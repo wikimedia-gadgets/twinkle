@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 """
 Script to sync twinkle
 """
@@ -17,8 +17,9 @@ import glob
 from optparse import OptionParser
 import pysvn
 from datetime import datetime
+import codecs
 
-prefix = "User:AzaToth/"
+prefix = "User:This, that and the other/"
 
 def main(options,args):
 
@@ -64,18 +65,18 @@ def main(options,args):
 		svntime = datetime.utcfromtimestamp( info.commit_time )
 		wikitime = datetime.strptime( page.editTime(), "%Y%m%d%H%M%S" )
 		if options.download and ( options.force or wikitime > svntime ): # newer page onwiki
-			fp = open( file, 'r' )
+			fp = codecs.open( file, 'r' , 'utf-8')
 			oldtext = fp.read()
 			if text == oldtext:
 				continue
 			if options.show_changes:
 				wikipedia.showDiff( oldtext, text )
 			fp.close()
-			fp = open( file, 'w' )
+			fp = codecs.open( file, 'w' , 'utf-8')
 			fp.write( text )
 			fp.close()
 		elif options.upload and ( options.force or wikitime < svntime ): #older page onwiki
-			fp = open( file, 'r' )
+			fp = codecs.open( file, 'r' , 'utf-8')
 			newtext = fp.read()
 			if text == newtext:
 				continue
