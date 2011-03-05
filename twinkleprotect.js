@@ -1,6 +1,6 @@
 // If TwinkleConfig aint exist.
 if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = function() {};
+	TwinkleConfig = {};
 }
 
 /**
@@ -19,591 +19,299 @@ if( typeof( TwinkleConfig.protectionSummaryAd ) == 'undefined' ) {
 	TwinkleConfig.protectionSummaryAd = " using [[WP:TW|TW]]";
 }
 
-function twinkleprotect() {
-	if( wgNamespaceNumber < 0 ) {
-		return;
-	}
+/**
+ TwinkleConfig.batchProtectChunks (integer)
+ How many pages should be processed at a time
+ */
+if( typeof( TwinkleConfig.batchProtectChunks ) == 'undefined' ) {
+	TwinkleConfig.batchProtectChunks = 50;
+}
 
-	if( userIsInGroup( 'sysop' ) ) {
-		twAddPortletLink( "javascript:twinkleprotect.callback()", "PP", "tw-rpp", "Protect page", "");
-	} else if (twinkleConfigExists) {
-		twAddPortletLink( "javascript:twinkleprotect.callback()", "RPP", "tw-rpp", "Request page protection", "");
-	}
-	else
-	{
-		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'RPP', 'tw-rpp', 'Request page protection', '');
+/**
+ TwinkleConfig.batchProtectMinCutOff (integer)
+ How many pages left in the process of being completed should allow a new batch to be initialized
+ */
+if( typeof( TwinkleConfig.batchProtectMinCutOff ) == 'undefined' ) {
+	TwinkleConfig.batchProtectMinCutOff = 5;
+}
+
+/**
+ TwinkleConfig.batchMax (integer)
+ How many pages should be processed maximum
+ */
+if( typeof( TwinkleConfig.batchMax ) == 'undefined' ) {
+	TwinkleConfig.batchMax = 5000;
+}
+
+function twinklebatchprotect() {
+	if( userIsInGroup( 'sysop' ) && (wgNamespaceNumber > 0 || wgCanonicalSpecialPageName == 'Prefixindex') ) {
+		twAddPortletLink( "javascript:twinklebatchprotect.callback()", "P-batch", "tw-pbatch", "Protect pages found on this page", "");
 	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinkleprotect); //schedule initializer
+window.TwinkleInit = (window.TwinkleInit || []).concat(twinklebatchprotect); //schedule initializer
 
-twinkleprotect.callback = function twinkleprotectCallback() {
-	var Window = new SimpleWindow( 600, 400 );
-	Window.setTitle( "Protection of pages" );
-	var form = new QuickForm( twinkleprotect.callback.evaluate );
-	if( userIsInGroup( 'sysop' ) ) {
-		form.append( {
-				type: 'checkbox',
-				name: 'request_only',
-				event: twinkleprotect.callback.disabledefaults,
-				list: [
-					{
-						label: 'Request protection',
-						value: 'request_only',
-						tooltip: 'If you want to request protection via WP:RPP instead of doing the protection by your self.'
-					}
-				]
-			} );
-	}
+twinklebatchprotect.unlinkCache = {};
+twinklebatchprotect.callback = function twinklesbatchprotectCallback() {
+	var Window = new SimpleWindow( 800, 400 );
+	Window.setTitle( "Batch protection" );
+
+	var form = new QuickForm( twinklebatchprotect.callback.evaluate );
 	form.append( {
 			type: 'select',
-			name: 'category',
-			label: 'Type of protection: ',
-			event: twinkleprotect.callback.disabledefaults,
+			name: 'move',
+			label: 'Move protection',
 			list: [
 				{
-					label: 'Full protection',
-					list: [
-						{ label: 'Generic', value: 'pp-protected' },
-						{ label: 'Dispute', selected: wgCurRevisionId != false, value: 'pp-dispute' },
-						{ label: 'Vandalism', value: 'pp-vandalism' },
-						{ label: 'High-visibility template', value: 'pp-template' },
-						{ label: 'User talk of blocked user', value: 'pp-usertalk' }
-					]
+					label: 'Allow all users (still autoconfirmed)',
+					value: '',
+					selected: true
 				},
 				{
-					label: 'Semi-protection',
-					list: [
-						{ label: 'Generic', value: 'pp-semi-protected' },
-						{ label: 'Vandalism', value: 'pp-semi-vandalism' },
-						{ label: 'High-visibility template', value: 'pp-semi-template' },
-						{ label: 'User talk of blocked user', value: 'pp-semi-usertalk' },
-						{ label: 'Spambot target', value: 'pp-semi-spambot' }
-					]
+					label: 'Block new and unregistered users',
+					value: 'autoconfirmed'
 				},
 				{
-					label: 'Other',
-					list: [
-						{ label: 'Move-protection', value: 'pp-move' },
-						{ label: 'Create-protection', selected: wgCurRevisionId == false , value: 'pp-create' },
-						{ label: 'Unprotection', value: 'unprotect' }
-					]
+					label: 'Block all non-admin users',
+					value: 'sysop'
 				}
 			]
 		} );
-	var flags = form.append( {
-			type: 'field',
-			label: 'Options'
+	form.append( {
+			type: 'select',
+			name: 'edit',
+			label: 'Edit protection',
+			list: [
+				{
+					label: 'Allow all users',
+					value: '',
+					selected: true
+				},
+				{
+					label: 'Block new and unregistered users',
+					value: 'autoconfirmed'
+				},
+				{
+					label: 'Block all non-admin users',
+					value: 'sysop'
+				}
+			]
 		} );
-
-	flags.append( {
+	form.append( {
+			type: 'select',
+			name: 'create',
+			label: 'Create protection',
+			list: [
+				{
+					label: 'Allow all users (still autoconfirmed)',
+					value: '',
+					selected: true
+				},
+				{
+					label: 'Block new and unregistered users',
+					value: 'autoconfirmed'
+				},
+				{
+					label: 'Block all non-admin users',
+					value: 'sysop'
+				}
+			]
+		} );
+	form.append( {
 			type: 'checkbox',
 			list: [
 				{
-					name: 'noinclude',
-					label: 'Wrap <noinclude>',
-					tooltip: 'Will wrap the template in <noinclude> tags, so that it won\'t transclude',
-					disabled:!userIsInGroup( 'sysop' ),
-					checked:(wgNamespaceNumber==10),
-					adminonly: true
-				},
-				{
-					name: 'small',
-					label: 'Iconify',
-					tooltip: 'Will use the |small=yes feature of the template, and only render it as a keylock',
-					disabled:!userIsInGroup( 'sysop' ),
-					adminonly: true
-				},
-				{
 					name: 'cascade',
-					label: 'Cascade protection',
-					tooltip: 'Cascade protection will protect all pages that is transcluded into said page'
+					label: 'Cascade protection'
 				}
 			]
 		} );
+	form.append( {
+			type: 'select',
+			name: 'expiry',
+			label: 'Expiration: ',
+			list: [
+				{ label: '15 minutes', value: '15 minutes' },
+				{ label: '30 minutes', value: '30 minutes' },
+				{ label: '45 minutes', value: '45 minutes' },
+				{ label: '1 hour', value: '1 hour' },
+				{ label: '2 hours', value: '2 hours' },
+				{ label: '3 hours', value: '3 hours' },
+				{ label: '6 hours', value: '6 hours' },
+				{ label: '12 hours', value: '12 hours' },
+				{ label: '1 day', value: '1 day' },
+				{ label: '2 days', value: '2 days' },
+				{ label: '3 days', value: '3 days' },
+				{ label: '4 days', value: '4 days' },
+				{ label: '5 days', value: '5 days' },
+				{ label: '6 days', value: '6 days' },
+				{ label: '1 week', value: '1 week' },
+				{ label: '2 weeks', value: '2 weeks' },
+				{ label: '1 month', value: '1 month' },
+				{ label: '2 months', value: '2 months' },
+				{ label: '3 months', value: '3 months' },
+				{ label: '6 months', value: '6 months' },
+				{ label: '1 year', value: '1 year' },
+				{ label: '2 years', value: '2 years' },
+				{ label: '3 years', value: '3 years' },
+				{ label: '6 years', value: '6 years' },
+				{ label: 'indefinite', selected: true, value:'indefinite' }
+			]
+		} );
 
-	if( userIsInGroup( 'sysop' ) ) {
-		form.append( {
-				type: 'select',
-				name: 'expiry',
-				label: 'Expiration: ',
-				list: [
-					{ label: '1 hour', value: '1 hour' },
-					{ label: '2 hours', value: '2 hours' },
-					{ label: '3 hours', value: '3 hours' },
-					{ label: '6 hours', value: '6 hours' },
-					{ label: '12 hours', value: '12 hours' },
-					{ label: '1 day', value: '1 day' },
-					{ label: '2 days', value: '2 days' },
-					{ label: '3 days', value: '3 days' },
-					{ label: '4 days', value: '4 days' },
-					{ label: '5 days', value: '5 days' },
-					{ label: '6 days', value: '6 days' },
-					{ label: '1 week', value: '1 week' },
-					{ label: '2 weeks', value: '2 weeks' },
-					{ label: '1 month', value: '1 month' },
-					{ label: '2 months', value: '2 months' },
-					{ label: '3 months', value: '3 months' },
-					{ label: '6 months', value: '6 months' },
-					{ label: '1 year', value: '1 year' },
-					{ label: 'indefinite', selected: true, value:'indefinite' }
-				]
-			} );
-	} else {
-		form.append( {
-				type: 'select',
-				name: 'expiry',
-				label: 'Expiration: ',
-				list: [
-					{ label: 'temporary', value: 'temporary' },
-					{ label: 'indefinite', value: 'indefinite' },
-					{ label: '', selected: true, value:'' }
-				]
-			} );
-	}
 	form.append( {
 			type: 'textarea',
 			name: 'reason',
 			label: 'Reason: '
 		} );
-	form.append( { type:'submit' } );
-	var result = form.render();
-	Window.setContent( result );
+
+	if( wgNamespaceNumber == Namespace.CATEGORY ) {
+
+		var query = {
+			'action': 'query',
+			'generator': 'categorymembers',
+			'gcmtitle': wgPageName,
+			'gcmlimit' : TwinkleConfig.batchMax, // the max for sysops
+			'prop': [ 'revisions' ],
+			'rvprop': [ 'size' ]
+		};
+	} else if( wgCanonicalSpecialPageName == 'Prefixindex' ) {
+		var query = {
+			'action': 'query',
+			'generator': 'allpages',
+			'gapnamespace': QueryString.exists('namespace') ? QueryString.get( 'namespace' ): document.getElementById('namespace').value,
+			'gapprefix': QueryString.exists('from') ? QueryString.get( 'from' ).replace('+', ' ').toUpperCaseFirstChar() : document.getElementById('nsfrom').value.toUpperCaseFirstChar(),
+			'gaplimit' : TwinkleConfig.batchMax, // the max for sysops
+			'prop' : [ 'revisions' ],
+			'rvprop': [ 'size' ]
+		}
+	} else {
+		var query = {
+			'action': 'query',
+			'gpllimit' : TwinkleConfig.batchMax, // the max for sysops
+			'generator': 'links',
+			'titles': wgPageName,
+			'prop': [ 'revisions' ],
+			'rvprop': [ 'size' ]
+		};
+
+	}
+	var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query, function( self ) {
+			var xmlDoc = self.responseXML;
+			var snapshot = xmlDoc.evaluate('//page', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
+			var list = [];
+			for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
+				var object = snapshot.snapshotItem(i);
+				var page = xmlDoc.evaluate( '@title', object, null, XPathResult.STRING_TYPE, null ).stringValue;
+				var size = xmlDoc.evaluate( 'revisions/rev/@size', object, null, XPathResult.NUMBER_TYPE, null ).numberValue;
+
+				list.push( {label:page + (size ? ' (' + size + ')' : '' ), value:page, checked: true });
+			}
+			self.params.form.append( {
+					type: 'checkbox',
+					name: 'pages',
+					list: list
+				}
+			)
+			self.params.form.append( { type:'submit' } );
+
+			var result = self.params.form.render();
+			self.params.Window.setContent( result );
+
+
+		}  );
+
+	wikipedia_api.params = { form:form, Window:Window };
+	wikipedia_api.post();
+	var root = document.createElement( 'div' );
+	Status.init( root );
+	Window.setContent( root );
 	Window.display();
 }
 
+twinklebatchprotect.currentProtectCounter = 0;
+twinklebatchprotect.currentprotector;
+twinklebatchprotect.callback.evaluate = function twinklebatchprotectCallbackEvaluate(event) {
+	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
+	var pages = event.target.getChecked( 'pages' );
+	var reason = event.target.reason.value;
+	var create = event.target.create.value;
+	var edit = event.target.edit.value;
+	var cascade = event.target.cascade.checked;
+	var expiry = event.target.expiry.value;
+	var move = event.target.move.value;
+	if( ! reason ) {
+		return;
+	}
+	Status.init( event.target );
+	if( !pages ) {
+		Status.error( 'Error', 'nothing to delete, aborting' );
+		return;
+	}
 
-twinkleprotect.callback.disabledefaults = function twinkleprotectCallbackDisableDefaults(e) {
-	var root = e.target.form;
-	if( e.target.value == 'unprotect' ) {
-		root.noinclude.disabled = true;
-		root.cascade.disabled = true;
-		root.expiry.disabled = true;
-		root.small.disabled = true;
-	} else {
-		root.noinclude.disabled = true;
-		root.cascade.disabled = false;
-		root.expiry.disabled = false;
-		root.small.disabled = true;
-		if( userIsInGroup( 'sysop' ) && !root.request_only.checked )
-		{
-			root.small.disabled = false;
-			root.noinclude.disabled = false;
+	function toCall( work ) {
+		if( work.length == 0 && twinklebatchprotect.currentProtectCounter <= 0 ) {
+			Status.info( 'work done' );
+			window.clearInterval( twinklebatchprotect.currentprotector );
+			Wikipedia.removeCheckpoint();
+			return;
+		} else if( work.length != 0 && twinklebatchprotect.currentProtectCounter <= TwinkleConfig.batchProtectMinCutOff ) {
+			var pages = work.shift();
+			twinklebatchprotect.currentProtectCounter += pages.length;
+			for( var i = 0; i < pages.length; ++i ) {
+				var page = pages[i];
+				var query = {
+					'action': 'query',
+					'titles': page
+				}
+				var wikipedia_api = new Wikipedia.api( 'Checking if page ' + page + ' exists', query, twinklebatchprotect.callbacks.main );
+				wikipedia_api.params = { page:page, reason:reason, move: move, edit: edit, create: create, expiry: expiry, cascade: cascade 	};
+				wikipedia_api.post();
+			}
 		}
 	}
-
-	if( /template/.test( e.target.value ) ) {
-		root.noinclude.checked = true;
-		root.expiry.disabled = true;
-	} else {
-		root.noinclude.checked = false;
-	}
-
+	var work = pages.chunk( TwinkleConfig.batchProtectChunks );
+	Wikipedia.addCheckpoint();
+	twinklebatchprotect.currentprotector = window.setInterval( toCall, 1000, work );
 }
-
-twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
-	var form = e.target;
-
-	var params = {
-		noinclude: form.noinclude.checked,
-		cascade: form.cascade.checked,
-		small: form.small.checked,
-		reason: form.reason.value,
-		expiry: form.expiry.value,
-		type: form.category.value
-	}
-
-	if( userIsInGroup( 'sysop') ) {
-		var request_only = form.request_only.checked;
-		if( request_only && params.expiry != 'indefinite' ) {
-			params.expiry = 'temporary';
+twinklebatchprotect.callbacks = {
+	main: function( self ) {
+		var xmlDoc = self.responseXML;
+		var normal = xmlDoc.evaluate( '//normalized/n/@to', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
+		if( normal ) {
+			self.params.page = normal;
 		}
-	}
-
-	Status.init( form );
-
-	if( userIsInGroup( 'sysop' ) && ! request_only ) {
-
-		var edit, move, tag = params.type, reason, create = '';
-		switch( tag ) {
-		case 'pp-dispute':
-			edit = 'sysop';
-			move = 'sysop';
-			reason = 'Full protection: dispute';
-			break;
-		case 'pp-vandalism':
-			edit = 'sysop';
-			move = 'sysop';
-			reason = 'Full protection: vandalism';
-			break;
-		case 'pp-template':
-			edit = 'sysop';
-			move = 'sysop';
-			reason = 'Full protection: high-visibility template';
-			break;
-		case 'pp-usertalk':
-			edit = 'sysop';
-			move = 'sysop';
-			reason = 'Full protection: user talk of blocked user';
-			break;
-		case 'pp-protected':
-			edit = 'sysop';
-			move = 'sysop';
-			if( params.reason ) {
-				tag += '|reason=' + params.reason;
-				params.reason = undefined;
-			}
-			reason = 'Full protection';
-			break;
-		case 'pp-semi-vandalism':
-			edit = 'autoconfirmed';
-			move = 'autoconfirmed';
-			reason = 'Semi-protection: vandalism';
-			break;
-		case 'pp-semi-usertalk':
-			edit = 'autoconfirmed';
-			move = 'autoconfirmed';
-			reason = 'Semi-protection: user talk of blocked user';
-			break;
-		case 'pp-semi-template':
-			edit = 'autoconfirmed';
-			move = 'autoconfirmed';
-			reason = 'Semi-protection: high-visibility template';
-			break;
-		case 'pp-semi-spambot':
-			edit = 'autoconfirmed';
-			move = 'autoconfirmed';
-			reason = 'Semi-protection: spambot target';
-			break;
-		case 'pp-semi-protected':
-			edit = 'autoconfirmed';
-			move = 'autoconfirmed';
-			if( params.reason ) {
-				tag += '|reason=' + params.reason;
-				params.reason = undefined;
-			}
-			reason = 'Semi-protection';
-			break;
-		case 'pp-move':
-			edit = '';
-			move = 'sysop';
-			reason = 'Move-protection';
-			break;
-		case 'pp-create':
-			edit = '';
-			move = '';
-			create = 'sysop';
-			reason = 'Create-protection';
-			break;
-
-		case 'unprotect':
-		default:
-			edit = '';
-			move = '';
-			reason = 'Unprotection';
-			break;
-		}
-		if( params.reason ) {
-			reason += ', ' + params.reason;
-		}
-		if( reason != '' && reason.charAt( reason.length - 1 ) != '.' ) {
-			reason += '.';
-		}
-
-		params.reason = reason;
-		params.tag = tag;
-		params.edit = edit;
-		params.move = move;
-		params.create = create;
 
 		var query = {
-			'title': wgPageName,
+			'title': self.params.page,
 			'action': 'protect'
 		};
+		var wikipedia_wiki = new Wikipedia.wiki( 'Protecting page ' + self.params.page, query, twinklebatchprotect.callbacks.protectPage, function( self ) {
+				--twinklebatchprotect.currentProtectCounter;
+				var link = document.createElement( 'a' );
+				link.setAttribute( 'href', wgArticlePath.replace( '$1', self.query['title'] ) );
+				link.setAttribute( 'title', self.query['title'] );
+				link.appendChild( document.createTextNode( self.query['title'] ) );
+				self.statelem.info( [ 'completed (' , link , ')' ] );
 
-		// Updating data for the action completed event
-		Wikipedia.actionCompleted.redirect = query['title'];
-		Wikipedia.actionCompleted.notice = "Done...";
-
-		var wikipedia_wiki = new Wikipedia.wiki( 'Protecting page', query, twinkleprotect.callbacks.sysop.protectingPage );
-		wikipedia_wiki.params = params;
+			} );
+		wikipedia_wiki.params = self.params;
+		wikipedia_wiki.followRedirect = false;
 		wikipedia_wiki.get();
-	} else {
-		var typename, reason;
-			switch( params.type ) {
-			case 'pp-dispute':
-			case 'pp-vandalism':
-			case 'pp-template':
-			case 'pp-usertalk':
-			case 'pp-protected':
-				typename = 'full protection';
-				break;
-			case 'pp-semi-vandalism':
-			case 'pp-semi-usertalk':
-			case 'pp-semi-template':
-			case 'pp-semi-spambot':
-			case 'pp-semi-protected':
-				typename = 'semi-protection';
-				break;
-			case 'pp-move':
-				typename = 'move-protection';
-				break;
-			case 'pp-create':
-				typename = 'create-protection';
-				break;
-			case 'unprotect':
-			default:
-				typename = 'Unprotection';
-				break;
-		}
-
-		switch( params.type ) {
-			case 'pp-dispute':
-				reason = 'dispute';
-				break;
-			case 'pp-vandalism':
-			case 'pp-semi-vandalism':
-				reason = 'vandalism';
-				break;
-			case 'pp-template':
-			case 'pp-semi-template':
-				reason = 'high-visibility template';
-				break;
-			case 'pp-usertalk':
-			case 'pp-semi-usertalk':
-				reason = 'user talk of blocked user';
-				break;
-			case 'pp-semi-spambot':
-				reason = 'spambot target';
-				break;
-			case 'pp-protected':
-			case 'pp-semi-protected':
-			case 'pp-move':
-			case 'pp-create':
-			case 'unprotect':
-			default:
-				reason = '';
-				break;
-		}
-
-		if( reason != '' ) {
-			reason = " ''" + reason + "''";
-		}
-		if( params.reason ) {
-			reason += ', ' + params.reason;
-		}
-		if( reason != '' && reason.charAt( reason.length - 1 ) != '.' ) {
-			reason += '.';
-		}
-
-		params.reason = reason;
-		params.typename = typename;
-
-		var query = {
-			'title': 'Wikipedia:Requests for page protection',
-			'action': 'submit'
-		};
-		// Updating data for the action completed event
-		Wikipedia.actionCompleted.redirect = query['title'];
-		Wikipedia.actionCompleted.notice = "Nomination completed, redirecting now to the discussion page";
-
-		var wikipedia_wiki = new Wikipedia.wiki( 'Requesting protection of page', query, twinkleprotect.callbacks.user );
-		wikipedia_wiki.params = params;
-		wikipedia_wiki.followRedirect = true;
-		wikipedia_wiki.get();
-	}
-}
-
-twinkleprotect.callbacks = {
-	sysop: {
-		taggingPage: function( self ) {
-			var form = self.responseXML.getElementById( 'editform' );
-			var oldtag_re = /\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*/gi;
-
-			var text = form.wpTextbox1.value;
-
-			text = text.replace( oldtag_re, '' );
-
-			if( self.params.type != 'unprotect' && self.params.expiry != 'indefinite' ) {
-				self.params.tag += '|expiry={' + '{subst:#time:F j, Y|+' + self.params.expiry +'}}';
-				if( self.params.small ) {
-					self.params.tag += '|small=yes';
-				}
-			}
-
-			var summary;
-			if( self.params.type == 'unprotect' ) {
-				summary = 'removing protection template' + TwinkleConfig.summaryAd;
-			} else {
-				if( self.params.noinclude ) {
-					text = "<noinclude>\{\{" + self.params.tag + "\}\}</noinclude>" + text;
-				} else {
-					text = "\{\{" + self.params.tag + "\}\}\n" + text;
-				}
-				summary = "adding \{\{" + self.params.tag + "\}\}" + TwinkleConfig.summaryAd;
-
-			}
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': form.wpWatchthis.checked ? '' : undefined,
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSummary': summary,
-				'wpTextbox1': text
-			};
-
-			self.post( postData );
-		},
-		protectingPage: function( self ){
-			var form  = self.responseXML.getElementById( 'mw-Protect-Form' );
-			var postData;
-
-			if( self.params.type == 'pp-move' ) {
-				postData = {
-					'wpEditToken': form.wpEditToken.value,
-					'mwProtect-level-move': self.params.move,
-					'wpProtectExpirySelection-move': self.params.expiry != 'indefinite' ? 'othertime' : 'indefinite',
-					'mwProtect-expiry-move': self.params.expiry != 'indefinite' ? self.params.expiry : undefined,
-					'mwProtect-cascade': self.params.cascade ? '' : undefined,
-					'mwProtectWatch': form.mwProtectWatch.checked ? '' : undefined,
-					'wpProtectReasonSelection': 'other',
-					'mwProtect-reason': self.params.reason + TwinkleConfig.protectionSummaryAd
-				};
-
-			} else if( self.params.type == 'pp-create' ) {
-				postData = {
-					'wpEditToken': form.wpEditToken.value,
-					'mwProtect-level-create': self.params.create,
-					'wpProtectExpirySelection-create': self.params.expiry != 'indefinite' ? 'othertime' : 'indefinite',
-					'mwProtect-expiry-create': self.params.expiry != 'indefinite' ? self.params.expiry : undefined,
-					'mwProtect-cascade': self.params.cascade ? '' : undefined,
-					'mwProtectWatch': form.mwProtectWatch.checked ? '' : undefined,
-					'wpProtectReasonSelection': 'other',
-					'mwProtect-reason': self.params.reason + TwinkleConfig.protectionSummaryAd
-				};
-
-			} else if( self.params.type == 'unprotect' ) {
-				postData = {
-					'wpEditToken': form.wpEditToken.value,
-					'mwProtect-level-edit': self.params.edit,
-					'wpProtectExpirySelection-edit': 'indefinite',
-					'mwProtect-level-move': self.params.move,
-					'wpProtectExpirySelection-move': 'indefinite',
-					'mwProtect-level-create': self.params.create,
-					'wpProtectExpirySelection-create': 'indefinite',
-					'mwProtect-cascade': self.params.cascade ? '' : undefined,
-					'mwProtectWatch': form.mwProtectWatch.checked ? '' : undefined,
-					'wpProtectReasonSelection': 'other',
-					'mwProtect-reason': self.params.reason + TwinkleConfig.protectionSummaryAd
-				};
-			} else {
-				postData = {
-					'wpEditToken': form.wpEditToken.value,
-					'mwProtect-level-edit': self.params.edit,
-					'wpProtectExpirySelection-edit': self.params.expiry != 'indefinite' ? 'othertime' : 'indefinite',
-					'mwProtect-expiry-edit': self.params.expiry != 'indefinite' ? self.params.expiry : undefined,
-					'mwProtect-level-move': self.params.move,
-					'wpProtectExpirySelection-move': self.params.expiry != 'indefinite' ? 'othertime' : 'indefinite',
-					'mwProtect-expiry-move': self.params.expiry != 'indefinite' ? self.params.expiry : undefined,
-					'mwProtect-cascade': self.params.cascade ? '' : undefined,
-					'mwProtectWatch': form.mwProtectWatch.checked ? '' : undefined,
-					'wpProtectReasonSelection': 'other',
-					'mwProtect-reason': self.params.reason + TwinkleConfig.protectionSummaryAd
-				};
-			}
-
-			self.post( postData );
-
-			var query = {
-				'title': wgPageName,
-				'action': 'submit'
-			};
-			if( self.params.create == '' ) {
-				var wikipedia_wiki = new Wikipedia.wiki( 'Tagging page', query, twinkleprotect.callbacks.sysop.taggingPage );
-				wikipedia_wiki.params = self.params;
-				wikipedia_wiki.get();
-			}
-		}
 	},
-	user: function( self ) {
-		var form = self.responseXML.getElementById( 'editform' );
-
-		var text = form.wpTextbox1.value;
-
-		var ns2tag	=	{
-			'0'	:	'la',
-			'1'	:	'lat',
-			'2'	:	'lu',
-			'3'	:	'lut',
-			'4'	:	'lw',
-			'5'	:	'lwt',
-			'6'	:	'li',
-			'7'	:	'lit',
-			'8'	:	'lm',
-			'9'	:	'lmt',
-			'10':	'lt',
-			'11':	'ltt',
-			'12':	'lh',
-			'13':	'lht',
-			'14':	'lc',
-			'15':	'lct',
-			'100':	'lp',
-			'101':	'lpt'
-		};
-
-		var rppRe = new RegExp( '====\\s*\\{\\{\\s*' + ns2tag[ wgNamespaceNumber ] + '\\s*\\|\\s*' + RegExp.escape( wgTitle, true ) + '\\s*\\}\\}\\s*====', 'm' );
-		var tag = rppRe.exec( text );
-
-		if( tag ) {
-			self.statelem.warn( [ htmlNode( 'strong', tag[0] ) , " is already placed on the page." ] )
-			return false;
-		}
-
-		var newtag = '==== \{\{' + ns2tag[ wgNamespaceNumber ] + '|' + wgTitle +  '\}\} ====' + "\n";
-		if( ( new RegExp( '^' + RegExp.escape( newtag ).replace( /\s+/g, '\\s*' ), 'm' ) ).test( text ) ) {
-			self.statelem.error( 'There are already a protection request for this page, aborting.' );
-			return;
-		}
-		var words = [];
-		switch( self.params.expiry ) {
-		case 'temporary':
-			words.push( "Temporary" );
-			break;
-		case 'indefinite':
-			words.push( "Indefinite" );
-			break;
-		}
-		if( self.params.cascade ) {
-			words.push( "cascading" );
-		}
-
-		words.push( self.params.typename );
-
-		newtag += "'''" + words.join( ' ' ) + "'''" + ( self.params.reason != '' ? self.params.reason : '' ) + " \~\~\~\~";
-
-		if( self.params.type == 'unprotect' ) {
-			var reg = /(\n==\s*Current requests for unprotection\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
-		} else {
-			var reg = /(\n==\s*Current requests for protection\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
-		}
-		var originalTextLength= text.length;
-		text = text.replace( reg, "$1" + newtag + "\n");
-		if (text.length==originalTextLength)
-		{
-			self.statelem.error( 'The marker that identifies where the protection request is supposed to be added on WP:RFPP could not be found. Aborting ...' );
-			return;
-		}
+	protectPage: function( self ) {
+		var form  = self.responseXML.getElementById( 'mw-Protect-Form' );
 		var postData = {
-			'wpMinoredit': undefined,
-			'wpWatchthis': form.wpWatchthis.checked ? '' : undefined,
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
 			'wpEditToken': form.wpEditToken.value,
-			'wpSection': '',
-			'wpSummary': "Requesting " + self.params.typename + ' of [[' + wgPageName.replace(/_/g, ' ') + ']].' + TwinkleConfig.summaryAd,
-			'wpTextbox1': text
+			'mwProtect-level-edit': self.params.edit,
+			'wpProtectExpirySelection-edit': self.params.expiry != 'indefinite' ? 'othertime' : 'indefinite',
+			'mwProtect-expiry-edit': self.params.expiry != 'indefinite' ? self.params.expiry : undefined,
+			'mwProtect-level-move': self.params.move,
+			'wpProtectExpirySelection-move': self.params.expiry != 'indefinite' ? 'othertime' : 'indefinite',
+			'mwProtect-expiry-move': self.params.expiry != 'indefinite' ? self.params.expiry : undefined,
+			'mwProtect-cascade': self.params.cascade ? '' : undefined,
+			'mwProtectWatch': form.mwProtectWatch.checked ? '' : undefined,
+			'wpProtectReasonSelection': 'other',
+			'mwProtect-reason': self.params.reason + TwinkleConfig.protectionSummaryAd
 		};
 
 		self.post( postData );

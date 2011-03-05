@@ -41,7 +41,7 @@ if( typeof( TwinkleConfig.blankTalkpageOnIndefBlock ) == 'undefined' ) {
  If ad should be added or not to summary, default [[WP:TWINKLE|TWINKLE]]
  */
 if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " using [[WP:TW|TW]]";
+	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
 }
 
 function twinklewarn() {
@@ -941,7 +941,7 @@ twinklewarn.messages = {
 		"uw-username": {
 			label:"Username is against policy",
 			summary:"Warning: Your username might be against policy"
-                },
+		},
 		"uw-coi-username": {
 			label:"Username is against policy, and conflict of interest",
 			summary:"Warning: Username and conflict of interest policy"
@@ -1358,9 +1358,9 @@ twinklewarn.callback.change_subcategory = function twinklewarnCallbackChangeSubc
 }
 
 twinklewarn.callbacks = {
-	main: function( self ) {
-		var form = self.responseXML.getElementById( 'editform' );
-		var text = form.wpTextbox1.value;
+	main: function( pageobj ) {
+		var text = pageobj.getPageText();
+		var params = pageobj.getCallbackParameters();
 
 		var history_re = /\<\!\-\-\ Template\:(uw\-.*?)\ \-\-\>.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4}) \(UTC\)/g;
 		var history = {};
@@ -1380,14 +1380,14 @@ twinklewarn.callbacks = {
 
 		var date = new Date();
 
-		if( self.params.sub_group in history ) {
-			var temp_time = new Date( history[ self.params.sub_group ] );
+		if( params.sub_group in history ) {
+			var temp_time = new Date( history[ params.sub_group ] );
 			temp_time.setUTCHours( temp_time.getUTCHours() + 24 );
 
 			if( temp_time > date ) {
-				Status.info( 'Info', "an identical " + self.params.sub_group + " has been issued in the last 24 hours" );
+				Status.info( 'Info', "an identical " + params.sub_group + " has been issued in the last 24 hours" );
 				if( !confirm( "Would you still like to add a warning/notice?" ) ) {
-					self.statelem.info( 'aborted per user request' );
+					pageobj.statelem.info( 'aborted per user request' );
 					return;
 				}
 			}
@@ -1398,7 +1398,7 @@ twinklewarn.callbacks = {
 		if( latest.date > date ) {
 			Status.info('Info', "a " + latest.type + " has been issued in the last minute" );
 				if( !confirm( "Would you still like to add a warning/notice?" ) ) {
-					self.statelem.info( 'aborted per user request' );
+					pageobj.statelem.info( 'aborted per user request' );
 					return;
 				}
 		}
@@ -1407,13 +1407,13 @@ twinklewarn.callbacks = {
 		var headerRe = new RegExp( "^==+\\s*(?:" + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() +  ")\\s+" + date.getUTCFullYear() + "\\s*==+", 'm' );
 
 		if( text.length > 0 ) {
-			text += "\n";
+			text += "\n\n";
 		}
 
-		if( self.params.main_group == 'block' ) {
+		if( params.main_group == 'block' ) {
 			var article = '', reason = '', time = null;
 
-			if( TwinkleConfig.blankTalkpageOnIndefBlock && self.params.sub_group != 'uw-lblock' && ( twinklewarn.indefBlockHash[ self.params.sub_group ] || /indef|\*|max/.exec( self.params.block_timer ) ) ) {
+			if( TwinkleConfig.blankTalkpageOnIndefBlock && params.sub_group != 'uw-lblock' && ( twinklewarn.indefBlockHash[ params.sub_group ] || /indef|\*|max/.exec( params.block_timer ) ) ) {
 				Status.info( 'Info', 'Blanking talk page per preferences and createing a new level 2 heading for the date' );
 				text = "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			} else if( !headerRe.exec( text ) ) {
@@ -1421,33 +1421,33 @@ twinklewarn.callbacks = {
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
 
-			if( self.params.article && twinklewarn.pageHash[ self.params.sub_group ] ) {
-				article = '|page=' + self.params.article;
+			if( params.article && twinklewarn.pageHash[ params.sub_group ] ) {
+				article = '|page=' + params.article;
 			}
 
-			if( self.params.reason && twinklewarn.reasonHash[ self.params.sub_group ] ) {
-				reason = '|reason=' + self.params.reason;
+			if( params.reason && twinklewarn.reasonHash[ params.sub_group ] ) {
+				reason = '|reason=' + params.reason;
 			}
 
-			if( /te?mp|^\s*$|min/.exec( self.params.block_timer ) || twinklewarn.indefBlockHash[ self.params.sub_group ] ) {
+			if( /te?mp|^\s*$|min/.exec( params.block_timer ) || twinklewarn.indefBlockHash[ params.sub_group ] ) {
 				time = '';
-			} else if( /indef|\*|max/.exec( self.params.block_timer ) ) {
+			} else if( /indef|\*|max/.exec( params.block_timer ) ) {
 				time = '|indef=yes';
 			} else {
-				time = '|time=' + self.params.block_timer;
+				time = '|time=' + params.block_timer;
 			}
 
-			text += "\{\{subst:" + self.params.sub_group + article + time + reason + "|sig=true|subst=subst:\}\}";
+			text += "\{\{subst:" + params.sub_group + article + time + reason + "|sig=true|subst=subst:\}\}";
 		} else {
 			if( !headerRe.exec( text ) ) {
 				Status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
 
-			if( self.params.sub_group == 'uw-username' ) {
-				text += "\{\{subst:" + self.params.sub_group + ( self.params.reason ? '|1=' + self.params.reason : '' ) + "|subst=subst:\}\} \~\~\~\~";
+			if( params.sub_group == 'uw-username' ) {
+				text += "\{\{subst:" + params.sub_group + ( params.reason ? '|1=' + params.reason : '' ) + "|subst=subst:\}\} \~\~\~\~";
 			} else {
-				text += "\{\{subst:" + self.params.sub_group + ( self.params.article ? '|1=' + self.params.article : '' ) + "|subst=subst:\}\}" + (self.params.reason ? " ''" + self.params.reason + "'' ": ' ' ) + "\~\~\~\~";
+				text += "\{\{subst:" + params.sub_group + ( params.article ? '|1=' + params.article : '' ) + "|subst=subst:\}\}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + "\~\~\~\~";
 			}
 		}
 
@@ -1462,19 +1462,11 @@ twinklewarn.callbacks = {
 				break;
 			}
 		}
-		var postData = {
-			'wpMinoredit': form.wpMinoredit.checked ? 1 : undefined,
-			'wpWatchthis': (form.wpWatchthis.checked || TwinkleConfig.watchWarnings) ? 1 : undefined,
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSection': '',
-			'wpSummary': twinklewarn.messages[self.params.main_group][self.params.sub_group].summary + ( self.params.article ? ' on [[' + self.params.article + ']]'  : '' ) + '.' + TwinkleConfig.summaryAd,
-			'wpTextbox1': text
-		};
 
-		self.post( postData );
+		pageobj.setPageText( text );
+		pageobj.setEditSummary( twinklewarn.messages[params.main_group][params.sub_group].summary + ( params.article ? ' on [[' + params.article + ']]'  : '' ) + '.' + TwinkleConfig.summaryAd );
+		pageobj.setWatchlist( TwinkleConfig.watchWarnings );
+		pageobj.save();
 	}
 }
 
@@ -1499,14 +1491,11 @@ twinklewarn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 
 	Status.init( e.target );
 
-	var query = {
-		'title': wgPageName,
-		'action': 'submit'
-	};
 	Wikipedia.actionCompleted.redirect = wgPageName;
 	Wikipedia.actionCompleted.notice = "Warning complete, reloading talk page in a few seconds";
-	var wikipedia_wiki = new Wikipedia.wiki( 'User talk page modification', query, twinklewarn.callbacks.main );
-	wikipedia_wiki.params = params;
-	wikipedia_wiki.followRedirect = true;
-	wikipedia_wiki.get();
+
+	var wikipedia_page = new Wikipedia.page( wgPageName, 'User talk page modification' );
+	wikipedia_page.setCallbackParameters( params );
+	wikipedia_page.setFollowRedirect( true );
+	wikipedia_page.load( twinklewarn.callbacks.main );
 }
