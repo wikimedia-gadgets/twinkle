@@ -1195,14 +1195,22 @@ twinklespeedy.callbacks = {
 			}
 
 			if( TwinkleConfig.markSpeedyPagesAsPatrolled && self.params.rcid != '' ) {
-				var query = {
-					'title': wgPageName,
-					'action': 'markpatrolled',
-					'rcid': self.params.rcid
-				};
+				//var query = {
+				//	'title': wgPageName,
+				//	'action': 'markpatrolled',
+				//	'rcid': self.params.rcid
+				//};
 
-				var wikipedia_wiki = new Wikipedia.wiki( 'Marking page as patrolled', query );
-				wikipedia_wiki.post();
+				//var wikipedia_wiki = new Wikipedia.wiki( 'Marking page as patrolled', query );
+				//wikipedia_wiki.post();
+
+				// absolutely horrible, shameful kludge to inform users about our woes
+				var stato = new Status("Automatic page patrolling currently not working");
+				var link = document.createElement( 'a' );
+				link.setAttribute( 'href', $('.patrollink a').attr('href') );
+				link.appendChild( document.createTextNode( 'ctrl-click/cmd-click this link' ) );
+
+				stato.warn( [ 'to manually mark as patrolled, ' , link ] );
 			}
 
 			// Notification to first contributor

@@ -1,3 +1,14 @@
+// Customised by [[User:This, that and the other]] to fix minor issues
+// with the default ([[User:AzaToth/twinklexfd.js]]):
+//  * No longer loses "reason" when switching between different XfD types
+
+// All changes from the original are marked with "**TTO" in a comment.
+
+// NOTE TO POTENTIAL EDITORS: Please notify [[User talk:This, that and the other]]
+// if modifying this script.
+
+
+
 // If TwinkleConfig aint exist.
 if( typeof( TwinkleConfig ) == 'undefined' ) {
 	TwinkleConfig = {};
@@ -176,6 +187,10 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 	}
 	var work_area = null;
 
+	// **TTO preserve old reason
+	var oldreasontextbox = e.target.form.getElementsByTagName('textarea')[0];
+	var oldreason = (oldreasontextbox ? oldreasontextbox.value : '');
+
 	switch( value ) {
 	case 'afd':
 		work_area = new QuickForm.element( {
@@ -213,10 +228,12 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		afd_category.append( { type:'option', label:'Indiscernible or unclassifiable topic', value:'I' } );
 		afd_category.append( { type:'option', label:'Debate not yet sorted', value:'U' } );
 
+		// **TTO use old reason
 		work_area.append( {
 				type: 'textarea',
 				name: 'xfdreason',
-				label: 'Reason: '
+				label: 'Reason: ',
+				value: oldreason
 			} );
 		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
@@ -253,10 +270,12 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 						}
 					]
 		} );
+		// **TTO use old reason
 		work_area.append( {
 				type: 'textarea',
 				name: 'xfdreason',
-				label: 'Reason: '
+				label: 'Reason: ',
+				value: oldreason
 			} );
 		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
@@ -279,10 +298,12 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 						}
 					]
 		} );
+		// **TTO use old reason
 		work_area.append( {
 				type: 'textarea',
 				name: 'xfdreason',
-				label: 'Reason: '
+				label: 'Reason: ',
+				value: oldreason
 			} );
 		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
@@ -305,10 +326,12 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 					}
 				]
 			} );
+		// **TTO use old reason
 		work_area.append( {
 				type: 'textarea',
 				name: 'xfdreason',
-				label: 'Reason: '
+				label: 'Reason: ',
+				value: oldreason
 			} );
 		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
@@ -346,10 +369,12 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 				disabled: true,
 				value: ''
 			} );
+		// **TTO use old reason
 		work_area.append( {
 				type: 'textarea',
 				name: 'xfdreason',
-				label: 'Reason: '
+				label: 'Reason: ',
+				value: oldreason
 			} );
 		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
@@ -361,10 +386,12 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 				label: 'Redirects for discussion',
 				name: 'work_area'
 			} );
+		// **TTO use old reason
 		work_area.append( {
 				type: 'textarea',
 				name: 'xfdreason',
-				label: 'Reason: '
+				label: 'Reason: ',
+				value: oldreason
 			} );
 		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
@@ -674,7 +701,7 @@ twinklexfd.callbacks = {
 
 			// Discussion page
 			var query = {
-				'title': 'Wikipedia:Miscellany for deletion/' + wgPageName + self.params.numbering,
+				'title': 'Wikipedia:Miscellany for deletion/' + wgPageName + this.params.numbering,
 				'action': 'submit'
 			};
 
@@ -790,7 +817,7 @@ twinklexfd.callbacks = {
 		userNotification: function( self ) {
 			var form = self.responseXML.getElementById( 'editform' );
 			var text = form.wpTextbox1.value;
-			text += "\n\{\{subst:MFDWarning|1=" + wgPageName + ( self.params.numbering != '' ? '|order=&#32;' + self.params.numbering : '' ) + "\}\} \~\~\~\~";
+			text += "\n\{\{subst:MFDWarning|1=" + wgPageName + ( self.params.numbering != '' ? '|order=&#32;' + this.params.numbering : '' ) + "\}\} \~\~\~\~";
 			var postData = {
 				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
 				'wpWatchthis': (TwinkleConfig.xfdWatchUser=="yes" || (TwinkleConfig.xfdWatchUser=="default"&&form.wpWatchthis.checked) ? '' : undefined),
@@ -1126,7 +1153,7 @@ twinklexfd.callbacks = {
 			var form = self.responseXML.getElementById('editform');
 			var added_data = "";
 			var summary = "";
-			switch( self.params.xfdcat ) {
+			switch( this.params.xfdcat ) {
 			case 'cfd':
 				added_data = "\{\{subst:cfd2|1=" + wgTitle + "|text=" + self.params.reason + " \~\~\~\~\}\}";
 				summary = "Added delete nomination of [[:" + wgPageName + "]];" + TwinkleConfig.summaryAd;

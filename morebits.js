@@ -75,8 +75,8 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 	//Add styles we might need.
   if (!twAddPortlet.styleAdded)
   {
-  	if (skin=="vector") appendCSS( "div div.extraMenu h5 span { background-position: 90% 50%;} div.extraMenu h5 a { padding-left: 0.4em; padding-right: 0.4em; width:auto; } div.extraMenu h5 a span {display:inline-block; font-size:0.8em; height:2.5em; font-weight: normal; padding-top: 1.25em; margin-right:14px; }" );
-  	else if (skin=="modern") appendCSS("#mw_contentwrapper div.portlet { overflow:hidden; height:1.5em; margin:0 0 0 14em; padding:0; } #mw_contentwrapper div.portlet h5 {display:none;} #mw_contentwrapper div.portlet div.pBody {margin:0; padding:0;} #mw_contentwrapper div.portlet div.pBody ul { display:inline; margin:0; } #mw_contentwrapper div.portlet div.pBody ul li { display:block; float:left; height:1.5em; margin:0 0.5em; padding:0 0.2em; text-transform:lowercase; } #mw_contentwrapper div.portlet div.pBody ul li a { text-decoration:underline;} #mw_contentwrapper div.portlet div.pBody ul li.selected a { text-decoration:none;}");
+  	if (skin=="vector") mw.util.addCSS( "div div.extraMenu h5 span { background-position: 90% 50%;} div.extraMenu h5 a { padding-left: 0.4em; padding-right: 0.4em; width:auto; } div.extraMenu h5 a span {display:inline-block; font-size:0.8em; height:2.5em; font-weight: normal; padding-top: 1.25em; margin-right:14px; }" );
+  	else if (skin=="modern") mw.util.addCSS("#mw_contentwrapper div.portlet { overflow:hidden; height:1.5em; margin:0 0 0 14em; padding:0; } #mw_contentwrapper div.portlet h5 {display:none;} #mw_contentwrapper div.portlet div.pBody {margin:0; padding:0;} #mw_contentwrapper div.portlet div.pBody ul { display:inline; margin:0; } #mw_contentwrapper div.portlet div.pBody ul li { display:block; float:left; height:1.5em; margin:0 0.5em; padding:0 0.2em; text-transform:lowercase; } #mw_contentwrapper div.portlet div.pBody ul li a { text-decoration:underline;} #mw_contentwrapper div.portlet div.pBody ul li.selected a { text-decoration:none;}");
   	twAddPortlet.styleAdded = true;
   }
 
@@ -1464,7 +1464,8 @@ Wikipedia.api = function( currentAction, query, oninit, statelem ) {
 	this.query['format'] = 'xml'; //LET THE FORCE BE WITH YOU!!!
 	this.oninit = oninit;
 	if( statelem ) {
-		statelem.status( currentAction )
+		this.statelem = statelem;
+		statelem.status( currentAction );
 	} else {
 		this.statelem = new Status( currentAction );
 	}
@@ -1475,27 +1476,298 @@ Wikipedia.api.prototype = {
 	oninit: null,
 	query: null,
 	responseXML: null,
-	statelem:  null,
+	statelem: null,
 	counter: 0,
 	post: function() {
-		var xmlhttp = sajax_init_object();
-		Wikipedia.dump.push( xmlhttp );
-		xmlhttp.obj = this;
-		xmlhttp.overrideMimeType('text/xml');
-		xmlhttp.open( 'POST' , wgServer + wgScriptPath + '/api.php', true);
-		xmlhttp.setRequestHeader('Content-type','application/x-www-form-urlencoded');
-		xmlhttp.onerror = function() {
-			this.obj.statelem.error( "Error " + this.status + " occurred while quering the api." );
-		}
-		xmlhttp.onload = function() {
-			this.obj.responseXML = this.responseXML;
-			if( this.obj.oninit ) {
-				this.obj.oninit( this.obj );
+		$.ajax( {
+			context: this,
+			type: "POST",
+			url: wgServer + wgScriptPath + '/api.php',
+			data: QueryString.create(this.query),
+			dataType: "xml",
+			success: function(xml, textStatus, jqXHR) {
+				this.responseXML = xml;
+				if (this.oninit) this.oninit(this);
+				setTimeout(Wikipedia.actionCompleted, 150);  // try to eliminate failure to redirect when using API
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				this.statelem.error(textStatus + ": " + errorThrown + " occurred while querying the API.");
 			}
-			Wikipedia.actionCompleted();
-		};
-		xmlhttp.send( QueryString.create( this.query ) );
+		} );
 	}
+}
+
+/**
+ * Wikipedia.page
+ * Encapsulates the MediaWiki API to make changes to a page.
+ *
+ * Instance methods (see detailed documentation below):
+ *  edit - Uses the MediaWiki API to edit a page.
+ *  revert - Uses the MediaWiki API to revert a page to an earlier revision.
+ *  notifyInitialContributor - Uses the API to edit the talk page of the initial contributor to a page.
+ *  patrol - Uses the MediaWiki API to patrol a page (when reached via Special:NewPages).
+ *
+ * Constructor parameter:
+ *  title - the title of the page to edit (for the current page, use wgPageName)
+ */
+Wikipedia.page = function(title)
+{
+	this.title = title;
+}
+
+Wikipedia.page.prototype = {
+	title: '',
+
+	/** Wikipedia.page.followRedirect:
+	 * If this is true, and the page at |title| is a redirect, any page actions will occur on
+	 * the target of the redirect
+	 */
+	followRedirect: false,
+
+	/**
+	 * Wikipedia.page.edit
+	 * Uses the MediaWiki API to edit a page.
+	 *
+	 * Remarks:
+	 *  This function can also be used for getting the content of the page. In the |onedit|
+	 *  parameter, specify a callback that deals with the page text (self.pagetext) and
+	 *  returns false.
+	 *
+	 * About the callback functions:
+	 *  Each of the callback functions takes one parameter, customarily called "self".
+	 *  This is actually the Wikipedia.api object used for instantiating the request.
+	 *  Useful properties on this object include:
+	 *   params - the object passed as the |params| parameter to Wikipedia.page.edit
+	 *   title - the title of the page that is being edited
+	 *   pagetext - only for the onedit callback:
+	 *              the current text of the page being edited - do not write to this property
+	 *   statelem - a Status object which can be used for writing out statuses
+	 *
+	 * Basic usage example:
+	 *  var thisPage = new Wikipedia.page(wgPageName);
+	 *  thisPage.followRedirect = true;  // if the page is moved (etc.), then tag the page at its new location
+	 *  thisPage.edit("Adding prod tag", self.params, prodTagCallback);
+	 *
+	 * Parameters:
+	 *  currentAction - the name of the action performed by the edit (e.g. "Notifying initial contributor")
+	 *  params - parameters to be passed onto the callback functions (as self.params)
+	 *  onedit - a callback function which modifies the page text as required, and returns
+	 *           either a) a JSON object with the API query parameters (other than 'action',
+	 *           'title', and 'token', which are automatically appended), or b) |false| to
+	 *           indicate that the edit should not proceed
+	 *  onsuccess - a callback function which is called when the edit has succeeded (optional)
+	 *  onfailure - a callback function which is called when the edit fails (optional, and rarely
+	 *              needed - the built-in error handling should typically be enough)
+	 */
+	edit: function(currentAction, params, onedit, onsuccess, onfailure)
+	{
+		var query = {
+			'action': 'query',
+			'prop': 'info|revisions',
+			'intoken': 'edit', // fetch an edit token...
+			'rvprop': 'content', // ...and get the page content at the same time
+			'titles': this.title
+		};
+		var statelem = new Status(currentAction);
+		var wikipedia_api = new Wikipedia.api("Retrieving edit data...", query, Wikipedia.page.callbacks.edit.request, statelem);
+		wikipedia_api.params = params;
+		wikipedia_api.title = this.title;
+		wikipedia_api.currentAction = currentAction;
+		wikipedia_api.onedit = onedit;
+		wikipedia_api.onsuccess = onsuccess;
+		wikipedia_api.onfailure = onfailure;
+		wikipedia_api.post();
+	},
+
+	/**
+	 * Wikipedia.page.revert
+	 * Uses the MediaWiki API to revert a page to an earlier revision.
+	 *
+	 * About the callback functions:
+	 *  See Wikipedia.page.edit documentation above.
+	 *
+	 * Parameters:
+	 *  currentAction - the name of the action performed by the edit (e.g. "Reverting given revision")
+	 *  oldid - the revision ID to revert to
+	 *  summary - the edit summary to use (or |undefined| if the default summary should be used -- ??? maybe this works)
+	 *  onsuccess - a callback function which is called when the revert has succeeded (optional)
+	 *  onfailure - a callback function which is called when the revert fails (optional, and rarely
+	 *              needed - the built-in error handling should typically be enough)
+	 */
+	revert: function(currentAction, oldid, summary, onsuccess, onfailure)
+	{
+		var query = {
+			'action': 'query',
+			'prop': 'info|revisions',
+			'intoken': 'edit', // fetch an edit token
+			'titles': this.title
+		};
+		var statelem = new Status(currentAction);
+		var wikipedia_api = new Wikipedia.api("Retrieving revert data...", query, Wikipedia.page.callbacks.revert.request, statelem);
+		wikipedia_api.params = params;
+		wikipedia_api.title = this.title;
+		wikipedia_api.oldid = oldid;
+		wikipedia_api.summary = summary;
+		wikipedia_api.onsuccess = (onsuccess ? onsuccess : function(self) { self.statelem.info("Done") });
+		wikipedia_api.onfailure = onfailure;
+		wikipedia_api.post();
+	},
+
+	/**
+	 * Wikipedia.page.notifyInitialContributor
+	 * Uses the MediaWiki API to edit the talk page of the initial contributor to a page.
+	 *
+	 * About the callback functions:
+	 *  See Wikipedia.page.edit documentation above.
+	 *
+	 * Parameters:
+	 *  title - the title of the page whose first contributor should be looked up
+	 *          (for the current page, use wgPageName)
+	 *  params - parameters to be passed onto the callback functions (as self.params)
+	 *  onedit - a callback function which modifies the page text as required, and returns
+	 *           either a) a JSON object with the API query parameters (other than 'action',
+	 *           'title', and 'token', which are automatically appended), or b) |false| to
+	 *           indicate that the edit should not proceed
+	 *  onsuccess - a callback function which is called when the edit has succeeded (optional)
+	 *  onfailure - a callback function which is called when the edit fails (optional, and rarely
+	 *              needed - the built-in error handling should typically be enough)
+	 *
+	 * The currentAction is hardcoded to "Notifying initial contributor (<their username>)", and
+	 * followRedirect is always true.
+	 */
+	notifyInitialContributor: function(params, onedit, onsuccess, onfailure)
+	{
+		var query = {
+			'action': 'query',
+			'prop': 'revisions',
+			'titles': this.title,
+			'rvlimit': 1,
+			'rvprop': 'user',
+			'rvdir': 'newer'
+		}
+		var callback = function (self)
+		{
+			var xmlDoc = self.responseXML;
+			self.username = xmlDoc.evaluate('//rev/@user', xmlDoc, null, XPathResult.STRING_TYPE, null).stringValue;
+
+			var usertalkpage = new Wikipedia.page("User talk:" + self.username);
+			usertalkpage.followRedirect = true; // last param: always follow redirects in user talk space
+			usertalkpage.edit("Notifying initial contributor (" + self.username + ")", self.params,
+				self.onedit, self.onsuccess, self.onfailure);
+		};
+		var wikipedia_api = new Wikipedia.api("Retrieving page creator information", query, callback);
+		wikipedia_api.title = this.title;
+		wikipedia_api.params = params;
+		wikipedia_api.onedit = onedit;
+		wikipedia_api.onsuccess = onsuccess;
+		wikipedia_api.onfailure = onfailure;
+		wikipedia_api.post();
+	}
+} // end Wikipedia.page.prototype
+
+Wikipedia.page.callbacks = { edit: {}, revert: {} };
+
+// Don't call these functions. They are callbacks.
+Wikipedia.page.callbacks.edit.request = function(self) {
+	var xmlDoc = self.responseXML;
+
+	self.pagetext = xmlDoc.evaluate('//rev', xmlDoc, null, XPathResult.STRING_TYPE, null).stringValue;
+
+	// check to see if the page is a redirect, and follow it if requested
+	if (self.followRedirect)
+	{
+		var isRedirect = xmlDoc.evaluate('boolean(//pages/page/@redirect)', xmlDoc, null, XPathResult.BOOLEAN_TYPE, null).booleanValue;
+		if (isRedirect)
+		{
+			var redirmatch = /\[\[(.*)\]\]/.exec(pagetext);
+			if (redirmatch)
+			{
+				// edit the redirect page instead
+				var redirectpage = new Wikipedia.page(redirmatch[1]);
+				redirectpage.followRedirect = true;  // XXX this could get sucked in by redirect loops, long chains of redirects, and other idiocy
+				redirectpage.edit(self.currentAction, self.params, self.onedit, self.onsuccess, self.onfailure);
+				return;
+			}
+		}
+	}
+
+	var result = self.onedit(self);  // invoke user-specified callback function
+	if (!result)
+		return;  // assuming that the callback already outputted an error to self.statelem
+	else
+	{
+		var edittoken = self.responseXML.evaluate('//page/@edittoken', self.responseXML, null, XPathResult.STRING_TYPE, null).stringValue;
+		if (!edittoken)
+		{
+			self.statelem.error("Failed to retrieve edit token.");
+			return;
+		}
+		var basetimestamp = xmlDoc.evaluate('//page/@touched', xmlDoc, null, XPathResult.STRING_TYPE, null).stringValue;
+
+		result["action"] = "edit";
+		result["title"] = self.title;
+		result["token"] = edittoken;
+		result["basetimestamp"] = basetimestamp; // prevent (most...) edit conflicts
+		var wikipedia_api = new Wikipedia.api("Sending edit data...", result, Wikipedia.page.callbacks.edit.success, self.statelem);
+		wikipedia_api.params = self.params;
+		wikipedia_api.title = self.title;
+		wikipedia_api.onsuccess = self.onsuccess;
+		wikipedia_api.onfailure = self.onfailure;
+		wikipedia_api.post();
+	}
+}
+
+// Don't call this function. It's a callback.
+Wikipedia.page.callbacks.edit.success = function(self) {
+	// test for success
+	var xmlDoc = self.responseXML;
+	var result = xmlDoc.evaluate('//edit/@result', xmlDoc, null, XPathResult.STRING_TYPE, null).stringValue;
+	if (result != 'Success')
+	{
+		// XXX need to implement vastly better error handling here: this is just a stopgap (as of Feb 2011)
+		self.statelem.error("Failed to save edit: " + (result ? result : "unknown failure"));
+		if (self.onfailure) self.onfailure(self);
+	}
+	else
+	{
+		if (self.onsuccess) {
+			self.onsuccess(self);
+		} else {
+			var link = document.createElement( 'a' );
+			link.setAttribute( 'href', wgArticlePath.replace( '$1', self.title ) );
+			link.setAttribute( 'title', self.title );
+			link.appendChild( document.createTextNode( self.title ) );
+
+			self.statelem.info( [ 'completed (' , link , ')' ] );
+		}
+	}
+}
+
+// Don't call this function. It's a callback.
+Wikipedia.page.callbacks.revert.request = function(self) {
+	var xmlDoc = self.responseXML;
+	var revid = xmlDoc.evaluate('//rev/@revid', xmlDoc, null, XPathResult.STRING_TYPE, null).stringValue;
+	var edittoken = self.responseXML.evaluate('//page/@edittoken', self.responseXML, null, XPathResult.STRING_TYPE, null).stringValue;
+	if (!edittoken)
+	{
+		self.statelem.error("Failed to retrieve edit token.");
+		return;
+	}
+	var basetimestamp = xmlDoc.evaluate('//page/@touched', xmlDoc, null, XPathResult.STRING_TYPE, null).stringValue;
+
+	var query = {
+		'action': 'edit',
+		'title': self.title,
+		'token': edittoken,
+		'basetimestamp': basetimestamp, // prevent (most...) edit conflicts
+		'summary': self.summary,
+		'undo': oldid,
+		'undoafter': revid
+	};
+	var wikipedia_api = new Wikipedia.api("Sending revert data...", result, Wikipedia.page.callbacks.edit.success, self.statelem);
+	wikipedia_api.params = self.params;
+	wikipedia_api.title = self.title;
+	wikipedia_api.post();
 }
 
 /*
@@ -1507,6 +1779,9 @@ Wikipedia.api.prototype = {
  onretry: function, a function to call when we try to retry a post
  */
 Wikipedia.wiki = function( currentAction, query, oninit, onsuccess, onerror, onretry ) {
+
+	alert('The action "' + currentAction + '" is still using the "Wikipedia.wiki" class.'); // for code testers only - normal editors won't need this alert
+
 	this.currentAction = currentAction;
 	this.query = query;
 	this.oninit = oninit;
@@ -1633,6 +1908,31 @@ Wikipedia.wiki.prototype = {
 		this.statelem.status( 'data loaded...' );
 	}
 }
+
+
+/**
+ * These functions retrieve the date from the server. It uses bandwidth, time, etc.
+ * They should be used only when the magic words { {subst:CURRENTDAY}},
+ * { {subst:CURRENTMONTHNAME}}, and { {subst:CURRENTYEAR}} cannot be used
+ * (for example, when specifying the title of a page).
+ */
+//WikiDate = {
+//	currentLongDate: false,
+	// Gets the server date in yyyy mmmm dd format (e.g. for XfD daily pages).
+//	getLongDate: function wikiDateGetLongDate()
+//	{
+//		var query = {
+//			'action': 'expandtemplates',
+//			'text': '\{\{CURRENTYEAR}} \{\{CURRENTMONTHNAME}} \{\{CURRENTDAY}}'
+//		};
+//		var callback = function(self)
+//		{
+//		};
+//		var wpapi = new Wikipedia.api("Retrieving server date", query, callback);
+		// AJAX is async, unfortunately; this stuff is not a nice solution
+//		for (var i = 0; i < 20; i++)
+//	}
+//};
 
 Number.prototype.zeroFill = function( length ) {
 	var str = this.toFixed();
@@ -2238,7 +2538,7 @@ function SimpleWindow( width, height ) {
 		".simplewindow .topbar { "+
 			"position: absolute; "+
 			"background-color: LightSteelBlue; "+
-			"font: 900 1em sans-serif; "+
+			"font: bold 1.2em sans-serif; "+
 			"vertical-align: baseline; "+
 			"text-align: center; "+
 			"width: 100%; "+
@@ -2284,6 +2584,7 @@ function SimpleWindow( width, height ) {
 	frame.style.left = Math.max(0, parseInt( window.innerWidth - this.width  )/2 ) + 'px';
 	var img = document.createElement( 'img' );
 	img.src = "http://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Crystal_button_cancel.svg/18px-Crystal_button_cancel.svg.png";
+	img.setAttribute("alt", "[close]");
 	closeButton.appendChild( img );
 
 	var self = this;
@@ -2443,7 +2744,7 @@ SimpleWindow.prototype = {
 *              - Correct: http://en.wikipedia.org/w/index.php?title=User%3AAzaToth%2Fmorebits.js&diff=298609098&oldid=298609007
 */
 
-var twinkleBlacklistedUsers = ["Dilip rajeev", "Jackmantas", "Flaming Grunt", "Catterick", "44 sweet", "Sarangsaras", "WebHamster", "Radiopathy", "Nezzadar", "Darrenhusted", "Notpietru", "Arthur Rubin", "Wuhwuzdat", "MikeWazowski", "Lefty101", "Bender176", "Tej smiles", "Bigvernie", "TK-CP", "NovaSkola", "Polaron", "SluggoOne", "TeleComNasSprVen", "TCNSV", "Wayne Slam", "Someone65", "S.V.Taylor", "Abhishek191288"];
+var twinkleBlacklistedUsers = ["Dilip rajeev", "Jackmantas", "Flaming Grunt", "Catterick", "44 sweet", "Sarangsaras", "WebHamster", "Radiopathy", "Nezzadar", "Darrenhusted", "Notpietru", "Arthur Rubin", "Wuhwuzdat", "MikeWazowski", "Lefty101", "Bender176", "Tej smiles", "Bigvernie", "TK-CP", "NovaSkola", "Polaron", "SluggoOne", "TeleComNasSprVen", "TCNSV", "Wayne Slam", "Someone65", "S.V.Taylor"];
 
 if(twinkleBlacklistedUsers.indexOf(wgUserName) != -1 && twinkleConfigExists) twinkleConfigExists = false;
 

@@ -5,15 +5,15 @@ if( typeof( TwinkleConfig ) == 'undefined' ) {
 
 /**
 TwinkleConfig.summaryAd (string)
-If ad should be added or not to summary, default [[WP:TWINKLE|TWINKLE]]
+If ad should be added or not to summary, default "([[WP:TW|TW]])"
 */
 if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " using [[WP:TW|TW]]";
+	TwinkleConfig.summaryAd = "([[WP:TW|TW]])";
 }
 
 /**
 TwinkleConfig.unlinkNamespaces (array)
-In what namespaces unlink should happen, default in 0 and 100
+In what namespaces unlink should happen, default in 0 (article) and 100 (portal)
 */
 if( typeof( TwinkleConfig.unlinkNamespaces) == 'undefined' ) {
 	TwinkleConfig.unlinkNamespaces = [0,100];
@@ -40,16 +40,16 @@ function twinkleunlink() {
 }
 window.TwinkleInit = (window.TwinkleInit || []).concat(twinkleunlink); //schedule initializer
 
-twinkleunlink.callback = function twinklesunlinkCallback() {
+twinkleunlink.callback = function twinkleunlinkCallback() {
 	var Window = new SimpleWindow( 800, 400 );
 	Window.setTitle( "Unlink backlinks" );
 
 	var form = new QuickForm( twinkleunlink.callback.evaluate );
 	form.append( {
-			type: 'textarea',
-			name: 'reason',
-			label: 'Reason: '
-		} );
+		type: 'textarea',
+		name: 'reason',
+		label: 'Reason: '
+	} );
 
 	if(wgNamespaceNumber == Namespace.IMAGE) {
 		var query = {
@@ -84,105 +84,53 @@ twinkleunlink.callback = function twinklesunlinkCallback() {
 twinkleunlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event) {
 	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
 
+	twinkleunlink.backlinksdone = 0;
+	twinkleunlink.imageusagedone = 0;
+
+	function processunlink(pages, imageusage) {
+		var statusIndicator = new Status((imageusage ? 'Unlinking instances of image usage' : 'Unlinking instances'), '0%');
+		var total = pages.length; // removing doubling of this number - no apparent reason for it
+
+		Wikipedia.addCheckpoint();
+
+		if( pages.length == 0 ) {
+			statusIndicator.info( '100% (completed)' );
+			Wikipedia.removeCheckpoint();
+			return;
+		}
+
+		// get an edit token
+		var params = { reason: reason, globalstatus: statusIndicator, current: 0, total: total };
+		for (var i = 0; i < pages.length; ++i)
+		{
+			var myparams = clone(params);
+			Wikipedia.page.edit('Unlinking in article "' + pages[i] + '"', pages[i], myparams,
+				(imageusage ? twinkleunlink.callbacks.unlinkImageInstances : twinkleunlink.callbacks.unlinkBacklinks),
+				twinkleunlink.callbacks.success);
+		}
+	}
+
 	var reason = event.target.reason.value;
 	if( event.target.backlinks ) {
-		var backlinks = getChecked( event.target.backlinks );
+		var backlinks = getChecked(event.target.backlinks);
 	}
 	if( event.target.imageusage ) {
-		var imageusage = getChecked( event.target.imageusage );
+		var imageusage = getChecked(event.target.imageusage);
 	}
 	Status.init( event.target );
-
-	if( imageusage ) {
-		var statusIndicator = new Status('Unlinking instances image', '0%');
-		var total = imageusage.length * 2;
-
-		var onsuccess = function( self ) {
-			var obj = self.params.obj;
-			var total = self.params.total;
-			var now = parseInt( 100 * ++(self.params.current)/total ) + '%';
-			obj.update( now );
-			self.statelem.unlink();
-			if( self.params.current >= total ) {
-				obj.info( now + ' (completed)' );
-				Wikipedia.removeCheckpoint();
-			}
-		}
-		var onloaded = onsuccess;
-
-		var onloading = function( self ) {}
-
-		Wikipedia.addCheckpoint();
-
-		if( imageusage.length == 0 ) {
-			statusIndicator.info( '100% (completed)' );
-			Wikipedia.removeCheckpoint();
-			return;
-		}
-		var params = { reason: reason, obj: statusIndicator, current: 0, total: total };
-		for ( var i = 0; i < imageusage.length; ++i ) {
-			var title = imageusage[i];
-			var query = {
-				'title': title,
-				'action': 'submit'
-			}
-			var wikipedia_wiki = new Wikipedia.wiki( "Unlinking on " + title, query, twinkleunlink.callbacks.unlinkImageInstances );
-			wikipedia_wiki.params = clone( params );
-			wikipedia_wiki.params.title = title;
-			wikipedia_wiki.onloading = onloading;
-			wikipedia_wiki.onloaded = onloaded;
-			wikipedia_wiki.onsuccess = onsuccess;
-			wikipedia_wiki.get();
-		}
-	}
-
-	if( backlinks ) {
-		var statusIndicator = new Status('Unlinking instances image', '0%');
-		var total = backlinks.length * 2;
-
-		var onsuccess = function( self ) {
-			var obj = self.params.obj;
-			var total = self.params.total;
-			var now = parseInt( 100 * ++(self.params.current)/total ) + '%';
-			obj.update( now );
-			self.statelem.unlink();
-			if( self.params.current >= total ) {
-				obj.info( now + ' (completed)' );
-				Wikipedia.removeCheckpoint();
-			}
-		}
-		var onloaded = onsuccess;
-
-		var onloading = function( self ) {}
-
-		Wikipedia.addCheckpoint();
-
-		if( backlinks.length == 0 ) {
-			statusIndicator.info( '100% (completed)' );
-			Wikipedia.removeCheckpoint();
-			return;
-		}
-		var params = { reason: reason, obj: statusIndicator, current: 0, total: total };
-		for ( var i = 0; i < backlinks.length; ++i ) {
-			var title = backlinks[i];
-			var query = {
-				'title': title,
-				'action': 'submit'
-			}
-			var wikipedia_wiki = new Wikipedia.wiki( "Unlinking on " + title, query, twinkleunlink.callbacks.unlinkBacklinks );
-			wikipedia_wiki.params = clone( params );
-			wikipedia_wiki.params.title = title;
-			wikipedia_wiki.onloading = onloading;
-			wikipedia_wiki.onloaded = onloaded;
-			wikipedia_wiki.onsuccess = onsuccess;
-			wikipedia_wiki.get();
-		}
-	}
+	if (backlinks) processunlink(backlinks, false);
+	if (imageusage) processunlink(imageusage, true);
 }
+
+twinkleunlink.backlinksdone = 0;
+twinkleunlink.imageusagedone = 0;
+
 twinkleunlink.callbacks = {
 	display: {
-		backlinks: function( self ) {
+		backlinks: function twinkleunlinkCallbackDisplayBacklinks( self ) {
 			var xmlDoc = self.responseXML;
+			var havecontent = false;
+
 			if( self.params.image ) {
 				var imageusage = xmlDoc.evaluate('//query/imageusage/iu/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
 				var list = [];
@@ -190,13 +138,20 @@ twinkleunlink.callbacks = {
 					var title = imageusage.snapshotItem(i).value;
 					list.push( { label: title, value: title, checked: true } );
 				}
-				self.params.form.append( { type:'header', label: 'Image usage' } );
-				self.params.form.append( {
+				if (list.length == 0)
+				{
+					self.params.form.append( { type: 'header', label: 'No instances of image usage found.' } );
+				}
+				else
+				{
+					self.params.form.append( { type:'header', label: 'Image usage' } );
+					self.params.form.append( {
 						type: 'checkbox',
 						name: 'imageusage',
 						list: list
-					}
-				);
+					} );
+					havecontent = true;
+				}
 			}
 
 			var backlinks = xmlDoc.evaluate('//query/backlinks/bl/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
@@ -208,71 +163,76 @@ twinkleunlink.callbacks = {
 				}
 				self.params.form.append( { type:'header', label: 'Backlinks' } );
 				self.params.form.append( {
-						type: 'checkbox',
-						name: 'backlinks',
-						list: list
-					}
-				);
+					type: 'checkbox',
+					name: 'backlinks',
+					list: list
+				});
+				havecontent = true;
+			}
+			else
+			{
+				self.params.form.append( { type: 'header', label: 'No backlinks found.' } );
 			}
 
-			self.params.form.append( { type:'submit' } );
+			if (havecontent) self.params.form.append( { type:'submit' } );
 
 			var result = self.params.form.render();
 			self.params.Window.setContent( result );
 		}
 	},
-	unlinkBacklinks: function( self ) {
-		var form = self.responseXML.getElementById('editform');
-		var text = form.wpTextbox1.value;
-		var old_text = text;
-		var wikiPage = new Mediawiki.Page( text );
-		wikiPage.removeLink( wgPageName );
+	unlinkBacklinks: function twinkleunlinkCallbackUnlinkBacklinks(self) {
+		var text, oldtext;
+		text = oldtext = self.pagetext;
 
+		var wikiPage = new Mediawiki.Page(text);
+		wikiPage.removeLink(wgPageName);
 		text = wikiPage.getText();
-		if( text == old_text ) {
+		if (text == oldtext) {
 			// Nothing to do, return
-			self.onsuccess( self );
-			Wikipedia.actionCompleted( self );
+			twinkleunlink.callbacks.success(self);
+			Wikipedia.actionCompleted(self);
 			return;
 		}
-		var postData = {
-			'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-			'wpWatchthis': undefined,
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSection': '',
-			'wpSummary': 'Removing backlinks to ' + wgTitle + " because \"" + self.params.reason.toUpperCaseFirstChar() + "\";" + TwinkleConfig.deletionSummaryAd,
-			'wpTextbox1': text
+
+		self.params.imageusage = false;
+		var query = {
+			'text': text,
+			'summary': 'Removing backlinks to ' + wgTitle + " because \"" + self.params.reason.toUpperCaseFirstChar() + "\". " + TwinkleConfig.summaryAd,
+			'nocreate': '',  // don't recreate a deleted page
+			'watchlist': 'nochange'  // if already watchlisted, leave it, but don't add page to watchlist
 		};
-		self.post( postData );
+		return query;
 	},
-	unlinkImageInstances: function( self ) {
-		var form = self.responseXML.getElementById('editform');
-		var text = form.wpTextbox1.value;
-		var old_text = text;
-		var wikiPage = new Mediawiki.Page( text );
-		wikiPage.commentOutImage( wgTitle, 'Commented out' );
+	unlinkImageInstances: function twinkleunlinkCallbackUnlinkImageInstances( self ) {
+		var text, oldtext;
+		text = oldtext = self.pagetext;
 
+		var wikiPage = new Mediawiki.Page(text);
+		wikiPage.commentOutImage(wgTitle, 'Commented out');
 		text = wikiPage.getText();
-		if( text == old_text ) {
+		if (text == oldtext) {
 			// Nothing to do, return
-			self.onsuccess( self );
-			Wikipedia.actionCompleted( self );
+			twinkleunlink.callbacks.success(self);
+			Wikipedia.actionCompleted(self);
 			return;
 		}
-		var postData = {
-			'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-			'wpWatchthis': undefined,
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSection': '',
-			'wpSummary': 'Removing instances of image ' + wgTitle + " because \"" + self.params.reason.toUpperCaseFirstChar() + "\";" + TwinkleConfig.deletionSummaryAd,
-			'wpTextbox1': text
+
+		self.params.imageusage = true;
+		var query = {
+			'text': text,
+			'summary': 'Removing instances of image ' + wgTitle + " because \"" + self.params.reason.toUpperCaseFirstChar() + "\". " + TwinkleConfig.summaryAd,
+			'nocreate': '',  // don't recreate a deleted page
+			'watchlist': 'nochange'  // if already watchlisted, leave it, but don't add page to watchlist
 		};
-		self.post( postData );
+		return query;
+	},
+	success: function twinkleunlinkCallbackSuccess( self ) {
+		var total = self.params.total;
+		var now = parseInt( 100 * (self.params.imageusage ? ++(twinkleunlink.imageusagedone) : ++(twinkleunlink.backlinksdone))/total ) + '%';
+		self.params.globalstatus.update( now );
+		if((self.params.imageusage ? twinkleunlink.imageusagedone : twinkleunlink.backlinksdone) >= total) {
+			self.params.globalstatus.info( now + ' (completed)' );
+			Wikipedia.removeCheckpoint();
+		}
 	}
 }

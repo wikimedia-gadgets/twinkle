@@ -19,7 +19,7 @@ import pysvn
 from datetime import datetime
 import codecs
 
-prefix = "User:AzaToth/"
+prefix = "User:This, that and the other/"
 
 def main(options,args):
 
