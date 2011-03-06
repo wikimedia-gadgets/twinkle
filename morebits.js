@@ -1662,6 +1662,15 @@ Wikipedia.api.prototype = {
  *       4. Most Twinkle modules use setWatchlist().
  *          setWatchlistFromPreferences() is only used for the few TwinkleConfig watchlist parameters
  *          that accept a string value of 'default'.
+ *
+ * setCreateOption(createOption)
+ *    createOption is a string value:
+ *       'recreate'   - create the page if it does not exist, or edit it if it exists
+ *       'createonly' - create the page if it does not exist, but return an error if it
+ *                      already exists
+ *       'nocreate'   - don't create the page, only edit it if it already exists
+ *       other/null   - create the page if it does not exist, unless it was deleted in the moment
+ *                      between retrieving the edit token and saving the edit
  */
 
 // Class constructor
@@ -1714,6 +1723,7 @@ Wikipedia.page.prototype = {
 	retries: 0,
 	editSummary: null,
 	watchlistOption: 'nochange',
+	createOption: null,
 	onLoadSuccess: null,
 	onLoadFailure: null,
 	onSaveSuccess: null,
@@ -1733,10 +1743,11 @@ Wikipedia.page.prototype = {
 	
 	getPageName: function() { return this.pageName; },
 	getPageText: function() { return this.pageText; },
-	setPageText: function(pageText) { this.pageText = pageText; },
-	setAppendText: function(appendText) { this.appendText = appendText; },
-	setPrependText: function(prependText) { this.prependText = prependText; },
+	setPageText: function(pageText) { this.editMode = 'all'; this.pageText = pageText; },
+	setAppendText: function(appendText) { this.editMode = 'append'; this.appendText = appendText; },
+	setPrependText: function(prependText) { this.editMode = 'prepend'; this.prependText = prependText; },
 	setEditSummary: function(summary) { this.editSummary = summary; },
+	setCreateOption: function(createOption) { this.createOption = createOption; }
 	setMinorEdit: function(minorEdit) { this.minorEdit = minorEdit; },
 	setMaxConflictRetries: function(maxRetries) { this.maxConflictRetries = maxRetries; },
 	setMaxRetries: function(maxRetries) { this.maxRetries = maxRetries; },
@@ -1774,12 +1785,13 @@ Wikipedia.page.prototype = {
 
 		this.loadQuery = {
 			action: 'query',
-			prop: (this.editMode == 'all') ? 'info|revisions' : 'info',
+			prop: 'info|revisions',
 			intoken: 'edit',  // fetch an edit token
-			rvprop: 'content',  // get the page content at the same time
 			titles: this.pageName
 			// don't need rvlimit=1 because we don't need rvstartid here and only one actual rev is returned by default
 		};
+		
+		if (this.editMode == 'all') this.loadQuery.rvprop = 'content';  // get the page content at the same time, if needed
 		
 		this.loadApi = new Wikipedia.api("Retrieving page...", this.loadQuery, Wikipedia.page.callbacks.loadSuccess, this.statusElement);
 		this.loadApi.parent = this;
@@ -1814,22 +1826,24 @@ Wikipedia.page.prototype = {
 		};
 		
 		switch (this.editMode) {
-			case 'all':
+			case 'append':
+				query.appendtext = this.appendText;  // use mode to append to current page contents
+				break;
+			case 'prepend':
+				query.prependtext = this.prependText;  // use mode to preprend to current page contents
+				break;
+			default:
 				query.text = this.pageText; // replace entire contents of the page
 				query.basetimestamp = this.lastEditTime; // check that page hasn't been edited since it was loaded
 				query.starttimestamp = this.loadTime; // check that page hasn't been deleted since it was loaded (don't recreate bad stuff)
 				break;
-			case 'append':
-				query.appendtext = this.appendText;  // use mode to append to current page contents
-				query.recreate = true;  // allow for recreate so we don't need to supply starttimestamp
-				break;
-			case 'prepend':
-				query.prependtext = this.prependText;  // use mode to preprend to current page contents
-				query.recreate = true;  // allow for recreate so we don't need to supply starttimestamp
-				break;
 		}
 
-		this.saveApi = new Wikipedia.api( "Saving page...", query, Wikipedia.page.callbacks.saveSucess, this.statusElement, Wikipedia.page.callbacks.saveError);
+		if (['recreate', 'createonly', 'nocreate'].indexOf(this.createOption) != -1) {
+			query[this.createOption] = '';
+		}
+
+		this.saveApi = new Wikipedia.api( "Saving page...", query, Wikipedia.page.callbacks.saveSuccess, this.statusElement, Wikipedia.page.callbacks.saveError);
 		this.saveApi.parent = this;
 		this.saveApi.post();
 	},
@@ -1871,12 +1885,11 @@ Wikipedia.page.callbacks = {
 				if (redirmatch)
 				{
 					self.pageName = redirmatch[1];
-					self.statusElement.info('Redirecting to: ' + self.pageName);  // XXX message is over-written in .api constructor!
 					self.followRedirect = false;  // no double redirects!
 					
 					// load the redirect page instead
 					self.loadQuery['titles'] = self.pageName;
-					self.loadApi = new Wikipedia.api("Retrieving page...", self.loadQuery, Wikipedia.page.callbacks.loadSucess, self.statusElement);
+					self.loadApi = new Wikipedia.api("Following redirect...", self.loadQuery, Wikipedia.page.callbacks.loadSuccess, self.statusElement);
 					self.loadApi.parent = self;
 					self.loadApi.post();
 					return;
@@ -1906,11 +1919,11 @@ Wikipedia.page.callbacks = {
 		self.onLoadSuccess(self);  // invoke callback
 	},
 	
-	autoSave: function(self) {  // callback from loadSuccess()
+	autoSave: function(self) {  // callback from loadSuccess(), append() and prepend()
 		self.save(self.onSaveSuccess, self.onSaveFailure);
 	},
 	
-	saveSucess: function(apiObject) {  // callback from saveApi.post()
+	saveSuccess: function(apiObject) {  // callback from saveApi.post()
 		var self = apiObject.parent;  // retrieve reference to "this" object
 		self.editMode = 'all';  // cancel append/prepend modes
 
@@ -2839,6 +2852,7 @@ function SimpleWindow( width, height ) {
 			"text-align: center; "+
 			"width: 100%; "+
 			"height: 20px; "+
+			"padding-top: 2px;"+
 			"cursor: move; "+
 			"}",
 		0
