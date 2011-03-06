@@ -941,7 +941,7 @@ twinklewarn.messages = {
 		"uw-username": {
 			label:"Username is against policy",
 			summary:"Warning: Your username might be against policy"
-                },
+		},
 		"uw-coi-username": {
 			label:"Username is against policy, and conflict of interest",
 			summary:"Warning: Username and conflict of interest policy"
@@ -1358,9 +1358,14 @@ twinklewarn.callback.change_subcategory = function twinklewarnCallbackChangeSubc
 }
 
 twinklewarn.callbacks = {
-	main: function( self ) {
-		var form = self.responseXML.getElementById( 'editform' );
-		var text = form.wpTextbox1.value;
+	main: function( apiobj ) {
+		var xml = apiobj.responseXML;
+var xmltext = (new XMLSerializer()).serializeToString(xml);  //  <--- testing only
+
+		var text = $(xml).find('rev').text();
+		var edittoken = $(xml).find('page').attr('edittoken');
+		var starttimestamp = $(xml).find('page').attr('starttimestamp');
+		var touched = $(xml).find('page').attr('touched');
 
 		var history_re = /\<\!\-\-\ Template\:(uw\-.*?)\ \-\-\>.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4}) \(UTC\)/g;
 		var history = {};
@@ -1380,14 +1385,14 @@ twinklewarn.callbacks = {
 
 		var date = new Date();
 
-		if( self.params.sub_group in history ) {
-			var temp_time = new Date( history[ self.params.sub_group ] );
+		if( apiobj.params.sub_group in history ) {
+			var temp_time = new Date( history[ apiobj.params.sub_group ] );
 			temp_time.setUTCHours( temp_time.getUTCHours() + 24 );
 
 			if( temp_time > date ) {
-				Status.info( 'Info', "an identical " + self.params.sub_group + " has been issued in the last 24 hours" );
+				Status.info( 'Info', "an identical " + apiobj.params.sub_group + " has been issued in the last 24 hours" );
 				if( !confirm( "Would you still like to add a warning/notice?" ) ) {
-					self.statelem.info( 'aborted per user request' );
+					apiobj.statelem.info( 'aborted per user request' );
 					return;
 				}
 			}
@@ -1398,7 +1403,7 @@ twinklewarn.callbacks = {
 		if( latest.date > date ) {
 			Status.info('Info', "a " + latest.type + " has been issued in the last minute" );
 				if( !confirm( "Would you still like to add a warning/notice?" ) ) {
-					self.statelem.info( 'aborted per user request' );
+					apiobj.statelem.info( 'aborted per user request' );
 					return;
 				}
 		}
@@ -1407,13 +1412,13 @@ twinklewarn.callbacks = {
 		var headerRe = new RegExp( "^==+\\s*(?:" + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() +  ")\\s+" + date.getUTCFullYear() + "\\s*==+", 'm' );
 
 		if( text.length > 0 ) {
-			text += "\n";
+			text += "\n\n";
 		}
 
-		if( self.params.main_group == 'block' ) {
+		if( apiobj.params.main_group == 'block' ) {
 			var article = '', reason = '', time = null;
 
-			if( TwinkleConfig.blankTalkpageOnIndefBlock && self.params.sub_group != 'uw-lblock' && ( twinklewarn.indefBlockHash[ self.params.sub_group ] || /indef|\*|max/.exec( self.params.block_timer ) ) ) {
+			if( TwinkleConfig.blankTalkpageOnIndefBlock && apiobj.params.sub_group != 'uw-lblock' && ( twinklewarn.indefBlockHash[ apiobj.params.sub_group ] || /indef|\*|max/.exec( apiobj.params.block_timer ) ) ) {
 				Status.info( 'Info', 'Blanking talk page per preferences and createing a new level 2 heading for the date' );
 				text = "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			} else if( !headerRe.exec( text ) ) {
@@ -1421,33 +1426,33 @@ twinklewarn.callbacks = {
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
 
-			if( self.params.article && twinklewarn.pageHash[ self.params.sub_group ] ) {
-				article = '|page=' + self.params.article;
+			if( apiobj.params.article && twinklewarn.pageHash[ apiobj.params.sub_group ] ) {
+				article = '|page=' + apiobj.params.article;
 			}
 
-			if( self.params.reason && twinklewarn.reasonHash[ self.params.sub_group ] ) {
-				reason = '|reason=' + self.params.reason;
+			if( apiobj.params.reason && twinklewarn.reasonHash[ apiobj.params.sub_group ] ) {
+				reason = '|reason=' + apiobj.params.reason;
 			}
 
-			if( /te?mp|^\s*$|min/.exec( self.params.block_timer ) || twinklewarn.indefBlockHash[ self.params.sub_group ] ) {
+			if( /te?mp|^\s*$|min/.exec( apiobj.params.block_timer ) || twinklewarn.indefBlockHash[ apiobj.params.sub_group ] ) {
 				time = '';
-			} else if( /indef|\*|max/.exec( self.params.block_timer ) ) {
+			} else if( /indef|\*|max/.exec( apiobj.params.block_timer ) ) {
 				time = '|indef=yes';
 			} else {
-				time = '|time=' + self.params.block_timer;
+				time = '|time=' + apiobj.params.block_timer;
 			}
 
-			text += "\{\{subst:" + self.params.sub_group + article + time + reason + "|sig=true|subst=subst:\}\}";
+			text += "\{\{subst:" + apiobj.params.sub_group + article + time + reason + "|sig=true|subst=subst:\}\}";
 		} else {
 			if( !headerRe.exec( text ) ) {
 				Status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
 
-			if( self.params.sub_group == 'uw-username' ) {
-				text += "\{\{subst:" + self.params.sub_group + ( self.params.reason ? '|1=' + self.params.reason : '' ) + "|subst=subst:\}\} \~\~\~\~";
+			if( apiobj.params.sub_group == 'uw-username' ) {
+				text += "\{\{subst:" + apiobj.params.sub_group + ( apiobj.params.reason ? '|1=' + apiobj.params.reason : '' ) + "|subst=subst:\}\} \~\~\~\~";
 			} else {
-				text += "\{\{subst:" + self.params.sub_group + ( self.params.article ? '|1=' + self.params.article : '' ) + "|subst=subst:\}\}" + (self.params.reason ? " ''" + self.params.reason + "'' ": ' ' ) + "\~\~\~\~";
+				text += "\{\{subst:" + apiobj.params.sub_group + ( apiobj.params.article ? '|1=' + apiobj.params.article : '' ) + "|subst=subst:\}\}" + (apiobj.params.reason ? " ''" + apiobj.params.reason + "'' ": ' ' ) + "\~\~\~\~";
 			}
 		}
 
@@ -1462,19 +1467,23 @@ twinklewarn.callbacks = {
 				break;
 			}
 		}
-		var postData = {
-			'wpMinoredit': form.wpMinoredit.checked ? 1 : undefined,
-			'wpWatchthis': (form.wpWatchthis.checked || TwinkleConfig.watchWarnings) ? 1 : undefined,
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSection': '',
-			'wpSummary': twinklewarn.messages[self.params.main_group][self.params.sub_group].summary + ( self.params.article ? ' on [[' + self.params.article + ']]'  : '' ) + '.' + TwinkleConfig.summaryAd,
-			'wpTextbox1': text
+		var warn_query = {
+			action : 'edit',
+			title : wgPageName,
+			summary: twinklewarn.messages[apiobj.params.main_group][apiobj.params.sub_group].summary + ( apiobj.params.article ? ' on [[' + apiobj.params.article + ']]'  : '' ) + '.' + TwinkleConfig.summaryAd,
+			text : text,
+			token : edittoken,
+			basetimestamp: touched,
+			starttimestamp: starttimestamp,
+			watchlist :  TwinkleConfig.watchWarnings ? 'watch' : undefined
+
+//			'wpMinoredit': form.wpMinoredit.checked ? 1 : undefined,
+//			'watchthis': (form.wpWatchthis.checked || TwinkleConfig.watchWarnings) ? 1 : undefined,
 		};
 
-		self.post( postData );
+		var wikipedia_api = new Wikipedia.api( "Saving warning", warn_query, undefined, apiobj.statelem);
+		wikipedia_api.params = apiobj.params;
+		wikipedia_api.post();
 	}
 }
 
@@ -1499,14 +1508,18 @@ twinklewarn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 
 	Status.init( e.target );
 
-	var query = {
-		'title': wgPageName,
-		'action': 'submit'
-	};
 	Wikipedia.actionCompleted.redirect = wgPageName;
 	Wikipedia.actionCompleted.notice = "Warning complete, reloading talk page in a few seconds";
-	var wikipedia_wiki = new Wikipedia.wiki( 'User talk page modification', query, twinklewarn.callbacks.main );
-	wikipedia_wiki.params = params;
-	wikipedia_wiki.followRedirect = true;
-	wikipedia_wiki.get();
+
+	var query = {
+		'action': 'query',
+		'titles': wgPageName,
+		'prop': ['info', 'revisions'],
+		'rvlimit': 1,
+		'rvprop': 'content',
+		'intoken': 'edit'
+	};
+	var wikipedia_api = new Wikipedia.api( 'Opening page', query, twinklewarn.callbacks.main);
+	wikipedia_api.params = params;
+	wikipedia_api.post();
 }

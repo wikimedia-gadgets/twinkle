@@ -81,7 +81,9 @@ twinklebatchdelete.callback = function twinklesbatchdeleteCallback() {
 	form.append( {
 			type: 'textarea',
 			name: 'reason',
-			label: 'Reason: '
+			label: 'Reason: ',
+			value: 'Twinkle batch-delete API testing'  // #################### testing only ###################
+
 		} );
 	if( wgNamespaceNumber == Namespace.CATEGORY ) {
 
@@ -90,8 +92,9 @@ twinklebatchdelete.callback = function twinklesbatchdeleteCallback() {
 			'generator': 'categorymembers',
 			'gcmtitle': wgPageName,
 			'gcmlimit' : TwinkleConfig.batchMax, // the max for sysops
-			'prop': [ 'categories', 'revisions' ],
-			'rvprop': [ 'size' ]
+			'prop': [ 'info', 'categories', 'revisions' ],
+			'rvprop': [ 'size' ],
+			'intoken' : 'delete'
 		};
 	} else if( wgCanonicalSpecialPageName == 'Prefixindex' ) {
 
@@ -125,8 +128,9 @@ twinklebatchdelete.callback = function twinklesbatchdeleteCallback() {
 			'gapnamespace': gapnamespace ,
 			'gapprefix': gapprefix,
 			'gaplimit' : TwinkleConfig.batchMax, // the max for sysops
-			'prop' : ['categories', 'revisions' ],
-			'rvprop': [ 'size' ]
+			'prop' : [ 'info', 'categories', 'revisions' ],
+			'rvprop': [ 'size' ],
+			'intoken' : 'delete'
 		}
 	} else {
 		var query = {
@@ -134,33 +138,42 @@ twinklebatchdelete.callback = function twinklesbatchdeleteCallback() {
 			'generator': 'links',
 			'titles': wgPageName,
 			'gpllimit' : TwinkleConfig.batchMax, // the max for sysops
-			'prop': [ 'categories', 'revisions' ],
-			'rvprop': [ 'size' ]
+			'prop': [ 'info',  'categories', 'revisions' ],
+			'rvprop': [ 'size' ],
+			'intoken' : 'delete'
 		};
 	}
 
-	var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query, function( self ) {
-			var xmlDoc = self.responseXML;
-			var snapshot = xmlDoc.evaluate('//page[@ns != "' + Namespace.IMAGE + '" and not(@missing)]', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
-			var list = [];
-			for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
-				var object = snapshot.snapshotItem(i);
-				var page = xmlDoc.evaluate( '@title', object, null, XPathResult.STRING_TYPE, null ).stringValue;
-				var size = xmlDoc.evaluate( 'revisions/rev/@size', object, null, XPathResult.NUMBER_TYPE, null ).numberValue;
+	var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query, function( apiobj ) {
+alert("TRACE: page list callback: xmlString= \n" + (new XMLSerializer()).serializeToString(apiobj.responseXML) + "[END]");
+			var xmlDoc = apiobj.responseXML;
+			var deletetoken = $(xmlDoc).find('page').attr('deletetoken');
 
-				var disputed = xmlDoc.evaluate( 'boolean(categories/cl[@title="Category:Contested candidates for speedy deletion"])', object, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
+			var list = [];
+			$(xmlDoc).find('page[ns!="' + Namespace.IMAGE + '"]:not([missing*=""])').each(function() {
+				var page = $(this).attr('title');
+				var size =  $(this).attr('length');
+				//var size =  $(this).find('revisions/rev').attr('size');
+				var disputed = $(this).find('categories/cl[title="Category:Contested candidates for speedy deletion"]').length > 0;
 				list.push( {label:page + ' (' + size + ')' + ( disputed ? ' DISPUTED' : '' ), value:page, checked:!disputed });
-			}
-			self.params.form.append( {
+			});
+
+			apiobj.params.form.append( {
 					type: 'checkbox',
 					name: 'pages',
 					list: list
 				}
 			)
-			self.params.form.append( { type:'submit' } );
+			apiobj.params.form.append( {
+					type: 'hidden',
+					name: 'deletetoken',
+					value: deletetoken
+				}
+			)
+			apiobj.params.form.append( { type:'submit' } );
 
-			var result = self.params.form.render();
-			self.params.Window.setContent( result );
+			var result = apiobj.params.form.render();
+			apiobj.params.Window.setContent( result );
 
 
 		}  );
@@ -185,6 +198,7 @@ twinklebatchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalua
 	var delete_page = event.target.delete_page.checked;
 	var unlink_page = event.target.unlink_page.checked;
 	var delete_redirects = event.target.delete_redirects.checked;
+	var deletetoken = event.target.deletetoken.value;
 	if( ! reason ) {
 		return;
 	}
@@ -194,7 +208,7 @@ twinklebatchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalua
 		return;
 	}
 
-	function toCall( work ) {
+	function toCall( work, reason, deletetoken ) {
 		if( work.length == 0 &&  twinklebatchdelete.currentDeleteCounter <= 0 && twinklebatchdelete.currentUnlinkCounter <= 0 ) {
 			window.clearInterval( twinklebatchdelete.currentdeletor );
 			Wikipedia.removeCheckpoint();
@@ -202,25 +216,47 @@ twinklebatchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalua
 		} else if( work.length != 0 && ( twinklebatchdelete.currentDeleteCounter <= TwinkleConfig.batchDeleteMinCutOff || twinklebatchdelete.currentUnlinkCounter <= TwinkleConfig.batchDeleteMinCutOff  ) ) {
 			twinklebatchdelete.unlinkCache = []; // Clear the cache
 			var pages = work.shift();
-			twinklebatchdelete.currentDeleteCounter += pages.length;
-			twinklebatchdelete.currentUnlinkCounter += pages.length;
+//(future)		twinklebatchdelete.currentDeleteCounter += pages.length;
+//(future)		twinklebatchdelete.currentUnlinkCounter += pages.length;
 			for( var i = 0; i < pages.length; ++i ) {
 				var page = pages[i];
+//				var query = {
+//					'action': 'query',
+//					'titles': page
+//				}
+//				var wikipedia_api = new Wikipedia.api( 'Checking if page ' + page + ' exists', query, twinklebatchdelete.callbacks.main );
+//				wikipedia_api.params = { page:page, reason:reason, unlink_page:unlink_page, delete_page:delete_page, delete_redirects:delete_redirects };
+//				wikipedia_api.post();
+
 				var query = {
-					'action': 'query',
-					'titles': page
-				}
-				var wikipedia_api = new Wikipedia.api( 'Checking if page ' + page + ' exists', query, twinklebatchdelete.callbacks.main );
-				wikipedia_api.params = { page:page, reason:reason, unlink_page:unlink_page, delete_page:delete_page, delete_redirects:delete_redirects };
+					'action': 'delete',
+					'title': page,
+					'reason ': reason + '.' +  TwinkleConfig.deletionSummaryAd,
+					'token': deletetoken,   //################### Is this visible from the caller?
+					// 'watch': ''
+					// 'unwatch': ''
+				};
+				var wikipedia_api = new Wikipedia.api( "Deleting " + page, query, twinklebatchdelete.callbacks.DeleteComplete);
+				wikipedia_api.params = { 'title' : page };
 				wikipedia_api.post();
 			}
 		}
 	}
 	var work = pages.chunk( TwinkleConfig.batchdeleteChunks );
 	Wikipedia.addCheckpoint();
-	twinklebatchdelete.currentdeletor = window.setInterval( toCall, 1000, work );
+	twinklebatchdelete.currentdeletor = window.setInterval( toCall, 1000, work, reason, deletetoken );
 }
 twinklebatchdelete.callbacks = {
+	DeleteComplete: function(apiobj) {
+		var xmlDoc = apiobj.responseXML;
+		alert("TRACE: Delete completion callback: xmlString= \n" + (new XMLSerializer()).serializeToString(apiobj.responseXML) + "[END]");
+
+		var link = document.createElement( 'a' );
+		link.setAttribute( 'href', wgArticlePath.replace( '$1', apiobj.params.title ) );
+		link.setAttribute( 'title', apiobj.params.title );
+		link.appendChild( document.createTextNode( apiobj.params.title ) );
+		apiobj.statelem.info( [ 'completed (' , link , ')' ] );
+	},
 	main: function( self ) {
 		var xmlDoc = self.responseXML;
 		var normal = xmlDoc.evaluate( '//normalized/n/@to', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;

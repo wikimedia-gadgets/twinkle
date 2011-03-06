@@ -279,10 +279,11 @@ twinklefluff.revert = function revertPage( type, vandal, rev, page ) {
 	}
 	var query = {
 		'action': 'query',
-		'prop': 'revisions',
+		'prop': ['info', 'revisions'],
 		'titles': wgPageName,
 		'rvlimit': 50, // max possible
-		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ]
+		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ],
+		'intoken': 'edit'
 	}
 	var wikipedia_api = new Wikipedia.api( 'Grabbing data of earlier revisions', query, twinklefluff.callbacks.main );
 	wikipedia_api.params = params;
@@ -295,11 +296,12 @@ twinklefluff.revertToRevision = function revertToRevision( oldrev ) {
 
 	var query = {
 		'action': 'query',
-		'prop': 'revisions',
+		'prop': ['info',  'revisions'],
 		'titles': wgPageName,
 		'rvlimit': 1,
 		'rvstartid': oldrev,
-		'rvprop': [ 'ids', 'timestamp', 'user', 'comment', 'content' ],
+		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ],
+		'intoken': 'edit',
 		'format': 'xml'
 	}
 
@@ -315,23 +317,19 @@ twinklefluff.userIpLink = function( user ) {
 twinklefluff.callbacks = {
 	toRevision: {
 		main: function( self ) {
+			//alert("TRACE: revertTorevision getrevs callback: xmlString= \n" + (new XMLSerializer()).serializeToString(self.responseXML) + "[END]");
 			var xmlDoc = self.responseXML;
-			self.params.revision = xmlDoc.evaluate('//rev', xmlDoc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
-			var query = {
-				'title': wgPageName,
-				'action': 'submit'
-			};
-			var wikipedia_wiki = new Wikipedia.wiki( 'Reverting page', query, twinklefluff.callbacks.toRevision.reverting );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.get();
 
-		},
-		reverting: function( self ) {
-			var form = self.responseXML.getElementById( 'editform' );
-			var text = self.params.revision.textContent;
+			var lastrevid = $(xmlDoc).find('page').attr('lastrevid');
+			var touched = $(xmlDoc).find('page').attr('touched');
+			var starttimestamp = $(xmlDoc).find('page').attr('starttimestamp');
+			var edittoken = $(xmlDoc).find('page').attr('edittoken');
+			var revertToRevID = $(xmlDoc).find('rev').attr('revid');
+			var revertToUser = $(xmlDoc).find('rev').attr('user');
 
-			if( !form ) {
-				self.statelem.error( 'couldn\'t grab element "editform", aborting, this could indicate failed response from the server' );
+			if (revertToRevID != self.params.rev)
+			{
+				self.statitem.error( 'The retrieved rev does not match the requested rev.  Aborting.' );
 				return;
 			}
 
@@ -342,33 +340,47 @@ twinklefluff.callbacks = {
 				return;
 			}
 			var summary = sprintf( "Reverted to revision %d by %s%s.%s",
-				self.params.revision.getAttribute( 'revid' ),
-				self.params.revision.getAttribute( 'user' ),
+				revertToRevID,
+				revertToUser,
 				optional_summary ? "; " + optional_summary : '',
 				TwinkleConfig.summaryAd
 			);
-			var postData = {
-			    'oldid': self.params.revision.getAttribute( 'revid' ),
-			    'baseRevId': self.params.revision.getAttribute( 'revid' ),
-				'wpMinoredit': TwinkleConfig.markRevertedPagesAsMinor.indexOf( 'torev' ) != -1 ? '' : undefined,
-				'wpWatchthis': TwinkleConfig.watchRevertedPages.indexOf( 'torev' ) != -1 ? '' : form.wpWatchthis.checked ? '' : undefined,
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': '',
-				'wpSummary': summary,
-				'wpTextbox1': text
-			};
-			Wikipedia.actionCompleted.redirect = wgPageName;
-			Wikipedia.actionCompleted.notice = "Reversion completed"
 
-			self.post( postData );
+			var query = {  // ##################################### New stuff ######################################
+				'action': 'edit',
+				'title': wgPageName,
+				'summary': summary,
+				'token': edittoken,
+				'undo': lastrevid,
+				'undoafter': revertToRevID,
+				'basetimestamp': touched,
+				'starttimestamp': starttimestamp,
+				'watchlist' :  TwinkleConfig.watchRevertedPages.indexOf( self.params.type ) != -1 ? 'watch' : undefined,
+				'minor': TwinkleConfig.markRevertedPagesAsMinor.indexOf( self.params.type ) != -1  ? true : undefined
+			};
+
+			Wikipedia.actionCompleted.redirect = wgPageName;
+			Wikipedia.actionCompleted.notice = "Reversion completed";
+
+			var wikipedia_api = new Wikipedia.api( 'Saving reverted contents', query, twinklefluff.callbacks.toRevision.complete, self.statelem);
+			wikipedia_api.params = self.params;
+			wikipedia_api.post();
+
+		},
+		complete: function (self) {
+			//alert("TRACE: revertPage getrevs callback: xmlString= \n" + (new XMLSerializer()).serializeToString(self.responseXML) + "[END]");
 		}
 	},
 	main: function( self ) {
-
+		//alert("TRACE: revertPage getrevs callback: xmlString= \n" + (new XMLSerializer()).serializeToString(self.responseXML) + "[END]");
 		var xmlDoc = self.responseXML;
+
+		var lastrevid = $(xmlDoc).find('page').attr('lastrevid');
+		var touched = $(xmlDoc).find('page').attr('touched');
+		var starttimestamp = $(xmlDoc).find('page').attr('starttimestamp');
+		var edittoken = $(xmlDoc).find('page').attr('edittoken');
+		var lastuser = $(xmlDoc).find('rev').attr('user');
+
 		var revs = xmlDoc.evaluate( '//rev', xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
 
 		if( revs.snapshotLength < 1 ) {
@@ -376,14 +388,14 @@ twinklefluff.callbacks = {
 			return;
 		}
 		var top = revs.snapshotItem(0);
-		if( top.getAttribute( 'revid' ) < wgCurRevisionId ) {
-			Status.error( 'Error', [ 'The received top revision id ', htmlNode( 'strong', top.getAttribute('revid') ), ' is less than our current revision id, this could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Will stop proceeding at this point.' ] );
+		if( lastrevid < wgCurRevisionId ) {
+			Status.error( 'Error', [ 'The received top revision id ', htmlNode( 'strong', lastrevid ), ' is less than our current revision id, this could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Will stop proceeding at this point.' ] );
 			return;
 		}
 		var index = 1;
-		if( wgCurRevisionId != top.getAttribute('revid') ) {
-			Status.warn( 'Warning', [ 'Latest revision ', htmlNode( 'strong', top.getAttribute('revid') ), ' doesn\'t equal our revision ', htmlNode( 'strong', wgCurRevisionId) ] );
-			if( top.getAttribute( 'user' ) == self.params.user ) {
+		if( wgCurRevisionId != lastrevid  ) {
+			Status.warn( 'Warning', [ 'Latest revision ', htmlNode( 'strong', lastrevid ), ' doesn\'t equal our revision ', htmlNode( 'strong', wgCurRevisionId) ] );
+			if( lastuser == self.params.user ) {
 				switch( self.params.type ) {
 				case 'vand':
 					Status.info( 'Info', [ 'Latest revision was made by ', htmlNode( 'strong', self.params.user ) , ', as we assume vandalism, we continue to revert' ]);
@@ -401,10 +413,10 @@ twinklefluff.callbacks = {
 				WHITELIST.indexOf( top.getAttribute( 'user' ) ) != -1 && revs.snapshotLength > 1 &&
 				revs.snapshotItem(1).getAttribute( 'pageId' ) == wgCurRevisionId
 			) {
-				Status.info( 'Info', [ 'Latest revision was made by ', htmlNode( 'strong', top.getAttribute( 'user' ) ), ', a trusted bot, and the revision before was made by our vandal, so we proceed with the revert.' ] );
+				Status.info( 'Info', [ 'Latest revision was made by ', htmlNode( 'strong', lastuser ), ', a trusted bot, and the revision before was made by our vandal, so we proceed with the revert.' ] );
 				index = 2;
 			} else {
-				Status.error( 'Error', [ 'Latest revision was made by ', htmlNode( 'strong', top.getAttribute( 'user' ) ), ', so it might have already been reverted, stopping  reverting.'] );
+				Status.error( 'Error', [ 'Latest revision was made by ', htmlNode( 'strong', lastuser ), ', so it might have already been reverted, stopping  reverting.'] );
 				return;
 			}
 
@@ -475,50 +487,7 @@ twinklefluff.callbacks = {
 		self.params.goodid = good_revision.getAttribute( 'revid' );
 		self.params.gooduser = good_revision.getAttribute( 'user' );
 
-
-		self.statelem.status( [ ' revision ', htmlNode( 'strong', good_revision.getAttribute( 'revid' ) ), ' that was made ', htmlNode( 'strong', count ), ' revisions ago by ', htmlNode( 'strong', good_revision.getAttribute( 'user' ) ) ] );
-
-		var query = {
-			'action': 'query',
-			'prop': 'revisions',
-			'titles': wgPageName,
-			'rvlimit': 1,
-			'rvprop': 'content',
-			'rvstartid': good_revision.getAttribute( 'revid' )
-		}
-
-		var wikipedia_api = new Wikipedia.api( [ 'Getting content for revision ', htmlNode( 'strong', good_revision.getAttribute( 'revid' ) ) ], query, twinklefluff.callbacks.grabbing );
-		wikipedia_api.params = self.params;
-		wikipedia_api.post();
-	},
-	grabbing: function( self ) {
-
-		xmlDoc = self.responseXML;
-
-		self.params.content = xmlDoc.evaluate( '//rev[1]', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-
-		var query = {
-			'title': wgPageName,
-			'action': 'submit'
-		};
-		var wikipedia_wiki = new Wikipedia.wiki( 'Reverting page', query, twinklefluff.callbacks.reverting );
-		wikipedia_wiki.params = self.params;
-		wikipedia_wiki.get();
-	},
-	reverting: function( self ) {
-		var doc = self.responseXML;
-
-		var form = doc.getElementById( 'editform' );
-		if( !form ) {
-			self.statelem.error( 'couldn\'t grab element "editform", aborting, this could indicate failed response from the server' );
-			return;
-		}
-
-		var text = self.params.content;
-		if( !text ) {
-			self.statelem.error( 'we received no revision, something is wrong, bailing out!' );
-			return;
-		}
+		self.statelem.status( [ ' revision ', htmlNode( 'strong', self.params.goodid ), ' that was made ', htmlNode( 'strong', count ), ' revisions ago by ', htmlNode( 'strong', self.params.gooduser ) ] );
 
 		var summary;
 
@@ -576,7 +545,7 @@ twinklefluff.callbacks = {
 				'vanarticlegoodrevid': self.params.goodid,
 				'type': self.params.type,
 				'count': self.params.count
-			}
+			};
 
 			switch( TwinkleConfig.userTalkPageMode ) {
 			case 'tab':
@@ -592,24 +561,29 @@ twinklefluff.callbacks = {
 			}
 		}
 
-		var postData = {
-		    'oldid': self.params.goodid,
-		    'baseRevId': self.params.goodid,
-			'wpMinoredit': TwinkleConfig.markRevertedPagesAsMinor.indexOf( self.params.type ) != -1  ? '' : undefined,
-			'wpWatchthis': TwinkleConfig.watchRevertedPages.indexOf( self.params.type ) != -1 ? '' : form.wpWatchthis.checked ? '' : undefined,
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSection': '',
-			'wpSummary': summary,
-			'wpTextbox1': text
+		var query = {  // ##################################### New stuff ######################################
+			'action': 'edit',
+			'title': wgPageName,
+			'summary': summary,
+			'token': edittoken,
+			'undo': lastrevid,
+			'undoafter': self.params.goodid,
+			'basetimestamp': touched,
+			'starttimestamp': starttimestamp,
+			'watchlist' :  TwinkleConfig.watchRevertedPages.indexOf( self.params.type ) != -1 ? 'watch' : undefined,
+			'minor': TwinkleConfig.markRevertedPagesAsMinor.indexOf( self.params.type ) != -1  ? true : undefined
 		};
 
 		Wikipedia.actionCompleted.redirect = wgPageName;
-		Wikipedia.actionCompleted.notice = "Reversion completed"
+		Wikipedia.actionCompleted.notice = "Reversion completed";
 
-		self.post( postData );
+		var wikipedia_api = new Wikipedia.api( 'Saving reverted contents', query, twinklefluff.callbacks.complete, self.statelem);
+		wikipedia_api.params = self.params;
+		wikipedia_api.post();
+
+	},
+	complete: function (self) {
+		//alert("TRACE: revertPage completion callback: xmlString= \n" + (new XMLSerializer()).serializeToString(self.responseXML) + "[END]");
 	}
 }
 

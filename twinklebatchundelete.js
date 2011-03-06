@@ -49,7 +49,8 @@ twinklebatchundelete.callback = function twinklebatchundeleteCallback() {
 	form.append( {
 			type: 'textarea',
 			name: 'reason',
-			label: 'Reason: '
+			label: 'Reason: ',
+			value: 'Twinkle batch undelete API testing'  // #################### testing only ###################
 		} );
 
 	var query = {
@@ -57,26 +58,36 @@ twinklebatchundelete.callback = function twinklebatchundeleteCallback() {
 		'generator': 'links',
 		'titles': wgPageName,
 		'gpllimit' : TwinkleConfig.batchMax, // the max for sysops
+		'prop' : 'info',
+		'intoken' : 'delete',  // It appears that edit, move, and delete tokens are identical, but "delete" seems appropriate for this function
 	};
-	var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query, function( self ) {
-			var xmlDoc = self.responseXML;
-			var snapshot = xmlDoc.evaluate('//page[@missing]', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
-			var list = [];
-			for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
-				var object = snapshot.snapshotItem(i);
-				var page = xmlDoc.evaluate( '@title', object, null, XPathResult.STRING_TYPE, null ).stringValue;
-				list.push( {label:page, value:page, checked: true });
-			}
-			self.params.form.append( {
+	var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query, function( apiobj ) {
+			var xmlDoc =apiobj.responseXML;
+
+			var deletetoken = $(xmlDoc).find('page').attr('deletetoken');
+
+			// Get a list of referenced redlinked pages and build a list to be displayed as checkboxes
+			var list = $(xmlDoc).find('page[missing*=""]').map( function() {
+				var page = $(this).attr('title');
+				return { label:page, value:page, checked: true };
+			});
+
+			apiobj.params.form.append( {
 					type: 'checkbox',
 					name: 'pages',
 					list: list
 				}
 			)
-			self.params.form.append( { type:'submit' } );
+			apiobj.params.form.append( {
+					type: 'hidden',
+					name: 'deletetoken',
+					value: deletetoken
+				}
+			)
+			apiobj.params.form.append( { type:'submit' } );
 
-			var result = self.params.form.render();
-			self.params.Window.setContent( result );
+			var result = apiobj.params.form.render();
+			apiobj.params.Window.setContent( result );
 
 
 		}  );
@@ -95,6 +106,7 @@ twinklebatchundelete.callback.evaluate = function( event ) {
 
 	var pages = event.target.getChecked( 'pages' );
 	var reason = event.target.reason.value;
+        var deletetoken = event.target.deletetoken.value;
 	if( ! reason ) {
 		return;
 	}
@@ -107,11 +119,11 @@ twinklebatchundelete.callback.evaluate = function( event ) {
 
 	var work = pages.chunk( TwinkleConfig.batchUndeleteChunks );
 	Wikipedia.addCheckpoint();
-	twinklebatchundelete.currentundeleteor = window.setInterval( twinklebatchundelete.callbacks.main, 1000, work, reason );
+	twinklebatchundelete.currentundeleteor = window.setInterval( twinklebatchundelete.callbacks.main, 1000, work, reason, deletetoken );
 }
 
 twinklebatchundelete.callbacks = {
-	main: function( work, reason ) 	{
+	main: function( work, reason, deletetoken ) 	{
 		if( work.length == 0 && twinklebatchundelete.currentUndeleteCounter <= 0 ) {
 			Status.info( 'work done' );
 			window.clearInterval( twinklebatchundelete.currentundeleteor );
@@ -122,35 +134,28 @@ twinklebatchundelete.callbacks = {
 			twinklebatchundelete.currentUndeleteCounter += pages.length;
 			for( var i = 0; i < pages.length; ++i ) {
 				var title = pages[i];
-				var query = {
-					'title': 'Special:Undelete',
-					'target': title,
-					'action': 'submit'
-				};
-				var wikipedia_wiki = new Wikipedia.wiki( "Undeleting " + title, query, twinklebatchundelete.callbacks.undeletePage, function( self ) {
-						--twinklebatchundelete.currentUndeleteCounter;
-						var link = document.createElement( 'a' );
-						link.setAttribute( 'href', wgArticlePath.replace( '$1', self.params.title ) );
-						link.setAttribute( 'title', self.params.title );
-						link.appendChild( document.createTextNode( self.params.title ) );
-						self.statelem.info( [ 'completed (' , link , ')' ] );
 
-					});
-				wikipedia_wiki.params = { title:title, reason: reason };
-				wikipedia_wiki.get();
+				var query = {
+					'action': 'undelete',
+					'title': title,
+					'reason ': reason + '.' +  TwinkleConfig.deletionSummaryAd,
+					'token': deletetoken
+				};
+				var wikipedia_api = new Wikipedia.api( "Undeleting " + title, query, twinklebatchundelete.callbacks.UndeleteComplete);
+				wikipedia_api.params = { 'title' : title };
+				wikipedia_api.post();
 
 			}
 		}
 	},
-	undeletePage: function( self ) {
-		var form = self.responseXML.getElementById('undelete');
-		var postData = {
-			'wpComment': self.params.reason + '.' +  TwinkleConfig.deletionSummaryAd,
-			'target': self.params.image,
-			'wpEditToken': form.wpEditToken.value,
-			'restore': 1
-		}
-		self.post( postData );
+	UndeleteComplete: function(apiobj) {
+		var xmlDoc = apiobj.responseXML;
+		//alert("TRACE: Undelete completion callback: xmlString= \n" + (new XMLSerializer()).serializeToString(apiobj.responseXML) + "[END]");
 
+		var link = document.createElement( 'a' );
+		link.setAttribute( 'href', wgArticlePath.replace( '$1', apiobj.params.title ) );
+		link.setAttribute( 'title', apiobj.params.title );
+		link.appendChild( document.createTextNode( apiobj.params.title ) );
+		apiobj.statelem.info( [ 'completed (' , link , ')' ] );
 	}
 };

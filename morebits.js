@@ -2443,7 +2443,7 @@ SimpleWindow.prototype = {
 *              - Correct: http://en.wikipedia.org/w/index.php?title=User%3AAzaToth%2Fmorebits.js&diff=298609098&oldid=298609007
 */
 
-var twinkleBlacklistedUsers = ["Dilip rajeev", "Jackmantas", "Flaming Grunt", "Catterick", "44 sweet", "Sarangsaras", "WebHamster", "Radiopathy", "Nezzadar", "Darrenhusted", "Notpietru", "Arthur Rubin", "Wuhwuzdat", "MikeWazowski", "Lefty101", "Bender176", "Tej smiles", "Bigvernie", "TK-CP", "NovaSkola", "Polaron", "SluggoOne", "TeleComNasSprVen", "TCNSV", "Wayne Slam", "Someone65", "S.V.Taylor", "Abhishek191288"];
+var twinkleBlacklistedUsers = ["Dilip rajeev", "Jackmantas", "Flaming Grunt", "Catterick", "44 sweet", "Sarangsaras", "WebHamster", "Radiopathy", "Nezzadar", "Darrenhusted", "Notpietru", "Arthur Rubin", "Wuhwuzdat", "MikeWazowski", "Lefty101", "Bender176", "Tej smiles", "Bigvernie", "TK-CP", "NovaSkola", "Polaron", "SluggoOne", "TeleComNasSprVen", "TCNSV", "Wayne Slam", "Someone65", "S.V.Taylor"];
 
 if(twinkleBlacklistedUsers.indexOf(wgUserName) != -1 && twinkleConfigExists) twinkleConfigExists = false;
 
