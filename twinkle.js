@@ -1,6 +1,6 @@
-/* This is my testversion of AzaToth's Twinkle. I use it to test Safari compatibility. 
-  *  It uses a hack to force a loadsequence for webkit users.
-  *  https://bugs.webkit.org/show_bug.cgi?id=28328 */
+/*  Master script to load Twinkle modules. 
+ *  It uses a hack to force a loadsequence for webkit users.
+ *  https://bugs.webkit.org/show_bug.cgi?id=28328 */
 
 importScript('User:AzaToth/morebits.js');
 var interval_id = setInterval( "checkLoaded()", 50 );
