@@ -54,7 +54,7 @@ twinkledeli.callback = function twinklesdeliCallback() {
 	form.append( {
 			type: 'checkbox',
 			list: [
-				{
+				{ 
 					label: 'Delete files',
 					name: 'delete_image',
 					value: 'delete',
@@ -79,7 +79,7 @@ twinkledeli.callback = function twinklesdeliCallback() {
 			'generator': 'categorymembers',
 			'gcmtitle': wgPageName,
 			'gcmnamespace': Namespace.IMAGE,
-			'gcmlimit' : TwinkleConfig.deliMax,
+			'gcmlimit' : TwinkleConfig.deliMax, 
 			'prop': [ 'imageinfo', 'categories', 'revisions' ],
 			'grvlimit': 1,
 			'grvprop': [ 'user' ]
@@ -192,11 +192,11 @@ twinkledeli.callbacks = {
 			wikipedia_api.post();
 		}
 		if( self.params.delete_image ) {
-			var query = {
-				'title': self.params.image,
+			var query = { 
+				'title': self.params.image, 
 				'action': 'delete'
 			};
-			var wikipedia_wiki = new Wikipedia.wiki( 'Deleting file ' + self.params.image, query, twinkledeli.callbacks.deleteImage, function( self ) {
+			var wikipedia_wiki = new Wikipedia.wiki( 'Deleting file ' + self.params.image, query, twinkledeli.callbacks.deleteImage, function( self ) { 
 					--twinkledeli.currentDeleteCounter;
 					var link = document.createElement( 'a' );
 					link.setAttribute( 'href', wgArticlePath.replace( '$1', self.query['title'] ) );
@@ -207,7 +207,7 @@ twinkledeli.callbacks = {
 				} );
 			wikipedia_wiki.params = self.params;
 			wikipedia_wiki.followRedirect = false;
-			wikipedia_wiki.get();
+			wikipedia_wiki.get();		
 		}
 	},
 	deleteImage: function( self ) {

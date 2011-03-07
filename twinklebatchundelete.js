@@ -122,12 +122,12 @@ twinklebatchundelete.callbacks = {
 			twinklebatchundelete.currentUndeleteCounter += pages.length;
 			for( var i = 0; i < pages.length; ++i ) {
 				var title = pages[i];
-				var query = {
+				var query = { 
 					'title': 'Special:Undelete',
 					'target': title,
 					'action': 'submit'
 				};
-				var wikipedia_wiki = new Wikipedia.wiki( "Undeleting " + title, query, twinklebatchundelete.callbacks.undeletePage, function( self ) {
+				var wikipedia_wiki = new Wikipedia.wiki( "Undeleting " + title, query, twinklebatchundelete.callbacks.undeletePage, function( self ) { 
 						--twinklebatchundelete.currentUndeleteCounter;
 						var link = document.createElement( 'a' );
 						link.setAttribute( 'href', wgArticlePath.replace( '$1', self.params.title ) );

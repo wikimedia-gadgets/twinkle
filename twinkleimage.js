@@ -141,7 +141,7 @@ twinkleimage.callback = function twinkleimageCallback() {
 twinkleimage.callback.choice = function twinkleimageCallbackChoose(event) {
 	var value = event.target.value;
 	var root = event.target.form;
-	var work_area = new QuickForm.element( {
+	var work_area = new QuickForm.element( { 
 			type: 'div',
 			name: 'work_area'
 		} );
@@ -235,7 +235,7 @@ twinkleimage.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		old_image: old_image
 	};
 	Status.init( event.target );
-
+	
 	// Tagging image
 	var query = {
 		'title': wgPageName,
@@ -319,7 +319,7 @@ twinkleimage.callbacks = {
 		};
 		text += "\}\}\n";
 		var postData = {
-			'wpMinoredit': undefined, // Per
+			'wpMinoredit': undefined, // Per 
 			'wpWatchthis': (TwinkleConfig.deliWatchPage=="yes" || (TwinkleConfig.deliWatchPage=="default"&&form.wpWatchthis.checked) ? '' : undefined),
 			'wpStarttime': form.wpStarttime.value,
 			'wpEdittime': form.wpEdittime.value,

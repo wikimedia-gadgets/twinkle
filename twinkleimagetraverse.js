@@ -32,7 +32,7 @@ twinkleimagetraverse.basequery = {
 	'generator': 'categorymembers',
 	'gcmtitle': wgPageName,
 	'gcmnamespace': Namespace.IMAGE,
-	'gcmlimit' : 1,
+	'gcmlimit' : 1, 
 	'prop': [ 'imageinfo', 'categories', 'revisions' ],
 	'rvlimit': 20,
 	'iihistory': true,
@@ -83,7 +83,7 @@ twinkleimagetraverse.callback = function() {
 
 	rendered.root = root;
 
-
+	
 	options.style.borderBottom = '1px solid gray';
 	options.style.height = '80px';
 	var row = root.appendChild( document.createElement( 'tr' ) );
@@ -166,7 +166,7 @@ twinkleimagetraverse.callbacks = {
 			tmp.appendChild( document.createTextNode( '\)' ) );
 			pagehistorylist.appendChild( tmp );
 		}
-
+		
 		for( var i = 0; i < filehistory.snapshotLength; ++i ) {
 			var cur = filehistory.snapshotItem(i);
 			var tmp = entry.cloneNode(false);
@@ -280,8 +280,8 @@ twinkleimagetraverse.callbacks = {
 
 			wikipedia_api.post();
 		}
-		var query = {
-			'title': params.image,
+		var query = { 
+			'title': params.image, 
 			'action': 'delete'
 		};
 		var wikipedia_wiki = new Wikipedia.wiki( 'Deleting image ' + params.image, query, twinkleimagetraverse.callbacks.deleteImage, function( self ) {
@@ -292,7 +292,7 @@ twinkleimagetraverse.callbacks = {
 			});
 		wikipedia_wiki.params = params;
 		wikipedia_wiki.followRedirect = false;
-		wikipedia_wiki.get();
+		wikipedia_wiki.get();	
 	},
 	deleteImage: function( self ) {
 		var form = this.responseXML.getElementById( 'deleteconfirm' );

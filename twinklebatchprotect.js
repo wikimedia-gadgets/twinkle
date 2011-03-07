@@ -61,12 +61,12 @@ twinklebatchprotect.callback = function twinklesbatchprotectCallback() {
 			name: 'move',
 			label: 'Move protection',
 			list: [
-				{
+				{ 
 					label: 'Allow all users (still autoconfirmed)',
 					value: '',
 					selected: true
 				},
-				{
+				{ 
 					label: 'Block new and unregistered users',
 					value: 'autoconfirmed'
 				},
@@ -81,12 +81,12 @@ twinklebatchprotect.callback = function twinklesbatchprotectCallback() {
 			name: 'edit',
 			label: 'Edit protection',
 			list: [
-				{
+				{ 
 					label: 'Allow all users',
 					value: '',
 					selected: true
 				},
-				{
+				{ 
 					label: 'Block new and unregistered users',
 					value: 'autoconfirmed'
 				},
@@ -101,12 +101,12 @@ twinklebatchprotect.callback = function twinklesbatchprotectCallback() {
 			name: 'create',
 			label: 'Create protection',
 			list: [
-				{
+				{ 
 					label: 'Allow all users (still autoconfirmed)',
 					value: '',
 					selected: true
 				},
-				{
+				{ 
 					label: 'Block new and unregistered users',
 					value: 'autoconfirmed'
 				},
@@ -157,7 +157,7 @@ twinklebatchprotect.callback = function twinklesbatchprotectCallback() {
 				{ label: 'indefinite', selected: true, value:'indefinite' }
 			]
 		} );
-
+	
 	form.append( {
 			type: 'textarea',
 			name: 'reason',
@@ -281,11 +281,11 @@ twinklebatchprotect.callbacks = {
 			self.params.page = normal;
 		}
 
-		var query = {
-			'title': self.params.page,
+		var query = { 
+			'title': self.params.page, 
 			'action': 'protect'
 		};
-		var wikipedia_wiki = new Wikipedia.wiki( 'Protecting page ' + self.params.page, query, twinklebatchprotect.callbacks.protectPage, function( self ) {
+		var wikipedia_wiki = new Wikipedia.wiki( 'Protecting page ' + self.params.page, query, twinklebatchprotect.callbacks.protectPage, function( self ) { 
 				--twinklebatchprotect.currentProtectCounter;
 				var link = document.createElement( 'a' );
 				link.setAttribute( 'href', wgArticlePath.replace( '$1', self.query['title'] ) );
@@ -296,7 +296,7 @@ twinklebatchprotect.callbacks = {
 			} );
 		wikipedia_wiki.params = self.params;
 		wikipedia_wiki.followRedirect = false;
-		wikipedia_wiki.get();
+		wikipedia_wiki.get();		
 	},
 	protectPage: function( self ) {
 		var form  = self.responseXML.getElementById( 'mw-Protect-Form' );

@@ -166,9 +166,9 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 	var childNodes = root.childNodes;
 	for( var i = 0; i < childNodes.length; ++i ) {
 		var node = childNodes[i];
-		if(
+		if( 
 			node instanceof Element &&
-			node.getAttribute( 'name' ) == 'work_area'
+			node.getAttribute( 'name' ) == 'work_area' 
 		) {
 			old_area = node;
 			break;
@@ -178,7 +178,7 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 
 	switch( value ) {
 	case 'afd':
-		work_area = new QuickForm.element( {
+		work_area = new QuickForm.element( { 
 				type: 'field',
 				label: 'Articles for deletion',
 				name: 'work_area'
@@ -194,10 +194,10 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 						}
 					]
 		} );
-		var afd_category = work_area.append( {
+		var afd_category = work_area.append( { 
 				type:'select',
 				name:'xfdcat',
-				label:'Choose what category this nomination belongs in'
+				label:'Choose what category this nomination belongs in' 
 			} );
 
 		afd_category.append( { type:'option', label:'Unknown', value:'?', selected:true } );
@@ -223,7 +223,7 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'tfd':
-		work_area = new QuickForm.element( {
+		work_area = new QuickForm.element( { 
 				type: 'field',
 				label: 'Templates for discussion',
 				name: 'work_area'
@@ -263,7 +263,7 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'mfd':
-		work_area = new QuickForm.element( {
+		work_area = new QuickForm.element( { 
 				type: 'field',
 				label: 'Miscellany for deletion',
 				name: 'work_area'
@@ -289,7 +289,7 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'ifd':
-		work_area = new QuickForm.element( {
+		work_area = new QuickForm.element( { 
 				type: 'field',
 				label: 'Files for deletion',
 				name: 'work_area'
@@ -315,7 +315,7 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'cfd':
-		work_area = new QuickForm.element( {
+		work_area = new QuickForm.element( { 
 				type: 'field',
 				label: 'Categories for discussion',
 				name: 'work_area'
@@ -356,7 +356,7 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'rfd':
-		work_area = new QuickForm.element( {
+		work_area = new QuickForm.element( { 
 				type: 'field',
 				label: 'Redirects for discussion',
 				name: 'work_area'
@@ -371,7 +371,7 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	default:
-		work_area = new QuickForm.element( {
+		work_area = new QuickForm.element( { 
 				type: 'field',
 				label: 'Nothing for anything',
 				name: 'work_area'
@@ -481,7 +481,7 @@ twinklexfd.callbacks = {
 				wikipedia_wiki.followRedirect = true;
 				wikipedia_wiki.get();
 			}
-
+			
 			if( self.params.usertalk ) {
 				var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, callback );
 				wikipedia_api.params = self.params;
@@ -719,7 +719,7 @@ twinklexfd.callbacks = {
 				wikipedia_wiki.followRedirect = true;
 				wikipedia_wiki.get();
 			}
-
+			
 			if( self.params.usertalk ) {
 				var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, callback );
 				wikipedia_api.params = self.params;
@@ -839,7 +839,7 @@ twinklexfd.callbacks = {
 		taggingImage: function( self ) {
 			var form = self.responseXML.getElementById('editform');
 			var postData = {
-				'wpMinoredit': undefined, // Per
+				'wpMinoredit': undefined, // Per 
 				'wpWatchthis': (TwinkleConfig.xfdWatchPage=="yes" || (TwinkleConfig.xfdWatchPage=="default"&&form.wpWatchthis.checked) ? '' : undefined),
 				'wpStarttime': form.wpStarttime.value,
 				'wpEdittime': form.wpEdittime.value,
@@ -965,7 +965,7 @@ twinklexfd.callbacks = {
 		taggingImage: function( self ) {
 			var form = self.responseXML.getElementById('editform');
 			var postData = {
-				'wpMinoredit': undefined, // Per
+				'wpMinoredit': undefined, // Per 
 				'wpWatchthis': (TwinkleConfig.xfdWatchPage=="yes" || (TwinkleConfig.xfdWatchPage=="default"&&form.wpWatchthis.checked) ? '' : undefined),
 				'wpStarttime': form.wpStarttime.value,
 				'wpEdittime': form.wpEdittime.value,
@@ -1256,7 +1256,7 @@ twinklexfd.callbacks = {
 				wikipedia_wiki.followRedirect = true;
 				wikipedia_wiki.get();
 			}
-
+			
 			if( self.params.usertalk ) {
 				var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, callback );
 				wikipedia_api.params = self.params;
@@ -1266,7 +1266,7 @@ twinklexfd.callbacks = {
 		taggingRedirect: function( self ) {
 			var form = self.responseXML.getElementById('editform');
 			var postData = {
-				'wpMinoredit': undefined, // Per
+				'wpMinoredit': undefined, // Per 
 				'wpWatchthis': (TwinkleConfig.xfdWatchPage=="yes" || (TwinkleConfig.xfdWatchPage=="default"&&form.wpWatchthis.checked) ? '' : undefined),
 				'wpStarttime': form.wpStarttime.value,
 				'wpEdittime': form.wpEdittime.value,
@@ -1286,7 +1286,7 @@ twinklexfd.callbacks = {
 				self.statelem.error( 'failed to find target spot for the discussion' );
 				return;
 			}
-
+ 
 			var postData = {
 				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
 				'wpWatchthis': (TwinkleConfig.xfdWatchDiscussion=="yes" || (TwinkleConfig.xfdWatchDiscussion=="default"&&form.wpWatchthis.checked) ? '' : undefined),

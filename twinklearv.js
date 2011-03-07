@@ -120,7 +120,7 @@ twinklearv.callback = function twinklearvCallback( uid ) {
 			name: 'uid',
 			value: uid
 		} );
-
+	
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
@@ -138,9 +138,9 @@ twinklearv.callback.change_category = function twinklearvCallbackChangeCategory(
 	var old_area;
 	for( var i = 0; i < root.childNodes.length; ++i ) {
 		var node = root.childNodes[i];
-		if(
+		if( 
 			node instanceof Element &&
-			node.getAttribute( 'name' ) == 'work_area'
+			node.getAttribute( 'name' ) == 'work_area' 
 		) {
 			old_area = node;
 			break;
@@ -151,7 +151,7 @@ twinklearv.callback.change_category = function twinklearvCallbackChangeCategory(
 	switch( value ) {
 	default:
 	case 'aiv':
-		work_area = new QuickForm.element( {
+		work_area = new QuickForm.element( { 
 				type: 'field',
 				label: 'Report user for vandalism',
 				name: 'work_area'
@@ -198,24 +198,24 @@ twinklearv.callback.change_category = function twinklearvCallbackChangeCategory(
 				type: 'checkbox',
 				name: 'arvtype',
 				list: [
-					{
+					{ 
 						label: 'Vandalism after final (level 4 or 4im) warning given',
 						value: 'final'
 					},
-					{
+					{ 
 						label: 'Vandalism after recent (within 1 day) release of block',
 						value: 'postblock'
 					},
-					{
+					{ 
 						label: 'Evidently a vandalism-only account',
 						value: 'vandalonly',
 						disabled: isIPAddress( root.uid.value )
 					},
-					{
+					{ 
 						label: 'Account is evidently a spambot or a compromised account',
 						value: 'spambot'
 					},
-					{
+					{ 
 						label: 'Account is a promotion-only account',
 						value: 'promoonly'
 					}
@@ -231,13 +231,13 @@ twinklearv.callback.change_category = function twinklearvCallbackChangeCategory(
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'username':
-		work_area = new QuickForm.element( {
+		work_area = new QuickForm.element( { 
 				type: 'field',
 				label: 'Report username violation',
 				name: 'work_area'
 			} );
-		work_area.append ( {
-				type:'header',
+		work_area.append ( { 
+				type:'header', 
 				label:'Type(s) of inappropriate username',
 				tooltip: 'Wikipedia does not allow usernames that are misleading, promotional, offensive or disruptive. Domain names and e-mail addresses are likewise prohibited. These criteria apply to both usernames and signatures. Usernames that are inappropriate in another language, or that represent an inappropriate name with misspellings and substitutions, or do so indirectly or by implication, are still considered inappropriate.'
 			} );
@@ -250,17 +250,17 @@ twinklearv.callback.change_category = function twinklearvCallbackChangeCategory(
 						value: 'misleading',
 						tooltip: 'Misleading usernames imply relevant, misleading things about the contributor. For example, misleading points of fact, an impression of undue authority, or the suggestion that the account is operated by a group, project or collective rather than one individual.'
 					},
-					{
+					{ 
 						label: 'Promotional username',
 						value: 'promotional',
 						tooltip: 'Promotional usernames are advertisements for a company or group.'
 					},
-					{
+					{ 
 						label: 'Offensive username',
 						value: 'offensive',
 						tooltip: 'Offensive usernames make harmonious editing difficult or impossible.'
 					},
-					{
+					{ 
 						label: 'Disruptive username',
 						value: 'disruptive',
 						tooltip: 'Disruptive usernames include outright trolling or personal attacks, or otherwise show a clear intent to disrupt Wikipedia.'
@@ -278,7 +278,7 @@ twinklearv.callback.change_category = function twinklearvCallbackChangeCategory(
 		break;
 
 	case 'puppet':
-		work_area = new QuickForm.element( {
+		work_area = new QuickForm.element( { 
 				type: 'field',
 				label: 'Report suspected sockpuppet',
 				name: 'work_area'
@@ -314,7 +314,7 @@ twinklearv.callback.change_category = function twinklearvCallbackChangeCategory(
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'sock':
-		work_area = new QuickForm.element( {
+		work_area = new QuickForm.element( { 
 				type: 'field',
 				label: 'Report suspected sockpuppeteer',
 				name: 'work_area'
@@ -375,7 +375,7 @@ twinklearv.callbacks = {
 		}
 		self.statelem.status( 'Adding new report...' );
 		var postData = {
-			'wpMinoredit': ( form.wpMinoredit.checked || TwinkleConfig.markAIVReportAsMinor ) ? '' : undefined,
+			'wpMinoredit': ( form.wpMinoredit.checked || TwinkleConfig.markAIVReportAsMinor ) ? '' : undefined, 
 			'wpWatchthis': form.wpWatchthis.checked ? '' : undefined,
 			'wpStarttime': form.wpStarttime.value,
 			'wpEdittime': form.wpEdittime.value,
@@ -406,7 +406,7 @@ twinklearv.callbacks = {
 
 		self.statelem.status( 'Adding new report...' );
 		var postData = {
-			'wpMinoredit': ( form.wpMinoredit.checked || TwinkleConfig.markUAAReportAsMinor ) ? '' : undefined,
+			'wpMinoredit': ( form.wpMinoredit.checked || TwinkleConfig.markUAAReportAsMinor ) ? '' : undefined, 
 			'wpWatchthis': form.wpWatchthis.checked ? '' : undefined,
 			'wpStarttime': form.wpStarttime.value,
 			'wpEdittime': form.wpEdittime.value,
@@ -419,7 +419,7 @@ twinklearv.callbacks = {
 		self.post( postData );
 	},
 	sock: {
-		main: function( self ) {
+		main: function( self ) { 
 			var form = self.responseXML.getElementById('editform');
 			var text = form.wpTextbox1.value;
 			if(self.params.notify){
@@ -427,17 +427,17 @@ twinklearv.callbacks = {
 					'title': 'User talk:' + self.params.uid,
 					'action': 'submit'
 				};
-
+	
 				var wikipedia_wiki = new Wikipedia.wiki( 'Notifying suspected sockpuppeteer', query, twinklearv.callbacks.sock.notifySock );
 				wikipedia_wiki.params = self.params;
 				wikipedia_wiki.followRedirect = true;
 				wikipedia_wiki.get();
-
+			
 
 				var statusIndicator2 = new Status('Notifying suspected sockpuppets', '0%');
 
 				var total = self.params.sockpuppets.length;
-
+	
 				var onsuccess = function( self ) {
 					var obj = self.params.obj;
 					var total = self.params.total;
@@ -461,7 +461,7 @@ twinklearv.callbacks = {
 				params2.current =   0;
 
 				var socks = self.params.sockpuppets;
-
+			
 				for( var i = 0; i < socks.length; ++i ) {
 					var query = {
 						'title': 'User talk:' + socks[i],
@@ -475,14 +475,14 @@ twinklearv.callbacks = {
 					wikipedia_wiki.get();
 				}
 			}
-			text +=
+			text += 
 				"\{\{subst:SPI report|socksraw=" +
 				self.params.sockpuppets.map( function(v) { return "* \{\{" + ( isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "\}\}" } ).join( "\n" ) +
 				"\n|evidence=" + self.params.evidence + " \n";
 			if( self.params.checkuser ) {
 					text += "|checkuser=yes";
 			}
-
+				
 			text += "\}\}";
 
 			var postData = {
@@ -496,7 +496,7 @@ twinklearv.callbacks = {
 				'wpSummary': 'Adding new report for [[Special:Contributions/' + self.params.uid + '|' + self.params.uid + ']].'+ TwinkleConfig.summaryAd,
 				'wpTextbox1': text
 			};
-
+			
 			self.post( postData );
 		},
 		notifySock: function( self ) {

@@ -165,19 +165,19 @@ twinkleproddelete.callbacks = {
 		wikipedia_api.params = self.params;
 		wikipedia_api.post();
 
-		var query = {
-			'title': namespaces[1] + ':' + self.params.page,
+		var query = { 
+			'title': namespaces[1] + ':' + self.params.page, 
 			'action': 'delete'
 		};
 		var wikipedia_wiki = new Wikipedia.wiki( 'Deleting talk page of page' + self.params.page, query, twinkleproddelete.callbacks.deleteTalkPage );
 		wikipedia_wiki.followRedirect = false;
-		wikipedia_wiki.get();
+		wikipedia_wiki.get();		
 
-		var query = {
-			'title': self.params.page,
+		var query = { 
+			'title': self.params.page, 
 			'action': 'delete'
 		};
-		var wikipedia_wiki = new Wikipedia.wiki( 'Deleting page ' + self.params.page, query, twinkleproddelete.callbacks.deletePage, function( self ) {
+		var wikipedia_wiki = new Wikipedia.wiki( 'Deleting page ' + self.params.page, query, twinkleproddelete.callbacks.deletePage, function( self ) { 
 				--twinkleproddelete.currentDeleteCounter;
 				var link = document.createElement( 'a' );
 				link.setAttribute( 'href', wgArticlePath.replace( '$1', self.query['title'] ) );
@@ -188,7 +188,7 @@ twinkleproddelete.callbacks = {
 			} );
 		wikipedia_wiki.params = self.params;
 		wikipedia_wiki.followRedirect = false;
-		wikipedia_wiki.get();
+		wikipedia_wiki.get();		
 
 	},
 	deleteRedirectsMain: function( self ) {

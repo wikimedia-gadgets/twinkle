@@ -46,7 +46,7 @@ twinkleprod.callback = function twinkleprodCallback() {
 	var Window = new SimpleWindow( 800, 410 );
 	Window.setTitle( "WP:PROD" );
 	var form = new QuickForm( twinkleprod.callback.evaluate );
-
+	
 	var field = form.append( {
 			type: 'field',
 			label: 'PROD type'
@@ -69,7 +69,7 @@ twinkleprod.callback = function twinkleprodCallback() {
 				}
 			]
 		} );
-
+	
 	//Note: This needs to be the form's lastchild! It will be replaced in callback.prodtypechanged!
 	form.append( {
 			type: 'div',
@@ -78,7 +78,7 @@ twinkleprod.callback = function twinkleprodCallback() {
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
-
+	
 	// fake a change event on the first prod type radio to initialize the type dependant controls
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
@@ -124,7 +124,7 @@ twinkleprod.callback.prodtypechanged = function(event)
 		case 'prodblp':
 		  //first, remember the prod value that the user entered in the textarea, in case he wants to switch back. We can abuse the config field for that.
 		  if (event.target.form.reason) TwinkleConfig.prodReasonDefault = event.target.form.reason.value;
-
+		
     	field.append( {
     			type: 'checkbox',
     			list: [
@@ -152,12 +152,12 @@ twinkleprod.callback.prodtypechanged = function(event)
     	  });
     	}
 			break;
-
+			
 		default: break;
 	};
-
-	work_area.append( { type:'submit', label:'Propose deletion' } );
-
+	
+	work_area.append( { type:'submit', label:'Propose deletion' } );	
+	
 	event.target.form.replaceChild( work_area.render(), event.target.form.lastChild );
 }
 
@@ -171,12 +171,12 @@ twinkleprod.callbacks = {
 			self.statelem.error( "It seems that the page doesn't exist.  Perhaps it has already been deleted." );
 			return;
 		}
-
+		
 		var query = {
 			'title': wgPageName,
 			'action': 'submit'
 		};
-
+		
 		var wikipedia_wiki = new Wikipedia.wiki( 'Tagging page', query, twinkleprod.callbacks.tagPage );
 		wikipedia_wiki.params = self.params;
 		wikipedia_wiki.followRedirect = false;
@@ -224,7 +224,7 @@ twinkleprod.callbacks = {
 				wikipedia_api.params = self.params;
 				wikipedia_api.post();
 			}
-
+			
 			var summaryText = "Proposing article for deletion per [[WP:"+(self.params.blp?"BLP":"")+"PROD]].";
 			text = "\{\{subst:prod"+(self.params.blp?" blp":"")+"|1=" + self.params.reason + "\}\}\n" + text;
 		} else {
@@ -238,7 +238,7 @@ twinkleprod.callbacks = {
 				self.statelem.info( 'Aborted per user request' );
 				return;
 			}
-
+			
 			var summaryText = "Endorsing proposed deletion per [[WP:"+(self.params.blp?"BLP":"")+"PROD]].";
 			text = text.replace( prod_re, text.match( prod_re ) + "\n\{\{prod-2|1=" + self.params.reason + "\}\}\n" );
 		}

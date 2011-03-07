@@ -106,7 +106,7 @@ twinkleprotect.callback = function twinkleprotectCallback() {
 					checked:(wgNamespaceNumber==10),
 					adminonly: true
 				},
-				{
+				{ 
 					name: 'small',
 					label: 'Iconify',
 					tooltip: 'Will use the |small=yes feature of the template, and only render it as a keylock',
@@ -314,7 +314,7 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		params.edit = edit;
 		params.move = move;
 		params.create = create;
-
+		
 		var query = {
 			'title': wgPageName,
 			'action': 'protect'
@@ -323,11 +323,11 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		// Updating data for the action completed event
 		Wikipedia.actionCompleted.redirect = query['title'];
 		Wikipedia.actionCompleted.notice = "Done...";
-
+		
 		var wikipedia_wiki = new Wikipedia.wiki( 'Protecting page', query, twinkleprotect.callbacks.sysop.protectingPage );
 		wikipedia_wiki.params = params;
 		wikipedia_wiki.get();
-	} else {
+	} else {	
 		var typename, reason;
 			switch( params.type ) {
 			case 'pp-dispute':
@@ -355,7 +355,7 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				typename = 'Unprotection';
 				break;
 		}
-
+		
 		switch( params.type ) {
 			case 'pp-dispute':
 				reason = 'dispute';
@@ -384,7 +384,7 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				reason = '';
 				break;
 		}
-
+		
 		if( reason != '' ) {
 			reason = " ''" + reason + "''";
 		}
@@ -458,7 +458,7 @@ twinkleprotect.callbacks = {
 		protectingPage: function( self ){
 			var form  = self.responseXML.getElementById( 'mw-Protect-Form' );
 			var postData;
-
+			
 			if( self.params.type == 'pp-move' ) {
 				postData = {
 					'wpEditToken': form.wpEditToken.value,
@@ -470,7 +470,7 @@ twinkleprotect.callbacks = {
 					'wpProtectReasonSelection': 'other',
 					'mwProtect-reason': self.params.reason + TwinkleConfig.protectionSummaryAd
 				};
-
+			
 			} else if( self.params.type == 'pp-create' ) {
 				postData = {
 					'wpEditToken': form.wpEditToken.value,
@@ -482,7 +482,7 @@ twinkleprotect.callbacks = {
 					'wpProtectReasonSelection': 'other',
 					'mwProtect-reason': self.params.reason + TwinkleConfig.protectionSummaryAd
 				};
-
+			
 			} else if( self.params.type == 'unprotect' ) {
 				postData = {
 					'wpEditToken': form.wpEditToken.value,
@@ -514,7 +514,7 @@ twinkleprotect.callbacks = {
 			}
 
 			self.post( postData );
-
+		
 			var query = {
 				'title': wgPageName,
 				'action': 'submit'

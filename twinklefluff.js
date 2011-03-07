@@ -83,7 +83,7 @@ if( typeof( TwinkleConfig.showRollbackLinks ) == 'undefined' ) {
 // a list of usernames, usually only bots, that vandalism revert is jumped over, that is
 // if vandalism revert was chosen on such username, then it's target in on the revision before.
 // This is for handeling quick bots that makes edits seconds after the original edit is made.
-// This only affect vandalism rollback, for good faith rollback, it will stop, indicating a bot
+// This only affect vandalism rollback, for good faith rollback, it will stop, indicating a bot 
 // has no faith, and for normal rollback, it will rollback that edit.
 var WHITELIST = [
 	'HagermanBot',
@@ -157,7 +157,7 @@ twinklefluff = {
 				}
 			}
 		} else {
-
+                        
 			if( wgCanonicalSpecialPageName == "Special:Undelete" ) {
 				//You can't rollback deleted pages!
 				return;
@@ -173,8 +173,8 @@ twinklefluff = {
 			}
 
 			try {
-				var otitle1 = document.getElementById('mw-diff-otitle1');
-				var ntitle1 = document.getElementById('mw-diff-ntitle1');
+				var otitle1 = document.getElementById('mw-diff-otitle1'); 
+				var ntitle1 = document.getElementById('mw-diff-ntitle1'); 
 				if (!otitle1 || !ntitle1) return;
 				var otitle = otitle1.parentNode;
 				var ntitle = ntitle1.parentNode;
@@ -235,9 +235,9 @@ twinklefluff = {
 				var vandLink = document.createElement('a');
 				var normLink = document.createElement('a');
 
-				agfLink.href = "javascript:twinklefluff.revert('agf' , '" + vandal + "')";
-				vandLink.href = "javascript:twinklefluff.revert('vand' , '" + vandal + "')";
-				normLink.href = "javascript:twinklefluff.revert('norm' , '" + vandal + "')";
+				agfLink.href = "javascript:twinklefluff.revert('agf' , '" + vandal + "')"; 
+				vandLink.href = "javascript:twinklefluff.revert('vand' , '" + vandal + "')"; 
+				normLink.href = "javascript:twinklefluff.revert('norm' , '" + vandal + "')"; 
 
 				agfLink.appendChild( spanTag( 'Black', '[' ) );
 				agfLink.appendChild( spanTag( 'DarkOliveGreen', 'rollback (AGF)' ) );
@@ -341,7 +341,7 @@ twinklefluff.callbacks = {
 				self.statelem.error( 'Aborted by user.' );
 				return;
 			}
-			var summary = sprintf( "Reverted to revision %d by %s%s.%s",
+			var summary = sprintf( "Reverted to revision %d by %s%s.%s", 
 				self.params.revision.getAttribute( 'revid' ),
 				self.params.revision.getAttribute( 'user' ),
 				optional_summary ? "; " + optional_summary : '',
@@ -350,7 +350,7 @@ twinklefluff.callbacks = {
 			var postData = {
 			    'oldid': self.params.revision.getAttribute( 'revid' ),
 			    'baseRevId': self.params.revision.getAttribute( 'revid' ),
-				'wpMinoredit': TwinkleConfig.markRevertedPagesAsMinor.indexOf( 'torev' ) != -1 ? '' : undefined,
+				'wpMinoredit': TwinkleConfig.markRevertedPagesAsMinor.indexOf( 'torev' ) != -1 ? '' : undefined, 
 				'wpWatchthis': TwinkleConfig.watchRevertedPages.indexOf( 'torev' ) != -1 ? '' : form.wpWatchthis.checked ? '' : undefined,
 				'wpStarttime': form.wpStarttime.value,
 				'wpEdittime': form.wpEdittime.value,
@@ -396,10 +396,10 @@ twinklefluff.callbacks = {
 					return;
 				}
 			}
-			else if(
-				self.params.type == 'vand' &&
+			else if( 
+				self.params.type == 'vand' && 
 				WHITELIST.indexOf( top.getAttribute( 'user' ) ) != -1 && revs.snapshotLength > 1 &&
-				revs.snapshotItem(1).getAttribute( 'pageId' ) == wgCurRevisionId
+				revs.snapshotItem(1).getAttribute( 'pageId' ) == wgCurRevisionId 
 			) {
 				Status.info( 'Info', [ 'Latest revision was made by ', htmlNode( 'strong', top.getAttribute( 'user' ) ), ', a trusted bot, and the revision before was made by our vandal, so we proceed with the revert.' ] );
 				index = 2;
@@ -461,10 +461,10 @@ twinklefluff.callbacks = {
 
 		var good_revision = revs.snapshotItem( found );
 
-		if(
-			self.params.type != 'vand' &&
-			count > 1  &&
-			!confirm( self.params.user + ' has done ' + count + ' edits in a row. Are you sure you want to revert them all?' )
+		if( 
+			self.params.type != 'vand' && 
+			count > 1  && 
+			!confirm( self.params.user + ' has done ' + count + ' edits in a row. Are you sure you want to revert them all?' ) 
 		) {
 			Status.info( 'Notice', 'Stopping reverting per user input' );
 			return;
@@ -531,15 +531,15 @@ twinklefluff.callbacks = {
 				return;
 			}
 
-			summary = sprintf( "Reverted [[WP:AGF|good faith]] edits by [[Special:Contributions/%s|%1$s]] ([[User talk:%1$s|talk]])%s%s",
-				self.params.user.replace("\\'", "'"),
+			summary = sprintf( "Reverted [[WP:AGF|good faith]] edits by [[Special:Contributions/%s|%1$s]] ([[User talk:%1$s|talk]])%s%s", 
+				self.params.user.replace("\\'", "'"), 
 				twinklefluff.formatSummaryPostfix(extra_summary),
 				TwinkleConfig.summaryAd
 			);
 			break;
 		case 'vand':
-			summary = sprintf( "Reverted %d %s by [[Special:Contributions/%s|%3$s]] ([[User talk:%3$s|talk]]) identified as [[WP:VAND|vandalism]] to last revision by %s.%s",
-				self.params.count,
+			summary = sprintf( "Reverted %d %s by [[Special:Contributions/%s|%3$s]] ([[User talk:%3$s|talk]]) identified as [[WP:VAND|vandalism]] to last revision by %s.%s", 
+				self.params.count, 
 				self.params.count > 1 ? 'edits': 'edit',
 				self.params.user.replace("\\'", "'"),
 				self.params.gooduser.replace("\\'", "'"),
@@ -555,18 +555,18 @@ twinklefluff.callbacks = {
 					return;
 				}
 			}
-			summary = sprintf( "Reverted %d %s by [[Special:Contributions/%s|%3$s]] ([[User talk:%3$s|talk]])%s%s",
-				self.params.count,
+			summary = sprintf( "Reverted %d %s by [[Special:Contributions/%s|%3$s]] ([[User talk:%3$s|talk]])%s%s", 
+				self.params.count, 
 				self.params.count > 1 ? 'edits': 'edit',
 				self.params.user.replace("\\'", "'"),
 				twinklefluff.formatSummaryPostfix(extra_summary),
-				TwinkleConfig.summaryAd
+				TwinkleConfig.summaryAd 
 			);
 		}
 
 		if( TwinkleConfig.openTalkPage.indexOf( self.params.type ) != -1 ) {
 			Status.info( 'Info', [ 'Opening user talk page edit form for user ', htmlNode( 'strong', self.params.user ) ] );
-
+			
 			var query = {
 				'title': 'User talk:' + self.params.user,
 				'action': 'edit',

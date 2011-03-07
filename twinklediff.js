@@ -1,4 +1,4 @@
-function twinklediff() {
+function twinklediff() { 
 	if( wgNamespaceNumber < 0 ) {
 		return;
 	}
@@ -46,7 +46,7 @@ twinklediff.evaluate = function twinklediffEvaluate(me) {
 		'prop': 'revisions',
 		'action': 'query',
 		'titles': wgPageName,
-		'rvlimit': 1,
+		'rvlimit': 1, 
 		'rvprop': [ 'ids', 'user' ],
 		'rvstartid': wgCurRevisionId - 1, // i.e. not the current one
 		'rvuser': user

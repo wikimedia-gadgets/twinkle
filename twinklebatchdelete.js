@@ -58,7 +58,7 @@ twinklebatchdelete.callback = function twinklesbatchdeleteCallback() {
 	form.append( {
 			type: 'checkbox',
 			list: [
-				{
+				{ 
 					label: 'Delete pages',
 					name: 'delete_page',
 					value: 'delete',
@@ -263,11 +263,11 @@ twinklebatchdelete.callbacks = {
 				wikipedia_api.post();
 			}
 
-			var query = {
-				'title': self.params.page,
+			var query = { 
+				'title': self.params.page, 
 				'action': 'delete'
 			};
-			var wikipedia_wiki = new Wikipedia.wiki( 'Deleting page ' + self.params.page, query, twinklebatchdelete.callbacks.deletePage, function( self ) {
+			var wikipedia_wiki = new Wikipedia.wiki( 'Deleting page ' + self.params.page, query, twinklebatchdelete.callbacks.deletePage, function( self ) { 
 					--twinklebatchdelete.currentDeleteCounter;
 					var link = document.createElement( 'a' );
 					link.setAttribute( 'href', wgArticlePath.replace( '$1', self.query['title'] ) );
@@ -278,7 +278,7 @@ twinklebatchdelete.callbacks = {
 				} );
 			wikipedia_wiki.params = self.params;
 			wikipedia_wiki.followRedirect = false;
-			wikipedia_wiki.get();
+			wikipedia_wiki.get();		
 		} else {
 			--twinklebatchdelete.currentDeleteCounter;
 		}

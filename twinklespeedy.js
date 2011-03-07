@@ -124,7 +124,7 @@ function twinklespeedy() {
 	if( wgNamespaceNumber < 0 ||
 	(wgArticleId==0 && (wgNamespaceNumber!=6 || (document.getElementById("mw-imagepage-section-filehistory") && !(document.getElementById("mw-sharedupload")))))
 	)  return;
-
+	
 	if( userIsInGroup( 'sysop' ) ) {
 		twAddPortletLink( "javascript:twinklespeedy.callback()", "CSD", "tw-csd", "Speedy delete according to WP:CSD", "");
 	} else if (twinkleConfigExists) {
@@ -143,7 +143,7 @@ twinklespeedy.callback = function twinklespeedyCallback() {
 }
 
 // Prepares the speedy deletion dialog and displays it
-// Parameters:
+// Parameters: 
 //  - callbackfunc: the function to call when the dialog box is submitted
 //  - firstTime: is this the first time? (false during a db-multiple run, true otherwise)
 //  - content: (optional) a div element in which the form content should be rendered - allows
@@ -152,7 +152,7 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 	var dialog;
 	if (!content)
 	{
-		dialog = new SimpleWindow( TwinkleConfig.speedyWindowWidth, TwinkleConfig.speedyWindowHeight );
+		dialog = new SimpleWindow( TwinkleConfig.speedyWindowWidth, TwinkleConfig.speedyWindowHeight ); 
 		dialog.setTitle( "Choose criteria for speedy deletion" );
 	}
 
@@ -187,7 +187,7 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 				]
 			} );
 	}
-
+	
 	// don't show this notification checkbox for db-multiple, as the value is ignored
 	// XXX currently not possible to turn off notification when using db-multiple
 	if (firstTime) {
@@ -246,22 +246,22 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 		form.append( { type:'header', label:'Articles' } );
 		form.append( { type: 'radio', name: 'csd', list: twinklespeedy.getArticleList(!firstTime) } );
 	}
-
+	
 	if( wgNamespaceNumber ==  14 || wgNamespaceNumber == 15 ) {
 		form.append( { type:'header', label: 'Categories' } );
 		form.append( { type: 'radio', name: 'csd', list: twinklespeedy.categoryList } );
 	}
-
+	
 	if( wgNamespaceNumber ==  2 || wgNamespaceNumber == 3 ) {
 		form.append( { type:'header', label: 'User pages' } );
 		form.append( { type: 'radio', name: 'csd', list: twinklespeedy.userList } );
 	}
-
+	
 	if( wgNamespaceNumber ==  10 || wgNamespaceNumber == 11 ) {
 		form.append( { type:'header', label: 'Templates' } );
 		form.append( { type: 'radio', name: 'csd', list: twinklespeedy.getTemplateList(!firstTime) } );
 	}
-
+	
 	if( wgNamespaceNumber ==  100 || wgNamespaceNumber == 101 ) {
 		form.append( { type:'header', label: 'Portals' } );
 		form.append( { type: 'radio', name: 'csd', list: twinklespeedy.portalList } );
@@ -272,7 +272,7 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 
 	form.append( { type:'header', label: 'Redirects' } );
 	form.append( { type: 'radio', name: 'csd', list: twinklespeedy.redirectList } );
-
+	
 	var result = form.render();
 	if (dialog)
 	{
@@ -291,31 +291,31 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 // this is a function to allow for db-multiple filtering
 twinklespeedy.getFileList = function twinklespeedyGetFileList(multiple) {
 	var result = [];
-	result.push({
+	result.push({ 
 		label: 'F1: Redundant file',
 		value: 'redundantimage',
-		tooltip: 'Any file that is a redundant copy, in the same file format and same or lower resolution, of something else on Wikipedia. Likewise, other media that is a redundant copy, in the same format and of the same or lower quality. This does not apply to files duplicated on Wikimedia Commons, because of licence issues; these should be tagged with \{\{subst:ncd|Image:newname.ext\}\} or \{\{subst:ncd\}\} instead'
+		tooltip: 'Any file that is a redundant copy, in the same file format and same or lower resolution, of something else on Wikipedia. Likewise, other media that is a redundant copy, in the same format and of the same or lower quality. This does not apply to files duplicated on Wikimedia Commons, because of licence issues; these should be tagged with \{\{subst:ncd|Image:newname.ext\}\} or \{\{subst:ncd\}\} instead' 
 	});
-	result.push({
+	result.push({ 
 		label: 'F2: Corrupt or empty file, or file description page for file on Commons',
-		value: 'noimage',
-		tooltip: 'Before deleting this type of file, verify that the MediaWiki engine cannot read it by previewing a resized thumbnail of it. This also includes empty (i.e., no content) file description pages for Commons files'
+		value: 'noimage', 
+		tooltip: 'Before deleting this type of file, verify that the MediaWiki engine cannot read it by previewing a resized thumbnail of it. This also includes empty (i.e., no content) file description pages for Commons files' 
 	});
-	result.push({
+	result.push({ 
 		label: 'F3: Improper license',
 		value: 'noncom',
 		tooltip: '"Files licensed as "for non-commercial use only", "non-derivative use" or "used with permission" that were uploaded on or after 2005-05-19, except where they have been shown to comply with the limited standards for the use of non-free content. This includes files licensed under a "Non-commercial Creative Commons License". Such files uploaded before 2005-05-19 may also be speedily deleted if they are not used in any articles'
 	});
 	if (!multiple) {
 		result.push({
-			label: 'F4: Lack of licensing information',
+			label: 'F4: Lack of licensing information', 
 			value: 'unksource',
 			tooltip: 'Files in category "Files with unknown source", "Files with unknown copyright status", or "Files with no copyright tag" that have been tagged with a template that places them in the category for more than seven days, regardless of when uploaded. Note, users sometimes specify their source in the upload summary, so be sure to check the circumstances of the file'
 		});
 		result.push({
 			label: 'F5: Unused unfree copyrighted files',
 			value: 'unfree',
-			tooltip: 'Files that are not under a free license or in the public domain that are not used in any article and that have been tagged with a template that places them in a dated subcategory of Category:Orphaned fairuse files for more than seven days. Reasonable exceptions may be made for file uploaded for an upcoming article. Use \{\{subst:orfud\}\} to tag files for forthcoming deletion'
+			tooltip: 'Files that are not under a free license or in the public domain that are not used in any article and that have been tagged with a template that places them in a dated subcategory of Category:Orphaned fairuse files for more than seven days. Reasonable exceptions may be made for file uploaded for an upcoming article. Use \{\{subst:orfud\}\} to tag files for forthcoming deletion' 
 		});
 		result.push({
 			label: 'F6: Missing fair-use rationale',
@@ -323,10 +323,10 @@ twinklespeedy.getFileList = function twinklespeedyGetFileList(multiple) {
 			tooltip: 'Any file without a fair use rationale may be deleted seven days after it is uploaded.  Boilerplate fair use templates do not constitute a fair use rationale.  Files uploaded before 2006-05-04 should not be deleted immediately; instead, the uploader should be notified that a fair-use rationale is needed.  Files uploaded after 2006-05-04 can be tagged with \{\{subst:nrd\}\}, and the uploader notified with \{\{subst:missing rationale|File:image name\}\}. Such files can be found in the dated subcategories of Category:Files with no fair use rationale'
 		});
 	}
-	result.push({
+	result.push({ 
 		label: 'F7: Invalid fair-use claim',
-		value: 'badfairuse',
-		tooltip: 'Any file with a clearly invalid fair-use tag (such as a \{\{logo\}\} tag on a photograph of a mascot) may be deleted at any time. Media that fail any part of the non-free content criteria and were uploaded after 2006-07-13 may be deleted forty-eight hours after notification of the uploader. For media uploaded before 2006-07-13 or tagged with the \{\{Replaceable fair use\}\} template, the uploader will be given seven days to comply with this policy after being notified'
+		value: 'badfairuse', 
+		tooltip: 'Any file with a clearly invalid fair-use tag (such as a \{\{logo\}\} tag on a photograph of a mascot) may be deleted at any time. Media that fail any part of the non-free content criteria and were uploaded after 2006-07-13 may be deleted forty-eight hours after notification of the uploader. For media uploaded before 2006-07-13 or tagged with the \{\{Replaceable fair use\}\} template, the uploader will be given seven days to comply with this policy after being notified' 
 	});
 	if (!multiple) result.push({
 		label: 'F8: Files available as identical or higher-resolution copies on Wikimedia Commons',
@@ -419,7 +419,7 @@ twinklespeedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 }
 
 twinklespeedy.categoryList = [
-	{
+	{ 
 		label: 'C1: Empty categories',
 		value: 'catempty',
 		tooltip: '(no articles or subcategories for at least four days) whose only content has consisted of links to parent categories. This does not apply to categories being discussed on WP:CFD or WP:SFD, or disambiguation categories. If the category isn\'t relatively new, it possibly contained articles earlier, and deeper investigation is needed'
@@ -474,17 +474,17 @@ twinklespeedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		value: 'reason',
 		tooltip: '{'+'{db}} is short for "delete because". One of the other deletion criteria must still apply to the page, and you should (must?) make mention of this in your rationale. This is not a "catch-all" for when you can\'t find the right criterion.'
 	});
-	result.push({
-		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
-		value: 'nonsense',
+	result.push({ 
+		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.', 
+		value: 'nonsense', 
 		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes'
 	});
-	result.push({
+	result.push({ 
 		label: 'G2: Test page',
 		value: 'test',
-		tooltip: 'e.g., "Can I really create a page here?"'
+		tooltip: 'e.g., "Can I really create a page here?"' 
 	});
-	result.push({
+	result.push({ 
 		label: 'G3: Pure vandalism',
 		value: 'vandalism',
 		tooltip: 'Plain pure vandalism'
@@ -495,8 +495,8 @@ twinklespeedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 			value: 'hoax',
 			tooltip: 'Blatant and obvious hoax, to the point of vandalism'
 		});
-		result.push({
-			label: 'G3: Pagemove vandalism',
+		result.push({ 
+			label: 'G3: Pagemove vandalism', 
 			value: 'pagemove',
 			tooltip: 'Nonsense redirects that are created from the cleanup of page move vandalism'
 		});
@@ -507,20 +507,20 @@ twinklespeedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		tooltip: 'A copy, by any title, of a page that was deleted via an XfD process or Deletion review, provided that the copy is substantially identical to the deleted version and that any revisions made clearly do not address the reasons for which the page was deleted. This clause does not apply to content that has been "userfied", to content undeleted as a result of Deletion review, or if the prior deletions were proposed or speedy deletions, although in this last case, the previous speedy criterion, or other speedy deletion criteria, may apply'
 	});
 	result.push({
-		label: 'G5: Banned user',
+		label: 'G5: Banned user', 
 		value: 'banned',
 		tooltip: 'Pages created by banned users while they were banned'
 	});
 	if (!multiple) {
 		result.push({
-			label: 'G6: History merge',
+			label: 'G6: History merge', 
 			value: 'histmerge',
-			tooltip: 'Temporarily deleting a page in order to merge page histories'
+			tooltip: 'Temporarily deleting a page in order to merge page histories' 
 		});
 		result.push({
-			label: 'G6: Move',
+			label: 'G6: Move', 
 			value: 'move',
-			tooltip: 'Making way for a noncontroversial move like reversing a redirect'
+			tooltip: 'Making way for a noncontroversial move like reversing a redirect' 
 		});
 		result.push({
 			label: 'G6: Afd',
@@ -570,33 +570,33 @@ twinklespeedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 			tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.'
 		});
 	}
-	result.push({
+	result.push({ 
 		label: 'G10: Attack page',
-		value: 'attack',
+		value: 'attack', 
 		tooltip: 'Pages that serve no purpose but to disparage their subject or some other entity (e.g., "John Q. Doe is an imbecile"). This includes a biography of a living person that is negative in tone and unsourced, where there is no NPOV version in the history to revert to. Administrators deleting such pages should not quote the content of the page in the deletion summary!'
 	});
-	result.push({
+	result.push({ 
 		label: 'G11: Unambiguous advertising',
-		value: 'spam',
+		value: 'spam', 
 		tooltip: 'Pages which exclusively promote a company, product, group, service, or person and which would need to be fundamentally rewritten in order to become encyclopedic. Note that simply having a company, product, group, service, or person as its subject does not qualify an article for this criterion; an article that is blatant advertising should have inappropriate content as well'
 	});
-	result.push({
-		label: 'G12: Unambiguous copyright infringement',
-		value: 'copyvio',
-		tooltip: 'Either, 1: Material was copied from another website that does not have a license compatible with Wikipedia, or is photography from a stock photo seller (such as Getty Images or Corbis) or other commercial content provider; 2: There is no non-infringing content in the page history worth saving; or 3: The infringement was introduced at once by a single person rather than created organically on wiki and then copied by another website such as one of the many Wikipedia mirrors'
+	result.push({ 
+		label: 'G12: Unambiguous copyright infringement', 
+		value: 'copyvio', 
+		tooltip: 'Either, 1: Material was copied from another website that does not have a license compatible with Wikipedia, or is photography from a stock photo seller (such as Getty Images or Corbis) or other commercial content provider; 2: There is no non-infringing content in the page history worth saving; or 3: The infringement was introduced at once by a single person rather than created organically on wiki and then copied by another website such as one of the many Wikipedia mirrors' 
 	});
 	return result;
 }
 
 twinklespeedy.redirectList = [
-	{
-		label: 'R2: Redirects from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
-		value: 'rediruser',
+	{ 
+		label: 'R2: Redirects from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces', 
+		value: 'rediruser', 
 		tooltip: '(this does not include the Wikipedia shortcut pseudo-namespaces). If this was the result of a page move, consider waiting a day or two before deleting the redirect'
 	},
-	{
-		label: 'R3: Redirects as a result of an implausible typo that were recently created',
-		value: 'redirtypo',
+	{ 
+		label: 'R3: Redirects as a result of an implausible typo that were recently created', 
+		value: 'redirtypo', 
 		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
 	}
 ];
@@ -628,7 +628,7 @@ twinklespeedy.normalizeHash = {
 	'copyvio': 'g12',
 	'nocontext': 'a1',
 	'foreign': 'a2',
-	'nocontent': 'a3',
+	'nocontent': 'a3', 
 	'transwiki': 'a5',
 	'a7': 'a7',
 	'person': 'a7',
@@ -687,7 +687,7 @@ twinklespeedy.reasonHash = {
 // Articles
 	'nocontext': 'Not enough context to identify article\'s subject',
 	'foreign': 'Article in a foreign language that exists on another project',
-	'nocontent': 'Article that has no meaningful, substantive content',
+	'nocontent': 'Article that has no meaningful, substantive content', 
 	'transwiki': 'Article that has been transwikied to another project',
 	'a7': 'No explanation of the subject\'s significance (real person, animal, organization, or web content)',
 	'person' : 'No explanation of the subject\'s significance (real person)',
@@ -755,9 +755,9 @@ twinklespeedy.callbacks = {
 				wikipedia_api.params = self.params;
 				wikipedia_api.post();
 			}
-
-			var query = {
-				'title': wgPageName,
+			
+			var query = { 
+				'title': wgPageName, 
 				'action': 'delete'
 			};
 
@@ -766,12 +766,12 @@ twinklespeedy.callbacks = {
 			wikipedia_wiki.followRedirect = false;
 			wikipedia_wiki.get();
 
-			if(
-				TwinkleConfig.deleteTalkPageOnDelete &&
+			if( 
+				TwinkleConfig.deleteTalkPageOnDelete && 
 				self.params.normalized != 'f8' &&
-				wgNamespaceNumber % 2 == 0 &&
-				wgNamespaceNumber != Namespace.USER &&
-				document.getElementById( 'ca-talk' ).className != 'new'
+				wgNamespaceNumber % 2 == 0 && 
+				wgNamespaceNumber != Namespace.USER && 
+				document.getElementById( 'ca-talk' ).className != 'new' 
 			) {
 				var talk_page = namespaces[ wgNamespaceNumber  + 1 ] + ':' + wgTitle;
 				var query = query = {
@@ -796,9 +796,9 @@ twinklespeedy.callbacks = {
 				wikipedia_api.post();
 			}
 			var doOrphan = TwinkleConfig.orphanBacklinksOnSpeedyDelete;
-			if(
-				doOrphan.orphan &&
-				doOrphan.exclude.indexOf( self.params.normalized.toLowerCase() ) == -1
+			if( 
+				doOrphan.orphan && 
+				doOrphan.exclude.indexOf( self.params.normalized.toLowerCase() ) == -1 
 			) {
 				var query = {
 					'action': 'query',
@@ -828,7 +828,7 @@ twinklespeedy.callbacks = {
 			var xmlDoc = self.responseXML;
 			var user = xmlDoc.evaluate( '//rev/@user', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
 			var statusIndicator = new Status('Opening user talk page edit form for user ' + user, 'opening');
-
+			
 			var query = {
 				'title': 'User talk:' + user,
 				'action': 'edit',
@@ -847,7 +847,7 @@ twinklespeedy.callbacks = {
 				window.open( wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ), 'twinklewarnwindow', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 				break;
 			}
-
+			
 			statusIndicator.info( 'complete' );
 		},
 		unlinkBacklinksMain: function( self ) {
@@ -1124,11 +1124,11 @@ twinklespeedy.callbacks = {
 			self.post( postData );
 		}
 	},
-
-
-
-
-
+	
+	
+	
+	
+	
 	user: {
 		main: function( self ) {
 			var xmlDoc = self.responseXML;
@@ -1139,8 +1139,8 @@ twinklespeedy.callbacks = {
 				self.statelem.error( "It seems that the page doesn't exist, perhaps it has already been deleted" );
 				return;
 			}
-			var query = {
-				'title': wgPageName,
+			var query = { 
+				'title': wgPageName, 
 				'action': 'submit'
 			};
 
@@ -1167,7 +1167,7 @@ twinklespeedy.callbacks = {
 			if( xfd && !confirm( "The deletion related template " + xfd[0] + " is already present on the page, do you still want to apply CSD template?" ) ) {
 				return;
 			}
-
+			
 			var code;
 			var parameters;
 			if (self.params.normalized == 'multiple')
@@ -1192,7 +1192,7 @@ twinklespeedy.callbacks = {
 						code += "|" + i + "=" + parameters[i];
 				code += "\}\}";
 				self.params.utparams = twinklespeedy.getUserTalkParameters(self.params.normalized, parameters);
-			}
+			}	
 
 			if( TwinkleConfig.markSpeedyPagesAsPatrolled && self.params.rcid != '' ) {
 				var query = {
@@ -1281,7 +1281,7 @@ twinklespeedy.callbacks = {
 			var nowelcome = TwinkleConfig.welcomeUserOnSpeedyDeletionNotification.indexOf( self.params.normalized ) == -1;
 			var form = self.responseXML.getElementById( 'editform' );
 			var text = form.wpTextbox1.value;
-
+			
 			// specialcase "db" and "db-multiple"
 			// XXX modify the "db-csd-notice-custom" template to cater for these special cases
 			switch (self.params.normalized)
@@ -1300,7 +1300,7 @@ twinklespeedy.callbacks = {
 				if (typeof self.params.utparams[i] == 'string')
 					text += "|" + i + "=" + self.params.utparams[i];
 			text += (nowelcome ? "|nowelcome=yes" : "") + "\}\} \~\~\~\~";
-
+			
 			var postData = {
 				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
 				'wpWatchthis': form.wpWatchthis.checked ? '' : undefined,
@@ -1401,7 +1401,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 						statelem.error( 'Aborted by user.' );
 						return;
 					}
-					if (rationale != '') parameters["rationale"] = rationale;
+					if (rationale != '') parameters["rationale"] = rationale; 
 					break;
 			}
 			break;
@@ -1412,7 +1412,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 				statelem.error( 'Aborted by user.' );
 				return;
 			}
-			if (rationale != '') parameters["rationale"] = rationale;
+			if (rationale != '') parameters["rationale"] = rationale; 
 			break;
 		case 'f9':
 		case 'g12':
@@ -1519,7 +1519,7 @@ twinklespeedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSys
 twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser(e) {
 	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
 	var value = e.target.value;
-
+		
 	if (value == 'multiple')
 	{
 		e.target.form.style.display = "none"; // give the user a cue that the dialog is being changed
@@ -1527,7 +1527,7 @@ twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser
 		setTimeout("twinklespeedy.initDialog(twinklespeedy.callback.doMultiple, false, twinklespeedy.targetdialogcontent)", 150);
 		return;
 	}
-
+	
 	if (value == 'multiple-finish')
 		value = 'multiple';
 	else
@@ -1536,7 +1536,7 @@ twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser
 		twinklespeedy.dbmultipleCriteria = [];
 		twinklespeedy.dbmultipleParameters = [];
 	}
-
+		
 	var normalized = twinklespeedy.normalizeHash[ value ];
 
 	// analyse each db-multiple criterion to determine whether to watch the page/notify the creator
@@ -1545,7 +1545,7 @@ twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser
 	{
 		for (var i in twinklespeedy.dbmultipleCriteria)
 		{
-			if (typeof twinklespeedy.dbmultipleCriteria[i] == 'string' &&
+			if (typeof twinklespeedy.dbmultipleCriteria[i] == 'string' && 
 				TwinkleConfig.watchSpeedyPages.indexOf(twinklespeedy.dbmultipleCriteria[i]) != -1)
 			{
 				watchPage = true;
@@ -1554,13 +1554,13 @@ twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser
 		}
 	}
 	else watchPage = TwinkleConfig.watchSpeedyPages.indexOf(normalized) != -1;
-
+	
 	var notifyuser = false;
 	if (value == 'multiple')
 	{
 		for (var i in twinklespeedy.dbmultipleCriteria)
 		{
-			if (typeof twinklespeedy.dbmultipleCriteria[i] == 'string' &&
+			if (typeof twinklespeedy.dbmultipleCriteria[i] == 'string' && 
 				TwinkleConfig.notifyUserOnSpeedyDeletionNomination.indexOf(twinklespeedy.dbmultipleCriteria[i]) != -1)
 			{
 				notifyuser = true;
@@ -1569,7 +1569,7 @@ twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser
 		}
 	}
 	else notifyuser = (TwinkleConfig.notifyUserOnSpeedyDeletionNomination.indexOf(normalized) != -1) && e.target.form.notify.checked;
-
+				
 	var params = {
 		value: value,
 		normalized: normalized,
