@@ -72,5 +72,16 @@ if( $opt->mode eq "pull" ) {
     }
     $cmd->close;
 } elsif( $opt->mode eq "push" ) {
-    say "TODO: push is not implemented";
+    while(my($page, $file) = each %pages) {
+        my @history = $bot->get_history($page);
+        my $tag = $repo->run(describe => '--always', '--all');
+        my $log = $repo->run(log => '-1', '--oneline', '--no-color', $file);
+        $tag =~ m{(?:heads/)?(?<branch>\w+)};
+        my $text = read_file($file,  {binmode => ':raw' });
+        $bot->edit({
+                page    => $page,
+                text    => decode("UTF-8", $text),
+                summary => "$+{branch}:$log",
+            });
+    }
 }
