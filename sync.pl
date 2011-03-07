@@ -24,6 +24,7 @@ my ($opt, $usage) = describe_options(
             ] 
         } 
     ],
+    [ 'strip', "strip line end spaces"],
     [],
     [ 'verbose|v',  "print extra stuff"            ],
     [ 'help',       "print usage message and exit" ],
@@ -59,7 +60,7 @@ if( $opt->mode eq "pull" ) {
     while(my($page, $file) = each %pages) {
         say "Grabbing $page";
         my $text = $bot->get_text($page);
-        $text =~ s/\h+$//mg;
+        $text =~ s/\h+$//mg if $opt->{'strip'};
         write_file( $file, {binmode => ':raw' }, $text);
     }
     my $cmd = $repo->command( diff => '--stat', '--color' );
