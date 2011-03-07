@@ -50,6 +50,7 @@ my $bot = MediaWiki::Bot->new({
         host        => 'en.wikipedia.org',
         path        => 'w',
         login_data  => { username => $opt->username, password => $opt->password},
+        debug => $opt->{verbose} ? 2 : 0
     }
 );
 
