@@ -6,6 +6,8 @@ use Git::Repository;
 use MediaWiki::Bot;
 use File::Slurp;
 use Getopt::Long::Descriptive;
+use Encode;
+use utf8;
 
 my $config_file = "$ENV{HOME}/.mwbotrc";
 my $c = {do "$config_file"} if -f $config_file;
@@ -61,7 +63,7 @@ if( $opt->mode eq "pull" ) {
         say "Grabbing $page";
         my $text = $bot->get_text($page);
         $text =~ s/\h+$//mg if $opt->{'strip'};
-        write_file( $file, {binmode => ':raw' }, $text);
+        write_file( $file, {binmode => ':raw' }, encode('UTF-8',$text));
     }
     my $cmd = $repo->command( diff => '--stat', '--color' );
     my $s = $cmd->stdout;
