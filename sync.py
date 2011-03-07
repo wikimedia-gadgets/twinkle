@@ -19,7 +19,11 @@ import pysvn
 from datetime import datetime
 import codecs
 
+<<<<<<< HEAD
 prefix = "User:Tcncv/"
+=======
+prefix = "User:This, that and the other/"
+>>>>>>> remotes/github/tto
 
 def main(options,args):
 
