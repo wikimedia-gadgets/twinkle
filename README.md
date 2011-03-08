@@ -5,9 +5,9 @@ Twinkle is a JavaScript library and application that gives Wikipedians a quick w
 
 It is based upon the `morebits.js` library, which forms the basis for many Wikipedia scripts and editing tools.
 
-See [Wikipedia:Twinkle](http://en.wikipedia.org/wiki/Wikipedia:Twinkle) on English Wikipedia for more information.
+See [Wikipedia:Twinkle][] on English Wikipedia for more information.
 
-[AzaToth](http://en.wikipedia.org/wiki/User:AzaToth) is the original author and maintainer of the tool, as well as the `morebits.js` library.
+[AzaToth][] is the original author and maintainer of the tool, as well as the `morebits.js` library.
 
 Synchronization
 ---------------
@@ -38,6 +38,8 @@ To `push` your changes to Foobar's wiki page, do:
 
 The edit summary will contain the `branch`, the last `commit sha`, and the `oneliner` for that commit.
 
+[Wikipedia:Twinkle]: http://en.wikipedia.org/wiki/Wikipedia:Twinkle
+[AzaToth]: http://en.wikipedia.org/wiki/User:AzaToth
 [Git::Repository]: http://search.cpan.org/~book/Git-Repository-1.17/lib/Git/Repository.pm
 [Mediawiki::Bot]: http://search.cpan.org/~lifeguard/MediaWiki-Bot-3.2.7/lib/MediaWiki/Bot.pm
 [App::cpanminus]: http://search.cpan.org/~miyagawa/App-cpanminus-1.4001/lib/App/cpanminus.pm
