@@ -74,9 +74,9 @@ if( $opt->mode eq "pull" ) {
 } elsif( $opt->mode eq "push" ) {
     while(my($page, $file) = each %pages) {
         my @history = $bot->get_history($page);
-        my $tag = $repo->run(describe => '--always', '--all');
+        my $tag = $repo->run(describe => '--always', '--all', '--dirty');
         my $log = $repo->run(log => '-1', '--oneline', '--no-color', $file);
-        $tag =~ m{(?:heads/)?(?<branch>\w+)};
+        $tag =~ m{(?:heads/)?(?<branch>.+)};
         my $text = read_file($file,  {binmode => ':raw' });
         $bot->edit({
                 page    => $page,
