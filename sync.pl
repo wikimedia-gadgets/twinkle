@@ -40,12 +40,6 @@ my %pages = map +("$opt->{base}/$_" => $_), @ARGV;
 
 my $repo = Git::Repository->new();
 
-my @status = $repo->run( status => '--porcelain');
-
-if( scalar @status ) {
-    say "repository is not clean. aborting...";
-    exit;
-}
 
 my $bot = MediaWiki::Bot->new({
         assert      => 'user',
@@ -58,6 +52,12 @@ my $bot = MediaWiki::Bot->new({
 );
 
 if( $opt->mode eq "pull" ) {
+    my @status = $repo->run( status => '--porcelain');
+
+    if( scalar @status ) {
+        say "repository is not clean. aborting...";
+        exit;
+    }
 
     while(my($page, $file) = each %pages) {
         say "Grabbing $page";
