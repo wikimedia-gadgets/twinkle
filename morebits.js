@@ -1181,6 +1181,27 @@ String.prototype.splitWeightedByKeys = function stringPrototypeSplitWeightedByKe
 	return result;
 }
 
+
+
+// Helper functions to change case of a string
+String.prototype.toUpperCaseFirstChar = function() {
+	return this.substr( 0, 1 ).toUpperCase() + this.substr( 1 );
+}
+
+String.prototype.toLowerCaseFirstChar = function() {
+	return this.substr( 0, 1 ).toLowerCase() + this.substr( 1 );
+}
+
+String.prototype.toUpperCaseEachWord = function( delim ) {
+	delim = delim ? delim : ' ';
+	return this.split( delim ).map( function(v) { return v.toUpperCaseFirstChar() } ).join( delim );
+}
+
+String.prototype.toLowerCaseEachWord = function( delim ) {
+	delim = delim ? delim : ' ';
+	return this.split( delim ).map( function(v) { return v.toLowerCaseFirstChar() } ).join( delim );
+}
+
 Array.prototype.uniq = function arrayPrototypeUniq() {
 	var result = [];
 	for( var i = 0; i < this.length; ++i ) {
@@ -1352,26 +1373,6 @@ Namespace = {
 	WP:             4,
 	WT:             5
 };
-
-
-// Helper functions to change case of a string
-String.prototype.toUpperCaseFirstChar = function() {
-	return this.substr( 0, 1 ).toUpperCase() + this.substr( 1 );
-}
-
-String.prototype.toLowerCaseFirstChar = function() {
-	return this.substr( 0, 1 ).toLowerCase() + this.substr( 1 );
-}
-
-String.prototype.toUpperCaseEachWord = function( delim ) {
-	delim = delim ? delim : ' ';
-	return this.split( delim ).map( function(v) { return v.toUpperCaseFirstChar() } ).join( delim );
-}
-
-String.prototype.toLowerCaseEachWord = function( delim ) {
-	delim = delim ? delim : ' ';
-	return this.split( delim ).map( function(v) { return v.toLowerCaseFirstChar() } ).join( delim );
-}
 
 /**
 * Helper functions to get the month as a string instead of a number
@@ -2760,8 +2761,6 @@ Status.warn = function( text, status ) {
 Status.error = function( text, status ) {
 	return new Status( text, status, 'error' );
 }
-
-
 
 // Simple helper function to create a simple node
 function htmlNode( type, content, color ) {
