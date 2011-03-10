@@ -1747,7 +1747,7 @@ Wikipedia.page.prototype = {
 	setAppendText: function(appendText) { this.editMode = 'append'; this.appendText = appendText; },
 	setPrependText: function(prependText) { this.editMode = 'prepend'; this.prependText = prependText; },
 	setEditSummary: function(summary) { this.editSummary = summary; },
-	setCreateOption: function(createOption) { this.createOption = createOption; }
+	setCreateOption: function(createOption) { this.createOption = createOption; },
 	setMinorEdit: function(minorEdit) { this.minorEdit = minorEdit; },
 	setMaxConflictRetries: function(maxRetries) { this.maxConflictRetries = maxRetries; },
 	setMaxRetries: function(maxRetries) { this.maxRetries = maxRetries; },
