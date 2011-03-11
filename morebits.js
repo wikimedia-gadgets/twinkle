@@ -1699,26 +1699,25 @@ Wikipedia.page = function(pageName, currentAction) {
  * Call sequence for common operations (optional final user callbacks not shown):
  *
  *    Edit current contents of a page (no edit conflict):
- *       .load() -> Wikipedia.api.post() -> .callbacks.loadSuccess() -> userTextEditCallback() -> 
- *                  .save() -> Wikipedia.api.post() -> .callbacks.saveSuccess()
+ *       .load() -> Wikipedia.api.post() -> .loadSuccess() -> userTextEditCallback() -> 
+ *                  .save() -> Wikipedia.api.post() -> .saveSuccess()
  *
  *    Edit current contents of a page (with edit conflict):
- *       .load() -> Wikipedia.api.post() -> .callbacks.loadSuccess() -> userTextEditCallback() -> 
- *                  .save() -> Wikipedia.api.post() -> .callbacks.saveFailure() ->
- *       .load() -> Wikipedia.api.post() -> .callbacks.loadSuccess() -> userTextEditCallback() -> 
- *                  .save() -> Wikipedia.api.post() -> .callbacks.saveSuccess()
+ *       .load() -> Wikipedia.api.post() -> .loadSuccess() -> userTextEditCallback() -> 
+ *                  .save() -> Wikipedia.api.post() -> .saveFailure() ->
+ *       .load() -> Wikipedia.api.post() -> .loadSuccess() -> userTextEditCallback() -> 
+ *                  .save() -> Wikipedia.api.post() -> .saveSuccess()
  *
  *    Append to a page (similar for prepend):
- *       .append() -> .load() -> Wikipedia.api.post() -> 
- *                    .callbacks.loadSuccess() -> .callbacks.autoSave() ->
- *                    .save() -> Wikipedia.api.post() -> .callbacks.saveSuccess()
+ *       .append() -> .load() -> Wikipedia.api.post() -> .loadSuccess() -> .autoSave() ->
+ *                    .save() -> Wikipedia.api.post() -> .saveSuccess()
  *
  *    Notes: 
  *       1. All functions following Wikipedia.api.post() are invoked asynchronously 
  *          from the jQuery AJAX library.
- *       2. In the case of .edit(), .callbacks.loadSuccess() performs one re-entry into .load() 
+ *       2. In the case of .edit(), .loadSuccess() performs one re-entry into .load() 
  *          when following a redirect. 
- *       3. In the case of .append() or .prepend(), .callbacks.loadSuccess() performs two re-entries  
+ *       3. In the case of .append() or .prepend(), .loadSuccess() performs two re-entries  
  *          into .load() when following a redirect. The first re-entry is to retrieve the 
  *          redirect target and the second is to verify that the target is not itself a redirect.
  *       4. Edit conflicts do not result in additional re-entries due to redirects because the
@@ -1813,8 +1812,8 @@ Wikipedia.page.prototype = {
 		this.loadApi.post();
 	},
 
-	loadSuccess: function(apiObject) {  // callback from loadApi.post()
-		var xml = apiObject.responseXML;
+	loadSuccess: function() {  // callback from loadApi.post()
+		var xml = loadApi.responseXML;
 
 		this.pageText = $(xml).find('rev').text();
 		if (this.editMode == 'all' && !this.pageText)
@@ -1937,7 +1936,7 @@ Wikipedia.page.prototype = {
 
 		// XXX Need to explicitly detect edit conflict and loss of edittoken conditions here
 		// It's impractical to request a new token, just invoke the edit conflict recovery logic when this happens
-		var loadAgain = true;  // XXX do something smart here using apiObject.errorThrown
+		var loadAgain = true;  // XXX do something smart here using saveApi.errorThrown
 		
 		if (loadAgain && this.conflictRetries++ < this.maxConflictRetries) {
 			this.statusElement.info("Edit conflict detected, attempting retry...");
