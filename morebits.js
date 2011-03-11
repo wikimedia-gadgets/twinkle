@@ -1518,8 +1518,10 @@ Wikipedia.api.prototype = {
 	onSuccess: null,
 	onError: null,
 	query: null,
+	parent: window, // use global context if there is no parent object
 	responseXML: null,
 	statelem: null,  // this non-standard name kept for backwards compatibility
+	setParent: function(parent) { this.parent = parent; },  // keep track of parent object for callbacks
 	post: function() {	
 		++Wikipedia.numberOfActionsLeft;
 		$.ajax( {
@@ -1532,9 +1534,14 @@ Wikipedia.api.prototype = {
 				this.textStatus = textStatus;
 				this.responseXML = xml;
 				
-				if (this.onSuccess) this.onSuccess(this);
-				else this.statelem.info(textStatus);
-				
+				// invoke callback if one was supplied
+				if (this.onSuccess) {
+					// set the callback context to this.parent for new code and supply the API object
+					// as the first argument to the callback for legacy code
+					this.onSuccess.call(this.parent, this);
+				} else {
+					this.statelem.info(textStatus);
+				}
 				Wikipedia.actionCompleted();
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
@@ -1795,7 +1802,7 @@ Wikipedia.page.prototype = {
 		if (this.editMode == 'all') this.loadQuery.rvprop = 'content';  // get the page content at the same time, if needed
 		
 		this.loadApi = new Wikipedia.api("Retrieving page...", this.loadQuery, Wikipedia.page.callbacks.loadSuccess, this.statusElement);
-		this.loadApi.parent = this;
+		this.loadApi.setParent(this);
 		this.loadApi.post();
 	},
 
@@ -1850,7 +1857,7 @@ Wikipedia.page.prototype = {
 		}
 
 		this.saveApi = new Wikipedia.api( "Saving page...", query, Wikipedia.page.callbacks.saveSuccess, this.statusElement, Wikipedia.page.callbacks.saveError);
-		this.saveApi.parent = this;
+		this.saveApi.setParent(this);
 		this.saveApi.post();
 	},
 	
@@ -1896,7 +1903,7 @@ Wikipedia.page.callbacks = {
 					// load the redirect page instead
 					self.loadQuery['titles'] = self.pageName;
 					self.loadApi = new Wikipedia.api("Following redirect...", self.loadQuery, Wikipedia.page.callbacks.loadSuccess, self.statusElement);
-					self.loadApi.parent = self;
+					self.loadApi.setParent(self);
 					self.loadApi.post();
 					return;
 				}
