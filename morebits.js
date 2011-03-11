@@ -1534,7 +1534,7 @@ Wikipedia.api.prototype = {
 				this.textStatus = textStatus;
 				this.responseXML = xml;
 				
-				// invoke callback if one was supplied
+				// invoke success callback if one was supplied
 				if (this.onSuccess) {
 					// set the callback context to this.parent for new code and supply the API object
 					// as the first argument to the callback for legacy code
@@ -1548,9 +1548,16 @@ Wikipedia.api.prototype = {
 				this.textStatus = textStatus;
 				this.errorThrown = errorThrown;
 				
-				if (this.onError) this.onError(this)
-				else this.statelem.error(textStatus + ': ' + errorThrown + ' occurred while querying the API.');
-				
+				// invoke failure callback if one was supplied
+				if (this.onError) {
+					// set the callback context to this.parent for new code and supply the API object
+					// as the first argument to the callback for legacy code
+					this.onError.call(this.parent, this);
+				} else {
+					this.statelem.error(textStatus + ': ' + errorThrown + ' occurred while querying the API.');
+				}
+				Wikipedia.actionCompleted();
+
 				// leave the pop-up window open so that the user sees the error
 			}
 		} );
@@ -1801,11 +1808,69 @@ Wikipedia.page.prototype = {
 		
 		if (this.editMode == 'all') this.loadQuery.rvprop = 'content';  // get the page content at the same time, if needed
 		
-		this.loadApi = new Wikipedia.api("Retrieving page...", this.loadQuery, Wikipedia.page.callbacks.loadSuccess, this.statusElement);
+		this.loadApi = new Wikipedia.api("Retrieving page...", this.loadQuery, this.loadSuccess, this.statusElement);
 		this.loadApi.setParent(this);
 		this.loadApi.post();
 	},
 
+	loadSuccess: function(apiObject) {  // callback from loadApi.post()
+		var xml = apiObject.responseXML;
+
+		this.pageText = $(xml).find('rev').text();
+		if (this.editMode == 'all' && !this.pageText)
+		{
+			this.statusElement.error("Failed to retrieve page text.");
+			return;
+		}
+
+		// check to see if the page is a redirect and follow it if requested
+		if (this.followRedirect)
+		{
+			var isRedirect = $(xml).find('pages').find('page').attr('redirect');
+			if (isRedirect)
+			{
+				var redirmatch = /\[\[(.*)\]\]/.exec(this.pageText);
+				if (redirmatch)
+				{
+					this.pageName = redirmatch[1];
+					this.followRedirect = false;  // no double redirects!
+					
+					// load the redirect page instead
+					this.loadQuery['titles'] = this.pageName;
+					this.loadApi = new Wikipedia.api("Following redirect...", this.loadQuery, this.loadSuccess, this.statusElement);
+					this.loadApi.setParent(this);
+					this.loadApi.post();
+					return;
+				}
+			}
+		}
+
+		this.editToken = $(xml).find('page').attr('edittoken');
+		if (!this.editToken)
+		{
+			this.statusElement.error("Failed to retrieve edit token.");
+			return;
+		}
+		this.loadTime = $(xml).find('page').attr('starttimestamp');
+		if (!this.loadTime)
+		{
+			this.statusElement.error("Failed to retrieve start timestamp.");
+			return;
+		}
+		this.lastEditTime = $(xml).find('page').attr('touched');
+		if (!this.lastEditTime)
+		{
+			this.statusElement.error("Failed to retrieve last edit time.");
+			return;
+		}
+		this.pageLoaded = true;
+		this.onLoadSuccess(this);  // invoke callback
+	},
+	
+	autoSave: function() {  // callback from loadSuccess() for append() and prepend() threads
+		this.save(this.onSaveSuccess, this.onSaveFailure);
+	},
+	
 	// Save updated .pageText to Wikipedia
 	// Only valid after successful .load()
 	save: function(onSuccess, onFailure) {
@@ -1856,115 +1921,52 @@ Wikipedia.page.prototype = {
 			query[this.createOption] = '';
 		}
 
-		this.saveApi = new Wikipedia.api( "Saving page...", query, Wikipedia.page.callbacks.saveSuccess, this.statusElement, Wikipedia.page.callbacks.saveError);
+		this.saveApi = new Wikipedia.api( "Saving page...", query, this.saveSuccess, this.statusElement, this.saveError);
 		this.saveApi.setParent(this);
 		this.saveApi.post();
 	},
 	
+	saveSuccess: function() {  // callback from saveApi.post()
+		this.editMode = 'all';  // cancel append/prepend modes
+
+		if (this.onSaveSuccess) this.onSaveSuccess(this);  // invoke callback
+		else this.statusElement.info('Completed save of: ' + this.pageName);
+	},
+	
+	saveError: function() {  // callback from saveApi.post()
+
+		// XXX Need to explicitly detect edit conflict and loss of edittoken conditions here
+		// It's impractical to request a new token, just invoke the edit conflict recovery logic when this happens
+		var loadAgain = true;  // XXX do something smart here using apiObject.errorThrown
+		
+		if (loadAgain && this.conflictRetries++ < this.maxConflictRetries) {
+			this.statusElement.info("Edit conflict detected, attempting retry...");
+			Wikipedia.page.load(this.onLoadSuccess, this.onLoadFailure);
+			
+		// Unknown POST error, retry the operation
+		} else if (this.retries++ < this.maxRetries) {
+			this.statusElement.info("Save failed, attempting retry...");
+			this.saveApi.post();  // give it another go!
+
+		} else {
+			this.statusElement.error("Failed to save edit to: " + this.pageName + ", because of: " + result);
+			this.editMode = 'all';  // cancel append/prepend modes
+			if (this.onSaveFailure) this.onSaveFailure(this);  // invoke callback
+		}
+	},
+
 	append: function(onSuccess, onFailure) {
 		this.editMode = 'append';
 		this.onSaveSuccess = onSuccess;
 		this.onSaveFailure = onFailure;
-		this.load(Wikipedia.page.callbacks.autoSave, onFailure);
+		this.load(this.autoSave, onFailure);
 	},
 
 	prepend: function(onSuccess, onFailure) {
 		this.editMode = 'prepend';
 		this.onSaveSuccess = onSuccess;
 		this.onSaveFailure = onFailure;
-		this.load(Wikipedia.page.callbacks.autoSave, onFailure);
-	},
-}
-
-Wikipedia.page.callbacks = {
-	loadSuccess: function(apiObject) {  // callback from loadApi.post()
-		var self = apiObject.parent;  // retrieve reference to "this" object
-		var xml = apiObject.responseXML;
-
-		self.pageText = $(xml).find('rev').text();
-		if (this.editMode == 'all' && !self.pageText)
-		{
-			self.statusElement.error("Failed to retrieve page text.");
-			return;
-		}
-
-		// check to see if the page is a redirect and follow it if requested
-		if (self.followRedirect)
-		{
-			var isRedirect = $(xml).find('pages').find('page').attr('redirect');
-			if (isRedirect)
-			{
-				var redirmatch = /\[\[(.*)\]\]/.exec(self.pageText);
-				if (redirmatch)
-				{
-					self.pageName = redirmatch[1];
-					self.followRedirect = false;  // no double redirects!
-					
-					// load the redirect page instead
-					self.loadQuery['titles'] = self.pageName;
-					self.loadApi = new Wikipedia.api("Following redirect...", self.loadQuery, Wikipedia.page.callbacks.loadSuccess, self.statusElement);
-					self.loadApi.setParent(self);
-					self.loadApi.post();
-					return;
-				}
-			}
-		}
-
-		self.editToken = $(xml).find('page').attr('edittoken');
-		if (!self.editToken)
-		{
-			self.statusElement.error("Failed to retrieve edit token.");
-			return;
-		}
-		self.loadTime = $(xml).find('page').attr('starttimestamp');
-		if (!self.loadTime)
-		{
-			self.statusElement.error("Failed to retrieve start timestamp.");
-			return;
-		}
-		self.lastEditTime = $(xml).find('page').attr('touched');
-		if (!self.lastEditTime)
-		{
-			self.statusElement.error("Failed to retrieve last edit time.");
-			return;
-		}
-		self.pageLoaded = true;
-		self.onLoadSuccess(self);  // invoke callback
-	},
-	
-	autoSave: function(self) {  // callback from loadSuccess(), append() and prepend()
-		self.save(self.onSaveSuccess, self.onSaveFailure);
-	},
-	
-	saveSuccess: function(apiObject) {  // callback from saveApi.post()
-		var self = apiObject.parent;  // retrieve reference to "this" object
-		self.editMode = 'all';  // cancel append/prepend modes
-
-		if (self.onSaveSuccess) self.onSaveSuccess(self);  // invoke callback
-		else self.statusElement.info('Completed save of: ' + self.pageName);
-	},
-	
-	saveError: function(apiObject) {  // callback from saveApi.post()
-		var self = apiObject.parent;  // retrieve reference to "this" object
-
-		// XXX Need to explicitly detect edit conflict and loss of edittoken conditions here
-		// It's impractical to request a new token, just invoke the edit conflict recovery logic when this happens
-		var loadAgain = true;  // XXX do something smart here using apiObject.errorThrown
-		
-		if (loadAgain && self.conflictRetries++ < self.maxConflictRetries) {
-			self.statusElement.info("Edit conflict detected, attempting retry...");
-			Wikipedia.page.load(self.onLoadSuccess, self.onLoadFailure);
-			
-		// Unknown POST error, retry the operation
-		} else if (self.retries++ < self.maxRetries) {
-			self.statusElement.info("Save failed, attempting retry...");
-			self.saveApi.post();  // give it another go!
-
-		} else {
-			self.statusElement.error("Failed to save edit to: " + self.pageName + ", because of: " + result);
-			self.editMode = 'all';  // cancel append/prepend modes
-			if (self.onSaveFailure) self.onSaveFailure(self);  // invoke callback
-		}
+		this.load(this.autoSave, onFailure);
 	}
 }
 
