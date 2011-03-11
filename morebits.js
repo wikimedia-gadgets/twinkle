@@ -1726,248 +1726,268 @@ Wikipedia.page = function(pageName, currentAction) {
  *          significant duplication of code for little benefit.
  */
  
-Wikipedia.page.prototype = {
-	pageName: null,
-	statusElement: null,
-	pageLoaded: false,
-	followRedirect: false,
-	maxRetries: 2,
-	maxConflictRetries: 2,
-	conflictRetries: 0,
-	retries: 0,
-	editSummary: null,
-	watchlistOption: 'nochange',
-	createOption: null,
-	onLoadSuccess: null,
-	onLoadFailure: null,
-	onSaveSuccess: null,
-	onSaveFailure: null,
-	loadQuery: null,
-	loadApi: null,
-	saveApi: null,
-	pageText: null,
-	appendText: null,   // can't reuse pageText for this because pageText is needed to follow a redirect
-	prependText: null,  // can't reuse pageText for this because pageText is needed to follow a redirect
-	editToken: null,
-	loadTime: null,
-	lastEditTime: null,
-	minorEdit: false,
-	editMode: 'all',  // save() replaces entire contents of the page
-	callbackParameters: null,
-	
-	getPageName: function() { return this.pageName; },
-	getPageText: function() { return this.pageText; },
-	setPageText: function(pageText) { this.editMode = 'all'; this.pageText = pageText; },
-	setAppendText: function(appendText) { this.editMode = 'append'; this.appendText = appendText; },
-	setPrependText: function(prependText) { this.editMode = 'prepend'; this.prependText = prependText; },
-	setEditSummary: function(summary) { this.editSummary = summary; },
-	setCreateOption: function(createOption) { this.createOption = createOption; },
-	setMinorEdit: function(minorEdit) { this.minorEdit = minorEdit; },
-	setMaxConflictRetries: function(maxRetries) { this.maxConflictRetries = maxRetries; },
-	setMaxRetries: function(maxRetries) { this.maxRetries = maxRetries; },
-	setCallbackParameters: function(callbackParameters) { this.callbackParameters = callbackParameters; },
-	getCallbackParameters: function() { return this.callbackParameters; },
-	getStatusElement: function() { return this.statusElement; },
-	
-	setFollowRedirect: function(followRedirect) {
-		if (this.pageLoaded) {
-			this.statusElement.error("Internal error: Cannot change redirect setting after the page has been loaded!");
-			return;
-		}
-		this.followRedirect = followRedirect;
-	},
-	
-	setWatchlist: function(flag) {
-		if (flag) this.watchlistOption = 'watch';
-		else this.watchlistOption = 'nochange';
-	},
-	
-	setWatchlistFromPreferences: function(flag) {
-		if (flag) this.watchlistOption = 'preferences';
-		else this.watchlistOption = 'nochange';
-	},
-	
-	load: function(onSuccess, onFailure) {
-		this.onLoadSuccess = onSuccess;
-		this.onLoadFailure = onFailure;
-		
-		// Need to be able to do something after the page loads
-		if (onSuccess == null) {
-			this.statusElement.error("Internal error: No onSuccess callback provided to load()!");
-			return;
-		}
+Wikipedia.page.prototype = function(){
 
-		this.loadQuery = {
-			action: 'query',
-			prop: 'info|revisions',
-			intoken: 'edit',  // fetch an edit token
-			titles: this.pageName
-			// don't need rvlimit=1 because we don't need rvstartid here and only one actual rev is returned by default
-		};
-		
-		if (this.editMode == 'all') this.loadQuery.rvprop = 'content';  // get the page content at the same time, if needed
-		
-		this.loadApi = new Wikipedia.api("Retrieving page...", this.loadQuery, this.loadSuccess, this.statusElement);
-		this.loadApi.setParent(this);
-		this.loadApi.post();
-	},
+    /*
+    * This ctx is not visible to the outside, thus all parameters
+    * must be accessed via getters and setters.
+    */
+    var ctx = {
+        pageName: null,
+        statusElement: null,
+        pageLoaded: false,
+        followRedirect: false,
+        maxRetries: 2,
+        maxConflictRetries: 2,
+        conflictRetries: 0,
+        retries: 0,
+        editSummary: null,
+        watchlistOption: 'nochange',
+        createOption: null,
+        onLoadSuccess: null,
+        onLoadFailure: null,
+        onSaveSuccess: null,
+        onSaveFailure: null,
+        loadQuery: null,
+        loadApi: null,
+        saveApi: null,
+        pageText: null,
+        appendText: null,   // can't reuse pageText for this because pageText is needed to follow a redirect
+        prependText: null,  // can't reuse pageText for this because pageText is needed to follow a redirect
+        editToken: null,
+        loadTime: null,
+        lastEditTime: null,
+        minorEdit: false,
+        editMode: 'all',  // save() replaces entire contents of the page
+        callbackParameters: null
+    };
 
-	loadSuccess: function() {  // callback from loadApi.post()
-		var xml = this.loadApi.responseXML;
+    /*
+    * Private member functions, which should not be exposed to the outside world
+    */
 
-		this.pageText = $(xml).find('rev').text();
-		if (this.editMode == 'all' && !this.pageText)
-		{
-			this.statusElement.error("Failed to retrieve page text.");
-			return;
-		}
+    // callback from loadSuccess() for append() and prepend() threads
+    var fnAutoSave = function() {
+        this.save(ctx.onSaveSuccess, ctx.onSaveFailure);
+    };
 
-		// check to see if the page is a redirect and follow it if requested
-		if (this.followRedirect)
-		{
-			var isRedirect = $(xml).find('pages').find('page').attr('redirect');
-			if (isRedirect)
-			{
-				var redirmatch = /\[\[(.*)\]\]/.exec(this.pageText);
-				if (redirmatch)
-				{
-					this.pageName = redirmatch[1];
-					this.followRedirect = false;  // no double redirects!
-					
-					// load the redirect page instead
-					this.loadQuery['titles'] = this.pageName;
-					this.loadApi = new Wikipedia.api("Following redirect...", this.loadQuery, this.loadSuccess, this.statusElement);
-					this.loadApi.setParent(this);
-					this.loadApi.post();
-					return;
-				}
-			}
-		}
+    // callback from loadApi.post()
+    var fnLoadSuccess = function() {
+        var xml = ctx.loadApi.responseXML;
 
-		this.editToken = $(xml).find('page').attr('edittoken');
-		if (!this.editToken)
-		{
-			this.statusElement.error("Failed to retrieve edit token.");
-			return;
-		}
-		this.loadTime = $(xml).find('page').attr('starttimestamp');
-		if (!this.loadTime)
-		{
-			this.statusElement.error("Failed to retrieve start timestamp.");
-			return;
-		}
-		this.lastEditTime = $(xml).find('page').attr('touched');
-		if (!this.lastEditTime)
-		{
-			this.statusElement.error("Failed to retrieve last edit time.");
-			return;
-		}
-		this.pageLoaded = true;
-		this.onLoadSuccess(this);  // invoke callback
-	},
-	
-	autoSave: function() {  // callback from loadSuccess() for append() and prepend() threads
-		this.save(this.onSaveSuccess, this.onSaveFailure);
-	},
-	
-	// Save updated .pageText to Wikipedia
-	// Only valid after successful .load()
-	save: function(onSuccess, onFailure) {
-		if (!this.pageLoaded)
-		{
-			this.statusElement.error("Internal error: Attempt to save a page that has not been loaded!");
-			return;
-		}
-		if (!this.editSummary)
-		{
-			this.statusElement.error("Internal error: Edit summary not set before save!");
-			return;
-		}
-		this.onSaveSuccess = onSuccess;
-		this.onSaveFailure = onFailure;
-		this.retries = 0;
-		
-		var query = {
-			action: 'edit',
-			title: this.pageName,
-			summary: this.editSummary,
-			token: this.editToken,
-			watchlist: this.watchlistOption,
-		};
-		
-		// Set minor edit attribute. If these parameters are present with any value, it is interpretted as true
-		if (this.minorEdit) {
-			query.minor = true;
-		} else {
-			query.notminor = true;  // force Twinkle config to override user preference setting for "all edits are minor"
-		}
-		
-		switch (this.editMode) {
-			case 'append':
-				query.appendtext = this.appendText;  // use mode to append to current page contents
-				break;
-			case 'prepend':
-				query.prependtext = this.prependText;  // use mode to preprend to current page contents
-				break;
-			default:
-				query.text = this.pageText; // replace entire contents of the page
-				query.basetimestamp = this.lastEditTime; // check that page hasn't been edited since it was loaded
-				query.starttimestamp = this.loadTime; // check that page hasn't been deleted since it was loaded (don't recreate bad stuff)
-				break;
-		}
+        ctx.pageText = $(xml).find('rev').text();
+        if (ctx.editMode == 'all' && !ctx.pageText)
+        {
+            ctx.statusElement.error("Failed to retrieve page text.");
+            return;
+        }
 
-		if (['recreate', 'createonly', 'nocreate'].indexOf(this.createOption) != -1) {
-			query[this.createOption] = '';
-		}
+        // check to see if the page is a redirect and follow it if requested
+        if (ctx.followRedirect)
+        {
+            var isRedirect = $(xml).find('pages').find('page').attr('redirect');
+            if (isRedirect)
+            {
+                var redirmatch = /\[\[(.*)\]\]/.exec(ctx.pageText);
+                if (redirmatch)
+                {
+                    ctx.pageName = redirmatch[1];
+                    ctx.followRedirect = false;  // no double redirects!
 
-		this.saveApi = new Wikipedia.api( "Saving page...", query, this.saveSuccess, this.statusElement, this.saveError);
-		this.saveApi.setParent(this);
-		this.saveApi.post();
-	},
-	
-	saveSuccess: function() {  // callback from saveApi.post()
-		this.editMode = 'all';  // cancel append/prepend modes
+                    // load the redirect page instead
+                    ctx.loadQuery['titles'] = ctx.pageName;
+                    ctx.loadApi = new Wikipedia.api("Following redirect...", ctx.loadQuery, ctx.loadSuccess, ctx.statusElement);
+                    ctx.loadApi.setParent(ctx);
+                    ctx.loadApi.post();
+                    return;
+                }
+            }
+        }
 
-		if (this.onSaveSuccess) this.onSaveSuccess(this);  // invoke callback
-		else this.statusElement.info('Completed save of: ' + this.pageName);
-	},
-	
-	saveError: function() {  // callback from saveApi.post()
+        ctx.editToken = $(xml).find('page').attr('edittoken');
+        if (!ctx.editToken)
+        {
+            ctx.statusElement.error("Failed to retrieve edit token.");
+            return;
+        }
+        ctx.loadTime = $(xml).find('page').attr('starttimestamp');
+        if (!ctx.loadTime)
+        {
+            ctx.statusElement.error("Failed to retrieve start timestamp.");
+            return;
+        }
+        ctx.lastEditTime = $(xml).find('page').attr('touched');
+        if (!ctx.lastEditTime)
+        {
+            ctx.statusElement.error("Failed to retrieve last edit time.");
+            return;
+        }
+        ctx.pageLoaded = true;
+        ctx.onLoadSuccess(this);  // invoke callback
+    };
 
-		// XXX Need to explicitly detect edit conflict and loss of edittoken conditions here
-		// It's impractical to request a new token, just invoke the edit conflict recovery logic when this happens
-		var loadAgain = true;  // XXX do something smart here using saveApi.errorThrown
-		
-		if (loadAgain && this.conflictRetries++ < this.maxConflictRetries) {
-			this.statusElement.info("Edit conflict detected, attempting retry...");
-			Wikipedia.page.load(this.onLoadSuccess, this.onLoadFailure);
-			
-		// Unknown POST error, retry the operation
-		} else if (this.retries++ < this.maxRetries) {
-			this.statusElement.info("Save failed, attempting retry...");
-			this.saveApi.post();  // give it another go!
+    // callback from saveApi.post()
+    var fnSaveSuccess = function() {
+        ctx.editMode = 'all';  // cancel append/prepend modes
 
-		} else {
-			this.statusElement.error("Failed to save edit to: " + this.pageName + ", because of: " + result);
-			this.editMode = 'all';  // cancel append/prepend modes
-			if (this.onSaveFailure) this.onSaveFailure(this);  // invoke callback
-		}
-	},
+        if (ctx.onSaveSuccess) ctx.onSaveSuccess(this);  // invoke callback
+        else ctx.statusElement.info('Completed save of: ' + ctx.pageName);
+    };
 
-	append: function(onSuccess, onFailure) {
-		this.editMode = 'append';
-		this.onSaveSuccess = onSuccess;
-		this.onSaveFailure = onFailure;
-		this.load(this.autoSave, onFailure);
-	},
+    // callback from saveApi.post()
+    var fnSaveError = function() {
 
-	prepend: function(onSuccess, onFailure) {
-		this.editMode = 'prepend';
-		this.onSaveSuccess = onSuccess;
-		this.onSaveFailure = onFailure;
-		this.load(this.autoSave, onFailure);
-	}
-}
+        // XXX Need to explicitly detect edit conflict and loss of edittoken conditions here
+        // It's impractical to request a new token, just invoke the edit conflict recovery logic when ctx happens
+        var loadAgain = true;  // XXX do something smart here using saveApi.errorThrown
+
+        if (loadAgain && ctx.conflictRetries++ < ctx.maxConflictRetries) {
+            ctx.statusElement.info("Edit conflict detected, attempting retry...");
+            Wikipedia.page.load(ctx.onLoadSuccess, ctx.onLoadFailure);
+
+            // Unknown POST error, retry the operation
+        } else if (ctx.retries++ < ctx.maxRetries) {
+            ctx.statusElement.info("Save failed, attempting retry...");
+            ctx.saveApi.post();  // give it another go!
+
+        } else {
+            ctx.statusElement.error("Failed to save edit to: " + ctx.pageName + ", because of: " + result);
+            ctx.editMode = 'all';  // cancel append/prepend modes
+            if (ctx.onSaveFailure) ctx.onSaveFailure(this);  // invoke callback
+        }
+    };
+
+    /*
+    * Return the public interface
+    */
+    return {
+        getPageName: function() { return ctx.pageName; },
+        getPageText: function() { return ctx.pageText; },
+        setPageText: function(pageText) { ctx.editMode = 'all'; ctx.pageText = pageText; },
+        setAppendText: function(appendText) { ctx.editMode = 'append'; ctx.appendText = appendText; },
+        setPrependText: function(prependText) { ctx.editMode = 'prepend'; ctx.prependText = prependText; },
+        setEditSummary: function(summary) { ctx.editSummary = summary; },
+        setCreateOption: function(createOption) { ctx.createOption = createOption; },
+        setMinorEdit: function(minorEdit) { ctx.minorEdit = minorEdit; },
+        setMaxConflictRetries: function(maxRetries) { ctx.maxConflictRetries = maxRetries; },
+        setMaxRetries: function(maxRetries) { ctx.maxRetries = maxRetries; },
+        setCallbackParameters: function(callbackParameters) { ctx.callbackParameters = callbackParameters; },
+        getCallbackParameters: function() { return ctx.callbackParameters; },
+        getStatusElement: function() { return ctx.statusElement; },
+
+        setFollowRedirect: function(followRedirect) {
+            if (ctx.pageLoaded) {
+                ctx.statusElement.error("Internal error: Cannot change redirect setting after the page has been loaded!");
+                return;
+            }
+            ctx.followRedirect = followRedirect;
+        },
+
+        setWatchlist: function(flag) {
+            if (flag) ctx.watchlistOption = 'watch';
+            else ctx.watchlistOption = 'nochange';
+        },
+
+        setWatchlistFromPreferences: function(flag) {
+            if (flag) ctx.watchlistOption = 'preferences';
+            else ctx.watchlistOption = 'nochange';
+        },
+
+        load: function(onSuccess, onFailure) {
+            ctx.onLoadSuccess = onSuccess;
+            ctx.onLoadFailure = onFailure;
+
+            // Need to be able to do something after the page loads
+            if (onSuccess == null) {
+                ctx.statusElement.error("Internal error: No onSuccess callback provided to load()!");
+                return;
+            }
+
+            ctx.loadQuery = {
+                action: 'query',
+                prop: 'info|revisions',
+                intoken: 'edit',  // fetch an edit token
+                titles: ctx.pageName
+                // don't need rvlimit=1 because we don't need rvstartid here and only one actual rev is returned by default
+            };
+
+            if (ctx.editMode == 'all') ctx.loadQuery.rvprop = 'content';  // get the page content at the same time, if needed
+
+            ctx.loadApi = new Wikipedia.api("Retrieving page...", ctx.loadQuery, fnLoadSuccess, ctx.statusElement);
+            ctx.loadApi.setParent(this);
+            ctx.loadApi.post();
+        },
+
+        // Save updated .pageText to Wikipedia
+        // Only valid after successful .load()
+        save: function(onSuccess, onFailure) {
+            if (!ctx.pageLoaded)
+            {
+                ctx.statusElement.error("Internal error: Attempt to save a page that has not been loaded!");
+                return;
+            }
+            if (!ctx.editSummary)
+            {
+                ctx.statusElement.error("Internal error: Edit summary not set before save!");
+                return;
+            }
+            ctx.onSaveSuccess = onSuccess;
+            ctx.onSaveFailure = onFailure;
+            ctx.retries = 0;
+
+            var query = {
+                action: 'edit',
+                title: ctx.pageName,
+                summary: ctx.editSummary,
+                token: ctx.editToken,
+                watchlist: ctx.watchlistOption,
+            };
+
+            // Set minor edit attribute. If these parameters are present with any value, it is interpretted as true
+            if (ctx.minorEdit) {
+                query.minor = true;
+            } else {
+                query.notminor = true;  // force Twinkle config to override user preference setting for "all edits are minor"
+            }
+
+            switch (ctx.editMode) {
+            case 'append':
+                query.appendtext = ctx.appendText;  // use mode to append to current page contents
+                break;
+            case 'prepend':
+                query.prependtext = ctx.prependText;  // use mode to preprend to current page contents
+                break;
+            default:
+                query.text = ctx.pageText; // replace entire contents of the page
+                query.basetimestamp = ctx.lastEditTime; // check that page hasn't been edited since it was loaded
+                query.starttimestamp = ctx.loadTime; // check that page hasn't been deleted since it was loaded (don't recreate bad stuff)
+                break;
+            }
+
+            if (['recreate', 'createonly', 'nocreate'].indexOf(ctx.createOption) != -1) {
+                query[ctx.createOption] = '';
+            }
+
+            ctx.saveApi = new Wikipedia.api( "Saving page...", query, fnSaveSuccess, ctx.statusElement, fnSaveError);
+            ctx.saveApi.setParent(this);
+            ctx.saveApi.post();
+        },
+
+        append: function(onSuccess, onFailure) {
+            ctx.editMode = 'append';
+            ctx.onSaveSuccess = onSuccess;
+            ctx.onSaveFailure = onFailure;
+            this.load(fnAutoSave, onFailure);
+        },
+
+        prepend: function(onSuccess, onFailure) {
+            ctx.editMode = 'prepend';
+            ctx.onSaveSuccess = onSuccess;
+            ctx.onSaveFailure = onFailure;
+            this.load(fnAutoSave, onFailure);
+        }
+    };
+}();
 
 /* Issues:
 	- Do we need the onFailure callbacks? How do we know when to call them? Timeouts? Enhance Wikipedia.api for failures?
