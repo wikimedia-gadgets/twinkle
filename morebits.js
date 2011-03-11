@@ -1861,19 +1861,48 @@ Wikipedia.page.prototype = function(){
     * Return the public interface
     */
     return {
-        getPageName: function() { return ctx.pageName; },
-        getPageText: function() { return ctx.pageText; },
-        setPageText: function(pageText) { ctx.editMode = 'all'; ctx.pageText = pageText; },
-        setAppendText: function(appendText) { ctx.editMode = 'append'; ctx.appendText = appendText; },
-        setPrependText: function(prependText) { ctx.editMode = 'prepend'; ctx.prependText = prependText; },
-        setEditSummary: function(summary) { ctx.editSummary = summary; },
-        setCreateOption: function(createOption) { ctx.createOption = createOption; },
-        setMinorEdit: function(minorEdit) { ctx.minorEdit = minorEdit; },
-        setMaxConflictRetries: function(maxRetries) { ctx.maxConflictRetries = maxRetries; },
-        setMaxRetries: function(maxRetries) { ctx.maxRetries = maxRetries; },
-        setCallbackParameters: function(callbackParameters) { ctx.callbackParameters = callbackParameters; },
-        getCallbackParameters: function() { return ctx.callbackParameters; },
-        getStatusElement: function() { return ctx.statusElement; },
+        getPageName: function() {
+            return ctx.pageName;
+        },
+        getPageText: function() {
+            return ctx.pageText;
+        },
+        setPageText: function(pageText) {
+            ctx.editMode = 'all';
+            ctx.pageText = pageText;
+        },
+        setAppendText: function(appendText) {
+            ctx.editMode = 'append';
+            ctx.appendText = appendText;
+        },
+        setPrependText: function(prependText) {
+            ctx.editMode = 'prepend';
+            ctx.prependText = prependText;
+        },
+        setEditSummary: function(summary) {
+            ctx.editSummary = summary;
+        },
+        setCreateOption: function(createOption) {
+            ctx.createOption = createOption;
+        },
+        setMinorEdit: function(minorEdit) {
+            ctx.minorEdit = minorEdit;
+        },
+        setMaxConflictRetries: function(maxRetries) {
+            ctx.maxConflictRetries = maxRetries;
+        },
+        setMaxRetries: function(maxRetries) {
+            ctx.maxRetries = maxRetries;
+        },
+        setCallbackParameters: function(callbackParameters) {
+            ctx.callbackParameters = callbackParameters;
+        },
+        getCallbackParameters: function() {
+            return ctx.callbackParameters;
+        },
+        getStatusElement: function() {
+            return ctx.statusElement;
+        },
 
         setFollowRedirect: function(followRedirect) {
             if (ctx.pageLoaded) {
