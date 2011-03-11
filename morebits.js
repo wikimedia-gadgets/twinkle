@@ -1813,7 +1813,7 @@ Wikipedia.page.prototype = {
 	},
 
 	loadSuccess: function() {  // callback from loadApi.post()
-		var xml = loadApi.responseXML;
+		var xml = this.loadApi.responseXML;
 
 		this.pageText = $(xml).find('rev').text();
 		if (this.editMode == 'all' && !this.pageText)
