@@ -1670,8 +1670,8 @@ Wikipedia.api.prototype = {
  *       'createonly' - create the page if it does not exist, but return an error if it
  *                      already exists
  *       'nocreate'   - don't create the page, only edit it if it already exists
- *       other/null   - create the page if it does not exist, unless it was deleted in the moment
- *                      between retrieving the edit token and saving the edit
+ *       null         - create the page if it does not exist, unless it was deleted in the moment
+ *                      between retrieving the edit token and saving the edit (default)
  */
 
 // Class constructor
@@ -1822,9 +1822,14 @@ Wikipedia.page.prototype = {
 			summary: this.editSummary,
 			token: this.editToken,
 			watchlist: this.watchlistOption,
-			minor: this.minorEdit,
-			notminor: !this.minorEdit  // force Twinkle config to override user preference setting for "all edits are minor"
 		};
+		
+		// Set minor edit attribute. If these parameters are present with any value, it is interpretted as true
+		if (this.minorEdit) {
+			query.minor = true;
+		} else {
+			query.notminor = true;  // force Twinkle config to override user preference setting for "all edits are minor"
+		}
 		
 		switch (this.editMode) {
 			case 'append':
