@@ -1525,46 +1525,48 @@ Wikipedia.api.prototype = {
 
 	// post(): carries out the request
 	// do not specify a parameter unless you really really want to give jQuery some extra parameters
-	post: function(internal_params) {
-		++Wikipedia.numberOfActionsLeft;
-		var ajaxparams = (internal_params ? internal_params : {});  // allows for overriding of jQuery arguments
-		ajaxparams.context = this;
-		ajaxparams.type || (ajaxparams.type = 'POST');
-		ajaxparams.url || (ajaxparams.url = wgServer + wgScriptPath + '/api.php');
-		ajaxparams.data || (ajaxparams.data = QueryString.create(this.query));
-		ajaxparams.dataType || (ajaxparams.dataType = 'xml');
-		ajaxparams.success = function(xml, textStatus, jqXHR) {
-			this.textStatus = textStatus;
-			this.responseXML = xml;
+    post: function(internal_params) {
+        ++Wikipedia.numberOfActionsLeft;
+        var ajaxparams = $.extend( {}, internal_params, {
+            'context': this,
+            'type': 'POST',
+            'url': wgServer + wgScriptPath + '/api.php',
+            'data': QueryString.create(this.query),
+            'datatype': 'xml'
+            'success': function(xml, textStatus, jqXHR) {
+                this.textStatus = textStatus;
+                this.responseXML = xml;
 
-			// invoke success callback if one was supplied
-			if (this.onSuccess) {
-				// set the callback context to this.parent for new code and supply the API object
-				// as the first argument to the callback (for legacy code)
-				this.onSuccess.call(this.parent, this);
-			} else {
-				this.statelem.info(textStatus);
-			}
+                // invoke success callback if one was supplied
+                if (this.onSuccess) {
+                    // set the callback context to this.parent for new code and supply the API object
+                    // as the first argument to the callback (for legacy code)
+                    this.onSuccess.call(this.parent, this);
+                } else {
+                    this.statelem.info(textStatus);
+                }
 
-			Wikipedia.actionCompleted();
-		};
-		ajaxparams.error = function(jqXHR, textStatus, errorThrown) {
-			this.textStatus = textStatus;
-			this.errorThrown = errorThrown;
+                Wikipedia.actionCompleted();
+            },
+            'error': function(jqXHR, textStatus, errorThrown) {
+                this.textStatus = textStatus;
+                this.errorThrown = errorThrown;
 
-			// invoke failure callback if one was supplied
-			if (this.onError) {
-				// set the callback context to this.parent for new code and supply the API object
-				// as the first argument to the callback for legacy code
-				this.onError.call(this.parent, this);
-			} else {
-				this.statelem.error(textStatus + ': ' + errorThrown + ' occurred while querying the API.');
-			}
+                // invoke failure callback if one was supplied
+                if (this.onError) {
+                    // set the callback context to this.parent for new code and supply the API object
+                    // as the first argument to the callback for legacy code
+                    this.onError.call(this.parent, this);
+                } else {
+                    this.statelem.error(textStatus + ': ' + errorThrown + ' occurred while querying the API.');
+                }
 
-			// leave the pop-up window open so that the user sees the error
-		};
-		return $.ajax(ajaxparams);  // the return value should always be ignored, unless using internal_params with |async: false|
-	},
+                // leave the pop-up window open so that the user sees the error
+            }
+        });
+
+        return $.ajax(ajaxparams);  // the return value should always be ignored, unless using internal_params with |async: false|
+    },
 
 	getStatusElement: function() { return this.statelem; }
 }
