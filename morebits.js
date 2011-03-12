@@ -1694,7 +1694,7 @@ Wikipedia.api.prototype = {
 // Class constructor
 Wikipedia.page = function(pageName, currentAction) {
 	this.pageName = pageName;
-	if (currentAction == null) currentAction = 'Opening page: ' + pageName;
+	if (currentAction == null) currentAction = 'Opening page "' + pageName + '"';
 	this.statusElement = new Status(currentAction);
 }
 
@@ -1799,8 +1799,8 @@ Wikipedia.page.prototype = function(){
 
 					// load the redirect page instead
 					ctx.loadQuery['titles'] = ctx.pageName;
-					ctx.loadApi = new Wikipedia.api("Following redirect...", ctx.loadQuery, ctx.loadSuccess, ctx.statusElement);
-					ctx.loadApi.setParent(ctx);
+					ctx.loadApi = new Wikipedia.api("Following redirect...", ctx.loadQuery, fnLoadSuccess, ctx.statusElement);
+					ctx.loadApi.setParent(this);
 					ctx.loadApi.post();
 					return;
 				}
@@ -1834,26 +1834,26 @@ Wikipedia.page.prototype = function(){
 		ctx.editMode = 'all';  // cancel append/prepend modes
 
 		if (ctx.onSaveSuccess) ctx.onSaveSuccess(this);  // invoke callback
-		else ctx.statusElement.info('Completed save of: ' + ctx.pageName);
+		else ctx.statusElement.info('Done');
 	};
 
 	// callback from saveApi.post()
 	var fnSaveError = function() {
 		// XXX Need to explicitly detect edit conflict and loss of edittoken conditions here
-		// It's impractical to request a new token, just invoke the edit conflict recovery logic when ctx happens
-		var loadAgain = true;  // XXX do something smart here using saveApi.errorThrown
+		// It's impractical to request a new token, just invoke the edit conflict recovery logic when this happens
+		var loadAgain = true;  // XXX do something smart here using |ctx.saveApi.errorThrown|
 
 		if (loadAgain && ctx.conflictRetries++ < ctx.maxConflictRetries) {
-			ctx.statusElement.info("Edit conflict detected, attempting retry...");
-			Wikipedia.page.load(ctx.onLoadSuccess, ctx.onLoadFailure);
+			ctx.statusElement.info("Edit conflict detected, retrying...");
+			this.load(ctx.onLoadSuccess, ctx.onLoadFailure);
 
 			// Unknown POST error, retry the operation
 		} else if (ctx.retries++ < ctx.maxRetries) {
-			ctx.statusElement.info("Save failed, attempting retry...");
+			ctx.statusElement.info("Save failed, retrying...");
 			ctx.saveApi.post();  // give it another go!
 
 		} else {
-			ctx.statusElement.error("Failed to save edit to: " + ctx.pageName + ", because of: " + result);
+			ctx.statusElement.error("Failed to save edit");  // XXX include a reason for failure
 			ctx.editMode = 'all';  // cancel append/prepend modes
 			if (ctx.onSaveFailure) ctx.onSaveFailure(this);  // invoke callback
 		}
@@ -1968,10 +1968,10 @@ Wikipedia.page.prototype = function(){
 				title: ctx.pageName,
 				summary: ctx.editSummary,
 				token: ctx.editToken,
-				watchlist: ctx.watchlistOption,
+				watchlist: ctx.watchlistOption
 			};
 
-			// Set minor edit attribute. If these parameters are present with any value, it is interpretted as true
+			// Set minor edit attribute. If these parameters are present with any value, it is interpreted as true
 			if (ctx.minorEdit) {
 				query.minor = true;
 			} else {
@@ -1983,7 +1983,7 @@ Wikipedia.page.prototype = function(){
 				query.appendtext = ctx.appendText;  // use mode to append to current page contents
 				break;
 			case 'prepend':
-				query.prependtext = ctx.prependText;  // use mode to preprend to current page contents
+				query.prependtext = ctx.prependText;  // use mode to prepend to current page contents
 				break;
 			default:
 				query.text = ctx.pageText; // replace entire contents of the page
@@ -2014,8 +2014,8 @@ Wikipedia.page.prototype = function(){
 			ctx.onSaveFailure = onFailure;
 			this.load(fnAutoSave, onFailure);
 		}
-	};
-}();
+	}; // end public interface
+}(); // end Wikipedia.page.prototype
 
 /* Issues:
 	- Do we need the onFailure callbacks? How do we know when to call them? Timeouts? Enhance Wikipedia.api for failures?
@@ -2060,54 +2060,6 @@ wikiRevert = function(currentAction, title, oldid, summary, onsuccess, onfailure
 	wikipedia_api.oldid = oldid;
 	wikipedia_api.summary = summary;
 	wikipedia_api.onsuccess = (onsuccess ? onsuccess : function(self) { self.statelem.info("Done") });
-	wikipedia_api.onfailure = onfailure;
-	wikipedia_api.post();
-}
-
-/** 
- * Wikipedia.page.notifyInitialContributor
- * Uses the MediaWiki API to edit the talk page of the initial contributor to a page.
- *
- * About the callback functions:
- *  See Wikipedia.page.edit documentation above.
- *
- * Parameters:
- *  title - the title of the page whose first contributor should be looked up
- *          (for the current page, use wgPageName)
- *  params - parameters to be passed onto the callback functions (as self.params)
- *  onedit - a callback function which modifies the page text as required, and returns
- *           either a) a JSON object with the API query parameters (other than 'action',
- *           'title', and 'token', which are automatically appended), or b) |false| to
- *           indicate that the edit should not proceed
- *  onsuccess - a callback function which is called when the edit has succeeded (optional)
- *  onfailure - a callback function which is called when the edit fails (optional, and rarely 
- *              needed - the built-in error handling should typically be enough)
- *
- * The currentAction is hardcoded to "Notifying initial contributor (<their username>)", and
- * followRedirect is always true.
- */
-wikiNotifyInitialContributor = function(title, params, onedit, onsuccess, onfailure)
-{
-	var query = {
-		'action': 'query',
-		'prop': 'revisions',
-		'titles': title,
-		'rvlimit': 1,
-		'rvprop': 'user',
-		'rvdir': 'newer'
-	}
-	var callback = function (self)
-	{
-		var xmlDoc = self.responseXML;
-		self.username = xmlDoc.evaluate('//rev/@user', xmlDoc, null, XPathResult.STRING_TYPE, null).stringValue;
-		Wikipedia.editPage("Notifying initial contributor (" + self.username + ")", "User talk:" + self.username, self.params,
-			self.onedit, self.onsuccess, self.onfailure, true); // last param: always follow redirects in user talk space
-	};
-	var wikipedia_api = new Wikipedia.api("Retrieving page creator information", query, callback);
-	wikipedia_api.title = title;
-	wikipedia_api.params = params;
-	wikipedia_api.onedit = onedit;
-	wikipedia_api.onsuccess = onsuccess;
 	wikipedia_api.onfailure = onfailure;
 	wikipedia_api.post();
 }
