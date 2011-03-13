@@ -1527,7 +1527,7 @@ Wikipedia.api.prototype = {
 	// do not specify a parameter unless you really really want to give jQuery some extra parameters
     post: function(internal_params) {
         ++Wikipedia.numberOfActionsLeft;
-        var ajaxparams = $.extend( {}, internal_params, {
+        var ajaxparams = $.extend({}, {
             'context': this,
             'type': 'POST',
             'url': wgServer + wgScriptPath + '/api.php',
@@ -1563,7 +1563,7 @@ Wikipedia.api.prototype = {
 
                 // leave the pop-up window open so that the user sees the error
             }
-        });
+        , internal_params });
 
         return $.ajax(ajaxparams);  // the return value should always be ignored, unless using internal_params with |async: false|
     },
