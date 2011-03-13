@@ -87,12 +87,12 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 	if (nextnodeid) nextnode = document.getElementById(nextnodeid);
 
 	//Add styles we might need.
-  if (!twAddPortlet.styleAdded)
-  {
-  	if (skin=="vector") appendCSS( "div div.extraMenu h5 span { background-position: 90% 50%;} div.extraMenu h5 a { padding-left: 0.4em; padding-right: 0.4em; width:auto; } div.extraMenu h5 a span {display:inline-block; font-size:0.8em; height:2.5em; font-weight: normal; padding-top: 1.25em; margin-right:14px; }" );
-  	else if (skin=="modern") appendCSS("#mw_contentwrapper div.portlet { overflow:hidden; height:1.5em; margin:0 0 0 14em; padding:0; } #mw_contentwrapper div.portlet h5 {display:none;} #mw_contentwrapper div.portlet div.pBody {margin:0; padding:0;} #mw_contentwrapper div.portlet div.pBody ul { display:inline; margin:0; } #mw_contentwrapper div.portlet div.pBody ul li { display:block; float:left; height:1.5em; margin:0 0.5em; padding:0 0.2em; text-transform:lowercase; } #mw_contentwrapper div.portlet div.pBody ul li a { text-decoration:underline;} #mw_contentwrapper div.portlet div.pBody ul li.selected a { text-decoration:none;}");
-  	twAddPortlet.styleAdded = true;
-  }
+	if (!twAddPortlet.styleAdded)
+	{
+		if (skin=="vector") appendCSS( "div div.extraMenu h5 span { background-position: 90% 50%;} div.extraMenu h5 a { padding-left: 0.4em; padding-right: 0.4em; width:auto; } div.extraMenu h5 a span {display:inline-block; font-size:0.8em; height:2.5em; font-weight: normal; padding-top: 1.25em; margin-right:14px; }" );
+		else if (skin=="modern") appendCSS("#mw_contentwrapper div.portlet { overflow:hidden; height:1.5em; margin:0 0 0 14em; padding:0; } #mw_contentwrapper div.portlet h5 {display:none;} #mw_contentwrapper div.portlet div.pBody {margin:0; padding:0;} #mw_contentwrapper div.portlet div.pBody ul { display:inline; margin:0; } #mw_contentwrapper div.portlet div.pBody ul li { display:block; float:left; height:1.5em; margin:0 0.5em; padding:0 0.2em; text-transform:lowercase; } #mw_contentwrapper div.portlet div.pBody ul li a { text-decoration:underline;} #mw_contentwrapper div.portlet div.pBody ul li.selected a { text-decoration:none;}");
+		twAddPortlet.styleAdded = true;
+	}
 
 	//verify/normalize input
 	type = skin=="vector" && type=="menu" && (navigation=="left-navigation" || navigation=="right-navigation")?"menu":"";
@@ -1565,7 +1565,7 @@ Wikipedia.api.prototype = {
 			}
 		}, internal_params );
 
-		return $.ajax(ajaxparams);	// the return value should always be ignored, unless using internal_params with |async: false|
+		return $.ajax(ajaxparams);  // the return value should always be ignored, unless using internal_params with |async: false|
 	},
 
 	getStatusElement: function() { return this.statelem; }
@@ -1977,11 +1977,6 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.pageExists = !($(xml).find('page').attr('missing'));
 		if (ctx.pageExists) {
 			ctx.pageText = $(xml).find('rev').text();
-			if (ctx.editMode == 'all' && !ctx.pageText)
-			{
-				ctx.statusElement.error("Failed to retrieve page text.");
-				return;
-			}
 		} else {
 			ctx.pageText = '';  // allow for concatenation, etc.
 		}
@@ -2709,6 +2704,8 @@ function Status( text, stat, type ) {
 	this.text = this.codify(text);
 	this.stat = this.codify(stat);
 	this.type = type || 'status';
+	// XXX temporary hack to force the page not to reload when an error is output - see also update() below
+	if (type == 'error') Wikipedia.numberOfActionsLeft = 1000;
 	this.generate(); 
 	if( stat ) {
 		this.render();
@@ -2775,6 +2772,8 @@ Status.prototype = {
 		this.stat = this.codify( status );
 		if( type ) {
 			this.type = type;
+			// XXX temporary hack to force the page not to reload when an error is output - see also Status() above
+			if (type == 'error') Wikipedia.numberOfActionsLeft = 1000;
 		}
 		this.render();
 	},
@@ -2814,7 +2813,7 @@ Status.info = function( text, status ) {
 	return new Status( text, status, 'info' );
 }
 Status.warn = function( text, status ) {
-	return new Status( text, status, 'error' );
+	return new Status( text, status, 'warn' );
 }
 Status.error = function( text, status ) {
 	return new Status( text, status, 'error' );
