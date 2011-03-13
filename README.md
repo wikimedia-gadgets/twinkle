@@ -38,8 +38,16 @@ To `push` your changes to Foobar's wiki page, do:
 
 The edit summary will contain the `branch`, the last `commit sha`, and the `oneliner` for that commit.
 
+Style Guideline
+---------------
+
+While old legacy code has many different and inhorerent styles, it's decided to utilize a more coherent style through the code.
+
+The [jQuery Core Style Guideline][jq_style] is what we will hereafter use as our style guideline.
+
 [Wikipedia:Twinkle]: http://en.wikipedia.org/wiki/Wikipedia:Twinkle
 [AzaToth]: http://en.wikipedia.org/wiki/User:AzaToth
 [Git::Repository]: http://search.cpan.org/~book/Git-Repository-1.17/lib/Git/Repository.pm
 [Mediawiki::Bot]: http://search.cpan.org/~lifeguard/MediaWiki-Bot-3.2.7/lib/MediaWiki/Bot.pm
 [App::cpanminus]: http://search.cpan.org/~miyagawa/App-cpanminus-1.4001/lib/App/cpanminus.pm
+[jq_style]: http://docs.jquery.com/JQuery_Core_Style_Guidelines
