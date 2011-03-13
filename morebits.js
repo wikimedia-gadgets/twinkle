@@ -1899,9 +1899,9 @@ Wikipedia.page = function(pageName, currentAction) {
     /*
     * Initialization
     */
-    this.pageName = pageName;
+    ctx.pageName = pageName;
     if (currentAction == null) currentAction = 'Opening page "' + pageName + '"';
-    this.statusElement = new Status(currentAction);
+    ctx.statusElement = new Status(currentAction);
 
 
     /**
