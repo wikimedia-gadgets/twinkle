@@ -1532,7 +1532,7 @@ Wikipedia.api.prototype = {
 			'type': 'POST',
 			'url': wgServer + wgScriptPath + '/api.php',
 			'data': QueryString.create(this.query),
-			'datatype': 'xml'
+			'datatype': 'xml',
 			'success': function(xml, textStatus, jqXHR) {
 				this.textStatus = textStatus;
 				this.responseXML = xml;
