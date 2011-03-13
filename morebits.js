@@ -1804,7 +1804,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		else ctx.watchlistOption = 'nochange';
 	};
 
-	this.exists: function() {
+	this.exists = function() {
 		return ctx.pageExists;
 	};
 
