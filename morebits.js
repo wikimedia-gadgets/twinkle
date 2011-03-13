@@ -1874,7 +1874,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			break;
 		default:
 			query.text = ctx.pageText; // replace entire contents of the page
-			query.basetimestamp = ctx.lastEditTime; // check that page hasn't been edited since it was loaded
+			if (ctx.lastEditTime) query.basetimestamp = ctx.lastEditTime; // check that page hasn't been edited since it was loaded
 			query.starttimestamp = ctx.loadTime; // check that page hasn't been deleted since it was loaded (don't recreate bad stuff)
 			break;
 		}
@@ -2016,11 +2016,6 @@ Wikipedia.page = function(pageName, currentAction) {
 			return;
 		}
 		ctx.lastEditTime = $(xml).find('page').attr('touched');
-		if (!ctx.lastEditTime)
-		{
-			ctx.statusElement.error("Failed to retrieve last edit time.");
-			return;
-		}
 		ctx.pageLoaded = true;
 		ctx.onLoadSuccess(this);  // invoke callback
 	};
