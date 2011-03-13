@@ -34,10 +34,10 @@ switch (skin)
 		if( typeof( TwinkleConfig.portletName ) == 'undefined' ) TwinkleConfig.portletName = 'TW';
 		if( typeof( TwinkleConfig.portletType ) == 'undefined' ) TwinkleConfig.portletType = 'menu';
 		if( typeof( TwinkleConfig.portletNext ) == 'undefined' ) TwinkleConfig.portletNext = 'p-search';
-	  break;
+		break;
 	default:
 		if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-cactions';
-	  break;
+		break;
 }
 
 /**
@@ -75,7 +75,7 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 	//sanity checks, and get required DOM nodes
 	var root = document.getElementById( navigation );
 	if ( !root ) return null;
-	
+
 	var item = document.getElementById( id );
 	if (item)
 	{
@@ -131,7 +131,7 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 		var span = document.createElement( 'span' );
 		span.appendChild( document.createTextNode( text ) );
 		h5.appendChild( span );
-		
+
 		var a = document.createElement( 'a' );
 		a.href = "#";
 		var span = document.createElement( 'span' );
@@ -141,11 +141,11 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 	}
 	else h5.appendChild( document.createTextNode( text ) );
 	outerDiv.appendChild( h5 );
-	
+
 	var innerDiv = document.createElement( 'div' ); //not strictly necessary with type vectorTabs, or other skins.
 	innerDiv.className = innerDivClass;
 	outerDiv.appendChild(innerDiv);
-	
+
 	var ul = document.createElement( 'ul' );
 	innerDiv.appendChild( ul );
 
@@ -675,19 +675,19 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 }
 
 QuickForm.element.generateTooltip = function QuickFormElementGenerateTooltip( node, data ) {
-		var tooltipButtonContainer = node.appendChild( document.createElement( 'span' ) );
-		tooltipButtonContainer.className = 'tooltipButtonContainer';
-		var tooltipButton = tooltipButtonContainer.appendChild( document.createElement( 'span' ) );
-		tooltipButton.className = 'tooltipButton';
-		tooltipButton.appendChild( document.createTextNode( '?' ) );
-		var tooltip = document.createElement( 'div' );
-		tooltip.className = 'quickformtooltip';
-		tooltip.appendChild( document.createTextNode( data.tooltip ) );
-		tooltipButton.tooltip = tooltip;
-		tooltipButton.showing = false;
-		tooltipButton.interval = null;
-		tooltipButton.addEventListener( 'mouseover', QuickForm.element.generateTooltip.display, false );
-		tooltipButton.addEventListener( 'mouseout', QuickForm.element.generateTooltip.fade, false );
+	var tooltipButtonContainer = node.appendChild( document.createElement( 'span' ) );
+	tooltipButtonContainer.className = 'tooltipButtonContainer';
+	var tooltipButton = tooltipButtonContainer.appendChild( document.createElement( 'span' ) );
+	tooltipButton.className = 'tooltipButton';
+	tooltipButton.appendChild( document.createTextNode( '?' ) );
+	var tooltip = document.createElement( 'div' );
+	tooltip.className = 'quickformtooltip';
+	tooltip.appendChild( document.createTextNode( data.tooltip ) );
+	tooltipButton.tooltip = tooltip;
+	tooltipButton.showing = false;
+	tooltipButton.interval = null;
+	tooltipButton.addEventListener( 'mouseover', QuickForm.element.generateTooltip.display, false );
+	tooltipButton.addEventListener( 'mouseout', QuickForm.element.generateTooltip.fade, false );
 
 }
 QuickForm.element.generateTooltip.display = function QuickFormElementGenerateTooltipDisplay(e) {
@@ -1044,7 +1044,7 @@ sprintf.format = function sprintfFormat( type, value, flags ) {
 	} else {
 		result = fill + result;
 	}
-	
+
 	return prefix + result;
 }
 
@@ -1240,7 +1240,7 @@ Array.prototype.chunk = function arrayChunk( size ) {
 		}
 		current.push( this[i] );
 	}
-    return result;
+	return result;
 }
 
 Unbinder = function unbinder( string ) {
@@ -1255,94 +1255,94 @@ Unbinder = function unbinder( string ) {
 }
 
 Unbinder.prototype = {
-  unbind: function UnbinderUnbind( prefix, postfix ) {
-    var re = new RegExp( prefix + '(.*?)' + postfix, 'g' );
-    this.content = this.content.replace( re, Unbinder.getCallback( this ) );
-  },
-  rebind: function UnbinderRebind() {
-    var content = this.content;
-    content.self = this;
-    for( var current in this.history )
-      if( this.history.hasOwnProperty( current ) )
-        content = content.replace( current, this.history[current] );
-    return content;
-  },
-  prefix: null, // %UNIQ::0.5955981644938324::
-  postfix: null, // ::UNIQ%
-  content: null, // string
-  counter: null, // 0++
-  history: null // {}
+	unbind: function UnbinderUnbind( prefix, postfix ) {
+		var re = new RegExp( prefix + '(.*?)' + postfix, 'g' );
+		this.content = this.content.replace( re, Unbinder.getCallback( this ) );
+	},
+	rebind: function UnbinderRebind() {
+		var content = this.content;
+		content.self = this;
+		for( var current in this.history )
+			if( this.history.hasOwnProperty( current ) )
+				content = content.replace( current, this.history[current] );
+		return content;
+	},
+	prefix: null, // %UNIQ::0.5955981644938324::
+	postfix: null, // ::UNIQ%
+	content: null, // string
+	counter: null, // 0++
+	history: null // {}
 };
 
 Unbinder.getCallback = function UnbinderGetCallback(self) {
-  return function UnbinderCallback( match , a , b ) {
-    var current = self.prefix + self.counter + self.postfix;
-    self.history[current] = match;
-    ++self.counter;
-    return current;
-  };
+	return function UnbinderCallback( match , a , b ) {
+		var current = self.prefix + self.counter + self.postfix;
+		self.history[current] = match;
+		++self.counter;
+		return current;
+	};
 };
 
 function clone( obj, deep ) {
-  var objectClone = new obj.constructor();
-  for ( var property in obj )
-    if ( !deep ) {
-		objectClone[property] = obj[property];
-	}
-    else if ( typeof obj[property] == 'object' ) {
-		objectClone[property] = clone( obj[property], deep );
-	}
-    else {
-		objectClone[property] = obj[property];
-	}
-  return objectClone;
+	var objectClone = new obj.constructor();
+	for ( var property in obj )
+		if ( !deep ) {
+			objectClone[property] = obj[property];
+		} else if ( typeof obj[property] == 'object' ) {
+			objectClone[property] = clone( obj[property], deep );
+		} else {
+			objectClone[property] = obj[property];
+		}
+	return objectClone;
 }
 
-namespaces	=	{
-	'-2':	'Media',
-	'-1':	'Special',
-	'0'	:	'',
-	'1'	:	'Talk',
-	'2'	:	'User',
-	'3'	:	'User_talk',
-	'4'	:	'Project',
-	'5'	:	'Project talk',
-	'6'	:	'Image',
-	'7'	:	'Image talk',
-	'8'	:	'MediaWiki',
-	'9'	:	'MediaWiki talk',
-	'10':	'Template',
-	'11':	'Template talk',
-	'12':	'Help',
-	'13':	'Help talk',
-	'14':	'Category',
-	'15':	'Category talk',
-	'100':	'Portal',
-	'101':	'Portal talk'
+namespaces = {
+	'-2':  'Media',
+	'-1':  'Special',
+	'0':   '',
+	'1':   'Talk',
+	'2':   'User',
+	'3':   'User_talk',
+	'4':   'Project',
+	'5':   'Project talk',
+	'6':   'Image',
+	'7':   'Image talk',
+	'8':   'MediaWiki',
+	'9':   'MediaWiki talk',
+	'10':  'Template',
+	'11':  'Template talk',
+	'12':  'Help',
+	'13':  'Help talk',
+	'14':  'Category',
+	'15':  'Category talk',
+	'100': 'Portal',
+	'101': 'Portal talk'
 };
-function ln( ns, title )	{
+
+function ln( ns, title ) {
 	var ns2ln = {
-		'0'	:	'la',
-		'1'	:	'lat',
-		'2'	:	'lu',
-		'3'	:	'lut',
-		'4'	:	'lw',
-		'5'	:	'lwt',
-		'6'	:	'li',
-		'7'	:	'lit',
-		'8'	:	'lm',
-		'9'	:	'lmt',
-		'10':	'lt',
-		'11':	'ltt',
-		'12':	'lh',
-		'13':	'lht',
-		'14':	'lc',
-		'15':	'lct',
-		'100':	'lp',
-		'101':	'lpt'
+		'0':   'la',
+		'1':   'lat',
+		'2':   'lu',
+		'3':   'lut',
+		'4':   'lw',
+		'5':   'lwt',
+		'6':   'li',
+		'7':   'lit',
+		'8':   'lm',
+		'9':   'lmt',
+		'10':  'lt',
+		'11':  'ltt',
+		'12':  'lh',
+		'13':  'lht',
+		'14':  'lc',
+		'15':  'lct',
+		'100': 'lp',
+		'101': 'lpt'
 	};
 	return "\{\{" + ns2ln[ns] + "|" + title + "\}\}";
 }
+
 Namespace = {
 	MAIN:           0,
 	TALK:           1,
@@ -1456,7 +1456,7 @@ Wikipedia.nbrOfCheckpointsLeft = 0;
  *    This is used for batch operations. The end of a batch is signaled by calling
  *    Wikipedia.removeCheckpoint(). 
  */
- 
+
 Wikipedia.actionCompleted = function( self ) {
 	if( --Wikipedia.numberOfActionsLeft <= 0 && Wikipedia.nbrOfCheckpointsLeft <= 0 ) {
 		Wikipedia.actionCompleted.event( self );
@@ -1525,48 +1525,48 @@ Wikipedia.api.prototype = {
 
 	// post(): carries out the request
 	// do not specify a parameter unless you really really want to give jQuery some extra parameters
-    post: function(internal_params) {
-        ++Wikipedia.numberOfActionsLeft;
-        var ajaxparams = $.extend({}, {
-            'context': this,
-            'type': 'POST',
-            'url': wgServer + wgScriptPath + '/api.php',
-            'data': QueryString.create(this.query),
-            'datatype': 'xml'
-            'success': function(xml, textStatus, jqXHR) {
-                this.textStatus = textStatus;
-                this.responseXML = xml;
+	post: function(internal_params) {
+		++Wikipedia.numberOfActionsLeft;
+		var ajaxparams = $.extend( {}, {
+			'context': this,
+			'type': 'POST',
+			'url': wgServer + wgScriptPath + '/api.php',
+			'data': QueryString.create(this.query),
+			'datatype': 'xml'
+			'success': function(xml, textStatus, jqXHR) {
+				this.textStatus = textStatus;
+				this.responseXML = xml;
 
-                // invoke success callback if one was supplied
-                if (this.onSuccess) {
-                    // set the callback context to this.parent for new code and supply the API object
-                    // as the first argument to the callback (for legacy code)
-                    this.onSuccess.call(this.parent, this);
-                } else {
-                    this.statelem.info(textStatus);
-                }
+				// invoke success callback if one was supplied
+				if (this.onSuccess) {
+					// set the callback context to this.parent for new code and supply the API object
+					// as the first argument to the callback (for legacy code)
+					this.onSuccess.call(this.parent, this);
+				} else {
+					this.statelem.info(textStatus);
+				}
 
-                Wikipedia.actionCompleted();
-            },
-            'error': function(jqXHR, textStatus, errorThrown) {
-                this.textStatus = textStatus;
-                this.errorThrown = errorThrown;
+				Wikipedia.actionCompleted();
+			},
+			'error': function(jqXHR, textStatus, errorThrown) {
+				this.textStatus = textStatus;
+				this.errorThrown = errorThrown;
 
-                // invoke failure callback if one was supplied
-                if (this.onError) {
-                    // set the callback context to this.parent for new code and supply the API object
-                    // as the first argument to the callback for legacy code
-                    this.onError.call(this.parent, this);
-                } else {
-                    this.statelem.error(textStatus + ': ' + errorThrown + ' occurred while querying the API.');
-                }
+				// invoke failure callback if one was supplied
+				if (this.onError) {
+					// set the callback context to this.parent for new code and supply the API object
+					// as the first argument to the callback for legacy code
+					this.onError.call(this.parent, this);
+				} else {
+					this.statelem.error(textStatus + ': ' + errorThrown + ' occurred while querying the API.');
+				}
 
-                // leave the pop-up window open so that the user sees the error
-            }
-        , internal_params });
+				// leave the pop-up window open so that the user sees the error
+			}
+		}, internal_params );
 
-        return $.ajax(ajaxparams);  // the return value should always be ignored, unless using internal_params with |async: false|
-    },
+		return $.ajax(ajaxparams);	// the return value should always be ignored, unless using internal_params with |async: false|
+	},
 
 	getStatusElement: function() { return this.statelem; }
 }
@@ -1691,6 +1691,8 @@ Wikipedia.api.prototype = {
  *       'nocreate'   - don't create the page, only edit it if it already exists
  *       null         - create the page if it does not exist, unless it was deleted in the moment
  *                      between retrieving the edit token and saving the edit (default)
+ *
+ * exists(): returns true if the page existed on the wiki when it was last loaded
  */
 
 /**
@@ -1726,9 +1728,9 @@ Wikipedia.api.prototype = {
 
 Wikipedia.page = function(pageName, currentAction) {
 
-	/*
-	* Public interface accessors
-	*/
+	/**
+	 * Public interface accessors
+	 */
 	this.getPageName = function() {
 		return ctx.pageName;
 	};
@@ -1800,6 +1802,10 @@ Wikipedia.page = function(pageName, currentAction) {
 	this.setWatchlistFromPreferences = function(flag) {
 		if (flag) ctx.watchlistOption = 'preferences';
 		else ctx.watchlistOption = 'nochange';
+	};
+
+	this.exists: function() {
+		return ctx.pageExists;
 	};
 
 	this.load = function(onSuccess, onFailure) {
@@ -1896,23 +1902,21 @@ Wikipedia.page = function(pageName, currentAction) {
 		this.load(fnAutoSave, onFailure);
 	}
 
-	/*
-	* Initialization
-	*/
-	ctx.pageName = pageName;
+	/**
+	 * Initialization
+	 */
 	if (currentAction == null) currentAction = 'Opening page "' + pageName + '"';
-	ctx.statusElement = new Status(currentAction);
-
 
 	/**
-	* Private context variables
-	*
-	* This context is not visible to the outside, thus all the data here
-	* must be accessed via getters and setter functions.
-	*/
+	 * Private context variables
+	 *
+	 * This context is not visible to the outside, thus all the data here
+	 * must be accessed via getters and setter functions.
+	 */
 	var ctx = {
-		pageName: null,
-		statusElement: null,
+		pageName: pageName,
+		pageExists: false,
+		statusElement: new Status(currentAction),
 		pageLoaded: false,
 		followRedirect: false,
 		maxRetries: 2,
@@ -1941,10 +1945,10 @@ Wikipedia.page = function(pageName, currentAction) {
 	};
 
 	/**
-	* Private member functions
-	*
-	* These are not exposed outside
-	*/
+	 * Private member functions
+	 *
+	 * These are not exposed outside
+	 */
 
 	// callback from loadSuccess() for append() and prepend() threads
 	var fnAutoSave = function() {
@@ -1955,15 +1959,20 @@ Wikipedia.page = function(pageName, currentAction) {
 	var fnLoadSuccess = function() {
 		var xml = ctx.loadApi.responseXML;
 
-		ctx.pageText = $(xml).find('rev').text();
-		if (ctx.editMode == 'all' && !ctx.pageText)
-		{
-			ctx.statusElement.error("Failed to retrieve page text.");
-			return;
+		ctx.pageExists = !($(xml).find('page').attr('missing'));
+		if (ctx.pageExists) {
+			ctx.pageText = $(xml).find('rev').text();
+			if (ctx.editMode == 'all' && !ctx.pageText)
+			{
+				ctx.statusElement.error("Failed to retrieve page text.");
+				return;
+			}
+		} else {
+			ctx.pageText = '';  // allow for concatenation, etc.
 		}
 
 		// check to see if the page is a redirect and follow it if requested
-		if (ctx.followRedirect)
+		if (ctx.pageExists && ctx.followRedirect)
 		{
 			var isRedirect = $(xml).find('pages').find('page').attr('redirect');
 			if (isRedirect)
@@ -2038,18 +2047,18 @@ Wikipedia.page = function(pageName, currentAction) {
 } /* end Wikipedia.page */
 
 
-/* Issues:
-	- Do we need the onFailure callbacks? How do we know when to call them? Timeouts? Enhance Wikipedia.api for failures?
-	- Should we retry loads also?
-	- Need to reset current action before the save?
-	- Deal with action.completed stuff
-*/
+/** Issues:
+ * - Do we need the onFailure callbacks? How do we know when to call them? Timeouts? Enhance Wikipedia.api for failures?
+ * - Should we retry loads also?
+ * - Need to reset current action before the save?
+ * - Deal with action.completed stuff
+ */
 
 
 /************* The following three functions are from the old Wikipedia.page 
                and haven't yet been converted to the new format *******************/
 
-			   
+
 /** 
  * Wikipedia.page.revert
  * Uses the MediaWiki API to revert a page to an earlier revision.
@@ -2096,7 +2105,7 @@ wikiRevertCallback = function(self) {
 		return;
 	}
 	var basetimestamp = xmlDoc.evaluate('//page/@touched', xmlDoc, null, XPathResult.STRING_TYPE, null).stringValue;
-	
+
 	var query = {
 		'action': 'edit',
 		'title': self.title,
@@ -2259,23 +2268,23 @@ Wikipedia.wiki.prototype = {
  * (for example, when specifying the title of a page).
  */
 //WikiDate = {
-//	currentLongDate: false,
-	// Gets the server date in yyyy mmmm dd format (e.g. for XfD daily pages).
-//	getLongDate: function wikiDateGetLongDate()
-//	{
-//		var query = {
-//			'action': 'expandtemplates',
-//			'text': '\{\{CURRENTYEAR}} \{\{CURRENTMONTHNAME}} \{\{CURRENTDAY}}'
-//		};
-//		var callback = function(self) 
-//		{
-			
-//		};
-//		var wpapi = new Wikipedia.api("Retrieving server date", query, callback);
-		// AJAX is async, unfortunately; this stuff is not a nice solution
-//		for (var i = 0; i < 20; i++)
-			
-//	}
+//  currentLongDate: false,
+  // Gets the server date in yyyy mmmm dd format (e.g. for XfD daily pages).
+//  getLongDate: function wikiDateGetLongDate()
+//  {
+//    var query = {
+//      'action': 'expandtemplates',
+//      'text': '\{\{CURRENTYEAR}} \{\{CURRENTMONTHNAME}} \{\{CURRENTDAY}}'
+//    };
+//    var callback = function(self) 
+//    {
+
+//    };
+//    var wpapi = new Wikipedia.api("Retrieving server date", query, callback);
+    // AJAX is async, unfortunately; this stuff is not a nice solution
+//    for (var i = 0; i < 20; i++)
+
+//  }
 //};
 
 Number.prototype.zeroFill = function( length ) {
@@ -2418,7 +2427,7 @@ Mediawiki.Page.prototype = {
 		}
 		// unbind the newly created comments
 		unbinder.unbind( '<!--', '-->' );
-		
+
 		/*
 		 * Check for gallery images, i.e. instances that must start on a new line, eventually preceded with some space, and must include Image: prefix
 		 * Will eat the whole line.
@@ -2655,8 +2664,8 @@ QueryString.create = function( arr ) {
 		} else {
 			res = encodeURIComponent( arr[i] );
 		}
-                if( i == 'wpEditToken' ) {
-                        editToken = res;
+		if( i == 'wpEditToken' ) {
+			editToken = res;
 		} else {
 			resarr.push( encodeURIComponent( i ) + '=' + res );
 		}
@@ -2981,46 +2990,46 @@ SimpleWindow.prototype = {
 		if( !nextState ){
 			nextState = this.currentState;
 		}
-        if( !this.actionTransitionFunctions[nextState] ){
+		if( !this.actionTransitionFunctions[nextState] ){
 			nextState = this.undefinedState(event, nextState);
 		}
-        this.currentState = nextState;
+		this.currentState = nextState;
 		event.stopPropagation();
-    },
-    unexpectedEvent: function(event) { 
+	},
+	unexpectedEvent: function(event) { 
 		throw ("Handled unexpected event '" + event.type + "' in state '" + this.currentState);
-        return this.initialState; 
-    },  
-   
-    undefinedState: function(event, state) {
-        throw ("Transitioned to undefined state '" + state + "' from state '" + this.currentState + "' due to event '" + event.type);
-        return this.initialState; 
-    },  
+		return this.initialState; 
+	},  
+
+	undefinedState: function(event, state) {
+		throw ("Transitioned to undefined state '" + state + "' from state '" + this.currentState + "' due to event '" + event.type);
+		return this.initialState; 
+	},  
 	actionTransitionFunctions: { 
-        Inactive: {
-            mouseover: function(event) { 
-                return this.currentState;
-            },
-            mousemove: function(event) { 
-                return this.currentState;
-            },
-            mouseup: function(event) { 
-                return this.currentState;
-            }
-        }, 
-        Move: {
-            mouseover: function(event) { 
+		Inactive: {
+			mouseover: function(event) { 
+				return this.currentState;
+			},
+			mousemove: function(event) { 
+				return this.currentState;
+			},
+			mouseup: function(event) { 
+				return this.currentState;
+			}
+		}, 
+		Move: {
+			mouseover: function(event) { 
 				this.moveWindow( event.clientX,  event.clientY );
-                return this.currentState;
-            },
-            mousemove: function(event) { 
+				return this.currentState;
+			},
+			mousemove: function(event) { 
 				return this.doActionTransition("Move", "mouseover", event);
-            },
-            mouseup: function(event) { 
+			},
+			mouseup: function(event) { 
 				this.frame.style.opacity = '1';
-                return 'Inactive';
-            }
-        }, 
+				return 'Inactive';
+			}
+		}, 
 		Resize: {
 			mouseover: function(event) { 
 				this.resizeWindow( event.clientX,  event.clientY );
@@ -3036,8 +3045,8 @@ SimpleWindow.prototype = {
 		}
 	},
 	doActionTransition: function(anotherState, anotherEventType, event) {
-         return this.actionTransitionFunctions[anotherState][anotherEventType].call(this,event);
-    },
+		return this.actionTransitionFunctions[anotherState][anotherEventType].call(this,event);
+	},
 	display: function() {
 		document.body.appendChild( this.frame );
 	},
