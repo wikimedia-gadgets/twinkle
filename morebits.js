@@ -1543,7 +1543,7 @@ Wikipedia.api.prototype = {
 					// as the first argument to the callback (for legacy code)
 					this.onSuccess.call(this.parent, this);
 				} else {
-					this.statelem.info(textStatus);
+					this.statelem.info("Done");
 				}
 
 				Wikipedia.actionCompleted();
@@ -1900,7 +1900,22 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.onSaveSuccess = onSuccess;
 		ctx.onSaveFailure = onFailure;
 		this.load(fnAutoSave, onFailure);
-	}
+	};
+
+	// XXX make this async with a callback - atm it seems to lock up the browser!!
+	this.getInitialContributor = function() {
+		var query = {
+			'action': 'query',
+			'prop': 'revisions',
+			'titles': ctx.pageName,
+			'rvlimit': 1,
+			'rvprop': 'user',
+			'rvdir': 'newer'
+		};
+		var wikipedia_api = new Wikipedia.api("Retrieving page creator information", query);
+		var xmlDoc = wikipedia_api.post({ async: false }).responseXML;
+		return $(xmlDoc).find('rev').attr('user');
+	};
 
 	/**
 	 * Initialization
@@ -1951,8 +1966,8 @@ Wikipedia.page = function(pageName, currentAction) {
 	 */
 
 	// callback from loadSuccess() for append() and prepend() threads
-	var fnAutoSave = function() {
-		this.save(ctx.onSaveSuccess, ctx.onSaveFailure);
+	var fnAutoSave = function(pageobj) {
+		pageobj.save(ctx.onSaveSuccess, ctx.onSaveFailure);
 	};
 
 	// callback from loadApi.post()
@@ -3096,7 +3111,7 @@ SimpleWindow.prototype = {
 *              - Correct: http://en.wikipedia.org/w/index.php?title=User%3AAzaToth%2Fmorebits.js&diff=298609098&oldid=298609007 
 */
 
-var twinkleBlacklistedUsers = ["Dilip rajeev", "Jackmantas", "Flaming Grunt", "Catterick", "44 sweet", "Sarangsaras", "WebHamster", "Radiopathy", "Nezzadar", "Darrenhusted", "Notpietru", "Arthur Rubin", "Wuhwuzdat", "MikeWazowski", "Lefty101", "Bender176", "Tej smiles", "Bigvernie", "TK-CP", "NovaSkola", "Polaron", "SluggoOne", "TeleComNasSprVen", "TCNSV", "Wayne Slam", "Someone65", "S.V.Taylor"];
+var twinkleBlacklistedUsers = ["Dilip rajeev", "Jackmantas", "Flaming Grunt", "Catterick", "44 sweet", "Sarangsaras", "WebHamster", "Radiopathy", "Nezzadar", "Darrenhusted", "Notpietru", "Arthur Rubin", "Wuhwuzdat", "MikeWazowski", "Lefty101", "Bender176", "Tej smiles", "Bigvernie", "TK-CP", "NovaSkola", "Polaron", "SluggoOne", "TeleComNasSprVen", "TCNSV", "Wayne Slam", "Someone65", "S.V.Taylor", "Abhishek191288"];
 
 if(twinkleBlacklistedUsers.indexOf(wgUserName) != -1 && twinkleConfigExists) twinkleConfigExists = false;
 
