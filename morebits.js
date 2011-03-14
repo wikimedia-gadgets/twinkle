@@ -602,6 +602,9 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 		break;
 	case 'div':
 		node = document.createElement( 'div' );
+		if (data.label) {
+			node.appendChild( document.createTextNode( data.label ) );
+		}
 		break;
 	case 'submit':
 		node = document.createElement( 'span' );
@@ -1973,6 +1976,12 @@ Wikipedia.page = function(pageName, currentAction) {
 	// callback from loadApi.post()
 	var fnLoadSuccess = function() {
 		var xml = ctx.loadApi.responseXML;
+
+		// check for invalid titles
+		if ($(xml).find('page').attr('invalid')) {
+			ctx.statusElement.error("Attempt made to edit a page with an invalid title");
+			return;
+		}
 
 		ctx.pageExists = !($(xml).find('page').attr('missing'));
 		if (ctx.pageExists) {
