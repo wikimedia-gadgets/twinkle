@@ -2034,7 +2034,13 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.editMode = 'all';  // cancel append/prepend modes
 
 		if (ctx.onSaveSuccess) ctx.onSaveSuccess(this);  // invoke callback
-		else ctx.statusElement.info('Done');
+		else
+		{
+			var link = document.createElement('a');
+			link.setAttribute('href', wgArticlePath.replace('$1', ctx.pageName));
+			link.appendChild(document.createTextNode(ctx.pageName));
+			ctx.statusElement.info(['Completed (', link, ')']);
+		}
 	};
 
 	// callback from saveApi.post()
