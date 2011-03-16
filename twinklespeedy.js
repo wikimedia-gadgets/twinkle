@@ -1258,6 +1258,7 @@ twinklespeedy.callbacks = {
 			pageobj.setPageText(code + ((params.normalized == 'g10' || twinklespeedy.dbmultipleCriteria.indexOf('g10') != -1) ?
 					'' : ("\n" + text) )); // cause attack pages to be blanked
 			pageobj.setEditSummary(editsummary + TwinkleConfig.summaryAd);
+			pageobj.setWatchlist(params.watch);
 			pageobj.setCreateOption('nocreate');
 			pageobj.save();
 		}
