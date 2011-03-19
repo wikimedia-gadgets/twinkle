@@ -5,18 +5,18 @@ if( typeof( TwinkleConfig ) == 'undefined' ) {
 
 /**
  TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default "([[WP:TW|TW]])"
+ If ad should be added or not to summary, default " ([[WP:TW|TW]])"
  */
 if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = "([[WP:TW|TW]])";
+	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
 }
 
 /**
  TwinkleConfig.deletionSummaryAd (string)
- If ad should be added or not to deletion summary, default "([[WP:TW|TW]])"
+ If ad should be added or not to deletion summary, default " ([[WP:TW|TW]])"
  */
 if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
-	TwinkleConfig.deletionSummaryAd = "([[WP:TW|TW]])";
+	TwinkleConfig.deletionSummaryAd = " ([[WP:TW|TW]])";
 }
 
 /**
