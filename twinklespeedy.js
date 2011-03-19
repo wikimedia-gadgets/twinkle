@@ -1224,6 +1224,7 @@ twinklespeedy.callbacks = {
 					usertalkpage.setAppendText(notifytext);
 					usertalkpage.setEditSummary('Notification: speedy deletion nomination of \[\[' + wgPageName + '\]\].' + TwinkleConfig.summaryAd);
 					usertalkpage.setCreateOption('recreate');
+					usertalkpage.setFollowRedirect(true);
 					usertalkpage.append();
 				}
 			}
