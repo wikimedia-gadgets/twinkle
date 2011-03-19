@@ -1637,6 +1637,13 @@ Wikipedia.api.prototype = {
  *       true  - When save is called, the resulting edit will be marked as "minor".
  *       false - When save is called, the resulting edit will not be marked as "minor". (default)
  *
+ * getPageSection()
+ *    Returns the page section number as set in setPageSection(), or |null| if none is set
+ *
+ * setPageSection(pageSection)
+ *    pageSection - integer specifying the section number to load or save. The default is |null|, which means
+ *                  that the entire page will be retrieved.
+ *
  * setMaxConflictRetries(maxRetries)
  *    maxRetries - number of retries for save errors involving an edit conflict or loss of edit token
  *    default: 2
@@ -1769,6 +1776,14 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.minorEdit = minorEdit;
 	};
 
+	this.getPageSection = function() {
+		return ctx.pageSection;
+	};
+
+	this.setPageSection = function(pageSection) {
+		ctx.pageSection = pageSection;
+	};
+
 	this.setMaxConflictRetries = function(maxRetries) {
 		ctx.maxConflictRetries = maxRetries;
 	};
@@ -1829,6 +1844,10 @@ Wikipedia.page = function(pageName, currentAction) {
 			// don't need rvlimit=1 because we don't need rvstartid here and only one actual rev is returned by default
 		};
 
+		if (typeof(ctx.pageSection) === 'number') {
+			ctx.loadQuery.rvsection = ctx.pageSection;
+		}
+
 		if (ctx.editMode == 'all') ctx.loadQuery.rvprop = 'content';  // get the page content at the same time, if needed
 
 		ctx.loadApi = new Wikipedia.api("Retrieving page...", ctx.loadQuery, fnLoadSuccess, ctx.statusElement);
@@ -1860,6 +1879,10 @@ Wikipedia.page = function(pageName, currentAction) {
 			token: ctx.editToken,
 			watchlist: ctx.watchlistOption
 		};
+
+		if (typeof(ctx.pageSection) === 'number') {
+			query.section = ctx.pageSection;
+		}
 
 		// Set minor edit attribute. If these parameters are present with any value, it is interpreted as true
 		if (ctx.minorEdit) {
@@ -1937,6 +1960,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		statusElement: new Status(currentAction),
 		pageLoaded: false,
 		followRedirect: false,
+		pageSection: null,
 		maxRetries: 2,
 		maxConflictRetries: 2,
 		conflictRetries: 0,
