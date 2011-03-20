@@ -46,6 +46,9 @@ if (( wgAction == 'view' && skin == 'vector' )) {
 			page.setMaxConflictRetries(0);
 			page.setMaxRetries(0);
 		}
+		if ( $('#sectionNumber').val() != "" ) {
+			page.setPageSection( Number( $('#sectionNumber').val() ) );
+		}		
 		page.setCreateOption(morebits_test_createOption);
 	  },
 	  
@@ -74,6 +77,7 @@ if (( wgAction == 'view' && skin == 'vector' )) {
           .append( $('<div style="margin-top:0.4em;"></div>').html( 'Text to be added:<br/>' ).append( $('<textarea id="message" id="runTestMessage" style="width:99%" rows="4" cols="60"></textarea>') ) )
           .append( $('<div style="margin-top:0.4em;"></div>').html( 'Insert text before:<br/>' ).append( $('<textarea id="beforeText" style="width:99%" rows="4" cols="60"></textarea>') ) )
           .append( $('<div style="margin-top:0.4em;"></div>').html( 'Edit summary:<br/>' ).append( $('<textarea id="editSummary" style="width:99%" rows="4" cols="60"></textarea>') ) )
+          .append( $('<div style="margin-top:0.4em;"></div>').html( 'Section number:<br/>' ).append( $('<textarea id="sectionNumber" style="width:10%" rows="1" cols="3"></textarea>') ) )
 		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="followRedirect"/> Follow redirect') )
 		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="minorEdit"/> Minor edit') )
 		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="watchlist"/> Add to watchlist') )
