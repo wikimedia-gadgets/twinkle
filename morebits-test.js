@@ -46,21 +46,28 @@ if (( wgAction == 'view' && skin == 'vector' )) {
 			page.setMaxConflictRetries(0);
 			page.setMaxRetries(0);
 		}
-		if ( $('#sectionNumber').val() != "" ) {
-			page.setPageSection( Number( $('#sectionNumber').val() ) );
+		var section = $('#runTestForm input[name="sectionNumber"]').val();
+		if ( section != "" ) {
+			page.setPageSection( Number( section ) );
 		}		
 		page.setCreateOption(morebits_test_createOption);
 	  },
 	  
-	  loadCallback: function(page) {
+	  loadCallbackInsert: function(page) {
 	    var params = page.getCallbackParameters();
 		var text = page.getPageText();
 		var pos = text.indexOf(params['beforeText']);
 		if (pos == -1) {
-		  alert('Search text "' + params['beforeText'] + '" not found');
+		  alert('Search text "' + params['beforeText'] + '" not found!');
 		  return;
 		}
 		page.setPageText(text.substr(0, pos) + params['newText'] + text.substr(pos));
+		page.save();
+	  },
+	  
+	  loadCallbackReplace: function(page) {
+	    var params = page.getCallbackParameters();
+		page.setPageText(params['newText']);
 		page.save();
 	  },
 
@@ -75,9 +82,9 @@ if (( wgAction == 'view' && skin == 'vector' )) {
 		
         $runTests = $('<div id="runTestForm" style="position:relative;"></div>')
           .append( $('<div style="margin-top:0.4em;"></div>').html( 'Text to be added:<br/>' ).append( $('<textarea id="message" id="runTestMessage" style="width:99%" rows="4" cols="60"></textarea>') ) )
-          .append( $('<div style="margin-top:0.4em;"></div>').html( 'Insert text before:<br/>' ).append( $('<textarea id="beforeText" style="width:99%" rows="4" cols="60"></textarea>') ) )
+          .append( $('<div style="margin-top:0.4em;"></div>').html( 'Insert text before (for insert mode only):<br/>' ).append( $('<textarea id="beforeText" style="width:99%" rows="4" cols="60"></textarea>') ) )
           .append( $('<div style="margin-top:0.4em;"></div>').html( 'Edit summary:<br/>' ).append( $('<textarea id="editSummary" style="width:99%" rows="4" cols="60"></textarea>') ) )
-          .append( $('<div style="margin-top:0.4em;"></div>').html( 'Section number:<br/>' ).append( $('<textarea id="sectionNumber" style="width:10%" rows="1" cols="3"></textarea>') ) )
+          .append( $('<div style="margin-top:0.4em;"></div>').html( 'Section number: <input type="text" name="sectionNumber" size="3">' ) )
 		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="followRedirect"/> Follow redirect') )
 		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="minorEdit"/> Minor edit') )
 		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="watchlist"/> Add to watchlist') )
@@ -112,6 +119,10 @@ if (( wgAction == 'view' && skin == 'vector' )) {
 					page.prepend();
 				},
 				"Insert": function(e) { 
+					if ( $('#beforeText').val() == "" ) {
+						alert ("Text to insert before must be specified!");
+						return;
+					}
 					$(this).dialog('close');
 					morebitsTest.initSimpleWindow();
 					
@@ -121,7 +132,18 @@ if (( wgAction == 'view' && skin == 'vector' )) {
 						newText: $('#message').val()
 						});
 					morebitsTest.setPageOptions(page);
-					page.load(morebitsTest.loadCallback);
+					page.load(morebitsTest.loadCallbackInsert);
+				},
+				"Replace": function(e) { 
+					$(this).dialog('close');
+					morebitsTest.initSimpleWindow();
+					
+					var page = new Wikipedia.page(wgPageName);
+					page.setCallbackParameters( {
+						newText: $('#message').val()
+						});
+					morebitsTest.setPageOptions(page);
+					page.load(morebitsTest.loadCallbackReplace);
 				}
             }
           });
