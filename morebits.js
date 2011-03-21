@@ -1525,23 +1525,38 @@ Wikipedia.api.prototype = {
 	responseXML: null,
 	setParent: function(parent) { this.parent = parent; },  // keep track of parent object for callbacks
 	statelem: null,  // this non-standard name kept for backwards compatibility
+	statusText: null, // result received from the API, normally "success" or "error"
+	errorCode: null, // short text error code, if any, as documented in the MediaWiki API
+	errorText: null, // full error description, if any
 
 	// post(): carries out the request
 	// do not specify a parameter unless you really really want to give jQuery some extra parameters
-	post: function(internal_params) {
+	post: function( callerAjaxParameters ) {
+	
 		++Wikipedia.numberOfActionsLeft;
+		
 		var ajaxparams = $.extend( {}, {
-			'context': this,
-			'type': 'POST',
-			'url': wgServer + wgScriptPath + '/api.php',
-			'data': QueryString.create(this.query),
-			'datatype': 'xml',
-			'success': function(xml, textStatus, jqXHR) {
-				this.textStatus = textStatus;
+			context: this,
+			type: 'POST',
+			url: wgServer + wgScriptPath + '/api.php',
+			data: QueryString.create(this.query),
+			datatype: 'xml',
+			
+			success: function(xml, statusText, jqXHR) {
+				this.statusText = statusText;
 				this.responseXML = xml;
-
+				this.errorCode = $(xml).find('error').attr('code');
+				this.errorText = $(xml).find('error').attr('info');
+				
+				if (typeof(this.errorCode) === "string") {
+				
+					// the API didn't like what we told it, e.g., bad edit token or an error creating a page
+					this.returnError( this.errorText );
+				}
+				
 				// invoke success callback if one was supplied
 				if (this.onSuccess) {
+				
 					// set the callback context to this.parent for new code and supply the API object
 					// as the first argument to the callback (for legacy code)
 					this.onSuccess.call(this.parent, this);
@@ -1551,27 +1566,47 @@ Wikipedia.api.prototype = {
 
 				Wikipedia.actionCompleted();
 			},
-			'error': function(jqXHR, textStatus, errorThrown) {
-				this.textStatus = textStatus;
-				this.errorThrown = errorThrown;
-
-				// invoke failure callback if one was supplied
-				if (this.onError) {
-					// set the callback context to this.parent for new code and supply the API object
-					// as the first argument to the callback for legacy code
-					this.onError.call(this.parent, this);
-				} else {
-					this.statelem.error(textStatus + ': ' + errorThrown + ' occurred while querying the API.');
-				}
-
-				// leave the pop-up window open so that the user sees the error
+			
+			// only network and server errors reach here – complaints from the API itself are caught in success()
+			error: function(jqXHR, statusText, errorThrown) {
+				this.statusText = statusText;
+				this.errorThrown = errorThrown; // frequently undefined
+				this.returnError( textStatus + ' "' + jqXHR.statusText + '" occurred while contacting the API.' );
 			}
-		}, internal_params );
+		}, callerAjaxParameters );
 
-		return $.ajax(ajaxparams);  // the return value should always be ignored, unless using internal_params with |async: false|
+		return $.ajax( ajaxparams );  // the return value should be ignored, unless using callerAjaxParameters with |async: false|
 	},
 
-	getStatusElement: function() { return this.statelem; }
+	returnError: function( errorText ) {
+	
+		// invoke failure callback if one was supplied
+		if (this.onError) {
+		
+			// set the callback context to this.parent for new code and supply the API object
+			// as the first argument to the callback for legacy code
+			this.onError.call(this.parent, this);
+		} else {
+			this.statelem.error(errorText);
+		}
+		// don't complete the action so that the error remains displayed
+	},
+
+	getStatusElement: function() {
+		return this.statelem;
+	},
+	
+	getErrorCode: function() {
+		return this.errorCode;
+	},
+
+	getErrorText: function() {
+		return this.errorText;
+	},
+	
+	getXML: function() {
+		return this.responseXML;
+	}
 }
 
 /** 
@@ -1636,9 +1671,6 @@ Wikipedia.api.prototype = {
  *    minorEdit is a boolean value:
  *       true  - When save is called, the resulting edit will be marked as "minor".
  *       false - When save is called, the resulting edit will not be marked as "minor". (default)
- *
- * getPageSection()
- *    Returns the page section number as set in setPageSection(), or |null| if none is set
  *
  * setPageSection(pageSection)
  *    pageSection - integer specifying the section number to load or save. The default is |null|, which means
@@ -1774,10 +1806,6 @@ Wikipedia.page = function(pageName, currentAction) {
 
 	this.setMinorEdit = function(minorEdit) {
 		ctx.minorEdit = minorEdit;
-	};
-
-	this.getPageSection = function() {
-		return ctx.pageSection;
 	};
 
 	this.setPageSection = function(pageSection) {
@@ -1939,7 +1967,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			'rvdir': 'newer'
 		};
 		var wikipedia_api = new Wikipedia.api("Retrieving page creator information", query);
-		var xmlDoc = wikipedia_api.post({ async: false }).responseXML;
+		var xmlDoc = wikipedia_api.post( { async: false } ).getXML();
 		return $(xmlDoc).find('rev').attr('user');
 	};
 
@@ -1999,7 +2027,7 @@ Wikipedia.page = function(pageName, currentAction) {
 
 	// callback from loadApi.post()
 	var fnLoadSuccess = function() {
-		var xml = ctx.loadApi.responseXML;
+		var xml = ctx.loadApi.getXML();
 
 		// check for invalid titles
 		if ($(xml).find('page').attr('invalid')) {
