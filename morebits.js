@@ -1551,7 +1551,7 @@ Wikipedia.api.prototype = {
 				if (typeof(this.errorCode) === "string") {
 				
 					// the API didn't like what we told it, e.g., bad edit token or an error creating a page
-					this.returnError( this.errorText );
+					this.returnError();
 					return;
 				}
 				
@@ -1560,7 +1560,7 @@ Wikipedia.api.prototype = {
 				
 					// set the callback context to this.parent for new code and supply the API object
 					// as the first argument to the callback (for legacy code)
-					this.onSuccess.call(this.parent, this);
+					this.onSuccess.call( this.parent, this );
 				} else {
 					this.statelem.info("Done");
 				}
@@ -1572,7 +1572,8 @@ Wikipedia.api.prototype = {
 			error: function(jqXHR, statusText, errorThrown) {
 				this.statusText = statusText;
 				this.errorThrown = errorThrown; // frequently undefined
-				this.returnError( textStatus + ' "' + jqXHR.statusText + '" occurred while contacting the API.' );
+				this.errorText = textStatus + ' "' + jqXHR.statusText + '" occurred while contacting the API.';
+				this.returnError();
 			}
 			
 		}, callerAjaxParameters );
@@ -1587,9 +1588,9 @@ Wikipedia.api.prototype = {
 		
 			// set the callback context to this.parent for new code and supply the API object
 			// as the first argument to the callback for legacy code
-			this.onError.call(this.parent, this);
+			this.onError.call( this.parent, this );
 		} else {
-			this.statelem.error(errorText);
+			this.statelem.error( this.errorText );
 		}
 		// don't complete the action so that the error remains displayed
 	},
@@ -2113,7 +2114,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			ctx.saveApi.post();  // give it another go!
 
 		} else {
-			ctx.statusElement.error("Failed to save edit");  // XXX include a reason for failure
+			ctx.statusElement.error( "Failed to save edit: " + this.saveApi.getErrorText() );  // XXX include a reason for failure
 			ctx.editMode = 'all';  // cancel append/prepend modes
 			if (ctx.onSaveFailure) ctx.onSaveFailure(this);  // invoke callback
 		}
