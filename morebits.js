@@ -1572,7 +1572,7 @@ Wikipedia.api.prototype = {
 			error: function(jqXHR, statusText, errorThrown) {
 				this.statusText = statusText;
 				this.errorThrown = errorThrown; // frequently undefined
-				this.errorText = textStatus + ' "' + jqXHR.statusText + '" occurred while contacting the API.';
+				this.errorText = statusText + ' "' + jqXHR.statusText + '" occurred while contacting the API.';
 				this.returnError();
 			}
 			
@@ -1581,7 +1581,7 @@ Wikipedia.api.prototype = {
 		return $.ajax( ajaxparams );  // the return value should be ignored, unless using callerAjaxParameters with |async: false|
 	},
 
-	returnError: function( errorText ) {
+	returnError: function() {
 	
 		// invoke failure callback if one was supplied
 		if (this.onError) {
@@ -2083,8 +2083,8 @@ Wikipedia.page = function(pageName, currentAction) {
 		}
 		ctx.lastEditTime = $(xml).find('page').attr('touched');
 		ctx.pageLoaded = true;
-		ctx.statusElement.info("Pausing to generate edit conflict...");
-		// alert("Generate edit conflict now");
+
+		// alert("Generate edit conflict now");  // for testing
 		ctx.onLoadSuccess(this);  // invoke callback
 	};
 
