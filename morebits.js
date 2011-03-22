@@ -1552,6 +1552,7 @@ Wikipedia.api.prototype = {
 				
 					// the API didn't like what we told it, e.g., bad edit token or an error creating a page
 					this.returnError( this.errorText );
+					return;
 				}
 				
 				// invoke success callback if one was supplied
@@ -1573,6 +1574,7 @@ Wikipedia.api.prototype = {
 				this.errorThrown = errorThrown; // frequently undefined
 				this.returnError( textStatus + ' "' + jqXHR.statusText + '" occurred while contacting the API.' );
 			}
+			
 		}, callerAjaxParameters );
 
 		return $.ajax( ajaxparams );  // the return value should be ignored, unless using callerAjaxParameters with |async: false|
