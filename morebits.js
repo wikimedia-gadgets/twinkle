@@ -1931,7 +1931,9 @@ Wikipedia.page = function(pageName, currentAction) {
 			break;
 		default:
 			query.text = ctx.pageText; // replace entire contents of the page
-			if (ctx.lastEditTime) query.basetimestamp = ctx.lastEditTime; // check that page hasn't been edited since it was loaded
+			if (ctx.lastEditTime) {
+				query.basetimestamp = ctx.lastEditTime; // check that page hasn't been edited since it was loaded
+			}
 			query.starttimestamp = ctx.loadTime; // check that page hasn't been deleted since it was loaded (don't recreate bad stuff)
 			break;
 		}
@@ -2081,6 +2083,8 @@ Wikipedia.page = function(pageName, currentAction) {
 		}
 		ctx.lastEditTime = $(xml).find('page').attr('touched');
 		ctx.pageLoaded = true;
+		ctx.statusElement.info("Pausing to generate edit conflict...");
+		// alert("Generate edit conflict now");
 		ctx.onLoadSuccess(this);  // invoke callback
 	};
 
@@ -2100,27 +2104,38 @@ Wikipedia.page = function(pageName, currentAction) {
 
 	// callback from saveApi.post()
 	var fnSaveError = function() {
-		// XXX Need to explicitly detect edit conflict and loss of edittoken conditions here
-		// It's impractical to request a new token, just invoke the edit conflict recovery logic when this happens
-		var loadAgain = true;  // XXX do something smart here using |ctx.saveApi.errorThrown|
 
-		if (loadAgain && ctx.conflictRetries++ < ctx.maxConflictRetries) {
+		var errorCode = ctx.saveApi.getErrorCode();
+		
+		// check for edit conflict
+		if ( errorCode == "editconflict" && ctx.conflictRetries++ < ctx.maxConflictRetries ) {
+			 
+			// alert("Edit conflict detected!");
 			ctx.statusElement.info("Edit conflict detected, retrying...");
 			this.load(ctx.onLoadSuccess, ctx.onLoadFailure);
 
-			// Unknown POST error, retry the operation
-		} else if (ctx.retries++ < ctx.maxRetries) {
-			ctx.statusElement.info("Save failed, retrying...");
-			ctx.saveApi.post();  // give it another go!
+		// check for loss of edit token
+		// it's impractical to request a new token here, so invoke edit conflict logic when this happens
+		} else if ( errorCode == "notoken" && ctx.conflictRetries++ < ctx.maxConflictRetries ) {
+			 
+			ctx.statusElement.info("Edit token is invalid, retrying...");
+			this.load(ctx.onLoadSuccess, ctx.onLoadFailure);
 
+		// check for network or server error
+		} else if ( errorCode == "undefined" && ctx.retries++ < ctx.maxRetries ) {
+		
+			// the error might be transient, so try again
+			ctx.statusElement.info("Save failed, retrying...");
+			ctx.saveApi.post(); // give it another go!
+			
 		} else {
-			ctx.statusElement.error( "Failed to save edit: " + this.saveApi.getErrorText() );  // XXX include a reason for failure
+			// hard error, give up
+			ctx.statusElement.error( "Failed to save edit: " + ctx.saveApi.getErrorText() );
 			ctx.editMode = 'all';  // cancel append/prepend modes
 			if (ctx.onSaveFailure) ctx.onSaveFailure(this);  // invoke callback
 		}
 	};
 } /* end Wikipedia.page */
-
 
 /** Issues:
  * - Do we need the onFailure callbacks? How do we know when to call them? Timeouts? Enhance Wikipedia.api for failures?
