@@ -603,7 +603,18 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 	case 'div':
 		node = document.createElement( 'div' );
 		if (data.label) {
-			node.appendChild( document.createTextNode( data.label ) );
+			if ( !( data.label instanceof Array ) ) {
+				data.label = [ data.label ];
+			}
+			var result = document.createDocumentFragment();
+			for( var i = 0; i < data.label.length; ++i ) {
+				if( typeof(data.label[i]) === 'string' ) {
+					result.appendChild( document.createTextNode( data.label[i] ) );
+				} else if( data.label[i] instanceof Element ) {
+					result.appendChild( data.label[i] );
+				}
+			}
+			node.appendChild( result );
 		}
 		break;
 	case 'submit':
@@ -1972,7 +1983,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			'rvdir': 'newer'
 		};
 		var wikipedia_api = new Wikipedia.api("Retrieving page creator information", query);
-		var xmlDoc = wikipedia_api.post( { async: false } ).getXML();
+		var xmlDoc = wikipedia_api.post( { async: false } ).responseXML;
 		return $(xmlDoc).find('rev').attr('user');
 	};
 
@@ -2809,7 +2820,7 @@ Status.init = function( root ) {
 	styles.insertRule(".tw_status_status { color: SteelBlue; }", 0);
 	styles.insertRule(".tw_status_info { color: ForestGreen; }", 0);
 	styles.insertRule(".tw_status_warn { color: OrangeRed; }", 0);
-	styles.insertRule(".tw_status_error { color: OrangeRed; font-weight: 900; }", 0);
+	styles.insertRule(".tw_status_error { color: OrangeRed; font-weight: bold; }", 0);
 }
 Status.root = null;
 
