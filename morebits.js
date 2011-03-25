@@ -1878,6 +1878,12 @@ Wikipedia.page = function(pageName, currentAction) {
 			return;
 		}
 
+		// sanity check
+		if (ctx.pageSection && ctx.followRedirect) {
+			ctx.statusElement.error("Internal error: cannot use followRedirect=true when using pageSection!! Sorry about that.");
+			return;
+		}
+
 		ctx.loadQuery = {
 			action: 'query',
 			prop: 'info|revisions',
@@ -2119,7 +2125,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			var link = document.createElement('a');
 			link.setAttribute('href', wgArticlePath.replace('$1', ctx.pageName));
 			link.appendChild(document.createTextNode(ctx.pageName));
-			ctx.statusElement.info(['Completed (', link, ')']);
+			ctx.statusElement.info(['completed (', link, ')']);
 		}
 	};
 
