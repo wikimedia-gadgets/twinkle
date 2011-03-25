@@ -1543,32 +1543,32 @@ Wikipedia.api.prototype = {
 	// post(): carries out the request
 	// do not specify a parameter unless you really really want to give jQuery some extra parameters
 	post: function( callerAjaxParameters ) {
-	
+
 		++Wikipedia.numberOfActionsLeft;
-		
+
 		var ajaxparams = $.extend( {}, {
 			context: this,
 			type: 'POST',
 			url: wgServer + wgScriptPath + '/api.php',
 			data: QueryString.create(this.query),
 			datatype: 'xml',
-			
+
 			success: function(xml, statusText, jqXHR) {
 				this.statusText = statusText;
 				this.responseXML = xml;
 				this.errorCode = $(xml).find('error').attr('code');
 				this.errorText = $(xml).find('error').attr('info');
-				
+
 				if (typeof(this.errorCode) === "string") {
-				
+
 					// the API didn't like what we told it, e.g., bad edit token or an error creating a page
 					this.returnError();
 					return;
 				}
-				
+
 				// invoke success callback if one was supplied
 				if (this.onSuccess) {
-				
+
 					// set the callback context to this.parent for new code and supply the API object
 					// as the first argument to the callback (for legacy code)
 					this.onSuccess.call( this.parent, this );
@@ -1578,7 +1578,7 @@ Wikipedia.api.prototype = {
 
 				Wikipedia.actionCompleted();
 			},
-			
+
 			// only network and server errors reach here – complaints from the API itself are caught in success()
 			error: function(jqXHR, statusText, errorThrown) {
 				this.statusText = statusText;
@@ -1586,17 +1586,17 @@ Wikipedia.api.prototype = {
 				this.errorText = statusText + ' "' + jqXHR.statusText + '" occurred while contacting the API.';
 				this.returnError();
 			}
-			
+
 		}, callerAjaxParameters );
 
 		return $.ajax( ajaxparams );  // the return value should be ignored, unless using callerAjaxParameters with |async: false|
 	},
 
 	returnError: function() {
-	
+
 		// invoke failure callback if one was supplied
 		if (this.onError) {
-		
+
 			// set the callback context to this.parent for new code and supply the API object
 			// as the first argument to the callback for legacy code
 			this.onError.call( this.parent, this );
@@ -1609,7 +1609,7 @@ Wikipedia.api.prototype = {
 	getStatusElement: function() {
 		return this.statelem;
 	},
-	
+
 	getErrorCode: function() {
 		return this.errorCode;
 	},
@@ -1617,7 +1617,7 @@ Wikipedia.api.prototype = {
 	getErrorText: function() {
 		return this.errorText;
 	},
-	
+
 	getXML: function() {
 		return this.responseXML;
 	}
@@ -1996,38 +1996,42 @@ Wikipedia.page = function(pageName, currentAction) {
 	 * Private context variables
 	 *
 	 * This context is not visible to the outside, thus all the data here
-	 * must be accessed via getters and setter functions.
+	 * must be accessed via getter and setter functions.
 	 */
 	var ctx = {
+		 // backing fields for public properties
 		pageName: pageName,
-		pageExists: false,
-		statusElement: new Status(currentAction),
-		pageLoaded: false,
-		followRedirect: false,
+		pageText: null,
+		editMode: 'all',  // save() replaces entire contents of the page by default
+		appendText: null,   // can't reuse pageText for this because pageText is needed to follow a redirect
+		prependText: null,  // can't reuse pageText for this because pageText is needed to follow a redirect
+		editSummary: null,
+		createOption: null,
+		minorEdit: false,
 		pageSection: null,
-		maxRetries: 2,
 		maxConflictRetries: 2,
+		maxRetries: 2,
+		callbackParameters: null,
+		statusElement: new Status(currentAction),
+		followRedirect: false,
+		watchlistOption: 'nochange',
+		pageExists: false,
+		 // internal status
+		pageLoaded: false,
+		editToken: null,
+		loadTime: null,
+		lastEditTime: null,
 		conflictRetries: 0,
 		retries: 0,
-		editSummary: null,
-		watchlistOption: 'nochange',
-		createOption: null,
+		 // callbacks
 		onLoadSuccess: null,
 		onLoadFailure: null,
 		onSaveSuccess: null,
 		onSaveFailure: null,
+		 // internal objects
 		loadQuery: null,
 		loadApi: null,
 		saveApi: null,
-		pageText: null,
-		appendText: null,   // can't reuse pageText for this because pageText is needed to follow a redirect
-		prependText: null,  // can't reuse pageText for this because pageText is needed to follow a redirect
-		editToken: null,
-		loadTime: null,
-		lastEditTime: null,
-		minorEdit: false,
-		editMode: 'all',  // save() replaces entire contents of the page
-		callbackParameters: null
 	};
 
 	/**
@@ -2104,8 +2108,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.editMode = 'all';  // cancel append/prepend modes
 
 		if (ctx.onSaveSuccess) ctx.onSaveSuccess(this);  // invoke callback
-		else
-		{
+		else {
 			var link = document.createElement('a');
 			link.setAttribute('href', wgArticlePath.replace('$1', ctx.pageName));
 			link.appendChild(document.createTextNode(ctx.pageName));
@@ -2117,7 +2120,7 @@ Wikipedia.page = function(pageName, currentAction) {
 	var fnSaveError = function() {
 
 		var errorCode = ctx.saveApi.getErrorCode();
-		
+
 		// check for edit conflict
 		if ( errorCode == "editconflict" && ctx.conflictRetries++ < ctx.maxConflictRetries ) {
 			 
@@ -2134,11 +2137,11 @@ Wikipedia.page = function(pageName, currentAction) {
 
 		// check for network or server error
 		} else if ( errorCode == "undefined" && ctx.retries++ < ctx.maxRetries ) {
-		
+
 			// the error might be transient, so try again
 			ctx.statusElement.info("Save failed, retrying...");
 			ctx.saveApi.post(); // give it another go!
-			
+
 		} else {
 			// hard error, give up
 			ctx.statusElement.error( "Failed to save edit: " + ctx.saveApi.getErrorText() );
