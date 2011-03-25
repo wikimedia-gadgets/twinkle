@@ -1176,7 +1176,7 @@ twinklespeedy.callbacks = {
 							Wikipedia.actionCompleted();
 						},
 						error: function(jqXHR, textStatus, errorThrown) {
-							if (textStatus == "parsererror") { // kludge for Firefox 4.0b12
+							if (textStatus == "parsererror") { // kludge
 								this.info("Done");
 								Wikipedia.actionCompleted();
 							} else {
@@ -1190,15 +1190,8 @@ twinklespeedy.callbacks = {
 			// Notification to first contributor
 			if (params.usertalk) {
 				var thispage = new Wikipedia.page(wgPageName);
-				var initialcontrib = thispage.getInitialContributor();
-				if (!initialcontrib)
-				{
-					var errorstatus = new Status("Notifying initial contributor");
-					errorstatus.error("Failed to retrieve data of initial revision");
-				}
-				else
-				{
-					var usertalkpage = new Wikipedia.page('User talk:' + initialcontrib, "Notifying initial contributor (" + initialcontrib + ")");
+				var callback = function(pageobj, initialContrib) {
+					var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 					var nowelcome = TwinkleConfig.welcomeUserOnSpeedyDeletionNotification.indexOf(params.normalized) == -1;
 					var notifytext;
 
@@ -1222,11 +1215,12 @@ twinklespeedy.callbacks = {
 					notifytext += (nowelcome ? "|nowelcome=yes" : "") + "\}\} \~\~\~\~";
 
 					usertalkpage.setAppendText(notifytext);
-					usertalkpage.setEditSummary('Notification: speedy deletion nomination of \[\[' + wgPageName + '\]\].' + TwinkleConfig.summaryAd);
+					usertalkpage.setEditSummary("Notification: speedy deletion nomination of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
 					usertalkpage.setCreateOption('recreate');
 					usertalkpage.setFollowRedirect(true);
 					usertalkpage.append();
-				}
+				};
+				thispage.getInitialContributor(callback);
 			}
 
 			// Wrap SD template in noinclude tags if we are in template space.
