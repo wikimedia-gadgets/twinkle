@@ -1972,8 +1972,13 @@ Wikipedia.page = function(pageName, currentAction) {
 		this.load(fnAutoSave, onFailure);
 	};
 
-	// XXX make this async with a callback - atm it seems to lock up the browser!!
-	this.getInitialContributor = function() {
+	this.getInitialContributor = function(onSuccess) {
+		if (onSuccess == null) {
+			ctx.statusElement.error("Internal error: No onSuccess callback provided to getInitialContributor()!");
+			return;
+		}
+		ctx.onGetInitialContributorSuccess = onSuccess;
+
 		var query = {
 			'action': 'query',
 			'prop': 'revisions',
@@ -1982,9 +1987,9 @@ Wikipedia.page = function(pageName, currentAction) {
 			'rvprop': 'user',
 			'rvdir': 'newer'
 		};
-		var wikipedia_api = new Wikipedia.api("Retrieving page creator information", query);
-		var xmlDoc = wikipedia_api.post( { async: false } ).responseXML;
-		return $(xmlDoc).find('rev').attr('user');
+		ctx.getInitialContributorApi = new Wikipedia.api("Retrieving page creator information", query, fnGetInitialContributorSuccess);
+		ctx.getInitialContributorApi.setParent(this);
+		ctx.getInitialContributorApi.post();
 	};
 
 	/**
@@ -2028,10 +2033,12 @@ Wikipedia.page = function(pageName, currentAction) {
 		onLoadFailure: null,
 		onSaveSuccess: null,
 		onSaveFailure: null,
+		onGetInitialContributorSuccess: null,
 		 // internal objects
 		loadQuery: null,
 		loadApi: null,
 		saveApi: null,
+		getInitialContributorApi: null,
 	};
 
 	/**
@@ -2148,6 +2155,16 @@ Wikipedia.page = function(pageName, currentAction) {
 			ctx.editMode = 'all';  // cancel append/prepend modes
 			if (ctx.onSaveFailure) ctx.onSaveFailure(this);  // invoke callback
 		}
+	};
+
+	var fnGetInitialContributorSuccess = function() {
+		var xmlDoc = ctx.getInitialContributorApi.getXML();
+		var initialcontrib = $(xmlDoc).find('rev').attr('user');
+		if (!initialcontrib) {
+			ctx.statusElement.error("Could not find name of initial contributor.");
+			return;
+		}
+		ctx.onGetInitialContributorSuccess(this, initialcontrib);  // XXX hardly ideal
 	};
 } /* end Wikipedia.page */
 
