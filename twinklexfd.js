@@ -5,7 +5,9 @@ if( typeof( TwinkleConfig ) == 'undefined' ) {
 
 /**
  TwinkleConfig.xfdWatchDiscussion (string)
- The watchlist setting of the newly created XfD page. Either "yes", "no", or "default". Default is "default" (Duh).
+ The watchlist setting of the newly created XfD page (for those processes that create discussion pages for each nomination),
+ or the list page for the other processes.
+ Either "yes" (add to watchlist), "no" (don't add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
  */
 if( typeof( TwinkleConfig.xfdWatchDiscussion ) == 'undefined' ) {
 	TwinkleConfig.xfdWatchDiscussion = "default";
@@ -13,15 +15,17 @@ if( typeof( TwinkleConfig.xfdWatchDiscussion ) == 'undefined' ) {
 
 /**
  TwinkleConfig.xfdWatchPage (string)
- The watchlist setting of the page listed for XfD. Either "yes", "no", or "default". Default is "default" (Duh).
+ The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
+ add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
  */
 if( typeof( TwinkleConfig.xfdWatchPage) == 'undefined' ) {
-	TwinkleConfig.xfdWatchPage= "default";
+	TwinkleConfig.xfdWatchPage = "default";
 }
 
 /**
  TwinkleConfig.xfdWatchUser (string)
- The watchlist setting of the user if he receives a notification. Either "yes", "no", or "default". Default is "default" (Duh).
+ The watchlist setting of the user if he receives a notification. Either "yes" (add to watchlist), "no" (don't
+ add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
  */
 if( typeof( TwinkleConfig.xfdWatchUser ) == 'undefined' ) {
 	TwinkleConfig.xfdWatchUser = "default";
@@ -29,27 +33,20 @@ if( typeof( TwinkleConfig.xfdWatchUser ) == 'undefined' ) {
 
 /**
  TwinkleConfig.xfdWatchList (string)
- The watchlist setting of xfd list page, *if* the discussion is on a separate page. Either "yes", "no", or "default". Default is "no" (Hehe. Seriously though, who wants to watch it? Sorry in advance for any false positives.).
+ The watchlist setting of the XfD list page, *if* the discussion is on a separate page. Either "yes" (add to watchlist), "no" (don't
+ add to watchlist), or "default" (use setting from preferences). Default is "no" (Hehe. Seriously though, who wants to watch it?
+ Sorry in advance for any false positives.).
  */
 if( typeof( TwinkleConfig.xfdWatchList ) == 'undefined' ) {
 	TwinkleConfig.xfdWatchList = "no";
 }
 
 /**
- TwinkleConfig.xfdWatchUsages (string)
- The watchlist setting of usages of the tagged page (image, usually). Either "yes", "no", or "default". Default is "no".
- */
-if( typeof( TwinkleConfig.xfdWatchUsages ) == 'undefined' ) {
-	TwinkleConfig.xfdWatchUsages = "no";
-}
-
-
-/**
  TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default [[WP:TWINKLE|TWINKLE]]
+ If ad should be added or not to summary, default " ([[WP:TW|TW]])"
  */
 if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " using [[WP:TW|TW]]";
+	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
 }
 
 function num2order( num ) {
@@ -60,16 +57,14 @@ function num2order( num ) {
 	default: return num + 'th';
 	}
 }
+
 function twinklexfd() {
 	if( wgNamespaceNumber < 0 || wgCurRevisionId == false ) {
 		return;
 	}
-	if (twinkleConfigExists)
-	{
+	if (twinkleConfigExists) {
 		twAddPortletLink( "javascript:twinklexfd.callback()", "XFD", "tw-xfd", "Anything for deletion", "");
-	}
-	else
-	{
+	} else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'XFD', 'tw-xfd', 'Anything for deletion', '');
 	}
 }
@@ -77,7 +72,7 @@ window.TwinkleInit = (window.TwinkleInit || []).concat(twinklexfd); //schedule i
 
 twinklexfd.callback = function twinklexfdCallback() {
 
-	var Window = new SimpleWindow( 600, 325 );
+	var Window = new SimpleWindow( 600, 350 );
 	Window.setTitle( "Anything for deletion" );
 	var form = new QuickForm( twinklexfd.callback.evaluate );
 	var categories = form.append( {
@@ -89,46 +84,46 @@ twinklexfd.callback = function twinklexfdCallback() {
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Afd',
+			label: 'AfD (Articles for deletion)',
 			selected: wgNamespaceNumber == Namespace.MAIN,
 			value: 'afd'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Tfd',
+			label: 'TfD (Templates for discussion)',
 			selected: wgNamespaceNumber == Namespace.TEMPLATE,
 			value: 'tfd'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Ffd/PUF',
+			label: 'FfD (Files for deletion)/PUF (Possibly unfree files)',
 			selected: wgNamespaceNumber == Namespace.IMAGE,
-			value: 'ifd'
+			value: 'ffd'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Cfd',
+			label: 'CfD (Categories for discussion)',
 			selected: wgNamespaceNumber == Namespace.CATEGORY,
 			value: 'cfd'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Mfd',
+			label: 'MfD (Miscellany for deletion)',
 			selected: [ Namespace.IMAGE, Namespace.MAIN, Namespace.TEMPLATE, Namespace.CATEGORY ].indexOf( wgNamespaceNumber ) == -1 ,
 			value: 'mfd'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Rfd',
+			label: 'RfD (Redirects for discussion)',
 			selected: QueryString.equals('redirect', 'no') && (document.evaluate( "//span[@class='redirectText']", document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null ).snapshotLength>0),
 			value: 'rfd'
 		} );
-	categories.append( {
-			type: 'option',
-			label: 'Sfd',
-			disabled: true,
-			value: 'sfd'
-		} );
+	//categories.append( {
+	//		type: 'option',
+	//		label: 'SfD (Stub types for deletion)',
+	//		disabled: true,
+	//		value: 'sfd'
+	//	} );
 	form.append( {
 			type: 'checkbox',
 			list: [
@@ -136,7 +131,7 @@ twinklexfd.callback = function twinklexfdCallback() {
 					label: 'Notify if possible',
 					value: 'notify',
 					name: 'notify',
-					tooltip: 'If a notification if defined in the configuration, then notify if this is true, else no notify',
+					tooltip: 'If a notification if defined in the configuration, then notify the page creator if this is true, else no notify',
 					checked: true
 				}
 			]
@@ -166,9 +161,9 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 	var childNodes = root.childNodes;
 	for( var i = 0; i < childNodes.length; ++i ) {
 		var node = childNodes[i];
-		if( 
+		if(
 			node instanceof Element &&
-			node.getAttribute( 'name' ) == 'work_area' 
+			node.getAttribute( 'name' ) == 'work_area'
 		) {
 			old_area = node;
 			break;
@@ -176,9 +171,12 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 	}
 	var work_area = null;
 
+	var oldreasontextbox = e.target.form.getElementsByTagName('textarea')[0];
+	var oldreason = (oldreasontextbox ? oldreasontextbox.value : '');
+
 	switch( value ) {
 	case 'afd':
-		work_area = new QuickForm.element( { 
+		work_area = new QuickForm.element( {
 				type: 'field',
 				label: 'Articles for deletion',
 				name: 'work_area'
@@ -187,17 +185,17 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 				type: 'checkbox',
 				list: [
 						{
-							label: 'Wrap <noinclude>',
+							label: 'Wrap deletion tag with <noinclude>',
 							value: 'noinclude',
 							name: 'noinclude',
-							tooltip: 'Will wrap the template in <noinclude> tags, so that it won\'t transclude'
+							tooltip: 'Will wrap the deletion tag in <noinclude> tags, so that it won\'t transclude. This option is not normally required.'
 						}
 					]
 		} );
-		var afd_category = work_area.append( { 
+		var afd_category = work_area.append( {
 				type:'select',
 				name:'xfdcat',
-				label:'Choose what category this nomination belongs in' 
+				label:'Choose what category this nomination belongs in'
 			} );
 
 		afd_category.append( { type:'option', label:'Unknown', value:'?', selected:true } );
@@ -216,39 +214,34 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		work_area.append( {
 				type: 'textarea',
 				name: 'xfdreason',
-				label: 'Reason: '
+				label: 'Reason: ',
+				value: oldreason
 			} );
 		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'tfd':
-		work_area = new QuickForm.element( { 
+		work_area = new QuickForm.element( {
 				type: 'field',
 				label: 'Templates for discussion',
 				name: 'work_area'
+			} );
+		var linknode = document.createElement('a');
+		linknode.setAttribute("href", "/wiki/WP:SFD");
+		linknode.appendChild(document.createTextNode('WP:SFD'));
+		work_area.append( {
+				type: 'div',
+				label: [ 'Stub templates and userboxes are not eligible for TfD. Stub templates go to ', linknode, ', and userboxes go to MfD.' ]
 			} );
 		work_area.append( {
 				type: 'checkbox',
 				list: [
 						{
-							label: 'Wrap <noinclude>',
-							value: 'noinclude',
-							name: 'noinclude',
-							tooltip: 'Will wrap the template in <noinclude> tags, so that it won\'t transclude',
-							disabled: true,
-							checked: false
-						}
-					]
-		} );
-		work_area.append( {
-				type: 'checkbox',
-				list: [
-						{
-							label: 'Inline template',
+							label: 'Inline deletion tag',
 							value: 'tfdinline',
 							name: 'tfdinline',
-							tooltip: 'Use \{\{tfd|type=inline\}\} to tag the page instead of \{\{tfd\}\}.',
+							tooltip: 'Use \{\{tfd|type=inline\}\} to tag the page instead of \{\{tfd\}\}. Good for inline templates (those that appear amongst the words of text).',
 							checked: false
 						}
 					]
@@ -256,14 +249,15 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		work_area.append( {
 				type: 'textarea',
 				name: 'xfdreason',
-				label: 'Reason: '
+				label: 'Reason: ',
+				value: oldreason
 			} );
 		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'mfd':
-		work_area = new QuickForm.element( { 
+		work_area = new QuickForm.element( {
 				type: 'field',
 				label: 'Miscellany for deletion',
 				name: 'work_area'
@@ -272,24 +266,39 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 				type: 'checkbox',
 				list: [
 						{
-							label: 'Wrap <noinclude>',
+							label: 'Wrap deletion tag with <noinclude>',
 							value: 'noinclude',
 							name: 'noinclude',
-							tooltip: 'Will wrap the template in <noinclude> tags, so that it won\'t transclude'
+							tooltip: 'Will wrap the deletion tag in <noinclude> tags, so that it won\'t transclude. Select this option for userboxes.'
 						}
 					]
 		} );
+		if (wgNamespaceNumber == Namespace.USER || wgNamespaceNumber == Namespace.USER_TALK) {
+			work_area.append( {
+				type: 'checkbox',
+				list: [
+						{
+							label: 'Also notify owner of userspace if they are not the page creator',
+							value: 'notifyuserspace',
+							name: 'notifyuserspace',
+							tooltip: 'If the user in whose userspace this page is located, is not the page creator (for example, the page is a rescued article stored as a userspace draft), notify the userspace owner as well.',
+							checked: true
+						}
+					]
+			} );
+		}
 		work_area.append( {
 				type: 'textarea',
 				name: 'xfdreason',
-				label: 'Reason: '
+				label: 'Reason: ',
+				value: oldreason
 			} );
 		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
-	case 'ifd':
-		work_area = new QuickForm.element( { 
+	case 'ffd':
+		work_area = new QuickForm.element( {
 				type: 'field',
 				label: 'Files for deletion',
 				name: 'work_area'
@@ -308,14 +317,15 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		work_area.append( {
 				type: 'textarea',
 				name: 'xfdreason',
-				label: 'Reason: '
+				label: 'Reason: ',
+				value: oldreason
 			} );
 		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'cfd':
-		work_area = new QuickForm.element( { 
+		work_area = new QuickForm.element( {
 				type: 'field',
 				label: 'Categories for discussion',
 				name: 'work_area'
@@ -334,10 +344,10 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 					}
 				}
 			} );
-		cfd_category.append( { type:'option', label: 'Deletion', value: 'cfd', selected:true } );
-		cfd_category.append( { type:'option', label:'Merge', value:'cfm' } );
-		cfd_category.append( { type:'option', label:'Renaming', value:'cfr' } );
-		cfd_category.append( { type:'option', label:'Convert into article', value:'cfc' } );
+		cfd_category.append( { type: 'option', label: 'Deletion', value: 'cfd', selected: true } );
+		cfd_category.append( { type: 'option', label: 'Merge', value: 'cfm' } );
+		cfd_category.append( { type: 'option', label: 'Renaming', value: 'cfr' } );
+		cfd_category.append( { type: 'option', label: 'Convert into article', value: 'cfc' } );
 
 		work_area.append( {
 				type: 'input',
@@ -349,14 +359,15 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		work_area.append( {
 				type: 'textarea',
 				name: 'xfdreason',
-				label: 'Reason: '
+				label: 'Reason: ',
+				value: oldreason
 			} );
 		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'rfd':
-		work_area = new QuickForm.element( { 
+		work_area = new QuickForm.element( {
 				type: 'field',
 				label: 'Redirects for discussion',
 				name: 'work_area'
@@ -364,14 +375,15 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		work_area.append( {
 				type: 'textarea',
 				name: 'xfdreason',
-				label: 'Reason: '
+				label: 'Reason: ',
+				value: oldreason
 			} );
 		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	default:
-		work_area = new QuickForm.element( { 
+		work_area = new QuickForm.element( {
 				type: 'field',
 				label: 'Nothing for anything',
 				name: 'work_area'
@@ -384,14 +396,13 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 
 twinklexfd.callbacks = {
 	afd: {
-		main: function ( self ) {
-			var xmlDoc = self.responseXML;
+		main: function(apiobj) {
+			var xmlDoc = apiobj.responseXML;
 			var titles = xmlDoc.evaluate( '//allpages/p/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
 
 			// There has been no earlier entries with this prefix, just go on.
 			if( titles.snapshotLength <= 0 ) {
-				self.params.numbering = self.params.number = '';
-				numbering = number = '';
+				apiobj.params.numbering = apiobj.params.number = '';
 			} else {
 				var number = 0;
 				for( var i = 0; i < titles.snapshotLength; ++i ) {
@@ -417,218 +428,236 @@ twinklexfd.callbacks = {
 					// A match, set number to the max of current
 					number = Math.max( number, Number(match[1]) );
 				}
-				self.params.number = num2order( parseInt( number ) + 1);
-				self.params.numbering = number > 0 ? ' (' + self.params.number + ' nomination)' : '';
+				apiobj.params.number = num2order( parseInt( number ) + 1);
+				apiobj.params.numbering = number > 0 ? ' (' + apiobj.params.number + ' nomination)' : '';
 			}
+			apiobj.params.discussionpage = 'Wikipedia:Articles for deletion/' + wgPageName + apiobj.params.numbering;
 
-			Status.info( 'Next discussion page","[[Wikipedia:Articles for deletion/' + wgPageName + self.params.numbering + ']]' );
-
-			// Discussion page
-			var query = {
-				'title': 'Wikipedia:Articles for deletion/' + wgPageName + self.params.numbering,
-				'action': 'submit'
-			};
+			Status.info( "Next discussion page", "[[" + apiobj.params.discussionpage + "]]" );
 
 			// Updating data for the action completed event
-			Wikipedia.actionCompleted.redirect = query['title'];
+			Wikipedia.actionCompleted.redirect = apiobj.params.discussionpage;
 			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
 
-			var wikipedia_wiki = new Wikipedia.wiki( 'Creating article deletion discussion page', query, twinklexfd.callbacks.afd.discussionPage );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.get();
-
 			// Tagging article
-			var query = {
-				'title': wgPageName,
-				'action': 'submit'
-			};
-			var wikipedia_wiki = new Wikipedia.wiki( 'Adding deletion tag to article', query, twinklexfd.callbacks.afd.article );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.get();
+			var wikipedia_page = new Wikipedia.page(wgPageName, "Adding deletion tag to article");
+			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the article is moved, we would want to follow the redirect
+			wikipedia_page.setCallbackParameters(apiobj.params);
+			wikipedia_page.load(twinklexfd.callbacks.afd.taggingArticle);
+		},
+		// Tagging needs to happen before everything else: this means we can check if there is an AfD tag already on the page
+		taggingArticle: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+			var statelem = pageobj.getStatusElement();
+
+			// Check for existing AfD tag, for the benefit of new page patrollers
+			var textNoAfd = text.replace(/{\{\s*(Article for deletion\/dated|AfDM)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/g, "");
+			if (text != textNoAfd) {
+				if (confirm("An AfD tag was found on this article. Maybe someone beat you to it.  \nClick OK to replace the current AfD tag (not recommended), or Cancel to abandon your nomination.")) {
+					text = textNoAfd;
+				} else {
+					statelem.error("Article already tagged with AfD tag, and you chose to abort");
+					window.location.reload();
+					return;
+				}
+			}
+
+			// Now we know we want to go ahead with it, trigger the other AJAX requests
+
+			// Starting discussion page
+			var wikipedia_page = new Wikipedia.page(params.discussionpage, "Creating article deletion discussion page");
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.load(twinklexfd.callbacks.afd.discussionPage);
 
 			// Today's list
 			var date = new Date();
-
-			query = {
-				'title': 'Wikipedia:Articles for deletion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate(),
-				'action': 'submit'
-			};
-
-			var wikipedia_wiki = new Wikipedia.wiki( 'Adding discussion to today\'s list', query, twinklexfd.callbacks.afd.todaysList );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.followRedirect = true;
-			wikipedia_wiki.get();
+			wikipedia_page = new Wikipedia.page('Wikipedia:Articles for deletion/Log/' + date.getUTCFullYear() + ' ' +
+				date.getUTCMonthName() + ' ' + date.getUTCDate(), "Adding discussion to today's list");
+			wikipedia_page.setFollowRedirect(true);
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.load(twinklexfd.callbacks.afd.todaysList);
 
 			// Notification to first contributor
-
-			var query = {
-				'action': 'query',
-				'prop': 'revisions',
-				'titles': wgPageName,
-				'rvlimit': 1,
-				'rvprop': 'user',
-				'rvdir': 'newer'
+			if (params.usertalk) {
+				var thispage = new Wikipedia.page(wgPageName);
+				thispage.setCallbackParameters(params);
+				thispage.getInitialContributor(twinklexfd.callbacks.afd.userNotification);
 			}
-			var callback = function( self ) {
-				var xmlDoc = self.responseXML;
-				var user = xmlDoc.evaluate( '//rev/@user', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-				var query = {
-					'title': 'User talk:' + user,
-					'action': 'submit'
-				};
-				var wikipedia_wiki = new Wikipedia.wiki( 'Notifying initial contributor (' + user + ')', query, twinklexfd.callbacks.afd.userNotification );
-				wikipedia_wiki.params = self.params;
-				wikipedia_wiki.followRedirect = true;
-				wikipedia_wiki.get();
+
+			// Remove some tags that should always be removed on AfD.
+			text = text.replace(/{\{\s*(dated prod|dated prod blp|Prod blp\/dated|Proposed deletion\/dated|prod2|Proposed deletion endorsed|New unreviewed article|Userspace draft)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
+			// Then, test if there are speedy deletion-related templates on the article.
+			var textNoSd = text.replace(/{\{\s*(db(-\w*)?|delete|(?:hang|hold)[- ]?on)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
+			if (text != textNoSd && confirm("A speedy deletion tag was found on this page. Should it be removed?")) {
+				text = textNoSd;
 			}
-			
-			if( self.params.usertalk ) {
-				var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, callback );
-				wikipedia_api.params = self.params;
-				wikipedia_api.post();
+
+			pageobj.setPageText((params.noinclude ? "<noinclude>\{\{" : "\{\{") + (params.number == '' ? "subst:afd|help=off" : ('subst:afdx|' +
+				params.number + "|help=off")) + (params.noinclude ? "}}</noinclude>\n" : "}}\n") + text);
+			pageobj.setEditSummary("Nominated for deletion; see [[" + params.discussionpage + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchPage) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
 			}
+			pageobj.setCreateOption('nocreate');
+			pageobj.save();
 		},
-		article: function( self ) {
-			var form = self.responseXML.getElementById('editform');
+		discussionPage: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
 
-			//remove some tags that should always be removed on AfD.
-			text = form.wpTextbox1.value.replace(/{\{\s*(dated prod|dated prod blp|Prod blp\/dated|Proposed deletion\/dated|prod2|Proposed deletion endorsed|New unreviewed article|Userspace draft)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
-			//then, test if there are SD related templates on the article.
-			textNoSd = text.replace(/{\{\s*(db(-\w*)?|delete|(?:hang|hold)[- ]?on)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
-			if (text!=textNoSd && confirm("Speedy Deletion templates were found on this page. Should they be removed?")) text=textNoSd;
-			form.wpTextbox1.value = text;
-
-			var postData = {
-				'wpMinoredit': undefined, // Per memo
-				'wpWatchthis': (TwinkleConfig.xfdWatchPage=="yes" || (TwinkleConfig.xfdWatchPage=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "Nominated for deletion; see [[Wikipedia:Articles for deletion/" + wgPageName + self.params.numbering + ']].'+ TwinkleConfig.summaryAd,
-				'wpTextbox1': ( self.params.noinclude ? "<noinclude>" : "" ) + "\{\{" + ( self.params.number == '' ? "subst:afd|help=off\}\}\n" : 'subst:afdx|' + self.params.number + "|help=off}}\n" ) + ( self.params.noinclude ? "</noinclude>" : "" ) + form.wpTextbox1.value
-			};
-			self.post( postData );
+			pageobj.setPageText("\{\{subst:afd2|pg=" + wgPageName + "|cat=" + params.xfdcat + "|text=" + params.reason + " \~\~\~\~\}\}\n");
+			pageobj.setEditSummary("Creating deletion discussion page for [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchDiscussion) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
+			}
+			pageobj.setCreateOption('createonly');
+			pageobj.save();
 		},
-		discussionPage: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchDiscussion=="yes" || (TwinkleConfig.xfdWatchDiscussion=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "Creating deletion discussion page for \[\[" + wgPageName + '\]\].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': "\{\{subst:afd2|pg=" + wgPageName + "|cat=" + self.params.xfdcat + "|text=" + self.params.reason + " \~\~\~\~\}\}\n"
-			};
-			self.post( postData );
-		},
-		todaysList: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var old_text = form.wpTextbox1.value;
+		todaysList: function(pageobj) {
+			var old_text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+			var statelem = pageobj.getStatusElement();
 
-			var text = old_text.replace( /(<\!-- Add new entries to the TOP of the following list -->\n+)/, "$1\{\{subst:afd3|pg=" + wgPageName + self.params.numbering + "\}\}\n");
+			var text = old_text.replace( /(<\!-- Add new entries to the TOP of the following list -->\n+)/, "$1\{\{subst:afd3|pg=" + wgPageName + params.numbering + "\}\}\n");
 			if( text == old_text ) {
-				self.statelem.error( 'failed to find target spot for the discussion' );
+				statelem.error( 'failed to find target spot for the discussion' );
 				return;
 			}
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchList=="yes" || (TwinkleConfig.xfdWatchList=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "Adding \[\[WP:Articles for deletion/" + wgPageName + self.params.numbering + '\|AfD\]\] for \[\[' + wgPageName + '\]\].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
+			pageobj.setPageText(text);
+			pageobj.setEditSummary("Adding [[" + params.discussionpage + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchList) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
+			}
+			pageobj.setCreateOption('recreate');
+			pageobj.save();
 		},
-		userNotification: function( self ) {
-			var form = self.responseXML.getElementById( 'editform' );
-			var text = form.wpTextbox1.value;
-			text += "\n\{\{subst:AFDWarning|1=" + wgPageName + ( self.params.numbering != '' ? '|order=&#32;' + self.params.numbering : '' ) + "\}\} \~\~\~\~";
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchUser=="yes" || (TwinkleConfig.xfdWatchUser=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': 'AfD nomination of \[\[' + wgPageName + '\]\].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
+		userNotification: function(pageobj, initialContrib) {
+			var params = pageobj.getCallbackParameters();
+			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var notifytext = "\n\{\{subst:AFDWarning|1=" + wgPageName + ( params.numbering != '' ? '|order=&#32;' + params.numbering : '' ) + "\}\} \~\~\~\~";
+			usertalkpage.setAppendText(notifytext);
+			usertalkpage.setEditSummary("Notification: listing at [[WP:AFD|articles for deletion]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setCreateOption('recreate');
+			switch (TwinkleConfig.xfdWatchUser) {
+				case 'yes':
+					usertalkpage.setWatchlist(true);
+					break;
+				case 'no':
+					usertalkpage.setWatchlistFromPreferences(false);
+					break;
+				default:
+					usertalkpage.setWatchlistFromPreferences(true);
+					break;
+			}
+			usertalkpage.setFollowRedirect(true);
+			usertalkpage.append();
 		}
 	},
+
+
 	tfd: {
-		taggingTemplate: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var postData = {
-				'wpMinoredit': undefined, // Per memo
-				'wpWatchthis': (TwinkleConfig.xfdWatchPage=="yes" || (TwinkleConfig.xfdWatchPage=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "Nominated for deletion; see \[\[Wikipedia:Templates for discussion#" + wgPageName + '\]\].'+ TwinkleConfig.summaryAd,
-				'wpTextbox1': "\{\{tfd"+(self.params.tfdinline?"|type=inline":"")+"|" + wgTitle + "\}\}\n" + form.wpTextbox1.value
-			};
-			self.post( postData );
+		taggingTemplate: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+
+			pageobj.setPageText("\{\{tfd" + (params.tfdinline ? "|type=inline" : "") + "|" + wgTitle + "\}\}\n" + text);
+			pageobj.setEditSummary("Nominated for deletion; see [[" + params.logpage + "#" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchPage) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
+			}
+			pageobj.setCreateOption('nocreate');
+			pageobj.save();
 		},
-		todaysList: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var old_text = form.wpTextbox1.value;
-			text = old_text.replace( '-->', "-->\n\{\{subst:tfd2|" + wgTitle + "|text=" + self.params.reason + " \~\~\~\~\}\}");
+		todaysList: function(pageobj) {
+			var old_text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+			var statelem = pageobj.getStatusElement();
+
+			var text = old_text.replace( '-->', "-->\n\{\{subst:tfd2|" + wgTitle + "|text=" + params.reason + " \~\~\~\~\}\}");
 			if( text == old_text ) {
-				self.statelem.error( 'failed to find target spot for the discussion' );
+				statelem.error( 'failed to find target spot for the discussion' );
 				return;
 			}
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchDiscussion=="yes" || (TwinkleConfig.xfdWatchDiscussion=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "Adding [[Template:" + wgTitle + ']].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
+			pageobj.setPageText(text);
+			pageobj.setEditSummary("Adding [[Template:" + wgTitle + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchDiscussion) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
+			}
+			pageobj.setCreateOption('recreate');
+			pageobj.save();
 		},
-		userNotification: function( self ) {
-			var form = self.responseXML.getElementById( 'editform' );
-			var text = form.wpTextbox1.value;
-			text += "\n\{\{subst:tfdnotice|1=" + wgTitle + "\}\} \~\~\~\~";
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchUser=="yes" || (TwinkleConfig.xfdWatchUser=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': 'TfD nomination of \[\[Template:' + wgTitle + '\]\].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
+		userNotification: function(pageobj, initialContrib) {
+			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var notifytext = "\n\{\{subst:tfdnotice|1=" + wgTitle + "\}\} \~\~\~\~";
+			usertalkpage.setAppendText(notifytext);
+			usertalkpage.setEditSummary("Notification: nomination at [[WP:TFD|templates for discussion]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setCreateOption('recreate');
+			switch (TwinkleConfig.xfdWatchUser) {
+				case 'yes':
+					usertalkpage.setWatchlist(true);
+					break;
+				case 'no':
+					usertalkpage.setWatchlistFromPreferences(false);
+					break;
+				default:
+					usertalkpage.setWatchlistFromPreferences(true);
+					break;
+			}
+			usertalkpage.setFollowRedirect(true);
+			usertalkpage.append();
 		}
 	},
+
+
 	mfd: {
-		main: function( self ) {
-			var xmlDoc = self.responseXML;
+		main: function(apiobj) {
+			var xmlDoc = apiobj.responseXML;
 			var titles = xmlDoc.evaluate( '//allpages/p/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
 
 			// There has been no earlier entries with this prefix, just go on.
 			if( titles.snapshotLength <= 0 ) {
-				self.params.numbering = self.params.number = '';
+				apiobj.params.numbering = apiobj.params.number = '';
 				numbering = number = '';
 			} else {
 				var number = 0;
@@ -655,673 +684,521 @@ twinklexfd.callbacks = {
 					// A match, set number to the max of current
 					number = Math.max( number, Number(match[1]) );
 				}
-				self.params.number = num2order( parseInt( number ) + 1);
-				self.params.numbering = number > 0 ? ' (' + self.params.number + ' nomination)' : '';
+				apiobj.params.number = num2order( parseInt( number ) + 1);
+				apiobj.params.numbering = number > 0 ? ' (' + apiobj.params.number + ' nomination)' : '';
 			}
+			apiobj.params.discussionpage = "Wikipedia:Miscellany for deletion/" + wgPageName + apiobj.params.numbering;
 
+			apiobj.statelem.info( "next in order is [[" + apiobj.params.discussionpage + ']]');
 
-			self.statelem.info( 'next in order is [[Wikipedia:Miscellany for deletion/' + wgPageName + self.params.numbering + ']]');
+			// Tagging page
+			var wikipedia_page = new Wikipedia.page(wgPageName, "Tagging page with deletion tag");
+			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
+			wikipedia_page.setCallbackParameters(apiobj.params);
+			wikipedia_page.load(twinklexfd.callbacks.mfd.taggingPage);
 
-			// Tagging article
-			var query = {
-				'title': wgPageName,
-				'action': 'submit'
-			};
-
-			var wikipedia_wiki = new Wikipedia.wiki( 'Tagging page with deletion tag', query, twinklexfd.callbacks.mfd.taggingPage );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.get();
+			// Updating data for the action completed event
+			Wikipedia.actionCompleted.redirect = apiobj.params.discussionpage;
+			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
 
 			// Discussion page
-			var query = {
-				'title': 'Wikipedia:Miscellany for deletion/' + wgPageName + self.params.numbering,
-				'action': 'submit'
-			};
-
-			// Updating data for the action completed event
-			Wikipedia.actionCompleted.redirect = query['title'];
-			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
-
-			wikipedia_wiki = new Wikipedia.wiki( 'Creating page deletion discussion page', query, twinklexfd.callbacks.mfd.discussionPage );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.get();
+			wikipedia_page = new Wikipedia.page(apiobj.params.discussionpage, "Creating deletion discussion page");
+			wikipedia_page.setCallbackParameters(apiobj.params);
+			wikipedia_page.load(twinklexfd.callbacks.mfd.discussionPage);
 
 			// Today's list
-			var query = {
-				'title': 'Wikipedia:Miscellany for deletion',
-				'action': 'submit',
-				'section': 2
-			};
+			wikipedia_page = new Wikipedia.page("Wikipedia:Miscellany for deletion", "Adding discussion to today's list");
+			//wikipedia_page.setPageSection(2);
+				// pageSection has been disabled - the API seems to throw up with nonexistent edit conflicts
+				// it can be turned on again once the problem is fixed, to save bandwidth
+			//wikipedia_page.setFollowRedirect(true);
+			wikipedia_page.setCallbackParameters(apiobj.params);
+			wikipedia_page.load(twinklexfd.callbacks.mfd.todaysList);
 
-			wikipedia_wiki = new Wikipedia.wiki( 'Adding deletion discussion to today\'s list', query, twinklexfd.callbacks.mfd.todaysList );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.followRedirect = true;
-			wikipedia_wiki.get();
-
-			// Notification to first contributor
-			var query = {
-				'action': 'query',
-				'prop': 'revisions',
-				'titles': wgPageName,
-				'rvlimit': 1,
-				'rvprop': 'user',
-				'rvdir': 'newer'
-			}
-			var callback = function( self ) {
-				var xmlDoc = self.responseXML;
-				var user = xmlDoc.evaluate( '//rev/@user', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-				var query = {
-					'title': 'User talk:' + user,
-					'action': 'submit'
-				};
-				var wikipedia_wiki = new Wikipedia.wiki( 'Notifying initial contributor (' + user + ')', query, twinklexfd.callbacks.mfd.userNotification );
-				wikipedia_wiki.params = self.params;
-				wikipedia_wiki.followRedirect = true;
-				wikipedia_wiki.get();
-			}
-			
-			if( self.params.usertalk ) {
-				var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, callback );
-				wikipedia_api.params = self.params;
-				wikipedia_api.post();
+			// Notification to first contributor, and notification to owner of userspace (if applicable and required)
+			if (apiobj.params.usertalk) {
+				var thispage = new Wikipedia.page(wgPageName);
+				thispage.setCallbackParameters(apiobj.params);
+				thispage.getInitialContributor(twinklexfd.callbacks.mfd.userNotification);
 			}
 		},
-		taggingPage: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var postData = {
-				'wpMinoredit': undefined, // Per memo
-				'wpWatchthis': (TwinkleConfig.xfdWatchPage=="yes" || (TwinkleConfig.xfdWatchPage=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "Nominated for deletion; see [[Wikipedia:Miscellany for deletion/" + wgPageName + self.params.numbering + ']].'+ TwinkleConfig.summaryAd,
-				'wpTextbox1': ( self.params.noinclude ? "<noinclude>" : "" ) + "\{\{" + ( self.params.number == '' ? "mfd\}\}\n" : 'mfdx|' + self.params.number + "}}\n" ) + ( self.params.noinclude ? "</noinclude>" : "" ) + form.wpTextbox1.value
-			};
-			self.post( postData );
-		},
-		discussionPage: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchDiscussion=="yes" || (TwinkleConfig.xfdWatchDiscussion=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "Creating deletion discussion page for \[\[" + wgPageName + '\]\].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': "\{\{subst:mfd2|pg=" + wgPageName + "|text=" + self.params.reason + " \~\~\~\~\}\}\n"
-			};
-			self.post( postData );
-		},
-		todaysList: function( self ) {
-			var form = self.responseXML.getElementById('editform');
+		taggingPage: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
 
-			var text = form.wpTextbox1.value;
+			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "\{\{" + ((params.number == '') ? "mfd\}\}\n" : ('mfdx|' + params.number + "}}\n")) +
+				(params.noinclude ? "</noinclude>" : "") + text);
+			pageobj.setEditSummary("Nominated for deletion; see [[" + params.discussionpage + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchPage) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
+			}
+			pageobj.setCreateOption('nocreate');
+			pageobj.save();
+		},
+		discussionPage: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+
+			pageobj.setPageText("\{\{subst:mfd2|pg=" + wgPageName + "|text=" + params.reason + " \~\~\~\~\}\}\n");
+			pageobj.setEditSummary("Creating deletion discussion page for [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchDiscussion) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
+			}
+			pageobj.setCreateOption('createonly');
+			pageobj.save();
+		},
+		todaysList: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+			var statelem = pageobj.getStatusElement();
+
 			var date = new Date();
-
-			var date_header = "==="+date.getUTCMonthName() + ' ' + date.getUTCDate()+', '+date.getUTCFullYear()+"===";
-			var date_header_regex = new RegExp( "(===\\s*" + date.getUTCMonthName() + '\\s+' + date.getUTCDate()+',\\s+'+date.getUTCFullYear() + "\\s*===)" );
-			var new_data = "\n\{\{subst:mfd3|pg=" + wgPageName + self.params.numbering + "\}\}";
+			var date_header = "===" + date.getUTCMonthName() + ' ' + date.getUTCDate() + ', ' + date.getUTCFullYear() + "===";
+			var date_header_regex = new RegExp( "(===\\s*" + date.getUTCMonthName() + '\\s+' + date.getUTCDate() + ',\\s+' + date.getUTCFullYear() + "\\s*===)" );
+			var new_data = "\{\{subst:mfd3|pg=" + wgPageName + params.numbering + "\}\}";
 
 			if( date_header_regex.test( text ) ) { // we have a section already
-				self.statelem.info( 'Found today\'s section, proceeding to add new entry' );
+				statelem.info( 'Found today\'s section, proceeding to add new entry' );
 				text = text.replace( date_header_regex, "$1\n" + new_data );
 			} else { // we need to create a new section
-				self.statelem.info( 'No section for today found, proceeding to create one' );
-				text = date_header + new_data + "\n\n" + text;
+				statelem.info( 'No section for today found, proceeding to create one' );
+				text = text.replace("===", date_header + new_data + "\n\n===");
 			}
 
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchList=="yes" || (TwinkleConfig.xfdWatchList=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "Adding \[\[WP:Miscellany for deletion/" + wgPageName + self.params.numbering + '\|MfD\]\] for \[\['+wgPageName+'\]\].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
+			pageobj.setPageText(text);
+			pageobj.setEditSummary("Adding [[" + params.discussionpage + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchList) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
+			}
+			pageobj.setCreateOption('recreate');
+			pageobj.save();
 		},
-		userNotification: function( self ) {
-			var form = self.responseXML.getElementById( 'editform' );
-			var text = form.wpTextbox1.value;
-			text += "\n\{\{subst:MFDWarning|1=" + wgPageName + ( self.params.numbering != '' ? '|order=&#32;' + self.params.numbering : '' ) + "\}\} \~\~\~\~";
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchUser=="yes" || (TwinkleConfig.xfdWatchUser=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': 'MfD nomination of \[\[' + wgPageName + '\]\].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
+		userNotification: function(pageobj, initialContrib) {
+			var params = pageobj.getCallbackParameters();
+
+			// Really notify the creator
+			twinklexfd.callbacks.mfd.userNotificationMain(params, initialContrib, "Notifying initial contributor");
+
+			// Also notify the user who owns the subpage if they are not the creator
+			if (params.notifyuserspace) {
+				var userspaceOwner = ((wgTitle.indexOf('/') == -1) ? wgTitle : wgTitle.substring(0, wgTitle.indexOf('/')));
+				if (userspaceOwner != initialContrib) {
+					twinklexfd.callbacks.mfd.userNotificationMain(params, userspaceOwner, "Notifying owner of userspace");
+				}
+			}
+		},
+		userNotificationMain: function(params, initialContrib, actionName)
+		{
+			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, actionName + " (" + initialContrib + ")");
+			var notifytext = "\n\{\{subst:MFDWarning|1=" + wgPageName + ( params.numbering != '' ? '|order=&#32;' + params.numbering : '' ) + "\}\} \~\~\~\~";
+			usertalkpage.setAppendText(notifytext);
+			usertalkpage.setEditSummary("Notification: listing at [[WP:MFD|miscellany for deletion]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setCreateOption('recreate');
+			switch (TwinkleConfig.xfdWatchUser) {
+				case 'yes':
+					usertalkpage.setWatchlist(true);
+					break;
+				case 'no':
+					usertalkpage.setWatchlistFromPreferences(false);
+					break;
+				default:
+					usertalkpage.setWatchlistFromPreferences(true);
+					break;
+			}
+			usertalkpage.setFollowRedirect(true);
+			usertalkpage.append();
 		}
 	},
-	ifd: {
-		main: function( self ) {
-			var xmlDoc = self.responseXML;
-			var user = xmlDoc.evaluate( '//rev/@user', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-			self.params.uploader = user;
-			var query = {
-				'title': 'Wikipedia:Files for deletion/' + self.params.date,
-				'action': 'submit'
-			};
 
-			wikipedia_wiki = new Wikipedia.wiki( 'Adding deletion discussion to today\'s list', query, twinklexfd.callbacks.ifd.todaysList );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.followRedirect = true;
-			wikipedia_wiki.get();
 
-			// Updating data for the action completed event
-			Wikipedia.actionCompleted.redirect = query['title'];
-			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
+	ffd: {
+		main: function(pageobj, initialContrib) {
+			// this is coming in from getInitialContributor...!
+			var params = pageobj.getCallbackParameters();
+			params.uploader = initialContrib;
+
+			// Adding discussion
+			wikipedia_page = new Wikipedia.page(params.logpage, "Adding discussion to today's list");
+			wikipedia_page.setFollowRedirect(true);
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.load(twinklexfd.callbacks.ffd.todaysList);
 
 			// Notification to first contributor
-
-			if( self.params.usertalk ) {
-				var query = {
-					'title': 'User talk:' + self.params.uploader,
-					'action': 'submit'
-				};
-				wikipedia_wiki = new Wikipedia.wiki( 'Notifying initial contributor (' + self.params.uploader + ')', query, twinklexfd.callbacks.ifd.userNotification );
-				wikipedia_wiki.followRedirect = true;
-				wikipedia_wiki.get();
+			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var notifytext = "\n\{\{subst:idw|1=" + wgTitle + "\}\}";
+			usertalkpage.setAppendText(notifytext);
+			usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for deletion]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setCreateOption('recreate');
+			switch (TwinkleConfig.xfdWatchUser) {
+				case 'yes':
+					usertalkpage.setWatchlist(true);
+					break;
+				case 'no':
+					usertalkpage.setWatchlistFromPreferences(false);
+					break;
+				default:
+					usertalkpage.setWatchlistFromPreferences(true);
+					break;
 			}
+			usertalkpage.setFollowRedirect(true);
+			usertalkpage.append();
 		},
-		taggingImage: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var postData = {
-				'wpMinoredit': undefined, // Per 
-				'wpWatchthis': (TwinkleConfig.xfdWatchPage=="yes" || (TwinkleConfig.xfdWatchPage=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "This file is being considered for deletion in accordance with Wikipedia's [[Wikipedia:Deletion policy|Deletion policy]]; See \[\[Wikipedia:Files for deletion#" + wgPageName + '\]\].'+ TwinkleConfig.summaryAd,
-				'wpTextbox1': "\{\{ifd|log=" + self.params.date + "\}\}\n" + form.wpTextbox1.value
-			};
-			self.post( postData );
-		},
-		todaysList: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchDiscussion=="yes" || (TwinkleConfig.xfdWatchDiscussion=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "Adding discussion for \[\[:" + wgPageName + '\]\].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': form.wpTextbox1.value + "\n\{\{subst:ifd2|1=" + wgTitle + "|Uploader=" + self.params.uploader + "|Reason=" + self.params.reason + "\}\} \~\~\~\~"
-			};
-			self.post( postData );
-		},
-		userNotification: function( self ) {
-			var form = self.responseXML.getElementById( 'editform' );
-			var text = form.wpTextbox1.value;
-			text += "\n\{\{subst:idw|1=" + wgTitle + "\}\}";
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchUser=="yes" || (TwinkleConfig.xfdWatchUser=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': 'Notification: FfD nomination of \[\[' + wgPageName + '\]\].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
-		},
-		tagInstancesMain: function( self ) {
-			var xmlDoc = self.responseXML;
-			var nsResolver = xmlDoc.createNSResolver( xmlDoc.ownerDocument == null ? xmlDoc.documentElement : xmlDoc.ownerDocument.documentElement);
-			var snapshot = xmlDoc.evaluate('//imageusage/iu/@title', xmlDoc, nsResolver, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
+		taggingImage: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
 
-			if( snapshot.snapshotLength == 0 ) {
-				return;
+			pageobj.setPageText("\{\{ffd|log=" + params.date + "\}\}\n" + text);
+			pageobj.setEditSummary("Nominated for deletion at [[" + params.logpage + "#" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchPage) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
 			}
-
-			var statusIndicator = new Status('Tagging file instances ', '0%');
-			var total = snapshot.snapshotLength * 2;
-
-			var date = new Date();
-			var dateString = date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
-
-			imageTaggingCounter = 0;
-			var onsuccess = function( self ) {
-				var obj = self.params.obj;
-				var total = self.params.total;
-				var now = parseInt( 100 * ++imageTaggingCounter/total ) + '%';
-				obj.update( now );
-				self.statelem.unlink();
-				if( imageTaggingCounter == total ) {
-					obj.info( now + ' (completed)' );
-					Wikipedia.removeCheckpoint();
-				}
-			}
-
-			var onloaded = onsuccess;
-
-			var onloading = function( self ) {}
-
-
-			Wikipedia.addCheckpoint();
-			for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
-				var title = snapshot.snapshotItem(i).value;
-				var query = {
-					'title': title,
-					'action': 'submit'
-				}
-				var wikipedia_wiki = new Wikipedia.wiki( "Tagging of " + title, query, twinklexfd.callbacks.ifd.tagInstances );
-				wikipedia_wiki.params = { title:title, total:total, obj:statusIndicator, date:dateString };
-				wikipedia_wiki.onloading = onloading;
-				wikipedia_wiki.onloaded = onloaded;
-				wikipedia_wiki.onsuccess = onsuccess;
-				wikipedia_wiki.get();
-			}
+			pageobj.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
+			pageobj.save();
 		},
-		tagInstances: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var text = form.wpTextbox1.value;
-			var old_text = text;
-			var wikiPage = new Mediawiki.Page( text );
+		todaysList: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
 
-			var tag = "\{\{ifdc|1=" + wgTitle + "|log=" + self.params.date + "\}\}";
-			wikiPage.addToImageComment( wgTitle, tag );
-
-			text = wikiPage.getText();
-			if( text == old_text ) {
-				// Nothing to do, return
-				self.onsuccess( self );
-				Wikipedia.actionCompleted();
-				return;
+			pageobj.setPageText(text + "\n\{\{subst:ffd2|1=" + wgTitle + "|Uploader=" + params.uploader + "|Reason=" + params.reason + "\}\} \~\~\~\~");
+			pageobj.setEditSummary("Adding [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchDiscussion) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
 			}
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchUsages=="yes" || (TwinkleConfig.xfdWatchUsages=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': 'Tagging [[:File:' + wgTitle + "]] which is up for deletion at [[WP:FFD|Files for deletion]]" + TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
+			pageobj.setCreateOption('recreate');
+			pageobj.save();
 		}
 	},
+
+
 	puf: {
-		taggingImage: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var postData = {
-				'wpMinoredit': undefined, // Per 
-				'wpWatchthis': (TwinkleConfig.xfdWatchPage=="yes" || (TwinkleConfig.xfdWatchPage=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "This file has been listed on [[Wikipedia:Possibly unfree files]] because the information on its source or copyright status is disputed; See \[\[Wikipedia:Possibly unfree files#" + wgPageName + '\]\].'+ TwinkleConfig.summaryAd,
-				'wpTextbox1': "\{\{puf|log=" + self.params.date + "\}\}\n" + form.wpTextbox1.value
-			};
-			self.post( postData );
-		},
-		todaysList: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchDiscussion=="yes" || (TwinkleConfig.xfdWatchDiscussion=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "Adding discussion for \[\[:" + wgPageName + '\]\].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': form.wpTextbox1.value + "\n\{\{subst:puf2|image=" + wgTitle + "|reason=" + self.params.reason + "\}\} \~\~\~\~"
-			};
-			self.post( postData );
-		},
-		userNotification: function( self ) {
-			var form = self.responseXML.getElementById( 'editform' );
-			var text = form.wpTextbox1.value;
-			text += "\n\{\{subst:idw-puf|1=" + wgTitle + "\}\} --\~\~\~\~";
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchUser=="yes" || (TwinkleConfig.xfdWatchUser=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': 'Notification: PUF posting of \[\[' + wgPageName + '\]\].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
-		},
-		tagInstancesMain: function( self ) {
-			var xmlDoc = self.responseXML;
-			var nsResolver = xmlDoc.createNSResolver( xmlDoc.ownerDocument == null ? xmlDoc.documentElement : xmlDoc.ownerDocument.documentElement);
-			var snapshot = xmlDoc.evaluate('//imageusage/iu/@title', xmlDoc, nsResolver, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
+		taggingImage: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
 
-			if( snapshot.snapshotLength == 0 ) {
-				return;
+			pageobj.setPageText("\{\{puf|help=off|log=" + params.date + "\}\}\n" + text);
+			pageobj.setEditSummary("Listed at [[WP:PUF|possibly unfree files]]: [[" + params.logpage + "#" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchPage) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
 			}
-			var statusIndicator = new Status('Tagging file instances', '0%');
-			var total = snapshot.snapshotLength * 2;
-
-			var date = new Date();
-			var dateString = date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
-
-			imageTaggingCounter = 0;
-			var onsuccess = function( self ) {
-				var obj = self.params.obj;
-				var total = self.params.total;
-				var now = parseInt( 100 * ++imageTaggingCounter/total ) + '%';
-				obj.update( now );
-				self.statelem.unlink();
-				if( imageTaggingCounter == total ) {
-					obj.info( now + ' (completed)' );
-					Wikipedia.removeCheckpoint();
-				}
-			}
-			var onloaded = onsuccess;
-
-			var onloading = function( wikipedia_wiki ) {}
-
-
-			Wikipedia.addCheckpoint();
-			for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
-				var title = snapshot.snapshotItem(i).value;
-				var query = {
-					'title': title,
-					'action': 'submit'
-				}
-				var wikipedia_wiki = new Wikipedia.wiki( "Tagging " + title, query, twinklexfd.callbacks.puf.tagInstances );
-				wikipedia_wiki.params = { title:title, total:total, obj:statusIndicator, date:dateString };
-				wikipedia_wiki.onloading = onloading;
-				wikipedia_wiki.onloaded = onloaded;
-				wikipedia_wiki.onsuccess = onsuccess;
-				wikipedia_wiki.get();
-			}
+			pageobj.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
+			pageobj.save();
 		},
-		tagInstances: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var text = form.wpTextbox1.value;
-			var old_text = text;
-			var wikiPage = new Mediawiki.Page( text );
+		todaysList: function(pageobj) {
+			var old_text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
 
-			var tag = "\{\{pufc|1=" + wgTitle + "|log=" + self.params.date + "\}\}";
-			wikiPage.addToImageComment( wgTitle, tag );
-
-			text = wikiPage.getText();
-			if( text == old_text ) {
-				// Nothing to do, return
-				self.onsuccess( self );
-				Wikipedia.actionCompleted();
-				return;
+			pageobj.setPageText(text + "\n\{\{subst:puf2|image=" + wgTitle + "|reason=" + params.reason + "\}\} \~\~\~\~");
+			pageobj.setEditSummary("Adding [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchDiscussion) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
 			}
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchUsages=="yes" || (TwinkleConfig.xfdWatchUsages=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': 'Tagging [[:File:' + wgTitle + "]] which has been listed on [[WP:PUF|Possible unfree files]]" + TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
+			pageobj.setCreateOption('recreate');
+			pageobj.save();
+		},
+		userNotification: function(pageobj, initialContrib) {
+			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var notifytext = "\n\{\{subst:idw-puf|1=" + wgTitle + "\}\}";
+			usertalkpage.setAppendText(notifytext);
+			usertalkpage.setEditSummary("Notification: listing at [[WP:PUF|possibly unfree files]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setCreateOption('recreate');
+			switch (TwinkleConfig.xfdWatchUser) {
+				case 'yes':
+					usertalkpage.setWatchlist(true);
+					break;
+				case 'no':
+					usertalkpage.setWatchlistFromPreferences(false);
+					break;
+				default:
+					usertalkpage.setWatchlistFromPreferences(true);
+					break;
+			}
+			usertalkpage.setFollowRedirect(true);
+			usertalkpage.append();
 		}
-
 	},
+
+
 	cfd: {
-		taggingCategory: function( self ) {
-			var form = self.responseXML.getElementById('editform');
+		taggingCategory: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+
 			var added_data = "";
-			var summary = "";
-			switch( self.params.xfdcat ) {
+			var editsummary = "";
+			switch( params.xfdcat ) {
 			case 'cfd':
 				added_data = "\{\{subst:cfd\}\}";
-				summary = "This category is being considered for deletion in accordance with [[WP:CDP|CDP]];" + TwinkleConfig.summaryAd;
+				editsummary = "Category being considered for deletion in accordance with [[WP:CDP|CDP]].";
 				break;
 			case 'cfm':
-				added_data = "\{\{subst:cfm|" + self.params.target.replace('Category:','') + "\}\}";
-				summary = "This category is being considered for merging in accordance with [[WP:CDP|CDP]];" + TwinkleConfig.summaryAd;
+				added_data = "\{\{subst:cfm|" + params.target.replace('Category:','') + "\}\}";
+				editsummary = "Category being considered for merging in accordance with [[WP:CDP|CDP]].";
 				break;
 			case 'cfr':
-				added_data = "\{\{subst:cfr|" + self.params.target.replace('Category:','') + "\}\}";
-				summary = "This category is being considered for renaming in accordance with [[WP:CDP|CDP]];" + TwinkleConfig.summaryAd;
+				added_data = "\{\{subst:cfr|" + params.target.replace('Category:','') + "\}\}";
+				editsummary = "Category being considered for renaming in accordance with [[WP:CDP|CDP]].";
 				break;
 			case 'cfc':
-				added_data = "\{\{subst:cfc|" + self.params.target + "\}\}";
-				summary = "This category is being considered for conversion in accordance with [[WP:CDP|CDP]];" + TwinkleConfig.summaryAd;
+				added_data = "\{\{subst:cfc|" + params.target + "\}\}";
+				editsummary = "Category being considered for conversion to an article in accordance with [[WP:CDP|CDP]].";
 				break;
 			}
-			var postData = {
-				'wpMinoredit': undefined, // Per the cabal
-				'wpWatchthis': (TwinkleConfig.xfdWatchPage=="yes" || (TwinkleConfig.xfdWatchPage=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': summary,
-				'wpTextbox1': added_data + "\n" + form.wpTextbox1.value
-			};
-			self.post( postData );
-		},
-		todaysList: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var added_data = "";
-			var summary = "";
-			switch( self.params.xfdcat ) {
-			case 'cfd':
-				added_data = "\{\{subst:cfd2|1=" + wgTitle + "|text=" + self.params.reason + " \~\~\~\~\}\}";
-				summary = "Added delete nomination of [[:" + wgPageName + "]];" + TwinkleConfig.summaryAd;
-				break;
-			case 'cfm':
-				added_data = "\{\{subst:cfm2|1=" + wgTitle + "|2=" + self.params.target + "|text=" + self.params.reason + " \~\~\~\~\}\}";
-				summary = "Added merge nomination of [[:" + wgPageName + "]];" + TwinkleConfig.summaryAd;
-				break;
-			case 'cfr':
-				added_data = "\{\{subst:cfr2|1=" + wgTitle + "|2=" + self.params.target + "|text=" + self.params.reason + " \~\~\~\~\}\}";
-				summary = "Added rename nomination of [[:" + wgPageName + "]];" + TwinkleConfig.summaryAd;
-				break;
-			case 'cfc':
-				added_data = "\{\{subst:cfc2|1=" + wgTitle + "|2=" + self.params.target + "|text=" + self.params.reason + " \~\~\~\~\}\}";
-				summary = "Added convert nomination of [[:" + wgPageName + "]];" + TwinkleConfig.summaryAd;
-				break;
-			}
-			var old_text = form.wpTextbox1.value;
 
-			text = old_text.replace( '-->', "-->\n" + added_data );
+			pageobj.setPageText(added_data + "\n" + text);
+			pageobj.setEditSummary(editsummary + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchPage) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
+			}
+			pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
+			pageobj.save();
+		},
+		todaysList: function(pageobj) {
+			var old_text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+			var statelem = pageobj.getStatusElement();
+
+			var added_data = "";
+			var editsummary = "";
+			switch( params.xfdcat ) {
+			case 'cfd':
+				added_data = "\{\{subst:cfd2|1=" + wgTitle + "|text=" + params.reason + " \~\~\~\~\}\}";
+				editsummary = "Added delete nomination of [[:" + wgPageName + "]].";
+				break;
+			case 'cfm':
+				added_data = "\{\{subst:cfm2|1=" + wgTitle + "|2=" + params.target + "|text=" + params.reason + " \~\~\~\~\}\}";
+				editsummary = "Added merge nomination of [[:" + wgPageName + "]].";
+				break;
+			case 'cfr':
+				added_data = "\{\{subst:cfr2|1=" + wgTitle + "|2=" + params.target + "|text=" + params.reason + " \~\~\~\~\}\}";
+				editsummary = "Added rename nomination of [[:" + wgPageName + "]].";
+				break;
+			case 'cfc':
+				added_data = "\{\{subst:cfc2|1=" + wgTitle + "|2=" + params.target + "|text=" + params.reason + " \~\~\~\~\}\}";
+				editsummary = "Added convert nomination of [[:" + wgPageName + "]].";
+				break;
+			}
+
+			text = old_text.replace( 'below this line -->', "below this line -->\n" + added_data );
 			if( text == old_text ) {
-				self.statelem.error( 'failed to find target spot for the discussion' );
+				statelem.error( 'failed to find target spot for the discussion' );
 				return;
 			}
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchDiscussion=="yes" || (TwinkleConfig.xfdWatchDiscussion=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': summary,
-				'wpTextbox1': text
-			};
-			self.post( postData );
-		},
-		userNotification: function( self ) {
-			var form = self.responseXML.getElementById( 'editform' );
-			var text = form.wpTextbox1.value;
-			var intext = "";
-			switch( self.params.xfdcat ) {
-			case 'cfd':
-				intext = 'for deletion';
-				break;
-			case 'cfm':
-				intext = 'for merging into \{\{lc|' + self.params.target + "\}\}" ;
-				break;
-			case 'cfr':
-				intext = 'for renaming to \{\{lc|' + self.params.target + "\}\}" ;
-				break;
-			case 'cfc':
-				intext = 'for converting into an article named \{\{lc|' + self.params.target + "\}\}" ;
-				break;
+
+			pageobj.setPageText(text);
+			pageobj.setEditSummary(editsummary + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchDiscussion) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
 			}
-			text += "\n\{\{subst:CFDNote|1=" + wgPageName + "\}\} \~\~\~\~";
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchUser=="yes" || (TwinkleConfig.xfdWatchUser=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': 'Notification: CfD nomination of \[\[:' + wgPageName + '\]\].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
+			pageobj.setCreateOption('recreate');
+			pageobj.save();
+		},
+		userNotification: function(pageobj, initialContrib) {
+			var params = pageobj.getCallbackParameters();
+			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var notifytext = "\n\{\{subst:CFDNote|1=" + wgPageName + "\}\} \~\~\~\~";
+			usertalkpage.setAppendText(notifytext);
+			usertalkpage.setEditSummary("Notification: listing at [[WP:CFD|categories for discussion]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setCreateOption('recreate');
+			switch (TwinkleConfig.xfdWatchUser) {
+				case 'yes':
+					usertalkpage.setWatchlist(true);
+					break;
+				case 'no':
+					usertalkpage.setWatchlistFromPreferences(false);
+					break;
+				default:
+					usertalkpage.setWatchlistFromPreferences(true);
+					break;
+			}
+			usertalkpage.setFollowRedirect(true);
+			usertalkpage.append();
 		}
 	},
+
+
 	rfd: {
-		main: function( self ) {
-			var xmlDoc = self.responseXML;
+		// This is a callback from an API request, which gets the target of the redirect
+		main: function(apiobj) {
+			var xmlDoc = apiobj.responseXML;
 			var target = xmlDoc.evaluate( '//redirects/r/@to', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
 			if( !target ) {
-				self.statelem.error( 'no target of this redirect, aborting' );
+				apiobj.statelem.error( "This page is currently not a redirect, aborting" );
 				return;
 			}
-			self.params.target = target;
-
-			// Tagging redirect
-			var query = {
-				'title': wgPageName,
-				'action': 'submit'
-			};
-
-			wikipedia_wiki = new Wikipedia.wiki( 'Tagging redirect with rfd tag', query, twinklexfd.callbacks.rfd.taggingRedirect );
-			wikipedia_wiki.followRedirect = false;
-			wikipedia_wiki.get();
+			apiobj.params.target = target;
 
 			var date = new Date();
-			var today = date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
-			var query = {
-				'title': 'Wikipedia:Redirects for discussion/Log/' + today,
-				'action': 'submit'
-			};
+			apiobj.params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 
-			wikipedia_wiki = new Wikipedia.wiki( 'Adding deletion discussion to today\'s list', query, twinklexfd.callbacks.rfd.todaysList );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.followRedirect = true;
-			wikipedia_wiki.get();
+			// Tagging redirect
+			var wikipedia_page = new Wikipedia.page(wgPageName, "Adding deletion tag to redirect");
+			wikipedia_page.setFollowRedirect(false);
+			wikipedia_page.setCallbackParameters(apiobj.params);
+			wikipedia_page.load(twinklexfd.callbacks.rfd.taggingRedirect);
 
 			// Updating data for the action completed event
-			Wikipedia.actionCompleted.redirect = query['title'];
-			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
+			Wikipedia.actionCompleted.redirect = apiobj.params.logpage;
+			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
 
-			self.params.todaysPage = query['title'];
+			// Adding discussion
+			wikipedia_page = new Wikipedia.page(apiobj.params.logpage, "Adding discussion to today's log");
+			wikipedia_page.setFollowRedirect(true);
+			wikipedia_page.setCallbackParameters(apiobj.params);
+			wikipedia_page.load(twinklexfd.callbacks.rfd.todaysList);
 
 			// Notifying initial contributor
-			var query = {
-				'action': 'query',
-				'prop': 'revisions',
-				'titles': wgPageName,
-				'rvlimit': 1,
-				'rvprop': 'user',
-				'rvdir': 'newer'
-			}
-			var callback = function( self ) {
-				var xmlDoc = self.responseXML;
-				var user = xmlDoc.evaluate( '//rev/@user', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-				var query = {
-					'title': 'User talk:' + user,
-					'action': 'submit'
-				};
-				var wikipedia_wiki = new Wikipedia.wiki( 'Notifying initial contributor (' + user + ')', query, twinklexfd.callbacks.rfd.userNotification );
-				wikipedia_wiki.params = self.params;
-				wikipedia_wiki.followRedirect = true;
-				wikipedia_wiki.get();
-			}
-			
-			if( self.params.usertalk ) {
-				var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, callback );
-				wikipedia_api.params = self.params;
-				wikipedia_api.post();
+			if (apiobj.params.usertalk) {
+				var thispage = new Wikipedia.page(wgPageName);
+				thispage.setCallbackParameters(apiobj.params);
+				thispage.getInitialContributor(twinklexfd.callbacks.rfd.userNotification);
 			}
 		},
-		taggingRedirect: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var postData = {
-				'wpMinoredit': undefined, // Per 
-				'wpWatchthis': (TwinkleConfig.xfdWatchPage=="yes" || (TwinkleConfig.xfdWatchPage=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "This redirect has been listed on \[\[Wikipedia:Redirects for discussion\]\]." + TwinkleConfig.summaryAd,
-				'wpTextbox1': "\{\{rfd\}\}\n" + form.wpTextbox1.value
-			};
-			self.post( postData );
+		taggingRedirect: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+
+			pageobj.setPageText("\{\{rfd\}\}\n" + text);
+			pageobj.setEditSummary("Listed for discussion at [[" + params.logpage + "#" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchPage) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
+			}
+			pageobj.setCreateOption('nocreate');
+			pageobj.save();
 		},
-		todaysList: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var old_text = form.wpTextbox1.value;
-			var text = old_text.replace( /(<\!-- Add new entries directly below this line -->\n+)/, "$1\{\{subst:rfd2|redirect="+ wgPageName + "|target=" + self.params.target + "|text=" + self.params.reason.toUpperCaseFirstChar() +"\}\} \~\~\~\~\n" );
+		todaysList: function(pageobj) {
+			var old_text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+			var statelem = pageobj.getStatusElement();
+
+			var text = old_text.replace( /(<\!-- Add new entries directly below this line -->)/, "$1\n\{\{subst:rfd2|redirect="+ wgPageName + "|target=" +
+				params.target + "|text=" + params.reason.toUpperCaseFirstChar() +"\}\} \~\~\~\~\n" );
 			if( text == old_text ) {
-				self.statelem.error( 'failed to find target spot for the discussion' );
+				statelem.error( 'failed to find target spot for the discussion' );
 				return;
 			}
- 
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchDiscussion=="yes" || (TwinkleConfig.xfdWatchDiscussion=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "Adding [[" + wgPageName + ']].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
+
+			pageobj.setPageText(text);
+			pageobj.setEditSummary("Adding [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			switch (TwinkleConfig.xfdWatchDiscussion) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
+			}
+			pageobj.setCreateOption('recreate');
+			pageobj.save();
 		},
-		userNotification: function( self ) {
-			var form = self.responseXML.getElementById( 'editform' );
-			var text = form.wpTextbox1.value;
-			text += "\n\{\{subst:RFDNote|1=" + wgPageName + "\}\} \~\~\~\~";
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': (TwinkleConfig.xfdWatchUser=="yes" || (TwinkleConfig.xfdWatchUser=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': 'Notification: RFD posting of \[\[' + wgPageName + '\]\].' + TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
+		userNotification: function(pageobj, initialContrib) {
+			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var notifytext = "\n\{\{subst:RFDNote|1=" + wgPageName + "\}\} \~\~\~\~";
+			usertalkpage.setAppendText(notifytext);
+			usertalkpage.setEditSummary("Notification: listing at [[WP:RFD|redirects for discussion]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setCreateOption('recreate');
+			switch (TwinkleConfig.xfdWatchUser) {
+				case 'yes':
+					usertalkpage.setWatchlist(true);
+					break;
+				case 'no':
+					usertalkpage.setWatchlistFromPreferences(false);
+					break;
+				default:
+					usertalkpage.setWatchlistFromPreferences(true);
+					break;
+			}
+			usertalkpage.setFollowRedirect(true);
+			usertalkpage.append();
 		}
 	}
 }
 
-twinklexfd.callback.evaluate = function(e) {
 
+
+twinklexfd.callback.evaluate = function(e) {
 	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
 
 	var type =  e.target.category.value;
@@ -1330,7 +1207,7 @@ twinklexfd.callback.evaluate = function(e) {
 	if( type in {'afd':'','cfd':''} ) {
 		var xfdcat = e.target.xfdcat.value;
 	}
-	if( type == 'ifd' ) {
+	if( type == 'ffd' ) {
 		var puf = e.target.puf.checked;
 	}
 	if( type in {'afd':'','mfd':''} ) {
@@ -1338,6 +1215,9 @@ twinklexfd.callback.evaluate = function(e) {
 	}
 	if( type == 'tfd' ) {
 		var tfdinline = e.target.tfdinline.checked;
+	}
+	if( type == 'mfd' ) {
+		var notifyuserspace = e.target.notifyuserspace.checked;
 	}
 
 	Status.init( e.target );
@@ -1348,6 +1228,7 @@ twinklexfd.callback.evaluate = function(e) {
 	}
 
 	switch( type ) {
+
 	case 'afd': // AFD
 		var query = {
 			'action': 'query',
@@ -1361,65 +1242,39 @@ twinklexfd.callback.evaluate = function(e) {
 		wikipedia_api.params = { usertalk:usertalk, reason:reason, noinclude:noinclude, xfdcat:xfdcat };
 		wikipedia_api.post();
 		break;
+
 	case 'tfd': // TFD
 		Wikipedia.addCheckpoint();
-		// Tagging article
-		var query = {
-			'title': wgPageName,
-			'action': 'submit'
-		};
-		wikipedia_wiki = new Wikipedia.wiki( 'Tagging template with deletion tag', query, twinklexfd.callbacks.tfd.taggingTemplate );
-		wikipedia_wiki.params = { tfdinline:tfdinline };
-		wikipedia_wiki.get();
 
-		// Adding discussion
 		var date = new Date();
+		var logpage = 'Wikipedia:Templates for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 
-		query = {
-			'title': 'Wikipedia:Templates for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate(),
-			'action': 'submit',
-			'section': 1
-		};
+		// Tagging template
+		var wikipedia_page = new Wikipedia.page(wgPageName, "Tagging template with deletion tag");
+		wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
+		wikipedia_page.setCallbackParameters({ tfdinline: tfdinline, logpage: logpage });
+		wikipedia_page.load(twinklexfd.callbacks.tfd.taggingTemplate);
 
 		// Updating data for the action completed event
-		Wikipedia.actionCompleted.redirect = query['title'];
-		Wikipedia.actionCompleted.notice = "Nomination completed, redirecting now to the list of today";
+		Wikipedia.actionCompleted.redirect = logpage;
+		Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
 
-		wikipedia_wiki = new Wikipedia.wiki( 'Adding discussion to today\'s list', query, twinklexfd.callbacks.tfd.todaysList );
-		wikipedia_wiki.params = { reason:reason };
-		wikipedia_wiki.followRedirect = true;
-		wikipedia_wiki.get();
+		// Adding discussion
+		wikipedia_page = new Wikipedia.page(logpage, "Adding discussion to today's log");
+		wikipedia_page.setFollowRedirect(true);
+		wikipedia_page.setCallbackParameters({ reason: reason });
+		wikipedia_page.load(twinklexfd.callbacks.tfd.todaysList);
 
-		var query = {
-			'action': 'query',
-			'prop': 'revisions',
-			'titles': wgPageName,
-			'rvlimit': 1,
-			'rvprop': 'user',
-			'rvdir': 'newer'
-		}
-		var callback = function( self ) {
-			var xmlDoc = self.responseXML;
-			var user = xmlDoc.evaluate( '//rev/@user', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-			var query = {
-				'title': 'User talk:' + user,
-				'action': 'submit'
-			};
-			var wikipedia_wiki = new Wikipedia.wiki( 'Notifying initial contributor (' + user + ')', query, twinklexfd.callbacks.tfd.userNotification );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.followRedirect = true;
-			wikipedia_wiki.get();
-		}
-		if( usertalk ) {
-			var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, callback );
-			wikipedia_api.params = self.params;
-			wikipedia_api.post();
+		// Notification to first contributor
+		if (usertalk) {
+			var thispage = new Wikipedia.page(wgPageName);
+			thispage.getInitialContributor(twinklexfd.callbacks.tfd.userNotification);
 		}
 
 		Wikipedia.removeCheckpoint();
 		break;
-	case 'mfd': // MFD
 
+	case 'mfd': // MFD
 		var query = {
 			'action': 'query',
 			'list': 'allpages',
@@ -1428,123 +1283,68 @@ twinklexfd.callback.evaluate = function(e) {
 			'apfilterredir': 'nonredirects',
 			'aplimit': userIsInGroup( 'sysop' ) ? 5000 : 500
 		};
-		var wikipedia_api = new Wikipedia.api( 'Querying allpages', query, twinklexfd.callbacks.mfd.main );
-		wikipedia_api.params = { usertalk:usertalk, reason:reason, noinclude:noinclude, xfdcat:xfdcat };
+		var wikipedia_api = new Wikipedia.api( "Looking for prior nominations of this page", query, twinklexfd.callbacks.mfd.main );
+		wikipedia_api.params = { usertalk: usertalk, notifyuserspace: notifyuserspace, reason: reason, noinclude: noinclude, xfdcat: xfdcat };
 		wikipedia_api.post();
 		break;
-	case 'ifd': // IFD
 
+	case 'ffd': // FFD
 		var date = new Date();
 		var dateString = date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
-		var params = { usertalk: usertalk, reason: reason, date: dateString };
+		var logpage = 'Wikipedia:Files for deletion/' + dateString;
+		var params = { usertalk: usertalk, reason: reason, date: dateString, logpage: logpage };
 
 		Wikipedia.addCheckpoint();
 		if( puf ) {
-			// Tagging file
-			var query = {
-				'title': wgPageName,
-				'action': 'submit'
-			};
-
-			var wikipedia_wiki = new Wikipedia.wiki( 'Tagging file with PUF tag', query, twinklexfd.callbacks.puf.taggingImage );
-			wikipedia_wiki.params = params;
-			wikipedia_wiki.get();
-			// Adding discussion
-
-			query = {
-				'title': 'Wikipedia:Possibly unfree files/' + dateString,
-				'action': 'submit'
-			};
+			params.logpage = logpage = 'Wikipedia:Possibly unfree files/' + dateString;
 
 			// Updating data for the action completed event
-			Wikipedia.actionCompleted.redirect = query['title'];
-			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to today\'s list";
+			Wikipedia.actionCompleted.redirect = logpage;
+			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to today's list";
 
-			wikipedia_wiki = new Wikipedia.wiki( 'Adding discussion to today\'s list', query, twinklexfd.callbacks.puf.todaysList );
-			wikipedia_wiki.params = params;
-			wikipedia_wiki.followRedirect = true;
-			wikipedia_wiki.get();
+			// Tagging file
+			var wikipedia_page = new Wikipedia.page(wgPageName, "Tagging file with PUF tag");
+			wikipedia_page.setFollowRedirect(true);
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.load(twinklexfd.callbacks.puf.taggingImage);
 
-			var query = {
-				'action': 'query',
-				'prop': 'revisions',
-				'titles': wgPageName,
-				'rvlimit': 1,
-				'rvprop': 'user',
-				'rvdir': 'newer'
-			}
-			var callback = function( self ) {
-				var xmlDoc = self.responseXML;
-				var user = xmlDoc.evaluate( '//rev/@user', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-				var query = {
-					'title': 'User talk:' + user,
-					'action': 'submit'
-				};
-				var wikipedia_wiki = new Wikipedia.wiki( 'Notifying initial contributor (' + user + ')', query, twinklexfd.callbacks.puf.userNotification );
-				wikipedia_wiki.params = self.params;
-				wikipedia_wiki.followRedirect = true;
-				wikipedia_wiki.get();
-			}
-			if( usertalk ) {
-				var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, callback );
-				wikipedia_api.params = params;
-				wikipedia_api.post();
+			// Adding discussion
+			wikipedia_page = new Wikipedia.page(params.logpage, "Adding discussion to today's list");
+			wikipedia_page.setFollowRedirect(true);
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.load(twinklexfd.callbacks.puf.todaysList);
+
+			// Notification to first contributor
+			if (usertalk) {
+				wikipedia_page = new Wikipedia.page(wgPageName);
+				wikipedia_page.setCallbackParameters(params);
+				wikipedia_page.getInitialContributor(twinklexfd.callbacks.puf.userNotification);
 			}
 
 			Wikipedia.removeCheckpoint();
 
-			// adding tag to captions
-			var query = {
-				'action': 'query',
-				'list': 'imageusage',
-				'iutitle': wgPageName,
-				'iulimit': userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
-			};
-
-			//Disabled, we let [[User:Sambot]] do that now. Also see [[WP:TW/BUG#333]] and [[WP:TW/BUG#285]]:
-			//var wikipedia_api = new Wikipedia.api( 'Grabbing file links', query, twinklexfd.callbacks.puf.tagInstancesMain );
-			//wikipedia_api.post();
-
 		} else {
-			// Tagging file
-			var query = {
-				'title': wgPageName,
-				'action': 'submit'
-			};
+			// Updating data for the action completed event
+			Wikipedia.actionCompleted.redirect = logpage;
+			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
 
-			var wikipedia_wiki = new Wikipedia.wiki( 'Tagging file with deletion tag', query, twinklexfd.callbacks.ifd.taggingImage );
-			wikipedia_wiki.params = params;
-			wikipedia_wiki.get();
+			// Tagging file
+			var wikipedia_page = new Wikipedia.page(wgPageName, "Adding deletion tag to file page");
+			wikipedia_page.setFollowRedirect(true);
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.load(twinklexfd.callbacks.ffd.taggingImage);
 
 			// Contributor specific edits
-			var query = {
-				'action': 'query',
-				'prop': 'revisions',
-				'titles': wgPageName,
-				'rvlimit': 1,
-				'rvprop': 'user',
-				'rvdir': 'newer'
-			}
-			var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, twinklexfd.callbacks.ifd.main );
-			wikipedia_api.params = params;
-			wikipedia_api.post();
-
-			// adding tag to captions
-			var query = {
-				'action': 'query',
-				'list': 'imageusage',
-				'iutitle': wgPageName,
-				'iulimit': userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
-			};
-
-			//Disabled, we let [[User:Sambot]] do that now. Also see [[WP:TW/BUG#333]] and [[WP:TW/BUG#285]]:
-			//var wikipedia_api = new Wikipedia.api( 'Grabbing file links', query, twinklexfd.callbacks.ifd.tagInstancesMain );
-			//wikipedia_api.post();
+			wikipedia_page = new Wikipedia.page(wgPageName);
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.getInitialContributor(twinklexfd.callbacks.ffd.main);
 		}
 		Wikipedia.removeCheckpoint();
 		break;
+
 	case 'cfd':
 		Wikipedia.addCheckpoint();
+
 		if( e.target.xfdtarget ) {
 			var target = e.target.xfdtarget.value.replace( /^\:?Category\:/, '' );
 		} else {
@@ -1552,73 +1352,47 @@ twinklexfd.callback.evaluate = function(e) {
 		}
 
 		var date = new Date();
-		var todaysPage = 'Wikipedia:Categories for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
+		var logpage = 'Wikipedia:Categories for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
+
+		var params = { reason: reason, xfdcat: xfdcat, target: target, logpage: logpage };
 
 		// Updating data for the action completed event
-		Wikipedia.actionCompleted.redirect = todaysPage;
-		Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
+		Wikipedia.actionCompleted.redirect = logpage;
+		Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
 
 		// Tagging category
+		var wikipedia_page = new Wikipedia.page(wgPageName, "Tagging category with deletion tag");
+		wikipedia_page.setCallbackParameters(params);
+		wikipedia_page.load(twinklexfd.callbacks.cfd.taggingCategory);
 
-		var query = {
-			'title': wgPageName,
-			'action': 'submit'
-		};
-		var params = { reason:reason, xfdcat:xfdcat, target:target };
-
-		var wikipedia_wiki = new Wikipedia.wiki( 'Tagging category with tag', query, twinklexfd.callbacks.cfd.taggingCategory );
-		wikipedia_wiki.params = params;
-		wikipedia_wiki.get();
-
-		// Today's list
-		var query = {
-			'title': todaysPage,
-			'action': 'submit',
-			'section': 2
-		};
-
-		var wikipedia_wiki = new Wikipedia.wiki( 'Adding discussion to today\'s list', query, twinklexfd.callbacks.cfd.todaysList );
-		wikipedia_wiki.params = params;
-		wikipedia_wiki.followRedirect = true;
-		wikipedia_wiki.get();
+		// Adding discussion to list
+		wikipedia_page = new Wikipedia.page(logpage, "Adding discussion to today's list");
+		//wikipedia_page.setPageSection(2);
+			// pageSection has been disabled - the API seems to throw up with nonexistent edit conflicts
+			// it can be turned on again once the problem is fixed, to save bandwidth
+		//wikipedia_page.setFollowRedirect(true);
+		wikipedia_page.setCallbackParameters(params);
+		wikipedia_page.load(twinklexfd.callbacks.cfd.todaysList);
 
 		// Notification to first contributor
-		var query = {
-			'action': 'query',
-			'prop': 'revisions',
-			'titles': wgPageName,
-			'rvlimit': 1,
-			'rvprop': 'user',
-			'rvdir': 'newer'
-		}
-		var callback = function( self ) {
-			var xmlDoc = self.responseXML;
-			var user = xmlDoc.evaluate( '//rev/@user', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-			var query = {
-				'title': 'User talk:' + user,
-				'action': 'submit'
-			};
-			var wikipedia_wiki = new Wikipedia.wiki( 'Notifying initial contributor (' + user + ')', query, twinklexfd.callbacks.cfd.userNotification );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.followRedirect = true;
-			wikipedia_wiki.get();
-		}
-		if( usertalk ) {
-			var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, callback );
-			wikipedia_api.params = { xfdcat:xfdcat, target:target, todaysPage:todaysPage };
-			wikipedia_api.post();
+		if (usertalk) {
+			wikipedia_page = new Wikipedia.page(wgPageName);
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.getInitialContributor(twinklexfd.callbacks.cfd.userNotification);
 		}
 
 		Wikipedia.removeCheckpoint();
 		break;
+
 	case 'rfd':
+		// Find current target of redirect
 		var query = {
 			'action': 'query',
 			'titles': wgPageName,
 			'redirects': true
 		};
-		var wikipedia_api = new Wikipedia.api( 'Querying redirect', query, twinklexfd.callbacks.rfd.main );
-		wikipedia_api.params = { usertalk:usertalk, reason:reason };
+		var wikipedia_api = new Wikipedia.api( "Finding target of redirect", query, twinklexfd.callbacks.rfd.main );
+		wikipedia_api.params = { usertalk: usertalk, reason: reason };
 		wikipedia_api.post();
 		break;
 	}
