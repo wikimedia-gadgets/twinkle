@@ -2524,8 +2524,8 @@ Mediawiki.Page.prototype = {
 	removeLink: function( link_target ) {
 		var first_char = link_target.substr( 0, 1 );
 		var link_re_string = "[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' +  RegExp.escape( link_target.substr( 1 ), true );
-		var link_simple_re = new RegExp( "\\[\\[(" + link_re_string + ")\\|?\\]\\]", 'g' );
-		var link_named_re = new RegExp( "\\[\\[" + link_re_string + "\\|(.+?)\\]\\]", 'g' );
+		var link_simple_re = new RegExp( "\\[\\[:?(" + link_re_string + ")\\|?\\]\\]", 'g' );
+		var link_named_re = new RegExp( "\\[\\[:?" + link_re_string + "\\|(.+?)\\]\\]", 'g' );
 		if( link_simple_re.test(this.text) ) {
 			this.text = this.text.replace( link_simple_re, "$1" );
 		} else {
