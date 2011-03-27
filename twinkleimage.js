@@ -228,6 +228,9 @@ twinkleimage.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	};
 	Status.init( event.target );
 
+	Wikipedia.actionCompleted.redirect = wgPageName;
+	Wikipedia.actionCompleted.notice = "Tagging complete";
+
 	// Tagging image
 	var wikipedia_page = new Wikipedia.page( wgPageName, 'Tagging file with deletion tag' );
 	wikipedia_page.setCallbackParameters( params );
