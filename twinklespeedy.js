@@ -406,9 +406,9 @@ twinklespeedy.categoryList = [
 		tooltip: '(no articles or subcategories for at least four days) whose only content has consisted of links to parent categories. This does not apply to categories being discussed on WP:CFD or WP:SFD, or disambiguation categories. If the category isn\'t relatively new, it possibly contained articles earlier, and deeper investigation is needed'
 	},
 	{
-		label: 'G8: Categories populated by deleted or retargeted templates',
+		label: 'G8: Categories populated by a deleted or retargeted template',
 		value: 'templatecat',
-		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.'
+		tooltip: 'If a template which includes pages in a category has been deleted, the associated category can be deleted. This excludes categories that are still in use.'
 	}
 ];
 
