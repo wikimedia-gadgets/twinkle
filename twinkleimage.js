@@ -5,10 +5,10 @@ if( typeof( TwinkleConfig ) == 'undefined' ) {
 
 /**
  TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default [[WP:TWINKLE|TWINKLE]]
+ If ad should be added or not to summary, default " ([[WP:TW|TW]])"
  */
 if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " using [[WP:TW|TW]]";
+	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
 }
 
 /**
@@ -30,20 +30,11 @@ if( typeof( TwinkleConfig.deliWatchPage) == 'undefined' ) {
 
 /**
  TwinkleConfig.deliWatchUser (string)
- The watchlist setting of the user if he receives a notification. Either "yes", "no", or "default". Default is "default" (Duh).
+ The watchlist setting of the user talk page if a notification is placed. Either "yes", "no", or "default". Default is "default" (Duh).
  */
 if( typeof( TwinkleConfig.deliWatchUser ) == 'undefined' ) {
 	TwinkleConfig.deliWatchUser = "default";
 }
-
-/**
- TwinkleConfig.deliWatchUsages (string)
- The watchlist setting of usages of the tagged image. Either "yes", "no", or "default". Default is "no".
- */
-if( typeof( TwinkleConfig.deliWatchUsages ) == 'undefined' ) {
-	TwinkleConfig.deliWatchUsages = "no";
-}
-
 
 function twinkleimage() {
 	if( wgNamespaceNumber == 6 && !(document.getElementById("mw-sharedupload"))) {
@@ -64,7 +55,7 @@ twinkleimage.callback = function twinkleimageCallback() {
 					label: 'Notify original uploader',
 					value: 'notify',
 					name: 'notify',
-					tooltip: 'Uncheck this if you are planning to make multiple nominations from the same user, and dont want your ass to be spanked.',
+					tooltip: "Uncheck this if you are planning to make multiple nominations from the same user, and don't want to overload their talk page with too many notifications.",
 					checked: TwinkleConfig.notifyUserOnDeli
 				}
 			]
@@ -80,46 +71,45 @@ twinkleimage.callback = function twinkleimageCallback() {
 			event: twinkleimage.callback.choice,
 			list: [
 				{
-					label: 'No source',
+					label: 'No source (CSD F4)',
 					value: 'no source',
 					checked: true,
 					tooltip: 'Image or media has no source information'
 				},
 				{
-					label: 'No license',
+					label: 'No license (CSD F4)',
 					value: 'no license',
 					tooltip: 'Image or media does not have information on its copyright status'
 				},
 				{
-					label: 'No source and no license',
+					label: 'No source and no license (CSD F4)',
 					value: 'no source no license',
 					tooltip: 'Image or media has neither information on source nor its copyright status'
 				},
 				{
-					label: 'No permission',
-					value: 'no permission',
-					tooltip: 'Image or media does not have proof that the author agreed to licence the file'
-				},
-				{
-					label: 'No fair use rationale',
-					value: 'no fair use rationale',
-					tooltip: 'Image or media is claimed to be used under Wikipedia\'s fair use policy but has no explanation as to why it is permitted under the policy'
-				},
-				{
-					label: 'Disputed fair use rationale',
-					value: 'disputed fair use rationale',
-					tooltip: 'Image or media has a fair use rationale that is disputed'
-				},
-
-				{
-					label: 'Orphaned fair use',
+					label: 'Orphaned fair use (CSD F5)',
 					value: 'orphaned fair use',
 					tooltip: 'Image or media is unlicensed for use on Wikipedia and allowed only under a claim of fair use per Wikipedia:Non-free content, but it is not used in any articles'
 				},
 				{
-					label: 'Replaceable fair use',
+					label: 'No fair use rationale (CSD F6)',
+					value: 'no fair use rationale',
+					tooltip: 'Image or media is claimed to be used under Wikipedia\'s fair use policy but has no explanation as to why it is permitted under the policy'
+				},
+				{
+					label: 'Disputed fair use rationale (CSD F7)',
+					value: 'disputed fair use rationale',
+					tooltip: 'Image or media has a fair use rationale that is disputed'
+				},
+				{
+					label: 'Replaceable fair use (CSD F7)',
 					value: 'replaceable fair use',
-					tooltip: 'Image or media may fail Wikipedia\'s first non-free content criterion in that it illustrates a subject for which a free image might reasonably be found or created that adequately provides the same information'
+					tooltip: 'Image or media may fail Wikipedia\'s first non-free content criterion ([[WP:NFCC#1]]) in that it illustrates a subject for which a free image might reasonably be found or created that adequately provides the same information'
+				},
+				{
+					label: 'No permission (CSD F11)',
+					value: 'no permission',
+					tooltip: 'Image or media does not have proof that the author agreed to licence the file'
 				}
 			]
 		} );
@@ -132,7 +122,7 @@ twinkleimage.callback = function twinkleimageCallback() {
 	Window.setContent( result );
 	Window.display();
 
-	// We must init the
+	// We must init the parameters
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
 	result.type[0].dispatchEvent( evt );
@@ -141,7 +131,7 @@ twinkleimage.callback = function twinkleimageCallback() {
 twinkleimage.callback.choice = function twinkleimageCallbackChoose(event) {
 	var value = event.target.value;
 	var root = event.target.form;
-	var work_area = new QuickForm.element( { 
+	var work_area = new QuickForm.element( {
 			type: 'div',
 			name: 'work_area'
 		} );
@@ -202,6 +192,8 @@ twinkleimage.callback.choice = function twinkleimageCallbackChoose(event) {
 }
 
 twinkleimage.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
+	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
+
 	var notify = event.target.notify.checked;
 	var types = event.target.type;
 	for( var i = 0; i < types.length; ++i ) {
@@ -235,186 +227,98 @@ twinkleimage.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		old_image: old_image
 	};
 	Status.init( event.target );
-	
-	// Tagging image
-	var query = {
-		'title': wgPageName,
-		'action': 'submit'
-	};
 
-	var wikipedia_wiki = new Wikipedia.wiki( 'Tagging file with deletion tag', query, twinkleimage.callbacks.taggingImage );
-	wikipedia_wiki.params = params;
-	wikipedia_wiki.get();
+	// Tagging image
+	var wikipedia_page = new Wikipedia.page( wgPageName, 'Tagging file with deletion tag' );
+	wikipedia_page.setCallbackParameters( params );
+	wikipedia_page.load( twinkleimage.callbacks.taggingImage );
 
 	// Notifying uploader
 	if( notify ) {
-		var query = {
-			'action': 'query',
-			'prop': 'revisions',
-			'titles': wgPageName,
-			'rvlimit': 1,
-			'rvprop': 'user',
-			'rvdir': 'newer'
-		}
-		var callback = function( self ) {
-			var xmlDoc = self.responseXML;
-			var user = xmlDoc.evaluate( '//rev/@user', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-			var query = {
-				'title': 'User talk:' + user,
-				'action': 'submit'
-			};
-			var wikipedia_wiki = new Wikipedia.wiki( 'Notifying of initial contributor (' + user + ')', query, twinkleimage.callbacks.userNotification );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.followRedirect = true;
-			wikipedia_wiki.get();
-		}
-		var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, callback );
-		wikipedia_api.params = params;
-		wikipedia_api.post();
+		wikipedia_page.getInitialContributor(twinkleimage.callbacks.userNotification);
 	} else {
 		// No auto-notifiaction, display what was going to be added.
 		var noteData = document.createElement( 'pre' );
 		noteData.appendChild( document.createTextNode( "\{\{subst:di-" + type + "-notice|1=" + wgTitle + "\}\} \~\~\~\~" ) );
-		Status.info( 'Notification', [ 'Following/Similar data should be pasted to the original uploader:', document.createElement( 'br' ),  noteData ] );
-
+		Status.info( 'Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement( 'br' ),  noteData ] );
 	}
-
-	// adding tag to captions
-	var query = {
-		'action': 'query',
-		'list': 'imageusage',
-		'iutitle': wgPageName,
-		'iulimit': userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
-	};
-
-	//Disabled, we let [[User:Sambot]] do that now. Also see [[WP:TW/BUG#333]] and [[WP:TW/BUG#285]]:
-	//var wikipedia_api = new Wikipedia.api( 'Grabbing file links', query, twinkleimage.callbacks.tagInstancesMain );
-	//wikipedia_api.params = params;
-	//wikipedia_api.post();
 }
 
 twinkleimage.callbacks = {
-	taggingImage: function( self ) {
-		var form = self.responseXML.getElementById('editform');
-		var text = "\{\{di-" + self.params.type + "|date=\{\{subst:#time:j F Y\}\}";
-		switch( self.params.type ) {
+	taggingImage: function(pageobj) {
+		var text = pageobj.getPageText();
+		var params = pageobj.getCallbackParameters();
+
+		var tag = "\{\{di-" + params.type + "|date=\{\{subst:#time:j F Y\}\}";
+		var csdcrit = "";
+		switch( params.type ) {
 			case 'no source no license':
 			case 'no source':
-				text += self.params.non_free ? "|non-free=yes" : "";
+				tag += params.non_free ? "|non-free=yes" : "";
+				csdcrit = "F4";
 				break;
 			case 'no permission':
-				text += self.params.source ? "|source=" + self.params.source : "";
+				tag += params.source ? "|source=" + params.source : "";
+				csdcrit = "F11";
 				break;
 			case 'disputed fair use rationale':
-				text += self.params.reason ? "|concern=" + self.params.reason : "";
+				tag += params.reason ? "|concern=" + params.reason : "";
+				csdcrit = "F7";
 				break;
 			case 'orphaned fair use':
-				text += self.params.replacement ? "|replacement=" + self.params.replacement : "";
+				tag += params.replacement ? "|replacement=" + params.replacement : "";
+				csdcrit = "F5";
 				break;
 			case 'replaceable fair use':
-				text += self.params.old_image ? "|old image=yes" : "";
+				tag += params.old_image ? "|old image=yes" : "";
+				csdcrit = "F7";
+				break;
+			case 'no license':
+				csdcrit = "F4";
+				break;
+			case 'no fair use rationale':
+				csdcrit = "F6";
 				break;
 			default:
 				break;
 		};
-		text += "\}\}\n";
-		var postData = {
-			'wpMinoredit': undefined, // Per 
-			'wpWatchthis': (TwinkleConfig.deliWatchPage=="yes" || (TwinkleConfig.deliWatchPage=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSection': '',
-			'wpSummary': "This file is up for deletion per \[\[WP:CSD\]\]." + TwinkleConfig.summaryAd,
-			'wpTextbox1': text + form.wpTextbox1.value
-		};
-		self.post( postData );
-	},
-	userNotification: function( self ) {
-		var form = self.responseXML.getElementById( 'editform' );
-		var text = form.wpTextbox1.value;
-		text += "\n\{\{subst:di-" + self.params.type + "-notice|1=" + wgTitle + "\}\} \~\~\~\~";
-		var postData = {
-			'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-			'wpWatchthis': (TwinkleConfig.deliWatchUser=="yes" || (TwinkleConfig.deliWatchUser=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSection': '',
-			'wpSummary': 'Notification: Deletion of \[\[' + wgPageName + '\]\].' + TwinkleConfig.summaryAd,
-			'wpTextbox1': text
-		};
-		self.post( postData );
-	},
-	tagInstancesMain: function( self ) {
-		var statusIndicator = new Status('Tagging file instances', '0%');
-		var xmlDoc = self.responseXML;
-		var nsResolver = xmlDoc.createNSResolver( xmlDoc.ownerDocument == null ? xmlDoc.documentElement : xmlDoc.ownerDocument.documentElement);
-		var snapshot = xmlDoc.evaluate('//imageusage/iu/@title', xmlDoc, nsResolver, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
+		tag += "\}\}\n";
 
-		var total = snapshot.snapshotLength * 2;
-
-		imageTaggingCounter = 0;
-		var onsuccess = function( self ) {
-			var obj = self.params.obj;
-			var total = self.params.total;
-			var now = parseInt( 100 * ++imageTaggingCounter/total ) + '%';
-			obj.update( now );
-			self.statelem.unlink();
-			if( imageTaggingCounter == total ) {
-				obj.info( now + ' (completed)' );
-				Wikipedia.removeCheckpoint();
-			}
+		pageobj.setPageText(tag + text);
+		pageobj.setEditSummary("This file is up for deletion, per [[WP:CSD#" + csdcrit + "|CSD " + csdcrit + "]] (" + params.type + ")." + TwinkleConfig.summaryAd);
+		switch (TwinkleConfig.deliWatchPage) {
+			case 'yes':
+				pageobj.setWatchlist(true);
+				break;
+			case 'no':
+				pageobj.setWatchlistFromPreferences(false);
+				break;
+			default:
+				pageobj.setWatchlistFromPreferences(true);
+				break;
 		}
-		var onloaded = onsuccess;
-
-		var onloading = function( self ) {}
-
-
-		Wikipedia.addCheckpoint();
-		for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
-			var title = snapshot.snapshotItem(i).value;
-			var query = {
-				'title': title,
-				'action': 'submit'
-			}
-			var wikipedia_wiki = new Wikipedia.wiki( "Tagging " + title, query, twinkleimage.callbacks.tagInstances );
-			wikipedia_wiki.params = { title:title, total:total, obj:statusIndicator, days: self.params.old_image ? 2 : 7 };
-			wikipedia_wiki.onloading = onloading;
-			wikipedia_wiki.onloaded = onloaded;
-			wikipedia_wiki.onsuccess = onsuccess;
-			wikipedia_wiki.get();
-		}
+		pageobj.setCreateOption('nocreate');
+		pageobj.save();
 	},
-	tagInstances: function( self ) {
-		var form = self.responseXML.getElementById('editform');
-		var text = form.wpTextbox1.value;
-		var old_text = text;
-		var wikiPage = new Mediawiki.Page( text );
-
-		var tag = "\{\{deletable image-caption|1=\{\{subst:#time:l, j F Y| + " + self.params.days + " days\}\}\}\}";
-		wikiPage.addToImageComment( wgTitle, tag );
-
-		text = wikiPage.getText();
-		if( text == old_text ) {
-			// Nothing to do, return
-			self.onsuccess( self );
-			Wikipedia.actionCompleted( self );
-			return;
+	userNotification: function(pageobj, initialContrib ) {
+		var params = pageobj.getCallbackParameters();
+		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+		var notifytext = "\n\{\{subst:di-" + params.type + "-notice|1=" + wgTitle + "\}\} \~\~\~\~";
+		usertalkpage.setAppendText(notifytext);
+		usertalkpage.setEditSummary("Notification: tagging for deletion of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+		usertalkpage.setCreateOption('recreate');
+		switch (TwinkleConfig.deliWatchUser) {
+			case 'yes':
+				usertalkpage.setWatchlist(true);
+				break;
+			case 'no':
+				usertalkpage.setWatchlistFromPreferences(false);
+				break;
+			default:
+				usertalkpage.setWatchlistFromPreferences(true);
+				break;
 		}
-		var postData = {
-			'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-			'wpWatchthis': (TwinkleConfig.deliWatchUsages=="yes"||(TwinkleConfig.deliWatchUsages=="default"&&form.wpWatchthis.checked) ? '' : undefined),
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSection': '',
-			'wpSummary': 'Tagging [[:File:' + wgTitle + "]] which is up for deletion per [[WP:CSD|CSD]] " + TwinkleConfig.summaryAd,
-			'wpTextbox1': text
-		};
-		self.post( postData );
+		usertalkpage.setFollowRedirect(true);
+		usertalkpage.append();
 	}
 }
