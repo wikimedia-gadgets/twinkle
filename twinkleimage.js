@@ -235,7 +235,7 @@ twinkleimage.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
 	// Notifying uploader
 	if( notify ) {
-		wikipedia_page.getInitialContributor(twinkleimage.callbacks.userNotification);
+		wikipedia_page.lookupCreator(twinkleimage.callbacks.userNotification);
 	} else {
 		// No auto-notifiaction, display what was going to be added.
 		var noteData = document.createElement( 'pre' );
@@ -300,8 +300,9 @@ twinkleimage.callbacks = {
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 	},
-	userNotification: function(pageobj, initialContrib ) {
+	userNotification: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
+		var initialContrib = pageobj.getCreator();
 		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n\{\{subst:di-" + params.type + "-notice|1=" + wgTitle + "\}\} \~\~\~\~";
 		usertalkpage.setAppendText(notifytext);

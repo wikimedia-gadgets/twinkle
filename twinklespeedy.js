@@ -1190,7 +1190,8 @@ twinklespeedy.callbacks = {
 			// Notification to first contributor
 			if (params.usertalk) {
 				var thispage = new Wikipedia.page(wgPageName);
-				var callback = function(pageobj, initialContrib) {
+				var callback = function(pageobj) {
+					var initialContrib = pageobj.getCreator();
 					var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 					var nowelcome = TwinkleConfig.welcomeUserOnSpeedyDeletionNotification.indexOf(params.normalized) == -1;
 					var notifytext;
@@ -1220,7 +1221,7 @@ twinklespeedy.callbacks = {
 					usertalkpage.setFollowRedirect(true);
 					usertalkpage.append();
 				};
-				thispage.getInitialContributor(callback);
+				thispage.lookupCreator(callback);
 			}
 
 			// Wrap SD template in noinclude tags if we are in template space.

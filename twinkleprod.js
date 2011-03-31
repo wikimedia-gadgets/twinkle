@@ -187,7 +187,7 @@ twinkleprod.callbacks = {
 			if( params.usertalk ) {
 				var thispage = new Wikipedia.page(wgPageName);
 				thispage.setCallbackParameters(params);
-				thispage.getInitialContributor(twinkleprod.callbacks.userNotification);
+				thispage.lookupCreator(twinkleprod.callbacks.userNotification);
 			}
 			
 			var summaryText = "Proposing article for deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
@@ -218,8 +218,9 @@ twinkleprod.callbacks = {
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 	},
-	userNotification: function(pageobj, initialContrib) {
+	userNotification: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
+		var initialContrib = pageobj.getCreator();
 		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n\{\{subst:prodwarning" + (params.blp ? "BLP" : "") + "|1=" + wgPageName + "|concern=" + params.reason + "\}\} \~\~\~\~";
 		usertalkpage.setAppendText(notifytext);

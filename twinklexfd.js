@@ -482,7 +482,7 @@ twinklexfd.callbacks = {
 			if (params.usertalk) {
 				var thispage = new Wikipedia.page(wgPageName);
 				thispage.setCallbackParameters(params);
-				thispage.getInitialContributor(twinklexfd.callbacks.afd.userNotification);
+				thispage.lookupCreator(twinklexfd.callbacks.afd.userNotification);
 			}
 
 			// Remove some tags that should always be removed on AfD.
@@ -556,8 +556,9 @@ twinklexfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
-		userNotification: function(pageobj, initialContrib) {
+		userNotification: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
+			var initialContrib = pageobj.getCreator();
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:AFDWarning|1=" + wgPageName + ( params.numbering != '' ? '|order=&#32;' + params.numbering : '' ) + "\}\} \~\~\~\~";
 			usertalkpage.setAppendText(notifytext);
@@ -627,7 +628,8 @@ twinklexfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
-		userNotification: function(pageobj, initialContrib) {
+		userNotification: function(pageobj) {
+			var initialContrib = pageobj.getCreator();
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:tfdnotice|1=" + wgTitle + "\}\} \~\~\~\~";
 			usertalkpage.setAppendText(notifytext);
@@ -719,7 +721,7 @@ twinklexfd.callbacks = {
 			if (apiobj.params.usertalk) {
 				var thispage = new Wikipedia.page(wgPageName);
 				thispage.setCallbackParameters(apiobj.params);
-				thispage.getInitialContributor(twinklexfd.callbacks.mfd.userNotification);
+				thispage.lookupCreator(twinklexfd.callbacks.mfd.userNotification);
 			}
 		},
 		taggingPage: function(pageobj) {
@@ -797,7 +799,8 @@ twinklexfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
-		userNotification: function(pageobj, initialContrib) {
+		userNotification: function(pageobj) {
+			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
 
 			// Really notify the creator
@@ -836,8 +839,8 @@ twinklexfd.callbacks = {
 
 
 	ffd: {
-		main: function(pageobj, initialContrib) {
-			// this is coming in from getInitialContributor...!
+		main: function(pageobj) {
+			// this is coming in from lookupCreator...!
 			var params = pageobj.getCallbackParameters();
 			params.uploader = initialContrib;
 
@@ -951,7 +954,8 @@ twinklexfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
-		userNotification: function(pageobj, initialContrib) {
+		userNotification: function(pageobj) {
+			var initialContrib = pageobj.getCreator();
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:idw-puf|1=" + wgTitle + "\}\}";
 			usertalkpage.setAppendText(notifytext);
@@ -1064,7 +1068,8 @@ twinklexfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
-		userNotification: function(pageobj, initialContrib) {
+		userNotification: function(pageobj) {
+			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:CFDNote|1=" + wgPageName + "\}\} \~\~\~\~";
@@ -1122,7 +1127,7 @@ twinklexfd.callbacks = {
 			if (apiobj.params.usertalk) {
 				var thispage = new Wikipedia.page(wgPageName);
 				thispage.setCallbackParameters(apiobj.params);
-				thispage.getInitialContributor(twinklexfd.callbacks.rfd.userNotification);
+				thispage.lookupCreator(twinklexfd.callbacks.rfd.userNotification);
 			}
 		},
 		taggingRedirect: function(pageobj) {
@@ -1173,7 +1178,8 @@ twinklexfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
-		userNotification: function(pageobj, initialContrib) {
+		userNotification: function(pageobj) {
+			var initialContrib = pageobj.getCreator();
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:RFDNote|1=" + wgPageName + "\}\} \~\~\~\~";
 			usertalkpage.setAppendText(notifytext);
@@ -1268,7 +1274,7 @@ twinklexfd.callback.evaluate = function(e) {
 		// Notification to first contributor
 		if (usertalk) {
 			var thispage = new Wikipedia.page(wgPageName);
-			thispage.getInitialContributor(twinklexfd.callbacks.tfd.userNotification);
+			thispage.lookupCreator(twinklexfd.callbacks.tfd.userNotification);
 		}
 
 		Wikipedia.removeCheckpoint();
@@ -1318,7 +1324,7 @@ twinklexfd.callback.evaluate = function(e) {
 			if (usertalk) {
 				wikipedia_page = new Wikipedia.page(wgPageName);
 				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.getInitialContributor(twinklexfd.callbacks.puf.userNotification);
+				wikipedia_page.lookupCreator(twinklexfd.callbacks.puf.userNotification);
 			}
 
 			Wikipedia.removeCheckpoint();
@@ -1337,7 +1343,7 @@ twinklexfd.callback.evaluate = function(e) {
 			// Contributor specific edits
 			wikipedia_page = new Wikipedia.page(wgPageName);
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.getInitialContributor(twinklexfd.callbacks.ffd.main);
+			wikipedia_page.lookupCreator(twinklexfd.callbacks.ffd.main);
 		}
 		Wikipedia.removeCheckpoint();
 		break;
@@ -1378,7 +1384,7 @@ twinklexfd.callback.evaluate = function(e) {
 		if (usertalk) {
 			wikipedia_page = new Wikipedia.page(wgPageName);
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.getInitialContributor(twinklexfd.callbacks.cfd.userNotification);
+			wikipedia_page.lookupCreator(twinklexfd.callbacks.cfd.userNotification);
 		}
 
 		Wikipedia.removeCheckpoint();
