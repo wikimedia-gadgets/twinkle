@@ -12,17 +12,27 @@
  * within this module that is automatically loaded by many scripts and any forked copy.
  */
 
-// Prevent double execution of this script when it is imported by multiple user scripts to improve performance
-if (typeof(_morebits_js_loading) == 'undefined') {
-_morebits_js_loading = true; // don't check this to see if initialization is complete, use morebits_js_loaded
+// Turned this off, because it seemed to be causing scope problems
+// Prevent double execution of this script when it is imported by multiple user scripts to improve performane
+//if (typeof(_morebits_js_loading) == 'undefined') {
+//_morebits_js_loading = true; // don't check this to see if initialization is complete, use morebits_js_loaded
 
 var twinkleConfigExists = false;
 
-if( userIsInGroup( 'sysop' ) || twUserIsWhitelisted() ) {
-	twinkleConfigExists = true;
+// Simple helper functions to see what groups a user might belong
+function userIsInGroup( group ) {
+	return ( wgUserGroups != null && wgUserGroups.indexOf( group ) != -1 ) || ( wgUserGroups == null && group == 'anon' );
 }
+function userIsAnon() {
+	return wgUserGroups == null;
+}
+
+// Determine whether a user should be allowed to use Twinkle (a good guide to whether they should be allowed to use other user scripts, too)
 function twUserIsWhitelisted() {
 	return userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'confirmed' );
+}
+if( userIsInGroup( 'sysop' ) || twUserIsWhitelisted() ) {
+	twinkleConfigExists = true;
 }
 
 if( typeof( TwinkleConfig ) == 'undefined' ) TwinkleConfig = {};
@@ -2629,17 +2639,6 @@ Mediawiki.Page.prototype = {
 	}
 }
 
-// Simple helper functions to see what groups a user might belong
-
-function userIsInGroup( group ) {
-
-	return ( wgUserGroups != null && wgUserGroups.indexOf( group ) != -1 ) || ( wgUserGroups == null && group == 'anon' );
-}
-
-function userIsAnon() {
-	return wgUserGroups == null;
-}
-
 // AOL Proxy IP Addresses (2007-02-03)
 var AOLNetworks = [
 	'64.12.96.0/19',
@@ -3269,5 +3268,4 @@ function twinkleInit() {
 // Initialize when all main page elements have been loaded, but don't wait for images
 $(document).ready(twinkleInit);
 
-} //if (typeof(_morebits_loading) == 'undefined')
-
+//} //if (typeof(_morebits_loading) == 'undefined') -- turned off, see line 15
