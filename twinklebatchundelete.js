@@ -41,7 +41,6 @@ function twinklebatchundelete() {
 		twAddPortletLink( "javascript:twinklebatchundelete.callback()", "Und-batch", "tw-batch-undel", "Undelete 'em all", "");
 	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat( twinklebatchundelete ); //schedule initializer.
 
 twinklebatchundelete.callback = function twinklebatchundeleteCallback() {
 	var Window = new SimpleWindow( 800, 400 );
@@ -154,3 +153,6 @@ twinklebatchundelete.callbacks = {
 
 	}
 };
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinklebatchundelete", twinklebatchundelete );

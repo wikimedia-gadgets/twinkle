@@ -49,7 +49,6 @@ function twinklewarn() {
 		twAddPortletLink( (twinkleConfigExists ? "javascript:twinklewarn.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "Warn", "tw-warn", "Warn/Notify user", "");
 	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat( twinklewarn); //schedule initializer
 
 twinklewarn.callback = function twinklewarnCallback() {
 	var Window = new SimpleWindow( 600, 400 );
@@ -1499,3 +1498,6 @@ twinklewarn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	wikipedia_page.setFollowRedirect( true );
 	wikipedia_page.load( twinklewarn.callbacks.main );
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinklewarn", twinklewarn );

@@ -68,7 +68,6 @@ function twinklexfd() {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'XFD', 'tw-xfd', 'Anything for deletion', '');
 	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinklexfd); //schedule initializer
 
 twinklexfd.callback = function twinklexfdCallback() {
 
@@ -1403,3 +1402,6 @@ twinklexfd.callback.evaluate = function(e) {
 		break;
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinklexfd", twinklexfd );

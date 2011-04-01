@@ -127,7 +127,6 @@ function twinklespeedy() {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'CSD', 'tw-csd', 'Request speedy deletion according to WP:CSD', '');
 	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinklespeedy); //schedule initializer
 
 // This function is run when the CSD tab/header link is clicked
 twinklespeedy.callback = function twinklespeedyCallback() {
@@ -1576,3 +1575,5 @@ twinklespeedy.callback.doMultiple = function twinklespeedyCallbackDoMultiple(e)
 	}
 }
 
+// register initialization callback
+Twinkle.init.moduleReady( "twinklespeedy", twinklespeedy );

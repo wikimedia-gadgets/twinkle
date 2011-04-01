@@ -37,7 +37,6 @@ function twinkleprod() {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'PROD', 'tw-prod', 'Propose deletion via WP:PROD', '');
 	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinkleprod); //schedule initializer
 
 twinkleprod.callback = function twinkleprodCallback() {
 	var Window = new SimpleWindow( 800, 410 );
@@ -268,3 +267,6 @@ twinkleprod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(twinkleprod.callbacks.main);
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinkleprod", twinkleprod );

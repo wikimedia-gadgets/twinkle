@@ -47,7 +47,6 @@ function twinklebatchdelete() {
 	  twAddPortletLink( "javascript:twinklebatchdelete.callback()", "D-batch", "tw-batch", "Delete pages found in this category/on this page", "");
         }
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinklebatchdelete); //schedule initializer
 
 twinklebatchdelete.unlinkCache = {};
 twinklebatchdelete.callback = function twinklesbatchdeleteCallback() {
@@ -465,3 +464,6 @@ twinklebatchdelete.callbacks = {
 		self.post( postData );
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinklebatchdelete", twinklebatchdelete );

@@ -48,7 +48,6 @@ function twinklebatchprotect() {
 		twAddPortletLink( "javascript:twinklebatchprotect.callback()", "P-batch", "tw-pbatch", "Protect pages found on this page", "");
 	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinklebatchprotect); //schedule initializer
 
 twinklebatchprotect.unlinkCache = {};
 twinklebatchprotect.callback = function twinklesbatchprotectCallback() {
@@ -317,3 +316,6 @@ twinklebatchprotect.callbacks = {
 		self.post( postData );
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinklebatchprotect", twinklebatchprotect );

@@ -600,7 +600,7 @@ twinklefluff.formatSummaryPostfix = function(stringToAdd) {
 	}
 }
 
-addOnloadHook( function() {
+function twinklefluffinit() {
 	if (window.twinkleConfigExists)
 	{
 		if( QueryString.exists( 'twinklerevert' ) ) {
@@ -609,4 +609,7 @@ addOnloadHook( function() {
 			twinklefluff.normal();
 		}
 	}
-});
+};
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinklefluff", twinklefluffinit );

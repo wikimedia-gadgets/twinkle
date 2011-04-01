@@ -72,8 +72,6 @@ function twinklearv(){
 	}
 }
 
-window.TwinkleInit = (window.TwinkleInit || []).concat( twinklearv ); //schedule initializer
-
 twinklearv.callback = function twinklearvCallback( uid ) {
 	if( uid == wgUserName ){
 		alert( 'You don\'t want to report yourself, do you?' );
@@ -659,3 +657,6 @@ twinklearv.callback.evaluate = function(e) {
 		wikipedia_wiki.get();
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinklearv", twinklearv );

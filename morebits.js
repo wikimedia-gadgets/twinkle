@@ -12,11 +12,6 @@
  * within this module that is automatically loaded by many scripts and any forked copy.
  */
 
-// Turned this off, because it seemed to be causing scope problems
-// Prevent double execution of this script when it is imported by multiple user scripts to improve performane
-//if (typeof(_morebits_js_loading) == 'undefined') {
-//_morebits_js_loading = true; // don't check this to see if initialization is complete, use morebits_js_loaded
-
 var twinkleConfigExists = false;
 
 // Simple helper functions to see what groups a user might belong
@@ -31,11 +26,13 @@ function userIsAnon() {
 function twUserIsWhitelisted() {
 	return userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'confirmed' );
 }
-if( userIsInGroup( 'sysop' ) || twUserIsWhitelisted() ) {
+if ( twUserIsWhitelisted() ) {
 	twinkleConfigExists = true;
 }
 
-if( typeof( TwinkleConfig ) == 'undefined' ) TwinkleConfig = {};
+if ( typeof( TwinkleConfig ) == 'undefined' ) {
+	TwinkleConfig = {};
+}
 switch (skin)
 {
 	case 'vector':
@@ -1862,7 +1859,7 @@ Wikipedia.page = function(pageName, currentAction) {
 
 	this.setFollowRedirect = function(followRedirect) {
 		if (ctx.pageLoaded) {
-			ctx.statusElement.error("Internal error: Cannot change redirect setting after the page has been loaded!");
+			ctx.statusElement.error("Internal error: cannot change redirect setting after the page has been loaded!");
 			return;
 		}
 		ctx.followRedirect = followRedirect;
@@ -1888,7 +1885,7 @@ Wikipedia.page = function(pageName, currentAction) {
 
 		// Need to be able to do something after the page loads
 		if (onSuccess == null) {
-			ctx.statusElement.error("Internal error: No onSuccess callback provided to load()!");
+			ctx.statusElement.error("Internal error: no onSuccess callback provided to load()!");
 			return;
 		}
 
@@ -1926,12 +1923,12 @@ Wikipedia.page = function(pageName, currentAction) {
 	this.save = function(onSuccess, onFailure) {
 		if (!ctx.pageLoaded)
 		{
-			ctx.statusElement.error("Internal error: Attempt to save a page that has not been loaded!");
+			ctx.statusElement.error("Internal error: attempt to save a page that has not been loaded!");
 			return;
 		}
 		if (!ctx.editSummary)
 		{
-			ctx.statusElement.error("Internal error: Edit summary not set before save!");
+			ctx.statusElement.error("Internal error: edit summary not set before save!");
 			return;
 		}
 		ctx.onSaveSuccess = onSuccess;
@@ -1998,7 +1995,7 @@ Wikipedia.page = function(pageName, currentAction) {
 
 	this.lookupCreator = function(onSuccess) {
 		if (onSuccess == null) {
-			ctx.statusElement.error("Internal error: No onSuccess callback provided to lookupCreator()!");
+			ctx.statusElement.error("Internal error: no onSuccess callback provided to lookupCreator()!");
 			return;
 		}
 		ctx.onLookupCreatorSuccess = onSuccess;
@@ -2673,47 +2670,6 @@ Mediawiki.Page.prototype = {
 	}
 }
 
-// AOL Proxy IP Addresses (2007-02-03)
-var AOLNetworks = [
-	'64.12.96.0/19',
-	'149.174.160.0/20',
-	'152.163.240.0/21',
-	'152.163.248.0/22',
-	'152.163.252.0/23',
-	'152.163.96.0/22',
-	'152.163.100.0/23',
-	'195.93.32.0/22',
-	'195.93.48.0/22',
-	'195.93.64.0/19',
-	'195.93.96.0/19',
-	'195.93.16.0/20',
-	'198.81.0.0/22',
-	'198.81.16.0/20',
-	'198.81.8.0/23',
-	'202.67.64.128/25',
-	'205.188.192.0/20',
-	'205.188.208.0/23',
-	'205.188.112.0/20',
-	'205.188.146.144/30',
-	'207.200.112.0/21',
-];
-
-// AOL Client IP Addresses (2007-02-03)
-var AOLClients = [
-	'172.128.0.0/10',
-	'172.192.0.0/12',
-	'172.208.0.0/14',
-	'202.67.66.0/23',
-	'172.200.0.0/15',
-	'172.202.0.0/15',
-	'172.212.0.0/14',
-	'172.216.0.0/16',
-	'202.67.68.0/22',
-	'202.67.72.0/21',
-	'202.67.80.0/20',
-	'202.67.96.0/19',
-];
-
 /**
 * ipadress is in the format 1.2.3.4 and network is in the format 1.2.3.4/5
 */
@@ -3266,40 +3222,7 @@ SimpleWindow.prototype = {
 	}
 }
 
-/*
-*  Things to note: 
-*       - The users listed in the twinkleblacklist array will *not* be able to use Twinkle, even if they have it enabled as a 
-*         gadget. *However*, since javascript files are usually cached in the client's browser cache, it can take a while for
-*         the blacklisting to come into effect - theoretically for up to 30 days, although usually with the next browser restart.
-*       - The search method used the detect the usernames in this array is case-sensitive, so make sure that you get the
-*         capitalization right!  Always capitalize the first letter of a username; this is how the software formats usernames.
-*       - The users on this blacklist will remain so until they are removed.  The only way to restore one of these users' access to
-*         Twinkle is to remove his/her name from the list. Even then, the user might need to [[WP:BYPASS]] his browser cache.
-*       - Make sure that every username is wrapped in straight quotation marks ("" or ''), that quotation marks or apostrophes 
-*         within the usernames are preceded by a backward-slash (\), and that every name EXCEPT THE LAST ONE is followed by a 
-*         comma.  Not following these directions can cause the script to fail.
-*              - Correct: http://en.wikipedia.org/w/index.php?title=User%3AAzaToth%2Fmorebits.js&diff=298609098&oldid=298609007 
-*/
+// Blacklist was removed per consensus at http://en.wikipedia.org/wiki/Wikipedia:Administrators%27_noticeboard/Archive221#New_Twinkle_blacklist_proposal
 
-var twinkleBlacklistedUsers = ["Dilip rajeev", "Jackmantas", "Flaming Grunt", "Catterick", "44 sweet", "Sarangsaras", "WebHamster", "Radiopathy", "Nezzadar", "Darrenhusted", "Notpietru", "Arthur Rubin", "Wuhwuzdat", "MikeWazowski", "Lefty101", "Bender176", "Tej smiles", "Bigvernie", "TK-CP", "NovaSkola", "Polaron", "SluggoOne", "TeleComNasSprVen", "TCNSV", "Wayne Slam", "Someone65", "S.V.Taylor", "Abhishek191288"];
-
-if(twinkleBlacklistedUsers.indexOf(wgUserName) != -1 && twinkleConfigExists) twinkleConfigExists = false;
-
-// let master load script know that this module has loaded
-morebits_js_loaded = true;
-
-// When Twinkle modules are imported, we can't be sure that this base module
-// has been loaded yet. For that reason, modules using them need
-// to initialize themselves using
-//   window.TwinkleInit = (window.TwinkleInit || []).concat( someInitializationFunction );
-// for maximal robustness. Looks weird, works well.
-function twinkleInit() {
-	var funcs = window.TwinkleInit;
-	window.TwinkleInit = { concat : function(func){ func(); return window.TwinkleInit;} }; //redefine the concat method used to enqueue initializers: From now on, they just execute immediately.
-	if (funcs) for (var i=0; i<funcs.length; i++) funcs[i]();
-}
-
-// Initialize when all main page elements have been loaded, but don't wait for images
-$(document).ready(twinkleInit);
-
-//} //if (typeof(_morebits_loading) == 'undefined') -- turned off, see line 15
+// register null initialization callback to let the loader know we're ready
+Twinkle.init.moduleReady( "morebits", function() { return; } );

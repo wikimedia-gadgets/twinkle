@@ -165,7 +165,15 @@ if (( wgAction == 'view' && skin == 'vector' )) {
 
     } // close morebitsTest object
     morebitsTest.initialize();
-	twAddPortletLink( ("javascript:morebitsTest.launchDialog($runTests)"), "Test", "tw-test", "Test morebits.js", "");
   }) // close mw.loader
+  
+  function morebits_test_init() {
+	 twAddPortletLink( ("javascript:morebitsTest.launchDialog($runTests)"), "Test", "tw-test", "Test morebits.js", "");
+  }
+
 } // close if
+
+// register initialization callback
+Twinkle.init.moduleReady( "morebits-test", morebits_test_init );
+
 //</nowiki>

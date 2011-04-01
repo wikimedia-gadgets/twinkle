@@ -34,7 +34,6 @@ function twinkleprotect() {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'RPP', 'tw-rpp', 'Request page protection', '');
 	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinkleprotect); //schedule initializer
 
 twinkleprotect.callback = function twinkleprotectCallback() {
 	var Window = new SimpleWindow( 600, 400 );
@@ -609,3 +608,6 @@ twinkleprotect.callbacks = {
 		self.post( postData );
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinkleprotect", twinkleprotect );

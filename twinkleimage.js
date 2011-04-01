@@ -42,8 +42,6 @@ function twinkleimage() {
 	}
 }
 
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinkleimage); //schedule initializer
-
 twinkleimage.callback = function twinkleimageCallback() {
 	var Window = new SimpleWindow( 600, 300 );
 	Window.setTitle( "File for pseudo-speedy deletion" );
@@ -323,3 +321,6 @@ twinkleimage.callbacks = {
 		usertalkpage.append();
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinkleimage", twinkleimage );

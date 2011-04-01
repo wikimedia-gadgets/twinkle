@@ -25,7 +25,6 @@ function twinkleimagetraverse() {
 		twAddPortletLink( "javascript:twinkleimagetraverse.callback()", "Traverse", "tw-imagetraverse", "Traverse category", "");
 	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinkleimagetraverse); //schedule initializer
 
 twinkleimagetraverse.basequery = {
 	'action': 'query',
@@ -405,3 +404,6 @@ twinkleimagetraverse.callbacks = {
 		self.post( postData );
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinkleimagetraverse", twinkleimagetraverse );

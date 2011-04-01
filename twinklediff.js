@@ -26,7 +26,6 @@ function twinklediff() {
 	};
 	twAddPortletLink( wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ), 'Current', 'tw-curdiff', 'Show difference to current revision' );
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat( twinklediff ); //schedule initializer
 
 twinklediff.evaluate = function twinklediffEvaluate(me) {
 	var ntitle = getElementsByClassName( document.getElementById('bodyContent'), 'td' , 'diff-ntitle' )[0];
@@ -74,3 +73,6 @@ twinklediff.callbacks = {
 		window.location = wgServer + wgScriptPath + '/index.php?' + QueryString.create( query );
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinklediff", twinklediff );

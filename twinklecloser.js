@@ -33,7 +33,6 @@ function twinklecloser() {
 		twinklecloser.mark( type );
 	}
 }
-addOnloadHook(twinklecloser);
 
 twinklecloser.mark = function twinklecloserMark( type ) {
 	switch( type ) {
@@ -599,3 +598,6 @@ twinklecloser.callbacks = {
 	}
 
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinklecloser", twinklecloser );
