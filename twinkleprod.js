@@ -1,40 +1,27 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default " ([[WP:TW|TW]])"
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
-}
-
-/**
- TwinkleConfig.watchProdPages (boolean)
- If, when applying prod template to page, watch it, default true
- */
-if( typeof( TwinkleConfig.watchProdPages ) == 'undefined' ) {
-	TwinkleConfig.watchProdPages = true;
-}
-
-/**
- TwinkleConfig.prodReasonDefault (string)
- The prefilled PROD reason.
- */
-if( typeof( TwinkleConfig.prodReasonDefault ) == 'undefined' ) {
-	TwinkleConfig.prodReasonDefault = "";
-}
-
 function twinkleprod() {
 	if( wgNamespaceNumber != 0 || wgCurRevisionId == false ) {
 		return;
 	}
-	if (twinkleConfigExists) {
+	if (Twinkle.authorizedUser) {
 		twAddPortletLink( "javascript:twinkleprod.callback()", "PROD", "tw-prod", "Propose deletion via WP:PROD", "");
 	} else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'PROD', 'tw-prod', 'Propose deletion via WP:PROD', '');
+	}
+	
+	/**
+	 TwinkleConfig.watchProdPages (boolean)
+	 If, when applying prod template to page, watch it, default true
+	 */
+	if( typeof( TwinkleConfig.watchProdPages ) == 'undefined' ) {
+		TwinkleConfig.watchProdPages = true;
+	}
+
+	/**
+	 TwinkleConfig.prodReasonDefault (string)
+	 The prefilled PROD reason.
+	 */
+	if( typeof( TwinkleConfig.prodReasonDefault ) == 'undefined' ) {
+		TwinkleConfig.prodReasonDefault = "";
 	}
 }
 

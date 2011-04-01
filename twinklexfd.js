@@ -1,52 +1,50 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
+function twinklexfd() {
+	if ( wgNamespaceNumber < 0 || wgCurRevisionId == false ) {
+		return;
+	}
+	if (Twinkle.authorizedUser) {
+		twAddPortletLink( "javascript:twinklexfd.callback()", "XFD", "tw-xfd", "Anything for deletion", "");
+	} else {
+		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'XFD', 'tw-xfd', 'Anything for deletion', '');
+	}
 
-/**
- TwinkleConfig.xfdWatchDiscussion (string)
- The watchlist setting of the newly created XfD page (for those processes that create discussion pages for each nomination),
- or the list page for the other processes.
- Either "yes" (add to watchlist), "no" (don't add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
- */
-if( typeof( TwinkleConfig.xfdWatchDiscussion ) == 'undefined' ) {
-	TwinkleConfig.xfdWatchDiscussion = "default";
-}
+	/**
+	 TwinkleConfig.xfdWatchDiscussion (string)
+	 The watchlist setting of the newly created XfD page (for those processes that create discussion pages for each nomination),
+	 or the list page for the other processes.
+	 Either "yes" (add to watchlist), "no" (don't add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+	 */
+	if( typeof( TwinkleConfig.xfdWatchDiscussion ) == 'undefined' ) {
+		TwinkleConfig.xfdWatchDiscussion = "default";
+	}
 
-/**
- TwinkleConfig.xfdWatchPage (string)
- The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
- add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
- */
-if( typeof( TwinkleConfig.xfdWatchPage) == 'undefined' ) {
-	TwinkleConfig.xfdWatchPage = "default";
-}
+	/**
+	 TwinkleConfig.xfdWatchPage (string)
+	 The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
+	 add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+	 */
+	if( typeof( TwinkleConfig.xfdWatchPage) == 'undefined' ) {
+		TwinkleConfig.xfdWatchPage = "default";
+	}
 
-/**
- TwinkleConfig.xfdWatchUser (string)
- The watchlist setting of the user if he receives a notification. Either "yes" (add to watchlist), "no" (don't
- add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
- */
-if( typeof( TwinkleConfig.xfdWatchUser ) == 'undefined' ) {
-	TwinkleConfig.xfdWatchUser = "default";
-}
+	/**
+	 TwinkleConfig.xfdWatchUser (string)
+	 The watchlist setting of the user if he receives a notification. Either "yes" (add to watchlist), "no" (don't
+	 add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+	 */
+	if( typeof( TwinkleConfig.xfdWatchUser ) == 'undefined' ) {
+		TwinkleConfig.xfdWatchUser = "default";
+	}
 
-/**
- TwinkleConfig.xfdWatchList (string)
- The watchlist setting of the XfD list page, *if* the discussion is on a separate page. Either "yes" (add to watchlist), "no" (don't
- add to watchlist), or "default" (use setting from preferences). Default is "no" (Hehe. Seriously though, who wants to watch it?
- Sorry in advance for any false positives.).
- */
-if( typeof( TwinkleConfig.xfdWatchList ) == 'undefined' ) {
-	TwinkleConfig.xfdWatchList = "no";
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default " ([[WP:TW|TW]])"
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
+	/**
+	 TwinkleConfig.xfdWatchList (string)
+	 The watchlist setting of the XfD list page, *if* the discussion is on a separate page. Either "yes" (add to watchlist), "no" (don't
+	 add to watchlist), or "default" (use setting from preferences). Default is "no" (Hehe. Seriously though, who wants to watch it?
+	 Sorry in advance for any false positives.).
+	 */
+	if( typeof( TwinkleConfig.xfdWatchList ) == 'undefined' ) {
+		TwinkleConfig.xfdWatchList = "no";
+	}
 }
 
 function num2order( num ) {
@@ -55,17 +53,6 @@ function num2order( num ) {
 	case 2: return '2nd';
 	case 3: return '3rd';
 	default: return num + 'th';
-	}
-}
-
-function twinklexfd() {
-	if( wgNamespaceNumber < 0 || wgCurRevisionId == false ) {
-		return;
-	}
-	if (twinkleConfigExists) {
-		twAddPortletLink( "javascript:twinklexfd.callback()", "XFD", "tw-xfd", "Anything for deletion", "");
-	} else {
-		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'XFD', 'tw-xfd', 'Anything for deletion', '');
 	}
 }
 

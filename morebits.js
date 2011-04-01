@@ -12,7 +12,37 @@
  * within this module that is automatically loaded by many scripts and any forked copy.
  */
 
-var twinkleConfigExists = false;
+// Initialization callback function
+Twinkle.morebits = function() {
+	if ( typeof( TwinkleConfig ) === 'undefined' ) {
+		TwinkleConfig = {};
+	}
+
+	switch (skin)
+	{
+		case 'vector':
+			if( typeof( TwinkleConfig.portletArea ) == 'undefined' ) TwinkleConfig.portletArea = 'right-navigation';
+			if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-twinkle';
+			if( typeof( TwinkleConfig.portletName ) == 'undefined' ) TwinkleConfig.portletName = 'TW';
+			if( typeof( TwinkleConfig.portletType ) == 'undefined' ) TwinkleConfig.portletType = 'menu';
+			if( typeof( TwinkleConfig.portletNext ) == 'undefined' ) TwinkleConfig.portletNext = 'p-search';
+			break;
+		default:
+			if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-cactions';
+			break;
+	}
+
+	/**
+	 TwinkleConfig.summaryAd (string)
+	 If ad should be added or not to edit summary
+	 */
+	if ( typeof( TwinkleConfig.summaryAd ) === 'undefined' ) {
+		TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
+	}
+	
+	// check if account is experienced enough for more advanced functions
+	Twinkle.authorizedUser = userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'confirmed' );
+}
 
 // Simple helper functions to see what groups a user might belong
 function userIsInGroup( group ) {
@@ -20,31 +50,6 @@ function userIsInGroup( group ) {
 }
 function userIsAnon() {
 	return wgUserGroups == null;
-}
-
-// Determine whether a user should be allowed to use Twinkle (a good guide to whether they should be allowed to use other user scripts, too)
-function twUserIsWhitelisted() {
-	return userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'confirmed' );
-}
-if ( twUserIsWhitelisted() ) {
-	twinkleConfigExists = true;
-}
-
-if ( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
-switch (skin)
-{
-	case 'vector':
-		if( typeof( TwinkleConfig.portletArea ) == 'undefined' ) TwinkleConfig.portletArea = 'right-navigation';
-		if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-twinkle';
-		if( typeof( TwinkleConfig.portletName ) == 'undefined' ) TwinkleConfig.portletName = 'TW';
-		if( typeof( TwinkleConfig.portletType ) == 'undefined' ) TwinkleConfig.portletType = 'menu';
-		if( typeof( TwinkleConfig.portletNext ) == 'undefined' ) TwinkleConfig.portletNext = 'p-search';
-		break;
-	default:
-		if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-cactions';
-		break;
 }
 
 /**
@@ -3224,5 +3229,9 @@ SimpleWindow.prototype = {
 
 // Blacklist was removed per consensus at http://en.wikipedia.org/wiki/Wikipedia:Administrators%27_noticeboard/Archive221#New_Twinkle_blacklist_proposal
 
-// register null initialization callback to let the loader know we're ready
-Twinkle.init.moduleReady( "morebits", function() { return; } );
+// Check if this module was loaded by Twinkle or some other user script
+if (typeof(Twinkle.init.moduleReady) === "function") {
+
+	// register null initialization callback to let the Twinkle loader know we're ready
+	Twinkle.init.moduleReady( "morebits", Twinkle.morebits );
+}

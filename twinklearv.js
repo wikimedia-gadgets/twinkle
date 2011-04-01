@@ -1,52 +1,5 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " using [[WP:TW|TW]]";
-}
-
-/**
- TwinkleConfig.markAIVReportAsMinor (boolean)
- Defines if a reports to AIV should be marked as minor, if false, default is applied as per preference.
- */
-if( typeof( TwinkleConfig.markAIVReportAsMinor ) == 'undefined' ) {
-	TwinkleConfig.markAIVReportAsMinor = true;
-}
-
-/**
- TwinkleConfig.markUAAReportAsMinor (boolean)
- Defines if a reports to UAA should be marked as minor, if false, default is applied as per preference.
- */
-if( typeof( TwinkleConfig.markUAAReportAsMinor ) == 'undefined' ) {
-	TwinkleConfig.markUAAReportAsMinor = true;
-}
-
-/**
- TwinkleConfig.markSockReportAsMinor (boolean)
- Defines if a reports to SPI should be marked as minor, if false, default is applied as per preference.
- */
-if( typeof( TwinkleConfig.markSockReportAsMinor ) == 'undefined' ) {
-	TwinkleConfig.markSockReportAsMinor = true;
-}
-
-function num2order( num ) {
-	switch( num ) {
-	case 1: return '';
-	case 2: return '2nd';
-	case 3: return '3rd';
-	default: return num + 'th';
-	}
-}
-
 function twinklearv(){
 	var username;
-
 
 	if ( wgNamespaceNumber == 3 || wgNamespaceNumber == 2 || ( wgNamespaceNumber == -1 && wgTitle == "Contributions" )){
 
@@ -57,11 +10,12 @@ function twinklearv(){
 			username = wgTitle.split( '/' )[0]; // only first part before any slashes
 		}
 
-		if( !username ) return;
+		if ( !username ) return;
 
 		var name = isIPAddress( username ) ? 'Report IP' : 'Report';
 		var title =  isIPAddress( username ) ? 'Report IP to Administrators' : 'Report user to Administrators';
-		if (twinkleConfigExists)
+		
+		if (Twinkle.authorizedUser)
 		{
 			twAddPortletLink( "javascript:twinklearv.callback(\"" + username.replace( /\"/g, "\\\"") + "\")", "ARV", "tw-arv", name, title );
 		}
@@ -69,6 +23,39 @@ function twinklearv(){
 		{
 			twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'ARV', 'tw-arv', name, title);
 		}
+		
+		/**
+		 TwinkleConfig.markAIVReportAsMinor (boolean)
+		 Defines if a reports to AIV should be marked as minor, if false, default is applied as per preference.
+		 */
+		if( typeof( TwinkleConfig.markAIVReportAsMinor ) == 'undefined' ) {
+			TwinkleConfig.markAIVReportAsMinor = true;
+		}
+
+		/**
+		 TwinkleConfig.markUAAReportAsMinor (boolean)
+		 Defines if a reports to UAA should be marked as minor, if false, default is applied as per preference.
+		 */
+		if( typeof( TwinkleConfig.markUAAReportAsMinor ) == 'undefined' ) {
+			TwinkleConfig.markUAAReportAsMinor = true;
+		}
+
+		/**
+		 TwinkleConfig.markSockReportAsMinor (boolean)
+		 Defines if a reports to SPI should be marked as minor, if false, default is applied as per preference.
+		 */
+		if( typeof( TwinkleConfig.markSockReportAsMinor ) == 'undefined' ) {
+			TwinkleConfig.markSockReportAsMinor = true;
+		}
+	}
+}
+
+function num2order( num ) {
+	switch( num ) {
+	case 1: return '';
+	case 2: return '2nd';
+	case 3: return '3rd';
+	default: return num + 'th';
 	}
 }
 

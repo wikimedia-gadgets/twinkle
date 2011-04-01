@@ -1,18 +1,6 @@
 /**
  Twinklefluff revert and antivandalism utillity
  */
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
-}
 
 /**
  TwinkleConfig.revertMaxRevisions (int)
@@ -601,9 +589,9 @@ twinklefluff.formatSummaryPostfix = function(stringToAdd) {
 }
 
 function twinklefluffinit() {
-	if (window.twinkleConfigExists)
+	if (Twinkle.authorizedUser)
 	{
-		if( QueryString.exists( 'twinklerevert' ) ) {
+		if ( QueryString.exists( 'twinklerevert' ) ) {
 			twinklefluff.auto();
 		} else {
 			twinklefluff.normal();
