@@ -1,43 +1,29 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default " ([[WP:TW|TW]])"
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
-}
-
-/**
- TwinkleConfig.watchProdPages (boolean)
- If, when applying prod template to page, watch it, default true
- */
-if( typeof( TwinkleConfig.watchProdPages ) == 'undefined' ) {
-	TwinkleConfig.watchProdPages = true;
-}
-
-/**
- TwinkleConfig.prodReasonDefault (string)
- The prefilled PROD reason.
- */
-if( typeof( TwinkleConfig.prodReasonDefault ) == 'undefined' ) {
-	TwinkleConfig.prodReasonDefault = "";
-}
-
 function twinkleprod() {
 	if( wgNamespaceNumber != 0 || wgCurRevisionId == false ) {
 		return;
 	}
-	if (twinkleConfigExists) {
+	if (Twinkle.authorizedUser) {
 		twAddPortletLink( "javascript:twinkleprod.callback()", "PROD", "tw-prod", "Propose deletion via WP:PROD", "");
 	} else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'PROD', 'tw-prod', 'Propose deletion via WP:PROD', '');
 	}
+	
+	/**
+	 TwinkleConfig.watchProdPages (boolean)
+	 If, when applying prod template to page, watch it, default true
+	 */
+	if( typeof( TwinkleConfig.watchProdPages ) == 'undefined' ) {
+		TwinkleConfig.watchProdPages = true;
+	}
+
+	/**
+	 TwinkleConfig.prodReasonDefault (string)
+	 The prefilled PROD reason.
+	 */
+	if( typeof( TwinkleConfig.prodReasonDefault ) == 'undefined' ) {
+		TwinkleConfig.prodReasonDefault = "";
+	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinkleprod); //schedule initializer
 
 twinkleprod.callback = function twinkleprodCallback() {
 	var Window = new SimpleWindow( 800, 410 );
@@ -187,7 +173,7 @@ twinkleprod.callbacks = {
 			if( params.usertalk ) {
 				var thispage = new Wikipedia.page(wgPageName);
 				thispage.setCallbackParameters(params);
-				thispage.getInitialContributor(twinkleprod.callbacks.userNotification);
+				thispage.lookupCreator(twinkleprod.callbacks.userNotification);
 			}
 			
 			var summaryText = "Proposing article for deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
@@ -218,8 +204,9 @@ twinkleprod.callbacks = {
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 	},
-	userNotification: function(pageobj, initialContrib) {
+	userNotification: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
+		var initialContrib = pageobj.getCreator();
 		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n\{\{subst:prodwarning" + (params.blp ? "BLP" : "") + "|1=" + wgPageName + "|concern=" + params.reason + "\}\} \~\~\~\~";
 		usertalkpage.setAppendText(notifytext);
@@ -267,3 +254,6 @@ twinkleprod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(twinkleprod.callbacks.main);
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinkleprod", twinkleprod );

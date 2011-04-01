@@ -1,24 +1,3 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = function() {};
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " using [[WP:TW|TW]]";
-}
-
-/**
- TwinkleConfig.protectionSummaryAd (string)
- If ad should be added or not to protection summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.protectionSummaryAd ) == 'undefined' ) {
-	TwinkleConfig.protectionSummaryAd = " using [[WP:TW|TW]]";
-}
-
 function twinkleprotect() {
 	if( wgNamespaceNumber < 0 ) {
 		return;
@@ -26,15 +5,22 @@ function twinkleprotect() {
 
 	if( userIsInGroup( 'sysop' ) ) {
 		twAddPortletLink( "javascript:twinkleprotect.callback()", "PP", "tw-rpp", "Protect page", "");
-	} else if (twinkleConfigExists) {
+	} 
+	else if (Twinkle.authorizedUser) {
 		twAddPortletLink( "javascript:twinkleprotect.callback()", "RPP", "tw-rpp", "Request page protection", "");
 	}
-	else
-	{
+	else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'RPP', 'tw-rpp', 'Request page protection', '');
 	}
+	
+	/**
+	 TwinkleConfig.protectionSummaryAd (string)
+	 If ad should be added or not to protection summary
+	 */
+	if( typeof( TwinkleConfig.protectionSummaryAd ) === 'undefined' ) {
+		TwinkleConfig.protectionSummaryAd = TwinkleConfig.summaryAd;
+	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinkleprotect); //schedule initializer
 
 twinkleprotect.callback = function twinkleprotectCallback() {
 	var Window = new SimpleWindow( 600, 400 );
@@ -609,3 +595,6 @@ twinkleprotect.callbacks = {
 		self.post( postData );
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinkleprotect", twinkleprotect );

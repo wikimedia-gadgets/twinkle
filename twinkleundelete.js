@@ -19,7 +19,6 @@ function twinkleundelete() {
 		addPortletLink( 'p-cactions', "javascript:twinkleundelete.callback()", "undel", "tw-undel", "Undelete em all", "");
 	}
 }
-addOnloadHook(twinkleundelete);
 
 twinkleundelete.callback = function twinkleundeleteCallback() {
 	var Window = new SimpleWindow( 800, 400 );
@@ -54,3 +53,6 @@ twinkleundelete.callbacks = {
 
 	}
 };
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinkleundelete", twinkleundelete );

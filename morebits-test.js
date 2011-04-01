@@ -51,6 +51,10 @@ if (( wgAction == 'view' && skin == 'vector' )) {
 			page.setPageSection( Number( section ) );
 		}		
 		page.setCreateOption(morebits_test_createOption);
+		
+		if ( $('#runTestForm input[name="lookupCreator"]').attr('checked') ) {
+			page.lookupCreator(morebitsTest.lookupCreatorCallback);
+		}
 	  },
 	  
 	  loadCallbackInsert: function(page) {
@@ -62,14 +66,22 @@ if (( wgAction == 'view' && skin == 'vector' )) {
 		  return;
 		}
 		page.setPageText(text.substr(0, pos) + params['newText'] + text.substr(pos));
-		page.save();
+		page.save(morebitsTest.finalSaveCallback);
 	  },
 	  
 	  loadCallbackReplace: function(page) {
 	    var params = page.getCallbackParameters();
 		page.setPageText(params['newText']);
-		page.save();
+		page.save(morebitsTest.finalSaveCallback);
 	  },
+
+	  lookupCreatorCallback: function(page) {
+		alert("Page was created by: " + page.getCreator());
+	  },	  
+
+	  finalSaveCallback: function(page) {
+		Wikipedia.actionCompleted.redirect = page.getPageName(); // get result of redirects
+	  },	  
 
       initialize: function() {
 
@@ -89,7 +101,8 @@ if (( wgAction == 'view' && skin == 'vector' )) {
 		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="minorEdit"/> Minor edit') )
 		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="watchlist"/> Add to watchlist') )
 		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="watchlistFromPreferences"/> Add to watchlist based on preference settings') )
-		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="noRetries"/> Disable retries<hr/>') )
+		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="noRetries"/> Disable retries') )
+		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="lookupCreator"/> Lookup page creator<hr/>') )
 		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="radio" name="createOption" value="" onclick="morebits_test_createOption=value" checked/> Create page if needed, unless deleted since loaded<br>') )
 		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="radio" name="createOption" value="recreate" onclick="morebits_test_createOption=value"/> Create page if needed<br>') )
 		  .append( $('<div style="margin-top:0.4em;"></div>').html('<input type="radio" name="createOption" value="createonly" onclick="morebits_test_createOption=value"/> Only create a new page<br>') )
@@ -97,7 +110,7 @@ if (( wgAction == 'view' && skin == 'vector' )) {
 		  .dialog({
             width: 500,
             autoOpen: false,
-            title: 'Test morebits.js',
+            title: 'Test Wikipedia.page class',
             modal: true,
             buttons: { 
 				"Append": function() { 
@@ -107,7 +120,7 @@ if (( wgAction == 'view' && skin == 'vector' )) {
 					var page = new Wikipedia.page(wgPageName);
 					page.setAppendText( $('#message').val() );
 					morebitsTest.setPageOptions(page);
-					page.append();
+					page.append(morebitsTest.finalSaveCallback);
 				},
 				"Prepend": function(e) { 
 					$(this).dialog('close');
@@ -116,7 +129,7 @@ if (( wgAction == 'view' && skin == 'vector' )) {
 					var page = new Wikipedia.page(wgPageName);
 					page.setPrependText( $('#message').val() );
 					morebitsTest.setPageOptions(page);
-					page.prepend();
+					page.prepend(morebitsTest.finalSaveCallback);
 				},
 				"Insert": function(e) { 
 					if ( $('#beforeText').val() == "" ) {
@@ -152,7 +165,15 @@ if (( wgAction == 'view' && skin == 'vector' )) {
 
     } // close morebitsTest object
     morebitsTest.initialize();
-	twAddPortletLink( ("javascript:morebitsTest.launchDialog($runTests)"), "Test", "tw-test", "Test morebits.js", "");
   }) // close mw.loader
+  
+  function morebits_test_init() {
+	 twAddPortletLink( ("javascript:morebitsTest.launchDialog($runTests)"), "Test", "tw-test", "Test morebits.js", "");
+  }
+
 } // close if
+
+// register initialization callback
+Twinkle.init.moduleReady( "morebits-test", morebits_test_init );
+
 //</nowiki>

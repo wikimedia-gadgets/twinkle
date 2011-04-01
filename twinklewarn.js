@@ -1,55 +1,41 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
-
-/**
- TwinkleConfig.defaultGroup (int)
- if true, watch the page which has been dispatched an warning or notice, if false, default applies
- */
-if( typeof( TwinkleConfig.defaultWarningGroup ) == 'undefined' ) {
-	TwinkleConfig.defaultWarningGroup = 1;
-}
-
-/**
- TwinkleConfig.showSharedIPNotice may take arguments:
- true: to show shared ip notice if an IP address
- false: to not print the notice
- */
-if( typeof( TwinkleConfig.showSharedIPNotice ) == 'undefined' ) {
-	TwinkleConfig.showSharedIPNotice = true;
-}
-
-/**
- TwinkleConfig.watchWarnings (boolean)
- if true, watch the page which has been dispatched an warning or notice, if false, default applies
- */
-if( typeof( TwinkleConfig.watchWarnings ) == 'undefined' ) {
-	TwinkleConfig.watchWarnings = true;
-}
-
-/**
- TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
- if true, blank the talk page when issuing an indef block notice (per [[WP:UW#Indefinitely blocked users]])
- */
-if( typeof( TwinkleConfig.blankTalkpageOnIndefBlock ) == 'undefined' ) {
-	TwinkleConfig.blankTalkpageOnIndefBlock = false;
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
-}
-
 function twinklewarn() {
 	if( wgNamespaceNumber == 3 ) {
-		twAddPortletLink( (twinkleConfigExists ? "javascript:twinklewarn.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "Warn", "tw-warn", "Warn/Notify user", "");
+		twAddPortletLink( (Twinkle.authorizedUser ? "javascript:twinklewarn.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "Warn", "tw-warn", "Warn/Notify user", "");
+		
+		/**
+		 TwinkleConfig.defaultGroup (int)
+		 if true, watch the page which has been dispatched an warning or notice, if false, default applies
+		 */
+		if( typeof( TwinkleConfig.defaultWarningGroup ) == 'undefined' ) {
+			TwinkleConfig.defaultWarningGroup = 1;
+		}
+
+		/**
+		 TwinkleConfig.showSharedIPNotice may take arguments:
+		 true: to show shared ip notice if an IP address
+		 false: to not print the notice
+		 */
+		if( typeof( TwinkleConfig.showSharedIPNotice ) == 'undefined' ) {
+			TwinkleConfig.showSharedIPNotice = true;
+		}
+
+		/**
+		 TwinkleConfig.watchWarnings (boolean)
+		 if true, watch the page which has been dispatched an warning or notice, if false, default applies
+		 */
+		if( typeof( TwinkleConfig.watchWarnings ) == 'undefined' ) {
+			TwinkleConfig.watchWarnings = true;
+		}
+
+		/**
+		 TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
+		 if true, blank the talk page when issuing an indef block notice (per [[WP:UW#Indefinitely blocked users]])
+		 */
+		if( typeof( TwinkleConfig.blankTalkpageOnIndefBlock ) == 'undefined' ) {
+			TwinkleConfig.blankTalkpageOnIndefBlock = false;
+		}
 	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat( twinklewarn); //schedule initializer
 
 twinklewarn.callback = function twinklewarnCallback() {
 	var Window = new SimpleWindow( 600, 400 );
@@ -1499,3 +1485,6 @@ twinklewarn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	wikipedia_page.setFollowRedirect( true );
 	wikipedia_page.load( twinklewarn.callbacks.main );
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinklewarn", twinklewarn );

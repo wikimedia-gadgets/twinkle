@@ -12,32 +12,44 @@
  * within this module that is automatically loaded by many scripts and any forked copy.
  */
 
-// Prevent double execution of this script when it is imported by multiple user scripts to improve performance
-if (typeof(_morebits_js_loading) == 'undefined') {
-_morebits_js_loading = true; // don't check this to see if initialization is complete, use morebits_js_loaded
+// Initialization callback function
+Twinkle.morebits = function() {
+	if ( typeof( TwinkleConfig ) === 'undefined' ) {
+		TwinkleConfig = {};
+	}
 
-var twinkleConfigExists = false;
+	switch (skin)
+	{
+		case 'vector':
+			if( typeof( TwinkleConfig.portletArea ) == 'undefined' ) TwinkleConfig.portletArea = 'right-navigation';
+			if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-twinkle';
+			if( typeof( TwinkleConfig.portletName ) == 'undefined' ) TwinkleConfig.portletName = 'TW';
+			if( typeof( TwinkleConfig.portletType ) == 'undefined' ) TwinkleConfig.portletType = 'menu';
+			if( typeof( TwinkleConfig.portletNext ) == 'undefined' ) TwinkleConfig.portletNext = 'p-search';
+			break;
+		default:
+			if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-cactions';
+			break;
+	}
 
-if( userIsInGroup( 'sysop' ) || twUserIsWhitelisted() ) {
-	twinkleConfigExists = true;
+	/**
+	 TwinkleConfig.summaryAd (string)
+	 If ad should be added or not to edit summary
+	 */
+	if ( typeof( TwinkleConfig.summaryAd ) === 'undefined' ) {
+		TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
+	}
+	
+	// check if account is experienced enough for more advanced functions
+	Twinkle.authorizedUser = userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'confirmed' );
 }
-function twUserIsWhitelisted() {
-	return userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'confirmed' );
-}
 
-if( typeof( TwinkleConfig ) == 'undefined' ) TwinkleConfig = {};
-switch (skin)
-{
-	case 'vector':
-		if( typeof( TwinkleConfig.portletArea ) == 'undefined' ) TwinkleConfig.portletArea = 'right-navigation';
-		if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-twinkle';
-		if( typeof( TwinkleConfig.portletName ) == 'undefined' ) TwinkleConfig.portletName = 'TW';
-		if( typeof( TwinkleConfig.portletType ) == 'undefined' ) TwinkleConfig.portletType = 'menu';
-		if( typeof( TwinkleConfig.portletNext ) == 'undefined' ) TwinkleConfig.portletNext = 'p-search';
-		break;
-	default:
-		if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-cactions';
-		break;
+// Simple helper functions to see what groups a user might belong
+function userIsInGroup( group ) {
+	return ( wgUserGroups != null && wgUserGroups.indexOf( group ) != -1 ) || ( wgUserGroups == null && group == 'anon' );
+}
+function userIsAnon() {
+	return wgUserGroups == null;
 }
 
 /**
@@ -1749,36 +1761,36 @@ Wikipedia.api.prototype = {
  *                      between retrieving the edit token and saving the edit (default)
  *
  * exists(): returns true if the page existed on the wiki when it was last loaded
+ * 
+ * getCreator(): returns the user who created the page following lookupCreator()
+ *
  */
 
 /**
  * Call sequence for common operations (optional final user callbacks not shown):
  *
  *    Edit current contents of a page (no edit conflict):
- *       .load() -> Wikipedia.api.post() -> .loadSuccess() -> userTextEditCallback() -> 
- *                  .save() -> Wikipedia.api.post() -> .saveSuccess()
+ *       .load(userTextEditCallback) -> ctx.loadApi.post() -> ctx.loadApi.post.success() -> 
+ *             ctx.fnLoadSuccess() -> userTextEditCallback() -> .save() -> 
+ *             ctx.saveApi.post() -> ctx.loadApi.post.success() -> ctx.fnSaveSuccess()
  *
  *    Edit current contents of a page (with edit conflict):
- *       .load() -> Wikipedia.api.post() -> .loadSuccess() -> userTextEditCallback() -> 
- *                  .save() -> Wikipedia.api.post() -> .saveFailure() ->
- *       .load() -> Wikipedia.api.post() -> .loadSuccess() -> userTextEditCallback() -> 
- *                  .save() -> Wikipedia.api.post() -> .saveSuccess()
+ *       .load(userTextEditCallback) -> ctx.loadApi.post() -> ctx.loadApi.post.success() -> 
+ *             ctx.fnLoadSuccess() -> userTextEditCallback() -> .save() -> 
+ *             ctx.saveApi.post() -> ctx.loadApi.post.success() -> ctx.fnSaveError() ->
+ *             ctx.loadApi.post() -> ctx.loadApi.post.success() -> 
+ *             ctx.fnLoadSuccess() -> userTextEditCallback() -> .save() -> 
+ *             ctx.saveApi.post() -> ctx.loadApi.post.success() -> ctx.fnSaveSuccess()
  *
  *    Append to a page (similar for prepend):
- *       .append() -> .load() -> Wikipedia.api.post() -> .loadSuccess() -> .autoSave() ->
- *                    .save() -> Wikipedia.api.post() -> .saveSuccess()
+ *       .append() -> ctx.loadApi.post() -> ctx.loadApi.post.success() -> 
+ *             ctx.fnLoadSuccess() -> ctx.fnAutoSave() -> .save() -> 
+ *             ctx.saveApi.post() -> ctx.loadApi.post.success() -> ctx.fnSaveSuccess()
  *
  *    Notes: 
  *       1. All functions following Wikipedia.api.post() are invoked asynchronously 
  *          from the jQuery AJAX library.
- *       2. In the case of .edit(), .loadSuccess() performs one re-entry into .load() 
- *          when following a redirect. 
- *       3. In the case of .append() or .prepend(), .loadSuccess() performs two re-entries  
- *          into .load() when following a redirect. The first re-entry is to retrieve the 
- *          redirect target and the second is to verify that the target is not itself a redirect.
- *       4. Edit conflicts do not result in additional re-entries due to redirects because the
- *          resolved page name is retained from the first edit attempt.
- *       5. The sequence for append/prepend could be slightly shortened, but it would require
+ *       2. The sequence for append/prepend could be slightly shortened, but it would require
  *          significant duplication of code for little benefit.
  */
 
@@ -1842,13 +1854,17 @@ Wikipedia.page = function(pageName, currentAction) {
 		return ctx.callbackParameters;
 	};
 
+	this.getCreator = function() {
+		return ctx.creator;
+	};
+
 	this.getStatusElement = function() {
 		return ctx.statusElement;
 	};
 
 	this.setFollowRedirect = function(followRedirect) {
 		if (ctx.pageLoaded) {
-			ctx.statusElement.error("Internal error: Cannot change redirect setting after the page has been loaded!");
+			ctx.statusElement.error("Internal error: cannot change redirect setting after the page has been loaded!");
 			return;
 		}
 		ctx.followRedirect = followRedirect;
@@ -1874,7 +1890,7 @@ Wikipedia.page = function(pageName, currentAction) {
 
 		// Need to be able to do something after the page loads
 		if (onSuccess == null) {
-			ctx.statusElement.error("Internal error: No onSuccess callback provided to load()!");
+			ctx.statusElement.error("Internal error: no onSuccess callback provided to load()!");
 			return;
 		}
 
@@ -1892,6 +1908,10 @@ Wikipedia.page = function(pageName, currentAction) {
 			// don't need rvlimit=1 because we don't need rvstartid here and only one actual rev is returned by default
 		};
 
+		if (ctx.followRedirect) {
+			ctx.loadQuery.redirects = '';  // follow all redirects
+		}
+		
 		if (typeof(ctx.pageSection) === 'number') {
 			ctx.loadQuery.rvsection = ctx.pageSection;
 		}
@@ -1908,12 +1928,12 @@ Wikipedia.page = function(pageName, currentAction) {
 	this.save = function(onSuccess, onFailure) {
 		if (!ctx.pageLoaded)
 		{
-			ctx.statusElement.error("Internal error: Attempt to save a page that has not been loaded!");
+			ctx.statusElement.error("Internal error: attempt to save a page that has not been loaded!");
 			return;
 		}
 		if (!ctx.editSummary)
 		{
-			ctx.statusElement.error("Internal error: Edit summary not set before save!");
+			ctx.statusElement.error("Internal error: edit summary not set before save!");
 			return;
 		}
 		ctx.onSaveSuccess = onSuccess;
@@ -1978,12 +1998,12 @@ Wikipedia.page = function(pageName, currentAction) {
 		this.load(fnAutoSave, onFailure);
 	};
 
-	this.getInitialContributor = function(onSuccess) {
+	this.lookupCreator = function(onSuccess) {
 		if (onSuccess == null) {
-			ctx.statusElement.error("Internal error: No onSuccess callback provided to getInitialContributor()!");
+			ctx.statusElement.error("Internal error: no onSuccess callback provided to lookupCreator()!");
 			return;
 		}
-		ctx.onGetInitialContributorSuccess = onSuccess;
+		ctx.onLookupCreatorSuccess = onSuccess;
 
 		var query = {
 			'action': 'query',
@@ -1993,9 +2013,14 @@ Wikipedia.page = function(pageName, currentAction) {
 			'rvprop': 'user',
 			'rvdir': 'newer'
 		};
-		ctx.getInitialContributorApi = new Wikipedia.api("Retrieving page creator information", query, fnGetInitialContributorSuccess);
-		ctx.getInitialContributorApi.setParent(this);
-		ctx.getInitialContributorApi.post();
+		
+		if (ctx.followRedirect) {
+			query.redirects = '';  // follow all redirects
+		}
+		
+		ctx.lookupCreatorApi = new Wikipedia.api("Retrieving page creator information", query, fnLookupCreatorSuccess);
+		ctx.lookupCreatorApi.setParent(this);
+		ctx.lookupCreatorApi.post();
 	};
 
 	/**
@@ -2027,6 +2052,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		followRedirect: false,
 		watchlistOption: 'nochange',
 		pageExists: false,
+		creator: null,
 		 // internal status
 		pageLoaded: false,
 		editToken: null,
@@ -2039,12 +2065,12 @@ Wikipedia.page = function(pageName, currentAction) {
 		onLoadFailure: null,
 		onSaveSuccess: null,
 		onSaveFailure: null,
-		onGetInitialContributorSuccess: null,
+		onLookupCreatorSuccess: null,
 		 // internal objects
 		loadQuery: null,
 		loadApi: null,
 		saveApi: null,
-		getInitialContributorApi: null,
+		lookupCreatorApi: null
 	};
 
 	/**
@@ -2062,10 +2088,8 @@ Wikipedia.page = function(pageName, currentAction) {
 	var fnLoadSuccess = function() {
 		var xml = ctx.loadApi.getXML();
 
-		// check for invalid titles
-		if ($(xml).find('page').attr('invalid')) {
-			ctx.statusElement.error("Attempt made to edit a page with an invalid title");
-			return;
+		if ( !fnCheckPageName(xml) ) {
+			return; // abort
 		}
 
 		ctx.pageExists = !($(xml).find('page').attr('missing'));
@@ -2073,28 +2097,6 @@ Wikipedia.page = function(pageName, currentAction) {
 			ctx.pageText = $(xml).find('rev').text();
 		} else {
 			ctx.pageText = '';  // allow for concatenation, etc.
-		}
-
-		// check to see if the page is a redirect and follow it if requested
-		if (ctx.pageExists && ctx.followRedirect)
-		{
-			var isRedirect = $(xml).find('pages').find('page').attr('redirect');
-			if (isRedirect)
-			{
-				var redirmatch = /\[\[(.*)\]\]/.exec(ctx.pageText);
-				if (redirmatch)
-				{
-					ctx.pageName = redirmatch[1];
-					ctx.followRedirect = false;  // no double redirects!
-
-					// load the redirect page instead
-					ctx.loadQuery['titles'] = ctx.pageName;
-					ctx.loadApi = new Wikipedia.api("Following redirect...", ctx.loadQuery, fnLoadSuccess, ctx.statusElement);
-					ctx.loadApi.setParent(this);
-					ctx.loadApi.post();
-					return;
-				}
-			}
 		}
 
 		ctx.editToken = $(xml).find('page').attr('edittoken');
@@ -2116,6 +2118,33 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.onLoadSuccess(this);  // invoke callback
 	};
 
+	// helper function to parse the page name returned from the API
+	var fnCheckPageName = function(xml) {
+	
+		// check for invalid titles
+		if ($(xml).find('page').attr('invalid')) {
+			ctx.statusElement.error("Attempt to edit a page with invalid title: " + ctx.pageName);
+			return false; // abort
+		}
+
+		// retrieve actual title of the page after normalization and redirects
+		if ($(xml).find('page').attr('title')) {
+			ctx.pageName = $(xml).find('page').attr('title');
+			
+			// only notify user for redirects, not normalization
+			if ($(xml).find('redirects')) {
+				ctx.statusElement.info("Redirected to " + ctx.pageName);
+			}
+		}
+		else {
+			// could be a circular redirect or other problem
+			ctx.statusElement.error("Could not resolve redirects for: " + ctx.pageName);
+			return false; // abort
+		}
+		return true; // all OK
+	};
+		
+	
 	// callback from saveApi.post()
 	var fnSaveSuccess = function() {
 		ctx.editMode = 'all';  // cancel append/prepend modes
@@ -2124,30 +2153,37 @@ Wikipedia.page = function(pageName, currentAction) {
 		var xml = ctx.saveApi.getXML();
 		if ($(xml).find('edit').attr('result') == "Success") {
 			// real success
-			if (ctx.onSaveSuccess) ctx.onSaveSuccess(this);  // invoke callback
+			if (ctx.onSaveSuccess) {
+				ctx.onSaveSuccess(this);  // invoke callback
+			}
 			else {
 				var link = document.createElement('a');
 				link.setAttribute('href', wgArticlePath.replace('$1', ctx.pageName));
 				link.appendChild(document.createTextNode(ctx.pageName));
 				ctx.statusElement.info(['completed (', link, ')']);
 			}
-		} else {
-			// errors here are only generated by extensions which hook APIEditBeforeSave within MediaWiki
-			// Wikimedia wikis should only return spam blacklist errors and captchas
-			var blacklist = $(xml).find('edit').attr('spamblacklist');
-			if (blacklist) {
-				var code = document.createElement('code');
-				code.style.fontFamily = "monospace";
-				code.appendChild(document.createTextNode(blacklist));
-				ctx.statusElement.error(['Could not save the edit, because the URL ', code, ' is on the spam blacklist.']);
-				return;
-			}
-			var captcha = $(xml).find('captcha');
-			if (captcha) {
-				ctx.statusElement.error("Could not save the edit, because the wiki server wanted you to fill out a CAPTCHA. CAPTCHAs are not supported from user scripts at the moment.");
-				return;
-			}
+			return;
+		} 
+		// errors here are only generated by extensions which hook APIEditBeforeSave within MediaWiki
+		// Wikimedia wikis should only return spam blacklist errors and captchas
+		var blacklist = $(xml).find('edit').attr('spamblacklist');
+		var captcha = $(xml).find('captcha');
+
+		if (blacklist) {
+			var code = document.createElement('code');
+			code.style.fontFamily = "monospace";
+			code.appendChild(document.createTextNode(blacklist));
+			ctx.statusElement.error(['Could not save the edit because the URL ', code, ' is on the spam blacklist.']);
 		}
+		else if (captcha) {
+			ctx.statusElement.error("Could not save the edit because the wiki server wanted you to fill out a CAPTCHA.");
+		}
+		else {
+			ctx.statusElement.error("Unknown error saving page");
+		}
+		
+		// force error to stay on the screen
+		++Wikipedia.numberOfActionsLeft;
 	};
 
 	// callback from saveApi.post()
@@ -2160,38 +2196,48 @@ Wikipedia.page = function(pageName, currentAction) {
 			 
 			// alert("Edit conflict detected!");
 			ctx.statusElement.info("Edit conflict detected, retrying...");
-			this.load(ctx.onLoadSuccess, ctx.onLoadFailure);
+			--Wikipedia.numberOfActionsLeft;  // allow for normal completion if retry succeeds
+			ctx.loadApi.post(); // reload
 
 		// check for loss of edit token
 		// it's impractical to request a new token here, so invoke edit conflict logic when this happens
 		} else if ( errorCode == "notoken" && ctx.conflictRetries++ < ctx.maxConflictRetries ) {
 			 
 			ctx.statusElement.info("Edit token is invalid, retrying...");
-			this.load(ctx.onLoadSuccess, ctx.onLoadFailure);
+			--Wikipedia.numberOfActionsLeft;  // allow for normal completion if retry succeeds
+			ctx.loadApi.post(); // reload
 
 		// check for network or server error
 		} else if ( errorCode == "undefined" && ctx.retries++ < ctx.maxRetries ) {
 
 			// the error might be transient, so try again
 			ctx.statusElement.info("Save failed, retrying...");
+			--Wikipedia.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.saveApi.post(); // give it another go!
 
 		} else {
 			// hard error, give up
 			ctx.statusElement.error( "Failed to save edit: " + ctx.saveApi.getErrorText() );
 			ctx.editMode = 'all';  // cancel append/prepend modes
-			if (ctx.onSaveFailure) ctx.onSaveFailure(this);  // invoke callback
+			if (ctx.onSaveFailure) {
+				ctx.onSaveFailure(this);  // invoke callback
+			}
 		}
 	};
 
-	var fnGetInitialContributorSuccess = function() {
-		var xmlDoc = ctx.getInitialContributorApi.getXML();
-		var initialcontrib = $(xmlDoc).find('rev').attr('user');
-		if (!initialcontrib) {
-			ctx.statusElement.error("Could not find name of initial contributor.");
+	var fnLookupCreatorSuccess = function() {
+		var xml = ctx.lookupCreatorApi.getXML();
+		
+		if ( !fnCheckPageName(xml) ) {
+			return; // abort
+		}
+
+		ctx.creator = $(xml).find('rev').attr('user');
+		if (!ctx.creator) {
+			ctx.statusElement.error("Could not find name of page creator");
 			return;
 		}
-		ctx.onGetInitialContributorSuccess(this, initialcontrib);  // XXX hardly ideal
+		ctx.onLookupCreatorSuccess(this);
 	};
 } /* end Wikipedia.page */
 
@@ -2628,58 +2674,6 @@ Mediawiki.Page.prototype = {
 		return this.text;
 	}
 }
-
-// Simple helper functions to see what groups a user might belong
-
-function userIsInGroup( group ) {
-
-	return ( wgUserGroups != null && wgUserGroups.indexOf( group ) != -1 ) || ( wgUserGroups == null && group == 'anon' );
-}
-
-function userIsAnon() {
-	return wgUserGroups == null;
-}
-
-// AOL Proxy IP Addresses (2007-02-03)
-var AOLNetworks = [
-	'64.12.96.0/19',
-	'149.174.160.0/20',
-	'152.163.240.0/21',
-	'152.163.248.0/22',
-	'152.163.252.0/23',
-	'152.163.96.0/22',
-	'152.163.100.0/23',
-	'195.93.32.0/22',
-	'195.93.48.0/22',
-	'195.93.64.0/19',
-	'195.93.96.0/19',
-	'195.93.16.0/20',
-	'198.81.0.0/22',
-	'198.81.16.0/20',
-	'198.81.8.0/23',
-	'202.67.64.128/25',
-	'205.188.192.0/20',
-	'205.188.208.0/23',
-	'205.188.112.0/20',
-	'205.188.146.144/30',
-	'207.200.112.0/21',
-];
-
-// AOL Client IP Addresses (2007-02-03)
-var AOLClients = [
-	'172.128.0.0/10',
-	'172.192.0.0/12',
-	'172.208.0.0/14',
-	'202.67.66.0/23',
-	'172.200.0.0/15',
-	'172.202.0.0/15',
-	'172.212.0.0/14',
-	'172.216.0.0/16',
-	'202.67.68.0/22',
-	'202.67.72.0/21',
-	'202.67.80.0/20',
-	'202.67.96.0/19',
-];
 
 /**
 * ipadress is in the format 1.2.3.4 and network is in the format 1.2.3.4/5
@@ -3233,41 +3227,11 @@ SimpleWindow.prototype = {
 	}
 }
 
-/*
-*  Things to note: 
-*       - The users listed in the twinkleblacklist array will *not* be able to use Twinkle, even if they have it enabled as a 
-*         gadget. *However*, since javascript files are usually cached in the client's browser cache, it can take a while for
-*         the blacklisting to come into effect - theoretically for up to 30 days, although usually with the next browser restart.
-*       - The search method used the detect the usernames in this array is case-sensitive, so make sure that you get the
-*         capitalization right!  Always capitalize the first letter of a username; this is how the software formats usernames.
-*       - The users on this blacklist will remain so until they are removed.  The only way to restore one of these users' access to
-*         Twinkle is to remove his/her name from the list. Even then, the user might need to [[WP:BYPASS]] his browser cache.
-*       - Make sure that every username is wrapped in straight quotation marks ("" or ''), that quotation marks or apostrophes 
-*         within the usernames are preceded by a backward-slash (\), and that every name EXCEPT THE LAST ONE is followed by a 
-*         comma.  Not following these directions can cause the script to fail.
-*              - Correct: http://en.wikipedia.org/w/index.php?title=User%3AAzaToth%2Fmorebits.js&diff=298609098&oldid=298609007 
-*/
+// Blacklist was removed per consensus at http://en.wikipedia.org/wiki/Wikipedia:Administrators%27_noticeboard/Archive221#New_Twinkle_blacklist_proposal
 
-var twinkleBlacklistedUsers = ["Dilip rajeev", "Jackmantas", "Flaming Grunt", "Catterick", "44 sweet", "Sarangsaras", "WebHamster", "Radiopathy", "Nezzadar", "Darrenhusted", "Notpietru", "Arthur Rubin", "Wuhwuzdat", "MikeWazowski", "Lefty101", "Bender176", "Tej smiles", "Bigvernie", "TK-CP", "NovaSkola", "Polaron", "SluggoOne", "TeleComNasSprVen", "TCNSV", "Wayne Slam", "Someone65", "S.V.Taylor", "Abhishek191288"];
+// Check if this module was loaded by Twinkle or some other user script
+if (typeof(Twinkle.init.moduleReady) === "function") {
 
-if(twinkleBlacklistedUsers.indexOf(wgUserName) != -1 && twinkleConfigExists) twinkleConfigExists = false;
-
-// let master load script know that this module has loaded
-morebits_js_loaded = true;
-
-// When Twinkle modules are imported, we can't be sure that this base module
-// has been loaded yet. For that reason, modules using them need
-// to initialize themselves using
-//   window.TwinkleInit = (window.TwinkleInit || []).concat( someInitializationFunction );
-// for maximal robustness. Looks weird, works well.
-function twinkleInit() {
-	var funcs = window.TwinkleInit;
-	window.TwinkleInit = { concat : function(func){ func(); return window.TwinkleInit;} }; //redefine the concat method used to enqueue initializers: From now on, they just execute immediately.
-	if (funcs) for (var i=0; i<funcs.length; i++) funcs[i]();
+	// register null initialization callback to let the Twinkle loader know we're ready
+	Twinkle.init.moduleReady( "morebits", Twinkle.morebits );
 }
-
-// Initialize when all main page elements have been loaded, but don't wait for images
-$(document).ready(twinkleInit);
-
-} //if (typeof(_morebits_loading) == 'undefined')
-

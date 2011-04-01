@@ -43,7 +43,6 @@ function twinkledeli() {
 		twAddPortletLink( "javascript:twinkledeli.callback()", "Deli-batch", "tw-deli", "Delete file found on page", "");
 	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinkledeli); //schedule initializer
 
 twinkledeli.unlinkCache = {};
 twinkledeli.callback = function twinklesdeliCallback() {
@@ -326,3 +325,6 @@ twinkledeli.callbacks = {
 		self.post( postData );
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinkledelimages", twinkledeli );

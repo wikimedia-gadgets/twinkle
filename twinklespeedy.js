@@ -1,133 +1,121 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default " ([[WP:TW|TW]])"
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
-}
-
-/**
- TwinkleConfig.deletionSummaryAd (string)
- If ad should be added or not to deletion summary, default " ([[WP:TW|TW]])"
- */
-if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
-	TwinkleConfig.deletionSummaryAd = " ([[WP:TW|TW]])";
-}
-
-/**
- TwinkleConfig.watchSpeedyPages (array)
- What types of actions that should result in forced addition to watchlist
- */
-if( typeof( TwinkleConfig.watchSpeedyPages ) == 'undefined' ) {
-	TwinkleConfig.watchSpeedyPages = [ 'g3', 'g5', 'g10', 'g11', 'g12' ];
-}
-
-/**
- TwinkleConfig.markSpeedyPagesAsPatrolled (boolean)
- If, when applying speedy template to page, to mark the page as patrolled, default true
- */
-if( typeof( TwinkleConfig.markSpeedyPagesAsPatrolled ) == 'undefined' ) {
-	TwinkleConfig.markSpeedyPagesAsPatrolled = true;
-}
-
-/**
- TwinkleConfig.notifyUserOnSpeedyDeletionNomination (array of strings)
- What types of actions that should result that the author of the page should be notified of nomination
- */
-if( typeof( TwinkleConfig.notifyUserOnSpeedyDeletionNomination ) == 'undefined' ) {
-	TwinkleConfig.notifyUserOnSpeedyDeletionNomination = [ 'db', 'g1', 'g2', 'g3', 'g4', 'g10', 'g11', 'g12', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 't2', 't3', 'p1', 'p2' ];
-}
-
-/**
- TwinkleConfig.welcomeUserOnSpeedyDeletionNotification (array of strings)
- On what types of speedy deletion notifications shall the user be welcomed
- with a {{firstarticle}} notice if his talk page has not yet been created.
- */
-if( typeof( TwinkleConfig.welcomeUserOnSpeedyDeletionNotification ) == 'undefined' ) {
-	TwinkleConfig.welcomeUserOnSpeedyDeletionNotification = TwinkleConfig.notifyUserOnSpeedyDeletionNomination;
-}
-
-/**
- TwinkleConfig.openUserTalkPageOnSpeedyDelete (array of strings)
- What types of actions that should result user talk page to be opened when speedily deleting (admin only)
- */
-if( typeof( TwinkleConfig.openUserTalkPageOnSpeedyDelete ) == 'undefined' ) {
-	TwinkleConfig.openUserTalkPageOnSpeedyDelete = [ 'db', 'g1', 'g2', 'g3', 'g4', 'g5', 'g10', 'g11', 'g12', 'a1', 'a3', 'a7', 'a9', 'a10', 'f3', 'f7', 'f9', 'u3', 't2', 'p1' ];
-}
-
-/**
- TwinkleConfig.userTalkPageMode may take arguments:
- 'window': open a new window, remember the opened window
- 'tab': opens in a new tab, if possible.
- 'blank': force open in a new window, even if a such window exist
- */
-if( typeof( TwinkleConfig.userTalkPageMode ) == 'undefined' ) {
-	TwinkleConfig.userTalkPageMode = 'window';
-}
-
-/**
- TwinkleConfig.deleteTalkPageOnDelete (boolean)
- If talk page if exists should also be deleted (CSD G8) when spedying a page (admin only)
- */
-if( typeof( TwinkleConfig.deleteTalkPageOnDelete ) == 'undefined' ) {
-	TwinkleConfig.deleteTalkPageOnDelete = false;
-}
-
-/**
- TwinkleConfig.orphanNormalPagesOnSpeedyDelete (hash)
- Defines if all backlinks to a page should be removed.
- property 'exclude' defined actions not to orphan
- */
-if( typeof( TwinkleConfig.orphanBacklinksOnSpeedyDelete ) == 'undefined' ) {
-	TwinkleConfig.orphanBacklinksOnSpeedyDelete = { exclude: ['g6'], orphan:true };
-}
-
-/**
- TwinkleConfig.speedyWindowWidth (integer)
- Defines the width of the Twinkle SD window in pixels
- */
-if( typeof( TwinkleConfig.speedyWindowWidth ) == 'undefined' ) {
-	TwinkleConfig.speedyWindowWidth = 800;
-}
-
-/**
- TwinkleConfig.speedyWindowHeight (integer)
- Defines the height of the Twinkle SD window in pixels
- */
-if( typeof( TwinkleConfig.speedyWindowHeight ) == 'undefined' ) {
-	TwinkleConfig.speedyWindowHeight = 500;
-}
-
-/**
- TwinkleConfig.deleteSysopDefaultToTag (boolean)
- Make the CSD screen default to "tag" instead of "delete" (admin only)
- */
-if( typeof(TwinkleConfig.deleteSysopDefaultToTag) == 'undefined' ) TwinkleConfig.deleteSysopDefaultToTag = true;
-
 function twinklespeedy() {
 	// Disable on:
 	// * special pages
 	// * pages with neither a page nor local file revision
-	if( wgNamespaceNumber < 0 ||
+	if ( wgNamespaceNumber < 0 ||
 	(wgArticleId==0 && (wgNamespaceNumber!=6 || (document.getElementById("mw-imagepage-section-filehistory") && !(document.getElementById("mw-sharedupload")))))
 	)  return;
 
-	if( userIsInGroup( 'sysop' ) ) {
+	if ( userIsInGroup( 'sysop' ) ) {
 		twAddPortletLink( "javascript:twinklespeedy.callback()", "CSD", "tw-csd", "Speedy delete according to WP:CSD", "");
-	} else if (twinkleConfigExists) {
+	} 
+	else if (Twinkle.authorizedUser) {
 		twAddPortletLink( "javascript:twinklespeedy.callback()", "CSD", "tw-csd", "Request speedy deletion according to WP:CSD", "");
 	}
-	else
-	{
+	else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'CSD', 'tw-csd', 'Request speedy deletion according to WP:CSD', '');
 	}
+
+	/**
+	 TwinkleConfig.deletionSummaryAd (string)
+	 If ad should be added or not to deletion summary, default " ([[WP:TW|TW]])"
+	 */
+	if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
+		TwinkleConfig.deletionSummaryAd = TwinkleConfig.summaryAd;
+	}
+
+	/**
+	 TwinkleConfig.watchSpeedyPages (array)
+	 What types of actions that should result in forced addition to watchlist
+	 */
+	if( typeof( TwinkleConfig.watchSpeedyPages ) == 'undefined' ) {
+		TwinkleConfig.watchSpeedyPages = [ 'g3', 'g5', 'g10', 'g11', 'g12' ];
+	}
+
+	/**
+	 TwinkleConfig.markSpeedyPagesAsPatrolled (boolean)
+	 If, when applying speedy template to page, to mark the page as patrolled, default true
+	 */
+	if( typeof( TwinkleConfig.markSpeedyPagesAsPatrolled ) == 'undefined' ) {
+		TwinkleConfig.markSpeedyPagesAsPatrolled = true;
+	}
+
+	/**
+	 TwinkleConfig.notifyUserOnSpeedyDeletionNomination (array of strings)
+	 What types of actions that should result that the author of the page should be notified of nomination
+	 */
+	if( typeof( TwinkleConfig.notifyUserOnSpeedyDeletionNomination ) == 'undefined' ) {
+		TwinkleConfig.notifyUserOnSpeedyDeletionNomination = [ 'db', 'g1', 'g2', 'g3', 'g4', 'g10', 'g11', 'g12', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 't2', 't3', 'p1', 'p2' ];
+	}
+
+	/**
+	 TwinkleConfig.welcomeUserOnSpeedyDeletionNotification (array of strings)
+	 On what types of speedy deletion notifications shall the user be welcomed
+	 with a {{firstarticle}} notice if his talk page has not yet been created.
+	 */
+	if( typeof( TwinkleConfig.welcomeUserOnSpeedyDeletionNotification ) == 'undefined' ) {
+		TwinkleConfig.welcomeUserOnSpeedyDeletionNotification = TwinkleConfig.notifyUserOnSpeedyDeletionNomination;
+	}
+
+	/**
+	 TwinkleConfig.openUserTalkPageOnSpeedyDelete (array of strings)
+	 What types of actions that should result user talk page to be opened when speedily deleting (admin only)
+	 */
+	if( typeof( TwinkleConfig.openUserTalkPageOnSpeedyDelete ) == 'undefined' ) {
+		TwinkleConfig.openUserTalkPageOnSpeedyDelete = [ 'db', 'g1', 'g2', 'g3', 'g4', 'g5', 'g10', 'g11', 'g12', 'a1', 'a3', 'a7', 'a9', 'a10', 'f3', 'f7', 'f9', 'u3', 't2', 'p1' ];
+	}
+
+	/**
+	 TwinkleConfig.userTalkPageMode may take arguments:
+	 'window': open a new window, remember the opened window
+	 'tab': opens in a new tab, if possible.
+	 'blank': force open in a new window, even if a such window exist
+	 */
+	if( typeof( TwinkleConfig.userTalkPageMode ) == 'undefined' ) {
+		TwinkleConfig.userTalkPageMode = 'window';
+	}
+
+	/**
+	 TwinkleConfig.deleteTalkPageOnDelete (boolean)
+	 If talk page if exists should also be deleted (CSD G8) when spedying a page (admin only)
+	 */
+	if( typeof( TwinkleConfig.deleteTalkPageOnDelete ) == 'undefined' ) {
+		TwinkleConfig.deleteTalkPageOnDelete = false;
+	}
+
+	/**
+	 TwinkleConfig.orphanNormalPagesOnSpeedyDelete (hash)
+	 Defines if all backlinks to a page should be removed.
+	 property 'exclude' defined actions not to orphan
+	 */
+	if( typeof( TwinkleConfig.orphanBacklinksOnSpeedyDelete ) == 'undefined' ) {
+		TwinkleConfig.orphanBacklinksOnSpeedyDelete = { exclude: ['g6'], orphan:true };
+	}
+
+	/**
+	 TwinkleConfig.speedyWindowWidth (integer)
+	 Defines the width of the Twinkle SD window in pixels
+	 */
+	if( typeof( TwinkleConfig.speedyWindowWidth ) == 'undefined' ) {
+		TwinkleConfig.speedyWindowWidth = 800;
+	}
+
+	/**
+	 TwinkleConfig.speedyWindowHeight (integer)
+	 Defines the height of the Twinkle SD window in pixels
+	 */
+	if( typeof( TwinkleConfig.speedyWindowHeight ) == 'undefined' ) {
+		TwinkleConfig.speedyWindowHeight = 500;
+	}
+
+	/**
+	 TwinkleConfig.deleteSysopDefaultToTag (boolean)
+	 Make the CSD screen default to "tag" instead of "delete" (admin only)
+	 */
+	if( typeof(TwinkleConfig.deleteSysopDefaultToTag) == 'undefined' ) {
+		TwinkleConfig.deleteSysopDefaultToTag = true;
+	}
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinklespeedy); //schedule initializer
 
 // This function is run when the CSD tab/header link is clicked
 twinklespeedy.callback = function twinklespeedyCallback() {
@@ -1190,7 +1178,8 @@ twinklespeedy.callbacks = {
 			// Notification to first contributor
 			if (params.usertalk) {
 				var thispage = new Wikipedia.page(wgPageName);
-				var callback = function(pageobj, initialContrib) {
+				var callback = function(pageobj) {
+					var initialContrib = pageobj.getCreator();
 					var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 					var nowelcome = TwinkleConfig.welcomeUserOnSpeedyDeletionNotification.indexOf(params.normalized) == -1;
 					var notifytext;
@@ -1220,7 +1209,7 @@ twinklespeedy.callbacks = {
 					usertalkpage.setFollowRedirect(true);
 					usertalkpage.append();
 				};
-				thispage.getInitialContributor(callback);
+				thispage.lookupCreator(callback);
 			}
 
 			// Wrap SD template in noinclude tags if we are in template space.
@@ -1575,3 +1564,5 @@ twinklespeedy.callback.doMultiple = function twinklespeedyCallbackDoMultiple(e)
 	}
 }
 
+// register initialization callback
+Twinkle.init.moduleReady( "twinklespeedy", twinklespeedy );

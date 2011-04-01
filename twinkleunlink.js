@@ -38,7 +38,6 @@ function twinkleunlink() {
 	}
 	twAddPortletLink( "javascript:twinkleunlink.callback()", "Unlink", "tw-unlink", "Unlink backlinks", "");
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinkleunlink); //schedule initializer
 
 twinkleunlink.callback = function twinkleunlinkCallback() {
 	var Window = new SimpleWindow( 800, 400 );
@@ -234,3 +233,6 @@ twinkleunlink.callbacks = {
 		}
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinkleunlink", twinkleunlink );

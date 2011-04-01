@@ -1,52 +1,50 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
+function twinklexfd() {
+	if ( wgNamespaceNumber < 0 || wgCurRevisionId == false ) {
+		return;
+	}
+	if (Twinkle.authorizedUser) {
+		twAddPortletLink( "javascript:twinklexfd.callback()", "XFD", "tw-xfd", "Anything for deletion", "");
+	} else {
+		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'XFD', 'tw-xfd', 'Anything for deletion', '');
+	}
 
-/**
- TwinkleConfig.xfdWatchDiscussion (string)
- The watchlist setting of the newly created XfD page (for those processes that create discussion pages for each nomination),
- or the list page for the other processes.
- Either "yes" (add to watchlist), "no" (don't add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
- */
-if( typeof( TwinkleConfig.xfdWatchDiscussion ) == 'undefined' ) {
-	TwinkleConfig.xfdWatchDiscussion = "default";
-}
+	/**
+	 TwinkleConfig.xfdWatchDiscussion (string)
+	 The watchlist setting of the newly created XfD page (for those processes that create discussion pages for each nomination),
+	 or the list page for the other processes.
+	 Either "yes" (add to watchlist), "no" (don't add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+	 */
+	if( typeof( TwinkleConfig.xfdWatchDiscussion ) == 'undefined' ) {
+		TwinkleConfig.xfdWatchDiscussion = "default";
+	}
 
-/**
- TwinkleConfig.xfdWatchPage (string)
- The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
- add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
- */
-if( typeof( TwinkleConfig.xfdWatchPage) == 'undefined' ) {
-	TwinkleConfig.xfdWatchPage = "default";
-}
+	/**
+	 TwinkleConfig.xfdWatchPage (string)
+	 The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
+	 add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+	 */
+	if( typeof( TwinkleConfig.xfdWatchPage) == 'undefined' ) {
+		TwinkleConfig.xfdWatchPage = "default";
+	}
 
-/**
- TwinkleConfig.xfdWatchUser (string)
- The watchlist setting of the user if he receives a notification. Either "yes" (add to watchlist), "no" (don't
- add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
- */
-if( typeof( TwinkleConfig.xfdWatchUser ) == 'undefined' ) {
-	TwinkleConfig.xfdWatchUser = "default";
-}
+	/**
+	 TwinkleConfig.xfdWatchUser (string)
+	 The watchlist setting of the user if he receives a notification. Either "yes" (add to watchlist), "no" (don't
+	 add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+	 */
+	if( typeof( TwinkleConfig.xfdWatchUser ) == 'undefined' ) {
+		TwinkleConfig.xfdWatchUser = "default";
+	}
 
-/**
- TwinkleConfig.xfdWatchList (string)
- The watchlist setting of the XfD list page, *if* the discussion is on a separate page. Either "yes" (add to watchlist), "no" (don't
- add to watchlist), or "default" (use setting from preferences). Default is "no" (Hehe. Seriously though, who wants to watch it?
- Sorry in advance for any false positives.).
- */
-if( typeof( TwinkleConfig.xfdWatchList ) == 'undefined' ) {
-	TwinkleConfig.xfdWatchList = "no";
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default " ([[WP:TW|TW]])"
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
+	/**
+	 TwinkleConfig.xfdWatchList (string)
+	 The watchlist setting of the XfD list page, *if* the discussion is on a separate page. Either "yes" (add to watchlist), "no" (don't
+	 add to watchlist), or "default" (use setting from preferences). Default is "no" (Hehe. Seriously though, who wants to watch it?
+	 Sorry in advance for any false positives.).
+	 */
+	if( typeof( TwinkleConfig.xfdWatchList ) == 'undefined' ) {
+		TwinkleConfig.xfdWatchList = "no";
+	}
 }
 
 function num2order( num ) {
@@ -57,18 +55,6 @@ function num2order( num ) {
 	default: return num + 'th';
 	}
 }
-
-function twinklexfd() {
-	if( wgNamespaceNumber < 0 || wgCurRevisionId == false ) {
-		return;
-	}
-	if (twinkleConfigExists) {
-		twAddPortletLink( "javascript:twinklexfd.callback()", "XFD", "tw-xfd", "Anything for deletion", "");
-	} else {
-		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'XFD', 'tw-xfd', 'Anything for deletion', '');
-	}
-}
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinklexfd); //schedule initializer
 
 twinklexfd.callback = function twinklexfdCallback() {
 
@@ -482,7 +468,7 @@ twinklexfd.callbacks = {
 			if (params.usertalk) {
 				var thispage = new Wikipedia.page(wgPageName);
 				thispage.setCallbackParameters(params);
-				thispage.getInitialContributor(twinklexfd.callbacks.afd.userNotification);
+				thispage.lookupCreator(twinklexfd.callbacks.afd.userNotification);
 			}
 
 			// Remove some tags that should always be removed on AfD.
@@ -556,8 +542,9 @@ twinklexfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
-		userNotification: function(pageobj, initialContrib) {
+		userNotification: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
+			var initialContrib = pageobj.getCreator();
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:AFDWarning|1=" + wgPageName + ( params.numbering != '' ? '|order=&#32;' + params.numbering : '' ) + "\}\} \~\~\~\~";
 			usertalkpage.setAppendText(notifytext);
@@ -627,7 +614,8 @@ twinklexfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
-		userNotification: function(pageobj, initialContrib) {
+		userNotification: function(pageobj) {
+			var initialContrib = pageobj.getCreator();
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:tfdnotice|1=" + wgTitle + "\}\} \~\~\~\~";
 			usertalkpage.setAppendText(notifytext);
@@ -719,7 +707,7 @@ twinklexfd.callbacks = {
 			if (apiobj.params.usertalk) {
 				var thispage = new Wikipedia.page(wgPageName);
 				thispage.setCallbackParameters(apiobj.params);
-				thispage.getInitialContributor(twinklexfd.callbacks.mfd.userNotification);
+				thispage.lookupCreator(twinklexfd.callbacks.mfd.userNotification);
 			}
 		},
 		taggingPage: function(pageobj) {
@@ -797,7 +785,8 @@ twinklexfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
-		userNotification: function(pageobj, initialContrib) {
+		userNotification: function(pageobj) {
+			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
 
 			// Really notify the creator
@@ -836,8 +825,8 @@ twinklexfd.callbacks = {
 
 
 	ffd: {
-		main: function(pageobj, initialContrib) {
-			// this is coming in from getInitialContributor...!
+		main: function(pageobj) {
+			// this is coming in from lookupCreator...!
 			var params = pageobj.getCallbackParameters();
 			params.uploader = initialContrib;
 
@@ -951,7 +940,8 @@ twinklexfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
-		userNotification: function(pageobj, initialContrib) {
+		userNotification: function(pageobj) {
+			var initialContrib = pageobj.getCreator();
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:idw-puf|1=" + wgTitle + "\}\}";
 			usertalkpage.setAppendText(notifytext);
@@ -1064,7 +1054,8 @@ twinklexfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
-		userNotification: function(pageobj, initialContrib) {
+		userNotification: function(pageobj) {
+			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:CFDNote|1=" + wgPageName + "\}\} \~\~\~\~";
@@ -1122,7 +1113,7 @@ twinklexfd.callbacks = {
 			if (apiobj.params.usertalk) {
 				var thispage = new Wikipedia.page(wgPageName);
 				thispage.setCallbackParameters(apiobj.params);
-				thispage.getInitialContributor(twinklexfd.callbacks.rfd.userNotification);
+				thispage.lookupCreator(twinklexfd.callbacks.rfd.userNotification);
 			}
 		},
 		taggingRedirect: function(pageobj) {
@@ -1173,7 +1164,8 @@ twinklexfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
-		userNotification: function(pageobj, initialContrib) {
+		userNotification: function(pageobj) {
+			var initialContrib = pageobj.getCreator();
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:RFDNote|1=" + wgPageName + "\}\} \~\~\~\~";
 			usertalkpage.setAppendText(notifytext);
@@ -1268,7 +1260,7 @@ twinklexfd.callback.evaluate = function(e) {
 		// Notification to first contributor
 		if (usertalk) {
 			var thispage = new Wikipedia.page(wgPageName);
-			thispage.getInitialContributor(twinklexfd.callbacks.tfd.userNotification);
+			thispage.lookupCreator(twinklexfd.callbacks.tfd.userNotification);
 		}
 
 		Wikipedia.removeCheckpoint();
@@ -1318,7 +1310,7 @@ twinklexfd.callback.evaluate = function(e) {
 			if (usertalk) {
 				wikipedia_page = new Wikipedia.page(wgPageName);
 				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.getInitialContributor(twinklexfd.callbacks.puf.userNotification);
+				wikipedia_page.lookupCreator(twinklexfd.callbacks.puf.userNotification);
 			}
 
 			Wikipedia.removeCheckpoint();
@@ -1337,7 +1329,7 @@ twinklexfd.callback.evaluate = function(e) {
 			// Contributor specific edits
 			wikipedia_page = new Wikipedia.page(wgPageName);
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.getInitialContributor(twinklexfd.callbacks.ffd.main);
+			wikipedia_page.lookupCreator(twinklexfd.callbacks.ffd.main);
 		}
 		Wikipedia.removeCheckpoint();
 		break;
@@ -1378,7 +1370,7 @@ twinklexfd.callback.evaluate = function(e) {
 		if (usertalk) {
 			wikipedia_page = new Wikipedia.page(wgPageName);
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.getInitialContributor(twinklexfd.callbacks.cfd.userNotification);
+			wikipedia_page.lookupCreator(twinklexfd.callbacks.cfd.userNotification);
 		}
 
 		Wikipedia.removeCheckpoint();
@@ -1397,3 +1389,6 @@ twinklexfd.callback.evaluate = function(e) {
 		break;
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinklexfd", twinklexfd );

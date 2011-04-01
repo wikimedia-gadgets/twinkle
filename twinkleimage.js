@@ -1,48 +1,32 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default " ([[WP:TW|TW]])"
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
-}
-
-/**
- TwinkleConfig.notifyUserOnDeli (boolean)
- If the user should be notified after placing a file deletion tag
- */
-if( typeof( TwinkleConfig.notifyUserOnDeli ) == 'undefined' ) {
-	TwinkleConfig.notifyUserOnDeli = true;
-}
-
-/**
- TwinkleConfig.deliWatchPage (string)
- The watchlist setting of the page tagged for deletion. Either "yes", "no", or "default". Default is "default" (Duh).
- */
-if( typeof( TwinkleConfig.deliWatchPage) == 'undefined' ) {
-	TwinkleConfig.deliWatchPage = "default";
-}
-
-
-/**
- TwinkleConfig.deliWatchUser (string)
- The watchlist setting of the user talk page if a notification is placed. Either "yes", "no", or "default". Default is "default" (Duh).
- */
-if( typeof( TwinkleConfig.deliWatchUser ) == 'undefined' ) {
-	TwinkleConfig.deliWatchUser = "default";
-}
 
 function twinkleimage() {
 	if( wgNamespaceNumber == 6 && !(document.getElementById("mw-sharedupload"))) {
-		twAddPortletLink( (twinkleConfigExists ? "javascript:twinkleimage.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "DI", "tw-di", "Nominate file for relative speedy deletion", "");
+		twAddPortletLink( (Twinkle.authorizedUser ? "javascript:twinkleimage.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "DI", "tw-di", "Nominate file for relative speedy deletion", "");
+		/**
+		 TwinkleConfig.notifyUserOnDeli (boolean)
+		 If the user should be notified after placing a file deletion tag
+		 */
+		if( typeof( TwinkleConfig.notifyUserOnDeli ) == 'undefined' ) {
+			TwinkleConfig.notifyUserOnDeli = true;
+		}
+
+		/**
+		 TwinkleConfig.deliWatchPage (string)
+		 The watchlist setting of the page tagged for deletion. Either "yes", "no", or "default". Default is "default" (Duh).
+		 */
+		if( typeof( TwinkleConfig.deliWatchPage) == 'undefined' ) {
+			TwinkleConfig.deliWatchPage = "default";
+		}
+
+		/**
+		 TwinkleConfig.deliWatchUser (string)
+		 The watchlist setting of the user talk page if a notification is placed. Either "yes", "no", or "default". Default is "default" (Duh).
+		 */
+		if( typeof( TwinkleConfig.deliWatchUser ) == 'undefined' ) {
+			TwinkleConfig.deliWatchUser = "default";
+		}
 	}
 }
-
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinkleimage); //schedule initializer
 
 twinkleimage.callback = function twinkleimageCallback() {
 	var Window = new SimpleWindow( 600, 300 );
@@ -238,7 +222,7 @@ twinkleimage.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
 	// Notifying uploader
 	if( notify ) {
-		wikipedia_page.getInitialContributor(twinkleimage.callbacks.userNotification);
+		wikipedia_page.lookupCreator(twinkleimage.callbacks.userNotification);
 	} else {
 		// No auto-notifiaction, display what was going to be added.
 		var noteData = document.createElement( 'pre' );
@@ -303,8 +287,9 @@ twinkleimage.callbacks = {
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 	},
-	userNotification: function(pageobj, initialContrib ) {
+	userNotification: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
+		var initialContrib = pageobj.getCreator();
 		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n\{\{subst:di-" + params.type + "-notice|1=" + wgTitle + "\}\} \~\~\~\~";
 		usertalkpage.setAppendText(notifytext);
@@ -325,3 +310,6 @@ twinkleimage.callbacks = {
 		usertalkpage.append();
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinkleimage", twinkleimage );

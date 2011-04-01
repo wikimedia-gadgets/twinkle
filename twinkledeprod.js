@@ -32,7 +32,6 @@ function twinkleproddelete() {
 	}
 	twAddPortletLink( "javascript:twinkleproddelete.callback()", "Deprod", "tw-deprod", "Delete prod pages found in this category", "");
 }
-window.TwinkleInit = (window.TwinkleInit || []).concat(twinkleproddelete); //schedule initializer
 
 function getChecked( nodelist ) {
 	if( !( nodelist instanceof NodeList ) ) {
@@ -294,3 +293,6 @@ twinkleproddelete.callbacks = {
 		self.post( postData );
 	}
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinkledeprod", twinkleproddelete );
