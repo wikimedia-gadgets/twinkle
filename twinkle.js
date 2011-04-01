@@ -16,7 +16,7 @@ Twinkle.init = {
 		var defaultDir = "User:UncleDouggie";
 		
 		/* The order of the modules in the TW menu is determined from the order in the following list.
-		   Undesired modules modules may be removed from this list without requiring any other code changes.
+		   Undesired modules may be removed from this list without requiring any other code changes.
 		   To override the location of a module for debugging, just change the "dir" property. */
 
 		this.modules = new Array (	
