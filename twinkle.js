@@ -1,7 +1,22 @@
 // Twinkle loader
 
-// using debug mode for testing purposes (stops minification of scripts, which is quite important for JS debugging!)
-mediaWiki.config.set("debug", "true");
+// Create configuration object if not provided by the user
+if ( typeof( TwinkleConfig ) === 'undefined' ) {
+	TwinkleConfig = {};
+}
+
+if ( typeof( TwinkleConfig.debug ) === 'undefined' ) {
+	TwinkleConfig.debug = false;
+}
+
+if ( typeof( TwinkleConfig.debugLoad ) === 'undefined' ) {
+	TwinkleConfig.debugLoad = false;
+}
+
+if (TwinkleConfig.debug) {
+	// set debug mode to stop minification of scripts, which is important for JS debugging!
+	mediaWiki.config.set("debug", "true");
+}
 
 Twinkle = {};  // don't pollute the global namespace
 
@@ -52,10 +67,31 @@ Twinkle.init = {
 		   user scripts also need to load morebits. However, it's all we've got now so we will
 		   just hope that the user's browser performs some optimization. */
 		
+		var smaxage, maxage;
+		
+		if (TwinkleConfig.debug) {
+			smaxage = 1;  // no caching for modules in debug mode
+			maxage = 1;  // no caching for modules in debug mode
+		}
+		else {
+			// normal usage without debug - note that scripts may be minified
+			smaxage = 7200; // permit 2 hour module cache
+			maxage = 7200; // permit 2 hour module cache
+		}
+		
 		for (var i = 0; i < this.modules.length; i++) {
 			var modulePath = this.modules[i].dir + "/" + this.modules[i].name + ".js";
-			var url = wgServer + wgScript + "?title=" + modulePath + "&action=raw&ctype=text/javascript&smaxage=21600&maxage=86400";
-			mw.loader.load( url );
+			
+			if (TwinkleConfig.debugLoad) {
+				// Firefox doesn't support debugging or logging of errors to the console when using mw.loader.load!
+				// For developer use, load the module the old fashioned way until MediaWiki gives us something better
+				importScript( modulePath );
+			}
+			else {
+				// normal module loader
+				var url = wgServer + wgScript + "?title=" + modulePath + "&action=raw&ctype=text/javascript&smaxage=" + smaxage + "&maxage=" + maxage;
+				mw.loader.load( url );
+			}
 		}
 	},
 

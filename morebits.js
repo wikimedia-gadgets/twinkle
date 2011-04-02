@@ -14,9 +14,6 @@
 
 // Initialization callback function
 Twinkle.morebits = function() {
-	if ( typeof( TwinkleConfig ) === 'undefined' ) {
-		TwinkleConfig = {};
-	}
 
 	switch (skin)
 	{
