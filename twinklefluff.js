@@ -2,85 +2,6 @@
  Twinklefluff revert and antivandalism utillity
  */
 
-/**
- TwinkleConfig.revertMaxRevisions (int)
- defines how many revision to query maximum, maximum possible is 50, default is 50
- */
-if( typeof( TwinkleConfig.revertMaxRevisions ) == 'undefined' ) {
-	TwinkleConfig.revertMaxRevisions = 50;
-}
-
-/**
- TwinkleConfig.userTalkPageMode may take arguments:
- 'window': open a new window, remember the opened window
- 'tab': opens in a new tab, if possible.
- 'blank': force open in a new window, even if a such window exist
- */
-if( typeof( TwinkleConfig.userTalkPageMode ) == 'undefined' ) {
-	TwinkleConfig.userTalkPageMode = 'window';
-}
-
-/**
- TwinkleConfig.openTalkPage (array)
- What types of actions that should result in opening of talk page
- */
-if( typeof( TwinkleConfig.openTalkPage ) == 'undefined' ) {
-	TwinkleConfig.openTalkPage = [ 'agf', 'norm', 'vand' ];
-}
-
-/**
- TwinkleConfig.openTalkPageOnAutoRevert (bool)
- Defines if talk page should be opened when canling revert from contrib page, this because from there, actions may be multiple, and opening talk page not suitable. If set to true, openTalkPage defines then if talk page will be opened.
- */
-if( typeof( TwinkleConfig.openTalkPageOnAutoRevert ) == 'undefined' ) {
-	TwinkleConfig.openTalkPageOnAutoRevert = false;
-}
-
-/**
- TwinkleConfig.markRevertedPagesAsMinor (array)
- What types of actions that should result in marking edit as minor
- */
-if( typeof( TwinkleConfig.markRevertedPagesAsMinor ) == 'undefined' ) {
-	TwinkleConfig.markRevertedPagesAsMinor = [ 'vand' ];
-}
-
-/**
- TwinkleConfig.watchRevertedPages (array)
- What types of actions that should result in forced addition to watchlist
- */
-if( typeof( TwinkleConfig.watchRevertedPages ) == 'undefined' ) {
-	TwinkleConfig.watchRevertedPages = [ 'agf', 'norm', 'vand', 'torev' ];
-}
-
-/**
- TwinkleConfig.offerReasonOnNormalRevert (boolean)
- If to offer a promt for extra summary reason for normal reverts, default to true
- */
-if( typeof( TwinkleConfig.offerReasonOnNormalRevert ) == 'undefined' ) {
-	TwinkleConfig.offerReasonOnNormalRevert = true;
-}
-
-/**
- TwinkleConfig.showRollbackLinks (array)
- Where Twinkle should show rollback links (diff, others, mine, contribs)
- */
-if( typeof( TwinkleConfig.showRollbackLinks ) == 'undefined' ) {
-	TwinkleConfig.showRollbackLinks = [ 'diff', 'others' ];
-}
-
-// a list of usernames, usually only bots, that vandalism revert is jumped over, that is
-// if vandalism revert was chosen on such username, then it's target in on the revision before.
-// This is for handeling quick bots that makes edits seconds after the original edit is made.
-// This only affect vandalism rollback, for good faith rollback, it will stop, indicating a bot 
-// has no faith, and for normal rollback, it will rollback that edit.
-var WHITELIST = [
-	'HagermanBot',
-	'SineBot',
-	'HBC AIV helperbot',
-	'HBC AIV helperbot2',
-	'HBC AIV helperbot3',
-]
-
 twinklefluff = {
 	auto: function() {
 		if( QueryString.get( 'oldid' ) != wgCurRevisionId ) {
@@ -398,7 +319,7 @@ twinklefluff.callbacks = {
 			}
 			else if( 
 				self.params.type == 'vand' && 
-				WHITELIST.indexOf( top.getAttribute( 'user' ) ) != -1 && revs.snapshotLength > 1 &&
+				twinklefluff.whiteList.indexOf( top.getAttribute( 'user' ) ) != -1 && revs.snapshotLength > 1 &&
 				revs.snapshotItem(1).getAttribute( 'pageId' ) == wgCurRevisionId 
 			) {
 				Status.info( 'Info', [ 'Latest revision was made by ', htmlNode( 'strong', lastuser ), ', a trusted bot, and the revision before was made by our vandal, so we proceed with the revert.' ] );
@@ -410,7 +331,7 @@ twinklefluff.callbacks = {
 
 		}
 
-		if( WHITELIST.indexOf( self.params.user ) != -1  ) {
+		if( twinklefluff.whiteList.indexOf( self.params.user ) != -1  ) {
 			switch( self.params.type ) {
 			case 'vand':
 				Status.info( 'Info', [ 'Vandalism revert was chosen on ', htmlNode( 'strong', self.params.user ), ', as this is a whitelisted bot, we assume you wanted to revert vandalism made by the previous user instead.' ] );
@@ -591,6 +512,85 @@ twinklefluff.formatSummaryPostfix = function(stringToAdd) {
 function twinklefluffinit() {
 	if (Twinkle.authorizedUser)
 	{
+		/**
+		 TwinkleConfig.revertMaxRevisions (int)
+		 defines how many revision to query maximum, maximum possible is 50, default is 50
+		 */
+		if( typeof( TwinkleConfig.revertMaxRevisions ) == 'undefined' ) {
+			TwinkleConfig.revertMaxRevisions = 50;
+		}
+
+		/**
+		 TwinkleConfig.userTalkPageMode may take arguments:
+		 'window': open a new window, remember the opened window
+		 'tab': opens in a new tab, if possible.
+		 'blank': force open in a new window, even if a such window exist
+		 */
+		if( typeof( TwinkleConfig.userTalkPageMode ) == 'undefined' ) {
+			TwinkleConfig.userTalkPageMode = 'window';
+		}
+
+		/**
+		 TwinkleConfig.openTalkPage (array)
+		 What types of actions that should result in opening of talk page
+		 */
+		if( typeof( TwinkleConfig.openTalkPage ) == 'undefined' ) {
+			TwinkleConfig.openTalkPage = [ 'agf', 'norm', 'vand' ];
+		}
+
+		/**
+		 TwinkleConfig.openTalkPageOnAutoRevert (bool)
+		 Defines if talk page should be opened when canling revert from contrib page, this because from there, actions may be multiple, and opening talk page not suitable. If set to true, openTalkPage defines then if talk page will be opened.
+		 */
+		if( typeof( TwinkleConfig.openTalkPageOnAutoRevert ) == 'undefined' ) {
+			TwinkleConfig.openTalkPageOnAutoRevert = false;
+		}
+
+		/**
+		 TwinkleConfig.markRevertedPagesAsMinor (array)
+		 What types of actions that should result in marking edit as minor
+		 */
+		if( typeof( TwinkleConfig.markRevertedPagesAsMinor ) == 'undefined' ) {
+			TwinkleConfig.markRevertedPagesAsMinor = [ 'vand' ];
+		}
+
+		/**
+		 TwinkleConfig.watchRevertedPages (array)
+		 What types of actions that should result in forced addition to watchlist
+		 */
+		if( typeof( TwinkleConfig.watchRevertedPages ) == 'undefined' ) {
+			TwinkleConfig.watchRevertedPages = [ 'agf', 'norm', 'vand', 'torev' ];
+		}
+
+		/**
+		 TwinkleConfig.offerReasonOnNormalRevert (boolean)
+		 If to offer a promt for extra summary reason for normal reverts, default to true
+		 */
+		if( typeof( TwinkleConfig.offerReasonOnNormalRevert ) == 'undefined' ) {
+			TwinkleConfig.offerReasonOnNormalRevert = true;
+		}
+
+		/**
+		 TwinkleConfig.showRollbackLinks (array)
+		 Where Twinkle should show rollback links (diff, others, mine, contribs)
+		 */
+		if( typeof( TwinkleConfig.showRollbackLinks ) == 'undefined' ) {
+			TwinkleConfig.showRollbackLinks = [ 'diff', 'others' ];
+		}
+
+		// a list of usernames, usually only bots, that vandalism revert is jumped over, that is
+		// if vandalism revert was chosen on such username, then it's target in on the revision before.
+		// This is for handeling quick bots that makes edits seconds after the original edit is made.
+		// This only affect vandalism rollback, for good faith rollback, it will stop, indicating a bot 
+		// has no faith, and for normal rollback, it will rollback that edit.
+		twinklefluff.whiteList = [
+			'HagermanBot',
+			'SineBot',
+			'HBC AIV helperbot',
+			'HBC AIV helperbot2',
+			'HBC AIV helperbot3',
+		]
+
 		if ( QueryString.exists( 'twinklerevert' ) ) {
 			twinklefluff.auto();
 		} else {

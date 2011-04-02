@@ -1,36 +1,23 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " using [[WP:TW|TW]]";
-}
-
-/**
- TwinkleConfig.deletionSummaryAd (string)
- If ad should be added or not to deletion summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
-	TwinkleConfig.deletionSummaryAd = " using [[WP:TW|TW]]";
-}
-
-/**
- TwinkleConfig.proddeleteChunks (integer)
- How many pages should be processed at a time
- */
-if( typeof( TwinkleConfig.proddeleteChunks ) == 'undefined' ) {
-	TwinkleConfig.proddeleteChunks = 50;
-}
 function twinkleproddelete() {
 	if( wgNamespaceNumber != Namespace.CATEGORY || ! userIsInGroup( 'sysop' ) || ! /^Category:Proposed_deletion_as_of/.test(wgPageName) ) {
 		return;
 	}
 	twAddPortletLink( "javascript:twinkleproddelete.callback()", "Deprod", "tw-deprod", "Delete prod pages found in this category", "");
+	/**
+	 TwinkleConfig.deletionSummaryAd (string)
+	 If ad should be added or not to deletion summary, default
+	 */
+	if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
+		TwinkleConfig.deletionSummaryAd = TwinkleConfig.summaryAd;
+	}
+
+	/**
+	 TwinkleConfig.proddeleteChunks (integer)
+	 How many pages should be processed at a time
+	 */
+	if( typeof( TwinkleConfig.proddeleteChunks ) == 'undefined' ) {
+		TwinkleConfig.proddeleteChunks = 50;
+	}
 }
 
 function getChecked( nodelist ) {

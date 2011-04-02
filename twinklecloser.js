@@ -1,24 +1,12 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = function() {};
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default [[WP:TWINKLE|]]
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " using [[WP:TW|]]";
-}
-/**
- TwinkleConfig.deletionSummaryAd (string)
- If ad should be added or not to deletion summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
-	TwinkleConfig.deletionSummaryAd = " using [[WP:TW|]]";
-}
-
 function twinklecloser() {
+	/**
+	 TwinkleConfig.deletionSummaryAd (string)
+	 If ad should be added or not to deletion summary
+	 */
+	if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
+		TwinkleConfig.deletionSummaryAd = TwinkleConfig.summaryAd;
+	}
+
 	var closeable = false;
 	var type;
 	if( /Wikipedia:Articles_for_creation\/\d{4}-\d{2}-\d{2}/.test(wgPageName) ) {

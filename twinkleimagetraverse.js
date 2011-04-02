@@ -1,28 +1,14 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " using [[WP:TW|TW]]";
-}
-
-/**
- TwinkleConfig.deletionSummaryAd (string)
- If ad should be added or not to deletion summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
-	TwinkleConfig.deletionSummaryAd = " using [[WP:TW|TW]]";
-}
-
 function twinkleimagetraverse() {
 	if( userIsInGroup( 'sysop' ) && wgNamespaceNumber == Namespace.CATEGORY ) {
 
 		twAddPortletLink( "javascript:twinkleimagetraverse.callback()", "Traverse", "tw-imagetraverse", "Traverse category", "");
+		/**
+		 TwinkleConfig.deletionSummaryAd (string)
+		 If ad should be added or not to deletion summary
+		 */
+		if ( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
+			TwinkleConfig.deletionSummaryAd = TwinkleConfig.summaryAd;
+		}
 	}
 }
 

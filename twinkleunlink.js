@@ -1,22 +1,16 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
+function twinkleunlink() {
+	if( wgNamespaceNumber < 0 ) {
+		return;
+	}
+	twAddPortletLink( "javascript:twinkleunlink.callback()", "Unlink", "tw-unlink", "Unlink backlinks", "");
 
-/**
-TwinkleConfig.summaryAd (string)
-If ad should be added or not to summary, default " ([[WP:TW|TW]])"
-*/
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
-}
-
-/**
-TwinkleConfig.unlinkNamespaces (array)
-In what namespaces unlink should happen, default in 0 (article) and 100 (portal)
-*/
-if( typeof( TwinkleConfig.unlinkNamespaces) == 'undefined' ) {
-	TwinkleConfig.unlinkNamespaces = [0,100];
+	/**
+	TwinkleConfig.unlinkNamespaces (array)
+	In what namespaces unlink should happen, default in 0 (article) and 100 (portal)
+	*/
+	if( typeof( TwinkleConfig.unlinkNamespaces) == 'undefined' ) {
+		TwinkleConfig.unlinkNamespaces = [0,100];
+	}
 }
 
 function getChecked2( nodelist ) {
@@ -30,13 +24,6 @@ function getChecked2( nodelist ) {
 		}
 	}
 	return result;
-}
-
-function twinkleunlink() {
-	if( wgNamespaceNumber < 0 ) {
-		return;
-	}
-	twAddPortletLink( "javascript:twinkleunlink.callback()", "Unlink", "tw-unlink", "Unlink backlinks", "");
 }
 
 twinkleunlink.callback = function twinkleunlinkCallback() {

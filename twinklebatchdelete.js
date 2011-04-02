@@ -1,51 +1,39 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
-
-/**
- TwinkleConfig.summaryAd (string)
- If ad should be added or not to summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.summaryAd ) == 'undefined' ) {
-	TwinkleConfig.summaryAd = " using [[WP:TW|TW]]";
-}
-
-/**
- TwinkleConfig.deletionSummaryAd (string)
- If ad should be added or not to deletion summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
-	TwinkleConfig.deletionSummaryAd = " using [[WP:TW|TW]]";
-}
-
-/**
- TwinkleConfig.batchdeleteChunks (integer)
- How many pages should be processed at a time
- */
-if( typeof( TwinkleConfig.batchDeleteChunks ) == 'undefined' ) {
-	TwinkleConfig.batchdeleteChunks = 1;
-}
-
-/**
- TwinkleConfig.batchDeleteMinCutOff (integer)
- How many pages left in the process of being completed should allow a new batch to be initialized
- */
-if( typeof( TwinkleConfig.batchDeleteMinCutOff ) == 'undefined' ) {
-	TwinkleConfig.batchDeleteMinCutOff = 0;
-}
-/**
- TwinkleConfig.batchMax (integer)
- How many pages should be processed maximum
- */
-if( typeof( TwinkleConfig.batchMax ) == 'undefined' ) {
-	TwinkleConfig.batchMax = 5000;
-}
-
 function twinklebatchdelete() {
+
 	if( userIsInGroup( 'sysop' ) && (wgNamespaceNumber > 0 || wgCanonicalSpecialPageName == 'Prefixindex') ) {
-	  twAddPortletLink( "javascript:twinklebatchdelete.callback()", "D-batch", "tw-batch", "Delete pages found in this category/on this page", "");
-        }
+	
+		twAddPortletLink( "javascript:twinklebatchdelete.callback()", "D-batch", "tw-batch", "Delete pages found in this category/on this page", "");
+		/**
+		 TwinkleConfig.deletionSummaryAd (string)
+		 If ad should be added or not to deletion summary
+		 */
+		if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
+			TwinkleConfig.deletionSummaryAd = TwinkleConfig.summaryAd;
+		}
+
+		/**
+		 TwinkleConfig.batchdeleteChunks (integer)
+		 How many pages should be processed at a time
+		 */
+		if( typeof( TwinkleConfig.batchDeleteChunks ) == 'undefined' ) {
+			TwinkleConfig.batchdeleteChunks = 1;
+		}
+
+		/**
+		 TwinkleConfig.batchDeleteMinCutOff (integer)
+		 How many pages left in the process of being completed should allow a new batch to be initialized
+		 */
+		if( typeof( TwinkleConfig.batchDeleteMinCutOff ) == 'undefined' ) {
+			TwinkleConfig.batchDeleteMinCutOff = 0;
+		}
+		/**
+		 TwinkleConfig.batchMax (integer)
+		 How many pages should be processed maximum
+		 */
+		if( typeof( TwinkleConfig.batchMax ) == 'undefined' ) {
+			TwinkleConfig.batchMax = 5000;
+		}
+	}
 }
 
 twinklebatchdelete.unlinkCache = {};

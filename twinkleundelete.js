@@ -1,21 +1,8 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
-
-/**
- TwinkleConfig.deletionSummaryAd (string)
- If ad should be added or not to deletion summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
-	TwinkleConfig.deletionSummaryAd = " using [[WP:TW|TW]]";
-}
-
 function twinkleundelete() {
-	if( wgNamespaceNumber < 0 || wgCurRevisionId != false ) {
+	if ( wgNamespaceNumber < 0 || wgCurRevisionId != false ) {
 		return;
 	}
-	if( userIsInGroup( 'sysop' ) ) {
+	if ( userIsInGroup( 'sysop' ) ) {
 		addPortletLink( 'p-cactions', "javascript:twinkleundelete.callback()", "undel", "tw-undel", "Undelete em all", "");
 	}
 }

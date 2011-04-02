@@ -1,44 +1,31 @@
-// If TwinkleConfig aint exist.
-if( typeof( TwinkleConfig ) == 'undefined' ) {
-	TwinkleConfig = {};
-}
-
-/**
- TwinkleConfig.deletionSummaryAd (string)
- If ad should be added or not to deletion summary, default [[WP:TWINKLE|TWINKLE]]
- */
-if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
-	TwinkleConfig.deletionSummaryAd = " using [[WP:TW|TW]]";
-}
-/**
- TwinkleConfig.batchundeleteChunks (integer)
- How many pages should be processed at a time
- */
-if( typeof( TwinkleConfig.batchUndeleteChunks ) == 'undefined' ) {
-	TwinkleConfig.batchundeleteChunks = 50;
-}
-
-/**
- TwinkleConfig.batchUndeleteMinCutOff (integer)
- How many pages left in the process of being completed should allow a new batch to be initialized
- */
-if( typeof( TwinkleConfig.batchUndeleteMinCutOff ) == 'undefined' ) {
-	TwinkleConfig.batchUndeleteMinCutOff = 5;
-}
-/**
- TwinkleConfig.batchMax (integer)
- How many pages should be processed maximum
- */
-if( typeof( TwinkleConfig.batchMax ) == 'undefined' ) {
-	TwinkleConfig.batchMax = 5000;
-}
-
 function twinklebatchundelete() {
 	if( wgNamespaceNumber != Namespace.USER ) {
 		return;
 	}
 	if( userIsInGroup( 'sysop' ) ) {
 		twAddPortletLink( "javascript:twinklebatchundelete.callback()", "Und-batch", "tw-batch-undel", "Undelete 'em all", "");
+		/**
+		 TwinkleConfig.batchundeleteChunks (integer)
+		 How many pages should be processed at a time
+		 */
+		if( typeof( TwinkleConfig.batchUndeleteChunks ) == 'undefined' ) {
+			TwinkleConfig.batchundeleteChunks = 50;
+		}
+
+		/**
+		 TwinkleConfig.batchUndeleteMinCutOff (integer)
+		 How many pages left in the process of being completed should allow a new batch to be initialized
+		 */
+		if( typeof( TwinkleConfig.batchUndeleteMinCutOff ) == 'undefined' ) {
+			TwinkleConfig.batchUndeleteMinCutOff = 5;
+		}
+		/**
+		 TwinkleConfig.batchMax (integer)
+		 How many pages should be processed maximum
+		 */
+		if( typeof( TwinkleConfig.batchMax ) == 'undefined' ) {
+			TwinkleConfig.batchMax = 5000;
+		}
 	}
 }
 
