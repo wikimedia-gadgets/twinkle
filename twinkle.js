@@ -1,23 +1,5 @@
 // Twinkle loader
 
-// Create configuration object if not provided by the user
-if ( typeof( TwinkleConfig ) === 'undefined' ) {
-	TwinkleConfig = {};
-}
-
-if ( typeof( TwinkleConfig.debug ) === 'undefined' ) {
-	TwinkleConfig.debug = false;
-}
-
-if ( typeof( TwinkleConfig.debugLoad ) === 'undefined' ) {
-	TwinkleConfig.debugLoad = false;
-}
-
-if (TwinkleConfig.debug) {
-	// set debug mode to stop minification of scripts, which is important for JS debugging!
-	mediaWiki.config.set("debug", "true");
-}
-
 Twinkle = {};  // don't pollute the global namespace
 
 Twinkle.init = {
@@ -34,7 +16,7 @@ Twinkle.init = {
 		   Undesired modules may be removed from this list without requiring any other code changes.
 		   To override the location of a module for debugging, just change the "dir" property. */
 
-		this.modules = new Array (	
+		this.modules = [	
 			{ dir: defaultDir, name: "morebits" }, // mandatory and must be first or nothing will work
 			{ dir: defaultDir, name: "twinklewarn" },
 			{ dir: defaultDir, name: "twinklespeedy" },
@@ -53,7 +35,39 @@ Twinkle.init = {
 			{ dir: defaultDir, name: "twinkleimagetraverse" },
 			{ dir: defaultDir, name: "twinklebatchundelete" },
 			{ dir: defaultDir, name: "morebits-test" }
-		);
+		];
+		
+		// Create configuration object if not provided by the user's custom .js file
+		if ( typeof( TwinkleConfig ) === 'undefined' ) {
+			TwinkleConfig = {};
+		}
+
+		// Default is no debug
+		if ( typeof( TwinkleConfig.debug ) === 'undefined' ) {
+			TwinkleConfig.debug = false;
+		}
+
+		if ( typeof( TwinkleConfig.debugFirefox ) === 'undefined' ) {
+			TwinkleConfig.debugFirefox = false;
+		}
+
+		var smaxage, maxage;
+		
+		if (TwinkleConfig.debug) {
+			/* Require revalidation of the cahced copy with the server.
+			   We use 1 second instead of 0 to make sure that MediaWiki never changes "maxage=0" into "nocache",
+			   which behaves differently in some browsers. */
+			smaxage = 1;
+			maxage = 1;
+			
+			// set debug mode to stop minification of scripts, which is important for JS debugging!
+			mediaWiki.config.set("debug", "true");
+		}
+		else {
+			// normal usage without debug - note that scripts may be minified
+			smaxage = 7200; // permit 2 hour module cache
+			maxage = 7200; // permit 2 hour module cache
+		}
 		
 		/* Load all modules asynchronously for best performance.
 		
@@ -65,24 +79,13 @@ Twinkle.init = {
 		   Using mw.loader.load() for morebits.js may not be as good as the deprecated importScript()
 		   because it doesn't seem to filter multiple load requests in the event that other
 		   user scripts also need to load morebits. However, it's all we've got now so we will
-		   just hope that the user's browser performs some optimization. */
-		
-		var smaxage, maxage;
-		
-		if (TwinkleConfig.debug) {
-			smaxage = 1;  // no caching for modules in debug mode
-			maxage = 1;  // no caching for modules in debug mode
-		}
-		else {
-			// normal usage without debug - note that scripts may be minified
-			smaxage = 7200; // permit 2 hour module cache
-			maxage = 7200; // permit 2 hour module cache
-		}
+		   just hope that the user's browser performs some optimization. Also, mw.loader.load() performs
+		   minification by default, which boosts performance. */
 		
 		for (var i = 0; i < this.modules.length; i++) {
 			var modulePath = this.modules[i].dir + "/" + this.modules[i].name + ".js";
 			
-			if (TwinkleConfig.debugLoad) {
+			if (TwinkleConfig.debugFirefox) {
 				// Firefox doesn't support debugging or logging of errors to the console when using mw.loader.load!
 				// For developer use, load the module the old fashioned way until MediaWiki gives us something better
 				importScript( modulePath );
