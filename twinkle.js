@@ -34,67 +34,18 @@ Twinkle.init = {
 			{ dir: defaultDir, name: "twinklebatchprotect" },
 			{ dir: defaultDir, name: "twinkleimagetraverse" },
 			{ dir: defaultDir, name: "twinklebatchundelete" },
+			{ dir: defaultDir, name: "twinklecloser" },  // newly discovered module
+			{ dir: defaultDir, name: "twinkleundelete" },  // newly discovered module
 			{ dir: defaultDir, name: "morebits-test" }
 		];
 		
-		// Create configuration object if not provided by the user's custom .js file
-		if ( typeof( TwinkleConfig ) === 'undefined' ) {
-			TwinkleConfig = {};
-		}
-
-		// Default is no debug
-		if ( typeof( TwinkleConfig.debug ) === 'undefined' ) {
-			TwinkleConfig.debug = false;
-		}
-
-		if ( typeof( TwinkleConfig.debugFirefox ) === 'undefined' ) {
-			TwinkleConfig.debugFirefox = false;
-		}
-
-		var smaxage, maxage;
-		
-		if (TwinkleConfig.debug) {
-			/* Require revalidation of the cahced copy with the server.
-			   We use 1 second instead of 0 to make sure that MediaWiki never changes "maxage=0" into "nocache",
-			   which behaves differently in some browsers. */
-			smaxage = 1;
-			maxage = 1;
-			
-			// set debug mode to stop minification of scripts, which is important for JS debugging!
-			mediaWiki.config.set("debug", "true");
-		}
-		else {
-			// normal usage without debug - note that scripts may be minified
-			smaxage = 7200; // permit 2 hour module cache
-			maxage = 7200; // permit 2 hour module cache
-		}
-		
-		/* Load all modules asynchronously for best performance.
-		
-		   For mw.loader documentation, see: 
-			   http://www.mediawiki.org/wiki/ResourceLoader/Default_modules#mediaWiki.loader
-		   We don't use mw.loader.using() because it seems to only work with registered
-		   MediaWiki module dependencies, not with user scripts such as morebits.js.
-		   
-		   Using mw.loader.load() for morebits.js may not be as good as the deprecated importScript()
-		   because it doesn't seem to filter multiple load requests in the event that other
-		   user scripts also need to load morebits. However, it's all we've got now so we will
-		   just hope that the user's browser performs some optimization. Also, mw.loader.load() performs
-		   minification by default, which boosts performance. */
+		/* Load all modules using the deprecated importScript() function. 
+		   See [[Wikipedia talk:WikiProject User scripts#Replacing importScript.28.29]] 
+		   for more imformation on loading methods. */
 		
 		for (var i = 0; i < this.modules.length; i++) {
 			var modulePath = this.modules[i].dir + "/" + this.modules[i].name + ".js";
-			
-			if (TwinkleConfig.debugFirefox) {
-				// Firefox doesn't support debugging or logging of errors to the console when using mw.loader.load!
-				// For developer use, load the module the old fashioned way until MediaWiki gives us something better
-				importScript( modulePath );
-			}
-			else {
-				// normal module loader
-				var url = wgServer + wgScript + "?title=" + modulePath + "&action=raw&ctype=text/javascript&smaxage=" + smaxage + "&maxage=" + maxage;
-				mw.loader.load( url );
-			}
+			importScript( modulePath );
 		}
 	},
 
@@ -145,6 +96,11 @@ Twinkle.init = {
 			this.modulesHaveStarted = true;  // lockout another attempt in case the browser calls .ready() again
 		}
 	}
+}
+
+// Create configuration object if not provided by the user's custom .js file
+if ( typeof( TwinkleConfig ) === 'undefined' ) {
+	TwinkleConfig = {};
 }
 
 Twinkle.init.loadModules();
