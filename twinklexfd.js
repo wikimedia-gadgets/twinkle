@@ -828,6 +828,7 @@ twinklexfd.callbacks = {
 		main: function(pageobj) {
 			// this is coming in from lookupCreator...!
 			var params = pageobj.getCallbackParameters();
+			var initialContrib = pageobj.getCreator();
 			params.uploader = initialContrib;
 
 			// Adding discussion
