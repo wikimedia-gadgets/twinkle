@@ -2105,7 +2105,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.lastEditTime = $(xml).find('page').attr('touched');
 		ctx.pageLoaded = true;
 
-		// alert("Generate edit conflict now");  // for testing
+		// alert("Generate edit conflict now");  // for testing for edit conflict recovery logic
 		ctx.onLoadSuccess(this);  // invoke callback
 	};
 
