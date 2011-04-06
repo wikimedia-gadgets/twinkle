@@ -413,7 +413,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				aivPage.getStatusElement().status( 'Adding new report...' );
 				aivPage.setMinorEdit( TwinkleConfig.markAIVReportAsMinor );
 				aivPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
-				aivPage.setPageText( text + '*\{\{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '\}\} - ' + reason.replace(/\r?\n/g, "<br />") + ' ~~' + '~~' );
+				aivPage.setPageText( text + '\n*\{\{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '\}\} - ' + reason.replace(/\r?\n/g, "<br />") + ' ~~' + '~~' );
 				aivPage.save();
 			} );
 			break;
@@ -465,7 +465,6 @@ Twinkle.arv.callback.evaluate = function(e) {
 			
 		// Report master sockpuppet account
 		case 'sock':
-			Status.init( form );
 			Twinkle.arv.processSock( {
 				uid: uid, 
 				sockpuppets: form.getTexts( 'sockpuppet' ), 
@@ -473,11 +472,11 @@ Twinkle.arv.callback.evaluate = function(e) {
 				checkuser: form.checkuser.checked, 
 				notify: form.notify.checked
 			} );
+			Status.init( form );
 			break;
 
 		// Report an account as being a sockpuppet of another
 		case 'puppet':
-			Status.init( form );
 			Twinkle.arv.processSock( {
 				uid: form.sockmaster.value.rtrim(), 
 				sockpuppets: new Array(uid), 
@@ -485,73 +484,73 @@ Twinkle.arv.callback.evaluate = function(e) {
 				checkuser: form.checkuser.checked, 
 				notify: form.notify.checked
 			} );
+			Status.init( form );
 			break;
 	}
 }
 
 Twinkle.arv.processSock = function( params ) {
+
+	// notify all user accounts if requested
+	if (params.notify) {
+	
+		var notifyEditSummary = "Notifying about suspicion of sockpuppeteering." + TwinkleConfig.summaryAd;
+		var notifyText = "\n\n\{\{subst:socksuspectnotice|1=" + params.uid + "\}\} \~\~\~\~";
+		
+		// notify user's master account
+		var masterTalkPage = new Wikipedia.page( 'User talk:' + params.uid, 'Notifying suspected sockpuppeteer' );
+		masterTalkPage.setFollowRedirect( true );
+		masterTalkPage.setEditSummary( notifyEditSummary );
+		masterTalkPage.setAppendText( notifyText );
+		masterTalkPage.append();
+
+		var statusIndicator = new Status( 'Notifying suspected sockpuppets', '0%' );
+		var total = params.sockpuppets.length;
+		var current =   0;
+		
+		// display status of notifications as they progress
+		var onSuccess = function( sockTalkPage ) {
+			var now = parseInt( 100 * ++(current)/total ) + '%';
+			statusIndicator.update( now );
+			sockTalkPage.getStatusElement().unlink();
+			if ( current >= total ) {
+				statusIndicator.info( now + ' (completed)' );
+				Wikipedia.removeCheckpoint();
+			}
+		}
+		
+		Wikipedia.addCheckpoint();
+		var socks = params.sockpuppets;
+
+		// notify each puppet account
+		for( var i = 0; i < socks.length; ++i ) {
+			var sockTalkPage = new Wikipedia.page( 'User talk:' + socks[i], "Notification for " +  socks[i] );
+			sockTalkPage.setFollowRedirect( true );
+			sockTalkPage.setEditSummary( notifyEditSummary );
+			sockTalkPage.setAppendText( notifyText );
+			sockTalkPage.append( onSuccess );
+		}
+	}
+
+	// prepare the SPI report
+	var text = 
+		"\{\{subst:SPI report|socksraw=" +
+		params.sockpuppets.map( function(v) { 
+				return "* \{\{" + ( isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "\}\}"; 
+			} )
+			.join( "\n" ) + "\n|evidence=" + params.evidence + " \n";
+		
+	if ( params.checkuser ) {
+			text += "|checkuser=yes";
+	}
+	text += "\}\}";
+
 	var spiPage = new Wikipedia.page( 'Wikipedia:Sockpuppet investigations/' +  params.uid, 'Retrieving discussion page' );
 	spiPage.setFollowRedirect( true );
-
-	spiPage.load( function() { 
-		var text = spiPage.getPageText();
-
-		// notify all user accounts if requested
-		if (params.notify) {
-		
-			// notify user's master account
-			var masterTalkPage = new Wikipedia.page( 'User talk:' + params.uid, 'Notifying suspected sockpuppeteer' );
-			masterTalkPage.setFollowRedirect( true );
-			masterTalkPage.setEditSummary( "Notifying about suspicion of sockpuppeteering." + TwinkleConfig.summaryAd );
-			masterTalkPage.setAppendText( "\n\{\{subst:socksuspectnotice|1=" + params.uid + "\}\} \~\~\~\~" );
-			masterTalkPage.append();
-
-			var statusIndicator = new Status( 'Notifying suspected sockpuppets', '0%' );
-			var total = params.sockpuppets.length;
-			var current =   0;
-			
-			var onSuccess = function( sockTalkPage ) {
-				var now = parseInt( 100 * ++(current)/total ) + '%';
-				statusIndicator.update( now );
-				sockTalkPage.getStatusElement().unlink();
-				if ( current >= total ) {
-					statusIndicator.info( now + ' (completed)' );
-					Wikipedia.removeCheckpoint();
-				}
-			}
-			
-			Wikipedia.addCheckpoint();
-			var socks = params.sockpuppets;
-
-			// notify each puppet account
-			for( var i = 0; i < socks.length; ++i ) {
-				var sockTalkPage = new Wikipedia.page( 'User talk:' + socks[i], "Notification for " +  socks[i] );
-				sockTalkPage.setFollowRedirect( true );
-				sockTalkPage.setEditSummary( "Notifying about suspicion of sockpuppeteering." + TwinkleConfig.summaryAd );
-				sockTalkPage.setAppendText( "\n\{\{subst:socksuspectnotice|1=" + socks[i] + "\}\} \~\~\~\~" );
-				sockTalkPage.onSuccess( onSuccess );
-				sockTalkPage.append();
-			}
-		}
-		
-		// prepare the SPI report
-		text += 
-			"\{\{subst:SPI report|socksraw=" +
-			params.sockpuppets.map( function(v) { 
-					return "* \{\{" + ( isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "\}\}"; 
-				} )
-				.join( "\n" ) + "\n|evidence=" + params.evidence + " \n";
-			
-		if ( params.checkuser ) {
-				text += "|checkuser=yes";
-		}
-		text += "\}\}";
-
-		spiPage.setMinorEdit( TwinkleConfig.markSockReportAsMinor );
-		spiPage.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ TwinkleConfig.summaryAd );
-		spiPage.setPageText( text );
-		spiPage.save();
-	} );
+	spiPage.setMinorEdit( TwinkleConfig.markSockReportAsMinor );
+	spiPage.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ TwinkleConfig.summaryAd );
+	spiPage.setAppendText( text );
+	spiPage.append();
 }
 
 // register initialization callback
