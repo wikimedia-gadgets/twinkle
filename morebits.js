@@ -1891,12 +1891,6 @@ Wikipedia.page = function(pageName, currentAction) {
 			return;
 		}
 
-		// sanity check
-		if (ctx.pageSection && ctx.followRedirect) {
-			ctx.statusElement.error("Internal error: cannot use followRedirect=true when using pageSection!! Sorry about that.");
-			return;
-		}
-
 		ctx.loadQuery = {
 			action: 'query',
 			prop: 'info|revisions',

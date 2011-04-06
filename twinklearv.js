@@ -340,167 +340,100 @@ twinklearv.callback.change_category = function twinklearvCallbackChangeCategory(
 }
 
 twinklearv.callbacks = {
-	aiv: function( self ) {
-		uid = self.params.uid;
-		reason = self.params.reason;
-		var form = self.responseXML.getElementById('editform');
+	aiv: function( aivPage ) {
+		var text = aivPage.getPageText();
+		var params = aivPage.getCallbackParameters();
 
-		if( !form ) {
-			self.statelem.error( 'Failed to retrieve edit form.' );
-			return;
-		}
-		var text = form.wpTextbox1.value;
+		uid = params.uid;
+		reason = params.reason;
 
 		var re = new RegExp( "\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*" + RegExp.escape( uid, true ) + "\\s*\\}\\}" );
 
 		var myArr;
 		if( ( myArr = re.exec( text ) ) ) {
-			self.statelem.info( 'Report already present, will not add a new one' );
+			aivPage.getStatusElement().info( 'Report already present, will not add a new one' );
 			return;
 		}
-		self.statelem.status( 'Adding new report...' );
-		var postData = {
-			'wpMinoredit': ( form.wpMinoredit.checked || TwinkleConfig.markAIVReportAsMinor ) ? '' : undefined, 
-			'wpWatchthis': form.wpWatchthis.checked ? '' : undefined,
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSection': form.wpSection.value,
-			'wpSummary': 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd,
-			'wpTextbox1': text + '*\{\{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '\}\} - ' + reason.replace(/\r?\n/g, "<br />") + ' ~~' + '~~'
-		};
-
-		self.post( postData );
+		aivPage.getStatusElement().status( 'Adding new report...' );
+		
+		aivPage.setMinorEdit( TwinkleConfig.markAIVReportAsMinor );
+		aivPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
+		aivPage.setPageText( text + '*\{\{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '\}\} - ' + reason.replace(/\r?\n/g, "<br />") + ' ~~' + '~~' );
+		aivPage.save();
 	},
-	username: function( self ) {
-		uid = self.params.uid;
-		reason = self.params.reason;
-		var form = self.responseXML.getElementById('editform');
-
-		if( !form ) {
-			self.statelem.error( 'Failed to retrieve edit form.' );
-			return;
-		}
-		var text = form.wpTextbox1.value;
-
+	
+	username: function( uaaPage ) {
+		var text = uaaPage.getPageText();
+		var params = uaaPage.getCallbackParameters();
+		
+		uid = params.uid;
+		reason = params.reason;
+		
 		if (new RegExp( "\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?" + RegExp.escape(uid, true) + "\\s*(\\||\\})" ).test(text)) {
-			self.statelem.error( 'User is already listed.' );
+			uaaPage.getStatusElement().error( 'User is already listed.' );
 			return;
 		}
 
-		self.statelem.status( 'Adding new report...' );
-		var postData = {
-			'wpMinoredit': ( form.wpMinoredit.checked || TwinkleConfig.markUAAReportAsMinor ) ? '' : undefined, 
-			'wpWatchthis': form.wpWatchthis.checked ? '' : undefined,
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSection': form.wpSection.value,
-			'wpSummary': 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd,
-			'wpTextbox1': text.replace( /-->/, "-->\n" + reason.replace( '\$', "$$$$" ) )
-		};
-		self.post( postData );
+		uaaPage.setMinorEdit( TwinkleConfig.markUAAReportAsMinor );
+		uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
+		uaaPage.setPageText( text.replace( /-->/, "-->\n" + reason.replace( '\$', "$$$$" ) ) );
+		uaaPage.save();
 	},
-	sock: {
-		main: function( self ) { 
-			var form = self.responseXML.getElementById('editform');
-			var text = form.wpTextbox1.value;
-			if(self.params.notify){
-				var query = {
-					'title': 'User talk:' + self.params.uid,
-					'action': 'submit'
-				};
 	
-				var wikipedia_wiki = new Wikipedia.wiki( 'Notifying suspected sockpuppeteer', query, twinklearv.callbacks.sock.notifySock );
-				wikipedia_wiki.params = self.params;
-				wikipedia_wiki.followRedirect = true;
-				wikipedia_wiki.get();
-			
-
-				var statusIndicator2 = new Status('Notifying suspected sockpuppets', '0%');
-
-				var total = self.params.sockpuppets.length;
-	
-				var onsuccess = function( self ) {
-					var obj = self.params.obj;
-					var total = self.params.total;
-					var now = parseInt( 100 * ++(self.params.current)/total ) + '%';
-					obj.update( now );
-					self.statelem.unlink();
-					if( self.params.current >= total ) {
-						obj.info( now + ' (completed)' );
-						Wikipedia.removeCheckpoint();
-					}
-				}
-				var onloaded = onsuccess;
-
-				var onloading = function( self ) {}
-
-				Wikipedia.addCheckpoint();
-
-				var params2 = clone( self.params );
-				params2.total = total;
-				params2.obj = statusIndicator2;
-				params2.current =   0;
-
-				var socks = self.params.sockpuppets;
-			
-				for( var i = 0; i < socks.length; ++i ) {
-					var query = {
-						'title': 'User talk:' + socks[i],
-						'action': 'submit'
-					};
-					var wikipedia_wiki = new Wikipedia.wiki( "Notification for " +  socks[i], query, twinklearv.callbacks.sock.notifySock );
-					wikipedia_wiki.params = params2;
-					wikipedia_wiki.onloaded = onloaded;
-					wikipedia_wiki.onsuccess = onsuccess;
-					wikipedia_wiki.followRedirect = true;
-					wikipedia_wiki.get();
-				}
-			}
-			text += 
-				"\{\{subst:SPI report|socksraw=" +
-				self.params.sockpuppets.map( function(v) { return "* \{\{" + ( isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "\}\}" } ).join( "\n" ) +
-				"\n|evidence=" + self.params.evidence + " \n";
-			if( self.params.checkuser ) {
-					text += "|checkuser=yes";
-			}
+	sock: function( spiPage ) { 
+		var text = uaaPage.getPageText();
+		var params = uaaPage.getCallbackParameters();
 				
-			text += "\}\}";
+		if (params.notify) {
+			var masterTalkPage = new Wikipedia.page( 'User talk:' + params.uid, 'Notifying suspected sockpuppeteer' );
+			masterTalkPage.setFollowRedirect( true );
+			masterTalkPage.setEditSummary( "Notifying about suspicion of sockpuppeteering." + TwinkleConfig.summaryAd );
+			masterTalkPage.setAppendText( "\n\{\{subst:socksuspectnotice|1=" + params.uid + "\}\} \~\~\~\~" );
+			masterTalkPage.append();
 
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': form.wpWatchthis.checked ? '' : undefined,
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': 'Adding new report for [[Special:Contributions/' + self.params.uid + '|' + self.params.uid + ']].'+ TwinkleConfig.summaryAd,
-				'wpTextbox1': text
-			};
+			var statusIndicator = new Status('Notifying suspected sockpuppets', '0%');
+			var total = params.sockpuppets.length;
+			var current =   0;
 			
-			self.post( postData );
-		},
-		notifySock: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			text = form.wpTextbox1.value;
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': form.wpWatchthis.checked ? '' : undefined,
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': form.wpSection.value,
-				'wpSummary': "Notifying about suspicion of sockpuppeteering." + TwinkleConfig.summaryAd,
-				'wpTextbox1': text + "\n\{\{subst:socksuspectnotice|1=" + self.params.uid + "\}\} \~\~\~\~"
-			};
-
-			self.post( postData );
+			var onSuccess = function( sockTalkPage ) {
+				var now = parseInt( 100 * ++(current)/total ) + '%';
+				statusIndicator.update( now );
+				sockTalkPage.getStatusElement().unlink();
+				if ( current >= total ) {
+					statusIndicator.info( now + ' (completed)' );
+					Wikipedia.removeCheckpoint();
+				}
+			}
+			
+			Wikipedia.addCheckpoint();
+			var socks = params.sockpuppets;
+		
+			for( var i = 0; i < socks.length; ++i ) {
+				var sockTalkPage = new Wikipedia.page( 'User talk:' + socks[i], "Notification for " +  socks[i] );
+				sockTalkPage.setFollowRedirect( true );
+				sockTalkPage.setEditSummary( "Notifying about suspicion of sockpuppeteering." + TwinkleConfig.summaryAd );
+				sockTalkPage.setAppendText( "\n\{\{subst:socksuspectnotice|1=" + socks[i] + "\}\} \~\~\~\~" );
+				sockTalkPage.onSuccess( onSuccess );
+				sockTalkPage.append();
+			}
 		}
+		text += 
+			"\{\{subst:SPI report|socksraw=" +
+			params.sockpuppets.map( function(v) { 
+					return "* \{\{" + ( isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "\}\}"; 
+				} )
+				.join( "\n" ) + "\n|evidence=" + params.evidence + " \n";
+			
+		if ( params.checkuser ) {
+				text += "|checkuser=yes";
+		}
+			
+		text += "\}\}";
+
+		spiPage.setMinorEdit( TwinkleConfig.markSockReportAsMinor );
+		spiPage.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ TwinkleConfig.summaryAd );
+		spiPage.setPageText( text );
+		spiPage.save();
 	}
 }
 
@@ -541,10 +474,10 @@ twinklearv.callback.evaluate = function(e) {
 			} ).join( ', ' );
 
 
-		if( form.page.value != '' ) {
+		if ( form.page.value != '' ) {
 			reason += 'On [[' + form.page.value.replace( /^(Image|Category|File):/i, ':$1:' ) + ']]';
 
-			if( form.badid.value != '' ) {
+			if ( form.badid.value != '' ) {
 				var query = {
 					'title': form.page.value,
 					'diff': form.badid.value,
@@ -555,24 +488,27 @@ twinklearv.callback.evaluate = function(e) {
 			reason += ';';
 		}
 
-		if( types ) {
+		if ( types ) {
 			reason += " " + types;
 		}
 		if (comment != '' ) {
 			reason += (reason==""?"":". ") + comment + '.';
 		}
-		Status.init( form );
 
-		var query = {
-			'title': 'Wikipedia:Administrator intervention against vandalism',
-			'action': 'submit',
-			'section': 1
-		};
-		wikipedia_wiki = new Wikipedia.wiki( 'Processing AIV request', query, twinklearv.callbacks.aiv );
-		wikipedia_wiki.params = { reason:reason, uid:uid };
-		wikipedia_wiki.followRedirect = true;
-		wikipedia_wiki.get();
+		var params = {
+			reason: reason, 
+			uid: uid
+		}
+
+		Status.init( form );
+		var aivPage = new Wikipedia.page( 'Wikipedia:Administrator intervention against vandalism', 'Processing AIV request' );
+		aivPage.setPageSection(1);
+		aivPage.setCallbackParameters( params );
+		aivPage.setFollowRedirect( true );
+		aivPage.load( twinklearv.callbacks.aiv );
+
 		break;
+		
 	case 'username':
 		var types = form.getChecked( 'arvtype' );
 		if( types.length == 0 ) {
@@ -581,13 +517,13 @@ twinklearv.callback.evaluate = function(e) {
 		}
 		types = types.map( function( v ) { return v.toLowerCaseFirstChar(); } );
 
-		if( types.length <= 2 ) {
+		if ( types.length <= 2 ) {
 			types = types.join( ' and ' );
 		} else {
 			types = [ types.slice( 0, -1 ).join( ', ' ), types.slice( -1 ) ].join( ' and ' );
 		}
 		var article = 'a';
-		if( /[aeiouwyh]/.test( types[0] ) ) { // non 100% correct, but whatever inlcuding 'h' for Cockney
+		if ( /[aeiouwyh]/.test( types[0] ) ) { // non 100% correct, but whatever inlcuding 'h' for Cockney
 			article = 'an';
 		}
 		reason = "*\{\{user-uaa|1=" + uid + "\}\} &mdash; Violation of username policy because it's " + article + " " + types + " username; ";
@@ -595,53 +531,62 @@ twinklearv.callback.evaluate = function(e) {
 			reason += "''" + comment.toUpperCaseFirstChar() + "''. ";
 		}
 		reason += "\~\~\~\~";
-		Status.init( form );
 
-		var query = {
-			'title': 'Wikipedia:Usernames for administrator attention',
-			'action': 'submit',
-			'section': 1
+		var callback = function( uaaPage ) {
+			var text = uaaPage.getPageText();
+			
+			if (new RegExp( "\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?" + RegExp.escape(uid, true) + "\\s*(\\||\\})" ).test(text)) {
+				uaaPage.getStatusElement().error( 'User is already listed.' );
+				return;
+			}
+
+			uaaPage.setMinorEdit( TwinkleConfig.markUAAReportAsMinor );
+			uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
+			uaaPage.setPageText( text.replace( /-->/, "-->\n" + reason.replace( '\$', "$$$$" ) ) );
+			uaaPage.save();
 		};
 
-		wikipedia_wiki = new Wikipedia.wiki( 'Processing UAA request', query, twinklearv.callbacks.username );
-		wikipedia_wiki.params = { reason:reason, uid:uid };
-		wikipedia_wiki.followRedirect = true;
-		wikipedia_wiki.get();
+		Status.init( form );
+		var uaaPage = new Wikipedia.page( 'Wikipedia:Usernames for administrator attention', 'Processing UAA request' );
+		uaaPage.setPageSection(1);
+		uaaPage.setFollowRedirect( true );
+		uaaPage.load( callback );
+
 		break;
+		
 	case 'sock':
-		var sockpuppets = form.getTexts( 'sockpuppet' );
-		var evidence = form.evidence.value.rtrim();
-		var checkuser = form.checkuser.checked;
-		var notify = form.notify.checked;
+		var params = {
+			uid: uid, 
+			sockpuppets: form.getTexts( 'sockpuppet' ), 
+			evidence: form.evidence.value.rtrim(), 
+			checkuser: form.checkuser.checked, 
+			notify: form.notify.checked
+		}
+
 		Status.init( form );
+		var spiPage = new Wikipedia.page( 'Wikipedia:Sockpuppet investigations/' +  params.uid, 'Retrieving discussion page' );
+		spiPage.setCallbackParameters( params );
+		spiPage.setFollowRedirect( true );
+		spiPage.load( twinklearv.callbacks.sock );
 
-		var query = {
-			'title': 'Wikipedia:Sockpuppet investigations/' +  uid,
-			'action': 'submit'
-		};
-
-		var wikipedia_wiki = new Wikipedia.wiki( 'Retrieving discussion page', query, twinklearv.callbacks.sock.main );
-		wikipedia_wiki.params = { uid:uid, sockpuppets:sockpuppets, evidence:evidence, checkuser:checkuser, notify:notify };
-		wikipedia_wiki.followRedirect = true;
-		wikipedia_wiki.get();
 		break;
+		
 	case 'puppet':
-		var sockpuppets = new Array(uid);
-		var evidence = form.evidence.value.rtrim();
-		var checkuser = form.checkuser.checked;
-		var notify = form.notify.checked;
-		var master = form.sockmaster.value.rtrim();
+		var params = {
+			uid: form.sockmaster.value.rtrim(), 
+			sockpuppets: new Array(uid), 
+			evidence: form.evidence.value.rtrim(), 
+			checkuser: form.checkuser.checked, 
+			notify: form.notify.checked
+		}
+
 		Status.init( form );
-
-		var query = {
-			'title': 'Wikipedia:Sockpuppet investigations/' + master,
-			'action': 'submit'
-		};
-
-		var wikipedia_wiki = new Wikipedia.wiki( 'Retrieving discussion page', query, twinklearv.callbacks.sock.main );
-		wikipedia_wiki.params = { uid:master, sockpuppets:sockpuppets, evidence:evidence, checkuser:checkuser, notify:notify };
-		wikipedia_wiki.followRedirect = true;
-		wikipedia_wiki.get();
+		var spiPage = new Wikipedia.page( 'Wikipedia:Sockpuppet investigations/' +  params.uid, 'Retrieving discussion page' );
+		spiPage.setCallbackParameters( params );
+		spiPage.setFollowRedirect( true );
+		spiPage.load( twinklearv.callbacks.sock );
+		
+		break;
 	}
 }
 
