@@ -50,15 +50,6 @@ Twinkle.arv = function () {
 	}
 }
 
-function num2order( num ) {
-	switch( num ) {
-	case 1: return '';
-	case 2: return '2nd';
-	case 3: return '3rd';
-	default: return num + 'th';
-	}
-}
-
 Twinkle.arv.callback = function ( uid ) {
 	if( uid == wgUserName ){
 		alert( 'You don\'t want to report yourself, do you?' );
@@ -340,6 +331,12 @@ Twinkle.arv.callback.changeCategory = function (e) {
 }
 
 Twinkle.arv.callback.evaluate = function(e) {
+
+	// no automatic redirect when done, just leave the results window open
+	Wikipedia.actionCompleted.redirect = null;
+	Wikipedia.actionCompleted.notice = 'Action';
+	Wikipedia.actionCompleted.postfix = 'completed';
+
 	var form = e.target;
 	var reason = "";
 	if ( form.reason ) {
@@ -348,6 +345,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 	var uid = form.uid.value;
 	
 	switch( form.category.value ) {
+
+		// Report user for vandalism
 		default:
 		case 'aiv':
 			var types = form.getChecked( 'arvtype' );
@@ -400,12 +399,13 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 			Status.init( form );
 			var aivPage = new Wikipedia.page( 'Wikipedia:Administrator intervention against vandalism', 'Processing AIV request' );
-			aivPage.setPageSection(1);
+			aivPage.setPageSection( 1 );
 			aivPage.setFollowRedirect( true );
 			
 			aivPage.load( function() {
 				var text = aivPage.getPageText();
 
+				// check if user has already been reported
 				if (new RegExp( "\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*" + RegExp.escape( uid, true ) + "\\s*\\}\\}" ).test(text)) {
 					aivPage.getStatusElement().info( 'Report already present, will not add a new one' );
 					return;
@@ -418,6 +418,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			} );
 			break;
 			
+		// Report inappropriate username
 		case 'username':
 			var types = form.getChecked( 'arvtype' );
 			if( types.length == 0 ) {
@@ -432,7 +433,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				types = [ types.slice( 0, -1 ).join( ', ' ), types.slice( -1 ) ].join( ' and ' );
 			}
 			var article = 'a';
-			if ( /[aeiouwyh]/.test( types[0] ) ) { // non 100% correct, but whatever inlcuding 'h' for Cockney
+			if ( /[aeiouwyh]/.test( types[0] ) ) { // non 100% correct, but whatever, inlcuding 'h' for Cockney
 				article = 'an';
 			}
 			reason = "*\{\{user-uaa|1=" + uid + "\}\} &mdash; Violation of username policy because it's " + article + " " + types + " username; ";
@@ -443,13 +444,13 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 			Status.init( form );
 			var uaaPage = new Wikipedia.page( 'Wikipedia:Usernames for administrator attention', 'Processing UAA request' );
-			//var uaaPage = new Wikipedia.page( 'User:UncleDouggie/test', 'Processing UAA request' );
-			uaaPage.setPageSection(1);
+			uaaPage.setPageSection( 1 );
 			uaaPage.setFollowRedirect( true );
 
-			uaaPage.load( function( uaaPage ) {
+			uaaPage.load( function() {
 				var text = uaaPage.getPageText();
 				
+				// check if user has already been reported
 				if (new RegExp( "\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?" + RegExp.escape(uid, true) + "\\s*(\\||\\})" ).test(text)) {
 					uaaPage.getStatusElement().error( 'User is already listed.' );
 					return;
@@ -457,11 +458,12 @@ Twinkle.arv.callback.evaluate = function(e) {
 				uaaPage.getStatusElement().status( 'Adding new report...' );
 				uaaPage.setMinorEdit( TwinkleConfig.markUAAReportAsMinor );
 				uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
-				uaaPage.setPageText( text.replace( /-->/, "-->\n" + reason.replace( '\$', "$$$$" ) ) );
+				uaaPage.setPageText( text.replace( /-->/, "-->\n" + reason.replace( '\$', "$$$$" ) ) );  // add at top
 				uaaPage.save();
 			} );
 			break;
 			
+		// Report master sockpuppet account
 		case 'sock':
 			Status.init( form );
 			Twinkle.arv.processSock( {
@@ -472,7 +474,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 				notify: form.notify.checked
 			} );
 			break;
-			
+
+		// Report an account as being a sockpuppet of another
 		case 'puppet':
 			Status.init( form );
 			Twinkle.arv.processSock( {
@@ -492,15 +495,18 @@ Twinkle.arv.processSock = function( params ) {
 
 	spiPage.load( function() { 
 		var text = spiPage.getPageText();
-				
+
+		// notify all user accounts if requested
 		if (params.notify) {
+		
+			// notify user's master account
 			var masterTalkPage = new Wikipedia.page( 'User talk:' + params.uid, 'Notifying suspected sockpuppeteer' );
 			masterTalkPage.setFollowRedirect( true );
 			masterTalkPage.setEditSummary( "Notifying about suspicion of sockpuppeteering." + TwinkleConfig.summaryAd );
 			masterTalkPage.setAppendText( "\n\{\{subst:socksuspectnotice|1=" + params.uid + "\}\} \~\~\~\~" );
 			masterTalkPage.append();
 
-			var statusIndicator = new Status('Notifying suspected sockpuppets', '0%');
+			var statusIndicator = new Status( 'Notifying suspected sockpuppets', '0%' );
 			var total = params.sockpuppets.length;
 			var current =   0;
 			
@@ -516,7 +522,8 @@ Twinkle.arv.processSock = function( params ) {
 			
 			Wikipedia.addCheckpoint();
 			var socks = params.sockpuppets;
-		
+
+			// notify each puppet account
 			for( var i = 0; i < socks.length; ++i ) {
 				var sockTalkPage = new Wikipedia.page( 'User talk:' + socks[i], "Notification for " +  socks[i] );
 				sockTalkPage.setFollowRedirect( true );
@@ -526,6 +533,8 @@ Twinkle.arv.processSock = function( params ) {
 				sockTalkPage.append();
 			}
 		}
+		
+		// prepare the SPI report
 		text += 
 			"\{\{subst:SPI report|socksraw=" +
 			params.sockpuppets.map( function(v) { 
@@ -536,7 +545,6 @@ Twinkle.arv.processSock = function( params ) {
 		if ( params.checkuser ) {
 				text += "|checkuser=yes";
 		}
-			
 		text += "\}\}";
 
 		spiPage.setMinorEdit( TwinkleConfig.markSockReportAsMinor );

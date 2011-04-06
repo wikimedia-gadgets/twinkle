@@ -15,6 +15,8 @@ Twinkle.init = {
 		/* The order of the modules in the TW menu is determined from the order in the following list.
 		   Undesired modules may be removed from this list without requiring any other code changes.
 		   To override the location of a module for debugging, just change the "dir" property. */
+		   
+		// XXX don't waste time loading the admin modules for non-admins
 
 		this.modules = [	
 			{ dir: defaultDir, name: "morebits" }, // mandatory and must be first or nothing will work
