@@ -2186,9 +2186,20 @@ Wikipedia.page = function(pageName, currentAction) {
 		if ( errorCode == "editconflict" && ctx.conflictRetries++ < ctx.maxConflictRetries ) {
 			 
 			// alert("Edit conflict detected!");
-			ctx.statusElement.info("Edit conflict detected, retrying...");
 			--Wikipedia.numberOfActionsLeft;  // allow for normal completion if retry succeeds
-			ctx.loadApi.post(); // reload
+
+			// edit conflicts can occur when the page needs to be purged from the server cache
+			var purgeQuery = {
+				action: 'purge',
+				titles: ctx.pageName  // redirects are already resolved
+			};
+
+			var purgeApi = new Wikipedia.api("Edit conflict detected, purging server cache...", purgeQuery, ctx.statusElement);
+			purgeApi.post( { async: false } );  // just wait for it to complete
+			ctx.statusElement.info("Edit conflict detected, reapplying edit...");
+			--Wikipedia.numberOfActionsLeft;  // compensate for use of |async: false|
+
+			ctx.loadApi.post(); // reload the page and reapply the edit
 
 		// check for loss of edit token
 		// it's impractical to request a new token here, so invoke edit conflict logic when this happens

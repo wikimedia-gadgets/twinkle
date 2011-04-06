@@ -1,4 +1,4 @@
-function twinklearv(){
+Twinkle.arv = function () {
 	var username;
 
 	if ( wgNamespaceNumber == 3 || wgNamespaceNumber == 2 || ( wgNamespaceNumber == -1 && wgTitle == "Contributions" )){
@@ -17,7 +17,7 @@ function twinklearv(){
 		
 		if (Twinkle.authorizedUser)
 		{
-			twAddPortletLink( "javascript:twinklearv.callback(\"" + username.replace( /\"/g, "\\\"") + "\")", "ARV", "tw-arv", name, title );
+			twAddPortletLink( "javascript:Twinkle.arv.callback(\"" + username.replace( /\"/g, "\\\"") + "\")", "ARV", "tw-arv", name, title );
 		}
 		else
 		{
@@ -59,7 +59,7 @@ function num2order( num ) {
 	}
 }
 
-twinklearv.callback = function twinklearvCallback( uid ) {
+Twinkle.arv.callback = function ( uid ) {
 	if( uid == wgUserName ){
 		alert( 'You don\'t want to report yourself, do you?' );
 		return;
@@ -68,12 +68,12 @@ twinklearv.callback = function twinklearvCallback( uid ) {
 	var Window = new SimpleWindow( 600, 500 );
 	Window.setTitle( "Advance Reporting and Vetting" ); //Backronym
 
-	var form = new QuickForm( twinklearv.callback.evaluate );
+	var form = new QuickForm( Twinkle.arv.callback.evaluate );
 	var categories = form.append( {
 			type: 'select',
 			name: 'category',
 			label: 'Select report type: ',
-			event: twinklearv.callback.change_category
+			event: Twinkle.arv.callback.changeCategory
 		} );
 	categories.append( {
 			type: 'option',
@@ -117,7 +117,7 @@ twinklearv.callback = function twinklearvCallback( uid ) {
 
 }
 
-twinklearv.callback.change_category = function twinklearvCallbackChangeCategory(e) {
+Twinkle.arv.callback.changeCategory = function (e) {
 	var value = e.target.value;
 	var root = e.target.form;
 	var old_area;
@@ -339,50 +339,159 @@ twinklearv.callback.change_category = function twinklearvCallbackChangeCategory(
 	}
 }
 
-twinklearv.callbacks = {
-	aiv: function( aivPage ) {
-		var text = aivPage.getPageText();
-		var params = aivPage.getCallbackParameters();
-
-		uid = params.uid;
-		reason = params.reason;
-
-		var re = new RegExp( "\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*" + RegExp.escape( uid, true ) + "\\s*\\}\\}" );
-
-		var myArr;
-		if( ( myArr = re.exec( text ) ) ) {
-			aivPage.getStatusElement().info( 'Report already present, will not add a new one' );
-			return;
-		}
-		aivPage.getStatusElement().status( 'Adding new report...' );
-		
-		aivPage.setMinorEdit( TwinkleConfig.markAIVReportAsMinor );
-		aivPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
-		aivPage.setPageText( text + '*\{\{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '\}\} - ' + reason.replace(/\r?\n/g, "<br />") + ' ~~' + '~~' );
-		aivPage.save();
-	},
+Twinkle.arv.callback.evaluate = function(e) {
+	var form = e.target;
+	var reason = "";
+	if ( form.reason ) {
+		comment = form.reason.value;
+	}
+	var uid = form.uid.value;
 	
-	username: function( uaaPage ) {
-		var text = uaaPage.getPageText();
-		var params = uaaPage.getCallbackParameters();
-		
-		uid = params.uid;
-		reason = params.reason;
-		
-		if (new RegExp( "\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?" + RegExp.escape(uid, true) + "\\s*(\\||\\})" ).test(text)) {
-			uaaPage.getStatusElement().error( 'User is already listed.' );
-			return;
-		}
+	switch( form.category.value ) {
+		default:
+		case 'aiv':
+			var types = form.getChecked( 'arvtype' );
+			if( types.length == 0 && comment == '' ) {
+				alert( 'You must specify some reason' );
+				return;
+			}
 
-		uaaPage.setMinorEdit( TwinkleConfig.markUAAReportAsMinor );
-		uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
-		uaaPage.setPageText( text.replace( /-->/, "-->\n" + reason.replace( '\$', "$$$$" ) ) );
-		uaaPage.save();
-	},
-	
-	sock: function( spiPage ) { 
-		var text = uaaPage.getPageText();
-		var params = uaaPage.getCallbackParameters();
+			types = types.map( function(v) {
+					switch(v) {
+					case 'final':
+						return 'vandalism after final warning';
+						break;
+					case 'postblock':
+						return 'vandalism after recent release of block';
+						break;
+					case 'spambot':
+						return 'account is evidently a spambot or a compromised account';
+						break;
+					case 'vandalonly':
+						return 'actions evidently indicate a vandalism-only account';
+						break;
+					case 'promoonly':
+						return 'account is being used only for promotional purposes';
+						break;
+					}
+				} ).join( ', ' );
+
+
+			if ( form.page.value != '' ) {
+				reason += 'On [[' + form.page.value.replace( /^(Image|Category|File):/i, ':$1:' ) + ']]';
+
+				if ( form.badid.value != '' ) {
+					var query = {
+						'title': form.page.value,
+						'diff': form.badid.value,
+						'oldid': form.goodid.value
+					};
+					reason += ' ([' +  wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ) + ' diff])';
+				}
+				reason += ';';
+			}
+
+			if ( types ) {
+				reason += " " + types;
+			}
+			if (comment != '' ) {
+				reason += (reason == ""?"" : ". ") + comment + '.';
+			}
+
+			Status.init( form );
+			var aivPage = new Wikipedia.page( 'Wikipedia:Administrator intervention against vandalism', 'Processing AIV request' );
+			aivPage.setPageSection(1);
+			aivPage.setFollowRedirect( true );
+			
+			aivPage.load( function() {
+				var text = aivPage.getPageText();
+
+				if (new RegExp( "\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*" + RegExp.escape( uid, true ) + "\\s*\\}\\}" ).test(text)) {
+					aivPage.getStatusElement().info( 'Report already present, will not add a new one' );
+					return;
+				}
+				aivPage.getStatusElement().status( 'Adding new report...' );
+				aivPage.setMinorEdit( TwinkleConfig.markAIVReportAsMinor );
+				aivPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
+				aivPage.setPageText( text + '*\{\{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '\}\} - ' + reason.replace(/\r?\n/g, "<br />") + ' ~~' + '~~' );
+				aivPage.save();
+			} );
+			break;
+			
+		case 'username':
+			var types = form.getChecked( 'arvtype' );
+			if( types.length == 0 ) {
+				alert( 'You must specify at least one breached violation' );
+				return;
+			}
+			types = types.map( function( v ) { return v.toLowerCaseFirstChar(); } );
+
+			if ( types.length <= 2 ) {
+				types = types.join( ' and ' );
+			} else {
+				types = [ types.slice( 0, -1 ).join( ', ' ), types.slice( -1 ) ].join( ' and ' );
+			}
+			var article = 'a';
+			if ( /[aeiouwyh]/.test( types[0] ) ) { // non 100% correct, but whatever inlcuding 'h' for Cockney
+				article = 'an';
+			}
+			reason = "*\{\{user-uaa|1=" + uid + "\}\} &mdash; Violation of username policy because it's " + article + " " + types + " username; ";
+			if (comment != '' ) {
+				reason += "''" + comment.toUpperCaseFirstChar() + "''. ";
+			}
+			reason += "\~\~\~\~";
+
+			Status.init( form );
+			var uaaPage = new Wikipedia.page( 'Wikipedia:Usernames for administrator attention', 'Processing UAA request' );
+			//var uaaPage = new Wikipedia.page( 'User:UncleDouggie/test', 'Processing UAA request' );
+			uaaPage.setPageSection(1);
+			uaaPage.setFollowRedirect( true );
+
+			uaaPage.load( function( uaaPage ) {
+				var text = uaaPage.getPageText();
+				
+				if (new RegExp( "\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?" + RegExp.escape(uid, true) + "\\s*(\\||\\})" ).test(text)) {
+					uaaPage.getStatusElement().error( 'User is already listed.' );
+					return;
+				}
+				uaaPage.getStatusElement().status( 'Adding new report...' );
+				uaaPage.setMinorEdit( TwinkleConfig.markUAAReportAsMinor );
+				uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
+				uaaPage.setPageText( text.replace( /-->/, "-->\n" + reason.replace( '\$', "$$$$" ) ) );
+				uaaPage.save();
+			} );
+			break;
+			
+		case 'sock':
+			Status.init( form );
+			Twinkle.arv.processSock( {
+				uid: uid, 
+				sockpuppets: form.getTexts( 'sockpuppet' ), 
+				evidence: form.evidence.value.rtrim(), 
+				checkuser: form.checkuser.checked, 
+				notify: form.notify.checked
+			} );
+			break;
+			
+		case 'puppet':
+			Status.init( form );
+			Twinkle.arv.processSock( {
+				uid: form.sockmaster.value.rtrim(), 
+				sockpuppets: new Array(uid), 
+				evidence: form.evidence.value.rtrim(), 
+				checkuser: form.checkuser.checked, 
+				notify: form.notify.checked
+			} );
+			break;
+	}
+}
+
+Twinkle.arv.processSock = function( params ) {
+	var spiPage = new Wikipedia.page( 'Wikipedia:Sockpuppet investigations/' +  params.uid, 'Retrieving discussion page' );
+	spiPage.setFollowRedirect( true );
+
+	spiPage.load( function() { 
+		var text = spiPage.getPageText();
 				
 		if (params.notify) {
 			var masterTalkPage = new Wikipedia.page( 'User talk:' + params.uid, 'Notifying suspected sockpuppeteer' );
@@ -434,161 +543,8 @@ twinklearv.callbacks = {
 		spiPage.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ TwinkleConfig.summaryAd );
 		spiPage.setPageText( text );
 		spiPage.save();
-	}
-}
-
-twinklearv.callback.evaluate = function(e) {
-	var form = e.target;
-	var reason = "";
-	if( form.reason ) {
-		comment = form.reason.value;
-	}
-	var uid = form.uid.value;
-	switch( form.category.value ) {
-	default:
-	case 'aiv':
-		var types = form.getChecked( 'arvtype' );
-		if( types.length == 0 && comment == '' ) {
-			alert( 'You must specify some reason' );
-			return;
-		}
-
-		types = types.map( function(v) {
-				switch(v) {
-				case 'final':
-					return 'vandalism after final warning';
-					break;
-				case 'postblock':
-					return 'vandalism after recent release of block';
-					break;
-				case 'spambot':
-					return 'account is evidently a spambot or a compromised account';
-					break;
-				case 'vandalonly':
-					return 'actions evidently indicate a vandalism-only account';
-					break;
-				case 'promoonly':
-					return 'account is being used only for promotional purposes';
-					break;
-				}
-			} ).join( ', ' );
-
-
-		if ( form.page.value != '' ) {
-			reason += 'On [[' + form.page.value.replace( /^(Image|Category|File):/i, ':$1:' ) + ']]';
-
-			if ( form.badid.value != '' ) {
-				var query = {
-					'title': form.page.value,
-					'diff': form.badid.value,
-					'oldid': form.goodid.value
-				};
-				reason += ' ([' +  wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ) + ' diff])';
-			}
-			reason += ';';
-		}
-
-		if ( types ) {
-			reason += " " + types;
-		}
-		if (comment != '' ) {
-			reason += (reason==""?"":". ") + comment + '.';
-		}
-
-		var params = {
-			reason: reason, 
-			uid: uid
-		}
-
-		Status.init( form );
-		var aivPage = new Wikipedia.page( 'Wikipedia:Administrator intervention against vandalism', 'Processing AIV request' );
-		aivPage.setPageSection(1);
-		aivPage.setCallbackParameters( params );
-		aivPage.setFollowRedirect( true );
-		aivPage.load( twinklearv.callbacks.aiv );
-
-		break;
-		
-	case 'username':
-		var types = form.getChecked( 'arvtype' );
-		if( types.length == 0 ) {
-			alert( 'You must specify at least one breached violation' );
-			return;
-		}
-		types = types.map( function( v ) { return v.toLowerCaseFirstChar(); } );
-
-		if ( types.length <= 2 ) {
-			types = types.join( ' and ' );
-		} else {
-			types = [ types.slice( 0, -1 ).join( ', ' ), types.slice( -1 ) ].join( ' and ' );
-		}
-		var article = 'a';
-		if ( /[aeiouwyh]/.test( types[0] ) ) { // non 100% correct, but whatever inlcuding 'h' for Cockney
-			article = 'an';
-		}
-		reason = "*\{\{user-uaa|1=" + uid + "\}\} &mdash; Violation of username policy because it's " + article + " " + types + " username; ";
-		if (comment != '' ) {
-			reason += "''" + comment.toUpperCaseFirstChar() + "''. ";
-		}
-		reason += "\~\~\~\~";
-
-		var callback = function( uaaPage ) {
-			var text = uaaPage.getPageText();
-			
-			if (new RegExp( "\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?" + RegExp.escape(uid, true) + "\\s*(\\||\\})" ).test(text)) {
-				uaaPage.getStatusElement().error( 'User is already listed.' );
-				return;
-			}
-
-			uaaPage.setMinorEdit( TwinkleConfig.markUAAReportAsMinor );
-			uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
-			uaaPage.setPageText( text.replace( /-->/, "-->\n" + reason.replace( '\$', "$$$$" ) ) );
-			uaaPage.save();
-		};
-
-		Status.init( form );
-		var uaaPage = new Wikipedia.page( 'Wikipedia:Usernames for administrator attention', 'Processing UAA request' );
-		uaaPage.setPageSection(1);
-		uaaPage.setFollowRedirect( true );
-		uaaPage.load( callback );
-
-		break;
-		
-	case 'sock':
-		var params = {
-			uid: uid, 
-			sockpuppets: form.getTexts( 'sockpuppet' ), 
-			evidence: form.evidence.value.rtrim(), 
-			checkuser: form.checkuser.checked, 
-			notify: form.notify.checked
-		}
-
-		Status.init( form );
-		var spiPage = new Wikipedia.page( 'Wikipedia:Sockpuppet investigations/' +  params.uid, 'Retrieving discussion page' );
-		spiPage.setCallbackParameters( params );
-		spiPage.setFollowRedirect( true );
-		spiPage.load( twinklearv.callbacks.sock );
-
-		break;
-		
-	case 'puppet':
-		var params = {
-			uid: form.sockmaster.value.rtrim(), 
-			sockpuppets: new Array(uid), 
-			evidence: form.evidence.value.rtrim(), 
-			checkuser: form.checkuser.checked, 
-			notify: form.notify.checked
-		}
-
-		Status.init( form );
-		var spiPage = new Wikipedia.page( 'Wikipedia:Sockpuppet investigations/' +  params.uid, 'Retrieving discussion page' );
-		spiPage.setCallbackParameters( params );
-		spiPage.setFollowRedirect( true );
-		spiPage.load( twinklearv.callbacks.sock );
-		
-		break;
-	}
+	} );
 }
 
 // register initialization callback
-Twinkle.init.moduleReady( "twinklearv", twinklearv );
+Twinkle.init.moduleReady( "twinklearv", Twinkle.arv );
