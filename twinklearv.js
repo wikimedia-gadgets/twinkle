@@ -16,12 +16,11 @@ Twinkle.arv = function () {
 
 		if ( !username ) return;
 
-		var name = isIPAddress( username ) ? 'Report IP' : 'Report';
-		var title =  isIPAddress( username ) ? 'Report IP to Administrators' : 'Report user to Administrators';
+		var title =  isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
 		
 		if (twinkleUserAuthorized)
 		{
-			twAddPortletLink( "javascript:Twinkle.arv.callback(\"" + username.replace( /\"/g, "\\\"") + "\")", "ARV", "tw-arv", name, title );
+			twAddPortletLink( "javascript:Twinkle.arv.callback(\"" + username.replace( /\"/g, "\\\"") + "\")", "ARV", "tw-arv", title, "" );
 		}
 		else
 		{
