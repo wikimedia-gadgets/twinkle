@@ -1,3 +1,7 @@
+if ( typeof(Twinkle) === "undefined" ) {
+	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
+}
+
 function twinkleproddelete() {
 	if( wgNamespaceNumber != Namespace.CATEGORY || ! userIsInGroup( 'sysop' ) || ! /^Category:Proposed_deletion_as_of/.test(wgPageName) ) {
 		return;

@@ -1,3 +1,7 @@
+if ( typeof(Twinkle) === "undefined" ) {
+	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
+}
+
 /**
  Twinklefluff revert and antivandalism utillity
  */
@@ -510,7 +514,7 @@ twinklefluff.formatSummaryPostfix = function(stringToAdd) {
 }
 
 function twinklefluffinit() {
-	if (Twinkle.authorizedUser)
+	if (twinkleUserAuthorized)
 	{
 		/**
 		 TwinkleConfig.revertMaxRevisions (int)

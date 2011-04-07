@@ -1,3 +1,7 @@
+if ( typeof(Twinkle) === "undefined" ) {
+	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
+}
+
 function twinklespeedy() {
 	// Disable on:
 	// * special pages
@@ -9,7 +13,7 @@ function twinklespeedy() {
 	if ( userIsInGroup( 'sysop' ) ) {
 		twAddPortletLink( "javascript:twinklespeedy.callback()", "CSD", "tw-csd", "Speedy delete according to WP:CSD", "");
 	} 
-	else if (Twinkle.authorizedUser) {
+	else if (twinkleUserAuthorized) {
 		twAddPortletLink( "javascript:twinklespeedy.callback()", "CSD", "tw-csd", "Request speedy deletion according to WP:CSD", "");
 	}
 	else {

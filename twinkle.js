@@ -41,11 +41,19 @@ Twinkle.init = {
 			{ dir: defaultDir, name: "morebits-test" }
 		];
 		
+		var startingModule = 0;  // load all modules by default
+		
+		// check if morebits has already been loaded by another script
+		if ( typeof(morebits_v2_js_loaded) !== "undefined" ) {
+			startingModule = 1;  // don't reload morebits
+			this.modules[0].callback = { return; }  // indicate that morebits is ready
+		}
+		
 		/* Load all modules using the deprecated importScript() function. 
 		   See [[Wikipedia talk:WikiProject User scripts#Replacing importScript.28.29]] 
 		   for more imformation on loading methods. */
 		
-		for (var i = 0; i < this.modules.length; i++) {
+		for (var i = startingModule; i < this.modules.length; i++) {
 			var modulePath = this.modules[i].dir + "/" + this.modules[i].name + ".js";
 			importScript( modulePath );
 		}
@@ -60,7 +68,8 @@ Twinkle.init = {
 		for (var i = 0; i < this.modules.length; i++) {
 			if (this.modules[i].name === moduleName) {
 			
-				if (typeof(this.modules[i].callback) !== "undefined") {
+				// check if any module other than morebits tries to register twice
+				if (typeof(this.modules[i].callback) !== "undefined" && i > 0) {
 					alert("Twinkle.init.moduleReady: attempt to register duplicate module " + moduleName);
 					return;
 				}

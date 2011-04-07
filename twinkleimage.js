@@ -1,7 +1,10 @@
+if ( typeof(Twinkle) === "undefined" ) {
+	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
+}
 
 function twinkleimage() {
 	if( wgNamespaceNumber == 6 && !(document.getElementById("mw-sharedupload"))) {
-		twAddPortletLink( (Twinkle.authorizedUser ? "javascript:twinkleimage.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "DI", "tw-di", "Nominate file for relative speedy deletion", "");
+		twAddPortletLink( (twinkleUserAuthorized ? "javascript:twinkleimage.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "DI", "tw-di", "Nominate file for relative speedy deletion", "");
 		/**
 		 TwinkleConfig.notifyUserOnDeli (boolean)
 		 If the user should be notified after placing a file deletion tag

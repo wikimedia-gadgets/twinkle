@@ -12,35 +12,6 @@
  * within this module that is automatically loaded by many scripts and any forked copy.
  */
 
-// Initialization callback function
-Twinkle.morebits = function() {
-
-	switch (skin)
-	{
-		case 'vector':
-			if( typeof( TwinkleConfig.portletArea ) == 'undefined' ) TwinkleConfig.portletArea = 'right-navigation';
-			if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-twinkle';
-			if( typeof( TwinkleConfig.portletName ) == 'undefined' ) TwinkleConfig.portletName = 'TW';
-			if( typeof( TwinkleConfig.portletType ) == 'undefined' ) TwinkleConfig.portletType = 'menu';
-			if( typeof( TwinkleConfig.portletNext ) == 'undefined' ) TwinkleConfig.portletNext = 'p-search';
-			break;
-		default:
-			if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-cactions';
-			break;
-	}
-
-	/**
-	 TwinkleConfig.summaryAd (string)
-	 If ad should be added or not to edit summary
-	 */
-	if ( typeof( TwinkleConfig.summaryAd ) === 'undefined' ) {
-		TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
-	}
-	
-	// check if account is experienced enough for more advanced functions
-	Twinkle.authorizedUser = userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'confirmed' );
-}
-
 // Simple helper functions to see what groups a user might belong
 function userIsInGroup( group ) {
 	return ( wgUserGroups != null && wgUserGroups.indexOf( group ) != -1 ) || ( wgUserGroups == null && group == 'anon' );
@@ -3235,9 +3206,54 @@ SimpleWindow.prototype = {
 
 // Blacklist was removed per consensus at http://en.wikipedia.org/wiki/Wikipedia:Administrators%27_noticeboard/Archive221#New_Twinkle_blacklist_proposal
 
-// Check if this module was loaded by Twinkle or some other user script
-if (typeof(Twinkle.init.moduleReady) === "function") {
+// Twinkle initialization
+
+// Create configuration object if not provided by the user's custom .js file.
+// Duplicate of twinkle.js code in case this module is imported by another script.
+if ( typeof( TwinkleConfig ) === 'undefined' ) {
+	TwinkleConfig = {};
+}
+
+switch (skin)
+{
+	case 'vector':
+		if( typeof( TwinkleConfig.portletArea ) == 'undefined' ) TwinkleConfig.portletArea = 'right-navigation';
+		if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-twinkle';
+		if( typeof( TwinkleConfig.portletName ) == 'undefined' ) TwinkleConfig.portletName = 'TW';
+		if( typeof( TwinkleConfig.portletType ) == 'undefined' ) TwinkleConfig.portletType = 'menu';
+		if( typeof( TwinkleConfig.portletNext ) == 'undefined' ) TwinkleConfig.portletNext = 'p-search';
+		break;
+	default:
+		if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-cactions';
+		break;
+}
+
+// initialize text that is added to the end of all Twinkle edit summaries
+if ( typeof( TwinkleConfig.summaryAd ) === 'undefined' ) {
+	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
+}
+
+// check if account is experienced enough for more advanced functions
+// don't use the Twinkle object because other scripts may import this
+twinkleUserAuthorized = userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'confirmed' );
+
+// flag to let sript loaders know that this module has already been loaded
+morebits_js_loaded = true;  // legacy version
+morebits_v2_js_loaded = true;  // version enhanced for HTML5
+
+// check if the Twinkle loader is active
+if ( typeof(Twinkle) === "object" ) {
 
 	// register null initialization callback to let the Twinkle loader know we're ready
-	Twinkle.init.moduleReady( "morebits", Twinkle.morebits );
+	Twinkle.init.moduleReady( "morebits", { return; } );
+	}
 }
+
+/* Add code here to call the initialization callback of any other user scripts that are
+   dependent on this module. Browsers don't enforce initializing scripts in the order
+   they are loaded. Therefore, scripts that load this module must be tolerant of having this
+   module initialize last. Also, other scripts must be tolerant of receiving multiple
+   initialization callbacks because of the many other scripts that might be loading
+   this same module. See twinkle.js for an example of the proper way to write a loader. 
+   In simple cases, the loader code may be included directly within a user script. */
+   

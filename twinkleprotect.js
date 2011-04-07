@@ -1,3 +1,7 @@
+if ( typeof(Twinkle) === "undefined" ) {
+	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
+}
+
 function twinkleprotect() {
 	if( wgNamespaceNumber < 0 ) {
 		return;
@@ -6,7 +10,7 @@ function twinkleprotect() {
 	if( userIsInGroup( 'sysop' ) ) {
 		twAddPortletLink( "javascript:twinkleprotect.callback()", "PP", "tw-rpp", "Protect page", "");
 	} 
-	else if (Twinkle.authorizedUser) {
+	else if (twinkleUserAuthorized) {
 		twAddPortletLink( "javascript:twinkleprotect.callback()", "RPP", "tw-rpp", "Request page protection", "");
 	}
 	else {

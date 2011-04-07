@@ -1,8 +1,12 @@
+if ( typeof(Twinkle) === "undefined" ) {
+	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
+}
+
 function twinkleprod() {
 	if( wgNamespaceNumber != 0 || wgCurRevisionId == false ) {
 		return;
 	}
-	if (Twinkle.authorizedUser) {
+	if (twinkleUserAuthorized) {
 		twAddPortletLink( "javascript:twinkleprod.callback()", "PROD", "tw-prod", "Propose deletion via WP:PROD", "");
 	} else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'PROD', 'tw-prod', 'Propose deletion via WP:PROD', '');

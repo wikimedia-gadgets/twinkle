@@ -1,6 +1,10 @@
+if ( typeof(Twinkle) === "undefined" ) {
+	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
+}
+
 function twinklewarn() {
 	if( wgNamespaceNumber == 3 ) {
-		twAddPortletLink( (Twinkle.authorizedUser ? "javascript:twinklewarn.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "Warn", "tw-warn", "Warn/Notify user", "");
+		twAddPortletLink( (twinkleUserAuthorized ? "javascript:twinklewarn.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "Warn", "tw-warn", "Warn/Notify user", "");
 		
 		/**
 		 TwinkleConfig.defaultGroup (int)

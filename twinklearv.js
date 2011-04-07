@@ -1,3 +1,7 @@
+if ( typeof(Twinkle) === "undefined" ) {
+	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
+}
+
 Twinkle.arv = function () {
 	var username;
 
@@ -15,7 +19,7 @@ Twinkle.arv = function () {
 		var name = isIPAddress( username ) ? 'Report IP' : 'Report';
 		var title =  isIPAddress( username ) ? 'Report IP to Administrators' : 'Report user to Administrators';
 		
-		if (Twinkle.authorizedUser)
+		if (twinkleUserAuthorized)
 		{
 			twAddPortletLink( "javascript:Twinkle.arv.callback(\"" + username.replace( /\"/g, "\\\"") + "\")", "ARV", "tw-arv", name, title );
 		}
@@ -491,6 +495,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 Twinkle.arv.processSock = function( params ) {
 
+	Wikipedia.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
+	
 	// notify all user accounts if requested
 	if (params.notify) {
 	
@@ -515,11 +521,9 @@ Twinkle.arv.processSock = function( params ) {
 			sockTalkPage.getStatusElement().unlink();
 			if ( current >= total ) {
 				statusIndicator.info( now + ' (completed)' );
-				Wikipedia.removeCheckpoint();
 			}
 		}
 		
-		Wikipedia.addCheckpoint();
 		var socks = params.sockpuppets;
 
 		// notify each puppet account
@@ -533,15 +537,14 @@ Twinkle.arv.processSock = function( params ) {
 	}
 
 	// prepare the SPI report
-	var text = 
-		"\{\{subst:SPI report|socksraw=" +
+	var text = "\n\n\{\{subst:SPI report|socksraw=" +
 		params.sockpuppets.map( function(v) { 
 				return "* \{\{" + ( isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "\}\}"; 
 			} )
 			.join( "\n" ) + "\n|evidence=" + params.evidence + " \n";
 		
 	if ( params.checkuser ) {
-			text += "|checkuser=yes";
+		text += "|checkuser=yes";
 	}
 	text += "\}\}";
 
@@ -551,6 +554,8 @@ Twinkle.arv.processSock = function( params ) {
 	spiPage.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ TwinkleConfig.summaryAd );
 	spiPage.setAppendText( text );
 	spiPage.append();
+	
+	Wikipedia.removeCheckpoint();  // all page updates have been started
 }
 
 // register initialization callback
