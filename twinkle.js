@@ -18,7 +18,7 @@ Twinkle = {};  // don't pollute the global namespace
 Twinkle.init = {
 
 	modulesAreReady: false,
-	documentIsReady: false,
+	domIsReady: false,
 	modulesHaveStarted: false,
 	loadTimeHasElapsed: false,
 
@@ -148,7 +148,7 @@ Twinkle.init = {
 
 	// DOM ready callback
 	domReady: function () {
-		Twinkle.init.documentIsReady = true;
+		Twinkle.init.domIsReady = true;
 		Twinkle.init.attemptStart();
 	},
 
@@ -156,9 +156,9 @@ Twinkle.init = {
 	attemptStart: function() {
 
 		// check if the document and all Twinkle modules have finished loading
-		// if we have waiting long enough, start what is ready
-		if ( !this.modulesHaveStarted && this.documentIsReady && 
-		     (this.modulesAreReady || this.loadTimeHasElapsed) ) {
+		// if we have waiting long enough, start what is ready, so long as morebits is loaded
+		if ( !this.modulesHaveStarted && this.domIsReady && 
+		     (this.modulesAreReady || (this.loadTimeHasElapsed && this.modules[0].callback) ) ) {
 		
 			// initialize all Twinkle modules in the predefined sequence
 			for (var i = 0; i < this.modules.length; i++) {
@@ -171,11 +171,15 @@ Twinkle.init = {
 	}
 }
 
-// Create configuration object if not provided by the user's custom .js file
-if ( typeof( TwinkleConfig ) === 'undefined' ) {
-	TwinkleConfig = {};
+// don't activate on special pages other than "Contributions" so they load faster, especially the watchlist
+if ( wgNamespaceNumber != -1 || wgTitle == "Contributions" ) {
+
+	// Create configuration object if not provided by the user's custom .js file
+	if ( typeof( TwinkleConfig ) === 'undefined' ) {
+		TwinkleConfig = {};
+	}
+
+	Twinkle.init.loadModules();
+
+	$(document).ready(Twinkle.init.domReady);
 }
-
-Twinkle.init.loadModules();
-
-$(document).ready(Twinkle.init.domReady);

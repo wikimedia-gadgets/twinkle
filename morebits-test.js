@@ -3,8 +3,8 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 	// Construct object (to prevent namespace conflicts)
 	Twinkle.morebitsTest = {
 
-		launchDialog: function( interface ) {
-			interface.dialog('open');
+		launchDialog: function( userInterface ) {
+			userInterface.dialog('open');
 		},
 	  
 		initSimpleWindow: function() {

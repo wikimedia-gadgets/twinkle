@@ -375,10 +375,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 						case 'promoonly':
 							return 'account is being used only for promotional purposes';
 							break;
-						default:
-							return 'unknown reason';
-							break;
 					}
+					return 'unknown reason';
 				} ).join( ', ' );
 
 
