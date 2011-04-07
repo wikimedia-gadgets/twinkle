@@ -46,7 +46,7 @@ Twinkle.init = {
 		// check if morebits has already been loaded by another script
 		if ( typeof(morebits_v2_js_loaded) !== "undefined" ) {
 			startingModule = 1;  // don't reload morebits
-			this.modules[0].callback = function () {};  // indicate that morebits is ready
+			this.modules[0].callback = function() {};  // indicate that morebits is ready
 		}
 		
 		/* Load all modules using the deprecated importScript() function. 

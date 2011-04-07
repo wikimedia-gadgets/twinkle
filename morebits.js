@@ -3245,7 +3245,7 @@ morebits_v2_js_loaded = true;  // version enhanced for HTML5
 if ( typeof(Twinkle) === "object" ) {
 
 	// register null initialization callback to let the Twinkle loader know we're ready
-	Twinkle.init.moduleReady( "morebits", function () {} );
+	Twinkle.init.moduleReady( "morebits", function() {} );
 }
 
 /* Add code here to call the initialization callback of any other user scripts that are
