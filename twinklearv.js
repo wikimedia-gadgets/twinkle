@@ -381,7 +381,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 
 			if ( form.page.value != '' ) {
-				reason += 'On [[' + form.page.value.replace( /^(Image|Category|File):/i, ':$1:' ) + ']]';
+			
+				// add a leading : on linked page namespace to prevent transclusion
+				reason = 'On [[' + form.page.value.replace( /^(Image|Category|File):/i, ':$1:' ) + ']]';
 
 				if ( form.badid.value != '' ) {
 					var query = {
@@ -397,9 +399,11 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if ( types ) {
 				reason += " " + types;
 			}
-			if (comment != '' ) {
-				reason += (reason == ""?"" : ". ") + comment + '.';
+			if (comment != "" ) {
+				reason += (reason == ""?"" : ". ") + comment + ".";
 			}
+			reason += "\~\~\~\~";
+			reason.replace(/\r?\n/g, "<br />");  // convert newlines to HTML breaks
 
 			Status.init( form );
 			var aivPage = new Wikipedia.page( 'Wikipedia:Administrator intervention against vandalism', 'Processing AIV request' );
@@ -417,7 +421,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				aivPage.getStatusElement().status( 'Adding new report...' );
 				aivPage.setMinorEdit( TwinkleConfig.markAIVReportAsMinor );
 				aivPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
-				aivPage.setPageText( text + '\n*\{\{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '\}\} - ' + reason.replace(/\r?\n/g, "<br />") + ' ~~' + '~~' );
+				aivPage.setPageText( text + '\n*\{\{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '\}\} - ' + reason );
 				aivPage.save();
 			} );
 			break;
@@ -445,6 +449,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				reason += "''" + comment.toUpperCaseFirstChar() + "''. ";
 			}
 			reason += "\~\~\~\~";
+			reason.replace( "\$", "$$$$" );  // XXX why is this here? Convert newlines to HTML breaks live aiv?
 
 			Status.init( form );
 			var uaaPage = new Wikipedia.page( 'Wikipedia:Usernames for administrator attention', 'Processing UAA request' );
@@ -462,7 +467,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				uaaPage.getStatusElement().status( 'Adding new report...' );
 				uaaPage.setMinorEdit( TwinkleConfig.markUAAReportAsMinor );
 				uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
-				uaaPage.setPageText( text.replace( /-->/, "-->\n" + reason.replace( '\$', "$$$$" ) ) );  // add at top
+				uaaPage.setPageText( text.replace( /-->/, "-->\n" + reason ) );  // add at top
 				uaaPage.save();
 			} );
 			break;
