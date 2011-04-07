@@ -403,7 +403,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				reason += (reason == ""?"" : ". ") + comment + ".";
 			}
 			reason += "\~\~\~\~";
-			reason.replace(/\r?\n/g, "<br />");  // convert newlines to HTML breaks
+			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
 
 			Status.init( form );
 			var aivPage = new Wikipedia.page( 'Wikipedia:Administrator intervention against vandalism', 'Processing AIV request' );
@@ -449,7 +449,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				reason += "''" + comment.toUpperCaseFirstChar() + "''. ";
 			}
 			reason += "\~\~\~\~";
-			reason.replace( "\$", "$$$$" );  // XXX why is this here? Convert newlines to HTML breaks live aiv?
+			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
 
 			Status.init( form );
 			var uaaPage = new Wikipedia.page( 'Wikipedia:Usernames for administrator attention', 'Processing UAA request' );
