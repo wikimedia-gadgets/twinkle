@@ -1263,7 +1263,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 			if (rationale == null || rationale.replace(/^\s*/, "").replace(/\s*$/, "") == '')
 			{
 				statelem.error( 'You must specify a rationale.  Aborted by user.' );
-				return;
+				return null;
 			}
 			if (rationale != '') parameters["1"] = rationale;
 			break;
@@ -1275,7 +1275,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 				if (rationale == null || rationale.replace(/^\s*/, "").replace(/\s*$/, "") == '')
 				{
 					statelem.error( 'You must specify a rationale.  Aborted by user.' );
-					return;
+					return null;
 				}
 			}
 			if (rationale != '') parameters["rationale"] = rationale;
@@ -1286,7 +1286,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 			if (filename == null)
 			{
 				statelem.error( 'Aborted by user.' );
-				return;
+				return null;
 			}
 			if (filename != '' && filename != pagenamespaces)
 			{
@@ -1297,7 +1297,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 				else
 				{
 					statelem.error("The File: prefix was missing from the image filename.  Aborted.");
-					return;
+					return null;
 				}
 			}
 			parameters["date"] = "\~\~\~\~\~";
@@ -1310,7 +1310,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 					if (title == null)
 					{
 						statelem.error( 'Aborted by user.' );
-						return;
+						return null;
 					}
 					parameters["1"] = title;
 					break;
@@ -1319,13 +1319,13 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 					if (title == null)
 					{
 						statelem.error( 'Aborted by user.' );
-						return;
+						return null;
 					}
 					var reason = prompt( 'Please enter the reason for the page move:' );
 					if (reason == null)
 					{
 						self.statelem.error( 'Aborted by user.' );
-						return;
+						return null;
 					}
 					parameters["1"] = title;
 					parameters["2"] = reason;
@@ -1335,7 +1335,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 					if (rationale == null)
 					{
 						statelem.error( 'Aborted by user.' );
-						return;
+						return null;
 					}
 					if (rationale != '') parameters["rationale"] = rationale;
 					break;
@@ -1346,7 +1346,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 			if (rationale == null)
 			{
 				statelem.error( 'Aborted by user.' );
-				return;
+				return null;
 			}
 			if (rationale != '') parameters["rationale"] = rationale;
 			break;
@@ -1356,7 +1356,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 			if (url == null)
 			{
 				statelem.error( 'Aborted by user.' );
-				return;
+				return null;
 			}
 			parameters["url"] = url;
 			break;
@@ -1365,7 +1365,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 			if (source == null)
 			{
 				statelem.error('Aborted by user.');
-				return;
+				return null;
 			}
 			parameters["source"] = source;
 			break;
@@ -1374,7 +1374,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 			if (title == null)
 			{
 				statelem.error( 'Aborted by user.' );
-				return;
+				return null;
 			}
 			parameters["article"] = title;
 			break;
@@ -1383,7 +1383,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 			if (img == null)
 			{
 				statelem.error( 'Aborted by user.' );
-				return;
+				return null;
 			}
 			parameters["filename"] = img;
 			break;
@@ -1392,7 +1392,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 			if (template == null)
 			{
 				statelem.error( 'Aborted by user.' );
-				return;
+				return null;
 			}
 			parameters["1"] = "\~\~\~\~\~";
 			parameters["2"] = template;
@@ -1406,7 +1406,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 			if (criterion == null || criterion.replace(/^\s*/, "").replace(/\s*$/, "") == '')
 			{
 				statelem.error( 'You must enter a criterion.  Aborted by user.' );
-				return;
+				return null;
 			}
 			parameters["1"] = criterion;
 			break;
@@ -1441,7 +1441,7 @@ twinklespeedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSys
 	}
 
 	if (!confirm("Twinkle's admin CSD functionality has not been upgraded to use the API, and will probably not work. Do you want to try it anyway?"))
-		return;
+		return null;
 
 	var value = e.target.value;
 	var normalized = twinklespeedy.normalizeHash[ value ];
@@ -1462,6 +1462,7 @@ twinklespeedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSys
 	var wikipedia_api = new Wikipedia.api( 'Checking if page exists', query, twinklespeedy.callbacks.sysop.main );
 	wikipedia_api.params = params;
 	wikipedia_api.post();
+	return null;
 }
 
 twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser(e) {

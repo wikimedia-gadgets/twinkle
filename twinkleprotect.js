@@ -547,7 +547,7 @@ twinkleprotect.callbacks = {
 
 		if( tag ) {
 			self.statelem.warn( [ htmlNode( 'strong', tag[0] ) , " is already placed on the page." ] )
-			return false;
+			return;
 		}
 
 		var newtag = '==== \{\{' + ns2tag[ wgNamespaceNumber ] + '|' + wgTitle +  '\}\} ====' + "\n";

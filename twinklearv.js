@@ -360,21 +360,24 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 			types = types.map( function(v) {
 					switch(v) {
-					case 'final':
-						return 'vandalism after final warning';
-						break;
-					case 'postblock':
-						return 'vandalism after recent release of block';
-						break;
-					case 'spambot':
-						return 'account is evidently a spambot or a compromised account';
-						break;
-					case 'vandalonly':
-						return 'actions evidently indicate a vandalism-only account';
-						break;
-					case 'promoonly':
-						return 'account is being used only for promotional purposes';
-						break;
+						case 'final':
+							return 'vandalism after final warning';
+							break;
+						case 'postblock':
+							return 'vandalism after recent release of block';
+							break;
+						case 'spambot':
+							return 'account is evidently a spambot or a compromised account';
+							break;
+						case 'vandalonly':
+							return 'actions evidently indicate a vandalism-only account';
+							break;
+						case 'promoonly':
+							return 'account is being used only for promotional purposes';
+							break;
+						default:
+							return 'unknown reason';
+							break;
 					}
 				} ).join( ', ' );
 
