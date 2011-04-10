@@ -156,7 +156,7 @@ twinkleproddelete.callbacks = {
 		wikipedia_api.post();
 
 		var query = { 
-			'title': namespaces[1] + ':' + self.params.page, 
+			'title': 'Talk:' + self.params.page,
 			'action': 'delete'
 		};
 		var wikipedia_wiki = new Wikipedia.wiki( 'Deleting talk page of page' + self.params.page, query, twinkleproddelete.callbacks.deleteTalkPage );

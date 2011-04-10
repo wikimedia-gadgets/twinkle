@@ -731,7 +731,7 @@ twinklespeedy.callbacks = {
 				wgNamespaceNumber != Namespace.USER &&
 				document.getElementById( 'ca-talk' ).className != 'new'
 			) {
-				var talk_page = namespaces[ wgNamespaceNumber  + 1 ] + ':' + wgTitle;
+				var talk_page = Wikipedia.namespaces[ wgNamespaceNumber + 1 ] + ':' + wgTitle;
 				var query = query = {
 					'title': talk_page,
 					'action': 'delete'

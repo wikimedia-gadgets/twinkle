@@ -1290,29 +1290,6 @@ function clone( obj, deep ) {
 	return objectClone;
 }
 
-namespaces = {
-	'-2':  'Media',
-	'-1':  'Special',
-	'0':   '',
-	'1':   'Talk',
-	'2':   'User',
-	'3':   'User_talk',
-	'4':   'Project',
-	'5':   'Project talk',
-	'6':   'Image',
-	'7':   'Image talk',
-	'8':   'MediaWiki',
-	'9':   'MediaWiki talk',
-	'10':  'Template',
-	'11':  'Template talk',
-	'12':  'Help',
-	'13':  'Help talk',
-	'14':  'Category',
-	'15':  'Category talk',
-	'100': 'Portal',
-	'101': 'Portal talk'
-};
-
 function ln( ns, title ) {
 	var ns2ln = {
 		'0':   'la',
@@ -1332,7 +1309,9 @@ function ln( ns, title ) {
 		'14':  'lc',
 		'15':  'lct',
 		'100': 'lp',
-		'101': 'lpt'
+		'101': 'lpt',
+		'108': 'lb',
+		'109': 'lbt'
 	};
 	return "\{\{" + ns2ln[ns] + "|" + title + "\}\}";
 }
@@ -1358,6 +1337,8 @@ Namespace = {
 	CATEGORY_TALK:  15,
 	PORTAL:         100,
 	PORTAL_TALK:    101,
+	BOOK:           108,
+	BOOK_TALK:      109,
 	MEDIA:          -2,
 	SPECIAL:        -1,
 
@@ -1418,6 +1399,54 @@ Date.prototype.getUTCMonthNameAbbrev = function() {
 
 // Accessor functions for wikiediting and api-access
 Wikipedia = {};
+
+Wikipedia.namespaces = {
+	'-2':  'Media',
+	'-1':  'Special',
+	'0':   '',
+	'1':   'Talk',
+	'2':   'User',
+	'3':   'User talk',
+	'4':   'Project',
+	'5':   'Project talk',
+	'6':   'Image',
+	'7':   'Image talk',
+	'8':   'MediaWiki',
+	'9':   'MediaWiki talk',
+	'10':  'Template',
+	'11':  'Template talk',
+	'12':  'Help',
+	'13':  'Help talk',
+	'14':  'Category',
+	'15':  'Category talk',
+	'100': 'Portal',
+	'101': 'Portal talk',
+	'108': 'Book',
+	'109': 'Book talk'
+};
+
+Wikipedia.namespacesNoSpecial = {
+	'0':   '',
+	'1':   'Talk',
+	'2':   'User',
+	'3':   'User talk',
+	'4':   'Project',
+	'5':   'Project talk',
+	'6':   'Image',
+	'7':   'Image talk',
+	'8':   'MediaWiki',
+	'9':   'MediaWiki talk',
+	'10':  'Template',
+	'11':  'Template talk',
+	'12':  'Help',
+	'13':  'Help talk',
+	'14':  'Category',
+	'15':  'Category talk',
+	'100': 'Portal',
+	'101': 'Portal talk',
+	'108': 'Book',
+	'109': 'Book talk'
+};
 
 // we dump all XHR here so they won't loose props
 Wikipedia.dump = [];
