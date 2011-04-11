@@ -3,11 +3,11 @@ if ( typeof(Twinkle) === "undefined" ) {
 }
 
 function twinkleprotect() {
-	if( wgNamespaceNumber < 0 ) {
+	if ( wgNamespaceNumber < 0 ) {
 		return;
 	}
 
-	if( userIsInGroup( 'sysop' ) ) {
+	if ( userIsInGroup( 'sysop' ) ) {
 		twAddPortletLink( "javascript:twinkleprotect.callback()", "PP", "tw-rpp", "Protect page", "");
 	} 
 	else if (twinkleUserAuthorized) {
@@ -311,15 +311,16 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		};
 
 		// Updating data for the action completed event
-		Wikipedia.actionCompleted.redirect = query['title'];
+		Wikipedia.actionCompleted.redirect = wgPageName;
 		Wikipedia.actionCompleted.notice = "Done...";
 		
 		var wikipedia_wiki = new Wikipedia.wiki( 'Protecting page', query, twinkleprotect.callbacks.sysop.protectingPage );
 		wikipedia_wiki.params = params;
 		wikipedia_wiki.get();
+		
 	} else {	
 		var typename, reason;
-			switch( params.type ) {
+		switch( params.type ) {
 			case 'pp-dispute':
 			case 'pp-vandalism':
 			case 'pp-template':
@@ -388,63 +389,21 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		params.reason = reason;
 		params.typename = typename;
 
-		var query = {
-			'title': 'Wikipedia:Requests for page protection',
-			'action': 'submit'
-		};
+		rppName = 'Wikipedia:Requests for page protection';
+		
 		// Updating data for the action completed event
-		Wikipedia.actionCompleted.redirect = query['title'];
+		Wikipedia.actionCompleted.redirect = rppName;
 		Wikipedia.actionCompleted.notice = "Nomination completed, redirecting now to the discussion page";
 
-		var wikipedia_wiki = new Wikipedia.wiki( 'Requesting protection of page', query, twinkleprotect.callbacks.user );
-		wikipedia_wiki.params = params;
-		wikipedia_wiki.followRedirect = true;
-		wikipedia_wiki.get();
+		var rppPage = new Wikipedia.page( rppName, 'Requesting protection of page');
+		rppPage.setFollowRedirect( true );
+		rppPage.setCallbackParameters( params );
+		rppPage.load( twinkleprotect.callbacks.user );
 	}
 }
 
 twinkleprotect.callbacks = {
 	sysop: {
-		taggingPage: function( self ) {
-			var form = self.responseXML.getElementById( 'editform' );
-			var oldtag_re = /\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*/gi;
-
-			var text = form.wpTextbox1.value;
-
-			text = text.replace( oldtag_re, '' );
-
-			if( self.params.type != 'unprotect' && self.params.expiry != 'indefinite' ) {
-				self.params.tag += '|expiry={' + '{subst:#time:F j, Y|+' + self.params.expiry +'}}';
-				if( self.params.small ) {
-					self.params.tag += '|small=yes';
-				}
-			}
-
-			var summary;
-			if( self.params.type == 'unprotect' ) {
-				summary = 'removing protection template' + TwinkleConfig.summaryAd;
-			} else {
-				if( self.params.noinclude ) {
-					text = "<noinclude>\{\{" + self.params.tag + "\}\}</noinclude>" + text;
-				} else {
-					text = "\{\{" + self.params.tag + "\}\}\n" + text;
-				}
-				summary = "adding \{\{" + self.params.tag + "\}\}" + TwinkleConfig.summaryAd;
-
-			}
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': form.wpWatchthis.checked ? '' : undefined,
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSummary': summary,
-				'wpTextbox1': text
-			};
-
-			self.post( postData );
-		},
 		protectingPage: function( self ){
 			var form  = self.responseXML.getElementById( 'mw-Protect-Form' );
 			var postData;
@@ -505,21 +464,51 @@ twinkleprotect.callbacks = {
 
 			self.post( postData );
 		
-			var query = {
-				'title': wgPageName,
-				'action': 'submit'
-			};
-			if( self.params.create == '' ) {
-				var wikipedia_wiki = new Wikipedia.wiki( 'Tagging page', query, twinkleprotect.callbacks.sysop.taggingPage );
-				wikipedia_wiki.params = self.params;
-				wikipedia_wiki.get();
+			var protectedPage = new Wikipedia.page( wgPageName, 'Tagging page');
+			protectedPage.setCallbackParameters( params );
+			protectedPage.load( twinkleprotect.callbacks.sysop.taggingPage );
+		},
+		
+		taggingPage: function( protectedPage ) {
+		
+			var params = protectedPage.getCallbackParameters();
+			var text = protectedPage.getPageText();
+
+			var oldtag_re = /\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*/gi;
+
+			text = text.replace( oldtag_re, '' );
+
+			if( params.type != 'unprotect' && params.expiry != 'indefinite' ) {
+				params.tag += '|expiry={' + '{subst:#time:F j, Y|+' + params.expiry +'}}';
+				if( params.small ) {
+					params.tag += '|small=yes';
+				}
 			}
+
+			var summary;
+			if( params.type == 'unprotect' ) {
+				summary = 'removing protection template' + TwinkleConfig.summaryAd;
+			} else {
+				if( params.noinclude ) {
+					text = "<noinclude>\{\{" + params.tag + "\}\}</noinclude>" + text;
+				} else {
+					text = "\{\{" + params.tag + "\}\}\n" + text;
+				}
+				summary = "adding \{\{" + params.tag + "\}\}" + TwinkleConfig.summaryAd;
+
+			}
+			
+			protectedPage.setEditSummary( summary );
+			protectedPage.setPageText( text );
+			protectedPage.save();
 		}
 	},
-	user: function( self ) {
-		var form = self.responseXML.getElementById( 'editform' );
+	
+	user: function( rppPage ) {
 
-		var text = form.wpTextbox1.value;
+		var params = rppPage.getCallbackParameters();
+		var text = rppPage.getPageText();
+		var statusElement = rppPage.getStatusElement();
 
 		var ns2tag	=	{
 			'0'	:	'la',
@@ -545,18 +534,22 @@ twinkleprotect.callbacks = {
 		var rppRe = new RegExp( '====\\s*\\{\\{\\s*' + ns2tag[ wgNamespaceNumber ] + '\\s*\\|\\s*' + RegExp.escape( wgTitle, true ) + '\\s*\\}\\}\\s*====', 'm' );
 		var tag = rppRe.exec( text );
 
-		if( tag ) {
-			self.statelem.warn( [ htmlNode( 'strong', tag[0] ) , " is already placed on the page." ] )
+		var rppLink = document.createElement('a');
+		rppLink.setAttribute('href', wgArticlePath.replace('$1', rppPage.getPageName()));
+		rppLink.appendChild(document.createTextNode(rppPage.getPageName()));
+		
+		if ( tag ) {
+			statusElement.error( [ 'There is already a protection request for this page at ', rppLink, ', aborting.' ] );
 			return;
 		}
 
 		var newtag = '==== \{\{' + ns2tag[ wgNamespaceNumber ] + '|' + wgTitle +  '\}\} ====' + "\n";
 		if( ( new RegExp( '^' + RegExp.escape( newtag ).replace( /\s+/g, '\\s*' ), 'm' ) ).test( text ) ) {
-			self.statelem.error( 'There are already a protection request for this page, aborting.' );
+			statusElement.error( [ 'There is already a protection request for this page at ', rppLink, ', aborting.' ] );
 			return;
 		}
 		var words = [];
-		switch( self.params.expiry ) {
+		switch( params.expiry ) {
 		case 'temporary':
 			words.push( "Temporary" );
 			break;
@@ -564,39 +557,30 @@ twinkleprotect.callbacks = {
 			words.push( "Indefinite" );
 			break;
 		}
-		if( self.params.cascade ) {
+		if( params.cascade ) {
 			words.push( "cascading" );
 		}
 
-		words.push( self.params.typename );
+		words.push( params.typename );
 
-		newtag += "'''" + words.join( ' ' ) + "'''" + ( self.params.reason != '' ? self.params.reason : '' ) + " \~\~\~\~";
+		newtag += "'''" + words.join( ' ' ) + "'''" + ( params.reason != '' ? params.reason : '' ) + " \~\~\~\~";
 
-		if( self.params.type == 'unprotect' ) {
+		if ( params.type == 'unprotect' ) {
 			var reg = /(\n==\s*Current requests for unprotection\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
 		} else {
 			var reg = /(\n==\s*Current requests for protection\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
 		}
-		var originalTextLength= text.length;
+		var originalTextLength = text.length;
 		text = text.replace( reg, "$1" + newtag + "\n");
-		if (text.length==originalTextLength)
+		if (text.length == originalTextLength)
 		{
-			self.statelem.error( 'The marker that identifies where the protection request is supposed to be added on WP:RFPP could not be found. Aborting ...' );
+			statusElement.error( 'The marker that identifies where the protection request is supposed to be added on WP:RFPP could not be found. Aborting ...' );
 			return;
 		}
-		var postData = {
-			'wpMinoredit': undefined,
-			'wpWatchthis': form.wpWatchthis.checked ? '' : undefined,
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSection': '',
-			'wpSummary': "Requesting " + self.params.typename + ' of [[' + wgPageName.replace(/_/g, ' ') + ']].' + TwinkleConfig.summaryAd,
-			'wpTextbox1': text
-		};
-
-		self.post( postData );
+		rppPage.getStatusElement().status( 'Adding new request...' );
+		rppPage.setEditSummary( "Requesting " + params.typename + ' of [[' + wgPageName.replace(/_/g, ' ') + ']].' + TwinkleConfig.summaryAd );
+		rppPage.setPageText( text );
+		rppPage.save();
 	}
 }
 
