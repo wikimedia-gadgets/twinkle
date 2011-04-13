@@ -129,10 +129,14 @@ Twinkle.init = {
 	domIsReady: false,
 	modulesHaveStarted: false,
 	loadTimeHasElapsed: false,
+	useLocalServer: false,  // loads modules from the local webserver for development use
 
 	loadModules: function() {
 
-		var defaultDir = "User:UncleDouggie";
+		var defaultDir = "User:UncleDouggie";  // contains full set of modules
+		if (this.useLocalServer) {
+			defaultDir = "twinkle";  // override path for testing on local server
+		}
 
 		/* The order of the modules in the TW menu is determined from the order in the following list.
 		   Undesired modules may be removed from this list without requiring any other code changes.
@@ -214,7 +218,11 @@ Twinkle.init = {
 				continue;
 			}
 			var modulePath = this.modules[i].dir + "/" + this.modules[i].name + ".js";
-			importScript( modulePath );
+			if (this.useLocalServer) {
+				importScriptURI('http://localhost/' + modulePath);
+			} else {
+				importScript( modulePath );  // load from Wikipedia
+			}
 		}
 
 		// XXX fixme quick
