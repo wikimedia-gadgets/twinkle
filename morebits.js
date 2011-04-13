@@ -135,8 +135,8 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 //Build a portlet menu if it doesn't exist yet, and add the portlet link.
 function twAddPortletLink( href, text, id, tooltip, accesskey, nextnode )
 {
-	if (TwinkleConfig.portletArea) twAddPortlet(TwinkleConfig.portletArea, TwinkleConfig.portletId, TwinkleConfig.portletName, TwinkleConfig.portletType, TwinkleConfig.portletNext);
-	addPortletLink( TwinkleConfig.portletId, href, text, id, tooltip, accesskey, nextnode );
+	if (twAddPortlet.portletArea) twAddPortlet(twAddPortlet.portletArea, twAddPortlet.portletId, twAddPortlet.portletName, twAddPortlet.portletType, twAddPortlet.portletNext);
+	addPortletLink( twAddPortlet.portletId, href, text, id, tooltip, accesskey, nextnode );
 }
 
 Cookies = {
@@ -3243,17 +3243,18 @@ if ( typeof( TwinkleConfig ) === 'undefined' ) {
 	TwinkleConfig = {};
 }
 
+twAddPortlet.usingTwCfg = (typeof(TwinkleConfig) !== "undefined");
 switch (skin)
 {
 	case 'vector':
-		if( typeof( TwinkleConfig.portletArea ) == 'undefined' ) TwinkleConfig.portletArea = 'right-navigation';
-		if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-twinkle';
-		if( typeof( TwinkleConfig.portletName ) == 'undefined' ) TwinkleConfig.portletName = 'TW';
-		if( typeof( TwinkleConfig.portletType ) == 'undefined' ) TwinkleConfig.portletType = 'menu';
-		if( typeof( TwinkleConfig.portletNext ) == 'undefined' ) TwinkleConfig.portletNext = 'p-search';
+		twAddPortlet.portletArea = (twAddPortlet.usingTwCfg && TwinkleConfig.portletArea ? TwinkleConfig.portletArea : 'right-navigation');
+		twAddPortlet.portletId = (twAddPortlet.usingTwCfg && TwinkleConfig.portletId ? TwinkleConfig.portletId : 'p-twinkle');
+		twAddPortlet.portletName = (twAddPortlet.usingTwCfg && TwinkleConfig.portletName ? TwinkleConfig.portletName : 'TW');
+		twAddPortlet.portletType = (twAddPortlet.usingTwCfg && TwinkleConfig.portletType ? TwinkleConfig.portletType : 'menu');
+		twAddPortlet.portletNext = (twAddPortlet.usingTwCfg && TwinkleConfig.portletNext ? TwinkleConfig.portletNext : 'p-search');
 		break;
 	default:
-		if( typeof( TwinkleConfig.portletId   ) == 'undefined' ) TwinkleConfig.portletId   = 'p-cactions';
+		twAddPortlet.portletId = (twAddPortlet.usingTwCfg && TwinkleConfig.portletId ? TwinkleConfig.portletId : 'p-cactions');
 		break;
 }
 
