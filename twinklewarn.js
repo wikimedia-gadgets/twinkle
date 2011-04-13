@@ -25,15 +25,16 @@ twinklewarn.callback = function twinklewarnCallback() {
 			event:twinklewarn.callback.change_category
 		} );
 
-	main_group.append( { type:'option', label:'General Note (1)', value:'level1', selected: ( TwinkleConfig.defaultWarningGroup == 1 || TwinkleConfig.defaultWarningGroup < 1 || ( userIsInGroup( 'sysop' ) ? TwinkleConfig.defaultWarningGroup > 8 : TwinkleConfig.defaultWarningGroup > 7 ) ) } );
-	main_group.append( { type:'option', label:'Caution (2)', value:'level2', selected: ( TwinkleConfig.defaultWarningGroup == 2 ) } );
-	main_group.append( { type:'option', label:'Warning (3)', value:'level3', selected: ( TwinkleConfig.defaultWarningGroup == 3 ) } );
-	main_group.append( { type:'option', label:'Final warning (4)', value:'level4', selected: ( TwinkleConfig.defaultWarningGroup == 4 ) } );
-	main_group.append( { type:'option', label:'Only warning (4im)', value:'level4im', selected: ( TwinkleConfig.defaultWarningGroup == 5 ) } );
-	main_group.append( { type:'option', label:'Single issue notices', value:'singlenotice', selected: ( TwinkleConfig.defaultWarningGroup == 6 ) } );
-	main_group.append( { type:'option', label:'Single issue warnings', value:'singlewarn', selected: ( TwinkleConfig.defaultWarningGroup == 7 ) } );
+	var defaultGroup = parseInt(TwinkleConfig.defaultWarningGroup);
+	main_group.append( { type:'option', label:'General Note (1)', value:'level1', selected: ( defaultGroup == 1 || defaultGroup < 1 || ( userIsInGroup( 'sysop' ) ? defaultGroup > 8 : defaultGroup > 7 ) ) } );
+	main_group.append( { type:'option', label:'Caution (2)', value:'level2', selected: ( defaultGroup == 2 ) } );
+	main_group.append( { type:'option', label:'Warning (3)', value:'level3', selected: ( defaultGroup == 3 ) } );
+	main_group.append( { type:'option', label:'Final warning (4)', value:'level4', selected: ( defaultGroup == 4 ) } );
+	main_group.append( { type:'option', label:'Only warning (4im)', value:'level4im', selected: ( defaultGroup == 5 ) } );
+	main_group.append( { type:'option', label:'Single issue notices', value:'singlenotice', selected: ( defaultGroup == 6 ) } );
+	main_group.append( { type:'option', label:'Single issue warnings', value:'singlewarn', selected: ( defaultGroup == 7 ) } );
 	if( userIsInGroup( 'sysop' ) ) {
-		main_group.append( { type:'option', label:'Blocking', value:'block', selected: ( TwinkleConfig.defaultWarningGroup == 8 ) } );
+		main_group.append( { type:'option', label:'Blocking', value:'block', selected: ( defaultGroup == 8 ) } );
 	}
 
 	main_select.append( { type:'select', name:'sub_group', event:twinklewarn.callback.change_subcategory } ); //Will be empty to begin with.
