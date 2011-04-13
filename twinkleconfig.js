@@ -1,0 +1,1162 @@
+if ( typeof(Twinkle) === "undefined" ) {
+	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
+}
+
+Twinkle.config = {};
+
+Twinkle.config.commonEnums = {
+	watchlist: { yes: "Add to watchlist", no: "Don't add to watchlist", default: "Follow your site preferences" },
+	talkPageMode: { window: "In a window, replacing other user talks", tab: "In a new tab", blank: "In a totally new window" },
+};
+
+Twinkle.config.commonSets = {
+	csdCriteria: {
+		db: "Custom rationale (\{\{db}})",
+		g1: "G1", g2: "G2", g3: "G3", g4: "G4", g5: "G5", g6: "G6", g7: "G7", g8: "G8", g10: "G10", g11: "G11", g12: "G12",
+		a1: "A1", a2: "A2", a3: "A3", a5: "A5", a7: "A7", a9: "A9", a10: "A10",
+		u1: "U1", u2: "U2", u3: "U3",
+		f1: "F1", f2: "F2", f3: "F3", f7: "F7", f8: "F8", f9: "F9", f10: "F10",
+		c1: "C1",
+		t2: "T2", t3: "T3",
+		r2: "R2", r3: "R3",
+		p1: "P1", p2: "P2"  // db-multiple is not listed here because it is treated differently within twinklespeedy
+	},
+	csdCriteriaDisplayOrder: [
+		"db",
+		"g1", "g2", "g3", "g4", "g5", "g6", "g7", "g8", "g10", "g11", "g12",
+		"a1", "a2", "a3", "a5", "a7", "a9", "a10",
+		"u1", "u2", "u3",
+		"f1", "f2", "f3", "f7", "f8", "f9", "f10",
+		"c1",
+		"t2", "t3",
+		"r2", "r3",
+		"p1", "p2"
+	],
+	namespacesNoSpecial: {
+		"0": "Article",
+		"1": "Talk (article)",
+		"2": "User",
+		"3": "User talk",
+		"4": "Wikipedia",
+		"5": "Wikipedia talk",
+		"6": "File",
+		"7": "File talk",
+		"8": "MediaWiki",
+		"9": "MediaWiki talk",
+		"10": "Template",
+		"11": "Template talk",
+		"12": "Help",
+		"13": "Help talk",
+		"14": "Category",
+		"15": "Category talk",
+		"100": "Portal",
+		"101": "Portal talk",
+		"108": "Book",
+		"109": "Book talk"
+	},
+};
+
+/**
+ * Section entry format:
+ *
+ * {
+ *   title: <human-readable section title>,
+ *   adminOnly: <true for admin-only sections>,
+ *   hidden: <true for advanced preferences that rarely need to be changed - they can still be modified by manually editing twinkleoptions.js>,
+ *   inFriendlyConfig: <true for preferences located under FriendlyConfig rather than TwinkleConfig>,
+ *   preferences: [
+ *     {
+ *       name: <TwinkleConfig property name>,
+ *       label: <human-readable short description - used as a form label>,
+ *       helptip: <(optional) human-readable text (using valid HTML) that complements the description, like limits, warnings, etc.>
+ *       adminOnly: <true for admin-only preferences>,
+ *       type: <string|boolean|integer|enum|set>,
+ *       enumValues: <for type = "enum": a JSON object where the keys are the internal names and the values are human-readable strings>,
+ *       setValues: <for type = "set": a JSON object where the keys are the internal names and the values are human-readable strings>,
+ *       setDisplayOrder: <(optional) for type = "set": an array containing the keys of setValues (as strings) in the order that they are displayed>
+ *     },
+ *     . . .
+ *   ]
+ * },
+ * . . .
+ *
+ * IMPORTANT NOTE: Some advanced preferences aren't displayed here; if the user chooses to set them manually
+ * (i.e. by editing their twinkleconfig.js file), they are detected and stored in Twinkle.config.foundPrefs.
+ *
+ */
+
+Twinkle.config.sections = [
+{
+	title: "General",
+	preferences: [
+		// TwinkleConfig.summaryAd (string)
+		// Text to be appended to the edit summary of edits made using Twinkle
+		{
+			name: "summaryAd",
+			label: "\"Ad\" to be appended to Twinkle's edit summaries",
+			helptip: "The summary ad should start with a space, and be kept short.",
+			type: "string"
+		},
+
+		// TwinkleConfig.deletionSummaryAd (string)
+		// Text to be appended to the edit summary of deletions made using Twinkle
+		{
+			name: "deletionSummaryAd",
+			label: "Summary ad to use for deletion summaries",
+			helptip: "Normally the same as the edit summary ad above.",
+			adminOnly: true,
+			type: "string"
+		},
+
+		// TwinkleConfig.protectionSummaryAd (string)
+		// Text to be appended to the edit summary of page protections made using Twinkle
+		{
+			name: "protectionSummaryAd",
+			label: "Summary ad to use for page protections",
+			helptip: "Normally the same as the edit summary ad above.",
+			adminOnly: true,
+			type: "string"
+		},
+
+		// TwinkleConfig.userTalkPageMode may take arguments:
+		// 'window': open a new window, remember the opened window
+		// 'tab': opens in a new tab, if possible.
+		// 'blank': force open in a new window, even if such a window exists
+		{
+			name: "userTalkPageMode",
+			label: "When opening a user talk page, open it",
+			type: "enum",
+			enumValues: Twinkle.config.commonEnums.talkPageMode
+		},
+	]
+},
+
+{
+	title: "ARV",
+	preferences: [
+		// TwinkleConfig.markAIVReportAsMinor (boolean)
+		// Defines if reportS to AIV should be marked as minor
+		{
+			name: "markAIVReportAsMinor",
+			label: "Mark AIV reports as minor edits",
+			type: "boolean"
+		},
+
+		// TwinkleConfig.markUAAReportAsMinor (boolean)
+		// Defines if reports to UAA should be marked as minor
+		{
+			name: "markUAAReportAsMinor",
+			label: "Mark UAA reports as minor edits",
+			type: "boolean"
+		},
+
+		// TwinkleConfig.markSockReportAsMinor (boolean)
+		// Defines if reports to SPI should be marked as minor
+		{
+			name: "markSockReportAsMinor",
+			label: "Mark SPI reports as minor edits",
+			type: "boolean"
+		},
+	]
+},
+
+{
+	title: "Revert and rollback",  // twinklefluff module
+	preferences: [
+		// TwinkleConfig.openTalkPage (array)
+		// What types of actions that should result in opening of talk page
+		{
+			name: "openTalkPage",
+			label: "Open user talk page after these types of reversions",
+			type: "set",
+			setValues: { agf: "AGF rollback", norm: "Normal rollback", vand: "Vandalism rollback", torev: "\"Restore this version\"" }
+		},
+
+		// TwinkleConfig.openTalkPageOnAutoRevert (bool)
+		// Defines if talk page should be opened when calling revert from contrib page, because from there, actions may be multiple, and opening talk page not suitable. If set to true, openTalkPage defines then if talk page will be opened.
+		{
+			name: "openTalkPageOnAutoRevert",
+			label: "Open user talk page when invoking rollback from user contributions",
+			type: "boolean"
+		},
+
+		// TwinkleConfig.markRevertedPagesAsMinor (array)
+		// What types of actions that should result in marking edit as minor
+		{
+			name: "markRevertedPagesAsMinor",
+			label: "Mark reversions as minor for these types of reversions",
+			type: "set",
+			setValues: { agf: "AGF rollback", norm: "Normal rollback", vand: "Vandalism rollback", torev: "\"Restore this version\"" }
+		},
+
+		// TwinkleConfig.watchRevertedPages (array)
+		// What types of actions that should result in forced addition to watchlist
+		{
+			name: "watchRevertedPages",
+			label: "Add pages to watchlist for these types of reversions",
+			type: "set",
+			setValues: { agf: "AGF rollback", norm: "Normal rollback", vand: "Vandalism rollback", torev: "\"Restore this version\"" }
+		},
+
+		// TwinkleConfig.offerReasonOnNormalRevert (boolean)
+		// If to offer a prompt for extra summary reason for normal reverts, default to true
+		{
+			name: "offerReasonOnNormalRevert",
+			label: "Ask for reason for \"restore this version\" reverts",
+			helptip: "Strongly recommended.",
+			type: "boolean"
+		},
+
+		// TwinkleConfig.showRollbackLinks (array)
+		// Where Twinkle should show rollback links (diff, others, mine, contribs)
+		// XXX |contribs| seems to be equal to |others| + |mine|, i.e. redundant -->
+		{
+			name: "showRollbackLinks",
+			label: "Show rollback links on these pages",
+			type: "set",
+			setValues: { diff: "Diff pages", others: "Contributions pages of other users", mine: "My contributions page" }
+		},
+	]
+},
+
+{
+	title: "DI (image deletion)",
+	preferences: [
+		// TwinkleConfig.notifyUserOnDeli (boolean)
+		// If the user should be notified after placing a file deletion tag
+		{
+			name: "notifyUserOnDeli",
+			label: "Check the \"notify initial uploader\" box by default",
+			type: "boolean"
+		},
+
+		// TwinkleConfig.deliWatchPage (string)
+		// The watchlist setting of the page tagged for deletion. Either "yes", "no", or "default". Default is "default" (Duh).
+		{
+			name: "deliWatchPage",
+			label: "Add image page to watchlist when tagging",
+			type: "enum",
+			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+
+		// TwinkleConfig.deliWatchUser (string)
+		// The watchlist setting of the user talk page if a notification is placed. Either "yes", "no", or "default". Default is "default" (Duh).
+		{
+			name: "deliWatchUser",
+			label: "Add user talk page of initial uploader to watchlist (if notifying them)",
+			type: "enum",
+			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+	]
+},
+
+{
+	title: "PROD (proposed deletion)",
+	preferences: [
+		// TwinkleConfig.watchProdPages (boolean)
+		// If, when applying prod template to page, to watch the page
+		{
+			name: "watchProdPages",
+			label: "Add article to watchlist when tagging",
+			type: "boolean"
+		},
+
+		// TwinkleConfig.prodReasonDefault (string)
+		// The prefilled PROD reason.
+		{
+			name: "prodReasonDefault",
+			label: "Prefilled PROD reason",
+			type: "string"
+		},
+	]
+},
+
+{
+	title: "CSD (speedy deletion)",
+	preferences: [
+		// TwinkleConfig.watchSpeedyPages (array)
+		// Whether to add speedy tagged pages to watchlist
+		{
+			name: "watchSpeedyPages",
+			label: "Add page to watchlist when tagging with these criteria",
+			type: "set",
+			setValues: Twinkle.config.commonSets.csdCriteria,
+			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
+		},
+
+		// TwinkleConfig.markSpeedyPagesAsPatrolled (boolean)
+		// If, when applying speedy template to page, to mark the page as patrolled (if the page was reached from NewPages)
+		{
+			name: "markSpeedyPagesAsPatrolled",
+			label: "Mark page as patrolled when tagging (if possible)",
+			helptip: "Due to technical limitations, pages are only marked as patrolled when they are reached from Special:NewPages.",
+			type: "boolean"
+		},
+
+		// TwinkleConfig.notifyUserOnSpeedyDeletionNomination (array)
+		// What types of actions should result that the author of the page being notified of nomination
+		{
+			name: "notifyUserOnSpeedyDeletionNomination",
+			label: "Notify page creator only when tagging with these criteria",
+			helptip: "Even if you choose to notify from the CSD screen, the notification will only take place for those criteria selected here.",
+			type: "set",
+			setValues: Twinkle.config.commonSets.csdCriteria,
+			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
+		},
+
+		// TwinkleConfig.welcomeUserOnSpeedyDeletionNotification (array of strings)
+		// On what types of speedy deletion notifications shall the user be welcomed
+		// with a "firstarticle" notice if his talk page has not yet been created.
+		{
+			name: "welcomeUserOnSpeedyDeletionNotification",
+			label: "Welcome page creator alongside notification when tagging with these criteria",
+			helptip: "The welcome is issued only when the user is notified about the deletion, and only if their talk page does not already exist. The template used is \{\{<a href=\"/wiki/Template:Firstarticle\">firstarticle</a>}}.",
+			type: "set",
+			setValues: Twinkle.config.commonSets.csdCriteria,
+			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
+		},
+
+		/* CSD admin stuff is broken, so commenting this stuff out
+
+		// TwinkleConfig.openUserTalkPageOnSpeedyDelete (array of strings)
+		// What types of actions that should result user talk page to be opened when speedily deleting (admin only)
+		{
+			name: "openUserTalkPageOnSpeedyDelete",
+			label: "Open user talk page when deleting under these criteria",
+			adminOnly: true,
+			type: "set",
+			setValues: Twinkle.config.commonSets.csdCriteria,
+			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
+		},
+
+		// TwinkleConfig.deleteTalkPageOnDelete (boolean)
+		// If talk page if exists should also be deleted (CSD G8) when spedying a page (admin only)
+		{
+			name: "deleteTalkPageOnDelete",
+			label: "Also delete talk page when speedy deleting a page",
+			adminOnly: true,
+			type: "boolean"
+		},
+
+		// TwinkleConfig.orphanNormalPagesOnSpeedyDelete (hash)
+		// Defines if all backlinks to a page should be removed.
+		// property 'exclude' defined actions not to orphan
+		// XXX needs to be modified so it doesn't nest JSON
+		//if( typeof( TwinkleConfig.orphanBacklinksOnSpeedyDelete ) == 'undefined' ) {
+		//	TwinkleConfig.orphanBacklinksOnSpeedyDelete = { exclude: ['g6'], orphan:true };
+		//}
+		*/
+
+		// TwinkleConfig.deleteSysopDefaultToTag (boolean)
+		// Make the CSD screen default to "tag" instead of "delete" (admin only)
+		{
+			name: "deleteSysopDefaultToTag",
+			label: "Default to speedy tagging instead of outright deletion",
+			helptip: "Outright speedy deletion using Twinkle is broken at the moment, so leave this option enabled!",
+			adminOnly: true,
+			type: "boolean"
+		},
+
+		// TwinkleConfig.speedyWindowWidth (integer)
+		// Defines the width of the Twinkle SD window in pixels
+		{
+			name: "speedyWindowWidth",
+			label: "Width of speedy deletion window (pixels)",
+			type: "integer"
+		},
+
+		// TwinkleConfig.speedyWindowWidth (integer)
+		// Defines the width of the Twinkle SD window in pixels
+		{
+			name: "speedyWindowHeight",
+			label: "Height of speedy deletion window (pixels)",
+			helptip: "If you have a big monitor, you might like to increase this.",
+			type: "integer"
+		},
+	]
+},
+
+{
+	title: "Unlink",
+	preferences: [
+		// TwinkleConfig.unlinkNamespaces (array)
+		// In what namespaces unlink should happen, default in 0 (article) and 100 (portal)
+		{
+			name: "unlinkNamespaces",
+			label: "Remove links from pages in these namespaces",
+			helptip: "Avoid selecting any talk namespaces, as Twinkle might end up unlinking on talk archives (a big no-no).",
+			type: "set",
+			setValues: Twinkle.config.commonSets.namespacesNoSpecial
+		},
+	]
+},
+
+{
+	title: "Warn",
+	preferences: [
+		// TwinkleConfig.defaultWarningGroup (int)
+		// if true, watch the page which has been dispatched an warning or notice, if false, default applies
+		{
+			name: "defaultWarningGroup",
+			label: "Default warning level",
+			type: "enum",
+			enumValues: { "1": "Level 1", "2": "Level 2", "3": "Level 3", "4": "Level 4", "5": "Level 4im", "6": "Single-issue notices", "7": "Single-issue warnings", "8": "Block (admin only)" }
+		},
+
+		// TwinkleConfig.showSharedIPNotice may take arguments:
+		// true: to show shared ip notice if an IP address
+		// false: to not print the notice
+		{
+			name: "showSharedIPNotice",
+			label: "Add extra notice on shared IP talk pages",
+			helptip: "The notice used for this is not a template - it is hard-coded in Twinkle at the moment.",
+			type: "boolean"
+		},
+
+		// TwinkleConfig.watchWarnings (boolean)
+		// if true, watch the page which has been dispatched an warning or notice, if false, default applies
+		{
+			name: "watchWarnings",
+			label: "Add user talk page to watchlist when notifying",
+			type: "boolean"
+		},
+
+		// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
+		// if true, blank the talk page when issuing an indef block notice (per [[WP:UW#Indefinitely blocked users]])
+		{
+			name: "blankTalkpageOnIndefBlock",
+			label: "Blank the talk page when indefinitely blocking users",
+			helptip: "See <a href=\"/wiki/WP:UW#Indefinitely blocked users\">WP:UW</a> for more information.",
+			adminOnly: true,
+			type: "boolean"
+		},
+	]
+},
+
+{
+	title: "XFD (deletion discussions)",
+	preferences: [
+		// TwinkleConfig.xfdWatchPage (string)
+		// The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
+		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+		{
+			name: "xfdWatchPage",
+			label: "Add the nominated page to watchlist",
+			type: "enum",
+			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+
+		// TwinkleConfig.xfdWatchDiscussion (string)
+		// The watchlist setting of the newly created XfD page (for those processes that create discussion pages for each nomination),
+		// or the list page for the other processes.
+		// Either "yes" (add to watchlist), "no" (don't add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+		{
+			name: "xfdWatchDiscussion",
+			label: "Add the deletion discussion page to watchlist",
+			helptip: "This refers to the discussion subpage (for AfD and MfD) or the daily log page (for TfD, CfD, RfD and FfD)",
+			type: "enum",
+			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+
+		// TwinkleConfig.xfdWatchUser (string)
+		// The watchlist setting of the user if he receives a notification. Either "yes" (add to watchlist), "no" (don't
+		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+		{
+			name: "xfdWatchUser",
+			label: "Add the user talk page to watchlist (when notifying)",
+			type: "enum",
+			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+
+		// TwinkleConfig.xfdWatchList (string)
+		// The watchlist setting of the XfD list page, *if* the discussion is on a separate page. Either "yes" (add to watchlist), "no" (don't
+		// add to watchlist), or "default" (use setting from preferences). Default is "no" (Hehe. Seriously though, who wants to watch it?
+		// Sorry in advance for any false positives.).
+		{
+			name: "xfdWatchList",
+			label: "Add the daily log/list page to the watchlist (if relevant)",
+			helptip: "This only applies for AfD and MfD, where the discussions are transcluded onto a daily log page (for AfD) or the main MfD page (for MfD).",
+			type: "enum",
+			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+	]
+},
+
+{
+	title: "Hidden",
+	hidden: true,
+	preferences: [
+		// twinklefluff.js: defines how many revision to query maximum, maximum possible is 50, default is 50
+		{
+			name: "revertMaxRevisions",
+			type: "integer"
+		},
+		// twinklebatchdelete.js: How many pages should be processed at a time
+		{
+			name: "batchdeleteChunks",
+			type: "integer"
+		},
+		// twinklebatchdelete.js: How many pages left in the process of being completed should allow a new batch to be initialized
+		{
+			name: "batchDeleteMinCutOff",
+			type: "integer"
+		},
+		// twinklebatchdelete.js: How many pages should be processed maximum
+		{
+			name: "batchMax",
+			type: "integer"
+		},
+		// twinklebatchprotect.js: How many pages should be processed at a time
+		{
+			name: "batchProtectChunks",
+			type: "integer"
+		},
+		// twinklebatchprotect.js: How many pages left in the process of being completed should allow a new batch to be initialized
+		{
+			name: "batchProtectMinCutOff",
+			type: "integer"
+		},
+		// twinklebatchundelete.js: How many pages should be processed at a time
+		{
+			name: "batchundeleteChunks",
+			type: "integer"
+		},
+		// twinklebatchundelete.js: How many pages left in the process of being completed should allow a new batch to be initialized
+		{
+			name: "batchUndeleteMinCutOff",
+			type: "integer"
+		},
+		// twinkledelimages.js: How many files should be processed at a time
+		{
+			name: "deliChunks",
+			type: "integer"
+		},
+		// twinkledelimages.js: How many files should be processed maximum
+		{
+			name: "deliMax",
+			type: "integer"
+		},
+		// twinkledeprod.js: How many pages should be processed at a time
+		{
+			name: "proddeleteChunks",
+			type: "integer"
+		},
+	]
+},
+
+// XXX Friendly preferences go here
+
+]; // end of Twinkle.config.sections
+
+//{
+//			name: "",
+//			label: "",
+//			type: ""
+//		},
+
+
+Twinkle.config.init = function twinkleconfigInit() {
+
+	if ((wgPageName == "Wikipedia:Twinkle/Preferences" ||
+	    (wgNamespaceNumber == 2 && wgTitle.lastIndexOf("/Twinkle preferences") == (wgTitle.length - 20))) &&
+	    wgAction == "view") {
+		// create the config page on /Twinkle preferences subpages
+
+		// set style (the url() CSS function doesn't seem to work from wikicode - ?!)
+		document.getElementById("twinkle-config-titlebar").style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC)";
+
+		var contentdiv = document.getElementById("twinkle-config-content");
+		contentdiv.textContent = "";  // clear children
+
+		// let user know about possible conflict with monobook.js/vector.js file
+		// (settings in that file will still work, but they will be overwritten by twinkleoptions.js settings)
+		var contentnotice = document.createElement("p");
+		// I hate innerHTML, but this is one thing it *is* good for...
+		contentnotice.innerHTML = "<b>Before modifying your preferences here,</b> make sure you have removed any old <code>TwinkleConfig</code> and <code>FriendlyConfig</code> settings from your <a href=\"/wiki/Special:MyPage/skin.js\" title=\"Special:MyPage/skin.js\">user JavaScript file</a>.";
+		contentdiv.appendChild(contentnotice);
+
+		var contentform = document.createElement("form");
+		contentform.setAttribute("action", "#tw-save");
+		contentform.addEventListener("submit", Twinkle.config.save, true);
+		contentdiv.appendChild(contentform);
+
+		var container = document.createElement("table");
+		container.style.width = "100%";
+		contentform.appendChild(container);
+
+		$(Twinkle.config.sections).each(function(sectionkey, section) {
+			if (section.hidden || (section.adminOnly && !userIsInGroup("sysop"))) {
+				return;  // i.e. "continue" in this context
+			}
+
+			var confighash;  // retrieve the live config values
+			if (section.inFriendlyConfig) {
+				confighash = FriendlyConfig;
+			} else {
+				confighash = TwinkleConfig;
+			}
+
+			var row = document.createElement("tr");
+			var cell = document.createElement("td");
+			cell.setAttribute("colspan", "3");
+			var heading = document.createElement("h4");
+			heading.style.borderBottom = "1px solid gray";
+			heading.style.marginTop = "0.2em";
+			heading.appendChild(document.createTextNode(section.title));
+			cell.appendChild(heading);
+			row.appendChild(cell);
+			container.appendChild(row);
+
+			var rowcount = 1;  // for row banding
+
+			// add each of the preferences to the form
+			$(section.preferences).each(function(prefkey, pref) {
+				if (pref.adminOnly && !userIsInGroup("sysop")) {
+					return;  // i.e. "continue" in this context
+				}
+
+				row = document.createElement("tr");
+				row.style.marginBottom = "0.2em";
+				// create odd row banding
+				if (rowcount++ % 2 == 0) {
+					row.style.backgroundColor = "rgba(128, 128, 128, 0.1)";
+				}
+				cell = document.createElement("td");
+
+				switch (pref.type) {
+
+					case "boolean":  // create a checkbox
+						cell.setAttribute("colspan", "2");
+
+						var label = document.createElement("label");
+						var input = document.createElement("input");
+						input.setAttribute("type", "checkbox");
+						input.setAttribute("id", pref.name);
+						input.setAttribute("name", pref.name);
+						if (confighash[pref.name] === true) {
+							input.setAttribute("checked", "checked");
+						}
+						label.appendChild(input);
+						label.appendChild(document.createTextNode(" " + pref.label));
+						cell.appendChild(label);
+						break;
+
+					case "string":  // create an input box
+					case "integer":
+						// add label to first column
+						cell.style.textAlign = "right";
+						cell.style.width = "25em";
+						cell.style.paddingRight = "0.5em";
+						var label = document.createElement("label");
+						label.setAttribute("for", pref.name);
+						label.appendChild(document.createTextNode(pref.label + ":"));
+						cell.appendChild(label);
+						row.appendChild(cell);
+
+						// add input box to second column
+						cell = document.createElement("td");
+						cell.style.width = "15em";
+						cell.style.paddingRight = "1em";
+						var input = document.createElement("input");
+						input.setAttribute("type", "text");
+						input.setAttribute("id", pref.name);
+						input.setAttribute("name", pref.name);
+						if (pref.type == "integer") {
+							input.setAttribute("size", 6);
+							input.setAttribute("type", "number");
+							input.setAttribute("step", "1");  // integers only
+						}
+						if (confighash[pref.name]) {
+							input.setAttribute("value", confighash[pref.name]);
+						}
+						cell.appendChild(input);
+						break;
+
+					case "enum":  // create a combo box
+						// add label to first column
+						// XXX duplicates the code above
+						cell.style.textAlign = "right";
+						cell.style.width = "25em";
+						cell.style.paddingRight = "0.5em";
+						var label = document.createElement("label");
+						label.setAttribute("for", pref.name);
+						label.appendChild(document.createTextNode(pref.label + ":"));
+						cell.appendChild(label);
+						row.appendChild(cell);
+
+						// add input box to second column
+						cell = document.createElement("td");
+						cell.style.width = "15em";
+						cell.style.paddingRight = "1em";
+						var input = document.createElement("select");
+						input.setAttribute("id", pref.name);
+						input.setAttribute("name", pref.name);
+						$.each(pref.enumValues, function(enumvalue, enumdisplay) {
+							var option = document.createElement("option");
+							option.setAttribute("value", enumvalue);
+							if (confighash[pref.name] == enumvalue) {
+								option.setAttribute("selected", "selected");
+							}
+							option.appendChild(document.createTextNode(enumdisplay));
+							input.appendChild(option);
+						});
+						cell.appendChild(input);
+						break;
+
+					case "set":  // create a set of check boxes
+						// add label first of all
+						cell.setAttribute("colspan", "2");
+						var label = document.createElement("label");  // not really necessary to use a label element here, but we do it for consistency of styling
+						label.appendChild(document.createTextNode(pref.label + ":"));
+						cell.appendChild(label);
+
+						var checkdiv = document.createElement("div");
+						checkdiv.style.paddingLeft = "1em";
+						if (pref.setDisplayOrder) {
+							// add check boxes according to the given display order
+							$.each(pref.setDisplayOrder, function(itemkey, item) {
+								var checklabel = document.createElement("label");
+								checklabel.style.marginRight = "0.7em";
+								checklabel.style.whiteSpace = "nowrap";
+								var check = document.createElement("input");
+								check.setAttribute("type", "checkbox");
+								check.setAttribute("id", pref.name + "_" + item);
+								check.setAttribute("name", pref.name + "_" + item);
+								if (confighash[pref.name] && confighash[pref.name].indexOf(item) !== -1) {
+									check.setAttribute("checked", "checked");
+								}
+								checklabel.appendChild(check);
+								checklabel.appendChild(document.createTextNode(" " + pref.setValues[item]));
+								checkdiv.appendChild(checklabel);
+								checkdiv.appendChild(document.createTextNode(" "));  // for wrapping
+							});
+						} else {
+							// add check boxes according to the order it gets fed to us (probably strict alphabetical)
+							// XXX another code duplication!! very annoying.
+							$.each(pref.setValues, function(itemkey, itemvalue) {
+								var checklabel = document.createElement("label");
+								checklabel.style.marginRight = "0.7em";
+								checklabel.style.whiteSpace = "nowrap";
+								var check = document.createElement("input");
+								check.setAttribute("type", "checkbox");
+								check.setAttribute("id", pref.name + "_" + itemkey);
+								check.setAttribute("name", pref.name + "_" + itemkey);
+								if (confighash[pref.name] && confighash[pref.name].indexOf(itemkey) !== -1) {
+									check.setAttribute("checked", "checked");
+								}
+								// cater for legacy integer array values for unlinkNamespaces (this can be removed a few years down the track...)
+								if (pref.name === "unlinkNamespaces") {
+									if (confighash[pref.name] && confighash[pref.name].indexOf(parseInt(itemkey)) !== -1) {
+										check.setAttribute("checked", "checked");
+									}
+								}
+								checklabel.appendChild(check);
+								checklabel.appendChild(document.createTextNode(" " + itemvalue));
+								checkdiv.appendChild(checklabel);
+								checkdiv.appendChild(document.createTextNode(" "));  // for wrapping
+							});
+						}
+						cell.appendChild(checkdiv);
+						break;
+
+					default:
+						alert("twinkleconfig: unknown data type for preference " + pref.name);
+						break;
+				}
+				row.appendChild(cell);
+
+				// add help tip
+				cell = document.createElement("td");
+				cell.style.fontSize = "90%";
+				cell.style.color = "gray";
+				if (pref.helptip) {
+					cell.innerHTML = pref.helptip;
+				}
+				var resetlink = document.createElement("a");
+				resetlink.setAttribute("href", "#tw-reset");
+				resetlink.setAttribute("id", "twinkle-config-reset-" + pref.name);
+				resetlink.addEventListener("click", Twinkle.config.resetPref, false);
+				if (resetlink.style.styleFloat) {  // IE (inc. IE9)
+					resetlink.style.styleFloat = "right";
+				} else {  // standards
+					resetlink.style.cssFloat = "right";
+				}
+				resetlink.style.margin = "0 0.6em";
+				resetlink.appendChild(document.createTextNode("Reset"));
+				cell.appendChild(resetlink);
+				row.appendChild(cell);
+
+				container.appendChild(row);
+			});
+		});
+
+		var footerbox = document.createElement("div");
+		footerbox.setAttribute("id", "twinkle-config-buttonpane");
+		footerbox.style.backgroundColor = "#D9E0EC";  // XXX need real background color!
+		footerbox.style.padding = "0.5em";  // XXX ...and it needs all the real jQuery lookalike styling, too!
+		var button = document.createElement("button");
+		button.setAttribute("type", "submit");
+		button.appendChild(document.createTextNode("Save changes"));
+		footerbox.appendChild(button);
+		var footerspan = document.createElement("span");
+		footerspan.className = "plainlinks";
+		footerspan.style.marginLeft = "2em";
+		footerspan.style.fontSize = "90%";
+		footerspan.appendChild(document.createTextNode("To reset all preferences to the defaults, you can "));
+		var footera = document.createElement("a");
+		// XXX change this href away from TTO's userspace - move editintro to [[Wikipedia:Twinkle/Preferences/twinkleoptions blanking editintro]] or something like that
+		footera.setAttribute("href", "/w/index.php?action=edit&title=Special:MyPage/twinkleoptions.js&editintro=User:This,_that_and_the_other/twinkleoptions_blanking_editintro");
+		footera.appendChild(document.createTextNode("blank your preferences file"));
+		footerspan.appendChild(footera);
+		footerspan.appendChild(document.createTextNode("."));
+		footerbox.appendChild(footerspan);
+		contentform.appendChild(footerbox);
+
+		// TODO more stuff here when SimpleWindow gets footer links, per design sheet
+
+	} else if (wgNamespaceNumber == 2) {
+
+		var box = document.createElement("div");
+		box.setAttribute("id", "twinkle-config-headerbox");
+		box.style.border = "1px #f60 solid";
+		box.style.background = "#fed";
+		box.style.padding = "0.6em";
+		box.style.margin = "0.5em auto";
+		box.style.textAlign = "center";
+
+		if (wgTitle.lastIndexOf("/twinkleoptions.js") === wgTitle.length - 18 && location.search.indexOf("&editintro=") === -1) {
+			// place "why not try the preference panel" notice, except when there is an editintro (probably the "how to blank preferences" one)
+			box.style.fontWeight = "bold";
+			box.style.width = "80%";
+
+			if (wgArticleId > 0) {  // page exists
+				box.appendChild(document.createTextNode("This page contains your Twinkle preferences. You can change them using the "));
+			} else {  // page does not exist
+				box.appendChild(document.createTextNode("You can customize Twinkle to suit your preferences by using the "));
+			}
+			var link = document.createElement("a");
+			link.setAttribute("href", "/wiki/User:This, that and the other/Twinkle preferences");
+			link.appendChild(document.createTextNode("Twinkle preferences panel"));
+			box.appendChild(link);
+			box.appendChild(document.createTextNode(", or by editing this page."));
+			$(box).insertAfter($("#contentSub"));
+
+		} else if (wgTitle.lastIndexOf(".js") == wgTitle.length - 3) {
+			// place "Looking for Twinkle options?" notice
+			box.style.width = "60%";
+
+			box.appendChild(document.createTextNode("If you want to set Twinkle preferences, you can use the "));
+			var link = document.createElement("a");
+			link.setAttribute("href", "/wiki/User:This, that and the other/Twinkle preferences");
+			link.appendChild(document.createTextNode("Twinkle preferences panel"));
+			box.appendChild(link);
+			box.appendChild(document.createTextNode("."));
+			$(box).insertAfter($("#contentSub"));
+		}
+	}
+}
+
+Twinkle.config.resetPref = function twinkleconfigResetPref(e) {
+	var wantedpref = e.target.id.substring(21); // "twinkle-config-reset-" prefix is stripped
+
+	// search tactics
+	$(Twinkle.config.sections).each(function(sectionkey, section) {
+		if (section.hidden || (section.adminOnly && !userIsInGroup("sysop"))) {
+			return;  // skip impossibilities
+		}
+
+		var foundit = false;
+
+		$(section.preferences).each(function(prefkey, pref) {
+			if (pref.name !== wantedpref) {
+				return;
+			}
+
+			switch (pref.type) {
+
+				case "boolean":
+					document.getElementById(pref.name).checked = (section.inFriendlyConfig ?
+						Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]);
+					break;
+
+				case "string":
+				case "integer":
+				case "enum":
+					document.getElementById(pref.name).value = (section.inFriendlyConfig ?
+						Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]);
+					break;
+
+				case "set":
+					$.each(pref.setValues, function(itemkey, itemvalue) {
+						if (document.getElementById(pref.name + "_" + itemkey)) {
+							document.getElementById(pref.name + "_" + itemkey).checked = ((section.inFriendlyConfig ?
+								Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]).indexOf(itemkey) !== -1);
+						}
+					});
+					break;
+
+				default:
+					alert("twinkleconfig: unknown data type for preference " + pref.name);
+					break;
+			}
+
+			foundit = true;
+			return false;
+		});
+
+		if (foundit) {
+			return false;
+		}
+	});
+	return false;  // stop link from scrolling page
+}
+
+Twinkle.config.save = function twinkleconfigSave(e) {
+	Status.init( document.getElementById("twinkle-config-content") );
+
+	Wikipedia.actionCompleted.notice = "Save";  // XXX think of something better!
+
+	var userjs = "User:" + wgUserName + "/twinkleoptions.js";
+	var wikipedia_page = new Wikipedia.page(userjs, "Saving preferences to " + userjs);
+	wikipedia_page.setCallbackParameters(e.target);
+	wikipedia_page.load(Twinkle.config.writePrefs);
+}
+
+// The JSON stringify method in the following code was excerpted from
+// http://www.JSON.org/json2.js
+// version of 2011-02-23
+
+// Douglas Crockford, the code's author, has released it into the Public Domain.
+// See http://www.JSON.org/js.html
+
+var JSON;
+if (!JSON) {
+	JSON = {};
+}
+
+(function() {
+	var escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
+		gap,
+		indent = '  ',  // hardcoded indent
+		meta = { '\b': '\\b', '\t': '\\t', '\n': '\\n', '\f': '\\f', '\r': '\\r', '"' : '\\"', '\\': '\\\\' };
+
+	function quote(string) {
+		escapable.lastIndex = 0;
+		return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
+			var c = meta[a];
+			return typeof c === 'string' ? c :	'\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+		}) + '"' : '"' + string + '"';
+	}
+
+	function str(key, holder) {
+		var i, k, v, length, mind = gap, partial, value = holder[key];
+
+		if (value && typeof value === 'object' && typeof value.toJSON === 'function') {
+			value = value.toJSON(key);
+		}
+
+		switch (typeof value) {
+		case 'string':
+			return quote(value);
+		case 'number':
+			return isFinite(value) ? String(value) : 'null';
+		case 'boolean':
+		case 'null':
+			return String(value);
+		case 'object':
+			if (!value) {
+				return 'null';
+			}
+			gap += indent;
+			partial = [];
+			if (Object.prototype.toString.apply(value) === '[object Array]') {
+				length = value.length;
+				for (i = 0; i < length; i += 1) {
+					partial[i] = str(i, value) || 'null';
+				}
+				v = partial.length === 0 ? '[]' : gap ?
+					'[\n' + gap + partial.join(',\n' + gap) + '\n' + mind + ']' :
+					'[' + partial.join(',') + ']';
+				gap = mind;
+				return v;
+			}
+			for (k in value) {
+				if (Object.prototype.hasOwnProperty.call(value, k)) {
+					v = str(k, value);
+					if (v) {
+						partial.push(quote(k) + (gap ? ': ' : ':') + v);
+					}
+				}
+			}
+			v = partial.length === 0 ? '{}' : gap ?
+				'{\n' + gap + partial.join(',\n' + gap) + '\n' + mind + '}' :
+				'{' + partial.join(',') + '}';
+			gap = mind;
+			return v;
+		}
+	}
+
+	if (typeof JSON.stringify !== 'function') {
+		JSON.stringify = function (value, ignoredParam1, ignoredParam2) {
+			ignoredParam1 = ignoredParam2;  // boredom
+			gap = '';
+			return str('', {'': value});
+		};
+	}
+}());
+
+Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
+	var form = pageobj.getCallbackParameters();
+	var statelem = pageobj.getStatusElement();
+
+	// this is the object which gets serialized into JSON
+	var newConfig = {
+		twinkle: {},
+		friendly: {}
+	};
+
+	// keeping track of all preferences that we encounter
+	// any others that are set in the user's current config are kept
+	// this way, preferences that this script doesn't know about are not lost
+	// (it does mean obsolete prefs will never go away, but... ah well...)
+	var foundTwinklePrefs = [], foundFriendlyPrefs = [];
+
+	// needed later on
+	// not robust enough for general-purpose work, so we keep it in scope here
+	// (for example, compare(["a","b"], ["a,b"]) == true, which is wrong, but for our
+	// purposes here, that doesn't really matter)
+	var compare = function(a, b) {
+		if (Object.prototype.toString.apply(a) === '[object Array]') {
+			return a.sort().toString() === b.sort().toString();
+		} else {
+			return a === b;
+		}
+	};
+
+	$(Twinkle.config.sections).each(function(sectionkey, section) {
+		// XXX this bit is duplicated in the function code above
+		if (section.adminOnly && !userIsInGroup("sysop")) {
+			return;  // i.e. "continue" in this context
+		}
+
+		// reach each of the preferences from the form
+		$(section.preferences).each(function(prefkey, pref) {
+			var userValue;  // = undefined
+
+			// only read form values for those prefs that have them
+			if (!section.hidden && (!pref.adminOnly || userIsInGroup("sysop"))) {
+				switch (pref.type) {
+
+					case "boolean":  // read from the checkbox
+						userValue = form[pref.name].checked;
+						break;
+
+					case "string":  // read from the input box or combo box
+					case "enum":
+						userValue = form[pref.name].value;
+						break;
+
+					case "integer":  // read from the input box
+						userValue = parseInt(form[pref.name].value);
+						if (userValue === NaN) {
+							Status.warn("Saving", "The value you specified for " + pref.name + " (" + pref.value + ") was invalid. The save will continue, and the invalid data value will be skipped.");
+							userValue = null;
+						}
+						break;
+
+					case "set":  // read from the set of check boxes
+						userValue = [];
+						if (pref.setDisplayOrder) {
+							// read only those keys specified in the display order
+							$.each(pref.setDisplayOrder, function(itemkey, item) {
+								if (form[pref.name + "_" + item].checked) {
+									userValue.push(item);
+								}
+							});
+						} else {
+							// read all the keys in the list of values
+							$.each(pref.setValues, function(itemkey, itemvalue) {
+								if (form[pref.name + "_" + itemkey].checked) {
+									userValue.push(itemkey);
+								}
+							});
+						}
+						break;
+
+					default:
+						alert("twinkleconfig: unknown data type for preference " + pref.name);
+						break;
+				}
+			}
+
+			// only save those preferences that are *different* from the default
+			if (section.inFriendlyConfig) {
+				if (userValue != null && !compare(userValue, Twinkle.defaultConfig.friendly[pref.name])) {
+					newConfig.friendly[pref.name] = userValue;
+				}
+				foundFriendlyPrefs.push(pref.name);
+			} else {
+				if (userValue != null && !compare(userValue, Twinkle.defaultConfig.twinkle[pref.name])) {
+					newConfig.twinkle[pref.name] = userValue;
+				}
+				foundTwinklePrefs.push(pref.name);
+			}
+		});
+	});
+
+	$.each(TwinkleConfig, function(tkey, tvalue) {
+		if (foundTwinklePrefs.indexOf(tkey) === -1) {
+			newConfig.twinkle[tkey] = tvalue;
+		}
+	});
+	// XXX uncomment me when Friendly is here
+	//$.each(FriendlyConfig, function(fkey, fvalue) {
+	//	if (foundFriendlyPrefs.indexOf(fkey) === -1) {
+	//		newConfig.friendly[fkey] = fvalue;
+	//	}
+	//});
+
+	var text =
+		"// twinkleoptions.js: personal Twinkle preferences file\n" +
+		"//\n" +
+		"// NOTE: The easiest way to change your Twinkle preferences is by using the\n" +
+		"// Twinkle preferences panel, at [[" + wgPageName + "]].\n" +
+		"//\n" +
+		"// This file is AUTOMATICALLY GENERATED.  Any changes you make (aside from\n" +
+		"// changing the configuration parameters in a valid-JavaScript way) will be\n" +
+		"// overwritten the next time you click \"save\" in the Twinkle preferences\n" +
+		"// panel.  If modifying this file, make sure to use correct JavaScript.\n" +
+		"\n" +
+		"Twinkle.prefs = "
+  ;
+	text += JSON.stringify(newConfig, null, 2);
+	text +=
+		";\n" +
+		"\n" +
+		"// End of twinkleoptions.js\n"
+	;
+
+	pageobj.setPageText(text);
+	pageobj.setEditSummary("Saving Twinkle preferences: automatic edit from [[" + wgPageName + "]] ([[WP:TW|TW]])");
+	pageobj.setCreateOption("recreate");
+	pageobj.save(Twinkle.config.saveSuccess);
+}
+
+Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
+	pageobj.getStatusElement().info("successful");
+
+	var noticebox = document.createElement("div");
+	noticebox.className = "successbox";
+	noticebox.style.fontSize = "100%";
+	noticebox.style.marginTop = "2em";
+	noticebox.innerHTML = "<p><b>Your Twinkle preferences have been saved.</b></p><p>To see the changes, you will need to <a href=\"/wiki/WP:BYPASS\" title=\"WP:BYPASS\"><b>bypass your browser cache</b></a>.</p>";
+	Status.root.appendChild(noticebox);
+	var noticeclear = document.createElement("br");
+	noticeclear.style.clear = "both";
+	Status.root.appendChild(noticeclear);
+}
+
+
+// register initialization callback
+Twinkle.init.moduleReady( "twinkleconfig", Twinkle.config.init );
+

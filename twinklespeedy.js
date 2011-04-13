@@ -589,6 +589,7 @@ twinklespeedy.callbacks = {
 	// XXX if fixing this admin CSD bit, please do these things as well:
 	//  - make sure to uncomment the admin CSD prefs in twinkle.js defaultConfig
 	//  - unpack the orphanBacklinks pref into two separate prefs (i.e. TwinkleConfig.unlinkBacklinks... (boolean) and TwinkleConfig.speedyUnlinkExcludeNamespaces (array/set))
+	//  - in twinkleconfig.js, uncomment the admin CSD prefs and update the code to match the pref change outlined above
 	// thanks for doing this! -- This, that and the other
 	
 		main: function( self ) {

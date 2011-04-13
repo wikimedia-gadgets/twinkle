@@ -20,6 +20,9 @@ Twinkle.defaultConfig = {};
  * Twinkle.defaultConfig.twinkle and Twinkle.defaultConfig.friendly
  *
  * This holds the default set of preferences used by Twinkle. (The |friendly| object holds preferences stored in the FriendlyConfig object.)
+ * It is important that all new preferences added here, especially admin-only ones, are also added to
+ * |Twinkle.config.sections| in twinkleconfig.js, so they are configurable via the Twinkle preferences panel.
+ * For help on the actual preferences, see the comments in twinkleconfig.js.
  */
 Twinkle.defaultConfig.twinkle = {
 	 // General
@@ -186,6 +189,12 @@ Twinkle.init = {
 
 			// add the debug modules to the end of the module list
 			this.modules.push.apply( this.modules, debugModules );
+		}
+
+		// in userspace and project space, load twinkleconfig
+		// XXX this check should be refined once [[Wikipedia:Twinkle/Preferences]] is created and established
+		if (wgNamespaceNumber == 2 || wgNamespaceNumber == 4) {
+			this.modules.push({ dir: defaultDir, name: "twinkleconfig" });
 		}
 
 		var skipMorebits = false;  // load all modules by default
