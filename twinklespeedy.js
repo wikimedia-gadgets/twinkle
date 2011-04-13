@@ -1350,7 +1350,7 @@ twinklespeedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSys
 	if (!confirm("Twinkle's admin CSD functionality has not been upgraded to use the API, and will probably not work. Do you want to try it anyway?"))
 		return null;
 
-	var value = e.target.value;
+	var value = e.target.values;
 	var normalized = twinklespeedy.normalizeHash[ value ];
 
 	var params = {
@@ -1374,7 +1374,7 @@ twinklespeedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSys
 
 twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser(e) {
 	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
-	var value = e.target.value;
+	var value = e.target.values;
 
 	if (value == 'multiple')
 	{
@@ -1449,7 +1449,7 @@ twinklespeedy.dbmultipleCriteria = [];
 twinklespeedy.dbmultipleParameters = [];
 twinklespeedy.callback.doMultiple = function twinklespeedyCallbackDoMultiple(e)
 {
-	var value = e.target.value;
+	var value = e.target.values;
 	var normalized = twinklespeedy.normalizeHash[value];
 	if (value != 'multiple-finish')
 	{
