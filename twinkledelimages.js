@@ -7,31 +7,7 @@ function twinkledeli() {
 		return;
 	}
 	if( userIsInGroup( 'sysop' ) ) {
-
 		twAddPortletLink( "javascript:twinkledeli.callback()", "Deli-batch", "tw-deli", "Delete file found on page", "");
-		/**
-		TwinkleConfig.deletionSummaryAd (string)
-		If ad should be added or not to deletion summary
-		*/
-		if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
-			TwinkleConfig.deletionSummaryAd = TwinkleConfig.summaryAd;
-		}
-
-		/**
-		TwinkleConfig.deliChunks (integer)
-		How many files should be processed at a time
-		*/
-		if( typeof( TwinkleConfig.deliChunks ) == 'undefined' ) {
-			TwinkleConfig.deliChunks = 500;
-		}
-
-		/**
-		TwinkleConfig.deliMax (integer)
-		How many files should be processed maximum
-		*/
-		if( typeof( TwinkleConfig.deliMax ) == 'undefined' ) {
-			TwinkleConfig.deliMax = 5000;
-		}
 	}
 }
 

@@ -5,29 +5,6 @@ if ( typeof(Twinkle) === "undefined" ) {
 function twinkleimage() {
 	if( wgNamespaceNumber == 6 && !(document.getElementById("mw-sharedupload"))) {
 		twAddPortletLink( (twinkleUserAuthorized ? "javascript:twinkleimage.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "DI", "tw-di", "Nominate file for relative speedy deletion", "");
-		/**
-		 TwinkleConfig.notifyUserOnDeli (boolean)
-		 If the user should be notified after placing a file deletion tag
-		 */
-		if( typeof( TwinkleConfig.notifyUserOnDeli ) == 'undefined' ) {
-			TwinkleConfig.notifyUserOnDeli = true;
-		}
-
-		/**
-		 TwinkleConfig.deliWatchPage (string)
-		 The watchlist setting of the page tagged for deletion. Either "yes", "no", or "default". Default is "default" (Duh).
-		 */
-		if( typeof( TwinkleConfig.deliWatchPage) == 'undefined' ) {
-			TwinkleConfig.deliWatchPage = "default";
-		}
-
-		/**
-		 TwinkleConfig.deliWatchUser (string)
-		 The watchlist setting of the user talk page if a notification is placed. Either "yes", "no", or "default". Default is "default" (Duh).
-		 */
-		if( typeof( TwinkleConfig.deliWatchUser ) == 'undefined' ) {
-			TwinkleConfig.deliWatchUser = "default";
-		}
 	}
 }
 

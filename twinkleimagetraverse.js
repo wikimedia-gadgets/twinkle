@@ -4,15 +4,7 @@ if ( typeof(Twinkle) === "undefined" ) {
 
 function twinkleimagetraverse() {
 	if( userIsInGroup( 'sysop' ) && wgNamespaceNumber == Namespace.CATEGORY ) {
-
 		twAddPortletLink( "javascript:twinkleimagetraverse.callback()", "Traverse", "tw-imagetraverse", "Traverse category", "");
-		/**
-		 TwinkleConfig.deletionSummaryAd (string)
-		 If ad should be added or not to deletion summary
-		 */
-		if ( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
-			TwinkleConfig.deletionSummaryAd = TwinkleConfig.summaryAd;
-		}
 	}
 }
 

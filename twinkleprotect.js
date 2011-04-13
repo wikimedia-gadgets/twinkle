@@ -16,14 +16,6 @@ function twinkleprotect() {
 	else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'RPP', 'tw-rpp', 'Request page protection', '');
 	}
-	
-	/**
-	 TwinkleConfig.protectionSummaryAd (string)
-	 If ad should be added or not to protection summary
-	 */
-	if( typeof( TwinkleConfig.protectionSummaryAd ) === 'undefined' ) {
-		TwinkleConfig.protectionSummaryAd = TwinkleConfig.summaryAd;
-	}
 }
 
 twinkleprotect.callback = function twinkleprotectCallback() {

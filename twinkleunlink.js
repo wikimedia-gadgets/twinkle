@@ -7,14 +7,6 @@ function twinkleunlink() {
 		return;
 	}
 	twAddPortletLink( "javascript:twinkleunlink.callback()", "Unlink", "tw-unlink", "Unlink backlinks", "");
-
-	/**
-	TwinkleConfig.unlinkNamespaces (array)
-	In what namespaces unlink should happen, default in 0 (article) and 100 (portal)
-	*/
-	if( typeof( TwinkleConfig.unlinkNamespaces) == 'undefined' ) {
-		TwinkleConfig.unlinkNamespaces = [0,100];
-	}
 }
 
 function getChecked2( nodelist ) {

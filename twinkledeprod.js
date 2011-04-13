@@ -7,21 +7,6 @@ function twinkleproddelete() {
 		return;
 	}
 	twAddPortletLink( "javascript:twinkleproddelete.callback()", "Deprod", "tw-deprod", "Delete prod pages found in this category", "");
-	/**
-	 TwinkleConfig.deletionSummaryAd (string)
-	 If ad should be added or not to deletion summary, default
-	 */
-	if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
-		TwinkleConfig.deletionSummaryAd = TwinkleConfig.summaryAd;
-	}
-
-	/**
-	 TwinkleConfig.proddeleteChunks (integer)
-	 How many pages should be processed at a time
-	 */
-	if( typeof( TwinkleConfig.proddeleteChunks ) == 'undefined' ) {
-		TwinkleConfig.proddeleteChunks = 50;
-	}
 }
 
 function getChecked( nodelist ) {

@@ -3237,12 +3237,6 @@ SimpleWindow.prototype = {
 
 // Twinkle initialization
 
-// Create configuration object if not provided by the user's custom .js file.
-// Duplicate of twinkle.js code in case this module is imported by another script.
-if ( typeof( TwinkleConfig ) === 'undefined' ) {
-	TwinkleConfig = {};
-}
-
 twAddPortlet.usingTwCfg = (typeof(TwinkleConfig) !== "undefined");
 switch (skin)
 {
@@ -3256,11 +3250,6 @@ switch (skin)
 	default:
 		twAddPortlet.portletId = (twAddPortlet.usingTwCfg && TwinkleConfig.portletId ? TwinkleConfig.portletId : 'p-cactions');
 		break;
-}
-
-// initialize text that is added to the end of all Twinkle edit summaries
-if ( typeof( TwinkleConfig.summaryAd ) === 'undefined' ) {
-	TwinkleConfig.summaryAd = " ([[WP:TW|TW]])";
 }
 
 // check if account is experienced enough for more advanced functions

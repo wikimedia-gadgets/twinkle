@@ -3,14 +3,6 @@ if ( typeof(Twinkle) === "undefined" ) {
 }
 
 function twinklecloser() {
-	/**
-	 TwinkleConfig.deletionSummaryAd (string)
-	 If ad should be added or not to deletion summary
-	 */
-	if( typeof( TwinkleConfig.deletionSummaryAd ) == 'undefined' ) {
-		TwinkleConfig.deletionSummaryAd = TwinkleConfig.summaryAd;
-	}
-
 	var closeable = false;
 	var type;
 	if( /Wikipedia:Articles_for_creation\/\d{4}-\d{2}-\d{2}/.test(wgPageName) ) {

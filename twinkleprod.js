@@ -11,22 +11,6 @@ function twinkleprod() {
 	} else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'PROD', 'tw-prod', 'Propose deletion via WP:PROD', '');
 	}
-	
-	/**
-	 TwinkleConfig.watchProdPages (boolean)
-	 If, when applying prod template to page, watch it, default true
-	 */
-	if( typeof( TwinkleConfig.watchProdPages ) == 'undefined' ) {
-		TwinkleConfig.watchProdPages = true;
-	}
-
-	/**
-	 TwinkleConfig.prodReasonDefault (string)
-	 The prefilled PROD reason.
-	 */
-	if( typeof( TwinkleConfig.prodReasonDefault ) == 'undefined' ) {
-		TwinkleConfig.prodReasonDefault = "";
-	}
 }
 
 twinkleprod.callback = function twinkleprodCallback() {

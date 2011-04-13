@@ -4,41 +4,7 @@ if ( typeof(Twinkle) === "undefined" ) {
 
 function twinklebatchprotect() {
 	if( userIsInGroup( 'sysop' ) && (wgNamespaceNumber > 0 || wgCanonicalSpecialPageName == 'Prefixindex') ) {
-	
 		twAddPortletLink( "javascript:twinklebatchprotect.callback()", "P-batch", "tw-pbatch", "Protect pages found on this page", "");
-		
-		/**
-		 TwinkleConfig.protectionSummaryAd (string)
-		 If ad should be added or not to protection summary
-		 */
-		if( typeof( TwinkleConfig.protectionSummaryAd ) == 'undefined' ) {
-			TwinkleConfig.protectionSummaryAd = TwinkleConfig.summaryAd;
-		}
-
-		/**
-		 TwinkleConfig.batchProtectChunks (integer)
-		 How many pages should be processed at a time
-		 */
-		if( typeof( TwinkleConfig.batchProtectChunks ) == 'undefined' ) {
-			TwinkleConfig.batchProtectChunks = 50;
-		}
-
-		/**
-		 TwinkleConfig.batchProtectMinCutOff (integer)
-		 How many pages left in the process of being completed should allow a new batch to be initialized
-		 */
-		if( typeof( TwinkleConfig.batchProtectMinCutOff ) == 'undefined' ) {
-			TwinkleConfig.batchProtectMinCutOff = 5;
-		}
-
-		/**
-		 TwinkleConfig.batchMax (integer)
-		 How many pages should be processed maximum
-		 */
-		if( typeof( TwinkleConfig.batchMax ) == 'undefined' ) {
-			TwinkleConfig.batchMax = 5000;
-		}
-
 	}
 }
 

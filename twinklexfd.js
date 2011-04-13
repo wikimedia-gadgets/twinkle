@@ -11,44 +11,6 @@ function twinklexfd() {
 	} else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'XFD', 'tw-xfd', 'Anything for deletion', '');
 	}
-
-	/**
-	 TwinkleConfig.xfdWatchDiscussion (string)
-	 The watchlist setting of the newly created XfD page (for those processes that create discussion pages for each nomination),
-	 or the list page for the other processes.
-	 Either "yes" (add to watchlist), "no" (don't add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
-	 */
-	if( typeof( TwinkleConfig.xfdWatchDiscussion ) == 'undefined' ) {
-		TwinkleConfig.xfdWatchDiscussion = "default";
-	}
-
-	/**
-	 TwinkleConfig.xfdWatchPage (string)
-	 The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
-	 add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
-	 */
-	if( typeof( TwinkleConfig.xfdWatchPage) == 'undefined' ) {
-		TwinkleConfig.xfdWatchPage = "default";
-	}
-
-	/**
-	 TwinkleConfig.xfdWatchUser (string)
-	 The watchlist setting of the user if he receives a notification. Either "yes" (add to watchlist), "no" (don't
-	 add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
-	 */
-	if( typeof( TwinkleConfig.xfdWatchUser ) == 'undefined' ) {
-		TwinkleConfig.xfdWatchUser = "default";
-	}
-
-	/**
-	 TwinkleConfig.xfdWatchList (string)
-	 The watchlist setting of the XfD list page, *if* the discussion is on a separate page. Either "yes" (add to watchlist), "no" (don't
-	 add to watchlist), or "default" (use setting from preferences). Default is "no" (Hehe. Seriously though, who wants to watch it?
-	 Sorry in advance for any false positives.).
-	 */
-	if( typeof( TwinkleConfig.xfdWatchList ) == 'undefined' ) {
-		TwinkleConfig.xfdWatchList = "no";
-	}
 }
 
 function num2order( num ) {

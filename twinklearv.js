@@ -26,30 +26,6 @@ Twinkle.arv = function () {
 		{
 			twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'ARV', 'tw-arv', name, title);
 		}
-		
-		/**
-		 TwinkleConfig.markAIVReportAsMinor (boolean)
-		 Defines if a reports to AIV should be marked as minor, if false, default is applied as per preference.
-		 */
-		if( typeof( TwinkleConfig.markAIVReportAsMinor ) == 'undefined' ) {
-			TwinkleConfig.markAIVReportAsMinor = true;
-		}
-
-		/**
-		 TwinkleConfig.markUAAReportAsMinor (boolean)
-		 Defines if a reports to UAA should be marked as minor, if false, default is applied as per preference.
-		 */
-		if( typeof( TwinkleConfig.markUAAReportAsMinor ) == 'undefined' ) {
-			TwinkleConfig.markUAAReportAsMinor = true;
-		}
-
-		/**
-		 TwinkleConfig.markSockReportAsMinor (boolean)
-		 Defines if a reports to SPI should be marked as minor, if false, default is applied as per preference.
-		 */
-		if( typeof( TwinkleConfig.markSockReportAsMinor ) == 'undefined' ) {
-			TwinkleConfig.markSockReportAsMinor = true;
-		}
 	}
 }
 

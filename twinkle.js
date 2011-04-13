@@ -15,8 +15,113 @@
 
 Twinkle = {};  // don't pollute the global namespace
 
+Twinkle.defaultConfig = {};
+/**
+ * Twinkle.defaultConfig.twinkle and Twinkle.defaultConfig.friendly
+ *
+ * This holds the default set of preferences used by Twinkle. (The |friendly| object holds preferences stored in the FriendlyConfig object.)
+ */
+Twinkle.defaultConfig.twinkle = {
+	 // General
+	summaryAd: " ([[WP:TW|TW]])",
+	deletionSummaryAd: " ([[WP:TW|TW]])",
+	protectionSummaryAd: " ([[WP:TW|TW]])",
+	userTalkPageMode: "window",
+	 // ARV
+	markAIVReportAsMinor: true,
+	markUAAReportAsMinor: true,
+	markSockReportAsMinor: true,
+	 // Fluff (revert and rollback)
+	openTalkPage: [ "agf", "norm", "vand" ],
+	openTalkPageOnAutoRevert: false,
+	markRevertedPagesAsMinor: [ "vand" ],
+	watchRevertedPages: [ "agf", "norm", "vand", "torev" ],
+	offerReasonOnNormalRevert: true,
+	showRollbackLinks: [ "diff", "others" ],
+	 // DI (twinkleimage)
+	notifyUserOnDeli: true,
+	deliWatchPage: "default",
+	deliWatchUser: "default",
+	 // PROD
+	watchProdPages: true,
+	prodReasonDefault: "",
+	 // CSD
+	watchSpeedyPages: [ "g3", "g5", "g10", "g11", "g12" ],
+	markSpeedyPagesAsPatrolled: true,
+	// these two should probably be identical by default
+	notifyUserOnSpeedyDeletionNomination:    [ "db", "g1", "g2", "g3", "g4", "g10", "g11", "g12", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "t2", "t3", "p1", "p2" ],
+	welcomeUserOnSpeedyDeletionNotification: [ "db", "g1", "g2", "g3", "g4", "g10", "g11", "g12", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "t2", "t3", "p1", "p2" ],
+	// XXX admin CSD is broken, uncomment this when it is fixed
+	//openUserTalkPageOnSpeedyDelete: [ "db", "g1", "g2", "g3", "g4", "g5", "g10", "g11", "g12", "a1", "a3", "a7", "a9", "a10", "f3", "f7", "f9", "u3", "t2", "p1" ],
+	//deleteTalkPageOnDelete: false,
+	//orphanBacklinksOnSpeedyDelete: { exclude: [ "g6" ], orphan: true },  // XXX needs to be un-hashed, and made into two separate prefs
+	deleteSysopDefaultToTag: true,
+	speedyWindowHeight: 500,
+	speedyWindowWidth: 800,
+	 // Unlink
+	unlinkNamespaces: [ "0", "100" ],
+	 // Warn
+	defaultWarningGroup: "1",
+	showSharedIPNotice: true,
+	watchWarnings: true,
+	blankTalkpageOnIndefBlock: false,
+		// XfD
+	xfdWatchDiscussion: "default",
+	xfdWatchList: "no",
+	xfdWatchPage: "default",
+	xfdWatchUser: "default",
+	 // Hidden preferences
+	revertMaxRevisions: 50,
+	batchdeleteChunks: 50,
+	batchDeleteMinCutOff: 5,
+	batchMax: 5000,
+	batchProtectChunks: 50,
+	batchProtectMinCutOff: 5,
+	batchundeleteChunks: 50,
+	batchUndeleteMinCutOff: 5,
+	deliChunks: 500,
+	deliMax: 5000,
+	proddeleteChunks: 50,
+};
+
+// XXX uncomment this when Friendly makes a friendly appearance in the tree, and it is converted as needed
+//Twinkle.defaultConfig.friendly = {
+//	clockStyle: "dynamic",
+//	enableClock: true,
+//	groupByDefault: true,
+//	idsToRename: [
+//		{ id: 'ca-nstab-main', name: 'Main', mainPageOnly: true },
+//		{ id: 'ca-nstab-help', name: 'Help' },
+//		{ id: 'ca-nstab-special', name: 'Special' },
+//		{ id: 'ca-nstab-project', name: 'Project' },
+//		{ id: 'ca-nstab-user', name: 'User' },
+//		{ id: 'ca-edit', name: 'Edit' },
+//		{ id: 'ca-viewsource', name: 'Source' },
+//		{ id: 'ca-talk', name: 'Talk' },
+//		{ id: 'ca-undelete', name: 'Undelete' },
+//		{ id: 'ca-addsection', name: '+' }
+//	],
+//	insertHeadings: true,
+//	insertSignature: true,  // sign welcome templates, where appropriate
+//	insertTalkbackSignature: true,  // always sign talkback templates
+//	insertUsername: true,
+//	markSharedIPAsMinor: true,
+//	markTaggedPagesAsMinor: false,
+//	markTaggedPagesAsPatrolled: true,
+//	markTalkbackAsMinor: true,
+//	markWelcomesAsMinor: true,
+//	maskTemplateInSummary: true,
+//	quickWelcomeMode: "semiauto",
+//	quickWelcomeTemplate: "Welcome",
+//	talkbackHeading: "== Talkback ==",
+//	topWelcomes: false,
+//	watchTaggedPages: true,
+//	watchWelcomes: true,
+//	welcomeHeading: "== Welcome ==",
+//};
+
 Twinkle.init = {
- 
+
 	modulesAreReady: false,
 	domIsReady: false,
 	modulesHaveStarted: false,
@@ -25,14 +130,15 @@ Twinkle.init = {
 	loadModules: function() {
 
 		var defaultDir = "User:UncleDouggie";
-		
+
 		/* The order of the modules in the TW menu is determined from the order in the following list.
 		   Undesired modules may be removed from this list without requiring any other code changes.
 		   To override the location of a module for debugging, just change the "dir" property. */
 
 		// modules that everyone can use
-		this.modules = [	
-			{ dir: defaultDir, name: "morebits" }, // mandatory and must be first or nothing will work
+		this.modules = [
+			{ dir: "User:" + wgUserName, name: "twinkleoptions" },  // mandatory and must be first or nothing will work
+			{ dir: defaultDir, name: "morebits" },  // mandatory and must be second or nothing will work
 			{ dir: defaultDir, name: "twinklewarn" },
 			{ dir: defaultDir, name: "twinklespeedy" },
 			{ dir: defaultDir, name: "twinklearv" },
@@ -43,9 +149,16 @@ Twinkle.init = {
 			{ dir: defaultDir, name: "twinklexfd" },
 			{ dir: defaultDir, name: "twinklecloser" },  // newly discovered module
 			{ dir: defaultDir, name: "twinkleimage" },
-			{ dir: defaultDir, name: "twinkleunlink" }
+			{ dir: defaultDir, name: "twinkleunlink" },
+			// XXX uncomment me once Friendly is nearby
+			//{ dir: defaultDir, name: "friendlywelcome" },
+			//{ dir: defaultDir, name: "friendlyshared" },
+			//{ dir: defaultDir, name: "friendlytag" },
+			//{ dir: defaultDir, name: "friendlyclock" },
+			//{ dir: defaultDir, name: "friendlytabs" },
+			//{ dir: defaultDir, name: "friendlytalkback" }
 		];
-		
+
 		// define admin modules separately so that non-admins don't have to wait for them to load
 		var adminModules = [
 			{ dir: defaultDir, name: "twinkledelimages" },
@@ -56,51 +169,56 @@ Twinkle.init = {
 			{ dir: defaultDir, name: "twinklebatchundelete" },
 			{ dir: defaultDir, name: "twinkleundelete" },  // newly discovered module
 		];
-		
+
 		// special purpose modules used to debug Twinkle
 		var debugModules = [
 			{ dir: defaultDir, name: "morebits-test" }
 		];
-		
+
 		// check if user is an admin
 		if (wgUserGroups != null && wgUserGroups.indexOf( "sysop" ) != -1) {
-		
+
 			// add the admin modules to the end of the module list
 			this.modules.push.apply( this.modules, adminModules );
 		}
-		
-		if (TwinkleConfig.loadDebugModules) {
+
+		if (/*TwinkleConfig.loadDebugModules*/ true) {  // XXX fix this
 
 			// add the debug modules to the end of the module list
 			this.modules.push.apply( this.modules, debugModules );
 		}
 
-		var startingModule = 0;  // load all modules by default
-		
+		var skipMorebits = false;  // load all modules by default
+
 		// check if morebits has already been loaded by another script
 		if ( typeof(morebits_v2_js_loaded) !== "undefined" ) {
-			startingModule = 1;  // don't reload morebits
-			this.modules[0].callback = function() {};  // indicate that morebits is ready
+			skipMorebits = true;  // don't reload morebits
+			this.modules[1].callback = function() {};  // indicate that morebits is ready
 		}
-		
-		/* Load all modules using the deprecated importScript() function. 
-		   See http://en.wikipedia.org/wiki/Wikipedia_talk:WikiProject_User_scripts#Replacing_importScript.28.29 
+
+		/* Load all modules using the deprecated importScript() function.
+		   See http://en.wikipedia.org/wiki/Wikipedia_talk:WikiProject_User_scripts#Replacing_importScript.28.29
 		   for more imformation on loading methods. */
-		
-		for (var i = startingModule; i < this.modules.length; i++) {
+
+		for (var i = 0; i < this.modules.length; i++) {
+			if (skipMorebits && i == 1) {
+				continue;
+			}
 			var modulePath = this.modules[i].dir + "/" + this.modules[i].name + ".js";
 			importScript( modulePath );
 		}
 
-		if( typeof( TwinkleConfig.moduleLoadTime ) == 'undefined' ) {
-			TwinkleConfig.moduleLoadTime = 20;  // seconds to wait for modules to load
-		}
-		
+		// XXX fixme quick
+		//if( typeof( TwinkleConfig.moduleLoadTime ) == 'undefined' true) {
+		//	TwinkleConfig.moduleLoadTime = 20;  // seconds to wait for modules to load
+		//}
+
 		// setup timer callback in case all modules don't load
-		window.setTimeout( function() { 
+		window.setTimeout( function() {
 				Twinkle.init.loadTimeout();
-			}, 
-			TwinkleConfig.moduleLoadTime * 1000 );
+			},
+			//TwinkleConfig.moduleLoadTime * 1000 );
+			20000 );
 	},
 
 	// timer callback after module loading started
@@ -114,34 +232,35 @@ Twinkle.init = {
 
 		var moduleFound = false;
 		var modulesAreReady = true;
-		
+
 		// traverse list of modules
 		for (var i = 0; i < this.modules.length; i++) {
 			if (this.modules[i].name === moduleName) {
-			
-				// check if any module other than morebits tries to register twice
-				if (typeof(this.modules[i].callback) !== "undefined" && i > 0) {
+
+				// check if any module other than twinkleoptions or morebits tries to register twice
+				if (typeof(this.modules[i].callback) !== "undefined" && i > 1) {
 					alert("Twinkle.init.moduleReady: attempt to register duplicate module " + moduleName);
 					return;
 				}
 				this.modules[i].callback = moduleCallback;
 				moduleFound = true;
-				
+
 				// check for late registration
 				if (this.modulesHaveStarted) {
 					moduleCallback();  // start module immediately
 				}
 			}
-			else if (typeof(this.modules[i].callback) === "undefined") {
+			// check to see if all the other modules have loaded (except twinkleoptions, which is allowed to be missing)
+			else if (typeof(this.modules[i].callback) === "undefined" && i > 0) {
 				modulesAreReady = false;
 			}
 		}
-		
+
 		if (!moduleFound) {
 			alert("Twinkle.init.moduleReady: attempt to register unknown module " + moduleName);
 			return;
 		}
-		
+
 		this.modulesAreReady = modulesAreReady;
 		this.attemptStart();
 	},
@@ -157,9 +276,49 @@ Twinkle.init = {
 
 		// check if the document and all Twinkle modules have finished loading
 		// if we have waiting long enough, start what is ready, so long as morebits is loaded
-		if ( !this.modulesHaveStarted && this.domIsReady && 
-		     (this.modulesAreReady || (this.loadTimeHasElapsed && this.modules[0].callback) ) ) {
-		
+		if ( !this.modulesHaveStarted && this.domIsReady &&
+		     (this.modulesAreReady || (this.loadTimeHasElapsed && this.modules[1].callback) ) ) {
+
+			// set up TwinkleConfig and FriendlyConfig
+			// look for the unqualified names to start with, to support legacy installations of the scripts
+			// XXX this hopes that the user's twinkleoptions.js has actually loaded by now if it exists
+			var usingDefaults = false;
+			if (typeof(TwinkleConfig) === "undefined") {
+				if (typeof(Twinkle.prefs) === "undefined" || typeof(Twinkle.prefs.twinkle) === "undefined") {
+					// this should really be a cloning operation, but since TwinkleConfig should 
+					// never be modified, that doesn't matter
+					TwinkleConfig = Twinkle.defaultConfig.twinkle;  // intentional use of global namespace (TwinkleConfig)
+					usingDefaults = true;
+				} else {
+					TwinkleConfig = Twinkle.prefs.twinkle;  // intentional use of global namespace (TwinkleConfig)
+				}
+			}
+			if (!usingDefaults) {
+				$.each(Twinkle.defaultConfig.twinkle, function(key, value) {
+					if (typeof(TwinkleConfig[key]) === "undefined") {
+						TwinkleConfig[key] = value;
+					}
+				});
+			}
+
+			// XXX uncomment me once Friendly is integrated fully
+			//usingDefaults = false;
+			//if (typeof(FriendlyConfig) === "undefined") {
+			//	if (typeof(Twinkle.prefs) === "undefined" || typeof(Twinkle.prefs.friendly) === "undefined") {
+			//		FriendlyConfig = Twinkle.defaultConfig.friendly;  // intentional use of global namespace (FriendlyConfig)
+			//		usingDefaults = true;
+			//	} else {
+			//		FriendlyConfig = Twinkle.prefs.friendly;  // intentional use of global namespace (FriendlyConfig)
+			//	}
+			//}
+			//if (!usingDefaults) { {
+			//	$.each(Twinkle.defaultConfig.friendly, function(key, value) {
+			//		if (typeof(FriendlyConfig[key]) === "undefined") {
+			//			FriendlyConfig[key] = value;
+			//		}
+			//	});
+			//}
+
 			// initialize all Twinkle modules in the predefined sequence
 			for (var i = 0; i < this.modules.length; i++) {
 				if (typeof(this.modules[i].callback) === "function") {
@@ -173,11 +332,6 @@ Twinkle.init = {
 
 // don't activate on special pages other than "Contributions" so they load faster, especially the watchlist
 if ( wgNamespaceNumber != -1 || wgTitle == "Contributions" ) {
-
-	// Create configuration object if not provided by the user's custom .js file
-	if ( typeof( TwinkleConfig ) === 'undefined' ) {
-		TwinkleConfig = {};
-	}
 
 	Twinkle.init.loadModules();
 
