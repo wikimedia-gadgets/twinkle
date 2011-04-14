@@ -30,7 +30,7 @@ twinklexfd.callback = function twinklexfdCallback() {
 	var categories = form.append( {
 			type: 'select',
 			name: 'category',
-			label: 'Select wanted type of category: ',
+			label: 'Deletion discussion venue:',
 			tooltip: 'When activated, a default choice is made, based on what namespace you are in. This default should be the most appropriate',
 			event: twinklexfd.callback.change_category
 		} );
@@ -147,7 +147,7 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		var afd_category = work_area.append( {
 				type:'select',
 				name:'xfdcat',
-				label:'Choose what category this nomination belongs in'
+				label:'Choose what category this nomination belongs in:'
 			} );
 
 		afd_category.append( { type:'option', label:'Unknown', value:'?', selected:true } );
@@ -846,6 +846,11 @@ twinklexfd.callbacks = {
 		todaysList: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
+
+			// add date header if the log is found to be empty (a bot should do this automatically, but it sometimes breaks down)
+			if (!pageobj.exists()) {
+				text = "\{\{subst:Ffd log}}";
+			}
 
 			pageobj.setPageText(text + "\n\{\{subst:ffd2|1=" + wgTitle + "|Uploader=" + params.uploader + "|Reason=" + params.reason + "\}\} \~\~\~\~");
 			pageobj.setEditSummary("Adding [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
