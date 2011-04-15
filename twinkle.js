@@ -13,7 +13,7 @@
  *   8. Completely event driven. No busy waiting or periodic timers.
  */
 
-Twinkle = {};  // don't pollute the global namespace
+var Twinkle = {};  // don't pollute the global namespace
 
 Twinkle.defaultConfig = {};
 /**

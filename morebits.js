@@ -139,7 +139,7 @@ function twAddPortletLink( href, text, id, tooltip, accesskey, nextnode )
 	addPortletLink( twAddPortlet.portletId, href, text, id, tooltip, accesskey, nextnode );
 }
 
-Cookies = {
+var Cookies = {
 	/*
 	 * Creates an cookie with the name and value pair. expiry is optional or null and defaults
 	 * to browser standard (in seconds), path is optional and defaults to "/"
@@ -198,7 +198,7 @@ Cookies = {
  * specific coding.
  */
 
-QuickForm = function QuickForm( event, eventType ) {
+var QuickForm = function QuickForm( event, eventType ) {
 
 	this.root = new QuickForm.element( { type: 'form', event: event, eventType:eventType } );
 
@@ -356,6 +356,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 			for( var i = 0; i < data.list.length; ++i ) {
 				var cur_id = id + '_' + i;
 				var current = data.list[i];
+				var cur_node;
 				if( current.type == 'header' ) {
 					// inline hack
 					cur_node = node.appendChild( document.createElement( 'h6' ) );
@@ -1042,7 +1043,7 @@ sprintf.format = function sprintfFormat( type, value, flags ) {
 	return prefix + result;
 }
 
-Bytes = function ( value ) {
+function Bytes( value ) {
 	if( typeof(value) == 'string' ) {
 		var res = /(\d+) ?(\w?)(i?)B?/.exec( value );
 		var number = res[1];
@@ -1237,7 +1238,7 @@ Array.prototype.chunk = function arrayChunk( size ) {
 	return result;
 }
 
-Unbinder = function unbinder( string ) {
+function Unbinder( string ) {
 	if( typeof( string ) != 'string' ) {
 		throw "not a string";
 	}
@@ -1398,7 +1399,7 @@ Date.prototype.getUTCMonthNameAbbrev = function() {
 }
 
 // Accessor functions for wikiediting and api-access
-Wikipedia = {};
+var Wikipedia = {};
 
 Wikipedia.namespaces = {
 	'-2':  'Media',
@@ -1409,8 +1410,8 @@ Wikipedia.namespaces = {
 	'3':   'User talk',
 	'4':   'Project',
 	'5':   'Project talk',
-	'6':   'Image',
-	'7':   'Image talk',
+	'6':   'File',
+	'7':   'File talk',
 	'8':   'MediaWiki',
 	'9':   'MediaWiki talk',
 	'10':  'Template',
@@ -1425,15 +1426,15 @@ Wikipedia.namespaces = {
 	'109': 'Book talk'
 };
 
-Wikipedia.namespacesNoSpecial = {
-	'0':   '',
+Wikipedia.namespacesFriendly = {
+	'0':   '(Article)',
 	'1':   'Talk',
 	'2':   'User',
 	'3':   'User talk',
-	'4':   'Project',
-	'5':   'Project talk',
-	'6':   'Image',
-	'7':   'Image talk',
+	'4':   'Wikipedia',
+	'5':   'Wikipedia talk',
+	'6':   'File',
+	'7':   'File talk',
 	'8':   'MediaWiki',
 	'9':   'MediaWiki talk',
 	'10':  'Template',
@@ -1498,8 +1499,8 @@ Wikipedia.actionCompleted.event = function() {
 		window.setTimeout( function() { window.location = Wikipedia.actionCompleted.redirect } , Wikipedia.actionCompleted.timeOut );
 	}
 }
-wpActionCompletedTimeOut = typeof(wpActionCompletedTimeOut) == 'undefined'  ? 5000 : wpActionCompletedTimeOut;
-wpMaxLag = typeof(wpMaxLag) == 'undefined' ? 10 : wpMaxLag; // Maximum lag allowed, 5-10 is a good value, the higher value, the more agressive.
+var wpActionCompletedTimeOut = typeof(wpActionCompletedTimeOut) == 'undefined'  ? 5000 : wpActionCompletedTimeOut;
+var wpMaxLag = typeof(wpMaxLag) == 'undefined' ? 10 : wpMaxLag; // Maximum lag allowed, 5-10 is a good value, the higher value, the more agressive.
 
 Wikipedia.editCount = 10;
 Wikipedia.actionCompleted.timeOut = wpActionCompletedTimeOut;
@@ -2427,7 +2428,7 @@ Number.prototype.zeroFill = function( length ) {
 	return str;
 }
 
-Mediawiki = {};
+var Mediawiki = {};
 
 Mediawiki.Template = {
 	parse: function( text, start ) {
@@ -2762,7 +2763,7 @@ QueryString.prototype.create = QueryString.create;
 * Simple exception handling
 */
 
-Exception = function( message ) {
+var Exception = function( message ) {
 	this.message = message || '';
 	this.name = "Exception";
 }
