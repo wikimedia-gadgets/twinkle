@@ -177,6 +177,7 @@ Twinkle.config.sections = [
 		{
 			name: "openTalkPageOnAutoRevert",
 			label: "Open user talk page when invoking rollback from user contributions",
+			helptip: "Often, you may be rolling back many pages at a time from a vandal's contributions page, so it would be unsuitable to open the user talk page. Hence, this option is off by default. When this is on, the desired options must be enabled in the previous setting for this to work.",
 			type: "boolean"
 		},
 
@@ -202,14 +203,14 @@ Twinkle.config.sections = [
 		// If to offer a prompt for extra summary reason for normal reverts, default to true
 		{
 			name: "offerReasonOnNormalRevert",
-			label: "Ask for reason for \"restore this version\" reverts",
-			helptip: "Strongly recommended.",
+			label: "Ask for reason for normal rollbacks",
+			helptip: "\"Normal\" rollbacks are the non-AGF, non-vandal, non-\"restore this version\" rollbacks.",
 			type: "boolean"
 		},
 
 		// TwinkleConfig.showRollbackLinks (array)
 		// Where Twinkle should show rollback links (diff, others, mine, contribs)
-		// XXX |contribs| seems to be equal to |others| + |mine|, i.e. redundant -->
+		// Note from TTO: |contribs| seems to be equal to |others| + |mine|, i.e. redundant, so I left it out heres
 		{
 			name: "showRollbackLinks",
 			label: "Show rollback links on these pages",
@@ -243,7 +244,7 @@ Twinkle.config.sections = [
 		// The watchlist setting of the user talk page if a notification is placed. Either "yes", "no", or "default". Default is "default" (Duh).
 		{
 			name: "deliWatchUser",
-			label: "Add user talk page of initial uploader to watchlist (if notifying them)",
+			label: "Add user talk page of initial uploader to watchlist when notifying",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		},
@@ -274,6 +275,13 @@ Twinkle.config.sections = [
 {
 	title: "CSD (speedy deletion)",
 	preferences: [
+		// TwinkleConfig.speedyPromptOnG7 (boolean)
+		{
+			name: "speedyPromptOnG7",
+			label: "Prompt for rationale when tagging with G7 (author request)",
+			type: "boolean"
+		},
+
 		// TwinkleConfig.watchSpeedyPages (array)
 		// Whether to add speedy tagged pages to watchlist
 		{
@@ -458,16 +466,6 @@ Twinkle.config.sections = [
 			enumValues: Twinkle.config.commonEnums.watchlist
 		},
 
-		// TwinkleConfig.xfdWatchUser (string)
-		// The watchlist setting of the user if he receives a notification. Either "yes" (add to watchlist), "no" (don't
-		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
-		{
-			name: "xfdWatchUser",
-			label: "Add the user talk page to watchlist (when notifying)",
-			type: "enum",
-			enumValues: Twinkle.config.commonEnums.watchlist
-		},
-
 		// TwinkleConfig.xfdWatchList (string)
 		// The watchlist setting of the XfD list page, *if* the discussion is on a separate page. Either "yes" (add to watchlist), "no" (don't
 		// add to watchlist), or "default" (use setting from preferences). Default is "no" (Hehe. Seriously though, who wants to watch it?
@@ -476,6 +474,16 @@ Twinkle.config.sections = [
 			name: "xfdWatchList",
 			label: "Add the daily log/list page to the watchlist (if relevant)",
 			helptip: "This only applies for AfD and MfD, where the discussions are transcluded onto a daily log page (for AfD) or the main MfD page (for MfD).",
+			type: "enum",
+			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+
+		// TwinkleConfig.xfdWatchUser (string)
+		// The watchlist setting of the user if he receives a notification. Either "yes" (add to watchlist), "no" (don't
+		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+		{
+			name: "xfdWatchUser",
+			label: "Add the user talk page to watchlist (when notifying)",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		},
@@ -920,6 +928,8 @@ Twinkle.config.save = function twinkleconfigSave(e) {
 	var wikipedia_page = new Wikipedia.page(userjs, "Saving preferences to " + userjs);
 	wikipedia_page.setCallbackParameters(e.target);
 	wikipedia_page.load(Twinkle.config.writePrefs);
+
+	return false;
 }
 
 // The JSON stringify method in the following code was excerpted from

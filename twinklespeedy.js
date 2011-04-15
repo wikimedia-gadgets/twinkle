@@ -1249,13 +1249,16 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 			}
 			break;
 		case 'g7':
-			var rationale = prompt('Please provide an optional rationale (perhaps linking to where the author requested this deletion - leave empty to skip):');
-			if (rationale == null)
+			if (TwinkleConfig.speedyPromptOnG7)
 			{
-				statelem.error( 'Aborted by user.' );
-				return null;
+				var rationale = prompt('Please provide an optional rationale (perhaps linking to where the author requested this deletion - leave empty to skip):');
+				if (rationale == null)
+				{
+					statelem.error( 'Aborted by user.' );
+					return null;
+				}
+				if (rationale != '') parameters["rationale"] = rationale;
 			}
-			if (rationale != '') parameters["rationale"] = rationale;
 			break;
 		case 'f9':
 		case 'g12':
