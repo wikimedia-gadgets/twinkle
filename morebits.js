@@ -202,20 +202,70 @@ var QuickForm = function QuickForm( event, eventType ) {
 
 	this.root = new QuickForm.element( { type: 'form', event: event, eventType:eventType } );
 
-	var cssNode = document.createElement('style');
-	cssNode.type = 'text/css';
-	cssNode.rel = 'stylesheet';
-	cssNode.appendChild( document.createTextNode("")); // Safari bugfix
-	document.getElementsByTagName("head")[0].appendChild(cssNode);
-	var styles = cssNode.sheet ? cssNode.sheet : cssNode.stylesSheet;
-	styles.insertRule("form.quickform { width: 96%; margin:auto; padding: .5em; vertical-align: middle}", 0);
-	styles.insertRule("form.quickform * { font-family: sans-serif; vertical-align: middle}", 0);
-	styles.insertRule("form.quickform select { width: 30em; border: 1px solid gray; font-size: 1.1em}", 0);
-	styles.insertRule("form.quickform h5 { border-top: 1px solid gray;}", 0);
-	styles.insertRule("form.quickform textarea { width: 100%; height: 6em }", 0);
-	styles.insertRule("form.quickform .tooltipButtonContainer { position: relative; width: 100%; }", 0);
-	styles.insertRule("form.quickform .tooltipButton { padding: .2em; color: blue; font-weight: bold; cursor:help;}", 0);
-	styles.insertRule(".quickformtooltip { z-index: 200; position: absolute; padding: .1em; border: 1px dotted red; background-color: Linen; font: caption; font-size: 10pt; max-width: 800px}", 0);
+	// XXX perhaps break this out into a separate CSS file??
+	var quickformcss =
+		"form.quickform { " +
+			"width: 96%; " +
+			"margin: auto; " +
+			"padding: .5em; " +
+			"vertical-align: middle; " +
+		"} " +
+		"form.quickform * { " +
+			"font-family: sans-serif; " +
+			"vertical-align: middle; " +
+		"} " +
+		"form.quickform fieldset { " +
+			"margin: 0.4em 0 1em; " +
+		"} " +
+		"form.quickform legend { " +
+			"color: #31628F;" +
+			"font-weight: bold;" +
+		"} " +
+		"form.quickform input[type=\"text\"], form.quickform select { " +
+			"min-width: 15em; " +
+			"font-size: 110%; " +
+		"} " +
+		"form.quickform select { " +
+			"border: 1px solid gray; " +
+			"margin-left: 0.2em; " +
+		"} " +
+		"form.quickform h5 { " +
+			"margin: 0.5em 0 0; " +
+			"padding: 0.3em 0.2em 0.2em; " +
+		"} " +
+		"form.quickform div + h5, form.quickform div + div h5 { " +  // only give the top border to headers that have a control above them
+			"border-top: 1px solid #88A; " +
+		"} " +
+		"form.quickform textarea { " +
+			"width: 100%; " +
+			"height: 4em; " +
+			"font-size: 150%; " +
+		"} " +
+		"form.quickform span.quickformDescription { " +
+			"font-style: italic; " +
+		"} " +
+		"form.quickform .tooltipButtonContainer { " +
+			"position: relative; " +
+			"width: 100%; " +
+		"} " +
+		"form.quickform .tooltipButton { " +
+			"padding: .2em; " +
+			"color: blue; " +
+			"font-weight: bold; " +
+			"cursor: help; " +
+		"} " +
+		".quickformtooltip { " +
+			"z-index: 2000; " +
+			"position: absolute; " +
+			"padding: .1em; " +
+			"border: 1px dotted red; " +
+			"background-color: Linen; " +
+			"font: caption; " +
+			"font-size: 10pt; " +
+			"max-width: 800px; " +
+		"} "
+	;
+	mw.util.addCSS(quickformcss);
 }
 
 QuickForm.prototype.render = function QuickFormRender() {
@@ -583,11 +633,15 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 		break;
 	case 'div':
 		node = document.createElement( 'div' );
+		if (data.name) {
+			node.setAttribute( 'name', data.name );
+		}
 		if (data.label) {
 			if ( !( data.label instanceof Array ) ) {
 				data.label = [ data.label ];
 			}
-			var result = document.createDocumentFragment();
+			var result = document.createElement( 'span' );
+			result.className = 'quickformDescription';
 			for( var i = 0; i < data.label.length; ++i ) {
 				if( typeof(data.label[i]) === 'string' ) {
 					result.appendChild( document.createTextNode( data.label[i] ) );
@@ -632,8 +686,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 			label.appendChild( document.createTextNode( data.label ) );
 			label.setAttribute( 'for', id );
 		}
-		node.appendChild( document.createElement( 'br' ) );
-		textarea = node.appendChild( document.createElement( 'textarea' ) );
+		var textarea = node.appendChild( document.createElement( 'textarea' ) );
 		textarea.setAttribute( 'name', data.name );
 		if( data.cols ) {
 			textarea.setAttribute( 'cols', data.cols );
