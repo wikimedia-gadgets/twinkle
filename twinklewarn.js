@@ -10,9 +10,12 @@ function twinklewarn() {
 
 twinklewarn.callback = function twinklewarnCallback() {
 	var Window = new SimpleWindow( 600, 400 );
-	Window.setTitle( "Warn/Notify user" );
-	var form = new QuickForm( twinklewarn.callback.evaluate );
+	Window.setTitle( "Warn/notify user" );
+	Window.setScriptName( "Twinkle" );
+	Window.addFooterLink( "Choosing a warning level", "WP:UWUL#Levels" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#warn" );
 
+	var form = new QuickForm( twinklewarn.callback.evaluate );
 	var main_select = form.append( {
 			type:'field',
 			label:'Choose type of warning/notice to issue',
@@ -1447,6 +1450,7 @@ twinklewarn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 		block_timer: e.target.block_timer ? e.target.block_timer.value : null
 	}
 
+	SimpleWindow.setButtonsEnabled( false );
 	Status.init( e.target );
 
 	Wikipedia.actionCompleted.redirect = wgPageName;

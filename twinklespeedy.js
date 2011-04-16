@@ -38,6 +38,9 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 	{
 		dialog = new SimpleWindow( TwinkleConfig.speedyWindowWidth, TwinkleConfig.speedyWindowHeight );
 		dialog.setTitle( "Choose criteria for speedy deletion" );
+		dialog.setScriptName( "Twinkle" );
+		dialog.addFooterLink( "Speedy deletion policy", "WP:CSD" );
+		dialog.addFooterLink( "Twinkle help", "WP:TW/DOC#speedy" );
 	}
 
 	var form = new QuickForm( callbackfunc, 'change' );

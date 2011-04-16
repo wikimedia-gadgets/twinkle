@@ -25,7 +25,11 @@ function num2order( num ) {
 twinklexfd.callback = function twinklexfdCallback() {
 
 	var Window = new SimpleWindow( 600, 350 );
-	Window.setTitle( "Anything for deletion" );
+	Window.setTitle( "Nominate for deletion (XfD)" );
+	Window.setScriptName( "Twinkle" );
+	Window.addFooterLink( "About deletion discussions", "WP:XFD" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#xfd" );
+
 	var form = new QuickForm( twinklexfd.callback.evaluate );
 	var categories = form.append( {
 			type: 'select',
@@ -94,16 +98,16 @@ twinklexfd.callback = function twinklexfdCallback() {
 			label:'Work area',
 			name: 'work_area'
 		} );
+	form.append( { type:'submit' } );
 
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
 
-	// We must init the
+	// We must init the controls
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
 	result.category.dispatchEvent( evt );
-
 }
 
 twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(e) {
@@ -169,7 +173,6 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 				label: 'Reason: ',
 				value: oldreason
 			} );
-		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -184,7 +187,7 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 		linknode.appendChild(document.createTextNode('WP:SFD'));
 		work_area.append( {
 				type: 'div',
-				label: [ 'Stub templates and userboxes are not eligible for TfD. Stub templates go to ', linknode, ', and userboxes go to MfD.' ]
+				label: [ 'Stub types and userboxes are not eligible for TfD. Stub types go to ', linknode, ', and userboxes go to MfD.' ]
 			} );
 		work_area.append( {
 				type: 'checkbox',
@@ -204,7 +207,6 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 				label: 'Reason: ',
 				value: oldreason
 			} );
-		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -245,7 +247,6 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 				label: 'Reason: ',
 				value: oldreason
 			} );
-		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -272,7 +273,6 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 				label: 'Reason: ',
 				value: oldreason
 			} );
-		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -314,7 +314,6 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 				label: 'Reason: ',
 				value: oldreason
 			} );
-		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -330,7 +329,6 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 				label: 'Reason: ',
 				value: oldreason
 			} );
-		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -1184,6 +1182,7 @@ twinklexfd.callback.evaluate = function(e) {
 		var notifyuserspace = e.target.notifyuserspace.checked;
 	}
 
+	SimpleWindow.setButtonsEnabled( false );
 	Status.init( e.target );
 
 	if( type == null ) {

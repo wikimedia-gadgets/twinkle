@@ -37,6 +37,11 @@ Twinkle.arv.callback = function ( uid ) {
 
 	var Window = new SimpleWindow( 600, 500 );
 	Window.setTitle( "Advance Reporting and Vetting" ); //Backronym
+	Window.setScriptName( "Twinkle" );
+	Window.addFooterLink( "Guide to AIV", "WP:GAIV" );
+	Window.addFooterLink( "UAA instructions", "WP:UAAI" );
+	Window.addFooterLink( "About SPI", "WP:SPI" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#arv" );
 
 	var form = new QuickForm( Twinkle.arv.callback.evaluate );
 	var categories = form.append( {
@@ -47,22 +52,22 @@ Twinkle.arv.callback = function ( uid ) {
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Vandalism',
+			label: 'Vandalism (AIV)',
 			value: 'aiv'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Username',
+			label: 'Username (UAA)',
 			value: 'username'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Sockpuppeteer',
+			label: 'Sockpuppeteer (SPI)',
 			value: 'sock'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Sockpuppet',
+			label: 'Sockpuppet (SPI)',
 			value: 'puppet'
 		} );
 	form.append( {
@@ -70,6 +75,7 @@ Twinkle.arv.callback = function ( uid ) {
 			label:'Work area',
 			name: 'work_area'
 		} );
+	form.append( { type:'submit' } );
 	form.append( {
 			type: 'hidden',
 			name: 'uid',
@@ -181,7 +187,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'reason',
 				label: 'Comment: '
 			} );
-		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -227,7 +232,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'reason',
 				label: 'Comment:'
 			} );
-		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -264,7 +268,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					tooltip: 'Notification is not mandatory. In many cases, especially of chronic sockpuppeteers, notification may be counterproductive. However, especially in less egregious cases involving users who has not been reported before, notification may make the cases fairer and also appear to be fairer in the eyes of the accused. Use your judgment.'
 				} ]
 			} );
-		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -302,7 +305,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					tooltip: 'Notification is not mandatory. In many cases, especially of chronic sockpuppeteers, notification may be counterproductive. However, especially in less egregious cases involving users who has not been reported before, notification may make the cases fairer and also appear to be fairer in the eyes of the accused. Use your judgment.'
 				} ]
 			} );
-		work_area.append( { type:'submit' } );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -381,6 +383,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			reason += "\~\~\~\~";
 			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
 
+			SimpleWindow.setButtonsEnabled( false );
 			Status.init( form );
 			var aivPage = new Wikipedia.page( 'Wikipedia:Administrator intervention against vandalism', 'Processing AIV request' );
 			aivPage.setPageSection( 1 );
@@ -427,6 +430,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			reason += "\~\~\~\~";
 			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
 
+			SimpleWindow.setButtonsEnabled( false );
 			Status.init( form );
 			var uaaPage = new Wikipedia.page( 'Wikipedia:Usernames for administrator attention', 'Processing UAA request' );
 			uaaPage.setPageSection( 1 );
@@ -457,6 +461,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				checkuser: form.checkuser.checked, 
 				notify: form.notify.checked
 			} );
+			SimpleWindow.setButtonsEnabled( false );
 			Status.init( form );
 			break;
 
@@ -469,6 +474,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				checkuser: form.checkuser.checked, 
 				notify: form.notify.checked
 			} );
+			SimpleWindow.setButtonsEnabled( false );
 			Status.init( form );
 			break;
 	}

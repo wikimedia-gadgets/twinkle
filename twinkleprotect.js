@@ -20,7 +20,11 @@ function twinkleprotect() {
 
 twinkleprotect.callback = function twinkleprotectCallback() {
 	var Window = new SimpleWindow( 600, 400 );
-	Window.setTitle( "Protection of pages" );
+	Window.setTitle( userIsInGroup( 'sysop' ) ? "Apply or request page protection" : "Request page protection" );
+	Window.setScriptName( "Twinkle" );
+	Window.addFooterLink( "Protection policy", "WP:PROT" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#protect" );
+
 	var form = new QuickForm( twinkleprotect.callback.evaluate );
 	if( userIsInGroup( 'sysop' ) ) {
 		form.append( {
@@ -201,6 +205,7 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		}
 	}
 
+	SimpleWindow.setButtonsEnabled( false );
 	Status.init( form );
 
 	if( userIsInGroup( 'sysop' ) && ! request_only ) {

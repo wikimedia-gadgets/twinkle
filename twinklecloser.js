@@ -56,6 +56,10 @@ twinklecloser.actions = {
 	afc: function twinklecloserActionsAfc( section ) {
 		var Window = new SimpleWindow( 800, 400 );
 		Window.setTitle( "Close AFC" );
+		Window.setScriptName( "Twinkle" );
+		Window.addFooterLink( "AFC reviewing instructions", "WP:AFCR" );
+		Window.addFooterLink( "Twinkle help", "WP:TW/DOC#closer-afc" );
+
 		var form = new QuickForm( twinklecloser.callbacks.afc.evaluate );
 		form.append ( {
 				label: 'Action: ',
@@ -103,6 +107,10 @@ twinklecloser.actions = {
 	afd: function twinklecloserActionsAfd( section, page ) {
 		var Window = new SimpleWindow( 800, 400 );
 		Window.setTitle( "Close AFD" );
+		Window.setScriptName( "Twinkle" );
+		Window.addFooterLink( "AFD closing instructions", "Wikipedia:Articles for deletion/Administrator instructions" );
+		Window.addFooterLink( "Twinkle help", "WP:TW/DOC#closer-afd" );
+
 		var form = new QuickForm( twinklecloser.callbacks.afd.evaluate );
 		form.append ( {
 				label: 'Action: ',
@@ -329,6 +337,7 @@ twinklecloser.callbacks = {
 				break;
 			}
 
+			SimpleWindow.setButtonsEnabled( false );
 			Status.init( form );
 			var query = {
 				'title': wgPageName,
@@ -448,6 +457,8 @@ twinklecloser.callbacks = {
 				break;
 			}
 			params.label = label;
+
+			SimpleWindow.setButtonsEnabled( false );
 			Status.init( form );
 
 			if( type == 'delete' ) {

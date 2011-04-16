@@ -25,6 +25,8 @@ function getChecked2( nodelist ) {
 twinkleunlink.callback = function twinkleunlinkCallback() {
 	var Window = new SimpleWindow( 800, 400 );
 	Window.setTitle( "Unlink backlinks" );
+	Window.setScriptName( "Twinkle" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#unlink" );
 
 	var form = new QuickForm( twinkleunlink.callback.evaluate );
 	form.append( {
@@ -99,6 +101,8 @@ twinkleunlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event) 
 	if( event.target.imageusage ) {
 		var imageusage = getChecked(event.target.imageusage);
 	}
+
+	SimpleWindow.setButtonsEnabled( false );
 	Status.init( event.target );
 	if (backlinks) processunlink(backlinks, false);
 	if (imageusage) processunlink(imageusage, true);
@@ -153,7 +157,7 @@ twinkleunlink.callbacks = {
 			}
 			else
 			{
-				apiobj.params.form.append( { type: 'header', label: 'No backlinks found.' } );
+				apiobj.params.form.append( { type: 'div', label: 'No backlinks found.' } );
 			}
 
 			if (havecontent) apiobj.params.form.append( { type:'submit' } );

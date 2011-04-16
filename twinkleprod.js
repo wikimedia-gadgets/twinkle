@@ -15,7 +15,12 @@ function twinkleprod() {
 
 twinkleprod.callback = function twinkleprodCallback() {
 	var Window = new SimpleWindow( 800, 410 );
-	Window.setTitle( "Proposed deletion (WP:PROD)" );
+	Window.setTitle( "Proposed deletion (PROD)" );
+	Window.setScriptName( "Twinkle" );
+	Window.addFooterLink( "Proposed deletion policy", "WP:PROD" );
+	Window.addFooterLink( "BLP PROD policy", "WP:BLPPROD" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#prod" );
+
 	var form = new QuickForm( twinkleprod.callback.evaluate );
 	
 	var field = form.append( {
@@ -40,11 +45,14 @@ twinkleprod.callback = function twinkleprodCallback() {
 				}
 			]
 		} );
-	
-	//Note: This needs to be the form's lastchild! It will be replaced in callback.prodtypechanged!
+
 	form.append( {
-			type: 'div',
+			type: 'field',
+			label:'Work area',
+			name: 'work_area'
 		} );
+
+	form.append( { type:'submit', label:'Propose deletion' } );	
 
 	var result = form.render();
 	Window.setContent( result );
@@ -58,13 +66,10 @@ twinkleprod.callback = function twinkleprodCallback() {
 
 twinkleprod.callback.prodtypechanged = function(event) {
   //prepare frame for prod type dependant controls
-	var work_area = new QuickForm.element( {
-			type: 'div',
-		} );
-
-	var field = work_area.append( {
+	var field = new QuickForm.element( {
 			type: 'field',
-			label: 'Parameters'
+			label: 'Parameters',
+			name: 'work_area'
 		} );
 	// create prod type dependant controls
 	switch( event.target.value )
@@ -127,10 +132,8 @@ twinkleprod.callback.prodtypechanged = function(event) {
 			
 		default: break;
 	};
-	
-	work_area.append( { type:'submit', label:'Propose deletion' } );	
-	
-	event.target.form.replaceChild( work_area.render(), event.target.form.lastChild );
+
+	event.target.form.replaceChild( field.render(), $(event.target.form).find('fieldset[name="work_area"]')[0] );
 }
 
 
@@ -223,6 +226,7 @@ twinkleprod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 		reason: prodtype=='prodblp' ? '' : form.reason.value  // using an empty string here as fallback will help with prod-2.
 	};
 
+	SimpleWindow.setButtonsEnabled( false );
 	Status.init( form );
 
 	if (prodtype == 'prodblp' && wgArticleId < 26596183)

@@ -10,7 +10,11 @@ function twinkleimage() {
 
 twinkleimage.callback = function twinkleimageCallback() {
 	var Window = new SimpleWindow( 600, 300 );
-	Window.setTitle( "File for pseudo-speedy deletion" );
+	Window.setTitle( "File for dated speedy deletion" );
+	Window.setScriptName( "Twinkle" );
+	Window.addFooterLink( "Speedy deletion policy", "WP:CSD" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#image" );
+
 	var form = new QuickForm( twinkleimage.callback.evaluate );
 	form.append( {
 			type: 'checkbox',
@@ -82,6 +86,8 @@ twinkleimage.callback = function twinkleimageCallback() {
 			label: 'Work area',
 			name: 'work_area'
 		} );
+	form.append( { type:'submit' } );
+
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
@@ -150,9 +156,8 @@ twinkleimage.callback.choice = function twinkleimageCallbackChoose(event) {
 		default:
 			break;
 	};
-	work_area.append( { type:'submit' } );
-	work_area = work_area.render();
-	root.replaceChild( work_area, root.lastChild );
+
+	root.replaceChild( work_area.render(), $(root).find('div[name="work_area"]')[0] );
 }
 
 twinkleimage.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
@@ -190,6 +195,7 @@ twinkleimage.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		replacement: replacement,
 		old_image: old_image
 	};
+	SimpleWindow.setButtonsEnabled( false );
 	Status.init( event.target );
 
 	Wikipedia.actionCompleted.redirect = wgPageName;
