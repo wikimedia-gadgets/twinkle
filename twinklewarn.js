@@ -832,8 +832,8 @@ twinklewarn.messages = {
 	},
 	singlewarn: {
 		"uw-3rr": { 
-			label:"Potentially violating the three revert rule", 
-			summary:"Warning: Potentially violating the three revert rule"
+			label:"Edit warring, and/or violating the three revert rule",
+			summary:"Warning: Edit warring, and/or violating the three revert rule"
 		},
 		"uw-affiliate": { 
 			label:"Affiliate marketing", 
