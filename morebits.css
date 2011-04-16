@@ -231,3 +231,6 @@ body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
 	color: #0645AD;
 }
 
+.ui-icon-inline {
+	display: inline-block;
+}

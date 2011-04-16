@@ -348,11 +348,11 @@ Twinkle.init = {
 
 // don't activate on special pages other than "Contributions" so they load faster, especially the watchlist
 if ( wgNamespaceNumber != -1 || wgTitle == "Contributions" ) {
-
-	// skip IE < 9 (not supported by Twinkle)
-	if (navigator.appName !== "Microsoft Internet Explorer" || document.addEventListener) {
-		Twinkle.init.loadModules();
-		$(document).ready(Twinkle.init.domReady);
+	// can't theoretically run twinkle on old Internet Explorer, just die...
+	if( !($.client.profile().name == 'msie' && $.client.profile().versionBase < 9) ) {
+		mw.loader.using( ['jquery.ui.dialog', 'jquery.tipsy'], function(){
+			Twinkle.init.loadModules();
+			$(document).ready(Twinkle.init.domReady);
+		});
 	}
-
 }

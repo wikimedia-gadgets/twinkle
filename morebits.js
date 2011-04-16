@@ -650,44 +650,19 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 }
 
 QuickForm.element.generateTooltip = function QuickFormElementGenerateTooltip( node, data ) {
-	var tooltipButtonContainer = node.appendChild( document.createElement( 'span' ) );
-	tooltipButtonContainer.className = 'tooltipButtonContainer';
-	var tooltipButton = tooltipButtonContainer.appendChild( document.createElement( 'span' ) );
-	tooltipButton.className = 'tooltipButton';
-	tooltipButton.appendChild( document.createTextNode( '?' ) );
-	var tooltip = document.createElement( 'div' );
-	tooltip.className = 'quickformtooltip';
-	tooltip.appendChild( document.createTextNode( data.tooltip ) );
-	tooltipButton.tooltip = tooltip;
-	tooltipButton.showing = false;
-	tooltipButton.interval = null;
-	tooltipButton.addEventListener( 'mouseover', QuickForm.element.generateTooltip.display, false );
-	tooltipButton.addEventListener( 'mouseout', QuickForm.element.generateTooltip.fade, false );
+	var obj = $('<span/>', {
+		'class': 'ui-icon ui-icon-lightbulb ui-icon-inline'
+	})
+	.appendTo(node)
+	.tipsy({
+		'fallback': data.tooltip,
+		'fade': true,
+		'gravity': $.fn.tipsy.autoWE,
+		'html': true,
+		'delayOut': 500,
 
+	})
 }
-QuickForm.element.generateTooltip.display = function QuickFormElementGenerateTooltipDisplay(e) {
-	window.clearInterval( e.target.interval );
-	e.target.tooltip.style.setProperty( '-moz-opacity', 1, null);
-	e.target.tooltip.style.setProperty( 'opacity', 1, null);
-	e.target.tooltip.style.left = (e.pageX - e.layerX + 24) + "px";
-	e.target.tooltip.style.top = (e.pageY - e.layerY + 12) + "px";
-	document.body.appendChild( e.target.tooltip );
-	e.target.showing = true;
-}
-
-QuickForm.element.generateTooltip.fade = function QuickFormElementGenerateTooltipFade( e ) {
-	e.target.opacity = 1.2;
-	e.target.interval  = window.setInterval(function(e){
-			e.target.tooltip.style.setProperty( '-moz-opacity', e.target.opacity, null);
-			e.target.tooltip.style.setProperty( 'opacity', e.target.opacity, null);
-			e.target.opacity -= 0.1;
-			if( e.target.opacity <= 0 ) {
-				window.clearInterval( e.target.interval );
-				document.body.removeChild( e.target.tooltip );e.target.showing = false;
-			}
-		},50,e);
-}
-
 /*
  * returns an array containing the values of elements with the given name, that has it's
  * checked property set to true. (i.e. a checkbox or a radiobutton is checked), or select options
