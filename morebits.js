@@ -2954,271 +2954,228 @@ function htmlNode( type, content, color ) {
 	return node;
 }
 
-// A simple dragable window
+// A simple draggable window
+// now a wrapper for jQuery UI's dialog feature
 
+// The height passed in here is the maximum allowable height for the content area.
 function SimpleWindow( width, height ) {
-	var stylesheet = document.createElement('style');
-	stylesheet.type = 'text/css';
-	stylesheet.rel = 'stylesheet';
-	stylesheet.appendChild( document.createTextNode("") ); // Safari bugfix
-	document.getElementsByTagName("head")[0].appendChild(stylesheet);
-	var styles = stylesheet.sheet ? stylesheet.sheet : stylesheet.styleSheet;
-	styles.insertRule(
-		".simplewindow { "+
-			"font: x-small sans-serif;"+
-			"position: fixed; "+
-			"background-color: AliceBlue; "+
-			"border: 2px ridge Black; "+
-			"z-index: 100; "+
-			"}",
-		0
-	);
+	var simplewindowcss = ".morebits-dialog { " +
+			"border: 1px #666 solid; " +
+			"font: 0.8em sans-serif; " +
+			"background-color: AliceBlue !important; " +
+			"background-image: none !important; " +
+		"} " +
+		"body .ui-dialog.morebits-dialog .ui-dialog-titlebar { " +  // "body" etc. is necessary here to get enough CSS specificity points
+			"height: 1em; " +
+			"padding: 0.4em 0.3em 0.5em !important; " +
+			"background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC\") repeat-x 50% 80% #cfd6e1 !important; " +
+			"font: bold 1em sans-serif; " +
+		"} " +
+		".morebits-dialog-scriptname { " +
+			"font-weight: normal; " +
+		"} " +
+		".ui-dialog.morebits-dialog .ui-dialog-titlebar-close { " +
+			"right: 0.2em; " +
+			"height: 100%; " +
+			"margin: -0.5em -0.15em 0; " +
+			"right: 0; " +
+			"top: auto; " +
+			"width: 2em; " +
+		"} " +
+		".ui-dialog.morebits-dialog .ui-dialog-titlebar-close span { " +
+			"margin: 0.33em; " +
+		"} " +
+		".ui-dialog.morebits-dialog .morebits-dialog-content { " +
+			"padding: 0; " +
+			"font-size: 88%; " +  // this just seems to be traditional - I don't quite see the point, in this day and age of huge monitors, etc.
+		"} " +
+		"body .ui-dialog.morebits-dialog .ui-dialog-buttonpane { " +
+			"background-color: #BCCADF; " +  // was #D0D7E4
+			"min-height: 0.5em; " +
+			"padding-left: 1.2em !important; " +
+		"} " +
+		"body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button { " +
+			"margin: 0.2em 0 -0.1em; " +
+			"float: none; " +
+		"} " +
+		".morebits-dialog-footerlinks { " +
+			"font-size: 90%; " +
+			"float: right; " +
+			"margin: 0.7em 0.4em 0 0; " +
+		"} " +
+		"body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a { " +
+			"color: #3062AD; " +
+		"} " +
+		".morebits-dialog-buttons[data-empty] + .morebits-dialog-footerlinks { " +
+			"margin: 0.1em 0.4em -0.2em 0; " +
+		"} " +
+		".ui-dialog.morebits-dialog a, .ui-dialog.morebits-dialog .ui-widget-content a { " +
+			"color: #0645AD; " +  // jQuery imposes a ridiculous nearly-black colour on <a> tags... I don't understand it
+		"} "
+	;
+	mw.util.addCSS(simplewindowcss);
 
-	styles.insertRule(
-		".simplewindow .content { "+
-			"position: absolute; "+
-			"top: 22px; "+
-			"bottom: 0; "+
-			"overflow: auto; "+
-			"width: 100%; "+
-			"}",
-		0
-	);
+	var content = document.createElement( 'div' );
+	this.content = content;
+	content.className = 'morebits-dialog-content';
 
-	styles.insertRule(
-		".simplewindow .resizebuttonhorizontal { "+
-			"position: absolute; "+
-			"background-color: MediumPurple; "+
-			"opacity: 0.5; "+
-			"right: -2px; "+
-			"bottom: -2px; "+
-			"width: 20px; "+
-			"height: 4px; "+
-			"cursor: se-resize; "+
-			"}",
-		0
-	);
-	styles.insertRule(
-		".simplewindow .resizebuttonvertical { "+
-			"position: absolute; "+
-			"opacity: 0.5; "+
-			"background-color: MediumPurple; "+
-			"right: -2px; "+
-			"bottom: -2px; "+
-			"width: 4px; "+
-			"height: 20px; "+
-			"cursor: se-resize; "+
-			"}",
-		0
-	);
-
-	styles.insertRule( 
-		".simplewindow .closebutton {"+
-			"position: absolute; "+
-			"font: 100 0.8em sans-serif; "+
-			"top: 1px; "+
-			"left: 1px; "+
-			"height: 100%; "+
-			"cursor: pointer; "+
-			"}",
-		0
-	);
-
-	styles.insertRule(
-		".simplewindow .topbar { "+
-			"position: absolute; "+
-			"background-color: LightSteelBlue; "+
-			"font: bold 1.2em sans-serif; "+
-			"vertical-align: baseline; "+
-			"text-align: center; "+
-			"width: 100%; "+
-			"height: 20px; "+
-			"padding-top: 2px;"+
-			"cursor: move; "+
-			"}",
-		0
-	);
-
-	this.width = width;
 	this.height = height;
 
-	var frame = document.createElement( 'div' );
-	var content = document.createElement( 'div' );
-	var topbar = document.createElement( 'div' );
-	var title = document.createElement( 'span' );
-	var closeButton = document.createElement( 'span' );
-	var resizeButton2 = document.createElement( 'div' );
-	var resizeButton1 = document.createElement( 'div' );
+	$(this.content).dialog({
+			autoOpen: false,
+			buttons: { "Placeholder button": function() {} },
+			dialogClass: 'morebits-dialog',
+			width: Math.min(parseInt(window.innerWidth), parseInt(width ? width : 800)),
+			// give jQuery the given height value (which represents the anticipated height of the dialog) here, so
+			// it can position the dialog appropriately
+			height: height
+		});
 
-	this.frame = frame;
-	this.title = title;
-	this.content = content;
+	var $widget = $(this.content).dialog("widget");
 
-	frame.className = 'simplewindow';
-	content.className = 'content';
-	topbar.className = 'topbar';
-	resizeButton1.className = 'resizebuttonvertical';
-	resizeButton2.className = 'resizebuttonhorizontal';
-	closeButton.className = 'closebutton';
-	title.className = 'title';
+	// delete the placeholder button (it's only there so the buttonpane gets created)
+	$widget.find("button").each(function(key, value) {
+		value.parentNode.removeChild(value);
+	});
 
-	topbar.appendChild( closeButton );
-	topbar.appendChild( title );
-	frame.appendChild( topbar );
-	frame.appendChild( content );
-	frame.appendChild( resizeButton1 );
-	frame.appendChild( resizeButton2 );
-
-	frame.style.width = Math.min(parseInt(window.innerWidth), parseInt(width)) + 'px';
-	frame.style.height = Math.min(parseInt(window.innerHeight), parseInt(height)) + 'px';
-	frame.style.top = Math.max(0, parseInt( window.innerHeight - this.height  )/2 ) + 'px' ;
-	frame.style.left = Math.max(0, parseInt( window.innerWidth - this.width  )/2 ) + 'px';
-	var img = document.createElement( 'img' );
-	img.src = "http://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Crystal_button_cancel.svg/18px-Crystal_button_cancel.svg.png";
-	img.setAttribute("alt", "[close]");
-	closeButton.appendChild( img );
-
-	var self = this;
-
-	// Specific events
-	frame.addEventListener( 'mousedown', function(event) { self.focus(event); }, false );
-	closeButton.addEventListener( 'click', function(event) {self.close(event); }, false );
-	topbar.addEventListener( 'mousedown', function(event) {self.initMove(event); }, false );
-	resizeButton1.addEventListener( 'mousedown', function(event) {self.initResize(event); }, false );
-	resizeButton2.addEventListener( 'mousedown', function(event) {self.initResize(event); }, false );
-
-	// Generic events
-	window.addEventListener( 'mouseover', function(event) {self.handleEvent(event); }, false );
-	window.addEventListener( 'mousemove', function(event) {self.handleEvent(event); }, false );
-	window.addEventListener( 'mouseup', function(event) {self.handleEvent(event); }, false );
-    this.currentState = this.initialState;    
+	// add container for the buttons we add, and the footer links (if any)
+	var buttonspan = document.createElement("span");
+	buttonspan.className = "morebits-dialog-buttons";
+	var linksspan = document.createElement("span");
+	linksspan.className = "morebits-dialog-footerlinks";
+	$widget.find(".ui-dialog-buttonpane").append(buttonspan, linksspan);
 }
 
 SimpleWindow.prototype = {
-	focusLayer: 100,
-	width: 800,
+	buttons: [],
 	height: 600,
-    initialState: "Inactive",
-	currentState: null, // current state of finite state machine (one of 'actionTransitionFunctions' properties)
-	focus: function(event) { 
-		this.frame.style.zIndex = ++this.focusLayer;
+	hasFooterLinks: false,
+	scriptName: null,
+
+	// Focuses the dialog. This might work, or on the contrary, it might not.
+	focus: function(event) {
+		$(this.content).dialog("moveToTop");
 	},
+	// Closes the dialog.  If this is set as an event handler, it will stop the event from doing anything more.
 	close: function(event) {
 		event.preventDefault();
-		document.body.removeChild( this.frame );
+		$(this.content).dialog("close");
 	},
-	initMove: function(event) {
-		event.preventDefault();
-		this.initialX = parseInt( event.clientX - this.frame.offsetLeft );
-		this.initialY = parseInt( event.clientY - this.frame.offsetTop );
-		this.frame.style.opacity = '0.5';
-		this.currentState = 'Move';
-	},
-	initResize: function(event) {
-		event.preventDefault();
-		this.frame.style.opacity = '0.5';
-		this.currentState = 'Resize';
-	},
-	handleEvent: function(event) { 
-		event.preventDefault();
-		var actionTransitionFunction = this.actionTransitionFunctions[this.currentState][event.type];
-		if( !actionTransitionFunction ) {
-			actionTransitionFunction = this.unexpectedEvent;
-		}
-		var nextState = actionTransitionFunction.call(this, event);
-		if( !nextState ){
-			nextState = this.currentState;
-		}
-		if( !this.actionTransitionFunctions[nextState] ){
-			nextState = this.undefinedState(event, nextState);
-		}
-		this.currentState = nextState;
-		event.stopPropagation();
-	},
-	unexpectedEvent: function(event) { 
-		throw ("Handled unexpected event '" + event.type + "' in state '" + this.currentState);
-		return this.initialState; 
-	},  
-
-	undefinedState: function(event, state) {
-		throw ("Transitioned to undefined state '" + state + "' from state '" + this.currentState + "' due to event '" + event.type);
-		return this.initialState; 
-	},  
-	actionTransitionFunctions: { 
-		Inactive: {
-			mouseover: function(event) { 
-				return this.currentState;
-			},
-			mousemove: function(event) { 
-				return this.currentState;
-			},
-			mouseup: function(event) { 
-				return this.currentState;
-			}
-		}, 
-		Move: {
-			mouseover: function(event) { 
-				this.moveWindow( event.clientX,  event.clientY );
-				return this.currentState;
-			},
-			mousemove: function(event) { 
-				return this.doActionTransition("Move", "mouseover", event);
-			},
-			mouseup: function(event) { 
-				this.frame.style.opacity = '1';
-				return 'Inactive';
-			}
-		}, 
-		Resize: {
-			mouseover: function(event) { 
-				this.resizeWindow( event.clientX,  event.clientY );
-				return this.currentState;
-			},
-			mousemove: function(event) { 
-				return this.doActionTransition("Resize", "mouseover", event);
-			},
-			mouseup: function(event) { 
-				this.frame.style.opacity = '1';
-				return 'Inactive';
-			}
-		}
-	},
-	doActionTransition: function(anotherState, anotherEventType, event) {
-		return this.actionTransitionFunctions[anotherState][anotherEventType].call(this,event);
-	},
+	// Shows the dialog.  Calling display() on a dialog that has previously been closed might work, but it is not guaranteed.
 	display: function() {
-		document.body.appendChild( this.frame );
+		if (this.scriptname) {
+			var $widget = $(this.content).dialog("widget");
+			$widget.find(".morebits-dialog-scriptname").remove();
+			var scriptnamespan = document.createElement("span");
+			scriptnamespan.className = "morebits-dialog-scriptname";
+			scriptnamespan.textContent = this.scriptname + " \u00B7 ";  // U+00B7 MIDDLE DOT = &middot;
+			$widget.find(".ui-dialog-title").prepend(scriptnamespan);
+		}
+
+		$(this.content).dialog("open");
+		this.setHeight( this.height );  // init height algorithm
 	},
+	// Sets the dialog title.
 	setTitle: function( title ) {
-		this.title.textContent = title;
+		$(this.content).dialog("option", "title", title);
 	},
+	// Sets the script name, appearing as a prefix to the title to help users determine which
+	// user script is producing which dialog. For instance, Twinkle modules set this to "Twinkle".
+	setScriptName: function( scriptname ) {
+		this.scriptname = scriptname;
+	},
+	// Sets the dialog width.
 	setWidth: function( width ) {
-		this.frame.style.width = width;
+		$(this.content).dialog("option", "width", width);
 	},
+	// Sets the dialog's maximum height. The dialog will auto-size to fit its contents,
+	// but the content area will grow no larger than the height given here.
 	setHeight: function( height ) {
-		this.frame.style.height = height;
+		this.height = height;
+
+		// from display time onwards, let the browser determine the optimum height, and instead limit the height at the given value
+		// note that the given height will now exclude the title bar and button pane (in total, about 35px on Firefox 4 - allowing for 40px here)
+		$(this.content).dialog("option", "height", (window.innerHeight <= (this.height + 40)) ? window.innerHeight : "auto");
+		$(this.content).dialog("widget").find(".morebits-dialog-content")[0].style.maxHeight = parseInt(this.height) + "px";
 	},
+	// Sets the content of the dialog to the given element node, usually from rendering a QuickForm or QuickForm element.
+	// Re-enumerates the footer buttons, but leaves the footer links as they are.
+	// Be sure to call this at least once before the dialog is displayed...
 	setContent: function( content ) {
 		this.purgeContent();
 		this.addContent( content );
 	},
 	addContent: function( content ) {
 		this.content.appendChild( content );
+
+		// look for submit buttons in the content, hide them, and add a proxy button to the button pane
+		var thisproxy = this;
+		$(this.content).find('input[type="submit"], button[type="submit"]').each(function(key, value) {
+				value.style.display = "none";
+				var button = document.createElement("button");
+				button.textContent = (value.hasAttribute("value") ? value.getAttribute("value") : (value.textContent ? value.textContent : "Submit Query"));
+				// here is an instance of cheap coding, probably a memory-usage hit in using a closure here
+				button.addEventListener("click", function() { value.click(); }, false);
+				thisproxy.buttons.push(button);
+			});
+		// remove all buttons from the button pane and re-add them
+		if (this.buttons.length > 0) {
+			$(this.content).dialog("widget").find(".morebits-dialog-buttons").empty().append(this.buttons)[0].removeAttribute("data-empty");
+		} else {
+			$(this.content).dialog("widget").find(".morebits-dialog-buttons")[0].setAttribute("data-empty", "data-empty");  // used by CSS
+		}
 	},
 	purgeContent: function( content ) {
+		this.buttons = [];
+		// delete all buttons in the buttonpane
+		$(this.content).dialog("widget").find(".morebits-dialog-buttons").empty();
+
 		while( this.content.hasChildNodes() ) {
 			this.content.removeChild( this.content.firstChild );
 		}
 	},
+	// Adds a link in the bottom-right corner of the dialog.
+	// This can be used to provide help or policy links.
+	// For example, Twinkle's CSD module adds a link to the CSD policy page,
+	// as well as a link to Twinkle's documentation.
+	addFooterLink: function( text, wikiPage ) {
+		var $footerlinks = $(this.content).dialog("widget").find(".morebits-dialog-footerlinks");
+		if (this.hasFooterLinks) {
+			var bullet = document.createElement("span");
+			bullet.textContent = " \u2022 ";  // U+2022 BULLET
+			$footerlinks.append(bullet);
+		}
+		var link = document.createElement("a");
+		link.setAttribute("href", "/wiki/" + wikiPage);
+		link.setAttribute("title", wikiPage);
+		link.setAttribute("target", "_blank");
+		link.textContent = text;
+		$footerlinks.append(link);
+		this.hasFooterLinks = true;
+	},
 	moveWindow: function( x, y ) {
-		this.frame.style.left = x - this.initialX + 'px';
-		this.frame.style.top  = y - this.initialY + 'px';
+		// XXX needs to be implemented
+		//this.frame.style.left = x - this.initialX + 'px';
+		//this.frame.style.top  = y - this.initialY + 'px';
+		alert("code tried to move a SimpleWindow - not yet implemented...");
 	},
 	resizeWindow: function( x, y ) {
-		this.frame.style.height  = Math.max( parseInt( y - this.frame.offsetTop ), 200 ) + 'px';
-		this.frame.style.width = Math.max( parseInt( x -  this.frame.offsetLeft ), 200 ) + 'px';
+		// XXX needs to be implemented
+		//this.frame.style.height  = Math.max( parseInt( y - this.frame.offsetTop ), 200 ) + 'px';
+		//this.frame.style.width = Math.max( parseInt( x -  this.frame.offsetLeft ), 200 ) + 'px';
+		alert("code tried to resize a SimpleWindow - not yet implemented...");
 	}
 }
+
+// Enables or disables all footer buttons on all SimpleWindows in the current page.
+// This should be called with |false| when the button(s) become irrelevant (e.g. just before Status.init is called).
+// This is not an instance method so that consumers don't have to keep a reference to the original
+// SimpleWindow object sitting around somewhere. Anyway, most of the time there will only be one
+// SimpleWindow open, so this shouldn't matter.
+SimpleWindow.setButtonsEnabled = function( enabled ) {
+	$(".morebits-dialog-buttons button").attr("disabled", !enabled);
+};
+
 
 // Blacklist was removed per consensus at http://en.wikipedia.org/wiki/Wikipedia:Administrators%27_noticeboard/Archive221#New_Twinkle_blacklist_proposal
 
