@@ -3,10 +3,10 @@ if ( typeof(Twinkle) === "undefined" ) {
 }
 
 /**
- Twinklefluff revert and antivandalism utillity
+ Twinklefluff revert and antivandalism utility
  */
 
-twinklefluff = {
+var twinklefluff = {
 	auto: function() {
 		if( QueryString.get( 'oldid' ) != wgCurRevisionId ) {
 			// not latest revision
@@ -240,13 +240,12 @@ twinklefluff.callbacks = {
 			var revertToRevID = $(xmlDoc).find('rev').attr('revid');
 			var revertToUser = $(xmlDoc).find('rev').attr('user');
 
-			if (revertToRevID != self.params.rev)
-			{
-				self.statitem.error( 'The retrieved rev does not match the requested rev.  Aborting.' );
+			if (revertToRevID != self.params.rev) {
+				self.statitem.error( 'The retrieved revision does not match the requested revision.  Aborting.' );
 				return;
 			}
 
-			var optional_summary = prompt( "Please, if possible, specify a reason for the revert" );
+			var optional_summary = prompt( "Please specify a reason for the revert, if possible:" );
 			if (optional_summary == null)
 			{
 				self.statelem.error( 'Aborted by user.' );
@@ -302,7 +301,7 @@ twinklefluff.callbacks = {
 		}
 		var top = revs.snapshotItem(0);
 		if( lastrevid < wgCurRevisionId ) {
-			Status.error( 'Error', [ 'The received top revision id ', htmlNode( 'strong', lastrevid ), ' is less than our current revision id, this could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Will stop proceeding at this point.' ] );
+			Status.error( 'Error', [ 'The most recent revision ID received from the server, ', htmlNode( 'strong', lastrevid ), ', is less than the ID of the displayed revision. This could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Will stop proceeding at this point.' ] );
 			return;
 		}
 		var index = 1;
@@ -311,10 +310,10 @@ twinklefluff.callbacks = {
 			if( lastuser == self.params.user ) {
 				switch( self.params.type ) {
 				case 'vand':
-					Status.info( 'Info', [ 'Latest revision was made by ', htmlNode( 'strong', self.params.user ) , ', as we assume vandalism, we continue to revert' ]);
+					Status.info( 'Info', [ 'Latest revision was made by ', htmlNode( 'strong', self.params.user ) , '. As we assume vandalism, we continue to revert' ]);
 					break;
 				case 'agf':
-					Status.warn( 'Warning', [ 'Latest revision was made by ', htmlNode( 'strong', self.params.user ) , ', as we assume good faith, we stop reverting, as the problem might have been fixed.' ]);
+					Status.warn( 'Warning', [ 'Latest revision was made by ', htmlNode( 'strong', self.params.user ) , '. As we assume good faith, we stop reverting, as the problem might have been fixed.' ]);
 					return;
 				default:
 					Status.warn( 'Notice', [ 'Latest revision was made by ', htmlNode( 'strong', self.params.user ) , ', but we will stop reverting anyway.' ] );
@@ -338,25 +337,25 @@ twinklefluff.callbacks = {
 		if( twinklefluff.whiteList.indexOf( self.params.user ) != -1  ) {
 			switch( self.params.type ) {
 			case 'vand':
-				Status.info( 'Info', [ 'Vandalism revert was chosen on ', htmlNode( 'strong', self.params.user ), ', as this is a whitelisted bot, we assume you wanted to revert vandalism made by the previous user instead.' ] );
+				Status.info( 'Info', [ 'Vandalism revert was chosen on ', htmlNode( 'strong', self.params.user ), '. As this is a whitelisted bot, we assume you wanted to revert vandalism made by the previous user instead.' ] );
 				index = 2;
 				vandal = revs.snapshotItem(1).getAttribute( 'user' );
 				self.params.user = revs.snapshotItem(1).getAttribute( 'user' );
 				break;
 			case 'agf':
-				Status.warn( 'Notice', [ 'Good faith revert was chosen on ', htmlNode( 'strong', self.params.user ), ', as this is a whitelisted bot, it makes no sense at all to revert it as a good faith edit, will stop reverting.' ] );
+				Status.warn( 'Notice', [ 'Good faith revert was chosen on ', htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot, it makes no sense at all to revert it as a good faith edit, will stop reverting.' ] );
 				return;
 
 				break;
 			case 'norm':
 			default:
-				var cont = confirm( 'Normal revert was chosen, but the top user (' + self.params.user + ') is a whitelisted bot, do you want to revert the revision before instead?' );
+				var cont = confirm( 'Normal revert was chosen, but the most recent edit was made by a whitelisted bot (' + self.params.user + '). Do you want to revert the revision before instead?' );
 				if( cont ) {
-					Status.info( 'Info', [ 'Normal revert was chosen on ', htmlNode( 'strong', self.params.user ), ', as this is a whitelisted bot, and per confirm, we\'ll revert the previous revision instead.' ] );
+					Status.info( 'Info', [ 'Normal revert was chosen on ', htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot, and per confirmation, we\'ll revert the previous revision instead.' ] );
 					index = 2;
 					self.params.user = revs.snapshotItem(1).getAttribute( 'user' );
 				} else {
-					Status.warn( 'Notice', [ 'Normal revert was chosen on ', htmlNode( 'strong', self.params.user ), ', this is a whitelisted bot, but per confirmation, revert on top revision will proceed.' ] );
+					Status.warn( 'Notice', [ 'Normal revert was chosen on ', htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot, but per confirmation, revert on top revision will proceed.' ] );
 				}
 				break;
 			}
@@ -374,13 +373,13 @@ twinklefluff.callbacks = {
 
 
 		if( ! found ) {
-			self.statelem.error( [ 'No previous revision found, perhaps ', htmlNode( 'strong', self.params.user ), ' is the only contributor, or that the user has made more than ' + TwinkleConfig.revertMaxRevisions + ' edits in a row.' ] );
+			self.statelem.error( [ 'No previous revision found. Perhaps ', htmlNode( 'strong', self.params.user ), ' is the only contributor, or that the user has made more than ' + TwinkleConfig.revertMaxRevisions + ' edits in a row.' ] );
 			return;
 
 		}
 
 		if( count == 0 ) {
-			Status.error( 'Error', "We were to revert zero revisions. As that makes no sense, we'll stop reverting this time. It could be that the edit already have been reverted, but the revision id was still the same." );
+			Status.error( 'Error', "We were to revert zero revisions. As that makes no sense, we'll stop reverting this time. It could be that the edit has already been reverted, but the revision ID was still the same." );
 			return;
 		}
 
@@ -389,7 +388,7 @@ twinklefluff.callbacks = {
 		if( 
 			self.params.type != 'vand' && 
 			count > 1  && 
-			!confirm( self.params.user + ' has done ' + count + ' edits in a row. Are you sure you want to revert them all?' ) 
+			!confirm( self.params.user + ' has made ' + count + ' edits in a row. Are you sure you want to revert them all?' ) 
 		) {
 			Status.info( 'Notice', 'Stopping reverting per user input' );
 			return;
@@ -497,6 +496,7 @@ twinklefluff.callbacks = {
 	},
 	complete: function (self) {
 		//alert("TRACE: revertPage completion callback: xmlString= \n" + (new XMLSerializer()).serializeToString(self.responseXML) + "[END]");
+		self.statelem.info("done");
 	}
 }
 
