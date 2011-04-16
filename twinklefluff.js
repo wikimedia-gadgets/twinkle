@@ -38,36 +38,35 @@ var twinklefluff = {
 
 		if( wgNamespaceNumber == -1 && wgCanonicalSpecialPageName == "Contributions" ) {
 			//Get the username these contributions are for
-			username = document.evaluate( 'substring-after(//div[@id="contentSub"]//a[@title="Special:Log"][last()]/@href, "user=")', document, null, XPathResult.STRING_TYPE, null).stringValue;
+			username = decodeURIComponent(/user=(.+)/.exec($('div#contentSub a[title="Special:Log"]').last().attr("href").replace(/\+/g, "%20"))[1]);
 			if( TwinkleConfig.showRollbackLinks.indexOf('contribs') != -1 || ( wgUserName != username && TwinkleConfig.showRollbackLinks.indexOf('others') != -1 ) || ( wgUserName == username && TwinkleConfig.showRollbackLinks.indexOf('mine') != -1 ) ) {
-				var list = document.evaluate( '//div[@id="bodyContent"]//ul/li[contains(span[@class="mw-uctop"], "(top)")]', document, null,  XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
-				var vandal = document.evaluate( '//div[@id="contentSub"]/a[1]/@title', document, null, XPathResult.STRING_TYPE, null ).stringValue.replace(/^User( talk)?:/ , '').replace("'", "\\'");
+				var list = $("div#bodyContent ul li:has(span.mw-uctop)");
 
 				var revNode = document.createElement('strong');
 				var revLink = document.createElement('a');
-				revLink.appendChild( spanTag( 'Black', ' [' ) );
+				revLink.appendChild( spanTag( 'Black', '[' ) );
 				revLink.appendChild( spanTag( 'SteelBlue', 'rollback' ) );
 				revLink.appendChild( spanTag( 'Black', ']' ) );
 				revNode.appendChild(revLink);
 
 				var revVandNode = document.createElement('strong');
 				var revVandLink = document.createElement('a');
-				revVandLink.appendChild( spanTag( 'Black', ' [' ) );
+				revVandLink.appendChild( spanTag( 'Black', '[' ) );
 				revVandLink.appendChild( spanTag( 'Red', 'vandalism' ) );
 				revVandLink.appendChild( spanTag( 'Black', ']' ) );
 				revVandNode.appendChild(revVandLink);
 
-				for(var i = 0; i < list.snapshotLength; ++i ) {
-					var current = list.snapshotItem(i);
-
-					var href = document.evaluate( 'a[2]/@href', current, null, XPathResult.STRING_TYPE, null ).stringValue;
+				list.each(function(key, current) {
+					var href = $(current).find("a:nth-child(2)").attr("href");
+					current.appendChild( document.createTextNode(' ') );
 					var tmpNode = revNode.cloneNode( true );
 					tmpNode.firstChild.setAttribute( 'href', href + '&' + QueryString.create( { 'twinklerevert': 'norm' } ) );
 					current.appendChild( tmpNode );
+					current.appendChild( document.createTextNode(' ') );
 					var tmpNode = revVandNode.cloneNode( true );
 					tmpNode.firstChild.setAttribute( 'href', href + '&' + QueryString.create( { 'twinklerevert': 'vand' } ) );
 					current.appendChild( tmpNode );
-				}
+				});
 			}
 		} else {
                         
@@ -79,7 +78,7 @@ var twinklefluff = {
 
 			var body = document.getElementById('bodyContent');
 
-			var firstRev = document.evaluate( 'boolean(/div[@class="firstrevisionheader"])', body, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
+			var firstRev = $("div.firstrevisionheader").length;
 			if( firstRev ) {
 				// we have first revision here, nothing to do.
 				return;
@@ -96,7 +95,7 @@ var twinklefluff = {
 				return;
 			}
 
-			var old_rev_url = document.evaluate( '//div[@id="mw-diff-otitle1"]//strong/a/@href',  document, null, XPathResult.STRING_TYPE, null ).stringValue;
+			var old_rev_url = $("div#mw-diff-otitle1 strong a").attr("href");
 
 			// Lets first add a [edit this revision] link
 			var query = new QueryString( old_rev_url.split( '?', 2 )[1] );
@@ -119,7 +118,7 @@ var twinklefluff = {
 				// Not latest revision
 				curVersion = false;
 
-				var new_rev_url = document.evaluate( '//div[@id="mw-diff-ntitle1"]//strong/a/@href',  document, null, XPathResult.STRING_TYPE, null ).stringValue;
+				var new_rev_url = $("div#mw-diff-ntitle1 strong a").attr("href");
 				var query = new QueryString( new_rev_url.split( '?', 2 )[1] );
 				var newrev = query.get( 'oldid' );
 				var revertToRevision = document.createElement('div');
@@ -135,7 +134,7 @@ var twinklefluff = {
 				return;
 			}
 			if( TwinkleConfig.showRollbackLinks.indexOf('diff') != -1 ) {
-				vandal = document.evaluate( 'a', document.getElementById('mw-diff-ntitle2') , null, XPathResult.STRING_TYPE, null ).stringValue.replace("'", "\\'");
+				var vandal = $("#mw-diff-ntitle2 a").first().text().replace("'", "\\'");
 
 				var revertNode = document.createElement('div');
 				revertNode.setAttribute( 'id', 'tw-revert' );

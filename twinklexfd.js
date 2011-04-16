@@ -71,7 +71,7 @@ twinklexfd.callback = function twinklexfdCallback() {
 	categories.append( {
 			type: 'option',
 			label: 'RfD (Redirects for discussion)',
-			selected: QueryString.equals('redirect', 'no') && (document.evaluate( "//span[@class='redirectText']", document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null ).snapshotLength>0),
+			selected: QueryString.equals('redirect', 'no') && ($("span.redirectText").length > 0),
 			value: 'rfd'
 		} );
 	//categories.append( {

@@ -9,7 +9,7 @@ Twinkle.arv = function () {
 
 		// If we are on the contributions page, need to parse some then
 		if( wgNamespaceNumber == -1 && wgTitle == "Contributions" ) {
-			username = decodeURIComponent(document.evaluate( 'substring-after(//div[@id="contentSub"]//a[@title="Special:Log"][last()]/@href, "user=")', document, null, XPathResult.STRING_TYPE, null).stringValue.replace( /\+/g, "%20"));
+			username = decodeURIComponent(/user=(.+)/.exec($('div#contentSub a[title="Special:Log"]').last().attr("href").replace(/\+/g, "%20"))[1]);
 		} else {
 			username = wgTitle.split( '/' )[0]; // only first part before any slashes
 		}

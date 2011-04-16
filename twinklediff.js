@@ -22,7 +22,7 @@ function twinklediff() {
 
 	twAddPortletLink( "javascript:twinklediff.evaluate(true);", 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision' );
 
-	var oldid = document.evaluate( 'substring-after(//div[@id="mw-diff-ntitle1"]/strong/a[1]/@href, "oldid=")', document, null, XPathResult.STRING_TYPE, null).stringValue;
+	var oldid = /oldid=(.+)/.exec($('div#mw-diff-ntitle1 strong a').first().attr("href"))[1];
 	var query = {
 		'title': wgPageName,
 		'diff': 'cur',
@@ -43,7 +43,7 @@ twinklediff.evaluate = function twinklediffEvaluate(me) {
 			// nothing to do?
 			return;
 		}
-		user = document.evaluate( 'a[1]', node, null, XPathResult.STRING_TYPE, null ).stringValue;
+		user = $(node).find('a').first().text();
 	}
 	var query = {
 		'prop': 'revisions',
