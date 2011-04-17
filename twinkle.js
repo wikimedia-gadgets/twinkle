@@ -97,7 +97,7 @@ Twinkle.defaultConfig.friendly = {
 	 // Welcome
 	topWelcomes: false,
 	watchWelcomes: true,
-	welcomeHeading: "== Welcome ==",
+	welcomeHeading: "Welcome",
 	insertUsername: true,
 	insertSignature: true,  // sign welcome templates, where appropriate
 	markWelcomesAsMinor: true,
@@ -148,8 +148,7 @@ Twinkle.init = {
 			{ dir: defaultDir, name: "twinklecloser" },  // newly discovered module
 			{ dir: defaultDir, name: "twinkleimage" },
 			{ dir: defaultDir, name: "twinkleunlink" },
-			// XXX uncomment me once Friendly is nearby
-			//{ dir: defaultDir, name: "friendlywelcome" },
+			{ dir: defaultDir, name: "friendlywelcome" },
 			{ dir: defaultDir, name: "friendlyshared" },
 			{ dir: defaultDir, name: "friendlytag" },
 			{ dir: defaultDir, name: "friendlytalkback" }

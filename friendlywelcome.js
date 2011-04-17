@@ -1,149 +1,76 @@
-// <nowiki>
-// If FriendlyConfig aint exist.
-if( typeof( FriendlyConfig ) == 'undefined' ) {
-	FriendlyConfig = {};
+if ( typeof(Twinkle) === "undefined" ) {
+	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
 }
 
-/**
- FriendlyConfig.summaryAd ( string )
- If ad should be added or not to summary, default [[WP:TW|TW]]
- */
-if( typeof( FriendlyConfig.summaryAd ) == 'undefined' ) {
-	FriendlyConfig.summaryAd = " using [[WP:TW|TW]]";
-}
-
-/**
- FriendlyConfig.topWelcomes ( boolean )
- */
-if( typeof( FriendlyConfig.topWelcomes ) == 'undefined' ) {
-	FriendlyConfig.topWelcomes = false;
-}
-
-/**
- FriendlyConfig.watchWelcomes ( boolean )
- */
-if( typeof( FriendlyConfig.watchWelcomes ) == 'undefined' ) {
-	FriendlyConfig.watchWelcomes = true;
-}
-
-/**
- FriendlyConfig.insertHeadings ( boolean )
- */
-if( typeof( FriendlyConfig.insertHeadings ) == 'undefined' ) {
-	FriendlyConfig.insertHeadings = true;
-}
-
-/**
- FriendlyConfig.welcomeHeading ( string )
- */
-if( typeof( FriendlyConfig.welcomeHeading ) == 'undefined' ) {
-	FriendlyConfig.welcomeHeading = "== Welcome ==";
-}
-
-/**
- FriendlyConfig.insertUsername ( boolean )
- */
-if( typeof( FriendlyConfig.insertUsername ) == 'undefined' ) {
-	FriendlyConfig.insertUsername = true;
-}
-
-/**
- FriendlyConfig.insertSignature ( boolean )
- */
-if( typeof( FriendlyConfig.insertSignature ) == 'undefined' ) {
-	FriendlyConfig.insertSignature = true;
-}
-
-/**
- FriendlyConfig.markWelcomesAsMinor ( boolean )
- */
-if( typeof( FriendlyConfig.markWelcomesAsMinor ) == 'undefined' ) {
-	FriendlyConfig.markWelcomesAsMinor = true;
-}
-
-/**
- FriendlyConfig.quickWelcomeMode ( String )
- */
-if( typeof( FriendlyConfig.quickWelcomeMode ) == 'undefined' ) {
-	FriendlyConfig.quickWelcomeMode = "semiauto";
-}
-
-/**
- FriendlyConfig.quickWelcomeTemplate ( String )
- */
-if( typeof( FriendlyConfig.quickWelcomeTemplate ) == 'undefined' ) {
-	FriendlyConfig.quickWelcomeTemplate = "Welcome";
-}
-
-/**
- FriendlyConfig.maskTemplateInSummary ( boolean )
- */
-if( typeof( FriendlyConfig.maskTemplateInSummary ) == 'undefined' ) {
-	FriendlyConfig.maskTemplateInSummary = true;
-}
-
-friendlywelcome = {
-	auto: function() {
-		if( QueryString.get( 'action' ) != 'edit' ) {
-			// userpage not empty, aborting auto-welcome
-			return;
+function friendlywelcome() {
+	if( QueryString.exists( 'friendlywelcome' ) ) {
+		if( QueryString.get( 'friendlywelcome' ) == 'auto' ) {
+			friendlywelcome.auto();
+		} else {
+			friendlywelcome.semiauto();
 		}
-		
-		return friendlywelcome.welcome();
-	},
-	semiauto: function()  {
-		friendlywelcome.callback( wgTitle.split( '/' )[0].replace( /\"/, "\\\"") );
-	},
-	normal: function() {
-		if( QueryString.exists( 'diff' ) ) {
-			var oXPath = '//div[@id="mw-diff-otitle2"]/span[@class="mw-usertoollinks"]/a[1][@class="new"]';
-			var nXPath = '//div[@id="mw-diff-ntitle2"]/span[@class="mw-usertoollinks"]/a[1][@class="new"]';
-			var oList = document.evaluate( oXPath, document, null,  XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
-			var nList = document.evaluate( nXPath, document, null,  XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
-			
-			if( oList.snapshotLength > 0 || nList.snapshotLength > 0 ) {
-				var spanTag = function( color, content ) {
-					var span = document.createElement( 'span' );
-					span.style.color = color;
-					span.appendChild( document.createTextNode( content ) );
-					return span;
-				}
+	} else {
+		friendlywelcome.normal();
+	}
+}
 
-				var welcomeNode = document.createElement('strong');
-				var welcomeLink = document.createElement('a');
-				welcomeLink.appendChild( spanTag( 'Black', '[' ) );
-				welcomeLink.appendChild( spanTag( 'Goldenrod', 'welcome' ) );
-				welcomeLink.appendChild( spanTag( 'Black', ']' ) );
-				welcomeNode.appendChild(welcomeLink);
+friendlywelcome.auto = function() {
+	if( QueryString.get( 'action' ) != 'edit' ) {
+		// userpage not empty, aborting auto-welcome
+		return;
+	}
 
-				if( oList.snapshotLength > 0 ) {
-					var oTalkNode = oList.snapshotItem(0);
-					
-					var oHref = document.evaluate( '@href', oTalkNode, null, XPathResult.STRING_TYPE, null ).stringValue;
-					
-					var oWelcomeNode = welcomeNode.cloneNode( true );
-					oWelcomeNode.firstChild.setAttribute( 'href', oHref + '&' + QueryString.create( { 'friendlywelcome': FriendlyConfig.quickWelcomeMode=='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': wgPageName.replace(/_/g, ' ') } ) );
-					oTalkNode.parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );
-					oTalkNode.parentNode.parentNode.appendChild( oWelcomeNode );
-				}
-				
-				if( nList.snapshotLength > 0 ) {
-					var nTalkNode = nList.snapshotItem(0);
-					
-					var nHref = document.evaluate( '@href', nTalkNode, null, XPathResult.STRING_TYPE, null ).stringValue;
-					
-					var nWelcomeNode = welcomeNode.cloneNode( true );
-					nWelcomeNode.firstChild.setAttribute( 'href', nHref + '&' + QueryString.create( { 'friendlywelcome': FriendlyConfig.quickWelcomeMode=='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': wgPageName.replace(/_/g, ' ') } ) );
-					nTalkNode.parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );
-					nTalkNode.parentNode.parentNode.appendChild( nWelcomeNode );
-				}
+	return friendlywelcome.welcome();
+};
+
+friendlywelcome.semiauto = function() {
+	friendlywelcome.callback( wgTitle.split( '/' )[0].replace( /\"/, "\\\"") );
+}
+
+friendlywelcome.normal = function() {
+	if( QueryString.exists( 'diff' ) ) {
+		// check whether the contributors' talk pages exist yet
+		var $oList = $("div#mw-diff-otitle2 span.mw-usertoollinks a.new:contains(talk)").first();
+		var $nList = $("div#mw-diff-ntitle2 span.mw-usertoollinks a.new:contains(talk)").first();
+
+		if( $oList.length > 0 || $nList.length > 0 ) {
+			var spanTag = function( color, content ) {
+				var span = document.createElement( 'span' );
+				span.style.color = color;
+				span.appendChild( document.createTextNode( content ) );
+				return span;
+			}
+
+			var welcomeNode = document.createElement('strong');
+			var welcomeLink = document.createElement('a');
+			welcomeLink.appendChild( spanTag( 'Black', '[' ) );
+			welcomeLink.appendChild( spanTag( 'Goldenrod', 'welcome' ) );
+			welcomeLink.appendChild( spanTag( 'Black', ']' ) );
+			welcomeNode.appendChild(welcomeLink);
+
+			if( $oList.length > 0 ) {
+				var oHref = $oList.attr("href");
+
+				var oWelcomeNode = welcomeNode.cloneNode( true );
+				oWelcomeNode.firstChild.setAttribute( 'href', oHref + '&' + QueryString.create( { 'friendlywelcome': FriendlyConfig.quickWelcomeMode=='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': wgPageName.replace(/_/g, ' ') } ) );
+				$oList[0].parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );
+				$oList[0].parentNode.parentNode.appendChild( oWelcomeNode );
+			}
+
+			if( $nList.length > 0 ) {
+				var nHref = $nList.attr("href");
+
+				var nWelcomeNode = welcomeNode.cloneNode( true );
+				nWelcomeNode.firstChild.setAttribute( 'href', nHref + '&' + QueryString.create( { 'friendlywelcome': FriendlyConfig.quickWelcomeMode=='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': wgPageName.replace(/_/g, ' ') } ) );
+				$nList[0].parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );
+				$nList[0].parentNode.parentNode.appendChild( nWelcomeNode );
 			}
 		}
-		if( wgNamespaceNumber == 3 ) {
-			var username = wgTitle.split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
+	}
+	if( wgNamespaceNumber == 3 ) {
+		var username = wgTitle.split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
 
-			twAddPortletLink("javascript:friendlywelcome.callback(\"" + username + "\")", "Wel", "friendly-welcome", "Welcome user", "");
-		}
+		twAddPortletLink("javascript:friendlywelcome.callback(\"" + username + "\")", "Wel", "friendly-welcome", "Welcome user", "");
 	}
 }
 
@@ -156,21 +83,22 @@ friendlywelcome.welcome = function welcomeUser() {
 		mode: 'auto'
 	};
 
-	var query = { 
-		'title': wgPageName, 
-		'action': 'submit'
-	};
 	Wikipedia.actionCompleted.redirect = wgPageName;
-	Wikipedia.actionCompleted.notice = "Welcoming complete, reloading talk page in some seconds";
-	var wikipedia_wiki = new Wikipedia.wiki( 'User talk page modification', query, friendlywelcome.callbacks.main );
-	wikipedia_wiki.followRedirect = true;
-	wikipedia_wiki.params = params;
-	wikipedia_wiki.get();
+	Wikipedia.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
+
+	var wikipedia_page = new Wikipedia.page(wgPageName, "User talk page modification");
+	wikipedia_page.setFollowRedirect(true);
+	wikipedia_page.setCallbackParameters(params);
+	wikipedia_page.load(friendlywelcome.callbacks.main);
 }
 
 friendlywelcome.callback = function friendlywelcomeCallback( uid ) {
 	var Window = new SimpleWindow( 600, 400 );
-	Window.setTitle( "Choose a welcome template" ); 
+	Window.setTitle( "Welcome user" );
+	Window.setScriptName( "Twinkle" );
+	Window.addFooterLink( "Welcoming Committee", "WP:WC" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#welcome" );
+
 	var form = new QuickForm( friendlywelcome.callback.evaluate, 'change' );
 
 	form.append( {
@@ -182,8 +110,7 @@ friendlywelcome.callback = function friendlywelcomeCallback( uid ) {
 			event: function( event ) {
 				event.stopPropagation();
 			}
-		}
-	);
+		} );
 
 	form.append( { type:'header', label:'Simple templates' } );
 	form.append( { type: 'radio', name: 'simple', list: friendlywelcome.standardList } );
@@ -209,111 +136,114 @@ friendlywelcome.callback = function friendlywelcomeCallback( uid ) {
 
 friendlywelcome.standardList = [
 	{
-		label: '{{Welcome}}: standard welcome*',
+		label: '\{\{Welcome}}: standard welcome*',
 		value: 'Welcome' },
 	{ 
-		label: '{{Welcomeshort}}: short welcome',
+		label: '\{\{Welcomeshort}}: short welcome',
 		value: 'Welcomeshort',
 		tooltip: 'Includes section heading.' },
 	{ 
-		label: '{{WelcomeSimple}}: simple welcome',
+		label: '\{\{WelcomeSimple}}: simple welcome',
 		value: 'WelcomeSimple',
 		tooltip: 'Won\'t overwhelm new users.  Includes section heading.' },
 	{
-		label: '{{Welcome-personal}}: includes a plate of cookies',
+		label: '\{\{Welcome-personal}}: includes a plate of cookies',
 		value: 'Welcome-personal',
 		tooltip: 'A personal welcome with an introduction from you and a plate of cookies.  Includes section heading and signature.' },
 	{ 
-		label: '{{WelcomeMenu}}: welcome with menu of links',
+		label: '\{\{WelcomeMenu}}: welcome with menu of links',
 		value: 'WelcomeMenu',
 		tooltip: 'Contains a welcome message and many useful links broken up into different sections.  Includes signature.' },
 	{ 
-		label: '{{Welcomeg}}: similar to {{WelcomeMenu}}',
+		label: '\{\{Welcomeg}}: similar to \{\{WelcomeMenu}}',
 		value: 'Welcomeg',
 		tooltip: 'Contains a welcome message and many useful links broken up into different sections.  Includes signature.' },
 	{ 
-		label: '{{Welcomeh}}: same as {{Welcomeg}} but with a section heading',
+		label: '\{\{Welcomeh}}: same as \{\{Welcomeg}} but with a section heading',
 		value: 'Welcomeh',
-		tooltip: 'Contains a section heading, a welcome message and many useful links broken up into different sections.  Includes section heading and signature.' }
+		tooltip: 'Contains a section heading, a welcome message and many useful links broken up into different sections.  Includes section heading and signature.' },
+	{ 
+		label: '\{\{Welcome-belated}}: welcome for users with more substantial contributions',
+		value: 'Welcome-belated' },
 ]
 
 friendlywelcome.welcomingCommitteeList = [
 	{ 
-		label: '{{Wel}}: similar to {{Welcome}}, but automatically identifies anonymous and registered users*',
+		label: '\{\{Wel}}: similar to \{\{Welcome}}, but automatically identifies anonymous and registered users*',
 		value: 'Wel',
-		tooltip: 'This template checks whether the username contains any letters. If there are any, {{Welcome-reg}} will be shown. If there are none, {{Welcome-anon}} will be shown.' },
+		tooltip: 'This template checks whether the username contains any letters. If there are any, \{\{Welcome-reg}} will be shown. If there are none, \{\{Welcome-anon}} will be shown.' },
 	{ 
-		label: '{{W-basic}}: standard template, similar to {{Welcome}} with additional options',
+		label: '\{\{W-basic}}: standard template, similar to \{\{Welcome}} with additional options',
 		value: 'W-basic',
-		tooltip: 'This template is similar to {{Welcome}} but supports many different options.  Includes a signature.' },
+		tooltip: 'This template is similar to \{\{Welcome}} but supports many different options.  Includes a signature.' },
 	{ 
-		label: '{{W-shout}}: extroverted message with bold advice',
+		label: '\{\{W-shout}}: extroverted message with bold advice',
 		value: 'W-shout',
-		tooltip: 'This template is similar to {{WelcomeShout}} but supports many different options.  Includes a signature.' },
+		tooltip: 'This template is similar to \{\{WelcomeShout}} but supports many different options.  Includes a signature.' },
 	{ 
-		label: '{{W-short}}: concise; won\'t overwhelm',
+		label: '\{\{W-short}}: concise; won\'t overwhelm',
 		value: 'W-short||',
-		tooltip: 'This template is similar to {{Welcomeshort}} but supports many different options.  Includes a signature.' },
+		tooltip: 'This template is similar to \{\{Welcomeshort}} but supports many different options.  Includes a signature.' },
 	{ 
-		label: '{{W-link}}: shortest greeting, links to Welcoming committee\'s greetings page',
+		label: '\{\{W-link}}: shortest greeting, links to Welcoming committee\'s greetings page',
 		value: 'W-link',
-		tooltip: 'This template is similar to {{Welcom}} but supports many different options.  Includes a signature.' },
+		tooltip: 'This template is similar to \{\{Welcom}} but supports many different options.  Includes a signature.' },
 	{ 
-		label: '{{W-graphical}}: graphical menu format to ease transition from the graphic-heavy web',
+		label: '\{\{W-graphical}}: graphical menu format to ease transition from the graphic-heavy web',
 		value: 'W-graphical',
-		tooltip: 'This template is similar to {{Welcomeg}} but has fewer links.  Supports many different options.  Includes a signature.' },
+		tooltip: 'This template is similar to \{\{Welcomeg}} but has fewer links.  Supports many different options.  Includes a signature.' },
 	{ 
-		label: '{{W-screen}}: graphical; designed to fit the size of the user\'s screen',
+		label: '\{\{W-screen}}: graphical; designed to fit the size of the user\'s screen',
 		value: 'W-screen',
 		tooltip: 'This template is a nice graphical welcome with many different options.  Includes a signature.' }
 ]
 
 friendlywelcome.problemList = [
 	{ 
-		label: '{{Welcomelaws}}: welcome with information about copyrights, npov, the sandbox, and vandalism',
+		label: '\{\{Welcomelaws}}: welcome with information about copyrights, npov, the sandbox, and vandalism',
 		value: 'Welcomelaws' },
 	{ 
-		label: '{{Firstarticle}}: for someone whose first article did not meet page creation guidelines*',
+		label: '\{\{Firstarticle}}: for someone whose first article did not meet page creation guidelines*',
 		value: 'Firstarticle' },
 	{ 
-		label: '{{Welcomevandal}}: for someone whose initial efforts appear to be vandalism*',
+		label: '\{\{Welcomevandal}}: for someone whose initial efforts appear to be vandalism*',
 		value: 'Welcomevandal',
-		tooltip: 'Includes a section heading.' },
+		tooltip: 'Includes a section heading.'},
 	{ 
-		label: '{{Welcomenpov}}: for someone whose initial efforts do not adhere to the neutral point of view policy*',
+		label: '\{\{Welcomenpov}}: for someone whose initial efforts do not adhere to the neutral point of view policy*',
 		value: 'Welcomenpov' },
 	{ 
-		label: '{{Welcomespam}}: welcome with additional discussion of anti-spamming polices*',
+		label: '\{\{Welcomespam}}: welcome with additional discussion of anti-spamming polices*',
 		value: 'Welcomespam' },
 	{ 
-		label: '{{Welcomeunsourced}}: for someone whose initial efforts are uncited*',
+		label: '\{\{Welcomeunsourced}}: for someone whose initial efforts are uncited*',
 		value: 'Welcomeunsourced' },
 	{ 
-		label: '{{Welcomeauto}}: for someone who created an autobiographical article*',
+		label: '\{\{Welcomeauto}}: for someone who created an autobiographical article*',
 		value: 'Welcomeauto' },
 	{ 
-		label: '{{Welcome-COI}}: for someone who created an article about a subject with which they have a conflict of interest*',
+		label: '\{\{Welcome-COI}}: for someone who created an article about a subject with which they have a conflict of interest*',
 		value: 'Welcome-COI' }
 ]
 
 friendlywelcome.anonymousList = [
 	{
-		label: '{{Welcome-anon}}: for anonymous users; encourages getting a username*',
+		label: '\{\{Welcome-anon}}: for anonymous users; encourages getting a username*',
 		value: 'Welcome-anon' },
 	{
-		label: '{{Welcomeanon2}}: similar to {{Welcome-anon}} but with hints and tips*',
+		label: '\{\{Welcomeanon2}}: similar to \{\{Welcome-anon}} but with hints and tips*',
 		value: 'Welcomeanon2',
 		tooltip: 'Includes section heading.' },
 	{
-		label: '{{Welc-anon}}: similar to {{Welcome-anon}} but with a border and section heading',
+		label: '\{\{Welc-anon}}: similar to \{\{Welcome-anon}} but with a border and section heading',
 		value: 'Welc-anon||',
 		tooltip: 'Includes section heading.' },
 	{
-		label: '{{Welcome-anon-vandal}}: for anonymous users who have vandalized a page*',
+		label: '\{\{Welcome-anon-vandal}}: for anonymous users who have vandalized a page*',
 		value: 'Welcome-anon-vandal',
 		tooltip: 'Includes a section heading and signature.' },
 	{
-		label: '{{Welcome-anon-vandalism-fighter}}: for anonymous users who fight vandalism, urging them to create an account*',
+		label: '\{\{Welcome-anon-vandalism-fighter}}: for anonymous users who fight vandalism, urging them to create an account*',
 		value: 'Welcome-anon-vandalism-fighter', 
 		tooltip: 'Includes section heading.',
 	},
@@ -329,6 +259,7 @@ friendlywelcome.headingHash = {
 	'WelcomeMenu': true,
 	'Welcomeg': true,
 	'Welcomeh': false,
+	'Welcome-belated': false,
 	'Wel': false,
 	'W-basic': true,
 	'W-shout': true,
@@ -361,6 +292,7 @@ friendlywelcome.signatureHash = {
 	'WelcomeMenu': true,
 	'Welcomeg': true,
 	'Welcomeh': true,
+	'Welcome-belated': true,
 	'Wel': false,
 	'W-basic': true,
 	'W-shout': true,
@@ -395,6 +327,7 @@ friendlywelcome.artHash = {
 	'WelcomeMenu': false,
 	'Welcomeg': false,
 	'Welcomeh': false,
+	'Welcome-belated': false,
 	'Wel': true,
 	'W-basic': false,
 	'W-shout': false,
@@ -429,6 +362,7 @@ friendlywelcome.vandalHash = {
 	'WelcomeMenu': false,
 	'Welcomeg': false,
 	'Welcomeh': false,
+	'Welcome-belated': false,
 	'Wel': false,
 	'W-basic': false,
 	'W-shout': false,
@@ -452,11 +386,12 @@ friendlywelcome.vandalHash = {
 }
 
 friendlywelcome.callbacks = {
-	main: function( self ) {
-		var form = self.responseXML.getElementById( 'editform' );
+	main: function( pageobj ) {
+		var params = pageobj.getCallbackParameters();
+		var oldText = pageobj.getPageText();
 		
 		// abort if mode is auto and form is not empty
-		if( form.wpTextbox1.value != '' && self.params.mode == 'auto' ) {
+		if( pageobj.exists() && params.mode == 'auto' ) {
 			Status.info( 'Warning', 'User talk page not empty; aborting automatic welcome' );
 			Wikipedia.actionCompleted.event();
 			return;
@@ -467,32 +402,32 @@ friendlywelcome.callbacks = {
 				+ ( FriendlyConfig.topWelcomes ? 'top' : 'bottom' )
 				+ ' of the user\'s talk page.' );
 		if( !FriendlyConfig.topWelcomes ) {
-			text += form.wpTextbox1.value + '\n';
+			text += oldText + '\n';
 		}
 		
-		if( friendlywelcome.headingHash[ self.params.value ] && FriendlyConfig.insertHeadings ) {
+		if( friendlywelcome.headingHash[ params.value ] && FriendlyConfig.insertHeadings ) {
 			Status.info( 'Info', 'Will create a new heading for the welcome' );
-			text += FriendlyConfig.welcomeHeading + "\n";
+			text += "== " + FriendlyConfig.welcomeHeading + " ==\n";
 		}
 		
-		Status.info( 'Info', 'Will substitute the {{' + self.params.value + '}} welcome template' );
-		text += '\{\{subst:' + self.params.value;
+		Status.info( 'Info', 'Will substitute the \{\{' + params.value + '}} welcome template' );
+		text += '\{\{subst:' + params.value;
 		
-		if( friendlywelcome.artHash[ self.params.value ] ) {
-			if( FriendlyConfig.insertUsername && self.params.value.substring(2,0) != 'W-' ) {
+		if( friendlywelcome.artHash[ params.value ] ) {
+			if( FriendlyConfig.insertUsername && params.value.substring(2,0) != 'W-' ) {
 				Status.info( 'Info', 'Will add your username to the template' );
 				text += '|' + wgUserName;
 			}
 			
-			if( self.params.article != '' ) {
+			if( params.article != '' ) {
 				Status.info( 'Info', 'Will add article link to the template' );
-				text += '|art=' + self.params.article;
+				text += '|art=' + params.article;
 			}
-		} else if( friendlywelcome.vandalHash[ self.params.value ] ) {
-			if( self.params.article != '' ) {
+		} else if( friendlywelcome.vandalHash[ params.value ] ) {
+			if( params.article != '' ) {
 				Status.info( 'Info', 'Will add article link to the template' );
 			}
-			text += '|' + self.params.article;
+			text += '|' + params.article;
 			
 			if( FriendlyConfig.insertUsername ) {
 				Status.info( 'Info', 'Will add your username to the template' );
@@ -505,28 +440,23 @@ friendlywelcome.callbacks = {
 		
 		text += '\}\}';
 		
-		if( !friendlywelcome.signatureHash[ self.params.value ] && FriendlyConfig.insertSignature ) {
+		if( !friendlywelcome.signatureHash[ params.value ] && FriendlyConfig.insertSignature ) {
 			Status.info( 'Info', 'Will add your signature after the welcome' );
 			text += ' \n\~\~\~\~';
 		}
 		
 		if( FriendlyConfig.topWelcomes ) {
-			text += '\n\n' + form.wpTextbox1.value;
+			text += '\n\n' + oldText;
 		}
-		
-		var postData = {
-			'wpMinoredit': FriendlyConfig.markWelcomesAsMinor ? 1 : undefined,
-			'wpWatchthis': form.wpWatchthis.checked ? 1 : (FriendlyConfig.watchWelcomes ? 1 : undefined),
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSummary': 'Added ' + ( FriendlyConfig.maskTemplateInSummary ? 'welcome' : ( '\{\{[[Template:' + self.params.value + '|' + self.params.value + ']]\}\}' ) )
-					+ ' template to user talk page' + FriendlyConfig.summaryAd,
-			'wpTextbox1': text
-		};
  
-		self.post( postData );
+		var summaryText = "Added " + ( FriendlyConfig.maskTemplateInSummary ? 'welcome' : ( '\{\{[[Template:' + params.value + '|' + params.value + ']]\}\}' ) ) +
+			" template to user talk page";
+		pageobj.setPageText(text);
+		pageobj.setEditSummary(summaryText + TwinkleConfig.summaryAd);
+		pageobj.setMinorEdit(FriendlyConfig.markWelcomesAsMinor);
+		pageobj.setWatchlist(FriendlyConfig.watchWelcomes);
+		pageobj.setCreateOption('recreate');
+		pageobj.save();
 	}
 }
 
@@ -542,30 +472,17 @@ friendlywelcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) 
 		mode: 'manual'
 	};
 
+	SimpleWindow.setButtonsEnabled( false );
 	Status.init( e.target.form );
-	
-	var query = { 
-		'title': wgPageName, 
-		'action': 'submit'
-	};
+
 	Wikipedia.actionCompleted.redirect = wgPageName;
-	Wikipedia.actionCompleted.notice = "Welcoming complete, reloading talk page in some seconds";
-	var wikipedia_wiki = new Wikipedia.wiki( 'User talk page modification', query, friendlywelcome.callbacks.main );
-	wikipedia_wiki.followRedirect = true;
-	wikipedia_wiki.params = params;
-	wikipedia_wiki.get();
+	Wikipedia.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
+
+	var wikipedia_page = new Wikipedia.page(wgPageName, "User talk page modification");
+	wikipedia_page.setFollowRedirect(true);
+	wikipedia_page.setCallbackParameters(params);
+	wikipedia_page.load(friendlywelcome.callbacks.main);
 }
 
-window.TwinkleInit = (window.TwinkleInit || []).concat( function() {
-	if( QueryString.exists( 'friendlywelcome' ) ) {
-		if( QueryString.get( 'friendlywelcome' ) == 'auto' ) {
-			friendlywelcome.auto();
-		} else {
-			friendlywelcome.semiauto();
-		}
-	} else {
-		friendlywelcome.normal();
-	}
-}); //schedule initializer
-
-// </nowiki>
+// register initialization callback
+Twinkle.init.moduleReady( "friendlywelcome", friendlywelcome );
