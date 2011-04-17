@@ -1,49 +1,11 @@
-// <nowiki>
-// If FriendlyConfig aint exist.
-if( typeof( FriendlyConfig ) == 'undefined' ) {
-	FriendlyConfig = {};
-}
-
-/**
- FriendlyConfig.summaryAd ( string )
- If ad should be added or not to summary, default [[WP:TW|TW]]
- */
-if( typeof( FriendlyConfig.summaryAd ) == 'undefined' ) {
-	FriendlyConfig.summaryAd = " using [[WP:TW|TW]]";
-}
-
-/**
- FriendlyConfig.groupByDefault ( boolean )
- */
-if( typeof( FriendlyConfig.groupByDefault ) == 'undefined' ) {
-	FriendlyConfig.groupByDefault = true;
-}
-
-/**
- FriendlyConfig.watchTaggedPages ( boolean )
- */
-if( typeof( FriendlyConfig.watchTaggedPages ) == 'undefined' ) {
-	FriendlyConfig.watchTaggedPages = true;
-}
-
-/**
- FriendlyConfig.markTaggedPagesAsMinor ( boolean )
- */
-if( typeof( FriendlyConfig.markTaggedPagesAsMinor ) == 'undefined' ) {
-	FriendlyConfig.markTaggedPagesAsMinor = false;
-}
-
-/**
- FriendlyConfig.markTaggedPagesAsPatrolled ( boolean )
- */
-if( typeof( FriendlyConfig.markTaggedPagesAsPatrolled ) == 'undefined' ) {
-	FriendlyConfig.markTaggedPagesAsPatrolled = true;
+if ( typeof(Twinkle) === "undefined" ) {
+	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
 }
 
 var isRedirect = false;
 
 function friendlytag() {
-	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) == 'no' && !QueryString.exists( 'rcid' ) ) {
+	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) == 'no' && $("span.redirectText").length > 0 ) {
 		isRedirect = true;
 		twAddPortletLink( "javascript:friendlytag.callback()", "Tag", "friendly-tag", "Tag redirect", "");
 	} else if( wgNamespaceNumber != 0 || wgCurRevisionId == false ) {
@@ -53,10 +15,12 @@ function friendlytag() {
 	}
 }
 
-addOnloadHook(friendlytag);
-
 friendlytag.callback = function friendlytagCallback( uid ) {
-	var Window = new SimpleWindow( 600, 400 );
+	var Window = new SimpleWindow( 630, 400 );
+	Window.setScriptName( "Twinkle" );
+	// anyone got a good policy/guideline/info page/instructional page link??
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#tag" );
+
 	var form = new QuickForm( friendlytag.callback.evaluate );
 
 	if( !isRedirect ) {
@@ -76,8 +40,6 @@ friendlytag.callback = function friendlytagCallback( uid ) {
 			}
 		);
 
-		form.append( { type:'submit' } );
-
 		form.append( { type:'header', label:'Maintenance templates' } );
 		form.append( { type:'checkbox', name: 'maintenance', list: friendlytag.maintenanceList } );
 
@@ -93,8 +55,6 @@ friendlytag.callback = function friendlytagCallback( uid ) {
 		}
 	} else {
 		Window.setTitle( "Redirect tagging" );
-
-		form.append( { type:'submit' } );
 
 		form.append( { type:'header', label:'Spelling, misspelling, tense and capitalization templates' } );
 		form.append( { type:'checkbox', name: 'spelling', list: friendlytag.spellingList } );
@@ -171,6 +131,10 @@ friendlytag.maintenanceList = [
 		value: 'lead rewrite'
 	},
 	{
+		label: '\{\{linkrot\}\}: article uses bare URLs for references, which are prone to link rot',
+		value: 'linkrot'
+	},
+	{
 		label: '\{\{morefootnotes\}\}: article has some references, but insufficient in-text citations',
 		value: 'morefootnotes'
 	},
@@ -201,6 +165,10 @@ friendlytag.maintenanceList = [
 	{
 		label: '\{\{sections\}\}: article needs to be broken into sections',
 		value: 'sections'
+	},
+	{
+		label: '\{\{tense\}\}: article is written in an incorrect tense',
+		value: 'tense'
 	},
 	{
 		label: '\{\{tone\}\}: tone of article is not appropriate',
@@ -736,40 +704,42 @@ friendlytag.groupHash = {
 }
 
 friendlytag.callbacks = {
-	main: function( self ) {
-		var form = self.responseXML.getElementById( 'editform' );
-		var tagRe, text = '', summaryText = 'Added';
-		var tags = new Array(), groupableTags = new Array();
+	main: function( pageobj ) {
+		var params = pageobj.getCallbackParameters();
+		var tagRe, tagText = '', summaryText = 'Added';
+		var tags = [], groupableTags = [];
 
 		//Remove tags that become superfluous with this action
-		form.wpTextbox1.value = form.wpTextbox1.value.replace(/{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
+		var pageText = pageobj.getPageText().replace(/{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
 
 		if( !isRedirect ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
-			Status.info( 'Info', 'Checking for preexisting tags on the article' );
-			for( var i = 0; i < self.params.tags.length; i++ ) {
-				tagRe = new RegExp( '(\\{\\{' + self.params.tags[i] + '(\\||\\}\\}))', 'im' );
-				if( !tagRe.exec( form.wpTextbox1.value ) ) {
-					if( friendlytag.groupHash[ self.params.tags[i] ] ) {
-						groupableTags = groupableTags.concat( self.params.tags[i] );
+			for( var i = 0; i < params.tags.length; i++ ) {
+				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im' );
+				if( !tagRe.exec( pageText ) ) {
+					if( friendlytag.groupHash[ params.tags[i] ] && 
+							(params.tags[i] !== 'globalize' || params.globalizeSubcategory === 'globalize' ) &&
+							(params.tags[i] !== 'notability' || params.notabilitySubcategory === 'none' )) {
+						// don't add to multipleissues for globalize/notability subcats
+						groupableTags = groupableTags.concat( params.tags[i] );
 					} else {
-						tags = tags.concat( self.params.tags[i] );
+						tags = tags.concat( params.tags[i] );
 					}
 				} else {
-					Status.info( 'Info', 'Found \{\{' + self.params.tags[i]
+					Status.info( 'Info', 'Found \{\{' + params.tags[i]
 						+ '\}\} on the article already...excluding' );
 				}
 			}
 
-			if( self.params.group && groupableTags.length >= 3 ) {
+			if( params.group && groupableTags.length >= 3 ) {
 				Status.info( 'Info', 'Grouping supported tags into \{\{multiple issues\}\}' );
 
 				groupableTags.sort();
-				text += '\{\{multiple issues';
+				tagText += '\{\{multiple issues';
 				summaryText += ' \{\{[[Template:multiple issues|multiple issues]]\}\} with parameters';
 				for( var i = 0; i < groupableTags.length; i++ ) {
-					text += '|' + groupableTags[i]
-					+ '=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}';
+					tagText += '|' + groupableTags[i] +
+						'=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}';
 
 					if( i == (groupableTags.length - 1) ) {
 						summaryText += ' and';
@@ -778,20 +748,19 @@ friendlytag.callbacks = {
 					}
 					summaryText += ' ' + groupableTags[i];
 				}
-				text += '\}\}\n';
+				tagText += '\}\}\n';
 			} else {
 				tags = tags.concat( groupableTags );
 			}
 		} else {
-			// Check for preexisting tags
-			Status.info( 'Info', 'Checking for preexisting tags on the redirect' );
-			for( var i = 0; i < self.params.tags.length; i++ ) {
-				tagRe = new RegExp( '(\\{\\{' + self.params.tags[i] + '(\\||\\}\\}))', 'im' );
-				if( !tagRe.exec( form.wpTextbox1.value ) ) {
-					tags = tags.concat( self.params.tags[i] );
+			// Check for pre-existing tags
+			for( var i = 0; i < params.tags.length; i++ ) {
+				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im' );
+				if( !tagRe.exec( pageText ) ) {
+					tags = tags.concat( params.tags[i] );
 				} else {
-					Status.info( 'Info', 'Found \{\{' + self.params.tags[i]
-						+ '\}\} on the redirect already...excluding' );
+					Status.info( 'Info', 'Found \{\{' + params.tags[i] +
+						'\}\} on the redirect already...excluding' );
 				}
 			}
 		}
@@ -799,22 +768,31 @@ friendlytag.callbacks = {
 		tags.sort();
 		for( var i = 0; i < tags.length; i++ ) {
 			if( tags[i] == 'uncategorized' || tags[i] == 'catimprove' ) {
-				form.wpTextbox1.value += '\n\n\{\{' + tags[i]
+				pageText += '\n\n\{\{' + tags[i]
 				+ '|date=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}\}\}';
 			} else {
 				if( tags[i] == 'globalize' ) {
-					text += '\{\{' + self.params.globalizeSubcategory;
-				} else if( tags[i] == 'current' ) {
-					text += '\{\{' + self.params.currentSubcategory;
+					tagText += '\{\{' + params.globalizeSubcategory;
 				} else {
-					text += ( isRedirect ? '\n' : '' ) + '\{\{' + tags[i];
+					tagText += ( isRedirect ? '\n' : '' ) + '\{\{' + tags[i];
 				}
 
-				if( tags[i] == 'notability' && self.params.notabilitySubcategory != 'none' ) {
-					text += '|' + self.params.notabilitySubcategory;
+				if( tags[i] == 'notability' && params.notabilitySubcategory != 'none' ) {
+					tagText += '|' + params.notabilitySubcategory;
+				}
+
+				// prompt for other parameters, based on the tag
+				if( tags[i] == 'notenglish' ) {
+					var langname = prompt('Please enter the name of the language the article is thought to be written in.  \n' +
+						"Just click OK if you don't know.  To skip the \{\{notenglish}} tag, click Cancel.", "");
+					if (langname == null) {
+						continue;
+					} else if (langname !== "") {
+						tagText += '|1=' + langname;
+					}
 				}
 				
-				text += isRedirect ? '\}\}' : '|date=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}\}\}\n';
+				tagText += isRedirect ? '\}\}' : '|date=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}\}\}\n';
 			}
 
 			if( i == (tags.length - 1) && ( i > 0 || groupableTags.length > 3 ) ) {
@@ -825,48 +803,34 @@ friendlytag.callbacks = {
 
 			summaryText += ' \{\{[[Template:';
 			if( tags[i] == 'globalize' ) {
-				summaryText += self.params.globalizeSubcategory + '|' + self.params.globalizeSubcategory;			
-			} else if( tags[i] == 'current' ) {
-				summaryText += self.params.currentSubcategory + '|' + self.params.currentSubcategory;
+				summaryText += params.globalizeSubcategory + '|' + params.globalizeSubcategory;
 			} else {
 				summaryText += tags[i] + '|' + tags[i];
 			}
 			summaryText += ']]\}\}';
 		}
 
-		if( !isRedirect ) {
-			//smartly insert the new tags after any hatnotes. Regex is a bit more
-			//complicated than it'd need to be, to allow templates as parameters,
-			//and to handle whitespace properly.
-			text = form.wpTextbox1.value.replace(/^\s*(?:((?:\s*{{\s*(?:about|dablink|distinguish|for|other\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see also|selfref|the)\d*\s*(\|(?:{{[^{}]*}}|[^{}])*)?}})+(?:\s*\n)?)\s*)?/i, "$1"+text);
+		if( isRedirect ) {
+			pageText += tagText;
 		} else {
-			text = form.wpTextbox1.value + text;
+			// smartly insert the new tags after any hatnotes. Regex is a bit more
+			// complicated than it'd need to be, to allow templates as parameters,
+			// and to handle whitespace properly.
+			pageText = pageText.replace(/^\s*(?:((?:\s*{{\s*(?:about|dablink|distinguish|for|other\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see also|selfref|the)\d*\s*(\|(?:{{[^{}]*}}|[^{}])*)?}})+(?:\s*\n)?)\s*)?/i, 
+				"$1" + tagText);
 		}
-		summaryText += ' tag' + ( ( tags.length + ( groupableTags.length > 3 ? 1 : 0 ) ) > 1 ? 's' : '' )
-		+ ' to ' + ( isRedirect ? 'redirect' : 'article' ) + FriendlyConfig.summaryAd;
+		summaryText += ' tag' + ( ( tags.length + ( groupableTags.length > 3 ? 1 : 0 ) ) > 1 ? 's' : '' ) +
+			' to ' + ( isRedirect ? 'redirect' : 'article' ) + TwinkleConfig.summaryAd;
 
-		var postData = {
-			'wpMinoredit': FriendlyConfig.markTaggedPagesAsMinor ? 1 : undefined,
-			'wpWatchthis': form.wpWatchthis.checked ? 1 : (FriendlyConfig.watchTaggedPages ? 1 : undefined),
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSummary': summaryText,
-			'wpTextbox1': text
-		};
-
-		self.post( postData );
+		pageobj.setPageText(pageText);
+		pageobj.setEditSummary(summaryText);
+		pageobj.setWatchlist(FriendlyConfig.watchTaggedPages);
+		pageobj.setMinorEdit(FriendlyConfig.markTaggedPagesAsMinor);
+		pageobj.setCreateOption('nocreate');
+		pageobj.save();
 		
-		if( FriendlyConfig.markTaggedPagesAsPatrolled && self.params.rcid != '' ) {
-			var query = {
-				'title': wgPageName,
-				'action': 'markpatrolled',
-				'rcid': self.params.rcid
-			};
-
-			var wikipedia_wiki = new Wikipedia.wiki( 'Marking page as patrolled', query );
-			wikipedia_wiki.post();
+		if( FriendlyConfig.markTaggedPagesAsPatrolled ) {
+			pageobj.patrol();
 		}
 	}
 }
@@ -883,7 +847,6 @@ friendlytag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		}
 		var globalizeSubcategory = form.getChecked( 'problem.globalize' );
 		var notabilitySubcategory = form.getChecked( 'problem.notability' );
-		var currentSubcategory = form.getChecked( 'notice.current' );
 	}
 	var params;
 
@@ -896,28 +859,25 @@ friendlytag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			tags: tags,
 			group: form.group.checked,
 			globalizeSubcategory: globalizeSubcategory ? globalizeSubcategory[0] : null,
-			notabilitySubcategory: notabilitySubcategory ? notabilitySubcategory[0] : null,
-			currentSubcategory: currentSubcategory ? currentSubcategory[0] : null,
-			rcid: QueryString.exists( 'rcid' ) ? QueryString.get( 'rcid' ) : ''
+			notabilitySubcategory: notabilitySubcategory ? notabilitySubcategory[0] : null
 		}
 	} else {
 		params = {
-			tags: tags,
-			rcid: QueryString.exists( 'rcid' ) ? QueryString.get( 'rcid' ) : ''
+			tags: tags
 		}
 	}
 
+	SimpleWindow.setButtonsEnabled( false );
 	Status.init( form );
 
-	var query = { 
-		'title': wgPageName, 
-		'action': 'submit'
-	};
 	Wikipedia.actionCompleted.redirect = wgPageName;
-	Wikipedia.actionCompleted.notice = "Tagging complete, reloading article in some seconds";
+	Wikipedia.actionCompleted.notice = "Tagging complete, reloading article in a few seconds";
 	if (isRedirect) Wikipedia.actionCompleted.followRedirect = false;
-	var wikipedia_wiki = new Wikipedia.wiki( 'Article modification', query, friendlytag.callbacks.main );
-	wikipedia_wiki.params = params;
-	wikipedia_wiki.get();
+
+	var wikipedia_page = new Wikipedia.page(wgPageName, isRedirect ? "Tagging redirect" : "Tagging article");
+	wikipedia_page.setCallbackParameters(params);
+	wikipedia_page.load(friendlytag.callbacks.main);
 }
-// </nowiki>
+
+// register initialization callback
+Twinkle.init.moduleReady( "friendlytag", friendlytag );
