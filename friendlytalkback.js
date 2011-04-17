@@ -194,6 +194,7 @@ friendlytalkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 	talkpage.setEditSummary("Talkback ([[" + (tbtarget == 'other' ? '' : 'User talk:') + tbPageName +
 		(section ? ('#' + section) : '') + "]])" + TwinkleConfig.summaryAd);
 	talkpage.setCreateOption('recreate');
+	talkpage.setMinorEdit(FriendlyConfig.markTalkbackAsMinor);
 	talkpage.setFollowRedirect(true);
 	talkpage.append();
 }
