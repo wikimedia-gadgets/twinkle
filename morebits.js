@@ -1955,15 +1955,21 @@ Wikipedia.page = function(pageName, currentAction) {
 			// don't need rvlimit=1 because we don't need rvstartid here and only one actual rev is returned by default
 		};
 
+		if (ctx.editMode == 'all') {
+			ctx.loadQuery.rvprop = 'content';  // get the page content at the same time, if needed
+		}
+
 		if (ctx.followRedirect) {
 			ctx.loadQuery.redirects = '';  // follow all redirects
 		}
-		
+
 		if (typeof(ctx.pageSection) === 'number') {
 			ctx.loadQuery.rvsection = ctx.pageSection;
 		}
 
-		if (ctx.editMode == 'all') ctx.loadQuery.rvprop = 'content';  // get the page content at the same time, if needed
+		if (userIsInGroup('sysop')) {
+			ctx.loadQuery.inprop = 'protection';
+		}
 
 		ctx.loadApi = new Wikipedia.api("Retrieving page...", ctx.loadQuery, fnLoadSuccess, ctx.statusElement);
 		ctx.loadApi.setParent(this);
@@ -1973,16 +1979,23 @@ Wikipedia.page = function(pageName, currentAction) {
 	// Save updated .pageText to Wikipedia
 	// Only valid after successful .load()
 	this.save = function(onSuccess, onFailure) {
-		if (!ctx.pageLoaded)
-		{
+		if (!ctx.pageLoaded) {
 			ctx.statusElement.error("Internal error: attempt to save a page that has not been loaded!");
 			return;
 		}
-		if (!ctx.editSummary)
-		{
+
+		if (!ctx.editSummary) {
 			ctx.statusElement.error("Internal error: edit summary not set before save!");
 			return;
 		}
+
+		if (ctx.fullyProtected && !confirm('An automated edit to the fully protected page "' + ctx.pageName + 
+			(ctx.fullyProtected === 'indefinite' ? '" (protected indefinitely)' : ('" (protection expiring ' + ctx.fullyProtected + ')')) +
+			' is about to be made.  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.')) {
+			ctx.statusElement.error("Edit to fully protected page was aborted.");
+			return;
+		}
+
 		ctx.onSaveSuccess = onSuccess;
 		ctx.onSaveFailure = onFailure;
 		ctx.retries = 0;
@@ -2132,6 +2145,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		editToken: null,
 		loadTime: null,
 		lastEditTime: null,
+		fullyProtected: false,
 		conflictRetries: 0,
 		retries: 0,
 		 // callbacks
@@ -2171,6 +2185,16 @@ Wikipedia.page = function(pageName, currentAction) {
 			ctx.pageText = $(xml).find('rev').text();
 		} else {
 			ctx.pageText = '';  // allow for concatenation, etc.
+		}
+
+		// extract protection info, to alert admins when they are about to edit a protected page
+		if (userIsInGroup('sysop')) {
+			var editprot = $(xml).find('pr[type="edit"]');
+			if (editprot.length > 0 && editprot.attr('level') === 'sysop') {
+				ctx.fullyProtected = editprot.attr('expiry');
+			} else {
+				ctx.fullyProtected = false;
+			}
 		}
 
 		ctx.editToken = $(xml).find('page').attr('edittoken');
