@@ -60,17 +60,18 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 							event.stopPropagation();
 						}
 					},
-					{
-						label: 'unlink links to this page',
-						value: 'orphan_backlinks',
-						name: 'orphan_backlinks',
-						tooltip: 'If you want to orphan the current page. If checked, excludes will still apply',
-						checked: TwinkleConfig.orphanBacklinksOnSpeedyDelete.orphan,
-						event: function( event ) {
-							TwinkleConfig.orphanBacklinksOnSpeedyDelete.orphan = event.target.checked;
-							event.stopPropagation();
-						}
-					}
+					// XXX uncomment me when admin CSD is fixed
+					//{
+					//	label: 'unlink links to this page',
+					//	value: 'orphan_backlinks',
+					//	name: 'orphan_backlinks',
+					//	tooltip: 'If you want to orphan the current page. If checked, excludes will still apply',
+					//	checked: TwinkleConfig.orphanBacklinksOnSpeedyDelete.orphan,
+					//	event: function( event ) {
+					//		TwinkleConfig.orphanBacklinksOnSpeedyDelete.orphan = event.target.checked;
+					//		event.stopPropagation();
+					//	}
+					//}
 				]
 			} );
 	}
