@@ -233,7 +233,7 @@ var QuickForm = function QuickForm( event, eventType ) {
 			"margin: 0.5em 0 0; " +
 			"padding: 0.3em 0.2em 0.2em; " +
 		"} " +
-		"form.quickform div + h5, form.quickform div + div h5 { " +  // only give the top border to headers that have a control above them
+		"form.quickform div + h5, form.quickform div + div h5, form.quickform h5 + h5 { " +  // only give the top border to headers with something above them
 			"border-top: 1px solid #88A; " +
 		"} " +
 		"form.quickform textarea { " +
@@ -1636,7 +1636,7 @@ Wikipedia.api.prototype = {
 					// as the first argument to the callback (for legacy code)
 					this.onSuccess.call( this.parent, this );
 				} else {
-					this.statelem.info("Done");
+					this.statelem.info("done");
 				}
 
 				Wikipedia.actionCompleted();
