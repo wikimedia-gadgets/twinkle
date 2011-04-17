@@ -1049,49 +1049,14 @@ twinklespeedy.callbacks = {
 				params.utparams = twinklespeedy.getUserTalkParameters(params.normalized, parameters);
 			}
 
+			var thispage = new Wikipedia.page(wgPageName);
 			// patrol the page, if reached from Special:NewPages
-			// XXX this code needs to be made so much more robust
-			if( TwinkleConfig.markSpeedyPagesAsPatrolled && params.rcid != '' ) {
-				// extract patrol token from "Mark page as patrolled" link on page
-				var patrollinkmatch = /token=(.+)%2B%5C$/.exec($('.patrollink a').attr('href'));
-
-				if (patrollinkmatch) {
-					var patroltoken = patrollinkmatch[1] + "+\\";
-					var patrolstat = new Status("Marking page as patrolled", "Doing...");
-					(Wikipedia.numberOfActionsLeft)++;
-
-					var query = {
-						'title': wgPageName,
-						'action': 'markpatrolled',
-						'rcid': params.rcid,
-						'token': patroltoken
-					};
-
-					$.ajax( {
-						context: patrolstat,
-						type: 'GET',
-						url: wgServer + wgScriptPath + '/index.php',
-						data: QueryString.create(query),
-						dataType: 'xml',
-						success: function(xml, textStatus, jqXHR) {
-							this.info("Done");
-							Wikipedia.actionCompleted();
-						},
-						error: function(jqXHR, textStatus, errorThrown) {
-							if (textStatus == "parsererror") { // kludge
-								this.info("Done");
-								Wikipedia.actionCompleted();
-							} else {
-								this.error(textStatus + ': ' + errorThrown + ' occurred while trying to do this.');
-							}
-						}
-					} );
-				}
+			if( TwinkleConfig.markSpeedyPagesAsPatrolled ) {
+				thispage.patrol();
 			}
 
 			// Notification to first contributor
 			if (params.usertalk) {
-				var thispage = new Wikipedia.page(wgPageName);
 				var callback = function(pageobj) {
 					var initialContrib = pageobj.getCreator();
 					var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
@@ -1437,7 +1402,6 @@ twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser
 		normalized: normalized,
 		watch: watchPage,
 		usertalk: notifyuser,
-		rcid: QueryString.exists( 'rcid' ) ? QueryString.get( 'rcid' ) : '',
 		wgCanonicalNamespace : wgCanonicalNamespace
 	};
 
