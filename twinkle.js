@@ -88,41 +88,31 @@ Twinkle.defaultConfig.twinkle = {
 	proddeleteChunks: 50,
 };
 
-// XXX uncomment this when Friendly makes a friendly appearance in the tree, and it is converted as needed
-//Twinkle.defaultConfig.friendly = {
-//	clockStyle: "dynamic",
-//	enableClock: true,
-//	groupByDefault: true,
-//	idsToRename: [
-//		{ id: 'ca-nstab-main', name: 'Main', mainPageOnly: true },
-//		{ id: 'ca-nstab-help', name: 'Help' },
-//		{ id: 'ca-nstab-special', name: 'Special' },
-//		{ id: 'ca-nstab-project', name: 'Project' },
-//		{ id: 'ca-nstab-user', name: 'User' },
-//		{ id: 'ca-edit', name: 'Edit' },
-//		{ id: 'ca-viewsource', name: 'Source' },
-//		{ id: 'ca-talk', name: 'Talk' },
-//		{ id: 'ca-undelete', name: 'Undelete' },
-//		{ id: 'ca-addsection', name: '+' }
-//	],
-//	insertHeadings: true,
-//	insertSignature: true,  // sign welcome templates, where appropriate
-//	insertTalkbackSignature: true,  // always sign talkback templates
-//	insertUsername: true,
-//	markSharedIPAsMinor: true,
-//	markTaggedPagesAsMinor: false,
-//	markTaggedPagesAsPatrolled: true,
-//	markTalkbackAsMinor: true,
-//	markWelcomesAsMinor: true,
-//	maskTemplateInSummary: true,
-//	quickWelcomeMode: "semiauto",
-//	quickWelcomeTemplate: "Welcome",
-//	talkbackHeading: "== Talkback ==",
-//	topWelcomes: false,
-//	watchTaggedPages: true,
-//	watchWelcomes: true,
-//	welcomeHeading: "== Welcome ==",
-//};
+Twinkle.defaultConfig.friendly = {
+	 // Tag
+	groupByDefault: true,
+	watchTaggedPages: true,
+	markTaggedPagesAsMinor: false,
+	markTaggedPagesAsPatrolled: true,
+	 // Welcome
+	topWelcomes: false,
+	watchWelcomes: true,
+	welcomeHeading: "== Welcome ==",
+	insertUsername: true,
+	insertSignature: true,  // sign welcome templates, where appropriate
+	markWelcomesAsMinor: true,
+	quickWelcomeMode: "semiauto",
+	quickWelcomeTemplate: "Welcome",
+	maskTemplateInSummary: true,
+	 // Talkback
+	markTalkbackAsMinor: true,
+	insertTalkbackSignature: true,  // always sign talkback templates
+	talkbackHeading: "== Talkback ==",
+	 // Talkback + welcome
+	insertHeadings: true,
+	 // Shared
+	markSharedIPAsMinor: true,
+};
 
 Twinkle.init = {
 
@@ -319,23 +309,22 @@ Twinkle.init = {
 				});
 			}
 
-			// XXX uncomment me once Friendly is integrated fully
-			//usingDefaults = false;
-			//if (typeof(FriendlyConfig) === "undefined") {
-			//	if (typeof(Twinkle.prefs) === "undefined" || typeof(Twinkle.prefs.friendly) === "undefined") {
-			//		FriendlyConfig = Twinkle.defaultConfig.friendly;  // intentional use of global namespace (FriendlyConfig)
-			//		usingDefaults = true;
-			//	} else {
-			//		FriendlyConfig = Twinkle.prefs.friendly;  // intentional use of global namespace (FriendlyConfig)
-			//	}
-			//}
-			//if (!usingDefaults) { {
-			//	$.each(Twinkle.defaultConfig.friendly, function(key, value) {
-			//		if (typeof(FriendlyConfig[key]) === "undefined") {
-			//			FriendlyConfig[key] = value;
-			//		}
-			//	});
-			//}
+			usingDefaults = false;
+			if (typeof(FriendlyConfig) === "undefined") {
+				if (typeof(Twinkle.prefs) === "undefined" || typeof(Twinkle.prefs.friendly) === "undefined") {
+					FriendlyConfig = Twinkle.defaultConfig.friendly;  // intentional use of global namespace (FriendlyConfig)
+					usingDefaults = true;
+				} else {
+					FriendlyConfig = Twinkle.prefs.friendly;  // intentional use of global namespace (FriendlyConfig)
+				}
+			}
+			if (!usingDefaults) {
+				$.each(Twinkle.defaultConfig.friendly, function(key, value) {
+					if (typeof(FriendlyConfig[key]) === "undefined") {
+						FriendlyConfig[key] = value;
+					}
+				});
+			}
 
 			// initialize all Twinkle modules in the predefined sequence
 			for (var i = 0; i < this.modules.length; i++) {
