@@ -1,45 +1,6 @@
-// If FriendlyConfig aint exist.
-if( typeof( FriendlyConfig ) == 'undefined' ) {
-	FriendlyConfig = {};
+if ( typeof(Twinkle) === "undefined" ) {
+	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
 }
-
-/**
- FriendlyConfig.summaryAd ( string )
- If ad should be added or not to summary, default [[WP:TW|TW]]
- */
-if( typeof( FriendlyConfig.summaryAd ) == 'undefined' ) {
-	FriendlyConfig.summaryAd = " using [[WP:TW|TW]]";
-}
-
-/**
- FriendlyConfig.markTalkbackAsMinor ( boolean )
- */
-if( typeof( FriendlyConfig.markTalkbackAsMinor ) == 'undefined' ) {
-	FriendlyConfig.markTalkbackAsMinor = true;
-}
-
-/**
- FriendlyConfig.insertHeadings ( boolean )
- */
-if( typeof( FriendlyConfig.insertHeadings ) == 'undefined' ) {
-	FriendlyConfig.insertHeadings = true;
-}
-
-/**
- FriendlyConfig.insertTalkbackSignature ( boolean )
- */
-if( typeof( FriendlyConfig.insertTalkbackSignature ) == 'undefined' ) {
-	FriendlyConfig.insertTalkbackSignature = false;
-}
-
-/**
- FriendlyConfig.talkbackHeading ( String )
- */
-if( typeof( FriendlyConfig.talkbackHeading ) == 'undefined' ) {
-	FriendlyConfig.talkbackHeading = 'Talkback'
-}
-
-addOnloadHook(friendlytalkback);
 
 function friendlytalkback() {
 	if( wgNamespaceNumber == 3 ) {
@@ -56,7 +17,11 @@ friendlytalkback.callback = function friendlytalkbackCallback( uid ) {
 	}
 
 	var Window = new SimpleWindow( 600, 350 );
-	Window.setTitle( "Talkback" ); 
+	Window.setTitle( "Talkback" );
+	Window.setScriptName( "Twinkle" );
+	Window.addFooterLink( "About \{\{talkback}}", "Template:Talkback" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#talkback" );
+
 	var form = new QuickForm( friendlytalkback.callback.evaluate );
 
 	form.append( { type: 'radio', name: 'tbtarget',
@@ -79,6 +44,8 @@ friendlytalkback.callback = function friendlytalkbackCallback( uid ) {
 			name: 'work_area'
 		} );
 
+	form.append( { type:'submit' } );
+
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
@@ -97,7 +64,7 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 	var value = e.target.value;
 	var root = e.target.form;
 	var old_area;
-	
+
 	if(root.section) {
 		friendlytalkback.prev_section = root.section.value;
 	}
@@ -107,7 +74,7 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 	if(root.page) {
 		friendlytalkback.prev_page = root.page.value;
 	}
-	
+
 	for( var i = 0; i < root.childNodes.length; ++i ) {
 		var node = root.childNodes[i];
 		if( 
@@ -123,7 +90,7 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 			label: 'Talkback information',
 			name: 'work_area'
 		} );
-	
+
 	switch( value ) {
 		default:
 		case 'mytalk':
@@ -172,49 +139,10 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 	}
 	
 	work_area.append( { type:'textarea', label:'Additional message (optional):', name:'message', tooltip:'An additional message that you would like to leave below the talkback template.  Your signature will be added to the end of the message if you leave one.' } );
-	
-	work_area.append( { type:'submit' } );
+
 	work_area = work_area.render();
-	old_area.parentNode.replaceChild( work_area, old_area );
+	root.replaceChild( work_area, old_area );
 	root.message.value = friendlytalkback.prev_message;
-}
-
-friendlytalkback.callbacks = {
-	main: function( self ) {
-		self.statelem.status( 'Grabbing edit token...' );
-		var xmlDoc = self.responseXML;
-		var editToken = xmlDoc.evaluate( '//page/@edittoken', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-		
-		var tbPageName = (self.params.tbtarget == 'mytalk')?wgUserName:self.params.page;
-
-		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
-		var text = '\n==' + FriendlyConfig.talkbackHeading.replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n{\{talkback|';
-		text += tbPageName;
-
-		if( self.params.section != '' ) {
-			text += '|' + self.params.section;
-		}
-
-		text += '|ts=\~\~\~\~\~\}\}';
-		
-		if( self.params.message != '' ) {
-			text += '\n' + self.params.message + '  \~\~\~\~';
-		} else if( FriendlyConfig.insertTalkbackSignature ) {
-			text += '\n\~\~\~\~';
-		}
-
-		var query = {
-			'action': 'edit',
-			'title': wgPageName,
-			'appendtext': text,
-			'token': editToken,
-			'summary': 'Talkback ([\['+ (self.params.tbtarget == 'other'?'':'User talk:') + tbPageName + (self.params.section?('#'+self.params.section):'') +']])',
-			'minor': FriendlyConfig.markTalkbackAsMinor ? 1 : undefined
-		};
-
-		var wikipedia_api = new Wikipedia.api( 'Edit token grabbed; adding talkback notification to user talk page...', query, null, self.statelem );
-		wikipedia_api.post();
-	}
 }
 
 friendlytalkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e) {
@@ -226,37 +154,49 @@ friendlytalkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 		
 		if( tbtarget == 'usertalk' ) {
 			if( page == '' ) {
-				alert( 'You must specify the username of the user whose talk page you left a message on' );
+				alert( 'You must specify the username of the user whose talk page you left a message on.' );
 				return;
 			}
 		} else {
 			if( page == '' ) {
-				alert( 'You must specify the full page name when your message is not on a user talk page' );
+				alert( 'You must specify the full page name when your message is not on a user talk page.' );
 				return;
 			}			
 		}
 	}
-	
-	var params = {
-		tbtarget: tbtarget,
-		page: page,
-		section: section,
-		message: e.target.message.value
-	};
 
+	SimpleWindow.setButtonsEnabled( false );
 	Status.init( e.target );
 
 	Wikipedia.actionCompleted.redirect = wgPageName;
-	Wikipedia.actionCompleted.notice = "Talkback notification complete; reloading talk page in a few seconds";
-	
-	var query = {
-		'action': 'query',
-		'prop': 'info',
-		'intoken': 'edit',
-		'titles': wgPageName
-	};
+	Wikipedia.actionCompleted.notice = "Talkback complete; reloading talk page in a few seconds";
 
-	var wikipedia_api = new Wikipedia.api( 'Status', query, friendlytalkback.callbacks.main );
-	wikipedia_api.params = params;
-	wikipedia_api.post();
+	var talkpage = new Wikipedia.page(wgPageName, "Adding talkback");
+	var tbPageName = (tbtarget == 'mytalk') ? wgUserName : page;
+
+	//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
+	var text = '\n==' + FriendlyConfig.talkbackHeading.replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n{\{talkback|';
+	text += tbPageName;
+
+	if( section != '' ) {
+		text += '|' + section;
+	}
+
+	text += '|ts=\~\~\~\~\~\}\}';
+	
+	if( e.target.message.value != '' ) {
+		text += '\n' + e.target.message.value + '  \~\~\~\~';
+	} else if( FriendlyConfig.insertTalkbackSignature ) {
+		text += '\n\~\~\~\~';
+	}
+
+	talkpage.setAppendText(text);
+	talkpage.setEditSummary("Talkback ([[" + (tbtarget == 'other' ? '' : 'User talk:') + tbPageName +
+		(section ? ('#' + section) : '') + "]])" + TwinkleConfig.summaryAd);
+	talkpage.setCreateOption('recreate');
+	talkpage.setFollowRedirect(true);
+	talkpage.append();
 }
+
+// register initialization callback
+Twinkle.init.moduleReady( "friendlytalkback", friendlytalkback );

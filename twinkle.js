@@ -107,7 +107,7 @@ Twinkle.defaultConfig.friendly = {
 	 // Talkback
 	markTalkbackAsMinor: true,
 	insertTalkbackSignature: true,  // always sign talkback templates
-	talkbackHeading: "== Talkback ==",
+	talkbackHeading: "Talkback",
 	 // Talkback + welcome
 	insertHeadings: true,
 	 // Shared
@@ -152,7 +152,7 @@ Twinkle.init = {
 			//{ dir: defaultDir, name: "friendlywelcome" },
 			//{ dir: defaultDir, name: "friendlyshared" },
 			{ dir: defaultDir, name: "friendlytag" },
-			//{ dir: defaultDir, name: "friendlytalkback" }
+			{ dir: defaultDir, name: "friendlytalkback" }
 		];
 
 		// define admin modules separately so that non-admins don't have to wait for them to load
