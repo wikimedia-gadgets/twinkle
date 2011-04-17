@@ -407,7 +407,8 @@ friendlywelcome.callbacks = {
 		
 		if( friendlywelcome.headingHash[ params.value ] && FriendlyConfig.insertHeadings ) {
 			Status.info( 'Info', 'Will create a new heading for the welcome' );
-			text += "== " + FriendlyConfig.welcomeHeading + " ==\n";
+			// strip section header markers from pref, to preserve backwards compatibility
+			text += "== " + FriendlyConfig.welcomeHeading.replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + " ==\n";
 		}
 		
 		Status.info( 'Info', 'Will substitute the \{\{' + params.value + '}} welcome template' );

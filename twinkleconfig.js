@@ -701,7 +701,11 @@ Twinkle.config.init = function twinkleconfigInit() {
 	if ((wgPageName == "Wikipedia:Twinkle/Preferences" ||
 	    (wgNamespaceNumber == 2 && wgTitle.lastIndexOf("/Twinkle preferences") == (wgTitle.length - 20))) &&
 	    wgAction == "view") {
-		// create the config page on /Twinkle preferences subpages
+		// create the config page at Wikipedia:Twinkle/Preferences, and at user subpages (for testing purposes)
+
+		if (!document.getElementById("twinkle-config")) {
+			return;  // maybe the page is misconfigured, or something - but any attempt to modify it will be pointless
+		}
 
 		// set style (the url() CSS function doesn't seem to work from wikicode - ?!)
 		document.getElementById("twinkle-config-titlebar").style.backgroundImage = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC)";
@@ -815,7 +819,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 					case "enum":  // create a combo box
 						// add label to first column
-						// XXX duplicates the code above
+						// note: duplicates the code above, under string/integer
 						cell.style.textAlign = "right";
 						cell.style.width = "25em";
 						cell.style.paddingRight = "0.5em";
@@ -873,7 +877,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 							});
 						} else {
 							// add check boxes according to the order it gets fed to us (probably strict alphabetical)
-							// XXX another code duplication!! very annoying.
+							// note: duplicates code in previous loop
 							$.each(pref.setValues, function(itemkey, itemvalue) {
 								var checklabel = document.createElement("label");
 								checklabel.style.marginRight = "0.7em";
@@ -933,8 +937,8 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 		var footerbox = document.createElement("div");
 		footerbox.setAttribute("id", "twinkle-config-buttonpane");
-		footerbox.style.backgroundColor = "#D9E0EC";  // XXX need real background color!
-		footerbox.style.padding = "0.5em";  // XXX ...and it needs all the real jQuery lookalike styling, too!
+		footerbox.style.backgroundColor = "#BCCADF";
+		footerbox.style.padding = "0.5em";
 		var button = document.createElement("button");
 		button.setAttribute("type", "submit");
 		button.appendChild(document.createTextNode("Save changes"));
@@ -1055,7 +1059,7 @@ Twinkle.config.resetPref = function twinkleconfigResetPref(e) {
 Twinkle.config.save = function twinkleconfigSave(e) {
 	Status.init( document.getElementById("twinkle-config-content") );
 
-	Wikipedia.actionCompleted.notice = "Save";  // XXX think of something better!
+	Wikipedia.actionCompleted.notice = "Save";
 
 	var userjs = "User:" + wgUserName + "/twinkleoptions.js";
 	var wikipedia_page = new Wikipedia.page(userjs, "Saving preferences to " + userjs);
@@ -1177,7 +1181,6 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	};
 
 	$(Twinkle.config.sections).each(function(sectionkey, section) {
-		// XXX this bit is duplicated in the function code above
 		if (section.adminOnly && !userIsInGroup("sysop")) {
 			return;  // i.e. "continue" in this context
 		}
@@ -1252,12 +1255,11 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 			newConfig.twinkle[tkey] = tvalue;
 		}
 	});
-	// XXX uncomment me when Friendly is here
-	//$.each(FriendlyConfig, function(fkey, fvalue) {
-	//	if (foundFriendlyPrefs.indexOf(fkey) === -1) {
-	//		newConfig.friendly[fkey] = fvalue;
-	//	}
-	//});
+	$.each(FriendlyConfig, function(fkey, fvalue) {
+		if (foundFriendlyPrefs.indexOf(fkey) === -1) {
+			newConfig.friendly[fkey] = fvalue;
+		}
+	});
 
 	var text =
 		"// twinkleoptions.js: personal Twinkle preferences file\n" +
