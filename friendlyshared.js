@@ -1,25 +1,6 @@
-// <nowiki>
-// If FriendlyConfig aint exist.
-if( typeof( FriendlyConfig ) == 'undefined' ) {
-	FriendlyConfig = {};
+if ( typeof(Twinkle) === "undefined" ) {
+	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
 }
-
-/**
- FriendlyConfig.summaryAd ( string )
- If ad should be added or not to summary, default [[WP:TW|TW]]
- */
-if( typeof( FriendlyConfig.summaryAd ) == 'undefined' ) {
-	FriendlyConfig.summaryAd = " using [[WP:TW|TW]]";
-}
-
-/**
- FriendlyConfig.markSharedIPAsMinor ( boolean )
- */
-if( typeof( FriendlyConfig.markSharedIPAsMinor ) == 'undefined' ) {
-	FriendlyConfig.markSharedIPAsMinor = true;
-}
-
-addOnloadHook(friendlyshared);
 
 function friendlyshared() {
 	if( wgNamespaceNumber == 3 && isIPAddress( wgTitle ) ) {
@@ -31,7 +12,10 @@ function friendlyshared() {
 
 friendlyshared.callback = function friendlysharedCallback( uid ) {
 	var Window = new SimpleWindow( 600, 400 );
-	Window.setTitle( "Choose a shared IP address template" ); 
+	Window.setTitle( "Shared IP address tagging" );
+	Window.setScriptName( "Twinkle" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#shared" );
+
 	var form = new QuickForm( friendlyshared.callback.evaluate );
 
 	form.append( { type:'header', label:'Shared IP address templates' } );
@@ -76,31 +60,38 @@ friendlyshared.callback = function friendlysharedCallback( uid ) {
 
 friendlyshared.standardList = [
 	{
-		label: '{{sharedip}}: standard shared IP address template',
-		value: 'sharedip',
-		tooltip: 'IP user talk page template that shows helpful information to IP users and those wishing to warn or ban them' },
+		label: '\{\{shared IP}}: standard shared IP address template',
+		value: 'shared IP',
+		tooltip: 'IP user talk page template that shows helpful information to IP users and those wishing to warn or ban them'
+	},
 	{ 
-		label: '{{sharedipedu}}: shared IP address template modified for educational institutions',
-		value: 'sharedipedu' },
+		label: '\{\{shared IP edu}}: shared IP address template modified for educational institutions',
+		value: 'shared IP edu'
+	},
 	{
-		label: '{{sharedippublic}}: shared IP address template modified for public terminals',
-		value: 'sharedippublic' },
+		label: '\{\{shared IP public}}: shared IP address template modified for public terminals',
+		value: 'shared IP public'
+	},
 	{
-		label: '{{sharedipusmilitary}}: shared IP address template modified for the US military',
-		value: 'sharedipusmilitary' },
+		label: '\{\{shared IP gov}}: shared IP address template modified for government agencies or facilities',
+		value: 'shared IP gov'
+	},
 	{
-		label: '{{dynamicip}}: shared IP address template modified for organizations with dynamic addressing',
-		value: 'dynamicip' },
+		label: '\{\{dynamicIP}}: shared IP address template modified for organizations with dynamic addressing',
+		value: 'dynamicIP'
+	},
 	{ 
-		label: '{{isp}}: shared IP address template modified for ISP organizations',
-		value: 'isp' },
+		label: '\{\{ISP}}: shared IP address template modified for ISP organizations (specifically proxies)',
+		value: 'ISP'
+	},
 	{ 
-		label: '{{mobileip}}: shared IP address template modified mobile phone company and their customers',
-		value: 'mobileip' }
-]
+		label: '\{\{mobileIP}}: shared IP address template modified mobile phone company and their customers',
+		value: 'mobileIP'
+	}
+];
 
 friendlyshared.callback.change_shared = function friendlytagCallbackChangeShared(e) {
-	if( e.target.value == 'sharedipedu' ) {
+	if( e.target.value == 'shared IP edu' ) {
 		e.target.form.contact.disabled = false;
 	} else {
 		e.target.form.contact.disabled = true;
@@ -110,44 +101,40 @@ friendlyshared.callback.change_shared = function friendlytagCallbackChangeShared
 }
 
 friendlyshared.callbacks = {
-	main: function( self ) {
-		var form = self.responseXML.getElementById( 'editform' );
+	main: function( pageobj ) {
+		var params = pageobj.getCallbackParameters();
+		var pageText = pageobj.getPageText();
 		var found = false;
 		var text = '{{';
 
 		for( var i=0; i < friendlyshared.standardList.length; i++ ) {
 			tagRe = new RegExp( '(\{\{' + friendlyshared.standardList[i].value + '(\||\}\}))', 'im' );
-			if( tagRe.exec( form.wpTextbox1.value ) ) {
-				Status.info( 'Info', 'Found {{' + friendlyshared.standardList[i].value + '}} on the user\'s talk page already...aborting' );
+			if( tagRe.exec( pageText ) ) {
+				Status.warn( 'Info', 'Found {{' + friendlyshared.standardList[i].value + '}} on the user\'s talk page already...aborting' );
 				found = true;
-				text = form.wpTextbox1.value;
 			}
 		}
-		
-		if( !found ) {
-			Status.info( 'Info', 'Will add the shared IP address template to the top of the user\'s talk page.' );
-			text += self.params.value + '|' + self.params.organization;
-			if( self.params.value == 'sharedipedu' && self.params.contact != '') {
-				text += '|' + self.params.contact;
-			}
-			if( self.params.host != '' ) {
-				text += '|host=' + self.params.host;
-			}
-			text += '}}\n\n' + form.wpTextbox1.value;
+
+		if( found ) {
+			return;
 		}
-		
-		var postData = {
-			'wpMinoredit': FriendlyConfig.markSharedIPAsMinor ? 1 : undefined,
-			'wpWatchthis': form.wpWatchthis.checked ? 1 : undefined,
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSummary': 'Added \{\{[[Template:' + self.params.value + '|' + self.params.value + ']]\}\} template to user talk page.' + FriendlyConfig.summaryAd,
-			'wpTextbox1': text
-		};
- 
-		self.post( postData );
+
+		Status.info( 'Info', 'Will add the shared IP address template to the top of the user\'s talk page.' );
+		text += params.value + '|' + params.organization;
+		if( params.value == 'shared IP edu' && params.contact != '') {
+			text += '|' + params.contact;
+		}
+		if( params.host != '' ) {
+			text += '|host=' + params.host;
+		}
+		text += '}}\n\n';
+
+		var summaryText = 'Added \{\{[[Template:' + params.value + '|' + params.value + ']]\}\} template.';
+		pageobj.setPageText(text + pageText);
+		pageobj.setEditSummary(summaryText + TwinkleConfig.summaryAd);
+		pageobj.setMinorEdit(FriendlyConfig.markSharedIPAsMinor);
+		pageobj.setCreateOption('recreate');
+		pageobj.save();
 	}
 }
 
@@ -172,17 +159,17 @@ friendlyshared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 		contact: e.target.contact.value
 	};
 
+	SimpleWindow.setButtonsEnabled( false );
 	Status.init( e.target );
-	
-	var query = { 
-		'title': wgPageName, 
-		'action': 'submit'
-	};
+
 	Wikipedia.actionCompleted.redirect = wgPageName;
-	Wikipedia.actionCompleted.notice = "Shared IP tagging complete, reloading talk page in some seconds";
-	var wikipedia_wiki = new Wikipedia.wiki( 'User talk page modification', query, friendlyshared.callbacks.main );
-	wikipedia_wiki.params = params;
-	wikipedia_wiki.followRedirect = true;
-	wikipedia_wiki.get();
+	Wikipedia.actionCompleted.notice = "Tagging complete, reloading talk page in a few seconds";
+
+	var wikipedia_page = new Wikipedia.page(wgPageName, "User talk page modification");
+	wikipedia_page.setFollowRedirect(true);
+	wikipedia_page.setCallbackParameters(params);
+	wikipedia_page.load(friendlyshared.callbacks.main);
 }
-// </nowiki>
+
+// register initialization callback
+Twinkle.init.moduleReady( "friendlyshared", friendlyshared );
