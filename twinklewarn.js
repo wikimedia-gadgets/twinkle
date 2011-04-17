@@ -456,6 +456,10 @@ twinklewarn.messages = {
 
 	},
 	level4: {
+		"uw-generic4": { 
+			label:"Generic warning (for template series missing level 4)", 
+			summary:"Final warning notice" 
+		},
 		"uw-vandalism4": { 
 			label:"Vandalism", 
 			summary:"Final warning: Vandalism" 
@@ -866,6 +870,10 @@ twinklewarn.messages = {
 		"uw-copyright-link": { 
 			label:"Linking to copyrighted works violation",
 			summary:"Warning: Linking to copyrighted works violation" 
+		},
+		"uw-copyright-remove": {
+			label:"Removing \{\{copyvio}} template from articles",
+			summary:"Warning: Removing \{\{copyvio}} templates"
 		},
 		"uw-efsummary": {
 			label:"Edit summary triggering the edit filter",
