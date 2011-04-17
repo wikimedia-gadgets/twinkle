@@ -131,11 +131,24 @@ Twinkle.config.sections = [
 	]
 },
 
+// a second "general" section for FriendlyConfig general options is required
+{
+	title: "General (welcome/talkback)",
+	inFriendlyConfig: true,
+	preferences: [
+		{
+			name: "insertHeadings",
+			label: "Insert section headings before welcomes and talkbacks",
+			type: "boolean"
+		},
+	]
+},
+
 {
 	title: "ARV",
 	preferences: [
 		// TwinkleConfig.markAIVReportAsMinor (boolean)
-		// Defines if reportS to AIV should be marked as minor
+		// Defines if reports to AIV should be marked as minor
 		{
 			name: "markAIVReportAsMinor",
 			label: "Mark AIV reports as minor edits",
@@ -156,6 +169,58 @@ Twinkle.config.sections = [
 			name: "markSockReportAsMinor",
 			label: "Mark SPI reports as minor edits",
 			type: "boolean"
+		},
+	]
+},
+
+{
+	title: "Image deletion (DI)",
+	preferences: [
+		// TwinkleConfig.notifyUserOnDeli (boolean)
+		// If the user should be notified after placing a file deletion tag
+		{
+			name: "notifyUserOnDeli",
+			label: "Check the \"notify initial uploader\" box by default",
+			type: "boolean"
+		},
+
+		// TwinkleConfig.deliWatchPage (string)
+		// The watchlist setting of the page tagged for deletion. Either "yes", "no", or "default". Default is "default" (Duh).
+		{
+			name: "deliWatchPage",
+			label: "Add image page to watchlist when tagging",
+			type: "enum",
+			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+
+		// TwinkleConfig.deliWatchUser (string)
+		// The watchlist setting of the user talk page if a notification is placed. Either "yes", "no", or "default". Default is "default" (Duh).
+		{
+			name: "deliWatchUser",
+			label: "Add user talk page of initial uploader to watchlist when notifying",
+			type: "enum",
+			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+	]
+},
+
+{
+	title: "Proposed deletion (PROD)",
+	preferences: [
+		// TwinkleConfig.watchProdPages (boolean)
+		// If, when applying prod template to page, to watch the page
+		{
+			name: "watchProdPages",
+			label: "Add article to watchlist when tagging",
+			type: "boolean"
+		},
+
+		// TwinkleConfig.prodReasonDefault (string)
+		// The prefilled PROD reason.
+		{
+			name: "prodReasonDefault",
+			label: "Prefilled PROD reason",
+			type: "string"
 		},
 	]
 },
@@ -221,59 +286,19 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "DI (image deletion)",
+	title: "Shared IP tagging",
+	inFriendlyConfig: true,
 	preferences: [
-		// TwinkleConfig.notifyUserOnDeli (boolean)
-		// If the user should be notified after placing a file deletion tag
 		{
-			name: "notifyUserOnDeli",
-			label: "Check the \"notify initial uploader\" box by default",
+			name: "markSharedIPAsMinor",
+			label: "Mark tagging edits as minor",
 			type: "boolean"
-		},
-
-		// TwinkleConfig.deliWatchPage (string)
-		// The watchlist setting of the page tagged for deletion. Either "yes", "no", or "default". Default is "default" (Duh).
-		{
-			name: "deliWatchPage",
-			label: "Add image page to watchlist when tagging",
-			type: "enum",
-			enumValues: Twinkle.config.commonEnums.watchlist
-		},
-
-		// TwinkleConfig.deliWatchUser (string)
-		// The watchlist setting of the user talk page if a notification is placed. Either "yes", "no", or "default". Default is "default" (Duh).
-		{
-			name: "deliWatchUser",
-			label: "Add user talk page of initial uploader to watchlist when notifying",
-			type: "enum",
-			enumValues: Twinkle.config.commonEnums.watchlist
 		},
 	]
 },
 
 {
-	title: "PROD (proposed deletion)",
-	preferences: [
-		// TwinkleConfig.watchProdPages (boolean)
-		// If, when applying prod template to page, to watch the page
-		{
-			name: "watchProdPages",
-			label: "Add article to watchlist when tagging",
-			type: "boolean"
-		},
-
-		// TwinkleConfig.prodReasonDefault (string)
-		// The prefilled PROD reason.
-		{
-			name: "prodReasonDefault",
-			label: "Prefilled PROD reason",
-			type: "string"
-		},
-	]
-},
-
-{
-	title: "CSD (speedy deletion)",
+	title: "Speedy deletion (CSD)",
 	preferences: [
 		// TwinkleConfig.speedyPromptOnG7 (boolean)
 		{
@@ -385,6 +410,57 @@ Twinkle.config.sections = [
 },
 
 {
+	title: "Tag",
+	inFriendlyConfig: true,
+	preferences: [
+		{
+			name: "groupByDefault",
+			label: "Check the \"group into \{\{multiple issues}}\" box by default",
+			type: "boolean"
+		},
+		{
+			name: "watchTaggedPages",
+			label: "Add page to watchlist when tagging",
+			type: "boolean"
+		},
+		{
+			name: "markTaggedPagesAsMinor",
+			label: "Mark tagging edits as minor",
+			type: "boolean"
+		},
+		{
+			name: "markTaggedPagesAsPatrolled",
+			label: "Mark pages as patrolled when tagging (if possible)",
+			helptip: "Due to technical limitations, pages are only marked as patrolled when they are reached from Special:NewPages.",
+			type: "boolean"
+		},
+	]
+},
+
+{
+	title: "Talkback",
+	inFriendlyConfig: true,
+	preferences: [
+		{
+			name: "markTalkbackAsMinor",
+			label: "Mark talkbacks as minor edits",
+			type: "boolean"
+		},
+		{
+			name: "insertTalkbackSignature",
+			label: "Insert signature within talkbacks",
+			type: "boolean"
+		},
+		{
+			name: "talkbackHeading",
+			label: "Section heading to use for talkbacks",
+			helptip: "This only works if headings are enabled under \"General (welcome/talkback)\" above.",
+			type: "string"
+		},
+	]
+},
+
+{
 	title: "Unlink",
 	preferences: [
 		// TwinkleConfig.unlinkNamespaces (array)
@@ -400,7 +476,7 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Warn",
+	title: "Warn user",
 	preferences: [
 		// TwinkleConfig.defaultWarningGroup (int)
 		// if true, watch the page which has been dispatched an warning or notice, if false, default applies
@@ -436,6 +512,65 @@ Twinkle.config.sections = [
 			label: "Blank the talk page when indefinitely blocking users",
 			helptip: "See <a href=\"/wiki/WP:UW#Indefinitely blocked users\">WP:UW</a> for more information.",
 			adminOnly: true,
+			type: "boolean"
+		},
+	]
+},
+
+{
+	title: "Welcome user",
+	inFriendlyConfig: true,
+	preferences: [
+		{
+			name: "topWelcomes",
+			label: "Place welcomes above existing content on user talk pages",
+			type: "boolean"
+		},
+		{
+			name: "watchWelcomes",
+			label: "Add user talk pages to watchlist when welcoming",
+			helptip: "Doing so adds to the personal element of welcoming a user - you will be able to see how they are coping as a newbie, and possibly help them.",
+			type: "boolean"
+		},
+		{
+			name: "welcomeHeading",
+			label: "Section heading to use for welcomes",
+			helptip: "This only works if headings are enabled under \"General (welcome/talkback)\" above.",
+			type: "string"
+		},
+		{
+			name: "insertUsername",
+			label: "Add your username to the template (if relevant)",
+			helptip: "Some welcome templates have an opening sentence like \"Hi, I'm <username>. Welcome\" etc. If you turn off this option, these templates will not display your username in that way.",
+			type: "boolean"
+		},
+		{
+			name: "insertSignature",
+			label: "Add your signature after the welcome",
+			helptip: "Strongly recommended.",
+			type: "boolean"
+		},
+		{
+			name: "markWelcomesAsMinor",
+			label: "Mark welcomes as minor edits",
+			type: "boolean"
+		},
+		{
+			name: "quickWelcomeMode",
+			label: "Clicking the \"welcome\" link on a diff page will",
+			helptip: "If you choose to welcome automatically, the template you specify below will be used.",
+			type: "enum",
+			enumValues: { auto: "welcome automatically", norm: "prompt you to select a template" }
+		},
+		{
+			name: "quickWelcomeTemplate",
+			label: "Template to use when welcoming automatically",
+			helptip: "Enter the name of a welcome template, without the curly brackets. A link to the given article will be added.",
+			type: "string"
+		},
+		{
+			name: "maskTemplateInSummary",
+			label: "Include the name of the welcome template in the edit summary",
 			type: "boolean"
 		},
 	]
@@ -551,8 +686,6 @@ Twinkle.config.sections = [
 		},
 	]
 },
-
-// XXX Friendly preferences go here
 
 ]; // end of Twinkle.config.sections
 
@@ -832,7 +965,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		box.style.margin = "0.5em auto";
 		box.style.textAlign = "center";
 
-		if (wgTitle.lastIndexOf("/twinkleoptions.js") === wgTitle.length - 18 && location.search.indexOf("&editintro=") === -1) {
+		if (wgTitle === wgUserName + "/twinkleoptions.js" && location.search.indexOf("&editintro=") === -1) {
 			// place "why not try the preference panel" notice, except when there is an editintro (probably the "how to blank preferences" one)
 			box.style.fontWeight = "bold";
 			box.style.width = "80%";
@@ -849,7 +982,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			box.appendChild(document.createTextNode(", or by editing this page."));
 			$(box).insertAfter($("#contentSub"));
 
-		} else if (wgTitle.lastIndexOf(".js") == wgTitle.length - 3) {
+		} else if (wgTitle.indexOf(wgUserName) === 0 && wgTitle.lastIndexOf(".js") == wgTitle.length - 3) {
 			// place "Looking for Twinkle options?" notice
 			box.style.width = "60%";
 
