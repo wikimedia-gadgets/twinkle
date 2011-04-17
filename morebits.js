@@ -1815,6 +1815,8 @@ Wikipedia.api.prototype = {
  * 
  * getCreator(): returns the user who created the page following lookupCreator()
  *
+ * patrol(): marks the page as patrolled (only when "rcid" is present in the query string)
+ *
  */
 
 /**
