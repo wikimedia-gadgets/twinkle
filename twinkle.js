@@ -151,9 +151,7 @@ Twinkle.init = {
 			// XXX uncomment me once Friendly is nearby
 			//{ dir: defaultDir, name: "friendlywelcome" },
 			//{ dir: defaultDir, name: "friendlyshared" },
-			//{ dir: defaultDir, name: "friendlytag" },
-			//{ dir: defaultDir, name: "friendlyclock" },
-			//{ dir: defaultDir, name: "friendlytabs" },
+			{ dir: defaultDir, name: "friendlytag" },
 			//{ dir: defaultDir, name: "friendlytalkback" }
 		];
 
