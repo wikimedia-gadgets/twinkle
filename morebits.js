@@ -2180,7 +2180,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			return; // abort
 		}
 
-		ctx.pageExists = !($(xml).find('page').attr('missing'));
+		ctx.pageExists = ($(xml).find('page').attr('missing') !== "");
 		if (ctx.pageExists) {
 			ctx.pageText = $(xml).find('rev').text();
 		} else {
