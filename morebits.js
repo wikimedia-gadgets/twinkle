@@ -2328,9 +2328,15 @@ Wikipedia.page = function(pageName, currentAction) {
 			--Wikipedia.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.saveApi.post(); // give it another go!
 
+		// hard error, give up
 		} else {
-			// hard error, give up
-			ctx.statusElement.error( "Failed to save edit: " + ctx.saveApi.getErrorText() );
+
+			// non-admin attempting to edit a protected page - this gives a friendlier message than the default
+			if ( errorCode == "protectedpage" ) {
+				ctx.statusElement.error( "Failed to save edit: Page is fully protected" );
+			} else {
+				ctx.statusElement.error( "Failed to save edit: " + ctx.saveApi.getErrorText() );
+			}
 			ctx.editMode = 'all';  // cancel append/prepend modes
 			if (ctx.onSaveFailure) {
 				ctx.onSaveFailure(this);  // invoke callback
