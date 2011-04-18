@@ -501,7 +501,7 @@ twinklefluff.callbacks = {
 
 twinklefluff.formatSummaryPostfix = function(stringToAdd) {
 	if (stringToAdd) {
-		stringToAdd = '; ' + stringToAdd.toUpperCaseFirstChar();
+		stringToAdd = ': ' + stringToAdd.toUpperCaseFirstChar();
 		if (stringToAdd.search(/[.?!;]$/) == -1) {
 			stringToAdd = stringToAdd + '.';
 		}
