@@ -177,7 +177,7 @@ Twinkle.init = {
 			this.modules.push.apply( this.modules, adminModules );
 		}
 
-		if (/*TwinkleConfig.loadDebugModules*/ true) {  // XXX fix this
+		if (typeof(twinkleLoadDebugModules) !== "undefined") {
 
 			// add the debug modules to the end of the module list
 			this.modules.push.apply( this.modules, debugModules );
@@ -213,17 +213,15 @@ Twinkle.init = {
 			}
 		}
 
-		// XXX fixme quick
-		//if( typeof( TwinkleConfig.moduleLoadTime ) == 'undefined' true) {
-		//	TwinkleConfig.moduleLoadTime = 20;  // seconds to wait for modules to load
-		//}
+		if( typeof( twinkleModuleLoadTime ) === 'undefined') {
+			twinkleModuleLoadTime = 20;  // seconds to wait for modules to load
+		}
 
 		// setup timer callback in case all modules don't load
 		window.setTimeout( function() {
 				Twinkle.init.loadTimeout();
 			},
-			//TwinkleConfig.moduleLoadTime * 1000 );
-			20000 );
+			twinkleModuleLoadTime * 1000 );
 	},
 
 	// timer callback after module loading started
