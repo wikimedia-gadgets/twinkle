@@ -419,6 +419,26 @@ Twinkle.config.sections = [
 			helptip: "If you have a big monitor, you might like to increase this.",
 			type: "integer"
 		},
+
+		{
+			name: "logSpeedyNominations",
+			label: "Keep a log in userspace of all CSD nominations",
+			helptip: "Since non-admins do not have access to their deleted contributions, the userspace log offers a good way to keep track of all pages you nominate for CSD using Twinkle.",
+			type: "boolean"
+		},
+		{
+			name: "noLogOnSpeedyNomination",
+			label: "Do not create a userspace log entry when tagging with these criteria",
+			type: "set",
+			setValues: Twinkle.config.commonSets.csdCriteria,
+			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
+		},
+		{
+			name: "speedyLogPageName",
+			label: "Keep the CSD userspace log at this user subpage",
+			helptip: "i.e. User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the CSD userspace log.",
+			type: "string"
+		},
 	]
 },
 
@@ -583,7 +603,8 @@ Twinkle.config.sections = [
 		},
 		{
 			name: "maskTemplateInSummary",
-			label: "Include the name of the welcome template in the edit summary",
+			label: "Omit the name of the welcome template in the edit summary",
+			helptip: "The names of some of the templates (e.g. \"welcome-anon-vandal\") may be viewed by the user as attacks, so it is better to leave them out of the edit summary",
 			type: "boolean"
 		},
 	]

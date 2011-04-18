@@ -1088,8 +1088,17 @@ twinklespeedy.callbacks = {
 					usertalkpage.setCreateOption('recreate');
 					usertalkpage.setFollowRedirect(true);
 					usertalkpage.append();
+
+					// add this nomination to the user's userspace log, if the user has enabled it
+					if (params.lognomination) {
+						twinklespeedy.callbacks.user.addToLog(params, initialContrib);
+					}
 				};
 				thispage.lookupCreator(callback);
+			}
+			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
+			else if (params.lognomination) {
+				twinklespeedy.callbacks.user.addToLog(params, null);
 			}
 
 			// Wrap SD template in noinclude tags if we are in template space.
@@ -1124,6 +1133,67 @@ twinklespeedy.callbacks = {
 			pageobj.setEditSummary(editsummary + TwinkleConfig.summaryAd);
 			pageobj.setWatchlist(params.watch);
 			pageobj.setCreateOption('nocreate');
+			pageobj.save();
+		},
+
+		addToLog: function(params, initialContrib) {
+			var wikipedia_page = new Wikipedia.page("User:" + wgUserName + "/" + TwinkleConfig.speedyLogPageName, "Adding entry to userspace log");
+			params.logInitialContrib = initialContrib;
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.load(twinklespeedy.callbacks.user.saveLog);
+		},
+
+		saveLog: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+
+			// add blurb if log page doesn't exist
+			if (!pageobj.exists()) {
+				text =
+					"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
+					"If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and " +
+					"nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].\n"
+				;
+				if (userIsInGroup("sysop")) {
+					text += "\nThis log does not track outright speedy deletions made using Twinkle.\n";
+				}
+			}
+
+			// create monthly header
+			var date = new Date();
+			var headerRe = new RegExp("^==+\\s*" + date.getUTCMonthName() + "\\s+" + date.getUTCFullYear() + "\\s*==+", "m");
+			if (!headerRe.exec(text)) {
+				text += "\n\n=== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ===";
+			}
+
+			text += "\n# [[:" + wgPageName + "]]: ";
+			switch (params.normalized)
+			{
+				case 'db':
+					text += "\{\{tl|db-reason\}\}";
+					break;
+				case 'multiple':
+					text += "multiple criteria (";
+					for (var i in twinklespeedy.dbmultipleCriteria) {
+						if (typeof twinklespeedy.dbmultipleCriteria[i] === 'string') {
+							text += '[[WP:CSD#' + twinklespeedy.dbmultipleCriteria[i].toUpperCase() + '|' + twinklespeedy.dbmultipleCriteria[i].toUpperCase() + ']], ';
+						}
+					}
+					text = text.substr(0, text.length - 2);  // remove trailing comma
+					text += ')';
+					break;
+				default:
+					text += "[[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] (\{\{tl|db-" + params.value + "\}\})";
+					break;
+			}
+			if (params.logInitialContrib) {
+				text += "; notified \{\{user|" + params.logInitialContrib + "\}\}";
+			}
+			text += " \~\~\~\~\~\n";
+
+			pageobj.setPageText(text);
+			pageobj.setEditSummary("Logging speedy deletion nomination of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			pageobj.setCreateOption("recreate");
 			pageobj.save();
 		}
 	}
@@ -1200,7 +1270,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 					var reason = prompt( 'Please enter the reason for the page move:' );
 					if (reason == null)
 					{
-						self.statelem.error( 'Aborted by user.' );
+						statelem.error( 'Aborted by user.' );
 						return null;
 					}
 					parameters["1"] = title;
@@ -1398,12 +1468,28 @@ twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser
 	}
 	else notifyuser = (TwinkleConfig.notifyUserOnSpeedyDeletionNomination.indexOf(normalized) != -1) && e.target.form.notify.checked;
 
+	var csdlog = false;
+	if (TwinkleConfig.logSpeedyNominations && value == 'multiple')
+	{
+		for (var i in twinklespeedy.dbmultipleCriteria)
+		{
+			if (typeof twinklespeedy.dbmultipleCriteria[i] == 'string' &&
+				TwinkleConfig.noLogOnSpeedyNomination.indexOf(twinklespeedy.dbmultipleCriteria[i]) === -1)
+			{
+				csdlog = true;
+				break;
+			}
+		}
+	}
+	else csdlog = TwinkleConfig.logSpeedyNominations && TwinkleConfig.noLogOnSpeedyNomination.indexOf(normalized) === -1;
+
 	var params = {
 		value: value,
 		normalized: normalized,
 		watch: watchPage,
 		usertalk: notifyuser,
-		wgCanonicalNamespace : wgCanonicalNamespace
+		wgCanonicalNamespace: wgCanonicalNamespace,
+		lognomination: csdlog
 	};
 
 	Status.init( e.target.form );

@@ -64,6 +64,9 @@ Twinkle.defaultConfig.twinkle = {
 	deleteSysopDefaultToTag: true,
 	speedyWindowHeight: 500,
 	speedyWindowWidth: 800,
+	logSpeedyNominations: false,
+	noLogOnSpeedyNomination: [ "u1" ],
+	speedyLogPageName: "CSD log",
 	 // Unlink
 	unlinkNamespaces: [ "0", "100" ],
 	 // Warn
