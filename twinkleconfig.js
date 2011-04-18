@@ -222,6 +222,19 @@ Twinkle.config.sections = [
 			label: "Prefilled PROD reason",
 			type: "string"
 		},
+
+		{
+			name: "logProdPages",
+			label: "Keep a log in userspace of all pages you tag for PROD",
+			helptip: "Since non-admins do not have access to their deleted contributions, the userspace log offers a good way to keep track of all pages you tag for PROD using Twinkle.",
+			type: "boolean"
+		},
+		{
+			name: "prodLogPageName",
+			label: "Keep the PROD userspace log at this user subpage",
+			helptip: "i.e. User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the PROD userspace log.",
+			type: "string"
+		},
 	]
 },
 

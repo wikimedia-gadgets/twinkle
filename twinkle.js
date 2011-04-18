@@ -48,6 +48,8 @@ Twinkle.defaultConfig.twinkle = {
 	 // PROD
 	watchProdPages: true,
 	prodReasonDefault: "",
+	logProdPages: false,
+	prodLogPageName: "PROD log",
 	 // CSD
 	speedyPromptOnG7: false,
 	watchSpeedyPages: [ "g3", "g5", "g10", "g11", "g12" ],

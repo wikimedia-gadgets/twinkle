@@ -166,7 +166,11 @@ twinkleprod.callbacks = {
 				thispage.setCallbackParameters(params);
 				thispage.lookupCreator(twinkleprod.callbacks.userNotification);
 			}
-			
+			// If not notifying, log this PROD
+			else if( TwinkleConfig.logProdPages ) {
+				twinkleprod.callbacks.addToLog(params, null);
+			}
+
 			var summaryText = "Proposing article for deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
 			text = "\{\{subst:prod" + (params.blp ? " blp" : ("|1=" + params.reason)) + "\}\}\n" + text;
 		}
@@ -184,9 +188,14 @@ twinkleprod.callbacks = {
 				statelem.warn( 'Aborted per user request' );
 				return;
 			}
-			
+
 			var summaryText = "Endorsing proposed deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
 			text = text.replace( prod_re, text.match( prod_re ) + "\n\{\{prod-2|1=" + (params.blp ? "article is a [[WP:BLPPROD|biography of a living person with no sources]]" : params.reason) + "\}\}\n" );
+
+			if( TwinkleConfig.logProdPages ) {
+				params.logEndorsing = true;
+				twinkleprod.callbacks.addToLog(params);
+			}
 		}
 
 		pageobj.setPageText(text);
@@ -195,6 +204,7 @@ twinkleprod.callbacks = {
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 	},
+
 	userNotification: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
 		var initialContrib = pageobj.getCreator();
@@ -205,6 +215,58 @@ twinkleprod.callbacks = {
 		usertalkpage.setCreateOption('recreate');
 		usertalkpage.setFollowRedirect(true);
 		usertalkpage.append();
+		if (TwinkleConfig.logProdPages) {
+			params.logInitialContrib = initialContrib;
+			twinkleprod.callbacks.addToLog(params);
+		}
+	},
+
+	addToLog: function(params) {
+		var wikipedia_page = new Wikipedia.page("User:" + wgUserName + "/" + TwinkleConfig.prodLogPageName, "Adding entry to userspace log");
+		wikipedia_page.setCallbackParameters(params);
+		wikipedia_page.load(twinkleprod.callbacks.saveLog);
+	},
+
+	saveLog: function(pageobj) {
+		var text = pageobj.getPageText();
+		var params = pageobj.getCallbackParameters();
+
+		// add blurb if log page doesn't exist
+		if (!pageobj.exists()) {
+			text =
+				"This is a log of all [[WP:PROD|proposed deletion]] tags applied or endorsed by this user using [[WP:TW|Twinkle]]'s PROD module.\n\n" +
+				"If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and " +
+				"nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].\n"
+			;
+		}
+
+		// create monthly header
+		var date = new Date();
+		var headerRe = new RegExp("^==+\\s*" + date.getUTCMonthName() + "\\s+" + date.getUTCFullYear() + "\\s*==+", "m");
+		if (!headerRe.exec(text)) {
+			text += "\n\n=== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ===";
+		}
+
+		var summarytext;
+		if (params.logEndorsing) {
+			text += "\n# [[" + wgPageName + "]]: endorsed " + (params.blp ? "BLP " : "") + "PROD. \~\~\~\~\~";
+			if (params.reason != '' && params.reason != null) {
+				text += "\n#* '''Reason''': " + params.reason + "\n";
+			}
+			summarytext = "Logging endorsement of PROD nomination of [[" + wgPageName + "]].";
+		} else {
+			text += "\n# [[" + wgPageName + "]]: " + (params.blp ? "BLP " : "") + "PROD";
+			if (params.logInitialContrib) {
+				text += "; notified \{\{user|" + params.logInitialContrib + "\}\}";
+			}
+			text += " \~\~\~\~\~\n#* '''Reason''': " + params.reason + "\n";
+			summarytext = "Logging PROD nomination of [[" + wgPageName + "]].";
+		}
+
+		pageobj.setPageText(text);
+		pageobj.setEditSummary(summarytext + TwinkleConfig.summaryAd);
+		pageobj.setCreateOption("recreate");
+		pageobj.save();
 	}
 }
 
