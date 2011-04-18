@@ -685,6 +685,10 @@ twinklewarn.messages = {
 			label:"Removing proper sources containing dead links", 
 			summary:"Notice: Removing proper sources containing dead links" 
 		},
+		"uw-directcat": { 
+			label:"Applying stub categories manually", 
+			summary:"Notice: Applying stub categories manually" 
+		},
 		"uw-draftfirst": { 
 			label:"Draft in userspace without the risk of speedy deletion", 
 			summary:"Notice: Consider drafting your article in [[Help:Userspace draft|userspace]]"
@@ -706,7 +710,7 @@ twinklewarn.messages = {
 			summary:"Notice: User forgets to place a hang-on reasoning to the talk page" 
 		},
 		"uw-hasty": { 
-			label:"Hasty addition of speedy deletiontags", 
+			label:"Hasty addition of speedy deletion tags", 
 			summary:"Notice: Allow creators time to improve their articles before tagging them for deletion"
 		},
 		"uw-imageuse": {
@@ -756,6 +760,10 @@ twinklewarn.messages = {
 		"uw-patrolled": { 
 			label:"Mark newpages as patrolled when patrolling", 
 			summary:"Notice: Mark newpages as patrolled when patrolling" 
+		},
+		"uw-plagiarism": { 
+			label:"Copying from public domain sources without attribution", 
+			summary:"Notice: Copying from public domain sources without attribution" 
 		},
 		"uw-preview": { 
 			label:"Use preview button to avoid mistakes", 
@@ -816,6 +824,10 @@ twinklewarn.messages = {
 		"uw-tilde": { 
 			label:"Not signing posts", 
 			summary:"Notice: Not signing posts" 
+		},
+		"uw-toppost": { 
+			label:"Posting at the top of talk pages", 
+			summary:"Notice: Posting at the top of talk pages" 
 		},
 		"uw-uaa": { 
 			label:"Reporting of username to WP:UAA not accepted", 

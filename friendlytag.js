@@ -782,14 +782,34 @@ friendlytag.callbacks = {
 				}
 
 				// prompt for other parameters, based on the tag
-				if( tags[i] == 'notenglish' ) {
-					var langname = prompt('Please enter the name of the language the article is thought to be written in.  \n' +
-						"Just click OK if you don't know.  To skip the \{\{notenglish}} tag, click Cancel.", "");
-					if (langname == null) {
-						continue;
-					} else if (langname !== "") {
-						tagText += '|1=' + langname;
-					}
+				switch( tags[i] ) {
+					case 'cleanup':
+						var reason = prompt('You can optionally enter a more specific reason why the article requires cleanup.  \n' +
+							"Just click OK if you don't wish to enter this.  To skip the \{\{cleanup}} tag, click Cancel.", "");
+						if (reason == null) {
+							continue;
+						} else if (reason !== "") {
+							tagText += '|reason=' + reason;
+						}
+						break;
+					case 'notenglish':
+						var langname = prompt('Please enter the name of the language the article is thought to be written in.  \n' +
+							"Just click OK if you don't know.  To skip the \{\{notenglish}} tag, click Cancel.", "");
+						if (langname == null) {
+							continue;
+						} else if (langname !== "") {
+							tagText += '|1=' + langname;
+						}
+						break;
+					case 'roughtranslation':
+						var langname = prompt('Please enter the name of the language the article is thought to have been translated from.  \n' +
+							"Just click OK if you don't know.  To skip the \{\{roughtranslation}} tag, click Cancel.", "");
+						if (langname == null) {
+							continue;
+						} else if (langname !== "") {
+							tagText += '|1=' + langname;
+						}
+						break;
 				}
 				
 				tagText += isRedirect ? '\}\}' : '|date=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}\}\}\n';
