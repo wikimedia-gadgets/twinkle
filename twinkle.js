@@ -57,10 +57,8 @@ Twinkle.defaultConfig.twinkle = {
 	// these two should probably be identical by default
 	notifyUserOnSpeedyDeletionNomination:    [ "db", "g1", "g2", "g3", "g4", "g10", "g11", "g12", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "t2", "t3", "p1", "p2" ],
 	welcomeUserOnSpeedyDeletionNotification: [ "db", "g1", "g2", "g3", "g4", "g10", "g11", "g12", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "t2", "t3", "p1", "p2" ],
-	// XXX admin CSD is broken, uncomment this when it is fixed
-	//openUserTalkPageOnSpeedyDelete: [ "db", "g1", "g2", "g3", "g4", "g5", "g10", "g11", "g12", "a1", "a3", "a7", "a9", "a10", "f3", "f7", "f9", "u3", "t2", "p1" ],
-	//deleteTalkPageOnDelete: false,
-	//orphanBacklinksOnSpeedyDelete: { exclude: [ "g6" ], orphan: true },  // XXX needs to be un-hashed, and made into two separate prefs
+	openUserTalkPageOnSpeedyDelete: [ "db", "g1", "g2", "g3", "g4", "g5", "g10", "g11", "g12", "a1", "a3", "a7", "a9", "a10", "f3", "f7", "f9", "u3", "t2", "p1" ],
+	deleteTalkPageOnDelete: false,
 	deleteSysopDefaultToTag: true,
 	speedyWindowHeight: 500,
 	speedyWindowWidth: 800,
