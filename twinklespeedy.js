@@ -59,19 +59,7 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 							event.target.form.notify.checked = event.target.checked;
 							event.stopPropagation();
 						}
-					},
-					// XXX uncomment me when admin CSD is fixed
-					//{
-					//	label: 'unlink links to this page',
-					//	value: 'orphan_backlinks',
-					//	name: 'orphan_backlinks',
-					//	tooltip: 'If you want to orphan the current page. If checked, excludes will still apply',
-					//	checked: TwinkleConfig.orphanBacklinksOnSpeedyDelete.orphan,
-					//	event: function( event ) {
-					//		TwinkleConfig.orphanBacklinksOnSpeedyDelete.orphan = event.target.checked;
-					//		event.stopPropagation();
-					//	}
-					//}
+					}
 				]
 			} );
 	}
@@ -589,114 +577,90 @@ twinklespeedy.reasonHash = {
 
 twinklespeedy.callbacks = {
 	sysop: {
-	
+
 	// XXX if fixing this admin CSD bit, please do these things as well:
-	//  - make sure to uncomment the admin CSD prefs in twinkle.js defaultConfig
-	//  - unpack the orphanBacklinks pref into two separate prefs (i.e. TwinkleConfig.unlinkBacklinks... (boolean) and TwinkleConfig.speedyUnlinkExcludeNamespaces (array/set))
 	//  - in twinkleconfig.js, uncomment the admin CSD prefs and update the code to match the pref change outlined above
 	// thanks for doing this! -- This, that and the other
-	
-		main: function( self ) {
-			var xmlDoc = self.responseXML;
-			var normal = xmlDoc.evaluate( '//normalized/n/@to', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-			if( normal ) {
-				wgPageName = normal;
-			}
-			var exists = xmlDoc.evaluate( 'boolean(//pages/page[not(@missing)])', xmlDoc, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
 
-			if( ! exists ) {
-				self.statelem.error( "It seems that the page doesn't exist, perhaps it has already been deleted" );
-				return;
-			}
-
-			if( self.params.openusertalk ) {
+		main: function( params ) {
+		
+			if( params.openusertalk ) {
 				// Open talk page of first contributor
-				var query = {
-					'action': 'query',
-					'prop': 'revisions',
-					'titles': wgPageName,
-					'rvlimit': 1,
-					'rvprop': 'user',
-					'rvdir': 'newer'
-				}
-
-				var wikipedia_api = new Wikipedia.api( 'Grabbing username of initial contributor', query, twinklespeedy.callbacks.sysop.openUserTalkPage );
-				wikipedia_api.params = self.params;
-				wikipedia_api.post();
+				var thispage = new Wikipedia.page( wgPageName );
+				thispage.setCallbackParameters( params );
+				thispage.lookupCreator( twinklespeedy.callbacks.sysop.openUserTalkPage );
 			}
 
 			var query = {
-				'title': wgPageName,
-				'action': 'delete'
+				'action': 'query',
+				'prop': 'info',
+				'intoken': 'delete',
+				'titles': wgPageName
 			};
 
-			var wikipedia_wiki = new Wikipedia.wiki( 'Deleting page', query, twinklespeedy.callbacks.sysop.deletePage );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.followRedirect = false;
-			wikipedia_wiki.get();
+			var wikipedia_api = new Wikipedia.api( 'Deleting page', query, twinklespeedy.callbacks.sysop.deletePage );
+			wikipedia_api.params = params;
+			wikipedia_api.post();
 
 			if(
 				TwinkleConfig.deleteTalkPageOnDelete &&
-				self.params.normalized != 'f8' &&
+				params.normalized != 'f8' &&
 				wgNamespaceNumber % 2 == 0 &&
 				wgNamespaceNumber != Namespace.USER &&
 				document.getElementById( 'ca-talk' ).className != 'new'
 			) {
 				var talk_page = Wikipedia.namespaces[ wgNamespaceNumber + 1 ] + ':' + wgTitle;
-				var query = query = {
-					'title': talk_page,
-					'action': 'delete'
+				var query = {
+					'action': 'query',
+					'prop': 'info',
+					'intoken': 'delete',
+					'titles': talk_page
 				};
-				var wikipedia_wiki = new Wikipedia.wiki( 'Deleting talk page', query, twinklespeedy.callbacks.sysop.deleteTalkPage );
-				wikipedia_wiki.params = self.params;
-				wikipedia_wiki.followRedirect = false;
-				wikipedia_wiki.get();
+				var wikipedia_api = new Wikipedia.api( 'Deleting talk page', query, twinklespeedy.callbacks.sysop.deleteTalkPage );
+				wikipedia_api.params = params;
+				wikipedia_api.post();
 			}
 
-			if( wgNamespaceNumber == 6 && self.params.normalized != 'f8' ) {
-				var query = {
-					'action': 'query',
-					'list': 'imageusage',
-					'titles': wgPageName,
-					'iulimit': userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
-				};
-				var wikipedia_api = new Wikipedia.api( 'Grabbing file links', query, twinklespeedy.callbacks.sysop.unlinkImageInstancesMain );
-				wikipedia_api.params = self.params;
-				wikipedia_api.post();
+			if( wgNamespaceNumber == 6 && params.normalized != 'f8' ) {
+				var link = document.createElement( 'a' );
+				link.setAttribute( 'href', 'javascript:twinkleunlink.callback()' );
+				link.style.fontSize = "130%";  // okay, it's crass...
+				link.style.fontWeight = "bold";
+				link.textContent = 'click here to go to the Unlink tool';
+				var bigtext = document.createElement( 'span' );
+				bigtext.style.fontSize = "130%";  // okay, it's crass...
+				bigtext.style.fontWeight = "bold";
+				bigtext.textContent = 'To orphan backlinks and remove instances of image usage';
+				Status.info( bigtext, link );
+			} else {
+				var link = document.createElement( 'a' );
+				link.setAttribute( 'href', 'javascript:twinkleunlink.callback()' );
+				link.style.fontSize = "130%";  // okay, it's crass...
+				link.style.fontWeight = "bold";
+				link.textContent = 'click here to go to the Unlink tool';
+				var bigtext = document.createElement( 'span' );
+				bigtext.style.fontSize = "130%";  // okay, it's crass...
+				bigtext.style.fontWeight = "bold";
+				bigtext.textContent = 'To orphan backlinks';
+				Status.info( bigtext, link );
 			}
-			var doOrphan = TwinkleConfig.orphanBacklinksOnSpeedyDelete;
-			if(
-				doOrphan.orphan &&
-				doOrphan.exclude.indexOf( self.params.normalized.toLowerCase() ) == -1
-			) {
-				var query = {
-					'action': 'query',
-					'list': 'backlinks',
-					'blfilterredir': 'nonredirects',
-					'bltitle': wgPageName,
-					'bllimit': userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
-					'blnamespace': [0, 100] // Main namespace and portal namespace only, keep on talk pages.
-				};
-				var wikipedia_api = new Wikipedia.api( 'Grabbing backlinks', query, twinklespeedy.callbacks.sysop.unlinkBacklinksMain );
-				wikipedia_api.params = self.params;
-				wikipedia_api.post();
-			}
+
 			var query = {
 				'action': 'query',
 				'list': 'backlinks',
 				'blfilterredir': 'redirects',
 				'bltitle': wgPageName,
-				'bllimit': userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
+				'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
 			};
 			var wikipedia_api = new Wikipedia.api( 'Grabbing redirects', query, twinklespeedy.callbacks.sysop.deleteRedirectsMain );
-			wikipedia_api.params = self.params;
+			wikipedia_api.params = params;
 			wikipedia_api.post();
 
 		},
-		openUserTalkPage: function( self ) {
-			var xmlDoc = self.responseXML;
-			var user = xmlDoc.evaluate( '//rev/@user', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-			var statusIndicator = new Status('Opening user talk page edit form for user ' + user, 'opening');
+		openUserTalkPage: function( pageobj ) {
+			pageobj.getStatusElement().unlink();  // don't need it anymore
+			var user = pageobj.getCreator();
+			var statusIndicator = new Status('Opening user talk page edit form for ' + user, 'opening...');
 
 			var query = {
 				'title': 'User talk:' + user,
@@ -719,278 +683,130 @@ twinklespeedy.callbacks = {
 
 			statusIndicator.info( 'complete' );
 		},
-		unlinkBacklinksMain: function( self ) {
-			var xmlDoc = self.responseXML;
-			var snapshot = xmlDoc.evaluate('//backlinks/bl/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
+		deleteRedirectsMain: function( apiobj ) {
+			var xmlDoc = apiobj.getXML();
+			var $snapshot = $(xmlDoc).find('backlinks bl');
 
-			if( snapshot.snapshotLength == 0 ) {
-				return;
-			}
+			var total = $snapshot.length;
 
-			var statusIndicator = new Status('Removing backlinks', '0%');
-
-			var total = snapshot.snapshotLength * 2;
-
-			var onsuccess = function( self ) {
-				var obj = self.params.obj;
-				var total = self.params.total;
-				var now = parseInt( 100 * ++(self.params.current)/total ) + '%';
-				obj.update( now );
-				self.statelem.unlink();
-				if( self.params.current >= total ) {
-					obj.info( now + ' (completed)' );
-					Wikipedia.removeCheckpoint();
-				}
-			}
-			var onloaded = onsuccess;
-
-			var onloading = function( self ) {}
-
-
-			Wikipedia.addCheckpoint();
-			if( snapshot.snapshotLength == 0 ) {
-				statusIndicator.info( '100% (completed)' );
-				Wikipedia.removeCheckpoint();
-				return;
-			}
-
-			var params = clone( self.params );
-			params.current = 0;
-			params.total = total;
-			params.obj = statusIndicator;
-			params.page = wgPageName;
-
-
-			for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
-				var title = snapshot.snapshotItem(i).value;
-				var query = {
-					'title': title,
-					'action': 'submit'
-				}
-				var wikipedia_wiki = new Wikipedia.wiki( "Unlinking on " + title, query, twinklespeedy.callbacks.sysop.unlinkBacklinks );
-				wikipedia_wiki.params = params;
-				wikipedia_wiki.onloading = onloading;
-				wikipedia_wiki.onloaded = onloaded;
-				wikipedia_wiki.onsuccess = onsuccess;
-				wikipedia_wiki.get();
-			}
-		},
-		unlinkBacklinks: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var text = form.wpTextbox1.value;
-			var old_text = text;
-			var wikiPage = new Mediawiki.Page( text );
-			wikiPage.removeLink( self.params.page );
-
-			text = wikiPage.getText();
-			if( text == old_text ) {
-				// Nothing to do, return
-				self.onsuccess( self );
-				Wikipedia.actionCompleted( self );
-				return;
-			}
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': undefined,
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': '',
-				'wpSummary': 'Removing backlinks to ' + self.params.page + " that has been speedily deleted per ([[WP:CSD#" + self.params.normalized.toUpperCase() + "|CSD " + self.params.normalized.toUpperCase() + "]])" + ". " + TwinkleConfig.deletionSummaryAd,
-				'wpTextbox1': text
-			};
-			self.post( postData );
-		},
-		deleteRedirectsMain: function( self ) {
-			var xmlDoc = self.responseXML;
-			var snapshot = xmlDoc.evaluate('//backlinks/bl/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
-
-			var total = snapshot.snapshotLength * 2;
-
-			if( snapshot.snapshotLength == 0 ) {
+			if( total == 0 ) {
 				return;
 			}
 
 			var statusIndicator = new Status('Deleting redirects', '0%');
 
-			var onsuccess = function( self ) {
-				var obj = self.params.obj;
-				var total = self.params.total;
-				var now = parseInt( 100 * ++(self.params.current)/total ) + '%';
+			var onsuccess = function( apiobj ) {
+				var obj = apiobj.params.obj;
+				var total = apiobj.params.total;
+				var now = parseInt( 100 * ++(apiobj.params.current)/total ) + '%';
 				obj.update( now );
-				self.statelem.unlink();
-				if( self.params.current >= total ) {
+				apiobj.statelem.unlink();
+				if( apiobj.params.current >= total ) {
 					obj.info( now + ' (completed)' );
 					Wikipedia.removeCheckpoint();
 				}
 			}
-			var onloaded = onsuccess;
-
-			var onloading = function( self ) {}
-
 
 			Wikipedia.addCheckpoint();
-			if( snapshot.snapshotLength == 0 ) {
-				statusIndicator.info( '100% (completed)' );
-				Wikipedia.removeCheckpoint();
-				return;
-			}
 
-			var params = clone( self.params );
+			var params = clone( apiobj.params );
 			params.current = 0;
 			params.total = total;
 			params.obj = statusIndicator;
 
-
-			for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
-				var title = snapshot.snapshotItem(i).value;
+			$snapshot.each(function(key, value) {
+				var title = $(value).attr('title');
 				var query = {
-					'title': title,
-					'action': 'delete'
-				}
-				var wikipedia_wiki = new Wikipedia.wiki( "Deleting " + title, query, twinklespeedy.callbacks.sysop.deleteRedirects );
-				wikipedia_wiki.params = params;
-				wikipedia_wiki.onloading = onloading;
-				wikipedia_wiki.onloaded = onloaded;
-				wikipedia_wiki.onsuccess = onsuccess;
-				wikipedia_wiki.followRedirect = false;
-				wikipedia_wiki.get();
-			}
-		},
-		deleteRedirects: function( self ) {
-			var form = this.responseXML.getElementById( 'deleteconfirm' );
-			if( ! form ) { // Hell, file deletion is b0rked :(
-				form = this.responseXML.getElementsByTagName( 'form' )[0];
-				var postData = {
-					'wpDeleteReasonList': 'other',
-					'wpReason': "[[WP:CSD#G8|G8]]: Redirect to deleted page \"" + wgPageName + "\" " + TwinkleConfig.deletionSummaryAd,
-					'wpEditToken': form.wpEditToken.value
-				}
-			} else {
+					'action': 'query',
+					'prop': 'info',
+					'intoken': 'delete',
+					'titles': title
+				};
 
-				var postData = {
-					'wpWatch': form.wpWatch.checked ? '' : undefined,
-					'wpDeleteReasonList': 'other',
-					'wpReason': "[[WP:CSD#G8|G8]]: Redirect to deleted page \"" + wgPageName + "\" " + TwinkleConfig.deletionSummaryAd,
-					'wpEditToken': form.wpEditToken.value
-				}
-			}
-			self.post( postData );
+				var wikipedia_api = new Wikipedia.api( 'Deleting redirect "' + title + '"', query, twinklespeedy.callbacks.sysop.deleteRedirects );
+				wikipedia_api.params = params;
+				wikipedia_api.onsuccess = onsuccess;
+				wikipedia_api.statelem.status( 'retrieving data...' );
+				wikipedia_api.post();
+			});
 		},
-		unlinkImageInstancesMain: function( self ) {
-			var xmlDoc = self.responseXML;
-			var snapshot = xmlDoc.evaluate('//imageusage/iu/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
-
-			if( snapshot.snapshotLength == 0 ) {
+		deleteRedirects: function( apiobj ) {
+			var xml = apiobj.getXML();
+			if( $(xml).find('page').attr('missing') === "" ) {
+				apiobj.statelem.error( "It seems that the redirect doesn't exist, perhaps it has already been deleted" );
+				return;
+			}
+	
+			var editToken = $(xml).find('page').attr('deletetoken');
+			if (!editToken) {
+				apiobj.statelem.error("Failed to retrieve delete token.");
 				return;
 			}
 
-			var statusIndicator = new Status('Unlinking file instances ', '0%');
-
-			var total = snapshot.snapshotLength * 2;
-
-			var onsuccess = function( self ) {
-				var obj = self.params.obj;
-				var total = self.params.total;
-				var now = parseInt( 100 * ++(self.params.current)/total ) + '%';
-				obj.update( now );
-				self.statelem.unlink();
-				if( self.params.current >= total ) {
-					obj.info( now + ' (completed)' );
-					Wikipedia.removeCheckpoint();
-				}
-			}
-			var onloaded = onsuccess;
-
-			var onloading = function( self ) {}
-
-
-			Wikipedia.addCheckpoint();
-			if( snapshot.snapshotLength == 0 ) {
-					statusIndicator.info( '100% (completed)' );
-					Wikipedia.removeCheckpoint();
-					return;
-			}
-
-			var params = clone( self.params );
-			params.current = 0;
-			params.total = total;
-			params.obj = statusIndicator;
-			params.image = wgTitle;
-
-			for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
-				var title = snapshot.snapshotItem(i).value;
-				var query = {
-					'title': title,
-					'action': 'submit'
-				}
-				var wikipedia_wiki = new Wikipedia.wiki( "Unlinking on " + title, query, twinklespeedy.callbacks.sysop.unlinkImageInstances );
-				wikipedia_wiki.params = params;
-				wikipedia_wiki.onloading = onloading;
-				wikipedia_wiki.onloaded = onloaded;
-				wikipedia_wiki.onsuccess = onsuccess;
-				wikipedia_wiki.get();
-			}
-		},
-		unlinkImageInstances: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			var text = form.wpTextbox1.value;
-			var old_text = text;
-			var wikiPage = new Mediawiki.Page( text );
-			wikiPage.commentOutImage( self.params.image, 'Commented out because file was deleted' );
-
-			text = wikiPage.getText();
-			if( text == old_text ) {
-				// Nothing to do, return
-				self.onsuccess( self );
-				Wikipedia.actionCompleted( self );
-				return;
-			}
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': undefined,
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSection': '',
-				'wpSummary': 'Removing instance of file ' + self.params.image + " that has been speedily deleted per [[WP:CSD#" + self.params.normalized.toUpperCase() + "|CSD " + self.params.normalized.toUpperCase() + "]]" + ". " + TwinkleConfig.deletionSummaryAd,
-				'wpTextbox1': text
+			var query = {
+				'action': 'delete',
+				'title': $(xml).find('page').attr('title'),
+				'token': editToken,
+				'reason': "[[WP:CSD#G8|G8]]: Redirect to deleted page \"" + wgPageName + "\" " + TwinkleConfig.deletionSummaryAd
 			};
-			self.post( postData );
-		},
-		deletePage: function( self ) {
-			var form = this.responseXML.getElementById( 'deleteconfirm' );
-			if( ! form ) { // Hell, file deletion is b0rked :(
-				form = this.responseXML.getElementsByTagName( 'form' )[0];
-				var postData = {
-					'wpDeleteReasonList': 'other',
-					'wpReason': "[[WP:CSD#" + self.params.normalized.toUpperCase() + "|" + self.params.normalized.toUpperCase() + "]]: " + self.params.reason + " " + TwinkleConfig.deletionSummaryAd,
-					'wpEditToken': form.wpEditToken.value
-				}
-				self.post( postData );
-			} else {
 
-				var postData = {
-					'wpWatch': (self.params.watch || form.wpWatch.checked) ? '' : undefined,
-					'wpDeleteReasonList': 'other',
-					'wpReason': "[[WP:CSD#" + self.params.normalized.toUpperCase() + "|" + self.params.normalized.toUpperCase() + "]]: " + self.params.reason + " " + TwinkleConfig.deletionSummaryAd,
-					'wpEditToken': form.wpEditToken.value
-				}
-				self.post( postData );
-			}
+			var wikipedia_api = new Wikipedia.api( 'sending data...', query );
+			wikipedia_api.post();
 		},
-		deleteTalkPage: function( self ) {
-			form = this.responseXML.getElementById( 'deleteconfirm' );
-
-			var postData = {
-				'wpWatch': (self.params.watch || form.wpWatch.checked) ? '' : undefined,
-				'wpDeleteReasonList': 'other',
-				'wpReason': "[[WP:CSD#G8|G8]]: Talk page of deleted page \"" + wgPageName + "\" " + TwinkleConfig.deletionSummaryAd,
-				'wpEditToken': form.wpEditToken.value
+		deletePage: function( apiobj ) {
+			var xml = apiobj.getXML();
+			if( $(xml).find('page').attr('missing') === "" ) {
+				apiobj.statelem.error( "It seems that the talk page doesn't exist, perhaps it has already been deleted" );
+				return;
 			}
-			self.post( postData );
+
+			var editToken = $(xml).find('page').attr('deletetoken');
+			if (!editToken) {
+				apiobj.statelem.error("Failed to retrieve delete token.");
+				return;
+			}
+
+			var reason = prompt("Enter the deletion summary to use, or press OK to accept the automatically generated one.", 
+				"[[WP:CSD#" + apiobj.params.normalized.toUpperCase() + "|" + apiobj.params.normalized.toUpperCase() + "]]: " + apiobj.params.reason);
+			if (reason == null) {
+				return;
+			}
+
+			var query = {
+				'action': 'delete',
+				'title': $(xml).find('page').attr('title'),
+				'token': editToken,
+				'reason': reason + TwinkleConfig.deletionSummaryAd
+			};
+			if (apiobj.params.watch) {
+				query.watch = 'true';
+			}
+
+			var wikipedia_api = new Wikipedia.api( 'sending data...', query );
+			wikipedia_api.post();
+		},
+		deleteTalkPage: function( apiobj ) {
+			var xml = apiobj.getXML();
+			if( $(xml).find('page').attr('missing') === "" ) {
+				apiobj.statelem.error( "It seems that the page doesn't exist, perhaps it has already been deleted" );
+				return;
+			}
+
+			var editToken = $(xml).find('page').attr('deletetoken');
+			if (!editToken) {
+				apiobj.statelem.error("Failed to retrieve delete token.");
+				return;
+			}
+
+			var query = {
+				'action': 'delete',
+				'title': $(xml).find('page').attr('title'),
+				'token': editToken,
+				'reason': "[[WP:CSD#G8|G8]]: Talk page of deleted page \"" + wgPageName + "\" " + TwinkleConfig.deletionSummaryAd
+			};
+
+			var wikipedia_api = new Wikipedia.api( 'sending data...', query );
+			wikipedia_api.post();
 		}
 	},
 
@@ -1389,9 +1205,6 @@ twinklespeedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSys
 		return twinklespeedy.callback.evaluateUser(e);
 	}
 
-	if (!confirm("Twinkle's admin CSD functionality has not been upgraded to use the API, and will probably not work. Do you want to try it anyway?"))
-		return null;
-
 	var value = e.target.values;
 	var normalized = twinklespeedy.normalizeHash[ value ];
 
@@ -1404,13 +1217,7 @@ twinklespeedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSys
 	};
 	Status.init( e.target.form );
 
-	var query = {
-		'action': 'query',
-		'titles': wgPageName
-	}
-	var wikipedia_api = new Wikipedia.api( 'Checking if page exists', query, twinklespeedy.callbacks.sysop.main );
-	wikipedia_api.params = params;
-	wikipedia_api.post();
+	twinklespeedy.callbacks.sysop.main( params );
 	return null;
 }
 
