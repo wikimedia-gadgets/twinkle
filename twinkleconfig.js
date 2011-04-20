@@ -362,8 +362,6 @@ Twinkle.config.sections = [
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
 		},
 
-		/* CSD admin stuff is broken, so commenting this stuff out
-
 		// TwinkleConfig.openUserTalkPageOnSpeedyDelete (array of strings)
 		// What types of actions that should result user talk page to be opened when speedily deleting (admin only)
 		{
@@ -379,26 +377,16 @@ Twinkle.config.sections = [
 		// If talk page if exists should also be deleted (CSD G8) when spedying a page (admin only)
 		{
 			name: "deleteTalkPageOnDelete",
-			label: "Also delete talk page when speedy deleting a page",
+			label: "Check the \"also delete talk page\" box by default",
 			adminOnly: true,
 			type: "boolean"
 		},
-
-		// TwinkleConfig.orphanNormalPagesOnSpeedyDelete (hash)
-		// Defines if all backlinks to a page should be removed.
-		// property 'exclude' defined actions not to orphan
-		// XXX needs to be modified so it doesn't nest JSON
-		//if( typeof( TwinkleConfig.orphanBacklinksOnSpeedyDelete ) == 'undefined' ) {
-		//	TwinkleConfig.orphanBacklinksOnSpeedyDelete = { exclude: ['g6'], orphan:true };
-		//}
-		*/
 
 		// TwinkleConfig.deleteSysopDefaultToTag (boolean)
 		// Make the CSD screen default to "tag" instead of "delete" (admin only)
 		{
 			name: "deleteSysopDefaultToTag",
 			label: "Default to speedy tagging instead of outright deletion",
-			helptip: "Outright speedy deletion using Twinkle is broken at the moment, so leave this option enabled!",
 			adminOnly: true,
 			type: "boolean"
 		},
