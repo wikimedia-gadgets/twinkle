@@ -33,6 +33,9 @@ friendlytalkback.callback = function friendlytalkbackCallback( uid ) {
 						label: 'Other user talk page',
 						value: 'usertalk' },
 					{
+						label: "Administrators' noticeboard",
+						value: 'an' },
+					{
 						label: 'Other page',
 						value: 'other' } ],
 				event: friendlytalkback.callback.change_target
@@ -119,6 +122,31 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 					value: friendlytalkback.prev_section
 				} );
 			break;
+		case 'an':
+			var noticeboard = work_area.append( {
+					type: 'select',
+					name: 'noticeboard',
+					label: 'Noticeboard:'
+				} );
+			noticeboard.append( {
+					type: 'option',
+					label: "WP:AN (Administrators' noticeboard)",
+					value: "Wikipedia:Administrators' noticeboard"
+				} );
+			noticeboard.append( {
+					type: 'option',
+					label: 'WP:ANI (Adminstrators\' noticeboard/Incidents)',
+					selected: true,
+					value: "Wikipedia:Administrators' noticeboard/Incidents"
+				} );
+			work_area.append( {
+					type:'input',
+					name:'section',
+					label:'Linked thread',
+					tooltip:'The heading of the relevant AN or ANI thread.',
+					value: friendlytalkback.prev_section
+				} );
+			break;
 		case 'other':
 			work_area.append( { 
 					type:'input',
@@ -137,8 +165,10 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 				} );
 			break;
 	}
-	
-	work_area.append( { type:'textarea', label:'Additional message (optional):', name:'message', tooltip:'An additional message that you would like to leave below the talkback template.  Your signature will be added to the end of the message if you leave one.' } );
+
+	if (value !== "an") {
+		work_area.append( { type:'textarea', label:'Additional message (optional):', name:'message', tooltip:'An additional message that you would like to leave below the talkback template.  Your signature will be added to the end of the message if you leave one.' } );
+	}
 
 	work_area = work_area.render();
 	root.replaceChild( work_area, old_area );
@@ -161,8 +191,10 @@ friendlytalkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 			if( page == '' ) {
 				alert( 'You must specify the full page name when your message is not on a user talk page.' );
 				return;
-			}			
+			}
 		}
+	} else if (tbtarget == "an") {
+		page = e.target.noticeboard.value;
 	}
 
 	SimpleWindow.setButtonsEnabled( false );
@@ -174,25 +206,34 @@ friendlytalkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 	var talkpage = new Wikipedia.page(wgPageName, "Adding talkback");
 	var tbPageName = (tbtarget == 'mytalk') ? wgUserName : page;
 
-	//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
-	var text = '\n==' + FriendlyConfig.talkbackHeading.replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n{\{talkback|';
-	text += tbPageName;
+	var text;
+	if ( tbtarget === "an" ) {
+		text = "\n== " + FriendlyConfig.adminNoticeHeading + " ==\n\{\{subst:ANI-notice|thread=";
+		text += section + "|noticeboard=" + tbPageName + "}}\~\~\~\~";
 
-	if( section != '' ) {
-		text += '|' + section;
-	}
+		talkpage.setEditSummary("Notice of AN/ANI discussion" + TwinkleConfig.summaryAd);
+	} else {
+		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
+		text = '\n==' + FriendlyConfig.talkbackHeading.replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n{\{talkback|';
+		text += tbPageName;
 
-	text += '|ts=\~\~\~\~\~\}\}';
-	
-	if( e.target.message.value != '' ) {
-		text += '\n' + e.target.message.value + '  \~\~\~\~';
-	} else if( FriendlyConfig.insertTalkbackSignature ) {
-		text += '\n\~\~\~\~';
+		if( section != '' ) {
+			text += '|' + section;
+		}
+
+		text += '|ts=\~\~\~\~\~\}\}';
+
+		if( e.target.message.value != '' ) {
+			text += '\n' + e.target.message.value + '  \~\~\~\~';
+		} else if( FriendlyConfig.insertTalkbackSignature ) {
+			text += '\n\~\~\~\~';
+		}
+
+		talkpage.setEditSummary("Talkback ([[" + (tbtarget == 'other' ? '' : 'User talk:') + tbPageName +
+			(section ? ('#' + section) : '') + "]])" + TwinkleConfig.summaryAd);
 	}
 
 	talkpage.setAppendText(text);
-	talkpage.setEditSummary("Talkback ([[" + (tbtarget == 'other' ? '' : 'User talk:') + tbPageName +
-		(section ? ('#' + section) : '') + "]])" + TwinkleConfig.summaryAd);
 	talkpage.setCreateOption('recreate');
 	talkpage.setMinorEdit(FriendlyConfig.markTalkbackAsMinor);
 	talkpage.setFollowRedirect(true);

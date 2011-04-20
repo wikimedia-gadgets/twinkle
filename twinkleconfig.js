@@ -132,17 +132,13 @@ Twinkle.config.sections = [
 },
 
 // a second "general" section for FriendlyConfig general options is required
-{
-	title: "General (welcome/talkback)",
-	inFriendlyConfig: true,
-	preferences: [
-		{
-			name: "insertHeadings",
-			label: "Insert section headings before welcomes and talkbacks",
-			type: "boolean"
-		},
-	]
-},
+//{
+//	title: "General (welcome/talkback)",
+//	inFriendlyConfig: true,
+//	preferences: [
+//
+//	]
+//},
 
 {
 	title: "ARV",
@@ -475,7 +471,11 @@ Twinkle.config.sections = [
 		{
 			name: "talkbackHeading",
 			label: "Section heading to use for talkbacks",
-			helptip: "This only works if headings are enabled under \"General (welcome/talkback)\" above.",
+			type: "string"
+		},
+		{
+			name: "adminNoticeHeading",
+			label: "Section heading to use for administrators' noticeboard notices",
 			type: "string"
 		},
 	]
@@ -554,9 +554,14 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 		{
+			name: "insertHeadings",
+			label: "Insert a section heading before welcomes",
+			type: "boolean"
+		},
+		{
 			name: "welcomeHeading",
 			label: "Section heading to use for welcomes",
-			helptip: "This only works if headings are enabled under \"General (welcome/talkback)\" above.",
+			helptip: "This only works if headings are enabled.",
 			type: "string"
 		},
 		{
