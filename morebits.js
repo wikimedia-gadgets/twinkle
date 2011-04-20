@@ -1813,10 +1813,18 @@ Wikipedia.api.prototype = {
  *                      between retrieving the edit token and saving the edit (default)
  *
  * exists(): returns true if the page existed on the wiki when it was last loaded
+ *
+ * lookupCreator(onSuccess): Retrieves the username of the user who created the page
+ *    onSuccess - callback function which is called when the username is found
+ *                within the callback, the username can be retrieved using the getCreator() function
  * 
  * getCreator(): returns the user who created the page following lookupCreator()
  *
  * patrol(): marks the page as patrolled (only when "rcid" is present in the query string)
+ *
+ * move(onSuccess, onFailure): Moves a page to another title
+ *
+ * deletePage(onSuccess, onFailure): Deletes a page (for admins only)
  *
  */
 
@@ -2138,7 +2146,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		}
 
 		ctx.onMoveSuccess = onSuccess;
-		ctx.onMoveFailure = onSuccess;
+		ctx.onMoveFailure = onFailure;
 
 		var query = {
 			action: 'query',
@@ -2171,7 +2179,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		}
 
 		ctx.onDeleteSuccess = onSuccess;
-		ctx.onDeleteFailure = onSuccess;
+		ctx.onDeleteFailure = onFailure;
 
 		var query = {
 			action: 'query',
@@ -2545,6 +2553,7 @@ Wikipedia.page = function(pageName, currentAction) {
  * - Should we retry loads also?
  * - Need to reset current action before the save?
  * - Deal with action.completed stuff
+ * - XXX need to reset all parameters once done (e.g. edit summary, move destination, etc.)
  */
 
 /*
