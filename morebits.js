@@ -1708,7 +1708,8 @@ Wikipedia.api.prototype = {
  * load(onSuccess, onFailure): Loads the text for the page
  *    onSuccess - callback function which is called when the load has succeeded
  *    onFailure - callback function which is called when the load fails (optional)
- *                *** onFailure for load() is not yet implemented – do we need it? ***
+ *                XXX onFailure for load() is not yet implemented – do we need it? -- UncleDouggie
+ *                    probably not -- TTO
  *
  * save(onSuccess, onFailure): Saves the text for the page. Must be preceded by calling load().
  *    onSuccess - callback function which is called when the save has succeeded (optional)
@@ -1911,6 +1912,22 @@ Wikipedia.page = function(pageName, currentAction) {
 		return ctx.creator;
 	};
 
+	this.setMoveDestination = function(destination) {
+		ctx.moveDestination = destination;
+	}
+
+	this.setMoveTalkPage = function(flag) {
+		ctx.moveTalkPage = !!flag;
+	};
+
+	this.setMoveSubpages = function(flag) {
+		ctx.moveSubpages = !!flag;
+	};
+
+	this.setMoveSuppressRedirect = function(flag) {
+		ctx.moveSuppressRedirect = !!flag;
+	};
+
 	this.getStatusElement = function() {
 		return ctx.statusElement;
 	};
@@ -2110,6 +2127,68 @@ Wikipedia.page = function(pageName, currentAction) {
 		}
 	};
 
+	this.move = function(onSuccess, onFailure) {
+		if (!ctx.editSummary) {
+			ctx.statusElement.error("Internal error: move reason not set before move (use setEditSummary function)!");
+			return;
+		}
+		if (!ctx.moveDestination) {
+			ctx.statusElement.error("Internal error: destination page name was not set before move!");
+			return;
+		}
+
+		ctx.onMoveSuccess = onSuccess;
+		ctx.onMoveFailure = onSuccess;
+
+		var query = {
+			action: 'query',
+			prop: 'info',
+			intoken: 'move',
+			titles: ctx.pageName
+		};
+		if (ctx.followRedirect) {
+			query.redirects = '';  // follow all redirects
+		}
+		if (userIsInGroup('sysop')) {
+			ctx.loadQuery.inprop = 'protection';
+		}
+
+		ctx.moveApi = new Wikipedia.api("Retrieving move token...", query, fnProcessMove, ctx.statusElement);
+		ctx.moveApi.setParent(this);
+		ctx.moveApi.post();
+	};
+
+	// |delete| is a reserved word in some flavours of JS
+	this.deletePage = function(onSuccess, onFailure) {
+		// if a non-admin tries to do this, don't bother
+		if (!userIsInGroup('sysop')) {
+			ctx.statusElement.error("Cannot delete page: only admins can do that");
+			return;
+		}
+		if (!ctx.editSummary) {
+			ctx.statusElement.error("Internal error: delete reason not set before delete (use setEditSummary function)!");
+			return;
+		}
+
+		ctx.onDeleteSuccess = onSuccess;
+		ctx.onDeleteFailure = onSuccess;
+
+		var query = {
+			action: 'query',
+			prop: 'info',
+			inprop: 'protection',
+			intoken: 'delete',
+			titles: ctx.pageName
+		};
+		if (ctx.followRedirect) {
+			query.redirects = '';  // follow all redirects
+		}
+
+		ctx.deleteApi = new Wikipedia.api("Retrieving delete token...", query, fnProcessDelete, ctx.statusElement);
+		ctx.deleteApi.setParent(this);
+		ctx.deleteApi.post();
+	};
+
 	/**
 	 * Initialization
 	 */
@@ -2140,6 +2219,10 @@ Wikipedia.page = function(pageName, currentAction) {
 		watchlistOption: 'nochange',
 		pageExists: false,
 		creator: null,
+		moveDestination: null,
+		moveTalkPage: false,
+		moveSubpages: false,
+		moveSuppressRedirect: false,
 		 // internal status
 		pageLoaded: false,
 		editToken: null,
@@ -2154,11 +2237,19 @@ Wikipedia.page = function(pageName, currentAction) {
 		onSaveSuccess: null,
 		onSaveFailure: null,
 		onLookupCreatorSuccess: null,
+		onMoveSuccess: null,
+		onMoveFailure: null,
+		onDeleteSuccess: null,
+		onDeleteFailure: null,
 		 // internal objects
 		loadQuery: null,
 		loadApi: null,
 		saveApi: null,
-		lookupCreatorApi: null
+		lookupCreatorApi: null,
+		moveApi: null,
+		moveProcessApi: null,
+		deleteApi: null,
+		deleteProcessApi: null,
 	};
 
 	/**
@@ -2357,6 +2448,95 @@ Wikipedia.page = function(pageName, currentAction) {
 			return;
 		}
 		ctx.onLookupCreatorSuccess(this);
+	};
+
+	var fnProcessMove = function() {
+		var xml = ctx.moveApi.getXML();
+
+		if ($(xml).find('page').attr('missing') === "") {
+			ctx.statusElement.error("Cannot move the page, because it no longer exists");
+			return;
+		}
+
+		// extract protection info
+		if (userIsInGroup('sysop')) {
+			var editprot = $(xml).find('pr[type="edit"]');
+			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !confirm('You are about to move the fully protected page "' + ctx.pageName + 
+				(editprot.attr('expiry') === 'indefinite' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
+				'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
+				ctx.statusElement.error("Deletion of fully protected page was aborted.");
+				return;
+			}
+		}
+
+		var moveToken = $(xml).find('page').attr('movetoken');
+		if (!moveToken) {
+			ctx.statusElement.error("Failed to retrieve delete token.");
+			return;
+		}
+
+		var query = {
+			'action': 'move',
+			'from': $(xml).find('page').attr('title'),
+			'to': ctx.moveDestination,
+			'token': deleteToken,
+			'reason': ctx.editSummary
+		};
+		if (ctx.moveTalkPage) {
+			query.movetalk = 'true';
+		}
+		if (ctx.moveSubpages) {
+			query.movesubpages = 'true';  // XXX don't know whether this works for non-admins
+		}
+		if (ctx.moveSuppressRedirect) {
+			query.noredirect = 'true';
+		}
+		if (ctx.watchlistOption === 'watch') {
+			query.watch = 'true';
+		}
+
+		ctx.moveProcessApi = new Wikipedia.api("moving page...", query, ctx.onMoveSuccess, ctx.statusElement, ctx.onMoveFailure);
+		ctx.moveProcessApi.setParent(this);
+		ctx.moveProcessApi.post();
+	};
+
+
+	var fnProcessDelete = function() {
+		var xml = ctx.deleteApi.getXML();
+
+		if ($(xml).find('page').attr('missing') === "") {
+			ctx.statusElement.error("Cannot delete the page, because it no longer exists");
+			return;
+		}
+
+		// extract protection info
+		var editprot = $(xml).find('pr[type="edit"]');
+		if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !confirm('You are about to delete the fully protected page "' + ctx.pageName + 
+			(editprot.attr('expiry') === 'indefinite' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
+			'.  \n\nClick OK to proceed with the deletion, or Cancel to skip this deletion.')) {
+			ctx.statusElement.error("Deletion of fully protected page was aborted.");
+			return;
+		}
+
+		var deleteToken = $(xml).find('page').attr('deletetoken');
+		if (!deleteToken) {
+			ctx.statusElement.error("Failed to retrieve delete token.");
+			return;
+		}
+
+		var query = {
+			'action': 'delete',
+			'title': $(xml).find('page').attr('title'),
+			'token': deleteToken,
+			'reason': ctx.editSummary
+		};
+		if (ctx.watchlistOption === 'watch') {
+			query.watch = 'true';
+		}
+
+		ctx.deleteProcessApi = new Wikipedia.api("deleting page...", query, ctx.onDeleteSuccess, ctx.statusElement, ctx.onDeleteFailure);
+		ctx.deleteProcessApi.setParent(this);
+		ctx.deleteProcessApi.post();
 	};
 } /* end Wikipedia.page */
 
