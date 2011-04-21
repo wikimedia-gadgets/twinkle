@@ -2158,7 +2158,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			query.redirects = '';  // follow all redirects
 		}
 		if (userIsInGroup('sysop')) {
-			ctx.loadQuery.inprop = 'protection';
+			query.inprop = 'protection';
 		}
 
 		ctx.moveApi = new Wikipedia.api("Retrieving move token...", query, fnProcessMove, ctx.statusElement);
