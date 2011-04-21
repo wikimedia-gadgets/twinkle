@@ -1920,6 +1920,14 @@ Wikipedia.page = function(pageName, currentAction) {
 		return ctx.creator;
 	};
 
+	this.setOldID = function(oldID) {
+		ctx.revertOldID = oldID;
+	};
+
+	this.getRevisionUser = function() {
+		return ctx.revertUser;
+	};
+
 	this.setMoveDestination = function(destination) {
 		ctx.moveDestination = destination;
 	}
@@ -1982,16 +1990,17 @@ Wikipedia.page = function(pageName, currentAction) {
 
 		if (ctx.editMode == 'all') {
 			ctx.loadQuery.rvprop = 'content';  // get the page content at the same time, if needed
+		} else if (ctx.editMode == 'revert') {
+			ctx.loadQuery.rvlimit = 1;
+			ctx.loadQuery.rvstartid = ctx.revertOldID;
 		}
 
 		if (ctx.followRedirect) {
 			ctx.loadQuery.redirects = '';  // follow all redirects
 		}
-
 		if (typeof(ctx.pageSection) === 'number') {
 			ctx.loadQuery.rvsection = ctx.pageSection;
 		}
-
 		if (userIsInGroup('sysop')) {
 			ctx.loadQuery.inprop = 'protection';
 		}
@@ -2008,7 +2017,6 @@ Wikipedia.page = function(pageName, currentAction) {
 			ctx.statusElement.error("Internal error: attempt to save a page that has not been loaded!");
 			return;
 		}
-
 		if (!ctx.editSummary) {
 			ctx.statusElement.error("Internal error: edit summary not set before save!");
 			return;
@@ -2050,6 +2058,14 @@ Wikipedia.page = function(pageName, currentAction) {
 			break;
 		case 'prepend':
 			query.prependtext = ctx.prependText;  // use mode to prepend to current page contents
+			break;
+		case 'revert':
+			query.undo = ctx.revertCurID;
+			query.undoafter = ctx.revertOldID;
+			if (ctx.lastEditTime) {
+				query.basetimestamp = ctx.lastEditTime; // check that page hasn't been edited since it was loaded
+			}
+			query.starttimestamp = ctx.loadTime; // check that page hasn't been deleted since it was loaded (don't recreate bad stuff)
 			break;
 		default:
 			query.text = ctx.pageText; // replace entire contents of the page
@@ -2133,6 +2149,17 @@ Wikipedia.page = function(pageName, currentAction) {
 				datatype: 'text'  // we don't really care about the response
 			});
 		}
+	};
+
+	this.revert = function(onSuccess, onFailure) {
+		if (!ctx.revertOldID) {
+			ctx.statusElement.error("Internal error: revision ID to revert to was not set before revert!");
+			return;
+		}
+		ctx.editMode = 'revert';
+		ctx.onSaveSuccess = onSuccess;
+		ctx.onSaveFailure = onFailure;
+		this.load(fnAutoSave, onFailure);
 	};
 
 	this.move = function(onSuccess, onFailure) {
@@ -2227,6 +2254,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		watchlistOption: 'nochange',
 		pageExists: false,
 		creator: null,
+		revertOldID: null,
 		moveDestination: null,
 		moveTalkPage: false,
 		moveSubpages: false,
@@ -2236,6 +2264,8 @@ Wikipedia.page = function(pageName, currentAction) {
 		editToken: null,
 		loadTime: null,
 		lastEditTime: null,
+		revertCurID: null,
+		revertUser: null,
 		fullyProtected: false,
 		conflictRetries: 0,
 		retries: 0,
@@ -2309,6 +2339,24 @@ Wikipedia.page = function(pageName, currentAction) {
 			return;
 		}
 		ctx.lastEditTime = $(xml).find('page').attr('touched');
+
+		if (ctx.editMode === 'revert') {
+			ctx.revertCurID = $(xml).find('rev').attr('revid');
+			if (!ctx.revertCurID) {
+				ctx.statusElement.error("Failed to retrieve current revision ID.");
+				return;
+			}
+			ctx.revertUser = $(xml).find('rev').attr('user');
+			if (!ctx.revertUser) {
+				if ($(xml).find('rev').attr('userhidden') === "") {  // username was RevDel'd or oversighted
+					ctx.revertUser = "<username hidden>";
+				} else {
+					ctx.statusElement.error("Failed to retrieve user who made the revision.");
+					return;
+				}
+			}
+		}
+
 		ctx.pageLoaded = true;
 
 		// alert("Generate edit conflict now");  // for testing edit conflict recovery logic
@@ -2344,11 +2392,10 @@ Wikipedia.page = function(pageName, currentAction) {
 		}
 		return true; // all OK
 	};
-		
-	
+
 	// callback from saveApi.post()
 	var fnSaveSuccess = function() {
-		ctx.editMode = 'all';  // cancel append/prepend modes
+		ctx.editMode = 'all';  // cancel append/prepend/revert modes
 		var xml = ctx.saveApi.getXML();
 
 		// see if the API thinks we were successful
@@ -2357,8 +2404,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			// real success
 			if (ctx.onSaveSuccess) {
 				ctx.onSaveSuccess(this);  // invoke callback
-			}
-			else {
+			} else {
 				// default on success action - display link for edited page
 				var link = document.createElement('a');
 				link.setAttribute('href', wgArticlePath.replace('$1', ctx.pageName));
@@ -2436,7 +2482,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			} else {
 				ctx.statusElement.error( "Failed to save edit: " + ctx.saveApi.getErrorText() );
 			}
-			ctx.editMode = 'all';  // cancel append/prepend modes
+			ctx.editMode = 'all';  // cancel append/prepend/revert modes
 			if (ctx.onSaveFailure) {
 				ctx.onSaveFailure(this);  // invoke callback
 			}
