@@ -441,6 +441,11 @@ twinklespeedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 			value: 'xfd',
 			tooltip: 'An admin has closed a deletion discussion (at AfD, FfD, RfD, TfD, CfD, SfD, or MfD) as "delete", but they didn\'t actually delete the page.'
 		});
+		result.push({
+			label: 'G6: Orphaned disambiguation page',
+			value: 'disambig',
+			tooltip: 'Deleting unnecessary disambiguation pages.'
+		});
 	}
 	result.push({
 		label: 'G6: Housekeeping',
@@ -518,6 +523,7 @@ twinklespeedy.normalizeHash = {
 	'histmerge': 'g6',
 	'move': 'g6',
 	'xfd': 'g6',
+	'disambig': 'g6',
 	'g6': 'g6',
 	'author': 'g7',
 	'g8': 'g8',
@@ -572,6 +578,7 @@ twinklespeedy.reasonHash = {
 	'histmerge': 'Temporary deletion in order to merge page histories',
 	'move': 'Making way for a non-controversial move',
 	'xfd': 'Deleting page per result of [[WP:XfD|deletion discussion]]',
+	'disambig': 'Deleting unnecessary disambiguation page',
 	'g6': 'Housekeeping and routine (non-controversial) cleanup',
 	'author': 'One author who has requested deletion or blanked the page',
 	'g8': 'Page dependent on a deleted or nonexistent page',
