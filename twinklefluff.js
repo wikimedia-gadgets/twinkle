@@ -273,7 +273,7 @@ twinklefluff.callbacks = {
 			Wikipedia.actionCompleted.redirect = wgPageName;
 			Wikipedia.actionCompleted.notice = "Reversion completed";
 
-			var wikipedia_api = new Wikipedia.api( 'Saving reverted contents', query, twinklefluff.callbacks.toRevision.complete, self.statelem);
+			var wikipedia_api = new Wikipedia.api( 'Saving reverted contents', query, null/*twinklefluff.callbacks.toRevision.complete*/, self.statelem);
 			wikipedia_api.params = self.params;
 			wikipedia_api.post();
 

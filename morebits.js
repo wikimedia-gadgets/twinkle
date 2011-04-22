@@ -1944,6 +1944,18 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.moveSuppressRedirect = !!flag;
 	};
 
+	this.setEditProtection = function(level, expiry) {
+		ctx.protectEdit = { level: level, expiry: expiry };
+	};
+
+	this.setMoveProtection = function(level, expiry) {
+		ctx.protectMove = { level: level, expiry: expiry };
+	};
+
+	this.setCascadingProtection = function(flag) {
+		ctx.protectCascade = !!flag;
+	};
+
 	this.getStatusElement = function() {
 		return ctx.statusElement;
 	};
@@ -2224,6 +2236,40 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.deleteApi.post();
 	};
 
+	this.protect = function(onSuccess, onFailure) {
+		// if a non-admin tries to do this, don't bother
+		if (!userIsInGroup('sysop')) {
+			ctx.statusElement.error("Cannot protect page: only admins can do that");
+			return;
+		}
+		if (!ctx.protectEdit && !ctx.protectMove) {
+			ctx.statusElement.error("Internal error: you must set edit and/or move protection before calling protect()!");
+			return;
+		}
+		if (!ctx.editSummary) {
+			ctx.statusElement.error("Internal error: protection reason not set before protect (use setEditSummary function)!");
+			return;
+		}
+
+		ctx.onProtectSuccess = onSuccess;
+		ctx.onProtectFailure = onFailure;
+
+		var query = {
+			action: 'query',
+			prop: 'info',
+			inprop: 'protection',
+			intoken: 'protect',
+			titles: ctx.pageName
+		};
+		if (ctx.followRedirect) {
+			query.redirects = '';  // follow all redirects
+		}
+
+		ctx.protectApi = new Wikipedia.api("Retrieving protect token...", query, fnProcessProtect, ctx.statusElement);
+		ctx.protectApi.setParent(this);
+		ctx.protectApi.post();
+	};
+
 	/**
 	 * Initialization
 	 */
@@ -2259,6 +2305,9 @@ Wikipedia.page = function(pageName, currentAction) {
 		moveTalkPage: false,
 		moveSubpages: false,
 		moveSuppressRedirect: false,
+		protectEdit: null,
+		protectMove: null,
+		protectCascade: false,
 		 // internal status
 		pageLoaded: false,
 		editToken: null,
@@ -2279,6 +2328,8 @@ Wikipedia.page = function(pageName, currentAction) {
 		onMoveFailure: null,
 		onDeleteSuccess: null,
 		onDeleteFailure: null,
+		onProtectSuccess: null,
+		onProtectFailure: null,
 		 // internal objects
 		loadQuery: null,
 		loadApi: null,
@@ -2288,6 +2339,8 @@ Wikipedia.page = function(pageName, currentAction) {
 		moveProcessApi: null,
 		deleteApi: null,
 		deleteProcessApi: null,
+		protectApi: null,
+		protectProcessApi: null,
 	};
 
 	/**
@@ -2355,6 +2408,8 @@ Wikipedia.page = function(pageName, currentAction) {
 					return;
 				}
 			}
+			// set revert edit summary
+			ctx.editSummary = "[[Help:Revert|Reverted]] to revision " + ctx.revertOldID + " by " + ctx.revertUser + ": " + ctx.editSummary;
 		}
 
 		ctx.pageLoaded = true;
@@ -2518,7 +2573,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !confirm('You are about to move the fully protected page "' + ctx.pageName + 
 				(editprot.attr('expiry') === 'indefinite' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
 				'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
-				ctx.statusElement.error("Deletion of fully protected page was aborted.");
+				ctx.statusElement.error("Move of fully protected page was aborted.");
 				return;
 			}
 		}
@@ -2553,7 +2608,6 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.moveProcessApi.setParent(this);
 		ctx.moveProcessApi.post();
 	};
-
 
 	var fnProcessDelete = function() {
 		var xml = ctx.deleteApi.getXML();
@@ -2591,6 +2645,61 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.deleteProcessApi = new Wikipedia.api("deleting page...", query, ctx.onDeleteSuccess, ctx.statusElement, ctx.onDeleteFailure);
 		ctx.deleteProcessApi.setParent(this);
 		ctx.deleteProcessApi.post();
+	};
+
+	var fnProcessProtect = function() {
+		var xml = ctx.protectApi.getXML();
+
+		if ($(xml).find('page').attr('missing') === "") {
+			ctx.statusElement.error("Cannot protect the page, because it no longer exists");
+			return;
+		}
+
+		var editprot = $(xml).find('pr[type="edit"]');
+		// cascading protection not possible on edit<sysop
+		// XXX fix this logic - I can't wrap my head around it
+		//if (ctx.protectCascade && (editprot && editprot.attr('level') !== 'sysop') && (ctx.protectEdit && ctx.protectEdit.level !== 'sysop')) {
+		//	ctx.statusElement.error("Internal error: cascading protection requires sysop-level edit protection!");
+		//	return;
+		//}
+
+		var protectToken = $(xml).find('page').attr('protecttoken');
+		if (!protectToken) {
+			ctx.statusElement.error("Failed to retrieve protect token.");
+			return;
+		}
+
+		var protections = '', expiry = '';
+		if (ctx.protectEdit) {
+			protections += 'edit=' + ctx.protectEdit.level;
+			expiry += ctx.protectEdit.expiry;
+		}
+		if (ctx.protectMove) { 
+			if (ctx.protectEdit) {
+				protections += '|';
+				expiry += '|';
+			}
+			protections += 'move=' + ctx.protectMove.level;
+			expiry += ctx.protectMove.expiry;
+		}
+		var query = {
+			action: 'protect',
+			title: $(xml).find('page').attr('title'),
+			token: protectToken,
+			protections: protections,
+			expiry: expiry,
+			reason: ctx.editSummary
+		};
+		if (ctx.protectCascade) {
+			query.cascade = 'true';
+		}
+		if (ctx.watchlistOption === 'watch') {
+			query.watch = 'true';
+		}
+
+		ctx.protectProcessApi = new Wikipedia.api("protecting page...", query, ctx.onProtectSuccess, ctx.statusElement, ctx.onProtectFailure);
+		ctx.protectProcessApi.setParent(this);
+		ctx.protectProcessApi.post();
 	};
 } /* end Wikipedia.page */
 
@@ -3323,6 +3432,8 @@ function SimpleWindow( width, height ) {
 			// give jQuery the given height value (which represents the anticipated height of the dialog) here, so
 			// it can position the dialog appropriately
 			height: height
+		}).bind("dialogresize", function(event, ui) {
+			this.style.maxHeight = "";
 		});
 
 	var $widget = $(this.content).dialog("widget");
