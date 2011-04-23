@@ -19,7 +19,7 @@ function twinkleprotect() {
 }
 
 twinkleprotect.callback = function twinkleprotectCallback() {
-	var Window = new SimpleWindow( 620, 550 );
+	var Window = new SimpleWindow( 620, 530 );
 	Window.setTitle( userIsInGroup( 'sysop' ) ? "Apply, request or tag page protection" : "Request or tag page protection" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Protection templates", "Template:Protection templates" );
@@ -54,7 +54,7 @@ twinkleprotect.callback = function twinkleprotectCallback() {
 				{
 					label: 'Request page protection',
 					value: 'request',
-					tooltip: 'If you want to request protection via WP:RPP' + (userIsInGroup('sysop') ? 'instead of doing the protection by yourself.' : '.'),
+					tooltip: 'If you want to request protection via WP:RPP' + (userIsInGroup('sysop') ? ' instead of doing the protection by yourself.' : '.'),
 					checked: !userIsInGroup('sysop')
 				},
 				{
@@ -79,7 +79,52 @@ twinkleprotect.callback = function twinkleprotectCallback() {
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
 	result.actiontype[0].dispatchEvent( evt );
+
+	// reduce vertical height of dialog
+	$('select[name="editlevel"], select[name="editexpiry"], select[name="moveexpiry"], select[name="movelevel"], select[name="createexpiry"], select[name="createlevel"]')
+		.parent().css({ display: 'inline-block', marginRight: '0.5em' });
+
+	// get current protection level asynchronously
+	Wikipedia.addCheckpoint();  // avoid Action: completed notice
+	if (userIsInGroup('sysop')) {
+		var query = {
+			action: 'query',
+			prop: 'info',
+			inprop: 'protection',
+			titles: wgPageName
+		};
+		Status.init($('div[name="currentprot"] span').last()[0]);
+		var statelem = new Status("Current protection level");
+		var wpapi = new Wikipedia.api("retrieving...", query, twinkleprotect.callback.protectionLevel, statelem);
+		wpapi.post();
+	}
 }
+
+twinkleprotect.callback.protectionLevel = function twinkleprotectCallbackProtectionLevel(apiobj) {
+	var xml = apiobj.getXML();
+	var result = [];
+	$(xml).find('pr').each(function(index, pr) {
+		var $pr = $(pr);
+		var boldnode = document.createElement('b');
+		boldnode.textContent = $pr.attr('type').toUpperCaseFirstChar() + ": " + $pr.attr('level');
+		result.push(boldnode);
+		if ($pr.attr('expiry') === 'infinity') {
+			result.push(" (indefinite) ");
+		} else {
+			result.push(" (expires " + new Date($pr.attr('expiry')).toUTCString() + ") ");
+		}
+		if ($pr.attr('cascade') === '') {
+			result.push("(cascading) ");
+		}
+	});
+	if (!result.length) {
+		var boldnode = document.createElement('b');
+		boldnode.textContent = "no protection";
+		result.push(boldnode);
+	}
+	apiobj.statelem.info(result);
+	setTimeout(Wikipedia.removeCheckpoint, 1000);
+};
 
 twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeAction(e) {
 	var field_preset;
@@ -98,152 +143,198 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 				});
 
 			field2 = new QuickForm.element({ type: 'field', label: 'Protection options', name: 'field2' });
-			field2.append({ type: 'div', name: 'currentprot' });  // holds the current protection level, as filled out by the async callback
-			field2.append({
-					type: 'checkbox',
-					name: 'editmodify',
-					event: function(e) {
-						e.target.form.editlevel.disabled = !e.target.checked;
-						e.target.form.editexpiry.disabled = !e.target.checked || (e.target.form.editlevel.value === 'all');
-						e.target.form.editlevel.style.color = e.target.form.editexpiry.style.color = (e.target.checked ? "" : "transparent");
-					},
-					list: [
-						{
-							label: 'Modify edit protection',
-							value: 'editmodify',
-							tooltip: 'If this is turned off, the edit protection level, and expiry time, will be left as is.',
-							checked: true
-						}
-					]
-				});
-			var editlevel = field2.append({
-					type: 'select',
-					name: 'editlevel',
-					label: 'Edit protection:',
-					event: function(e) {
-						e.target.form.editexpiry.disabled = (e.target.value === 'all');
-					}
-				});
-			editlevel.append({
-					type: 'option',
-					label: 'All',
-					value: 'all'
-				});
-			editlevel.append({
-					type: 'option',
-					label: 'Autoconfirmed',
-					value: 'autoconfirmed'
-				});
-			editlevel.append({
-					type: 'option',
-					label: 'Sysop',
-					value: 'sysop',
-					selected: true
-				});
-			field2.append({
-					type: 'select',
-					name: 'editexpiry',
-					label: 'Expires:',
-					event: function(e) {
-						if (e.target.value === 'custom') {
-							twinkleprotect.doCustomExpiry(e.target);
-						}
-					},
-					list: [
-						{ label: '1 hour', value: '1 hour' },
-						{ label: '2 hours', value: '2 hours' },
-						{ label: '3 hours', value: '3 hours' },
-						{ label: '6 hours', value: '6 hours' },
-						{ label: '12 hours', value: '12 hours' },
-						{ label: '1 day', value: '1 day' },
-						{ label: '2 days', selected: true, value: '2 days' },
-						{ label: '3 days', value: '3 days' },
-						{ label: '4 days', value: '4 days' },
-						{ label: '1 week', value: '1 week' },
-						{ label: '2 weeks', value: '2 weeks' },
-						{ label: '1 month', value: '1 month' },
-						{ label: '2 months', value: '2 months' },
-						{ label: '3 months', value: '3 months' },
-						{ label: '1 year', value: '1 year' },
-						{ label: 'indefinite', value:'indefinite' },
-						{ label: 'Custom...', value: 'custom' }
-					]
-				});
-			field2.append({
-					type: 'checkbox',
-					name: 'movemodify',
-					event: function(e) {
-						e.target.form.movelevel.disabled = !e.target.checked;
-						e.target.form.moveexpiry.disabled = !e.target.checked || (e.target.form.movelevel.value === 'all');
-						e.target.form.movelevel.style.color = e.target.form.moveexpiry.style.color = (e.target.checked ? "" : "transparent");
-					},
-					list: [
-						{
-							label: 'Modify move protection',
-							value: 'movemodify',
-							tooltip: 'If this is turned off, the move protection level, and expiry time, will be left as is.',
-							checked: true
-						}
-					],
-				});
-			editlevel = field2.append({
-					type: 'select',
-					name: 'movelevel',
-					label: 'Move protection:',
-					event: function(e) {
-						e.target.form.moveexpiry.disabled = (e.target.value === 'all');
-					}
-				});
-			editlevel.append({
-					type: 'option',
-					label: 'All',
-					value: 'all'
-				});
-			editlevel.append({
-					type: 'option',
-					label: 'Autoconfirmed',
-					value: 'autoconfirmed'
-				});
-			editlevel.append({
-					type: 'option',
-					label: 'Sysop',
-					value: 'sysop',
-					selected: true
-				});
-			field2.append({
-					type: 'select',
-					name: 'moveexpiry',
-					label: 'Expires:',
-					event: function(e) {
-						if (e.target.value === 'custom') {
-							twinkleprotect.doCustomExpiry(e.target);
-						}
-					},
-					list: [
-						{ label: '1 hour', value: '1 hour' },
-						{ label: '2 hours', value: '2 hours' },
-						{ label: '3 hours', value: '3 hours' },
-						{ label: '6 hours', value: '6 hours' },
-						{ label: '12 hours', value: '12 hours' },
-						{ label: '1 day', value: '1 day' },
-						{ label: '2 days', selected: true, value: '2 days' },
-						{ label: '3 days', value: '3 days' },
-						{ label: '4 days', value: '4 days' },
-						{ label: '1 week', value: '1 week' },
-						{ label: '2 weeks', value: '2 weeks' },
-						{ label: '1 month', value: '1 month' },
-						{ label: '2 months', value: '2 months' },
-						{ label: '3 months', value: '3 months' },
-						{ label: '1 year', value: '1 year' },
-						{ label: 'indefinite', value:'indefinite' },
-						{ label: 'Custom...', value: 'custom' }
-					]
-				});
+			field2.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
+			// for existing pages
+			if (wgArticleId) {
+				field2.append({
+						type: 'checkbox',
+						name: 'editmodify',
+						event: twinkleprotect.formevents.editmodify,
+						list: [
+							{
+								label: 'Modify edit protection',
+								value: 'editmodify',
+								tooltip: 'If this is turned off, the edit protection level, and expiry time, will be left as is.',
+								checked: true
+							}
+						]
+					});
+				var editlevel = field2.append({
+						type: 'select',
+						name: 'editlevel',
+						label: 'Edit protection:',
+						event: twinkleprotect.formevents.editlevel
+					});
+				editlevel.append({
+						type: 'option',
+						label: 'All',
+						value: 'all'
+					});
+				editlevel.append({
+						type: 'option',
+						label: 'Autoconfirmed',
+						value: 'autoconfirmed'
+					});
+				editlevel.append({
+						type: 'option',
+						label: 'Sysop',
+						value: 'sysop',
+						selected: true
+					});
+				field2.append({
+						type: 'select',
+						name: 'editexpiry',
+						label: 'Expires:',
+						event: function(e) {
+							if (e.target.value === 'custom') {
+								twinkleprotect.doCustomExpiry(e.target);
+							}
+						},
+						list: [
+							{ label: '1 hour', value: '1 hour' },
+							{ label: '2 hours', value: '2 hours' },
+							{ label: '3 hours', value: '3 hours' },
+							{ label: '6 hours', value: '6 hours' },
+							{ label: '12 hours', value: '12 hours' },
+							{ label: '1 day', value: '1 day' },
+							{ label: '2 days', selected: true, value: '2 days' },
+							{ label: '3 days', value: '3 days' },
+							{ label: '4 days', value: '4 days' },
+							{ label: '1 week', value: '1 week' },
+							{ label: '2 weeks', value: '2 weeks' },
+							{ label: '1 month', value: '1 month' },
+							{ label: '2 months', value: '2 months' },
+							{ label: '3 months', value: '3 months' },
+							{ label: '1 year', value: '1 year' },
+							{ label: 'indefinite', value:'indefinite' },
+							{ label: 'Custom...', value: 'custom' }
+						]
+					});
+				field2.append({
+						type: 'checkbox',
+						name: 'movemodify',
+						event: twinkleprotect.formevents.movemodify,
+						list: [
+							{
+								label: 'Modify move protection',
+								value: 'movemodify',
+								tooltip: 'If this is turned off, the move protection level, and expiry time, will be left as is.',
+								checked: true
+							}
+						],
+					});
+				editlevel = field2.append({
+						type: 'select',
+						name: 'movelevel',
+						label: 'Move protection:',
+						event: twinkleprotect.formevents.movelevel
+					});
+				editlevel.append({
+						type: 'option',
+						label: 'All',
+						value: 'all'
+					});
+				editlevel.append({
+						type: 'option',
+						label: 'Autoconfirmed',
+						value: 'autoconfirmed'
+					});
+				editlevel.append({
+						type: 'option',
+						label: 'Sysop',
+						value: 'sysop',
+						selected: true
+					});
+				field2.append({
+						type: 'select',
+						name: 'moveexpiry',
+						label: 'Expires:',
+						event: function(e) {
+							if (e.target.value === 'custom') {
+								twinkleprotect.doCustomExpiry(e.target);
+							}
+						},
+						list: [
+							{ label: '1 hour', value: '1 hour' },
+							{ label: '2 hours', value: '2 hours' },
+							{ label: '3 hours', value: '3 hours' },
+							{ label: '6 hours', value: '6 hours' },
+							{ label: '12 hours', value: '12 hours' },
+							{ label: '1 day', value: '1 day' },
+							{ label: '2 days', selected: true, value: '2 days' },
+							{ label: '3 days', value: '3 days' },
+							{ label: '4 days', value: '4 days' },
+							{ label: '1 week', value: '1 week' },
+							{ label: '2 weeks', value: '2 weeks' },
+							{ label: '1 month', value: '1 month' },
+							{ label: '2 months', value: '2 months' },
+							{ label: '3 months', value: '3 months' },
+							{ label: '1 year', value: '1 year' },
+							{ label: 'indefinite', value:'indefinite' },
+							{ label: 'Custom...', value: 'custom' }
+						]
+					});
+			} else {  // for non-existing pages
+				var editlevel = field2.append({
+						type: 'select',
+						name: 'createlevel',
+						label: 'Create protection:',
+						event: twinkleprotect.formevents.createlevel
+					});
+				editlevel.append({
+						type: 'option',
+						label: 'All (registered users)',
+						value: 'all'
+					});
+				editlevel.append({
+						type: 'option',
+						label: 'Autoconfirmed',
+						value: 'autoconfirmed'
+					});
+				editlevel.append({
+						type: 'option',
+						label: 'Sysop',
+						value: 'sysop',
+						selected: true
+					});
+				field2.append({
+						type: 'select',
+						name: 'createexpiry',
+						label: 'Expires:',
+						event: function(e) {
+							if (e.target.value === 'custom') {
+								twinkleprotect.doCustomExpiry(e.target);
+							}
+						},
+						list: [
+							{ label: '1 hour', value: '1 hour' },
+							{ label: '2 hours', value: '2 hours' },
+							{ label: '3 hours', value: '3 hours' },
+							{ label: '6 hours', value: '6 hours' },
+							{ label: '12 hours', value: '12 hours' },
+							{ label: '1 day', value: '1 day' },
+							{ label: '2 days', value: '2 days' },
+							{ label: '3 days', value: '3 days' },
+							{ label: '4 days', value: '4 days' },
+							{ label: '1 week', value: '1 week' },
+							{ label: '2 weeks', value: '2 weeks' },
+							{ label: '1 month', value: '1 month' },
+							{ label: '2 months', value: '2 months' },
+							{ label: '3 months', value: '3 months' },
+							{ label: '1 year', value: '1 year' },
+							{ label: 'indefinite', selected: true, value: 'indefinite' },
+							{ label: 'Custom...', value: 'custom' }
+						]
+					});
+			}
 			field2.append({
 					type: 'textarea',
 					name: 'reason',
 					label: 'Protection reason (for log):',
 				});
+			if (!wgArticleId) {  // tagging isn't relevant for non-existing pages
+				break;
+			}
 			// fall through to 'tag' case, which shares the same field1
 		case 'tag':
 			field1 = new QuickForm.element({ type: 'field', label: 'Tagging options', name: 'field1' });
@@ -252,9 +343,7 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 					name: 'tagtype',
 					label: 'Choose protection template:',
 					list: twinkleprotect.protectionTags,
-					event: function(e) {
-						e.target.form.small.disabled = e.target.form.noinclude.disabled = (e.target.value === 'none') || (e.target.value === 'noop');
-					}
+					event: twinkleprotect.formevents.tagtype
 				} );
 			field1.append( {
 					type: 'checkbox',
@@ -282,7 +371,7 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 					name: 'category',
 					label: 'Type and reason:',
 					event: twinkleprotect.callback.changePreset,
-					list: twinkleprotect.protectionTypes
+					list: (wgArticleId ? twinkleprotect.protectionTypes : twinkleprotect.protectionTypesCreate)
 				});
 
 			field1 = new QuickForm.element({ type: 'field', label: 'Options', name: 'field1' });
@@ -328,10 +417,30 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 	}
 }
 
-twinkleprotect.currentEditLevel = null;
-twinkleprotect.currentEditExpiry = null;
-twinkleprotect.currentMoveLevel = null;
-twinkleprotect.currentMoveExpiry = null;
+twinkleprotect.formevents = {
+	editmodify: function twinkleprotectFormEditmodifyEvent(e) {
+		e.target.form.editlevel.disabled = !e.target.checked;
+		e.target.form.editexpiry.disabled = !e.target.checked || (e.target.form.editlevel.value === 'all');
+		e.target.form.editlevel.style.color = e.target.form.editexpiry.style.color = (e.target.checked ? "" : "transparent");
+	},
+	editlevel: function twinkleprotectFormEditlevelEvent(e) {
+		e.target.form.editexpiry.disabled = (e.target.value === 'all');
+	},
+	movemodify: function twinkleprotectFormMovemodifyEvent(e) {
+		e.target.form.movelevel.disabled = !e.target.checked;
+		e.target.form.moveexpiry.disabled = !e.target.checked || (e.target.form.movelevel.value === 'all');
+		e.target.form.movelevel.style.color = e.target.form.moveexpiry.style.color = (e.target.checked ? "" : "transparent");
+	},
+	movelevel: function twinkleprotectFormMovelevelEvent(e) {
+		e.target.form.moveexpiry.disabled = (e.target.value === 'all');
+	},
+	createlevel: function twinkleprotectFormCreatelevelEvent(e) {
+		e.target.form.createexpiry.disabled = (e.target.value === 'all');
+	},
+	tagtype: function twinkleprotectFormTagtypeEvent(e) {
+		e.target.form.small.disabled = e.target.form.noinclude.disabled = (e.target.value === 'none') || (e.target.value === 'noop');
+	},
+};
 
 twinkleprotect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
 	var custom = prompt('Enter a custom expiry time.  \nYou can use relative times, like "1 minute" or "19 days", or absolute timestamps, "yyyymmddhhmm" (e.g. "200602011406" is Feb 1, 2006, at 14:06 UTC).', '');
@@ -379,7 +488,15 @@ twinkleprotect.protectionTypes = [
 ];
 
 twinkleprotect.protectionTypesCreate = [
-	{ label: 'Create protection', selected: true, value: 'pp-create' },
+	{
+		label: 'Create protection',
+		list: [
+			{ label: 'Generic (\{\{pp-create}})', value: 'pp-create' },
+			{ label: 'Offensive name', value: 'pp-create-offensive' },
+			{ label: 'Repeatedly recreated', selected: true, value: 'pp-create-salt' },
+			{ label: 'Recently deleted BLP', value: 'pp-create-blp' },
+		]
+	},
 	{ label: 'Unprotection', value: 'unprotect' },
 ];
 
@@ -458,11 +575,25 @@ twinkleprotect.protectionPresetsInfo = {
 	'unprotect': {
 		edit: 'all',
 		move: 'all',
-		reason: null
+		create: 'all',
+		reason: null,
+		template: 'none'
+	},
+	'pp-create-offensive': {
+		create: 'sysop',
+		reason: '[[WP:SALT|Offensive name]]'
+	},
+	'pp-create-salt': {
+		create: 'sysop',
+		reason: '[[WP:SALT|Repeatedly recreated]]'
+	},
+	'pp-create-blp': {
+		create: 'sysop',
+		reason: '[[WP:BLPDEL|Recently deleted BLP]]'
 	},
 	'pp-create': {
 		create: 'sysop',
-		reason: null
+		reason: '\{\{pp-create}}'
 	},
 };
 
@@ -524,24 +655,33 @@ twinkleprotect.callback.changePreset = function twinkleprotectCallbackChangePres
 
 	if (actiontype === 'protect') {  // actually protecting the page
 		var item = twinkleprotect.protectionPresetsInfo[form.category.value];
-		if (item.edit) {
-			form.editmodify.checked = true;
-			form.editlevel.value = item.edit;
+		if (wgArticleId) {
+			if (item.edit) {
+				form.editmodify.checked = true;
+				twinkleprotect.formevents.editmodify({ target: form.editmodify });
+				form.editlevel.value = item.edit;
+				twinkleprotect.formevents.editlevel({ target: form.editlevel });
+			} else {
+				form.editmodify.checked = false;
+				twinkleprotect.formevents.editmodify({ target: form.editmodify });
+			}
+
+			if (item.move) {
+				form.movemodify.checked = true;
+				twinkleprotect.formevents.movemodify({ target: form.movemodify });
+				form.movelevel.value = item.move;
+				twinkleprotect.formevents.movelevel({ target: form.movelevel });
+			} else {
+				form.movemodify.checked = false;
+				twinkleprotect.formevents.movemodify({ target: form.movemodify });
+			}
 		} else {
-			form.editmodify.checked = false;
+			if (item.create) {
+				form.createlevel.value = item.create;
+				twinkleprotect.formevents.createlevel({ target: form.createlevel });
+			}
 		}
 
-		if (item.move) {
-			form.movemodify.checked = true;
-			form.movelevel.value = item.move;
-		} else {
-			form.movemodify.checked = false;
-		}
-
-		if (item.create) {
-			alert("Haven't got create protection working quite yet...");
-			return;
-		}
 		if (item.reason) {
 			form.reason.value = item.reason;
 		} else {
@@ -549,17 +689,20 @@ twinkleprotect.callback.changePreset = function twinkleprotectCallbackChangePres
 		}
 
 		// sort out tagging options
-		if( form.category.value === 'unprotect' ) {
-			form.tagtype.value = 'none';
-		} else {
-			form.tagtype.value = (item.template ? item.template : form.category.value);
-		}
+		if (wgArticleId) {
+			if( form.category.value === 'unprotect' ) {
+				form.tagtype.value = 'none';
+			} else {
+				form.tagtype.value = (item.template ? item.template : form.category.value);
+			}
+			twinkleprotect.formevents.tagtype({ target: form.tagtype });
 
-		if( /template/.test( form.category.value ) ) {
-			form.noinclude.checked = true;
-			form.editexpiry.value = form.moveexpiry.value = "indefinite";
-		} else {
-			form.noinclude.checked = false;
+			if( /template/.test( form.category.value ) ) {
+				form.noinclude.checked = true;
+				form.editexpiry.value = form.moveexpiry.value = "indefinite";
+			} else {
+				form.noinclude.checked = false;
+			}
 		}
 
 	} else {  // RPP request
@@ -587,12 +730,16 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	switch (actiontype) {
 		case 'protect':
 			// protect the page
-			var thispage = new Wikipedia.page(wgPageName, "Protecting page...");
-			if (form.editmodify.checked) {
-				thispage.setEditProtection(form.editlevel.value, form.editexpiry.value);
-			}
-			if (form.movemodify.checked) {
-				thispage.setMoveProtection(form.movelevel.value, form.moveexpiry.value);
+			var thispage = new Wikipedia.page(wgPageName, "Protecting page");
+			if (wgArticleId) {
+				if (form.editmodify.checked) {
+					thispage.setEditProtection(form.editlevel.value, form.editexpiry.value);
+				}
+				if (form.movemodify.checked) {
+					thispage.setMoveProtection(form.movelevel.value, form.moveexpiry.value);
+				}
+			} else {
+				thispage.setCreateProtection(form.createlevel.value, form.createexpiry.value);
 			}
 			if (form.reason.value) {
 				thispage.setEditSummary(form.reason.value);
@@ -600,6 +747,13 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				alert("You must enter a protect reason, which will be inscribed into the protection log.");
 				return;
 			}
+
+			SimpleWindow.setButtonsEnabled( false );
+			Status.init( form );
+
+			Wikipedia.actionCompleted.redirect = wgPageName;
+			Wikipedia.actionCompleted.notice = "Protection complete";
+
 			thispage.protect();
 			return;
 			// fall through to "tag" case
@@ -614,23 +768,22 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				noinclude: form.noinclude.checked
 			};
 
-			SimpleWindow.setButtonsEnabled( false );
-			Status.init( form );
+			if (actiontype === 'tag') {
+				SimpleWindow.setButtonsEnabled( false );
+				Status.init( form );
+				Wikipedia.actionCompleted.redirect = wgPageName;
+				Wikipedia.actionCompleted.followRedirect = false;
+				Wikipedia.actionCompleted.notice = "Tagging complete";
+			}
 
 			if (tagparams.tag === 'noop') {
 				Status.info("Applying protection template", "nothing to do");
 				break;
 			}
 
-			if (actiontype === 'tag') {
-				Wikipedia.actionCompleted.redirect = wgPageName;
-				Wikipedia.actionCompleted.followRedirect = false;
-				Wikipedia.actionCompleted.notice = "Tagging complete";
-			}
-
 			var protectedPage = new Wikipedia.page( wgPageName, 'Tagging page');
 			protectedPage.setCallbackParameters( tagparams );
-			protectedPage.load( twinkleprotect.callbacks.sysop.taggingPage );
+			protectedPage.load( twinkleprotect.callbacks.taggingPage );
 			break;
 
 		case 'request':
@@ -653,9 +806,15 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typename = 'semi-protection';
 					break;
 				case 'pp-move':
+				case 'pp-move-dispute':
+				case 'pp-move-indef':
+				case 'pp-move-vandalism':
 					typename = 'move protection';
 					break;
 				case 'pp-create':
+				case 'pp-create-offensive':
+				case 'pp-create-blp':
+				case 'pp-create-salt':
 					typename = 'create protection';
 					break;
 				case 'unprotect':
@@ -694,17 +853,26 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-move-indef':
 					typereason = 'Highly visible page';
 					break;
+				case 'pp-create-offensive':
+					typereason = 'Offensive name';
+					break;
+				case 'pp-create-blp':
+					typereason = 'Recently deleted [[WP:BLP|BLP]]';
+					break;
+				case 'pp-create-salt':
+					typereason = 'Repeatedly recreated';
+					break;
 				default:
 					typereason = '';
 					break;
 			}
 
-			var reason;
-			if( typereason !== '' ) {
-				reason = typereason;
-			}
+			var reason = typereason;
 			if( form.reason.value !== '') {
-				reason += "\u00A0\u2013 " + form.reason.value;  // U+00A0 NO-BREAK SPACE; U+2013 EN RULE
+				if ( typereason !== '' ) {
+					reason += "\u00A0\u2013 ";  // U+00A0 NO-BREAK SPACE; U+2013 EN RULE
+				}
+				reason += form.reason.value;
 			}
 			if( reason != '' && reason.charAt( reason.length - 1 ) != '.' ) {
 				reason += '.';
@@ -729,191 +897,78 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			var rppPage = new Wikipedia.page( rppName, 'Requesting protection of page');
 			rppPage.setFollowRedirect( true );
 			rppPage.setCallbackParameters( rppparams );
-			rppPage.load( twinkleprotect.callbacks.user );
+			rppPage.load( twinkleprotect.callbacks.fileRequest );
 			break;
 	}
-
-	//var params = {
-	//	reason: form.reason.value,
-	//	expiry: form.expiry.value,
-	//	type: form.category.value
-	//}
-
-	//if( userIsInGroup( 'sysop') ) {
-	//	params.small = form.small.checked;
-	//	params.editprot = form.editprot.checked;
-	//	params.moveprot = form.moveprot.checked;
-	//	params.noinclude = form.noinclude.checked;
-	//	var request_only = form.request_only.checked;
-	//	if( request_only && params.expiry != 'indefinite' ) {
-	//		params.expiry = 'temporary';
-	//	}
-	//}
-
-
-	//if( userIsInGroup( 'sysop' ) && ! request_only ) {
-
-
-	//	if( params.reason ) {
-	//		reason += ', ' + params.reason;
-	//	}
-	//	if( reason != '' && reason.charAt( reason.length - 1 ) != '.' ) {
-	//		reason += '.';
-	//	}
-
-	//	params.reason = reason;
-	//	params.tag = tag;
-	//	params.edit = edit;
-	//	params.move = move;
-	//	params.create = create;
-
-	//	var query = {
-	//		'title': wgPageName,
-	//		'action': 'protect'
-	//	};
-
-		// Updating data for the action completed event
-	//	Wikipedia.actionCompleted.redirect = wgPageName;
-	//	Wikipedia.actionCompleted.notice = "Done...";
-
-	//	var wikipedia_wiki = new Wikipedia.wiki( 'Protecting page', query, twinkleprotect.callbacks.sysop.protectingPage );
-	//	wikipedia_wiki.params = params;
-	//	wikipedia_wiki.get();
-
-	//}
 }
 
 twinkleprotect.callbacks = {
-	sysop: {
-		protectingPage: function( self ){
-			var form  = self.responseXML.getElementById( 'mw-Protect-Form' );
-			var postData;
+	taggingPage: function( protectedPage ) {
+		var params = protectedPage.getCallbackParameters();
+		var text = protectedPage.getPageText();
 
-			if( self.params.type == 'pp-move' ) {
-				postData = {
-					'wpEditToken': form.wpEditToken.value,
-					'mwProtect-level-move': self.params.move,
-					'wpProtectExpirySelection-move': self.params.expiry != 'indefinite' ? 'othertime' : 'indefinite',
-					'mwProtect-expiry-move': self.params.expiry != 'indefinite' ? self.params.expiry : undefined,
-					'mwProtect-cascade': self.params.cascade ? '' : undefined,
-					'mwProtectWatch': form.mwProtectWatch.checked ? '' : undefined,
-					'wpProtectReasonSelection': 'other',
-					'mwProtect-reason': self.params.reason + TwinkleConfig.protectionSummaryAd
-				};
+		var oldtag_re = /\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*/gi;
 
-			} else if( self.params.type == 'pp-create' ) {
-				postData = {
-					'wpEditToken': form.wpEditToken.value,
-					'mwProtect-level-create': self.params.create,
-					'wpProtectExpirySelection-create': self.params.expiry != 'indefinite' ? 'othertime' : 'indefinite',
-					'mwProtect-expiry-create': self.params.expiry != 'indefinite' ? self.params.expiry : undefined,
-					'mwProtect-cascade': self.params.cascade ? '' : undefined,
-					'mwProtectWatch': form.mwProtectWatch.checked ? '' : undefined,
-					'wpProtectReasonSelection': 'other',
-					'mwProtect-reason': self.params.reason + TwinkleConfig.protectionSummaryAd
-				};
+		text = text.replace( oldtag_re, '' );
 
-			} else if( self.params.type == 'unprotect' ) {
-				postData = {
-					'wpEditToken': form.wpEditToken.value,
-					'mwProtect-level-edit': self.params.edit,
-					'wpProtectExpirySelection-edit': 'indefinite',
-					'mwProtect-level-move': self.params.move,
-					'wpProtectExpirySelection-move': 'indefinite',
-					'mwProtect-level-create': self.params.create,
-					'wpProtectExpirySelection-create': 'indefinite',
-					'mwProtect-cascade': self.params.cascade ? '' : undefined,
-					'mwProtectWatch': form.mwProtectWatch.checked ? '' : undefined,
-					'wpProtectReasonSelection': 'other',
-					'mwProtect-reason': self.params.reason + TwinkleConfig.protectionSummaryAd
-				};
-			} else {
-				postData = {
-					'wpEditToken': form.wpEditToken.value,
-					'mwProtect-level-edit': self.params.edit,
-					'wpProtectExpirySelection-edit': self.params.expiry != 'indefinite' ? 'othertime' : 'indefinite',
-					'mwProtect-expiry-edit': self.params.expiry != 'indefinite' ? self.params.expiry : undefined,
-					'mwProtect-level-move': self.params.move,
-					'wpProtectExpirySelection-move': self.params.expiry != 'indefinite' ? 'othertime' : 'indefinite',
-					'mwProtect-expiry-move': self.params.expiry != 'indefinite' ? self.params.expiry : undefined,
-					'mwProtect-cascade': self.params.cascade ? '' : undefined,
-					'mwProtectWatch': form.mwProtectWatch.checked ? '' : undefined,
-					'wpProtectReasonSelection': 'other',
-					'mwProtect-reason': self.params.reason + TwinkleConfig.protectionSummaryAd
-				};
+		if ( params.tag !== 'none' ) {
+			var tag = params.tag;
+			if( params.reason ) {
+				tag += '|reason=' + params.reason;
 			}
-
-			self.post( postData );
-		},
-
-		taggingPage: function( protectedPage ) {
-
-			var params = protectedPage.getCallbackParameters();
-			var text = protectedPage.getPageText();
-
-			var oldtag_re = /\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*/gi;
-
-			text = text.replace( oldtag_re, '' );
-
-			if ( params.tag !== 'none' ) {
-				var tag = params.tag;
-				if( params.reason ) {
-					tag += '|reason=' + params.reason;
-				}
-				if( ['indefinite', 'infinite', 'never', null].indexOf(params.expiry) === -1 ) {
-					tag += '|expiry=\{\{subst:#time:F j, Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
-				}
-				if( params.small ) {
-					tag += '|small=yes';
-				}
+			if( ['indefinite', 'infinite', 'never', null].indexOf(params.expiry) === -1 ) {
+				tag += '|expiry=\{\{subst:#time:F j, Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
 			}
-
-			var summary;
-			if( params.tag === 'none' ) {
-				summary = 'Removing protection template' + TwinkleConfig.summaryAd;
-			} else {
-				if( params.noinclude ) {
-					text = "<noinclude>\{\{" + tag + "\}\}</noinclude>" + text;
-				} else {
-					text = "\{\{" + tag + "\}\}\n" + text;
-				}
-				summary = "Adding \{\{" + params.tag + "\}\}" + TwinkleConfig.summaryAd;
+			if( params.small ) {
+				tag += '|small=yes';
 			}
-
-			protectedPage.setEditSummary( summary );
-			protectedPage.setPageText( text );
-			protectedPage.setCreateOption( 'nocreate' );
-			protectedPage.save();
 		}
+
+		var summary;
+		if( params.tag === 'none' ) {
+			summary = 'Removing protection template' + TwinkleConfig.summaryAd;
+		} else {
+			if( params.noinclude ) {
+				text = "<noinclude>\{\{" + tag + "\}\}</noinclude>" + text;
+			} else {
+				text = "\{\{" + tag + "\}\}\n" + text;
+			}
+			summary = "Adding \{\{" + params.tag + "\}\}" + TwinkleConfig.summaryAd;
+		}
+
+		protectedPage.setEditSummary( summary );
+		protectedPage.setPageText( text );
+		protectedPage.setCreateOption( 'nocreate' );
+		protectedPage.save();
 	},
 
-	user: function( rppPage ) {
+	fileRequest: function( rppPage ) {
 
 		var params = rppPage.getCallbackParameters();
 		var text = rppPage.getPageText();
 		var statusElement = rppPage.getStatusElement();
 
-		var ns2tag	=	{
-			'0'	:	'la',
-			'1'	:	'lat',
-			'2'	:	'lu',
-			'3'	:	'lut',
-			'4'	:	'lw',
-			'5'	:	'lwt',
-			'6'	:	'lf',
-			'7'	:	'lft',
-			'8'	:	'lm',
-			'9'	:	'lmt',
-			'10':	'lt',
-			'11':	'ltt',
-			'12':	'lh',
-			'13':	'lht',
-			'14':	'lc',
-			'15':	'lct',
-			'100':	'lp',
-			'101':	'lpt',
-			'108':	'lb',
-			'109':	'lbt'
+		var ns2tag = {
+			'0': 'la',
+			'1': 'lat',
+			'2': 'lu',
+			'3': 'lut',
+			'4': 'lw',
+			'5': 'lwt',
+			'6': 'lf',
+			'7': 'lft',
+			'8': 'lm',
+			'9': 'lmt',
+			'10': 'lt',
+			'11': 'ltt',
+			'12': 'lh',
+			'13': 'lht',
+			'14': 'lc',
+			'15': 'lct',
+			'100': 'lp',
+			'101': 'lpt',
+			'108': 'lb',
+			'109': 'lbt'
 		};
 
 		var rppRe = new RegExp( '====\\s*\\{\\{\\s*' + ns2tag[ wgNamespaceNumber ] + '\\s*\\|\\s*' + RegExp.escape( wgTitle, true ) + '\\s*\\}\\}\\s*====', 'm' );
@@ -936,10 +991,10 @@ twinkleprotect.callbacks = {
 		var words = '';
 		switch( params.expiry ) {
 		case 'temporary':
-			words = "Temporary";
+			words = "Temporary ";
 			break;
 		case 'indefinite':
-			words = "Indefinite";
+			words = "Indefinite ";
 			break;
 		}
 
