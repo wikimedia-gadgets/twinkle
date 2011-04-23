@@ -442,9 +442,9 @@ twinklespeedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 			tooltip: 'An admin has closed a deletion discussion (at AfD, FfD, RfD, TfD, CfD, SfD, or MfD) as "delete", but they didn\'t actually delete the page.'
 		});
 		result.push({
-			label: 'G6: Orphaned disambiguation page',
+			label: 'G6: Unnecessary disambiguation page',
 			value: 'disambig',
-			tooltip: 'Deleting unnecessary disambiguation pages.'
+			tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate two or fewer existing Wikipedia pages and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguates no (zero) existing Wikipedia pages, regardless of its title.'
 		});
 	}
 	result.push({
@@ -578,7 +578,7 @@ twinklespeedy.reasonHash = {
 	'histmerge': 'Temporary deletion in order to merge page histories',
 	'move': 'Making way for a non-controversial move',
 	'xfd': 'Deleting page per result of [[WP:XfD|deletion discussion]]',
-	'disambig': 'Deleting unnecessary disambiguation page',
+	'disambig': 'Unnecessary disambiguation page',
 	'g6': 'Housekeeping and routine (non-controversial) cleanup',
 	'author': 'One author who has requested deletion or blanked the page',
 	'g8': 'Page dependent on a deleted or nonexistent page',
