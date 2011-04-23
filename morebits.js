@@ -1952,6 +1952,10 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.protectMove = { level: level, expiry: expiry };
 	};
 
+	this.setCreateProtection = function(level, expiry) {
+		ctx.protectCreate = { level: level, expiry: expiry };
+	};
+
 	this.setCascadingProtection = function(flag) {
 		ctx.protectCascade = !!flag;
 	};
@@ -2242,8 +2246,8 @@ Wikipedia.page = function(pageName, currentAction) {
 			ctx.statusElement.error("Cannot protect page: only admins can do that");
 			return;
 		}
-		if (!ctx.protectEdit && !ctx.protectMove) {
-			ctx.statusElement.error("Internal error: you must set edit and/or move protection before calling protect()!");
+		if (!ctx.protectEdit && !ctx.protectMove && !ctx.protectCreate) {
+			ctx.statusElement.error("Internal error: you must set edit and/or move and/or create protection before calling protect()!");
 			return;
 		}
 		if (!ctx.editSummary) {
@@ -2307,6 +2311,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		moveSuppressRedirect: false,
 		protectEdit: null,
 		protectMove: null,
+		protectCreate: null,
 		protectCascade: false,
 		 // internal status
 		pageLoaded: false,
@@ -2681,6 +2686,14 @@ Wikipedia.page = function(pageName, currentAction) {
 			}
 			protections += 'move=' + ctx.protectMove.level;
 			expiry += ctx.protectMove.expiry;
+		}
+		if (ctx.protectCreate) {
+			if (ctx.protectEdit || ctx.protectMove) {
+				protections += '|';
+				expiry += '|';
+			}
+			protections += 'create=' + ctx.protectCreate.level;
+			expiry += ctx.protectCreate.expiry;
 		}
 		var query = {
 			action: 'protect',
