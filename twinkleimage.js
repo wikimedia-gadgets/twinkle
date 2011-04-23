@@ -3,7 +3,7 @@ if ( typeof(Twinkle) === "undefined" ) {
 }
 
 function twinkleimage() {
-	if( wgNamespaceNumber == 6 && !(document.getElementById("mw-sharedupload"))) {
+	if( wgNamespaceNumber === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory")) {
 		twAddPortletLink( (twinkleUserAuthorized ? "javascript:twinkleimage.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "DI", "tw-di", "Nominate file for relative speedy deletion", "");
 	}
 }

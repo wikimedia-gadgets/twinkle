@@ -5,10 +5,10 @@ if ( typeof(Twinkle) === "undefined" ) {
 function twinklespeedy() {
 	// Disable on:
 	// * special pages
-	// * pages with neither a page nor local file revision
-	if ( wgNamespaceNumber < 0 ||
-	(wgArticleId==0 && (wgNamespaceNumber!=6 || (document.getElementById("mw-imagepage-section-filehistory") && !(document.getElementById("mw-sharedupload")))))
-	)  return;
+	// * non-existent pages
+	if (wgNamespaceNumber < 0 || !wgArticleId) {
+		return;
+	}
 
 	if ( userIsInGroup( 'sysop' ) ) {
 		twAddPortletLink( "javascript:twinklespeedy.callback()", "CSD", "tw-csd", "Speedy delete according to WP:CSD", "");

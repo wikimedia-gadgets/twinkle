@@ -3,7 +3,7 @@ if ( typeof(Twinkle) === "undefined" ) {
 }
 
 function twinklediff() { 
-	if( wgNamespaceNumber < 0 ) {
+	if( wgNamespaceNumber < 0 || !wgArticleId ) {
 		return;
 	}
 

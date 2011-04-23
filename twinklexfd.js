@@ -3,7 +3,12 @@ if ( typeof(Twinkle) === "undefined" ) {
 }
 
 function twinklexfd() {
-	if ( wgNamespaceNumber < 0 || wgCurRevisionId == false ) {
+	// Disable on:
+	// * special pages
+	// * non-existent pages
+	// * files on Commons, whether there is a local page or not (unneeded local pages of files on Commons are eligible for CSD F2)
+	// * file pages without actual files (these are eligible for CSD G8)
+	if ( wgNamespaceNumber < 0 || !wgArticleId || (wgNamespaceNumber === 6 && (document.getElementById('mw-sharedupload') || (!document.getElementById('mw-imagepage-section-filehistory') && !document.getElementsByClassName('redirectText').length))) ) {
 		return;
 	}
 	if (twinkleUserAuthorized) {
