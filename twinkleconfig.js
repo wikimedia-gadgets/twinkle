@@ -567,7 +567,7 @@ Twinkle.config.sections = [
 		{
 			name: "insertUsername",
 			label: "Add your username to the template (if relevant)",
-			helptip: "Some welcome templates have an opening sentence like \"Hi, I'm <username>. Welcome\" etc. If you turn off this option, these templates will not display your username in that way.",
+			helptip: "Some welcome templates have an opening sentence like \"Hi, I'm &lt;username&gt;. Welcome\" etc. If you turn off this option, these templates will not display your username in that way.",
 			type: "boolean"
 		},
 		{
@@ -977,7 +977,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		footerspan.appendChild(document.createTextNode("To reset all preferences to the defaults, you can "));
 		var footera = document.createElement("a");
 		// XXX change this href away from TTO's userspace - move editintro to [[Wikipedia:Twinkle/Preferences/twinkleoptions blanking editintro]] or something like that
-		footera.setAttribute("href", "/w/index.php?action=edit&title=Special:MyPage/twinkleoptions.js&editintro=User:This,_that_and_the_other/twinkleoptions_blanking_editintro");
+		footera.setAttribute("href", "/w/index.php?action=edit&title=Special:MyPage/twinkleoptions.js&editintro=User:This,_that_and_the_other/twinkleoptions_blanking_editintro&summary=Resetting Twinkle preferences");
 		footera.appendChild(document.createTextNode("blank your preferences file"));
 		footerspan.appendChild(footera);
 		footerspan.appendChild(document.createTextNode("."));
