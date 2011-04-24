@@ -292,13 +292,13 @@ twinklefluff.callbacks = {
 		var edittoken = $(xmlDoc).find('page').attr('edittoken');
 		var lastuser = $(xmlDoc).find('rev').attr('user');
 
-		var revs = xmlDoc.evaluate( '//rev', xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
+		var revs = $(xmlDoc).find('rev');
 
-		if( revs.snapshotLength < 1 ) {
+		if( revs.length < 1 ) {
 			self.statitem.error( 'We have less than one additional revision, thus impossible to revert' );
 			return;
 		}
-		var top = revs.snapshotItem(0);
+		var top = revs[0];
 		if( lastrevid < wgCurRevisionId ) {
 			Status.error( 'Error', [ 'The most recent revision ID received from the server, ', htmlNode( 'strong', lastrevid ), ', is less than the ID of the displayed revision. This could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Will stop proceeding at this point.' ] );
 			return;
@@ -321,8 +321,8 @@ twinklefluff.callbacks = {
 			}
 			else if( 
 				self.params.type == 'vand' && 
-				twinklefluff.whiteList.indexOf( top.getAttribute( 'user' ) ) != -1 && revs.snapshotLength > 1 &&
-				revs.snapshotItem(1).getAttribute( 'pageId' ) == wgCurRevisionId 
+				twinklefluff.whiteList.indexOf( top.getAttribute( 'user' ) ) != -1 && revs.length > 1 &&
+				revs[1].getAttribute( 'pageId' ) == wgCurRevisionId 
 			) {
 				Status.info( 'Info', [ 'Latest revision was made by ', htmlNode( 'strong', lastuser ), ', a trusted bot, and the revision before was made by our vandal, so we proceed with the revert.' ] );
 				index = 2;
@@ -338,8 +338,8 @@ twinklefluff.callbacks = {
 			case 'vand':
 				Status.info( 'Info', [ 'Vandalism revert was chosen on ', htmlNode( 'strong', self.params.user ), '. As this is a whitelisted bot, we assume you wanted to revert vandalism made by the previous user instead.' ] );
 				index = 2;
-				vandal = revs.snapshotItem(1).getAttribute( 'user' );
-				self.params.user = revs.snapshotItem(1).getAttribute( 'user' );
+				vandal = revs[1].getAttribute( 'user' );
+				self.params.user = revs[1].getAttribute( 'user' );
 				break;
 			case 'agf':
 				Status.warn( 'Notice', [ 'Good faith revert was chosen on ', htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot, it makes no sense at all to revert it as a good faith edit, will stop reverting.' ] );
@@ -352,7 +352,7 @@ twinklefluff.callbacks = {
 				if( cont ) {
 					Status.info( 'Info', [ 'Normal revert was chosen on ', htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot, and per confirmation, we\'ll revert the previous revision instead.' ] );
 					index = 2;
-					self.params.user = revs.snapshotItem(1).getAttribute( 'user' );
+					self.params.user = revs[1].getAttribute( 'user' );
 				} else {
 					Status.warn( 'Notice', [ 'Normal revert was chosen on ', htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot, but per confirmation, revert on top revision will proceed.' ] );
 				}
@@ -362,9 +362,9 @@ twinklefluff.callbacks = {
 		var found = false;
 		var count = 0;
 
-		for( var i = index; i < revs.snapshotLength; ++i ) {
+		for( var i = index; i < revs.length; ++i ) {
 			++count;
-			if( revs.snapshotItem(i).getAttribute( 'user' ) != self.params.user ) {
+			if( revs[i].getAttribute( 'user' ) != self.params.user ) {
 				found = i;
 				break;
 			}
@@ -382,7 +382,7 @@ twinklefluff.callbacks = {
 			return;
 		}
 
-		var good_revision = revs.snapshotItem( found );
+		var good_revision = revs[ found ];
 
 		if( 
 			self.params.type != 'vand' && 

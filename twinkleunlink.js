@@ -10,7 +10,7 @@ function twinkleunlink() {
 }
 
 function getChecked2( nodelist ) {
-	if( !( nodelist instanceof NodeList ) ) {
+	if( !( nodelist instanceof NodeList ) && !( nodelist instanceof HTMLCollection ) ) {
 		return nodelist.checked ? [ nodelist.value ] : [];
 	}
 	var result = [];
@@ -60,7 +60,9 @@ twinkleunlink.callback = function twinkleunlinkCallback() {
 	wikipedia_api.post();
 
 	var root = document.createElement( 'div' );
+	root.style.padding = '20px';  // just so it doesn't look broken
 	Status.init( root );
+	wikipedia_api.statelem.status( "loading..." );
 	Window.setContent( root );
 	Window.display();
 }
@@ -72,7 +74,7 @@ twinkleunlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event) 
 	twinkleunlink.imageusagedone = 0;
 
 	function processunlink(pages, imageusage) {
-		var statusIndicator = new Status((imageusage ? 'Unlinking instances of image usage' : 'Unlinking instances'), '0%');
+		var statusIndicator = new Status((imageusage ? 'Unlinking instances of image usage' : 'Unlinking backlinks'), '0%');
 		var total = pages.length;  // removing doubling of this number - no apparent reason for it
 
 		Wikipedia.addCheckpoint();
@@ -96,16 +98,18 @@ twinkleunlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event) 
 
 	var reason = event.target.reason.value;
 	if( event.target.backlinks ) {
-		var backlinks = getChecked(event.target.backlinks);
+		var backlinks = getChecked2(event.target.backlinks);
 	}
 	if( event.target.imageusage ) {
-		var imageusage = getChecked(event.target.imageusage);
+		var imageusage = getChecked2(event.target.imageusage);
 	}
 
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( event.target );
+	Wikipedia.addCheckpoint();
 	if (backlinks) processunlink(backlinks, false);
 	if (imageusage) processunlink(imageusage, true);
+	Wikipedia.removeCheckpoint();
 }
 
 twinkleunlink.backlinksdone = 0;
@@ -118,15 +122,15 @@ twinkleunlink.callbacks = {
 			var havecontent = false;
 
 			if( apiobj.params.image ) {
-				var imageusage = xmlDoc.evaluate('//query/imageusage/iu/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
+				var imageusage = $(xmlDoc).find('query imageusage iu');
 				var list = [];
-				for ( var i = 0; i < imageusage.snapshotLength; ++i ) {
-					var title = imageusage.snapshotItem(i).value;
+				for ( var i = 0; i < imageusage.length; ++i ) {
+					var title = imageusage[i].getAttribute('title');
 					list.push( { label: title, value: title, checked: true } );
 				}
 				if (list.length == 0)
 				{
-					apiobj.params.form.append( { type: 'header', label: 'No instances of image usage found.' } );
+					apiobj.params.form.append( { type: 'div', label: 'No instances of image usage found.' } );
 				}
 				else
 				{
@@ -140,11 +144,11 @@ twinkleunlink.callbacks = {
 				}
 			}
 
-			var backlinks = xmlDoc.evaluate('//query/backlinks/bl/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
-			if( backlinks.snapshotLength > 0 ) {
+			var backlinks = $(xmlDoc).find('query backlinks bl');
+			if( backlinks.length > 0 ) {
 				var list = [];
-				for ( var i = 0; i < backlinks.snapshotLength; ++i ) {
-					var title = backlinks.snapshotItem(i).value;
+				for ( var i = 0; i < backlinks.length; ++i ) {
+					var title = backlinks[i].getAttribute('title');
 					list.push( { label: title, value: title, checked: true } );
 				}
 				apiobj.params.form.append( { type:'header', label: 'Backlinks' } );

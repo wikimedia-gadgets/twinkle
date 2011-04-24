@@ -63,7 +63,7 @@ twinklediff.evaluate = function twinklediffEvaluate(me) {
 twinklediff.callbacks = {
 	main: function( self ) {
 		var xmlDoc = self.responseXML;
-		var revid = xmlDoc.evaluate( '//rev/@revid', xmlDoc, null, XPathResult.NUMBER_TYPE, null ).numberValue;
+		var revid = $(xmlDoc).find('rev').attr('revid');
 
 		if( ! revid ) {
 			self.statelem.error( 'no suitable earlier revision found, or ' + self.params.user + ' is the only contributor. Aborting.' );

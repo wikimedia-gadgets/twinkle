@@ -353,15 +353,15 @@ twinklexfd.callbacks = {
 	afd: {
 		main: function(apiobj) {
 			var xmlDoc = apiobj.responseXML;
-			var titles = xmlDoc.evaluate( '//allpages/p/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
+			var titles = $(xmlDoc).find('allpages p');
 
 			// There has been no earlier entries with this prefix, just go on.
-			if( titles.snapshotLength <= 0 ) {
+			if( titles.length <= 0 ) {
 				apiobj.params.numbering = apiobj.params.number = '';
 			} else {
 				var number = 0;
-				for( var i = 0; i < titles.snapshotLength; ++i ) {
-					var title = titles.snapshotItem(i).value;
+				for( var i = 0; i < titles.length; ++i ) {
+					var title = titles[i].getAttribute('title');
 
 					// First, simple test, is there an instance with this exact name?
 					if( title == 'Wikipedia:Articles for deletion/' + wgPageName ) {
@@ -610,16 +610,16 @@ twinklexfd.callbacks = {
 	mfd: {
 		main: function(apiobj) {
 			var xmlDoc = apiobj.responseXML;
-			var titles = xmlDoc.evaluate( '//allpages/p/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
+			var titles = $(xmlDoc).find('allpages p');
 
 			// There has been no earlier entries with this prefix, just go on.
-			if( titles.snapshotLength <= 0 ) {
+			if( titles.length <= 0 ) {
 				apiobj.params.numbering = apiobj.params.number = '';
 				numbering = number = '';
 			} else {
 				var number = 0;
-				for( var i = 0; i < titles.snapshotLength; ++i ) {
-					var title = titles.snapshotItem(i).value;
+				for( var i = 0; i < titles.length; ++i ) {
+					var title = titles[i].getAttribute('title');
 
 					// First, simple test, is there an instance with this exact name?
 					if( title == 'Wikipedia:Miscellany for deletion/' + wgPageName ) {
@@ -1058,7 +1058,7 @@ twinklexfd.callbacks = {
 		// This is a callback from an API request, which gets the target of the redirect
 		main: function(apiobj) {
 			var xmlDoc = apiobj.responseXML;
-			var target = xmlDoc.evaluate( '//redirects/r/@to', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
+			var target = $(xmlDoc).find('redirects r').first().attr('to');
 			if( !target ) {
 				apiobj.statelem.error( "This page is currently not a redirect, aborting" );
 				return;
