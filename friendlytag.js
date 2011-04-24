@@ -135,6 +135,18 @@ friendlytag.maintenanceList = [
 		value: 'linkrot'
 	},
 	{
+		label: '\{\{merge\}\}: article should be merged with another given article',
+		value: 'merge'
+	},
+	{
+		label: '\{\{merge from\}\}: another given article should be merged into this one',
+		value: 'merge from'
+	},
+	{
+		label: '\{\{merge to\}\}: article should be merged into another given article',
+		value: 'merge to'
+	},
+	{
 		label: '\{\{morefootnotes\}\}: article has some references, but insufficient in-text citations',
 		value: 'morefootnotes'
 	},
@@ -808,6 +820,18 @@ friendlytag.callbacks = {
 							continue;
 						} else if (langname !== "") {
 							tagText += '|1=' + langname;
+						}
+						break;
+					case 'merge':
+					case 'merge to':
+					case 'merge from':
+						var param = prompt('Please enter the name of the other article(s) involved in the merge.  \n' +
+							"To specify multiple articles, separate them with a vertical pipe (|) character.  \n" +
+							"This information is required.  Click OK when done, or click Cancel to skip the merge tag.", "");
+						if (param == null) {
+							continue;
+						} else if (param !== "") {
+							tagText += '|' + param;
 						}
 						break;
 				}
