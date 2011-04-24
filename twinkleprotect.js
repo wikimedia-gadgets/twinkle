@@ -100,6 +100,8 @@ twinkleprotect.callback = function twinkleprotectCallback() {
 	}
 }
 
+twinkleprotect.protectionLevel = null;
+
 twinkleprotect.callback.protectionLevel = function twinkleprotectCallbackProtectionLevel(apiobj) {
 	var xml = apiobj.getXML();
 	var result = [];
@@ -122,6 +124,7 @@ twinkleprotect.callback.protectionLevel = function twinkleprotectCallbackProtect
 		boldnode.textContent = "no protection";
 		result.push(boldnode);
 	}
+	twinkleprotect.protectionLevel = result;
 	apiobj.statelem.info(result);
 	setTimeout(Wikipedia.removeCheckpoint, 1000);
 };
@@ -414,6 +417,12 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 		oldfield.parentNode.replaceChild(field2.render(), oldfield);
 	} else {
 		$(e.target.form).find('fieldset[name="field2"]').css('display', 'none');
+	}
+
+	// re-add protection level text, if it's available
+	if (e.target.value === 'protect' && twinkleprotect.protectionLevel) {
+		Status.init($('div[name="currentprot"] span').last()[0]);
+		Status.info("Current protection level", twinkleprotect.protectionLevel);
 	}
 }
 
@@ -1000,7 +1009,7 @@ twinkleprotect.callbacks = {
 
 		words += params.typename;
 
-		newtag += "'''" + words.toUpperCaseFirstChar() + "'''" + ( params.reason != '' ? ': ' + params.reason : '' ) + " \~\~\~\~";
+		newtag += "'''" + words.toUpperCaseFirstChar() + ( params.reason != '' ? ":''' " + params.reason : ".'''" ) + " \~\~\~\~";
 
 		if ( params.category == 'unprotect' ) {
 			var reg = /(\n==\s*Current requests for unprotection\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
@@ -1015,7 +1024,7 @@ twinkleprotect.callbacks = {
 			return;
 		}
 		statusElement.status( 'Adding new request...' );
-		rppPage.setEditSummary( "Requesting " + params.typename + ' of [[' + wgPageName.replace(/_/g, ' ') + ']]' + TwinkleConfig.summaryAd );
+		rppPage.setEditSummary( "Requesting " + params.typename + ' of [[' + wgPageName.replace(/_/g, ' ') + ']].' + TwinkleConfig.summaryAd );
 		rppPage.setPageText( text );
 		rppPage.setCreateOption( 'recreate' );
 		rppPage.save();
