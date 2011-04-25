@@ -1395,7 +1395,7 @@ twinklewarn.callbacks = {
 			var article = '', reason = '', time = null;
 			
 			if( TwinkleConfig.blankTalkpageOnIndefBlock && params.sub_group != 'uw-lblock' && ( twinklewarn.indefBlockHash[ params.sub_group ] || /indef|\*|max/.exec( params.block_timer ) ) ) {
-				Status.info( 'Info', 'Blanking talk page per preferences and createing a new level 2 heading for the date' );
+				Status.info( 'Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date' );
 				text = "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			} else if( !headerRe.exec( text ) ) {
 				Status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );

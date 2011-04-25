@@ -118,10 +118,11 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Notify if possible',
+						label: 'Notify page creator if possible',
 						value: 'notify',
 						name: 'notify',
-						tooltip: 'If a notification is defined in the configuration, then notify if this is true, else no notification',
+						tooltip: "A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences " +
+							"for the criterion you choose AND this box is checked. The creator may be welcomed as well.",
 						checked: !userIsInGroup( 'sysop' ) || TwinkleConfig.deleteSysopDefaultToTag,
 						disabled: userIsInGroup( 'sysop' ) && !TwinkleConfig.deleteSysopDefaultToTag,
 						event: function( event ) {

@@ -89,10 +89,10 @@ twinklexfd.callback = function twinklexfdCallback() {
 			type: 'checkbox',
 			list: [
 				{
-					label: 'Notify if possible',
+					label: 'Notify page creator if possible',
 					value: 'notify',
 					name: 'notify',
-					tooltip: 'If a notification if defined in the configuration, then notify the page creator if this is true, else no notify',
+					tooltip: "A notification template will be placed on the creator's talk page if this is true.",
 					checked: true
 				}
 			]
