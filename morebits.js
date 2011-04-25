@@ -3444,7 +3444,9 @@ function SimpleWindow( width, height ) {
 			width: Math.min(parseInt(window.innerWidth), parseInt(width ? width : 800)),
 			// give jQuery the given height value (which represents the anticipated height of the dialog) here, so
 			// it can position the dialog appropriately
-			height: height
+			// the 20 pixels represents adjustment for the extra height of the jQuery dialog "chrome", compared
+			// to that of the old SimpleWindow
+			height: height + 20
 		}).bind("dialogresize", function(event, ui) {
 			this.style.maxHeight = "";
 		});
@@ -3512,9 +3514,14 @@ SimpleWindow.prototype = {
 		this.height = height;
 
 		// from display time onwards, let the browser determine the optimum height, and instead limit the height at the given value
-		// note that the given height will now exclude the title bar and button pane (in total, about 35px on Firefox 4 - allowing for 40px here)
-		$(this.content).dialog("option", "height", (window.innerHeight <= (this.height + 40)) ? window.innerHeight : "auto");
-		$(this.content).dialog("widget").find(".morebits-dialog-content")[0].style.maxHeight = parseInt(this.height) + "px";
+		// note that the given height will exclude the approx. 20px that the jQuery UI chrome has in height in addition to the height
+		// of an equivalent "classic" SimpleWindow
+		if (parseInt(getComputedStyle($(this.content).dialog("widget")[0]).height) > window.innerHeight) {
+			$(this.content).dialog("option", "height", window.innerHeight - 2).dialog("option", "position", "top");
+		} else {
+			$(this.content).dialog("option", "height", "auto");
+		}
+		$(this.content).dialog("widget").find(".morebits-dialog-content")[0].style.maxHeight = parseInt(this.height - 30) + "px";
 	},
 	// Sets the content of the dialog to the given element node, usually from rendering a QuickForm or QuickForm element.
 	// Re-enumerates the footer buttons, but leaves the footer links as they are.
