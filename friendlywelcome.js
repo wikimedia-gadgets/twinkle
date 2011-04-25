@@ -468,7 +468,7 @@ friendlywelcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) 
 	}
 	
 	var params = {
-		value: e.target.value,
+		value: e.target.values,
 		article: e.target.form.article.value,
 		mode: 'manual'
 	};

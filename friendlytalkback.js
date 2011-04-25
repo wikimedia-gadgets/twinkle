@@ -64,7 +64,7 @@ friendlytalkback.prev_section = '';
 friendlytalkback.prev_message = '';
 
 friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarget(e) {
-	var value = e.target.value;
+	var value = e.target.values;
 	var root = e.target.form;
 	var old_area;
 
