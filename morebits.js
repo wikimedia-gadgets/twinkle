@@ -2204,7 +2204,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			query.inprop = 'protection';
 		}
 
-		ctx.moveApi = new Wikipedia.api("Retrieving move token...", query, fnProcessMove, ctx.statusElement);
+		ctx.moveApi = new Wikipedia.api("retrieving move token...", query, fnProcessMove, ctx.statusElement);
 		ctx.moveApi.setParent(this);
 		ctx.moveApi.post();
 	};
@@ -2235,7 +2235,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.deleteApi = new Wikipedia.api("Retrieving delete token...", query, fnProcessDelete, ctx.statusElement);
+		ctx.deleteApi = new Wikipedia.api("retrieving delete token...", query, fnProcessDelete, ctx.statusElement);
 		ctx.deleteApi.setParent(this);
 		ctx.deleteApi.post();
 	};
@@ -2269,7 +2269,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.protectApi = new Wikipedia.api("Retrieving protect token...", query, fnProcessProtect, ctx.statusElement);
+		ctx.protectApi = new Wikipedia.api("retrieving protect token...", query, fnProcessProtect, ctx.statusElement);
 		ctx.protectApi.setParent(this);
 		ctx.protectApi.post();
 	};
@@ -2734,7 +2734,16 @@ Wikipedia.page = function(pageName, currentAction) {
  */
 Wikipedia.wiki = function( currentAction, query, oninit, onsuccess, onerror, onretry ) {
 
-	alert('The action "' + currentAction + '" is still using the "Wikipedia.wiki" class.'); // for code testers only - normal editors won't need this alert
+	var node = document.createElement("div");
+	node.style.background = "#F9F9F9";
+	node.style.border = "1px solid maroon";
+	node.style.padding = "0.6em 0.8em";
+	node.style.margin = "0.5em";
+	node.style.fontSize = "small";
+	node.innerHTML = "<b>This user script is using the deprecated \"Wikipedia.wiki\" class to edit the wiki. " +
+		"It may cease to function in the near future.</b><br />Please pass this message on to the script's maintainer, to ensure the script is upgraded.<br />" +
+		"(The developers of Twinkle are happy to assist script maintainers with updating scripts.)";
+	Status.warn(currentAction, [ node ]);
 
 	this.currentAction = currentAction;
 	this.query = query;
@@ -2772,8 +2781,7 @@ Wikipedia.wiki.prototype = {
 		xmlhttp.open( 'POST' , wgServer + wgScriptPath + '/index.php?useskin=monobook&' + QueryString.create( this.query ), true);
 		xmlhttp.setRequestHeader('Content-type','application/x-www-form-urlencoded');
 		xmlhttp.onerror = function(e) {
-			var self = this.obj;
-			self.statelem.error( "Error " + this.status + " occurred while posting the document." );
+			this.obj.statelem.error( "Error " + this.status + " occurred while posting the document." );
 		}
 		xmlhttp.onload = function(e) {
 			var self = this.obj;
@@ -2829,23 +2837,26 @@ Wikipedia.wiki.prototype = {
 		wikipedia_api.parent = this;
 		wikipedia_api.post();
 	},
-	postget: function() {
-		var xmlDoc = self.responseXML = this.responseXML;
+	// note: this was updated in April 2011 to work with the revamped Wikipedia.api class.
+	// This was done so a lot of user scripts that use morebits didn't break down.
+	// But some deprecated technologies, like XPath and sajax, were kept intentionally, to
+	// discourage future consumers, and to not widen compatibility (i.e. doesn't work in IE9).
+	postget: function(apiobj) {
+		var xmlDoc = apiobj.getXML();
 		var to = xmlDoc.evaluate( '//redirects/r/@to', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-		if( !this.parent.followRedirect ) {
-			this.parent.statelem.info('ignoring eventual redirect');
+		if( !this.followRedirect ) {
+			this.statelem.info('ignoring eventual redirect');
 		} else if( to ) {
-			this.parent.query['title'] = to;
+			this.query['title'] = to;
 		}
-		this.parent.onloading( this );
+		this.onloading( this );
 		var xmlhttp = sajax_init_object();
 		Wikipedia.dump.push( xmlhttp );
-		xmlhttp.obj = this.parent;
+		xmlhttp.obj = this;
 		xmlhttp.overrideMimeType('text/xml');
-		xmlhttp.open( 'GET' , wgServer + wgScriptPath + '/index.php?useskin=monobook&' + QueryString.create( this.parent.query ), true);
+		xmlhttp.open( 'GET' , wgServer + wgScriptPath + '/index.php?useskin=monobook&' + QueryString.create( this.query ), true);
 		xmlhttp.onerror = function() {
-			var self = this.obj;
-			self.statelem.error( "Error " + this.status + " occurred while receiving the document." );
+			this.obj.statelem.error( "Error " + this.status + " occurred while receiving the document." );
 		}
 		xmlhttp.onload = function() { 
 			this.obj.onloaded( this.obj );
@@ -2862,7 +2873,6 @@ Wikipedia.wiki.prototype = {
 		this.statelem.status( 'data loaded...' );
 	}
 }
-
 
 /**
  * These functions retrieve the date from the server. It uses bandwidth, time, etc.
