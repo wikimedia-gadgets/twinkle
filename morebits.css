@@ -1,0 +1,233 @@
+/* Status */
+
+.tw_status_status {
+	color: #4682B4;
+}
+
+.tw_status_info {
+	color: #228B22;
+}
+
+.tw_status_warn {
+	color: #FF4500;
+}
+
+.tw_status_error {
+	color: #FF4500;
+	font-weight: 900;
+}
+
+/* Quickform */
+
+form.quickform
+{
+	width: 96%;
+	vertical-align: middle;
+	margin: auto;
+	padding: .5em;
+}
+
+form.quickform *
+{
+	font-family: sans-serif;
+	vertical-align: middle;
+}
+
+form.quickform fieldset
+{
+	margin: .4em 0 1em;
+}
+
+form.quickform legend
+{
+	color: #31628F;
+	font-weight: 700;
+}
+
+form.quickform input[type=text],form.quickform select
+{
+	min-width: 15em;
+	font-size: 110%;
+}
+
+form.quickform select
+{
+	border: 1px solid gray;
+	margin-left: .2em;
+}
+
+form.quickform h5
+{
+	margin: .5em 0 0;
+	padding: .3em .2em .2em;
+}
+
+form.quickform div + h5,form.quickform div + div h5,form.quickform h5 + h5
+{
+	border-top: 1px solid #88A;
+}
+
+form.quickform textarea
+{
+	width: 100%;
+	height: 4em;
+	font-size: 150%;
+}
+
+form.quickform span.quickformDescription
+{
+	font-style: italic;
+}
+
+form.quickform .tooltipButtonContainer
+{
+	position: relative;
+	width: 100%;
+}
+
+form.quickform .tooltipButton
+{
+	color: blue;
+	font-weight: 700;
+	cursor: help;
+	padding: .2em;
+}
+
+.quickformtooltip
+{
+	z-index: 2000;
+	position: absolute;
+	border: 1px dotted red;
+	background-color: #FAF0E6;
+	font: caption;
+	font-size: 10pt;
+	max-width: 800px;
+	padding: .1em;
+}
+
+
+/* Portlet */
+
+.skin-vector div div.extraMenu h5 span {
+	background-position: 90% 50%;
+}
+
+.skin-vector div.extraMenu h5 a {
+	padding-left: .4em;
+	padding-right: .4em;
+	width: auto;
+}
+
+.skin-vector div.extraMenu h5 a span {
+	display: inline-block;
+	font-size: .8em;
+	height: 2.5em;
+	font-weight: 400;
+	padding-top: 1.25em;
+	margin-right: 14px;
+}
+
+.skin-modern #mw_contentwrapper div.portlet {
+	overflow: hidden;
+	height: 1.5em;
+	margin: 0 0 0 14em;
+	padding: 0;
+}
+
+.skin-modern #mw_contentwrapper div.portlet h5 {
+	display: none;
+}
+
+.skin-modern #mw_contentwrapper div.portlet div.pbody {
+	margin: 0;
+	padding: 0;
+}
+
+.skin-modern #mw_contentwrapper div.portlet div.pbody ul {
+	display: inline;
+	margin: 0;
+}
+
+.skin-modern #mw_contentwrapper div.portlet div.pbody ul li {
+	display: block;
+	float: left;
+	height: 1.5em;
+	margin: 0 .5em;
+	padding: 0 .2em;
+	text-transform: lowercase;
+}
+
+.skin-modern #mw_contentwrapper div.portlet div.pbody ul li a {
+	text-decoration: underline;
+}
+
+.skin-modern #mw_contentwrapper div.portlet div.pbody ul li.selected a {
+	text-decoration: none;
+}
+
+/* Simplewindow */
+
+.morebits-dialog {
+	border: 1px #666 solid;
+	font: .8em sans-serif;
+	background-color: #F0F8FF;
+	background-image: none;
+}
+
+body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
+	height:1em;
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC) repeat-x 50% 80% #cfd6e1;
+	font: bold 1em sans-serif;
+	padding: .4em .3em .5em;
+}
+
+.morebits-dialog-scriptname {
+	font-weight: 400;
+}
+
+.ui-dialog.morebits-dialog .ui-dialog-titlebar-close {
+	height: 100%;
+	right: 0;
+	top: auto;
+	width: 2em;
+	margin: -.5em -.15em 0;
+}
+
+.ui-dialog.morebits-dialog .ui-dialog-titlebar-close span {
+	margin: .33em;
+}
+
+.ui-dialog.morebits-dialog .morebits-dialog-content {
+	font-size: 88%;
+	padding: 0;
+}
+
+body .ui-dialog.morebits-dialog .ui-dialog-buttonpane {
+	background-color: #BCCADF;
+	min-height: .5em;
+	padding-left: 1.2em;
+}
+
+body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
+	float: none;
+	margin: .2em 0 -.1em;
+}
+
+.morebits-dialog-footerlinks {
+	font-size: 90%;
+	float: right;
+	margin: .7em .4em 0 0;
+}
+
+body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
+	color: #3062AD;
+}
+
+.morebits-dialog-buttons[data-empty] + .morebits-dialog-footerlinks {
+	margin: .1em .4em -.2em 0;
+}
+
+.ui-dialog.morebits-dialog a,.ui-dialog.morebits-dialog .ui-widget-content a {
+	color: #0645AD;
+}
+

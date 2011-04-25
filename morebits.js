@@ -66,14 +66,6 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 	var nextnode;
 	if (nextnodeid) nextnode = document.getElementById(nextnodeid);
 
-	//Add styles we might need.
-	if (!twAddPortlet.styleAdded)
-	{
-		if (skin=="vector") appendCSS( "div div.extraMenu h5 span { background-position: 90% 50%;} div.extraMenu h5 a { padding-left: 0.4em; padding-right: 0.4em; width:auto; } div.extraMenu h5 a span {display:inline-block; font-size:0.8em; height:2.5em; font-weight: normal; padding-top: 1.25em; margin-right:14px; }" );
-		else if (skin=="modern") appendCSS("#mw_contentwrapper div.portlet { overflow:hidden; height:1.5em; margin:0 0 0 14em; padding:0; } #mw_contentwrapper div.portlet h5 {display:none;} #mw_contentwrapper div.portlet div.pBody {margin:0; padding:0;} #mw_contentwrapper div.portlet div.pBody ul { display:inline; margin:0; } #mw_contentwrapper div.portlet div.pBody ul li { display:block; float:left; height:1.5em; margin:0 0.5em; padding:0 0.2em; text-transform:lowercase; } #mw_contentwrapper div.portlet div.pBody ul li a { text-decoration:underline;} #mw_contentwrapper div.portlet div.pBody ul li.selected a { text-decoration:none;}");
-		twAddPortlet.styleAdded = true;
-	}
-
 	//verify/normalize input
 	type = skin=="vector" && type=="menu" && (navigation=="left-navigation" || navigation=="right-navigation")?"menu":"";
 	var outerDivClass;
@@ -201,71 +193,6 @@ var Cookies = {
 var QuickForm = function QuickForm( event, eventType ) {
 
 	this.root = new QuickForm.element( { type: 'form', event: event, eventType:eventType } );
-
-	// XXX perhaps break this out into a separate CSS file??
-	var quickformcss =
-		"form.quickform { " +
-			"width: 96%; " +
-			"margin: auto; " +
-			"padding: .5em; " +
-			"vertical-align: middle; " +
-		"} " +
-		"form.quickform * { " +
-			"font-family: sans-serif; " +
-			"vertical-align: middle; " +
-		"} " +
-		"form.quickform fieldset { " +
-			"margin: 0.4em 0 1em; " +
-		"} " +
-		"form.quickform legend { " +
-			"color: #31628F;" +
-			"font-weight: bold;" +
-		"} " +
-		"form.quickform input[type=\"text\"], form.quickform select { " +
-			"min-width: 15em; " +
-			"font-size: 110%; " +
-		"} " +
-		"form.quickform select { " +
-			"border: 1px solid gray; " +
-			"margin-left: 0.2em; " +
-		"} " +
-		"form.quickform h5 { " +
-			"margin: 0.5em 0 0; " +
-			"padding: 0.3em 0.2em 0.2em; " +
-		"} " +
-		"form.quickform div + h5, form.quickform div + div h5, form.quickform h5 + h5 { " +  // only give the top border to headers with something above them
-			"border-top: 1px solid #88A; " +
-		"} " +
-		"form.quickform textarea { " +
-			"width: 100%; " +
-			"height: 4em; " +
-			"font-size: 150%; " +
-		"} " +
-		"form.quickform span.quickformDescription { " +
-			"font-style: italic; " +
-		"} " +
-		"form.quickform .tooltipButtonContainer { " +
-			"position: relative; " +
-			"width: 100%; " +
-		"} " +
-		"form.quickform .tooltipButton { " +
-			"padding: .2em; " +
-			"color: blue; " +
-			"font-weight: bold; " +
-			"cursor: help; " +
-		"} " +
-		".quickformtooltip { " +
-			"z-index: 2000; " +
-			"position: absolute; " +
-			"padding: .1em; " +
-			"border: 1px dotted red; " +
-			"background-color: Linen; " +
-			"font: caption; " +
-			"font-size: 10pt; " +
-			"max-width: 800px; " +
-		"} "
-	;
-	mw.util.addCSS(quickformcss);
 }
 
 QuickForm.prototype.render = function QuickFormRender() {
@@ -3653,4 +3580,3 @@ if ( typeof(Twinkle) === "object" ) {
    initialization callbacks because of the many other scripts that might be loading
    this same module. See twinkle.js for an example of the proper way to write a loader. 
    In simple cases, the loader code may be included directly within a user script. */
-   

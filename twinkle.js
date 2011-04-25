@@ -141,6 +141,7 @@ Twinkle.init = {
 		this.modules = [
 			{ dir: "User:" + wgUserName, name: "twinkleoptions" },  // mandatory and must be first or nothing will work
 			{ dir: defaultDir, name: "morebits" },  // mandatory and must be second or nothing will work
+			{ dir: defaultDir, name: "morebits", type: 'css' },  // mandatory and must be third, or nothing will be visible
 			{ dir: defaultDir, name: "twinklewarn" },
 			{ dir: defaultDir, name: "twinklespeedy" },
 			{ dir: defaultDir, name: "twinklearv" },
@@ -209,11 +210,20 @@ Twinkle.init = {
 			if (skipMorebits && i == 1) {
 				continue;
 			}
-			var modulePath = this.modules[i].dir + "/" + this.modules[i].name + ".js";
-			if (this.useLocalServer) {
-				importScriptURI('http://localhost/' + modulePath);
+			if( this.modules[i].type == 'css' ) {
+				var modulePath = this.modules[i].dir + "/" + this.modules[i].name + ".css";
+				if (this.useLocalServer) {
+					importStylesheetURI('http://localhost/' + modulePath);
+				} else {
+					importStylesheet( modulePath );  // load from Wikipedia
+				}
 			} else {
-				importScript( modulePath );  // load from Wikipedia
+				var modulePath = this.modules[i].dir + "/" + this.modules[i].name + ".js";
+				if (this.useLocalServer) {
+					importScriptURI('http://localhost/' + modulePath);
+				} else {
+					importScript( modulePath );  // load from Wikipedia
+				}
 			}
 		}
 
