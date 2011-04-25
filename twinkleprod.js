@@ -72,7 +72,7 @@ twinkleprod.callback.prodtypechanged = function(event) {
 			name: 'work_area'
 		} );
 	// create prod type dependant controls
-	switch( event.target.value )
+	switch( event.target.values )
 	{
 		case 'prod':
 			field.append( {

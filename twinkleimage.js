@@ -99,7 +99,7 @@ twinkleimage.callback = function twinkleimageCallback() {
 }
 
 twinkleimage.callback.choice = function twinkleimageCallbackChoose(event) {
-	var value = event.target.value;
+	var value = event.target.values;
 	var root = event.target.form;
 	var work_area = new QuickForm.element( {
 			type: 'div',

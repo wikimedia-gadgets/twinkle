@@ -134,7 +134,7 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 	var field1;
 	var field2;
 
-	switch (e.target.value) {
+	switch (e.target.values) {
 		case 'protect':
 			field_preset = new QuickForm.element({ type: 'field', label: 'Preset', name: 'field_preset' });
 			field_preset.append({
@@ -420,7 +420,7 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 	}
 
 	// re-add protection level text, if it's available
-	if (e.target.value === 'protect' && twinkleprotect.protectionLevel) {
+	if (e.target.values === 'protect' && twinkleprotect.protectionLevel) {
 		Status.init($('div[name="currentprot"] span').last()[0]);
 		Status.info("Current protection level", twinkleprotect.protectionLevel);
 	}
