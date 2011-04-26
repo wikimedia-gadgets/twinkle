@@ -1,5 +1,5 @@
 if ( typeof(Twinkle) === "undefined" ) {
-	alert( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
+	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
 }
 
 Twinkle.arv = function () {
