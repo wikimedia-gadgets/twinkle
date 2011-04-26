@@ -22,7 +22,8 @@ function getChecked2( nodelist ) {
 	return result;
 }
 
-twinkleunlink.callback = function twinkleunlinkCallback() {
+// the parameter is used when invoking unlink from admin speedy
+twinkleunlink.callback = function twinkleunlinkCallback(presetReason) {
 	var Window = new SimpleWindow( 800, 400 );
 	Window.setTitle( "Unlink backlinks" );
 	Window.setScriptName( "Twinkle" );
@@ -32,7 +33,8 @@ twinkleunlink.callback = function twinkleunlinkCallback() {
 	form.append( {
 		type: 'textarea',
 		name: 'reason',
-		label: 'Reason: '
+		label: 'Reason: ',
+		value: (presetReason ? presetReason : '')
 	} );
 
 	if(wgNamespaceNumber == Namespace.IMAGE) {

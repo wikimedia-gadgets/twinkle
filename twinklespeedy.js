@@ -662,18 +662,18 @@ twinklespeedy.callbacks = {
 			// promote Unlink tool
 			if( wgNamespaceNumber === 6 && params.normalized !== 'f8' ) {
 				var link = document.createElement( 'a' );
-				link.setAttribute( 'href', 'javascript:Wikipedia.actionCompleted.redirect=null;twinkleunlink.callback()' );
+				link.setAttribute( 'href', 'javascript:Wikipedia.actionCompleted.redirect=null;twinkleunlink.callback("Removing usages of and links to deleted file ' + encodeURIComponent(wgPageName) + '")' );
 				link.style.fontSize = "130%";  // okay, it's crass...
 				link.style.fontWeight = "bold";
 				link.textContent = 'click here to go to the Unlink tool';
 				var bigtext = document.createElement( 'span' );
 				bigtext.style.fontSize = "130%";  // okay, it's crass...
 				bigtext.style.fontWeight = "bold";
-				bigtext.textContent = 'To orphan backlinks and remove instances of image usage';
+				bigtext.textContent = 'To orphan backlinks and remove instances of file usage';
 				Status.info( bigtext, link );
 			} else if (params.normalized !== 'f8') {
 				var link = document.createElement( 'a' );
-				link.setAttribute( 'href', 'javascript:Wikipedia.actionCompleted.redirect=null;twinkleunlink.callback()' );
+				link.setAttribute( 'href', 'javascript:Wikipedia.actionCompleted.redirect=null;twinkleunlink.callback("Removing links to deleted page ' + encodeURIComponent(wgPageName) + '")' );
 				link.style.fontSize = "130%";  // okay, it's crass...
 				link.style.fontWeight = "bold";
 				link.textContent = 'click here to go to the Unlink tool';
