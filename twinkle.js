@@ -141,6 +141,7 @@ Twinkle.init = {
 		this.modules = [
 			{ dir: "User:" + wgUserName, name: "twinkleoptions" },  // mandatory and must be first or nothing will work
 			{ dir: defaultDir, name: "morebits" },  // mandatory and must be second or nothing will work
+			{ dir: defaultDir, name: "morebits", type: 'css' },  // mandatory and must be third, or nothing will be visible
 			{ dir: defaultDir, name: "twinklewarn" },
 			{ dir: defaultDir, name: "twinklespeedy" },
 			{ dir: defaultDir, name: "twinklearv" },
@@ -209,11 +210,20 @@ Twinkle.init = {
 			if (skipMorebits && i == 1) {
 				continue;
 			}
-			var modulePath = this.modules[i].dir + "/" + this.modules[i].name + ".js";
-			if (this.useLocalServer) {
-				importScriptURI('http://localhost/' + modulePath);
+			if( this.modules[i].type == 'css' ) {
+				var modulePath = this.modules[i].dir + "/" + this.modules[i].name + ".css";
+				if (this.useLocalServer) {
+					importStylesheetURI('http://localhost/' + modulePath);
+				} else {
+					importStylesheet( modulePath );  // load from Wikipedia
+				}
 			} else {
-				importScript( modulePath );  // load from Wikipedia
+				var modulePath = this.modules[i].dir + "/" + this.modules[i].name + ".js";
+				if (this.useLocalServer) {
+					importScriptURI('http://localhost/' + modulePath);
+				} else {
+					importScript( modulePath );  // load from Wikipedia
+				}
 			}
 		}
 
@@ -338,11 +348,11 @@ Twinkle.init = {
 
 // don't activate on special pages other than "Contributions" so they load faster, especially the watchlist
 if ( wgNamespaceNumber != -1 || wgTitle == "Contributions" ) {
-
-	// skip IE < 9 (not supported by Twinkle)
-	if (navigator.appName !== "Microsoft Internet Explorer" || document.addEventListener) {
-		Twinkle.init.loadModules();
-		$(document).ready(Twinkle.init.domReady);
+	// can't theoretically run twinkle on old Internet Explorer, just die...
+	if( !($.client.profile().name == 'msie' && $.client.profile().versionBase < 9) ) {
+		mw.loader.using( ['jquery.ui.dialog', 'jquery.tipsy'], function(){
+			Twinkle.init.loadModules();
+			$(document).ready(Twinkle.init.domReady);
+		});
 	}
-
 }
