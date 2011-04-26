@@ -12,6 +12,8 @@ twinklebatchdelete.unlinkCache = {};
 twinklebatchdelete.callback = function twinklesbatchdeleteCallback() {
 	var Window = new SimpleWindow( 800, 400 );
 	Window.setTitle( "Batch deletion" );
+	Window.setScriptName( "Twinkle" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#batchdelete" );
 
 	var form = new QuickForm( twinklebatchdelete.callback.evaluate );
 	form.append( {
@@ -147,6 +149,7 @@ twinklebatchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalua
 	if( ! reason ) {
 		return;
 	}
+	SimpleWindow.setButtonsEnabled( false );
 	Status.init( event.target );
 	if( !pages ) {
 		Status.error( 'Error', 'nothing to delete, aborting' );
@@ -189,7 +192,7 @@ twinklebatchdelete.callbacks = {
 		var exists = xmlDoc.evaluate( 'boolean(//pages/page[not(@missing)])', xmlDoc, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
 
 		if( ! exists ) {
-			self.statelem.error( "It seems that the page doesn't exists, perhaps it has already been deleted" );
+			self.statelem.error( "It seems that the page doesn't exist, perhaps it has already been deleted" );
 			return;
 		}
 		if( self.params.unlink_page ) {
@@ -222,22 +225,17 @@ twinklebatchdelete.callbacks = {
 				wikipedia_api.post();
 			}
 
-			var query = { 
-				'title': self.params.page, 
-				'action': 'delete'
-			};
-			var wikipedia_wiki = new Wikipedia.wiki( 'Deleting page ' + self.params.page, query, twinklebatchdelete.callbacks.deletePage, function( self ) { 
+			var wikipedia_page = new Wikipedia.page( self.params.page, 'Deleting page ' + self.params.page );
+			wikipedia_page.setEditSummary(self.params.reason + TwinkleConfig.deletionSummaryAd);
+			wikipedia_page.deletePage(function( apiobj ) { 
 					--twinklebatchdelete.currentDeleteCounter;
 					var link = document.createElement( 'a' );
-					link.setAttribute( 'href', wgArticlePath.replace( '$1', self.query['title'] ) );
-					link.setAttribute( 'title', self.query['title'] );
-					link.appendChild( document.createTextNode( self.query['title'] ) );
-					self.statelem.info( [ 'completed (' , link , ')' ] );
+					link.setAttribute( 'href', wgArticlePath.replace( '$1', self.params.page ) );
+					link.setAttribute( 'title', self.params.page );
+					link.appendChild( document.createTextNode( self.params.page ) );
+					apiobj.statelem.info( [ 'completed (' , link , ')' ] );
 
-				} );
-			wikipedia_wiki.params = self.params;
-			wikipedia_wiki.followRedirect = false;
-			wikipedia_wiki.get();		
+				} );	
 		} else {
 			--twinklebatchdelete.currentDeleteCounter;
 		}
@@ -246,7 +244,7 @@ twinklebatchdelete.callbacks = {
 		var xmlDoc = self.responseXML;
 		var snapshot = xmlDoc.evaluate('//backlinks/bl/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
 
-		var total = snapshot.snapshotLength * 2;
+		var total = snapshot.snapshotLength;
 
 		if( snapshot.snapshotLength == 0 ) {
 			return;
@@ -265,9 +263,6 @@ twinklebatchdelete.callbacks = {
 				Wikipedia.removeCheckpoint();
 			}
 		}
-		var onloaded = onsuccess;
-
-		var onloading = function( self ) {}
 
 
 		Wikipedia.addCheckpoint();
@@ -285,45 +280,11 @@ twinklebatchdelete.callbacks = {
 
 		for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
 			var title = snapshot.snapshotItem(i).value;
-			var query = {
-				'title': title,
-				'action': 'delete'
-			}
-			var wikipedia_wiki = new Wikipedia.wiki( "Deleting " + title, query, twinklebatchdelete.callbacks.deleteRedirects );
-			wikipedia_wiki.params = params;
-			wikipedia_wiki.onloading = onloading;
-			wikipedia_wiki.onloaded = onloaded;
-			wikipedia_wiki.onsuccess = onsuccess;
-			wikipedia_wiki.followRedirect = false;
-			wikipedia_wiki.get();
+			var wikipedia_page = new Wikipedia.page( title, "Deleting " + title );
+			wikipedia_page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + self.params.page + '"' + TwinkleConfig.deletionSummaryA);
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.deletePage(onsuccess);
 		}
-	},
-	deleteRedirects: function( self ) {
-		var form = this.responseXML.getElementById( 'deleteconfirm' );
-		if( ! form ) { // Hell, image deletion is b0rked :(
-			form = this.responseXML.getElementsByTagName( 'form' )[0];
-			var postData = {
-				'wpReason': "Speedy deleted per ([[WP:CSD#G8|CSD G8]]), Redirect to deleted page \"" + self.params.page + "\"." + TwinkleConfig.deletionSummaryAd,
-				'wpEditToken': form.wpEditToken.value
-			}
-		} else {
-
-			var postData = {
-				'wpWatch': form.wpWatch.checked ? '' : undefined,
-				'wpReason': "Speedy deleted per ([[WP:CSD#G8|CSD G8]]), Redirect to deleted page \"" + self.params.page + "\"." + TwinkleConfig.deletionSummaryAd,
-				'wpEditToken': form.wpEditToken.value
-			}
-		}
-		self.post( postData );
-	},
-	deletePage: function( self ) {
-		var form = this.responseXML.getElementById( 'deleteconfirm' );
-		var postData = {
-			'wpWatch': form.wpWatch.checked ? '' : undefined,
-			'wpReason': "Deleted because \"" + self.params.reason + "\"." + TwinkleConfig.deletionSummaryAd,
-			'wpEditToken': form.wpEditToken.value
-		}
-		self.post( postData );
 	},
 	unlinkBacklinksMain: function( self ) {
 		var xmlDoc = self.responseXML;
@@ -350,10 +311,6 @@ twinklebatchdelete.callbacks = {
 				Wikipedia.removeCheckpoint();
 			}
 		}
-		var onloaded = onsuccess;
-
-		var onloading = function( self ) {}
-
 
 		Wikipedia.addCheckpoint();
 		if( snapshot.snapshotLength == 0 ) {
@@ -368,60 +325,45 @@ twinklebatchdelete.callbacks = {
 
 		for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
 			var title = snapshot.snapshotItem(i).value;
-			var query = {
-				'title': title,
-				'action': 'submit'
-			}
-			var wikipedia_wiki = new Wikipedia.wiki( "Unlinking on " + title, query, twinklebatchdelete.callbacks.unlinkBacklinks );
+			var wikipedia_page = new Wikipedia.page( title, "Unlinking on " + title );
 			var params = clone( self.params );
 			params.title = title;
-
-			wikipedia_wiki.params = params;
-			wikipedia_wiki.onloading = onloading;
-			wikipedia_wiki.onloaded = onloaded;
-			wikipedia_wiki.onsuccess = onsuccess;
-			wikipedia_wiki.get();
+			params.onsuccess = onsuccess;
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.load(twinklebatchdelete.callbacks.unlinkBacklinks);
 		}
 	},
-	unlinkBacklinks: function( self ) {
-		var form = self.responseXML.getElementById('editform');
-		if( ! form ) {
+	unlinkBacklinks: function( pageobj ) {
+		var params = pageobj.getCallbackParameters();
+		if( ! pageobj.exists() ) {
 			// we probably just deleted it, as a recursive backlink
-			self.onsuccess( self );
-			Wikipedia.actionCompleted( self );
+			params.onsuccess( { params: params, statelem: pageobj.getStatusElement() } );
+			Wikipedia.actionCompleted();
 			return;
 		}
 		var text;
 
-		if( self.params.title in twinklebatchdelete.unlinkCache ) {
-			text = twinklebatchdelete.unlinkCache[ self.params.title ];
+		if( params.title in twinklebatchdelete.unlinkCache ) {
+			text = twinklebatchdelete.unlinkCache[ params.title ];
 		} else {
-			text = form.wpTextbox1.value;
+			text = pageobj.getPageText();
 		}
 		var old_text = text;
 		var wikiPage = new Mediawiki.Page( text );
-		wikiPage.removeLink( self.params.page );
+		wikiPage.removeLink( params.page );
 
 		text = wikiPage.getText();
-		twinklebatchdelete.unlinkCache[ self.params.title ] = text;
+		twinklebatchdelete.unlinkCache[ params.title ] = text;
 		if( text == old_text ) {
 			// Nothing to do, return
-			self.onsuccess( self );
-			Wikipedia.actionCompleted( self );
+			params.onsuccess( { params: params, statelem: pageobj.getStatusElement() } );
+			Wikipedia.actionCompleted();
 			return;
 		}
-		var postData = {
-			'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-			'wpWatchthis': undefined,
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSection': '',
-			'wpSummary': 'Removing backlinks to page ' + self.params.page + " that has been deleted because \"" + self.params.reason + "\")" + "; " + TwinkleConfig.deletionSummaryAd,
-			'wpTextbox1': text
-		};
-		self.post( postData );
+		pageobj.setEditSummary('Removing backlinks to deleted page ' + self.params.page + TwinkleConfig.deletionSummaryAd);
+		pageobj.setPageText(text);
+		pageobj.setCreateOption('nocreate');
+		pageobj.save(params.onsuccess);
 	}
 }
 
