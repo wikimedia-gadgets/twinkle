@@ -651,18 +651,18 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 
 QuickForm.element.generateTooltip = function QuickFormElementGenerateTooltip( node, data ) {
 	var obj = $('<span/>', {
-		'class': 'ui-icon ui-icon-lightbulb ui-icon-inline'
-	})
-	.appendTo(node)
-	.tipsy({
-		'fallback': data.tooltip,
-		'fade': true,
-		'gravity': $.fn.tipsy.autoWE,
-		'html': true,
-		'delayOut': 500,
-
-	})
+			'class': 'ui-icon ui-icon-lightbulb ui-icon-inline morebits-tooltip'
+		})
+		.appendTo(node)
+		.tipsy({
+			'fallback': data.tooltip,
+			'fade': true,
+			'gravity': $.fn.tipsy.autoWE,
+			'html': true,
+			'delayOut': 500,
+		});
 }
+
 /*
  * returns an array containing the values of elements with the given name, that has it's
  * checked property set to true. (i.e. a checkbox or a radiobutton is checked), or select options
@@ -3287,62 +3287,6 @@ function htmlNode( type, content, color ) {
 
 // The height passed in here is the maximum allowable height for the content area.
 function SimpleWindow( width, height ) {
-	var simplewindowcss = ".morebits-dialog { " +
-			"border: 1px #666 solid; " +
-			"font: 0.8em sans-serif; " +
-			"background-color: AliceBlue !important; " +
-			"background-image: none !important; " +
-		"} " +
-		"body .ui-dialog.morebits-dialog .ui-dialog-titlebar { " +  // "body" etc. is necessary here to get enough CSS specificity points
-			"height: 1em; " +
-			"padding: 0.4em 0.3em 0.5em !important; " +
-			"background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC\") repeat-x 50% 80% #cfd6e1 !important; " +
-			"font: bold 1em sans-serif; " +
-		"} " +
-		".morebits-dialog-scriptname { " +
-			"font-weight: normal; " +
-		"} " +
-		".ui-dialog.morebits-dialog .ui-dialog-titlebar-close { " +
-			"right: 0.2em; " +
-			"height: 100%; " +
-			"margin: -0.5em -0.15em 0; " +
-			"right: 0; " +
-			"top: auto; " +
-			"width: 2em; " +
-		"} " +
-		".ui-dialog.morebits-dialog .ui-dialog-titlebar-close span { " +
-			"margin: 0.33em; " +
-		"} " +
-		".ui-dialog.morebits-dialog .morebits-dialog-content { " +
-			"padding: 0; " +
-			"font-size: 88%; " +  // this just seems to be traditional - I don't quite see the point, in this day and age of huge monitors, etc.
-		"} " +
-		"body .ui-dialog.morebits-dialog .ui-dialog-buttonpane { " +
-			"background-color: #BCCADF; " +  // was #D0D7E4
-			"min-height: 0.5em; " +
-			"padding-left: 1.2em !important; " +
-		"} " +
-		"body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button { " +
-			"margin: 0.2em 0 -0.1em; " +
-			"float: none; " +
-		"} " +
-		".morebits-dialog-footerlinks { " +
-			"font-size: 90%; " +
-			"float: right; " +
-			"margin: 0.7em 0.4em 0 0; " +
-		"} " +
-		"body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a { " +
-			"color: #3062AD; " +
-		"} " +
-		".morebits-dialog-buttons[data-empty] + .morebits-dialog-footerlinks { " +
-			"margin: 0.1em 0.4em -0.2em 0; " +
-		"} " +
-		".ui-dialog.morebits-dialog a, .ui-dialog.morebits-dialog .ui-widget-content a { " +
-			"color: #0645AD; " +  // jQuery imposes a ridiculous nearly-black colour on <a> tags... I don't understand it
-		"} "
-	;
-	mw.util.addCSS(simplewindowcss);
-
 	var content = document.createElement( 'div' );
 	this.content = content;
 	content.className = 'morebits-dialog-content';

@@ -41,10 +41,10 @@ form.quickform fieldset
 form.quickform legend
 {
 	color: #31628F;
-	font-weight: 700;
+	font-weight: bold;
 }
 
-form.quickform input[type=text],form.quickform select
+form.quickform input[type=text], form.quickform select
 {
 	min-width: 15em;
 	font-size: 110%;
@@ -62,7 +62,8 @@ form.quickform h5
 	padding: .3em .2em .2em;
 }
 
-form.quickform div + h5,form.quickform div + div h5,form.quickform h5 + h5
+/* only give the top border to headers with something above them */
+form.quickform div + h5, form.quickform div + div h5, form.quickform h5 + h5
 {
 	border-top: 1px solid #88A;
 }
@@ -88,21 +89,9 @@ form.quickform .tooltipButtonContainer
 form.quickform .tooltipButton
 {
 	color: blue;
-	font-weight: 700;
+	font-weight: bold;
 	cursor: help;
 	padding: .2em;
-}
-
-.quickformtooltip
-{
-	z-index: 2000;
-	position: absolute;
-	border: 1px dotted red;
-	background-color: #FAF0E6;
-	font: caption;
-	font-size: 10pt;
-	max-width: 800px;
-	padding: .1em;
 }
 
 
@@ -165,24 +154,25 @@ form.quickform .tooltipButton
 	text-decoration: none;
 }
 
-/* Simplewindow */
+
+/* SimpleWindow */
 
 .morebits-dialog {
 	border: 1px #666 solid;
 	font: .8em sans-serif;
-	background-color: #F0F8FF;
-	background-image: none;
+	background-color: #F0F8FF !important;
+	background-image: none !important;
 }
 
 body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
-	height:1em;
-	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC) repeat-x 50% 80% #cfd6e1;
+	height: 1em;
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC) repeat-x 50% 80% #cfd6e1 !important;
 	font: bold 1em sans-serif;
-	padding: .4em .3em .5em;
+	padding: .4em .3em .5em !important;
 }
 
 .morebits-dialog-scriptname {
-	font-weight: 400;
+	font-weight: normal;
 }
 
 .ui-dialog.morebits-dialog .ui-dialog-titlebar-close {
@@ -198,14 +188,14 @@ body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 }
 
 .ui-dialog.morebits-dialog .morebits-dialog-content {
-	font-size: 88%;
+	font-size: 88%;  /* this just seems to be traditional - I don't quite see the point, in this day and age of huge monitors, etc. */
 	padding: 0;
 }
 
 body .ui-dialog.morebits-dialog .ui-dialog-buttonpane {
 	background-color: #BCCADF;
 	min-height: .5em;
-	padding-left: 1.2em;
+	padding-left: 1.2em !important;
 }
 
 body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
@@ -227,8 +217,8 @@ body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
 	margin: .1em .4em -.2em 0;
 }
 
-.ui-dialog.morebits-dialog a,.ui-dialog.morebits-dialog .ui-widget-content a {
-	color: #0645AD;
+.ui-dialog.morebits-dialog a, .ui-dialog.morebits-dialog .ui-widget-content a {
+	color: #0645AD;  /* jQuery imposes a ridiculous nearly-black colour on <a> tags... I don't understand it */
 }
 
 .ui-icon-inline {
