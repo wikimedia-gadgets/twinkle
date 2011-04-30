@@ -135,7 +135,7 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 				} );
 			noticeboard.append( {
 					type: 'option',
-					label: 'WP:ANI (Adminstrators\' noticeboard/Incidents)',
+					label: 'WP:ANI (Administrators\' noticeboard/Incidents)',
 					selected: true,
 					value: "Wikipedia:Administrators' noticeboard/Incidents"
 				} );
