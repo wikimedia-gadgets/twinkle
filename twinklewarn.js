@@ -9,7 +9,7 @@ function twinklewarn() {
 }
 
 twinklewarn.callback = function twinklewarnCallback() {
-	var Window = new SimpleWindow( 600, 400 );
+	var Window = new SimpleWindow( 600, 440 );
 	Window.setTitle( "Warn/notify user" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Choosing a warning level", "WP:UWUL#Levels" );
@@ -53,7 +53,14 @@ twinklewarn.callback = function twinklewarnCallback() {
 
 	var more = form.append( { type:'field', label:'Fill in an optional reason and hit \"Submit\"' } );
 	more.append( { type:'textarea', label:'More:', name:'reason', tooltip:'Perhaps a reason, or that a more detailed notice must be appended' } );
+
+	var previewlink = document.createElement( 'a' );
+	previewlink.setAttribute( 'href', 'javascript:twinklewarn.callbacks.preview()' );
+	previewlink.textContent = 'Preview';
+	more.append( { type: 'div', name: 'warningpreview', label: [ previewlink ] } );
+
 	more.append( { type:'submit', label:'Submit' } );
+
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
@@ -1339,6 +1346,69 @@ twinklewarn.callback.change_subcategory = function twinklewarnCallbackChangeSubc
 }
 
 twinklewarn.callbacks = {
+	preview: function() {
+		// XXX cannot preview block templates as yet...
+		var templatename = $('select[name="sub_group"]:visible').last()[0].value;
+		if (templatename in twinklewarn.warnings.block) {
+			alert("Cannot preview block templates at the moment, unfortunately");
+			return;
+		}
+
+		var previewdiv = $('div[name="warningpreview"]:visible').last();
+		if (!previewdiv.length) {
+			return;  // just give up
+		}
+		previewdiv = previewdiv[0];
+
+		var previewbox = $('div#twinklewarn-previewbox:visible').last();
+		if (!previewbox.length) {
+			previewbox = document.createElement('div');
+			previewbox.style.background = "white";
+			previewbox.style.border = "2px inset";
+			previewbox.style.marginTop = "0.4em";
+			previewbox.style.padding = "0.2em 0.4em";
+			previewbox.setAttribute('id', 'twinklewarn-previewbox');
+			previewdiv.parentNode.appendChild(previewbox);
+		} else {
+			previewbox = previewbox[0];
+		}
+
+		var statusspan = document.createElement('span');
+		previewbox.appendChild(statusspan);
+		Status.init(statusspan);
+		var templatetext = '{{subst:' + templatename;
+		var linkedarticle = $('input[name="article"]:visible').last();
+		if (linkedarticle.length) {
+			templatetext += '|1=' + linkedarticle[0].value;
+		}
+		templatetext += '}}';
+		var reason = $('textarea[name="reason"]:visible').last();
+		if (reason.length && reason[0].value) {
+			templatetext += " ''" + reason[0].value + "''";
+		}
+		var query = {
+			action: 'parse',
+			prop: 'text',
+			pst: 'true',  // PST = pre-save transform; this makes substitution work properly
+			text: templatetext,
+			title: wgPageName
+		};
+		var wikipedia_api = new Wikipedia.api("loading...", query, twinklewarn.callbacks.previewRender, new Status("Preview"));
+		wikipedia_api.params = { previewbox: previewbox };
+		wikipedia_api.post();
+	},
+	previewRender: function( apiobj ) {
+		var params = apiobj.params;
+		var xml = apiobj.getXML();
+		var html = $(xml).find('text').text();
+		if (!html) {
+			apiobj.statelem.error("failed to retrieve preview, or warning template was blanked");
+			return;
+		}
+		params.previewbox.innerHTML = html;
+		// fix vertical alignment
+		$(params.previewbox).find(':not(img)').css('vertical-align', 'baseline');
+	},
 	main: function( pageobj ) {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
@@ -1366,8 +1436,7 @@ twinklewarn.callbacks = {
 			temp_time.setUTCHours( temp_time.getUTCHours() + 24 );
 
 			if( temp_time > date ) {
-				Status.info( 'Info', "an identical " + params.sub_group + " has been issued in the last 24 hours" );
-				if( !confirm( "Would you still like to add a warning/notice?" ) ) {
+				if( !confirm( "An identical " + params.sub_group + " has been issued in the last 24 hours.  \nWould you still like to add this warning/notice?" ) ) {
 					pageobj.statelem.info( 'aborted per user request' );
 					return;
 				}
@@ -1377,11 +1446,10 @@ twinklewarn.callbacks = {
 		latest.date.setUTCMinutes( latest.date.getUTCMinutes() + 1 ); // after long debate, one minute is max
 
 		if( latest.date > date ) {
-			Status.info('Info', "a " + latest.type + " has been issued in the last minute" );
-				if( !confirm( "Would you still like to add a warning/notice?" ) ) {
-					pageobj.statelem.info( 'aborted per user request' );
-					return;
-				}
+			if( !confirm( "A " + latest.type + " has been issued in the last minute.  \nWould you still like to add this warning/notice?" ) ) {
+				pageobj.statelem.info( 'aborted per user request' );
+				return;
+			}
 		}
 		
 		var mainheaderRe = /==+\\s*Warnings\\s*==+/;
