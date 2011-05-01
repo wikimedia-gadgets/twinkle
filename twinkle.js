@@ -141,22 +141,26 @@ Twinkle.init = {
 		this.modules = [
 			{ dir: "User:" + wgUserName, name: "twinkleoptions" },  // mandatory and must be first or nothing will work
 			{ dir: defaultDir, name: "morebits" },  // mandatory and must be second or nothing will work
-			{ dir: defaultDir, name: "morebits", type: 'css' },  // mandatory and must be third, or nothing will be visible
-			{ dir: defaultDir, name: "twinklewarn" },
-			{ dir: defaultDir, name: "twinklespeedy" },
-			{ dir: defaultDir, name: "twinklearv" },
+			{ dir: defaultDir, name: "morebits", type: "css" },  // mandatory and must be third, or nothing will be visible
 			{ dir: defaultDir, name: "twinklefluff" },
+		// misc. ones first
+			{ dir: defaultDir, name: "twinkleunlink" },
 			{ dir: defaultDir, name: "twinklediff" },
-			{ dir: defaultDir, name: "twinkleprotect" },
+		// deletion
+			{ dir: defaultDir, name: "twinklespeedy" },
 			{ dir: defaultDir, name: "twinkleprod" },
 			{ dir: defaultDir, name: "twinklexfd" },
-			{ dir: defaultDir, name: "twinklecloser" },  // newly discovered module
 			{ dir: defaultDir, name: "twinkleimage" },
-			{ dir: defaultDir, name: "twinkleunlink" },
+		// maintenance
+			{ dir: defaultDir, name: "twinkleprotect" },
+			{ dir: defaultDir, name: "friendlytag" },
+		// user/user talk-related
+			{ dir: defaultDir, name: "twinklewarn" },
+			{ dir: defaultDir, name: "twinklearv" },
 			{ dir: defaultDir, name: "friendlywelcome" },
 			{ dir: defaultDir, name: "friendlyshared" },
-			{ dir: defaultDir, name: "friendlytag" },
-			{ dir: defaultDir, name: "friendlytalkback" }
+			{ dir: defaultDir, name: "friendlytalkback" },
+			{ dir: defaultDir, name: "twinklecloser" }
 		];
 
 		// define admin modules separately so that non-admins don't have to wait for them to load
@@ -215,7 +219,8 @@ Twinkle.init = {
 				if (this.useLocalServer) {
 					importStylesheetURI('http://localhost/' + modulePath);
 				} else {
-					importStylesheet( modulePath );  // load from Wikipedia
+					importStylesheetURI( wgScript + '?action=raw&ctype=text/css&title=' +
+						encodeURIComponent(modulePath.replace(/ /g, '_')) + "&happy=yes" );  // load from Wikipedia, working around very weird bugginess in IE
 				}
 			} else {
 				var modulePath = this.modules[i].dir + "/" + this.modules[i].name + ".js";
