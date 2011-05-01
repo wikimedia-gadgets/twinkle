@@ -142,7 +142,7 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 					label: 'Tag with multiple criteria',
 					value: 'multiple',
 					tooltip: 'Opens a series of further dialogs, allowing you to specify all the criteria you want to tag this page with.',
-					disabled: !TwinkleConfig.deleteSysopDefaultToTag
+					disabled: userIsInGroup('sysop') && !TwinkleConfig.deleteSysopDefaultToTag
 				}
 			]
 		} );
