@@ -976,8 +976,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		footerspan.style.fontSize = "90%";
 		footerspan.appendChild(document.createTextNode("To reset all preferences to the defaults, you can "));
 		var footera = document.createElement("a");
-		// XXX change this href away from TTO's userspace - move editintro to [[Wikipedia:Twinkle/Preferences/twinkleoptions blanking editintro]] or something like that
-		footera.setAttribute("href", "/w/index.php?action=edit&title=Special:MyPage/twinkleoptions.js&editintro=User:This,_that_and_the_other/twinkleoptions_blanking_editintro&summary=Resetting Twinkle preferences");
+		footera.setAttribute("href", "/w/index.php?action=edit&title=Special:MyPage/twinkleoptions.js&editintro=Wikipedia:Twinkle/Preferences/Blanking_editintro&summary=Resetting Twinkle preferences");
 		footera.appendChild(document.createTextNode("blank your preferences file"));
 		footerspan.appendChild(footera);
 		footerspan.appendChild(document.createTextNode("."));
@@ -1007,7 +1006,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 				box.appendChild(document.createTextNode("You can customize Twinkle to suit your preferences by using the "));
 			}
 			var link = document.createElement("a");
-			link.setAttribute("href", "/wiki/User:This, that and the other/Twinkle preferences");
+			link.setAttribute("href", "/wiki/Wikipedia:Twinkle/Preferences");
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode(", or by editing this page."));
@@ -1019,7 +1018,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 			box.appendChild(document.createTextNode("If you want to set Twinkle preferences, you can use the "));
 			var link = document.createElement("a");
-			link.setAttribute("href", "/wiki/User:This, that and the other/Twinkle preferences");
+			link.setAttribute("href", "/wiki/Wikipedia:Twinkle/Preferences");
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode("."));
