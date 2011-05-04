@@ -1184,7 +1184,7 @@ twinklexfd.callback.evaluate = function(e) {
 		var tfdinline = e.target.tfdinline.checked;
 	}
 	if( type == 'mfd' ) {
-		var notifyuserspace = e.target.notifyuserspace.checked;
+		var notifyuserspace = e.target.notifyuserspace && e.target.notifyuserspace.checked;
 	}
 
 	SimpleWindow.setButtonsEnabled( false );
