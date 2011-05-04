@@ -360,7 +360,7 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 						{
 							name: 'noinclude',
 							label: 'Wrap protection template with <noinclude>',
-							tooltip: 'Will wrap the protection template in <noinclude> tags, so that it won\'t transclude',
+							tooltip: 'Will wrap the protection template in &lt;noinclude&gt; tags, so that it won\'t transclude',
 							checked: (wgNamespaceNumber == 10)
 						}
 					]

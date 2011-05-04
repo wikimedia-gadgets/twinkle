@@ -149,7 +149,7 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 							label: 'Wrap deletion tag with <noinclude>',
 							value: 'noinclude',
 							name: 'noinclude',
-							tooltip: 'Will wrap the deletion tag in <noinclude> tags, so that it won\'t transclude. This option is not normally required.'
+							tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. This option is not normally required.'
 						}
 					]
 		} );
@@ -228,7 +228,7 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 							label: 'Wrap deletion tag with <noinclude>',
 							value: 'noinclude',
 							name: 'noinclude',
-							tooltip: 'Will wrap the deletion tag in <noinclude> tags, so that it won\'t transclude. Select this option for userboxes.'
+							tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. Select this option for userboxes.'
 						}
 					]
 		} );
