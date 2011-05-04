@@ -164,6 +164,10 @@ form.quickform .tooltipButton
 	background-image: none !important;
 }
 
+body.skin-monobook .morebits-dialog {
+	font-size: 125%;
+}
+
 body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 	height: 1em;
 	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC) repeat-x 50% 80% #cfd6e1 !important;
@@ -194,6 +198,7 @@ body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 
 body .ui-dialog.morebits-dialog .ui-dialog-buttonpane {
 	background-color: #BCCADF;
+	margin: 0;
 	min-height: .5em;
 	padding-left: 1.2em !important;
 }
@@ -201,6 +206,9 @@ body .ui-dialog.morebits-dialog .ui-dialog-buttonpane {
 body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
 	float: none;
 	margin: .2em 0 -.1em;
+	padding-top: 0;
+	padding-bottom: 0;
+	cursor: auto;
 }
 
 .morebits-dialog-footerlinks {
