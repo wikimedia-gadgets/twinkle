@@ -841,16 +841,16 @@ twinklewarn.messages = {
 			summary:"Notice: Reporting of username to WP:UAA not accepted" 
 		},
 		"uw-userspacenoindex": { 
-			label:"User page isn't appropriate for search engine indexing", 
-			summary:"Notice: User page isn't appropriate for search engine indexing" 
+			label:"User page/subpage isn't appropriate for search engine indexing", 
+			summary:"Notice: User (sub)page isn't appropriate for search engine indexing" 
 		},
 		"uw-vgscope": {
 			label:"Adding video game walkthroughs, cheats or instructions",
 			summary:"Notice: Adding video game walkthroughs, cheats or instructions"
 		},
 		"uw-warn": { 
-			label:"Warning vandals", 
-			summary:"Notice: Warning vandals"
+			label:"Place user warning templates when reverting vandalism", 
+			summary:"Notice: You can use user warning templates when reverting vandalism"
 		}
 	},
 	singlewarn: {
@@ -862,9 +862,9 @@ twinklewarn.messages = {
 			label:"Affiliate marketing", 
 			summary:"Warning: Affiliate marketing"
 		},
-		"attack": {
-			label:"Personal attacks",
-			summary:"Warning: Personal attacks"
+		"uw-attack": {
+			label:"Creating attack pages",
+			summary:"Warning: Creating attack pages"
 		},
 		"uw-attempt": {
 			label:"Triggering the edit filter",
