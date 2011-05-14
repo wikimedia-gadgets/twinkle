@@ -2,11 +2,10 @@ if ( typeof(Twinkle) === "undefined" ) {
 	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
 }
 
-var isRedirect = false;
 
 function friendlytag() {
 	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) == 'no' && $("span.redirectText").length > 0 ) {
-		isRedirect = true;
+		friendlytag.isRedirect = true;
 		twAddPortletLink( "javascript:friendlytag.callback()", "Tag", "friendly-tag", "Tag redirect", "");
 	} else if( wgNamespaceNumber != 0 || wgCurRevisionId == false ) {
 		return;
@@ -23,7 +22,7 @@ friendlytag.callback = function friendlytagCallback( uid ) {
 
 	var form = new QuickForm( friendlytag.callback.evaluate );
 
-	if( !isRedirect ) {
+	if( !friendlytag.isRedirect ) {
 		Window.setTitle( "Article maintenance tagging" );
 
 		form.append( {
@@ -724,7 +723,7 @@ friendlytag.callbacks = {
 		//Remove tags that become superfluous with this action
 		var pageText = pageobj.getPageText().replace(/{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
 
-		if( !isRedirect ) {
+		if( !friendlytag.isRedirect ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
 			for( var i = 0; i < params.tags.length; i++ ) {
 				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im' );
@@ -786,7 +785,7 @@ friendlytag.callbacks = {
 				if( tags[i] == 'globalize' ) {
 					tagText += '\{\{' + params.globalizeSubcategory;
 				} else {
-					tagText += ( isRedirect ? '\n' : '' ) + '\{\{' + tags[i];
+					tagText += ( friendlytag.isRedirect ? '\n' : '' ) + '\{\{' + tags[i];
 				}
 
 				if( tags[i] == 'notability' && params.notabilitySubcategory != 'none' ) {
@@ -836,7 +835,7 @@ friendlytag.callbacks = {
 						break;
 				}
 				
-				tagText += isRedirect ? '\}\}' : '|date=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}\}\}\n';
+				tagText += friendlytag.isRedirect ? '\}\}' : '|date=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}\}\}\n';
 			}
 
 			if( i == (tags.length - 1) && ( i > 0 || groupableTags.length > 3 ) ) {
@@ -854,7 +853,7 @@ friendlytag.callbacks = {
 			summaryText += ']]\}\}';
 		}
 
-		if( isRedirect ) {
+		if( friendlytag.isRedirect ) {
 			pageText += tagText;
 		} else {
 			// smartly insert the new tags after any hatnotes. Regex is a bit more
@@ -864,7 +863,7 @@ friendlytag.callbacks = {
 				"$1" + tagText);
 		}
 		summaryText += ' tag' + ( ( tags.length + ( groupableTags.length > 3 ? 1 : 0 ) ) > 1 ? 's' : '' ) +
-			' to ' + ( isRedirect ? 'redirect' : 'article' ) + TwinkleConfig.summaryAd;
+			' to ' + ( friendlytag.isRedirect ? 'redirect' : 'article' ) + TwinkleConfig.summaryAd;
 
 		pageobj.setPageText(pageText);
 		pageobj.setEditSummary(summaryText);
@@ -881,7 +880,7 @@ friendlytag.callbacks = {
 
 friendlytag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	var form = e.target;
-	if( isRedirect ) {
+	if( friendlytag.isRedirect ) {
 		var tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
 	} else {
 		if( typeof( FriendlyConfig.customTagList ) == 'object' ) {
@@ -898,7 +897,7 @@ friendlytag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		alert( 'You must select at least one tag!' );
 		return;
 	}
-	if( !isRedirect ) {
+	if( !friendlytag.isRedirect ) {
 		params = {
 			tags: tags,
 			group: form.group.checked,
@@ -916,9 +915,11 @@ friendlytag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	Wikipedia.actionCompleted.redirect = wgPageName;
 	Wikipedia.actionCompleted.notice = "Tagging complete, reloading article in a few seconds";
-	if (isRedirect) Wikipedia.actionCompleted.followRedirect = false;
+	if (friendlytag.isRedirect) {
+		Wikipedia.actionCompleted.followRedirect = false;
+	}
 
-	var wikipedia_page = new Wikipedia.page(wgPageName, isRedirect ? "Tagging redirect" : "Tagging article");
+	var wikipedia_page = new Wikipedia.page(wgPageName, friendlytag.isRedirect ? "Tagging redirect" : "Tagging article");
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(friendlytag.callbacks.main);
 }
