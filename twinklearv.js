@@ -10,10 +10,10 @@
 Twinkle.arv = function () {
 	var username;
 
-	if ( wgNamespaceNumber == 3 || wgNamespaceNumber == 2 || ( wgNamespaceNumber == -1 && wgTitle == "Contributions" )){
+	if ( wgNamespaceNumber === 3 || wgNamespaceNumber === 2 || ( wgNamespaceNumber === -1 && wgTitle === "Contributions" )){
 
 		// If we are on the contributions page, need to parse some then
-		if( wgNamespaceNumber == -1 && wgTitle == "Contributions" ) {
+		if( wgNamespaceNumber === -1 && wgTitle === "Contributions" ) {
 			username = decodeURIComponent(/user=(.+)/.exec($('div#contentSub a[title="Special:Log"]').last().attr("href").replace(/\+/g, "%20"))[1]);
 		} else {
 			username = wgTitle.split( '/' )[0]; // only first part before any slashes
@@ -35,7 +35,7 @@ Twinkle.arv = function () {
 }
 
 Twinkle.arv.callback = function ( uid ) {
-	if( uid == wgUserName ){
+	if( uid === wgUserName ){
 		alert( 'You don\'t want to report yourself, do you?' );
 		return;
 	}
@@ -106,7 +106,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 		var node = root.childNodes[i];
 		if( 
 			node instanceof Element &&
-			node.getAttribute( 'name' ) == 'work_area' 
+			node.getAttribute( 'name' ) === 'work_area' 
 		) {
 			old_area = node;
 			break;
@@ -131,11 +131,11 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				event: function(e) {
 					var value = e.target.value;
 					var root = e.target.form;
-					if( value == '' ) {
+					if( value === '' ) {
 						root.badid.disabled = root.goodid.disabled = true;
 					} else {
 						root.badid.disabled = false;
-						root.goodid.disabled = root.badid.value == '';
+						root.goodid.disabled = root.badid.value === '';
 					}
 				}
 			} );
@@ -149,7 +149,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				event: function(e) {
 					var value = e.target.value;
 					var root = e.target.form;
-					root.goodid.disabled = value == '';
+					root.goodid.disabled = value === '';
 				}
 			} );
 		work_area.append( {
@@ -325,6 +325,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 	var form = e.target;
 	var reason = "";
+	var comment = "";
 	if ( form.reason ) {
 		comment = form.reason.value;
 	}
@@ -336,7 +337,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 		default:
 		case 'aiv':
 			var types = form.getChecked( 'arvtype' );
-			if( types.length == 0 && comment == '' ) {
+			if( !types.length && comment === '' ) {
 				alert( 'You must specify some reason' );
 				return;
 			}
@@ -345,30 +346,25 @@ Twinkle.arv.callback.evaluate = function(e) {
 					switch(v) {
 						case 'final':
 							return 'vandalism after final warning';
-							break;
 						case 'postblock':
 							return 'vandalism after recent release of block';
-							break;
 						case 'spambot':
 							return 'account is evidently a spambot or a compromised account';
-							break;
 						case 'vandalonly':
 							return 'actions evidently indicate a vandalism-only account';
-							break;
 						case 'promoonly':
 							return 'account is being used only for promotional purposes';
-							break;
 					}
 					return 'unknown reason';
 				} ).join( ', ' );
 
 
-			if ( form.page.value != '' ) {
+			if ( form.page.value !== '' ) {
 			
 				// add a leading : on linked page namespace to prevent transclusion
 				reason = 'On [[' + form.page.value.replace( /^(Image|Category|File):/i, ':$1:' ) + ']]';
 
-				if ( form.badid.value != '' ) {
+				if ( form.badid.value !== '' ) {
 					var query = {
 						'title': form.page.value,
 						'diff': form.badid.value,
@@ -382,8 +378,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if ( types ) {
 				reason += " " + types;
 			}
-			if (comment != "" ) {
-				reason += (reason == ""?"" : ". ") + comment + ".";
+			if (comment !== "" ) {
+				reason += (reason === "" ? "" : ". ") + comment + ".";
 			}
 			reason += "\~\~\~\~";
 			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
@@ -413,7 +409,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 		// Report inappropriate username
 		case 'username':
 			var types = form.getChecked( 'arvtype' );
-			if( types.length == 0 ) {
+			if( !types.length ) {
 				alert( 'You must specify at least one breached violation' );
 				return;
 			}
@@ -429,7 +425,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				article = 'an';
 			}
 			reason = "*\{\{user-uaa|1=" + uid + "\}\} &mdash; Violation of username policy because it's " + article + " " + types + " username; ";
-			if (comment != '' ) {
+			if (comment !== '' ) {
 				reason += "''" + comment.toUpperCaseFirstChar() + "''. ";
 			}
 			reason += "\~\~\~\~";
