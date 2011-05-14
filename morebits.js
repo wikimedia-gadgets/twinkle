@@ -28,10 +28,10 @@
 
 // Simple helper functions to see what groups a user might belong
 function userIsInGroup( group ) {
-	return ( wgUserGroups != null && wgUserGroups.indexOf( group ) != -1 ) || ( wgUserGroups == null && group == 'anon' );
+	return mw.config.get( 'wgUserGroups' ).indexOf( group ) !== -1;
 }
 function userIsAnon() {
-	return wgUserGroups == null;
+	return mw.config.get( 'wgUserGroups' ).length === 1;
 }
 
 /**
@@ -68,36 +68,45 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 {
 	//sanity checks, and get required DOM nodes
 	var root = document.getElementById( navigation );
-	if ( !root ) return null;
+	if ( !root ) {
+		return null;
+	}
 
 	var item = document.getElementById( id );
-	if (item)
-	{
-		if (item.parentNode && item.parentNode==root) return item;
+	if (item) {
+		if (item.parentNode && item.parentNode === root) {
+			return item;
+		}
 		return null;
 	}
 
 	var nextnode;
-	if (nextnodeid) nextnode = document.getElementById(nextnodeid);
+	if (nextnodeid) {
+		nextnode = document.getElementById(nextnodeid);
+	}
 
 	//verify/normalize input
-	type = skin=="vector" && type=="menu" && (navigation=="left-navigation" || navigation=="right-navigation")?"menu":"";
+	type = (skin === "vector" && type === "menu" && (navigation === "left-navigation" || navigation === "right-navigation")) ? "menu" : "";
 	var outerDivClass;
 	var innerDivClass;
 	switch (skin)
 	{
 		case "vector":
-			if (navigation!="portal" && navigation!="left-navigation" && navigation!="right-navigation") navigation="mw-panel";
-			outerDivClass = navigation=="mw-panel"?"portal":(type=="menu"?"vectorMenu extraMenu":"vectorTabs extraMenu");
-			innerDivClass = navigation=="mw-panel"?'body':(type=='menu'?'menu':'');
+			if (navigation !== "portal" && navigation !== "left-navigation" && navigation !== "right-navigation") {
+				navigation = "mw-panel";
+			}
+			outerDivClass = (navigation === "mw-panel") ? "portal" : (type === "menu" ? "vectorMenu extraMenu" : "vectorTabs extraMenu");
+			innerDivClass = (navigation === "mw-panel") ? 'body' : (type === 'menu' ? 'menu':'');
 			break;
 		case "modern":
-			if (navigation!="mw_portlets" && navigation!="mw_contentwrapper") navigation="mw_portlets";
+			if (navigation !== "mw_portlets" && navigation !== "mw_contentwrapper") {
+				navigation = "mw_portlets";
+			}
 			outerDivClass = "portlet";
 			innerDivClass = "pBody";
 			break;
 		default:
-			navigation="column-one";
+			navigation = "column-one";
 			outerDivClass = "portlet";
 			innerDivClass = "pBody";
 			break;
@@ -108,11 +117,11 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 	outerDiv.className = outerDivClass+" emptyPortlet";
 	outerDiv.id = id;
 	var nextnode;
-	if ( nextnode && nextnode.parentNode==root ) root.insertBefore( outerDiv, nextnode );
+	if ( nextnode && nextnode.parentNode === root ) root.insertBefore( outerDiv, nextnode );
 	else root.appendChild( outerDiv );
 
 	var h5 = document.createElement( 'h5' );
-	if (type=='menu')
+	if (type === 'menu')
 	{
 		var span = document.createElement( 'span' );
 		span.appendChild( document.createTextNode( text ) );
@@ -178,7 +187,7 @@ var Cookies = {
 		for( var i = 0; i < cookies.length; ++i ) {
 			var current = cookies[i];
 			current = current.trim();
-			if( current.indexOf( name + "=" ) == 0 ) {
+			if( current.indexOf( name + "=" ) === 0 ) {
 				return decodeURIComponent( current.substring( name.length + 1 ) );
 			}
 		}
@@ -228,10 +237,11 @@ QuickForm.element = function QuickFormElement( data ) {
 QuickForm.element.id = 0;
 
 QuickForm.element.prototype.append = function QuickFormElementAppend( data ) {
+	var child;
 	if( data instanceof QuickForm.element ) {
-		var child = data;
+		child = data;
 	} else {
-		var child = new QuickForm.element( data );
+		child = new QuickForm.element( data );
 	}
 	this.childs.push( child );
 	return child;
@@ -253,7 +263,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 	var id = ( in_id ? in_id + '_' : '' ) + 'node_' + this.id;
 	if( data.adminonly && !userIsInGroup( 'sysop' ) ) {
 		// hell hack alpha
-		data.type = hidden;
+		data.type = 'hidden';
 	}
 	switch( data.type ) {
 	case 'form':
@@ -348,7 +358,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 				var cur_id = id + '_' + i;
 				var current = data.list[i];
 				var cur_node;
-				if( current.type == 'header' ) {
+				if( current.type === 'header' ) {
 					// inline hack
 					cur_node = node.appendChild( document.createElement( 'h6' ) );
 					cur_node.appendChild( document.createTextNode( current.label ) );
@@ -398,9 +408,9 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 					var event = function(e) {
 						if( e.target.checked ) {
 							e.target.parentNode.appendChild( e.target.subgroup );
-							if( e.target.type == 'radio' ) {
+							if( e.target.type === 'radio' ) {
 								var name = e.target.name;
-								if( typeof( e.target.form.names[name] ) != 'undefined' ) {
+								if( typeof( e.target.form.names[name] ) !== 'undefined' ) {
 									e.target.form.names[name].parentNode.removeChild( e.target.form.names[name].subgroup );
 								}
 								e.target.form.names[name] = e.target;
@@ -413,11 +423,11 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 					if( current.checked ) {
 						input.parentNode.appendChild( subgroup );
 					}
-				} else if( data.type == 'radio' ) {
+				} else if( data.type === 'radio' ) {
 					var event = function(e) {
 						if( e.target.checked ) {
 							var name = e.target.name;
-							if( typeof( e.target.form.names[name] ) != 'undefined' ) {
+							if( typeof( e.target.form.names[name] ) !== 'undefined' ) {
 								e.target.form.names[name].parentNode.removeChild( e.target.form.names[name].subgroup );
 							}
 							delete e.target.form.names[name];
@@ -487,7 +497,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 			} );
 
 		node.appendChild( more[0] );
-		moreButton = more[1];
+		var moreButton = more[1];
 
 
 		var sublist = {
@@ -555,7 +565,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 					}
 				} );
 			node.appendChild( remove[0] );
-			removeButton = remove[1];
+			var removeButton = remove[1];
 			removeButton.inputnode = node;
 			removeButton.listnode = data.listnode;
 			removeButton.morebutton = data.morebutton;
@@ -648,7 +658,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 
 	}
 
-	if( childContainder == null ) {
+	if( !childContainder ) {
 		childContainder = node;
 	} 
 	if( data.tooltip ) {
@@ -656,7 +666,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 	}
 
 	if( data.extra ) {
-		childContainder.extra = extra;
+		childContainder.extra = data.extra;
 	}
 	childContainder.setAttribute( 'id', data.id || id );
 
@@ -704,7 +714,7 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
 			}
 		}
 	} else if( elements instanceof HTMLInputElement ) {
-		if( type != null && elements.type != type ) {
+		if( type && elements.type !== type ) {
 			return [];
 		} else if( elements.checked ) {
 			return [ elements.value ];
@@ -712,7 +722,7 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
 	} else {
 		for( var i = 0; i < elements.length; ++i ) {
 			if( elements[i].checked ) {
-				if( type != null && elements[i].type != type ) {
+				if( type && elements[i].type !== type ) {
 					continue;
 				}
 				if( elements[i].values ) {
@@ -731,7 +741,7 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
  * type is "text" or given.
  */
 HTMLFormElement.prototype.getTexts = function( name, type ) {
-	type == type || 'text';
+	type = type || 'text';
 	var elements = this.elements[name];
 	if( !elements ) { 
 		// if the element doesn't exists, return null.
@@ -768,7 +778,7 @@ RegExp.escape = function( text, space_fix ) {
 
 // Sprintf implementation based on perl similar
 function sprintf() {
-	if( arguments.length == 0 ) {
+	if( !arguments.length ) {
 		throw "Not enough arguments for sprintf";
 	}
 	var result = "";
@@ -811,7 +821,6 @@ function sprintf() {
 			case 'b':
 				var value = arguments[current_index];
 				if( vector ) {
-					r = value.toString().split( '' );
 					result += value.toString().split('').map( function( value ) {
 							return sprintf.format( current_char, value.charCodeAt(), flags );
 						}).join( vector_delimiter );
@@ -852,18 +861,18 @@ function sprintf() {
 				var len = num.toString().length;
 				i += len - 1;
 				var next = format.charAt( i  + 1 );
-				if( next == '$' ) {
+				if( next === '$' ) {
 					if( num <= 0 || num >= arguments.length ) {
 						throw "out of bound";
 					}
 					if( relative ) {
 						if( precision ) {
-							flags['precision'] = arguments[num];
+							flags.precision = arguments[num];
 							precision = false;
-						} else if( format.charAt( i + 2 ) == 'v' ) {
+						} else if( format.charAt( i + 2 ) === 'v' ) {
 							vector_delimiter = arguments[num];
 						}else {
-							flags['width'] = arguments[num];
+							flags.width = arguments[num];
 						}
 						relative = false;
 					} else {
@@ -872,19 +881,19 @@ function sprintf() {
 					}
 					++i;
 				} else if( precision ) {
-					flags['precision'] = num;
+					flags.precision = num;
 					precision = false;
 				} else {
-					flags['width'] = num;
+					flags.width = num;
 				}
 			} else if ( relative && !/\d/.test( format.charAt( i + 1 ) ) ) {
 				if( precision ) {
-					flags['precision'] = arguments[current_index];
+					flags.precision = arguments[current_index];
 					precision = false;
-				} else if( format.charAt( i + 1 ) == 'v' ) {
+				} else if( format.charAt( i + 1 ) === 'v' ) {
 					vector_delimiter = arguments[current_index];
 				} else {
-					flags['width'] = arguments[current_index];
+					flags.width = arguments[current_index];
 				}
 				++index;
 				if( !fixed ) {
@@ -893,7 +902,7 @@ function sprintf() {
 				relative = false;
 			}
 		} else {
-			if( current_char == '%' ) {
+			if( current_char === '%' ) {
 				in_operator = true;
 				continue;
 			} else {
@@ -908,8 +917,8 @@ function sprintf() {
 sprintf.format = function sprintfFormat( type, value, flags ) {
 
 	// Similar to how perl printf works
-	if( value == undefined ) {
-		if( type == 's' ) {
+	if( !value ) {
+		if( type === 's' ) {
 			return '';
 		} else {
 			return '0';
@@ -920,6 +929,7 @@ sprintf.format = function sprintfFormat( type, value, flags ) {
 	var prefix = '';
 	var fill = '';
 	var fillchar = ' ';
+	var digits;
 	switch( type ) {
 	case '%':
 		result = '%';
@@ -937,47 +947,48 @@ sprintf.format = function sprintfFormat( type, value, flags ) {
 		result = Math.abs( parseInt( value ) ).toString(); // it's not correct, but JS lacks unsigned ints
 		break;
 	case 'o':
-		result = (new Number( Math.abs( parseInt( value ) ) ) ).toString(8);
+		result = Math.abs( parseInt( value ) ).toString(8);
 		break;
 	case 'x':
-		result = (new Number( Math.abs( parseInt( value ) ) ) ).toString(16);
+		result = Math.abs( parseInt( value ) ).toString(16);
 		break;
 	case 'b':
-		result = (new Number( Math.abs( parseInt( value ) ) ) ).toString(2);
+		result = Math.abs( parseInt( value ) ).toString(2);
 		break;
 	case 'e':
-		var digits = flags['precision'] ? flags['precision'] : 6;
+		digits = flags.precision ? flags.precision : 6;
 		result = (new Number( value ) ).toExponential( digits ).toString();
 		break;
 	case 'f':
-		var digits = flags['precision'] ? flags['precision'] : 6;
+		digits = flags.precision ? flags.precision : 6;
 		result = (new Number( value ) ).toFixed( digits ).toString();
+		break;
 	case 'g':
-		var digits = flags['precision'] ? flags['precision'] : 6;
+		digits = flags.precision ? flags.precision : 6;
 		result = (new Number( value ) ).toPrecision( digits ).toString();
 		break;
 	case 'X':
-		result = (new Number( Math.abs( parseInt( value ) ) ) ).toString(16).toUpperCase();
+		result = Math.abs( parseInt( value ) ).toString(16).toUpperCase();
 		break;
 	case 'E':
-		var digits = flags['precision'] ? flags['precision'] : 6;
+		digits = flags.precision ? flags.precision : 6;
 		result = (new Number( value ) ).toExponential( digits ).toString().toUpperCase();
 		break;
 	case 'G':
-		var digits = flags['precision'] ? flags['precision'] : 6;
+		var digits = flags.precision ? flags.precision : 6;
 		result = (new Number( value ) ).toPrecision( digits ).toString().toUpperCase();
 		break;
 	}
 
-	if(flags['+'] && parseFloat( value ) > 0 && ['d','e','f','g','E','G'].indexOf(type) != -1 ) {
+	if(flags['+'] && parseFloat( value ) > 0 && ['d','e','f','g','E','G'].indexOf(type) !== -1 ) {
 		prefix = '+';
 	}
 
-	if(flags[' '] && parseFloat( value ) > 0 && ['d','e','f','g','E','G'].indexOf(type) != -1 ) {
+	if(flags[' '] && parseFloat( value ) > 0 && ['d','e','f','g','E','G'].indexOf(type) !== -1 ) {
 		prefix = ' ';
 	}
 
-	if( flags['#'] && parseInt( value ) != 0 ) {
+	if( flags['#'] && parseInt( value ) !== 0 ) {
 		switch(type) {
 		case 'o':
 			prefix = '0';
@@ -996,8 +1007,8 @@ sprintf.format = function sprintfFormat( type, value, flags ) {
 		fillchar = '0';
 	}
 
-	if( flags['width'] && flags['width'] > ( result.length + prefix.length ) ) {
-		var tofill = flags['width'] - result.length - prefix.length;
+	if( flags.width && flags.width > ( result.length + prefix.length ) ) {
+		var tofill = flags.width - result.length - prefix.length;
 		for( var i = 0; i < tofill; ++i ) {
 			fill += fillchar;
 		}
@@ -1013,7 +1024,7 @@ sprintf.format = function sprintfFormat( type, value, flags ) {
 }
 
 function Bytes( value ) {
-	if( typeof(value) == 'string' ) {
+	if( typeof(value) === 'string' ) {
 		var res = /(\d+) ?(\w?)(i?)B?/.exec( value );
 		var number = res[1];
 		var mag = res[2];
@@ -1071,7 +1082,7 @@ Bytes.prototype.toString = function( magnitude ) {
 		} else {
 			tmp /= Math.pow( 10, Bytes.magnitudes[mag] * 3 );
 		}
-		if( parseInt( tmp ) != tmp ) {
+		if( parseInt( tmp ) !== tmp ) {
 			tmp = (new Number( tmp ) ).toPrecision( 4 );
 		}
 		return tmp + ' ' + mag + (si?'i':'') +  'B';
@@ -1083,7 +1094,7 @@ Bytes.prototype.toString = function( magnitude ) {
 			++current;
 		}
 		tmp = this.value / Math.pow( 2, current * 10 );
-		if( parseInt( tmp ) != tmp ) {
+		if( parseInt( tmp ) !== tmp ) {
 			tmp = (new Number( tmp ) ).toPrecision( 4 );
 		}
 		return tmp + ' ' + Bytes.rmagnitudes[current] + ( current > 0 ? 'iB' : 'B' );
@@ -1104,16 +1115,16 @@ String.prototype.trim = function stringPrototypeTrim( chars ) {
 }
 
 String.prototype.splitWeightedByKeys = function stringPrototypeSplitWeightedByKeys( start, end, skip ) {
-	if( start.length != end.length ) {
+	if( start.length !== end.length ) {
 		throw 'start marker and end marker must be of the same length';
 	}
 	var level = 0;
 	var initial = null;
 	var result = [];
 	if( !( skip instanceof Array ) ) {
-		if( typeof( skip ) == 'undefined' ) {
+		if( typeof( skip ) === 'undefined' ) {
 			skip = [];
-		} else if( typeof( skip ) == 'string' ) {
+		} else if( typeof( skip ) === 'string' ) {
 			skip = [ skip ];
 		} else {
 			throw "non-applicable skip parameter";
@@ -1121,22 +1132,22 @@ String.prototype.splitWeightedByKeys = function stringPrototypeSplitWeightedByKe
 	}
 	for( var i  = 0; i < this.length; ++i ) {
 		for( var j = 0; j < skip.length; ++j ) {
-			if( this.substr( i, skip[j].length ) == skip[j] ) {
+			if( this.substr( i, skip[j].length ) === skip[j] ) {
 				i += skip[j].length - 1;
 				continue;
 			}
 		}
-		if( this.substr( i, start.length ) == start ) {
-			if( initial == null ) {
+		if( this.substr( i, start.length ) === start ) {
+			if( initial === null ) {
 				initial = i;
 			}
 			++level;
 			i += start.length - 1;
-		} else if( this.substr( i, end.length ) == end ) {
+		} else if( this.substr( i, end.length ) === end ) {
 			--level;
 			i += end.length - 1;
 		}
-		if( level == 0 && initial != null ) {
+		if( !level && initial ) {
 			result.push( this.substring( initial, i + 1 ) );
 			initial = null;
 		}
@@ -1170,7 +1181,7 @@ Array.prototype.uniq = function arrayPrototypeUniq() {
 	var result = [];
 	for( var i = 0; i < this.length; ++i ) {
 		var current = this[i];
-		if( result.indexOf( current ) == -1 ) {
+		if( result.indexOf( current ) === -1 ) {
 			result.push( current );
 		}
 	}
@@ -1182,7 +1193,7 @@ Array.prototype.dups = function arrayPrototypeUniq() {
 	var result = [];
 	for( var i = 0; i < this.length; ++i ) {
 		var current = this[i];
-		if( uniques.indexOf( current ) == -1 ) {
+		if( uniques.indexOf( current ) === -1 ) {
 			uniques.push( current );
 		} else {
 			result.push( current );
@@ -1192,13 +1203,13 @@ Array.prototype.dups = function arrayPrototypeUniq() {
 }
 
 Array.prototype.chunk = function arrayChunk( size ) {
-	if( typeof( size ) != 'number' || size <= 0 ) { // pretty impossible to do anything :)
+	if( typeof( size ) !== 'number' || size <= 0 ) { // pretty impossible to do anything :)
 		return [ this ]; // we return an array consisting of this array.
 	}
 	var result = [];
 	var current;
 	for(var i = 0; i < this.length; ++i ) {
-		if( i % size == 0 ) { // when 'i' is 0, this is always true, so we start by creating one.
+		if( i % size === 0 ) { // when 'i' is 0, this is always true, so we start by creating one.
 			current = [];
 			result.push( current );
 		}
@@ -1208,7 +1219,7 @@ Array.prototype.chunk = function arrayChunk( size ) {
 }
 
 function Unbinder( string ) {
-	if( typeof( string ) != 'string' ) {
+	if( typeof( string ) !== 'string' ) {
 		throw "not a string";
 	}
 	this.content = string;
@@ -1252,7 +1263,7 @@ function clone( obj, deep ) {
 	for ( var property in obj )
 		if ( !deep ) {
 			objectClone[property] = obj[property];
-		} else if ( typeof obj[property] == 'object' ) {
+		} else if ( typeof obj[property] === 'object' ) {
 			objectClone[property] = clone( obj[property], deep );
 		} else {
 			objectClone[property] = obj[property];
@@ -1286,7 +1297,7 @@ function ln( ns, title ) {
 	return "\{\{" + ns2ln[ns] + "|" + title + "\}\}";
 }
 
-Namespace = {
+var Namespace = {
 	MAIN:           0,
 	TALK:           1,
 	USER:           2,
@@ -1459,17 +1470,17 @@ Wikipedia.actionCompleted = function( self ) {
 // Change per action wanted
 Wikipedia.actionCompleted.event = function() {
 	new Status( Wikipedia.actionCompleted.notice, Wikipedia.actionCompleted.postfix, 'info' );
-	if( Wikipedia.actionCompleted.redirect != null ) {
+	if( Wikipedia.actionCompleted.redirect ) {
 		// if it isn't an url, make it an relative to self (probably this is the case)
 		if( !/^\w+\:\/\//.test( Wikipedia.actionCompleted.redirect ) ) {
-			Wikipedia.actionCompleted.redirect = wgServer + wgArticlePath.replace( '$1', encodeURIComponent( Wikipedia.actionCompleted.redirect ).replace( /\%2F/g, '/' ) );
+			Wikipedia.actionCompleted.redirect = mw.config.get( 'wgServer' ) + mw.config.get( 'wgArticlePath' ).replace( '$1', encodeURIComponent( Wikipedia.actionCompleted.redirect ).replace( /\%2F/g, '/' ) );
 			if( Wikipedia.actionCompleted.followRedirect === false ) Wikipedia.actionCompleted.redirect += "?redirect=no";
 		}
 		window.setTimeout( function() { window.location = Wikipedia.actionCompleted.redirect } , Wikipedia.actionCompleted.timeOut );
 	}
 }
-var wpActionCompletedTimeOut = typeof(wpActionCompletedTimeOut) == 'undefined'  ? 5000 : wpActionCompletedTimeOut;
-var wpMaxLag = typeof(wpMaxLag) == 'undefined' ? 10 : wpMaxLag; // Maximum lag allowed, 5-10 is a good value, the higher value, the more agressive.
+var wpActionCompletedTimeOut = typeof(wpActionCompletedTimeOut) === 'undefined'  ? 5000 : wpActionCompletedTimeOut;
+var wpMaxLag = typeof(wpMaxLag) === 'undefined' ? 10 : wpMaxLag; // Maximum lag allowed, 5-10 is a good value, the higher value, the more agressive.
 
 Wikipedia.editCount = 10;
 Wikipedia.actionCompleted.timeOut = wpActionCompletedTimeOut;
@@ -1496,7 +1507,7 @@ Wikipedia.removeCheckpoint = function() {
 Wikipedia.api = function( currentAction, query, onSuccess, statusElement, onError ) {
 	this.currentAction = currentAction;
 	this.query = query;
-	this.query['format'] = 'xml';
+	this.query.format = 'xml';
 	this.onSuccess = onSuccess;
 	this.onError = onError;
 	if( statusElement ) {
@@ -1528,7 +1539,7 @@ Wikipedia.api.prototype = {
 		var ajaxparams = $.extend( {}, {
 			context: this,
 			type: 'POST',
-			url: wgServer + wgScriptPath + '/api.php',
+			url: mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/api.php',
 			data: QueryString.create(this.query),
 			datatype: 'xml',
 
@@ -1618,7 +1629,7 @@ Wikipedia.api.prototype = {
  *
  * Constructor: Wikipedia.page(pageName, currentAction)
  *    pageName - the name of the page, prefixed by the namespace (if any)
- *               (for the current page, use wgPageName)
+ *               (for the current page, use mw.config.get('wgPageName'))
  *    currentAction - a string describing the action about to be undertaken (optional)
  *
  * load(onSuccess, onFailure): Loads the text for the page
@@ -1774,6 +1785,77 @@ Wikipedia.api.prototype = {
 
 Wikipedia.page = function(pageName, currentAction) {
 
+	if (!currentAction) currentAction = 'Opening page "' + pageName + '"';
+
+	/**
+	 * Private context variables
+	 *
+	 * This context is not visible to the outside, thus all the data here
+	 * must be accessed via getter and setter functions.
+	 */
+	var ctx = {
+		 // backing fields for public properties
+		pageName: pageName,
+		pageText: null,
+		editMode: 'all',  // save() replaces entire contents of the page by default
+		appendText: null,   // can't reuse pageText for this because pageText is needed to follow a redirect
+		prependText: null,  // can't reuse pageText for this because pageText is needed to follow a redirect
+		editSummary: null,
+		createOption: null,
+		minorEdit: false,
+		pageSection: null,
+		maxConflictRetries: 2,
+		maxRetries: 2,
+		callbackParameters: null,
+		statusElement: new Status(currentAction),
+		followRedirect: false,
+		watchlistOption: 'nochange',
+		pageExists: false,
+		creator: null,
+		revertOldID: null,
+		moveDestination: null,
+		moveTalkPage: false,
+		moveSubpages: false,
+		moveSuppressRedirect: false,
+		protectEdit: null,
+		protectMove: null,
+		protectCreate: null,
+		protectCascade: false,
+		 // internal status
+		pageLoaded: false,
+		editToken: null,
+		loadTime: null,
+		lastEditTime: null,
+		revertCurID: null,
+		revertUser: null,
+		fullyProtected: false,
+		conflictRetries: 0,
+		retries: 0,
+		 // callbacks
+		onLoadSuccess: null,
+		onLoadFailure: null,
+		onSaveSuccess: null,
+		onSaveFailure: null,
+		onLookupCreatorSuccess: null,
+		onMoveSuccess: null,
+		onMoveFailure: null,
+		onDeleteSuccess: null,
+		onDeleteFailure: null,
+		onProtectSuccess: null,
+		onProtectFailure: null,
+		 // internal objects
+		loadQuery: null,
+		loadApi: null,
+		saveApi: null,
+		lookupCreatorApi: null,
+		moveApi: null,
+		moveProcessApi: null,
+		deleteApi: null,
+		deleteProcessApi: null,
+		protectApi: null,
+		protectProcessApi: null,
+	};
+
 	/**
 	 * Public interface accessors
 	 */
@@ -1907,7 +1989,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.onLoadFailure = onFailure;
 
 		// Need to be able to do something after the page loads
-		if (onSuccess == null) {
+		if (!onSuccess) {
 			ctx.statusElement.error("Internal error: no onSuccess callback provided to load()!");
 			return;
 		}
@@ -1920,9 +2002,9 @@ Wikipedia.page = function(pageName, currentAction) {
 			// don't need rvlimit=1 because we don't need rvstartid here and only one actual rev is returned by default
 		};
 
-		if (ctx.editMode == 'all') {
+		if (ctx.editMode === 'all') {
 			ctx.loadQuery.rvprop = 'content';  // get the page content at the same time, if needed
-		} else if (ctx.editMode == 'revert') {
+		} else if (ctx.editMode === 'revert') {
 			ctx.loadQuery.rvlimit = 1;
 			ctx.loadQuery.rvstartid = ctx.revertOldID;
 		}
@@ -2008,7 +2090,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			break;
 		}
 
-		if (['recreate', 'createonly', 'nocreate'].indexOf(ctx.createOption) != -1) {
+		if (['recreate', 'createonly', 'nocreate'].indexOf(ctx.createOption) !== -1) {
 			query[ctx.createOption] = '';
 		}
 
@@ -2032,7 +2114,7 @@ Wikipedia.page = function(pageName, currentAction) {
 	};
 
 	this.lookupCreator = function(onSuccess) {
-		if (onSuccess == null) {
+		if (!onSuccess) {
 			ctx.statusElement.error("Internal error: no onSuccess callback provided to lookupCreator()!");
 			return;
 		}
@@ -2077,7 +2159,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			}, null, patrolstat);
 			wikipedia_api.post({
 				type: 'GET',
-				url: wgServer + wgScriptPath + '/index.php',
+				url: mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php',
 				datatype: 'text'  // we don't really care about the response
 			});
 		}
@@ -2191,80 +2273,6 @@ Wikipedia.page = function(pageName, currentAction) {
 	};
 
 	/**
-	 * Initialization
-	 */
-	if (currentAction == null) currentAction = 'Opening page "' + pageName + '"';
-
-	/**
-	 * Private context variables
-	 *
-	 * This context is not visible to the outside, thus all the data here
-	 * must be accessed via getter and setter functions.
-	 */
-	var ctx = {
-		 // backing fields for public properties
-		pageName: pageName,
-		pageText: null,
-		editMode: 'all',  // save() replaces entire contents of the page by default
-		appendText: null,   // can't reuse pageText for this because pageText is needed to follow a redirect
-		prependText: null,  // can't reuse pageText for this because pageText is needed to follow a redirect
-		editSummary: null,
-		createOption: null,
-		minorEdit: false,
-		pageSection: null,
-		maxConflictRetries: 2,
-		maxRetries: 2,
-		callbackParameters: null,
-		statusElement: new Status(currentAction),
-		followRedirect: false,
-		watchlistOption: 'nochange',
-		pageExists: false,
-		creator: null,
-		revertOldID: null,
-		moveDestination: null,
-		moveTalkPage: false,
-		moveSubpages: false,
-		moveSuppressRedirect: false,
-		protectEdit: null,
-		protectMove: null,
-		protectCreate: null,
-		protectCascade: false,
-		 // internal status
-		pageLoaded: false,
-		editToken: null,
-		loadTime: null,
-		lastEditTime: null,
-		revertCurID: null,
-		revertUser: null,
-		fullyProtected: false,
-		conflictRetries: 0,
-		retries: 0,
-		 // callbacks
-		onLoadSuccess: null,
-		onLoadFailure: null,
-		onSaveSuccess: null,
-		onSaveFailure: null,
-		onLookupCreatorSuccess: null,
-		onMoveSuccess: null,
-		onMoveFailure: null,
-		onDeleteSuccess: null,
-		onDeleteFailure: null,
-		onProtectSuccess: null,
-		onProtectFailure: null,
-		 // internal objects
-		loadQuery: null,
-		loadApi: null,
-		saveApi: null,
-		lookupCreatorApi: null,
-		moveApi: null,
-		moveProcessApi: null,
-		deleteApi: null,
-		deleteProcessApi: null,
-		protectApi: null,
-		protectProcessApi: null,
-	};
-
-	/**
 	 * Private member functions
 	 *
 	 * These are not exposed outside
@@ -2375,7 +2383,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		var xml = ctx.saveApi.getXML();
 
 		// see if the API thinks we were successful
-		if ($(xml).find('edit').attr('result') == "Success") {
+		if ($(xml).find('edit').attr('result') === "Success") {
 		
 			// real success
 			if (ctx.onSaveSuccess) {
@@ -2383,7 +2391,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			} else {
 				// default on success action - display link for edited page
 				var link = document.createElement('a');
-				link.setAttribute('href', wgArticlePath.replace('$1', ctx.pageName));
+				link.setAttribute('href', mw.config.get('wgArticlePath').replace('$1', ctx.pageName));
 				link.appendChild(document.createTextNode(ctx.pageName));
 				ctx.statusElement.info(['completed (', link, ')']);
 			}
@@ -2417,7 +2425,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		var errorCode = ctx.saveApi.getErrorCode();
 
 		// check for edit conflict
-		if ( errorCode == "editconflict" && ctx.conflictRetries++ < ctx.maxConflictRetries ) {
+		if ( errorCode === "editconflict" && ctx.conflictRetries++ < ctx.maxConflictRetries ) {
 			 
 			// edit conflicts can occur when the page needs to be purged from the server cache
 			var purgeQuery = {
@@ -2435,14 +2443,14 @@ Wikipedia.page = function(pageName, currentAction) {
 
 		// check for loss of edit token
 		// it's impractical to request a new token here, so invoke edit conflict logic when this happens
-		} else if ( errorCode == "notoken" && ctx.conflictRetries++ < ctx.maxConflictRetries ) {
+		} else if ( errorCode === "notoken" && ctx.conflictRetries++ < ctx.maxConflictRetries ) {
 			 
 			ctx.statusElement.info("Edit token is invalid, retrying");
 			--Wikipedia.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.loadApi.post(); // reload
 
 		// check for network or server error
-		} else if ( errorCode == "undefined" && ctx.retries++ < ctx.maxRetries ) {
+		} else if ( errorCode === "undefined" && ctx.retries++ < ctx.maxRetries ) {
 
 			// the error might be transient, so try again
 			ctx.statusElement.info("Save failed, retrying");
@@ -2453,7 +2461,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		} else {
 
 			// non-admin attempting to edit a protected page - this gives a friendlier message than the default
-			if ( errorCode == "protectedpage" ) {
+			if ( errorCode === "protectedpage" ) {
 				ctx.statusElement.error( "Failed to save edit: Page is fully protected" );
 			} else {
 				ctx.statusElement.error( "Failed to save edit: " + ctx.saveApi.getErrorText() );
@@ -2509,7 +2517,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			'action': 'move',
 			'from': $(xml).find('page').attr('title'),
 			'to': ctx.moveDestination,
-			'token': deleteToken,
+			'token': moveToken,
 			'reason': ctx.editSummary
 		};
 		if (ctx.moveTalkPage) {
@@ -2694,7 +2702,7 @@ Wikipedia.wiki.prototype = {
 		Wikipedia.dump.push( xmlhttp );
 		xmlhttp.obj = this;
 		xmlhttp.overrideMimeType('text/xml');
-		xmlhttp.open( 'POST' , wgServer + wgScriptPath + '/index.php?useskin=monobook&' + QueryString.create( this.query ), true);
+		xmlhttp.open( 'POST' , mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?useskin=monobook&' + QueryString.create( this.query ), true);
 		xmlhttp.setRequestHeader('Content-type','application/x-www-form-urlencoded');
 		xmlhttp.onerror = function(e) {
 			this.obj.statelem.error( "Error " + this.status + " occurred while posting the document." );
@@ -2702,8 +2710,8 @@ Wikipedia.wiki.prototype = {
 		xmlhttp.onload = function(e) {
 			var self = this.obj;
 			var status = this.status;
-			if( status != 200 ) {
-				if( status == 503 ) {
+			if( status !== 200 ) {
+				if( status === 503 ) {
 					var retry = this.getResponseHeader( 'Retry-After' );
 					var lag = this.getResponseHeader( 'X-Database-Lag' );
 					if( lag ) {
@@ -2730,7 +2738,7 @@ Wikipedia.wiki.prototype = {
 					self.onsuccess( self );
 				} else {
 					var link = document.createElement( 'a' );
-					link.setAttribute( 'href', wgArticlePath.replace( '$1', self.query['title'] ) );
+					link.setAttribute( 'href', mw.config.get('wgArticlePath').replace( '$1', self.query['title'] ) );
 					link.setAttribute( 'title', self.query['title'] );
 					link.appendChild( document.createTextNode( self.query['title'] ) );
 
@@ -2770,7 +2778,7 @@ Wikipedia.wiki.prototype = {
 		Wikipedia.dump.push( xmlhttp );
 		xmlhttp.obj = this;
 		xmlhttp.overrideMimeType('text/xml');
-		xmlhttp.open( 'GET' , wgServer + wgScriptPath + '/index.php?useskin=monobook&' + QueryString.create( this.query ), true);
+		xmlhttp.open( 'GET' , mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?useskin=monobook&' + QueryString.create( this.query ), true);
 		xmlhttp.onerror = function() {
 			this.obj.statelem.error( "Error " + this.status + " occurred while receiving the document." );
 		}
@@ -2838,42 +2846,42 @@ Mediawiki.Template = {
 
 		for( var i = start; i < text.length; ++i ) {
 			var test3 = text.substr( i, 3 );
-			if( test3 == '\{\{\{' ) {
+			if( test3 === '\{\{\{' ) {
 				current += '\{\{\{';
 				i += 2;
 				++level;
 				continue;
 			}
-			if( test3 == '\}\}\}' ) {
+			if( test3 === '\}\}\}' ) {
 				current += '\}\}\}';
 				i += 2;
 				--level;
 				continue;
 			}
 			var test2 = text.substr( i, 2 );
-			if( test2 == '\{\{' || test2 == '\[\[' ) {
+			if( test2 === '\{\{' || test2 === '\[\[' ) {
 				current += test2;
 				++i;
 				++level;
 				continue;
 			}
-			if( test2 == '\]\]' ) {
+			if( test2 === '\]\]' ) {
 				current += test2;
 				++i;
 				--level;
 				continue;
 			}
-			if( test2 == '\}\}' ) {
+			if( test2 === '\}\}' ) {
 				current += test2;
 				++i;
 				--level;
 
 				if( level <= 0 ) {
-					if( count == -1 ) {
+					if( count === -1 ) {
 						result.name = current.substring(2).trim();
 						++count;
 					} else {
-						if( equals != -1 ) {
+						if( equals !== -1 ) {
 							var key = current.substring( 0, equals ).trim();
 							var value = current.substring( equals ).trim();
 							result.parameters[key] = value;
@@ -2888,12 +2896,12 @@ Mediawiki.Template = {
 				continue;
 			}
 
-			if( text.charAt(i) == '|' && level <= 0 ) {
-				if( count == -1 ) {
+			if( text.charAt(i) === '|' && level <= 0 ) {
+				if( count === -1 ) {
 					result.name = current.substring(2).trim();
 					++count;
 				} else {
-					if( equals != -1 ) {
+					if( equals !== -1 ) {
 						var key = current.substring( 0, equals ).trim();
 						var value = current.substring( equals + 1 ).trim();
 						result.parameters[key] = value;
@@ -2904,7 +2912,7 @@ Mediawiki.Template = {
 					}
 				}
 				current = '';
-			} else if( equals == -1 && text.charAt(i) == '=' && level <= 0 ) {
+			} else if( equals === -1 && text.charAt(i) === '=' && level <= 0 ) {
 				equals = current.length;
 				current += text.charAt(i);
 			} else {
@@ -3023,13 +3031,13 @@ function isInNetwork( ipaddress, network ) {
 	var netarr = network.split('/')[0].split('.');
 	var net = (parseInt(netarr[0]) << 24) + (parseInt(netarr[1]) << 16) + (parseInt(netarr[2]) << 8) + (parseInt(netarr[3]));
 
-	return (ip & netmask) == net;
+	return (ip & netmask) === net;
 }
 
 /* Returns true if given string contains a valid IP-address, that is, from 0.0.0.0 to 255.255.255.255*/
 function isIPAddress( string ){
 	var res = /(\d{1,4})\.(\d{1,3})\.(\d{1,3})\.(\d{1,4})/.exec( string );
-	return res != null && res.slice( 1, 5 ).every( function( e ) { return e < 256; } );
+	return res && res.slice( 1, 5 ).every( function( e ) { return e < 256; } );
 }
 
 /**
@@ -3060,7 +3068,7 @@ function QueryString(qString) {
 	this.string = qString;
 	this.params = {};
 
-	if( qString.length == 0 ) {
+	if( !qString.length ) {
 		return;
 	}
 
@@ -3071,7 +3079,7 @@ function QueryString(qString) {
 		var pair = args[i].split( '=' );
 		var key = decodeURIComponent( pair[0] ), value = key;
 
-		if( pair.length == 2 ) {
+		if( pair.length === 2 ) {
 			value = decodeURIComponent( pair[1] );
 		}
 
@@ -3079,17 +3087,17 @@ function QueryString(qString) {
 	}
 }
 
-QueryString.static = null;
+QueryString.staticstr = null;
 
 QueryString.staticInit = function() {
-	if( QueryString.static == null ) {
-		QueryString.static = new QueryString(location.search.substring(1));
+	if( !QueryString.staticstr ) {
+		QueryString.staticstr = new QueryString(location.search.substring(1));
 	}
 }
 
 QueryString.get = function(key) {
 	QueryString.staticInit();
-	return QueryString.static.get(key);
+	return QueryString.staticstr.get(key);
 };
 
 QueryString.prototype.get = function(key) {
@@ -3098,7 +3106,7 @@ QueryString.prototype.get = function(key) {
 
 QueryString.exists = function(key) {
 	QueryString.staticInit();
-	return QueryString.static.exists(key);
+	return QueryString.staticstr.exists(key);
 }
 
 QueryString.prototype.exists = function(key) {
@@ -3107,16 +3115,16 @@ QueryString.prototype.exists = function(key) {
 
 QueryString.equals = function(key, value) {
 	QueryString.staticInit();
-	return QueryString.static.equals(key, value);
+	return QueryString.staticstr.equals(key, value);
 }
 
 QueryString.prototype.equals = function(key, value) {
-	return this.params[key] == value ? true : false;
+	return this.params[key] === value ? true : false;
 }
 
 QueryString.toString = function() {
 	QueryString.staticInit();
-	return QueryString.static.toString();
+	return QueryString.staticstr.toString();
 }
 
 QueryString.prototype.toString = function() {
@@ -3125,15 +3133,15 @@ QueryString.prototype.toString = function() {
 
 
 QueryString.create = function( arr ) {
-	var resarr = Array();
+	var resarr = [];
 	var editToken;  // KLUGE: this should always be the last item in the query string (bug TW-B-0013)
 	for( var i in arr ) {
-		if( typeof arr[i] == 'undefined' ) {
+		if( typeof arr[i] === 'undefined' ) {
 			continue;
 		}
 		var res;
 		if( arr[i] instanceof Array ){
-			var v =  Array();
+			var v = [];
 			for(var j = 0; j < arr[i].length; ++j ) {
 				v[j] = encodeURIComponent( arr[i][j] );
 			}
@@ -3141,13 +3149,13 @@ QueryString.create = function( arr ) {
 		} else {
 			res = encodeURIComponent( arr[i] );
 		}
-		if( i == 'wpEditToken' ) {
+		if( i === 'wpEditToken' ) {
 			editToken = res;
 		} else {
 			resarr.push( encodeURIComponent( i ) + '=' + res );
 		}
 	}
-	if( typeof editToken != 'undefined' ) {
+	if( typeof editToken !== 'undefined' ) {
 		resarr.push( 'wpEditToken=' + editToken );
 	}
 	return resarr.join('&');
@@ -3172,7 +3180,7 @@ function Status( text, stat, type ) {
 	this.stat = this.codify(stat);
 	this.type = type || 'status';
 	// XXX temporary hack to force the page not to reload when an error is output - see also update() below
-	if (type == 'error') Wikipedia.numberOfActionsLeft = 1000;
+	if (type === 'error') Wikipedia.numberOfActionsLeft = 1000;
 	this.generate(); 
 	if( stat ) {
 		this.render();
@@ -3226,7 +3234,7 @@ Status.prototype = {
 		var result;
 		result = document.createDocumentFragment();
 		for( var i = 0; i < obj.length; ++i ) {
-			if( typeof obj[i] == 'string' ) {
+			if( typeof obj[i] === 'string' ) {
 				result.appendChild( document.createTextNode( obj[i] ) );
 			} else if( obj[i] instanceof Element ) {
 				result.appendChild( obj[i] );
@@ -3240,7 +3248,7 @@ Status.prototype = {
 		if( type ) {
 			this.type = type;
 			// XXX temporary hack to force the page not to reload when an error is output - see also Status() above
-			if (type == 'error') Wikipedia.numberOfActionsLeft = 1000;
+			if (type === 'error') Wikipedia.numberOfActionsLeft = 1000;
 		}
 		this.render();
 	},
@@ -3477,25 +3485,20 @@ SimpleWindow.setButtonsEnabled = function( enabled ) {
 // Twinkle initialization
 
 twAddPortlet.usingTwCfg = (typeof(TwinkleConfig) !== "undefined");
-switch (skin)
-{
-	case 'vector':
-		twAddPortlet.portletArea = (twAddPortlet.usingTwCfg && TwinkleConfig.portletArea ? TwinkleConfig.portletArea : 'right-navigation');
-		twAddPortlet.portletId = (twAddPortlet.usingTwCfg && TwinkleConfig.portletId ? TwinkleConfig.portletId : 'p-twinkle');
-		twAddPortlet.portletName = (twAddPortlet.usingTwCfg && TwinkleConfig.portletName ? TwinkleConfig.portletName : 'TW');
-		twAddPortlet.portletType = (twAddPortlet.usingTwCfg && TwinkleConfig.portletType ? TwinkleConfig.portletType : 'menu');
-		twAddPortlet.portletNext = (twAddPortlet.usingTwCfg && TwinkleConfig.portletNext ? TwinkleConfig.portletNext : 'p-search');
-		break;
-	default:
-		twAddPortlet.portletId = (twAddPortlet.usingTwCfg && TwinkleConfig.portletId ? TwinkleConfig.portletId : 'p-cactions');
-		break;
+if (skin === 'vector') {
+	twAddPortlet.portletArea = (twAddPortlet.usingTwCfg && TwinkleConfig.portletArea ? TwinkleConfig.portletArea : 'right-navigation');
+	twAddPortlet.portletId = (twAddPortlet.usingTwCfg && TwinkleConfig.portletId ? TwinkleConfig.portletId : 'p-twinkle');
+	twAddPortlet.portletName = (twAddPortlet.usingTwCfg && TwinkleConfig.portletName ? TwinkleConfig.portletName : 'TW');
+	twAddPortlet.portletType = (twAddPortlet.usingTwCfg && TwinkleConfig.portletType ? TwinkleConfig.portletType : 'menu');
+	twAddPortlet.portletNext = (twAddPortlet.usingTwCfg && TwinkleConfig.portletNext ? TwinkleConfig.portletNext : 'p-search');
+} else {
+	twAddPortlet.portletId = (twAddPortlet.usingTwCfg && TwinkleConfig.portletId ? TwinkleConfig.portletId : 'p-cactions');
 }
 
 // check if account is experienced enough for more advanced functions
 // don't use the Twinkle object because other scripts may import this
-twinkleUserAuthorized = userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'confirmed' );
+var twinkleUserAuthorized = userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'confirmed' );
 
-// flag to let sript loaders know that this module has already been loaded
-morebits_js_loaded = true;  // legacy version
-morebits_v2_js_loaded = true;  // version enhanced for HTML5
-
+// flag to let script loaders know that this module has already been loaded
+var morebits_js_loaded = true;  // legacy version
+var morebits_v2_js_loaded = true;  // version enhanced for HTML5
