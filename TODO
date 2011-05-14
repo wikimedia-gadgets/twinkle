@@ -1,1 +1,0 @@
-*  Remove the hard-coded dependency on a particular display mechanim (i.e. the status object)
