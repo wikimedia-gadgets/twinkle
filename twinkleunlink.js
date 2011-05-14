@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinkleunlink.js: Unlink module
+ ****************************************
+ * Mode of invocation:     Tab ("Unlink")
+ * Active on:              Non-special pages
+ * Config directives in:   TwinkleConfig
+ */
 
 function twinkleunlink() {
 	if( wgNamespaceNumber < 0 ) {
@@ -226,6 +231,3 @@ twinkleunlink.callbacks = {
 		}
 	}
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinkleunlink", twinkleunlink );

@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinklediff.js: Diff module
+ ****************************************
+ * Mode of invocation:     Tab on non-diff pages ("Last"); tabs on diff pages ("Since", "Since mine", "Current")
+ * Active on:              Existing non-special pages
+ * Config directives in:   TwinkleConfig
+ */
 
 function twinklediff() { 
 	if( wgNamespaceNumber < 0 || !wgArticleId ) {
@@ -77,6 +82,3 @@ twinklediff.callbacks = {
 		window.location = wgServer + wgScriptPath + '/index.php?' + QueryString.create( query );
 	}
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinklediff", twinklediff );

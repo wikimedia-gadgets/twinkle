@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinklewarn.js: Warn module
+ ****************************************
+ * Mode of invocation:     Tab ("Warn")
+ * Active on:              User talk pages
+ * Config directives in:   TwinkleConfig
+ */
 
 function twinklewarn() {
 	if( wgNamespaceNumber == 3 ) {
@@ -1549,6 +1554,3 @@ twinklewarn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	wikipedia_page.setFollowRedirect( true );
 	wikipedia_page.load( twinklewarn.callbacks.main );
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinklewarn", twinklewarn );

@@ -3499,17 +3499,3 @@ twinkleUserAuthorized = userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'conf
 morebits_js_loaded = true;  // legacy version
 morebits_v2_js_loaded = true;  // version enhanced for HTML5
 
-// check if the Twinkle loader is active
-if ( typeof(Twinkle) === "object" ) {
-
-	// register null initialization callback to let the Twinkle loader know we're ready
-	Twinkle.init.moduleReady( "morebits", function() {} );
-}
-
-/* Add code here to call the initialization callback of any other user scripts that are
-   dependent on this module. Browsers don't enforce initializing scripts in the order
-   they are loaded. Therefore, scripts that load this module must be tolerant of having this
-   module initialize last. Also, other scripts must be tolerant of receiving multiple
-   initialization callbacks because of the many other scripts that might be loading
-   this same module. See twinkle.js for an example of the proper way to write a loader. 
-   In simple cases, the loader code may be included directly within a user script. */

@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinkledelimages.js: Batch deletion of images (sysops only)
+ ****************************************
+ * Mode of invocation:     Tab ("Deli-batch")
+ * Active on:              Existing non-special pages
+ * Config directives in:   TwinkleConfig
+ */
 
 function twinkledeli() {
 	if( wgNamespaceNumber < 0 || wgCurRevisionId == false ) {
@@ -292,6 +297,3 @@ twinkledeli.callbacks = {
 		self.post( postData );
 	}
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinkledelimages", twinkledeli );

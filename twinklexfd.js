@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinklexfd.js: XFD module
+ ****************************************
+ * Mode of invocation:     Tab ("XFD")
+ * Active on:              Existing, non-special pages, except for file pages with no local (non-Commons) file which are not redirects
+ * Config directives in:   TwinkleConfig
+ */
 
 function twinklexfd() {
 	// Disable on:
@@ -1365,6 +1370,3 @@ twinklexfd.callback.evaluate = function(e) {
 		break;
 	}
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinklexfd", twinklexfd );

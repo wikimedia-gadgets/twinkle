@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** friendlyshared.js: Shared IP tagging module
+ ****************************************
+ * Mode of invocation:     Tab ("Shared")
+ * Active on:              Existing IP user talk pages
+ * Config directives in:   FriendlyConfig
+ */
 
 function friendlyshared() {
 	if( wgNamespaceNumber == 3 && isIPAddress( wgTitle ) ) {
@@ -170,6 +175,3 @@ friendlyshared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(friendlyshared.callbacks.main);
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "friendlyshared", friendlyshared );

@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinkleimage.js: Image CSD module
+ ****************************************
+ * Mode of invocation:     Tab ("DI")
+ * Active on:              File pages with a corresponding file which is local (not on Commons)
+ * Config directives in:   TwinkleConfig
+ */
 
 function twinkleimage() {
 	if( wgNamespaceNumber === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory")) {
@@ -296,6 +301,3 @@ twinkleimage.callbacks = {
 		usertalkpage.append();
 	}
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinkleimage", twinkleimage );

@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinklespeedy.js: CSD module
+ ****************************************
+ * Mode of invocation:     Tab ("CSD")
+ * Active on:              Non-special, existing pages
+ * Config directives in:   TwinkleConfig
+ */
 
 function twinklespeedy() {
 	// Disable on:
@@ -1304,6 +1309,3 @@ twinklespeedy.callback.doMultiple = function twinklespeedyCallbackDoMultiple(e)
 		twinklespeedy.callback.evaluateUser(e);
 	}
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinklespeedy", twinklespeedy );

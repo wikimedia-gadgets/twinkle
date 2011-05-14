@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinklefluff.js: Revert/rollback module
+ ****************************************
+ * Mode of invocation:     Links on history, contributions, and diff pages
+ * Active on:              Diff pages, history pages, contributions pages
+ * Config directives in:   TwinkleConfig
+ */
 
 /**
  Twinklefluff revert and antivandalism utility
@@ -535,6 +540,3 @@ function twinklefluffinit() {
 		}
 	}
 };
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinklefluff", twinklefluffinit );

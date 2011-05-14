@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinkleimagetraverse.js: Image traverse module (sysops only)
+ ****************************************
+ * Mode of invocation:     Tab ("Traverse")
+ * Active on:              Categories
+ * Config directives in:   TwinkleConfig
+ */
 
 function twinkleimagetraverse() {
 	if( userIsInGroup( 'sysop' ) && wgNamespaceNumber == Namespace.CATEGORY ) {
@@ -386,6 +391,3 @@ twinkleimagetraverse.callbacks = {
 		self.post( postData );
 	}
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinkleimagetraverse", twinkleimagetraverse );

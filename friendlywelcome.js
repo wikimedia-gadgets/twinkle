@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** friendlywelcome.js: Welcome module
+ ****************************************
+ * Mode of invocation:     Tab ("Wel"), or from links on diff pages
+ * Active on:              Existing user talk pages, diff pages
+ * Config directives in:   FriendlyConfig
+ */
 
 function friendlywelcome() {
 	if( QueryString.exists( 'friendlywelcome' ) ) {
@@ -484,6 +489,3 @@ friendlywelcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) 
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(friendlywelcome.callbacks.main);
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "friendlywelcome", friendlywelcome );

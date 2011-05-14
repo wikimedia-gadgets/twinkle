@@ -1,7 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
-
+/*
+ ****************************************
+ *** friendlytag.js: Tag module
+ ****************************************
+ * Mode of invocation:     Tab ("Tag")
+ * Active on:              Existing articles, all redirects
+ * Config directives in:   FriendlyConfig
+ */
 
 function friendlytag() {
 	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) == 'no' && $("span.redirectText").length > 0 ) {
@@ -923,6 +927,3 @@ friendlytag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(friendlytag.callbacks.main);
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "friendlytag", friendlytag );

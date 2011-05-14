@@ -1,6 +1,12 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinklecloser.js: AFD/AFC closer module
+ ****************************************
+ * Mode of invocation:     Link on AFD subpages (including daily log pages) and AFC daily log pages
+ * Active on:              The aforementioned pages
+ * Config directives in:   TwinkleConfig
+ */
+
 
 function twinklecloser() {
 	var closeable = false;
@@ -593,6 +599,3 @@ twinklecloser.callbacks = {
 	}
 
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinklecloser", twinklecloser );

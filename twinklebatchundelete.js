@@ -1,6 +1,12 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinklebatchundelete.js: Batch undelete module
+ ****************************************
+ * Mode of invocation:     Tab ("Und-batch")
+ * Active on:              Existing and non-existing user pages (??? why?)
+ * Config directives in:   TwinkleConfig
+ */
+
 
 function twinklebatchundelete() {
 	if( wgNamespaceNumber != Namespace.USER ) {
@@ -122,6 +128,3 @@ twinklebatchundelete.callbacks = {
 
 	}
 };
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinklebatchundelete", twinklebatchundelete );

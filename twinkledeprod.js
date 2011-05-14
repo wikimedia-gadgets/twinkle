@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinkledeprod.js: Batch deletion of expired PRODs (sysops only)
+ ****************************************
+ * Mode of invocation:     Tab ("Deprod")
+ * Active on:              Categories whose name starts with "Category:Proposed deletion as of"
+ * Config directives in:   TwinkleConfig
+ */
 
 function twinkleproddelete() {
 	if( wgNamespaceNumber != Namespace.CATEGORY || ! userIsInGroup( 'sysop' ) || ! /^Category:Proposed_deletion_as_of/.test(wgPageName) ) {
@@ -269,6 +274,3 @@ twinkleproddelete.callbacks = {
 		self.post( postData );
 	}
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinkledeprod", twinkleproddelete );

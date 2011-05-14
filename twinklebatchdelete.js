@@ -1,6 +1,12 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinklebatchdelete.js: Batch delete module (sysops only)
+ ****************************************
+ * Mode of invocation:     Tab ("D-batch")
+ * Active on:              Existing and non-existing non-articles, and Special:PrefixIndex
+ * Config directives in:   TwinkleConfig
+ */
+
 
 function twinklebatchdelete() {
 	if( userIsInGroup( 'sysop' ) && (wgNamespaceNumber > 0 || wgCanonicalSpecialPageName == 'Prefixindex') ) {
@@ -366,6 +372,3 @@ twinklebatchdelete.callbacks = {
 		pageobj.save(params.onsuccess);
 	}
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinklebatchdelete", twinklebatchdelete );

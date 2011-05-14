@@ -1,6 +1,16 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinkleconfig.js: Preferences module
+ ****************************************
+ * Mode of invocation:     Adds configuration form to Wikipedia:Twinkle/Preferences and user 
+                           subpages named "/Twinkle preferences", and adds ad box to the top of user 
+                           subpages belonging to the currently logged-in user which end in '.js', or
+                           which are called "/twinkleoptions.js" and the "editintro" parameter is not
+                           present in the URL
+ * Active on:              What I just said.  Yeah.
+ * Config directives in:   TwinkleConfig
+ */
+
 
 Twinkle.config = {};
 
@@ -1326,8 +1336,3 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	noticeclear.style.clear = "both";
 	Status.root.appendChild(noticeclear);
 }
-
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinkleconfig", Twinkle.config.init );
-

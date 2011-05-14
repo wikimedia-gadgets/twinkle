@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** friendlytalkback.js: Talkback module
+ ****************************************
+ * Mode of invocation:     Tab ("TB")
+ * Active on:              Existing user talk pages
+ * Config directives in:   FriendlyConfig
+ */
 
 function friendlytalkback() {
 	if( wgNamespaceNumber == 3 ) {
@@ -239,6 +244,3 @@ friendlytalkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 	talkpage.setFollowRedirect(true);
 	talkpage.append();
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "friendlytalkback", friendlytalkback );

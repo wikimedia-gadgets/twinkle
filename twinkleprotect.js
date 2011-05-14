@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinkleprotect.js: Protect/RPP module
+ ****************************************
+ * Mode of invocation:     Tab ("PP"/"RPP")
+ * Active on:              Non-special pages
+ * Config directives in:   TwinkleConfig
+ */
 
 function twinkleprotect() {
 	if ( wgNamespaceNumber < 0 ) {
@@ -1030,6 +1035,3 @@ twinkleprotect.callbacks = {
 		rppPage.save();
 	}
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinkleprotect", twinkleprotect );

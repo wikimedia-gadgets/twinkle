@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinklearv.js: ARV module
+ ****************************************
+ * Mode of invocation:     Tab ("ARV")
+ * Active on:              Existing and non-existing user pages, user talk pages, contributions pages
+ * Config directives in:   TwinkleConfig
+ */
 
 Twinkle.arv = function () {
 	var username;
@@ -544,6 +549,3 @@ Twinkle.arv.processSock = function( params ) {
 	
 	Wikipedia.removeCheckpoint();  // all page updates have been started
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinklearv", Twinkle.arv );

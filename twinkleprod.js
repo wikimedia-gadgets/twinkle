@@ -1,6 +1,11 @@
-if ( typeof(Twinkle) === "undefined" ) {
-	throw ( "Twinkle modules may not be directly imported.\nSee WP:Twinkle for installation instructions." );
-}
+/*
+ ****************************************
+ *** twinkleprod.js: PROD module
+ ****************************************
+ * Mode of invocation:     Tab ("PROD")
+ * Active on:              Existing articles
+ * Config directives in:   TwinkleConfig
+ */
 
 function twinkleprod() {
 	if( wgNamespaceNumber != 0 || wgCurRevisionId == false ) {
@@ -308,6 +313,3 @@ twinkleprod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(twinkleprod.callbacks.main);
 }
-
-// register initialization callback
-Twinkle.init.moduleReady( "twinkleprod", twinkleprod );
