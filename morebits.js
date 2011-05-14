@@ -1,15 +1,29 @@
 /**
- * Use of this module by Twinkle:
- *   1. Twinkle specific functions related to configuration. These could possibly be moved to a new twinklecommon.js module.
- *   2. General classes related to use of the MediaWiki API. These classes are also used by many other user scripts
- *      so they should remain in this file. These classes are:
- *        Wikipedia.api – Invokes the actual MediaWiki API
- *        Wikipedia.page – Manages the details of the API including forming queries, handling edit tokens, 
- *                         page updates, and recovering from errors.
- *   3. Some date functions.
+ * morebits.js
+ * ===========
+ * A library full of lots of goodness for user scripts on Wikipedia.
+ * (It should work on other MediaWiki wikis as well, despite some Wikipedia-specific object naming.)
  *
- * This module should not be forked to avoid naming conflicts between the objects and functions 
- * within this module that is automatically loaded by many scripts and any forked copy.
+ * The highlights include:
+ *   - QuickForm class - generates quick HTML forms on the fly
+ *   - Wikipedia.api class - makes calls to the Wikipedia API (or the API of any MediaWiki wiki)
+ *   - Wikipedia.page class - modifies pages on the wiki (edit, revert, delete, etc.)
+ *   - MediaWiki class - contains some utilities for dealing with wikitext
+ *   - Status class - a rough-and-ready status message displayer, used by the Wikipedia classes
+ *   - SimpleWindow class - a wrapper for jQuery UI Dialog with a custom look and extra features
+ *
+ * Dependencies:
+ *   - The whole thing relies on jQuery.  But most wikis should provide this by default.
+ *   - QuickForm, SimpleWindow, Status, and the portlet stuff rely on the "morebits.css" file for their styling.
+ *   - SimpleWindow relies on jquery UI Dialog (ResourceLoader module name 'jquery.ui.dialog').
+ *   - QuickForm tooltips rely on Tipsy (ResourceLoader module name 'jquery.tipsy').
+ *     For external installations, Tipsy is available at [http://onehackoranother.com/projects/jquery/tipsy].
+ *
+ * Most of the stuff here doesn't work on IE < 9.  It is your script's responsibility to enforce this.
+ *
+ * This library is maintained by the maintainers of Twinkle.
+ * For queries, suggestions, help, etc., head to [[WT:TW]].
+ * The latest development source is available at [https://github.com/azatoth/twinkle/blob/master/morebits.js].
  */
 
 // Simple helper functions to see what groups a user might belong
