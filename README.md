@@ -9,8 +9,26 @@ See [Wikipedia:Twinkle][] on English Wikipedia for more information.
 
 [AzaToth][] is the original author and maintainer of the tool, as well as the `morebits.js` library.
 
-Synchronization
----------------
+Updating scripts on Wikipedia
+-----------------------------
+
+To generate the concatenated Twinkle script, use this `bash` command:
+
+    awk 'FNR==1{print ""}{print}' twinkle.header.js twinkle[!.]*.js friendly*.js twinkle.footer.js > alltwinkle.js
+
+Then you will be able to upload `alltwinkle.js` to [MediaWiki:Gadget-Twinkle.js][] and [User:AzaToth/twinkle.js][]. This does not include `morebits.js` and `morebits.css`; these have to be uploaded separately.
+
+If `morebits.js` and/or `morebits.css` need to be updated, they should be synched to these places:
+
+* _morebits.js_ at [MediaWiki:Gadget-morebits.js][] and [User:AzaToth/morebits.js][]
+* _morebits.css_ at [MediaWiki:Gadget-morebits.css][] and [User:AzaToth/morebits.css][]
+
+[MediaWiki:Gadgets-definition][] should contain the following line:
+
+    * Twinkle[ResourceLoader|dependencies=jquery.ui.dialog,jquery.tipsy]|morebits.js|morebits.css|twinkle.js
+
+Synchronization (for developers)
+--------------------------------
 
 There is a synchronization script called `sync.pl`, which can be used to pull and push files to wikipedia. 
 
@@ -38,15 +56,22 @@ To `push` your changes to Foobar's wiki page, do:
 
 The edit summary will contain the `branch`, the last `commit sha`, and the `oneliner` for that commit.
 
-Style Guideline
+Style guideline
 ---------------
 
-While old legacy code has many different and inhorerent styles, it's decided to utilize a more coherent style through the code.
+While old legacy code has many different and incoherent styles, it's decided to utilize a more coherent style throughout the code.
 
 The [jQuery Core Style Guideline][jq_style] is what we will hereafter use as our style guideline.
 
 [Wikipedia:Twinkle]: http://en.wikipedia.org/wiki/Wikipedia:Twinkle
 [AzaToth]: http://en.wikipedia.org/wiki/User:AzaToth
+[MediaWiki:Gadget-Twinkle.js]: http://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.js
+[User:AzaToth/twinkle.js]: http://en.wikipedia.org/wiki/User:AzaToth/twinkle.js
+[MediaWiki:Gadget-morebits.js]: http://en.wikipedia.org/wiki/MediaWiki:Gadget-morebits.js
+[User:AzaToth/morebits.js]: http://en.wikipedia.org/wiki/User:AzaToth/morebits.js
+[MediaWiki:Gadget-morebits.css]: http://en.wikipedia.org/wiki/MediaWiki:Gadget-morebits.css
+[User:AzaToth/morebits.css]: http://en.wikipedia.org/wiki/User:AzaToth/morebits.css
+[MediaWiki:Gadgets-definition]: http://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
 [Git::Repository]: http://search.cpan.org/~book/Git-Repository-1.17/lib/Git/Repository.pm
 [Mediawiki::Bot]: http://search.cpan.org/~lifeguard/MediaWiki-Bot-3.2.7/lib/MediaWiki/Bot.pm
 [App::cpanminus]: http://search.cpan.org/~miyagawa/App-cpanminus-1.4001/lib/App/cpanminus.pm
