@@ -90,9 +90,6 @@ Twinkle.config.commonSets = {
  * },
  * . . .
  *
- * IMPORTANT NOTE: Some advanced preferences aren't displayed here; if the user chooses to set them manually
- * (i.e. by editing their twinkleconfig.js file), they are detected and stored in Twinkle.config.foundPrefs.
- *
  */
 
 Twinkle.config.sections = [
