@@ -7,18 +7,18 @@
  * Config directives in:   TwinkleConfig
  */
 
-function twinkleprod() {
-	if( wgNamespaceNumber != 0 || wgCurRevisionId == false ) {
+Twinkle.prod = function twinkleprod() {
+	if( wgNamespaceNumber !== 0 || !wgCurRevisionId ) {
 		return;
 	}
 	if (twinkleUserAuthorized) {
-		twAddPortletLink( "javascript:twinkleprod.callback()", "PROD", "tw-prod", "Propose deletion via WP:PROD", "");
+		twAddPortletLink( "javascript:Twinkle.prod.callback()", "PROD", "tw-prod", "Propose deletion via WP:PROD", "");
 	} else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'PROD', 'tw-prod', 'Propose deletion via WP:PROD', '');
 	}
 }
 
-twinkleprod.callback = function twinkleprodCallback() {
+Twinkle.prod.callback = function twinkleprodCallback() {
 	var Window = new SimpleWindow( 800, 410 );
 	Window.setTitle( "Proposed deletion (PROD)" );
 	Window.setScriptName( "Twinkle" );
@@ -26,7 +26,7 @@ twinkleprod.callback = function twinkleprodCallback() {
 	Window.addFooterLink( "BLP PROD policy", "WP:BLPPROD" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#prod" );
 
-	var form = new QuickForm( twinkleprod.callback.evaluate );
+	var form = new QuickForm( Twinkle.prod.callback.evaluate );
 	
 	var field = form.append( {
 			type: 'field',
@@ -35,7 +35,7 @@ twinkleprod.callback = function twinkleprodCallback() {
 	field.append( {
 			type: 'radio',
 			name: 'prodtype',
-			event: twinkleprod.callback.prodtypechanged,
+			event: Twinkle.prod.callback.prodtypechanged,
 			list: [
 				{
 					label: 'PROD (proposed deletion)',
@@ -69,7 +69,7 @@ twinkleprod.callback = function twinkleprodCallback() {
 	result.prodtype[0].dispatchEvent( evt );
 }
 
-twinkleprod.callback.prodtypechanged = function(event) {
+Twinkle.prod.callback.prodtypechanged = function(event) {
   //prepare frame for prod type dependant controls
 	var field = new QuickForm.element( {
 			type: 'field',
@@ -142,7 +142,7 @@ twinkleprod.callback.prodtypechanged = function(event) {
 }
 
 
-twinkleprod.callbacks = {
+Twinkle.prod.callbacks = {
 	main: function(pageobj) {
 		var statelem = pageobj.getStatusElement();
 
@@ -169,11 +169,11 @@ twinkleprod.callbacks = {
 			if( params.usertalk ) {
 				var thispage = new Wikipedia.page(wgPageName);
 				thispage.setCallbackParameters(params);
-				thispage.lookupCreator(twinkleprod.callbacks.userNotification);
+				thispage.lookupCreator(Twinkle.prod.callbacks.userNotification);
 			}
 			// If not notifying, log this PROD
 			else if( TwinkleConfig.logProdPages ) {
-				twinkleprod.callbacks.addToLog(params, null);
+				Twinkle.prod.callbacks.addToLog(params, null);
 			}
 
 			var summaryText = "Proposing article for deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
@@ -199,7 +199,7 @@ twinkleprod.callbacks = {
 
 			if( TwinkleConfig.logProdPages ) {
 				params.logEndorsing = true;
-				twinkleprod.callbacks.addToLog(params);
+				Twinkle.prod.callbacks.addToLog(params);
 			}
 		}
 
@@ -222,14 +222,14 @@ twinkleprod.callbacks = {
 		usertalkpage.append();
 		if (TwinkleConfig.logProdPages) {
 			params.logInitialContrib = initialContrib;
-			twinkleprod.callbacks.addToLog(params);
+			Twinkle.prod.callbacks.addToLog(params);
 		}
 	},
 
 	addToLog: function(params) {
 		var wikipedia_page = new Wikipedia.page("User:" + wgUserName + "/" + TwinkleConfig.prodLogPageName, "Adding entry to userspace log");
 		wikipedia_page.setCallbackParameters(params);
-		wikipedia_page.load(twinkleprod.callbacks.saveLog);
+		wikipedia_page.load(Twinkle.prod.callbacks.saveLog);
 	},
 
 	saveLog: function(pageobj) {
@@ -275,7 +275,7 @@ twinkleprod.callbacks = {
 	}
 }
 
-twinkleprod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
+Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
 	var form = e.target;
 
@@ -311,5 +311,5 @@ twinkleprod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	var wikipedia_page = new Wikipedia.page(wgPageName, "Tagging page");
 	wikipedia_page.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
 	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.load(twinkleprod.callbacks.main);
+	wikipedia_page.load(Twinkle.prod.callbacks.main);
 }

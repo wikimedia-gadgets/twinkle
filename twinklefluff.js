@@ -11,7 +11,7 @@
  Twinklefluff revert and antivandalism utility
  */
 
-var twinklefluff = {
+Twinkle.fluff = {
 	auto: function() {
 		if( QueryString.get( 'oldid' ) != wgCurRevisionId ) {
 			// not latest revision
@@ -30,7 +30,7 @@ var twinklefluff = {
 			TwinkleConfig.openTalkPage = [];
 		}
 
-		twinklefluff.revert( QueryString.get( 'twinklerevert' ), vandal );
+		Twinkle.fluff.revert( QueryString.get( 'twinklerevert' ), vandal );
 	},
 	normal: function() {
 
@@ -112,7 +112,7 @@ var twinklefluff = {
 			revertToRevision.style.fontWeight = 'bold';
 
 			var revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
-			revertToRevisionLink.href = "javascript:twinklefluff.revertToRevision('" + oldrev + "')";
+			revertToRevisionLink.href = "javascript:Twinkle.fluff.revertToRevision('" + oldrev + "')";
 			revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
 			revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
 			revertToRevisionLink.appendChild( spanTag( 'Black', ']' ) );
@@ -130,7 +130,7 @@ var twinklefluff = {
 				revertToRevision.setAttribute( 'id', 'tw-revert-to-nrevision' );
 				revertToRevision.style.fontWeight = 'bold';
 				var revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
-				revertToRevisionLink.href = "javascript:twinklefluff.revertToRevision('" + newrev + "')";
+				revertToRevisionLink.href = "javascript:Twinkle.fluff.revertToRevision('" + newrev + "')";
 				revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
 				revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
 				revertToRevisionLink.appendChild( spanTag( 'Black', ']' ) );
@@ -152,9 +152,9 @@ var twinklefluff = {
 				var vandLink = document.createElement('a');
 				var normLink = document.createElement('a');
 
-				agfLink.href = "javascript:twinklefluff.revert('agf' , '" + vandal + "')"; 
-				vandLink.href = "javascript:twinklefluff.revert('vand' , '" + vandal + "')"; 
-				normLink.href = "javascript:twinklefluff.revert('norm' , '" + vandal + "')"; 
+				agfLink.href = "javascript:Twinkle.fluff.revert('agf' , '" + vandal + "')"; 
+				vandLink.href = "javascript:Twinkle.fluff.revert('vand' , '" + vandal + "')"; 
+				normLink.href = "javascript:Twinkle.fluff.revert('norm' , '" + vandal + "')"; 
 
 				agfLink.appendChild( spanTag( 'Black', '[' ) );
 				agfLink.appendChild( spanTag( 'DarkOliveGreen', 'rollback (AGF)' ) );
@@ -184,7 +184,7 @@ var twinklefluff = {
 	}
 }
 
-twinklefluff.revert = function revertPage( type, vandal, rev, page ) {
+Twinkle.fluff.revert = function revertPage( type, vandal, rev, page ) {
 
 	wgPageName = page || wgPageName;
 	wgCurRevisionId = rev || wgCurRevisionId;
@@ -202,12 +202,12 @@ twinklefluff.revert = function revertPage( type, vandal, rev, page ) {
 		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ],
 		'intoken': 'edit'
 	}
-	var wikipedia_api = new Wikipedia.api( 'Grabbing data of earlier revisions', query, twinklefluff.callbacks.main );
+	var wikipedia_api = new Wikipedia.api( 'Grabbing data of earlier revisions', query, Twinkle.fluff.callbacks.main );
 	wikipedia_api.params = params;
 	wikipedia_api.post();
 }
 
-twinklefluff.revertToRevision = function revertToRevision( oldrev ) {
+Twinkle.fluff.revertToRevision = function revertToRevision( oldrev ) {
 
 	Status.init( document.getElementById('bodyContent') );
 
@@ -222,16 +222,16 @@ twinklefluff.revertToRevision = function revertToRevision( oldrev ) {
 		'format': 'xml'
 	}
 
-	var wikipedia_api = new Wikipedia.api( 'Grabbing data of the earlier revision', query, twinklefluff.callbacks.toRevision.main );
+	var wikipedia_api = new Wikipedia.api( 'Grabbing data of the earlier revision', query, Twinkle.fluff.callbacks.toRevision.main );
 	wikipedia_api.params = { rev: oldrev };
 	wikipedia_api.post();
 }
 
-twinklefluff.userIpLink = function( user ) {
+Twinkle.fluff.userIpLink = function( user ) {
 	return (isIPAddress(user)?"[[Special:Contributions/":"[[User:")+user+"|"+user+"]]";
 }
 
-twinklefluff.callbacks = {
+Twinkle.fluff.callbacks = {
 	toRevision: {
 		main: function( self ) {
 			//alert("TRACE: revertTorevision getrevs callback: xmlString= \n" + (new XMLSerializer()).serializeToString(self.responseXML) + "[END]");
@@ -278,7 +278,7 @@ twinklefluff.callbacks = {
 			Wikipedia.actionCompleted.redirect = wgPageName;
 			Wikipedia.actionCompleted.notice = "Reversion completed";
 
-			var wikipedia_api = new Wikipedia.api( 'Saving reverted contents', query, null/*twinklefluff.callbacks.toRevision.complete*/, self.statelem);
+			var wikipedia_api = new Wikipedia.api( 'Saving reverted contents', query, null/*Twinkle.fluff.callbacks.toRevision.complete*/, self.statelem);
 			wikipedia_api.params = self.params;
 			wikipedia_api.post();
 
@@ -326,7 +326,7 @@ twinklefluff.callbacks = {
 			}
 			else if( 
 				self.params.type == 'vand' && 
-				twinklefluff.whiteList.indexOf( top.getAttribute( 'user' ) ) != -1 && revs.length > 1 &&
+				Twinkle.fluff.whiteList.indexOf( top.getAttribute( 'user' ) ) != -1 && revs.length > 1 &&
 				revs[1].getAttribute( 'pageId' ) == wgCurRevisionId 
 			) {
 				Status.info( 'Info', [ 'Latest revision was made by ', htmlNode( 'strong', lastuser ), ', a trusted bot, and the revision before was made by our vandal, so we proceed with the revert.' ] );
@@ -338,7 +338,7 @@ twinklefluff.callbacks = {
 
 		}
 
-		if( twinklefluff.whiteList.indexOf( self.params.user ) != -1  ) {
+		if( Twinkle.fluff.whiteList.indexOf( self.params.user ) != -1  ) {
 			switch( self.params.type ) {
 			case 'vand':
 				Status.info( 'Info', [ 'Vandalism revert was chosen on ', htmlNode( 'strong', self.params.user ), '. As this is a whitelisted bot, we assume you wanted to revert vandalism made by the previous user instead.' ] );
@@ -418,7 +418,7 @@ twinklefluff.callbacks = {
 
 			summary = sprintf( "Reverted [[WP:AGF|good faith]] edits by [[Special:Contributions/%s|%1$s]] ([[User talk:%1$s|talk]])%s%s", 
 				self.params.user.replace("\\'", "'"), 
-				twinklefluff.formatSummaryPostfix(extra_summary),
+				Twinkle.fluff.formatSummaryPostfix(extra_summary),
 				TwinkleConfig.summaryAd
 			);
 			break;
@@ -444,7 +444,7 @@ twinklefluff.callbacks = {
 				self.params.count, 
 				self.params.count > 1 ? 'edits': 'edit',
 				self.params.user.replace("\\'", "'"),
-				twinklefluff.formatSummaryPostfix(extra_summary),
+				Twinkle.fluff.formatSummaryPostfix(extra_summary),
 				TwinkleConfig.summaryAd 
 			);
 		}
@@ -493,7 +493,7 @@ twinklefluff.callbacks = {
 		Wikipedia.actionCompleted.redirect = wgPageName;
 		Wikipedia.actionCompleted.notice = "Reversion completed";
 
-		var wikipedia_api = new Wikipedia.api( 'Saving reverted contents', query, twinklefluff.callbacks.complete, self.statelem);
+		var wikipedia_api = new Wikipedia.api( 'Saving reverted contents', query, Twinkle.fluff.callbacks.complete, self.statelem);
 		wikipedia_api.params = self.params;
 		wikipedia_api.post();
 
@@ -504,7 +504,7 @@ twinklefluff.callbacks = {
 	}
 }
 
-twinklefluff.formatSummaryPostfix = function(stringToAdd) {
+Twinkle.fluff.formatSummaryPostfix = function(stringToAdd) {
 	if (stringToAdd) {
 		stringToAdd = ': ' + stringToAdd.toUpperCaseFirstChar();
 		if (stringToAdd.search(/[.?!;]$/) == -1) {
@@ -517,7 +517,7 @@ twinklefluff.formatSummaryPostfix = function(stringToAdd) {
 	}
 }
 
-function twinklefluffinit() {
+Twinkle.fluff.init = function twinklefluffinit() {
 	if (twinkleUserAuthorized)
 	{
 		// a list of usernames, usually only bots, that vandalism revert is jumped over, that is
@@ -525,7 +525,7 @@ function twinklefluffinit() {
 		// This is for handeling quick bots that makes edits seconds after the original edit is made.
 		// This only affect vandalism rollback, for good faith rollback, it will stop, indicating a bot 
 		// has no faith, and for normal rollback, it will rollback that edit.
-		twinklefluff.whiteList = [
+		Twinkle.fluff.whiteList = [
 			'HagermanBot',
 			'SineBot',
 			'HBC AIV helperbot',
@@ -534,9 +534,9 @@ function twinklefluffinit() {
 		]
 
 		if ( QueryString.exists( 'twinklerevert' ) ) {
-			twinklefluff.auto();
+			Twinkle.fluff.auto();
 		} else {
-			twinklefluff.normal();
+			Twinkle.fluff.normal();
 		}
 	}
 };

@@ -7,11 +7,11 @@
  * Config directives in:   TwinkleConfig
  */
 
-function twinkleunlink() {
+Twinkle.unlink = function twinkleunlink() {
 	if( wgNamespaceNumber < 0 ) {
 		return;
 	}
-	twAddPortletLink( "javascript:twinkleunlink.callback()", "Unlink", "tw-unlink", "Unlink backlinks", "");
+	twAddPortletLink( "javascript:Twinkle.unlink.callback()", "Unlink", "tw-unlink", "Unlink backlinks", "");
 }
 
 function getChecked2( nodelist ) {
@@ -28,13 +28,13 @@ function getChecked2( nodelist ) {
 }
 
 // the parameter is used when invoking unlink from admin speedy
-twinkleunlink.callback = function twinkleunlinkCallback(presetReason) {
+Twinkle.unlink.callback = function twinkleunlinkCallback(presetReason) {
 	var Window = new SimpleWindow( 800, 400 );
 	Window.setTitle( "Unlink backlinks" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#unlink" );
 
-	var form = new QuickForm( twinkleunlink.callback.evaluate );
+	var form = new QuickForm( Twinkle.unlink.callback.evaluate );
 	form.append( {
 		type: 'textarea',
 		name: 'reason',
@@ -62,7 +62,7 @@ twinkleunlink.callback = function twinkleunlinkCallback(presetReason) {
 			'blnamespace': TwinkleConfig.unlinkNamespaces // Main namespace and portal namespace only, keep on talk pages.
 		};
 	}
-	var wikipedia_api = new Wikipedia.api( 'Grabbing backlinks', query, twinkleunlink.callbacks.display.backlinks );
+	var wikipedia_api = new Wikipedia.api( 'Grabbing backlinks', query, Twinkle.unlink.callbacks.display.backlinks );
 	wikipedia_api.params = { form: form, Window: Window, image: wgNamespaceNumber == Namespace.IMAGE };
 	wikipedia_api.post();
 
@@ -74,11 +74,11 @@ twinkleunlink.callback = function twinkleunlinkCallback(presetReason) {
 	Window.display();
 }
 
-twinkleunlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event) {
+Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event) {
 	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
 
-	twinkleunlink.backlinksdone = 0;
-	twinkleunlink.imageusagedone = 0;
+	Twinkle.unlink.backlinksdone = 0;
+	Twinkle.unlink.imageusagedone = 0;
 
 	function processunlink(pages, imageusage) {
 		var statusIndicator = new Status((imageusage ? 'Unlinking instances of image usage' : 'Unlinking backlinks'), '0%');
@@ -99,7 +99,7 @@ twinkleunlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event) 
 			var myparams = clone(params);
 			var articlepage = new Wikipedia.page(pages[i], 'Unlinking in article "' + pages[i] + '"');
 			articlepage.setCallbackParameters(myparams);
-			articlepage.load(imageusage ? twinkleunlink.callbacks.unlinkImageInstances : twinkleunlink.callbacks.unlinkBacklinks);
+			articlepage.load(imageusage ? Twinkle.unlink.callbacks.unlinkImageInstances : Twinkle.unlink.callbacks.unlinkBacklinks);
 		}
 	}
 
@@ -119,10 +119,10 @@ twinkleunlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event) 
 	Wikipedia.removeCheckpoint();
 }
 
-twinkleunlink.backlinksdone = 0;
-twinkleunlink.imageusagedone = 0;
+Twinkle.unlink.backlinksdone = 0;
+Twinkle.unlink.imageusagedone = 0;
 
-twinkleunlink.callbacks = {
+Twinkle.unlink.callbacks = {
 	display: {
 		backlinks: function twinkleunlinkCallbackDisplayBacklinks(apiobj) {
 			var xmlDoc = apiobj.responseXML;
@@ -187,7 +187,7 @@ twinkleunlink.callbacks = {
 		text = wikiPage.getText();
 		if (text == oldtext) {
 			// Nothing to do, return
-			twinkleunlink.callbacks.success(pageobj);
+			Twinkle.unlink.callbacks.success(pageobj);
 			Wikipedia.actionCompleted();
 			return;
 		}
@@ -195,7 +195,7 @@ twinkleunlink.callbacks = {
 		pageobj.setPageText(text);
 		pageobj.setEditSummary("Removing link(s) to \"" + wgPageName + "\": " + params.reason + "." + TwinkleConfig.summaryAd);
 		pageobj.setCreateOption('nocreate');
-		pageobj.save(twinkleunlink.callbacks.success);
+		pageobj.save(Twinkle.unlink.callbacks.success);
 	},
 	unlinkImageInstances: function twinkleunlinkCallbackUnlinkImageInstances(pageobj) {
 		var text, oldtext;
@@ -207,7 +207,7 @@ twinkleunlink.callbacks = {
 		text = wikiPage.getText();
 		if (text == oldtext) {
 			// Nothing to do, return
-			twinkleunlink.callbacks.success(pageobj);
+			Twinkle.unlink.callbacks.success(pageobj);
 			Wikipedia.actionCompleted();
 			return;
 		}
@@ -215,7 +215,7 @@ twinkleunlink.callbacks = {
 		pageobj.setPageText(text);
 		pageobj.setEditSummary("Commenting out use(s) of image \"" + wgPageName + "\": " + params.reason + "." + TwinkleConfig.summaryAd);
 		pageobj.setCreateOption('nocreate');
-		pageobj.save(twinkleunlink.callbacks.success);
+		pageobj.save(Twinkle.unlink.callbacks.success);
 	},
 	success: function twinkleunlinkCallbackSuccess(pageobj) {
 		var statelem = pageobj.getStatusElement();
@@ -223,9 +223,9 @@ twinkleunlink.callbacks = {
 
 		var params = pageobj.getCallbackParameters();
 		var total = params.total;
-		var now = parseInt( 100 * (params.imageusage ? ++(twinkleunlink.imageusagedone) : ++(twinkleunlink.backlinksdone))/total ) + '%';
+		var now = parseInt( 100 * (params.imageusage ? ++(Twinkle.unlink.imageusagedone) : ++(Twinkle.unlink.backlinksdone))/total ) + '%';
 		params.globalstatus.update( now );
-		if((params.imageusage ? twinkleunlink.imageusagedone : twinkleunlink.backlinksdone) >= total) {
+		if((params.imageusage ? Twinkle.unlink.imageusagedone : Twinkle.unlink.backlinksdone) >= total) {
 			params.globalstatus.info( now + ' (completed)' );
 			Wikipedia.removeCheckpoint();
 		}

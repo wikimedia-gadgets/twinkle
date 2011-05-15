@@ -5,11 +5,10 @@
 
 var TwinkleConfig, FriendlyConfig;
 
-var wikipedia_script_sentry_load;
-if ( typeof wikipedia_script_sentry_load === 'undefined' ) {
-	wikipedia_script_sentry_load = [];
+if ( typeof window.wikipedia_script_sentry_load === 'undefined' ) {
+	window.wikipedia_script_sentry_load = [];  // necessary evil!
 };
-wikipedia_script_sentry_load.push(function() {
+window.wikipedia_script_sentry_load.push(function() {
 	// don't activate on special pages other than "Contributions" so they load faster, especially the watchlist
 	// also, can't theoretically run Twinkle on old Internet Explorer, just die...!
 	if( (wgNamespaceNumber === -1 && wgTitle !== "Contributions") || ($.client.profile().name === 'msie' && $.client.profile().versionBase < 9) ) {
@@ -58,31 +57,31 @@ wikipedia_script_sentry_load.push(function() {
 		// load the modules in the order that the tabs should appears
 		// misc. ones first
 		Twinkle.config.init();
-		twinkleunlink();
-		twinklediff();
-		twinklefluffinit();
+		Twinkle.unlink();
+		Twinkle.diff();
+		Twinkle.fluff.init();
 		// deletion
-		twinklespeedy();
-		twinkleprod();
-		twinklexfd();
-		twinkleimage();
+		Twinkle.speedy();
+		Twinkle.prod();
+		Twinkle.xfd();
+		Twinkle.image();
 		// maintenance
-		twinkleprotect();
-		friendlytag();
+		Twinkle.protect();
+		Twinkle.tag();
 		// user/user talk-related
-		twinklewarn();
 		Twinkle.arv();
-		friendlywelcome();
-		friendlyshared();
-		friendlytalkback();
+		Twinkle.warn();
+		Twinkle.welcome();
+		Twinkle.shared();
+		Twinkle.talkback();
 		if (userIsInGroup('sysop')) {
-			twinklecloser();
-			twinkledeli();
-			twinkleproddelete();
-			twinklebatchdelete();
-			twinklebatchprotect();
-			twinkleimagetraverse();
-			twinklebatchundelete();
+			Twinkle.closer();
+			Twinkle.delimages();
+			Twinkle.deprod();
+			Twinkle.batchdelete();
+			Twinkle.batchprotect();
+			Twinkle.imagetraverse();
+			Twinkle.batchundelete();
 		}
 		// run the initialization callbacks for any custom modules
 		$(Twinkle.initCallbacks).each(function(k, v) { v(); });

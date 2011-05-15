@@ -7,7 +7,7 @@
  * Config directives in:   TwinkleConfig
  */
 
-function twinklespeedy() {
+Twinkle.speedy = function twinklespeedy() {
 	// Disable on:
 	// * special pages
 	// * non-existent pages
@@ -16,19 +16,17 @@ function twinklespeedy() {
 	}
 
 	if ( userIsInGroup( 'sysop' ) ) {
-		twAddPortletLink( "javascript:twinklespeedy.callback()", "CSD", "tw-csd", "Speedy delete according to WP:CSD", "");
-	}
-	else if (twinkleUserAuthorized) {
-		twAddPortletLink( "javascript:twinklespeedy.callback()", "CSD", "tw-csd", "Request speedy deletion according to WP:CSD", "");
-	}
-	else {
+		twAddPortletLink( "javascript:Twinkle.speedy.callback()", "CSD", "tw-csd", "Speedy delete according to WP:CSD", "");
+	} else if (twinkleUserAuthorized) {
+		twAddPortletLink( "javascript:Twinkle.speedy.callback()", "CSD", "tw-csd", "Request speedy deletion according to WP:CSD", "");
+	} else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'CSD', 'tw-csd', 'Request speedy deletion according to WP:CSD', '');
 	}
 }
 
 // This function is run when the CSD tab/header link is clicked
-twinklespeedy.callback = function twinklespeedyCallback() {
-	twinklespeedy.initDialog(userIsInGroup( 'sysop' ) ? twinklespeedy.callback.evaluateSysop : twinklespeedy.callback.evaluateUser, true);
+Twinkle.speedy.callback = function twinklespeedyCallback() {
+	Twinkle.speedy.initDialog(userIsInGroup( 'sysop' ) ? Twinkle.speedy.callback.evaluateSysop : Twinkle.speedy.callback.evaluateUser, true);
 }
 
 // Prepares the speedy deletion dialog and displays it
@@ -37,7 +35,7 @@ twinklespeedy.callback = function twinklespeedyCallback() {
 //  - firstTime: is this the first time? (false during a db-multiple run, true otherwise)
 //  - content: (optional) a div element in which the form content should be rendered - allows
 //    for placing content in an existing dialog box
-twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstTime, content) {
+Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstTime, content) {
 	var dialog;
 	if (!content)
 	{
@@ -138,7 +136,7 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 			}
 		);
 	}
-	else form.append( { type:'header', label: 'Tagging with \{\{db-multiple}}: Criterion ' + (twinklespeedy.dbmultipleCriteria.length + 1) } );
+	else form.append( { type:'header', label: 'Tagging with \{\{db-multiple}}: Criterion ' + (Twinkle.speedy.dbmultipleCriteria.length + 1) } );
 
 	if (firstTime) {
 		form.append( { type: 'radio', name: 'csd',
@@ -152,7 +150,7 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 			]
 		} );
 	}
-	else if (twinklespeedy.dbmultipleCriteria.length > 0) {
+	else if (Twinkle.speedy.dbmultipleCriteria.length > 0) {
 		form.append( { type: 'radio', name: 'csd',
 			list: [
 				{
@@ -165,40 +163,40 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 
 	if( wgNamespaceNumber ==  Namespace.IMAGE ) {
 		form.append( { type: 'header', label: 'Files' } );
-		form.append( { type: 'radio', name: 'csd', list: twinklespeedy.getFileList(!firstTime) } );
+		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getFileList(!firstTime) } );
 		form.append( { type: 'div', label: 'Tagging for CSD F4 (no license), F5 (orphaned fair use), F6 (no fair use rationale), and F11 (no permission) can be done using Twinkle\'s "DI" tab.' } );
 	}
 
 	if( wgNamespaceNumber ==  0 || wgNamespaceNumber == 1 ) {
 		form.append( { type: 'header', label: 'Articles' } );
-		form.append( { type: 'radio', name: 'csd', list: twinklespeedy.getArticleList(!firstTime) } );
+		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getArticleList(!firstTime) } );
 	}
 
 	if( wgNamespaceNumber ==  14 || wgNamespaceNumber == 15 ) {
 		form.append( { type: 'header', label: 'Categories' } );
-		form.append( { type: 'radio', name: 'csd', list: twinklespeedy.categoryList } );
+		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.categoryList } );
 	}
 
 	if( wgNamespaceNumber ==  2 || wgNamespaceNumber == 3 ) {
 		form.append( { type: 'header', label: 'User pages' } );
-		form.append( { type: 'radio', name: 'csd', list: twinklespeedy.userList } );
+		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.userList } );
 	}
 
 	if( wgNamespaceNumber ==  10 || wgNamespaceNumber == 11 ) {
 		form.append( { type: 'header', label: 'Templates' } );
-		form.append( { type: 'radio', name: 'csd', list: twinklespeedy.getTemplateList(!firstTime) } );
+		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getTemplateList(!firstTime) } );
 	}
 
 	if( wgNamespaceNumber ==  100 || wgNamespaceNumber == 101 ) {
 		form.append( { type: 'header', label: 'Portals' } );
-		form.append( { type: 'radio', name: 'csd', list: twinklespeedy.getPortalList(!firstTime) } );
+		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getPortalList(!firstTime) } );
 	}
 
 	form.append( { type: 'header', label: 'General criteria' } );
-	form.append( { type: 'radio', name: 'csd', list: twinklespeedy.getGeneralList(!firstTime) });
+	form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getGeneralList(!firstTime) });
 
 	form.append( { type: 'header', label: 'Redirects' } );
-	form.append( { type: 'radio', name: 'csd', list: twinklespeedy.redirectList } );
+	form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.redirectList } );
 
 	var result = form.render();
 	if (dialog)
@@ -216,7 +214,7 @@ twinklespeedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstT
 }
 
 // this is a function to allow for db-multiple filtering
-twinklespeedy.getFileList = function twinklespeedyGetFileList(multiple) {
+Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
 	var result = [];
 	result.push({
 		label: 'F1: Redundant file',
@@ -266,7 +264,7 @@ twinklespeedy.getFileList = function twinklespeedyGetFileList(multiple) {
 	return result;
 }
 
-twinklespeedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
+Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 	var result = [];
 	result.push({
 		label: 'A1: No context. Articles lacking sufficient context to identify the subject of the article.',
@@ -333,7 +331,7 @@ twinklespeedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 	return result;
 }
 
-twinklespeedy.categoryList = [
+Twinkle.speedy.categoryList = [
 	{
 		label: 'C1: Empty categories',
 		value: 'catempty',
@@ -346,7 +344,7 @@ twinklespeedy.categoryList = [
 	}
 ];
 
-twinklespeedy.userList = [
+Twinkle.speedy.userList = [
 	{
 		label: 'U1: User request',
 		value: 'userreq',
@@ -364,7 +362,7 @@ twinklespeedy.userList = [
 	},
 ];
 
-twinklespeedy.getTemplateList = function twinklespeedyGetTemplateList(multiple) {
+Twinkle.speedy.getTemplateList = function twinklespeedyGetTemplateList(multiple) {
 	var result = [];
 	result.push({
 		label: 'T2: Templates that are blatant misrepresentations of established policy',
@@ -379,7 +377,7 @@ twinklespeedy.getTemplateList = function twinklespeedyGetTemplateList(multiple) 
 	return result;
 }
 
-twinklespeedy.getPortalList = function twinklespeedyGetPortalList(multiple) {
+Twinkle.speedy.getPortalList = function twinklespeedyGetPortalList(multiple) {
 	var result = [];
 	if (!multiple) result.push({
 		label: 'P1: Portal that would be subject to speedy deletion if it were an article',
@@ -394,7 +392,7 @@ twinklespeedy.getPortalList = function twinklespeedyGetPortalList(multiple) {
 	return result;
 }
 
-twinklespeedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
+Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 	var result = [];
 	if (!multiple) result.push({
 		label: 'Custom rationale' + (userIsInGroup('sysop') ? ' (custom deletion reason)' : ' using {'+'{db}} template'),
@@ -498,7 +496,7 @@ twinklespeedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 	return result;
 }
 
-twinklespeedy.redirectList = [
+Twinkle.speedy.redirectList = [
 	{
 		label: 'R2: Redirects from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
 		value: 'rediruser',
@@ -516,7 +514,7 @@ twinklespeedy.redirectList = [
 	}
 ];
 
-twinklespeedy.normalizeHash = {
+Twinkle.speedy.normalizeHash = {
 	'reason': 'db',
 	'multiple': 'multiple',
 	'multiple-finish': 'multiple-finish',
@@ -572,7 +570,7 @@ twinklespeedy.normalizeHash = {
 };
 
 // keep this synched with [[MediaWiki:Deletereason-dropdown]]
-twinklespeedy.reasonHash = {
+Twinkle.speedy.reasonHash = {
 	'reason': '',
 // General
 	'nonsense': '[[WP:PN|Patent nonsense]], meaningless, or incomprehensible',
@@ -633,7 +631,7 @@ twinklespeedy.reasonHash = {
 	'redirtypo': 'Recently created, implausible [[WP:R|redirect]]'
 };
 
-twinklespeedy.callbacks = {
+Twinkle.speedy.callbacks = {
 	sysop: {
 		main: function( params ) {
 			var thispage = new Wikipedia.page( wgPageName, "Deleting page" );
@@ -693,7 +691,7 @@ twinklespeedy.callbacks = {
 			if( params.openusertalk ) {
 				thispage = new Wikipedia.page( wgPageName );  // necessary evil to clear incorrect Status.text
 				thispage.setCallbackParameters( params );
-				thispage.lookupCreator( twinklespeedy.callbacks.sysop.openUserTalkPage );
+				thispage.lookupCreator( Twinkle.speedy.callbacks.sysop.openUserTalkPage );
 			}
 
 			// delete redirects
@@ -705,7 +703,7 @@ twinklespeedy.callbacks = {
 					'bltitle': wgPageName,
 					'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
 				};
-				var wikipedia_api = new Wikipedia.api( 'getting list of redirects...', query, twinklespeedy.callbacks.sysop.deleteRedirectsMain,
+				var wikipedia_api = new Wikipedia.api( 'getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
 					new Status( 'Deleting redirects' ) );
 				wikipedia_api.params = params;
 				wikipedia_api.post();
@@ -813,25 +811,25 @@ twinklespeedy.callbacks = {
 			if (params.normalized == 'multiple')
 			{
 				code = "\{\{db-multiple";
-				for (var i in twinklespeedy.dbmultipleCriteria)
-					if (typeof twinklespeedy.dbmultipleCriteria[i] == 'string')
-						code += "|" + twinklespeedy.dbmultipleCriteria[i].toUpperCase();
-				for (var i in twinklespeedy.dbmultipleParameters)
-					if (typeof twinklespeedy.dbmultipleParameters[i] == 'string')
-						code += "|" + i + "=" + twinklespeedy.dbmultipleParameters[i];
+				for (var i in Twinkle.speedy.dbmultipleCriteria)
+					if (typeof Twinkle.speedy.dbmultipleCriteria[i] == 'string')
+						code += "|" + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase();
+				for (var i in Twinkle.speedy.dbmultipleParameters)
+					if (typeof Twinkle.speedy.dbmultipleParameters[i] == 'string')
+						code += "|" + i + "=" + Twinkle.speedy.dbmultipleParameters[i];
 				code += "\}\}";
 				params.utparams = [];
 			}
 			else
 			{
-				parameters = twinklespeedy.getParameters(params.value, params.normalized, statelem);
+				parameters = Twinkle.speedy.getParameters(params.value, params.normalized, statelem);
 				if (!parameters) return;
 				code = "\{\{db-" + params.value;
 				for (var i in parameters)
 					if (typeof parameters[i] == 'string')
 						code += "|" + i + "=" + parameters[i];
 				code += "\}\}";
-				params.utparams = twinklespeedy.getUserTalkParameters(params.normalized, parameters);
+				params.utparams = Twinkle.speedy.getUserTalkParameters(params.normalized, parameters);
 			}
 
 			var thispage = new Wikipedia.page(wgPageName);
@@ -875,14 +873,14 @@ twinklespeedy.callbacks = {
 
 					// add this nomination to the user's userspace log, if the user has enabled it
 					if (params.lognomination) {
-						twinklespeedy.callbacks.user.addToLog(params, initialContrib);
+						Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
 					}
 				};
 				thispage.lookupCreator(callback);
 			}
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
 			else if (params.lognomination) {
-				twinklespeedy.callbacks.user.addToLog(params, null);
+				Twinkle.speedy.callbacks.user.addToLog(params, null);
 			}
 
 			// Wrap SD template in noinclude tags if we are in template space.
@@ -901,9 +899,9 @@ twinklespeedy.callbacks = {
 					break;
 				case 'multiple':
 					editsummary = 'Requesting speedy deletion (';
-					for (var i in twinklespeedy.dbmultipleCriteria)
-						if (typeof twinklespeedy.dbmultipleCriteria[i] == 'string')
-							editsummary += '[[WP:CSD#' + twinklespeedy.dbmultipleCriteria[i].toUpperCase() + '|CSD ' + twinklespeedy.dbmultipleCriteria[i].toUpperCase() + ']], ';
+					for (var i in Twinkle.speedy.dbmultipleCriteria)
+						if (typeof Twinkle.speedy.dbmultipleCriteria[i] == 'string')
+							editsummary += '[[WP:CSD#' + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase() + '|CSD ' + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase() + ']], ';
 					editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
 					editsummary += ').';
 					break;
@@ -912,7 +910,7 @@ twinklespeedy.callbacks = {
 					break;
 			}
 
-			pageobj.setPageText(code + ((params.normalized == 'g10' || twinklespeedy.dbmultipleCriteria.indexOf('g10') != -1) ?
+			pageobj.setPageText(code + ((params.normalized == 'g10' || Twinkle.speedy.dbmultipleCriteria.indexOf('g10') != -1) ?
 					'' : ("\n" + text) )); // cause attack pages to be blanked
 			pageobj.setEditSummary(editsummary + TwinkleConfig.summaryAd);
 			pageobj.setWatchlist(params.watch);
@@ -924,7 +922,7 @@ twinklespeedy.callbacks = {
 			var wikipedia_page = new Wikipedia.page("User:" + wgUserName + "/" + TwinkleConfig.speedyLogPageName, "Adding entry to userspace log");
 			params.logInitialContrib = initialContrib;
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(twinklespeedy.callbacks.user.saveLog);
+			wikipedia_page.load(Twinkle.speedy.callbacks.user.saveLog);
 		},
 
 		saveLog: function(pageobj) {
@@ -958,9 +956,9 @@ twinklespeedy.callbacks = {
 					break;
 				case 'multiple':
 					text += "multiple criteria (";
-					for (var i in twinklespeedy.dbmultipleCriteria) {
-						if (typeof twinklespeedy.dbmultipleCriteria[i] === 'string') {
-							text += '[[WP:CSD#' + twinklespeedy.dbmultipleCriteria[i].toUpperCase() + '|' + twinklespeedy.dbmultipleCriteria[i].toUpperCase() + ']], ';
+					for (var i in Twinkle.speedy.dbmultipleCriteria) {
+						if (typeof Twinkle.speedy.dbmultipleCriteria[i] === 'string') {
+							text += '[[WP:CSD#' + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase() + '|' + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase() + ']], ';
 						}
 					}
 					text = text.substr(0, text.length - 2);  // remove trailing comma
@@ -984,7 +982,7 @@ twinklespeedy.callbacks = {
 }
 
 // prompts user for parameters to be passed into the speedy deletion tag
-twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normalized, statelem)
+Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normalized, statelem)
 {
 	var parameters = [];
 	switch( normalized ) {
@@ -1148,7 +1146,7 @@ twinklespeedy.getParameters = function twinklespeedyGetParameters(value, normali
 }
 
 // function for processing talk page notification template parameters
-twinklespeedy.getUserTalkParameters = function twinklespeedyGetUserTalkParameters(normalized, parameters)
+Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParameters(normalized, parameters)
 {
 	var utparams = [];
 	switch (normalized)
@@ -1164,42 +1162,42 @@ twinklespeedy.getUserTalkParameters = function twinklespeedyGetUserTalkParameter
 	return utparams;
 }
 
-twinklespeedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSysop(e)
+Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSysop(e)
 {
 	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
 
 	var tag_only = e.target.form.tag_only;
 	if( tag_only && tag_only.checked ) {
-		return twinklespeedy.callback.evaluateUser(e);
+		return Twinkle.speedy.callback.evaluateUser(e);
 	}
 
 	var value = e.target.values;
-	var normalized = twinklespeedy.normalizeHash[ value ];
+	var normalized = Twinkle.speedy.normalizeHash[ value ];
 
 	var params = {
 		value: value,
 		normalized: normalized,
 		watch: TwinkleConfig.watchSpeedyPages.indexOf( normalized ) != -1,
-		reason: twinklespeedy.reasonHash[ value ],
+		reason: Twinkle.speedy.reasonHash[ value ],
 		openusertalk: TwinkleConfig.openUserTalkPageOnSpeedyDelete.indexOf( normalized ) != -1,
 		deleteTalkPage: e.target.form.talkpage && e.target.form.talkpage.checked,
 		deleteRedirects: e.target.form.redirects.checked
 	};
 	Status.init( e.target.form );
 
-	twinklespeedy.callbacks.sysop.main( params );
+	Twinkle.speedy.callbacks.sysop.main( params );
 	return null;
 }
 
-twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser(e) {
+Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser(e) {
 	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
 	var value = e.target.values;
 
 	if (value == 'multiple')
 	{
 		e.target.form.style.display = "none"; // give the user a cue that the dialog is being changed
-		twinklespeedy.targetdialogcontent = e.target.form.parentNode; // make this accessible in scopeless setTimeout
-		setTimeout("twinklespeedy.initDialog(twinklespeedy.callback.doMultiple, false, twinklespeedy.targetdialogcontent)", 150);
+		Twinkle.speedy.targetdialogcontent = e.target.form.parentNode; // make this accessible in scopeless setTimeout
+		setTimeout("Twinkle.speedy.initDialog(Twinkle.speedy.callback.doMultiple, false, Twinkle.speedy.targetdialogcontent)", 150);
 		return;
 	}
 
@@ -1208,20 +1206,20 @@ twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser
 	else
 	{
 		// clear these out, whatever the case, to avoid errors
-		twinklespeedy.dbmultipleCriteria = [];
-		twinklespeedy.dbmultipleParameters = [];
+		Twinkle.speedy.dbmultipleCriteria = [];
+		Twinkle.speedy.dbmultipleParameters = [];
 	}
 
-	var normalized = twinklespeedy.normalizeHash[ value ];
+	var normalized = Twinkle.speedy.normalizeHash[ value ];
 
 	// analyse each db-multiple criterion to determine whether to watch the page/notify the creator
 	var watchPage = false;
 	if (value == 'multiple')
 	{
-		for (var i in twinklespeedy.dbmultipleCriteria)
+		for (var i in Twinkle.speedy.dbmultipleCriteria)
 		{
-			if (typeof twinklespeedy.dbmultipleCriteria[i] == 'string' &&
-				TwinkleConfig.watchSpeedyPages.indexOf(twinklespeedy.dbmultipleCriteria[i]) != -1)
+			if (typeof Twinkle.speedy.dbmultipleCriteria[i] == 'string' &&
+				TwinkleConfig.watchSpeedyPages.indexOf(Twinkle.speedy.dbmultipleCriteria[i]) != -1)
 			{
 				watchPage = true;
 				break;
@@ -1233,10 +1231,10 @@ twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser
 	var notifyuser = false;
 	if (value == 'multiple')
 	{
-		for (var i in twinklespeedy.dbmultipleCriteria)
+		for (var i in Twinkle.speedy.dbmultipleCriteria)
 		{
-			if (typeof twinklespeedy.dbmultipleCriteria[i] == 'string' &&
-				TwinkleConfig.notifyUserOnSpeedyDeletionNomination.indexOf(twinklespeedy.dbmultipleCriteria[i]) != -1)
+			if (typeof Twinkle.speedy.dbmultipleCriteria[i] == 'string' &&
+				TwinkleConfig.notifyUserOnSpeedyDeletionNomination.indexOf(Twinkle.speedy.dbmultipleCriteria[i]) != -1)
 			{
 				notifyuser = true;
 				break;
@@ -1248,10 +1246,10 @@ twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser
 	var csdlog = false;
 	if (TwinkleConfig.logSpeedyNominations && value == 'multiple')
 	{
-		for (var i in twinklespeedy.dbmultipleCriteria)
+		for (var i in Twinkle.speedy.dbmultipleCriteria)
 		{
-			if (typeof twinklespeedy.dbmultipleCriteria[i] == 'string' &&
-				TwinkleConfig.noLogOnSpeedyNomination.indexOf(twinklespeedy.dbmultipleCriteria[i]) === -1)
+			if (typeof Twinkle.speedy.dbmultipleCriteria[i] == 'string' &&
+				TwinkleConfig.noLogOnSpeedyNomination.indexOf(Twinkle.speedy.dbmultipleCriteria[i]) === -1)
 			{
 				csdlog = true;
 				break;
@@ -1276,36 +1274,36 @@ twinklespeedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser
 
 	var wikipedia_page = new Wikipedia.page(wgPageName, "Tagging page");
 	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.load(twinklespeedy.callbacks.user.main);
+	wikipedia_page.load(Twinkle.speedy.callbacks.user.main);
 }
 
-twinklespeedy.dbmultipleCriteria = [];
-twinklespeedy.dbmultipleParameters = [];
-twinklespeedy.callback.doMultiple = function twinklespeedyCallbackDoMultiple(e)
+Twinkle.speedy.dbmultipleCriteria = [];
+Twinkle.speedy.dbmultipleParameters = [];
+Twinkle.speedy.callback.doMultiple = function twinklespeedyCallbackDoMultiple(e)
 {
 	var value = e.target.values;
-	var normalized = twinklespeedy.normalizeHash[value];
+	var normalized = Twinkle.speedy.normalizeHash[value];
 	if (value != 'multiple-finish')
 	{
-		if (twinklespeedy.dbmultipleCriteria.indexOf(normalized) != -1)
+		if (Twinkle.speedy.dbmultipleCriteria.indexOf(normalized) != -1)
 			alert('You already selected that criterion. Please choose another.');
 		else
 		{
-			var parameters = twinklespeedy.getParameters(value, normalized, Status);
+			var parameters = Twinkle.speedy.getParameters(value, normalized, Status);
 			if (parameters)
 			{
 				for (var i in parameters)
 					if (typeof parameters[i] == 'string')
-						twinklespeedy.dbmultipleParameters[i] = parameters[i];
-				twinklespeedy.dbmultipleCriteria.push(normalized);
+						Twinkle.speedy.dbmultipleParameters[i] = parameters[i];
+				Twinkle.speedy.dbmultipleCriteria.push(normalized);
 			}
 		}
 		e.target.form.style.display = "none"; // give the user a cue that the dialog is being changed
-		twinklespeedy.targetdialogcontent = e.target.form.parentNode; // make this accessible in scopeless setTimeout
-		setTimeout("twinklespeedy.initDialog(twinklespeedy.callback.doMultiple, false, twinklespeedy.targetdialogcontent)", 150);
+		Twinkle.speedy.targetdialogcontent = e.target.form.parentNode; // make this accessible in scopeless setTimeout
+		setTimeout("Twinkle.speedy.initDialog(Twinkle.speedy.callback.doMultiple, false, Twinkle.speedy.targetdialogcontent)", 150);
 	}
 	else
 	{
-		twinklespeedy.callback.evaluateUser(e);
+		Twinkle.speedy.callback.evaluateUser(e);
 	}
 }

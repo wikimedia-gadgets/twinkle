@@ -7,32 +7,32 @@
  * Config directives in:   FriendlyConfig
  */
 
-function friendlywelcome() {
+Twinkle.welcome = function friendlywelcome() {
 	if( QueryString.exists( 'friendlywelcome' ) ) {
 		if( QueryString.get( 'friendlywelcome' ) == 'auto' ) {
-			friendlywelcome.auto();
+			Twinkle.welcome.auto();
 		} else {
-			friendlywelcome.semiauto();
+			Twinkle.welcome.semiauto();
 		}
 	} else {
-		friendlywelcome.normal();
+		Twinkle.welcome.normal();
 	}
 }
 
-friendlywelcome.auto = function() {
+Twinkle.welcome.auto = function() {
 	if( QueryString.get( 'action' ) != 'edit' ) {
 		// userpage not empty, aborting auto-welcome
 		return;
 	}
 
-	return friendlywelcome.welcome();
+	return Twinkle.welcome.welcomeUser();
 };
 
-friendlywelcome.semiauto = function() {
-	friendlywelcome.callback( wgTitle.split( '/' )[0].replace( /\"/, "\\\"") );
+Twinkle.welcome.semiauto = function() {
+	Twinkle.welcome.callback( mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /\"/, "\\\"") );
 }
 
-friendlywelcome.normal = function() {
+Twinkle.welcome.normal = function() {
 	if( QueryString.exists( 'diff' ) ) {
 		// check whether the contributors' talk pages exist yet
 		var $oList = $("div#mw-diff-otitle2 span.mw-usertoollinks a.new:contains(talk)").first();
@@ -57,7 +57,7 @@ friendlywelcome.normal = function() {
 				var oHref = $oList.attr("href");
 
 				var oWelcomeNode = welcomeNode.cloneNode( true );
-				oWelcomeNode.firstChild.setAttribute( 'href', oHref + '&' + QueryString.create( { 'friendlywelcome': FriendlyConfig.quickWelcomeMode=='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': wgPageName.replace(/_/g, ' ') } ) );
+				oWelcomeNode.firstChild.setAttribute( 'href', oHref + '&' + QueryString.create( { 'friendlywelcome': FriendlyConfig.quickWelcomeMode=='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
 				$oList[0].parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );
 				$oList[0].parentNode.parentNode.appendChild( oWelcomeNode );
 			}
@@ -66,20 +66,20 @@ friendlywelcome.normal = function() {
 				var nHref = $nList.attr("href");
 
 				var nWelcomeNode = welcomeNode.cloneNode( true );
-				nWelcomeNode.firstChild.setAttribute( 'href', nHref + '&' + QueryString.create( { 'friendlywelcome': FriendlyConfig.quickWelcomeMode=='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': wgPageName.replace(/_/g, ' ') } ) );
+				nWelcomeNode.firstChild.setAttribute( 'href', nHref + '&' + QueryString.create( { 'friendlywelcome': FriendlyConfig.quickWelcomeMode=='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
 				$nList[0].parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );
 				$nList[0].parentNode.parentNode.appendChild( nWelcomeNode );
 			}
 		}
 	}
-	if( wgNamespaceNumber == 3 ) {
-		var username = wgTitle.split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
+	if( mw.config.get( 'wgNamespaceNumber' ) === 3 ) {
+		var username = mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
 
-		twAddPortletLink("javascript:friendlywelcome.callback(\"" + username + "\")", "Wel", "friendly-welcome", "Welcome user", "");
+		twAddPortletLink("javascript:Twinkle.welcome.callback(\"" + username + "\")", "Wel", "friendly-welcome", "Welcome user", "");
 	}
 }
 
-friendlywelcome.welcome = function welcomeUser() {
+Twinkle.welcome.welcomeUser = function welcomeUser() {
 	Status.init( document.getElementById('bodyContent') );
 
 	var params = {
@@ -88,23 +88,23 @@ friendlywelcome.welcome = function welcomeUser() {
 		mode: 'auto'
 	};
 
-	Wikipedia.actionCompleted.redirect = wgPageName;
+	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
 	Wikipedia.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Wikipedia.page(wgPageName, "User talk page modification");
+	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "User talk page modification");
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.load(friendlywelcome.callbacks.main);
+	wikipedia_page.load(Twinkle.welcome.callbacks.main);
 }
 
-friendlywelcome.callback = function friendlywelcomeCallback( uid ) {
+Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	var Window = new SimpleWindow( 600, 400 );
 	Window.setTitle( "Welcome user" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Welcoming Committee", "WP:WC" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#welcome" );
 
-	var form = new QuickForm( friendlywelcome.callback.evaluate, 'change' );
+	var form = new QuickForm( Twinkle.welcome.callback.evaluate, 'change' );
 
 	form.append( {
 			type: 'input',
@@ -118,7 +118,7 @@ friendlywelcome.callback = function friendlywelcomeCallback( uid ) {
 		} );
 
 	form.append( { type:'header', label:'Simple templates' } );
-	form.append( { type: 'radio', name: 'simple', list: friendlywelcome.standardList } );
+	form.append( { type: 'radio', name: 'simple', list: Twinkle.welcome.standardList } );
 
 	if( typeof( FriendlyConfig.customWelcomeList ) == 'object' ) {
 		form.append( { type:'header', label:'Custom templates' } );
@@ -126,20 +126,20 @@ friendlywelcome.callback = function friendlywelcomeCallback( uid ) {
 	}
 
 	form.append( { type:'header', label:'Welcoming committee templates' } );
-	form.append( { type: 'radio', name: 'welcomingCommittee', list: friendlywelcome.welcomingCommitteeList } );
+	form.append( { type: 'radio', name: 'welcomingCommittee', list: Twinkle.welcome.welcomingCommitteeList } );
 
 	form.append( { type:'header', label:'Potential problem user templates' } );
-	form.append( { type: 'radio', name: 'problem', list: friendlywelcome.problemList } );
+	form.append( { type: 'radio', name: 'problem', list: Twinkle.welcome.problemList } );
 
 	form.append( { type:'header', label:'Anonymous user templates' } );
-	form.append( { type: 'radio', name: 'anonymous', list: friendlywelcome.anonymousList } );
+	form.append( { type: 'radio', name: 'anonymous', list: Twinkle.welcome.anonymousList } );
 
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
 }
 
-friendlywelcome.standardList = [
+Twinkle.welcome.standardList = [
 	{
 		label: '\{\{Welcome}}: standard welcome*',
 		value: 'Welcome' },
@@ -172,7 +172,7 @@ friendlywelcome.standardList = [
 		value: 'Welcome-belated' },
 ]
 
-friendlywelcome.welcomingCommitteeList = [
+Twinkle.welcome.welcomingCommitteeList = [
 	{ 
 		label: '\{\{Wel}}: similar to \{\{Welcome}}, but automatically identifies anonymous and registered users*',
 		value: 'Wel',
@@ -203,7 +203,7 @@ friendlywelcome.welcomingCommitteeList = [
 		tooltip: 'This template is a nice graphical welcome with many different options.  Includes a signature.' }
 ]
 
-friendlywelcome.problemList = [
+Twinkle.welcome.problemList = [
 	{ 
 		label: '\{\{Welcomelaws}}: welcome with information about copyrights, npov, the sandbox, and vandalism',
 		value: 'Welcomelaws' },
@@ -231,7 +231,7 @@ friendlywelcome.problemList = [
 		value: 'Welcome-COI' }
 ]
 
-friendlywelcome.anonymousList = [
+Twinkle.welcome.anonymousList = [
 	{
 		label: '\{\{Welcome-anon}}: for anonymous users; encourages getting a username*',
 		value: 'Welcome-anon' },
@@ -255,7 +255,7 @@ friendlywelcome.anonymousList = [
 ]
 
 // Set to true if template does not already have heading
-friendlywelcome.headingHash = {
+Twinkle.welcome.headingHash = {
 	'Welcome': true,
 	'Welcomeshort': false,
 	'WelcomeSimple': false,
@@ -288,7 +288,7 @@ friendlywelcome.headingHash = {
 }
 
 // Set to true if template already has signature
-friendlywelcome.signatureHash = {
+Twinkle.welcome.signatureHash = {
 	'Welcome': false,
 	'Welcomeshort': false,
 	'WelcomeSimple': false,
@@ -323,7 +323,7 @@ friendlywelcome.signatureHash = {
 /* Set to true if template supports article
  * name from art template parameter 
  */
-friendlywelcome.artHash = {
+Twinkle.welcome.artHash = {
 	'Welcome': true,
 	'Welcomeshort': false,
 	'WelcomeSimple': false,
@@ -358,7 +358,7 @@ friendlywelcome.artHash = {
 /* Set to true if template supports article
  * name from vanarticle template parameter 
  */
-friendlywelcome.vandalHash = {
+Twinkle.welcome.vandalHash = {
 	'Welcome': false,
 	'Welcomeshort': false,
 	'WelcomeSimple': false,
@@ -390,7 +390,7 @@ friendlywelcome.vandalHash = {
 	'Welcome-anon-vandal': true
 }
 
-friendlywelcome.callbacks = {
+Twinkle.welcome.callbacks = {
 	main: function( pageobj ) {
 		var params = pageobj.getCallbackParameters();
 		var oldText = pageobj.getPageText();
@@ -410,7 +410,7 @@ friendlywelcome.callbacks = {
 			text += oldText + '\n';
 		}
 		
-		if( friendlywelcome.headingHash[ params.value ] && FriendlyConfig.insertHeadings ) {
+		if( Twinkle.welcome.headingHash[ params.value ] && FriendlyConfig.insertHeadings ) {
 			Status.info( 'Info', 'Will create a new heading for the welcome' );
 			// strip section header markers from pref, to preserve backwards compatibility
 			text += "== " + FriendlyConfig.welcomeHeading.replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + " ==\n";
@@ -419,17 +419,17 @@ friendlywelcome.callbacks = {
 		Status.info( 'Info', 'Will substitute the \{\{' + params.value + '}} welcome template' );
 		text += '\{\{subst:' + params.value;
 		
-		if( friendlywelcome.artHash[ params.value ] ) {
+		if( Twinkle.welcome.artHash[ params.value ] ) {
 			if( FriendlyConfig.insertUsername && params.value.substring(2,0) != 'W-' ) {
 				Status.info( 'Info', 'Will add your username to the template' );
-				text += '|' + wgUserName;
+				text += '|' + mw.config.get('wgUserName');
 			}
 			
 			if( params.article != '' ) {
 				Status.info( 'Info', 'Will add article link to the template' );
 				text += '|art=' + params.article;
 			}
-		} else if( friendlywelcome.vandalHash[ params.value ] ) {
+		} else if( Twinkle.welcome.vandalHash[ params.value ] ) {
 			if( params.article != '' ) {
 				Status.info( 'Info', 'Will add article link to the template' );
 			}
@@ -437,16 +437,16 @@ friendlywelcome.callbacks = {
 			
 			if( FriendlyConfig.insertUsername ) {
 				Status.info( 'Info', 'Will add your username to the template' );
-				text += '|' + wgUserName;
+				text += '|' + mw.config.get('wgUserName');
 			}
 		} else if( FriendlyConfig.insertUsername ) {
 			Status.info( 'Info', 'Will add your username to the template' );
-			text += '|' + wgUserName;
+			text += '|' + mw.config.get('wgUserName');
 		} 
 		
 		text += '\}\}';
 		
-		if( !friendlywelcome.signatureHash[ params.value ] && FriendlyConfig.insertSignature ) {
+		if( !Twinkle.welcome.signatureHash[ params.value ] && FriendlyConfig.insertSignature ) {
 			Status.info( 'Info', 'Will add your signature after the welcome' );
 			text += ' \n\~\~\~\~';
 		}
@@ -466,7 +466,7 @@ friendlywelcome.callbacks = {
 	}
 }
 
-friendlywelcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) {
+Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) {
 	// Ignore if a change to the text field triggered this event
 	if( e.target.name == 'article' ) {
 		return;
@@ -481,11 +481,11 @@ friendlywelcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) 
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( e.target.form );
 
-	Wikipedia.actionCompleted.redirect = wgPageName;
+	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
 	Wikipedia.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Wikipedia.page(wgPageName, "User talk page modification");
+	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "User talk page modification");
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.load(friendlywelcome.callbacks.main);
+	wikipedia_page.load(Twinkle.welcome.callbacks.main);
 }

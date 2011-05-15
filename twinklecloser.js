@@ -7,58 +7,55 @@
  * Config directives in:   TwinkleConfig
  */
 
-
-function twinklecloser() {
+Twinkle.closer = function twinklecloser() {
 	var closeable = false;
 	var type;
 	if( /Wikipedia:Articles_for_creation\/\d{4}-\d{2}-\d{2}/.test(wgPageName) ) {
 		closeable = true;
 		type = 'afc';
-	} else if(  /Wikipedia:Articles_for_deletion\/Log\/\d{4}_\w+_\d{1,2}/.test(wgPageName) ) {
+	} else if(  /Wikipedia:Articles_for_deletion\//.test(wgPageName) ) {
 		closeable = true;
 		type = 'afd';
 	}
 
 	if( closeable ) {
-		twinklecloser.mark( type );
+		Twinkle.closer.mark( type );
 	}
 }
 
-twinklecloser.mark = function twinklecloserMark( type ) {
+Twinkle.closer.mark = function twinklecloserMark( type ) {
 	switch( type ) {
 	case 'afc':
-		var sections = document.evaluate( '//h2[span/@class="editsection"]', document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
-		for( var i = 0; i < sections.snapshotLength; ++i ) {
-			var section = sections.snapshotItem(i);
-			var section_number = document.evaluate( 'substring-after(span/a/@href, "section=")', section, null, XPathResult.STRING_TYPE, null ).stringValue;
-			var a_node = document.createElement( 'a' );
-			a_node.appendChild( document.createTextNode( '[close]' ) );
-			a_node.style.fontWeight = 'bold';
-			a_node.setAttribute( 'href', 'javascript:twinklecloser.actions.afc("' + section_number + '")' );
-
-			section.insertBefore( a_node, section.firstChild );
-		}
+		var sections = $('h2:has(span.editsection)');
+		sections.each(function(index, section) {
+			var editlink = $(section).find('span a');
+			var section_number = editlink.attr('href').substring(editlink.attr('href').indexOf('section='));
+			var closelink =  document.createElement( 'a' );
+			closelink.appendChild( document.createTextNode( '[close]' ) );
+			closelink.setAttribute('class', 'twinkle-closer-link twinkle-closer-link-afc');
+			closelink.style.color = '#449922';
+			closelink.setAttribute( 'href', 'javascript:Twinkle.closer.actions.afc("' + section_number + '")' );
+			section.insertBefore( closelink, section.firstChild );
+		});
 		break;
 	case 'afd':
-		var sections = document.evaluate( '//h3[span/@class="editsection"]', document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
-		for( var i = 0; i < sections.snapshotLength; ++i ) {
-			var section = sections.snapshotItem(i);
-			var section_number = document.evaluate( 'substring-after(span/a/@href, "section=")', section, null, XPathResult.STRING_TYPE, null ).stringValue;
-			var page = document.evaluate( 'span/a/@title', section, null, XPathResult.STRING_TYPE, null ).stringValue;
-			var a_node = document.createElement( 'a' );
-			a_node.appendChild( document.createTextNode( '[close]' ) );
-			a_node.style.fontWeight = 'bold';
-			a_node.style.color = '#449922';
-			a_node.setAttribute( 'href', 'javascript:twinklecloser.actions.afd("' + section_number + '", "' + page + '")' );
-
-			section.insertBefore( a_node, section.firstChild );
-		}
+		var sections = $('h3:has(span.editsection)');
+		sections.each(function(index, section) {
+			var editlink = $(section).find('span a');
+			var section_number = editlink.attr('href').substring(editlink.attr('href').indexOf('section='));
+			var page = editlink.attr('title');
+			var closelink =  document.createElement( 'a' );
+			closelink.appendChild( document.createTextNode( '[close]' ) );
+			closelink.setAttribute('class', 'twinkle-closer-link twinkle-closer-link-afd');
+			closelink.style.color = '#449922';
+			closelink.setAttribute( 'href', 'javascript:Twinkle.closer.actions.afd("' + section_number + '", "' + page + '")' );
+			section.insertBefore( closelink, section.firstChild );
+		});
 		break;
-
 	}
 }
 
-twinklecloser.actions = {
+Twinkle.closer.actions = {
 	afc: function twinklecloserActionsAfc( section ) {
 		var Window = new SimpleWindow( 800, 400 );
 		Window.setTitle( "Close AFC" );
@@ -66,12 +63,12 @@ twinklecloser.actions = {
 		Window.addFooterLink( "AFC reviewing instructions", "WP:AFCR" );
 		Window.addFooterLink( "Twinkle help", "WP:TW/DOC#closer-afc" );
 
-		var form = new QuickForm( twinklecloser.callbacks.afc.evaluate );
+		var form = new QuickForm( Twinkle.closer.callbacks.afc.evaluate );
 		form.append ( {
 				label: 'Action: ',
 				type: 'select',
 				name: 'type',
-				event: twinklecloser.callbacks.afc.submenu,
+				event: Twinkle.closer.callbacks.afc.submenu,
 				list: [
 					{
 						label: 'Approved',
@@ -101,6 +98,8 @@ twinklecloser.actions = {
 				name: 'page',
 				value: page
 			} );
+		form.append( { type:'submit' } );
+
 		var result = form.render();
 		Window.setContent( result );
 		Window.display();
@@ -117,7 +116,7 @@ twinklecloser.actions = {
 		Window.addFooterLink( "AFD closing instructions", "Wikipedia:Articles for deletion/Administrator instructions" );
 		Window.addFooterLink( "Twinkle help", "WP:TW/DOC#closer-afd" );
 
-		var form = new QuickForm( twinklecloser.callbacks.afd.evaluate );
+		var form = new QuickForm( Twinkle.closer.callbacks.afd.evaluate );
 		form.append ( {
 				label: 'Action: ',
 				type: 'radio',
@@ -192,13 +191,14 @@ twinklecloser.actions = {
 				name: 'page',
 				value: page
 			} );
+		form.append( { type:'submit' } );
 		var result = form.render();
 		Window.setContent( result );
 		Window.display();
 	}
 }
 
-twinklecloser.callbacks = {
+Twinkle.closer.callbacks = {
 	afc: {
 		submenu: function(e) {
 			var value = e.target.value;
@@ -222,7 +222,7 @@ twinklecloser.callbacks = {
 							}
 						]
 					} );
-				work_area.append( { type:'submit' } );
+				
 				work_area = work_area.render();
 				old_area.parentNode.replaceChild( work_area, old_area );
 				break;
@@ -238,7 +238,7 @@ twinklecloser.callbacks = {
 						label: 'Article ',
 						tooltop: 'Leave empty if article was created as specified'
 					} );
-				work_area.append( { type:'submit' } );
+				
 				work_area = work_area.render();
 				old_area.parentNode.replaceChild( work_area, old_area );
 				break;
@@ -315,7 +315,6 @@ twinklecloser.callbacks = {
 							}
 						]
 					} );
-				work_area.append( { type:'submit' } );
 				work_area = work_area.render();
 				old_area.parentNode.replaceChild( work_area, old_area );
 				break;
@@ -350,7 +349,7 @@ twinklecloser.callbacks = {
 				'action': 'submit',
 				'section': section
 			};
-			wikipedia_wiki = new Wikipedia.wiki( 'Processing', query, twinklecloser.callbacks.afc.edit );
+			wikipedia_wiki = new Wikipedia.wiki( 'Processing', query, Twinkle.closer.callbacks.afc.edit );
 			wikipedia_wiki.params = params;
 			wikipedia_wiki.get();
 
@@ -430,7 +429,7 @@ twinklecloser.callbacks = {
 				break;
 
 			}
-			work_area.append( { type:'submit' } );
+			
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild( work_area, old_area );
 		},
@@ -477,7 +476,7 @@ twinklecloser.callbacks = {
 						'bltitle': affected_page,
 						'bllimit': 5000
 					};
-					var wikipedia_api = new Wikipedia.api( 'Grabbing redirects', query, twinklecloser.callbacks.afd.deleteRedirectsMain );
+					var wikipedia_api = new Wikipedia.api( 'Grabbing redirects', query, Twinkle.closer.callbacks.afd.deleteRedirectsMain );
 					wikipedia_api.params = params;
 					wikipedia_api.post();
 					// and now, delete!
@@ -486,7 +485,7 @@ twinklecloser.callbacks = {
 						'action': 'delete'
 					};
 
-					var wikipedia_wiki = new Wikipedia.wiki( 'Deleting page', query, twinklecloser.callbacks.afd.deletePage );
+					var wikipedia_wiki = new Wikipedia.wiki( 'Deleting page', query, Twinkle.closer.callbacks.afd.deletePage );
 					wikipedia_wiki.params = params;
 					wikipedia_wiki.followRedirect = false;
 					wikipedia_wiki.get();
@@ -499,7 +498,7 @@ twinklecloser.callbacks = {
 				'action': 'submit',
 				'section': section
 			};
-			wikipedia_wiki = new Wikipedia.wiki( 'Processing', query, twinklecloser.callbacks.afd.edit );
+			wikipedia_wiki = new Wikipedia.wiki( 'Processing', query, Twinkle.closer.callbacks.afd.edit );
 			wikipedia_wiki.params = params;
 			wikipedia_wiki.get();
 		},
@@ -550,7 +549,7 @@ twinklecloser.callbacks = {
 					'title': title,
 					'action': 'delete'
 				}
-				var wikipedia_wiki = new Wikipedia.wiki( "Deleting " + title, query, twinklecloser.callbacks.afd.deleteRedirects );
+				var wikipedia_wiki = new Wikipedia.wiki( "Deleting " + title, query, Twinkle.closer.callbacks.afd.deleteRedirects );
 				wikipedia_wiki.params = params;
 				wikipedia_wiki.onloading = onloading;
 				wikipedia_wiki.onloaded = onloaded;

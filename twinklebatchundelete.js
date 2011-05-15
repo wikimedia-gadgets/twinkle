@@ -8,18 +8,18 @@
  */
 
 
-function twinklebatchundelete() {
+Twinkle.batchundelete = function twinklebatchundelete() {
 	if( wgNamespaceNumber != Namespace.USER ) {
 		return;
 	}
 	if( userIsInGroup( 'sysop' ) ) {
-		twAddPortletLink( "javascript:twinklebatchundelete.callback()", "Und-batch", "tw-batch-undel", "Undelete 'em all", "");
+		twAddPortletLink( "javascript:Twinkle.batchundelete.callback()", "Und-batch", "tw-batch-undel", "Undelete 'em all", "");
 	}
 }
 
-twinklebatchundelete.callback = function twinklebatchundeleteCallback() {
+Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	var Window = new SimpleWindow( 800, 400 );
-	var form = new QuickForm( twinklebatchundelete.callback.evaluate );
+	var form = new QuickForm( Twinkle.batchundelete.callback.evaluate );
 	form.append( {
 			type: 'textarea',
 			name: 'reason',
@@ -61,9 +61,9 @@ twinklebatchundelete.callback = function twinklebatchundeleteCallback() {
 	Window.setContent( root );
 	Window.display();
 }
-twinklebatchundelete.currentUndeleteCounter = 0;
-twinklebatchundelete.currentundeleteor;
-twinklebatchundelete.callback.evaluate = function( event ) {
+Twinkle.batchundelete.currentUndeleteCounter = 0;
+Twinkle.batchundelete.currentundeletor = 0;
+Twinkle.batchundelete.callback.evaluate = function( event ) {
 	Wikipedia.actionCompleted.notice = 'Status';
 	Wikipedia.actionCompleted.postfix = 'batch undeletion is now completed';
 
@@ -81,19 +81,19 @@ twinklebatchundelete.callback.evaluate = function( event ) {
 
 	var work = pages.chunk( TwinkleConfig.batchUndeleteChunks );
 	Wikipedia.addCheckpoint();
-	twinklebatchundelete.currentundeleteor = window.setInterval( twinklebatchundelete.callbacks.main, 1000, work, reason );
+	Twinkle.batchundelete.currentundeletor = window.setInterval( Twinkle.batchundelete.callbacks.main, 1000, work, reason );
 }
 
-twinklebatchundelete.callbacks = {
-	main: function( work, reason ) 	{
-		if( work.length == 0 && twinklebatchundelete.currentUndeleteCounter <= 0 ) {
+Twinkle.batchundelete.callbacks = {
+	main: function( work, reason ) {
+		if( work.length == 0 && Twinkle.batchundelete.currentUndeleteCounter <= 0 ) {
 			Status.info( 'work done' );
-			window.clearInterval( twinklebatchundelete.currentundeleteor );
+			window.clearInterval( Twinkle.batchundelete.currentundeletor );
 			Wikipedia.removeCheckpoint();
 			return;
-		} else if( work.length != 0 && twinklebatchundelete.currentUndeleteCounter <= TwinkleConfig.batchUndeleteMinCutOff ) {
+		} else if( work.length != 0 && Twinkle.batchundelete.currentUndeleteCounter <= TwinkleConfig.batchUndeleteMinCutOff ) {
 			var pages = work.shift();
-			twinklebatchundelete.currentUndeleteCounter += pages.length;
+			Twinkle.batchundelete.currentUndeleteCounter += pages.length;
 			for( var i = 0; i < pages.length; ++i ) {
 				var title = pages[i];
 				var query = { 
@@ -101,8 +101,8 @@ twinklebatchundelete.callbacks = {
 					'target': title,
 					'action': 'submit'
 				};
-				var wikipedia_wiki = new Wikipedia.wiki( "Undeleting " + title, query, twinklebatchundelete.callbacks.undeletePage, function( self ) { 
-						--twinklebatchundelete.currentUndeleteCounter;
+				var wikipedia_wiki = new Wikipedia.wiki( "Undeleting " + title, query, Twinkle.batchundelete.callbacks.undeletePage, function( self ) { 
+						--Twinkle.batchundelete.currentUndeleteCounter;
 						var link = document.createElement( 'a' );
 						link.setAttribute( 'href', wgArticlePath.replace( '$1', self.params.title ) );
 						link.setAttribute( 'title', self.params.title );

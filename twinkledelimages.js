@@ -7,21 +7,21 @@
  * Config directives in:   TwinkleConfig
  */
 
-function twinkledeli() {
-	if( wgNamespaceNumber < 0 || wgCurRevisionId == false ) {
+Twinkle.delimages = function twinkledeli() {
+	if( wgNamespaceNumber < 0 || wgCurRevisionId === false ) {
 		return;
 	}
 	if( userIsInGroup( 'sysop' ) ) {
-		twAddPortletLink( "javascript:twinkledeli.callback()", "Deli-batch", "tw-deli", "Delete file found on page", "");
+		twAddPortletLink( "javascript:Twinkle.delimages.callback()", "Deli-batch", "tw-deli", "Delete file found on page", "");
 	}
 }
 
-twinkledeli.unlinkCache = {};
-twinkledeli.callback = function twinklesdeliCallback() {
+Twinkle.delimages.unlinkCache = {};
+Twinkle.delimages.callback = function twinkledeliCallback() {
 	var Window = new SimpleWindow( 800, 400 );
 	Window.setTitle( "Batch file deletion" );
 
-	var form = new QuickForm( twinkledeli.callback.evaluate );
+	var form = new QuickForm( Twinkle.delimages.callback.evaluate );
 	form.append( {
 			type: 'checkbox',
 			list: [
@@ -99,10 +99,10 @@ twinkledeli.callback = function twinklesdeliCallback() {
 	Window.display();
 }
 
-twinkledeli.currentDeleteCounter = 0;
-twinkledeli.currentUnlinkCounter = 0;
-twinkledeli.currentdeletor;
-twinkledeli.callback.evaluate = function twinkledeliCallbackEvaluate(event) {
+Twinkle.delimages.currentDeleteCounter = 0;
+Twinkle.delimages.currentUnlinkCounter = 0;
+Twinkle.delimages.currentdeletor = 0;
+Twinkle.delimages.callback.evaluate = function twinkledeliCallbackEvaluate(event) {
 	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
 	var images = event.target.getChecked( 'images' );
 	var reason = event.target.reason.value;
@@ -113,22 +113,22 @@ twinkledeli.callback.evaluate = function twinkledeliCallbackEvaluate(event) {
 	}
 	Status.init( event.target );
 	function toCall( work ) {
-		if( work.length == 0 && twinkledeli.currentDeleteCounter <= 0 && twinkledeli.currentUnlinkCounter <= 0 ) {
+		if( work.length == 0 && Twinkle.delimages.currentDeleteCounter <= 0 && Twinkle.delimages.currentUnlinkCounter <= 0 ) {
 			Status.info( 'work done' );
-			window.clearInterval( twinkledeli.currentdeletor );
+			window.clearInterval( Twinkle.delimages.currentdeletor );
 			Wikipedia.removeCheckpoint();
 			return;
-		} else if( twinkledeli.currentDeleteCounter <= 0 && twinkledeli.currentUnlinkCounter <= 0 ) {
-			twinkledeli.unlinkCache = []; // Clear the cache
+		} else if( Twinkle.delimages.currentDeleteCounter <= 0 && Twinkle.delimages.currentUnlinkCounter <= 0 ) {
+			Twinkle.delimages.unlinkCache = []; // Clear the cache
 			var images = work.shift();
-			twinkledeli.currentDeleteCounter = images.length; // can be less than the number of elements in deliChunks
+			Twinkle.delimages.currentDeleteCounter = images.length; // can be less than the number of elements in deliChunks
 			for( var i = 0; i < images.length; ++i ) {
 				var image = images[i];
 				var query = {
 					'action': 'query',
 					'titles': image
 				}
-				var wikipedia_api = new Wikipedia.api( 'Checking if file ' + image + ' exists', query, twinkledeli.callbacks.main );
+				var wikipedia_api = new Wikipedia.api( 'Checking if file ' + image + ' exists', query, Twinkle.delimages.callbacks.main );
 				wikipedia_api.params = { image:image, reason:reason, unlink_image:unlink_image, delete_image:delete_image };
 				wikipedia_api.post();
 			}
@@ -136,9 +136,9 @@ twinkledeli.callback.evaluate = function twinkledeliCallbackEvaluate(event) {
 	}
 	var work = images.chunk( TwinkleConfig.deliChunks );
 	Wikipedia.addCheckpoint();
-	twinkledeli.currentdeletor = window.setInterval( toCall, 1000, work );
+	Twinkle.delimages.currentdeletor = window.setInterval( toCall, 1000, work );
 }
-twinkledeli.callbacks = {
+Twinkle.delimages.callbacks = {
 	main: function( self ) {
 		var xmlDoc = self.responseXML;
 		var normal = xmlDoc.evaluate( '//normalized/n/@to', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
@@ -158,7 +158,7 @@ twinkledeli.callbacks = {
 				'titles': self.params.image,
 				'iulimit': userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
 			};
-			var wikipedia_api = new Wikipedia.api( 'Grabbing file links', query, twinkledeli.callbacks.unlinkImageInstancesMain );
+			var wikipedia_api = new Wikipedia.api( 'Grabbing file links', query, Twinkle.delimages.callbacks.unlinkImageInstancesMain );
 			wikipedia_api.params = self.params;
 			wikipedia_api.post();
 		}
@@ -167,8 +167,8 @@ twinkledeli.callbacks = {
 				'title': self.params.image, 
 				'action': 'delete'
 			};
-			var wikipedia_wiki = new Wikipedia.wiki( 'Deleting file ' + self.params.image, query, twinkledeli.callbacks.deleteImage, function( self ) { 
-					--twinkledeli.currentDeleteCounter;
+			var wikipedia_wiki = new Wikipedia.wiki( 'Deleting file ' + self.params.image, query, Twinkle.delimages.callbacks.deleteImage, function( self ) { 
+					--Twinkle.delimages.currentDeleteCounter;
 					var link = document.createElement( 'a' );
 					link.setAttribute( 'href', wgArticlePath.replace( '$1', self.query['title'] ) );
 					link.setAttribute( 'title', self.query['title'] );
@@ -250,7 +250,7 @@ twinkledeli.callbacks = {
 				'title': title,
 				'action': 'submit'
 			}
-			var wikipedia_wiki = new Wikipedia.wiki( "Unlinking on " + title, query, twinkledeli.callbacks.unlinkImageInstances );
+			var wikipedia_wiki = new Wikipedia.wiki( "Unlinking on " + title, query, Twinkle.delimages.callbacks.unlinkImageInstances );
 			var params = clone( self.params );
 			params.title = title;
 
@@ -266,8 +266,8 @@ twinkledeli.callbacks = {
 		var form = self.responseXML.getElementById('editform');
 		var text;
 
-		if( self.params.title in twinkledeli.unlinkCache ) {
-			text = twinkledeli.unlinkCache[ self.params.title ];
+		if( self.params.title in Twinkle.delimages.unlinkCache ) {
+			text = Twinkle.delimages.unlinkCache[ self.params.title ];
 		} else {
 			text = form.wpTextbox1.value;
 		}
@@ -276,7 +276,7 @@ twinkledeli.callbacks = {
 		wikiPage.commentOutImage( image , 'Commented out because image was deleted' );
 
 		text = wikiPage.getText();
-		twinkledeli.unlinkCache[ self.params.title ] = text;
+		Twinkle.delimages.unlinkCache[ self.params.title ] = text;
 		if( text == old_text ) {
 			// Nothing to do, return
 			self.onsuccess( self );

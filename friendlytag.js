@@ -7,26 +7,26 @@
  * Config directives in:   FriendlyConfig
  */
 
-function friendlytag() {
+Twinkle.tag = function friendlytag() {
 	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) == 'no' && $("span.redirectText").length > 0 ) {
-		friendlytag.isRedirect = true;
-		twAddPortletLink( "javascript:friendlytag.callback()", "Tag", "friendly-tag", "Tag redirect", "");
+		Twinkle.tag.isRedirect = true;
+		twAddPortletLink( "javascript:Twinkle.tag.callback()", "Tag", "friendly-tag", "Tag redirect", "");
 	} else if( wgNamespaceNumber != 0 || wgCurRevisionId == false ) {
 		return;
 	} else {
-		twAddPortletLink( "javascript:friendlytag.callback()", "Tag", "friendly-tag", "Tag article", "");
+		twAddPortletLink( "javascript:Twinkle.tag.callback()", "Tag", "friendly-tag", "Tag article", "");
 	}
 }
 
-friendlytag.callback = function friendlytagCallback( uid ) {
+Twinkle.tag.callback = function friendlytagCallback( uid ) {
 	var Window = new SimpleWindow( 630, 400 );
 	Window.setScriptName( "Twinkle" );
 	// anyone got a good policy/guideline/info page/instructional page link??
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#tag" );
 
-	var form = new QuickForm( friendlytag.callback.evaluate );
+	var form = new QuickForm( Twinkle.tag.callback.evaluate );
 
-	if( !friendlytag.isRedirect ) {
+	if( !Twinkle.tag.isRedirect ) {
 		Window.setTitle( "Article maintenance tagging" );
 
 		form.append( {
@@ -44,13 +44,13 @@ friendlytag.callback = function friendlytagCallback( uid ) {
 		);
 
 		form.append( { type:'header', label:'Maintenance templates' } );
-		form.append( { type:'checkbox', name: 'maintenance', list: friendlytag.maintenanceList } );
+		form.append( { type:'checkbox', name: 'maintenance', list: Twinkle.tag.maintenanceList } );
 
 		form.append( { type:'header', label:'Problem templates' } );
-		form.append( { type:'checkbox', name: 'problem', list: friendlytag.problemList } );
+		form.append( { type:'checkbox', name: 'problem', list: Twinkle.tag.problemList } );
 
 		form.append( { type:'header', label:'Notice templates' } );
-		form.append( { type:'checkbox', name: 'notice', list: friendlytag.noticeList } );
+		form.append( { type:'checkbox', name: 'notice', list: Twinkle.tag.noticeList } );
 
 		if( typeof( FriendlyConfig.customTagList ) == 'object' ) {
 			form.append( { type:'header', label:'Custom templates' } );
@@ -60,13 +60,13 @@ friendlytag.callback = function friendlytagCallback( uid ) {
 		Window.setTitle( "Redirect tagging" );
 
 		form.append( { type:'header', label:'Spelling, misspelling, tense and capitalization templates' } );
-		form.append( { type:'checkbox', name: 'spelling', list: friendlytag.spellingList } );
+		form.append( { type:'checkbox', name: 'spelling', list: Twinkle.tag.spellingList } );
 
 		form.append( { type:'header', label:'Alternative name templates' } );
-		form.append( { type:'checkbox', name: 'alternative', list: friendlytag.alternativeList } );
+		form.append( { type:'checkbox', name: 'alternative', list: Twinkle.tag.alternativeList } );
 
 		form.append( { type:'header', label:'Miscellaneous and administrative redirect templates' } );
-		form.append( { type:'checkbox', name: 'administrative', list: friendlytag.administrativeList } );
+		form.append( { type:'checkbox', name: 'administrative', list: Twinkle.tag.administrativeList } );
 	}
 
 	form.append( { type:'submit' } );
@@ -76,7 +76,7 @@ friendlytag.callback = function friendlytagCallback( uid ) {
 	Window.display();
 }
 
-friendlytag.maintenanceList = [
+Twinkle.tag.maintenanceList = [
 	{
 		label: '\{\{catimprove\}\}: article may require additional categories.',
 		value: 'catimprove'
@@ -204,7 +204,7 @@ friendlytag.maintenanceList = [
 ];
 
 
-friendlytag.problemList = [
+Twinkle.tag.problemList = [
 	{
 		label: '\{\{advert\}\}: article is written like an advertisement',
 		value: 'advert'
@@ -476,7 +476,7 @@ friendlytag.problemList = [
 	}
 ];
 
-friendlytag.noticeList = [
+Twinkle.tag.noticeList = [
 	{
 		label: '\{\{goceinuse\}\}: article is currently undergoing a major copy edit by the Guild of Copy Editors',
 		value: 'goceinuse' },
@@ -492,7 +492,7 @@ friendlytag.noticeList = [
 ];
 
 
-friendlytag.spellingList = [
+Twinkle.tag.spellingList = [
 	{
 		label: '\{\{R from abbreviation\}\}: redirect from a title with an abbreviation',
 		value: 'R from abbreviation' 
@@ -535,7 +535,7 @@ friendlytag.spellingList = [
 	}
 ];
 
-friendlytag.alternativeList = [
+Twinkle.tag.alternativeList = [
 	{
 		label: '\{\{R from alternative name\}\}: redirect from a title that is another name, a pseudonym, a nickname, or a synonym',
 		value: 'R from alternative name' 
@@ -578,7 +578,7 @@ friendlytag.alternativeList = [
 	}
 ];
 
-friendlytag.administrativeList = [
+Twinkle.tag.administrativeList = [
 	{
 		label: '\{\{R from merge\}\}: redirect from a merged page in order to preserve its edit history',
 		value: 'R from merge' 
@@ -614,7 +614,7 @@ friendlytag.administrativeList = [
 ];
 
 // Set to true if template can be grouped into {{articleissues}}
-friendlytag.groupHash = {
+Twinkle.tag.groupHash = {
 	'3O': true,
 	'advert': true,
 	'autobiography': true,
@@ -718,7 +718,7 @@ friendlytag.groupHash = {
 	'wikify': true
 }
 
-friendlytag.callbacks = {
+Twinkle.tag.callbacks = {
 	main: function( pageobj ) {
 		var params = pageobj.getCallbackParameters();
 		var tagRe, tagText = '', summaryText = 'Added';
@@ -727,12 +727,12 @@ friendlytag.callbacks = {
 		//Remove tags that become superfluous with this action
 		var pageText = pageobj.getPageText().replace(/{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
 
-		if( !friendlytag.isRedirect ) {
+		if( !Twinkle.tag.isRedirect ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
 			for( var i = 0; i < params.tags.length; i++ ) {
 				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im' );
 				if( !tagRe.exec( pageText ) ) {
-					if( friendlytag.groupHash[ params.tags[i] ] && 
+					if( Twinkle.tag.groupHash[ params.tags[i] ] && 
 							(params.tags[i] !== 'globalize' || params.globalizeSubcategory === 'globalize' ) &&
 							(params.tags[i] !== 'notability' || params.notabilitySubcategory === 'none' )) {
 						// don't add to multipleissues for globalize/notability subcats
@@ -789,7 +789,7 @@ friendlytag.callbacks = {
 				if( tags[i] == 'globalize' ) {
 					tagText += '\{\{' + params.globalizeSubcategory;
 				} else {
-					tagText += ( friendlytag.isRedirect ? '\n' : '' ) + '\{\{' + tags[i];
+					tagText += ( Twinkle.tag.isRedirect ? '\n' : '' ) + '\{\{' + tags[i];
 				}
 
 				if( tags[i] == 'notability' && params.notabilitySubcategory != 'none' ) {
@@ -839,7 +839,7 @@ friendlytag.callbacks = {
 						break;
 				}
 				
-				tagText += friendlytag.isRedirect ? '\}\}' : '|date=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}\}\}\n';
+				tagText += Twinkle.tag.isRedirect ? '\}\}' : '|date=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}\}\}\n';
 			}
 
 			if( i == (tags.length - 1) && ( i > 0 || groupableTags.length > 3 ) ) {
@@ -857,7 +857,7 @@ friendlytag.callbacks = {
 			summaryText += ']]\}\}';
 		}
 
-		if( friendlytag.isRedirect ) {
+		if( Twinkle.tag.isRedirect ) {
 			pageText += tagText;
 		} else {
 			// smartly insert the new tags after any hatnotes. Regex is a bit more
@@ -867,7 +867,7 @@ friendlytag.callbacks = {
 				"$1" + tagText);
 		}
 		summaryText += ' tag' + ( ( tags.length + ( groupableTags.length > 3 ? 1 : 0 ) ) > 1 ? 's' : '' ) +
-			' to ' + ( friendlytag.isRedirect ? 'redirect' : 'article' ) + TwinkleConfig.summaryAd;
+			' to ' + ( Twinkle.tag.isRedirect ? 'redirect' : 'article' ) + TwinkleConfig.summaryAd;
 
 		pageobj.setPageText(pageText);
 		pageobj.setEditSummary(summaryText);
@@ -882,9 +882,9 @@ friendlytag.callbacks = {
 	}
 }
 
-friendlytag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
+Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	var form = e.target;
-	if( friendlytag.isRedirect ) {
+	if( Twinkle.tag.isRedirect ) {
 		var tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
 	} else {
 		if( typeof( FriendlyConfig.customTagList ) == 'object' ) {
@@ -901,7 +901,7 @@ friendlytag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		alert( 'You must select at least one tag!' );
 		return;
 	}
-	if( !friendlytag.isRedirect ) {
+	if( !Twinkle.tag.isRedirect ) {
 		params = {
 			tags: tags,
 			group: form.group.checked,
@@ -919,11 +919,11 @@ friendlytag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	Wikipedia.actionCompleted.redirect = wgPageName;
 	Wikipedia.actionCompleted.notice = "Tagging complete, reloading article in a few seconds";
-	if (friendlytag.isRedirect) {
+	if (Twinkle.tag.isRedirect) {
 		Wikipedia.actionCompleted.followRedirect = false;
 	}
 
-	var wikipedia_page = new Wikipedia.page(wgPageName, friendlytag.isRedirect ? "Tagging redirect" : "Tagging article");
+	var wikipedia_page = new Wikipedia.page(wgPageName, Twinkle.tag.isRedirect ? "Tagging redirect" : "Tagging article");
 	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.load(friendlytag.callbacks.main);
+	wikipedia_page.load(Twinkle.tag.callbacks.main);
 }

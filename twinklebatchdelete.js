@@ -8,20 +8,20 @@
  */
 
 
-function twinklebatchdelete() {
-	if( userIsInGroup( 'sysop' ) && (wgNamespaceNumber > 0 || wgCanonicalSpecialPageName == 'Prefixindex') ) {
-		twAddPortletLink( "javascript:twinklebatchdelete.callback()", "D-batch", "tw-batch", "Delete pages found in this category/on this page", "");
+Twinkle.batchdelete = function twinklebatchdelete() {
+	if( userIsInGroup( 'sysop' ) && (wgNamespaceNumber > 0 || wgCanonicalSpecialPageName === 'Prefixindex') ) {
+		twAddPortletLink( "javascript:Twinkle.batchdelete.callback()", "D-batch", "tw-batch", "Delete pages found in this category/on this page", "");
 	}
 }
 
-twinklebatchdelete.unlinkCache = {};
-twinklebatchdelete.callback = function twinklesbatchdeleteCallback() {
+Twinkle.batchdelete.unlinkCache = {};
+Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	var Window = new SimpleWindow( 800, 400 );
 	Window.setTitle( "Batch deletion" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#batchdelete" );
 
-	var form = new QuickForm( twinklebatchdelete.callback.evaluate );
+	var form = new QuickForm( Twinkle.batchdelete.callback.evaluate );
 	form.append( {
 			type: 'checkbox',
 			list: [
@@ -50,7 +50,7 @@ twinklebatchdelete.callback = function twinklesbatchdeleteCallback() {
 			name: 'reason',
 			label: 'Reason: '
 		} );
-	if( wgNamespaceNumber == Namespace.CATEGORY ) {
+	if( wgNamespaceNumber === Namespace.CATEGORY ) {
 
 		var query = {
 			'action': 'query',
@@ -60,7 +60,7 @@ twinklebatchdelete.callback = function twinklesbatchdeleteCallback() {
 			'prop': [ 'categories', 'revisions' ],
 			'rvprop': [ 'size' ]
 		};
-	} else if( wgCanonicalSpecialPageName == 'Prefixindex' ) {
+	} else if( wgCanonicalSpecialPageName === 'Prefixindex' ) {
 
 		if(QueryString.exists( 'from' ) )
 		{
@@ -75,7 +75,7 @@ twinklebatchdelete.callback = function twinklesbatchdeleteCallback() {
 			var gapnamespace = Namespace[titleSplit[0].toUpperCase()];
 			if ( titleSplit.length<2 || typeof(gapnamespace)=='undefined' )
 			{
-				var gapnamespace = Namespace.MAIN;
+				gapnamespace = Namespace.MAIN;
 				var gapprefix = pathSplit.splice(3).join('/');
 			}
 			else
@@ -140,10 +140,10 @@ twinklebatchdelete.callback = function twinklesbatchdeleteCallback() {
 	Window.display();
 }
 
-twinklebatchdelete.currentDeleteCounter = 0;
-twinklebatchdelete.currentUnlinkCounter = 0;
-twinklebatchdelete.currentdeletor;
-twinklebatchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvaluate(event) {
+Twinkle.batchdelete.currentDeleteCounter = 0;
+Twinkle.batchdelete.currentUnlinkCounter = 0;
+Twinkle.batchdelete.currentdeletor = 0;
+Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvaluate(event) {
 	Wikipedia.actionCompleted.notice = 'Status';
 	Wikipedia.actionCompleted.postfix = 'batch deletion is now complete';
 	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
@@ -163,22 +163,22 @@ twinklebatchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalua
 	}
 
 	function toCall( work ) {
-		if( work.length == 0 &&  twinklebatchdelete.currentDeleteCounter <= 0 && twinklebatchdelete.currentUnlinkCounter <= 0 ) {
-			window.clearInterval( twinklebatchdelete.currentdeletor );
+		if( work.length === 0 &&  Twinkle.batchdelete.currentDeleteCounter <= 0 && Twinkle.batchdelete.currentUnlinkCounter <= 0 ) {
+			window.clearInterval( Twinkle.batchdelete.currentdeletor );
 			Wikipedia.removeCheckpoint();
 			return;
-		} else if( work.length != 0 && ( twinklebatchdelete.currentDeleteCounter <= TwinkleConfig.batchDeleteMinCutOff || twinklebatchdelete.currentUnlinkCounter <= TwinkleConfig.batchDeleteMinCutOff  ) ) {
-			twinklebatchdelete.unlinkCache = []; // Clear the cache
+		} else if( work.length !== 0 && ( Twinkle.batchdelete.currentDeleteCounter <= TwinkleConfig.batchDeleteMinCutOff || Twinkle.batchdelete.currentUnlinkCounter <= TwinkleConfig.batchDeleteMinCutOff  ) ) {
+			Twinkle.batchdelete.unlinkCache = []; // Clear the cache
 			var pages = work.shift();
-			twinklebatchdelete.currentDeleteCounter += pages.length;
-			twinklebatchdelete.currentUnlinkCounter += pages.length;
+			Twinkle.batchdelete.currentDeleteCounter += pages.length;
+			Twinkle.batchdelete.currentUnlinkCounter += pages.length;
 			for( var i = 0; i < pages.length; ++i ) {
 				var page = pages[i];
 				var query = {
 					'action': 'query',
 					'titles': page
 				}
-				var wikipedia_api = new Wikipedia.api( 'Checking if page ' + page + ' exists', query, twinklebatchdelete.callbacks.main );
+				var wikipedia_api = new Wikipedia.api( 'Checking if page ' + page + ' exists', query, Twinkle.batchdelete.callbacks.main );
 				wikipedia_api.params = { page:page, reason:reason, unlink_page:unlink_page, delete_page:delete_page, delete_redirects:delete_redirects };
 				wikipedia_api.post();
 			}
@@ -186,9 +186,10 @@ twinklebatchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalua
 	}
 	var work = pages.chunk( TwinkleConfig.batchdeleteChunks );
 	Wikipedia.addCheckpoint();
-	twinklebatchdelete.currentdeletor = window.setInterval( toCall, 1000, work );
+	Twinkle.batchdelete.currentdeletor = window.setInterval( toCall, 1000, work );
 }
-twinklebatchdelete.callbacks = {
+
+Twinkle.batchdelete.callbacks = {
 	main: function( self ) {
 		var xmlDoc = self.responseXML;
 		var normal = xmlDoc.evaluate( '//normalized/n/@to', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
@@ -210,11 +211,11 @@ twinklebatchdelete.callbacks = {
 				'bltitle': self.params.page,
 				'bllimit': userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
 			};
-			var wikipedia_api = new Wikipedia.api( 'Grabbing backlinks', query, twinklebatchdelete.callbacks.unlinkBacklinksMain );
+			var wikipedia_api = new Wikipedia.api( 'Grabbing backlinks', query, Twinkle.batchdelete.callbacks.unlinkBacklinksMain );
 			wikipedia_api.params = self.params;
 			wikipedia_api.post();
 		} else {
-			--twinklebatchdelete.currentUnlinkCounter;
+			--Twinkle.batchdelete.currentUnlinkCounter;
 		}
 		if( self.params.delete_page ) {
 			if (self.params.delete_redirects)
@@ -226,7 +227,7 @@ twinklebatchdelete.callbacks = {
 					'bltitle': self.params.page,
 					'bllimit': userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
 				};
-				var wikipedia_api = new Wikipedia.api( 'Grabbing backlinks', query, twinklebatchdelete.callbacks.deleteRedirectsMain );
+				var wikipedia_api = new Wikipedia.api( 'Grabbing backlinks', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain );
 				wikipedia_api.params = self.params;
 				wikipedia_api.post();
 			}
@@ -234,7 +235,7 @@ twinklebatchdelete.callbacks = {
 			var wikipedia_page = new Wikipedia.page( self.params.page, 'Deleting page ' + self.params.page );
 			wikipedia_page.setEditSummary(self.params.reason + TwinkleConfig.deletionSummaryAd);
 			wikipedia_page.deletePage(function( apiobj ) { 
-					--twinklebatchdelete.currentDeleteCounter;
+					--Twinkle.batchdelete.currentDeleteCounter;
 					var link = document.createElement( 'a' );
 					link.setAttribute( 'href', wgArticlePath.replace( '$1', self.params.page ) );
 					link.setAttribute( 'title', self.params.page );
@@ -243,7 +244,7 @@ twinklebatchdelete.callbacks = {
 
 				} );	
 		} else {
-			--twinklebatchdelete.currentDeleteCounter;
+			--Twinkle.batchdelete.currentDeleteCounter;
 		}
 	},
 	deleteRedirectsMain: function( self ) {
@@ -252,7 +253,7 @@ twinklebatchdelete.callbacks = {
 
 		var total = snapshot.snapshotLength;
 
-		if( snapshot.snapshotLength == 0 ) {
+		if( snapshot.snapshotLength === 0 ) {
 			return;
 		}
 
@@ -272,7 +273,7 @@ twinklebatchdelete.callbacks = {
 
 
 		Wikipedia.addCheckpoint();
-		if( snapshot.snapshotLength == 0 ) {
+		if( snapshot.snapshotLength === 0 ) {
 			statusIndicator.info( '100% (completed)' );
 			Wikipedia.removeCheckpoint();
 			return;
@@ -296,8 +297,8 @@ twinklebatchdelete.callbacks = {
 		var xmlDoc = self.responseXML;
 		var snapshot = xmlDoc.evaluate('//backlinks/bl/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
 
-		if( snapshot.snapshotLength == 0 ) {
-			--twinklebatchdelete.currentUnlinkCounter;
+		if( snapshot.snapshotLength === 0 ) {
+			--Twinkle.batchdelete.currentUnlinkCounter;
 			return;
 		}
 
@@ -313,15 +314,15 @@ twinklebatchdelete.callbacks = {
 			self.statelem.unlink();
 			if( self.params.current >= total ) {
 				obj.info( now + ' (completed)' );
-				--twinklebatchdelete.currentUnlinkCounter;
+				--Twinkle.batchdelete.currentUnlinkCounter;
 				Wikipedia.removeCheckpoint();
 			}
 		}
 
 		Wikipedia.addCheckpoint();
-		if( snapshot.snapshotLength == 0 ) {
+		if( snapshot.snapshotLength === 0 ) {
 			statusIndicator.info( '100% (completed)' );
-			--twinklebatchdelete.currentUnlinkCounter;
+			--Twinkle.batchdelete.currentUnlinkCounter;
 			Wikipedia.removeCheckpoint();
 			return;
 		}
@@ -336,7 +337,7 @@ twinklebatchdelete.callbacks = {
 			params.title = title;
 			params.onsuccess = onsuccess;
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(twinklebatchdelete.callbacks.unlinkBacklinks);
+			wikipedia_page.load(Twinkle.batchdelete.callbacks.unlinkBacklinks);
 		}
 	},
 	unlinkBacklinks: function( pageobj ) {
@@ -349,8 +350,8 @@ twinklebatchdelete.callbacks = {
 		}
 		var text;
 
-		if( params.title in twinklebatchdelete.unlinkCache ) {
-			text = twinklebatchdelete.unlinkCache[ params.title ];
+		if( params.title in Twinkle.batchdelete.unlinkCache ) {
+			text = Twinkle.batchdelete.unlinkCache[ params.title ];
 		} else {
 			text = pageobj.getPageText();
 		}
@@ -359,8 +360,8 @@ twinklebatchdelete.callbacks = {
 		wikiPage.removeLink( params.page );
 
 		text = wikiPage.getText();
-		twinklebatchdelete.unlinkCache[ params.title ] = text;
-		if( text == old_text ) {
+		Twinkle.batchdelete.unlinkCache[ params.title ] = text;
+		if( text === old_text ) {
 			// Nothing to do, return
 			params.onsuccess( { params: params, statelem: pageobj.getStatusElement() } );
 			Wikipedia.actionCompleted();

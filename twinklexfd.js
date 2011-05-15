@@ -7,7 +7,7 @@
  * Config directives in:   TwinkleConfig
  */
 
-function twinklexfd() {
+Twinkle.xfd = function twinklexfd() {
 	// Disable on:
 	// * special pages
 	// * non-existent pages
@@ -17,7 +17,7 @@ function twinklexfd() {
 		return;
 	}
 	if (twinkleUserAuthorized) {
-		twAddPortletLink( "javascript:twinklexfd.callback()", "XFD", "tw-xfd", "Anything for deletion", "");
+		twAddPortletLink( "javascript:Twinkle.xfd.callback()", "XFD", "tw-xfd", "Anything for deletion", "");
 	} else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'XFD', 'tw-xfd', 'Anything for deletion', '');
 	}
@@ -32,7 +32,7 @@ function num2order( num ) {
 	}
 }
 
-twinklexfd.callback = function twinklexfdCallback() {
+Twinkle.xfd.callback = function twinklexfdCallback() {
 
 	var Window = new SimpleWindow( 600, 350 );
 	Window.setTitle( "Nominate for deletion (XfD)" );
@@ -40,13 +40,13 @@ twinklexfd.callback = function twinklexfdCallback() {
 	Window.addFooterLink( "About deletion discussions", "WP:XFD" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#xfd" );
 
-	var form = new QuickForm( twinklexfd.callback.evaluate );
+	var form = new QuickForm( Twinkle.xfd.callback.evaluate );
 	var categories = form.append( {
 			type: 'select',
 			name: 'category',
 			label: 'Deletion discussion venue:',
 			tooltip: 'When activated, a default choice is made, based on what namespace you are in. This default should be the most appropriate',
-			event: twinklexfd.callback.change_category
+			event: Twinkle.xfd.callback.change_category
 		} );
 	categories.append( {
 			type: 'option',
@@ -120,7 +120,7 @@ twinklexfd.callback = function twinklexfdCallback() {
 	result.category.dispatchEvent( evt );
 }
 
-twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(e) {
+Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory(e) {
 	var value = e.target.value;
 	var root = e.target.form;
 	var old_area;
@@ -354,7 +354,7 @@ twinklexfd.callback.change_category = function twinklexfdCallbackChangeCategory(
 	}
 }
 
-twinklexfd.callbacks = {
+Twinkle.xfd.callbacks = {
 	afd: {
 		main: function(apiobj) {
 			var xmlDoc = apiobj.responseXML;
@@ -403,7 +403,7 @@ twinklexfd.callbacks = {
 			var wikipedia_page = new Wikipedia.page(wgPageName, "Adding deletion tag to article");
 			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the article is moved, we would want to follow the redirect
 			wikipedia_page.setCallbackParameters(apiobj.params);
-			wikipedia_page.load(twinklexfd.callbacks.afd.taggingArticle);
+			wikipedia_page.load(Twinkle.xfd.callbacks.afd.taggingArticle);
 		},
 		// Tagging needs to happen before everything else: this means we can check if there is an AfD tag already on the page
 		taggingArticle: function(pageobj) {
@@ -428,7 +428,7 @@ twinklexfd.callbacks = {
 			// Starting discussion page
 			var wikipedia_page = new Wikipedia.page(params.discussionpage, "Creating article deletion discussion page");
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(twinklexfd.callbacks.afd.discussionPage);
+			wikipedia_page.load(Twinkle.xfd.callbacks.afd.discussionPage);
 
 			// Today's list
 			var date = new Date();
@@ -436,13 +436,13 @@ twinklexfd.callbacks = {
 				date.getUTCMonthName() + ' ' + date.getUTCDate(), "Adding discussion to today's list");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(twinklexfd.callbacks.afd.todaysList);
+			wikipedia_page.load(Twinkle.xfd.callbacks.afd.todaysList);
 
 			// Notification to first contributor
 			if (params.usertalk) {
 				var thispage = new Wikipedia.page(wgPageName);
 				thispage.setCallbackParameters(params);
-				thispage.lookupCreator(twinklexfd.callbacks.afd.userNotification);
+				thispage.lookupCreator(Twinkle.xfd.callbacks.afd.userNotification);
 			}
 
 			// Remove some tags that should always be removed on AfD.
@@ -657,7 +657,7 @@ twinklexfd.callbacks = {
 			var wikipedia_page = new Wikipedia.page(wgPageName, "Tagging page with deletion tag");
 			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
 			wikipedia_page.setCallbackParameters(apiobj.params);
-			wikipedia_page.load(twinklexfd.callbacks.mfd.taggingPage);
+			wikipedia_page.load(Twinkle.xfd.callbacks.mfd.taggingPage);
 
 			// Updating data for the action completed event
 			Wikipedia.actionCompleted.redirect = apiobj.params.discussionpage;
@@ -666,7 +666,7 @@ twinklexfd.callbacks = {
 			// Discussion page
 			wikipedia_page = new Wikipedia.page(apiobj.params.discussionpage, "Creating deletion discussion page");
 			wikipedia_page.setCallbackParameters(apiobj.params);
-			wikipedia_page.load(twinklexfd.callbacks.mfd.discussionPage);
+			wikipedia_page.load(Twinkle.xfd.callbacks.mfd.discussionPage);
 
 			// Today's list
 			wikipedia_page = new Wikipedia.page("Wikipedia:Miscellany for deletion", "Adding discussion to today's list");
@@ -675,13 +675,13 @@ twinklexfd.callbacks = {
 				// it can be turned on again once the problem is fixed, to save bandwidth
 			//wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(apiobj.params);
-			wikipedia_page.load(twinklexfd.callbacks.mfd.todaysList);
+			wikipedia_page.load(Twinkle.xfd.callbacks.mfd.todaysList);
 
 			// Notification to first contributor, and notification to owner of userspace (if applicable and required)
 			if (apiobj.params.usertalk) {
 				var thispage = new Wikipedia.page(wgPageName);
 				thispage.setCallbackParameters(apiobj.params);
-				thispage.lookupCreator(twinklexfd.callbacks.mfd.userNotification);
+				thispage.lookupCreator(Twinkle.xfd.callbacks.mfd.userNotification);
 			}
 		},
 		taggingPage: function(pageobj) {
@@ -764,13 +764,13 @@ twinklexfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			// Really notify the creator
-			twinklexfd.callbacks.mfd.userNotificationMain(params, initialContrib, "Notifying initial contributor");
+			Twinkle.xfd.callbacks.mfd.userNotificationMain(params, initialContrib, "Notifying initial contributor");
 
 			// Also notify the user who owns the subpage if they are not the creator
 			if (params.notifyuserspace) {
 				var userspaceOwner = ((wgTitle.indexOf('/') == -1) ? wgTitle : wgTitle.substring(0, wgTitle.indexOf('/')));
 				if (userspaceOwner != initialContrib) {
-					twinklexfd.callbacks.mfd.userNotificationMain(params, userspaceOwner, "Notifying owner of userspace");
+					Twinkle.xfd.callbacks.mfd.userNotificationMain(params, userspaceOwner, "Notifying owner of userspace");
 				}
 			}
 		},
@@ -809,7 +809,7 @@ twinklexfd.callbacks = {
 			wikipedia_page = new Wikipedia.page(params.logpage, "Adding discussion to today's list");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(twinklexfd.callbacks.ffd.todaysList);
+			wikipedia_page.load(Twinkle.xfd.callbacks.ffd.todaysList);
 
 			// Notification to first contributor
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
@@ -1077,7 +1077,7 @@ twinklexfd.callbacks = {
 			var wikipedia_page = new Wikipedia.page(wgPageName, "Adding deletion tag to redirect");
 			wikipedia_page.setFollowRedirect(false);
 			wikipedia_page.setCallbackParameters(apiobj.params);
-			wikipedia_page.load(twinklexfd.callbacks.rfd.taggingRedirect);
+			wikipedia_page.load(Twinkle.xfd.callbacks.rfd.taggingRedirect);
 
 			// Updating data for the action completed event
 			Wikipedia.actionCompleted.redirect = apiobj.params.logpage;
@@ -1087,13 +1087,13 @@ twinklexfd.callbacks = {
 			wikipedia_page = new Wikipedia.page(apiobj.params.logpage, "Adding discussion to today's log");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(apiobj.params);
-			wikipedia_page.load(twinklexfd.callbacks.rfd.todaysList);
+			wikipedia_page.load(Twinkle.xfd.callbacks.rfd.todaysList);
 
 			// Notifying initial contributor
 			if (apiobj.params.usertalk) {
 				var thispage = new Wikipedia.page(wgPageName);
 				thispage.setCallbackParameters(apiobj.params);
-				thispage.lookupCreator(twinklexfd.callbacks.rfd.userNotification);
+				thispage.lookupCreator(Twinkle.xfd.callbacks.rfd.userNotification);
 			}
 		},
 		taggingRedirect: function(pageobj) {
@@ -1170,7 +1170,7 @@ twinklexfd.callbacks = {
 
 
 
-twinklexfd.callback.evaluate = function(e) {
+Twinkle.xfd.callback.evaluate = function(e) {
 	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
 
 	var type =  e.target.category.value;
@@ -1211,7 +1211,7 @@ twinklexfd.callback.evaluate = function(e) {
 			'apfilterredir': 'nonredirects',
 			'aplimit': userIsInGroup( 'sysop' ) ? 5000 : 500
 		};
-		var wikipedia_api = new Wikipedia.api( 'Tagging article with deletion tag', query, twinklexfd.callbacks.afd.main );
+		var wikipedia_api = new Wikipedia.api( 'Tagging article with deletion tag', query, Twinkle.xfd.callbacks.afd.main );
 		wikipedia_api.params = { usertalk:usertalk, reason:reason, noinclude:noinclude, xfdcat:xfdcat };
 		wikipedia_api.post();
 		break;
@@ -1226,7 +1226,7 @@ twinklexfd.callback.evaluate = function(e) {
 		var wikipedia_page = new Wikipedia.page(wgPageName, "Tagging template with deletion tag");
 		wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
 		wikipedia_page.setCallbackParameters({ tfdinline: tfdinline, logpage: logpage });
-		wikipedia_page.load(twinklexfd.callbacks.tfd.taggingTemplate);
+		wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplate);
 
 		// Updating data for the action completed event
 		Wikipedia.actionCompleted.redirect = logpage;
@@ -1236,12 +1236,12 @@ twinklexfd.callback.evaluate = function(e) {
 		wikipedia_page = new Wikipedia.page(logpage, "Adding discussion to today's log");
 		wikipedia_page.setFollowRedirect(true);
 		wikipedia_page.setCallbackParameters({ reason: reason });
-		wikipedia_page.load(twinklexfd.callbacks.tfd.todaysList);
+		wikipedia_page.load(Twinkle.xfd.callbacks.tfd.todaysList);
 
 		// Notification to first contributor
 		if (usertalk) {
 			var thispage = new Wikipedia.page(wgPageName);
-			thispage.lookupCreator(twinklexfd.callbacks.tfd.userNotification);
+			thispage.lookupCreator(Twinkle.xfd.callbacks.tfd.userNotification);
 		}
 
 		Wikipedia.removeCheckpoint();
@@ -1256,7 +1256,7 @@ twinklexfd.callback.evaluate = function(e) {
 			'apfilterredir': 'nonredirects',
 			'aplimit': userIsInGroup( 'sysop' ) ? 5000 : 500
 		};
-		var wikipedia_api = new Wikipedia.api( "Looking for prior nominations of this page", query, twinklexfd.callbacks.mfd.main );
+		var wikipedia_api = new Wikipedia.api( "Looking for prior nominations of this page", query, Twinkle.xfd.callbacks.mfd.main );
 		wikipedia_api.params = { usertalk: usertalk, notifyuserspace: notifyuserspace, reason: reason, noinclude: noinclude, xfdcat: xfdcat };
 		wikipedia_api.post();
 		break;
@@ -1279,19 +1279,19 @@ twinklexfd.callback.evaluate = function(e) {
 			var wikipedia_page = new Wikipedia.page(wgPageName, "Tagging file with PUF tag");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(twinklexfd.callbacks.puf.taggingImage);
+			wikipedia_page.load(Twinkle.xfd.callbacks.puf.taggingImage);
 
 			// Adding discussion
 			wikipedia_page = new Wikipedia.page(params.logpage, "Adding discussion to today's list");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(twinklexfd.callbacks.puf.todaysList);
+			wikipedia_page.load(Twinkle.xfd.callbacks.puf.todaysList);
 
 			// Notification to first contributor
 			if (usertalk) {
 				wikipedia_page = new Wikipedia.page(wgPageName);
 				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.lookupCreator(twinklexfd.callbacks.puf.userNotification);
+				wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.puf.userNotification);
 			}
 
 			Wikipedia.removeCheckpoint();
@@ -1305,12 +1305,12 @@ twinklexfd.callback.evaluate = function(e) {
 			var wikipedia_page = new Wikipedia.page(wgPageName, "Adding deletion tag to file page");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(twinklexfd.callbacks.ffd.taggingImage);
+			wikipedia_page.load(Twinkle.xfd.callbacks.ffd.taggingImage);
 
 			// Contributor specific edits
 			wikipedia_page = new Wikipedia.page(wgPageName);
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.lookupCreator(twinklexfd.callbacks.ffd.main);
+			wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.ffd.main);
 		}
 		Wikipedia.removeCheckpoint();
 		break;
@@ -1336,7 +1336,7 @@ twinklexfd.callback.evaluate = function(e) {
 		// Tagging category
 		var wikipedia_page = new Wikipedia.page(wgPageName, "Tagging category with deletion tag");
 		wikipedia_page.setCallbackParameters(params);
-		wikipedia_page.load(twinklexfd.callbacks.cfd.taggingCategory);
+		wikipedia_page.load(Twinkle.xfd.callbacks.cfd.taggingCategory);
 
 		// Adding discussion to list
 		wikipedia_page = new Wikipedia.page(logpage, "Adding discussion to today's list");
@@ -1345,13 +1345,13 @@ twinklexfd.callback.evaluate = function(e) {
 			// it can be turned on again once the problem is fixed, to save bandwidth
 		//wikipedia_page.setFollowRedirect(true);
 		wikipedia_page.setCallbackParameters(params);
-		wikipedia_page.load(twinklexfd.callbacks.cfd.todaysList);
+		wikipedia_page.load(Twinkle.xfd.callbacks.cfd.todaysList);
 
 		// Notification to first contributor
 		if (usertalk) {
 			wikipedia_page = new Wikipedia.page(wgPageName);
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.lookupCreator(twinklexfd.callbacks.cfd.userNotification);
+			wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.cfd.userNotification);
 		}
 
 		Wikipedia.removeCheckpoint();
@@ -1364,7 +1364,7 @@ twinklexfd.callback.evaluate = function(e) {
 			'titles': wgPageName,
 			'redirects': true
 		};
-		var wikipedia_api = new Wikipedia.api( "Finding target of redirect", query, twinklexfd.callbacks.rfd.main );
+		var wikipedia_api = new Wikipedia.api( "Finding target of redirect", query, Twinkle.xfd.callbacks.rfd.main );
 		wikipedia_api.params = { usertalk: usertalk, reason: reason };
 		wikipedia_api.post();
 		break;

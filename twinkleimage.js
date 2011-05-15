@@ -7,20 +7,20 @@
  * Config directives in:   TwinkleConfig
  */
 
-function twinkleimage() {
+Twinkle.image = function twinkleimage() {
 	if( wgNamespaceNumber === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory")) {
-		twAddPortletLink( (twinkleUserAuthorized ? "javascript:twinkleimage.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "DI", "tw-di", "Nominate file for relative speedy deletion", "");
+		twAddPortletLink( (twinkleUserAuthorized ? "javascript:Twinkle.image.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "DI", "tw-di", "Nominate file for relative speedy deletion", "");
 	}
 }
 
-twinkleimage.callback = function twinkleimageCallback() {
+Twinkle.image.callback = function twinkleimageCallback() {
 	var Window = new SimpleWindow( 600, 300 );
 	Window.setTitle( "File for dated speedy deletion" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Speedy deletion policy", "WP:CSD" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#image" );
 
-	var form = new QuickForm( twinkleimage.callback.evaluate );
+	var form = new QuickForm( Twinkle.image.callback.evaluate );
 	form.append( {
 			type: 'checkbox',
 			list: [
@@ -41,7 +41,7 @@ twinkleimage.callback = function twinkleimageCallback() {
 	field.append( {
 			type: 'radio',
 			name: 'type',
-			event: twinkleimage.callback.choice,
+			event: Twinkle.image.callback.choice,
 			list: [
 				{
 					label: 'No source (CSD F4)',
@@ -103,7 +103,7 @@ twinkleimage.callback = function twinkleimageCallback() {
 	result.type[0].dispatchEvent( evt );
 }
 
-twinkleimage.callback.choice = function twinkleimageCallbackChoose(event) {
+Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 	var value = event.target.values;
 	var root = event.target.form;
 	var work_area = new QuickForm.element( {
@@ -165,7 +165,7 @@ twinkleimage.callback.choice = function twinkleimageCallbackChoose(event) {
 	root.replaceChild( work_area.render(), $(root).find('div[name="work_area"]')[0] );
 }
 
-twinkleimage.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
+Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
 
 	var notify = event.target.notify.checked;
@@ -209,11 +209,11 @@ twinkleimage.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	// Tagging image
 	var wikipedia_page = new Wikipedia.page( wgPageName, 'Tagging file with deletion tag' );
 	wikipedia_page.setCallbackParameters( params );
-	wikipedia_page.load( twinkleimage.callbacks.taggingImage );
+	wikipedia_page.load( Twinkle.image.callbacks.taggingImage );
 
 	// Notifying uploader
 	if( notify ) {
-		wikipedia_page.lookupCreator(twinkleimage.callbacks.userNotification);
+		wikipedia_page.lookupCreator(Twinkle.image.callbacks.userNotification);
 	} else {
 		// No auto-notifiaction, display what was going to be added.
 		var noteData = document.createElement( 'pre' );
@@ -222,7 +222,7 @@ twinkleimage.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	}
 }
 
-twinkleimage.callbacks = {
+Twinkle.image.callbacks = {
 	taggingImage: function(pageobj) {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();

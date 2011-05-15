@@ -7,15 +7,15 @@
  * Config directives in:   FriendlyConfig
  */
 
-function friendlytalkback() {
+Twinkle.talkback = function friendlytalkback() {
 	if( wgNamespaceNumber == 3 ) {
 		var username = wgTitle.split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
 
-		twAddPortletLink( "javascript:friendlytalkback.callback(\"" + username + "\")", "TB", "friendly-talkback", "Easy talkback", "");
+		twAddPortletLink( "javascript:Twinkle.talkback.callback(\"" + username + "\")", "TB", "friendly-talkback", "Easy talkback", "");
 	}
 }
 
-friendlytalkback.callback = function friendlytalkbackCallback( uid ) {
+Twinkle.talkback.callback = function friendlytalkbackCallback( uid ) {
 	if( uid == wgUserName ){
 		alert( 'Is it really so bad that you\'re talking back to yourself?' );
 		return;
@@ -27,7 +27,7 @@ friendlytalkback.callback = function friendlytalkbackCallback( uid ) {
 	Window.addFooterLink( "About \{\{talkback}}", "Template:Talkback" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#talkback" );
 
-	var form = new QuickForm( friendlytalkback.callback.evaluate );
+	var form = new QuickForm( Twinkle.talkback.callback.evaluate );
 
 	form.append( { type: 'radio', name: 'tbtarget',
 				list: [ {
@@ -43,7 +43,7 @@ friendlytalkback.callback = function friendlytalkbackCallback( uid ) {
 					{
 						label: 'Other page',
 						value: 'other' } ],
-				event: friendlytalkback.callback.change_target
+				event: Twinkle.talkback.callback.change_target
 			} );
 
 	form.append( {
@@ -64,23 +64,23 @@ friendlytalkback.callback = function friendlytalkbackCallback( uid ) {
 	result.tbtarget[0].dispatchEvent( evt );
 }
 
-friendlytalkback.prev_page = '';
-friendlytalkback.prev_section = '';
-friendlytalkback.prev_message = '';
+Twinkle.talkback.prev_page = '';
+Twinkle.talkback.prev_section = '';
+Twinkle.talkback.prev_message = '';
 
-friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarget(e) {
+Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarget(e) {
 	var value = e.target.values;
 	var root = e.target.form;
 	var old_area;
 
 	if(root.section) {
-		friendlytalkback.prev_section = root.section.value;
+		Twinkle.talkback.prev_section = root.section.value;
 	}
 	if(root.message) {
-		friendlytalkback.prev_message = root.message.value;
+		Twinkle.talkback.prev_message = root.message.value;
 	}
 	if(root.page) {
-		friendlytalkback.prev_page = root.page.value;
+		Twinkle.talkback.prev_page = root.page.value;
 	}
 
 	for( var i = 0; i < root.childNodes.length; ++i ) {
@@ -107,7 +107,7 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 					name:'section',
 					label:'Linked section (optional)',
 					tooltip:'The section heading on your talk page where you left a message. Leave empty for no section to be linked.',
-					value: friendlytalkback.prev_section
+					value: Twinkle.talkback.prev_section
 				} );
 			break;
 		case 'usertalk':
@@ -116,7 +116,7 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 					name:'page',
 					label:'User',
 					tooltip:'The username of the user on whose talk page you left a message.',
-					value: friendlytalkback.prev_page
+					value: Twinkle.talkback.prev_page
 				} );
 			
 			work_area.append( { 
@@ -124,7 +124,7 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 					name:'section',
 					label:'Linked section (optional)',
 					tooltip:'The section heading on the page where you left a message. Leave empty for no section to be linked.',
-					value: friendlytalkback.prev_section
+					value: Twinkle.talkback.prev_section
 				} );
 			break;
 		case 'an':
@@ -149,7 +149,7 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 					name:'section',
 					label:'Linked thread',
 					tooltip:'The heading of the relevant AN or ANI thread.',
-					value: friendlytalkback.prev_section
+					value: Twinkle.talkback.prev_section
 				} );
 			break;
 		case 'other':
@@ -158,7 +158,7 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 					name:'page',
 					label:'Full page name',
 					tooltip:'The full page name where you left the message.  For example: "Wikipedia talk:Friendly".',
-					value: friendlytalkback.prev_page
+					value: Twinkle.talkback.prev_page
 				} );
 			
 			work_area.append( { 
@@ -166,7 +166,7 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 					name:'section',
 					label:'Linked section (optional)',
 					tooltip:'The section heading on the page where you left a message. Leave empty for no section to be linked.',
-					value: friendlytalkback.prev_section
+					value: Twinkle.talkback.prev_section
 				} );
 			break;
 	}
@@ -177,10 +177,10 @@ friendlytalkback.callback.change_target = function friendlytagCallbackChangeTarg
 
 	work_area = work_area.render();
 	root.replaceChild( work_area, old_area );
-	root.message.value = friendlytalkback.prev_message;
+	root.message.value = Twinkle.talkback.prev_message;
 }
 
-friendlytalkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e) {
+Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e) {
 	var tbtarget = e.target.getChecked( 'tbtarget' )[0];
 	var page = null;
 	var section = e.target.section.value;

@@ -7,13 +7,13 @@
  * Config directives in:   TwinkleConfig
  */
 
-function twinkleimagetraverse() {
+Twinkle.imagetraverse = function twinkleimagetraverse() {
 	if( userIsInGroup( 'sysop' ) && wgNamespaceNumber == Namespace.CATEGORY ) {
-		twAddPortletLink( "javascript:twinkleimagetraverse.callback()", "Traverse", "tw-imagetraverse", "Traverse category", "");
+		twAddPortletLink( "javascript:Twinkle.imagetraverse.callback()", "Traverse", "tw-imagetraverse", "Traverse category", "");
 	}
 }
 
-twinkleimagetraverse.basequery = {
+Twinkle.imagetraverse.basequery = {
 	'action': 'query',
 	'generator': 'categorymembers',
 	'gcmtitle': wgPageName,
@@ -25,19 +25,19 @@ twinkleimagetraverse.basequery = {
 	'rvprop': [ 'user', 'size', 'flags', 'ids', 'comment', 'timestamp' ],
 	'iiprop': [ 'timestamp', 'user', 'url', 'size', 'comment' ]
 };
-twinkleimagetraverse.callback = function() {
+Twinkle.imagetraverse.callback = function() {
 	var Window = new SimpleWindow( 1200, 650 );
 	Window.setTitle( "Image traverse" );
-	var form = new QuickForm( twinkleimagetraverse.callback.evaluate );
+	var form = new QuickForm( Twinkle.imagetraverse.callback.evaluate );
 	form.append( {
 			type: 'button',
 			label: 'Skip',
-			event: twinkleimagetraverse.callbacks.skip
+			event: Twinkle.imagetraverse.callbacks.skip
 		} );
 	form.append( {
 			type: 'button',
 			label: 'Delete',
-			event: twinkleimagetraverse.callbacks.deleteMain
+			event: Twinkle.imagetraverse.callbacks.deleteMain
 		} );
 	form.append( {
 			type: 'input',
@@ -93,7 +93,7 @@ twinkleimagetraverse.callback = function() {
 	status.style.height = '180px';
 	status.style.overflow = 'auto';
 	Wikipedia.actionCompleted.event = function() {} // just avoid it
-	var wikipedia_api = new Wikipedia.api( 'Grabbing images', twinkleimagetraverse.basequery, twinkleimagetraverse.callbacks.main );
+	var wikipedia_api = new Wikipedia.api( 'Grabbing images', Twinkle.imagetraverse.basequery, Twinkle.imagetraverse.callbacks.main );
 	wikipedia_api.params = { root:root, view:view, histbox:histbox, status:status, Window:Window };
 	root.params = wikipedia_api.params;
 	wikipedia_api.post();
@@ -103,7 +103,7 @@ twinkleimagetraverse.callback = function() {
 	Window.display();
 }
 
-twinkleimagetraverse.callback.evaluate = function() {
+Twinkle.imagetraverse.callback.evaluate = function() {
 }
 
 function make_wikilink( page, title, oldid, diff ) {
@@ -120,7 +120,7 @@ function make_wikilink( page, title, oldid, diff ) {
 	return a;
 }
 
-twinkleimagetraverse.callbacks = {
+Twinkle.imagetraverse.callbacks = {
 	main: function( self ) {
 		var xmlDoc = self.responseXML;
 
@@ -197,7 +197,7 @@ twinkleimagetraverse.callbacks = {
 			'text': '\{\{Wikipedia:WikiProject User scripts/Scripts/Twinkle/Template|' + image.replace(/^File:/, '') + '\}\}',
 			'prop': 'text'
 		}
-		var wikipedia_api = new Wikipedia.api( 'Rendering', query, twinkleimagetraverse.callbacks.render1 );
+		var wikipedia_api = new Wikipedia.api( 'Rendering', query, Twinkle.imagetraverse.callbacks.render1 );
 		wikipedia_api.params = self.params;
 		wikipedia_api.post();
 	},
@@ -214,7 +214,7 @@ twinkleimagetraverse.callbacks = {
 			'iulimit': 20,
 			'iufilterredir': 'nonredirects'
 		}
-		var wikipedia_api = new Wikipedia.api( 'Rendering', query, twinkleimagetraverse.callbacks.render2 );
+		var wikipedia_api = new Wikipedia.api( 'Rendering', query, Twinkle.imagetraverse.callbacks.render2 );
 		wikipedia_api.params = self.params;
 		wikipedia_api.post();
 	},
@@ -237,15 +237,15 @@ twinkleimagetraverse.callbacks = {
 
 	},
 	next: function( params ) {
-		twinkleimagetraverse.basequery['gcmcontinue'] = params.next;
-		var wikipedia_api = new Wikipedia.api( 'Grabbing images', twinkleimagetraverse.basequery, twinkleimagetraverse.callbacks.main );
+		Twinkle.imagetraverse.basequery['gcmcontinue'] = params.next;
+		var wikipedia_api = new Wikipedia.api( 'Grabbing images', Twinkle.imagetraverse.basequery, Twinkle.imagetraverse.callbacks.main );
 		wikipedia_api.params = params;
 		wikipedia_api.post();
 	},
 	skip: function( event ) {
 		var form = event.target.form;
 		var params = form.root.params;
-		twinkleimagetraverse.callbacks.next( params );
+		Twinkle.imagetraverse.callbacks.next( params );
 		Status.info( 'Skipped', params.image );
 	},
 	deleteMain: function( event ) {
@@ -261,7 +261,7 @@ twinkleimagetraverse.callbacks = {
 				'iulimit': 5000,
 				'iufilterredir': 'nonredirects'
 			};
-			var wikipedia_api = new Wikipedia.api( 'Grabbing image links', query, twinkleimagetraverse.callbacks.unlinkImageInstancesMain );
+			var wikipedia_api = new Wikipedia.api( 'Grabbing image links', query, Twinkle.imagetraverse.callbacks.unlinkImageInstancesMain );
 			wikipedia_api.params = params;
 
 			wikipedia_api.post();
@@ -270,8 +270,8 @@ twinkleimagetraverse.callbacks = {
 			'title': params.image, 
 			'action': 'delete'
 		};
-		var wikipedia_wiki = new Wikipedia.wiki( 'Deleting image ' + params.image, query, twinkleimagetraverse.callbacks.deleteImage, function( self ) {
-				twinkleimagetraverse.callbacks.next( self.params );
+		var wikipedia_wiki = new Wikipedia.wiki( 'Deleting image ' + params.image, query, Twinkle.imagetraverse.callbacks.deleteImage, function( self ) {
+				Twinkle.imagetraverse.callbacks.next( self.params );
 				self.statelem.unlink();
 				Status.info( 'Deleted', self.params.image );
 
@@ -345,7 +345,7 @@ twinkleimagetraverse.callbacks = {
 				'title': title,
 				'action': 'submit'
 			}
-			var wikipedia_wiki = new Wikipedia.wiki( "Unlinking on " + title, query, twinkleimagetraverse.callbacks.unlinkImageInstances );
+			var wikipedia_wiki = new Wikipedia.wiki( "Unlinking on " + title, query, Twinkle.imagetraverse.callbacks.unlinkImageInstances );
 			var params = clone( self.params );
 			params.title = title;
 

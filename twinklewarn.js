@@ -7,20 +7,20 @@
  * Config directives in:   TwinkleConfig
  */
 
-function twinklewarn() {
+Twinkle.warn = function twinklewarn() {
 	if( wgNamespaceNumber == 3 ) {
-		twAddPortletLink( (twinkleUserAuthorized ? "javascript:twinklewarn.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "Warn", "tw-warn", "Warn/Notify user", "");
+		twAddPortletLink( (twinkleUserAuthorized ? "javascript:Twinkle.warn.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "Warn", "tw-warn", "Warn/Notify user", "");
 	}
 }
 
-twinklewarn.callback = function twinklewarnCallback() {
+Twinkle.warn.callback = function twinklewarnCallback() {
 	var Window = new SimpleWindow( 600, 440 );
 	Window.setTitle( "Warn/notify user" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Choosing a warning level", "WP:UWUL#Levels" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#warn" );
 
-	var form = new QuickForm( twinklewarn.callback.evaluate );
+	var form = new QuickForm( Twinkle.warn.callback.evaluate );
 	var main_select = form.append( {
 			type:'field',
 			label:'Choose type of warning/notice to issue',
@@ -30,7 +30,7 @@ twinklewarn.callback = function twinklewarnCallback() {
 	var main_group = main_select.append( {
 			type:'select',
 			name:'main_group',
-			event:twinklewarn.callback.change_category
+			event:Twinkle.warn.callback.change_category
 		} );
 
 	var defaultGroup = parseInt(TwinkleConfig.defaultWarningGroup);
@@ -45,7 +45,7 @@ twinklewarn.callback = function twinklewarnCallback() {
 		main_group.append( { type:'option', label:'Blocking', value:'block', selected: ( defaultGroup == 8 ) } );
 	}
 
-	main_select.append( { type:'select', name:'sub_group', event:twinklewarn.callback.change_subcategory } ); //Will be empty to begin with.
+	main_select.append( { type:'select', name:'sub_group', event:Twinkle.warn.callback.change_subcategory } ); //Will be empty to begin with.
 
 	form.append( {
 			type:'input',
@@ -60,7 +60,7 @@ twinklewarn.callback = function twinklewarnCallback() {
 	more.append( { type:'textarea', label:'More:', name:'reason', tooltip:'Perhaps a reason, or that a more detailed notice must be appended' } );
 
 	var previewlink = document.createElement( 'a' );
-	previewlink.setAttribute( 'href', 'javascript:twinklewarn.callbacks.preview()' );
+	previewlink.setAttribute( 'href', 'javascript:Twinkle.warn.callbacks.preview()' );
 	previewlink.textContent = 'Preview';
 	more.append( { type: 'div', name: 'warningpreview', label: [ previewlink ] } );
 
@@ -79,7 +79,7 @@ twinklewarn.callback = function twinklewarnCallback() {
 }
 
 // This is all the messages that might be dispatched by the code
-twinklewarn.messages = {
+Twinkle.warn.messages = {
 	level1: {
 		"uw-vandalism1": {
 			label:"Vandalism",
@@ -1101,7 +1101,7 @@ twinklewarn.messages = {
 };
 
 // Set to true if the template is always for an indef block
-twinklewarn.indefBlockHash = {
+Twinkle.warn.indefBlockHash = {
 	'uw-block': false,
 	'uw-3block': false,
 	'uw-ablock': false,
@@ -1142,7 +1142,7 @@ twinklewarn.indefBlockHash = {
 };
 
 // Set to true if the template supports the page parameter
-twinklewarn.pageHash = {
+Twinkle.warn.pageHash = {
 	'uw-block': true,
 	'uw-3block': true,
 	'uw-ablock': true,
@@ -1183,7 +1183,7 @@ twinklewarn.pageHash = {
 };
 
 // Set to true if the template supports the reason parameter and isn't the same as its super-template when a reason is provided
-twinklewarn.reasonHash = {
+Twinkle.warn.reasonHash = {
 	'uw-block': true,
 	'uw-3block': false,
 	'uw-ablock': true,
@@ -1223,14 +1223,14 @@ twinklewarn.reasonHash = {
 	'uw-voablock': false
 };
 
-twinklewarn.prev_block_timer = null;
-twinklewarn.prev_article = null;
-twinklewarn.prev_reason = null;
+Twinkle.warn.prev_block_timer = null;
+Twinkle.warn.prev_article = null;
+Twinkle.warn.prev_reason = null;
 
-twinklewarn.callback.change_category = function twinklewarnCallbackChangeCategory(e) {
+Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCategory(e) {
 	var value = e.target.value;
 	var sub_group = e.target.root.sub_group;
-	var messages = twinklewarn.messages[ value ];
+	var messages = Twinkle.warn.messages[ value ];
 	sub_group.main_group = value;
 	var old_subvalue = sub_group.value;
 	if( old_subvalue ) {
@@ -1260,89 +1260,89 @@ twinklewarn.callback.change_category = function twinklewarnCallbackChangeCategor
 				tooltip: 'The period the blocking is due for, for example 24 hours, 2 weeks, indefinite etc...'
 			} );
 		e.target.root.insertBefore( more.render(), e.target.root.lastChild );
-		if(!(twinklewarn.prev_block_timer === null)) {
-			e.target.root.block_timer.value = twinklewarn.prev_block_timer;
-			twinklewarn.prev_block_timer = null;
+		if(!(Twinkle.warn.prev_block_timer === null)) {
+			e.target.root.block_timer.value = Twinkle.warn.prev_block_timer;
+			Twinkle.warn.prev_block_timer = null;
 		}		
-		if(twinklewarn.prev_article === null) {
-			twinklewarn.prev_article = e.target.root.article.value;
+		if(Twinkle.warn.prev_article === null) {
+			Twinkle.warn.prev_article = e.target.root.article.value;
 		}
 		e.target.root.article.disabled = true;
 		e.target.root.article.value = '';
 	} else if( e.target.root.block_timer ) {
-		if(!e.target.root.block_timer.disabled && twinklewarn.prev_block_timer === null) {
-			twinklewarn.prev_block_timer = e.target.root.block_timer.value;
+		if(!e.target.root.block_timer.disabled && Twinkle.warn.prev_block_timer === null) {
+			Twinkle.warn.prev_block_timer = e.target.root.block_timer.value;
 		}
 		e.target.root.removeChild( e.target.root.block_timer.parentNode );
-		if(e.target.root.article.disabled && !(twinklewarn.prev_article === null)) {
-			e.target.root.article.value = twinklewarn.prev_article;
-			twinklewarn.prev_article = null;
+		if(e.target.root.article.disabled && !(Twinkle.warn.prev_article === null)) {
+			e.target.root.article.value = Twinkle.warn.prev_article;
+			Twinkle.warn.prev_article = null;
 		}
 		e.target.root.article.disabled = false;
-		if(e.target.root.reason.disabled && !(twinklewarn.prev_reason === null)) {
-			e.target.root.reason.value = twinklewarn.prev_reason;
-			twinklewarn.prev_reason = null;
+		if(e.target.root.reason.disabled && !(Twinkle.warn.prev_reason === null)) {
+			e.target.root.reason.value = Twinkle.warn.prev_reason;
+			Twinkle.warn.prev_reason = null;
 		}
 		e.target.root.reason.disabled = false;
 	}
 }
 
-twinklewarn.callback.change_subcategory = function twinklewarnCallbackChangeSubcategory(e) {
+Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSubcategory(e) {
 	var main_group = e.target.main_group;
 	var value = e.target.value;
 
 	if( main_group == 'singlewarn' ) {
 		if( value == 'uw-username' ) {
-			if(twinklewarn.prev_article === null) {
-				twinklewarn.prev_article = e.target.form.article.value;
+			if(Twinkle.warn.prev_article === null) {
+				Twinkle.warn.prev_article = e.target.form.article.value;
 			}
 			e.target.form.article.disabled = true;
 			e.target.form.article.value = '';
 		} else if( e.target.form.article.disabled ) {
-			if(!(twinklewarn.prev_article === null)) {
-				e.target.form.article.value = twinklewarn.prev_article;
-				twinklewarn.prev_article = null;
+			if(!(Twinkle.warn.prev_article === null)) {
+				e.target.form.article.value = Twinkle.warn.prev_article;
+				Twinkle.warn.prev_article = null;
 			}
 			e.target.form.article.disabled = false;
 		}
 	} else if( main_group == 'block' ) {
-		if( twinklewarn.indefBlockHash[ value ] ) {
-			if(twinklewarn.prev_block_timer === null) {
-				twinklewarn.prev_block_timer = e.target.form.block_timer.value;
+		if( Twinkle.warn.indefBlockHash[ value ] ) {
+			if(Twinkle.warn.prev_block_timer === null) {
+				Twinkle.warn.prev_block_timer = e.target.form.block_timer.value;
 			}
 			e.target.form.block_timer.disabled = true;
 			e.target.form.block_timer.value = 'indef';
 		} else if( e.target.form.block_timer.disabled ) {
-			if(!(twinklewarn.prev_block_timer === null)) {
-				e.target.form.block_timer.value = twinklewarn.prev_block_timer;
-				twinklewarn.prev_block_timer = null;
+			if(!(Twinkle.warn.prev_block_timer === null)) {
+				e.target.form.block_timer.value = Twinkle.warn.prev_block_timer;
+				Twinkle.warn.prev_block_timer = null;
 			}
 			e.target.form.block_timer.disabled = false;
 		}
 
-		if( twinklewarn.pageHash[ value ] ) {
-			if(!(twinklewarn.prev_article === null)) {
-				e.target.form.article.value = twinklewarn.prev_article;
-				twinklewarn.prev_article = null;
+		if( Twinkle.warn.pageHash[ value ] ) {
+			if(!(Twinkle.warn.prev_article === null)) {
+				e.target.form.article.value = Twinkle.warn.prev_article;
+				Twinkle.warn.prev_article = null;
 			}
 			e.target.form.article.disabled = false;
 		} else if( !e.target.form.article.disabled ) {
-			if(twinklewarn.prev_article === null) {
-				twinklewarn.prev_article = e.target.form.article.value;
+			if(Twinkle.warn.prev_article === null) {
+				Twinkle.warn.prev_article = e.target.form.article.value;
 			}
 			e.target.form.article.disabled = true;
 			e.target.form.article.value = '';
 		}
 
-		if( twinklewarn.reasonHash[ value ] ) {
-			if(!(twinklewarn.prev_reason === null)) {
-				e.target.form.reason.value = twinklewarn.prev_reason;
-				twinklewarn.prev_reason = null;
+		if( Twinkle.warn.reasonHash[ value ] ) {
+			if(!(Twinkle.warn.prev_reason === null)) {
+				e.target.form.reason.value = Twinkle.warn.prev_reason;
+				Twinkle.warn.prev_reason = null;
 			}
 			e.target.form.reason.disabled = false;
 		} else if( !e.target.form.reason.disabled ) {
-			if(twinklewarn.prev_reason === null) {
-				twinklewarn.prev_reason = e.target.form.reason.value;
+			if(Twinkle.warn.prev_reason === null) {
+				Twinkle.warn.prev_reason = e.target.form.reason.value;
 			}
 			e.target.form.reason.disabled = true;
 			e.target.form.reason.value = '';
@@ -1350,11 +1350,11 @@ twinklewarn.callback.change_subcategory = function twinklewarnCallbackChangeSubc
 	}
 }
 
-twinklewarn.callbacks = {
+Twinkle.warn.callbacks = {
 	preview: function() {
 		// XXX cannot preview block templates as yet...
 		var templatename = $('select[name="sub_group"]:visible').last()[0].value;
-		if (templatename in twinklewarn.warnings.block) {
+		if (templatename in Twinkle.warn.messages.block) {
 			alert("Cannot preview block templates at the moment, unfortunately");
 			return;
 		}
@@ -1398,7 +1398,7 @@ twinklewarn.callbacks = {
 			text: templatetext,
 			title: wgPageName
 		};
-		var wikipedia_api = new Wikipedia.api("loading...", query, twinklewarn.callbacks.previewRender, new Status("Preview"));
+		var wikipedia_api = new Wikipedia.api("loading...", query, Twinkle.warn.callbacks.previewRender, new Status("Preview"));
 		wikipedia_api.params = { previewbox: previewbox };
 		wikipedia_api.post();
 	},
@@ -1467,7 +1467,7 @@ twinklewarn.callbacks = {
 		if( params.main_group == 'block' ) {
 			var article = '', reason = '', time = null;
 			
-			if( TwinkleConfig.blankTalkpageOnIndefBlock && params.sub_group != 'uw-lblock' && ( twinklewarn.indefBlockHash[ params.sub_group ] || /indef|\*|max/.exec( params.block_timer ) ) ) {
+			if( TwinkleConfig.blankTalkpageOnIndefBlock && params.sub_group != 'uw-lblock' && ( Twinkle.warn.indefBlockHash[ params.sub_group ] || /indef|\*|max/.exec( params.block_timer ) ) ) {
 				Status.info( 'Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date' );
 				text = "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			} else if( !headerRe.exec( text ) ) {
@@ -1475,15 +1475,15 @@ twinklewarn.callbacks = {
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
 			
-			if( params.article && twinklewarn.pageHash[ params.sub_group ] ) {
+			if( params.article && Twinkle.warn.pageHash[ params.sub_group ] ) {
 				article = '|page=' + params.article;
 			}
 			
-			if( params.reason && twinklewarn.reasonHash[ params.sub_group ] ) {
+			if( params.reason && Twinkle.warn.reasonHash[ params.sub_group ] ) {
 				reason = '|reason=' + params.reason;
 			}
 			
-			if( /te?mp|^\s*$|min/.exec( params.block_timer ) || twinklewarn.indefBlockHash[ params.sub_group ] ) {
+			if( /te?mp|^\s*$|min/.exec( params.block_timer ) || Twinkle.warn.indefBlockHash[ params.sub_group ] ) {
 				time = '';
 			} else if( /indef|\*|max/.exec( params.block_timer ) ) {
 				time = '|indef=yes';
@@ -1518,13 +1518,13 @@ twinklewarn.callbacks = {
 		}
 		
 		pageobj.setPageText( text );
-		pageobj.setEditSummary( twinklewarn.messages[params.main_group][params.sub_group].summary + ( params.article ? ' on [[' + params.article + ']]'  : '' ) + '.' + TwinkleConfig.summaryAd );
+		pageobj.setEditSummary( Twinkle.warn.messages[params.main_group][params.sub_group].summary + ( params.article ? ' on [[' + params.article + ']]'  : '' ) + '.' + TwinkleConfig.summaryAd );
 		pageobj.setWatchlist( TwinkleConfig.watchWarnings );
 		pageobj.save();
 	}
 }
 
-twinklewarn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
+Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 
 	// First, check to make sure a reason was filled in if uw-username was selected
 	
@@ -1552,5 +1552,5 @@ twinklewarn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	var wikipedia_page = new Wikipedia.page( wgPageName, 'User talk page modification' );
 	wikipedia_page.setCallbackParameters( params );
 	wikipedia_page.setFollowRedirect( true );
-	wikipedia_page.load( twinklewarn.callbacks.main );
+	wikipedia_page.load( Twinkle.warn.callbacks.main );
 }

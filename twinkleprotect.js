@@ -7,23 +7,23 @@
  * Config directives in:   TwinkleConfig
  */
 
-function twinkleprotect() {
+Twinkle.protect = function twinkleprotect() {
 	if ( wgNamespaceNumber < 0 ) {
 		return;
 	}
 
 	if ( userIsInGroup( 'sysop' ) ) {
-		twAddPortletLink( "javascript:twinkleprotect.callback()", "PP", "tw-rpp", "Protect page", "");
+		twAddPortletLink( "javascript:Twinkle.protect.callback()", "PP", "tw-rpp", "Protect page", "");
 	}
 	else if (twinkleUserAuthorized) {
-		twAddPortletLink( "javascript:twinkleprotect.callback()", "RPP", "tw-rpp", "Request page protection", "");
+		twAddPortletLink( "javascript:Twinkle.protect.callback()", "RPP", "tw-rpp", "Request page protection", "");
 	}
 	else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'RPP', 'tw-rpp', 'Request page protection', '');
 	}
 }
 
-twinkleprotect.callback = function twinkleprotectCallback() {
+Twinkle.protect.callback = function twinkleprotectCallback() {
 	var Window = new SimpleWindow( 620, 530 );
 	Window.setTitle( userIsInGroup( 'sysop' ) ? "Apply, request or tag page protection" : "Request or tag page protection" );
 	Window.setScriptName( "Twinkle" );
@@ -31,7 +31,7 @@ twinkleprotect.callback = function twinkleprotectCallback() {
 	Window.addFooterLink( "Protection policy", "WP:PROT" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#protect" );
 
-	var form = new QuickForm( twinkleprotect.callback.evaluate );
+	var form = new QuickForm( Twinkle.protect.callback.evaluate );
 	var actionfield = form.append( {
 			type: 'field',
 			label: 'Type of action'
@@ -40,7 +40,7 @@ twinkleprotect.callback = function twinkleprotectCallback() {
 		actionfield.append( {
 				type: 'radio',
 				name: 'actiontype',
-				event: twinkleprotect.callback.changeAction,
+				event: Twinkle.protect.callback.changeAction,
 				list: [
 					{
 						label: 'Protect page',
@@ -54,7 +54,7 @@ twinkleprotect.callback = function twinkleprotectCallback() {
 	actionfield.append( {
 			type: 'radio',
 			name: 'actiontype',
-			event: twinkleprotect.callback.changeAction,
+			event: Twinkle.protect.callback.changeAction,
 			list: [
 				{
 					label: 'Request page protection',
@@ -100,14 +100,14 @@ twinkleprotect.callback = function twinkleprotectCallback() {
 		};
 		Status.init($('div[name="currentprot"] span').last()[0]);
 		var statelem = new Status("Current protection level");
-		var wpapi = new Wikipedia.api("retrieving...", query, twinkleprotect.callback.protectionLevel, statelem);
+		var wpapi = new Wikipedia.api("retrieving...", query, Twinkle.protect.callback.protectionLevel, statelem);
 		wpapi.post();
 	}
 }
 
-twinkleprotect.protectionLevel = null;
+Twinkle.protect.protectionLevel = null;
 
-twinkleprotect.callback.protectionLevel = function twinkleprotectCallbackProtectionLevel(apiobj) {
+Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtectionLevel(apiobj) {
 	var xml = apiobj.getXML();
 	var result = [];
 	$(xml).find('pr').each(function(index, pr) {
@@ -129,12 +129,12 @@ twinkleprotect.callback.protectionLevel = function twinkleprotectCallbackProtect
 		boldnode.textContent = "no protection";
 		result.push(boldnode);
 	}
-	twinkleprotect.protectionLevel = result;
+	Twinkle.protect.protectionLevel = result;
 	apiobj.statelem.info(result);
 	setTimeout(Wikipedia.removeCheckpoint, 1000);
 };
 
-twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeAction(e) {
+Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAction(e) {
 	var field_preset;
 	var field1;
 	var field2;
@@ -146,8 +146,8 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 					type: 'select',
 					name: 'category',
 					label: 'Choose a preset:',
-					event: twinkleprotect.callback.changePreset,
-					list: (wgArticleId ? twinkleprotect.protectionTypes : twinkleprotect.protectionTypesCreate)
+					event: Twinkle.protect.callback.changePreset,
+					list: (wgArticleId ? Twinkle.protect.protectionTypes : Twinkle.protect.protectionTypesCreate)
 				});
 
 			field2 = new QuickForm.element({ type: 'field', label: 'Protection options', name: 'field2' });
@@ -157,7 +157,7 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 				field2.append({
 						type: 'checkbox',
 						name: 'editmodify',
-						event: twinkleprotect.formevents.editmodify,
+						event: Twinkle.protect.formevents.editmodify,
 						list: [
 							{
 								label: 'Modify edit protection',
@@ -171,7 +171,7 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 						type: 'select',
 						name: 'editlevel',
 						label: 'Edit protection:',
-						event: twinkleprotect.formevents.editlevel
+						event: Twinkle.protect.formevents.editlevel
 					});
 				editlevel.append({
 						type: 'option',
@@ -195,7 +195,7 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 						label: 'Expires:',
 						event: function(e) {
 							if (e.target.value === 'custom') {
-								twinkleprotect.doCustomExpiry(e.target);
+								Twinkle.protect.doCustomExpiry(e.target);
 							}
 						},
 						list: [
@@ -221,7 +221,7 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 				field2.append({
 						type: 'checkbox',
 						name: 'movemodify',
-						event: twinkleprotect.formevents.movemodify,
+						event: Twinkle.protect.formevents.movemodify,
 						list: [
 							{
 								label: 'Modify move protection',
@@ -235,7 +235,7 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 						type: 'select',
 						name: 'movelevel',
 						label: 'Move protection:',
-						event: twinkleprotect.formevents.movelevel
+						event: Twinkle.protect.formevents.movelevel
 					});
 				editlevel.append({
 						type: 'option',
@@ -259,7 +259,7 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 						label: 'Expires:',
 						event: function(e) {
 							if (e.target.value === 'custom') {
-								twinkleprotect.doCustomExpiry(e.target);
+								Twinkle.protect.doCustomExpiry(e.target);
 							}
 						},
 						list: [
@@ -287,7 +287,7 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 						type: 'select',
 						name: 'createlevel',
 						label: 'Create protection:',
-						event: twinkleprotect.formevents.createlevel
+						event: Twinkle.protect.formevents.createlevel
 					});
 				editlevel.append({
 						type: 'option',
@@ -311,7 +311,7 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 						label: 'Expires:',
 						event: function(e) {
 							if (e.target.value === 'custom') {
-								twinkleprotect.doCustomExpiry(e.target);
+								Twinkle.protect.doCustomExpiry(e.target);
 							}
 						},
 						list: [
@@ -350,8 +350,8 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 					type: 'select',
 					name: 'tagtype',
 					label: 'Choose protection template:',
-					list: twinkleprotect.protectionTags,
-					event: twinkleprotect.formevents.tagtype
+					list: Twinkle.protect.protectionTags,
+					event: Twinkle.protect.formevents.tagtype
 				} );
 			field1.append( {
 					type: 'checkbox',
@@ -378,8 +378,8 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 					type: 'select',
 					name: 'category',
 					label: 'Type and reason:',
-					event: twinkleprotect.callback.changePreset,
-					list: (wgArticleId ? twinkleprotect.protectionTypes : twinkleprotect.protectionTypesCreate)
+					event: Twinkle.protect.callback.changePreset,
+					list: (wgArticleId ? Twinkle.protect.protectionTypes : Twinkle.protect.protectionTypesCreate)
 				});
 
 			field1 = new QuickForm.element({ type: 'field', label: 'Options', name: 'field1' });
@@ -425,13 +425,13 @@ twinkleprotect.callback.changeAction = function twinkleprotectCallbackChangeActi
 	}
 
 	// re-add protection level text, if it's available
-	if (e.target.values === 'protect' && twinkleprotect.protectionLevel) {
+	if (e.target.values === 'protect' && Twinkle.protect.protectionLevel) {
 		Status.init($('div[name="currentprot"] span').last()[0]);
-		Status.info("Current protection level", twinkleprotect.protectionLevel);
+		Status.info("Current protection level", Twinkle.protect.protectionLevel);
 	}
 }
 
-twinkleprotect.formevents = {
+Twinkle.protect.formevents = {
 	editmodify: function twinkleprotectFormEditmodifyEvent(e) {
 		e.target.form.editlevel.disabled = !e.target.checked;
 		e.target.form.editexpiry.disabled = !e.target.checked || (e.target.form.editlevel.value === 'all');
@@ -456,7 +456,7 @@ twinkleprotect.formevents = {
 	},
 };
 
-twinkleprotect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
+Twinkle.protect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
 	var custom = prompt('Enter a custom expiry time.  \nYou can use relative times, like "1 minute" or "19 days", or absolute timestamps, "yyyymmddhhmm" (e.g. "200602011406" is Feb 1, 2006, at 14:06 UTC).', '');
 	if (custom) {
 		var option = document.createElement('option');
@@ -467,7 +467,7 @@ twinkleprotect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
 	}
 }
 
-twinkleprotect.protectionTypes = [
+Twinkle.protect.protectionTypes = [
 	{
 		label: 'Full protection',
 		list: [
@@ -501,7 +501,7 @@ twinkleprotect.protectionTypes = [
 	{ label: 'Unprotection', value: 'unprotect' },
 ];
 
-twinkleprotect.protectionTypesCreate = [
+Twinkle.protect.protectionTypesCreate = [
 	{
 		label: 'Create protection',
 		list: [
@@ -515,7 +515,7 @@ twinkleprotect.protectionTypesCreate = [
 ];
 
 // NOTICE: keep this synched with [[MediaWiki:Protect-dropdown]]
-twinkleprotect.protectionPresetsInfo = {
+Twinkle.protect.protectionPresetsInfo = {
 	'pp-protected': {
 		edit: 'sysop',
 		move: 'sysop',
@@ -611,7 +611,7 @@ twinkleprotect.protectionPresetsInfo = {
 	},
 };
 
-twinkleprotect.protectionTags = [
+Twinkle.protect.protectionTags = [
 	{
 		label: 'None (remove existing protection templates)',
 		value: 'none'
@@ -655,7 +655,7 @@ twinkleprotect.protectionTags = [
 	},
 ];
 
-twinkleprotect.callback.changePreset = function twinkleprotectCallbackChangePreset(e) {
+Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePreset(e) {
 	var form = e.target.form;
 
 	var actiontypes = form.actiontype;
@@ -668,31 +668,31 @@ twinkleprotect.callback.changePreset = function twinkleprotectCallbackChangePres
 	}
 
 	if (actiontype === 'protect') {  // actually protecting the page
-		var item = twinkleprotect.protectionPresetsInfo[form.category.value];
+		var item = Twinkle.protect.protectionPresetsInfo[form.category.value];
 		if (wgArticleId) {
 			if (item.edit) {
 				form.editmodify.checked = true;
-				twinkleprotect.formevents.editmodify({ target: form.editmodify });
+				Twinkle.protect.formevents.editmodify({ target: form.editmodify });
 				form.editlevel.value = item.edit;
-				twinkleprotect.formevents.editlevel({ target: form.editlevel });
+				Twinkle.protect.formevents.editlevel({ target: form.editlevel });
 			} else {
 				form.editmodify.checked = false;
-				twinkleprotect.formevents.editmodify({ target: form.editmodify });
+				Twinkle.protect.formevents.editmodify({ target: form.editmodify });
 			}
 
 			if (item.move) {
 				form.movemodify.checked = true;
-				twinkleprotect.formevents.movemodify({ target: form.movemodify });
+				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 				form.movelevel.value = item.move;
-				twinkleprotect.formevents.movelevel({ target: form.movelevel });
+				Twinkle.protect.formevents.movelevel({ target: form.movelevel });
 			} else {
 				form.movemodify.checked = false;
-				twinkleprotect.formevents.movemodify({ target: form.movemodify });
+				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 			}
 		} else {
 			if (item.create) {
 				form.createlevel.value = item.create;
-				twinkleprotect.formevents.createlevel({ target: form.createlevel });
+				Twinkle.protect.formevents.createlevel({ target: form.createlevel });
 			}
 		}
 
@@ -709,7 +709,7 @@ twinkleprotect.callback.changePreset = function twinkleprotectCallbackChangePres
 			} else {
 				form.tagtype.value = (item.template ? item.template : form.category.value);
 			}
-			twinkleprotect.formevents.tagtype({ target: form.tagtype });
+			Twinkle.protect.formevents.tagtype({ target: form.tagtype });
 
 			if( /template/.test( form.category.value ) ) {
 				form.noinclude.checked = true;
@@ -729,7 +729,7 @@ twinkleprotect.callback.changePreset = function twinkleprotectCallbackChangePres
 	}
 }
 
-twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
+Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	var form = e.target;
 
 	var actiontypes = form.actiontype;
@@ -797,7 +797,7 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 
 			var protectedPage = new Wikipedia.page( wgPageName, 'Tagging page');
 			protectedPage.setCallbackParameters( tagparams );
-			protectedPage.load( twinkleprotect.callbacks.taggingPage );
+			protectedPage.load( Twinkle.protect.callbacks.taggingPage );
 			break;
 
 		case 'request':
@@ -911,12 +911,12 @@ twinkleprotect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			var rppPage = new Wikipedia.page( rppName, 'Requesting protection of page');
 			rppPage.setFollowRedirect( true );
 			rppPage.setCallbackParameters( rppparams );
-			rppPage.load( twinkleprotect.callbacks.fileRequest );
+			rppPage.load( Twinkle.protect.callbacks.fileRequest );
 			break;
 	}
 }
 
-twinkleprotect.callbacks = {
+Twinkle.protect.callbacks = {
 	taggingPage: function( protectedPage ) {
 		var params = protectedPage.getCallbackParameters();
 		var text = protectedPage.getPageText();

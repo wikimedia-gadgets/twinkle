@@ -8,18 +8,18 @@
  */
 
 
-function twinklebatchprotect() {
+Twinkle.batchprotect = function twinklebatchprotect() {
 	if( userIsInGroup( 'sysop' ) && (wgNamespaceNumber > 0 || wgCanonicalSpecialPageName == 'Prefixindex') ) {
-		twAddPortletLink( "javascript:twinklebatchprotect.callback()", "P-batch", "tw-pbatch", "Protect pages found on this page", "");
+		twAddPortletLink( "javascript:Twinkle.batchprotect.callback()", "P-batch", "tw-pbatch", "Protect pages found on this page", "");
 	}
 }
 
-twinklebatchprotect.unlinkCache = {};
-twinklebatchprotect.callback = function twinklesbatchprotectCallback() {
+Twinkle.batchprotect.unlinkCache = {};
+Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	var Window = new SimpleWindow( 800, 400 );
 	Window.setTitle( "Batch protection" );
 
-	var form = new QuickForm( twinklebatchprotect.callback.evaluate );
+	var form = new QuickForm( Twinkle.batchprotect.callback.evaluate );
 	form.append( {
 			type: 'select',
 			name: 'move',
@@ -192,9 +192,9 @@ twinklebatchprotect.callback = function twinklesbatchprotectCallback() {
 	Window.display();
 }
 
-twinklebatchprotect.currentProtectCounter = 0;
-twinklebatchprotect.currentprotector;
-twinklebatchprotect.callback.evaluate = function twinklebatchprotectCallbackEvaluate(event) {
+Twinkle.batchprotect.currentProtectCounter = 0;
+Twinkle.batchprotect.currentprotector = 0;
+Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEvaluate(event) {
 	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
 	var pages = event.target.getChecked( 'pages' );
 	var reason = event.target.reason.value;
@@ -213,21 +213,21 @@ twinklebatchprotect.callback.evaluate = function twinklebatchprotectCallbackEval
 	}
 
 	function toCall( work ) {
-		if( work.length == 0 && twinklebatchprotect.currentProtectCounter <= 0 ) {
+		if( work.length == 0 && Twinkle.batchprotect.currentProtectCounter <= 0 ) {
 			Status.info( 'work done' );
-			window.clearInterval( twinklebatchprotect.currentprotector );
+			window.clearInterval( Twinkle.batchprotect.currentprotector );
 			Wikipedia.removeCheckpoint();
 			return;
-		} else if( work.length != 0 && twinklebatchprotect.currentProtectCounter <= TwinkleConfig.batchProtectMinCutOff ) {
+		} else if( work.length != 0 && Twinkle.batchprotect.currentProtectCounter <= TwinkleConfig.batchProtectMinCutOff ) {
 			var pages = work.shift();
-			twinklebatchprotect.currentProtectCounter += pages.length;
+			Twinkle.batchprotect.currentProtectCounter += pages.length;
 			for( var i = 0; i < pages.length; ++i ) {
 				var page = pages[i];
 				var query = {
 					'action': 'query',
 					'titles': page
 				}
-				var wikipedia_api = new Wikipedia.api( 'Checking if page ' + page + ' exists', query, twinklebatchprotect.callbacks.main );
+				var wikipedia_api = new Wikipedia.api( 'Checking if page ' + page + ' exists', query, Twinkle.batchprotect.callbacks.main );
 				wikipedia_api.params = { page:page, reason:reason, move: move, edit: edit, create: create, expiry: expiry, cascade: cascade 	};
 				wikipedia_api.post();
 			}
@@ -235,9 +235,9 @@ twinklebatchprotect.callback.evaluate = function twinklebatchprotectCallbackEval
 	}
 	var work = pages.chunk( TwinkleConfig.batchProtectChunks );
 	Wikipedia.addCheckpoint();
-	twinklebatchprotect.currentprotector = window.setInterval( toCall, 1000, work );
+	Twinkle.batchprotect.currentprotector = window.setInterval( toCall, 1000, work );
 }
-twinklebatchprotect.callbacks = {
+Twinkle.batchprotect.callbacks = {
 	main: function( self ) {
 		var xmlDoc = self.responseXML;
 		var normal = xmlDoc.evaluate( '//normalized/n/@to', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
@@ -249,8 +249,8 @@ twinklebatchprotect.callbacks = {
 			'title': self.params.page, 
 			'action': 'protect'
 		};
-		var wikipedia_wiki = new Wikipedia.wiki( 'Protecting page ' + self.params.page, query, twinklebatchprotect.callbacks.protectPage, function( self ) { 
-				--twinklebatchprotect.currentProtectCounter;
+		var wikipedia_wiki = new Wikipedia.wiki( 'Protecting page ' + self.params.page, query, Twinkle.batchprotect.callbacks.protectPage, function( self ) { 
+				--Twinkle.batchprotect.currentProtectCounter;
 				var link = document.createElement( 'a' );
 				link.setAttribute( 'href', wgArticlePath.replace( '$1', self.query['title'] ) );
 				link.setAttribute( 'title', self.query['title'] );

@@ -7,7 +7,7 @@
  * Config directives in:   TwinkleConfig
  */
 
-Twinkle.arv = function () {
+Twinkle.arv = function twinklearv() {
 	var username;
 
 	if ( wgNamespaceNumber === 3 || wgNamespaceNumber === 2 || ( wgNamespaceNumber === -1 && wgTitle === "Contributions" )){

@@ -13,8 +13,10 @@
  * It needs a better header comment than this one.
  */
 
-var Twinkle = {};  // don't pollute the global namespace
+var Twinkle = {};
+window.Twinkle = Twinkle;  // allow global access
 
+// for use by custom modules (normally empty)
 Twinkle.initCallbacks = [];
 Twinkle.addInitCallback = function(func) {
 	Twinkle.initCallbacks.push(func);

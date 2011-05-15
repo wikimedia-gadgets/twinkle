@@ -7,7 +7,7 @@
  * Config directives in:   TwinkleConfig
  */
 
-function twinklediff() { 
+Twinkle.diff = function twinklediff() { 
 	if( wgNamespaceNumber < 0 || !wgArticleId ) {
 		return;
 	}
@@ -23,9 +23,9 @@ function twinklediff() {
 	// Show additional tabs only on diff pages
 	if(!QueryString.exists('diff')) return;
 
-	twAddPortletLink( "javascript:twinklediff.evaluate(false);", 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user' );
+	twAddPortletLink( "javascript:Twinkle.diff.evaluate(false);", 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user' );
 
-	twAddPortletLink( "javascript:twinklediff.evaluate(true);", 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision' );
+	twAddPortletLink( "javascript:Twinkle.diff.evaluate(true);", 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision' );
 
 	var oldid = /oldid=(.+)/.exec($('div#mw-diff-ntitle1 strong a').first().attr("href"))[1];
 	var query = {
@@ -36,7 +36,7 @@ function twinklediff() {
 	twAddPortletLink( wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ), 'Current', 'tw-curdiff', 'Show difference to current revision' );
 }
 
-twinklediff.evaluate = function twinklediffEvaluate(me) {
+Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 	var ntitle = getElementsByClassName( document.getElementById('bodyContent'), 'td' , 'diff-ntitle' )[0];
 
 	var user;
@@ -60,12 +60,12 @@ twinklediff.evaluate = function twinklediffEvaluate(me) {
 		'rvuser': user
 	};
 	Status.init( document.getElementById('bodyContent') );
-	var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, twinklediff.callbacks.main );
+	var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, Twinkle.diff.callbacks.main );
 	wikipedia_api.params = { user: user };
 	wikipedia_api.post();
 }
 
-twinklediff.callbacks = {
+Twinkle.diff.callbacks = {
 	main: function( self ) {
 		var xmlDoc = self.responseXML;
 		var revid = $(xmlDoc).find('rev').attr('revid');
