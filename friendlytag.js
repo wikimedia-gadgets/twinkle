@@ -78,6 +78,10 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 
 Twinkle.tag.maintenanceList = [
 	{
+		label: '\{\{allplot\}\}: article is almost entirely a plot summary',
+		value: 'allplot' 
+	},
+	{
 		label: '\{\{catimprove\}\}: article may require additional categories.',
 		value: 'catimprove'
 	},
@@ -429,6 +433,10 @@ Twinkle.tag.problemList = [
 	{
 		label: '\{\{primarysources\}\}: article needs reliable, third-party sources',
 		value: 'primarysources'
+	},
+	{
+		label: "\{\{overdetailed\}\}: article contains an excessive amount of intricate detail",
+		value: "overdetailed"
 	},
 	{
 		label: "\{\{recentism\}\}: article is slanted towards recent events",
