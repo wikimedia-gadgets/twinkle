@@ -11,7 +11,8 @@ if ( typeof window.wikipedia_script_sentry_load === 'undefined' ) {
 window.wikipedia_script_sentry_load.push(function() {
 	// don't activate on special pages other than "Contributions" so they load faster, especially the watchlist
 	// also, can't theoretically run Twinkle on old Internet Explorer, just die...!
-	if( (wgNamespaceNumber === -1 && wgTitle !== "Contributions") || ($.client.profile().name === 'msie' && $.client.profile().versionBase < 9) ) {
+	if( (mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgTitle') !== "Contributions") || 
+		($.client.profile().name === 'msie' && $.client.profile().versionBase < 9) ) {
 		return;
 	}
 
@@ -89,7 +90,7 @@ window.wikipedia_script_sentry_load.push(function() {
 	});
 });
 
-importScript('User:' + wgUserName + '/twinkleoptions.js');
+importScript('User:' + mw.config.get('wgUserName') + '/twinkleoptions.js');
 
 // Developers: you can import custom Twinkle modules here
 // for example, importScript('User:UncleDouggie/morebits-test.js');

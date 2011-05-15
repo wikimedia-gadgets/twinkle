@@ -16,7 +16,7 @@ To generate the concatenated Twinkle script, use this `bash` command:
 
     awk 'FNR==1{print ""}{print}' twinkle.header.js twinkle[!.]*.js friendly*.js twinkle.footer.js > alltwinkle.js
 
-Then you will be able to upload `alltwinkle.js` to [MediaWiki:Gadget-Twinkle.js][] and [User:AzaToth/twinkle.js][]. This does not include `morebits.js` and `morebits.css`; these have to be uploaded separately.
+Then you will be able to upload `alltwinkle.js` to [MediaWiki:Gadget-Twinkle.js][]. This does not include `morebits.js` and `morebits.css`; these have to be uploaded separately.
 
 If `morebits.js` and/or `morebits.css` need to be updated, they should be synched to these places:
 
@@ -25,7 +25,7 @@ If `morebits.js` and/or `morebits.css` need to be updated, they should be synche
 
 [MediaWiki:Gadgets-definition][] should contain the following line:
 
-    * Twinkle[ResourceLoader|dependencies=jquery.ui.dialog,jquery.tipsy]|morebits.js|morebits.css|twinkle.js
+    * Twinkle[ResourceLoader|dependencies=jquery.ui.dialog,jquery.tipsy]|morebits.js|morebits.css|Twinkle.js
 
 Synchronization (for developers)
 --------------------------------
