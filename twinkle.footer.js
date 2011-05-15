@@ -37,6 +37,7 @@ window.wikipedia_script_sentry_load.push(function() {
 				}
 			});
 		}
+		Twinkle.TwinkleConfig = TwinkleConfig;  // allow global access, mainly for debugging
 
 		usingDefaults = false;
 		if (typeof(FriendlyConfig) === "undefined") {
@@ -54,6 +55,7 @@ window.wikipedia_script_sentry_load.push(function() {
 				}
 			});
 		}
+		Twinkle.FriendlyConfig = FriendlyConfig;  // allow global access, mainly for debugging
 
 		// load the modules in the order that the tabs should appears
 		// misc. ones first
@@ -90,9 +92,11 @@ window.wikipedia_script_sentry_load.push(function() {
 	});
 });
 
-importScript('User:' + mw.config.get('wgUserName') + '/twinkleoptions.js');
+var scriptpathbefore = mw.config.get('wgServer') + mw.config.get('wgScript') + "?title=";
+var scriptpathafter = "&action=raw&ctype=text/javascript&happy=yes";
+mw.loader.load(scriptpathbefore + "User:" + mw.util.wikiUrlencode(mw.config.get('wgUserName')) + "/twinkleoptions.js" + scriptpathafter);
 
 // Developers: you can import custom Twinkle modules here
-// for example, importScript('User:UncleDouggie/morebits-test.js');
+// for example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
 
-importScript('Wikipedia:WikiProject_User_scripts/Scripts/Load_sentry');  // leave this last
+mw.loader.load(scriptpathbefore + "Wikipedia:WikiProject_User_scripts/Scripts/Load_sentry" + scriptpathafter);  // leave this last
