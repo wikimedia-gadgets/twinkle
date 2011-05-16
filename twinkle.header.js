@@ -9,6 +9,8 @@
  * To update this script from github, you must have a local repository set up. Then
  * follow the instructions at [https://github.com/azatoth/twinkle/blob/master/README.md].
  *
+ * ----------
+ *
  * This is AzaToth's Twinkle. See [[WP:TW]].
  * It needs a better header comment than this one.
  */
@@ -124,3 +126,34 @@ Twinkle.defaultConfig.friendly = {
 	markSharedIPAsMinor: true,
 };
 
+Twinkle.getPref = function twinkleGetPref(name) {
+	var result;
+	if (typeof(window.TwinkleConfig) === "object") {
+		// look in TwinkleConfig
+		result = window.TwinkleConfig[name];
+	} else if (typeof(Twinkle.prefs) === "object" && typeof(Twinkle.prefs.twinkle) === "object") {
+		// look in Twinkle.prefs (twinkleoptions.js)
+		result = Twinkle.prefs.twinkle[name];
+	}
+
+	if (typeof(result) === "undefined") {
+		return Twinkle.defaultConfig.twinkle[name];
+	}
+	return result;
+}
+
+Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
+	var result;
+	if (typeof(window.FriendlyConfig) === "object") {
+		// look in FriendlyConfig
+		result = window.FriendlyConfig[name];
+	} else if (typeof(Twinkle.prefs) === "object" && typeof(Twinkle.prefs.friendly) === "object") {
+		// look in Twinkle.prefs (twinkleoptions.js)
+		result = Twinkle.prefs.friendly[name];
+	}
+
+	if (typeof(result) === "undefined") {
+		return Twinkle.defaultConfig.friendly[name];
+	}
+	return result;
+}
