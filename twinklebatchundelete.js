@@ -30,7 +30,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		'action': 'query',
 		'generator': 'links',
 		'titles': wgPageName,
-		'gpllimit' : TwinkleConfig.batchMax, // the max for sysops
+		'gpllimit' : Twinkle.getPref('batchMax'), // the max for sysops
 	};
 	var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query, function( self ) {
 			var xmlDoc = self.responseXML;
@@ -79,7 +79,7 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 		return;
 	}
 
-	var work = pages.chunk( TwinkleConfig.batchUndeleteChunks );
+	var work = pages.chunk( Twinkle.getPref('batchUndeleteChunks') );
 	Wikipedia.addCheckpoint();
 	Twinkle.batchundelete.currentundeletor = window.setInterval( Twinkle.batchundelete.callbacks.main, 1000, work, reason );
 }
@@ -91,7 +91,7 @@ Twinkle.batchundelete.callbacks = {
 			window.clearInterval( Twinkle.batchundelete.currentundeletor );
 			Wikipedia.removeCheckpoint();
 			return;
-		} else if( work.length != 0 && Twinkle.batchundelete.currentUndeleteCounter <= TwinkleConfig.batchUndeleteMinCutOff ) {
+		} else if( work.length != 0 && Twinkle.batchundelete.currentUndeleteCounter <= Twinkle.getPref('batchUndeleteMinCutOff') ) {
 			var pages = work.shift();
 			Twinkle.batchundelete.currentUndeleteCounter += pages.length;
 			for( var i = 0; i < pages.length; ++i ) {
@@ -119,7 +119,7 @@ Twinkle.batchundelete.callbacks = {
 	undeletePage: function( self ) {
 		var form = self.responseXML.getElementById('undelete');
 		var postData = {
-			'wpComment': self.params.reason + '.' +  TwinkleConfig.deletionSummaryAd,
+			'wpComment': self.params.reason + '.' +  Twinkle.getPref('deletionSummaryAd'),
 			'target': self.params.image,
 			'wpEditToken': form.wpEditToken.value,
 			'restore': 1

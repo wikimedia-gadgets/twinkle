@@ -768,11 +768,11 @@ Twinkle.config.init = function twinkleconfigInit() {
 				return;  // i.e. "continue" in this context
 			}
 
-			var confighash;  // retrieve the live config values
+			var configgetter;  // retrieve the live config values
 			if (section.inFriendlyConfig) {
-				confighash = FriendlyConfig;
+				configgetter = Twinkle.getFriendlyPref;
 			} else {
-				confighash = TwinkleConfig;
+				configgetter = Twinkle.getPref;
 			}
 
 			var row = document.createElement("tr");
@@ -812,7 +812,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						input.setAttribute("type", "checkbox");
 						input.setAttribute("id", pref.name);
 						input.setAttribute("name", pref.name);
-						if (confighash[pref.name] === true) {
+						if (configgetter(pref.name) === true) {
 							input.setAttribute("checked", "checked");
 						}
 						label.appendChild(input);
@@ -840,13 +840,13 @@ Twinkle.config.init = function twinkleconfigInit() {
 						input.setAttribute("type", "text");
 						input.setAttribute("id", pref.name);
 						input.setAttribute("name", pref.name);
-						if (pref.type == "integer") {
+						if (pref.type === "integer") {
 							input.setAttribute("size", 6);
 							input.setAttribute("type", "number");
 							input.setAttribute("step", "1");  // integers only
 						}
-						if (confighash[pref.name]) {
-							input.setAttribute("value", confighash[pref.name]);
+						if (configgetter(pref.name)) {
+							input.setAttribute("value", configgetter(pref.name));
 						}
 						cell.appendChild(input);
 						break;
@@ -873,7 +873,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						$.each(pref.enumValues, function(enumvalue, enumdisplay) {
 							var option = document.createElement("option");
 							option.setAttribute("value", enumvalue);
-							if (confighash[pref.name] == enumvalue) {
+							if (configgetter(pref.name) == enumvalue) {
 								option.setAttribute("selected", "selected");
 							}
 							option.appendChild(document.createTextNode(enumdisplay));
@@ -901,7 +901,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 								check.setAttribute("type", "checkbox");
 								check.setAttribute("id", pref.name + "_" + item);
 								check.setAttribute("name", pref.name + "_" + item);
-								if (confighash[pref.name] && confighash[pref.name].indexOf(item) !== -1) {
+								if (configgetter(pref.name) && configgetter(pref.name).indexOf(item) !== -1) {
 									check.setAttribute("checked", "checked");
 								}
 								checklabel.appendChild(check);
@@ -920,12 +920,12 @@ Twinkle.config.init = function twinkleconfigInit() {
 								check.setAttribute("type", "checkbox");
 								check.setAttribute("id", pref.name + "_" + itemkey);
 								check.setAttribute("name", pref.name + "_" + itemkey);
-								if (confighash[pref.name] && confighash[pref.name].indexOf(itemkey) !== -1) {
+								if (configgetter(pref.name) && configgetter(pref.name).indexOf(itemkey) !== -1) {
 									check.setAttribute("checked", "checked");
 								}
 								// cater for legacy integer array values for unlinkNamespaces (this can be removed a few years down the track...)
 								if (pref.name === "unlinkNamespaces") {
-									if (confighash[pref.name] && confighash[pref.name].indexOf(parseInt(itemkey)) !== -1) {
+									if (configgetter(pref.name) && configgetter(pref.name).indexOf(parseInt(itemkey)) !== -1) {
 										check.setAttribute("checked", "checked");
 									}
 								}
@@ -1238,7 +1238,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 					case "integer":  // read from the input box
 						userValue = parseInt(form[pref.name].value);
 						if (userValue === NaN) {
-							Status.warn("Saving", "The value you specified for " + pref.name + " (" + pref.value + ") was invalid. The save will continue, and the invalid data value will be skipped.");
+							Status.warn("Saving", "The value you specified for " + pref.name + " (" + pref.value + ") was invalid. The save will continue, but the invalid data value will be skipped.");
 							userValue = null;
 						}
 						break;
@@ -1283,16 +1283,18 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		});
 	});
 
-	$.each(TwinkleConfig, function(tkey, tvalue) {
-		if (foundTwinklePrefs.indexOf(tkey) === -1) {
-			newConfig.twinkle[tkey] = tvalue;
-		}
-	});
-	$.each(FriendlyConfig, function(fkey, fvalue) {
-		if (foundFriendlyPrefs.indexOf(fkey) === -1) {
-			newConfig.friendly[fkey] = fvalue;
-		}
-	});
+	if (Twinkle.prefs) {
+		$.each(Twinkle.prefs.twinkle, function(tkey, tvalue) {
+			if (foundTwinklePrefs.indexOf(tkey) === -1) {
+				newConfig.twinkle[tkey] = tvalue;
+			}
+		});
+		$.each(Twinkle.prefs.friendly, function(fkey, fvalue) {
+			if (foundFriendlyPrefs.indexOf(fkey) === -1) {
+				newConfig.friendly[fkey] = fvalue;
+			}
+		});
+	}
 
 	var text =
 		"// twinkleoptions.js: personal Twinkle preferences file\n" +
@@ -1305,7 +1307,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		"// overwritten the next time you click \"save\" in the Twinkle preferences\n" +
 		"// panel.  If modifying this file, make sure to use correct JavaScript.\n" +
 		"\n" +
-		"Twinkle.prefs = "
+		"window.Twinkle.prefs = "
   ;
 	text += JSON.stringify(newConfig, null, 2);
 	text +=

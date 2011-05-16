@@ -455,8 +455,8 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>\{\{" : "\{\{") + (params.number == '' ? "subst:afd|help=off" : ('subst:afdx|' +
 				params.number + "|help=off")) + (params.noinclude ? "}}</noinclude>\n" : "}}\n") + text);
-			pageobj.setEditSummary("Nominated for deletion; see [[" + params.discussionpage + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchPage) {
+			pageobj.setEditSummary("Nominated for deletion; see [[" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -475,8 +475,8 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText("\{\{subst:afd2|pg=" + wgPageName + "|cat=" + params.xfdcat + "|text=" + params.reason + " \~\~\~\~\}\}\n");
-			pageobj.setEditSummary("Creating deletion discussion page for [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchDiscussion) {
+			pageobj.setEditSummary("Creating deletion discussion page for [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -501,8 +501,8 @@ Twinkle.xfd.callbacks = {
 				return;
 			}
 			pageobj.setPageText(text);
-			pageobj.setEditSummary("Adding [[" + params.discussionpage + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchList) {
+			pageobj.setEditSummary("Adding [[" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchList')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -522,9 +522,9 @@ Twinkle.xfd.callbacks = {
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:AFDWarning|1=" + wgPageName + ( params.numbering != '' ? '|order=&#32;' + params.numbering : '' ) + "\}\} \~\~\~\~";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: listing at [[WP:AFD|articles for deletion]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setEditSummary("Notification: listing at [[WP:AFD|articles for deletion]] of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
-			switch (TwinkleConfig.xfdWatchUser) {
+			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
 					usertalkpage.setWatchlist(true);
 					break;
@@ -547,8 +547,8 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText("\{\{tfd" + (params.tfdinline ? "|type=inline" : "") + "|" + wgTitle + "\}\}\n" + text);
-			pageobj.setEditSummary("Nominated for deletion; see [[" + params.logpage + "#" + wgPageName + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchPage) {
+			pageobj.setEditSummary("Nominated for deletion; see [[" + params.logpage + "#" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -573,8 +573,8 @@ Twinkle.xfd.callbacks = {
 				return;
 			}
 			pageobj.setPageText(text);
-			pageobj.setEditSummary("Adding [[Template:" + wgTitle + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchDiscussion) {
+			pageobj.setEditSummary("Adding [[Template:" + wgTitle + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -593,9 +593,9 @@ Twinkle.xfd.callbacks = {
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:tfdnotice|1=" + wgTitle + "\}\} \~\~\~\~";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: nomination at [[WP:TFD|templates for discussion]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setEditSummary("Notification: nomination at [[WP:TFD|templates for discussion]] of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
-			switch (TwinkleConfig.xfdWatchUser) {
+			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
 					usertalkpage.setWatchlist(true);
 					break;
@@ -690,8 +690,8 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "\{\{" + ((params.number == '') ? "mfd\}\}\n" : ('mfdx|' + params.number + "}}\n")) +
 				(params.noinclude ? "</noinclude>" : "") + text);
-			pageobj.setEditSummary("Nominated for deletion; see [[" + params.discussionpage + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchPage) {
+			pageobj.setEditSummary("Nominated for deletion; see [[" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -710,8 +710,8 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText("\{\{subst:mfd2|pg=" + wgPageName + "|text=" + params.reason + " \~\~\~\~\}\}\n");
-			pageobj.setEditSummary("Creating deletion discussion page for [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchDiscussion) {
+			pageobj.setEditSummary("Creating deletion discussion page for [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -744,8 +744,8 @@ Twinkle.xfd.callbacks = {
 			}
 
 			pageobj.setPageText(text);
-			pageobj.setEditSummary("Adding [[" + params.discussionpage + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchList) {
+			pageobj.setEditSummary("Adding [[" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchList')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -779,9 +779,9 @@ Twinkle.xfd.callbacks = {
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, actionName + " (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:MFDWarning|1=" + wgPageName + ( params.numbering != '' ? '|order=&#32;' + params.numbering : '' ) + "\}\} \~\~\~\~";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: listing at [[WP:MFD|miscellany for deletion]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setEditSummary("Notification: listing at [[WP:MFD|miscellany for deletion]] of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
-			switch (TwinkleConfig.xfdWatchUser) {
+			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
 					usertalkpage.setWatchlist(true);
 					break;
@@ -815,9 +815,9 @@ Twinkle.xfd.callbacks = {
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:idw|1=" + wgTitle + "\}\}";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for deletion]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for deletion]] of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
-			switch (TwinkleConfig.xfdWatchUser) {
+			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
 					usertalkpage.setWatchlist(true);
 					break;
@@ -836,8 +836,8 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText("\{\{ffd|log=" + params.date + "\}\}\n" + text);
-			pageobj.setEditSummary("Nominated for deletion at [[" + params.logpage + "#" + wgPageName + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchPage) {
+			pageobj.setEditSummary("Nominated for deletion at [[" + params.logpage + "#" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -861,8 +861,8 @@ Twinkle.xfd.callbacks = {
 			}
 
 			pageobj.setPageText(text + "\n\{\{subst:ffd2|1=" + wgTitle + "|Uploader=" + params.uploader + "|Reason=" + params.reason + "\}\} \~\~\~\~");
-			pageobj.setEditSummary("Adding [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchDiscussion) {
+			pageobj.setEditSummary("Adding [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -885,8 +885,8 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText("\{\{puf|help=off|log=" + params.date + "\}\}\n" + text);
-			pageobj.setEditSummary("Listed at [[WP:PUF|possibly unfree files]]: [[" + params.logpage + "#" + wgPageName + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchPage) {
+			pageobj.setEditSummary("Listed at [[WP:PUF|possibly unfree files]]: [[" + params.logpage + "#" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -905,8 +905,8 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(text + "\n\{\{subst:puf2|image=" + wgTitle + "|reason=" + params.reason + "\}\} \~\~\~\~");
-			pageobj.setEditSummary("Adding [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchDiscussion) {
+			pageobj.setEditSummary("Adding [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -925,9 +925,9 @@ Twinkle.xfd.callbacks = {
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:idw-puf|1=" + wgTitle + "\}\}";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: listing at [[WP:PUF|possibly unfree files]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setEditSummary("Notification: listing at [[WP:PUF|possibly unfree files]] of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
-			switch (TwinkleConfig.xfdWatchUser) {
+			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
 					usertalkpage.setWatchlist(true);
 					break;
@@ -971,8 +971,8 @@ Twinkle.xfd.callbacks = {
 			}
 
 			pageobj.setPageText(added_data + "\n" + text);
-			pageobj.setEditSummary(editsummary + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchPage) {
+			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -1019,8 +1019,8 @@ Twinkle.xfd.callbacks = {
 			}
 
 			pageobj.setPageText(text);
-			pageobj.setEditSummary(editsummary + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchDiscussion) {
+			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -1040,9 +1040,9 @@ Twinkle.xfd.callbacks = {
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:CFDNote|1=" + wgPageName + "\}\} \~\~\~\~";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: listing at [[WP:CFD|categories for discussion]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setEditSummary("Notification: listing at [[WP:CFD|categories for discussion]] of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
-			switch (TwinkleConfig.xfdWatchUser) {
+			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
 					usertalkpage.setWatchlist(true);
 					break;
@@ -1101,8 +1101,8 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText("\{\{rfd\}\}\n" + text);
-			pageobj.setEditSummary("Listed for discussion at [[" + params.logpage + "#" + wgPageName + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchPage) {
+			pageobj.setEditSummary("Listed for discussion at [[" + params.logpage + "#" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -1129,8 +1129,8 @@ Twinkle.xfd.callbacks = {
 			}
 
 			pageobj.setPageText(text);
-			pageobj.setEditSummary("Adding [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
-			switch (TwinkleConfig.xfdWatchDiscussion) {
+			pageobj.setEditSummary("Adding [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
 					break;
@@ -1149,9 +1149,9 @@ Twinkle.xfd.callbacks = {
 			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n\{\{subst:RFDNote|1=" + wgPageName + "\}\} \~\~\~\~";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: listing at [[WP:RFD|redirects for discussion]] of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			usertalkpage.setEditSummary("Notification: listing at [[WP:RFD|redirects for discussion]] of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
-			switch (TwinkleConfig.xfdWatchUser) {
+			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
 					usertalkpage.setWatchlist(true);
 					break;

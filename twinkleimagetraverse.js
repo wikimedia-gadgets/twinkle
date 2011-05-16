@@ -286,7 +286,7 @@ Twinkle.imagetraverse.callbacks = {
 			form = this.responseXML.getElementsByTagName( 'form' )[0];
 			var postData = {
 				'wpDeleteReasonList': 'other',
-				'wpReason': "Deleted because \"" + self.params.reason + "\"." + TwinkleConfig.deletionSummaryAd,
+				'wpReason': "Deleted because \"" + self.params.reason + "\"." + Twinkle.getPref('deletionSummaryAd'),
 				'wpEditToken': form.wpEditToken.value
 			}
 			self.post( postData );
@@ -295,7 +295,7 @@ Twinkle.imagetraverse.callbacks = {
 			var postData = {
 				'wpWatch': form.wpWatch.checked ? '' : undefined,
 				'wpDeleteReasonList': 'other',
-				'wpReason': "Deleted because \"" + self.params.reason + "\"." + TwinkleConfig.deletionSummaryAd,
+				'wpReason': "Deleted because \"" + self.params.reason + "\"." + Twinkle.getPref('deletionSummaryAd'),
 				'wpEditToken': form.wpEditToken.value
 			}
 			self.post( postData );
@@ -385,7 +385,7 @@ Twinkle.imagetraverse.callbacks = {
 			'wpEdittime': form.wpEdittime.value,
 			'wpAutoSummary': form.wpAutoSummary.value,
 			'wpEditToken': form.wpEditToken.value,
-			'wpSummary': 'Removing instance of image ' + image + " that has been deleted because \"" + self.params.reason + "\")" + "; " + TwinkleConfig.deletionSummaryAd,
+			'wpSummary': 'Removing instance of image ' + image + " that has been deleted because \"" + self.params.reason + "\")" + "; " + Twinkle.getPref('deletionSummaryAd'),
 			'wpTextbox1': text
 		};
 		self.post( postData );

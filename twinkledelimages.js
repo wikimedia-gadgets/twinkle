@@ -50,7 +50,7 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 			'generator': 'categorymembers',
 			'gcmtitle': wgPageName,
 			'gcmnamespace': Namespace.IMAGE,
-			'gcmlimit' : TwinkleConfig.deliMax, 
+			'gcmlimit' : Twinkle.getPref('deliMax'), 
 			'prop': [ 'imageinfo', 'categories', 'revisions' ],
 			'grvlimit': 1,
 			'grvprop': [ 'user' ]
@@ -134,7 +134,7 @@ Twinkle.delimages.callback.evaluate = function twinkledeliCallbackEvaluate(event
 			}
 		}
 	}
-	var work = images.chunk( TwinkleConfig.deliChunks );
+	var work = images.chunk( Twinkle.getPref('deliChunks') );
 	Wikipedia.addCheckpoint();
 	Twinkle.delimages.currentdeletor = window.setInterval( toCall, 1000, work );
 }
@@ -187,7 +187,7 @@ Twinkle.delimages.callbacks = {
 			form = this.responseXML.getElementsByTagName( 'form' )[0];
 			var postData = {
 				'wpDeleteReasonList': 'other',
-				'wpReason': "Deleted because \"" + self.params.reason + "\"." + TwinkleConfig.deletionSummaryAd,
+				'wpReason': "Deleted because \"" + self.params.reason + "\"." + Twinkle.getPref('deletionSummaryAd'),
 				'wpEditToken': form.wpEditToken.value
 			}
 			self.post( postData );
@@ -196,7 +196,7 @@ Twinkle.delimages.callbacks = {
 			var postData = {
 				'wpWatch': form.wpWatch.checked ? '' : undefined,
 				'wpDeleteReasonList': 'other',
-				'wpReason': "Deleted because \"" + self.params.reason + "\"." + TwinkleConfig.deletionSummaryAd,
+				'wpReason': "Deleted because \"" + self.params.reason + "\"." + Twinkle.getPref('deletionSummaryAd'),
 				'wpEditToken': form.wpEditToken.value
 			}
 			self.post( postData );
@@ -291,7 +291,7 @@ Twinkle.delimages.callbacks = {
 			'wpAutoSummary': form.wpAutoSummary.value,
 			'wpEditToken': form.wpEditToken.value,
 			'wpSection': '',
-			'wpSummary': 'Removing instance of file ' + image + " that has been deleted because \"" + self.params.reason + "\")" + "; " + TwinkleConfig.deletionSummaryAd,
+			'wpSummary': 'Removing instance of file ' + image + " that has been deleted because \"" + self.params.reason + "\")" + "; " + Twinkle.getPref('deletionSummaryAd'),
 			'wpTextbox1': text
 		};
 		self.post( postData );

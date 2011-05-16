@@ -213,13 +213,13 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 
 	var text;
 	if ( tbtarget === "an" ) {
-		text = "\n== " + FriendlyConfig.adminNoticeHeading + " ==\n\{\{subst:ANI-notice|thread=";
+		text = "\n== " + Twinkle.getFriendlyPref('adminNoticeHeading') + " ==\n\{\{subst:ANI-notice|thread=";
 		text += section + "|noticeboard=" + tbPageName + "}}\~\~\~\~";
 
-		talkpage.setEditSummary("Notice of AN/ANI discussion" + TwinkleConfig.summaryAd);
+		talkpage.setEditSummary("Notice of AN/ANI discussion" + Twinkle.getPref('summaryAd'));
 	} else {
 		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
-		text = '\n==' + FriendlyConfig.talkbackHeading.replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n{\{talkback|';
+		text = '\n==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n{\{talkback|';
 		text += tbPageName;
 
 		if( section != '' ) {
@@ -230,17 +230,17 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 
 		if( e.target.message.value != '' ) {
 			text += '\n' + e.target.message.value + '  \~\~\~\~';
-		} else if( FriendlyConfig.insertTalkbackSignature ) {
+		} else if( Twinkle.getFriendlyPref('insertTalkbackSignature') ) {
 			text += '\n\~\~\~\~';
 		}
 
 		talkpage.setEditSummary("Talkback ([[" + (tbtarget == 'other' ? '' : 'User talk:') + tbPageName +
-			(section ? ('#' + section) : '') + "]])" + TwinkleConfig.summaryAd);
+			(section ? ('#' + section) : '') + "]])" + Twinkle.getPref('summaryAd'));
 	}
 
 	talkpage.setAppendText(text);
 	talkpage.setCreateOption('recreate');
-	talkpage.setMinorEdit(FriendlyConfig.markTalkbackAsMinor);
+	talkpage.setMinorEdit(Twinkle.getFriendlyPref('markTalkbackAsMinor'));
 	talkpage.setFollowRedirect(true);
 	talkpage.append();
 }

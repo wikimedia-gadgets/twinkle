@@ -57,7 +57,7 @@ Twinkle.welcome.normal = function() {
 				var oHref = $oList.attr("href");
 
 				var oWelcomeNode = welcomeNode.cloneNode( true );
-				oWelcomeNode.firstChild.setAttribute( 'href', oHref + '&' + QueryString.create( { 'friendlywelcome': FriendlyConfig.quickWelcomeMode=='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
+				oWelcomeNode.firstChild.setAttribute( 'href', oHref + '&' + QueryString.create( { 'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode')=='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
 				$oList[0].parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );
 				$oList[0].parentNode.parentNode.appendChild( oWelcomeNode );
 			}
@@ -66,7 +66,7 @@ Twinkle.welcome.normal = function() {
 				var nHref = $nList.attr("href");
 
 				var nWelcomeNode = welcomeNode.cloneNode( true );
-				nWelcomeNode.firstChild.setAttribute( 'href', nHref + '&' + QueryString.create( { 'friendlywelcome': FriendlyConfig.quickWelcomeMode=='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
+				nWelcomeNode.firstChild.setAttribute( 'href', nHref + '&' + QueryString.create( { 'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode')=='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
 				$nList[0].parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );
 				$nList[0].parentNode.parentNode.appendChild( nWelcomeNode );
 			}
@@ -83,7 +83,7 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 	Status.init( document.getElementById('bodyContent') );
 
 	var params = {
-		value: FriendlyConfig.quickWelcomeTemplate,
+		value: Twinkle.getFriendlyPref('quickWelcomeTemplate'),
 		article: QueryString.exists( 'vanarticle' ) ? QueryString.get( 'vanarticle' ) : '',
 		mode: 'auto'
 	};
@@ -120,9 +120,9 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	form.append( { type:'header', label:'Simple templates' } );
 	form.append( { type: 'radio', name: 'simple', list: Twinkle.welcome.standardList } );
 
-	if( typeof( FriendlyConfig.customWelcomeList ) == 'object' ) {
+	if( typeof( Twinkle.getFriendlyPref('customWelcomeList') ) == 'object' ) {
 		form.append( { type:'header', label:'Custom templates' } );
-		form.append( { type: 'radio', name: 'custom', list: FriendlyConfig.customWelcomeList } );
+		form.append( { type: 'radio', name: 'custom', list: Twinkle.getFriendlyPref('customWelcomeList') } );
 	}
 
 	form.append( { type:'header', label:'Welcoming committee templates' } );
@@ -311,7 +311,6 @@ Twinkle.welcome.signatureHash = {
 	'Welcomenpov': false,
 	'Welcomespam': false,
 	'Welcomeunsourced': false,
-	'Welcomeunsourced': false,
 	'Welcome-COI': false,
 	'Welcome-anon': false,
 	'Welcomeanon2': false,
@@ -404,23 +403,23 @@ Twinkle.welcome.callbacks = {
 		
 		var text = '';
 		Status.info( 'Info', 'Will add the welcome template to the '
-				+ ( FriendlyConfig.topWelcomes ? 'top' : 'bottom' )
+				+ ( Twinkle.getFriendlyPref('topWelcomes') ? 'top' : 'bottom' )
 				+ ' of the user\'s talk page.' );
-		if( !FriendlyConfig.topWelcomes ) {
+		if( !Twinkle.getFriendlyPref('topWelcomes') ) {
 			text += oldText + '\n';
 		}
 		
-		if( Twinkle.welcome.headingHash[ params.value ] && FriendlyConfig.insertHeadings ) {
+		if( Twinkle.welcome.headingHash[ params.value ] && Twinkle.getFriendlyPref('insertHeadings') ) {
 			Status.info( 'Info', 'Will create a new heading for the welcome' );
 			// strip section header markers from pref, to preserve backwards compatibility
-			text += "== " + FriendlyConfig.welcomeHeading.replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + " ==\n";
+			text += "== " + Twinkle.getFriendlyPref('welcomeHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + " ==\n";
 		}
 		
 		Status.info( 'Info', 'Will substitute the \{\{' + params.value + '}} welcome template' );
 		text += '\{\{subst:' + params.value;
 		
 		if( Twinkle.welcome.artHash[ params.value ] ) {
-			if( FriendlyConfig.insertUsername && params.value.substring(2,0) != 'W-' ) {
+			if( Twinkle.getFriendlyPref('insertUsername') && params.value.substring(2,0) != 'W-' ) {
 				Status.info( 'Info', 'Will add your username to the template' );
 				text += '|' + mw.config.get('wgUserName');
 			}
@@ -435,32 +434,32 @@ Twinkle.welcome.callbacks = {
 			}
 			text += '|' + params.article;
 			
-			if( FriendlyConfig.insertUsername ) {
+			if( Twinkle.getFriendlyPref('insertUsername') ) {
 				Status.info( 'Info', 'Will add your username to the template' );
 				text += '|' + mw.config.get('wgUserName');
 			}
-		} else if( FriendlyConfig.insertUsername ) {
+		} else if( Twinkle.getFriendlyPref('insertUsername') ) {
 			Status.info( 'Info', 'Will add your username to the template' );
 			text += '|' + mw.config.get('wgUserName');
 		} 
 		
 		text += '\}\}';
 		
-		if( !Twinkle.welcome.signatureHash[ params.value ] && FriendlyConfig.insertSignature ) {
+		if( !Twinkle.welcome.signatureHash[ params.value ] && Twinkle.getFriendlyPref('insertSignature') ) {
 			Status.info( 'Info', 'Will add your signature after the welcome' );
 			text += ' \n\~\~\~\~';
 		}
 		
-		if( FriendlyConfig.topWelcomes ) {
+		if( Twinkle.getFriendlyPref('topWelcomes') ) {
 			text += '\n\n' + oldText;
 		}
  
-		var summaryText = "Added " + ( FriendlyConfig.maskTemplateInSummary ? 'welcome' : ( '\{\{[[Template:' + params.value + '|' + params.value + ']]\}\}' ) ) +
+		var summaryText = "Added " + ( Twinkle.getFriendlyPref('maskTemplateInSummary') ? 'welcome' : ( '\{\{[[Template:' + params.value + '|' + params.value + ']]\}\}' ) ) +
 			" template to user talk page";
 		pageobj.setPageText(text);
-		pageobj.setEditSummary(summaryText + TwinkleConfig.summaryAd);
-		pageobj.setMinorEdit(FriendlyConfig.markWelcomesAsMinor);
-		pageobj.setWatchlist(FriendlyConfig.watchWelcomes);
+		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
+		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markWelcomesAsMinor'));
+		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchWelcomes'));
 		pageobj.setCreateOption('recreate');
 		pageobj.save();
 	}

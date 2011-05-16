@@ -97,7 +97,7 @@ Twinkle.deprod.callback.evaluate = function twinkleproddeleteCallbackEvaluate(ev
 			Wikipedia.removeCheckpoint();
 			return;
 		} else if( Twinkle.deprod.currentDeleteCounter <= 0 || Twinkle.deprod.currentUnlinkCounter <= 0 ) {
-			Twinkle.deprod.currentcounter = TwinkleConfig.proddeleteChunks;
+			Twinkle.deprod.currentcounter = Twinkle.getPref('proddeleteChunks');
 			Twinkle.deprod.unlinkCache = []; // Clear the cache
 			var pages = work.pop();
 			for( var i = 0; i < pages.length; ++i ) {
@@ -115,7 +115,7 @@ Twinkle.deprod.callback.evaluate = function twinkleproddeleteCallbackEvaluate(ev
 			}
 		}
 	}
-	var work = pages.chunk( TwinkleConfig.proddeleteChunks );
+	var work = pages.chunk( Twinkle.getPref('proddeleteChunks') );
 	Wikipedia.addCheckpoint();
 	Twinkle.deprod.currentdeletor = window.setInterval( toCall, 1000, work );
 }
@@ -231,14 +231,14 @@ Twinkle.deprod.callbacks = {
 		if( ! form ) { // Hell, image deletion is b0rked :(
 			form = this.responseXML.getElementsByTagName( 'form' )[0];
 			var postData = {
-				'wpReason': "Speedy deleted per ([[WP:CSD#R1|CSD R1]]), Redirect to deleted page \"" + self.params.page + "\"." + TwinkleConfig.deletionSummaryAd,
+				'wpReason': "Speedy deleted per ([[WP:CSD#R1|CSD R1]]), Redirect to deleted page \"" + self.params.page + "\"." + Twinkle.getPref('deletionSummaryAd'),
 				'wpEditToken': form.wpEditToken.value
 			}
 		} else {
 
 			var postData = {
 				'wpWatch': form.wpWatch.checked ? '' : undefined,
-				'wpReason': "Speedy deleted per ([[WP:CSD#R1|CSD R1]]), Redirect to deleted page \"" + self.params.page + "\"." + TwinkleConfig.deletionSummaryAd,
+				'wpReason': "Speedy deleted per ([[WP:CSD#R1|CSD R1]]), Redirect to deleted page \"" + self.params.page + "\"." + Twinkle.getPref('deletionSummaryAd'),
 				'wpEditToken': form.wpEditToken.value
 			}
 		}
@@ -248,7 +248,7 @@ Twinkle.deprod.callbacks = {
 		var form = this.responseXML.getElementById( 'deleteconfirm' );
 		var postData = {
 			'wpWatch': form.wpWatch.checked ? '' : undefined,
-			'wpReason': "Deleted because expired \[\[WP:PROD\]\]; Reason given: " + self.params.reason + "." + TwinkleConfig.deletionSummaryAd,
+			'wpReason': "Deleted because expired \[\[WP:PROD\]\]; Reason given: " + self.params.reason + "." + Twinkle.getPref('deletionSummaryAd'),
 			'wpEditToken': form.wpEditToken.value
 		}
 		self.post( postData );
@@ -267,7 +267,7 @@ Twinkle.deprod.callbacks = {
 		}
 		var postData = {
 			'wpWatch': form.wpWatch.checked ? '' : undefined,
-			'wpReason': "Deleted talk page of a page because expired \[\[WP:PROD\]\]." + TwinkleConfig.deletionSummaryAd,
+			'wpReason': "Deleted talk page of a page because expired \[\[WP:PROD\]\]." + Twinkle.getPref('deletionSummaryAd'),
 			'wpEditToken': form.wpEditToken.value
 		}
 		self.post( postData );

@@ -39,7 +39,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 	var dialog;
 	if (!content)
 	{
-		dialog = new SimpleWindow( TwinkleConfig.speedyWindowWidth, TwinkleConfig.speedyWindowHeight );
+		dialog = new SimpleWindow( Twinkle.getPref('speedyWindowWidth'), Twinkle.getPref('speedyWindowHeight') );
 		dialog.setTitle( "Choose criteria for speedy deletion" );
 		dialog.setScriptName( "Twinkle" );
 		dialog.addFooterLink( "Speedy deletion policy", "WP:CSD" );
@@ -56,7 +56,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 						value: 'tag_only',
 						name: 'tag_only',
 						tooltip: 'If you just want to tag the page, instead of deleting it now',
-						checked : TwinkleConfig.deleteSysopDefaultToTag,
+						checked : Twinkle.getPref('deleteSysopDefaultToTag'),
 						event: function( event ) {
 							// enable/disable notify checkbox
 							event.target.form.notify.disabled = !event.target.checked;
@@ -64,7 +64,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 							// enable/disable talk page checkbox
 							if (event.target.form.talkpage) {
 								event.target.form.talkpage.disabled = event.target.checked;
-								event.target.form.talkpage.checked = !event.target.checked && TwinkleConfig.deleteTalkPageOnDelete;
+								event.target.form.talkpage.checked = !event.target.checked && Twinkle.getPref('deleteTalkPageOnDelete');
 							}
 							// enable/disable redirects checkbox
 							event.target.form.redirects.disabled = event.target.checked;
@@ -86,8 +86,8 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 						value: 'talkpage',
 						name: 'talkpage',
 						tooltip: "This option deletes the page's talk page in addition. If you choose the F8 (moved to Commons) criterion, this option is ignored and the talk page is *not* deleted.",
-						checked: TwinkleConfig.deleteTalkPageOnDelete,
-						disabled: TwinkleConfig.deleteSysopDefaultToTag,
+						checked: Twinkle.getPref('deleteTalkPageOnDelete'),
+						disabled: Twinkle.getPref('deleteSysopDefaultToTag'),
 						event: function( event ) {
 							event.stopPropagation();
 						}
@@ -104,7 +104,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 						name: 'redirects',
 						tooltip: "This option deletes all incoming redirects in addition. Avoid this option for procedural (e.g. move/merge) deletions.",
 						checked: true,
-						disabled: TwinkleConfig.deleteSysopDefaultToTag,
+						disabled: Twinkle.getPref('deleteSysopDefaultToTag'),
 						event: function( event ) {
 							event.stopPropagation();
 						}
@@ -126,8 +126,8 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 						name: 'notify',
 						tooltip: "A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences " +
 							"for the criterion you choose AND this box is checked. The creator may be welcomed as well.",
-						checked: !userIsInGroup( 'sysop' ) || TwinkleConfig.deleteSysopDefaultToTag,
-						disabled: userIsInGroup( 'sysop' ) && !TwinkleConfig.deleteSysopDefaultToTag,
+						checked: !userIsInGroup( 'sysop' ) || Twinkle.getPref('deleteSysopDefaultToTag'),
+						disabled: userIsInGroup( 'sysop' ) && !Twinkle.getPref('deleteSysopDefaultToTag'),
 						event: function( event ) {
 							event.stopPropagation();
 						}
@@ -145,7 +145,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 					label: 'Tag with multiple criteria',
 					value: 'multiple',
 					tooltip: 'Opens a series of further dialogs, allowing you to specify all the criteria you want to tag this page with.',
-					disabled: userIsInGroup('sysop') && !TwinkleConfig.deleteSysopDefaultToTag
+					disabled: userIsInGroup('sysop') && !Twinkle.getPref('deleteSysopDefaultToTag')
 				}
 			]
 		} );
@@ -648,7 +648,7 @@ Twinkle.speedy.callbacks = {
 				Status.error("Asking for reason", "you didn't give one, so aborting");
 				return;
 			}
-			thispage.setEditSummary( reason + TwinkleConfig.deletionSummaryAd );
+			thispage.setEditSummary( reason + Twinkle.getPref('deletionSummaryAd') );
 			thispage.deletePage();
 
 			// delete talk page
@@ -658,7 +658,7 @@ Twinkle.speedy.callbacks = {
 				document.getElementById( 'ca-talk' ).className != 'new'
 			) {
 				var talkpage = new Wikipedia.page( Wikipedia.namespaces[ wgNamespaceNumber + 1 ] + ':' + wgTitle, "Deleting talk page" );
-				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page [[' + wgPageName + "]]. " + TwinkleConfig.deletionSummaryAd);
+				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page [[' + wgPageName + "]]. " + Twinkle.getPref('deletionSummaryAd'));
 				talkpage.deletePage();
 			}
 
@@ -720,7 +720,7 @@ Twinkle.speedy.callbacks = {
 				'preview': 'yes',
 				'vanarticle': wgPageName.replace(/_/g, ' ')
 			};
-			switch( TwinkleConfig.userTalkPageMode ) {
+			switch( Twinkle.getPref('userTalkPageMode') ) {
 			case 'tab':
 				window.open( wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ), '_tab' );
 				break;
@@ -770,7 +770,7 @@ Twinkle.speedy.callbacks = {
 			$snapshot.each(function(key, value) {
 				var title = $(value).attr('title');
 				var page = new Wikipedia.page(title, 'Deleting redirect "' + title + '"');
-				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page [['+ wgPageName + "]]." + TwinkleConfig.deletionSummaryAd);
+				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page [['+ wgPageName + "]]." + Twinkle.getPref('deletionSummaryAd'));
 				page.deletePage(onsuccess);
 			});
 		}
@@ -834,7 +834,7 @@ Twinkle.speedy.callbacks = {
 
 			var thispage = new Wikipedia.page(wgPageName);
 			// patrol the page, if reached from Special:NewPages
-			if( TwinkleConfig.markSpeedyPagesAsPatrolled ) {
+			if( Twinkle.getPref('markSpeedyPagesAsPatrolled') ) {
 				thispage.patrol();
 			}
 
@@ -843,7 +843,7 @@ Twinkle.speedy.callbacks = {
 				var callback = function(pageobj) {
 					var initialContrib = pageobj.getCreator();
 					var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-					var nowelcome = TwinkleConfig.welcomeUserOnSpeedyDeletionNotification.indexOf(params.normalized) == -1;
+					var nowelcome = Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(params.normalized) == -1;
 					var notifytext;
 
 					// specialcase "db" and "db-multiple"
@@ -866,7 +866,7 @@ Twinkle.speedy.callbacks = {
 					notifytext += (nowelcome ? "|nowelcome=yes" : "") + "\}\} \~\~\~\~";
 
 					usertalkpage.setAppendText(notifytext);
-					usertalkpage.setEditSummary("Notification: speedy deletion nomination of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+					usertalkpage.setEditSummary("Notification: speedy deletion nomination of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
 					usertalkpage.setCreateOption('recreate');
 					usertalkpage.setFollowRedirect(true);
 					usertalkpage.append();
@@ -912,14 +912,14 @@ Twinkle.speedy.callbacks = {
 
 			pageobj.setPageText(code + ((params.normalized == 'g10' || Twinkle.speedy.dbmultipleCriteria.indexOf('g10') != -1) ?
 					'' : ("\n" + text) )); // cause attack pages to be blanked
-			pageobj.setEditSummary(editsummary + TwinkleConfig.summaryAd);
+			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			pageobj.setWatchlist(params.watch);
 			pageobj.setCreateOption('nocreate');
 			pageobj.save();
 		},
 
 		addToLog: function(params, initialContrib) {
-			var wikipedia_page = new Wikipedia.page("User:" + wgUserName + "/" + TwinkleConfig.speedyLogPageName, "Adding entry to userspace log");
+			var wikipedia_page = new Wikipedia.page("User:" + wgUserName + "/" + Twinkle.getPref('speedyLogPageName'), "Adding entry to userspace log");
 			params.logInitialContrib = initialContrib;
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.speedy.callbacks.user.saveLog);
@@ -974,7 +974,7 @@ Twinkle.speedy.callbacks = {
 			text += " \~\~\~\~\~\n";
 
 			pageobj.setPageText(text);
-			pageobj.setEditSummary("Logging speedy deletion nomination of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+			pageobj.setEditSummary("Logging speedy deletion nomination of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
 			pageobj.setCreateOption("recreate");
 			pageobj.save();
 		}
@@ -1070,7 +1070,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			}
 			break;
 		case 'g7':
-			if (TwinkleConfig.speedyPromptOnG7)
+			if (Twinkle.getPref('speedyPromptOnG7'))
 			{
 				var rationale = prompt('Please provide an optional rationale (perhaps linking to where the author requested this deletion - leave empty to skip):');
 				if (rationale == null)
@@ -1177,9 +1177,9 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 	var params = {
 		value: value,
 		normalized: normalized,
-		watch: TwinkleConfig.watchSpeedyPages.indexOf( normalized ) != -1,
+		watch: Twinkle.getPref('watchSpeedyPages').indexOf( normalized ) != -1,
 		reason: Twinkle.speedy.reasonHash[ value ],
-		openusertalk: TwinkleConfig.openUserTalkPageOnSpeedyDelete.indexOf( normalized ) != -1,
+		openusertalk: Twinkle.getPref('openUserTalkPageOnSpeedyDelete').indexOf( normalized ) != -1,
 		deleteTalkPage: e.target.form.talkpage && e.target.form.talkpage.checked,
 		deleteRedirects: e.target.form.redirects.checked
 	};
@@ -1219,14 +1219,14 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		for (var i in Twinkle.speedy.dbmultipleCriteria)
 		{
 			if (typeof Twinkle.speedy.dbmultipleCriteria[i] == 'string' &&
-				TwinkleConfig.watchSpeedyPages.indexOf(Twinkle.speedy.dbmultipleCriteria[i]) != -1)
+				Twinkle.getPref('watchSpeedyPages').indexOf(Twinkle.speedy.dbmultipleCriteria[i]) != -1)
 			{
 				watchPage = true;
 				break;
 			}
 		}
 	}
-	else watchPage = TwinkleConfig.watchSpeedyPages.indexOf(normalized) != -1;
+	else watchPage = Twinkle.getPref('watchSpeedyPages').indexOf(normalized) != -1;
 
 	var notifyuser = false;
 	if (value == 'multiple')
@@ -1234,29 +1234,29 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		for (var i in Twinkle.speedy.dbmultipleCriteria)
 		{
 			if (typeof Twinkle.speedy.dbmultipleCriteria[i] == 'string' &&
-				TwinkleConfig.notifyUserOnSpeedyDeletionNomination.indexOf(Twinkle.speedy.dbmultipleCriteria[i]) != -1)
+				Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(Twinkle.speedy.dbmultipleCriteria[i]) != -1)
 			{
 				notifyuser = true;
 				break;
 			}
 		}
 	}
-	else notifyuser = (TwinkleConfig.notifyUserOnSpeedyDeletionNomination.indexOf(normalized) != -1) && e.target.form.notify.checked;
+	else notifyuser = (Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(normalized) != -1) && e.target.form.notify.checked;
 
 	var csdlog = false;
-	if (TwinkleConfig.logSpeedyNominations && value == 'multiple')
+	if (Twinkle.getPref('logSpeedyNominations') && value == 'multiple')
 	{
 		for (var i in Twinkle.speedy.dbmultipleCriteria)
 		{
 			if (typeof Twinkle.speedy.dbmultipleCriteria[i] == 'string' &&
-				TwinkleConfig.noLogOnSpeedyNomination.indexOf(Twinkle.speedy.dbmultipleCriteria[i]) === -1)
+				Twinkle.getPref('noLogOnSpeedyNomination').indexOf(Twinkle.speedy.dbmultipleCriteria[i]) === -1)
 			{
 				csdlog = true;
 				break;
 			}
 		}
 	}
-	else csdlog = TwinkleConfig.logSpeedyNominations && TwinkleConfig.noLogOnSpeedyNomination.indexOf(normalized) === -1;
+	else csdlog = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(normalized) === -1;
 
 	var params = {
 		value: value,

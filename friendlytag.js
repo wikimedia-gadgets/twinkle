@@ -37,7 +37,7 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 						value: 'group',
 						name: 'group',
 						tooltip: 'If applying three or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped into a single {{multiple issues}} template.',
-						checked: FriendlyConfig.groupByDefault
+						checked: Twinkle.getFriendlyPref('groupByDefault')
 					}
 				]
 			}
@@ -52,9 +52,9 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 		form.append( { type:'header', label:'Notice templates' } );
 		form.append( { type:'checkbox', name: 'notice', list: Twinkle.tag.noticeList } );
 
-		if( typeof( FriendlyConfig.customTagList ) == 'object' ) {
+		if( typeof( Twinkle.getFriendlyPref('customTagList') ) == 'object' ) {
 			form.append( { type:'header', label:'Custom templates' } );
-			form.append( { type: 'checkbox', name: 'custom', list: FriendlyConfig.customTagList } );
+			form.append( { type: 'checkbox', name: 'custom', list: Twinkle.getFriendlyPref('customTagList') } );
 		}
 	} else {
 		Window.setTitle( "Redirect tagging" );
@@ -875,16 +875,16 @@ Twinkle.tag.callbacks = {
 				"$1" + tagText);
 		}
 		summaryText += ' tag' + ( ( tags.length + ( groupableTags.length > 3 ? 1 : 0 ) ) > 1 ? 's' : '' ) +
-			' to ' + ( Twinkle.tag.isRedirect ? 'redirect' : 'article' ) + TwinkleConfig.summaryAd;
+			' to ' + ( Twinkle.tag.isRedirect ? 'redirect' : 'article' ) + Twinkle.getPref('summaryAd');
 
 		pageobj.setPageText(pageText);
 		pageobj.setEditSummary(summaryText);
-		pageobj.setWatchlist(FriendlyConfig.watchTaggedPages);
-		pageobj.setMinorEdit(FriendlyConfig.markTaggedPagesAsMinor);
+		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
+		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 		
-		if( FriendlyConfig.markTaggedPagesAsPatrolled ) {
+		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
 			pageobj.patrol();
 		}
 	}
@@ -895,7 +895,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	if( Twinkle.tag.isRedirect ) {
 		var tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
 	} else {
-		if( typeof( FriendlyConfig.customTagList ) == 'object' ) {
+		if( typeof( Twinkle.getFriendlyPref('customTagList') ) == 'object' ) {
 			var tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) ).concat( form.getChecked( 'custom' ) );
 		} else {
 			var tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) );

@@ -29,7 +29,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 					value: 'notify',
 					name: 'notify',
 					tooltip: "Uncheck this if you are planning to make multiple nominations from the same user, and don't want to overload their talk page with too many notifications.",
-					checked: TwinkleConfig.notifyUserOnDeli
+					checked: Twinkle.getPref('notifyUserOnDeli')
 				}
 			]
 		}
@@ -263,8 +263,8 @@ Twinkle.image.callbacks = {
 		tag += "\}\}\n";
 
 		pageobj.setPageText(tag + text);
-		pageobj.setEditSummary("This file is up for deletion, per [[WP:CSD#" + csdcrit + "|CSD " + csdcrit + "]] (" + params.type + ")." + TwinkleConfig.summaryAd);
-		switch (TwinkleConfig.deliWatchPage) {
+		pageobj.setEditSummary("This file is up for deletion, per [[WP:CSD#" + csdcrit + "|CSD " + csdcrit + "]] (" + params.type + ")." + Twinkle.getPref('summaryAd'));
+		switch (Twinkle.getPref('deliWatchPage')) {
 			case 'yes':
 				pageobj.setWatchlist(true);
 				break;
@@ -284,9 +284,9 @@ Twinkle.image.callbacks = {
 		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n\{\{subst:di-" + params.type + "-notice|1=" + wgTitle + "\}\} \~\~\~\~";
 		usertalkpage.setAppendText(notifytext);
-		usertalkpage.setEditSummary("Notification: tagging for deletion of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+		usertalkpage.setEditSummary("Notification: tagging for deletion of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
 		usertalkpage.setCreateOption('recreate');
-		switch (TwinkleConfig.deliWatchUser) {
+		switch (Twinkle.getPref('deliWatchUser')) {
 			case 'yes':
 				usertalkpage.setWatchlist(true);
 				break;

@@ -33,7 +33,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 			event:Twinkle.warn.callback.change_category
 		} );
 
-	var defaultGroup = parseInt(TwinkleConfig.defaultWarningGroup);
+	var defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'));
 	main_group.append( { type:'option', label:'General Note (1)', value:'level1', selected: ( defaultGroup == 1 || defaultGroup < 1 || ( userIsInGroup( 'sysop' ) ? defaultGroup > 8 : defaultGroup > 7 ) ) } );
 	main_group.append( { type:'option', label:'Caution (2)', value:'level2', selected: ( defaultGroup == 2 ) } );
 	main_group.append( { type:'option', label:'Warning (3)', value:'level3', selected: ( defaultGroup == 3 ) } );
@@ -1467,7 +1467,7 @@ Twinkle.warn.callbacks = {
 		if( params.main_group == 'block' ) {
 			var article = '', reason = '', time = null;
 			
-			if( TwinkleConfig.blankTalkpageOnIndefBlock && params.sub_group != 'uw-lblock' && ( Twinkle.warn.indefBlockHash[ params.sub_group ] || /indef|\*|max/.exec( params.block_timer ) ) ) {
+			if( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.sub_group != 'uw-lblock' && ( Twinkle.warn.indefBlockHash[ params.sub_group ] || /indef|\*|max/.exec( params.block_timer ) ) ) {
 				Status.info( 'Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date' );
 				text = "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			} else if( !headerRe.exec( text ) ) {
@@ -1505,7 +1505,7 @@ Twinkle.warn.callbacks = {
 			}
 		}
 		
-		if ( TwinkleConfig.showSharedIPNotice && isIPAddress( wgTitle ) ) {
+		if ( Twinkle.getPref('showSharedIPNotice') && isIPAddress( wgTitle ) ) {
 			Status.info( 'Info', 'Adding a shared ip notice' );
 			switch( QueryString.get( 'type' ) ) {
 			case 'vand':
@@ -1518,8 +1518,8 @@ Twinkle.warn.callbacks = {
 		}
 		
 		pageobj.setPageText( text );
-		pageobj.setEditSummary( Twinkle.warn.messages[params.main_group][params.sub_group].summary + ( params.article ? ' on [[' + params.article + ']]'  : '' ) + '.' + TwinkleConfig.summaryAd );
-		pageobj.setWatchlist( TwinkleConfig.watchWarnings );
+		pageobj.setEditSummary( Twinkle.warn.messages[params.main_group][params.sub_group].summary + ( params.article ? ' on [[' + params.article + ']]'  : '' ) + '.' + Twinkle.getPref('summaryAd') );
+		pageobj.setWatchlist( Twinkle.getPref('watchWarnings') );
 		pageobj.save();
 	}
 }

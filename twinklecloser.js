@@ -381,7 +381,7 @@ Twinkle.closer.callbacks = {
 				'wpEdittime': form.wpEdittime.value,
 				'wpAutoSummary': form.wpAutoSummary.value,
 				'wpEditToken': form.wpEditToken.value,
-				'wpSummary': form.wpSummary.value + ' ' + summary + TwinkleConfig.summaryAd,
+				'wpSummary': form.wpSummary.value + ' ' + summary + Twinkle.getPref('summaryAd'),
 				'wpTextbox1': text
 			};
 
@@ -562,7 +562,7 @@ Twinkle.closer.callbacks = {
 			var form = this.responseXML.getElementById( 'deleteconfirm' );
 			var postData = {
 				'wpWatch': form.wpWatch.checked ? '' : undefined,
-				'wpReason': "Speedy deleted per ([[WP:CSD#R1|CSD R1]]), Redirect to deleted page \"" + self.params.affected_page + "\"." + TwinkleConfig.deletionSummaryAd,
+				'wpReason': "Speedy deleted per ([[WP:CSD#R1|CSD R1]]), Redirect to deleted page \"" + self.params.affected_page + "\"." + Twinkle.getPref('deletionSummaryAd'),
 				'wpEditToken': form.wpEditToken.value
 			}
 			self.post( postData );
@@ -571,7 +571,7 @@ Twinkle.closer.callbacks = {
 			var form = this.responseXML.getElementById( 'deleteconfirm' );
 			var postData = {
 				'wpWatch': form.wpWatch.checked ? '' : undefined,
-				'wpReason': "Deleted per outcome of [[WP:AFD]] discussion (see [[" + self.params.page + "]])." + TwinkleConfig.deletionSummaryAd,
+				'wpReason': "Deleted per outcome of [[WP:AFD]] discussion (see [[" + self.params.page + "]])." + Twinkle.getPref('deletionSummaryAd'),
 				'wpEditToken': form.wpEditToken.value
 			}
 			self.post( postData );
@@ -589,7 +589,7 @@ Twinkle.closer.callbacks = {
 				'wpEdittime': form.wpEdittime.value,
 				'wpAutoSummary': form.wpAutoSummary.value,
 				'wpEditToken': form.wpEditToken.value,
-				'wpSummary': summary + TwinkleConfig.summaryAd,
+				'wpSummary': summary + Twinkle.getPref('summaryAd'),
 				'wpTextbox1': text
 			};
 

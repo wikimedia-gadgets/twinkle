@@ -134,7 +134,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			'action': 'query',
 			'generator': 'categorymembers',
 			'gcmtitle': wgPageName,
-			'gcmlimit' : TwinkleConfig.batchMax, // the max for sysops
+			'gcmlimit' : Twinkle.getPref('batchMax'), // the max for sysops
 			'prop': [ 'revisions' ],
 			'rvprop': [ 'size' ]
 		};
@@ -144,14 +144,14 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			'generator': 'allpages',
 			'gapnamespace': QueryString.exists('namespace') ? QueryString.get( 'namespace' ): document.getElementById('namespace').value,
 			'gapprefix': QueryString.exists('from') ? QueryString.get( 'from' ).replace('+', ' ').toUpperCaseFirstChar() : document.getElementById('nsfrom').value.toUpperCaseFirstChar(),
-			'gaplimit' : TwinkleConfig.batchMax, // the max for sysops
+			'gaplimit' : Twinkle.getPref('batchMax'), // the max for sysops
 			'prop' : [ 'revisions' ],
 			'rvprop': [ 'size' ]
 		}
 	} else {
 		var query = {
 			'action': 'query',
-			'gpllimit' : TwinkleConfig.batchMax, // the max for sysops
+			'gpllimit' : Twinkle.getPref('batchMax'), // the max for sysops
 			'generator': 'links',
 			'titles': wgPageName,
 			'prop': [ 'revisions' ],
@@ -218,7 +218,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 			window.clearInterval( Twinkle.batchprotect.currentprotector );
 			Wikipedia.removeCheckpoint();
 			return;
-		} else if( work.length != 0 && Twinkle.batchprotect.currentProtectCounter <= TwinkleConfig.batchProtectMinCutOff ) {
+		} else if( work.length != 0 && Twinkle.batchprotect.currentProtectCounter <= Twinkle.getPref('batchProtectMinCutOff') ) {
 			var pages = work.shift();
 			Twinkle.batchprotect.currentProtectCounter += pages.length;
 			for( var i = 0; i < pages.length; ++i ) {
@@ -233,7 +233,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 			}
 		}
 	}
-	var work = pages.chunk( TwinkleConfig.batchProtectChunks );
+	var work = pages.chunk( Twinkle.getPref('batchProtectChunks') );
 	Wikipedia.addCheckpoint();
 	Twinkle.batchprotect.currentprotector = window.setInterval( toCall, 1000, work );
 }
@@ -275,7 +275,7 @@ Twinkle.batchprotect.callbacks = {
 			'mwProtect-cascade': self.params.cascade ? '' : undefined,
 			'mwProtectWatch': form.mwProtectWatch.checked ? '' : undefined,
 			'wpProtectReasonSelection': 'other',
-			'mwProtect-reason': self.params.reason + TwinkleConfig.protectionSummaryAd
+			'mwProtect-reason': self.params.reason + Twinkle.getPref('protectionSummaryAd')
 		};
 
 		self.post( postData );

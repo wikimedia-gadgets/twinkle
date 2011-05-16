@@ -3479,11 +3479,13 @@ SimpleWindow.setButtonsEnabled = function( enabled ) {
 	$(".morebits-dialog-buttons button").attr("disabled", !enabled);
 };
 
+/**
+ * Twinkle-related stuff 
+ */
 
 // Blacklist was removed per consensus at http://en.wikipedia.org/wiki/Wikipedia:Administrators%27_noticeboard/Archive221#New_Twinkle_blacklist_proposal
 
-// Twinkle initialization
-
+// set up configuration of the Twinkle portlet
 twAddPortlet.usingTwCfg = (typeof(TwinkleConfig) !== "undefined");
 if (skin === 'vector') {
 	twAddPortlet.portletArea = (twAddPortlet.usingTwCfg && TwinkleConfig.portletArea ? TwinkleConfig.portletArea : 'right-navigation');
@@ -3496,7 +3498,7 @@ if (skin === 'vector') {
 }
 
 // check if account is experienced enough for more advanced functions
-// don't use the Twinkle object because other scripts may import this
+// This may be useful to other user scripts.
 var twinkleUserAuthorized = userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'confirmed' );
 
 // flag to let script loaders know that this module has already been loaded

@@ -19,6 +19,8 @@ Twinkle.prod = function twinkleprod() {
 }
 
 Twinkle.prod.callback = function twinkleprodCallback() {
+	Twinkle.prod.defaultReason = Twinkle.getPref('prodReasonDefault');
+
 	var Window = new SimpleWindow( 800, 410 );
 	Window.setTitle( "Proposed deletion (PROD)" );
 	Window.setScriptName( "Twinkle" );
@@ -97,13 +99,15 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 					type: 'textarea',
 					name: 'reason',
 					label: 'Reason for proposed deletion:',
-					value: TwinkleConfig.prodReasonDefault,
+					value: Twinkle.prod.defaultReason
 				} );
 			break;
 
 		case 'prodblp':
 		  // first, remember the prod value that the user entered in the textarea, in case he wants to switch back. We can abuse the config field for that.
-		  if (event.target.form.reason) TwinkleConfig.prodReasonDefault = event.target.form.reason.value;
+		  if (event.target.form.reason) {
+				Twinkle.prod.defaultReason = event.target.form.reason.value;
+			}
 		
 			field.append( {
 					type: 'checkbox',
@@ -172,7 +176,7 @@ Twinkle.prod.callbacks = {
 				thispage.lookupCreator(Twinkle.prod.callbacks.userNotification);
 			}
 			// If not notifying, log this PROD
-			else if( TwinkleConfig.logProdPages ) {
+			else if( Twinkle.getPref('logProdPages') ) {
 				Twinkle.prod.callbacks.addToLog(params, null);
 			}
 
@@ -197,15 +201,15 @@ Twinkle.prod.callbacks = {
 			var summaryText = "Endorsing proposed deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
 			text = text.replace( prod_re, text.match( prod_re ) + "\n\{\{prod-2|1=" + (params.blp ? "article is a [[WP:BLPPROD|biography of a living person with no sources]]" : params.reason) + "\}\}\n" );
 
-			if( TwinkleConfig.logProdPages ) {
+			if( Twinkle.getPref('logProdPages') ) {
 				params.logEndorsing = true;
 				Twinkle.prod.callbacks.addToLog(params);
 			}
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary(summaryText + TwinkleConfig.summaryAd);
-		pageobj.setWatchlist(TwinkleConfig.watchProdPages);
+		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
+		pageobj.setWatchlist(Twinkle.getPref('watchProdPages'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 	},
@@ -216,18 +220,18 @@ Twinkle.prod.callbacks = {
 		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n\{\{subst:prodwarning" + (params.blp ? "BLP" : "") + "|1=" + wgPageName + "|concern=" + params.reason + "\}\} \~\~\~\~";
 		usertalkpage.setAppendText(notifytext);
-		usertalkpage.setEditSummary("Notification: proposed deletion of [[" + wgPageName + "]]." + TwinkleConfig.summaryAd);
+		usertalkpage.setEditSummary("Notification: proposed deletion of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
 		usertalkpage.setCreateOption('recreate');
 		usertalkpage.setFollowRedirect(true);
 		usertalkpage.append();
-		if (TwinkleConfig.logProdPages) {
+		if (Twinkle.getPref('logProdPages')) {
 			params.logInitialContrib = initialContrib;
 			Twinkle.prod.callbacks.addToLog(params);
 		}
 	},
 
 	addToLog: function(params) {
-		var wikipedia_page = new Wikipedia.page("User:" + wgUserName + "/" + TwinkleConfig.prodLogPageName, "Adding entry to userspace log");
+		var wikipedia_page = new Wikipedia.page("User:" + wgUserName + "/" + Twinkle.getPref('prodLogPageName'), "Adding entry to userspace log");
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.load(Twinkle.prod.callbacks.saveLog);
 	},
@@ -269,7 +273,7 @@ Twinkle.prod.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary(summarytext + TwinkleConfig.summaryAd);
+		pageobj.setEditSummary(summarytext + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption("recreate");
 		pageobj.save();
 	}

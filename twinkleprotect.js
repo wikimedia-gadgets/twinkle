@@ -90,7 +90,7 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 		.parent().css({ display: 'inline-block', marginRight: '0.5em' });
 
 	// get current protection level asynchronously
-	Wikipedia.addCheckpoint();  // avoid Action: completed notice
+	Wikipedia.actionCompleted.postfix = false;  // avoid Action: completed notice
 	if (userIsInGroup('sysop')) {
 		var query = {
 			action: 'query',
@@ -131,7 +131,7 @@ Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtec
 	}
 	Twinkle.protect.protectionLevel = result;
 	apiobj.statelem.info(result);
-	setTimeout(Wikipedia.removeCheckpoint, 1000);
+	window.setTimeout(function() { Wikipedia.actionCompleted.postfix = "completed"; }, 500);  // restore actionCompleted message
 };
 
 Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAction(e) {
@@ -940,14 +940,14 @@ Twinkle.protect.callbacks = {
 
 		var summary;
 		if( params.tag === 'none' ) {
-			summary = 'Removing protection template' + TwinkleConfig.summaryAd;
+			summary = 'Removing protection template' + Twinkle.getPref('summaryAd');
 		} else {
 			if( params.noinclude ) {
 				text = "<noinclude>\{\{" + tag + "\}\}</noinclude>" + text;
 			} else {
 				text = "\{\{" + tag + "\}\}\n" + text;
 			}
-			summary = "Adding \{\{" + params.tag + "\}\}" + TwinkleConfig.summaryAd;
+			summary = "Adding \{\{" + params.tag + "\}\}" + Twinkle.getPref('summaryAd');
 		}
 
 		protectedPage.setEditSummary( summary );
@@ -1029,7 +1029,7 @@ Twinkle.protect.callbacks = {
 			return;
 		}
 		statusElement.status( 'Adding new request...' );
-		rppPage.setEditSummary( "Requesting " + params.typename + ' of [[' + wgPageName.replace(/_/g, ' ') + ']].' + TwinkleConfig.summaryAd );
+		rppPage.setEditSummary( "Requesting " + params.typename + ' of [[' + wgPageName.replace(/_/g, ' ') + ']].' + Twinkle.getPref('summaryAd') );
 		rppPage.setPageText( text );
 		rppPage.setCreateOption( 'recreate' );
 		rppPage.save();

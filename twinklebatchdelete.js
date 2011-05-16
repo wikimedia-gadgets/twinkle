@@ -56,7 +56,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			'action': 'query',
 			'generator': 'categorymembers',
 			'gcmtitle': wgPageName,
-			'gcmlimit' : TwinkleConfig.batchMax, // the max for sysops
+			'gcmlimit' : Twinkle.getPref('batchMax'), // the max for sysops
 			'prop': [ 'categories', 'revisions' ],
 			'rvprop': [ 'size' ]
 		};
@@ -91,7 +91,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			'generator': 'allpages',
 			'gapnamespace': gapnamespace ,
 			'gapprefix': gapprefix,
-			'gaplimit' : TwinkleConfig.batchMax, // the max for sysops
+			'gaplimit' : Twinkle.getPref('batchMax'), // the max for sysops
 			'prop' : ['categories', 'revisions' ],
 			'rvprop': [ 'size' ]
 		}
@@ -100,7 +100,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			'action': 'query',
 			'generator': 'links',
 			'titles': wgPageName,
-			'gpllimit' : TwinkleConfig.batchMax, // the max for sysops
+			'gpllimit' : Twinkle.getPref('batchMax'), // the max for sysops
 			'prop': [ 'categories', 'revisions' ],
 			'rvprop': [ 'size' ]
 		};
@@ -167,7 +167,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 			window.clearInterval( Twinkle.batchdelete.currentdeletor );
 			Wikipedia.removeCheckpoint();
 			return;
-		} else if( work.length !== 0 && ( Twinkle.batchdelete.currentDeleteCounter <= TwinkleConfig.batchDeleteMinCutOff || Twinkle.batchdelete.currentUnlinkCounter <= TwinkleConfig.batchDeleteMinCutOff  ) ) {
+		} else if( work.length !== 0 && ( Twinkle.batchdelete.currentDeleteCounter <= Twinkle.getPref('batchDeleteMinCutOff') || Twinkle.batchdelete.currentUnlinkCounter <= Twinkle.getPref('batchDeleteMinCutOff')  ) ) {
 			Twinkle.batchdelete.unlinkCache = []; // Clear the cache
 			var pages = work.shift();
 			Twinkle.batchdelete.currentDeleteCounter += pages.length;
@@ -184,7 +184,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 			}
 		}
 	}
-	var work = pages.chunk( TwinkleConfig.batchdeleteChunks );
+	var work = pages.chunk( Twinkle.getPref('batchdeleteChunks') );
 	Wikipedia.addCheckpoint();
 	Twinkle.batchdelete.currentdeletor = window.setInterval( toCall, 1000, work );
 }
@@ -233,7 +233,7 @@ Twinkle.batchdelete.callbacks = {
 			}
 
 			var wikipedia_page = new Wikipedia.page( self.params.page, 'Deleting page ' + self.params.page );
-			wikipedia_page.setEditSummary(self.params.reason + TwinkleConfig.deletionSummaryAd);
+			wikipedia_page.setEditSummary(self.params.reason + Twinkle.getPref('deletionSummaryAd'));
 			wikipedia_page.deletePage(function( apiobj ) { 
 					--Twinkle.batchdelete.currentDeleteCounter;
 					var link = document.createElement( 'a' );
@@ -288,7 +288,7 @@ Twinkle.batchdelete.callbacks = {
 		for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
 			var title = snapshot.snapshotItem(i).value;
 			var wikipedia_page = new Wikipedia.page( title, "Deleting " + title );
-			wikipedia_page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + self.params.page + '"' + TwinkleConfig.deletionSummaryA);
+			wikipedia_page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + self.params.page + '"' + Twinkle.getPref('deletionSummaryAd'));
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.deletePage(onsuccess);
 		}
@@ -367,7 +367,7 @@ Twinkle.batchdelete.callbacks = {
 			Wikipedia.actionCompleted();
 			return;
 		}
-		pageobj.setEditSummary('Removing backlinks to deleted page ' + self.params.page + TwinkleConfig.deletionSummaryAd);
+		pageobj.setEditSummary('Removing backlinks to deleted page ' + self.params.page + Twinkle.getPref('deletionSummaryAd'));
 		pageobj.setPageText(text);
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(params.onsuccess);

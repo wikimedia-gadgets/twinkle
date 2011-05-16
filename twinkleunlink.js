@@ -50,7 +50,7 @@ Twinkle.unlink.callback = function twinkleunlinkCallback(presetReason) {
 			'iutitle': wgPageName,
 			'bllimit': userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
 			'iulimit': userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
-			'blnamespace': TwinkleConfig.unlinkNamespaces // Main namespace and portal namespace only, keep on talk pages.
+			'blnamespace': Twinkle.getPref('unlinkNamespaces') // Main namespace and portal namespace only, keep on talk pages.
 		};
 	} else {
 		var query = {
@@ -59,7 +59,7 @@ Twinkle.unlink.callback = function twinkleunlinkCallback(presetReason) {
 			'bltitle': wgPageName,
 			'blfilterredir': 'nonredirects',
 			'bllimit': userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
-			'blnamespace': TwinkleConfig.unlinkNamespaces // Main namespace and portal namespace only, keep on talk pages.
+			'blnamespace': Twinkle.getPref('unlinkNamespaces') // Main namespace and portal namespace only, keep on talk pages.
 		};
 	}
 	var wikipedia_api = new Wikipedia.api( 'Grabbing backlinks', query, Twinkle.unlink.callbacks.display.backlinks );
@@ -193,7 +193,7 @@ Twinkle.unlink.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary("Removing link(s) to \"" + wgPageName + "\": " + params.reason + "." + TwinkleConfig.summaryAd);
+		pageobj.setEditSummary("Removing link(s) to \"" + wgPageName + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(Twinkle.unlink.callbacks.success);
 	},
@@ -213,7 +213,7 @@ Twinkle.unlink.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary("Commenting out use(s) of image \"" + wgPageName + "\": " + params.reason + "." + TwinkleConfig.summaryAd);
+		pageobj.setEditSummary("Commenting out use(s) of image \"" + wgPageName + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(Twinkle.unlink.callbacks.success);
 	},

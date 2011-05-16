@@ -399,8 +399,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 					return;
 				}
 				aivPage.getStatusElement().status( 'Adding new report...' );
-				aivPage.setMinorEdit( TwinkleConfig.markAIVReportAsMinor );
-				aivPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
+				aivPage.setMinorEdit( Twinkle.getPref('markAIVReportAsMinor') );
+				aivPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd') );
 				aivPage.setPageText( text + '\n*\{\{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '\}\} - ' + reason );
 				aivPage.save();
 			} );
@@ -446,8 +446,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 					return;
 				}
 				uaaPage.getStatusElement().status( 'Adding new report...' );
-				uaaPage.setMinorEdit( TwinkleConfig.markUAAReportAsMinor );
-				uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ TwinkleConfig.summaryAd );
+				uaaPage.setMinorEdit( Twinkle.getPref('markUAAReportAsMinor') );
+				uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ Twinkle.getPref('summaryAd') );
 				uaaPage.setPageText( text.replace( /-->/, "-->\n" + reason ) );  // add at top
 				uaaPage.save();
 			} );
@@ -488,7 +488,7 @@ Twinkle.arv.processSock = function( params ) {
 	// notify all user accounts if requested
 	if (params.notify) {
 	
-		var notifyEditSummary = "Notifying about suspicion of sockpuppeteering." + TwinkleConfig.summaryAd;
+		var notifyEditSummary = "Notifying about suspicion of sockpuppeteering." + Twinkle.getPref('summaryAd');
 		var notifyText = "\n\n\{\{subst:socksuspectnotice|1=" + params.uid + "\}\} \~\~\~\~";
 		
 		// notify user's master account
@@ -538,8 +538,8 @@ Twinkle.arv.processSock = function( params ) {
 
 	var spiPage = new Wikipedia.page( 'Wikipedia:Sockpuppet investigations/' +  params.uid, 'Retrieving discussion page' );
 	spiPage.setFollowRedirect( true );
-	spiPage.setMinorEdit( TwinkleConfig.markSockReportAsMinor );
-	spiPage.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ TwinkleConfig.summaryAd );
+	spiPage.setMinorEdit( Twinkle.getPref('markSockReportAsMinor') );
+	spiPage.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ Twinkle.getPref('summaryAd') );
 	spiPage.setAppendText( text );
 	spiPage.append();
 	
