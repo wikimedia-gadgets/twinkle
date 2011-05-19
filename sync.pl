@@ -22,7 +22,8 @@ my ($opt, $usage) = describe_options(
             required => 1,
             one_of => [
                 ["pull" => "pull changes from wikipedia"],
-                ["push" => "push changes to wikipedia"]
+                ["push" => "push changes to wikipedia"],
+                ["deploy" => "push changes to wikipedia as gadgets"]
             ] 
         } 
     ],
@@ -35,6 +36,9 @@ my ($opt, $usage) = describe_options(
 print($usage->text), exit if $opt->help || !scalar(@ARGV);
 
 my %pages = map +("$opt->{base}/$_" => $_), @ARGV;
+my %deploys = (
+	'twinkle.js' => 'MediaWiki:Gadget-TwinkleTEST.js'
+);
 
 # Config file should be an hash consisting of username and password keys
 
@@ -43,9 +47,9 @@ my $repo = Git::Repository->new();
 
 my $bot = MediaWiki::Bot->new({
         assert      => 'user',
-        protocol    => 'http',
-        host        => 'en.wikipedia.org',
-        path        => 'w',
+        protocol    => 'https',
+        host        => 'secure.wikimedia.org',
+        path        => 'wikipedia/en/w',
         login_data  => { username => $opt->username, password => $opt->password},
         debug => $opt->{verbose} ? 2 : 0
     }
@@ -56,7 +60,7 @@ if( $opt->mode eq "pull" ) {
 
     if( scalar @status ) {
         say "repository is not clean. aborting...";
-        exit;
+		#exit;
     }
 
     while(my($page, $file) = each %pages) {
@@ -83,5 +87,26 @@ if( $opt->mode eq "pull" ) {
                 text    => decode("UTF-8", $text),
                 summary => "$+{branch}:$log",
             });
+    }
+} elsif( $opt->mode eq "deploy" ) {
+    foreach my $file (values %pages) {
+		unless(defined $deploys{$file}) {
+			die "file not deployable";
+		}
+		$page = $deploys{$file};
+		say "$page - $file";
+        my @history = $bot->get_history($page);
+        my $tag = $repo->run(describe => '--always', '--all', '--dirty');
+        my $log = $repo->run(log => '-1', '--oneline', '--no-color', $file);
+        $tag =~ m{(?:heads/)?(?<branch>.+)};
+        my $text = read_file($file,  {binmode => ':raw' });
+        my $ret = $bot->edit({
+                page    => $page,
+                text    => decode("UTF-8", $text),
+                summary => "$+{branch}:$log",
+            });
+		unless($ret) {
+			die "Error $bot->{error}->{code}: $bot->{error}->{details}";
+		}
     }
 }
