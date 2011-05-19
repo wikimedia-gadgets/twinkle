@@ -180,7 +180,7 @@ body.skin-monobook .morebits-dialog {
 
 body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 	height: 1em;
-	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC) repeat-x 50% 80% #cfd6e1 !important;
+	background: repeat-x 50% 80% #cfd6e1 !important;  /* the actual image is specified in morebits.js - ResourceLoader mangles data: URIs in CSS */
 	font: bold 1em sans-serif;
 	padding: .4em .3em .5em !important;
 }

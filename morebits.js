@@ -18,11 +18,13 @@
  *   - SimpleWindow relies on jquery UI Dialog (ResourceLoader module name 'jquery.ui.dialog').
  *   - QuickForm tooltips rely on Tipsy (ResourceLoader module name 'jquery.tipsy').
  *     For external installations, Tipsy is available at [http://onehackoranother.com/projects/jquery/tipsy].
+ *   - To create a gadget based on morebits.js, use this syntax in MediaWiki:Gadgets-definition:
+ *       * GadgetName[ResourceLoader|dependencies=jquery.ui.dialog,jquery.tipsy]|morebits.js|morebits.css|GadgetName.js
  *
  * Most of the stuff here doesn't work on IE < 9.  It is your script's responsibility to enforce this.
  *
  * This library is maintained by the maintainers of Twinkle.
- * For queries, suggestions, help, etc., head to [[WT:TW]].
+ * For queries, suggestions, help, etc., head to [[Wikipedia talk:Twinkle]] on English Wikipedia [http://en.wikipedia.org].
  * The latest development source is available at [https://github.com/azatoth/twinkle/blob/master/morebits.js].
  */
 
@@ -1725,9 +1727,9 @@ Wikipedia.api.prototype = {
  *          the same as 'nochange'. Not sure why we would want this option anyway.
  *       2. If both setWatchlist() and setWatchlistFromPreferences() are called,
  *          the last call takes priority.
- *       3. Twinkle modules should use the appropriate TwinkleConfig parameter to set the watchlist options.
+ *       3. Twinkle modules should use the appropriate preference to set the watchlist options.
  *       4. Most Twinkle modules use setWatchlist().
- *          setWatchlistFromPreferences() is only used for the few TwinkleConfig watchlist parameters
+ *          setWatchlistFromPreferences() is only needed for the few Twinkle watchlist preferences
  *          that accept a string value of 'default'.
  *
  * setCreateOption(createOption)
@@ -3330,6 +3332,9 @@ function SimpleWindow( width, height ) {
 		});
 
 	var $widget = $(this.content).dialog("widget");
+
+	// add background gradient to titlebar
+	$widget.find(".ui-dialog-titlebar").css("background-image", 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC)');
 
 	// delete the placeholder button (it's only there so the buttonpane gets created)
 	$widget.find("button").each(function(key, value) {
