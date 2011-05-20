@@ -8,7 +8,7 @@ twinkle.js: twinkle.header.js $(wildcard twinkle[!.]*.js friendly*.js) twinkle.f
 	awk 'FNR==1{print ""}{print}' $^ > $@
 
 
-deploy: twinkle.js
+deploy: twinkle.js morebits.js morebits.css
 	./sync.pl --deploy $^
 
 clean:
