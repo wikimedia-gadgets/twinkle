@@ -5,7 +5,9 @@
 
 var scriptpathbefore = mw.config.get('wgServer') + mw.config.get('wgScript') + "?title=";
 var scriptpathafter = "&action=raw&ctype=text/javascript&happy=yes";
-mw.loader.load(scriptpathbefore + "User:" + mw.util.wikiUrlencode(mw.config.get('wgUserName')) + "/twinkleoptions.js" + scriptpathafter);
+
+// retrieve the user's Twinkle preferences
+mw.loader.load(scriptpathbefore + "User:" + encodeURIComponent(mw.config.get('wgUserName')) + "/twinkleoptions.js" + scriptpathafter);
 
 // Developers: you can import custom Twinkle modules here
 // for example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
