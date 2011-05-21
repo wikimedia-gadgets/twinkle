@@ -4,9 +4,7 @@
  ****************************************
  * Mode of invocation:     Adds configuration form to Wikipedia:Twinkle/Preferences and user 
                            subpages named "/Twinkle preferences", and adds ad box to the top of user 
-                           subpages belonging to the currently logged-in user which end in '.js', or
-                           which are called "/twinkleoptions.js" and the "editintro" parameter is not
-                           present in the URL
+                           subpages belonging to the currently logged-in user which end in '.js'
  * Active on:              What I just said.  Yeah.
  * Config directives in:   TwinkleConfig
  */
@@ -732,9 +730,9 @@ Twinkle.config.sections = [
 
 Twinkle.config.init = function twinkleconfigInit() {
 
-	if ((wgPageName == "Wikipedia:Twinkle/Preferences" ||
-	    (wgNamespaceNumber == 2 && wgTitle.lastIndexOf("/Twinkle preferences") == (wgTitle.length - 20))) &&
-	    wgAction == "view") {
+	if ((wgPageName === "Wikipedia:Twinkle/Preferences" ||
+	    (wgNamespaceNumber === 2 && wgTitle.lastIndexOf("/Twinkle preferences") === (wgTitle.length - 20))) &&
+	    wgAction === "view") {
 		// create the config page at Wikipedia:Twinkle/Preferences, and at user subpages (for testing purposes)
 
 		if (!document.getElementById("twinkle-config")) {
@@ -754,6 +752,11 @@ Twinkle.config.init = function twinkleconfigInit() {
 		contentnotice.innerHTML = "<b>Before modifying your preferences here,</b> make sure you have removed any old <code>TwinkleConfig</code> and <code>FriendlyConfig</code> settings from your <a href=\"/wiki/Special:MyPage/skin.js\" title=\"Special:MyPage/skin.js\">user JavaScript file</a>.";
 		contentdiv.appendChild(contentnotice);
 
+		// look and see if the user does in fact have any old settings in their skin JS file
+		var skinjs = new Wikipedia.page("User:" + mw.config.get('wgUserName') + "/" + mw.config.get('skin') + ".js");
+		skinjs.setCallbackParameters(contentnotice);
+		skinjs.load(Twinkle.config.legacyPrefsNotice);
+
 		var contentform = document.createElement("form");
 		contentform.setAttribute("action", "#tw-save");
 		contentform.addEventListener("submit", Twinkle.config.save, true);
@@ -765,7 +768,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 		$(Twinkle.config.sections).each(function(sectionkey, section) {
 			if (section.hidden || (section.adminOnly && !userIsInGroup("sysop"))) {
-				return;  // i.e. "continue" in this context
+				return true;  // i.e. "continue" in this context
 			}
 
 			var configgetter;  // retrieve the live config values
@@ -791,7 +794,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			// add each of the preferences to the form
 			$(section.preferences).each(function(prefkey, pref) {
 				if (pref.adminOnly && !userIsInGroup("sysop")) {
-					return;  // i.e. "continue" in this context
+					return true;  // i.e. "continue" in this context
 				}
 
 				row = document.createElement("tr");
@@ -974,25 +977,24 @@ Twinkle.config.init = function twinkleconfigInit() {
 		footerbox.style.backgroundColor = "#BCCADF";
 		footerbox.style.padding = "0.5em";
 		var button = document.createElement("button");
+		button.setAttribute("id", "twinkle-config-submit");
 		button.setAttribute("type", "submit");
 		button.appendChild(document.createTextNode("Save changes"));
 		footerbox.appendChild(button);
 		var footerspan = document.createElement("span");
 		footerspan.className = "plainlinks";
-		footerspan.style.marginLeft = "2em";
+		footerspan.style.marginLeft = "2.4em";
 		footerspan.style.fontSize = "90%";
-		footerspan.appendChild(document.createTextNode("To reset all preferences to the defaults, you can "));
 		var footera = document.createElement("a");
-		footera.setAttribute("href", "/w/index.php?action=edit&title=Special:MyPage/twinkleoptions.js&editintro=Wikipedia:Twinkle/Preferences/Blanking_editintro&summary=Resetting Twinkle preferences");
-		footera.appendChild(document.createTextNode("blank your preferences file"));
+		footera.setAttribute("href", "#tw-reset-all");
+		footera.setAttribute("id", "twinkle-config-resetall");
+		footera.addEventListener("click", Twinkle.config.resetAllPrefs, false);
+		footera.appendChild(document.createTextNode("Restore defaults"));
 		footerspan.appendChild(footera);
-		footerspan.appendChild(document.createTextNode("."));
 		footerbox.appendChild(footerspan);
 		contentform.appendChild(footerbox);
 
-		// TODO more stuff here when SimpleWindow gets footer links, per design sheet
-
-	} else if (wgNamespaceNumber == 2) {
+	} else if (wgNamespaceNumber === 2) {
 
 		var box = document.createElement("div");
 		box.setAttribute("id", "twinkle-config-headerbox");
@@ -1002,10 +1004,11 @@ Twinkle.config.init = function twinkleconfigInit() {
 		box.style.margin = "0.5em auto";
 		box.style.textAlign = "center";
 
-		if (wgTitle === wgUserName + "/twinkleoptions.js" && location.search.indexOf("&editintro=") === -1) {
-			// place "why not try the preference panel" notice, except when there is an editintro (probably the "how to blank preferences" one)
+		if (wgTitle === wgUserName + "/twinkleoptions.js") {
+			// place "why not try the preference panel" notice
 			box.style.fontWeight = "bold";
 			box.style.width = "80%";
+			box.style.borderWidth = "2px";
 
 			if (wgArticleId > 0) {  // page exists
 				box.appendChild(document.createTextNode("This page contains your Twinkle preferences. You can change them using the "));
@@ -1034,57 +1037,87 @@ Twinkle.config.init = function twinkleconfigInit() {
 	}
 }
 
-Twinkle.config.resetPref = function twinkleconfigResetPref(e) {
+// Wikipedia.page callback from init code
+Twinkle.config.legacyPrefsNotice = function twinkleconfigLegacyPrefsNotice(pageobj) {
+	var text = pageobj.getPageText();
+	var contentnotice = pageobj.getCallbackParameters();
+	if (text.indexOf("TwinkleConfig") !== -1 || text.indexOf("FriendlyConfig") !== -1) {
+		contentnotice.innerHTML = '<table class="plainlinks ombox ombox-content"><tr><td class="mbox-image">' +
+			'<img alt="" src="http://upload.wikimedia.org/wikipedia/en/3/38/Imbox_content.png" /></td>' +
+			'<td class="mbox-text"><p><big><b>Before modifying your settings here,</b> you must remove your old Twinkle and Friendly settings from your personal skin JavaScript.</big></p>' +
+			'<p>To do this, you can <a href="/w/index.php?title=User:' + encodeURIComponent(mw.config.get('wgUserName')) + '/' + mw.config.get('skin') + '.js&action=edit" target="_tab"><b>edit your personal JavaScript</b></a>, removing all lines ofcode that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
+			'</td></tr></table>';
+	} else {
+		$(contentnotice).remove();
+	}
+}
+
+Twinkle.config.resetPrefLink = function twinkleconfigResetPrefLink(e) {
 	var wantedpref = e.target.id.substring(21); // "twinkle-config-reset-" prefix is stripped
 
 	// search tactics
 	$(Twinkle.config.sections).each(function(sectionkey, section) {
 		if (section.hidden || (section.adminOnly && !userIsInGroup("sysop"))) {
-			return;  // skip impossibilities
+			return true;  // continue: skip impossibilities
 		}
 
 		var foundit = false;
 
 		$(section.preferences).each(function(prefkey, pref) {
 			if (pref.name !== wantedpref) {
-				return;
+				return true;  // continue
 			}
-
-			switch (pref.type) {
-
-				case "boolean":
-					document.getElementById(pref.name).checked = (section.inFriendlyConfig ?
-						Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]);
-					break;
-
-				case "string":
-				case "integer":
-				case "enum":
-					document.getElementById(pref.name).value = (section.inFriendlyConfig ?
-						Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]);
-					break;
-
-				case "set":
-					$.each(pref.setValues, function(itemkey, itemvalue) {
-						if (document.getElementById(pref.name + "_" + itemkey)) {
-							document.getElementById(pref.name + "_" + itemkey).checked = ((section.inFriendlyConfig ?
-								Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]).indexOf(itemkey) !== -1);
-						}
-					});
-					break;
-
-				default:
-					alert("twinkleconfig: unknown data type for preference " + pref.name);
-					break;
-			}
-
+			Twinkle.config.resetPref(pref, section.inFriendlyConfig);
 			foundit = true;
-			return false;
+			return false;  // break
 		});
 
 		if (foundit) {
-			return false;
+			return false;  // break
 		}
+	});
+	return false;  // stop link from scrolling page
+}
+
+Twinkle.config.resetPref = function twinkleconfigResetPref(pref, inFriendlyConfig) {
+	switch (pref.type) {
+
+		case "boolean":
+			document.getElementById(pref.name).checked = (inFriendlyConfig ?
+				Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]);
+			break;
+
+		case "string":
+		case "integer":
+		case "enum":
+			document.getElementById(pref.name).value = (inFriendlyConfig ?
+				Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]);
+			break;
+
+		case "set":
+			$.each(pref.setValues, function(itemkey, itemvalue) {
+				if (document.getElementById(pref.name + "_" + itemkey)) {
+					document.getElementById(pref.name + "_" + itemkey).checked = ((inFriendlyConfig ?
+						Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]).indexOf(itemkey) !== -1);
+				}
+			});
+			break;
+
+		default:
+			alert("twinkleconfig: unknown data type for preference " + pref.name);
+			break;
+	}
+}
+
+Twinkle.config.resetAllPrefs = function twinkleconfigResetAllPrefs() {
+	// no confirmation message - the user can just refresh/close the page to abort
+	$(Twinkle.config.sections).each(function(sectionkey, section) {
+		if (section.hidden || (section.adminOnly && !userIsInGroup("sysop"))) {
+			return true;  // continue: skip impossibilities
+		}
+		$(section.preferences).each(function(prefkey, pref) {
+			Twinkle.config.resetPref(pref, section.inFriendlyConfig);
+		});
 	});
 	return false;  // stop link from scrolling page
 }
