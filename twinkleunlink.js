@@ -42,7 +42,7 @@ Twinkle.unlink.callback = function twinkleunlinkCallback(presetReason) {
 		value: (presetReason ? presetReason : '')
 	} );
 
-	if(wgNamespaceNumber == Namespace.IMAGE) {
+	if(wgNamespaceNumber === Namespace.IMAGE) {
 		var query = {
 			'action': 'query',
 			'list': [ 'backlinks', 'imageusage' ],
@@ -67,7 +67,7 @@ Twinkle.unlink.callback = function twinkleunlinkCallback(presetReason) {
 	wikipedia_api.post();
 
 	var root = document.createElement( 'div' );
-	root.style.padding = '20px';  // just so it doesn't look broken
+	root.style.padding = '15px';  // just so it doesn't look broken
 	Status.init( root );
 	wikipedia_api.statelem.status( "loading..." );
 	Window.setContent( root );
@@ -81,7 +81,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	Twinkle.unlink.imageusagedone = 0;
 
 	function processunlink(pages, imageusage) {
-		var statusIndicator = new Status((imageusage ? 'Unlinking instances of image usage' : 'Unlinking backlinks'), '0%');
+		var statusIndicator = new Status((imageusage ? 'Unlinking instances of file usage' : 'Unlinking backlinks'), '0%');
 		var total = pages.length;  // removing doubling of this number - no apparent reason for it
 
 		Wikipedia.addCheckpoint();
@@ -137,11 +137,26 @@ Twinkle.unlink.callbacks = {
 				}
 				if (list.length == 0)
 				{
-					apiobj.params.form.append( { type: 'div', label: 'No instances of image usage found.' } );
+					apiobj.params.form.append( { type: 'div', label: 'No instances of file usage found.' } );
 				}
 				else
 				{
-					apiobj.params.form.append( { type:'header', label: 'Image usage' } );
+					apiobj.params.form.append( { type:'header', label: 'File usage' } );
+					var namespaces = [];
+					$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
+						namespaces.push(Wikipedia.namespacesFriendly[v]);
+					});
+					apiobj.params.form.append( {
+						type: 'div',
+						label: "Selected namespaces: " + namespaces.join(', '),
+						tooltip: "You can change this with your Twinkle preferences, at [[WP:TWPREFS]]"
+					});
+					if ($(xmlDoc).find('query-continue')) {
+						apiobj.params.form.append( {
+							type: 'div',
+							label: "First " + list.length.toString() + " file usages shown."
+						});
+					}
 					apiobj.params.form.append( {
 						type: 'checkbox',
 						name: 'imageusage',
@@ -159,6 +174,21 @@ Twinkle.unlink.callbacks = {
 					list.push( { label: title, value: title, checked: true } );
 				}
 				apiobj.params.form.append( { type:'header', label: 'Backlinks' } );
+				var namespaces = [];
+				$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
+					namespaces.push(Wikipedia.namespacesFriendly[v]);
+				});
+				apiobj.params.form.append( {
+					type: 'div',
+					label: "Selected namespaces: " + namespaces.join(', '),
+					tooltip: "You can change this with your Twinkle preferences, at [[WP:TWPREFS]]"
+				});
+				if ($(xmlDoc).find('query-continue')) {
+					apiobj.params.form.append( {
+						type: 'div',
+						label: "First " + list.length.toString() + " backlinks shown."
+					});
+				}
 				apiobj.params.form.append( {
 					type: 'checkbox',
 					name: 'backlinks',
@@ -213,7 +243,7 @@ Twinkle.unlink.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary("Commenting out use(s) of image \"" + wgPageName + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary("Commenting out use(s) of file \"" + wgPageName + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(Twinkle.unlink.callbacks.success);
 	},
