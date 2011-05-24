@@ -7,12 +7,12 @@
 * Config directives in:   TwinkleConfig
 */
 
-(function(){
+;(function(){
 	Twinkle.deprod = function() {
 		if( wgNamespaceNumber !== Namespace.CATEGORY || ! userIsInGroup( 'sysop' ) || ! /^Category:Proposed_deletion_as_of/.test(wgPageName) ) {
 			return;
 		}
-		$(twAddPortletLink( "", "Deprod", "tw-deprod", "Delete prod pages found in this category", "")).click(callback);
+		$(twAddPortletLink( "#", "Deprod", "tw-deprod", "Delete prod pages found in this category", "")).click(callback);
 	};
 
 	var unlinkCache = {},
