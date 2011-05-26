@@ -867,6 +867,10 @@ Twinkle.warn.messages = {
 			label:"Affiliate marketing", 
 			summary:"Warning: Affiliate marketing"
 		},
+		"uw-agf-sock": { 
+			label:"Use of multiple accounts (assuming good faith)", 
+			summary:"Warning: Using multiple accounts"
+		},
 		"uw-attack": {
 			label:"Creating attack pages",
 			summary:"Warning: Creating attack pages"
@@ -1529,7 +1533,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	// First, check to make sure a reason was filled in if uw-username was selected
 	
 	if(e.target.sub_group.value == 'uw-username' && e.target.reason.value.trim() == '') {
-		alert("You must supply a reason for the \{\{uw-username}} template");
+		alert("You must supply a reason for the \{\{uw-username}} template.");
 		return;
 	}
 
