@@ -11,7 +11,7 @@ Twinkle.tag = function friendlytag() {
 	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) == 'no' && $("span.redirectText").length > 0 ) {
 		Twinkle.tag.isRedirect = true;
 		twAddPortletLink( "javascript:Twinkle.tag.callback()", "Tag", "friendly-tag", "Tag redirect", "");
-	} else if( wgNamespaceNumber != 0 || wgCurRevisionId == false ) {
+	} else if( wgNamespaceNumber !== 0 || !wgCurRevisionId ) {
 		return;
 	} else {
 		twAddPortletLink( "javascript:Twinkle.tag.callback()", "Tag", "friendly-tag", "Tag article", "");
@@ -871,7 +871,7 @@ Twinkle.tag.callbacks = {
 			// smartly insert the new tags after any hatnotes. Regex is a bit more
 			// complicated than it'd need to be, to allow templates as parameters,
 			// and to handle whitespace properly.
-			pageText = pageText.replace(/^\s*(?:((?:\s*{{\s*(?:about|dablink|distinguish|for|other\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see also|selfref|the)\d*\s*(\|(?:{{[^{}]*}}|[^{}])*)?}})+(?:\s*\n)?)\s*)?/i, 
+			pageText = pageText.replace(/^\s*(?:((?:\s*{{\s*(?:about|dablink|distinguish|for|other\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\s?(?:also|wiktionary)|selfref|the)\d*\s*(\|(?:{{[^{}]*}}|[^{}])*)?}})+(?:\s*\n)?)\s*)?/i, 
 				"$1" + tagText);
 		}
 		summaryText += ' tag' + ( ( tags.length + ( groupableTags.length > 3 ? 1 : 0 ) ) > 1 ? 's' : '' ) +
