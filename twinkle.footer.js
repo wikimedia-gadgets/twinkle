@@ -21,11 +21,6 @@ Twinkle.load = function twinkleload() {
 	}
 
 	// load the modules in the order that the tabs should appears
-	// misc. ones first
-	Twinkle.config.init();
-	Twinkle.unlink();
-	Twinkle.diff();
-	Twinkle.fluff.init();
 	// deletion
 	Twinkle.speedy();
 	Twinkle.prod();
@@ -40,6 +35,11 @@ Twinkle.load = function twinkleload() {
 	Twinkle.welcome();
 	Twinkle.shared();
 	Twinkle.talkback();
+	// misc. ones last
+	Twinkle.diff();
+	Twinkle.unlink();
+	Twinkle.config.init();
+	Twinkle.fluff.init();
 	if (userIsInGroup('sysop')) {
 		Twinkle.closer();
 		Twinkle.delimages();
