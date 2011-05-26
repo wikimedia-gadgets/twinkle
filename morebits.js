@@ -30,7 +30,7 @@
 
 // Simple helper functions to see what groups a user might belong
 function userIsInGroup( group ) {
-	return mw.config.get( 'wgUserGroups' ).indexOf( group ) !== -1;
+	return $.inArray(group, mw.config.get( 'wgUserGroups' )) !== -1;
 }
 function userIsAnon() {
 	return mw.config.get( 'wgUserGroups' ).length === 1;
