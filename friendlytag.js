@@ -790,18 +790,19 @@ Twinkle.tag.callbacks = {
 
 		tags.sort();
 		for( var i = 0; i < tags.length; i++ ) {
+			var currentTag = "";
 			if( tags[i] == 'uncategorized' || tags[i] == 'catimprove' ) {
 				pageText += '\n\n\{\{' + tags[i]
 				+ '|date=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}\}\}';
 			} else {
-				if( tags[i] == 'globalize' ) {
-					tagText += '\{\{' + params.globalizeSubcategory;
+				if( tags[i] === 'globalize' ) {
+					currentTag += '\{\{' + params.globalizeSubcategory;
 				} else {
-					tagText += ( Twinkle.tag.isRedirect ? '\n' : '' ) + '\{\{' + tags[i];
+					currentTag += ( Twinkle.tag.isRedirect ? '\n' : '' ) + '\{\{' + tags[i];
 				}
 
-				if( tags[i] == 'notability' && params.notabilitySubcategory != 'none' ) {
-					tagText += '|' + params.notabilitySubcategory;
+				if( tags[i] === 'notability' && params.notabilitySubcategory !== 'none' ) {
+					currentTag += '|' + params.notabilitySubcategory;
 				}
 
 				// prompt for other parameters, based on the tag
@@ -812,7 +813,7 @@ Twinkle.tag.callbacks = {
 						if (reason == null) {
 							continue;
 						} else if (reason !== "") {
-							tagText += '|reason=' + reason;
+							currentTag += '|reason=' + reason;
 						}
 						break;
 					case 'notenglish':
@@ -821,7 +822,7 @@ Twinkle.tag.callbacks = {
 						if (langname == null) {
 							continue;
 						} else if (langname !== "") {
-							tagText += '|1=' + langname;
+							currentTag += '|1=' + langname;
 						}
 						break;
 					case 'roughtranslation':
@@ -830,7 +831,7 @@ Twinkle.tag.callbacks = {
 						if (langname == null) {
 							continue;
 						} else if (langname !== "") {
-							tagText += '|1=' + langname;
+							currentTag += '|1=' + langname;
 						}
 						break;
 					case 'merge':
@@ -842,12 +843,13 @@ Twinkle.tag.callbacks = {
 						if (param == null) {
 							continue;
 						} else if (param !== "") {
-							tagText += '|' + param;
+							currentTag += '|' + param;
 						}
 						break;
 				}
 				
-				tagText += Twinkle.tag.isRedirect ? '\}\}' : '|date=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}\}\}\n';
+				currentTag += Twinkle.tag.isRedirect ? '\}\}' : '|date=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}\}\}\n';
+				tagText += currentTag;
 			}
 
 			if( i == (tags.length - 1) && ( i > 0 || groupableTags.length > 3 ) ) {
