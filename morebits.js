@@ -3361,17 +3361,19 @@ SimpleWindow.prototype = {
 	},
 	// Closes the dialog.  If this is set as an event handler, it will stop the event from doing anything more.
 	close: function(event) {
-		event.preventDefault();
+		if (event) {
+			event.preventDefault();
+		}
 		$(this.content).dialog("close");
 	},
 	// Shows the dialog.  Calling display() on a dialog that has previously been closed might work, but it is not guaranteed.
 	display: function() {
-		if (this.scriptname) {
+		if (this.scriptName) {
 			var $widget = $(this.content).dialog("widget");
 			$widget.find(".morebits-dialog-scriptname").remove();
 			var scriptnamespan = document.createElement("span");
 			scriptnamespan.className = "morebits-dialog-scriptname";
-			scriptnamespan.textContent = this.scriptname + " \u00B7 ";  // U+00B7 MIDDLE DOT = &middot;
+			scriptnamespan.textContent = this.scriptName + " \u00B7 ";  // U+00B7 MIDDLE DOT = &middot;
 			$widget.find(".ui-dialog-title").prepend(scriptnamespan);
 		}
 
@@ -3384,8 +3386,8 @@ SimpleWindow.prototype = {
 	},
 	// Sets the script name, appearing as a prefix to the title to help users determine which
 	// user script is producing which dialog. For instance, Twinkle modules set this to "Twinkle".
-	setScriptName: function( scriptname ) {
-		this.scriptname = scriptname;
+	setScriptName: function( name ) {
+		this.scriptName = name;
 	},
 	// Sets the dialog width.
 	setWidth: function( width ) {
