@@ -14,7 +14,7 @@ Twinkle.delimages = function twinkledeli() {
 	if( userIsInGroup( 'sysop' ) ) {
 		twAddPortletLink( "javascript:Twinkle.delimages.callback()", "Deli-batch", "tw-deli", "Delete file found on page", "");
 	}
-}
+};
 
 Twinkle.delimages.unlinkCache = {};
 Twinkle.delimages.callback = function twinkledeliCallback() {
@@ -44,8 +44,9 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 		name: 'reason',
 		label: 'Reason: '
 	} );
-	if( wgNamespaceNumber == Namespace.CATEGORY ) {
-		var query = {
+	var query;
+	if( wgNamespaceNumber === Namespace.CATEGORY ) {
+		query = {
 			'action': 'query',
 			'generator': 'categorymembers',
 			'gcmtitle': wgPageName,
@@ -56,7 +57,7 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 			'grvprop': [ 'user' ]
 		};
 	} else {
-		var query = {
+		query = {
 			'action': 'query',
 			'generator': 'images',
 			'titles': wgPageName,
@@ -87,8 +88,8 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 			name: 'images',
 			list: list
 		}
-		)
-		self.params.form.append( { type:'submit' } );
+	);
+	self.params.form.append( { type:'submit' } );
 
 	var result = self.params.form.render();
 	self.params.Window.setContent( result );
@@ -102,7 +103,7 @@ var root = document.createElement( 'div' );
 Status.init( root );
 Window.setContent( root );
 Window.display();
-}
+};
 
 Twinkle.delimages.currentDeleteCounter = 0;
 Twinkle.delimages.currentUnlinkCounter = 0;
@@ -130,12 +131,13 @@ Twinkle.delimages.callback.evaluate = function twinkledeliCallbackEvaluate(event
 			var images = work.shift();
 			Twinkle.delimages.currentDeleteCounter = images.length;
 			Twinkle.delimages.currentUnlinkCounter = images.length;
-			for( var i = 0; i < images.length; ++i ) {
+			var i;
+			for( i = 0; i < images.length; ++i ) {
 				var image = images[i];
 				var query = {
 					'action': 'query',
 					'titles': image
-				}
+				};
 				var wikipedia_api = new Wikipedia.api( 'Checking if file ' + image + ' exists', query, Twinkle.delimages.callbacks.main );
 				wikipedia_api.params = { image:image, reason:reason, unlink_image:unlink_image, delete_image:delete_image };
 				wikipedia_api.post();
@@ -145,7 +147,7 @@ Twinkle.delimages.callback.evaluate = function twinkledeliCallbackEvaluate(event
 	var work = images.chunk( Twinkle.getPref('deliChunks') );
 	Wikipedia.addCheckpoint();
 	Twinkle.delimages.currentdeletor = window.setInterval( toCall, 1000, work );
-}
+};
 Twinkle.delimages.callbacks = {
 	main: function( self ) {
 		var xmlDoc = self.responseXML;
@@ -187,7 +189,7 @@ Twinkle.delimages.callbacks = {
 		$(xmlDoc).find('imageusage iu').each(function(){
 			instances.push($(this).attr('title'));
 		});
-		if( instances.length == 0 ) {
+		if( instances.length === 0 ) {
 			--twinklebatchdelete.currentUnlinkCounter;
 			return;
 		}
@@ -210,7 +212,7 @@ Twinkle.delimages.callbacks = {
 		wikiPage.commentOutImage( image , 'Commented out because image was deleted' );
 		var text = wikiPage.getText();
 
-		if( text == old_text ) {
+		if( text === old_text ) {
 			statelem.error( 'failed to unlink image ' + image +' from ' + self.getPageName() );
 			return;
 		}
@@ -219,4 +221,4 @@ Twinkle.delimages.callbacks = {
 		self.setCreateOption('nocreate');
 		self.save();
 	}
-}
+};

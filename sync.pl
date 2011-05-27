@@ -17,6 +17,8 @@ my ($opt, $usage) = describe_options(
     [ 'username|u=s', "username for account on wikipedia", {default => $c->{username} // ""} ],
     [ 'password|p=s', "password for account on wikipedia (do not use)", {default => $c->{password} // ""} ],
     [ 'base|b=s', "base localtion on wikipedia where files exists (default User:AzaToth or entry in .mwbotrc)", {default => $c->{base} // "User:AzaToth"} ],
+	[ 'lang=s', 'Target language', {default => 'en'} ],
+	[ 'family=s', 'Target family', {default => 'wikipedia'} ],
     [ 'mode' => hidden =>
         {
             required => 1,
@@ -51,7 +53,7 @@ my $bot = MediaWiki::Bot->new({
         assert      => 'user',
         protocol    => 'https',
         host        => 'secure.wikimedia.org',
-        path        => 'wikipedia/en/w',
+        path        => "$opt->{family}/$opt->{lang}/w",
         login_data  => { username => $opt->username, password => $opt->password},
         debug => $opt->{verbose} ? 2 : 0
     }
@@ -79,7 +81,6 @@ if( $opt->mode eq "pull" ) {
     $cmd->close;
 } elsif( $opt->mode eq "push" ) {
     while(my($page, $file) = each %pages) {
-        my @history = $bot->get_history($page);
         my $tag = $repo->run(describe => '--always', '--all', '--dirty');
         my $log = $repo->run(log => '-1', '--oneline', '--no-color', $file);
         $tag =~ m{(?:heads/)?(?<branch>.+)};
@@ -96,8 +97,7 @@ if( $opt->mode eq "pull" ) {
 			die "file not deployable";
 		}
 		$page = $deploys{$file};
-		say "$page - $file";
-        my @history = $bot->get_history($page);
+		say "$file -> https://secure.wikimedia.org/$opt->{family}/$opt->{lang}/wiki/$page";
         my $tag = $repo->run(describe => '--always', '--all', '--dirty');
         my $log = $repo->run(log => '-1', '--oneline', '--no-color', $file);
         $tag =~ m{(?:heads/)?(?<branch>.+)};

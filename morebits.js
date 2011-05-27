@@ -153,7 +153,7 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 function twAddPortletLink( href, text, id, tooltip, accesskey, nextnode )
 {
 	if (twAddPortlet.portletArea) twAddPortlet(twAddPortlet.portletArea, twAddPortlet.portletId, twAddPortlet.portletName, twAddPortlet.portletType, twAddPortlet.portletNext);
-	addPortletLink( twAddPortlet.portletId, href, text, id, tooltip, accesskey, nextnode );
+	return addPortletLink( twAddPortlet.portletId, href, text, id, tooltip, accesskey, nextnode );
 }
 
 var Cookies = {
