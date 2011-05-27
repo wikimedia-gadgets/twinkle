@@ -106,6 +106,7 @@ Twinkle.defaultConfig.friendly = {
 	watchTaggedPages: true,
 	markTaggedPagesAsMinor: false,
 	markTaggedPagesAsPatrolled: true,
+	customTagList: [],
 	 // Welcome
 	topWelcomes: false,
 	watchWelcomes: true,
@@ -117,6 +118,7 @@ Twinkle.defaultConfig.friendly = {
 	quickWelcomeMode: "norm",
 	quickWelcomeTemplate: "welcome",
 	maskTemplateInSummary: true,
+	customWelcomeList: [],
 	 // Talkback
 	markTalkbackAsMinor: true,
 	insertTalkbackSignature: true,  // always sign talkback templates
