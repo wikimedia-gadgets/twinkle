@@ -56,22 +56,22 @@ Twinkle.arv.callback = function ( uid ) {
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Vandalism (AIV)',
+			label: 'Vandalism (WP:AIV)',
 			value: 'aiv'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Username (UAA)',
+			label: 'Username (WP:UAA)',
 			value: 'username'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Sockpuppeteer (SPI)',
+			label: 'Sockpuppeteer (WP:SPI)',
 			value: 'sock'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Sockpuppet (SPI)',
+			label: 'Sockpuppet (WP:SPI)',
 			value: 'puppet'
 		} );
 	form.append( {

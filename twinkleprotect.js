@@ -84,8 +84,8 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	result.actiontype[0].dispatchEvent( evt );
 
 	// reduce vertical height of dialog
-	$('select[name="editlevel"], select[name="editexpiry"], select[name="moveexpiry"], select[name="movelevel"], select[name="createexpiry"], select[name="createlevel"]')
-		.parent().css({ display: 'inline-block', marginRight: '0.5em' });
+	$('select[name="editlevel"], select[name="editexpiry"], select[name="moveexpiry"], select[name="movelevel"], select[name="createexpiry"], select[name="createlevel"]').
+		parent().css({ display: 'inline-block', marginRight: '0.5em' });
 
 	// get current protection level asynchronously
 	Wikipedia.actionCompleted.postfix = false;  // avoid Action: completed notice
@@ -470,7 +470,7 @@ Twinkle.protect.protectionTypes = [
 		label: 'Full protection',
 		list: [
 			{ label: 'Generic (full)', value: 'pp-protected' },
-			{ label: 'Content dispute/edit warring (full)', selected: true, value: 'pp-dispute' },
+			{ label: 'Content dispute/edit warring (full)', selected: userIsInGroup('sysop'), value: 'pp-dispute' },
 			{ label: 'Persistent vandalism (full)', value: 'pp-vandalism' },
 			{ label: 'Highly visible template (full)', value: 'pp-template' },
 			{ label: 'User talk of blocked user (full)', value: 'pp-usertalk' }
@@ -480,7 +480,7 @@ Twinkle.protect.protectionTypes = [
 		label: 'Semi-protection',
 		list: [
 			{ label: 'Generic (semi)', value: 'pp-semi-protected' },
-			{ label: 'Persistent vandalism (semi)', value: 'pp-semi-vandalism' },
+			{ label: 'Persistent vandalism (semi)', selected: !userIsInGroup('sysop'), value: 'pp-semi-vandalism' },
 			{ label: 'BLP policy violations (semi)', value: 'pp-semi-blp' },
 			{ label: 'Sockpuppetry (semi)', value: 'pp-semi-sock' },
 			{ label: 'Highly visible template (semi)', value: 'pp-semi-template' },
