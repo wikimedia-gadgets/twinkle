@@ -9,7 +9,7 @@
 
 Twinkle.welcome = function friendlywelcome() {
 	if( QueryString.exists( 'friendlywelcome' ) ) {
-		if( QueryString.get( 'friendlywelcome' ) == 'auto' ) {
+		if( QueryString.get( 'friendlywelcome' ) === 'auto' ) {
 			Twinkle.welcome.auto();
 		} else {
 			Twinkle.welcome.semiauto();
@@ -17,20 +17,20 @@ Twinkle.welcome = function friendlywelcome() {
 	} else {
 		Twinkle.welcome.normal();
 	}
-}
+};
 
 Twinkle.welcome.auto = function() {
-	if( QueryString.get( 'action' ) != 'edit' ) {
+	if( QueryString.get( 'action' ) !== 'edit' ) {
 		// userpage not empty, aborting auto-welcome
 		return;
 	}
 
-	return Twinkle.welcome.welcomeUser();
+	Twinkle.welcome.welcomeUser();
 };
 
 Twinkle.welcome.semiauto = function() {
 	Twinkle.welcome.callback( mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /\"/, "\\\"") );
-}
+};
 
 Twinkle.welcome.normal = function() {
 	if( QueryString.exists( 'diff' ) ) {
@@ -44,7 +44,7 @@ Twinkle.welcome.normal = function() {
 				span.style.color = color;
 				span.appendChild( document.createTextNode( content ) );
 				return span;
-			}
+			};
 
 			var welcomeNode = document.createElement('strong');
 			var welcomeLink = document.createElement('a');
@@ -74,10 +74,9 @@ Twinkle.welcome.normal = function() {
 	}
 	if( mw.config.get( 'wgNamespaceNumber' ) === 3 ) {
 		var username = mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-
 		twAddPortletLink("javascript:Twinkle.welcome.callback(\"" + username + "\")", "Wel", "friendly-welcome", "Welcome user", "");
 	}
-}
+};
 
 Twinkle.welcome.welcomeUser = function welcomeUser() {
 	Status.init( document.getElementById('bodyContent') );
@@ -95,7 +94,7 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);
-}
+};
 
 Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	var Window = new SimpleWindow( 600, 400 );
@@ -120,7 +119,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	form.append( { type:'header', label:'Simple templates' } );
 	form.append( { type: 'radio', name: 'simple', list: Twinkle.welcome.standardList } );
 
-	if( typeof( Twinkle.getFriendlyPref('customWelcomeList') ) == 'object' ) {
+	if( typeof( Twinkle.getFriendlyPref('customWelcomeList') ) === 'object' ) {
 		form.append( { type:'header', label:'Custom templates' } );
 		form.append( { type: 'radio', name: 'custom', list: Twinkle.getFriendlyPref('customWelcomeList') } );
 	}
@@ -137,122 +136,149 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
-}
+};
 
 Twinkle.welcome.standardList = [
 	{
 		label: '\{\{Welcome}}: standard welcome*',
-		value: 'Welcome' },
+		value: 'Welcome'
+	},
 	{ 
 		label: '\{\{Welcomeshort}}: short welcome',
 		value: 'Welcomeshort',
-		tooltip: 'Includes section heading.' },
+		tooltip: 'Includes section heading.'
+	},
 	{ 
 		label: '\{\{WelcomeSimple}}: simple welcome',
 		value: 'WelcomeSimple',
-		tooltip: 'Won\'t overwhelm new users.  Includes section heading.' },
+		tooltip: 'Won\'t overwhelm new users.  Includes section heading.'
+	},
 	{
 		label: '\{\{Welcome-personal}}: includes a plate of cookies',
 		value: 'Welcome-personal',
-		tooltip: 'A personal welcome with an introduction from you and a plate of cookies.  Includes section heading and signature.' },
+		tooltip: 'A personal welcome with an introduction from you and a plate of cookies.  Includes section heading and signature.'
+	},
 	{ 
 		label: '\{\{WelcomeMenu}}: welcome with menu of links',
 		value: 'WelcomeMenu',
-		tooltip: 'Contains a welcome message and many useful links broken up into different sections.  Includes signature.' },
+		tooltip: 'Contains a welcome message and many useful links broken up into different sections.  Includes signature.' 
+	},
 	{ 
 		label: '\{\{Welcomeg}}: similar to \{\{WelcomeMenu}}',
 		value: 'Welcomeg',
-		tooltip: 'Contains a welcome message and many useful links broken up into different sections.  Includes signature.' },
+		tooltip: 'Contains a welcome message and many useful links broken up into different sections.  Includes signature.'
+	},
 	{ 
 		label: '\{\{Welcomeh}}: same as \{\{Welcomeg}} but with a section heading',
 		value: 'Welcomeh',
-		tooltip: 'Contains a section heading, a welcome message and many useful links broken up into different sections.  Includes section heading and signature.' },
+		tooltip: 'Contains a section heading, a welcome message and many useful links broken up into different sections.  Includes section heading and signature.'
+	},
 	{ 
 		label: '\{\{Welcome-belated}}: welcome for users with more substantial contributions',
-		value: 'Welcome-belated' },
-]
+		value: 'Welcome-belated'
+	}
+];
 
 Twinkle.welcome.welcomingCommitteeList = [
 	{ 
 		label: '\{\{Wel}}: similar to \{\{Welcome}}, but automatically identifies anonymous and registered users*',
 		value: 'Wel',
-		tooltip: 'This template checks whether the username contains any letters. If there are any, \{\{Welcome-reg}} will be shown. If there are none, \{\{Welcome-anon}} will be shown.' },
+		tooltip: 'This template checks whether the username contains any letters. If there are any, \{\{Welcome-reg}} will be shown. If there are none, \{\{Welcome-anon}} will be shown.'
+	},
 	{ 
 		label: '\{\{W-basic}}: standard template, similar to \{\{Welcome}} with additional options',
 		value: 'W-basic',
-		tooltip: 'This template is similar to \{\{Welcome}} but supports many different options.  Includes a signature.' },
+		tooltip: 'This template is similar to \{\{Welcome}} but supports many different options.  Includes a signature.'
+	},
 	{ 
 		label: '\{\{W-shout}}: extroverted message with bold advice',
 		value: 'W-shout',
-		tooltip: 'This template is similar to \{\{WelcomeShout}} but supports many different options.  Includes a signature.' },
+		tooltip: 'This template is similar to \{\{WelcomeShout}} but supports many different options.  Includes a signature.'
+	},
 	{ 
 		label: '\{\{W-short}}: concise; won\'t overwhelm',
 		value: 'W-short||',
-		tooltip: 'This template is similar to \{\{Welcomeshort}} but supports many different options.  Includes a signature.' },
+		tooltip: 'This template is similar to \{\{Welcomeshort}} but supports many different options.  Includes a signature.'
+	},
 	{ 
 		label: '\{\{W-link}}: shortest greeting, links to Welcoming committee\'s greetings page',
 		value: 'W-link',
-		tooltip: 'This template is similar to \{\{Welcom}} but supports many different options.  Includes a signature.' },
+		tooltip: 'This template is similar to \{\{Welcom}} but supports many different options.  Includes a signature.'
+	},
 	{ 
 		label: '\{\{W-graphical}}: graphical menu format to ease transition from the graphic-heavy web',
 		value: 'W-graphical',
-		tooltip: 'This template is similar to \{\{Welcomeg}} but has fewer links.  Supports many different options.  Includes a signature.' },
+		tooltip: 'This template is similar to \{\{Welcomeg}} but has fewer links.  Supports many different options.  Includes a signature.'
+	},
 	{ 
 		label: '\{\{W-screen}}: graphical; designed to fit the size of the user\'s screen',
 		value: 'W-screen',
-		tooltip: 'This template is a nice graphical welcome with many different options.  Includes a signature.' }
-]
+		tooltip: 'This template is a nice graphical welcome with many different options.  Includes a signature.'
+	}
+];
 
 Twinkle.welcome.problemList = [
 	{ 
 		label: '\{\{Welcomelaws}}: welcome with information about copyrights, npov, the sandbox, and vandalism',
-		value: 'Welcomelaws' },
+		value: 'Welcomelaws'
+	},
 	{ 
 		label: '\{\{Firstarticle}}: for someone whose first article did not meet page creation guidelines*',
-		value: 'Firstarticle' },
+		value: 'Firstarticle'
+	},
 	{ 
 		label: '\{\{Welcomevandal}}: for someone whose initial efforts appear to be vandalism*',
 		value: 'Welcomevandal',
-		tooltip: 'Includes a section heading.'},
+		tooltip: 'Includes a section heading.'
+	},
 	{ 
 		label: '\{\{Welcomenpov}}: for someone whose initial efforts do not adhere to the neutral point of view policy*',
-		value: 'Welcomenpov' },
+		value: 'Welcomenpov'
+	},
 	{ 
 		label: '\{\{Welcomespam}}: welcome with additional discussion of anti-spamming polices*',
-		value: 'Welcomespam' },
+		value: 'Welcomespam'
+	},
 	{ 
 		label: '\{\{Welcomeunsourced}}: for someone whose initial efforts are uncited*',
-		value: 'Welcomeunsourced' },
+		value: 'Welcomeunsourced'
+	},
 	{ 
 		label: '\{\{Welcomeauto}}: for someone who created an autobiographical article*',
-		value: 'Welcomeauto' },
+		value: 'Welcomeauto'
+	},
 	{ 
 		label: '\{\{Welcome-COI}}: for someone who created an article about a subject with which they have a conflict of interest*',
-		value: 'Welcome-COI' }
-]
+		value: 'Welcome-COI'
+	}
+];
 
 Twinkle.welcome.anonymousList = [
 	{
 		label: '\{\{Welcome-anon}}: for anonymous users; encourages getting a username*',
-		value: 'Welcome-anon' },
+		value: 'Welcome-anon'
+	},
 	{
 		label: '\{\{Welcomeanon2}}: similar to \{\{Welcome-anon}} but with hints and tips*',
 		value: 'Welcomeanon2',
-		tooltip: 'Includes section heading.' },
+		tooltip: 'Includes section heading.'
+	},
 	{
 		label: '\{\{Welc-anon}}: similar to \{\{Welcome-anon}} but with a border and section heading',
 		value: 'Welc-anon||',
-		tooltip: 'Includes section heading.' },
+		tooltip: 'Includes section heading.'
+	},
 	{
 		label: '\{\{Welcome-anon-vandal}}: for anonymous users who have vandalized a page*',
 		value: 'Welcome-anon-vandal',
-		tooltip: 'Includes a section heading and signature.' },
+		tooltip: 'Includes a section heading and signature.'
+	},
 	{
 		label: '\{\{Welcome-anon-vandalism-fighter}}: for anonymous users who fight vandalism, urging them to create an account*',
 		value: 'Welcome-anon-vandalism-fighter', 
-		tooltip: 'Includes section heading.',
-	},
-]
+		tooltip: 'Includes section heading.'
+	}
+];
 
 // Set to true if template does not already have heading
 Twinkle.welcome.headingHash = {
@@ -285,7 +311,7 @@ Twinkle.welcome.headingHash = {
 	'Welc-anon||': false,
 	'Welcome-anon-vandalism-fighter': false,
 	'Welcome-anon-vandal': false
-}
+};
 
 // Set to true if template already has signature
 Twinkle.welcome.signatureHash = {
@@ -317,7 +343,7 @@ Twinkle.welcome.signatureHash = {
 	'Welc-anon||': false,
 	'Welcome-anon-vandalism-fighter': false,
 	'Welcome-anon-vandal': true
-}
+};
 
 /* Set to true if template supports article
  * name from art template parameter 
@@ -352,7 +378,7 @@ Twinkle.welcome.artHash = {
 	'Welc-anon||': false,
 	'Welcome-anon-vandalism-fighter': true,
 	'Welcome-anon-vandal': false
-}
+};
 
 /* Set to true if template supports article
  * name from vanarticle template parameter 
@@ -387,7 +413,7 @@ Twinkle.welcome.vandalHash = {
 	'Welc-anon||': false,
 	'Welcome-anon-vandalism-fighter': false,
 	'Welcome-anon-vandal': true
-}
+};
 
 Twinkle.welcome.callbacks = {
 	main: function( pageobj ) {
@@ -395,16 +421,16 @@ Twinkle.welcome.callbacks = {
 		var oldText = pageobj.getPageText();
 		
 		// abort if mode is auto and form is not empty
-		if( pageobj.exists() && params.mode == 'auto' ) {
+		if( pageobj.exists() && params.mode === 'auto' ) {
 			Status.info( 'Warning', 'User talk page not empty; aborting automatic welcome' );
 			Wikipedia.actionCompleted.event();
 			return;
 		}
 		
 		var text = '';
-		Status.info( 'Info', 'Will add the welcome template to the '
-				+ ( Twinkle.getFriendlyPref('topWelcomes') ? 'top' : 'bottom' )
-				+ ' of the user\'s talk page.' );
+		Status.info( 'Info', 'Will add the welcome template to the ' +
+			( Twinkle.getFriendlyPref('topWelcomes') ? 'top' : 'bottom' ) +
+			' of the user\'s talk page.' );
 		if( !Twinkle.getFriendlyPref('topWelcomes') ) {
 			text += oldText + '\n';
 		}
@@ -419,17 +445,17 @@ Twinkle.welcome.callbacks = {
 		text += '\{\{subst:' + params.value;
 		
 		if( Twinkle.welcome.artHash[ params.value ] ) {
-			if( Twinkle.getFriendlyPref('insertUsername') && params.value.substring(2,0) != 'W-' ) {
+			if( Twinkle.getFriendlyPref('insertUsername') && params.value.substring(2,0) !== 'W-' ) {
 				Status.info( 'Info', 'Will add your username to the template' );
 				text += '|' + mw.config.get('wgUserName');
 			}
 			
-			if( params.article != '' ) {
+			if( params.article ) {
 				Status.info( 'Info', 'Will add article link to the template' );
 				text += '|art=' + params.article;
 			}
 		} else if( Twinkle.welcome.vandalHash[ params.value ] ) {
-			if( params.article != '' ) {
+			if( params.article ) {
 				Status.info( 'Info', 'Will add article link to the template' );
 			}
 			text += '|' + params.article;
@@ -463,11 +489,11 @@ Twinkle.welcome.callbacks = {
 		pageobj.setCreateOption('recreate');
 		pageobj.save();
 	}
-}
+};
 
 Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) {
 	// Ignore if a change to the text field triggered this event
-	if( e.target.name == 'article' ) {
+	if( e.target.name === 'article' ) {
 		return;
 	}
 	
@@ -487,4 +513,4 @@ Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) 
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);
-}
+};

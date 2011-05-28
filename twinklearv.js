@@ -8,34 +8,33 @@
  */
 
 Twinkle.arv = function twinklearv() {
-	var username;
-
-	if ( wgNamespaceNumber === 3 || wgNamespaceNumber === 2 || ( wgNamespaceNumber === -1 && wgTitle === "Contributions" )){
+	if ( mw.config.get('wgNamespaceNumber') === 2 || mw.config.get('wgNamespaceNumber') === 3 || 
+	    ( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgTitle') === "Contributions" )) {
 
 		// If we are on the contributions page, need to parse some then
-		if( wgNamespaceNumber === -1 && wgTitle === "Contributions" ) {
+		var username;
+		if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgTitle') === "Contributions" ) {
 			username = decodeURIComponent(/user=(.+)/.exec($('div#contentSub a[title="Special:Log"]').last().attr("href").replace(/\+/g, "%20"))[1]);
 		} else {
-			username = wgTitle.split( '/' )[0]; // only first part before any slashes
+			username = mw.config.get('wgTitle').split( '/' )[0]; // only first part before any slashes
 		}
 
-		if ( !username ) return;
+		if ( !username ) {
+			return;
+		}
 
-		var title =  isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
+		var title = isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
 		
-		if (twinkleUserAuthorized)
-		{
+		if (twinkleUserAuthorized) {
 			twAddPortletLink( "javascript:Twinkle.arv.callback(\"" + username.replace( /\"/g, "\\\"") + "\")", "ARV", "tw-arv", title, "" );
-		}
-		else
-		{
+		} else {
 			twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'ARV', 'tw-arv', name, title);
 		}
 	}
-}
+};
 
 Twinkle.arv.callback = function ( uid ) {
-	if( uid === wgUserName ){
+	if( uid === mw.config.get('wgUserName') ){
 		alert( 'You don\'t want to report yourself, do you?' );
 		return;
 	}
@@ -95,8 +94,7 @@ Twinkle.arv.callback = function ( uid ) {
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
 	result.category.dispatchEvent( evt );
-
-}
+};
 
 Twinkle.arv.callback.changeCategory = function (e) {
 	var value = e.target.value;
@@ -104,10 +102,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 	var old_area;
 	for( var i = 0; i < root.childNodes.length; ++i ) {
 		var node = root.childNodes[i];
-		if( 
-			node instanceof Element &&
-			node.getAttribute( 'name' ) === 'work_area' 
-		) {
+		if (node instanceof Element && node.getAttribute( 'name' ) === 'work_area') {
 			old_area = node;
 			break;
 		}
@@ -252,7 +247,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				type: 'input',
 				name: 'sockmaster',
 				label: 'Sockpuppeteer',
-				tooltip: 'The username of the sockpuppeteer (sockmaster) without the User:-prefix',
+				tooltip: 'The username of the sockpuppeteer (sockmaster) without the User:-prefix'
 			}
 		);
 		work_area.append( {
@@ -263,15 +258,18 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			} );
 		work_area.append( {
 				type: 'checkbox',
-				list: [ {
-					label: 'Request CheckUser evidence',
-					name: 'checkuser',
-					tooltip: 'CheckUser is a tool used to obtain technical evidence related to a sock-puppetry allegation. It will not be used without good cause, which you must clearly demonstrate. Make sure your evidence explains why CheckUser is appropriate.'
-				}, {
-					label: 'Notify reported users',
-					name: 'notify',
-					tooltip: 'Notification is not mandatory. In many cases, especially of chronic sockpuppeteers, notification may be counterproductive. However, especially in less egregious cases involving users who has not been reported before, notification may make the cases fairer and also appear to be fairer in the eyes of the accused. Use your judgment.'
-				} ]
+				list: [
+					{
+						label: 'Request CheckUser evidence',
+						name: 'checkuser',
+						tooltip: 'CheckUser is a tool used to obtain technical evidence related to a sock-puppetry allegation. It will not be used without good cause, which you must clearly demonstrate. Make sure your evidence explains why CheckUser is appropriate.'
+					},
+					{
+						label: 'Notify reported users',
+						name: 'notify',
+						tooltip: 'Notification is not mandatory. In many cases, especially of chronic sockpuppeteers, notification may be counterproductive. However, especially in less egregious cases involving users who has not been reported before, notification may make the cases fairer and also appear to be fairer in the eyes of the accused. Use your judgment.'
+					}
+				]
 			} );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
@@ -314,7 +312,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	}
-}
+};
 
 Twinkle.arv.callback.evaluate = function(e) {
 
@@ -330,13 +328,14 @@ Twinkle.arv.callback.evaluate = function(e) {
 		comment = form.reason.value;
 	}
 	var uid = form.uid.value;
-	
+
+	var types;
 	switch( form.category.value ) {
 
 		// Report user for vandalism
-		default:
 		case 'aiv':
-			var types = form.getChecked( 'arvtype' );
+		default:
+			types = form.getChecked( 'arvtype' );
 			if( !types.length && comment === '' ) {
 				alert( 'You must specify some reason' );
 				return;
@@ -354,8 +353,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 							return 'actions evidently indicate a vandalism-only account';
 						case 'promoonly':
 							return 'account is being used only for promotional purposes';
+						default:
+							return 'unknown reason';
 					}
-					return 'unknown reason';
 				} ).join( ', ' );
 
 
@@ -370,7 +370,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 						'diff': form.badid.value,
 						'oldid': form.goodid.value
 					};
-					reason += ' ([' +  wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ) + ' diff])';
+					reason += ' ([' + mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ) + ' diff])';
 				}
 				reason += ';';
 			}
@@ -408,7 +408,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			
 		// Report inappropriate username
 		case 'username':
-			var types = form.getChecked( 'arvtype' );
+			types = form.getChecked( 'arvtype' );
 			if( !types.length ) {
 				alert( 'You must specify at least one breached violation' );
 				return;
@@ -479,7 +479,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			Status.init( form );
 			break;
 	}
-}
+};
 
 Twinkle.arv.processSock = function( params ) {
 
@@ -510,7 +510,7 @@ Twinkle.arv.processSock = function( params ) {
 			if ( current >= total ) {
 				statusIndicator.info( now + ' (completed)' );
 			}
-		}
+		};
 		
 		var socks = params.sockpuppets;
 
@@ -528,8 +528,7 @@ Twinkle.arv.processSock = function( params ) {
 	var text = "\n\n\{\{subst:SPI report|socksraw=" +
 		params.sockpuppets.map( function(v) { 
 				return "* \{\{" + ( isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "\}\}"; 
-			} )
-			.join( "\n" ) + "\n|evidence=" + params.evidence + " \n";
+			} ).join( "\n" ) + "\n|evidence=" + params.evidence + " \n";
 		
 	if ( params.checkuser ) {
 		text += "|checkuser=yes";
@@ -544,4 +543,4 @@ Twinkle.arv.processSock = function( params ) {
 	spiPage.append();
 	
 	Wikipedia.removeCheckpoint();  // all page updates have been started
-}
+};

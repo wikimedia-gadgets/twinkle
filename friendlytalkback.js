@@ -8,15 +8,14 @@
  */
 
 Twinkle.talkback = function friendlytalkback() {
-	if( wgNamespaceNumber == 3 ) {
-		var username = wgTitle.split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-
+	if( mw.config.get('wgNamespaceNumber') === 3 ) {
+		var username = mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
 		twAddPortletLink( "javascript:Twinkle.talkback.callback(\"" + username + "\")", "TB", "friendly-talkback", "Easy talkback", "");
 	}
-}
+};
 
 Twinkle.talkback.callback = function friendlytalkbackCallback( uid ) {
-	if( uid == wgUserName ){
+	if( uid === mw.config.get('wgUserName') ){
 		alert( 'Is it really so bad that you\'re talking back to yourself?' );
 		return;
 	}
@@ -62,7 +61,7 @@ Twinkle.talkback.callback = function friendlytalkbackCallback( uid ) {
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
 	result.tbtarget[0].dispatchEvent( evt );
-}
+};
 
 Twinkle.talkback.prev_page = '';
 Twinkle.talkback.prev_section = '';
@@ -85,10 +84,7 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 
 	for( var i = 0; i < root.childNodes.length; ++i ) {
 		var node = root.childNodes[i];
-		if( 
-			node instanceof Element &&
-			node.getAttribute( 'name' ) == 'work_area' 
-		) {
+		if (node instanceof Element && node.getAttribute( 'name' ) === 'work_area' ) {
 			old_area = node;
 			break;
 		}
@@ -100,8 +96,8 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 		} );
 
 	switch( value ) {
-		default:
 		case 'mytalk':
+		default:
 			work_area.append( { 
 					type:'input',
 					name:'section',
@@ -178,38 +174,38 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 	work_area = work_area.render();
 	root.replaceChild( work_area, old_area );
 	root.message.value = Twinkle.talkback.prev_message;
-}
+};
 
 Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e) {
 	var tbtarget = e.target.getChecked( 'tbtarget' )[0];
 	var page = null;
 	var section = e.target.section.value;
-	if( tbtarget == 'usertalk' || tbtarget == 'other' ) {
+	if( tbtarget === 'usertalk' || tbtarget === 'other' ) {
 		page = e.target.page.value;
 		
-		if( tbtarget == 'usertalk' ) {
-			if( page == '' ) {
+		if( tbtarget === 'usertalk' ) {
+			if( !page ) {
 				alert( 'You must specify the username of the user whose talk page you left a message on.' );
 				return;
 			}
 		} else {
-			if( page == '' ) {
+			if( !page ) {
 				alert( 'You must specify the full page name when your message is not on a user talk page.' );
 				return;
 			}
 		}
-	} else if (tbtarget == "an") {
+	} else if (tbtarget === "an") {
 		page = e.target.noticeboard.value;
 	}
 
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( e.target );
 
-	Wikipedia.actionCompleted.redirect = wgPageName;
+	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
 	Wikipedia.actionCompleted.notice = "Talkback complete; reloading talk page in a few seconds";
 
-	var talkpage = new Wikipedia.page(wgPageName, "Adding talkback");
-	var tbPageName = (tbtarget == 'mytalk') ? wgUserName : page;
+	var talkpage = new Wikipedia.page(mw.config.get('wgPageName'), "Adding talkback");
+	var tbPageName = (tbtarget === 'mytalk') ? mw.config.get('wgUserName') : page;
 
 	var text;
 	if ( tbtarget === "an" ) {
@@ -222,19 +218,19 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 		text = '\n==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n{\{talkback|';
 		text += tbPageName;
 
-		if( section != '' ) {
+		if( section ) {
 			text += '|' + section;
 		}
 
 		text += '|ts=\~\~\~\~\~\}\}';
 
-		if( e.target.message.value != '' ) {
+		if( e.target.message.value ) {
 			text += '\n' + e.target.message.value + '  \~\~\~\~';
 		} else if( Twinkle.getFriendlyPref('insertTalkbackSignature') ) {
 			text += '\n\~\~\~\~';
 		}
 
-		talkpage.setEditSummary("Talkback ([[" + (tbtarget == 'other' ? '' : 'User talk:') + tbPageName +
+		talkpage.setEditSummary("Talkback ([[" + (tbtarget === 'other' ? '' : 'User talk:') + tbPageName +
 			(section ? ('#' + section) : '') + "]])" + Twinkle.getPref('summaryAd'));
 	}
 
@@ -243,4 +239,4 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 	talkpage.setMinorEdit(Twinkle.getFriendlyPref('markTalkbackAsMinor'));
 	talkpage.setFollowRedirect(true);
 	talkpage.append();
-}
+};

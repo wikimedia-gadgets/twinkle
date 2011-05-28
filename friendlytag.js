@@ -8,15 +8,15 @@
  */
 
 Twinkle.tag = function friendlytag() {
-	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) == 'no' && $("span.redirectText").length > 0 ) {
+	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) === 'no' && $("span.redirectText").length > 0 ) {
 		Twinkle.tag.isRedirect = true;
 		twAddPortletLink( "javascript:Twinkle.tag.callback()", "Tag", "friendly-tag", "Tag redirect", "");
-	} else if( wgNamespaceNumber !== 0 || !wgCurRevisionId ) {
+	} else if( mw.config.get('wgNamespaceNumber') !== 0 || !mw.config.get('wgCurRevisionId') ) {
 		return;
 	} else {
-		twAddPortletLink( "javascript:Twinkle.tag.callback()", "Tag", "friendly-tag", "Tag article", "");
+		twAddPortletLink( "javascript:Twinkle.tag.callback()", "Tag", "friendly-tag", "Add maintenance tags to article", "");
 	}
-}
+};
 
 Twinkle.tag.callback = function friendlytagCallback( uid ) {
 	var Window = new SimpleWindow( 630, 400 );
@@ -52,7 +52,7 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 		form.append( { type:'header', label:'Notice templates' } );
 		form.append( { type:'checkbox', name: 'notice', list: Twinkle.tag.noticeList } );
 
-		if( typeof( Twinkle.getFriendlyPref('customTagList') ) == 'object' ) {
+		if( typeof( Twinkle.getFriendlyPref('customTagList') ) === 'object' ) {
 			form.append( { type:'header', label:'Custom templates' } );
 			form.append( { type: 'checkbox', name: 'custom', list: Twinkle.getFriendlyPref('customTagList') } );
 		}
@@ -74,7 +74,7 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
-}
+};
 
 Twinkle.tag.maintenanceList = [
 	{
@@ -724,7 +724,7 @@ Twinkle.tag.groupHash = {
 	'verylong': true,
 	'weasel': true,
 	'wikify': true
-}
+};
 
 Twinkle.tag.callbacks = {
 	main: function( pageobj ) {
@@ -733,11 +733,12 @@ Twinkle.tag.callbacks = {
 		var tags = [], groupableTags = [];
 
 		//Remove tags that become superfluous with this action
-		var pageText = pageobj.getPageText().replace(/{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
+		var pageText = pageobj.getPageText().replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
 
+		var i;
 		if( !Twinkle.tag.isRedirect ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
-			for( var i = 0; i < params.tags.length; i++ ) {
+			for( i = 0; i < params.tags.length; i++ ) {
 				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im' );
 				if( !tagRe.exec( pageText ) ) {
 					if( Twinkle.tag.groupHash[ params.tags[i] ] && 
@@ -749,8 +750,8 @@ Twinkle.tag.callbacks = {
 						tags = tags.concat( params.tags[i] );
 					}
 				} else {
-					Status.info( 'Info', 'Found \{\{' + params.tags[i]
-						+ '\}\} on the article already...excluding' );
+					Status.info( 'Info', 'Found \{\{' + params.tags[i] +
+						'\}\} on the article already...excluding' );
 				}
 			}
 
@@ -760,13 +761,13 @@ Twinkle.tag.callbacks = {
 				groupableTags.sort();
 				tagText += '\{\{multiple issues';
 				summaryText += ' \{\{[[Template:multiple issues|multiple issues]]\}\} with parameters';
-				for( var i = 0; i < groupableTags.length; i++ ) {
+				for( i = 0; i < groupableTags.length; i++ ) {
 					tagText += '|' + groupableTags[i] +
 						'=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}';
 
-					if( i == (groupableTags.length - 1) ) {
+					if( i === (groupableTags.length - 1) ) {
 						summaryText += ' and';
-					} else if ( i < (groupableTags.length - 1) && i != 0 ) {
+					} else if ( i < (groupableTags.length - 1) && i > 0 ) {
 						summaryText += ',';
 					}
 					summaryText += ' ' + groupableTags[i];
@@ -777,7 +778,7 @@ Twinkle.tag.callbacks = {
 			}
 		} else {
 			// Check for pre-existing tags
-			for( var i = 0; i < params.tags.length; i++ ) {
+			for( i = 0; i < params.tags.length; i++ ) {
 				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im' );
 				if( !tagRe.exec( pageText ) ) {
 					tags = tags.concat( params.tags[i] );
@@ -789,11 +790,11 @@ Twinkle.tag.callbacks = {
 		}
 
 		tags.sort();
-		for( var i = 0; i < tags.length; i++ ) {
+		for( i = 0; i < tags.length; i++ ) {
 			var currentTag = "";
-			if( tags[i] == 'uncategorized' || tags[i] == 'catimprove' ) {
-				pageText += '\n\n\{\{' + tags[i]
-				+ '|date=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}\}\}';
+			if( tags[i] === 'uncategorized' || tags[i] === 'catimprove' ) {
+				pageText += '\n\n\{\{' + tags[i] +
+					'|date=\{\{subst:CURRENTMONTHNAME\}\} \{\{subst:CURRENTYEAR\}\}\}\}';
 			} else {
 				if( tags[i] === 'globalize' ) {
 					currentTag += '\{\{' + params.globalizeSubcategory;
@@ -810,7 +811,7 @@ Twinkle.tag.callbacks = {
 					case 'cleanup':
 						var reason = prompt('You can optionally enter a more specific reason why the article requires cleanup.  \n' +
 							"Just click OK if you don't wish to enter this.  To skip the \{\{cleanup}} tag, click Cancel.", "");
-						if (reason == null) {
+						if (reason === null) {
 							continue;
 						} else if (reason !== "") {
 							currentTag += '|reason=' + reason;
@@ -819,19 +820,19 @@ Twinkle.tag.callbacks = {
 					case 'notenglish':
 						var langname = prompt('Please enter the name of the language the article is thought to be written in.  \n' +
 							"Just click OK if you don't know.  To skip the \{\{notenglish}} tag, click Cancel.", "");
-						if (langname == null) {
+						if (langname === null) {
 							continue;
 						} else if (langname !== "") {
 							currentTag += '|1=' + langname;
 						}
 						break;
 					case 'roughtranslation':
-						var langname = prompt('Please enter the name of the language the article is thought to have been translated from.  \n' +
+						var roughlang = prompt('Please enter the name of the language the article is thought to have been translated from.  \n' +
 							"Just click OK if you don't know.  To skip the \{\{roughtranslation}} tag, click Cancel.", "");
-						if (langname == null) {
+						if (roughlang === null) {
 							continue;
-						} else if (langname !== "") {
-							currentTag += '|1=' + langname;
+						} else if (roughlang !== "") {
+							currentTag += '|1=' + roughlang;
 						}
 						break;
 					case 'merge':
@@ -840,11 +841,13 @@ Twinkle.tag.callbacks = {
 						var param = prompt('Please enter the name of the other article(s) involved in the merge.  \n' +
 							"To specify multiple articles, separate them with a vertical pipe (|) character.  \n" +
 							"This information is required.  Click OK when done, or click Cancel to skip the merge tag.", "");
-						if (param == null) {
+						if (param === null) {
 							continue;
 						} else if (param !== "") {
 							currentTag += '|' + param;
 						}
+						break;
+					default:
 						break;
 				}
 				
@@ -852,14 +855,16 @@ Twinkle.tag.callbacks = {
 				tagText += currentTag;
 			}
 
-			if( i == (tags.length - 1) && ( i > 0 || groupableTags.length > 3 ) ) {
-				summaryText += ' and';
-			} else if ( i < (tags.length - 1) && ( i != 0 || groupableTags.length > 3 ) ) {
-				summaryText += ',';
+			if ( i > 0 || groupableTags.length > 3 ) {
+				if( i === (tags.length - 1) ) {
+					summaryText += ' and';
+				} else if ( i < (tags.length - 1) ) {
+					summaryText += ',';
+				}
 			}
 
 			summaryText += ' \{\{[[Template:';
-			if( tags[i] == 'globalize' ) {
+			if( tags[i] === 'globalize' ) {
 				summaryText += params.globalizeSubcategory + '|' + params.globalizeSubcategory;
 			} else {
 				summaryText += tags[i] + '|' + tags[i];
@@ -873,7 +878,7 @@ Twinkle.tag.callbacks = {
 			// smartly insert the new tags after any hatnotes. Regex is a bit more
 			// complicated than it'd need to be, to allow templates as parameters,
 			// and to handle whitespace properly.
-			pageText = pageText.replace(/^\s*(?:((?:\s*{{\s*(?:about|dablink|distinguish|for|other\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\s?(?:also|wiktionary)|selfref|the)\d*\s*(\|(?:{{[^{}]*}}|[^{}])*)?}})+(?:\s*\n)?)\s*)?/i, 
+			pageText = pageText.replace(/^\s*(?:((?:\s*\{\{\s*(?:about|dablink|distinguish|for|other\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\s?(?:also|wiktionary)|selfref|the)\d*\s*(\|(?:\{\{[^{}]*}}|[^{}])*)?}})+(?:\s*\n)?)\s*)?/i, 
 				"$1" + tagText);
 		}
 		summaryText += ' tag' + ( ( tags.length + ( groupableTags.length > 3 ? 1 : 0 ) ) > 1 ? 's' : '' ) +
@@ -890,24 +895,25 @@ Twinkle.tag.callbacks = {
 			pageobj.patrol();
 		}
 	}
-}
+};
 
 Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	var form = e.target;
+	var tags;
 	if( Twinkle.tag.isRedirect ) {
-		var tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
+		tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
 	} else {
-		if( typeof( Twinkle.getFriendlyPref('customTagList') ) == 'object' ) {
-			var tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) ).concat( form.getChecked( 'custom' ) );
+		if( typeof( Twinkle.getFriendlyPref('customTagList') ) === 'object' ) {
+			tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) ).concat( form.getChecked( 'custom' ) );
 		} else {
-			var tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) );
+			tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) );
 		}
 		var globalizeSubcategory = form.getChecked( 'problem.globalize' );
 		var notabilitySubcategory = form.getChecked( 'problem.notability' );
 	}
 	var params;
 
-	if( tags.length == 0 ) {
+	if( tags.length ) {
 		alert( 'You must select at least one tag!' );
 		return;
 	}
@@ -917,23 +923,23 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			group: form.group.checked,
 			globalizeSubcategory: globalizeSubcategory ? globalizeSubcategory[0] : null,
 			notabilitySubcategory: notabilitySubcategory ? notabilitySubcategory[0] : null
-		}
+		};
 	} else {
 		params = {
 			tags: tags
-		}
+		};
 	}
 
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( form );
 
-	Wikipedia.actionCompleted.redirect = wgPageName;
+	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
 	Wikipedia.actionCompleted.notice = "Tagging complete, reloading article in a few seconds";
 	if (Twinkle.tag.isRedirect) {
 		Wikipedia.actionCompleted.followRedirect = false;
 	}
 
-	var wikipedia_page = new Wikipedia.page(wgPageName, Twinkle.tag.isRedirect ? "Tagging redirect" : "Tagging article");
+	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), Twinkle.tag.isRedirect ? "Tagging redirect" : "Tagging article");
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.tag.callbacks.main);
-}
+};

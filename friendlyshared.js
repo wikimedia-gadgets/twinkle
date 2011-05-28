@@ -8,12 +8,11 @@
  */
 
 Twinkle.shared = function friendlyshared() {
-	if( wgNamespaceNumber == 3 && isIPAddress( wgTitle ) ) {
-		var username = wgTitle.split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-
+	if( mw.config.get('wgNamespaceNumber') === 3 && isIPAddress(mw.config.get('wgTitle')) ) {
+		var username = mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
 		twAddPortletLink( "javascript:Twinkle.shared.callback(\"" + username + "\")", "Shared IP", "friendly-shared", "Shared IP tagging", "");
 	}
-}
+};
 
 Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 	var Window = new SimpleWindow( 600, 400 );
@@ -61,7 +60,7 @@ Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
-}
+};
 
 Twinkle.shared.standardList = [
 	{
@@ -96,14 +95,14 @@ Twinkle.shared.standardList = [
 ];
 
 Twinkle.shared.callback.change_shared = function friendlytagCallbackChangeShared(e) {
-	if( e.target.value == 'shared IP edu' ) {
+	if( e.target.value === 'shared IP edu' ) {
 		e.target.form.contact.disabled = false;
 	} else {
 		e.target.form.contact.disabled = true;
 	}
 	e.target.form.organization.disabled=false;
 	e.target.form.host.disabled=false;
-}
+};
 
 Twinkle.shared.callbacks = {
 	main: function( pageobj ) {
@@ -126,10 +125,10 @@ Twinkle.shared.callbacks = {
 
 		Status.info( 'Info', 'Will add the shared IP address template to the top of the user\'s talk page.' );
 		text += params.value + '|' + params.organization;
-		if( params.value == 'shared IP edu' && params.contact != '') {
+		if( params.value === 'shared IP edu' && params.contact !== '') {
 			text += '|' + params.contact;
 		}
-		if( params.host != '' ) {
+		if( params.host !== '' ) {
 			text += '|host=' + params.host;
 		}
 		text += '}}\n\n';
@@ -141,7 +140,7 @@ Twinkle.shared.callbacks = {
 		pageobj.setCreateOption('recreate');
 		pageobj.save();
 	}
-}
+};
 
 Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	var shared = e.target.getChecked( 'shared' );
@@ -152,7 +151,7 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	
 	var value = shared[0];
 	
-	if( e.target.organization.value == '') {
+	if( e.target.organization.value === '') {
 		alert( 'You must input an organization for the {{' + value + '}} template!' );
 		return;
 	}
@@ -167,11 +166,11 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( e.target );
 
-	Wikipedia.actionCompleted.redirect = wgPageName;
+	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
 	Wikipedia.actionCompleted.notice = "Tagging complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Wikipedia.page(wgPageName, "User talk page modification");
+	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "User talk page modification");
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.shared.callbacks.main);
-}
+};
