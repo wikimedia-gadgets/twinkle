@@ -13,24 +13,20 @@
 
 Twinkle.fluff = {
 	auto: function() {
-		if( QueryString.get( 'oldid' ) != wgCurRevisionId ) {
+		if( QueryString.get( 'oldid' ) !== mw.config.get('wgCurRevisionId') ) {
 			// not latest revision
 			return;
 		}
 
 		var ntitle = getElementsByClassName( document.getElementById('bodyContent'), 'td' , 'diff-ntitle' )[0];
-		if( ntitle.getElementsByTagName('a')[0].firstChild.nodeValue.indexOf( 'Current revision' ) != 0 ) {
+		if( ntitle.getElementsByTagName('a')[0].firstChild.nodeValue.indexOf( 'Current revision' ) !== 0 ) {
 			// not latest revision
 			return;
 		}
 
 		vandal = ntitle.getElementsByTagName('a')[3].firstChild.nodeValue;
 
-		if( !Twinkle.getPref('openTalkPageOnAutoRevert') ) {
-			Twinkle.getPref('openTalkPage') = [];
-		}
-
-		Twinkle.fluff.revert( QueryString.get( 'twinklerevert' ), vandal );
+		Twinkle.fluff.revert( QueryString.get( 'twinklerevert' ), vandal, true );
 	},
 	normal: function() {
 
@@ -39,12 +35,14 @@ Twinkle.fluff = {
 			span.style.color = color;
 			span.appendChild( document.createTextNode( content ) );
 			return span;
-		}
+		};
 
-		if( wgNamespaceNumber == -1 && wgCanonicalSpecialPageName == "Contributions" ) {
+		if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
 			//Get the username these contributions are for
 			username = decodeURIComponent(/user=(.+)/.exec($('div#contentSub a[title="Special:Log"]').last().attr("href").replace(/\+/g, "%20"))[1]);
-			if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') != -1 || ( wgUserName != username && Twinkle.getPref('showRollbackLinks').indexOf('others') != -1 ) || ( wgUserName == username && Twinkle.getPref('showRollbackLinks').indexOf('mine') != -1 ) ) {
+			if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 || 
+				( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) || 
+				( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
 				var list = $("div#bodyContent ul li:has(span.mw-uctop)");
 
 				var revNode = document.createElement('strong');
@@ -68,18 +66,17 @@ Twinkle.fluff = {
 					tmpNode.firstChild.setAttribute( 'href', href + '&' + QueryString.create( { 'twinklerevert': 'norm' } ) );
 					current.appendChild( tmpNode );
 					current.appendChild( document.createTextNode(' ') );
-					var tmpNode = revVandNode.cloneNode( true );
+					tmpNode = revVandNode.cloneNode( true );
 					tmpNode.firstChild.setAttribute( 'href', href + '&' + QueryString.create( { 'twinklerevert': 'vand' } ) );
 					current.appendChild( tmpNode );
 				});
 			}
 		} else {
                         
-			if( wgCanonicalSpecialPageName == "Special:Undelete" ) {
+			if( mw.config.get('wgCanonicalSpecialPageName') === "Special:Undelete" ) {
 				//You can't rollback deleted pages!
 				return;
 			}
-
 
 			var body = document.getElementById('bodyContent');
 
@@ -92,7 +89,9 @@ Twinkle.fluff = {
 			try {
 				var otitle1 = document.getElementById('mw-diff-otitle1'); 
 				var ntitle1 = document.getElementById('mw-diff-ntitle1'); 
-				if (!otitle1 || !ntitle1) return;
+				if (!otitle1 || !ntitle1) {
+					return;
+				}
 				var otitle = otitle1.parentNode;
 				var ntitle = ntitle1.parentNode;
 			} catch( e ) {
@@ -124,12 +123,12 @@ Twinkle.fluff = {
 				curVersion = false;
 
 				var new_rev_url = $("div#mw-diff-ntitle1 strong a").attr("href");
-				var query = new QueryString( new_rev_url.split( '?', 2 )[1] );
+				query = new QueryString( new_rev_url.split( '?', 2 )[1] );
 				var newrev = query.get( 'oldid' );
-				var revertToRevision = document.createElement('div');
+				revertToRevision = document.createElement('div');
 				revertToRevision.setAttribute( 'id', 'tw-revert-to-nrevision' );
 				revertToRevision.style.fontWeight = 'bold';
-				var revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
+				revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
 				revertToRevisionLink.href = "javascript:Twinkle.fluff.revertToRevision('" + newrev + "')";
 				revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
 				revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
@@ -182,30 +181,33 @@ Twinkle.fluff = {
 			}
 		}
 	}
-}
+};
 
-Twinkle.fluff.revert = function revertPage( type, vandal, rev, page ) {
+Twinkle.fluff.revert = function revertPage( type, vandal, autoRevert, rev, page ) {
 
-	wgPageName = page || wgPageName;
-	wgCurRevisionId = rev || wgCurRevisionId;
+	var pagename = page || mw.config.get('wgPageName');
+	var revid = rev || mw.config.get('wgCurRevisionId');
 
 	Status.init( document.getElementById('bodyContent') );
 	var params = {
 		type: type,
-		user: vandal
-	}
+		user: vandal,
+		pagename: pagename,
+		revid: revid,
+		autoRevert: !!autoRevert
+	};
 	var query = {
 		'action': 'query',
 		'prop': ['info', 'revisions'],
-		'titles': wgPageName,
+		'titles': pagename,
 		'rvlimit': 50, // max possible
 		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ],
 		'intoken': 'edit'
-	}
+	};
 	var wikipedia_api = new Wikipedia.api( 'Grabbing data of earlier revisions', query, Twinkle.fluff.callbacks.main );
 	wikipedia_api.params = params;
 	wikipedia_api.post();
-}
+};
 
 Twinkle.fluff.revertToRevision = function revertToRevision( oldrev ) {
 
@@ -214,22 +216,21 @@ Twinkle.fluff.revertToRevision = function revertToRevision( oldrev ) {
 	var query = {
 		'action': 'query',
 		'prop': ['info',  'revisions'],
-		'titles': wgPageName,
+		'titles': mw.config.get('wgPageName'),
 		'rvlimit': 1,
 		'rvstartid': oldrev,
 		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ],
 		'intoken': 'edit',
 		'format': 'xml'
-	}
-
+	};
 	var wikipedia_api = new Wikipedia.api( 'Grabbing data of the earlier revision', query, Twinkle.fluff.callbacks.toRevision.main );
 	wikipedia_api.params = { rev: oldrev };
 	wikipedia_api.post();
-}
+};
 
 Twinkle.fluff.userIpLink = function( user ) {
-	return (isIPAddress(user)?"[[Special:Contributions/":"[[User:")+user+"|"+user+"]]";
-}
+	return (isIPAddress(user) ? "[[Special:Contributions/" : "[[User:" ) + user + "|" + user + "]]";
+};
 
 Twinkle.fluff.callbacks = {
 	toRevision: {
@@ -244,38 +245,34 @@ Twinkle.fluff.callbacks = {
 			var revertToRevID = $(xmlDoc).find('rev').attr('revid');
 			var revertToUser = $(xmlDoc).find('rev').attr('user');
 
-			if (revertToRevID != self.params.rev) {
+			if (revertToRevID !== self.params.rev) {
 				self.statitem.error( 'The retrieved revision does not match the requested revision.  Aborting.' );
 				return;
 			}
 
-			var optional_summary = prompt( "Please specify a reason for the revert, if possible:" );
-			if (optional_summary == null)
+			var optional_summary = prompt( "Please specify a reason for the revert, if possible:", "" );
+			if (optional_summary === null)
 			{
 				self.statelem.error( 'Aborted by user.' );
 				return;
 			}
-			var summary = sprintf( "Reverted to revision %d by %s%s.%s", 
-				revertToRevID,
-				revertToUser,
-				optional_summary ? "; " + optional_summary : '',
-				Twinkle.getPref('summaryAd')
-			);
+			var summary = "Reverted to revision " + revertToRevID + " by " + revertToUser + (optional_summary ? ": " + optional_summary : '') + "." +
+				Twinkle.getPref('summaryAd');
 		
-			var query = {  // ##################################### New stuff ######################################
+			var query = { 
 				'action': 'edit',
-				'title': wgPageName,
+				'title': mw.config.get('wgPageName'),
 				'summary': summary,
 				'token': edittoken,
 				'undo': lastrevid,
 				'undoafter': revertToRevID,
 				'basetimestamp': touched,
 				'starttimestamp': starttimestamp,
-				'watchlist' :  Twinkle.getPref('watchRevertedPages').indexOf( self.params.type ) != -1 ? 'watch' : undefined,
-				'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf( self.params.type ) != -1  ? true : undefined
+				'watchlist': Twinkle.getPref('watchRevertedPages').indexOf( self.params.type ) !== -1 ? 'watch' : undefined,
+				'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf( self.params.type ) !== -1  ? true : undefined
 			};
 
-			Wikipedia.actionCompleted.redirect = wgPageName;
+			Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
 			Wikipedia.actionCompleted.notice = "Reversion completed";
 
 			var wikipedia_api = new Wikipedia.api( 'Saving reverted contents', query, null/*Twinkle.fluff.callbacks.toRevision.complete*/, self.statelem);
@@ -304,14 +301,14 @@ Twinkle.fluff.callbacks = {
 			return;
 		}
 		var top = revs[0];
-		if( lastrevid < wgCurRevisionId ) {
+		if( lastrevid < self.params.revid ) {
 			Status.error( 'Error', [ 'The most recent revision ID received from the server, ', htmlNode( 'strong', lastrevid ), ', is less than the ID of the displayed revision. This could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Will stop proceeding at this point.' ] );
 			return;
 		}
 		var index = 1;
-		if( wgCurRevisionId != lastrevid  ) {
-			Status.warn( 'Warning', [ 'Latest revision ', htmlNode( 'strong', lastrevid ), ' doesn\'t equal our revision ', htmlNode( 'strong', wgCurRevisionId) ] );
-			if( lastuser == self.params.user ) {
+		if( self.params.revid !== lastrevid  ) {
+			Status.warn( 'Warning', [ 'Latest revision ', htmlNode( 'strong', lastrevid ), ' doesn\'t equal our revision ', htmlNode( 'strong', self.params.revid ) ] );
+			if( lastuser === self.params.user ) {
 				switch( self.params.type ) {
 				case 'vand':
 					Status.info( 'Info', [ 'Latest revision was made by ', htmlNode( 'strong', self.params.user ) , '. As we assume vandalism, we continue to revert' ]);
@@ -324,11 +321,9 @@ Twinkle.fluff.callbacks = {
 					return;
 				}
 			}
-			else if( 
-				self.params.type == 'vand' && 
-				Twinkle.fluff.whiteList.indexOf( top.getAttribute( 'user' ) ) != -1 && revs.length > 1 &&
-				revs[1].getAttribute( 'pageId' ) == wgCurRevisionId 
-			) {
+			else if(self.params.type === 'vand' && 
+					Twinkle.fluff.whiteList.indexOf( top.getAttribute( 'user' ) ) !== -1 && revs.length > 1 &&
+					revs[1].getAttribute( 'pageId' ) === self.params.revid) {
 				Status.info( 'Info', [ 'Latest revision was made by ', htmlNode( 'strong', lastuser ), ', a trusted bot, and the revision before was made by our vandal, so we proceed with the revert.' ] );
 				index = 2;
 			} else {
@@ -338,7 +333,7 @@ Twinkle.fluff.callbacks = {
 
 		}
 
-		if( Twinkle.fluff.whiteList.indexOf( self.params.user ) != -1  ) {
+		if( Twinkle.fluff.whiteList.indexOf( self.params.user ) !== -1  ) {
 			switch( self.params.type ) {
 			case 'vand':
 				Status.info( 'Info', [ 'Vandalism revert was chosen on ', htmlNode( 'strong', self.params.user ), '. As this is a whitelisted bot, we assume you wanted to revert vandalism made by the previous user instead.' ] );
@@ -375,25 +370,21 @@ Twinkle.fluff.callbacks = {
 			}
 		}
 
-
 		if( ! found ) {
 			self.statelem.error( [ 'No previous revision found. Perhaps ', htmlNode( 'strong', self.params.user ), ' is the only contributor, or that the user has made more than ' + Twinkle.getPref('revertMaxRevisions') + ' edits in a row.' ] );
 			return;
-
 		}
 
-		if( count == 0 ) {
+		if( ! count ) {
 			Status.error( 'Error', "We were to revert zero revisions. As that makes no sense, we'll stop reverting this time. It could be that the edit has already been reverted, but the revision ID was still the same." );
 			return;
 		}
 
 		var good_revision = revs[ found ];
 
-		if( 
-			self.params.type != 'vand' && 
-			count > 1  && 
-			!confirm( self.params.user + ' has made ' + count + ' edits in a row. Are you sure you want to revert them all?' ) 
-		) {
+		if (self.params.type !== 'vand' && 
+				count > 1 && 
+				!confirm( self.params.user + ' has made ' + count + ' edits in a row. Are you sure you want to revert them all?' )) {
 			Status.info( 'Notice', 'Stopping reverting per user input' );
 			return;
 		}
@@ -405,12 +396,11 @@ Twinkle.fluff.callbacks = {
 
 		self.statelem.status( [ ' revision ', htmlNode( 'strong', self.params.goodid ), ' that was made ', htmlNode( 'strong', count ), ' revisions ago by ', htmlNode( 'strong', self.params.gooduser ) ] );
 
-		var summary;
-
+		var summary, extra_summary;
 		switch( self.params.type ) {
 		case 'agf':
-			var extra_summary = prompt( "An optional comment for the edit summary:" );
-			if (extra_summary == null)
+			extra_summary = prompt( "An optional comment for the edit summary:", "" );
+			if (extra_summary === null)
 			{
 				self.statelem.error( 'Aborted by user.' );
 				return;
@@ -419,8 +409,7 @@ Twinkle.fluff.callbacks = {
 			summary = sprintf( "Reverted [[WP:AGF|good faith]] edits by [[Special:Contributions/%s|%1$s]] ([[User talk:%1$s|talk]])%s%s", 
 				self.params.user.replace("\\'", "'"), 
 				Twinkle.fluff.formatSummaryPostfix(extra_summary),
-				Twinkle.getPref('summaryAd')
-			);
+				Twinkle.getPref('summaryAd') );
 			break;
 		case 'vand':
 			summary = sprintf( "Reverted %d %s by [[Special:Contributions/%s|%3$s]] ([[User talk:%3$s|talk]]) identified as [[WP:VAND|vandalism]] to last revision by %s.%s", 
@@ -428,13 +417,13 @@ Twinkle.fluff.callbacks = {
 				self.params.count > 1 ? 'edits': 'edit',
 				self.params.user.replace("\\'", "'"),
 				self.params.gooduser.replace("\\'", "'"),
-				Twinkle.getPref('summaryAd')
-			);
+				Twinkle.getPref('summaryAd') );
 			break;
 		case 'norm':
+		default:
 			if( Twinkle.getPref('offerReasonOnNormalRevert') ) {
-				var extra_summary = prompt( "An optional comment for the edit summary:" );
-				if (extra_summary == null)
+				extra_summary = prompt( "An optional comment for the edit summary:", "" );
+				if (extra_summary === null)
 				{
 					self.statelem.error( 'Aborted by user.' );
 					return;
@@ -445,19 +434,21 @@ Twinkle.fluff.callbacks = {
 				self.params.count > 1 ? 'edits': 'edit',
 				self.params.user.replace("\\'", "'"),
 				Twinkle.fluff.formatSummaryPostfix(extra_summary),
-				Twinkle.getPref('summaryAd') 
-			);
+				Twinkle.getPref('summaryAd') );
+			break;
 		}
 
-		if( Twinkle.getPref('openTalkPage').indexOf( self.params.type ) != -1 ) {
+		var query;
+		if( (!self.params.autoRevert || Twinkle.getPref('openTalkPageOnAutoRevert')) && 
+				Twinkle.getPref('openTalkPage').indexOf( self.params.type ) !== -1 ) {
 			Status.info( 'Info', [ 'Opening user talk page edit form for user ', htmlNode( 'strong', self.params.user ) ] );
 			
-			var query = {
+			query = {
 				'title': 'User talk:' + self.params.user,
 				'action': 'edit',
 				'preview': 'yes',
-				'vanarticle': wgPageName.replace(/_/g, ' '),
-				'vanarticlerevid': wgCurRevisionId,
+				'vanarticle': self.params.pagename.replace(/_/g, ' '),
+				'vanarticlerevid': self.params.revid,
 				'vanarticlegoodrevid': self.params.goodid,
 				'type': self.params.type,
 				'count': self.params.count
@@ -465,21 +456,21 @@ Twinkle.fluff.callbacks = {
 
 			switch( Twinkle.getPref('userTalkPageMode') ) {
 			case 'tab':
-				window.open( wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ), '_tab' );
+				window.open( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), '_tab' );
 				break;
 			case 'blank':
-				window.open( wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ), '_blank', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
+				window.open( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), '_blank', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 				break;
 			case 'window':
 			default:
-				window.open( wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ), 'twinklewarnwindow', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
+				window.open( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), 'twinklewarnwindow', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 				break;
 			}
 		}
 		
-		var query = {  // ##################################### New stuff ######################################
+		query = {
 			'action': 'edit',
-			'title': wgPageName,
+			'title': self.params.pagename,
 			'summary': summary,
 			'token': edittoken,
 			'undo': lastrevid,
@@ -490,7 +481,7 @@ Twinkle.fluff.callbacks = {
 			'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf( self.params.type ) != -1  ? true : undefined
 		};
 
-		Wikipedia.actionCompleted.redirect = wgPageName;
+		Wikipedia.actionCompleted.redirect = self.params.pagename;
 		Wikipedia.actionCompleted.notice = "Reversion completed";
 
 		var wikipedia_api = new Wikipedia.api( 'Saving reverted contents', query, Twinkle.fluff.callbacks.complete, self.statelem);
@@ -502,7 +493,7 @@ Twinkle.fluff.callbacks = {
 		//alert("TRACE: revertPage completion callback: xmlString= \n" + (new XMLSerializer()).serializeToString(self.responseXML) + "[END]");
 		self.statelem.info("done");
 	}
-}
+};
 
 Twinkle.fluff.formatSummaryPostfix = function(stringToAdd) {
 	if (stringToAdd) {
@@ -515,7 +506,7 @@ Twinkle.fluff.formatSummaryPostfix = function(stringToAdd) {
 	else {
 		return '.';
 	}
-}
+};
 
 Twinkle.fluff.init = function twinklefluffinit() {
 	if (twinkleUserAuthorized)
@@ -530,8 +521,8 @@ Twinkle.fluff.init = function twinklefluffinit() {
 			'SineBot',
 			'HBC AIV helperbot',
 			'HBC AIV helperbot2',
-			'HBC AIV helperbot3',
-		]
+			'HBC AIV helperbot3'
+		];
 
 		if ( QueryString.exists( 'twinklerevert' ) ) {
 			Twinkle.fluff.auto();

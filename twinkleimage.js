@@ -8,10 +8,10 @@
  */
 
 Twinkle.image = function twinkleimage() {
-	if( wgNamespaceNumber === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory")) {
+	if( mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory")) {
 		twAddPortletLink( (twinkleUserAuthorized ? "javascript:Twinkle.image.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "DI", "tw-di", "Nominate file for relative speedy deletion", "");
 	}
-}
+};
 
 Twinkle.image.callback = function twinkleimageCallback() {
 	var Window = new SimpleWindow( 600, 300 );
@@ -101,7 +101,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
 	result.type[0].dispatchEvent( evt );
-}
+};
 
 Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 	var value = event.target.values;
@@ -160,13 +160,13 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 			break;
 		default:
 			break;
-	};
+	}
 
 	root.replaceChild( work_area.render(), $(root).find('div[name="work_area"]')[0] );
-}
+};
 
 Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
-	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
+	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' '));  // for queen/king/whatever and country!
 
 	var notify = event.target.notify.checked;
 	var types = event.target.type;
@@ -203,11 +203,11 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( event.target );
 
-	Wikipedia.actionCompleted.redirect = wgPageName;
+	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
 	Wikipedia.actionCompleted.notice = "Tagging complete";
 
 	// Tagging image
-	var wikipedia_page = new Wikipedia.page( wgPageName, 'Tagging file with deletion tag' );
+	var wikipedia_page = new Wikipedia.page( mw.config.get('wgPageName'), 'Tagging file with deletion tag' );
 	wikipedia_page.setCallbackParameters( params );
 	wikipedia_page.load( Twinkle.image.callbacks.taggingImage );
 
@@ -217,10 +217,10 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	} else {
 		// No auto-notifiaction, display what was going to be added.
 		var noteData = document.createElement( 'pre' );
-		noteData.appendChild( document.createTextNode( "\{\{subst:di-" + type + "-notice|1=" + wgTitle + "\}\} \~\~\~\~" ) );
+		noteData.appendChild( document.createTextNode( "\{\{subst:di-" + type + "-notice|1=" + mw.config.get('wgTitle') + "\}\} \~\~\~\~" ) );
 		Status.info( 'Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement( 'br' ),  noteData ] );
 	}
-}
+};
 
 Twinkle.image.callbacks = {
 	taggingImage: function(pageobj) {
@@ -259,7 +259,7 @@ Twinkle.image.callbacks = {
 				break;
 			default:
 				break;
-		};
+		}
 		tag += "\}\}\n";
 
 		pageobj.setPageText(tag + text);
@@ -282,9 +282,9 @@ Twinkle.image.callbacks = {
 		var params = pageobj.getCallbackParameters();
 		var initialContrib = pageobj.getCreator();
 		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-		var notifytext = "\n\{\{subst:di-" + params.type + "-notice|1=" + wgTitle + "\}\} \~\~\~\~";
+		var notifytext = "\n\{\{subst:di-" + params.type + "-notice|1=" + mw.config.get('wgTitle') + "\}\} \~\~\~\~";
 		usertalkpage.setAppendText(notifytext);
-		usertalkpage.setEditSummary("Notification: tagging for deletion of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
+		usertalkpage.setEditSummary("Notification: tagging for deletion of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 		usertalkpage.setCreateOption('recreate');
 		switch (Twinkle.getPref('deliWatchUser')) {
 			case 'yes':
@@ -300,4 +300,4 @@ Twinkle.image.callbacks = {
 		usertalkpage.setFollowRedirect(true);
 		usertalkpage.append();
 	}
-}
+};
