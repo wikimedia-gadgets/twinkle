@@ -1,11 +1,11 @@
 /*
- ****************************************
- *** twinklecloser.js: AFD/AFC closer module
- ****************************************
- * Mode of invocation:     Link on AFD subpages (including daily log pages) and AFC daily log pages
- * Active on:              The aforementioned pages
- * Config directives in:   TwinkleConfig
- */
+****************************************
+*** twinklecloser.js: AFD/AFC closer module
+****************************************
+* Mode of invocation:     Link on AFD subpages (including daily log pages) and AFC daily log pages
+* Active on:              The aforementioned pages
+* Config directives in:   TwinkleConfig
+*/
 
 Twinkle.closer = function twinklecloser() {
 	var closeable = false;
@@ -21,39 +21,39 @@ Twinkle.closer = function twinklecloser() {
 	if( closeable ) {
 		Twinkle.closer.mark( type );
 	}
-}
+};
 
 Twinkle.closer.mark = function twinklecloserMark( type ) {
+	var sections;
 	switch( type ) {
 	case 'afc':
-		var sections = $('h2:has(span.editsection)');
+		sections = $('h2:has(span.editsection)');
 		sections.each(function(index, section) {
-			var editlink = $(section).find('span a');
-			var section_number = editlink.attr('href').substring(editlink.attr('href').indexOf('section='));
-			var closelink =  document.createElement( 'a' );
-			closelink.appendChild( document.createTextNode( '[close]' ) );
-			closelink.setAttribute('class', 'twinkle-closer-link twinkle-closer-link-afc');
-			closelink.style.color = '#449922';
-			closelink.setAttribute( 'href', 'javascript:Twinkle.closer.actions.afc("' + section_number + '")' );
-			section.insertBefore( closelink, section.firstChild );
+			var query = new QueryString($(this).find('span.editsection a').attr('href').split( '?', 2 )[1]);
+			var section_number = query.get('section');
+			var closelink = $('<a/>', {
+				'text': '[close]',
+				'click': function(){Twinkle.closer.actions.afc(section_number);},
+				'class': 'twinkle-closer-link twinkle-closer-link-afc',
+				'css': { 'color': '#449922'	}
+			}).prependTo(this);
 		});
 		break;
 	case 'afd':
-		var sections = $('h3:has(span.editsection)');
+		sections = $('h3:has(span.editsection)');
 		sections.each(function(index, section) {
-			var editlink = $(section).find('span a');
-			var section_number = editlink.attr('href').substring(editlink.attr('href').indexOf('section='));
-			var page = editlink.attr('title');
-			var closelink =  document.createElement( 'a' );
-			closelink.appendChild( document.createTextNode( '[close]' ) );
-			closelink.setAttribute('class', 'twinkle-closer-link twinkle-closer-link-afd');
-			closelink.style.color = '#449922';
-			closelink.setAttribute( 'href', 'javascript:Twinkle.closer.actions.afd("' + section_number + '", "' + page + '")' );
-			section.insertBefore( closelink, section.firstChild );
+			var query = new QueryString($(this).find('span.editsection a').attr('href').split( '?', 2 )[1]);
+			var section_number = query.get('section');
+			var closelink = $('<a/>', {
+				'text': '[close]',
+				'click': function(){Twinkle.closer.actions.afd(section_number);},
+				'class': 'twinkle-closer-link twinkle-closer-link-afd',
+				'css': { 'color': '#449922'	}
+			}).prependTo(this);
 		});
 		break;
 	}
-}
+};
 
 Twinkle.closer.actions = {
 	afc: function twinklecloserActionsAfc( section ) {
@@ -65,39 +65,39 @@ Twinkle.closer.actions = {
 
 		var form = new QuickForm( Twinkle.closer.callbacks.afc.evaluate );
 		form.append ( {
-				label: 'Action: ',
-				type: 'select',
-				name: 'type',
-				event: Twinkle.closer.callbacks.afc.submenu,
-				list: [
-					{
-						label: 'Approved',
-						value: 'approved'
-					},
-					{
-						label: 'Denied',
-						value: 'denied'
-					},
-					{
-						label: 'Archive',
-						value: 'archive'
-					}
-				]
-			});
+			label: 'Action: ',
+			type: 'select',
+			name: 'type',
+			event: Twinkle.closer.callbacks.afc.submenu,
+			list: [
+				{
+					label: 'Approved',
+					value: 'approved'
+				},
+				{
+					label: 'Denied',
+					value: 'denied'
+				},
+				{
+					label: 'Archive',
+					value: 'archive'
+				}
+			]
+		});
 		form.append( {
-				type: 'div',
-				id: 'work_area'
-			} );
+			type: 'div',
+			id: 'work_area'
+		} );
 		form.append( {
-				type: 'hidden',
-				name: 'section',
-				value: section
-			} );
+			type: 'hidden',
+			name: 'section',
+			value: section
+		} );
 		form.append( {
-				type: 'hidden',
-				name: 'page',
-				value: page
-			} );
+			type: 'hidden',
+			name: 'page',
+			value: page
+		} );
 		form.append( { type:'submit' } );
 
 		var result = form.render();
@@ -118,85 +118,85 @@ Twinkle.closer.actions = {
 
 		var form = new QuickForm( Twinkle.closer.callbacks.afd.evaluate );
 		form.append ( {
-				label: 'Action: ',
-				type: 'radio',
-				name: 'type',
-				list: [
-					{
-						label: 'Keep',
-						value: 'keep'
-					},
-					{
-						label: 'No consensus',
-						value: 'no consensus'
-					},
-					{
-						label: 'Merge',
-						value: 'merge'
-					},
-					{
-						label: 'Redirect',
-						value: 'redirect',
-						subgroup: {
-							type: 'input',
-							name: 'target',
-							label: 'Target: ',
-							tooltip: 'the name of the page to redirect to'
-						}
-
-					},
-					{
-						label: 'Delete',
-						value: 'delete',
-						subgroup: {
-							type: 'checkbox',
-							list: [
-								{
-									label: 'Delete? ',
-									value: 'delete',
-									name: 'del',
-									tooltop: 'if we should delete the page on the fly',
-									checked: true
-								}
-							]
-						}
+			label: 'Action: ',
+			type: 'radio',
+			name: 'type',
+			list: [
+				{
+					label: 'Keep',
+					value: 'keep'
+				},
+				{
+					label: 'No consensus',
+					value: 'no consensus'
+				},
+				{
+					label: 'Merge',
+					value: 'merge'
+				},
+				{
+					label: 'Redirect',
+					value: 'redirect',
+					subgroup: {
+						type: 'input',
+						name: 'target',
+						label: 'Target: ',
+						tooltip: 'the name of the page to redirect to'
 					}
-				]
-			});
+
+				},
+				{
+					label: 'Delete',
+					value: 'delete',
+					subgroup: {
+						type: 'checkbox',
+						list: [
+							{
+								label: 'Delete? ',
+								value: 'delete',
+								name: 'del',
+								tooltop: 'if we should delete the page on the fly',
+								checked: true
+							}
+						]
+					}
+				}
+			]
+		});
 		form.append( {
-				type: 'textarea',
-				name: 'reason',
-				label: 'Reason:'
-			} );
+			type: 'textarea',
+			name: 'reason',
+			label: 'Reason:'
+		} );
 
 		form.append( {
-				type: 'input',
-				name: 'affected_page',
-				label: 'Affected page: ',
-				value: page.replace( /.*\/(.*?)(\s\(.*?\))?/, "$1" )
-			} );
+			type: 'input',
+			name: 'affected_page',
+			label: 'Affected page: ',
+			value: page.replace( /.*\/(.*?)(\s\(.*?\))?/, "$1" )
+		} );
 
 		form.append( {
-				type: 'div',
-				id: 'work_area'
-			} );
+			type: 'div',
+			id: 'work_area'
+		} );
 
 		form.append( {
-				type: 'hidden',
-				name: 'section',
-				value: section
-			} );
+			type: 'hidden',
+			name: 'section',
+			value: section
+		} );
 		form.append( {
-				type: 'hidden',
-				name: 'page',
-				value: page
-			} );
+			type: 'hidden',
+			name: 'page',
+			value: page
+		} );
 		form.append( { type:'submit' } );
 		var result = form.render();
 		Window.setContent( result );
 		Window.display();
 	}
-}
+};
 
 Twinkle.closer.callbacks = {
 	afc: {
@@ -208,113 +208,113 @@ Twinkle.closer.callbacks = {
 			switch( value ) {
 			case 'archive':
 				work_area = new QuickForm.element( {
-						type: 'div',
-						id: 'work_area'
-					} );
+					type: 'div',
+					id: 'work_area'
+				} );
 
 				work_area.append( {
-						type: 'checkbox',
-						name: 'approved',
-						list: [
-							{
-								label: 'Approved ',
-								value: 'approved'
-							}
-						]
-					} );
-				
+					type: 'checkbox',
+					name: 'approved',
+					list: [
+						{
+							label: 'Approved ',
+							value: 'approved'
+						}
+					]
+				} );
+
 				work_area = work_area.render();
 				old_area.parentNode.replaceChild( work_area, old_area );
 				break;
 			case 'approved':
 				work_area = new QuickForm.element( {
-						type: 'div',
-						id: 'work_area'
-					} );
+					type: 'div',
+					id: 'work_area'
+				} );
 
 				work_area.append( {
-						type: 'input',
-						name: 'article',
-						label: 'Article ',
-						tooltop: 'Leave empty if article was created as specified'
-					} );
-				
+					type: 'input',
+					name: 'article',
+					label: 'Article ',
+					tooltop: 'Leave empty if article was created as specified'
+				} );
+
 				work_area = work_area.render();
 				old_area.parentNode.replaceChild( work_area, old_area );
 				break;
 			case 'denied':
 				work_area = new QuickForm.element( {
-						type: 'div',
-						id: 'work_area'
-					} );
+					type: 'div',
+					id: 'work_area'
+				} );
 
 				work_area.append( {
-						type: 'select',
-						name: 'reason',
-						label: 'Reason ',
-						list: [
-							{
-								label:'v',
-								value:'v'
-							},
-							{
-								label:'bio',
-								value:'bio'
-							},
-							{
-								label:'nn',
-								value:'nn'
-							},
-							{
-								label:'web',
-								value:'web'
-							},
-							{
-								label:'corp',
-								value:'corp'
-							},
-							{
-								label:'music',
-								value:'music'
-							},
-							{
-								label:'dict',
-								value:'dict'
-							},
-							{
-								label:'context',
-								value:'context'
-							},
-							{
-								label:'blank',
-								value:'blank'
-							},
-							{
-								label:'neo',
-								value:'neo'
-							},
-							{
-								label:'joke',
-								value:'joke'
-							},
-							{
-								label:'lang',
-								value:'lang'
-							},
-							{
-								label:'blp',
-								value:'blp'
-							},
-							{
-								label:'npov',
-								value:'npov'
-							},
-							{
-								label:'not',
-								value:'not'
-							}
-						]
-					} );
+					type: 'select',
+					name: 'reason',
+					label: 'Reason ',
+					list: [
+						{
+							label:'v',
+							value:'v'
+						},
+						{
+							label:'bio',
+							value:'bio'
+						},
+						{
+							label:'nn',
+							value:'nn'
+						},
+						{
+							label:'web',
+							value:'web'
+						},
+						{
+							label:'corp',
+							value:'corp'
+						},
+						{
+							label:'music',
+							value:'music'
+						},
+						{
+							label:'dict',
+							value:'dict'
+						},
+						{
+							label:'context',
+							value:'context'
+						},
+						{
+							label:'blank',
+							value:'blank'
+						},
+						{
+							label:'neo',
+							value:'neo'
+						},
+						{
+							label:'joke',
+							value:'joke'
+						},
+						{
+							label:'lang',
+							value:'lang'
+						},
+						{
+							label:'blp',
+							value:'blp'
+						},
+						{
+							label:'npov',
+							value:'npov'
+						},
+						{
+							label:'not',
+							value:'not'
+						}
+					]
+				} );
 				work_area = work_area.render();
 				old_area.parentNode.replaceChild( work_area, old_area );
 				break;
@@ -344,48 +344,36 @@ Twinkle.closer.callbacks = {
 
 			SimpleWindow.setButtonsEnabled( false );
 			Status.init( form );
-			var query = {
-				'title': wgPageName,
-				'action': 'submit',
-				'section': section
-			};
-			wikipedia_wiki = new Wikipedia.wiki( 'Processing', query, Twinkle.closer.callbacks.afc.edit );
-			wikipedia_wiki.params = params;
-			wikipedia_wiki.get();
-
+			var page = Wikipedia.page(mw.config.get('wgPageName'), "Processing");
+			page.setPageSection(section);
+			page.setCallbackParameters(params);
+			page.load(Twinkle.closer.callbacks.afc.edit);
 		},
-		edit: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			text = form.wpTextbox1.value;
+		edit: function( pageobj ) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+			var statelem = pageobj.getStatusElement();
 			var summary;
 
-			switch( self.params.type ) {
+			switch( params.type ) {
 			case 'approved':
-				text += self.params.tag + '\~\~\~\~';
-				summary = 'Approving article';
+				text += params.tag + '\~\~\~\~';
+				summary = 'Approving article.';
 				break;
 			case 'denied':
-				text += self.params.tag + '\~\~\~\~';
-				summary = 'Denying article';
+				text += params.tag + '\~\~\~\~';
+				summary = 'Denying article.';
 				break;
 			case 'archive':
-				text = text.replace( /^(==.*?==)\n/, "$1\n" + self.params.top  );
-				text += self.params.bottom;
-				summary = 'Archiving';
+				text = text.replace( /^(==.*?==)\n/, "$1\n" + params.top  );
+				text += params.bottom;
+				summary = 'Archiving.';
 				break;
 			}
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': form.wpWatchthis.checked ? '' : undefined,
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSummary': form.wpSummary.value + ' ' + summary + Twinkle.getPref('summaryAd'),
-				'wpTextbox1': text
-			};
-
-			self.post( postData );
+			pageobj.setPageText(text);
+			pageobj.setEditSummary(summary + Twinkle.getPref('summaryAd'));
+			pageobj.setCreateOption('nocreate');
+			pageobj.save();
 		}
 	},
 	afd: {
@@ -394,9 +382,9 @@ Twinkle.closer.callbacks = {
 			var root = e.target.form;
 			var old_area = document.getElementById( 'work_area' );
 			var	work_area = new QuickForm.element( {
-					type: 'div',
-					id: 'work_area'
-				} );
+				type: 'div',
+				id: 'work_area'
+			} );
 			switch( value ) {
 			case 'keep':
 			case 'no consensus':
@@ -404,32 +392,32 @@ Twinkle.closer.callbacks = {
 				break;
 			case 'redirect':
 				work_area.append( {
-						type: 'input',
-						name: 'target',
-						label: 'Target: ',
-						tooltip: 'the name of the page to redirect to'
-					} );
+					type: 'input',
+					name: 'target',
+					label: 'Target: ',
+					tooltip: 'the name of the page to redirect to'
+				} );
 				break;
 			case 'merge':
 				// merge must be done manually
 				break;
 			case 'delete':
 				work_area.append( {
-						type: 'checkbox',
-						list: [
-							{
-								label: 'Delete? ',
-								value: 'delete',
-								name: 'del',
-								tooltop: 'if we should delete the page on the fly',
-								checked: true
-							}
-						]
-					} );
+					type: 'checkbox',
+					list: [
+						{
+							label: 'Delete? ',
+							value: 'delete',
+							name: 'del',
+							tooltop: 'if we should delete the page on the fly',
+							checked: true
+						}
+					]
+				} );
 				break;
 
 			}
-			
+
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild( work_area, old_area );
 		},
@@ -441,7 +429,7 @@ Twinkle.closer.callbacks = {
 			var page = form.page.value;
 			var affected_page = form.affected_page.value;
 			var params = { type: type, page: page, reason: reason, affected_page: affected_page };
-			var label;
+			var label, wp_page;
 			switch( type ) {
 			case 'keep':
 				label = "Keep";
@@ -466,7 +454,7 @@ Twinkle.closer.callbacks = {
 			SimpleWindow.setButtonsEnabled( false );
 			Status.init( form );
 
-			if( type == 'delete' ) {
+			if( type === 'delete' ) {
 				if( del ) {
 					// Start by purging redirect
 					var query = {
@@ -479,122 +467,36 @@ Twinkle.closer.callbacks = {
 					var wikipedia_api = new Wikipedia.api( 'Grabbing redirects', query, Twinkle.closer.callbacks.afd.deleteRedirectsMain );
 					wikipedia_api.params = params;
 					wikipedia_api.post();
-					// and now, delete!
-					var query = {
-						'title': affected_page,
-						'action': 'delete'
-					};
 
-					var wikipedia_wiki = new Wikipedia.wiki( 'Deleting page', query, Twinkle.closer.callbacks.afd.deletePage );
-					wikipedia_wiki.params = params;
-					wikipedia_wiki.followRedirect = false;
-					wikipedia_wiki.get();
+					// and now, delete!
+
+					wp_page = Wikipedia.page(affected_page, 'Deleting page');
+					wp_page.setEditSummary("Deleted per outcome of [[WP:AFD]] discussion (see [[" + params.page + "]])." + Twinkle.getPref('deletionSummaryAd'));
+					wp_page.deletePage();
 				}
 
 			}
 
-			var query = {
-				'title': page,
-				'action': 'submit',
-				'section': section
-			};
-			wikipedia_wiki = new Wikipedia.wiki( 'Processing', query, Twinkle.closer.callbacks.afd.edit );
-			wikipedia_wiki.params = params;
-			wikipedia_wiki.get();
+			wp_page = Wikipedia.page(page, "Updating process page");
+			wp_page.setPageSection(section);
+			wp_page.setCallbackParameters(params);
+			wp_page.load(Twinkle.closer.callbacks.afd.edit);
 		},
 		deleteRedirectsMain: function( self ) {
-			var xmlDoc = self.responseXML;
-			var snapshot = xmlDoc.evaluate('//backlinks/bl/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
-
-			var total = snapshot.snapshotLength * 2;
-
-			if( snapshot.snapshotLength == 0 ) {
-				return;
-			}
-
-			var statusIndicator = new Status('Deleting redirects', '0%');
-
-			var onsuccess = function( self ) {
-				var obj = self.params.obj;
-				var total = self.params.total;
-				var now = parseInt( 100 * ++(self.params.current)/total ) + '%';
-				obj.update( now );
-				self.statelem.unlink();
-				if( self.params.current >= total ) {
-					obj.info( now + ' (completed)' );
-					Wikipedia.removeCheckpoint();
-				}
-			}
-			var onloaded = onsuccess;
-
-			var onloading = function( self ) {}
-
-
-			Wikipedia.addCheckpoint();
-			if( snapshot.snapshotLength == 0 ) {
-				statusIndicator.info( '100% (completed)' );
-				Wikipedia.removeCheckpoint();
-				return;
-			}
-
-			var params = clone( self.params );
-			params.current = 0;
-			params.total = total;
-			params.obj = statusIndicator;
-
-
-			for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
-				var title = snapshot.snapshotItem(i).value;
-				var query = {
-					'title': title,
-					'action': 'delete'
-				}
-				var wikipedia_wiki = new Wikipedia.wiki( "Deleting " + title, query, Twinkle.closer.callbacks.afd.deleteRedirects );
-				wikipedia_wiki.params = params;
-				wikipedia_wiki.onloading = onloading;
-				wikipedia_wiki.onloaded = onloaded;
-				wikipedia_wiki.onsuccess = onsuccess;
-				wikipedia_wiki.followRedirect = false;
-				wikipedia_wiki.get();
-			}
+			$doc = $(self.responseXML);
+			$doc.find("backlinks bl").each(function(){
+				var title = $(this).attr('title');
+				var page = new Wikipedia.page(title, "Deleting redirecting page " + title);
+				page.setEditSummary("Speedy deleted per ([[WP:CSD#R1|CSD R1]]), Redirect to deleted page \"" + self.params.affected_page + "\"." + Twinkle.getPref('deletionSummaryAd'));
+				page.deletePage();
+			});
 		},
-		deleteRedirects: function( self ) {
-			var form = this.responseXML.getElementById( 'deleteconfirm' );
-			var postData = {
-				'wpWatch': form.wpWatch.checked ? '' : undefined,
-				'wpReason': "Speedy deleted per ([[WP:CSD#R1|CSD R1]]), Redirect to deleted page \"" + self.params.affected_page + "\"." + Twinkle.getPref('deletionSummaryAd'),
-				'wpEditToken': form.wpEditToken.value
-			}
-			self.post( postData );
-		},
-		deletePage: function( self ) {
-			var form = this.responseXML.getElementById( 'deleteconfirm' );
-			var postData = {
-				'wpWatch': form.wpWatch.checked ? '' : undefined,
-				'wpReason': "Deleted per outcome of [[WP:AFD]] discussion (see [[" + self.params.page + "]])." + Twinkle.getPref('deletionSummaryAd'),
-				'wpEditToken': form.wpEditToken.value
-			}
-			self.post( postData );
-		},
-		edit: function( self ) {
-			var form = self.responseXML.getElementById('editform');
-			text = form.wpTextbox1.value;
-			var summary = "Closing discussion, result was \"" + self.params.label + "\"";
-			text = "\{\{subst:Afd top\}\}'''" + self.params.label + "''' " + self.params.reason + ". \~\~\~\~\n" + text + "\n\{\{subst:Afd bottom\}\}";
-
-			var postData = {
-				'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-				'wpWatchthis': form.wpWatchthis.checked ? '' : undefined,
-				'wpStarttime': form.wpStarttime.value,
-				'wpEdittime': form.wpEdittime.value,
-				'wpAutoSummary': form.wpAutoSummary.value,
-				'wpEditToken': form.wpEditToken.value,
-				'wpSummary': summary + Twinkle.getPref('summaryAd'),
-				'wpTextbox1': text
-			};
-
-			self.post( postData );
+		edit: function( pageobj ) {
+			var text = pageobj.getText();
+			var params = pageobj.getCallbackParameters();
+			pageobj.setEditSummary( "Closing discussion, result was \"" + params.label + "\"" +  Twinkle.getPref('summaryAd') );
+			pageobj.setPageText("\{\{subst:Afd top\}\}'''" + params.label + "''' " + params.reason + ". \~\~\~\~\n" + text + "\n\{\{subst:Afd bottom\}\}");
+			pageobj.save();
 		}
 	}
-
-}
+};
