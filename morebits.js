@@ -126,25 +126,27 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 	var outerDiv = document.createElement( 'div' );
 	outerDiv.className = outerDivClass+" emptyPortlet";
 	outerDiv.id = id;
-	var nextnode;
-	if ( nextnode && nextnode.parentNode === root ) root.insertBefore( outerDiv, nextnode );
-	else root.appendChild( outerDiv );
+	if ( nextnode && nextnode.parentNode === root ) {
+		root.insertBefore( outerDiv, nextnode );
+	} else {
+		root.appendChild( outerDiv );
+	}
 
 	var h5 = document.createElement( 'h5' );
-	if (type === 'menu')
-	{
+	if (type === 'menu') {
 		var span = document.createElement( 'span' );
 		span.appendChild( document.createTextNode( text ) );
 		h5.appendChild( span );
 
 		var a = document.createElement( 'a' );
 		a.href = "#";
-		var span = document.createElement( 'span' );
+		span = document.createElement( 'span' );
 		span.appendChild( document.createTextNode( text ) );
 		a.appendChild( span );
 		h5.appendChild( a );
+	} else {
+		h5.appendChild( document.createTextNode( text ) );
 	}
-	else h5.appendChild( document.createTextNode( text ) );
 	outerDiv.appendChild( h5 );
 
 	var innerDiv = document.createElement( 'div' ); //not strictly necessary with type vectorTabs, or other skins.
@@ -165,7 +167,9 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 
 function twAddPortletLink( href, text, id, tooltip, accesskey, nextnode )
 {
-	if (twAddPortlet.portletArea) twAddPortlet(twAddPortlet.portletArea, twAddPortlet.portletId, twAddPortlet.portletName, twAddPortlet.portletType, twAddPortlet.portletNext);
+	if (twAddPortlet.portletArea) {
+		twAddPortlet(twAddPortlet.portletArea, twAddPortlet.portletId, twAddPortlet.portletName, twAddPortlet.portletType, twAddPortlet.portletNext);
+	}
 	return addPortletLink( twAddPortlet.portletId, href, text, id, tooltip, accesskey, nextnode );
 }
 
@@ -226,7 +230,8 @@ var Cookies = {
 	remove: function( name ) {
 		Cookies.set( name, '', -1 );
 	}
-}
+};
+
 
 /**
  * **************** QuickForm ****************
@@ -235,25 +240,24 @@ var Cookies = {
  */
 
 var QuickForm = function QuickForm( event, eventType ) {
-
 	this.root = new QuickForm.element( { type: 'form', event: event, eventType:eventType } );
-}
+};
 
 QuickForm.prototype.render = function QuickFormRender() {
 	var ret = this.root.render();
 	ret.names = {};
 	return ret;
+};
 
-}
 QuickForm.prototype.append = function QuickFormAppend( data ) {
 	return this.root.append( data );
-}
+};
 
 QuickForm.element = function QuickFormElement( data ) {
 	this.data = data;
 	this.childs = [];
 	this.id = QuickForm.element.id++;
-}
+};
 
 QuickForm.element.id = 0;
 
@@ -266,7 +270,7 @@ QuickForm.element.prototype.append = function QuickFormElementAppend( data ) {
 	}
 	this.childs.push( child );
 	return child;
-}
+};
 
 QuickForm.element.prototype.render = function QuickFormElementRender() {
 	var currentNode = this.compute( this.data );
@@ -275,7 +279,7 @@ QuickForm.element.prototype.render = function QuickFormElementRender() {
 		currentNode[1].appendChild( this.childs[i].render() );
 	}
 	return currentNode[0];
-}
+};
 
 QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in_id ) {
 	var node;
@@ -286,6 +290,8 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 		// hell hack alpha
 		data.type = 'hidden';
 	}
+
+	var i, current, subnode;
 	switch( data.type ) {
 	case 'form':
 		node = document.createElement( 'form' );
@@ -318,9 +324,9 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 		select.setAttribute( 'name', data.name );
 
 		if( data.list ) {
-			for( var i = 0; i < data.list.length; ++i ) {
+			for( i = 0; i < data.list.length; ++i ) {
 
-				var current = data.list[i];
+				current = data.list[i];
 
 				if( current.list ) {
 					current.type = 'optgroup';
@@ -328,8 +334,8 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 					current.type = 'option';
 				}
 
-				var res = this.compute( current );
-				select.appendChild( res[0] );
+				subnode = this.compute( current );
+				select.appendChild( subnode[0] );
 			}
 		}
 		childContainder = select;
@@ -352,14 +358,13 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 		node.setAttribute( 'label', data.label );
 
 		if( data.list ) {
-			for( var i = 0; i < data.list.length; ++i ) {
+			for( i = 0; i < data.list.length; ++i ) {
 
-				var current = data.list[i];
-
+				current = data.list[i];
 				current.type = 'option'; //must be options here
 
-				var res = this.compute( current );
-				node.appendChild( res[0] );
+				subnode = this.compute( current );
+				node.appendChild( subnode[0] );
 			}
 		}
 		break;
@@ -375,45 +380,45 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 	case 'radio':
 		node = document.createElement( 'div' );
 		if( data.list ) {
-			for( var i = 0; i < data.list.length; ++i ) {
+			for( i = 0; i < data.list.length; ++i ) {
 				var cur_id = id + '_' + i;
-				var current = data.list[i];
-				var cur_node;
+				current = data.list[i];
+				var cur_div;
 				if( current.type === 'header' ) {
 					// inline hack
-					cur_node = node.appendChild( document.createElement( 'h6' ) );
-					cur_node.appendChild( document.createTextNode( current.label ) );
+					cur_div = node.appendChild( document.createElement( 'h6' ) );
+					cur_div.appendChild( document.createTextNode( current.label ) );
 					if( current.tooltip ) {
-						QuickForm.element.generateTooltip( cur_node , current );
+						QuickForm.element.generateTooltip( cur_div , current );
 					}
 					continue;
 				}
-				cur_node = node.appendChild( document.createElement( 'div' ) );
-				var input = cur_node.appendChild( document.createElement( 'input' ) );
-				input.values = current.value;
-				input.setAttribute( 'value', current.value );
-				input.setAttribute( 'name', current.name || data.name );
-				input.setAttribute( 'type', data.type );
-				input.setAttribute( 'id', cur_id );
-
+				cur_div = node.appendChild( document.createElement( 'div' ) );
+				subnode = cur_div.appendChild( document.createElement( 'input' ) );
+				subnode.values = current.value;
+				subnode.setAttribute( 'value', current.value );
+				subnode.setAttribute( 'name', current.name || data.name );
+				subnode.setAttribute( 'type', data.type );
+				subnode.setAttribute( 'id', cur_id );
 
 				if( current.checked ) {
-					input.setAttribute( 'checked', 'checked' );
+					subnode.setAttribute( 'checked', 'checked' );
 				}
 				if( current.disabled ) {
-					input.setAttribute( 'disabled', 'disabled' );
+					subnode.setAttribute( 'disabled', 'disabled' );
 				}
 				if( data.event ) {
-					input.addEventListener( 'change', data.event, false );
+					subnode.addEventListener( 'change', data.event, false );
 				} else if ( current.event ) {
-					input.addEventListener( 'change', current.event, true );
+					subnode.addEventListener( 'change', current.event, true );
 				}
-				var label = cur_node.appendChild( document.createElement( 'label' ) );
+				label = cur_div.appendChild( document.createElement( 'label' ) );
 				label.appendChild( document.createTextNode( current.label ) );
 				label.setAttribute( 'for', cur_id );
 				if( current.tooltip ) {
 					QuickForm.element.generateTooltip( label, current );
 				}
+				var event;
 				if( current.subgroup ) {
 					var tmpgroup = current.subgroup;
 					if( ! tmpgroup.type ) {
@@ -423,8 +428,8 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 
 					var subgroup =this.compute( current.subgroup, cur_id )[0];
 					subgroup.style.marginLeft = '3em';
-					input.subgroup = subgroup;
-					input.shown = false;
+					subnode.subgroup = subgroup;
+					subnode.shown = false;
 
 					var event = function(e) {
 						if( e.target.checked ) {
@@ -439,10 +444,10 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 						} else {
 							e.target.parentNode.removeChild( e.target.subgroup );
 						}
-					}
-					input.addEventListener( 'change', event, true );
+					};
+					subnode.addEventListener( 'change', event, true );
 					if( current.checked ) {
-						input.parentNode.appendChild( subgroup );
+						subnode.parentNode.appendChild( subgroup );
 					}
 				} else if( data.type === 'radio' ) {
 					var event = function(e) {
@@ -453,8 +458,8 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 							}
 							delete e.target.form.names[name];
 						} 
-					}
-					input.addEventListener( 'change', event, true );
+					};
+					subnode.addEventListener( 'change', event, true );
 				}
 			}
 		}
@@ -468,26 +473,26 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 			label.setAttribute( 'for', id );
 		}
 
-		var input = node.appendChild( document.createElement( 'input' ) );
+		subnode = node.appendChild( document.createElement( 'input' ) );
 		if( data.value ) {
-			input.setAttribute( 'value', data.value );
+			subnode.setAttribute( 'value', data.value );
 		}
-		input.setAttribute( 'name', data.name );
-		input.setAttribute( 'type', 'text' );
+		subnode.setAttribute( 'name', data.name );
+		subnode.setAttribute( 'type', 'text' );
 		if( data.size ) {
-			input.setAttribute( 'size', data.size );
+			subnode.setAttribute( 'size', data.size );
 		}
 		if( data.disabled ) {
-			input.setAttribute( 'disabled', 'disabled' );
+			subnode.setAttribute( 'disabled', 'disabled' );
 		}
 		if( data.readonly ) {
-			input.setAttribute( 'readonly', 'readonly' );
+			subnode.setAttribute( 'readonly', 'readonly' );
 		}
 		if( data.maxlength ) {
-			input.setAttribute( 'maxlength', data.maxlength );
+			subnode.setAttribute( 'maxlength', data.maxlength );
 		}
 		if( data.event ) {
-			input.addEventListener( 'keyup', data.event, false );
+			subnode.addEventListener( 'keyup', data.event, false );
 		}
 		break;
 	case 'dyninput':
@@ -520,7 +525,6 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 		node.appendChild( more[0] );
 		var moreButton = more[1];
 
-
 		var sublist = {
 			type: '_dyninput_element',
 			label: data.sublabel || data.label,
@@ -530,10 +534,9 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 			remove: false,
 			maxlength: data.maxlength,
 			event: data.event
-		}
+		};
 
-
-		for( var i = 0; i < min; ++i ) {
+		for( i = 0; i < min; ++i ) {
 			var elem = new QuickForm.element( sublist );
 			listNode.appendChild( elem.render() );
 		}
@@ -555,20 +558,20 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 			label.setAttribute( 'for', id );
 		}
 
-		var input = node.appendChild( document.createElement( 'input' ) );
+		subnode = node.appendChild( document.createElement( 'input' ) );
 		if( data.value ) {
-			input.setAttribute( 'value', data.value );
+			subnode.setAttribute( 'value', data.value );
 		}
-		input.setAttribute( 'name', data.name );
-		input.setAttribute( 'type', 'text' );
+		subnode.setAttribute( 'name', data.name );
+		subnode.setAttribute( 'type', 'text' );
 		if( data.size ) {
-			input.setAttribute( 'size', data.size );
+			subnode.setAttribute( 'size', data.size );
 		}
 		if( data.maxlength ) {
-			input.setAttribute( 'maxlength', data.maxlength );
+			subnode.setAttribute( 'maxlength', data.maxlength );
 		}
 		if( data.event ) {
-			input.addEventListener( 'keyup', data.event, false );
+			subnode.addEventListener( 'keyup', data.event, false );
 		}
 		if( data.remove ) {
 			var remove = this.compute( {
@@ -593,7 +596,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 		}
 		break;
 	case 'hidden':
-		var node = document.createElement( 'input' );
+		node = document.createElement( 'input' );
 		node.setAttribute( 'type', 'hidden' );
 		node.values = data.value;
 		node.setAttribute( 'value', data.value );
@@ -614,7 +617,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 			}
 			var result = document.createElement( 'span' );
 			result.className = 'quickformDescription';
-			for( var i = 0; i < data.label.length; ++i ) {
+			for( i = 0; i < data.label.length; ++i ) {
 				if( typeof(data.label[i]) === 'string' ) {
 					result.appendChild( document.createTextNode( data.label[i] ) );
 				} else if( data.label[i] instanceof Element ) {
@@ -658,25 +661,27 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 			label.appendChild( document.createTextNode( data.label ) );
 			label.setAttribute( 'for', id );
 		}
-		var textarea = node.appendChild( document.createElement( 'textarea' ) );
-		textarea.setAttribute( 'name', data.name );
+		subnode = node.appendChild( document.createElement( 'textarea' ) );
+		subnode.setAttribute( 'name', data.name );
 		if( data.cols ) {
-			textarea.setAttribute( 'cols', data.cols );
+			subnode.setAttribute( 'cols', data.cols );
 		}
 		if( data.rows ) {
-			textarea.setAttribute( 'rows', data.rows );
+			subnode.setAttribute( 'rows', data.rows );
 		}
 		if( data.disabled ) {
-			textarea.setAttribute( 'disabled', 'disabled' );
+			subnode.setAttribute( 'disabled', 'disabled' );
 		}
 		if( data.readonly ) {
-			textarea.setAttribute( 'readonly', 'readonly' );
+			subnode.setAttribute( 'readonly', 'readonly' );
 		}
 		if( data.value ) {
-			textarea.value = data.value;
+			subnode.value = data.value;
 		}
 		break;
-
+	default:
+		throw ("QuickForm: unknown element type " + data.type.toString());
+		break;
 	}
 
 	if( !childContainder ) {
@@ -692,21 +697,20 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 	childContainder.setAttribute( 'id', data.id || id );
 
 	return [ node, childContainder ];
-}
+};
 
 QuickForm.element.generateTooltip = function QuickFormElementGenerateTooltip( node, data ) {
-	var obj = $('<span/>', {
+	$('<span/>', {
 			'class': 'ui-icon ui-icon-lightbulb ui-icon-inline morebits-tooltip'
-		})
-		.appendTo(node)
-		.tipsy({
+		}).appendTo(node).tipsy({
 			'fallback': data.tooltip,
 			'fade': true,
 			'gravity': $.fn.tipsy.autoWE,
 			'html': true,
-			'delayOut': 500,
+			'delayOut': 250
 		});
-}
+};
+
 
 /**
  * **************** HTMLFormElement ****************
@@ -731,9 +735,10 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
 		return null;
 	}
 	var return_array = [];
+	var i;
 	if( elements instanceof HTMLSelectElement ) {
 		var options = elements.options;
-		for( var i = 0; i < options.length; ++i ) {
+		for( i = 0; i < options.length; ++i ) {
 			if( options[i].selected ) {
 				if( options[i].values ) {
 					return_array.push( options[i].values );
@@ -750,7 +755,7 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
 			return [ elements.value ];
 		}
 	} else {
-		for( var i = 0; i < elements.length; ++i ) {
+		for( i = 0; i < elements.length; ++i ) {
 			if( elements[i].checked ) {
 				if( type && elements[i].type !== type ) {
 					continue;
@@ -764,7 +769,7 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
 		}
 	}
 	return return_array;
-}
+};
 
 HTMLFormElement.prototype.getTexts = function( name, type ) {
 	type = type || 'text';
@@ -775,12 +780,14 @@ HTMLFormElement.prototype.getTexts = function( name, type ) {
 	}
 	var return_array = [];
 	for( var i = 0; i < elements.length; ++i ) {
-		if( elements[i].value != '' ) {
+		if( elements[i].values ) {
 			return_array.push( elements[i].value );
 		}
 	}
 	return return_array;
-}
+};
+
+
 /**
  * **************** RegExp ****************
  *
@@ -889,8 +896,10 @@ function sprintf() {
 			case '.':
 				precision = true;
 				break;
+			default:
+				break;
 			}
-			if( /\d/.test( current_char ) ) {
+			if( (/\d/).test( current_char ) ) {
 				var num = parseInt( format.substr( i ) );
 				var len = num.toString().length;
 				i += len - 1;
@@ -920,7 +929,7 @@ function sprintf() {
 				} else {
 					flags.width = num;
 				}
-			} else if ( relative && !/\d/.test( format.charAt( i + 1 ) ) ) {
+			} else if ( relative && !((/\d/).test( format.charAt( i + 1 ) )) ) {
 				if( precision ) {
 					flags.precision = arguments[current_index];
 					precision = false;
@@ -1009,9 +1018,11 @@ sprintf.format = function sprintfFormat( type, value, flags ) {
 		result = (new Number( value ) ).toExponential( digits ).toString().toUpperCase();
 		break;
 	case 'G':
-		var digits = flags.precision ? flags.precision : 6;
+		digits = flags.precision ? flags.precision : 6;
 		result = (new Number( value ) ).toPrecision( digits ).toString().toUpperCase();
 		break;
+	default:
+		throw ("sprintf.format: unrecognized format code " + type.toString());
 	}
 
 	if(flags['+'] && parseFloat( value ) > 0 && ['d','e','f','g','E','G'].indexOf(type) !== -1 ) {
@@ -1034,6 +1045,8 @@ sprintf.format = function sprintfFormat( type, value, flags ) {
 		case 'b':
 			prefix = '0b';
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -1055,14 +1068,14 @@ sprintf.format = function sprintfFormat( type, value, flags ) {
 	}
 
 	return prefix + result;
-}
+};
 
 
 /**
  * **************** Bytes ****************
  */
 
-function Bytes( value ) {
+var Bytes = function( value ) {
 	if( typeof(value) === 'string' ) {
 		var res = /(\d+) ?(\w?)(i?)B?/.exec( value );
 		var number = res[1];
@@ -1082,7 +1095,7 @@ function Bytes( value ) {
 	} else {
 		this.value = value;
 	}
-}
+};
 
 Bytes.magnitudes = {
 	'': 0,
@@ -1094,7 +1107,8 @@ Bytes.magnitudes = {
 	'E': 6,
 	'Z': 7,
 	'Y': 8
-}
+};
+
 Bytes.rmagnitudes = {
 	0: '',
 	1: 'K',
@@ -1105,11 +1119,11 @@ Bytes.rmagnitudes = {
 	6: 'E',
 	7: 'Z',
 	8: 'Y'
-}
+};
 
 Bytes.prototype.valueOf = function() {
 	return this.value;
-}
+};
 
 Bytes.prototype.toString = function( magnitude ) {
 	var tmp = this.value;
@@ -1138,24 +1152,25 @@ Bytes.prototype.toString = function( magnitude ) {
 		}
 		return tmp + ' ' + Bytes.rmagnitudes[current] + ( current > 0 ? 'iB' : 'B' );
 	}
+};
 
 /**
  * **************** String ****************
  */
 
-}
 String.prototype.ltrim = function stringPrototypeLtrim( chars ) {
 	chars = chars || "\\s*";
 	return this.replace( new RegExp("^[" + chars + "]+", "g"), "" );
-}
+};
 
 String.prototype.rtrim = function stringPrototypeRtrim( chars ) {
 	chars = chars || "\\s*";
 	return this.replace( new RegExp("[" + chars + "]+$", "g"), "" );
-}
+};
+
 String.prototype.trim = function stringPrototypeTrim( chars ) {
 	return this.rtrim(chars).ltrim(chars);
-}
+};
 
 String.prototype.splitWeightedByKeys = function stringPrototypeSplitWeightedByKeys( start, end, skip ) {
 	if( start.length !== end.length ) {
@@ -1197,28 +1212,26 @@ String.prototype.splitWeightedByKeys = function stringPrototypeSplitWeightedByKe
 	}
 
 	return result;
-}
-
-
+};
 
 // Helper functions to change case of a string
 String.prototype.toUpperCaseFirstChar = function() {
 	return this.substr( 0, 1 ).toUpperCase() + this.substr( 1 );
-}
+};
 
 String.prototype.toLowerCaseFirstChar = function() {
 	return this.substr( 0, 1 ).toLowerCase() + this.substr( 1 );
-}
+};
 
 String.prototype.toUpperCaseEachWord = function( delim ) {
 	delim = delim ? delim : ' ';
-	return this.split( delim ).map( function(v) { return v.toUpperCaseFirstChar() } ).join( delim );
-}
+	return this.split( delim ).map( function(v) { return v.toUpperCaseFirstChar(); } ).join( delim );
+};
 
 String.prototype.toLowerCaseEachWord = function( delim ) {
 	delim = delim ? delim : ' ';
-	return this.split( delim ).map( function(v) { return v.toLowerCaseFirstChar() } ).join( delim );
-}
+	return this.split( delim ).map( function(v) { return v.toLowerCaseFirstChar(); } ).join( delim );
+};
 
 
 /**
@@ -1234,7 +1247,7 @@ Array.prototype.uniq = function arrayPrototypeUniq() {
 		}
 	}
 	return result;
-}
+};
 
 Array.prototype.dups = function arrayPrototypeUniq() {
 	var uniques = [];
@@ -1248,7 +1261,7 @@ Array.prototype.dups = function arrayPrototypeUniq() {
 		}
 	}
 	return result;
-}
+};
 
 // REMOVEME
 Array.prototype.chunk = function arrayChunk( size ) {
@@ -1422,6 +1435,7 @@ Date.monthNames = [
 	'November',
 	'December'
 ];
+
 Date.monthNamesAbbrev = [
 	'Jan',
 	'Feb',
@@ -1439,18 +1453,19 @@ Date.monthNamesAbbrev = [
 
 Date.prototype.getMonthName = function() {
 	return Date.monthNames[ this.getMonth() ];
-}
+};
 
 Date.prototype.getMonthNameAbbrev = function() {
 	return Date.monthNamesAbbrev[ this.getMonth() ];
-}
+};
+
 Date.prototype.getUTCMonthName = function() {
 	return Date.monthNames[ this.getUTCMonth() ];
-}
+};
 
 Date.prototype.getUTCMonthNameAbbrev = function() {
 	return Date.monthNamesAbbrev[ this.getUTCMonth() ];
-}
+};
 
 /**
  * **************** Wikipedia ****************
@@ -1548,21 +1563,23 @@ Wikipedia.actionCompleted = function( self ) {
 	if( --Wikipedia.numberOfActionsLeft <= 0 && Wikipedia.nbrOfCheckpointsLeft <= 0 ) {
 		Wikipedia.actionCompleted.event( self );
 	}
-}
+};
 
 // Change per action wanted
 Wikipedia.actionCompleted.event = function() {
 	new Status( Wikipedia.actionCompleted.notice, Wikipedia.actionCompleted.postfix, 'info' );
 	if( Wikipedia.actionCompleted.redirect ) {
 		// if it isn't an url, make it an relative to self (probably this is the case)
-		if( !/^\w+\:\/\//.test( Wikipedia.actionCompleted.redirect ) ) {
+		if( !( (/^\w+\:\/\//).test( Wikipedia.actionCompleted.redirect ) ) ) {
 			Wikipedia.actionCompleted.redirect = mw.config.get( 'wgServer' ) + mw.config.get( 'wgArticlePath' ).replace( '$1', encodeURIComponent( Wikipedia.actionCompleted.redirect ).replace( /\%2F/g, '/' ) );
-			if( Wikipedia.actionCompleted.followRedirect === false ) Wikipedia.actionCompleted.redirect += "?redirect=no";
+			if( Wikipedia.actionCompleted.followRedirect === false ) {
+				Wikipedia.actionCompleted.redirect += "?redirect=no";
+			}
 		}
-		window.setTimeout( function() { window.location = Wikipedia.actionCompleted.redirect } , Wikipedia.actionCompleted.timeOut );
+		window.setTimeout( function() { window.location = Wikipedia.actionCompleted.redirect; }, Wikipedia.actionCompleted.timeOut );
 	}
-}
-var wpActionCompletedTimeOut = typeof(wpActionCompletedTimeOut) === 'undefined'  ? 5000 : wpActionCompletedTimeOut;
+};
+var wpActionCompletedTimeOut = typeof(wpActionCompletedTimeOut) === 'undefined' ? 5000 : wpActionCompletedTimeOut;
 var wpMaxLag = typeof(wpMaxLag) === 'undefined' ? 10 : wpMaxLag; // Maximum lag allowed, 5-10 is a good value, the higher value, the more agressive.
 
 // editCount - REMOVEME when Wikipedia.wiki is gone
@@ -1574,7 +1591,7 @@ Wikipedia.actionCompleted.postfix = 'completed';
 
 Wikipedia.addCheckpoint = function() {
 	++Wikipedia.nbrOfCheckpointsLeft;
-}
+};
 
 Wikipedia.removeCheckpoint = function() {
 	if( --Wikipedia.nbrOfCheckpointsLeft <= 0 && Wikipedia.numberOfActionsLeft <= 0 ) {
@@ -1604,7 +1621,8 @@ Wikipedia.api = function( currentAction, query, onSuccess, statusElement, onErro
 	} else {
 		this.statelem = new Status( currentAction );
 	}
-}
+};
+
 Wikipedia.api.prototype = {
 	currentAction: '',
 	onSuccess: null,
@@ -1873,7 +1891,9 @@ Wikipedia.api.prototype = {
 
 Wikipedia.page = function(pageName, currentAction) {
 
-	if (!currentAction) currentAction = 'Opening page "' + pageName + '"';
+	if (!currentAction) {
+		currentAction = 'Opening page "' + pageName + '"';
+	}
 
 	/**
 	 * Private context variables
@@ -1941,7 +1961,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		deleteApi: null,
 		deleteProcessApi: null,
 		protectApi: null,
-		protectProcessApi: null,
+		protectProcessApi: null
 	};
 
 	/**
@@ -2016,7 +2036,7 @@ Wikipedia.page = function(pageName, currentAction) {
 
 	this.setMoveDestination = function(destination) {
 		ctx.moveDestination = destination;
-	}
+	};
 
 	this.setMoveTalkPage = function(flag) {
 		ctx.moveTalkPage = !!flag;
@@ -2059,13 +2079,19 @@ Wikipedia.page = function(pageName, currentAction) {
 	};
 
 	this.setWatchlist = function(flag) {
-		if (flag) ctx.watchlistOption = 'watch';
-		else ctx.watchlistOption = 'nochange';
+		if (flag) {
+			ctx.watchlistOption = 'watch';
+		} else {
+			ctx.watchlistOption = 'nochange';
+		}
 	};
 
 	this.setWatchlistFromPreferences = function(flag) {
-		if (flag) ctx.watchlistOption = 'preferences';
-		else ctx.watchlistOption = 'nochange';
+		if (flag) {
+			ctx.watchlistOption = 'preferences';
+		} else {
+			ctx.watchlistOption = 'nochange';
+		}
 	};
 
 	this.exists = function() {
@@ -2773,7 +2799,7 @@ Wikipedia.wiki = function( currentAction, query, oninit, onsuccess, onerror, onr
 	this.onretry = onretry;
 	this.statelem = new Status( currentAction );
 	++Wikipedia.numberOfActionsLeft;
-}
+};
 
 Wikipedia.wiki.prototype = {
 	currentAction: '',
@@ -2802,7 +2828,7 @@ Wikipedia.wiki.prototype = {
 		xmlhttp.setRequestHeader('Content-type','application/x-www-form-urlencoded');
 		xmlhttp.onerror = function(e) {
 			this.obj.statelem.error( "Error " + this.status + " occurred while posting the document." );
-		}
+		};
 		xmlhttp.onload = function(e) {
 			var self = this.obj;
 			var status = this.status;
@@ -2851,7 +2877,7 @@ Wikipedia.wiki.prototype = {
 			'action': 'query',
 			'titles': this.query['title'],
 			'redirects': ''
-		}
+		};
 
 		var wikipedia_api = new Wikipedia.api( "resolving eventual redirect", redirect_query, this.postget, this.statelem );
 		wikipedia_api.parent = this;
@@ -2877,7 +2903,7 @@ Wikipedia.wiki.prototype = {
 		xmlhttp.open( 'GET' , mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?useskin=monobook&' + QueryString.create( this.query ), true);
 		xmlhttp.onerror = function() {
 			this.obj.statelem.error( "Error " + this.status + " occurred while receiving the document." );
-		}
+		};
 		xmlhttp.onload = function() { 
 			this.obj.onloaded( this.obj );
 			this.obj.responseXML = this.responseXML;
@@ -2925,6 +2951,7 @@ Mediawiki.Template = {
 			name: '',
 			parameters: {}
 		};
+		var key, value;
 
 		for( var i = start; i < text.length; ++i ) {
 			var test3 = text.substr( i, 3 );
@@ -2964,8 +2991,8 @@ Mediawiki.Template = {
 						++count;
 					} else {
 						if( equals !== -1 ) {
-							var key = current.substring( 0, equals ).trim();
-							var value = current.substring( equals ).trim();
+							key = current.substring( 0, equals ).trim();
+							value = current.substring( equals ).trim();
 							result.parameters[key] = value;
 							equals = -1;
 						} else {
@@ -2984,8 +3011,8 @@ Mediawiki.Template = {
 					++count;
 				} else {
 					if( equals !== -1 ) {
-						var key = current.substring( 0, equals ).trim();
-						var value = current.substring( equals + 1 ).trim();
+						key = current.substring( 0, equals ).trim();
+						value = current.substring( equals + 1 ).trim();
 						result.parameters[key] = value;
 						equals = -1;
 					} else {
@@ -3004,12 +3031,11 @@ Mediawiki.Template = {
 
 		return result;
 	}
-}
+};
 
 Mediawiki.Page = function mediawikiPage( text ) {
 	this.text = text;
-}
-
+};
 
 Mediawiki.Page.prototype = {
 	text: '',
@@ -3080,8 +3106,8 @@ Mediawiki.Page.prototype = {
 			}
 		}
 		var gallery_re = new RegExp( "^(\\s*" + image_re_string + '.*?)\\|?(.*?)$', 'mg' );
-		var replacement = "$1|$2 " + data;
-		this.text = this.text.replace( gallery_re, replacement );
+		var newtext = "$1|$2 " + data;
+		this.text = this.text.replace( gallery_re, newtext );
 	},
 	removeTemplate: function( template ) {
 		var first_char = template.substr( 0, 1 );
@@ -3093,7 +3119,6 @@ Mediawiki.Page.prototype = {
 				this.text = this.text.replace( allTemplates[i], '', 'g' );
 			}
 		}
-
 	},
 	getText: function() {
 		return this.text;
@@ -3126,7 +3151,6 @@ function isIPAddress( string ){
 
 
 /**
-function QueryString(qString) {
  * **************** QueryString ****************
  * Maps the querystring to an object
  *
@@ -3151,6 +3175,7 @@ function QueryString(qString) {
  * var obj = new QueryString('foo=bar&baz=quux');
  * value = obj.get('foo');
  */
+var QueryString = function(qString) {
 	this.string = qString;
 	this.params = {};
 
@@ -3171,7 +3196,7 @@ function QueryString(qString) {
 
 		this.params[key] = value;
 	}
-}
+};
 
 QueryString.staticstr = null;
 
@@ -3179,7 +3204,7 @@ QueryString.staticInit = function() {
 	if( !QueryString.staticstr ) {
 		QueryString.staticstr = new QueryString(location.search.substring(1));
 	}
-}
+};
 
 QueryString.get = function(key) {
 	QueryString.staticInit();
@@ -3193,30 +3218,29 @@ QueryString.prototype.get = function(key) {
 QueryString.exists = function(key) {
 	QueryString.staticInit();
 	return QueryString.staticstr.exists(key);
-}
+};
 
 QueryString.prototype.exists = function(key) {
 	return this.params[key] ? true : false;
-}
+};
 
 QueryString.equals = function(key, value) {
 	QueryString.staticInit();
 	return QueryString.staticstr.equals(key, value);
-}
+};
 
 QueryString.prototype.equals = function(key, value) {
 	return this.params[key] === value ? true : false;
-}
+};
 
 QueryString.toString = function() {
 	QueryString.staticInit();
 	return QueryString.staticstr.toString();
-}
+};
 
 QueryString.prototype.toString = function() {
 	return this.string ? this.string : null;
-}
-
+};
 
 QueryString.create = function( arr ) {
 	var resarr = [];
@@ -3245,7 +3269,7 @@ QueryString.create = function( arr ) {
 		resarr.push( 'wpEditToken=' + editToken );
 	}
 	return resarr.join('&');
-}
+};
 QueryString.prototype.create = QueryString.create;
 
 /**
@@ -3257,11 +3281,11 @@ QueryString.prototype.create = QueryString.create;
 var Exception = function( message ) {
 	this.message = message || '';
 	this.name = "Exception";
-}
+};
 
 Exception.prototype.what = function() {
 	return this.message;
-}
+};
 
 
 /**
@@ -3272,13 +3296,16 @@ var Status = function( text, stat, type ) {
 	this.text = this.codify(text);
 	this.stat = this.codify(stat);
 	this.type = type || 'status';
-	// XXX temporary hack to force the page not to reload when an error is output - see also update() below
-	if (type === 'error') Wikipedia.numberOfActionsLeft = 1000;
+	// hack to force the page not to reload when an error is output - see also update() below
+	if (type === 'error') {
+		Wikipedia.numberOfActionsLeft = 1000;
+	}
 	this.generate(); 
 	if( stat ) {
 		this.render();
 	}
-}
+};
+
 Status.init = function( root ) {
 	if( !( root instanceof Element ) ) {
 		throw new Exception( 'object not an instance of Element' );
@@ -3287,18 +3314,8 @@ Status.init = function( root ) {
 		root.removeChild( root.firstChild );
 	}
 	Status.root = root;
+};
 
-	var cssNode = document.createElement('style');
-	cssNode.type = 'text/css';
-	cssNode.rel = 'stylesheet';
-	cssNode.appendChild( document.createTextNode("")); // Safari bugfix
-	document.getElementsByTagName("head")[0].appendChild(cssNode);
-	var styles = cssNode.sheet ? cssNode.sheet : cssNode.stylesSheet;
-	styles.insertRule(".tw_status_status { color: SteelBlue; }", 0);
-	styles.insertRule(".tw_status_info { color: ForestGreen; }", 0);
-	styles.insertRule(".tw_status_warn { color: OrangeRed; }", 0);
-	styles.insertRule(".tw_status_error { color: OrangeRed; font-weight: bold; }", 0);
-}
 Status.root = null;
 
 Status.prototype = {
@@ -3340,8 +3357,10 @@ Status.prototype = {
 		this.stat = this.codify( status );
 		if( type ) {
 			this.type = type;
-			// XXX temporary hack to force the page not to reload when an error is output - see also Status() above
-			if (type === 'error') Wikipedia.numberOfActionsLeft = 1000;
+			// hack to force the page not to reload when an error is output - see also Status() above
+			if (type === 'error') {
+				Wikipedia.numberOfActionsLeft = 1000;
+			}
 		}
 		this.render();
 	},
@@ -3372,20 +3391,23 @@ Status.prototype = {
 	error: function( status ) {
 		this.update( status, 'error');
 	}
-}
+};
 
 Status.status = function( text, status ) {
 	return new Status( text, status, 'status' );
-}
+};
+
 Status.info = function( text, status ) {
 	return new Status( text, status, 'info' );
-}
+};
+
 Status.warn = function( text, status ) {
 	return new Status( text, status, 'warn' );
-}
+};
+
 Status.error = function( text, status ) {
 	return new Status( text, status, 'error' );
-}
+};
 
 
 /**
@@ -3411,7 +3433,7 @@ function htmlNode( type, content, color ) {
  */
 
 // The height passed in here is the maximum allowable height for the content area.
-function SimpleWindow( width, height ) {
+var SimpleWindow = function( width, height ) {
 	var content = document.createElement( 'div' );
 	this.content = content;
 	content.className = 'morebits-dialog-content';
@@ -3448,7 +3470,7 @@ function SimpleWindow( width, height ) {
 	var linksspan = document.createElement("span");
 	linksspan.className = "morebits-dialog-footerlinks";
 	$widget.find(".ui-dialog-buttonpane").append(buttonspan, linksspan);
-}
+};
 
 SimpleWindow.prototype = {
 	buttons: [],
@@ -3565,18 +3587,14 @@ SimpleWindow.prototype = {
 		this.hasFooterLinks = true;
 	},
 	moveWindow: function( x, y ) {
-		// XXX needs to be implemented
-		//this.frame.style.left = x - this.initialX + 'px';
-		//this.frame.style.top  = y - this.initialY + 'px';
-		alert("code tried to move a SimpleWindow - not yet implemented...");
+		// unimplemented
+		alert("SimpleWindow.moveWindow is no longer implemented.");
 	},
 	resizeWindow: function( x, y ) {
-		// XXX needs to be implemented
-		//this.frame.style.height  = Math.max( parseInt( y - this.frame.offsetTop ), 200 ) + 'px';
-		//this.frame.style.width = Math.max( parseInt( x -  this.frame.offsetLeft ), 200 ) + 'px';
-		alert("code tried to resize a SimpleWindow - not yet implemented...");
+		// unimplemented
+		alert("SimpleWindow.resizeWindow is no longer implemented.");
 	}
-}
+};
 
 // Enables or disables all footer buttons on all SimpleWindows in the current page.
 // This should be called with |false| when the button(s) become irrelevant (e.g. just before Status.init is called).
