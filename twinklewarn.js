@@ -8,10 +8,10 @@
  */
 
 Twinkle.warn = function twinklewarn() {
-	if( wgNamespaceNumber == 3 ) {
+	if( mw.config.get('wgNamespaceNumber') === 3 ) {
 		twAddPortletLink( (twinkleUserAuthorized ? "javascript:Twinkle.warn.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "Warn", "tw-warn", "Warn/Notify user", "");
 	}
-}
+};
 
 Twinkle.warn.callback = function twinklewarnCallback() {
 	var Window = new SimpleWindow( 600, 440 );
@@ -34,15 +34,15 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		} );
 
 	var defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'));
-	main_group.append( { type:'option', label:'General Note (1)', value:'level1', selected: ( defaultGroup == 1 || defaultGroup < 1 || ( userIsInGroup( 'sysop' ) ? defaultGroup > 8 : defaultGroup > 7 ) ) } );
-	main_group.append( { type:'option', label:'Caution (2)', value:'level2', selected: ( defaultGroup == 2 ) } );
-	main_group.append( { type:'option', label:'Warning (3)', value:'level3', selected: ( defaultGroup == 3 ) } );
-	main_group.append( { type:'option', label:'Final warning (4)', value:'level4', selected: ( defaultGroup == 4 ) } );
-	main_group.append( { type:'option', label:'Only warning (4im)', value:'level4im', selected: ( defaultGroup == 5 ) } );
-	main_group.append( { type:'option', label:'Single issue notices', value:'singlenotice', selected: ( defaultGroup == 6 ) } );
-	main_group.append( { type:'option', label:'Single issue warnings', value:'singlewarn', selected: ( defaultGroup == 7 ) } );
+	main_group.append( { type:'option', label:'General Note (1)', value:'level1', selected: ( defaultGroup === 1 || defaultGroup < 1 || ( userIsInGroup( 'sysop' ) ? defaultGroup > 8 : defaultGroup > 7 ) ) } );
+	main_group.append( { type:'option', label:'Caution (2)', value:'level2', selected: ( defaultGroup === 2 ) } );
+	main_group.append( { type:'option', label:'Warning (3)', value:'level3', selected: ( defaultGroup === 3 ) } );
+	main_group.append( { type:'option', label:'Final warning (4)', value:'level4', selected: ( defaultGroup === 4 ) } );
+	main_group.append( { type:'option', label:'Only warning (4im)', value:'level4im', selected: ( defaultGroup === 5 ) } );
+	main_group.append( { type:'option', label:'Single issue notices', value:'singlenotice', selected: ( defaultGroup === 6 ) } );
+	main_group.append( { type:'option', label:'Single issue warnings', value:'singlewarn', selected: ( defaultGroup === 7 ) } );
 	if( userIsInGroup( 'sysop' ) ) {
-		main_group.append( { type:'option', label:'Blocking', value:'block', selected: ( defaultGroup == 8 ) } );
+		main_group.append( { type:'option', label:'Blocking', value:'block', selected: ( defaultGroup === 8 ) } );
 	}
 
 	main_select.append( { type:'select', name:'sub_group', event:Twinkle.warn.callback.change_subcategory } ); //Will be empty to begin with.
@@ -75,8 +75,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
 	result.main_group.dispatchEvent( evt );
-
-}
+};
 
 // This is all the messages that might be dispatched by the code
 Twinkle.warn.messages = {
@@ -1256,7 +1255,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		sub_group.appendChild( elem.render() );
 	}
 
-	if( value == 'block' ) {
+	if( value === 'block' ) {
 		var more = new QuickForm.element( {
 				type: 'input',
 				name: 'block_timer',
@@ -1289,14 +1288,14 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		}
 		e.target.root.reason.disabled = false;
 	}
-}
+};
 
 Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSubcategory(e) {
 	var main_group = e.target.main_group;
 	var value = e.target.value;
 
-	if( main_group == 'singlewarn' ) {
-		if( value == 'uw-username' ) {
+	if( main_group === 'singlewarn' ) {
+		if( value === 'uw-username' ) {
 			if(Twinkle.warn.prev_article === null) {
 				Twinkle.warn.prev_article = e.target.form.article.value;
 			}
@@ -1309,7 +1308,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 			}
 			e.target.form.article.disabled = false;
 		}
-	} else if( main_group == 'block' ) {
+	} else if( main_group === 'block' ) {
 		if( Twinkle.warn.indefBlockHash[ value ] ) {
 			if(Twinkle.warn.prev_block_timer === null) {
 				Twinkle.warn.prev_block_timer = e.target.form.block_timer.value;
@@ -1352,7 +1351,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 			e.target.form.reason.value = '';
 		}
 	}
-}
+};
 
 Twinkle.warn.callbacks = {
 	preview: function() {
@@ -1400,7 +1399,7 @@ Twinkle.warn.callbacks = {
 			prop: 'text',
 			pst: 'true',  // PST = pre-save transform; this makes substitution work properly
 			text: templatetext,
-			title: wgPageName
+			title: mw.config.get('wgPageName')
 		};
 		var wikipedia_api = new Wikipedia.api("loading...", query, Twinkle.warn.callbacks.previewRender, new Status("Preview"));
 		wikipedia_api.params = { previewbox: previewbox };
@@ -1427,7 +1426,7 @@ Twinkle.warn.callbacks = {
 		var latest = { date:new Date( 0 ), type:'' };
 		var current;
 
-		while( ( current = history_re.exec( text ) ) != undefined ) {
+		while( ( current = history_re.exec( text ) ) ) {
 			var current_date = new Date( current[2] + ' UTC' );
 			if( !( current[1] in history ) ||  history[ current[1] ] < current_date ) {
 				history[ current[1] ] = current_date;
@@ -1468,10 +1467,10 @@ Twinkle.warn.callbacks = {
 			text += "\n\n";
 		}
 
-		if( params.main_group == 'block' ) {
+		if( params.main_group === 'block' ) {
 			var article = '', reason = '', time = null;
 			
-			if( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.sub_group != 'uw-lblock' && ( Twinkle.warn.indefBlockHash[ params.sub_group ] || /indef|\*|max/.exec( params.block_timer ) ) ) {
+			if( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.sub_group !== 'uw-lblock' && ( Twinkle.warn.indefBlockHash[ params.sub_group ] || (/indef|\*|max/).exec( params.block_timer ) ) ) {
 				Status.info( 'Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date' );
 				text = "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			} else if( !headerRe.exec( text ) ) {
@@ -1502,14 +1501,14 @@ Twinkle.warn.callbacks = {
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
 
-			if( params.sub_group == 'uw-username' ) {
+			if( params.sub_group === 'uw-username' ) {
 				text += "\{\{subst:" + params.sub_group + ( params.reason ? '|1=' + params.reason : '' ) + "|subst=subst:\}\} \~\~\~\~";
 			} else {
 				text += "\{\{subst:" + params.sub_group + ( params.article ? '|1=' + params.article : '' ) + "|subst=subst:\}\}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + "\~\~\~\~";
 			}
 		}
 		
-		if ( Twinkle.getPref('showSharedIPNotice') && isIPAddress( wgTitle ) ) {
+		if ( Twinkle.getPref('showSharedIPNotice') && isIPAddress( mw.config.get('wgTitle') ) ) {
 			Status.info( 'Info', 'Adding a shared ip notice' );
 			switch( QueryString.get( 'type' ) ) {
 			case 'vand':
@@ -1526,13 +1525,13 @@ Twinkle.warn.callbacks = {
 		pageobj.setWatchlist( Twinkle.getPref('watchWarnings') );
 		pageobj.save();
 	}
-}
+};
 
 Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 
 	// First, check to make sure a reason was filled in if uw-username was selected
 	
-	if(e.target.sub_group.value == 'uw-username' && e.target.reason.value.trim() == '') {
+	if(e.target.sub_group.value === 'uw-username' && e.target.reason.value.trim() === '') {
 		alert("You must supply a reason for the \{\{uw-username}} template.");
 		return;
 	}
@@ -1545,16 +1544,16 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 		sub_group: e.target.sub_group.value,
 		article: e.target.article.value.replace( /^(Image|Category):/i, ':$1:' ),
 		block_timer: e.target.block_timer ? e.target.block_timer.value : null
-	}
+	};
 
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( e.target );
 
-	Wikipedia.actionCompleted.redirect = wgPageName;
+	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
 	Wikipedia.actionCompleted.notice = "Warning complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Wikipedia.page( wgPageName, 'User talk page modification' );
+	var wikipedia_page = new Wikipedia.page( mw.config.get('wgPageName'), 'User talk page modification' );
 	wikipedia_page.setCallbackParameters( params );
 	wikipedia_page.setFollowRedirect( true );
 	wikipedia_page.load( Twinkle.warn.callbacks.main );
-}
+};

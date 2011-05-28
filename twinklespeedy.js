@@ -11,7 +11,7 @@ Twinkle.speedy = function twinklespeedy() {
 	// Disable on:
 	// * special pages
 	// * non-existent pages
-	if (wgNamespaceNumber < 0 || !wgArticleId) {
+	if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId')) {
 		return;
 	}
 
@@ -22,12 +22,12 @@ Twinkle.speedy = function twinklespeedy() {
 	} else {
 		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'CSD', 'tw-csd', 'Request speedy deletion according to WP:CSD', '');
 	}
-}
+};
 
 // This function is run when the CSD tab/header link is clicked
 Twinkle.speedy.callback = function twinklespeedyCallback() {
 	Twinkle.speedy.initDialog(userIsInGroup( 'sysop' ) ? Twinkle.speedy.callback.evaluateSysop : Twinkle.speedy.callback.evaluateUser, true);
-}
+};
 
 // Prepares the speedy deletion dialog and displays it
 // Parameters:
@@ -77,7 +77,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 				]
 			} );
 		form.append( { type: 'header', label: 'Delete-related options' } );
-		if (wgNamespaceNumber % 2 == 0 && (wgNamespaceNumber != 2 || /\//.test(wgTitle))) {  // hide option for user pages, to avoid accidentally deleting user talk page
+		if (mw.config.get('wgNamespaceNumber') % 2 === 0 && (mw.config.get('wgNamespaceNumber') !== 2 || (/\//).test(mw.config.get('wgTitle')))) {  // hide option for user pages, to avoid accidentally deleting user talk page
 			form.append( {
 				type: 'checkbox',
 				list: [
@@ -135,8 +135,9 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 				]
 			}
 		);
+	} else {
+		form.append( { type:'header', label: 'Tagging with \{\{db-multiple}}: Criterion ' + (Twinkle.speedy.dbmultipleCriteria.length + 1) } );
 	}
-	else form.append( { type:'header', label: 'Tagging with \{\{db-multiple}}: Criterion ' + (Twinkle.speedy.dbmultipleCriteria.length + 1) } );
 
 	if (firstTime) {
 		form.append( { type: 'radio', name: 'csd',
@@ -149,8 +150,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 				}
 			]
 		} );
-	}
-	else if (Twinkle.speedy.dbmultipleCriteria.length > 0) {
+	} else if (Twinkle.speedy.dbmultipleCriteria.length > 0) {
 		form.append( { type: 'radio', name: 'csd',
 			list: [
 				{
@@ -161,35 +161,46 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 		} );
 	}
 
-	if( wgNamespaceNumber ==  Namespace.IMAGE ) {
-		form.append( { type: 'header', label: 'Files' } );
-		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getFileList(!firstTime) } );
-		form.append( { type: 'div', label: 'Tagging for CSD F4 (no license), F5 (orphaned fair use), F6 (no fair use rationale), and F11 (no permission) can be done using Twinkle\'s "DI" tab.' } );
-	}
+	switch (mw.config.get('wgNamespaceNumber')) {
+		case 0:  // article
+		case 1:  // talk
+			form.append( { type: 'header', label: 'Articles' } );
+			form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getArticleList(!firstTime) } );
+			break;
 
-	if( wgNamespaceNumber ==  0 || wgNamespaceNumber == 1 ) {
-		form.append( { type: 'header', label: 'Articles' } );
-		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getArticleList(!firstTime) } );
-	}
+		case 2:  // user
+		case 3:  // user talk
+			form.append( { type: 'header', label: 'User pages' } );
+			form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.userList } );
+			break;
 
-	if( wgNamespaceNumber ==  14 || wgNamespaceNumber == 15 ) {
-		form.append( { type: 'header', label: 'Categories' } );
-		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.categoryList } );
-	}
+		case 6:  // file
+		case 7:  // file talk
+			form.append( { type: 'header', label: 'Files' } );
+			form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getFileList(!firstTime) } );
+			form.append( { type: 'div', label: 'Tagging for CSD F4 (no license), F5 (orphaned fair use), F6 (no fair use rationale), and F11 (no permission) can be done using Twinkle\'s "DI" tab.' } );
+			break;
 
-	if( wgNamespaceNumber ==  2 || wgNamespaceNumber == 3 ) {
-		form.append( { type: 'header', label: 'User pages' } );
-		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.userList } );
-	}
+		case 10:  // template
+		case 11:  // template talk
+			form.append( { type: 'header', label: 'Templates' } );
+			form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getTemplateList(!firstTime) } );
+			break;
 
-	if( wgNamespaceNumber ==  10 || wgNamespaceNumber == 11 ) {
-		form.append( { type: 'header', label: 'Templates' } );
-		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getTemplateList(!firstTime) } );
-	}
+		case 14:  // category
+		case 15:  // category talk
+			form.append( { type: 'header', label: 'Categories' } );
+			form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.categoryList } );
+			break;
 
-	if( wgNamespaceNumber ==  100 || wgNamespaceNumber == 101 ) {
-		form.append( { type: 'header', label: 'Portals' } );
-		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getPortalList(!firstTime) } );
+		case 100:  // portal
+		case 101:  // portal talk
+			form.append( { type: 'header', label: 'Portals' } );
+			form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.getPortalList(!firstTime) } );
+			break;
+
+		default:
+			break;
 	}
 
 	form.append( { type: 'header', label: 'General criteria' } );
@@ -211,7 +222,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 		content.textContent = ''; // clear children
 		content.appendChild(result);
 	}
-}
+};
 
 // this is a function to allow for db-multiple filtering
 Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
@@ -262,7 +273,7 @@ Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
 		tooltip: 'This is only for use when the file doesn\'t exist at all. Corrupt files, and local description pages for files on Commons, should use F2; implausible redirects should use R3; and broken Commons redirects should use G6.'
 	});
 	return result;
-}
+};
 
 Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 	var result = [];
@@ -329,7 +340,7 @@ Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 		tooltip: 'A recently created article with no relevant page history that does not aim to expand upon, detail or improve information within any existing article(s) on the subject, and where the title is not a plausible redirect. This does not include content forks, split pages or any article that aims at expanding or detailing an existing one.'
 	});
 	return result;
-}
+};
 
 Twinkle.speedy.categoryList = [
 	{
@@ -359,7 +370,7 @@ Twinkle.speedy.userList = [
 		label: 'U3: Non-free galleries',
 		value: 'gallery',
 		tooltip: 'Galleries in the userspace which consist mostly of "fair use" or non-free files. Wikipedia\'s non-free content policy forbids users from displaying non-free files, even ones they have uploaded themselves, in userspace. It is acceptable to have free files, GFDL-files, Creative Commons and similar licenses along with public domain material, but not "fair use" files'
-	},
+	}
 ];
 
 Twinkle.speedy.getTemplateList = function twinklespeedyGetTemplateList(multiple) {
@@ -375,7 +386,7 @@ Twinkle.speedy.getTemplateList = function twinklespeedyGetTemplateList(multiple)
 		tooltip: 'Templates that are either substantial duplications of another template or hardcoded instances of another template where the same functionality could be provided by that other template'
 	});
 	return result;
-}
+};
 
 Twinkle.speedy.getPortalList = function twinklespeedyGetPortalList(multiple) {
 	var result = [];
@@ -390,7 +401,7 @@ Twinkle.speedy.getPortalList = function twinklespeedyGetPortalList(multiple) {
 		tooltip: 'Any Portal based on a topic for which there is not a non-stub header article, and at least three non-stub articles detailing subject matter that would be appropriate to discuss under the title of that Portal'
 	});
 	return result;
-}
+};
 
 Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 	var result = [];
@@ -494,7 +505,7 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		tooltip: 'Either: (1) Material was copied from another website that does not have a license compatible with Wikipedia, or is photography from a stock photo seller (such as Getty Images or Corbis) or other commercial content provider; (2) There is no non-infringing content in the page history worth saving; or (3) The infringement was introduced at once by a single person rather than created organically on wiki and then copied by another website such as one of the many Wikipedia mirrors'
 	});
 	return result;
-}
+};
 
 Twinkle.speedy.redirectList = [
 	{
@@ -634,7 +645,7 @@ Twinkle.speedy.reasonHash = {
 Twinkle.speedy.callbacks = {
 	sysop: {
 		main: function( params ) {
-			var thispage = new Wikipedia.page( wgPageName, "Deleting page" );
+			var thispage = new Wikipedia.page( mw.config.get('wgPageName'), "Deleting page" );
 
 			// delete page
 			var reason;
@@ -644,43 +655,42 @@ Twinkle.speedy.callbacks = {
 				reason = prompt("Enter the deletion summary to use, or press OK to accept the automatically generated one.",
 					"[[WP:CSD#" + params.normalized.toUpperCase() + "|" + params.normalized.toUpperCase() + "]]: " + params.reason);
 			}
-			if (reason == null || reason.replace(/^\s*/, "").replace(/\s*$/, "") == '') {
-				Status.error("Asking for reason", "you didn't give one, so aborting");
+			if (!reason || !reason.replace(/^\s*/, "").replace(/\s*$/, "")) {
+				Status.error("Asking for reason", "you didn't give one.  I don't know... what with admins and their apathetic antics... I give up...");
 				return;
 			}
 			thispage.setEditSummary( reason + Twinkle.getPref('deletionSummaryAd') );
 			thispage.deletePage();
 
 			// delete talk page
-			if(
-				params.deleteTalkPage &&
-				params.normalized != 'f8' &&
-				document.getElementById( 'ca-talk' ).className != 'new'
-			) {
-				var talkpage = new Wikipedia.page( Wikipedia.namespaces[ wgNamespaceNumber + 1 ] + ':' + wgTitle, "Deleting talk page" );
-				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page [[' + wgPageName + "]]. " + Twinkle.getPref('deletionSummaryAd'));
+			if (params.deleteTalkPage &&
+			    params.normalized !== 'f8' &&
+			    document.getElementById( 'ca-talk' ).className !== 'new') {
+				var talkpage = new Wikipedia.page( Wikipedia.namespaces[ mw.config.get('wgNamespaceNumber') + 1 ] + ':' + mw.config.get('wgTitle'), "Deleting talk page" );
+				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page [[' + mw.config.get('wgPageName') + "]]. " + Twinkle.getPref('deletionSummaryAd'));
 				talkpage.deletePage();
 			}
 
 			// promote Unlink tool
-			if( wgNamespaceNumber === 6 && params.normalized !== 'f8' ) {
-				var link = document.createElement( 'a' );
-				link.setAttribute( 'href', 'javascript:Wikipedia.actionCompleted.redirect=null;twinkleunlink.callback("Removing usages of and links to deleted file ' + encodeURIComponent(wgPageName) + '")' );
+			var link, bigtext;
+			if( mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8' ) {
+				link = document.createElement( 'a' );
+				link.setAttribute( 'href', 'javascript:Wikipedia.actionCompleted.redirect=null;twinkleunlink.callback("Removing usages of and links to deleted file ' + encodeURIComponent(mw.config.get('wgPageName')) + '")' );
 				link.style.fontSize = "130%";  // okay, it's crass...
 				link.style.fontWeight = "bold";
 				link.textContent = 'click here to go to the Unlink tool';
-				var bigtext = document.createElement( 'span' );
+				bigtext = document.createElement( 'span' );
 				bigtext.style.fontSize = "130%";  // okay, it's crass...
 				bigtext.style.fontWeight = "bold";
 				bigtext.textContent = 'To orphan backlinks and remove instances of file usage';
 				Status.info( bigtext, link );
 			} else if (params.normalized !== 'f8') {
-				var link = document.createElement( 'a' );
-				link.setAttribute( 'href', 'javascript:Wikipedia.actionCompleted.redirect=null;twinkleunlink.callback("Removing links to deleted page ' + encodeURIComponent(wgPageName) + '")' );
+				link = document.createElement( 'a' );
+				link.setAttribute( 'href', 'javascript:Wikipedia.actionCompleted.redirect=null;twinkleunlink.callback("Removing links to deleted page ' + encodeURIComponent(mw.config.get('wgPageName')) + '")' );
 				link.style.fontSize = "130%";  // okay, it's crass...
 				link.style.fontWeight = "bold";
 				link.textContent = 'click here to go to the Unlink tool';
-				var bigtext = document.createElement( 'span' );
+				bigtext = document.createElement( 'span' );
 				bigtext.style.fontSize = "130%";  // okay, it's crass...
 				bigtext.style.fontWeight = "bold";
 				bigtext.textContent = 'To orphan backlinks';
@@ -689,7 +699,7 @@ Twinkle.speedy.callbacks = {
 
 			// open talk page of first contributor
 			if( params.openusertalk ) {
-				thispage = new Wikipedia.page( wgPageName );  // necessary evil to clear incorrect Status.text
+				thispage = new Wikipedia.page( mw.config.get('wgPageName') );  // a necessary evil, in order to clear incorrect Status.text
 				thispage.setCallbackParameters( params );
 				thispage.lookupCreator( Twinkle.speedy.callbacks.sysop.openUserTalkPage );
 			}
@@ -700,7 +710,7 @@ Twinkle.speedy.callbacks = {
 					'action': 'query',
 					'list': 'backlinks',
 					'blfilterredir': 'redirects',
-					'bltitle': wgPageName,
+					'bltitle': mw.config.get('wgPageName'),
 					'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
 				};
 				var wikipedia_api = new Wikipedia.api( 'getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
@@ -718,18 +728,18 @@ Twinkle.speedy.callbacks = {
 				'title': 'User talk:' + user,
 				'action': 'edit',
 				'preview': 'yes',
-				'vanarticle': wgPageName.replace(/_/g, ' ')
+				'vanarticle': mw.config.get('wgPageName').replace(/_/g, ' ')
 			};
 			switch( Twinkle.getPref('userTalkPageMode') ) {
 			case 'tab':
-				window.open( wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ), '_tab' );
+				window.open( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), '_tab' );
 				break;
 			case 'blank':
-				window.open( wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ), '_blank', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
+				window.open( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), '_blank', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 				break;
 			case 'window':
 				default :
-				window.open( wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ), 'twinklewarnwindow', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
+				window.open( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), 'twinklewarnwindow', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 				break;
 			}
 
@@ -741,7 +751,7 @@ Twinkle.speedy.callbacks = {
 
 			var total = $snapshot.length;
 
-			if( total == 0 ) {
+			if( !total ) {
 				return;
 			}
 
@@ -758,7 +768,7 @@ Twinkle.speedy.callbacks = {
 					obj.info( now + ' (completed)' );
 					Wikipedia.removeCheckpoint();
 				}
-			}
+			};
 
 			Wikipedia.addCheckpoint();
 
@@ -770,7 +780,7 @@ Twinkle.speedy.callbacks = {
 			$snapshot.each(function(key, value) {
 				var title = $(value).attr('title');
 				var page = new Wikipedia.page(title, 'Deleting redirect "' + title + '"');
-				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page [['+ wgPageName + "]]." + Twinkle.getPref('deletionSummaryAd'));
+				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page [[' + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('deletionSummaryAd'));
 				page.deletePage(onsuccess);
 			});
 		}
@@ -797,7 +807,7 @@ Twinkle.speedy.callbacks = {
 			// check for existing deletion tags
 			var tag = /(\{\{\s*(?:db|delete|db-.*?)(?:\||\s*\}\}))/.exec( text );
 			if( tag ) {
-				statelem.error( [ htmlNode( 'strong', tag[0] ) , " is already placed on the page." ] )
+				statelem.error( [ htmlNode( 'strong', tag[0] ) , " is already placed on the page." ] );
 				return;
 			}
 
@@ -806,33 +816,40 @@ Twinkle.speedy.callbacks = {
 				return;
 			}
 
-			var code;
-			var parameters;
-			if (params.normalized == 'multiple')
+			var code, parameters, i;
+			if (params.normalized === 'multiple')
 			{
 				code = "\{\{db-multiple";
-				for (var i in Twinkle.speedy.dbmultipleCriteria)
-					if (typeof Twinkle.speedy.dbmultipleCriteria[i] == 'string')
+				for (i in Twinkle.speedy.dbmultipleCriteria) {
+					if (typeof Twinkle.speedy.dbmultipleCriteria[i] === 'string') {
 						code += "|" + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase();
-				for (var i in Twinkle.speedy.dbmultipleParameters)
-					if (typeof Twinkle.speedy.dbmultipleParameters[i] == 'string')
+					}
+				}
+				for (i in Twinkle.speedy.dbmultipleParameters) {
+					if (typeof Twinkle.speedy.dbmultipleParameters[i] === 'string') {
 						code += "|" + i + "=" + Twinkle.speedy.dbmultipleParameters[i];
+					}
+				}
 				code += "\}\}";
 				params.utparams = [];
 			}
 			else
 			{
 				parameters = Twinkle.speedy.getParameters(params.value, params.normalized, statelem);
-				if (!parameters) return;
+				if (!parameters) {
+					return;  // the user aborted
+				}
 				code = "\{\{db-" + params.value;
-				for (var i in parameters)
-					if (typeof parameters[i] == 'string')
+				for (i in parameters) {
+					if (typeof parameters[i] === 'string') {
 						code += "|" + i + "=" + parameters[i];
+					}
+				}
 				code += "\}\}";
 				params.utparams = Twinkle.speedy.getUserTalkParameters(params.normalized, parameters);
 			}
 
-			var thispage = new Wikipedia.page(wgPageName);
+			var thispage = new Wikipedia.page(mw.config.get('wgPageName'));
 			// patrol the page, if reached from Special:NewPages
 			if( Twinkle.getPref('markSpeedyPagesAsPatrolled') ) {
 				thispage.patrol();
@@ -843,7 +860,7 @@ Twinkle.speedy.callbacks = {
 				var callback = function(pageobj) {
 					var initialContrib = pageobj.getCreator();
 					var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-					var nowelcome = Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(params.normalized) == -1;
+					var nowelcome = Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(params.normalized) === -1;
 					var notifytext;
 
 					// specialcase "db" and "db-multiple"
@@ -851,22 +868,24 @@ Twinkle.speedy.callbacks = {
 					switch (params.normalized)
 					{
 						case 'db':
-							notifytext = "\n\n\{\{subst:db-reason-notice|1=" + wgPageName;
+							notifytext = "\n\n\{\{subst:db-reason-notice|1=" + mw.config.get('wgPageName');
 							break;
 						case 'multiple':
-							notifytext = "\n\n\{\{subst:db-notice-multiple|1=" + wgPageName;
+							notifytext = "\n\n\{\{subst:db-notice-multiple|1=" + mw.config.get('wgPageName');
 							break;
 						default:
-							notifytext = "\n\n\{\{subst:db-csd-notice-custom|1=" + wgPageName + "|2=" + params.value;
+							notifytext = "\n\n\{\{subst:db-csd-notice-custom|1=" + mw.config.get('wgPageName') + "|2=" + params.value;
 							break;
 					}
-					for (var i in params.utparams)
-						if (typeof params.utparams[i] == 'string')
+					for (var i in params.utparams) {
+						if (typeof params.utparams[i] === 'string') {
 							notifytext += "|" + i + "=" + params.utparams[i];
+						}
+					}
 					notifytext += (nowelcome ? "|nowelcome=yes" : "") + "\}\} \~\~\~\~";
 
 					usertalkpage.setAppendText(notifytext);
-					usertalkpage.setEditSummary("Notification: speedy deletion nomination of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
+					usertalkpage.setEditSummary("Notification: speedy deletion nomination of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 					usertalkpage.setCreateOption('recreate');
 					usertalkpage.setFollowRedirect(true);
 					usertalkpage.append();
@@ -885,10 +904,12 @@ Twinkle.speedy.callbacks = {
 
 			// Wrap SD template in noinclude tags if we are in template space.
 			// Won't work with userboxes in userspace, or any other transcluded page outside template space
-			if (params.wgCanonicalNamespace == "Template") code = "<noinclude>" + code + "</noinclude>";
+			if (mw.config.get('wgNamespaceNumber') === 10) {  // Template:
+				code = "<noinclude>" + code + "</noinclude>";
+			}
 
 			// Remove tags that become superfluous with this action
-			text = text.replace(/{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
+			text = text.replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
 
 			// Generate edit summary for edit
 			var editsummary;
@@ -899,9 +920,11 @@ Twinkle.speedy.callbacks = {
 					break;
 				case 'multiple':
 					editsummary = 'Requesting speedy deletion (';
-					for (var i in Twinkle.speedy.dbmultipleCriteria)
-						if (typeof Twinkle.speedy.dbmultipleCriteria[i] == 'string')
+					for (i in Twinkle.speedy.dbmultipleCriteria) {
+						if (typeof Twinkle.speedy.dbmultipleCriteria[i] === 'string') {
 							editsummary += '[[WP:CSD#' + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase() + '|CSD ' + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase() + ']], ';
+						}
+					}
 					editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
 					editsummary += ').';
 					break;
@@ -910,7 +933,7 @@ Twinkle.speedy.callbacks = {
 					break;
 			}
 
-			pageobj.setPageText(code + ((params.normalized == 'g10' || Twinkle.speedy.dbmultipleCriteria.indexOf('g10') != -1) ?
+			pageobj.setPageText(code + ((params.normalized === 'g10' || Twinkle.speedy.dbmultipleCriteria.indexOf('g10') !== -1) ?
 					'' : ("\n" + text) )); // cause attack pages to be blanked
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			pageobj.setWatchlist(params.watch);
@@ -919,7 +942,7 @@ Twinkle.speedy.callbacks = {
 		},
 
 		addToLog: function(params, initialContrib) {
-			var wikipedia_page = new Wikipedia.page("User:" + wgUserName + "/" + Twinkle.getPref('speedyLogPageName'), "Adding entry to userspace log");
+			var wikipedia_page = new Wikipedia.page("User:" + mw.config.get('wgUserName') + "/" + Twinkle.getPref('speedyLogPageName'), "Adding entry to userspace log");
 			params.logInitialContrib = initialContrib;
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.speedy.callbacks.user.saveLog);
@@ -934,8 +957,7 @@ Twinkle.speedy.callbacks = {
 				text =
 					"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
 					"If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and " +
-					"nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].\n"
-				;
+					"nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].\n";
 				if (userIsInGroup("sysop")) {
 					text += "\nThis log does not track outright speedy deletions made using Twinkle.\n";
 				}
@@ -948,7 +970,7 @@ Twinkle.speedy.callbacks = {
 				text += "\n\n=== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ===";
 			}
 
-			text += "\n# [[:" + wgPageName + "]]: ";
+			text += "\n# [[:" + mw.config.get('wgPageName') + "]]: ";
 			switch (params.normalized)
 			{
 				case 'db':
@@ -974,12 +996,12 @@ Twinkle.speedy.callbacks = {
 			text += " \~\~\~\~\~\n";
 
 			pageobj.setPageText(text);
-			pageobj.setEditSummary("Logging speedy deletion nomination of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Logging speedy deletion nomination of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 			pageobj.setCreateOption("recreate");
 			pageobj.save();
 		}
 	}
-}
+};
 
 // prompts user for parameters to be passed into the speedy deletion tag
 Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normalized, statelem)
@@ -988,37 +1010,36 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 	switch( normalized ) {
 		case 'db':
 			var rationale = prompt('Please enter a mandatory rationale.   \n\"This page qualifies for speedy deletion because:\"');
-			if (rationale == null || rationale.replace(/^\s*/, "").replace(/\s*$/, "") == '')
+			if (!rationale || !rationale.replace(/^\s*/, "").replace(/\s*$/, ""))
 			{
 				statelem.error( 'You must specify a rationale.  Aborted by user.' );
 				return null;
 			}
-			if (rationale != '') parameters["1"] = rationale;
+			parameters["1"] = rationale;
 			break;
 		case 'u1':
-			var rationale = '';
-			if (wgNamespaceNumber==3 && !(/\//.test(wgTitle)))
+			if (mw.config.get('wgNamespaceNumber') === 3 && !((/\//).test(mw.config.get('wgTitle'))))
 			{
 				var rationale = prompt('Please provide a mandatory rationale to explain why this user talk page should be deleted:');
-				if (rationale == null || rationale.replace(/^\s*/, "").replace(/\s*$/, "") == '')
+				if (!rationale || !rationale.replace(/^\s*/, "").replace(/\s*$/, ""))
 				{
 					statelem.error( 'You must specify a rationale.  Aborted by user.' );
 					return null;
 				}
+				parameters["rationale"] = rationale;
 			}
-			if (rationale != '') parameters["rationale"] = rationale;
 			break;
 		case 'f8':
-			var pagenamespaces = wgPageName.replace( '_', ' ' );
+			var pagenamespaces = mw.config.get('wgPageName').replace( '_', ' ' );
 			var filename = prompt( 'Please enter the name of the file on Commons:', pagenamespaces );
-			if (filename == null)
+			if (filename === null)
 			{
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
-			if (filename != '' && filename != pagenamespaces)
+			if (filename !== '' && filename !== pagenamespaces)
 			{
-				if (filename.indexOf("Image:") == 0 || filename.indexOf("File:") == 0)
+				if (filename.indexOf("Image:") === 0 || filename.indexOf("File:") === 0)
 				{
 					parameters["1"] = filename;
 				}
@@ -1035,7 +1056,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			switch( value ) {
 				case 'histmerge':
 					var title = prompt( 'Please enter the title to merge into:' );
-					if (title == null)
+					if (title === null)
 					{
 						statelem.error( 'Aborted by user.' );
 						return null;
@@ -1044,13 +1065,13 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					break;
 				case 'move':
 					var title = prompt( 'Please enter the title of the page to be moved here:' );
-					if (title == null)
+					if (title === null)
 					{
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
 					var reason = prompt( 'Please enter the reason for the page move:' );
-					if (reason == null)
+					if (reason === null)
 					{
 						statelem.error( 'Aborted by user.' );
 						return null;
@@ -1060,12 +1081,17 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					break;
 				case 'g6':
 					rationale = prompt( 'Please provide an optional rationale (leave empty to skip):' );
-					if (rationale == null)
+					if (rationale === null)
 					{
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
-					if (rationale != '') parameters["rationale"] = rationale;
+					if (rationale !== '')
+					{
+						parameters["rationale"] = rationale;
+					}
+					break;
+				default:
 					break;
 			}
 			break;
@@ -1073,18 +1099,21 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			if (Twinkle.getPref('speedyPromptOnG7'))
 			{
 				var rationale = prompt('Please provide an optional rationale (perhaps linking to where the author requested this deletion - leave empty to skip):');
-				if (rationale == null)
+				if (rationale === null)
 				{
 					statelem.error( 'Aborted by user.' );
 					return null;
 				}
-				if (rationale != '') parameters["rationale"] = rationale;
+				if (rationale !== '')
+				{
+					parameters["rationale"] = rationale;
+				}
 			}
 			break;
 		case 'f9':
 		case 'g12':
 			var url = prompt( 'Please enter the URL if available, including the "http://":' );
-			if (url == null)
+			if (url === null)
 			{
 				statelem.error( 'Aborted by user.' );
 				return null;
@@ -1093,7 +1122,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 'a2':
 			var source = prompt('Enter an interwiki link to the article on the foreign-language wiki (for example, "fr:Bonjour"):');
-			if (source == null)
+			if (source === null)
 			{
 				statelem.error('Aborted by user.');
 				return null;
@@ -1102,7 +1131,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 'a10':
 			var title = prompt( 'Enter the article name that is duplicated:' );
-			if (title == null)
+			if (title === null)
 			{
 				statelem.error( 'Aborted by user.' );
 				return null;
@@ -1111,7 +1140,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 'f1':
 			var img = prompt( 'Enter the file this is redundant to, excluding the "Image:" or "File:" prefix:' );
-			if (img == null)
+			if (img === null)
 			{
 				statelem.error( 'Aborted by user.' );
 				return null;
@@ -1120,7 +1149,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 't3':
 			var template = prompt( 'Enter the template this is redundant to, excluding the "Template:" prefix:' );
-			if (template == null)
+			if (template === null)
 			{
 				statelem.error( 'Aborted by user.' );
 				return null;
@@ -1134,16 +1163,18 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 'p1':
 			var criterion = prompt( 'Enter the code of the article CSD criterion which this portal falls under:   \n\n(A1 = no context, A3 = no content, A7 = non-notable, A10 = duplicate)' );
-			if (criterion == null || criterion.replace(/^\s*/, "").replace(/\s*$/, "") == '')
+			if (!criterion || !criterion.replace(/^\s*/, "").replace(/\s*$/, ""))
 			{
 				statelem.error( 'You must enter a criterion.  Aborted by user.' );
 				return null;
 			}
 			parameters["1"] = criterion;
 			break;
+		default:
+			break;
 	}
 	return parameters;
-}
+};
 
 // function for processing talk page notification template parameters
 Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParameters(normalized, parameters)
@@ -1158,17 +1189,20 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 			utparams["key1"] = "article";
 			utparams["value1"] = parameters["article"];
 			break;
+		default:
+			break;
 	}
 	return utparams;
-}
+};
 
 Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSysop(e)
 {
-	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
+	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' ')); // for queen/king/whatever and country!
 
 	var tag_only = e.target.form.tag_only;
 	if( tag_only && tag_only.checked ) {
-		return Twinkle.speedy.callback.evaluateUser(e);
+		Twinkle.speedy.callback.evaluateUser(e);
+		return;
 	}
 
 	var value = e.target.values;
@@ -1177,23 +1211,22 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 	var params = {
 		value: value,
 		normalized: normalized,
-		watch: Twinkle.getPref('watchSpeedyPages').indexOf( normalized ) != -1,
+		watch: Twinkle.getPref('watchSpeedyPages').indexOf( normalized ) !== -1,
 		reason: Twinkle.speedy.reasonHash[ value ],
-		openusertalk: Twinkle.getPref('openUserTalkPageOnSpeedyDelete').indexOf( normalized ) != -1,
+		openusertalk: Twinkle.getPref('openUserTalkPageOnSpeedyDelete').indexOf( normalized ) !== -1,
 		deleteTalkPage: e.target.form.talkpage && e.target.form.talkpage.checked,
 		deleteRedirects: e.target.form.redirects.checked
 	};
 	Status.init( e.target.form );
 
 	Twinkle.speedy.callbacks.sysop.main( params );
-	return null;
-}
+};
 
 Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser(e) {
-	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
+	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' '));  // for queen/king/whatever and country!
 	var value = e.target.values;
 
-	if (value == 'multiple')
+	if (value === 'multiple')
 	{
 		e.target.form.style.display = "none"; // give the user a cue that the dialog is being changed
 		Twinkle.speedy.targetdialogcontent = e.target.form.parentNode; // make this accessible in scopeless setTimeout
@@ -1201,8 +1234,9 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		return;
 	}
 
-	if (value == 'multiple-finish')
+	if (value === 'multiple-finish') {
 		value = 'multiple';
+	}
 	else
 	{
 		// clear these out, whatever the case, to avoid errors
@@ -1211,44 +1245,51 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	}
 
 	var normalized = Twinkle.speedy.normalizeHash[ value ];
+	var i;
 
 	// analyse each db-multiple criterion to determine whether to watch the page/notify the creator
 	var watchPage = false;
-	if (value == 'multiple')
+	if (value === 'multiple')
 	{
-		for (var i in Twinkle.speedy.dbmultipleCriteria)
+		for (i in Twinkle.speedy.dbmultipleCriteria)
 		{
-			if (typeof Twinkle.speedy.dbmultipleCriteria[i] == 'string' &&
-				Twinkle.getPref('watchSpeedyPages').indexOf(Twinkle.speedy.dbmultipleCriteria[i]) != -1)
+			if (typeof Twinkle.speedy.dbmultipleCriteria[i] === 'string' &&
+				Twinkle.getPref('watchSpeedyPages').indexOf(Twinkle.speedy.dbmultipleCriteria[i]) !== -1)
 			{
 				watchPage = true;
 				break;
 			}
 		}
 	}
-	else watchPage = Twinkle.getPref('watchSpeedyPages').indexOf(normalized) != -1;
+	else
+	{
+		watchPage = Twinkle.getPref('watchSpeedyPages').indexOf(normalized) !== -1;
+	}
 
 	var notifyuser = false;
-	if (value == 'multiple')
+	if (value === 'multiple')
 	{
-		for (var i in Twinkle.speedy.dbmultipleCriteria)
+		for (i in Twinkle.speedy.dbmultipleCriteria)
 		{
-			if (typeof Twinkle.speedy.dbmultipleCriteria[i] == 'string' &&
-				Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(Twinkle.speedy.dbmultipleCriteria[i]) != -1)
+			if (typeof Twinkle.speedy.dbmultipleCriteria[i] === 'string' &&
+				Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(Twinkle.speedy.dbmultipleCriteria[i]) !== -1)
 			{
 				notifyuser = true;
 				break;
 			}
 		}
 	}
-	else notifyuser = (Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(normalized) != -1) && e.target.form.notify.checked;
+	else
+	{
+		notifyuser = (Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(normalized) !== -1) && e.target.form.notify.checked;
+	}
 
 	var csdlog = false;
-	if (Twinkle.getPref('logSpeedyNominations') && value == 'multiple')
+	if (Twinkle.getPref('logSpeedyNominations') && value === 'multiple')
 	{
-		for (var i in Twinkle.speedy.dbmultipleCriteria)
+		for (i in Twinkle.speedy.dbmultipleCriteria)
 		{
-			if (typeof Twinkle.speedy.dbmultipleCriteria[i] == 'string' &&
+			if (typeof Twinkle.speedy.dbmultipleCriteria[i] === 'string' &&
 				Twinkle.getPref('noLogOnSpeedyNomination').indexOf(Twinkle.speedy.dbmultipleCriteria[i]) === -1)
 			{
 				csdlog = true;
@@ -1256,26 +1297,28 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 			}
 		}
 	}
-	else csdlog = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(normalized) === -1;
+	else
+	{
+		csdlog = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(normalized) === -1;
+	}
 
 	var params = {
 		value: value,
 		normalized: normalized,
 		watch: watchPage,
 		usertalk: notifyuser,
-		wgCanonicalNamespace: wgCanonicalNamespace,
 		lognomination: csdlog
 	};
 
 	Status.init( e.target.form );
 
-	Wikipedia.actionCompleted.redirect = wgPageName;
+	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
 	Wikipedia.actionCompleted.notice = "Tagging complete";
 
-	var wikipedia_page = new Wikipedia.page(wgPageName, "Tagging page");
+	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Tagging page");
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.speedy.callbacks.user.main);
-}
+};
 
 Twinkle.speedy.dbmultipleCriteria = [];
 Twinkle.speedy.dbmultipleParameters = [];
@@ -1283,18 +1326,22 @@ Twinkle.speedy.callback.doMultiple = function twinklespeedyCallbackDoMultiple(e)
 {
 	var value = e.target.values;
 	var normalized = Twinkle.speedy.normalizeHash[value];
-	if (value != 'multiple-finish')
+	if (value !== 'multiple-finish')
 	{
-		if (Twinkle.speedy.dbmultipleCriteria.indexOf(normalized) != -1)
+		if (Twinkle.speedy.dbmultipleCriteria.indexOf(normalized) !== -1)
+		{
 			alert('You already selected that criterion. Please choose another.');
+		}
 		else
 		{
 			var parameters = Twinkle.speedy.getParameters(value, normalized, Status);
 			if (parameters)
 			{
-				for (var i in parameters)
-					if (typeof parameters[i] == 'string')
+				for (var i in parameters) {
+					if (typeof parameters[i] === 'string') {
 						Twinkle.speedy.dbmultipleParameters[i] = parameters[i];
+					}
+				}
 				Twinkle.speedy.dbmultipleCriteria.push(normalized);
 			}
 		}
@@ -1306,4 +1353,4 @@ Twinkle.speedy.callback.doMultiple = function twinklespeedyCallbackDoMultiple(e)
 	{
 		Twinkle.speedy.callback.evaluateUser(e);
 	}
-}
+};

@@ -8,13 +8,13 @@
  */
 
 Twinkle.unlink = function twinkleunlink() {
-	if( wgNamespaceNumber < 0 ) {
+	if( mw.config.get('wgNamespaceNumber') < 0 ) {
 		return;
 	}
 	twAddPortletLink( "javascript:Twinkle.unlink.callback()", "Unlink", "tw-unlink", "Unlink backlinks", "");
-}
+};
 
-function getChecked2( nodelist ) {
+Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
 	if( !( nodelist instanceof NodeList ) && !( nodelist instanceof HTMLCollection ) ) {
 		return nodelist.checked ? [ nodelist.value ] : [];
 	}
@@ -25,7 +25,7 @@ function getChecked2( nodelist ) {
 		}
 	}
 	return result;
-}
+};
 
 // the parameter is used when invoking unlink from admin speedy
 Twinkle.unlink.callback = function twinkleunlinkCallback(presetReason) {
@@ -42,28 +42,29 @@ Twinkle.unlink.callback = function twinkleunlinkCallback(presetReason) {
 		value: (presetReason ? presetReason : '')
 	} );
 
-	if(wgNamespaceNumber === Namespace.IMAGE) {
-		var query = {
+	var query;
+	if(mw.config.get('wgNamespaceNumber') === Namespace.IMAGE) {
+		query = {
 			'action': 'query',
 			'list': [ 'backlinks', 'imageusage' ],
-			'bltitle': wgPageName,
-			'iutitle': wgPageName,
+			'bltitle': mw.config.get('wgPageName'),
+			'iutitle': mw.config.get('wgPageName'),
 			'bllimit': userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
 			'iulimit': userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
 			'blnamespace': Twinkle.getPref('unlinkNamespaces') // Main namespace and portal namespace only, keep on talk pages.
 		};
 	} else {
-		var query = {
+		query = {
 			'action': 'query',
 			'list': 'backlinks',
-			'bltitle': wgPageName,
+			'bltitle': mw.config.get('wgPageName'),
 			'blfilterredir': 'nonredirects',
 			'bllimit': userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
 			'blnamespace': Twinkle.getPref('unlinkNamespaces') // Main namespace and portal namespace only, keep on talk pages.
 		};
 	}
 	var wikipedia_api = new Wikipedia.api( 'Grabbing backlinks', query, Twinkle.unlink.callbacks.display.backlinks );
-	wikipedia_api.params = { form: form, Window: Window, image: wgNamespaceNumber == Namespace.IMAGE };
+	wikipedia_api.params = { form: form, Window: Window, image: mw.config.get('wgNamespaceNumber') === Namespace.IMAGE };
 	wikipedia_api.post();
 
 	var root = document.createElement( 'div' );
@@ -72,10 +73,10 @@ Twinkle.unlink.callback = function twinkleunlinkCallback(presetReason) {
 	wikipedia_api.statelem.status( "loading..." );
 	Window.setContent( root );
 	Window.display();
-}
+};
 
 Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event) {
-	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
+	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' '));  // for queen/king/whatever and country!
 
 	Twinkle.unlink.backlinksdone = 0;
 	Twinkle.unlink.imageusagedone = 0;
@@ -86,7 +87,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 
 		Wikipedia.addCheckpoint();
 
-		if( pages.length == 0 ) {
+		if( !pages.length ) {
 			statusIndicator.info( '100% (completed)' );
 			Wikipedia.removeCheckpoint();
 			return;
@@ -105,19 +106,23 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 
 	var reason = event.target.reason.value;
 	if( event.target.backlinks ) {
-		var backlinks = getChecked2(event.target.backlinks);
+		var backlinks = Twinkle.unlink.getChecked2(event.target.backlinks);
 	}
 	if( event.target.imageusage ) {
-		var imageusage = getChecked2(event.target.imageusage);
+		var imageusage = Twinkle.unlink.getChecked2(event.target.imageusage);
 	}
 
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( event.target );
 	Wikipedia.addCheckpoint();
-	if (backlinks) processunlink(backlinks, false);
-	if (imageusage) processunlink(imageusage, true);
+	if (backlinks) {
+		processunlink(backlinks, false);
+	}
+	if (imageusage) {
+		processunlink(imageusage, true);
+	}
 	Wikipedia.removeCheckpoint();
-}
+};
 
 Twinkle.unlink.backlinksdone = 0;
 Twinkle.unlink.imageusagedone = 0;
@@ -127,22 +132,23 @@ Twinkle.unlink.callbacks = {
 		backlinks: function twinkleunlinkCallbackDisplayBacklinks(apiobj) {
 			var xmlDoc = apiobj.responseXML;
 			var havecontent = false;
+			var list, namespaces, i;
 
 			if( apiobj.params.image ) {
 				var imageusage = $(xmlDoc).find('query imageusage iu');
-				var list = [];
-				for ( var i = 0; i < imageusage.length; ++i ) {
-					var title = imageusage[i].getAttribute('title');
-					list.push( { label: title, value: title, checked: true } );
+				list = [];
+				for ( i = 0; i < imageusage.length; ++i ) {
+					var usagetitle = imageusage[i].getAttribute('title');
+					list.push( { label: usagetitle, value: usagetitle, checked: true } );
 				}
-				if (list.length == 0)
+				if (!list.length)
 				{
 					apiobj.params.form.append( { type: 'div', label: 'No instances of file usage found.' } );
 				}
 				else
 				{
 					apiobj.params.form.append( { type:'header', label: 'File usage' } );
-					var namespaces = [];
+					namespaces = [];
 					$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
 						namespaces.push(Wikipedia.namespacesFriendly[v]);
 					});
@@ -168,13 +174,13 @@ Twinkle.unlink.callbacks = {
 
 			var backlinks = $(xmlDoc).find('query backlinks bl');
 			if( backlinks.length > 0 ) {
-				var list = [];
-				for ( var i = 0; i < backlinks.length; ++i ) {
+				list = [];
+				for ( i = 0; i < backlinks.length; ++i ) {
 					var title = backlinks[i].getAttribute('title');
 					list.push( { label: title, value: title, checked: true } );
 				}
 				apiobj.params.form.append( { type:'header', label: 'Backlinks' } );
-				var namespaces = [];
+				namespaces = [];
 				$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
 					namespaces.push(Wikipedia.namespacesFriendly[v]);
 				});
@@ -201,7 +207,9 @@ Twinkle.unlink.callbacks = {
 				apiobj.params.form.append( { type: 'div', label: 'No backlinks found.' } );
 			}
 
-			if (havecontent) apiobj.params.form.append( { type:'submit' } );
+			if (havecontent) {
+				apiobj.params.form.append( { type:'submit' } );
+			}
 
 			var result = apiobj.params.form.render();
 			apiobj.params.Window.setContent( result );
@@ -213,9 +221,9 @@ Twinkle.unlink.callbacks = {
 		var params = pageobj.getCallbackParameters();
 
 		var wikiPage = new Mediawiki.Page(text);
-		wikiPage.removeLink(wgPageName);
+		wikiPage.removeLink(mw.config.get('wgPageName'));
 		text = wikiPage.getText();
-		if (text == oldtext) {
+		if (text === oldtext) {
 			// Nothing to do, return
 			Twinkle.unlink.callbacks.success(pageobj);
 			Wikipedia.actionCompleted();
@@ -223,7 +231,7 @@ Twinkle.unlink.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary("Removing link(s) to \"" + wgPageName + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary("Removing link(s) to \"" + mw.config.get('wgPageName') + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(Twinkle.unlink.callbacks.success);
 	},
@@ -233,9 +241,9 @@ Twinkle.unlink.callbacks = {
 		var params = pageobj.getCallbackParameters();
 
 		var wikiPage = new Mediawiki.Page(text);
-		wikiPage.commentOutImage(wgTitle, 'Commented out');
+		wikiPage.commentOutImage(mw.config.get('wgTitle'), 'Commented out');
 		text = wikiPage.getText();
-		if (text == oldtext) {
+		if (text === oldtext) {
 			// Nothing to do, return
 			Twinkle.unlink.callbacks.success(pageobj);
 			Wikipedia.actionCompleted();
@@ -243,7 +251,7 @@ Twinkle.unlink.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary("Commenting out use(s) of file \"" + wgPageName + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary("Commenting out use(s) of file \"" + mw.config.get('wgPageName') + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(Twinkle.unlink.callbacks.success);
 	},
@@ -260,4 +268,4 @@ Twinkle.unlink.callbacks = {
 			Wikipedia.removeCheckpoint();
 		}
 	}
-}
+};
