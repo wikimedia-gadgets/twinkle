@@ -8,40 +8,39 @@
  */
 
 Twinkle.diff = function twinklediff() { 
-	if( wgNamespaceNumber < 0 || !wgArticleId ) {
+	if( mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') ) {
 		return;
 	}
 
 	var query = {
-		'title': wgPageName,
+		'title': mw.config.get('wgPageName'),
 		'diff': 'cur',
 		'oldid': 'prev'
 	};
 
-	twAddPortletLink( wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ), 'Last', 'tw-lastdiff', 'Show most recent diff' );
+	twAddPortletLink( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), 'Last', 'tw-lastdiff', 'Show most recent diff' );
 
 	// Show additional tabs only on diff pages
-	if(!QueryString.exists('diff')) return;
+	if (QueryString.exists('diff')) {
+		twAddPortletLink( "javascript:Twinkle.diff.evaluate(false);", 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user' );
+		twAddPortletLink( "javascript:Twinkle.diff.evaluate(true);", 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision' );
 
-	twAddPortletLink( "javascript:Twinkle.diff.evaluate(false);", 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user' );
-
-	twAddPortletLink( "javascript:Twinkle.diff.evaluate(true);", 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision' );
-
-	var oldid = /oldid=(.+)/.exec($('div#mw-diff-ntitle1 strong a').first().attr("href"))[1];
-	var query = {
-		'title': wgPageName,
-		'diff': 'cur',
-		'oldid' : oldid
-	};
-	twAddPortletLink( wgServer + wgScriptPath + '/index.php?' + QueryString.create( query ), 'Current', 'tw-curdiff', 'Show difference to current revision' );
-}
+		var oldid = /oldid=(.+)/.exec($('div#mw-diff-ntitle1 strong a').first().attr("href"))[1];
+		query = {
+			'title': mw.config.get('wgPageName'),
+			'diff': 'cur',
+			'oldid' : oldid
+		};
+		twAddPortletLink( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), 'Current', 'tw-curdiff', 'Show difference to current revision' );
+	}
+};
 
 Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 	var ntitle = getElementsByClassName( document.getElementById('bodyContent'), 'td' , 'diff-ntitle' )[0];
 
 	var user;
 	if( me ) {
-		user = wgUserName;
+		user = mw.config.get('wgUserName');
 	} else {
 		var node = document.getElementById( 'mw-diff-ntitle2' );
 		if( ! node ) {
@@ -53,17 +52,17 @@ Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 	var query = {
 		'prop': 'revisions',
 		'action': 'query',
-		'titles': wgPageName,
+		'titles': mw.config.get('wgPageName'),
 		'rvlimit': 1, 
 		'rvprop': [ 'ids', 'user' ],
-		'rvstartid': wgCurRevisionId - 1, // i.e. not the current one
+		'rvstartid': mw.config.get('wgCurRevisionId') - 1, // i.e. not the current one
 		'rvuser': user
 	};
 	Status.init( document.getElementById('bodyContent') );
 	var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, Twinkle.diff.callbacks.main );
 	wikipedia_api.params = { user: user };
 	wikipedia_api.post();
-}
+};
 
 Twinkle.diff.callbacks = {
 	main: function( self ) {
@@ -75,10 +74,10 @@ Twinkle.diff.callbacks = {
 			return;
 		}
 		var query = {
-			'title': wgPageName,
+			'title': mw.config.get('wgPageName'),
 			'oldid': revid,
-			'diff': wgCurRevisionId
+			'diff': mw.config.get('wgCurRevisionId')
 		};
-		window.location = wgServer + wgScriptPath + '/index.php?' + QueryString.create( query );
+		window.location = mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query );
 	}
-}
+};

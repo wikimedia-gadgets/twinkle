@@ -20,7 +20,7 @@ window.Twinkle = Twinkle;  // allow global access
 
 // for use by custom modules (normally empty)
 Twinkle.initCallbacks = [];
-Twinkle.addInitCallback = function(func) {
+Twinkle.addInitCallback = function twinkleAddInitCallback(func) {
 	Twinkle.initCallbacks.push(func);
 };
 
@@ -97,7 +97,7 @@ Twinkle.defaultConfig.twinkle = {
 	batchUndeleteMinCutOff: 5,
 	deliChunks: 500,
 	deliMax: 5000,
-	proddeleteChunks: 50,
+	proddeleteChunks: 50
 };
 
 Twinkle.defaultConfig.friendly = {
@@ -125,7 +125,7 @@ Twinkle.defaultConfig.friendly = {
 	talkbackHeading: "Talkback",
 	adminNoticeHeading: "Notice",
 	 // Shared
-	markSharedIPAsMinor: true,
+	markSharedIPAsMinor: true
 };
 
 Twinkle.getPref = function twinkleGetPref(name) {
@@ -142,7 +142,7 @@ Twinkle.getPref = function twinkleGetPref(name) {
 		return Twinkle.defaultConfig.twinkle[name];
 	}
 	return result;
-}
+};
 
 Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
 	var result;
@@ -158,4 +158,4 @@ Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
 		return Twinkle.defaultConfig.friendly[name];
 	}
 	return result;
-}
+};

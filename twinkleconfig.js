@@ -870,13 +870,14 @@ Twinkle.config.init = function twinkleconfigInit() {
 				}
 				cell = document.createElement("td");
 
+				var label, input;
 				switch (pref.type) {
 
 					case "boolean":  // create a checkbox
 						cell.setAttribute("colspan", "2");
 
-						var label = document.createElement("label");
-						var input = document.createElement("input");
+						label = document.createElement("label");
+						input = document.createElement("input");
 						input.setAttribute("type", "checkbox");
 						input.setAttribute("id", pref.name);
 						input.setAttribute("name", pref.name);
@@ -894,7 +895,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						cell.style.textAlign = "right";
 						cell.style.width = "25em";
 						cell.style.paddingRight = "0.5em";
-						var label = document.createElement("label");
+						label = document.createElement("label");
 						label.setAttribute("for", pref.name);
 						label.appendChild(document.createTextNode(pref.label + ":"));
 						cell.appendChild(label);
@@ -904,7 +905,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						cell = document.createElement("td");
 						cell.style.width = "15em";
 						cell.style.paddingRight = "1em";
-						var input = document.createElement("input");
+						input = document.createElement("input");
 						input.setAttribute("type", "text");
 						input.setAttribute("id", pref.name);
 						input.setAttribute("name", pref.name);
@@ -925,7 +926,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						cell.style.textAlign = "right";
 						cell.style.width = "25em";
 						cell.style.paddingRight = "0.5em";
-						var label = document.createElement("label");
+						label = document.createElement("label");
 						label.setAttribute("for", pref.name);
 						label.appendChild(document.createTextNode(pref.label + ":"));
 						cell.appendChild(label);
@@ -935,7 +936,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						cell = document.createElement("td");
 						cell.style.width = "15em";
 						cell.style.paddingRight = "1em";
-						var input = document.createElement("select");
+						input = document.createElement("select");
 						input.setAttribute("id", pref.name);
 						input.setAttribute("name", pref.name);
 						$.each(pref.enumValues, function(enumvalue, enumdisplay) {
@@ -953,7 +954,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 					case "set":  // create a set of check boxes
 						// add label first of all
 						cell.setAttribute("colspan", "2");
-						var label = document.createElement("label");  // not really necessary to use a label element here, but we do it for consistency of styling
+						label = document.createElement("label");  // not really necessary to use a label element here, but we do it for consistency of styling
 						label.appendChild(document.createTextNode(pref.label + ":"));
 						cell.appendChild(label);
 
@@ -1011,7 +1012,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						cell.style.textAlign = "right";
 						cell.style.width = "25em";
 						cell.style.paddingRight = "0.5em";
-						var label = document.createElement("label");
+						label = document.createElement("label");
 						label.setAttribute("for", pref.name);
 						label.appendChild(document.createTextNode(pref.label + ":"));
 						cell.appendChild(label);
@@ -1104,6 +1105,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		box.style.margin = "0.5em auto";
 		box.style.textAlign = "center";
 
+		var link;
 		if (mw.config.get("wgTitle") === mw.config.get("wgUserName") + "/twinkleoptions.js") {
 			// place "why not try the preference panel" notice
 			box.style.fontWeight = "bold";
@@ -1115,7 +1117,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			} else {  // page does not exist
 				box.appendChild(document.createTextNode("You can customize Twinkle to suit your preferences by using the "));
 			}
-			var link = document.createElement("a");
+			link = document.createElement("a");
 			link.setAttribute("href", "/wiki/Wikipedia:Twinkle/Preferences");
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
@@ -1127,7 +1129,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			box.style.width = "60%";
 
 			box.appendChild(document.createTextNode("If you want to set Twinkle preferences, you can use the "));
-			var link = document.createElement("a");
+			link = document.createElement("a");
 			link.setAttribute("href", "/wiki/Wikipedia:Twinkle/Preferences");
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
@@ -1135,7 +1137,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			$(box).insertAfter($("#contentSub"));
 		}
 	}
-}
+};
 
 // Wikipedia.page callback from init code
 Twinkle.config.legacyPrefsNotice = function twinkleconfigLegacyPrefsNotice(pageobj) {
@@ -1150,7 +1152,7 @@ Twinkle.config.legacyPrefsNotice = function twinkleconfigLegacyPrefsNotice(pageo
 	} else {
 		$(contentnotice).remove();
 	}
-}
+};
 
 // custom list-related stuff
 
@@ -1285,7 +1287,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 
 	dialog.setContent(dialogcontent);
 	dialog.display();
-}
+};
 
 // Resets the data value, re-populates based on the new (default) value, then saves the
 // old data value again (less surprising behaviour)
@@ -1307,7 +1309,7 @@ Twinkle.config.listDialog.reset = function twinkleconfigListDialogReset(button, 
 
 	// save the old value
 	$button.data("value", oldvalue);
-}
+};
 
 Twinkle.config.listDialog.save = function twinkleconfigListDialogSave(button, tbody) {
 	var result = [];
@@ -1324,7 +1326,7 @@ Twinkle.config.listDialog.save = function twinkleconfigListDialogSave(button, tb
 		}
 	});
 	$(button).data("value", result);
-}
+};
 
 // reset/restore defaults
 
@@ -1353,7 +1355,7 @@ Twinkle.config.resetPrefLink = function twinkleconfigResetPrefLink(e) {
 		}
 	});
 	return false;  // stop link from scrolling page
-}
+};
 
 Twinkle.config.resetPref = function twinkleconfigResetPref(pref, inFriendlyConfig) {
 	switch (pref.type) {
@@ -1388,7 +1390,7 @@ Twinkle.config.resetPref = function twinkleconfigResetPref(pref, inFriendlyConfi
 			alert("twinkleconfig: unknown data type for preference " + pref.name);
 			break;
 	}
-}
+};
 
 Twinkle.config.resetAllPrefs = function twinkleconfigResetAllPrefs() {
 	// no confirmation message - the user can just refresh/close the page to abort
@@ -1404,7 +1406,7 @@ Twinkle.config.resetAllPrefs = function twinkleconfigResetAllPrefs() {
 		return true;
 	});
 	return false;  // stop link from scrolling page
-}
+};
 
 Twinkle.config.save = function twinkleconfigSave(e) {
 	Status.init( document.getElementById("twinkle-config-content") );
@@ -1417,7 +1419,7 @@ Twinkle.config.save = function twinkleconfigSave(e) {
 	wikipedia_page.load(Twinkle.config.writePrefs);
 
 	return false;
-}
+};
 
 // The JSON stringify method in the following code was excerpted from
 // http://www.JSON.org/json2.js
@@ -1490,6 +1492,8 @@ if (!JSON) {
 				'{' + partial.join(',') + '}';
 			gap = mind;
 			return v;
+		default:
+			throw "JSON.stringify: unknown data type";
 		}
 	}
 
@@ -1605,12 +1609,12 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 
 			// only save those preferences that are *different* from the default
 			if (section.inFriendlyConfig) {
-				if (userValue != null && !compare(userValue, Twinkle.defaultConfig.friendly[pref.name])) {
+				if (typeof userValue !== "undefined" && !compare(userValue, Twinkle.defaultConfig.friendly[pref.name])) {
 					newConfig.friendly[pref.name] = userValue;
 				}
 				foundFriendlyPrefs.push(pref.name);
 			} else {
-				if (userValue != null && !compare(userValue, Twinkle.defaultConfig.twinkle[pref.name])) {
+				if (typeof userValue !== "undefined" && !compare(userValue, Twinkle.defaultConfig.twinkle[pref.name])) {
 					newConfig.twinkle[pref.name] = userValue;
 				}
 				foundTwinklePrefs.push(pref.name);
@@ -1653,7 +1657,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	pageobj.setEditSummary("Saving Twinkle preferences: automatic edit from [[" + mw.config.get("wgPageName") + "]] ([[WP:TW|TW]])");
 	pageobj.setCreateOption("recreate");
 	pageobj.save(Twinkle.config.saveSuccess);
-}
+};
 
 Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	pageobj.getStatusElement().info("successful");
@@ -1667,4 +1671,4 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	var noticeclear = document.createElement("br");
 	noticeclear.style.clear = "both";
 	Status.root.appendChild(noticeclear);
-}
+};
