@@ -28,7 +28,12 @@
  * The latest development source is available at [https://github.com/azatoth/twinkle/blob/master/morebits.js].
  */
 
-// Simple helper functions to see what groups a user might belong
+
+/**
+ * **************** userIsInGroup(), userIsAnon() ****************
+ * Simple helper functions to see what groups a user might belong
+ */
+
 function userIsInGroup( group ) {
 	return $.inArray(group, mw.config.get( 'wgUserGroups' )) !== -1;
 }
@@ -36,8 +41,11 @@ function userIsAnon() {
 	return mw.config.get( 'wgUserGroups' ).length === 1;
 }
 
+
 /**
- * Add a portlet menu to one of the navigation areas on the page.
+ * **************** twAddPortlet() ****************
+ *
+ * Adds a portlet menu to one of the navigation areas on the page.
  * This is necessarily quite a hack since skins, navigation areas, and
  * portlet menu types all work slightly different.
  *
@@ -149,12 +157,22 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 	return outerDiv;
 }
 
-//Build a portlet menu if it doesn't exist yet, and add the portlet link.
+
+/**
+ * **************** twAddPortletLink() ****************
+ * Builds a portlet menu if it doesn't exist yet, and add the portlet link.
+ */
+
 function twAddPortletLink( href, text, id, tooltip, accesskey, nextnode )
 {
 	if (twAddPortlet.portletArea) twAddPortlet(twAddPortlet.portletArea, twAddPortlet.portletId, twAddPortlet.portletName, twAddPortlet.portletType, twAddPortlet.portletNext);
 	return addPortletLink( twAddPortlet.portletId, href, text, id, tooltip, accesskey, nextnode );
 }
+
+
+/**
+ * **************** Cookies ****************
+ */
 
 var Cookies = {
 	/*
@@ -211,6 +229,7 @@ var Cookies = {
 }
 
 /**
+ * **************** QuickForm ****************
  * Quickform is a class for creation of simple and standard forms without much 
  * specific coding.
  */
@@ -689,13 +708,22 @@ QuickForm.element.generateTooltip = function QuickFormElementGenerateTooltip( no
 		});
 }
 
-/*
- * returns an array containing the values of elements with the given name, that has it's
- * checked property set to true. (i.e. a checkbox or a radiobutton is checked), or select options
- * that have selected set to true. (don't try to mix selects with radio/checkboxes, please)
- * Type is optional and can specify if either radio or checkbox (for the event
- * that both checkboxes and radiobuttons have the same name.
+/**
+ * **************** HTMLFormElement ****************
+ *
+ * getChecked: 
+ *   XXX Doesn't seem to work reliably across all browsers at the moment. -- see getChecked2 in twinkleunlink.js, which is better
+ *
+ *   Returns an array containing the values of elements with the given name, that has it's
+ *   checked property set to true. (i.e. a checkbox or a radiobutton is checked), or select options
+ *   that have selected set to true. (don't try to mix selects with radio/checkboxes, please)
+ *   Type is optional and can specify if either radio or checkbox (for the event
+ *   that both checkboxes and radiobuttons have the same name.
+ * getTexts:
+ *   Returns an array containing the values of elements with the given name, that has non-empty strings
+ *   type is "text" or given.
  */
+
 HTMLFormElement.prototype.getChecked = function( name, type ) {
 	var elements = this.elements[name];
 	if( !elements ) { 
@@ -738,10 +766,6 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
 	return return_array;
 }
 
-/*
- * returns an array containing the values of elements with the given name, that has non-empty strings
- * type is "text" or given.
- */
 HTMLFormElement.prototype.getTexts = function( name, type ) {
 	type = type || 'text';
 	var elements = this.elements[name];
@@ -758,8 +782,11 @@ HTMLFormElement.prototype.getTexts = function( name, type ) {
 	return return_array;
 }
 /**
-* Will escape a string to be used in a RegExp
-*/
+ * **************** RegExp ****************
+ *
+ * RegExp.escape: Will escape a string to be used in a RegExp
+ */
+
 RegExp.escape = function( text, space_fix ) {
 
 	if ( !arguments.callee.sRE ) {
@@ -775,10 +802,15 @@ RegExp.escape = function( text, space_fix ) {
 	}
 
 	return text;
+};
 
-}
 
-// Sprintf implementation based on perl similar
+/**
+ * **************** sprintf ****************
+ * implementation based on perl similar
+ * REMOVEME - and replace usages with concatenated strings - this is a real performance hog
+ */
+
 function sprintf() {
 	if( !arguments.length ) {
 		throw "Not enough arguments for sprintf";
@@ -1025,6 +1057,11 @@ sprintf.format = function sprintfFormat( type, value, flags ) {
 	return prefix + result;
 }
 
+
+/**
+ * **************** Bytes ****************
+ */
+
 function Bytes( value ) {
 	if( typeof(value) === 'string' ) {
 		var res = /(\d+) ?(\w?)(i?)B?/.exec( value );
@@ -1101,6 +1138,10 @@ Bytes.prototype.toString = function( magnitude ) {
 		}
 		return tmp + ' ' + Bytes.rmagnitudes[current] + ( current > 0 ? 'iB' : 'B' );
 	}
+
+/**
+ * **************** String ****************
+ */
 
 }
 String.prototype.ltrim = function stringPrototypeLtrim( chars ) {
@@ -1179,6 +1220,11 @@ String.prototype.toLowerCaseEachWord = function( delim ) {
 	return this.split( delim ).map( function(v) { return v.toLowerCaseFirstChar() } ).join( delim );
 }
 
+
+/**
+ * **************** Array ****************
+ */
+
 Array.prototype.uniq = function arrayPrototypeUniq() {
 	var result = [];
 	for( var i = 0; i < this.length; ++i ) {
@@ -1204,6 +1250,7 @@ Array.prototype.dups = function arrayPrototypeUniq() {
 	return result;
 }
 
+// REMOVEME
 Array.prototype.chunk = function arrayChunk( size ) {
 	if( typeof( size ) !== 'number' || size <= 0 ) { // pretty impossible to do anything :)
 		return [ this ]; // we return an array consisting of this array.
@@ -1218,7 +1265,13 @@ Array.prototype.chunk = function arrayChunk( size ) {
 		current.push( this[i] );
 	}
 	return result;
-}
+};
+
+
+/**
+ * **************** Unbinder ****************
+ * REMOVEME - no idea what this is for
+ */
 
 function Unbinder( string ) {
 	if( typeof( string ) !== 'string' ) {
@@ -1260,6 +1313,12 @@ Unbinder.getCallback = function UnbinderGetCallback(self) {
 	};
 };
 
+
+/**
+ * **************** clone() ****************
+ * REMOVEME - global namespace pollution, and unused?
+ */
+
 function clone( obj, deep ) {
 	var objectClone = new obj.constructor();
 	for ( var property in obj )
@@ -1272,6 +1331,12 @@ function clone( obj, deep ) {
 		}
 	return objectClone;
 }
+
+
+/**
+ * **************** ln() ****************
+ * REMOVEME - unused
+ */
 
 function ln( ns, title ) {
 	var ns2ln = {
@@ -1298,6 +1363,11 @@ function ln( ns, title ) {
 	};
 	return "\{\{" + ns2ln[ns] + "|" + title + "\}\}";
 }
+
+
+/**
+ * **************** Namespace ****************
+ */
 
 var Namespace = {
 	MAIN:           0,
@@ -1332,9 +1402,11 @@ var Namespace = {
 	WT:             5
 };
 
+
 /**
-* Helper functions to get the month as a string instead of a number
-*/
+ * **************** Date ****************
+ * Helper functions to get the month as a string instead of a number
+ */
 
 Date.monthNames = [
 	'January',
@@ -1380,7 +1452,11 @@ Date.prototype.getUTCMonthNameAbbrev = function() {
 	return Date.monthNamesAbbrev[ this.getUTCMonth() ];
 }
 
-// Accessor functions for wikiediting and api-access
+/**
+ * **************** Wikipedia ****************
+ * Accessor functions for wikiediting and api-access
+ */
+
 var Wikipedia = {};
 
 Wikipedia.namespaces = {
@@ -1432,12 +1508,14 @@ Wikipedia.namespacesFriendly = {
 };
 
 // we dump all XHR here so they won't loose props
+// REMOVEME - only Wikipedia.wiki uses this
 Wikipedia.dump = [];
 
-Wikipedia.numberOfActionsLeft = 0;
-Wikipedia.nbrOfCheckpointsLeft = 0;
 
-/* Use of Wikipedia.actionCompleted():
+/**
+ * **************** Wikipedia.actionCompleted ****************
+ *
+ * Use of Wikipedia.actionCompleted():
  *    Every call to Wikipedia.api.post() results in the dispatch of
  *    an asynchronous callback. Each callback can in turn
  *    make an additional call to Wikipedia.api.post() to continue a 
@@ -1463,6 +1541,9 @@ Wikipedia.nbrOfCheckpointsLeft = 0;
  *    Wikipedia.removeCheckpoint(). 
  */
 
+Wikipedia.numberOfActionsLeft = 0;
+Wikipedia.nbrOfCheckpointsLeft = 0;
+
 Wikipedia.actionCompleted = function( self ) {
 	if( --Wikipedia.numberOfActionsLeft <= 0 && Wikipedia.nbrOfCheckpointsLeft <= 0 ) {
 		Wikipedia.actionCompleted.event( self );
@@ -1484,6 +1565,7 @@ Wikipedia.actionCompleted.event = function() {
 var wpActionCompletedTimeOut = typeof(wpActionCompletedTimeOut) === 'undefined'  ? 5000 : wpActionCompletedTimeOut;
 var wpMaxLag = typeof(wpMaxLag) === 'undefined' ? 10 : wpMaxLag; // Maximum lag allowed, 5-10 is a good value, the higher value, the more agressive.
 
+// editCount - REMOVEME when Wikipedia.wiki is gone
 Wikipedia.editCount = 10;
 Wikipedia.actionCompleted.timeOut = wpActionCompletedTimeOut;
 Wikipedia.actionCompleted.redirect = null;
@@ -1498,7 +1580,11 @@ Wikipedia.removeCheckpoint = function() {
 	if( --Wikipedia.nbrOfCheckpointsLeft <= 0 && Wikipedia.numberOfActionsLeft <= 0 ) {
 		Wikipedia.actionCompleted.event();
 	}
-}
+};
+
+/**
+ * **************** Wikipedia.api ****************
+ */
 
 /*
  currentAction: text, the current action (required)
@@ -1613,14 +1699,14 @@ Wikipedia.api.prototype = {
 	getXML: function() {
 		return this.responseXML;
 	}
-}
+};
 
-/** 
- * Class: Wikipedia.page
- * Uses the MediaWiki API to load a page and optionally edit it.
+/**
+ * **************** Wikipedia.page ****************
+ * Uses the MediaWiki API to load a page and optionally edit it, move it, etc.
  *
  * Callers are not permitted to directly access the properties of this class!
- * All property access is through the appropriate getProperty() or setProperty() method.
+ * All property access is through the appropriate get___() or set___() method.
  *
  * Callers should set Wikipedia.actionCompleted.notice and Wikipedia.actionCompleted.redirect
  * before the first call to Wikipedia.page.load().
@@ -2640,14 +2726,22 @@ Wikipedia.page = function(pageName, currentAction) {
 		ctx.protectProcessApi.setParent(this);
 		ctx.protectProcessApi.post();
 	};
-} /* end Wikipedia.page */
+}; // end Wikipedia.page
 
-/** Issues:
+/** Wikipedia.page TODO: (XXX)
  * - Do we need the onFailure callbacks? How do we know when to call them? Timeouts? Enhance Wikipedia.api for failures?
  * - Should we retry loads also?
  * - Need to reset current action before the save?
  * - Deal with action.completed stuff
- * - XXX need to reset all parameters once done (e.g. edit summary, move destination, etc.)
+ * - Need to reset all parameters once done (e.g. edit summary, move destination, etc.)
+ */
+
+
+/**
+ * **************** Wikipedia.wiki ****************
+ * REMOVEME - but *only* after:
+ *   (a) Twinkle no longer uses it, and
+ *   (b) we know it's not in use by commonly-used custom scripts
  */
 
 /*
@@ -2798,40 +2892,26 @@ Wikipedia.wiki.prototype = {
 	onloaded: function() {
 		this.statelem.status( 'data loaded...' );
 	}
-}
+};
+
 
 /**
- * These functions retrieve the date from the server. It uses bandwidth, time, etc.
- * They should be used only when the magic words { {subst:CURRENTDAY}},
- * { {subst:CURRENTMONTHNAME}}, and { {subst:CURRENTYEAR}} cannot be used
- * (for example, when specifying the title of a page).
+ * **************** Number ****************
+ * REMOVEME - unused?
  */
-//WikiDate = {
-//  currentLongDate: false,
-  // Gets the server date in yyyy mmmm dd format (e.g. for XfD daily pages).
-//  getLongDate: function wikiDateGetLongDate()
-//  {
-//    var query = {
-//      'action': 'expandtemplates',
-//      'text': '\{\{CURRENTYEAR}} \{\{CURRENTMONTHNAME}} \{\{CURRENTDAY}}'
-//    };
-//    var callback = function(self) 
-//    {
-
-//    };
-//    var wpapi = new Wikipedia.api("Retrieving server date", query, callback);
-    // AJAX is async, unfortunately; this stuff is not a nice solution
-//    for (var i = 0; i < 20; i++)
-
-//  }
-//};
 
 Number.prototype.zeroFill = function( length ) {
 	var str = this.toFixed();
 	if( !length ) { return str; }
 	while( str.length < length ) { str = '0' + str; }
 	return str;
-}
+};
+
+
+/**
+ * **************** MediaWiki ****************
+ * Wikitext manipulation
+ */
 
 var Mediawiki = {};
 
@@ -3018,12 +3098,14 @@ Mediawiki.Page.prototype = {
 	getText: function() {
 		return this.text;
 	}
-}
+};
+
 
 /**
-* ipadress is in the format 1.2.3.4 and network is in the format 1.2.3.4/5
-*/
+ * **************** isInNetwork(), isIPAddress() ****************
+ */
 
+// ipadress is in the format 1.2.3.4 and network is in the format 1.2.3.4/5
 function isInNetwork( ipaddress, network ) {
 	var iparr = ipaddress.split('.');
 	var ip = (parseInt(iparr[0]) << 24) + (parseInt(iparr[1]) << 16) + (parseInt(iparr[2]) << 8) + (parseInt(iparr[3]));
@@ -3036,37 +3118,39 @@ function isInNetwork( ipaddress, network ) {
 	return (ip & netmask) === net;
 }
 
-/* Returns true if given string contains a valid IP-address, that is, from 0.0.0.0 to 255.255.255.255*/
+// Returns true if given string contains a valid IP-address, that is, from 0.0.0.0 to 255.255.255.255
 function isIPAddress( string ){
 	var res = /(\d{1,4})\.(\d{1,3})\.(\d{1,3})\.(\d{1,4})/.exec( string );
 	return res && res.slice( 1, 5 ).every( function( e ) { return e < 256; } );
 }
 
+
 /**
-* Maps the querystring to an object
-*
-* Functions:
-*
-* QueryString.exists(key)
-*     returns true if the particular key is set
-* QueryString.get(key)
-*     returns the value associated to the key
-* QueryString.equals(key, value)
-*     returns true if the value associated with given key equals given value
-* QueryString.toString()
-*     returns the query string as a string
-* QueryString.create( hash )
-*     creates an querystring and encodes strings via encodeURIComponent and joins arrays with | 
-*
-* In static context, the value of location.search.substring(1), else the value given to the constructor is going to be used. The mapped hash is saved in the object.
-*
-* Example:
-*
-* var value = QueryString.get('key');
-* var obj = new QueryString('foo=bar&baz=quux');
-* value = obj.get('foo');
-*/
 function QueryString(qString) {
+ * **************** QueryString ****************
+ * Maps the querystring to an object
+ *
+ * Functions:
+ *
+ * QueryString.exists(key)
+ *     returns true if the particular key is set
+ * QueryString.get(key)
+ *     returns the value associated to the key
+ * QueryString.equals(key, value)
+ *     returns true if the value associated with given key equals given value
+ * QueryString.toString()
+ *     returns the query string as a string
+ * QueryString.create( hash )
+ *     creates an querystring and encodes strings via encodeURIComponent and joins arrays with | 
+ *
+ * In static context, the value of location.search.substring(1), else the value given to the constructor is going to be used. The mapped hash is saved in the object.
+ *
+ * Example:
+ *
+ * var value = QueryString.get('key');
+ * var obj = new QueryString('foo=bar&baz=quux');
+ * value = obj.get('foo');
+ */
 	this.string = qString;
 	this.params = {};
 
@@ -3165,8 +3249,10 @@ QueryString.create = function( arr ) {
 QueryString.prototype.create = QueryString.create;
 
 /**
-* Simple exception handling
-*/
+ * **************** Exception ****************
+ * Simple exception handling
+ * REMOVEME - unused?
+ */
 
 var Exception = function( message ) {
 	this.message = message || '';
@@ -3177,7 +3263,12 @@ Exception.prototype.what = function() {
 	return this.message;
 }
 
-function Status( text, stat, type ) {
+
+/**
+ * **************** Status ****************
+ */
+
+var Status = function( text, stat, type ) {
 	this.text = this.codify(text);
 	this.stat = this.codify(stat);
 	this.type = type || 'status';
@@ -3296,7 +3387,13 @@ Status.error = function( text, status ) {
 	return new Status( text, status, 'error' );
 }
 
-// Simple helper function to create a simple node
+
+/**
+ * **************** htmlNode() ****************
+ * Simple helper function to create a simple node
+ * XXX rewrite more flexibly, and place under an object, for example QuickNode.create
+ */
+
 function htmlNode( type, content, color ) {
 	var node = document.createElement( type );
 	if( color ) {
@@ -3306,8 +3403,12 @@ function htmlNode( type, content, color ) {
 	return node;
 }
 
-// A simple draggable window
-// now a wrapper for jQuery UI's dialog feature
+
+/**
+ * **************** SimpleWindow ****************
+ * A simple draggable window
+ * now a wrapper for jQuery UI's dialog feature
+ */
 
 // The height passed in here is the maximum allowable height for the content area.
 function SimpleWindow( width, height ) {
@@ -3487,7 +3588,7 @@ SimpleWindow.setButtonsEnabled = function( enabled ) {
 };
 
 /**
- * Twinkle-related stuff 
+ * **************** Twinkle-related stuff ****************
  */
 
 // Blacklist was removed per consensus at http://en.wikipedia.org/wiki/Wikipedia:Administrators%27_noticeboard/Archive221#New_Twinkle_blacklist_proposal
