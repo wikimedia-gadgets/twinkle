@@ -4,7 +4,7 @@ twinkle.min.js: twinkle.js
 	uglifyjs --output $@ $^
 
 
-twinkle.js: twinkle.header.js $(wildcard twinkle[!.]*.js friendly*.js) twinkle.footer.js
+twinkle.js: twinkle.header.js $(wildcard modules/*.js) twinkle.footer.js
 	awk 'FNR==1{print ""}{print}' $^ > $@
 
 
