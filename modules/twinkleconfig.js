@@ -261,7 +261,7 @@ Twinkle.config.sections = [
 		// What types of actions that should result in marking edit as minor
 		{
 			name: "markRevertedPagesAsMinor",
-			label: "Mark reversions as minor for these types of reversions",
+			label: "Mark as minor edit for these types of reversions",
 			type: "set",
 			setValues: { agf: "AGF rollback", norm: "Normal rollback", vand: "Vandalism rollback", torev: "\"Restore this version\"" }
 		},
@@ -279,8 +279,8 @@ Twinkle.config.sections = [
 		// If to offer a prompt for extra summary reason for normal reverts, default to true
 		{
 			name: "offerReasonOnNormalRevert",
-			label: "Ask for reason for normal rollbacks",
-			helptip: "\"Normal\" rollbacks are the non-AGF, non-vandal, non-\"restore this version\" rollbacks.",
+			label: "Prompt for reason for normal rollbacks",
+			helptip: "\"Normal\" rollbacks are the ones that are invoked from the middle [rollback] link.",
 			type: "boolean"
 		},
 
@@ -302,7 +302,7 @@ Twinkle.config.sections = [
 	preferences: [
 		{
 			name: "markSharedIPAsMinor",
-			label: "Mark tagging edits as minor",
+			label: "Mark shared IP tagging as a minor edit",
 			type: "boolean"
 		}
 	]
@@ -333,7 +333,7 @@ Twinkle.config.sections = [
 		{
 			name: "markSpeedyPagesAsPatrolled",
 			label: "Mark page as patrolled when tagging (if possible)",
-			helptip: "Due to technical limitations, pages are only marked as patrolled when they are reached from Special:NewPages.",
+			helptip: "Due to technical limitations, pages are only marked as patrolled when they are reached via Special:NewPages.",
 			type: "boolean"
 		},
 
@@ -354,7 +354,7 @@ Twinkle.config.sections = [
 		{
 			name: "welcomeUserOnSpeedyDeletionNotification",
 			label: "Welcome page creator alongside notification when tagging with these criteria",
-			helptip: "The welcome is issued only when the user is notified about the deletion, and only if their talk page does not already exist. The template used is \{\{<a href=\"/wiki/Template:Firstarticle\">firstarticle</a>}}.",
+			helptip: "The welcome is issued only if the user is notified about the deletion, and only if their talk page does not already exist. The template used is \{\{<a href=\"/wiki/Template:Firstarticle\">firstarticle</a>}}.",
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteria,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
@@ -444,13 +444,13 @@ Twinkle.config.sections = [
 		},
 		{
 			name: "markTaggedPagesAsMinor",
-			label: "Mark tagging edits as minor",
+			label: "Mark addition of tags as a minor edit",
 			type: "boolean"
 		},
 		{
 			name: "markTaggedPagesAsPatrolled",
 			label: "Mark pages as patrolled when tagging (if possible)",
-			helptip: "Due to technical limitations, pages are only marked as patrolled when they are reached from Special:NewPages.",
+			helptip: "Due to technical limitations, pages are only marked as patrolled when they are reached via Special:NewPages.",
 			type: "boolean"
 		},
 		{
