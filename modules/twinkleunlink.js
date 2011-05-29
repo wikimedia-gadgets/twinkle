@@ -157,7 +157,7 @@ Twinkle.unlink.callbacks = {
 						label: "Selected namespaces: " + namespaces.join(', '),
 						tooltip: "You can change this with your Twinkle preferences, at [[WP:TWPREFS]]"
 					});
-					if ($(xmlDoc).find('query-continue')) {
+					if ($(xmlDoc).find('query-continue').length) {
 						apiobj.params.form.append( {
 							type: 'div',
 							label: "First " + list.length.toString() + " file usages shown."
@@ -189,7 +189,7 @@ Twinkle.unlink.callbacks = {
 					label: "Selected namespaces: " + namespaces.join(', '),
 					tooltip: "You can change this with your Twinkle preferences, at [[WP:TWPREFS]]"
 				});
-				if ($(xmlDoc).find('query-continue')) {
+				if ($(xmlDoc).find('query-continue').length) {
 					apiobj.params.form.append( {
 						type: 'div',
 						label: "First " + list.length.toString() + " backlinks shown."
