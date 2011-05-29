@@ -24,7 +24,7 @@
 
 .tw_status_error {
 	color: #FF4500;
-	font-weight: 900;
+	font-weight: bold;
 }
 
 /* Quickform */
@@ -121,7 +121,7 @@ form.quickform .tooltipButton
 	display: inline-block;
 	font-size: .8em;
 	height: 2.5em;
-	font-weight: 400;
+	font-weight: normal;
 	padding-top: 1.25em;
 	margin-right: 14px;
 }
