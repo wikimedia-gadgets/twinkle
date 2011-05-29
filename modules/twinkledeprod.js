@@ -9,7 +9,7 @@
 
 ;(function(){
 	Twinkle.deprod = function() {
-		if( wgNamespaceNumber !== Namespace.CATEGORY || ! userIsInGroup( 'sysop' ) || ! /^Category:Proposed_deletion_as_of/.test(wgPageName) ) {
+		if( mw.config.get( 'wgNamespaceNumber' ) !== Namespace.CATEGORY || ! userIsInGroup( 'sysop' ) || !((/^Category:Proposed_deletion_as_of/).test(mw.config.get( 'wgPageName' ))) ) {
 			return;
 		}
 		$(twAddPortletLink( "#", "Deprod", "tw-deprod", "Delete prod pages found in this category", "")).click(callback);
@@ -33,7 +33,7 @@
 		var query = {
 			'action': 'query',
 			'generator': 'categorymembers',
-			'gcmtitle': wgPageName,
+			'gcmtitle': mw.config.get( 'wgPageName' ),
 			'gcmlimit' : 5000, // the max for sysops
 			'prop': [ 'categories', 'revisions' ],
 			'rvprop': [ 'content' ]
@@ -80,7 +80,7 @@
 	},
 
 	callback_commit = function(event) {
-		wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
+		mw.config.get( 'wgPageName' ) = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' ); // for queen/king/whatever and country!
 		var pages = event.target.getChecked( 'pages' );
 		Status.init( event.target );
 		function toCall( work ) {

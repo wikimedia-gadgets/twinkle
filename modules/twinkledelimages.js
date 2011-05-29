@@ -8,7 +8,7 @@
 */
 
 Twinkle.delimages = function twinkledeli() {
-	if( wgNamespaceNumber < 0 || wgCurRevisionId === false ) {
+	if( mw.config.get( 'wgNamespaceNumber' ) < 0 || !mw.config.get( 'wgCurRevisionId' ) ) {
 		return;
 	}
 	if( userIsInGroup( 'sysop' ) ) {
@@ -45,11 +45,11 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 		label: 'Reason: '
 	} );
 	var query;
-	if( wgNamespaceNumber === Namespace.CATEGORY ) {
+	if( mw.config.get( 'wgNamespaceNumber' ) === Namespace.CATEGORY ) {
 		query = {
 			'action': 'query',
 			'generator': 'categorymembers',
-			'gcmtitle': wgPageName,
+			'gcmtitle': mw.config.get( 'wgPageName' ),
 			'gcmnamespace': Namespace.IMAGE,
 			'gcmlimit' : Twinkle.getPref('deliMax'), 
 			'prop': [ 'imageinfo', 'categories', 'revisions' ],
@@ -60,9 +60,9 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 		query = {
 			'action': 'query',
 			'generator': 'images',
-			'titles': wgPageName,
+			'titles': mw.config.get( 'wgPageName' ),
 			'prop': [ 'imageinfo', 'categories', 'revisions' ],
-			'gimlimit': 'max',
+			'gimlimit': 'max'
 		};
 	}
 	var wikipedia_api = new Wikipedia.api( 'Grabbing files', query, function( self ) {
@@ -109,7 +109,7 @@ Twinkle.delimages.currentDeleteCounter = 0;
 Twinkle.delimages.currentUnlinkCounter = 0;
 Twinkle.delimages.currentdeletor = 0;
 Twinkle.delimages.callback.evaluate = function twinkledeliCallbackEvaluate(event) {
-	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
+	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' '));  // for queen/king/whatever and country!
 	var images = event.target.getChecked( 'images' );
 	var reason = event.target.reason.value;
 	var delete_image = event.target.delete_image.checked;

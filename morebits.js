@@ -431,7 +431,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 					subnode.subgroup = subgroup;
 					subnode.shown = false;
 
-					var event = function(e) {
+					event = function(e) {
 						if( e.target.checked ) {
 							e.target.parentNode.appendChild( e.target.subgroup );
 							if( e.target.type === 'radio' ) {
@@ -450,7 +450,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 						subnode.parentNode.appendChild( subgroup );
 					}
 				} else if( data.type === 'radio' ) {
-					var event = function(e) {
+					event = function(e) {
 						if( e.target.checked ) {
 							var name = e.target.name;
 							if( typeof( e.target.form.names[name] ) !== 'undefined' ) {

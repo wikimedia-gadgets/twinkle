@@ -237,11 +237,13 @@ Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
 		value: 'noimage',
 		tooltip: 'Before deleting this type of file, verify that the MediaWiki engine cannot read it by previewing a resized thumbnail of it. This also includes empty (i.e., no content) file description pages for Commons files'
 	});
-	if (!multiple) result.push({
-		label: 'F2: Unneeded file description page for a file on Commons',
-		value: 'fpcfail',
-		tooltip: 'An image, hosted on Commons, but with tags or information on its English Wikipedia description page that are no longer needed. (For example, a failed featured picture candidate.)'
-	});
+	if (!multiple) {
+		result.push({
+			label: 'F2: Unneeded file description page for a file on Commons',
+			value: 'fpcfail',
+			tooltip: 'An image, hosted on Commons, but with tags or information on its English Wikipedia description page that are no longer needed. (For example, a failed featured picture candidate.)'
+		});
+	}
 	result.push({
 		label: 'F3: Improper license',
 		value: 'noncom',
@@ -252,11 +254,13 @@ Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
 		value: 'badfairuse',
 		tooltip: 'Any file with a clearly invalid fair-use tag (such as a \{\{logo\}\} tag on a photograph of a mascot) may be deleted at any time. Media that fail any part of the non-free content criteria and were uploaded after 2006-07-13 may be deleted forty-eight hours after notification of the uploader. For media uploaded before 2006-07-13 or tagged with the \{\{Replaceable fair use\}\} template, the uploader will be given seven days to comply with this policy after being notified'
 	});
-	if (!multiple) result.push({
-		label: 'F8: Files available as identical or higher-resolution copies on Wikimedia Commons',
-		value: 'nowcommons',
-		tooltip: 'Provided the following conditions are met: 1: The file format of both images is the same. 2: The file\'s license and source status is beyond reasonable doubt, and the license is undoubtedly accepted at Commons. 3: All information on the file description page is present on the Commons file description page. That includes the complete upload history with links to the uploader\'s local user pages. 4: The file is not protected, and the file description page does not contain a request not to move it to Commons. 5: If the file is available on Commons under a different name than locally, all local references to the file must be updated to point to the title used at Commons. 6: For \{\{c-uploaded\}\} files: They may be speedily deleted as soon as they are off the Main Page'
-	});
+	if (!multiple) {
+		result.push({
+			label: 'F8: Files available as identical or higher-resolution copies on Wikimedia Commons',
+			value: 'nowcommons',
+			tooltip: 'Provided the following conditions are met: 1: The file format of both images is the same. 2: The file\'s license and source status is beyond reasonable doubt, and the license is undoubtedly accepted at Commons. 3: All information on the file description page is present on the Commons file description page. That includes the complete upload history with links to the uploader\'s local user pages. 4: The file is not protected, and the file description page does not contain a request not to move it to Commons. 5: If the file is available on Commons under a different name than locally, all local references to the file must be updated to point to the title used at Commons. 6: For \{\{c-uploaded\}\} files: They may be speedily deleted as soon as they are off the Main Page'
+		});
+	}
 	result.push({
 		label: 'F9: Unambiguous copyright infringement',
 		value: 'imgcopyvio',
@@ -334,11 +338,13 @@ Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 		value: 'a9',
 		tooltip: 'An article about a musical recording which does not indicate why its subject is important or significant, and where the artist\'s article has never existed or has been deleted'
 	});
-	if (!multiple) result.push({
-		label: 'A10: Recently created article that duplicates an existing topic',
-		value: 'a10',
-		tooltip: 'A recently created article with no relevant page history that does not aim to expand upon, detail or improve information within any existing article(s) on the subject, and where the title is not a plausible redirect. This does not include content forks, split pages or any article that aims at expanding or detailing an existing one.'
-	});
+	if (!multiple) {
+		result.push({
+			label: 'A10: Recently created article that duplicates an existing topic',
+			value: 'a10',
+			tooltip: 'A recently created article with no relevant page history that does not aim to expand upon, detail or improve information within any existing article(s) on the subject, and where the title is not a plausible redirect. This does not include content forks, split pages or any article that aims at expanding or detailing an existing one.'
+		});
+	}
 	return result;
 };
 
@@ -380,21 +386,25 @@ Twinkle.speedy.getTemplateList = function twinklespeedyGetTemplateList(multiple)
 		value: 'policy',
 		tooltip: 'This includes "speedy deletion" templates for issues that are not speedy deletion criteria and disclaimer templates intended to be used in articles'
 	});
-	if (!multiple) result.push({
-		label: 'T3: Templates that are not employed in any useful fashion',
-		value: 't3',
-		tooltip: 'Templates that are either substantial duplications of another template or hardcoded instances of another template where the same functionality could be provided by that other template'
-	});
+	if (!multiple) {
+		result.push({
+			label: 'T3: Templates that are not employed in any useful fashion',
+			value: 't3',
+			tooltip: 'Templates that are either substantial duplications of another template or hardcoded instances of another template where the same functionality could be provided by that other template'
+		});
+	}
 	return result;
 };
 
 Twinkle.speedy.getPortalList = function twinklespeedyGetPortalList(multiple) {
 	var result = [];
-	if (!multiple) result.push({
-		label: 'P1: Portal that would be subject to speedy deletion if it were an article',
-		value: 'p1',
-		tooltip: 'You must specify the article criterion that applies in this case (A1, A3, A7, or A10).'
-	});
+	if (!multiple) {
+		result.push({
+			label: 'P1: Portal that would be subject to speedy deletion if it were an article',
+			value: 'p1',
+			tooltip: 'You must specify the article criterion that applies in this case (A1, A3, A7, or A10).'
+		});
+	}
 	result.push({
 		label: 'P2: Underpopulated portal',
 		value: 'emptyportal',
@@ -405,11 +415,13 @@ Twinkle.speedy.getPortalList = function twinklespeedyGetPortalList(multiple) {
 
 Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 	var result = [];
-	if (!multiple) result.push({
-		label: 'Custom rationale' + (userIsInGroup('sysop') ? ' (custom deletion reason)' : ' using {'+'{db}} template'),
-		value: 'reason',
-		tooltip: '{'+'{db}} is short for "delete because". One of the other deletion criteria must still apply to the page, and you should (must?) make mention of this in your rationale. This is not a "catch-all" for when you can\'t find the right criterion.'
-	});
+	if (!multiple) {
+		result.push({
+			label: 'Custom rationale' + (userIsInGroup('sysop') ? ' (custom deletion reason)' : ' using {'+'{db}} template'),
+			value: 'reason',
+			tooltip: '{'+'{db}} is short for "delete because". One of the other deletion criteria must still apply to the page, and you should (must?) make mention of this in your rationale. This is not a "catch-all" for when you can\'t find the right criterion.'
+		});
+	}
 	result.push({
 		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
 		value: 'nonsense',
@@ -425,11 +437,13 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		value: 'vandalism',
 		tooltip: 'Plain pure vandalism (including redirects left behind from pagemove vandalism)'
 	});
-	if (!multiple) result.push({
-		label: 'G3: Blatant hoax',
-		value: 'hoax',
-		tooltip: 'Blatant and obvious hoax, to the point of vandalism'
-	});
+	if (!multiple) {
+		result.push({
+			label: 'G3: Blatant hoax',
+			value: 'hoax',
+			tooltip: 'Blatant and obvious hoax, to the point of vandalism'
+		});
+	}
 	result.push({
 		label: 'G4: Recreation of deleted material',
 		value: 'repost',
@@ -1009,24 +1023,24 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 	var parameters = [];
 	switch( normalized ) {
 		case 'db':
-			var rationale = prompt('Please enter a mandatory rationale.   \n\"This page qualifies for speedy deletion because:\"');
-			if (!rationale || !rationale.replace(/^\s*/, "").replace(/\s*$/, ""))
+			var dbrationale = prompt('Please enter a mandatory rationale.   \n\"This page qualifies for speedy deletion because:\"', "");
+			if (!dbrationale || !dbrationale.replace(/^\s*/, "").replace(/\s*$/, ""))
 			{
 				statelem.error( 'You must specify a rationale.  Aborted by user.' );
 				return null;
 			}
-			parameters["1"] = rationale;
+			parameters["1"] = dbrationale;
 			break;
 		case 'u1':
 			if (mw.config.get('wgNamespaceNumber') === 3 && !((/\//).test(mw.config.get('wgTitle'))))
 			{
-				var rationale = prompt('Please provide a mandatory rationale to explain why this user talk page should be deleted:');
-				if (!rationale || !rationale.replace(/^\s*/, "").replace(/\s*$/, ""))
+				var u1rationale = prompt('Please provide a mandatory rationale to explain why this user talk page should be deleted:', "");
+				if (!u1rationale || !u1rationale.replace(/^\s*/, "").replace(/\s*$/, ""))
 				{
 					statelem.error( 'You must specify a rationale.  Aborted by user.' );
 					return null;
 				}
-				parameters["rationale"] = rationale;
+				parameters["rationale"] = u1rationale;
 			}
 			break;
 		case 'f8':
@@ -1052,25 +1066,24 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			parameters["date"] = "\~\~\~\~\~";
 			break;
 		case 'g6':
-			var rationale = null;
 			switch( value ) {
 				case 'histmerge':
-					var title = prompt( 'Please enter the title to merge into:' );
-					if (title === null)
+					var mergetitle = prompt( 'Please enter the title to merge into:', "" );
+					if (mergetitle === null)
 					{
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
-					parameters["1"] = title;
+					parameters["1"] = mergetitle;
 					break;
 				case 'move':
-					var title = prompt( 'Please enter the title of the page to be moved here:' );
+					var title = prompt( 'Please enter the title of the page to be moved here:', "" );
 					if (title === null)
 					{
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
-					var reason = prompt( 'Please enter the reason for the page move:' );
+					var reason = prompt( 'Please enter the reason for the page move:', "" );
 					if (reason === null)
 					{
 						statelem.error( 'Aborted by user.' );
@@ -1080,15 +1093,15 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					parameters["2"] = reason;
 					break;
 				case 'g6':
-					rationale = prompt( 'Please provide an optional rationale (leave empty to skip):' );
-					if (rationale === null)
+					var g6rationale = prompt( 'Please provide an optional rationale (leave empty to skip):', "" );
+					if (g6rationale === null)
 					{
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
-					if (rationale !== '')
+					if (g6rationale !== '')
 					{
-						parameters["rationale"] = rationale;
+						parameters["rationale"] = g6rationale;
 					}
 					break;
 				default:
@@ -1098,21 +1111,21 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 		case 'g7':
 			if (Twinkle.getPref('speedyPromptOnG7'))
 			{
-				var rationale = prompt('Please provide an optional rationale (perhaps linking to where the author requested this deletion - leave empty to skip):');
-				if (rationale === null)
+				var g7rationale = prompt('Please provide an optional rationale (perhaps linking to where the author requested this deletion - leave empty to skip):', "");
+				if (g7rationale === null)
 				{
 					statelem.error( 'Aborted by user.' );
 					return null;
 				}
-				if (rationale !== '')
+				if (g7rationale !== '')
 				{
-					parameters["rationale"] = rationale;
+					parameters["rationale"] = g7rationale;
 				}
 			}
 			break;
 		case 'f9':
 		case 'g12':
-			var url = prompt( 'Please enter the URL if available, including the "http://":' );
+			var url = prompt( 'Please enter the URL if available, including the "http://":', "" );
 			if (url === null)
 			{
 				statelem.error( 'Aborted by user.' );
@@ -1121,7 +1134,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			parameters["url"] = url;
 			break;
 		case 'a2':
-			var source = prompt('Enter an interwiki link to the article on the foreign-language wiki (for example, "fr:Bonjour"):');
+			var source = prompt('Enter an interwiki link to the article on the foreign-language wiki (for example, "fr:Bonjour"):', "");
 			if (source === null)
 			{
 				statelem.error('Aborted by user.');
@@ -1130,16 +1143,16 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			parameters["source"] = source;
 			break;
 		case 'a10':
-			var title = prompt( 'Enter the article name that is duplicated:' );
-			if (title === null)
+			var duptitle = prompt( 'Enter the article name that is duplicated:', "" );
+			if (duptitle === null)
 			{
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
-			parameters["article"] = title;
+			parameters["article"] = duptitle;
 			break;
 		case 'f1':
-			var img = prompt( 'Enter the file this is redundant to, excluding the "Image:" or "File:" prefix:' );
+			var img = prompt( 'Enter the file this is redundant to, excluding the "Image:" or "File:" prefix:', "" );
 			if (img === null)
 			{
 				statelem.error( 'Aborted by user.' );
@@ -1148,7 +1161,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			parameters["filename"] = img;
 			break;
 		case 't3':
-			var template = prompt( 'Enter the template this is redundant to, excluding the "Template:" prefix:' );
+			var template = prompt( 'Enter the template this is redundant to, excluding the "Template:" prefix:', "" );
 			if (template === null)
 			{
 				statelem.error( 'Aborted by user.' );
@@ -1162,7 +1175,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			// it is actually blanked elsewhere in code, but setting the flag here
 			break;
 		case 'p1':
-			var criterion = prompt( 'Enter the code of the article CSD criterion which this portal falls under:   \n\n(A1 = no context, A3 = no content, A7 = non-notable, A10 = duplicate)' );
+			var criterion = prompt( 'Enter the code of the article CSD criterion which this portal falls under:   \n\n(A1 = no context, A3 = no content, A7 = non-notable, A10 = duplicate)', "" );
 			if (!criterion || !criterion.replace(/^\s*/, "").replace(/\s*$/, ""))
 			{
 				statelem.error( 'You must enter a criterion.  Aborted by user.' );

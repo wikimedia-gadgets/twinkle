@@ -10,10 +10,10 @@
 Twinkle.closer = function twinklecloser() {
 	var closeable = false;
 	var type;
-	if( /Wikipedia:Articles_for_creation\/\d{4}-\d{2}-\d{2}/.test(wgPageName) ) {
+	if( /Wikipedia:Articles_for_creation\/\d{4}-\d{2}-\d{2}/.test(mw.config.get('wgPageName')) ) {
 		closeable = true;
 		type = 'afc';
-	} else if(  /Wikipedia:Articles_for_deletion\//.test(wgPageName) ) {
+	} else if(  /Wikipedia:Articles_for_deletion\//.test(mw.config.get('wgPageName')) ) {
 		closeable = true;
 		type = 'afd';
 	}
@@ -51,6 +51,9 @@ Twinkle.closer.mark = function twinklecloserMark( type ) {
 				'css': { 'color': '#449922'	}
 			}).prependTo(this);
 		});
+		break;
+	default:
+		alert("Twinkle.closer.mark: unknown closure type " + type);
 		break;
 	}
 };
@@ -318,7 +321,9 @@ Twinkle.closer.callbacks = {
 				work_area = work_area.render();
 				old_area.parentNode.replaceChild( work_area, old_area );
 				break;
-
+			default:
+				alert("Twinkle.closer.callbacks.afc.submenu: unknown outcome " + value);
+				break;
 			}
 		},
 		evaluate: function(e) {
@@ -339,6 +344,9 @@ Twinkle.closer.callbacks = {
 				var approved = form.approved.checked;
 				params.top = '\{\{subst:afc top' + ( approved ? '|approved' : '' ) + '\}\}';
 				params.bottom = '\{\{subst:afc b\}\}';
+				break;
+			default:
+				alert("Twinkle.closer.callbacks.afc.evaluate: unknown outcome " + type);
 				break;
 			}
 
@@ -368,6 +376,9 @@ Twinkle.closer.callbacks = {
 				text = text.replace( /^(==.*?==)\n/, "$1\n" + params.top  );
 				text += params.bottom;
 				summary = 'Archiving.';
+				break;
+			default:
+				alert("Twinkle.closer.callbacks.afc.edit: unknown outcome " + params.type);
 				break;
 			}
 			pageobj.setPageText(text);
@@ -415,7 +426,9 @@ Twinkle.closer.callbacks = {
 					]
 				} );
 				break;
-
+			default:
+				alert("Twinkle.closer.callbacks.afd.submenu: unknown outcome " + value);
+				break;
 			}
 
 			work_area = work_area.render();
@@ -447,6 +460,9 @@ Twinkle.closer.callbacks = {
 			case 'delete':
 				label = "Delete";
 				var del = form.del.checked;
+				break;
+			default:
+				alert("Twinkle.closer.callbacks.afd.evaluate: unknown outcome " + type);
 				break;
 			}
 			params.label = label;
@@ -483,7 +499,7 @@ Twinkle.closer.callbacks = {
 			wp_page.load(Twinkle.closer.callbacks.afd.edit);
 		},
 		deleteRedirectsMain: function( self ) {
-			$doc = $(self.responseXML);
+			var $doc = $(self.responseXML);
 			$doc.find("backlinks bl").each(function(){
 				var title = $(this).attr('title');
 				var page = new Wikipedia.page(title, "Deleting redirecting page " + title);
