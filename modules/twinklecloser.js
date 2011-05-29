@@ -42,11 +42,13 @@ Twinkle.closer.mark = function twinklecloserMark( type ) {
 	case 'afd':
 		sections = $('h3:has(span.editsection)');
 		sections.each(function(index, section) {
-			var query = new QueryString($(this).find('span.editsection a').attr('href').split( '?', 2 )[1]);
+			var $a = $(this).find('span.editsection a');
+			var page =$a.attr('title');
+			var query = new QueryString($a.attr('href').split( '?', 2 )[1]);
 			var section_number = query.get('section');
 			var closelink = $('<a/>', {
 				'text': '[close]',
-				'click': function(){Twinkle.closer.actions.afd(section_number);},
+				'click': function(){Twinkle.closer.actions.afd(section_number, page);},
 				'class': 'twinkle-closer-link twinkle-closer-link-afd',
 				'css': { 'color': '#449922'	}
 			}).prependTo(this);
