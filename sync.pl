@@ -39,7 +39,7 @@ print($usage->text), exit if $opt->help || !scalar(@ARGV);
 
 my %pages = map +("$opt->{base}/$_" => $_), @ARGV;
 my %deploys = (
-	'twinkle.js' => 'MediaWiki:Gadget-TwinkleTEST.js',
+	'twinkle.js' => 'MediaWiki:Gadget-Twinkle.js',
 	'morebits.js' => 'MediaWiki:Gadget-morebits.js',
 	'morebits.css' => 'MediaWiki:Gadget-morebits.css'
 );
