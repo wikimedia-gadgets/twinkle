@@ -217,7 +217,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	} else {
 		// No auto-notifiaction, display what was going to be added.
 		var noteData = document.createElement( 'pre' );
-		noteData.appendChild( document.createTextNode( "\{\{subst:di-" + type + "-notice|1=" + mw.config.get('wgTitle') + "\}\} \~\~\~\~" ) );
+		noteData.appendChild( document.createTextNode( "{{subst:di-" + type + "-notice|1=" + mw.config.get('wgTitle') + "}} ~~~~" ) );
 		Status.info( 'Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement( 'br' ),  noteData ] );
 	}
 };
@@ -227,7 +227,7 @@ Twinkle.image.callbacks = {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
 
-		var tag = "\{\{di-" + params.type + "|date=\{\{subst:#time:j F Y\}\}";
+		var tag = "{{di-" + params.type + "|date={{subst:#time:j F Y}}";
 		var csdcrit = "";
 		switch( params.type ) {
 			case 'no source no license':
@@ -260,7 +260,7 @@ Twinkle.image.callbacks = {
 			default:
 				break;
 		}
-		tag += "\}\}\n";
+		tag += "}}\n";
 
 		pageobj.setPageText(tag + text);
 		pageobj.setEditSummary("This file is up for deletion, per [[WP:CSD#" + csdcrit + "|CSD " + csdcrit + "]] (" + params.type + ")." + Twinkle.getPref('summaryAd'));
@@ -282,7 +282,7 @@ Twinkle.image.callbacks = {
 		var params = pageobj.getCallbackParameters();
 		var initialContrib = pageobj.getCreator();
 		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-		var notifytext = "\n\{\{subst:di-" + params.type + "-notice|1=" + mw.config.get('wgTitle') + "\}\} \~\~\~\~";
+		var notifytext = "\n{{subst:di-" + params.type + "-notice|1=" + mw.config.get('wgTitle') + "}} ~~~~";
 		usertalkpage.setAppendText(notifytext);
 		usertalkpage.setEditSummary("Notification: tagging for deletion of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 		usertalkpage.setCreateOption('recreate');

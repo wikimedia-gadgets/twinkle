@@ -165,9 +165,9 @@ Twinkle.prod.callbacks = {
 		}
 
 		// Remove tags that become superfluous with this action
-		text = text.replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
+		text = text.replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 
-		var prod_re = /{\{\s*(?:dated prod|dated prod blp|Prod blp\/dated|Proposed deletion\/dated)\s*\|(?:\{\{[^\{\}]*\}\}|[^\}\{])*\}\}/i;
+		var prod_re = /\{\{\s*(?:dated prod|dated prod blp|Prod blp\/dated|Proposed deletion\/dated)\s*\|(?:\{\{[^\{\}]*\}\}|[^\}\{])*\}\}/i;
 		var summaryText;
 		if( !prod_re.test( text ) ) {
 			// Notification to first contributor
@@ -182,17 +182,17 @@ Twinkle.prod.callbacks = {
 			}
 
 			summaryText = "Proposing article for deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
-			text = "\{\{subst:prod" + (params.blp ? " blp" : ("|1=" + params.reason)) + "\}\}\n" + text;
+			text = "{{subst:prod" + (params.blp ? " blp" : ("|1=" + params.reason)) + "}}\n" + text;
 		}
 		else {  // already tagged for PROD, so try endorsing it
 			var prod2_re = /\{\{(?:Proposed deletion endorsed|prod-?2).*?\}\}/;
 			if( prod2_re.test( text ) ) {
-				statelem.warn( 'Page already tagged with \{\{prod\}\} and \{\{prod-2\}\} templates, aborting procedure' );
+				statelem.warn( 'Page already tagged with {{prod}} and {{prod-2}} templates, aborting procedure' );
 				return;
 			}
-			var confirmtext = "A \{\{prod\}\} tag was already found on this article. \nWould you like to add a \{\{prod-2\}\} (PROD endorsement) tag with your explanation?";
+			var confirmtext = "A {{prod}} tag was already found on this article. \nWould you like to add a {{prod-2}} (PROD endorsement) tag with your explanation?";
 			if (params.blp) {
-				confirmtext = "A non-BLP \{\{prod\}\} tag was found on this article.  \nWould you like to add a \{\{prod-2\}\} (PROD endorsement) tag with explanation \"unsourced BLP\"?";
+				confirmtext = "A non-BLP {{prod}} tag was found on this article.  \nWould you like to add a {{prod-2}} (PROD endorsement) tag with explanation \"unsourced BLP\"?";
 			}
 			if( !confirm( confirmtext ) ) {
 				statelem.warn( 'Aborted per user request' );
@@ -200,7 +200,7 @@ Twinkle.prod.callbacks = {
 			}
 
 			summaryText = "Endorsing proposed deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
-			text = text.replace( prod_re, text.match( prod_re ) + "\n\{\{prod-2|1=" + (params.blp ? "article is a [[WP:BLPPROD|biography of a living person with no sources]]" : params.reason) + "\}\}\n" );
+			text = text.replace( prod_re, text.match( prod_re ) + "\n{{prod-2|1=" + (params.blp ? "article is a [[WP:BLPPROD|biography of a living person with no sources]]" : params.reason) + "}}\n" );
 
 			if( Twinkle.getPref('logProdPages') ) {
 				params.logEndorsing = true;
@@ -219,7 +219,7 @@ Twinkle.prod.callbacks = {
 		var params = pageobj.getCallbackParameters();
 		var initialContrib = pageobj.getCreator();
 		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-		var notifytext = "\n\{\{subst:prodwarning" + (params.blp ? "BLP" : "") + "|1=" + mw.config.get('wgPageName') + "|concern=" + params.reason + "\}\} \~\~\~\~";
+		var notifytext = "\n{{subst:prodwarning" + (params.blp ? "BLP" : "") + "|1=" + mw.config.get('wgPageName') + "|concern=" + params.reason + "}} ~~~~";
 		usertalkpage.setAppendText(notifytext);
 		usertalkpage.setEditSummary("Notification: proposed deletion of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 		usertalkpage.setCreateOption('recreate');
@@ -258,7 +258,7 @@ Twinkle.prod.callbacks = {
 
 		var summarytext;
 		if (params.logEndorsing) {
-			text += "\n# [[" + mw.config.get('wgPageName') + "]]: endorsed " + (params.blp ? "BLP " : "") + "PROD. \~\~\~\~\~";
+			text += "\n# [[" + mw.config.get('wgPageName') + "]]: endorsed " + (params.blp ? "BLP " : "") + "PROD. ~~~~~";
 			if (params.reason) {
 				text += "\n#* '''Reason''': " + params.reason + "\n";
 			}
@@ -266,9 +266,9 @@ Twinkle.prod.callbacks = {
 		} else {
 			text += "\n# [[" + mw.config.get('wgPageName') + "]]: " + (params.blp ? "BLP " : "") + "PROD";
 			if (params.logInitialContrib) {
-				text += "; notified \{\{user|" + params.logInitialContrib + "\}\}";
+				text += "; notified {{user|" + params.logInitialContrib + "}}";
 			}
-			text += " \~\~\~\~\~\n#* '''Reason''': " + params.reason + "\n";
+			text += " ~~~~~n#* '''Reason''': " + params.reason + "\n";
 			summarytext = "Logging PROD nomination of [[" + mw.config.get('wgPageName') + "]].";
 		}
 

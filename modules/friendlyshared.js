@@ -64,32 +64,32 @@ Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 
 Twinkle.shared.standardList = [
 	{
-		label: '\{\{shared IP}}: standard shared IP address template',
+		label: '{{shared IP}}: standard shared IP address template',
 		value: 'shared IP',
 		tooltip: 'IP user talk page template that shows helpful information to IP users and those wishing to warn or ban them'
 	},
 	{ 
-		label: '\{\{shared IP edu}}: shared IP address template modified for educational institutions',
+		label: '{{shared IP edu}}: shared IP address template modified for educational institutions',
 		value: 'shared IP edu'
 	},
 	{
-		label: '\{\{shared IP public}}: shared IP address template modified for public terminals',
+		label: '{{shared IP public}}: shared IP address template modified for public terminals',
 		value: 'shared IP public'
 	},
 	{
-		label: '\{\{shared IP gov}}: shared IP address template modified for government agencies or facilities',
+		label: '{{shared IP gov}}: shared IP address template modified for government agencies or facilities',
 		value: 'shared IP gov'
 	},
 	{
-		label: '\{\{dynamicIP}}: shared IP address template modified for organizations with dynamic addressing',
+		label: '{{dynamicIP}}: shared IP address template modified for organizations with dynamic addressing',
 		value: 'dynamicIP'
 	},
 	{ 
-		label: '\{\{ISP}}: shared IP address template modified for ISP organizations (specifically proxies)',
+		label: '{{ISP}}: shared IP address template modified for ISP organizations (specifically proxies)',
 		value: 'ISP'
 	},
 	{ 
-		label: '\{\{mobileIP}}: shared IP address template modified mobile phone company and their customers',
+		label: '{{mobileIP}}: shared IP address template modified mobile phone company and their customers',
 		value: 'mobileIP'
 	}
 ];
@@ -112,7 +112,7 @@ Twinkle.shared.callbacks = {
 		var text = '{{';
 
 		for( var i=0; i < Twinkle.shared.standardList.length; i++ ) {
-			tagRe = new RegExp( '(\{\{' + Twinkle.shared.standardList[i].value + '(\||\}\}))', 'im' );
+			tagRe = new RegExp( '(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im' );
 			if( tagRe.exec( pageText ) ) {
 				Status.warn( 'Info', 'Found {{' + Twinkle.shared.standardList[i].value + '}} on the user\'s talk page already...aborting' );
 				found = true;
@@ -133,7 +133,7 @@ Twinkle.shared.callbacks = {
 		}
 		text += '}}\n\n';
 
-		var summaryText = 'Added \{\{[[Template:' + params.value + '|' + params.value + ']]\}\} template.';
+		var summaryText = 'Added {{[[Template:' + params.value + '|' + params.value + ']]}} template.';
 		pageobj.setPageText(text + pageText);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
 		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markSharedIPAsMinor'));

@@ -80,7 +80,6 @@
 	},
 
 	callback_commit = function(event) {
-		mw.config.get( 'wgPageName' ) = mw.config.get( 'wgPageName' ).replace( /_/g, ' ' ); // for queen/king/whatever and country!
 		var pages = event.target.getChecked( 'pages' );
 		Status.init( event.target );
 		function toCall( work ) {

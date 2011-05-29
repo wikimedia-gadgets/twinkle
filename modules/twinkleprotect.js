@@ -1,3 +1,4 @@
+/* jshint mediawiki: true */
 /*
  ****************************************
  *** twinkleprotect.js: Protect/RPP module
@@ -503,7 +504,7 @@ Twinkle.protect.protectionTypesCreate = [
 	{
 		label: 'Create protection',
 		list: [
-			{ label: 'Generic (\{\{pp-create}})', value: 'pp-create' },
+			{ label: 'Generic ({{pp-create}})', value: 'pp-create' },
 			{ label: 'Offensive name', value: 'pp-create-offensive' },
 			{ label: 'Repeatedly recreated', selected: true, value: 'pp-create-salt' },
 			{ label: 'Recently deleted BLP', value: 'pp-create-blp' }
@@ -605,7 +606,7 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-create': {
 		create: 'sysop',
-		reason: '\{\{pp-create}}'
+		reason: '{{pp-create}}'
 	}
 };
 
@@ -621,34 +622,34 @@ Twinkle.protect.protectionTags = [
 	{
 		label: 'Full protection templates',
 		list: [
-			{ label: '\{\{pp-dispute\}\}: dispute/edit war', value: 'pp-dispute', selected: true },
-			{ label: '\{\{pp-usertalk\}\}: blocked user talk', value: 'pp-usertalk' }
+			{ label: '{{pp-dispute}}: dispute/edit war', value: 'pp-dispute', selected: true },
+			{ label: '{{pp-usertalk}}: blocked user talk', value: 'pp-usertalk' }
 		]
 	},
 	{
 		label: 'Full/semi-protection templates',
 		list: [
-			{ label: '\{\{pp-vandalism\}\}: vandalism', value: 'pp-vandalism' },
-			{ label: '\{\{pp-template\}\}: high-risk template', value: 'pp-template' },
-			{ label: '\{\{pp-protected\}\}: general protection', value: 'pp-protected' }
+			{ label: '{{pp-vandalism}}: vandalism', value: 'pp-vandalism' },
+			{ label: '{{pp-template}}: high-risk template', value: 'pp-template' },
+			{ label: '{{pp-protected}}: general protection', value: 'pp-protected' }
 		]
 	},
 	{
 		label: 'Semi-protection templates',
 		list: [
-			{ label: '\{\{pp-semi-usertalk\}\}: blocked user talk', value: 'pp-semi-usertalk' },
-			{ label: '\{\{pp-semi-sock\}\}: sockpuppetry', value: 'pp-semi-sock' },
-			{ label: '\{\{pp-semi-blp\}\}: BLP violations', value: 'pp-semi-blp' },
-			{ label: '\{\{pp-semi-indef\}\}: general long-term', value: 'pp-semi-indef' }
+			{ label: '{{pp-semi-usertalk}}: blocked user talk', value: 'pp-semi-usertalk' },
+			{ label: '{{pp-semi-sock}}: sockpuppetry', value: 'pp-semi-sock' },
+			{ label: '{{pp-semi-blp}}: BLP violations', value: 'pp-semi-blp' },
+			{ label: '{{pp-semi-indef}}: general long-term', value: 'pp-semi-indef' }
 		]
 	},
 	{
 		label: 'Move protection templates',
 		list: [
-			{ label: '\{\{pp-move-dispute\}\}: dispute/move war', value: 'pp-move-dispute' },
-			{ label: '\{\{pp-move-vandalism\}\}: page-move vandalism', value: 'pp-move-vandalism' },
-			{ label: '\{\{pp-move-indef\}\}: general long-term', value: 'pp-move-indef' },
-			{ label: '\{\{pp-move\}\}: other', value: 'pp-move' }
+			{ label: '{{pp-move-dispute}}: dispute/move war', value: 'pp-move-dispute' },
+			{ label: '{{pp-move-vandalism}}: page-move vandalism', value: 'pp-move-vandalism' },
+			{ label: '{{pp-move-indef}}: general long-term', value: 'pp-move-indef' },
+			{ label: '{{pp-move}}: other', value: 'pp-move' }
 		]
 	}
 ];
@@ -935,7 +936,7 @@ Twinkle.protect.callbacks = {
 				tag += '|reason=' + params.reason;
 			}
 			if( ['indefinite', 'infinite', 'never', null].indexOf(params.expiry) === -1 ) {
-				tag += '|expiry=\{\{subst:#time:F j, Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
+				tag += '|expiry={{subst:#time:F j, Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
 			}
 			if( params.small ) {
 				tag += '|small=yes';
@@ -947,11 +948,11 @@ Twinkle.protect.callbacks = {
 			summary = 'Removing protection template' + Twinkle.getPref('summaryAd');
 		} else {
 			if( params.noinclude ) {
-				text = "<noinclude>\{\{" + tag + "\}\}</noinclude>" + text;
+				text = "<noinclude>{{" + tag + "}}</noinclude>" + text;
 			} else {
-				text = "\{\{" + tag + "\}\}\n" + text;
+				text = "{{" + tag + "}}\n" + text;
 			}
-			summary = "Adding \{\{" + params.tag + "\}\}" + Twinkle.getPref('summaryAd');
+			summary = "Adding {{" + params.tag + "}}" + Twinkle.getPref('summaryAd');
 		}
 
 		protectedPage.setEditSummary( summary );
@@ -1001,7 +1002,7 @@ Twinkle.protect.callbacks = {
 			return;
 		}
 
-		var newtag = '==== \{\{' + ns2tag[ mw.config.get('wgNamespaceNumber') ] + '|' + mw.config.get('wgTitle') +  '\}\} ====' + "\n";
+		var newtag = '==== {{' + ns2tag[ mw.config.get('wgNamespaceNumber') ] + '|' + mw.config.get('wgTitle') +  '}} ====' + "\n";
 		if( ( new RegExp( '^' + RegExp.escape( newtag ).replace( /\s+/g, '\\s*' ), 'm' ) ).test( text ) ) {
 			statusElement.error( [ 'There is already a protection request for this page at ', rppLink, ', aborting.' ] );
 			return;
@@ -1022,7 +1023,7 @@ Twinkle.protect.callbacks = {
 
 		words += params.typename;
 
-		newtag += "'''" + words.toUpperCaseFirstChar() + ( params.reason !== '' ? ":''' " + params.reason : ".'''" ) + " \~\~\~\~";
+		newtag += "'''" + words.toUpperCaseFirstChar() + ( params.reason !== '' ? ":''' " + params.reason : ".'''" ) + " ~~~~";
 
 		var reg;
 		if ( params.category === 'unprotect' ) {

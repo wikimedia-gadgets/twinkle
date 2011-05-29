@@ -140,78 +140,78 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 
 Twinkle.welcome.standardList = [
 	{
-		label: '\{\{Welcome}}: standard welcome*',
+		label: '{{Welcome}}: standard welcome*',
 		value: 'Welcome'
 	},
 	{ 
-		label: '\{\{Welcomeshort}}: short welcome',
+		label: '{{Welcomeshort}}: short welcome',
 		value: 'Welcomeshort',
 		tooltip: 'Includes section heading.'
 	},
 	{ 
-		label: '\{\{WelcomeSimple}}: simple welcome',
+		label: '{{WelcomeSimple}}: simple welcome',
 		value: 'WelcomeSimple',
 		tooltip: 'Won\'t overwhelm new users.  Includes section heading.'
 	},
 	{
-		label: '\{\{Welcome-personal}}: includes a plate of cookies',
+		label: '{{Welcome-personal}}: includes a plate of cookies',
 		value: 'Welcome-personal',
 		tooltip: 'A personal welcome with an introduction from you and a plate of cookies.  Includes section heading and signature.'
 	},
 	{ 
-		label: '\{\{WelcomeMenu}}: welcome with menu of links',
+		label: '{{WelcomeMenu}}: welcome with menu of links',
 		value: 'WelcomeMenu',
 		tooltip: 'Contains a welcome message and many useful links broken up into different sections.  Includes signature.' 
 	},
 	{ 
-		label: '\{\{Welcomeg}}: similar to \{\{WelcomeMenu}}',
+		label: '{{Welcomeg}}: similar to {{WelcomeMenu}}',
 		value: 'Welcomeg',
 		tooltip: 'Contains a welcome message and many useful links broken up into different sections.  Includes signature.'
 	},
 	{ 
-		label: '\{\{Welcomeh}}: same as \{\{Welcomeg}} but with a section heading',
+		label: '{{Welcomeh}}: same as {{Welcomeg}} but with a section heading',
 		value: 'Welcomeh',
 		tooltip: 'Contains a section heading, a welcome message and many useful links broken up into different sections.  Includes section heading and signature.'
 	},
 	{ 
-		label: '\{\{Welcome-belated}}: welcome for users with more substantial contributions',
+		label: '{{Welcome-belated}}: welcome for users with more substantial contributions',
 		value: 'Welcome-belated'
 	}
 ];
 
 Twinkle.welcome.welcomingCommitteeList = [
 	{ 
-		label: '\{\{Wel}}: similar to \{\{Welcome}}, but automatically identifies anonymous and registered users*',
+		label: '{{Wel}}: similar to {{Welcome}}, but automatically identifies anonymous and registered users*',
 		value: 'Wel',
-		tooltip: 'This template checks whether the username contains any letters. If there are any, \{\{Welcome-reg}} will be shown. If there are none, \{\{Welcome-anon}} will be shown.'
+		tooltip: 'This template checks whether the username contains any letters. If there are any, {{Welcome-reg}} will be shown. If there are none, {{Welcome-anon}} will be shown.'
 	},
 	{ 
-		label: '\{\{W-basic}}: standard template, similar to \{\{Welcome}} with additional options',
+		label: '{{W-basic}}: standard template, similar to {{Welcome}} with additional options',
 		value: 'W-basic',
-		tooltip: 'This template is similar to \{\{Welcome}} but supports many different options.  Includes a signature.'
+		tooltip: 'This template is similar to {{Welcome}} but supports many different options.  Includes a signature.'
 	},
 	{ 
-		label: '\{\{W-shout}}: extroverted message with bold advice',
+		label: '{{W-shout}}: extroverted message with bold advice',
 		value: 'W-shout',
-		tooltip: 'This template is similar to \{\{WelcomeShout}} but supports many different options.  Includes a signature.'
+		tooltip: 'This template is similar to {{WelcomeShout}} but supports many different options.  Includes a signature.'
 	},
 	{ 
-		label: '\{\{W-short}}: concise; won\'t overwhelm',
+		label: '{{W-short}}: concise; won\'t overwhelm',
 		value: 'W-short||',
-		tooltip: 'This template is similar to \{\{Welcomeshort}} but supports many different options.  Includes a signature.'
+		tooltip: 'This template is similar to {{Welcomeshort}} but supports many different options.  Includes a signature.'
 	},
 	{ 
-		label: '\{\{W-link}}: shortest greeting, links to Welcoming committee\'s greetings page',
+		label: '{{W-link}}: shortest greeting, links to Welcoming committee\'s greetings page',
 		value: 'W-link',
-		tooltip: 'This template is similar to \{\{Welcom}} but supports many different options.  Includes a signature.'
+		tooltip: 'This template is similar to {{Welcom}} but supports many different options.  Includes a signature.'
 	},
 	{ 
-		label: '\{\{W-graphical}}: graphical menu format to ease transition from the graphic-heavy web',
+		label: '{{W-graphical}}: graphical menu format to ease transition from the graphic-heavy web',
 		value: 'W-graphical',
-		tooltip: 'This template is similar to \{\{Welcomeg}} but has fewer links.  Supports many different options.  Includes a signature.'
+		tooltip: 'This template is similar to {{Welcomeg}} but has fewer links.  Supports many different options.  Includes a signature.'
 	},
 	{ 
-		label: '\{\{W-screen}}: graphical; designed to fit the size of the user\'s screen',
+		label: '{{W-screen}}: graphical; designed to fit the size of the user\'s screen',
 		value: 'W-screen',
 		tooltip: 'This template is a nice graphical welcome with many different options.  Includes a signature.'
 	}
@@ -219,62 +219,62 @@ Twinkle.welcome.welcomingCommitteeList = [
 
 Twinkle.welcome.problemList = [
 	{ 
-		label: '\{\{Welcomelaws}}: welcome with information about copyrights, npov, the sandbox, and vandalism',
+		label: '{{Welcomelaws}}: welcome with information about copyrights, npov, the sandbox, and vandalism',
 		value: 'Welcomelaws'
 	},
 	{ 
-		label: '\{\{Firstarticle}}: for someone whose first article did not meet page creation guidelines*',
+		label: '{{Firstarticle}}: for someone whose first article did not meet page creation guidelines*',
 		value: 'Firstarticle'
 	},
 	{ 
-		label: '\{\{Welcomevandal}}: for someone whose initial efforts appear to be vandalism*',
+		label: '{{Welcomevandal}}: for someone whose initial efforts appear to be vandalism*',
 		value: 'Welcomevandal',
 		tooltip: 'Includes a section heading.'
 	},
 	{ 
-		label: '\{\{Welcomenpov}}: for someone whose initial efforts do not adhere to the neutral point of view policy*',
+		label: '{{Welcomenpov}}: for someone whose initial efforts do not adhere to the neutral point of view policy*',
 		value: 'Welcomenpov'
 	},
 	{ 
-		label: '\{\{Welcomespam}}: welcome with additional discussion of anti-spamming polices*',
+		label: '{{Welcomespam}}: welcome with additional discussion of anti-spamming polices*',
 		value: 'Welcomespam'
 	},
 	{ 
-		label: '\{\{Welcomeunsourced}}: for someone whose initial efforts are uncited*',
+		label: '{{Welcomeunsourced}}: for someone whose initial efforts are uncited*',
 		value: 'Welcomeunsourced'
 	},
 	{ 
-		label: '\{\{Welcomeauto}}: for someone who created an autobiographical article*',
+		label: '{{Welcomeauto}}: for someone who created an autobiographical article*',
 		value: 'Welcomeauto'
 	},
 	{ 
-		label: '\{\{Welcome-COI}}: for someone who created an article about a subject with which they have a conflict of interest*',
+		label: '{{Welcome-COI}}: for someone who created an article about a subject with which they have a conflict of interest*',
 		value: 'Welcome-COI'
 	}
 ];
 
 Twinkle.welcome.anonymousList = [
 	{
-		label: '\{\{Welcome-anon}}: for anonymous users; encourages getting a username*',
+		label: '{{Welcome-anon}}: for anonymous users; encourages getting a username*',
 		value: 'Welcome-anon'
 	},
 	{
-		label: '\{\{Welcomeanon2}}: similar to \{\{Welcome-anon}} but with hints and tips*',
+		label: '{{Welcomeanon2}}: similar to {{Welcome-anon}} but with hints and tips*',
 		value: 'Welcomeanon2',
 		tooltip: 'Includes section heading.'
 	},
 	{
-		label: '\{\{Welc-anon}}: similar to \{\{Welcome-anon}} but with a border and section heading',
+		label: '{{Welc-anon}}: similar to {{Welcome-anon}} but with a border and section heading',
 		value: 'Welc-anon||',
 		tooltip: 'Includes section heading.'
 	},
 	{
-		label: '\{\{Welcome-anon-vandal}}: for anonymous users who have vandalized a page*',
+		label: '{{Welcome-anon-vandal}}: for anonymous users who have vandalized a page*',
 		value: 'Welcome-anon-vandal',
 		tooltip: 'Includes a section heading and signature.'
 	},
 	{
-		label: '\{\{Welcome-anon-vandalism-fighter}}: for anonymous users who fight vandalism, urging them to create an account*',
+		label: '{{Welcome-anon-vandalism-fighter}}: for anonymous users who fight vandalism, urging them to create an account*',
 		value: 'Welcome-anon-vandalism-fighter', 
 		tooltip: 'Includes section heading.'
 	}
@@ -441,8 +441,8 @@ Twinkle.welcome.callbacks = {
 			text += "== " + Twinkle.getFriendlyPref('welcomeHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + " ==\n";
 		}
 		
-		Status.info( 'Info', 'Will substitute the \{\{' + params.value + '}} welcome template' );
-		text += '\{\{subst:' + params.value;
+		Status.info( 'Info', 'Will substitute the {{' + params.value + '}} welcome template' );
+		text += '{{subst:' + params.value;
 		
 		if( Twinkle.welcome.artHash[ params.value ] ) {
 			if( Twinkle.getFriendlyPref('insertUsername') && params.value.substring(2,0) !== 'W-' ) {
@@ -469,18 +469,18 @@ Twinkle.welcome.callbacks = {
 			text += '|' + mw.config.get('wgUserName');
 		} 
 		
-		text += '\}\}';
+		text += '}}';
 		
 		if( !Twinkle.welcome.signatureHash[ params.value ] && Twinkle.getFriendlyPref('insertSignature') ) {
 			Status.info( 'Info', 'Will add your signature after the welcome' );
-			text += ' \n\~\~\~\~';
+			text += ' \n~~~~';
 		}
 		
 		if( Twinkle.getFriendlyPref('topWelcomes') ) {
 			text += '\n\n' + oldText;
 		}
  
-		var summaryText = "Added " + ( Twinkle.getFriendlyPref('maskTemplateInSummary') ? 'welcome' : ( '\{\{[[Template:' + params.value + '|' + params.value + ']]\}\}' ) ) +
+		var summaryText = "Added " + ( Twinkle.getFriendlyPref('maskTemplateInSummary') ? 'welcome' : ( '{{[[Template:' + params.value + '|' + params.value + ']]}}' ) ) +
 			" template to user talk page";
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));

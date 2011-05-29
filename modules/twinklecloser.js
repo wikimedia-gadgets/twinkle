@@ -336,16 +336,16 @@ Twinkle.closer.callbacks = {
 			switch( type ) {
 			case 'approved':
 				var article = form.article.value;
-				params.tag = '\{\{subst:afc accept' + ( article ? '|' + article : '' ) + '\}\}';
+				params.tag = '{{subst:afc accept' + ( article ? '|' + article : '' ) + '}}';
 				break;
 			case 'denied':
 				var reason = form.reason.value;
-				params.tag = '\{\{subst:afc ' + reason + '\}\}';
+				params.tag = '{{subst:afc ' + reason + '}}';
 				break;
 			case 'archive':
 				var approved = form.approved.checked;
-				params.top = '\{\{subst:afc top' + ( approved ? '|approved' : '' ) + '\}\}';
-				params.bottom = '\{\{subst:afc b\}\}';
+				params.top = '{{subst:afc top' + ( approved ? '|approved' : '' ) + '}}';
+				params.bottom = '{{subst:afc b}}';
 				break;
 			default:
 				alert("Twinkle.closer.callbacks.afc.evaluate: unknown outcome " + type);
@@ -367,11 +367,11 @@ Twinkle.closer.callbacks = {
 
 			switch( params.type ) {
 			case 'approved':
-				text += params.tag + '\~\~\~\~';
+				text += params.tag + '~~~~';
 				summary = 'Approving article.';
 				break;
 			case 'denied':
-				text += params.tag + '\~\~\~\~';
+				text += params.tag + '~~~~';
 				summary = 'Denying article.';
 				break;
 			case 'archive':
@@ -513,7 +513,7 @@ Twinkle.closer.callbacks = {
 			var text = pageobj.getText();
 			var params = pageobj.getCallbackParameters();
 			pageobj.setEditSummary( "Closing discussion, result was \"" + params.label + "\"" +  Twinkle.getPref('summaryAd') );
-			pageobj.setPageText("\{\{subst:Afd top\}\}'''" + params.label + "''' " + params.reason + ". \~\~\~\~\n" + text + "\n\{\{subst:Afd bottom\}\}");
+			pageobj.setPageText("{{subst:Afd top}}'''" + params.label + "''' " + params.reason + ". ~~~~n" + text + "\n{{subst:Afd bottom}}");
 			pageobj.save();
 		}
 	}

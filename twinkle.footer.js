@@ -55,3 +55,5 @@ Twinkle.load = function twinkleload() {
 };
 
 $(document).ready(Twinkle.load);
+
+// </nowiki>

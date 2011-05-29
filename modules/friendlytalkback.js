@@ -23,7 +23,7 @@ Twinkle.talkback.callback = function friendlytalkbackCallback( uid ) {
 	var Window = new SimpleWindow( 600, 350 );
 	Window.setTitle( "Talkback" );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "About \{\{talkback}}", "Template:Talkback" );
+	Window.addFooterLink( "About {{talkback}}", "Template:Talkback" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#talkback" );
 
 	var form = new QuickForm( Twinkle.talkback.callback.evaluate );
@@ -209,25 +209,25 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 
 	var text;
 	if ( tbtarget === "an" ) {
-		text = "\n== " + Twinkle.getFriendlyPref('adminNoticeHeading') + " ==\n\{\{subst:ANI-notice|thread=";
-		text += section + "|noticeboard=" + tbPageName + "}}\~\~\~\~";
+		text = "\n== " + Twinkle.getFriendlyPref('adminNoticeHeading') + " ==\n{{subst:ANI-notice|thread=";
+		text += section + "|noticeboard=" + tbPageName + "}}~~~~";
 
 		talkpage.setEditSummary("Notice of AN/ANI discussion" + Twinkle.getPref('summaryAd'));
 	} else {
 		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
-		text = '\n==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n{\{talkback|';
+		text = '\n==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, "$1") + '==\n{{talkback|';
 		text += tbPageName;
 
 		if( section ) {
 			text += '|' + section;
 		}
 
-		text += '|ts=\~\~\~\~\~\}\}';
+		text += '|ts=~~~~~}}';
 
 		if( e.target.message.value ) {
-			text += '\n' + e.target.message.value + '  \~\~\~\~';
+			text += '\n' + e.target.message.value + '  ~~~~';
 		} else if( Twinkle.getFriendlyPref('insertTalkbackSignature') ) {
-			text += '\n\~\~\~\~';
+			text += '\n~~~~';
 		}
 
 		talkpage.setEditSummary("Talkback ([[" + (tbtarget === 'other' ? '' : 'User talk:') + tbPageName +

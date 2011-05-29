@@ -15,6 +15,8 @@
  * It needs a better header comment than this one.
  */
 
+//<nowiki>
+
 var Twinkle = {};
 window.Twinkle = Twinkle;  // allow global access
 
