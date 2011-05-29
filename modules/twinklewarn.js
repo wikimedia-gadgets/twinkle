@@ -109,8 +109,8 @@ Twinkle.warn.messages = {
 			summary:"General note: Creating inappropriate pages" 
 		},
 		"uw-upload1": { 
-			label:"Uploading inappropriate images", 
-			summary:"General note: Uploading inappropriate images" 
+			label:"Uploading unencyclopedic images", 
+			summary:"General note: Uploading unencyclopedic images" 
 		},
 		"uw-image1": { 
 			label:"Image-related vandalism", 
@@ -165,8 +165,8 @@ Twinkle.warn.messages = {
 			summary:"General note: Formatting, date, language, etc (Manual of style)" 
 		},
 		"uw-move1": { 
-			label:"Page moves", 
-			summary:"General note: Page moves" 
+			label:"Page moves against naming conventions or consensus", 
+			summary:"General note: Page moves against naming conventions or consensus" 
 		},
 		"uw-chat1": { 
 			label:"Using talk page as forum", 
@@ -239,8 +239,8 @@ Twinkle.warn.messages = {
 			summary:"Caution: Creating inappropriate pages" 
 		},
 		"uw-upload2": { 
-			label:"Uploading inappropriate images", 
-			summary:"Caution: Uploading inappropriate images" 
+			label:"Uploading unencyclopedic images", 
+			summary:"Caution: Uploading unencyclopedic images" 
 		},
 		"uw-image2": { 
 			label:"Image-related vandalism", 
@@ -295,8 +295,8 @@ Twinkle.warn.messages = {
 			summary:"Caution: Formatting, date, language, etc (Manual of style)" 
 		},
 		"uw-move2": { 
-			label:"Page moves", 
-			summary:"Caution: Page moves" 
+			label:"Page moves against naming conventions or consensus", 
+			summary:"Caution: Page moves against naming conventions or consensus" 
 		},
 		"uw-chat2": { 
 			label:"Using talk page as forum", 
@@ -369,8 +369,8 @@ Twinkle.warn.messages = {
 			summary:"Warning: Creating inappropriate pages" 
 		},
 		"uw-upload3": { 
-			label:"Uploading inappropriate images", 
-			summary:"Warning: Uploading inappropriate images" 
+			label:"Uploading unencyclopedic images", 
+			summary:"Warning: Uploading unencyclopedic images" 
 		},
 		"uw-image3": { 
 			label:"Image-related vandalism", 
@@ -425,8 +425,8 @@ Twinkle.warn.messages = {
 			summary:"Warning: Formatting, date, language, etc (Manual of style)" 
 		},
 		"uw-move3": { 
-			label:"Page moves", 
-			summary:"Warning: Page moves" 
+			label:"Page moves against naming conventions or consensus", 
+			summary:"Warning: Page moves against naming conventions or consensus" 
 		},
 		"uw-chat3": { 
 			label:"Using talk page as forum", 
@@ -500,8 +500,8 @@ Twinkle.warn.messages = {
 			summary:"Final warning: Creating inappropriate pages" 
 		},
 		"uw-upload4": { 
-			label:"Uploading inappropriate images", 
-			summary:"Final warning: Uploading inappropriate images" 
+			label:"Uploading unencyclopedic images", 
+			summary:"Final warning: Uploading unencyclopedic images" 
 		},
 		"uw-image4": { 
 			label:"Image-related vandalism", 
@@ -552,8 +552,8 @@ Twinkle.warn.messages = {
 			summary:"Final warning: Formatting, date, language, etc (Manual of style)" 
 		},
 		"uw-move4": { 
-			label:"Page moves", 
-			summary:"Final warning: Page moves" 
+			label:"Page moves against naming conventions or consensus", 
+			summary:"Final warning: Page moves against naming conventions or consensus" 
 		},
 		"uw-chat4": { 
 			label:"Using talk page as forum", 
@@ -603,8 +603,8 @@ Twinkle.warn.messages = {
 			summary:"Only warning: Creating inappropriate pages" 
 		},
 		"uw-upload4im": { 
-			label:"Uploading inappropriate images", 
-			summary:"Only warning: Uploading inappropriate images" 
+			label:"Uploading unencyclopedic images", 
+			summary:"Only warning: Uploading unencyclopedic images" 
 		},
 		"uw-image4im": { 
 			label:"Image-related vandalism", 
@@ -627,8 +627,8 @@ Twinkle.warn.messages = {
 			summary:"Only warning: Defamation not specifically directed" 
 		},
 		"uw-move4im": { 
-			label:"Page moves", 
-			summary:"Only warning: Page moves" 
+			label:"Page moves against naming conventions or consensus", 
+			summary:"Only warning: Page moves against naming conventions or consensus" 
 		},
 		"uw-npa4im": { 
 			label:"Personal attack directed at a specific editor", 
