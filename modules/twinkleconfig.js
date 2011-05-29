@@ -1275,13 +1275,14 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 	button.setAttribute("type", "submit");  // so SimpleWindow puts the button in the button pane
 	button.addEventListener("click", function(e) {
 		Twinkle.config.listDialog.reset($prefbutton, dlgtbody);
-		dialog.close();
 	}, false);
 	button.textContent = "Reset";
 	dialogcontent.appendChild(button);
 	button = document.createElement("button");
 	button.setAttribute("type", "submit");  // so SimpleWindow puts the button in the button pane
-	button.addEventListener("click", dialog.close, false);
+	button.addEventListener("click", function(e) {
+		dialog.close();  // the event parameter on this function seems to be broken
+	}, false);
 	button.textContent = "Cancel";
 	dialogcontent.appendChild(button);
 
