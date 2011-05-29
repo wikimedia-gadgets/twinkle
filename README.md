@@ -14,7 +14,7 @@ Updating scripts on Wikipedia
 
 To generate the concatenated Twinkle script, use this `bash` command:
 
-    awk 'FNR==1{print ""}{print}' twinkle.header.js twinkle[!.]*.js friendly*.js twinkle.footer.js > alltwinkle.js
+    awk 'FNR==1{print ""}{print}' twinkle.header.js modules/*.js twinkle.footer.js > alltwinkle.js
 
 Then you will be able to upload `alltwinkle.js` to [MediaWiki:Gadget-Twinkle.js][]. This does not include `morebits.js` and `morebits.css`; these have to be uploaded separately.
 
@@ -54,7 +54,7 @@ To `push` your changes to Foobar's wiki page, do:
 
     ./sync.pl --base User:Foobar --pull morebits.js 
 
-The edit summary will contain the `branch`, the last `commit sha`, and the `oneliner` for that commit.
+The edit summary will contain the branch, the last commit sha, and the oneliner for that commit.
 
 Style guideline
 ---------------
