@@ -743,6 +743,17 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		break;
 	}
 
+	if( actiontype === 'tag' || actiontype === 'protect' ) {
+		tagparams = {
+			tag: form.tagtype.value,
+			reason: ((form.tagtype.value === 'pp-protected' || form.tagtype.value === 'pp-semi-protected' || form.tagtype.value === 'pp-move') && form.reason) ? form.reason.value : null,
+			expiry: (actiontype === 'protect') ? (form.editmodify.checked ? form.editexpiry.value : (form.movemodify.checked ?
+				form.moveexpiry.value : null)) : null,
+				small: form.small.checked,
+				noinclude: form.noinclude.checked
+		};
+	}
+
 	switch (actiontype) {
 		case 'protect':
 			// protect the page
@@ -773,15 +784,6 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			thispage.protect();
 			// fall through to "tag" case
 		case 'tag':
-			// tag the page through the protection
-			var tagparams = {
-				tag: form.tagtype.value,
-				reason: ((form.tagtype.value === 'pp-protected' || form.tagtype.value === 'pp-semi-protected' || form.tagtype.value === 'pp-move') && form.reason) ? form.reason.value : null,
-				expiry: (actiontype === 'protect') ? (form.editmodify.checked ? form.editexpiry.value : (form.movemodify.checked ?
-					form.moveexpiry.value : null)) : null,
-				small: form.small.checked,
-				noinclude: form.noinclude.checked
-			};
 
 			if (actiontype === 'tag') {
 				SimpleWindow.setButtonsEnabled( false );
