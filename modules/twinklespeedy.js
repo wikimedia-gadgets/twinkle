@@ -29,6 +29,7 @@ Twinkle.speedy.callback = function twinklespeedyCallback() {
 	Twinkle.speedy.initDialog(userIsInGroup( 'sysop' ) ? Twinkle.speedy.callback.evaluateSysop : Twinkle.speedy.callback.evaluateUser, true);
 };
 
+var dialog;
 // Prepares the speedy deletion dialog and displays it
 // Parameters:
 //  - callbackfunc: the function to call when the dialog box is submitted
@@ -36,7 +37,6 @@ Twinkle.speedy.callback = function twinklespeedyCallback() {
 //  - content: (optional) a div element in which the form content should be rendered - allows
 //    for placing content in an existing dialog box
 Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstTime, content) {
-	var dialog;
 	if (!content)
 	{
 		dialog = new SimpleWindow( Twinkle.getPref('speedyWindowWidth'), Twinkle.getPref('speedyWindowHeight') );
@@ -688,27 +688,37 @@ Twinkle.speedy.callbacks = {
 			// promote Unlink tool
 			var link, bigtext;
 			if( mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8' ) {
-				link = document.createElement( 'a' );
-				link.setAttribute( 'href', 'javascript:Wikipedia.actionCompleted.redirect=null;twinkleunlink.callback("Removing usages of and links to deleted file ' + encodeURIComponent(mw.config.get('wgPageName')) + '")' );
-				link.style.fontSize = "130%";  // okay, it's crass...
-				link.style.fontWeight = "bold";
-				link.textContent = 'click here to go to the Unlink tool';
-				bigtext = document.createElement( 'span' );
-				bigtext.style.fontSize = "130%";  // okay, it's crass...
-				bigtext.style.fontWeight = "bold";
-				bigtext.textContent = 'To orphan backlinks and remove instances of file usage';
-				Status.info( bigtext, link );
+				var $link = $('<a/>', {
+					'href': '#',
+					'text': 'click here to go to the Unlink tool',
+					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
+					'click': function(){
+						Wikipedia.actionCompleted.redirect=null;
+						dialog.close();
+						Twinkle.unlink.callback("Removing usages of and links to deleted file " + mw.config.get('wgPageName'));
+					}
+				});
+				var $bigtext = $('<span/>', {
+					'text': 'To orphan backlinks and remove instances of file usage',
+					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
+				});
+				Status.info($bigtext[0], $link[0]);
 			} else if (params.normalized !== 'f8') {
-				link = document.createElement( 'a' );
-				link.setAttribute( 'href', 'javascript:Wikipedia.actionCompleted.redirect=null;twinkleunlink.callback("Removing links to deleted page ' + encodeURIComponent(mw.config.get('wgPageName')) + '")' );
-				link.style.fontSize = "130%";  // okay, it's crass...
-				link.style.fontWeight = "bold";
-				link.textContent = 'click here to go to the Unlink tool';
-				bigtext = document.createElement( 'span' );
-				bigtext.style.fontSize = "130%";  // okay, it's crass...
-				bigtext.style.fontWeight = "bold";
-				bigtext.textContent = 'To orphan backlinks';
-				Status.info( bigtext, link );
+				var $link = $('<a/>', {
+					'href': '#',
+					'text': 'click here to go to the Unlink tool',
+					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
+					'click': function(){
+						Wikipedia.actionCompleted.redirect=null;
+						dialog.close();
+						Twinkle.unlink.callback("Removing links to deleted page " + mw.config.get('wgPageName'));
+					}
+				});
+				var $bigtext = $('<span/>', {
+					'text': 'To orphan backlinks',
+					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
+				});
+				Status.info($bigtext[0], $link[0]);
 			}
 
 			// open talk page of first contributor
