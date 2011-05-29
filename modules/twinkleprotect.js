@@ -1,4 +1,3 @@
-/* jshint mediawiki: true */
 /*
  ****************************************
  *** twinkleprotect.js: Protect/RPP module
