@@ -771,7 +771,6 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			Wikipedia.actionCompleted.notice = "Protection complete";
 
 			thispage.protect();
-			return;
 			// fall through to "tag" case
 		case 'tag':
 			// tag the page through the protection
