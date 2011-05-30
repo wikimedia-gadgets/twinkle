@@ -42,11 +42,13 @@ Twinkle.closer.mark = function twinklecloserMark( type ) {
 	case 'afd':
 		sections = $('h3:has(span.editsection)');
 		sections.each(function(index, section) {
-			var query = new QueryString($(this).find('span.editsection a').attr('href').split( '?', 2 )[1]);
+			var $a = $(this).find('span.editsection a');
+			var page =$a.attr('title');
+			var query = new QueryString($a.attr('href').split( '?', 2 )[1]);
 			var section_number = query.get('section');
 			var closelink = $('<a/>', {
 				'text': '[close]',
-				'click': function(){Twinkle.closer.actions.afd(section_number);},
+				'click': function(){Twinkle.closer.actions.afd(section_number, page);},
 				'class': 'twinkle-closer-link twinkle-closer-link-afd',
 				'css': { 'color': '#449922'	}
 			}).prependTo(this);
@@ -334,16 +336,16 @@ Twinkle.closer.callbacks = {
 			switch( type ) {
 			case 'approved':
 				var article = form.article.value;
-				params.tag = '\{\{subst:afc accept' + ( article ? '|' + article : '' ) + '\}\}';
+				params.tag = '{{subst:afc accept' + ( article ? '|' + article : '' ) + '}}';
 				break;
 			case 'denied':
 				var reason = form.reason.value;
-				params.tag = '\{\{subst:afc ' + reason + '\}\}';
+				params.tag = '{{subst:afc ' + reason + '}}';
 				break;
 			case 'archive':
 				var approved = form.approved.checked;
-				params.top = '\{\{subst:afc top' + ( approved ? '|approved' : '' ) + '\}\}';
-				params.bottom = '\{\{subst:afc b\}\}';
+				params.top = '{{subst:afc top' + ( approved ? '|approved' : '' ) + '}}';
+				params.bottom = '{{subst:afc b}}';
 				break;
 			default:
 				alert("Twinkle.closer.callbacks.afc.evaluate: unknown outcome " + type);
@@ -365,11 +367,11 @@ Twinkle.closer.callbacks = {
 
 			switch( params.type ) {
 			case 'approved':
-				text += params.tag + '\~\~\~\~';
+				text += params.tag + '~~~~';
 				summary = 'Approving article.';
 				break;
 			case 'denied':
-				text += params.tag + '\~\~\~\~';
+				text += params.tag + '~~~~';
 				summary = 'Denying article.';
 				break;
 			case 'archive':
@@ -511,7 +513,7 @@ Twinkle.closer.callbacks = {
 			var text = pageobj.getText();
 			var params = pageobj.getCallbackParameters();
 			pageobj.setEditSummary( "Closing discussion, result was \"" + params.label + "\"" +  Twinkle.getPref('summaryAd') );
-			pageobj.setPageText("\{\{subst:Afd top\}\}'''" + params.label + "''' " + params.reason + ". \~\~\~\~\n" + text + "\n\{\{subst:Afd bottom\}\}");
+			pageobj.setPageText("{{subst:Afd top}}'''" + params.label + "''' " + params.reason + ". ~~~~n" + text + "\n{{subst:Afd bottom}}");
 			pageobj.save();
 		}
 	}

@@ -29,6 +29,7 @@ Twinkle.speedy.callback = function twinklespeedyCallback() {
 	Twinkle.speedy.initDialog(userIsInGroup( 'sysop' ) ? Twinkle.speedy.callback.evaluateSysop : Twinkle.speedy.callback.evaluateUser, true);
 };
 
+var dialog;
 // Prepares the speedy deletion dialog and displays it
 // Parameters:
 //  - callbackfunc: the function to call when the dialog box is submitted
@@ -36,7 +37,6 @@ Twinkle.speedy.callback = function twinklespeedyCallback() {
 //  - content: (optional) a div element in which the form content should be rendered - allows
 //    for placing content in an existing dialog box
 Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstTime, content) {
-	var dialog;
 	if (!content)
 	{
 		dialog = new SimpleWindow( Twinkle.getPref('speedyWindowWidth'), Twinkle.getPref('speedyWindowHeight') );
@@ -136,7 +136,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 			}
 		);
 	} else {
-		form.append( { type:'header', label: 'Tagging with \{\{db-multiple}}: Criterion ' + (Twinkle.speedy.dbmultipleCriteria.length + 1) } );
+		form.append( { type:'header', label: 'Tagging with {{db-multiple}}: Criterion ' + (Twinkle.speedy.dbmultipleCriteria.length + 1) } );
 	}
 
 	if (firstTime) {
@@ -230,7 +230,7 @@ Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
 	result.push({
 		label: 'F1: Redundant file',
 		value: 'redundantimage',
-		tooltip: 'Any file that is a redundant copy, in the same file format and same or lower resolution, of something else on Wikipedia. Likewise, other media that is a redundant copy, in the same format and of the same or lower quality. This does not apply to files duplicated on Wikimedia Commons, because of licence issues; these should be tagged with \{\{subst:ncd|Image:newname.ext\}\} or \{\{subst:ncd\}\} instead'
+		tooltip: 'Any file that is a redundant copy, in the same file format and same or lower resolution, of something else on Wikipedia. Likewise, other media that is a redundant copy, in the same format and of the same or lower quality. This does not apply to files duplicated on Wikimedia Commons, because of licence issues; these should be tagged with {{subst:ncd|Image:newname.ext}} or {{subst:ncd}} instead'
 	});
 	result.push({
 		label: 'F2: Corrupt or blank file',
@@ -252,13 +252,13 @@ Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
 	result.push({
 		label: 'F7: Invalid fair-use claim',
 		value: 'badfairuse',
-		tooltip: 'Any file with a clearly invalid fair-use tag (such as a \{\{logo\}\} tag on a photograph of a mascot) may be deleted at any time. Media that fail any part of the non-free content criteria and were uploaded after 2006-07-13 may be deleted forty-eight hours after notification of the uploader. For media uploaded before 2006-07-13 or tagged with the \{\{Replaceable fair use\}\} template, the uploader will be given seven days to comply with this policy after being notified'
+		tooltip: 'Any file with a clearly invalid fair-use tag (such as a {{logo}} tag on a photograph of a mascot) may be deleted at any time. Media that fail any part of the non-free content criteria and were uploaded after 2006-07-13 may be deleted forty-eight hours after notification of the uploader. For media uploaded before 2006-07-13 or tagged with the {{Replaceable fair use}} template, the uploader will be given seven days to comply with this policy after being notified'
 	});
 	if (!multiple) {
 		result.push({
 			label: 'F8: Files available as identical or higher-resolution copies on Wikimedia Commons',
 			value: 'nowcommons',
-			tooltip: 'Provided the following conditions are met: 1: The file format of both images is the same. 2: The file\'s license and source status is beyond reasonable doubt, and the license is undoubtedly accepted at Commons. 3: All information on the file description page is present on the Commons file description page. That includes the complete upload history with links to the uploader\'s local user pages. 4: The file is not protected, and the file description page does not contain a request not to move it to Commons. 5: If the file is available on Commons under a different name than locally, all local references to the file must be updated to point to the title used at Commons. 6: For \{\{c-uploaded\}\} files: They may be speedily deleted as soon as they are off the Main Page'
+			tooltip: 'Provided the following conditions are met: 1: The file format of both images is the same. 2: The file\'s license and source status is beyond reasonable doubt, and the license is undoubtedly accepted at Commons. 3: All information on the file description page is present on the Commons file description page. That includes the complete upload history with links to the uploader\'s local user pages. 4: The file is not protected, and the file description page does not contain a request not to move it to Commons. 5: If the file is available on Commons under a different name than locally, all local references to the file must be updated to point to the title used at Commons. 6: For {{c-uploaded}} files: They may be speedily deleted as soon as they are off the Main Page'
 		});
 	}
 	result.push({
@@ -289,7 +289,7 @@ Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 	result.push({
 		label: 'A2: Foreign language articles that exist on another Wikimedia project',
 		value: 'foreign',
-		tooltip: 'If the article in question does not exist on another project, the template \{\{notenglish\}\} should be used instead. All articles in a non-English language that do not meet this criteria (and do not meet any other criteria for speedy deletion) should be listed at Pages Needing Translation (PNT) for review and possible translation'
+		tooltip: 'If the article in question does not exist on another project, the template {{notenglish}} should be used instead. All articles in a non-English language that do not meet this criteria (and do not meet any other criteria for speedy deletion) should be listed at Pages Needing Translation (PNT) for review and possible translation'
 	});
 	result.push({
 		label: 'A3: No content whatsoever',
@@ -688,27 +688,37 @@ Twinkle.speedy.callbacks = {
 			// promote Unlink tool
 			var link, bigtext;
 			if( mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8' ) {
-				link = document.createElement( 'a' );
-				link.setAttribute( 'href', 'javascript:Wikipedia.actionCompleted.redirect=null;twinkleunlink.callback("Removing usages of and links to deleted file ' + encodeURIComponent(mw.config.get('wgPageName')) + '")' );
-				link.style.fontSize = "130%";  // okay, it's crass...
-				link.style.fontWeight = "bold";
-				link.textContent = 'click here to go to the Unlink tool';
-				bigtext = document.createElement( 'span' );
-				bigtext.style.fontSize = "130%";  // okay, it's crass...
-				bigtext.style.fontWeight = "bold";
-				bigtext.textContent = 'To orphan backlinks and remove instances of file usage';
-				Status.info( bigtext, link );
+				var $link = $('<a/>', {
+					'href': '#',
+					'text': 'click here to go to the Unlink tool',
+					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
+					'click': function(){
+						Wikipedia.actionCompleted.redirect=null;
+						dialog.close();
+						Twinkle.unlink.callback("Removing usages of and links to deleted file " + mw.config.get('wgPageName'));
+					}
+				});
+				var $bigtext = $('<span/>', {
+					'text': 'To orphan backlinks and remove instances of file usage',
+					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
+				});
+				Status.info($bigtext[0], $link[0]);
 			} else if (params.normalized !== 'f8') {
-				link = document.createElement( 'a' );
-				link.setAttribute( 'href', 'javascript:Wikipedia.actionCompleted.redirect=null;twinkleunlink.callback("Removing links to deleted page ' + encodeURIComponent(mw.config.get('wgPageName')) + '")' );
-				link.style.fontSize = "130%";  // okay, it's crass...
-				link.style.fontWeight = "bold";
-				link.textContent = 'click here to go to the Unlink tool';
-				bigtext = document.createElement( 'span' );
-				bigtext.style.fontSize = "130%";  // okay, it's crass...
-				bigtext.style.fontWeight = "bold";
-				bigtext.textContent = 'To orphan backlinks';
-				Status.info( bigtext, link );
+				var $link = $('<a/>', {
+					'href': '#',
+					'text': 'click here to go to the Unlink tool',
+					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
+					'click': function(){
+						Wikipedia.actionCompleted.redirect=null;
+						dialog.close();
+						Twinkle.unlink.callback("Removing links to deleted page " + mw.config.get('wgPageName'));
+					}
+				});
+				var $bigtext = $('<span/>', {
+					'text': 'To orphan backlinks',
+					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
+				});
+				Status.info($bigtext[0], $link[0]);
 			}
 
 			// open talk page of first contributor
@@ -833,7 +843,7 @@ Twinkle.speedy.callbacks = {
 			var code, parameters, i;
 			if (params.normalized === 'multiple')
 			{
-				code = "\{\{db-multiple";
+				code = "{{db-multiple";
 				for (i in Twinkle.speedy.dbmultipleCriteria) {
 					if (typeof Twinkle.speedy.dbmultipleCriteria[i] === 'string') {
 						code += "|" + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase();
@@ -844,7 +854,7 @@ Twinkle.speedy.callbacks = {
 						code += "|" + i + "=" + Twinkle.speedy.dbmultipleParameters[i];
 					}
 				}
-				code += "\}\}";
+				code += "}}";
 				params.utparams = [];
 			}
 			else
@@ -853,13 +863,13 @@ Twinkle.speedy.callbacks = {
 				if (!parameters) {
 					return;  // the user aborted
 				}
-				code = "\{\{db-" + params.value;
+				code = "{{db-" + params.value;
 				for (i in parameters) {
 					if (typeof parameters[i] === 'string') {
 						code += "|" + i + "=" + parameters[i];
 					}
 				}
-				code += "\}\}";
+				code += "}}";
 				params.utparams = Twinkle.speedy.getUserTalkParameters(params.normalized, parameters);
 			}
 
@@ -882,13 +892,13 @@ Twinkle.speedy.callbacks = {
 					switch (params.normalized)
 					{
 						case 'db':
-							notifytext = "\n\n\{\{subst:db-reason-notice|1=" + mw.config.get('wgPageName');
+							notifytext = "\n\n{{subst:db-reason-notice|1=" + mw.config.get('wgPageName');
 							break;
 						case 'multiple':
-							notifytext = "\n\n\{\{subst:db-notice-multiple|1=" + mw.config.get('wgPageName');
+							notifytext = "\n\n{{subst:db-notice-multiple|1=" + mw.config.get('wgPageName');
 							break;
 						default:
-							notifytext = "\n\n\{\{subst:db-csd-notice-custom|1=" + mw.config.get('wgPageName') + "|2=" + params.value;
+							notifytext = "\n\n{{subst:db-csd-notice-custom|1=" + mw.config.get('wgPageName') + "|2=" + params.value;
 							break;
 					}
 					for (var i in params.utparams) {
@@ -896,7 +906,7 @@ Twinkle.speedy.callbacks = {
 							notifytext += "|" + i + "=" + params.utparams[i];
 						}
 					}
-					notifytext += (nowelcome ? "|nowelcome=yes" : "") + "\}\} \~\~\~\~";
+					notifytext += (nowelcome ? "|nowelcome=yes" : "") + "}} ~~~~";
 
 					usertalkpage.setAppendText(notifytext);
 					usertalkpage.setEditSummary("Notification: speedy deletion nomination of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
@@ -923,7 +933,7 @@ Twinkle.speedy.callbacks = {
 			}
 
 			// Remove tags that become superfluous with this action
-			text = text.replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*}}|[^{}])*)?}}\s*/ig, "");
+			text = text.replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 
 			// Generate edit summary for edit
 			var editsummary;
@@ -988,7 +998,7 @@ Twinkle.speedy.callbacks = {
 			switch (params.normalized)
 			{
 				case 'db':
-					text += "\{\{tl|db-reason\}\}";
+					text += "{{tl|db-reason}}";
 					break;
 				case 'multiple':
 					text += "multiple criteria (";
@@ -1001,13 +1011,13 @@ Twinkle.speedy.callbacks = {
 					text += ')';
 					break;
 				default:
-					text += "[[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] (\{\{tl|db-" + params.value + "\}\})";
+					text += "[[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] ({{tl|db-" + params.value + "}})";
 					break;
 			}
 			if (params.logInitialContrib) {
-				text += "; notified \{\{user|" + params.logInitialContrib + "\}\}";
+				text += "; notified {{user|" + params.logInitialContrib + "}}";
 			}
-			text += " \~\~\~\~\~\n";
+			text += " ~~~~~\n";
 
 			pageobj.setPageText(text);
 			pageobj.setEditSummary("Logging speedy deletion nomination of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
@@ -1063,7 +1073,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					return null;
 				}
 			}
-			parameters["date"] = "\~\~\~\~\~";
+			parameters["date"] = "~~~~~";
 			break;
 		case 'g6':
 			switch( value ) {
@@ -1167,7 +1177,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
-			parameters["1"] = "\~\~\~\~\~";
+			parameters["1"] = "~~~~~";
 			parameters["2"] = template;
 			break;
 		case 'g10':

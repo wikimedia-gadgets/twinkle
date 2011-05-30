@@ -39,7 +39,7 @@ print($usage->text), exit if $opt->help || !scalar(@ARGV);
 
 my %pages = map +("$opt->{base}/$_" => $_), @ARGV;
 my %deploys = (
-	'twinkle.js' => 'MediaWiki:Gadget-TwinkleTEST.js',
+	'twinkle.js' => 'MediaWiki:Gadget-Twinkle.js',
 	'morebits.js' => 'MediaWiki:Gadget-morebits.js',
 	'morebits.css' => 'MediaWiki:Gadget-morebits.css'
 );
@@ -98,14 +98,13 @@ if( $opt->mode eq "pull" ) {
 		}
 		$page = $deploys{$file};
 		say "$file -> https://secure.wikimedia.org/$opt->{family}/$opt->{lang}/wiki/$page";
-        my $tag = $repo->run(describe => '--always', '--all', '--dirty');
-        my $log = $repo->run(log => '-1', '--oneline', '--no-color', $file);
-        $tag =~ m{(?:heads/)?(?<branch>.+)};
+        my $tag = $repo->run(describe => '--always', '--dirty');
+        my $log = $repo->run(log => '-1', '--pretty=format:%s', '--no-color');
         my $text = read_file($file,  {binmode => ':raw' });
         my $ret = $bot->edit({
                 page    => $page,
                 text    => decode("UTF-8", $text),
-                summary => "$+{branch}:$log",
+                summary => "$tag: $log",
             });
 		unless($ret) {
 			die "Error $bot->{error}->{code}: $bot->{error}->{details}";

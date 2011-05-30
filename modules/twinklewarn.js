@@ -177,16 +177,16 @@ Twinkle.warn.messages = {
 			summary:"General note: Refactoring others' talk page comments" 
 		},
 		"uw-afd1": { 
-			label:"Removing \{\{afd\}\} templates", 
-			summary:"General note: Removing \{\{afd\}\} templates" 
+			label:"Removing {{afd}} templates",
+			summary:"General note: Removing {{afd}} templates"
 		},
 		"uw-speedy1": { 
-			label:"Removing \{\{speedy deletion\}\} templates", 
-			summary:"General note: Removing \{\{speedy deletion\}\} templates" 
+			label:"Removing {{speedy deletion}} templates",
+			summary:"General note: Removing {{speedy deletion}} templates"
 		},
 		"uw-blpprod1": { 
-			label:"Removing \{\{blp prod\}\} templates", 
-			summary:"General note: Removing \{\{blp prod\}\} templates"
+			label:"Removing {{blp prod}} templates",
+			summary:"General note: Removing {{blp prod}} templates"
 		},
 		"uw-npa1": { 
 			label:"Personal attack directed at a specific editor", 
@@ -307,16 +307,16 @@ Twinkle.warn.messages = {
 			summary:"Caution: Refactoring others' talk page comments" 
 		},
 		"uw-afd2": { 
-			label:"Removing \{\{afd\}\} templates", 
-			summary:"Caution: Removing \{\{afd\}\} templates" 
+			label:"Removing {{afd}} templates",
+			summary:"Caution: Removing {{afd}} templates"
 		},
 		"uw-speedy2": { 
-			label:"Removing \{\{speedy deletion\}\} templates", 
-			summary:"Caution: Removing \{\{speedy deletion\}\} templates" 
+			label:"Removing {{speedy deletion}} templates",
+			summary:"Caution: Removing {{speedy deletion}} templates"
 		},
 		"uw-blpprod2": { 
-			label:"Removing \{\{blp prod\}\} templates", 
-			summary:"Caution: Removing \{\{blp prod\}\} templates" 
+			label:"Removing {{blp prod}} templates",
+			summary:"Caution: Removing {{blp prod}} templates"
 		},
 		"uw-npa2": { 
 			label:"Personal attack directed at a specific editor", 
@@ -437,16 +437,16 @@ Twinkle.warn.messages = {
 			summary:"Warning: Refactoring others' talk page comments" 
 		},
 		"uw-afd3": { 
-			label:"Removing \{\{afd\}\} templates", 
-			summary:"Warning: Removing \{\{afd\}\} templates" 
+			label:"Removing {{afd}} templates",
+			summary:"Warning: Removing {{afd}} templates"
 		},
 		"uw-speedy3": { 
-			label:"Removing \{\{speedy deletion\}\} templates", 
-			summary:"Warning: Removing \{\{speedy deletion\}\} templates" 
+			label:"Removing {{speedy deletion}} templates",
+			summary:"Warning: Removing {{speedy deletion}} templates"
 		},
 		"uw-blpprod3": { 
-			label:"Removing \{\{blpprod\}\} templates", 
-			summary:"Warning: Removing \{\{blpprod\}\} templates" 
+			label:"Removing {{blpprod}} templates",
+			summary:"Warning: Removing {{blpprod}} templates"
 		},
 		"uw-npa3": { 
 			label:"Personal attack directed at a specific editor", 
@@ -564,16 +564,16 @@ Twinkle.warn.messages = {
 			summary:"Final warning: Refactoring others' talk page comments" 
 		},
 		"uw-afd4": { 
-			label:"Removing \{\{afd\}\} templates", 
-			summary:"Final warning: Removing \{\{afd\}\} templates" 
+			label:"Removing {{afd}} templates",
+			summary:"Final warning: Removing {{afd}} templates"
 		},
 		"uw-speedy4": { 
-			label:"Removing \{\{speedy deletion\}\} templates", 
-			summary:"Final warning: Removing \{\{speedy deletion\}\} templates" 
+			label:"Removing {{speedy deletion}} templates",
+			summary:"Final warning: Removing {{speedy deletion}} templates"
 		},
 		"uw-blpprod4": { 
-			label:"Removing \{\{blpprod\}\} templates", 
-			summary:"Final warning: Removing \{\{blpprod\}\} templates" 
+			label:"Removing {{blpprod}} templates",
+			summary:"Final warning: Removing {{blpprod}} templates"
 		},
 		"uw-npa4": { 
 			label:"Personal attack directed at a specific editor", 
@@ -899,8 +899,8 @@ Twinkle.warn.messages = {
 			summary:"Warning: Linking to copyrighted works violation" 
 		},
 		"uw-copyright-remove": {
-			label:"Removing \{\{copyvio}} template from articles",
-			summary:"Warning: Removing \{\{copyvio}} templates"
+			label:"Removing {{copyvio}} template from articles",
+			summary:"Warning: Removing {{copyvio}} templates"
 		},
 		"uw-efsummary": {
 			label:"Edit summary triggering the edit filter",
@@ -1460,7 +1460,7 @@ Twinkle.warn.callbacks = {
 			}
 		}
 		
-		var mainheaderRe = /==+\\s*Warnings\\s*==+/;
+		var mainheaderRe = new RegExp("==+\\s*Warnings\\s*==+");
 		var headerRe = new RegExp( "^==+\\s*(?:" + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() +  ")\\s+" + date.getUTCFullYear() + "\\s*==+", 'm' );
 
 		if( text.length > 0 ) {
@@ -1494,7 +1494,7 @@ Twinkle.warn.callbacks = {
 				time = '|time=' + params.block_timer;
 			}
 
-			text += "\{\{subst:" + params.sub_group + article + time + reason + "|sig=true|subst=subst:\}\}";
+			text += "{{subst:" + params.sub_group + article + time + reason + "|sig=true|subst=subst:}}";
 		} else {
 			if( !headerRe.exec( text ) ) {
 				Status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
@@ -1502,9 +1502,9 @@ Twinkle.warn.callbacks = {
 			}
 
 			if( params.sub_group === 'uw-username' ) {
-				text += "\{\{subst:" + params.sub_group + ( params.reason ? '|1=' + params.reason : '' ) + "|subst=subst:\}\} \~\~\~\~";
+				text += "{{subst:" + params.sub_group + ( params.reason ? '|1=' + params.reason : '' ) + "|subst=subst:}} ~~~~";
 			} else {
-				text += "\{\{subst:" + params.sub_group + ( params.article ? '|1=' + params.article : '' ) + "|subst=subst:\}\}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + "\~\~\~\~";
+				text += "{{subst:" + params.sub_group + ( params.article ? '|1=' + params.article : '' ) + "|subst=subst:}}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + "~~~~";
 			}
 		}
 		
@@ -1532,7 +1532,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	// First, check to make sure a reason was filled in if uw-username was selected
 	
 	if(e.target.sub_group.value === 'uw-username' && e.target.reason.value.trim() === '') {
-		alert("You must supply a reason for the \{\{uw-username}} template.");
+		alert("You must supply a reason for the {{uw-username}} template.");
 		return;
 	}
 

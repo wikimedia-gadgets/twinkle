@@ -23,7 +23,7 @@ Twinkle.config.commonEnums = {
 
 Twinkle.config.commonSets = {
 	csdCriteria: {
-		db: "Custom rationale (\{\{db}})",
+		db: "Custom rationale ({{db}})",
 		g1: "G1", g2: "G2", g3: "G3", g4: "G4", g5: "G5", g6: "G6", g7: "G7", g8: "G8", g10: "G10", g11: "G11", g12: "G12",
 		a1: "A1", a2: "A2", a3: "A3", a5: "A5", a7: "A7", a9: "A9", a10: "A10",
 		u1: "U1", u2: "U2", u3: "U3",
@@ -354,7 +354,7 @@ Twinkle.config.sections = [
 		{
 			name: "welcomeUserOnSpeedyDeletionNotification",
 			label: "Welcome page creator alongside notification when tagging with these criteria",
-			helptip: "The welcome is issued only if the user is notified about the deletion, and only if their talk page does not already exist. The template used is \{\{<a href=\"/wiki/Template:Firstarticle\">firstarticle</a>}}.",
+			helptip: "The welcome is issued only if the user is notified about the deletion, and only if their talk page does not already exist. The template used is {{<a href=\"/wiki/Template:Firstarticle\">firstarticle</a>}}.",
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteria,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
@@ -434,7 +434,7 @@ Twinkle.config.sections = [
 	preferences: [
 		{
 			name: "groupByDefault",
-			label: "Check the \"group into \{\{multiple issues}}\" box by default",
+			label: "Check the \"group into {{multiple issues}}\" box by default",
 			type: "boolean"
 		},
 		{

@@ -381,7 +381,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if (comment !== "" ) {
 				reason += (reason === "" ? "" : ". ") + comment + ".";
 			}
-			reason += "\~\~\~\~";
+			reason += "~~~~";
 			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
 
 			SimpleWindow.setButtonsEnabled( false );
@@ -401,7 +401,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				aivPage.getStatusElement().status( 'Adding new report...' );
 				aivPage.setMinorEdit( Twinkle.getPref('markAIVReportAsMinor') );
 				aivPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd') );
-				aivPage.setPageText( text + '\n*\{\{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '\}\} - ' + reason );
+				aivPage.setPageText( text + '\n*{{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '}} - ' + reason );
 				aivPage.save();
 			} );
 			break;
@@ -424,11 +424,11 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if ( /[aeiouwyh]/.test( types[0] ) ) { // non 100% correct, but whatever, inlcuding 'h' for Cockney
 				article = 'an';
 			}
-			reason = "*\{\{user-uaa|1=" + uid + "\}\} &mdash; Violation of username policy because it's " + article + " " + types + " username; ";
+			reason = "*{{user-uaa|1=" + uid + "}} &mdash; Violation of username policy because it's " + article + " " + types + " username; ";
 			if (comment !== '' ) {
 				reason += "''" + comment.toUpperCaseFirstChar() + "''. ";
 			}
-			reason += "\~\~\~\~";
+			reason += "~~~~";
 			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
 
 			SimpleWindow.setButtonsEnabled( false );
@@ -489,7 +489,7 @@ Twinkle.arv.processSock = function( params ) {
 	if (params.notify) {
 	
 		var notifyEditSummary = "Notifying about suspicion of sockpuppeteering." + Twinkle.getPref('summaryAd');
-		var notifyText = "\n\n\{\{subst:socksuspectnotice|1=" + params.uid + "\}\} \~\~\~\~";
+		var notifyText = "\n\n{{subst:socksuspectnotice|1=" + params.uid + "}} ~~~~";
 		
 		// notify user's master account
 		var masterTalkPage = new Wikipedia.page( 'User talk:' + params.uid, 'Notifying suspected sockpuppeteer' );
@@ -525,15 +525,15 @@ Twinkle.arv.processSock = function( params ) {
 	}
 
 	// prepare the SPI report
-	var text = "\n\n\{\{subst:SPI report|socksraw=" +
+	var text = "\n\n{{subst:SPI report|socksraw=" +
 		params.sockpuppets.map( function(v) { 
-				return "* \{\{" + ( isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "\}\}"; 
+				return "* {{" + ( isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "}}";
 			} ).join( "\n" ) + "\n|evidence=" + params.evidence + " \n";
 		
 	if ( params.checkuser ) {
 		text += "|checkuser=yes";
 	}
-	text += "\}\}";
+	text += "}}";
 
 	var spiPage = new Wikipedia.page( 'Wikipedia:Sockpuppet investigations/' +  params.uid, 'Retrieving discussion page' );
 	spiPage.setFollowRedirect( true );
