@@ -413,17 +413,17 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 		{
+			name: "speedyLogPageName",
+			label: "Keep the CSD userspace log at this user subpage",
+			helptip: "i.e. User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the CSD userspace log.",
+			type: "string"
+		},
+		{
 			name: "noLogOnSpeedyNomination",
 			label: "Do not create a userspace log entry when tagging with these criteria",
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteria,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
-		},
-		{
-			name: "speedyLogPageName",
-			label: "Keep the CSD userspace log at this user subpage",
-			helptip: "i.e. User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the CSD userspace log.",
-			type: "string"
 		}
 	]
 },

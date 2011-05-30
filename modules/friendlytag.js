@@ -913,7 +913,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	}
 	var params;
 
-	if( tags.length ) {
+	if( !tags.length ) {
 		alert( 'You must select at least one tag!' );
 		return;
 	}
