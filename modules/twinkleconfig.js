@@ -354,7 +354,7 @@ Twinkle.config.sections = [
 		{
 			name: "welcomeUserOnSpeedyDeletionNotification",
 			label: "Welcome page creator alongside notification when tagging with these criteria",
-			helptip: "The welcome is issued only if the user is notified about the deletion, and only if their talk page does not already exist. The template used is {{<a href=\"/wiki/Template:Firstarticle\">firstarticle</a>}}.",
+			helptip: "The welcome is issued only if the user is notified about the deletion, and only if their talk page does not already exist. The template used is {{<a href=\"" + mw.config.get("wgArticlePath").replace("$1", "Template:Firstarticle") + "\">firstarticle</a>}}.",
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteria,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
@@ -541,7 +541,7 @@ Twinkle.config.sections = [
 		{
 			name: "blankTalkpageOnIndefBlock",
 			label: "Blank the talk page when indefinitely blocking users",
-			helptip: "See <a href=\"/wiki/WP:UW#Indefinitely blocked users\">WP:UW</a> for more information.",
+			helptip: "See <a href=\"" + mw.config.get("wgArticlePath").replace("$1", "WP:UW#Indefinitely blocked users") + "\">WP:UW</a> for more information.",
 			adminOnly: true,
 			type: "boolean"
 		}
@@ -762,7 +762,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		// (settings in that file will still work, but they will be overwritten by twinkleoptions.js settings)
 		var contentnotice = document.createElement("p");
 		// I hate innerHTML, but this is one thing it *is* good for...
-		contentnotice.innerHTML = "<b>Before modifying your preferences here,</b> make sure you have removed any old <code>TwinkleConfig</code> and <code>FriendlyConfig</code> settings from your <a href=\"/wiki/Special:MyPage/skin.js\" title=\"Special:MyPage/skin.js\">user JavaScript file</a>.";
+		contentnotice.innerHTML = "<b>Before modifying your preferences here,</b> make sure you have removed any old <code>TwinkleConfig</code> and <code>FriendlyConfig</code> settings from your <a href=\"" + mw.config.get("wgArticlePath").replace("$1", "Special:MyPage/skin.js") + "\" title=\"Special:MyPage/skin.js\">user JavaScript file</a>.";
 		contentdiv.appendChild(contentnotice);
 
 		// look and see if the user does in fact have any old settings in their skin JS file
@@ -1118,7 +1118,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 				box.appendChild(document.createTextNode("You can customize Twinkle to suit your preferences by using the "));
 			}
 			link = document.createElement("a");
-			link.setAttribute("href", "/wiki/Wikipedia:Twinkle/Preferences");
+			link.setAttribute("href", mw.config.get("wgArticlePath").replace("$1", "Wikipedia:Twinkle/Preferences"));
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode(", or by editing this page."));
@@ -1130,7 +1130,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 			box.appendChild(document.createTextNode("If you want to set Twinkle preferences, you can use the "));
 			link = document.createElement("a");
-			link.setAttribute("href", "/wiki/Wikipedia:Twinkle/Preferences");
+			link.setAttribute("href", mw.config.get("wgArticlePath").replace("$1", "Wikipedia:Twinkle/Preferences"));
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode("."));
@@ -1147,7 +1147,7 @@ Twinkle.config.legacyPrefsNotice = function twinkleconfigLegacyPrefsNotice(pageo
 		contentnotice.innerHTML = '<table class="plainlinks ombox ombox-content"><tr><td class="mbox-image">' +
 			'<img alt="" src="http://upload.wikimedia.org/wikipedia/en/3/38/Imbox_content.png" /></td>' +
 			'<td class="mbox-text"><p><big><b>Before modifying your settings here,</b> you must remove your old Twinkle and Friendly settings from your personal skin JavaScript.</big></p>' +
-			'<p>To do this, you can <a href="/w/index.php?title=User:' + encodeURIComponent(mw.config.get("wgUserName")) + '/' + mw.config.get("skin") + '.js&action=edit" target="_tab"><b>edit your personal JavaScript</b></a>, removing all lines of code that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
+			'<p>To do this, you can <a href="' + mw.config.get("wgScript") + '?title=User:' + encodeURIComponent(mw.config.get("wgUserName")) + '/' + mw.config.get("skin") + '.js&action=edit" target="_tab"><b>edit your personal JavaScript</b></a>, removing all lines of code that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
 			'</td></tr></table>';
 	} else {
 		$(contentnotice).remove();
@@ -1667,7 +1667,7 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	noticebox.className = "successbox";
 	noticebox.style.fontSize = "100%";
 	noticebox.style.marginTop = "2em";
-	noticebox.innerHTML = "<p><b>Your Twinkle preferences have been saved.</b></p><p>To see the changes, you will need to <a href=\"/wiki/WP:BYPASS\" title=\"WP:BYPASS\"><b>bypass your browser cache</b></a>.</p>";
+	noticebox.innerHTML = "<p><b>Your Twinkle preferences have been saved.</b></p><p>To see the changes, you will need to <a href=\"" + mw.config.get("wgArticlePath").replace("$1", "WP:BYPASS") + "\" title=\"WP:BYPASS\"><b>bypass your browser cache</b></a>.</p>";
 	Status.root.appendChild(noticebox);
 	var noticeclear = document.createElement("br");
 	noticeclear.style.clear = "both";
