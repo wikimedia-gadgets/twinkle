@@ -29,7 +29,7 @@ Twinkle.speedy.callback = function twinklespeedyCallback() {
 	Twinkle.speedy.initDialog(userIsInGroup( 'sysop' ) ? Twinkle.speedy.callback.evaluateSysop : Twinkle.speedy.callback.evaluateUser, true);
 };
 
-var dialog;
+Twinkle.speedy.dialog = null;
 // Prepares the speedy deletion dialog and displays it
 // Parameters:
 //  - callbackfunc: the function to call when the dialog box is submitted
@@ -37,9 +37,11 @@ var dialog;
 //  - content: (optional) a div element in which the form content should be rendered - allows
 //    for placing content in an existing dialog box
 Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, firstTime, content) {
+	var dialog;
 	if (!content)
 	{
-		dialog = new SimpleWindow( Twinkle.getPref('speedyWindowWidth'), Twinkle.getPref('speedyWindowHeight') );
+		Twinkle.speedy.dialog = new SimpleWindow( Twinkle.getPref('speedyWindowWidth'), Twinkle.getPref('speedyWindowHeight') );
+		dialog = Twinkle.speedy.dialog;
 		dialog.setTitle( "Choose criteria for speedy deletion" );
 		dialog.setScriptName( "Twinkle" );
 		dialog.addFooterLink( "Speedy deletion policy", "WP:CSD" );
@@ -247,8 +249,25 @@ Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
 	result.push({
 		label: 'F3: Improper license',
 		value: 'noncom',
-		tooltip: '"Files licensed as "for non-commercial use only", "non-derivative use" or "used with permission" that were uploaded on or after 2005-05-19, except where they have been shown to comply with the limited standards for the use of non-free content. This includes files licensed under a "Non-commercial Creative Commons License". Such files uploaded before 2005-05-19 may also be speedily deleted if they are not used in any articles'
+		tooltip: 'Files licensed as "for non-commercial use only", "non-derivative use" or "used with permission" that were uploaded on or after 2005-05-19, except where they have been shown to comply with the limited standards for the use of non-free content. This includes files licensed under a "Non-commercial Creative Commons License". Such files uploaded before 2005-05-19 may also be speedily deleted if they are not used in any articles'
 	});
+	if (userIsInGroup('sysop')) {
+		result.push({
+			label: 'F4: Lack of licensing information',
+			value: 'unksource',
+			tooltip: 'Files in category "Files with unknown source", "Files with unknown copyright status", or "Files with no copyright tag" that have been tagged with a template that places them in the category for more than seven days, regardless of when uploaded. Note, users sometimes specify their source in the upload summary, so be sure to check the circumstances of the file.'
+		});
+		result.push({
+			label: 'F5: Unused unfree copyrighted files',
+			value: 'unfree',
+			tooltip: 'Files that are not under a free license or in the public domain that are not used in any article and that have been tagged with a template that places them in a dated subcategory of Category:Orphaned fairuse files for more than seven days. Reasonable exceptions may be made for file uploaded for an upcoming article. Use the "Orphaned fair use" option in Twinkle\'s DI module to tag files for forthcoming deletion.'
+		});
+		result.push({
+			label: 'F6: Missing fair-use rationale',
+			value: 'norat',
+			tooltip: 'Any file without a fair use rationale may be deleted seven days after it is uploaded.  Boilerplate fair use templates do not constitute a fair use rationale.  Files uploaded before 2006-05-04 should not be deleted immediately; instead, the uploader should be notified that a fair-use rationale is needed.  Files uploaded after 2006-05-04 can be tagged using the "No fair use rationale" option in Twinkle\'s DI module. Such files can be found in the dated subcategories of Category:Files with no fair use rationale.'
+		});
+	}
 	result.push({
 		label: 'F7: Invalid fair-use claim',
 		value: 'badfairuse',
@@ -271,6 +290,13 @@ Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
 		value: 'badfiletype',
 		tooltip: 'Files uploaded that are neither image, sound, nor video files (e.g. .doc, .pdf, or .xls files) which are not used in any article and have no foreseeable encyclopedic use'
 	});
+	if (userIsInGroup('sysop')) {
+		result.push({
+			label: 'F11: No evidence of permission',
+			value: 'nopermission',
+			tooltip: 'If an uploader has specified a license and has named a third party as the source/copyright holder without providing evidence that this third party has in fact agreed, the item may be deleted seven days after notification of the uploader'
+		});
+	}
 	result.push({
 		label: 'G8: File description page with no corresponding file',
 		value: 'imagepage',
@@ -580,10 +606,14 @@ Twinkle.speedy.normalizeHash = {
 	'redundantimage': 'f1',
 	'noimage': 'f2',
 	'noncom': 'f3',
+	'unksource': 'f4',
+	'unfree': 'f5',
+	'norat': 'f6',
 	'badfairuse': 'f7',
 	'nowcommons': 'f8',
 	'imgcopyvio': 'f9',
 	'badfiletype': 'f10',
+	'nopermission': 'f11',
 	'catempty': 'c1',
 	'userreq': 'u1',
 	'nouser': 'u2',
@@ -635,10 +665,14 @@ Twinkle.speedy.reasonHash = {
 	'redundantimage': 'File  redundant to another on Wikipedia',
 	'noimage': 'Corrupt or empty file, or a file description page for a file on Commons',
 	'noncom': 'File with improper license',
+	'unksource': 'Lack of licensing information',
+	'unfree': 'Unused non-free media',
+	'norat': 'Non-free file without [[WP:RAT|fair-use rationale]]',
 	'badfairuse': '[[WP:NFCC|Invalid]] fair-use claim',
 	'nowcommons': 'Media file available on Commons',
 	'imgcopyvio': 'File [[WP:COPYVIO|copyright violation]]',
 	'badfiletype': 'Useless media file',
+	'nopermission': 'No evidence of permission',
 // Categories
 	'catempty': 'Empty category',
 // User pages
@@ -693,9 +727,9 @@ Twinkle.speedy.callbacks = {
 					'text': 'click here to go to the Unlink tool',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
 					'click': function(){
-						Wikipedia.actionCompleted.redirect=null;
-						dialog.close();
-						Twinkle.unlink.callback("Removing usages of and links to deleted file " + mw.config.get('wgPageName'));
+						Wikipedia.actionCompleted.redirect = null;
+						Twinkle.speedy.dialog.close();
+						Twinkle.unlink.callback("Removing usages of and/or links to deleted file " + mw.config.get('wgPageName'));
 					}
 				});
 				var $bigtext = $('<span/>', {
@@ -709,8 +743,8 @@ Twinkle.speedy.callbacks = {
 					'text': 'click here to go to the Unlink tool',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
 					'click': function(){
-						Wikipedia.actionCompleted.redirect=null;
-						dialog.close();
+						Wikipedia.actionCompleted.redirect = null;
+						Twinkle.speedy.dialog.close();
 						Twinkle.unlink.callback("Removing links to deleted page " + mw.config.get('wgPageName'));
 					}
 				});
@@ -1268,6 +1302,13 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	}
 
 	var normalized = Twinkle.speedy.normalizeHash[ value ];
+
+	// for sysops only
+	if (['f4', 'f5', 'f6', 'f11'].indexOf(normalized) !== -1) {
+		alert("Tagging with F4, F5, F6, and F11 is not possible using the CSD module.  Try using DI instead, or unchecking \"Tag page only\" if you meant to delete the page.");
+		return;
+	}
+
 	var i;
 
 	// analyse each db-multiple criterion to determine whether to watch the page/notify the creator
