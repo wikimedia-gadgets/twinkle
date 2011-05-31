@@ -41,6 +41,7 @@ Twinkle.defaultConfig.twinkle = {
 	deletionSummaryAd: " ([[WP:TW|TW]])",
 	protectionSummaryAd: " ([[WP:TW|TW]])",
 	userTalkPageMode: "window",
+	dialogLargeFont: false,
 	 // ARV
 	markAIVReportAsMinor: true,
 	markUAAReportAsMinor: true,

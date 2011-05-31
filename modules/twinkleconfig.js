@@ -138,6 +138,13 @@ Twinkle.config.sections = [
 			label: "When opening a user talk page, open it",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.talkPageMode
+		},
+
+		// TwinkleConfig.dialogLargeFont (boolean)
+		{
+			name: "dialogLargeFont",
+			label: "Use larger text in Twinkle dialogs",
+			type: "boolean"
 		}
 	]
 },

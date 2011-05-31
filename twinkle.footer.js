@@ -52,6 +52,22 @@ Twinkle.load = function twinkleload() {
 	// run the initialization callbacks for any custom modules
 	$(Twinkle.initCallbacks).each(function(k, v) { v(); });
 	Twinkle.addInitCallback = function(func) { func(); };
+
+	// make text in Twinkle dialogs bigger, if desired
+	if (Twinkle.getPref("dialogLargeFont")) {
+		// mw.util.addCSS is not available at this stage of loading the page
+		var s = document.createElement("style");
+		s.type = "text/css";
+		s.rel = "stylesheet";
+		var css = ".morebits-dialog-content, .morebits-dialog-footerlinks { font-size: 100% !important; } " +
+			".morebits-dialog input, .morebits-dialog select, .morebits-dialog-content button { font-size: inherit !important; }";
+		if (s.styleSheet) {
+			s.styleSheet.cssText = css;
+		} else {
+			s.appendChild(document.createTextNode(css));
+		}
+		document.getElementsByTagName("head")[0].appendChild(s);
+	}
 };
 
 $(document).ready(Twinkle.load);
