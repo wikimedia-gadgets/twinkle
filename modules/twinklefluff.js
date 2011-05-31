@@ -306,7 +306,7 @@ Twinkle.fluff.callbacks = {
 			return;
 		}
 		var index = 1;
-		if( self.params.revid !== lastrevid  ) {
+		if( self.params.revid != lastrevid  ) {
 			Status.warn( 'Warning', [ 'Latest revision ', htmlNode( 'strong', lastrevid ), ' doesn\'t equal our revision ', htmlNode( 'strong', self.params.revid ) ] );
 			if( lastuser === self.params.user ) {
 				switch( self.params.type ) {
