@@ -3524,7 +3524,7 @@ SimpleWindow.prototype = {
 		// from display time onwards, let the browser determine the optimum height, and instead limit the height at the given value
 		// note that the given height will exclude the approx. 20px that the jQuery UI chrome has in height in addition to the height
 		// of an equivalent "classic" SimpleWindow
-		if (parseInt(getComputedStyle($(this.content).dialog("widget")[0]).height) > window.innerHeight) {
+		if (parseInt(getComputedStyle($(this.content).dialog("widget")[0], null).height) > window.innerHeight) {
 			$(this.content).dialog("option", "height", window.innerHeight - 2).dialog("option", "position", "top");
 		} else {
 			$(this.content).dialog("option", "height", "auto");

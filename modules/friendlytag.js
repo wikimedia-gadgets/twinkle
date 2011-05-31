@@ -52,7 +52,7 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 		form.append( { type:'header', label:'Notice templates' } );
 		form.append( { type:'checkbox', name: 'notice', list: Twinkle.tag.noticeList } );
 
-		if( typeof( Twinkle.getFriendlyPref('customTagList') ) === 'object' ) {
+		if( Twinkle.getFriendlyPref('customTagList').length ) {
 			form.append( { type:'header', label:'Custom templates' } );
 			form.append( { type: 'checkbox', name: 'custom', list: Twinkle.getFriendlyPref('customTagList') } );
 		}
@@ -903,7 +903,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	if( Twinkle.tag.isRedirect ) {
 		tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
 	} else {
-		if( typeof( Twinkle.getFriendlyPref('customTagList') ) === 'object' ) {
+		if( Twinkle.getFriendlyPref('customTagList').length ) {
 			tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) ).concat( form.getChecked( 'custom' ) );
 		} else {
 			tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) );
