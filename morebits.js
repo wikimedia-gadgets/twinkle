@@ -701,7 +701,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 
 QuickForm.element.generateTooltip = function QuickFormElementGenerateTooltip( node, data ) {
 	$('<span/>', {
-			'class': 'ui-icon ui-icon-lightbulb ui-icon-inline morebits-tooltip'
+			'class': 'ui-icon ui-icon-help ui-icon-inline morebits-tooltip'
 		}).appendTo(node).tipsy({
 			'fallback': data.tooltip,
 			'fade': true,
