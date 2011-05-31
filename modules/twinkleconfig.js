@@ -1102,6 +1102,11 @@ Twinkle.config.init = function twinkleconfigInit() {
 		footerbox.appendChild(footerspan);
 		contentform.appendChild(footerbox);
 
+		// since all the section headers exist now, we can try going to the requested anchor
+		if (location.hash) {
+			location.hash = location.hash;
+		}
+
 	} else if (mw.config.get("wgNamespaceNumber") === 2) {
 
 		var box = document.createElement("div");
