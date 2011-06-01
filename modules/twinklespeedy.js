@@ -605,6 +605,7 @@ Twinkle.speedy.normalizeHash = {
 	'redirtypo': 'r3',
 	'redundantimage': 'f1',
 	'noimage': 'f2',
+	'fpcfail': 'f2',
 	'noncom': 'f3',
 	'unksource': 'f4',
 	'unfree': 'f5',
