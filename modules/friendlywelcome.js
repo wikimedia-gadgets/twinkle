@@ -119,7 +119,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	form.append( { type:'header', label:'Simple templates' } );
 	form.append( { type: 'radio', name: 'simple', list: Twinkle.welcome.standardList } );
 
-	if( typeof( Twinkle.getFriendlyPref('customWelcomeList') ) === 'object' ) {
+	if( Twinkle.getFriendlyPref('customWelcomeList').length ) {
 		form.append( { type:'header', label:'Custom templates' } );
 		form.append( { type: 'radio', name: 'custom', list: Twinkle.getFriendlyPref('customWelcomeList') } );
 	}
