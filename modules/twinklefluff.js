@@ -440,7 +440,8 @@ Twinkle.fluff.callbacks = {
 
 		var query;
 		if( (!self.params.autoRevert || Twinkle.getPref('openTalkPageOnAutoRevert')) && 
-				Twinkle.getPref('openTalkPage').indexOf( self.params.type ) !== -1 ) {
+				Twinkle.getPref('openTalkPage').indexOf( self.params.type ) !== -1 &&
+				mw.config.get('wgUserName') !== self.params.user ) {
 			Status.info( 'Info', [ 'Opening user talk page edit form for user ', htmlNode( 'strong', self.params.user ) ] );
 			
 			query = {
