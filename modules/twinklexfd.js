@@ -807,24 +807,26 @@ Twinkle.xfd.callbacks = {
 			wikipedia_page.load(Twinkle.xfd.callbacks.ffd.todaysList);
 
 			// Notification to first contributor
-			var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-			var notifytext = "\n{{subst:idw|1=" + mw.config.get('wgTitle') + "}}";
-			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for deletion]] of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
-			usertalkpage.setCreateOption('recreate');
-			switch (Twinkle.getPref('xfdWatchUser')) {
-				case 'yes':
-					usertalkpage.setWatchlist(true);
-					break;
-				case 'no':
-					usertalkpage.setWatchlistFromPreferences(false);
-					break;
-				default:
-					usertalkpage.setWatchlistFromPreferences(true);
-					break;
+			if(params.usertalk) {
+				var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+				var notifytext = "\n{{subst:idw|1=" + mw.config.get('wgTitle') + "}}";
+				usertalkpage.setAppendText(notifytext);
+				usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for deletion]] of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
+				usertalkpage.setCreateOption('recreate');
+				switch (Twinkle.getPref('xfdWatchUser')) {
+					case 'yes':
+						usertalkpage.setWatchlist(true);
+						break;
+					case 'no':
+						usertalkpage.setWatchlistFromPreferences(false);
+						break;
+					default:
+						usertalkpage.setWatchlistFromPreferences(true);
+						break;
+				}
+				usertalkpage.setFollowRedirect(true);
+				usertalkpage.append();
 			}
-			usertalkpage.setFollowRedirect(true);
-			usertalkpage.append();
 		},
 		taggingImage: function(pageobj) {
 			var text = pageobj.getPageText();

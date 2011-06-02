@@ -578,7 +578,7 @@ Twinkle.config.sections = [
 		{
 			name: "welcomeHeading",
 			label: "Section heading to use for welcomes",
-			helptip: "This only works if headings are enabled.",
+			helptip: "Only has an effect if headings are enabled, and the heading is not part of the template.",
 			type: "string"
 		},
 		{
