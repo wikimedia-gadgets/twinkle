@@ -5,6 +5,11 @@
  * Mode of invocation:     Tab ("CSD")
  * Active on:              Non-special, existing pages
  * Config directives in:   TwinkleConfig
+ *
+ * NOTE FOR DEVELOPERS:
+ *   If adding a new criterion, check out the default values of the CSD preferences
+ *   in twinkle.header.js, and add your new criterion to those if you think it would
+ *   be good. 
  */
 
 Twinkle.speedy = function twinklespeedy() {
@@ -701,8 +706,12 @@ Twinkle.speedy.callbacks = {
 			if (params.normalized === 'db') {
 				reason = prompt("Enter the deletion summary to use, which will be entered into the deletion log:", "");
 			} else {
-				reason = prompt("Enter the deletion summary to use, or press OK to accept the automatically generated one.",
-					"[[WP:CSD#" + params.normalized.toUpperCase() + "|" + params.normalized.toUpperCase() + "]]: " + params.reason);
+				var presetReason = "[[WP:CSD#" + params.normalized.toUpperCase() + "|" + params.normalized.toUpperCase() + "]]: " + params.reason;
+				if (Twinkle.getPref("promptForSpeedyDeletionSummary").indexOf(params.normalized) !== -1) {
+					reason = prompt("Enter the deletion summary to use, or press OK to accept the automatically generated one.", presetReason);
+				} else {
+					reason = presetReason;
+				}
 			}
 			if (!reason || !reason.replace(/^\s*/, "").replace(/\s*$/, "")) {
 				Status.error("Asking for reason", "you didn't give one.  I don't know... what with admins and their apathetic antics... I give up...");

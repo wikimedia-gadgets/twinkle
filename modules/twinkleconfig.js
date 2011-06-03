@@ -367,6 +367,16 @@ Twinkle.config.sections = [
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
 		},
 
+		// TwinkleConfig.promptForSpeedyDeletionSummary (array of strings)
+		{
+			name: "promptForSpeedyDeletionSummary",
+			label: "Allow editing of deletion summary when deleting under these criteria",
+			adminOnly: true,
+			type: "set",
+			setValues: Twinkle.config.commonSets.csdCriteria,
+			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
+		},
+
 		// TwinkleConfig.openUserTalkPageOnSpeedyDelete (array of strings)
 		// What types of actions that should result user talk page to be opened when speedily deleting (admin only)
 		{
