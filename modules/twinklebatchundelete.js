@@ -30,7 +30,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		'action': 'query',
 		'generator': 'links',
 		'titles': wgPageName,
-		'gpllimit' : Twinkle.getPref('batchMax'), // the max for sysops
+		'gpllimit' : Twinkle.getPref('batchMax') // the max for sysops
 	};
 	var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query, function( self ) {
 			var xmlDoc = self.responseXML;
