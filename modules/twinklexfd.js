@@ -898,7 +898,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.save();
 		},
 		todaysList: function(pageobj) {
-			var old_text = pageobj.getPageText();
+			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(text + "\n{{subst:puf2|image=" + mw.config.get('wgTitle') + "|reason=" + params.reason + "}} ~~~~");
