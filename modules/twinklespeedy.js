@@ -996,6 +996,12 @@ Twinkle.speedy.callbacks = {
 					editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
 					editsummary += ').';
 					break;
+				case 'g6':
+					if (params.value === 'histmerge') {
+						editsummary = "Requesting history merge with [[" + parameters["1"] + "]] ([[WP:CSD#G6|CSD G6]]).";
+						break;
+					}
+					// fall through
 				default:
 					editsummary = "Requesting speedy deletion ([[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]]).";
 					break;
