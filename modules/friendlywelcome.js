@@ -248,7 +248,7 @@ Twinkle.welcome.problemList = [
 		value: 'Welcomeauto'
 	},
 	{ 
-		label: '{{Welcome-COI}}: for someone who created an article about a subject with which they have a conflict of interest*',
+		label: '{{Welcome-COI}}: for someone who created or edited an article about a subject with which they have a conflict of interest*',
 		value: 'Welcome-COI'
 	}
 ];
