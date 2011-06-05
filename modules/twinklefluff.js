@@ -13,17 +13,13 @@
 
 Twinkle.fluff = {
 	auto: function() {
-		if( QueryString.get( 'oldid' ) !== mw.config.get('wgCurRevisionId') ) {
+		if( parseInt( QueryString.get('oldid'), 10) !== mw.config.get('wgCurRevisionId') ) {
 			// not latest revision
+			alert("Can't rollback, page has changed in the meantime.");
 			return;
 		}
 
 		var ntitle = getElementsByClassName( document.getElementById('bodyContent'), 'td' , 'diff-ntitle' )[0];
-		if( ntitle.getElementsByTagName('a')[0].firstChild.nodeValue.indexOf( 'Current revision' ) !== 0 ) {
-			// not latest revision
-			return;
-		}
-
 		vandal = ntitle.getElementsByTagName('a')[3].firstChild.nodeValue;
 
 		Twinkle.fluff.revert( QueryString.get( 'twinklerevert' ), vandal, true );
@@ -60,7 +56,7 @@ Twinkle.fluff = {
 				revVandNode.appendChild(revVandLink);
 
 				list.each(function(key, current) {
-					var href = $(current).find("a:nth-child(2)").attr("href");
+					var href = $(current).children("a:eq(1)").attr("href");
 					current.appendChild( document.createTextNode(' ') );
 					var tmpNode = revNode.cloneNode( true );
 					tmpNode.firstChild.setAttribute( 'href', href + '&' + QueryString.create( { 'twinklerevert': 'norm' } ) );
@@ -104,7 +100,7 @@ Twinkle.fluff = {
 			// Lets first add a [edit this revision] link
 			var query = new QueryString( old_rev_url.split( '?', 2 )[1] );
 
-			var oldrev = query.get( 'oldid' );
+			var oldrev = parseInt( query.get('oldid'), 10); //important to only accept numbers: We build a script string with this, and used to be open to script injection here!
 
 			var revertToRevision = document.createElement('div');
 			revertToRevision.setAttribute( 'id', 'tw-revert-to-orevision' );
@@ -124,7 +120,7 @@ Twinkle.fluff = {
 
 				var new_rev_url = $("div#mw-diff-ntitle1 strong a").attr("href");
 				query = new QueryString( new_rev_url.split( '?', 2 )[1] );
-				var newrev = query.get( 'oldid' );
+				var newrev = parseInt( query.get('oldid'), 10);
 				revertToRevision = document.createElement('div');
 				revertToRevision.setAttribute( 'id', 'tw-revert-to-nrevision' );
 				revertToRevision.style.fontWeight = 'bold';
@@ -238,7 +234,7 @@ Twinkle.fluff.callbacks = {
 			//alert("TRACE: revertTorevision getrevs callback: xmlString= \n" + (new XMLSerializer()).serializeToString(self.responseXML) + "[END]");
 			var xmlDoc = self.responseXML;
 
-			var lastrevid = $(xmlDoc).find('page').attr('lastrevid');
+			var lastrevid = parseInt( $(xmlDoc).find('page').attr('lastrevid'), 10);
 			var touched = $(xmlDoc).find('page').attr('touched');
 			var starttimestamp = $(xmlDoc).find('page').attr('starttimestamp');
 			var edittoken = $(xmlDoc).find('page').attr('edittoken');
@@ -288,7 +284,7 @@ Twinkle.fluff.callbacks = {
 		//alert("TRACE: revertPage getrevs callback: xmlString= \n" + (new XMLSerializer()).serializeToString(self.responseXML) + "[END]");
 		var xmlDoc = self.responseXML;
 
-		var lastrevid = $(xmlDoc).find('page').attr('lastrevid');
+		var lastrevid = parseInt( $(xmlDoc).find('page').attr('lastrevid'), 10);
 		var touched = $(xmlDoc).find('page').attr('touched');
 		var starttimestamp = $(xmlDoc).find('page').attr('starttimestamp');
 		var edittoken = $(xmlDoc).find('page').attr('edittoken');
@@ -306,7 +302,7 @@ Twinkle.fluff.callbacks = {
 			return;
 		}
 		var index = 1;
-		if( self.params.revid != lastrevid  ) {  // number compared with string... hence can't use !== here
+		if( self.params.revid !== lastrevid  ) {
 			Status.warn( 'Warning', [ 'Latest revision ', htmlNode( 'strong', lastrevid ), ' doesn\'t equal our revision ', htmlNode( 'strong', self.params.revid ) ] );
 			if( lastuser === self.params.user ) {
 				switch( self.params.type ) {
