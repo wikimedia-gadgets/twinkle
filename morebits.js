@@ -1569,9 +1569,9 @@ Wikipedia.actionCompleted = function( self ) {
 Wikipedia.actionCompleted.event = function() {
 	new Status( Wikipedia.actionCompleted.notice, Wikipedia.actionCompleted.postfix, 'info' );
 	if( Wikipedia.actionCompleted.redirect ) {
-		// if it isn't an url, make it an relative to self (probably this is the case)
+		// if it isn't a URL, which is likely, make it one. TODO: This breaks on the articles 'http://', 'ftp://', and similar ones. Are we ever using URL redirects?
 		if( !( (/^\w+\:\/\//).test( Wikipedia.actionCompleted.redirect ) ) ) {
-			Wikipedia.actionCompleted.redirect = mw.config.get( 'wgServer' ) + mw.config.get( 'wgArticlePath' ).replace( '$1', encodeURIComponent( Wikipedia.actionCompleted.redirect ).replace( /\%2F/g, '/' ) );
+			Wikipedia.actionCompleted.redirect = mw.util.wikiGetlink( Wikipedia.actionCompleted.redirect );
 			if( Wikipedia.actionCompleted.followRedirect === false ) {
 				Wikipedia.actionCompleted.redirect += "?redirect=no";
 			}
@@ -2505,7 +2505,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			} else {
 				// default on success action - display link for edited page
 				var link = document.createElement('a');
-				link.setAttribute('href', mw.config.get('wgArticlePath').replace('$1', ctx.pageName));
+				link.setAttribute('href', mw.util.wikiGetlink(ctx.pageName) );
 				link.appendChild(document.createTextNode(ctx.pageName));
 				ctx.statusElement.info(['completed (', link, ')']);
 			}
@@ -2860,7 +2860,7 @@ Wikipedia.wiki.prototype = {
 					self.onsuccess( self );
 				} else {
 					var link = document.createElement( 'a' );
-					link.setAttribute( 'href', mw.config.get('wgArticlePath').replace( '$1', self.query['title'] ) );
+					link.setAttribute( 'href', mw.util.wikiGetlink(self.query['title']) );
 					link.setAttribute( 'title', self.query['title'] );
 					link.appendChild( document.createTextNode( self.query['title'] ) );
 
@@ -3581,7 +3581,7 @@ SimpleWindow.prototype = {
 			$footerlinks.append(bullet);
 		}
 		var link = document.createElement("a");
-		link.setAttribute("href", "/wiki/" + wikiPage);
+		link.setAttribute("href", mw.util.wikiGetlink(wikiPage) );
 		link.setAttribute("title", wikiPage);
 		link.setAttribute("target", "_blank");
 		link.textContent = text;

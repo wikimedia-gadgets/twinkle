@@ -252,7 +252,7 @@ Twinkle.batchprotect.callbacks = {
 		var wikipedia_wiki = new Wikipedia.wiki( 'Protecting page ' + self.params.page, query, Twinkle.batchprotect.callbacks.protectPage, function( self ) { 
 				--Twinkle.batchprotect.currentProtectCounter;
 				var link = document.createElement( 'a' );
-				link.setAttribute( 'href', wgArticlePath.replace( '$1', self.query['title'] ) );
+				link.setAttribute( 'href', mw.util.wikiGetlink(self.query['title']) );
 				link.setAttribute( 'title', self.query['title'] );
 				link.appendChild( document.createTextNode( self.query['title'] ) );
 				self.statelem.info( [ 'completed (' , link , ')' ] );

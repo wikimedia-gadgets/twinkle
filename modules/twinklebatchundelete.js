@@ -104,10 +104,10 @@ Twinkle.batchundelete.callbacks = {
 				var wikipedia_wiki = new Wikipedia.wiki( "Undeleting " + title, query, Twinkle.batchundelete.callbacks.undeletePage, function( self ) { 
 						--Twinkle.batchundelete.currentUndeleteCounter;
 						var link = document.createElement( 'a' );
-						link.setAttribute( 'href', wgArticlePath.replace( '$1', self.params.title ) );
+						link.setAttribute( 'href', mw.util.wikiGetlink(self.params.title) );
 						link.setAttribute( 'title', self.params.title );
-						link.appendChild( document.createTextNode( self.params.title ) );
-						self.statelem.info( [ 'completed (' , link , ')' ] );
+						link.appendChild( document.createTextNode(self.params.title) );
+						self.statelem.info( ['completed (',link,')'] );
 
 					});
 				wikipedia_wiki.params = { title:title, reason: reason };
