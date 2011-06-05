@@ -268,129 +268,46 @@ Twinkle.imagetraverse.callbacks = {
 
 			wikipedia_api.post();
 		}
-		query = {
-			'title': params.image, 
-			'action': 'delete'
-		};
-		var wikipedia_wiki = new Wikipedia.wiki( 'Deleting image ' + params.image, query, Twinkle.imagetraverse.callbacks.deleteImage, function( self ) {
-				Twinkle.imagetraverse.callbacks.next( self.params );
-				self.statelem.unlink();
-				Status.info( 'Deleted', self.params.image );
-
-			});
-		wikipedia_wiki.params = params;
-		wikipedia_wiki.followRedirect = false;
-		wikipedia_wiki.get();	
-	},
-	deleteImage: function( self ) {
-		var form = this.responseXML.getElementById( 'deleteconfirm' );
-		var postdata;
-		if( ! form ) { // Hell, image deletion is b0rked :(
-			form = this.responseXML.getElementsByTagName( 'form' )[0];
-			postData = {
-				'wpDeleteReasonList': 'other',
-				'wpReason': "Deleted because \"" + self.params.reason + "\"." + Twinkle.getPref('deletionSummaryAd'),
-				'wpEditToken': form.wpEditToken.value
-			};
-			self.post( postData );
-		} else {
-
-			postData = {
-				'wpWatch': form.wpWatch.checked ? '' : undefined,
-				'wpDeleteReasonList': 'other',
-				'wpReason': "Deleted because \"" + self.params.reason + "\"." + Twinkle.getPref('deletionSummaryAd'),
-				'wpEditToken': form.wpEditToken.value
-			};
-			self.post( postData );
-		}
+		var imagepage = new Wikipedia.page( self.params.image, 'Deleting image');
+		imagepage.setEditSummary( "Deleted because \"" + self.params.reason + "\"." + Twinkle.getPref('deletionSummaryAd'));
+		imagepage.setCallbackParameters({'image': self.params.image});
+		imagepage.deletePage();
 	},
 	unlinkImageInstancesMain: function( self ) {
 		var xmlDoc = self.responseXML;
-		var snapshot = xmlDoc.evaluate('//imageusage/iu/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
-
-		if( snapshot.snapshotLength === 0 ) {
+		var instances = [];
+		$(xmlDoc).find('imageusage iu').each(function(){
+			instances.push($(this).attr('title'));
+		});
+		if( instances.length === 0 ) {
 			return;
 		}
 
-		var statusIndicator = new Status('Unlinking instances image', '0%');
+		$.each( instances, function(k,title) {
+			page = new Wikipedia.page(title, "Unlinking instances on " + title);
+			page.setFollowRedirect(true);
+			page.setCallbackParameters({'image': self.params.image, 'reason': self.params.reason});
+			page.load(Twinkle.imagetraverse.callbacks.unlinkImageInstances);
 
-		var total = snapshot.snapshotLength * 2;
-
-		var onsuccess = function( self ) {
-			var obj = self.params.obj;
-			var total = self.params.total;
-			var now = parseInt( 100 * ++(self.params.current)/total, 10 ) + '%';
-			obj.update( now );
-			self.statelem.unlink();
-			if( self.params.current >= total ) {
-				obj.info( now + ' (completed)' );
-				Wikipedia.removeCheckpoint();
-			}
-		};
-		var onloaded = onsuccess;
-
-		var onloading = function( self ) {};
-
-
-		Wikipedia.addCheckpoint();
-		if( snapshot.snapshotLength === 0 ) {
-			statusIndicator.info( '100% (completed)' );
-			Wikipedia.removeCheckpoint();
-			return;
-		}
-		self.params.total = total;
-		self.params.obj = statusIndicator;
-		self.params.current =   0;
-
-		for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
-			var title = snapshot.snapshotItem(i).value;
-			var query = {
-				'title': title,
-				'action': 'submit'
-			};
-			var wikipedia_wiki = new Wikipedia.wiki( "Unlinking on " + title, query, Twinkle.imagetraverse.callbacks.unlinkImageInstances );
-			var params = clone( self.params );
-			params.title = title;
-
-			wikipedia_wiki.params = params;
-			wikipedia_wiki.onloading = onloading;
-			wikipedia_wiki.onloaded = onloaded;
-			wikipedia_wiki.onsuccess = onsuccess;
-			wikipedia_wiki.get();
-		}
+		});
 	},
 	unlinkImageInstances: function( self ) {
-		var image = self.params.image.replace( /^File:/, '' );
-		var form = self.responseXML.getElementById('editform');
-		var text;
+		var params = self.getCallbackParameters();
+		var statelem = self.getStatusElement();
 
-		if( self.params.title in twinkledeli.unlinkCache ) {
-			text = twinkledeli.unlinkCache[ self.params.title ];
-		} else {
-			text = form.wpTextbox1.value;
-		}
-		var old_text = text;
-		var wikiPage = new Mediawiki.Page( text );
+		var image = params.image.replace( /^(?:Image|File):/, '' );
+		var old_text = self.getPageText();
+		var wikiPage = new Mediawiki.Page( old_text );
 		wikiPage.commentOutImage( image , 'Commented out because image was deleted' );
+		var text = wikiPage.getText();
 
-		text = wikiPage.getText();
-		twinkledeli.unlinkCache[ self.params.title ] = text;
-		if( text == old_text ) {
-			// Nothing to do, return
-			self.onsuccess( self );
-			Wikipedia.actionCompleted( self );
+		if( text === old_text ) {
+			statelem.error( 'failed to unlink image ' + image +' from ' + self.getPageName() );
 			return;
 		}
-		var postData = {
-			'wpMinoredit': form.wpMinoredit.checked ? '' : undefined,
-			'wpWatchthis': undefined,
-			'wpStarttime': form.wpStarttime.value,
-			'wpEdittime': form.wpEdittime.value,
-			'wpAutoSummary': form.wpAutoSummary.value,
-			'wpEditToken': form.wpEditToken.value,
-			'wpSummary': 'Removing instance of image ' + image + " that has been deleted because \"" + self.params.reason + "\")" + "; " + Twinkle.getPref('deletionSummaryAd'),
-			'wpTextbox1': text
-		};
-		self.post( postData );
+		self.setPageText(text);
+		self.setEditSummary('Removing instance of file ' + image + " that has been deleted because \"" + params.reason + "\")" + "; " + Twinkle.getPref('deletionSummaryAd'));
+		self.setCreateOption('nocreate');
+		self.save();
 	}
 };
