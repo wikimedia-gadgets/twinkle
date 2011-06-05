@@ -370,7 +370,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 						'diff': form.badid.value,
 						'oldid': form.goodid.value
 					};
-					reason += ' ([' + mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ) + ' diff])';
+					reason += ' ({{diff|' + form.page.value + '|' + form.badid.value + '|' + form.goodid.value + '|diff}})';
 				}
 				reason += ';';
 			}
