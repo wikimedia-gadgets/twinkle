@@ -9,9 +9,9 @@
 
 Twinkle.imagetraverse = function twinkleimagetraverse() {
 	if( userIsInGroup( 'sysop' ) && wgNamespaceNumber == Namespace.CATEGORY ) {
-		twAddPortletLink( "javascript:Twinkle.imagetraverse.callback()", "Traverse", "tw-imagetraverse", "Traverse category", "");
+		twAddPortletLink("#", "Traverse", "tw-imagetraverse", "Traverse category", "").click(Twinkle.imagetraverse.callback);
 	}
-}
+};
 
 Twinkle.imagetraverse.basequery = {
 	'action': 'query',
@@ -72,7 +72,7 @@ Twinkle.imagetraverse.callback = function() {
 	
 	options.style.borderBottom = '1px solid gray';
 	options.style.height = '80px';
-	var row = root.appendChild( document.createElement( 'tr' ) );
+	row = root.appendChild( document.createElement( 'tr' ) );
 	var oview = row.appendChild(  document.createElement( 'td' ) );
 	var ohistbox = row.appendChild(  document.createElement( 'td' ) );
 	ohistbox.style.width = '250px';
@@ -84,7 +84,7 @@ Twinkle.imagetraverse.callback = function() {
 	var view = oview.appendChild(  document.createElement( 'div' ) );
 	view.style.height = '500px';
 	view.style.overflow = 'auto';
-	var row = root.appendChild( document.createElement( 'tr' ) );
+	row = root.appendChild( document.createElement( 'tr' ) );
 	var ostatus = row.appendChild(  document.createElement( 'td' ) );
 	ostatus.style.borderTop = '1px solid gray';
 	ostatus.setAttribute( 'colspan', 2 );
@@ -92,7 +92,7 @@ Twinkle.imagetraverse.callback = function() {
 	ostatus.style.verticalAlign = 'top';
 	status.style.height = '180px';
 	status.style.overflow = 'auto';
-	Wikipedia.actionCompleted.event = function() {} // just avoid it
+	Wikipedia.actionCompleted.event = function() {}; // just avoid it
 	var wikipedia_api = new Wikipedia.api( 'Grabbing images', Twinkle.imagetraverse.basequery, Twinkle.imagetraverse.callbacks.main );
 	wikipedia_api.params = { root:root, view:view, histbox:histbox, status:status, Window:Window };
 	root.params = wikipedia_api.params;
@@ -101,17 +101,17 @@ Twinkle.imagetraverse.callback = function() {
 	Status.init( status );
 	Window.setContent( root );
 	Window.display();
-}
+};
 
 Twinkle.imagetraverse.callback.evaluate = function() {
-}
+};
 
 function make_wikilink( page, title, oldid, diff ) {
 	var query = {
 		'title': page,
 		'diff': diff,
 		'oldid': oldid
-	}
+	};
 	var url = wgScriptPath + '/index.php?' + QueryString.create( query );
 	var a = document.createElement( 'a' );
 	a.setAttribute( 'href', url );
@@ -141,36 +141,37 @@ Twinkle.imagetraverse.callbacks = {
 
 		var entry = document.createElement( 'li' );
 
-		for( var i = 0; i < pagehistory.snapshotLength; ++i ) {
-			var cur = pagehistory.snapshotItem(i);
-			var tmp = entry.cloneNode(false);
+		var i, cur, tmp, link;
+		for( i = 0; i < pagehistory.snapshotLength; ++i ) {
+			cur = pagehistory.snapshotItem(i);
+			tmp = entry.cloneNode(false);
 			tmp.appendChild( make_wikilink( image, cur.getAttribute( 'timestamp' ), cur.getAttribute( 'revid' ) ) );
 			tmp.appendChild( document.createTextNode( ' ' ) );
 			tmp.appendChild( make_wikilink( 'User:' + cur.getAttribute( 'user' ), cur.getAttribute( 'user' ) ) );
-			tmp.appendChild( document.createTextNode( ' \(' + ( new Bytes( cur.getAttribute( 'size' ) ) ).toString() + '\) \(' ) );
+			tmp.appendChild( document.createTextNode( ' (' + ( new Bytes( cur.getAttribute( 'size' ) ) ).toString() + ') (' ) );
 			tmp.appendChild( document.createElement( 'em' ) ).appendChild(document.createTextNode( cur.getAttribute( 'comment' ) ) );
-			tmp.appendChild( document.createTextNode( '\)' ) );
+			tmp.appendChild( document.createTextNode( ')' ) );
 			pagehistorylist.appendChild( tmp );
 		}
 		
-		for( var i = 0; i < filehistory.snapshotLength; ++i ) {
-			var cur = filehistory.snapshotItem(i);
-			var tmp = entry.cloneNode(false);
-			var link = document.createElement( 'a' );
+		for( i = 0; i < filehistory.snapshotLength; ++i ) {
+			cur = filehistory.snapshotItem(i);
+			tmp = entry.cloneNode(false);
+			link = document.createElement( 'a' );
 			link.setAttribute( 'href', cur.getAttribute( 'url' ) );
 			link.appendChild( document.createTextNode( cur.getAttribute( 'timestamp' ) ) );
 			tmp.appendChild( link );
 			tmp.appendChild( document.createTextNode( ' ' ) );
 			tmp.appendChild( make_wikilink( 'User:' + cur.getAttribute( 'user' ), cur.getAttribute( 'user' ) ) );
-			tmp.appendChild( document.createTextNode( ' \(' + ( new Bytes( cur.getAttribute( 'size' ) ) ).toString() + '\) \(' ) );
+			tmp.appendChild( document.createTextNode( ' (' + ( new Bytes( cur.getAttribute( 'size' ) ) ).toString() + ') (' ) );
 			tmp.appendChild( document.createElement( 'em' ) ).appendChild(document.createTextNode( cur.getAttribute( 'comment' ) ) );
-			tmp.appendChild( document.createTextNode( '\)' ) );
+			tmp.appendChild( document.createTextNode( ')' ) );
 			filehistorylist.appendChild( tmp );
 		}
 
-		for( var i = 0; i < categories.snapshotLength; ++i ) {
-			var cur = categories.snapshotItem(i);
-			var tmp = entry.cloneNode(false);
+		for( i = 0; i < categories.snapshotLength; ++i ) {
+			cur = categories.snapshotItem(i);
+			tmp = entry.cloneNode(false);
 			tmp.appendChild( make_wikilink( cur.getAttribute( 'title' ), cur.getAttribute( 'title' ).replace( /Category:/, '' ) ) );
 			categorylist.appendChild( tmp );
 		}
@@ -194,9 +195,9 @@ Twinkle.imagetraverse.callbacks = {
 		var query = {
 			'action': 'parse',
 			'title': image,
-			'text': '\{\{Wikipedia:WikiProject User scripts/Scripts/Twinkle/Template|' + image.replace(/^File:/, '') + '\}\}',
+			'text': '{{Wikipedia:WikiProject User scripts/Scripts/Twinkle/Template|' + image.replace(/^File:/, '') + '}}',
 			'prop': 'text'
-		}
+		};
 		var wikipedia_api = new Wikipedia.api( 'Rendering', query, Twinkle.imagetraverse.callbacks.render1 );
 		wikipedia_api.params = self.params;
 		wikipedia_api.post();
@@ -213,7 +214,7 @@ Twinkle.imagetraverse.callbacks = {
 			'iutitle': self.params.image,
 			'iulimit': 20,
 			'iufilterredir': 'nonredirects'
-		}
+		};
 		var wikipedia_api = new Wikipedia.api( 'Rendering', query, Twinkle.imagetraverse.callbacks.render2 );
 		wikipedia_api.params = self.params;
 		wikipedia_api.post();
@@ -237,7 +238,7 @@ Twinkle.imagetraverse.callbacks = {
 
 	},
 	next: function( params ) {
-		Twinkle.imagetraverse.basequery['gcmcontinue'] = params.next;
+		Twinkle.imagetraverse.basequery.gcmcontinue = params.next;
 		var wikipedia_api = new Wikipedia.api( 'Grabbing images', Twinkle.imagetraverse.basequery, Twinkle.imagetraverse.callbacks.main );
 		wikipedia_api.params = params;
 		wikipedia_api.post();
@@ -253,8 +254,9 @@ Twinkle.imagetraverse.callbacks = {
 		var params = form.root.params;
 		params.reason = form.reason.value;
 
+		var query;
 		if( form.unlink.checked ) {
-			var query = {
+			query = {
 				'action': 'query',
 				'list': 'imageusage',
 				'titles': params.image,
@@ -266,7 +268,7 @@ Twinkle.imagetraverse.callbacks = {
 
 			wikipedia_api.post();
 		}
-		var query = { 
+		query = {
 			'title': params.image, 
 			'action': 'delete'
 		};
@@ -282,22 +284,23 @@ Twinkle.imagetraverse.callbacks = {
 	},
 	deleteImage: function( self ) {
 		var form = this.responseXML.getElementById( 'deleteconfirm' );
+		var postdata;
 		if( ! form ) { // Hell, image deletion is b0rked :(
 			form = this.responseXML.getElementsByTagName( 'form' )[0];
-			var postData = {
+			postData = {
 				'wpDeleteReasonList': 'other',
 				'wpReason': "Deleted because \"" + self.params.reason + "\"." + Twinkle.getPref('deletionSummaryAd'),
 				'wpEditToken': form.wpEditToken.value
-			}
+			};
 			self.post( postData );
 		} else {
 
-			var postData = {
+			postData = {
 				'wpWatch': form.wpWatch.checked ? '' : undefined,
 				'wpDeleteReasonList': 'other',
 				'wpReason': "Deleted because \"" + self.params.reason + "\"." + Twinkle.getPref('deletionSummaryAd'),
 				'wpEditToken': form.wpEditToken.value
-			}
+			};
 			self.post( postData );
 		}
 	},
@@ -305,7 +308,7 @@ Twinkle.imagetraverse.callbacks = {
 		var xmlDoc = self.responseXML;
 		var snapshot = xmlDoc.evaluate('//imageusage/iu/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
 
-		if( snapshot.snapshotLength == 0 ) {
+		if( snapshot.snapshotLength === 0 ) {
 			return;
 		}
 
@@ -316,21 +319,21 @@ Twinkle.imagetraverse.callbacks = {
 		var onsuccess = function( self ) {
 			var obj = self.params.obj;
 			var total = self.params.total;
-			var now = parseInt( 100 * ++(self.params.current)/total ) + '%';
+			var now = parseInt( 100 * ++(self.params.current)/total, 10 ) + '%';
 			obj.update( now );
 			self.statelem.unlink();
 			if( self.params.current >= total ) {
 				obj.info( now + ' (completed)' );
 				Wikipedia.removeCheckpoint();
 			}
-		}
+		};
 		var onloaded = onsuccess;
 
-		var onloading = function( self ) {}
+		var onloading = function( self ) {};
 
 
 		Wikipedia.addCheckpoint();
-		if( snapshot.snapshotLength == 0 ) {
+		if( snapshot.snapshotLength === 0 ) {
 			statusIndicator.info( '100% (completed)' );
 			Wikipedia.removeCheckpoint();
 			return;
@@ -344,7 +347,7 @@ Twinkle.imagetraverse.callbacks = {
 			var query = {
 				'title': title,
 				'action': 'submit'
-			}
+			};
 			var wikipedia_wiki = new Wikipedia.wiki( "Unlinking on " + title, query, Twinkle.imagetraverse.callbacks.unlinkImageInstances );
 			var params = clone( self.params );
 			params.title = title;
@@ -390,4 +393,4 @@ Twinkle.imagetraverse.callbacks = {
 		};
 		self.post( postData );
 	}
-}
+};

@@ -1011,7 +1011,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 								}
 								// cater for legacy integer array values for unlinkNamespaces (this can be removed a few years down the track...)
 								if (pref.name === "unlinkNamespaces") {
-									if (configgetter(pref.name) && configgetter(pref.name).indexOf(parseInt(itemkey)) !== -1) {
+									if (configgetter(pref.name) && configgetter(pref.name).indexOf(parseInt(itemkey, 10)) !== -1) {
 										check.setAttribute("checked", "checked");
 									}
 								}
@@ -1594,8 +1594,8 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 						break;
 
 					case "integer":  // read from the input box
-						userValue = parseInt(form[pref.name].value);
-						if (userValue === NaN) {
+						userValue = parseInt(form[pref.name].value, 10);
+						if (isNaN(userValue)) {
 							Status.warn("Saving", "The value you specified for " + pref.name + " (" + pref.value + ") was invalid.  The save will continue, but the invalid data value will be skipped.");
 							userValue = null;
 						}

@@ -13,9 +13,9 @@ Twinkle.batchundelete = function twinklebatchundelete() {
 		return;
 	}
 	if( userIsInGroup( 'sysop' ) ) {
-		twAddPortletLink( "javascript:Twinkle.batchundelete.callback()", "Und-batch", "tw-batch-undel", "Undelete 'em all", "");
+		twAddPortletLink("#", "Und-batch", "tw-batch-undel", "Undelete 'em all", "").click(Twinkle.batchundelete.callback);
 	}
-}
+};
 
 Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	var Window = new SimpleWindow( 800, 400 );
@@ -46,7 +46,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 					name: 'pages',
 					list: list
 				}
-			)
+			);
 			self.params.form.append( { type:'submit' } );
 
 			var result = self.params.form.render();
@@ -60,7 +60,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	Status.init( root );
 	Window.setContent( root );
 	Window.display();
-}
+};
 Twinkle.batchundelete.currentUndeleteCounter = 0;
 Twinkle.batchundelete.currentundeletor = 0;
 Twinkle.batchundelete.callback.evaluate = function( event ) {
@@ -82,16 +82,16 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 	var work = pages.chunk( Twinkle.getPref('batchUndeleteChunks') );
 	Wikipedia.addCheckpoint();
 	Twinkle.batchundelete.currentundeletor = window.setInterval( Twinkle.batchundelete.callbacks.main, 1000, work, reason );
-}
+};
 
 Twinkle.batchundelete.callbacks = {
 	main: function( work, reason ) {
-		if( work.length == 0 && Twinkle.batchundelete.currentUndeleteCounter <= 0 ) {
+		if( work.length === 0 && Twinkle.batchundelete.currentUndeleteCounter <= 0 ) {
 			Status.info( 'work done' );
 			window.clearInterval( Twinkle.batchundelete.currentundeletor );
 			Wikipedia.removeCheckpoint();
 			return;
-		} else if( work.length != 0 && Twinkle.batchundelete.currentUndeleteCounter <= Twinkle.getPref('batchUndeleteMinCutOff') ) {
+		} else if( work.length !== 0 && Twinkle.batchundelete.currentUndeleteCounter <= Twinkle.getPref('batchUndeleteMinCutOff') ) {
 			var pages = work.shift();
 			Twinkle.batchundelete.currentUndeleteCounter += pages.length;
 			for( var i = 0; i < pages.length; ++i ) {
@@ -123,7 +123,7 @@ Twinkle.batchundelete.callbacks = {
 			'target': self.params.image,
 			'wpEditToken': form.wpEditToken.value,
 			'restore': 1
-		}
+		};
 		self.post( postData );
 
 	}

@@ -26,9 +26,9 @@ Twinkle.arv = function twinklearv() {
 		var title = isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
 		
 		if (twinkleUserAuthorized) {
-			twAddPortletLink( "javascript:Twinkle.arv.callback(\"" + username.replace( /\"/g, "\\\"") + "\")", "ARV", "tw-arv", title, "" );
+			twAddPortletLink("#", "ARV", "tw-arv", title, "" ).click(function(){Twinkle.arv.callback(username.replace( /\"/g, "\\\""));});
 		} else {
-			twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'ARV', 'tw-arv', name, title);
+			twAddPortletLink("#", 'ARV', 'tw-arv', name, title).click(function(){alert("Your account is too new to use Twinkle.");});
 		}
 	}
 };
@@ -110,8 +110,9 @@ Twinkle.arv.callback.changeCategory = function (e) {
 	var work_area = null;
 
 	switch( value ) {
-	default:
 	case 'aiv':
+		/* falls through */
+	default:
 		work_area = new QuickForm.element( { 
 				type: 'field',
 				label: 'Report user for vandalism',
@@ -334,6 +335,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 		// Report user for vandalism
 		case 'aiv':
+			/* falls through */
 		default:
 			types = form.getChecked( 'arvtype' );
 			if( !types.length && comment === '' ) {
@@ -504,7 +506,7 @@ Twinkle.arv.processSock = function( params ) {
 		
 		// display status of notifications as they progress
 		var onSuccess = function( sockTalkPage ) {
-			var now = parseInt( 100 * ++(current)/total ) + '%';
+			var now = parseInt( 100 * ++(current)/total, 10 ) + '%';
 			statusIndicator.update( now );
 			sockTalkPage.getStatusElement().unlink();
 			if ( current >= total ) {

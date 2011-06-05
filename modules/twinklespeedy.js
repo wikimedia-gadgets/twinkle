@@ -21,11 +21,11 @@ Twinkle.speedy = function twinklespeedy() {
 	}
 
 	if ( userIsInGroup( 'sysop' ) ) {
-		twAddPortletLink( "javascript:Twinkle.speedy.callback()", "CSD", "tw-csd", "Speedy delete according to WP:CSD", "");
+		twAddPortletLink("#", "CSD", "tw-csd", "Speedy delete according to WP:CSD", "").click(Twinkle.speedy.callback);
 	} else if (twinkleUserAuthorized) {
-		twAddPortletLink( "javascript:Twinkle.speedy.callback()", "CSD", "tw-csd", "Request speedy deletion according to WP:CSD", "");
+		twAddPortletLink("#", "CSD", "tw-csd", "Request speedy deletion according to WP:CSD", "").click(Twinkle.speedy.callback);
 	} else {
-		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'CSD', 'tw-csd', 'Request speedy deletion according to WP:CSD', '');
+		twAddPortletLink("#", 'CSD', 'tw-csd', 'Request speedy deletion according to WP:CSD', '').click(function(){alert("Your account is too new to use Twinkle.");});
 	}
 };
 
@@ -730,9 +730,9 @@ Twinkle.speedy.callbacks = {
 			}
 
 			// promote Unlink tool
-			var link, bigtext;
+			var $link, $bigtext;
 			if( mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8' ) {
-				var $link = $('<a/>', {
+				$link = $('<a/>', {
 					'href': '#',
 					'text': 'click here to go to the Unlink tool',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
@@ -742,13 +742,13 @@ Twinkle.speedy.callbacks = {
 						Twinkle.unlink.callback("Removing usages of and/or links to deleted file " + mw.config.get('wgPageName'));
 					}
 				});
-				var $bigtext = $('<span/>', {
+				$bigtext = $('<span/>', {
 					'text': 'To orphan backlinks and remove instances of file usage',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
 				});
 				Status.info($bigtext[0], $link[0]);
 			} else if (params.normalized !== 'f8') {
-				var $link = $('<a/>', {
+				$link = $('<a/>', {
 					'href': '#',
 					'text': 'click here to go to the Unlink tool',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
@@ -758,7 +758,7 @@ Twinkle.speedy.callbacks = {
 						Twinkle.unlink.callback("Removing links to deleted page " + mw.config.get('wgPageName'));
 					}
 				});
-				var $bigtext = $('<span/>', {
+				$bigtext = $('<span/>', {
 					'text': 'To orphan backlinks',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
 				});
@@ -806,6 +806,7 @@ Twinkle.speedy.callbacks = {
 				window.open( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), '_blank', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 				break;
 			case 'window':
+				/* falls through */
 				default :
 				window.open( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), 'twinklewarnwindow', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 				break;
@@ -829,7 +830,7 @@ Twinkle.speedy.callbacks = {
 			var onsuccess = function( apiobj ) {
 				var obj = apiobj.params.obj;
 				var total = apiobj.params.total;
-				var now = parseInt( 100 * ++(apiobj.params.current)/total ) + '%';
+				var now = parseInt( 100 * ++(apiobj.params.current)/total, 10 ) + '%';
 				obj.update( now );
 				apiobj.statelem.unlink();
 				if( apiobj.params.current >= total ) {
@@ -1001,7 +1002,7 @@ Twinkle.speedy.callbacks = {
 						editsummary = "Requesting history merge with [[" + parameters["1"] + "]] ([[WP:CSD#G6|CSD G6]]).";
 						break;
 					}
-					// fall through
+					/* falls through */
 				default:
 					editsummary = "Requesting speedy deletion ([[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]]).";
 					break;
@@ -1100,7 +1101,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					statelem.error( 'You must specify a rationale.  Aborted by user.' );
 					return null;
 				}
-				parameters["rationale"] = u1rationale;
+				parameters.rationale = u1rationale;
 			}
 			break;
 		case 'f8':
@@ -1123,7 +1124,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					return null;
 				}
 			}
-			parameters["date"] = "~~~~~";
+			parameters.date = "~~~~~";
 			break;
 		case 'g6':
 			switch( value ) {
@@ -1161,7 +1162,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					}
 					if (g6rationale !== '')
 					{
-						parameters["rationale"] = g6rationale;
+						parameters.rationale = g6rationale;
 					}
 					break;
 				default:
@@ -1179,7 +1180,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				}
 				if (g7rationale !== '')
 				{
-					parameters["rationale"] = g7rationale;
+					parameters.rationale = g7rationale;
 				}
 			}
 			break;
@@ -1191,7 +1192,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
-			parameters["url"] = url;
+			parameters.url = url;
 			break;
 		case 'a2':
 			var source = prompt('Enter an interwiki link to the article on the foreign-language wiki (for example, "fr:Bonjour"):', "");
@@ -1200,7 +1201,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				statelem.error('Aborted by user.');
 				return null;
 			}
-			parameters["source"] = source;
+			parameters.source = source;
 			break;
 		case 'a10':
 			var duptitle = prompt( 'Enter the article name that is duplicated:', "" );
@@ -1209,7 +1210,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
-			parameters["article"] = duptitle;
+			parameters.article = duptitle;
 			break;
 		case 'f1':
 			var img = prompt( 'Enter the file this is redundant to, excluding the "Image:" or "File:" prefix:', "" );
@@ -1218,7 +1219,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
-			parameters["filename"] = img;
+			parameters.filename = img;
 			break;
 		case 't3':
 			var template = prompt( 'Enter the template this is redundant to, excluding the "Template:" prefix:', "" );
@@ -1231,7 +1232,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			parameters["2"] = template;
 			break;
 		case 'g10':
-			parameters["blanked"] = 'yes';
+			parameters.blanked = 'yes';
 			// it is actually blanked elsewhere in code, but setting the flag here
 			break;
 		case 'p1':
@@ -1259,8 +1260,8 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 			utparams["2"] = parameters["1"];
 			break;
 		case 'a10':
-			utparams["key1"] = "article";
-			utparams["value1"] = parameters["article"];
+			utparams.key1 = "article";
+			utparams.value1 = parameters.article;
 			break;
 		default:
 			break;
@@ -1303,7 +1304,9 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	{
 		e.target.form.style.display = "none"; // give the user a cue that the dialog is being changed
 		Twinkle.speedy.targetdialogcontent = e.target.form.parentNode; // make this accessible in scopeless setTimeout
-		setTimeout("Twinkle.speedy.initDialog(Twinkle.speedy.callback.doMultiple, false, Twinkle.speedy.targetdialogcontent)", 150);
+		setTimeout(function(){
+			Twinkle.speedy.initDialog(Twinkle.speedy.callback.doMultiple, false, Twinkle.speedy.targetdialogcontent);
+		}, 150);
 		return;
 	}
 
@@ -1427,7 +1430,9 @@ Twinkle.speedy.callback.doMultiple = function twinklespeedyCallbackDoMultiple(e)
 		}
 		e.target.form.style.display = "none"; // give the user a cue that the dialog is being changed
 		Twinkle.speedy.targetdialogcontent = e.target.form.parentNode; // make this accessible in scopeless setTimeout
-		setTimeout("Twinkle.speedy.initDialog(Twinkle.speedy.callback.doMultiple, false, Twinkle.speedy.targetdialogcontent)", 150);
+		setTimeout(function(){
+			Twinkle.speedy.initDialog(Twinkle.speedy.callback.doMultiple, false, Twinkle.speedy.targetdialogcontent);
+		}, 150);
 	}
 	else
 	{

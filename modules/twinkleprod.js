@@ -12,9 +12,9 @@ Twinkle.prod = function twinkleprod() {
 		return;
 	}
 	if (twinkleUserAuthorized) {
-		twAddPortletLink( "javascript:Twinkle.prod.callback()", "PROD", "tw-prod", "Propose deletion via WP:PROD", "");
+		twAddPortletLink("#", "PROD", "tw-prod", "Propose deletion via WP:PROD", "").click(Twinkle.prod.callback);
 	} else {
-		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'PROD', 'tw-prod', 'Propose deletion via WP:PROD', '');
+		twAddPortletLink("#", 'PROD', 'tw-prod', 'Propose deletion via WP:PROD', '').click(function(){alert("Your account is too new to use Twinkle.");});
 	}
 };
 
@@ -282,6 +282,7 @@ Twinkle.prod.callbacks = {
 Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' '));  // for queen/king/whatever and country!
 	var form = e.target;
+	var prodtype;
 
 	var prodtypes = form.prodtype;
 	for( var i = 0; i < prodtypes.length; i++ )
@@ -289,7 +290,7 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 		if( !prodtypes[i].checked ) {
 			continue;
 		}
-		var prodtype = prodtypes[i].value;
+		prodtype = prodtypes[i].value;
 		break;
 	}
 

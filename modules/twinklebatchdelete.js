@@ -10,7 +10,7 @@
 
 Twinkle.batchdelete = function twinklebatchdelete() {
 	if( userIsInGroup( 'sysop' ) && (mw.config.get( 'wgNamespaceNumber' ) > 0 || mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex') ) {
-		twAddPortletLink( "javascript:Twinkle.batchdelete.callback()", "D-batch", "tw-batch", "Delete pages found in this category/on this page", "");
+		twAddPortletLink("#", "D-batch", "tw-batch", "Delete pages found in this category/on this page", "").click(Twinkle.batchdelete.callback);
 	}
 };
 
@@ -265,7 +265,7 @@ Twinkle.batchdelete.callbacks = {
 		var onsuccess = function( self ) {
 			var obj = self.params.obj;
 			var total = self.params.total;
-			var now = parseInt( 100 * ++(self.params.current)/total ) + '%';
+			var now = parseInt( 100 * ++(self.params.current)/total, 10 ) + '%';
 			obj.update( now );
 			self.statelem.unlink();
 			if( self.params.current >= total ) {
@@ -312,7 +312,7 @@ Twinkle.batchdelete.callbacks = {
 		var onsuccess = function( self ) {
 			var obj = self.params.obj;
 			var total = self.params.total;
-			var now = parseInt( 100 * ++(self.params.current)/total ) + '%';
+			var now = parseInt( 100 * ++(self.params.current)/total, 10 ) + '%';
 			obj.update( now );
 			self.statelem.unlink();
 			if( self.params.current >= total ) {

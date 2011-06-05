@@ -17,9 +17,9 @@ Twinkle.xfd = function twinklexfd() {
 		return;
 	}
 	if (twinkleUserAuthorized) {
-		twAddPortletLink( "javascript:Twinkle.xfd.callback()", "XFD", "tw-xfd", "Anything for deletion", "");
+		twAddPortletLink("#", "XFD", "tw-xfd", "Anything for deletion", "").click(Twinkle.xfd.callback);
 	} else {
-		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'XFD', 'tw-xfd', 'Anything for deletion', '');
+		twAddPortletLink("#", 'XFD', 'tw-xfd', 'Anything for deletion', '').click(function(){alert("Your account is too new to use Twinkle.");});
 	}
 };
 
@@ -384,7 +384,7 @@ Twinkle.xfd.callbacks = {
 					// A match, set number to the max of current
 					number = Math.max( number, Number(match[1]) );
 				}
-				apiobj.params.number = Twinkle.xfd.num2order( parseInt( number ) + 1);
+				apiobj.params.number = Twinkle.xfd.num2order( parseInt( number, 10 ) + 1);
 				apiobj.params.numbering = number > 0 ? ' (' + apiobj.params.number + ' nomination)' : '';
 			}
 			apiobj.params.discussionpage = 'Wikipedia:Articles for deletion/' + mw.config.get('wgPageName') + apiobj.params.numbering;
@@ -641,7 +641,7 @@ Twinkle.xfd.callbacks = {
 					// A match, set number to the max of current
 					number = Math.max( number, Number(match[1]) );
 				}
-				apiobj.params.number = Twinkle.xfd.num2order( parseInt( number ) + 1);
+				apiobj.params.number = Twinkle.xfd.num2order( parseInt( number, 10 ) + 1);
 				apiobj.params.numbering = number > 0 ? ' (' + apiobj.params.number + ' nomination)' : '';
 			}
 			apiobj.params.discussionpage = "Wikipedia:Miscellany for deletion/" + mw.config.get('wgPageName') + apiobj.params.numbering;
@@ -1179,20 +1179,21 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	var type =  e.target.category.value;
 	var usertalk = e.target.notify.checked;
 	var reason = e.target.xfdreason.value;
+	var xfdcat, puf, noinclude, tfdinline, notifyuserspace;
 	if( type in {'afd':'','cfd':''} ) {
-		var xfdcat = e.target.xfdcat.value;
+		xfdcat = e.target.xfdcat.value;
 	}
 	if( type === 'ffd' ) {
-		var puf = e.target.puf.checked;
+		puf = e.target.puf.checked;
 	}
 	if( type in {'afd':'','mfd':''} ) {
-		var noinclude = e.target.noinclude.checked;
+		noinclude = e.target.noinclude.checked;
 	}
 	if( type === 'tfd' ) {
-		var tfdinline = e.target.tfdinline.checked;
+		tfdinline = e.target.tfdinline.checked;
 	}
 	if( type === 'mfd' ) {
-		var notifyuserspace = e.target.notifyuserspace && e.target.notifyuserspace.checked;
+		notifyuserspace = e.target.notifyuserspace && e.target.notifyuserspace.checked;
 	}
 
 	SimpleWindow.setButtonsEnabled( false );

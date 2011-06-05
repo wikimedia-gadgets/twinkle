@@ -10,7 +10,7 @@
 Twinkle.shared = function friendlyshared() {
 	if( mw.config.get('wgNamespaceNumber') === 3 && isIPAddress(mw.config.get('wgTitle')) ) {
 		var username = mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-		twAddPortletLink( "javascript:Twinkle.shared.callback(\"" + username + "\")", "Shared IP", "friendly-shared", "Shared IP tagging", "");
+		twAddPortletLink("#", "Shared IP", "friendly-shared", "Shared IP tagging", "").click(function(){Twinkle.shared.callback(username);});
 	}
 };
 

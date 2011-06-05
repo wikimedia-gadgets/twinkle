@@ -13,11 +13,11 @@ Twinkle.protect = function twinkleprotect() {
 	}
 
 	if ( userIsInGroup( 'sysop' ) ) {
-		twAddPortletLink( "javascript:Twinkle.protect.callback()", "PP", "tw-rpp", "Protect page", "");
+		twAddPortletLink("#", "PP", "tw-rpp", "Protect page", "").click(Twinkle.protect.callback);
 	} else if (twinkleUserAuthorized) {
-		twAddPortletLink( "javascript:Twinkle.protect.callback()", "RPP", "tw-rpp", "Request page protection", "");
+		twAddPortletLink("#", "RPP", "tw-rpp", "Request page protection", "").click(Twinkle.protect.callback);
 	} else {
-		twAddPortletLink( 'javascript:alert("Your account is too new to use Twinkle.");', 'RPP', 'tw-rpp', 'Request page protection', '');
+		twAddPortletLink("#", 'RPP', 'tw-rpp', 'Request page protection', '').click(function(){alert("Your account is too new to use Twinkle.");});
 	}
 };
 
@@ -341,7 +341,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			if (!mw.config.get('wgArticleId')) {  // tagging isn't relevant for non-existing pages
 				break;
 			}
-			// fall through to 'tag' case, which shares the same field1
+			/* falls through */
 		case 'tag':
 			field1 = new QuickForm.element({ type: 'field', label: 'Tagging options', name: 'field1' });
 			field1.append( {
@@ -782,7 +782,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			Wikipedia.actionCompleted.notice = "Protection complete";
 
 			thispage.protect();
-			// fall through to "tag" case
+			/* falls through */
 		case 'tag':
 
 			if (actiontype === 'tag') {
@@ -835,6 +835,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typename = 'create protection';
 					break;
 				case 'unprotect':
+					/* falls through */
 				default:
 					typename = 'unprotection';
 					break;
@@ -926,13 +927,14 @@ Twinkle.protect.callbacks = {
 	taggingPage: function( protectedPage ) {
 		var params = protectedPage.getCallbackParameters();
 		var text = protectedPage.getPageText();
+		var tag, summary;
 
 		var oldtag_re = /\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*/gi;
 
 		text = text.replace( oldtag_re, '' );
 
 		if ( params.tag !== 'none' ) {
-			var tag = params.tag;
+			tag = params.tag;
 			if( params.reason ) {
 				tag += '|reason=' + params.reason;
 			}
@@ -944,7 +946,6 @@ Twinkle.protect.callbacks = {
 			}
 		}
 
-		var summary;
 		if( params.tag === 'none' ) {
 			summary = 'Removing protection template' + Twinkle.getPref('summaryAd');
 		} else {

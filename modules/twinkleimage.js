@@ -8,8 +8,18 @@
  */
 
 Twinkle.image = function twinkleimage() {
-	if( mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory")) {
-		twAddPortletLink( (twinkleUserAuthorized ? "javascript:Twinkle.image.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "DI", "tw-di", "Nominate file for relative speedy deletion", "");
+	if(
+		mw.config.get('wgNamespaceNumber') === 6 &&
+		!document.getElementById("mw-sharedupload") &&
+		document.getElementById("mw-imagepage-section-filehistory")
+		) {
+		if(twinkleUserAuthorized) {
+			twAddPortletLink("#", "DI", "tw-di", "Nominate file for relative speedy deletion", "").click(Twinkle.image.callback);
+		} else {
+			twAddPortletLink("#", "DI", "tw-di", "Nominate file for relative speedy deletion", "").click(function(){
+				alert("Your account is too new to use Twinkle.");
+			});
+		}
 	}
 };
 
@@ -166,39 +176,40 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 };
 
 Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
+	var type, non_free, source, reason, replacement, old_image;
 	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' '));  // for queen/king/whatever and country!
 
 	var notify = event.target.notify.checked;
 	var types = event.target.type;
 	for( var i = 0; i < types.length; ++i ) {
 		if( types[i].checked ) {
-			var type = types[i].value;
+			type = types[i].value;
 			break;
 		}
 	}
 	if( event.target.non_free ) {
-		var non_free = event.target.non_free.checked;
+		non_free = event.target.non_free.checked;
 	}
 	if( event.target.source ) {
-		var source = event.target.source.value;
+		source = event.target.source.value;
 	}
 	if( event.target.reason ) {
-		var reason = event.target.reason.value;
+		reason = event.target.reason.value;
 	}
 	if( event.target.replacement ) {
-		var replacement = event.target.replacement.value;
+		replacement = event.target.replacement.value;
 	}
 	if( event.target.old_image ) {
-		var old_image = event.target.old_image.checked;
+		old_image = event.target.old_image.checked;
 	}
 
 	var params = {
-		type: type,
-		non_free: non_free,
-		source: source,
-		reason: reason,
-		replacement: replacement,
-		old_image: old_image
+		'type': type,
+		'non_free': non_free,
+		'source': source,
+		'reason': reason,
+		'replacement': replacement,
+		'old_image': old_image
 	};
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( event.target );

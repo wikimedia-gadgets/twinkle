@@ -82,14 +82,15 @@ Twinkle.fluff = {
 				return;
 			}
 
+			var otitle, ntitle;
 			try {
 				var otitle1 = document.getElementById('mw-diff-otitle1'); 
 				var ntitle1 = document.getElementById('mw-diff-ntitle1'); 
 				if (!otitle1 || !ntitle1) {
 					return;
 				}
-				var otitle = otitle1.parentNode;
-				var ntitle = ntitle1.parentNode;
+				otitle = otitle1.parentNode;
+				ntitle = ntitle1.parentNode;
 			} catch( e ) {
 				// no old, nor new title, nothing to do really, return;
 				return;
@@ -107,7 +108,9 @@ Twinkle.fluff = {
 			revertToRevision.style.fontWeight = 'bold';
 
 			var revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
-			revertToRevisionLink.href = "javascript:Twinkle.fluff.revertToRevision('" + oldrev + "')";
+			$(revertToRevisionLink).click(function(){
+				Twinkle.fluff.revertToRevision(oldrev);
+			});
 			revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
 			revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
 			revertToRevisionLink.appendChild( spanTag( 'Black', ']' ) );
@@ -125,7 +128,9 @@ Twinkle.fluff = {
 				revertToRevision.setAttribute( 'id', 'tw-revert-to-nrevision' );
 				revertToRevision.style.fontWeight = 'bold';
 				revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
-				revertToRevisionLink.href = "javascript:Twinkle.fluff.revertToRevision('" + newrev + "')";
+				$(revertToRevisionLink).click(function(){
+					Twinkle.fluff.revertToRevision(newrev);
+				});
 				revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
 				revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
 				revertToRevisionLink.appendChild( spanTag( 'Black', ']' ) );
@@ -147,9 +152,15 @@ Twinkle.fluff = {
 				var vandLink = document.createElement('a');
 				var normLink = document.createElement('a');
 
-				agfLink.href = "javascript:Twinkle.fluff.revert('agf' , '" + vandal + "')"; 
-				vandLink.href = "javascript:Twinkle.fluff.revert('vand' , '" + vandal + "')"; 
-				normLink.href = "javascript:Twinkle.fluff.revert('norm' , '" + vandal + "')"; 
+				$(agfLink).click(function(){
+					Twinkle.fluff.revert('agf', vandal);
+				});
+				$(vandLink).click(function(){
+					Twinkle.fluff.revert('vand', vandal);
+				});
+				$(normLink).click(function(){
+					Twinkle.fluff.revert('norm', vandal);
+				});
 
 				agfLink.appendChild( spanTag( 'Black', '[' ) );
 				agfLink.appendChild( spanTag( 'DarkOliveGreen', 'rollback (AGF)' ) );
@@ -340,9 +351,8 @@ Twinkle.fluff.callbacks = {
 			case 'agf':
 				Status.warn( 'Notice', [ 'Good faith revert was chosen on ', htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot, it makes no sense at all to revert it as a good faith edit, will stop reverting.' ] );
 				return;
-
-				break;
 			case 'norm':
+				/* falls through */
 			default:
 				var cont = confirm( 'Normal revert was chosen, but the most recent edit was made by a whitelisted bot (' + self.params.user + '). Do you want to revert the revision before instead?' );
 				if( cont ) {
@@ -416,6 +426,7 @@ Twinkle.fluff.callbacks = {
 				Twinkle.getPref('summaryAd') );
 			break;
 		case 'norm':
+			/* falls through */
 		default:
 			if( Twinkle.getPref('offerReasonOnNormalRevert') ) {
 				extra_summary = prompt( "An optional comment for the edit summary:", "" );
@@ -459,6 +470,7 @@ Twinkle.fluff.callbacks = {
 				window.open( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), '_blank', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 				break;
 			case 'window':
+				/* falls through */
 			default:
 				window.open( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), 'twinklewarnwindow', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 				break;

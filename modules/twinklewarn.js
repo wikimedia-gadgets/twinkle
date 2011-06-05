@@ -9,7 +9,13 @@
 
 Twinkle.warn = function twinklewarn() {
 	if( mw.config.get('wgNamespaceNumber') === 3 ) {
-		twAddPortletLink( (twinkleUserAuthorized ? "javascript:Twinkle.warn.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "Warn", "tw-warn", "Warn/Notify user", "");
+				if(twinkleUserAuthorized) {
+			twAddPortletLink("#", "Warn", "tw-warn", "Warn/Notify user", "").click(Twinkle.warn.callback);
+		} else {
+			twAddPortletLink("#", "Warn", "tw-warn", "Warn/Notify user", "").click(function(){
+				alert("Your account is too new to use Twinkle.");
+			});
+		}
 	}
 };
 
@@ -33,7 +39,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 			event:Twinkle.warn.callback.change_category
 		} );
 
-	var defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'));
+	var defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'), 10);
 	main_group.append( { type:'option', label:'General Note (1)', value:'level1', selected: ( defaultGroup === 1 || defaultGroup < 1 || ( userIsInGroup( 'sysop' ) ? defaultGroup > 8 : defaultGroup > 7 ) ) } );
 	main_group.append( { type:'option', label:'Caution (2)', value:'level2', selected: ( defaultGroup === 2 ) } );
 	main_group.append( { type:'option', label:'Warning (3)', value:'level3', selected: ( defaultGroup === 3 ) } );
@@ -60,7 +66,9 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	more.append( { type:'textarea', label:'More:', name:'reason', tooltip:'Perhaps a reason, or that a more detailed notice must be appended' } );
 
 	var previewlink = document.createElement( 'a' );
-	previewlink.setAttribute( 'href', 'javascript:Twinkle.warn.callbacks.preview()' );
+	$(previewlink).click(function(){
+		Twinkle.warn.callbacks.preview();
+	});
 	previewlink.textContent = 'Preview';
 	more.append( { type: 'div', name: 'warningpreview', label: [ previewlink ] } );
 
@@ -1236,9 +1244,10 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	var messages = Twinkle.warn.messages[ value ];
 	sub_group.main_group = value;
 	var old_subvalue = sub_group.value;
+	var old_subvalue_re;
 	if( old_subvalue ) {
 		old_subvalue = old_subvalue.replace(/\d*(im)?$/, '' );
-		var old_subvalue_re = new RegExp( RegExp.escape( old_subvalue ) + "(\\d*(?:im)?)$" );
+		old_subvalue_re = new RegExp( RegExp.escape( old_subvalue ) + "(\\d*(?:im)?)$" );
 	}
 
 	while( sub_group.hasChildNodes() ){
@@ -1263,7 +1272,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 				tooltip: 'The period the blocking is due for, for example 24 hours, 2 weeks, indefinite etc...'
 			} );
 		e.target.root.insertBefore( more.render(), e.target.root.lastChild );
-		if(!(Twinkle.warn.prev_block_timer === null)) {
+		if(Twinkle.warn.prev_block_timer !== null) {
 			e.target.root.block_timer.value = Twinkle.warn.prev_block_timer;
 			Twinkle.warn.prev_block_timer = null;
 		}		
@@ -1277,12 +1286,12 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			Twinkle.warn.prev_block_timer = e.target.root.block_timer.value;
 		}
 		e.target.root.removeChild( e.target.root.block_timer.parentNode );
-		if(e.target.root.article.disabled && !(Twinkle.warn.prev_article === null)) {
+		if(e.target.root.article.disabled && Twinkle.warn.prev_article !== null) {
 			e.target.root.article.value = Twinkle.warn.prev_article;
 			Twinkle.warn.prev_article = null;
 		}
 		e.target.root.article.disabled = false;
-		if(e.target.root.reason.disabled && !(Twinkle.warn.prev_reason === null)) {
+		if(e.target.root.reason.disabled && Twinkle.warn.prev_reason !== null) {
 			e.target.root.reason.value = Twinkle.warn.prev_reason;
 			Twinkle.warn.prev_reason = null;
 		}
@@ -1302,7 +1311,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 			e.target.form.article.disabled = true;
 			e.target.form.article.value = '';
 		} else if( e.target.form.article.disabled ) {
-			if(!(Twinkle.warn.prev_article === null)) {
+			if(Twinkle.warn.prev_article !== null) {
 				e.target.form.article.value = Twinkle.warn.prev_article;
 				Twinkle.warn.prev_article = null;
 			}
@@ -1316,7 +1325,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 			e.target.form.block_timer.disabled = true;
 			e.target.form.block_timer.value = 'indef';
 		} else if( e.target.form.block_timer.disabled ) {
-			if(!(Twinkle.warn.prev_block_timer === null)) {
+			if(Twinkle.warn.prev_block_timer !== null) {
 				e.target.form.block_timer.value = Twinkle.warn.prev_block_timer;
 				Twinkle.warn.prev_block_timer = null;
 			}
@@ -1324,7 +1333,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		}
 
 		if( Twinkle.warn.pageHash[ value ] ) {
-			if(!(Twinkle.warn.prev_article === null)) {
+			if(Twinkle.warn.prev_article !== null) {
 				e.target.form.article.value = Twinkle.warn.prev_article;
 				Twinkle.warn.prev_article = null;
 			}
@@ -1338,7 +1347,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		}
 
 		if( Twinkle.warn.reasonHash[ value ] ) {
-			if(!(Twinkle.warn.prev_reason === null)) {
+			if(Twinkle.warn.prev_reason !== null) {
 				e.target.form.reason.value = Twinkle.warn.prev_reason;
 				Twinkle.warn.prev_reason = null;
 			}
@@ -1421,7 +1430,7 @@ Twinkle.warn.callbacks = {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
 
-		var history_re = /\<\!\-\-\ Template\:(uw\-.*?)\ \-\-\>.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4}) \(UTC\)/g;
+		var history_re = /<!-- Template:(uw-.*?) -->.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4}) \(UTC\)/g;
 		var history = {};
 		var latest = { date:new Date( 0 ), type:'' };
 		var current;
@@ -1510,13 +1519,10 @@ Twinkle.warn.callbacks = {
 		
 		if ( Twinkle.getPref('showSharedIPNotice') && isIPAddress( mw.config.get('wgTitle') ) ) {
 			Status.info( 'Info', 'Adding a shared ip notice' );
-			switch( QueryString.get( 'type' ) ) {
-			case 'vand':
+			if( QueryString.get( 'type' ) == 'vand' ) {
 				text +=  "\n:''If this is a shared [[IP address]], and you didn't make any [[Wikipedia:vandalism|unconstructive]] edits, consider [[Wikipedia:Why create an account?|creating an account]] for yourself so you can avoid further irrelevant warnings.'' ";
-				break;
-			default:
+			} else {
 				text +=  "\n:''If this is a shared [[IP address]], and you didn't make the edit, consider [[Wikipedia:Why create an account?|creating an account]] for yourself so you can avoid further irrelevant notices.'' ";
-				break;
 			}
 		}
 		

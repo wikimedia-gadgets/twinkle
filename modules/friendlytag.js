@@ -10,11 +10,11 @@
 Twinkle.tag = function friendlytag() {
 	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) === 'no' && $("span.redirectText").length > 0 ) {
 		Twinkle.tag.isRedirect = true;
-		twAddPortletLink( "javascript:Twinkle.tag.callback()", "Tag", "friendly-tag", "Tag redirect", "");
+		twAddPortletLink("#", "Tag", "friendly-tag", "Tag redirect", "").click(Twinkle.tag.callback);
 	} else if( mw.config.get('wgNamespaceNumber') !== 0 || !mw.config.get('wgCurRevisionId') ) {
 		return;
 	} else {
-		twAddPortletLink( "javascript:Twinkle.tag.callback()", "Tag", "friendly-tag", "Add maintenance tags to article", "");
+		twAddPortletLink("#", "Tag", "friendly-tag", "Add maintenance tags to article", "").click(Twinkle.tag.callback);
 	}
 };
 
@@ -899,7 +899,7 @@ Twinkle.tag.callbacks = {
 
 Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	var form = e.target;
-	var tags;
+	var tags, globalizeSubcategory, notabilitySubcategory;
 	if( Twinkle.tag.isRedirect ) {
 		tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
 	} else {
@@ -908,8 +908,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		} else {
 			tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) );
 		}
-		var globalizeSubcategory = form.getChecked( 'problem.globalize' );
-		var notabilitySubcategory = form.getChecked( 'problem.notability' );
+		globalizeSubcategory = form.getChecked( 'problem.globalize' );
+		notabilitySubcategory = form.getChecked( 'problem.notability' );
 	}
 	var params;
 

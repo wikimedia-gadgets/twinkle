@@ -22,8 +22,8 @@ Twinkle.diff = function twinklediff() {
 
 	// Show additional tabs only on diff pages
 	if (QueryString.exists('diff')) {
-		twAddPortletLink( "javascript:Twinkle.diff.evaluate(false);", 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user' );
-		twAddPortletLink( "javascript:Twinkle.diff.evaluate(true);", 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision' );
+		twAddPortletLink("#", 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user' ).click(function(){Twinkle.diff.evaluate(false);});
+		twAddPortletLink("#", 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision' ).click(function(){Twinkle.diff.evaluate(true);});
 
 		var oldid = /oldid=(.+)/.exec($('div#mw-diff-ntitle1 strong a').first().attr("href"))[1];
 		query = {

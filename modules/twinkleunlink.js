@@ -11,7 +11,7 @@ Twinkle.unlink = function twinkleunlink() {
 	if( mw.config.get('wgNamespaceNumber') < 0 ) {
 		return;
 	}
-	twAddPortletLink( "javascript:Twinkle.unlink.callback()", "Unlink", "tw-unlink", "Unlink backlinks", "");
+	twAddPortletLink("#", "Unlink", "tw-unlink", "Unlink backlinks", "").click(Twinkle.unlink.callback);
 };
 
 Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
@@ -105,11 +105,12 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	}
 
 	var reason = event.target.reason.value;
+	var backlinks, imageusage;
 	if( event.target.backlinks ) {
-		var backlinks = Twinkle.unlink.getChecked2(event.target.backlinks);
+		backlinks = Twinkle.unlink.getChecked2(event.target.backlinks);
 	}
 	if( event.target.imageusage ) {
-		var imageusage = Twinkle.unlink.getChecked2(event.target.imageusage);
+		imageusage = Twinkle.unlink.getChecked2(event.target.imageusage);
 	}
 
 	SimpleWindow.setButtonsEnabled( false );
@@ -261,7 +262,7 @@ Twinkle.unlink.callbacks = {
 
 		var params = pageobj.getCallbackParameters();
 		var total = params.total;
-		var now = parseInt( 100 * (params.imageusage ? ++(Twinkle.unlink.imageusagedone) : ++(Twinkle.unlink.backlinksdone))/total ) + '%';
+		var now = parseInt( 100 * (params.imageusage ? ++(Twinkle.unlink.imageusagedone) : ++(Twinkle.unlink.backlinksdone))/total, 10 ) + '%';
 		params.globalstatus.update( now );
 		if((params.imageusage ? Twinkle.unlink.imageusagedone : Twinkle.unlink.backlinksdone) >= total) {
 			params.globalstatus.info( now + ' (completed)' );
