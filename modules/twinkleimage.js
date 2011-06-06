@@ -8,15 +8,14 @@
  */
 
 Twinkle.image = function twinkleimage() {
-	if(
-		mw.config.get('wgNamespaceNumber') === 6 &&
-		!document.getElementById("mw-sharedupload") &&
-		document.getElementById("mw-imagepage-section-filehistory")
-		) {
+	if (mw.config.get('wgNamespaceNumber') === 6 &&
+	    !document.getElementById("mw-sharedupload") &&
+	    document.getElementById("mw-imagepage-section-filehistory"))
+	{
 		if(twinkleUserAuthorized) {
-			twAddPortletLink("#", "DI", "tw-di", "Nominate file for relative speedy deletion", "").click(Twinkle.image.callback);
+			$(twAddPortletLink("#", "DI", "tw-di", "Nominate file for delayed speedy deletion", "")).click(Twinkle.image.callback);
 		} else {
-			twAddPortletLink("#", "DI", "tw-di", "Nominate file for relative speedy deletion", "").click(function(){
+			$(twAddPortletLink("#", "DI", "tw-di", "Nominate file for delayed speedy deletion", "")).click(function(){
 				alert("Your account is too new to use Twinkle.");
 			});
 		}

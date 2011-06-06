@@ -10,11 +10,11 @@
 Twinkle.tag = function friendlytag() {
 	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) === 'no' && $("span.redirectText").length > 0 ) {
 		Twinkle.tag.isRedirect = true;
-		twAddPortletLink("#", "Tag", "friendly-tag", "Tag redirect", "").click(Twinkle.tag.callback);
+		$(twAddPortletLink("#", "Tag", "friendly-tag", "Tag redirect", "")).click(Twinkle.tag.callback);
 	} else if( mw.config.get('wgNamespaceNumber') !== 0 || !mw.config.get('wgCurRevisionId') ) {
 		return;
 	} else {
-		twAddPortletLink("#", "Tag", "friendly-tag", "Add maintenance tags to article", "").click(Twinkle.tag.callback);
+		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add maintenance tags to article", "")).click(Twinkle.tag.callback);
 	}
 };
 

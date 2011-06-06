@@ -11,7 +11,7 @@ Twinkle.unlink = function twinkleunlink() {
 	if( mw.config.get('wgNamespaceNumber') < 0 ) {
 		return;
 	}
-	twAddPortletLink("#", "Unlink", "tw-unlink", "Unlink backlinks", "").click(Twinkle.unlink.callback);
+	$(twAddPortletLink("#", "Unlink", "tw-unlink", "Unlink backlinks", "")).click(Twinkle.unlink.callback);
 };
 
 Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {

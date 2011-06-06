@@ -17,9 +17,11 @@ Twinkle.xfd = function twinklexfd() {
 		return;
 	}
 	if (twinkleUserAuthorized) {
-		twAddPortletLink("#", "XFD", "tw-xfd", "Anything for deletion", "").click(Twinkle.xfd.callback);
+		$(twAddPortletLink("#", "XFD", "tw-xfd", "Nominate for deletion", "")).click(Twinkle.xfd.callback);
 	} else {
-		twAddPortletLink("#", 'XFD', 'tw-xfd', 'Anything for deletion', '').click(function(){alert("Your account is too new to use Twinkle.");});
+		$(twAddPortletLink("#", 'XFD', 'tw-xfd', 'Nominate for deletion', '')).click(function() {
+			alert("Your account is too new to use Twinkle.");
+		});
 	}
 };
 

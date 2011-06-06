@@ -74,7 +74,7 @@ Twinkle.welcome.normal = function() {
 	}
 	if( mw.config.get( 'wgNamespaceNumber' ) === 3 ) {
 		var username = mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-		twAddPortletLink("#", "Wel", "friendly-welcome", "Welcome user", "").click(function(){Twinkle.welcome.callback(username);});
+		$(twAddPortletLink("#", "Wel", "friendly-welcome", "Welcome user", "")).click(function() { Twinkle.welcome.callback(username); });
 	}
 };
 

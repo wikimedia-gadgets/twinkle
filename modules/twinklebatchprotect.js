@@ -10,7 +10,7 @@
 
 Twinkle.batchprotect = function twinklebatchprotect() {
 	if( userIsInGroup( 'sysop' ) && (wgNamespaceNumber > 0 || wgCanonicalSpecialPageName == 'Prefixindex') ) {
-		twAddPortletLink("#", "P-batch", "tw-pbatch", "Protect pages found on this page", "").click(Twinkle.batchprotect.callback);
+		$(twAddPortletLink("#", "P-batch", "tw-pbatch", "Protect pages found on this page", "")).click(Twinkle.batchprotect.callback);
 	}
 };
 

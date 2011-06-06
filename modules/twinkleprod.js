@@ -12,9 +12,11 @@ Twinkle.prod = function twinkleprod() {
 		return;
 	}
 	if (twinkleUserAuthorized) {
-		twAddPortletLink("#", "PROD", "tw-prod", "Propose deletion via WP:PROD", "").click(Twinkle.prod.callback);
+		$(twAddPortletLink("#", "PROD", "tw-prod", "Propose deletion via WP:PROD", "")).click(Twinkle.prod.callback);
 	} else {
-		twAddPortletLink("#", 'PROD', 'tw-prod', 'Propose deletion via WP:PROD', '').click(function(){alert("Your account is too new to use Twinkle.");});
+		$(twAddPortletLink("#", 'PROD', 'tw-prod', 'Propose deletion via WP:PROD', '')).click(function() {
+			alert("Your account is too new to use Twinkle.");
+		});
 	}
 };
 

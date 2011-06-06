@@ -21,11 +21,13 @@ Twinkle.speedy = function twinklespeedy() {
 	}
 
 	if ( userIsInGroup( 'sysop' ) ) {
-		twAddPortletLink("#", "CSD", "tw-csd", "Speedy delete according to WP:CSD", "").click(Twinkle.speedy.callback);
+		$(twAddPortletLink("#", "CSD", "tw-csd", "Delete page according to WP:CSD", "")).click(Twinkle.speedy.callback);
 	} else if (twinkleUserAuthorized) {
-		twAddPortletLink("#", "CSD", "tw-csd", "Request speedy deletion according to WP:CSD", "").click(Twinkle.speedy.callback);
+		$(twAddPortletLink("#", "CSD", "tw-csd", "Request speedy deletion according to WP:CSD", "")).click(Twinkle.speedy.callback);
 	} else {
-		twAddPortletLink("#", 'CSD', 'tw-csd', 'Request speedy deletion according to WP:CSD', '').click(function(){alert("Your account is too new to use Twinkle.");});
+		$(twAddPortletLink("#", 'CSD', 'tw-csd', 'Request speedy deletion according to WP:CSD', '')).click(function() {
+			alert("Your account is too new to use Twinkle.");
+		});
 	}
 };
 
@@ -1303,9 +1305,8 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	if (value === 'multiple')
 	{
 		e.target.form.style.display = "none"; // give the user a cue that the dialog is being changed
-		Twinkle.speedy.targetdialogcontent = e.target.form.parentNode; // make this accessible in scopeless setTimeout
-		setTimeout(function(){
-			Twinkle.speedy.initDialog(Twinkle.speedy.callback.doMultiple, false, Twinkle.speedy.targetdialogcontent);
+		setTimeout(function() {
+			Twinkle.speedy.initDialog(Twinkle.speedy.callback.doMultiple, false, e.target.form.parentNode);
 		}, 150);
 		return;
 	}
@@ -1429,9 +1430,8 @@ Twinkle.speedy.callback.doMultiple = function twinklespeedyCallbackDoMultiple(e)
 			}
 		}
 		e.target.form.style.display = "none"; // give the user a cue that the dialog is being changed
-		Twinkle.speedy.targetdialogcontent = e.target.form.parentNode; // make this accessible in scopeless setTimeout
-		setTimeout(function(){
-			Twinkle.speedy.initDialog(Twinkle.speedy.callback.doMultiple, false, Twinkle.speedy.targetdialogcontent);
+		setTimeout(function() {
+			Twinkle.speedy.initDialog(Twinkle.speedy.callback.doMultiple, false, e.target.form.parentNode);
 		}, 150);
 	}
 	else
