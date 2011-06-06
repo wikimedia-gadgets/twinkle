@@ -174,35 +174,6 @@ function twAddPortletLink( href, text, id, tooltip, accesskey, nextnode )
 	return addPortletLink( twAddPortlet.portletId, href, text, id, tooltip, accesskey, nextnode );
 }
 
-/**
- * **************** Morebits ****************
- */
-
-var Morebits = {
-	/*
-	The following three functions are taken straight from mediawiki.util
-	http://svn.wikimedia.org/viewvc/mediawiki/trunk/phase3/resources/mediawiki.util/mediawiki.util.js?revision=89349&view=co
-	The ResourceLoader does not allow to define a load order of dependencies, and standard module mediawiki.util is loaded after
-	ext.gadget.twinkle. Thus the Twinkle.load method may be executed before the corresponding functions from
-	mediawiki.util are defined, and we have to replicate them.
-	*/
-	rawurlencode : function(str) {
-		str = ( str + '' ).toString();
-		return encodeURIComponent( str )
-			.replace( /!/g, '%21' ).replace( /'/g, '%27' ).replace( /\(/g, '%28' )
-			.replace( /\)/g, '%29' ).replace( /\*/g, '%2A' ).replace( /~/g, '%7E' );
-	},
-
-	wikiUrlencode : function(str) {
-		return Morebits.rawurlencode( str )
-			.replace( /%20/g, '_' ).replace( /%3A/g, ':' ).replace( /%2F/g, '/' );
-	},
-
-	wikiGetlink : function(str) {
-		return mw.config.get( 'wgArticlePath' ).replace( '$1', Morebits.wikiUrlencode( str ) );
-	}
-}
-
 
 /**
  * **************** Cookies ****************
@@ -1601,7 +1572,7 @@ Wikipedia.actionCompleted.event = function() {
 	if( Wikipedia.actionCompleted.redirect ) {
 		// if it isn't a URL, which is likely, make it one. TODO: This breaks on the articles 'http://', 'ftp://', and similar ones. Are we ever using URL redirects?
 		if( !( (/^\w+\:\/\//).test( Wikipedia.actionCompleted.redirect ) ) ) {
-			Wikipedia.actionCompleted.redirect = Morebits.wikiGetlink( Wikipedia.actionCompleted.redirect );
+			Wikipedia.actionCompleted.redirect = mw.util.wikiGetlink( Wikipedia.actionCompleted.redirect );
 			if( Wikipedia.actionCompleted.followRedirect === false ) {
 				Wikipedia.actionCompleted.redirect += "?redirect=no";
 			}
@@ -2536,7 +2507,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			} else {
 				// default on success action - display link for edited page
 				var link = document.createElement('a');
-				link.setAttribute('href', Morebits.wikiGetlink(ctx.pageName) );
+				link.setAttribute('href', mw.util.wikiGetlink(ctx.pageName) );
 				link.appendChild(document.createTextNode(ctx.pageName));
 				ctx.statusElement.info(['completed (', link, ')']);
 			}
@@ -2891,7 +2862,7 @@ Wikipedia.wiki.prototype = {
 					self.onsuccess( self );
 				} else {
 					var link = document.createElement( 'a' );
-					link.setAttribute( 'href', Morebits.wikiGetlink(self.query['title']) );
+					link.setAttribute( 'href', mw.util.wikiGetlink(self.query['title']) );
 					link.setAttribute( 'title', self.query['title'] );
 					link.appendChild( document.createTextNode( self.query['title'] ) );
 
@@ -3598,7 +3569,7 @@ SimpleWindow.prototype = {
 			$footerlinks.append(bullet);
 		}
 		var link = document.createElement("a");
-		link.setAttribute("href", Morebits.wikiGetlink(wikiPage) );
+		link.setAttribute("href", mw.util.wikiGetlink(wikiPage) );
 		link.setAttribute("title", wikiPage);
 		link.setAttribute("target", "_blank");
 		link.textContent = text;

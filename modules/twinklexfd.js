@@ -192,7 +192,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				name: 'work_area'
 			} );
 		var linknode = document.createElement('a');
-		linknode.setAttribute("href", Morebits.wikiGetlink("WP:SFD") );
+		linknode.setAttribute("href", mw.util.wikiGetlink("WP:SFD") );
 		linknode.appendChild(document.createTextNode('WP:SFD'));
 		work_area.append( {
 				type: 'div',
