@@ -48,11 +48,16 @@ Notice that your working directory **must** be clean, if not, either `stash` or 
 
 To `pull` user Foobar's changes, do:
 
-    ./sync.pl --base User:Foobar --push morebits.js 
+    ./sync.pl --base User:Foobar --pull morebits.js
 
 To `push` your changes to Foobar's wiki page, do:
 
-    ./sync.pl --base User:Foobar --pull morebits.js 
+    ./sync.pl --base User:Foobar --push morebits.js
+
+There is also an `deploy` command to deploy the new files live.
+
+    ./sync.pl --deploy twinkle.js
+    make deploy
 
 The edit summary will contain the branch, the last commit sha, and the oneliner for that commit.
 
