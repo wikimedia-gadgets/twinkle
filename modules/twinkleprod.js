@@ -292,7 +292,7 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 		if( !prodtypes[i].checked ) {
 			continue;
 		}
-		prodtype = prodtypes[i].value;
+		prodtype = prodtypes[i].values;
 		break;
 	}
 
