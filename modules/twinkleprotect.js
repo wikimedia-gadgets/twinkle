@@ -998,7 +998,7 @@ Twinkle.protect.callbacks = {
 		var tag = rppRe.exec( text );
 
 		var rppLink = document.createElement('a');
-		rppLink.setAttribute('href', mw.util.wikiGetlink(rppPage.getPageName()) );
+		rppLink.setAttribute('href', Morebits.wikiGetlink(rppPage.getPageName()) );
 		rppLink.appendChild(document.createTextNode(rppPage.getPageName()));
 
 		if ( tag ) {

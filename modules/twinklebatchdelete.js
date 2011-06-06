@@ -241,7 +241,7 @@ Twinkle.batchdelete.callbacks = {
 			wikipedia_page.deletePage(function( apiobj ) { 
 					--Twinkle.batchdelete.currentDeleteCounter;
 					var link = document.createElement( 'a' );
-					link.setAttribute( 'href', mw.util.wikiGetlink(self.params.page) );
+					link.setAttribute( 'href', Morebits.wikiGetlink(self.params.page) );
 					link.setAttribute( 'title', self.params.page );
 					link.appendChild( document.createTextNode( self.params.page ) );
 					apiobj.statelem.info( [ 'completed (' , link , ')' ] );
