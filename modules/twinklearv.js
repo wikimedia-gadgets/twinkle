@@ -26,9 +26,9 @@ Twinkle.arv = function twinklearv() {
 		var title = isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
 		
 		if (twinkleUserAuthorized) {
-			twAddPortletLink("#", "ARV", "tw-arv", title, "" ).click(function(){Twinkle.arv.callback(username.replace( /\"/g, "\\\""));});
+			$(twAddPortletLink("#", "ARV", "tw-arv", title, "" )).click(function() { Twinkle.arv.callback(username.replace( /\"/g, "\\\"")); } );
 		} else {
-			twAddPortletLink("#", 'ARV', 'tw-arv', name, title).click(function(){alert("Your account is too new to use Twinkle.");});
+			$(twAddPortletLink("#", 'ARV', 'tw-arv', title, "" )).click(function() { alert("Your account is too new to use Twinkle."); } );
 		}
 	}
 };
@@ -317,11 +317,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 
 Twinkle.arv.callback.evaluate = function(e) {
 
-	// no automatic redirect when done, just leave the results window open
-	Wikipedia.actionCompleted.redirect = null;
-	Wikipedia.actionCompleted.notice = 'Action';
-	Wikipedia.actionCompleted.postfix = 'completed';
-
 	var form = e.target;
 	var reason = "";
 	var comment = "";
@@ -388,6 +383,10 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 			SimpleWindow.setButtonsEnabled( false );
 			Status.init( form );
+
+			Wikipedia.actionCompleted.redirect = "Wikipedia:Administrator intervention against vandalism";
+			Wikipedia.actionCompleted.notice = "Reporting complete";
+
 			var aivPage = new Wikipedia.page( 'Wikipedia:Administrator intervention against vandalism', 'Processing AIV request' );
 			aivPage.setPageSection( 1 );
 			aivPage.setFollowRedirect( true );
@@ -435,6 +434,10 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 			SimpleWindow.setButtonsEnabled( false );
 			Status.init( form );
+
+			Wikipedia.actionCompleted.redirect = "Wikipedia:Usernames for administrator attention";
+			Wikipedia.actionCompleted.notice = "Reporting complete";
+
 			var uaaPage = new Wikipedia.page( 'Wikipedia:Usernames for administrator attention', 'Processing UAA request' );
 			uaaPage.setPageSection( 1 );
 			uaaPage.setFollowRedirect( true );
@@ -457,6 +460,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 			
 		// Report master sockpuppet account
 		case 'sock':
+			SimpleWindow.setButtonsEnabled( false );
+			Status.init( form );
+
 			Twinkle.arv.processSock( {
 				uid: uid, 
 				sockpuppets: form.getTexts( 'sockpuppet' ), 
@@ -464,12 +470,13 @@ Twinkle.arv.callback.evaluate = function(e) {
 				checkuser: form.checkuser.checked, 
 				notify: form.notify.checked
 			} );
-			SimpleWindow.setButtonsEnabled( false );
-			Status.init( form );
 			break;
 
 		// Report an account as being a sockpuppet of another
 		case 'puppet':
+			SimpleWindow.setButtonsEnabled( false );
+			Status.init( form );
+
 			Twinkle.arv.processSock( {
 				uid: form.sockmaster.value.rtrim(), 
 				sockpuppets: new Array(uid), 
@@ -477,8 +484,6 @@ Twinkle.arv.callback.evaluate = function(e) {
 				checkuser: form.checkuser.checked, 
 				notify: form.notify.checked
 			} );
-			SimpleWindow.setButtonsEnabled( false );
-			Status.init( form );
 			break;
 	}
 };
@@ -537,7 +542,12 @@ Twinkle.arv.processSock = function( params ) {
 	}
 	text += "}}";
 
-	var spiPage = new Wikipedia.page( 'Wikipedia:Sockpuppet investigations/' +  params.uid, 'Retrieving discussion page' );
+	var reportpage = 'Wikipedia:Sockpuppet investigations/' + params.uid;
+
+	Wikipedia.actionCompleted.redirect = reportpage;
+	Wikipedia.actionCompleted.notice = "Reporting complete";
+
+	var spiPage = new Wikipedia.page( reportpage, 'Retrieving discussion page' );
 	spiPage.setFollowRedirect( true );
 	spiPage.setMinorEdit( Twinkle.getPref('markSockReportAsMinor') );
 	spiPage.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ Twinkle.getPref('summaryAd') );
