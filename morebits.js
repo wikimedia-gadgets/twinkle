@@ -194,12 +194,12 @@ var Morebits = {
 	},
 
 	wikiUrlencode : function(str) {
-		return Twinkle.rawurlencode( str )
+		return Morebits.rawurlencode( str )
 			.replace( /%20/g, '_' ).replace( /%3A/g, ':' ).replace( /%2F/g, '/' );
 	},
 
 	wikiGetlink : function(str) {
-		return mw.config.get( 'wgArticlePath' ).replace( '$1', Twinkle.wikiUrlencode( str ) );
+		return mw.config.get( 'wgArticlePath' ).replace( '$1', Morebits.wikiUrlencode( str ) );
 	}
 }
 
