@@ -402,8 +402,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 				aivPage.getStatusElement().status( 'Adding new report...' );
 				aivPage.setMinorEdit( Twinkle.getPref('markAIVReportAsMinor') );
 				aivPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd') );
-				aivPage.setPageText( text + '\n*{{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '}} - ' + reason );
-				aivPage.save();
+				aivPage.setAppendText( '\n*{{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '}} - ' + reason );
+				aivPage.append();
 			} );
 			break;
 			
