@@ -101,13 +101,14 @@ Twinkle.fluff = {
 			// Lets first add a [edit this revision] link
 			var query = new QueryString( old_rev_url.split( '?', 2 )[1] );
 
-			var oldrev = parseInt( query.get('oldid'), 10); //important to only accept numbers: We build a script string with this, and used to be open to script injection here!
+			var oldrev = query.get('oldid');
 
 			var revertToRevision = document.createElement('div');
 			revertToRevision.setAttribute( 'id', 'tw-revert-to-orevision' );
 			revertToRevision.style.fontWeight = 'bold';
 
 			var revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
+			revertToRevisionLink.href = "#";
 			$(revertToRevisionLink).click(function(){
 				Twinkle.fluff.revertToRevision(oldrev);
 			});
@@ -123,11 +124,12 @@ Twinkle.fluff = {
 
 				var new_rev_url = $("div#mw-diff-ntitle1 strong a").attr("href");
 				query = new QueryString( new_rev_url.split( '?', 2 )[1] );
-				var newrev = parseInt( query.get('oldid'), 10);
+				var newrev = query.get('oldid');
 				revertToRevision = document.createElement('div');
 				revertToRevision.setAttribute( 'id', 'tw-revert-to-nrevision' );
 				revertToRevision.style.fontWeight = 'bold';
 				revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
+				revertToRevisionLink.href = "#";
 				$(revertToRevisionLink).click(function(){
 					Twinkle.fluff.revertToRevision(newrev);
 				});
@@ -152,6 +154,9 @@ Twinkle.fluff = {
 				var vandLink = document.createElement('a');
 				var normLink = document.createElement('a');
 
+				agfLink.href = "#"; 
+				vandLink.href = "#"; 
+				normLink.href = "#"; 
 				$(agfLink).click(function(){
 					Twinkle.fluff.revert('agf', vandal);
 				});
