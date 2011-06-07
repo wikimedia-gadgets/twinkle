@@ -867,8 +867,8 @@ Twinkle.warn.messages = {
 	},
 	singlewarn: {
 		"uw-3rr": { 
-			label:"Edit warring, and/or violating the three revert rule",
-			summary:"Warning: Edit warring, and/or violating the three revert rule"
+			label:"Violating the three-revert rule; see also uw-ew",
+			summary:"Warning: Violating the three-revert rule"
 		},
 		"uw-affiliate": { 
 			label:"Affiliate marketing", 
@@ -913,6 +913,10 @@ Twinkle.warn.messages = {
 		"uw-efsummary": {
 			label:"Edit summary triggering the edit filter",
 			summary:"Warning: Edit summary triggering the edit filter"
+		},
+		"uw-ew": {
+			label:"Edit warring; see also uw-3rr",
+			summary:"Warning: Edit warring"
 		},
 		"uw-hoax": { 
 			label:"Creating hoaxes", 
