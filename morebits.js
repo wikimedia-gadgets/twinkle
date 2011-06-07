@@ -1,3 +1,4 @@
+// <nowiki>
 /**
  * morebits.js
  * ===========
@@ -681,7 +682,6 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 		break;
 	default:
 		throw ("QuickForm: unknown element type " + data.type.toString());
-		break;
 	}
 
 	if( !childContainder ) {
@@ -900,7 +900,7 @@ function sprintf() {
 				break;
 			}
 			if( (/\d/).test( current_char ) ) {
-				var num = parseInt( format.substr( i ) );
+				var num = parseInt( format.substr( i ), 10 );
 				var len = num.toString().length;
 				i += len - 1;
 				var next = format.charAt( i  + 1 );
@@ -978,48 +978,48 @@ sprintf.format = function sprintfFormat( type, value, flags ) {
 		result = '%';
 		break;
 	case 'c':
-		result = String.fromCharCode( parseInt( value ) );
+		result = String.fromCharCode( parseInt( value, 10 ) );
 		break;
 	case 's':
 		result = value.toString();
 		break;
 	case 'd':
-		result = parseInt( value ).toString();
+		result = parseInt( value, 10 ).toString();
 		break;
 	case 'u':
-		result = Math.abs( parseInt( value ) ).toString(); // it's not correct, but JS lacks unsigned ints
+		result = Math.abs( parseInt( value, 10 ) ).toString(); // it's not correct, but JS lacks unsigned ints
 		break;
 	case 'o':
-		result = Math.abs( parseInt( value ) ).toString(8);
+		result = Math.abs( parseInt( value, 10 ) ).toString(8);
 		break;
 	case 'x':
-		result = Math.abs( parseInt( value ) ).toString(16);
+		result = Math.abs( parseInt( value, 10 ) ).toString(16);
 		break;
 	case 'b':
-		result = Math.abs( parseInt( value ) ).toString(2);
+		result = Math.abs( parseInt( value, 10 ) ).toString(2);
 		break;
 	case 'e':
 		digits = flags.precision ? flags.precision : 6;
-		result = (new Number( value ) ).toExponential( digits ).toString();
+		result = Number( value ).toExponential( digits ).toString();
 		break;
 	case 'f':
 		digits = flags.precision ? flags.precision : 6;
-		result = (new Number( value ) ).toFixed( digits ).toString();
+		result = Number( value ).toFixed( digits ).toString();
 		break;
 	case 'g':
 		digits = flags.precision ? flags.precision : 6;
-		result = (new Number( value ) ).toPrecision( digits ).toString();
+		result = Number( value ).toPrecision( digits ).toString();
 		break;
 	case 'X':
-		result = Math.abs( parseInt( value ) ).toString(16).toUpperCase();
+		result = Math.abs( parseInt( value, 10 ) ).toString(16).toUpperCase();
 		break;
 	case 'E':
 		digits = flags.precision ? flags.precision : 6;
-		result = (new Number( value ) ).toExponential( digits ).toString().toUpperCase();
+		result = Number( value ).toExponential( digits ).toString().toUpperCase();
 		break;
 	case 'G':
 		digits = flags.precision ? flags.precision : 6;
-		result = (new Number( value ) ).toPrecision( digits ).toString().toUpperCase();
+		result = Number( value ).toPrecision( digits ).toString().toUpperCase();
 		break;
 	default:
 		throw ("sprintf.format: unrecognized format code " + type.toString());
@@ -1033,7 +1033,7 @@ sprintf.format = function sprintfFormat( type, value, flags ) {
 		prefix = ' ';
 	}
 
-	if( flags['#'] && parseInt( value ) !== 0 ) {
+	if( flags['#'] && parseInt( value, 10 ) !== 0 ) {
 		switch(type) {
 		case 'o':
 			prefix = '0';
@@ -1135,10 +1135,10 @@ Bytes.prototype.toString = function( magnitude ) {
 		} else {
 			tmp /= Math.pow( 10, Bytes.magnitudes[mag] * 3 );
 		}
-		if( parseInt( tmp ) !== tmp ) {
-			tmp = (new Number( tmp ) ).toPrecision( 4 );
+		if( parseInt( tmp, 10 ) !== tmp ) {
+			tmp = Number( tmp ).toPrecision( 4 );
 		}
-		return tmp + ' ' + mag + (si?'i':'') +  'B';
+		return tmp + ' ' + mag + (si?'i':'') + 'B';
 	} else {
 		// si per default
 		var current = 0;
@@ -1147,12 +1147,13 @@ Bytes.prototype.toString = function( magnitude ) {
 			++current;
 		}
 		tmp = this.value / Math.pow( 2, current * 10 );
-		if( parseInt( tmp ) !== tmp ) {
-			tmp = (new Number( tmp ) ).toPrecision( 4 );
+		if( parseInt( tmp, 10 ) !== tmp ) {
+			tmp = Number( tmp ).toPrecision( 4 );
 		}
 		return tmp + ' ' + Bytes.rmagnitudes[current] + ( current > 0 ? 'iB' : 'B' );
 	}
 };
+
 
 /**
  * **************** String ****************
@@ -1263,7 +1264,6 @@ Array.prototype.dups = function arrayPrototypeUniq() {
 	return result;
 };
 
-// REMOVEME
 Array.prototype.chunk = function arrayChunk( size ) {
 	if( typeof( size ) !== 'number' || size <= 0 ) { // pretty impossible to do anything :)
 		return [ this ]; // we return an array consisting of this array.
@@ -1329,12 +1329,12 @@ Unbinder.getCallback = function UnbinderGetCallback(self) {
 
 /**
  * **************** clone() ****************
- * REMOVEME - global namespace pollution, and unused?
+ * REMOVEME - global namespace pollution -> move to better name
  */
 
 function clone( obj, deep ) {
 	var objectClone = new obj.constructor();
-	for ( var property in obj )
+	for ( var property in obj ) {
 		if ( !deep ) {
 			objectClone[property] = obj[property];
 		} else if ( typeof obj[property] === 'object' ) {
@@ -1342,6 +1342,7 @@ function clone( obj, deep ) {
 		} else {
 			objectClone[property] = obj[property];
 		}
+	}
 	return objectClone;
 }
 
@@ -1523,7 +1524,7 @@ Wikipedia.namespacesFriendly = {
 };
 
 // we dump all XHR here so they won't loose props
-// REMOVEME - only Wikipedia.wiki uses this
+// REMOVEME after Wikipedia.wiki is gone
 Wikipedia.dump = [];
 
 
@@ -1584,6 +1585,7 @@ var wpMaxLag = typeof(wpMaxLag) === 'undefined' ? 10 : wpMaxLag; // Maximum lag 
 
 // editCount - REMOVEME when Wikipedia.wiki is gone
 Wikipedia.editCount = 10;
+
 Wikipedia.actionCompleted.timeOut = wpActionCompletedTimeOut;
 Wikipedia.actionCompleted.redirect = null;
 Wikipedia.actionCompleted.notice = 'Action';
@@ -2955,32 +2957,32 @@ Mediawiki.Template = {
 
 		for( var i = start; i < text.length; ++i ) {
 			var test3 = text.substr( i, 3 );
-			if( test3 === '\{\{\{' ) {
-				current += '\{\{\{';
+			if( test3 === '{{{' ) {
+				current += '{{{';
 				i += 2;
 				++level;
 				continue;
 			}
-			if( test3 === '\}\}\}' ) {
-				current += '\}\}\}';
+			if( test3 === '}}}' ) {
+				current += '}}}';
 				i += 2;
 				--level;
 				continue;
 			}
 			var test2 = text.substr( i, 2 );
-			if( test2 === '\{\{' || test2 === '\[\[' ) {
+			if( test2 === '{{' || test2 === '[[' ) {
 				current += test2;
 				++i;
 				++level;
 				continue;
 			}
-			if( test2 === '\]\]' ) {
+			if( test2 === '[[' ) {
 				current += test2;
 				++i;
 				--level;
 				continue;
 			}
-			if( test2 === '\}\}' ) {
+			if( test2 === '}}' ) {
 				current += test2;
 				++i;
 				--level;
@@ -3112,8 +3114,8 @@ Mediawiki.Page.prototype = {
 	removeTemplate: function( template ) {
 		var first_char = template.substr( 0, 1 );
 		var template_re_string = "(?:[Tt]emplate:)?\\s*[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' +  RegExp.escape( template.substr( 1 ), true ); 
-		var links_re = new RegExp( "\\\{\\\{" + template_re_string );
-		var allTemplates = this.text.splitWeightedByKeys( '{\{', '}}', [ '{{{', '}}}' ] ).uniq();
+		var links_re = new RegExp( "\\{\\{" + template_re_string );
+		var allTemplates = this.text.splitWeightedByKeys( '{{', '}}', [ '{{{', '}}}' ] ).uniq();
 		for( var i = 0; i < allTemplates.length; ++i ) {
 			if( links_re.test( allTemplates[i] ) ) {
 				this.text = this.text.replace( allTemplates[i], '', 'g' );
@@ -3133,12 +3135,12 @@ Mediawiki.Page.prototype = {
 // ipadress is in the format 1.2.3.4 and network is in the format 1.2.3.4/5
 function isInNetwork( ipaddress, network ) {
 	var iparr = ipaddress.split('.');
-	var ip = (parseInt(iparr[0]) << 24) + (parseInt(iparr[1]) << 16) + (parseInt(iparr[2]) << 8) + (parseInt(iparr[3]));
+	var ip = (parseInt(iparr[0], 10) << 24) + (parseInt(iparr[1], 10) << 16) + (parseInt(iparr[2], 10) << 8) + (parseInt(iparr[3], 10));
 
 	var netmask = 0xffffffff << network.split('/')[1];
 
 	var netarr = network.split('/')[0].split('.');
-	var net = (parseInt(netarr[0]) << 24) + (parseInt(netarr[1]) << 16) + (parseInt(netarr[2]) << 8) + (parseInt(netarr[3]));
+	var net = (parseInt(netarr[0], 10) << 24) + (parseInt(netarr[1], 10) << 16) + (parseInt(netarr[2], 10) << 8) + (parseInt(netarr[3], 10));
 
 	return (ip & netmask) === net;
 }
@@ -3308,7 +3310,7 @@ var Status = function( text, stat, type ) {
 
 Status.init = function( root ) {
 	if( !( root instanceof Element ) ) {
-		throw new Exception( 'object not an instance of Element' );
+		throw 'object not an instance of Element';
 	}
 	while( root.hasChildNodes() ) {
 		root.removeChild( root.firstChild );
@@ -3444,7 +3446,7 @@ var SimpleWindow = function( width, height ) {
 			autoOpen: false,
 			buttons: { "Placeholder button": function() {} },
 			dialogClass: 'morebits-dialog',
-			width: Math.min(parseInt(window.innerWidth), parseInt(width ? width : 800)),
+			width: Math.min(parseInt(window.innerWidth, 10), parseInt(width ? width : 800, 10)),
 			// give jQuery the given height value (which represents the anticipated height of the dialog) here, so
 			// it can position the dialog appropriately
 			// the 20 pixels represents adjustment for the extra height of the jQuery dialog "chrome", compared
@@ -3526,12 +3528,12 @@ SimpleWindow.prototype = {
 		// from display time onwards, let the browser determine the optimum height, and instead limit the height at the given value
 		// note that the given height will exclude the approx. 20px that the jQuery UI chrome has in height in addition to the height
 		// of an equivalent "classic" SimpleWindow
-		if (parseInt(getComputedStyle($(this.content).dialog("widget")[0], null).height) > window.innerHeight) {
+		if (parseInt(getComputedStyle($(this.content).dialog("widget")[0], null).height, 10) > window.innerHeight) {
 			$(this.content).dialog("option", "height", window.innerHeight - 2).dialog("option", "position", "top");
 		} else {
 			$(this.content).dialog("option", "height", "auto");
 		}
-		$(this.content).dialog("widget").find(".morebits-dialog-content")[0].style.maxHeight = parseInt(this.height - 30) + "px";
+		$(this.content).dialog("widget").find(".morebits-dialog-content")[0].style.maxHeight = parseInt(this.height - 30, 10) + "px";
 	},
 	// Sets the content of the dialog to the given element node, usually from rendering a QuickForm or QuickForm element.
 	// Re-enumerates the footer buttons, but leaves the footer links as they are.
@@ -3632,3 +3634,5 @@ var twinkleUserAuthorized = userIsInGroup( 'autoconfirmed' ) || userIsInGroup( '
 // flag to let script loaders know that this module has already been loaded
 var morebits_js_loaded = true;  // legacy version
 var morebits_v2_js_loaded = true;  // version enhanced for HTML5
+
+// </nowiki>
