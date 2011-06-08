@@ -28,6 +28,9 @@ Twinkle.imagetraverse.basequery = {
 Twinkle.imagetraverse.callback = function() {
 	var Window = new SimpleWindow( 1200, 650 );
 	Window.setTitle( "Image traverse" );
+	Window.setScriptName( "Twinkle" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#imagetraverse" );
+
 	var form = new QuickForm( Twinkle.imagetraverse.callback.evaluate );
 	form.append( {
 			type: 'button',

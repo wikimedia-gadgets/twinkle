@@ -20,6 +20,8 @@ Twinkle.delimages.unlinkCache = {};
 Twinkle.delimages.callback = function twinkledeliCallback() {
 	var Window = new SimpleWindow( 800, 400 );
 	Window.setTitle( "Batch file deletion" );
+	Window.setScriptName( "Twinkle" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#delimages" );
 
 	var form = new QuickForm( Twinkle.delimages.callback.evaluate );
 	form.append( {
