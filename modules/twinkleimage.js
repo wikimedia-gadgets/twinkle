@@ -202,13 +202,41 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		old_image = event.target.old_image.checked;
 	}
 
+	var csdcrit;
+	switch( params.type ) {
+		case 'no source no license':
+		case 'no source':
+		case 'no license':
+			csdcrit = "F4";
+			break;
+		case 'orphaned fair use':
+			csdcrit = "F5";
+			break;
+		case 'no fair use rationale':
+			csdcrit = "F6";
+			break;
+		case 'disputed fair use rationale':
+		case 'replaceable fair use':
+			csdcrit = "F7";
+			break;
+		case 'no permission':
+			csdcrit = "F11";
+			break;
+		default:
+			throw "Twinkle.image.callback.evaluate: unknown criterion";
+	}
+
+	var lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit) === -1;
+
 	var params = {
 		'type': type,
+		'normalized': csdcrit,
 		'non_free': non_free,
 		'source': source,
 		'reason': reason,
 		'replacement': replacement,
-		'old_image': old_image
+		'old_image': old_image,
+		'lognomination': lognomination
 	};
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( event.target );
@@ -225,7 +253,12 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	if( notify ) {
 		wikipedia_page.lookupCreator(Twinkle.image.callbacks.userNotification);
 	} else {
-		// No auto-notifiaction, display what was going to be added.
+		// add to CSD log if desired
+		if (lognomination) {
+			params.fromDI = true;
+			Twinkle.speedy.callbacks.user.addToLog(params, null);
+		}
+		// No auto-notification, display what was going to be added.
 		var noteData = document.createElement( 'pre' );
 		noteData.appendChild( document.createTextNode( "{{subst:di-" + type + "-notice|1=" + mw.config.get('wgTitle') + "}} ~~~~" ) );
 		Status.info( 'Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement( 'br' ),  noteData ] );
@@ -238,42 +271,30 @@ Twinkle.image.callbacks = {
 		var params = pageobj.getCallbackParameters();
 
 		var tag = "{{di-" + params.type + "|date={{subst:#time:j F Y}}";
-		var csdcrit = "";
 		switch( params.type ) {
 			case 'no source no license':
 			case 'no source':
 				tag += params.non_free ? "|non-free=yes" : "";
-				csdcrit = "F4";
 				break;
 			case 'no permission':
 				tag += params.source ? "|source=" + params.source : "";
-				csdcrit = "F11";
 				break;
 			case 'disputed fair use rationale':
 				tag += params.reason ? "|concern=" + params.reason : "";
-				csdcrit = "F7";
 				break;
 			case 'orphaned fair use':
 				tag += params.replacement ? "|replacement=" + params.replacement : "";
-				csdcrit = "F5";
 				break;
 			case 'replaceable fair use':
 				tag += params.old_image ? "|old image=yes" : "";
-				csdcrit = "F7";
-				break;
-			case 'no license':
-				csdcrit = "F4";
-				break;
-			case 'no fair use rationale':
-				csdcrit = "F6";
 				break;
 			default:
-				break;
+				break;  // doesn't matter
 		}
 		tag += "}}\n";
 
 		pageobj.setPageText(tag + text);
-		pageobj.setEditSummary("This file is up for deletion, per [[WP:CSD#" + csdcrit + "|CSD " + csdcrit + "]] (" + params.type + ")." + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary("This file is up for deletion, per [[WP:CSD#" + params.normalized + "|CSD " + params.normalized + "]] (" + params.type + ")." + Twinkle.getPref('summaryAd'));
 		switch (Twinkle.getPref('deliWatchPage')) {
 			case 'yes':
 				pageobj.setWatchlist(true);
@@ -309,5 +330,11 @@ Twinkle.image.callbacks = {
 		}
 		usertalkpage.setFollowRedirect(true);
 		usertalkpage.append();
+
+		// add this nomination to the user's userspace log, if the user has enabled it
+		if (params.lognomination) {
+			params.fromDI = true;
+			Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
+		}
 	}
 };

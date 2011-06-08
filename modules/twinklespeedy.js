@@ -1018,6 +1018,11 @@ Twinkle.speedy.callbacks = {
 			pageobj.save();
 		},
 
+		// note: this code is also invoked from twinkleimage
+		// the params used are:
+		//   for all: params.normalized
+		//   for CSD: params.value
+		//   for DI: params.fromDI = true, params.type
 		addToLog: function(params, initialContrib) {
 			var wikipedia_page = new Wikipedia.page("User:" + mw.config.get('wgUserName') + "/" + Twinkle.getPref('speedyLogPageName'), "Adding entry to userspace log");
 			params.logInitialContrib = initialContrib;
@@ -1048,25 +1053,30 @@ Twinkle.speedy.callbacks = {
 			}
 
 			text += "\n# [[:" + mw.config.get('wgPageName') + "]]: ";
-			switch (params.normalized)
-			{
-				case 'db':
-					text += "{{tl|db-reason}}";
-					break;
-				case 'multiple':
-					text += "multiple criteria (";
-					for (var i in Twinkle.speedy.dbmultipleCriteria) {
-						if (typeof Twinkle.speedy.dbmultipleCriteria[i] === 'string') {
-							text += '[[WP:CSD#' + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase() + '|' + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase() + ']], ';
+			if (params.fromDI) {
+				text += "DI [[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] (" + params.type + ")";
+			} else {
+				switch (params.normalized)
+				{
+					case 'db':
+						text += "{{tl|db-reason}}";
+						break;
+					case 'multiple':
+						text += "multiple criteria (";
+						for (var i in Twinkle.speedy.dbmultipleCriteria) {
+							if (typeof Twinkle.speedy.dbmultipleCriteria[i] === 'string') {
+								text += '[[WP:CSD#' + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase() + '|' + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase() + ']], ';
+							}
 						}
-					}
-					text = text.substr(0, text.length - 2);  // remove trailing comma
-					text += ')';
-					break;
-				default:
-					text += "[[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] ({{tl|db-" + params.value + "}})";
-					break;
+						text = text.substr(0, text.length - 2);  // remove trailing comma
+						text += ')';
+						break;
+					default:
+						text += "[[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] ({{tl|db-" + params.value + "}})";
+						break;
+				}
 			}
+
 			if (params.logInitialContrib) {
 				text += "; notified {{user|" + params.logInitialContrib + "}}";
 			}
