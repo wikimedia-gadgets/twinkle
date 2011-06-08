@@ -425,9 +425,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if ( /[aeiouwyh]/.test( types[0] ) ) { // non 100% correct, but whatever, inlcuding 'h' for Cockney
 				article = 'an';
 			}
-			reason = "*{{user-uaa|1=" + uid + "}} &mdash; Violation of username policy because it's " + article + " " + types + " username; ";
+			reason = "*{{user-uaa|1=" + uid + "}} &mdash; Violation of username policy as " + article + " " + types + " username. ";
 			if (comment !== '' ) {
-				reason += "''" + comment.toUpperCaseFirstChar() + "''. ";
+				reason += comment.toUpperCaseFirstChar() + ". ";
 			}
 			reason += "~~~~";
 			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
@@ -439,7 +439,6 @@ Twinkle.arv.callback.evaluate = function(e) {
 			Wikipedia.actionCompleted.notice = "Reporting complete";
 
 			var uaaPage = new Wikipedia.page( 'Wikipedia:Usernames for administrator attention', 'Processing UAA request' );
-			uaaPage.setPageSection( 1 );
 			uaaPage.setFollowRedirect( true );
 
 			uaaPage.load( function() {
@@ -453,7 +452,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				uaaPage.getStatusElement().status( 'Adding new report...' );
 				uaaPage.setMinorEdit( Twinkle.getPref('markUAAReportAsMinor') );
 				uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ Twinkle.getPref('summaryAd') );
-				uaaPage.setPageText( text.replace( /-->/, "-->\n" + reason ) );  // add at top
+				uaaPage.setPageText( text.replace( /List begins below this line.\s*-->/, "List begins below this line.\n-->\n" + reason ) );  // add at top
 				uaaPage.save();
 			} );
 			break;
