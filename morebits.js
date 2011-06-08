@@ -1024,7 +1024,7 @@ Array.prototype.chunk = function arrayChunk( size ) {
 
 /**
  * **************** Unbinder ****************
- * REMOVEME - no idea what this is for
+ * Used by MediaWiki.commentOutImage
  */
 
 function Unbinder( string ) {
@@ -1085,38 +1085,6 @@ function clone( obj, deep ) {
 		}
 	}
 	return objectClone;
-}
-
-
-/**
- * **************** ln() ****************
- * REMOVEME - unused
- */
-
-function ln( ns, title ) {
-	var ns2ln = {
-		'0':   'la',
-		'1':   'lat',
-		'2':   'lu',
-		'3':   'lut',
-		'4':   'lw',
-		'5':   'lwt',
-		'6':   'li',
-		'7':   'lit',
-		'8':   'lm',
-		'9':   'lmt',
-		'10':  'lt',
-		'11':  'ltt',
-		'12':  'lh',
-		'13':  'lht',
-		'14':  'lc',
-		'15':  'lct',
-		'100': 'lp',
-		'101': 'lpt',
-		'108': 'lb',
-		'109': 'lbt'
-	};
-	return "\{\{" + ns2ln[ns] + "|" + title + "\}\}";
 }
 
 
@@ -2508,9 +2476,7 @@ Wikipedia.page = function(pageName, currentAction) {
 
 /**
  * **************** Wikipedia.wiki ****************
- * REMOVEME - but *only* after:
- *   (a) Twinkle no longer uses it, and
- *   (b) we know it's not in use by commonly-used custom scripts
+ * REMOVEME - but *only* after Twinkle no longer uses it
  */
 
 /*
