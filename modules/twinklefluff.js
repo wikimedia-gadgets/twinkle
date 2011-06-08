@@ -407,7 +407,7 @@ Twinkle.fluff.callbacks = {
 
 		self.statelem.status( [ ' revision ', htmlNode( 'strong', self.params.goodid ), ' that was made ', htmlNode( 'strong', count ), ' revisions ago by ', htmlNode( 'strong', self.params.gooduser ) ] );
 
-		var summary, extra_summary;
+		var summary, extra_summary, userstr, gooduserstr;
 		switch( self.params.type ) {
 		case 'agf':
 			extra_summary = prompt( "An optional comment for the edit summary:", "" );
@@ -417,19 +417,19 @@ Twinkle.fluff.callbacks = {
 				return;
 			}
 
-			summary = sprintf( "Reverted [[WP:AGF|good faith]] edits by [[Special:Contributions/%s|%1$s]] ([[User talk:%1$s|talk]])%s%s", 
-				self.params.user.replace("\\'", "'"), 
-				Twinkle.fluff.formatSummaryPostfix(extra_summary),
-				Twinkle.getPref('summaryAd') );
+			userstr = self.params.user.replace("\\'", "'");
+			summary = "Reverted [[WP:AGF|good faith]] edits by [[Special:Contributions/" + userstr + "|" + userstr + "]] ([[User talk:" + 
+				userstr + "|talk]])" + Twinkle.fluff.formatSummaryPostfix(extra_summary) + Twinkle.getPref('summaryAd');
 			break;
+
 		case 'vand':
-			summary = sprintf( "Reverted %d %s by [[Special:Contributions/%s|%3$s]] ([[User talk:%3$s|talk]]) identified as [[WP:VAND|vandalism]] to last revision by %s.%s", 
-				self.params.count, 
-				self.params.count > 1 ? 'edits': 'edit',
-				self.params.user.replace("\\'", "'"),
-				self.params.gooduser.replace("\\'", "'"),
-				Twinkle.getPref('summaryAd') );
+			userstr = self.params.user.replace("\\'", "'");
+			gooduserstr = self.params.gooduser.replace("\\'", "'")
+			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" +
+				userstr + "|" + userstr + "]] ([[User talk:" + userstr + "|talk]]) identified as [[WP:VAND|vandalism]] to last revision by " +
+				gooduserstr + "." + Twinkle.getPref('summaryAd');
 			break;
+
 		case 'norm':
 			/* falls through */
 		default:
@@ -441,12 +441,11 @@ Twinkle.fluff.callbacks = {
 					return;
 				}
 			}
-			summary = sprintf( "Reverted %d %s by [[Special:Contributions/%s|%3$s]] ([[User talk:%3$s|talk]])%s%s", 
-				self.params.count, 
-				self.params.count > 1 ? 'edits': 'edit',
-				self.params.user.replace("\\'", "'"),
-				Twinkle.fluff.formatSummaryPostfix(extra_summary),
-				Twinkle.getPref('summaryAd') );
+
+			userstr = self.params.user.replace("\\'", "'");
+			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" + 
+				userstr + "|" + userstr + "]] ([[User talk:" + userstr + "|talk]])" + Twinkle.fluff.formatSummaryPostfix(extra_summary) +
+				Twinkle.getPref('summaryAd');
 			break;
 		}
 
