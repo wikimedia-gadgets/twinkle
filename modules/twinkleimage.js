@@ -203,7 +203,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	}
 
 	var csdcrit;
-	switch( params.type ) {
+	switch( type ) {
 		case 'no source no license':
 		case 'no source':
 		case 'no license':
