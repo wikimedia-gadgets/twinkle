@@ -7,14 +7,56 @@ var scriptpathbefore = mw.config.get('wgServer') + mw.config.get('wgScript') + "
 var scriptpathafter = "&action=raw&ctype=text/javascript&happy=yes";
 
 // retrieve the user's Twinkle preferences
-mw.loader.load(scriptpathbefore + "User:" + encodeURIComponent(mw.config.get('wgUserName')) + "/twinkleoptions.js" + scriptpathafter);
+$.ajax({
+	url: scriptpathbefore + "User:" + encodeURIComponent(mw.config.get('wgUserName')) + "/twinkleoptions.js" + scriptpathafter,
+	dataType: 'text',
+	error: function(){ jsMsg("Could not load twinkleoptions.js"); },
+	success: function(optionsText){
+
+		//quick pass if user has no options
+		if ( optionsText === "/* Empty */" ) {
+			return;
+		}
+
+		//twinkle options are basically a JSON object with some comments. Strip those:
+		optionsText = optionsText.replace(/(?:^(?:\/\/[^\n]*\n)*\n*|(?:\/\/[^\n]*(?:\n|$))*$)/g, "");
+
+		//first version of options had some boilerplate code to make it eval-able -- strip that too. This part may become obsolete down the line.
+		if (optionsText.lastIndexOf("window.Twinkle.prefs = ", 0) === 0) {
+			optionsText = optionsText.replace(/(?:^window.Twinkle.prefs = |;\n*$)/g, "");
+		}
+
+		try {
+			var options = $.parseJSON(optionsText);
+
+			// Assuming that our options evolve, we will want to transform older versions:
+			//if (options.optionsVersion === undefined) {
+			// ...
+			// options.optionsVersion = 1;
+			//}
+			//if (options.optionsVersion === 1) {
+			// ...
+			// options.optionsVersion = 2;
+			//}
+			// At the same time, twinkleconfig.js needs to be adapted to write a higher version number into the options.
+
+			Twinkle.prefs = options;
+		}
+		catch (e) {
+			jsMsg("Could not parse twinkleoptions.js");
+		}
+	},
+	complete: function(){
+		$(document).ready(Twinkle.load);
+	}
+});
 
 // Developers: you can import custom Twinkle modules here
 // for example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
 
-Twinkle.load = function twinkleload() {
-	// don't activate on special pages other than "Contributions", so that they load faster, especially the watchlist
-	// also, can't theoretically run Twinkle on old Internet Explorer, just die...!
+Twinkle.load = function(){
+	// Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
+	// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
 	if ( (mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgTitle') !== "Contributions") || 
 		($.client.profile().name === 'msie' && $.client.profile().versionBase < 9) ) {
 		return;
@@ -53,23 +95,11 @@ Twinkle.load = function twinkleload() {
 	$(Twinkle.initCallbacks).each(function(k, v) { v(); });
 	Twinkle.addInitCallback = function(func) { func(); };
 
-	// make text in Twinkle dialogs bigger, if desired
+	// increates text size in Twinkle dialogs bigger, if so configured
 	if (Twinkle.getPref("dialogLargeFont")) {
-		// mw.util.addCSS is not available at this stage of loading the page
-		var s = document.createElement("style");
-		s.type = "text/css";
-		s.rel = "stylesheet";
-		var css = ".morebits-dialog-content, .morebits-dialog-footerlinks { font-size: 100% !important; } " +
-			".morebits-dialog input, .morebits-dialog select, .morebits-dialog-content button { font-size: inherit !important; }";
-		if (s.styleSheet) {
-			s.styleSheet.cssText = css;
-		} else {
-			s.appendChild(document.createTextNode(css));
-		}
-		document.getElementsByTagName("head")[0].appendChild(s);
+		mw.util.addCSS(".morebits-dialog-content, .morebits-dialog-footerlinks { font-size: 100% !important; } " +
+			".morebits-dialog input, .morebits-dialog select, .morebits-dialog-content button { font-size: inherit !important; }");
 	}
 };
-
-$(document).ready(Twinkle.load);
 
 // </nowiki>
