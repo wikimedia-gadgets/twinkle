@@ -622,7 +622,7 @@ Twinkle.config.sections = [
 		},
 		{
 			name: "insertUsername",
-			label: "Add your username to the template (if relevant)",
+			label: "Add your username to the template (where applicable)",
 			helptip: "Some welcome templates have an opening sentence like \"Hi, I'm &lt;username&gt;. Welcome\" etc. If you turn off this option, these templates will not display your username in that way.",
 			type: "boolean"
 		},
@@ -698,7 +698,7 @@ Twinkle.config.sections = [
 		// Sorry in advance for any false positives.).
 		{
 			name: "xfdWatchList",
-			label: "Add the daily log/list page to the watchlist (if relevant)",
+			label: "Add the daily log/list page to the watchlist (where applicable)",
 			helptip: "This only applies for AfD and MfD, where the discussions are transcluded onto a daily log page (for AfD) or the main MfD page (for MfD).",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
@@ -720,6 +720,27 @@ Twinkle.config.sections = [
 	title: "Hidden",
 	hidden: true,
 	preferences: [
+		// twinkle.header.js: portlet setup
+		{
+			name: "portletArea",
+			type: "string"
+		},
+		{
+			name: "portletId",
+			type: "string"
+		},
+		{
+			name: "portletName",
+			type: "string"
+		},
+		{
+			name: "portletType",
+			type: "string"
+		},
+		{
+			name: "portletNext",
+			type: "string"
+		},
 		// twinklefluff.js: defines how many revision to query maximum, maximum possible is 50, default is 50
 		{
 			name: "revertMaxRevisions",

@@ -105,6 +105,23 @@ Twinkle.defaultConfig.twinkle = {
 	proddeleteChunks: 50
 };
 
+// now some skin dependent config.
+if (mw.config.get("skin") === 'vector') {
+	Twinkle.defaultConfig.twinkle.portletArea = 'right-navigation';
+	Twinkle.defaultConfig.twinkle.portletId   = 'p-twinkle';
+	Twinkle.defaultConfig.twinkle.portletName = 'TW';
+	Twinkle.defaultConfig.twinkle.portletType = 'menu';
+	Twinkle.defaultConfig.twinkle.portletNext = 'p-search';
+} else {
+	Twinkle.defaultConfig.twinkle.portletArea =  null;
+	Twinkle.defaultConfig.twinkle.portletId   = 'p-cactions';
+	Twinkle.defaultConfig.twinkle.portletName = null;
+	Twinkle.defaultConfig.twinkle.portletType = null;
+	Twinkle.defaultConfig.twinkle.portletNext = null;
+}
+
+
+
 Twinkle.defaultConfig.friendly = {
 	 // Tag
 	groupByDefault: true,
@@ -174,7 +191,7 @@ Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
  * This is necessarily quite a hack since skins, navigation areas, and
  * portlet menu types all work slightly different.
  *
- * Available navigation areas depend on the script used.
+ * Available navigation areas depend on the skin used.
  * Monobook:
  *  "column-one", outer div class "portlet", inner div class "pBody". Existing portlets: "p-cactions", "p-personal", "p-logo", "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
  *  Special layout of p-cactions and p-personal through specialized styles.
@@ -186,10 +203,6 @@ Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
  * Modern:
  *  "mw_contentwrapper" (top nav), outer div class "portlet", inner div class "pBody". Existing portlets or elements: "p-cactions", "mw_content"
  *  "mw_portlets" (sidebar), outer div class "portlet", inner div class "pBody". Existing portlets: "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
- *
- * NOTE: If anyone is brave enough to reuse this directly, please shoot
- * me a note. Otherwise I might change the signature down the line and
- * your script breaks. Amalthea.
  *
  * @param String navigation -- id of the target navigation area (skin dependant, on vector either of "left-navigation", "right-navigation", or "mw-panel")
  * @param String id -- id of the portlet menu to create, preferably start with "p-".
@@ -289,26 +302,12 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
  * **************** twAddPortletLink() ****************
  * Builds a portlet menu if it doesn't exist yet, and add the portlet link.
  */
-
 function twAddPortletLink( href, text, id, tooltip, accesskey, nextnode )
 {
-	if (twAddPortlet.portletArea) {
-		twAddPortlet(twAddPortlet.portletArea, twAddPortlet.portletId, twAddPortlet.portletName, twAddPortlet.portletType, twAddPortlet.portletNext);
+	if (Twinkle.getPref("portletArea") !== null) {
+		twAddPortlet(Twinkle.getPref("portletArea"), Twinkle.getPref("portletId"), Twinkle.getPref("portletName"), Twinkle.getPref("portletType"), Twinkle.getPref("portletNext"));
 	}
-	return addPortletLink( twAddPortlet.portletId, href, text, id, tooltip, accesskey, nextnode );
-}
-
-
-// set up configuration of the Twinkle portlet
-twAddPortlet.usingTwCfg = (typeof(TwinkleConfig) !== "undefined");
-if (skin === 'vector') {
-	twAddPortlet.portletArea = (twAddPortlet.usingTwCfg && TwinkleConfig.portletArea ? TwinkleConfig.portletArea : 'right-navigation');
-	twAddPortlet.portletId = (twAddPortlet.usingTwCfg && TwinkleConfig.portletId ? TwinkleConfig.portletId : 'p-twinkle');
-	twAddPortlet.portletName = (twAddPortlet.usingTwCfg && TwinkleConfig.portletName ? TwinkleConfig.portletName : 'TW');
-	twAddPortlet.portletType = (twAddPortlet.usingTwCfg && TwinkleConfig.portletType ? TwinkleConfig.portletType : 'menu');
-	twAddPortlet.portletNext = (twAddPortlet.usingTwCfg && TwinkleConfig.portletNext ? TwinkleConfig.portletNext : 'p-search');
-} else {
-	twAddPortlet.portletId = (twAddPortlet.usingTwCfg && TwinkleConfig.portletId ? TwinkleConfig.portletId : 'p-cactions');
+	return addPortletLink( Twinkle.getPref("portletId"), href, text, id, tooltip, accesskey, nextnode );
 }
 
 // check if account is experienced enough for more advanced functions
