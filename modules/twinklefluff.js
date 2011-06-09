@@ -197,6 +197,10 @@ Twinkle.fluff = {
 
 Twinkle.fluff.revert = function revertPage( type, vandal, autoRevert, rev, page ) {
 
+	if (Twinkle.getPref('confirmOnFluff') && !confirm("Reverting page: are you sure?")) {
+		return;
+	}
+
 	var pagename = page || mw.config.get('wgPageName');
 	var revid = rev || mw.config.get('wgCurRevisionId');
 
@@ -222,6 +226,10 @@ Twinkle.fluff.revert = function revertPage( type, vandal, autoRevert, rev, page 
 };
 
 Twinkle.fluff.revertToRevision = function revertToRevision( oldrev ) {
+
+	if (Twinkle.getPref('confirmOnFluff') && !confirm("Reverting to revision: are you sure?")) {
+		return;
+	}
 
 	Status.init( document.getElementById('bodyContent') );
 

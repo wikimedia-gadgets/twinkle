@@ -44,6 +44,28 @@ Twinkle.config.commonSets = {
 		"r2", "r3",
 		"p1", "p2"
 	],
+	csdAndDICriteria: {
+		db: "Custom rationale ({{db}})",
+		g1: "G1", g2: "G2", g3: "G3", g4: "G4", g5: "G5", g6: "G6", g7: "G7", g8: "G8", g10: "G10", g11: "G11", g12: "G12",
+		a1: "A1", a2: "A2", a3: "A3", a5: "A5", a7: "A7", a9: "A9", a10: "A10",
+		u1: "U1", u2: "U2", u3: "U3",
+		f1: "F1", f2: "F2", f3: "F3", f4: "F4", f5: "F5", f6: "F6", f7: "F7", f8: "F8", f9: "F9", f10: "F10", f11: "F11",
+		c1: "C1",
+		t2: "T2", t3: "T3",
+		r2: "R2", r3: "R3",
+		p1: "P1", p2: "P2"
+	},
+	csdAndDICriteriaDisplayOrder: [
+		"db",
+		"g1", "g2", "g3", "g4", "g5", "g6", "g7", "g8", "g10", "g11", "g12",
+		"a1", "a2", "a3", "a5", "a7", "a9", "a10",
+		"u1", "u2", "u3",
+		"f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11",
+		"c1",
+		"t2", "t3",
+		"r2", "r3",
+		"p1", "p2"
+	],
 	namespacesNoSpecial: {
 		"0": "Article",
 		"1": "Talk (article)",
@@ -291,6 +313,13 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 
+		{
+			name: "confirmOnFluff",
+			label: "Provide a confirmation message before reverting",
+			helptip: "For users of pen or touch devices, and chronically indecisive people.",
+			type: "boolean"
+		},
+
 		// TwinkleConfig.showRollbackLinks (array)
 		// Where Twinkle should show rollback links (diff, others, mine, contribs)
 		// Note from TTO: |contribs| seems to be equal to |others| + |mine|, i.e. redundant, so I left it out heres
@@ -373,8 +402,8 @@ Twinkle.config.sections = [
 			label: "Allow editing of deletion summary when deleting under these criteria",
 			adminOnly: true,
 			type: "set",
-			setValues: Twinkle.config.commonSets.csdCriteria,
-			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
+			setValues: Twinkle.config.commonSets.csdAndDICriteria,
+			setDisplayOrder: Twinkle.config.commonSets.csdAndDICriteriaDisplayOrder
 		},
 
 		// TwinkleConfig.openUserTalkPageOnSpeedyDelete (array of strings)
@@ -384,8 +413,8 @@ Twinkle.config.sections = [
 			label: "Open user talk page when deleting under these criteria",
 			adminOnly: true,
 			type: "set",
-			setValues: Twinkle.config.commonSets.csdCriteria,
-			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
+			setValues: Twinkle.config.commonSets.csdAndDICriteria,
+			setDisplayOrder: Twinkle.config.commonSets.csdAndDICriteriaDisplayOrder
 		},
 
 		// TwinkleConfig.deleteTalkPageOnDelete (boolean)
@@ -426,7 +455,7 @@ Twinkle.config.sections = [
 		{
 			name: "logSpeedyNominations",
 			label: "Keep a log in userspace of all CSD nominations",
-			helptip: "Since non-admins do not have access to their deleted contributions, the userspace log offers a good way to keep track of all pages you nominate for CSD using Twinkle.",
+			helptip: "Since non-admins do not have access to their deleted contributions, the userspace log offers a good way to keep track of all pages you nominate for CSD using Twinkle. Files tagged using DI are also added to this log.",
 			type: "boolean"
 		},
 		{
@@ -439,8 +468,8 @@ Twinkle.config.sections = [
 			name: "noLogOnSpeedyNomination",
 			label: "Do not create a userspace log entry when tagging with these criteria",
 			type: "set",
-			setValues: Twinkle.config.commonSets.csdCriteria,
-			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
+			setValues: Twinkle.config.commonSets.csdAndDICriteria,
+			setDisplayOrder: Twinkle.config.commonSets.csdAndDICriteriaDisplayOrder
 		}
 	]
 },

@@ -52,6 +52,7 @@ Twinkle.defaultConfig.twinkle = {
 	markRevertedPagesAsMinor: [ "vand" ],
 	watchRevertedPages: [ "agf", "norm", "vand", "torev" ],
 	offerReasonOnNormalRevert: true,
+	confirmOnFluff: false,
 	showRollbackLinks: [ "diff", "others" ],
 	 // DI (twinkleimage)
 	notifyUserOnDeli: true,
