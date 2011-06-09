@@ -197,10 +197,6 @@ Twinkle.fluff = {
 
 Twinkle.fluff.revert = function revertPage( type, vandal, autoRevert, rev, page ) {
 
-	if (Twinkle.getPref('confirmOnFluff') && !confirm("Reverting page: are you sure?")) {
-		return;
-	}
-
 	var pagename = page || mw.config.get('wgPageName');
 	var revid = rev || mw.config.get('wgCurRevisionId');
 
@@ -227,10 +223,6 @@ Twinkle.fluff.revert = function revertPage( type, vandal, autoRevert, rev, page 
 
 Twinkle.fluff.revertToRevision = function revertToRevision( oldrev ) {
 
-	if (Twinkle.getPref('confirmOnFluff') && !confirm("Reverting to revision: are you sure?")) {
-		return;
-	}
-
 	Status.init( document.getElementById('bodyContent') );
 
 	var query = {
@@ -255,7 +247,6 @@ Twinkle.fluff.userIpLink = function( user ) {
 Twinkle.fluff.callbacks = {
 	toRevision: {
 		main: function( self ) {
-			//alert("TRACE: revertTorevision getrevs callback: xmlString= \n" + (new XMLSerializer()).serializeToString(self.responseXML) + "[END]");
 			var xmlDoc = self.responseXML;
 
 			var lastrevid = parseInt( $(xmlDoc).find('page').attr('lastrevid'), 10);
@@ -270,7 +261,7 @@ Twinkle.fluff.callbacks = {
 				return;
 			}
 
-			var optional_summary = prompt( "Please specify a reason for the revert, if possible:", "" );
+			var optional_summary = prompt( "Please specify a reason for the revert:", "" );
 			if (optional_summary === null)
 			{
 				self.statelem.error( 'Aborted by user.' );
@@ -301,11 +292,9 @@ Twinkle.fluff.callbacks = {
 
 		},
 		complete: function (self) {
-			//alert("TRACE: revertPage getrevs callback: xmlString= \n" + (new XMLSerializer()).serializeToString(self.responseXML) + "[END]");
 		}
 	},
 	main: function( self ) {
-		//alert("TRACE: revertPage getrevs callback: xmlString= \n" + (new XMLSerializer()).serializeToString(self.responseXML) + "[END]");
 		var xmlDoc = self.responseXML;
 
 		var lastrevid = parseInt( $(xmlDoc).find('page').attr('lastrevid'), 10);
@@ -400,12 +389,14 @@ Twinkle.fluff.callbacks = {
 		}
 
 		var good_revision = revs[ found ];
-
+		var userHasAlreadyConfirmedAction = false;
 		if (self.params.type !== 'vand' && 
 				count > 1 && 
 				!confirm( self.params.user + ' has made ' + count + ' edits in a row. Are you sure you want to revert them all?' )) {
 			Status.info( 'Notice', 'Stopping reverting per user input' );
 			return;
+		} else {
+			userHasAlreadyConfirmedAction = true;
 		}
 
 		self.params.count = count;
@@ -431,6 +422,12 @@ Twinkle.fluff.callbacks = {
 			break;
 
 		case 'vand':
+
+			//Rollback-vandal is the only fluff-action where the user does not enter a summary and has thus no chance to cancel, so we only need to ask for confirmation here, if so configured:
+			if (Twinkle.getPref('confirmOnFluff') && !userHasAlreadyConfirmedAction && !confirm("Reverting page: are you sure?")) {
+				return;
+			}
+
 			userstr = self.params.user.replace("\\'", "'");
 			gooduserstr = self.params.gooduser.replace("\\'", "'")
 			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" +
@@ -511,7 +508,6 @@ Twinkle.fluff.callbacks = {
 
 	},
 	complete: function (self) {
-		//alert("TRACE: revertPage completion callback: xmlString= \n" + (new XMLSerializer()).serializeToString(self.responseXML) + "[END]");
 		self.statelem.info("done");
 	}
 };
