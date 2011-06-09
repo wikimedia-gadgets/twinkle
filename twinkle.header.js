@@ -164,3 +164,152 @@ Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
 	}
 	return result;
 };
+
+
+
+/**
+ * **************** twAddPortlet() ****************
+ *
+ * Adds a portlet menu to one of the navigation areas on the page.
+ * This is necessarily quite a hack since skins, navigation areas, and
+ * portlet menu types all work slightly different.
+ *
+ * Available navigation areas depend on the script used.
+ * Monobook:
+ *  "column-one", outer div class "portlet", inner div class "pBody". Existing portlets: "p-cactions", "p-personal", "p-logo", "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
+ *  Special layout of p-cactions and p-personal through specialized styles.
+ * Vector:
+ *  "mw-panel", outer div class "portal", inner div class "body". Existing portlets/elements: "p-logo", "p-navigation", "p-interaction", "p-tb", "p-coll-print_export"
+ *  "left-navigation", outer div class "vectorTabs" or "vectorMenu", inner div class "" or "menu". Existing portlets: "p-namespaces", "p-variants" (menu)
+ *  "right-navigation", outer div class "vectorTabs" or "vectorMenu", inner div class "" or "menu". Existing portlets: "p-views", "p-cactions" (menu), "p-search"
+ *  Special layout of p-personal portlet (part of "head") through specialized styles.
+ * Modern:
+ *  "mw_contentwrapper" (top nav), outer div class "portlet", inner div class "pBody". Existing portlets or elements: "p-cactions", "mw_content"
+ *  "mw_portlets" (sidebar), outer div class "portlet", inner div class "pBody". Existing portlets: "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
+ *
+ * NOTE: If anyone is brave enough to reuse this directly, please shoot
+ * me a note. Otherwise I might change the signature down the line and
+ * your script breaks. Amalthea.
+ *
+ * @param String navigation -- id of the target navigation area (skin dependant, on vector either of "left-navigation", "right-navigation", or "mw-panel")
+ * @param String id -- id of the portlet menu to create, preferably start with "p-".
+ * @param String text -- name of the portlet menu to create. Visibility depends on the class used.
+ * @param String type -- type of portlet. Currently only used for the vector non-sidebar portlets, pass "menu" to make this portlet a drop down menu.
+ * @param Node nextnodeid -- the id of the node before which the new item should be added, should be another item in the same list, or undefined to place it at the end.
+ *
+ * @return Node -- the DOM node of the new item (a DIV element) or null
+ */
+function twAddPortlet( navigation, id, text, type, nextnodeid )
+{
+	//sanity checks, and get required DOM nodes
+	var root = document.getElementById( navigation );
+	if ( !root ) {
+		return null;
+	}
+
+	var item = document.getElementById( id );
+	if (item) {
+		if (item.parentNode && item.parentNode === root) {
+			return item;
+		}
+		return null;
+	}
+
+	var nextnode;
+	if (nextnodeid) {
+		nextnode = document.getElementById(nextnodeid);
+	}
+
+	//verify/normalize input
+	type = (skin === "vector" && type === "menu" && (navigation === "left-navigation" || navigation === "right-navigation")) ? "menu" : "";
+	var outerDivClass;
+	var innerDivClass;
+	switch (skin)
+	{
+		case "vector":
+			if (navigation !== "portal" && navigation !== "left-navigation" && navigation !== "right-navigation") {
+				navigation = "mw-panel";
+			}
+			outerDivClass = (navigation === "mw-panel") ? "portal" : (type === "menu" ? "vectorMenu extraMenu" : "vectorTabs extraMenu");
+			innerDivClass = (navigation === "mw-panel") ? 'body' : (type === 'menu' ? 'menu':'');
+			break;
+		case "modern":
+			if (navigation !== "mw_portlets" && navigation !== "mw_contentwrapper") {
+				navigation = "mw_portlets";
+			}
+			outerDivClass = "portlet";
+			innerDivClass = "pBody";
+			break;
+		default:
+			navigation = "column-one";
+			outerDivClass = "portlet";
+			innerDivClass = "pBody";
+			break;
+	}
+
+	//Build the DOM elements.
+	var outerDiv = document.createElement( 'div' );
+	outerDiv.className = outerDivClass+" emptyPortlet";
+	outerDiv.id = id;
+	if ( nextnode && nextnode.parentNode === root ) {
+		root.insertBefore( outerDiv, nextnode );
+	} else {
+		root.appendChild( outerDiv );
+	}
+
+	var h5 = document.createElement( 'h5' );
+	if (type === 'menu') {
+		var span = document.createElement( 'span' );
+		span.appendChild( document.createTextNode( text ) );
+		h5.appendChild( span );
+
+		var a = document.createElement( 'a' );
+		a.href = "#";
+		span = document.createElement( 'span' );
+		span.appendChild( document.createTextNode( text ) );
+		a.appendChild( span );
+		h5.appendChild( a );
+	} else {
+		h5.appendChild( document.createTextNode( text ) );
+	}
+	outerDiv.appendChild( h5 );
+
+	var innerDiv = document.createElement( 'div' ); //not strictly necessary with type vectorTabs, or other skins.
+	innerDiv.className = innerDivClass;
+	outerDiv.appendChild(innerDiv);
+
+	var ul = document.createElement( 'ul' );
+	innerDiv.appendChild( ul );
+
+	return outerDiv;
+}
+
+
+/**
+ * **************** twAddPortletLink() ****************
+ * Builds a portlet menu if it doesn't exist yet, and add the portlet link.
+ */
+
+function twAddPortletLink( href, text, id, tooltip, accesskey, nextnode )
+{
+	if (twAddPortlet.portletArea) {
+		twAddPortlet(twAddPortlet.portletArea, twAddPortlet.portletId, twAddPortlet.portletName, twAddPortlet.portletType, twAddPortlet.portletNext);
+	}
+	return addPortletLink( twAddPortlet.portletId, href, text, id, tooltip, accesskey, nextnode );
+}
+
+
+// set up configuration of the Twinkle portlet
+twAddPortlet.usingTwCfg = (typeof(TwinkleConfig) !== "undefined");
+if (skin === 'vector') {
+	twAddPortlet.portletArea = (twAddPortlet.usingTwCfg && TwinkleConfig.portletArea ? TwinkleConfig.portletArea : 'right-navigation');
+	twAddPortlet.portletId = (twAddPortlet.usingTwCfg && TwinkleConfig.portletId ? TwinkleConfig.portletId : 'p-twinkle');
+	twAddPortlet.portletName = (twAddPortlet.usingTwCfg && TwinkleConfig.portletName ? TwinkleConfig.portletName : 'TW');
+	twAddPortlet.portletType = (twAddPortlet.usingTwCfg && TwinkleConfig.portletType ? TwinkleConfig.portletType : 'menu');
+	twAddPortlet.portletNext = (twAddPortlet.usingTwCfg && TwinkleConfig.portletNext ? TwinkleConfig.portletNext : 'p-search');
+} else {
+	twAddPortlet.portletId = (twAddPortlet.usingTwCfg && TwinkleConfig.portletId ? TwinkleConfig.portletId : 'p-cactions');
+}
+
+// check if account is experienced enough for more advanced functions
+var twinkleUserAuthorized = userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'confirmed' );

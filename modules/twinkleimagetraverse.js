@@ -271,9 +271,9 @@ Twinkle.imagetraverse.callbacks = {
 
 			wikipedia_api.post();
 		}
-		var imagepage = new Wikipedia.page( self.params.image, 'Deleting image');
-		imagepage.setEditSummary( "Deleted because \"" + self.params.reason + "\"." + Twinkle.getPref('deletionSummaryAd'));
-		imagepage.setCallbackParameters({'image': self.params.image});
+		var imagepage = new Wikipedia.page( params.image, 'Deleting image');
+		imagepage.setEditSummary( "Deleted because \"" + params.reason + "\"." + Twinkle.getPref('deletionSummaryAd'));
+		imagepage.setCallbackParameters({'image': params.image});
 		imagepage.deletePage();
 	},
 	unlinkImageInstancesMain: function( self ) {
