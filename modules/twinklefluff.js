@@ -390,12 +390,11 @@ Twinkle.fluff.callbacks = {
 
 		var good_revision = revs[ found ];
 		var userHasAlreadyConfirmedAction = false;
-		if (self.params.type !== 'vand' && 
-				count > 1 && 
-				!confirm( self.params.user + ' has made ' + count + ' edits in a row. Are you sure you want to revert them all?' )) {
-			Status.info( 'Notice', 'Stopping reverting per user input' );
-			return;
-		} else {
+		if (self.params.type !== 'vand' && count > 1) {
+			if ( !confirm( self.params.user + ' has made ' + count + ' edits in a row. Are you sure you want to revert them all?') ) {
+				Status.info( 'Notice', 'Stopping reverting per user input' );
+				return;
+			}
 			userHasAlreadyConfirmedAction = true;
 		}
 
@@ -425,6 +424,7 @@ Twinkle.fluff.callbacks = {
 
 			//Rollback-vandal is the only fluff-action where the user does not enter a summary and has thus no chance to cancel, so we only need to ask for confirmation here, if so configured:
 			if (Twinkle.getPref('confirmOnFluff') && !userHasAlreadyConfirmedAction && !confirm("Reverting page: are you sure?")) {
+				self.statelem.error( 'Aborted by user.' );
 				return;
 			}
 
