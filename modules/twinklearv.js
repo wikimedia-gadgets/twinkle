@@ -457,64 +457,40 @@ Twinkle.arv.callback.evaluate = function(e) {
 			} );
 			break;
 			
-		// Report master sockpuppet account
-		case 'sock':
-			SimpleWindow.setButtonsEnabled( false );
+		// WP:SPI
+		case "sock":
+			/* falls through */
+		case "puppet":
 			var sockParameters = {
-				uid: uid, 
-				sockpuppets: form.getTexts( 'sockpuppet' ), 
 				evidence: form.evidence.value.rtrim(), 
 				checkuser: form.checkuser.checked, 
 				notify: form.notify.checked
 			};
-			Status.init( form );
 
-			Twinkle.arv.processSock( sockParameters );
-			break;
-
-		// Report an account as being a sockpuppet of another
-		case 'puppet':
-			if (!(form.sockmaster.value.trim())) {
+			var puppetReport = form.category.value === "puppet";
+			if (puppetReport && !(form.sockmaster.value.trim())) {
 				if (!confirm("You have not entered a sockmaster account for this puppet. Do you want to report this account as a sockpuppeteer instead?")) {
 					return;
 				}
-
-				// A bit of code duplication here with the 'sock' case. Alternative would be a rather ugly control flow.
-				SimpleWindow.setButtonsEnabled( false );
-				var sockParameters = {
-					uid: uid,
-					sockpuppets: new Array(),
-					evidence: form.evidence.value.rtrim(),
-					checkuser: form.checkuser.checked,
-					notify: form.notify.checked
-				};
-				Status.init( form );
-
-				Twinkle.arv.processSock( sockParameters );
-				break;
+				puppetReport = false;
 			}
 
-			SimpleWindow.setButtonsEnabled( false );
-			var sockParameters = {
-				uid: form.sockmaster.value.rtrim(),
-				sockpuppets: new Array(uid),
-				evidence: form.evidence.value.rtrim(),
-				checkuser: form.checkuser.checked,
-				notify: form.notify.checked
-			};
-			Status.init( form );
+			sockParameters.uid = puppetReport ? form.sockmaster.value.rtrim() : uid;
+			sockParameters.sockpuppets = puppetReport ? [uid] : (form.getTexts( 'sockpuppet' ) || []);
 
+			SimpleWindow.setButtonsEnabled( false );
+			Status.init( form );
 			Twinkle.arv.processSock( sockParameters );
 			break;
+
 	}
 };
 
 Twinkle.arv.processSock = function( params ) {
-
 	Wikipedia.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
 	
 	// notify all user accounts if requested
-	if (params.notify) {
+	if (params.notify && params.sockpuppets.length>0) {
 	
 		var notifyEditSummary = "Notifying about suspicion of sockpuppeteering." + Twinkle.getPref('summaryAd');
 		var notifyText = "\n\n{{subst:socksuspectnotice|1=" + params.uid + "}} ~~~~";
