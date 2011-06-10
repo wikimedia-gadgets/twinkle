@@ -665,7 +665,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 		if( !actiontypes[i].checked ) {
 			continue;
 		}
-		actiontype = actiontypes[i].value;
+		actiontype = actiontypes[i].values;
 		break;
 	}
 
@@ -741,7 +741,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		if( !actiontypes[i].checked ) {
 			continue;
 		}
-		actiontype = actiontypes[i].value;
+		actiontype = actiontypes[i].values;
 		break;
 	}
 

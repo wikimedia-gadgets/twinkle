@@ -769,12 +769,12 @@ Bytes.prototype.toString = function( magnitude ) {
  */
 
 String.prototype.ltrim = function stringPrototypeLtrim( chars ) {
-	chars = chars || "\\s*";
+	chars = chars || "\\s";
 	return this.replace( new RegExp("^[" + chars + "]+", "g"), "" );
 };
 
 String.prototype.rtrim = function stringPrototypeRtrim( chars ) {
-	chars = chars || "\\s*";
+	chars = chars || "\\s";
 	return this.replace( new RegExp("[" + chars + "]+$", "g"), "" );
 };
 
@@ -938,7 +938,8 @@ Unbinder.getCallback = function UnbinderGetCallback(self) {
 
 /**
  * **************** clone() ****************
- * REMOVEME - global namespace pollution -> move to better name
+ * REMOVEME - global namespace pollution -> move to better name, or
+ * rework the few usages using jQuery.extend
  */
 
 function clone( obj, deep ) {
