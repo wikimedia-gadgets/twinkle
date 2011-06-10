@@ -829,8 +829,8 @@ Twinkle.warn.messages = {
 			summary:"Notice: You can be bold and fix things yourself" 
 		},
 		"uw-spoiler": {
-			label:"Censoring spoiler alerts", 
-			summary:"Notice: Don't remove spoilers or add spoiler alerts" 
+			label:"Adding spoiler alerts or removing supposed spoilers from appropriate sections",
+			summary:"Notice: Don't delete or flag potential 'spoilers' in Wikipedia articles"
 		},
 		"uw-subst": { 
 			label:"Remember to subst: templates", 
