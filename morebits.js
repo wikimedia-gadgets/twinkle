@@ -3079,7 +3079,8 @@ SimpleWindow.prototype = {
 			$widget.find(".ui-dialog-title").prepend(scriptnamespan);
 		}
 
-		$(this.content).dialog("open");
+		var dialog = $(this.content).dialog("open");
+		if (window.setupTooltips) { dialog.parent()[0].ranSetupTooltipsAlready = false; setupTooltips(dialog.parent()[0]); } //tie in with NAVPOP
 		this.setHeight( this.height );  // init height algorithm
 	},
 	// Sets the dialog title.
