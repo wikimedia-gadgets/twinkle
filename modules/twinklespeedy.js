@@ -335,9 +335,9 @@ Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 		tooltip: 'Any article that has been discussed at Articles for Deletion (et al), where the outcome was to transwiki, and where the transwikification has been properly performed and the author information recorded. Alternately, any article that consists of only a dictionary definition, where the transwikification has been properly performed and the author information recorded'
 	});
 	result.push({
-		label: 'A7: Unremarkable people, groups, companies and web content',
+		label: 'A7: Unremarkable people, groups, companies, web content, and individual animals',
 		value: 'a7',
-		tooltip: 'An article about a real person, group of people, band, club, company, or web content that does not assert the importance or significance of its subject. If controversial, or if there has been a previous AfD that resulted in the article being kept, the article should be nominated for AfD instead'
+		tooltip: 'An article about a real person, group of people, band, club, company, web content, or individual animal that does not assert the importance or significance of its subject. If controversial, or if there has been a previous AfD that resulted in the article being kept, the article should be nominated for AfD instead'
 	});
 	if (!multiple) {
 		result.push({
