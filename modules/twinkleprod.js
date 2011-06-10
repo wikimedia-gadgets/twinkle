@@ -270,7 +270,10 @@ Twinkle.prod.callbacks = {
 			if (params.logInitialContrib) {
 				text += "; notified {{user|" + params.logInitialContrib + "}}";
 			}
-			text += " ~~~~~n#* '''Reason''': " + params.reason + "\n";
+			text += " ~~~~~\n";
+			if (!params.blp) {
+				text += "#* '''Reason''': " + params.reason + "\n";
+			}
 			summarytext = "Logging PROD nomination of [[" + mw.config.get('wgPageName') + "]].";
 		}
 
