@@ -73,6 +73,10 @@ Twinkle.shared.standardList = [
 		value: 'shared IP edu'
 	},
 	{
+		label: '{{shared IP corp}}: shared IP address template modified for businesses',
+		value: 'shared IP corp'
+	},
+	{
 		label: '{{shared IP public}}: shared IP address template modified for public terminals',
 		value: 'shared IP public'
 	},
