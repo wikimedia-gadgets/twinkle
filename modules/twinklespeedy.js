@@ -365,6 +365,11 @@ Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 			value: 'web',
 			tooltip: 'Article about a web site, blog, online forum, webcomic, podcast, or similar web content that does not assert the importance or significance of its subject'
 		});
+		result.push({
+			label: 'A7: Unremarkable animal',
+			value: 'animal',
+			tooltip: 'Article about an unremarkable individual animal'
+		});
 	}
 	result.push({
 		label: 'A9: Unremarkable musical recording where artist\'s article doesn\'t exist',
@@ -606,6 +611,7 @@ Twinkle.speedy.normalizeHash = {
 	'web': 'a7',
 	'band': 'a7',
 	'club': 'a7',
+	'individual animal': 'a7',
 	'a9': 'a9',
 	'a10': 'a10',
 	'rediruser': 'r2',
@@ -667,6 +673,7 @@ Twinkle.speedy.reasonHash = {
 	'corp': 'No explanation of the subject\'s significance (organization)',
 	'club': 'No explanation of the subject\'s significance (organization)',
 	'band': 'No explanation of the subject\'s significance (band/musician)',
+	'animal': 'No explanation of the subject\'s significance (individual animal)',
 	'a9': 'Music recording by redlinked artist and no indication of importance or significance',
 	'a10': 'Recently created article that duplicates an existing topic',
 // Images and media
