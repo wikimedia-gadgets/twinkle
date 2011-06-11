@@ -3,17 +3,25 @@
  *** friendlytag.js: Tag module
  ****************************************
  * Mode of invocation:     Tab ("Tag")
- * Active on:              Existing articles, all redirects
+ * Active on:              Existing articles; file pages with a corresponding file
+ *                         which is local (not on Commons); all redirects
  * Config directives in:   FriendlyConfig
  */
 
 Twinkle.tag = function friendlytag() {
+	// redirect tagging
 	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) === 'no' && $("span.redirectText").length > 0 ) {
-		Twinkle.tag.isRedirect = true;
+		Twinkle.tag.mode = 'redirect';
 		$(twAddPortletLink("#", "Tag", "friendly-tag", "Tag redirect", "")).click(Twinkle.tag.callback);
-	} else if( mw.config.get('wgNamespaceNumber') !== 0 || !mw.config.get('wgCurRevisionId') ) {
-		return;
-	} else {
+	} 
+	// file tagging
+	else if( mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory") ) {
+		Twinkle.tag.mode = 'file';
+		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add license and/or maintenance tags", "")).click(Twinkle.tag.callback);
+	} 
+	// article tagging
+	else if( mw.config.get('wgNamespaceNumber') === 0 && mw.config.get('wgCurRevisionId') ) {
+		Twinkle.tag.mode = 'article';
 		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add maintenance tags to article", "")).click(Twinkle.tag.callback);
 	}
 };
@@ -26,47 +34,149 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 
 	var form = new QuickForm( Twinkle.tag.callback.evaluate );
 
-	if( !Twinkle.tag.isRedirect ) {
-		Window.setTitle( "Article maintenance tagging" );
+	switch( Twinkle.tag.mode ) {
+		case 'article':
+			Window.setTitle( "Article maintenance tagging" );
 
-		form.append( {
-				type: 'checkbox',
-				list: [
-					{
-						label: 'Group into {{multiple issues}} if possible',
-						value: 'group',
-						name: 'group',
-						tooltip: 'If applying three or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped into a single {{multiple issues}} template.',
-						checked: Twinkle.getFriendlyPref('groupByDefault')
-					}
-				]
+			form.append( {
+					type: 'checkbox',
+					list: [
+						{
+							label: 'Group into {{multiple issues}} if possible',
+							value: 'group',
+							name: 'group',
+							tooltip: 'If applying three or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped into a single {{multiple issues}} template.',
+							checked: Twinkle.getFriendlyPref('groupByDefault')
+						}
+					]
+				}
+			);
+
+			form.append( { type:'header', label:'Maintenance templates' } );
+			form.append( { type:'checkbox', name: 'maintenance', list: Twinkle.tag.maintenanceList } );
+
+			form.append( { type:'header', label:'Problem templates' } );
+			form.append( { type:'checkbox', name: 'problem', list: Twinkle.tag.problemList } );
+
+			form.append( { type:'header', label:'Notice templates' } );
+			form.append( { type:'checkbox', name: 'notice', list: Twinkle.tag.noticeList } );
+
+			if( Twinkle.getFriendlyPref('customTagList').length ) {
+				form.append( { type:'header', label:'Custom templates' } );
+				form.append( { type: 'checkbox', name: 'custom', list: Twinkle.getFriendlyPref('customTagList') } );
 			}
-		);
+			break;
 
-		form.append( { type:'header', label:'Maintenance templates' } );
-		form.append( { type:'checkbox', name: 'maintenance', list: Twinkle.tag.maintenanceList } );
+		case 'file':
+			Window.setTitle( "File license and maintenance tagging" );
 
-		form.append( { type:'header', label:'Problem templates' } );
-		form.append( { type:'checkbox', name: 'problem', list: Twinkle.tag.problemList } );
+			var licenseMenu = form.append( {
+					type: 'select',
+					name: 'imageLicense',
+					label: 'Change image license to ',
+				} );
 
-		form.append( { type:'header', label:'Notice templates' } );
-		form.append( { type:'checkbox', name: 'notice', list: Twinkle.tag.noticeList } );
+			// ADD FAVORITE LICENSE TAGS TO DROP-DOWN
+			// XXX fixme
+			if( Twinkle.getPref.length ) {
+			licenseMenu.append( { type:'option', label: 'None (do not change license)', value: '' } );
 
-		if( Twinkle.getFriendlyPref('customTagList').length ) {
-			form.append( { type:'header', label:'Custom templates' } );
-			form.append( { type: 'checkbox', name: 'custom', list: Twinkle.getFriendlyPref('customTagList') } );
-		}
-	} else {
-		Window.setTitle( "Redirect tagging" );
+			$.each(Twinkle.getPref('customFileTagList'), function(value, label) {
+				licenseMenu.append( { type:'option', label: label, value: value } );
+			});
 
-		form.append( { type:'header', label:'Spelling, misspelling, tense and capitalization templates' } );
-		form.append( { type:'checkbox', name: 'spelling', list: Twinkle.tag.spellingList } );
+			var licenseOptGroup = licenseMenu.append({ 
+					type: 'optgroup',
+					label: 'Free content licenses'
+				});
+			$.each(Twinkle.tag.file.freeLicenses, function(k, tag) {
+				licenseOptGroup.append(
+					type: 'option',
+					label: tag,
+					value: tag
+				});
+			});
 
-		form.append( { type:'header', label:'Alternative name templates' } );
-		form.append( { type:'checkbox', name: 'alternative', list: Twinkle.tag.alternativeList } );
+			licenseOptGroup = licenseMenu.append({ 
+					type: 'optgroup',
+					label: 'Non-free licenses'
+				});
+			$.each(Twinkle.tag.file.nonFreeLicenses, function(k, tag) {
+				licenseOptGroup.append({
+					type: 'option',
+					label: tag,
+					value: tag
+				});
+			});
 
-		form.append( { type:'header', label:'Miscellaneous and administrative redirect templates' } );
-		form.append( { type:'checkbox', name: 'administrative', list: Twinkle.tag.administrativeList } );
+			form.append( {
+					type: 'checkbox',
+					name: 'removeFUR',
+					list: [
+						{ label: 'Remove any fair-use rationale', value: 'removeFUR' }
+					]
+				} );
+
+			form.append( { type: 'submit' } );
+
+			// XXX fixme: ADD FAVORITE (nonlicense) other TAGS TO list of checkboxes
+
+			// XXX add fields for {{information}}
+			form.append({ type: 'header', label: 'Information box' });
+			fieldsetDiv.append( {
+					type: 'checkbox',
+					name: 'information',
+					list: [
+						{ label: '{{Information}}', value: 'information' }
+					]
+				} );
+
+			form.append({ type: 'header', label: 'Cleanup tags' } );
+			fieldsetDiv = form.append({ type: 'div', id: 'furme-two-cols-cleanup' } );
+			fieldsetDiv.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.cleanupList } );
+
+			form.append({ type: 'header', label: 'Commons-related tags' });
+			fieldsetDiv = form.append({ type: 'div', id: 'furme-two-cols-commons' } );
+			fieldsetDiv.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.commonsList } );
+			form.append( {
+					type: 'div',
+					label: 'For tagging with {{NowCommons}}, use Twinkle\'s "DI" module.'
+				} );
+
+			form.append({ type: 'header', label: 'Restriction tags' });
+			fieldsetDiv = form.append({ type: 'div', id: 'furme-two-cols-restriction' } );
+			fieldsetDiv.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.restrictionList } );
+
+			form.append({ type: 'header', label: 'Replacement tags' });
+			fieldsetDiv = form.append({ type: 'div', id: 'furme-two-cols-replacement' } );
+			fieldsetDiv.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.replacementList } );
+
+			// XXX fixme to use a class: add two-column styles
+			$("form.quickform fieldset div#furme-two-cols-replacement").css("-moz-column-count: 2; column-count: 2");
+			$("form.quickform fieldset div#furme-two-cols-cleanup").css("-moz-column-count: 2; column-count: 2");
+			$("form.quickform fieldset div#furme-two-cols-commons").css("-moz-column-count: 2; column-count: 2");
+			$("form.quickform fieldset div#furme-two-cols-favorites").css("-moz-column-count: 2; column-count: 2");
+			$("form.quickform fieldset div#furme-two-cols-general").css("-moz-column-count: 2; column-count: 2");
+			$("form.quickform fieldset div#furme-two-cols-restriction").css("-moz-column-count: 2; column-count: 2");
+			$("form.quickform fieldset div#furme-two-cols-replacement").css("-moz-column-count: 2; column-count: 2");
+			break;
+
+		case 'redirect':
+			Window.setTitle( "Redirect tagging" );
+
+			form.append({ type: 'header', label:'Spelling, misspelling, tense and capitalization templates' });
+			form.append({ type: 'checkbox', name: 'spelling', list: Twinkle.tag.spellingList });
+
+			form.append({ type: 'header', label:'Alternative name templates' });
+			form.append({ type: 'checkbox', name: 'alternative', list: Twinkle.tag.alternativeList });
+
+			form.append({ type: 'header', label:'Miscellaneous and administrative redirect templates' });
+			form.append({ type: 'checkbox', name: 'administrative', list: Twinkle.tag.administrativeList });
+			break;
+
+		default:
+			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
+			break;
 	}
 
 	form.append( { type:'submit' } );
@@ -75,6 +185,8 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 	Window.setContent( result );
 	Window.display();
 };
+
+// Tags for ARTICLES start here
 
 Twinkle.tag.maintenanceList = [
 	{
@@ -499,6 +611,7 @@ Twinkle.tag.noticeList = [
 		value: 'underconstruction' }
 ];
 
+// Tags for REDIRECTS start here
 
 Twinkle.tag.spellingList = [
 	{
@@ -621,6 +734,179 @@ Twinkle.tag.administrativeList = [
 	}
 ];
 
+// LICENSE templates for FILES start here
+
+Twinkle.tag.file.freeLicenses = [
+	'Attribution',
+	'Cc-by',
+	'Cc-by-2.0',
+	'Cc-by-3.0',
+	'Cc-by-sa',
+	'Cc-by-sa-2.0',
+	'Cc-by-sa-3.0',
+	'Cc-sa',
+	'Free screenshot',
+	'GFDL-self',
+	'GFDL-presumed',
+	'GPL',
+	'Money-US',
+	'PD-art',
+	'PD-art-life-70',
+	'PD-art-US',
+	'PD-Australia',
+	'PD-author',
+	'PD-because',
+	'PD-BritishGov',
+	'PD-Canada',
+	'PD-font',
+	'PD-ineligible',
+	'PD-Italy',
+	'PD-link',
+	'PD-old',
+	'PD-old-50',
+	'PD-old-100',
+	'PD-release',
+	'PD-Russia-2008',
+	'PD-shape',
+	'PD-self',
+	'PD-text',
+	'PD-US',
+	'PD-US-1923-abroad',
+	'PD-US-patent',
+	'PD-USGov',
+	'PD-USGov-CIA',
+	'PD-USGov-Congress',
+	'PD-USGov-Congress-Bio',
+	'PD-USGov-DOC-Census',
+	'PD-USGov-DOC-NOAA',
+	'PD-USGov-DOJ',
+	'PD-USGov-Interior-NPS',
+	'PD-USGov-Interior-USGS',
+	'PD-USGov-Military',
+	'PD-USGov-Military-Air Force',
+	'PD-USGov-Military-Army',
+	'PD-USGov-Military-Marines',
+	'PD-USGov-Military-Navy',
+	'PD-USGov-NASA',
+	'PD-USGov-USDA',
+	'PD-USGov-USDA-FS',
+	'PD-user',
+	'Wikipedia-screenshot'
+];
+
+Twinkle.tag.file.nonFreeLicenses = [
+	'Non-free 2D art',
+	'Non-free 3D art',
+	'Non-free album cover',
+	'Non-free audio sample',
+	'Non-free AUSPIC',
+	'Non-free Australian DoD',
+	'Non-free Baseball HoF',
+	'Non-free board game cover',
+	'Non-free book cover',
+	'Non-free British Columbia traffic sign',
+	'Non-free character',
+	'Non-free cereal box cover',
+	'Non-free Cartoon Network image',
+	'Non-free comic',
+	'Non-free computer icon',
+	'Non-free Crown copyright',
+	'Non-free currency',
+	'Non-free currency-EU banknote',
+	'Non-free currency-EU coin common',
+	'Non-free currency-EU coin national',
+	'Non-free currency-New Zealand',
+	'Non-free currency-Switzerland',
+	'Non-free currency-UK',
+	'Non-free Denver Public Library image',
+	'Non-free ESA media',
+	'Non-free fair use in',
+	'Non-free film screenshot',
+	'Non-free flag',
+	'Non-free game cover',
+	'Non-free game screenshot',
+	'Non-free historic image',
+	'Non-free logo',
+	'Non-free magazine cover',
+	'Non-free Mozilla logo',
+	'Non-free music video screenshot',
+	'Non-free NASA logo',
+	'Non-free newspaper image',
+	'Non-free parody',
+	'Non-free Otto Perry image',
+	'Non-free poster',
+	'Non-free product cover',
+	'Non-free promotional',
+	'Non-free recording medium',
+	'Non-free Robert Richardson image',
+	'Non-free Scout logo',
+	'Non-free sheet music',
+	'Non-free software cover',
+	'Non-free software screenshot',
+	'Non-free speech',
+	'Non-free stamp',
+	'Non-free standard test image',
+	'Non-free symbol',
+	'Non-free television screenshot',
+	'Non-free unsure',
+	'Non-free USGov-IEEPA sanctions',
+	'Non-free USGov-USPS stamp',
+	'Non-free video cover',
+	'Non-free video screenshot',
+	'Non-free vodcast screenshot',
+	'Non-free web screenshot',
+	'Non-free Wikimedia logo',
+	'Non-free with NC',
+	'Non-free with ND',
+	'Non-free with permission',
+	'Non-free WWE photo'
+];
+
+// non-license MAINTENANCE TAGS for FILES start here
+
+Twinkle.tag.file.cleanupList = [
+	{ label: '{{Artifacts}}', value: '{{Artifacts}}' },
+	{ label: '{{BadJPEG}}', value: '{{BadJPEG}}' },
+	{ label: '{{BadGIF}}', value: '{{BadGIF}}' },
+	{ label: '{{BadFormat}}', value: '{{BadFormat}}' },
+	{ label: '{{Cleanup-image}}', value: '{{Cleanup-image}}' },
+	{ label: '{{ClearType}}', value: '{{ClearType}}' },
+	{ label: '{{Image-blownout}}', value: '{{Image-blownout}}' },
+	{ label: '{{Image-out-of-focus}}', value: '{{Image-out-of-focus}}' },
+	{ label: '{{Image-Poor-Quality}}', value: '{{Image-Poor-Quality}}' },
+	{ label: '{{Image-underexposure}}', value: '{{Image-underexposure}}' },
+	{ label: '{{Imagewatermark}}', value: '{{Imagewatermark}}' },
+	{ label: '{{NoCoins}}', value: '{{NoCoins}}' },
+	{ label: '{{Non-free reduce}}', value: '{{Non-free reduce}}' },
+	{ label: '{{Overcompressed JPEG}}', value: '{{Overcompressed JPEG}}' },
+	{ label: '{{Opaque}}', value: '{{Opaque}}' },
+	{ label: '{{RemoveBorder}}', value: '{{RemoveBorder}}' },
+	{ label: '{{Rename media}}', value: '{{Rename media}}' },
+	{ label: '{{ShouldBeSVG}}', value: '{{ShouldBeSVG}}' },
+	{ label: '{{ShouldBeJPEG}}', value: '{{ShouldBeJPEG}}' },
+	{ label: '{{ShouldBePNG}}', value: '{{ShouldBePNG}}' }
+];
+
+Twinkle.tag.file.commonsList = [
+	{ label: '{{Do not move to Commons}}', value: '{{Do not move to Commons}}' },
+	{ label: '{{Copy to Wikimedia Commons}}', value: '{{Copy to Wikimedia Commons}}' },
+	{ label: '{{KeepLocal}}', value: '{{KeepLocal}}' },
+	{ label: '{{ShadowsCommons}}', value: '{{ShadowsCommons}}' }
+];
+
+Twinkle.tag.file.restrictionList = [
+	{ label: '{{Freedom of panorama}}', value: '{{Freedom of panorama}}' },
+	{ label: '{{Insignia}}', value: '{{Insignia}}' },
+	{ label: '{{SVG-Logo}}', value: '{{SVG-Logo}}' },
+	{ label: '{{Trademark}}', value: '{{Trademark}}' }
+];
+
+Twinkle.tag.file.replacementList = [
+	{ label: '{{PNG version available}}', value: '{{PNG version available}}' },
+	{ label: '{{Vector version available}}', value: '{{Vector version available}}' }
+];
+
+
 // Set to true if template can be grouped into {{articleissues}}
 Twinkle.tag.groupHash = {
 	'3O': true,
@@ -736,7 +1022,7 @@ Twinkle.tag.callbacks = {
 		var pageText = pageobj.getPageText().replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 
 		var i;
-		if( !Twinkle.tag.isRedirect ) {
+		if( !Twinkle.tag.mode === 'redirect' ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
 			for( i = 0; i < params.tags.length; i++ ) {
 				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im' );
@@ -799,7 +1085,7 @@ Twinkle.tag.callbacks = {
 				if( tags[i] === 'globalize' ) {
 					currentTag += '{{' + params.globalizeSubcategory;
 				} else {
-					currentTag += ( Twinkle.tag.isRedirect ? '\n' : '' ) + '{{' + tags[i];
+					currentTag += ( Twinkle.tag.mode === 'redirect' ? '\n' : '' ) + '{{' + tags[i];
 				}
 
 				if( tags[i] === 'notability' && params.notabilitySubcategory !== 'none' ) {
@@ -851,7 +1137,7 @@ Twinkle.tag.callbacks = {
 						break;
 				}
 				
-				currentTag += Twinkle.tag.isRedirect ? '}}' : '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}\n';
+				currentTag += Twinkle.tag.mode === 'redirect' ? '}}' : '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}\n';
 				tagText += currentTag;
 			}
 
@@ -872,7 +1158,7 @@ Twinkle.tag.callbacks = {
 			summaryText += ']]}}';
 		}
 
-		if( Twinkle.tag.isRedirect ) {
+		if( Twinkle.tag.mode === 'redirect' ) {
 			pageText += tagText;
 		} else {
 			// smartly insert the new tags after any hatnotes. Regex is a bit more
@@ -882,7 +1168,7 @@ Twinkle.tag.callbacks = {
 				"$1" + tagText);
 		}
 		summaryText += ' tag' + ( ( tags.length + ( groupableTags.length > 3 ? 1 : 0 ) ) > 1 ? 's' : '' ) +
-			' to ' + ( Twinkle.tag.isRedirect ? 'redirect' : 'article' ) + Twinkle.getPref('summaryAd');
+			' to ' + Twinkle.tag.mode + Twinkle.getPref('summaryAd');
 
 		pageobj.setPageText(pageText);
 		pageobj.setEditSummary(summaryText);
@@ -894,40 +1180,113 @@ Twinkle.tag.callbacks = {
 		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
 			pageobj.patrol();
 		}
+	},
+
+	file: function friendlytagCallbacksFile(pageobj) {
+		var text = pageobj.getPageText();
+		var params = pageobj.getCallbackParameters();
+		var editsummarybits = [];
+
+		// XXX needs general fixes from twinklefur
+
+		if ( params.imageLicense )
+		{
+			
+
+			
+
+			editsummarybits.push('changing license to ' + imageLicense);
+		}
+
+		if (params.information)
+		{
+			var informationTemplate = '{{Information\n' +
+				'| description    = \n' +
+				'| source         = \n' +
+				'| date           = \n' +
+				'| author         = \n' +
+				'| permission     = \n' +
+				'| other_versions = \n' +
+				'}}\n';
+			text = text.replace(regExFindSummary, "== Summary ==\n" + informationTemplate);
+
+			editsummarybits.push('adding {{Information}}');
+		}
+
+		// Add in maintenance tags
+		if (params.tags.length) {
+
+			// Ask for new name on Commons  XXX readd nowcommons AND ALSO FOR {{RENAME MEDIA}}
+			//if (params.tags.indexOf('subst:ncd') !== -1)
+			//{
+			//	var img = prompt( 'enter the image name on Commons (if different than local name), excluding the File: prefix' );
+			//	if (img != null && img != '') {
+			//		imageTags = imageTags.replace(/\{\{subst:ncd\}\}/, '{{subst:ncd|' + img + '}}');
+			//	}
+			//}
+
+			text = "{{" + params.tags.join("}}\n{{") + "}}\n\n" + text;
+
+			editsummarybits.push('adding {{' + params.tags.join('}}\n{{') + '}}');
+		}
+
+		// Remove any fair use rationale
+		if (params.removeFUR)
+		{
+			// Remove any fair use headings
+			var regExFindFUHeading = /(\s*)===?\s*Fair use[^=]*===?\s*/ig;
+			text = text.replace(regExFindFUHeading, "$1");
+
+			var regExFindRationale = /{{(.*fur|Non-free use rationale|Fair use rationale|Non-free fair use rationale|Rationale|Non-free media rationale|Non-free image data|Non-free image rationale)[^]+?}}\s*/igm;
+			text = text.replace(regExFindRationale, '');
+		}
+
+		pageobj.setPageText(text);
+		pageobj.setEditSummary(editsummarybits.join("; ").toUpperCaseFirstChar() + Twinkle.getPref('summaryAd'));
+		pageobj.setCreateOption('nocreate');
+		pageobj.save();
 	}
 };
 
 Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	var form = e.target;
-	var tags, globalizeSubcategory, notabilitySubcategory;
-	if( Twinkle.tag.isRedirect ) {
-		tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
-	} else {
-		if( Twinkle.getFriendlyPref('customTagList').length ) {
-			tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) ).concat( form.getChecked( 'custom' ) );
-		} else {
-			tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) );
-		}
-		globalizeSubcategory = form.getChecked( 'problem.globalize' );
-		notabilitySubcategory = form.getChecked( 'problem.notability' );
-	}
-	var params;
+	var params = {};
 
-	if( !tags.length ) {
+	switch (Twinkle.tag.mode) {
+		case 'article':
+			if( Twinkle.getFriendlyPref('customTagList').length ) {
+				params.tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) ).concat( form.getChecked( 'custom' ) );
+			} else {
+				params.tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) );
+			}
+			params.group = form.group.checked;
+			params.globalizeSubcategory = form.getChecked( 'problem.globalize' );
+			params.globalizeSubcategory = params.globalizeSubcategory ? params.globalizeSubcategory[0] : null;
+			params.notabilitySubcategory = form.getChecked( 'problem.notability' );
+			params.notabilitySubcategory = params.notabilitySubcategory ? params.notabilitySubcategory[0] : null;
+			break;
+		case 'file':
+			params.imageLicense = form.imageLicense.options[form.imageLicense.selectedIndex].value;
+			params.removeFUR = form.removeFUR.checked;
+			params.information = form.information.checked;
+			params.tags = [];
+			for (var i = 0; i < form.imageTags.length; i++) {
+				if (form.imageTags[i].checked) {
+					params.tags.push(form.imageTags[i].value);
+				}
+			}
+			break;
+		case 'redirect':
+			params.tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
+			break;
+		default:
+			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
+			break;
+	}
+
+	if( !params.tags.length ) {
 		alert( 'You must select at least one tag!' );
 		return;
-	}
-	if( !Twinkle.tag.isRedirect ) {
-		params = {
-			tags: tags,
-			group: form.group.checked,
-			globalizeSubcategory: globalizeSubcategory ? globalizeSubcategory[0] : null,
-			notabilitySubcategory: notabilitySubcategory ? notabilitySubcategory[0] : null
-		};
-	} else {
-		params = {
-			tags: tags
-		};
 	}
 
 	SimpleWindow.setButtonsEnabled( false );
@@ -935,11 +1294,23 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
 	Wikipedia.actionCompleted.notice = "Tagging complete, reloading article in a few seconds";
-	if (Twinkle.tag.isRedirect) {
+	if (Twinkle.tag.mode === 'redirect') {
 		Wikipedia.actionCompleted.followRedirect = false;
 	}
 
-	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), Twinkle.tag.isRedirect ? "Tagging redirect" : "Tagging article");
+	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Tagging " + Twinkle.tag.mode);
 	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.load(Twinkle.tag.callbacks.main);
+	switch (Twinkle.tag.mode) {
+		case 'article':
+			/* falls through */
+		case 'redirect':
+			wikipedia_page.load(Twinkle.tag.callbacks.main);
+			return;
+		case 'file':
+			wikipedia_page.load(Twinkle.tag.callbacks.file);
+			return;
+		default:
+			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
+			break;
+	}
 };
