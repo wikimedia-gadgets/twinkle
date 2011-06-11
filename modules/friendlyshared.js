@@ -66,7 +66,7 @@ Twinkle.shared.standardList = [
 	{
 		label: '{{shared IP}}: standard shared IP address template',
 		value: 'shared IP',
-		tooltip: 'IP user talk page template that shows helpful information to IP users and those wishing to warn or ban them'
+		tooltip: 'IP user talk page template that shows helpful information to IP users and those wishing to warn, block or ban them'
 	},
 	{ 
 		label: '{{shared IP edu}}: shared IP address template modified for educational institutions',
@@ -93,7 +93,7 @@ Twinkle.shared.standardList = [
 		value: 'ISP'
 	},
 	{ 
-		label: '{{mobileIP}}: shared IP address template modified mobile phone company and their customers',
+		label: '{{mobileIP}}: shared IP address template modified for mobile phone companies and their customers',
 		value: 'mobileIP'
 	}
 ];
