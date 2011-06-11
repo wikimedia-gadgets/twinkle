@@ -515,10 +515,17 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		tooltip: 'Other non-controversial "housekeeping" tasks'
 	});
 	result.push({
-		label: 'G7: Author requests deletion, or author blanked',
+		label: 'G7: Author requests deletion',
 		value: 'author',
-		tooltip: 'Any page for which deletion is requested by the original author in good faith, provided the page\'s only substantial content was added by its author. If the author blanks the page, this can also be taken as a deletion request.'
+		tooltip: 'Any page for which deletion is requested by the original author in good faith, provided the page\'s only substantial content was added by its author.'
 	});
+	if (!multiple) {
+		result.push({
+			label: 'G7: Author blanked',
+			value: 'blanked',
+			tooltip: 'Any page for which deletion is requested by the original author in good faith, provided the page\'s only substantial content was added by its author. The author blanked the page, this is taken as a deletion request.''
+		});
+	}
 	result.push({
 		label: 'G8: Pages dependent on a non-existent or deleted page',
 		value: 'g8',
@@ -588,6 +595,7 @@ Twinkle.speedy.normalizeHash = {
 	'disambig': 'g6',
 	'g6': 'g6',
 	'author': 'g7',
+	'blanked': 'g7',
 	'g8': 'g8',
 	'talk': 'g8',
 	'subpage': 'g8',
@@ -647,7 +655,8 @@ Twinkle.speedy.reasonHash = {
 	'xfd': 'Deleting page per result of [[WP:XfD|deletion discussion]]',
 	'disambig': 'Unnecessary disambiguation page',
 	'g6': 'Housekeeping and routine (non-controversial) cleanup',
-	'author': 'One author who has requested deletion or blanked the page',
+	'author': 'One author who has requested deletion',
+	'blanked': 'One author who has requested deletion by blanking the page',
 	'g8': 'Page dependent on a deleted or nonexistent page',
 	'talk': '[[Help:Talk page|Talk page]] of a deleted or nonexistent page',
 	'subpage': '[[WP:Subpages|Subpage]] of a deleted or nonexistent page',
