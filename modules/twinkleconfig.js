@@ -880,7 +880,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		var tocnumber = 1;
 
 		var contentform = document.createElement("form");
-		contentform.setAttribute("action", "#tw-save");
+		contentform.setAttribute("action", "javascript:void(0)");  // was #tw-save - changed to void(0) to work around Chrome issue
 		contentform.addEventListener("submit", Twinkle.config.save, true);
 		contentdiv.appendChild(contentform);
 
