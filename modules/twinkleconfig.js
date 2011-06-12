@@ -570,7 +570,7 @@ Twinkle.config.sections = [
 		{
 			name: "showSharedIPNotice",
 			label: "Add extra notice on shared IP talk pages",
-			helptip: "The notice used for this is not a template - it is hard-coded in Twinkle at the moment.",
+			helptip: "The notice used for this is now a template ([[Template:Warned IP notice]]).",
 			type: "boolean"
 		},
 
