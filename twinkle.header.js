@@ -307,7 +307,7 @@ function twAddPortletLink( href, text, id, tooltip, accesskey, nextnode )
 	if (Twinkle.getPref("portletArea") !== null) {
 		twAddPortlet(Twinkle.getPref("portletArea"), Twinkle.getPref("portletId"), Twinkle.getPref("portletName"), Twinkle.getPref("portletType"), Twinkle.getPref("portletNext"));
 	}
-	return addPortletLink( Twinkle.getPref("portletId"), href, text, id, tooltip, accesskey, nextnode );
+	return mw.util.addPortletLink( Twinkle.getPref("portletId"), href, text, id, tooltip, accesskey, nextnode );
 }
 
 // check if account is experienced enough for more advanced functions
