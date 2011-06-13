@@ -648,6 +648,10 @@ Twinkle.warn.messages = {
 			label:"Creating double redirects through bad page moves", 
 			summary:"Notice: Creating double redirects through bad page moves" 
 		},
+		"uw-3rr-resolve": { 
+			label:"Approching an edit-war", 
+			summary:"Notice: edit-war approching" 
+		},
 		"uw-aiv": { 
 			label:"Bad AIV report", 
 			summary:"Notice: Bad AIV report" 
