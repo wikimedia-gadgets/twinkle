@@ -68,84 +68,36 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 			break;
 
 		case 'file':
-			Window.setTitle( "File license and maintenance tagging" );
-
-			var licenseMenu = form.append( {
-					type: 'select',
-					name: 'imageLicense',
-					label: 'Change image license to ',
-				} );
-
-			// ADD FAVORITE LICENSE TAGS TO DROP-DOWN
-			// XXX fixme
-			if( Twinkle.getPref.length ) {
-			licenseMenu.append( { type:'option', label: 'None (do not change license)', value: '' } );
-
-			$.each(Twinkle.getPref('customFileTagList'), function(value, label) {
-				licenseMenu.append( { type:'option', label: label, value: value } );
-			});
-
-			var licenseOptGroup = licenseMenu.append({ 
-					type: 'optgroup',
-					label: 'Free content licenses'
-				});
-			$.each(Twinkle.tag.file.freeLicenses, function(k, tag) {
-				licenseOptGroup.append(
-					type: 'option',
-					label: tag,
-					value: tag
-				});
-			});
-
-			licenseOptGroup = licenseMenu.append({ 
-					type: 'optgroup',
-					label: 'Non-free licenses'
-				});
-			$.each(Twinkle.tag.file.nonFreeLicenses, function(k, tag) {
-				licenseOptGroup.append({
-					type: 'option',
-					label: tag,
-					value: tag
-				});
-			});
-
-			form.append( {
-					type: 'checkbox',
-					name: 'removeFUR',
-					list: [
-						{ label: 'Remove any fair-use rationale', value: 'removeFUR' }
-					]
-				} );
-
-			form.append( { type: 'submit' } );
+			Window.setTitle( "File maintenance tagging" );
 
 			// XXX fixme: ADD FAVORITE (nonlicense) other TAGS TO list of checkboxes
 
-			// XXX add fields for {{information}}
-			form.append({ type: 'header', label: 'Information box' });
-			fieldsetDiv.append( {
+			form.append({ type: 'header', label: 'Information summary' });
+			form.append( {
 					type: 'checkbox',
 					name: 'information',
 					list: [
 						{ label: '{{Information}}', value: 'information' }
-					]
+					],
+					event: Twinkle.tag.fileInformationDisplay
 				} );
+			form.append({ type: 'div', id: 'furme-information-placeholder' });
+
+			form.append({ type: 'header', label: 'License and sourcing problem tags' });
+			fieldsetDiv = form.append({ type: 'div', id: 'furme-two-cols-license' } );
+			fieldsetDiv.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.licenseList } );
 
 			form.append({ type: 'header', label: 'Cleanup tags' } );
 			fieldsetDiv = form.append({ type: 'div', id: 'furme-two-cols-cleanup' } );
 			fieldsetDiv.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.cleanupList } );
 
-			form.append({ type: 'header', label: 'Commons-related tags' });
+			form.append({ type: 'header', label: 'Image quality tags' } );
+			fieldsetDiv = form.append({ type: 'div', id: 'furme-two-cols-quality' } );
+			fieldsetDiv.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.qualityList } );
+
+			form.append({ type: 'header', label: 'Wikimedia Commons-related tags' });
 			fieldsetDiv = form.append({ type: 'div', id: 'furme-two-cols-commons' } );
 			fieldsetDiv.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.commonsList } );
-			form.append( {
-					type: 'div',
-					label: 'For tagging with {{NowCommons}}, use Twinkle\'s "DI" module.'
-				} );
-
-			form.append({ type: 'header', label: 'Restriction tags' });
-			fieldsetDiv = form.append({ type: 'div', id: 'furme-two-cols-restriction' } );
-			fieldsetDiv.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.restrictionList } );
 
 			form.append({ type: 'header', label: 'Replacement tags' });
 			fieldsetDiv = form.append({ type: 'div', id: 'furme-two-cols-replacement' } );
@@ -156,9 +108,8 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 			$("form.quickform fieldset div#furme-two-cols-cleanup").css("-moz-column-count: 2; column-count: 2");
 			$("form.quickform fieldset div#furme-two-cols-commons").css("-moz-column-count: 2; column-count: 2");
 			$("form.quickform fieldset div#furme-two-cols-favorites").css("-moz-column-count: 2; column-count: 2");
-			$("form.quickform fieldset div#furme-two-cols-general").css("-moz-column-count: 2; column-count: 2");
-			$("form.quickform fieldset div#furme-two-cols-restriction").css("-moz-column-count: 2; column-count: 2");
-			$("form.quickform fieldset div#furme-two-cols-replacement").css("-moz-column-count: 2; column-count: 2");
+			$("form.quickform fieldset div#furme-two-cols-license").css("-moz-column-count: 2; column-count: 2");
+			$("form.quickform fieldset div#furme-two-cols-quality").css("-moz-column-count: 2; column-count: 2");
 			break;
 
 		case 'redirect':
@@ -184,6 +135,49 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
+};
+
+Twinkle.tag.fileInformationDisplay = function twinkletagFileInformationDisplay(e) {
+	if (e.target.checked) {
+		var placeholder = new QuickForm.element({
+			type: 'div',
+			id: 'furme-information-placeholder'
+		});
+		placeholder.append({
+			type: 'input',
+			name: 'informationDescription',
+			label: 'Description: '
+		});
+		placeholder.append({
+			type: 'input',
+			name: 'informationSource',
+			label: 'Source: '
+		});
+		placeholder.append({
+			type: 'input',
+			name: 'informationDate',
+			label: 'Date: '
+		});
+		placeholder.append({
+			type: 'input',
+			name: 'informationAuthor',
+			label: 'Author: '
+		});
+		placeholder.append({
+			type: 'input',
+			name: 'informationPermission',
+			label: 'Permission: '
+		});
+		placeholder.append({
+			type: 'input',
+			name: 'informationOtherVersions',
+			label: 'Other versions: '
+		});
+		
+		$(e.target.form).find("#furme-information-placeholder").replaceWith(placeholder.render());
+	} else {
+		$(e.target.form).find("#furme-information-placeholder").empty();
+	}
 };
 
 // Tags for ARTICLES start here
@@ -734,176 +728,59 @@ Twinkle.tag.administrativeList = [
 	}
 ];
 
-// LICENSE templates for FILES start here
+// maintenance tags for FILES start here
 
-Twinkle.tag.file.freeLicenses = [
-	'Attribution',
-	'Cc-by',
-	'Cc-by-2.0',
-	'Cc-by-3.0',
-	'Cc-by-sa',
-	'Cc-by-sa-2.0',
-	'Cc-by-sa-3.0',
-	'Cc-sa',
-	'Free screenshot',
-	'GFDL-self',
-	'GFDL-presumed',
-	'GPL',
-	'Money-US',
-	'PD-art',
-	'PD-art-life-70',
-	'PD-art-US',
-	'PD-Australia',
-	'PD-author',
-	'PD-because',
-	'PD-BritishGov',
-	'PD-Canada',
-	'PD-font',
-	'PD-ineligible',
-	'PD-Italy',
-	'PD-link',
-	'PD-old',
-	'PD-old-50',
-	'PD-old-100',
-	'PD-release',
-	'PD-Russia-2008',
-	'PD-shape',
-	'PD-self',
-	'PD-text',
-	'PD-US',
-	'PD-US-1923-abroad',
-	'PD-US-patent',
-	'PD-USGov',
-	'PD-USGov-CIA',
-	'PD-USGov-Congress',
-	'PD-USGov-Congress-Bio',
-	'PD-USGov-DOC-Census',
-	'PD-USGov-DOC-NOAA',
-	'PD-USGov-DOJ',
-	'PD-USGov-Interior-NPS',
-	'PD-USGov-Interior-USGS',
-	'PD-USGov-Military',
-	'PD-USGov-Military-Air Force',
-	'PD-USGov-Military-Army',
-	'PD-USGov-Military-Marines',
-	'PD-USGov-Military-Navy',
-	'PD-USGov-NASA',
-	'PD-USGov-USDA',
-	'PD-USGov-USDA-FS',
-	'PD-user',
-	'Wikipedia-screenshot'
+Twinkle.tag.file = {};
+
+Twinkle.tag.file.licenseList = [
+	{ label: '{{Bsr}}: source info consists of bare image URL/generic base URL only', value: 'Bsr' },
+	{ label: '{{Non-free reduce}}: non-low-resolution fair use image (or too-long audio clip, etc)', value: 'Non-free reduce' },   // XXX add types
+	{ label: '{{Non-free reduced}}: fair use media which has been reduced (old versions need to be deleted)', value: 'Non-free reduced' }
 ];
-
-Twinkle.tag.file.nonFreeLicenses = [
-	'Non-free 2D art',
-	'Non-free 3D art',
-	'Non-free album cover',
-	'Non-free audio sample',
-	'Non-free AUSPIC',
-	'Non-free Australian DoD',
-	'Non-free Baseball HoF',
-	'Non-free board game cover',
-	'Non-free book cover',
-	'Non-free British Columbia traffic sign',
-	'Non-free character',
-	'Non-free cereal box cover',
-	'Non-free Cartoon Network image',
-	'Non-free comic',
-	'Non-free computer icon',
-	'Non-free Crown copyright',
-	'Non-free currency',
-	'Non-free currency-EU banknote',
-	'Non-free currency-EU coin common',
-	'Non-free currency-EU coin national',
-	'Non-free currency-New Zealand',
-	'Non-free currency-Switzerland',
-	'Non-free currency-UK',
-	'Non-free Denver Public Library image',
-	'Non-free ESA media',
-	'Non-free fair use in',
-	'Non-free film screenshot',
-	'Non-free flag',
-	'Non-free game cover',
-	'Non-free game screenshot',
-	'Non-free historic image',
-	'Non-free logo',
-	'Non-free magazine cover',
-	'Non-free Mozilla logo',
-	'Non-free music video screenshot',
-	'Non-free NASA logo',
-	'Non-free newspaper image',
-	'Non-free parody',
-	'Non-free Otto Perry image',
-	'Non-free poster',
-	'Non-free product cover',
-	'Non-free promotional',
-	'Non-free recording medium',
-	'Non-free Robert Richardson image',
-	'Non-free Scout logo',
-	'Non-free sheet music',
-	'Non-free software cover',
-	'Non-free software screenshot',
-	'Non-free speech',
-	'Non-free stamp',
-	'Non-free standard test image',
-	'Non-free symbol',
-	'Non-free television screenshot',
-	'Non-free unsure',
-	'Non-free USGov-IEEPA sanctions',
-	'Non-free USGov-USPS stamp',
-	'Non-free video cover',
-	'Non-free video screenshot',
-	'Non-free vodcast screenshot',
-	'Non-free web screenshot',
-	'Non-free Wikimedia logo',
-	'Non-free with NC',
-	'Non-free with ND',
-	'Non-free with permission',
-	'Non-free WWE photo'
-];
-
-// non-license MAINTENANCE TAGS for FILES start here
 
 Twinkle.tag.file.cleanupList = [
-	{ label: '{{Artifacts}}', value: '{{Artifacts}}' },
-	{ label: '{{BadJPEG}}', value: '{{BadJPEG}}' },
-	{ label: '{{BadGIF}}', value: '{{BadGIF}}' },
-	{ label: '{{BadFormat}}', value: '{{BadFormat}}' },
-	{ label: '{{Cleanup-image}}', value: '{{Cleanup-image}}' },
-	{ label: '{{ClearType}}', value: '{{ClearType}}' },
-	{ label: '{{Image-blownout}}', value: '{{Image-blownout}}' },
-	{ label: '{{Image-out-of-focus}}', value: '{{Image-out-of-focus}}' },
-	{ label: '{{Image-Poor-Quality}}', value: '{{Image-Poor-Quality}}' },
-	{ label: '{{Image-underexposure}}', value: '{{Image-underexposure}}' },
-	{ label: '{{Imagewatermark}}', value: '{{Imagewatermark}}' },
-	{ label: '{{NoCoins}}', value: '{{NoCoins}}' },
-	{ label: '{{Non-free reduce}}', value: '{{Non-free reduce}}' },
-	{ label: '{{Overcompressed JPEG}}', value: '{{Overcompressed JPEG}}' },
-	{ label: '{{Opaque}}', value: '{{Opaque}}' },
-	{ label: '{{RemoveBorder}}', value: '{{RemoveBorder}}' },
-	{ label: '{{Rename media}}', value: '{{Rename media}}' },
-	{ label: '{{ShouldBeSVG}}', value: '{{ShouldBeSVG}}' },
-	{ label: '{{ShouldBeJPEG}}', value: '{{ShouldBeJPEG}}' },
-	{ label: '{{ShouldBePNG}}', value: '{{ShouldBePNG}}' }
+	{ label: '{{Artifacts}}: PNG contains residual compression artifacts', value: 'Artifacts' },
+	{ label: '{{Bad font}}: SVG uses fonts not available on the thumbnail server', value: 'Bad font' },
+	{ label: '{{Bad format}}: PDF/DOC/... file should be converted to a more useful format', value: 'Bad format' },
+	{ label: '{{Bad GIF}}: GIF that should be PNG, JPEG, or SVG', value: 'Bad GIF' },
+	{ label: '{{Bad JPEG}}: JPEG that should be PNG or SVG', value: 'Bad JPEG' },
+	{ label: '{{Bad trace}}: auto-traced SVG requiring cleanup', value: 'Bad trace' },
+	{ label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image' },
+	{ label: '{{Cleanup SVG}}: SVG needing code and/or appearance cleanup', value: 'Cleanup SVG' },
+	{ label: '{{ClearType}}: image (not screenshot) with ClearType anti-aliasing', value: 'ClearType' },
+	{ label: '{{Imagewatermark}}: image contains visible or invisible watermarking', value: 'Imagewatermark' },
+	{ label: '{{NoCoins}}: image using coins to indicate scale', value: 'NoCoins' },
+	{ label: '{{Overcompressed JPEG}}: JPEG with high levels of artifacts', value: 'Overcompressed JPEG' },
+	{ label: '{{Opaque}}: opaque background should be transparent', value: 'Opaque' },
+	{ label: '{{Remove border}}: unneeded border, white space, etc.', value: 'Remove border' },
+	{ label: '{{Rename media}}: this tag should not be under the "cleanup" heading', value: 'Rename media' },
+	{ label: '{{Should be PNG}}: GIF or JPEG should be lossless', value: 'Should be PNG' },
+	{ label: '{{Should be SVG}}: PNG, GIF or JPEG should be vector graphics', value: 'Should be SVG' },
+	{ label: '{{Should be text}}: image should be represented as text, tables, or math markup', value: 'Should be text' }
+];
+
+Twinkle.tag.file.qualityList = [
+	{ label: '{{Image-blownout}}', value: 'Image-blownout' },
+	{ label: '{{Image-out-of-focus}}', value: 'Image-out-of-focus' },
+	{ label: '{{Image-Poor-Quality}}', value: 'Image-Poor-Quality' },
+	{ label: '{{Image-underexposure}}', value: 'Image-underexposure' },
+	{ label: '{{Low quality chem}}: disputed chemical structures', value: 'Low quality chem' }
 ];
 
 Twinkle.tag.file.commonsList = [
-	{ label: '{{Do not move to Commons}}', value: '{{Do not move to Commons}}' },
-	{ label: '{{Copy to Wikimedia Commons}}', value: '{{Copy to Wikimedia Commons}}' },
-	{ label: '{{KeepLocal}}', value: '{{KeepLocal}}' },
-	{ label: '{{ShadowsCommons}}', value: '{{ShadowsCommons}}' }
-];
-
-Twinkle.tag.file.restrictionList = [
-	{ label: '{{Freedom of panorama}}', value: '{{Freedom of panorama}}' },
-	{ label: '{{Insignia}}', value: '{{Insignia}}' },
-	{ label: '{{SVG-Logo}}', value: '{{SVG-Logo}}' },
-	{ label: '{{Trademark}}', value: '{{Trademark}}' }
+	{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
+	{ label: '{{Do not move to Commons}} (PD issue): file is PD in the US but not in country of origin', value: 'Do not move to Commons' },
+	{ label: '{{Do not move to Commons}} (other reason)', value: 'Do not move to Commons_reason' },
+	{ label: '{{Keep local}}: request to keep local copy of a Commons file', value: 'Keep local' },
+	{ label: '{{Now Commons}}: file has been copied to Commons', value: 'subst:ncd' },
+	{ label: '{{Shadows Commons}}: a different file is present on Commons under the same filename', value: 'Shadows Commons' }
 ];
 
 Twinkle.tag.file.replacementList = [
-	{ label: '{{PNG version available}}', value: '{{PNG version available}}' },
-	{ label: '{{Vector version available}}', value: '{{Vector version available}}' }
+	{ label: '{{Obsolete}}: improved version available', value: 'Obsolete' },
+	{ label: '{{Redundant}}: exact duplicate of another file, but not yet orphaned', value: 'Redundant' },
+	{ label: '{{PNG version available}}', value: 'PNG version available' },
+	{ label: '{{SVG version available}}', value: 'SVG version available' }
 ];
 
 
@@ -1187,64 +1064,123 @@ Twinkle.tag.callbacks = {
 		var params = pageobj.getCallbackParameters();
 		var editsummarybits = [];
 
-		// XXX needs general fixes from twinklefur
-
-		if ( params.imageLicense )
-		{
-			
-
-			
-
-			editsummarybits.push('changing license to ' + imageLicense);
-		}
-
-		if (params.information)
-		{
-			var informationTemplate = '{{Information\n' +
-				'| description    = \n' +
-				'| source         = \n' +
-				'| date           = \n' +
-				'| author         = \n' +
-				'| permission     = \n' +
-				'| other_versions = \n' +
+		if (params.information)	{
+			var newSummary = '{{Information\n' +
+				'| description    = ' + params.informationDescription + '\n' +
+				'| source         = ' + params.informationSource + '\n' +
+				'| date           = ' + params.informationDate + '\n' +
+				'| author         = ' + params.informationAuthor + '\n' +
+				'| permission     = ' + params.informationPermission + '\n' +
+				'| other_versions = ' + params.informationOtherVersions + '\n' +
 				'}}\n';
-			text = text.replace(regExFindSummary, "== Summary ==\n" + informationTemplate);
-
+			Twinkle.fur.cleanupFilePage(text, newSummary, false);
 			editsummarybits.push('adding {{Information}}');
 		}
 
 		// Add in maintenance tags
 		if (params.tags.length) {
 
-			// Ask for new name on Commons  XXX readd nowcommons AND ALSO FOR {{RENAME MEDIA}}
-			//if (params.tags.indexOf('subst:ncd') !== -1)
-			//{
-			//	var img = prompt( 'enter the image name on Commons (if different than local name), excluding the File: prefix' );
-			//	if (img != null && img != '') {
-			//		imageTags = imageTags.replace(/\{\{subst:ncd\}\}/, '{{subst:ncd|' + img + '}}');
-			//	}
-			//}
+			var tagtext = "";
+			$.each(params.tags, function(k, tag) {
+				tagtext += "{{" + tag;
 
-			text = "{{" + params.tags.join("}}\n{{") + "}}\n\n" + text;
+				var input;
+				switch (tag) {
+					case "subst:ncd":
+						/* falls through */
+					case "Keep local":
+						input = prompt( "{{" + (tag === "subst:ncd" ? "Now Commons" : tag) + 
+							"}} - Enter the name of the image on Commons (if different from local name), excluding the File: prefix:", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += '|1=' + input;
+						}
+						break;
+					case "Rename media":
+						input = prompt( "{{Rename media}} - Enter the new name for the image (optional):", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|1=" + input;
+						}
+						input = prompt( "{{Rename media}} - Enter the reason for the rename (optional):", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|2=" + input;
+						}
+						break;
+					case "Cleanup image":
+						/* falls through */
+					case "Cleanup SVG":
+						input = prompt( "{{" + tag + "}} - Enter the reason for cleanup (required). To skip the tag, click Cancel:", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|1=" + input;
+						}
+						break;
+					case "Image-Poor-Quality":
+						input = prompt( "{{Image-Poor-Quality}} - Enter the reason why this image is so bad (required). To skip the tag, click Cancel:", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|1=" + input;
+						}
+						break;
+					case "Low quality chem":
+						input = prompt( "{{Low quality chem}} - Enter the reason why the diagram is disputed (required). To skip the tag, click Cancel:", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|1=" + input;
+						}
+						break;
+					case "Should be SVG":  // XXX fixme
+						input = prompt( "{{Should be SVG}} - Enter the category (alphabet, chemical, circuit, coat of arms, diagram, ...) This will be made into a dropdown list...", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|1=" + input;
+						}
+						break;
+					case "PNG version available":
+						/* falls through */
+					case "SVG version available":
+						/* falls through */
+					case "Obsolete":
+						/* falls through */
+					case "Redundant":
+						input = prompt( "{{" + tag + "}} - Enter the name of the file which replaces this one (required). To skip the tag, click Cancel:", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|1=" + input;
+						}
+						break;
+					default:
+						break;  // don't care
+				}
+				tagtext += "}}\n";
+				return true;  // continue
+			});
 
-			editsummarybits.push('adding {{' + params.tags.join('}}\n{{') + '}}');
-		}
+			text = tagtext + text;
 
-		// Remove any fair use rationale
-		if (params.removeFUR)
-		{
-			// Remove any fair use headings
-			var regExFindFUHeading = /(\s*)===?\s*Fair use[^=]*===?\s*/ig;
-			text = text.replace(regExFindFUHeading, "$1");
-
-			var regExFindRationale = /{{(.*fur|Non-free use rationale|Fair use rationale|Non-free fair use rationale|Rationale|Non-free media rationale|Non-free image data|Non-free image rationale)[^]+?}}\s*/igm;
-			text = text.replace(regExFindRationale, '');
+			editsummarybits.push('adding {{' + params.tags.join('}}, {{') + '}}');
 		}
 
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(editsummarybits.join("; ").toUpperCaseFirstChar() + Twinkle.getPref('summaryAd'));
+		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
+		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
+
+		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
+			pageobj.patrol();
+		}
 	}
 };
 
@@ -1266,15 +1202,16 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			params.notabilitySubcategory = params.notabilitySubcategory ? params.notabilitySubcategory[0] : null;
 			break;
 		case 'file':
-			params.imageLicense = form.imageLicense.options[form.imageLicense.selectedIndex].value;
-			params.removeFUR = form.removeFUR.checked;
 			params.information = form.information.checked;
-			params.tags = [];
-			for (var i = 0; i < form.imageTags.length; i++) {
-				if (form.imageTags[i].checked) {
-					params.tags.push(form.imageTags[i].value);
-				}
+			if (params.information) {
+				params.informationDescription = form.informationDescription.value;
+				params.informationSource = form.informationSource.value;
+				params.informationAuthor = form.informationAuthor.value;
+				params.informationDate = form.informationDate.value;
+				params.informationPermission = form.informationPermission.value;
+				params.informationOtherVersions = form.informationOtherVersions.value;
 			}
+			params.tags = form.getChecked( 'imageTags' );
 			break;
 		case 'redirect':
 			params.tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
