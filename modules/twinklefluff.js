@@ -538,7 +538,9 @@ Twinkle.fluff.init = function twinklefluffinit() {
 			'SineBot',
 			'HBC AIV helperbot',
 			'HBC AIV helperbot2',
-			'HBC AIV helperbot3'
+			'HBC AIV helperbot3',
+			'ClueBot',
+			'ClueBot NG'
 		];
 
 		if ( QueryString.exists( 'twinklerevert' ) ) {
