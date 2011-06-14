@@ -1111,6 +1111,34 @@ Twinkle.warn.messages = {
 		"uw-spoablock": {
 			'label':"Sockpuppet account block",
 			'summary':"You have been indefinitely blocked from editing because your account is being used only for [[WP:SOCK|sock puppetry or meat puppetry]]"
+		},
+		"schoolblock": {
+			'label':"School IP block",
+			'summary':"Anonymous users of this [[IP]] have been [[WP:BLOCK|blocked from editing]] for [[WP:VANDALISM|persistant vandalism]].  To edit, please [[WP:ACCOUNT|create yourself an account]]."
+		},
+		"anonblock": {
+			'label':"Anon block",
+			'summary':"This [[IP]] is blocked.  To edit, please [[WP:ACCOUNT|create yourself an account]]."
+		},
+		"usernameblock": {
+			'label':"username block",
+			'summary':"You have been indefinitely blocked from editing for a violation of the [[WP:USERNAME|username policy]]."
+		},
+		"UsernameHardBlocked": {
+			'label':"username hard-block",
+			'summary':"You have been blocked indefinitely for a blatant violation of our [[WP:USERNAME|username policy]]."
+		},
+		"spamusernameblock": {
+			'label':"spam and username block",
+			'summary':"You have been indefinitely for [[WP:SPAM|spamming]] and a violation of our [[WP:USERNAME|username policy]]."
+		},
+		"softerblock": {
+			'label':"softer block",
+			'summary':"You have been softer blocked."
+		},
+		"vaublock": {
+			'label':"vau block",
+			'summary':"You have been indefinitely blocked because you use your account only for vandalism."
 		}
 	}
 };
@@ -1153,7 +1181,14 @@ Twinkle.warn.indefBlockHash = {
 	'uw-uhblock-double': true,
 	'uw-ublock-double': true,
 	'uw-vaublock': true,
-	'uw-voablock': true
+	'uw-voablock': true,
+	'schoolblock': false,
+	'anonblock': false,
+	'usernameblock': false,
+	'UsernameHardBlocked': false,
+	'spamusernameblock': false,
+	'softerblock': false,
+	'vaublock': false
 };
 
 // Set to true if the template supports the page parameter
@@ -1194,7 +1229,14 @@ Twinkle.warn.pageHash = {
 	'uw-uhblock-double': false,
 	'uw-ublock-double': false,
 	'uw-vaublock': true,
-	'uw-voablock': true
+	'uw-voablock': true,
+	'schoolblock': false,
+	'anonblock': false,
+	'usernameblock': false,
+	'UsernameHardBlocked': false,
+	'spamusernameblock': false,
+	'softerblock': false,
+	'vaublock': false
 };
 
 // Set to true if the template supports the reason parameter and isn't the same as its super-template when a reason is provided
@@ -1235,7 +1277,14 @@ Twinkle.warn.reasonHash = {
 	'uw-uhblock-double': false,
 	'uw-ublock-double': false,
 	'uw-vaublock': false,
-	'uw-voablock': false
+	'uw-voablock': false,
+	'schoolblock': false,
+	'anonblock': false,
+	'usernameblock': false,
+	'UsernameHardBlocked': false,
+	'spamusernameblock': false,
+	'softerblock': false,
+	'vaublock': false
 };
 
 Twinkle.warn.prev_block_timer = null;
