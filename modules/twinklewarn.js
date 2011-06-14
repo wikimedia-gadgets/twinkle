@@ -1111,6 +1111,10 @@ Twinkle.warn.messages = {
 		"uw-spoablock": {
 			'label':"Sockpuppet account block",
 			'summary':"You have been indefinitely blocked from editing because your account is being used only for [[WP:SOCK|sock puppetry or meat puppetry]]"
+		},
+		"schoolblock": {
+			'label':"School IP block",
+			'summary':"Anonymous users from this [[IP]] have been blocked from editing because of [[WP:VANDALISM|persistant vandalism]].  To edit, please make yourself an [[Wikipedia:Account|account]]"
 		}
 	}
 };
@@ -1153,7 +1157,8 @@ Twinkle.warn.indefBlockHash = {
 	'uw-uhblock-double': true,
 	'uw-ublock-double': true,
 	'uw-vaublock': true,
-	'uw-voablock': true
+	'uw-voablock': true,
+	'schoolblock': false
 };
 
 // Set to true if the template supports the page parameter
@@ -1194,7 +1199,8 @@ Twinkle.warn.pageHash = {
 	'uw-uhblock-double': false,
 	'uw-ublock-double': false,
 	'uw-vaublock': true,
-	'uw-voablock': true
+	'uw-voablock': true,
+	'schoolblock': false
 };
 
 // Set to true if the template supports the reason parameter and isn't the same as its super-template when a reason is provided
@@ -1235,7 +1241,8 @@ Twinkle.warn.reasonHash = {
 	'uw-uhblock-double': false,
 	'uw-ublock-double': false,
 	'uw-vaublock': false,
-	'uw-voablock': false
+	'uw-voablock': false,
+	'schoolblock': false
 };
 
 Twinkle.warn.prev_block_timer = null;
