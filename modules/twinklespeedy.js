@@ -508,6 +508,16 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 			value: 'disambig',
 			tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate two or fewer existing Wikipedia pages and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguates no (zero) existing Wikipedia pages, regardless of its title.'
 		});
+		result.push({
+			label: 'G6: Redirect to malplaced disambiguation page',
+			value: 'movedab',
+			tooltip: 'This only applies for redirects to disambiguation pages ending in (disambiguation) where a primary topic does not exist.'
+		});
+		result.push({
+			label: 'G6: Copy-and-paste page move',
+			value: 'copypaste',
+			tooltip: 'This only applies for a copy-and-paste page move of another page that needs to be temporarily deleted to make room for a clean page move.'
+		});
 	}
 	result.push({
 		label: 'G6: Housekeeping',
@@ -586,6 +596,8 @@ Twinkle.speedy.normalizeHash = {
 	'move': 'g6',
 	'xfd': 'g6',
 	'disambig': 'g6',
+	'movedab': 'g6',
+	'copypaste': 'g6',
 	'g6': 'g6',
 	'author': 'g7',
 	'g8': 'g8',
@@ -646,6 +658,8 @@ Twinkle.speedy.reasonHash = {
 	'move': 'Making way for a non-controversial move',
 	'xfd': 'Deleting page per result of [[WP:XfD|deletion discussion]]',
 	'disambig': 'Unnecessary disambiguation page',
+	'movedab': 'Redirect to [[WP:MALPLACED|malplaced disambiguation page]]',
+	'copypaste': '[[WP:CPMV|Copy-and-paste]] page move',
 	'g6': 'Housekeeping and routine (non-controversial) cleanup',
 	'author': 'One author who has requested deletion or blanked the page',
 	'g8': 'Page dependent on a deleted or nonexistent page',
@@ -1164,6 +1178,15 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					}
 					parameters["1"] = title;
 					parameters["2"] = reason;
+					break;
+				case 'copypaste':
+					var copytitle = prompt( 'Please enter the title of the original page that was copy-pasted here:', "" );
+					if (copytitle === null)
+					{
+						statelem.error( 'Aborted by user.' );
+						return null;
+					}
+					parameters["1"] = copytitle;
 					break;
 				case 'g6':
 					var g6rationale = prompt( 'Please provide an optional rationale (leave empty to skip):', "" );
