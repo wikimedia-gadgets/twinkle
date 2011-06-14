@@ -728,10 +728,6 @@ Twinkle.warn.messages = {
 			label:"User forgets to place a hang-on reasoning to the talk page", 
 			summary:"Notice: User forgets to place a hang-on reasoning to the talk page" 
 		},
-		"uw-hangonnocsd": {
-			label:"User adds hang-on tag to page that is not nominated for speedy deletion"
-			summary:"Notice: User adds hang-on tag to page that is not nominated for speedy deletion"
-		},
 		"uw-hasty": { 
 			label:"Hasty addition of speedy deletion tags", 
 			summary:"Notice: Allow creators time to improve their articles before tagging them for deletion"
