@@ -591,9 +591,6 @@ QuickForm.element.generateTooltip = function QuickFormElementGenerateTooltip( no
  *   that have selected set to true. (don't try to mix selects with radio/checkboxes, please)
  *   Type is optional and can specify if either radio or checkbox (for the event
  *   that both checkboxes and radiobuttons have the same name.
- * getTexts:
- *   Returns an array containing the values of elements with the given name, that has non-empty strings
- *   type is "text" or given.
  */
 
 HTMLFormElement.prototype.getChecked = function( name, type ) {
@@ -634,22 +631,6 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
 					return_array.push( elements[i].value );
 				}
 			}
-		}
-	}
-	return return_array;
-};
-
-HTMLFormElement.prototype.getTexts = function( name, type ) {
-	type = type || 'text';
-	var elements = this.elements[name];
-	if( !elements ) { 
-		// if the element doesn't exists, return null.
-		return null;
-	}
-	var return_array = [];
-	for( var i = 0; i < elements.length; ++i ) {
-		if( elements[i].values ) {
-			return_array.push( elements[i].value );
 		}
 	}
 	return return_array;

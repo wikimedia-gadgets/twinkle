@@ -476,7 +476,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			}
 
 			sockParameters.uid = puppetReport ? form.sockmaster.value.rtrim() : uid;
-			sockParameters.sockpuppets = puppetReport ? [uid] : (form.getTexts( 'sockpuppet' ) || []);
+			sockParameters.sockpuppets = puppetReport ? [uid] : $.map( $('input:text[@name=sockpuppet]',form), function(o){ return $(o).val(); });
 
 			SimpleWindow.setButtonsEnabled( false );
 			Status.init( form );
