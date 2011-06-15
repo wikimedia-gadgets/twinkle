@@ -890,14 +890,14 @@ Twinkle.speedy.callbacks = {
 			statelem.status( 'Checking for tags on the page...' );
 
 			// check for existing deletion tags
-			var tag = /(\{\{\s*(?:db|delete|db-.*?)(?:\||\s*\}\}))/.exec( text );
+			var tag = /(?:\{\{\s*(db|delete|db-.*?)(?:\s*\||\s*\}\}))/.exec( text );
 			if( tag ) {
-				statelem.error( [ htmlNode( 'strong', tag[0] ) , " is already placed on the page." ] );
+				statelem.error( [ htmlNode( 'strong', tag[1] ) , " is already placed on the page." ] );
 				return;
 			}
 
-			var xfd = /(\{\{(?:[rsaiftcm]fd|md1)[^{}]*?\}\})/i.exec( text );
-			if( xfd && !confirm( "The deletion related template " + xfd[0] + " is already present on the page, do you still want to apply CSD template?" ) ) {
+			var xfd = /(?:\{\{([rsaiftcm]fd|md1)[^{}]*?\}\})/i.exec( text );
+			if( xfd && !confirm( "The deletion-related template \{\{" + xfd[1] + "\}\} was found on the page. Do you still want to add a CSD template?" ) ) {
 				return;
 			}
 
