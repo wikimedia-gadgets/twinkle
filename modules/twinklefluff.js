@@ -414,6 +414,7 @@ Twinkle.fluff.callbacks = {
 				self.statelem.error( 'Aborted by user.' );
 				return;
 			}
+			userHasAlreadyConfirmedAction = true;
 
 			userstr = self.params.user.replace("\\'", "'");
 			summary = "Reverted [[WP:AGF|good faith]] edits by [[Special:Contributions/" + userstr + "|" + userstr + "]] ([[User talk:" + 
@@ -421,12 +422,6 @@ Twinkle.fluff.callbacks = {
 			break;
 
 		case 'vand':
-
-			//Rollback-vandal is the only fluff-action where the user does not enter a summary and has thus no chance to cancel, so we only need to ask for confirmation here, if so configured:
-			if (Twinkle.getPref('confirmOnFluff') && !userHasAlreadyConfirmedAction && !confirm("Reverting page: are you sure?")) {
-				self.statelem.error( 'Aborted by user.' );
-				return;
-			}
 
 			userstr = self.params.user.replace("\\'", "'");
 			gooduserstr = self.params.gooduser.replace("\\'", "'")
@@ -445,6 +440,7 @@ Twinkle.fluff.callbacks = {
 					self.statelem.error( 'Aborted by user.' );
 					return;
 				}
+				userHasAlreadyConfirmedAction = true;
 			}
 
 			userstr = self.params.user.replace("\\'", "'");
@@ -452,6 +448,11 @@ Twinkle.fluff.callbacks = {
 				userstr + "|" + userstr + "]] ([[User talk:" + userstr + "|talk]])" + Twinkle.fluff.formatSummaryPostfix(extra_summary) +
 				Twinkle.getPref('summaryAd');
 			break;
+		}
+
+		if (Twinkle.getPref('confirmOnFluff') && !userHasAlreadyConfirmedAction && !confirm("Reverting page: are you sure?")) {
+			self.statelem.error( 'Aborted by user.' );
+			return;
 		}
 
 		var query;
@@ -534,11 +535,9 @@ Twinkle.fluff.init = function twinklefluffinit() {
 		// This only affect vandalism rollback, for good faith rollback, it will stop, indicating a bot 
 		// has no faith, and for normal rollback, it will rollback that edit.
 		Twinkle.fluff.whiteList = [
-			'HagermanBot',
-			'SineBot',
-			'HBC AIV helperbot',
-			'HBC AIV helperbot2',
-			'HBC AIV helperbot3'
+			'AnomieBOT',
+			'ClueBot NG',
+			'SineBot'
 		];
 
 		if ( QueryString.exists( 'twinklerevert' ) ) {
