@@ -37,42 +37,10 @@ Twinkle.fur = function furme() {
 	}
 
 	if( wgNamespaceNumber === 6 ) {
-		//editLinkFreeLogo = "javascript:window.location = '"+ wgScript + '?title=' + encodeURIComponent(wgPageName) + '&action=edit&furme=true&freelogo=true' + "'";
-
-		// Add the links to the html page
-		$(twAddPortletLink( "#", "FUR", "furme-fur", "Apply fair-use rationale to image", "")).click(Twinkle.fur.seedValues);
-
-		//if (FurMeConfig.linkFreeLogo)
-		//	addPortletLink( portletLinkLocation, editLinkFreeLogo, freeLogoTitleText, "furme-freelogo", "Change licensing information to free logo", "");
-
-		//if (FurMeConfig.linkImageTags)
-		//	addPortletLink( portletLinkLocation, "javascript:Twinkle.fur.imagetags()", imageTagsTitleText, "furme-imagetags", "Edit/Add image tags", "");
-	}
-
-	// Add the FUR template
-	if( wgNamespaceNumber === 6 && wgAction === "edit" && QueryString.exists( 'furme' ) ) {
-		// Check if we are doing free logo changes
-		if (QueryString.exists( 'freelogo' ) || QueryString.exists( 'furmeImageTags' )) {
-			furmeEditText('');
-		}
-		else {
-			var type = QueryString.get( 'type' );
-
-			// Open the template page to get copy of template syntax
-			var url = wgServer + wgScriptPath + '/api.php?action=query&prop=revisions&titles=User:AWeenieMan/furme/Template:' + type + '&rvprop=content&format=xml'
-			var http = new XMLHttpRequest(); // create the HTTP Object
-
-			http.open("GET", url, true);
-			http.onreadystatechange = function() {
-				if( http.readyState == 4 ) {
-					xmlDocument = http.responseXML;
-					template = xmlDocument.getElementsByTagName('rev')[0].childNodes[0].nodeValue;
-					template = template.replace(/(\s*)<[\/]?nowiki>(\s*)/ig, '');
-					furmeEditText(template + "\n");
-				}
-			};
-			http.send(null);
-		}
+		$(twAddPortletLink( "#", "FUR", "furme-fur", "Apply fair-use rationale to image", "")).click(function() {
+			Twinkle.fur.refreshSeedValues();
+			Twinkle.fur.callback();
+		});
 	}
 }
 
@@ -93,72 +61,67 @@ Twinkle.fur.seedValues = {
 	'infoboxSingle': false
 };
 
-Twinkle.fur.seedValues = function furmeSeedValues(titleSeed) {
+Twinkle.fur.refreshSeedValues = function furmeSeedValues(titleSeed) {
 	var urlSeedTemp = '';
 
-	/*
-		SEE IF THERE IS ONLY ONE ARTICLE TO WHICH THE IMAGE LINKS
-	*/
+	// see if there is only one article to which the image links
 
-	if (titleSeed == 'undefined' || null == titleSeed)
+	if (!titleSeed)
 	{
 		var linkList = document.getElementById('linkstoimage');
-		while (linkList && (!linkList.tagName || linkList.tagName.toLowerCase() != "ul")) linkList = linkList.nextSibling;
-		if (typeof linkList != 'undefined' && null != linkList) {
+		while (linkList && (!linkList.tagName || linkList.tagName.toLowerCase() !== "ul")) {
+			linkList = linkList.nextSibling;
+		}
+		if (linkList) {
 			var pageLinks = linkList.getElementsByTagName("a");
-			if (pageLinks.length == 1) seedValues['title'] = pageLinks[0].getAttribute("title");
+			if (pageLinks.length === 1) {
+				Twinkle.fur.seedValues.title = pageLinks[0].getAttribute("title");
+			}
 		}
 	}
 	else
 	{
-		seedValues['title'] = titleSeed;
+		Twinkle.fur.seedValues.title = titleSeed;
 	}
 
-	/*
-		SEE IF THERE IS ONLY ONE EXTERNAL URL (ASSUMED TO BE SOURCE)
-	*/
+	// see if there is only one external URL (assumed to be source)
 
-	extUrlCount = 0;
-	regExFindHyperlink = /(javascript|wikimedia|wikipedia)/;
-	var linkList = document.getElementById('bodyContent').getElementsByTagName("a");
-	if (document.getElementById('imageLicense'))
+	var imgDescription = [$(".fullMedia")[0].nextSibling];
+	do {
+		imgDescription.push(imgDescription[imgDescription.length - 1].nextSibling);
+	} while (imgDescription[imgDescription.length - 1].nextSibling.id !== "filehistory");
+
+	var regExSkipHyperlink = /(javascript\:|wikimedia\.org|wikipedia\.org)/;
+	var $linkList = $(imgDescription).find("a");
+	var licenseHrefs = [];
+	if (document.getElementById('imageLicense')) {
 		var licenseLinkList = document.getElementById('imageLicense').getElementsByTagName("a");
+		$.each(licenseLinkList, function(k, link) {
+			licenseHrefs.push(link.href);
+		});
+	}
 
-	if (typeof linkList != 'undefined' && null != linkList) {
-		for( var i = 0; i < linkList.length; ++i ) {
-
-			// Loop through ignore list
-			var ignoreLink = false;
-			if (typeof licenseLinkList != 'undefined' && null != licenseLinkList) {
-				for( var j = 0; j < licenseLinkList.length; ++j ) {
-					if (linkList[i].href == licenseLinkList[j].href)
-						ignoreLink = true;
-				}
-			}
-
-			if( regExFindHyperlink.test(linkList[i].href) == false
-				&& linkList[i].href.length > 0
-				&& !ignoreLink) { // Ignore internal links and license links
-				if (linkList[i].href != urlSeedTemp) {
-					urlSeedTemp = linkList[i].href;
-					extUrlCount++;
-				}
-			}
+	var linkUrl;
+	$linkList.each(function(k, link) {
+		if (link.href && !regExSkipHyperlink.test(link.href) &&
+				link.href.length && licenseHrefs.indexOf(link.href) === -1) { // Ignore internal links and license links
+			linkUrl = link.href;
+			return false;  // break
 		}
-	}
-	if (extUrlCount == 1) {
-		seedValues['url'] = urlSeedTemp;
-	}
+	});
 
+	if (linkUrl) {
+		seedValues.url = linkUrl;
+	}
 	// Attempt to find incomplete url
-	else if (extUrlCount == 0)
+	else
 	{
-		regExFindURL = /[\s\W]www\.([^<>\s]+?)\.(com|gov|edu|cc|org|net|uk|eu|ca|cn|tv|fm|pl|nz)[^\s"<>]*(?=\b[\s\W])/ig;
+		var regExFindURL = /[\s\W]www\.([^<>\s]+?)\.(com|gov|edu|cc|org|net|uk|eu|ca|cn|tv|fm|pl|nz)[^\s"<>]*(?=\b[\s\W])/ig;
 		var pageText = document.getElementById('bodyContent').innerHTML;
-		findURL = pageText.match(regExFindURL);
+		var findURL = pageText.match(regExFindURL);
 
-		if (findURL != null) {
-			seedValues['url'] = 'http://' + findURL[0].trimPunctuation().trim().toLowerCase();
+		if (findURL) {
+			seedValues.url = 'http://' + findURL[0].trimPunctuation().trim().toLowerCase();
 		}
 		else
 		{
@@ -166,136 +129,112 @@ Twinkle.fur.seedValues = function furmeSeedValues(titleSeed) {
 			regExFindURL = /[\s\W]([^<>\s"]+?)\.(com|gov|edu|cc|org|net|uk|eu|ca|cn|tv|fm|pl|nz)[^\s"<>]*(?=\b[\s\W])/ig;
 			findURL = pageText.match(regExFindURL);
 
-			if (typeof findURL != 'undefined' && null != findURL) {
+			if (findURL) {
 				for( var i = 0; i < findURL.length; ++i ) {
-					if (findURL[i].search('http://') == -1 && findURL[i].search(/\/w\/index\.php\?title=/) == -1 && seedValues['url'] == '')
+					if (findURL[i].search('http://') === -1 && findURL[i].search(/\/w\/index\.php\?title=/) === -1 && !seedValues.url)
 					{
 						// Ignore this common one in EXIF data
-						if (findURL[i].trimPunctuation().trim().toLowerCase() != 'paint.net')
-							seedValues['url'] = 'http://www.' + findURL[i].trimPunctuation().trim().toLowerCase();
+						if (findURL[i].trimPunctuation().trim().toLowerCase() !== 'paint.net')
+							Twinkle.fur.seedValues.url = 'http://www.' + findURL[i].trimPunctuation().trim().toLowerCase();
 					}
 				}
 			}
-
-
 		}
 	}
 
-	/*
-		CLEAN AMAZON URLS
-	*/
+	// clean Amazon URLs
 
-	if (FurMeConfig.cleanAmazonURLs == true) {
-		if (seedValues['url'].search(/amazon\./) != -1) {
-			seedValues['url'] = seedValues['url'].cleanAmazonURL();
+	if (FurMeConfig.cleanAmazonURLs) {
+		if (Twinkle.fur.seedValues.url.search(/amazon\./) != -1) {
+			Twinkle.fur.seedValues.url = Twinkle.fur.seedValues.url.cleanAmazonURL();
 		}
 	}
 
-	/*
-		SEE IF THE IMAGE IS <301PX WIDE/TALL (FAIR USE STANDARD)
-	*/
+	// see if the image is <301px wide/tall (fair use standard)
 
 	if (document.getElementById('file').getElementsByTagName("img")[0].width < 301 ||
 		document.getElementById('file').getElementsByTagName("img")[0].height < 301) {
-		seedValues['resolution'] = 'Yes'
+		Twinkle.fur.seedValues.resolution = 'Yes';
 	}
 
-	/*
-		FILL IN PARAMETERS FROM INFOBOX ON ARTICLE
-	*/
+	// fill in parameters from infobox on article
 
-	if (seedValues['title'].length > 0)
+	if (Twinkle.fur.seedValues.title.length > 0)
 	{
-
-		var url = wgServer + wgScriptPath + '/api.php?action=query&prop=revisions&titles=' + encodeURIComponent(seedValues['title']) + '&rvprop=content&format=xml'
-		var http = new XMLHttpRequest(); // create the HTTP Object
-
-		http.open("GET", url, false);
-		http.send(null);
-
-		if (http.status == 200)
-		{
-			try
-			{
-				xmlDocument = http.responseXML;
-				articleText = xmlDocument.getElementsByTagName('rev')[0].childNodes[0].nodeValue;
-
-				try {
-					seedValues['artist'] = articleText.match(/Artist\s*=\s*(.*)\s*\|/i)[1].rtrimPipe();
-					seedValues['artist'] = seedValues['artist'].replace(/\[*(Various Artists|Various|Multiple|Multiple Artists|N\/A)\]*/i, '');
-				} catch(err) {}
-				try { seedValues['author'] = articleText.match(/Author\s*=\s*(.*)\s*\|/i)[1].rtrimPipe() } catch(err) {}
-				try { seedValues['coverArtist'] = articleText.match(/Cover_artist\s*=\s*(.*)\s*\|/i)[1].rtrimPipe() } catch(err) {}
-				try {
-					seedValues['name'] = articleText.match(/Name\s*=\s*(.*)\s*\|/i)[1].rtrimPipe() ;
-					seedValues['name'] = seedValues['name'].replace(/(<br>|<br\/>|<br \/>)/i, ' ');
-				} catch(err) {}
-				try { seedValues['publisher'] = articleText.match(/Publisher\s*=\s*(.*)\s*\|/i)[1].rtrimPipe() } catch(err) {}
-				try {
-					seedValues['year'] = articleText.match(/Release_date\s*=\s*(.*)\s*\|/i)[1];
-					seedValues['year'] = seedValues['year'].match(/([1-9][0-9]{3})/ig);
-				}
-				catch(err) {}
-				try
-				{
-					seedValues['label'] = articleText.match(/Label\s*=\s*(.*)\s*\|/i)[1].rtrimPipe();
-					seedValues['label'] = seedValues['label'].replace(/\s*<(small)>(.*?)<\/\1>/ig, '');
-					seedValues['label'] = seedValues['label'].replace(/\s*<br\s*\/*>/ig, ' / ');
-					seedValues['label'] = seedValues['label'].replace(/\s*(\(US\)|\(UK\)|\(U\.S\.\)|\(U\.K\.\))\s*/ig, '');
-					seedValues['label'] = seedValues['label'].replace(/\s*\{\{flag.*}}\s*/ig, '');
-					seedValues['label'] = seedValues['label'].replace(/\s*\|\s*Producer\s*=\s*.*/ig, '');
-				}
-				catch(err) {}
-				try { seedValues['distributor'] = articleText.match(/Distributor\s*=\s*(.*)\s*\|/i)[1].rtrimPipe() } catch(err) {}
-				try { var infoboxType = articleText.match(/\{\{Infobox\s?([^\s\|]+)/i)[1].toLowerCase() } catch(err) {}
-				if (infoboxType == '' || infoboxType == 'undefined' || null == infoboxType)
-					try { var infoboxType = articleText.match(/\{\{([^\s]+)\s?Infobox\s*/i)[1].toLowerCase() } catch(err) {}
-
-				if (infoboxType == 'album' || infoboxType == 'albums')
-					seedValues['infoboxAlbum'] = true;
-				else if (infoboxType == 'single' || infoboxType == 'singles')
-					seedValues['infoboxSingle'] = true;
-
-				// Check if image is used in infobox
-				infoboxImages = articleText.match(/(Cover|logo|logofile|station_logo|company_logo|image|image_name)\s*=\s*(.*)\s*[\|\}]/gi);
-
-				if (infoboxImages != null)
-				{
-					for (var i = 0; i < infoboxImages.length; i++)
-					{
-						infoboxImages[i] = decodeURIComponent(infoboxImages[i]);
-						if (infoboxImages[i].toLowerCase().replace(/_/gi, ' ').search(wgTitle.replace(/(\(|\)|\^|\$|\.|\{|\?|\*|\+|\|)/gi, "\\$1").toLowerCase()) != -1)
-							seedValues['infobox'] = true;
-					}
-				}
+		var wppage = new Wikipedia.page(Twinkle.fur.seedValues.title, "Getting infobox data");
+		wppage.setFollowRedirect(true);
+		wppage.load(function(pageobj) {
+			if (!pageobj.exists()) {
+				pageobj.getStatusElement().warn("Article does not exist");
+				return;
+			}
+			var articleText = pageobj.getPageText();
+			try {
+				Twinkle.fur.seedValues.artist = articleText.match(/Artist\s*=\s*(.*)\s*\|/i)[1].rtrimPipe();
+				Twinkle.fur.seedValues.artist = Twinkle.fur.seedValues.artist.replace(/\[*(Various Artists|Various|Multiple|Multiple Artists|N\/A)\]*/i, '');
+			} catch(err) {}
+			try { Twinkle.fur.seedValues.author = articleText.match(/Author\s*=\s*(.*)\s*\|/i)[1].rtrimPipe() } catch(err) {}
+			try { Twinkle.fur.seedValues.coverArtist = articleText.match(/Cover_artist\s*=\s*(.*)\s*\|/i)[1].rtrimPipe() } catch(err) {}
+			try {
+				Twinkle.fur.seedValues.name = articleText.match(/Name\s*=\s*(.*)\s*\|/i)[1].rtrimPipe() ;
+				Twinkle.fur.seedValues.name = Twinkle.fur.seedValues.name.replace(/(<br>|<br\/>|<br \/>)/i, ' ');
+			} catch(err) {}
+			try { Twinkle.fur.seedValues.publisher = articleText.match(/Publisher\s*=\s*(.*)\s*\|/i)[1].rtrimPipe() } catch(err) {}
+			try {
+				Twinkle.fur.seedValues.year = articleText.match(/Release_date\s*=\s*(.*)\s*\|/i)[1];
+				Twinkle.fur.seedValues.year = Twinkle.fur.seedValues.year.match(/([1-9][0-9]{3})/ig);
 			}
 			catch(err) {}
-		}
-	}
+			try
+			{
+				Twinkle.fur.seedValues.label = articleText.match(/Label\s*=\s*(.*)\s*\|/i)[1].rtrimPipe();
+				Twinkle.fur.seedValues.label = Twinkle.fur.seedValues.label.replace(/\s*<(small)>(.*?)<\/\1>/ig, '');
+				Twinkle.fur.seedValues.label = Twinkle.fur.seedValues.label.replace(/\s*<br\s*\/*>/ig, ' / ');
+				Twinkle.fur.seedValues.label = Twinkle.fur.seedValues.label.replace(/\s*(\(US\)|\(UK\)|\(U\.S\.\)|\(U\.K\.\))\s*/ig, '');
+				Twinkle.fur.seedValues.label = Twinkle.fur.seedValues.label.replace(/\s*\{\{flag.*}}\s*/ig, '');
+				Twinkle.fur.seedValues.label = Twinkle.fur.seedValues.label.replace(/\s*\|\s*Producer\s*=\s*.*/ig, '');
+			}
+			catch(err) {}
+			try { Twinkle.fur.seedValues.distributor = articleText.match(/Distributor\s*=\s*(.*)\s*\|/i)[1].rtrimPipe() } catch(err) {}
+			try { var infoboxType = articleText.match(/\{\{Infobox\s?([^\s\|]+)/i)[1].toLowerCase() } catch(err) {}
+			if (infoboxType == '' || infoboxType == 'undefined' || null == infoboxType)
+				try { var infoboxType = articleText.match(/\{\{([^\s]+)\s?Infobox\s*/i)[1].toLowerCase() } catch(err) {}
 
-	/*
-		OPTIONALLY, IF NOT IN INFOBOX, OPEN THE ARTICLE IN A NEW WINDOW/TAB/ETC.
-		OR, OPEN ALL ARTICLES
-	*/
+			if (infoboxType == 'album' || infoboxType == 'albums')
+				Twinkle.fur.seedValues.infoboxAlbum = true;
+			else if (infoboxType == 'single' || infoboxType == 'singles')
+				Twinkle.fur.seedValues.infoboxSingle = true;
 
-	if (!seedValues['infobox'] && (seedValues['title'].length > 0 || FurMeConfig.openAllArticles) )
+			// Check if image is used in infobox
+			var infoboxImages = articleText.match(/(Cover|logo|logofile|station_logo|company_logo|image|image_name)\s*=\s*(.*)\s*[\|\}]/gi);
+
+			if (infoboxImages != null)
+			{
+				for (var i = 0; i < infoboxImages.length; i++)
+				{
+					infoboxImages[i] = decodeURIComponent(infoboxImages[i]);
+					if (infoboxImages[i].toLowerCase().replace(/_/gi, ' ').search(wgTitle.replace(/(\(|\)|\^|\$|\.|\{|\?|\*|\+|\|)/gi, "\\$1").toLowerCase()) != -1)
+						Twinkle.fur.seedValues.infobox = true;
+				}
+			}
+		});
+
+	// optionally, if not in infobox, open the article in a new window/tab/etc.
+	// or, open all articles
+
+	if (!Twinkle.fur.seedValues.infobox && FurMeConfig.openLinkedArticles && (Twinkle.fur.seedValues.title.length > 0 || FurMeConfig.openAllArticles) )
 	{
-		var maxArticlesToOpen = 10;
-		if (FurMeConfig.openAllArticles == false)
-			maxArticlesToOpen = 1;
+		var maxArticlesToOpen = FurMeConfig.openAllArticles ? 10 : 1;
 
-		if (typeof pageLinks != 'undefined' && null != pageLinks) {
+		if (pageLinks) {
 			for (var i = 0; i < Math.min(maxArticlesToOpen, pageLinks.length); i++)
 			{
-				var url = wgServer + wgArticlePath.replace(/\$1/, pageLinks[i].getAttribute('title')) + '?furme=true&image=' + wgPageName.stripslashes();
+				var url = wgServer + wgArticlePath.replace(/\$1/, pageLinks[i].getAttribute('title')) + '?twinkleImageRemover=true&image=' + wgPageName.stripslashes();
 
 				switch( FurMeConfig.openArticleMode )
 				{
 					case 'tab':
 						window.open( url, '_tab' + i );
-						break;
-					case 'browser':
-						window.open( url, 'furmearticlewindow' + i );
 						break;
 					case 'blank':
 						window.open( url, '_blank', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
@@ -303,34 +242,31 @@ Twinkle.fur.seedValues = function furmeSeedValues(titleSeed) {
 					case 'window':
 						window.open( url, 'furmearticlewindow', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 						break;
-					case 'none':
 					default:
 						break;
 				}
 			}
 		}
 	}
-
-	Twinkle.fur.callback();
 }
 
-Twinkle.fur.cleanupFilePage = function twinklefurCleanupFilePage(text, newLicense) {
+Twinkle.fur.cleanupFilePage = function twinklefurCleanupFilePage(text, newSummary, newLicense) {
 	// find the summary header, make sure to be below it (place summary header if not there)
 	var regExFindSummary = /==\s*[Ss]ummary\s*==\s*/;
-	var findSummary = text.search(regExFindSummary);
-	
-	if (findSummary === -1) {
+	if (text.search(regExFindSummary) === -1) {
 		text = "== Summary ==\n" + text;
 	}
-		
-	text = text.replace(regExFindSummary, "== Summary ==\n" + template);  // XXX
+
+	if (newSummary) {
+		text = text.replace(regExFindSummary, "== Summary ==\n" + newSummary);
+	}
 	
 	// get rid of disputed templates (where the problem should now be corrected)
 	
 	var regExFindNoSource = /\{\{(Di-no source|No source|Unspecified|Unknownsource|Fairuseunknownsource|Fuus|Nosource|No source since|No source notified|No info|Nosources|Di-no-source)(.*)\}\}\n*/i;
 	var regExFindDisputed = /\{\{(Di-disputed fair use rationale|Di-disputed rationale|Improve rationale|Di-missing article links)(.*)\}\}\n*/i;
 	var regExFindNoRationale = /\{\{(Di-no fair use rationale|No rationale|Fairuse rationale needed|Fu-ra-ne|Norat|Norationale|Di-no rationale)(.*)\}\}\n*/i;
-	var regExFindMissingArticleLinks = /\s*\{\{(Di-missing article links)[^\}]+?\}\}\s*/i;  // XXX does this still exist?
+	var regExFindMissingArticleLinks = /\s*\{\{(Di-missing article links)[^\}]+?\}\}\s*/i;  // XXX does this template still exist?
 	
 	if (text.search(regExFindNoSource) !== -1) {
 		Status.info("Info", "Removing {{di-no source}} or equivalent template that was found on page");
@@ -356,10 +292,19 @@ Twinkle.fur.cleanupFilePage = function twinklefurCleanupFilePage(text, newLicens
 	
 	// add in == Licensing == header if not there
 	
+	var regExFindLicenseTemplate = /\n*{{\s*(Template:)?(Non-free|PD|CC|GFDL|GPL|Wikipedia-screenshot)([^}]*)}}\s*/gi;
+
 	var regExFindLicensing = /\s*==\s*[Ll]icensing[:]*\s*==\s*/;
-	text = text.replace(regExFindLicensing, "\n\n== Licensing ==\n");
-	
-	findLicensing = textboxText.search(regExFindLicensing);
+	if (text.search(regExFindLicensing) === -1) {
+		if (newLicense && text.search(regExFindLicenseTemplate) === -1) {
+			// assuming no license template present, adding header
+			text += "\n\n== Licensing ==\n";
+		} else {
+			text = text.replace(regExFindLicenseTemplate, "\n\n== Licensing ==\n{{$2$3}}");
+		}
+	} else {
+		text = text.replace(regExFindLicensing, "\n\n== Licensing ==\n");
+	}
 	
 	if (newLicense) {
 		// Temporarily rename tags beginning with "Non-free" that should not be removed
@@ -368,31 +313,23 @@ Twinkle.fur.cleanupFilePage = function twinklefurCleanupFilePage(text, newLicens
 		text = text.replace(regExFindTagsNoReplace, '{{%%$2%%');
 
 		// Remove all licenses
-		text = text.replace(regExFindLicense, '');
+		text = text.replace(regExFindLicenseTemplate, '');
 
 		// Rename tags back
 		regExFindTagsNoReplace = new RegExp("{{%%(" + tagsNoReplace + ")%%", "gi");
 		text = text.replace(regExFindTagsNoReplace, "{{$1");
 		
-		text = text.replace(regExFindLicensing, "\n\n== Licensing ==\n{{" + params.imageLicense + "}}\n");
+		text = text.replace(regExFindLicensing, "\n\n== Licensing ==\n{{" + newLicense + "}}\n");
 	} 
-	
-	if (findLicensing == -1) {
-		var regExFindLicense = /\n*{{\s*(Template:)?(Non-free|PD|CC|GFDL|GPL)([^}]*)}}\s*/gi;
-
-		else {
-			text = text.replace(regExFindLicense, "\n\n== Licensing ==\n{{$2$3}}");
-		}
-	}
 
 	return text;
 };
 
 Twinkle.fur.callback = function twinklefurCallback() {
 	var dialog = new SimpleWindow( 600, Twinkle.getPref('furWindowHeight') );
-	dialog.setTitle( "Apply fair-use rationale to image" );
+	dialog.setTitle( "Change file license/FUR" );
 	dialog.setScriptName( "Twinkle" );
-	dialog.addFooterLink( "Twinkle help", "WP:TW/DOC#unlink" );
+	dialog.addFooterLink( "Twinkle help", "WP:TW/DOC#fur" );
 
 	var thispage = new Wikipedia.page( wgPageName, 'Fetching page wikitext' );
 	thispage.setCallbackParameters({ 'dialog': dialog });
@@ -406,6 +343,8 @@ Twinkle.fur.callback = function twinklefurCallback() {
 	dialog.display();
 };
 
+Twinkle.fur.pageActions = [];   // { type: 'add'|'remove', what: 'text'|'template'|'fur'|'license', item: <line of text>/<template name to remove>/<template code to add> }
+
 Twinkle.fur.callbacks = {};
 
 Twinkle.fur.callbacks.displayForm = function furmeCallback(pageobj) {
@@ -415,21 +354,345 @@ Twinkle.fur.callbacks.displayForm = function furmeCallback(pageobj) {
 	var defaultLogo = false;
 	var defaultFilm = false;
 	var defaultIndex = 0;
+	
+	var text = pageobj.getPageText();
 
-	var Window = new SimpleWindow( 600, Twinkle.getPref('furWindowHeight') );
-	Window.setTitle( "" );
-	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#fur" );
+	// first of all, figure out what is on the page
+	var textForParsing = text.replace("\r", "\n").replace("}}", "}}\n");
+	var pageitems = [];
+	var insideTemplate, gotSummaryHeader, gotLicenseHeader;
+	$.each(textForParsing.split("\n"), function(k, line) {
+		if (/^\s*$/.test(line)) {
+			return true;
+		}
+		if (insideTemplate) {
+			if (line.indexOf("}}") !== -1) {
+				insideTemplate = false;
+			}
+			return true;
+		}
+		var templateregex = /\s*{{\s*([^\|}]+)/;  // /\s*{{\s*(([^\|\}]+)\s*(\|(?:{{[^{}]*}}|[^{}])*)?)}}\s*/gi;
+		var templatematch = templateregex.exec(line);
+		if (templatematch) {
+			var templatename = templatematch[1].toLowerCase();
+			if (templatename.indexOf(" fur") !== -1) {
+				pageitems.push({ type: "fur", code: templatematch[1] });
+			} else if (templatename.indexOf("non-free") !== -1 && 
+					templatename.indexOf("non-free image data") === -1 &&
+					templatename.indexOf("non-free media data") === -1) {
+				pageitems.push({ type: "nonfree", code: templatematch[1] });
+			} else {
+				pageitems.push({ type: "template", code: templatematch[1] });
+			}
+			if (line.indexOf("}}") !== -1) {  // XXX huge fail with nested templates...
+				insideTemplate = true;
+			}
+		} else if (/^\s*==\s*[Ss]ummary\s*==\s*$/.test(line)) {
+			pageitems.push({ type: "summaryHeader", code: "== Summary ==" });
+			gotSummaryHeader = true;
+		} else if (/^\s*==\s*[Ll]icensing[:]*\s*==\s*$/.test(line)) {
+			pageitems.push({ type: "licenseHeader", code: "== Summary ==" });
+			gotLicenseHeader = true;
+		} else {
+			pageitems.push({ type: "other", code: line });
+		}
+		return true;
+	});
 
-	var form = new QuickForm( Twinkle.fur.callback.evaluate );
+	var i;
+	if (!gotSummaryHeader) {
+		i = 0;
+		while (pageitems[i] && pageitems[i].type === "template") {  // assuming that the templates are maintenance tags
+			i++;
+		}
+		if (i === 0) {
+			pageitems = [{ type: "summaryHeader", code: "== Summary ==" }].concat(pageitems);
+		} else {
+			pageitems = pageitems.slice(0, i).concat({ type: "summaryHeader", code: "== Summary ==" }).concat(pageitems.slice(i));
+		}
+	}
+	if (!gotLicenseHeader) {
+		var foundSummary = false;
+		i = -1;
+		// looking for the last template we can find
+		$.each(pageitems, function(k, item) {
+			// never put licensing header before summary header
+			if (!foundSummary) {
+				if (item.type !== "summaryHeader") {
+					return;
+				} else {
+					foundSummary = true;
+					return;
+				}
+			}
+			if (item.type === "nonfree" || item.type === "template") {
+				i = k;
+			}
+		});
+		if (i === -1) {
+			// assume no licensing info whatsoever, so adding licensing header at bottom
+			pageitems.push({ type: "licenseHeader", code: "== Licensing ==" });
+		} else {
+			pageitems = pageitems.slice(0, i).concat({ type: "licenseHeader", code: "== Licensing ==" }).concat(pageitems.slice(i));
+		}
+	}
+	
+	var params = pageobj.getCallbackParameters();
+	var dialog = params.dialog;
 
-	// XXX scroller
-	if ( /[&?]furme-scroller=([^&]*)/.exec(window.location.search) ) {
-		var scrollerStarted = decodeURIComponent(/[&?]furme-scroller=([^&]*)/.exec(window.location.search)[1]);
-	} else {
-		var scrollerStarted = 'false';
-	{
+	var dialogcontent = document.createElement("div");
+	
+	var table = document.createElement("table");
+	table.className = "wikitable";
+	var rowcount = 0;
+	$.each(pageitems, function(k, item) {
+		rowcount++;
+		var itemtr = document.createElement("tr");
+		itemtr.id = "twinklefur-row-" + rowcount;
+		var td = document.createElement("td");
+		td.style.width = "85%";
+		if (["fur", "nonfree", "template"].indexOf(item.type) !== -1) {
+			td.style.fontWeight = "bold";
+		}
+		td.textContent = (item.code.length > 120 ? (item.code.substring(0, 120) + "...") : item.code);
+		itemtr.appendChild(td);
+		td = document.createElement("td");
+		td.textContent = "Delete";
+		itemtr.appendChild(td);
+		$(td).click(function() {
+			$(itemtr).remove();
+			$(addtr).remove();
+			Twinkle.fur.pageActions.push({ 
+				type: 'remove',
+				what: (td.style.fontWeight === "bold" ? "template" : "text"),
+				item: item.code
+			});
+		});
+	});
 
+	var button = document.createElement("button");
+	button.setAttribute("type", "button");
+	$(button).click(Twinkle.fur.addInformation);
+	button.textContent = "Add {{Information}}";
+
+	button = document.createElement("button");
+	button.setAttribute("type", "button");
+	$(button).click(Twinkle.fur.addImageData);
+	button.textContent = "Add {{Non-free image data}}";
+
+	button = document.createElement("button");
+	button.setAttribute("type", "button");
+	$(button).click(Twinkle.fur.addLicense);
+	button.textContent = "Add license tag";
+
+	button = document.createElement("button");
+	button.setAttribute("type", "button");
+	$(button).click(Twinkle.fur.addFur);
+	button.textContent = "Add fair use rationale";
+
+	dialog.setContent( dialogcontent );
+	dialog.display();
+};
+
+Twinkle.fur.freeLicenses = [
+	'Attribution',
+	'Cc-by',
+	'Cc-by-2.0',
+	'Cc-by-3.0',
+	'Cc-by-sa',
+	'Cc-by-sa-2.0',
+	'Cc-by-sa-3.0',
+	'Cc-sa',
+	'Free screenshot',
+	'GFDL-self',
+	'GFDL-presumed',
+	'GPL',
+	'Money-US',
+	'PD-art',
+	'PD-art-life-70',
+	'PD-art-US',
+	'PD-Australia',
+	'PD-author',
+	'PD-because',
+	'PD-BritishGov',
+	'PD-Canada',
+	'PD-font',
+	'PD-ineligible',
+	'PD-Italy',
+	'PD-link',
+	'PD-old',
+	'PD-old-50',
+	'PD-old-100',
+	'PD-release',
+	'PD-Russia-2008',
+	'PD-shape',
+	'PD-self',
+	'PD-text',
+	'PD-US',
+	'PD-US-1923-abroad',
+	'PD-US-patent',
+	'PD-USGov',
+	'PD-USGov-CIA',
+	'PD-USGov-Congress',
+	'PD-USGov-Congress-Bio',
+	'PD-USGov-DOC-Census',
+	'PD-USGov-DOC-NOAA',
+	'PD-USGov-DOJ',
+	'PD-USGov-Interior-NPS',
+	'PD-USGov-Interior-USGS',
+	'PD-USGov-Military',
+	'PD-USGov-Military-Air Force',
+	'PD-USGov-Military-Army',
+	'PD-USGov-Military-Marines',
+	'PD-USGov-Military-Navy',
+	'PD-USGov-NASA',
+	'PD-USGov-USDA',
+	'PD-USGov-USDA-FS',
+	'PD-user',
+	'Wikipedia-screenshot'
+];
+
+Twinkle.fur.nonFreeLicenses = [
+	'Non-free 2D art',
+	'Non-free 3D art',
+	'Non-free album cover',
+	'Non-free audio sample',
+	'Non-free AUSPIC',
+	'Non-free Australian DoD',
+	'Non-free Baseball HoF',
+	'Non-free board game cover',
+	'Non-free book cover',
+	'Non-free British Columbia traffic sign',
+	'Non-free character',
+	'Non-free cereal box cover',
+	'Non-free Cartoon Network image',
+	'Non-free comic',
+	'Non-free computer icon',
+	'Non-free Crown copyright',
+	'Non-free currency',
+	'Non-free currency-EU banknote',
+	'Non-free currency-EU coin common',
+	'Non-free currency-EU coin national',
+	'Non-free currency-New Zealand',
+	'Non-free currency-Switzerland',
+	'Non-free currency-UK',
+	'Non-free Denver Public Library image',
+	'Non-free ESA media',
+	'Non-free fair use in',
+	'Non-free film screenshot',
+	'Non-free flag',
+	'Non-free game cover',
+	'Non-free game screenshot',
+	'Non-free historic image',
+	'Non-free logo',
+	'Non-free magazine cover',
+	'Non-free Mozilla logo',
+	'Non-free music video screenshot',
+	'Non-free NASA logo',
+	'Non-free newspaper image',
+	'Non-free parody',
+	'Non-free Otto Perry image',
+	'Non-free poster',
+	'Non-free product cover',
+	'Non-free promotional',
+	'Non-free recording medium',
+	'Non-free Robert Richardson image',
+	'Non-free Scout logo',
+	'Non-free sheet music',
+	'Non-free software cover',
+	'Non-free software screenshot',
+	'Non-free speech',
+	'Non-free stamp',
+	'Non-free standard test image',
+	'Non-free symbol',
+	'Non-free television screenshot',
+	'Non-free unsure',
+	'Non-free USGov-IEEPA sanctions',
+	'Non-free USGov-USPS stamp',
+	'Non-free video cover',
+	'Non-free video screenshot',
+	'Non-free vodcast screenshot',
+	'Non-free web screenshot',
+	'Non-free Wikimedia logo',
+	'Non-free with NC',
+	'Non-free with ND',
+	'Non-free with permission',
+	'Non-free WWE photo'
+];
+
+Twinkle.fur.addLicense = function twinklefurAddLicense() {
+	var dialog = new SimpleWindow( 500, 600 );
+	dialog.setTitle( "Add license template" );
+	dialog.setScriptName( "Twinkle file license" );
+
+	var form = new QuickForm( Twinkle.fur.addLicense.callback );
+	
+
+	dialog.setContent( dialogcontent );
+	dialog.display();
+};
+
+var licenseMenu = form.append( {
+					type: 'select',
+					name: 'imageLicense',
+					label: 'Change image license to ',
+				} );
+
+			// ADD FAVORITE LICENSE TAGS TO DROP-DOWN
+			// XXX fixme
+			if( Twinkle.getPref.length ) {
+			licenseMenu.append( { type:'option', label: 'None (do not change license)', value: '' } );
+
+			$.each(Twinkle.getPref('customFileTagList'), function(value, label) {
+				licenseMenu.append( { type:'option', label: label, value: value } );
+			});
+
+			var licenseOptGroup = licenseMenu.append({ 
+					type: 'optgroup',
+					label: 'Free content licenses'
+				});
+			$.each(Twinkle.tag.file.freeLicenses, function(k, tag) {
+				licenseOptGroup.append(
+					type: 'option',
+					label: tag,
+					value: tag
+				});
+			});
+
+			licenseOptGroup = licenseMenu.append({ 
+					type: 'optgroup',
+					label: 'Non-free licenses'
+				});
+			$.each(Twinkle.tag.file.nonFreeLicenses, function(k, tag) {
+				licenseOptGroup.append({
+					type: 'option',
+					label: tag,
+					value: tag
+				});
+			});
+
+			form.append( {
+					type: 'checkbox',
+					name: 'removeFUR',
+					list: [
+						{ label: 'Remove any fair-use rationale', value: 'removeFUR' }
+					]
+				} );
+				
+				
+				
+				
+	
+	
+	
+	Twinkle.tag.file.restrictionList = [
+	{ label: '{{Freedom of panorama}}', value: 'Freedom of panorama' },
+	{ label: '{{Insignia}}', value: 'Insignia' },
+	{ label: '{{SVG-Logo}}', value: 'SVG-Logo' },
+	{ label: '{{Trademark}}', value: 'Trademark' }
+];
+
+	
 	/*
 		WHAT SHOULD THE DEFAULT FUR OPTION BE
 	*/
@@ -520,11 +783,6 @@ Twinkle.fur.callbacks.displayForm = function furmeCallback(pageobj) {
 					value: 'Film cover fur',
 					checked: defaultFilm,
 					tooltip: 'Image or media is a cover of a film'
-				},
-				{
-					label: 'Historic photograph',
-					value: 'Historic fur',
-					tooltip: 'Image or media is a historically significant photograph'
 				}
 			]
 		} );
@@ -534,21 +792,7 @@ Twinkle.fur.callbacks.displayForm = function furmeCallback(pageobj) {
 			name: 'work_area'
 		} );
 
-	form.append( {
-			type: 'submit',
-			label: 'Save page',
-			name: 'submitSave'
-		} );
-	form.append( {
-			type: 'submit',
-			label: 'Show preview',
-			name: 'submitPreview'
-		} );
-	form.append( {
-			type: 'submit',
-			label: 'Show changes',
-			name: 'submitDiff'
-		} );
+	form.append( { type: 'submit' } );
 
 	var result = form.render();
 	Window.setContent( result );
@@ -589,14 +833,14 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 				type: 'input',
 				name: 'article',
 				label: 'Article: ',
-				value: seedValues['title']
+				value: Twinkle.fur.seedValues.title
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'website',
 				label: 'Source: ',
-				value: seedValues['url']
+				value: Twinkle.fur.seedValues.url
 			} );
 
 		work_area.append( {
@@ -610,7 +854,7 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 				type: 'input',
 				name: 'resolution',
 				label: 'Low resolution: ',
-				value: seedValues['resolution'],
+				value: Twinkle.fur.seedValues.resolution,
 				tooltip: "Images must generally be of low resolution. The rule of thumb for raster images is no more than 300 pixels in width or height, which ensures that the image's resolution is less than 0.1 megapixels. If you are using an image of higher resolution, please explain why. If the image is 0.1 megapixels or less, just put \"Yes\"."
 			} );
 
@@ -653,14 +897,14 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 				type: 'input',
 				name: 'article',
 				label: 'Article: ',
-				value: seedValues['title']
+				value: Twinkle.fur.seedValues.title
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'website',
 				label: 'Website: ',
-				value: seedValues['url']
+				value: Twinkle.fur.seedValues.url
 			} );
 
 		work_area.append( {
@@ -679,9 +923,9 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 				name: 'useInArticle',
 				list: [
 					{
-						label: 'Infobox (' + seedValues['infobox'] + ')',
+						label: 'Infobox (' + Twinkle.fur.seedValues.infobox + ')',
 						value: 'Infobox',
-						checked: seedValues['infobox'],
+						checked: Twinkle.fur.seedValues.infobox,
 						tooltip: 'The logo is used in a company infobox for logos that represent the company'
 					},
 					{
@@ -741,35 +985,35 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 				type: 'input',
 				name: 'article',
 				label: 'Article: ',
-				value: seedValues['title']
+				value: Twinkle.fur.seedValues.title
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'website',
 				label: 'Website: ',
-				value: seedValues['url']
+				value: Twinkle.fur.seedValues.url
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'artist',
 				label: 'Artist: ',
-				value: seedValues['artist']
+				value: Twinkle.fur.seedValues.artist
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'album',
 				label: 'Album: ',
-				value: seedValues['name']
+				value: Twinkle.fur.seedValues.name
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'label',
 				label: 'Label: ',
-				value: seedValues['label']
+				value: Twinkle.fur.seedValues.label
 			} );
 
 		work_area.append( {
@@ -790,12 +1034,12 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 					{
 						label: 'Album',
 						value: 'album',
-						checked: seedValues['infoboxAlbum']
+						checked: Twinkle.fur.seedValues.infoboxAlbum
 					},
 					{
 						label: 'Single',
 						value: 'single',
-						checked: seedValues['infoboxSingle']
+						checked: Twinkle.fur.seedValues.infoboxSingle
 					}
 				]
 
@@ -811,9 +1055,9 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 				name: 'useInArticle',
 				list: [
 					{
-						label: 'Infobox (' + seedValues['infobox'] + ')',
+						label: 'Infobox (' + Twinkle.fur.seedValues.infobox + ')',
 						value: 'Infobox',
-						checked: seedValues['infobox'],
+						checked: Twinkle.fur.seedValues.infobox,
 						tooltip: 'The image is used in an infobox for the article about the album / work'
 					},
 					{
@@ -881,35 +1125,35 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 				type: 'input',
 				name: 'article',
 				label: 'Article: ',
-				value: seedValues['title']
+				value: Twinkle.fur.seedValues.title
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'title',
 				label: 'Title: ',
-				value: seedValues['name']
+				value: Twinkle.fur.seedValues.name
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'author',
 				label: 'Author: ',
-				value: seedValues['author']
+				value: Twinkle.fur.seedValues.author
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'publisher',
 				label: 'Publisher: ',
-				value: seedValues['publisher']
+				value: Twinkle.fur.seedValues.publisher
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'website',
 				label: 'Website: ',
-				value: seedValues['url']
+				value: Twinkle.fur.seedValues.url
 			} );
 
 		work_area.append( {
@@ -922,14 +1166,14 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 				type: 'input',
 				name: 'coverArtist',
 				label: 'Cover Artist: ',
-				value: seedValues['coverArtist']
+				value: Twinkle.fur.seedValues.coverArtist
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'year',
 				label: 'Year: ',
-				value: seedValues['year']
+				value: Twinkle.fur.seedValues.year
 			} );
 
 		var field = work_area.append( {
@@ -942,9 +1186,9 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 				name: 'useInArticle',
 				list: [
 					{
-						label: 'Infobox (' + seedValues['infobox'] + ')',
+						label: 'Infobox (' + Twinkle.fur.seedValues.infobox + ')',
 						value: 'Infobox',
-						checked: seedValues['infobox'],
+						checked: Twinkle.fur.seedValues.infobox,
 						tooltip: 'The image is used in an infobox for the article about the book'
 					},
 					{
@@ -1011,28 +1255,28 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 				type: 'input',
 				name: 'article',
 				label: 'Article: ',
-				value: seedValues['title']
+				value: Twinkle.fur.seedValues.title
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'website',
 				label: 'Website: ',
-				value: seedValues['url']
+				value: Twinkle.fur.seedValues.url
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'album', // share the same parameter as album cover
 				label: 'Film: ',
-				value: seedValues['name']
+				value: Twinkle.fur.seedValues.name
 			} );
 
 		work_area.append( {
 				type: 'input',
 				name: 'distributor',
 				label: 'Distributor: ',
-				value: seedValues['distributor']
+				value: Twinkle.fur.seedValues.distributor
 			} );
 
 		work_area.append( {
@@ -1072,9 +1316,9 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 				name: 'useInArticle',
 				list: [
 					{
-						label: 'Infobox (' + seedValues['infobox'] + ')',
+						label: 'Infobox (' + Twinkle.fur.seedValues.infobox + ')',
 						value: 'Infobox',
-						checked: seedValues['infobox'],
+						checked: Twinkle.fur.seedValues.infobox,
 						tooltip: 'The image is used in an infobox for the article about the film / work'
 					},
 					{
@@ -1130,21 +1374,6 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 			} );
 
 		break;
-
-	case 'Historic fur':
-		work_area.append( {
-				type: 'input',
-				name: 'article',
-				label: 'Article: ',
-				value: seedValues['title']
-			} );
-
-		work_area.append( {
-				type: 'input',
-				name: 'website',
-				label: 'Source: ',
-				value: seedValues['url']
-			} );
 	}
 
 	work_area = work_area.render();
@@ -1161,129 +1390,212 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 
 }
 
-Twinkle.fur.refreshValues = function furmeRefreshValues() {
-	var newArticle = document.getElementsByName('article')[0].value
-	document.body.removeChild( document.getElementsByName('id')[0].parentNode.parentNode );
-	Twinkle.fur.seedValues(newArticle);
-}
-
 Twinkle.fur.callback.evaluate = function furmeCallbackEvaluate(event) {
 	var types = event.target.type;
 	for( var i = 0; i < types.length; ++i ) {
 		if( types[i].checked ) {
-			var type = types[i].value;
+			var type = types[i].values;
 			break;
 		}
 	}
 
+
+
+				params.imageLicense = form.imageLicense.options[form.imageLicense.selectedIndex].value;
+			params.removeFUR = form.removeFUR.checked;
+
+
+		// Remove any fair use rationale
+		if (params.removeFUR)
+		{
+			// Remove any fair use headings
+			var regExFindFUHeading = /(\s*)===?\s*Fair use[^=]*===?\s*/ig;
+			text = text.replace(regExFindFUHeading, "$1");
+
+			var regExFindRationale = /{{(.*fur|Non-free use rationale|Fair use rationale|Non-free fair use rationale|Rationale|Non-free media rationale|Non-free image data|Non-free image rationale)[^]+?}}\s*/igm;
+			text = text.replace(regExFindRationale, '');
+		}
+		
+
+	// XXX scroller
 	if ( /[&?]furme-scroller=([^&]*)/.exec(window.location.search) ) {
 		var scrollerStarted = /[&?]furme-scroller=([^&]*)/.exec(window.location.search)[1];
 	}
+	
+	var params = {};
 	if( event.target.portion ) {
-		var portion = encodeURIComponent(event.target.portion.value);
+		params.portion = event.target.portion.value;
 	}
 	if( event.target.description ) {
-		var description = encodeURIComponent(event.target.description.value);
+		params.description = event.target.description.value;
 	}
 	if( event.target.resolution ) {
-		var resolution = encodeURIComponent(event.target.resolution.value);
+		params.resolution = event.target.resolution.value;
 	}
 	if( event.target.purpose ) {
-		var purpose = encodeURIComponent(event.target.purpose.value);
+		params.purpose = event.target.purpose.value;
 	}
 	if( event.target.replaceability ) {
-		var replaceability = encodeURIComponent(event.target.replaceability.value);
+		params.replaceability = event.target.replaceability.value;
 	}
 	if( event.target.article ) {
-		var article = encodeURIComponent(event.target.article.value);
+		params.article = event.target.article.value;
 	}
 	if( event.target.website ) {
-		var website = encodeURIComponent(event.target.website.value);
+		params.website = event.target.website.value;
 	}
 	if( event.target.owner ) {
-		var owner = encodeURIComponent(event.target.owner.value);
+		params.owner = event.target.owner.value;
 	}
 	if( event.target.artist ) {
-		var artist = encodeURIComponent(event.target.artist.value);
+		params.artist = event.target.artist.value;
 	}
 	if( event.target.album ) {
-		var album = encodeURIComponent(event.target.album.value);
+		params.album = event.target.album.value;
 	}
 	if( event.target.label ) {
-		var label = encodeURIComponent(event.target.label.value);
+		params.label = event.target.label.value;
 	}
 	if( event.target.author ) {
-		var author = encodeURIComponent(event.target.author.value);
+		params.author = event.target.author.value;
 	}
 	if( event.target.publisher ) {
-		var publisher = encodeURIComponent(event.target.publisher.value);
+		params.publisher = event.target.publisher.value;
 	}
 	if( event.target.year ) {
-		var year = encodeURIComponent(event.target.year.value);
+		params.year = event.target.year.value;
 	}
 	if( event.target.title ) {
-		var title = encodeURIComponent(event.target.title.value);
+		params.title = event.target.title.value;
 	}
 	if( event.target.distributor ) {
-		var distributor = encodeURIComponent(event.target.distributor.value);
+		params.distributor = event.target.distributor.value;
 	}
 	if( event.target.coverArtist ) {
-		var coverArtist = encodeURIComponent(event.target.coverArtist.value);
+		params.coverArtist = event.target.coverArtist.value;
 	}
-	var useType;
-	if (typeof event.target.useType != 'undefined' && null != event.target.useType) {
+	if (event.target.useType) {
 		for (var i=0; i < event.target.useType.length; i++) {
 			if (event.target.useType[i].checked) {
-				useType = event.target.useType[i].value;
+				params.useType = event.target.useType[i].values;
 			}
 		}
 	}
-	var useInArticle;
-	if (typeof event.target.useInArticle != 'undefined' && null != event.target.useInArticle) {
+	if (event.target.useInArticle) {
 		for (var i=0; i < event.target.useInArticle.length; i++) {
 			if (event.target.useInArticle[i].checked) {
-				useInArticle = event.target.useInArticle[i].value;
+				params.useInArticle = event.target.useInArticle[i].values;
 			}
 		}
 	}
-	var scanned;
 	if (event.target.scanned && event.target.scanned.checked) {
-		scanned = event.target.scanned.value;
+		params.scanned = event.target.scanned.value;
 	}
-	var rename;
 	if (event.target.rename && event.target.rename.checked) {
-		rename = event.target.rename.value;
+		params.rename = event.target.rename.value;
 	}
-	var reduce;
 	if (event.target.reduce && event.target.reduce.checked) {
-		reduce = event.target.reduce.value;
+		params.reduce = event.target.reduce.value;
 	}
+
+
+	var template;
+	switch (...template) {
+		case "Album cover fur":
+			template = "{{album cover fur\n" + 
+				"| Article           = \n" +
+				"| Use               = \n" +  //  Choose: Infobox / Header / Section / Artist / other (specify Purpose)
+				"<!-- ADDITIONAL INFORMATION -->\n" +
+				"| Name              = \n" +
+				"| Artist            = \n" +
+				"| Label             = \n" +
+				"| Graphic Artist    = \n" +
+				"| Item              = \n" +
+				"| Type              = \n" +
+				"| Website           = \n" +
+				"| Owner             = \n" +
+				"| Commentary        = \n" +
+				"<!--OVERRIDE FIELDS -->\n" +
+				"| Description       = \n" +
+				"| Source            = \n" +
+				"| Portion           = \n" +
+				"| Low resolution    = \n" +
+				"| Purpose           = \n" +  // <!-- Must be specified if Use is not Infobox / Header / Section / Artist -->
+				"| Replaceability    = \n" +
+				"| Other information = \n" +
+				"}}";
+			break;
+		case "Book cover fur":
+			template = "{{Book cover fur\n" +
+				"| Article           = \n" +
+				"| Use               = \n" +  //<!--Choose: Infobox / Header / Section / Author / Other -->
+				"<!-- OPTIONAL FIELDS -->\n" +
+				"| Title             = \n" +
+				"| Author            = \n" +
+				"| Publisher         = \n" +
+				"| Cover_artist      = \n" +
+				"| Website           = \n" +
+				"| Owner             = \n" +
+				"| Commentary        = \n" +
+				"<!--OVERRIDE FIELDS -->\n" +
+				"| Description       = \n" +
+				"| Source            = \n" +
+				"| Portion           = \n" +
+				"| Low resolution    = \n" +
+				"| Purpose           = \n" +
+				"| Replaceability    = \n" +
+				"| Other information = \n" +
+				"}}";
+			break;
+		case "Film cover fur":
+			template = "{{Film cover fur\n" +
+				"| Format            = \n" + // <!--Choose: Full / Data / Rationale -->
+				"| Article           = \n" +
+				"| Use               = \n" + // <!--Choose: Infobox / Header / Section / Other --> 
+				"<!-- ADDITIONAL INFORMATION -->\n" +
+				"| Type              = \n" +
+				"| Title             = \n" +
+				"| Distributor       = \n" +
+				"| Publisher         = \n" +
+				"| Website           = \n" +
+				"| Owner             = \n" +
+				"| Commentary        = \n" +
+				"| Other purpose     = \n" + // <!-- Must be specified if Use is not Infobox / Header / Section -->
+				"<!--OVERRIDE FIELDS -->\n" +
+				"| Description       = \n" +
+				"| Source            = \n" +
+				"| Portion           = \n" +
+				"| Low resolution    = \n" +
+				"| Purpose           = \n" +
+				"| Replaceability    = \n" +
+				"| Other information = \n" +
+				"}}\n";
+			break;
+		case "Logo fur":
+			template = "{{logo fur\n" +
+				"| Article           = \n" +
+				"| Use               = \n" + // <!--Choose: Infobox / Org / Brand / Product / Public facility / Other -->
+				"<!-- ADDITIONAL INFORMATION -->\n" +
+				"| Used for          = \n" +
+				"| Owner             = \n" +
+				"| Website           = \n" +
+				"| History           = \n" +
+				"| Commentary        = \n" +
+				"<!--OVERRIDE FIELDS -->\n" +
+				"| Description       = \n" +
+				"| Source            = \n" +
+				"| Portion           = \n" +
+				"| Low resolution    = \n" +
+				"| Purpose           = \n" + //<!--Must be specified if Use is not Infobox / Org / Brand / Product-->
+				"| Replaceability    = \n" +
+				"| Other information = \n" +
+				"}}\n";
+			break;
+	}
+	
 
 	if (/[&?]freelogo=/.test(window.location.search) == false && /[&?]furmeImageTags=/.test(window.location.search) == false)
 	{
-		var purpose = decodeURIComponent(/[&?]purpose=([^&]*)/.exec(window.location.search)[1]);
-		var portion = decodeURIComponent(/[&?]portion=([^&]*)/.exec(window.location.search)[1]);
-		var resolution = decodeURIComponent(/[&?]resolution=([^&]*)/.exec(window.location.search)[1]);
-		var replaceability = decodeURIComponent(/[&?]replaceability=([^&]*)/.exec(window.location.search)[1]);
-		var description = decodeURIComponent(/[&?]description=([^&]*)/.exec(window.location.search)[1]);
-		var article = decodeURIComponent(/[&?]article=([^&]*)/.exec(window.location.search)[1]);
-		var owner = decodeURIComponent(/[&?]owner=([^&]*)/.exec(window.location.search)[1]);
-		var website = decodeURIComponent(/[&?]website=([^&]*)/.exec(window.location.search)[1]);
-		var use = decodeURIComponent(/[&?]use=([^&]*)/.exec(window.location.search)[1]);
-		var type = decodeURIComponent(/[&?]type=([^&]*)/.exec(window.location.search)[1]);
-		var artist = decodeURIComponent(/[&?]artist=([^&]*)/.exec(window.location.search)[1]);
-		var album = decodeURIComponent(/[&?]album=([^&]*)/.exec(window.location.search)[1]);
-		var label = decodeURIComponent(/[&?]label=([^&]*)/.exec(window.location.search)[1]);
-		var year = decodeURIComponent(/[&?]year=([^&]*)/.exec(window.location.search)[1]);
-		var author = decodeURIComponent(/[&?]author=([^&]*)/.exec(window.location.search)[1]);
-		var publisher = decodeURIComponent(/[&?]publisher=([^&]*)/.exec(window.location.search)[1]);
-		var title = decodeURIComponent(/[&?]bookTitle=([^&]*)/.exec(window.location.search)[1]);
-		var coverArtist = decodeURIComponent(/[&?]coverArtist=([^&]*)/.exec(window.location.search)[1]);
-		var useType = decodeURIComponent(/[&?]useType=([^&]*)/.exec(window.location.search)[1]);
-		var distributor = decodeURIComponent(/[&?]distributor=([^&]*)/.exec(window.location.search)[1]);
-		var rename = decodeURIComponent(/[&?]rename=([^&]*)/.exec(window.location.search)[1]);
-		var reduce = decodeURIComponent(/[&?]reduce=([^&]*)/.exec(window.location.search)[1]);
-		var scanned = decodeURIComponent(/[&?]scan=([^&]*)/.exec(window.location.search)[1]);
 
 		if (purpose != 'undefined')
 			template = template.replace(/(\s*)Purpose(\s*)=(\s*)/, "$1Purpose$2= " + purpose.trim() + "\n");
@@ -1301,7 +1613,7 @@ Twinkle.fur.callback.evaluate = function furmeCallbackEvaluate(event) {
 			template = template.replace(/(\s*)Owner(\s*)=(\s*)/, "$1Owner$2= " + owner.trim() + "\n");
 		if (website != 'undefined')
 			template = template.replace(/(\s*)Website(\s*)=(\s*)/, "$1Website$2= " + website.trim() + "\n");
-		if (website != 'undefined' && (type == 'Non-free use rationale' || type == 'Historic fur'))
+		if (website != 'undefined' && (type == 'Non-free use rationale'))
 			template = template.replace(/(\s*)Source(\s*)=(\s*)/, "$1Source$2= " + website.trim() + "\n");
 		if (use != 'undefined')
 			template = template.replace(/(\s*)Use(\s*)=(\s*)/, "$1Use$2= " + use.trim() + "\n");
@@ -1505,6 +1817,28 @@ Twinkle.fur.callback.evaluate = function furmeCallbackEvaluate(event) {
 			break;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Twinkle.fur.imageRemover = function furmeImageRemover()
 {
