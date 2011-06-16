@@ -1027,6 +1027,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 						var checkdiv = document.createElement("div");
 						checkdiv.style.paddingLeft = "1em";
+						var checkcount = 0;
 						if (pref.setDisplayOrder) {
 							// add check boxes according to the given display order
 							$.each(pref.setDisplayOrder, function(itemkey, item) {
@@ -1044,6 +1045,9 @@ Twinkle.config.init = function twinkleconfigInit() {
 								checklabel.appendChild(document.createTextNode(" " + pref.setValues[item]));
 								checkdiv.appendChild(checklabel);
 								checkdiv.appendChild(document.createTextNode(" "));  // for wrapping
+								if ($.browser.msie && (checkcount++) % 5 === 4) {
+									checkdiv.appendChild(document.createElement("br"));  // hack: IE fails at fancy wrapping
+								}
 							});
 						} else {
 							// add check boxes according to the order it gets fed to us (probably strict alphabetical)
@@ -1069,6 +1073,9 @@ Twinkle.config.init = function twinkleconfigInit() {
 								checklabel.appendChild(document.createTextNode(" " + itemvalue));
 								checkdiv.appendChild(checklabel);
 								checkdiv.appendChild(document.createTextNode(" "));  // for wrapping
+								if ($.browser.msie && (checkcount++) % 5 === 4) {
+									checkdiv.appendChild(document.createElement("br"));  // hack: IE fails at fancy wrapping
+								}
 							});
 						}
 						cell.appendChild(checkdiv);
