@@ -42,10 +42,6 @@ Twinkle.defaultConfig.twinkle = {
 	protectionSummaryAd: " ([[WP:TW|TW]])",
 	userTalkPageMode: "window",
 	dialogLargeFont: false,
-	 // ARV
-	markAIVReportAsMinor: true,
-	markUAAReportAsMinor: true,
-	markSockReportAsMinor: true,
 	 // Fluff (revert and rollback)
 	openTalkPage: [ "agf", "norm", "vand" ],
 	openTalkPageOnAutoRevert: false,

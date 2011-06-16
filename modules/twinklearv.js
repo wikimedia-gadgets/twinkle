@@ -400,7 +400,6 @@ Twinkle.arv.callback.evaluate = function(e) {
 					return;
 				}
 				aivPage.getStatusElement().status( 'Adding new report...' );
-				aivPage.setMinorEdit( Twinkle.getPref('markAIVReportAsMinor') );
 				aivPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd') );
 				aivPage.setAppendText( '\n*{{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '}} - ' + reason );
 				aivPage.append();
@@ -450,7 +449,6 @@ Twinkle.arv.callback.evaluate = function(e) {
 					return;
 				}
 				uaaPage.getStatusElement().status( 'Adding new report...' );
-				uaaPage.setMinorEdit( Twinkle.getPref('markUAAReportAsMinor') );
 				uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ Twinkle.getPref('summaryAd') );
 				uaaPage.setPageText( text.replace( /List begins below this line.\s*-->/, "List begins below this line.\n-->\n" + reason ) );  // add at top
 				uaaPage.save();
@@ -546,7 +544,6 @@ Twinkle.arv.processSock = function( params ) {
 
 	var spiPage = new Wikipedia.page( reportpage, 'Retrieving discussion page' );
 	spiPage.setFollowRedirect( true );
-	spiPage.setMinorEdit( Twinkle.getPref('markSockReportAsMinor') );
 	spiPage.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ Twinkle.getPref('summaryAd') );
 	spiPage.setAppendText( text );
 	spiPage.append();

@@ -172,35 +172,6 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "ARV",
-	preferences: [
-		// TwinkleConfig.markAIVReportAsMinor (boolean)
-		// Defines if reports to AIV should be marked as minor
-		{
-			name: "markAIVReportAsMinor",
-			label: "Mark AIV reports as minor edits",
-			type: "boolean"
-		},
-
-		// TwinkleConfig.markUAAReportAsMinor (boolean)
-		// Defines if reports to UAA should be marked as minor
-		{
-			name: "markUAAReportAsMinor",
-			label: "Mark UAA reports as minor edits",
-			type: "boolean"
-		},
-
-		// TwinkleConfig.markSockReportAsMinor (boolean)
-		// Defines if reports to SPI should be marked as minor
-		{
-			name: "markSockReportAsMinor",
-			label: "Mark SPI reports as minor edits",
-			type: "boolean"
-		}
-	]
-},
-
-{
 	title: "Image deletion (DI)",
 	preferences: [
 		// TwinkleConfig.notifyUserOnDeli (boolean)
