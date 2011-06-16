@@ -314,7 +314,7 @@ Twinkle.image.callbacks = {
 		var initialContrib = pageobj.getCreator();
 		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n{{subst:di-" + params.type + "-notice|1=" + mw.config.get('wgTitle');
-		if params.type == 'no permission' {
+		if (params.type === 'no permission') {
 			notifytext += params.source ? "|source=" + params.source : "";
 		}
 		notifytext += "}} ~~~~";
