@@ -1518,7 +1518,7 @@ if (!JSON) {
 			gap = mind;
 			return v;
 		default:
-			throw "JSON.stringify: unknown data type";
+			throw new Error( "JSON.stringify: unknown data type" );
 		}
 	}
 

@@ -175,6 +175,6 @@ Twinkle.morebitsTestInit = function () {
 // register initialization callback
 var Twinkle;
 if ( typeof Twinkle === 'undefined' ) {
-	throw ( 'Attempt to load module "morebits-test" without having loaded Twinkle previously.' );
+	throw new Error( 'Attempt to load module "morebits-test" without having loaded Twinkle previously.' );
 };
 Twinkle.addInitCallback( Twinkle.morebitsTestInit );

@@ -55,7 +55,7 @@ var Cookies = {
 	 */
 	create: function( name, value, max_age, path ) {
 		if( Cookies.exists( name ) ) {
-			throw "cookie " + name + " already exists";
+			throw new Error( "cookie " + name + " already exists" );
 		}
 		Cookies.set( name, value, max_age, path );
 	},
@@ -549,7 +549,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 		}
 		break;
 	default:
-		throw ("QuickForm: unknown element type " + data.type.toString());
+		throw new Error("QuickForm: unknown element type " + data.type.toString());
 	}
 
 	if( !childContainder ) {
@@ -765,7 +765,7 @@ String.prototype.trim = function stringPrototypeTrim( chars ) {
 
 String.prototype.splitWeightedByKeys = function stringPrototypeSplitWeightedByKeys( start, end, skip ) {
 	if( start.length !== end.length ) {
-		throw 'start marker and end marker must be of the same length';
+		throw new Error( 'start marker and end marker must be of the same length' );
 	}
 	var level = 0;
 	var initial = null;
@@ -776,7 +776,7 @@ String.prototype.splitWeightedByKeys = function stringPrototypeSplitWeightedByKe
 		} else if( typeof( skip ) === 'string' ) {
 			skip = [ skip ];
 		} else {
-			throw "non-applicable skip parameter";
+			throw new Error( "non-applicable skip parameter" );
 		}
 	}
 	for( var i  = 0; i < this.length; ++i ) {
@@ -878,7 +878,7 @@ Array.prototype.chunk = function arrayChunk( size ) {
 
 function Unbinder( string ) {
 	if( typeof( string ) !== 'string' ) {
-		throw "not a string";
+		throw new Error( "not a string" );
 	}
 	this.content = string;
 	this.counter = 0;
@@ -2867,7 +2867,7 @@ var Status = function( text, stat, type ) {
 
 Status.init = function( root ) {
 	if( !( root instanceof Element ) ) {
-		throw 'object not an instance of Element';
+		throw new Error( 'object not an instance of Element' );
 	}
 	while( root.hasChildNodes() ) {
 		root.removeChild( root.firstChild );
