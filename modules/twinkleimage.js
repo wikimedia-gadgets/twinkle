@@ -313,7 +313,11 @@ Twinkle.image.callbacks = {
 		var params = pageobj.getCallbackParameters();
 		var initialContrib = pageobj.getCreator();
 		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-		var notifytext = "\n{{subst:di-" + params.type + "-notice|1=" + mw.config.get('wgTitle') + "}} ~~~~";
+		var notifytext = "\n{{subst:di-" + params.type + "-notice|1=" + mw.config.get('wgTitle');
+		if params.type == 'no permission' {
+			notifytext += params.source ? "|source=" + params.source : "";
+		}
+		notifytext += "}} ~~~~";
 		usertalkpage.setAppendText(notifytext);
 		usertalkpage.setEditSummary("Notification: tagging for deletion of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 		usertalkpage.setCreateOption('recreate');
