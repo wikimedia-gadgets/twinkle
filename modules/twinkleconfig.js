@@ -960,7 +960,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 					case "integer":
 						// add label to first column
 						cell.style.textAlign = "right";
-						cell.style.width = "25em";
 						cell.style.paddingRight = "0.5em";
 						label = document.createElement("label");
 						label.setAttribute("for", pref.name);
@@ -970,7 +969,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 						// add input box to second column
 						cell = document.createElement("td");
-						cell.style.width = "15em";
 						cell.style.paddingRight = "1em";
 						input = document.createElement("input");
 						input.setAttribute("type", "text");
@@ -991,7 +989,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 						// add label to first column
 						// note: duplicates the code above, under string/integer
 						cell.style.textAlign = "right";
-						cell.style.width = "25em";
 						cell.style.paddingRight = "0.5em";
 						label = document.createElement("label");
 						label.setAttribute("for", pref.name);
@@ -1001,7 +998,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 						// add input box to second column
 						cell = document.createElement("td");
-						cell.style.width = "15em";
 						cell.style.paddingRight = "1em";
 						input = document.createElement("select");
 						input.setAttribute("id", pref.name);
@@ -1027,56 +1023,35 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 						var checkdiv = document.createElement("div");
 						checkdiv.style.paddingLeft = "1em";
-						var checkcount = 0;
+						var worker = function(itemkey, itemvalue) {
+							var checklabel = document.createElement("label");
+							checklabel.style.marginRight = "0.7em";
+							checklabel.style.display = "inline-block";
+							var check = document.createElement("input");
+							check.setAttribute("type", "checkbox");
+							check.setAttribute("id", pref.name + "_" + itemkey);
+							check.setAttribute("name", pref.name + "_" + itemkey);
+							if (configgetter(pref.name) && configgetter(pref.name).indexOf(itemkey) !== -1) {
+								check.setAttribute("checked", "checked");
+							}
+							// cater for legacy integer array values for unlinkNamespaces (this can be removed a few years down the track...)
+							if (pref.name === "unlinkNamespaces") {
+								if (configgetter(pref.name) && configgetter(pref.name).indexOf(parseInt(itemkey, 10)) !== -1) {
+									check.setAttribute("checked", "checked");
+								}
+							}
+							checklabel.appendChild(check);
+							checklabel.appendChild(document.createTextNode(itemvalue));
+							checkdiv.appendChild(checklabel);
+						};
 						if (pref.setDisplayOrder) {
 							// add check boxes according to the given display order
 							$.each(pref.setDisplayOrder, function(itemkey, item) {
-								var checklabel = document.createElement("label");
-								checklabel.style.marginRight = "0.7em";
-								checklabel.style.whiteSpace = "nowrap";
-								var check = document.createElement("input");
-								check.setAttribute("type", "checkbox");
-								check.setAttribute("id", pref.name + "_" + item);
-								check.setAttribute("name", pref.name + "_" + item);
-								if (configgetter(pref.name) && configgetter(pref.name).indexOf(item) !== -1) {
-									check.setAttribute("checked", "checked");
-								}
-								checklabel.appendChild(check);
-								checklabel.appendChild(document.createTextNode(" " + pref.setValues[item]));
-								checkdiv.appendChild(checklabel);
-								checkdiv.appendChild(document.createTextNode(" "));  // for wrapping
-								if ($.browser.msie && (checkcount++) % 5 === 4) {
-									checkdiv.appendChild(document.createElement("br"));  // hack: IE fails at fancy wrapping
-								}
+								worker(item, pref.setValues[item]);
 							});
 						} else {
 							// add check boxes according to the order it gets fed to us (probably strict alphabetical)
-							// note: duplicates code in previous loop
-							$.each(pref.setValues, function(itemkey, itemvalue) {
-								var checklabel = document.createElement("label");
-								checklabel.style.marginRight = "0.7em";
-								checklabel.style.whiteSpace = "nowrap";
-								var check = document.createElement("input");
-								check.setAttribute("type", "checkbox");
-								check.setAttribute("id", pref.name + "_" + itemkey);
-								check.setAttribute("name", pref.name + "_" + itemkey);
-								if (configgetter(pref.name) && configgetter(pref.name).indexOf(itemkey) !== -1) {
-									check.setAttribute("checked", "checked");
-								}
-								// cater for legacy integer array values for unlinkNamespaces (this can be removed a few years down the track...)
-								if (pref.name === "unlinkNamespaces") {
-									if (configgetter(pref.name) && configgetter(pref.name).indexOf(parseInt(itemkey, 10)) !== -1) {
-										check.setAttribute("checked", "checked");
-									}
-								}
-								checklabel.appendChild(check);
-								checklabel.appendChild(document.createTextNode(" " + itemvalue));
-								checkdiv.appendChild(checklabel);
-								checkdiv.appendChild(document.createTextNode(" "));  // for wrapping
-								if ($.browser.msie && (checkcount++) % 5 === 4) {
-									checkdiv.appendChild(document.createElement("br"));  // hack: IE fails at fancy wrapping
-								}
-							});
+							$.each(pref.setValues, worker);
 						}
 						cell.appendChild(checkdiv);
 						break;
@@ -1084,7 +1059,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 					case "customList":
 						// add label to first column
 						cell.style.textAlign = "right";
-						cell.style.width = "25em";
 						cell.style.paddingRight = "0.5em";
 						label = document.createElement("label");
 						label.setAttribute("for", pref.name);
@@ -1094,7 +1068,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 						// add button to second column
 						cell = document.createElement("td");
-						cell.style.width = "15em";
 						cell.style.paddingRight = "1em";
 						var button = document.createElement("button");
 						button.setAttribute("id", pref.name);
@@ -1120,6 +1093,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 				// add help tip
 				cell = document.createElement("td");
 				cell.style.fontSize = "90%";
+
 				cell.style.color = "gray";
 				if (pref.helptip) {
 					cell.innerHTML = pref.helptip;

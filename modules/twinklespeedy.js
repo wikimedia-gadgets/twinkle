@@ -897,7 +897,7 @@ Twinkle.speedy.callbacks = {
 			}
 
 			var xfd = /(?:\{\{([rsaiftcm]fd|md1)[^{}]*?\}\})/i.exec( text );
-			if( xfd && !confirm( "The deletion-related template \{\{" + xfd[1] + "\}\} was found on the page. Do you still want to add a CSD template?" ) ) {
+			if( xfd && !confirm( "The deletion-related template {{" + xfd[1] + "}} was found on the page. Do you still want to add a CSD template?" ) ) {
 				return;
 			}
 
