@@ -199,6 +199,8 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 		page = e.target.noticeboard.value;
 	}
 
+	var message = e.target.message.value;
+
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( e.target );
 
@@ -225,8 +227,8 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 
 		text += '|ts=~~~~~}}';
 
-		if( e.target.message.value ) {
-			text += '\n' + e.target.message.value + '  ~~~~';
+		if( message ) {
+			text += '\n' + message + '  ~~~~';
 		} else if( Twinkle.getFriendlyPref('insertTalkbackSignature') ) {
 			text += '\n~~~~';
 		}
