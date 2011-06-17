@@ -86,6 +86,10 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 };
 
 // This is all the messages that might be dispatched by the code
+// Each of the individual templates require the following information:
+//   label (required): A short description displayed in the dialog
+//   summary (required): The edit summary used. If an article name is entered, the summary is postfixed with "on [[article]]", and it is always postfixed with ". $summaryAd"
+//   suppressArticleInSummary (optional): Set to true to suppress showing the article name in the edit summary. Useful if the warning relates to attack pages, or some such.
 Twinkle.warn.messages = {
 	level1: {
 		"uw-vandalism1": {
@@ -880,7 +884,8 @@ Twinkle.warn.messages = {
 		},
 		"uw-attack": {
 			label:"Creating attack pages",
-			summary:"Warning: Creating attack pages"
+			summary:"Warning: Creating attack pages",
+			suppressArticleInSummary: true
 		},
 		"uw-attempt": {
 			label:"Triggering the edit filter",
@@ -1433,6 +1438,7 @@ Twinkle.warn.callbacks = {
 	main: function( pageobj ) {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
+		var messageData = Twinkle.warn.messages[params.main_group][params.sub_group];
 
 		var history_re = /<!-- Template:(uw-.*?) -->.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4}) \(UTC\)/g;
 		var history = {};
@@ -1529,9 +1535,15 @@ Twinkle.warn.callbacks = {
 				text +=  "\n:''If this is a shared [[IP address]], and you didn't make the edit, consider [[Wikipedia:Why create an account?|creating an account]] for yourself so you can avoid further irrelevant notices.'' ";
 			}
 		}
-		
+
+		var summary = messageData.summary;
+		if ( messageData.suppressArticleInSummary !== true && params.article ) {
+			summary += " on [[" + params.article + "]]";
+		}
+		summary += "." + Twinkle.getPref("summaryAd");
+
 		pageobj.setPageText( text );
-		pageobj.setEditSummary( Twinkle.warn.messages[params.main_group][params.sub_group].summary + ( params.article ? ' on [[' + params.article + ']]'  : '' ) + '.' + Twinkle.getPref('summaryAd') );
+		pageobj.setEditSummary( summary );
 		pageobj.setWatchlist( Twinkle.getPref('watchWarnings') );
 		pageobj.save();
 	}
