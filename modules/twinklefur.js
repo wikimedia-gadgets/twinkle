@@ -490,6 +490,11 @@ Twinkle.fur.callbacks.displayForm = function furmeCallback(pageobj) {
 	$(button).click(Twinkle.fur.addFur);
 	button.textContent = "Add fair use rationale";
 
+	button = document.createElement("button");
+	button.setAttribute("type", "button");
+	$(button).click(Twinkle.fur.addRestriction);
+	button.textContent = "Add restriction tag";
+
 	dialog.setContent( dialogcontent );
 	dialog.display();
 };
@@ -623,102 +628,77 @@ Twinkle.fur.nonFreeLicenses = [
 Twinkle.fur.addLicense = function twinklefurAddLicense() {
 	var dialog = new SimpleWindow( 500, 600 );
 	dialog.setTitle( "Add license template" );
-	dialog.setScriptName( "Twinkle file license" );
+	dialog.setScriptName( "Twinkle \u00B7 File licensing" );  // U+00B7 MIDDLE DOT
 
 	var form = new QuickForm( Twinkle.fur.addLicense.callback );
-	
 
-	dialog.setContent( dialogcontent );
+	var licenseMenu = form.append( {
+			type: 'select',
+			name: 'license',
+			label: 'Add this license: ',
+		} );
+
+	// add favorite license tags to drop-down
+	licenseMenu.append( { type:'option', label: 'None (do not change license)', value: '' } );
+
+	if( Twinkle.getPref("furCustomLicenseTags").length ) {  // XXX pref
+		$.each(Twinkle.getPref('furCustomLicenseTags'), function(value, label) {
+			licenseMenu.append( { type:'option', label: label, value: value } );
+		});
+	}
+
+	var licenseOptGroup = licenseMenu.append({ 
+			type: 'optgroup',
+			label: 'Free content licenses'
+		});
+	$.each(Twinkle.fur.freeLicenses, function(k, tag) {
+		licenseOptGroup.append( { type: 'option', label: tag, value: tag });
+	});
+
+	licenseOptGroup = licenseMenu.append({ 
+			type: 'optgroup',
+			label: 'Non-free licenses'
+		});
+	$.each(Twinkle.fur.nonFreeLicenses, function(k, tag) {
+		licenseOptGroup.append( { type: 'option', label: tag, value: tag });
+	});
+
+	form.append({ type: 'submit', label: 'Add to page' });
+
+	dialog.setContent( form.render() );
 	dialog.display();
 };
 
-var licenseMenu = form.append( {
-					type: 'select',
-					name: 'imageLicense',
-					label: 'Change image license to ',
-				} );
+Twinkle.fur.addLicense.callback = function twinklefurAddLicenseCallback(e) {
+	throw "not yet implemented";
+};
 
-			// ADD FAVORITE LICENSE TAGS TO DROP-DOWN
-			// XXX fixme
-			if( Twinkle.getPref.length ) {
-			licenseMenu.append( { type:'option', label: 'None (do not change license)', value: '' } );
+Twinkle.fur.addFUR = function twinklefurAddFUR() {
+	var dialog = new SimpleWindow( 500, 600 );
+	dialog.setTitle( "Add fair use rationale" );
+	dialog.setScriptName( "Twinkle \u00B7 File licensing" );  // U+00B7 MIDDLE DOT
 
-			$.each(Twinkle.getPref('customFileTagList'), function(value, label) {
-				licenseMenu.append( { type:'option', label: label, value: value } );
-			});
+	var form = new QuickForm( Twinkle.fur.addFUR.callback );
 
-			var licenseOptGroup = licenseMenu.append({ 
-					type: 'optgroup',
-					label: 'Free content licenses'
-				});
-			$.each(Twinkle.tag.file.freeLicenses, function(k, tag) {
-				licenseOptGroup.append(
-					type: 'option',
-					label: tag,
-					value: tag
-				});
-			});
-
-			licenseOptGroup = licenseMenu.append({ 
-					type: 'optgroup',
-					label: 'Non-free licenses'
-				});
-			$.each(Twinkle.tag.file.nonFreeLicenses, function(k, tag) {
-				licenseOptGroup.append({
-					type: 'option',
-					label: tag,
-					value: tag
-				});
-			});
-
-			form.append( {
-					type: 'checkbox',
-					name: 'removeFUR',
-					list: [
-						{ label: 'Remove any fair-use rationale', value: 'removeFUR' }
-					]
-				} );
-				
-				
-				
-				
-	
-	
-	
-	Twinkle.tag.file.restrictionList = [
-	{ label: '{{Freedom of panorama}}', value: 'Freedom of panorama' },
-	{ label: '{{Insignia}}', value: 'Insignia' },
-	{ label: '{{SVG-Logo}}', value: 'SVG-Logo' },
-	{ label: '{{Trademark}}', value: 'Trademark' }
-];
-
-	
-	/*
-		WHAT SHOULD THE DEFAULT FUR OPTION BE
-	*/
+	// what should the default fur option be
+	var defaulttag = "nonfree";
 	if (document.getElementById('catlinks')) {
 		$('#catlinks a').each(function(k, link) {
-			switch (linkList[i].attr('title'))
-			{
+			switch (link.attr('title').substring(9)) {
 				case 'Album covers':
-					defaultAlbumCover = true;
-					defaultGeneric = false;
-					defaultIndex = 2;
+					defaulttag = "album";
 					break;
-				case 'All non-free Logos': // XXX check this, and all category names
-					defaultLogo = true;
-					defaultGeneric = false;
-					defaultIndex = 1;
+				case 'All non-free logos':
+					defaulttag = "logo";
 					break;
 				case 'Book covers':
-					defaultBook = true;
-					defaultGeneric = false;
-					defaultIndex = 3;
+					defaulttag = "book";
 					break;
-				case 'DVD covers':
-					defaultFilm = true;
-					defaultGeneric = false;
-					defaultIndex = 4;
+				case 'DVD covers':  // XXX CfD underway to rename to "Video covers"
+					defaulttag = "film";
+					break;
+				case 'Non-free posters':
+					defaulttag = "poster";
 					break;
 				default:
 					break;
@@ -726,98 +706,74 @@ var licenseMenu = form.append( {
 		});
 	}
 
-	// XXX scroller
-	if ( scrollerStarted == 'true' )
-	{
-		form.append( {
-			type: 'button',
-			name: 'furme-scroller-button',
-			label: 'FurMe Scroller: Skip Image',
-			event: Twinkle.fur.callback.next
-		} );
-
-		form.append( {
-			type: 'button',
-			name: 'furme-scroller-cancel',
-			label: 'FurMe Scroller: Stop!',
-			event: Twinkle.fur.callback.stopScrolling
-		} );
-	}
-
-	var field = form.append( {
-			type: 'field',
-			label: 'Type of fair-use rationale wanted'
-		} );
-
-	field.append( {
-			type: 'radio',
-			name: 'type',
-			event: Twinkle.fur.callback.choice,
+	form.append( {
+			type: 'select',
+			name: 'license',
+			label: 'Use this FUR tagh: ',
+			event: Twinkle.fur.addFUR.choice,
 			list: [
 				{
 					label: 'Generic non-free use',
 					value: 'Non-free use rationale',
-					checked: defaultGeneric,
+					checked: defaulttag === "nonfree",
 					tooltip: 'Image or media being used with a non-free license under WP:FURG'
 				},
 				{
 					label: 'Logo',
 					value: 'Logo fur',
-					checked: defaultLogo,
+					checked: defaulttag === "logo",
 					tooltip: 'Image or media is a logo used to help the reader identify the organization'
 				},
 				{
 					label: 'Album cover',
 					value: 'Album cover fur',
-					checked: defaultAlbumCover,
+					checked: defaulttag === "album",
 					tooltip: 'Image or media is a cover of an album'
 				},
 				{
 					label: 'Book cover',
 					value: 'Book cover fur',
-					checked: defaultBook,
+					checked: defaulttag === "book",
 					tooltip: 'Image or media is a front cover of a book'
 				},
 				{
 					label: 'Film cover',
 					value: 'Film cover fur',
-					checked: defaultFilm,
+					checked: defaulttag === "film",
 					tooltip: 'Image or media is a cover of a film'
+				},
+				{
+					label: 'Poster',
+					value: 'Poster fur',
+					checked: defaulttag === "poster",
+					tooltip: 'Image or media is a promotional poster'
 				}
 			]
 		} );
+
 	form.append( {
 			type: 'div',
 			label: 'Work area',
 			name: 'work_area'
 		} );
 
-	form.append( { type: 'submit' } );
+	form.append( { type: 'submit', label: 'Add to page' } );
 
-	var result = form.render();
-	Window.setContent( result );
-	Window.display();
+	dialog.setContent( form.render() );
+	dialog.display();
 
 	// We must init the
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
-	result.type[defaultIndex].dispatchEvent( evt );
-	Twinkle.fur.callback.choice(evt);
-}
+	result.type[defaultIndex].dispatchEvent( evt );  // XXX fixme
+	Twinkle.fur.addFUR.choice(evt);
+};
 
-// XXX scroller
-Twinkle.fur.callback.next = function furmeCallbackNext(event) {
-	window.location = wgArticlePath.replace(/\$1/, wgPageName);
-}
+Twinkle.fur.addFUR.callback = function twinklefurAddFURCallback(e) {
+	throw "not yet implemented";
+};
 
-// XXX scroller
-Twinkle.fur.callback.stopScrolling = function furmeCallbackStopScrolling(event) {
-	document.cookie = 'FurMeScroller-Counter=;path=/;expires=-1';
-	document.cookie = 'FurMeScroller-Images=;path=/;expires=-1';
-	window.location = wgArticlePath.replace(/\$1/, wgPageName);
-}
-
-Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
+Twinkle.fur.addFUR.choice = function furmeCallbackChoose(event) {
 	var value = event.target.value;
 	var root = event.target.form;
 	var work_area = new QuickForm.element( {
@@ -828,7 +784,6 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 	switch( value ) {
 
 	case 'Non-free use rationale':
-
 		work_area.append( {
 				type: 'input',
 				name: 'article',
@@ -1120,7 +1075,6 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 		break;
 
 	case 'Book cover fur':
-
 		work_area.append( {
 				type: 'input',
 				name: 'article',
@@ -1387,8 +1341,100 @@ Twinkle.fur.callback.choice = function furmeCallbackChoose(event) {
 	refreshImage.setAttribute('title', 'Refresh values');
 	refreshImage.style.width = '18px';
 	refreshImage.style.cursor = 'pointer';
-
 }
+
+Twinkle.fur.restrictionList = [
+	{ label: '{{Freedom of panorama}}', value: 'Freedom of panorama' },
+	{ label: '{{Insignia}}', value: 'Insignia' },
+	{ label: '{{SVG-Logo}}', value: 'SVG-Logo' },
+	{ label: '{{Trademark}}', value: 'Trademark' }
+];
+
+Twinkle.fur.addRestriction = function twinklefurAddRestriction() {
+	var dialog = new SimpleWindow( 500, 600 );
+	dialog.setTitle( "Add file usage restriction tag" );
+	dialog.setScriptName( "Twinkle \u00B7 File licensing" );  // U+00B7 MIDDLE DOT
+
+	var form = new QuickForm( Twinkle.fur.addRestriction.callback );
+
+	form.append({ type: 'header', label: 'Usage restriction tags' });
+	form.append({ type: 'checkbox', name: 'tags', list: Twinkle.fur.restrictionList } );
+
+	form.append( { type: 'submit', label: 'Add to page' } );
+
+	dialog.setContent( form.render() );
+	dialog.display();
+};
+
+Twinkle.fur.addFUR.callback = function twinklefurAddFURCallback(e) {
+	throw "not yet implemented";
+};
+
+
+
+
+
+
+
+
+
+
+			form.append({ type: 'header', label: 'Information summary' });
+			form.append( {
+					type: 'checkbox',
+					name: 'information',
+					list: [
+						{ label: '{{Information}}', value: 'information' }
+					],
+					event: Twinkle.tag.fileInformationDisplay
+				} );
+			form.append({ type: 'div', id: 'furme-information-placeholder' });
+			
+			
+			Twinkle.tag.fileInformationDisplay = function twinkletagFileInformationDisplay(e) {
+	if (e.target.checked) {
+		var placeholder = new QuickForm.element({
+			type: 'div',
+			id: 'furme-information-placeholder'
+		});
+		placeholder.append({
+			type: 'input',
+			name: 'informationDescription',
+			label: 'Description: '
+		});
+		placeholder.append({
+			type: 'input',
+			name: 'informationSource',
+			label: 'Source: '
+		});
+		placeholder.append({
+			type: 'input',
+			name: 'informationDate',
+			label: 'Date: '
+		});
+		placeholder.append({
+			type: 'input',
+			name: 'informationAuthor',
+			label: 'Author: '
+		});
+		placeholder.append({
+			type: 'input',
+			name: 'informationPermission',
+			label: 'Permission: '
+		});
+		placeholder.append({
+			type: 'input',
+			name: 'informationOtherVersions',
+			label: 'Other versions: '
+		});
+		
+		$(e.target.form).find("#furme-information-placeholder").replaceWith(placeholder.render());
+	} else {
+		$(e.target.form).find("#furme-information-placeholder").empty();
+	}
+};
+
+
 
 Twinkle.fur.callback.evaluate = function furmeCallbackEvaluate(event) {
 	var types = event.target.type;
