@@ -3,17 +3,25 @@
  *** friendlytag.js: Tag module
  ****************************************
  * Mode of invocation:     Tab ("Tag")
- * Active on:              Existing articles, all redirects
+ * Active on:              Existing articles; file pages with a corresponding file
+ *                         which is local (not on Commons); all redirects
  * Config directives in:   FriendlyConfig
  */
 
 Twinkle.tag = function friendlytag() {
+	// redirect tagging
 	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) === 'no' && $("span.redirectText").length > 0 ) {
-		Twinkle.tag.isRedirect = true;
+		Twinkle.tag.mode = 'redirect';
 		$(twAddPortletLink("#", "Tag", "friendly-tag", "Tag redirect", "")).click(Twinkle.tag.callback);
-	} else if( mw.config.get('wgNamespaceNumber') !== 0 || !mw.config.get('wgCurRevisionId') ) {
-		return;
-	} else {
+	}
+	// file tagging
+	else if( mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory") ) {
+		Twinkle.tag.mode = 'file';
+		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add maintenance tags to file", "")).click(Twinkle.tag.callback);
+	}
+	// article tagging
+	else if( mw.config.get('wgNamespaceNumber') === 0 && mw.config.get('wgCurRevisionId') ) {
+		Twinkle.tag.mode = 'article';
 		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add maintenance tags to article", "")).click(Twinkle.tag.callback);
 	}
 };
@@ -26,47 +34,76 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 
 	var form = new QuickForm( Twinkle.tag.callback.evaluate );
 
-	if( !Twinkle.tag.isRedirect ) {
-		Window.setTitle( "Article maintenance tagging" );
+	switch( Twinkle.tag.mode ) {
+		case 'article':
+			Window.setTitle( "Article maintenance tagging" );
 
-		form.append( {
-				type: 'checkbox',
-				list: [
-					{
-						label: 'Group into {{multiple issues}} if possible',
-						value: 'group',
-						name: 'group',
-						tooltip: 'If applying three or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped into a single {{multiple issues}} template.',
-						checked: Twinkle.getFriendlyPref('groupByDefault')
-					}
-				]
+			form.append( {
+					type: 'checkbox',
+					list: [
+						{
+							label: 'Group into {{multiple issues}} if possible',
+							value: 'group',
+							name: 'group',
+							tooltip: 'If applying three or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped into a single {{multiple issues}} template.',
+							checked: Twinkle.getFriendlyPref('groupByDefault')
+						}
+					]
+				}
+			);
+
+			form.append( { type:'header', label:'Maintenance templates' } );
+			form.append( { type:'checkbox', name: 'maintenance', list: Twinkle.tag.maintenanceList } );
+
+			form.append( { type:'header', label:'Problem templates' } );
+			form.append( { type:'checkbox', name: 'problem', list: Twinkle.tag.problemList } );
+
+			form.append( { type:'header', label:'Notice templates' } );
+			form.append( { type:'checkbox', name: 'notice', list: Twinkle.tag.noticeList } );
+
+			if( Twinkle.getFriendlyPref('customTagList').length ) {
+				form.append( { type:'header', label:'Custom templates' } );
+				form.append( { type: 'checkbox', name: 'custom', list: Twinkle.getFriendlyPref('customTagList') } );
 			}
-		);
+			break;
 
-		form.append( { type:'header', label:'Maintenance templates' } );
-		form.append( { type:'checkbox', name: 'maintenance', list: Twinkle.tag.maintenanceList } );
+		case 'file':
+			Window.setTitle( "File maintenance tagging" );
 
-		form.append( { type:'header', label:'Problem templates' } );
-		form.append( { type:'checkbox', name: 'problem', list: Twinkle.tag.problemList } );
+			// TODO: perhaps add custom tags TO list of checkboxes
 
-		form.append( { type:'header', label:'Notice templates' } );
-		form.append( { type:'checkbox', name: 'notice', list: Twinkle.tag.noticeList } );
+			form.append({ type: 'header', label: 'License and sourcing problem tags' });
+			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.licenseList } );
 
-		if( Twinkle.getFriendlyPref('customTagList').length ) {
-			form.append( { type:'header', label:'Custom templates' } );
-			form.append( { type: 'checkbox', name: 'custom', list: Twinkle.getFriendlyPref('customTagList') } );
-		}
-	} else {
-		Window.setTitle( "Redirect tagging" );
+			form.append({ type: 'header', label: 'Cleanup tags' } );
+			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.cleanupList } );
 
-		form.append( { type:'header', label:'Spelling, misspelling, tense and capitalization templates' } );
-		form.append( { type:'checkbox', name: 'spelling', list: Twinkle.tag.spellingList } );
+			form.append({ type: 'header', label: 'Image quality tags' } );
+			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.qualityList } );
 
-		form.append( { type:'header', label:'Alternative name templates' } );
-		form.append( { type:'checkbox', name: 'alternative', list: Twinkle.tag.alternativeList } );
+			form.append({ type: 'header', label: 'Wikimedia Commons-related tags' });
+			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.commonsList } );
 
-		form.append( { type:'header', label:'Miscellaneous and administrative redirect templates' } );
-		form.append( { type:'checkbox', name: 'administrative', list: Twinkle.tag.administrativeList } );
+			form.append({ type: 'header', label: 'Replacement tags' });
+			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.replacementList } );
+			break;
+
+		case 'redirect':
+			Window.setTitle( "Redirect tagging" );
+
+			form.append({ type: 'header', label:'Spelling, misspelling, tense and capitalization templates' });
+			form.append({ type: 'checkbox', name: 'spelling', list: Twinkle.tag.spellingList });
+
+			form.append({ type: 'header', label:'Alternative name templates' });
+			form.append({ type: 'checkbox', name: 'alternative', list: Twinkle.tag.alternativeList });
+
+			form.append({ type: 'header', label:'Miscellaneous and administrative redirect templates' });
+			form.append({ type: 'checkbox', name: 'administrative', list: Twinkle.tag.administrativeList });
+			break;
+
+		default:
+			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
+			break;
 	}
 
 	form.append( { type:'submit' } );
@@ -75,6 +112,8 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 	Window.setContent( result );
 	Window.display();
 };
+
+// Tags for ARTICLES start here
 
 Twinkle.tag.maintenanceList = [
 	{
@@ -499,6 +538,7 @@ Twinkle.tag.noticeList = [
 		value: 'underconstruction' }
 ];
 
+// Tags for REDIRECTS start here
 
 Twinkle.tag.spellingList = [
 	{
@@ -621,6 +661,85 @@ Twinkle.tag.administrativeList = [
 	}
 ];
 
+// maintenance tags for FILES start here
+
+Twinkle.tag.file = {};
+
+Twinkle.tag.file.licenseList = [
+	{ label: '{{Bsr}}: source info consists of bare image URL/generic base URL only', value: 'Bsr' },
+	{ label: '{{Non-free reduce}}: non-low-resolution fair use image (or too-long audio clip, etc)', value: 'Non-free reduce' },
+	{ label: '{{Non-free reduced}}: fair use media which has been reduced (old versions need to be deleted)', value: 'Non-free reduced' }
+];
+
+Twinkle.tag.file.cleanupList = [
+	{ label: '{{Artifacts}}: PNG contains residual compression artifacts', value: 'Artifacts' },
+	{ label: '{{Bad font}}: SVG uses fonts not available on the thumbnail server', value: 'Bad font' },
+	{ label: '{{Bad format}}: PDF/DOC/... file should be converted to a more useful format', value: 'Bad format' },
+	{ label: '{{Bad GIF}}: GIF that should be PNG, JPEG, or SVG', value: 'Bad GIF' },
+	{ label: '{{Bad JPEG}}: JPEG that should be PNG or SVG', value: 'Bad JPEG' },
+	{ label: '{{Bad trace}}: auto-traced SVG requiring cleanup', value: 'Bad trace' },
+	{ label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image' },
+	{ label: '{{Cleanup SVG}}: SVG needing code and/or appearance cleanup', value: 'Cleanup SVG' },
+	{ label: '{{ClearType}}: image (not screenshot) with ClearType anti-aliasing', value: 'ClearType' },
+	{ label: '{{Imagewatermark}}: image contains visible or invisible watermarking', value: 'Imagewatermark' },
+	{ label: '{{NoCoins}}: image using coins to indicate scale', value: 'NoCoins' },
+	{ label: '{{Overcompressed JPEG}}: JPEG with high levels of artifacts', value: 'Overcompressed JPEG' },
+	{ label: '{{Opaque}}: opaque background should be transparent', value: 'Opaque' },
+	{ label: '{{Remove border}}: unneeded border, white space, etc.', value: 'Remove border' },
+	{ label: '{{Rename media}}: this tag should not be under the "cleanup" heading', value: 'Rename media' },
+	{ label: '{{Should be PNG}}: GIF or JPEG should be lossless', value: 'Should be PNG' },
+	{
+		label: '{{Should be SVG}}: PNG, GIF or JPEG should be vector graphics', value: 'Should be SVG',
+		subgroup: {
+			name: 'svgCategory',
+			type: 'select',
+			list: [
+				{ label: '{{Should be SVG|other}}', value: 'other' },
+				{ label: '{{Should be SVG|alphabet}}: character images, font examples, etc.', value: 'alphabet' },
+				{ label: '{{Should be SVG|chemical}}: chemical diagrams, etc.', value: 'chemical' },
+				{ label: '{{Should be SVG|circuit}}: electronic circuit diagrams, etc.', value: 'circuit' },
+				{ label: '{{Should be SVG|coat of arms}}: coats of arms', value: 'coat of arms' },
+				{ label: '{{Should be SVG|diagram}}: diagrams that do not fit any other subcategory', value: 'diagram' },
+				{ label: '{{Should be SVG|emblem}}: emblems, free/libre logos, insignias, etc.', value: 'emblem' },
+				{ label: '{{Should be SVG|fair use}}: fair-use images, fair-use logos', value: 'fair use' },
+				{ label: '{{Should be SVG|flag}}: flags', value: 'flag' },
+				{ label: '{{Should be SVG|graph}}: visual plots of data', value: 'graph' },
+				{ label: '{{Should be SVG|logo}}: logos', value: 'logo' },
+				{ label: '{{Should be SVG|map}}: maps', value: 'map' },
+				{ label: '{{Should be SVG|music}}: musical scales, notes, etc.', value: 'music' },
+				{ label: '{{Should be SVG|physical}}: "realistic" images of physical objects, people, etc.', value: 'physical' },
+				{ label: '{{Should be SVG|symbol}}: miscellaneous symbols, icons, etc.', value: 'symbol' }
+			]
+		}
+	},
+	{ label: '{{Should be text}}: image should be represented as text, tables, or math markup', value: 'Should be text' }
+];
+
+Twinkle.tag.file.qualityList = [
+	{ label: '{{Image-blownout}}', value: 'Image-blownout' },
+	{ label: '{{Image-out-of-focus}}', value: 'Image-out-of-focus' },
+	{ label: '{{Image-Poor-Quality}}', value: 'Image-Poor-Quality' },
+	{ label: '{{Image-underexposure}}', value: 'Image-underexposure' },
+	{ label: '{{Low quality chem}}: disputed chemical structures', value: 'Low quality chem' }
+];
+
+Twinkle.tag.file.commonsList = [
+	{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
+	{ label: '{{Do not move to Commons}} (PD issue): file is PD in the US but not in country of origin', value: 'Do not move to Commons' },
+	{ label: '{{Do not move to Commons}} (other reason)', value: 'Do not move to Commons_reason' },
+	{ label: '{{Keep local}}: request to keep local copy of a Commons file', value: 'Keep local' },
+	{ label: '{{Now Commons}}: file has been copied to Commons', value: 'subst:ncd' },
+	{ label: '{{Shadows Commons}}: a different file is present on Commons under the same filename', value: 'Shadows Commons' }
+];
+
+Twinkle.tag.file.replacementList = [
+	{ label: '{{Obsolete}}: improved version available', value: 'Obsolete' },
+	{ label: '{{Redundant}}: exact duplicate of another file, but not yet orphaned', value: 'Redundant' },
+	{ label: '{{PNG version available}}', value: 'PNG version available' },
+	{ label: '{{SVG version available}}', value: 'SVG version available' }
+];
+
+
 // Set to true if template can be grouped into {{articleissues}}
 Twinkle.tag.groupHash = {
 	'3O': true,
@@ -736,7 +855,7 @@ Twinkle.tag.callbacks = {
 		var pageText = pageobj.getPageText().replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 
 		var i;
-		if( !Twinkle.tag.isRedirect ) {
+		if( !Twinkle.tag.mode === 'redirect' ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
 			for( i = 0; i < params.tags.length; i++ ) {
 				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im' );
@@ -799,7 +918,7 @@ Twinkle.tag.callbacks = {
 				if( tags[i] === 'globalize' ) {
 					currentTag += '{{' + params.globalizeSubcategory;
 				} else {
-					currentTag += ( Twinkle.tag.isRedirect ? '\n' : '' ) + '{{' + tags[i];
+					currentTag += ( Twinkle.tag.mode === 'redirect' ? '\n' : '' ) + '{{' + tags[i];
 				}
 
 				if( tags[i] === 'notability' && params.notabilitySubcategory !== 'none' ) {
@@ -851,7 +970,7 @@ Twinkle.tag.callbacks = {
 						break;
 				}
 				
-				currentTag += Twinkle.tag.isRedirect ? '}}' : '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}\n';
+				currentTag += Twinkle.tag.mode === 'redirect' ? '}}' : '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}\n';
 				tagText += currentTag;
 			}
 
@@ -872,7 +991,7 @@ Twinkle.tag.callbacks = {
 			summaryText += ']]}}';
 		}
 
-		if( Twinkle.tag.isRedirect ) {
+		if( Twinkle.tag.mode === 'redirect' ) {
 			pageText += tagText;
 		} else {
 			// smartly insert the new tags after any hatnotes. Regex is a bit more
@@ -882,7 +1001,7 @@ Twinkle.tag.callbacks = {
 				"$1" + tagText);
 		}
 		summaryText += ' tag' + ( ( tags.length + ( groupableTags.length > 3 ? 1 : 0 ) ) > 1 ? 's' : '' ) +
-			' to ' + ( Twinkle.tag.isRedirect ? 'redirect' : 'article' ) + Twinkle.getPref('summaryAd');
+			' to ' + Twinkle.tag.mode + Twinkle.getPref('summaryAd');
 
 		pageobj.setPageText(pageText);
 		pageobj.setEditSummary(summaryText);
@@ -894,40 +1013,158 @@ Twinkle.tag.callbacks = {
 		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
 			pageobj.patrol();
 		}
+	},
+
+	file: function friendlytagCallbacksFile(pageobj) {
+		var text = pageobj.getPageText();
+		var params = pageobj.getCallbackParameters();
+		var summary = "Adding ";
+
+		// Add in maintenance tags
+		if (params.tags.length) {
+
+			var tagtext = "";
+			$.each(params.tags, function(k, tag) {
+				tagtext += "{{" + (tag === "Do not move to Commons_reason" ? "Do not move to Commons" : tag);
+
+				var input;
+				switch (tag) {
+					case "subst:ncd":
+						/* falls through */
+					case "Keep local":
+						input = prompt( "{{" + (tag === "subst:ncd" ? "Now Commons" : tag) +
+							"}} - Enter the name of the image on Commons (if different from local name), excluding the File: prefix:", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += '|1=' + input;
+						}
+						break;
+					case "Rename media":
+						input = prompt( "{{Rename media}} - Enter the new name for the image (optional):", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|1=" + input;
+						}
+						input = prompt( "{{Rename media}} - Enter the reason for the rename (optional):", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|2=" + input;
+						}
+						break;
+					case "Cleanup image":
+						/* falls through */
+					case "Cleanup SVG":
+						input = prompt( "{{" + tag + "}} - Enter the reason for cleanup (required). To skip the tag, click Cancel:", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|1=" + input;
+						}
+						break;
+					case "Image-Poor-Quality":
+						input = prompt( "{{Image-Poor-Quality}} - Enter the reason why this image is so bad (required). To skip the tag, click Cancel:", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|1=" + input;
+						}
+						break;
+					case "Low quality chem":
+						input = prompt( "{{Low quality chem}} - Enter the reason why the diagram is disputed (required). To skip the tag, click Cancel:", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|1=" + input;
+						}
+						break;
+					case "PNG version available":
+						/* falls through */
+					case "SVG version available":
+						/* falls through */
+					case "Obsolete":
+						/* falls through */
+					case "Redundant":
+						input = prompt( "{{" + tag + "}} - Enter the name of the file which replaces this one (required). To skip the tag, click Cancel:", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|1=" + input;
+						}
+						break;
+					case "Do not move to Commons_reason":
+						input = prompt( "{{Do not move to Commons}} - Enter the reason why this image should not be moved to Commons (required). To skip the tag, click Cancel:", "" );
+						if (input === null) {
+							return true;  // continue
+						} else if (input !== "") {
+							tagtext += "|reason=" + input;
+						}
+						break;
+					default:
+						break;  // don't care
+				}
+
+				if (tag === "Should be SVG") {
+					tagtext += "|" + params.svgSubcategory;
+				}
+
+				tagtext += "}}\n";
+
+				summary += "{{" + tag + "}}, ";
+
+				return true;  // continue
+			});
+
+			text = tagtext + text;
+		}
+
+		pageobj.setPageText(text);
+		pageobj.setEditSummary(summary.substring(0, summary.length - 2) + Twinkle.getPref('summaryAd'));
+		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
+		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
+		pageobj.setCreateOption('nocreate');
+		pageobj.save();
+
+		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
+			pageobj.patrol();
+		}
 	}
 };
 
 Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	var form = e.target;
-	var tags, globalizeSubcategory, notabilitySubcategory;
-	if( Twinkle.tag.isRedirect ) {
-		tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
-	} else {
-		if( Twinkle.getFriendlyPref('customTagList').length ) {
-			tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) ).concat( form.getChecked( 'custom' ) );
-		} else {
-			tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) );
-		}
-		globalizeSubcategory = form.getChecked( 'problem.globalize' );
-		notabilitySubcategory = form.getChecked( 'problem.notability' );
-	}
-	var params;
+	var params = {};
 
-	if( !tags.length ) {
+	switch (Twinkle.tag.mode) {
+		case 'article':
+			if( Twinkle.getFriendlyPref('customTagList').length ) {
+				params.tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) ).concat( form.getChecked( 'custom' ) );
+			} else {
+				params.tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) );
+			}
+			params.group = form.group.checked;
+			params.globalizeSubcategory = form.getChecked( 'problem.globalize' );
+			params.globalizeSubcategory = params.globalizeSubcategory ? params.globalizeSubcategory[0] : null;
+			params.notabilitySubcategory = form.getChecked( 'problem.notability' );
+			params.notabilitySubcategory = params.notabilitySubcategory ? params.notabilitySubcategory[0] : null;
+			break;
+		case 'file':
+			params.svgSubcategory = form["imageTags.svgCategory"] ? form["imageTags.svgCategory"].value : null;
+			params.tags = form.getChecked( 'imageTags' );
+			break;
+		case 'redirect':
+			params.tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
+			break;
+		default:
+			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
+			break;
+	}
+
+	if( !params.tags.length ) {
 		alert( 'You must select at least one tag!' );
 		return;
-	}
-	if( !Twinkle.tag.isRedirect ) {
-		params = {
-			tags: tags,
-			group: form.group.checked,
-			globalizeSubcategory: globalizeSubcategory ? globalizeSubcategory[0] : null,
-			notabilitySubcategory: notabilitySubcategory ? notabilitySubcategory[0] : null
-		};
-	} else {
-		params = {
-			tags: tags
-		};
 	}
 
 	SimpleWindow.setButtonsEnabled( false );
@@ -935,11 +1172,23 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
 	Wikipedia.actionCompleted.notice = "Tagging complete, reloading article in a few seconds";
-	if (Twinkle.tag.isRedirect) {
+	if (Twinkle.tag.mode === 'redirect') {
 		Wikipedia.actionCompleted.followRedirect = false;
 	}
 
-	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), Twinkle.tag.isRedirect ? "Tagging redirect" : "Tagging article");
+	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Tagging " + Twinkle.tag.mode);
 	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.load(Twinkle.tag.callbacks.main);
+	switch (Twinkle.tag.mode) {
+		case 'article':
+			/* falls through */
+		case 'redirect':
+			wikipedia_page.load(Twinkle.tag.callbacks.main);
+			return;
+		case 'file':
+			wikipedia_page.load(Twinkle.tag.callbacks.file);
+			return;
+		default:
+			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
+			break;
+	}
 };
