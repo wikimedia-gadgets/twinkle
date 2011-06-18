@@ -11,7 +11,7 @@ Twinkle.unlink = function twinkleunlink() {
 	if( mw.config.get('wgNamespaceNumber') < 0 ) {
 		return;
 	}
-	$(twAddPortletLink("#", "Unlink", "tw-unlink", "Unlink backlinks", "")).click(Twinkle.unlink.callback);
+	$(twAddPortletLink("#", "Unlink", "tw-unlink", "Unlink backlinks", "")).click(function(){Twinkle.unlink.callback()}); //wrap call in function, callback expects a reason parameter.
 };
 
 Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
@@ -28,7 +28,7 @@ Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
 };
 
 // the parameter is used when invoking unlink from admin speedy
-Twinkle.unlink.callback = function twinkleunlinkCallback(presetReason) {
+Twinkle.unlink.callback = function(presetReason) {
 	var Window = new SimpleWindow( 800, 400 );
 	Window.setTitle( "Unlink backlinks" );
 	Window.setScriptName( "Twinkle" );

@@ -1529,11 +1529,7 @@ Twinkle.warn.callbacks = {
 		
 		if ( Twinkle.getPref('showSharedIPNotice') && isIPAddress( mw.config.get('wgTitle') ) ) {
 			Status.info( 'Info', 'Adding a shared ip notice' );
-			if( QueryString.get( 'type' ) === 'vand' ) {
-				text +=  "\n:''If this is a shared [[IP address]], and you didn't make any [[Wikipedia:vandalism|unconstructive]] edits, consider [[Wikipedia:Why create an account?|creating an account]] for yourself so you can avoid further irrelevant warnings.'' ";
-			} else {
-				text +=  "\n:''If this is a shared [[IP address]], and you didn't make the edit, consider [[Wikipedia:Why create an account?|creating an account]] for yourself so you can avoid further irrelevant notices.'' ";
-			}
+			text +=  "\n{{subst:SharedIPAdvice}}";
 		}
 
 		var summary = messageData.summary;
