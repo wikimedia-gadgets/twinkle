@@ -1186,6 +1186,42 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					parameters["1"] = title;
 					parameters["2"] = reason;
 					break;
+				case 'xfd':
+					var votepage = prompt( 'If the title of the discussion is different than the title of the page, and it is not an SfD discussion or a page where the discussion is not where it is expected to be, please enter the title of the discussion here (leave empty to skip):', "" );
+					if (votepage === null)
+					{
+						statelem.error( 'Aborted by user.' );
+						return null;
+					}
+					if (votepage === '')
+					{
+						var fullvotepage = prompt( 'For SfD discussions and pages where discussions are not where they are expected to be, please enter the full title of the discussion, including the namespace, here: (leave empty to skip):', "" );
+						if (fullvotepage === null)
+						{
+						statelem.error( 'Aborted by user.' );
+						return null;
+						}
+					}
+					var redirectpar = prompt( 'If this page is a redirect that was discussed at RfD, please type the word "yes" here: (leave empty to skip):', "");
+					if (redirectpar === null)
+					{
+						statelem.error( 'Aborted by user.' );
+						return null;
+					}
+					if (votepage !== '')
+					{
+						parameters.votepage = votepage
+						
+					}
+					if (fullvotepage !== '')
+					{
+						parameters.fullvotepage = fullvotepage
+					}
+					if (redirect !== '')
+					{
+						parameters.redirect = redirectpar
+					}
+					break;
 				case 'copypaste':
 					var copytitle = prompt( 'Please enter the title of the original page that was copy-pasted here:', "" );
 					if (copytitle === null)
