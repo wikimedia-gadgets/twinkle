@@ -8,7 +8,7 @@
  */
 
 Twinkle.prod = function twinkleprod() {
-	if( mw.config.get('wgNamespaceNumber') !== 0 || !mw.config.get('wgCurRevisionId') || 
+	if( mw.config.get('wgNamespaceNumber') !== 0 || !mw.config.get('wgCurRevisionId') ||
 		(QueryString.equals('redirect', 'no') && $("span.redirectText").length > 0) ) {
 		return;
 	}

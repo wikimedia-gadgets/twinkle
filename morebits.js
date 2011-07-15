@@ -895,9 +895,11 @@ Unbinder.prototype = {
 	rebind: function UnbinderRebind() {
 		var content = this.content;
 		content.self = this;
-		for( var current in this.history )
-			if( this.history.hasOwnProperty( current ) )
+		for( var current in this.history ) {
+			if( this.history.hasOwnProperty( current ) ) {
 				content = content.replace( current, this.history[current] );
+			}
+		}
 		return content;
 	},
 	prefix: null, // %UNIQ::0.5955981644938324::
@@ -2855,9 +2857,13 @@ var Status = function( text, stat, type ) {
 	this.text = this.codify(text);
 	this.stat = this.codify(stat);
 	this.type = type || 'status';
-	// hack to force the page not to reload when an error is output - see also update() below
 	if (type === 'error') {
+		// hack to force the page not to reload when an error is output - see also update() below
 		Wikipedia.numberOfActionsLeft = 1000;
+		// call error callback
+		if (Status.errorEvent) {
+			Status.errorEvent();
+		}
 	}
 	this.generate(); 
 	if( stat ) {
@@ -2873,9 +2879,18 @@ Status.init = function( root ) {
 		root.removeChild( root.firstChild );
 	}
 	Status.root = root;
+	Status.errorEvent = null;
 };
 
 Status.root = null;
+
+Status.onError = function( handler ) {
+	if (typeof handler === "function") {
+		Status.errorEvent = handler;
+	} else {
+		throw "Status.onError: handler is not a function";
+	}
+};
 
 Status.prototype = {
 	stat: null,
@@ -2916,9 +2931,13 @@ Status.prototype = {
 		this.stat = this.codify( status );
 		if( type ) {
 			this.type = type;
-			// hack to force the page not to reload when an error is output - see also Status() above
 			if (type === 'error') {
+				// hack to force the page not to reload when an error is output - see also Status() above
 				Wikipedia.numberOfActionsLeft = 1000;
+				// call error callback
+				if (Status.errorEvent) {
+					Status.errorEvent();
+				}
 			}
 		}
 		this.render();

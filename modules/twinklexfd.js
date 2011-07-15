@@ -34,6 +34,24 @@ Twinkle.xfd.num2order = function twinklexfdNum2order( num ) {
 	}
 };
 
+Twinkle.xfd.currentRationale = null;
+
+// error callback on Status object
+Twinkle.xfd.printRationale = function twinklexfdPrintRationale() {
+	if (Twinkle.xfd.currentRationale) {
+		var p = document.createElement("p");
+		p.textContent = "Your deletion rationale is provided below, which you can copy and paste into a new XFD dialog if you wish to try again:";
+		var pre = document.createElement("pre");
+		pre.className = "toccolours";
+		pre.style.marginTop = "0";
+		pre.textContent = Twinkle.xfd.currentRationale;
+		p.appendChild(pre);
+		Status.root.appendChild(p);
+		// only need to print the rationale once
+		Twinkle.xfd.currentRationale = null;
+	}
+};
+
 Twinkle.xfd.callback = function twinklexfdCallback() {
 	var Window = new SimpleWindow( 600, 350 );
 	Window.setTitle( "Nominate for deletion (XfD)" );
@@ -487,6 +505,7 @@ Twinkle.xfd.callbacks = {
 			}
 			pageobj.setCreateOption('createonly');
 			pageobj.save();
+			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 		},
 		todaysList: function(pageobj) {
 			var old_text = pageobj.getPageText();
@@ -585,6 +604,7 @@ Twinkle.xfd.callbacks = {
 			}
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
+			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
@@ -721,6 +741,7 @@ Twinkle.xfd.callbacks = {
 			}
 			pageobj.setCreateOption('createonly');
 			pageobj.save();
+			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 		},
 		todaysList: function(pageobj) {
 			var text = pageobj.getPageText();
@@ -874,6 +895,7 @@ Twinkle.xfd.callbacks = {
 			}
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
+			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 		}
 	},
 
@@ -918,6 +940,7 @@ Twinkle.xfd.callbacks = {
 			}
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
+			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
@@ -1038,6 +1061,7 @@ Twinkle.xfd.callbacks = {
 			}
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
+			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
@@ -1148,6 +1172,7 @@ Twinkle.xfd.callbacks = {
 			}
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
+			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
@@ -1200,6 +1225,9 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( e.target );
+
+	Twinkle.xfd.currentRationale = reason;
+	Status.onError(Twinkle.xfd.printRationale);
 
 	if( !type ) {
 		Status.error( 'Error', 'no action given' );
