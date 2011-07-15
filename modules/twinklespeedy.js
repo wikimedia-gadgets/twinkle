@@ -952,7 +952,6 @@ Twinkle.speedy.callbacks = {
 				var callback = function(pageobj) {
 					var initialContrib = pageobj.getCreator();
 					var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-					var nowelcome = Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(params.normalized) === -1;
 					var notifytext;
 
 					// specialcase "db" and "db-multiple"
@@ -974,7 +973,7 @@ Twinkle.speedy.callbacks = {
 							notifytext += "|" + i + "=" + params.utparams[i];
 						}
 					}
-					notifytext += (nowelcome ? "|nowelcome=yes" : "") + "}} ~~~~";
+					notifytext += (params.welcomeuser ? "" : "|nowelcome=yes") + "}} ~~~~";
 
 					usertalkpage.setAppendText(notifytext);
 					usertalkpage.setEditSummary("Notification: speedy deletion nomination of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
@@ -1408,6 +1407,27 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		notifyuser = (Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(normalized) !== -1) && e.target.form.notify.checked;
 	}
 
+	var welcomeuser = false;
+	if (notifyuser)
+	{
+		if (value === 'multiple')
+		{
+			for (i in Twinkle.speedy.dbmultipleCriteria)
+			{
+				if (typeof Twinkle.speedy.dbmultipleCriteria[i] === 'string' &&
+					Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(Twinkle.speedy.dbmultipleCriteria[i]) !== -1)
+				{
+					welcomeuser = true;
+					break;
+				}
+			}
+		}
+		else
+		{
+			welcomeuser = Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(normalized) !== -1;
+		}
+	}
+
 	var csdlog = false;
 	if (Twinkle.getPref('logSpeedyNominations') && value === 'multiple')
 	{
@@ -1431,6 +1451,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		normalized: normalized,
 		watch: watchPage,
 		usertalk: notifyuser,
+		welcomeuser: welcomeuser,
 		lognomination: csdlog
 	};
 
