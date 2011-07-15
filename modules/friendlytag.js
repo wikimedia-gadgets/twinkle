@@ -13,12 +13,12 @@ Twinkle.tag = function friendlytag() {
 	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) === 'no' && $("span.redirectText").length > 0 ) {
 		Twinkle.tag.mode = 'redirect';
 		$(twAddPortletLink("#", "Tag", "friendly-tag", "Tag redirect", "")).click(Twinkle.tag.callback);
-	} 
+	}
 	// file tagging
 	else if( mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory") ) {
 		Twinkle.tag.mode = 'file';
 		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add maintenance tags to file", "")).click(Twinkle.tag.callback);
-	} 
+	}
 	// article tagging
 	else if( mw.config.get('wgNamespaceNumber') === 0 && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
@@ -1032,7 +1032,7 @@ Twinkle.tag.callbacks = {
 					case "subst:ncd":
 						/* falls through */
 					case "Keep local":
-						input = prompt( "{{" + (tag === "subst:ncd" ? "Now Commons" : tag) + 
+						input = prompt( "{{" + (tag === "subst:ncd" ? "Now Commons" : tag) +
 							"}} - Enter the name of the image on Commons (if different from local name), excluding the File: prefix:", "" );
 						if (input === null) {
 							return true;  // continue
@@ -1105,11 +1105,11 @@ Twinkle.tag.callbacks = {
 					default:
 						break;  // don't care
 				}
-				
+
 				if (tag === "Should be SVG") {
 					tagtext += "|" + params.svgSubcategory;
 				}
-				
+
 				tagtext += "}}\n";
 
 				summary += "{{" + tag + "}}, ";
