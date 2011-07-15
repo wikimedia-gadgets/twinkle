@@ -1090,7 +1090,7 @@ Twinkle.xfd.callbacks = {
 
 	rfd: {
 		// This is a callback from an API request, which gets the target of the redirect
-		main: function(apiobj) {
+		findTargetCallback: function(apiobj) {
 			var xmlDoc = apiobj.responseXML;
 			var target = $(xmlDoc).find('redirects r').first().attr('to');
 			if( !target ) {
@@ -1098,30 +1098,32 @@ Twinkle.xfd.callbacks = {
 				return;
 			}
 			apiobj.params.target = target;
-
+			Twinkle.xfd.callbacks.rfd.main(apiobj.params);
+		},
+		main: function(params) {
 			var date = new Date();
-			apiobj.params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
+			params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 
 			// Tagging redirect
 			var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Adding deletion tag to redirect");
 			wikipedia_page.setFollowRedirect(false);
-			wikipedia_page.setCallbackParameters(apiobj.params);
+			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.rfd.taggingRedirect);
 
 			// Updating data for the action completed event
-			Wikipedia.actionCompleted.redirect = apiobj.params.logpage;
+			Wikipedia.actionCompleted.redirect = params.logpage;
 			Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
 
 			// Adding discussion
-			wikipedia_page = new Wikipedia.page(apiobj.params.logpage, "Adding discussion to today's log");
+			wikipedia_page = new Wikipedia.page(params.logpage, "Adding discussion to today's log");
 			wikipedia_page.setFollowRedirect(true);
-			wikipedia_page.setCallbackParameters(apiobj.params);
+			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.rfd.todaysList);
 
 			// Notifying initial contributor
-			if (apiobj.params.usertalk) {
+			if (params.usertalk) {
 				var thispage = new Wikipedia.page(mw.config.get('wgPageName'));
-				thispage.setCallbackParameters(apiobj.params);
+				thispage.setCallbackParameters(params);
 				thispage.lookupCreator(Twinkle.xfd.callbacks.rfd.userNotification);
 			}
 		},
@@ -1392,15 +1394,22 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		break;
 
 	case 'rfd':
-		// Find current target of redirect
-		query = {
-			'action': 'query',
-			'titles': mw.config.get('wgPageName'),
-			'redirects': true
-		};
-		wikipedia_api = new Wikipedia.api( "Finding target of redirect", query, Twinkle.xfd.callbacks.rfd.main );
-		wikipedia_api.params = { usertalk: usertalk, reason: reason };
-		wikipedia_api.post();
+		params = { usertalk: usertalk, reason: reason };
+		if (document.getElementById("softredirect")) {
+			// For soft redirects, skip straight to the callback
+			params.target = document.getElementById("softredirect").textContent.replace(/^\:+/, "");
+			Twinkle.xfd.callbacks.rfd.main(params);
+		} else {
+			// Find current target of redirect
+			query = {
+				'action': 'query',
+				'titles': mw.config.get('wgPageName'),
+				'redirects': true
+			};
+			wikipedia_api = new Wikipedia.api( "Finding target of redirect", query, Twinkle.xfd.callbacks.rfd.findTargetCallback );
+			wikipedia_api.params = params;
+			wikipedia_api.post();
+		}
 		break;
 	default:
 		alert("twinklexfd: unknown XFD discussion venue");
