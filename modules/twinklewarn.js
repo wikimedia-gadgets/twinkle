@@ -776,7 +776,11 @@ Twinkle.warn.messages = {
 			label:"Notify authors of speedy deletion tagged articles", 
 			summary:"Notice: Please notify authors of articles tagged for speedy deletion"
 		},
-		"uw-notvote": { 
+		"uw-notvand": {
+			label:"Mislabelling edits as vandalism",
+			summary:"Notice: Misidentifying edits as vandalism"
+		},
+		"uw-notvote": {
 			label:"We use consensus, not voting", 
 			summary:"Notice: We use consensus, not voting" 
 		},
