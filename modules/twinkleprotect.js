@@ -901,7 +901,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			var rppparams = {
 				reason: reason,
 				typename: typename,
-				//category: form.category.value,
+				category: form.category.value,
 				expiry: form.expiry.value
 			};
 
