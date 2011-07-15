@@ -3,12 +3,13 @@
  *** twinkleprod.js: PROD module
  ****************************************
  * Mode of invocation:     Tab ("PROD")
- * Active on:              Existing articles
+ * Active on:              Existing articles which are not redirects
  * Config directives in:   TwinkleConfig
  */
 
 Twinkle.prod = function twinkleprod() {
-	if( mw.config.get('wgNamespaceNumber') !== 0 || !mw.config.get('wgCurRevisionId') ) {
+	if( mw.config.get('wgNamespaceNumber') !== 0 || !mw.config.get('wgCurRevisionId') || 
+		(QueryString.equals('redirect', 'no') && $("span.redirectText").length > 0) ) {
 		return;
 	}
 	if (twinkleUserAuthorized) {
