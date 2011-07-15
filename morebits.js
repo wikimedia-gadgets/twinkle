@@ -1084,6 +1084,12 @@ Wikipedia.namespacesFriendly = {
 	'109': 'Book talk'
 };
 
+// Analyzes the HTML of the current page (i.e. no AJAX requests) to determine if it
+// is a redirect or soft redirect
+Wikipedia.isPageRedirect = function wikipediaIsPageRedirect() {
+	return !!($("span.redirectText").length > 0 || document.getElementById("softredirect"));
+};
+
 // we dump all XHR here so they won't loose props
 // REMOVEME after Wikipedia.wiki is gone
 Wikipedia.dump = [];

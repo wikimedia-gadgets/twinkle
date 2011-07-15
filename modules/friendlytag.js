@@ -10,7 +10,7 @@
 
 Twinkle.tag = function friendlytag() {
 	// redirect tagging
-	if( QueryString.exists( 'redirect' ) && QueryString.get( 'redirect' ) === 'no' && $("span.redirectText").length > 0 ) {
+	if( Wikipedia.isPageRedirect() ) {
 		Twinkle.tag.mode = 'redirect';
 		$(twAddPortletLink("#", "Tag", "friendly-tag", "Tag redirect", "")).click(Twinkle.tag.callback);
 	}

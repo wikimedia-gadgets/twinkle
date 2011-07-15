@@ -13,7 +13,7 @@ Twinkle.xfd = function twinklexfd() {
 	// * non-existent pages
 	// * files on Commons, whether there is a local page or not (unneeded local pages of files on Commons are eligible for CSD F2)
 	// * file pages without actual files (these are eligible for CSD G8)
-	if ( mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') || (mw.config.get('wgNamespaceNumber') === 6 && (document.getElementById('mw-sharedupload') || (!document.getElementById('mw-imagepage-section-filehistory') && !document.getElementsByClassName('redirectText').length))) ) {
+	if ( mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') || (mw.config.get('wgNamespaceNumber') === 6 && (document.getElementById('mw-sharedupload') || (!document.getElementById('mw-imagepage-section-filehistory') && !Wikipedia.isPageRedirect()))) ) {
 		return;
 	}
 	if (twinkleUserAuthorized) {
@@ -100,7 +100,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append( {
 			type: 'option',
 			label: 'RfD (Redirects for discussion)',
-			selected: QueryString.equals('redirect', 'no') && ($("span.redirectText").length > 0),
+			selected: Wikipedia.isPageRedirect(),
 			value: 'rfd'
 		} );
 	//categories.append( {
