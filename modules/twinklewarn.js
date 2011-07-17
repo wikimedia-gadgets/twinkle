@@ -871,6 +871,10 @@ Twinkle.warn.messages = {
 		"uw-warn": { 
 			label:"Place user warning templates when reverting vandalism", 
 			summary:"Notice: You can use user warning templates when reverting vandalism"
+		},
+		"uw-userspace draft finish": { 
+			label:"Stale userspace draft", 
+			summary:"Notice: Stale Userspace draft" 
 		}
 	},
 	singlewarn: {
