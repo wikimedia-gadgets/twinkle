@@ -58,9 +58,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 			name:'article',
 			label:'Linked article',
 			value:( QueryString.exists( 'vanarticle' ) ? QueryString.get( 'vanarticle' ) : '' ),
-			tooltip:'An article might be linked to the notice, either it was a revert to said article that dispatched this notice. Leave empty for no article to be linked'
+			tooltip:'An article can be linked within the notice, perhaps because it was a revert to said article that dispatched this notice. Leave empty for no article to be linked.'
 		} );
-
 
 	var more = form.append( { type:'field', label:'Fill in an optional reason and hit \"Submit\"' } );
 	more.append( { type:'textarea', label:'More:', name:'reason', tooltip:'Perhaps a reason, or that a more detailed notice must be appended' } );
@@ -69,6 +68,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	$(previewlink).click(function(){
 		Twinkle.warn.callbacks.preview();
 	});
+	previewlink.style.cursor = "pointer";
 	previewlink.textContent = 'Preview';
 	more.append( { type: 'div', name: 'warningpreview', label: [ previewlink ] } );
 
@@ -949,7 +949,7 @@ Twinkle.warn.messages = {
 		},
 		"uw-socksuspect": {
 			label:"Sockpuppetry",
-			summary:"Warning: Sockpuppetry"
+			summary:"Warning: You are a suspected [[WP:SOCK|sockpuppet]]"  // of User:...
 		},
 		"uw-upv": { 
 			label:"Userpage vandalism", 
@@ -1373,6 +1373,15 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 			e.target.form.reason.value = '';
 		}
 	}
+
+	var $article = $(e.target.article);
+	if (main_group === "singlewarn" && value === "uw-socksuspect") {
+		$article.prev().hide();
+		$article.before('<span id="tw-spi-article-username">Username of sock master, if known (without User:) </span>');
+	} else {
+		$("span#tw-spi-article-username").remove();
+		$article.prev().show();
+	}
 };
 
 Twinkle.warn.callbacks = {
@@ -1524,21 +1533,31 @@ Twinkle.warn.callbacks = {
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
 
-			if( params.sub_group === 'uw-username' ) {
-				text += "{{subst:" + params.sub_group + ( params.reason ? '|1=' + params.reason : '' ) + "|subst=subst:}} ~~~~";
-			} else {
-				text += "{{subst:" + params.sub_group + ( params.article ? '|1=' + params.article : '' ) + "|subst=subst:}}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + "~~~~";
+			switch( params.sub_group ) {
+				case 'uw-username':
+					text += "{{subst:" + params.sub_group + ( params.reason ? '|1=' + params.reason : '' ) + "|subst=subst:}} ~~~~";
+					break;
+				case 'uw-socksuspect':
+					text += "{{subst:" + params.sub_group + ( params.article ? '|1=User:' + params.article : '' ) + "|subst=subst:}}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + " ~~~~";
+					break;
+				default:
+					text += "{{subst:" + params.sub_group + ( params.article ? '|1=' + params.article : '' ) + "|subst=subst:}}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + "~~~~";
+					break;
 			}
 		}
 		
 		if ( Twinkle.getPref('showSharedIPNotice') && isIPAddress( mw.config.get('wgTitle') ) ) {
-			Status.info( 'Info', 'Adding a shared ip notice' );
+			Status.info( 'Info', 'Adding a shared IP notice' );
 			text +=  "\n{{subst:SharedIPAdvice}}";
 		}
 
 		var summary = messageData.summary;
 		if ( messageData.suppressArticleInSummary !== true && params.article ) {
-			summary += " on [[" + params.article + "]]";
+			if ( params.sub_group === "uw-socksuspect" ) {  // this template requires a username
+				summary += " of [[User:" + params.article + "]]";
+			} else {
+				summary += " on [[" + params.article + "]]";
+			}
 		}
 		summary += "." + Twinkle.getPref("summaryAd");
 
