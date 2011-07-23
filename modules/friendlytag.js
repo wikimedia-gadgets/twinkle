@@ -936,6 +936,15 @@ Twinkle.tag.callbacks = {
 							currentTag += '|reason=' + reason;
 						}
 						break;
+					case 'copypaste':
+						var url = prompt('Please enter the URL which is believed to be the source of the copy-paste.  \n' +
+							"Just click OK if you don't know.  To skip the {{copypaste}} tag, click Cancel.", "");
+						if (url === null) {
+							continue;
+						} else if (url !== "") {
+							currentTag += '|url=' + url;
+						}
+						break;
 					case 'notenglish':
 						var langname = prompt('Please enter the name of the language the article is thought to be written in.  \n' +
 							"Just click OK if you don't know.  To skip the {{notenglish}} tag, click Cancel.", "");
