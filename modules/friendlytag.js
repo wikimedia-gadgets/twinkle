@@ -4,7 +4,9 @@
  ****************************************
  * Mode of invocation:     Tab ("Tag")
  * Active on:              Existing articles; file pages with a corresponding file
- *                         which is local (not on Commons); all redirects
+ *                         which is local (not on Commons); existing user subpages
+ *                         and existing subpages of Wikipedia:Articles for creation;
+ *                         all redirects
  * Config directives in:   FriendlyConfig
  */
 
@@ -23,6 +25,11 @@ Twinkle.tag = function friendlytag() {
 	else if( mw.config.get('wgNamespaceNumber') === 0 && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
 		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add maintenance tags to article", "")).click(Twinkle.tag.callback);
+	}
+	// tagging of draft articles
+	else if( ((mw.config.get('wgNamespaceNumber') === 2 && mw.config.get('wgPageName').indexOf("/") !== -1) || /^Wikipedia\:Articles[ _]for[ _]creation\//.exec(mw.config.get('wgPageName')) ) && mw.config.get('wgCurRevisionId') ) {
+		Twinkle.tag.mode = 'draft';
+		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add review tags to draft article", "")).click(Twinkle.tag.callback);
 	}
 };
 
@@ -99,6 +106,13 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 
 			form.append({ type: 'header', label:'Miscellaneous and administrative redirect templates' });
 			form.append({ type: 'checkbox', name: 'administrative', list: Twinkle.tag.administrativeList });
+			break;
+
+		case 'draft':
+			Window.setTitle( "Article draft tagging" );
+
+			form.append({ type: 'header', label:'Draft article tags' });
+			form.append({ type: 'checkbox', name: 'draftTags', list: Twinkle.tag.draftList });
 			break;
 
 		default:
@@ -740,6 +754,13 @@ Twinkle.tag.file.replacementList = [
 ];
 
 
+// Tags for DRAFT ARTICLES start here
+
+Twinkle.tag.draftList = [
+	{ label: '{{New unreviewed article}}: mark article for later review', value: 'new unreviewed article' }
+];
+
+
 // Contains those article tags that can be grouped into {{multiple issues}}.
 // This list includes synonyms.
 Twinkle.tag.groupHash = [
@@ -881,7 +902,7 @@ Twinkle.tag.callbacks = {
 		var pageText = pageobj.getPageText().replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 
 		var i;
-		if( !Twinkle.tag.mode === 'redirect' ) {
+		if( Twinkle.tag.mode !== 'redirect' ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
 			for( i = 0; i < params.tags.length; i++ ) {
 				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im' );
@@ -1191,6 +1212,10 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 		case 'redirect':
 			params.tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
+			break;
+		case 'draft':
+			params.tags = form.getChecked( 'draftTags' );
+			Twinkle.tag.mode = 'article';
 			break;
 		default:
 			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
