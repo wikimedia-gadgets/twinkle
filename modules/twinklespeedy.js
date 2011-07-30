@@ -556,6 +556,13 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		value: 'attack',
 		tooltip: 'Pages that serve no purpose but to disparage their subject or some other entity (e.g., "John Q. Doe is an imbecile"). This includes a biography of a living person that is negative in tone and unsourced, where there is no NPOV version in the history to revert to. Administrators deleting such pages should not quote the content of the page in the deletion summary!'
 	});
+	if (!multiple) {
+		result.push({
+			label: 'G10: Wholly negative, unsourced BLP',
+			value: 'negublp',
+			tooltip: 'A biography of a living person that is entirely negative in tone and unsourced, where there is no neutral version in the history to revert to.'
+		});
+	}
 	result.push({
 		label: 'G11: Unambiguous advertising',
 		value: 'spam',
@@ -611,6 +618,7 @@ Twinkle.speedy.normalizeHash = {
 	'redirnone': 'g8',
 	'templatecat': 'g8',
 	'attack': 'g10',
+	'negublp': 'g10',
 	'spam': 'g11',
 	'copyvio': 'g12',
 	'nocontext': 'a1',
@@ -674,6 +682,7 @@ Twinkle.speedy.reasonHash = {
 	'redirnone': '[[Wikipedia:Redirect|redirect]] to a deleted or nonexistent page',
 	'templatecat': 'Populated by deleted or retargeted templates',
 	'attack': '[[WP:ATP|Attack page]] or negative unsourced [[WP:BLP|BLP]]',
+	'negublp': 'Negative unsourced [[WP:BLP|BLP]]',
 	'spam': 'Unambiguous [[WP:ADS|advertising]] or promotion',
 	'copyvio': 'Unambiguous [[WP:C|copyright infringement]]',
 // Articles
