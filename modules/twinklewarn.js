@@ -1583,7 +1583,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 		reason: e.target.reason.value,
 		main_group: e.target.main_group.value,
 		sub_group: e.target.sub_group.value,
-		article: e.target.article.value.replace( /^(Image|Category):/i, ':$1:' ),
+		article: e.target.article.value,  // .replace( /^(Image|Category):/i, ':$1:' ),  -- apparently no longer needed...
 		block_timer: e.target.block_timer ? e.target.block_timer.value : null
 	};
 
