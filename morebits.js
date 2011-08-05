@@ -104,8 +104,41 @@ var Cookies = {
 
 /**
  * **************** QuickForm ****************
- * Quickform is a class for creation of simple and standard forms without much 
+ * QuickForm is a class for creation of simple and standard forms without much 
  * specific coding.
+ *
+ * Index to QuickForm element types:
+ *
+ *   select    A combo box (aka drop-down).
+ *              - Attributes: name, label, multiple, size, list, event
+ *   option    An element for a combo box.
+ *              - Attributes: value, label, selected, disabled
+ *   optgroup  A group of "option"s.
+ *              - Attributes: label, list
+ *   field     A fieldset (aka group box).
+ *              - Attributes: name, label
+ *   checkbox  A checkbox. Must use "list" parameter.
+ *              - Attributes: name, list, event
+ *              - Attributes (within list): name, label, value, checked, disabled, event, subgroup
+ *   radio     A radio button. Must use "list" parameter.
+ *              - Attributes: name, list, event
+ *              - Attributes (within list): name, label, value, checked, disabled, event, subgroup
+ *   input     A text box.
+ *              - Attributes: name, label, value, size, disabled, readonly, maxlength, event
+ *   dyninput  A set of text boxes with "Remove" buttons and an "Add" button.
+ *              - Attributes: name, label, min, max, sublabel, value, size, maxlength, event
+ *   hidden    An invisible form field.
+ *              - Attributes: name, value
+ *   div       A generic placeholder element or label.
+ *              - Attributes: name, label
+ *   submit    A submit button. SimpleWindow moves these to the footer of the dialog.
+ *              - Attributes: name, label, disabled
+ *   button    A generic button.
+ *              - Attributes: name, label, disabled, event
+ *   textarea  A big, multi-line text box.
+ *              - Attributes: name, label, value, cols, rows, disabled, readonly
+ *
+ * Global attributes: id, tooltip, extra, adminonly
  */
 
 var QuickForm = function QuickForm( event, eventType ) {
