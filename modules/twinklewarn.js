@@ -1314,7 +1314,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 
 Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSubcategory(e) {
 	var main_group = e.target.form.main_group.value;
-	var value = e.target.form.value.value;
+	var value = e.target.form.sub_group.value;
 
 	if( main_group === 'singlewarn' ) {
 		if( value === 'uw-username' ) {
@@ -1374,7 +1374,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		}
 	}
 
-	var $article = $(e.target.article);
+	var $article = $(e.target.form.article);
 	if (main_group === "singlewarn" && value === "uw-socksuspect") {
 		$article.prev().hide();
 		$article.before('<span id="tw-spi-article-username">Username of sock master, if known (without User:) </span>');
