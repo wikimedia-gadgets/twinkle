@@ -1218,16 +1218,15 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					}
 					if (votepage !== '')
 					{
-						parameters.votepage = votepage
-						
+						parameters.votepage = votepage;
 					}
 					if (fullvotepage !== '')
 					{
-						parameters.fullvotepage = fullvotepage
+						parameters.fullvotepage = fullvotepage;
 					}
 					if (redirect !== '')
 					{
-						parameters.redirect = redirectpar
+						parameters.redirect = redirectpar;
 					}
 					break;
 				case 'copypaste':

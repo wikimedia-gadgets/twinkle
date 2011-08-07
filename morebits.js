@@ -129,6 +129,8 @@ var Cookies = {
  *              - Attributes: name, label, min, max, sublabel, value, size, maxlength, event
  *   hidden    An invisible form field.
  *              - Attributes: name, value
+ *   header    A level 5 header.
+ *              - Attributes: label
  *   div       A generic placeholder element or label.
  *              - Attributes: name, label
  *   submit    A submit button. SimpleWindow moves these to the footer of the dialog.
