@@ -34,7 +34,7 @@ Twinkle.tag = function friendlytag() {
 };
 
 Twinkle.tag.callback = function friendlytagCallback( uid ) {
-	var Window = new SimpleWindow( 630, 400 );
+	var Window = new SimpleWindow( 630, (Twinkle.tag.mode === "article") ? 450 : 400 );
 	Window.setScriptName( "Twinkle" );
 	// anyone got a good policy/guideline/info page/instructional page link??
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#tag" );
@@ -59,18 +59,23 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 				}
 			);
 
-			form.append( { type:'header', label:'Maintenance templates' } );
-			form.append( { type:'checkbox', name: 'maintenance', list: Twinkle.tag.maintenanceList } );
+			form.append({
+				type: 'select',
+				name: 'sortorder',
+				label: 'View this list:',
+				tooltip: 'You can change the default view order in your Twinkle preferences (WP:TWPREFS).',
+				event: Twinkle.tag.updateSortOrder,
+				list: [
+					{ type: 'option', value: 'cat', label: 'By categories', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'cat' },
+					{ type: 'option', value: 'alpha', label: 'In alphabetical order', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'alpha' }
+				]
+			});
 
-			form.append( { type:'header', label:'Problem templates' } );
-			form.append( { type:'checkbox', name: 'problem', list: Twinkle.tag.problemList } );
-
-			form.append( { type:'header', label:'Notice templates' } );
-			form.append( { type:'checkbox', name: 'notice', list: Twinkle.tag.noticeList } );
+			form.append( { type: 'div', id: 'tagWorkArea' } );
 
 			if( Twinkle.getFriendlyPref('customTagList').length ) {
-				form.append( { type:'header', label:'Custom templates' } );
-				form.append( { type: 'checkbox', name: 'custom', list: Twinkle.getFriendlyPref('customTagList') } );
+				form.append( { type: 'header', label: 'Custom tags' } );
+				form.append( { type: 'checkbox', name: 'articleTags', list: Twinkle.getFriendlyPref('customTagList') } );
 			}
 			break;
 
@@ -99,13 +104,13 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 			Window.setTitle( "Redirect tagging" );
 
 			form.append({ type: 'header', label:'Spelling, misspelling, tense and capitalization templates' });
-			form.append({ type: 'checkbox', name: 'spelling', list: Twinkle.tag.spellingList });
+			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.spellingList });
 
 			form.append({ type: 'header', label:'Alternative name templates' });
-			form.append({ type: 'checkbox', name: 'alternative', list: Twinkle.tag.alternativeList });
+			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.alternativeList });
 
 			form.append({ type: 'header', label:'Miscellaneous and administrative redirect templates' });
-			form.append({ type: 'checkbox', name: 'administrative', list: Twinkle.tag.administrativeList });
+			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.administrativeList });
 			break;
 
 		case 'draft':
@@ -125,432 +130,332 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
+
+	if (Twinkle.tag.mode === "article") {
+		// fake a change event on the sort dropdown, to initialize the tag list
+		var evt = document.createEvent("Event");
+		evt.initEvent("change", true, true);
+		result.sortorder.dispatchEvent(evt);
+	}
 };
+
+Twinkle.tag.checkedTags = [];
+
+Twinkle.tag.updateSortOrder = function(e) {
+	var sortorder = e.target.value;
+	var $workarea = $(e.target.form).find("div#tagWorkArea");
+
+	Twinkle.tag.checkedTags = e.target.form.getChecked("articleTags");
+	if (!Twinkle.tag.checkedTags) {
+		Twinkle.tag.checkedTags = [];
+	}
+
+	// function to generate a checkbox, with appropriate subgroup if needed
+	var makeCheckbox = function(tag, description) {
+		var checkbox = { value: tag, label: "{{" + tag + "}}: " + description };
+		if (Twinkle.tag.checkedTags.indexOf(tag) !== -1) {
+			checkbox.checked = true;
+		}
+		if (tag === "globalize") {
+			checkbox.subgroup = {
+				name: 'globalize',
+				type: 'select',
+				list: [
+					{ label: "{{globalize}}: article may not represent a worldwide view of the subject", value: "globalize" },
+					{
+						label: "Region-specific {{globalize}} subtemplates",
+						list: [
+							{ label: "{{globalize/Australia}}: article deals primarily with the Australian viewpoint", value: "globalize/Australia" },
+							{ label: "{{globalize/Canada}}: article deals primarily with the Canadian viewpoint", value: "globalize/Canada" },
+							{ label: "{{globalize/China}}: article deals primarily with the Chinese viewpoint", value: "globalize/China" },
+							{ label: "{{globalize/Common law}}: article deals primarily with the viewpoint of common law countries", value: "globalize/Common law" },
+							{ label: "{{globalize/Eng}}: article deals primarily with the English-speaking viewpoint", value: "globalize/Eng" },
+							{ label: "{{globalize/Europe}}: article deals primarily with the European viewpoint", value: "globalize/Europe" },
+							{ label: "{{globalize/France}}: article deals primarily with the French viewpoint", value: "globalize/France" },
+							{ label: "{{globalize/Germany}}: article deals primarily with the German viewpoint", value: "globalize/Germany" },
+							{ label: "{{globalize/India}}: article deals primarily with the Indian viewpoint", value: "globalize/India" },
+							{ label: "{{globalize/Middle East}}: article deals primarily with the Middle Eastern viewpoint", value: "globalize/Middle East" },
+							{ label: "{{globalize/North America}}: article deals primarily with the North American viewpoint", value: "globalize/North America" },
+							{ label: "{{globalize/Northern}}: article deals primarily with the northern hemisphere viewpoint", value: "globalize/Northern" },
+							{ label: "{{globalize/Southern}}: article deals primarily with the southern hemisphere viewpoint", value: "globalize/Southern" },
+							{ label: "{{globalize/South Africa}}: article deals primarily with the South African viewpoint", value: "globalize/South Africa" },
+							{ label: "{{globalize/UK}}: article deals primarily with the British viewpoint", value: "globalize/UK" },
+							{ label: "{{globalize/UK and Canada}}: article deals primarily with the British and Canadian viewpoints", value: "globalize/UK and Canada" },
+							{ label: "{{globalize/US}}: article deals primarily with the USA viewpoint", value: "globalize/US" },
+							{ label: "{{globalize/West}}: article deals primarily with the viewpoint of Western countries", value: "globalize/West" }
+						]
+					}
+				]
+			};
+		} else if (tag === "notability") {
+			checkbox.subgroup = {
+				name: 'notability',
+				type: 'select',
+				list: [
+					{ label: "{{notability}}: article\'s subject may not meet the general notability guideline", value: "none" },
+					{ label: "{{notability|Academics}}: notability guideline for academics", value: "Academics" },
+					{ label: "{{notability|Biographies}}: notability guideline for biographies", value: "Biographies" },
+					{ label: "{{notability|Books}}: notability guideline for books", value: "Books" },
+					{ label: "{{notability|Companies}}: notability guidelines for companies and organizations", value: "Companies" },
+					{ label: "{{notability|Events}}: notability guideline for events", value: "Events" },
+					{ label: "{{notability|Films}}: notability guideline for films", value: "Films" },
+					{ label: "{{notability|Music}}: notability guideline for music", value: "Music" },
+					{ label: "{{notability|Neologisms}}: notability guideline for neologisms", value: "Neologisms" },
+					{ label: "{{notability|Numbers}}: notability guideline for numbers", value: "Numbers" },
+					{ label: "{{notability|Products}}: notability guideline for products and services", value: "Products" },
+					{ label: "{{notability|Sport}}: notability guideline for sports and athletics", value: "Sport" },
+					{ label: "{{notability|Web}}: notability guideline for web content", value: "Web" }
+				]
+			};
+		}
+		return checkbox;
+	};
+
+	// categorical sort order
+	if (sortorder === "cat") {
+		var div = new QuickForm.element({
+			type: "div",
+			id: "tagWorkArea"
+		});
+
+		// function to iterate through the tags and create a checkbox for each one
+		var doCategoryCheckboxes = function(subdiv, array) {
+			var checkboxes = [];
+			$.each(array, function(k, tag) {
+				var description = Twinkle.tag.article.tags[tag];
+				checkboxes.push(makeCheckbox(tag, description));
+			});
+			subdiv.append({
+				type: "checkbox",
+				name: "articleTags",
+				list: checkboxes
+			});
+		};
+
+		var i = 0;
+		// go through each category and sub-category and append lists of checkboxes
+		$.each(Twinkle.tag.article.tagCategories, function(title, content) {
+			div.append({ type: "header", id: "tagHeader" + i, label: title });
+			var subdiv = div.append({ type: "div", id: "tagSubdiv" + i++ });
+			if ($.isArray(content)) {
+				doCategoryCheckboxes(subdiv, content);
+			} else {
+				$.each(content, function(subtitle, subcontent) {
+					subdiv.append({ type: "div", label: [ htmlNode("b", subtitle) ] });
+					doCategoryCheckboxes(subdiv, subcontent);
+				});
+			}
+		});
+
+		var rendered = div.render();
+		$workarea.replaceWith(rendered);
+		var $rendered = $(rendered);
+		$rendered.find("h5").css({ 'font-size': '110%', 'margin-top': '1em' });
+		$rendered.find("div").filter(":has(span.quickformDescription)").css({ 'margin-top': '0.4em' });
+	}
+	// alphabetical sort order
+	else {
+		var checkboxes = [];
+		$.each(Twinkle.tag.article.tags, function(tag, description) {
+			checkboxes.push(makeCheckbox(tag, description));
+		});
+		var tags = new QuickForm.element({
+			type: "checkbox",
+			name: "articleTags",
+			list: checkboxes
+		});
+		$workarea.empty().append(tags.render());
+	}
+};
+
 
 // Tags for ARTICLES start here
 
-Twinkle.tag.maintenanceList = [
-	{
-		label: '{{allplot}}: article is almost entirely a plot summary',
-		value: 'allplot' 
-	},
-	{
-		label: '{{catimprove}}: article may require additional categories',
-		value: 'catimprove'
-	},
-	{
-		label: '{{cleanup}}: article may require cleanup',
-		value: 'cleanup'
-	},
-	{
-		label: '{{confusing}}: article may be confusing or unclear',
-		value: 'confusing'
-	},
-	{
-		label: '{{copyedit}}: article needs copy editing for grammar, style, cohesion, tone, and/or spelling',
-		value: 'copyedit'
-	},
-	{
-		label: '{{citation style}}: article has unclear or inconsistent inline citations',
-		value: 'citation style'
-	},
-	{
-		label: '{{deadend}}: article has few or no links to other articles',
-		value: 'deadend'
-	},
-	{
-		label: '{{essay-like}}: article is written like an essay and needs cleanup',
-		value: 'essay-like'
-	},
-	{
-		label: '{{expert}}: article needs attention from an expert on the subject',
-		value: 'expert'
-	},
-	{
-		label: '{{fansite}}: article  resembles a fansite',
-		value: 'fansite'
-	},
-	{
-		label: '{{in-universe}}: article subject is fictional and needs rewriting from a non-fictional perspective',
-		value: 'in-universe'
-	},
-	{
-		label: '{{lead missing}}: article has no lead section and one should be written',
-		value: 'lead missing'
-	},
-	{
-		label: '{{lead too long}}: article lead section is too long and should be shortened',
-		value: 'lead too long'
-	},
-	{
-		label: '{{lead too short}}: article lead section is too short and should be expanded',
-		value: 'lead too short'
-	},
-	{
-		label: '{{lead rewrite}}: article lead section needs to be rewritten to comply with guidelines',
-		value: 'lead rewrite'
-	},
-	{
-		label: '{{linkrot}}: article uses bare URLs for references, which are prone to link rot',
-		value: 'linkrot'
-	},
-	{
-		label: '{{merge}}: article should be merged with another given article',
-		value: 'merge'
-	},
-	{
-		label: '{{merge from}}: another given article should be merged into this one',
-		value: 'merge from'
-	},
-	{
-		label: '{{merge to}}: article should be merged into another given article',
-		value: 'merge to'
-	},
-	{
-		label: '{{morefootnotes}}: article has some references, but insufficient in-text citations',
-		value: 'morefootnotes'
-	},
-	{
-		label: '{{nofootnotes}}: article has references, but no in-text citations',
-		value: 'nofootnotes'
-	},
-	{
-		label: '{{notenglish}}: article is written in a language other than English and needs translation',
-		value: 'notenglish'
-	},
-	{
-		label: '{{orphan}}: article has few or no other articles that link to it',
-		value: 'orphan' 
-	},
-	{
-		label: '{{plot}}: plot summary in article is too long',
-		value: 'plot' 
-	},
-	{
-		label: '{{prose}}: article is in a list format that may be better presented using prose',
-		value: 'prose'
-	},
-	{
-		label: '{{pov-check}}: nominate article to be checked for neutrality',
-		value: 'pov-check'
-	},
-	{
-		label: '{{sections}}: article needs to be broken into sections',
-		value: 'sections'
-	},
-	{
-		label: '{{tense}}: article is written in an incorrect tense',
-		value: 'tense'
-	},
-	{
-		label: '{{tone}}: tone of article is not appropriate',
-		value: 'tone'
-	},
-	{
-		label: '{{uncategorized}}: article is uncategorized',
-		value: 'uncategorized'
-	},
-	{
-		label: '{{verylong}}: article is too long',
-		value: 'verylong'
-	},
-	{
-		label: '{{wikify}}: article needs to be wikified',
-		value: 'wikify'
-	}
-];
+Twinkle.tag.article = {};
 
+Twinkle.tag.article.tags = {
+	"advert": "article is written like an advertisement",
+	"allplot": "article is almost entirely a plot summary",
+	"autobiography": "article is an autobiography and may not be of NPOV",
+	"BLP sources": "BLP article needs additional sources for verification",
+	"BLP unsourced": "BLP article has no sources at all (use BLP PROD instead for new articles)",
+	"catimprove": "article may require additional categories",
+	"citation style": "article has unclear or inconsistent inline citations",
+	"cleanup": "article may require cleanup",
+	"close paraphrasing": "article contains close paraphrasing of a non-free copyrighted source",
+	"COI": "article creator or major contributor may have a conflict of interest",
+	"confusing": "article may be confusing or unclear",
+	"context": "article provides insufficient context",
+	"copyedit": "article needs copy editing for grammar, style, cohesion, tone, and/or spelling",
+	"copypaste": "article appears to have been copied and pasted from a source",
+	"dead end": "article has few or no links to other articles",
+	"disputed": "article has questionable factual accuracy",
+	"essay-like": "article is written like an essay and needs cleanup",
+	"expert-subject": "article needs attention from an expert on the subject",
+	"external links": "article's external links may not follow content policies or guidelines",
+	"fansite": "article  resembles a fansite",
+	"fiction": "article fails to distinguish between fact and fiction",
+	"globalize": "article may not represent a worldwide view of the subject",
+	"GOCEinuse": "article is currently undergoing a major copy edit by the Guild of Copy Editors",
+	"hoax": "article may be a complete hoax",
+	"in-universe": "article subject is fictional and needs rewriting from a non-fictional perspective",
+	"incoherent": "article is incoherent or very hard to understand",
+	"in use": "article is undergoing a major edit for a short while",
+	"lead missing": "article has no lead section and one should be written",
+	"lead rewrite": "article lead section needs to be rewritten to comply with guidelines",
+	"lead too long": "article lead section is too long and should be shortened",
+	"lead too short": "article lead section is too short and should be expanded",
+	"linkrot": "article uses bare URLs for references, which are prone to link rot",
+	"merge": "article should be merged with another given article",
+	"merge from": "another given article should be merged into this one",
+	"merge to": "article should be merged into another given article",
+	"more footnotes": "article has some references, but insufficient in-text citations",
+	"new unreviewed article": "mark article for later review",
+	"no footnotes": "article has references, but no in-text citations",
+	"non-free": "article may contain excessive or improper use of copyrighted materials",
+	"NOT": "article contains unencyclopedic material which contravenes WP:NOT",
+	"notability": "article's subject may not meet the notability guideline",
+	"not English": "article is written in a language other than English and needs translation",
+	"one source": "article relies largely or entirely upon a single source",
+	"original research": "article has original research or unverified claims",
+	"orphan": "article is linked to from few or no other articles",
+	"out of date": "article needs out-of-date information removed or updated",
+	"overcoverage": "article has an extensive bias or disproportional coverage towards one or more specific regions",
+	"over detailed": "article contains an excessive amount of intricate detail",
+	"peacock": "article may contain peacock terms that promote the subject without adding information",
+	"plot": "plot summary in article is too long",
+	"POV": "article does not maintain a neutral point of view",
+	"primary sources": "article relies too heavily on first-hand sources, and needs third-party sources",
+	"prose": "article is in a list format that may be better presented using prose",
+	"recentism": "article is slanted towards recent events",
+	"ref improve": "article needs additional references or sources for verification",
+	"rough translation": "article is poorly translated and needs cleanup",
+	"sections": "article needs to be broken into sections",
+	"self-published": "article may contain improper references to self-published sources",
+	"synthesis": "article may contain unpublished synthesis of published material that conveys unattributable ideas",
+	"tense": "article is written in an incorrect tense",
+	"tone": "tone of article is not appropriate",
+	"too few opinions": "article may not include all significant viewpoints",
+	"uncategorized": "article is uncategorized",
+	"under construction": "article is currently in the middle of an expansion or major revamping",
+	"unreferenced": "article has no references at all",
+	"unreliable sources": "article's references may not be reliable sources",
+	"update": "article needs additional up-to-date information added",
+	"very long": "article is too long",
+	"weasel": "article neutrality is compromised by the use of weasel words",
+	"wikify": "article needs to be wikified"
+};
 
-Twinkle.tag.problemList = [
-	{
-		label: '{{advert}}: article is written like an advertisement',
-		value: 'advert'
+Twinkle.tag.article.tagCategories = {
+	"Cleanup and maintenance tags": {
+		"General cleanup": [
+			"cleanup",
+			"copyedit",
+			"wikify"
+		],
+		"Potentially unwanted content": [
+			"close paraphrasing",
+			"copypaste",
+			"external links",
+			"non-free",
+			"NOT"
+		],
+		"Structure and lead section": [
+			"lead missing",
+			"lead rewrite",
+			"lead too long",
+			"lead too short",
+			"sections",
+			"very long"
+		],
+		"Fiction-related cleanup": [
+			"allplot",
+			"fiction",
+			"in-universe",
+			"plot"
+		]
 	},
-	{
-		label: '{{autobiography}}: article is an autobiography and may not be of NPOV',
-		value: 'autobiography'
+	"General content issues": {
+		"Importance and notability": [
+			"notability"  // has subcategories and special-cased code
+		],
+		"Style of writing": [
+			"advert",
+			"essay-like",
+			"fansite",
+			"prose",
+			"tense",
+			"tone"
+		],
+		"Sense (or lack thereof)": [
+			"confusing",
+			"incoherent"
+		],
+		"Information and detail": [
+			"context",
+			"expert-subject",
+			"over detailed"
+		],
+		"Timeliness": [
+			"out of date",
+			"update"
+		],
+		"Neutrality, bias, and factual accuracy": [
+			"COI",
+			"disputed",
+			"hoax",
+			"globalize",  // has subcategories and special-cased code
+			"peacock",
+			"POV",
+			"recentism",
+			"too few opinions",
+			"weasel"
+		],
+		"Verifiability and sources": [
+			"BLP sources",
+			"BLP unsourced",
+			"one source",
+			"original research",
+			"primary sources",
+			"ref improve",
+			"self-published",
+			"unreferenced",
+			"unreliable sources"
+		]
 	},
-	{
-		label: '{{close paraphrase}}: article contains close paraphrasing of a non-free copyrighted source',
-		value: 'close paraphrase'
+	"Specific content issues": {
+		"Language": [
+			"not English",
+			"rough translation"
+		],
+		"Links": [
+			"dead end",
+			"orphan",
+			"wikify"  // this tag is listed twice because it used to focus mainly on links, but now it's a more general cleanup tag
+		],
+		"Referencing technique": [
+			"citation style",
+			"linkrot",
+			"more footnotes",
+			"no footnotes"
+		],
+		"Categories": [
+			"catimprove",
+			"uncategorized"
+		]
 	},
-	{
-		label: '{{coi}}: article creator or major contributor may have a conflict of interest',
-		value: 'coi'
-	},
-	{
-		label: '{{context}}: article provides insufficient context',
-		value: 'context'
-	},
-	{
-		label: '{{copypaste}}: article appears to have been copied and pasted from a source',
-		value: 'copypaste'
-	},
-	{
-		label: '{{disputed}}: article has questionable factual accuracy',
-		value: 'disputed'
-	},
-	{
-		label: '{{external links}}: article\'s external links may not follow content policies or guidelines',
-		value: 'external links'
-	},
-	{
-		label: '{{globalize}}: article may not represent a worldwide view of the subject',
-		value: 'globalize',
-		subgroup: {
-			name: 'globalize',
-			type: 'select',
-			list: [
-				{
-					label: "{{globalize}}: article may not represent a worldwide view of the subject",
-					value: "globalize"
-				},
-				{
-					label: "Region-specific {{globalize}} subtemplates",
-					list: [
-						{
-							label: "{{globalize/Australia}}: article deals primarily with the Australian viewpoint",
-							value: "globalize/Australia"
-						},
-						{
-							label: "{{globalize/Belgium}}: article deals primarily with the Belgian viewpoint",
-							value: "globalize/Belgium"
-						},
-						{
-							label: "{{globalize/Canada}}: article deals primarily with the Canadian viewpoint",
-							value: "globalize/Canada"
-						},
-						{
-							label: "{{globalize/Common law}}: article deals primarily with the viewpoint of common law countries",
-							value: "globalize/Common law"
-						},
-						{
-							label: "{{globalize/Eng}}: article deals primarily with the English-speaking viewpoint",
-							value: "globalize/Eng"
-						},
-						{
-							label: "{{globalize/Europe}}: article deals primarily with the European viewpoint",
-							value: "globalize/Europe"
-						},
-						{
-							label: "{{globalize/France}}: article deals primarily with the French viewpoint",
-							value: "globalize/France"
-						},
-						{
-							label: "{{globalize/Germany}}: article deals primarily with the German viewpoint",
-							value: "globalize/Germany"
-						},
-						{
-							label: "{{globalize/Greece}}: article deals primarily with the Greek viewpoint",
-							value: "globalize/Greece"
-						},
-						{
-							label: "{{globalize/Luxembourg}}: article deals primarily with the Luxembourgish viewpoint",
-							value: "globalize/Luxembourg"
-						},
-						{
-							label: "{{globalize/Netherlands}}: article deals primarily with the Dutch viewpoint",
-							value: "globalize/Netherlands"
-						},
-						{
-							label: "{{globalize/North America}}: article deals primarily with the North American viewpoint",
-							value: "globalize/North America"
-						},
-						{
-							label: "{{globalize/Northern}}: article deals primarily with the northern hemisphere viewpoint",
-							value: "globalize/Northern"
-						},
-						{
-							label: "{{globalize/Russia}}: article deals primarily with the Russian viewpoint",
-							value: "globalize/Russia"
-						},
-						{
-							label: "{{globalize/Southern}}: article deals primarily with the southern hemisphere viewpoint",
-							value: "globalize/Southern"
-						},
-						{
-							label: "{{globalize/UK}}: article deals primarily with the British viewpoint",
-							value: "globalize/UK"
-						},
-						{
-							label: "{{globalize/UK and Canada}}: article deals primarily with the British and Canadian viewpoints",
-							value: "globalize/UK and Canada"
-						},
-						{
-							label: "{{globalize/USA}}: article deals primarily with the American viewpoint",
-							value: "globalize/USA"
-						}
-					]
-				}
-			]
-		}
-	},
-	{
-		label: '{{hoax}}: article may be a complete hoax',
-		value: 'hoax'
-	},
-	{
-		label: '{{non-free}}: article may contain excessive or improper use of copyrighted materials',
-		value: 'non-free'
-	},
-	{
-		label: '{{notability}}: article\'s subject may not meet the notability guideline',
-		value: 'notability',
-		subgroup: {
-			name: 'notability',
-			type: 'select',
-			list: [
-				{
-					label: "{{notability}}: article\'s subject may not meet the notability guideline",
-					value: "none"
-				},
-				{
-					label: "{{notability|Academics}}: notability guideline for academics",
-					value: "Academics"
-				},
-				{
-					label: "{{notability|Biographies}}: notability guideline for biographies",
-					value: "Biographies"
-				},
-				{
-					label: "{{notability|Books}}: notability guideline for books",
-					value: "Books"
-				},
-				{
-					label: "{{notability|Companies}}: notability guideline for companies and organizations",
-					value: "Companies"
-				},
-				{
-					label: "{{notability|Episode}}: notability guideline for television episodes",
-					value: "Episode"
-				},
-				{
-					label: "{{notability|Fiction}}: notability guideline for fiction",
-					value: "Fiction"
-				},
-				{
-					label: "{{notability|Films}}: notability guideline for films",
-					value: "Films"
-				},
-				{
-					label: "{{notability|Institutions}}: synonym of \"Companies\"",
-					value: "Institutions"
-				},
-				{
-					label: "{{notability|Music}}: notability guideline for music",
-					value: "Music"
-				},
-				{
-					label: "{{notability|Neologisms}}: notability guideline for neologisms",
-					value: "Neologisms"
-				},
-				{
-					label: "{{notability|Numbers}}: notability guideline for numbers",
-					value: "Numbers"
-				},
-				{
-					label: "{{notability|Organizations}}: synonym of \"Companies\"",
-					value: "Organizations"
-				},
-				{
-					label: "{{notability|Products}}: notability guideline for products and services",
-					value: "Products"
-				},
-				{
-					label: "{{notability|Web}}: notability guideline for web content",
-					value: "Web"
-				}
-			]
-		}
-	},
-	{
-		label: '{{npov}}: article does not maintain a neutral point of view',
-		value: 'npov'
-	},
-	{
-		label: '{{one source}}: article relies largely or entirely upon a single source',
-		value: 'one source'
-	},
-	{
-		label: '{{original research}}: article has original research or unverified claims',
-		value: 'original research'
-	},
-	{
-		label: '{{overcoverage}}: Examples and perspectives in the article might have an extensive bias or disproportional coverage towards one or more specific regions',
-		value: 'overcoverage'
-	},
-	{
-		label: '{{peacock}}: article may contain peacock terms that promotes the subject in a subjective manner without adding information',
-		value: 'peacock'
-	},
-	{
-		label: '{{primarysources}}: article needs reliable, third-party sources',
-		value: 'primarysources'
-	},
-	{
-		label: "{{overdetailed}}: article contains an excessive amount of intricate detail",
-		value: "overdetailed"
-	},
-	{
-		label: "{{recentism}}: article is slanted towards recent events",
-		value: "recentism"
-	},
-	{ 
-		label: '{{refimprove}}: article needs additional references or sources for verification',
-		value: 'refimprove' 
-	},
-	{ 
-		label: '{{refimproveBLP}}: BLP article needs additional references or sources for verification',
-		value: 'refimproveBLP' 
-	},
-	{
-		label: '{{self-published}}: article may contain improper references to self-published sources',
-		value: 'self-published'
-	},
-	{
-		label: '{{synthesis}}: article may contain unpublished synthesis of published material that conveys unattributable ideas',
-		value: 'synthesis'
-	},
-	{
-		label: "{{toofewopinions}}: article may not include all significant viewpoints",
-		value: "toofewopinions"
-	},
-	{
-		label: '{{unencyclopedic}}: article contains unencyclopedic material',
-		value: 'unencyclopedic'
-	},
-	{
-		label: '{{unreferenced}}: article has no references at all',
-		value: 'unreferenced'
-	},
-	{
-		label: '{{unreferencedBLP}}: BLP article has no references at all',
-		value: 'unreferencedBLP'
-	},
-	{
-		label: '{{update}}: article information is out of date',
-		value: 'update'
-	},
-	{
-		label: '{{weasel}}: article quality may be compromised by the use of weasel words',
-		value: 'weasel'
-	}
-];
-
-Twinkle.tag.noticeList = [
-	{
-		label: '{{goceinuse}}: article is currently undergoing a major copy edit by the Guild of Copy Editors',
-		value: 'goceinuse' },
-	{
-		label: '{{inuse}}: article is undergoing a major edit for a short while',
-		value: 'inuse' },
-	{
-		label: '{{new unreviewed article}}: mark article for later review',
-		value: 'new unreviewed article' },
-	{
-		label: '{{underconstruction}}: article is currently in the middle of an expansion or major revamping',
-		value: 'underconstruction' }
-];
+	"Merging": [
+		"merge",
+		"merge from",
+		"merge to"
+	],
+	"Informational": [
+		"GOCEinuse",
+		"in use",
+		"new unreviewed article",
+		"under construction"
+	]
+};
 
 // Tags for REDIRECTS start here
 
@@ -560,11 +465,11 @@ Twinkle.tag.spellingList = [
 		value: 'R from abbreviation' 
 	},
 	{
-		label: '{{R to list entry}}: redirect to a \"list of minor entities\"-type article which is a collection of brief descriptions for subjects not notable enough to have separate articles',
+		label: '{{R to list entry}}: redirect to a \"list of minor entities\"-type article which contains brief descriptions of subjects not notable enough to have separate articles',
 		value: 'R to list entry' 
 	},
 	{
-		label: '{{R to section}}: sames as {{R to list entry}}, but when list is more sectionlike in organization, such as list of fictional characters in a fictional universe.',
+		label: '{{R to section}}: similar to {{R to list entry}}, but when list is organized in sections, such as list of characters in a fictional universe.',
 		value: 'R to section' 
 	},
 	{
@@ -584,11 +489,11 @@ Twinkle.tag.spellingList = [
 		value: 'R from related word' 
 	},
 	{
-		label: '{{R with possibilities}}: redirect from a title for a topic more detailed than what is currently provided on the target page, or section of that page, hence something which can and should be expanded',
+		label: '{{R with possibilities}}: redirect from a more specific title to a more general, less detailed article, hence something which can and should be expanded',
 		value: 'R with possibilities' 
 	},
 	{
-		label: '{{R from member}}: redirect from a person who is a member of a group to more general related topics, such as the group, organization, ensemble or team that he or she belongs to',
+		label: '{{R from member}}: redirect from a member of a group to a related topic such as the group, organization, or team that he or she belongs to',
 		value: 'R from member' 
 	},
 	{
@@ -611,7 +516,7 @@ Twinkle.tag.alternativeList = [
 		value: 'R from surname' 
 	},
 	{
-		label: '{{R from historic name}}: redirect from a title that is another name, a pseudonym, a nickname, or a synonym that has a significant historic past as a region, state, principate\'s holding, city, city-state or such, but which region has been subsumed into a modern era municipality, district or state, or otherwise suffered from a name change over time',
+		label: '{{R from historic name}}: redirect from another name with a significant historic past as a region, state, city or such, but which is no longer known by that title or name',
 		value: 'R from historic name' 
 	},
 	{
@@ -992,22 +897,31 @@ Twinkle.tag.callbacks = {
 							currentTag += '|url=' + url;
 						}
 						break;
-					case 'notenglish':
+					case 'not English':
 						var langname = prompt('Please enter the name of the language the article is thought to be written in.  \n' +
-							"Just click OK if you don't know.  To skip the {{notenglish}} tag, click Cancel.", "");
+							"Just click OK if you don't know.  To skip the {{not English}} tag, click Cancel.", "");
 						if (langname === null) {
 							continue;
 						} else if (langname !== "") {
 							currentTag += '|1=' + langname;
 						}
 						break;
-					case 'roughtranslation':
+					case 'rough translation':
 						var roughlang = prompt('Please enter the name of the language the article is thought to have been translated from.  \n' +
-							"Just click OK if you don't know.  To skip the {{roughtranslation}} tag, click Cancel.", "");
+							"Just click OK if you don't know.  To skip the {{rough translation}} tag, click Cancel.", "");
 						if (roughlang === null) {
 							continue;
 						} else if (roughlang !== "") {
 							currentTag += '|1=' + roughlang;
+						}
+						break;
+					case 'expert-subject':
+						var wikiproject = prompt('Please enter the name of a WikiProject which might be able to help recruit an expert.  \n' +
+							"Just click OK if you don't know.  To skip the {{expert-subject}} tag, click Cancel.", "");
+						if (wikiproject === null) {
+							continue;
+						} else if (wikiproject !== "") {
+							currentTag += '|1=' + wikiproject;
 						}
 						break;
 					case 'merge':
@@ -1025,7 +939,7 @@ Twinkle.tag.callbacks = {
 					default:
 						break;
 				}
-				
+
 				currentTag += Twinkle.tag.mode === 'redirect' ? '}}' : '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}\n';
 				tagText += currentTag;
 			}
@@ -1065,7 +979,7 @@ Twinkle.tag.callbacks = {
 		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
-		
+
 		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
 			pageobj.patrol();
 		}
@@ -1195,23 +1109,17 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	switch (Twinkle.tag.mode) {
 		case 'article':
-			if( Twinkle.getFriendlyPref('customTagList').length ) {
-				params.tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) ).concat( form.getChecked( 'custom' ) );
-			} else {
-				params.tags = form.getChecked( 'notice' ).concat( form.getChecked( 'problem' ) ).concat( form.getChecked( 'maintenance' ) );
-			}
+			params.tags = form.getChecked( 'articleTags' );
 			params.group = form.group.checked;
-			params.globalizeSubcategory = form.getChecked( 'problem.globalize' );
-			params.globalizeSubcategory = params.globalizeSubcategory ? params.globalizeSubcategory[0] : null;
-			params.notabilitySubcategory = form.getChecked( 'problem.notability' );
-			params.notabilitySubcategory = params.notabilitySubcategory ? params.notabilitySubcategory[0] : null;
+			params.globalizeSubcategory = form["articleTags.globalize"] ? form["articleTags.globalize"].value : null;
+			params.notabilitySubcategory = form["articleTags.notability"] ? form["articleTags.notability"].value : null;
 			break;
 		case 'file':
 			params.svgSubcategory = form["imageTags.svgCategory"] ? form["imageTags.svgCategory"].value : null;
 			params.tags = form.getChecked( 'imageTags' );
 			break;
 		case 'redirect':
-			params.tags = form.getChecked( 'administrative' ).concat( form.getChecked( 'alternative' ) ).concat( form.getChecked( 'spelling' ) );
+			params.tags = form.getChecked( 'redirectTags' );
 			break;
 		case 'draft':
 			params.tags = form.getChecked( 'draftTags' );

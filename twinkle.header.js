@@ -11,8 +11,8 @@
  *
  * ----------
  *
- * This is AzaToth's Twinkle. See [[WP:TW]].
- * It needs a better header comment than this one.
+ * This is AzaToth's Twinkle, the popular script sidekick for newbies, admins, and
+ * every Wikipedian in between. Visit [[WP:TW]] for more information.
  */
 
 //<nowiki>
@@ -116,14 +116,13 @@ if (mw.config.get("skin") === 'vector') {
 	Twinkle.defaultConfig.twinkle.portletNext = null;
 }
 
-
-
 Twinkle.defaultConfig.friendly = {
 	 // Tag
 	groupByDefault: true,
 	watchTaggedPages: true,
 	markTaggedPagesAsMinor: false,
 	markTaggedPagesAsPatrolled: true,
+	tagArticleSortOrder: "cat",
 	customTagList: [],
 	 // Welcome
 	topWelcomes: false,

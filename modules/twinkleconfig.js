@@ -450,11 +450,6 @@ Twinkle.config.sections = [
 	inFriendlyConfig: true,
 	preferences: [
 		{
-			name: "groupByDefault",
-			label: "Check the \"group into {{multiple issues}}\" box by default",
-			type: "boolean"
-		},
-		{
 			name: "watchTaggedPages",
 			label: "Add page to watchlist when tagging",
 			type: "boolean"
@@ -469,6 +464,17 @@ Twinkle.config.sections = [
 			label: "Mark pages as patrolled when tagging (if possible)",
 			helptip: "Due to technical limitations, pages are only marked as patrolled when they are reached via Special:NewPages.",
 			type: "boolean"
+		},
+		{
+			name: "groupByDefault",
+			label: "Check the \"group into {{multiple issues}}\" box by default",
+			type: "boolean"
+		},
+		{
+			name: "tagArticleSortOrder",
+			label: "Default view order for article tags",
+			type: "enum",
+			enumValues: { "cat": "By categories", "alpha": "In alphabetical order" }
 		},
 		{
 			name: "customTagList",
