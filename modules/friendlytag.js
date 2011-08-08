@@ -276,7 +276,6 @@ Twinkle.tag.article = {};
 Twinkle.tag.article.tags = {
 	"advert": "article is written like an advertisement",
 	"allplot": "article is almost entirely a plot summary",
-	"autobiography": "article is an autobiography and may not be of NPOV",
 	"BLP sources": "BLP article needs additional sources for verification",
 	"BLP unsourced": "BLP article has no sources at all (use BLP PROD instead for new articles)",
 	"catimprove": "article may require additional categories",
@@ -332,7 +331,6 @@ Twinkle.tag.article.tags = {
 	"rough translation": "article is poorly translated and needs cleanup",
 	"sections": "article needs to be broken into sections",
 	"self-published": "article may contain improper references to self-published sources",
-	"synthesis": "article may contain unpublished synthesis of published material that conveys unattributable ideas",
 	"tense": "article is written in an incorrect tense",
 	"tone": "tone of article is not appropriate",
 	"too few opinions": "article may not include all significant viewpoints",
