@@ -1070,6 +1070,9 @@ Twinkle.tag.callbacks = {
 							tagtext += "|reason=" + input;
 						}
 						break;
+					case "Non-free reduced":
+						tagtext += "|date={{subst:date}}";
+						break;
 					default:
 						break;  // don't care
 				}
