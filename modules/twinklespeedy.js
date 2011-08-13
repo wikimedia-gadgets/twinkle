@@ -265,7 +265,7 @@ Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
 			tooltip: 'Files in category "Files with unknown source", "Files with unknown copyright status", or "Files with no copyright tag" that have been tagged with a template that places them in the category for more than seven days, regardless of when uploaded. Note, users sometimes specify their source in the upload summary, so be sure to check the circumstances of the file.'
 		});
 		result.push({
-			label: 'F5: Unused unfree copyrighted files',
+			label: 'F5: Unused unfree copyrighted file',
 			value: 'unfree',
 			tooltip: 'Files that are not under a free license or in the public domain that are not used in any article and that have been tagged with a template that places them in a dated subcategory of Category:Orphaned fairuse files for more than seven days. Reasonable exceptions may be made for file uploaded for an upcoming article. Use the "Orphaned fair use" option in Twinkle\'s DI module to tag files for forthcoming deletion.'
 		});
@@ -276,13 +276,20 @@ Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
 		});
 	}
 	result.push({
-		label: 'F7: Invalid fair-use claim',
-		value: 'badfairuse',
-		tooltip: 'Any file with a clearly invalid fair-use tag (such as a {{logo}} tag on a photograph of a mascot) may be deleted at any time. Media that fail any part of the non-free content criteria and were uploaded after 2006-07-13 may be deleted forty-eight hours after notification of the uploader. For media uploaded before 2006-07-13 or tagged with the {{Replaceable fair use}} template, the uploader will be given seven days to comply with this policy after being notified'
+		label: 'F7: Clearly invalid fair-use tag',
+		value: 'badfairuse',  // same as below
+		tooltip: 'This is only for files with a clearly invalid fair-use tag, such as a {{Non-free logo}} tag on a photograph of a mascot. For cases that require a waiting period (replaceable images or otherwise disputed rationales), use the options on Twinkle\'s DI tab.'
 	});
 	if (!multiple) {
 		result.push({
-			label: 'F8: Files available as identical or higher-resolution copies on Wikimedia Commons',
+			label: 'F7: Fair-use media from a commercial image agency which is not the subject of sourced commentary',
+			value: 'badfairuse',  // same as above
+			tooltip: 'Non-free images or media from a commercial source (e.g., Associated Press, Getty), where the file itself is not the subject of sourced commentary, are considered an invalid claim of fair use and fail the strict requirements of WP:NFCC.'
+		});
+	}
+	if (!multiple) {
+		result.push({
+			label: 'F8: File available as an identical or higher-resolution copy on Wikimedia Commons',
 			value: 'nowcommons',
 			tooltip: 'Provided the following conditions are met: 1: The file format of both images is the same. 2: The file\'s license and source status is beyond reasonable doubt, and the license is undoubtedly accepted at Commons. 3: All information on the file description page is present on the Commons file description page. That includes the complete upload history with links to the uploader\'s local user pages. 4: The file is not protected, and the file description page does not contain a request not to move it to Commons. 5: If the file is available on Commons under a different name than locally, all local references to the file must be updated to point to the title used at Commons. 6: For {{c-uploaded}} files: They may be speedily deleted as soon as they are off the Main Page'
 		});
@@ -457,18 +464,18 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		result.push({
 			label: 'Custom rationale' + (userIsInGroup('sysop') ? ' (custom deletion reason)' : ' using {'+'{db}} template'),
 			value: 'reason',
-			tooltip: '{'+'{db}} is short for "delete because". One of the other deletion criteria must still apply to the page, and you should (must?) make mention of this in your rationale. This is not a "catch-all" for when you can\'t find the right criterion.'
+			tooltip: '{'+'{db}} is short for "delete because". At least one of the other deletion criteria must still apply to the page, and you should (must?) make mention of this in your rationale. This is not a "catch-all" for when you can\'t find any criteria that fit.'
 		});
 	}
 	result.push({
 		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
 		value: 'nonsense',
-		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes'
+		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.'
 	});
 	result.push({
 		label: 'G2: Test page',
 		value: 'test',
-		tooltip: 'e.g., "Can I really create a page here?"'
+		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates (although criterion T3 may apply).'
 	});
 	result.push({
 		label: 'G3: Pure vandalism',
@@ -566,7 +573,7 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 	result.push({
 		label: 'G11: Unambiguous advertising',
 		value: 'spam',
-		tooltip: 'Pages which exclusively promote a company, product, group, service, or person and which would need to be fundamentally rewritten in order to become encyclopedic. Note that simply having a company, product, group, service, or person as its subject does not qualify an article for this criterion; an article that is blatant advertising should have inappropriate content as well'
+		tooltip: 'Pages which exclusively promote a company, product, group, service, or person and which would need to be fundamentally rewritten in order to become encyclopedic. Note that an article about a company or a product which describes its subject from a neutral point of view does not qualify for this criterion; an article that is blatant advertising should have inappropriate content as well'
 	});
 	result.push({
 		label: 'G12: Unambiguous copyright infringement',
