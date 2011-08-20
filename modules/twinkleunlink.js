@@ -16,12 +16,12 @@ Twinkle.unlink = function twinkleunlink() {
 
 Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
 	if( !( nodelist instanceof NodeList ) && !( nodelist instanceof HTMLCollection ) ) {
-		return nodelist.checked ? [ nodelist.value ] : [];
+		return nodelist.checked ? [ nodelist.values ] : [];
 	}
 	var result = [];
 	for(var i  = 0; i < nodelist.length; ++i ) {
 		if( nodelist[i].checked ) {
-			result.push( nodelist[i].value );
+			result.push( nodelist[i].values );
 		}
 	}
 	return result;
