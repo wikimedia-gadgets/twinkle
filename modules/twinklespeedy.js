@@ -170,7 +170,13 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 		} );
 	}
 
-	switch (mw.config.get('wgNamespaceNumber')) {
+	var namespace = mw.config.get('wgNamespaceNumber');
+	if (namespace % 2 === 1 && namespace !== 3) {  // talk pages, but not user talk pages
+		form.append( { type: 'header', label: 'Talk pages' } );
+		form.append( { type: 'radio', name: 'csd', list: Twinkle.speedy.talkList } );
+	}
+
+	switch (namespace) {
 		case 0:  // article
 		case 1:  // talk
 			form.append( { type: 'header', label: 'Articles' } );
@@ -232,6 +238,14 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc, first
 		content.appendChild(result);
 	}
 };
+
+Twinkle.speedy.talkList = [
+	{
+		label: 'G8: Talk pages with no corresponding subject page',
+		value: 'talk',
+		tooltip: 'This excludes any page that is useful to the project - in particular, user talk pages, talk page archives, and talk pages for files that exist on Wikimedia Commons.'
+	}
+];
 
 // this is a function to allow for db-multiple filtering
 Twinkle.speedy.getFileList = function twinklespeedyGetFileList(multiple) {
@@ -547,11 +561,6 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		tooltip: 'such as talk pages with no corresponding subject page; subpages with no parent page; file pages without a corresponding file; redirects to invalid targets, such as nonexistent targets, redirect loops, and bad titles; or categories populated by deleted or retargeted templates. This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.'
 	});
 	if (!multiple) {
-		result.push({
-			label: 'G8: Talk pages with no corresponding subject page',
-			value: 'talk',
-			tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.'
-		});
 		result.push({
 			label: 'G8: Subpages with no parent page',
 			value: 'subpage',
@@ -971,7 +980,6 @@ Twinkle.speedy.callbacks = {
 					var notifytext;
 
 					// specialcase "db" and "db-multiple"
-					// XXX modify the "db-csd-notice-custom" template to cater for these special cases
 					switch (params.normalized)
 					{
 						case 'db':
