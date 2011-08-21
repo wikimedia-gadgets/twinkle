@@ -276,6 +276,7 @@ Twinkle.tag.article = {};
 Twinkle.tag.article.tags = {
 	"advert": "article is written like an advertisement",
 	"allplot": "article is almost entirely a plot summary",
+	"autobiography": "article is an autobiography and may not be written neutrally",
 	"BLP sources": "BLP article needs additional sources for verification",
 	"BLP unsourced": "BLP article has no sources at all (use BLP PROD instead for new articles)",
 	"catimprove": "article may require additional categories",
@@ -399,6 +400,7 @@ Twinkle.tag.article.tagCategories = {
 			"update"
 		],
 		"Neutrality, bias, and factual accuracy": [
+			"autobiography",
 			"COI",
 			"disputed",
 			"hoax",
