@@ -1225,23 +1225,14 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 						return null;
 						}
 					}
-					var redirectpar = prompt( 'If this page is a redirect that was discussed at RfD, please type the word "yes" here: (leave empty to skip):', "");
-					if (redirectpar === null)
-					{
-						statelem.error( 'Aborted by user.' );
-						return null;
-					}
-					if (votepage !== '')
-					{
+					if (votepage !== '') {
 						parameters.votepage = votepage;
 					}
-					if (fullvotepage !== '')
-					{
+					if (fullvotepage !== '') {
 						parameters.fullvotepage = fullvotepage;
 					}
-					if (redirect !== '')
-					{
-						parameters.redirect = redirectpar;
+					if (confirm('If this page is a redirect that was discussed at RfD, click OK. Otherwise, click Cancel.')) {
+						parameters.redirect = "yes";
 					}
 					break;
 				case 'copypaste':
