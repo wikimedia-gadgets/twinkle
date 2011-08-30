@@ -353,7 +353,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 						default:
 							return 'unknown reason';
 					}
-				} ).join( ', ' );
+				} ).join( '; ' );
 
 
 			if ( form.page.value !== '' ) {
@@ -378,7 +378,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if (comment !== "" ) {
 				reason += (reason === "" ? "" : ". ") + comment + ".";
 			}
-			reason += "~~~~";
+			reason += " ~~~~";
 			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
 
 			SimpleWindow.setButtonsEnabled( false );
@@ -401,7 +401,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				}
 				aivPage.getStatusElement().status( 'Adding new report...' );
 				aivPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd') );
-				aivPage.setAppendText( '\n*{{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '}} - ' + reason );
+				aivPage.setAppendText( '\n*{{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '}} &ndash; ' + reason );
 				aivPage.append();
 			} );
 			break;
@@ -424,7 +424,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if ( /[aeiouwyh]/.test( types[0] ) ) { // non 100% correct, but whatever, inlcuding 'h' for Cockney
 				article = 'an';
 			}
-			reason = "*{{user-uaa|1=" + uid + "}} &mdash; Violation of username policy as " + article + " " + types + " username. ";
+			reason = "*{{user-uaa|1=" + uid + "}} &ndash; Violation of username policy as " + article + " " + types + " username. ";
 			if (comment !== '' ) {
 				reason += comment.toUpperCaseFirstChar() + ". ";
 			}
