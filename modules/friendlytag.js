@@ -279,21 +279,21 @@ Twinkle.tag.article.tags = {
 	"autobiography": "article is an autobiography and may not be written neutrally",
 	"BLP sources": "BLP article needs additional sources for verification",
 	"BLP unsourced": "BLP article has no sources at all (use BLP PROD instead for new articles)",
-	"catimprove": "article may require additional categories",
+	"cat improve": "article may require additional categories",
 	"citation style": "article has unclear or inconsistent inline citations",
 	"cleanup": "article may require cleanup",
 	"close paraphrasing": "article contains close paraphrasing of a non-free copyrighted source",
 	"COI": "article creator or major contributor may have a conflict of interest",
 	"confusing": "article may be confusing or unclear",
 	"context": "article provides insufficient context",
-	"copyedit": "article needs copy editing for grammar, style, cohesion, tone, and/or spelling",
+	"copy edit": "article needs copy editing for grammar, style, cohesion, tone, and/or spelling",
 	"copypaste": "article appears to have been copied and pasted from a source",
 	"dead end": "article has few or no links to other articles",
 	"disputed": "article has questionable factual accuracy",
 	"essay-like": "article is written like an essay and needs cleanup",
 	"expert-subject": "article needs attention from an expert on the subject",
 	"external links": "article's external links may not follow content policies or guidelines",
-	"fansite": "article  resembles a fansite",
+	"fansite": "article resembles a fansite",
 	"fiction": "article fails to distinguish between fact and fiction",
 	"globalize": "article may not represent a worldwide view of the subject",
 	"GOCEinuse": "article is currently undergoing a major copy edit by the Guild of Copy Editors",
@@ -332,6 +332,7 @@ Twinkle.tag.article.tags = {
 	"rough translation": "article is poorly translated and needs cleanup",
 	"sections": "article needs to be broken into sections",
 	"self-published": "article may contain improper references to self-published sources",
+	"technical": "article may be too technical for the uninitiated reader",
 	"tense": "article is written in an incorrect tense",
 	"tone": "tone of article is not appropriate",
 	"too few opinions": "article may not include all significant viewpoints",
@@ -349,7 +350,7 @@ Twinkle.tag.article.tagCategories = {
 	"Cleanup and maintenance tags": {
 		"General cleanup": [
 			"cleanup",
-			"copyedit",
+			"copy edit",
 			"wikify"
 		],
 		"Potentially unwanted content": [
@@ -383,6 +384,7 @@ Twinkle.tag.article.tagCategories = {
 			"essay-like",
 			"fansite",
 			"prose",
+			"technical",
 			"tense",
 			"tone"
 		],
@@ -440,7 +442,7 @@ Twinkle.tag.article.tagCategories = {
 			"no footnotes"
 		],
 		"Categories": [
-			"catimprove",
+			"cat improve",
 			"uncategorized"
 		]
 	},
@@ -863,7 +865,7 @@ Twinkle.tag.callbacks = {
 		tags.sort();
 		for( i = 0; i < tags.length; i++ ) {
 			var currentTag = "";
-			if( tags[i] === 'uncategorized' || tags[i] === 'catimprove' ) {
+			if( tags[i] === 'uncategorized' || tags[i] === 'cat improve' ) {
 				pageText += '\n\n{{' + tags[i] +
 					'|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
 			} else {
