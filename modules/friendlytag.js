@@ -926,6 +926,15 @@ Twinkle.tag.callbacks = {
 							currentTag += '|1=' + wikiproject;
 						}
 						break;
+					case 'wikify':
+						var wreason = prompt('You can optionally enter a more specific reason why the article needs to be wikified.  \n' +
+							"Just click OK if you don't wish to enter this.  To skip the {{wikify}} tag, click Cancel.", "");
+						if (wreason === null) {
+							continue;
+						} else if (wreason !== "") {
+							currentTag += '|reason=' + wreason;
+						}
+						break;
 					case 'merge':
 					case 'merge to':
 					case 'merge from':
