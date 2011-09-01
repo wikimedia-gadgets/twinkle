@@ -157,8 +157,8 @@ Twinkle.warn.messages = {
 			summary:"General note: Introducing factual errors" 
 		},
 		"uw-nor1": { 
-			label:"Adding original research, including unpublished syntheses of sourced material", 
-			summary:"General note: Adding original research, including unpublished syntheses of sourced material" 
+			label:"Adding original research, including unpublished syntheses of source material", 
+			summary:"General note: Adding original research, including unpublished syntheses of source material" 
 		},
 		"uw-biog1": { 
 			label:"Adding unreferenced controversial information about living persons", 
@@ -974,278 +974,193 @@ Twinkle.warn.messages = {
 	},
 	block: {
 		"uw-block": {
-			'label':"Block",
-			'summary':"You have been blocked from editing"
+			label: "Block",
+			summary: "You have been blocked from editing",
+			pageParam: true
 		},
 		"uw-blocknotalk": {
-			'label':"Block (talk page disabled)",
-			'summary':"You have been blocked from editing and your user talk page has been disabled"
+			label: "Block - talk page disabled",
+			summary: "You have been blocked from editing and your user talk page has been disabled",
+			pageParam: true
 		},
 		"uw-blockindef": {
-			'label':"Block (indefinite)",
-			'summary':"You have been indefinitely blocked from editing"
+			label: "Block - indefinite",
+			summary: "You have been indefinitely blocked from editing",
+			indefinite: true,
+			pageParam: true
 		},
 		"uw-ablock": {
-			'label':"Anonymous block",
-			'summary':"Your IP address has been blocked from editing"
-		},
-		"uw-aeblock": {
-			'label':"Arbitration enforcement block",
-			'summary':"You have been blocked from editing for violating an [[WP:Arbitration|arbitration decision]] with your edits"
-		},
-		"uw-adblock": {
-			'label':"Advertising block",
-			'summary':"You have been blocked from editing for [[WP:SOAP|advertising or self-promotion]]"
-		},
-		"uw-sblock": {
-			'label':"Spam block",
-			'summary':"You have been blocked from editing for continuing to add [[WP:SPAM|spam links]]"
-		},
-		"uw-soablock": {
-			'label':"Spam/advertising-only account block",
-			'summary':"You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam, advertising, or promotion]]"
+			label: "Block - IP address",
+			summary: "Your IP address has been blocked from editing",
+			pageParam: true
 		},
 		"uw-vblock": {
-			'label':"Vandalism block",
-			'summary':"You have been blocked from editing for persistent [[WP:VAND|vandalism]]"
+			label: "Vandalism block",
+			summary: "You have been blocked from editing for persistent [[WP:VAND|vandalism]]",
+			pageParam: true
 		},
 		"uw-voablock": {
-			'label':"Vandalism-only account block",
-			'summary':"You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]]"
+			label: "Vandalism-only account block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]]",
+			indefinite: true,
+			pageParam: true
 		},
 		"uw-bioblock": {
-			'label':"BLP violations",
-			'summary':"You have been blocked from editing for violations of Wikipedia's [[WP:BLP|biographies of living persons policy]]"
+			label: "BLP violations block",
+			summary: "You have been blocked from editing for violations of Wikipedia's [[WP:BLP|biographies of living persons policy]]",
+			pageParam: true
+		},
+		"uw-sblock": {
+			label: "Spam block",
+			summary: "You have been blocked from editing for using Wikipedia for [[WP:SPAM|spam]] purposes"
+		},
+		"uw-adblock": {
+			label: "Advertising block",
+			summary: "You have been blocked from editing for [[WP:SOAP|advertising or self-promotion]]",
+			pageParam: true
+		},
+		"uw-soablock": {
+			label: "Spam/advertising-only account block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam, advertising, or promotion]]",
+			indefinite: true,
+			pageParam: true
 		},
 		"uw-npblock": {
-			'label':"Creating nonsense pages block",
-			'summary':"You have been blocked from editing for creating [[WP:PN|nonsense pages]]"
-		},
-		"uw-myblock": {
-			'label':"Social networking block",
-			'summary':"You have been blocked from editing for using user and/or article pages as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]"
+			label: "Creating nonsense pages block",
+			summary: "You have been blocked from editing for creating [[WP:PN|nonsense pages]]",
+			pageParam: true
 		},
 		"uw-copyrightblock": {
-			'label':"Copyright violation block",
-			'summary':"You have been blocked from editing for continued [[WP:COPYVIO|copyright infringement]]"
-		},
-		"uw-dblock": {
-			'label':"Deletion/removal of content block",
-			'summary':"You have been blocked from editing for continued [[WP:VAND|removal of material]]"
-		},
-		"uw-efblock": {
-			'label':"Edit filter-related block",
-			'summary':"You have been blocked from editing for making disruptive edits that repeatedly triggered the [[WP:EF|edit filter]]"
-		},
-		"uw-ewblock": {
-			'label':"Edit warring block",
-			'summary':"You have been blocked from editing to prevent further [[WP:DE|disruption]] caused by your engagement in an [[WP:EW|edit war]]"
-		},
-		"uw-3block": {
-			'label':"Three-revert rule violation block",
-			'summary':"You have been blocked from editing for your [[WP:DE|disruption]] caused by [[WP:EW|edit warring]] and violation of the [[WP:3RR|three-revert rule]]"
-		},
-		"uw-botblock": {
-			'label':"Unapproved bot block",
-			'summary':"You have been blocked from editing because it appears you are running a [[WP:BOT|bot script]] without [[WP:BRFA|approval]]"
-		},
-		"uw-ublock": {
-			'label':"Username soft block",
-			'summary':"You have been indefinitely blocked from editing because your username is a violation of the [[WP:U|username policy]]"
-		},
-		"uw-uhblock": {
-			'label':"Username hard block",
-			'summary':"You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]]"
-		},
-		"uw-softerblock": {
-			'label':"Promotional username soft block",
-			'summary':"You have been indefinitely blocked from editing because your [[WP:U|username]] gives the impression that the account represents a group, organization or website"
-		},
-		"uw-causeblock": {
-			'label':"Promotional username soft block, for charitable causes and social service organizations",
-			'summary':"You have been indefinitely blocked from editing because your [[WP:U|username]] gives the impression that the account represents a group, organization or website"
-		},
-		"uw-botublock": {
-			'label':"Bot username soft block",
-			'summary':"You have been indefinitely blocked from editing because your [[WP:U|username]] indicates this is a [[WP:BOT|bot]] account, which is currently not approved"
-		},
-		"uw-memorialblock": {
-			'label':"Memorial username soft block",
-			'summary':"You have been indefinitely blocked from editing because your [[WP:U|username]] indicates this account may be used as a memorial or tribute to someone"
-		},
-		"uw-ublock-famous": {
-			'label':"Famous username soft block",
-			'summary':"You have been indefinitely blocked from editing because your [[WP:U|username]] matches the name of a well-known living individual"
-		},
-		"uw-ublock-double": {
-			'label':"Similar username soft block",
-			'summary':"You have been indefinitely blocked from editing because your [[WP:U|username]] is too similar to the username of another Wikipedia user"
-		},
-		"uw-uhblock-double": {
-			'label':"Username impersonation hard block",
-			'summary':"You have been indefinitely blocked from editing because your [[WP:U|username]] appears to impersonate another Wikipedia user"
-		},
-		"uw-vaublock": {
-			'label':"Vandalism-only account and username hard block",
-			'summary':"You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]] and your username is a blatant violation of the [[WP:U|username policy]]"
-		},
-		"uw-spamublock": {
-			'label':"Spam/advertising-only account and promotional username hard block",
-			'summary':"You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam or advertising]] and your username is a violation of the [[WP:U|username policy]]"
-		},
-		"uw-compblock": {
-			'label':"Possible compromised account block",
-			'summary':"You have been indefinitely blocked from editing because it is believed that your [[WP:SECURE|account has been compromised]]"
-		},
-		"uw-lblock": {
-			'label':"Legal threat block",
-			'summary':"You have been blocked from editing for making [[WP:NLT|legal threats or taking legal action]]"
-		},
-		"uw-hblock": {
-			'label':"Harassment block",
-			'summary':"You have been blocked from editing for attempting to [[WP:HARASS|harass]] other users"
-		},
-		"uw-pinfoblock": {
-			'label':"Personal information exposure block",
-			'summary':"You have been blocked from editing for [[WP:OUTING|posting personal information]] of another editor"
-		},
-		"uw-deoablock": {
-			'label':"Disruption/trolling only account block",
-			'summary':"You have been indefinitely blocked from editing because your account is being used only for [[WP:DE|trolling, disruption or harassment]]"
-		},
-		"uw-block-onlyfor": {
-			'label':"Bad-faith single purpose account",
-			'summary':"You have been indefinitely blocked from editing because your account is a [[WP:SPA|single purpose account]] being [[WP:DE|used only for disruptive editing]]"
+			label: "Copyright violation block",
+			summary: "You have been blocked from editing for continued [[WP:COPYVIO|copyright infringement]]",
+			pageParam: true
 		},
 		"uw-spoablock": {
-			'label':"Sockpuppet account block",
-			'summary':"You have been indefinitely blocked from editing because your account is being used only for [[WP:SOCK|sock puppetry or meat puppetry]]"
-		}
+			label: "Sockpuppet account block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:SOCK|sock puppetry]]",
+			indefinite: true
+		},
+		"uw-hblock": {
+			label: "Harassment block",
+			summary: "You have been blocked from editing for attempting to [[WP:HARASS|harass]] other users",
+			pageParam: true
+		},
+		"uw-ewblock": {
+			label: "Edit warring block",
+			summary: "You have been blocked from editing to prevent further [[WP:DE|disruption]] caused by your engagement in an [[WP:EW|edit war]]",
+			pageParam: true
+		},
+		"uw-3block": {
+			label: "Three-revert rule violation block",
+			summary: "You have been blocked from editing for violation of the [[WP:3RR|three-revert rule]]",
+			pageParam: true
+		},
+		"uw-disruptblock": {
+			label: "Disruptive editing block",
+			summary: "You have been blocked from editing for [[WP:DE|disruptive editing]]",
+			pageParam: true
+		},
+		"uw-deoablock": {
+			label: "Disruption/trolling-only account block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:DE|trolling, disruption or harassment]]",
+			indefinite: true,
+			pageParam: true
+		},
+		"uw-lblock": {
+			label: "Legal threat block (indefinite)",
+			summary: "You have been indefinitely blocked from editing for making [[WP:NLT|legal threats or taking legal action]]",
+			indefinite: true
+		},
+		"uw-aeblock": {
+			label: "Arbitration enforcement block",
+			summary: "You have been blocked from editing for violating an [[WP:Arbitration|arbitration decision]] with your edits",
+			pageParam: true
+		},
+		"uw-efblock": {
+			label: "Edit filter-related block",
+			summary: "You have been blocked from editing for making disruptive edits that repeatedly triggered the [[WP:EF|edit filter]]"
+		},
+		"uw-myblock": {
+			label: "Social networking block",
+			summary: "You have been blocked from editing for using user and/or article pages as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]",
+			pageParam: true
+		},
+		"uw-dblock": {
+			label: "Deletion/removal of content block",
+			summary: "You have been blocked from editing for continued [[WP:VAND|removal of material]]",
+			pageParam: true
+		},
+		"uw-compblock": {
+			label: "Possible compromised account block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because it is believed that your [[WP:SECURE|account has been compromised]]",
+			indefinite: true
+		},
+		"uw-botblock": {
+			label: "Unapproved bot block",
+			summary: "You have been blocked from editing because it appears you are running a [[WP:BOT|bot script]] without [[WP:BRFA|approval]]",
+			pageParam: true
+		},
+		"uw-ublock": {
+			label: "Username soft block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your username is a violation of the [[WP:U|username policy]]",
+			indefinite: true
+		},
+		"uw-uhblock": {
+			label: "Username hard block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]]",
+			indefinite: true
+		},
+		"uw-softerblock": {
+			label: "Promotional username soft block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] gives the impression that the account represents a group, organization or website",
+			indefinite: true
+		},
+		"uw-causeblock": {
+			label: "Promotional username soft block, for charitable causes (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] gives the impression that the account represents a group, organization or website",
+			indefinite: true
+		},
+		"uw-botublock": {
+			label: "Bot username soft block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] indicates this is a [[WP:BOT|bot]] account, which is currently not approved",
+			indefinite: true
+		},
+		"uw-memorialblock": {
+			label: "Memorial username soft block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] indicates this account may be used as a memorial or tribute to someone",
+			indefinite: true
+		},
+		"uw-ublock-famous": {
+			label: "Famous username soft block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] matches the name of a well-known living individual",
+			indefinite: true
+		},
+		"uw-ublock-double": {
+			label: "Similar username soft block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] is too similar to the username of another Wikipedia user",
+			indefinite: true
+		},
+		"uw-uhblock-double": {
+			label: "Username impersonation hard block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] appears to impersonate another established Wikipedia user",
+			indefinite: true
+		},
+		"uw-vaublock": {
+			label: "Vandalism-only account and username hard block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]] and your username is a blatant violation of the [[WP:U|username policy]]",
+			indefinite: true,
+			pageParam: true
+		}//,
+		//"uw-spamublock": {
+		//	label: "Spam-only account and promotional username hard block (indefinite) ** NEEDS TO BE FIXED",
+		//	summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam or advertising]] and your username is a violation of the [[WP:U|username policy]]",
+		//	indefinite: true
+		//}
 	}
 };
 
-// Set to true if the template is always for an indef block
-Twinkle.warn.indefBlockHash = {
-	'uw-block': false,
-	'uw-3block': false,
-	'uw-ablock': false,
-	'uw-adblock': false,
-	'uw-aeblock': false,
-	'uw-bioblock': false,
-	'uw-blocknotalk': false,
-	'uw-botblock': false,
-	'uw-copyrightblock': false,
-	'uw-dblock': false,
-	'uw-efblock': false,
-	'uw-ewblock': false,
-	'uw-hblock': false,
-	'uw-myblock': false,
-	'uw-npblock': false,
-	'uw-pinfoblock': false,
-	'uw-sblock': false,
-	'uw-pblock': false,
-	'uw-blockindef': true,
-	'uw-block-onlyfor': true,
-	'uw-botublock': true,
-	'uw-causeblock': true,
-	'uw-compblock': true,
-	'uw-deoablock': true,
-	'uw-lblock': true,
-	'uw-memorialblock': true,
-	'uw-soablock': true,
-	'uw-softerblock': true,
-	'uw-spamublock': true,
-	'uw-spoablock': true,
-	'uw-ublock': true,
-	'uw-ublock-famous': true,
-	'uw-uhblock': true,
-	'uw-uhblock-double': true,
-	'uw-ublock-double': true,
-	'uw-vaublock': true,
-	'uw-voablock': true
-};
-
-// Set to true if the template supports the page parameter
-Twinkle.warn.pageHash = {
-	'uw-block': true,
-	'uw-3block': true,
-	'uw-ablock': true,
-	'uw-adblock': true,
-	'uw-aeblock': true,
-	'uw-bioblock': true,
-	'uw-blocknotalk': true,
-	'uw-botblock': true,
-	'uw-copyrightblock': true,
-	'uw-dblock': true,
-	'uw-efblock': true,
-	'uw-ewblock': true,
-	'uw-hblock': true,
-	'uw-myblock': true,
-	'uw-npblock': true,
-	'uw-pinfoblock': true,
-	'uw-sblock': true,
-	'uw-vblock': true,
-	'uw-blockindef': true,
-	'uw-block-onlyfor': true,
-	'uw-botublock': false,
-	'uw-causeblock': false,
-	'uw-compblock': true,
-	'uw-deoablock': true,
-	'uw-lblock': true,
-	'uw-memorialblock': false,
-	'uw-soablock': true,
-	'uw-softerblock': false,
-	'uw-spamublock': false,
-	'uw-spoablock': true,
-	'uw-ublock': false,
-	'uw-ublock-famous': false,
-	'uw-uhblock': false,
-	'uw-uhblock-double': false,
-	'uw-ublock-double': false,
-	'uw-vaublock': true,
-	'uw-voablock': true
-};
-
 // Set to true if the template supports the reason parameter and isn't the same as its super-template when a reason is provided
-Twinkle.warn.reasonHash = {
-	'uw-block': true,
-	'uw-3block': false,
-	'uw-ablock': true,
-	'uw-adblock': false,
-	'uw-aeblock': true,
-	'uw-bioblock': false,
-	'uw-blocknotalk': true,
-	'uw-botblock': false,
-	'uw-copyrightblock': false,
-	'uw-dblock': false,
-	'uw-efblock': false,
-	'uw-ewblock': false,
-	'uw-hblock': false,
-	'uw-myblock': false,
-	'uw-npblock': false,
-	'uw-pinfoblock': true,
-	'uw-sblock': false,
-	'uw-vblock': false,
-	'uw-blockindef': true,
-	'uw-block-onlyfor': true,
-	'uw-botublock': true,
-	'uw-causeblock': false,
-	'uw-compblock': false,
-	'uw-deoablock': false,
-	'uw-lblock': false,
-	'uw-memorialblock': false,
-	'uw-soablock': false,
-	'uw-softerblock': false,
-	'uw-spamublock': false,
-	'uw-spoablock': false,
-	'uw-ublock': true,
-	'uw-ublock-famous': false,
-	'uw-uhblock': true,
-	'uw-uhblock-double': false,
-	'uw-ublock-double': false,
-	'uw-vaublock': false,
-	'uw-voablock': false
-};
+// NOTE: I have removed this reason hash; I have an updated version on my machine, which I am yet to integrate. -- TTO
 
 Twinkle.warn.prev_block_timer = null;
 Twinkle.warn.prev_article = null;
@@ -1292,8 +1207,9 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		if(Twinkle.warn.prev_article === null) {
 			Twinkle.warn.prev_article = e.target.root.article.value;
 		}
-		e.target.root.article.disabled = true;
+		e.target.root.article.disabled = false;
 		e.target.root.article.value = '';
+		$(e.target.root).find("fieldset:has(textarea)").hide();
 	} else if( e.target.root.block_timer ) {
 		if(!e.target.root.block_timer.disabled && Twinkle.warn.prev_block_timer === null) {
 			Twinkle.warn.prev_block_timer = e.target.root.block_timer.value;
@@ -1309,6 +1225,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			Twinkle.warn.prev_reason = null;
 		}
 		e.target.root.reason.disabled = false;
+		$(e.target.root).find("fieldset:has(textarea)").show();
 	}
 };
 
@@ -1331,7 +1248,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 			e.target.form.article.disabled = false;
 		}
 	} else if( main_group === 'block' ) {
-		if( Twinkle.warn.indefBlockHash[ value ] ) {
+		if( Twinkle.warn.messages.block[value].indefinite ) {
 			if(Twinkle.warn.prev_block_timer === null) {
 				Twinkle.warn.prev_block_timer = e.target.form.block_timer.value;
 			}
@@ -1345,7 +1262,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 			e.target.form.block_timer.disabled = false;
 		}
 
-		if( Twinkle.warn.pageHash[ value ] ) {
+		if( Twinkle.warn.messages.block[value].pageParam ) {
 			if(Twinkle.warn.prev_article !== null) {
 				e.target.form.article.value = Twinkle.warn.prev_article;
 				Twinkle.warn.prev_article = null;
@@ -1359,19 +1276,19 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 			e.target.form.article.value = '';
 		}
 
-		if( Twinkle.warn.reasonHash[ value ] ) {
-			if(Twinkle.warn.prev_reason !== null) {
-				e.target.form.reason.value = Twinkle.warn.prev_reason;
-				Twinkle.warn.prev_reason = null;
-			}
-			e.target.form.reason.disabled = false;
-		} else if( !e.target.form.reason.disabled ) {
-			if(Twinkle.warn.prev_reason === null) {
-				Twinkle.warn.prev_reason = e.target.form.reason.value;
-			}
-			e.target.form.reason.disabled = true;
-			e.target.form.reason.value = '';
-		}
+		//if( Twinkle.warn.messages.block[value].reasonParam ) {
+		//	if(Twinkle.warn.prev_reason !== null) {
+		//		e.target.form.reason.value = Twinkle.warn.prev_reason;
+		//		Twinkle.warn.prev_reason = null;
+		//	}
+		//	e.target.form.reason.disabled = false;
+		//} else if( !e.target.form.reason.disabled ) {
+		//	if(Twinkle.warn.prev_reason === null) {
+		//		Twinkle.warn.prev_reason = e.target.form.reason.value;
+		//	}
+		//	e.target.form.reason.disabled = true;
+		//	e.target.form.reason.value = '';
+		//}
 	}
 
 	var $article = $(e.target.form.article);
@@ -1386,12 +1303,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 
 Twinkle.warn.callbacks = {
 	preview: function() {
-		// XXX cannot preview block templates as yet...
 		var templatename = $('select[name="sub_group"]:visible').last()[0].value;
-		if (templatename in Twinkle.warn.messages.block) {
-			alert("Cannot preview block templates at the moment, unfortunately");
-			return;
-		}
 
 		var previewdiv = $('div[name="warningpreview"]:visible').last();
 		if (!previewdiv.length) {
@@ -1415,9 +1327,26 @@ Twinkle.warn.callbacks = {
 		var statusspan = document.createElement('span');
 		previewbox.appendChild(statusspan);
 		Status.init(statusspan);
+		
 		var templatetext = '{{subst:' + templatename;
 		var linkedarticle = $('input[name="article"]:visible').last();
-		if (linkedarticle.length) {
+		if (templatename in Twinkle.warn.messages.block) {
+			if( linkedarticle.length && Twinkle.warn.messages.block[templatename].pageParam ) {
+				templatetext += '|page=' + linkedarticle;
+			}
+
+			var blocktime = $('input[name="block_timer"]:visible').last();
+			if( /te?mp|^\s*$|min/.exec( blocktime ) || Twinkle.warn.messages.block[templatename].indefinite ) {
+				; // nothing
+			} else if( /indef|\*|max/.exec( blocktime ) ) {
+				templatetext += '|indef=yes';
+			} else {
+				templatetext += '|time=' + blocktime;
+			}
+
+			templatetext += "|sig=true";
+		} else if (linkedarticle.length) {
+			// add linked article for user warnings (non-block templates)
 			templatetext += '|1=' + linkedarticle[0].value;
 		}
 		templatetext += '}}';
@@ -1502,7 +1431,7 @@ Twinkle.warn.callbacks = {
 		if( params.main_group === 'block' ) {
 			var article = '', reason = '', time = null;
 			
-			if( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.sub_group !== 'uw-lblock' && ( Twinkle.warn.indefBlockHash[ params.sub_group ] || (/indef|\*|max/).exec( params.block_timer ) ) ) {
+			if( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.sub_group !== 'uw-lblock' && ( Twinkle.warn.messages.block[params.sub_group].indefinite || (/indef|\*|max/).exec( params.block_timer ) ) ) {
 				Status.info( 'Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date' );
 				text = "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			} else if( !headerRe.exec( text ) ) {
@@ -1510,15 +1439,15 @@ Twinkle.warn.callbacks = {
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
 			
-			if( params.article && Twinkle.warn.pageHash[ params.sub_group ] ) {
+			if( params.article && Twinkle.warn.messages.block[params.sub_group].pageParam ) {
 				article = '|page=' + params.article;
 			}
 			
-			if( params.reason && Twinkle.warn.reasonHash[ params.sub_group ] ) {
-				reason = '|reason=' + params.reason;
-			}
+			//if( params.reason && Twinkle.warn.reasonHash[ params.sub_group ] ) {
+			//	reason = '|reason=' + params.reason;
+			//}
 			
-			if( /te?mp|^\s*$|min/.exec( params.block_timer ) || Twinkle.warn.indefBlockHash[ params.sub_group ] ) {
+			if( /te?mp|^\s*$|min/.exec( params.block_timer ) || Twinkle.warn.messages.block[params.sub_group].indefinite ) {
 				time = '';
 			} else if( /indef|\*|max/.exec( params.block_timer ) ) {
 				time = '|indef=yes';
@@ -1536,9 +1465,6 @@ Twinkle.warn.callbacks = {
 			switch( params.sub_group ) {
 				case 'uw-username':
 					text += "{{subst:" + params.sub_group + ( params.reason ? '|1=' + params.reason : '' ) + "|subst=subst:}} ~~~~";
-					break;
-				case 'uw-socksuspect':
-					text += "{{subst:" + params.sub_group + ( params.article ? '|1=User:' + params.article : '' ) + "|subst=subst:}}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + " ~~~~";
 					break;
 				default:
 					text += "{{subst:" + params.sub_group + ( params.article ? '|1=' + params.article : '' ) + "|subst=subst:}}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + "~~~~";
