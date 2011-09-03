@@ -482,7 +482,7 @@ Twinkle.config.sections = [
 			helptip: "These appear as additional options at the bottom of the list of tags. For example, you could add new maintenance tags which have not yet been added to Twinkle's defaults.",
 			type: "customList",
 			customListValueTitle: "Template name (no curly brackets)",
-			customListLabelTitle: "Text to show in Welcome dialog"
+			customListLabelTitle: "Text to show in Tag dialog"
 		}
 	]
 },
