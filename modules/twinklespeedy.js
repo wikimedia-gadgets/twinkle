@@ -1182,6 +1182,15 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			}
 			parameters.date = "~~~~~";
 			break;
+		case 'g5':
+			var banneduser = prompt( 'Please enter the username of the banned user if available:', "" );
+			if (banneduser === null)
+			{
+				statelem.error( 'Aborted by user.' );
+				return null;
+			}
+			parameters["1"] = banneduser;
+			break;	
 		case 'g6':
 			switch( value ) {
 				case 'histmerge':
