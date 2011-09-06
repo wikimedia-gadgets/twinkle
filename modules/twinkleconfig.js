@@ -44,6 +44,17 @@ Twinkle.config.commonSets = {
 		"r2", "r3",
 		"p1", "p2"
 	],
+	csdCriteriaNotificationDisplayOrder: [
+		"db",
+		"g1", "g2", "g3", "g4", "g10", "g11", "g12",
+		"a1", "a2", "a3", "a5", "a7", "a9", "a10",
+		"u3",
+		"f1", "f2", "f3", "f7", "f8", "f9", "f10",
+		"c1",
+		"t2", "t3",
+		"r2", "r3",
+		"p1", "p2"
+	],
 	csdAndDICriteria: {
 		db: "Custom rationale ({{db}})",
 		g1: "G1", g2: "G2", g3: "G3", g4: "G4", g5: "G5", g6: "G6", g7: "G7", g8: "G8", g10: "G10", g11: "G11", g12: "G12",
@@ -352,7 +363,7 @@ Twinkle.config.sections = [
 			helptip: "Even if you choose to notify from the CSD screen, the notification will only take place for those criteria selected here.",
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteria,
-			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
+			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
 		},
 
 		// TwinkleConfig.welcomeUserOnSpeedyDeletionNotification (array of strings)
@@ -364,7 +375,7 @@ Twinkle.config.sections = [
 			helptip: "The welcome is issued only if the user is notified about the deletion, and only if their talk page does not already exist. The template used is {{<a href=\"" + mw.util.wikiGetlink("Template:Firstarticle") + "\">firstarticle</a>}}.",
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteria,
-			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
+			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
 		},
 
 		// TwinkleConfig.promptForSpeedyDeletionSummary (array of strings)

@@ -669,8 +669,8 @@ Twinkle.speedy.normalizeHash = {
 	'nouser': 'u2',
 	'gallery': 'u3',
 	'policy':'t2',
-	't3':'t3',
-	'p1':'p1',
+	't3': 't3',
+	'p1': 'p1',
 	'emptyportal': 'p2'
 };
 
