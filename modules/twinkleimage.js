@@ -89,7 +89,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 					tooltip: 'Image or media may fail Wikipedia\'s first non-free content criterion ([[WP:NFCC#1]]) in that it illustrates a subject for which a free image might reasonably be found or created that adequately provides the same information'
 				},
 				{
-					label: 'No permission (CSD F11)',
+					label: 'No evidence of permission (CSD F11)',
 					value: 'no permission',
 					tooltip: 'Image or media does not have proof that the author agreed to licence the file'
 				}
