@@ -976,19 +976,19 @@ Twinkle.xfd.callbacks = {
 			switch( params.xfdcat ) {
 			case 'cfd':
 				added_data = "{{subst:cfd}}";
-				editsummary = "Category being considered for deletion in accordance with [[WP:CDP|CDP]].";
+				editsummary = "Category being considered for deletion; see [[WP:CFD|categories for discussion]].";
 				break;
 			case 'cfm':
 				added_data = "{{subst:cfm|" + params.target.replace('Category:','') + "}}";
-				editsummary = "Category being considered for merging in accordance with [[WP:CDP|CDP]].";
+				editsummary = "Category being considered for merging; see [[WP:CFD|categories for discussion]].";
 				break;
 			case 'cfr':
 				added_data = "{{subst:cfr|" + params.target.replace('Category:','') + "}}";
-				editsummary = "Category being considered for renaming in accordance with [[WP:CDP|CDP]].";
+				editsummary = "Category being considered for renaming; see [[WP:CFD|categories for discussion]].";
 				break;
 			case 'cfc':
 				added_data = "{{subst:cfc|" + params.target + "}}";
-				editsummary = "Category being considered for conversion to an article in accordance with [[WP:CDP|CDP]].";
+				editsummary = "Category being considered for conversion to an article; see [[WP:CFD|categories for discussion]].";
 				break;
 			default:
 				alert("twinklexfd in taggingCategory(): unknown CFD action");
@@ -1208,14 +1208,17 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	var type =  e.target.category.value;
 	var usertalk = e.target.notify.checked;
 	var reason = e.target.xfdreason.value;
-	var xfdcat, puf, noinclude, tfdinline, notifyuserspace;
-	if( type in {'afd':'','cfd':''} ) {
+	var xfdcat, xfdtarget, puf, noinclude, tfdinline, notifyuserspace;
+	if( type === "afd" || type === "cfd" ) {
 		xfdcat = e.target.xfdcat.value;
+	}
+	if( type === "cfd" ) {
+		xfdtarget = e.target.xfdtarget.value;
 	}
 	if( type === 'ffd' ) {
 		puf = e.target.puf.checked;
 	}
-	if( type in {'afd':'','mfd':''} ) {
+	if( type === "afd" || type === "mfd" ) {
 		noinclude = e.target.noinclude.checked;
 	}
 	if( type === 'tfd' ) {
@@ -1354,16 +1357,15 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	case 'cfd':
 		Wikipedia.addCheckpoint();
 
-		var target;
-		if( e.target.xfdtarget ) {
-			target = e.target.xfdtarget.value.replace( /^\:?Category\:/, '' );
+		if( xfdtarget ) {
+			xfdtarget = xfdtarget.replace( /^\:?Category\:/, '' );
 		} else {
-			target = '';
+			xfdtarget = '';
 		}
 
 		logpage = 'Wikipedia:Categories for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 
-		params = { reason: reason, xfdcat: xfdcat, target: target, logpage: logpage };
+		params = { reason: reason, xfdcat: xfdcat, target: xfdtarget, logpage: logpage };
 
 		// Updating data for the action completed event
 		Wikipedia.actionCompleted.redirect = logpage;
