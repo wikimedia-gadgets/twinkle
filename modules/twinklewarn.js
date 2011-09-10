@@ -1150,12 +1150,12 @@ Twinkle.warn.messages = {
 			summary: "You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]] and your username is a blatant violation of the [[WP:U|username policy]]",
 			indefinite: true,
 			pageParam: true
-		}//,
-		//"uw-spamublock": {
-		//	label: "Spam-only account and promotional username hard block (indefinite) ** NEEDS TO BE FIXED",
-		//	summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam or advertising]] and your username is a violation of the [[WP:U|username policy]]",
-		//	indefinite: true
-		//}
+		},
+		"uw-spamublock": {
+			label: "Spam-only account and promotional username hard block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam or advertising]] and your username is a violation of the [[WP:U|username policy]]",
+			indefinite: true
+		}
 	}
 };
 
