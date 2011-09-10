@@ -504,9 +504,9 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		});
 	}
 	result.push({
-		label: 'G4: Recreation of deleted material',
+		label: 'G4: Recreation of material deleted via a deletion discussion',
 		value: 'repost',
-		tooltip: 'A copy, by any title, of a page that was deleted via an XfD process or Deletion review, provided that the copy is substantially identical to the deleted version and that any revisions made clearly do not address the reasons for which the page was deleted. This clause does not apply to content that has been "userfied", to content undeleted as a result of Deletion review, or if the prior deletions were proposed or speedy deletions, although in this last case, the previous speedy criterion, or other speedy deletion criteria, may apply'
+		tooltip: 'A copy, by any title, of a page that was deleted via an XfD process or Deletion review, provided that the copy is substantially identical to the deleted version. This clause does not apply to content that has been "userfied", to content undeleted as a result of Deletion review, or if the prior deletions were proposed or speedy deletions, although in this last case, other speedy deletion criteria may still apply'
 	});
 	result.push({
 		label: 'G5: Banned user',
