@@ -154,7 +154,7 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 					type:'input',
 					name:'page',
 					label:'Full page name',
-					tooltip:'The full page name where you left the message.  For example: "Wikipedia talk:Friendly".',
+					tooltip:'The full page name where you left the message.  For example: "Wikipedia talk:Twinkle".',
 					value: Twinkle.talkback.prev_page
 				} );
 			
@@ -213,7 +213,7 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 	var text;
 	if ( tbtarget === "an" ) {
 		text = "\n== " + Twinkle.getFriendlyPref('adminNoticeHeading') + " ==\n{{subst:ANI-notice|thread=";
-		text += section + "|noticeboard=" + tbPageName + "}}~~~~";
+		text += section + "|noticeboard=" + tbPageName + "}} ~~~~";
 
 		talkpage.setEditSummary("Notice of AN/ANI discussion" + Twinkle.getPref('summaryAd'));
 	} else {
