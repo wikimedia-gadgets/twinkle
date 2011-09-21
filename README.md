@@ -32,7 +32,7 @@ Synchronization (for developers)
 
 There is a synchronization script called `sync.pl`, which can be used to pull and push files to wikipedia. 
 
-The program depends on Perl 5.10 and the modules [`Git::Repository`][Git::Repository] and [`Mediawiki::Bot`][Mediawiki::Bot], which can be installed easy using [`App::cpanminus`][App::cpanminus]:
+The program depends on Perl 5.10 and the modules [`Git::Repository`][Git::Repository] and [`MediaWiki::Bot`][MediaWiki::Bot], which can be installed easy using [`App::cpanminus`][App::cpanminus]:
 
     cpanm --sudo install Git::Repository MediaWiki::Bot
 
