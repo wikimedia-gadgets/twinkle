@@ -331,6 +331,7 @@ Twinkle.tag.article.tags = {
 	"POV": "article does not maintain a neutral point of view",
 	"primary sources": "article relies too heavily on first-hand sources, and needs third-party sources",
 	"prose": "article is in a list format that may be better presented using prose",
+	"puffery": "article may contain wording that promotes the subject through exaggeration",
 	"recentism": "article is slanted towards recent events",
 	"ref improve": "article needs additional references or sources for verification",
 	"rough translation": "article is poorly translated and needs cleanup",
@@ -384,7 +385,8 @@ Twinkle.tag.article.tagCategories = {
 	},
 	"General content issues": {
 		"Importance and notability": [
-			"notability"  // has subcategories and special-cased code
+			"notability",  // has subcategories and special-cased code
+			"puffery"
 		],
 		"Style of writing": [
 			"advert",
