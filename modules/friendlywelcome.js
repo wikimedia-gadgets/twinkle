@@ -33,11 +33,6 @@ Twinkle.welcome.semiauto = function() {
 };
 
 Twinkle.welcome.normal = function() {
-	if( mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\"") === mw.config.get('wgUserName') ){
-		alert( 'You\'re very welcome! Very welcome indeed!' );
-		return;
-	}
-	
 	if( QueryString.exists( 'diff' ) ) {
 		// check whether the contributors' talk pages exist yet
 		var $oList = $("div#mw-diff-otitle2 span.mw-usertoollinks a.new:contains(talk)").first();
@@ -102,6 +97,11 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 };
 
 Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
+	if( uid === mw.config.get('wgUserName') ){
+		alert( 'You\'re very welcome! Very welcome indeed!' );
+		return;
+	}
+	
 	var Window = new SimpleWindow( 600, 400 );
 	Window.setTitle( "Welcome user" );
 	Window.setScriptName( "Twinkle" );
