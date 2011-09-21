@@ -309,6 +309,7 @@ Twinkle.tag.article.tags = {
 	"merge": "article should be merged with another given article",
 	"merge from": "another given article should be merged into this one",
 	"merge to": "article should be merged into another given article",
+	"metricate": "article exclusively uses non-SI units of measurement",
 	"more footnotes": "article has some references, but insufficient in-text citations",
 	"new unreviewed article": "mark article for later review",
 	"no footnotes": "article has references, but no in-text citations",
@@ -395,7 +396,8 @@ Twinkle.tag.article.tagCategories = {
 		"Information and detail": [
 			"context",
 			"expert-subject",
-			"over detailed"
+			"over detailed",
+			"metricate"
 		],
 		"Timeliness": [
 			"out of date",
