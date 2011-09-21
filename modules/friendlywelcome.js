@@ -33,6 +33,11 @@ Twinkle.welcome.semiauto = function() {
 };
 
 Twinkle.welcome.normal = function() {
+	if( uid === mw.config.get('wgUserName') ){
+		alert( 'You\'re very welcome! Very welcome indeed!' );
+		return;
+	}
+	
 	if( QueryString.exists( 'diff' ) ) {
 		// check whether the contributors' talk pages exist yet
 		var $oList = $("div#mw-diff-otitle2 span.mw-usertoollinks a.new:contains(talk)").first();
