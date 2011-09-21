@@ -20,7 +20,7 @@ Twinkle.warn = function twinklewarn() {
 };
 
 Twinkle.warn.callback = function twinklewarnCallback() {
-	if( uid === mw.config.get('wgUserName') ){
+	if( mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\"") === mw.config.get('wgUserName') ){
 		alert( 'Fine, you\'ve been warned!' );
 		return;
 	}

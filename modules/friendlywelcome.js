@@ -33,7 +33,7 @@ Twinkle.welcome.semiauto = function() {
 };
 
 Twinkle.welcome.normal = function() {
-	if( uid === mw.config.get('wgUserName') ){
+	if( mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\"") === mw.config.get('wgUserName') ){
 		alert( 'You\'re very welcome! Very welcome indeed!' );
 		return;
 	}
