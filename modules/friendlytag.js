@@ -286,6 +286,7 @@ Twinkle.tag.article.tags = {
 	"cleanup-reorganize": "article may be in need of reorganization to comply with Wikipedia's layout guidelines",
 	"close paraphrasing": "article contains close paraphrasing of a non-free copyrighted source",
 	"COI": "article creator or major contributor may have a conflict of interest",
+	"condense": "article may have too many section headers dividing up its content",
 	"confusing": "article may be confusing or unclear",
 	"context": "article provides insufficient context",
 	"copy edit": "article needs copy editing for grammar, style, cohesion, tone, and/or spelling",
@@ -371,7 +372,8 @@ Twinkle.tag.article.tagCategories = {
 			"lead too short",
 			"sections",
 			"very long",
-			"capitalization"
+			"capitalization",
+			"condense"
 		],
 		"Fiction-related cleanup": [
 			"allplot",
