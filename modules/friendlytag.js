@@ -283,6 +283,7 @@ Twinkle.tag.article.tags = {
 	"cat improve": "article may require additional categories",
 	"citation style": "article has unclear or inconsistent inline citations",
 	"cleanup": "article may require cleanup",
+	"cleanup-reorganize": "article may be in need of reorganization to comply with Wikipedia's layout guidelines",
 	"close paraphrasing": "article contains close paraphrasing of a non-free copyrighted source",
 	"COI": "article creator or major contributor may have a conflict of interest",
 	"confusing": "article may be confusing or unclear",
@@ -352,6 +353,7 @@ Twinkle.tag.article.tagCategories = {
 	"Cleanup and maintenance tags": {
 		"General cleanup": [
 			"cleanup",
+			"cleanup-reorganize",
 			"copy edit",
 			"wikify"
 		],
