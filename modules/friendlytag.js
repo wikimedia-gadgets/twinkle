@@ -279,6 +279,7 @@ Twinkle.tag.article.tags = {
 	"autobiography": "article is an autobiography and may not be written neutrally",
 	"BLP sources": "BLP article needs additional sources for verification",
 	"BLP unsourced": "BLP article has no sources at all (use BLP PROD instead for new articles)",
+	"capitalization": "article does not follow Wikipedia's guidelines on the use of capital letters",
 	"cat improve": "article may require additional categories",
 	"citation style": "article has unclear or inconsistent inline citations",
 	"cleanup": "article may require cleanup",
@@ -361,13 +362,14 @@ Twinkle.tag.article.tagCategories = {
 			"non-free",
 			"NOT"
 		],
-		"Structure and lead section": [
+		"Structure, formatting, and lead section": [
 			"lead missing",
 			"lead rewrite",
 			"lead too long",
 			"lead too short",
 			"sections",
-			"very long"
+			"very long",
+			"capitalization"
 		],
 		"Fiction-related cleanup": [
 			"allplot",
