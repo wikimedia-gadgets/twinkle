@@ -273,6 +273,9 @@ Twinkle.tag.updateSortOrder = function(e) {
 
 Twinkle.tag.article = {};
 
+// A list of all article tags, in alphabetical order
+// To ensure tags appear in the default "categorized" view, add them to the tagCategories hash below.
+
 Twinkle.tag.article.tags = {
 	"advert": "article is written like an advertisement",
 	"allplot": "article is almost entirely a plot summary",
@@ -351,11 +354,14 @@ Twinkle.tag.article.tags = {
 	"wikify": "article needs to be wikified"
 };
 
+// A list of tags in order of category
+// Tags should be in alphabetical order within the categories
+// Add new categories with discretion - the list is long enough as is!
+
 Twinkle.tag.article.tagCategories = {
 	"Cleanup and maintenance tags": {
 		"General cleanup": [
 			"cleanup",
-			"cleanup-reorganize",
 			"copy edit",
 			"wikify"
 		],
@@ -367,14 +373,15 @@ Twinkle.tag.article.tagCategories = {
 			"NOT"
 		],
 		"Structure, formatting, and lead section": [
+			"capitalization",
+			"cleanup-reorganize",
+			"condense",
 			"lead missing",
 			"lead rewrite",
 			"lead too long",
 			"lead too short",
 			"sections",
-			"very long",
-			"capitalization",
-			"condense"
+			"very long"
 		],
 		"Fiction-related cleanup": [
 			"allplot",
@@ -385,8 +392,7 @@ Twinkle.tag.article.tagCategories = {
 	},
 	"General content issues": {
 		"Importance and notability": [
-			"notability",  // has subcategories and special-cased code
-			"puffery"
+			"notability"  // has subcategories and special-cased code
 		],
 		"Style of writing": [
 			"advert",
@@ -404,8 +410,8 @@ Twinkle.tag.article.tagCategories = {
 		"Information and detail": [
 			"context",
 			"expert-subject",
-			"over detailed",
-			"metricate"
+			"metricate",
+			"over detailed"
 		],
 		"Timeliness": [
 			"out of date",
@@ -419,6 +425,7 @@ Twinkle.tag.article.tagCategories = {
 			"globalize",  // has subcategories and special-cased code
 			"peacock",
 			"POV",
+			"puffery",
 			"recentism",
 			"too few opinions",
 			"weasel"
