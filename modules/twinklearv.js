@@ -369,16 +369,16 @@ Twinkle.arv.callback.evaluate = function(e) {
 					};
 					reason += ' ({{diff|' + form.page.value + '|' + form.badid.value + '|' + form.goodid.value + '|diff}})';
 				}
-				reason += ';';
+				reason += ':';
 			}
 
 			if ( types ) {
 				reason += " " + types;
 			}
 			if (comment !== "" ) {
-				reason += (reason === "" ? "" : ". ") + comment + ".";
+				reason += (reason === "" ? "" : ". ") + comment;
 			}
-			reason += " ~~~~";
+			reason += ". ~~~~";
 			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
 
 			SimpleWindow.setButtonsEnabled( false );
