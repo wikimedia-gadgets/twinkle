@@ -17,6 +17,20 @@ Twinkle.warn = function twinklewarn() {
 			});
 		}
 	}
+
+	// modify URL of talk page on rollback success pages
+	if( mw.config.get('wgAction') === 'rollback' ) {
+		var $vandalTalkLink = $("#mw-rollback-success .mw-usertoollinks a").first();
+		$vandalTalkLink.css("font-weight", "bold");
+
+		var extraParam = "vanarticle=" + mw.util.rawurlencode(mw.config.get("wgPageName").replace(/_/g, " "));
+		var href = $vandalTalkLink.attr("href");
+		if (href.indexOf("?") === -1) {
+			$vandalTalkLink.attr("href", href + "?" + extraParam);
+		} else {
+			$vandalTalkLink.attr("href", href + "&" + extraParam);
+		}
+	}
 };
 
 Twinkle.warn.callback = function twinklewarnCallback() {
