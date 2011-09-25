@@ -328,6 +328,7 @@ Twinkle.tag.article.tags = {
 	"orphan": "article is linked to from few or no other articles",
 	"out of date": "article needs out-of-date information removed or updated",
 	"overcoverage": "article has an extensive bias or disproportional coverage towards one or more specific regions",
+	"overlinked": "article may have too many duplicate and/or irrelevant links",
 	"over detailed": "article contains an excessive amount of intricate detail",
 	"peacock": "article may contain peacock terms that promote the subject without adding information",
 	"plot": "plot summary in article is too long",
@@ -450,6 +451,7 @@ Twinkle.tag.article.tagCategories = {
 		"Links": [
 			"dead end",
 			"orphan",
+			"overlinked",
 			"wikify"  // this tag is listed twice because it used to focus mainly on links, but now it's a more general cleanup tag
 		],
 		"Referencing technique": [
