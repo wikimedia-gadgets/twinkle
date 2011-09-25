@@ -182,7 +182,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	var types = event.target.type;
 	for( var i = 0; i < types.length; ++i ) {
 		if( types[i].checked ) {
-			type = types[i].value;
+			type = types[i].values;
 			break;
 		}
 	}
