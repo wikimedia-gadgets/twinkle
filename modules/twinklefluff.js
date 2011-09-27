@@ -141,7 +141,7 @@ Twinkle.fluff = {
 				return;
 			}
 			if( Twinkle.getPref('showRollbackLinks').indexOf('diff') != -1 ) {
-				var vandal = $("#mw-diff-ntitle2 a").first().text().replace("'", "\\'");
+				var vandal = $("#mw-diff-ntitle2 a").first().text();
 
 				var revertNode = document.createElement('div');
 				revertNode.setAttribute( 'id', 'tw-revert' );
@@ -306,7 +306,7 @@ Twinkle.fluff.callbacks = {
 		var revs = $(xmlDoc).find('rev');
 
 		if( revs.length < 1 ) {
-			self.statitem.error( 'We have less than one additional revision, thus impossible to revert' );
+			self.statelem.error( 'We have less than one additional revision, thus impossible to revert' );
 			return;
 		}
 		var top = revs[0];
@@ -416,15 +416,15 @@ Twinkle.fluff.callbacks = {
 			}
 			userHasAlreadyConfirmedAction = true;
 
-			userstr = self.params.user.replace("\\'", "'");
+			userstr = self.params.user;
 			summary = "Reverted [[WP:AGF|good faith]] edits by [[Special:Contributions/" + userstr + "|" + userstr + "]] ([[User talk:" + 
 				userstr + "|talk]])" + Twinkle.fluff.formatSummaryPostfix(extra_summary) + Twinkle.getPref('summaryAd');
 			break;
 
 		case 'vand':
 
-			userstr = self.params.user.replace("\\'", "'");
-			gooduserstr = self.params.gooduser.replace("\\'", "'")
+			userstr = self.params.user;
+			gooduserstr = self.params.gooduser;
 			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" +
 				userstr + "|" + userstr + "]] ([[User talk:" + userstr + "|talk]]) identified as [[WP:VAND|vandalism]] to last revision by " +
 				gooduserstr + "." + Twinkle.getPref('summaryAd');
@@ -443,7 +443,7 @@ Twinkle.fluff.callbacks = {
 				userHasAlreadyConfirmedAction = true;
 			}
 
-			userstr = self.params.user.replace("\\'", "'");
+			userstr = self.params.user;
 			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" + 
 				userstr + "|" + userstr + "]] ([[User talk:" + userstr + "|talk]])" + Twinkle.fluff.formatSummaryPostfix(extra_summary) +
 				Twinkle.getPref('summaryAd');
