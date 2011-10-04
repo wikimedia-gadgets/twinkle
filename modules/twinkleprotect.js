@@ -337,7 +337,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			}
 			field2.append({
 					type: 'textarea',
-					name: 'reason',
+					name: 'protectReason',
 					label: 'Protection reason (for log):'
 				});
 			if (!mw.config.get('wgArticleId')) {  // tagging isn't relevant for non-existing pages
@@ -698,10 +698,11 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			}
 		}
 
+		var reasonField = (actiontype === "protect" ? form.protectReason : form.reason);
 		if (item.reason) {
-			form.reason.value = item.reason;
+			reasonField.value = item.reason;
 		} else {
-			form.reason.value = '';
+			reasonField.value = '';
 		}
 
 		// sort out tagging options
@@ -748,11 +749,11 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	if( actiontype === 'tag' || actiontype === 'protect' ) {
 		tagparams = {
 			tag: form.tagtype.value,
-			reason: ((form.tagtype.value === 'pp-protected' || form.tagtype.value === 'pp-semi-protected' || form.tagtype.value === 'pp-move') && form.reason) ? form.reason.value : null,
+			reason: ((form.tagtype.value === 'pp-protected' || form.tagtype.value === 'pp-semi-protected' || form.tagtype.value === 'pp-move') && form.protectReason) ? form.protectReason.value : null,
 			expiry: (actiontype === 'protect') ? (form.editmodify.checked ? form.editexpiry.value : (form.movemodify.checked ?
 				form.moveexpiry.value : null)) : null,
-				small: form.small.checked,
-				noinclude: form.noinclude.checked
+			small: form.small.checked,
+			noinclude: form.noinclude.checked
 		};
 	}
 
@@ -770,8 +771,8 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			} else {
 				thispage.setCreateProtection(form.createlevel.value, form.createexpiry.value);
 			}
-			if (form.reason.value) {
-				thispage.setEditSummary(form.reason.value);
+			if (form.protectReason.value) {
+				thispage.setEditSummary(form.protectReason.value);
 			} else {
 				alert("You must enter a protect reason, which will be inscribed into the protection log.");
 				return;
