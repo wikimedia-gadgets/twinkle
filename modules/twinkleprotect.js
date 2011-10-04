@@ -424,10 +424,17 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 		$(e.target.form).find('fieldset[name="field2"]').css('display', 'none');
 	}
 
-	// re-add protection level text, if it's available
-	if (e.target.values === 'protect' && Twinkle.protect.protectionLevel) {
-		Status.init($('div[name="currentprot"] span').last()[0]);
-		Status.info("Current protection level", Twinkle.protect.protectionLevel);
+	if (e.target.values === 'protect') {
+		// fake a change event on the preset dropdown
+		var evt = document.createEvent( "Event" );
+		evt.initEvent( 'change', true, true );
+		e.target.form.category.dispatchEvent( evt );
+
+		// re-add protection level text, if it's available
+		if (Twinkle.protect.protectionLevel) {
+			Status.init($('div[name="currentprot"] span').last()[0]);
+			Status.info("Current protection level", Twinkle.protect.protectionLevel);
+		}
 	}
 };
 
@@ -472,7 +479,7 @@ Twinkle.protect.protectionTypes = [
 		label: 'Full protection',
 		list: [
 			{ label: 'Generic (full)', value: 'pp-protected' },
-			{ label: 'Content dispute/edit warring (full)', selected: userIsInGroup('sysop'), value: 'pp-dispute' },
+			{ label: 'Content dispute/edit warring (full)', value: 'pp-dispute' },
 			{ label: 'Persistent vandalism (full)', value: 'pp-vandalism' },
 			{ label: 'Highly visible template (full)', value: 'pp-template' },
 			{ label: 'User talk of blocked user (full)', value: 'pp-usertalk' }
@@ -482,7 +489,7 @@ Twinkle.protect.protectionTypes = [
 		label: 'Semi-protection',
 		list: [
 			{ label: 'Generic (semi)', value: 'pp-semi-protected' },
-			{ label: 'Persistent vandalism (semi)', selected: !userIsInGroup('sysop'), value: 'pp-semi-vandalism' },
+			{ label: 'Persistent vandalism (semi)', selected: true, value: 'pp-semi-vandalism' },
 			{ label: 'BLP policy violations (semi)', value: 'pp-semi-blp' },
 			{ label: 'Sockpuppetry (semi)', value: 'pp-semi-sock' },
 			{ label: 'Highly visible template (semi)', value: 'pp-semi-template' },
