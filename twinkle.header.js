@@ -259,6 +259,11 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 	var outerDiv = document.createElement( 'div' );
 	outerDiv.className = outerDivClass+" emptyPortlet";
 	outerDiv.id = id;
+	if (type === "menu") {
+		// fix drop-down arrow image in Vector skin
+		outerDiv.style.backgroundImage = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAQCAMAAAAlM38UAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA9QTFRFsbGxmpqa3d3deXl58/n79CzHcQAAAAV0Uk5T/////wD7tg5TAAAAMklEQVR42mJgwQoYBkqYiZEZAhiZUFRDxWGicEPA4nBRhNlAcYQokpVMDEwD6kuAAAMAyGMFQVv5ldcAAAAASUVORK5CYII=")';
+		outerDiv.style.backgroundPosition = 'right 60%';
+	}
 	if ( nextnode && nextnode.parentNode === root ) {
 		root.insertBefore( outerDiv, nextnode );
 	} else {
