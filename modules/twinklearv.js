@@ -14,7 +14,7 @@ Twinkle.arv = function twinklearv() {
 		// If we are on the contributions page, need to parse some then
 		var username;
 		if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgTitle') === "Contributions" ) {
-			username = decodeURIComponent(/user=(.+)/.exec($('div#contentSub a[title="Special:Log"]').last().attr("href").replace(/\+/g, "%20"))[1]);
+			username = decodeURIComponent(/wiki\/Special:Log\/(.+)$/.exec($('div#contentSub a[title^="Special:Log"]').last().attr("href").replace(/_/g, "%20"))[1]);
 		} else {
 			username = mw.config.get('wgTitle').split( '/' )[0]; // only first part before any slashes
 		}
