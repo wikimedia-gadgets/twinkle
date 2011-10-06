@@ -14,7 +14,7 @@ $.ajax({
 	success: function(optionsText){
 
 		//quick pass if user has no options
-		if ( optionsText === "/* Empty */" ) {
+		if ( optionsText === "" ) {
 			return;
 		}
 
@@ -40,7 +40,9 @@ $.ajax({
 			//}
 			// At the same time, twinkleconfig.js needs to be adapted to write a higher version number into the options.
 
-			Twinkle.prefs = options;
+			if( options ) {
+				Twinkle.prefs = options;
+			}
 		}
 		catch (e) {
 			jsMsg("Could not parse twinkleoptions.js");
