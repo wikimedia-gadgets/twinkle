@@ -174,7 +174,9 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 
 	work_area = work_area.render();
 	root.replaceChild( work_area, old_area );
-	root.message.value = Twinkle.talkback.prev_message;
+	if (root.message) {
+		root.message.value = Twinkle.talkback.prev_message;
+	}
 };
 
 Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e) {
@@ -199,7 +201,10 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 		page = e.target.noticeboard.value;
 	}
 
-	var message = e.target.message.value;
+	var message;
+	if (e.target.message) {
+		message = e.target.message.value;
+	}
 
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( e.target );
