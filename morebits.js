@@ -2227,7 +2227,7 @@ Wikipedia.page = function(pageName, currentAction) {
 
 		var moveToken = $(xml).find('page').attr('movetoken');
 		if (!moveToken) {
-			ctx.statusElement.error("Failed to retrieve delete token.");
+			ctx.statusElement.error("Failed to retrieve move token.");
 			return;
 		}
 
