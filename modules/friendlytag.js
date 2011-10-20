@@ -1018,12 +1018,12 @@ Twinkle.tag.callbacks = {
 		var params = pageobj.getCallbackParameters();
 		var summary = "Adding ";
 
-		// Add in maintenance tags
+		// Add maintenance tags
 		if (params.tags.length) {
 
-			var tagtext = "";
+			var tagtext = "", currentTag;
 			$.each(params.tags, function(k, tag) {
-				tagtext += "{{" + (tag === "Do not move to Commons_reason" ? "Do not move to Commons" : tag);
+				currentTag = "{{" + (tag === "Do not move to Commons_reason" ? "Do not move to Commons" : tag);
 
 				var input;
 				switch (tag) {
@@ -1035,7 +1035,7 @@ Twinkle.tag.callbacks = {
 						if (input === null) {
 							return true;  // continue
 						} else if (input !== "") {
-							tagtext += '|1=' + input;
+							currentTag += '|1=' + input;
 						}
 						break;
 					case "Rename media":
@@ -1043,13 +1043,13 @@ Twinkle.tag.callbacks = {
 						if (input === null) {
 							return true;  // continue
 						} else if (input !== "") {
-							tagtext += "|1=" + input;
+							currentTag += "|1=" + input;
 						}
 						input = prompt( "{{Rename media}} - Enter the reason for the rename (optional):", "" );
 						if (input === null) {
 							return true;  // continue
 						} else if (input !== "") {
-							tagtext += "|2=" + input;
+							currentTag += "|2=" + input;
 						}
 						break;
 					case "Cleanup image":
@@ -1059,7 +1059,7 @@ Twinkle.tag.callbacks = {
 						if (input === null) {
 							return true;  // continue
 						} else if (input !== "") {
-							tagtext += "|1=" + input;
+							currentTag += "|1=" + input;
 						}
 						break;
 					case "Image-Poor-Quality":
@@ -1067,7 +1067,7 @@ Twinkle.tag.callbacks = {
 						if (input === null) {
 							return true;  // continue
 						} else if (input !== "") {
-							tagtext += "|1=" + input;
+							currentTag += "|1=" + input;
 						}
 						break;
 					case "Low quality chem":
@@ -1075,7 +1075,7 @@ Twinkle.tag.callbacks = {
 						if (input === null) {
 							return true;  // continue
 						} else if (input !== "") {
-							tagtext += "|1=" + input;
+							currentTag += "|1=" + input;
 						}
 						break;
 					case "PNG version available":
@@ -1089,7 +1089,7 @@ Twinkle.tag.callbacks = {
 						if (input === null) {
 							return true;  // continue
 						} else if (input !== "") {
-							tagtext += "|1=" + input;
+							currentTag += "|1=" + input;
 						}
 						break;
 					case "Do not move to Commons_reason":
@@ -1097,26 +1097,32 @@ Twinkle.tag.callbacks = {
 						if (input === null) {
 							return true;  // continue
 						} else if (input !== "") {
-							tagtext += "|reason=" + input;
+							currentTag += "|reason=" + input;
 						}
 						break;
 					case "Non-free reduced":
-						tagtext += "|date={{subst:date}}";
+						currentTag += "|date={{subst:date}}";
 						break;
 					default:
 						break;  // don't care
 				}
 
 				if (tag === "Should be SVG") {
-					tagtext += "|" + params.svgSubcategory;
+					currentTag += "|" + params.svgSubcategory;
 				}
 
-				tagtext += "}}\n";
+				currentTag += "}}\n";
 
+				tagtext += currentTag;
 				summary += "{{" + tag + "}}, ";
 
 				return true;  // continue
 			});
+
+			if (!tagtext) {
+				pageobj.getStatusElement().warn("User canceled operation; nothing to do");
+				return;
+			}
 
 			text = tagtext + text;
 		}
