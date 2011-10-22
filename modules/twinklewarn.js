@@ -80,12 +80,12 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 			tooltip:'An article can be linked within the notice, perhaps because it was a revert to said article that dispatched this notice. Leave empty for no article to be linked.'
 		} );
 
-	var more = form.append( { type:'field', label:'Fill in an optional reason and hit \"Submit\"' } );
-	more.append( { type:'textarea', label:'More:', name:'reason', tooltip:'Perhaps a reason, or that a more detailed notice must be appended' } );
+	var more = form.append( { type: 'field', name: 'reasonGroup', label: 'Warning information' } );
+	more.append( { type:'textarea', label:'Optional message:', name:'reason', tooltip:'Perhaps a reason, or that a more detailed notice must be appended' } );
 
 	var previewlink = document.createElement( 'a' );
 	$(previewlink).click(function(){
-		Twinkle.warn.callbacks.preview();
+		Twinkle.warn.callbacks.preview(result);  // |result| is defined below
 	});
 	previewlink.style.cursor = "pointer";
 	previewlink.textContent = 'Preview';
@@ -995,18 +995,21 @@ Twinkle.warn.messages = {
 		"uw-block": {
 			label: "Block",
 			summary: "You have been blocked from editing",
-			pageParam: true
+			pageParam: true,
+			reasonParam: true  // allows editing of reason for generic templates
 		},
 		"uw-blocknotalk": {
 			label: "Block - talk page disabled",
 			summary: "You have been blocked from editing and your user talk page has been disabled",
-			pageParam: true
+			pageParam: true,
+			reasonParam: true
 		},
 		"uw-blockindef": {
 			label: "Block - indefinite",
 			summary: "You have been indefinitely blocked from editing",
 			indefinite: true,
-			pageParam: true
+			pageParam: true,
+			reasonParam: true
 		},
 		"uw-ablock": {
 			label: "Block - IP address",
@@ -1093,7 +1096,8 @@ Twinkle.warn.messages = {
 		"uw-aeblock": {
 			label: "Arbitration enforcement block",
 			summary: "You have been blocked from editing for violating an [[WP:Arbitration|arbitration decision]] with your edits",
-			pageParam: true
+			pageParam: true,
+			reasonParam: true
 		},
 		"uw-efblock": {
 			label: "Edit filter-related block",
@@ -1122,12 +1126,14 @@ Twinkle.warn.messages = {
 		"uw-ublock": {
 			label: "Username soft block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your username is a violation of the [[WP:U|username policy]]",
-			indefinite: true
+			indefinite: true,
+			reasonParam: true
 		},
 		"uw-uhblock": {
 			label: "Username hard block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]]",
-			indefinite: true
+			indefinite: true,
+			reasonParam: true
 		},
 		"uw-softerblock": {
 			label: "Promotional username soft block (indefinite)",
@@ -1178,10 +1184,8 @@ Twinkle.warn.messages = {
 	}
 };
 
-// Set to true if the template supports the reason parameter and isn't the same as its super-template when a reason is provided
-// NOTE: I have removed this reason hash; I have an updated version on my machine, which I am yet to integrate. -- TTO
-
 Twinkle.warn.prev_block_timer = null;
+Twinkle.warn.prev_block_reason = null;
 Twinkle.warn.prev_article = null;
 Twinkle.warn.prev_reason = null;
 
@@ -1206,45 +1210,62 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		if( old_subvalue && old_subvalue_re.test( i ) ) {
 			selected = true;
 		}
-		var elem = new QuickForm.element( { type:'option', label:"[" + i + "]: " + messages[i].label, value:i, selected: selected } );
+		var elem = new QuickForm.element( { type:'option', label:"{{" + i + "}}: " + messages[i].label, value:i, selected: selected } );
 		
 		sub_group.appendChild( elem.render() );
 	}
 
 	if( value === 'block' ) {
-		var more = new QuickForm.element( {
-				type: 'input',
-				name: 'block_timer',
-				label: 'Period of blocking: ',
-				tooltip: 'The period the blocking is due for, for example 24 hours, 2 weeks, indefinite etc...'
-			} );
+		// create the block-related fields
+		var more = new QuickForm.element( { type: 'div', id: 'block_fields' } );
+		more.append( {
+			type: 'input',
+			name: 'block_timer',
+			label: 'Period of blocking: ',
+			tooltip: 'The period the blocking is due for, for example 24 hours, 2 weeks, indefinite etc...'
+		} );
+		more.append( {
+			type: 'input',
+			name: 'block_reason',
+			label: '"You have been blocked for ..." ',
+			tooltip: 'An optional reason, to replace the default generic reason. Only available for the generic block templates.'
+		} );
 		e.target.root.insertBefore( more.render(), e.target.root.lastChild );
+
+		// restore saved values of fields
 		if(Twinkle.warn.prev_block_timer !== null) {
 			e.target.root.block_timer.value = Twinkle.warn.prev_block_timer;
 			Twinkle.warn.prev_block_timer = null;
-		}		
+		}
+		if(Twinkle.warn.prev_block_reason !== null) {
+			e.target.root.block_reason.value = Twinkle.warn.prev_block_reason;
+			Twinkle.warn.prev_block_reason = null;
+		}
 		if(Twinkle.warn.prev_article === null) {
 			Twinkle.warn.prev_article = e.target.root.article.value;
 		}
 		e.target.root.article.disabled = false;
-		e.target.root.article.value = '';
-		$(e.target.root).find("fieldset:has(textarea)").hide();
+
+		$(e.target.root.reason).parent().hide();
+		$("div#twinklewarn-previewbox:visible").last().remove();
 	} else if( e.target.root.block_timer ) {
+		// hide the block-related fields
 		if(!e.target.root.block_timer.disabled && Twinkle.warn.prev_block_timer === null) {
 			Twinkle.warn.prev_block_timer = e.target.root.block_timer.value;
 		}
-		e.target.root.removeChild( e.target.root.block_timer.parentNode );
+		if(!e.target.root.block_reason.disabled && Twinkle.warn.prev_block_reason === null) {
+			Twinkle.warn.prev_block_reason = e.target.root.block_reason.value;
+		}
+		$(e.target.root).find("#block_fields").remove();
+
 		if(e.target.root.article.disabled && Twinkle.warn.prev_article !== null) {
 			e.target.root.article.value = Twinkle.warn.prev_article;
 			Twinkle.warn.prev_article = null;
 		}
 		e.target.root.article.disabled = false;
-		if(e.target.root.reason.disabled && Twinkle.warn.prev_reason !== null) {
-			e.target.root.reason.value = Twinkle.warn.prev_reason;
-			Twinkle.warn.prev_reason = null;
-		}
-		e.target.root.reason.disabled = false;
-		$(e.target.root).find("fieldset:has(textarea)").show();
+
+		$(e.target.root.reason).parent().show();
+		$("div#twinklewarn-previewbox:visible").last().remove();
 	}
 };
 
@@ -1272,7 +1293,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 				Twinkle.warn.prev_block_timer = e.target.form.block_timer.value;
 			}
 			e.target.form.block_timer.disabled = true;
-			e.target.form.block_timer.value = 'indef';
+			e.target.form.block_timer.value = 'indefinite';
 		} else if( e.target.form.block_timer.disabled ) {
 			if(Twinkle.warn.prev_block_timer !== null) {
 				e.target.form.block_timer.value = Twinkle.warn.prev_block_timer;
@@ -1295,19 +1316,19 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 			e.target.form.article.value = '';
 		}
 
-		//if( Twinkle.warn.messages.block[value].reasonParam ) {
-		//	if(Twinkle.warn.prev_reason !== null) {
-		//		e.target.form.reason.value = Twinkle.warn.prev_reason;
-		//		Twinkle.warn.prev_reason = null;
-		//	}
-		//	e.target.form.reason.disabled = false;
-		//} else if( !e.target.form.reason.disabled ) {
-		//	if(Twinkle.warn.prev_reason === null) {
-		//		Twinkle.warn.prev_reason = e.target.form.reason.value;
-		//	}
-		//	e.target.form.reason.disabled = true;
-		//	e.target.form.reason.value = '';
-		//}
+		if( Twinkle.warn.messages.block[value].reasonParam ) {
+			if(Twinkle.warn.prev_block_reason !== null) {
+				e.target.form.block_reason.value = Twinkle.warn.prev_block_reason;
+				Twinkle.warn.prev_block_reason = null;
+			}
+			e.target.form.block_reason.disabled = false;
+		} else if( !e.target.form.block_reason.disabled ) {
+			if(Twinkle.warn.prev_block_reason === null) {
+				Twinkle.warn.prev_block_reason = e.target.form.block_reason.value;
+			}
+			e.target.form.block_reason.disabled = true;
+			e.target.form.block_reason.value = '';
+		}
 	}
 
 	var $article = $(e.target.form.article);
@@ -1321,16 +1342,16 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 };
 
 Twinkle.warn.callbacks = {
-	preview: function() {
-		var templatename = $('select[name="sub_group"]:visible').last()[0].value;
+	preview: function(form) {
+		var templatename = form.sub_group.value;
 
-		var previewdiv = $('div[name="warningpreview"]:visible').last();
+		var previewdiv = $(form).find('div[name="warningpreview"]').last();
 		if (!previewdiv.length) {
 			return;  // just give up
 		}
 		previewdiv = previewdiv[0];
 
-		var previewbox = $('div#twinklewarn-previewbox:visible').last();
+		var previewbox = $(form).find('div#twinklewarn-previewbox').last();
 		if (!previewbox.length) {
 			previewbox = document.createElement('div');
 			previewbox.style.background = "white";
@@ -1340,6 +1361,7 @@ Twinkle.warn.callbacks = {
 			previewbox.setAttribute('id', 'twinklewarn-previewbox');
 			previewdiv.parentNode.appendChild(previewbox);
 		} else {
+			previewbox.show();
 			previewbox = previewbox[0];
 		}
 
@@ -1348,13 +1370,13 @@ Twinkle.warn.callbacks = {
 		Status.init(statusspan);
 		
 		var templatetext = '{{subst:' + templatename;
-		var linkedarticle = $('input[name="article"]:visible').last();
+		var linkedarticle = form.article.value;
 		if (templatename in Twinkle.warn.messages.block) {
-			if( linkedarticle.length && Twinkle.warn.messages.block[templatename].pageParam ) {
+			if( linkedarticle && Twinkle.warn.messages.block[templatename].pageParam ) {
 				templatetext += '|page=' + linkedarticle;
 			}
 
-			var blocktime = $('input[name="block_timer"]:visible').last();
+			var blocktime = form.block_timer.value;
 			if( /te?mp|^\s*$|min/.exec( blocktime ) || Twinkle.warn.messages.block[templatename].indefinite ) {
 				; // nothing
 			} else if( /indef|\*|max/.exec( blocktime ) ) {
@@ -1363,16 +1385,26 @@ Twinkle.warn.callbacks = {
 				templatetext += '|time=' + blocktime;
 			}
 
-			templatetext += "|sig=true";
-		} else if (linkedarticle.length) {
-			// add linked article for user warnings (non-block templates)
-			templatetext += '|1=' + linkedarticle[0].value;
+			var blockreason = form.block_reason.value;
+			if( blockreason ) {
+				templatetext += '|reason=' + blockreason;
+			}
+
+			templatetext += "|sig=true}}";
+		} else {
+			if (linkedarticle) {
+				// add linked article for user warnings (non-block templates)
+				templatetext += '|1=' + linkedarticle;
+			}
+			templatetext += '}}';
+
+			// add extra message for non-block templates
+			var reason = form.reason.value;
+			if (reason) {
+				templatetext += " ''" + reason + "''";
+			}
 		}
-		templatetext += '}}';
-		var reason = $('textarea[name="reason"]:visible').last();
-		if (reason.length && reason[0].value) {
-			templatetext += " ''" + reason[0].value + "''";
-		}
+		
 		var query = {
 			action: 'parse',
 			prop: 'text',
@@ -1462,9 +1494,9 @@ Twinkle.warn.callbacks = {
 				article = '|page=' + params.article;
 			}
 			
-			//if( params.reason && Twinkle.warn.reasonHash[ params.sub_group ] ) {
-			//	reason = '|reason=' + params.reason;
-			//}
+			if( params.reason && Twinkle.warn.messages.block[params.sub_group].reasonParam ) {
+				reason = '|reason=' + params.reason;
+			}
 			
 			if( /te?mp|^\s*$|min/.exec( params.block_timer ) || Twinkle.warn.messages.block[params.sub_group].indefinite ) {
 				time = '';
@@ -1525,7 +1557,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	// Then, grab all the values provided by the form
 	
 	var params = {
-		reason: e.target.reason.value,
+		reason: e.target.block_reason ? e.target.block_reason.value : e.target.reason.value,
 		main_group: e.target.main_group.value,
 		sub_group: e.target.sub_group.value,
 		article: e.target.article.value,  // .replace( /^(Image|Category):/i, ':$1:' ),  -- apparently no longer needed...
