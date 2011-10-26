@@ -1404,7 +1404,7 @@ Twinkle.warn.callbacks = {
 				templatetext += " ''" + reason + "''";
 			}
 		}
-		
+
 		var query = {
 			action: 'parse',
 			prop: 'text',
