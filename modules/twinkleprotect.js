@@ -1047,7 +1047,10 @@ Twinkle.protect.callbacks = {
 		text = text.replace( reg, "$1" + newtag + "\n");
 		if (text.length === originalTextLength)
 		{
-			statusElement.error( 'Could not find relevant "current requests for ..." heading on WP:RFPP. Aborting.' );
+			var linknode = document.createElement('a');
+			linknode.setAttribute("href", mw.util.wikiGetlink("Wikipedia:Twinkle/Fixing RPP") );
+			linknode.appendChild(document.createTextNode('How to fix RPP'));
+			statusElement.error( [ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode, '.' ] );
 			return;
 		}
 		statusElement.status( 'Adding new request...' );
