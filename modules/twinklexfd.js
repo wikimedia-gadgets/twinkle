@@ -91,6 +91,11 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 			selected: mw.config.get('wgNamespaceNumber') === Namespace.CATEGORY,
 			value: 'cfd'
 		} );
+  categories.append( {
+			type: 'option',
+			label: 'CfD/S (Categories for speedy renaming)',
+			value: 'cfds'
+		} );
 	categories.append( {
 			type: 'option',
 			label: 'MfD (Miscellany for deletion)',
@@ -139,11 +144,13 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	result.category.dispatchEvent( evt );
 };
 
+Twinkle.xfd.previousNotify = true;
+
 Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory(e) {
 	var value = e.target.value;
-	var root = e.target.form;
+	var form = e.target.form;
 	var old_area;
-	var childNodes = root.childNodes;
+	var childNodes = form.childNodes;
 	for( var i = 0; i < childNodes.length; ++i ) {
 		var node = childNodes[i];
 		if (node instanceof Element &&
@@ -154,7 +161,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 	}
 	var work_area = null;
 
-	var oldreasontextbox = e.target.form.getElementsByTagName('textarea')[0];
+	var oldreasontextbox = form.getElementsByTagName('textarea')[0];
 	var oldreason = (oldreasontextbox ? oldreasontextbox.value : '');
 
 	switch( value ) {
@@ -344,6 +351,47 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
+	case 'cfds':
+		work_area = new QuickForm.element( {
+				type: 'field',
+				label: 'Categories for speedy renaming',
+				name: 'work_area'
+			} );
+		var cfds_category = work_area.append( {
+				type: 'select',
+				label: 'C2 sub-criterion: ',
+				name: 'xfdcat',
+				tooltip: 'See WP:CFDS for full explanations.',
+				event: function(e) {
+					var value = e.target.value;
+					var target = e.target.form.xfdtarget;
+					if( value === 'cfd' ) {
+						target.disabled = true;
+					} else {
+						target.disabled = false;
+					}
+				}
+			} );
+		cfds_category.append( { type: 'option', label: 'C2A: Typographic and spelling fixes', value: 'C2A', selected: true } );
+		cfds_category.append( { type: 'option', label: 'C2B: Naming conventions and disambiguation', value: 'C2B' } );
+		cfds_category.append( { type: 'option', label: 'C2C: Consistency with names of similar categories', value: 'C2C' } );
+		cfds_category.append( { type: 'option', label: 'C2D: Rename to match article name', value: 'C2D' } );
+
+		work_area.append( {
+				type: 'input',
+				name: 'xfdtarget',
+				label: 'New name: ',
+				value: ''
+			} );
+		work_area.append( {
+				type: 'textarea',
+				name: 'xfdreason',
+				label: 'Reason: ',
+				value: oldreason
+			} );
+		work_area = work_area.render();
+		old_area.parentNode.replaceChild( work_area, old_area );
+		break;
 	case 'rfd':
 		work_area = new QuickForm.element( {
 				type: 'field',
@@ -368,6 +416,16 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
+	}
+
+	// No creator notification for CFDS
+	if (value === "cfds") {
+		Twinkle.xfd.previousNotify = form.notify.checked;
+		form.notify.checked = false;
+		form.notify.disabled = true;
+	} else {
+		form.notify.checked = Twinkle.xfd.previousNotify;
+		form.notify.disabled = false;
 	}
 };
 
@@ -1088,6 +1146,61 @@ Twinkle.xfd.callbacks = {
 	},
 
 
+	cfds: {
+		taggingCategory: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+
+			pageobj.setPageText("{{subst:cfr-speedy|1=" + params.target + "}}\n" + text);
+			pageobj.setEditSummary("Nominated for speedy renaming; see [[WP:CFDS|categories for discussion/Speedy]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchPage')) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
+			}
+			pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
+			pageobj.save();
+		},
+		addToList: function(pageobj) {
+			var old_text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+			var statelem = pageobj.getStatusElement();
+
+			var newcatname = (/^Category:/.test(params.target) ? params.target : ("Category:" + params.target));
+			text = old_text.replace( 'BELOW THIS LINE -->', "BELOW THIS LINE -->\n* [[:" + mw.config.get('wgPageName') + "]] to [[:" +
+				newcatname + "]]\u00A0\u2013 " + params.xfdcat + (params.reason ? (": " + params.reason) : ".") + " ~~~~" );
+				// U+00A0 NO-BREAK SPACE; U+2013 EN RULE
+			if( text === old_text ) {
+				statelem.error( 'failed to find target spot for the discussion' );
+				return;
+			}
+
+			pageobj.setPageText(text);
+			pageobj.setEditSummary("Adding [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
+			switch (Twinkle.getPref('xfdWatchDiscussion')) {
+				case 'yes':
+					pageobj.setWatchlist(true);
+					break;
+				case 'no':
+					pageobj.setWatchlistFromPreferences(false);
+					break;
+				default:
+					pageobj.setWatchlistFromPreferences(true);
+					break;
+			}
+			pageobj.setCreateOption('recreate');
+			pageobj.save();
+			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+		}
+	},
+
+
 	rfd: {
 		// This is a callback from an API request, which gets the target of the redirect
 		findTargetCallback: function(apiobj) {
@@ -1209,10 +1322,10 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	var usertalk = e.target.notify.checked;
 	var reason = e.target.xfdreason.value;
 	var xfdcat, xfdtarget, puf, noinclude, tfdinline, notifyuserspace;
-	if( type === "afd" || type === "cfd" ) {
+	if( type === "afd" || type === "cfd" || type === "cfds" ) {
 		xfdcat = e.target.xfdcat.value;
 	}
-	if( type === "cfd" ) {
+	if( type === "cfd" || type === "cfds" ) {
 		xfdtarget = e.target.xfdtarget.value;
 	}
 	if( type === 'ffd' ) {
@@ -1393,6 +1506,28 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		}
 
 		Wikipedia.removeCheckpoint();
+		break;
+
+	case 'cfds':
+		xfdtarget = xfdtarget.replace( /^\:?Category\:/, '' );
+
+		logpage = "Wikipedia:Categories for discussion/Speedy";
+		params = { reason: reason, xfdcat: xfdcat, target: xfdtarget };
+
+		// Updating data for the action completed event
+		Wikipedia.actionCompleted.redirect = logpage;
+		Wikipedia.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
+
+		// Tagging category
+		wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Tagging category with rename tag");
+		wikipedia_page.setCallbackParameters(params);
+		wikipedia_page.load(Twinkle.xfd.callbacks.cfds.taggingCategory);
+
+		// Adding discussion to list
+		wikipedia_page = new Wikipedia.page(logpage, "Adding discussion to the list");
+		wikipedia_page.setCallbackParameters(params);
+		wikipedia_page.load(Twinkle.xfd.callbacks.cfds.addToList);
+
 		break;
 
 	case 'rfd':
