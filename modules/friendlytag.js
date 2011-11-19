@@ -286,6 +286,7 @@ Twinkle.tag.article.tags = {
 	"cat improve": "article may require additional categories",
 	"citation style": "article has unclear or inconsistent inline citations",
 	"cleanup": "article may require cleanup",
+	"cleanup-link rot": "article uses bare URLs for references, which are prone to link rot",
 	"cleanup-reorganize": "article may be in need of reorganization to comply with Wikipedia's layout guidelines",
 	"close paraphrasing": "article contains close paraphrasing of a non-free copyrighted source",
 	"COI": "article creator or major contributor may have a conflict of interest",
@@ -311,7 +312,6 @@ Twinkle.tag.article.tags = {
 	"lead rewrite": "article lead section needs to be rewritten to comply with guidelines",
 	"lead too long": "article lead section is too long and should be shortened",
 	"lead too short": "article lead section is too short and should be expanded",
-	"linkrot": "article uses bare URLs for references, which are prone to link rot",
 	"merge": "article should be merged with another given article",
 	"merge from": "another given article should be merged into this one",
 	"merge to": "article should be merged into another given article",
@@ -456,7 +456,7 @@ Twinkle.tag.article.tagCategories = {
 		],
 		"Referencing technique": [
 			"citation style",
-			"linkrot",
+			"cleanup-link rot",
 			"more footnotes",
 			"no footnotes"
 		],
