@@ -976,6 +976,13 @@ Twinkle.speedy.callbacks = {
 			if (params.usertalk) {
 				var callback = function(pageobj) {
 					var initialContrib = pageobj.getCreator();
+
+					// don't notify users when their user talk page is nominated
+					if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
+						Status.warn("Notifying initial contributor: this user created their own user talk page; skipping notification"); 
+						return;
+					}
+
 					var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 					var notifytext;
 
