@@ -1189,6 +1189,15 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			}
 			parameters.date = "~~~~~";
 			break;
+		case 'g4':
+			var discussionlink = prompt( 'If it is in a nonstandard location, please enter the full title of the discussion (leave empty to skip):', "" );
+			if (discussionlink === null)
+			{
+				statelem.error( 'Aborted by user.' );
+				return null;
+			}
+			parameters["1"] = discussionlink;
+			break;	
 		case 'g5':
 			var banneduser = prompt( 'Please enter the username of the banned user if available:', "" );
 			if (banneduser === null)
