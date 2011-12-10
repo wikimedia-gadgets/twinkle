@@ -566,7 +566,7 @@ Twinkle.xfd.callbacks = {
 			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 		},
 		todaysList: function(pageobj) {
-			var old_text = pageobj.getPageText();
+			var old_text = pageobj.getPageText() + "\n";  // MW strips trailing blanks, but we like them, so we add a fake one
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
