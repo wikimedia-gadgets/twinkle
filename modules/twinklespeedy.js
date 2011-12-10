@@ -1189,6 +1189,20 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			}
 			parameters.date = "~~~~~";
 			break;
+		case 'g4':
+			var deldisc = prompt( 'Please enter the name of the page where the deletion discussion took place.  \nNOTE: For regular AfD and MfD discussions, just click OK - a link will be automatically provided.', "" );
+			if (deldisc === null)
+			{
+				statelem.error( 'Aborted by user.' );
+				return null;
+			}
+			if (deldisc !== "" && (deldisc.substring(0, 9) !== "Wikipedia" || deldisc.substring(0, 3) !== "WP:"))
+			{
+				statelem.error( 'The deletion discussion page name, if provided, must start with "Wikipedia:".  Cannot proceed.' );
+				return null;
+			}
+			parameters["1"] = deldisc;
+			break;
 		case 'g5':
 			var banneduser = prompt( 'Please enter the username of the banned user if available:', "" );
 			if (banneduser === null)
