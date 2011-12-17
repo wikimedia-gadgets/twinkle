@@ -2861,21 +2861,6 @@ QueryString.create = function( arr ) {
 };
 QueryString.prototype.create = QueryString.create;
 
-/**
- * **************** Exception ****************
- * Simple exception handling
- * REMOVEME - unused?
- */
-
-var Exception = function( message ) {
-	this.message = message || '';
-	this.name = "Exception";
-};
-
-Exception.prototype.what = function() {
-	return this.message;
-};
-
 
 /**
  * **************** Status ****************
