@@ -861,48 +861,68 @@ Morebits.string = {
 
 
 /**
- * **************** Array ****************
+ * **************** Morebits.array ****************
+ *
+ * uniq(arr): returns a copy of the array with duplicates removed
+ *
+ * dups(arr): returns a copy of the array with the first instance of each value
+ *            removed; subsequent instances of those values (duplicates) remain
+ *
+ * chunk(arr, size): breaks up |arr| into smaller arrays of length |size|, and
+ *                   returns an array of these "chunked" arrays
  */
 
-Array.prototype.uniq = function arrayPrototypeUniq() {
-	var result = [];
-	for( var i = 0; i < this.length; ++i ) {
-		var current = this[i];
-		if( result.indexOf( current ) === -1 ) {
-			result.push( current );
+Morebits.array = {
+	uniq: function(arr) {
+		if (!($.isArray(arr))) {
+			throw "A non-array object passed to Morebits.array.uniq";
+			return;
 		}
-	}
-	return result;
-};
-
-Array.prototype.dups = function arrayPrototypeUniq() {
-	var uniques = [];
-	var result = [];
-	for( var i = 0; i < this.length; ++i ) {
-		var current = this[i];
-		if( uniques.indexOf( current ) === -1 ) {
-			uniques.push( current );
-		} else {
-			result.push( current );
+		var result = [];
+		for( var i = 0; i < arr.length; ++i ) {
+			var current = arr[i];
+			if( result.indexOf( current ) === -1 ) {
+				result.push( current );
+			}
 		}
-	}
-	return result;
-};
-
-Array.prototype.chunk = function arrayChunk( size ) {
-	if( typeof( size ) !== 'number' || size <= 0 ) { // pretty impossible to do anything :)
-		return [ this ]; // we return an array consisting of this array.
-	}
-	var result = [];
-	var current;
-	for(var i = 0; i < this.length; ++i ) {
-		if( i % size === 0 ) { // when 'i' is 0, this is always true, so we start by creating one.
-			current = [];
-			result.push( current );
+		return result;
+	},
+	dups: function(arr) {
+		if (!($.isArray(arr))) {
+			throw "A non-array object passed to Morebits.array.dups";
+			return;
 		}
-		current.push( this[i] );
+		var uniques = [];
+		var result = [];
+		for( var i = 0; i < arr.length; ++i ) {
+			var current = arr[i];
+			if( uniques.indexOf( current ) === -1 ) {
+				uniques.push( current );
+			} else {
+				result.push( current );
+			}
+		}
+		return result;
+	},
+	chunk: function( arr, size ) {
+		if (!($.isArray(arr))) {
+			throw "A non-array object passed to Morebits.array.chunk";
+			return;
+		}
+		if( typeof( size ) !== 'number' || size <= 0 ) { // pretty impossible to do anything :)
+			return [ arr ]; // we return an array consisting of this array.
+		}
+		var result = [];
+		var current;
+		for(var i = 0; i < arr.length; ++i ) {
+			if( i % size === 0 ) { // when 'i' is 0, this is always true, so we start by creating one.
+				current = [];
+				result.push( current );
+			}
+			current.push( arr[i] );
+		}
+		return result;
 	}
-	return result;
 };
 
 
@@ -2655,7 +2675,7 @@ Mediawiki.Page.prototype = {
 		 * Will eat the whole link
 		 */
 		var links_re = new RegExp( "\\[\\[(?:[Ii]mage|[Ff]ile):\\s*" + image_re_string );
-		var allLinks = unbinder.content.splitWeightedByKeys( '[[', ']]' ).uniq();
+		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys( unbinder.content, '[[', ']]' ));
 		for( var i = 0; i < allLinks.length; ++i ) {
 			if( links_re.test( allLinks[i] ) ) {
 				var replacement = '<!-- ' + reason + allLinks[i] + ' -->';
@@ -2688,7 +2708,7 @@ Mediawiki.Page.prototype = {
 		var first_char = image.substr( 0, 1 );
 		var image_re_string = "(?:[Ii]mage|[Ff]ile):\\s*[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' +  RegExp.escape( image.substr( 1 ), true ); 
 		var links_re = new RegExp( "\\[\\[" + image_re_string );
-		var allLinks = this.text.splitWeightedByKeys( '[[', ']]' ).uniq();
+		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys( this.text, '[[', ']]' ));
 		for( var i = 0; i < allLinks.length; ++i ) {
 			if( links_re.test( allLinks[i] ) ) {
 				var replacement = allLinks[i];
@@ -2705,7 +2725,7 @@ Mediawiki.Page.prototype = {
 		var first_char = template.substr( 0, 1 );
 		var template_re_string = "(?:[Tt]emplate:)?\\s*[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' +  RegExp.escape( template.substr( 1 ), true ); 
 		var links_re = new RegExp( "\\{\\{" + template_re_string );
-		var allTemplates = this.text.splitWeightedByKeys( '{{', '}}', [ '{{{', '}}}' ] ).uniq();
+		var allTemplates = Morebits.array.uniq(Morebits.string.splitWeightedByKeys( this.text, '{{', '}}', [ '{{{', '}}}' ] ));
 		for( var i = 0; i < allTemplates.length; ++i ) {
 			if( links_re.test( allTemplates[i] ) ) {
 				this.text = this.text.replace( allTemplates[i], '', 'g' );

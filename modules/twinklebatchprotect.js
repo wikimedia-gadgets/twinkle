@@ -372,7 +372,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 			}
 		}
 	};
-	var work = pages.chunk( Twinkle.getPref('batchProtectChunks') );
+	var work = Morebits.array.chunk( pages, Twinkle.getPref('batchProtectChunks') );
 	Wikipedia.addCheckpoint();
 	Twinkle.batchprotect.currentprotector = window.setInterval( toCall, 1000, work );
 };

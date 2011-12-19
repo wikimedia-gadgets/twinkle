@@ -106,7 +106,7 @@
 				}
 			}
 		}
-		var work = pages.chunk( Twinkle.getPref('proddeleteChunks') );
+		var work = Morebits.array.chunk( pages, Twinkle.getPref('proddeleteChunks') );
 		Wikipedia.addCheckpoint();
 		currentDeletor = window.setInterval( toCall, 1000, work );
 	},

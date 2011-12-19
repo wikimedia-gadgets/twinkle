@@ -79,7 +79,7 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 		return;
 	}
 
-	var work = pages.chunk( Twinkle.getPref('batchUndeleteChunks') );
+	var work = Morebits.array.chunk( pages, Twinkle.getPref('batchUndeleteChunks') );
 	Wikipedia.addCheckpoint();
 	Twinkle.batchundelete.currentundeletor = window.setInterval( Twinkle.batchundelete.callbacks.main, 1000, work, reason );
 };

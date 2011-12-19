@@ -146,7 +146,7 @@ Twinkle.delimages.callback.evaluate = function twinkledeliCallbackEvaluate(event
 			}
 		}
 	}
-	var work = images.chunk( Twinkle.getPref('deliChunks') );
+	var work = Morebits.array.chunk( images, Twinkle.getPref('deliChunks') );
 	Wikipedia.addCheckpoint();
 	Twinkle.delimages.currentdeletor = window.setInterval( toCall, 1000, work );
 };

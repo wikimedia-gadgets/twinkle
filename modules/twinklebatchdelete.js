@@ -186,7 +186,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 			}
 		}
 	}
-	var work = pages.chunk( Twinkle.getPref('batchdeleteChunks') );
+	var work = Morebits.array.chunk( pages, Twinkle.getPref('batchdeleteChunks') );
 	Wikipedia.addCheckpoint();
 	Twinkle.batchdelete.currentdeletor = window.setInterval( toCall, 1000, work );
 };
