@@ -115,7 +115,7 @@ Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtec
 	$(xml).find('pr').each(function(index, pr) {
 		var $pr = $(pr);
 		var boldnode = document.createElement('b');
-		boldnode.textContent = $pr.attr('type').toUpperCaseFirstChar() + ": " + $pr.attr('level');
+		boldnode.textContent = Morebits.string.toUpperCaseFirstChar($pr.attr('type')) + ": " + $pr.attr('level');
 		result.push(boldnode);
 		if ($pr.attr('expiry') === 'infinity') {
 			result.push(" (indefinite) ");
@@ -1037,7 +1037,7 @@ Twinkle.protect.callbacks = {
 
 		words += params.typename;
 
-		newtag += "'''" + words.toUpperCaseFirstChar() + ( params.reason !== '' ? ":''' " + params.reason : ".'''" ) + " ~~~~";
+		newtag += "'''" + Morebits.string.toUpperCaseFirstChar(words) + ( params.reason !== '' ? ":''' " + params.reason : ".'''" ) + " ~~~~";
 
 		var reg;
 		if ( params.category === 'unprotect' ) {

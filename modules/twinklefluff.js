@@ -515,7 +515,7 @@ Twinkle.fluff.callbacks = {
 
 Twinkle.fluff.formatSummaryPostfix = function(stringToAdd) {
 	if (stringToAdd) {
-		stringToAdd = ': ' + stringToAdd.toUpperCaseFirstChar();
+		stringToAdd = ': ' + Morebits.string.toUpperCaseFirstChar(stringToAdd);
 		if (stringToAdd.search(/[.?!;]$/) == -1) {
 			stringToAdd = stringToAdd + '.';
 		}

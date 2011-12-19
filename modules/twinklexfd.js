@@ -1266,7 +1266,7 @@ Twinkle.xfd.callbacks = {
 			var statelem = pageobj.getStatusElement();
 
 			var text = old_text.replace( /(<\!-- Add new entries directly below this line -->)/, "$1\n{{subst:rfd2|redirect="+ mw.config.get('wgPageName') + "|target=" +
-				params.target + "|text=" + params.reason.toUpperCaseFirstChar() +"}} ~~~~\n" );
+				params.target + "|text=" + Morebits.string.toUpperCaseFirstChar(params.reason) + "}} ~~~~\n" );
 			if( text === old_text ) {
 				statelem.error( 'failed to find target spot for the discussion' );
 				return;

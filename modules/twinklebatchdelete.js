@@ -68,7 +68,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		if(QueryString.exists( 'from' ) )
 		{
 			gapnamespace = QueryString.get( 'namespace' );
-			gapprefix = QueryString.get( 'from' ).toUpperCaseFirstChar();
+			gapprefix = Morebits.string.toUpperCaseFirstChar( QueryString.get( 'from' ) );
 		}
 		else
 		{

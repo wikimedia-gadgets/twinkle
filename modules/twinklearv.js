@@ -413,7 +413,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				alert( 'You must specify at least one breached violation' );
 				return;
 			}
-			types = types.map( function( v ) { return v.toLowerCaseFirstChar(); } );
+			types = types.map( Morebits.string.toLowerCaseFirstChar );
 
 			if ( types.length <= 2 ) {
 				types = types.join( ' and ' );
@@ -426,7 +426,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			}
 			reason = "*{{user-uaa|1=" + uid + "}} &ndash; Violation of username policy as " + article + " " + types + " username. ";
 			if (comment !== '' ) {
-				reason += comment.toUpperCaseFirstChar() + ". ";
+				reason += Morebits.string.toUpperCaseFirstChar(comment) + ". ";
 			}
 			reason += "~~~~";
 			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
@@ -460,7 +460,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			/* falls through */
 		case "puppet":
 			var sockParameters = {
-				evidence: form.evidence.value.rtrim(), 
+				evidence: form.evidence.value.trimRight(), 
 				checkuser: form.checkuser.checked, 
 				notify: form.notify.checked
 			};
@@ -473,7 +473,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				puppetReport = false;
 			}
 
-			sockParameters.uid = puppetReport ? form.sockmaster.value.rtrim() : uid;
+			sockParameters.uid = puppetReport ? form.sockmaster.value.trimRight() : uid;
 			sockParameters.sockpuppets = puppetReport ? [uid] : $.map( $('input:text[@name=sockpuppet]',form), function(o){ return $(o).val(); });
 
 			SimpleWindow.setButtonsEnabled( false );
