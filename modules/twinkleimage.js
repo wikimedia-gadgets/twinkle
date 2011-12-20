@@ -226,7 +226,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 			throw new Error( "Twinkle.image.callback.evaluate: unknown criterion" );
 	}
 
-	var lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit) === -1;
+	var lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit.toLowerCase()) === -1;
 
 	var params = {
 		'type': type,
