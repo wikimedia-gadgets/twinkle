@@ -2320,11 +2320,15 @@ Wikipedia.page = function(pageName, currentAction) {
 	var fnProcessProtect = function() {
 		var xml = ctx.protectApi.getXML();
 
-		// XXX edit/move can only be set on existing pages, and create only on non-existing pages - check for this
-		//if ($(xml).find('page').attr('missing') === "") {
-		//	ctx.statusElement.error("Cannot protect the page, because it no longer exists");
-		//	return;
-		//}
+		var missing = ($(xml).find('page').attr('missing') === "");
+		if (((ctx.protectEdit || ctx.protectMove) && missing)) {
+			ctx.statusElement.error("Cannot protect the page, because it no longer exists");
+			return;
+		}
+		if (ctx.protectCreate && !missing) {
+			ctx.statusElement.error("Cannot create protect the page, because it already exists");
+			return;
+		}
 
 		var editprot = $(xml).find('pr[type="edit"]');
 		// cascading protection not possible on edit<sysop
