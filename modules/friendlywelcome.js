@@ -241,7 +241,7 @@ Twinkle.welcome.problemList = [
 		value: 'Welcomenpov'
 	},
 	{ 
-		label: '{{Welcomespam}}: welcome with additional discussion of anti-spamming polices*',
+		label: '{{Welcomespam}}: welcome with additional discussion of anti-spamming policies*',
 		value: 'Welcomespam'
 	},
 	{ 
@@ -272,6 +272,11 @@ Twinkle.welcome.anonymousList = [
 		label: '{{Welc-anon}}: similar to {{Welcome-anon}} but with a border and section heading',
 		value: 'Welc-anon||',
 		tooltip: 'Includes section heading.'
+	},
+	{
+		label: '{{Welcome-anon-test}}: for anonymous users who have performed test edits*',
+		value: 'Welcome-anon-test',
+		tooltip: 'Includes a section heading.'
 	},
 	{
 		label: '{{Welcome-anon-vandal}}: for anonymous users who have vandalized a page*',
@@ -314,6 +319,7 @@ Twinkle.welcome.headingHash = {
 	'Welcome-anon': true,
 	'Welcomeanon2': false,
 	'Welc-anon||': false,
+	'Welcome-anon-test': false,
 	'Welcome-anon-vandalism-fighter': false,
 	'Welcome-anon-vandal': false
 };
@@ -346,6 +352,7 @@ Twinkle.welcome.signatureHash = {
 	'Welcome-anon': false,
 	'Welcomeanon2': false,
 	'Welc-anon||': false,
+	'Welcome-anon-test': false,
 	'Welcome-anon-vandalism-fighter': false,
 	'Welcome-anon-vandal': true
 };
@@ -381,6 +388,7 @@ Twinkle.welcome.artHash = {
 	'Welcome-anon': true,
 	'Welcomeanon2': true,
 	'Welc-anon||': false,
+	'Welcome-anon-test': false,
 	'Welcome-anon-vandalism-fighter': true,
 	'Welcome-anon-vandal': false
 };
@@ -416,6 +424,7 @@ Twinkle.welcome.vandalHash = {
 	'Welcome-anon': false,
 	'Welcomeanon2': false,
 	'Welc-anon||': false,
+	'Welcome-anon-test': true,  // even though not a vandalism warning
 	'Welcome-anon-vandalism-fighter': false,
 	'Welcome-anon-vandal': true
 };
