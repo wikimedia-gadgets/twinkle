@@ -120,8 +120,8 @@ Twinkle.warn.messages = {
 			summary:"General note: Editing tests"
 		},
 		"uw-delete1": {
-			label:"Page blanking, removal of content",
-			summary:"General note: Page blanking, removal of content"
+			label:"Removal of content, blanking",
+			summary:"General note: Removal of content, blanking"
 		},
 		"uw-redirect1": { 
 			label:"Creating malicious redirects", 
@@ -250,8 +250,8 @@ Twinkle.warn.messages = {
 			summary:"Caution: Editing tests" 
 		},
 		"uw-delete2": { 
-			label:"Page blanking, removal of content", 
-			summary:"Caution: Page blanking, removal of content" 
+			label:"Removal of content, blanking",
+			summary:"Caution: Removal of content, blanking"
 		},
 		"uw-redirect2": { 
 			label:"Creating malicious redirects", 
@@ -380,8 +380,8 @@ Twinkle.warn.messages = {
 			summary:"Warning: Editing tests" 
 		},
 		"uw-delete3": { 
-			label:"Page blanking, removal of content", 
-			summary:"Warning: Page blanking, removal of content" 
+			label:"Removal of content, blanking", 
+			summary:"Warning: Removal of content, blanking"
 		},
 		"uw-redirect3": { 
 			label:"Creating malicious redirects", 
@@ -511,8 +511,8 @@ Twinkle.warn.messages = {
 			summary:"Final warning: Editing tests" 
 		},
 		"uw-delete4": { 
-			label:"Page blanking, removal of content", 
-			summary:"Final warning: Page blanking, removal of content" 
+			label:"Removal of content, blanking", 
+			summary:"Final warning: Removal of content, blanking" 
 		},
 		"uw-redirect4": { 
 			label:"Creating malicious redirects", 
@@ -618,8 +618,8 @@ Twinkle.warn.messages = {
 			summary:"Only warning: Vandalism" 
 		},
 		"uw-delete4im": { 
-			label:"Page blanking, removal of content", 
-			summary:"Only warning: Page blanking, removal of content" 
+			label:"Removal of content, blanking", 
+			summary:"Only warning: Removal of content, blanking" 
 		},
 		"uw-redirect4im": { 
 			label:"Creating malicious redirects", 
