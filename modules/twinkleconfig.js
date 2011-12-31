@@ -1165,7 +1165,8 @@ Twinkle.config.init = function twinkleconfigInit() {
 			box.appendChild(document.createTextNode(", or by editing this page."));
 			$(box).insertAfter($("#contentSub"));
 
-		} else if (mw.config.get("wgTitle").indexOf(mw.config.get("wgUserName")) === 0 && mw.config.get("wgTitle").lastIndexOf(".js") == mw.config.get("wgTitle").length - 3) {
+		} else if (mw.config.get("wgTitle").indexOf(mw.config.get("wgUserName")) === 0 &&
+				mw.config.get("wgPageName").lastIndexOf(".js") == mw.config.get("wgPageName").length - 3) {
 			// place "Looking for Twinkle options?" notice
 			box.style.width = "60%";
 
