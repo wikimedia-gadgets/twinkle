@@ -397,13 +397,11 @@ Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 		value: 'a9',
 		tooltip: 'An article about a musical recording which does not indicate why its subject is important or significant, and where the artist\'s article has never existed or has been deleted'
 	});
-	if (!multiple) {
-		result.push({
-			label: 'A10: Recently created article that duplicates an existing topic',
-			value: 'a10',
-			tooltip: 'A recently created article with no relevant page history that does not aim to expand upon, detail or improve information within any existing article(s) on the subject, and where the title is not a plausible redirect. This does not include content forks, split pages or any article that aims at expanding or detailing an existing one.'
-		});
-	}
+	result.push({
+		label: 'A10: Recently created article that duplicates an existing topic',
+		value: 'a10',
+		tooltip: 'A recently created article with no relevant page history that does not aim to expand upon, detail or improve information within any existing article(s) on the subject, and where the title is not a plausible redirect. This does not include content forks, split pages or any article that aims at expanding or detailing an existing one.'
+	});
 	return result;
 };
 
