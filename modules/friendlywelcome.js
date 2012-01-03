@@ -215,6 +215,11 @@ Twinkle.welcome.welcomingCommitteeList = [
 		value: 'W-graphical',
 		tooltip: 'This template is similar to {{Welcomeg}} but has fewer links.  Supports many different options.  Includes a signature.'
 	},
+		{ 
+		label: '{{W-graphic}}: another version of {{W-graphical}}',
+		value: 'W-graphic',
+		tooltip: 'This template is similar to {{W-graphic}} but with more powerful colours and changes in text.  Supports many different options.  Includes a signature.'
+	},
 	{ 
 		label: '{{W-screen}}: graphical; designed to fit the size of the user\'s screen',
 		value: 'W-screen',
