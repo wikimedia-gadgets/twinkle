@@ -215,6 +215,11 @@ Twinkle.welcome.welcomingCommitteeList = [
 		value: 'W-graphical',
 		tooltip: 'This template is similar to {{Welcomeg}} but has fewer links.  Supports many different options.  Includes a signature.'
 	},
+		{ 
+		label: '{{W-graphic}}: another version of {{W-graphical}}',
+		value: 'W-graphic',
+		tooltip: 'This template is similar to {{W-graphic}} but with more powerful colours and changes in text.  Supports many different options.  Includes a signature.'
+	},
 	{ 
 		label: '{{W-screen}}: graphical; designed to fit the size of the user\'s screen',
 		value: 'W-screen',
@@ -307,6 +312,7 @@ Twinkle.welcome.headingHash = {
 	'W-short||': true,
 	'W-link': true,
 	'W-graphical': true,
+	'W-graphic': true,
 	'W-screen': true,
 	'Welcomelaws': true,
 	'Firstarticle': true,
@@ -341,6 +347,7 @@ Twinkle.welcome.signatureHash = {
 	'W-short||': true,
 	'W-link': true,
 	'W-graphical': true,
+	'W-graphic': true,
 	'W-screen': true,
 	'Welcomelaws': false,
 	'Firstarticle': true,
@@ -376,6 +383,7 @@ Twinkle.welcome.artHash = {
 	'W-short||': false,
 	'W-link': false,
 	'W-graphical': false,
+	'W-graphic': false,
 	'W-screen': false,
 	'Welcomelaws': false,
 	'Firstarticle': false,
@@ -412,6 +420,7 @@ Twinkle.welcome.vandalHash = {
 	'W-short||': false,
 	'W-link': false,
 	'W-graphical': false,
+	'W-graphic': false,
 	'W-screen': false,
 	'Welcomelaws': false,
 	'Firstarticle': true,
