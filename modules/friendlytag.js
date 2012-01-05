@@ -652,7 +652,8 @@ Twinkle.tag.file.cleanupList = [
 			]
 		}
 	},
-	{ label: '{{Should be text}}: image should be represented as text, tables, or math markup', value: 'Should be text' }
+	{ label: '{{Should be text}}: image should be represented as text, tables, or math markup', value: 'Should be text' },
+ 	{ label: '{{Split media}}: there are two different images in the upload log which need to be split', value: 'Split media' }
 ];
 
 Twinkle.tag.file.qualityList = [
@@ -669,7 +670,6 @@ Twinkle.tag.file.commonsList = [
 	{ label: '{{Do not move to Commons}} (other reason)', value: 'Do not move to Commons_reason' },
 	{ label: '{{Keep local}}: request to keep local copy of a Commons file', value: 'Keep local' },
 	{ label: '{{Now Commons}}: file has been copied to Commons', value: 'subst:ncd' },
-	{ label: '{{Shadows Commons}}: a different file is present on Commons under the same filename', value: 'Shadows Commons' }
 ];
 
 Twinkle.tag.file.replacementList = [
@@ -980,11 +980,11 @@ Twinkle.tag.callbacks = {
 				}
 			}
 
-			summaryText += ' {{[[Template:';
+			summaryText += ' {{[[';
 			if( tags[i] === 'globalize' ) {
-				summaryText += params.globalizeSubcategory + '|' + params.globalizeSubcategory;
+				summaryText += "Template:" + params.globalizeSubcategory + '|' + params.globalizeSubcategory;
 			} else {
-				summaryText += tags[i] + '|' + tags[i];
+				summaryText += (tags[i].indexOf(":") !== -1 ? tags[i] : ("Template:" + tags[i] + "|" + tags[i]));
 			}
 			summaryText += ']]}}';
 		}
@@ -1023,6 +1023,12 @@ Twinkle.tag.callbacks = {
 
 			var tagtext = "", currentTag;
 			$.each(params.tags, function(k, tag) {
+				 // when other commons-related tags are placed, remove "move to Commons" tag
+         if (["Keep local", "subst:ncd", "Do not move to Commons_reason", "Do not move to Commons",
+ 	 "Now Commons"].indexOf(tag) !== -1) {
+ 	 text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*}}/gi, "");
+}
+
 				currentTag = "{{" + (tag === "Do not move to Commons_reason" ? "Do not move to Commons" : tag);
 
 				var input;
