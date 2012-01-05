@@ -980,11 +980,11 @@ Twinkle.tag.callbacks = {
 				}
 			}
 
-			summaryText += ' {{[[Template:';
+			summaryText += ' {{[[';
 			if( tags[i] === 'globalize' ) {
-				summaryText += params.globalizeSubcategory + '|' + params.globalizeSubcategory;
+				summaryText += "Template:" + params.globalizeSubcategory + '|' + params.globalizeSubcategory;
 			} else {
-				summaryText += tags[i] + '|' + tags[i];
+				summaryText += (tags[i].indexOf(":") !== -1 ? tags[i] : ("Template:" + tags[i] + "|" + tags[i]));
 			}
 			summaryText += ']]}}';
 		}
