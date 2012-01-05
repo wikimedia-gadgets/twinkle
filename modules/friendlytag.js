@@ -1023,6 +1023,12 @@ Twinkle.tag.callbacks = {
 
 			var tagtext = "", currentTag;
 			$.each(params.tags, function(k, tag) {
+				// when other commons-related tags are placed, remove "move to Commons" tag
+				if (["Keep local", "subst:ncd", "Do not move to Commons_reason", "Do not move to Commons",
+					"Now Commons"].indexOf(tag) !== -1) {
+					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*}}/gi, "");
+				}
+
 				currentTag = "{{" + (tag === "Do not move to Commons_reason" ? "Do not move to Commons" : tag);
 
 				var input;
