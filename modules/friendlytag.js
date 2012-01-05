@@ -652,7 +652,8 @@ Twinkle.tag.file.cleanupList = [
 			]
 		}
 	},
-	{ label: '{{Should be text}}: image should be represented as text, tables, or math markup', value: 'Should be text' }
+	{ label: '{{Should be text}}: image should be represented as text, tables, or math markup', value: 'Should be text' },
+	{ label: '{{Split media}}: there are two different images in the upload log which need to be split', value: 'Split media' }
 ];
 
 Twinkle.tag.file.qualityList = [
@@ -668,8 +669,7 @@ Twinkle.tag.file.commonsList = [
 	{ label: '{{Do not move to Commons}} (PD issue): file is PD in the US but not in country of origin', value: 'Do not move to Commons' },
 	{ label: '{{Do not move to Commons}} (other reason)', value: 'Do not move to Commons_reason' },
 	{ label: '{{Keep local}}: request to keep local copy of a Commons file', value: 'Keep local' },
-	{ label: '{{Now Commons}}: file has been copied to Commons', value: 'subst:ncd' },
-	{ label: '{{Shadows Commons}}: a different file is present on Commons under the same filename', value: 'Shadows Commons' }
+	{ label: '{{Now Commons}}: file has been copied to Commons', value: 'subst:ncd' }
 ];
 
 Twinkle.tag.file.replacementList = [
