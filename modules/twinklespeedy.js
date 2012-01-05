@@ -397,13 +397,11 @@ Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 		value: 'a9',
 		tooltip: 'An article about a musical recording which does not indicate why its subject is important or significant, and where the artist\'s article has never existed or has been deleted'
 	});
-	if (!multiple) {
-		result.push({
-			label: 'A10: Recently created article that duplicates an existing topic',
-			value: 'a10',
-			tooltip: 'A recently created article with no relevant page history that does not aim to expand upon, detail or improve information within any existing article(s) on the subject, and where the title is not a plausible redirect. This does not include content forks, split pages or any article that aims at expanding or detailing an existing one.'
-		});
-	}
+  result.push({
+  label: 'A10: Recently created article that duplicates an existing topic',
+  value: 'a10',
+  tooltip: 'A recently created article with no relevant page history that does not aim to expand upon, detail or improve information within any existing article(s) on the subject, and where the title is not a plausible redirect. This does not include content forks, split pages or any article that aims at expanding or detailing an existing one.'
+});
 	return result;
 };
 
@@ -1309,7 +1307,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				}
 			}
 			break;
-		case 'f9':
+		
 		case 'g12':
 			var url = prompt( 'Please enter the URL if available, including the "http://":', "" );
 			if (url === null)
@@ -1319,6 +1317,15 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			}
 			parameters.url = url;
 			break;
+		case 'f9':
+ 	 	        var f9url = prompt( 'Please enter the URL of the copyvio, including the "http://".  \nIf you cannot provide a URL, please do not use CSD F9.  (Exception: for copyvios of non-Internet sources, leave the box blank.)', "" );
+                        if (f9url === null)
+                        {
+ 	                  statelem.error( 'Aborted by user.' );
+ 	                  return null;
+                        }
+                        parameters.url = f9url;
+                        break;
 		case 'a2':
 			var source = prompt('Enter an interwiki link to the article on the foreign-language wiki (for example, "fr:Bonjour"):', "");
 			if (source === null)
