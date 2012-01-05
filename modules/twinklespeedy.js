@@ -1307,7 +1307,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				}
 			}
 			break;
-		case 'f9':
 		case 'g12':
 			var url = prompt( 'Please enter the URL if available, including the "http://":', "" );
 			if (url === null)
@@ -1316,6 +1315,15 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				return null;
 			}
 			parameters.url = url;
+			break;
+		case 'f9':
+			var f9url = prompt( 'Please enter the URL of the copyvio, including the "http://".  \nIf you cannot provide a URL, please do not use CSD F9.  (Exception: for copyvios of non-Internet sources, leave the box blank.)', "" );
+			if (f9url === null)
+			{
+				statelem.error( 'Aborted by user.' );
+				return null;
+			}
+			parameters.url = f9url;
 			break;
 		case 'a2':
 			var source = prompt('Enter an interwiki link to the article on the foreign-language wiki (for example, "fr:Bonjour"):', "");
