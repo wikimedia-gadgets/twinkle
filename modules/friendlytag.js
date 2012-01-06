@@ -673,8 +673,8 @@ Twinkle.tag.file.commonsList = [
 ];
 
 Twinkle.tag.file.replacementList = [
+	{ label: '{{Duplicate}}: exact duplicate of another file, but not yet orphaned', value: 'Duplicate' },
 	{ label: '{{Obsolete}}: improved version available', value: 'Obsolete' },
-	{ label: '{{Redundant}}: exact duplicate of another file, but not yet orphaned', value: 'Redundant' },
 	{ label: '{{PNG version available}}', value: 'PNG version available' },
 	{ label: '{{SVG version available}}', value: 'SVG version available' }
 ];
@@ -1090,7 +1090,7 @@ Twinkle.tag.callbacks = {
 						/* falls through */
 					case "Obsolete":
 						/* falls through */
-					case "Redundant":
+					case "Duplicate":
 						input = prompt( "{{" + tag + "}} - Enter the name of the file which replaces this one (required). To skip the tag, click Cancel:", "" );
 						if (input === null) {
 							return true;  // continue
