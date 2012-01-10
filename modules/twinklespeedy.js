@@ -1198,7 +1198,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
-			if (deldisc !== "" && (deldisc.substring(0, 9) !== "Wikipedia" || deldisc.substring(0, 3) !== "WP:"))
+			if (deldisc !== "" && deldisc.substring(0, 9) !== "Wikipedia" && deldisc.substring(0, 3) !== "WP:")
 			{
 				statelem.error( 'The deletion discussion page name, if provided, must start with "Wikipedia:".  Cannot proceed.' );
 				return null;
