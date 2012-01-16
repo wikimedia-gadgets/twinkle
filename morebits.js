@@ -46,6 +46,23 @@ function userIsAnon() {
 
 
 
+/**
+ * **************** isIPAddress() ****************
+ * Helper function: Returns true if given string contains a valid IPv4 or
+ * IPv6 address
+ *
+ * This is copied from mediaWiki.util; sometimes util is loaded after twinkle (?!)
+ */
+
+Morebits.RE_IP_ADD = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[0-9]?[0-9])$/;
+Morebits.RE_IPV6_ADD = /^(?::(?::|(?::[0-9A-Fa-f]{1,4}){1,7})|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){0,6}::|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){7})$/;
+Morebits.RE_IPV6_ADD2 = /^[0-9A-Fa-f]{1,4}(?:::?[0-9A-Fa-f]{1,4}){1,6}$/;
+
+function isIPAddress( address ) {
+	return address.search( Morebits.RE_IP_ADD ) !== -1 ||  // IPv4
+		address.search( Morebits.RE_IPV6_ADD ) !== -1 ||  // IPv6
+		(address.search( Morebits.RE_IPV6_ADD2 ) !== -1	&& address.search( /::/ ) !== -1 && address.search( /::.*::/ ) === -1);
+}
 
 
 
@@ -2342,7 +2359,7 @@ Wikipedia.page = function(pageName, currentAction) {
 
 /**
  * **************** Wikipedia.wiki ****************
- * REMOVEME - but *only* after Twinkle no longer uses it
+ * REMOVEME - but *only* after Twinkle no longer uses it - viz. batchundelete :(
  */
 
 /*
@@ -2686,30 +2703,6 @@ Mediawiki.Page.prototype = {
 		return this.text;
 	}
 };
-
-
-/**
- * **************** isInNetwork(), isIPAddress() ****************
- */
-
-// ipadress is in the format 1.2.3.4 and network is in the format 1.2.3.4/5
-function isInNetwork( ipaddress, network ) {
-	var iparr = ipaddress.split('.');
-	var ip = (parseInt(iparr[0], 10) << 24) + (parseInt(iparr[1], 10) << 16) + (parseInt(iparr[2], 10) << 8) + (parseInt(iparr[3], 10));
-
-	var netmask = 0xffffffff << network.split('/')[1];
-
-	var netarr = network.split('/')[0].split('.');
-	var net = (parseInt(netarr[0], 10) << 24) + (parseInt(netarr[1], 10) << 16) + (parseInt(netarr[2], 10) << 8) + (parseInt(netarr[3], 10));
-
-	return (ip & netmask) === net;
-}
-
-// Returns true if given string contains a valid IP-address, that is, from 0.0.0.0 to 255.255.255.255
-function isIPAddress( string ){
-	var res = /(\d{1,4})\.(\d{1,3})\.(\d{1,3})\.(\d{1,4})/.exec( string );
-	return res && res.slice( 1, 5 ).every( function( e ) { return e < 256; } );
-}
 
 
 /**
