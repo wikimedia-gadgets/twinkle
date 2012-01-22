@@ -59,7 +59,7 @@ $.ajax({
 Twinkle.load = function(){
 	// Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
 	// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
-	if ( (mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') !== "Contributions") ||
+	if ( (mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') !== "Contributions" && mw.config.get('wgCanonicalSpecialPageName') !== "Prefixindex") ||
 		($.client.profile().name === 'msie' && $.client.profile().versionNumber < 9) ) {
 		return;
 	}
