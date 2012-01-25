@@ -217,7 +217,7 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 
 	var text;
 	if ( tbtarget === "an" ) {
-		text = "\n== " + Twinkle.getFriendlyPref('adminNoticeHeading') + " ==\n{{subst:ANI-notice|thread=";
+		text = "\n{{subst:ANI-notice|thread=";
 		text += section + "|noticeboard=" + tbPageName + "}} ~~~~";
 
 		talkpage.setEditSummary("Notice of AN/ANI discussion" + Twinkle.getPref('summaryAd'));
