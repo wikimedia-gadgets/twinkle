@@ -887,7 +887,7 @@ Twinkle.speedy.callbacks = {
 
 			Wikipedia.addCheckpoint();
 
-			var params = clone( apiobj.params );
+			var params = $.extend( {}, apiobj.params );
 			params.current = 0;
 			params.total = total;
 			params.obj = statusIndicator;

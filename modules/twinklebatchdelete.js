@@ -282,7 +282,7 @@ Twinkle.batchdelete.callbacks = {
 			return;
 		}
 
-		var params = clone( self.params );
+		var params = $.extend({}, self.params);
 		params.current = 0;
 		params.total = total;
 		params.obj = statusIndicator;
@@ -336,7 +336,7 @@ Twinkle.batchdelete.callbacks = {
 		for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
 			var title = snapshot.snapshotItem(i).value;
 			var wikipedia_page = new Wikipedia.page( title, "Unlinking on " + title );
-			var params = clone( self.params );
+			var params = $.extend( {}, self.params );
 			params.title = title;
 			params.onsuccess = onsuccess;
 			wikipedia_page.setCallbackParameters(params);
