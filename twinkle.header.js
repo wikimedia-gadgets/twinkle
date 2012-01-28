@@ -145,15 +145,15 @@ Twinkle.defaultConfig.friendly = {
 
 Twinkle.getPref = function twinkleGetPref(name) {
 	var result;
-	if (typeof(Twinkle.prefs) === "object" && typeof(Twinkle.prefs.twinkle) === "object") {
+	if (typeof Twinkle.prefs === "object" && typeof Twinkle.prefs.twinkle === "object") {
 		// look in Twinkle.prefs (twinkleoptions.js)
 		result = Twinkle.prefs.twinkle[name];
-	} else if (typeof(window.TwinkleConfig) === "object") {
+	} else if (typeof window.TwinkleConfig === "object") {
 		// look in TwinkleConfig
 		result = window.TwinkleConfig[name];
 	}
 
-	if (typeof(result) === "undefined") {
+	if (typeof result === "undefined") {
 		return Twinkle.defaultConfig.twinkle[name];
 	}
 	return result;
@@ -161,15 +161,15 @@ Twinkle.getPref = function twinkleGetPref(name) {
 
 Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
 	var result;
-	if (typeof(Twinkle.prefs) === "object" && typeof(Twinkle.prefs.friendly) === "object") {
+	if (typeof Twinkle.prefs === "object" && typeof Twinkle.prefs.friendly === "object") {
 		// look in Twinkle.prefs (twinkleoptions.js)
 		result = Twinkle.prefs.friendly[name];
-	} else if (typeof(window.FriendlyConfig) === "object") {
+	} else if (typeof window.FriendlyConfig === "object") {
 		// look in FriendlyConfig
 		result = window.FriendlyConfig[name];
 	}
 
-	if (typeof(result) === "undefined") {
+	if (typeof result === "undefined") {
 		return Twinkle.defaultConfig.friendly[name];
 	}
 	return result;

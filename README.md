@@ -36,7 +36,7 @@ The program depends on Perl 5.10 and the modules [`Git::Repository`][Git::Reposi
 
     cpanm --sudo install Git::Repository MediaWiki::Bot
 
-When running the program, you can either enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a file called `~/.mwbotrc` using following format:
+When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a file called `~/.mwbotrc` using the following format:
 
     username => "Username",
     password => "password",
@@ -44,7 +44,7 @@ When running the program, you can either enter your credentials on the command l
 
 where `base` is the wiki path to prefix the files for `pull` and `push`;
 
-Notice that your working directory **must** be clean, if not, either `stash` or `commit` your changes.
+Notice that your working directory **must** be clean; if not, either `stash` or `commit` your changes.
 
 To `pull` user Foobar's changes, do:
 
@@ -64,7 +64,7 @@ The edit summary will contain the branch, the last commit sha, and the oneliner 
 Style guideline
 ---------------
 
-While old legacy code has many different and incoherent styles, it's decided to utilize a more coherent style throughout the code.
+While old legacy code has many different and incoherent styles, it has been decided to utilize a more coherent style throughout the code.
 
 The [jQuery Core Style Guideline][jq_style] is what we will hereafter use as our style guideline.
 
