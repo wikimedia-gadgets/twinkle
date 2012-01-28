@@ -78,7 +78,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			}
 			var titleSplit = pathSplit[3].split(':');
 			gapnamespace = Namespace[titleSplit[0].toUpperCase()];
-			if ( titleSplit.length < 2 || typeof(gapnamespace) === 'undefined' )
+			if ( titleSplit.length < 2 || typeof gapnamespace === 'undefined' )
 			{
 				gapnamespace = Namespace.MAIN;
 				gapprefix = pathSplit.splice(3).join('/');
