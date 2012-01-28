@@ -507,7 +507,7 @@ Twinkle.welcome.callbacks = {
 			" template to user talk page";
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
-		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markWelcomesAsMinor'));
+		pageobj.setMinorEdit(false);
 		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchWelcomes'));
 		pageobj.setCreateOption('recreate');
 		pageobj.save();
