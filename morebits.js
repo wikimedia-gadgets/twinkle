@@ -304,7 +304,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 							e.target.parentNode.appendChild( e.target.subgroup );
 							if( e.target.type === 'radio' ) {
 								var name = e.target.name;
-								if( typeof( e.target.form.names[name] ) !== 'undefined' ) {
+								if( typeof e.target.form.names[name] !== 'undefined' ) {
 									e.target.form.names[name].parentNode.removeChild( e.target.form.names[name].subgroup );
 								}
 								e.target.form.names[name] = e.target;
@@ -321,7 +321,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 					event = function(e) {
 						if( e.target.checked ) {
 							var name = e.target.name;
-							if( typeof( e.target.form.names[name] ) !== 'undefined' ) {
+							if( typeof e.target.form.names[name] !== 'undefined' ) {
 								e.target.form.names[name].parentNode.removeChild( e.target.form.names[name].subgroup );
 							}
 							delete e.target.form.names[name];
@@ -486,7 +486,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 			var result = document.createElement( 'span' );
 			result.className = 'quickformDescription';
 			for( i = 0; i < data.label.length; ++i ) {
-				if( typeof(data.label[i]) === 'string' ) {
+				if( typeof data.label[i] === 'string' ) {
 					result.appendChild( document.createTextNode( data.label[i] ) );
 				} else if( data.label[i] instanceof Element ) {
 					result.appendChild( data.label[i] );
@@ -665,13 +665,13 @@ RegExp.escape = function( text, space_fix ) {
  */
 
 var Bytes = function( value ) {
-	if( typeof(value) === 'string' ) {
+	if( typeof value === 'string' ) {
 		var res = /(\d+) ?(\w?)(i?)B?/.exec( value );
 		var number = res[1];
 		var mag = res[2];
 		var si = res[3];
 
-		if( ! number ) {
+		if( !number ) {
 			this.number = 0;
 			return;
 		}
@@ -786,9 +786,9 @@ Morebits.string = {
 		var initial = null;
 		var result = [];
 		if( !( skip instanceof Array ) ) {
-			if( typeof( skip ) === 'undefined' ) {
+			if( typeof skip === 'undefined' ) {
 				skip = [];
-			} else if( typeof( skip ) === 'string' ) {
+			} else if( typeof skip === 'string' ) {
 				skip = [ skip ];
 			} else {
 				throw new Error( "non-applicable skip parameter" );
@@ -871,7 +871,7 @@ Morebits.array = {
 			throw "A non-array object passed to Morebits.array.chunk";
 			return;
 		}
-		if( typeof( size ) !== 'number' || size <= 0 ) { // pretty impossible to do anything :)
+		if( typeof size !== 'number' || size <= 0 ) { // pretty impossible to do anything :)
 			return [ arr ]; // we return an array consisting of this array.
 		}
 		var result = [];
@@ -894,7 +894,7 @@ Morebits.array = {
  */
 
 function Unbinder( string ) {
-	if( typeof( string ) !== 'string' ) {
+	if( typeof string !== 'string' ) {
 		throw new Error( "not a string" );
 	}
 	this.content = string;
@@ -1167,8 +1167,8 @@ Wikipedia.actionCompleted.event = function() {
 		window.setTimeout( function() { window.location = Wikipedia.actionCompleted.redirect; }, Wikipedia.actionCompleted.timeOut );
 	}
 };
-var wpActionCompletedTimeOut = typeof(wpActionCompletedTimeOut) === 'undefined' ? 5000 : wpActionCompletedTimeOut;
-var wpMaxLag = typeof(wpMaxLag) === 'undefined' ? 10 : wpMaxLag; // Maximum lag allowed, 5-10 is a good value, the higher value, the more agressive.
+var wpActionCompletedTimeOut = ( typeof wpActionCompletedTimeOut === 'undefined' ? 5000 : wpActionCompletedTimeOut );
+var wpMaxLag = ( typeof wpMaxLag === 'undefined' ? 10 : wpMaxLag ); // Maximum lag allowed, 5-10 is a good value, the higher value, the more agressive.
 
 // editCount - REMOVEME when Wikipedia.wiki is gone
 Wikipedia.editCount = 10;
@@ -1244,7 +1244,7 @@ Wikipedia.api.prototype = {
 				this.errorCode = $(xml).find('error').attr('code');
 				this.errorText = $(xml).find('error').attr('info');
 
-				if (typeof(this.errorCode) === "string") {
+				if (typeof this.errorCode === "string") {
 
 					// the API didn't like what we told it, e.g., bad edit token or an error creating a page
 					this.returnError();
@@ -1715,7 +1715,7 @@ Wikipedia.page = function(pageName, currentAction) {
 		if (ctx.followRedirect) {
 			ctx.loadQuery.redirects = '';  // follow all redirects
 		}
-		if (typeof(ctx.pageSection) === 'number') {
+		if (typeof ctx.pageSection === 'number') {
 			ctx.loadQuery.rvsection = ctx.pageSection;
 		}
 		if (userIsInGroup('sysop')) {
@@ -1758,7 +1758,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			watchlist: ctx.watchlistOption
 		};
 
-		if (typeof(ctx.pageSection) === 'number') {
+		if (typeof ctx.pageSection === 'number') {
 			query.section = ctx.pageSection;
 		}
 
