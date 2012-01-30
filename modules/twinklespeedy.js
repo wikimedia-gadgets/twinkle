@@ -887,7 +887,7 @@ Twinkle.speedy.callbacks = {
 
 			Wikipedia.addCheckpoint();
 
-			var params = clone( apiobj.params );
+			var params = $.extend( {}, apiobj.params );
 			params.current = 0;
 			params.total = total;
 			params.obj = statusIndicator;
@@ -1217,7 +1217,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 		case 'g6':
 			switch( value ) {
 				case 'histmerge':
-					var mergetitle = prompt( 'Please enter the title to merge into:', "" );
+					var mergetitle = prompt( 'Please enter the title to be merged into this one:', "" );
 					if (mergetitle === null)
 					{
 						statelem.error( 'Aborted by user.' );

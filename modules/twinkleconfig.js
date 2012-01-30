@@ -616,11 +616,6 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 		{
-			name: "markWelcomesAsMinor",
-			label: "Mark welcomes as minor edits",
-			type: "boolean"
-		},
-		{
 			name: "maskTemplateInSummary",
 			label: "Omit the name of the welcome template in the edit summary",
 			helptip: "The names of some of the templates (e.g. \"welcome-anon-vandal\") may be viewed by the user as attacks, so it is better to leave them out of the edit summary",

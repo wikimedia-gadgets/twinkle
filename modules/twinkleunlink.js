@@ -97,7 +97,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 		var params = { reason: reason, imageusage: imageusage, globalstatus: statusIndicator, current: 0, total: total };
 		for (var i = 0; i < pages.length; ++i)
 		{
-			var myparams = clone(params);
+			var myparams = $.extend({}, params);
 			var articlepage = new Wikipedia.page(pages[i], 'Unlinking in article "' + pages[i] + '"');
 			articlepage.setCallbackParameters(myparams);
 			articlepage.load(imageusage ? Twinkle.unlink.callbacks.unlinkImageInstances : Twinkle.unlink.callbacks.unlinkBacklinks);
