@@ -12,7 +12,7 @@ See [Wikipedia:Twinkle][] on the English Wikipedia for more information.
 Updating scripts on Wikipedia
 -----------------------------
 
-To generate the concatenated Twinkle script, use this `bash` command:
+To generate the concatenated Twinkle script, use the following `bash` command:
 
     awk 'FNR==1{print ""}{print}' twinkle.header.js modules/*.js twinkle.footer.js > alltwinkle.js
 
