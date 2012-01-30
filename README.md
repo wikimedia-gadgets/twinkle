@@ -5,7 +5,7 @@ Twinkle is a JavaScript library and application that gives Wikipedians a quick w
 
 It is based upon the `morebits.js` library, which forms the basis for many Wikipedia scripts and editing tools.
 
-See [Wikipedia:Twinkle][] on English Wikipedia for more information.
+See [Wikipedia:Twinkle][] on the English Wikipedia for more information.
 
 [AzaToth][] is the original author and maintainer of the tool, as well as the `morebits.js` library.
 
@@ -30,9 +30,9 @@ If `morebits.js` and/or `morebits.css` need to be updated, they should be synche
 Synchronization (for developers)
 --------------------------------
 
-There is a synchronization script called `sync.pl`, which can be used to pull and push files to wikipedia. 
+There is a synchronization script called `sync.pl`, which can be used to pull and push files to Wikipedia. 
 
-The program depends on Perl 5.10 and the modules [`Git::Repository`][Git::Repository] and [`MediaWiki::Bot`][MediaWiki::Bot], which can be installed easy using [`App::cpanminus`][App::cpanminus]:
+The program depends on Perl 5.10 and the modules [`Git::Repository`][Git::Repository] and [`MediaWiki::Bot`][MediaWiki::Bot], which can be installed easily using [`App::cpanminus`][App::cpanminus]:
 
     cpanm --sudo install Git::Repository MediaWiki::Bot
 
@@ -42,7 +42,7 @@ When running the program, you can enter your credentials on the command line usi
     password => "password",
     base     => "User::Username"
 
-where `base` is the wiki path to prefix the files for `pull` and `push`;
+where `base` is the wiki path to prefix the files for `pull` and `push`.
 
 Notice that your working directory **must** be clean; if not, either `stash` or `commit` your changes.
 
