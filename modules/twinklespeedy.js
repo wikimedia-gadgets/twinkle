@@ -1217,7 +1217,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 		case 'g6':
 			switch( value ) {
 				case 'histmerge':
-					var mergetitle = prompt( 'Please enter the title to merge into:', "" );
+					var mergetitle = prompt( 'Please enter the title to be merged into this one:', "" );
 					if (mergetitle === null)
 					{
 						statelem.error( 'Aborted by user.' );
