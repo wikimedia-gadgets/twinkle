@@ -139,6 +139,7 @@ Twinkle.defaultConfig.friendly = {
 	markTalkbackAsMinor: true,
 	insertTalkbackSignature: true,  // always sign talkback templates
 	talkbackHeading: "Talkback",
+	adminNoticeHeading: "Notice",
 	 // Shared
 	markSharedIPAsMinor: true
 };
