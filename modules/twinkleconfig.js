@@ -516,6 +516,11 @@ Twinkle.config.sections = [
 			name: "talkbackHeading",
 			label: "Section heading to use for talkbacks",
 			type: "string"
+		},
+		{
+			name: "adminNoticeHeading",
+			label: "Section heading to use for administrators' noticeboard notices",
+			type: "string"
 		}
 	]
 },
