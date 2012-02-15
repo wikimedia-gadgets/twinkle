@@ -347,6 +347,7 @@ Twinkle.tag.article.tags = {
 	"too few opinions": "article may not include all significant viewpoints",
 	"uncategorized": "article is uncategorized",
 	"under construction": "article is currently in the middle of an expansion or major revamping",
+	"undue": "article lends undue weight to certain aspects of the subject but not others",
 	"unreferenced": "article has no references at all",
 	"unreliable sources": "article's references may not be reliable sources",
 	"update": "article needs additional up-to-date information added",
@@ -412,7 +413,8 @@ Twinkle.tag.article.tagCategories = {
 			"context",
 			"expert-subject",
 			"metricate",
-			"over detailed"
+			"over detailed",
+			"undue"
 		],
 		"Timeliness": [
 			"out of date",
