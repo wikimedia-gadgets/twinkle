@@ -64,37 +64,41 @@ Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 
 Twinkle.shared.standardList = [
 	{
-		label: '{{shared IP}}: standard shared IP address template',
-		value: 'shared IP',
+		label: '{{Shared IP}}: standard shared IP address template',
+		value: 'Shared IP',
 		tooltip: 'IP user talk page template that shows helpful information to IP users and those wishing to warn, block or ban them'
 	},
 	{ 
-		label: '{{shared IP edu}}: shared IP address template modified for educational institutions',
-		value: 'shared IP edu'
+		label: '{{Shared IP edu}}: shared IP address template modified for educational institutions',
+		value: 'Shared IP edu'
 	},
 	{
-		label: '{{shared IP corp}}: shared IP address template modified for businesses',
-		value: 'shared IP corp'
+		label: '{{Shared IP corp}}: shared IP address template modified for businesses',
+		value: 'Shared IP corp'
 	},
 	{
-		label: '{{shared IP public}}: shared IP address template modified for public terminals',
-		value: 'shared IP public'
+		label: '{{Shared IP public}}: shared IP address template modified for public terminals',
+		value: 'Shared IP public'
 	},
 	{
-		label: '{{shared IP gov}}: shared IP address template modified for government agencies or facilities',
-		value: 'shared IP gov'
+		label: '{{Shared IP gov}}: shared IP address template modified for government agencies or facilities',
+		value: 'Shared IP gov'
 	},
 	{
-		label: '{{dynamicIP}}: shared IP address template modified for organizations with dynamic addressing',
-		value: 'dynamicIP'
+		label: '{{Dynamic IP}}: shared IP address template modified for organizations with dynamic addressing',
+		value: 'Dynamic IP'
+	},
+	{
+		label: '{{Static IP}}: shared IP address template modified for static IPs',
+		value: 'Static IP'
 	},
 	{ 
 		label: '{{ISP}}: shared IP address template modified for ISP organizations (specifically proxies)',
 		value: 'ISP'
 	},
 	{ 
-		label: '{{mobileIP}}: shared IP address template modified for mobile phone companies and their customers',
-		value: 'mobileIP'
+		label: '{{Mobile IP}}: shared IP address template modified for mobile phone companies and their customers',
+		value: 'Mobile IP'
 	}
 ];
 
