@@ -328,7 +328,7 @@ Twinkle.tag.article.tags = {
 	"out of date": "article needs out-of-date information removed or updated",
 	"overcoverage": "article has an extensive bias or disproportional coverage towards one or more specific regions",
 	"overlinked": "article may have too many duplicate and/or irrelevant links",
-	"over detailed": "article contains an excessive amount of intricate detail",
+	"overly detailed": "article contains an excessive amount of intricate detail",
 	"peacock": "article may contain peacock terms that promote the subject without adding information",
 	"plot": "plot summary in article is too long",
 	"POV": "article does not maintain a neutral point of view",
@@ -411,7 +411,7 @@ Twinkle.tag.article.tagCategories = {
 			"context",
 			"expert-subject",
 			"metricate",
-			"over detailed",
+			"overly detailed",
 			"undue"
 		],
 		"Timeliness": [
@@ -773,7 +773,7 @@ Twinkle.tag.groupHash = [
 	'orphan',
 	'do-attempt',
 	'out of date',
-	'over detailed',
+	'overly detailed',
 	'fancruft',
 	'peacock',
 	'plot',
