@@ -320,7 +320,6 @@ Twinkle.tag.article.tags = {
 	"new unreviewed article": "mark article for later review",
 	"no footnotes": "article has references, but no in-text citations",
 	"non-free": "article may contain excessive or improper use of copyrighted materials",
-	"NOT": "article contains unencyclopedic material which contravenes WP:NOT",
 	"notability": "article's subject may not meet the notability guideline",
 	"not English": "article is written in a language other than English and needs translation",
 	"one source": "article relies largely or entirely upon a single source",
@@ -371,8 +370,7 @@ Twinkle.tag.article.tagCategories = {
 			"close paraphrasing",
 			"copypaste",
 			"external links",
-			"non-free",
-			"NOT"
+			"non-free"
 		],
 		"Structure, formatting, and lead section": [
 			"capitalization",
