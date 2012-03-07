@@ -181,6 +181,14 @@ Twinkle.welcome.standardList = [
 	{ 
 		label: '{{Welcome-belated}}: welcome for users with more substantial contributions',
 		value: 'Welcome-belated'
+	},
+	{ 
+		label: '{{Welcome student}}: welcome for students editing as part of an educational class project',
+		value: 'Welcome student'
+	},
+	{ 
+		label: '{{Welcome teacher}}: welcome for course instructors involved in an educational class project',
+		value: 'Welcome teacher'
 	}
 ];
 
@@ -306,6 +314,8 @@ Twinkle.welcome.headingHash = {
 	'Welcomeg': true,
 	'Welcomeh': false,
 	'Welcome-belated': false,
+	'Welcome student': true,
+	'Welcome teacher': true,
 	'Wel': false,
 	'W-basic': true,
 	'W-shout': true,
@@ -341,6 +351,8 @@ Twinkle.welcome.signatureHash = {
 	'Welcomeg': true,
 	'Welcomeh': true,
 	'Welcome-belated': true,
+	'Welcome student': false,
+	'Welcome teacher': false,
 	'Wel': false,
 	'W-basic': true,
 	'W-shout': true,
@@ -377,6 +389,8 @@ Twinkle.welcome.artHash = {
 	'Welcomeg': false,
 	'Welcomeh': false,
 	'Welcome-belated': false,
+	'Welcome student': false,
+	'Welcome teacher': false,
 	'Wel': true,
 	'W-basic': false,
 	'W-shout': false,
@@ -414,6 +428,8 @@ Twinkle.welcome.vandalHash = {
 	'Welcomeg': false,
 	'Welcomeh': false,
 	'Welcome-belated': false,
+	'Welcome student': false,
+	'Welcome teacher': false,
 	'Wel': false,
 	'W-basic': false,
 	'W-shout': false,
