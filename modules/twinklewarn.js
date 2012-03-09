@@ -182,8 +182,8 @@ Twinkle.warn.messages = {
 			summary:"General note: Adding unreferenced controversial information about living persons" 
 		},
 		"uw-defam1": { 
-			label:"Defamation not specifically directed", 
-			summary:"General note: Defamation not specifically directed" 
+			label:"Addition of defamatory content", 
+			summary:"General note: Addition of defamatory content" 
 		},
 		"uw-uncen1": { 
 			label:"Censorship of material", 
@@ -312,8 +312,8 @@ Twinkle.warn.messages = {
 			summary:"Caution: Adding unreferenced controversial information about living persons" 
 		},
 		"uw-defam2": { 
-			label:"Defamation not specifically directed", 
-			summary:"Caution: Defamation not specifically directed" 
+			label:"Addition of defamatory content", 
+			summary:"Caution: Addition of defamatory content" 
 		},
 		"uw-uncen2": { 
 			label:"Censorship of material", 
@@ -442,8 +442,8 @@ Twinkle.warn.messages = {
 			summary:"Warning: Adding unreferenced controversial information about living persons" 
 		},
 		"uw-defam3": { 
-			label:"Defamation not specifically directed", 
-			summary:"Warning: Defamation not specifically directed" 
+			label:"Addition of defamatory content", 
+			summary:"Warning: Addition of defamatory content" 
 		},
 		"uw-uncen3": { 
 			label:"Censorship of material", 
@@ -569,8 +569,8 @@ Twinkle.warn.messages = {
 			summary:"Final warning: Adding unreferenced controversial information about living persons" 
 		},
 		"uw-defam4": { 
-			label:"Defamation not specifically directed", 
-			summary:"Final warning: Defamation not specifically directed" 
+			label:"Addition of defamatory content", 
+			summary:"Final warning: Addition of defamatory content" 
 		},
 		"uw-uncen4": { 
 			label:"Censorship of material", 
@@ -652,8 +652,8 @@ Twinkle.warn.messages = {
 			summary:"Only warning: Adding unreferenced controversial information about living persons" 
 		},
 		"uw-defam4im": { 
-			label:"Defamation not specifically directed", 
-			summary:"Only warning: Defamation not specifically directed" 
+			label:"Addition of defamatory content", 
+			summary:"Only warning: Addition of defamatory content" 
 		},
 		"uw-move4im": { 
 			label:"Page moves against naming conventions or consensus", 
