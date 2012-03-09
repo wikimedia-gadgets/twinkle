@@ -14,18 +14,14 @@ Twinkle.protect = function twinkleprotect() {
 		return;
 	}
 
-	if ( userIsInGroup( 'sysop' ) ) {
-		$(twAddPortletLink("#", "PP", "tw-rpp", "Protect page", "")).click(Twinkle.protect.callback);
-	} else if (twinkleUserAuthorized) {
-		$(twAddPortletLink("#", "RPP", "tw-rpp", "Request page protection", "")).click(Twinkle.protect.callback);
-	} else {
-		$(twAddPortletLink("#", 'RPP', 'tw-rpp', 'Request page protection', '')).click(function() {
-			alert("Your account is too new to use Twinkle.");
-		});
-	}
+	twAddPortletLink(Twinkle.protect.callback, "PP", "tw-rpp", userIsInGroup('sysop') ? "Protect page" : "Request page protection" );
 };
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
+	if (!twinkleUserAuthorized) {
+		alert("Your account is too new to use Twinkle.");
+		return;
+	}
 	var Window = new SimpleWindow( 620, 530 );
 	Window.setTitle( userIsInGroup( 'sysop' ) ? "Apply, request or tag page protection" : "Request or tag page protection" );
 	Window.setScriptName( "Twinkle" );

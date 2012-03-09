@@ -16,13 +16,7 @@ Twinkle.xfd = function twinklexfd() {
 	if ( mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') || (mw.config.get('wgNamespaceNumber') === 6 && (document.getElementById('mw-sharedupload') || (!document.getElementById('mw-imagepage-section-filehistory') && !Wikipedia.isPageRedirect()))) ) {
 		return;
 	}
-	if (twinkleUserAuthorized) {
-		$(twAddPortletLink("#", "XFD", "tw-xfd", "Nominate for deletion", "")).click(Twinkle.xfd.callback);
-	} else {
-		$(twAddPortletLink("#", 'XFD', 'tw-xfd', 'Nominate for deletion', '')).click(function() {
-			alert("Your account is too new to use Twinkle.");
-		});
-	}
+	twAddPortletLink( Twinkle.xfd.callback, "XFD", "tw-xfd", "Nominate for deletion" );
 };
 
 Twinkle.xfd.num2order = function twinklexfdNum2order( num ) {
@@ -53,6 +47,11 @@ Twinkle.xfd.printRationale = function twinklexfdPrintRationale() {
 };
 
 Twinkle.xfd.callback = function twinklexfdCallback() {
+	if (!twinkleUserAuthorized) {
+		alert("Your account is too new to use Twinkle.");
+		return;
+	}
+
 	var Window = new SimpleWindow( 600, 350 );
 	Window.setTitle( "Nominate for deletion (XfD)" );
 	Window.setScriptName( "Twinkle" );

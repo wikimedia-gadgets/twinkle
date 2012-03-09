@@ -9,13 +9,7 @@
 
 Twinkle.warn = function twinklewarn() {
 	if( mw.config.get('wgNamespaceNumber') === 3 ) {
-		if(twinkleUserAuthorized) {
-			$(twAddPortletLink("#", "Warn", "tw-warn", "Warn/notify user", "")).click(Twinkle.warn.callback);
-		} else {
-			$(twAddPortletLink("#", "Warn", "tw-warn", "Warn/notify user", "")).click(function() {
-				alert("Your account is too new to use Twinkle.");
-			});
-		}
+			twAddPortletLink( Twinkle.warn.callback, "Warn", "tw-warn", "Warn/notify user" );
 	}
 
 	// modify URL of talk page on rollback success pages
@@ -34,8 +28,12 @@ Twinkle.warn = function twinklewarn() {
 };
 
 Twinkle.warn.callback = function twinklewarnCallback() {
-	if( mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\"") === mw.config.get('wgUserName') ){
-		alert( 'Fine, you\'ve been warned!' );
+	if ( !twinkleUserAuthorized ) {
+		alert("Your account is too new to use Twinkle.");
+		return;
+	}
+	if( mw.config.get('wgTitle').split( '/' )[0] === mw.config.get('wgUserName') ){
+		alert( 'Consider yourself warned!' );
 		return;
 	}
 	

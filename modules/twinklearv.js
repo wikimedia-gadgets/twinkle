@@ -16,15 +16,15 @@ Twinkle.arv = function twinklearv() {
 
 	var title = isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
 
-	if (twinkleUserAuthorized) {
-		$(twAddPortletLink("#", "ARV", "tw-arv", title, "" )).click(function() { Twinkle.arv.callback(username.replace( /\"/g, "\\\"")); } );
-	} else {
-		$(twAddPortletLink("#", 'ARV', 'tw-arv', title, "" )).click(function() { alert("Your account is too new to use Twinkle."); } );
-	}
+	twAddPortletLink( function(){ Twinkle.arv.callback(username); }, "ARV", "tw-arv", title );
 };
 
 Twinkle.arv.callback = function ( uid ) {
-	if( uid === mw.config.get('wgUserName') ){
+	if ( !twinkleUserAuthorized ) {
+		alert("Your account is too new to use Twinkle.");
+		return;
+	}
+	if ( uid === mw.config.get('wgUserName') ) {
 		alert( 'You don\'t want to report yourself, do you?' );
 		return;
 	}

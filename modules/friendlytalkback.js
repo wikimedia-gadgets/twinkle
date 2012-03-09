@@ -15,7 +15,7 @@
 			return;
 		}
 	
-		$(twAddPortletLink( "#", "TB", "friendly-talkback", "Easy talkback", "" )).click(function(ev) { callback( uid ); ev.preventDefault(); });
+		twAddPortletLink( function(){ callback( uid ); }, "TB", "friendly-talkback", "Easy talkback" );
 	};
 	
 	var callback = function( uid ) {

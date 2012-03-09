@@ -11,16 +11,15 @@ Twinkle.prod = function twinkleprod() {
 	if( mw.config.get('wgNamespaceNumber') !== 0 || !mw.config.get('wgCurRevisionId') || Wikipedia.isPageRedirect() ) {
 		return;
 	}
-	if (twinkleUserAuthorized) {
-		$(twAddPortletLink("#", "PROD", "tw-prod", "Propose deletion via WP:PROD", "")).click(Twinkle.prod.callback);
-	} else {
-		$(twAddPortletLink("#", 'PROD', 'tw-prod', 'Propose deletion via WP:PROD', '')).click(function() {
-			alert("Your account is too new to use Twinkle.");
-		});
-	}
+	
+	twAddPortletLink( Twinkle.prod.callback, "PROD", "tw-prod", "Propose deletion via WP:PROD" );
 };
 
 Twinkle.prod.callback = function twinkleprodCallback() {
+	if ( !twinkleUserAuthorized ) {
+		alert("Your account is too new to use Twinkle.");
+		return;
+	}
 	Twinkle.prod.defaultReason = Twinkle.getPref('prodReasonDefault');
 
 	var Window = new SimpleWindow( 800, 410 );

@@ -302,13 +302,16 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 /**
  * **************** twAddPortletLink() ****************
  * Builds a portlet menu if it doesn't exist yet, and add the portlet link.
+ * @param task: Either a URL for the portlet link or a function to execute.
  */
-function twAddPortletLink( href, text, id, tooltip, accesskey, nextnode )
+function twAddPortletLink( task, text, id, tooltip )
 {
 	if (Twinkle.getPref("portletArea") !== null) {
 		twAddPortlet(Twinkle.getPref("portletArea"), Twinkle.getPref("portletId"), Twinkle.getPref("portletName"), Twinkle.getPref("portletType"), Twinkle.getPref("portletNext"));
 	}
-	return mw.util.addPortletLink( Twinkle.getPref("portletId"), href, text, id, tooltip, accesskey, nextnode );
+	var link = mw.util.addPortletLink( Twinkle.getPref("portletId"), typeof task === "string" ? task : "#", text, id, tooltip );
+	if (jQuery.isFunction(task)) jQuery(link).click(function(ev){ task(); ev.preventDefault(); });
+	return link;
 }
 
 // check if account is experienced enough for more advanced functions

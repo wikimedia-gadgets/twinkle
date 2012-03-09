@@ -12,7 +12,7 @@ Twinkle.delimages = function twinkledeli() {
 		return;
 	}
 	if( userIsInGroup( 'sysop' ) ) {
-		$(twAddPortletLink("#", "Deli-batch", "tw-deli", "Delete files found on page", "")).click(Twinkle.delimages.callback);
+		twAddPortletLink( Twinkle.delimages.callback, "Deli-batch", "tw-deli", "Delete files found on page" );
 	}
 };
 

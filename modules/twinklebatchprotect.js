@@ -13,7 +13,7 @@ Twinkle.batchprotect = function twinklebatchprotect() {
 	if( userIsInGroup( 'sysop' ) && ((mw.config.get( 'wgArticleId' ) > 0 && (mw.config.get( 'wgNamespaceNumber' ) === 2 ||
 		mw.config.get( 'wgNamespaceNumber' ) === 4)) || mw.config.get( 'wgNamespaceNumber' ) === 14 ||
 		mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex') ) {
-		$(twAddPortletLink("#", "P-batch", "tw-pbatch", "Protect pages found on this page", "")).click(Twinkle.batchprotect.callback);
+		twAddPortletLink( Twinkle.batchprotect.callback, "P-batch", "tw-pbatch", "Protect pages found on this page" );
 	}
 };
 

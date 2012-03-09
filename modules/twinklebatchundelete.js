@@ -13,7 +13,7 @@ Twinkle.batchundelete = function twinklebatchundelete() {
 		return;
 	}
 	if( userIsInGroup( 'sysop' ) ) {
-		$(twAddPortletLink("#", "Und-batch", "tw-batch-undel", "Undelete 'em all", "")).click(Twinkle.batchundelete.callback);
+		twAddPortletLink( Twinkle.batchundelete.callback, "Und-batch", "tw-batch-undel", "Undelete 'em all" );
 	}
 };
 

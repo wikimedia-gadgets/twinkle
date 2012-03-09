@@ -10,7 +10,7 @@
 
 Twinkle.batchdelete = function twinklebatchdelete() {
 	if( userIsInGroup( 'sysop' ) && (mw.config.get( 'wgNamespaceNumber' ) > 0 || mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex') ) {
-		$(twAddPortletLink("#", "D-batch", "tw-batch", "Delete pages found in this category/on this page", "")).click(Twinkle.batchdelete.callback);
+		twAddPortletLink( Twinkle.batchdelete.callback, "D-batch", "tw-batch", "Delete pages found in this category/on this page" );
 	}
 };
 

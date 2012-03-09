@@ -9,7 +9,7 @@
 
 Twinkle.imagetraverse = function twinkleimagetraverse() {
 	if( userIsInGroup( 'sysop' ) && wgNamespaceNumber == Namespace.CATEGORY ) {
-		$(twAddPortletLink("#", "Traverse", "tw-imagetraverse", "Traverse category", "")).click(Twinkle.imagetraverse.callback);
+		twAddPortletLink(Twinkle.imagetraverse.callback, "#", "Traverse", "tw-imagetraverse", "Traverse category");
 	}
 };
 

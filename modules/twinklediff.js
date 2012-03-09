@@ -18,12 +18,12 @@ Twinkle.diff = function twinklediff() {
 		'oldid': 'prev'
 	};
 
-	twAddPortletLink( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), 'Last', 'tw-lastdiff', 'Show most recent diff' );
+	twAddPortletLink( mw.util.wikiScript("index")+ "?" + jQuery.param( query ), 'Last', 'tw-lastdiff', 'Show most recent diff' );
 
 	// Show additional tabs only on diff pages
 	if (QueryString.exists('diff')) {
-		$(twAddPortletLink("#", 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user' )).click(function(){Twinkle.diff.evaluate(false);});
-		$(twAddPortletLink("#", 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision' )).click(function(){Twinkle.diff.evaluate(true);});
+		twAddPortletLink(function(){ Twinkle.diff.evaluate(false); }, 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user' );
+		twAddPortletLink( function(){ Twinkle.diff.evaluate(true); }, 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision' );
 
 		var oldid = /oldid=(.+)/.exec($('div#mw-diff-ntitle1 strong a').first().attr("href"))[1];
 		query = {
@@ -31,7 +31,7 @@ Twinkle.diff = function twinklediff() {
 			'diff': 'cur',
 			'oldid' : oldid
 		};
-		twAddPortletLink( mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query ), 'Current', 'tw-curdiff', 'Show difference to current revision' );
+		twAddPortletLink( mw.util.wikiScript("index")+ "?" + jQuery.param( query ), 'Current', 'tw-curdiff', 'Show difference to current revision' );
 	}
 };
 

@@ -20,19 +20,16 @@ Twinkle.speedy = function twinklespeedy() {
 		return;
 	}
 
-	if ( userIsInGroup( 'sysop' ) ) {
-		$(twAddPortletLink("#", "CSD", "tw-csd", "Delete page according to WP:CSD", "")).click(Twinkle.speedy.callback);
-	} else if (twinkleUserAuthorized) {
-		$(twAddPortletLink("#", "CSD", "tw-csd", "Request speedy deletion according to WP:CSD", "")).click(Twinkle.speedy.callback);
-	} else {
-		$(twAddPortletLink("#", 'CSD', 'tw-csd', 'Request speedy deletion according to WP:CSD', '')).click(function() {
-			alert("Your account is too new to use Twinkle.");
-		});
-	}
+	twAddPortletLink( Twinkle.speedy.callback, "CSD", "tw-csd", userIsInGroup('sysop') ? "Delete page according to WP:CSD" : "Request speedy deletion according to WP:CSD" );
 };
 
 // This function is run when the CSD tab/header link is clicked
 Twinkle.speedy.callback = function twinklespeedyCallback() {
+	if ( !twinkleUserAuthorized ) {
+		alert("Your account is too new to use Twinkle.");
+		return;
+	}
+
 	Twinkle.speedy.initDialog(userIsInGroup( 'sysop' ) ? Twinkle.speedy.callback.evaluateSysop : Twinkle.speedy.callback.evaluateUser, true);
 };
 

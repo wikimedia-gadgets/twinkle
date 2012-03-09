@@ -12,7 +12,7 @@
 		if( mw.config.get( 'wgNamespaceNumber' ) !== Namespace.CATEGORY || ! userIsInGroup( 'sysop' ) || !((/^Category:Proposed_deletion_as_of/).test(mw.config.get( 'wgPageName' ))) ) {
 			return;
 		}
-		$(twAddPortletLink( "#", "Deprod", "tw-deprod", "Delete prod pages found in this category", "")).click(callback);
+		twAddPortletLink( callback, "Deprod", "tw-deprod", "Delete prod pages found in this category");
 	};
 
 	var unlinkCache = {},

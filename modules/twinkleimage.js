@@ -10,19 +10,17 @@
 Twinkle.image = function twinkleimage() {
 	if (mw.config.get('wgNamespaceNumber') === 6 &&
 	    !document.getElementById("mw-sharedupload") &&
-	    document.getElementById("mw-imagepage-section-filehistory"))
-	{
-		if(twinkleUserAuthorized) {
-			$(twAddPortletLink("#", "DI", "tw-di", "Nominate file for delayed speedy deletion", "")).click(Twinkle.image.callback);
-		} else {
-			$(twAddPortletLink("#", "DI", "tw-di", "Nominate file for delayed speedy deletion", "")).click(function(){
-				alert("Your account is too new to use Twinkle.");
-			});
-		}
+	    document.getElementById("mw-imagepage-section-filehistory")) {
+	    	
+		twAddPortletLink(Twinkle.image.callback, "#", "DI", "tw-di", "Nominate file for delayed speedy deletion");
 	}
 };
 
 Twinkle.image.callback = function twinkleimageCallback() {
+	if( twinkleUserAuthorized ) {
+		alert("Your account is too new to use Twinkle.");
+		return;
+	}
 	var Window = new SimpleWindow( 600, 300 );
 	Window.setTitle( "File for dated speedy deletion" );
 	Window.setScriptName( "Twinkle" );

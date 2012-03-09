@@ -14,22 +14,22 @@ Twinkle.tag = function friendlytag() {
 	// redirect tagging
 	if( Wikipedia.isPageRedirect() ) {
 		Twinkle.tag.mode = 'redirect';
-		$(twAddPortletLink("#", "Tag", "friendly-tag", "Tag redirect", "")).click(Twinkle.tag.callback);
+		twAddPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Tag redirect" );
 	}
 	// file tagging
 	else if( mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory") ) {
 		Twinkle.tag.mode = 'file';
-		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add maintenance tags to file", "")).click(Twinkle.tag.callback);
+		twAddPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to file" );
 	}
 	// article tagging
 	else if( mw.config.get('wgNamespaceNumber') === 0 && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
-		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add maintenance tags to article", "")).click(Twinkle.tag.callback);
+		twAddPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to article" );
 	}
 	// tagging of draft articles
 	else if( ((mw.config.get('wgNamespaceNumber') === 2 && mw.config.get('wgPageName').indexOf("/") !== -1) || /^Wikipedia\:Articles[ _]for[ _]creation\//.exec(mw.config.get('wgPageName')) ) && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'draft';
-		$(twAddPortletLink("#", "Tag", "friendly-tag", "Add review tags to draft article", "")).click(Twinkle.tag.callback);
+	 twAddPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add review tags to draft article" );
 	}
 };
 
