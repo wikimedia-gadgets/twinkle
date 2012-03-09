@@ -17,7 +17,7 @@ Twinkle.image = function twinkleimage() {
 };
 
 Twinkle.image.callback = function twinkleimageCallback() {
-	if( twinkleUserAuthorized ) {
+	if( !twinkleUserAuthorized ) {
 		alert("Your account is too new to use Twinkle.");
 		return;
 	}
