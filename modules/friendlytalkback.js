@@ -8,10 +8,13 @@
  */
 
 Twinkle.talkback = function friendlytalkback() {
-	if( mw.config.get('wgNamespaceNumber') === 3 ) {
-		var username = mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-		$(twAddPortletLink("#", "TB", "friendly-talkback", "Easy talkback", "")).click(function() { Twinkle.talkback.callback(username); });
+
+	var uid = Morebits.getPageAssociatedUser();
+	if ( uid === false ) {
+		return;
 	}
+
+	$(twAddPortletLink("#", "TB", "friendly-talkback", "Easy talkback", "")).click(function(ev) { Twinkle.talkback.callback(uid); ev.preventDefault(); });
 };
 
 Twinkle.talkback.callback = function friendlytalkbackCallback( uid ) {
@@ -52,6 +55,7 @@ Twinkle.talkback.callback = function friendlytalkbackCallback( uid ) {
 		} );
 
 	form.append( { type:'submit' } );
+	form.append( { name: 'uid', value: uid, type: 'hidden' } );
 
 	var result = form.render();
 	Window.setContent( result );
@@ -180,9 +184,13 @@ Twinkle.talkback.callback.change_target = function friendlytagCallbackChangeTarg
 };
 
 Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e) {
+
 	var tbtarget = e.target.getChecked( 'tbtarget' )[0];
 	var page = null;
 	var section = e.target.section.value;
+	var uid = e.target.uid.value;
+	var fullUserTalkPageName = mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds')['user_talk']] + ':' + uid;
+
 	if( tbtarget === 'usertalk' || tbtarget === 'other' ) {
 		page = e.target.page.value;
 		
@@ -209,10 +217,10 @@ Twinkle.talkback.callback.evaluate = function friendlytalkbackCallbackEvaluate(e
 	SimpleWindow.setButtonsEnabled( false );
 	Status.init( e.target );
 
-	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
+	Wikipedia.actionCompleted.redirect = fullUserTalkPageName;
 	Wikipedia.actionCompleted.notice = "Talkback complete; reloading talk page in a few seconds";
 
-	var talkpage = new Wikipedia.page(mw.config.get('wgPageName'), "Adding talkback");
+	var talkpage = new Wikipedia.page(fullUserTalkPageName, "Adding talkback");
 	var tbPageName = (tbtarget === 'mytalk') ? mw.config.get('wgUserName') : page;
 
 	var text;

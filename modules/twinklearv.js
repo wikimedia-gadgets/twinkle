@@ -8,28 +8,18 @@
  */
 
 Twinkle.arv = function twinklearv() {
-	if ( mw.config.get('wgNamespaceNumber') === 2 || mw.config.get('wgNamespaceNumber') === 3 || 
-	    ( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" )) {
 
-		// If we are on the contributions page, need to parse some then
-		var username;
-		if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
-			username = decodeURIComponent(/wiki\/Special:Log\/(.+)$/.exec($('div#contentSub a[title^="Special:Log"]').last().attr("href").replace(/_/g, "%20"))[1]);
-		} else {
-			username = mw.config.get('wgTitle').split( '/' )[0]; // only first part before any slashes
-		}
+	var username = Morebits.getPageAssociatedUser();
+	if ( username === false ) {
+		return;
+	}
 
-		if ( !username ) {
-			return;
-		}
+	var title = isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
 
-		var title = isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
-		
-		if (twinkleUserAuthorized) {
-			$(twAddPortletLink("#", "ARV", "tw-arv", title, "" )).click(function() { Twinkle.arv.callback(username.replace( /\"/g, "\\\"")); } );
-		} else {
-			$(twAddPortletLink("#", 'ARV', 'tw-arv', title, "" )).click(function() { alert("Your account is too new to use Twinkle."); } );
-		}
+	if (twinkleUserAuthorized) {
+		$(twAddPortletLink("#", "ARV", "tw-arv", title, "" )).click(function() { Twinkle.arv.callback(username.replace( /\"/g, "\\\"")); } );
+	} else {
+		$(twAddPortletLink("#", 'ARV', 'tw-arv', title, "" )).click(function() { alert("Your account is too new to use Twinkle."); } );
 	}
 };
 
