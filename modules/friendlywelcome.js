@@ -350,7 +350,7 @@ Twinkle.welcome.signatureHash = {
 	'WelcomeMenu': true,
 	'Welcomeg': true,
 	'Welcomeh': true,
-	'Welcome-belated': true,
+	'Welcome-belated': false,
 	'Welcome student': false,
 	'Welcome teacher': false,
 	'Wel': false,
