@@ -21,15 +21,10 @@ Twinkle.tag = function friendlytag() {
 		Twinkle.tag.mode = 'file';
 		twAddPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to file" );
 	}
-	// article tagging
-	else if( mw.config.get('wgNamespaceNumber') === 0 && mw.config.get('wgCurRevisionId') ) {
+	// article/draft article tagging
+	else if( ( mw.config.get('wgNamespaceNumber') === 0 || /^Wikipedia([ _]talk)?\:Articles[ _]for[ _]creation\//.exec(mw.config.get('wgPageName')) ) && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
 		twAddPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to article" );
-	}
-	// tagging of draft articles
-	else if( ((mw.config.get('wgNamespaceNumber') === 2 && mw.config.get('wgPageName').indexOf("/") !== -1) || /^Wikipedia\:Articles[ _]for[ _]creation\//.exec(mw.config.get('wgPageName')) ) && mw.config.get('wgCurRevisionId') ) {
-		Twinkle.tag.mode = 'draft';
-	 twAddPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add review tags to draft article" );
 	}
 };
 
@@ -111,13 +106,6 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 
 			form.append({ type: 'header', label:'Miscellaneous and administrative redirect templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.administrativeList });
-			break;
-
-		case 'draft':
-			Window.setTitle( "Article draft tagging" );
-
-			form.append({ type: 'header', label:'Draft article tags' });
-			form.append({ type: 'checkbox', name: 'draftTags', list: Twinkle.tag.draftList });
 			break;
 
 		default:
@@ -678,12 +666,6 @@ Twinkle.tag.file.replacementList = [
 ];
 
 
-// Tags for DRAFT ARTICLES start here
-
-Twinkle.tag.draftList = [
-	{ label: '{{New unreviewed article}}: mark article for later review', value: 'new unreviewed article' }
-];
-
 
 // Contains those article tags that can be grouped into {{multiple issues}}.
 // This list includes synonyms.
@@ -1163,10 +1145,6 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 		case 'redirect':
 			params.tags = form.getChecked( 'redirectTags' );
-			break;
-		case 'draft':
-			params.tags = form.getChecked( 'draftTags' );
-			Twinkle.tag.mode = 'article';
 			break;
 		default:
 			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);

@@ -102,7 +102,7 @@ Twinkle.shared.standardList = [
 	}
 ];
 
-Twinkle.shared.callback.change_shared = function friendlytagCallbackChangeShared(e) {
+Twinkle.shared.callback.change_shared = function friendlysharedCallbackChangeShared(e) {
 	if( e.target.value === 'shared IP edu' ) {
 		e.target.form.contact.disabled = false;
 	} else {

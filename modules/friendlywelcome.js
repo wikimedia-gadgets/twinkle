@@ -115,7 +115,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 			name: 'article',
 			label: 'Linked article (if supported by template)',
 			value:( QueryString.exists( 'vanarticle' ) ? QueryString.get( 'vanarticle' ) : '' ),
-			tooltip: 'An article might be linked to the welcome if the template supports it. Leave empty for no artice to be linked.  Templates that support a linked article are marked with an asterisk.  Ignored for templates that do not support a linked article.',
+			tooltip: 'An article might be linked to the welcome if the template supports it. Leave empty for no article to be linked.  Templates that support a linked article are marked with an asterisk.  Ignored for templates that do not support a linked article.',
 			event: function( event ) {
 				event.stopPropagation();
 			}
