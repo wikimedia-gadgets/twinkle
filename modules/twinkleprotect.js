@@ -14,7 +14,8 @@ Twinkle.protect = function twinkleprotect() {
 		return;
 	}
 
-	twAddPortletLink(Twinkle.protect.callback, "PP", "tw-rpp", userIsInGroup('sysop') ? "Protect page" : "Request page protection" );
+	twAddPortletLink(Twinkle.protect.callback, userIsInGroup('sysop') ? "PP" : "RPP", "tw-rpp",
+		userIsInGroup('sysop') ? "Protect page" : "Request page protection" );
 };
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
