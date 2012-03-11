@@ -8,7 +8,7 @@
  */
 
 Twinkle.imagetraverse = function twinkleimagetraverse() {
-	if( userIsInGroup( 'sysop' ) && wgNamespaceNumber == Namespace.CATEGORY ) {
+	if( userIsInGroup( "sysop" ) && mw.config.get( "wgNamespaceNumber" ) === Namespace.CATEGORY ) {
 		twAddPortletLink(Twinkle.imagetraverse.callback, "Traverse", "tw-imagetraverse", "Traverse category");
 	}
 };
