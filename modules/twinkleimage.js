@@ -12,7 +12,7 @@ Twinkle.image = function twinkleimage() {
 	    !document.getElementById("mw-sharedupload") &&
 	    document.getElementById("mw-imagepage-section-filehistory")) {
 	    	
-		twAddPortletLink(Twinkle.image.callback, "#", "DI", "tw-di", "Nominate file for delayed speedy deletion");
+		twAddPortletLink(Twinkle.image.callback, "DI", "tw-di", "Nominate file for delayed speedy deletion");
 	}
 };
 
