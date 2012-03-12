@@ -499,11 +499,11 @@ Twinkle.welcome.callbacks = {
 			}
 			text += '|' + params.article;
 			
-			if( Twinkle.getFriendlyPref('insertUsername') ) {
+			if( Twinkle.getFriendlyPref('insertUsername') && params.value.substring(2,0) !== 'W-' ) {
 				Status.info( 'Info', 'Will add your username to the template' );
 				text += '|' + mw.config.get('wgUserName');
 			}
-		} else if( Twinkle.getFriendlyPref('insertUsername') ) {
+		} else if( Twinkle.getFriendlyPref('insertUsername') && params.value.substring(2,0) !== 'W-' ) {
 			Status.info( 'Info', 'Will add your username to the template' );
 			text += '|' + mw.config.get('wgUserName');
 		} 
