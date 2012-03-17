@@ -305,7 +305,7 @@ Twinkle.welcome.anonymousList = [
 
 // Set to true if template does not already have heading
 Twinkle.welcome.headingHash = {
-	'Welcome': true,
+	'Welcome': false,
 	'Welcomeshort': false,
 	'WelcomeSimple': false,
 	'Welcom': false,
