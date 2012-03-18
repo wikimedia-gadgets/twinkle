@@ -322,16 +322,35 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				event: function(e) {
 					var value = e.target.value;
 					var target = e.target.form.xfdtarget;
+					// update enabled status
 					if( value === 'cfd' ) {
 						target.disabled = true;
 					} else {
 						target.disabled = false;
+					}
+					// update label
+					if( value === 'cfs' ) {
+						target.previousSibling.textContent = "Target categories: ";
+					} else if( value === 'cfc' ) {
+						target.previousSibling.textContent = "Target article: ";
+					} else {
+						target.previousSibling.textContent = "Target category: ";
+					}
+					// add/remove extra input box
+					if( value === 'cfs' && $(target.parentNode).find("input[name='xfdtarget2']").length === 0 ) {
+						var xfdtarget2 = document.createElement("input");
+						xfdtarget2.setAttribute("name", "xfdtarget2");
+						xfdtarget2.setAttribute("type", "text");
+						target.parentNode.appendChild(xfdtarget2);
+					} else {
+						$(target.parentNode).find("input[name='xfdtarget2']").remove();
 					}
 				}
 			} );
 		cfd_category.append( { type: 'option', label: 'Deletion', value: 'cfd', selected: true } );
 		cfd_category.append( { type: 'option', label: 'Merge', value: 'cfm' } );
 		cfd_category.append( { type: 'option', label: 'Renaming', value: 'cfr' } );
+		cfd_category.append( { type: 'option', label: 'Split', value: 'cfs' } );
 		cfd_category.append( { type: 'option', label: 'Convert into article', value: 'cfc' } );
 
 		work_area.append( {
@@ -915,7 +934,7 @@ Twinkle.xfd.callbacks = {
 			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*}}/gi, "");
 
 			pageobj.setPageText("{{ffd|log=" + params.date + "}}\n" + text);
-			pageobj.setEditSummary("Nominated for deletion at [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Nominated for deletion; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -1037,19 +1056,23 @@ Twinkle.xfd.callbacks = {
 			switch( params.xfdcat ) {
 			case 'cfd':
 				added_data = "{{subst:cfd}}";
-				editsummary = "Category being considered for deletion; see [[WP:CFD|categories for discussion]].";
+				editsummary = "Category being considered for deletion; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]].";
 				break;
 			case 'cfm':
-				added_data = "{{subst:cfm|" + params.target.replace('Category:','') + "}}";
-				editsummary = "Category being considered for merging; see [[WP:CFD|categories for discussion]].";
+				added_data = "{{subst:cfm|" + params.target + "}}";
+				editsummary = "Category being considered for merging; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]].";
 				break;
 			case 'cfr':
-				added_data = "{{subst:cfr|" + params.target.replace('Category:','') + "}}";
-				editsummary = "Category being considered for renaming; see [[WP:CFD|categories for discussion]].";
+				added_data = "{{subst:cfr|" + params.target + "}}";
+				editsummary = "Category being considered for renaming; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]].";
+				break;
+			case 'cfs':
+				added_data = "{{subst:cfs|" + params.target + "|" + params.target2 + "}}";
+				editsummary = "Category being considered for splitting; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]].";
 				break;
 			case 'cfc':
 				added_data = "{{subst:cfc|" + params.target + "}}";
-				editsummary = "Category being considered for conversion to an article; see [[WP:CFD|categories for discussion]].";
+				editsummary = "Category being considered for conversion to an article; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]].";
 				break;
 			default:
 				alert("twinklexfd in taggingCategory(): unknown CFD action");
@@ -1091,6 +1114,10 @@ Twinkle.xfd.callbacks = {
 			case 'cfr':
 				added_data = "{{subst:cfr2|text=" + params.reason + " ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}}";
 				editsummary = "Added rename nomination of [[:" + mw.config.get('wgPageName') + "]].";
+				break;
+			case 'cfs':
+				added_data = "{{subst:cfs2|text=" + params.reason + " ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "|3=" + params.target2 + "}}";
+				editsummary = "Added split nomination of [[:" + mw.config.get('wgPageName') + "]].";
 				break;
 			case 'cfc':
 				added_data = "{{subst:cfc2|text=" + params.reason + " ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}}";
@@ -1324,12 +1351,15 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	var type =  e.target.category.value;
 	var usertalk = e.target.notify.checked;
 	var reason = e.target.xfdreason.value;
-	var xfdcat, xfdtarget, puf, noinclude, tfdinline, notifyuserspace;
+	var xfdcat, xfdtarget, xfdtarget2, puf, noinclude, tfdinline, notifyuserspace;
 	if( type === "afd" || type === "cfd" || type === "cfds" ) {
 		xfdcat = e.target.xfdcat.value;
 	}
 	if( type === "cfd" || type === "cfds" ) {
 		xfdtarget = e.target.xfdtarget.value;
+		if (e.target.xfdtarget2) {
+			xfdtarget2 = e.target.xfdtarget2.value;
+		}
 	}
 	if( type === 'ffd' ) {
 		puf = e.target.puf.checked;
@@ -1474,14 +1504,18 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		Wikipedia.addCheckpoint();
 
 		if( xfdtarget ) {
-			xfdtarget = xfdtarget.replace( /^\:?Category\:/, '' );
+			xfdtarget = xfdtarget.replace( /^\:?Category\:/i, '' );
 		} else {
 			xfdtarget = '';
 		}
 
+		if( xfdtarget2 ) {
+			xfdtarget2 = xfdtarget2.replace( /^\:?Category\:/i, '' );
+		}
+
 		logpage = 'Wikipedia:Categories for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 
-		params = { reason: reason, xfdcat: xfdcat, target: xfdtarget, logpage: logpage };
+		params = { reason: reason, xfdcat: xfdcat, target: xfdtarget, target2: xfdtarget2, logpage: logpage };
 
 		// Updating data for the action completed event
 		Wikipedia.actionCompleted.redirect = logpage;
