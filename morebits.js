@@ -288,13 +288,13 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 				}
 				var event;
 				if( current.subgroup ) {
-					var tmpgroup = current.subgroup;
+					var tmpgroup = $.extend({}, current.subgroup);
 					if( ! tmpgroup.type ) {
 						tmpgroup.type = data.type;
 					}
-					tmpgroup.name = (current.name || data.name) + '.' +  tmpgroup.name;
+					tmpgroup.name = (current.name || data.name) + '.' + tmpgroup.name;
 
-					var subgroup =this.compute( current.subgroup, cur_id )[0];
+					var subgroup = this.compute( tmpgroup, cur_id )[0];
 					subgroup.style.marginLeft = '3em';
 					subnode.subgroup = subgroup;
 					subnode.shown = false;
