@@ -3005,9 +3005,14 @@ var SimpleWindow = function( width, height ) {
 			// it can position the dialog appropriately
 			// the 20 pixels represents adjustment for the extra height of the jQuery dialog "chrome", compared
 			// to that of the old SimpleWindow
-			height: height + 20
-		}).bind("dialogresize", function(event, ui) {
-			this.style.maxHeight = "";
+			height: height + 20,
+			close: function(event, ui) {
+				// dialogs and their content can be destroyed once closed
+				$(event.target).dialog("destroy").remove();
+			},
+			resize: function(event, ui) {
+				this.style.maxHeight = "";
+			}
 		});
 
 	var $widget = $(this.content).dialog("widget");
