@@ -300,6 +300,11 @@ Twinkle.welcome.anonymousList = [
 		label: '{{Welcome-anon-vandalism-fighter}}: for anonymous users who fight vandalism, urging them to create an account*',
 		value: 'Welcome-anon-vandalism-fighter', 
 		tooltip: 'Includes section heading.'
+	},
+	{
+		label: '{{Wel-constructive-anon}}: for anonymous users who have helped in vandal fighting and have made constructive edits. Also urges them to create an account*' ,
+		value: 'Wel-constructive-anon', 
+		tooltip: 'Includes section heading.'
 	}
 ];
 
@@ -337,7 +342,8 @@ Twinkle.welcome.headingHash = {
 	'Welc-anon||': false,
 	'Welcome-anon-test': false,
 	'Welcome-anon-vandalism-fighter': false,
-	'Welcome-anon-vandal': false
+	'Welcome-anon-vandal': false,
+	'Wel-constructive-anon' : false
 };
 
 // Set to true if template already has signature
@@ -350,7 +356,7 @@ Twinkle.welcome.signatureHash = {
 	'WelcomeMenu': true,
 	'Welcomeg': true,
 	'Welcomeh': true,
-	'Welcome-belated': false,
+	'Welcome-belated': true,
 	'Welcome student': false,
 	'Welcome teacher': false,
 	'Wel': false,
@@ -373,7 +379,8 @@ Twinkle.welcome.signatureHash = {
 	'Welc-anon||': false,
 	'Welcome-anon-test': false,
 	'Welcome-anon-vandalism-fighter': false,
-	'Welcome-anon-vandal': true
+	'Welcome-anon-vandal': true,
+	'Wel-constructive-anon' : false
 };
 
 /* Set to true if template supports article
@@ -412,7 +419,8 @@ Twinkle.welcome.artHash = {
 	'Welc-anon||': false,
 	'Welcome-anon-test': false,
 	'Welcome-anon-vandalism-fighter': true,
-	'Welcome-anon-vandal': false
+	'Welcome-anon-vandal': false,
+	'Wel-constructive-anon' : true
 };
 
 /* Set to true if template supports article
@@ -451,7 +459,8 @@ Twinkle.welcome.vandalHash = {
 	'Welc-anon||': false,
 	'Welcome-anon-test': true,  // even though not a vandalism warning
 	'Welcome-anon-vandalism-fighter': false,
-	'Welcome-anon-vandal': true
+	'Welcome-anon-vandal': true,
+	'Wel-constructive-anon': false
 };
 
 Twinkle.welcome.callbacks = {
