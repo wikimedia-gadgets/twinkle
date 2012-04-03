@@ -285,6 +285,7 @@ Twinkle.tag.article.tags = {
 	"dead end": "article has few or no links to other articles",
 	"disputed": "article has questionable factual accuracy",
 	"essay-like": "article is written like an essay and needs cleanup",
+	"expert-subject": "article needs attention from an expert on the subject",
 	"external links": "article's external links may not follow content policies or guidelines",
 	"fansite": "article resembles a fansite",
 	"fiction": "article fails to distinguish between fact and fiction",
@@ -395,6 +396,7 @@ Twinkle.tag.article.tagCategories = {
 		],
 		"Information and detail": [
 			"context",
+			"expert-subject",
 			"metricate",
 			"overly detailed",
 			"undue"
