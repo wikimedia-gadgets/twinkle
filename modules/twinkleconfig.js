@@ -598,26 +598,9 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 		{
-			name: "insertHeadings",
-			label: "Insert a section heading before welcomes",
-			type: "boolean"
-		},
-		{
-			name: "welcomeHeading",
-			label: "Section heading to use for welcomes",
-			helptip: "Only has an effect if headings are enabled, and the heading is not part of the template.",
-			type: "string"
-		},
-		{
 			name: "insertUsername",
 			label: "Add your username to the template (where applicable)",
 			helptip: "Some welcome templates have an opening sentence like \"Hi, I'm &lt;username&gt;. Welcome\" etc. If you turn off this option, these templates will not display your username in that way.",
-			type: "boolean"
-		},
-		{
-			name: "insertSignature",
-			label: "Add your signature after the welcome",
-			helptip: "Strongly recommended.",
 			type: "boolean"
 		},
 		{
