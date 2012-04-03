@@ -87,7 +87,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	});
 	previewlink.style.cursor = "pointer";
 	previewlink.textContent = 'Preview';
-	more.append( { type: 'div', name: 'warningpreview', label: [ previewlink ] } );
+	more.append( { type: 'div', id: 'warningpreview', label: [ previewlink ] } );
+	more.append( { type: 'div', id: 'twinklewarn-previewbox', style: 'display: none' } );
 
 	more.append( { type:'submit', label:'Submit' } );
 
@@ -95,6 +96,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	Window.setContent( result );
 	Window.display();
 	result.main_group.root = result;
+	result.previewer = new Wikipedia.preview($(result).find('div#twinklewarn-previewbox').last()[0]);
 
 	// We must init the first choice (General Note);
 	var evt = document.createEvent( "Event" );
@@ -1245,7 +1247,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		e.target.root.article.disabled = false;
 
 		$(e.target.root.reason).parent().hide();
-		$("div#twinklewarn-previewbox:visible").last().remove();
+		e.target.root.previewer.closePreview();
 	} else if( e.target.root.block_timer ) {
 		// hide the block-related fields
 		if(!e.target.root.block_timer.disabled && Twinkle.warn.prev_block_timer === null) {
@@ -1263,7 +1265,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		e.target.root.article.disabled = false;
 
 		$(e.target.root.reason).parent().show();
-		$("div#twinklewarn-previewbox:visible").last().remove();
+		e.target.root.previewer.closePreview();
 	}
 };
 
@@ -1342,30 +1344,6 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 Twinkle.warn.callbacks = {
 	preview: function(form) {
 		var templatename = form.sub_group.value;
-
-		var previewdiv = $(form).find('div[name="warningpreview"]').last();
-		if (!previewdiv.length) {
-			return;  // just give up
-		}
-		previewdiv = previewdiv[0];
-
-		var previewbox = $(form).find('div#twinklewarn-previewbox').last();
-		if (!previewbox.length) {
-			previewbox = document.createElement('div');
-			previewbox.style.background = "white";
-			previewbox.style.border = "2px inset";
-			previewbox.style.marginTop = "0.4em";
-			previewbox.style.padding = "0.2em 0.4em";
-			previewbox.setAttribute('id', 'twinklewarn-previewbox');
-			previewdiv.parentNode.appendChild(previewbox);
-		} else {
-			previewbox.show();
-			previewbox = previewbox[0];
-		}
-
-		var statusspan = document.createElement('span');
-		previewbox.appendChild(statusspan);
-		Status.init(statusspan);
 		
 		var templatetext = '{{subst:' + templatename;
 		var linkedarticle = form.article.value;
@@ -1403,28 +1381,7 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
-		var query = {
-			action: 'parse',
-			prop: 'text',
-			pst: 'true',  // PST = pre-save transform; this makes substitution work properly
-			text: templatetext,
-			title: mw.config.get('wgPageName')
-		};
-		var wikipedia_api = new Wikipedia.api("loading...", query, Twinkle.warn.callbacks.previewRender, new Status("Preview"));
-		wikipedia_api.params = { previewbox: previewbox };
-		wikipedia_api.post();
-	},
-	previewRender: function( apiobj ) {
-		var params = apiobj.params;
-		var xml = apiobj.getXML();
-		var html = $(xml).find('text').text();
-		if (!html) {
-			apiobj.statelem.error("failed to retrieve preview, or warning template was blanked");
-			return;
-		}
-		params.previewbox.innerHTML = html;
-		// fix vertical alignment
-		$(params.previewbox).find(':not(img)').css('vertical-align', 'baseline');
+		form.previewer.beginRender(templatetext);
 	},
 	main: function( pageobj ) {
 		var text = pageobj.getPageText();
