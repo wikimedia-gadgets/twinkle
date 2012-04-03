@@ -27,7 +27,7 @@
 	font-weight: bold;
 }
 
-/* Quickform */
+/* QuickForm */
 
 form.quickform
 {
@@ -103,6 +103,56 @@ form.quickform .tooltipButton
 	cursor: help;
 	padding: .2em;
 }
+
+
+/* Scrollbox styles, for use within QuickForm */
+
+div.quickform-scrollbox
+{
+	background: white;
+	border: 1px solid gray;
+	margin-bottom: .6em;
+	margin-top: .6em;
+	max-height: 20em;
+	overflow: auto;
+	padding: 6px 6px 0;
+}
+
+div.quickform-scrollbox h5:first-child
+{
+	border: none;
+	margin-top: 0;
+	padding-top: 0;
+}
+
+div.quickform-scrollbox :last-child
+{
+	margin-bottom: 6px;
+}
+
+
+/* Previewbox */
+
+div.morebits-previewbox
+{
+	background: white;
+	color: black;
+	border: 2px inset;
+	margin: .4em auto .2em;
+	padding: .2em .4em;
+}
+
+div.morebits-previewbox *:not(img)
+{
+	vertical-align: baseline;
+}
+
+div.morebits-previewbox span.editsection
+{
+	display: none;
+}
+
+
 
 
 /* Portlet */

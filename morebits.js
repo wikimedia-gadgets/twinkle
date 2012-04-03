@@ -1321,6 +1321,9 @@ Wikipedia.api.prototype = {
  * reference to the Wikipedia.page object that registered the callback.
  * Callback functions may invoke any Wikipedia.page prototype method using this reference.
  *
+ *
+ * NOTE: This list of member functions is incomplete.
+ *
  * Constructor: Wikipedia.page(pageName, currentAction)
  *    pageName - the name of the page, prefixed by the namespace (if any)
  *               (for the current page, use mw.config.get('wgPageName'))
