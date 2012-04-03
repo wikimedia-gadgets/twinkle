@@ -104,7 +104,7 @@ function isIPAddress( address ) {
  *   textarea  A big, multi-line text box.
  *              - Attributes: name, label, value, cols, rows, disabled, readonly
  *
- * Global attributes: id, tooltip, extra, adminonly
+ * Global attributes: id, style, tooltip, extra, adminonly
  */
 
 var QuickForm = function QuickForm( event, eventType ) {
@@ -560,6 +560,9 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 
 	if( data.extra ) {
 		childContainder.extra = data.extra;
+	}
+	if( data.style ) {
+		childContainder.setAttribute( 'style', data.style );
 	}
 	childContainder.setAttribute( 'id', data.id || id );
 
@@ -2360,6 +2363,63 @@ Wikipedia.page = function(pageName, currentAction) {
 
 
 /**
+ * **************** Wikipedia.preview ****************
+ * Uses the API to parse a fragment of wikitext and render it as HTML.
+ *
+ * Constructor: Wikipedia.preview(previewbox, currentAction)
+ *    previewbox - the <div> element that will contain the rendered HTML
+ *
+ * beginRender(wikitext): Displays the preview box, and begins an asynchronous attempt
+ *                        to render the specified wikitext.
+ *    wikitext - wikitext to render; most things should work, including subst: and ~~~~
+ *
+ * closePreview(): Hides the preview box and clears it.
+ *
+ * The suggested implementation pattern (in SimpleWindow + QuickForm situations) is to
+ * construct a Wikipedia.preview object after rendering a QuickForm, and bind the object
+ * to an arbitrary property of the form (e.g. |previewer|).  For an example, see
+ * twinklewarn.js.
+ */
+
+Wikipedia.preview = function(previewbox) {
+	this.previewbox = previewbox;
+	$(previewbox).addClass("morebits-previewbox").hide();
+
+	this.beginRender = function(wikitext) {
+		$(previewbox).show();
+
+		var statusspan = document.createElement('span');
+		previewbox.appendChild(statusspan);
+		Status.init(statusspan);
+
+		var query = {
+			action: 'parse',
+			prop: 'text',
+			pst: 'true',  // PST = pre-save transform; this makes substitution work properly
+			text: wikitext,
+			title: mw.config.get('wgPageName')
+		};
+		var renderApi = new Wikipedia.api("loading...", query, fnRenderSuccess, new Status("Preview"));
+		renderApi.post();
+	};
+
+	var fnRenderSuccess = function(apiobj) {
+		var xml = apiobj.getXML();
+		var html = $(xml).find('text').text();
+		if (!html) {
+			apiobj.statelem.error("failed to retrieve preview, or template was blanked");
+			return;
+		}
+		previewbox.innerHTML = html;
+	};
+
+	this.closePreview = function() {
+		$(previewbox).empty().hide();
+	};
+};
+
+
+/**
  * **************** Wikipedia.wiki ****************
  * REMOVEME - but *only* after Twinkle no longer uses it - viz. batchundelete :(
  */
@@ -3160,6 +3220,9 @@ SimpleWindow.prototype = {
 	resizeWindow: function( x, y ) {
 		// unimplemented
 		alert("SimpleWindow.resizeWindow is no longer implemented.");
+	},
+	setModality: function( modal ) {
+		$(this.content).dialog("option", "modal", modal);
 	}
 };
 
