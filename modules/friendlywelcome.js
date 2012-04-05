@@ -170,10 +170,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			event: Twinkle.welcome.selectTemplate
 		});
 	}
-	
-	// the first radio button under each type should be automatically checked
-	var checkedFirst = false;
-	
+
 	var appendTemplates = function(list) {
 		div.append({ 
 			type: 'radio',
@@ -183,16 +180,11 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				var result = (properties ? { 
 					value: obj,
 					label: "{{" + obj + "}}: " + properties.description + (properties.linkedArticle ? "\u00A0*" : ""),  // U+00A0 NO-BREAK SPACE
-					tooltip: properties.tooltip,  // may be undefined
-					checked: !checkedFirst
+					tooltip: properties.tooltip  // may be undefined
 				} : {
 					value: obj,
-					label: "{{" + obj + "}}",
-					checked: !checkedFirst
+					label: "{{" + obj + "}}"
 				});
-				if (!checkedFirst) {
-					checkedFirst = true;
-				}
 				return result;
 			}),
 			event: Twinkle.welcome.selectTemplate
@@ -281,13 +273,18 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcomeen-uk"
 			]);
 			break;
+		default:
+			div.append({ type: 'div', label: 'Twinkle.welcome.populateWelcomeList: something went wrong' });
+			break;
 	}
 
 	var rendered = div.render();
 	rendered.className = "quickform-scrollbox";
 	$workarea.replaceWith(rendered);
 
-	Twinkle.welcome.selectTemplate({ target: e.target.form.template[0] });
+	var firstRadio = e.target.form.template[0];
+	firstRadio.checked = true;
+	Twinkle.welcome.selectTemplate({ target: firstRadio });
 };
 
 Twinkle.welcome.selectTemplate = function(e) {
@@ -390,9 +387,9 @@ Twinkle.welcome.templates = {
 		linkedArticle: true,
 		syntax: "{{subst:welcome-COI|$USERNAME$|art=$ARTICLE$}} ~~~~"
 	},
-	
+
 	// ANONYMOUS USER WELCOMES
-	
+
 	"welcome-anon": {
 		description: "for anonymous users; encourages creating an account",
 		linkedArticle: true,
