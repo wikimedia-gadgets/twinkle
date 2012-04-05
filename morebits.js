@@ -841,7 +841,6 @@ Morebits.array = {
 	uniq: function(arr) {
 		if (!($.isArray(arr))) {
 			throw "A non-array object passed to Morebits.array.uniq";
-			return;
 		}
 		var result = [];
 		for( var i = 0; i < arr.length; ++i ) {
@@ -855,7 +854,6 @@ Morebits.array = {
 	dups: function(arr) {
 		if (!($.isArray(arr))) {
 			throw "A non-array object passed to Morebits.array.dups";
-			return;
 		}
 		var uniques = [];
 		var result = [];
@@ -872,7 +870,6 @@ Morebits.array = {
 	chunk: function( arr, size ) {
 		if (!($.isArray(arr))) {
 			throw "A non-array object passed to Morebits.array.chunk";
-			return;
 		}
 		if( typeof size !== 'number' || size <= 0 ) { // pretty impossible to do anything :)
 			return [ arr ]; // we return an array consisting of this array.

@@ -326,7 +326,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	var createexpiry = event.target.createexpiry.value;
 
 	if( ! reason ) {
-		alert("You've got to give a reason, you rouge admin!")
+		alert("You've got to give a reason, you rouge admin!");
 		return;
 	}
 
