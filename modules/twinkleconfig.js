@@ -604,12 +604,6 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 		{
-			name: "maskTemplateInSummary",
-			label: "Omit the name of the welcome template in the edit summary",
-			helptip: "The names of some of the templates (e.g. \"welcome-anon-vandal\") may be viewed by the user as attacks, so it is better to leave them out of the edit summary",
-			type: "boolean"
-		},
-		{
 			name: "quickWelcomeMode",
 			label: "Clicking the \"welcome\" link on a diff page will",
 			helptip: "If you choose to welcome automatically, the template you specify below will be used.",

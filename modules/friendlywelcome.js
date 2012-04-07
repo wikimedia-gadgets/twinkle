@@ -661,8 +661,7 @@ Twinkle.welcome.callbacks = {
 			text += "\n" + welcomeText;
 		}
 
-		var summaryText = "Adding" + ( Twinkle.getFriendlyPref('maskTemplateInSummary') ? '' : ( ' {{[[Template:' + params.value + '|' + params.value + ']]}}' ) ) +
-			" welcome template.";
+		var summaryText = "Welcome to Wikipedia!";
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
 		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchWelcomes'));

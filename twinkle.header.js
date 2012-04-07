@@ -132,7 +132,6 @@ Twinkle.defaultConfig.friendly = {
 	insertUsername: true,
 	quickWelcomeMode: "norm",
 	quickWelcomeTemplate: "welcome",
-	maskTemplateInSummary: true,
 	customWelcomeList: [],
 	 // Talkback
 	markTalkbackAsMinor: true,
@@ -311,5 +310,5 @@ function twAddPortletLink( task, text, id, tooltip )
 	return link;
 }
 
-// check if account is experienced enough for more advanced functions
+// check if account is experienced enough to use Twinkle
 var twinkleUserAuthorized = userIsInGroup( 'autoconfirmed' ) || userIsInGroup( 'confirmed' );
