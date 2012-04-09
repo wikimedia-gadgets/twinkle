@@ -879,11 +879,12 @@ Twinkle.tag.callbacks = {
 				// prompt for other parameters, based on the tag
 				switch( tags[i] ) {
 					case 'cleanup':
-						var reason = prompt('You can optionally enter a more specific reason why the article requires cleanup.  \n' +
-							"Just click OK if you don't wish to enter this.  To skip the {{cleanup}} tag, click Cancel.", "");
-						if (reason === null) {
+						var reason = prompt('Please enter a more specific reason why the article requires cleanup.  \n' +
+							"This information is required.  To skip the {{cleanup}} tag, click Cancel.", "");
+						if (reason === null || reason === "") {
+							Status.warn("Notice", "{{cleanup}} tag skipped by user");
 							continue;
-						} else if (reason !== "") {
+						} else {
 							currentTag += '|reason=' + reason;
 						}
 						break;
