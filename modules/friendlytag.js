@@ -270,7 +270,6 @@ Twinkle.tag.article.tags = {
 	"autobiography": "article is an autobiography and may not be written neutrally",
 	"BLP sources": "BLP article needs additional sources for verification",
 	"BLP unsourced": "BLP article has no sources at all (use BLP PROD instead for new articles)",
-	"capitalization": "article does not follow Wikipedia's guidelines on the use of capital letters",
 	"cat improve": "article may require additional categories",
 	"citation style": "article has unclear or inconsistent inline citations",
 	"cleanup": "article may require cleanup",
@@ -360,7 +359,6 @@ Twinkle.tag.article.tagCategories = {
 			"non-free"
 		],
 		"Structure, formatting, and lead section": [
-			"capitalization",
 			"cleanup-reorganize",
 			"condense",
 			"lead missing",
@@ -888,6 +886,15 @@ Twinkle.tag.callbacks = {
 							currentTag += '|reason=' + reason;
 						}
 						break;
+					case 'copy edit':
+						var cereason = prompt('"This article may require copy editing for..."  (e.g. "consistent spelling")  \n' +
+							"Just click OK if you don't wish to enter this.  To skip the {{copy edit}} tag, click Cancel.", "");
+						if (cereason === null) {
+							continue;
+						} else if (cereason !== "") {
+							currentTag += '|for=' + cereason;
+						}
+						break;
 					case 'copypaste':
 						var url = prompt('Please enter the URL which is believed to be the source of the copy-paste.  \n' +
 							"Just click OK if you don't know.  To skip the {{copypaste}} tag, click Cancel.", "");
@@ -895,6 +902,15 @@ Twinkle.tag.callbacks = {
 							continue;
 						} else if (url !== "") {
 							currentTag += '|url=' + url;
+						}
+						break;
+					case 'expert-subject':
+						var wikiproject = prompt('Please enter the name of a WikiProject which might be able to help recruit an expert.  \n' +
+							"Just click OK if you don't know.  To skip the {{expert-subject}} tag, click Cancel.", "");
+						if (wikiproject === null) {
+							continue;
+						} else if (wikiproject !== "") {
+							currentTag += '|1=' + wikiproject;
 						}
 						break;
 					case 'not English':
@@ -913,15 +929,6 @@ Twinkle.tag.callbacks = {
 							continue;
 						} else if (roughlang !== "") {
 							currentTag += '|1=' + roughlang;
-						}
-						break;
-					case 'expert-subject':
-						var wikiproject = prompt('Please enter the name of a WikiProject which might be able to help recruit an expert.  \n' +
-							"Just click OK if you don't know.  To skip the {{expert-subject}} tag, click Cancel.", "");
-						if (wikiproject === null) {
-							continue;
-						} else if (wikiproject !== "") {
-							currentTag += '|1=' + wikiproject;
 						}
 						break;
 					case 'wikify':
