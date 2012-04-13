@@ -266,6 +266,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcomeen-ko",
 				"welcomeen-mr",
 				"welcomeen-ml",
+				"welcomeen-or",
 				"welcomeen-pt",
 				"welcomeen-ru",
 				"welcomeen-es",
@@ -575,6 +576,11 @@ Twinkle.welcome.templates = {
 		description: "welcome for users whose first language appears to be Malayalam",
 		linkedArticle: false,
 		syntax: "{{subst:welcomeen-ml}}"
+	},
+	"welcomeen-or": {
+		description: "welcome for users whose first language appears to be Odia (Oriya)",
+		linkedArticle: false,
+		syntax: "{{subst:welcomeen-or}}"
 	},
 	"welcomeen-pt": {
 		description: "welcome for users whose first language appears to be Portuguese",
