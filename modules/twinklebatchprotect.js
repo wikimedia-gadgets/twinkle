@@ -13,7 +13,7 @@ Twinkle.batchprotect = function twinklebatchprotect() {
 	if( userIsInGroup( 'sysop' ) && ((mw.config.get( 'wgArticleId' ) > 0 && (mw.config.get( 'wgNamespaceNumber' ) === 2 ||
 		mw.config.get( 'wgNamespaceNumber' ) === 4)) || mw.config.get( 'wgNamespaceNumber' ) === 14 ||
 		mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex') ) {
-		twAddPortletLink( Twinkle.batchprotect.callback, "P-batch", "tw-pbatch", "Protect pages found on this page" );
+		twAddPortletLink( Twinkle.batchprotect.callback, "P-batch", "tw-pbatch", "Protect pages linked from this page" );
 	}
 };
 
@@ -248,7 +248,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			'action': 'query',
 			'generator': 'allpages',
 			'gapnamespace': QueryString.exists('namespace') ? QueryString.get( 'namespace' ) : document.getElementById('namespace').value,
-			'gapprefix': QueryString.exists('from') ? Morebits.string.toUpperCaseFirstChar(QueryString.get( 'from' ).replace('+', ' ')) : 
+			'gapprefix': QueryString.exists('from') ? Morebits.string.toUpperCaseFirstChar(QueryString.get( 'from' ).replace('+', ' ')) :
 				Morebits.string.toUpperCaseFirstChar(document.getElementById('nsfrom').value),
 			'gaplimit' : Twinkle.getPref('batchMax'), // the max for sysops
 			'prop': 'revisions',
@@ -388,13 +388,20 @@ Twinkle.batchprotect.callbacks = {
 		var exists = ($(xml).find('page').attr('missing') !== "");
 
 		var page = new Wikipedia.page(apiobj.params.page, "Protecting " + apiobj.params.page);
+		var takenAction = false;
 		if (exists && apiobj.params.editmodify) {
 			page.setEditProtection(apiobj.params.editlevel, apiobj.params.editexpiry);
-		} else if (exists && apiobj.params.movemodify) {
+			takenAction = true;
+		}
+		if (exists && apiobj.params.movemodify) {
 			page.setMoveProtection(apiobj.params.movelevel, apiobj.params.moveexpiry);
-		} else if (!exists && apiobj.params.createmodify) {
+			takenAction = true;
+		}
+		if (!exists && apiobj.params.createmodify) {
 			page.setCreateProtection(apiobj.params.createlevel, apiobj.params.createexpiry);
-		} else {
+			takenAction = true;
+		}
+		if (!takenAction) {
 			Status.warn("Protecting " + apiobj.params.page, "page " + (exists ? "exists" : "does not exist") + "; nothing to do, skipping");
 			return;
 		}
