@@ -84,7 +84,6 @@ Twinkle.load = function () {
 	Twinkle.config.init();
 	Twinkle.fluff.init();
 	if ( userIsInGroup('sysop') ) {
-		//Twinkle.closer();  -- disabled for the moment, as it is disliked among Twinkle users -- TTO 2011-05-30
 		Twinkle.delimages();
 		Twinkle.deprod();
 		Twinkle.batchdelete();
