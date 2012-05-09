@@ -16,9 +16,9 @@ my ($opt, $usage) = describe_options(
     "$0 %o <files...>",
     [ 'username|u=s', "username for account on wikipedia", {default => $c->{username} // ""} ],
     [ 'password|p=s', "password for account on wikipedia (do not use)", {default => $c->{password} // ""} ],
-    [ 'base|b=s', "base localtion on wikipedia where files exists (default User:AzaToth or entry in .mwbotrc)", {default => $c->{base} // "User:AzaToth"} ],
-	[ 'lang=s', 'Target language', {default => 'en'} ],
-	[ 'family=s', 'Target family', {default => 'wikipedia'} ],
+    [ 'base|b=s', "base location on wikipedia where files exist (default User:AzaToth or entry in .mwbotrc)", {default => $c->{base} // "User:AzaToth"} ],
+    [ 'lang=s', 'Target language', {default => 'en'} ],
+    [ 'family=s', 'Target family', {default => 'wikipedia'} ],
     [ 'mode' => hidden =>
         {
             required => 1,
