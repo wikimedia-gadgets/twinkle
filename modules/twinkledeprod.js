@@ -39,11 +39,12 @@
 			'rvprop': [ 'content' ]
 		};
 
-		var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query, function( self ) {
-			var $doc = $(self.responseXML);
-			var $pages = $doc.find("page[ns!=\""+Namespace.IMAGE+"\"]");
-			var list = [];
-			var re = new RegExp("{{Proposed deletion");
+		var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query,
+			function( self ) {
+				var $doc = $(self.responseXML);
+				var $pages = $doc.find("page[ns!=\""+Namespace.IMAGE+"\"]");
+				var list = [];
+				var re = /{{Proposed deletion/;
 				$pages.each(function() {
 					var $self = $(this);
 					var page = $self.attr('title');
@@ -69,14 +70,14 @@
 				self.params.Window.setContent(  self.params.form.render() );
 			});
 
-			wikipedia_api.params = { form:form, Window:Window };
-			wikipedia_api.post();
-			var root = document.createElement( 'div' );
-			SimpleWindow.setButtonsEnabled( true );
+		wikipedia_api.params = { form:form, Window:Window };
+		wikipedia_api.post();
+		var root = document.createElement( 'div' );
+		SimpleWindow.setButtonsEnabled( true );
 
-			Status.init( root );
-			Window.setContent( root );
-			Window.display();
+		Status.init( root );
+		Window.setContent( root );
+		Window.display();
 	},
 
 	callback_commit = function(event) {
@@ -111,7 +112,7 @@
 		currentDeletor = window.setInterval( toCall, 1000, work );
 	},
 	callback_check = function( self ) {
-		var $doc  = $(self.responseXML);
+		var $doc  = $( self.responseXML );
 		var normal = $doc.find('normalized n').attr('to');
 		if( normal ) {
 			self.params.page = normal;
@@ -139,7 +140,7 @@
 		page.deletePage();
 
 		page = new Wikipedia.page(self.params.page, "Deleting article");
-		page.setEditSummary("DDeleted because expired [[WP:PROD]]; Reason given: " + self.params.reason + "." + Twinkle.getPref('deletionSummaryAd'));
+		page.setEditSummary("Deleted because expired [[WP:PROD]]; Reason given: " + self.params.reason + "." + Twinkle.getPref('deletionSummaryAd'));
 		page.deletePage();
 
 
