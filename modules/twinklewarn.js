@@ -33,8 +33,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		alert("Your account is too new to use Twinkle.");
 		return;
 	}
-	if( mw.config.get('wgTitle').split( '/' )[0] === mw.config.get('wgUserName') ){
-		alert( 'Consider yourself warned!' );
+	if( mw.config.get('wgTitle').split( '/' )[0] === mw.config.get('wgUserName') &&
+			!confirm( 'Warning yourself can be seen as a sign of mental instability! Are you sure you want to proceed?' ) ) {
 		return;
 	}
 	

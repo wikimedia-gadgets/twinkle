@@ -19,9 +19,8 @@
 	};
 	
 	var callback = function( uid ) {
-		if( uid === mw.config.get("wgUserName") ){
-			alert("Is it really so bad that you're talking back to yourself?");
-			return;
+	if( uid === mw.config.get("wgUserName") && !confirm("Is it really so bad that you're talking back to yourself?") ){
+		return;
 		}
 	
 		var Window = new SimpleWindow( 600, 350 );
