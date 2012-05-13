@@ -9,7 +9,7 @@
 
 ;(function(){
 	Twinkle.deprod = function() {
-		if( mw.config.get( 'wgNamespaceNumber' ) !== Namespace.CATEGORY || ! userIsInGroup( 'sysop' ) || !((/^Category:Proposed_deletion_as_of/).test(mw.config.get( 'wgPageName' ))) ) {
+		if( mw.config.get( 'wgNamespaceNumber' ) !== 14 || ! userIsInGroup( 'sysop' ) || !((/^Category:Proposed_deletion_as_of/).test(mw.config.get( 'wgPageName' ))) ) {
 			return;
 		}
 		twAddPortletLink( callback, "Deprod", "tw-deprod", "Delete prod pages found in this category");
@@ -41,7 +41,7 @@
 
 		var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query, function( self ) {
 			var $doc = $(self.responseXML);
-			var $pages = $doc.find("page[ns!=\""+Namespace.IMAGE+"\"]");
+			var $pages = $doc.find('page[ns!="6"]');  // all non-files
 			var list = [];
 			var re = new RegExp("{{Proposed deletion");
 				$pages.each(function() {

@@ -43,7 +43,7 @@ Twinkle.unlink.callback = function(presetReason) {
 	} );
 
 	var query;
-	if(mw.config.get('wgNamespaceNumber') === Namespace.IMAGE) {
+	if(mw.config.get('wgNamespaceNumber') === 6) {  // File:
 		query = {
 			'action': 'query',
 			'list': [ 'backlinks', 'imageusage' ],
@@ -64,7 +64,7 @@ Twinkle.unlink.callback = function(presetReason) {
 		};
 	}
 	var wikipedia_api = new Wikipedia.api( 'Grabbing backlinks', query, Twinkle.unlink.callbacks.display.backlinks );
-	wikipedia_api.params = { form: form, Window: Window, image: mw.config.get('wgNamespaceNumber') === Namespace.IMAGE };
+	wikipedia_api.params = { form: form, Window: Window, image: mw.config.get('wgNamespaceNumber') === 6 };
 	wikipedia_api.post();
 
 	var root = document.createElement( 'div' );

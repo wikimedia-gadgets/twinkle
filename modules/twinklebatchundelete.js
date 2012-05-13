@@ -7,9 +7,11 @@
  * Config directives in:   TwinkleConfig
  */
 
+// XXX TODO this module needs to be overhauled to use Morebits.wiki.page
+
 
 Twinkle.batchundelete = function twinklebatchundelete() {
-	if( wgNamespaceNumber != Namespace.USER ) {
+	if( wgNamespaceNumber != 2 ) {
 		return;
 	}
 	if( userIsInGroup( 'sysop' ) ) {

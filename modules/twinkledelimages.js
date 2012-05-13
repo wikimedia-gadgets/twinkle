@@ -47,12 +47,12 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 		label: 'Reason: '
 	} );
 	var query;
-	if( mw.config.get( 'wgNamespaceNumber' ) === Namespace.CATEGORY ) {
+	if( mw.config.get( 'wgNamespaceNumber' ) === 14 ) {  // Category:
 		query = {
 			'action': 'query',
 			'generator': 'categorymembers',
 			'gcmtitle': mw.config.get( 'wgPageName' ),
-			'gcmnamespace': Namespace.IMAGE,
+			'gcmnamespace': 6,  // File:
 			'gcmlimit' : Twinkle.getPref('deliMax'), 
 			'prop': [ 'imageinfo', 'categories', 'revisions' ],
 			'grvlimit': 1,

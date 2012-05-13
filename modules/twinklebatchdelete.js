@@ -52,7 +52,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		} );
 
 	var query;
-	if( mw.config.get( 'wgNamespaceNumber' ) === Namespace.CATEGORY ) {
+	if( mw.config.get( 'wgNamespaceNumber' ) === 14 ) {  // Category:
 
 		query = {
 			'action': 'query',
@@ -77,10 +77,10 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 				return;
 			}
 			var titleSplit = pathSplit[3].split(':');
-			gapnamespace = Namespace[titleSplit[0].toUpperCase()];
+			gapnamespace = mw.config.get("wgNamespaceIds")[titleSplit[0].toLowerCase()];
 			if ( titleSplit.length < 2 || typeof gapnamespace === 'undefined' )
 			{
-				gapnamespace = Namespace.MAIN;
+				gapnamespace = 0;  // article namespace
 				gapprefix = pathSplit.splice(3).join('/');
 			}
 			else
@@ -113,7 +113,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 
 	var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query, function( self ) {
 			var xmlDoc = self.responseXML;
-			var snapshot = xmlDoc.evaluate('//page[@ns != "' + Namespace.IMAGE + '" and not(@missing)]', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
+			var snapshot = xmlDoc.evaluate('//page[@ns != "6" and not(@missing)]', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );  // 6 = File: namespace
 			var list = [];
 			for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
 				var object = snapshot.snapshotItem(i);
