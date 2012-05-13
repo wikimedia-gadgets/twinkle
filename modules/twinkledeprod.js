@@ -39,11 +39,12 @@
 			'rvprop': [ 'content' ]
 		};
 
-		var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query, function( self ) {
-			var $doc = $(self.responseXML);
-			var $pages = $doc.find('page[ns!="6"]');  // all non-files
-			var list = [];
-			var re = new RegExp("{{Proposed deletion");
+		var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query,
+			function( self ) {
+				var $doc = $(self.responseXML);
+				var $pages = $doc.find('page[ns!="6"]');  // all non-files
+				var list = [];
+				var re = /{{Proposed deletion/;
 				$pages.each(function() {
 					var $self = $(this);
 					var page = $self.attr('title');
