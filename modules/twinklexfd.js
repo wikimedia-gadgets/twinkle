@@ -231,6 +231,12 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 							name: 'tfdinline',
 							tooltip: 'Use {{tfd|type=inline}} to tag the page instead of {{tfd}}. Good for inline templates (those that appear amongst the words of text).',
 							checked: false
+						},
+						{
+							label: 'Wrap deletion tag with <noinclude> (for substituted templates only)',
+							value: 'noinclude',
+							name: 'noinclude',
+							tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t get substituted along with the template.'
 						}
 					]
 		} );
@@ -639,7 +645,8 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText("{{tfd" + (params.tfdinline ? "|type=inline" : "") + "|" + mw.config.get('wgTitle') + "}}\n" + text);
+			pageobj.setPageText((params.noinclude ? "<noinclude>{{tfd|" : "{{tfd|") + (params.tfdinline ? "type=inline|" : "") + 
+				mw.config.get('wgTitle') + (params.noinclude ? "}}</noinclude>" : "}}\n") + text);
 			pageobj.setEditSummary("Nominated for deletion; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
@@ -1364,7 +1371,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	if( type === 'ffd' ) {
 		puf = e.target.puf.checked;
 	}
-	if( type === "afd" || type === "mfd" ) {
+	if( type === "afd" || type === "mfd" || type === "tfd" ) {
 		noinclude = e.target.noinclude.checked;
 	}
 	if( type === 'tfd' ) {
@@ -1411,7 +1418,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		// Tagging template
 		wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Tagging template with deletion tag");
 		wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
-		wikipedia_page.setCallbackParameters({ tfdinline: tfdinline, logpage: logpage });
+		wikipedia_page.setCallbackParameters({ tfdinline: tfdinline, logpage: logpage, noinclude: noinclude });
 		wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplate);
 
 		// Updating data for the action completed event
