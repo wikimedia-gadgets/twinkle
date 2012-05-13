@@ -16,6 +16,7 @@ Twinkle.warn = function twinklewarn() {
 	if( mw.config.get('wgAction') === 'rollback' ) {
 		var $vandalTalkLink = $("#mw-rollback-success .mw-usertoollinks a").first();
 		$vandalTalkLink.css("font-weight", "bold");
+		$vandalTalkLink.text("talk (warn using TW)");
 
 		var extraParam = "vanarticle=" + mw.util.rawurlencode(mw.config.get("wgPageName").replace(/_/g, " "));
 		var href = $vandalTalkLink.attr("href");
