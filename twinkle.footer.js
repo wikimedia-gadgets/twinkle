@@ -88,7 +88,6 @@ Twinkle.load = function () {
 		Twinkle.deprod();
 		Twinkle.batchdelete();
 		Twinkle.batchprotect();
-		Twinkle.imagetraverse();
 		Twinkle.batchundelete();
 	}
 	// Run the initialization callbacks for any custom modules
