@@ -1204,7 +1204,7 @@ Wikipedia.api.prototype = {
 		var ajaxparams = $.extend( {}, {
 			context: this,
 			type: 'POST',
-			url: mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/api.php',
+			url: mw.util.wikiScript('api'),
 			data: QueryString.create(this.query),
 			datatype: 'xml',
 
@@ -1837,7 +1837,7 @@ Wikipedia.page = function(pageName, currentAction) {
 			}, null, patrolstat);
 			wikipedia_api.post({
 				type: 'GET',
-				url: mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php',
+				url: mw.util.wikiScript('index'),
 				datatype: 'text'  // we don't really care about the response
 			});
 		}

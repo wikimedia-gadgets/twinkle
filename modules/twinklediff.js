@@ -78,6 +78,6 @@ Twinkle.diff.callbacks = {
 			'oldid': revid,
 			'diff': mw.config.get('wgCurRevisionId')
 		};
-		window.location = mw.config.get('wgServer') + mw.config.get('wgScriptPath') + '/index.php?' + QueryString.create( query );
+		window.location = mw.util.wikiScript('index') + '?' + QueryString.create( query );
 	}
 };
