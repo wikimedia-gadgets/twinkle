@@ -699,7 +699,7 @@ Twinkle.speedy.reasonHash = {
 	'spam': 'Unambiguous [[WP:ADS|advertising]] or promotion',
 	'copyvio': 'Unambiguous [[WP:C|copyright infringement]]',
 // Articles
-	'nocontext': 'Short article with not enough context to identify the subject',
+	'nocontext': 'Short article without enough context to identify the subject',
 	'foreign': 'Article in a foreign language that exists on another project',
 	'nocontent': 'Article that has no meaningful, substantive content',
 	'transwiki': 'Article that has been transwikied to another project',

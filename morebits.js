@@ -2708,7 +2708,11 @@ Mediawiki.Page.prototype = {
 	},
 	addToImageComment: function( image, data ) {
 		var first_char = image.substr( 0, 1 );
-		var image_re_string = "(?:[Ii]mage|[Ff]ile):\\s*[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' +  RegExp.escape( image.substr( 1 ), true ); 
+		var first_char_regex = RegExp.escape( first_char, true );
+		if( first_char.toUpperCase() !== first_char.toLowerCase() ) {
+			first_char_regex = '[' + RegExp.escape( first_char.toUpperCase(), true ) + RegExp.escape( first_char.toLowerCase(), true ) + ']';
+		}
+		var image_re_string = "(?:[Ii]mage|[Ff]ile):\\s*" + first_char_regex + RegExp.escape( image.substr( 1 ), true );
 		var links_re = new RegExp( "\\[\\[" + image_re_string );
 		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys( this.text, '[[', ']]' ));
 		for( var i = 0; i < allLinks.length; ++i ) {
