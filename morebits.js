@@ -32,16 +32,15 @@
 
 var Morebits = {};
 
+
+
 /**
- * **************** userIsInGroup(), userIsAnon() ****************
- * Simple helper functions to see what groups a user might belong
+ * **************** userIsInGroup() ****************
+ * Simple helper function to see what groups a user might belong
  */
 
 function userIsInGroup( group ) {
 	return $.inArray(group, mw.config.get( 'wgUserGroups' )) !== -1;
-}
-function userIsAnon() {
-	return mw.config.get( 'wgUserGroups' ).length === 1;
 }
 
 
@@ -582,6 +581,7 @@ QuickForm.element.generateTooltip = function QuickFormElementGenerateTooltip( no
 };
 
 
+
 /**
  * **************** HTMLFormElement ****************
  *
@@ -639,6 +639,7 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
 };
 
 
+
 /**
  * **************** RegExp ****************
  *
@@ -653,7 +654,7 @@ RegExp.escape = function( text, space_fix ) {
 
 	text = text.replace( arguments.callee.sRE , '\\$1' );
 
-	// Special Mediawiki escape, underscore/space is the same, often at lest:
+	// Special MediaWiki escape - underscore/space are often equivalent
 
 	if( space_fix ) {
 		text = text.replace( / |_/g, '[_ ]' );
@@ -663,8 +664,10 @@ RegExp.escape = function( text, space_fix ) {
 };
 
 
+
 /**
  * **************** Bytes ****************
+ * Utility object for formatting byte values
  */
 
 var Bytes = function( value ) {
@@ -745,6 +748,7 @@ Bytes.prototype.toString = function( magnitude ) {
 		return tmp + ' ' + Bytes.rmagnitudes[current] + ( current > 0 ? 'iB' : 'B' );
 	}
 };
+
 
 
 /**
@@ -887,16 +891,19 @@ Morebits.array = {
 	}
 };
 
+
+
 /**
- * Get the user associated with this page.
+ * **************** Morebits.getPageAssociatedUser ****************
+ * Get the user associated with the currently-viewed page.
  * Currently works on User:, User talk:, Special:Contributions.
  */
 Morebits.getPageAssociatedUser = function(){
 	var namespaceIds = mediaWiki.config.get("wgNamespaceIds");
 	var thisNamespaceId = mw.config.get('wgNamespaceNumber');
 
-	if ( thisNamespaceId === namespaceIds['user'] || thisNamespaceId === namespaceIds['user_talk'] ) {
-		return mw.config.get('wgTitle').split( '/' )[0]; // only first part before any slashes, to work on subpages
+	if ( thisNamespaceId === 2 /* User: */ || thisNamespaceId === 3 /* User talk: */ ) {
+		return mw.config.get('wgTitle').split( '/' )[0];  // only first part before any slashes, to work on subpages
 	}
 
 	if ( thisNamespaceId === namespaceIds['special'] && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
@@ -907,9 +914,10 @@ Morebits.getPageAssociatedUser = function(){
 };
 
 
+
 /**
  * **************** Unbinder ****************
- * Used by MediaWiki.commentOutImage
+ * Used by Mediawiki.Page.commentOutImage
  */
 
 function Unbinder( string ) {
@@ -953,6 +961,7 @@ Unbinder.getCallback = function UnbinderGetCallback(self) {
 		return current;
 	};
 };
+
 
 
 /**
@@ -1009,9 +1018,11 @@ Date.prototype.getUTCMonthNameAbbrev = function() {
 	return Date.monthNamesAbbrev[ this.getUTCMonth() ];
 };
 
+
+
 /**
  * **************** Wikipedia ****************
- * Accessor functions for wikiediting and api-access
+ * Various objects for wiki editing and API access
  */
 
 var Wikipedia = {};
@@ -1117,7 +1128,7 @@ Wikipedia.actionCompleted = function( self ) {
 Wikipedia.actionCompleted.event = function() {
 	new Status( Wikipedia.actionCompleted.notice, Wikipedia.actionCompleted.postfix, 'info' );
 	if( Wikipedia.actionCompleted.redirect ) {
-		// if it isn't a URL, which is likely, make it one. TODO: This breaks on the articles 'http://', 'ftp://', and similar ones. Are we ever using URL redirects?
+		// if it isn't a URL, make it one. TODO: This breaks on the articles 'http://', 'ftp://', and similar ones.
 		if( !( (/^\w+\:\/\//).test( Wikipedia.actionCompleted.redirect ) ) ) {
 			Wikipedia.actionCompleted.redirect = mw.util.wikiGetlink( Wikipedia.actionCompleted.redirect );
 			if( Wikipedia.actionCompleted.followRedirect === false ) {
@@ -1128,7 +1139,6 @@ Wikipedia.actionCompleted.event = function() {
 	}
 };
 var wpActionCompletedTimeOut = ( typeof wpActionCompletedTimeOut === 'undefined' ? 5000 : wpActionCompletedTimeOut );
-var wpMaxLag = ( typeof wpMaxLag === 'undefined' ? 10 : wpMaxLag ); // Maximum lag allowed, 5-10 is a good value, the higher value, the more agressive.
 
 // editCount - REMOVEME when Wikipedia.wiki is gone
 Wikipedia.editCount = 10;
@@ -1150,13 +1160,14 @@ Wikipedia.removeCheckpoint = function() {
 
 /**
  * **************** Wikipedia.api ****************
- */
-
-/*
- currentAction: text, the current action (required)
- query: Object, the query (required)
- onSuccess: function, the function to call when page gotten
- onError: function, the function to call if an error occurs
+ * An easy way to talk to the MediaWiki API.
+ *
+ * Constructor parameters:
+ *    currentAction: the current action (required)
+ *    query: the query (required)
+ *    onSuccess: the function to call when request gotten
+ *    statusElement: a Morebits.status object to use for status messages (optional)
+ *    onError: the function to call if an error occurs (optional)
  */
 Wikipedia.api = function( currentAction, query, onSuccess, statusElement, onError ) {
 	this.currentAction = currentAction;
@@ -1267,6 +1278,8 @@ Wikipedia.api.prototype = {
 		return this.responseXML;
 	}
 };
+
+
 
 /**
  * **************** Wikipedia.page ****************
@@ -2320,6 +2333,7 @@ Wikipedia.page = function(pageName, currentAction) {
  */
 
 
+
 /**
  * **************** Wikipedia.preview ****************
  * Uses the API to parse a fragment of wikitext and render it as HTML.
@@ -2377,6 +2391,7 @@ Wikipedia.preview = function(previewbox) {
 };
 
 
+
 /**
  * **************** Wikipedia.wiki ****************
  * REMOVEME - but *only* after Twinkle no longer uses it - viz. batchundelete :(
@@ -2427,7 +2442,7 @@ Wikipedia.wiki.prototype = {
 	post: function( data ) {
 		this.postData = data;
 		if( Wikipedia.editCount <= 0 ) {
-			this.query['maxlag'] = wpMaxLag; // are we a bot?
+			this.query['maxlag'] = 10; // are we a bot?
 		} else {
 			--Wikipedia.editCount;
 		}
@@ -2449,7 +2464,7 @@ Wikipedia.wiki.prototype = {
 					var retry = this.getResponseHeader( 'Retry-After' );
 					var lag = this.getResponseHeader( 'X-Database-Lag' );
 					if( lag ) {
-						self.statelem.warn( "current lag of " + lag + " seconds is more than our defined maximum lag of " + wpMaxLag + " seconds, will retry in " + retry + " seconds" );
+						self.statelem.warn( "current lag of " + lag + " seconds is more than our defined maximum lag of 10 seconds, will retry in " + retry + " seconds" );
 						window.setTimeout( function( self ) { self.post( self.postData ); }, retry * 1000, self );
 						return;
 					} else {
@@ -2531,6 +2546,7 @@ Wikipedia.wiki.prototype = {
 		this.statelem.status( 'data loaded...' );
 	}
 };
+
 
 
 /**
@@ -2848,6 +2864,7 @@ QueryString.create = function( arr ) {
 QueryString.prototype.create = QueryString.create;
 
 
+
 /**
  * **************** Status ****************
  */
@@ -2970,10 +2987,6 @@ Status.prototype = {
 	}
 };
 
-Status.status = function( text, status ) {
-	return new Status( text, status, 'status' );
-};
-
 Status.info = function( text, status ) {
 	return new Status( text, status, 'info' );
 };
@@ -2985,6 +2998,7 @@ Status.warn = function( text, status ) {
 Status.error = function( text, status ) {
 	return new Status( text, status, 'error' );
 };
+
 
 
 /**
@@ -3001,6 +3015,7 @@ function htmlNode( type, content, color ) {
 	node.appendChild( document.createTextNode( content ) );
 	return node;
 }
+
 
 
 /**
@@ -3170,14 +3185,6 @@ SimpleWindow.prototype = {
 		link.textContent = text;
 		$footerlinks.append(link);
 		this.hasFooterLinks = true;
-	},
-	moveWindow: function( x, y ) {
-		// unimplemented
-		alert("SimpleWindow.moveWindow is no longer implemented.");
-	},
-	resizeWindow: function( x, y ) {
-		// unimplemented
-		alert("SimpleWindow.resizeWindow is no longer implemented.");
 	},
 	setModality: function( modal ) {
 		$(this.content).dialog("option", "modal", modal);
