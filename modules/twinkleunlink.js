@@ -257,9 +257,6 @@ Twinkle.unlink.callbacks = {
 		pageobj.save(Twinkle.unlink.callbacks.success);
 	},
 	success: function twinkleunlinkCallbackSuccess(pageobj) {
-		var statelem = pageobj.getStatusElement();
-		statelem.info('done');
-
 		var params = pageobj.getCallbackParameters();
 		var total = params.total;
 		var now = parseInt( 100 * (params.imageusage ? ++(Twinkle.unlink.imageusagedone) : ++(Twinkle.unlink.backlinksdone))/total, 10 ) + '%';

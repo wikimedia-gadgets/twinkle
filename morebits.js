@@ -2064,14 +2064,13 @@ Wikipedia.page = function(pageName, currentAction) {
 		if ($(xml).find('edit').attr('result') === "Success") {
 		
 			// real success
+			// default on success action - display link for edited page
+			var link = document.createElement('a');
+			link.setAttribute('href', mw.util.wikiGetlink(ctx.pageName) );
+			link.appendChild(document.createTextNode(ctx.pageName));
+			ctx.statusElement.info(['completed (', link, ')']);
 			if (ctx.onSaveSuccess) {
 				ctx.onSaveSuccess(this);  // invoke callback
-			} else {
-				// default on success action - display link for edited page
-				var link = document.createElement('a');
-				link.setAttribute('href', mw.util.wikiGetlink(ctx.pageName) );
-				link.appendChild(document.createTextNode(ctx.pageName));
-				ctx.statusElement.info(['completed (', link, ')']);
 			}
 			return;
 		}
