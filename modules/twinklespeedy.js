@@ -969,58 +969,6 @@ Twinkle.speedy.callbacks = {
 				thispage.patrol();
 			}
 
-			// Notification to first contributor
-			if (params.usertalk) {
-				var callback = function(pageobj) {
-					var initialContrib = pageobj.getCreator();
-
-					// don't notify users when their user talk page is nominated
-					if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
-						Status.warn("Notifying initial contributor: this user created their own user talk page; skipping notification"); 
-						return;
-					}
-
-					var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-					var notifytext;
-
-					// specialcase "db" and "db-multiple"
-					switch (params.normalized)
-					{
-						case 'db':
-							notifytext = "\n\n{{subst:db-reason-notice|1=" + mw.config.get('wgPageName');
-							break;
-						case 'multiple':
-							notifytext = "\n\n{{subst:db-notice-multiple|1=" + mw.config.get('wgPageName');
-							break;
-						default:
-							notifytext = "\n\n{{subst:db-csd-notice-custom|1=" + mw.config.get('wgPageName') + "|2=" + params.value;
-							break;
-					}
-					for (var i in params.utparams) {
-						if (typeof params.utparams[i] === 'string') {
-							notifytext += "|" + i + "=" + params.utparams[i];
-						}
-					}
-					notifytext += (params.welcomeuser ? "" : "|nowelcome=yes") + "}} ~~~~";
-
-					usertalkpage.setAppendText(notifytext);
-					usertalkpage.setEditSummary("Notification: speedy deletion nomination of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
-					usertalkpage.setCreateOption('recreate');
-					usertalkpage.setFollowRedirect(true);
-					usertalkpage.append();
-
-					// add this nomination to the user's userspace log, if the user has enabled it
-					if (params.lognomination) {
-						Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
-					}
-				};
-				thispage.lookupCreator(callback);
-			}
-			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
-			else if (params.lognomination) {
-				Twinkle.speedy.callbacks.user.addToLog(params, null);
-			}
-
 			// Wrap SD template in noinclude tags if we are in template space.
 			// Won't work with userboxes in userspace, or any other transcluded page outside template space
 			if (mw.config.get('wgNamespaceNumber') === 10) {  // Template:
@@ -1067,7 +1015,64 @@ Twinkle.speedy.callbacks = {
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			pageobj.setWatchlist(params.watch);
 			pageobj.setCreateOption('nocreate');
-			pageobj.save();
+			pageobj.save(Twinkle.speedy.callbacks.user.tagComplete);
+		},
+
+		tagComplete: function(pageobj) {
+			var params = pageobj.getCallbackParameters();
+
+			// Notification to first contributor
+			if (params.usertalk) {
+				var callback = function(pageobj) {
+					var initialContrib = pageobj.getCreator();
+
+					// don't notify users when their user talk page is nominated
+					if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
+						Status.warn("Notifying initial contributor: this user created their own user talk page; skipping notification"); 
+						return;
+					}
+
+					var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+					var notifytext;
+
+					// specialcase "db" and "db-multiple"
+					switch (params.normalized)
+					{
+						case 'db':
+							notifytext = "\n\n{{subst:db-reason-notice|1=" + mw.config.get('wgPageName');
+							break;
+						case 'multiple':
+							notifytext = "\n\n{{subst:db-notice-multiple|1=" + mw.config.get('wgPageName');
+							break;
+						default:
+							notifytext = "\n\n{{subst:db-csd-notice-custom|1=" + mw.config.get('wgPageName') + "|2=" + params.value;
+							break;
+					}
+					for (var i in params.utparams) {
+						if (typeof params.utparams[i] === 'string') {
+							notifytext += "|" + i + "=" + params.utparams[i];
+						}
+					}
+					notifytext += (params.welcomeuser ? "" : "|nowelcome=yes") + "}} ~~~~";
+
+					usertalkpage.setAppendText(notifytext);
+					usertalkpage.setEditSummary("Notification: speedy deletion nomination of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
+					usertalkpage.setCreateOption('recreate');
+					usertalkpage.setFollowRedirect(true);
+					usertalkpage.append();
+
+					// add this nomination to the user's userspace log, if the user has enabled it
+					if (params.lognomination) {
+						Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
+					}
+				};
+				var thispage = new Wikipedia.page(mw.config.get('wgPageName'));
+				thispage.lookupCreator(callback);
+			}
+			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
+			else if (params.lognomination) {
+				Twinkle.speedy.callbacks.user.addToLog(params, null);
+			}
 		},
 
 		// note: this code is also invoked from twinkleimage
