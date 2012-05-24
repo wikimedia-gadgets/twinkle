@@ -886,7 +886,7 @@ Morebits.array = {
 		}
 		var result = [];
 		var current;
-		for(var i = 0; i < arr.length; ++i ) {
+		for( var i = 0; i < arr.length; ++i ) {
 			if( i % size === 0 ) { // when 'i' is 0, this is always true, so we start by creating one.
 				current = [];
 				result.push( current );
@@ -1147,7 +1147,8 @@ Wikipedia.actionCompleted.event = function() {
 		window.setTimeout( function() { window.location = Wikipedia.actionCompleted.redirect; }, Wikipedia.actionCompleted.timeOut );
 	}
 };
-var wpActionCompletedTimeOut = ( wpActionCompletedTimeOut === undefined ? 5000 : wpActionCompletedTimeOut );
+var wpActionCompletedTimeOut = ( window.wpActionCompletedTimeOut === undefined ? 5000 : window.wpActionCompletedTimeOut );
+window.wpActionCompletedTimeOut = wpActionCompletedTimeOut; // allow global access
 
 // editCount - REMOVEME when Wikipedia.wiki is gone
 Wikipedia.editCount = 10;
