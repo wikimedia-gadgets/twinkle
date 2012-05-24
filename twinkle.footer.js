@@ -2,7 +2,7 @@
  * General initialization code
  */
 
-var scriptpathbefore = mw.config.get( "wgServer" ) + mw.config.get( "wgScript" ) + "?title=";
+var scriptpathbefore = mw.util.wikiScript( "index" ) + "?title=";
 var scriptpathafter = "&action=raw&ctype=text/javascript&happy=yes";
 
 // Retrieve the user's Twinkle preferences
