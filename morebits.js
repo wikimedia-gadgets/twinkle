@@ -30,8 +30,10 @@
  */
 
 
-var Morebits = {};
+( function ( $, undefined ) { // Wrap with anonymous function
 
+var Morebits = {};
+window.Morebits = Morebits; // allow global access
 
 
 /**
@@ -39,7 +41,7 @@ var Morebits = {};
  * Simple helper function to see what groups a user might belong
  */
 
-function userIsInGroup( group ) {
+window.userIsInGroup = function ( group ) {
 	return $.inArray(group, mw.config.get( 'wgUserGroups' )) !== -1;
 }
 
@@ -57,7 +59,7 @@ Morebits.RE_IP_ADD = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[0-9]?[0-9])\.){3
 Morebits.RE_IPV6_ADD = /^(?::(?::|(?::[0-9A-Fa-f]{1,4}){1,7})|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){0,6}::|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){7})$/;
 Morebits.RE_IPV6_ADD2 = /^[0-9A-Fa-f]{1,4}(?:::?[0-9A-Fa-f]{1,4}){1,6}$/;
 
-function isIPAddress( address ) {
+window.isIPAddress = function ( address ) {
 	return address.search( Morebits.RE_IP_ADD ) !== -1 ||  // IPv4
 		address.search( Morebits.RE_IPV6_ADD ) !== -1 ||  // IPv6
 		(address.search( Morebits.RE_IPV6_ADD2 ) !== -1	&& address.search( /::/ ) !== -1 && address.search( /::.*::/ ) === -1);
@@ -109,6 +111,8 @@ function isIPAddress( address ) {
 var QuickForm = function QuickForm( event, eventType ) {
 	this.root = new QuickForm.element( { type: 'form', event: event, eventType:eventType } );
 };
+
+window.QuickForm = QuickForm; // allow global access
 
 QuickForm.prototype.render = function QuickFormRender() {
 	var ret = this.root.render();
@@ -303,7 +307,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 							e.target.parentNode.appendChild( e.target.subgroup );
 							if( e.target.type === 'radio' ) {
 								var name = e.target.name;
-								if( typeof e.target.form.names[name] !== 'undefined' ) {
+								if( e.target.form.names[name] !== undefined ) {
 									e.target.form.names[name].parentNode.removeChild( e.target.form.names[name].subgroup );
 								}
 								e.target.form.names[name] = e.target;
@@ -320,7 +324,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 					event = function(e) {
 						if( e.target.checked ) {
 							var name = e.target.name;
-							if( typeof e.target.form.names[name] !== 'undefined' ) {
+							if( e.target.form.names[name] !== undefined ) {
 								e.target.form.names[name].parentNode.removeChild( e.target.form.names[name].subgroup );
 							}
 							delete e.target.form.names[name];
@@ -479,7 +483,7 @@ QuickForm.element.prototype.compute = function QuickFormElementCompute( data, in
 			node.setAttribute( 'name', data.name );
 		}
 		if (data.label) {
-			if ( !( data.label instanceof Array ) ) {
+			if ( ! $.isArray( data.label ) ) {
 				data.label = [ data.label ];
 			}
 			var result = document.createElement( 'span' );
@@ -692,6 +696,8 @@ var Bytes = function( value ) {
 	}
 };
 
+window.Bytes = Bytes; // allow global access
+
 Bytes.magnitudes = {
 	'': 0,
 	'K': 1,
@@ -792,8 +798,8 @@ Morebits.string = {
 		var level = 0;
 		var initial = null;
 		var result = [];
-		if( !( skip instanceof Array ) ) {
-			if( typeof skip === 'undefined' ) {
+		if( ! $.isArray( skip ) ) {
+			if( skip === undefined ) {
 				skip = [];
 			} else if( typeof skip === 'string' ) {
 				skip = [ skip ];
@@ -843,7 +849,7 @@ Morebits.string = {
 
 Morebits.array = {
 	uniq: function(arr) {
-		if (!($.isArray(arr))) {
+		if ( ! $.isArray( arr ) ) {
 			throw "A non-array object passed to Morebits.array.uniq";
 		}
 		var result = [];
@@ -856,7 +862,7 @@ Morebits.array = {
 		return result;
 	},
 	dups: function(arr) {
-		if (!($.isArray(arr))) {
+		if ( ! $.isArray( arr ) ) {
 			throw "A non-array object passed to Morebits.array.dups";
 		}
 		var uniques = [];
@@ -872,7 +878,7 @@ Morebits.array = {
 		return result;
 	},
 	chunk: function( arr, size ) {
-		if (!($.isArray(arr))) {
+		if ( ! $.isArray( arr ) ) {
 			throw "A non-array object passed to Morebits.array.chunk";
 		}
 		if( typeof size !== 'number' || size <= 0 ) { // pretty impossible to do anything :)
@@ -929,6 +935,8 @@ function Unbinder( string ) {
 	this.prefix = '%UNIQ::' + Math.random() + '::';
 	this.postfix = '::UNIQ%';
 }
+
+window.Unbinder = Unbinder; // allow global access
 
 Unbinder.prototype = {
 	unbind: function UnbinderUnbind( prefix, postfix ) {
@@ -1025,6 +1033,8 @@ Date.prototype.getUTCMonthNameAbbrev = function() {
  */
 
 var Wikipedia = {};
+
+window.Wikipedia = Wikipedia; // allow global access
 
 Wikipedia.namespaces = {
 	'-2':  'Media',
@@ -1137,7 +1147,7 @@ Wikipedia.actionCompleted.event = function() {
 		window.setTimeout( function() { window.location = Wikipedia.actionCompleted.redirect; }, Wikipedia.actionCompleted.timeOut );
 	}
 };
-var wpActionCompletedTimeOut = ( typeof wpActionCompletedTimeOut === 'undefined' ? 5000 : wpActionCompletedTimeOut );
+var wpActionCompletedTimeOut = ( wpActionCompletedTimeOut === undefined ? 5000 : wpActionCompletedTimeOut );
 
 // editCount - REMOVEME when Wikipedia.wiki is gone
 Wikipedia.editCount = 10;
@@ -2555,6 +2565,8 @@ Wikipedia.wiki.prototype = {
 
 var Mediawiki = {};
 
+window.Mediawiki = Mediawiki; // allow global access
+
 Mediawiki.Template = {
 	parse: function( text, start ) {
 		var count = -1;
@@ -2792,6 +2804,8 @@ var QueryString = function(qString) {
 	}
 };
 
+window.QueryString = QueryString; // allow global access
+
 QueryString.staticstr = null;
 
 QueryString.staticInit = function() {
@@ -2840,11 +2854,11 @@ QueryString.create = function( arr ) {
 	var resarr = [];
 	var editToken;  // KLUGE: this should always be the last item in the query string (bug TW-B-0013)
 	for( var i in arr ) {
-		if( typeof arr[i] === 'undefined' ) {
+		if( arr[i] === undefined ) {
 			continue;
 		}
 		var res;
-		if( arr[i] instanceof Array ){
+		if( $.isArray( arr[i] ) ){
 			var v = [];
 			for(var j = 0; j < arr[i].length; ++j ) {
 				v[j] = encodeURIComponent( arr[i][j] );
@@ -2859,7 +2873,7 @@ QueryString.create = function( arr ) {
 			resarr.push( encodeURIComponent( i ) + '=' + res );
 		}
 	}
-	if( typeof editToken !== 'undefined' ) {
+	if( editToken !== undefined ) {
 		resarr.push( 'wpEditToken=' + editToken );
 	}
 	return resarr.join('&');
@@ -2890,6 +2904,8 @@ var Status = function( text, stat, type ) {
 	}
 };
 
+window.Status = Status; // allow global access
+
 Status.init = function( root ) {
 	if( !( root instanceof Element ) ) {
 		throw new Error( 'object not an instance of Element' );
@@ -2904,7 +2920,7 @@ Status.init = function( root ) {
 Status.root = null;
 
 Status.onError = function( handler ) {
-	if (typeof handler === "function") {
+	if ( $.isFunction( handler ) ) {
 		Status.errorEvent = handler;
 	} else {
 		throw "Status.onError: handler is not a function";
@@ -2931,7 +2947,7 @@ Status.prototype = {
 		}
 	},
 	codify: function( obj ) {
-		if ( ! ( obj instanceof Array ) ) {
+		if ( ! $.isArray( obj ) ) {
 			obj = [ obj ];
 		}
 		var result;
@@ -3010,7 +3026,7 @@ Status.error = function( text, status ) {
  * XXX rewrite more flexibly, and place under an object, for example QuickNode.create
  */
 
-function htmlNode( type, content, color ) {
+window.htmlNode = function ( type, content, color ) {
 	var node = document.createElement( type );
 	if( color ) {
 		node.style.color = color;
@@ -3073,6 +3089,8 @@ var SimpleWindow = function( width, height ) {
 	linksspan.className = "morebits-dialog-footerlinks";
 	$widget.find(".ui-dialog-buttonpane").append(buttonspan, linksspan);
 };
+
+window.SimpleWindow = SimpleWindow; // allow global access
 
 SimpleWindow.prototype = {
 	buttons: [],
@@ -3204,8 +3222,9 @@ SimpleWindow.setButtonsEnabled = function( enabled ) {
 };
 
 
-
 // Twinkle blacklist was removed per consensus at http://en.wikipedia.org/wiki/Wikipedia:Administrators%27_noticeboard/Archive221#New_Twinkle_blacklist_proposal
 
+
+} ( jQuery )); // End wrap with anonymous function
 
 // </nowiki>
