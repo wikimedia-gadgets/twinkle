@@ -221,6 +221,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			div.append({ type: 'header', label: 'Anonymous user welcome templates' });
 			appendTemplates([
 				"welcome-anon",
+				"welcome-anon-border",
 				"welcome-anon-test",
 				"welcome-anon-vandal",
 				"welcome-anon-constructive"
@@ -395,6 +396,11 @@ Twinkle.welcome.templates = {
 		description: "for anonymous users; encourages creating an account",
 		linkedArticle: true,
 		syntax: "{{subst:welcome-anon|art=$ARTICLE$}} ~~~~"
+	},
+	"welcome-anon-border": {
+		description: "has a border and is more better-looking than welcome-anon",
+		linkedArticle: false,
+		syntax: "{{subst:welcome-anon-border}}"
 	},
 	"welcome-anon-test": {
 		description: "for anonymous users who have performed test edits",
