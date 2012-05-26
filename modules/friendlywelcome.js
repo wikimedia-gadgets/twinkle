@@ -97,7 +97,7 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 };
 
 Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
-	if( uid === mw.config.get('wgUserName') && !confirm( 'Are you really sure you want to welcome yourself?...' ) ){
+	if( uid === mw.config.get('wgUserName') && !confirm( 'Welcome, welcome, you are very welcome, indeed.' ) ){
 		return;
 	}
 
@@ -221,6 +221,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			div.append({ type: 'header', label: 'Anonymous user welcome templates' });
 			appendTemplates([
 				"welcome-anon",
+				"Welcome-anon-border",
 				"welcome-anon-test",
 				"welcome-anon-vandal",
 				"welcome-anon-constructive"
@@ -395,6 +396,11 @@ Twinkle.welcome.templates = {
 		description: "for anonymous users; encourages creating an account",
 		linkedArticle: true,
 		syntax: "{{subst:welcome-anon|art=$ARTICLE$}} ~~~~"
+	},
+	"welcome-anon-border": {
+		description: "same as welcome-anon but is more stylish and has a border",
+		linkedArticle: false,
+		syntax: "{{subst:welcome-anon-border}}"
 	},
 	"welcome-anon-test": {
 		description: "for anonymous users who have performed test edits",
