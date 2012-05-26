@@ -398,7 +398,7 @@ Twinkle.welcome.templates = {
 		syntax: "{{subst:welcome-anon|art=$ARTICLE$}} ~~~~"
 	},
 	"welcome-anon-border": {
-		description: "has a border and is more better-looking than welcome-anon",
+		description: "similar to {{welcome-anon}}, but has a border and uses clearer language",
 		linkedArticle: false,
 		syntax: "{{subst:welcome-anon-border}}"
 	},
