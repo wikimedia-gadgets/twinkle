@@ -140,7 +140,7 @@
 		page.deletePage();
 
 		page = new Wikipedia.page(self.params.page, "Deleting article");
-		page.setEditSummary("DDeleted because expired [[WP:PROD]]; Reason given: " + self.params.reason + "." + Twinkle.getPref('deletionSummaryAd'));
+		page.setEditSummary("Deleted because expired [[WP:PROD]]; Reason given: " + self.params.reason + "." + Twinkle.getPref('deletionSummaryAd'));
 		page.deletePage();
 
 
