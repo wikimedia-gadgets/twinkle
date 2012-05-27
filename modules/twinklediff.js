@@ -36,7 +36,6 @@ Twinkle.diff = function twinklediff() {
 };
 
 Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
-	var ntitle = getElementsByClassName( document.getElementById('bodyContent'), 'td' , 'diff-ntitle' )[0];
 
 	var user;
 	if( me ) {
