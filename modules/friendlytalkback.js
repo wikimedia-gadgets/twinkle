@@ -19,8 +19,8 @@
 	};
 	
 	var callback = function( uid ) {
-	if( uid === mw.config.get("wgUserName") && !confirm("Is it really so bad that you're talking back to yourself?") ){
-		return;
+		if( uid === mw.config.get("wgUserName") && !confirm("Is it really so bad that you're talking back to yourself?") ){
+			return;
 		}
 	
 		var Window = new SimpleWindow( 600, 350 );
@@ -34,21 +34,25 @@
 		form.append({ type: "radio", name: "tbtarget",
 					list: [
 						{
-							label: "My talk page",
+							label: "Talkback: my talk page",
 							value: "mytalk",
 							checked: "true" 
 						},
 						{
-							label: "Other user talk page",
+							label: "Talkback: other user talk page",
 							value: "usertalk"
 						},
 						{
-							label: "Administrators' noticeboard",
-							value: "an"
+							label: "Talkback: other page",
+							value: "other"
 						},
 						{
-							label: "Other page",
-							value: "other"
+							label: "Noticeboard notification",
+							value: "notice"
+						},
+						{
+							label: "\"You've got mail\"",
+							value: "mail"
 						}
 					],
 					event: callback_change_target
@@ -134,7 +138,7 @@
 						value: prev_section
 					});
 				break;
-			case "an":
+			case "notice":
 				var noticeboard = work_area.append({
 						type: "select",
 						name: "noticeboard",
@@ -151,11 +155,16 @@
 						selected: true,
 						value: "Wikipedia:Administrators' noticeboard/Incidents"
 					});
+				noticeboard.append({
+						type: "option",
+						label: "WP:DRN (Dispute resolution noticeboard)",
+						value: "Wikipedia:Dispute resolution noticeboard"
+					});
 				work_area.append({
 						type:"input",
 						name:"section",
 						label:"Linked thread",
-						tooltip:"The heading of the relevant AN or ANI thread.",
+						tooltip:"The heading of the relevant thread on the noticeboard page.",
 						value: prev_section
 					});
 				break;
@@ -176,9 +185,17 @@
 						value: prev_section
 					});
 				break;
+			case "mail":
+				work_area.append({
+						type:"input",
+						name:"section",
+						label:"Subject of e-mail (optional)",
+						tooltip:"The subject line of the e-mail you sent.",
+					});
+				break;
 		}
 	
-		if (value !== "an") {
+		if (value !== "notice") {
 			work_area.append({ type:"textarea", label:"Additional message (optional):", name:"message", tooltip:"An additional message that you would like to leave below the talkback template. Your signature will be added to the end of the message if you leave one." });
 		}
 	
@@ -211,7 +228,7 @@
 					return;
 				}
 			}
-		} else if (tbtarget === "an") {
+		} else if (tbtarget === "notice") {
 			page = e.target.noticeboard.value;
 		}
 	
@@ -230,16 +247,29 @@
 		var tbPageName = (tbtarget === "mytalk") ? mw.config.get("wgUserName") : page;
 	
 		var text;
-		if ( tbtarget === "an" ) {
+		if ( tbtarget === "notice" ) {
 			text = "\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n{{subst:ANI-notice|thread=";
 			text += section + "|noticeboard=" + tbPageName + "}} ~~~~";
 	
-			talkpage.setEditSummary( "Notice of AN/ANI discussion" + Twinkle.getPref("summaryAd") );
+			talkpage.setEditSummary( "Notice of discussion at [[" + tbPageName + "]]" + Twinkle.getPref("summaryAd") );
+
+		} else if ( tbtarget === "mail" ) {
+			text = "\n==" + Twinkle.getFriendlyPref("mailHeading") + "==\n{{you've got mail|subject=";
+			text += section + "|ts=~~~~~}}";
+
+			if( message ) {
+				text += "\n" + message + "  ~~~~";
+			} else if( Twinkle.getFriendlyPref("insertTalkbackSignature") ) {
+				text += "\n~~~~";
+			}
+
+			talkpage.setEditSummary("Notification: You've got mail" + Twinkle.getPref("summaryAd"));
+
 		} else {
 			//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
 			text = "\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n{{talkback|";
 			text += tbPageName;
-	
+
 			if( section ) {
 				text += "|" + section;
 			}

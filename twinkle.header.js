@@ -143,6 +143,7 @@ Twinkle.defaultConfig.friendly = {
 	insertTalkbackSignature: true,  // always sign talkback templates
 	talkbackHeading: "Talkback",
 	adminNoticeHeading: "Notice",
+	mailHeading: "You've got mail!",
 	 // Shared
 	markSharedIPAsMinor: true
 };

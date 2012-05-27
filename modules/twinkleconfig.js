@@ -521,6 +521,11 @@ Twinkle.config.sections = [
 			name: "adminNoticeHeading",
 			label: "Section heading to use for administrators' noticeboard notices",
 			type: "string"
+		},
+		{
+			name: "mailHeading",
+			label: "Section heading to use for \"you've got mail\" notices",
+			type: "string"
 		}
 	]
 },
