@@ -221,6 +221,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			div.append({ type: 'header', label: 'Anonymous user welcome templates' });
 			appendTemplates([
 				"welcome-anon",
+				"welcome-anon-border",
 				"welcome-anon-test",
 				"welcome-anon-vandal",
 				"welcome-anon-constructive"
@@ -396,6 +397,11 @@ Twinkle.welcome.templates = {
 		linkedArticle: true,
 		syntax: "{{subst:welcome-anon|art=$ARTICLE$}} ~~~~"
 	},
+	"welcome-anon-border": {
+		description: "similar to {{welcome-anon}}, but has a border and uses clearer language",
+		linkedArticle: false,
+		syntax: "{{subst:welcome-anon-border}}"
+	},
 	"welcome-anon-test": {
 		description: "for anonymous users who have performed test edits",
 		linkedArticle: true,
@@ -409,7 +415,7 @@ Twinkle.welcome.templates = {
 	"welcome-anon-constructive": {
 		description: "for anonymous users who fight vandalism and edit constructively",
 		linkedArticle: true,
-		syntax: "{{subst:welcome-anon-constructive|art=$ARTICLE$}} ~~~~"
+		syntax: "{{subst:welcome-anon-constructive|art=$ARTICLE$}}"
 	},
 
 	// WIKIPROJECT-SPECIFIC WELCOMES
