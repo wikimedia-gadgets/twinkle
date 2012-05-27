@@ -700,6 +700,10 @@ Twinkle.warn.messages = {
 			label:"Conflict of Interest", 
 			summary:"Notice: Conflict of Interest" 
 		},
+		"uw-controversial": { 
+			label:"Introducing controversial material", 
+			summary:"Notice: Introducing controversial material" 
+		},
 		"uw-copying": {
 			label:"Copying text to another page",
 			summary:"Notice: Copying text to another page"
@@ -876,6 +880,14 @@ Twinkle.warn.messages = {
 			label:"Reporting of username to WP:UAA not accepted", 
 			summary:"Notice: Reporting of username to WP:UAA not accepted" 
 		},
+		"uw-upincat": { 
+			label:"Informing user that one of his/her pages had accidentally been included in a content category", 
+			summary:"Notice: Informing user that one of his/her pages had accidentally been included in a content category" 
+		},
+		"uw-uploadfirst": { 
+			label:"Attempting to display an external image on a page", 
+			summary:"Notice: Attempting to display an external image on a page" 
+		},
 		"uw-userspace draft finish": { 
 			label:"Stale userspace draft", 
 			summary:"Notice: Stale userspace draft" 
@@ -966,6 +978,10 @@ Twinkle.warn.messages = {
 		"uw-pinfo": { 
 			label:"Personal info", 
 			summary:"Warning: Personal info" 
+		},
+		"uw-protect": { 
+			label:"Attempting to pursue an inappropriate relationship with another user", 
+			summary:"Warning: Attempting to pursue an inappropriate relationship with another user" 
 		},
 		"uw-socksuspect": {
 			label:"Sockpuppetry",
