@@ -147,11 +147,6 @@
 					});
 				noticeboard.append({
 						type: "option",
-						label: "WP:AN3 (Administrators' noticeboard/Edit warring)",
-			                        value: "Wikipedia:Administrators' noticeboard/Edit warring"
-					});
-				noticeboard.append({
-						type: "option",
 						label: "WP:ANI (Administrators' noticeboard/Incidents)",
 						selected: true,
 						value: "Wikipedia:Administrators' noticeboard/Incidents"
