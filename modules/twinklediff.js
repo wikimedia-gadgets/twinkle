@@ -21,7 +21,7 @@ Twinkle.diff = function twinklediff() {
 	twAddPortletLink( mw.util.wikiScript("index")+ "?" + $.param( query ), 'Last', 'tw-lastdiff', 'Show most recent diff' );
 
 	// Show additional tabs only on diff pages
-	if (QueryString.exists('diff')) {
+	if (Morebits.queryString.exists('diff')) {
 		twAddPortletLink(function(){ Twinkle.diff.evaluate(false); }, 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user' );
 		twAddPortletLink( function(){ Twinkle.diff.evaluate(true); }, 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision' );
 
@@ -57,8 +57,8 @@ Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 		'rvstartid': mw.config.get('wgCurRevisionId') - 1, // i.e. not the current one
 		'rvuser': user
 	};
-	Status.init( document.getElementById('bodyContent') );
-	var wikipedia_api = new Wikipedia.api( 'Grabbing data of initial contributor', query, Twinkle.diff.callbacks.main );
+	Morebits.status.init( document.getElementById('bodyContent') );
+	var wikipedia_api = new Morebits.wiki.api( 'Grabbing data of initial contributor', query, Twinkle.diff.callbacks.main );
 	wikipedia_api.params = { user: user };
 	wikipedia_api.post();
 };
@@ -77,6 +77,6 @@ Twinkle.diff.callbacks = {
 			'oldid': revid,
 			'diff': mw.config.get('wgCurRevisionId')
 		};
-		window.location = mw.util.wikiScript('index') + '?' + QueryString.create( query );
+		window.location = mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query );
 	}
 };

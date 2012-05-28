@@ -10,7 +10,7 @@
 
 
 Twinkle.batchprotect = function twinklebatchprotect() {
-	if( userIsInGroup( 'sysop' ) && ((mw.config.get( 'wgArticleId' ) > 0 && (mw.config.get( 'wgNamespaceNumber' ) === 2 ||
+	if( Morebits.userIsInGroup( 'sysop' ) && ((mw.config.get( 'wgArticleId' ) > 0 && (mw.config.get( 'wgNamespaceNumber' ) === 2 ||
 		mw.config.get( 'wgNamespaceNumber' ) === 4)) || mw.config.get( 'wgNamespaceNumber' ) === 14 ||
 		mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex') ) {
 		twAddPortletLink( Twinkle.batchprotect.callback, "P-batch", "tw-pbatch", "Protect pages linked from this page" );
@@ -19,14 +19,14 @@ Twinkle.batchprotect = function twinklebatchprotect() {
 
 Twinkle.batchprotect.unlinkCache = {};
 Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
-	var Window = new SimpleWindow( 800, 400 );
+	var Window = new Morebits.simpleWindow( 800, 400 );
 	Window.setTitle( "Batch protection" );
 	Window.setScriptName( "Twinkle" );
 	//Window.addFooterLink( "Protection templates", "Template:Protection templates" );
 	Window.addFooterLink( "Protection policy", "WP:PROT" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#protect" );
 
-	var form = new QuickForm( Twinkle.batchprotect.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.batchprotect.callback.evaluate );
 	form.append({
 			type: 'checkbox',
 			name: 'editmodify',
@@ -247,8 +247,8 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		query = {
 			'action': 'query',
 			'generator': 'allpages',
-			'gapnamespace': QueryString.exists('namespace') ? QueryString.get( 'namespace' ) : document.getElementById('namespace').value,
-			'gapprefix': QueryString.exists('from') ? Morebits.string.toUpperCaseFirstChar(QueryString.get( 'from' ).replace('+', ' ')) :
+			'gapnamespace': Morebits.queryString.exists('namespace') ? Morebits.queryString.get( 'namespace' ) : document.getElementById('namespace').value,
+			'gapprefix': Morebits.queryString.exists('from') ? Morebits.string.toUpperCaseFirstChar(Morebits.queryString.get( 'from' ).replace('+', ' ')) :
 				Morebits.string.toUpperCaseFirstChar(document.getElementById('nsfrom').value),
 			'gaplimit' : Twinkle.getPref('batchMax'), // the max for sysops
 			'prop': 'revisions',
@@ -268,12 +268,12 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	var statusdiv = document.createElement("div");
 	statusdiv.style.padding = '15px';  // just so it doesn't look broken
 	Window.setContent(statusdiv);
-	Status.init(statusdiv);
+	Morebits.status.init(statusdiv);
 	Window.display();
 
-	var statelem = new Status("Grabbing list of pages");
+	var statelem = new Morebits.status("Grabbing list of pages");
 
-	var wikipedia_api = new Wikipedia.api( 'loading...', query, function(apiobj) {
+	var wikipedia_api = new Morebits.wiki.api( 'loading...', query, function(apiobj) {
 			var xml = apiobj.responseXML;
 			var $pages = $(xml).find('page');
 			var list = [];
@@ -330,20 +330,20 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 		return;
 	}
 
-	SimpleWindow.setButtonsEnabled(false);
-	Status.init( event.target );
+	Morebits.simpleWindow.setButtonsEnabled(false);
+	Morebits.status.init( event.target );
 
 	if( !pages ) {
-		Status.error( 'Error', 'Nothing to protect, aborting' );
+		Morebits.status.error( 'Error', 'Nothing to protect, aborting' );
 		return;
 	}
 
 	var toCall = function twinklebatchprotectToCall( work ) {
 		if( work.length === 0 && Twinkle.batchprotect.currentProtectCounter <= 0 ) {
-			Status.info( 'work done' );
+			Morebits.status.info( 'work done' );
 			window.clearInterval( Twinkle.batchprotect.currentprotector );
 			Twinkle.batchprotect.currentprotector = Twinkle.batchprotect.currentProtectCounter = 0;
-			Wikipedia.removeCheckpoint();
+			Morebits.wiki.removeCheckpoint();
 			return;
 		} else if( work.length !== 0 && Twinkle.batchprotect.currentProtectCounter <= Twinkle.getPref('batchProtectMinCutOff') ) {
 			var pages = work.shift();
@@ -354,7 +354,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 					'action': 'query',
 					'titles': page
 				};
-				var wikipedia_api = new Wikipedia.api( 'Checking if page ' + page + ' exists', query, Twinkle.batchprotect.callbacks.main );
+				var wikipedia_api = new Morebits.wiki.api( 'Checking if page ' + page + ' exists', query, Twinkle.batchprotect.callbacks.main );
 				wikipedia_api.params = {
 					page: page,
 					reason: reason,
@@ -373,7 +373,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 		}
 	};
 	var work = Morebits.array.chunk( pages, Twinkle.getPref('batchProtectChunks') );
-	Wikipedia.addCheckpoint();
+	Morebits.wiki.addCheckpoint();
 	Twinkle.batchprotect.currentprotector = window.setInterval( toCall, 1000, work );
 };
 
@@ -387,7 +387,7 @@ Twinkle.batchprotect.callbacks = {
 
 		var exists = ($(xml).find('page').attr('missing') !== "");
 
-		var page = new Wikipedia.page(apiobj.params.page, "Protecting " + apiobj.params.page);
+		var page = new Morebits.wiki.page(apiobj.params.page, "Protecting " + apiobj.params.page);
 		var takenAction = false;
 		if (exists && apiobj.params.editmodify) {
 			page.setEditProtection(apiobj.params.editlevel, apiobj.params.editexpiry);
@@ -402,7 +402,7 @@ Twinkle.batchprotect.callbacks = {
 			takenAction = true;
 		}
 		if (!takenAction) {
-			Status.warn("Protecting " + apiobj.params.page, "page " + (exists ? "exists" : "does not exist") + "; nothing to do, skipping");
+			Morebits.status.warn("Protecting " + apiobj.params.page, "page " + (exists ? "exists" : "does not exist") + "; nothing to do, skipping");
 			return;
 		}
 

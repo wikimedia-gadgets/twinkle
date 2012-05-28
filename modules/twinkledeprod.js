@@ -9,7 +9,7 @@
 
 ;(function(){
 	Twinkle.deprod = function() {
-		if( mw.config.get( 'wgNamespaceNumber' ) !== 14 || ! userIsInGroup( 'sysop' ) || !((/^Category:Proposed_deletion_as_of/).test(mw.config.get( 'wgPageName' ))) ) {
+		if( mw.config.get( 'wgNamespaceNumber' ) !== 14 || ! Morebits.userIsInGroup( 'sysop' ) || !((/^Category:Proposed_deletion_as_of/).test(mw.config.get( 'wgPageName' ))) ) {
 			return;
 		}
 		twAddPortletLink( callback, "Deprod", "tw-deprod", "Delete prod pages found in this category");
@@ -22,13 +22,13 @@
 	currentDeletor = null,
 
 	callback = function() {
-		var Window = new SimpleWindow( 800, 400 );
+		var Window = new Morebits.simpleWindow( 800, 400 );
 		Window.setTitle( "PROD cleaning" );
 		Window.setScriptName( "Twinkle" );
 		Window.addFooterLink( "Proposed deletion", "WP:PROD" );
 		Window.addFooterLink( "Twinkle help", "WP:TW/DOC#deprod" );
 
-		var form = new QuickForm( callback_commit );
+		var form = new Morebits.quickForm( callback_commit );
 
 		var query = {
 			'action': 'query',
@@ -39,7 +39,7 @@
 			'rvprop': [ 'content' ]
 		};
 
-		var wikipedia_api = new Wikipedia.api( 'Grabbing pages', query,
+		var wikipedia_api = new Morebits.wiki.api( 'Grabbing pages', query,
 			function( self ) {
 				var $doc = $(self.responseXML);
 				var $pages = $doc.find('page[ns!="6"]');  // all non-files
@@ -52,7 +52,7 @@
 					var concern = '';
 					var res = re.exec(content);
 					if( res ) {
-						var parsed = Mediawiki.Template.parse( content, res.index );
+						var parsed = Morebits.wikitext.template.parse( content, res.index );
 						concern = parsed.parameters.concern || '';
 					}
 					list.push( {label:page + ' (' + concern + ')' , value:page, checked:concern !== '' });
@@ -73,21 +73,21 @@
 			wikipedia_api.params = { form:form, Window:Window };
 			wikipedia_api.post();
 			var root = document.createElement( 'div' );
-			SimpleWindow.setButtonsEnabled( true );
+			Morebits.simpleWindow.setButtonsEnabled( true );
 
-			Status.init( root );
+			Morebits.status.init( root );
 			Window.setContent( root );
 			Window.display();
 	},
 
 	callback_commit = function(event) {
 		var pages = event.target.getChecked( 'pages' );
-		Status.init( event.target );
+		Morebits.status.init( event.target );
 		function toCall( work ) {
 			if( work.length === 0 ) {
-				Status.info( 'work done' );
+				Morebits.status.info( 'work done' );
 				window.clearInterval( currentDeletor );
-				Wikipedia.removeCheckpoint();
+				Morebits.wiki.removeCheckpoint();
 				return;
 			} else if( currentDeleteCounter <= 0 || currentUnlinkCounter <= 0 ) {
 				unlinkCache = []; // Clear the cache
@@ -101,14 +101,14 @@
 						'rvlimit': 1,
 						'titles': page
 					};
-					var wikipedia_api = new Wikipedia.api( 'Checking if page ' + page + ' exists', query, callback_check );
+					var wikipedia_api = new Morebits.wiki.api( 'Checking if page ' + page + ' exists', query, callback_check );
 					wikipedia_api.params = { page:page, reason: concerns[page] };
 					wikipedia_api.post();
 				}
 			}
 		}
 		var work = Morebits.array.chunk( pages, Twinkle.getPref('proddeleteChunks') );
-		Wikipedia.addCheckpoint();
+		Morebits.wiki.addCheckpoint();
 		currentDeletor = window.setInterval( toCall, 1000, work );
 	},
 	callback_check = function( self ) {
@@ -129,17 +129,17 @@
 			'list': 'backlinks',
 			'blfilterredir': 'redirects',
 			'bltitle': self.params.page,
-			'bllimit': userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
+			'bllimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
 		};
-		var wikipedia_api = new Wikipedia.api( 'Grabbing redirects', query, callback_deleteRedirects );
+		var wikipedia_api = new Morebits.wiki.api( 'Grabbing redirects', query, callback_deleteRedirects );
 		wikipedia_api.params = self.params;
 		wikipedia_api.post();
 
-		var page = new Wikipedia.page('Talk:' + self.params.page, "Deleting talk page");
+		var page = new Morebits.wiki.page('Talk:' + self.params.page, "Deleting talk page");
 		page.setEditSummary("Deleted talk page of a page because expired [[WP:PROD]]." + Twinkle.getPref('deletionSummaryAd'));
 		page.deletePage();
 
-		page = new Wikipedia.page(self.params.page, "Deleting article");
+		page = new Morebits.wiki.page(self.params.page, "Deleting article");
 		page.setEditSummary("Deleted because expired [[WP:PROD]]; Reason given: " + self.params.reason + "." + Twinkle.getPref('deletionSummaryAd'));
 		page.deletePage();
 
@@ -149,7 +149,7 @@
 		$doc = $(self.responseXML);
 		$doc.find("backlinks bl").each(function(){
 			var title = $(this).attr('title');
-			var page = new Wikipedia.page(title, "Deleting redirecting page " + title);
+			var page = new Morebits.wiki.page(title, "Deleting redirecting page " + title);
 			page.setEditSummary("Speedy deleted per ([[WP:CSD#R1|CSD R1]]), Redirect to deleted page \"" + self.params.page + "\"." + Twinkle.getPref('deletionSummaryAd'));
 			page.deletePage();
 		});

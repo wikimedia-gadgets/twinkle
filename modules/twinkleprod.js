@@ -8,7 +8,7 @@
  */
 
 Twinkle.prod = function twinkleprod() {
-	if( mw.config.get('wgNamespaceNumber') !== 0 || !mw.config.get('wgCurRevisionId') || Wikipedia.isPageRedirect() ) {
+	if( mw.config.get('wgNamespaceNumber') !== 0 || !mw.config.get('wgCurRevisionId') || Morebits.wiki.isPageRedirect() ) {
 		return;
 	}
 	
@@ -22,14 +22,14 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	}
 	Twinkle.prod.defaultReason = Twinkle.getPref('prodReasonDefault');
 
-	var Window = new SimpleWindow( 800, 410 );
+	var Window = new Morebits.simpleWindow( 800, 410 );
 	Window.setTitle( "Proposed deletion (PROD)" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Proposed deletion policy", "WP:PROD" );
 	Window.addFooterLink( "BLP PROD policy", "WP:BLPPROD" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#prod" );
 
-	var form = new QuickForm( Twinkle.prod.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.prod.callback.evaluate );
 	
 	var field = form.append( {
 			type: 'field',
@@ -74,7 +74,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 
 Twinkle.prod.callback.prodtypechanged = function(event) {
   //prepare frame for prod type dependant controls
-	var field = new QuickForm.element( {
+	var field = new Morebits.quickForm.element( {
 			type: 'field',
 			label: 'Parameters',
 			name: 'work_area'
@@ -173,7 +173,7 @@ Twinkle.prod.callbacks = {
 		if( !prod_re.test( text ) ) {
 			// Notification to first contributor
 			if( params.usertalk ) {
-				var thispage = new Wikipedia.page(mw.config.get('wgPageName'));
+				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				thispage.setCallbackParameters(params);
 				thispage.lookupCreator(Twinkle.prod.callbacks.userNotification);
 			}
@@ -219,7 +219,7 @@ Twinkle.prod.callbacks = {
 	userNotification: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
 		var initialContrib = pageobj.getCreator();
-		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+		var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n{{subst:prodwarning" + (params.blp ? "BLP" : "") + "|1=" + mw.config.get('wgPageName') + "|concern=" + params.reason + "}} ~~~~";
 		usertalkpage.setAppendText(notifytext);
 		usertalkpage.setEditSummary("Notification: proposed deletion of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
@@ -233,7 +233,7 @@ Twinkle.prod.callbacks = {
 	},
 
 	addToLog: function(params) {
-		var wikipedia_page = new Wikipedia.page("User:" + mw.config.get('wgUserName') + "/" + Twinkle.getPref('prodLogPageName'), "Adding entry to userspace log");
+		var wikipedia_page = new Morebits.wiki.page("User:" + mw.config.get('wgUserName') + "/" + Twinkle.getPref('prodLogPageName'), "Adding entry to userspace log");
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.load(Twinkle.prod.callbacks.saveLog);
 	},
@@ -304,22 +304,22 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 		reason: prodtype=='prodblp' ? '' : form.reason.value  // using an empty string here as fallback will help with prod-2.
 	};
 
-	SimpleWindow.setButtonsEnabled( false );
-	Status.init( form );
+	Morebits.simpleWindow.setButtonsEnabled( false );
+	Morebits.status.init( form );
 
 	if (prodtype === 'prodblp' && mw.config.get('wgArticleId') < 26596183)
 	{
 		if (!confirm( "It appears that this article was created before March 18, 2010, and is thus ineligible for a BLP PROD. Do you want to continue tagging it?" ))
 		{
-			Status.warn( 'Notice', 'Aborting per user input.' );
+			Morebits.status.warn( 'Notice', 'Aborting per user input.' );
 			return;
 		}
 	}
 
-	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "Tagging complete";
+	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.notice = "Tagging complete";
 
-	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Tagging page");
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging page");
 	wikipedia_page.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.prod.callbacks.main);

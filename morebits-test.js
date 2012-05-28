@@ -8,10 +8,10 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 		},
 	  
 		initSimpleWindow: function() {
-			var Window = new SimpleWindow( 600, 400 );
+			var Window = new Morebits.simpleWindow( 600, 400 );
 			Window.setTitle( "Test morebits.js" );
 			Window.display();
-			var form = new QuickForm( null );
+			var form = new Morebits.quickForm( null );
 			var main_group = form.append( {
 				type:'select',
 				name:'main_group',
@@ -21,9 +21,9 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 			Window.setContent( result );
 			Window.display();
 			result.main_group.root = result;
-			Status.init( result );
-			Wikipedia.actionCompleted.redirect = wgPageName;
-			Wikipedia.actionCompleted.notice = "Test complete, reloading talk page in a few seconds";
+			Morebits.status.init( result );
+			Morebits.wiki.actionCompleted.redirect = wgPageName;
+			Morebits.wiki.actionCompleted.notice = "Test complete, reloading talk page in a few seconds";
 		},
 
 		setPageOptions: function(page) {
@@ -78,7 +78,7 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 		},	  
 
 		finalSaveCallback: function(page) {
-			Wikipedia.actionCompleted.redirect = page.getPageName(); // get result of redirects
+			Morebits.wiki.actionCompleted.redirect = page.getPageName(); // get result of redirects
 		},	  
 
 		initialize: function() {
@@ -108,14 +108,14 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 				.dialog({
 					width: 500,
 					autoOpen: false,
-					title: 'Test Wikipedia.page class',
+					title: 'Test Morebits.wiki.page class',
 					modal: true,
 					buttons: { 
 						"Append": function() { 
 							$(this).dialog('close');
 							Twinkle.morebitsTest.initSimpleWindow();
 							
-							var page = new Wikipedia.page(wgPageName);
+							var page = new Morebits.wiki.page(wgPageName);
 							page.setAppendText( $('#message').val() );
 							Twinkle.morebitsTest.setPageOptions(page);
 							page.append(Twinkle.morebitsTest.finalSaveCallback);
@@ -124,7 +124,7 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 							$(this).dialog('close');
 							Twinkle.morebitsTest.initSimpleWindow();
 							
-							var page = new Wikipedia.page(wgPageName);
+							var page = new Morebits.wiki.page(wgPageName);
 							page.setPrependText( $('#message').val() );
 							Twinkle.morebitsTest.setPageOptions(page);
 							page.prepend(Twinkle.morebitsTest.finalSaveCallback);
@@ -137,7 +137,7 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 							$(this).dialog('close');
 							Twinkle.morebitsTest.initSimpleWindow();
 							
-							var page = new Wikipedia.page(wgPageName);
+							var page = new Morebits.wiki.page(wgPageName);
 							page.setCallbackParameters( {
 								beforeText: $('#beforeText').val(), 
 								newText: $('#message').val()
@@ -149,7 +149,7 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 							$(this).dialog('close');
 							Twinkle.morebitsTest.initSimpleWindow();
 							
-							var page = new Wikipedia.page(wgPageName);
+							var page = new Morebits.wiki.page(wgPageName);
 							page.setCallbackParameters( {
 								newText: $('#message').val()
 								});

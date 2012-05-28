@@ -14,7 +14,7 @@ Twinkle.arv = function twinklearv() {
 		return;
 	}
 
-	var title = isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
+	var title = Morebits.isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
 
 	twAddPortletLink( function(){ Twinkle.arv.callback(username); }, "ARV", "tw-arv", title );
 };
@@ -29,7 +29,7 @@ Twinkle.arv.callback = function ( uid ) {
 		return;
 	}
 
-	var Window = new SimpleWindow( 600, 500 );
+	var Window = new Morebits.simpleWindow( 600, 500 );
 	Window.setTitle( "Advance Reporting and Vetting" ); //Backronym
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Guide to AIV", "WP:GAIV" );
@@ -37,7 +37,7 @@ Twinkle.arv.callback = function ( uid ) {
 	Window.addFooterLink( "About SPI", "WP:SPI" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#arv" );
 
-	var form = new QuickForm( Twinkle.arv.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.arv.callback.evaluate );
 	var categories = form.append( {
 			type: 'select',
 			name: 'category',
@@ -103,7 +103,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 	case 'aiv':
 		/* falls through */
 	default:
-		work_area = new QuickForm.element( { 
+		work_area = new Morebits.quickForm.element( { 
 				type: 'field',
 				label: 'Report user for vandalism',
 				name: 'work_area'
@@ -113,7 +113,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'page',
 				label: 'Primary linked page: ',
 				tooltip: 'Leave blank to not link to the page in the report',
-				value: QueryString.exists( 'vanarticle' ) ? QueryString.get( 'vanarticle' ) : '',
+				value: Morebits.queryString.exists( 'vanarticle' ) ? Morebits.queryString.get( 'vanarticle' ) : '',
 				event: function(e) {
 					var value = e.target.value;
 					var root = e.target.form;
@@ -130,8 +130,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'badid',
 				label: 'Revision ID for target page when vandalised: ',
 				tooltip: 'Leave blank for no diff link',
-				value: QueryString.exists( 'vanarticlerevid' ) ? QueryString.get( 'vanarticlerevid' ) : '',
-				disabled: !QueryString.exists( 'vanarticle' ),
+				value: Morebits.queryString.exists( 'vanarticlerevid' ) ? Morebits.queryString.get( 'vanarticlerevid' ) : '',
+				disabled: !Morebits.queryString.exists( 'vanarticle' ),
 				event: function(e) {
 					var value = e.target.value;
 					var root = e.target.form;
@@ -143,8 +143,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'goodid',
 				label: 'Last good revision ID before vandalism of target page: ',
 				tooltip: 'Leave blank for diff link to previous revision',
-				value: QueryString.exists( 'vanarticlegoodrevid' ) ? QueryString.get( 'vanarticlegoodrevid' ) : '',
-				disabled: !QueryString.exists( 'vanarticle' ) || QueryString.exists( 'vanarticlerevid' )
+				value: Morebits.queryString.exists( 'vanarticlegoodrevid' ) ? Morebits.queryString.get( 'vanarticlegoodrevid' ) : '',
+				disabled: !Morebits.queryString.exists( 'vanarticle' ) || Morebits.queryString.exists( 'vanarticlerevid' )
 			} );
 		work_area.append( {
 				type: 'checkbox',
@@ -161,7 +161,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					{ 
 						label: 'Evidently a vandalism-only account',
 						value: 'vandalonly',
-						disabled: isIPAddress( root.uid.value )
+						disabled: Morebits.isIPAddress( root.uid.value )
 					},
 					{ 
 						label: 'Account is evidently a spambot or a compromised account',
@@ -182,7 +182,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'username':
-		work_area = new QuickForm.element( { 
+		work_area = new Morebits.quickForm.element( { 
 				type: 'field',
 				label: 'Report username violation',
 				name: 'work_area'
@@ -228,7 +228,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 		break;
 
 	case 'puppet':
-		work_area = new QuickForm.element( { 
+		work_area = new Morebits.quickForm.element( { 
 				type: 'field',
 				label: 'Report suspected sockpuppet',
 				name: 'work_area'
@@ -266,7 +266,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
 	case 'sock':
-		work_area = new QuickForm.element( { 
+		work_area = new Morebits.quickForm.element( { 
 				type: 'field',
 				label: 'Report suspected sockpuppeteer',
 				name: 'work_area'
@@ -371,13 +371,13 @@ Twinkle.arv.callback.evaluate = function(e) {
 			reason += ". ~~~~";
 			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
 
-			SimpleWindow.setButtonsEnabled( false );
-			Status.init( form );
+			Morebits.simpleWindow.setButtonsEnabled( false );
+			Morebits.status.init( form );
 
-			Wikipedia.actionCompleted.redirect = "Wikipedia:Administrator intervention against vandalism";
-			Wikipedia.actionCompleted.notice = "Reporting complete";
+			Morebits.wiki.actionCompleted.redirect = "Wikipedia:Administrator intervention against vandalism";
+			Morebits.wiki.actionCompleted.notice = "Reporting complete";
 
-			var aivPage = new Wikipedia.page( 'Wikipedia:Administrator intervention against vandalism', 'Processing AIV request' );
+			var aivPage = new Morebits.wiki.page( 'Wikipedia:Administrator intervention against vandalism', 'Processing AIV request' );
 			aivPage.setPageSection( 1 );
 			aivPage.setFollowRedirect( true );
 			
@@ -391,7 +391,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				}
 				aivPage.getStatusElement().status( 'Adding new report...' );
 				aivPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd') );
-				aivPage.setAppendText( '\n*{{' + ( isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '}} &ndash; ' + reason );
+				aivPage.setAppendText( '\n*{{' + ( Morebits.isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '}} &ndash; ' + reason );
 				aivPage.append();
 			} );
 			break;
@@ -421,13 +421,13 @@ Twinkle.arv.callback.evaluate = function(e) {
 			reason += "~~~~";
 			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
 
-			SimpleWindow.setButtonsEnabled( false );
-			Status.init( form );
+			Morebits.simpleWindow.setButtonsEnabled( false );
+			Morebits.status.init( form );
 
-			Wikipedia.actionCompleted.redirect = "Wikipedia:Usernames for administrator attention";
-			Wikipedia.actionCompleted.notice = "Reporting complete";
+			Morebits.wiki.actionCompleted.redirect = "Wikipedia:Usernames for administrator attention";
+			Morebits.wiki.actionCompleted.notice = "Reporting complete";
 
-			var uaaPage = new Wikipedia.page( 'Wikipedia:Usernames for administrator attention', 'Processing UAA request' );
+			var uaaPage = new Morebits.wiki.page( 'Wikipedia:Usernames for administrator attention', 'Processing UAA request' );
 			uaaPage.setFollowRedirect( true );
 
 			uaaPage.load( function() {
@@ -466,8 +466,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 			sockParameters.uid = puppetReport ? form.sockmaster.value.trimRight() : uid;
 			sockParameters.sockpuppets = puppetReport ? [uid] : $.map( $('input:text[@name=sockpuppet]',form), function(o){ return $(o).val(); });
 
-			SimpleWindow.setButtonsEnabled( false );
-			Status.init( form );
+			Morebits.simpleWindow.setButtonsEnabled( false );
+			Morebits.status.init( form );
 			Twinkle.arv.processSock( sockParameters );
 			break;
 
@@ -475,7 +475,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 };
 
 Twinkle.arv.processSock = function( params ) {
-	Wikipedia.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
+	Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
 	
 	// notify all user accounts if requested
 	if (params.notify && params.sockpuppets.length>0) {
@@ -484,13 +484,13 @@ Twinkle.arv.processSock = function( params ) {
 		var notifyText = "\n\n{{subst:socksuspectnotice|1=" + params.uid + "}} ~~~~";
 		
 		// notify user's master account
-		var masterTalkPage = new Wikipedia.page( 'User talk:' + params.uid, 'Notifying suspected sockpuppeteer' );
+		var masterTalkPage = new Morebits.wiki.page( 'User talk:' + params.uid, 'Notifying suspected sockpuppeteer' );
 		masterTalkPage.setFollowRedirect( true );
 		masterTalkPage.setEditSummary( notifyEditSummary );
 		masterTalkPage.setAppendText( notifyText );
 		masterTalkPage.append();
 
-		var statusIndicator = new Status( 'Notifying suspected sockpuppets', '0%' );
+		var statusIndicator = new Morebits.status( 'Notifying suspected sockpuppets', '0%' );
 		var total = params.sockpuppets.length;
 		var current =   0;
 		
@@ -508,7 +508,7 @@ Twinkle.arv.processSock = function( params ) {
 
 		// notify each puppet account
 		for( var i = 0; i < socks.length; ++i ) {
-			var sockTalkPage = new Wikipedia.page( 'User talk:' + socks[i], "Notification for " +  socks[i] );
+			var sockTalkPage = new Morebits.wiki.page( 'User talk:' + socks[i], "Notification for " +  socks[i] );
 			sockTalkPage.setFollowRedirect( true );
 			sockTalkPage.setEditSummary( notifyEditSummary );
 			sockTalkPage.setAppendText( notifyText );
@@ -519,7 +519,7 @@ Twinkle.arv.processSock = function( params ) {
 	// prepare the SPI report
 	var text = "\n\n{{subst:SPI report|socksraw=" +
 		params.sockpuppets.map( function(v) { 
-				return "* {{" + ( isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "}}";
+				return "* {{" + ( Morebits.isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "}}";
 			} ).join( "\n" ) + "\n|evidence=" + params.evidence + " \n";
 		
 	if ( params.checkuser ) {
@@ -529,14 +529,14 @@ Twinkle.arv.processSock = function( params ) {
 
 	var reportpage = 'Wikipedia:Sockpuppet investigations/' + params.uid;
 
-	Wikipedia.actionCompleted.redirect = reportpage;
-	Wikipedia.actionCompleted.notice = "Reporting complete";
+	Morebits.wiki.actionCompleted.redirect = reportpage;
+	Morebits.wiki.actionCompleted.notice = "Reporting complete";
 
-	var spiPage = new Wikipedia.page( reportpage, 'Retrieving discussion page' );
+	var spiPage = new Morebits.wiki.page( reportpage, 'Retrieving discussion page' );
 	spiPage.setFollowRedirect( true );
 	spiPage.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ Twinkle.getPref('summaryAd') );
 	spiPage.setAppendText( text );
 	spiPage.append();
 	
-	Wikipedia.removeCheckpoint();  // all page updates have been started
+	Morebits.wiki.removeCheckpoint();  // all page updates have been started
 };

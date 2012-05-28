@@ -29,12 +29,12 @@ Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
 
 // the parameter is used when invoking unlink from admin speedy
 Twinkle.unlink.callback = function(presetReason) {
-	var Window = new SimpleWindow( 800, 400 );
+	var Window = new Morebits.simpleWindow( 800, 400 );
 	Window.setTitle( "Unlink backlinks" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#unlink" );
 
-	var form = new QuickForm( Twinkle.unlink.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.unlink.callback.evaluate );
 	form.append( {
 		type: 'textarea',
 		name: 'reason',
@@ -49,8 +49,8 @@ Twinkle.unlink.callback = function(presetReason) {
 			'list': [ 'backlinks', 'imageusage' ],
 			'bltitle': mw.config.get('wgPageName'),
 			'iutitle': mw.config.get('wgPageName'),
-			'bllimit': userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
-			'iulimit': userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
+			'bllimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
+			'iulimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
 			'blnamespace': Twinkle.getPref('unlinkNamespaces') // Main namespace and portal namespace only, keep on talk pages.
 		};
 	} else {
@@ -59,17 +59,17 @@ Twinkle.unlink.callback = function(presetReason) {
 			'list': 'backlinks',
 			'bltitle': mw.config.get('wgPageName'),
 			'blfilterredir': 'nonredirects',
-			'bllimit': userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
+			'bllimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
 			'blnamespace': Twinkle.getPref('unlinkNamespaces') // Main namespace and portal namespace only, keep on talk pages.
 		};
 	}
-	var wikipedia_api = new Wikipedia.api( 'Grabbing backlinks', query, Twinkle.unlink.callbacks.display.backlinks );
+	var wikipedia_api = new Morebits.wiki.api( 'Grabbing backlinks', query, Twinkle.unlink.callbacks.display.backlinks );
 	wikipedia_api.params = { form: form, Window: Window, image: mw.config.get('wgNamespaceNumber') === 6 };
 	wikipedia_api.post();
 
 	var root = document.createElement( 'div' );
 	root.style.padding = '15px';  // just so it doesn't look broken
-	Status.init( root );
+	Morebits.status.init( root );
 	wikipedia_api.statelem.status( "loading..." );
 	Window.setContent( root );
 	Window.display();
@@ -82,14 +82,14 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	Twinkle.unlink.imageusagedone = 0;
 
 	function processunlink(pages, imageusage) {
-		var statusIndicator = new Status((imageusage ? 'Unlinking instances of file usage' : 'Unlinking backlinks'), '0%');
+		var statusIndicator = new Morebits.status((imageusage ? 'Unlinking instances of file usage' : 'Unlinking backlinks'), '0%');
 		var total = pages.length;  // removing doubling of this number - no apparent reason for it
 
-		Wikipedia.addCheckpoint();
+		Morebits.wiki.addCheckpoint();
 
 		if( !pages.length ) {
 			statusIndicator.info( '100% (completed)' );
-			Wikipedia.removeCheckpoint();
+			Morebits.wiki.removeCheckpoint();
 			return;
 		}
 
@@ -98,7 +98,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 		for (var i = 0; i < pages.length; ++i)
 		{
 			var myparams = $.extend({}, params);
-			var articlepage = new Wikipedia.page(pages[i], 'Unlinking in article "' + pages[i] + '"');
+			var articlepage = new Morebits.wiki.page(pages[i], 'Unlinking in article "' + pages[i] + '"');
 			articlepage.setCallbackParameters(myparams);
 			articlepage.load(imageusage ? Twinkle.unlink.callbacks.unlinkImageInstances : Twinkle.unlink.callbacks.unlinkBacklinks);
 		}
@@ -113,16 +113,16 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 		imageusage = Twinkle.unlink.getChecked2(event.target.imageusage);
 	}
 
-	SimpleWindow.setButtonsEnabled( false );
-	Status.init( event.target );
-	Wikipedia.addCheckpoint();
+	Morebits.simpleWindow.setButtonsEnabled( false );
+	Morebits.status.init( event.target );
+	Morebits.wiki.addCheckpoint();
 	if (backlinks) {
 		processunlink(backlinks, false);
 	}
 	if (imageusage) {
 		processunlink(imageusage, true);
 	}
-	Wikipedia.removeCheckpoint();
+	Morebits.wiki.removeCheckpoint();
 };
 
 Twinkle.unlink.backlinksdone = 0;
@@ -151,7 +151,7 @@ Twinkle.unlink.callbacks = {
 					apiobj.params.form.append( { type:'header', label: 'File usage' } );
 					namespaces = [];
 					$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
-						namespaces.push(Wikipedia.namespacesFriendly[v]);
+						namespaces.push(Morebits.wikipedia.namespacesFriendly[v]);
 					});
 					apiobj.params.form.append( {
 						type: 'div',
@@ -183,7 +183,7 @@ Twinkle.unlink.callbacks = {
 				apiobj.params.form.append( { type:'header', label: 'Backlinks' } );
 				namespaces = [];
 				$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
-					namespaces.push(Wikipedia.namespacesFriendly[v]);
+					namespaces.push(Morebits.wikipedia.namespacesFriendly[v]);
 				});
 				apiobj.params.form.append( {
 					type: 'div',
@@ -221,13 +221,13 @@ Twinkle.unlink.callbacks = {
 		text = oldtext = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
 
-		var wikiPage = new Mediawiki.Page(text);
+		var wikiPage = new Morebits.wikitext.page(text);
 		wikiPage.removeLink(mw.config.get('wgPageName'));
 		text = wikiPage.getText();
 		if (text === oldtext) {
 			// Nothing to do, return
 			Twinkle.unlink.callbacks.success(pageobj);
-			Wikipedia.actionCompleted();
+			Morebits.wiki.actionCompleted();
 			return;
 		}
 
@@ -241,13 +241,13 @@ Twinkle.unlink.callbacks = {
 		text = oldtext = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
 
-		var wikiPage = new Mediawiki.Page(text);
+		var wikiPage = new Morebits.wikitext.page(text);
 		wikiPage.commentOutImage(mw.config.get('wgTitle'), 'Commented out');
 		text = wikiPage.getText();
 		if (text === oldtext) {
 			// Nothing to do, return
 			Twinkle.unlink.callbacks.success(pageobj);
-			Wikipedia.actionCompleted();
+			Morebits.wiki.actionCompleted();
 			return;
 		}
 
@@ -263,7 +263,7 @@ Twinkle.unlink.callbacks = {
 		params.globalstatus.update( now );
 		if((params.imageusage ? Twinkle.unlink.imageusagedone : Twinkle.unlink.backlinksdone) >= total) {
 			params.globalstatus.info( now + ' (completed)' );
-			Wikipedia.removeCheckpoint();
+			Morebits.wiki.removeCheckpoint();
 		}
 	}
 };

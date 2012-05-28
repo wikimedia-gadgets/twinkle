@@ -8,19 +8,19 @@
  */
 
 Twinkle.shared = function friendlyshared() {
-	if( mw.config.get('wgNamespaceNumber') === 3 && isIPAddress(mw.config.get('wgTitle')) ) {
+	if( mw.config.get('wgNamespaceNumber') === 3 && Morebits.isIPAddress(mw.config.get('wgTitle')) ) {
 		var username = mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
 		twAddPortletLink( function(){ Twinkle.shared.callback(username); }, "Shared IP", "friendly-shared", "Shared IP tagging" );
 	}
 };
 
 Twinkle.shared.callback = function friendlysharedCallback( uid ) {
-	var Window = new SimpleWindow( 600, 400 );
+	var Window = new Morebits.simpleWindow( 600, 400 );
 	Window.setTitle( "Shared IP address tagging" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#shared" );
 
-	var form = new QuickForm( Twinkle.shared.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.shared.callback.evaluate );
 
 	var div = form.append( { type: 'div', id: 'sharedip-templatelist' } );
 	div.append( { type: 'header', label: 'Shared IP address templates' } );
@@ -126,7 +126,7 @@ Twinkle.shared.callbacks = {
 		for( var i=0; i < Twinkle.shared.standardList.length; i++ ) {
 			tagRe = new RegExp( '(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im' );
 			if( tagRe.exec( pageText ) ) {
-				Status.warn( 'Info', 'Found {{' + Twinkle.shared.standardList[i].value + '}} on the user\'s talk page already...aborting' );
+				Morebits.status.warn( 'Info', 'Found {{' + Twinkle.shared.standardList[i].value + '}} on the user\'s talk page already...aborting' );
 				found = true;
 			}
 		}
@@ -135,7 +135,7 @@ Twinkle.shared.callbacks = {
 			return;
 		}
 
-		Status.info( 'Info', 'Will add the shared IP address template to the top of the user\'s talk page.' );
+		Morebits.status.info( 'Info', 'Will add the shared IP address template to the top of the user\'s talk page.' );
 		text += params.value + '|' + params.organization;
 		if( params.value === 'shared IP edu' && params.contact !== '') {
 			text += '|' + params.contact;
@@ -175,13 +175,13 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 		contact: e.target.contact.value
 	};
 
-	SimpleWindow.setButtonsEnabled( false );
-	Status.init( e.target );
+	Morebits.simpleWindow.setButtonsEnabled( false );
+	Morebits.status.init( e.target );
 
-	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "Tagging complete, reloading talk page in a few seconds";
+	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.notice = "Tagging complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "User talk page modification");
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "User talk page modification");
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.shared.callbacks.main);

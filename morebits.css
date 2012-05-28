@@ -8,7 +8,7 @@
  * The latest development source is available at [https://github.com/azatoth/twinkle/blob/master/morebits.css].
  */
 
-/* Status */
+/* Morebits.status */
 
 .tw_status_status {
 	color: #4682B4;
@@ -27,7 +27,7 @@
 	font-weight: bold;
 }
 
-/* QuickForm */
+/* Morebits.quickForm */
 
 form.quickform
 {
@@ -105,7 +105,7 @@ form.quickform .tooltipButton
 }
 
 
-/* Scrollbox styles, for use within QuickForm */
+/* Scrollbox styles, for use within Morebits.quickForm */
 
 div.quickform-scrollbox
 {
@@ -215,7 +215,7 @@ div.morebits-previewbox span.editsection
 }
 
 
-/* SimpleWindow */
+/* Morebits.simpleWindow */
 
 .morebits-dialog {
 	border: 1px #666 solid;

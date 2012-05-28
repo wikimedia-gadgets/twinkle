@@ -8,8 +8,8 @@
  */
 
 Twinkle.welcome = function friendlywelcome() {
-	if( QueryString.exists( 'friendlywelcome' ) ) {
-		if( QueryString.get( 'friendlywelcome' ) === 'auto' ) {
+	if( Morebits.queryString.exists( 'friendlywelcome' ) ) {
+		if( Morebits.queryString.get( 'friendlywelcome' ) === 'auto' ) {
 			Twinkle.welcome.auto();
 		} else {
 			Twinkle.welcome.semiauto();
@@ -20,7 +20,7 @@ Twinkle.welcome = function friendlywelcome() {
 };
 
 Twinkle.welcome.auto = function() {
-	if( QueryString.get( 'action' ) !== 'edit' ) {
+	if( Morebits.queryString.get( 'action' ) !== 'edit' ) {
 		// userpage not empty, aborting auto-welcome
 		return;
 	}
@@ -33,7 +33,7 @@ Twinkle.welcome.semiauto = function() {
 };
 
 Twinkle.welcome.normal = function() {
-	if( QueryString.exists( 'diff' ) ) {
+	if( Morebits.queryString.exists( 'diff' ) ) {
 		// check whether the contributors' talk pages exist yet
 		var $oList = $("div#mw-diff-otitle2 span.mw-usertoollinks a.new:contains(talk)").first();
 		var $nList = $("div#mw-diff-ntitle2 span.mw-usertoollinks a.new:contains(talk)").first();
@@ -57,7 +57,7 @@ Twinkle.welcome.normal = function() {
 				var oHref = $oList.attr("href");
 
 				var oWelcomeNode = welcomeNode.cloneNode( true );
-				oWelcomeNode.firstChild.setAttribute( 'href', oHref + '&' + QueryString.create( { 'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode')==='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
+				oWelcomeNode.firstChild.setAttribute( 'href', oHref + '&' + Morebits.queryString.create( { 'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode')==='auto'?'auto':'norm' } ) + '&' + Morebits.queryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
 				$oList[0].parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );
 				$oList[0].parentNode.parentNode.appendChild( oWelcomeNode );
 			}
@@ -66,7 +66,7 @@ Twinkle.welcome.normal = function() {
 				var nHref = $nList.attr("href");
 
 				var nWelcomeNode = welcomeNode.cloneNode( true );
-				nWelcomeNode.firstChild.setAttribute( 'href', nHref + '&' + QueryString.create( { 'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode')==='auto'?'auto':'norm' } ) + '&' + QueryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
+				nWelcomeNode.firstChild.setAttribute( 'href', nHref + '&' + Morebits.queryString.create( { 'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode')==='auto'?'auto':'norm' } ) + '&' + Morebits.queryString.create( { 'vanarticle': mw.config.get( 'wgPageName' ).replace(/_/g, ' ') } ) );
 				$nList[0].parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );
 				$nList[0].parentNode.parentNode.appendChild( nWelcomeNode );
 			}
@@ -79,18 +79,18 @@ Twinkle.welcome.normal = function() {
 };
 
 Twinkle.welcome.welcomeUser = function welcomeUser() {
-	Status.init( document.getElementById('bodyContent') );
+	Morebits.status.init( document.getElementById('bodyContent') );
 
 	var params = {
 		value: Twinkle.getFriendlyPref('quickWelcomeTemplate'),
-		article: QueryString.exists( 'vanarticle' ) ? QueryString.get( 'vanarticle' ) : '',
+		article: Morebits.queryString.exists( 'vanarticle' ) ? Morebits.queryString.get( 'vanarticle' ) : '',
 		mode: 'auto'
 	};
 
-	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
+	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "User talk page modification");
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "User talk page modification");
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);
@@ -101,13 +101,13 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 		return;
 	}
 
-	var Window = new SimpleWindow( 600, 420 );
+	var Window = new Morebits.simpleWindow( 600, 420 );
 	Window.setTitle( "Welcome user" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Welcoming Committee", "WP:WC" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#welcome" );
 
-	var form = new QuickForm( Twinkle.welcome.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.welcome.callback.evaluate );
 
 	form.append({
 			type: 'select',
@@ -115,8 +115,8 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 			label: 'Type of welcome: ',
 			event: Twinkle.welcome.populateWelcomeList,
 			list: [
-				{ type: 'option', value: 'standard', label: 'Standard welcomes', selected: !isIPAddress(mw.config.get('wgTitle')) },
-				{ type: 'option', value: 'anonymous', label: 'IP user welcomes', selected: isIPAddress(mw.config.get('wgTitle')) },
+				{ type: 'option', value: 'standard', label: 'Standard welcomes', selected: !Morebits.isIPAddress(mw.config.get('wgTitle')) },
+				{ type: 'option', value: 'anonymous', label: 'IP user welcomes', selected: Morebits.isIPAddress(mw.config.get('wgTitle')) },
 				{ type: 'option', value: 'wikiProject', label: 'WikiProject welcomes' },
 				{ type: 'option', value: 'nonEnglish', label: 'Non-English welcomes' }
 			]
@@ -128,7 +128,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 			type: 'input',
 			name: 'article',
 			label: '* Linked article (if supported by template):',
-			value:( QueryString.exists( 'vanarticle' ) ? QueryString.get( 'vanarticle' ) : '' ),
+			value:( Morebits.queryString.exists( 'vanarticle' ) ? Morebits.queryString.get( 'vanarticle' ) : '' ),
 			tooltip: 'An article might be linked from within the welcome if the template supports it. Leave empty for no article to be linked.  Templates that support a linked article are marked with an asterisk.'
 		} );
 
@@ -156,7 +156,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 	var type = e.target.value;
 	var $workarea = $(e.target.form).find("div#welcomeWorkArea");
 
-	var div = new QuickForm.element({
+	var div = new Morebits.quickForm.element({
 		type: "div",
 		id: "welcomeWorkArea"
 	});
@@ -630,7 +630,7 @@ Twinkle.welcome.getTemplateWikitext = function(template, article) {
 
 Twinkle.welcome.callbacks = {
 	preview: function(form) {
-		var previewDialog = new SimpleWindow(750, 400);
+		var previewDialog = new Morebits.simpleWindow(750, 400);
 		previewDialog.setTitle("Welcome template preview");
 		previewDialog.setScriptName("Welcome user");
 		previewDialog.setModality(true);
@@ -640,7 +640,7 @@ Twinkle.welcome.callbacks = {
 		previewdiv.style.fontSize = "small";
 		previewDialog.setContent(previewdiv);
 
-		var previewer = new Wikipedia.preview(previewdiv);
+		var previewer = new Morebits.wiki.preview(previewdiv);
 		previewer.beginRender(Twinkle.welcome.getTemplateWikitext(form.getChecked("template"), form.article.value));
 
 		var submit = document.createElement("input");
@@ -660,8 +660,8 @@ Twinkle.welcome.callbacks = {
 
 		// abort if mode is auto and form is not empty
 		if( pageobj.exists() && params.mode === 'auto' ) {
-			Status.info( 'Warning', 'User talk page not empty; aborting automatic welcome' );
-			Wikipedia.actionCompleted.event();
+			Morebits.status.info( 'Warning', 'User talk page not empty; aborting automatic welcome' );
+			Morebits.wiki.actionCompleted.event();
 			return;
 		}
 
@@ -691,13 +691,13 @@ Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) 
 		mode: 'manual'
 	};
 
-	SimpleWindow.setButtonsEnabled( false );
-	Status.init( form );
+	Morebits.simpleWindow.setButtonsEnabled( false );
+	Morebits.status.init( form );
 
-	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
+	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "User talk page modification");
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "User talk page modification");
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);

@@ -12,7 +12,7 @@
 
 Twinkle.tag = function friendlytag() {
 	// redirect tagging
-	if( Wikipedia.isPageRedirect() ) {
+	if( Morebits.wiki.isPageRedirect() ) {
 		Twinkle.tag.mode = 'redirect';
 		twAddPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Tag redirect" );
 	}
@@ -29,12 +29,12 @@ Twinkle.tag = function friendlytag() {
 };
 
 Twinkle.tag.callback = function friendlytagCallback( uid ) {
-	var Window = new SimpleWindow( 630, (Twinkle.tag.mode === "article") ? 450 : 400 );
+	var Window = new Morebits.simpleWindow( 630, (Twinkle.tag.mode === "article") ? 450 : 400 );
 	Window.setScriptName( "Twinkle" );
 	// anyone got a good policy/guideline/info page/instructional page link??
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#tag" );
 
-	var form = new QuickForm( Twinkle.tag.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.tag.callback.evaluate );
 
 	switch( Twinkle.tag.mode ) {
 		case 'article':
@@ -201,7 +201,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 
 	// categorical sort order
 	if (sortorder === "cat") {
-		var div = new QuickForm.element({
+		var div = new Morebits.quickForm.element({
 			type: "div",
 			id: "tagWorkArea"
 		});
@@ -229,7 +229,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 				doCategoryCheckboxes(subdiv, content);
 			} else {
 				$.each(content, function(subtitle, subcontent) {
-					subdiv.append({ type: "div", label: [ htmlNode("b", subtitle) ] });
+					subdiv.append({ type: "div", label: [ Morebits.htmlNode("b", subtitle) ] });
 					doCategoryCheckboxes(subdiv, subcontent);
 				});
 			}
@@ -247,7 +247,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		$.each(Twinkle.tag.article.tags, function(tag, description) {
 			checkboxes.push(makeCheckbox(tag, description));
 		});
-		var tags = new QuickForm.element({
+		var tags = new Morebits.quickForm.element({
 			type: "checkbox",
 			name: "articleTags",
 			list: checkboxes
@@ -818,13 +818,13 @@ Twinkle.tag.callbacks = {
 						tags = tags.concat( params.tags[i] );
 					}
 				} else {
-					Status.info( 'Info', 'Found {{' + params.tags[i] +
+					Morebits.status.info( 'Info', 'Found {{' + params.tags[i] +
 						'}} on the article already...excluding' );
 				}
 			}
 
 			if( params.group && groupableTags.length >= 3 ) {
-				Status.info( 'Info', 'Grouping supported tags into {{multiple issues}}' );
+				Morebits.status.info( 'Info', 'Grouping supported tags into {{multiple issues}}' );
 
 				groupableTags.sort();
 				tagText += '{{multiple issues';
@@ -851,7 +851,7 @@ Twinkle.tag.callbacks = {
 				if( !tagRe.exec( pageText ) ) {
 					tags = tags.concat( params.tags[i] );
 				} else {
-					Status.info( 'Info', 'Found {{' + params.tags[i] +
+					Morebits.status.info( 'Info', 'Found {{' + params.tags[i] +
 						'}} on the redirect already...excluding' );
 				}
 			}
@@ -880,7 +880,7 @@ Twinkle.tag.callbacks = {
 						var reason = prompt('Please enter a more specific reason why the article requires cleanup.  \n' +
 							"This information is required.  To skip the {{cleanup}} tag, click Cancel.", "");
 						if (reason === null || reason === "") {
-							Status.warn("Notice", "{{cleanup}} tag skipped by user");
+							Morebits.status.warn("Notice", "{{cleanup}} tag skipped by user");
 							continue;
 						} else {
 							currentTag += '|reason=' + reason;
@@ -1164,16 +1164,16 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		return;
 	}
 
-	SimpleWindow.setButtonsEnabled( false );
-	Status.init( form );
+	Morebits.simpleWindow.setButtonsEnabled( false );
+	Morebits.status.init( form );
 
-	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "Tagging complete, reloading article in a few seconds";
+	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.notice = "Tagging complete, reloading article in a few seconds";
 	if (Twinkle.tag.mode === 'redirect') {
-		Wikipedia.actionCompleted.followRedirect = false;
+		Morebits.wiki.actionCompleted.followRedirect = false;
 	}
 
-	var wikipedia_page = new Wikipedia.page(mw.config.get('wgPageName'), "Tagging " + Twinkle.tag.mode);
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging " + Twinkle.tag.mode);
 	wikipedia_page.setCallbackParameters(params);
 	switch (Twinkle.tag.mode) {
 		case 'article':

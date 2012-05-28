@@ -317,4 +317,4 @@ function twAddPortletLink( task, text, id, tooltip )
 }
 
 // Check if account is experienced enough to use Twinkle
-var twinkleUserAuthorized = userIsInGroup( "autoconfirmed" ) || userIsInGroup( "confirmed" );
+var twinkleUserAuthorized = Morebits.userIsInGroup( "autoconfirmed" ) || Morebits.userIsInGroup( "confirmed" );

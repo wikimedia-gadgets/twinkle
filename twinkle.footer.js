@@ -83,7 +83,7 @@ Twinkle.load = function () {
 	Twinkle.unlink();
 	Twinkle.config.init();
 	Twinkle.fluff.init();
-	if ( userIsInGroup('sysop') ) {
+	if ( Morebits.userIsInGroup('sysop') ) {
 		Twinkle.delimages();
 		Twinkle.deprod();
 		Twinkle.batchdelete();

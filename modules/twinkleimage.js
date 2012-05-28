@@ -21,13 +21,13 @@ Twinkle.image.callback = function twinkleimageCallback() {
 		alert("Your account is too new to use Twinkle.");
 		return;
 	}
-	var Window = new SimpleWindow( 600, 300 );
+	var Window = new Morebits.simpleWindow( 600, 300 );
 	Window.setTitle( "File for dated speedy deletion" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Speedy deletion policy", "WP:CSD" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#image" );
 
-	var form = new QuickForm( Twinkle.image.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.image.callback.evaluate );
 	form.append( {
 			type: 'checkbox',
 			list: [
@@ -113,7 +113,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 	var value = event.target.values;
 	var root = event.target.form;
-	var work_area = new QuickForm.element( {
+	var work_area = new Morebits.quickForm.element( {
 			type: 'div',
 			name: 'work_area'
 		} );
@@ -236,14 +236,14 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		'old_image': old_image,
 		'lognomination': lognomination
 	};
-	SimpleWindow.setButtonsEnabled( false );
-	Status.init( event.target );
+	Morebits.simpleWindow.setButtonsEnabled( false );
+	Morebits.status.init( event.target );
 
-	Wikipedia.actionCompleted.redirect = mw.config.get('wgPageName');
-	Wikipedia.actionCompleted.notice = "Tagging complete";
+	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.notice = "Tagging complete";
 
 	// Tagging image
-	var wikipedia_page = new Wikipedia.page( mw.config.get('wgPageName'), 'Tagging file with deletion tag' );
+	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'Tagging file with deletion tag' );
 	wikipedia_page.setCallbackParameters( params );
 	wikipedia_page.load( Twinkle.image.callbacks.taggingImage );
 
@@ -259,7 +259,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		// No auto-notification, display what was going to be added.
 		var noteData = document.createElement( 'pre' );
 		noteData.appendChild( document.createTextNode( "{{subst:di-" + type + "-notice|1=" + mw.config.get('wgTitle') + "}} ~~~~" ) );
-		Status.info( 'Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement( 'br' ),  noteData ] );
+		Morebits.status.info( 'Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement( 'br' ),  noteData ] );
 	}
 };
 
@@ -313,7 +313,7 @@ Twinkle.image.callbacks = {
 	userNotification: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
 		var initialContrib = pageobj.getCreator();
-		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+		var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n{{subst:di-" + params.type + "-notice|1=" + mw.config.get('wgTitle');
 		if (params.type === 'no permission') {
 			notifytext += params.source ? "|source=" + params.source : "";

@@ -11,19 +11,19 @@ Twinkle.delimages = function twinkledeli() {
 	if( mw.config.get( 'wgNamespaceNumber' ) < 0 || !mw.config.get( 'wgCurRevisionId' ) ) {
 		return;
 	}
-	if( userIsInGroup( 'sysop' ) ) {
+	if( Morebits.userIsInGroup( 'sysop' ) ) {
 		twAddPortletLink( Twinkle.delimages.callback, "Deli-batch", "tw-deli", "Delete files found on page" );
 	}
 };
 
 Twinkle.delimages.unlinkCache = {};
 Twinkle.delimages.callback = function twinkledeliCallback() {
-	var Window = new SimpleWindow( 800, 400 );
+	var Window = new Morebits.simpleWindow( 800, 400 );
 	Window.setTitle( "Batch file deletion" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#delimages" );
 
-	var form = new QuickForm( Twinkle.delimages.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.delimages.callback.evaluate );
 	form.append( {
 		type: 'checkbox',
 		list: [
@@ -67,7 +67,7 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 			'gimlimit': 'max'
 		};
 	}
-	var wikipedia_api = new Wikipedia.api( 'Grabbing files', query, function( self ) {
+	var wikipedia_api = new Morebits.wiki.api( 'Grabbing files', query, function( self ) {
 		var xmlDoc = self.responseXML;
 		var images = $(xmlDoc).find('page[imagerepository="local"]');
 		var list = [];
@@ -102,7 +102,7 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 wikipedia_api.params = { form:form, Window:Window };
 wikipedia_api.post();
 var root = document.createElement( 'div' );
-Status.init( root );
+Morebits.status.init( root );
 Window.setContent( root );
 Window.display();
 };
@@ -120,13 +120,13 @@ Twinkle.delimages.callback.evaluate = function twinkledeliCallbackEvaluate(event
 		return;
 	}
 
-	SimpleWindow.setButtonsEnabled( false );
-	Status.init( event.target );
+	Morebits.simpleWindow.setButtonsEnabled( false );
+	Morebits.status.init( event.target );
 
 	function toCall( work ) {
 		if( work.length === 0 && Twinkle.delimages.currentDeleteCounter <= 0 && Twinkle.delimages.currentUnlinkCounter <= 0 ) {
 			window.clearInterval( Twinkle.delimages.currentdeletor );
-			Wikipedia.removeCheckpoint();
+			Morebits.wiki.removeCheckpoint();
 			return;
 		} else if( work.length !== 0 && Twinkle.delimages.currentDeleteCounter <= Twinkle.getPref('batchDeleteMinCutOff') && Twinkle.delimages.currentUnlinkCounter <= Twinkle.getPref('batchDeleteMinCutOff') ) {
 			Twinkle.delimages.unlinkCache = []; // Clear the cache
@@ -140,14 +140,14 @@ Twinkle.delimages.callback.evaluate = function twinkledeliCallbackEvaluate(event
 					'action': 'query',
 					'titles': image
 				};
-				var wikipedia_api = new Wikipedia.api( 'Checking if file ' + image + ' exists', query, Twinkle.delimages.callbacks.main );
+				var wikipedia_api = new Morebits.wiki.api( 'Checking if file ' + image + ' exists', query, Twinkle.delimages.callbacks.main );
 				wikipedia_api.params = { image:image, reason:reason, unlink_image:unlink_image, delete_image:delete_image };
 				wikipedia_api.post();
 			}
 		}
 	}
 	var work = Morebits.array.chunk( images, Twinkle.getPref('deliChunks') );
-	Wikipedia.addCheckpoint();
+	Morebits.wiki.addCheckpoint();
 	Twinkle.delimages.currentdeletor = window.setInterval( toCall, 1000, work );
 };
 Twinkle.delimages.callbacks = {
@@ -172,15 +172,15 @@ Twinkle.delimages.callbacks = {
 				'action': 'query',
 				'list': 'imageusage',
 				'iutitle': self.params.image,
-				'iulimit': userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
+				'iulimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
 			};
-			var wikipedia_api = new Wikipedia.api( 'Grabbing file links', query, Twinkle.delimages.callbacks.unlinkImageInstancesMain );
+			var wikipedia_api = new Morebits.wiki.api( 'Grabbing file links', query, Twinkle.delimages.callbacks.unlinkImageInstancesMain );
 			wikipedia_api.params = self.params;
 			wikipedia_api.post();
 		}
 		if( self.params.delete_image ) {
 
-			var imagepage = new Wikipedia.page( self.params.image, 'Deleting image');
+			var imagepage = new Morebits.wiki.page( self.params.image, 'Deleting image');
 			imagepage.setEditSummary( "Deleted because \"" + self.params.reason + "\"." + Twinkle.getPref('deletionSummaryAd'));
 			imagepage.deletePage();
 		}
@@ -197,7 +197,7 @@ Twinkle.delimages.callbacks = {
 		}
 
 		$.each( instances, function(k,title) {
-			page = new Wikipedia.page(title, "Unlinking instances on " + title);
+			page = new Morebits.wiki.page(title, "Unlinking instances on " + title);
 			page.setFollowRedirect(true);
 			page.setCallbackParameters({'image': self.params.image, 'reason': self.params.reason});
 			page.load(Twinkle.delimages.callbacks.unlinkImageInstances);
@@ -210,7 +210,7 @@ Twinkle.delimages.callbacks = {
 
 		var image = params.image.replace( /^(?:Image|File):/, '' );
 		var old_text = self.getPageText();
-		var wikiPage = new Mediawiki.Page( old_text );
+		var wikiPage = new Morebits.wikitext.page( old_text );
 		wikiPage.commentOutImage( image , 'Commented out because image was deleted' );
 		var text = wikiPage.getText();
 

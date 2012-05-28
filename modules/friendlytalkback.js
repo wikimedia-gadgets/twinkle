@@ -23,13 +23,13 @@
 			return;
 		}
 	
-		var Window = new SimpleWindow( 600, 350 );
+		var Window = new Morebits.simpleWindow( 600, 350 );
 		Window.setTitle("Talkback");
 		Window.setScriptName("Twinkle");
 		Window.addFooterLink( "About {{talkback}}", "Template:Talkback" );
 		Window.addFooterLink( "Twinkle help", "WP:TW/DOC#talkback" );
 	
-		var form = new QuickForm( callback_evaluate );
+		var form = new Morebits.quickForm( callback_evaluate );
 	
 		form.append({ type: "radio", name: "tbtarget",
 					list: [
@@ -103,7 +103,7 @@
 				break;
 			}
 		}
-		var work_area = new QuickForm.element({
+		var work_area = new Morebits.quickForm.element({
 				type: "field",
 				label: "Talkback information",
 				name: "work_area"
@@ -237,13 +237,13 @@
 			message = e.target.message.value;
 		}
 	
-		SimpleWindow.setButtonsEnabled( false );
-		Status.init( e.target );
+		Morebits.simpleWindow.setButtonsEnabled( false );
+		Morebits.status.init( e.target );
 	
-		Wikipedia.actionCompleted.redirect = fullUserTalkPageName;
-		Wikipedia.actionCompleted.notice = "Talkback complete; reloading talk page in a few seconds";
+		Morebits.wiki.actionCompleted.redirect = fullUserTalkPageName;
+		Morebits.wiki.actionCompleted.notice = "Talkback complete; reloading talk page in a few seconds";
 	
-		var talkpage = new Wikipedia.page(fullUserTalkPageName, "Adding talkback");
+		var talkpage = new Morebits.wiki.page(fullUserTalkPageName, "Adding talkback");
 		var tbPageName = (tbtarget === "mytalk") ? mw.config.get("wgUserName") : page;
 	
 		var text;
