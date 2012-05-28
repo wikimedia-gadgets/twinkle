@@ -147,10 +147,25 @@
 					});
 				noticeboard.append({
 						type: "option",
+						label: "WP:AN3 (Administrators' noticeboard/Edit warring)",
+			                        value: "Wikipedia:Administrators' noticeboard/Edit warring"
+					});
+				noticeboard.append({
+						type: "option",
 						label: "WP:ANI (Administrators' noticeboard/Incidents)",
 						selected: true,
 						value: "Wikipedia:Administrators' noticeboard/Incidents"
 					});
+				noticeboard.append({
+						type: "option",
+						label: "WP:AN3 (Administrators' noticeboard/Edit warring)",
+			                        value: "Wikipedia:Administrators' noticeboard/Edit warring"
+				        });
+				noticeboard.append({
+						type: "option",
+						label: "WP:WQA (Wikiquette assistance)",
+			                        value: "Wikipedia:Wikiquette assistance"
+				        });
 				work_area.append({
 						type:"input",
 						name:"section",
