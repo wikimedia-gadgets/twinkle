@@ -881,7 +881,7 @@ Twinkle.warn.messages = {
 			summary:"Notice: Reporting of username to WP:UAA not accepted" 
 		},
 		"uw-upincat": { 
-			label:"Informing user that one of his/her pages had accidentally been included in a content category", 
+			label:"Accidentally including user page/subpage in a content category",
 			summary:"Notice: Informing user that one of his/her pages had accidentally been included in a content category" 
 		},
 		"uw-uploadfirst": { 
