@@ -14,7 +14,7 @@ Twinkle.warn = function twinklewarn() {
 
 	// modify URL of talk page on rollback success pages
 	if( mw.config.get('wgAction') === 'rollback' ) {
-		var $vandalTalkLink = $("#mw-rollback-success .mw-usertoollinks a").first();
+		var $vandalTalkLink = $("#mw-rollback-success").find(".mw-usertoollinks a").first();
 		$vandalTalkLink.css("font-weight", "bold");
 		$vandalTalkLink.wrapInner($("<span/>").attr("title", "If appropriate, you can use Twinkle to warn the user about their edits to this page."));
 
@@ -1353,7 +1353,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		$article.prev().hide();
 		$article.before('<span id="tw-spi-article-username">Username of sock master, if known (without User:) </span>');
 	} else {
-		$("span#tw-spi-article-username").remove();
+		$("#tw-spi-article-username").remove();
 		$article.prev().show();
 	}
 };
