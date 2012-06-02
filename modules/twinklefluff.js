@@ -35,11 +35,11 @@ Twinkle.fluff = {
 
 		if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
 			//Get the username these contributions are for
-			username = decodeURIComponent(/wiki\/Special:Log\/(.+)$/.exec($('div#contentSub a[title^="Special:Log"]').last().attr("href").replace(/_/g, "%20"))[1]);
+			username = decodeURIComponent(/wiki\/Special:Log\/(.+)$/.exec($('#contentSub').find('a[title^="Special:Log"]').last().attr("href").replace(/_/g, "%20"))[1]);
 			if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 || 
 				( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) || 
 				( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
-				var list = $("div#bodyContent ul li:has(span.mw-uctop)");
+				var list = $("#bodyContent").find("ul li:has(span.mw-uctop)");
 
 				var revNode = document.createElement('strong');
 				var revLink = document.createElement('a');
@@ -96,7 +96,7 @@ Twinkle.fluff = {
 				return;
 			}
 
-			var old_rev_url = $("div#mw-diff-otitle1 strong a").attr("href");
+			var old_rev_url = $("#mw-diff-otitle1").find("strong a").attr("href");
 
 			// Lets first add a [edit this revision] link
 			var query = new Morebits.queryString( old_rev_url.split( '?', 2 )[1] );
@@ -122,7 +122,7 @@ Twinkle.fluff = {
 				// Not latest revision
 				curVersion = false;
 
-				var new_rev_url = $("div#mw-diff-ntitle1 strong a").attr("href");
+				var new_rev_url = $("#mw-diff-ntitle1").find("strong a").attr("href");
 				query = new Morebits.queryString( new_rev_url.split( '?', 2 )[1] );
 				var newrev = query.get('oldid');
 				revertToRevision = document.createElement('div');
@@ -141,7 +141,7 @@ Twinkle.fluff = {
 				return;
 			}
 			if( Twinkle.getPref('showRollbackLinks').indexOf('diff') != -1 ) {
-				var vandal = $("#mw-diff-ntitle2 a").first().text();
+				var vandal = $("#mw-diff-ntitle2").find("a").first().text();
 
 				var revertNode = document.createElement('div');
 				revertNode.setAttribute( 'id', 'tw-revert' );
