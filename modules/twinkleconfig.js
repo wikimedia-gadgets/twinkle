@@ -775,8 +775,8 @@ Twinkle.config.sections = [
 
 Twinkle.config.init = function twinkleconfigInit() {
 
-	if ((mw.config.get("wgPageName") === "Wikipedia:Twinkle/Preferences" ||
-	    (mw.config.get("wgNamespaceNumber") === 2 && mw.config.get("wgTitle").lastIndexOf("/Twinkle preferences") === (mw.config.get("wgTitle").length - 20))) &&
+	if ((mw.config.get("wgNamespaceNumber") === mw.config.get("wgNamespaceIds").project && mw.config.get("wgTitle") === "Twinkle/Preferences" ||
+	    (mw.config.get("wgNamespaceNumber") === mw.config.get("wgNamespaceIds").user && mw.config.get("wgTitle").lastIndexOf("/Twinkle preferences") === (mw.config.get("wgTitle").length - 20))) &&
 	    mw.config.get("wgAction") === "view") {
 		// create the config page at Wikipedia:Twinkle/Preferences, and at user subpages (for testing purposes)
 
@@ -970,7 +970,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						$.each(pref.enumValues, function(enumvalue, enumdisplay) {
 							var option = document.createElement("option");
 							option.setAttribute("value", enumvalue);
-							if (configgetter(pref.name) == enumvalue) {
+							if (configgetter(pref.name) === enumvalue) {
 								option.setAttribute("selected", "selected");
 							}
 							option.appendChild(document.createTextNode(enumdisplay));
@@ -1113,7 +1113,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			location.hash = location.hash;
 		}
 
-	} else if (mw.config.get("wgNamespaceNumber") === 2) {
+	} else if (mw.config.get("wgNamespaceNumber") === mw.config.get("wgNamespaceIds").user) {
 
 		var box = document.createElement("div");
 		box.setAttribute("id", "twinkle-config-headerbox");
@@ -1136,20 +1136,20 @@ Twinkle.config.init = function twinkleconfigInit() {
 				box.appendChild(document.createTextNode("You can customize Twinkle to suit your preferences by using the "));
 			}
 			link = document.createElement("a");
-			link.setAttribute("href", mw.util.wikiGetlink("Wikipedia:Twinkle/Preferences") );
+			link.setAttribute("href", mw.util.wikiGetlink(mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").project] + ":Twinkle/Preferences") );
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode(", or by editing this page."));
 			$(box).insertAfter($("#contentSub"));
 
 		} else if (mw.config.get("wgTitle").indexOf(mw.config.get("wgUserName")) === 0 &&
-				mw.config.get("wgPageName").lastIndexOf(".js") == mw.config.get("wgPageName").length - 3) {
+				mw.config.get("wgPageName").lastIndexOf(".js") === mw.config.get("wgPageName").length - 3) {
 			// place "Looking for Twinkle options?" notice
 			box.style.width = "60%";
 
 			box.appendChild(document.createTextNode("If you want to set Twinkle preferences, you can use the "));
 			link = document.createElement("a");
-			link.setAttribute("href", mw.util.wikiGetlink("Wikipedia:Twinkle/Preferences") );
+			link.setAttribute("href", mw.util.wikiGetlink(mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").project] + ":Twinkle/Preferences") );
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode("."));
@@ -1433,7 +1433,7 @@ Twinkle.config.save = function twinkleconfigSave(e) {
 
 	Morebits.wiki.actionCompleted.notice = "Save";
 
-	var userjs = "User:" + mw.config.get("wgUserName") + "/twinkleoptions.js";
+	var userjs = mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").user] + ":" + mw.config.get("wgUserName") + "/twinkleoptions.js";
 	var wikipedia_page = new Morebits.wiki.page(userjs, "Saving preferences to " + userjs);
 	wikipedia_page.setCallbackParameters(e.target);
 	wikipedia_page.load(Twinkle.config.writePrefs);
@@ -1470,7 +1470,7 @@ if (!JSON) {
 	function str(key, holder) {
 		var i, k, v, length, mind = gap, partial, value = holder[key];
 
-		if (value && typeof value === 'object' && typeof value.toJSON === 'function') {
+		if (value && typeof value === 'object' && $.isFunction(value.toJSON)) {
 			value = value.toJSON(key);
 		}
 
@@ -1488,9 +1488,9 @@ if (!JSON) {
 			}
 			gap += indent;
 			partial = [];
-			if (Object.prototype.toString.apply(value) === '[object Array]') {
+			if ($.isArray(value)) {
 				length = value.length;
-				for (i = 0; i < length; i += 1) {
+				for (i = 0; i < length; ++i) {
 					partial[i] = str(i, value) || 'null';
 				}
 				v = partial.length === 0 ? '[]' : gap ?
@@ -1517,7 +1517,7 @@ if (!JSON) {
 		}
 	}
 
-	if (typeof JSON.stringify !== 'function') {
+	if ($.isFunction(JSON.stringify)) {
 		JSON.stringify = function (value, ignoredParam1, ignoredParam2) {
 			ignoredParam1 = ignoredParam2;  // boredom
 			gap = '';
@@ -1548,12 +1548,12 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	// and it is not very robust: e.g. compare([2], ["2"]) === true, and
 	// compare({}, {}) === false, but it's good enough for our purposes here
 	var compare = function(a, b) {
-		if (Object.prototype.toString.apply(a) === "[object Array]") {
+		if ($.isArray(a)) {
 			if (a.length !== b.length) {
 				return false;
 			}
 			var asort = a.sort(), bsort = b.sort();
-			for (var i = 0; asort[i]; i++) {
+			for (var i = 0; asort[i]; ++i) {
 				// comparison of the two properties of custom lists
 				if ((typeof asort[i] === "object") && (asort[i].label !== bsort[i].label ||
 					asort[i].value !== bsort[i].value)) {
@@ -1629,12 +1629,12 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 
 			// only save those preferences that are *different* from the default
 			if (section.inFriendlyConfig) {
-				if (typeof userValue !== "undefined" && !compare(userValue, Twinkle.defaultConfig.friendly[pref.name])) {
+				if (userValue !== undefined && !compare(userValue, Twinkle.defaultConfig.friendly[pref.name])) {
 					newConfig.friendly[pref.name] = userValue;
 				}
 				foundFriendlyPrefs.push(pref.name);
 			} else {
-				if (typeof userValue !== "undefined" && !compare(userValue, Twinkle.defaultConfig.twinkle[pref.name])) {
+				if (userValue !== undefined && !compare(userValue, Twinkle.defaultConfig.twinkle[pref.name])) {
 					newConfig.twinkle[pref.name] = userValue;
 				}
 				foundTwinklePrefs.push(pref.name);

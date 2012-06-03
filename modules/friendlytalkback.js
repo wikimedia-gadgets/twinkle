@@ -190,7 +190,7 @@
 						type:"input",
 						name:"section",
 						label:"Subject of e-mail (optional)",
-						tooltip:"The subject line of the e-mail you sent.",
+						tooltip:"The subject line of the e-mail you sent."
 					});
 				break;
 		}
@@ -212,7 +212,7 @@
 		var page = null;
 		var section = e.target.section.value;
 		var uid = e.target.uid.value;
-		var fullUserTalkPageName = mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds")["user_talk"]] + ":" + uid;
+		var fullUserTalkPageName = mw.config.get("wgFormattedNamespaces")[ mw.config.get("wgNamespaceIds").user_talk ] + ":" + uid;
 	
 		if( tbtarget === "usertalk" || tbtarget === "other" ) {
 			page = e.target.page.value;
