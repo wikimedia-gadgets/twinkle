@@ -69,7 +69,7 @@ Twinkle.fluff = {
 			}
 		} else {
                         
-			if( mw.config.get('wgCanonicalSpecialPageName') === "Special:Undelete" ) {
+			if( mw.config.get('wgCanonicalSpecialPageName') === "Undelete" ) {
 				//You can't rollback deleted pages!
 				return;
 			}
@@ -140,7 +140,7 @@ Twinkle.fluff = {
 
 				return;
 			}
-			if( Twinkle.getPref('showRollbackLinks').indexOf('diff') != -1 ) {
+			if( Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 ) {
 				var vandal = $("#mw-diff-ntitle2").find("a").first().text();
 
 				var revertNode = document.createElement('div');
@@ -496,8 +496,8 @@ Twinkle.fluff.callbacks = {
 			'undoafter': self.params.goodid,
 			'basetimestamp': touched,
 			'starttimestamp': starttimestamp,
-			'watchlist' :  Twinkle.getPref('watchRevertedPages').indexOf( self.params.type ) != -1 ? 'watch' : undefined,
-			'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf( self.params.type ) != -1  ? true : undefined
+			'watchlist' :  Twinkle.getPref('watchRevertedPages').indexOf( self.params.type ) !== -1 ? 'watch' : undefined,
+			'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf( self.params.type ) !== -1 ? true : undefined
 		};
 
 		Morebits.wiki.actionCompleted.redirect = self.params.pagename;
@@ -516,7 +516,7 @@ Twinkle.fluff.callbacks = {
 Twinkle.fluff.formatSummaryPostfix = function(stringToAdd) {
 	if (stringToAdd) {
 		stringToAdd = ': ' + Morebits.string.toUpperCaseFirstChar(stringToAdd);
-		if (stringToAdd.search(/[.?!;]$/) == -1) {
+		if (stringToAdd.search(/[.?!;]$/) === -1) {
 			stringToAdd = stringToAdd + '.';
 		}
 		return stringToAdd;
