@@ -1517,7 +1517,7 @@ if (!JSON) {
 		}
 	}
 
-	if ($.isFunction(JSON.stringify)) {
+	if (!$.isFunction(JSON.stringify)) {
 		JSON.stringify = function (value, ignoredParam1, ignoredParam2) {
 			ignoredParam1 = ignoredParam2;  // boredom
 			gap = '';
