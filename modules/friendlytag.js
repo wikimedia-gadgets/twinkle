@@ -908,7 +908,7 @@ Twinkle.tag.callbacks = {
 						}
 						break;
 					case 'expand language':
-						var langcode = prompt('Please enter a ISO 639 language code. Please note that you will be required to add the |topic= parameter manually.  \n' +
+						var langcode = prompt('Please enter a ISO 639 language code.  \n' +
 							"This information is required.  To skip the {{expand language}} tag, click Cancel.", "");
 						if (langcode === null || langcode === "") {
 							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
@@ -916,6 +916,14 @@ Twinkle.tag.callbacks = {
 						} else {
 							currentTag += '|langcode=' + langcode;
 						}
+						var topic = prompt('Please enter the topic of the article.  \n' +
+							"This information is also required.  To skip the {{expand language}} tag, click Cancel.", "");
+						if (topic === null || topic === "") {
+							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
+							continue;
+						} else {
+							currentTag += '|topic=' + topic;
+						}						
 						break;						
 					case 'expert-subject':
 						var wikiproject = prompt('Please enter the name of a WikiProject which might be able to help recruit an expert.  \n' +
