@@ -284,6 +284,7 @@ Twinkle.tag.article.tags = {
 	"dead end": "article has few or no links to other articles",
 	"disputed": "article has questionable factual accuracy",
 	"essay-like": "article is written like an essay and needs cleanup",
+	"expand language": "article can be expanded with the text of the corresponding article translated from other sister projects",	
 	"expert-subject": "article needs attention from an expert on the subject",
 	"external links": "article's external links may not follow content policies or guidelines",
 	"fansite": "article resembles a fansite",
@@ -431,6 +432,7 @@ Twinkle.tag.article.tagCategories = {
 		"Language": [
 			"not English",
 			"rough translation"
+			"expand language"			
 		],
 		"Links": [
 			"dead end",
@@ -715,6 +717,7 @@ Twinkle.tag.groupHash = [
 	'essay',
 	'example farm',
 	'examplefarm',
+	'expand language',	
 	'expert',
 	'external links',
 	'fanpov',
@@ -905,6 +908,16 @@ Twinkle.tag.callbacks = {
 							currentTag += '|url=' + url;
 						}
 						break;
+					case 'language':
+						var langcode = prompt('Please enter a ISO 639 language code.  \n' +
+							"This information is required.  To skip the {{expand language}} tag, click Cancel.", "");
+						if (langcode === null || langcode === "") {
+							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
+							continue;
+						} else {
+							currentTag += '|langcode=' + langcode;
+						}
+						break;						
 					case 'expert-subject':
 						var wikiproject = prompt('Please enter the name of a WikiProject which might be able to help recruit an expert.  \n' +
 							"Just click OK if you don't know.  To skip the {{expert-subject}} tag, click Cancel.", "");
