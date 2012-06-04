@@ -716,8 +716,7 @@ Twinkle.tag.groupHash = [
 	'essay-like',
 	'essay',
 	'example farm',
-	'examplefarm',
-	'expand language',	
+	'examplefarm',	
 	'expert',
 	'external links',
 	'fanpov',
@@ -908,8 +907,8 @@ Twinkle.tag.callbacks = {
 							currentTag += '|url=' + url;
 						}
 						break;
-					case 'language':
-						var langcode = prompt('Please enter a ISO 639 language code.  \n' +
+					case 'expand language':
+						var langcode = prompt('Please enter a ISO 639 language code. Please note that you will be required to add the |topic= parameter manually.  \n' +
 							"This information is required.  To skip the {{expand language}} tag, click Cancel.", "");
 						if (langcode === null || langcode === "") {
 							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
