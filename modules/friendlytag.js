@@ -284,7 +284,7 @@ Twinkle.tag.article.tags = {
 	"dead end": "article has few or no links to other articles",
 	"disputed": "article has questionable factual accuracy",
 	"essay-like": "article is written like an essay and needs cleanup",
-	"expand language": "article can be expanded with the text of the corresponding article translated from other sister projects",	
+	"expand language": "article can be expanded with material from a foreign-language Wikipedia",	
 	"expert-subject": "article needs attention from an expert on the subject",
 	"external links": "article's external links may not follow content policies or guidelines",
 	"fansite": "article resembles a fansite",
@@ -431,7 +431,7 @@ Twinkle.tag.article.tagCategories = {
 	"Specific content issues": {
 		"Language": [
 			"not English",
-			"rough translation"
+			"rough translation",
 			"expand language"			
 		],
 		"Links": [
