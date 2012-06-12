@@ -19,7 +19,7 @@ Twinkle.fluff = {
 			return;
 		}
 
-		var ntitle = getElementsByClassName( document.getElementById('bodyContent'), 'td' , 'diff-ntitle' )[0];
+		var ntitle = document.getElementsByClassName( 'diff-ntitle' )[0];
 		vandal = ntitle.getElementsByTagName('a')[3].firstChild.nodeValue;
 
 		Twinkle.fluff.revert( Morebits.queryString.get( 'twinklerevert' ), vandal, true );
