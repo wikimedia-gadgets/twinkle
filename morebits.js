@@ -582,6 +582,139 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 		});
 };
 
+/**
+ * Some utility methods for manipulating quickForms after their creation
+ * (None of them work for "dyninput" type fields at present)
+ *
+ * Morebits.quickForm.getElements(form, fieldName)
+ *    Returns all form elements with a given field name or ID
+ *
+ * Morebits.quickForm.getCheckboxOrRadio(elementArray, value)
+ *    Searches the array of elements for a checkbox or radio button with a certain |value| attribute
+ *
+ * Morebits.quickForm.getElementContainer(element)
+ *    Returns the <div> containing the form element, or the form element itself
+ *    May not work as expected on checkboxes or radios
+ *
+ * Morebits.quickForm.getElementLabelObject(element)
+ *    Gets the HTML element that contains the label of the given form element (mainly for internal use)
+ *
+ * Morebits.quickForm.getElementLabel(element)
+ *    Gets the label text of the element
+ *
+ * Morebits.quickForm.setElementLabel(element, labelText)
+ *    Sets the label of the element to the given text
+ *
+ * Morebits.quickForm.overrideElementLabel(element, temporaryLabelText)
+ *    Stores the element's current label, and temporarily sets the label to the given text
+ *
+ * Morebits.quickForm.resetElementLabel(element)
+ *    Restores the label stored by overrideElementLabel
+ *
+ * Morebits.quickForm.setElementVisibility(element, visibility)
+ *    Shows or hides a form element plus its label and tooltip
+ *
+ * Morebits.quickForm.setElementTooltipVisibility(element, visibility)
+ *    Shows or hides the "question mark" icon next to a form element
+ */
+
+Morebits.quickForm.getElements = function QuickFormGetElements(form, fieldName) {
+	var $form = $(form);
+	var $elements = $form.find('[name="' + fieldName + '"]');
+	if ($elements.length > 0) {
+		return $elements.toArray();
+	}
+	$elements = $form.find('#' + fieldName);
+	if ($elements.length > 0) {
+		return $elements.toArray();
+	}
+	return null;
+};
+
+Morebits.quickForm.getCheckboxOrRadio = function QuickFormGetCheckboxOrRadio(elementArray, value) {
+	var found = $.grep(elementArray, function(el) {
+		return el.value === value;
+	});
+	if (found.length > 0) {
+		return found[0];
+	}
+	return null;
+};
+
+Morebits.quickForm.getElementContainer = function QuickFormGetElementContainer(element) {
+	// for divs, headings and fieldsets, the container is the element itself
+	if (element instanceof HTMLFieldSetElement || element instanceof HTMLDivElement ||
+			element instanceof HTMLHeadingElement) {
+		return element;
+	}
+
+	// for others, just return the parent node
+	return element.parentNode;
+};
+
+Morebits.quickForm.getElementLabelObject = function QuickFormGetElementLabelObject(element) {
+	// for buttons, divs and headers, the label is on the element itself
+	if (element.type === "button" || element.type === "submit" ||
+			element instanceof HTMLDivElement || element instanceof HTMLHeadingElement) {
+		return element;
+
+	// for fieldsets, the label is the child <legend> element
+	} else if (element instanceof HTMLFieldSetElement) {
+		return element.getElementsByTagName("legend")[0];
+
+	// for textareas, the label is the sibling <h5> element
+	} else if (element instanceof HTMLTextAreaElement) {
+		return element.parentNode.getElementsByTagName("h5")[0];
+
+	// for others, the label is the sibling <label> element
+	} else {
+		return element.parentNode.getElementsByTagName("label")[0];
+	}
+
+	return null;
+};
+
+Morebits.quickForm.getElementLabel = function QuickFormGetElementLabel(element) {
+	var labelElement = Morebits.quickForm.getElementLabelObject(element);
+
+	if (!labelElement) {
+		return null;
+	}
+	return labelElement.firstChild.textContent;
+};
+
+Morebits.quickForm.setElementLabel = function QuickFormSetElementLabel(element, labelText) {
+	var labelElement = Morebits.quickForm.getElementLabelObject(element);
+
+	if (!labelElement) {
+		return false;
+	}
+	labelElement.firstChild.textContent = labelText;
+	return true;
+};
+
+Morebits.quickForm.overrideElementLabel = function QuickFormOverrideElementLabel(element, temporaryLabelText) {
+	if (!element.hasAttribute("data-oldlabel")) {
+		element.setAttribute("data-oldlabel", Morebits.quickForm.getElementLabel(element));
+	}
+	return Morebits.quickForm.setElementLabel(element, temporaryLabelText);
+};
+
+Morebits.quickForm.resetElementLabel = function QuickFormResetElementLabel(element) {
+	if (element.hasAttribute("data-oldlabel")) {
+		return Morebits.quickForm.setElementLabel(element, element.getAttribute("data-oldlabel"));
+	}
+	return null;
+};
+
+Morebits.quickForm.setElementVisibility = function QuickFormSetElementVisibility(element, visibility) {
+	$(element).toggle(visibility);
+};
+
+Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementTooltipVisibility(element, visibility) {
+	$(Morebits.quickForm.getElementContainer(element)).find(".morebits-tooltip").toggle(visibility);
+};
+
 
 
 /**
