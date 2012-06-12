@@ -148,16 +148,7 @@ Twinkle.xfd.previousNotify = true;
 Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory(e) {
 	var value = e.target.value;
 	var form = e.target.form;
-	var old_area;
-	var childNodes = form.childNodes;
-	for( var i = 0; i < childNodes.length; ++i ) {
-		var node = childNodes[i];
-		if (node instanceof Element &&
-		    node.getAttribute( 'name' ) === 'work_area') {
-			old_area = node;
-			break;
-		}
-	}
+	var old_area = Morebits.quickForm.getElements(e.target.form, "work_area")[0];
 	var work_area = null;
 
 	var oldreasontextbox = form.getElementsByTagName('textarea')[0];

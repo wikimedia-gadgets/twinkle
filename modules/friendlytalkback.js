@@ -84,7 +84,7 @@
 	var callback_change_target = function( e ) {
 		var value = e.target.values;
 		var root = e.target.form;
-		var old_area;
+		var old_area = Morebits.quickForm.getElements(root, "work_area")[0];
 	
 		if(root.section) {
 			prev_section = root.section.value;
@@ -95,14 +95,7 @@
 		if(root.page) {
 			prev_page = root.page.value;
 		}
-	
-		for( var i = 0; i < root.childNodes.length; ++i ) {
-			var node = root.childNodes[i];
-			if (node instanceof Element && node.getAttribute( "name" ) === "work_area" ) {
-				old_area = node;
-				break;
-			}
-		}
+
 		var work_area = new Morebits.quickForm.element({
 				type: "field",
 				label: "Talkback information",

@@ -857,7 +857,7 @@ Twinkle.warn.messages = {
 			summary:"Notice: You can be bold and fix things yourself" 
 		},
 		"uw-spoiler": {
-			label:"Adding spoiler alerts or removing supposed spoilers from appropriate sections",
+			label:"Adding spoiler alerts or removing spoilers from appropriate sections",
 			summary:"Notice: Don't delete or flag potential 'spoilers' in Wikipedia articles"
 		},
 		"uw-subst": { 
@@ -1284,6 +1284,10 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		$(e.target.root.reason).parent().show();
 		e.target.root.previewer.closePreview();
 	}
+
+	// clear overridden label on article textbox
+	Morebits.quickForm.setElementTooltipVisibility(e.target.root.article, true);
+	Morebits.quickForm.resetElementLabel(e.target.root.article);
 };
 
 Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSubcategory(e) {
@@ -1291,18 +1295,18 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	var value = e.target.form.sub_group.value;
 
 	if( main_group === 'singlewarn' ) {
-		if( value === 'uw-username' ) {
+		if( value === 'uw-username' || value === 'uw-socksuspect' ) {
 			if(Twinkle.warn.prev_article === null) {
 				Twinkle.warn.prev_article = e.target.form.article.value;
 			}
-			e.target.form.article.disabled = true;
+			e.target.form.article.notArticle = true;
 			e.target.form.article.value = '';
-		} else if( e.target.form.article.disabled ) {
+		} else if( e.target.form.article.notArticle ) {
 			if(Twinkle.warn.prev_article !== null) {
 				e.target.form.article.value = Twinkle.warn.prev_article;
 				Twinkle.warn.prev_article = null;
 			}
-			e.target.form.article.disabled = false;
+			e.target.form.article.notArticle = false;
 		}
 	} else if( main_group === 'block' ) {
 		if( Twinkle.warn.messages.block[value].indefinite ) {
@@ -1348,13 +1352,16 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		}
 	}
 
-	var $article = $(e.target.form.article);
-	if (main_group === "singlewarn" && value === "uw-socksuspect") {
-		$article.prev().hide();
-		$article.before('<span id="tw-spi-article-username">Username of sock master, if known (without User:) </span>');
+	// change form labels according to the warning selected
+	if (value === "uw-socksuspect") {
+		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
+		Morebits.quickForm.overrideElementLabel(e.target.form.article, "Username of sock master, if known (without User:) ");
+	} else if (value === "uw-username") {
+		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
+		Morebits.quickForm.overrideElementLabel(e.target.form.article, "Username violates policy because... ");
 	} else {
-		$("span#tw-spi-article-username").remove();
-		$article.prev().show();
+		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, true);
+		Morebits.quickForm.resetElementLabel(e.target.form.article);
 	}
 };
 
@@ -1484,15 +1491,7 @@ Twinkle.warn.callbacks = {
 				Morebits.status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
-
-			switch( params.sub_group ) {
-				case 'uw-username':
-					text += "{{subst:" + params.sub_group + ( params.reason ? '|1=' + params.reason : '' ) + "|subst=subst:}} ~~~~";
-					break;
-				default:
-					text += "{{subst:" + params.sub_group + ( params.article ? '|1=' + params.article : '' ) + "|subst=subst:}}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + "~~~~";
-					break;
-			}
+			text += "{{subst:" + params.sub_group + ( params.article ? '|1=' + params.article : '' ) + "|subst=subst:}}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + "~~~~";
 		}
 		
 		if ( Twinkle.getPref('showSharedIPNotice') && Morebits.isIPAddress( mw.config.get('wgTitle') ) ) {
@@ -1521,7 +1520,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 
 	// First, check to make sure a reason was filled in if uw-username was selected
 	
-	if(e.target.sub_group.value === 'uw-username' && e.target.reason.value.trim() === '') {
+	if(e.target.sub_group.value === 'uw-username' && e.target.article.value.trim() === '') {
 		alert("You must supply a reason for the {{uw-username}} template.");
 		return;
 	}
