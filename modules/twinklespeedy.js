@@ -1043,6 +1043,12 @@ Twinkle.speedy.callbacks = {
 							break;
 						case 'multiple':
 							notifytext = "\n\n{{subst:db-notice-multiple|1=" + mw.config.get('wgPageName');
+							var count = 2;
+							for (i in Twinkle.speedy.dbmultipleCriteria) {
+								if (typeof Twinkle.speedy.dbmultipleCriteria[i] === 'string') {
+									notifytext += "|" + (count++) + "=" + Twinkle.speedy.dbmultipleCriteria[i].toUpperCase();
+								}
+							}
 							break;
 						default:
 							notifytext = "\n\n{{subst:db-csd-notice-custom|1=" + mw.config.get('wgPageName') + "|2=" + params.value;
