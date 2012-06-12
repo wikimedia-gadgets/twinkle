@@ -2,12 +2,12 @@
  * General initialization code
  */
 
-var scriptpathbefore = mw.util.wikiScript( "index" ) + "?title=";
-var scriptpathafter = "&action=raw&ctype=text/javascript&happy=yes";
+var scriptpathbefore = mw.util.wikiScript( "index" ) + "?title=",
+    scriptpathafter = "&action=raw&ctype=text/javascript&happy=yes";
 
 // Retrieve the user's Twinkle preferences
 $.ajax({
-	url: scriptpathbefore + "User:" + encodeURIComponent( mw.config.get( "wgUserName" )) + "/twinkleoptions.js" + scriptpathafter,
+	url: scriptpathbefore + "User:" + encodeURIComponent( mw.config.get("wgUserName")) + "/twinkleoptions.js" + scriptpathafter,
 	dataType: "text",
 	error: function () { mw.util.jsMessage( "Could not load twinkleoptions.js" ); },
 	success: function ( optionsText ) {
