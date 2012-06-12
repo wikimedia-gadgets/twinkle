@@ -796,14 +796,15 @@ Twinkle.tag.groupHash = [
 
 Twinkle.tag.callbacks = {
 	main: function( pageobj ) {
-		var params = pageobj.getCallbackParameters();
-		var tagRe, tagText = '', summaryText = 'Added';
-		var tags = [], groupableTags = [];
+		var params = pageobj.getCallbackParameters(),
+		    tagRe, tagText = '', summaryText = 'Added',
+		    tags = [], groupableTags = [],
 
-		// Remove tags that become superfluous with this action
-		var pageText = pageobj.getPageText().replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
+		    // Remove tags that become superfluous with this action
+		    pageText = pageobj.getPageText().replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, ""),
 
-		var i;
+		    i;
+		
 		if( Twinkle.tag.mode !== 'redirect' ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
 			for( i = 0; i < params.tags.length; i++ ) {

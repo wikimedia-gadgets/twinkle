@@ -14,7 +14,7 @@ Twinkle.warn = function twinklewarn() {
 
 	// modify URL of talk page on rollback success pages
 	if( mw.config.get('wgAction') === 'rollback' ) {
-		var $vandalTalkLink = $("#mw-rollback-success .mw-usertoollinks a").first();
+		var $vandalTalkLink = $("#mw-rollback-success").find(".mw-usertoollinks a").first();
 		$vandalTalkLink.css("font-weight", "bold");
 		$vandalTalkLink.wrapInner($("<span/>").attr("title", "If appropriate, you can use Twinkle to warn the user about their edits to this page."));
 

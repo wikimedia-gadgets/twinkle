@@ -35,8 +35,8 @@ Twinkle.welcome.semiauto = function() {
 Twinkle.welcome.normal = function() {
 	if( Morebits.queryString.exists( 'diff' ) ) {
 		// check whether the contributors' talk pages exist yet
-		var $oList = $("div#mw-diff-otitle2 span.mw-usertoollinks a.new:contains(talk)").first();
-		var $nList = $("div#mw-diff-ntitle2 span.mw-usertoollinks a.new:contains(talk)").first();
+		var $oList = $("#mw-diff-otitle2").find("span.mw-usertoollinks a.new:contains(talk)").first();
+		var $nList = $("#mw-diff-ntitle2").find("span.mw-usertoollinks a.new:contains(talk)").first();
 
 		if( $oList.length > 0 || $nList.length > 0 ) {
 			var spanTag = function( color, content ) {

@@ -11,7 +11,7 @@
 
 
 Twinkle.batchundelete = function twinklebatchundelete() {
-	if( wgNamespaceNumber != 2 ) {
+	if( mw.config.get("wgNamespaceNumber") !== mw.config.get("wgNamespaceIds").user ) {
 		return;
 	}
 	if( Morebits.userIsInGroup( 'sysop' ) ) {
@@ -31,7 +31,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	var query = {
 		'action': 'query',
 		'generator': 'links',
-		'titles': wgPageName,
+		'titles': mw.config.get("wgPageName"),
 		'gpllimit' : Twinkle.getPref('batchMax') // the max for sysops
 	};
 	var wikipedia_api = new Morebits.wiki.api( 'Grabbing pages', query, function( self ) {

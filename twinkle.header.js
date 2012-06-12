@@ -312,7 +312,12 @@ function twAddPortletLink( task, text, id, tooltip )
 		twAddPortlet( Twinkle.getPref( "portletArea" ), Twinkle.getPref( "portletId" ), Twinkle.getPref( "portletName" ), Twinkle.getPref( "portletType" ), Twinkle.getPref( "portletNext" ));
 	}
 	var link = mw.util.addPortletLink( Twinkle.getPref( "portletId" ), typeof task === "string" ? task : "#", text, id, tooltip );
-	if ($.isFunction(task)) $(link).click(function (ev) { task(); ev.preventDefault(); });
+	if ( $.isFunction( task ) ) {
+		$( link ).click(function ( ev ) {
+			task();
+			ev.preventDefault();
+		});
+	}
 	return link;
 }
 
