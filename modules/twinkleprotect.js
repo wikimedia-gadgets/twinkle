@@ -64,7 +64,8 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 				{
 					label: 'Tag page with protection template',
 					value: 'tag',
-					tooltip: 'If the protecting admin forgot to apply a protection template, or you have just protected the page without tagging, you can use this to apply the appropriate protection tag.'
+					tooltip: 'If the protecting admin forgot to apply a protection template, or you have just protected the page without tagging, you can use this to apply the appropriate protection tag.',
+					disabled: mw.config.get('wgArticleId') === 0
 				}
 			]
 		} );
@@ -83,10 +84,6 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
 	result.actiontype[0].dispatchEvent( evt );
-
-	// reduce vertical height of dialog
-	$('select[name="editlevel"], select[name="editexpiry"], select[name="moveexpiry"], select[name="movelevel"], select[name="createexpiry"], select[name="createlevel"]').
-		parent().css({ display: 'inline-block', marginRight: '0.5em' });
 
 	// get current protection level asynchronously
 	Morebits.wiki.actionCompleted.postfix = false;  // avoid Action: completed notice
@@ -434,6 +431,10 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
 			Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
 		}
+
+		// reduce vertical height of dialog
+		$(e.target.form).find('select[name="editlevel"], select[name="editexpiry"], select[name="moveexpiry"], select[name="movelevel"], select[name="createexpiry"], select[name="createlevel"]').
+			parent().css({ display: 'inline-block', marginRight: '0.5em' });
 	}
 };
 
