@@ -19,8 +19,7 @@ Twinkle.fluff = {
 			return;
 		}
 
-		var ntitle = document.getElementsByClassName( 'diff-ntitle' )[0];
-		vandal = ntitle.getElementsByTagName('a')[3].firstChild.nodeValue;
+		var vandal = $("#mw-diff-ntitle2").find("a.mw-userlink").text();
 
 		Twinkle.fluff.revert( Morebits.queryString.get( 'twinklerevert' ), vandal, true );
 	},
