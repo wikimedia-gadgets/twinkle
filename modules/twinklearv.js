@@ -197,7 +197,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					{ 
 						label: 'Promotional username',
 						value: 'promotional',
-						tooltip: 'Promotional usernames are advertisements for a company or group.'
+						tooltip: 'Promotional usernames are advertisements for a company, website or group. Please do not report these names to UAA unless the user has also made promotional edits related to the name.'
 					},
 					{ 
 						label: 'Offensive username',
