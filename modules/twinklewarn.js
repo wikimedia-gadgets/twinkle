@@ -906,6 +906,10 @@ Twinkle.warn.messages = {
 		}
 	},
 	singlewarn: {
+		"uw-3rr": {
+			label:"Violating the three-revert rule; see also uw-ew",
+			summary:"Warning: Violating the three-revert rule"
+		},
 		"uw-affiliate": { 
 			label:"Affiliate marketing", 
 			summary:"Warning: Affiliate marketing"
