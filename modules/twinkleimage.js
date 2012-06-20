@@ -11,7 +11,7 @@ Twinkle.image = function twinkleimage() {
 	if (mw.config.get('wgNamespaceNumber') === 6 &&
 	    !document.getElementById("mw-sharedupload") &&
 	    document.getElementById("mw-imagepage-section-filehistory")) {
-	    	
+		
 		twAddPortletLink(Twinkle.image.callback, "DI", "tw-di", "Nominate file for delayed speedy deletion");
 	}
 };
@@ -269,7 +269,7 @@ Twinkle.image.callbacks = {
 		var params = pageobj.getCallbackParameters();
 
 		// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
-		text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*}}/gi, "");
+		text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 
 		var tag = "{{di-" + params.type + "|date={{subst:#time:j F Y}}";
 		switch( params.type ) {

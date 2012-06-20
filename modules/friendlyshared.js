@@ -124,7 +124,7 @@ Twinkle.shared.callbacks = {
 		var text = '{{';
 
 		for( var i=0; i < Twinkle.shared.standardList.length; i++ ) {
-			tagRe = new RegExp( '(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im' );
+			var tagRe = new RegExp( '(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im' );
 			if( tagRe.exec( pageText ) ) {
 				Morebits.status.warn( 'Info', 'Found {{' + Twinkle.shared.standardList[i].value + '}} on the user\'s talk page already...aborting' );
 				found = true;

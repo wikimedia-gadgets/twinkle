@@ -300,8 +300,8 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 
 	var params = {
 		usertalk: form.notify.checked,
-		blp: prodtype=='prodblp',
-		reason: prodtype=='prodblp' ? '' : form.reason.value  // using an empty string here as fallback will help with prod-2.
+		blp: prodtype === 'prodblp',
+		reason: prodtype === 'prodblp' ? '' : form.reason.value  // using an empty string here as fallback will help with prod-2.
 	};
 
 	Morebits.simpleWindow.setButtonsEnabled( false );
