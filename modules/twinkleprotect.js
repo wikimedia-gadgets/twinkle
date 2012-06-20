@@ -940,8 +940,8 @@ Twinkle.protect.callbacks = {
 		var tag, summary;
 
 		var oldtag_re = /\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*/gi;
-		var re_result;
-		if (re_result = oldtag_re.exec(text)) {
+		var re_result = oldtag_re.exec(text);
+		if (re_result) {
 			if (confirm("{{" + re_result[1] + "}} was found on the page. \nClick OK to remove it, or click Cancel to leave it there.")) {
 				text = text.replace( oldtag_re, '' );
 			}

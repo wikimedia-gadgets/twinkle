@@ -250,6 +250,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcome-ch",
 				"welcome-uk",
 				"welcome-usroads",
+				"welcome-roads",				
 				"welcome-videogames"
 			]);
 			break;
@@ -520,6 +521,11 @@ Twinkle.welcome.templates = {
 		linkedArticle: false,
 		syntax: "{{subst:welcome-usroads}}"
 	},
+	"welcome-roads": {
+		description: "welcome for users with an apparent interest in road (worldwide) topics",
+		linkedArticle: false,
+		syntax: "{{subst:welcome-roads}}"
+	},	
 	"welcome-videogames": {
 		description: "welcome for users with an apparent interest in video game topics",
 		linkedArticle: false,
@@ -584,7 +590,7 @@ Twinkle.welcome.templates = {
 		syntax: "{{subst:welcomeen-ml}}"
 	},
 	"welcomeen-or": {
-		description: "welcome for users whose first language appears to be Odia (Oriya)",
+		description: "welcome for users whose first language appears to be Oriya (Odia)",
 		linkedArticle: false,
 		syntax: "{{subst:welcomeen-or}}"
 	},

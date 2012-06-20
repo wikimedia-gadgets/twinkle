@@ -44,7 +44,7 @@
 				var $doc = $(self.responseXML);
 				var $pages = $doc.find('page[ns!="6"]');  // all non-files
 				var list = [];
-				var re = /{{Proposed deletion/;
+				var re = /\{\{Proposed deletion/;
 				$pages.each(function() {
 					var $self = $(this);
 					var page = $self.attr('title');

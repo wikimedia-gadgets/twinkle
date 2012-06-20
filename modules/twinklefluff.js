@@ -371,7 +371,7 @@ Twinkle.fluff.callbacks = {
 
 		for( var i = index; i < revs.length; ++i ) {
 			++count;
-			if( revs[i].getAttribute( 'user' ) != self.params.user ) {
+			if( revs[i].getAttribute( 'user' ) !== self.params.user ) {
 				found = i;
 				break;
 			}
