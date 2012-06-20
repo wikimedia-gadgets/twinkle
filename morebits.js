@@ -29,7 +29,7 @@
  */
 
 
-( function ( $, undefined ) { // Wrap entire file with anonymous function
+( function ( window, document, $, undefined ) { // Wrap entire file with anonymous function
 
 var Morebits = {};
 window.Morebits = Morebits;  // allow global access
@@ -3353,7 +3353,7 @@ Morebits.simpleWindow.setButtonsEnabled = function( enabled ) {
 
 
 
-} ( jQuery )); // End wrap with anonymous function
+} ( window, document, jQuery )); // End wrap with anonymous function
 
 
 /**

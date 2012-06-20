@@ -19,7 +19,7 @@
 
 //<nowiki>
 
-( function ( $, undefined ) { // Wrap with anonymous function
+( function ( window, document, $, undefined ) { // Wrap with anonymous function
 
 var Twinkle = {};
 window.Twinkle = Twinkle;  // allow global access

@@ -101,6 +101,6 @@ Twinkle.load = function () {
 	}
 };
 
-} ( jQuery )); // End wrap with anonymous function
+} ( window, document, jQuery )); // End wrap with anonymous function
 
 // </nowiki>
