@@ -980,7 +980,7 @@ Twinkle.speedy.callbacks = {
 			text = text.replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 			if (mw.config.get('wgNamespaceNumber') === 6) {
 				// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
-				text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*}}/gi, "");
+				text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 			}
 
 			// Generate edit summary for edit
@@ -1033,8 +1033,8 @@ Twinkle.speedy.callbacks = {
 						return;
 					}
 
-					var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-					var notifytext;
+					var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")"),
+					    notifytext, i;
 
 					// specialcase "db" and "db-multiple"
 					switch (params.normalized)
@@ -1055,7 +1055,7 @@ Twinkle.speedy.callbacks = {
 							notifytext = "\n\n{{subst:db-csd-notice-custom|1=" + mw.config.get('wgPageName') + "|2=" + params.value;
 							break;
 					}
-					for (var i in params.utparams) {
+					for (i in params.utparams) {
 						if (typeof params.utparams[i] === 'string') {
 							notifytext += "|" + i + "=" + params.utparams[i];
 						}
@@ -1259,13 +1259,14 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
+					var fullvotepage;
 					if (votepage === '')
 					{
-						var fullvotepage = prompt( 'For SfD discussions and pages where discussions are not where they are expected to be, please enter the full title of the discussion, including the namespace, here: (leave empty to skip):', "" );
+						fullvotepage = prompt( 'For SfD discussions and pages where discussions are not where they are expected to be, please enter the full title of the discussion, including the namespace, here: (leave empty to skip):', "" );
 						if (fullvotepage === null)
 						{
-						statelem.error( 'Aborted by user.' );
-						return null;
+							statelem.error( 'Aborted by user.' );
+							return null;
 						}
 					}
 					if (votepage !== '') {
