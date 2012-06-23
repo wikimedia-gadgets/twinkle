@@ -244,13 +244,12 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcome-no",
 				"welcome-phys",
 				"welcome-pl",
+				"welcome-roads",
 				"welcome-rugbyunion",
 				"welcome-ru",
 				"welcome-starwars",
 				"welcome-ch",
 				"welcome-uk",
-				"welcome-usroads",
-				"welcome-roads",				
 				"welcome-videogames"
 			]);
 			break;
@@ -516,16 +515,11 @@ Twinkle.welcome.templates = {
 		linkedArticle: false,
 		syntax: "{{subst:welcome-uk}} ~~~~"
 	},
-	"welcome-usroads": {
-		description: "welcome for users with an apparent interest in US roads topics",
-		linkedArticle: false,
-		syntax: "{{subst:welcome-usroads}}"
-	},
 	"welcome-roads": {
-		description: "welcome for users with an apparent interest in road (worldwide) topics",
+		description: "welcome for users with an apparent interest in roads and highways topics",
 		linkedArticle: false,
 		syntax: "{{subst:welcome-roads}}"
-	},	
+	},
 	"welcome-videogames": {
 		description: "welcome for users with an apparent interest in video game topics",
 		linkedArticle: false,
