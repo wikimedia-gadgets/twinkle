@@ -10,16 +10,15 @@
 
 	Twinkle.talkback = function() {
 	
-		var uid = Morebits.getPageAssociatedUser();
-		if ( uid === false ) {
+		if ( Morebits.getPageAssociatedUser() === false ) {
 			return;
 		}
 	
-		twAddPortletLink( function(){ callback( uid ); }, "TB", "friendly-talkback", "Easy talkback" );
+		twAddPortletLink( callback, "TB", "friendly-talkback", "Easy talkback" );
 	};
 	
-	var callback = function( uid ) {
-		if( uid === mw.config.get("wgUserName") && !confirm("Is it really so bad that you're talking back to yourself?") ){
+	var callback = function( ) {
+		if( Morebits.getPageAssociatedUser() === mw.config.get("wgUserName") && !confirm("Is it really so bad that you're talking back to yourself?") ){
 			return;
 		}
 	
@@ -65,7 +64,6 @@
 			});
 	
 		form.append({ type: "submit" });
-		form.append({ name: "uid", value: uid, type: "hidden" });
 	
 		var result = form.render();
 		Window.setContent( result );
@@ -204,8 +202,7 @@
 		var tbtarget = e.target.getChecked( "tbtarget" )[0];
 		var page = null;
 		var section = e.target.section.value;
-		var uid = e.target.uid.value;
-		var fullUserTalkPageName = mw.config.get("wgFormattedNamespaces")[ mw.config.get("wgNamespaceIds").user_talk ] + ":" + uid;
+		var fullUserTalkPageName = mw.config.get("wgFormattedNamespaces")[ mw.config.get("wgNamespaceIds").user_talk ] + ":" + Morebits.getPageAssociatedUser();
 	
 		if( tbtarget === "usertalk" || tbtarget === "other" ) {
 			page = e.target.page.value;
