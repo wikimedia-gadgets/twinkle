@@ -997,7 +997,8 @@ Twinkle.warn.messages = {
 		},
 		"uw-username": { 
 			label:"Username is against policy", 
-			summary:"Warning: Your username might be against policy"
+			summary:"Warning: Your username might be against policy",
+			suppressArticleInSummary: true  // not relevant for this template
 		},
 		"uw-coi-username": { 
 			label:"Username is against policy, and conflict of interest", 
