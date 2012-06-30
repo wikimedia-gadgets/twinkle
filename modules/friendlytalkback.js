@@ -138,18 +138,34 @@
 				noticeboard.append({
 						type: "option",
 						label: "WP:AN (Administrators' noticeboard)",
-						value: "Wikipedia:Administrators' noticeboard"
+						value: "an"
+					});
+				noticeboard.append({
+						type: "option",
+						label: "WP:AN3 (Administrators' noticeboard/Edit warring)",
+						selected: true,
+						value: "an3"
 					});
 				noticeboard.append({
 						type: "option",
 						label: "WP:ANI (Administrators' noticeboard/Incidents)",
 						selected: true,
-						value: "Wikipedia:Administrators' noticeboard/Incidents"
+						value: "ani"
+					});
+				noticeboard.append({
+						type: "option",
+						label: "WP:COIN (Conflict of interest noticeboard)",
+						value: "coin"
 					});
 				noticeboard.append({
 						type: "option",
 						label: "WP:DRN (Dispute resolution noticeboard)",
-						value: "Wikipedia:Dispute resolution noticeboard"
+						value: "drn"
+					});
+				noticeboard.append({
+						type: "option",
+						label: "WP:WQA (Wikiquette assistance)",
+						value: "wqa"
 					});
 				work_area.append({
 						type:"input",
@@ -238,10 +254,36 @@
 	
 		var text;
 		if ( tbtarget === "notice" ) {
-			text = "\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n{{subst:ANI-notice|thread=";
-			text += section + "|noticeboard=" + tbPageName + "}} ~~~~";
-	
-			talkpage.setEditSummary( "Notice of discussion at [[" + tbPageName + "]]" + Twinkle.getPref("summaryAd") );
+			switch (page) {
+				case "an":
+					text = "\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n";
+					text += "{{subst:ANI-notice|thread=" + section + "|noticeboard=Wikipedia:Administrators' noticeboard}} ~~~~";
+					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Administrators' noticeboard]]" + Twinkle.getPref("summaryAd") );
+					break;
+				case "an3":
+					text = "{{subst:AN3-notice|" + section + "}} ~~~~";
+					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Administrators' noticeboard/Edit warring]]" + Twinkle.getPref("summaryAd") );
+					break;
+				case "ani":
+					text = "\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n";
+					text += "{{subst:ANI-notice|thread=" + section + "|noticeboard=Wikipedia:Administrators' noticeboard/Incidents}} ~~~~";
+					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Administrators' noticeboard/Incidents]]" + Twinkle.getPref("summaryAd") );
+					break;
+				case "coin":
+					text = "{{subst:Coin-notice|thread=" + section + "}} ~~~~";
+					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Conflict of interest noticeboard]]" + Twinkle.getPref("summaryAd") );
+					break;
+				case "drn":
+					text = "{{subst:DRN-notice|thread=" + section + "}} ~~~~";
+					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Dispute resolution noticeboard]]" + Twinkle.getPref("summaryAd") );
+					break;
+				case "wqa":
+					text = "{{subst:WQA-notice|thread=" + section + "}} ~~~~";
+					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Wikiquette assistance]]" + Twinkle.getPref("summaryAd") );
+					break;
+				default:
+					throw "Twinkle.talkback, function callback_evaluate: default case reached";
+			}
 
 		} else if ( tbtarget === "mail" ) {
 			text = "\n==" + Twinkle.getFriendlyPref("mailHeading") + "==\n{{you've got mail|subject=";

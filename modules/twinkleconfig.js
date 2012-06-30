@@ -520,6 +520,7 @@ Twinkle.config.sections = [
 		{
 			name: "adminNoticeHeading",
 			label: "Section heading to use for administrators' noticeboard notices",
+			helptip: "Only relevant for AN and ANI.",
 			type: "string"
 		},
 		{
