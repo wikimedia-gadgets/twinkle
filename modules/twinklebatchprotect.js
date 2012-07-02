@@ -182,7 +182,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		});
 	createlevel.append({
 			type: 'option',
-			label: 'All (registered users)',
+			label: 'All',
 			value: 'all'
 		});
 	createlevel.append({

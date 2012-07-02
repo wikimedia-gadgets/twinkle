@@ -287,7 +287,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					});
 				createlevel.append({
 						type: 'option',
-						label: 'All (registered users)',
+						label: 'All',
 						value: 'all'
 					});
 				createlevel.append({
