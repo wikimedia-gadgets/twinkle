@@ -636,8 +636,8 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText((params.noinclude ? "<noinclude>{{tfd|" : "{{tfd|") + (params.tfdinline ? "type=inline|" : "") + 
-				mw.config.get('wgTitle') + (params.noinclude ? "}}</noinclude>" : "}}\n") + text);
+			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{subst:template for discussion|help=off|" +
+				(params.tfdinline ? "type=inline|" : "") + mw.config.get('wgTitle') + (params.noinclude ? "}}</noinclude>" : "}}\n") + text);
 			pageobj.setEditSummary("Nominated for deletion; see [[" + params.logpage + "#" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
