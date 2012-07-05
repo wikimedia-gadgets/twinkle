@@ -908,7 +908,8 @@ Twinkle.tag.callbacks = {
 						}
 						break;
 					case 'expand language':
-						var langcode = prompt('Please enter a ISO 639 language code.  \n' +
+						currentTag += '|topic=';
+						var langcode = prompt('Please enter the language code of the other wiki (e.g. "fr", "roa-rup").  \n' +
 							"This information is required.  To skip the {{expand language}} tag, click Cancel.", "");
 						if (langcode === null || langcode === "") {
 							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
@@ -916,14 +917,14 @@ Twinkle.tag.callbacks = {
 						} else {
 							currentTag += '|langcode=' + langcode;
 						}
-						var topic = prompt('Please enter the topic of the article.  \n' +
-							"This information is also required.  To skip the {{expand language}} tag, click Cancel.", "");
-						if (topic === null || topic === "") {
+						var otherart = prompt('Please enter the name of the article in the other wiki (without interwiki prefix).  \n' +
+							"This information is optional.  To skip the {{expand language}} tag, click Cancel.", "");
+						if (otherart === null) {
 							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
 							continue;
 						} else {
-							currentTag += '|topic=' + topic;
-						}						
+							currentTag += '|otherarticle=' + otherart;
+						}
 						break;						
 					case 'expert-subject':
 						var wikiproject = prompt('Please enter the name of a WikiProject which might be able to help recruit an expert.  \n' +

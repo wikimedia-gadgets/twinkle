@@ -261,7 +261,7 @@
 					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Administrators' noticeboard]]" + Twinkle.getPref("summaryAd") );
 					break;
 				case "an3":
-					text = "{{subst:AN3-notice|" + section + "}} ~~~~";
+					text = "{{subst:An3-notice|" + section + "}} ~~~~";
 					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Administrators' noticeboard/Edit warring]]" + Twinkle.getPref("summaryAd") );
 					break;
 				case "ani":
