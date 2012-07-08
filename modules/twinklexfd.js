@@ -568,8 +568,9 @@ Twinkle.xfd.callbacks = {
 					break;
 			}
 			pageobj.setCreateOption('createonly');
-			pageobj.save();
-			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			pageobj.save(function() {
+				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			});
 		},
 		todaysList: function(pageobj) {
 			var old_text = pageobj.getPageText() + "\n";  // MW strips trailing blanks, but we like them, so we add a fake one
@@ -668,8 +669,9 @@ Twinkle.xfd.callbacks = {
 					break;
 			}
 			pageobj.setCreateOption('recreate');
-			pageobj.save();
-			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			pageobj.save(function() {
+				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			});
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
@@ -805,8 +807,9 @@ Twinkle.xfd.callbacks = {
 					break;
 			}
 			pageobj.setCreateOption('createonly');
-			pageobj.save();
-			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			pageobj.save(function() {
+				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			});
 		},
 		todaysList: function(pageobj) {
 			var text = pageobj.getPageText();
@@ -961,8 +964,9 @@ Twinkle.xfd.callbacks = {
 					break;
 			}
 			pageobj.setCreateOption('recreate');
-			pageobj.save();
-			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			pageobj.save(function() {
+				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			});
 		}
 	},
 
@@ -1008,8 +1012,9 @@ Twinkle.xfd.callbacks = {
 					break;
 			}
 			pageobj.setCreateOption('recreate');
-			pageobj.save();
-			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			pageobj.save(function() {
+				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			});
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
@@ -1137,8 +1142,9 @@ Twinkle.xfd.callbacks = {
 					break;
 			}
 			pageobj.setCreateOption('recreate');
-			pageobj.save();
-			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			pageobj.save(function() {
+				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			});
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
@@ -1214,8 +1220,9 @@ Twinkle.xfd.callbacks = {
 					break;
 			}
 			pageobj.setCreateOption('recreate');
-			pageobj.save();
-			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			pageobj.save(function() {
+				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			});
 		}
 	},
 
@@ -1305,8 +1312,9 @@ Twinkle.xfd.callbacks = {
 					break;
 			}
 			pageobj.setCreateOption('recreate');
-			pageobj.save();
-			Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			pageobj.save(function() {
+				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			});
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
