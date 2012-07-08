@@ -107,12 +107,6 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 			selected: Morebits.wiki.isPageRedirect(),
 			value: 'rfd'
 		} );
-	//categories.append( {
-	//		type: 'option',
-	//		label: 'SfD (Stub types for deletion)',
-	//		disabled: true,
-	//		value: 'sfd'
-	//	} );
 	form.append( {
 			type: 'checkbox',
 			list: [
@@ -206,12 +200,9 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'Templates for discussion',
 				name: 'work_area'
 			} );
-		var linknode = document.createElement('a');
-		linknode.setAttribute("href", mw.util.wikiGetlink("WP:SFD") );
-		linknode.appendChild(document.createTextNode('WP:SFD'));
 		work_area.append( {
 				type: 'div',
-				label: [ 'Stub types and userboxes are not eligible for TfD. Stub types go to ', linknode, ', and userboxes go to MfD.' ]
+				label: 'Stub types and userboxes are not eligible for TfD. Stub types go to CfD, and userboxes go to MfD.'
 			} );
 		work_area.append( {
 				type: 'checkbox',
