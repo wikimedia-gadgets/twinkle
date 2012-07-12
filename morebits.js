@@ -3248,7 +3248,10 @@ Morebits.simpleWindow.prototype = {
 		}
 
 		var dialog = $(this.content).dialog("open");
-		if (window.setupTooltips) { dialog.parent()[0].ranSetupTooltipsAlready = false; setupTooltips(dialog.parent()[0]); } //tie in with NAVPOP
+		if (window.setupTooltips && window.pg && window.pg.re && window.pg.re.diff) {  // tie in with NAVPOP
+			dialog.parent()[0].ranSetupTooltipsAlready = false;
+			setupTooltips(dialog.parent()[0]);
+		}
 		this.setHeight( this.height );  // init height algorithm
 	},
 	// Sets the dialog title.
