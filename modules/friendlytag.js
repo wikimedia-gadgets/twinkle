@@ -4,8 +4,8 @@
  ****************************************
  * Mode of invocation:     Tab ("Tag")
  * Active on:              Existing articles; file pages with a corresponding file
- *                         which is local (not on Commons); existing user subpages
- *                         and existing subpages of Wikipedia:Articles for creation;
+ *                         which is local (not on Commons); existing subpages of
+ *                         {Wikipedia|Wikipedia talk}:Articles for creation;
  *                         all redirects
  * Config directives in:   FriendlyConfig
  */
@@ -44,10 +44,10 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 					type: 'checkbox',
 					list: [
 						{
-							label: 'Group into {{multiple issues}} if possible',
+							label: 'Group inside {{multiple issues}} if possible',
 							value: 'group',
 							name: 'group',
-							tooltip: 'If applying three or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped into a single {{multiple issues}} template.',
+							tooltip: 'If applying three or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped inside a {{multiple issues}} template.',
 							checked: Twinkle.getFriendlyPref('groupByDefault')
 						}
 					]
@@ -666,156 +666,178 @@ Twinkle.tag.file.replacementList = [
 ];
 
 
-
-// Contains those article tags that can be grouped into {{multiple issues}}.
-// This list includes synonyms.
-Twinkle.tag.groupHash = [
-	'advert',
-	'autobiography',
-	'BLP IMDb-only refimprove',
-	'BLP IMDB-only refimprove',
-	'BLP IMDb refimprove',
-	'BLP sources',
-	'BLPsources',
-	'BLP unsourced',
-	'BLPunsourced',
-	'citation style',
-	'citationstyle',
-	'citation-style',
-	'citations missing',
-	'cite check',
-	'citecheck',
-	'cleanup',
-	'cleanup-laundry',
-	'laundry',
-	'laundrylists',
-	'cleanup-link rot',
-	'linkrot',
-	'cleanup-reorganize',
-	'organize',
-	'restructure',
-	'reorganisation',
-	'cleanup-rewrite',
-	'rewrite',
-	'cleanup-spam',
-	'spam',
-	'COI',
-	'coi',
-	'colloquial',
-	'confusing',
-	'context',
-	'contradict',
-	'copy edit',
-	'copyedit',
-	'criticism section',
-	'criticisms',
-	'crystal',
-	'dead end',
-	'deadend',
-	'disputed',
-	'essay-like',
-	'essay',
-	'example farm',
-	'examplefarm',	
-	'expert',
-	'external links',
-	'fanpov',
-	'fansite',
-	'fiction',
-	'game guide',
-	'gameguide',
-	'globalize',
-	'histinfo',
-	'hoax',
-	'howto',
-	'inappropriate person',
-	'incomplete',
-	'in-universe',
-	'lead missing',
-	'intromissing',
-	'lead rewrite',
-	'introrewrite',
-	'lead too long',
-	'intro length',
-	'intro-toolong',
-	'lead too short',
-	'intro-tooshort',
-	'like resume',
-	'likeresume',
-	'news release',
-	'newsrelease',
-	'no footnotes',
-	'notability',
-	'notable',
-	'one source',
-	'onesource',
-	'original research',
-	'orphan',
-	'do-attempt',
-	'out of date',
-	'overly detailed',
-	'fancruft',
-	'peacock',
-	'plot',
-	'POV',
-	'NPOV',
-	'pov',
-	'npov',
-	'POV-check',
-	'pov-check',
-	'primary sources',
-	'primarysources',
-	'prose',
-	'quote farm',
-	'quotefarm',
-	'recentism',
-	'refimprove',
-	'review',
-	'sections',
-	'self-published',
-	'story',
-	'synthesis',
-	'technical',
-	'jargon',
-	'tone',
-	'inappropriate tone',
-	'travel guide',
-	'travelguide',
-	'trivia',
-	'unbalanced',
-	'unencyclopedic',
-	'unreferenced',
-	'unref',
-	'unreliable sources',
-	'unreliable',
-	'update',
-	'very long',
-	'verylong',
-	'long',
-	'weasel',
-	'wikify'
+// Contains those article tags that *do not* work inside {{multiple issues}}.
+Twinkle.tag.multipleIssuesExceptions = [
+	'cat improve',
+	'copypaste',
+	'expand language',
+	'GOCEinuse',
+	'in use',
+	'merge',
+	'merge from',
+	'merge to',
+	'new unreviewed article',
+	'not English',
+	'rough translation',
+	'uncategorized',
+	'under construction',
+	'update'
 ];
+
 
 Twinkle.tag.callbacks = {
 	main: function( pageobj ) {
 		var params = pageobj.getCallbackParameters(),
 		    tagRe, tagText = '', summaryText = 'Added',
-		    tags = [], groupableTags = [],
+		    tags = [], groupableTags = [], i, totalTags;
 
-		    // Remove tags that become superfluous with this action
-		    pageText = pageobj.getPageText().replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, ""),
+		// Remove tags that become superfluous with this action
+		var pageText = pageobj.getPageText().replace(/\{\{\s*(New unreviewed article|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 
-		    i;
-		
+		var addTag = function friendlytagAddTag( tagIndex, tagName ) {
+			var currentTag = "";
+			if( tagName === 'uncategorized' || tagName === 'cat improve' ) {
+				pageText += '\n\n{{' + tagName +
+					'|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
+			} else {
+				if( tagName === 'globalize' ) {
+					currentTag += '{{' + params.globalizeSubcategory;
+				} else {
+					currentTag += ( Twinkle.tag.mode === 'redirect' ? '\n' : '' ) + '{{' + tagName;
+				}
+
+				if( tagName === 'notability' && params.notabilitySubcategory !== 'none' ) {
+					currentTag += '|' + params.notabilitySubcategory;
+				}
+
+				// prompt for other parameters, based on the tag
+				switch( tagName ) {
+					case 'cleanup':
+						var reason = prompt('Please enter a more specific reason why the article requires cleanup.  \n' +
+							"This information is required.  To skip the {{cleanup}} tag, click Cancel.", "");
+						if (reason === null || reason === "") {
+							Morebits.status.warn("Notice", "{{cleanup}} tag skipped by user");
+							return true;  // continue to next tag
+						} else {
+							currentTag += '|reason=' + reason;
+						}
+						break;
+					case 'copy edit':
+						var cereason = prompt('"This article may require copy editing for..."  (e.g. "consistent spelling")  \n' +
+							"Just click OK if you don't wish to enter this.  To skip the {{copy edit}} tag, click Cancel.", "");
+						if (cereason === null) {
+							return true;  // continue to next tag
+						} else if (cereason !== "") {
+							currentTag += '|for=' + cereason;
+						}
+						break;
+					case 'copypaste':
+						var url = prompt('Please enter the URL which is believed to be the source of the copy-paste.  \n' +
+							"Just click OK if you don't know.  To skip the {{copypaste}} tag, click Cancel.", "");
+						if (url === null) {
+							return true;  // continue to next tag
+						} else if (url !== "") {
+							currentTag += '|url=' + url;
+						}
+						break;
+					case 'expand language':
+						currentTag += '|topic=';
+						var langcode = prompt('Please enter the language code of the other wiki (e.g. "fr", "roa-rup").  \n' +
+							"This information is required.  To skip the {{expand language}} tag, click Cancel.", "");
+						if (langcode === null || langcode === "") {
+							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
+							return true;  // continue to next tag
+						} else {
+							currentTag += '|langcode=' + langcode;
+						}
+						var otherart = prompt('Please enter the name of the article in the other wiki (without interwiki prefix).  \n' +
+							"This information is optional.  To skip the {{expand language}} tag, click Cancel.", "");
+						if (otherart === null) {
+							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
+							return true;  // continue to next tag
+						} else {
+							currentTag += '|otherarticle=' + otherart;
+						}
+						break;						
+					case 'expert-subject':
+						var wikiproject = prompt('Please enter the name of a WikiProject which might be able to help recruit an expert.  \n' +
+							"Just click OK if you don't know.  To skip the {{expert-subject}} tag, click Cancel.", "");
+						if (wikiproject === null) {
+							return true;  // continue to next tag
+						} else if (wikiproject !== "") {
+							currentTag += '|1=' + wikiproject;
+						}
+						break;
+					case 'not English':
+						var langname = prompt('Please enter the name of the language the article is thought to be written in.  \n' +
+							"Just click OK if you don't know.  To skip the {{not English}} tag, click Cancel.", "");
+						if (langname === null) {
+							return true;  // continue to next tag
+						} else if (langname !== "") {
+							currentTag += '|1=' + langname;
+						}
+						break;
+					case 'rough translation':
+						var roughlang = prompt('Please enter the name of the language the article is thought to have been translated from.  \n' +
+							"Just click OK if you don't know.  To skip the {{rough translation}} tag, click Cancel.", "");
+						if (roughlang === null) {
+							return true;  // continue to next tag
+						} else if (roughlang !== "") {
+							currentTag += '|1=' + roughlang;
+						}
+						break;
+					case 'wikify':
+						var wreason = prompt('You can optionally enter a more specific reason why the article needs to be wikified.  \n' +
+							"Just click OK if you don't wish to enter this.  To skip the {{wikify}} tag, click Cancel.", "");
+						if (wreason === null) {
+							return true;  // continue to next tag
+						} else if (wreason !== "") {
+							currentTag += '|reason=' + wreason;
+						}
+						break;
+					case 'merge':
+					case 'merge to':
+					case 'merge from':
+						var param = prompt('Please enter the name of the other article(s) involved in the merge.  \n' +
+							"To specify multiple articles, separate them with a vertical pipe (|) character.  \n" +
+							"This information is required.  Click OK when done, or click Cancel to skip the merge tag.", "");
+						if (param === null) {
+							return true;  // continue to next tag
+						} else if (param !== "") {
+							currentTag += '|' + param;
+						}
+						break;
+					default:
+						break;
+				}
+
+				currentTag += (Twinkle.tag.mode === 'redirect') ? '}}' : '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}\n';
+				tagText += currentTag;
+			}
+
+			if ( tagIndex > 0 ) {
+				if( tagIndex === (totalTags - 1) ) {
+					summaryText += ' and';
+				} else if ( tagIndex < (totalTags - 1) ) {
+					summaryText += ',';
+				}
+			}
+
+			summaryText += ' {{[[';
+			if( tagName === 'globalize' ) {
+				summaryText += "Template:" + params.globalizeSubcategory + '|' + params.globalizeSubcategory;
+			} else {
+				summaryText += (tagName.indexOf(":") !== -1 ? tagName : ("Template:" + tagName + "|" + tagName));
+			}
+			summaryText += ']]}}';
+		};
+
 		if( Twinkle.tag.mode !== 'redirect' ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
 			for( i = 0; i < params.tags.length; i++ ) {
 				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im' );
 				if( !tagRe.exec( pageText ) ) {
-					if( Twinkle.tag.groupHash.indexOf(params.tags[i]) !== -1 && 
-							(params.tags[i] !== 'globalize' || params.globalizeSubcategory === 'globalize' ) &&
-							(params.tags[i] !== 'notability' || params.notabilitySubcategory === 'none' )) {
-						// don't add to multipleissues for globalize/notability subcats
+					if( Twinkle.tag.multipleIssuesExceptions.indexOf(params.tags[i]) === -1 ) {
 						groupableTags = groupableTags.concat( params.tags[i] );
 					} else {
 						tags = tags.concat( params.tags[i] );
@@ -827,28 +849,24 @@ Twinkle.tag.callbacks = {
 			}
 
 			if( params.group && groupableTags.length >= 3 ) {
-				Morebits.status.info( 'Info', 'Grouping supported tags into {{multiple issues}}' );
+				Morebits.status.info( 'Info', 'Grouping supported tags inside {{multiple issues}}' );
 
 				groupableTags.sort();
-				tagText += '{{multiple issues';
-				summaryText += ' {{[[Template:multiple issues|multiple issues]]}} with parameters';
-				for( i = 0; i < groupableTags.length; i++ ) {
-					tagText += '|' + groupableTags[i] +
-						'={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}';
+				tagText += '{{multiple issues|\n';
 
-					if( i === (groupableTags.length - 1) ) {
-						summaryText += ' and';
-					} else if ( i < (groupableTags.length - 1) && i > 0 ) {
-						summaryText += ',';
-					}
-					summaryText += ' ' + groupableTags[i];
+				totalTags = groupableTags.length;
+				$.each(groupableTags, addTag);
+
+				summaryText += ' tags (within {{[[Template:multiple issues|multiple issues]]}})';
+				if( tags.length > 0 ) {
+					summaryText += ', and';
 				}
 				tagText += '}}\n';
 			} else {
 				tags = tags.concat( groupableTags );
 			}
 		} else {
-			// Check for pre-existing tags
+			// Redirect tagging: Check for pre-existing tags
 			for( i = 0; i < params.tags.length; i++ ) {
 				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im' );
 				if( !tagRe.exec( pageText ) ) {
@@ -861,143 +879,8 @@ Twinkle.tag.callbacks = {
 		}
 
 		tags.sort();
-		for( i = 0; i < tags.length; i++ ) {
-			var currentTag = "";
-			if( tags[i] === 'uncategorized' || tags[i] === 'cat improve' ) {
-				pageText += '\n\n{{' + tags[i] +
-					'|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
-			} else {
-				if( tags[i] === 'globalize' ) {
-					currentTag += '{{' + params.globalizeSubcategory;
-				} else {
-					currentTag += ( Twinkle.tag.mode === 'redirect' ? '\n' : '' ) + '{{' + tags[i];
-				}
-
-				if( tags[i] === 'notability' && params.notabilitySubcategory !== 'none' ) {
-					currentTag += '|' + params.notabilitySubcategory;
-				}
-
-				// prompt for other parameters, based on the tag
-				switch( tags[i] ) {
-					case 'cleanup':
-						var reason = prompt('Please enter a more specific reason why the article requires cleanup.  \n' +
-							"This information is required.  To skip the {{cleanup}} tag, click Cancel.", "");
-						if (reason === null || reason === "") {
-							Morebits.status.warn("Notice", "{{cleanup}} tag skipped by user");
-							continue;
-						} else {
-							currentTag += '|reason=' + reason;
-						}
-						break;
-					case 'copy edit':
-						var cereason = prompt('"This article may require copy editing for..."  (e.g. "consistent spelling")  \n' +
-							"Just click OK if you don't wish to enter this.  To skip the {{copy edit}} tag, click Cancel.", "");
-						if (cereason === null) {
-							continue;
-						} else if (cereason !== "") {
-							currentTag += '|for=' + cereason;
-						}
-						break;
-					case 'copypaste':
-						var url = prompt('Please enter the URL which is believed to be the source of the copy-paste.  \n' +
-							"Just click OK if you don't know.  To skip the {{copypaste}} tag, click Cancel.", "");
-						if (url === null) {
-							continue;
-						} else if (url !== "") {
-							currentTag += '|url=' + url;
-						}
-						break;
-					case 'expand language':
-						currentTag += '|topic=';
-						var langcode = prompt('Please enter the language code of the other wiki (e.g. "fr", "roa-rup").  \n' +
-							"This information is required.  To skip the {{expand language}} tag, click Cancel.", "");
-						if (langcode === null || langcode === "") {
-							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
-							continue;
-						} else {
-							currentTag += '|langcode=' + langcode;
-						}
-						var otherart = prompt('Please enter the name of the article in the other wiki (without interwiki prefix).  \n' +
-							"This information is optional.  To skip the {{expand language}} tag, click Cancel.", "");
-						if (otherart === null) {
-							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
-							continue;
-						} else {
-							currentTag += '|otherarticle=' + otherart;
-						}
-						break;						
-					case 'expert-subject':
-						var wikiproject = prompt('Please enter the name of a WikiProject which might be able to help recruit an expert.  \n' +
-							"Just click OK if you don't know.  To skip the {{expert-subject}} tag, click Cancel.", "");
-						if (wikiproject === null) {
-							continue;
-						} else if (wikiproject !== "") {
-							currentTag += '|1=' + wikiproject;
-						}
-						break;
-					case 'not English':
-						var langname = prompt('Please enter the name of the language the article is thought to be written in.  \n' +
-							"Just click OK if you don't know.  To skip the {{not English}} tag, click Cancel.", "");
-						if (langname === null) {
-							continue;
-						} else if (langname !== "") {
-							currentTag += '|1=' + langname;
-						}
-						break;
-					case 'rough translation':
-						var roughlang = prompt('Please enter the name of the language the article is thought to have been translated from.  \n' +
-							"Just click OK if you don't know.  To skip the {{rough translation}} tag, click Cancel.", "");
-						if (roughlang === null) {
-							continue;
-						} else if (roughlang !== "") {
-							currentTag += '|1=' + roughlang;
-						}
-						break;
-					case 'wikify':
-						var wreason = prompt('You can optionally enter a more specific reason why the article needs to be wikified.  \n' +
-							"Just click OK if you don't wish to enter this.  To skip the {{wikify}} tag, click Cancel.", "");
-						if (wreason === null) {
-							continue;
-						} else if (wreason !== "") {
-							currentTag += '|reason=' + wreason;
-						}
-						break;
-					case 'merge':
-					case 'merge to':
-					case 'merge from':
-						var param = prompt('Please enter the name of the other article(s) involved in the merge.  \n' +
-							"To specify multiple articles, separate them with a vertical pipe (|) character.  \n" +
-							"This information is required.  Click OK when done, or click Cancel to skip the merge tag.", "");
-						if (param === null) {
-							continue;
-						} else if (param !== "") {
-							currentTag += '|' + param;
-						}
-						break;
-					default:
-						break;
-				}
-
-				currentTag += Twinkle.tag.mode === 'redirect' ? '}}' : '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}\n';
-				tagText += currentTag;
-			}
-
-			if ( i > 0 || groupableTags.length > 3 ) {
-				if( i === (tags.length - 1) ) {
-					summaryText += ' and';
-				} else if ( i < (tags.length - 1) ) {
-					summaryText += ',';
-				}
-			}
-
-			summaryText += ' {{[[';
-			if( tags[i] === 'globalize' ) {
-				summaryText += "Template:" + params.globalizeSubcategory + '|' + params.globalizeSubcategory;
-			} else {
-				summaryText += (tags[i].indexOf(":") !== -1 ? tags[i] : ("Template:" + tags[i] + "|" + tags[i]));
-			}
-			summaryText += ']]}}';
-		}
+		totalTags = tags.length;
+		$.each(tags, addTag);
 
 		if( Twinkle.tag.mode === 'redirect' ) {
 			pageText += tagText;
@@ -1008,7 +891,7 @@ Twinkle.tag.callbacks = {
 			pageText = pageText.replace(/^\s*(?:((?:\s*\{\{\s*(?:about|correct title|dablink|distinguish|for|other\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\s?(?:also|wiktionary)|selfref|the)\d*\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\})+(?:\s*\n)?)\s*)?/i,
 				"$1" + tagText);
 		}
-		summaryText += ' tag' + ( ( tags.length + ( groupableTags.length > 3 ? 1 : 0 ) ) > 1 ? 's' : '' ) +
+		summaryText += ( tags.length > 0 ? ' tag' + ( tags.length > 1 ? 's' : '' ) : '' ) +
 			' to ' + Twinkle.tag.mode + Twinkle.getPref('summaryAd');
 
 		pageobj.setPageText(pageText);
