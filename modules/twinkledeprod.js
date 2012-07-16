@@ -120,7 +120,7 @@
 		var exists = $doc.find('pages page:not([missing])').size() > 0;
 
 		if( ! exists ) {
-			self.statelem.error( "It seems that the page doesn't exists, perhaps it has already been deleted" );
+			self.statelem.error( "It seems that the page doesn't exist, perhaps it has already been deleted" );
 			return;
 		}
 
@@ -136,11 +136,11 @@
 		wikipedia_api.post();
 
 		var page = new Morebits.wiki.page('Talk:' + self.params.page, "Deleting talk page");
-		page.setEditSummary("Deleted talk page of a page because expired [[WP:PROD]]." + Twinkle.getPref('deletionSummaryAd'));
+		page.setEditSummary("[[WP:CSD#G8|G8]]: [[Help:Talk page|Talk page]] of deleted page \"" + self.params.page + "\"" + Twinkle.getPref('deletionSummaryAd'));
 		page.deletePage();
 
 		page = new Morebits.wiki.page(self.params.page, "Deleting article");
-		page.setEditSummary("Deleted because expired [[WP:PROD]]; Reason given: " + self.params.reason + "." + Twinkle.getPref('deletionSummaryAd'));
+		page.setEditSummary("Expired [[WP:PROD|PROD]], concern was: " + self.params.reason + Twinkle.getPref('deletionSummaryAd'));
 		page.deletePage();
 
 
@@ -150,7 +150,7 @@
 		$doc.find("backlinks bl").each(function(){
 			var title = $(this).attr('title');
 			var page = new Morebits.wiki.page(title, "Deleting redirecting page " + title);
-			page.setEditSummary("Speedy deleted per ([[WP:CSD#R1|CSD R1]]), Redirect to deleted page \"" + self.params.page + "\"." + Twinkle.getPref('deletionSummaryAd'));
+			page.setEditSummary("[[WP:CSD#R1|R1]]: Redirect to deleted page \"" + self.params.page + "\"" + Twinkle.getPref('deletionSummaryAd'));
 			page.deletePage();
 		});
 	};

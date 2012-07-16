@@ -771,7 +771,7 @@ Twinkle.speedy.callbacks = {
 			    params.normalized !== 'f8' &&
 			    document.getElementById( 'ca-talk' ).className !== 'new') {
 				var talkpage = new Morebits.wiki.page( Morebits.wikipedia.namespaces[ mw.config.get('wgNamespaceNumber') + 1 ] + ':' + mw.config.get('wgTitle'), "Deleting talk page" );
-				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page [[' + mw.config.get('wgPageName') + "]]. " + Twinkle.getPref('deletionSummaryAd'));
+				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page "' + mw.config.get('wgPageName') + '"' + Twinkle.getPref('deletionSummaryAd'));
 				talkpage.deletePage();
 			}
 
@@ -895,7 +895,7 @@ Twinkle.speedy.callbacks = {
 			$snapshot.each(function(key, value) {
 				var title = $(value).attr('title');
 				var page = new Morebits.wiki.page(title, 'Deleting redirect "' + title + '"');
-				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page [[' + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('deletionSummaryAd'));
+				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + mw.config.get('wgPageName') + '"' + Twinkle.getPref('deletionSummaryAd'));
 				page.deletePage(onsuccess);
 			});
 		}
