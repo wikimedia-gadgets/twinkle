@@ -256,29 +256,29 @@
 		if ( tbtarget === "notice" ) {
 			switch (page) {
 				case "an":
-					text = "\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n";
+					text = "\n\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n";
 					text += "{{subst:ANI-notice|thread=" + section + "|noticeboard=Wikipedia:Administrators' noticeboard}} ~~~~";
 					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Administrators' noticeboard]]" + Twinkle.getPref("summaryAd") );
 					break;
 				case "an3":
-					text = "{{subst:An3-notice|" + section + "}} ~~~~";
+					text = "\n\n{{subst:An3-notice|" + section + "}} ~~~~";
 					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Administrators' noticeboard/Edit warring]]" + Twinkle.getPref("summaryAd") );
 					break;
 				case "ani":
-					text = "\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n";
+					text = "\n\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n";
 					text += "{{subst:ANI-notice|thread=" + section + "|noticeboard=Wikipedia:Administrators' noticeboard/Incidents}} ~~~~";
 					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Administrators' noticeboard/Incidents]]" + Twinkle.getPref("summaryAd") );
 					break;
 				case "coin":
-					text = "{{subst:Coin-notice|thread=" + section + "}} ~~~~";
+					text = "\n\n{{subst:Coin-notice|thread=" + section + "}} ~~~~";
 					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Conflict of interest noticeboard]]" + Twinkle.getPref("summaryAd") );
 					break;
 				case "drn":
-					text = "{{subst:DRN-notice|thread=" + section + "}} ~~~~";
+					text = "\n\n{{subst:DRN-notice|thread=" + section + "}} ~~~~";
 					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Dispute resolution noticeboard]]" + Twinkle.getPref("summaryAd") );
 					break;
 				case "wqa":
-					text = "{{subst:WQA-notice|thread=" + section + "}} ~~~~";
+					text = "\n\n{{subst:WQA-notice|thread=" + section + "}} ~~~~";
 					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Wikiquette assistance]]" + Twinkle.getPref("summaryAd") );
 					break;
 				default:
@@ -286,7 +286,7 @@
 			}
 
 		} else if ( tbtarget === "mail" ) {
-			text = "\n==" + Twinkle.getFriendlyPref("mailHeading") + "==\n{{you've got mail|subject=";
+			text = "\n\n==" + Twinkle.getFriendlyPref("mailHeading") + "==\n{{you've got mail|subject=";
 			text += section + "|ts=~~~~~}}";
 
 			if( message ) {
@@ -299,7 +299,7 @@
 
 		} else {
 			//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
-			text = "\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n{{talkback|";
+			text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n{{talkback|";
 			text += tbPageName;
 
 			if( section ) {
