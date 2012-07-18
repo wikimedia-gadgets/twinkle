@@ -242,6 +242,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcome-math",
 				"welcome-med",
 				"welcome-no",
+				"welcome-pk",
 				"welcome-phys",
 				"welcome-pl",
 				"welcome-roads",
@@ -479,6 +480,11 @@ Twinkle.welcome.templates = {
 		description: "welcome for users with an apparent interest in Norway topics",
 		linkedArticle: false,
 		syntax: "{{subst:welcome-no}} ~~~~"
+	},
+	"welcome-pk": {
+		description: "welcome for users with an apparent interest in Pakistan topics",
+		linkedArticle: false,
+		syntax: "{{subst:welcome-pk}} ~~~~"
 	},
 	"welcome-phys": {
 		description: "welcome for users with an apparent interest in physics topics",
