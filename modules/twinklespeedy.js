@@ -1451,7 +1451,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		deleteRedirects: form.redirects.checked
 	};
 
-	SimpleWindow.setButtonsEnabled( false );
+	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( form );
 
 	Twinkle.speedy.callbacks.sysop.main( params );
