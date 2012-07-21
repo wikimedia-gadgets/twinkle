@@ -312,7 +312,7 @@ Twinkle.tag.article.tags = {
 	"not English": "article is written in a language other than English and needs translation",
 	"one source": "article relies largely or entirely upon a single source",
 	"original research": "article has original research or unverified claims",
-	"orphan": "article is linked to from few or no other articles",
+	"orphan": "article is linked to from no other articles",
 	"out of date": "article needs out-of-date information removed or updated",
 	"overcoverage": "article has an extensive bias or disproportional coverage towards one or more specific regions",
 	"overlinked": "article may have too many duplicate and/or irrelevant links",
