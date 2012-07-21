@@ -329,7 +329,12 @@ Twinkle.config.sections = [
 {
 	title: "Speedy deletion (CSD)",
 	preferences: [
-		// TwinkleConfig.speedyPromptOnG7 (boolean)
+		{
+			name: "speedySelectionStyle",
+			label: "When to go ahead and tag/delete the page",
+			type: "enum",
+			enumValues: { "buttonClick": 'When I click "Submit"', "radioClick": "As soon as I click an option" }
+		},
 		{
 			name: "speedyPromptOnG7",
 			label: "Prompt for rationale when tagging with G7 (author request)",
