@@ -426,7 +426,7 @@ Twinkle.speedy.categoryList = [
 	{
 		label: 'C1: Empty categories',
 		value: 'catempty',
-		tooltip: '(no articles or subcategories for at least four days) whose only content has consisted of links to parent categories. This does not apply to categories being discussed on WP:CFD or WP:SFD, or disambiguation categories. If the category isn\'t relatively new, it possibly contained articles earlier, and deeper investigation is needed'
+		tooltip: 'Categories that have been unpopulated for at least four days. This does not apply to categories being discussed at WP:CFD, disambiguation categories, and certain other exceptions. If the category isn\'t relatively new, it possibly contained articles earlier, and deeper investigation is needed'
 	},
 	{
 		label: 'G8: Categories populated by a deleted or retargeted template',
@@ -542,7 +542,7 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		result.push({
 			label: 'G6: XfD',
 			value: 'xfd',
-			tooltip: 'An admin has closed a deletion discussion (at AfD, FfD, RfD, TfD, CfD, SfD, or MfD) as "delete", but they didn\'t actually delete the page.'
+			tooltip: 'An admin has closed a deletion discussion (at AfD, FfD, RfD, TfD, CfD, or MfD) as "delete", but they didn\'t actually delete the page.'
 		});
 		result.push({
 			label: 'G6: Unnecessary disambiguation page',
@@ -1252,7 +1252,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					parameters["2"] = reason;
 					break;
 				case 'xfd':
-					var votepage = prompt( '[CSD G6: xfd] If the title of the discussion is different than the title of the page, and it is not an SfD discussion or a page where the discussion is not where it is expected to be, please enter the title of the discussion here (leave empty to skip):', "" );
+					var votepage = prompt( '[CSD G6: xfd] If the title of the discussion is different than the title of the page, and the deletion discussion is not in an unexpected location, please enter the title of the discussion here (leave empty to skip):', "" );
 					if (votepage === null)
 					{
 						statelem.error( 'Aborted by user.' );
@@ -1261,7 +1261,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					var fullvotepage;
 					if (votepage === '')
 					{
-						fullvotepage = prompt( '[CSD G6: xfd] For SfD discussions and pages where discussions are not where they are expected to be, please enter the full title of the discussion, including the namespace, here: (leave empty to skip):', "" );
+						fullvotepage = prompt( '[CSD G6: xfd] For pages where discussions are not where they are expected to be, please enter the full title of the discussion, including the namespace, here: (leave empty to skip):', "" );
 						if (fullvotepage === null)
 						{
 							statelem.error( 'Aborted by user.' );
