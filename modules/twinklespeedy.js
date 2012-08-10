@@ -1051,15 +1051,15 @@ Twinkle.speedy.callbacks = {
 
 					// specialcase "db" and "db-multiple"
 					if (params.normalizeds.length > 1) {
-						notifytext = "\n\n{{subst:db-notice-multiple|1=" + mw.config.get('wgPageName');
+						notifytext = "\n{{subst:db-notice-multiple|1=" + mw.config.get('wgPageName');
 						var count = 2;
 						$.each(params.normalizeds, function(index, norm) {
 							notifytext += "|" + (count++) + "=" + norm.toUpperCase();
 						});
 					} else if (params.normalizeds[0] === "db") {
-						notifytext = "\n\n{{subst:db-reason-notice|1=" + mw.config.get('wgPageName');
+						notifytext = "\n{{subst:db-reason-notice|1=" + mw.config.get('wgPageName');
 					} else {
-						notifytext = "\n\n{{subst:db-csd-notice-custom|1=" + mw.config.get('wgPageName') + "|2=" + params.values[0];
+						notifytext = "\n{{subst:db-csd-notice-custom|1=" + mw.config.get('wgPageName') + "|2=" + params.values[0];
 					}
 
 					for (i in params.utparams) {
