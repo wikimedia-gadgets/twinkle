@@ -407,7 +407,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if ( /[aeiouwyh]/.test( types[0] ) ) { // non 100% correct, but whatever, inlcuding 'h' for Cockney
 				article = 'an';
 			}
-			reason = "*{{user-uaa|1=" + uid + "}} &ndash; Violation of username policy as " + article + " " + types + " username. ";
+			reason = "*{{user-uaa|1=" + uid + "}} &ndash; Violation of the username policy as " + article + " " + types + " username. ";
 			if (comment !== '' ) {
 				reason += Morebits.string.toUpperCaseFirstChar(comment) + ". ";
 			}
@@ -433,7 +433,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				}
 				uaaPage.getStatusElement().status( 'Adding new report...' );
 				uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ Twinkle.getPref('summaryAd') );
-				uaaPage.setPageText( text.replace( /List begins below this line.\s*-->/, "List begins below this line.\n-->\n" + reason ) );  // add at top
+				uaaPage.setPageText( text.replace( /List begins below this line.\s*-->\s*/, "List begins below this line.\n-->\n" + reason + "\n\n" ) );  // add at top
 				uaaPage.save();
 			} );
 			break;
