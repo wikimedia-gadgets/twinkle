@@ -835,7 +835,7 @@ Twinkle.tag.callbacks = {
 		if( Twinkle.tag.mode !== 'redirect' ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
 			for( i = 0; i < params.tags.length; i++ ) {
-				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im' );
+				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\})|\\|\\s*' + params.tags[i] + '\\s*=[a-z ]+\\d+)', 'im' );
 				if( !tagRe.exec( pageText ) ) {
 					if( Twinkle.tag.multipleIssuesExceptions.indexOf(params.tags[i]) === -1 ) {
 						groupableTags = groupableTags.concat( params.tags[i] );
@@ -843,12 +843,42 @@ Twinkle.tag.callbacks = {
 						tags = tags.concat( params.tags[i] );
 					}
 				} else {
-					Morebits.status.info( 'Info', 'Found {{' + params.tags[i] +
+					Morebits.status.warn( 'Info', 'Found {{' + params.tags[i] +
 						'}} on the article already...excluding' );
 				}
 			}
 
-			if( params.group && groupableTags.length >= 3 ) {
+			var miTest = /\{\{(multiple ?issues|article ?issues|mi)[^}]+\{/im.exec(pageText);
+			var miOldStyleRegex = /\{\{(multiple ?issues|article ?issues|mi)\s*\|([^{]+)\}\}/im;
+			var miOldStyleTest = miOldStyleRegex.exec(pageText);
+
+			if( ( miTest || miOldStyleTest ) && groupableTags.length > 0 ) {
+				Morebits.status.info( 'Info', 'Adding supported tags inside existing {{multiple issues}} tag' );
+
+				groupableTags.sort();
+				tagText = "";
+
+				totalTags = groupableTags.length;
+				$.each(groupableTags, addTag);
+
+				summaryText += ' tag' + ( groupableTags.length > 1 ? 's' : '' ) + ' (within {{[[Template:multiple issues|multiple issues]]}})';
+				if( tags.length > 0 ) {
+					summaryText += ', and';
+				}
+
+				if( miOldStyleTest ) {
+					// convert tags from old-style to new-style
+					var split = miOldStyleTest[2].split("|");
+					$.each(split, function(index, val) {
+						split[index] = val.replace("=", "|date=").trim();
+					});
+					pageText = pageText.replace(miOldStyleRegex, "{{$1|\n{{" + split.join("}}\n{{") + "}}\n" + tagText + "}}\n");
+				} else {
+					var miRegex = new RegExp("(\\{\\{\\s*" + miTest[1] + "\\s*(?:\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?)\\}\\}\\s*", "im");
+					pageText = pageText.replace(miRegex, "$1" + tagText + "}}\n");
+				}
+				tagText = "";
+			} else if( params.group && groupableTags.length >= 3 ) {
 				Morebits.status.info( 'Info', 'Grouping supported tags inside {{multiple issues}}' );
 
 				groupableTags.sort();
@@ -872,7 +902,7 @@ Twinkle.tag.callbacks = {
 				if( !tagRe.exec( pageText ) ) {
 					tags = tags.concat( params.tags[i] );
 				} else {
-					Morebits.status.info( 'Info', 'Found {{' + params.tags[i] +
+					Morebits.status.warn( 'Info', 'Found {{' + params.tags[i] +
 						'}} on the redirect already...excluding' );
 				}
 			}
