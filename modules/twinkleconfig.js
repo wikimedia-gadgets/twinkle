@@ -413,6 +413,13 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 
+		{
+			name: "deleteRedirectsOnDelete",
+			label: "Check the \"also delete redirects\" box by default",
+			adminOnly: true,
+			type: "boolean"
+		},
+
 		// TwinkleConfig.deleteSysopDefaultToTag (boolean)
 		// Make the CSD screen default to "tag" instead of "delete" (admin only)
 		{
