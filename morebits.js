@@ -783,14 +783,9 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
 
 RegExp.escape = function( text, space_fix ) {
 
-	if ( !arguments.callee.sRE ) {
-		arguments.callee.sRE = /(\/|\.|\*|\+|\?|\||\(|\)|\[|\]|\{|\}|\\|\$|\^)/g;
-	}
-
-	text = text.replace( arguments.callee.sRE , '\\$1' );
+	text = $.escapeRE(text);
 
 	// Special MediaWiki escape - underscore/space are often equivalent
-
 	if( space_fix ) {
 		text = text.replace( / |_/g, '[_ ]' );
 	}
