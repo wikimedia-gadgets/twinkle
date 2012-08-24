@@ -892,10 +892,15 @@ Twinkle.tag.callbacks = {
 				"$1" + tagText);
 		}
 		summaryText += ( tags.length > 0 ? ' tag' + ( tags.length > 1 ? 's' : '' ) : '' ) +
-			' to ' + Twinkle.tag.mode + Twinkle.getPref('summaryAd');
+			' to ' + Twinkle.tag.mode;
+
+		// avoid truncated summaries
+		if (summaryText.length > (254 - Twinkle.getPref('summaryAd').length)) {
+			summaryText = summaryText.replace(/\[\[[^\|]+\|([^\]]+)\]\]/g, "$1");
+		}
 
 		pageobj.setPageText(pageText);
-		pageobj.setEditSummary(summaryText);
+		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
 		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
 		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
