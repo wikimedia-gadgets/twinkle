@@ -338,8 +338,7 @@ Twinkle.tag.article.tags = {
 	"unreliable sources": "article's references may not be reliable sources",
 	"update": "article needs additional up-to-date information added",
 	"very long": "article is too long",
-	"weasel": "article neutrality is compromised by the use of weasel words",
-	"wikify": "article needs to be wikified"
+	"weasel": "article neutrality is compromised by the use of weasel words"
 };
 
 // A list of tags in order of category
@@ -350,8 +349,7 @@ Twinkle.tag.article.tagCategories = {
 	"Cleanup and maintenance tags": {
 		"General cleanup": [
 			"cleanup",
-			"copy edit",
-			"wikify"
+			"copy edit"
 		],
 		"Potentially unwanted content": [
 			"close paraphrasing",
@@ -432,13 +430,12 @@ Twinkle.tag.article.tagCategories = {
 		"Language": [
 			"not English",
 			"rough translation",
-			"expand language"			
+			"expand language"
 		],
 		"Links": [
 			"dead end",
 			"orphan",
-			"overlinked",
-			"wikify"  // this tag is listed twice because it used to focus mainly on links, but now it's a more general cleanup tag
+			"overlinked"
 		],
 		"Referencing technique": [
 			"citation style",
@@ -784,15 +781,6 @@ Twinkle.tag.callbacks = {
 							return true;  // continue to next tag
 						} else if (roughlang !== "") {
 							currentTag += '|1=' + roughlang;
-						}
-						break;
-					case 'wikify':
-						var wreason = prompt('You can optionally enter a more specific reason why the article needs to be wikified.  \n' +
-							"Just click OK if you don't wish to enter this.  To skip the {{wikify}} tag, click Cancel.", "");
-						if (wreason === null) {
-							return true;  // continue to next tag
-						} else if (wreason !== "") {
-							currentTag += '|reason=' + wreason;
 						}
 						break;
 					case 'merge':
