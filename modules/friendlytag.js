@@ -82,14 +82,14 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 			form.append({ type: 'header', label: 'License and sourcing problem tags' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.licenseList } );
 
+			form.append({ type: 'header', label: 'Wikimedia Commons-related tags' });
+			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.commonsList } );
+
 			form.append({ type: 'header', label: 'Cleanup tags' } );
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.cleanupList } );
 
 			form.append({ type: 'header', label: 'Image quality tags' } );
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.qualityList } );
-
-			form.append({ type: 'header', label: 'Wikimedia Commons-related tags' });
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.commonsList } );
 
 			form.append({ type: 'header', label: 'Replacement tags' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.replacementList } );
@@ -594,6 +594,14 @@ Twinkle.tag.file.licenseList = [
 	{ label: '{{Non-free reduced}}: fair use media which has been reduced (old versions need to be deleted)', value: 'Non-free reduced' }
 ];
 
+Twinkle.tag.file.commonsList = [
+	{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
+	{ label: '{{Do not move to Commons}} (PD issue): file is PD in the US but not in country of origin', value: 'Do not move to Commons' },
+	{ label: '{{Do not move to Commons}} (other reason)', value: 'Do not move to Commons_reason' },
+	{ label: '{{Keep local}}: request to keep local copy of a Commons file', value: 'Keep local' },
+	{ label: '{{Now Commons}}: file has been copied to Commons', value: 'subst:ncd' }
+];
+
 Twinkle.tag.file.cleanupList = [
 	{ label: '{{Artifacts}}: PNG contains residual compression artifacts', value: 'Artifacts' },
 	{ label: '{{Bad font}}: SVG uses fonts not available on the thumbnail server', value: 'Bad font' },
@@ -645,14 +653,6 @@ Twinkle.tag.file.qualityList = [
 	{ label: '{{Image-Poor-Quality}}', value: 'Image-Poor-Quality' },
 	{ label: '{{Image-underexposure}}', value: 'Image-underexposure' },
 	{ label: '{{Low quality chem}}: disputed chemical structures', value: 'Low quality chem' }
-];
-
-Twinkle.tag.file.commonsList = [
-	{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
-	{ label: '{{Do not move to Commons}} (PD issue): file is PD in the US but not in country of origin', value: 'Do not move to Commons' },
-	{ label: '{{Do not move to Commons}} (other reason)', value: 'Do not move to Commons_reason' },
-	{ label: '{{Keep local}}: request to keep local copy of a Commons file', value: 'Keep local' },
-	{ label: '{{Now Commons}}: file has been copied to Commons', value: 'subst:ncd' }
 ];
 
 Twinkle.tag.file.replacementList = [
