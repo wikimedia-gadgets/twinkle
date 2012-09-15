@@ -1252,31 +1252,13 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					parameters["2"] = reason;
 					break;
 				case 'xfd':
-					var votepage = prompt( '[CSD G6: xfd] If the title of the discussion is different than the title of the page, and the deletion discussion is not in an unexpected location, please enter the title of the discussion here (leave empty to skip):', "" );
+					var votepage = prompt( '[CSD G6: xfd] Please provide a full link, without [[ ]], to the page where the deletion was discussed:', "" );
 					if (votepage === null)
 					{
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
-					var fullvotepage;
-					if (votepage === '')
-					{
-						fullvotepage = prompt( '[CSD G6: xfd] For pages where discussions are not where they are expected to be, please enter the full title of the discussion, including the namespace, here: (leave empty to skip):', "" );
-						if (fullvotepage === null)
-						{
-							statelem.error( 'Aborted by user.' );
-							return null;
-						}
-					}
-					if (votepage !== '') {
-						parameters.votepage = votepage;
-					}
-					if (fullvotepage !== '') {
-						parameters.fullvotepage = fullvotepage;
-					}
-					if (confirm('[CSD G6: xfd] If this page is a redirect that was discussed at RfD, click OK. Otherwise, click Cancel.')) {
-						parameters.redirect = "yes";
-					}
+					parameters.fullvotepage = votepage;
 					break;
 				case 'copypaste':
 					var copytitle = prompt( '[CSD G6: copypaste] Please enter the title of the original page that was copy-pasted here:', "" );
