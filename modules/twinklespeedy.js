@@ -1046,6 +1046,9 @@ Twinkle.speedy.callbacks = {
 						return;
 					}
 
+					// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page ...
+					if (initialContrib === "Cyberbot I" && params.normalizeds[0]==="f2") return;
+
 					var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")"),
 					    notifytext, i;
 
