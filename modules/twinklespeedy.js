@@ -1481,6 +1481,9 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	if (form.notify.checked) {
 		$.each(normalizeds, function(index, norm) {
 			if (Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1) {
+				if (norm === 'g6' && ['disambig', 'copypaste'].indexOf(values[index]) === -1) {
+					return true;
+				}
 				notifyuser = true;
 				return false;  // break
 			}

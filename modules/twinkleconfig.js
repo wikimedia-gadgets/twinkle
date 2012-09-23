@@ -31,7 +31,7 @@ Twinkle.config.commonSets = {
 		c1: "C1",
 		t2: "T2", t3: "T3",
 		r2: "R2", r3: "R3",
-		p1: "P1", p2: "P2"  // db-multiple is not listed here because it is treated differently within twinklespeedy
+		p1: "P1", p2: "P2"
 	},
 	csdCriteriaDisplayOrder: [
 		"db",
@@ -44,9 +44,21 @@ Twinkle.config.commonSets = {
 		"r2", "r3",
 		"p1", "p2"
 	],
+	csdCriteriaNotification: {
+		db: "Custom rationale ({{db}})",
+		g1: "G1", g2: "G2", g3: "G3", g4: "G4", g6: 'G6 ("unnecessary disambig." and "copy-paste move" only)',
+		g10: "G10", g11: "G11", g12: "G12",
+		a1: "A1", a2: "A2", a3: "A3", a5: "A5", a7: "A7", a9: "A9", a10: "A10",
+		u3: "U3",
+		f1: "F1", f2: "F2", f3: "F3", f7: "F7", f8: "F8", f9: "F9", f10: "F10",
+		c1: "C1",
+		t2: "T2", t3: "T3",
+		r2: "R2", r3: "R3",
+		p1: "P1", p2: "P2"
+	},
 	csdCriteriaNotificationDisplayOrder: [
 		"db",
-		"g1", "g2", "g3", "g4", "g10", "g11", "g12",
+		"g1", "g2", "g3", "g4", "g6", "g10", "g11", "g12",
 		"a1", "a2", "a3", "a5", "a7", "a9", "a10",
 		"u3",
 		"f1", "f2", "f3", "f7", "f9", "f10",
@@ -367,7 +379,7 @@ Twinkle.config.sections = [
 			label: "Notify page creator only when tagging with these criteria",
 			helptip: "Even if you choose to notify from the CSD screen, the notification will only take place for those criteria selected here.",
 			type: "set",
-			setValues: Twinkle.config.commonSets.csdCriteria,
+			setValues: Twinkle.config.commonSets.csdCriteriaNotification,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
 		},
 
@@ -379,7 +391,7 @@ Twinkle.config.sections = [
 			label: "Welcome page creator alongside notification when tagging with these criteria",
 			helptip: "The welcome is issued only if the user is notified about the deletion, and only if their talk page does not already exist. The template used is {{<a href=\"" + mw.util.wikiGetlink("Template:Firstarticle") + "\">firstarticle</a>}}.",
 			type: "set",
-			setValues: Twinkle.config.commonSets.csdCriteria,
+			setValues: Twinkle.config.commonSets.csdCriteriaNotification,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
 		},
 
