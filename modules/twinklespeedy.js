@@ -938,7 +938,7 @@ Twinkle.speedy.callbacks = {
 			statelem.status( 'Checking for tags on the page...' );
 
 			// check for existing deletion tags
-			var tag = /(?:\{\{\s*(db|delete|db-.*?)(?:\s*\||\s*\}\}))/.exec( text );
+			var tag = /(?:\{\{\s*(db|delete|db-.*?|speedy deletion-.*?)(?:\s*\||\s*\}\}))/.exec( text );
 			if( tag ) {
 				statelem.error( [ Morebits.htmlNode( 'strong', tag[1] ) , " is already placed on the page." ] );
 				return;
