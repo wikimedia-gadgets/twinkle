@@ -1278,6 +1278,10 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		if(!e.target.root.block_reason.disabled && Twinkle.warn.prev_block_reason === null) {
 			Twinkle.warn.prev_block_reason = e.target.root.block_reason.value;
 		}
+
+		// hack to fix something really weird - removed elements seem to somehow keep an association with the form
+		e.target.root.block_reason = null;
+
 		$(e.target.root).find("#block_fields").remove();
 
 		if(e.target.root.article.disabled && Twinkle.warn.prev_article !== null) {
