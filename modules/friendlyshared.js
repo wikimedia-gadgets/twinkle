@@ -103,17 +103,17 @@ Twinkle.shared.standardList = [
 	{ 
 		label: '{{Mobile IP}}: shared IP address template modified for mobile phone companies and their customers',
 		value: 'Mobile IP'
+	},
+	{
+		label: '{{Whois}}: template for IP addresses in need of monitoring, but unknown whether static, dynamic or shared',
+		value: 'Whois'
 	}
 ];
 
 Twinkle.shared.callback.change_shared = function friendlysharedCallbackChangeShared(e) {
-	if( e.target.value === 'Shared IP edu' ) {
-		e.target.form.contact.disabled = false;
-	} else {
-		e.target.form.contact.disabled = true;
-	}
-	e.target.form.organization.disabled=false;
-	e.target.form.host.disabled=false;
+	e.target.form.contact.disabled = (e.target.value !== 'Shared IP edu');  // only supported by {{Shared IP edu}}
+	e.target.form.organization.disabled = false;
+	e.target.form.host.disabled = (e.target.value === 'Whois');  // host= not supported by {{Whois}}
 };
 
 Twinkle.shared.callbacks = {
@@ -137,10 +137,10 @@ Twinkle.shared.callbacks = {
 
 		Morebits.status.info( 'Info', 'Will add the shared IP address template to the top of the user\'s talk page.' );
 		text += params.value + '|' + params.organization;
-		if( params.value === 'shared IP edu' && params.contact !== '') {
+		if( params.value === 'Shared IP edu' && params.contact !== '') {
 			text += '|' + params.contact;
 		}
-		if( params.host !== '' ) {
+		if( params.value !== 'Whois' && params.host !== '' ) {
 			text += '|host=' + params.host;
 		}
 		text += '}}\n\n';
