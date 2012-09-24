@@ -983,10 +983,6 @@ Twinkle.warn.messages = {
 			label:"Personal info", 
 			summary:"Warning: Personal info" 
 		},
-		"uw-protect": { 
-			label:"Attempting to pursue an inappropriate relationship with another user", 
-			summary:"Warning: Attempting to pursue an inappropriate relationship with another user" 
-		},
 		"uw-socksuspect": {
 			label:"Sockpuppetry",
 			summary:"Warning: You are a suspected [[WP:SOCK|sockpuppet]]"  // of User:...
