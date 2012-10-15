@@ -947,6 +947,10 @@ Twinkle.warn.messages = {
 			label:"Linking to copyrighted works violation",
 			summary:"Warning: Linking to copyrighted works violation" 
 		},
+		"uw-copyright-new": { 
+			label:"Copyright violation (for new users)",
+			summary:"Warning: Copyright violation (for new users)" 
+		},
 		"uw-copyright-remove": {
 			label:"Removing {{copyvio}} template from articles",
 			summary:"Warning: Removing {{copyvio}} templates"
@@ -1300,7 +1304,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	var value = e.target.form.sub_group.value;
 
 	if( main_group === 'singlenotice' || main_group === 'singlewarn' ) {
-		if( value === 'uw-bite' || value === 'uw-username' || value === 'uw-socksuspect' ) {
+		if( value === 'uw-bite' || value === 'uw-username' || value === 'uw-socksuspect' || value === 'uw-copyright-new' ) {
 			if(Twinkle.warn.prev_article === null) {
 				Twinkle.warn.prev_article = e.target.form.article.value;
 			}
@@ -1367,6 +1371,9 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	} else if (value === "uw-bite") {
 		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
 		Morebits.quickForm.overrideElementLabel(e.target.form.article, "Username of 'bitten' user (without User:) ");
+	} else if (value === "uw-copyright-new") {
+		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
+		Morebits.quickForm.overrideElementLabel(e.target.form.article, "Article to which user had added copyrighted content ");
 	} else {
 		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, true);
 		Morebits.quickForm.resetElementLabel(e.target.form.article);
