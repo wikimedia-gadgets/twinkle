@@ -947,6 +947,10 @@ Twinkle.warn.messages = {
 			label:"Linking to copyrighted works violation",
 			summary:"Warning: Linking to copyrighted works violation" 
 		},
+		"uw-copyright-new": { 
+			label:"Copyright violation (with explanation for new users)",
+			summary:"Notice: Avoiding copyright problems"
+		},
 		"uw-copyright-remove": {
 			label:"Removing {{copyvio}} template from articles",
 			summary:"Warning: Removing {{copyvio}} templates"
