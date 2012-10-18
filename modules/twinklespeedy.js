@@ -1075,8 +1075,15 @@ Twinkle.speedy.callbacks = {
 					}
 					notifytext += (params.welcomeuser ? "" : "|nowelcome=yes") + "}} ~~~~";
 
+					var editsummary = "Notification: speedy deletion nomination";
+					if (params.normalizeds.indexOf("g10") === -1) {  // no article name in summary for G10 deletions
+						editsummary += " of [[" + mw.config.get('wgPageName') + "]].";
+					} else {
+						editsummary += " of an attack page.";
+					}
+
 					usertalkpage.setAppendText(notifytext);
-					usertalkpage.setEditSummary("Notification: speedy deletion nomination of [[" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
+					usertalkpage.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 					usertalkpage.setCreateOption('recreate');
 					usertalkpage.setFollowRedirect(true);
 					usertalkpage.append();
