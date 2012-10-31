@@ -253,7 +253,7 @@ Twinkle.config.sections = [
 		{
 			name: "prodLogPageName",
 			label: "Keep the PROD userspace log at this user subpage",
-			helptip: "i.e. User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the PROD userspace log.",
+			helptip: "Enter a subpage name in this box. You will find your PROD log at User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the PROD userspace log.",
 			type: "string"
 		}
 	]
@@ -467,7 +467,7 @@ Twinkle.config.sections = [
 		{
 			name: "speedyLogPageName",
 			label: "Keep the CSD userspace log at this user subpage",
-			helptip: "i.e. User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the CSD userspace log.",
+			helptip: "Enter a subpage name in this box. You will find your CSD log at User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the CSD userspace log.",
 			type: "string"
 		},
 		{
