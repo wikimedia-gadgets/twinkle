@@ -281,7 +281,7 @@ Twinkle.tag.article.tags = {
 	"context": "article provides insufficient context",
 	"copy edit": "article needs copy editing for grammar, style, cohesion, tone, and/or spelling",
 	"copypaste": "article appears to have been copied and pasted from a source",
-	"dead end": "article has few or no links to other articles",
+	"dead end": "article has no links to other articles",
 	"disputed": "article has questionable factual accuracy",
 	"essay-like": "article is written like an essay and needs cleanup",
 	"expand language": "article can be expanded with material from a foreign-language Wikipedia",	
