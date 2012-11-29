@@ -599,6 +599,13 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		value: 'spam',
 		tooltip: 'Pages which exclusively promote a company, product, group, service, or person and which would need to be fundamentally rewritten in order to become encyclopedic. Note that an article about a company or a product which describes its subject from a neutral point of view does not qualify for this criterion; an article that is blatant advertising should have inappropriate content as well'
 	});
+	if (!multiple) {
+		result.push({
+			label: 'G11: Spam user page',
+			value: 'spamuser',
+			tooltip: 'User pages which exclusively promote a company, product, group, service, or person and which serve no purpose to the encyclopedia.'
+		});
+	}
 	result.push({
 		label: 'G12: Unambiguous copyright infringement',
 		value: 'copyvio',
@@ -650,6 +657,7 @@ Twinkle.speedy.normalizeHash = {
 	'attack': 'g10',
 	'negublp': 'g10',
 	'spam': 'g11',
+	'spamuser': 'g11',
 	'copyvio': 'g12',
 	'nocontext': 'a1',
 	'foreign': 'a2',
