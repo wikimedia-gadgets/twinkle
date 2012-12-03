@@ -213,7 +213,7 @@ Twinkle.speedy.callback.dbMultipleChanged = function twinklespeedyCallbackDbMult
 		case 2:  // user
 		case 3:  // user talk
 			work_area.append( { type: 'header', label: 'User pages' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.userList } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.getUserList(value) } );
 			break;
 
 		case 6:  // file
@@ -435,23 +435,32 @@ Twinkle.speedy.categoryList = [
 	}
 ];
 
-Twinkle.speedy.userList = [
-	{
+Twinkle.speedy.getUserList = function twinklespeedyGetTemplateList(multiple) {
+	var result = [];
+	result.push({
 		label: 'U1: User request',
 		value: 'userreq',
 		tooltip: 'Personal subpages, upon request by their user. In some rare cases there may be administrative need to retain the page. Also, sometimes, main user pages may be deleted as well. See Wikipedia:User page for full instructions and guidelines'
-	},
-	{
+	});
+	result.push({
 		label: 'U2: Nonexistent user',
 		value: 'nouser',
 		tooltip: 'User pages of users that do not exist (Check Special:Listusers)'
-	},
-	{
+	});
+	result.push({
 		label: 'U3: Non-free galleries',
 		value: 'gallery',
 		tooltip: 'Galleries in the userspace which consist mostly of "fair use" or non-free files. Wikipedia\'s non-free content policy forbids users from displaying non-free files, even ones they have uploaded themselves, in userspace. It is acceptable to have free files, GFDL-files, Creative Commons and similar licenses along with public domain material, but not "fair use" files'
+	});
+	if (!multiple) {
+		result.push({
+			label: 'G11: Spam user page',
+			value: 'spamuser',
+			tooltip: 'User pages which exclusively promote a company, product, group, service, or person and which serve no purpose to the encyclopedia.'
+		});
 	}
-];
+	return result;
+};
 
 Twinkle.speedy.getTemplateList = function twinklespeedyGetTemplateList(multiple) {
 	var result = [];
@@ -599,13 +608,6 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		value: 'spam',
 		tooltip: 'Pages which exclusively promote a company, product, group, service, or person and which would need to be fundamentally rewritten in order to become encyclopedic. Note that an article about a company or a product which describes its subject from a neutral point of view does not qualify for this criterion; an article that is blatant advertising should have inappropriate content as well'
 	});
-	if (!multiple) {
-		result.push({
-			label: 'G11: Spam user page',
-			value: 'spamuser',
-			tooltip: 'User pages which exclusively promote a company, product, group, service, or person and which serve no purpose to the encyclopedia.'
-		});
-	}
 	result.push({
 		label: 'G12: Unambiguous copyright infringement',
 		value: 'copyvio',
