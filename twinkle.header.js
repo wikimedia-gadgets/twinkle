@@ -275,7 +275,7 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 		root.appendChild( outerDiv );
 	}
 
-	var h5 = document.createElement( "h5" );
+	var h5 = document.createElement( "h3" );
 	if ( type === "menu" ) {
 		var span = document.createElement( "span" );
 		span.appendChild( document.createTextNode( text ) );

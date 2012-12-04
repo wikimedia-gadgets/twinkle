@@ -157,17 +157,19 @@ div.morebits-previewbox span.editsection
 
 /* Portlet */
 
-.skin-vector div div.extraMenu h5 span {
+.skin-vector div div.extraMenu h3 span {
 	background-position: 90% 50%;
 }
 
-.skin-vector div.extraMenu h5 a {
+.skin-vector div.extraMenu h3 a {
 	padding-left: .4em;
 	padding-right: .4em;
 	width: auto;
+	font-size: 0.78em;
+	padding-bottom: 0.5em;
 }
 
-.skin-vector div.extraMenu h5 a span {
+.skin-vector div.extraMenu h3 a span {
 	display: inline-block;
 	font-size: .8em;
 	height: 2.5em;
