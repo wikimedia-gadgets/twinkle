@@ -454,9 +454,9 @@ Twinkle.speedy.getUserList = function twinklespeedyGetTemplateList(multiple) {
 	});
 	if (!multiple) {
 		result.push({
-			label: 'G11: Spam user page',
+			label: 'G11: Promotional user page under a promotional user name',
 			value: 'spamuser',
-			tooltip: 'User pages which exclusively promote a company, product, group, service, or person and which serve no purpose to the encyclopedia.'
+			tooltip: 'A promotional user page, with a username that promotes or implies affiliation with the thing being promoted. Note that simply having a page on a company or product in one\'s userspace does not qualify it for deletion. If a user page is spammy but the username is not, then consider tagging with regular G11 instead.'
 		});
 	}
 	return result;
