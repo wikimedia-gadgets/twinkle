@@ -21,6 +21,8 @@ Twinkle.batchundelete = function twinklebatchundelete() {
 
 Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	var Window = new Morebits.simpleWindow( 800, 400 );
+	Window.setScriptName("Twinkle");
+	Window.setTitle("Batch undelete")
 	var form = new Morebits.quickForm( Twinkle.batchundelete.callback.evaluate );
 	form.append( {
 			type: 'textarea',
@@ -72,8 +74,10 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 	var pages = event.target.getChecked( 'pages' );
 	var reason = event.target.reason.value;
 	if( ! reason ) {
+		alert("You need to give a reason, you cabal crony!");
 		return;
 	}
+	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init( event.target );
 
 	if( !pages ) {
@@ -99,34 +103,24 @@ Twinkle.batchundelete.callbacks = {
 			for( var i = 0; i < pages.length; ++i ) {
 				var title = pages[i];
 				var query = { 
-					'title': 'Special:Undelete',
-					'target': title,
-					'action': 'submit'
+					'token': mw.user.tokens.get().editToken,
+					'title': title,
+					'action': 'undelete',
+					'reason': reason + Twinkle.getPref('deletionSummaryAd')
 				};
-				var wikipedia_wiki = new Morebits.wiki.legacyWiki( "Undeleting " + title, query, Twinkle.batchundelete.callbacks.undeletePage, function( self ) { 
+				var wikipedia_api = new Morebits.wiki.api( "Undeleting " + title, query, function( self ) { 
 						--Twinkle.batchundelete.currentUndeleteCounter;
 						var link = document.createElement( 'a' );
-						link.setAttribute( 'href', mw.util.wikiGetlink(self.params.title) );
-						link.setAttribute( 'title', self.params.title );
-						link.appendChild( document.createTextNode(self.params.title) );
+						link.setAttribute( 'href', mw.util.wikiGetlink(self.itsTitle) );
+						link.setAttribute( 'title', self.itsTitle );
+						link.appendChild( document.createTextNode(self.itsTitle) );
 						self.statelem.info( ['completed (',link,')'] );
 
 					});
-				wikipedia_wiki.params = { title:title, reason: reason };
-				wikipedia_wiki.get();
+				wikipedia_api.itsTitle = title;
+				wikipedia_api.post();
 
 			}
 		}
-	},
-	undeletePage: function( self ) {
-		var form = self.responseXML.getElementById('undelete');
-		var postData = {
-			'wpComment': self.params.reason + '.' +  Twinkle.getPref('deletionSummaryAd'),
-			'target': self.params.image,
-			'wpEditToken': form.wpEditToken.value,
-			'restore': 1
-		};
-		self.post( postData );
-
 	}
 };
