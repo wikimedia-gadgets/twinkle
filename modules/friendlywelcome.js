@@ -353,7 +353,7 @@ Twinkle.welcome.templates = {
 	"welcomelaws": {
 		description: "welcome with information about copyrights, NPOV, the sandbox, and vandalism",
 		linkedArticle: false,
-		syntax: "{{subst:welcomelaws|$USERNAME$}}"
+		syntax: "{{subst:welcomelaws|$USERNAME$}} ~~~~"
 	},
 	"first article": {
 		description: "for someone whose first article did not meet page creation guidelines",
