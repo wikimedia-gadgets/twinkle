@@ -34,7 +34,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		return;
 	}
 	if( mw.config.get('wgTitle').split( '/' )[0] === mw.config.get('wgUserName') &&
-			!confirm( 'Warning yourself can be seen as a sign of mental instability! Are you sure you want to proceed?' ) ) {
+			!confirm( 'You are about to warn yourself! Are you sure you want to proceed?' ) ) {
 		return;
 	}
 	
