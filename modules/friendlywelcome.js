@@ -214,7 +214,8 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcomespam",
 				"welcomeunsourced",
 				"welcomeauto",
-				"welcome-COI"
+				"welcome-COI",
+				"welcome-image"
 			]);
 			break;
 		case "anonymous":
@@ -389,6 +390,11 @@ Twinkle.welcome.templates = {
 		description: "for someone who has edited in areas where they may have a conflict of interest",
 		linkedArticle: true,
 		syntax: "{{subst:welcome-COI|$USERNAME$|art=$ARTICLE$}} ~~~~"
+	},
+	"welcome-image": {
+		description: "welcome with additional information about images (policy and procedure)",
+		linkedArticle: true,
+		syntax: "{{subst:welcome-image}}"
 	},
 
 	// ANONYMOUS USER WELCOMES
