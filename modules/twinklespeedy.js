@@ -471,9 +471,14 @@ Twinkle.speedy.getTemplateList = function twinklespeedyGetTemplateList(multiple)
 	});
 	if (!multiple) {
 		result.push({
+			label: 'T3: Duplicate templates or hardcoded instances',
+			value: 'duplicatetemplate',
+			tooltip: 'Templates that are either substantial duplications of another template or hardcoded instances of another template where the same functionality could be provided by that other template'
+		});
+		result.push({
 			label: 'T3: Templates that are not employed in any useful fashion',
 			value: 't3',
-			tooltip: 'Templates that are either substantial duplications of another template or hardcoded instances of another template where the same functionality could be provided by that other template'
+			tooltip: 'This criterion allows you to provide a rationale. In many cases, another criterion will be more appropriate, such as G1, G2, G6, or G8.'
 		});
 	}
 	return result;
@@ -693,6 +698,7 @@ Twinkle.speedy.normalizeHash = {
 	'nouser': 'u2',
 	'gallery': 'u3',
 	'policy':'t2',
+	'duplicatetemplate': 't3',
 	't3': 't3',
 	'p1': 'p1',
 	'emptyportal': 'p2'
@@ -1369,14 +1375,28 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			parameters.filename = img;
 			break;
 		case 't3':
-			var template = prompt( '[CSD T3] Enter the template this is redundant to, excluding the "Template:" prefix:', "" );
-			if (template === null)
-			{
-				statelem.error( 'Aborted by user.' );
-				return null;
+			switch( value ) {
+				case 'duplicatetemplate':
+					var template = prompt( '[CSD T3] Enter the template this is redundant to, excluding the "Template:" prefix:', "" );
+					if (template === null)
+					{
+						statelem.error( 'Aborted by user.' );
+						return null;
+					}
+					parameters["1"] = "~~~~~";
+					parameters["2"] = template;
+					break;
+				default:
+					var t3rationale = prompt( '[CSD T3] Please enter a mandatory rationale:', "" );
+					if (!t3rationale || !t3rationale.replace(/^\s*/, "").replace(/\s*$/, ""))
+					{
+						statelem.error( 'Aborted by user.' );
+						return null;
+					}
+					parameters["1"] = "~~~~~";
+					parameters.rationale = t3rationale;
+					break;
 			}
-			parameters["1"] = "~~~~~";
-			parameters["2"] = template;
 			break;
 		case 'g10':
 			parameters.blanked = 'yes';
