@@ -228,6 +228,10 @@ Twinkle.warn.messages = {
 			label:"Not assuming good faith", 
 			summary:"General note: Not assuming good faith" 
 		},
+		"uw-af1": {
+			label:"Inappropriate feedback through the Article Feedback Tool",
+			summary:"General note: Inappropriate feedback through the Article Feedback Tool"
+		},
 		"uw-own1": { 
 			label:"Ownership of articles", 
 			summary:"General note: Ownership of articles"
@@ -357,6 +361,10 @@ Twinkle.warn.messages = {
 		"uw-agf2": { 
 			label:"Not assuming good faith", 
 			summary:"Caution: Not assuming good faith" 
+		},
+		"uw-af2": {
+			label:"Inappropriate feedback through the Article Feedback Tool",
+			summary:"Caution: Inappropriate feedback through the Article Feedback Tool"
 		},
 		"uw-own2": { 
 			label:"Ownership of articles", 
@@ -488,6 +496,10 @@ Twinkle.warn.messages = {
 			label:"Not assuming good faith", 
 			summary:"Warning: Not assuming good faith" 
 		},
+		"uw-af3": {
+			label:"Inappropriate feedback through the Article Feedback Tool",
+			summary:"Warning: Inappropriate feedback through the Article Feedback Tool"
+		},
 		"uw-own3": { 
 			label:"Ownership of articles", 
 			summary:"Warning: Ownership of articles"
@@ -610,6 +622,10 @@ Twinkle.warn.messages = {
 		"uw-npa4": { 
 			label:"Personal attack directed at a specific editor", 
 			summary:"Final warning: Personal attack directed at a specific editor"
+		},
+		"uw-af4": {
+			label:"Inappropriate feedback through the Article Feedback Tool",
+			summary:"Final warning: Inappropriate feedback through the Article Feedback Tool"
 		}
 
 	},
@@ -665,6 +681,10 @@ Twinkle.warn.messages = {
 		"uw-npa4im": { 
 			label:"Personal attack directed at a specific editor", 
 			summary:"Only warning: Personal attack directed at a specific editor"
+		},
+		"uw-af4im": {
+			label:"Inappropriate feedback through the Article Feedback Tool",
+			summary:"Only warning: Inappropriate feedback through the Article Feedback Tool"
 		}
 	},
 	singlenotice: {
