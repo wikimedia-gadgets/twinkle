@@ -571,6 +571,10 @@ Twinkle.warn.messages = {
 			label:"Not adhering to neutral point of view", 
 			summary:"Final warning: Not adhering to neutral point of view" 
 		},
+		"uw-unsourced4": {
+			label:"Addition of unsourced or improperly cited material",
+			summary:"Final warning: Addition of unsourced or improperly cited material"
+		},
 		"uw-error4": { 
 			label:"Introducing deliberate factual errors", 
 			summary:"Final Warning: Introducing deliberate factual errors"
