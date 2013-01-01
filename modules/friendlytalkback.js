@@ -164,6 +164,11 @@
 					});
 				noticeboard.append({
 						type: "option",
+						label: "WP:HD (Help desk)",
+						value: "hd"
+					});
+				noticeboard.append({
+						type: "option",
 						label: "WP:WQA (Wikiquette assistance)",
 						value: "wqa"
 					});
@@ -276,6 +281,11 @@
 				case "drn":
 					text = "\n\n{{subst:DRN-notice|thread=" + section + "}} ~~~~";
 					talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Dispute resolution noticeboard]]" + Twinkle.getPref("summaryAd") );
+					break;
+				case "hd":
+					text = "\n\n== Your question at the Help desk ==\n";
+					text += "{{helpdeskreply|1=" + section + "|ts=~~~~~}}";
+					talkpage.setEditSummary( "Notification of replies at [[Wikipedia:Help desk]]" + Twinkle.getPref("summaryAd") );
 					break;
 				case "wqa":
 					text = "\n\n{{subst:WQA-notice|thread=" + section + "}} ~~~~";
