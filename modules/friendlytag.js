@@ -320,7 +320,7 @@ Twinkle.tag.article.tags = {
 	"peacock": "article may contain peacock terms that promote the subject without adding information",
 	"plot": "plot summary in article is too long",
 	"POV": "article does not maintain a neutral point of view",
-	"primary sources": "article relies too heavily on first-hand sources, and needs third-party sources",
+	"primary sources": "article relies too heavily on primary sources, and needs secondary sources",
 	"prose": "article is in a list format that may be better presented using prose",
 	"recentism": "article is slanted towards recent events",
 	"ref improve": "article needs additional references or sources for verification",
@@ -329,6 +329,7 @@ Twinkle.tag.article.tags = {
 	"self-published": "article may contain improper references to self-published sources",
 	"technical": "article may be too technical for the uninitiated reader",
 	"tense": "article is written in an incorrect tense",
+	"third-party": "article relies too heavily on affiliated sources, and needs third-party sources",
 	"tone": "tone of article is not appropriate",
 	"too few opinions": "article may not include all significant viewpoints",
 	"uncategorized": "article is uncategorized",
@@ -423,6 +424,7 @@ Twinkle.tag.article.tagCategories = {
 			"primary sources",
 			"ref improve",
 			"self-published",
+			"third-party",
 			"unreferenced",
 			"unreliable sources"
 		]
