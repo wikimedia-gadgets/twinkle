@@ -696,6 +696,18 @@ Twinkle.warn.messages = {
 			label:"Creating double redirects through bad page moves", 
 			summary:"Notice: Creating double redirects through bad page moves" 
 		},
+		"uw-af-contact": {
+			label:"Attempting to contact the subject of an article via article feedback",
+			summary:"Notice: Contacting the subject of an article via article feedback"
+		},
+		"uw-af-personalinfo": {
+			label:"Including personal info in article feedback",
+			summary:"Notice: Including personal info in article feedback"
+		},
+		"uw-af-question": {
+			label:"Asking questions in article feedback",
+			summary:"Notice: Asking questions in article feedback"
+		},
 		"uw-aiv": { 
 			label:"Bad AIV report", 
 			summary:"Notice: Bad AIV report" 
