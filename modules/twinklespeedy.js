@@ -408,6 +408,11 @@ Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 			value: 'animal',
 			tooltip: 'Article about an individual animal (e.g. pet) that does not assert the importance or significance of its subject'
 		});
+		result.push({
+			label: 'A7: Unremarkable organized event',
+			value: 'event',
+			tooltip: 'Article about an organized event (tour, function, meeting, party, etc.) that does not assert the importance or significance of its subject'
+		});
 	}
 	result.push({
 		label: 'A9: Unremarkable musical recording where artist\'s article doesn\'t exist',
@@ -677,6 +682,7 @@ Twinkle.speedy.normalizeHash = {
 	'band': 'a7',
 	'club': 'a7',
 	'animal': 'a7',
+	'event': 'a7',
 	'a9': 'a9',
 	'a10': 'a10',
 	'rediruser': 'r2',
