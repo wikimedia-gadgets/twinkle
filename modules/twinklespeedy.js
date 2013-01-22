@@ -543,9 +543,9 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		tooltip: 'A copy, by any title, of a page that was deleted via an XfD process or Deletion review, provided that the copy is substantially identical to the deleted version. This clause does not apply to content that has been "userfied", to content undeleted as a result of Deletion review, or if the prior deletions were proposed or speedy deletions, although in this last case, other speedy deletion criteria may still apply'
 	});
 	result.push({
-		label: 'G5: Banned user',
+		label: 'G5: Banned or blocked user',
 		value: 'banned',
-		tooltip: 'Pages created by banned users while they were banned'
+		tooltip: 'Pages created by banned or blocked users in violation of their ban or block, and which have no substantial edits by others'
 	});
 	if (!multiple) {
 		result.push({
@@ -556,7 +556,7 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		result.push({
 			label: 'G6: Move',
 			value: 'move',
-			tooltip: 'Making way for a noncontroversial move like reversing a redirect'
+			tooltip: 'Making way for an uncontroversial move like reversing a redirect'
 		});
 		result.push({
 			label: 'G6: XfD',
