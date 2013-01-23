@@ -1035,6 +1035,9 @@ Twinkle.tag.callbacks = {
 						text = text.replace(/\{\{\s*(Template\s*:\s*)?(Non-free reduce|FairUseReduce|Fairusereduce|Fair Use Reduce|Fair use reduce|Reduce size|Reduce|Fair-use reduce|Image-toobig|Comic-ovrsize-img|Non-free-reduce|Nfr|Smaller image|Nonfree reduce)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 						currentTag += "|date={{subst:date}}";
 						break;
+					case "Copy to Commons":
+						currentTag += "|human=" + mw.config.get("wgUserName");
+						break;
 					default:
 						break;  // don't care
 				}
