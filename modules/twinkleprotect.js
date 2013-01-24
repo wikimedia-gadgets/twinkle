@@ -854,26 +854,24 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 			Morebits.wiki.actionCompleted.notice = "Protection complete";
 
-			thispage.protect();
-			/* falls through */
+			thispage.protect(function() { 
+				thispage.getStatusElement().info("done");
+				if (tagparams) {
+					Twinkle.protect.callbacks.taggingPageInitial(tagparams);
+				}
+			});
+			break;
+
 		case 'tag':
 
-			if (actiontype === 'tag') {
-				Morebits.simpleWindow.setButtonsEnabled( false );
-				Morebits.status.init( form );
-				Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-				Morebits.wiki.actionCompleted.followRedirect = false;
-				Morebits.wiki.actionCompleted.notice = "Tagging complete";
-			}
+			Morebits.simpleWindow.setButtonsEnabled( false );
+			Morebits.status.init( form );
 
-			if (tagparams.tag === 'noop') {
-				Morebits.status.info("Applying protection template", "nothing to do");
-				break;
-			}
+			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+			Morebits.wiki.actionCompleted.followRedirect = false;
+			Morebits.wiki.actionCompleted.notice = "Tagging complete";
 
-			var protectedPage = new Morebits.wiki.page( mw.config.get('wgPageName'), 'Tagging page');
-			protectedPage.setCallbackParameters( tagparams );
-			protectedPage.load( Twinkle.protect.callbacks.taggingPage );
+			Twinkle.protect.callbacks.taggingPageInitial(tagparams);
 			break;
 
 		case 'request':
@@ -1004,6 +1002,16 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 };
 
 Twinkle.protect.callbacks = {
+	taggingPageInitial: function( tagparams ) {
+		if (tagparams.tag === 'noop') {
+			Morebits.status.info("Applying protection template", "nothing to do");
+			return;
+		}
+
+		var protectedPage = new Morebits.wiki.page( mw.config.get('wgPageName'), 'Tagging page');
+		protectedPage.setCallbackParameters( tagparams );
+		protectedPage.load( Twinkle.protect.callbacks.taggingPage );
+	},
 	taggingPage: function( protectedPage ) {
 		var params = protectedPage.getCallbackParameters();
 		var text = protectedPage.getPageText();
