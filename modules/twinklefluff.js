@@ -285,12 +285,10 @@ Twinkle.fluff.callbacks = {
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 			Morebits.wiki.actionCompleted.notice = "Reversion completed";
 
-			var wikipedia_api = new Morebits.wiki.api( 'Saving reverted contents', query, null/*Twinkle.fluff.callbacks.toRevision.complete*/, self.statelem);
+			var wikipedia_api = new Morebits.wiki.api( 'Saving reverted contents', query, Twinkle.fluff.callbacks.complete, self.statelem);
 			wikipedia_api.params = self.params;
 			wikipedia_api.post();
 
-		},
-		complete: function (self) {
 		}
 	},
 	main: function( self ) {
@@ -507,8 +505,16 @@ Twinkle.fluff.callbacks = {
 		wikipedia_api.post();
 
 	},
-	complete: function (self) {
-		self.statelem.info("done");
+	complete: function (apiobj) {
+		var blacklist = $(apiobj.getXML()).find('edit').attr('spamblacklist');
+		if (blacklist) {
+			var code = document.createElement('code');
+			code.style.fontFamily = "monospace";
+			code.appendChild(document.createTextNode(blacklist));
+			apiobj.statelem.error(['Could not rollback because the URL ', code, ' is on the spam blacklist.']);
+		} else {
+			apiobj.statelem.info("done");
+		}
 	}
 };
 
