@@ -1602,31 +1602,37 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	var ctx = {
 		 // backing fields for public properties
 		pageName: pageName,
+		pageExists: false,
+		editSummary: null,
+		callbackParameters: null,
+		statusElement: new Morebits.status(currentAction),
+		 // - edit
 		pageText: null,
 		editMode: 'all',  // save() replaces entire contents of the page by default
 		appendText: null,   // can't reuse pageText for this because pageText is needed to follow a redirect
 		prependText: null,  // can't reuse pageText for this because pageText is needed to follow a redirect
-		editSummary: null,
 		createOption: null,
 		minorEdit: false,
 		pageSection: null,
 		maxConflictRetries: 2,
 		maxRetries: 2,
-		callbackParameters: null,
-		statusElement: new Morebits.status(currentAction),
 		followRedirect: false,
 		watchlistOption: 'nochange',
-		pageExists: false,
 		creator: null,
+		 // - revert
 		revertOldID: null,
+		 // - move
 		moveDestination: null,
 		moveTalkPage: false,
 		moveSubpages: false,
 		moveSuppressRedirect: false,
+		 // - protect
 		protectEdit: null,
 		protectMove: null,
 		protectCreate: null,
 		protectCascade: false,
+		 // - stabilize (FlaggedRevs)
+		flaggedRevs: null,
 		 // internal status
 		pageLoaded: false,
 		editToken: null,
@@ -1649,6 +1655,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		onDeleteFailure: null,
 		onProtectSuccess: null,
 		onProtectFailure: null,
+		onStabilizeSuccess: null,
+		onStabilizeFailure: null,
 		 // internal objects
 		loadQuery: null,
 		loadApi: null,
@@ -1659,7 +1667,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		deleteApi: null,
 		deleteProcessApi: null,
 		protectApi: null,
-		protectProcessApi: null
+		protectProcessApi: null,
+		stabilizeApi: null,
+		stabilizeProcessApi: null
 	};
 
 	/**
@@ -1762,6 +1772,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	this.setCascadingProtection = function(flag) {
 		ctx.protectCascade = !!flag;
+	};
+	
+	this.setFlaggedRevs = function(level, expiry) {
+		ctx.flaggedRevs = { level: level, expiry: expiry };
 	};
 
 	this.getStatusElement = function() {
@@ -2082,6 +2096,42 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.protectApi = new Morebits.wiki.api("retrieving protect token...", query, fnProcessProtect, ctx.statusElement);
 		ctx.protectApi.setParent(this);
 		ctx.protectApi.post();
+	};
+	
+	// apply FlaggedRevs protection-style settings
+	// only works where $wgFlaggedRevsProtection = true (i.e. where FlaggedRevs
+	// settings appear on the wiki's "protect" tab)
+	this.stabilize = function(onSuccess, onFailure) {
+		// if a non-admin tries to do this, don't bother
+		if (!Morebits.userIsInGroup('sysop')) {
+			ctx.statusElement.error("Cannot apply FlaggedRevs settings: only admins can do that");
+			return;
+		}
+		if (!ctx.flaggedRevs) {
+			ctx.statusElement.error("Internal error: you must set flaggedRevs before calling stabilize()!");
+			return;
+		}
+		if (!ctx.editSummary) {
+			ctx.statusElement.error("Internal error: reason not set before calling stabilize() (use setEditSummary function)!");
+			return;
+		}
+
+		ctx.onStabilizeSuccess = onSuccess;
+		ctx.onStabilizeFailure = onFailure;
+
+		var query = {
+			action: 'query',
+			prop: 'info|flagged',
+			intoken: 'edit',
+			titles: ctx.pageName
+		};
+		if (ctx.followRedirect) {
+			query.redirects = '';  // follow all redirects
+		}
+
+		ctx.stabilizeApi = new Morebits.wiki.api("retrieving stabilize token...", query, fnProcessStabilize, ctx.statusElement);
+		ctx.stabilizeApi.setParent(this);
+		ctx.stabilizeApi.post();
 	};
 
 	/**
@@ -2453,6 +2503,38 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.protectProcessApi = new Morebits.wiki.api("protecting page...", query, ctx.onProtectSuccess, ctx.statusElement, ctx.onProtectFailure);
 		ctx.protectProcessApi.setParent(this);
 		ctx.protectProcessApi.post();
+	};
+
+	var fnProcessStabilize = function() {
+		var xml = ctx.stabilizeApi.getXML();
+
+		var missing = ($(xml).find('page').attr('missing') === "");
+		if (missing) {
+			ctx.statusElement.error("Cannot protect the page, because it no longer exists");
+			return;
+		}
+
+		var stabilizeToken = $(xml).find('page').attr('edittoken');
+		if (!stabilizeToken) {
+			ctx.statusElement.error("Failed to retrieve stabilize token.");
+			return;
+		}
+
+		var query = {
+			action: 'stabilize',
+			title: $(xml).find('page').attr('title'),
+			token: stabilizeToken,
+			protectlevel: ctx.flaggedRevs.level,
+			expiry: ctx.flaggedRevs.expiry,
+			reason: ctx.editSummary
+		};
+		if (ctx.watchlistOption === 'watch') {
+			query.watch = 'true';
+		}
+
+		ctx.stabilizeProcessApi = new Morebits.wiki.api("configuring stabilization settings...", query, ctx.onStabilizeSuccess, ctx.statusElement, ctx.onStabilizeFailure);
+		ctx.stabilizeProcessApi.setParent(this);
+		ctx.stabilizeProcessApi.post();
 	};
 }; // end Morebits.wiki.page
 
