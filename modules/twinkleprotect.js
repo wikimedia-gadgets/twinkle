@@ -90,7 +90,7 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	if (Morebits.userIsInGroup('sysop')) {
 		var query = {
 			action: 'query',
-			prop: 'info',
+			prop: 'info|flagged',
 			inprop: 'protection',
 			titles: mw.config.get('wgPageName')
 		};
@@ -106,6 +106,7 @@ Twinkle.protect.protectionLevel = null;
 Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtectionLevel(apiobj) {
 	var xml = apiobj.getXML();
 	var result = [];
+
 	$(xml).find('pr').each(function(index, pr) {
 		var $pr = $(pr);
 		var boldnode = document.createElement('b');
@@ -120,6 +121,15 @@ Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtec
 			result.push("(cascading) ");
 		}
 	});
+
+	var $flagged = $(xml).find('flagged');
+	if ($flagged.length) {
+		var boldnode = document.createElement('b');
+		// impossible for now to determine the PC level/expiry using API; bug 24068
+		boldnode.textContent = "Pending changes: enabled";
+		result.push(boldnode);
+	}
+
 	if (!result.length) {
 		var boldnode = document.createElement('b');
 		boldnode.textContent = "no protection";
@@ -433,8 +443,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 		}
 
 		// reduce vertical height of dialog
-		$(e.target.form).find('select[name="editlevel"], select[name="editexpiry"], select[name="moveexpiry"], select[name="movelevel"], select[name="createexpiry"], select[name="createlevel"]').
-			parent().css({ display: 'inline-block', marginRight: '0.5em' });
+		$(e.target.form).find('fieldset[name="field2"] select').parent().css({ display: 'inline-block', marginRight: '0.5em' });
 	}
 };
 
@@ -464,7 +473,7 @@ Twinkle.protect.formevents = {
 };
 
 Twinkle.protect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
-	var custom = prompt('Enter a custom expiry time.  \nYou can use relative times, like "1 minute" or "19 days", or absolute timestamps, "yyyymmddhhmm" (e.g. "200602011406" is Feb 1, 2006, at 14:06 UTC).', '');
+	var custom = prompt('Enter a custom expiry time.  \nYou can use relative times, like "1 minute" or "19 days", or absolute timestamps, "yyyymmddhhmm" (e.g. "200602011405" is Feb 1, 2006, at 14:05 UTC).', '');
 	if (custom) {
 		var option = document.createElement('option');
 		option.setAttribute('value', custom);
@@ -564,6 +573,7 @@ Twinkle.protect.protectionTypesCreate = [
 ];
 
 // NOTICE: keep this synched with [[MediaWiki:Protect-dropdown]]
+// Also note: stabilize = Pending Changes level
 Twinkle.protect.protectionPresetsInfo = {
 	'pp-protected': {
 		edit: 'sysop',
@@ -620,13 +630,13 @@ Twinkle.protect.protectionPresetsInfo = {
 		template: 'pp-protected'
 	},
 	'pp-pc-vandalism': {
-		stabilize: 'autoconfirmed',
+		stabilize: 'autoconfirmed',  // stabilize = Pending Changes
 		reason: 'Persistent [[WP:Vandalism|vandalism]]',
 		template: 'pp-pc1'
 	},
 	'pp-pc-blp': {
 		stabilize: 'autoconfirmed',
-		reason: 'Violations of the [[WP:Biographies of living persons|biographies of living persons policy]]',
+		reason: 'Violations of the [[WP:BLP|biographies of living persons policy]]',
 		template: 'pp-pc1'
 	},
 	'pp-pc-protected': {
@@ -653,6 +663,7 @@ Twinkle.protect.protectionPresetsInfo = {
 	'unprotect': {
 		edit: 'all',
 		move: 'all',
+		stabilize: 'none',
 		create: 'all',
 		reason: null,
 		template: 'none'
@@ -863,6 +874,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			break;
 
 		case 'tag':
+			// apply a protection template
 
 			Morebits.simpleWindow.setButtonsEnabled( false );
 			Morebits.status.init( form );
