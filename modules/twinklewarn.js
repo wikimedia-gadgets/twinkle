@@ -1329,6 +1329,9 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	// clear overridden label on article textbox
 	Morebits.quickForm.setElementTooltipVisibility(e.target.root.article, true);
 	Morebits.quickForm.resetElementLabel(e.target.root.article);
+	
+	// hide the big red notice
+	$("#tw-warn-red-notice").remove();
 };
 
 Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSubcategory(e) {
@@ -1406,6 +1409,16 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	} else {
 		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, true);
 		Morebits.quickForm.resetElementLabel(e.target.form.article);
+	}
+	
+	// add big red notice, warning users about how to use {{uw-username}} appropriately
+	if (value === "uw-username") {
+		var $redWarning = $("<div style='color: red;' id='tw-warn-red-notice'>{{uw-username}} should <b>not</b> be used for <b>blatant</b> username policy violations. " + 
+			"Blatant violations should be reported directly to UAA (via Twinkle's ARV tab). " +
+			"{{uw-username}} should only be used in edge cases in order to engage in discussion with the user.</div>");
+		$redWarning.insertBefore(Morebits.quickForm.getElementLabelObject(e.target.form.reasonGroup));
+	} else {
+		$("#tw-warn-red-notice").remove();
 	}
 };
 
