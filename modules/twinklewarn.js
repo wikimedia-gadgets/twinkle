@@ -880,10 +880,6 @@ Twinkle.warn.messages = {
 			label:"Reverting self tests", 
 			summary:"Notice: Reverting self tests" 
 		},
-		"uw-skype": {
-			label:"Skype interfering with editing",
-			summary:"Notice: Skype interfering with editing"
-		},
 		"uw-socialnetwork": { 
 			label:"Wikipedia is not a social network", 
 			summary:"Notice: Wikipedia is not a social network" 
