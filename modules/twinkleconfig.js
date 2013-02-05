@@ -653,6 +653,12 @@ Twinkle.config.sections = [
 			type: "customList",
 			customListValueTitle: "Template name (no curly brackets)",
 			customListLabelTitle: "Text to show in Welcome dialog"
+		},
+		{
+			name: "customWelcomeSignature",
+			label: "Automatically sign custom welcome templates",
+			helptip: "If your custom welcome templates contain a built-in signature within the template, turn off this option.",
+			type: "boolean"
 		}
 	]
 },

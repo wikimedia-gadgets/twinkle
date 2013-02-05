@@ -636,7 +636,8 @@ Twinkle.welcome.getTemplateWikitext = function(template, article) {
 			replace(/\$HEADER\$\s*/, "== Welcome ==\n\n").
 			replace("$EXTRA$", "");  // EXTRA is not implemented yet
 	} else {
-		return "{{subst:" + template + (article ? ("|art=" + article) : "") + "}} ~~~~";
+		return "{{subst:" + template + (article ? ("|art=" + article) : "") + "}}" + 
+			(Twinkle.getFriendlyPref("customWelcomeSignature") ? " ~~~~" : "");
 	}
 };
 

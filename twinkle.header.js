@@ -140,6 +140,7 @@ Twinkle.defaultConfig.friendly = {
 	quickWelcomeMode: "norm",
 	quickWelcomeTemplate: "welcome",
 	customWelcomeList: [],
+	customWelcomeSignature: true,
 	 // Talkback
 	markTalkbackAsMinor: true,
 	insertTalkbackSignature: true,  // always sign talkback templates
