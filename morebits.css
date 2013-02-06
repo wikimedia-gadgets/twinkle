@@ -73,7 +73,7 @@ form.quickform h5
 }
 
 /* only give the top border to headers with something above them */
-form.quickform div + h5, form.quickform div + div h5, form.quickform h5 + h5
+form.quickform div + h5, form.quickform div + div > h5, form.quickform h5 + h5
 {
 	border-top: 1px solid #88A;
 }
