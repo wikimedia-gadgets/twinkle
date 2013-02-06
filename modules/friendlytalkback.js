@@ -167,6 +167,11 @@
 						label: "WP:HD (Help desk)",
 						value: "hd"
 					});
+				noticeboard.append({
+						type: "option",
+						label: "WP:THQ (Teahouse question forum)",
+						value: "th"
+					});
 				work_area.append({
 						type:"input",
 						name:"section",
@@ -280,7 +285,11 @@
 				case "hd":
 					text = "\n\n== Your question at the Help desk ==\n";
 					text += "{{helpdeskreply|1=" + section + "|ts=~~~~~}}";
-					talkpage.setEditSummary( "Notification of replies at [[Wikipedia:Help desk]]" + Twinkle.getPref("summaryAd") );
+					talkpage.setEditSummary( "You have replies at the [[Wikipedia:Help desk|Wikipedia help desk]]" + Twinkle.getPref("summaryAd") );
+					break;
+				case "th":
+					text = "\n\n{{WP:Teahouse/Teahouse talkback|WP:Teahouse/Questions|" + section + "|ts=~~~~}}";
+					talkpage.setEditSummary( "You have replies at the [[Wikipedia:Teahouse/Questions|Teahouse question board]]" + Twinkle.getPref("summaryAd") );
 					break;
 				default:
 					throw "Twinkle.talkback, function callback_evaluate: default case reached";
