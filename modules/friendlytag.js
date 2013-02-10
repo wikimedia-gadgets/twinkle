@@ -410,6 +410,7 @@ Twinkle.tag.article.tagCategories = {
 			"disputed",
 			"hoax",
 			"globalize",  // has subcategories and special-cased code
+			"overcoverage",
 			"peacock",
 			"POV",
 			"recentism",
