@@ -90,6 +90,12 @@ form.quickform span.quickformDescription
 	font-style: italic;
 }
 
+form.quickform .quickformSubgroup
+{
+	margin-bottom: .5em;
+	margin-left: 3em;
+}
+
 form.quickform .tooltipButtonContainer
 {
 	position: relative;
