@@ -195,6 +195,44 @@ Twinkle.tag.updateSortOrder = function(e) {
 					{ label: "{{notability|Web}}: notability guideline for web content", value: "Web" }
 				]
 			};
+		} else if (tag === "merge" || tag === "merge from" || tag === "merge to") {
+			var otherTagName = "merge";
+			switch (tag)
+			{
+				case "merge from":
+					otherTagName = "merge to";
+					break;
+				case "merge to":
+					otherTagName = "merge from";
+					break;
+			}
+			checkbox.subgroup = [
+				{
+					name: 'mergeTarget',
+					type: 'input',
+					label: 'Other article(s): ',
+					tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two'
+				},
+				{
+					name: 'mergeTagOther',
+					type: 'checkbox',
+					list: [
+						{
+							label: 'Tag the other article with a {{' + otherTagName + '}} tag',
+							checked: true,
+							tooltip: 'Only available if a single article name is entered.'
+						}
+					]
+				}
+			];
+			if (mw.config.get('wgNamespaceNumber') === 0) {
+				checkbox.subgroup.push({
+					name: 'mergeReason',
+					type: 'textarea',
+					label: 'Rationale for merge (will be posted on talk page):',
+					tooltip: 'Optional, but strongly recommended. Leave blank if not wanted.'
+				});
+			}
 		}
 		return checkbox;
 	};
@@ -792,13 +830,16 @@ Twinkle.tag.callbacks = {
 					case 'merge':
 					case 'merge to':
 					case 'merge from':
-						var param = prompt('Please enter the name of the other article(s) involved in the merge.  \n' +
-							"To specify multiple articles, separate them with a vertical pipe (|) character.  \n" +
-							"This information is required.  Click OK when done, or click Cancel to skip the merge tag.", "");
-						if (param === null) {
-							return true;  // continue to next tag
-						} else if (param !== "") {
-							currentTag += '|' + param;
+						if (params.mergeTarget) {
+							// normalize the merge target for now and later
+							params.mergeTarget = Morebits.string.toUpperCaseFirstChar(params.mergeTarget.replace(/_/g, ' '));
+							currentTag += '|' + params.mergeTarget;
+							// link to the correct section on the talk page
+							if (!params.talkPageLink) {
+								params.talkPageLink = 'Talk:' + mw.config.get('wgTitle') + '#Proposed merge with ' +
+									params.mergeTarget;
+							}
+							currentTag += '|discuss=' + params.talkPageLink;
 						}
 						break;
 					default:
@@ -839,6 +880,11 @@ Twinkle.tag.callbacks = {
 				} else {
 					Morebits.status.warn( 'Info', 'Found {{' + params.tags[i] +
 						'}} on the article already...excluding' );
+					// don't do anything else with merge tags
+					if (params.tags[i] === "merge" || params.tags[i] === "merge from" || 
+						params.tags[i] === "merge to") {
+						params.mergeTarget = params.mergeReason = params.mergeTagOther = false;
+					}
 				}
 			}
 
@@ -932,6 +978,40 @@ Twinkle.tag.callbacks = {
 
 		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
 			pageobj.patrol();
+		}
+		
+		// special functions for merge tags
+		var talkpageLink = null;
+		if (params.mergeReason) {
+			// post the rationale on the talk page
+			// (only operates in main namespace)
+			var talkpageText = "\n\n== Proposed merge with [[" + params.mergeTarget + "]] ==\n\n";
+			talkpageText += params.mergeReason.trim() + " ~~~~";
+			
+			var talkpage = new Morebits.wiki.page("Talk:" + mw.config.get("wgTitle"), "Posting rationale on talk page");
+			talkpage.setAppendText(talkpageText);
+			talkpage.setEditSummary('Proposing to merge [[' + mw.config.get("wgTitle") +
+				']] with [[' + params.mergeTarget + ']]' + Twinkle.getPref('summaryAd'));
+			talkpage.setCreateOption('recreate');
+			talkpage.append();
+		}
+		if (params.mergeTagOther) {
+			// tag the target page if requested
+			var otherTagName = "merge";
+			if (tags.indexOf("merge from") !== -1) {
+				otherTagName = "merge to";
+			} else if (tags.indexOf("merge to") !== -1) {
+				otherTagName = "merge from";
+			}
+			var newParams = { 
+				tags: [otherTagName],
+				mergeTarget: mw.config.get("wgPageName"),
+				talkPageLink: params.talkPageLink
+			};
+			var otherpage = new Morebits.wiki.page(params.mergeTarget, "Tagging other page (" +
+				params.mergeTarget + ")");
+			otherpage.setCallbackParameters(newParams);
+			otherpage.load(Twinkle.tag.callbacks.main);
 		}
 	},
 
@@ -1086,6 +1166,9 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			params.group = form.group.checked;
 			params.globalizeSubcategory = form["articleTags.globalize"] ? form["articleTags.globalize"].value : null;
 			params.notabilitySubcategory = form["articleTags.notability"] ? form["articleTags.notability"].value : null;
+			params.mergeTarget = form["articleTags.mergeTarget"] ? form["articleTags.mergeTarget"].value : null;
+			params.mergeReason = form["articleTags.mergeReason"] ? form["articleTags.mergeReason"].value : null;
+			params.mergeTagOther = form["articleTags.mergeTagOther"] ? form["articleTags.mergeTagOther"].checked : false;
 			break;
 		case 'file':
 			params.svgSubcategory = form["imageTags.svgCategory"] ? form["imageTags.svgCategory"].value : null;
@@ -1101,6 +1184,10 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	if( !params.tags.length ) {
 		alert( 'You must select at least one tag!' );
+		return;
+	}
+	if( params.mergeTagOther && params.mergeTarget.indexOf('|') !== -1 ) {
+		alert( 'Tagging multiple articles in a merge is not supported at the moment. Please turn off the "tag other article" checkbox and try again.' );
 		return;
 	}
 
