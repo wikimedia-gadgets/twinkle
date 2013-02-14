@@ -2864,19 +2864,10 @@ Morebits.queryString.prototype.create = Morebits.queryString.create;
 
 Morebits.status = function Status( text, stat, type ) {
 	this.text = this.codify(text);
-	this.stat = this.codify(stat);
 	this.type = type || 'status';
-	if (type === 'error') {
-		// hack to force the page not to reload when an error is output - see also update() below
-		Morebits.wiki.numberOfActionsLeft = 1000;
-		// call error callback
-		if (Morebits.status.errorEvent) {
-			Morebits.status.errorEvent();
-		}
-	}
 	this.generate(); 
 	if( stat ) {
-		this.render();
+		this.update( stat, type );
 	}
 };
 
@@ -2946,6 +2937,10 @@ Morebits.status.prototype = {
 				// call error callback
 				if (Morebits.status.errorEvent) {
 					Morebits.status.errorEvent();
+				}
+				// also log error messages in the browser console
+				if (console && console.error) {
+					console.error(status);
 				}
 			}
 		}
