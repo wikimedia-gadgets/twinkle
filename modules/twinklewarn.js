@@ -1411,14 +1411,18 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		Morebits.quickForm.resetElementLabel(e.target.form.article);
 	}
 	
-	// add big red notice, warning users about how to use {{uw-username}} appropriately
+	// add big red notice, warning users about how to use {{uw-[coi-]username}} appropriately
+	$("#tw-warn-red-notice").remove();
 	if (value === "uw-username") {
 		var $redWarning = $("<div style='color: red;' id='tw-warn-red-notice'>{{uw-username}} should <b>not</b> be used for <b>blatant</b> username policy violations. " + 
 			"Blatant violations should be reported directly to UAA (via Twinkle's ARV tab). " +
 			"{{uw-username}} should only be used in edge cases in order to engage in discussion with the user.</div>");
 		$redWarning.insertAfter(Morebits.quickForm.getElementLabelObject(e.target.form.reasonGroup));
-	} else {
-		$("#tw-warn-red-notice").remove();
+	} else if (value === "uw-coi-username") {
+		var $redWarning = $("<div style='color: red;' id='tw-warn-red-notice'>{{uw-coi-username}} should <b>not</b> be used for <b>blatant</b> username policy violations. " + 
+			"Blatant violations should be reported directly to UAA (via Twinkle's ARV tab). " +
+			"{{uw-coi-username}} should only be used in edge cases in order to engage in discussion with the user.</div>");
+		$redWarning.insertAfter(Morebits.quickForm.getElementLabelObject(e.target.form.reasonGroup));
 	}
 };
 
