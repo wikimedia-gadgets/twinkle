@@ -79,7 +79,7 @@ Twinkle.welcome.normal = function() {
 };
 
 Twinkle.welcome.welcomeUser = function welcomeUser() {
-	Morebits.status.init( document.getElementById('bodyContent') );
+	Morebits.status.init( document.getElementById('mw-content-text') );
 
 	var params = {
 		value: Twinkle.getFriendlyPref('quickWelcomeTemplate'),
