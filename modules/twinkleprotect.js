@@ -153,7 +153,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					name: 'category',
 					label: 'Choose a preset:',
 					event: Twinkle.protect.callback.changePreset,
-					list: (mw.config.get('wgArticleId') ? Twinkle.protect.protectionTypesAdmin : Twinkle.protect.protectionTypesCreate)
+					list: (mw.config.get('wgArticleId') ? Twinkle.protect.protectionTypes : Twinkle.protect.protectionTypesCreate)
 				});
 
 			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Protection options', name: 'field2' });
@@ -275,12 +275,76 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							{ label: '6 hours', value: '6 hours' },
 							{ label: '12 hours', value: '12 hours' },
 							{ label: '1 day', value: '1 day' },
-							{ label: '2 days', selected: true, value: '2 days' },
+							{ label: '2 days', value: '2 days' },
 							{ label: '3 days', value: '3 days' },
 							{ label: '4 days', value: '4 days' },
 							{ label: '1 week', value: '1 week' },
 							{ label: '2 weeks', value: '2 weeks' },
 							{ label: '1 month', value: '1 month' },
+							{ label: '2 months', value: '2 months' },
+							{ label: '3 months', value: '3 months' },
+							{ label: '1 year', value: '1 year' },
+							{ label: 'indefinite', selected: true, value:'indefinite' },
+							{ label: 'Custom...', value: 'custom' }
+						]
+					});
+				field2.append({
+						type: 'checkbox',
+						name: 'pcmodify',
+						event: Twinkle.protect.formevents.pcmodify,
+						list: [
+							{
+								label: 'Modify pending changes protection',
+								value: 'pcmodify',
+								tooltip: 'If this is turned off, the pending changes level, and expiry time, will be left as is.',
+								checked: true
+							}
+						]
+					});
+				var pclevel = field2.append({
+						type: 'select',
+						name: 'pclevel',
+						label: 'Pending changes:',
+						event: Twinkle.protect.formevents.pclevel
+					});
+				pclevel.append({
+						type: 'option',
+						label: 'None',
+						value: 'none'
+					});
+				pclevel.append({
+						type: 'option',
+						label: 'Level 1',
+						value: 'autoconfirmed',
+						selected: true
+					});
+				pclevel.append({
+						type: 'option',
+						label: 'Level 2 (do not use)',
+						value: 'review'
+					});
+				field2.append({
+						type: 'select',
+						name: 'pcexpiry',
+						label: 'Expires:',
+						event: function(e) {
+							if (e.target.value === 'custom') {
+								Twinkle.protect.doCustomExpiry(e.target);
+							}
+						},
+						list: [
+							{ label: '1 hour', value: '1 hour' },
+							{ label: '2 hours', value: '2 hours' },
+							{ label: '3 hours', value: '3 hours' },
+							{ label: '6 hours', value: '6 hours' },
+							{ label: '12 hours', value: '12 hours' },
+							{ label: '1 day', value: '1 day' },
+							{ label: '2 days', value: '2 days' },
+							{ label: '3 days', value: '3 days' },
+							{ label: '4 days', value: '4 days' },
+							{ label: '1 week', value: '1 week' },
+							{ label: '2 weeks', value: '2 weeks' },
+							{ label: '1 month', selected: true, value: '1 month' },
 							{ label: '2 months', value: '2 months' },
 							{ label: '3 months', value: '3 months' },
 							{ label: '1 year', value: '1 year' },
@@ -464,6 +528,14 @@ Twinkle.protect.formevents = {
 	movelevel: function twinkleprotectFormMovelevelEvent(e) {
 		e.target.form.moveexpiry.disabled = (e.target.value === 'all');
 	},
+	pcmodify: function twinkleprotectFormPcmodifyEvent(e) {
+		e.target.form.pclevel.disabled = !e.target.checked;
+		e.target.form.pcexpiry.disabled = !e.target.checked || (e.target.form.pclevel.value === 'none');
+		e.target.form.pclevel.style.color = e.target.form.pcexpiry.style.color = (e.target.checked ? "" : "transparent");
+	},
+	pclevel: function twinkleprotectFormPclevelEvent(e) {
+		e.target.form.pcexpiry.disabled = (e.target.value === 'none');
+	},
 	createlevel: function twinkleprotectFormCreatelevelEvent(e) {
 		e.target.form.createexpiry.disabled = (e.target.value === 'all');
 	},
@@ -510,41 +582,6 @@ Twinkle.protect.protectionTypes = [
 			{ label: 'Generic (PC)', value: 'pp-pc-protected' },
 			{ label: 'Persistent vandalism (PC)', value: 'pp-pc-vandalism' },
 			{ label: 'BLP policy violations (PC)', value: 'pp-pc-blp' }
-		]
-	},
-	{
-		label: 'Move protection',
-		list: [
-			{ label: 'Generic (move)', value: 'pp-move' },
-			{ label: 'Dispute/move warring (move)', value: 'pp-move-dispute' },
-			{ label: 'Page-move vandalism (move)', value: 'pp-move-vandalism' },
-			{ label: 'Highly visible page (move)', value: 'pp-move-indef' }
-		]
-	},
-	{ label: 'Unprotection', value: 'unprotect' }
-];
-
-// NOTE: this will be merged with the protectionTypes object
-// once PC is implemented for admins
-Twinkle.protect.protectionTypesAdmin = [
-	{
-		label: 'Full protection',
-		list: [
-			{ label: 'Generic (full)', value: 'pp-protected' },
-			{ label: 'Content dispute/edit warring (full)', value: 'pp-dispute' },
-			{ label: 'Persistent vandalism (full)', value: 'pp-vandalism' },
-			{ label: 'Highly visible template (full)', value: 'pp-template' },
-			{ label: 'User talk of blocked user (full)', value: 'pp-usertalk' }
-		]
-	},
-	{
-		label: 'Semi-protection',
-		list: [
-			{ label: 'Generic (semi)', value: 'pp-semi-protected' },
-			{ label: 'Persistent vandalism (semi)', selected: true, value: 'pp-semi-vandalism' },
-			{ label: 'BLP policy violations (semi)', value: 'pp-semi-blp' },
-			{ label: 'Sockpuppetry (semi)', value: 'pp-semi-sock' },
-			{ label: 'User talk of blocked user (semi)', value: 'pp-semi-usertalk' }
 		]
 	},
 	{
@@ -772,6 +809,16 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				form.movemodify.checked = false;
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 			}
+			
+			if (item.stabilize) {
+				form.pcmodify.checked = true;
+				Twinkle.protect.formevents.pcmodify({ target: form.pcmodify });
+				form.pclevel.value = item.stabilize;
+				Twinkle.protect.formevents.pclevel({ target: form.pclevel });
+			} else {
+				form.pcmodify.checked = false;
+				Twinkle.protect.formevents.pcmodify({ target: form.pcmodify });
+			}
 		} else {
 			if (item.create) {
 				form.createlevel.value = item.create;
@@ -797,7 +844,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 
 			if( /template/.test( form.category.value ) ) {
 				form.noinclude.checked = true;
-				form.editexpiry.value = form.moveexpiry.value = "indefinite";
+				form.editexpiry.value = form.moveexpiry.value = form.pcexpiry.value = "indefinite";
 			} else {
 				form.noinclude.checked = false;
 			}
@@ -841,36 +888,88 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	switch (actiontype) {
 		case 'protect':
 			// protect the page
-			var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), "Protecting page");
-			if (mw.config.get('wgArticleId')) {
-				if (form.editmodify.checked) {
-					thispage.setEditProtection(form.editlevel.value, form.editexpiry.value);
-				}
-				if (form.movemodify.checked) {
-					thispage.setMoveProtection(form.movelevel.value, form.moveexpiry.value);
-				}
-			} else {
-				thispage.setCreateProtection(form.createlevel.value, form.createexpiry.value);
-			}
-			if (form.protectReason.value) {
-				thispage.setEditSummary(form.protectReason.value);
-			} else {
-				alert("You must enter a protect reason, which will be inscribed into the protection log.");
-				return;
-			}
-
-			Morebits.simpleWindow.setButtonsEnabled( false );
-			Morebits.status.init( form );
 
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 			Morebits.wiki.actionCompleted.notice = "Protection complete";
 
-			thispage.protect(function() { 
-				thispage.getStatusElement().info("done");
+			var statusInited = false;
+			var thispage;
+			
+			var allDone = function twinkleprotectCallbackAllDone() { 
+				if (thispage) {
+					thispage.getStatusElement().info("done");
+				}
 				if (tagparams) {
 					Twinkle.protect.callbacks.taggingPageInitial(tagparams);
 				}
-			});
+			};
+
+			var protectIt = function twinkleprotectCallbackProtectIt(next) {
+				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), "Protecting page");
+				if (mw.config.get('wgArticleId')) {
+					if (form.editmodify.checked) {
+						thispage.setEditProtection(form.editlevel.value, form.editexpiry.value);
+					}
+					if (form.movemodify.checked) {
+						thispage.setMoveProtection(form.movelevel.value, form.moveexpiry.value);
+					}
+				} else {
+					thispage.setCreateProtection(form.createlevel.value, form.createexpiry.value);
+				}
+				
+				if (form.protectReason.value) {
+					thispage.setEditSummary(form.protectReason.value);
+				} else {
+					alert("You must enter a protect reason, which will be inscribed into the protection log.");
+					return;
+				}
+
+				if (!statusInited) {
+					Morebits.simpleWindow.setButtonsEnabled( false );
+					Morebits.status.init( form );
+					statusInited = true;
+				}
+
+				thispage.protect(next);
+			};
+			
+			var stabilizeIt = function twinkleprotectCallbackStabilizeIt() {
+				if (thispage) {
+					thispage.getStatusElement().info("done");
+				}
+
+				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), "Applying pending changes protection");
+				thispage.setFlaggedRevs(form.pclevel.value, form.pcexpiry.value);
+				
+				if (form.protectReason.value) {
+					thispage.setEditSummary(form.protectReason.value);
+				} else {
+					alert("You must enter a protect reason, which will be inscribed into the protection log.");
+					return;
+				}
+
+				if (!statusInited) {
+					Morebits.simpleWindow.setButtonsEnabled(false);
+					Morebits.status.init(form);
+					statusInited = true;
+				}
+
+				thispage.stabilize(allDone);
+			};
+			
+			if ((form.editmodify && form.editmodify.checked) || (form.movemodify && form.movemodify.checked) || 
+				!mw.config.get('wgArticleId')) {
+				if (form.pcmodify && form.pcmodify.checked) {
+					protectIt(stabilizeIt);
+				} else {
+					protectIt(allDone);
+				}
+			} else if (form.pcmodify && form.pcmodify.checked) {
+				stabilizeIt();
+			} else {
+				alert("That's weird; nothing to do in Twinkle.protect.callback.evaluate");
+			}
+			
 			break;
 
 		case 'tag':
