@@ -38,7 +38,7 @@ Twinkle.fluff = {
 			if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 || 
 				( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) || 
 				( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
-				var list = $("#bodyContent").find("ul li:has(span.mw-uctop)");
+				var list = $("#mw-content-text").find("ul li:has(span.mw-uctop)");
 
 				var revNode = document.createElement('strong');
 				var revLink = document.createElement('a');
@@ -73,7 +73,7 @@ Twinkle.fluff = {
 				return;
 			}
 
-			var body = document.getElementById('bodyContent');
+			var body = document.getElementById('mw-content-text');
 
 			var firstRev = $("div.firstrevisionheader").length;
 			if( firstRev ) {
@@ -199,7 +199,7 @@ Twinkle.fluff.revert = function revertPage( type, vandal, autoRevert, rev, page 
 	var pagename = page || mw.config.get('wgPageName');
 	var revid = rev || mw.config.get('wgCurRevisionId');
 
-	Morebits.status.init( document.getElementById('bodyContent') );
+	Morebits.status.init( document.getElementById('mw-content-text') );
 	var params = {
 		type: type,
 		user: vandal,
@@ -222,7 +222,7 @@ Twinkle.fluff.revert = function revertPage( type, vandal, autoRevert, rev, page 
 
 Twinkle.fluff.revertToRevision = function revertToRevision( oldrev ) {
 
-	Morebits.status.init( document.getElementById('bodyContent') );
+	Morebits.status.init( document.getElementById('mw-content-text') );
 
 	var query = {
 		'action': 'query',
