@@ -556,6 +556,7 @@ Twinkle.protect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
 };
 
 Twinkle.protect.protectionTypes = [
+	{ label: 'Unprotection', value: 'unprotect' },
 	{
 		label: 'Full protection',
 		list: [
@@ -592,11 +593,11 @@ Twinkle.protect.protectionTypes = [
 			{ label: 'Page-move vandalism (move)', value: 'pp-move-vandalism' },
 			{ label: 'Highly visible page (move)', value: 'pp-move-indef' }
 		]
-	},
-	{ label: 'Unprotection', value: 'unprotect' }
+	}
 ];
 
 Twinkle.protect.protectionTypesCreate = [
+	{ label: 'Unprotection', value: 'unprotect' },
 	{
 		label: 'Create protection',
 		list: [
@@ -605,8 +606,7 @@ Twinkle.protect.protectionTypesCreate = [
 			{ label: 'Repeatedly recreated', selected: true, value: 'pp-create-salt' },
 			{ label: 'Recently deleted BLP', value: 'pp-create-blp' }
 		]
-	},
-	{ label: 'Unprotection', value: 'unprotect' }
+	}
 ];
 
 // NOTICE: keep this synched with [[MediaWiki:Protect-dropdown]]
