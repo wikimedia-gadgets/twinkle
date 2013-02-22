@@ -423,7 +423,7 @@ Twinkle.fluff.callbacks = {
 			userstr = self.params.user;
 			gooduserstr = self.params.gooduser;
 			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" +
-				userstr + "|" + userstr + "]] ([[User talk:" + userstr + "|talk]]) identified as [[WP:VAND|vandalism]] to last revision by " +
+				userstr + "|" + userstr + "]] ([[User talk:" + userstr + "|talk]]) to last revision by " +
 				gooduserstr + "." + Twinkle.getPref('summaryAd');
 			break;
 
