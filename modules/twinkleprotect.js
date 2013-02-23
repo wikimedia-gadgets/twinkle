@@ -107,28 +107,33 @@ Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtec
 	var xml = apiobj.getXML();
 	var result = [];
 
-	$(xml).find('pr').each(function(index, pr) {
-		var $pr = $(pr);
+	$(xml).find('pr, flagged').each(function(index, protectionEntry) {
+		var $protectionEntry = $(protectionEntry);
+		var type, level, expiry, cascade = false;
+		
+		if (protectionEntry.tagName.toLowerCase() === "flagged") {
+			type = "Pending changes";
+			level = $protectionEntry.attr('protection_level');
+			expiry = $protectionEntry.attr('protection_expiry');
+		} else {
+			type = Morebits.string.toUpperCaseFirstChar($protectionEntry.attr('type'));
+			level = $protectionEntry.attr('level');
+			expiry = $protectionEntry.attr('expiry');
+			cascade = $protectionEntry.attr('cascade') === '';
+		}
+		
 		var boldnode = document.createElement('b');
-		boldnode.textContent = Morebits.string.toUpperCaseFirstChar($pr.attr('type')) + ": " + $pr.attr('level');
+		boldnode.textContent = type + ": " + level;
 		result.push(boldnode);
-		if ($pr.attr('expiry') === 'infinity') {
+		if (expiry === 'infinity') {
 			result.push(" (indefinite) ");
 		} else {
-			result.push(" (expires " + new Date($pr.attr('expiry')).toUTCString() + ") ");
+			result.push(" (expires " + new Date(expiry).toUTCString() + ") ");
 		}
-		if ($pr.attr('cascade') === '') {
+		if (cascade) {
 			result.push("(cascading) ");
 		}
 	});
-
-	var $flagged = $(xml).find('flagged');
-	if ($flagged.length) {
-		var boldnode = document.createElement('b');
-		// impossible for now to determine the PC level/expiry using API; bug 24068
-		boldnode.textContent = "Pending changes: enabled";
-		result.push(boldnode);
-	}
 
 	if (!result.length) {
 		var boldnode = document.createElement('b');
