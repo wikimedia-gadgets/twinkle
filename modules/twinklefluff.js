@@ -200,6 +200,8 @@ Twinkle.fluff.revert = function revertPage( type, vandal, autoRevert, rev, page 
 	var revid = rev || mw.config.get('wgCurRevisionId');
 
 	Morebits.status.init( document.getElementById('mw-content-text') );
+	$( '#catlinks' ).remove();
+
 	var params = {
 		type: type,
 		user: vandal,
