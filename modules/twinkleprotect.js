@@ -102,6 +102,8 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 };
 
 Twinkle.protect.protectionLevel = null;
+Twinkle.protect.oldEditProtection = null;
+Twinkle.protect.oldMoveProtection = null;
 
 Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtectionLevel(apiobj) {
 	var xml = apiobj.getXML();
@@ -119,6 +121,18 @@ Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtec
 		}
 		if ($pr.attr('cascade') === '') {
 			result.push("(cascading) ");
+		}
+
+		if ($pr.attr('type') === "edit") {
+			Twinkle.protect.oldEditProtection = { 
+				level: $pr.attr('level'),
+				expiry: $pr.attr('expiry')
+			};
+		} else if ($pr.attr('type') === "move") {
+			Twinkle.protect.oldMoveProtection = { 
+				level: $pr.attr('level'),
+				expiry: $pr.attr('expiry')
+			};
 		}
 	});
 
@@ -503,7 +517,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 		// re-add protection level text, if it's available
 		if (Twinkle.protect.protectionLevel) {
 			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-			Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
+			// seems unneeded
+			//Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
 		}
 
 		// reduce vertical height of dialog
@@ -909,9 +924,28 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				if (mw.config.get('wgArticleId')) {
 					if (form.editmodify.checked) {
 						thispage.setEditProtection(form.editlevel.value, form.editexpiry.value);
+					} else if (form.movemodify.checked && Twinkle.protect.oldEditProtection) {
+						if (Twinkle.protect.oldEditProtection.expiry === "infinity") {
+							Twinkle.protect.oldEditProtection.expiry = "indefinite";  // stupid API bug
+						}
+						thispage.setEditProtection(Twinkle.protect.oldEditProtection.level,
+							Twinkle.protect.oldEditProtection.expiry);
+					} else {
+						alert("Twinkle couldn't retrieve the existing protection settings.");
+						return;
 					}
+
 					if (form.movemodify.checked) {
 						thispage.setMoveProtection(form.movelevel.value, form.moveexpiry.value);
+					} else if (form.editmodify.checked && Twinkle.protect.oldMoveProtection) {
+						if (Twinkle.protect.oldMoveProtection.expiry === "infinity") {
+							Twinkle.protect.oldMoveProtection.expiry = "indefinite";  // stupid API bug
+						}
+						thispage.setMoveProtection(Twinkle.protect.oldMoveProtection.level,
+							Twinkle.protect.oldMoveProtection.expiry);
+					} else {
+						alert("Twinkle couldn't retrieve the existing protection settings.");
+						return;
 					}
 				} else {
 					thispage.setCreateProtection(form.createlevel.value, form.createexpiry.value);
@@ -967,7 +1001,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			} else if (form.pcmodify && form.pcmodify.checked) {
 				stabilizeIt();
 			} else {
-				alert("That's weird; nothing to do in Twinkle.protect.callback.evaluate");
+				alert("Please give Twinkle something to do! \nIf you just want to tag the page, you can choose the 'Tag page with protection template' option at the top.");
 			}
 			
 			break;
