@@ -1176,7 +1176,7 @@ Twinkle.speedy.callbacks = {
 			}
 
 			if (params.logInitialContrib) {
-				text += "; notified {{user|" + params.logInitialContrib + "}}";
+				text += "; notified {{user|1=" + params.logInitialContrib + "}}";
 			}
 			text += " ~~~~~\n";
 
