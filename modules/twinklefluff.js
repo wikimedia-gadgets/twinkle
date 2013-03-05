@@ -481,7 +481,9 @@ Twinkle.fluff.callbacks = {
 			case 'window':
 				/* falls through */
 			default:
-				window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), 'twinklewarnwindow', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
+				window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), 
+					( window.name === 'twinklewarnwindow' ? '_blank' : 'twinklewarnwindow' ),
+					'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 				break;
 			}
 		}
