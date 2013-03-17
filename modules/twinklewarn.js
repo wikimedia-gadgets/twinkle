@@ -1528,7 +1528,7 @@ Twinkle.warn.callbacks = {
 			}
 		}
 		
-		var mainheaderRe = new RegExp("==+\\s*Warnings\\s*==+");
+		var mainheaderRe = /==+\s*Warnings\s*==+/;
 		var headerRe = new RegExp( "^==+\\s*(?:" + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() +  ")\\s+" + date.getUTCFullYear() + "\\s*==+", 'm' );
 
 		if( text.length > 0 ) {
