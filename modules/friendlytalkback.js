@@ -201,8 +201,8 @@
 				work_area.append({
 						type:"input",
 						name:"section",
-						label:"Subject of e-mail (optional)",
-						tooltip:"The subject line of the e-mail you sent."
+						label:"Subject of email (optional)",
+						tooltip:"The subject line of the email you sent."
 					});
 				break;
 		}
