@@ -192,7 +192,7 @@ Twinkle.warn.messages = {
 			label:"Addition of defamatory content", 
 			summary:"General note: Addition of defamatory content" 
 		},
-		"uw-uncen1": { 
+		"uw-notcensored1": { 
 			label:"Censorship of material", 
 			summary:"General note: Censorship of material" 
 		},
@@ -330,7 +330,7 @@ Twinkle.warn.messages = {
 			label:"Addition of defamatory content", 
 			summary:"Caution: Addition of defamatory content" 
 		},
-		"uw-uncen2": { 
+		"uw-notcensored2": { 
 			label:"Censorship of material", 
 			summary:"Caution: Censorship of material" 
 		},
@@ -468,7 +468,7 @@ Twinkle.warn.messages = {
 			label:"Addition of defamatory content", 
 			summary:"Warning: Addition of defamatory content" 
 		},
-		"uw-uncen3": { 
+		"uw-notcensored3": { 
 			label:"Censorship of material", 
 			summary:"Warning: Censorship of material" 
 		},
@@ -607,7 +607,7 @@ Twinkle.warn.messages = {
 			label:"Addition of defamatory content", 
 			summary:"Final warning: Addition of defamatory content" 
 		},
-		"uw-uncen4": { 
+		"uw-notcensored4": { 
 			label:"Censorship of material", 
 			summary:"Final warning: Censorship of material" 
 		},
