@@ -116,6 +116,10 @@ Twinkle.warn.messages = {
 			label:"Vandalism",
 			summary:"General note: Nonconstructive editing"
 		},
+		"uw-disruptive1": {
+			label:"Disruptive editing",
+			summary:"General note: Disruptive editing"
+		},
 		"uw-test1": {
 			label:"Editing tests",
 			summary:"General note: Editing tests"
@@ -249,6 +253,10 @@ Twinkle.warn.messages = {
 		"uw-vandalism2": { 
 			label:"Vandalism", 
 			summary:"Caution: Vandalism" 
+		},
+		"uw-disruptive2": {
+			label:"Disruptive editing",
+			summary:"Caution: Disruptive editing"
 		},
 		"uw-test2": { 
 			label:"Editing tests", 
@@ -384,6 +392,10 @@ Twinkle.warn.messages = {
 			label:"Vandalism", 
 			summary:"Warning: Vandalism" 
 		},
+		"uw-disruptive3": {
+			label:"Disruptive editing",
+			summary:"Warning: Disruptive editing"
+		},
 		"uw-test3": { 
 			label:"Editing tests", 
 			summary:"Warning: Editing tests" 
@@ -518,6 +530,10 @@ Twinkle.warn.messages = {
 		"uw-vandalism4": { 
 			label:"Vandalism", 
 			summary:"Final warning: Vandalism" 
+		},
+		"uw-disruptive4": {
+			label:"Disruptive editing",
+			summary:"Final warning: Disruptive editing"
 		},
 		"uw-test4": { 
 			label:"Editing tests", 
