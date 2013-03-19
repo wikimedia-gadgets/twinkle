@@ -284,6 +284,11 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 
 		var a = document.createElement( "a" );
 		a.href = "#";
+
+		$( a ).click(function ( e ) {
+			e.preventDefault();
+		});
+
 		span = document.createElement( "span" );
 		span.appendChild( document.createTextNode( text ) );
 		a.appendChild( span );
