@@ -545,7 +545,6 @@ Twinkle.fluff.init = function twinklefluffinit() {
 		// has no faith, and for normal rollback, it will rollback that edit.
 		Twinkle.fluff.whiteList = [
 			'AnomieBOT',
-			'ClueBot NG',
 			'SineBot'
 		];
 
