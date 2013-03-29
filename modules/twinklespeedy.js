@@ -773,6 +773,7 @@ Twinkle.speedy.reasonHash = {
 	'gallery': '[[WP:NFC|Non-free]] [[Help:Gallery|gallery]]',
 // Templates
 	'policy': 'Template that unambiguously misrepresents established policy',
+	'duplicatetemplate': 'Unused, redundant template',
 	't3': 'Unused, redundant template',
 // Portals
 	'p1': '[[WP:P|Portal]] page that would be subject to speedy deletion as an article',
