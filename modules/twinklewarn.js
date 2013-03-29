@@ -112,604 +112,670 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 //   suppressArticleInSummary (optional): Set to true to suppress showing the article name in the edit summary. Useful if the warning relates to attack pages, or some such.
 Twinkle.warn.messages = {
 	level1: {
-		"uw-vandalism1": {
-			label:"Vandalism",
-			summary:"General note: Nonconstructive editing"
+		"Common warnings": {
+			"uw-vandalism1": {
+				label:"Vandalism",
+				summary:"General note: Unconstructive editing"
+			},
+			"uw-disruptive1": {
+				label:"Disruptive editing",
+				summary:"General note: Unconstructive editing"
+			},
+			"uw-test1": {
+				label:"Editing tests",
+				summary:"General note: Editing tests"
+			},
+			"uw-delete1": {
+				label:"Removal of content, blanking",
+				summary:"General note: Removal of content, blanking"
+			}
 		},
-		"uw-disruptive1": {
-			label:"Disruptive editing",
-			summary:"General note: Disruptive editing"
+		"Behavior in articles": {
+			"uw-biog1": {
+				label:"Adding unreferenced controversial information about living persons",
+				summary:"General note: Adding unreferenced controversial information about living persons"
+			},
+			"uw-defam1": {
+				label:"Addition of defamatory content",
+				summary:"General note: Addition of defamatory content"
+			},
+			"uw-error1": {
+				label:"Introducing deliberate factual errors",
+				summary:"General note: Introducing factual errors"
+			},
+			"uw-genre1": {
+				label:"Frequent or mass changes to genres without consensus or references",
+				summary:"General note: Frequent or mass changes to genres without consensus or references"
+			},
+			"uw-image1": {
+				label:"Image-related vandalism in articles",
+				summary:"General note: Image-related vandalism in articles"
+			},
+			"uw-joke1": {
+				label:"Using improper humor in articles",
+				summary:"General note: Using improper humor in articles"
+			},
+			"uw-nor1": {
+				label:"Adding original research, including unpublished syntheses of sources",
+				summary:"General note: Adding original research, including unpublished syntheses of sources"
+			},
+			"uw-notcensored1": {
+				label:"Censorship of material",
+				summary:"General note: Censorship of material"
+			},
+			"uw-own1": {
+				label:"Ownership of articles",
+				summary:"General note: Ownership of articles"
+			},
+			"uw-tdel1": {
+				label:"Removal of maintenance templates",
+				summary:"General note: Removal of maintenance templates"
+			},
+			"uw-unsourced1": {
+				label:"Addition of unsourced or improperly cited material",
+				summary:"General note: Addition of unsourced or improperly cited material"
+			}
 		},
-		"uw-test1": {
-			label:"Editing tests",
-			summary:"General note: Editing tests"
+		"Promotions and spam": {
+			"uw-advert1": {
+				label:"Using Wikipedia for advertising or promotion",
+				summary:"General note: Using Wikipedia for advertising or promotion"
+			},
+			"uw-npov1": {
+				label:"Not adhering to neutral point of view",
+				summary:"General note: Not adhering to neutral point of view"
+			},
+			"uw-spam1": {
+				label:"Adding spam links",
+				summary:"General note: Adding spam links"
+			}
 		},
-		"uw-delete1": {
-			label:"Removal of content, blanking",
-			summary:"General note: Removal of content, blanking"
+		"Behavior towards other editors": {
+			"uw-agf1": {
+				label:"Not assuming good faith",
+				summary:"General note: Not assuming good faith"
+			},
+			"uw-npa1": {
+				label:"Personal attack directed at a specific editor",
+				summary:"General note: Personal attack directed at a specific editor"
+			},
+			"uw-tempabuse1": {
+				label:"Improper use of warning or blocking template",
+				summary:"General note: Improper use of warning or blocking template"
+			}
 		},
-		"uw-redirect1": { 
-			label:"Creating malicious redirects", 
-			summary:"General note: Creating malicious redirects" 
+		"Removal of deletion tags": {
+			"uw-afd1": {
+				label:"Removing {{afd}} templates",
+				summary:"General note: Removing {{afd}} templates"
+			},
+			"uw-blpprod1": {
+				label:"Removing {{blp prod}} templates",
+				summary:"General note: Removing {{blp prod}} templates"
+			},
+			"uw-idt1": {
+				label:"Removing file deletion tags",
+				summary:"General note: Removing file deletion tags"
+			},
+			"uw-speedy1": {
+				label:"Removing speedy deletion tags",
+				summary:"General note: Removing speedy deletion tags"
+			}
 		},
-		"uw-tdel1": { 
-			label:"Removal of maintenance templates", 
-			summary:"General note: Removal of maintenance templates" 
-		},
-		"uw-joke1": { 
-			label:"Using improper humor", 
-			summary:"General note: Using improper humor" 
-		},
-		"uw-create1": { 
-			label:"Creating inappropriate pages", 
-			summary:"General note: Creating inappropriate pages" 
-		},
-		"uw-upload1": { 
-			label:"Uploading unencyclopedic images", 
-			summary:"General note: Uploading unencyclopedic images" 
-		},
-		"uw-image1": { 
-			label:"Image-related vandalism", 
-			summary:"General note: Image-related vandalism" 
-		},
-		"uw-ics1": { 
-			label:"Uploading files missing copyright status", 
-			summary:"General note: Uploading files missing copyright status" 
-		},
-		"uw-idt1": { 
-			label:"Removing file deletion tags", 
-			summary:"General note: Removing file deletion tags" 
-		},
-		"uw-spam1": { 
-			label:"Adding spam links", 
-			summary:"General note: Adding spam links" 
-		},
-		"uw-advert1": { 
-			label:"Using Wikipedia for advertising or promotion", 
-			summary:"General note: Using Wikipedia for advertising or promotion" 
-		},
-		"uw-npov1": { 
-			label:"Not adhering to neutral point of view", 
-			summary:"General note: Not adhering to neutral point of view" 
-		},
-		"uw-unsourced1": { 
-			label:"Addition of unsourced or improperly cited material", 
-			summary:"General note: Addition of unsourced or improperly cited material" 
-		},
-		"uw-error1": { 
-			label:"Introducing deliberate factual errors", 
-			summary:"General note: Introducing factual errors" 
-		},
-		"uw-nor1": { 
-			label:"Adding original research, including unpublished syntheses of source material", 
-			summary:"General note: Adding original research, including unpublished syntheses of source material" 
-		},
-		"uw-biog1": { 
-			label:"Adding unreferenced controversial information about living persons", 
-			summary:"General note: Adding unreferenced controversial information about living persons" 
-		},
-		"uw-defam1": { 
-			label:"Addition of defamatory content", 
-			summary:"General note: Addition of defamatory content" 
-		},
-		"uw-notcensored1": { 
-			label:"Censorship of material", 
-			summary:"General note: Censorship of material" 
-		},
-		"uw-mos1": { 
-			label:"Manual of style", 
-			summary:"General note: Formatting, date, language, etc (Manual of style)" 
-		},
-		"uw-move1": { 
-			label:"Page moves against naming conventions or consensus", 
-			summary:"General note: Page moves against naming conventions or consensus" 
-		},
-		"uw-chat1": { 
-			label:"Using talk page as forum", 
-			summary:"General note: Using talk page as forum" 
-		},
-		"uw-tpv1": { 
-			label:"Refactoring others' talk page comments", 
-			summary:"General note: Refactoring others' talk page comments" 
-		},
-		"uw-afd1": { 
-			label:"Removing {{afd}} templates",
-			summary:"General note: Removing {{afd}} templates"
-		},
-		"uw-speedy1": { 
-			label:"Removing {{speedy deletion}} templates",
-			summary:"General note: Removing {{speedy deletion}} templates"
-		},
-		"uw-blpprod1": { 
-			label:"Removing {{blp prod}} templates",
-			summary:"General note: Removing {{blp prod}} templates"
-		},
-		"uw-npa1": { 
-			label:"Personal attack directed at a specific editor", 
-			summary:"General note: Personal attack directed at a specific editor" 
-		},
-		"uw-agf1": { 
-			label:"Not assuming good faith", 
-			summary:"General note: Not assuming good faith" 
-		},
-		"uw-af1": {
-			label:"Inappropriate feedback through the Article Feedback Tool",
-			summary:"General note: Inappropriate feedback through the Article Feedback Tool"
-		},
-		"uw-own1": { 
-			label:"Ownership of articles", 
-			summary:"General note: Ownership of articles"
-		},
-		"uw-tempabuse1": { 
-			label:"Improper use of warning or blocking template", 
-			summary:"General note: Improper use of warning or blocking template"
-		},
-		"uw-genre1": { 
-			label:"Frequent or mass changes to genres without consensus or references", 
-			summary:"General note: Frequent or mass changes to genres without consensus or references"
-		}
+		"Other": {
+			"uw-chat1": {
+				label:"Using talk page as forum",
+				summary:"General note: Using talk page as forum"
+			},
+			"uw-create1": {
+				label:"Creating inappropriate pages",
+				summary:"General note: Creating inappropriate pages"
+			},
+			"uw-mos1": {
+				label:"Manual of style",
+				summary:"General note: Formatting, date, language, etc (Manual of style)"
+			},
+			"uw-move1": {
+				label:"Page moves against naming conventions or consensus",
+				summary:"General note: Page moves against naming conventions or consensus"
+			},
+			"uw-tpv1": {
+				label:"Refactoring others' talk page comments",
+				summary:"General note: Refactoring others' talk page comments"
+			},
+			"uw-upload1": {
+				label:"Uploading unencyclopedic images",
+				summary:"General note: Uploading unencyclopedic images"
+			}
+		}/*,
+		"To be removed from Twinkle": {
+			"uw-redirect1": {
+				label:"Creating malicious redirects",
+				summary:"General note: Creating malicious redirects"
+			},
+			"uw-ics1": {
+				label:"Uploading files missing copyright status",
+				summary:"General note: Uploading files missing copyright status"
+			},
+			"uw-af1": {
+				label:"Inappropriate feedback through the Article Feedback Tool",
+				summary:"General note: Inappropriate feedback through the Article Feedback Tool"
+			}
+		}*/
 	},
 
 
 	level2: {
-		"uw-vandalism2": { 
-			label:"Vandalism", 
-			summary:"Caution: Vandalism" 
+		"Common warnings": {
+			"uw-vandalism2": {
+				label:"Vandalism",
+				summary:"Caution: Unconstructive editing"
+			},
+			"uw-disruptive2": {
+				label:"Disruptive editing",
+				summary:"Caution: Unconstructive editing"
+			},
+			"uw-test2": {
+				label:"Editing tests",
+				summary:"Caution: Editing tests"
+			},
+			"uw-delete2": {
+				label:"Removal of content, blanking",
+				summary:"Caution: Removal of content, blanking"
+			}
 		},
-		"uw-disruptive2": {
-			label:"Disruptive editing",
-			summary:"Caution: Disruptive editing"
+		"Behavior in articles": {
+			"uw-biog2": {
+				label:"Adding unreferenced controversial information about living persons",
+				summary:"Caution: Adding unreferenced controversial information about living persons"
+			},
+			"uw-defam2": {
+				label:"Addition of defamatory content",
+				summary:"Caution: Addition of defamatory content"
+			},
+			"uw-error2": {
+				label:"Introducing deliberate factual errors",
+				summary:"Caution: Introducing factual errors"
+			},
+			"uw-genre2": {
+				label:"Frequent or mass changes to genres without consensus or references",
+				summary:"Caution: Frequent or mass changes to genres without consensus or references"
+			},
+			"uw-image2": {
+				label:"Image-related vandalism in articles",
+				summary:"Caution: Image-related vandalism in articles"
+			},
+			"uw-joke2": {
+				label:"Using improper humor in articles",
+				summary:"Caution: Using improper humor in articles"
+			},
+			"uw-nor2": {
+				label:"Adding original research, including unpublished syntheses of sources",
+				summary:"Caution: Adding original research, including unpublished syntheses of sources"
+			},
+			"uw-notcensored2": {
+				label:"Censorship of material",
+				summary:"Caution: Censorship of material"
+			},
+			"uw-own2": {
+				label:"Ownership of articles",
+				summary:"Caution: Ownership of articles"
+			},
+			"uw-tdel2": {
+				label:"Removal of maintenance templates",
+				summary:"Caution: Removal of maintenance templates"
+			},
+			"uw-unsourced2": {
+				label:"Addition of unsourced or improperly cited material",
+				summary:"Caution: Addition of unsourced or improperly cited material"
+			}
 		},
-		"uw-test2": { 
-			label:"Editing tests", 
-			summary:"Caution: Editing tests" 
+		"Promotions and spam": {
+			"uw-advert2": {
+				label:"Using Wikipedia for advertising or promotion",
+				summary:"Caution: Using Wikipedia for advertising or promotion"
+			},
+			"uw-npov2": {
+				label:"Not adhering to neutral point of view",
+				summary:"Caution: Not adhering to neutral point of view"
+			},
+			"uw-spam2": {
+				label:"Adding spam links",
+				summary:"Caution: Adding spam links"
+			}
 		},
-		"uw-delete2": { 
-			label:"Removal of content, blanking",
-			summary:"Caution: Removal of content, blanking"
+		"Behavior towards other editors": {
+			"uw-agf2": {
+				label:"Not assuming good faith",
+				summary:"Caution: Not assuming good faith"
+			},
+			"uw-npa2": {
+				label:"Personal attack directed at a specific editor",
+				summary:"Caution: Personal attack directed at a specific editor"
+			},
+			"uw-tempabuse2": {
+				label:"Improper use of warning or blocking template",
+				summary:"Caution: Improper use of warning or blocking template"
+			}
 		},
-		"uw-redirect2": { 
-			label:"Creating malicious redirects", 
-			summary:"Caution: Creating malicious redirects" 
+		"Removal of deletion tags": {
+			"uw-afd2": {
+				label:"Removing {{afd}} templates",
+				summary:"Caution: Removing {{afd}} templates"
+			},
+			"uw-blpprod2": {
+				label:"Removing {{blp prod}} templates",
+				summary:"Caution: Removing {{blp prod}} templates"
+			},
+			"uw-idt2": {
+				label:"Removing file deletion tags",
+				summary:"Caution: Removing file deletion tags"
+			},
+			"uw-speedy2": {
+				label:"Removing speedy deletion tags",
+				summary:"Caution: Removing speedy deletion tags"
+			}
 		},
-		"uw-tdel2": { 
-			label:"Removal of maintenance templates", 
-			summary:"Caution: Removal of maintenance templates" 
-		},
-		"uw-joke2": { 
-			label:"Using improper humor", 
-			summary:"Caution: Using improper humor" 
-		},
-		"uw-create2": { 
-			label:"Creating inappropriate pages", 
-			summary:"Caution: Creating inappropriate pages" 
-		},
-		"uw-upload2": { 
-			label:"Uploading unencyclopedic images", 
-			summary:"Caution: Uploading unencyclopedic images" 
-		},
-		"uw-image2": { 
-			label:"Image-related vandalism", 
-			summary:"Caution: Image-related vandalism" 
-		},
-		"uw-ics2": { 
-			label:"Uploading files missing copyright status", 
-			summary:"Caution: Uploading files missing copyright status" 
-		},
-		"uw-idt2": { 
-			label:"Removing file deletion tags", 
-			summary:"Caution: Removing file deletion tags" 
-		},
-		"uw-spam2": { 
-			label:"Adding spam links", 
-			summary:"Caution: Adding spam links" 
-		},
-		"uw-advert2": { 
-			label:"Using Wikipedia for advertising or promotion", 
-			summary:"Caution: Using Wikipedia for advertising or promotion" 
-		},
-		"uw-npov2": { 
-			label:"Not adhering to neutral point of view", 
-			summary:"Caution: Not adhering to neutral point of view" 
-		},
-		"uw-unsourced2": { 
-			label:"Addition of unsourced or improperly cited material", 
-			summary:"Caution: Addition of unsourced or improperly cited material" 
-		},
-		"uw-error2": { 
-			label:"Introducing deliberate factual errors", 
-			summary:"Caution: Introducing factual errors" 
-		},
-		"uw-nor2": { 
-			label:"Adding original research, including unpublished syntheses of sourced material", 
-			summary:"Caution: Adding original research, including unpublished syntheses of sourced material"
-		},
-		"uw-biog2": { 
-			label:"Adding unreferenced controversial information about living persons", 
-			summary:"Caution: Adding unreferenced controversial information about living persons" 
-		},
-		"uw-defam2": { 
-			label:"Addition of defamatory content", 
-			summary:"Caution: Addition of defamatory content" 
-		},
-		"uw-notcensored2": { 
-			label:"Censorship of material", 
-			summary:"Caution: Censorship of material" 
-		},
-		"uw-mos2": { 
-			label:"Manual of style", 
-			summary:"Caution: Formatting, date, language, etc (Manual of style)" 
-		},
-		"uw-move2": { 
-			label:"Page moves against naming conventions or consensus", 
-			summary:"Caution: Page moves against naming conventions or consensus" 
-		},
-		"uw-chat2": { 
-			label:"Using talk page as forum", 
-			summary:"Caution: Using talk page as forum" 
-		},
-		"uw-tpv2": { 
-			label:"Refactoring others' talk page comments", 
-			summary:"Caution: Refactoring others' talk page comments" 
-		},
-		"uw-afd2": { 
-			label:"Removing {{afd}} templates",
-			summary:"Caution: Removing {{afd}} templates"
-		},
-		"uw-speedy2": { 
-			label:"Removing {{speedy deletion}} templates",
-			summary:"Caution: Removing {{speedy deletion}} templates"
-		},
-		"uw-blpprod2": { 
-			label:"Removing {{blp prod}} templates",
-			summary:"Caution: Removing {{blp prod}} templates"
-		},
-		"uw-npa2": { 
-			label:"Personal attack directed at a specific editor", 
-			summary:"Caution: Personal attack directed at a specific editor" 
-		},
-		"uw-agf2": { 
-			label:"Not assuming good faith", 
-			summary:"Caution: Not assuming good faith" 
-		},
-		"uw-af2": {
-			label:"Inappropriate feedback through the Article Feedback Tool",
-			summary:"Caution: Inappropriate feedback through the Article Feedback Tool"
-		},
-		"uw-own2": { 
-			label:"Ownership of articles", 
-			summary:"Caution: Ownership of articles"
-		},
-		"uw-tempabuse2": { 
-			label:"Improper use of warning or blocking template", 
-			summary:"Caution: Improper use of warning or blocking template"
-		},
-		"uw-genre2": { 
-			label:"Frequent or mass changes to genres without consensus or references", 
-			summary:"Caution: Frequent or mass changes to genres without consensus or references"
-		}
+		"Other": {
+			"uw-chat2": {
+				label:"Using talk page as forum",
+				summary:"Caution: Using talk page as forum"
+			},
+			"uw-create2": {
+				label:"Creating inappropriate pages",
+				summary:"Caution: Creating inappropriate pages"
+			},
+			"uw-mos2": {
+				label:"Manual of style",
+				summary:"Caution: Formatting, date, language, etc (Manual of style)"
+			},
+			"uw-move2": {
+				label:"Page moves against naming conventions or consensus",
+				summary:"Caution: Page moves against naming conventions or consensus"
+			},
+			"uw-tpv2": {
+				label:"Refactoring others' talk page comments",
+				summary:"Caution: Refactoring others' talk page comments"
+			},
+			"uw-upload2": {
+				label:"Uploading unencyclopedic images",
+				summary:"Caution: Uploading unencyclopedic images"
+			}
+		}/*,
+		"To be removed from Twinkle": {
+			"uw-redirect2": {
+				label:"Creating malicious redirects",
+				summary:"Caution: Creating malicious redirects"
+			},
+			"uw-ics2": {
+				label:"Uploading files missing copyright status",
+				summary:"Caution: Uploading files missing copyright status"
+			},
+			"uw-af2": {
+				label:"Inappropriate feedback through the Article Feedback Tool",
+				summary:"Caution: Inappropriate feedback through the Article Feedback Tool"
+			}
+		}*/
 	},
 
 
 	level3: {
-		"uw-vandalism3": { 
-			label:"Vandalism", 
-			summary:"Warning: Vandalism" 
+		"Common warnings": {
+			"uw-vandalism3": {
+				label:"Vandalism",
+				summary:"Warning: Vandalism"
+			},
+			"uw-disruptive3": {
+				label:"Disruptive editing",
+				summary:"Warning: Disruptive editing"
+			},
+			"uw-test3": {
+				label:"Editing tests",
+				summary:"Warning: Editing tests"
+			},
+			"uw-delete3": {
+				label:"Removal of content, blanking",
+				summary:"Warning: Removal of content, blanking"
+			}
 		},
-		"uw-disruptive3": {
-			label:"Disruptive editing",
-			summary:"Warning: Disruptive editing"
+		"Behavior in articles": {
+			"uw-biog3": {
+				label:"Adding unreferenced controversial/defamatory information about living persons",
+				summary:"Warning: Adding unreferenced controversial information about living persons"
+			},
+			"uw-defam3": {
+				label:"Addition of defamatory content",
+				summary:"Warning: Addition of defamatory content"
+			},
+			"uw-error3": {
+				label:"Introducing deliberate factual errors",
+				summary:"Warning: Introducing deliberate factual errors"
+			},
+			"uw-genre3": {
+				label:"Frequent or mass changes to genres without consensus or reference",
+				summary:"Warning: Frequent or mass changes to genres without consensus or reference"
+			},
+			"uw-image3": {
+				label:"Image-related vandalism in articles",
+				summary:"Warning: Image-related vandalism in articles"
+			},
+			"uw-joke3": {
+				label:"Using improper humor in articles",
+				summary:"Warning: Using improper humor in articles"
+			},
+			"uw-nor3": {
+				label:"Adding original research, including unpublished syntheses of sources",
+				summary:"Warning: Adding original research, including unpublished syntheses of sources"
+			},
+			"uw-notcensored3": {
+				label:"Censorship of material",
+				summary:"Warning: Censorship of material"
+			},
+			"uw-own3": {
+				label:"Ownership of articles",
+				summary:"Warning: Ownership of articles"
+			},
+			"uw-tdel3": {
+				label:"Removal of maintenance templates",
+				summary:"Warning: Removal of maintenance templates"
+			},
+			"uw-unsourced3": {
+				label:"Addition of unsourced or improperly cited material",
+				summary:"Warning: Addition of unsourced or improperly cited material"
+			}
 		},
-		"uw-test3": { 
-			label:"Editing tests", 
-			summary:"Warning: Editing tests" 
+		"Promotions and spam": {
+			"uw-advert3": {
+				label:"Using Wikipedia for advertising or promotion",
+				summary:"Warning: Using Wikipedia for advertising or promotion"
+			},
+			"uw-npov3": {
+				label:"Not adhering to neutral point of view",
+				summary:"Warning: Not adhering to neutral point of view"
+			},
+			"uw-spam3": {
+				label:"Adding spam links",
+				summary:"Warning: Adding spam links"
+			}
 		},
-		"uw-delete3": { 
-			label:"Removal of content, blanking", 
-			summary:"Warning: Removal of content, blanking"
+		"Behavior towards other users": {
+			"uw-agf3": {
+				label:"Not assuming good faith",
+				summary:"Warning: Not assuming good faith"
+			},
+			"uw-npa3": {
+				label:"Personal attack directed at a specific editor",
+				summary:"Warning: Personal attack directed at a specific editor"
+			}
 		},
-		"uw-redirect3": { 
-			label:"Creating malicious redirects", 
-			summary:"Warning: Creating malicious redirects" 
+		"Removal of deletion tags": {
+			"uw-afd3": {
+				label:"Removing {{afd}} templates",
+				summary:"Warning: Removing {{afd}} templates"
+			},
+			"uw-blpprod3": {
+				label:"Removing {{blpprod}} templates",
+				summary:"Warning: Removing {{blpprod}} templates"
+			},
+			"uw-idt3": {
+				label:"Removing file deletion tags",
+				summary:"Warning: Removing file deletion tags"
+			},
+			"uw-speedy3": {
+				label:"Removing speedy deletion tags",
+				summary:"Warning: Removing speedy deletion tags"
+			}
 		},
-		"uw-tdel3": { 
-			label:"Removal of maintenance templates", 
-			summary:"Warning: Removal of maintenance templates" 
-		},
-		"uw-joke3": { 
-			label:"Using improper humor", 
-			summary:"Warning: Using improper humor" 
-		},
-		"uw-create3": { 
-			label:"Creating inappropriate pages", 
-			summary:"Warning: Creating inappropriate pages" 
-		},
-		"uw-upload3": { 
-			label:"Uploading unencyclopedic images", 
-			summary:"Warning: Uploading unencyclopedic images" 
-		},
-		"uw-image3": { 
-			label:"Image-related vandalism", 
-			summary:"Warning: Image-related vandalism" 
-		},
-		"uw-ics3": { 
-			label:"Uploading files missing copyright status", 
-			summary:"Warning: Uploading files missing copyright status" 
-		},
-		"uw-idt3": { 
-			label:"Removing file deletion tags", 
-			summary:"Warning: Removing file deletion tags" 
-		},
-		"uw-spam3": { 
-			label:"Adding spam links", 
-			summary:"Warning: Adding spam links" 
-		},
-		"uw-advert3": { 
-			label:"Using Wikipedia for advertising or promotion", 
-			summary:"Warning: Using Wikipedia for advertising or promotion" 
-		},
-		"uw-npov3": { 
-			label:"Not adhering to neutral point of view", 
-			summary:"Warning: Not adhering to neutral point of view" 
-		},
-		"uw-unsourced3": { 
-			label:"Addition of unsourced or improperly cited material", 
-			summary:"Warning: Addition of unsourced or improperly cited material" 
-		},
-		"uw-error3": { 
-			label:"Introducing deliberate factual errors", 
-			summary:"Warning: Introducing deliberate factual errors" 
-		},
-		"uw-nor3": { 
-			label:"Adding original research, including unpublished syntheses of sourced material", 
-			summary:"Warning: Adding original research, including unpublished syntheses of sourced material"
-		},
-		"uw-biog3": { 
-			label:"Adding unreferenced controversial or defamatory information about living persons", 
-			summary:"Warning: Adding unreferenced controversial information about living persons" 
-		},
-		"uw-defam3": { 
-			label:"Addition of defamatory content", 
-			summary:"Warning: Addition of defamatory content" 
-		},
-		"uw-notcensored3": { 
-			label:"Censorship of material", 
-			summary:"Warning: Censorship of material" 
-		},
-		"uw-mos3": { 
-			label:"Manual of style", 
-			summary:"Warning: Formatting, date, language, etc (Manual of style)" 
-		},
-		"uw-move3": { 
-			label:"Page moves against naming conventions or consensus", 
-			summary:"Warning: Page moves against naming conventions or consensus" 
-		},
-		"uw-chat3": { 
-			label:"Using talk page as forum", 
-			summary:"Warning: Using talk page as forum" 
-		},
-		"uw-tpv3": { 
-			label:"Refactoring others' talk page comments", 
-			summary:"Warning: Refactoring others' talk page comments" 
-		},
-		"uw-afd3": { 
-			label:"Removing {{afd}} templates",
-			summary:"Warning: Removing {{afd}} templates"
-		},
-		"uw-speedy3": { 
-			label:"Removing {{speedy deletion}} templates",
-			summary:"Warning: Removing {{speedy deletion}} templates"
-		},
-		"uw-blpprod3": { 
-			label:"Removing {{blpprod}} templates",
-			summary:"Warning: Removing {{blpprod}} templates"
-		},
-		"uw-npa3": { 
-			label:"Personal attack directed at a specific editor", 
-			summary:"Warning: Personal attack directed at a specific editor" 
-		},
-		"uw-agf3": { 
-			label:"Not assuming good faith", 
-			summary:"Warning: Not assuming good faith" 
-		},
-		"uw-af3": {
-			label:"Inappropriate feedback through the Article Feedback Tool",
-			summary:"Warning: Inappropriate feedback through the Article Feedback Tool"
-		},
-		"uw-own3": { 
-			label:"Ownership of articles", 
-			summary:"Warning: Ownership of articles"
-		},
-		"uw-genre3": { 
-			label:"Frequent or mass changes to genres without consensus or reference", 
-			summary:"Warning: Frequent or mass changes to genres without consensus or reference"
-		}
-
+		"Other": {
+			"uw-chat3": {
+				label:"Using talk page as forum",
+				summary:"Warning: Using talk page as forum"
+			},
+			"uw-create3": {
+				label:"Creating inappropriate pages",
+				summary:"Warning: Creating inappropriate pages"
+			},
+			"uw-mos3": {
+				label:"Manual of style",
+				summary:"Warning: Formatting, date, language, etc (Manual of style)"
+			},
+			"uw-move3": {
+				label:"Page moves against naming conventions or consensus",
+				summary:"Warning: Page moves against naming conventions or consensus"
+			},
+			"uw-tpv3": {
+				label:"Refactoring others' talk page comments",
+				summary:"Warning: Refactoring others' talk page comments"
+			},
+			"uw-upload3": {
+				label:"Uploading unencyclopedic images",
+				summary:"Warning: Uploading unencyclopedic images"
+			}
+		}/*,
+		"To be removed fomr Twinkle": {
+			"uw-af3": {
+				label:"Inappropriate feedback through the Article Feedback Tool",
+				summary:"Warning: Inappropriate feedback through the Article Feedback Tool"
+			},
+			"uw-ics3": {
+				label:"Uploading files missing copyright status",
+				summary:"Warning: Uploading files missing copyright status"
+			},
+			"uw-redirect3": {
+				label:"Creating malicious redirects",
+				summary:"Warning: Creating malicious redirects"
+			}
+		}*/
 	},
 
 
 	level4: {
-		"uw-generic4": { 
-			label:"Generic warning (for template series missing level 4)", 
-			summary:"Final warning notice" 
+		"Common warnings": {
+			"uw-generic4": {
+				label:"Generic warning (for template series missing level 4)",
+				summary:"Final warning notice"
+			},
+			"uw-vandalism4": {
+				label:"Vandalism",
+				summary:"Final warning: Vandalism"
+			},
+			"uw-delete4": {
+				label:"Removal of content, blanking",
+				summary:"Final warning: Removal of content, blanking"
+			}
 		},
-		"uw-vandalism4": { 
-			label:"Vandalism", 
-			summary:"Final warning: Vandalism" 
+		"Behavior in articles": {
+			"uw-biog4": {
+				label:"Adding unreferenced defamatory information about living persons",
+				summary:"Final warning: Adding unreferenced controversial information about living persons"
+			},
+			"uw-defam4": {
+				label:"Addition of defamatory content",
+				summary:"Final warning: Addition of defamatory content"
+			},
+			"uw-error4": {
+				label:"Introducing deliberate factual errors",
+				summary:"Final warning: Introducing deliberate factual errors"
+			},
+			"uw-genre4": {
+				label:"Frequent or mass changes to genres without consensus or reference",
+				summary:"Final warning: Frequent or mass changes to genres without consensus or reference"
+			},
+			"uw-image4": {
+				label:"Image-related vandalism in articles",
+				summary:"Final warning: Image-related vandalism in articles"
+			},
+			"uw-joke4": {
+				label:"Using improper humor in articles",
+				summary:"Final warning: Using improper humor in articles"
+			},
+			"uw-nor4": {
+				label:"Adding original research, including unpublished syntheses of sources",
+				summary:"Final warning: Adding original research, including unpublished syntheses of sources"
+			},
+			"uw-tdel4": {
+				label:"Removal of maintenance templates",
+				summary:"Final warning: Removal of maintenance templates"
+			},
+			"uw-unsourced4": {
+				label:"Addition of unsourced or improperly cited material",
+				summary:"Final warning: Addition of unsourced or improperly cited material"
+			}
 		},
-		"uw-test4": { 
-			label:"Editing tests", 
-			summary:"Final warning: Editing tests" 
+		"Promotions and spam": {
+			"uw-advert4": {
+				label:"Using Wikipedia for advertising or promotion",
+				summary:"Final warning: Using Wikipedia for advertising or promotion"
+			},
+			"uw-npov4": {
+				label:"Not adhering to neutral point of view",
+				summary:"Final warning: Not adhering to neutral point of view"
+			},
+			"uw-spam4": {
+				label:"Adding spam links",
+				summary:"Final warning: Adding spam links"
+			}
 		},
-		"uw-delete4": { 
-			label:"Removal of content, blanking", 
-			summary:"Final warning: Removal of content, blanking" 
+		"Behavior towards other editors": {
+			"uw-npa4": {
+				label:"Personal attack directed at a specific editor",
+				summary:"Final warning: Personal attack directed at a specific editor"
+			}
 		},
-		"uw-redirect4": { 
-			label:"Creating malicious redirects", 
-			summary:"Final warning: Creating malicious redirects" 
+		"Removal of deletion tags": {
+			"uw-afd4": {
+				label:"Removing {{afd}} templates",
+				summary:"Final warning: Removing {{afd}} templates"
+			},
+			"uw-blpprod4": {
+				label:"Removing {{blp prod}} templates",
+				summary:"Final warning: Removing {{blp prod}} templates"
+			},
+			"uw-idt4": {
+				label:"Removing file deletion tags",
+				summary:"Final warning: Removing file deletion tags"
+			},
+			"uw-speedy4": {
+				label:"Removing speedy deletion tags",
+				summary:"Final warning: Removing speedy deletion tags"
+			}
 		},
-		"uw-tdel4": { 
-			label:"Removal of maintenance templates", 
-			summary:"Final warning: Removal of maintenance templates" 
-		},
-		"uw-joke4": { 
-			label:"Using improper humor", 
-			summary:"Final warning: Using improper humor" 
-		},
-		"uw-create4": { 
-			label:"Creating inappropriate pages", 
-			summary:"Final warning: Creating inappropriate pages" 
-		},
-		"uw-upload4": { 
-			label:"Uploading unencyclopedic images", 
-			summary:"Final warning: Uploading unencyclopedic images" 
-		},
-		"uw-image4": { 
-			label:"Image-related vandalism", 
-			summary:"Final warning: Image-related vandalism" 
-		},
-		"uw-ics4": { 
-			label:"Uploading files missing copyright status", 
-			summary:"Final warning: Uploading files missing copyright status" 
-		},
-		"uw-idt4": { 
-			label:"Removing file deletion tags", 
-			summary:"Final warning: Removing file deletion tags" 
-		},
-		"uw-spam4": { 
-			label:"Adding spam links", 
-			summary:"Final warning: Adding spam links" 
-		},
-		"uw-advert4": { 
-			label:"Using Wikipedia for advertising or promotion", 
-			summary:"Final warning: Using Wikipedia for advertising or promotion" 
-		},
-		"uw-npov4": { 
-			label:"Not adhering to neutral point of view", 
-			summary:"Final warning: Not adhering to neutral point of view" 
-		},
-		"uw-unsourced4": {
-			label:"Addition of unsourced or improperly cited material",
-			summary:"Final warning: Addition of unsourced or improperly cited material"
-		},
-		"uw-error4": { 
-			label:"Introducing deliberate factual errors", 
-			summary:"Final Warning: Introducing deliberate factual errors"
-		},
-		"uw-nor4": { 
-			label:"Adding original research, including unpublished syntheses of sourced material", 
-			summary:"Final Warning: Adding original research, including unpublished syntheses of sourced material"
-		},
-		"uw-biog4": { 
-			label:"Adding unreferenced defamatory information about living persons", 
-			summary:"Final warning: Adding unreferenced controversial information about living persons" 
-		},
-		"uw-defam4": { 
-			label:"Addition of defamatory content", 
-			summary:"Final warning: Addition of defamatory content" 
-		},
-		"uw-notcensored4": { 
-			label:"Censorship of material", 
-			summary:"Final warning: Censorship of material" 
-		},
-		"uw-mos4": { 
-			label:"Manual of style", 
-			summary:"Final warning: Formatting, date, language, etc (Manual of style)" 
-		},
-		"uw-move4": { 
-			label:"Page moves against naming conventions or consensus", 
-			summary:"Final warning: Page moves against naming conventions or consensus" 
-		},
-		"uw-chat4": { 
-			label:"Using talk page as forum", 
-			summary:"Final warning: Using talk page as forum" 
-		},
-		"uw-tpv4": { 
-			label:"Refactoring others' talk page comments", 
-			summary:"Final warning: Refactoring others' talk page comments" 
-		},
-		"uw-afd4": { 
-			label:"Removing {{afd}} templates",
-			summary:"Final warning: Removing {{afd}} templates"
-		},
-		"uw-speedy4": { 
-			label:"Removing {{speedy deletion}} templates",
-			summary:"Final warning: Removing {{speedy deletion}} templates"
-		},
-		"uw-blpprod4": { 
-			label:"Removing {{blpprod}} templates",
-			summary:"Final warning: Removing {{blpprod}} templates"
-		},
-		"uw-npa4": { 
-			label:"Personal attack directed at a specific editor", 
-			summary:"Final warning: Personal attack directed at a specific editor"
-		},
-		"uw-af4": {
-			label:"Inappropriate feedback through the Article Feedback Tool",
-			summary:"Final warning: Inappropriate feedback through the Article Feedback Tool"
-		}
-
+		"Other": {
+			"uw-chat4": {
+				label:"Using talk page as forum",
+				summary:"Final warning: Using talk page as forum"
+			},
+			"uw-create4": {
+				label:"Creating inappropriate pages",
+				summary:"Final warning: Creating inappropriate pages"
+			},
+			"uw-mos4": {
+				label:"Manual of style",
+				summary:"Final warning: Formatting, date, language, etc (Manual of style)"
+			},
+			"uw-move4": {
+				label:"Page moves against naming conventions or consensus",
+				summary:"Final warning: Page moves against naming conventions or consensus"
+			},
+			"uw-tpv4": {
+				label:"Refactoring others' talk page comments",
+				summary:"Final warning: Refactoring others' talk page comments"
+			},
+			"uw-upload4": {
+				label:"Uploading unencyclopedic images",
+				summary:"Final warning: Uploading unencyclopedic images"
+			}
+		}/*,
+		"To be removed from Twinkle": {
+			"uw-redirect4": {
+				label:"Creating malicious redirects",
+				summary:"Final warning: Creating malicious redirects"
+			},
+			"uw-ics4": {
+				label:"Uploading files missing copyright status",
+				summary:"Final warning: Uploading files missing copyright status"
+			},
+			"uw-af4": {
+				label:"Inappropriate feedback through the Article Feedback Tool",
+				summary:"Final warning: Inappropriate feedback through the Article Feedback Tool"
+			}
+		}*/
 	},
 
 
 	level4im: {
-		"uw-vandalism4im": { 
-			label:"Vandalism", 
-			summary:"Only warning: Vandalism" 
+		"Common warnings": {
+			"uw-vandalism4im": {
+				label:"Vandalism",
+				summary:"Only warning: Vandalism"
+			},
+			"uw-delete4im": {
+				label:"Removal of content, blanking",
+				summary:"Only warning: Removal of content, blanking"
+			}
 		},
-		"uw-delete4im": { 
-			label:"Removal of content, blanking", 
-			summary:"Only warning: Removal of content, blanking" 
+		"Behavior in articles": {
+			"uw-biog4im": {
+				label:"Adding unreferenced defamatory information about living persons",
+				summary:"Only warning: Adding unreferenced controversial information about living persons"
+			},
+			"uw-defam4im": {
+				label:"Addition of defamatory content",
+				summary:"Only warning: Addition of defamatory content"
+			},
+			"uw-image4im": {
+				label:"Image-related vandalism",
+				summary:"Only warning: Image-related vandalism"
+			},
+			"uw-joke4im": {
+				label:"Using improper humor",
+				summary:"Only warning: Using improper humor"
+			},
+			"uw-own4im": {
+				label:"Ownership of articles",
+				summary:"Only warning: Ownership of articles"
+			}
 		},
-		"uw-redirect4im": { 
-			label:"Creating malicious redirects", 
-			summary:"Only warning: Creating malicious redirects" 
+		"Promotions and spam": {
+			"uw-advert4im": {
+				label:"Using Wikipedia for advertising or promotion",
+				summary:"Only warning: Using Wikipedia for advertising or promotion"
+			},
+			"uw-spam4im": {
+				label:"Adding spam links",
+				summary:"Only warning: Adding spam links"
+			}
 		},
-		"uw-joke4im": { 
-			label:"Using improper humor", 
-			summary:"Only warning: Using improper humor" 
+		"Behavior towards other editors": {
+			"uw-npa4im": {
+				label:"Personal attack directed at a specific editor",
+				summary:"Only warning: Personal attack directed at a specific editor"
+			}
 		},
-		"uw-create4im": { 
-			label:"Creating inappropriate pages", 
-			summary:"Only warning: Creating inappropriate pages" 
-		},
-		"uw-upload4im": { 
-			label:"Uploading unencyclopedic images", 
-			summary:"Only warning: Uploading unencyclopedic images" 
-		},
-		"uw-image4im": { 
-			label:"Image-related vandalism", 
-			summary:"Only warning: Image-related vandalism" 
-		},
-		"uw-spam4im": { 
-			label:"Adding spam links", 
-			summary:"Only warning: Adding spam links" 
-		},
-		"uw-advert4im": { 
-			label:"Using Wikipedia for advertising or promotion", 
-			summary:"Only warning: Using Wikipedia for advertising or promotion" 
-		},
-		"uw-biog4im": { 
-			label:"Adding unreferenced defamatory information about living persons", 
-			summary:"Only warning: Adding unreferenced controversial information about living persons" 
-		},
-		"uw-defam4im": { 
-			label:"Addition of defamatory content", 
-			summary:"Only warning: Addition of defamatory content" 
-		},
-		"uw-move4im": { 
-			label:"Page moves against naming conventions or consensus", 
-			summary:"Only warning: Page moves against naming conventions or consensus" 
-		},
-		"uw-npa4im": { 
-			label:"Personal attack directed at a specific editor", 
-			summary:"Only warning: Personal attack directed at a specific editor"
-		},
-		"uw-af4im": {
-			label:"Inappropriate feedback through the Article Feedback Tool",
-			summary:"Only warning: Inappropriate feedback through the Article Feedback Tool"
-		}
+		"Other": {
+			"uw-create4im": {
+				label:"Creating inappropriate pages",
+				summary:"Only warning: Creating inappropriate pages"
+			},
+			"uw-move4im": {
+				label:"Page moves against naming conventions or consensus",
+				summary:"Only warning: Page moves against naming conventions or consensus"
+			},
+			"uw-upload4im": {
+				label:"Uploading unencyclopedic images",
+				summary:"Only warning: Uploading unencyclopedic images"
+			}
+		}/*,
+		"To be removed from Twinkle": {
+			"uw-af4im": {
+				label:"Inappropriate feedback through the Article Feedback Tool",
+				summary:"Only warning: Inappropriate feedback through the Article Feedback Tool"
+			},
+			"uw-redirect4im": {
+				label:"Creating malicious redirects",
+				summary:"Only warning: Creating malicious redirects"
+			}
+		}*/
 	},
 
 
@@ -1276,27 +1342,51 @@ Twinkle.warn.prev_reason = null;
 Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCategory(e) {
 	var value = e.target.value;
 	var sub_group = e.target.root.sub_group;
-	var messages = Twinkle.warn.messages[ value ];
 	sub_group.main_group = value;
 	var old_subvalue = sub_group.value;
 	var old_subvalue_re;
 	if( old_subvalue ) {
 		old_subvalue = old_subvalue.replace(/\d*(im)?$/, '' );
-		old_subvalue_re = new RegExp( RegExp.escape( old_subvalue ) + "(\\d*(?:im)?)$" );
+		old_subvalue_re = new RegExp( $.escapeRE( old_subvalue ) + "(\\d*(?:im)?)$" );
 	}
 
 	while( sub_group.hasChildNodes() ){
 		sub_group.removeChild( sub_group.firstChild );
 	}
 
-	for( var i in messages ) {
-		var selected = false;
-		if( old_subvalue && old_subvalue_re.test( i ) ) {
-			selected = true;
-		}
-		var elem = new Morebits.quickForm.element( { type:'option', label:"{{" + i + "}}: " + messages[i].label, value:i, selected: selected } );
-		
-		sub_group.appendChild( elem.render() );
+	// worker function to create the combo box entries
+	var createEntries = function( contents, container ) {
+		$.each( contents, function( itemKey, itemProperties ) {
+			var selected = false;
+			if( old_subvalue && old_subvalue_re.test( itemKey ) ) {
+				selected = true;
+			}
+			var elem = new Morebits.quickForm.element( {
+				type: 'option',
+				label: "{{" + itemKey + "}}: " + itemProperties.label,
+				value: itemKey,
+				selected: selected
+			} );
+			var elemRendered = container.appendChild( elem.render() );
+			$(elemRendered).data("messageData", itemProperties);
+		} );
+	};
+
+	if( value === "singlenotice" || value === "singlewarn" || value === "block" ) {
+		// no categories, just create the options right away
+		createEntries( Twinkle.warn.messages[ value ], sub_group );
+	} else {
+		// create the option-groups
+		$.each( Twinkle.warn.messages[ value ], function( groupLabel, groupContents ) {
+			var optgroup = new Morebits.quickForm.element( {
+				type: 'optgroup',
+				label: groupLabel
+			} );
+			optgroup = optgroup.render();
+			sub_group.appendChild( optgroup );
+			// create the options
+			createEntries( groupContents, optgroup );
+		} );
 	}
 
 	if( value === 'block' ) {
@@ -1457,43 +1547,54 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 };
 
 Twinkle.warn.callbacks = {
+	getWarningWikitext: function(templateName, article, reason) {
+		var text = "{{subst:" + templateName;
+
+		if (article) {
+			// add linked article for user warnings (non-block templates)
+			text += '|1=' + article;
+		}
+		text += '}}';
+
+		// add extra message for non-block templates
+		if (reason) {
+			text += " ''" + reason + "''";
+		}
+
+		return text;
+	},
+	getBlockNoticeWikitext: function(templateName, article, blockTime, blockReason, isIndefTemplate) {
+		var text = "{{subst:" + templateName;
+
+		if (article && Twinkle.warn.messages.block[templateName].pageParam) {
+			text += '|page=' + article;
+		}
+
+		if (!/te?mp|^\s*$|min/.exec(blockTime) && !isIndefTemplate) {
+			if (/indef|\*|max/.exec(blockTime)) {
+				text += '|indef=yes';
+			} else {
+				text += '|time=' + blockTime;
+			}
+		}
+
+		if (blockReason) {
+			text += '|reason=' + blockReason;
+		}
+
+		text += "|sig=true}}";
+		return text;
+	},
 	preview: function(form) {
 		var templatename = form.sub_group.value;
-		
-		var templatetext = '{{subst:' + templatename;
 		var linkedarticle = form.article.value;
+		var templatetext;
+
 		if (templatename in Twinkle.warn.messages.block) {
-			if( linkedarticle && Twinkle.warn.messages.block[templatename].pageParam ) {
-				templatetext += '|page=' + linkedarticle;
-			}
-
-			var blocktime = form.block_timer.value;
-			if( /te?mp|^\s*$|min/.exec( blocktime ) || Twinkle.warn.messages.block[templatename].indefinite ) {
-				; // nothing
-			} else if( /indef|\*|max/.exec( blocktime ) ) {
-				templatetext += '|indef=yes';
-			} else {
-				templatetext += '|time=' + blocktime;
-			}
-
-			var blockreason = form.block_reason.value;
-			if( blockreason ) {
-				templatetext += '|reason=' + blockreason;
-			}
-
-			templatetext += "|sig=true}}";
+			templatetext = Twinkle.warn.callbacks.getBlockNoticeWikitext(templatename, linkedarticle, form.block_timer.value,
+				form.block_reason.value, Twinkle.warn.messages.block[templatename].indefinite);
 		} else {
-			if (linkedarticle) {
-				// add linked article for user warnings (non-block templates)
-				templatetext += '|1=' + linkedarticle;
-			}
-			templatetext += '}}';
-
-			// add extra message for non-block templates
-			var reason = form.reason.value;
-			if (reason) {
-				templatetext += " ''" + reason + "''";
-			}
+			templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle, form.reason.value);
 		}
 
 		form.previewer.beginRender(templatetext);
@@ -1501,7 +1602,7 @@ Twinkle.warn.callbacks = {
 	main: function( pageobj ) {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
-		var messageData = Twinkle.warn.messages[params.main_group][params.sub_group];
+		var messageData = params.messageData;//Twinkle.warn.messages[params.main_group][params.sub_group];
 
 		var history_re = /<!-- Template:(uw-.*?) -->.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4}) \(UTC\)/g;
 		var history = {};
@@ -1549,39 +1650,21 @@ Twinkle.warn.callbacks = {
 		}
 
 		if( params.main_group === 'block' ) {
-			var article = '', reason = '', time = null;
-			
-			if( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.sub_group !== 'uw-lblock' && ( Twinkle.warn.messages.block[params.sub_group].indefinite || (/indef|\*|max/).exec( params.block_timer ) ) ) {
+			if( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.sub_group !== 'uw-lblock' && ( messageData.indefinite || (/indef|\*|max/).exec( params.block_timer ) ) ) {
 				Morebits.status.info( 'Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date' );
 				text = "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			} else if( !headerRe.exec( text ) ) {
 				Morebits.status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
-			
-			if( params.article && Twinkle.warn.messages.block[params.sub_group].pageParam ) {
-				article = '|page=' + params.article;
-			}
-			
-			if( params.reason && Twinkle.warn.messages.block[params.sub_group].reasonParam ) {
-				reason = '|reason=' + params.reason;
-			}
-			
-			if( /te?mp|^\s*$|min/.exec( params.block_timer ) || Twinkle.warn.messages.block[params.sub_group].indefinite ) {
-				time = '';
-			} else if( /indef|\*|max/.exec( params.block_timer ) ) {
-				time = '|indef=yes';
-			} else {
-				time = '|time=' + params.block_timer;
-			}
 
-			text += "{{subst:" + params.sub_group + article + time + reason + "|sig=true|subst=subst:}}";
+			text += Twinkle.warn.callbacks.getBlockNoticeWikitext(params.sub_group, params.article, params.block_timer, params.reason, messageData.indefinite);
 		} else {
 			if( !headerRe.exec( text ) ) {
 				Morebits.status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
-			text += "{{subst:" + params.sub_group + ( params.article ? '|1=' + params.article : '' ) + "|subst=subst:}}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + "~~~~";
+			text += Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article, params.reason) + " ~~~~";
 		}
 
 		if ( Twinkle.getPref('showSharedIPNotice') && Morebits.isIPAddress( mw.config.get('wgTitle') ) ) {
@@ -1609,20 +1692,23 @@ Twinkle.warn.callbacks = {
 Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 
 	// First, check to make sure a reason was filled in if uw-username was selected
-	
+
 	if(e.target.sub_group.value === 'uw-username' && e.target.article.value.trim() === '') {
 		alert("You must supply a reason for the {{uw-username}} template.");
 		return;
 	}
 
+	// Find the selected <option> element so we can fetch the data structure
+	var selectedEl = $(e.target.sub_group).find('option[value="' + $(e.target.sub_group).val() + '"]');
+
 	// Then, grab all the values provided by the form
-	
 	var params = {
 		reason: e.target.block_reason ? e.target.block_reason.value : e.target.reason.value,
 		main_group: e.target.main_group.value,
 		sub_group: e.target.sub_group.value,
 		article: e.target.article.value,  // .replace( /^(Image|Category):/i, ':$1:' ),  -- apparently no longer needed...
-		block_timer: e.target.block_timer ? e.target.block_timer.value : null
+		block_timer: e.target.block_timer ? e.target.block_timer.value : null,
+		messageData: selectedEl.data("messageData")
 	};
 
 	Morebits.simpleWindow.setButtonsEnabled( false );
