@@ -750,6 +750,7 @@ Twinkle.speedy.reasonHash = {
 	'club': 'No explanation of the subject\'s significance (organization)',
 	'band': 'No explanation of the subject\'s significance (band/musician)',
 	'animal': 'No explanation of the subject\'s significance (individual animal)',
+	'event': 'No explanation of the subject\'s significance (event)',
 	'a9': 'Music recording by redlinked artist and no indication of importance or significance',
 	'a10': 'Recently created article that duplicates an existing topic',
 // Images and media
