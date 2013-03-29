@@ -531,10 +531,6 @@ Twinkle.warn.messages = {
 			label:"Vandalism", 
 			summary:"Final warning: Vandalism" 
 		},
-		"uw-disruptive4": {
-			label:"Disruptive editing",
-			summary:"Final warning: Disruptive editing"
-		},
 		"uw-test4": { 
 			label:"Editing tests", 
 			summary:"Final warning: Editing tests" 
