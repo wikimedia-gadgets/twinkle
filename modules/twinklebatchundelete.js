@@ -3,15 +3,14 @@
  *** twinklebatchundelete.js: Batch undelete module
  ****************************************
  * Mode of invocation:     Tab ("Und-batch")
- * Active on:              Existing and non-existing user pages (??? why?)
+ * Active on:              Existing user pages
  * Config directives in:   TwinkleConfig
  */
 
-// XXX TODO this module needs to be overhauled to use Morebits.wiki.page
-
 
 Twinkle.batchundelete = function twinklebatchundelete() {
-	if( mw.config.get("wgNamespaceNumber") !== mw.config.get("wgNamespaceIds").user ) {
+	if( mw.config.get("wgNamespaceNumber") !== mw.config.get("wgNamespaceIds").user || 
+		!mw.config.get("wgArticleId") ) {
 		return;
 	}
 	if( Morebits.userIsInGroup( 'sysop' ) ) {
