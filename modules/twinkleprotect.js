@@ -109,6 +109,9 @@ Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtec
 	var xml = apiobj.getXML();
 	var result = [];
 
+	Twinkle.protect.oldEditProtection = {level: 'all', expiry: 'infinity'};
+	Twinkle.protect.oldMoveProtection = {level: 'all', expiry: 'infinity'};
+
 	$(xml).find('pr').each(function(index, pr) {
 		var $pr = $(pr);
 		var boldnode = document.createElement('b');
