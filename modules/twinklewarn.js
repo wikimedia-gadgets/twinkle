@@ -37,7 +37,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 			!confirm( 'You are about to warn yourself! Are you sure you want to proceed?' ) ) {
 		return;
 	}
-	
+
 	var Window = new Morebits.simpleWindow( 600, 440 );
 	Window.setTitle( "Warn/notify user" );
 	Window.setScriptName( "Twinkle" );
@@ -249,6 +249,8 @@ Twinkle.warn.messages = {
 			summary:"General note: Frequent or mass changes to genres without consensus or references"
 		}
 	},
+
+
 	level2: {
 		"uw-vandalism2": { 
 			label:"Vandalism", 
@@ -387,6 +389,8 @@ Twinkle.warn.messages = {
 			summary:"Caution: Frequent or mass changes to genres without consensus or references"
 		}
 	},
+
+
 	level3: {
 		"uw-vandalism3": { 
 			label:"Vandalism", 
@@ -522,6 +526,8 @@ Twinkle.warn.messages = {
 		}
 
 	},
+
+
 	level4: {
 		"uw-generic4": { 
 			label:"Generic warning (for template series missing level 4)", 
@@ -645,6 +651,8 @@ Twinkle.warn.messages = {
 		}
 
 	},
+
+
 	level4im: {
 		"uw-vandalism4im": { 
 			label:"Vandalism", 
@@ -703,10 +711,12 @@ Twinkle.warn.messages = {
 			summary:"Only warning: Inappropriate feedback through the Article Feedback Tool"
 		}
 	},
+
+
 	singlenotice: {
-		"uw-2redirect": { 
-			label:"Creating double redirects through bad page moves", 
-			summary:"Notice: Creating double redirects through bad page moves" 
+		"uw-2redirect": {
+			label:"Creating double redirects through bad page moves",
+			summary:"Notice: Creating double redirects through bad page moves"
 		},
 		"uw-af-contact": {
 			label:"Attempting to contact the subject of an article via article feedback",
@@ -720,37 +730,37 @@ Twinkle.warn.messages = {
 			label:"Asking questions in article feedback",
 			summary:"Notice: Asking questions in article feedback"
 		},
-		"uw-aiv": { 
-			label:"Bad AIV report", 
-			summary:"Notice: Bad AIV report" 
+		"uw-aiv": {
+			label:"Bad AIV report",
+			summary:"Notice: Bad AIV report"
 		},
-		"uw-articlesig": { 
-			label:"Adding signatures to article space", 
-			summary:"Notice: Adding signatures to article space" 
+		"uw-articlesig": {
+			label:"Adding signatures to article space",
+			summary:"Notice: Adding signatures to article space"
 		},
-		"uw-autobiography": { 
-			label:"Creating autobiographies", 
-			summary:"Notice: Creating autobiographies" 
+		"uw-autobiography": {
+			label:"Creating autobiographies",
+			summary:"Notice: Creating autobiographies"
 		},
-		"uw-badcat": { 
-			label:"Adding incorrect categories", 
-			summary:"Notice: Adding incorrect categories" 
+		"uw-badcat": {
+			label:"Adding incorrect categories",
+			summary:"Notice: Adding incorrect categories"
 		},
 		"uw-badlistentry": {
 			label:"Adding inappropriate entries to lists",
 			summary:"Notice: Adding inappropriate entries to lists"
 		},
-		"uw-bite": { 
-			label:"\"Biting\" newcomers", 
-			summary:"Notice: \"Biting\" newcomers" 
+		"uw-bite": {
+			label:"\"Biting\" newcomers",
+			summary:"Notice: \"Biting\" newcomers"
 		},
-		"uw-coi": { 
-			label:"Conflict of Interest", 
-			summary:"Notice: Conflict of Interest" 
+		"uw-coi": {
+			label:"Conflict of Interest",
+			summary:"Notice: Conflict of Interest"
 		},
-		"uw-controversial": { 
-			label:"Introducing controversial material", 
-			summary:"Notice: Introducing controversial material" 
+		"uw-controversial": {
+			label:"Introducing controversial material",
+			summary:"Notice: Introducing controversial material"
 		},
 		"uw-copying": {
 			label:"Copying text to another page",
@@ -764,44 +774,44 @@ Twinkle.warn.messages = {
 			label:"Speedy deletion declined",
 			summary:"Notice: Speedy deletion declined"
 		},
-		"uw-c&pmove": { 
-			label:"Cut and paste moves", 
-			summary:"Notice: Cut and paste moves" 
+		"uw-c&pmove": {
+			label:"Cut and paste moves",
+			summary:"Notice: Cut and paste moves"
 		},
 		"uw-dab": {
 			label:"Incorrect edit to a disambiguation page",
 			summary:"Notice: Incorrect edit to a disambiguation page"
 		},
-		"uw-date": { 
-			label:"Unnecessarily changing date formats", 
-			summary:"Notice: Unnecessarily changing date formats" 
+		"uw-date": {
+			label:"Unnecessarily changing date formats",
+			summary:"Notice: Unnecessarily changing date formats"
 		},
-		"uw-deadlink": { 
-			label:"Removing proper sources containing dead links", 
-			summary:"Notice: Removing proper sources containing dead links" 
+		"uw-deadlink": {
+			label:"Removing proper sources containing dead links",
+			summary:"Notice: Removing proper sources containing dead links"
 		},
-		"uw-directcat": { 
-			label:"Applying stub categories manually", 
-			summary:"Notice: Applying stub categories manually" 
+		"uw-directcat": {
+			label:"Applying stub categories manually",
+			summary:"Notice: Applying stub categories manually"
 		},
-		"uw-draftfirst": { 
-			label:"User should draft in userspace without the risk of speedy deletion", 
+		"uw-draftfirst": {
+			label:"User should draft in userspace without the risk of speedy deletion",
 			summary:"Notice: Consider drafting your article in [[Help:Userspace draft|userspace]]"
 		},
-		"uw-editsummary": { 
-			label:"Not using edit summary", 
-			summary:"Notice: Not using edit summary" 
+		"uw-editsummary": {
+			label:"Not using edit summary",
+			summary:"Notice: Not using edit summary"
 		},
-		"uw-english": { 
-			label:"Not communicating in English", 
-			summary:"Notice: Not communicating in English" 
+		"uw-english": {
+			label:"Not communicating in English",
+			summary:"Notice: Not communicating in English"
 		},
-		"uw-fuir": { 
-			label:"Fair use image has been removed from your userpage", 
-			summary:"Notice: A fair use image has been removed from your userpage" 
+		"uw-fuir": {
+			label:"Fair use image has been removed from your userpage",
+			summary:"Notice: A fair use image has been removed from your userpage"
 		},
-		"uw-hasty": { 
-			label:"Hasty addition of speedy deletion tags", 
+		"uw-hasty": {
+			label:"Hasty addition of speedy deletion tags",
 			summary:"Notice: Allow creators time to improve their articles before tagging them for deletion"
 		},
 		"uw-imageuse": {
@@ -812,36 +822,36 @@ Twinkle.warn.messages = {
 			label:"Incomplete AFD",
 			summary:"Notice: Incomplete AFD"
 		},
-		"uw-italicize": { 
-			label:"Italicize books, films, albums, magazines, TV series, etc within articles", 
-			summary:"Notice: Italicize books, films, albums, magazines, TV series, etc within articles" 
+		"uw-italicize": {
+			label:"Italicize books, films, albums, magazines, TV series, etc within articles",
+			summary:"Notice: Italicize books, films, albums, magazines, TV series, etc within articles"
 		},
-		"uw-lang": { 
-			label:"Unnecessarily changing between British and American English", 
-			summary:"Notice: Unnecessarily changing between British and American English" 
+		"uw-lang": {
+			label:"Unnecessarily changing between British and American English",
+			summary:"Notice: Unnecessarily changing between British and American English"
 		},
-		"uw-linking": { 
-			label:"Excessive addition of redlinks or repeated blue links", 
-			summary:"Notice: Excessive addition of redlinks or repeated blue links" 
+		"uw-linking": {
+			label:"Excessive addition of redlinks or repeated blue links",
+			summary:"Notice: Excessive addition of redlinks or repeated blue links"
 		},
-		"uw-minor": { 
-			label:"Incorrect use of minor edits check box", 
-			summary:"Notice: Incorrect use of minor edits check box" 
+		"uw-minor": {
+			label:"Incorrect use of minor edits check box",
+			summary:"Notice: Incorrect use of minor edits check box"
 		},
-		"uw-nonfree": { 
-			label:"Uploading replaceable non-free images", 
-			summary:"Notice: Uploading replaceable non-free images" 
+		"uw-nonfree": {
+			label:"Uploading replaceable non-free images",
+			summary:"Notice: Uploading replaceable non-free images"
 		},
-		"uw-notaiv": { 
-			label:"Do not report complex abuse to AIV", 
-			summary:"Notice: Do not report complex abuse to AIV" 
+		"uw-notaiv": {
+			label:"Do not report complex abuse to AIV",
+			summary:"Notice: Do not report complex abuse to AIV"
 		},
 		"uw-notenglish": {
 			label:"Creating non-English articles",
 			summary:"Notice: Creating non-English articles"
 		},
-		"uw-notifysd": { 
-			label:"Notify authors of speedy deletion tagged articles", 
+		"uw-notifysd": {
+			label:"Notify authors of speedy deletion tagged articles",
 			summary:"Notice: Please notify authors of articles tagged for speedy deletion"
 		},
 		"uw-notvand": {
@@ -849,24 +859,24 @@ Twinkle.warn.messages = {
 			summary:"Notice: Misidentifying edits as vandalism"
 		},
 		"uw-notvote": {
-			label:"We use consensus, not voting", 
-			summary:"Notice: We use consensus, not voting" 
+			label:"We use consensus, not voting",
+			summary:"Notice: We use consensus, not voting"
 		},
-		"uw-patrolled": { 
-			label:"Mark newpages as patrolled when patrolling", 
-			summary:"Notice: Mark newpages as patrolled when patrolling" 
+		"uw-patrolled": {
+			label:"Mark newpages as patrolled when patrolling",
+			summary:"Notice: Mark newpages as patrolled when patrolling"
 		},
-		"uw-plagiarism": { 
-			label:"Copying from public domain sources without attribution", 
-			summary:"Notice: Copying from public domain sources without attribution" 
+		"uw-plagiarism": {
+			label:"Copying from public domain sources without attribution",
+			summary:"Notice: Copying from public domain sources without attribution"
 		},
-		"uw-preview": { 
-			label:"Use preview button to avoid mistakes", 
-			summary:"Notice: Use preview button to avoid mistakes" 
+		"uw-preview": {
+			label:"Use preview button to avoid mistakes",
+			summary:"Notice: Use preview button to avoid mistakes"
 		},
-		"uw-probation": { 
-			label:"Article is on probation", 
-			summary:"Notice: Article is on probation" 
+		"uw-probation": {
+			label:"Article is on probation",
+			summary:"Notice: Article is on probation"
 		},
 		"uw-refimprove": {
 			label:"Creating unverifiable articles",
@@ -876,90 +886,92 @@ Twinkle.warn.messages = {
 			label:"Incorrect vandalism removal",
 			summary:"Notice: Incorrect vandalism removal"
 		},
-		"uw-repost": { 
-			label:"Recreating material previously deleted via XfD process", 
-			summary:"Notice: Recreating previously deleted material" 
+		"uw-repost": {
+			label:"Recreating material previously deleted via XfD process",
+			summary:"Notice: Recreating previously deleted material"
 		},
-		"uw-salt": { 
-			label:"Recreating salted articles under a different title", 
-			summary:"Notice: Recreating salted articles under a different title" 
+		"uw-salt": {
+			label:"Recreating salted articles under a different title",
+			summary:"Notice: Recreating salted articles under a different title"
 		},
-		"uw-samename": { 
-			label:"Rename request impossible", 
+		"uw-samename": {
+			label:"Rename request impossible",
 			summary:"Notice: Rename request impossible"
 		},
-		"uw-selfrevert": { 
-			label:"Reverting self tests", 
-			summary:"Notice: Reverting self tests" 
+		"uw-selfrevert": {
+			label:"Reverting self tests",
+			summary:"Notice: Reverting self tests"
 		},
-		"uw-socialnetwork": { 
-			label:"Wikipedia is not a social network", 
-			summary:"Notice: Wikipedia is not a social network" 
+		"uw-socialnetwork": {
+			label:"Wikipedia is not a social network",
+			summary:"Notice: Wikipedia is not a social network"
 		},
-		"uw-sofixit": { 
+		"uw-sofixit": {
 			label:"Be bold and fix things yourself",
-			summary:"Notice: You can be bold and fix things yourself" 
+			summary:"Notice: You can be bold and fix things yourself"
 		},
 		"uw-spoiler": {
 			label:"Adding spoiler alerts or removing spoilers from appropriate sections",
 			summary:"Notice: Don't delete or flag potential 'spoilers' in Wikipedia articles"
 		},
-		"uw-subst": { 
-			label:"Remember to subst: templates", 
-			summary:"Notice: Remember to subst: templates" 
+		"uw-subst": {
+			label:"Remember to subst: templates",
+			summary:"Notice: Remember to subst: templates"
 		},
-		"uw-talkinarticle": { 
-			label:"Talk in article", 
-			summary:"Notice: Talk in article" 
+		"uw-talkinarticle": {
+			label:"Talk in article",
+			summary:"Notice: Talk in article"
 		},
-		"uw-tilde": { 
-			label:"Not signing posts", 
-			summary:"Notice: Not signing posts" 
+		"uw-tilde": {
+			label:"Not signing posts",
+			summary:"Notice: Not signing posts"
 		},
-		"uw-toppost": { 
-			label:"Posting at the top of talk pages", 
-			summary:"Notice: Posting at the top of talk pages" 
+		"uw-toppost": {
+			label:"Posting at the top of talk pages",
+			summary:"Notice: Posting at the top of talk pages"
 		},
-		"uw-uaa": { 
-			label:"Reporting of username to WP:UAA not accepted", 
-			summary:"Notice: Reporting of username to WP:UAA not accepted" 
+		"uw-uaa": {
+			label:"Reporting of username to WP:UAA not accepted",
+			summary:"Notice: Reporting of username to WP:UAA not accepted"
 		},
-		"uw-upincat": { 
+		"uw-upincat": {
 			label:"Accidentally including user page/subpage in a content category",
-			summary:"Notice: Informing user that one of his/her pages had accidentally been included in a content category" 
+			summary:"Notice: Informing user that one of his/her pages had accidentally been included in a content category"
 		},
-		"uw-uploadfirst": { 
-			label:"Attempting to display an external image on a page", 
-			summary:"Notice: Attempting to display an external image on a page" 
+		"uw-uploadfirst": {
+			label:"Attempting to display an external image on a page",
+			summary:"Notice: Attempting to display an external image on a page"
 		},
-		"uw-userspace draft finish": { 
-			label:"Stale userspace draft", 
-			summary:"Notice: Stale userspace draft" 
+		"uw-userspace draft finish": {
+			label:"Stale userspace draft",
+			summary:"Notice: Stale userspace draft"
 		},
-		"uw-userspacenoindex": { 
-			label:"User page/subpage isn't appropriate for search engine indexing", 
-			summary:"Notice: User (sub)page isn't appropriate for search engine indexing" 
+		"uw-userspacenoindex": {
+			label:"User page/subpage isn't appropriate for search engine indexing",
+			summary:"Notice: User (sub)page isn't appropriate for search engine indexing"
 		},
 		"uw-vgscope": {
 			label:"Adding video game walkthroughs, cheats or instructions",
 			summary:"Notice: Adding video game walkthroughs, cheats or instructions"
 		},
-		"uw-warn": { 
-			label:"Place user warning templates when reverting vandalism", 
+		"uw-warn": {
+			label:"Place user warning templates when reverting vandalism",
 			summary:"Notice: You can use user warning templates when reverting vandalism"
 		}
 	},
+
+
 	singlewarn: {
 		"uw-3rr": {
 			label:"Violating the three-revert rule; see also uw-ew",
 			summary:"Warning: Violating the three-revert rule"
 		},
-		"uw-affiliate": { 
-			label:"Affiliate marketing", 
+		"uw-affiliate": {
+			label:"Affiliate marketing",
 			summary:"Warning: Affiliate marketing"
 		},
-		"uw-agf-sock": { 
-			label:"Use of multiple accounts (assuming good faith)", 
+		"uw-agf-sock": {
+			label:"Use of multiple accounts (assuming good faith)",
 			summary:"Warning: Using multiple accounts"
 		},
 		"uw-attack": {
@@ -987,11 +999,11 @@ Twinkle.warn.messages = {
 			label:"Copyright violation",
 			summary:"Warning: Copyright violation"
 		},
-		"uw-copyright-link": { 
+		"uw-copyright-link": {
 			label:"Linking to copyrighted works violation",
-			summary:"Warning: Linking to copyrighted works violation" 
+			summary:"Warning: Linking to copyrighted works violation"
 		},
-		"uw-copyright-new": { 
+		"uw-copyright-new": {
 			label:"Copyright violation (with explanation for new users)",
 			summary:"Notice: Avoiding copyright problems"
 		},
@@ -1011,76 +1023,82 @@ Twinkle.warn.messages = {
 			label:"Edit warring (softer wording for newcomers)",
 			summary:"Warning: Edit warring"
 		},
-		"uw-hoax": { 
-			label:"Creating hoaxes", 
-			summary:"Warning: Creating hoaxes" 
+		"uw-hoax": {
+			label:"Creating hoaxes",
+			summary:"Warning: Creating hoaxes"
 		},
-		"uw-legal": { 
-			label:"Making legal threats", 
-			summary:"Warning: Making legal threats" 
+		"uw-legal": {
+			label:"Making legal threats",
+			summary:"Warning: Making legal threats"
 		},
-		"uw-longterm": { 
-			label:"Long term pattern of vandalism", 
-			summary:"Warning: Long term pattern of vandalism" 
+		"uw-longterm": {
+			label:"Long term pattern of vandalism",
+			summary:"Warning: Long term pattern of vandalism"
 		},
-		"uw-multipleIPs": { 
-			label:"Usage of multiple IPs", 
-			summary:"Warning: Usage of multiple IPs" 
+		"uw-multipleIPs": {
+			label:"Usage of multiple IPs",
+			summary:"Warning: Usage of multiple IPs"
 		},
-		"uw-pinfo": { 
-			label:"Personal info", 
-			summary:"Warning: Personal info" 
+		"uw-pinfo": {
+			label:"Personal info",
+			summary:"Warning: Personal info"
 		},
 		"uw-socksuspect": {
 			label:"Sockpuppetry",
 			summary:"Warning: You are a suspected [[WP:SOCK|sockpuppet]]"  // of User:...
 		},
-		"uw-upv": { 
-			label:"Userpage vandalism", 
+		"uw-upv": {
+			label:"Userpage vandalism",
 			summary:"Warning: Userpage vandalism"
 		},
-		"uw-username": { 
-			label:"Username is against policy", 
+		"uw-username": {
+			label:"Username is against policy",
 			summary:"Warning: Your username might be against policy",
 			suppressArticleInSummary: true  // not relevant for this template
 		},
-		"uw-coi-username": { 
-			label:"Username is against policy, and conflict of interest", 
+		"uw-coi-username": {
+			label:"Username is against policy, and conflict of interest",
 			summary:"Warning: Username and conflict of interest policy"
 		},
-		"uw-userpage": { 
-			label:"Userpage or subpage is against policy", 
+		"uw-userpage": {
+			label:"Userpage or subpage is against policy",
 			summary:"Warning: Userpage or subpage is against policy"
 		},
-		"uw-wrongsummary": { 
-			label:"Using inaccurate or inappropriate edit summaries", 
+		"uw-wrongsummary": {
+			label:"Using inaccurate or inappropriate edit summaries",
 			summary:"Warning: Using inaccurate or inappropriate edit summaries"
 		}
 	},
+
+
 	block: {
 		"uw-block": {
 			label: "Block",
 			summary: "You have been blocked from editing",
 			pageParam: true,
-			reasonParam: true  // allows editing of reason for generic templates
+			reasonParam: true,  // allows editing of reason for generic templates
+			suppressArticleInSummary: true
 		},
 		"uw-blocknotalk": {
 			label: "Block - talk page disabled",
 			summary: "You have been blocked from editing and your user talk page has been disabled",
 			pageParam: true,
-			reasonParam: true
+			reasonParam: true,
+			suppressArticleInSummary: true
 		},
 		"uw-blockindef": {
 			label: "Block - indefinite",
 			summary: "You have been indefinitely blocked from editing",
 			indefinite: true,
 			pageParam: true,
-			reasonParam: true
+			reasonParam: true,
+			suppressArticleInSummary: true
 		},
 		"uw-ablock": {
 			label: "Block - IP address",
 			summary: "Your IP address has been blocked from editing",
-			pageParam: true
+			pageParam: true,
+			suppressArticleInSummary: true
 		},
 		"uw-vblock": {
 			label: "Vandalism block",
@@ -1341,7 +1359,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	// clear overridden label on article textbox
 	Morebits.quickForm.setElementTooltipVisibility(e.target.root.article, true);
 	Morebits.quickForm.resetElementLabel(e.target.root.article);
-	
+
 	// hide the big red notice
 	$("#tw-warn-red-notice").remove();
 };
@@ -1422,16 +1440,16 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, true);
 		Morebits.quickForm.resetElementLabel(e.target.form.article);
 	}
-	
+
 	// add big red notice, warning users about how to use {{uw-[coi-]username}} appropriately
 	$("#tw-warn-red-notice").remove();
 	if (value === "uw-username") {
-		var $redWarning = $("<div style='color: red;' id='tw-warn-red-notice'>{{uw-username}} should <b>not</b> be used for <b>blatant</b> username policy violations. " + 
+		var $redWarning = $("<div style='color: red;' id='tw-warn-red-notice'>{{uw-username}} should <b>not</b> be used for <b>blatant</b> username policy violations. " +
 			"Blatant violations should be reported directly to UAA (via Twinkle's ARV tab). " +
 			"{{uw-username}} should only be used in edge cases in order to engage in discussion with the user.</div>");
 		$redWarning.insertAfter(Morebits.quickForm.getElementLabelObject(e.target.form.reasonGroup));
 	} else if (value === "uw-coi-username") {
-		var $redWarning = $("<div style='color: red;' id='tw-warn-red-notice'>{{uw-coi-username}} should <b>not</b> be used for <b>blatant</b> username policy violations. " + 
+		var $redWarning = $("<div style='color: red;' id='tw-warn-red-notice'>{{uw-coi-username}} should <b>not</b> be used for <b>blatant</b> username policy violations. " +
 			"Blatant violations should be reported directly to UAA (via Twinkle's ARV tab). " +
 			"{{uw-coi-username}} should only be used in edge cases in order to engage in discussion with the user.</div>");
 		$redWarning.insertAfter(Morebits.quickForm.getElementLabelObject(e.target.form.reasonGroup));
@@ -1523,8 +1541,7 @@ Twinkle.warn.callbacks = {
 				return;
 			}
 		}
-		
-		var mainheaderRe = new RegExp("==+\\s*Warnings\\s*==+");
+
 		var headerRe = new RegExp( "^==+\\s*(?:" + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() +  ")\\s+" + date.getUTCFullYear() + "\\s*==+", 'm' );
 
 		if( text.length > 0 ) {
@@ -1566,7 +1583,7 @@ Twinkle.warn.callbacks = {
 			}
 			text += "{{subst:" + params.sub_group + ( params.article ? '|1=' + params.article : '' ) + "|subst=subst:}}" + (params.reason ? " ''" + params.reason + "'' ": ' ' ) + "~~~~";
 		}
-		
+
 		if ( Twinkle.getPref('showSharedIPNotice') && Morebits.isIPAddress( mw.config.get('wgTitle') ) ) {
 			Morebits.status.info( 'Info', 'Adding a shared IP notice' );
 			text +=  "\n{{subst:SharedIPAdvice}}";
