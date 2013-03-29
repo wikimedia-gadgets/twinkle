@@ -1191,6 +1191,8 @@ Twinkle.protect.callbacks = {
 		} else {
 			if( params.noinclude ) {
 				text = "<noinclude>{{" + tag + "}}</noinclude>" + text;
+			} else if( Morebits.wiki.isPageRedirect() ) {
+				text = text + "\n{{" + tag + "}}";
 			} else {
 				text = "{{" + tag + "}}\n" + text;
 			}
