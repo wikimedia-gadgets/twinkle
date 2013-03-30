@@ -579,7 +579,17 @@ Twinkle.config.sections = [
 			name: "defaultWarningGroup",
 			label: "Default warning level",
 			type: "enum",
-			enumValues: { "1": "Level 1", "2": "Level 2", "3": "Level 3", "4": "Level 4", "5": "Level 4im", "6": "Single-issue notices", "7": "Single-issue warnings", "8": "Block (admin only)" }
+			enumValues: {
+				"1": "Level 1",
+				"2": "Level 2",
+				"3": "Level 3",
+				"4": "Level 4",
+				"5": "Level 4im",
+				"6": "Single-issue notices",
+				"7": "Single-issue warnings",
+				"9": "Custom warnings",
+				"8": "Block (admin only)"
+			}
 		},
 
 		// TwinkleConfig.showSharedIPNotice may take arguments:
@@ -608,6 +618,14 @@ Twinkle.config.sections = [
 			helptip: "See <a href=\"" + mw.util.wikiGetlink("WP:UW#Indefinitely blocked users") + "\">WP:UW</a> for more information.",
 			adminOnly: true,
 			type: "boolean"
+		},
+		{
+			name: "customWarningList",
+			label: "Custom warning templates to display",
+			helptip: "You can add templates or user subpages. To add a series of warnings, add each template individually (e.g. uw-plotsum1, uw-plotsum2, etc).",
+			type: "customList",
+			customListValueTitle: "Template name (no curly brackets)",
+			customListLabelTitle: "Text to show in warning list (also used as edit summary)"
 		}
 	]
 },

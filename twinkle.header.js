@@ -88,6 +88,7 @@ Twinkle.defaultConfig.twinkle = {
 	showSharedIPNotice: true,
 	watchWarnings: true,
 	blankTalkpageOnIndefBlock: false,
+	customWarningList: [],
 	 // XfD
 	xfdWatchDiscussion: "default",
 	xfdWatchList: "no",
