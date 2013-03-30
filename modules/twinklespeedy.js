@@ -791,6 +791,8 @@ Twinkle.speedy.callbacks = {
 
 			Morebits.wiki.addCheckpoint();  // prevent actionCompleted from kicking in until user interaction is done
 			
+			// look up initial contributor. If prompting user for deletion reason, just display a link.
+			// Otherwise open the talk page directly
 			if( params.openusertalk ) {
 				thispage = new Morebits.wiki.page( mw.config.get('wgPageName') );  // a necessary evil, in order to clear incorrect status text
 				thispage.setCallbackParameters( params );
@@ -892,7 +894,7 @@ Twinkle.speedy.callbacks = {
 		openUserTalkPage: function( pageobj ) {
 			pageobj.getStatusElement().unlink();  // don't need it anymore
 			var user = pageobj.getCreator();
-			var statusIndicator = new Morebits.status('Opening user talk page edit form for ' + user, 'opening...');
+			var params = pageobj.getCallbackParameters();
 
 			var query = {
 				'title': 'User talk:' + user,
@@ -900,23 +902,43 @@ Twinkle.speedy.callbacks = {
 				'preview': 'yes',
 				'vanarticle': mw.config.get('wgPageName').replace(/_/g, ' ')
 			};
-			switch( Twinkle.getPref('userTalkPageMode') ) {
-			case 'tab':
-				window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_tab' );
-				break;
-			case 'blank':
-				window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_blank', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
-				break;
-			case 'window':
-				/* falls through */
-			default:
-				window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ),
-					( window.name === 'twinklewarnwindow' ? '_blank' : 'twinklewarnwindow' ),
-					'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
-				break;
-			}
 
-			statusIndicator.info( 'complete' );
+			if (params.normalized === 'db' || Twinkle.getPref("promptForSpeedyDeletionSummary").indexOf(params.normalized) !== -1) {
+				// provide a link to the user talk page
+				var $link, $bigtext;
+				$link = $('<a/>', {
+					'href': mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ),
+					'text': 'click here to open User talk:' + user,
+					'target': '_blank',
+					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
+				});
+				$bigtext = $('<span/>', {
+					'text': 'To notify the page creator',
+					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
+				});
+				Morebits.status.info($bigtext[0], $link[0]);
+			} else {
+				// open the initial contributor's talk page
+				var statusIndicator = new Morebits.status('Opening user talk page edit form for ' + user, 'opening...');
+
+				switch( Twinkle.getPref('userTalkPageMode') ) {
+				case 'tab':
+					window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_tab' );
+					break;
+				case 'blank':
+					window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_blank', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
+					break;
+				case 'window':
+					/* falls through */
+				default:
+					window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ),
+						( window.name === 'twinklewarnwindow' ? '_blank' : 'twinklewarnwindow' ),
+						'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
+					break;
+				}
+
+				statusIndicator.info( 'complete' );
+			}
 		},
 		deleteRedirectsMain: function( apiobj ) {
 			var xmlDoc = apiobj.getXML();
