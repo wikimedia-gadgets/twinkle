@@ -106,6 +106,11 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	}
 
 	var reason = event.target.reason.value;
+	if (!reason) {
+		alert("You must specify a reason for unlinking.");
+		return;
+	}
+
 	var backlinks, imageusage;
 	if( event.target.backlinks ) {
 		backlinks = Twinkle.unlink.getChecked2(event.target.backlinks);
