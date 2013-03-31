@@ -2750,7 +2750,7 @@ Morebits.wikitext.page.prototype = {
 		var unbinder = new Morebits.unbinder( this.text );
 		unbinder.unbind( '<!--', '-->' );
 
-		reason = reason ? ' ' + reason + ': ' : '';
+		reason = reason ? (reason + ': ') : '';
 		var first_char = image.substr( 0, 1 );
 		var image_re_string = "[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' +  RegExp.escape( image.substr( 1 ), true ); 
 

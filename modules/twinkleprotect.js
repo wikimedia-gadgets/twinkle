@@ -553,6 +553,8 @@ Twinkle.protect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
 		option.textContent = custom;
 		target.appendChild(option);
 		target.value = custom;
+	} else {
+		target.selectedIndex = 0;
 	}
 };
 
