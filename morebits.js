@@ -965,7 +965,7 @@ Morebits.string = {
 				--level;
 				i += end.length - 1;
 			}
-			if( !level && initial ) {
+			if( !level && initial !== null ) {
 				result.push( str.substring( initial, i + 1 ) );
 				initial = null;
 			}
