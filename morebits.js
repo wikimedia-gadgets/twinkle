@@ -2467,7 +2467,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 
-		var editprot = $(xml).find('pr[type="edit"]');
 		// cascading protection not possible on edit<sysop
 		// XXX fix this logic - I can't wrap my head around it
 		//if (ctx.protectCascade && (editprot && editprot.attr('level') !== 'sysop') && (ctx.protectEdit && ctx.protectEdit.level !== 'sysop')) {
@@ -2481,33 +2480,45 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 
-		var protections = '', expiry = '';
+		// fetch existing protection levels
+		var prs = $(xml).find('pr');
+		var editprot = prs.filter('[type="edit"]');
+		var moveprot = prs.filter('[type="move"]');
+		var createprot = prs.filter('[type="create"]');
+
+		var protections = [], expirys = [];
+
+		// set edit protection level
 		if (ctx.protectEdit) {
-			protections += 'edit=' + ctx.protectEdit.level;
-			expiry += ctx.protectEdit.expiry;
+			protections.push('edit=' + ctx.protectEdit.level);
+			expirys.push(ctx.protectEdit.expiry);
+		} else if (editprot.length) {
+			protections.push('edit=' + editprot.attr("level"));
+			expirys.push(editprot.attr("expiry").replace("infinity", "indefinite"));
 		}
+
 		if (ctx.protectMove) { 
-			if (ctx.protectEdit) {
-				protections += '|';
-				expiry += '|';
-			}
-			protections += 'move=' + ctx.protectMove.level;
-			expiry += ctx.protectMove.expiry;
+			protections.push('move=' + ctx.protectMove.level);
+			expirys.push(ctx.protectMove.expiry);
+		} else if (moveprot.length) {
+			protections.push('move=' + moveprot.attr("level"));
+			expirys.push(moveprot.attr("expiry").replace("infinity", "indefinite"));
 		}
+
 		if (ctx.protectCreate) {
-			if (ctx.protectEdit || ctx.protectMove) {
-				protections += '|';
-				expiry += '|';
-			}
-			protections += 'create=' + ctx.protectCreate.level;
-			expiry += ctx.protectCreate.expiry;
+			protections.push('create=' + ctx.protectCreate.level);
+			expirys.push(ctx.protectCreate.expiry);
+		} else if (createprot.length) {
+			protections.push('create=' + createprot.attr("level"));
+			expirys.push(createprot.attr("expiry").replace("infinity", "indefinite"));
 		}
+
 		var query = {
 			action: 'protect',
 			title: $(xml).find('page').attr('title'),
 			token: protectToken,
-			protections: protections,
-			expiry: expiry,
+			protections: protections.join('|'),
+			expiry: expirys.join('|'),
 			reason: ctx.editSummary
 		};
 		if (ctx.protectCascade) {

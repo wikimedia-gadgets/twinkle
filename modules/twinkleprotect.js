@@ -102,15 +102,10 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 };
 
 Twinkle.protect.protectionLevel = null;
-Twinkle.protect.oldEditProtection = null;
-Twinkle.protect.oldMoveProtection = null;
 
 Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtectionLevel(apiobj) {
 	var xml = apiobj.getXML();
 	var result = [];
-
-	Twinkle.protect.oldEditProtection = {level: 'all', expiry: 'infinity'};
-	Twinkle.protect.oldMoveProtection = {level: 'all', expiry: 'infinity'};
 
 	$(xml).find('pr').each(function(index, pr) {
 		var $pr = $(pr);
@@ -124,18 +119,6 @@ Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtec
 		}
 		if ($pr.attr('cascade') === '') {
 			result.push("(cascading) ");
-		}
-
-		if ($pr.attr('type') === "edit") {
-			Twinkle.protect.oldEditProtection = { 
-				level: $pr.attr('level'),
-				expiry: $pr.attr('expiry')
-			};
-		} else if ($pr.attr('type') === "move") {
-			Twinkle.protect.oldMoveProtection = { 
-				level: $pr.attr('level'),
-				expiry: $pr.attr('expiry')
-			};
 		}
 	});
 
@@ -425,7 +408,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			field2.append({
 					type: 'textarea',
 					name: 'protectReason',
-					label: 'Protection reason (for log):'
+					label: 'Reason (for protection log):'
 				});
 			if (!mw.config.get('wgArticleId')) {  // tagging isn't relevant for non-existing pages
 				break;
@@ -927,28 +910,9 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				if (mw.config.get('wgArticleId')) {
 					if (form.editmodify.checked) {
 						thispage.setEditProtection(form.editlevel.value, form.editexpiry.value);
-					} else if (form.movemodify.checked && Twinkle.protect.oldEditProtection) {
-						if (Twinkle.protect.oldEditProtection.expiry === "infinity") {
-							Twinkle.protect.oldEditProtection.expiry = "indefinite";  // stupid API bug
-						}
-						thispage.setEditProtection(Twinkle.protect.oldEditProtection.level,
-							Twinkle.protect.oldEditProtection.expiry);
-					} else {
-						alert("Twinkle couldn't retrieve the existing protection settings.");
-						return;
 					}
-
 					if (form.movemodify.checked) {
 						thispage.setMoveProtection(form.movelevel.value, form.moveexpiry.value);
-					} else if (form.editmodify.checked && Twinkle.protect.oldMoveProtection) {
-						if (Twinkle.protect.oldMoveProtection.expiry === "infinity") {
-							Twinkle.protect.oldMoveProtection.expiry = "indefinite";  // stupid API bug
-						}
-						thispage.setMoveProtection(Twinkle.protect.oldMoveProtection.level,
-							Twinkle.protect.oldMoveProtection.expiry);
-					} else {
-						alert("Twinkle couldn't retrieve the existing protection settings.");
-						return;
 					}
 				} else {
 					thispage.setCreateProtection(form.createlevel.value, form.createexpiry.value);
