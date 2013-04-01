@@ -721,8 +721,7 @@ Twinkle.tag.multipleIssuesExceptions = [
 	'not English',
 	'rough translation',
 	'uncategorized',
-	'under construction',
-	'update'
+	'under construction'
 ];
 
 
@@ -833,13 +832,20 @@ Twinkle.tag.callbacks = {
 						if (params.mergeTarget) {
 							// normalize the merge target for now and later
 							params.mergeTarget = Morebits.string.toUpperCaseFirstChar(params.mergeTarget.replace(/_/g, ' '));
+
 							currentTag += '|' + params.mergeTarget;
-							// link to the correct section on the talk page
-							if (!params.talkPageLink) {
-								params.talkPageLink = 'Talk:' + mw.config.get('wgTitle') + '#Proposed merge with ' +
-									params.mergeTarget;
+
+							// link to the correct section on the talk page, for article space only
+							if (mw.config.get('wgNamespaceNumber') === 0 && (params.mergeReason || params.discussArticle)) {
+								if (!params.discussArticle) {
+									// discussArticle is the article whose talk page will contain the discussion
+									params.discussArticle = (tagName === "merge to" ? params.mergeTarget : mw.config.get('wgTitle'));
+									// nonDiscussArticle is the article which won't have the discussion
+									params.nonDiscussArticle = (tagName === "merge to" ? mw.config.get('wgTitle') : params.mergeTarget)
+									params.talkDiscussionTitle = 'Proposed merge with ' + params.nonDiscussArticle;
+								}
+								currentTag += '|discuss=Talk:' + params.discussArticle + '#' + params.talkDiscussionTitle;
 							}
-							currentTag += '|discuss=' + params.talkPageLink;
 						}
 						break;
 					default:
@@ -974,44 +980,43 @@ Twinkle.tag.callbacks = {
 		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
 		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
-		pageobj.save();
+		pageobj.save(function() {
+			// special functions for merge tags
+			if (params.mergeReason) {
+				// post the rationale on the talk page (only operates in main namespace)
+				var talkpageText = "\n\n== Proposed merge with [[" + params.nonDiscussArticle + "]] ==\n\n";
+				talkpageText += params.mergeReason.trim() + " ~~~~";
+				
+				var talkpage = new Morebits.wiki.page("Talk:" + params.discussArticle, "Posting rationale on talk page");
+				talkpage.setAppendText(talkpageText);
+				talkpage.setEditSummary('Proposing to merge [[' + params.discussArticle +
+					']] with [[' + params.nonDiscussArticle + ']]' + Twinkle.getPref('summaryAd'));
+				talkpage.setCreateOption('recreate');
+				talkpage.append();
+			}
+			if (params.mergeTagOther) {
+				// tag the target page if requested
+				var otherTagName = "merge";
+				if (tags.indexOf("merge from") !== -1) {
+					otherTagName = "merge to";
+				} else if (tags.indexOf("merge to") !== -1) {
+					otherTagName = "merge from";
+				}
+				var newParams = { 
+					tags: [otherTagName],
+					mergeTarget: mw.config.get("wgPageName"),
+					discussArticle: params.discussArticle,
+					talkDiscussionTitle: params.talkDiscussionTitle
+				};
+				var otherpage = new Morebits.wiki.page(params.mergeTarget, "Tagging other page (" +
+					params.mergeTarget + ")");
+				otherpage.setCallbackParameters(newParams);
+				otherpage.load(Twinkle.tag.callbacks.main);
+			}
+		});
 
 		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
 			pageobj.patrol();
-		}
-		
-		// special functions for merge tags
-		var talkpageLink = null;
-		if (params.mergeReason) {
-			// post the rationale on the talk page
-			// (only operates in main namespace)
-			var talkpageText = "\n\n== Proposed merge with [[" + params.mergeTarget + "]] ==\n\n";
-			talkpageText += params.mergeReason.trim() + " ~~~~";
-			
-			var talkpage = new Morebits.wiki.page("Talk:" + mw.config.get("wgTitle"), "Posting rationale on talk page");
-			talkpage.setAppendText(talkpageText);
-			talkpage.setEditSummary('Proposing to merge [[' + mw.config.get("wgTitle") +
-				']] with [[' + params.mergeTarget + ']]' + Twinkle.getPref('summaryAd'));
-			talkpage.setCreateOption('recreate');
-			talkpage.append();
-		}
-		if (params.mergeTagOther) {
-			// tag the target page if requested
-			var otherTagName = "merge";
-			if (tags.indexOf("merge from") !== -1) {
-				otherTagName = "merge to";
-			} else if (tags.indexOf("merge to") !== -1) {
-				otherTagName = "merge from";
-			}
-			var newParams = { 
-				tags: [otherTagName],
-				mergeTarget: mw.config.get("wgPageName"),
-				talkPageLink: params.talkPageLink
-			};
-			var otherpage = new Morebits.wiki.page(params.mergeTarget, "Tagging other page (" +
-				params.mergeTarget + ")");
-			otherpage.setCallbackParameters(newParams);
-			otherpage.load(Twinkle.tag.callbacks.main);
 		}
 	},
 
