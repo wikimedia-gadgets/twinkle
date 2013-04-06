@@ -359,7 +359,7 @@ Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 	result.push({
 		label: 'A2: Foreign language articles that exist on another Wikimedia project',
 		value: 'foreign',
-		tooltip: 'If the article in question does not exist on another project, the template {{notenglish}} should be used instead. All articles in a non-English language that do not meet this criteria (and do not meet any other criteria for speedy deletion) should be listed at Pages Needing Translation (PNT) for review and possible translation'
+		tooltip: 'If the article in question is not substantially identical to another project, the template {{notenglish}} should be used instead. All articles in a non-English language that do not meet this criteria (and do not meet any other criteria for speedy deletion) should be listed at Pages Needing Translation (PNT) for review and possible translation'
 	});
 	result.push({
 		label: 'A3: No content whatsoever',
@@ -401,7 +401,7 @@ Twinkle.speedy.getArticleList = function twinklespeedyGetArticleList(multiple) {
 		result.push({
 			label: 'A7: Unremarkable website or web content',
 			value: 'web',
-			tooltip: 'Article about a web site, blog, online forum, webcomic, podcast, or similar web content that does not assert the importance or significance of its subject'
+			tooltip: 'Article about a website, blog, online forum, webcomic, podcast, or similar web content that does not assert the importance or significance of its subject'
 		});
 		result.push({
 			label: 'A7: Unremarkable individual animal',
@@ -518,7 +518,7 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 	result.push({
 		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
 		value: 'nonsense',
-		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.'
+		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, implausible theories, vandalism or hoaxes, fictional material, non-English material or poorly translated material. In short, if you can understand it, G1 does not apply.'
 	});
 	result.push({
 		label: 'G2: Test page',
@@ -528,7 +528,7 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 	result.push({
 		label: 'G3: Pure vandalism',
 		value: 'vandalism',
-		tooltip: 'Plain pure vandalism (including redirects left behind from pagemove vandalism)'
+		tooltip: 'Plain pure vandalism (including redirects left behind from page-move vandalism)'
 	});
 	if (!multiple) {
 		result.push({
@@ -623,6 +623,11 @@ Twinkle.speedy.getGeneralList = function twinklespeedyGetGeneralList(multiple) {
 		value: 'copyvio',
 		tooltip: 'Either: (1) Material was copied from another website that does not have a license compatible with Wikipedia, or is photography from a stock photo seller (such as Getty Images or Corbis) or other commercial content provider; (2) There is no non-infringing content in the page history worth saving; or (3) The infringement was introduced at once by a single person rather than created organically on wiki and then copied by another website such as one of the many Wikipedia mirrors'
 	});
+	result.push({
+		label: 'G13: Abandoned Articles for creation submission',
+		value: 'afc',
+		tooltip: 'Rejected Articles for creation submissions that have not been edited in over a year.'
+	});
 	return result;
 };
 
@@ -671,6 +676,7 @@ Twinkle.speedy.normalizeHash = {
 	'spam': 'g11',
 	'spamuser': 'g11',
 	'copyvio': 'g12',
+	'afc': 'g13',
 	'nocontext': 'a1',
 	'foreign': 'a2',
 	'nocontent': 'a3',
@@ -738,6 +744,7 @@ Twinkle.speedy.reasonHash = {
 	'negublp': 'Negative unsourced [[WP:BLP|BLP]]',
 	'spam': 'Unambiguous [[WP:ADS|advertising]] or promotion',
 	'copyvio': 'Unambiguous [[WP:C|copyright infringement]]',
+	'afc': 'Abandoned [[WP:AFC|Articles for creation]] submission'
 // Articles
 	'nocontext': 'Short article without enough context to identify the subject',
 	'foreign': 'Article in a foreign language that exists on another project',
