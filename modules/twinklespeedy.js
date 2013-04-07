@@ -198,7 +198,12 @@ Twinkle.speedy.callback.dbMultipleChanged = function twinklespeedyCallbackDbMult
 
 	var radioOrCheckbox = (value ? 'checkbox' : 'radio');
 
-	if (namespace % 2 === 1 && namespace !== 3) {  // talk pages, but not user talk pages
+	if (namespace === 5 && mw.config.get('wgTitle').indexOf('Articles for creation/') === 0) {
+		// show AFC criteria on AFC talk subpages
+		work_area.append( { type: 'header', label: 'Articles for Creation submissions' } );
+		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.afcList } );
+	} else if (namespace % 2 === 1 && namespace !== 3) {  
+		// show db-talk on talk pages, but not user talk pages
 		work_area.append( { type: 'header', label: 'Talk pages' } );
 		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.talkList } );
 	}
@@ -260,6 +265,14 @@ Twinkle.speedy.talkList = [
 		label: 'G8: Talk pages with no corresponding subject page',
 		value: 'talk',
 		tooltip: 'This excludes any page that is useful to the project - in particular, user talk pages, talk page archives, and talk pages for files that exist on Wikimedia Commons.'
+	}
+];
+
+Twinkle.speedy.afcList = [
+	{
+		label: 'G13: Old, rejected Articles for Creation submissions',
+		value: 'afc',
+		tooltip: 'Any rejected AfC submission that has not been edited for more than 1 year.'
 	}
 ];
 
@@ -671,6 +684,7 @@ Twinkle.speedy.normalizeHash = {
 	'spam': 'g11',
 	'spamuser': 'g11',
 	'copyvio': 'g12',
+	'afc': 'g13',
 	'nocontext': 'a1',
 	'foreign': 'a2',
 	'nocontent': 'a3',
@@ -738,6 +752,7 @@ Twinkle.speedy.reasonHash = {
 	'negublp': 'Negative unsourced [[WP:BLP|BLP]]',
 	'spam': 'Unambiguous [[WP:ADS|advertising]] or promotion',
 	'copyvio': 'Unambiguous [[WP:C|copyright infringement]]',
+	'afc': 'Abandoned [[WP:AFC|Articles for creation]] submission',
 // Articles
 	'nocontext': 'Short article without enough context to identify the subject',
 	'foreign': 'Article in a foreign language that exists on another project',
