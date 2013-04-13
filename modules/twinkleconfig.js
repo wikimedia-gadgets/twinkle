@@ -622,7 +622,7 @@ Twinkle.config.sections = [
 		{
 			name: "customWarningList",
 			label: "Custom warning templates to display",
-			helptip: "You can add templates or user subpages. To add a series of warnings, add each template individually (e.g. uw-plotsum1, uw-plotsum2, etc).",
+			helptip: "You can add individual templates or user subpages. Custom warnings appear in the \"Custom warnings\" category within the warning dialog box.",
 			type: "customList",
 			customListValueTitle: "Template name (no curly brackets)",
 			customListLabelTitle: "Text to show in warning list (also used as edit summary)"
