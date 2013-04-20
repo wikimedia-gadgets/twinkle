@@ -1483,7 +1483,7 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 			break;
 		case 'a10':
 			utparams.key1 = "article";
-			utparams.value1 = parameters.article;
+			utparams.value1 = utparams.article = parameters.article;
 			break;
 		default:
 			break;
