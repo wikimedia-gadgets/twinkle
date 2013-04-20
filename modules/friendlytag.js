@@ -144,95 +144,165 @@ Twinkle.tag.updateSortOrder = function(e) {
 		if (Twinkle.tag.checkedTags.indexOf(tag) !== -1) {
 			checkbox.checked = true;
 		}
-		if (tag === "globalize") {
-			checkbox.subgroup = {
-				name: 'globalize',
-				type: 'select',
-				list: [
-					{ label: "{{globalize}}: article may not represent a worldwide view of the subject", value: "globalize" },
-					{
-						label: "Region-specific {{globalize}} subtemplates",
-						list: [
-							{ label: "{{globalize/Australia}}: article deals primarily with the Australian viewpoint", value: "globalize/Australia" },
-							{ label: "{{globalize/Canada}}: article deals primarily with the Canadian viewpoint", value: "globalize/Canada" },
-							{ label: "{{globalize/China}}: article deals primarily with the Chinese viewpoint", value: "globalize/China" },
-							{ label: "{{globalize/Common law}}: article deals primarily with the viewpoint of common law countries", value: "globalize/Common law" },
-							{ label: "{{globalize/Eng}}: article deals primarily with the English-speaking viewpoint", value: "globalize/Eng" },
-							{ label: "{{globalize/Europe}}: article deals primarily with the European viewpoint", value: "globalize/Europe" },
-							{ label: "{{globalize/France}}: article deals primarily with the French viewpoint", value: "globalize/France" },
-							{ label: "{{globalize/Germany}}: article deals primarily with the German viewpoint", value: "globalize/Germany" },
-							{ label: "{{globalize/India}}: article deals primarily with the Indian viewpoint", value: "globalize/India" },
-							{ label: "{{globalize/Middle East}}: article deals primarily with the Middle Eastern viewpoint", value: "globalize/Middle East" },
-							{ label: "{{globalize/North America}}: article deals primarily with the North American viewpoint", value: "globalize/North America" },
-							{ label: "{{globalize/Northern}}: article deals primarily with the northern hemisphere viewpoint", value: "globalize/Northern" },
-							{ label: "{{globalize/Southern}}: article deals primarily with the southern hemisphere viewpoint", value: "globalize/Southern" },
-							{ label: "{{globalize/South Africa}}: article deals primarily with the South African viewpoint", value: "globalize/South Africa" },
-							{ label: "{{globalize/UK}}: article deals primarily with the British viewpoint", value: "globalize/UK" },
-							{ label: "{{globalize/UK and Canada}}: article deals primarily with the British and Canadian viewpoints", value: "globalize/UK and Canada" },
-							{ label: "{{globalize/US}}: article deals primarily with the USA viewpoint", value: "globalize/US" },
-							{ label: "{{globalize/West}}: article deals primarily with the viewpoint of Western countries", value: "globalize/West" }
-						]
-					}
-				]
-			};
-		} else if (tag === "notability") {
-			checkbox.subgroup = {
-				name: 'notability',
-				type: 'select',
-				list: [
-					{ label: "{{notability}}: article\'s subject may not meet the general notability guideline", value: "none" },
-					{ label: "{{notability|Academics}}: notability guideline for academics", value: "Academics" },
-					{ label: "{{notability|Biographies}}: notability guideline for biographies", value: "Biographies" },
-					{ label: "{{notability|Books}}: notability guideline for books", value: "Books" },
-					{ label: "{{notability|Companies}}: notability guidelines for companies and organizations", value: "Companies" },
-					{ label: "{{notability|Events}}: notability guideline for events", value: "Events" },
-					{ label: "{{notability|Films}}: notability guideline for films", value: "Films" },
-					{ label: "{{notability|Music}}: notability guideline for music", value: "Music" },
-					{ label: "{{notability|Neologisms}}: notability guideline for neologisms", value: "Neologisms" },
-					{ label: "{{notability|Numbers}}: notability guideline for numbers", value: "Numbers" },
-					{ label: "{{notability|Products}}: notability guideline for products and services", value: "Products" },
-					{ label: "{{notability|Sport}}: notability guideline for sports and athletics", value: "Sport" },
-					{ label: "{{notability|Web}}: notability guideline for web content", value: "Web" }
-				]
-			};
-		} else if (tag === "merge" || tag === "merge from" || tag === "merge to") {
-			var otherTagName = "merge";
-			switch (tag)
-			{
-				case "merge from":
-					otherTagName = "merge to";
-					break;
-				case "merge to":
-					otherTagName = "merge from";
-					break;
-			}
-			checkbox.subgroup = [
-				{
-					name: 'mergeTarget',
+		switch (tag) {
+			case "cleanup":
+				checkbox.subgroup = {
+					name: 'cleanup',
 					type: 'input',
-					label: 'Other article(s): ',
-					tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two'
-				},
-				{
-					name: 'mergeTagOther',
-					type: 'checkbox',
+					label: 'Specific reason why cleanup is needed: ',
+					tooltip: 'Required.',
+					size: 35
+				};
+				break;
+			case "copy edit":
+				checkbox.subgroup = {
+					name: 'copyEdit',
+					type: 'input',
+					label: '"This article may require copy editing for..." ',
+					tooltip: 'e.g. "consistent spelling". Optional.',
+					size: 35
+				};
+				break;
+			case "copypaste":
+				checkbox.subgroup = {
+					name: 'copypaste',
+					type: 'input',
+					label: 'Source URL: ',
+					tooltip: 'If known.',
+					size: 50
+				};
+				break;
+			case "expert-subject":
+				checkbox.subgroup = {
+					name: 'expertSubject',
+					type: 'input',
+					label: 'Name of relevant WikiProject: ',
+					tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.',
+				};
+				break;
+			case "globalize":
+				checkbox.subgroup = {
+					name: 'globalize',
+					type: 'select',
 					list: [
+						{ label: "{{globalize}}: article may not represent a worldwide view of the subject", value: "globalize" },
 						{
-							label: 'Tag the other article with a {{' + otherTagName + '}} tag',
-							checked: true,
-							tooltip: 'Only available if a single article name is entered.'
+							label: "Region-specific {{globalize}} subtemplates",
+							list: [
+								{ label: "{{globalize/Australia}}: article deals primarily with the Australian viewpoint", value: "globalize/Australia" },
+								{ label: "{{globalize/Canada}}: article deals primarily with the Canadian viewpoint", value: "globalize/Canada" },
+								{ label: "{{globalize/China}}: article deals primarily with the Chinese viewpoint", value: "globalize/China" },
+								{ label: "{{globalize/Common law}}: article deals primarily with the viewpoint of common law countries", value: "globalize/Common law" },
+								{ label: "{{globalize/Eng}}: article deals primarily with the English-speaking viewpoint", value: "globalize/Eng" },
+								{ label: "{{globalize/Europe}}: article deals primarily with the European viewpoint", value: "globalize/Europe" },
+								{ label: "{{globalize/France}}: article deals primarily with the French viewpoint", value: "globalize/France" },
+								{ label: "{{globalize/Germany}}: article deals primarily with the German viewpoint", value: "globalize/Germany" },
+								{ label: "{{globalize/India}}: article deals primarily with the Indian viewpoint", value: "globalize/India" },
+								{ label: "{{globalize/Middle East}}: article deals primarily with the Middle Eastern viewpoint", value: "globalize/Middle East" },
+								{ label: "{{globalize/North America}}: article deals primarily with the North American viewpoint", value: "globalize/North America" },
+								{ label: "{{globalize/Northern}}: article deals primarily with the northern hemisphere viewpoint", value: "globalize/Northern" },
+								{ label: "{{globalize/Southern}}: article deals primarily with the southern hemisphere viewpoint", value: "globalize/Southern" },
+								{ label: "{{globalize/South Africa}}: article deals primarily with the South African viewpoint", value: "globalize/South Africa" },
+								{ label: "{{globalize/UK}}: article deals primarily with the British viewpoint", value: "globalize/UK" },
+								{ label: "{{globalize/UK and Canada}}: article deals primarily with the British and Canadian viewpoints", value: "globalize/UK and Canada" },
+								{ label: "{{globalize/US}}: article deals primarily with the USA viewpoint", value: "globalize/US" },
+								{ label: "{{globalize/West}}: article deals primarily with the viewpoint of Western countries", value: "globalize/West" }
+							]
 						}
 					]
+				};
+				break;
+			case "merge":
+			case "merge from":
+			case "merge to":
+				var otherTagName = "merge";
+				switch (tag)
+				{
+					case "merge from":
+						otherTagName = "merge to";
+						break;
+					case "merge to":
+						otherTagName = "merge from";
+						break;
 				}
-			];
-			if (mw.config.get('wgNamespaceNumber') === 0) {
-				checkbox.subgroup.push({
-					name: 'mergeReason',
-					type: 'textarea',
-					label: 'Rationale for merge (will be posted on talk page):',
-					tooltip: 'Optional, but strongly recommended. Leave blank if not wanted.'
-				});
-			}
+				checkbox.subgroup = [
+					{
+						name: 'mergeTarget',
+						type: 'input',
+						label: 'Other article(s): ',
+						tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two'
+					},
+					{
+						name: 'mergeTagOther',
+						type: 'checkbox',
+						list: [
+							{
+								label: 'Tag the other article with a {{' + otherTagName + '}} tag',
+								checked: true,
+								tooltip: 'Only available if a single article name is entered.'
+							}
+						]
+					}
+				];
+				if (mw.config.get('wgNamespaceNumber') === 0) {
+					checkbox.subgroup.push({
+						name: 'mergeReason',
+						type: 'textarea',
+						label: 'Rationale for merge (will be posted on talk page):',
+						tooltip: 'Optional, but strongly recommended. Leave blank if not wanted.'
+					});
+				}
+				break;
+			case "not English":
+			case "rough translation":
+				checkbox.subgroup = [
+					{
+						name: 'translationLanguage',
+						type: 'input',
+						label: 'Language of article (if known): ',
+						tooltip: 'Try consulting [[WP:LRC]] if unsure.'
+					},
+					{
+						name: 'translationPostAtPNT',
+						type: 'checkbox',
+						list: [
+							{
+								label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
+								checked: true
+							}
+						]
+					},
+					{
+						name: 'translationComments',
+						type: 'textarea',
+						label: 'Additional comments to post at PNT',
+						tooltip: 'Optional, and only relevant if "List this article ..." above is checked.'
+					}
+				];
+				break;
+			case "notability":
+				checkbox.subgroup = {
+					name: 'notability',
+					type: 'select',
+					list: [
+						{ label: "{{notability}}: article\'s subject may not meet the general notability guideline", value: "none" },
+						{ label: "{{notability|Academics}}: notability guideline for academics", value: "Academics" },
+						{ label: "{{notability|Biographies}}: notability guideline for biographies", value: "Biographies" },
+						{ label: "{{notability|Books}}: notability guideline for books", value: "Books" },
+						{ label: "{{notability|Companies}}: notability guidelines for companies and organizations", value: "Companies" },
+						{ label: "{{notability|Events}}: notability guideline for events", value: "Events" },
+						{ label: "{{notability|Films}}: notability guideline for films", value: "Films" },
+						{ label: "{{notability|Music}}: notability guideline for music", value: "Music" },
+						{ label: "{{notability|Neologisms}}: notability guideline for neologisms", value: "Neologisms" },
+						{ label: "{{notability|Numbers}}: notability guideline for numbers", value: "Numbers" },
+						{ label: "{{notability|Products}}: notability guideline for products and services", value: "Products" },
+						{ label: "{{notability|Sport}}: notability guideline for sports and athletics", value: "Sport" },
+						{ label: "{{notability|Web}}: notability guideline for web content", value: "Web" }
+					]
+				};
+				break;
+			default:
+				break;
 		}
 		return checkbox;
 	};
@@ -388,12 +458,12 @@ Twinkle.tag.article.tags = {
 Twinkle.tag.article.tagCategories = {
 	"Cleanup and maintenance tags": {
 		"General cleanup": [
-			"cleanup",
-			"copy edit"
+			"cleanup",  // has a subgroup with text input
+			"copy edit"  // has a subgroup with text input
 		],
 		"Potentially unwanted content": [
 			"close paraphrasing",
-			"copypaste",
+			"copypaste",  // has a subgroup with text input
 			"external links",
 			"non-free"
 		],
@@ -416,7 +486,7 @@ Twinkle.tag.article.tagCategories = {
 	},
 	"General content issues": {
 		"Importance and notability": [
-			"notability"  // has subcategories and special-cased code
+			"notability"  // has a subgroup with subcategories
 		],
 		"Style of writing": [
 			"advert",
@@ -447,7 +517,7 @@ Twinkle.tag.article.tagCategories = {
 			"COI",
 			"disputed",
 			"hoax",
-			"globalize",  // has subcategories and special-cased code
+			"globalize",  // has a subgroup with subcategories
 			"overcoverage",
 			"peacock",
 			"POV",
@@ -470,8 +540,8 @@ Twinkle.tag.article.tagCategories = {
 	},
 	"Specific content issues": {
 		"Language": [
-			"not English",
-			"rough translation",
+			"not English",  // has a subgroup with text input
+			"rough translation",  // has a subgroup with text input
 			"expand language"
 		],
 		"Links": [
@@ -491,7 +561,7 @@ Twinkle.tag.article.tagCategories = {
 			"uncategorized"
 		]
 	},
-	"Merging": [
+	"Merging": [  // these three have a subgroup with several options
 		"merge",
 		"merge from",
 		"merge to"
@@ -741,43 +811,30 @@ Twinkle.tag.callbacks = {
 					'|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
 			} else {
 				if( tagName === 'globalize' ) {
-					currentTag += '{{' + params.globalizeSubcategory;
+					currentTag += '{{' + params.tagParameters.globalize;
 				} else {
 					currentTag += ( Twinkle.tag.mode === 'redirect' ? '\n' : '' ) + '{{' + tagName;
 				}
 
-				if( tagName === 'notability' && params.notabilitySubcategory !== 'none' ) {
-					currentTag += '|' + params.notabilitySubcategory;
+				if( tagName === 'notability' && params.tagParameters.notability !== 'none' ) {
+					currentTag += '|' + params.tagParameters.notability;
 				}
 
 				// prompt for other parameters, based on the tag
 				switch( tagName ) {
 					case 'cleanup':
-						var reason = prompt('Please enter a more specific reason why the article requires cleanup.  \n' +
-							"This information is required.  To skip the {{cleanup}} tag, click Cancel.", "");
-						if (reason === null || reason === "") {
-							Morebits.status.warn("Notice", "{{cleanup}} tag skipped by user");
-							return true;  // continue to next tag
-						} else {
-							currentTag += '|reason=' + reason;
+						if (params.tagParameters.cleanup) {
+							currentTag += '|reason=' + params.tagParameters.cleanup;
 						}
 						break;
 					case 'copy edit':
-						var cereason = prompt('"This article may require copy editing for..."  (e.g. "consistent spelling")  \n' +
-							"Just click OK if you don't wish to enter this.  To skip the {{copy edit}} tag, click Cancel.", "");
-						if (cereason === null) {
-							return true;  // continue to next tag
-						} else if (cereason !== "") {
-							currentTag += '|for=' + cereason;
+						if (params.tagParameters.copyEdit) {
+							currentTag += '|for=' + params.tagParameters.copyEdit;
 						}
 						break;
 					case 'copypaste':
-						var url = prompt('Please enter the URL which is believed to be the source of the copy-paste.  \n' +
-							"Just click OK if you don't know.  To skip the {{copypaste}} tag, click Cancel.", "");
-						if (url === null) {
-							return true;  // continue to next tag
-						} else if (url !== "") {
-							currentTag += '|url=' + url;
+						if (params.tagParameters.copypaste) {
+							currentTag += '|url=' + params.tagParameters.copypaste;
 						}
 						break;
 					case 'expand language':
@@ -800,30 +857,17 @@ Twinkle.tag.callbacks = {
 						}
 						break;						
 					case 'expert-subject':
-						var wikiproject = prompt('Please enter the name of a WikiProject which might be able to help recruit an expert.  \n' +
-							"Just click OK if you don't know.  To skip the {{expert-subject}} tag, click Cancel.", "");
-						if (wikiproject === null) {
-							return true;  // continue to next tag
-						} else if (wikiproject !== "") {
-							currentTag += '|1=' + wikiproject;
+						if (params.tagParameters.expertSubject) {
+							currentTag += '|1=' + params.tagParameters.expertSubject;
 						}
 						break;
 					case 'not English':
-						var langname = prompt('Please enter the name of the language the article is thought to be written in.  \n' +
-							"Just click OK if you don't know.  To skip the {{not English}} tag, click Cancel.", "");
-						if (langname === null) {
-							return true;  // continue to next tag
-						} else if (langname !== "") {
-							currentTag += '|1=' + langname;
-						}
-						break;
 					case 'rough translation':
-						var roughlang = prompt('Please enter the name of the language the article is thought to have been translated from.  \n' +
-							"Just click OK if you don't know.  To skip the {{rough translation}} tag, click Cancel.", "");
-						if (roughlang === null) {
-							return true;  // continue to next tag
-						} else if (roughlang !== "") {
-							currentTag += '|1=' + roughlang;
+						if (params.translationLanguage) {
+							currentTag += '|1=' + params.translationLanguage;
+						}
+						if (params.translationPostAtPNT) {
+							currentTag += '|listed=yes';
 						}
 						break;
 					case 'merge':
@@ -866,7 +910,7 @@ Twinkle.tag.callbacks = {
 
 			summaryText += ' {{[[';
 			if( tagName === 'globalize' ) {
-				summaryText += "Template:" + params.globalizeSubcategory + '|' + params.globalizeSubcategory;
+				summaryText += "Template:" + params.tagParameters.globalize + '|' + params.tagParameters.globalize;
 			} else {
 				summaryText += (tagName.indexOf(":") !== -1 ? tagName : ("Template:" + tagName + "|" + tagName));
 			}
@@ -1013,11 +1057,48 @@ Twinkle.tag.callbacks = {
 				otherpage.setCallbackParameters(newParams);
 				otherpage.load(Twinkle.tag.callbacks.main);
 			}
+
+			// post at WP:PNT for {{not English}} and {{rough translation}} tag
+			if (params.translationPostAtPNT) {
+				var pntPage = new Morebits.wiki.page('Wikipedia:Pages needing translation into English',
+					"Listing article at Wikipedia:Pages needing translation into English");
+				pntPage.setFollowRedirect(true);
+				pntPage.setCallbackParameters({
+					template: params.tags.indexOf("rough translation") !== -1 ? "duflu" : "needtrans",
+					lang: params.translationLanguage,
+					reason: params.translationComments
+				});
+				pntPage.load(Twinkle.tag.callbacks.translationListPage);
+			}
 		});
 
 		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
 			pageobj.patrol();
 		}
+	},
+
+	translationListPage: function friendlytagCallbacksTranslationListPage(pageobj) {
+		var old_text = pageobj.getPageText();
+		var params = pageobj.getCallbackParameters();
+		var statelem = pageobj.getStatusElement();
+
+		var templateText = "{{subst:" + params.template + "|pg=" + mw.config.get("wgPageName") + "|Language=" + 
+			(params.lang || "uncertain") + "|Comments=" + params.reason.trim() + "}} ~~~~";
+		var text;
+		if (params.template === "duflu") {
+			text = old_text + "\n\n" + templateText;
+		} else {
+			text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/, 
+			"\n\n" + templateText + "\n\n$1");
+		}
+		if (text === old_text) {
+			statelem.error('failed to find target spot for the discussion');
+			return;
+		}
+		pageobj.setPageText(text);
+		pageobj.setEditSummary("Adding [[" + mw.config.get("wgPageName") + "]]." + Twinkle.getPref('summaryAd'));
+		pageobj.setCreateOption('recreate');
+		pageobj.save();
 	},
 
 	file: function friendlytagCallbacksFile(pageobj) {
@@ -1162,6 +1243,8 @@ Twinkle.tag.callbacks = {
 };
 
 Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
+	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' '));  // for queen/king/whatever and country!
+
 	var form = e.target;
 	var params = {};
 
@@ -1169,11 +1252,22 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		case 'article':
 			params.tags = form.getChecked( 'articleTags' );
 			params.group = form.group.checked;
-			params.globalizeSubcategory = form["articleTags.globalize"] ? form["articleTags.globalize"].value : null;
-			params.notabilitySubcategory = form["articleTags.notability"] ? form["articleTags.notability"].value : null;
+			params.tagParameters = {
+				cleanup: form["articleTags.cleanup"] ? form["articleTags.cleanup"].value : null,
+				copyEdit: form["articleTags.copyEdit"] ? form["articleTags.copyEdit"].value : null,
+				copypaste: form["articleTags.copypaste"] ? form["articleTags.copypaste"].value : null,
+				expertSubject: form["articleTags.expertSubject"] ? form["articleTags.expertSubject"].value : null,
+				globalize: form["articleTags.globalize"] ? form["articleTags.globalize"].value : null,
+				notability: form["articleTags.notability"] ? form["articleTags.notability"].value : null
+			};
+			// common to {{merge}}, {{merge from}}, {{merge to}}
 			params.mergeTarget = form["articleTags.mergeTarget"] ? form["articleTags.mergeTarget"].value : null;
 			params.mergeReason = form["articleTags.mergeReason"] ? form["articleTags.mergeReason"].value : null;
 			params.mergeTagOther = form["articleTags.mergeTagOther"] ? form["articleTags.mergeTagOther"].checked : false;
+			// common to {{not English}}, {{rough translation}}
+			params.translationLanguage = form["articleTags.translationLanguage"] ? form["articleTags.translationLanguage"].value : null;
+			params.translationPostAtPNT = form["articleTags.translationPostAtPNT"] ? form["articleTags.translationPostAtPNT"].checked : null;
+			params.translationComments = form["articleTags.translationComments"] ? form["articleTags.translationComments"].value : null;
 			break;
 		case 'file':
 			params.svgSubcategory = form["imageTags.svgCategory"] ? form["imageTags.svgCategory"].value : null;
@@ -1187,12 +1281,26 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 	}
 
+	// form validation
 	if( !params.tags.length ) {
 		alert( 'You must select at least one tag!' );
 		return;
 	}
+	if( ((params.tags.indexOf("merge") !== -1) + (params.tags.indexOf("merge from") !== -1) +
+		(params.tags.indexOf("merge to") !== -1)) > 1 ) {
+		alert( 'Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).' );
+		return;
+	}
+	if( (params.tags.indexOf("not English") !== -1) && (params.tags.indexOf("rough translation") !== -1) ) {
+		alert( 'Please select only one of {{not English}} and {{rough translation}}.' );
+		return;
+	}
 	if( params.mergeTagOther && params.mergeTarget.indexOf('|') !== -1 ) {
 		alert( 'Tagging multiple articles in a merge is not supported at the moment. Please turn off the "tag other article" checkbox and try again.' );
+		return;
+	}
+	if( params.tags.indexOf('cleanup') !== -1 && params.tagParameters.cleanup.trim && params.tagParameters.cleanup.trim() === "") {
+		alert( 'You must specify a reason for the {{cleanup}} tag.' );
 		return;
 	}
 
