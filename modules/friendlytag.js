@@ -1084,19 +1084,23 @@ Twinkle.tag.callbacks = {
 
 		var templateText = "{{subst:" + params.template + "|pg=" + mw.config.get("wgPageName") + "|Language=" + 
 			(params.lang || "uncertain") + "|Comments=" + params.reason.trim() + "}} ~~~~";
-		var text;
+
+		var text, summary;
 		if (params.template === "duflu") {
 			text = old_text + "\n\n" + templateText;
+			summary = "Translation cleanup requested on ";
 		} else {
 			text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/, 
-			"\n\n" + templateText + "\n\n$1");
+				"\n\n" + templateText + "\n\n$1");
+			summary = "Translation" + (params.lang ? (" from " + params.lang) : "") + " requested on ";
 		}
+
 		if (text === old_text) {
 			statelem.error('failed to find target spot for the discussion');
 			return;
 		}
 		pageobj.setPageText(text);
-		pageobj.setEditSummary("Adding [[" + mw.config.get("wgPageName") + "]]." + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary(summary + " [[" + mw.config.get("wgPageName") + "]]" + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('recreate');
 		pageobj.save();
 	},
