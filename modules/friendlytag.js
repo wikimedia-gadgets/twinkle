@@ -249,7 +249,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 						name: 'mergeReason',
 						type: 'textarea',
 						label: 'Rationale for merge (will be posted on talk page):',
-						tooltip: 'Optional, but strongly recommended. Leave blank if not wanted.'
+						tooltip: 'Optional, but strongly recommended. Leave blank if not wanted. Only available if a single article name is entered.'
 					});
 				}
 				break;
@@ -1299,8 +1299,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		alert( 'Please select only one of {{not English}} and {{rough translation}}.' );
 		return;
 	}
-	if( params.mergeTagOther && params.mergeTarget.indexOf('|') !== -1 ) {
-		alert( 'Tagging multiple articles in a merge is not supported at the moment. Please turn off the "tag other article" checkbox and try again.' );
+	if( (params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1 ) {
+		alert( 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.' );
 		return;
 	}
 	if( params.tags.indexOf('cleanup') !== -1 && params.tagParameters.cleanup.trim && params.tagParameters.cleanup.trim() === "") {
