@@ -260,7 +260,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 						name: 'translationLanguage',
 						type: 'input',
 						label: 'Language of article (if known): ',
-						tooltip: 'Try consulting [[WP:LRC]] if unsure.'
+						tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
 					},
 					{
 						name: 'translationPostAtPNT',
