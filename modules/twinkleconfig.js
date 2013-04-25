@@ -490,6 +490,11 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 		{
+			name: "watchMergeDiscussions",
+			label: "Add talk pages to watchlist when starting merge discussions",
+			type: "boolean"
+		},
+		{
 			name: "markTaggedPagesAsMinor",
 			label: "Mark addition of tags as a minor edit",
 			type: "boolean"

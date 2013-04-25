@@ -248,7 +248,8 @@ Twinkle.tag.updateSortOrder = function(e) {
 					checkbox.subgroup.push({
 						name: 'mergeReason',
 						type: 'textarea',
-						label: 'Rationale for merge (will be posted on talk page):',
+						label: 'Rationale for merge (will be posted on ' + 
+							(tag === "merge to" ? 'the other article\'s' : 'this article\'s') + ' talk page):',
 						tooltip: 'Optional, but strongly recommended. Leave blank if not wanted. Only available if a single article name is entered.'
 					});
 				}
@@ -1030,11 +1031,13 @@ Twinkle.tag.callbacks = {
 				// post the rationale on the talk page (only operates in main namespace)
 				var talkpageText = "\n\n== Proposed merge with [[" + params.nonDiscussArticle + "]] ==\n\n";
 				talkpageText += params.mergeReason.trim() + " ~~~~";
-				
+
 				var talkpage = new Morebits.wiki.page("Talk:" + params.discussArticle, "Posting rationale on talk page");
 				talkpage.setAppendText(talkpageText);
-				talkpage.setEditSummary('Proposing to merge [[' + params.discussArticle +
-					']] with [[' + params.nonDiscussArticle + ']]' + Twinkle.getPref('summaryAd'));
+				talkpage.setEditSummary('Proposing to merge [[' + params.nonDiscussArticle + ']] ' +
+					(tags.indexOf("merge") !== -1 ? 'with' : 'into') + ' [[' + params.discussArticle + ']]' + 
+					Twinkle.getPref('summaryAd'));
+				talkpage.setWatchlist(Twinkle.getFriendlyPref('watchMergeDiscussions'));
 				talkpage.setCreateOption('recreate');
 				talkpage.append();
 			}
