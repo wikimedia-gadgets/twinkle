@@ -2809,7 +2809,7 @@ Morebits.wikitext.page.prototype = {
 		 * Will eat the whole line.
 		 */
 		var gallery_image_re = new RegExp( "(^\\s*(?:[Ii]mage|[Ff]ile):\\s*" + image_re_string + ".*?$)", 'mg' );
-		unbinder.content.replace( gallery_image_re, "<!-- " + reason + "$1 -->" );
+		unbinder.content = unbinder.content.replace( gallery_image_re, "<!-- " + reason + "$1 -->" );
 
 		// unbind the newly created comments
 		unbinder.unbind( '<!--', '-->' );
@@ -2818,7 +2818,7 @@ Morebits.wikitext.page.prototype = {
 		 * Will only eat the image name and the preceeding bar and an eventual named parameter
 		 */
 		var free_image_re = new RegExp( "(\\|\\s*(?:[\\w\\s]+\\=)?\\s*(?:(?:[Ii]mage|[Ff]ile):\\s*)?" + image_re_string + ")", 'mg' );
-		unbinder.content.replace( free_image_re, "<!-- " + reason + "$1 -->" );
+		unbinder.content = unbinder.content.replace( free_image_re, "<!-- " + reason + "$1 -->" );
 
 		// Rebind the content now, we are done!
 		this.text = unbinder.rebind();
