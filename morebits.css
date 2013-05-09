@@ -153,7 +153,7 @@ div.morebits-previewbox *:not(img)
 	vertical-align: baseline;
 }
 
-div.morebits-previewbox span.editsection
+div.morebits-previewbox .mw-editsection
 {
 	display: none;
 }
