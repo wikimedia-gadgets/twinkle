@@ -17,10 +17,6 @@ Twinkle.image = function twinkleimage() {
 };
 
 Twinkle.image.callback = function twinkleimageCallback() {
-	if( !twinkleUserAuthorized ) {
-		alert("Your account is too new to use Twinkle.");
-		return;
-	}
 	var Window = new Morebits.simpleWindow( 600, 300 );
 	Window.setTitle( "File for dated speedy deletion" );
 	Window.setScriptName( "Twinkle" );

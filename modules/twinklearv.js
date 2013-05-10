@@ -20,10 +20,6 @@ Twinkle.arv = function twinklearv() {
 };
 
 Twinkle.arv.callback = function ( uid ) {
-	if ( !twinkleUserAuthorized ) {
-		alert("Your account is too new to use Twinkle.");
-		return;
-	}
 	if ( uid === mw.config.get('wgUserName') ) {
 		alert( 'You don\'t want to report yourself, do you?' );
 		return;

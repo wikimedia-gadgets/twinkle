@@ -16,10 +16,6 @@ Twinkle.prod = function twinkleprod() {
 };
 
 Twinkle.prod.callback = function twinkleprodCallback() {
-	if ( !twinkleUserAuthorized ) {
-		alert("Your account is too new to use Twinkle.");
-		return;
-	}
 	Twinkle.prod.defaultReason = Twinkle.getPref('prodReasonDefault');
 
 	var Window = new Morebits.simpleWindow( 800, 410 );

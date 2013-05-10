@@ -29,10 +29,6 @@ Twinkle.warn = function twinklewarn() {
 };
 
 Twinkle.warn.callback = function twinklewarnCallback() {
-	if ( !twinkleUserAuthorized ) {
-		alert("Your account is too new to use Twinkle.");
-		return;
-	}
 	if( mw.config.get('wgTitle').split( '/' )[0] === mw.config.get('wgUserName') &&
 			!confirm( 'You are about to warn yourself! Are you sure you want to proceed?' ) ) {
 		return;

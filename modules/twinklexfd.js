@@ -47,11 +47,6 @@ Twinkle.xfd.printRationale = function twinklexfdPrintRationale() {
 };
 
 Twinkle.xfd.callback = function twinklexfdCallback() {
-	if (!twinkleUserAuthorized) {
-		alert("Your account is too new to use Twinkle.");
-		return;
-	}
-
 	var Window = new Morebits.simpleWindow( 600, 350 );
 	Window.setTitle( "Nominate for deletion (XfD)" );
 	Window.setScriptName( "Twinkle" );

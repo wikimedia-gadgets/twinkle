@@ -85,26 +85,23 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 			});
 		});
 
-		self.params.form.append( {
+		self.params.form.append({
 			type: 'checkbox',
 			name: 'images',
 			list: list
-		}
-	);
-	self.params.form.append( { type:'submit' } );
+		});
+		self.params.form.append( { type:'submit' } );
 
-	var result = self.params.form.render();
-	self.params.Window.setContent( result );
+		var result = self.params.form.render();
+		self.params.Window.setContent( result );
+	});
 
-
-}  );
-
-wikipedia_api.params = { form:form, Window:Window };
-wikipedia_api.post();
-var root = document.createElement( 'div' );
-Morebits.status.init( root );
-Window.setContent( root );
-Window.display();
+	wikipedia_api.params = { form:form, Window:Window };
+	wikipedia_api.post();
+	var root = document.createElement( 'div' );
+	Morebits.status.init( root );
+	Window.setContent( root );
+	Window.display();
 };
 
 Twinkle.delimages.currentDeleteCounter = 0;
