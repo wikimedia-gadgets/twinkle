@@ -1476,6 +1476,10 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 		case 'db':
 			utparams["2"] = parameters["1"];
 			break;
+		case 'g12':
+			utparams.key1 = "url";
+			utparams.value1 = utparams.url = parameters.url;
+			break;
 		case 'a10':
 			utparams.key1 = "article";
 			utparams.value1 = utparams.article = parameters.article;
