@@ -598,7 +598,10 @@ Twinkle.xfd.callbacks = {
 
 			var text = old_text.replace( /(<\!-- Add new entries to the TOP of the following list -->\n+)/, "$1{{subst:afd3|pg=" + mw.config.get('wgPageName') + params.numbering + "}}\n");
 			if( text === old_text ) {
-				statelem.error( 'failed to find target spot for the discussion' );
+				var linknode = document.createElement('a');
+				linknode.setAttribute("href", mw.util.wikiGetlink("Wikipedia:Twinkle/Fixing AFD") );
+				linknode.appendChild(document.createTextNode('How to fix AFD'));
+				statelem.error( [ 'Could not find the target spot for the discussion. To fix this problem, please see ', linknode, '.' ] );
 				return;
 			}
 			pageobj.setPageText(text);
