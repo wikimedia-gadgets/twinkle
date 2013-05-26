@@ -293,7 +293,7 @@
 					talkpage.setEditSummary( "You have replies at the [[Wikipedia:Help desk|Wikipedia help desk]]" + Twinkle.getPref("summaryAd") );
 					break;
 				case "otrs":
-					text = "\n\n{{subst:OTRSreply|1=" + section + "|~~~~}}";
+					text = "\n\n{{OTRSreply|1=" + section + "|~~~~}}";
 					talkpage.setEditSummary( "You have replies at the [[Wikipedia:OTRS noticeboard|OTRS noticeboard]]" + Twinkle.getPref("summaryAd") );
 					break;
 				case "th":
