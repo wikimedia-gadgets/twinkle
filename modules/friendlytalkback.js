@@ -164,6 +164,11 @@
 					});
 				noticeboard.append({
 						type: "option",
+						label: "WP:OTRS/N (OTRS noticeboard)",
+						value: "otrs"
+					});
+				noticeboard.append({
+						type: "option",
 						label: "WP:HD (Help desk)",
 						value: "hd"
 					});
@@ -286,6 +291,10 @@
 					text = "\n\n== Your question at the Help desk ==\n";
 					text += "{{helpdeskreply|1=" + section + "|ts=~~~~~}}";
 					talkpage.setEditSummary( "You have replies at the [[Wikipedia:Help desk|Wikipedia help desk]]" + Twinkle.getPref("summaryAd") );
+					break;
+				case "otrs":
+					text = "\n\n{{OTRSreply|1=" + section + "|2=~~~~}}";
+					talkpage.setEditSummary( "You have replies at the [[Wikipedia:OTRS noticeboard|OTRS noticeboard]]" + Twinkle.getPref("summaryAd") );
 					break;
 				case "th":
 					text = "\n\n== Teahouse talkback: you've got messages! ==\n{{WP:Teahouse/Teahouse talkback|WP:Teahouse/Questions|" + section + "|ts=~~~~}}";
