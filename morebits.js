@@ -19,7 +19,7 @@
  *   - Morebits.quickForm tooltips rely on Tipsy (ResourceLoader module name 'jquery.tipsy').
  *     For external installations, Tipsy is available at [http://onehackoranother.com/projects/jquery/tipsy].
  *   - To create a gadget based on morebits.js, use this syntax in MediaWiki:Gadgets-definition:
- *       * GadgetName[ResourceLoader|dependencies=mediawiki.util,jquery.ui.dialog,jquery.tipsy,user.tokens]|morebits.js|morebits.css|GadgetName.js
+ *       * GadgetName[ResourceLoader|dependencies=mediawiki.util,jquery.ui.dialog,jquery.tipsy]|morebits.js|morebits.css|GadgetName.js
  *
  * Most of the stuff here doesn't work on IE < 9.  It is your script's responsibility to enforce this.
  *
@@ -1989,7 +1989,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	this.patrol = function() {
 		// There's no patrol link on page, so we can't patrol
-		if ( !$( '.patrollink a' ).length ) {
+		if ( !$( '.patrollink' ).length ) {
 			return;
 		}
 
@@ -1999,18 +1999,16 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		if ( rcid ) {
 
-			var patrolstat = new Morebits.status("Marking page as patrolled");
+			var patrolstat = new Morebits.status( 'Marking page as patrolled' );
 
-			var wikipedia_api = new Morebits.wiki.api("doing...", {
+			var wikipedia_api = new Morebits.wiki.api( 'doing...', {
 				action: 'patrol',
 				rcid: rcid,
 				token: mw.user.tokens.get( 'patrolToken' )
-			}, null, patrolstat);
-			wikipedia_api.post({
-				type: 'POST',
-				url: mw.util.wikiScript('api'),
-				datatype: 'text'  // we don't really care about the response
-			});
+			}, null, patrolstat );
+
+			// We don't really care about the response
+			wikipedia_api.post();
 		}
 	};
 
