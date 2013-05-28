@@ -1567,7 +1567,7 @@ Morebits.wiki.api.prototype = {
  * 
  * getCreator(): returns the user who created the page following lookupCreator()
  *
- * patrol(): marks the page as patrolled (only when "rcid" is present in the query string)
+ * patrol(): marks the page as patrolled, if possible
  *
  * move(onSuccess, onFailure): Moves a page to another title
  *
@@ -1988,29 +1988,27 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	this.patrol = function() {
-		// look for rcid in querystring; if not, we won't have a patrol token, so no point trying
-		if (!Morebits.queryString.exists("rcid")) {
+		// There's no patrol link on page, so we can't patrol
+		if ( !$( '.patrollink' ).length ) {
 			return;
 		}
-		var rcid = Morebits.queryString.get("rcid");
 
-		// extract patrol token from "Mark page as patrolled" link on page
-		var patrollinkmatch = /token=(.+)%2B%5C$/.exec($(".patrollink a").attr("href"));
-		if (patrollinkmatch) {
-			var patroltoken = patrollinkmatch[1] + "+\\";
-			var patrolstat = new Morebits.status("Marking page as patrolled");
+		// Extract the rcid token from the "Mark page as patrolled" link on page
+		var patrolhref = $( '.patrollink a' ).attr( 'href' ),
+			rcid = mw.util.getParamValue( 'rcid', patrolhref );
 
-			var wikipedia_api = new Morebits.wiki.api("doing...", {
-				title: ctx.pageName,
-				action: 'markpatrolled',
+		if ( rcid ) {
+
+			var patrolstat = new Morebits.status( 'Marking page as patrolled' );
+
+			var wikipedia_api = new Morebits.wiki.api( 'doing...', {
+				action: 'patrol',
 				rcid: rcid,
-				token: patroltoken
-			}, null, patrolstat);
-			wikipedia_api.post({
-				type: 'GET',
-				url: mw.util.wikiScript('index'),
-				datatype: 'text'  // we don't really care about the response
-			});
+				token: mw.user.tokens.get( 'patrolToken' )
+			}, null, patrolstat );
+
+			// We don't really care about the response
+			wikipedia_api.post();
 		}
 	};
 
