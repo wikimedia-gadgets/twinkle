@@ -422,7 +422,6 @@ Twinkle.tag.article.tags = {
 	"one source": "article relies largely or entirely upon a single source",
 	"original research": "article has original research or unverified claims",
 	"orphan": "article is linked to from no other articles",
-	"out of date": "article needs out-of-date information removed or updated",
 	"overcoverage": "article has an extensive bias or disproportional coverage towards one or more specific regions",
 	"overlinked": "article may have too many duplicate and/or irrelevant links",
 	"overly detailed": "article contains an excessive amount of intricate detail",
@@ -510,7 +509,6 @@ Twinkle.tag.article.tagCategories = {
 			"undue"
 		],
 		"Timeliness": [
-			"out of date",
 			"update"
 		],
 		"Neutrality, bias, and factual accuracy": [
