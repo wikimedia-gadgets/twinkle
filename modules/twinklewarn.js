@@ -1096,6 +1096,10 @@ Twinkle.warn.messages = {
 			label:"Making legal threats",
 			summary:"Warning: Making legal threats"
 		},
+		"uw-login": {
+			label:"Editing while logged out",
+			summary:"Warning: Editing while logged out"
+		},
 		"uw-longterm": {
 			label:"Long term pattern of vandalism",
 			summary:"Warning: Long term pattern of vandalism"
