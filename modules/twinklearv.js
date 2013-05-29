@@ -60,6 +60,11 @@ Twinkle.arv.callback = function ( uid ) {
 			label: 'Sockpuppet (WP:SPI)',
 			value: 'puppet'
 		} );
+	categories.append( {
+		  type: 'option',
+		  label: 'Edit warring (WP:AN3)',
+		  value: 'an3'
+		} );
 	form.append( {
 			type: 'field',
 			label:'Work area',
@@ -290,7 +295,190 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			} );
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
-		break;
+        break;
+	  case 'an3':
+		work_area = new Morebits.quickForm.element( {
+		  type: 'field',
+		  label: 'Report edit warring',
+		  name: 'work_area'
+		} );
+
+		work_area.append(
+		  {
+			type: 'input',
+			name: 'page',
+			label: 'Page',
+			tooltip: 'The page edit warring took place'
+
+		  });
+		  work_area.append(
+			{
+			  type: 'button',
+			  name: 'load',
+			  label: 'Load',
+			  event: function(e) {
+				var root = e.target.form;
+				var value = root.page.value;
+				var uid = root.uid.value;
+				var $diffs = $(root).find('[name=diffs]');
+				$diffs.find('.entry').remove();
+				var api = new mw.Api();
+				api.get({
+				  action: 'query',
+				  prop: 'revisions',
+				  format: 'json',
+				  rvprop: 'ids|timestamp|parsedcomment|comment',
+				  rvlimit: 10,
+				  rvuser: uid,
+				  indexpageids: true,
+				  redirects: true,
+				  titles: value
+				}).done(function(data){
+				  var pageid = data.query.pageids[0];
+				  var page = data.query.pages[pageid];
+				  if(!page.revisions) {
+					return;
+				  }
+				  for(var i = 0; i < page.revisions.length; ++i) {
+					var rev = page.revisions[i];
+					var $entry = $('<div/>', {
+					  'class': 'entry',
+					});
+					var $input = $('<input/>', {
+					  'type': 'checkbox',
+					  'name': 's_diffs',
+					  'value': rev.revid
+					});
+					$input.data('revinfo',rev);
+					$input.appendTo($entry);
+					$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+rev.timestamp+'</a></span>').appendTo($diffs);
+
+
+				  }
+
+				  console.log( 'API result:', page );
+				}).fail(function(data){
+				  console.log( 'API failed :(', error );
+				});
+				var $warnings = $(root).find('[name=warnings]');
+				$warnings.find('.entry').remove();
+
+				api.get({
+				  action: 'query',
+				  prop: 'revisions',
+				  format: 'json',
+				  rvprop: 'ids|timestamp|parsedcomment|comment',
+				  rvlimit: 10,
+				  rvuser: mw.config.get('wgUserName'),
+				  indexpageids: true,
+				  redirects: true,
+				  titles: 'User talk:' + uid
+				}).done(function(data){
+				  var pageid = data.query.pageids[0];
+				  var page = data.query.pages[pageid];
+				  if(!page.revisions) {
+					return;
+				  }
+				  for(var i = 0; i < page.revisions.length; ++i) {
+					var rev = page.revisions[i];
+					var $entry = $('<div/>', {
+					  'class': 'entry',
+					});
+					var $input = $('<input/>', {
+					  'type': 'checkbox',
+					  'name': 's_warnings',
+					  'value': rev.revid
+					});
+					$input.data('revinfo',rev);
+					$input.appendTo($entry);
+					$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+rev.timestamp+'</a></span>').appendTo($warnings);
+
+
+				  }
+
+				  console.log( 'API result:', page );
+				}).fail(function(data){
+				  console.log( 'API failed :(', error );
+				});
+
+
+				var $resolves = $(root).find('[name=resolves]');
+				$resolves.find('.entry').remove();
+
+				api.get({
+				  action: 'query',
+				  prop: 'revisions',
+				  format: 'json',
+				  rvprop: 'ids|timestamp|parsedcomment|comment',
+				  rvlimit: 10,
+				  rvuser: mw.config.get('wgUserName'),
+				  indexpageids: true,
+				  redirects: true,
+				  titles: 'Talk:' + value
+				}).done(function(data){
+				  var pageid = data.query.pageids[0];
+				  var page = data.query.pages[pageid];
+				  if(!page.revisions) {
+					return;
+				  }
+				  for(var i = 0; i < page.revisions.length; ++i) {
+					var rev = page.revisions[i];
+					var $entry = $('<div/>', {
+					  'class': 'entry',
+					});
+					var $input = $('<input/>', {
+					  'type': 'checkbox',
+					  'name': 's_resolves',
+					  'value': rev.revid
+					});
+					$input.data('revinfo',rev);
+					$input.appendTo($entry);
+					$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+rev.timestamp+'</a></span>').appendTo($resolves);
+
+
+				  }
+
+				  console.log( 'API result:', page );
+				}).fail(function(data){
+				  console.log( 'API failed :(', error );
+				});
+			  }
+
+			});
+			work_area.append(
+			  {
+				type: 'field',
+				name: 'diffs',
+				label: 'Edits which constitute edit warring',
+				tooltip: 'Select the edits which you acuse the subject for edit warring with',
+			  }
+			);
+			work_area.append(
+			  {
+				type: 'field',
+				name: 'warnings',
+				label: 'Indications of warnings given to subject',
+				tooltip: 'You must have warned the subject before reporting',
+			  }
+			);
+			work_area.append(
+			  {
+				type: 'field',
+				name: 'resolves',
+				label: 'Resolution initiatives',
+				tooltip: 'You should have tried to resolve the issue on the talk page first',
+			  }
+			);
+
+			work_area.append( {
+			  type: 'textarea',
+			  label: 'Comment:',
+			  name: 'comment'
+			} );
+			work_area = work_area.render();
+			old_area.parentNode.replaceChild( work_area, old_area );
+			break;
+
 	}
 };
 
@@ -460,6 +648,32 @@ Twinkle.arv.callback.evaluate = function(e) {
 			Twinkle.arv.processSock( sockParameters );
 			break;
 
+		  case 'an3':
+
+			function extractDiffID(diff) {
+			  var matched = diff.match(/diff=(\d+)/);
+			  if(!matched) {
+				diffid = diff.replace(/\D/g,'');
+			  } else {
+				diffid = matched[1];
+			  }
+			  return diffid;
+			}
+
+			var an3Parameters = {
+			  'uid': uid,
+			  'page': form.page.value.trim(),
+			  'comment': form.comment.value.trim(),
+			  'diffs': $.map( $('input:checkbox[name=s_diffs]:checked',form), function(o){ return $(o).data('revinfo'); }),
+			  'warnings': $.map( $('input:checkbox[name=s_warnings]:checked',form), function(o){ return $(o).data('revinfo'); }),
+			  'resolves': $.map( $('input:checkbox[name=s_resolves]:checked',form), function(o){ return $(o).data('revinfo'); })
+			}
+			console.log("Result:", an3Parameters);
+
+			Morebits.simpleWindow.setButtonsEnabled( false );
+			Morebits.status.init( form );
+			Twinkle.arv.processAN3( an3Parameters );
+			break;
 	}
 };
 
@@ -529,3 +743,33 @@ Twinkle.arv.processSock = function( params ) {
 	
 	Morebits.wiki.removeCheckpoint();  // all page updates have been started
 };
+
+Twinkle.arv.processAN3 = function( params ) {
+  Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
+
+  // prepare the AN3 report
+  var difftext = params.diffs.map(function(v){
+	return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"'
+  }).join("\n");
+  var warningtext = params.warnings.map(function(v){
+	return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"'
+  }).join("\n");
+  var resolvetext = params.resolves.map(function(v){
+	return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"'
+  }).join("\n");
+
+  var text = "\n\n"+'{{subst:AN3 report|diffs='+difftext+'|warnings='+warningtext+'|resolves='+resolvetext+'|pagename='+params.page+'|comment='+params.comment+'|uid='+params.uid+'}}';
+
+  var reportpage = 'Wikipedia:Administrators\' noticeboard/Edit warring';
+
+  Morebits.wiki.actionCompleted.redirect = reportpage;
+  Morebits.wiki.actionCompleted.notice = "Reporting complete";
+
+  var an3Page = new Morebits.wiki.page( reportpage, 'Retrieving discussion page' );
+  an3Page.setFollowRedirect( true );
+  an3Page.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ Twinkle.getPref('summaryAd') );
+  an3Page.setAppendText( text );
+  an3Page.append();
+
+  Morebits.wiki.removeCheckpoint();  // all page updates have been started
+}
