@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -21,12 +24,12 @@ Twinkle.diff = function twinklediff() {
 		'oldid': 'prev'
 	};
 
-	twAddPortletLink( mw.util.wikiScript("index")+ "?" + $.param( query ), 'Last', 'tw-lastdiff', 'Show most recent diff' );
+	Twinkle.addPortletLink( mw.util.wikiScript("index")+ "?" + $.param( query ), 'Last', 'tw-lastdiff', 'Show most recent diff' );
 
 	// Show additional tabs only on diff pages
 	if (Morebits.queryString.exists('diff')) {
-		twAddPortletLink(function(){ Twinkle.diff.evaluate(false); }, 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user' );
-		twAddPortletLink( function(){ Twinkle.diff.evaluate(true); }, 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision' );
+		Twinkle.addPortletLink(function(){ Twinkle.diff.evaluate(false); }, 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user' );
+		Twinkle.addPortletLink( function(){ Twinkle.diff.evaluate(true); }, 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision' );
 
 		var oldid = /oldid=(.+)/.exec($('#mw-diff-ntitle1').find('strong a').first().attr("href"))[1];
 		query = {
@@ -34,7 +37,7 @@ Twinkle.diff = function twinklediff() {
 			'diff': 'cur',
 			'oldid' : oldid
 		};
-		twAddPortletLink( mw.util.wikiScript("index")+ "?" + $.param( query ), 'Current', 'tw-curdiff', 'Show difference to current revision' );
+		Twinkle.addPortletLink( mw.util.wikiScript("index")+ "?" + $.param( query ), 'Current', 'tw-curdiff', 'Show difference to current revision' );
 	}
 };
 
@@ -84,3 +87,6 @@ Twinkle.diff.callbacks = {
 	}
 };
 })(jQuery);
+
+
+//</nowiki>

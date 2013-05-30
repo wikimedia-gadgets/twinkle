@@ -72,10 +72,10 @@ my $repo = Git::Repository->new();
 my $bot = MediaWiki::Bot->new({
         assert      => 'user',
         protocol    => 'https',
-        host        => 'en.wikipedia.org',
+        host        => "$opt->{lang}.$opt->{family}.org",
         login_data  => { username => $opt->username, password => $opt->password},
         debug => $opt->{verbose} ? 2 : 0,
-		maxlag => 1000 # not a botty script, thus smash it!
+		maxlag => 1000000 # not a botty script, thus smash it!
     }
 );
 
@@ -117,7 +117,7 @@ if( $opt->mode eq "pull" ) {
 			die "file not deployable";
 		}
 		$page = $deploys{$file};
-		say "$file -> https://secure.wikimedia.org/$opt->{family}/$opt->{lang}/wiki/$page";
+		say "$file -> $opt->{lang}.$opt->{family}.org/wiki/$page";
         my $tag = $repo->run(describe => '--always', '--dirty');
         my $log = $repo->run(log => '-1', '--pretty=format:%s', '--no-color');
         my $text = read_file($file,  {binmode => ':raw' });

@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -19,7 +22,7 @@ Twinkle.arv = function twinklearv() {
 
 	var title = Morebits.isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
 
-	twAddPortletLink( function(){ Twinkle.arv.callback(username); }, "ARV", "tw-arv", title );
+	Twinkle.addPortletLink( function(){ Twinkle.arv.callback(username); }, "ARV", "tw-arv", title );
 };
 
 Twinkle.arv.callback = function ( uid ) {
@@ -777,3 +780,6 @@ Twinkle.arv.processAN3 = function( params ) {
   Morebits.wiki.removeCheckpoint();  // all page updates have been started
 }
 })(jQuery);
+
+
+//</nowiki>

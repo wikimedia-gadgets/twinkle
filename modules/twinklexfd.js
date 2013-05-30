@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -19,7 +22,7 @@ Twinkle.xfd = function twinklexfd() {
 	if ( mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') || (mw.config.get('wgNamespaceNumber') === 6 && (document.getElementById('mw-sharedupload') || (!document.getElementById('mw-imagepage-section-filehistory') && !Morebits.wiki.isPageRedirect()))) ) {
 		return;
 	}
-	twAddPortletLink( Twinkle.xfd.callback, "XFD", "tw-xfd", "Nominate for deletion" );
+	Twinkle.addPortletLink( Twinkle.xfd.callback, "XFD", "tw-xfd", "Nominate for deletion" );
 };
 
 Twinkle.xfd.num2order = function twinklexfdNum2order( num ) {
@@ -1699,3 +1702,6 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	}
 };
 })(jQuery);
+
+
+//</nowiki>

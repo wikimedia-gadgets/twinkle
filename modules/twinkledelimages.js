@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -15,7 +18,7 @@ Twinkle.delimages = function twinkledeli() {
 		return;
 	}
 	if( Morebits.userIsInGroup( 'sysop' ) ) {
-		twAddPortletLink( Twinkle.delimages.callback, "Deli-batch", "tw-deli", "Delete files found on page" );
+		Twinkle.addPortletLink( Twinkle.delimages.callback, "Deli-batch", "tw-deli", "Delete files found on page" );
 	}
 };
 
@@ -225,3 +228,6 @@ Twinkle.delimages.callbacks = {
 	}
 };
 })(jQuery);
+
+
+//</nowiki>

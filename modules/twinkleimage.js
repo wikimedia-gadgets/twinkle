@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -15,7 +18,7 @@ Twinkle.image = function twinkleimage() {
 	    !document.getElementById("mw-sharedupload") &&
 	    document.getElementById("mw-imagepage-section-filehistory")) {
 		
-		twAddPortletLink(Twinkle.image.callback, "DI", "tw-di", "Nominate file for delayed speedy deletion");
+		Twinkle.addPortletLink(Twinkle.image.callback, "DI", "tw-di", "Nominate file for delayed speedy deletion");
 	}
 };
 
@@ -343,3 +346,6 @@ Twinkle.image.callbacks = {
 	}
 };
 })(jQuery);
+
+
+//</nowiki>

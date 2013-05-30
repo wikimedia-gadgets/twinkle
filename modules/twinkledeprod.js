@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -15,7 +18,7 @@
 		if( mw.config.get( 'wgNamespaceNumber' ) !== 14 || ! Morebits.userIsInGroup( 'sysop' ) || !((/^Category:Proposed_deletion_as_of/).test(mw.config.get( 'wgPageName' ))) ) {
 			return;
 		}
-		twAddPortletLink( callback, "Deprod", "tw-deprod", "Delete prod pages found in this category");
+		Twinkle.addPortletLink( callback, "Deprod", "tw-deprod", "Delete prod pages found in this category");
 	};
 
 	var unlinkCache = {},
@@ -159,3 +162,6 @@
 	};
 }());
 })(jQuery);
+
+
+//</nowiki>
