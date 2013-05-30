@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
 ****************************************
 *** twinkledelimages.js: Batch deletion of images (sysops only)
@@ -221,3 +224,4 @@ Twinkle.delimages.callbacks = {
 		self.save();
 	}
 };
+})(jQuery);

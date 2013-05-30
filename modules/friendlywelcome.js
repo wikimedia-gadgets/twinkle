@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** friendlywelcome.js: Welcome module
@@ -716,3 +719,4 @@ Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) 
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);
 };
+})(jQuery);

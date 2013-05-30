@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** twinkleprod.js: PROD module
@@ -320,3 +323,4 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.prod.callbacks.main);
 };
+})(jQuery);

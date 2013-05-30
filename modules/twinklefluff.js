@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** twinklefluff.js: Revert/rollback module
@@ -555,3 +558,4 @@ Twinkle.fluff.init = function twinklefluffinit() {
 		}
 	}
 };
+})(jQuery);

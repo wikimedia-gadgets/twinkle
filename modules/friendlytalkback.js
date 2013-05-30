@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** friendlytalkback.js: Talkback module
@@ -345,3 +348,4 @@
 	};
 
 }());
+})(jQuery);

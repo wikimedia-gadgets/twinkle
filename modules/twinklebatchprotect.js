@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** twinklebatchprotect.js: Batch protect module (sysops only)
@@ -417,3 +420,4 @@ Twinkle.batchprotect.callbacks = {
 		} );
 	}
 };
+})(jQuery);

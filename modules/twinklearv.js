@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** twinklearv.js: ARV module
@@ -773,3 +776,4 @@ Twinkle.arv.processAN3 = function( params ) {
 
   Morebits.wiki.removeCheckpoint();  // all page updates have been started
 }
+})(jQuery);

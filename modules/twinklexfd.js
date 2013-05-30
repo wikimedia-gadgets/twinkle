@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** twinklexfd.js: XFD module
@@ -1695,3 +1698,4 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		break;
 	}
 };
+})(jQuery);

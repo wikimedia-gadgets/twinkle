@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** twinklebatchdelete.js: Batch delete module (sysops only)
@@ -379,3 +382,4 @@ Twinkle.batchdelete.callbacks = {
 		pageobj.save(params.onsuccess);
 	}
 };
+})(jQuery);

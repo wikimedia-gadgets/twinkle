@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
 ****************************************
 *** twinkledeprod.js: Batch deletion of expired PRODs (sysops only)
@@ -155,3 +158,4 @@
 		});
 	};
 }());
+})(jQuery);

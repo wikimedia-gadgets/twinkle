@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** twinklediff.js: Diff module
@@ -80,3 +83,4 @@ Twinkle.diff.callbacks = {
 		window.location = mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query );
 	}
 };
+})(jQuery);

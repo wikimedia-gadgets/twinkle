@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** twinkleunlink.js: Unlink module
@@ -273,3 +276,4 @@ Twinkle.unlink.callbacks = {
 		}
 	}
 };
+})(jQuery);

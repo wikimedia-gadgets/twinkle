@@ -1,3 +1,6 @@
+(function($){
+
+
 /*
  ****************************************
  *** twinkleimage.js: Image CSD module
@@ -339,3 +342,4 @@ Twinkle.image.callbacks = {
 		}
 	}
 };
+})(jQuery);
