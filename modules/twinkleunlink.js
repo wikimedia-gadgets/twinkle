@@ -30,7 +30,7 @@ Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
 // the parameter is used when invoking unlink from admin speedy
 Twinkle.unlink.callback = function(presetReason) {
 	var Window = new Morebits.simpleWindow( 800, 400 );
-	Window.setTitle( "Unlink backlinks" );
+	Window.setTitle( "Unlink backlinks" + (mw.config.get('wgNamespaceNumber') === 6 ? " and file usages" : "") );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#unlink" );
 
