@@ -1,3 +1,9 @@
+//<nowiki>
+
+
+(function($){
+
+
 /*
  ****************************************
  *** twinkleprod.js: PROD module
@@ -12,7 +18,7 @@ Twinkle.prod = function twinkleprod() {
 		return;
 	}
 	
-	twAddPortletLink( Twinkle.prod.callback, "PROD", "tw-prod", "Propose deletion via WP:PROD" );
+	Twinkle.addPortletLink( Twinkle.prod.callback, "PROD", "tw-prod", "Propose deletion via WP:PROD" );
 };
 
 Twinkle.prod.callback = function twinkleprodCallback() {
@@ -320,3 +326,7 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.prod.callbacks.main);
 };
+})(jQuery);
+
+
+//</nowiki>

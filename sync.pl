@@ -41,7 +41,27 @@ my %pages = map +("$opt->{base}/$_" => $_), @ARGV;
 my %deploys = (
 	'twinkle.js' => 'MediaWiki:Gadget-Twinkle.js',
 	'morebits.js' => 'MediaWiki:Gadget-morebits.js',
-	'morebits.css' => 'MediaWiki:Gadget-morebits.css'
+	'morebits.css' => 'MediaWiki:Gadget-morebits.css',
+	'modules/twinkleprod.js' => 'MediaWiki:Gadget-twinkleprod.js',
+	'modules/twinkleimage.js' => 'MediaWiki:Gadget-twinkleimage.js',
+	'modules/twinklebatchundelete.js' => 'MediaWiki:Gadget-twinklebatchundelete.js',
+	'modules/twinklewarn.js' => 'MediaWiki:Gadget-twinklewarn.js',
+	'modules/twinklespeedy.js' => 'MediaWiki:Gadget-twinklespeedy.js',
+	'modules/friendlyshared.js' => 'MediaWiki:Gadget-friendlyshared.js',
+	'modules/twinklediff.js' => 'MediaWiki:Gadget-twinklediff.js',
+	'modules/twinkleunlink.js' => 'MediaWiki:Gadget-twinkleunlink.js',
+	'modules/twinkledelimages.js' => 'MediaWiki:Gadget-twinkledelimages.js',
+	'modules/friendlytag.js' => 'MediaWiki:Gadget-friendlytag.js',
+	'modules/twinkledeprod.js' => 'MediaWiki:Gadget-twinkledeprod.js',
+	'modules/friendlywelcome.js' => 'MediaWiki:Gadget-friendlywelcome.js',
+	'modules/twinklexfd.js' => 'MediaWiki:Gadget-twinklexfd.js',
+	'modules/twinklebatchdelete.js' => 'MediaWiki:Gadget-twinklebatchdelete.js',
+	'modules/twinklebatchprotect.js' => 'MediaWiki:Gadget-twinklebatchprotect.js',
+	'modules/twinkleconfig.js' => 'MediaWiki:Gadget-twinkleconfig.js',
+	'modules/twinklefluff.js' => 'MediaWiki:Gadget-twinklefluff.js',
+	'modules/twinkleprotect.js' => 'MediaWiki:Gadget-twinkleprotect.js',
+	'modules/twinklearv.js' => 'MediaWiki:Gadget-twinklearv.js',
+	'modules/friendlytalkback.js' => 'MediaWiki:Gadget-friendlytalkback.js'
 );
 
 # Config file should be an hash consisting of username and password keys
@@ -52,10 +72,10 @@ my $repo = Git::Repository->new();
 my $bot = MediaWiki::Bot->new({
         assert      => 'user',
         protocol    => 'https',
-        host        => 'en.wikipedia.org',
+        host        => "$opt->{lang}.$opt->{family}.org",
         login_data  => { username => $opt->username, password => $opt->password},
         debug => $opt->{verbose} ? 2 : 0,
-		maxlag => 1000 # not a botty script, thus smash it!
+		maxlag => 1000000 # not a botty script, thus smash it!
     }
 );
 
@@ -97,7 +117,7 @@ if( $opt->mode eq "pull" ) {
 			die "file not deployable";
 		}
 		$page = $deploys{$file};
-		say "$file -> https://secure.wikimedia.org/$opt->{family}/$opt->{lang}/wiki/$page";
+		say "$file -> $opt->{lang}.$opt->{family}.org/wiki/$page";
         my $tag = $repo->run(describe => '--always', '--dirty');
         my $log = $repo->run(log => '-1', '--pretty=format:%s', '--no-color');
         my $text = read_file($file,  {binmode => ':raw' });

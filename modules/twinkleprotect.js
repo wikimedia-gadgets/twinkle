@@ -1,3 +1,9 @@
+//<nowiki>
+
+
+(function($){
+
+
 /*
  ****************************************
  *** twinkleprotect.js: Protect/RPP module
@@ -14,7 +20,7 @@ Twinkle.protect = function twinkleprotect() {
 		return;
 	}
 
-	twAddPortletLink(Twinkle.protect.callback, Morebits.userIsInGroup('sysop') ? "PP" : "RPP", "tw-rpp",
+	Twinkle.addPortletLink(Twinkle.protect.callback, Morebits.userIsInGroup('sysop') ? "PP" : "RPP", "tw-rpp",
 		Morebits.userIsInGroup('sysop') ? "Protect page" : "Request page protection" );
 };
 
@@ -1254,3 +1260,7 @@ Twinkle.protect.callbacks = {
 		rppPage.save();
 	}
 };
+})(jQuery);
+
+
+//</nowiki>

@@ -25,7 +25,7 @@ var Twinkle = {};
 window.Twinkle = Twinkle;  // allow global access
 
 // Check if account is experienced enough to use Twinkle
-var twinkleUserAuthorized = Morebits.userIsInGroup( "autoconfirmed" ) || Morebits.userIsInGroup( "confirmed" );
+Twinkle.userAuthorized = Morebits.userIsInGroup( "autoconfirmed" ) || Morebits.userIsInGroup( "confirmed" );
 
 // for use by custom modules (normally empty)
 Twinkle.initCallbacks = [];
@@ -191,7 +191,7 @@ Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
 
 
 /**
- * **************** twAddPortlet() ****************
+ * **************** Twinkle.addPortlet() ****************
  *
  * Adds a portlet menu to one of the navigation areas on the page.
  * This is necessarily quite a hack since skins, navigation areas, and
@@ -218,7 +218,7 @@ Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
  *
  * @return Node -- the DOM node of the new item (a DIV element) or null
  */
-function twAddPortlet( navigation, id, text, type, nextnodeid )
+Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 {
 	//sanity checks, and get required DOM nodes
 	var root = document.getElementById( navigation );
@@ -293,7 +293,7 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 		$( a ).click(function ( e ) {
 			e.preventDefault();
 
-			if ( !twinkleUserAuthorized ) {
+			if ( !Twinkle.userAuthorized ) {
 				alert("Sorry, your account is too new to use Twinkle.");
 			}
 		});
@@ -319,14 +319,14 @@ function twAddPortlet( navigation, id, text, type, nextnodeid )
 
 
 /**
- * **************** twAddPortletLink() ****************
+ * **************** Twinkle.addPortletLink() ****************
  * Builds a portlet menu if it doesn't exist yet, and add the portlet link.
  * @param task: Either a URL for the portlet link or a function to execute.
  */
-function twAddPortletLink( task, text, id, tooltip )
+Twinkle.addPortletLink = function( task, text, id, tooltip )
 {
 	if ( Twinkle.getPref("portletArea") !== null ) {
-		twAddPortlet( Twinkle.getPref( "portletArea" ), Twinkle.getPref( "portletId" ), Twinkle.getPref( "portletName" ), Twinkle.getPref( "portletType" ), Twinkle.getPref( "portletNext" ));
+		Twinkle.addPortlet( Twinkle.getPref( "portletArea" ), Twinkle.getPref( "portletId" ), Twinkle.getPref( "portletName" ), Twinkle.getPref( "portletType" ), Twinkle.getPref( "portletNext" ));
 	}
 	var link = mw.util.addPortletLink( Twinkle.getPref( "portletId" ), typeof task === "string" ? task : "#", text, id, tooltip );
 	if ( $.isFunction( task ) ) {
@@ -337,3 +337,115 @@ function twAddPortletLink( task, text, id, tooltip )
 	}
 	return link;
 }
+/**
+ * General initialization code
+ */
+
+var scriptpathbefore = mw.util.wikiScript( "index" ) + "?title=",
+    scriptpathafter = "&action=raw&ctype=text/javascript&happy=yes";
+
+// Retrieve the user's Twinkle preferences
+$.ajax({
+	url: scriptpathbefore + "User:" + encodeURIComponent( mw.config.get("wgUserName")) + "/twinkleoptions.js" + scriptpathafter,
+	dataType: "text",
+	error: function () { mw.util.jsMessage( "Could not load twinkleoptions.js" ); },
+	success: function ( optionsText ) {
+
+		// Quick pass if user has no options
+		if ( optionsText === "" ) {
+			return;
+		}
+
+		// Twinkle options are basically a JSON object with some comments. Strip those:
+		optionsText = optionsText.replace( /(?:^(?:\/\/[^\n]*\n)*\n*|(?:\/\/[^\n]*(?:\n|$))*$)/g, "" );
+
+		// First version of options had some boilerplate code to make it eval-able -- strip that too. This part may become obsolete down the line.
+		if ( optionsText.lastIndexOf( "window.Twinkle.prefs = ", 0 ) === 0 ) {
+			optionsText = optionsText.replace( /(?:^window.Twinkle.prefs = |;\n*$)/g, "" );
+		}
+
+		try {
+			var options = $.parseJSON( optionsText );
+
+			// Assuming that our options evolve, we will want to transform older versions:
+			//if ( options.optionsVersion === undefined ) {
+			// ...
+			// options.optionsVersion = 1;
+			//}
+			//if ( options.optionsVersion === 1 ) {
+			// ...
+			// options.optionsVersion = 2;
+			//}
+			// At the same time, twinkleconfig.js needs to be adapted to write a higher version number into the options.
+
+			if ( options ) {
+				Twinkle.prefs = options;
+			}
+		}
+		catch ( e ) {
+			mw.util.jsMessage("Could not parse twinkleoptions.js");
+		}
+	},
+	complete: function () {
+		$( Twinkle.load );
+	}
+});
+
+// Developers: you can import custom Twinkle modules here
+// For example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
+
+Twinkle.load = function () {
+	    // Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
+	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1
+	    	&& mw.config.get('wgCanonicalSpecialPageName') !== "Contributions"
+	    	&& mw.config.get('wgCanonicalSpecialPageName') !== "Prefixindex" ),
+
+	    // Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
+	    isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
+
+    // Prevent users that are not autoconfirmed from loading Twinkle as well.
+	if ( isSpecialPage || isOldIE || !Twinkle.userAuthorized ) {
+		return;
+	}
+
+	// Load the modules in the order that the tabs should appears
+	// User/user talk-related
+	Twinkle.arv();
+	Twinkle.warn();
+	Twinkle.welcome();
+	Twinkle.shared();
+	Twinkle.talkback();
+	// Deletion
+	Twinkle.speedy();
+	Twinkle.prod();
+	Twinkle.xfd();
+	Twinkle.image();
+	// Maintenance
+	Twinkle.protect();
+	Twinkle.tag();
+	// Misc. ones last
+	Twinkle.diff();
+	Twinkle.unlink();
+	Twinkle.config.init();
+	Twinkle.fluff.init();
+	if ( Morebits.userIsInGroup('sysop') ) {
+		Twinkle.delimages();
+		Twinkle.deprod();
+		Twinkle.batchdelete();
+		Twinkle.batchprotect();
+		Twinkle.batchundelete();
+	}
+	// Run the initialization callbacks for any custom modules
+	$( Twinkle.initCallbacks ).each(function ( k, v ) { v(); });
+	Twinkle.addInitCallback = function ( func ) { func(); };
+
+	// Increases text size in Twinkle dialogs, if so configured
+	if ( Twinkle.getPref( "dialogLargeFont" ) ) {
+		mw.util.addCSS( ".morebits-dialog-content, .morebits-dialog-footerlinks { font-size: 100% !important; } " +
+			".morebits-dialog input, .morebits-dialog select, .morebits-dialog-content button { font-size: inherit !important; }" );
+	}
+};
+
+} ( window, document, jQuery )); // End wrap with anonymous function
+
+// </nowiki>

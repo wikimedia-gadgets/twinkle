@@ -1,3 +1,9 @@
+//<nowiki>
+
+
+(function($){
+
+
 /*
  ****************************************
  *** twinklearv.js: ARV module
@@ -16,7 +22,7 @@ Twinkle.arv = function twinklearv() {
 
 	var title = Morebits.isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
 
-	twAddPortletLink( function(){ Twinkle.arv.callback(username); }, "ARV", "tw-arv", title );
+	Twinkle.addPortletLink( function(){ Twinkle.arv.callback(username); }, "ARV", "tw-arv", title );
 };
 
 Twinkle.arv.callback = function ( uid ) {
@@ -771,5 +777,20 @@ Twinkle.arv.processAN3 = function( params ) {
   an3Page.setAppendText( text );
   an3Page.append();
 
+  // notify user
+
+  var notifyEditSummary = "Notifying about edit warring noticeboard discussion." + Twinkle.getPref('summaryAd');
+  var notifyText = "\n\n{{subst:an3-notice|1=" + params.uid + "|auto=1}} ~~~~";
+
+  var talkPage = new Morebits.wiki.page( 'User talk:' + params.uid, 'Notifying edit warrior' );
+  talkPage.setFollowRedirect( true );
+  talkPage.setEditSummary( notifyEditSummary );
+  talkPage.setAppendText( notifyText );
+  talkPage.append();
+
   Morebits.wiki.removeCheckpoint();  // all page updates have been started
 }
+})(jQuery);
+
+
+//</nowiki>

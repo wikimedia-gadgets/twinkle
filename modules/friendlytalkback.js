@@ -1,3 +1,9 @@
+//<nowiki>
+
+
+(function($){
+
+
 /*
  ****************************************
  *** friendlytalkback.js: Talkback module
@@ -14,7 +20,7 @@
 			return;
 		}
 	
-		twAddPortletLink( callback, "TB", "friendly-talkback", "Easy talkback" );
+		Twinkle.addPortletLink( callback, "TB", "friendly-talkback", "Easy talkback" );
 	};
 	
 	var callback = function( ) {
@@ -345,3 +351,7 @@
 	};
 
 }());
+})(jQuery);
+
+
+//</nowiki>

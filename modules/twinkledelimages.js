@@ -1,3 +1,9 @@
+//<nowiki>
+
+
+(function($){
+
+
 /*
 ****************************************
 *** twinkledelimages.js: Batch deletion of images (sysops only)
@@ -12,7 +18,7 @@ Twinkle.delimages = function twinkledeli() {
 		return;
 	}
 	if( Morebits.userIsInGroup( 'sysop' ) ) {
-		twAddPortletLink( Twinkle.delimages.callback, "Deli-batch", "tw-deli", "Delete files found on page" );
+		Twinkle.addPortletLink( Twinkle.delimages.callback, "Deli-batch", "tw-deli", "Delete files found on page" );
 	}
 };
 
@@ -221,3 +227,7 @@ Twinkle.delimages.callbacks = {
 		self.save();
 	}
 };
+})(jQuery);
+
+
+//</nowiki>

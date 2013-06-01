@@ -1,3 +1,9 @@
+//<nowiki>
+
+
+(function($){
+
+
 /*
  ****************************************
  *** twinklebatchprotect.js: Batch protect module (sysops only)
@@ -13,7 +19,7 @@ Twinkle.batchprotect = function twinklebatchprotect() {
 	if( Morebits.userIsInGroup( 'sysop' ) && ((mw.config.get( 'wgArticleId' ) > 0 && (mw.config.get( 'wgNamespaceNumber' ) === 2 ||
 		mw.config.get( 'wgNamespaceNumber' ) === 4)) || mw.config.get( 'wgNamespaceNumber' ) === 14 ||
 		mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex') ) {
-		twAddPortletLink( Twinkle.batchprotect.callback, "P-batch", "tw-pbatch", "Protect pages linked from this page" );
+		Twinkle.addPortletLink( Twinkle.batchprotect.callback, "P-batch", "tw-pbatch", "Protect pages linked from this page" );
 	}
 };
 
@@ -417,3 +423,7 @@ Twinkle.batchprotect.callbacks = {
 		} );
 	}
 };
+})(jQuery);
+
+
+//</nowiki>

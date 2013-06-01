@@ -1,3 +1,9 @@
+//<nowiki>
+
+
+(function($){
+
+
 /*
  ****************************************
  *** twinklebatchundelete.js: Batch undelete module
@@ -14,7 +20,7 @@ Twinkle.batchundelete = function twinklebatchundelete() {
 		return;
 	}
 	if( Morebits.userIsInGroup( 'sysop' ) ) {
-		twAddPortletLink( Twinkle.batchundelete.callback, "Und-batch", "tw-batch-undel", "Undelete 'em all" );
+		Twinkle.addPortletLink( Twinkle.batchundelete.callback, "Und-batch", "tw-batch-undel", "Undelete 'em all" );
 	}
 };
 
@@ -123,3 +129,7 @@ Twinkle.batchundelete.callbacks = {
 		}
 	}
 };
+})(jQuery);
+
+
+//</nowiki>

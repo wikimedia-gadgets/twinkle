@@ -1,3 +1,9 @@
+//<nowiki>
+
+
+(function($){
+
+
 /*
  ****************************************
  *** twinklebatchdelete.js: Batch delete module (sysops only)
@@ -10,7 +16,7 @@
 
 Twinkle.batchdelete = function twinklebatchdelete() {
 	if( Morebits.userIsInGroup( 'sysop' ) && (mw.config.get( 'wgNamespaceNumber' ) > 0 || mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex') ) {
-		twAddPortletLink( Twinkle.batchdelete.callback, "D-batch", "tw-batch", "Delete pages found in this category/on this page" );
+		Twinkle.addPortletLink( Twinkle.batchdelete.callback, "D-batch", "tw-batch", "Delete pages found in this category/on this page" );
 	}
 };
 
@@ -379,3 +385,7 @@ Twinkle.batchdelete.callbacks = {
 		pageobj.save(params.onsuccess);
 	}
 };
+})(jQuery);
+
+
+//</nowiki>
