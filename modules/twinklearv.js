@@ -333,7 +333,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				  action: 'query',
 				  prop: 'revisions',
 				  format: 'json',
-				  rvprop: 'ids|timestamp|parsedcomment|comment',
+				  rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
 				  rvlimit: 10,
 				  rvuser: uid,
 				  indexpageids: true,
@@ -373,7 +373,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				  action: 'query',
 				  prop: 'revisions',
 				  format: 'json',
-				  rvprop: 'ids|timestamp|parsedcomment|comment',
+				  rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
 				  rvlimit: 10,
 				  rvuser: mw.config.get('wgUserName'),
 				  indexpageids: true,
@@ -415,7 +415,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				  action: 'query',
 				  prop: 'revisions',
 				  format: 'json',
-				  rvprop: 'ids|timestamp|parsedcomment|comment',
+				  rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
 				  rvlimit: 10,
 				  rvuser: mw.config.get('wgUserName'),
 				  indexpageids: true,
@@ -751,44 +751,81 @@ Twinkle.arv.processSock = function( params ) {
 };
 
 Twinkle.arv.processAN3 = function( params ) {
-  Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
-
   // prepare the AN3 report
-  var difftext = params.diffs.map(function(v){
-	return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"'
-  }).join("\n");
-  var warningtext = params.warnings.map(function(v){
-	return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"'
-  }).join("\n");
-  var resolvetext = params.resolves.map(function(v){
-	return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"'
-  }).join("\n");
+  var sha1, minid;
+  for(var i = 0; i < params.diffs.length; ++i) {
+	if(!minid || params.diffs[i].revid < minid) {
+	  minid = params.diffs[i].revid;
+	  sha1 = params.diffs[i].sha1;
+	}
+  }
 
-  var text = "\n\n"+'{{subst:AN3 report|diffs='+difftext+'|warnings='+warningtext+'|resolves='+resolvetext+'|pagename='+params.page+'|comment='+params.comment+'|uid='+params.uid+'}}';
+  var api = new mw.Api();
+  api.get({
+	action: 'query',
+	prop: 'revisions',
+	format: 'json',
+	rvprop: 'sha1|ids|timestamp|comment',
+	rvlimit: 100,
+	rvstartid: minid,
+	rvexcludeuser: params.uid,
+	indexpageids: true,
+	redirects: true,
+	titles: params.page
+  }).done(function(data){
+	Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
+	var orig;
+	for(var i = 0; i < data.length; ++i) {
+	  if(data[i].sha1 == sha1) {
+		orig = data[i];
+		break;
+	  }
+	}
 
-  var reportpage = 'Wikipedia:Administrators\' noticeboard/Edit warring';
+	origtext = "";
+	if(orig) {
+	  origtext = '{{diff2|' + orig.revid + '|' + orig.timestamp + '}} "' + orig.comment + '"';
+	}
 
-  Morebits.wiki.actionCompleted.redirect = reportpage;
-  Morebits.wiki.actionCompleted.notice = "Reporting complete";
+	var difftext = params.diffs.map(function(v){
+	  return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"'
+	}).join("\n");
+	var warningtext = params.warnings.map(function(v){
+	  return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"'
+	}).join("\n");
+	var resolvetext = params.resolves.map(function(v){
+	  return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"'
+	}).join("\n");
 
-  var an3Page = new Morebits.wiki.page( reportpage, 'Retrieving discussion page' );
-  an3Page.setFollowRedirect( true );
-  an3Page.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ Twinkle.getPref('summaryAd') );
-  an3Page.setAppendText( text );
-  an3Page.append();
+	var text = "\n\n"+'{{subst:AN3 report|diffs='+difftext+'|warnings='+warningtext+'|resolves='+resolvetext+'|pagename='+params.page+'|orig='+origtext+'|comment='+params.comment+'|uid='+params.uid+'}}';
 
-  // notify user
+	var reportpage = 'Wikipedia:Administrators\' noticeboard/Edit warring';
 
-  var notifyEditSummary = "Notifying about edit warring noticeboard discussion." + Twinkle.getPref('summaryAd');
-  var notifyText = "\n\n{{subst:an3-notice|1=" + params.uid + "|auto=1}} ~~~~";
+	Morebits.wiki.actionCompleted.redirect = reportpage;
+	Morebits.wiki.actionCompleted.notice = "Reporting complete";
 
-  var talkPage = new Morebits.wiki.page( 'User talk:' + params.uid, 'Notifying edit warrior' );
-  talkPage.setFollowRedirect( true );
-  talkPage.setEditSummary( notifyEditSummary );
-  talkPage.setAppendText( notifyText );
-  talkPage.append();
+	var an3Page = new Morebits.wiki.page( reportpage, 'Retrieving discussion page' );
+	an3Page.setFollowRedirect( true );
+	an3Page.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ Twinkle.getPref('summaryAd') );
+	an3Page.setAppendText( text );
+	an3Page.append();
 
-  Morebits.wiki.removeCheckpoint();  // all page updates have been started
+	// notify user
+
+	var notifyEditSummary = "Notifying about edit warring noticeboard discussion." + Twinkle.getPref('summaryAd');
+	var notifyText = "\n\n{{subst:an3-notice|1=" + params.uid + "|auto=1}} ~~~~";
+
+	var talkPage = new Morebits.wiki.page( 'User talk:' + params.uid, 'Notifying edit warrior' );
+	talkPage.setFollowRedirect( true );
+	talkPage.setEditSummary( notifyEditSummary );
+	talkPage.setAppendText( notifyText );
+	talkPage.append();
+	Morebits.wiki.removeCheckpoint();  // all page updates have been started
+	console.log( 'API result:', page );
+  }).fail(function(data){
+	console.log( 'API failed :(', error );
+  });
+
 }
 })(jQuery);
 
