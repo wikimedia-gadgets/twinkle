@@ -751,8 +751,8 @@ Twinkle.arv.processAN3 = function( params ) {
   // prepare the AN3 report
   var sha1, minid;
   for(var i = 0; i < params.diffs.length; ++i) {
-	if(!minid || params.diffs[i].revid < minid) {
-	  minid = params.diffs[i].revid;
+	if( params.diffs[i].parentid && (!minid || params.diffs[i].parentid < minid)) {
+	  minid = params.diffs[i].parentid;
 	  sha1 = params.diffs[i].sha1;
 	}
   }
