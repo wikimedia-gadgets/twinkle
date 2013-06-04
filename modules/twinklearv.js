@@ -810,7 +810,7 @@ Twinkle.arv.processAN3 = function( params ) {
 	// notify user
 
 	var notifyEditSummary = "Notifying about edit warring noticeboard discussion." + Twinkle.getPref('summaryAd');
-	var notifyText = "\n\n{{subst:an3-notice|1=" + params.uid + "|auto=1}} ~~~~";
+	var notifyText = "\n\n{{subst:an3-notice|1=" + mw.util.wikiUrlencode(params.uid) + "|auto=1}} ~~~~";
 
 	var talkPage = new Morebits.wiki.page( 'User talk:' + params.uid, 'Notifying edit warrior' );
 	talkPage.setFollowRedirect( true );
