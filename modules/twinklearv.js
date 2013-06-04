@@ -362,7 +362,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 
 				  }
 
-				  console.log( 'API result:', page );
 				}).fail(function(data){
 				  console.log( 'API failed :(', error );
 				});
@@ -402,7 +401,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 
 				  }
 
-				  console.log( 'API result:', page );
 				}).fail(function(data){
 				  console.log( 'API failed :(', error );
 				});
@@ -444,7 +442,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 
 				  }
 
-				  console.log( 'API result:', page );
 				}).fail(function(data){
 				  console.log( 'API failed :(', error );
 				});
@@ -821,7 +818,6 @@ Twinkle.arv.processAN3 = function( params ) {
 	talkPage.setAppendText( notifyText );
 	talkPage.append();
 	Morebits.wiki.removeCheckpoint();  // all page updates have been started
-	console.log( 'API result:', page );
   }).fail(function(data){
 	console.log( 'API failed :(', error );
   });
