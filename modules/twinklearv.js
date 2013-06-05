@@ -766,7 +766,6 @@ Twinkle.arv.processAN3 = function( params ) {
   for(var i = 0; i < params.diffs.length; ++i) {
 	if( params.diffs[i].parentid && (!minid || params.diffs[i].parentid < minid)) {
 	  minid = params.diffs[i].parentid;
-	  sha1 = params.diffs[i].sha1;
 	}
   }
 
@@ -785,10 +784,17 @@ Twinkle.arv.processAN3 = function( params ) {
   }).done(function(data){
 	Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
 	var orig;
-	for(var i = 0; i < data.length; ++i) {
-	  if(data[i].sha1 == sha1) {
-		orig = data[i];
-		break;
+	if(data.length) {
+	  var sha1 = data[0].sha1;
+	  for(var i = 1; i < data.length; ++i) {
+		if(data[i].sha1 == sha1) {
+		  orig = data[i];
+		  break;
+		}
+	  }
+
+	  if(!orig) {
+		orig = data[0];
 	  }
 	}
 
