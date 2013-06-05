@@ -409,6 +409,10 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				var $resolves = $(root).find('[name=resolves]');
 				$resolves.find('.entry').remove();
 
+				var t = new mw.Title(value);
+				var ns = t.getNamespaceId();
+				talk_page = (new mw.Title(t.getMain(), ns%2? ns : ns+1)).getPrefixedText();
+
 				api.get({
 				  action: 'query',
 				  prop: 'revisions',
@@ -418,7 +422,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				  rvuser: mw.config.get('wgUserName'),
 				  indexpageids: true,
 				  redirects: true,
-				  titles: 'Talk:' + value
+				  titles: talk_page
 				}).done(function(data){
 				  var pageid = data.query.pageids[0];
 				  var page = data.query.pages[pageid];
