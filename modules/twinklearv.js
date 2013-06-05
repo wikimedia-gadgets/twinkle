@@ -653,24 +653,33 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 		  case 'an3':
 
-			function extractDiffID(diff) {
-			  var matched = diff.match(/diff=(\d+)/);
-			  if(!matched) {
-				diffid = diff.replace(/\D/g,'');
-			  } else {
-				diffid = matched[1];
-			  }
-			  return diffid;
+			var diffs = $.map( $('input:checkbox[name=s_diffs]:checked',form), function(o){ return $(o).data('revinfo'); });
+
+			if(diffs.length < 3) {
+			  alert("You must select at least three offending edits.");
+			  return;
+			}
+
+			var warnings = $.map( $('input:checkbox[name=s_warnings]:checked',form), function(o){ return $(o).data('revinfo'); });
+
+			if(!warnings.length && !confirm("You have not selected any edits where you warn the offender; You wish to make the report anyway?")) {
+			  return;
+			}
+
+			var resolves = $.map( $('input:checkbox[name=s_resolves]:checked',form), function(o){ return $(o).data('revinfo'); });
+
+			if(!resolves.length && !confirm("You have not selected any edits where you tries to resolve the issue; You wish to make the report anyway?")) {
+			  return;
 			}
 
 			var an3Parameters = {
 			  'uid': uid,
 			  'page': form.page.value.trim(),
 			  'comment': form.comment.value.trim(),
-			  'diffs': $.map( $('input:checkbox[name=s_diffs]:checked',form), function(o){ return $(o).data('revinfo'); }),
-			  'warnings': $.map( $('input:checkbox[name=s_warnings]:checked',form), function(o){ return $(o).data('revinfo'); }),
-			  'resolves': $.map( $('input:checkbox[name=s_resolves]:checked',form), function(o){ return $(o).data('revinfo'); })
-			}
+			  'diffs': diffs,
+			  'warnings': warnings,
+			  'resolves': resolves
+			};
 			console.log("Result:", an3Parameters);
 
 			Morebits.simpleWindow.setButtonsEnabled( false );
