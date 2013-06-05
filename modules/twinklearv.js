@@ -348,7 +348,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				  for(var i = 0; i < page.revisions.length; ++i) {
 					var rev = page.revisions[i];
 					var $entry = $('<div/>', {
-					  'class': 'entry',
+					  'class': 'entry'
 					});
 					var $input = $('<input/>', {
 					  'type': 'checkbox',
@@ -387,7 +387,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				  for(var i = 0; i < page.revisions.length; ++i) {
 					var rev = page.revisions[i];
 					var $entry = $('<div/>', {
-					  'class': 'entry',
+					  'class': 'entry'
 					});
 					var $input = $('<input/>', {
 					  'type': 'checkbox',
@@ -428,7 +428,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				  for(var i = 0; i < page.revisions.length; ++i) {
 					var rev = page.revisions[i];
 					var $entry = $('<div/>', {
-					  'class': 'entry',
+					  'class': 'entry'
 					});
 					var $input = $('<input/>', {
 					  'type': 'checkbox',
@@ -453,7 +453,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				type: 'field',
 				name: 'diffs',
 				label: 'Edits which constitute edit warring',
-				tooltip: 'Select the edits which you acuse the subject for edit warring with',
+				tooltip: 'Select the edits which you acuse the subject for edit warring with'
 			  }
 			);
 			work_area.append(
@@ -461,7 +461,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				type: 'field',
 				name: 'warnings',
 				label: 'Indications of warnings given to subject',
-				tooltip: 'You must have warned the subject before reporting',
+				tooltip: 'You must have warned the subject before reporting'
 			  }
 			);
 			work_area.append(
@@ -469,7 +469,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				type: 'field',
 				name: 'resolves',
 				label: 'Resolution initiatives',
-				tooltip: 'You should have tried to resolve the issue on the talk page first',
+				tooltip: 'You should have tried to resolve the issue on the talk page first'
 			  }
 			);
 
@@ -785,13 +785,13 @@ Twinkle.arv.processAN3 = function( params ) {
 	}
 
 	var difftext = params.diffs.map(function(v){
-	  return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"'
+	  return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"';
 	}).join("\n");
 	var warningtext = params.warnings.map(function(v){
-	  return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"'
+	  return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"';
 	}).join("\n");
 	var resolvetext = params.resolves.map(function(v){
-	  return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"'
+	  return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"';
 	}).join("\n");
 
 	var text = "\n\n"+'{{subst:AN3 report|diffs='+difftext+'|warnings='+warningtext+'|resolves='+resolvetext+'|pagename='+params.page+'|orig='+origtext+'|comment='+params.comment+'|uid='+params.uid+'}}';
@@ -822,7 +822,7 @@ Twinkle.arv.processAN3 = function( params ) {
 	console.log( 'API failed :(', error );
   });
 
-}
+};
 })(jQuery);
 
 
