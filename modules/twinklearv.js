@@ -314,7 +314,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			type: 'input',
 			name: 'page',
 			label: 'Page',
-			tooltip: 'The page edit warring took place'
+			tooltip: 'The page being reported'
 
 		  });
 		  work_area.append(
@@ -456,15 +456,15 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			  {
 				type: 'field',
 				name: 'diffs',
-				label: 'Edits which constitute edit warring',
-				tooltip: 'Select the edits which you acuse the subject for edit warring with'
+				label: 'User\'s reverts',
+				tooltip: 'Select the edits you believe are reverts'
 			  }
 			);
 			work_area.append(
 			  {
 				type: 'field',
 				name: 'warnings',
-				label: 'Indications of warnings given to subject',
+				label: 'Warnings given to subject',
 				tooltip: 'You must have warned the subject before reporting'
 			  }
 			);
