@@ -362,7 +362,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					});
 					$input.data('revinfo',rev);
 					$input.appendTo($entry);
-					$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+rev.timestamp+'</a></span>').appendTo($diffs);
+					$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+moment(rev.timestamp).calendar()+'</a></span>').appendTo($diffs);
 
 
 				  }
@@ -402,7 +402,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					});
 					$input.data('revinfo',rev);
 					$input.appendTo($entry);
-					$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+rev.timestamp+'</a></span>').appendTo($warnings);
+					$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+moment(rev.timestamp).calendar()+'</a></span>').appendTo($warnings);
 
 
 				  }
@@ -448,7 +448,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					});
 					$input.data('revinfo',rev);
 					$input.appendTo($entry);
-					$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+rev.timestamp+'</a></span>').appendTo($resolves);
+					$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+moment(rev.timestamp).calendar()+'</a></span>').appendTo($resolves);
 
 
 				  }
