@@ -328,13 +328,18 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				var uid = root.uid.value;
 				var $diffs = $(root).find('[name=diffs]');
 				$diffs.find('.entry').remove();
+
+				var date = new Date();
+				date.setHours(-36); // all since 36 hours
+
 				var api = new mw.Api();
 				api.get({
 				  action: 'query',
 				  prop: 'revisions',
 				  format: 'json',
 				  rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-				  rvlimit: 10,
+				  rvlimit: 500,
+				  rvend: date.toISOString(),
 				  rvuser: uid,
 				  indexpageids: true,
 				  redirects: true,
@@ -373,7 +378,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				  prop: 'revisions',
 				  format: 'json',
 				  rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-				  rvlimit: 10,
+				  rvlimit: 500,
+				  rvend: date.toISOString(),
 				  rvuser: mw.config.get('wgUserName'),
 				  indexpageids: true,
 				  redirects: true,
@@ -418,7 +424,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				  prop: 'revisions',
 				  format: 'json',
 				  rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-				  rvlimit: 10,
+				  rvlimit: 500,
+				  rvend: date.toISOString(),
 				  rvuser: mw.config.get('wgUserName'),
 				  indexpageids: true,
 				  redirects: true,
