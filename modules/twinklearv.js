@@ -810,14 +810,37 @@ Twinkle.arv.processAN3 = function( params ) {
 	  origtext = '{{diff2|' + orig.revid + '|' + orig.timestamp + '}} "' + orig.comment + '"';
 	}
 
-	var difftext = params.diffs.map(function(v){
-	  return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"';
+	var grouped_diffs = {};
+
+	var revid, parentid, lastid;
+	for(var j = 0; j < params.diffs.length; ++j) {
+	  var cur = params.diffs[j];
+	  if( cur.revid && cur.revid != parentid || lastid === null ) {
+		lastid = cur.revid;
+		grouped_diffs[lastid] = [];
+	  }
+	  parentid = cur.parentid;
+	  grouped_diffs[lastid].push(cur);
+	}
+
+	var difftext = $.map(grouped_diffs, function(sub, index){
+	  var ret = "";
+	  if(sub.length >= 2) {
+		var last = sub[0];
+		var first = sub.slice(-1)[0];
+		var label = "Consecutive edits made from " + moment(first.timestamp).format('lll') + " to " + moment(last.timestamp).format('lll');
+		ret = "# {{diff|oldid="+first.parentid+"|diff="+last.revid+"|label="+label+"}}\n";
+	  }
+	  ret += sub.map(function(v){
+		return (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + moment(v.timestamp).format('lll') + '}} "' + v.comment + '"';
+	  }).join("\n");
+	  return ret;
 	}).join("\n");
 	var warningtext = params.warnings.map(function(v){
-	  return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"';
+	  return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).format('lll') + '}} "' + v.comment + '"';
 	}).join("\n");
 	var resolvetext = params.resolves.map(function(v){
-	  return '# ' + ' {{diff2|' + v.revid + '|' + v.timestamp + '}} "' + v.comment + '"';
+	  return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).format('lll') + '}} "' + v.comment + '"';
 	}).join("\n");
 
 	var text = "\n\n"+'{{subst:AN3 report|diffs='+difftext+'|warnings='+warningtext+'|resolves='+resolvetext+'|pagename='+params.page+'|orig='+origtext+'|comment='+params.comment+'|uid='+params.uid+'}}';
