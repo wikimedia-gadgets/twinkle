@@ -843,7 +843,13 @@ Twinkle.arv.processAN3 = function( params ) {
 	  return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).format('lll') + '}} "' + v.comment + '"';
 	}).join("\n");
 
-	var text = "\n\n"+'{{subst:AN3 report|diffs='+difftext+'|warnings='+warningtext+'|resolves='+resolvetext+'|pagename='+params.page+'|orig='+origtext+'|comment='+params.comment+'|uid='+params.uid+'}}';
+	var comment = params.comment.replace(/~*$/g, '').trim();
+
+	if(comment) {
+	  comment += " ~~~~";
+	}
+
+	var text = "\n\n"+'{{subst:AN3 report|diffs='+difftext+'|warnings='+warningtext+'|resolves='+resolvetext+'|pagename='+params.page+'|orig='+origtext+'|comment='+comment+'|uid='+params.uid+'}}';
 
 	var reportpage = 'Wikipedia:Administrators\' noticeboard/Edit warring';
 
