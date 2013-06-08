@@ -874,7 +874,7 @@ Twinkle.arv.processAN3 = function( params ) {
 		return (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + moment(v.timestamp).format('lll') + '}} "' + v.comment + '"';
 	  }).join("\n");
 	  return ret;
-	}).join("\n");
+	}).reverse().join("\n");
 	var warningtext = params.warnings.reverse().map(function(v){
 	  return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).format('lll') + '}} "' + v.comment + '"';
 	}).join("\n");
