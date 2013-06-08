@@ -453,6 +453,21 @@ Twinkle.arv.callback.changeCategory = function (e) {
 
 				  }
 
+				  // add free form input
+				  var $free_entry = $('<div/>', {
+					'class': 'entry'
+				  });
+				  var $free_input = $('<input/>', {
+					'type': 'text',
+					'name': 's_resolves_free'
+				  });
+
+				  var $free_label = $('<label/>', {
+					'for': 's_resolves_free',
+					'html': 'Diff to additional discussions: '
+				  });
+				  $free_entry.append($free_label).append($free_input).appendTo($resolves);
+
 				}).fail(function(data){
 				  console.log( 'API failed :(', error );
 				});
@@ -678,24 +693,48 @@ Twinkle.arv.callback.evaluate = function(e) {
 			}
 
 			var resolves = $.map( $('input:checkbox[name=s_resolves]:checked',form), function(o){ return $(o).data('revinfo'); });
+			var free_resolves = $('input[name=s_resolves_free]').val();
 
-			if(!resolves.length && !confirm("You have not selected any edits where you tries to resolve the issue; You wish to make the report anyway?")) {
-			  return;
-			}
+			var an3_next = function(free_resolves) {
+			  if(!resolves.length && !free_resolves && !confirm("You have not selected any edits where you tries to resolve the issue; You wish to make the report anyway?")) {
+				return;
+			  }
 
-			var an3Parameters = {
-			  'uid': uid,
-			  'page': form.page.value.trim(),
-			  'comment': form.comment.value.trim(),
-			  'diffs': diffs,
-			  'warnings': warnings,
-			  'resolves': resolves
+			  var an3Parameters = {
+				'uid': uid,
+				'page': form.page.value.trim(),
+				'comment': form.comment.value.trim(),
+				'diffs': diffs,
+				'warnings': warnings,
+				'resolves': resolves,
+				'free_resolves': free_resolves
+			  };
+
+			  Morebits.simpleWindow.setButtonsEnabled( false );
+			  Morebits.status.init( form );
+			  Twinkle.arv.processAN3( an3Parameters );
 			};
-			console.log("Result:", an3Parameters);
 
-			Morebits.simpleWindow.setButtonsEnabled( false );
-			Morebits.status.init( form );
-			Twinkle.arv.processAN3( an3Parameters );
+			if(free_resolves) {
+			  var oldid=mw.util.getParamValue('oldid',free_resolves);
+			  var api = new mw.Api();
+			  api.get({
+				action: 'query',
+				prop: 'revisions',
+				format: 'json',
+				rvprop: 'ids|timestamp|comment',
+				indexpageids: true,
+				revids: oldid
+			  }).done(function(data){
+				var pageid = data.query.pageids[0];
+				var page = data.query.pages[pageid];
+				an3_next(page);
+			  }).fail(function(data){
+				console.log( 'API failed :(', error );
+			  });
+			} else {
+			  an3_next();
+			}
 			break;
 	}
 };
@@ -842,6 +881,12 @@ Twinkle.arv.processAN3 = function( params ) {
 	var resolvetext = params.resolves.reverse().map(function(v){
 	  return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).format('lll') + '}} "' + v.comment + '"';
 	}).join("\n");
+
+	if(params.free_resolves) {
+	  var page = params.free_resolves;
+	  var rev = page.revisions[0];
+	  resolvetext += "\n# " + ' {{diff2|' + rev.revid + '|' + moment(rev.timestamp).format('lll') + ' on ' + page.title +  '}} "' + rev.comment + '"';
+	}
 
 	var comment = params.comment.replace(/~*$/g, '').trim();
 
