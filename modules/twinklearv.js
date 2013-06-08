@@ -831,15 +831,15 @@ Twinkle.arv.processAN3 = function( params ) {
 		var label = "Consecutive edits made from " + moment(first.timestamp).format('lll') + " to " + moment(last.timestamp).format('lll');
 		ret = "# {{diff|oldid="+first.parentid+"|diff="+last.revid+"|label="+label+"}}\n";
 	  }
-	  ret += sub.map(function(v){
+	  ret += sub.reverse().map(function(v){
 		return (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + moment(v.timestamp).format('lll') + '}} "' + v.comment + '"';
 	  }).join("\n");
 	  return ret;
 	}).join("\n");
-	var warningtext = params.warnings.map(function(v){
+	var warningtext = params.warnings.reverse().map(function(v){
 	  return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).format('lll') + '}} "' + v.comment + '"';
 	}).join("\n");
-	var resolvetext = params.resolves.map(function(v){
+	var resolvetext = params.resolves.reverse().map(function(v){
 	  return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).format('lll') + '}} "' + v.comment + '"';
 	}).join("\n");
 
