@@ -51,18 +51,10 @@ Morebits.userIsInGroup = function ( group ) {
  * **************** Morebits.isIPAddress() ****************
  * Helper function: Returns true if given string contains a valid IPv4 or
  * IPv6 address
- *
- * This is copied from mediaWiki.util
  */
 
-Morebits.RE_IP_ADD = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[0-9]?[0-9])$/;
-Morebits.RE_IPV6_ADD = /^(?::(?::|(?::[0-9A-Fa-f]{1,4}){1,7})|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){0,6}::|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){7})$/;
-Morebits.RE_IPV6_ADD2 = /^[0-9A-Fa-f]{1,4}(?:::?[0-9A-Fa-f]{1,4}){1,6}$/;
-
 Morebits.isIPAddress = function ( address ) {
-	return address.search( Morebits.RE_IP_ADD ) !== -1 ||  // IPv4
-		address.search( Morebits.RE_IPV6_ADD ) !== -1 ||  // IPv6
-		(address.search( Morebits.RE_IPV6_ADD2 ) !== -1	&& address.search( /::/ ) !== -1 && address.search( /::.*::/ ) === -1);
+  return mw.util.isIPv4Address(address) || mw.util.isIPv6Address(address);
 }
 
 
