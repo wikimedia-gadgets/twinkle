@@ -538,6 +538,11 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
+			if (!pageobj.exists()) {
+				statelem.error("It seems that the page doesn't exist; perhaps it has already been deleted");
+				return;
+			}
+
 			// Check for existing AfD tag, for the benefit of new page patrollers
 			var textNoAfd = text.replace(/\{\{\s*(Article for deletion\/dated|AfDM)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, "");
 			if (text !== textNoAfd) {
