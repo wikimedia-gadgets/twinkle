@@ -200,6 +200,10 @@ Twinkle.warn.messages = {
 				label:"Not assuming good faith",
 				summary:"General note: Not assuming good faith"
 			},
+			"uw-harass1": {
+				label:"Harassment of other users",
+				summary:"General note: Harassment of other users"
+			},
 			"uw-npa1": {
 				label:"Personal attack directed at a specific editor",
 				summary:"General note: Personal attack directed at a specific editor"
@@ -353,6 +357,10 @@ Twinkle.warn.messages = {
 			"uw-agf2": {
 				label:"Not assuming good faith",
 				summary:"Caution: Not assuming good faith"
+			},
+			"uw-harass2": {
+				label:"Harassment of other users",
+				summary:"Caution: Harassment of other users"
 			},
 			"uw-npa2": {
 				label:"Personal attack directed at a specific editor",
@@ -508,6 +516,10 @@ Twinkle.warn.messages = {
 				label:"Not assuming good faith",
 				summary:"Warning: Not assuming good faith"
 			},
+			"uw-harass3": {
+				label:"Harassment of other users",
+				summary:"Warning: Harassment of other users"
+			},
 			"uw-npa3": {
 				label:"Personal attack directed at a specific editor",
 				summary:"Warning: Personal attack directed at a specific editor"
@@ -642,6 +654,10 @@ Twinkle.warn.messages = {
 			}
 		},
 		"Behavior towards other editors": {
+			"uw-harass4": {
+				label:"Harassment of other users",
+				summary:"Final warning: Harassment of other users"
+			},
 			"uw-npa4": {
 				label:"Personal attack directed at a specific editor",
 				summary:"Final warning: Personal attack directed at a specific editor"
@@ -752,6 +768,10 @@ Twinkle.warn.messages = {
 			}
 		},
 		"Behavior towards other editors": {
+			"uw-harass4im": {
+				label:"Harassment of other users",
+				summary:"Only warning: Harassment of other users"
+			},
 			"uw-npa4im": {
 				label:"Personal attack directed at a specific editor",
 				summary:"Only warning: Personal attack directed at a specific editor"
