@@ -170,7 +170,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 
 	if ((type === "standard" || type === "anonymous") && Twinkle.getFriendlyPref("customWelcomeList").length) {
 		div.append({ type: 'header', label: 'Custom welcome templates' });
-		div.append({ 
+		div.append({
 			type: 'radio',
 			name: 'template',
 			list: Twinkle.getFriendlyPref("customWelcomeList"),
@@ -179,12 +179,12 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 	}
 
 	var appendTemplates = function(list) {
-		div.append({ 
+		div.append({
 			type: 'radio',
 			name: 'template',
 			list: list.map(function(obj) {
 				var properties = Twinkle.welcome.templates[obj];
-				var result = (properties ? { 
+				var result = (properties ? {
 					value: obj,
 					label: "{{" + obj + "}}: " + properties.description + (properties.linkedArticle ? "\u00A0*" : ""),  // U+00A0 NO-BREAK SPACE
 					tooltip: properties.tooltip  // may be undefined
@@ -210,7 +210,8 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcome-screen",
 				"welcome-belated",
 				"welcome student",
-				"welcome teacher"
+				"welcome teacher",
+				"welcome non-latin"
 			]);
 			div.append({ type: 'header', label: 'Problem user welcome templates' });
 			appendTemplates([
@@ -313,6 +314,8 @@ Twinkle.welcome.selectTemplate = function(e) {
 //   - $HEADER$    - adds a level 2 header (most templates already include this)
 
 Twinkle.welcome.templates = {
+	// GENERAL WELCOMES
+
 	"welcome": {
 		description: "standard welcome",
 		linkedArticle: true,
@@ -358,6 +361,14 @@ Twinkle.welcome.templates = {
 		linkedArticle: false,
 		syntax: "$HEADER$ {{subst:welcome teacher|$USERNAME$}} ~~~~"
 	},
+	"welcome non-latin": {
+		description: "welcome for users with a username containing non-Latin characters",
+		linkedArticle: false,
+		syntax: "{{subst:welcome non-latin|$USERNAME$}} ~~~~"
+	},
+
+	// PROBLEM USER WELCOMES
+
 	"welcomelaws": {
 		description: "welcome with information about copyrights, NPOV, the sandbox, and vandalism",
 		linkedArticle: false,
@@ -643,7 +654,7 @@ Twinkle.welcome.getTemplateWikitext = function(template, article) {
 			replace(/\$HEADER\$\s*/, "== Welcome ==\n\n").
 			replace("$EXTRA$", "");  // EXTRA is not implemented yet
 	} else {
-		return "{{subst:" + template + (article ? ("|art=" + article) : "") + "}}" + 
+		return "{{subst:" + template + (article ? ("|art=" + article) : "") + "}}" +
 			(Twinkle.getFriendlyPref("customWelcomeSignature") ? " ~~~~" : "");
 	}
 };

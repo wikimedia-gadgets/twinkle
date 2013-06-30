@@ -13,7 +13,7 @@
  * Config directives in:   TwinkleConfig
  */
 
-Twinkle.diff = function twinklediff() { 
+Twinkle.diff = function twinklediff() {
 	if( mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') ) {
 		return;
 	}
@@ -58,7 +58,7 @@ Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 		'prop': 'revisions',
 		'action': 'query',
 		'titles': mw.config.get('wgPageName'),
-		'rvlimit': 1, 
+		'rvlimit': 1,
 		'rvprop': [ 'ids', 'user' ],
 		'rvstartid': mw.config.get('wgCurRevisionId') - 1, // i.e. not the current one
 		'rvuser': user

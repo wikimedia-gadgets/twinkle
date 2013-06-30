@@ -705,9 +705,9 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{subst:tfm|help=off|" +
-				(params.tfdinline ? "type=inline|1=" : "1=") + params.otherTemplateName.replace(/^Template:/, "") + 
+				(params.tfdinline ? "type=inline|1=" : "1=") + params.otherTemplateName.replace(/^Template:/, "") +
 				(params.noinclude ? "}}</noinclude>" : "}}\n") + text);
-			pageobj.setEditSummary("Nominated for merging with [[" + params.otherTemplateName + "]]; see [[" + 
+			pageobj.setEditSummary("Nominated for merging with [[" + params.otherTemplateName + "]]; see [[" +
 				params.logpage + "#" + mw.config.get('wgPageName') + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
@@ -1536,7 +1536,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			params.otherTemplateName = "Template:" + xfdtarget;
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);
-			
+
 			// Tag other template
 			wikipedia_page = new Morebits.wiki.page("Template:" + xfdtarget, "Tagging other template with merge tag");
 			wikipedia_page.setFollowRedirect(true);
@@ -1566,7 +1566,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 			thispage.setCallbackParameters(params);
 			thispage.lookupCreator(Twinkle.xfd.callbacks.tfd.userNotification);
-			
+
 			// Nice try, but what if the two page creators are the same user?
 			// Also, other XFD types don't do this... yet!
 			//if (xfdcat === "tfm") {
@@ -1678,7 +1678,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 				Morebits.wiki.removeCheckpoint();
 				break;
-				
+
 			default:
 				// Updating data for the action completed event
 				Morebits.wiki.actionCompleted.redirect = logpage;

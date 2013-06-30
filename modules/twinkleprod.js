@@ -107,11 +107,11 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 			break;
 
 		case 'prodblp':
-		  // first, remember the prod value that the user entered in the textarea, in case he wants to switch back. We can abuse the config field for that.
-		  if (event.target.form.reason) {
+			// first, remember the prod value that the user entered in the textarea, in case he wants to switch back. We can abuse the config field for that.
+			if (event.target.form.reason) {
 				Twinkle.prod.defaultReason = event.target.form.reason.value;
 			}
-		
+
 			field.append( {
 					type: 'checkbox',
 					list: [
@@ -141,7 +141,7 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 				});
 			}
 			break;
-			
+
 		default:
 			break;
 	}
@@ -157,7 +157,7 @@ Twinkle.prod.callbacks = {
 			statelem.error( "It seems that the page doesn't exist.  Perhaps it has already been deleted." );
 			return;
 		}
-		
+
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
 

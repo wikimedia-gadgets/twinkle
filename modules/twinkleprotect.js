@@ -124,16 +124,17 @@ Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtec
 		}
 	});
 
+	var boldnode;
 	var $flagged = $(xml).find('flagged');
 	if ($flagged.length) {
-		var boldnode = document.createElement('b');
+		boldnode = document.createElement('b');
 		// impossible for now to determine the PC level/expiry using API; bug 24068
 		boldnode.textContent = "Pending changes: enabled";
 		result.push(boldnode);
 	}
 
 	if (!result.length) {
-		var boldnode = document.createElement('b');
+		boldnode = document.createElement('b');
 		boldnode.textContent = "no protection";
 		result.push(boldnode);
 	}
@@ -814,7 +815,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				form.movemodify.checked = false;
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 			}
-			
+
 			if (item.stabilize) {
 				form.pcmodify.checked = true;
 				Twinkle.protect.formevents.pcmodify({ target: form.pcmodify });
@@ -899,8 +900,8 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 
 			var statusInited = false;
 			var thispage;
-			
-			var allDone = function twinkleprotectCallbackAllDone() { 
+
+			var allDone = function twinkleprotectCallbackAllDone() {
 				if (thispage) {
 					thispage.getStatusElement().info("done");
 				}
@@ -921,7 +922,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				} else {
 					thispage.setCreateProtection(form.createlevel.value, form.createexpiry.value);
 				}
-				
+
 				if (form.protectReason.value) {
 					thispage.setEditSummary(form.protectReason.value);
 				} else {
@@ -937,7 +938,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 
 				thispage.protect(next);
 			};
-			
+
 			var stabilizeIt = function twinkleprotectCallbackStabilizeIt() {
 				if (thispage) {
 					thispage.getStatusElement().info("done");
@@ -945,7 +946,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 
 				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), "Applying pending changes protection");
 				thispage.setFlaggedRevs(form.pclevel.value, form.pcexpiry.value);
-				
+
 				if (form.protectReason.value) {
 					thispage.setEditSummary(form.protectReason.value);
 				} else {
@@ -961,8 +962,8 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 
 				thispage.stabilize(allDone);
 			};
-			
-			if ((form.editmodify && form.editmodify.checked) || (form.movemodify && form.movemodify.checked) || 
+
+			if ((form.editmodify && form.editmodify.checked) || (form.movemodify && form.movemodify.checked) ||
 				!mw.config.get('wgArticleId')) {
 				if (form.pcmodify && form.pcmodify.checked) {
 					protectIt(stabilizeIt);
@@ -974,7 +975,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			} else {
 				alert("Please give Twinkle something to do! \nIf you just want to tag the page, you can choose the 'Tag page with protection template' option at the top.");
 			}
-			
+
 			break;
 
 		case 'tag':

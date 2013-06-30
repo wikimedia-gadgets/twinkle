@@ -315,7 +315,7 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 	innerDiv.appendChild( ul );
 
 	return outerDiv;
-}
+};
 
 
 /**
@@ -336,7 +336,7 @@ Twinkle.addPortletLink = function( task, text, id, tooltip )
 		});
 	}
 	return link;
-}
+};
 /**
  * General initialization code
  */

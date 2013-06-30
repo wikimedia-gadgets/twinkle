@@ -102,11 +102,11 @@ Twinkle.shared.standardList = [
 		label: '{{Static IP}}: shared IP address template modified for static IP addresses',
 		value: 'Static IP'
 	},
-	{ 
+	{
 		label: '{{ISP}}: shared IP address template modified for ISP organizations (specifically proxies)',
 		value: 'ISP'
 	},
-	{ 
+	{
 		label: '{{Mobile IP}}: shared IP address template modified for mobile phone companies and their customers',
 		value: 'Mobile IP'
 	},
@@ -166,14 +166,14 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 		alert( 'You must select a shared IP address template to use!' );
 		return;
 	}
-	
+
 	var value = shared[0];
-	
+
 	if( e.target.organization.value === '') {
 		alert( 'You must input an organization for the {{' + value + '}} template!' );
 		return;
 	}
-	
+
 	var params = {
 		value: value,
 		organization: e.target.organization.value,

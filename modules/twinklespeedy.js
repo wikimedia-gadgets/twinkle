@@ -199,7 +199,7 @@ Twinkle.speedy.callback.dbMultipleChanged = function twinklespeedyCallbackDbMult
 
 	var radioOrCheckbox = (value ? 'checkbox' : 'radio');
 
-	if (namespace % 2 === 1 && namespace !== 3) {  
+	if (namespace % 2 === 1 && namespace !== 3) {
 		// show db-talk on talk pages, but not user talk pages
 		work_area.append( { type: 'header', label: 'Talk pages' } );
 		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.talkList } );
@@ -799,7 +799,7 @@ Twinkle.speedy.callbacks = {
 			var thispage;
 
 			Morebits.wiki.addCheckpoint();  // prevent actionCompleted from kicking in until user interaction is done
-			
+
 			// look up initial contributor. If prompting user for deletion reason, just display a link.
 			// Otherwise open the talk page directly
 			if( params.openusertalk ) {
@@ -827,7 +827,7 @@ Twinkle.speedy.callbacks = {
 				return;
 			}
 			thispage.setEditSummary( reason + Twinkle.getPref('deletionSummaryAd') );
-			thispage.deletePage(function() { 
+			thispage.deletePage(function() {
 				thispage.getStatusElement().info("done");
 				Twinkle.speedy.callbacks.sysop.deleteTalk( params );
 			});
@@ -836,14 +836,14 @@ Twinkle.speedy.callbacks = {
 		deleteTalk: function( params ) {
 			// delete talk page
 			if (params.deleteTalkPage &&
-			    params.normalized !== 'f8' &&
-			    document.getElementById( 'ca-talk' ).className !== 'new') {
+					params.normalized !== 'f8' &&
+					document.getElementById( 'ca-talk' ).className !== 'new') {
 				var talkpage = new Morebits.wiki.page( Morebits.wikipedia.namespaces[ mw.config.get('wgNamespaceNumber') + 1 ] + ':' + mw.config.get('wgTitle'), "Deleting talk page" );
 				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page "' + mw.config.get('wgPageName') + '"' + Twinkle.getPref('deletionSummaryAd'));
 				talkpage.deletePage();
 				// this is ugly, but because of the architecture of wiki.api, it is needed
 				// (otherwise success/failure messages for the previous action would be suppressed)
-				window.setTimeout(function() { Twinkle.speedy.callbacks.sysop.deleteRedirects( params ) }, 1800);
+				window.setTimeout(function() { Twinkle.speedy.callbacks.sysop.deleteRedirects( params ); }, 1800);
 			} else {
 				Twinkle.speedy.callbacks.sysop.deleteRedirects( params );
 			}
@@ -1026,7 +1026,7 @@ Twinkle.speedy.callbacks = {
 						breakFlag = true;
 						return false;  // the user aborted
 					}
-					for (i in parameters) {
+					for (var i in parameters) {
 						if (typeof parameters[i] === 'string' && !parseInt(i, 10)) {  // skip numeric parameters - {{db-multiple}} doesn't understand them
 							code += "|" + i + "=" + parameters[i];
 						}

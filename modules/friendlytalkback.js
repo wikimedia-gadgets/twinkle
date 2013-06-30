@@ -40,7 +40,7 @@ Twinkle.talkback.callback = function( ) {
 					{
 						label: "Talkback: my talk page",
 						value: "mytalk",
-						checked: "true" 
+						checked: "true"
 					},
 					{
 						label: "Talkback: other user talk page",

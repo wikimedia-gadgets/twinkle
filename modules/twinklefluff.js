@@ -276,8 +276,8 @@ Twinkle.fluff.callbacks = {
 			}
 			var summary = "Reverted to revision " + revertToRevID + " by " + revertToUser + (optional_summary ? ": " + optional_summary : '') + "." +
 				Twinkle.getPref('summaryAd');
-		
-			var query = { 
+
+			var query = {
 				'action': 'edit',
 				'title': mw.config.get('wgPageName'),
 				'summary': summary,
@@ -335,7 +335,7 @@ Twinkle.fluff.callbacks = {
 					return;
 				}
 			}
-			else if(self.params.type === 'vand' && 
+			else if(self.params.type === 'vand' &&
 					Twinkle.fluff.whiteList.indexOf( top.getAttribute( 'user' ) ) !== -1 && revs.length > 1 &&
 					revs[1].getAttribute( 'pageId' ) === self.params.revid) {
 				Morebits.status.info( 'Info', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', lastuser ), ', a trusted bot, and the revision before was made by our vandal, so we proceed with the revert.' ] );
@@ -422,7 +422,7 @@ Twinkle.fluff.callbacks = {
 			userHasAlreadyConfirmedAction = true;
 
 			userstr = self.params.user;
-			summary = "Reverted [[WP:AGF|good faith]] edits by [[Special:Contributions/" + userstr + "|" + userstr + "]] ([[User talk:" + 
+			summary = "Reverted [[WP:AGF|good faith]] edits by [[Special:Contributions/" + userstr + "|" + userstr + "]] ([[User talk:" +
 				userstr + "|talk]])" + Twinkle.fluff.formatSummaryPostfix(extra_summary) + Twinkle.getPref('summaryAd');
 			break;
 
@@ -449,7 +449,7 @@ Twinkle.fluff.callbacks = {
 			}
 
 			userstr = self.params.user;
-			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" + 
+			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" +
 				userstr + "|" + userstr + "]] ([[User talk:" + userstr + "|talk]])" + Twinkle.fluff.formatSummaryPostfix(extra_summary) +
 				Twinkle.getPref('summaryAd');
 			break;
@@ -461,11 +461,11 @@ Twinkle.fluff.callbacks = {
 		}
 
 		var query;
-		if( (!self.params.autoRevert || Twinkle.getPref('openTalkPageOnAutoRevert')) && 
+		if( (!self.params.autoRevert || Twinkle.getPref('openTalkPageOnAutoRevert')) &&
 				Twinkle.getPref('openTalkPage').indexOf( self.params.type ) !== -1 &&
 				mw.config.get('wgUserName') !== self.params.user ) {
 			Morebits.status.info( 'Info', [ 'Opening user talk page edit form for user ', Morebits.htmlNode( 'strong', self.params.user ) ] );
-			
+
 			query = {
 				'title': 'User talk:' + self.params.user,
 				'action': 'edit',
@@ -487,13 +487,13 @@ Twinkle.fluff.callbacks = {
 			case 'window':
 				/* falls through */
 			default:
-				window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), 
+				window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ),
 					( window.name === 'twinklewarnwindow' ? '_blank' : 'twinklewarnwindow' ),
 					'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 				break;
 			}
 		}
-		
+
 		query = {
 			'action': 'edit',
 			'title': self.params.pagename,

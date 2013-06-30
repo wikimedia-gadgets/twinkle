@@ -15,9 +15,9 @@
 
 Twinkle.image = function twinkleimage() {
 	if (mw.config.get('wgNamespaceNumber') === 6 &&
-	    !document.getElementById("mw-sharedupload") &&
-	    document.getElementById("mw-imagepage-section-filehistory")) {
-		
+			!document.getElementById("mw-sharedupload") &&
+			document.getElementById("mw-imagepage-section-filehistory")) {
+
 		Twinkle.addPortletLink(Twinkle.image.callback, "DI", "tw-di", "Nominate file for delayed speedy deletion");
 	}
 };
