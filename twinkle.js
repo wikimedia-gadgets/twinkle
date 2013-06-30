@@ -347,9 +347,10 @@ var scriptpathbefore = mw.util.wikiScript( "index" ) + "?title=",
 // Retrieve the user's Twinkle preferences
 $.ajax({
 	url: scriptpathbefore + "User:" + encodeURIComponent( mw.config.get("wgUserName")) + "/twinkleoptions.js" + scriptpathafter,
-	dataType: "text",
-	error: function () { mw.util.jsMessage( "Could not load twinkleoptions.js" ); },
-	success: function ( optionsText ) {
+	dataType: "text"
+})
+	.fail(function () {	mw.util.jsMessage( "Could not load twinkleoptions.js" ); })
+	.done(function ( optionsText ) {
 
 		// Quick pass if user has no options
 		if ( optionsText === "" ) {
@@ -385,11 +386,10 @@ $.ajax({
 		catch ( e ) {
 			mw.util.jsMessage("Could not parse twinkleoptions.js");
 		}
-	},
-	complete: function () {
+	})
+	.always(function () {
 		$( Twinkle.load );
-	}
-});
+	});
 
 // Developers: you can import custom Twinkle modules here
 // For example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);

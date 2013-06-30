@@ -1349,9 +1349,11 @@ Morebits.wiki.api.prototype = {
 			type: 'POST',
 			url: mw.util.wikiScript('api'),
 			data: Morebits.queryString.create(this.query),
-			datatype: 'xml',
+			datatype: 'xml'
+		}, callerAjaxParameters );
 
-			success: function(xml, statusText, jqXHR) {
+		return $.ajax( ajaxparams ).done(
+			function(xml, statusText, jqXHR) {
 				this.statusText = statusText;
 				this.responseXML = xml;
 				this.errorCode = $(xml).find('error').attr('code');
@@ -1375,19 +1377,16 @@ Morebits.wiki.api.prototype = {
 				}
 
 				Morebits.wiki.actionCompleted();
-			},
-
+			}
+		).fail(
 			// only network and server errors reach here – complaints from the API itself are caught in success()
-			error: function(jqXHR, statusText, errorThrown) {
+			function(jqXHR, statusText, errorThrown) {
 				this.statusText = statusText;
 				this.errorThrown = errorThrown; // frequently undefined
 				this.errorText = statusText + ' "' + jqXHR.statusText + '" occurred while contacting the API.';
 				this.returnError();
 			}
-
-		}, callerAjaxParameters );
-
-		return $.ajax( ajaxparams );  // the return value should be ignored, unless using callerAjaxParameters with |async: false|
+		);  // the return value should be ignored, unless using callerAjaxParameters with |async: false|
 	},
 
 	returnError: function() {
