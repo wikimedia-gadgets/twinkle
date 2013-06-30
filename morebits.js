@@ -1489,6 +1489,11 @@ Morebits.wiki.api.prototype = {
  *       true  - When save is called, the resulting edit will be marked as "minor".
  *       false - When save is called, the resulting edit will not be marked as "minor". (default)
  *
+ * setBotEdit(botEdit) 
+ *    botEdit is a boolean value:
+ *       true  - When save is called, the resulting edit will be marked as "bot".
+ *       false - When save is called, the resulting edit will not be marked as "bot". (default)
+ *
  * setPageSection(pageSection)
  *    pageSection - integer specifying the section number to load or save. The default is |null|, which means
  *                  that the entire page will be retrieved.
@@ -1621,6 +1626,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		prependText: null,  // can't reuse pageText for this because pageText is needed to follow a redirect
 		createOption: null,
 		minorEdit: false,
+		botEdit: false,
 		pageSection: null,
 		maxConflictRetries: 2,
 		maxRetries: 2,
@@ -1718,6 +1724,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	this.setMinorEdit = function(minorEdit) {
 		ctx.minorEdit = minorEdit;
+	};
+
+	this.setBotEdit = function(botEdit) {
+		ctx.botEdit = botEdit;
 	};
 
 	this.setPageSection = function(pageSection) {
@@ -1905,6 +1915,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.minor = true;
 		} else {
 			query.notminor = true;  // force Twinkle config to override user preference setting for "all edits are minor"
+		}
+
+		// Set bot edit attribute. If this paramter is present with any value, it is interpreted as true
+		if (ctx.botEdit) {
+			query.bot = true;
 		}
 
 		switch (ctx.editMode) {
