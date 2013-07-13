@@ -377,7 +377,7 @@ var callback_evaluate = function( e ) {
 		text += section + "|ts=~~~~~}}";
 
 		if( message ) {
-			text += "\n" + message + "  ~~~~";
+			text += "\n" + message.trim() + "  ~~~~";
 		} else if( Twinkle.getFriendlyPref("insertTalkbackSignature") ) {
 			text += "\n~~~~";
 		}
@@ -396,7 +396,7 @@ var callback_evaluate = function( e ) {
 		text += "|ts=~~~~~}}";
 
 		if( message ) {
-			text += "\n" + message + "  ~~~~";
+			text += "\n" + message.trim() + " ~~~~";
 		} else if( Twinkle.getFriendlyPref("insertTalkbackSignature") ) {
 			text += "\n~~~~";
 		}

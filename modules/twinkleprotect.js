@@ -1243,7 +1243,8 @@ Twinkle.protect.callbacks = {
 
 		words += params.typename;
 
-		newtag += "'''" + Morebits.string.toUpperCaseFirstChar(words) + ( params.reason !== '' ? ":''' " + params.reason : ".'''" ) + " ~~~~";
+		newtag += "'''" + Morebits.string.toUpperCaseFirstChar(words) + ( params.reason !== '' ? ( ":''' " + 
+			Morebits.string.formatReasonText(params.reason) ) : ".'''" ) + " ~~~~";
 
 		var reg;
 		if ( params.category === 'unprotect' ) {

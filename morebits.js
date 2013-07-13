@@ -962,6 +962,10 @@ Morebits.string = {
 		}
 
 		return result;
+	},
+	// for deletion/other templates taking a freeform "reason" from a textarea (e.g. PROD, XFD, RPP)
+	formatReasonText: function( str ) {
+		return str.toString().trimRight().replace(/\|/g, "{{subst:!}}");
 	}
 };
 
