@@ -895,22 +895,20 @@ Morebits.bytes.prototype.toString = function( magnitude ) {
  */
 
 if (!String.prototype.trimLeft) {
-	String.prototype.trimLeft = function stringPrototypeLtrim( chars ) {
-		chars = chars || "\\s";
-		return this.replace( new RegExp("^[" + chars + "]+", "g"), "" );
+	String.prototype.trimLeft = function stringPrototypeLtrim( ) {
+		return this.replace( /^[\s]+/g, "" );
 	};
 }
 
 if (!String.prototype.trimRight) {
-	String.prototype.trimRight = function stringPrototypeRtrim( chars ) {
-		chars = chars || "\\s";
-		return this.replace( new RegExp("[" + chars + "]+$", "g"), "" );
+	String.prototype.trimRight = function stringPrototypeRtrim( ) {
+		return this.replace( /[\s]+$/g, "" );
 	};
 }
 
 if (!String.prototype.trim) {
-	String.prototype.trim = function stringPrototypeTrim( chars ) {
-		return this.trimRight(chars).trimLeft(chars);
+	String.prototype.trim = function stringPrototypeTrim( ) {
+		return this.trimRight().trimLeft();
 	};
 }
 
