@@ -104,7 +104,7 @@ Twinkle.talkback.callback.optoutStatus = function(apiobj) {
 	var $el = $(xml).find('el');
 
 	if ($el.length) {
-		Twinkle.talkback.optout = mw.config.get("wgUserName") + " prefers not to receive talkbacks";
+		Twinkle.talkback.optout = Morebits.getPageAssociatedUser() + " prefers not to receive talkbacks";
 		var url = $el.text();
 		if (url.indexOf("reason=") > -1) {
 			Twinkle.talkback.optout += ": " + decodeURIComponent(url.substring(url.indexOf("reason=") + 7)) + ".";
