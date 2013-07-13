@@ -867,25 +867,25 @@ Twinkle.arv.processAN3 = function( params ) {
 	  if(sub.length >= 2) {
 		var last = sub[0];
 		var first = sub.slice(-1)[0];
-		var label = "Consecutive edits made from " + moment(first.timestamp).format('lll') + " to " + moment(last.timestamp).format('lll');
+		var label = "Consecutive edits made from " + moment(first.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + " to " + moment(last.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]');
 		ret = "# {{diff|oldid="+first.parentid+"|diff="+last.revid+"|label="+label+"}}\n";
 	  }
 	  ret += sub.reverse().map(function(v){
-		return (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + moment(v.timestamp).format('lll') + '}} "' + v.comment + '"';
+		return (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + moment(v.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + '}} "' + v.comment + '"';
 	  }).join("\n");
 	  return ret;
 	}).reverse().join("\n");
 	var warningtext = params.warnings.reverse().map(function(v){
-	  return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).format('lll') + '}} "' + v.comment + '"';
+	  return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + '}} "' + v.comment + '"';
 	}).join("\n");
 	var resolvetext = params.resolves.reverse().map(function(v){
-	  return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).format('lll') + '}} "' + v.comment + '"';
+	  return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + '}} "' + v.comment + '"';
 	}).join("\n");
 
 	if(params.free_resolves) {
 	  var page = params.free_resolves;
 	  var rev = page.revisions[0];
-	  resolvetext += "\n# " + ' {{diff2|' + rev.revid + '|' + moment(rev.timestamp).format('lll') + ' on ' + page.title +  '}} "' + rev.comment + '"';
+	  resolvetext += "\n# " + ' {{diff2|' + rev.revid + '|' + moment(rev.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + ' on ' + page.title +  '}} "' + rev.comment + '"';
 	}
 
 	var comment = params.comment.replace(/~*$/g, '').trim();
