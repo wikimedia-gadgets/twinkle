@@ -1203,7 +1203,14 @@ Twinkle.protect.callbacks = {
 			'109': 'lbt'
 		};
 
-		var rppRe = new RegExp( '====\\s*\\{\\{\\s*' + ns2tag[ mw.config.get('wgNamespaceNumber') ] + '\\s*\\|\\s*' + RegExp.escape( mw.config.get('wgTitle'), true ) + '\\s*\\}\\}\\s*====', 'm' );
+		var linkTemplate = ns2tag[ mw.config.get('wgNamespaceNumber') ];
+		// support other namespaces like TimedText
+		// (this could support talk spaces better, but doesn't seem worth it)
+		if (!linkTemplate) {
+			linkTemplate = 'ln|' + mw.config.get('wgPageName').replace(/_/g, ' ').substring(0, mw.config.get('wgPageName').indexOf(':'));
+		}
+
+		var rppRe = new RegExp( '====\\s*\\{\\{\\s*' + linkTemplate + '\\s*\\|\\s*' + RegExp.escape( mw.config.get('wgTitle'), true ) + '\\s*\\}\\}\\s*====', 'm' );
 		var tag = rppRe.exec( text );
 
 		var rppLink = document.createElement('a');
@@ -1215,7 +1222,7 @@ Twinkle.protect.callbacks = {
 			return;
 		}
 
-		var newtag = '==== {{' + ns2tag[ mw.config.get('wgNamespaceNumber') ] + '|' + mw.config.get('wgTitle') +  '}} ====' + "\n";
+		var newtag = '==== {{' + linkTemplate + '|' + mw.config.get('wgTitle') + '}} ====' + "\n";
 		if( ( new RegExp( '^' + RegExp.escape( newtag ).replace( /\s+/g, '\\s*' ), 'm' ) ).test( text ) ) {
 			statusElement.error( [ 'There is already a protection request for this page at ', rppLink, ', aborting.' ] );
 			return;
