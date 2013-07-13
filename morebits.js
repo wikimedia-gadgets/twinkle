@@ -1058,6 +1058,15 @@ Morebits.getPageAssociatedUser = function(){
 
 
 /**
+ * **************** Morebits.pageNameNorm ****************
+ * Stores a normalized version of the wgPageName variable (underscores converted to spaces).
+ * For queen/king/whatever and country!
+ */
+Morebits.pageNameNorm = mw.config.get('wgPageName').replace(/_/g, ' ');
+
+
+
+/**
  * **************** Morebits.unbinder ****************
  * Used by Morebits.wikitext.page.commentOutImage
  */

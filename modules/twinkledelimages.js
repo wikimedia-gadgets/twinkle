@@ -114,7 +114,6 @@ Twinkle.delimages.currentDeleteCounter = 0;
 Twinkle.delimages.currentUnlinkCounter = 0;
 Twinkle.delimages.currentdeletor = 0;
 Twinkle.delimages.callback.evaluate = function twinkledeliCallbackEvaluate(event) {
-	mw.config.set('wgPageName', mw.config.get('wgPageName').replace(/_/g, ' '));  // for queen/king/whatever and country!
 	var images = event.target.getChecked( 'images' );
 	var reason = event.target.reason.value;
 	var delete_image = event.target.delete_image.checked;

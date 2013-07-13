@@ -1207,7 +1207,7 @@ Twinkle.protect.callbacks = {
 		// support other namespaces like TimedText
 		// (this could support talk spaces better, but doesn't seem worth it)
 		if (!linkTemplate) {
-			linkTemplate = 'ln|' + mw.config.get('wgPageName').replace(/_/g, ' ').substring(0, mw.config.get('wgPageName').indexOf(':'));
+			linkTemplate = 'ln|' + Morebits.pageNameNorm.substring(0, Morebits.pageNameNorm.indexOf(':'));
 		}
 
 		var rppRe = new RegExp( '====\\s*\\{\\{\\s*' + linkTemplate + '\\s*\\|\\s*' + RegExp.escape( mw.config.get('wgTitle'), true ) + '\\s*\\}\\}\\s*====', 'm' );
@@ -1263,7 +1263,8 @@ Twinkle.protect.callbacks = {
 			return;
 		}
 		statusElement.status( 'Adding new request...' );
-		rppPage.setEditSummary( "Requesting " + params.typename + ' of [[' + mw.config.get('wgPageName').replace(/_/g, ' ') + ']].' + Twinkle.getPref('summaryAd') );
+		rppPage.setEditSummary( "Requesting " + params.typename + (params.typename === "pending changes" ? ' on [[' : ' of [[') +
+			Morebits.pageNameNorm + ']].' + Twinkle.getPref('summaryAd') );
 		rppPage.setPageText( text );
 		rppPage.setCreateOption( 'recreate' );
 		rppPage.save();
