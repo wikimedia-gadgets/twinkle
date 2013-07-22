@@ -75,7 +75,7 @@ Twinkle.welcome.normal = function() {
 				var nHref = $nList.attr("href");
 
 				var nWelcomeNode = welcomeNode.cloneNode( true );
-				nWelcomeNode.firstChild.setAttribute( 'href', oHref + '&' + Morebits.queryString.create( { 
+				nWelcomeNode.firstChild.setAttribute( 'href', nHref + '&' + Morebits.queryString.create( { 
 						'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode') === 'auto' ? 'auto': 'norm', 
 						'vanarticle': Morebits.pageNameNorm 
 					} ) );
