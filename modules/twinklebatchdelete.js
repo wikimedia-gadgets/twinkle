@@ -78,7 +78,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		}
 		else
 		{
-			var pathSplit = decodeURI(location.pathname).split('/');
+			var pathSplit = decodeURIComonent(location.pathname).split('/');
 			if (pathSplit.length < 3 || pathSplit[2] !== "Special:PrefixIndex") {
 				return;
 			}
