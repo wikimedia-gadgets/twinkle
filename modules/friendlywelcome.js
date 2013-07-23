@@ -345,7 +345,7 @@ Twinkle.welcome.templates = {
 	"welcome-menu": {
 		description: "welcome message with large table of about 60 links",
 		linkedArticle: false,
-		syntax: "$HEADER$ {{subst:welcome-menu}}"
+		syntax: "{{subst:welcome-menu}}"
 	},
 	"welcome-screen": {
 		description: "welcome message with clear, annotated table of 10 links",
