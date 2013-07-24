@@ -1411,7 +1411,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var text = old_text.replace( /(<\!-- Add new entries directly below this line.? -->)/, "$1\n{{subst:rfd2|text=" +
+			var text = old_text.replace( /(<\!-- Add new entries directly below this line\.? -->)/, "$1\n{{subst:rfd2|text=" +
 				Morebits.string.formatReasonText(params.reason) + "|redirect="+ Morebits.pageNameNorm + "|target=" +
 				params.target + "}} ~~~~\n" );
 			if( text === old_text ) {
