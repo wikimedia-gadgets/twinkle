@@ -381,11 +381,10 @@ Twinkle.tag.article = {};
 
 Twinkle.tag.article.tags = {
 	"advert": "article is written like an advertisement",
-	"allplot": "article is almost entirely a plot summary",
+	"all plot": "article is almost entirely a plot summary",
 	"autobiography": "article is an autobiography and may not be written neutrally",
 	"BLP sources": "BLP article needs additional sources for verification",
 	"BLP unsourced": "BLP article has no sources at all (use BLP PROD instead for new articles)",
-	"cat improve": "article may require additional categories",
 	"citation style": "article has unclear or inconsistent inline citations",
 	"cleanup": "article may require cleanup",
 	"cleanup-reorganize": "article may be in need of reorganization to comply with Wikipedia's layout guidelines",
@@ -407,6 +406,7 @@ Twinkle.tag.article.tags = {
 	"globalize": "article may not represent a worldwide view of the subject",
 	"GOCEinuse": "article is currently undergoing a major copy edit by the Guild of Copy Editors",
 	"hoax": "article may be a complete hoax",
+	"improve categories": "article may require additional categories",
 	"in-universe": "article subject is fictional and needs rewriting from a non-fictional perspective",
 	"incoherent": "article is incoherent or very hard to understand",
 	"in use": "article is undergoing a major edit for a short while",
@@ -484,7 +484,7 @@ Twinkle.tag.article.tagCategories = {
 			"very long"
 		],
 		"Fiction-related cleanup": [
-			"allplot",
+			"all plot",
 			"fiction",
 			"in-universe",
 			"plot"
@@ -562,7 +562,7 @@ Twinkle.tag.article.tagCategories = {
 			"no footnotes"
 		],
 		"Categories": [
-			"cat improve",
+			"improve categories",
 			"uncategorized"
 		]
 	},
@@ -784,10 +784,10 @@ Twinkle.tag.file.replacementList = [
 
 // Contains those article tags that *do not* work inside {{multiple issues}}.
 Twinkle.tag.multipleIssuesExceptions = [
-	'cat improve',
 	'copypaste',
 	'expand language',
 	'GOCEinuse',
+	'improve categories',
 	'in use',
 	'merge',
 	'merge from',
@@ -811,7 +811,7 @@ Twinkle.tag.callbacks = {
 
 		var addTag = function friendlytagAddTag( tagIndex, tagName ) {
 			var currentTag = "";
-			if( tagName === 'uncategorized' || tagName === 'cat improve' ) {
+			if( tagName === 'uncategorized' || tagName === 'improve categories' ) {
 				pageText += '\n\n{{' + tagName +
 					'|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
 			} else {
