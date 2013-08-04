@@ -148,6 +148,17 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 	var oldreasontextbox = form.getElementsByTagName('textarea')[0];
 	var oldreason = (oldreasontextbox ? oldreasontextbox.value : '');
+	
+	var appendReasonBox = function twinklexfdAppendReasonBox() {
+		work_area.append( {
+			type: 'textarea',
+			name: 'xfdreason',
+			label: 'Reason: ',
+			value: oldreason,
+			tooltip: 'You can use wikimarkup in your reason. Twinkle will automatically sign your post.'
+		} );
+		// TODO possible future "preview" link here
+	};
 
 	switch( value ) {
 	case 'afd':
@@ -186,12 +197,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		afd_category.append( { type:'option', label:'Indiscernible or unclassifiable topic', value:'I' } );
 		afd_category.append( { type:'option', label:'Debate not yet sorted', value:'U' } );
 
-		work_area.append( {
-				type: 'textarea',
-				name: 'xfdreason',
-				label: 'Reason: ',
-				value: oldreason
-			} );
+		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -246,12 +252,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						}
 					]
 		} );
-		work_area.append( {
-				type: 'textarea',
-				name: 'xfdreason',
-				label: 'Reason: ',
-				value: oldreason
-			} );
+		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -286,12 +287,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					]
 			} );
 		}
-		work_area.append( {
-				type: 'textarea',
-				name: 'xfdreason',
-				label: 'Reason: ',
-				value: oldreason
-			} );
+		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -324,12 +320,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					}
 				]
 			} );
-		work_area.append( {
-				type: 'textarea',
-				name: 'xfdreason',
-				label: 'Reason: ',
-				value: oldreason
-			} );
+		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -384,12 +375,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				disabled: true,
 				value: ''
 			} );
-		work_area.append( {
-				type: 'textarea',
-				name: 'xfdreason',
-				label: 'Reason: ',
-				value: oldreason
-			} );
+		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -426,12 +412,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'New name: ',
 				value: ''
 			} );
-		work_area.append( {
-				type: 'textarea',
-				name: 'xfdreason',
-				label: 'Reason: ',
-				value: oldreason
-			} );
+		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
@@ -441,12 +422,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'Redirects for discussion',
 				name: 'work_area'
 			} );
-		work_area.append( {
-				type: 'textarea',
-				name: 'xfdreason',
-				label: 'Reason: ',
-				value: oldreason
-			} );
+		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 		break;
