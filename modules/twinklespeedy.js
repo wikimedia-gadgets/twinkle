@@ -1182,14 +1182,16 @@ Twinkle.speedy.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
+			var appendText = "";
+
 			// add blurb if log page doesn't exist
 			if (!pageobj.exists()) {
-				text =
+				appendText +=
 					"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
 					"If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and " +
-					"nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].\n";
+					"nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].";
 				if (Morebits.userIsInGroup("sysop")) {
-					text += "\nThis log does not track outright speedy deletions made using Twinkle.\n";
+					appendText += "\n\nThis log does not track outright speedy deletions made using Twinkle.";
 				}
 			}
 
@@ -1197,36 +1199,36 @@ Twinkle.speedy.callbacks = {
 			var date = new Date();
 			var headerRe = new RegExp("^==+\\s*" + date.getUTCMonthName() + "\\s+" + date.getUTCFullYear() + "\\s*==+", "m");
 			if (!headerRe.exec(text)) {
-				text += "\n\n=== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ===";
+				appendText += "\n\n=== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ===";
 			}
 
-			text += "\n# [[:" + Morebits.pageNameNorm + "]]: ";
+			appendText += "\n# [[:" + Morebits.pageNameNorm + "]]: ";
 			if (params.fromDI) {
-				text += "DI [[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] (" + params.type + ")";
+				appendText += "DI [[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] (" + params.type + ")";
 			} else {
 				if (params.normalizeds.length > 1) {
-					text += "multiple criteria (";
+					appendText += "multiple criteria (";
 					$.each(params.normalizeds, function(index, norm) {
-						text += "[[WP:CSD#" + norm.toUpperCase() + "|" + norm.toUpperCase() + ']], ';
+						appendText += "[[WP:CSD#" + norm.toUpperCase() + "|" + norm.toUpperCase() + ']], ';
 					});
-					text = text.substr(0, text.length - 2);  // remove trailing comma
-					text += ')';
+					appendText = appendText.substr(0, appendText.length - 2);  // remove trailing comma
+					appendText += ')';
 				} else if (params.normalizeds[0] === "db") {
-					text += "{{tl|db-reason}}";
+					appendText += "{{tl|db-reason}}";
 				} else {
-					text += "[[WP:CSD#" + params.normalizeds[0].toUpperCase() + "|CSD " + params.normalizeds[0].toUpperCase() + "]] ({{tl|db-" + params.values[0] + "}})";
+					appendText += "[[WP:CSD#" + params.normalizeds[0].toUpperCase() + "|CSD " + params.normalizeds[0].toUpperCase() + "]] ({{tl|db-" + params.values[0] + "}})";
 				}
 			}
 
 			if (params.logInitialContrib) {
-				text += "; notified {{user|1=" + params.logInitialContrib + "}}";
+				appendText += "; notified {{user|1=" + params.logInitialContrib + "}}";
 			}
-			text += " ~~~~~\n";
+			appendText += " ~~~~~\n";
 
-			pageobj.setPageText(text);
+			pageobj.setAppendText(appendText);
 			pageobj.setEditSummary("Logging speedy deletion nomination of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			pageobj.setCreateOption("recreate");
-			pageobj.save();
+			pageobj.append();
 		}
 	}
 };
