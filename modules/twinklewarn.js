@@ -1725,12 +1725,12 @@ Twinkle.warn.callbacks = {
 					summary = "Final warning";
 					break;
 				case "m":
-					if(params.sub_group.substr( -3 ) == "4im")
-					{
+					if( params.sub_group.substr( -3 ) === "4im" ) {
 						summary = "Only warning";
 						break;
 					}
-					// else fall through
+					summary = "Notice";
+					break;
 				default:
 					summary = "Notice";
 					break;
