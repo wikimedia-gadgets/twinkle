@@ -246,14 +246,15 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			div.append({ type: 'header', label: 'WikiProject-specific welcome templates' });
 			appendTemplates([
 				"welcome-au",
+				"welcome-bd",
 				"welcome-bio",
 				"welcome-cal",
 				"welcome-conserv",
 				"welcome-cycling",
 				"welcome-dbz",
 				"welcome-et",
-				"welcome-in",
 				"welcome-de",
+				"welcome-in",
 				"welcome-math",
 				"welcome-med",
 				"welcome-no",
@@ -456,6 +457,11 @@ Twinkle.welcome.templates = {
 		linkedArticle: false,
 		syntax: "{{subst:welcome-au}} ~~~~"
 	},
+	"welcome-bd": {
+		description: "welcome for users with an apparent interest in Bangladesh topics",
+		linkedArticle: false,
+		syntax: "{{subst:welcome-bd}} ~~~~"
+	},
 	"welcome-bio": {
 		description: "welcome for users with an apparent interest in biographical topics",
 		linkedArticle: false,
@@ -486,15 +492,15 @@ Twinkle.welcome.templates = {
 		linkedArticle: false,
 		syntax: "{{subst:welcome-et}}"
 	},
-	"welcome-in": {
-		description: "welcome for users with an apparent interest in India topics",
-		linkedArticle: false,
-		syntax: "{{subst:welcome-in}} ~~~~"
-	},
 	"welcome-de": {
 		description: "welcome for users with an apparent interest in Germany topics",
 		linkedArticle: false,
 		syntax: "{{subst:welcome-de}} ~~~~"
+	},
+	"welcome-in": {
+		description: "welcome for users with an apparent interest in India topics",
+		linkedArticle: false,
+		syntax: "{{subst:welcome-in}} ~~~~"
 	},
 	"welcome-math": {
 		description: "welcome for users with an apparent interest in mathematical topics",
