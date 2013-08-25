@@ -62,7 +62,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 			name: 'work_area'
 		} );
 
-	form.append( { type:'submit', label:'Propose deletion' } );	
+	form.append( { type:'submit', label:'Propose deletion' } );
 
 	var result = form.render();
 	Window.setContent( result );
@@ -75,15 +75,14 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 };
 
 Twinkle.prod.callback.prodtypechanged = function(event) {
-  //prepare frame for prod type dependant controls
+	//prepare frame for prod type dependant controls
 	var field = new Morebits.quickForm.element( {
 			type: 'field',
 			label: 'Parameters',
 			name: 'work_area'
 		} );
 	// create prod type dependant controls
-	switch( event.target.values )
-	{
+	switch( event.target.values ) {
 		case 'prod':
 			field.append( {
 					type: 'checkbox',
@@ -133,8 +132,7 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 				type: 'div',
 				label: boldtext
 			});
-			if (mw.config.get('wgArticleId') < 26596183)
-			{
+			if (mw.config.get('wgArticleId') < 26596183) {
 				field.append({
 					type: 'header',
 					label: 'It appears that this article was created before March 18, 2010, and is thus ineligible for a BLP PROD. Please make sure that this is not the case, or use normal PROD instead.'
@@ -181,7 +179,7 @@ Twinkle.prod.callbacks = {
 			}
 			// If not notifying, log this PROD
 			else if( Twinkle.getPref('logProdPages') ) {
-				Twinkle.prod.callbacks.addToLog(params, null);
+				Twinkle.prod.callbacks.addToLog(params);
 			}
 
 			summaryText = "Proposing article for deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
@@ -204,7 +202,7 @@ Twinkle.prod.callbacks = {
 
 			summaryText = "Endorsing proposed deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
 			text = text.replace( prod_re, text.match( prod_re ) + "\n{{prod-2|1=" + (params.blp ?
-				"article is a [[WP:BLPPROD|biography of a living person with no sources]]" : 
+				"article is a [[WP:BLPPROD|biography of a living person with no sources]]" :
 				Morebits.string.formatReasonText(params.reason)) + "}}\n" );
 
 			if( Twinkle.getPref('logProdPages') ) {
@@ -223,6 +221,15 @@ Twinkle.prod.callbacks = {
 	userNotification: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
 		var initialContrib = pageobj.getCreator();
+
+		// Disallow warning yourself
+		if (initialContrib === mw.config.get("wgUserName")) {
+			if (Twinkle.getPref("logProdPages")) {
+				Twinkle.prod.callbacks.addToLog(params);
+			}
+			return;
+		}
+
 		var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n{{subst:prodwarning" + (params.blp ? "BLP" : "") + "|1=" + Morebits.pageNameNorm + "|concern=" + params.reason + "}} ~~~~";
 		usertalkpage.setAppendText(notifytext);
@@ -292,8 +299,7 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	var prodtype;
 
 	var prodtypes = form.prodtype;
-	for( var i = 0; i < prodtypes.length; i++ )
-	{
+	for( var i = 0; i < prodtypes.length; i++ ) {
 		if( !prodtypes[i].checked ) {
 			continue;
 		}
@@ -310,10 +316,8 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( form );
 
-	if (prodtype === 'prodblp' && mw.config.get('wgArticleId') < 26596183)
-	{
-		if (!confirm( "It appears that this article was created before March 18, 2010, and is thus ineligible for a BLP PROD. Do you want to continue tagging it?" ))
-		{
+	if (prodtype === 'prodblp' && mw.config.get('wgArticleId') < 26596183) {
+		if (!confirm( "It appears that this article was created before March 18, 2010, and is thus ineligible for a BLP PROD. Do you want to continue tagging it?" )) {
 			Morebits.status.warn( 'Notice', 'Aborting per user input.' );
 			return;
 		}
