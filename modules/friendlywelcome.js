@@ -459,8 +459,8 @@ Twinkle.welcome.templates = {
 	},
 	"welcome-bd": {
 		description: "welcome for users with an apparent interest in Bangladesh topics",
-		linkedArticle: false,
-		syntax: "{{subst:welcome-bd}} ~~~~"
+		linkedArticle: true,
+		syntax: "{{subst:welcome-bd|$USERNAME$|art=$ARTICLE$}} ~~~~"
 	},
 	"welcome-bio": {
 		description: "welcome for users with an apparent interest in biographical topics",
