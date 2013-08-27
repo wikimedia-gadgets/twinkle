@@ -821,7 +821,11 @@ Twinkle.speedy.callbacks = {
 					reason = presetReason;
 				}
 			}
-			if (!reason || !reason.replace(/^\s*/, "").replace(/\s*$/, "")) {
+			if (reason === null) {
+				Morebits.status.error("Asking for reason", "User cancelled");
+				Morebits.wiki.removeCheckpoint();
+				return;
+			} else if (!reason || !reason.replace(/^\s*/, "").replace(/\s*$/, "")) {
 				Morebits.status.error("Asking for reason", "you didn't give one.  I don't know... what with admins and their apathetic antics... I give up...");
 				Morebits.wiki.removeCheckpoint();
 				return;
