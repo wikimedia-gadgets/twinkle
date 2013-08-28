@@ -418,8 +418,8 @@ Twinkle.welcome.templates = {
 	},
 	"welcome-image": {
 		description: "welcome with additional information about images (policy and procedure)",
-		linkedArticle: true,
-		syntax: "{{subst:welcome-image}}"
+		linkedArticle: false,
+		syntax: "{{subst:welcome-image|$USERNAME$}}"
 	},
 
 	// ANONYMOUS USER WELCOMES
@@ -460,7 +460,7 @@ Twinkle.welcome.templates = {
 	"welcome-bd": {
 		description: "welcome for users with an apparent interest in Bangladesh topics",
 		linkedArticle: true,
-		syntax: "{{subst:welcome-bd|$USERNAME$|art=$ARTICLE$}} ~~~~"
+		syntax: "{{subst:welcome-bd|$USERNAME$||$EXTRA$|art=$ARTICLE$}} ~~~~"
 	},
 	"welcome-bio": {
 		description: "welcome for users with an apparent interest in biographical topics",
@@ -485,7 +485,7 @@ Twinkle.welcome.templates = {
 	"welcome-dbz": {
 		description: "welcome for users with an apparent interest in Dragon Ball topics",
 		linkedArticle: false,
-		syntax: "{{subst:welcome-dbz}}"
+		syntax: "{{subst:welcome-dbz|$EXTRA$|sig=~~~~}}"
 	},
 	"welcome-et": {
 		description: "welcome for users with an apparent interest in Estonia topics",
@@ -499,18 +499,18 @@ Twinkle.welcome.templates = {
 	},
 	"welcome-in": {
 		description: "welcome for users with an apparent interest in India topics",
-		linkedArticle: false,
-		syntax: "{{subst:welcome-in}} ~~~~"
+		linkedArticle: true,
+		syntax: "{{subst:welcome-in|$USERNAME$|art=$ARTICLE$}} ~~~~"
 	},
 	"welcome-math": {
 		description: "welcome for users with an apparent interest in mathematical topics",
-		linkedArticle: false,
-		syntax: "{{subst:welcome-math}} ~~~~"
+		linkedArticle: true,
+		syntax: "{{subst:welcome-math|$USERNAME$|art=$ARTICLE$}} ~~~~"
 	},
 	"welcome-med": {
 		description: "welcome for users with an apparent interest in medicine topics",
-		linkedArticle: false,
-		syntax: "{{subst:welcome-med}} ~~~~"
+		linkedArticle: true,
+		syntax: "{{subst:welcome-med|$USERNAME$|art=$ARTICLE$}} ~~~~"
 	},
 	"welcome-no": {
 		description: "welcome for users with an apparent interest in Norway topics",
@@ -519,13 +519,13 @@ Twinkle.welcome.templates = {
 	},
 	"welcome-pk": {
 		description: "welcome for users with an apparent interest in Pakistan topics",
-		linkedArticle: false,
-		syntax: "{{subst:welcome-pk}} ~~~~"
+		linkedArticle: true,
+		syntax: "{{subst:welcome-pk|$USERNAME$|art=$ARTICLE$}} ~~~~"
 	},
 	"welcome-phys": {
 		description: "welcome for users with an apparent interest in physics topics",
-		linkedArticle: false,
-		syntax: "{{subst:welcome-phys}} ~~~~"
+		linkedArticle: true,
+		syntax: "{{subst:welcome-phys|$USERNAME$|art=$ARTICLE$}} ~~~~"
 	},
 	"welcome-pl": {
 		description: "welcome for users with an apparent interest in Poland topics",
@@ -549,8 +549,8 @@ Twinkle.welcome.templates = {
 	},
 	"welcome-ch": {
 		description: "welcome for users with an apparent interest in Switzerland topics",
-		linkedArticle: false,
-		syntax: "{{subst:welcome-ch}} ~~~~"
+		linkedArticle: true,
+		syntax: "{{subst:welcome-ch|$USERNAME$|art=$ARTICLE$}} ~~~~"
 	},
 	"welcome-uk": {
 		description: "welcome for users with an apparent interest in Ukraine topics",
