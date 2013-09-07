@@ -647,7 +647,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				puppetReport = false;
 			}
 
-			sockParameters.uid = puppetReport ? form.sockmaster.value.trimRight() : uid;
+			sockParameters.uid = puppetReport ? form.sockmaster.value.trim() : uid;
 			sockParameters.sockpuppets = puppetReport ? [uid] : $.map( $('input:text[name=sockpuppet]',form), function(o){ return $(o).val() || null; });
 
 			Morebits.simpleWindow.setButtonsEnabled( false );
