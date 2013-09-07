@@ -634,7 +634,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			/* falls through */
 		case "puppet":
 			var sockParameters = {
-				evidence: form.evidence.value.trimRight(),
+				evidence: form.evidence.value.trim(),
 				checkuser: form.checkuser.checked,
 				notify: form.notify.checked
 			};
