@@ -274,8 +274,7 @@ Twinkle.fluff.callbacks = {
 				self.statelem.error( 'Aborted by user.' );
 				return;
 			}
-			var summary = "Reverted to revision " + revertToRevID + " by " + revertToUser + (optional_summary ? ": " + optional_summary : '') + "." +
-				Twinkle.getPref('summaryAd');
+			var summary = Twinkle.fluff.formatSummary("Reverted to revision " + revertToRevID + " by $USER", revertToUser, optional_summary);
 
 			var query = {
 				'action': 'edit',
@@ -410,7 +409,7 @@ Twinkle.fluff.callbacks = {
 
 		self.statelem.status( [ ' revision ', Morebits.htmlNode( 'strong', self.params.goodid ), ' that was made ', Morebits.htmlNode( 'strong', count ), ' revisions ago by ', Morebits.htmlNode( 'strong', self.params.gooduser ) ] );
 
-		var summary, extra_summary, userstr, gooduserstr;
+		var summary, extra_summary;
 		switch( self.params.type ) {
 		case 'agf':
 			extra_summary = prompt( "An optional comment for the edit summary:                              ", "" );  // padded out to widen prompt in Firefox
@@ -421,18 +420,14 @@ Twinkle.fluff.callbacks = {
 			}
 			userHasAlreadyConfirmedAction = true;
 
-			userstr = self.params.user;
-			summary = "Reverted [[WP:AGF|good faith]] edits by [[Special:Contributions/" + userstr + "|" + userstr + "]] ([[User talk:" +
-				userstr + "|talk]])" + Twinkle.fluff.formatSummaryPostfix(extra_summary) + Twinkle.getPref('summaryAd');
+			summary = Twinkle.fluff.formatSummary("Reverted [[WP:AGF|good faith]] edits by $USER", self.params.user, extra_summary);
 			break;
 
 		case 'vand':
 
-			userstr = self.params.user;
-			gooduserstr = self.params.gooduser;
 			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" +
-				userstr + "|" + userstr + "]] ([[User talk:" + userstr + "|talk]]) to last revision by " +
-				gooduserstr + "." + Twinkle.getPref('summaryAd');
+				self.params.user + "|" + self.params.user + "]] ([[User talk:" + self.params.user + "|talk]]) to last revision by " +
+				self.params.gooduser + "." + Twinkle.getPref('summaryAd');
 			break;
 
 		case 'norm':
@@ -448,10 +443,8 @@ Twinkle.fluff.callbacks = {
 				userHasAlreadyConfirmedAction = true;
 			}
 
-			userstr = self.params.user;
-			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" +
-				userstr + "|" + userstr + "]] ([[User talk:" + userstr + "|talk]])" + Twinkle.fluff.formatSummaryPostfix(extra_summary) +
-				Twinkle.getPref('summaryAd');
+			summary = Twinkle.fluff.formatSummary("Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + 
+				" by $USER", self.params.user, extra_summary);
 			break;
 		}
 
@@ -528,17 +521,40 @@ Twinkle.fluff.callbacks = {
 	}
 };
 
-Twinkle.fluff.formatSummaryPostfix = function(stringToAdd) {
-	if (stringToAdd) {
-		stringToAdd = ': ' + Morebits.string.toUpperCaseFirstChar(stringToAdd);
-		if (stringToAdd.search(/[.?!;]$/) === -1) {
-			stringToAdd = stringToAdd + '.';
+// builtInString should contain the string "$USER", which will be replaced
+// by an appropriate user link
+Twinkle.fluff.formatSummary = function(builtInString, userName, userString) {
+	var result = builtInString;
+	
+	// append user's custom reason with requisite punctuation
+	if (userString) {
+		result += ': ' + Morebits.string.toUpperCaseFirstChar(userString);
+		if (userString.search(/[.?!;]$/) === -1) {
+			result += '.';
 		}
-		return stringToAdd;
+	} else {
+		result += '.';
 	}
-	else {
-		return '.';
+	result += Twinkle.getPref('summaryAd');
+
+	// find number of UTF-8 bytes the resulting string takes up, and possibly add
+	// a contributions or contributions+talk link if it doesn't push the edit summary
+	// over the 255-byte limit
+	var resultLen = unescape(encodeURIComponent(result.replace("$USER", ""))).length;
+	var contribsLink = "[[Special:Contributions/" + userName + "|" + userName + "]]";
+	var contribsLen = unescape(encodeURIComponent(contribsLink)).length;
+	if (resultLen + contribsLen <= 255) {
+		var talkLink = " ([[User talk:" + userName + "|talk]])";
+		if (resultLen + contribsLen + unescape(encodeURIComponent(talkLink)).length <= 255) {
+			result = result.replace("$USER", contribsLink + talkLink);
+		} else {
+			result = result.replace("$USER", contribsLink);
+		}
+	} else {
+		result = result.replace("$USER", userName);
 	}
+	
+	return result;
 };
 
 Twinkle.fluff.init = function twinklefluffinit() {
