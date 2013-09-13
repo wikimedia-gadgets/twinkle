@@ -421,6 +421,7 @@ Twinkle.tag.article.tags = {
 	"metricate": "article exclusively uses non-SI units of measurement",
 	"more footnotes": "article has some references, but insufficient in-text citations",
 	"new unreviewed article": "mark article for later review",
+	"news release": "article reads like a news release",
 	"no footnotes": "article has references, but no in-text citations",
 	"non-free": "article may contain excessive or improper use of copyrighted materials",
 	"notability": "article's subject may not meet the notability guideline",
@@ -498,6 +499,7 @@ Twinkle.tag.article.tagCategories = {
 			"advert",
 			"essay-like",
 			"fansite",
+			"news release",
 			"prose",
 			"technical",
 			"tense",
@@ -865,6 +867,9 @@ Twinkle.tag.callbacks = {
 						if (params.tagParameters.expertSubject) {
 							currentTag += '|1=' + params.tagParameters.expertSubject;
 						}
+						break;
+					case 'news release':
+						currentTag += '|1=article';
 						break;
 					case 'not English':
 					case 'rough translation':
