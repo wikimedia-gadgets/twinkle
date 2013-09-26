@@ -791,7 +791,6 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
  */
 
 RegExp.escape = function( text, space_fix ) {
-
 	text = $.escapeRE(text);
 
 	// Special MediaWiki escape - underscore/space are often equivalent
@@ -1574,6 +1573,8 @@ Morebits.wiki.api.prototype = {
  * 
  * getCreator(): returns the user who created the page following lookupCreator()
  *
+ * getCurrentID(): returns a string containing the current revision ID of the page
+ *
  * patrol(): marks the page as patrolled, if possible
  *
  * move(onSuccess, onFailure): Moves a page to another title
@@ -1766,6 +1767,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	this.setOldID = function(oldID) {
 		ctx.revertOldID = oldID;
+	};
+
+	this.getCurrentID = function() {
+		return ctx.revertCurID;
 	};
 
 	this.getRevisionUser = function() {
@@ -2222,20 +2227,19 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		ctx.editToken = $(xml).find('page').attr('edittoken');
-		if (!ctx.editToken)
-		{
+		if (!ctx.editToken) {
 			ctx.statusElement.error("Failed to retrieve edit token.");
 			ctx.onLoadFailure(this);
 			return;
 		}
 		ctx.loadTime = $(xml).find('page').attr('starttimestamp');
-		if (!ctx.loadTime)
-		{
+		if (!ctx.loadTime) {
 			ctx.statusElement.error("Failed to retrieve start timestamp.");
 			ctx.onLoadFailure(this);
 			return;
 		}
 		ctx.lastEditTime = $(xml).find('page').attr('touched');
+		ctx.revertCurID = $(xml).find('page').attr('lastrevid');
 
 		if (ctx.editMode === 'revert') {
 			ctx.revertCurID = $(xml).find('rev').attr('revid');

@@ -1,3 +1,6 @@
 {
-	"maxerr": 1000
+	"maxerr": 1000,
+	"undef": true,
+	"unused": true,
+	"smarttabs": true
 }
