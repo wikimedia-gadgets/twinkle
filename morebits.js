@@ -1235,10 +1235,10 @@ Morebits.wikipedia.namespacesFriendly = {
 
 Morebits.wiki = {};
 
-// Analyzes the HTML of the current page (i.e. no AJAX requests) to determine if it
-// is a redirect or soft redirect
+// Determines whether the current page is a redirect or soft redirect
+// (fails to detect soft redirects on edit, history, etc. pages)
 Morebits.wiki.isPageRedirect = function wikipediaIsPageRedirect() {
-	return !!($("span.redirectText").length > 0 || document.getElementById("softredirect"));
+	return !!(mw.config.get("wgIsRedirect") || document.getElementById("softredirect"));
 };
 
 
