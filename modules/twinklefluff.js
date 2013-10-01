@@ -217,7 +217,7 @@ Twinkle.fluff.revert = function revertPage( type, vandal, autoRevert, rev, page 
 	};
 	var query = {
 		'action': 'query',
-		'prop': ['info', 'revisions'],
+		'prop': ['info', 'revisions', 'flagged'],
 		'titles': pagename,
 		'rvlimit': 50, // max possible
 		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ],
@@ -475,7 +475,8 @@ Twinkle.fluff.callbacks = {
 				window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_tab' );
 				break;
 			case 'blank':
-				window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_blank', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
+				window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_blank',
+					'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 				break;
 			case 'window':
 				/* falls through */
@@ -485,6 +486,16 @@ Twinkle.fluff.callbacks = {
 					'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
 				break;
 			}
+		}
+
+		// figure out whether we need to/can review the edit
+		var $flagged = $(xmlDoc).find('flagged');
+		if ((Morebits.userIsInGroup('reviewer') || Morebits.userIsInGroup('sysop')) &&
+				$flagged.length &&
+				$flagged.attr("stable_revid") >= self.params.goodid &&
+				$flagged.attr("pending_since")) {
+			self.params.reviewRevert = true;
+			self.params.edittoken = edittoken;
 		}
 
 		query = {
@@ -509,14 +520,29 @@ Twinkle.fluff.callbacks = {
 
 	},
 	complete: function (apiobj) {
-		var blacklist = $(apiobj.getXML()).find('edit').attr('spamblacklist');
+		var $edit = $(apiobj.getXML()).find('edit');
+		var blacklist = $edit.attr('spamblacklist');
 		if (blacklist) {
 			var code = document.createElement('code');
 			code.style.fontFamily = "monospace";
 			code.appendChild(document.createTextNode(blacklist));
 			apiobj.statelem.error(['Could not rollback because the URL ', code, ' is on the spam blacklist.']);
+		} else if ($edit.attr('nochange') === '') {
+			apiobj.statelem.warn("Revision we are reverting to is identical to current revision: Nothing to do");
 		} else {
 			apiobj.statelem.info("done");
+
+			// review the revert, if needed
+			if (apiobj.params.reviewRevert) {
+				var query = {
+					'action': 'review',
+					'revid': $edit.attr('newrevid'),
+					'token': apiobj.params.edittoken,
+					'comment': Twinkle.getPref('summaryAd').trim()
+				};
+				var wikipedia_api = new Morebits.wiki.api('Automatically accepting your changes', query);
+				wikipedia_api.post();
+			}
 		}
 	}
 };
