@@ -988,10 +988,6 @@ Twinkle.speedy.callbacks = {
 		}
 	},
 
-
-
-
-
 	user: {
 		main: function(pageobj) {
 			var statelem = pageobj.getStatusElement();
@@ -1019,13 +1015,12 @@ Twinkle.speedy.callbacks = {
 			}
 
 			var code, parameters, i;
-			if (params.normalizeds.length > 1)
-			{
+			if (params.normalizeds.length > 1) {
 				code = "{{db-multiple";
 				var breakFlag = false;
 				$.each(params.normalizeds, function(index, norm) {
 					code += "|" + norm.toUpperCase();
-					parameters = Twinkle.speedy.getParameters(params.values[index], norm, statelem);
+					parameters = Twinkle.speedy.getParameters(pageobj, params.values[index], norm, statelem);
 					if (!parameters) {
 						breakFlag = true;
 						return false;  // the user aborted
@@ -1041,10 +1036,8 @@ Twinkle.speedy.callbacks = {
 				}
 				code += "}}";
 				params.utparams = [];
-			}
-			else
-			{
-				parameters = Twinkle.speedy.getParameters(params.values[0], params.normalizeds[0], statelem);
+			} else {
+				parameters = Twinkle.speedy.getParameters(pageobj, params.values[0], params.normalizeds[0], statelem);
 				if (!parameters) {
 					return;  // the user aborted
 				}
@@ -1238,25 +1231,21 @@ Twinkle.speedy.callbacks = {
 };
 
 // prompts user for parameters to be passed into the speedy deletion tag
-Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normalized, statelem)
-{
+Twinkle.speedy.getParameters = function twinklespeedyGetParameters(pageobj, value, normalized, statelem) {
 	var parameters = [];
 	switch( normalized ) {
 		case 'db':
 			var dbrationale = prompt('Please enter a mandatory rationale.   \n\"This page qualifies for speedy deletion because:\"', "");
-			if (!dbrationale || !dbrationale.replace(/^\s*/, "").replace(/\s*$/, ""))
-			{
+			if (!dbrationale || !dbrationale.replace(/^\s*/, "").replace(/\s*$/, "")) {
 				statelem.error( 'You must specify a rationale.  Aborted by user.' );
 				return null;
 			}
 			parameters["1"] = dbrationale;
 			break;
 		case 'u1':
-			if (mw.config.get('wgNamespaceNumber') === 3 && !((/\//).test(mw.config.get('wgTitle'))))
-			{
+			if (mw.config.get('wgNamespaceNumber') === 3 && !((/\//).test(mw.config.get('wgTitle')))) {
 				var u1rationale = prompt('[CSD U1] Please provide a mandatory rationale to explain why this user talk page should be deleted:', "");
-				if (!u1rationale || !u1rationale.replace(/^\s*/, "").replace(/\s*$/, ""))
-				{
+				if (!u1rationale || !u1rationale.replace(/^\s*/, "").replace(/\s*$/, "")) {
 					statelem.error( 'You must specify a rationale.  Aborted by user.' );
 					return null;
 				}
@@ -1265,19 +1254,14 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 'f8':
 			var filename = prompt( '[CSD F8] Please enter the name of the file on Commons:', Morebits.pageNameNorm );
-			if (filename === null)
-			{
+			if (filename === null) {
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
-			if (filename !== '' && filename !== Morebits.pageNameNorm)
-			{
-				if (filename.indexOf("Image:") === 0 || filename.indexOf("File:") === 0)
-				{
+			if (filename !== '' && filename !== Morebits.pageNameNorm) {
+				if (filename.indexOf("Image:") === 0 || filename.indexOf("File:") === 0) {
 					parameters["1"] = filename;
-				}
-				else
-				{
+				} else {
 					statelem.error("The File: prefix was missing from the image filename.  Aborted.");
 					return null;
 				}
@@ -1286,13 +1270,11 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 'g4':
 			var deldisc = prompt( '[CSD G4] Please enter the name of the page where the deletion discussion took place.  \nNOTE: For regular AfD and MfD discussions, just click OK - a link will be automatically provided.', "" );
-			if (deldisc === null)
-			{
+			if (deldisc === null) {
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
-			if (deldisc !== "" && deldisc.substring(0, 9) !== "Wikipedia" && deldisc.substring(0, 3) !== "WP:")
-			{
+			if (deldisc !== "" && deldisc.substring(0, 9) !== "Wikipedia" && deldisc.substring(0, 3) !== "WP:") {
 				statelem.error( 'The deletion discussion page name, if provided, must start with "Wikipedia:".  Cannot proceed.' );
 				return null;
 			}
@@ -1300,8 +1282,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 'g5':
 			var banneduser = prompt( '[CSD G5] Please enter the username of the banned user if available:', "" );
-			if (banneduser === null)
-			{
+			if (banneduser === null) {
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
@@ -1311,8 +1292,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			switch( value ) {
 				case 'histmerge':
 					var mergetitle = prompt( '[CSD G6: history merge] Please enter the title to be merged into this one:', "" );
-					if (mergetitle === null)
-					{
+					if (mergetitle === null) {
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
@@ -1320,14 +1300,12 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					break;
 				case 'move':
 					var title = prompt( '[CSD G6: move] Please enter the title of the page to be moved here:', "" );
-					if (title === null)
-					{
+					if (title === null) {
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
 					var reason = prompt( '[CSD G6: move] Please enter the reason for the page move:', "" );
-					if (reason === null)
-					{
+					if (reason === null) {
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
@@ -1336,8 +1314,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					break;
 				case 'xfd':
 					var votepage = prompt( '[CSD G6: xfd] Please provide a full link, without [[ ]], to the page where the deletion was discussed:', "" );
-					if (votepage === null)
-					{
+					if (votepage === null) {
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
@@ -1345,8 +1322,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					break;
 				case 'copypaste':
 					var copytitle = prompt( '[CSD G6: copypaste] Please enter the title of the original page that was copy-pasted here:', "" );
-					if (copytitle === null)
-					{
+					if (copytitle === null) {
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
@@ -1354,13 +1330,11 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					break;
 				case 'g6':
 					var g6rationale = prompt( '[CSD G6] Please provide an optional rationale (leave empty to skip):', "" );
-					if (g6rationale === null)
-					{
+					if (g6rationale === null) {
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
-					if (g6rationale !== '')
-					{
+					if (g6rationale !== '') {
 						parameters.rationale = g6rationale;
 					}
 					break;
@@ -1369,33 +1343,52 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			}
 			break;
 		case 'g7':
-			if (Twinkle.getPref('speedyPromptOnG7'))
-			{
+			if (Twinkle.getPref('speedyPromptOnG7')) {
 				var g7rationale = prompt('[CSD G7] Please provide an optional rationale (perhaps linking to where the author requested this deletion - leave empty to skip):', "");
-				if (g7rationale === null)
-				{
+				if (g7rationale === null) {
 					statelem.error( 'Aborted by user.' );
 					return null;
 				}
-				if (g7rationale !== '')
-				{
+				if (g7rationale !== '') {
 					parameters.rationale = g7rationale;
 				}
 			}
 			break;
 		case 'g12':
 			var url = prompt( '[CSD G12] Please enter the URL if available, including the "http://":', "" );
-			if (url === null)
-			{
+			if (url === null) {
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
 			parameters.url = url;
 			break;
+		case 'g13':
+			var pageName = pageobj.getPageName(),
+			    currentRevisionID = pageobj.getCurrentID(),
+			    query = {
+			    	action: "query",
+			    	titles: pageName,
+			    	prop: "revisions",
+			    	rvprop: "timestamp",
+			    	rvstartid: currentRevisionID,
+			    	rvlimit: 1
+			    },
+			    api = new Morebits.wiki.api( 'Grabbing the last revision timestamp...', query, function( self ) {
+			    	var xmlDoc = self.responseXML,
+			    	    isoDateString = $(xmlDoc).find("rev").attr("timestamp");
+
+			    	parameters.ts = isoDateString;
+			    });
+
+			// Wait for API call to finish
+			api.post({
+				async: false
+			});
+			
+			break;
 		case 'f9':
 			var f9url = prompt( '[CSD F9] Please enter the URL of the copyvio, including the "http://".  \nIf you cannot provide a URL, please do not use CSD F9.  (Exception: for copyvios of non-Internet sources, leave the box blank.)', "" );
-			if (f9url === null)
-			{
+			if (f9url === null) {
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
@@ -1403,8 +1396,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 'a2':
 			var source = prompt('[CSD A2] Enter an interwiki link to the article on the foreign-language wiki (for example, "fr:Bonjour"):', "");
-			if (source === null)
-			{
+			if (source === null) {
 				statelem.error('Aborted by user.');
 				return null;
 			}
@@ -1412,8 +1404,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 'a10':
 			var duptitle = prompt( '[CSD A10] Enter the article name that is duplicated:', "" );
-			if (duptitle === null)
-			{
+			if (duptitle === null) {
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
@@ -1421,8 +1412,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 'f1':
 			var img = prompt( '[CSD F1] Enter the file this is redundant to, excluding the "Image:" or "File:" prefix:', "" );
-			if (img === null)
-			{
+			if (img === null) {
 				statelem.error( 'Aborted by user.' );
 				return null;
 			}
@@ -1432,8 +1422,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			switch( value ) {
 				case 'duplicatetemplate':
 					var template = prompt( '[CSD T3] Enter the template this is redundant to, excluding the "Template:" prefix:', "" );
-					if (template === null)
-					{
+					if (template === null) {
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
@@ -1442,8 +1431,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 					break;
 				default:
 					var t3rationale = prompt( '[CSD T3] Please enter a mandatory rationale:', "" );
-					if (!t3rationale || !t3rationale.replace(/^\s*/, "").replace(/\s*$/, ""))
-					{
+					if (!t3rationale || !t3rationale.replace(/^\s*/, "").replace(/\s*$/, "")) {
 						statelem.error( 'Aborted by user.' );
 						return null;
 					}
@@ -1458,8 +1446,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 			break;
 		case 'p1':
 			var criterion = prompt( '[CSD P1] Enter the code of the article CSD criterion which this portal falls under:   \n\n(A1 = no context, A3 = no content, A7 = non-notable, A10 = duplicate)', "" );
-			if (!criterion || !criterion.replace(/^\s*/, "").replace(/\s*$/, ""))
-			{
+			if (!criterion || !criterion.replace(/^\s*/, "").replace(/\s*$/, "")) {
 				statelem.error( 'You must enter a criterion.  Aborted by user.' );
 				return null;
 			}
@@ -1472,11 +1459,9 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(value, normal
 };
 
 // function for processing talk page notification template parameters
-Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParameters(normalized, parameters)
-{
+Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParameters(normalized, parameters) {
 	var utparams = [];
-	switch (normalized)
-	{
+	switch (normalized) {
 		case 'db':
 			utparams["2"] = parameters["1"];
 			break;
@@ -1504,8 +1489,7 @@ Twinkle.speedy.resolveCsdValues = function twinklespeedyResolveCsdValues(e) {
 	return values;
 };
 
-Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSysop(e)
-{
+Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSysop(e) {
 	var form = (e.target.form ? e.target.form : e.target);
 
 	var tag_only = form.tag_only;
