@@ -936,7 +936,7 @@ Twinkle.speedy.callbacks = {
 
 				switch( Twinkle.getPref('userTalkPageMode') ) {
 				case 'tab':
-					window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_tab' );
+					window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_blank' );
 					break;
 				case 'blank':
 					window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_blank', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );

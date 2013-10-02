@@ -472,7 +472,7 @@ Twinkle.fluff.callbacks = {
 
 			switch( Twinkle.getPref('userTalkPageMode') ) {
 			case 'tab':
-				window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_tab' );
+				window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_blank' );
 				break;
 			case 'blank':
 				window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_blank',
