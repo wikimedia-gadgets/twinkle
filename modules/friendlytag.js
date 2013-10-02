@@ -268,24 +268,37 @@ Twinkle.tag.updateSortOrder = function(e) {
 						type: 'input',
 						label: 'Language of article (if known): ',
 						tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
-					},
-					{
-						name: 'translationPostAtPNT',
+					}
+				];
+				if (tag === "not English") {
+					checkbox.subgroup.push({
+						name: 'translationNotify',
 						type: 'checkbox',
 						list: [
 							{
-								label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
-								checked: true
+								label: 'Notify article creator',
+								checked: true,
+								tooltip: "Places {{uw-notenglish}} on the creator's talk page."
 							}
 						]
-					},
-					{
-						name: 'translationComments',
-						type: 'textarea',
-						label: 'Additional comments to post at PNT',
-						tooltip: 'Optional, and only relevant if "List this article ..." above is checked.'
-					}
-				];
+					});
+				}
+				checkbox.subgroup.push({
+					name: 'translationPostAtPNT',
+					type: 'checkbox',
+					list: [
+						{
+							label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
+							checked: true
+						}
+					]
+				});
+				checkbox.subgroup.push({
+					name: 'translationComments',
+					type: 'textarea',
+					label: 'Additional comments to post at PNT',
+					tooltip: 'Optional, and only relevant if "List this article ..." above is checked.'
+				});
 				break;
 			case "notability":
 				checkbox.subgroup = {
@@ -547,8 +560,8 @@ Twinkle.tag.article.tagCategories = {
 	},
 	"Specific content issues": {
 		"Language": [
-			"not English",  // has a subgroup with text input
-			"rough translation",  // has a subgroup with text input
+			"not English",  // has a subgroup with several options
+			"rough translation",  // has a subgroup with several options
 			"expand language"
 		],
 		"Links": [
@@ -1082,6 +1095,22 @@ Twinkle.tag.callbacks = {
 				});
 				pntPage.load(Twinkle.tag.callbacks.translationListPage);
 			}
+			if (params.translationNotify) {
+				pageobj.lookupCreator(function(innerPageobj) {
+					var initialContrib = innerPageobj.getCreator();
+					var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib,
+						'Notifying initial contributor (' + initialContrib + ')');
+					var notifytext = "\n\n== Your article [[" + Morebits.pageNameNorm + "]]==\n" + 
+						"{{subst:uw-notenglish|1=" + Morebits.pageNameNorm +
+						(params.translationPostAtPNT ? "" : "|nopnt=yes") + "}} ~~~~";
+					userTalkPage.setAppendText(notifytext);
+					userTalkPage.setEditSummary("Notice: Please use English when contributing to the English Wikipedia." +
+						Twinkle.getPref('summaryAd'));
+					userTalkPage.setCreateOption('recreate');
+					userTalkPage.setFollowRedirect(true);
+					userTalkPage.append();
+				});
+			}
 		});
 
 		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
@@ -1280,6 +1309,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			params.mergeTagOther = form["articleTags.mergeTagOther"] ? form["articleTags.mergeTagOther"].checked : false;
 			// common to {{not English}}, {{rough translation}}
 			params.translationLanguage = form["articleTags.translationLanguage"] ? form["articleTags.translationLanguage"].value : null;
+			params.translationNotify = form["articleTags.translationNotify"] ? form["articleTags.translationNotify"].checked : null;
 			params.translationPostAtPNT = form["articleTags.translationPostAtPNT"] ? form["articleTags.translationPostAtPNT"].checked : null;
 			params.translationComments = form["articleTags.translationComments"] ? form["articleTags.translationComments"].value : null;
 			break;
