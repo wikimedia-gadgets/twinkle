@@ -42,6 +42,20 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 
 	var form = new Morebits.quickForm( Twinkle.tag.callback.evaluate );
 
+	if (document.getElementsByClassName("patrollink").length) {
+		form.append( {
+			type: 'checkbox',
+			list: [
+				{
+					label: 'Mark the page as patrolled',
+					value: 'patrolPage',
+					name: 'patrolPage',
+					checked: Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled')
+				}
+			]
+		} );
+	}
+
 	switch( Twinkle.tag.mode ) {
 		case 'article':
 			Window.setTitle( "Article maintenance tagging" );
@@ -1113,7 +1127,7 @@ Twinkle.tag.callbacks = {
 			}
 		});
 
-		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
+		if( params.patrol ) {
 			pageobj.patrol();
 		}
 	},
@@ -1281,7 +1295,7 @@ Twinkle.tag.callbacks = {
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 
-		if( Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled') ) {
+		if( params.patrol ) {
 			pageobj.patrol();
 		}
 	}
@@ -1290,6 +1304,9 @@ Twinkle.tag.callbacks = {
 Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	var form = e.target;
 	var params = {};
+	if (form.patrolPage) {
+		params.patrol = form.patrolPage.checked;
+	}
 
 	switch (Twinkle.tag.mode) {
 		case 'article':
