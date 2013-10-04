@@ -1199,7 +1199,13 @@ Morebits.wikipedia.namespaces = {
 	'100': 'Portal',
 	'101': 'Portal talk',
 	'108': 'Book',
-	'109': 'Book talk'
+	'109': 'Book talk',
+	'446': 'Education Program',
+	'447': 'Education Program talk',
+	'710': 'TimedText',
+	'711': 'TimedText talk',
+	'828': 'Module',
+	'829': 'Module talk'
 };
 
 Morebits.wikipedia.namespacesFriendly = {
@@ -1222,7 +1228,13 @@ Morebits.wikipedia.namespacesFriendly = {
 	'100': 'Portal',
 	'101': 'Portal talk',
 	'108': 'Book',
-	'109': 'Book talk'
+	'109': 'Book talk',
+	'446': 'Education Program',
+	'447': 'Education Program talk',
+	'710': 'TimedText',
+	'711': 'TimedText talk',
+	'828': 'Module',
+	'829': 'Module talk'
 };
 
 
