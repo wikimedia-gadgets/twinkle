@@ -269,20 +269,16 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				if( current.disabled ) {
 					subnode.setAttribute( 'disabled', 'disabled' );
 				}
-				if( data.event ) {
-					subnode.addEventListener( 'change', data.event, false );
-				} else if ( current.event ) {
-					subnode.addEventListener( 'change', current.event, true );
-				}
 				label = cur_div.appendChild( document.createElement( 'label' ) );
 				label.appendChild( document.createTextNode( current.label ) );
 				label.setAttribute( 'for', cur_id );
 				if( current.tooltip ) {
 					Morebits.quickForm.element.generateTooltip( label, current );
 				}
+
 				var event;
 				if( current.subgroup ) {
-					var tmpgroup = current.subgroup;  // $.extend({}, current.subgroup); really needed?
+					var tmpgroup = $.extend({}, current.subgroup);  // yes, this is really needed
 
 					if( ! $.isArray( tmpgroup ) ) {
 						tmpgroup = [ tmpgroup ];
@@ -334,6 +330,12 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 						}
 					};
 					subnode.addEventListener( 'change', event, true );
+				}
+				// add users' event last, so it can interact with the subgroup
+				if( data.event ) {
+					subnode.addEventListener( 'change', data.event, false );
+				} else if ( current.event ) {
+					subnode.addEventListener( 'change', current.event, true );
 				}
 			}
 		}
