@@ -866,11 +866,9 @@ Twinkle.config.init = function twinkleconfigInit() {
 		skinjs.load(Twinkle.config.legacyPrefsNotice);
 
 		// start a table of contents
-		var toctable = document.createElement("table");
+		var toctable = document.createElement("div");
 		toctable.className = "toc";
 		toctable.style.marginLeft = "0.4em";
-		var toctr = document.createElement("tr");
-		var toctd = document.createElement("td");
 		// create TOC title
 		var toctitle = document.createElement("div");
 		toctitle.id = "toctitle";
@@ -888,7 +886,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		toctoggle.appendChild(toctogglelink);
 		toctoggle.appendChild(document.createTextNode("]"));
 		toctitle.appendChild(toctoggle);
-		toctd.appendChild(toctitle);
+		toctable.appendChild(toctitle);
 		// create item container: this is what we add stuff to
 		var tocul = document.createElement("ul");
 		toctogglelink.addEventListener("click", function twinkleconfigTocToggle() {
@@ -900,9 +898,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 				toctogglelink.textContent = "show";
 			}
 		}, false);
-		toctd.appendChild(tocul);
-		toctr.appendChild(toctd);
-		toctable.appendChild(toctr);
+		toctable.appendChild(tocul);
 		contentdiv.appendChild(toctable);
 
 		var tocnumber = 1;
