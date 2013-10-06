@@ -278,7 +278,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 
 				var event;
 				if( current.subgroup ) {
-					var tmpgroup = $.extend({}, current.subgroup);  // yes, this is really needed
+					var tmpgroup = current.subgroup;
 
 					if( ! $.isArray( tmpgroup ) ) {
 						tmpgroup = [ tmpgroup ];
@@ -289,11 +289,12 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 						id: id + '_' + i + '_subgroup'
 					});
 					$.each( tmpgroup, function( idx, el ) {
-						if( ! el.type ) {
-							el.type = data.type;
+						var newEl = $.extend( {}, el );
+						if( ! newEl.type ) {
+							newEl.type = data.type;
 						}
-						el.name = (current.name || data.name) + '.' + el.name;
-						subgroupRaw.append( el );
+						newEl.name = (current.name || data.name) + '.' + newEl.name;
+						subgroupRaw.append( newEl );
 					} );
 
 					var subgroup = subgroupRaw.render( cur_id );
