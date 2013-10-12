@@ -357,11 +357,6 @@ Twinkle.config.sections = [
 			type: "enum",
 			enumValues: { "buttonClick": 'When I click "Submit"', "radioClick": "As soon as I click an option" }
 		},
-		{
-			name: "speedyPromptOnG7",
-			label: "Prompt for rationale when tagging with G7 (author request)",
-			type: "boolean"
-		},
 
 		// TwinkleConfig.watchSpeedyPages (array)
 		// Whether to add speedy tagged pages to watchlist
