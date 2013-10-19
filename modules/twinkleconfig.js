@@ -1169,7 +1169,9 @@ Twinkle.config.init = function twinkleconfigInit() {
 			location.hash = location.hash;
 		}
 
-	} else if (mw.config.get("wgNamespaceNumber") === mw.config.get("wgNamespaceIds").user) {
+	} else if (mw.config.get("wgNamespaceNumber") === mw.config.get("wgNamespaceIds").user &&
+			mw.config.get("wgTitle").indexOf(mw.config.get("wgUserName")) === 0 &&
+			mw.config.get("wgPageName").slice(-3) === ".js") {
 
 		var box = document.createElement("div");
 		box.setAttribute("id", "twinkle-config-headerbox");
@@ -1179,8 +1181,11 @@ Twinkle.config.init = function twinkleconfigInit() {
 		box.style.margin = "0.5em auto";
 		box.style.textAlign = "center";
 
-		var link;
-		if (mw.config.get("wgTitle") === mw.config.get("wgUserName") + "/twinkleoptions.js") {
+		var link,
+			scriptPageName = mw.config.get("wgPageName").slice(mw.config.get("wgPageName").lastIndexOf("/") + 1,
+				mw.config.get("wgPageName").lastIndexOf(".js"));
+
+		if (scriptPageName === "twinkleoptions") {
 			// place "why not try the preference panel" notice
 			box.style.fontWeight = "bold";
 			box.style.width = "80%";
@@ -1198,8 +1203,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			box.appendChild(document.createTextNode(", or by editing this page."));
 			$(box).insertAfter($("#contentSub"));
 
-		} else if (mw.config.get("wgTitle").indexOf(mw.config.get("wgUserName")) === 0 &&
-				mw.config.get("wgPageName").lastIndexOf(".js") === mw.config.get("wgPageName").length - 3) {
+		} else if (["monobook", "vector", "cologneblue", "modern", "common"].indexOf(scriptPageName) !== -1) {
 			// place "Looking for Twinkle options?" notice
 			box.style.width = "60%";
 
