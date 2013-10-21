@@ -85,6 +85,11 @@ form.quickform textarea
 	font-size: 150%;
 }
 
+form.quickform input:disabled + label
+{
+	color: gray;
+}
+
 form.quickform span.quickformDescription
 {
 	font-style: italic;
