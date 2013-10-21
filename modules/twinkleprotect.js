@@ -151,6 +151,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 	var field_preset;
 	var field1;
 	var field2;
+	var isTemplate = mw.config.get("wgNamespaceNumber") === 10 || mw.config.get("wgNamespaceNumber") === 828;
 
 	switch (e.target.values) {
 		case 'protect':
@@ -160,7 +161,11 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					name: 'category',
 					label: 'Choose a preset:',
 					event: Twinkle.protect.callback.changePreset,
-					list: (mw.config.get('wgArticleId') ? Twinkle.protect.protectionTypes : Twinkle.protect.protectionTypesCreate)
+					list: (mw.config.get('wgArticleId') ? 
+						Twinkle.protect.protectionTypes.filter(function(k, v) {
+							return isTemplate || v.label !== 'Template protection';
+						}) : 
+						Twinkle.protect.protectionTypesCreate)
 				});
 
 			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Protection options', name: 'field2' });
@@ -196,6 +201,13 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						label: 'Autoconfirmed',
 						value: 'autoconfirmed'
 					});
+				if (isTemplate) {
+					editlevel.append({
+							type: 'option',
+							label: 'Template editor',
+							value: 'templateeditor'
+						});
+				}
 				editlevel.append({
 						type: 'option',
 						label: 'Sysop',
@@ -260,6 +272,13 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						label: 'Autoconfirmed',
 						value: 'autoconfirmed'
 					});
+				if (isTemplate) {
+					movelevel.append({
+							type: 'option',
+							label: 'Template editor',
+							value: 'templateeditor'
+						});
+				}
 				movelevel.append({
 						type: 'option',
 						label: 'Sysop',
@@ -376,6 +395,13 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						label: 'Autoconfirmed',
 						value: 'autoconfirmed'
 					});
+				if (isTemplate) {
+					createlevel.append({
+							type: 'option',
+							label: 'Template editor',
+							value: 'templateeditor'
+						});
+				}
 				createlevel.append({
 						type: 'option',
 						label: 'Sysop',
@@ -573,8 +599,13 @@ Twinkle.protect.protectionTypes = [
 			{ label: 'Generic (full)', value: 'pp-protected' },
 			{ label: 'Content dispute/edit warring (full)', value: 'pp-dispute' },
 			{ label: 'Persistent vandalism (full)', value: 'pp-vandalism' },
-			{ label: 'Highly visible template (full)', value: 'pp-template' },
 			{ label: 'User talk of blocked user (full)', value: 'pp-usertalk' }
+		]
+	},
+	{
+		label: 'Template protection',
+		list: [
+			{ label: 'Highly visible template (TE)', value: 'pp-template' }
 		]
 	},
 	{
@@ -637,15 +668,15 @@ Twinkle.protect.protectionPresetsInfo = {
 		move: 'sysop',
 		reason: 'Persistent [[WP:Vandalism|vandalism]]'
 	},
-	'pp-template': {
-		edit: 'sysop',
-		move: 'sysop',
-		reason: '[[WP:High-risk templates|Highly visible template]]'
-	},
 	'pp-usertalk': {
 		edit: 'sysop',
 		move: 'sysop',
 		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]'
+	},
+	'pp-template': {
+		edit: 'templateeditor',
+		move: 'templateeditor',
+		reason: '[[WP:High-risk templates|Highly visible template]]'
 	},
 	'pp-semi-vandalism': {
 		edit: 'autoconfirmed',
@@ -1001,14 +1032,15 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			switch( form.category.value ) {
 				case 'pp-dispute':
 				case 'pp-vandalism':
-				case 'pp-template':
 				case 'pp-usertalk':
 				case 'pp-protected':
 					typename = 'full protection';
 					break;
+				case 'pp-template':
+					typename = 'template protection';
+					break;
 				case 'pp-semi-vandalism':
 				case 'pp-semi-usertalk':
-				case 'pp-semi-template':  // removed for now
 				case 'pp-semi-sock':
 				case 'pp-semi-blp':
 				case 'pp-semi-protected':
@@ -1047,7 +1079,6 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typereason = 'Persistent vandalism';
 					break;
 				case 'pp-template':
-				case 'pp-semi-template':  // removed for now
 					typereason = 'Highly visible template';
 					break;
 				case 'pp-usertalk':
