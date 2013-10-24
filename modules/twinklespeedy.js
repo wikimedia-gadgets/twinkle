@@ -591,7 +591,7 @@ Twinkle.speedy.articleList = [
 		}
 	},
 	{
-		label: 'A11: Obviously made up',
+		label: 'A11: Obviously made up by creator, and no claim of significance',
 		value: 'madeup',
 		tooltip: 'An article which plainly indicates that the subject was invented/coined/discovered by the article\'s creator or someone they know personally, and does not credibly indicate why its subject is important or significant'
 	}
