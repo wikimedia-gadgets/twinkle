@@ -13,9 +13,10 @@
  * Config directives in:   TwinkleConfig
  *
  * NOTE FOR DEVELOPERS:
- *   If adding a new criterion, check out the default values of the CSD preferences
- *   in twinkle.header.js, and add your new criterion to those if you think it would
- *   be good. 
+ *   If adding a new criterion, add it to the appropriate places at the top of
+ *   twinkleconfig.js.  Also check out the default values of the CSD preferences
+ *   in twinkle.js, and add your new criterion to those if you think it would be
+ *   good.
  */
 
 Twinkle.speedy = function twinklespeedy() {
