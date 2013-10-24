@@ -483,7 +483,7 @@ Twinkle.speedy.fileList = [
 		}
 	},
 	{
-		label: 'F10: Useless media file',
+		label: 'F10: Useless non-media file',
 		value: 'badfiletype',
 		tooltip: 'Files uploaded that are neither image, sound, nor video files (e.g. .doc, .pdf, or .xls files) which are not used in any article and have no foreseeable encyclopedic use'
 	},
