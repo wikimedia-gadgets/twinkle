@@ -589,6 +589,11 @@ Twinkle.speedy.articleList = [
 			type: 'input',
 			label: 'Article that is duplicated: '
 		}
+	},
+	{
+		label: 'A11: Obviously made up',
+		value: 'madeup',
+		tooltip: 'An article which plainly indicates that the subject was invented/coined/discovered by the article\'s creator or someone they know personally, and does not credibly indicate why its subject is important or significant'
 	}
 ];
 
@@ -964,6 +969,7 @@ Twinkle.speedy.normalizeHash = {
 	'event': 'a7',
 	'a9': 'a9',
 	'a10': 'a10',
+	'madeup': 'a11',
 	'rediruser': 'r2',
 	'redirtypo': 'r3',
 	'redundantimage': 'f1',
@@ -1033,6 +1039,7 @@ Twinkle.speedy.reasonHash = {
 	'event': 'No explanation of the subject\'s significance (event)',
 	'a9': 'Music recording by redlinked artist and no indication of importance or significance',
 	'a10': 'Recently created article that duplicates an existing topic',
+	'madeup': 'Obviously made up',
 // Images and media
 	'redundantimage': 'File redundant to another on Wikipedia',
 	'noimage': 'Corrupt or empty file',
