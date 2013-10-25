@@ -162,7 +162,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					label: 'Choose a preset:',
 					event: Twinkle.protect.callback.changePreset,
 					list: (mw.config.get('wgArticleId') ? 
-						Twinkle.protect.protectionTypes.filter(function(k, v) {
+						Twinkle.protect.protectionTypes.filter(function(v) {
 							return isTemplate || v.label !== 'Template protection';
 						}) : 
 						Twinkle.protect.protectionTypesCreate)
