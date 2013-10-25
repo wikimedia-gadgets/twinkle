@@ -658,14 +658,13 @@ Twinkle.arv.callback.evaluate = function(e) {
 		case 'an3':
 			var diffs = $.map( $('input:checkbox[name=s_diffs]:checked',form), function(o){ return $(o).data('revinfo'); });
 
-			if(diffs.length < 3) {
-				alert("You must select at least three offending edits.");
+			if (diffs.length < 3 && !confirm("You have selected fewer than three offending edits. Do you wish to make the report anyway?")) {
 				return;
 			}
 
 			var warnings = $.map( $('input:checkbox[name=s_warnings]:checked',form), function(o){ return $(o).data('revinfo'); });
 
-			if(!warnings.length && !confirm("You have not selected any edits where you warn the offender; You wish to make the report anyway?")) {
+			if(!warnings.length && !confirm("You have not selected any edits where you warned the offender. Do you wish to make the report anyway?")) {
 				return;
 			}
 
@@ -673,7 +672,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			var free_resolves = $('input[name=s_resolves_free]').val();
 
 			var an3_next = function(free_resolves) {
-				if(!resolves.length && !free_resolves && !confirm("You have not selected any edits where you tries to resolve the issue; You wish to make the report anyway?")) {
+				if(!resolves.length && !free_resolves && !confirm("You have not selected any edits where you tried to resolve the issue. Do you wish to make the report anyway?")) {
 					return;
 				}
 
