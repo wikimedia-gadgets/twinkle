@@ -238,7 +238,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcome-anon",
 				"welcome-anon-border",
 				"welcome-anon-test",
-				"welcome-anon-vandal",
+				"welcome-anon-unconstructive",
 				"welcome-anon-constructive"
 			]);
 			break;
@@ -439,10 +439,10 @@ Twinkle.welcome.templates = {
 		linkedArticle: true,
 		syntax: "{{subst:welcome-anon-test|$ARTICLE$|$USERNAME$}} ~~~~"
 	},
-	"welcome-anon-vandal": {
-		description: "for anonymous users who have vandalized a page",
+	"welcome-anon-unconstructive": {
+		description: "for anonymous users who have vandalized or made unhelpful edits",
 		linkedArticle: true,
-		syntax: "{{subst:welcome-anon-vandal|$ARTICLE$|$USERNAME$}}"
+		syntax: "{{subst:welcome-anon-unconstructive|$ARTICLE$|$USERNAME$}}"
 	},
 	"welcome-anon-constructive": {
 		description: "for anonymous users who fight vandalism and edit constructively",
