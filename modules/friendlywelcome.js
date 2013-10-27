@@ -351,7 +351,7 @@ Twinkle.welcome.templates = {
 	"welcome-screen": {
 		description: "welcome message with clear, annotated table of 10 links",
 		linkedArticle: false,
-		syntax: "$HEADER$ {{subst:welcome-screen}}"
+		syntax: "$HEADER$ {{subst:welcome-screen|static=true}}"
 	},
 	"welcome-belated": {
 		description: "welcome for users with more substantial contributions",
