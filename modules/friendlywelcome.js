@@ -445,7 +445,7 @@ Twinkle.welcome.templates = {
 		syntax: "{{subst:welcome-anon-unconstructive|$ARTICLE$|$USERNAME$}}"
 	},
 	"welcome-anon-constructive": {
-		description: "for anonymous users who fight vandalism and edit constructively",
+		description: "for anonymous users who fight vandalism or edit constructively",
 		linkedArticle: true,
 		syntax: "{{subst:welcome-anon-constructive|art=$ARTICLE$}}"
 	},
