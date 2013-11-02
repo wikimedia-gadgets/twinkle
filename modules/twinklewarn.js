@@ -843,7 +843,8 @@ Twinkle.warn.messages = {
 		},
 		"uw-bite": {
 			label: "\"Biting\" newcomers",
-			summary: "Notice: \"Biting\" newcomers"
+			summary: "Notice: \"Biting\" newcomers",
+			suppressArticleInSummary: true  // non-standard (user name, not article), and not necessary
 		},
 		"uw-coi": {
 			label: "Conflict of Interest",
