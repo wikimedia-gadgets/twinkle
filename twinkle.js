@@ -49,6 +49,8 @@ Twinkle.defaultConfig.twinkle = {
 	protectionSummaryAd: " ([[WP:TW|TW]])",
 	userTalkPageMode: "window",
 	dialogLargeFont: false,
+	 // ARV
+	spiWatchReport: "default",
 	 // Fluff (revert and rollback)
 	openTalkPage: [ "agf", "norm", "vand" ],
 	openTalkPageOnAutoRevert: false,
