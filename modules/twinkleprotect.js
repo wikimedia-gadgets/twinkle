@@ -915,6 +915,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		break;
 	}
 
+	var tagparams;
 	if( actiontype === 'tag' || (actiontype === 'protect' && mw.config.get('wgArticleId')) ) {
 		tagparams = {
 			tag: form.tagtype.value,
