@@ -450,12 +450,24 @@ Twinkle.speedy.fileList = [
 	{
 		label: 'F7: Clearly invalid fair-use tag',
 		value: 'badfairuse',  // same as below
-		tooltip: 'This is only for files with a clearly invalid fair-use tag, such as a {{Non-free logo}} tag on a photograph of a mascot. For cases that require a waiting period (replaceable images or otherwise disputed rationales), use the options on Twinkle\'s DI tab.'
+		tooltip: 'This is only for files with a clearly invalid fair-use tag, such as a {{Non-free logo}} tag on a photograph of a mascot. For cases that require a waiting period (replaceable images or otherwise disputed rationales), use the options on Twinkle\'s DI tab.',
+		subgroup: {
+			name: 'badfairuse_reason',
+			type: 'input',
+			label: 'Optional explanation: ',
+			size: 60
+		}
 	},
 	{
 		label: 'F7: Fair-use media from a commercial image agency which is not the subject of sourced commentary',
 		value: 'badfairuse',  // same as above
 		tooltip: 'Non-free images or media from a commercial source (e.g., Associated Press, Getty), where the file itself is not the subject of sourced commentary, are considered an invalid claim of fair use and fail the strict requirements of WP:NFCC.',
+		subgroup: {
+			name: 'badfairuse_reason',
+			type: 'input',
+			label: 'Optional explanation: ',
+			size: 60
+		},
 		hideWhenMultiple: true
 	},
 	{
@@ -1671,6 +1683,12 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						return false;
 					}
 					currentParams.filename = redimage.replace(/^\s*(Image|File):/i, "");
+				}
+				break;
+
+			case 'badfairuse':  // F7
+				if (form["csd.badfairuse_reason"] && form["csd.badfairuse_reason"].value) {
+					currentParams.reason = form["csd.badfairuse_reason"].value;
 				}
 				break;
 
