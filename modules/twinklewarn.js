@@ -970,6 +970,10 @@ Twinkle.warn.messages = {
 			label: "Article is on probation",
 			summary: "Notice: Article is on probation"
 		},
+		"uw-redlink": {
+			label: "Indiscriminate removal of redlinks",
+			summary: "Notice: Be careful when removing redlinks"
+		},
 		"uw-refimprove": {
 			label: "Creating unverifiable articles",
 			summary: "Notice: Creating unverifiable articles"
