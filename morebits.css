@@ -248,6 +248,10 @@ body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 	padding: .4em .3em .5em !important;
 }
 
+body.skin-monobook .morebits-dialog .ui-dialog-titlebar {
+	line-height: 1em;
+}
+
 .morebits-dialog-scriptname {
 	font-weight: normal;
 }
