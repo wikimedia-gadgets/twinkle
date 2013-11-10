@@ -2161,7 +2161,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			prop: 'info',
 			inprop: 'protection',
 			intoken: 'protect',
-			titles: ctx.pageName
+			titles: ctx.pageName,
+			watchlist: ctx.watchlistOption
 		};
 		if (ctx.followRedirect) {
 			query.redirects = '';  // follow all redirects
