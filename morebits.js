@@ -582,13 +582,18 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 	return [ node, childContainder ];
 };
 
+Morebits.quickForm.element.autoNWSW = function() {
+	return $(this).offset().top > ($(document).scrollTop() + $(window).height() / 2) ? 'sw' : 'nw';
+};
+
 Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTooltip( node, data ) {
 	$('<span/>', {
 			'class': 'ui-icon ui-icon-help ui-icon-inline morebits-tooltip'
 		}).appendTo(node).tipsy({
 			'fallback': data.tooltip,
 			'fade': true,
-			'gravity': $.fn.tipsy.autoWE,
+			'gravity': (data.type === "input" || data.type === "select") ? 
+				Morebits.quickForm.element.autoNWSW : $.fn.tipsy.autoWE,
 			'html': true,
 			'delayOut': 250
 		});
