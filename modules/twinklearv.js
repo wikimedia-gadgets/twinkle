@@ -552,7 +552,11 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if (comment !== "" ) {
 				reason += (reason === "" ? "" : ". ") + comment;
 			}
-			reason += ". ~~~~";
+			reason = reason.trim();
+			if (reason.substr(-1) !== ".") {
+				reason += ".";
+			}
+			reason += " ~~~~";
 			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
 
 			Morebits.simpleWindow.setButtonsEnabled( false );
