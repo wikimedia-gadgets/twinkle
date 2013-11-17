@@ -417,7 +417,7 @@ Twinkle.batchprotect.callbacks = {
 		page.protect(function(pageobj) {
 			--Twinkle.batchprotect.currentProtectCounter;
 			var link = document.createElement( 'a' );
-			link.setAttribute( 'href', mw.util.wikiGetlink( apiobj.params.page ) );
+			link.setAttribute( 'href', mw.util.getUrl( apiobj.params.page ) );
 			link.appendChild( document.createTextNode( apiobj.params.page ) );
 			pageobj.getStatusElement().info( [ 'completed (' , link , ')' ] );
 		} );

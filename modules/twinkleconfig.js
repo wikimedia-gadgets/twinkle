@@ -636,7 +636,7 @@ Twinkle.config.sections = [
 		{
 			name: "blankTalkpageOnIndefBlock",
 			label: "Blank the talk page when indefinitely blocking users",
-			helptip: "See <a href=\"" + mw.util.wikiGetlink("WP:UW#Indefinitely blocked users") + "\">WP:UW</a> for more information.",
+			helptip: "See <a href=\"" + mw.util.getUrl("WP:UW#Indefinitely blocked users") + "\">WP:UW</a> for more information.",
 			adminOnly: true,
 			type: "boolean"
 		},
@@ -864,7 +864,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		// (settings in that file will still work, but they will be overwritten by twinkleoptions.js settings)
 		var contentnotice = document.createElement("p");
 		// I hate innerHTML, but this is one thing it *is* good for...
-		contentnotice.innerHTML = "<b>Before modifying your preferences here,</b> make sure you have removed any old <code>TwinkleConfig</code> and <code>FriendlyConfig</code> settings from your <a href=\"" + mw.util.wikiGetlink("Special:MyPage/skin.js") + "\" title=\"Special:MyPage/skin.js\">user JavaScript file</a>.";
+		contentnotice.innerHTML = "<b>Before modifying your preferences here,</b> make sure you have removed any old <code>TwinkleConfig</code> and <code>FriendlyConfig</code> settings from your <a href=\"" + mw.util.getUrl("Special:MyPage/skin.js") + "\" title=\"Special:MyPage/skin.js\">user JavaScript file</a>.";
 		contentdiv.appendChild(contentnotice);
 
 		// look and see if the user does in fact have any old settings in their skin JS file
@@ -1129,7 +1129,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 				if (pref.helptip) {
 					// convert mentions of templates in the helptip to clickable links
 					cell.innerHTML = pref.helptip.replace(/{{(.+?)}}/g,
-						'{{<a href="' + mw.util.wikiGetlink("Template:") + '$1" target="_blank">$1</a>}}');
+						'{{<a href="' + mw.util.getUrl("Template:") + '$1" target="_blank">$1</a>}}');
 				}
 				// add reset link (custom lists don't need this, as their config value isn't displayed on the form)
 				if (pref.type !== "customList") {
@@ -1209,7 +1209,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 				box.appendChild(document.createTextNode("You can customize Twinkle to suit your preferences by using the "));
 			}
 			link = document.createElement("a");
-			link.setAttribute("href", mw.util.wikiGetlink(mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").project] + ":Twinkle/Preferences") );
+			link.setAttribute("href", mw.util.getUrl(mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").project] + ":Twinkle/Preferences") );
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode(", or by editing this page."));
@@ -1221,7 +1221,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 			box.appendChild(document.createTextNode("If you want to set Twinkle preferences, you can use the "));
 			link = document.createElement("a");
-			link.setAttribute("href", mw.util.wikiGetlink(mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").project] + ":Twinkle/Preferences") );
+			link.setAttribute("href", mw.util.getUrl(mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").project] + ":Twinkle/Preferences") );
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode("."));
@@ -1758,7 +1758,7 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	noticebox.className = "successbox";
 	noticebox.style.fontSize = "100%";
 	noticebox.style.marginTop = "2em";
-	noticebox.innerHTML = "<p><b>Your Twinkle preferences have been saved.</b></p><p>To see the changes, you will need to <b>clear your browser cache entirely</b> (see <a href=\"" + mw.util.wikiGetlink("WP:BYPASS") + "\" title=\"WP:BYPASS\">WP:BYPASS</a> for instructions).</p>";
+	noticebox.innerHTML = "<p><b>Your Twinkle preferences have been saved.</b></p><p>To see the changes, you will need to <b>clear your browser cache entirely</b> (see <a href=\"" + mw.util.getUrl("WP:BYPASS") + "\" title=\"WP:BYPASS\">WP:BYPASS</a> for instructions).</p>";
 	Morebits.status.root.appendChild(noticebox);
 	var noticeclear = document.createElement("br");
 	noticeclear.style.clear = "both";

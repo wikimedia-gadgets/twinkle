@@ -116,7 +116,7 @@ Twinkle.batchundelete.callbacks = {
 				var wikipedia_api = new Morebits.wiki.api( "Undeleting " + title, query, function( self ) { 
 						--Twinkle.batchundelete.currentUndeleteCounter;
 						var link = document.createElement( 'a' );
-						link.setAttribute( 'href', mw.util.wikiGetlink(self.itsTitle) );
+						link.setAttribute( 'href', mw.util.getUrl(self.itsTitle) );
 						link.setAttribute( 'title', self.itsTitle );
 						link.appendChild( document.createTextNode(self.itsTitle) );
 						self.statelem.info( ['completed (',link,')'] );

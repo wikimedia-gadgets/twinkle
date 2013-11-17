@@ -957,6 +957,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					}
 				} else {
 					thispage.setCreateProtection(form.createlevel.value, form.createexpiry.value);
+					thispage.setWatchlist(false);
 				}
 
 				if (form.protectReason.value) {
@@ -1251,7 +1252,7 @@ Twinkle.protect.callbacks = {
 		var tag = rppRe.exec( text );
 
 		var rppLink = document.createElement('a');
-		rppLink.setAttribute('href', mw.util.wikiGetlink(rppPage.getPageName()) );
+		rppLink.setAttribute('href', mw.util.getUrl(rppPage.getPageName()) );
 		rppLink.appendChild(document.createTextNode(rppPage.getPageName()));
 
 		if ( tag ) {
@@ -1294,7 +1295,7 @@ Twinkle.protect.callbacks = {
 		if (text.length === originalTextLength)
 		{
 			var linknode = document.createElement('a');
-			linknode.setAttribute("href", mw.util.wikiGetlink("Wikipedia:Twinkle/Fixing RPP") );
+			linknode.setAttribute("href", mw.util.getUrl("Wikipedia:Twinkle/Fixing RPP") );
 			linknode.appendChild(document.createTextNode('How to fix RPP'));
 			statusElement.error( [ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode, '.' ] );
 			return;

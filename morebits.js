@@ -1306,7 +1306,7 @@ Morebits.wiki.actionCompleted.event = function() {
 	if( Morebits.wiki.actionCompleted.redirect ) {
 		// if it isn't a URL, make it one. TODO: This breaks on the articles 'http://', 'ftp://', and similar ones.
 		if( !( (/^\w+\:\/\//).test( Morebits.wiki.actionCompleted.redirect ) ) ) {
-			Morebits.wiki.actionCompleted.redirect = mw.util.wikiGetlink( Morebits.wiki.actionCompleted.redirect );
+			Morebits.wiki.actionCompleted.redirect = mw.util.getUrl( Morebits.wiki.actionCompleted.redirect );
 			if( Morebits.wiki.actionCompleted.followRedirect === false ) {
 				Morebits.wiki.actionCompleted.redirect += "?redirect=no";
 			}
@@ -2341,7 +2341,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			// real success
 			// default on success action - display link for edited page
 			var link = document.createElement('a');
-			link.setAttribute('href', mw.util.wikiGetlink(ctx.pageName) );
+			link.setAttribute('href', mw.util.getUrl(ctx.pageName) );
 			link.appendChild(document.createTextNode(ctx.pageName));
 			ctx.statusElement.info(['completed (', link, ')']);
 			if (ctx.onSaveSuccess) {
@@ -3377,7 +3377,7 @@ Morebits.simpleWindow.prototype = {
 			$footerlinks.append(bullet);
 		}
 		var link = document.createElement("a");
-		link.setAttribute("href", mw.util.wikiGetlink(wikiPage) );
+		link.setAttribute("href", mw.util.getUrl(wikiPage) );
 		link.setAttribute("title", wikiPage);
 		link.setAttribute("target", "_blank");
 		link.textContent = text;
