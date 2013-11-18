@@ -914,6 +914,10 @@ Twinkle.warn.messages = {
 			label: "Incomplete AFD",
 			summary: "Notice: Incomplete AFD"
 		},
+		"uw-inline-el": {
+			label: "Adding external links to the body of an article",
+			summary: "Notice: Keep external links to External links sections at the bottom of an article"
+		},
 		"uw-italicize": {
 			label: "Italicize books, films, albums, magazines, TV series, etc within articles",
 			summary: "Notice: Italicize books, films, albums, magazines, TV series, etc within articles"
