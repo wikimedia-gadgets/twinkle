@@ -64,6 +64,11 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		});
 	editlevel.append({
 			type: 'option',
+			label: 'Template editor',
+			value: 'templateeditor'
+		});
+	editlevel.append({
+			type: 'option',
 			label: 'Sysop',
 			value: 'sysop',
 			selected: true
@@ -126,6 +131,11 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			type: 'option',
 			label: 'Autoconfirmed',
 			value: 'autoconfirmed'
+		});
+	movelevel.append({
+			type: 'option',
+			label: 'Template editor',
+			value: 'templateeditor'
 		});
 	movelevel.append({
 			type: 'option',
@@ -195,6 +205,11 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			type: 'option',
 			label: 'Autoconfirmed',
 			value: 'autoconfirmed'
+		});
+	createlevel.append({
+			type: 'option',
+			label: 'Template editor',
+			value: 'templateeditor'
 		});
 	createlevel.append({
 			type: 'option',
