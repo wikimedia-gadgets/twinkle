@@ -112,19 +112,21 @@ Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtec
 
 	$(xml).find('pr, flagged').each(function(index, protectionEntry) {
 		var $protectionEntry = $(protectionEntry);
-		var type, level, expiry, cascade = false;
+		var rawtype, type, level, expiry, cascade = false;
 		
 		if (protectionEntry.tagName.toLowerCase() === "flagged") {
+			rawtype = 'stabilize';
 			type = "Pending changes";
 			level = $protectionEntry.attr('protection_level');
 			expiry = $protectionEntry.attr('protection_expiry');
 		} else {
+			rawtype = $protectionEntry.attr('type');
 			type = Morebits.string.toUpperCaseFirstChar($protectionEntry.attr('type'));
 			level = $protectionEntry.attr('level');
 			expiry = $protectionEntry.attr('expiry');
 			cascade = $protectionEntry.attr('cascade') === '';
 		}
-		current.push({type: type, level: level, expiry: expiry, cascade: cascade});
+		current.push({type: rawtype, level: level, expiry: expiry, cascade: cascade});
 		var boldnode = document.createElement('b');
 		boldnode.textContent = type + ": " + level;
 		result.push(boldnode);
