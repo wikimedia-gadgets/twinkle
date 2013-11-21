@@ -25,6 +25,8 @@ Twinkle.protect = function twinkleprotect() {
 };
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
+	Twinkle.protect.protectionLevel = null;
+
 	var Window = new Morebits.simpleWindow( 620, 530 );
 	Window.setTitle( Morebits.userIsInGroup( 'sysop' ) ? "Apply, request or tag page protection" : "Request or tag page protection" );
 	Window.setScriptName( "Twinkle" );
@@ -88,67 +90,84 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	result.actiontype[0].dispatchEvent( evt );
 
 	// get current protection level asynchronously
-	Morebits.wiki.actionCompleted.postfix = false;  // avoid Action: completed notice
 	if (Morebits.userIsInGroup('sysop')) {
-		var query = {
-			action: 'query',
-			prop: 'info|flagged',
-			inprop: 'protection',
-			titles: mw.config.get('wgPageName')
-		};
+		Morebits.wiki.actionCompleted.postfix = false;  // avoid Action: completed notice
 		Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-		var statelem = new Morebits.status("Current protection level");
-		var wpapi = new Morebits.wiki.api("retrieving...", query, Twinkle.protect.callback.protectionLevel, statelem);
-		wpapi.post();
 	}
+	Twinkle.protect.fetchProtectionLevel();
 };
 
-Twinkle.protect.protectionLevel = null;
+Twinkle.protect.protectionLevel = null;  // a string, or null if no protection (only filled for sysops)
+Twinkle.protect.currentProtectionLevels = null;  // an array of objects { type, level, expiry, cascade }
 
-Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtectionLevel(apiobj) {
-	var xml = apiobj.getXML();
-	var result = [];
-	var current = [];
+Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLevel() {
 
-	$(xml).find('pr, flagged').each(function(index, protectionEntry) {
-		var $protectionEntry = $(protectionEntry);
-		var rawtype, type, level, expiry, cascade = false;
-		
-		if (protectionEntry.tagName.toLowerCase() === "flagged") {
-			rawtype = 'stabilize';
-			type = "Pending changes";
-			level = $protectionEntry.attr('protection_level');
-			expiry = $protectionEntry.attr('protection_expiry');
-		} else {
-			rawtype = $protectionEntry.attr('type');
-			type = Morebits.string.toUpperCaseFirstChar($protectionEntry.attr('type'));
-			level = $protectionEntry.attr('level');
-			expiry = $protectionEntry.attr('expiry');
-			cascade = $protectionEntry.attr('cascade') === '';
+	var api = new mw.Api();
+	api.get({
+		format: 'json',
+		indexpageids: true,
+		action: 'query',
+		prop: 'info|flagged',
+		inprop: 'protection',
+		titles: mw.config.get('wgPageName')
+	})
+	.done(function(data){
+		var pageid = data.query.pageids[0];
+		var page = data.query.pages[pageid];
+		var result = [];
+		var current = [];
+
+		var updateResult = function(label, level, expiry, cascade) {
+			// for sysops, stringify, so they can base their decision on existing protection
+			if (Morebits.userIsInGroup('sysop')) {
+				var boldnode = document.createElement('b');
+				boldnode.textContent = label + ": " + level;
+				result.push(boldnode);
+				if (expiry === 'infinity') {
+					result.push(" (indefinite) ");
+				} else {
+					result.push(" (expires " + new Date(expiry).toUTCString() + ") ");
+				}
+				if (cascade) {
+					result.push("(cascading) ");
+				}
+			}
+		};
+
+		$.each(page.protection, function( index, protection ) {
+			current.push({
+				type: protection.type,
+				level: protection.level,
+				expiry: protection.expiry,
+				cascade: protection.cascade && protection.cascade === ''
+			});
+			updateResult( Morebits.string.toUpperCaseFirstChar(protection.type), protection.level, protection.expiry, protection.cascade );
+		});
+
+		if(page.flagged) {
+			current.push({
+				type: 'stabilize',
+				level: page.flagged.protection_level,
+				expiry: page.flagged.protection_expiry
+			});
+			// FlaggedRevision gives bad date
+			updateResult( 'Pending Changes', page.flagged.protection_level, null , false );			
+		} 
+
+		// show the protection level to sysops
+		if (Morebits.userIsInGroup('sysop')) {
+			if (!result.length) {
+				var boldnode = document.createElement('b');
+				boldnode.textContent = "no protection";
+				result.push(boldnode);
+			}
+			Twinkle.protect.protectionLevel = result;
+			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
+			Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
 		}
-		current.push({type: rawtype, level: level, expiry: expiry, cascade: cascade});
-		var boldnode = document.createElement('b');
-		boldnode.textContent = type + ": " + level;
-		result.push(boldnode);
-		if (expiry === 'infinity') {
-			result.push(" (indefinite) ");
-		} else {
-			result.push(" (expires " + new Date(expiry).toUTCString() + ") ");
-		}
-		if (cascade) {
-			result.push("(cascading) ");
-		}
+
+		Twinkle.protect.currentProtectionLevels = current;
 	});
-
-	if (!result.length) {
-		var boldnode = document.createElement('b');
-		boldnode.textContent = "no protection";
-		result.push(boldnode);
-	}
-	Twinkle.protect.protectionLevel = result;
-	Twinkle.protect.currentProtectionLevel = current;
-	apiobj.statelem.info(result);
-	window.setTimeout(function() { Morebits.wiki.actionCompleted.postfix = "completed"; }, 500);  // restore actionCompleted message
 };
 
 Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAction(e) {
@@ -540,8 +559,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 		// re-add protection level text, if it's available
 		if (Twinkle.protect.protectionLevel) {
 			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-			// seems unneeded
-			//Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
+			Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
 		}
 
 		// reduce vertical height of dialog
@@ -1301,7 +1319,7 @@ Twinkle.protect.callbacks = {
 		// else we post it under decrease
 		var increase = false;
 
-		$.each(Twinkle.protect.currentProtectionLevel, function(i,v){
+		$.each(Twinkle.protect.currentProtectionLevels, function(i,v){
 			if( Twinkle.protect.protectionWeight[Twinkle.protect.protectionPresetsInfo[params.category][v.type]] >
 				Twinkle.protect.protectionWeight[v.level] )	{
 				increase = true;
@@ -1309,7 +1327,7 @@ Twinkle.protect.callbacks = {
 			}
 		});
 
-		if ( increase || Twinkle.protect.currentProtectionLevel.length === 0 ) {
+		if ( increase || Twinkle.protect.currentProtectionLevels.length === 0 ) {
 			reg = /(\n==\s*Current requests for increase in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
 		} else {
 			reg = /(\n==\s*Current requests for reduction in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
