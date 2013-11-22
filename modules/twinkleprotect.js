@@ -25,6 +25,8 @@ Twinkle.protect = function twinkleprotect() {
 };
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
+	Twinkle.protect.protectionLevel = null;
+
 	var Window = new Morebits.simpleWindow( 620, 530 );
 	Window.setTitle( Morebits.userIsInGroup( 'sysop' ) ? "Apply, request or tag page protection" : "Request or tag page protection" );
 	Window.setScriptName( "Twinkle" );
@@ -562,8 +564,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 		// re-add protection level text, if it's available
 		if (Twinkle.protect.protectionLevel) {
 			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-			// seems unneeded
-			//Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
+			Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
 		}
 
 		// reduce vertical height of dialog
