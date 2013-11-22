@@ -25,6 +25,8 @@ Twinkle.protect = function twinkleprotect() {
 };
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
+	Twinkle.protect.protectionLevel = null;
+
 	var Window = new Morebits.simpleWindow( 620, 530 );
 	Window.setTitle( Morebits.userIsInGroup( 'sysop' ) ? "Apply, request or tag page protection" : "Request or tag page protection" );
 	Window.setScriptName( "Twinkle" );
@@ -88,22 +90,28 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	result.actiontype[0].dispatchEvent( evt );
 
 	// get current protection level asynchronously
-	Morebits.wiki.actionCompleted.postfix = false;  // avoid Action: completed notice
 	if (Morebits.userIsInGroup('sysop')) {
-		var query = {
-			action: 'query',
-			prop: 'info|flagged',
-			inprop: 'protection',
-			titles: mw.config.get('wgPageName')
-		};
+		Morebits.wiki.actionCompleted.postfix = false;  // avoid Action: completed notice
 		Morebits.status.init($('div[name="currentprot"] span').last()[0]);
 		var statelem = new Morebits.status("Current protection level");
-		var wpapi = new Morebits.wiki.api("retrieving...", query, Twinkle.protect.callback.protectionLevel, statelem);
-		wpapi.post();
+		Twinkle.protect.fetchProtectionLevel(statelem);
 	}
 };
 
-Twinkle.protect.protectionLevel = null;
+Twinkle.protect.protectionLevel = null;  // a string, or null if no protection (only filled for sysops)
+Twinkle.protect.currentProtectionLevel = null;  // an array of objects { type, level, expiry, cascade }
+
+Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLevel(statelem, onSuccess) {
+	var query = {
+		action: 'query',
+		prop: 'info|flagged',
+		inprop: 'protection',
+		titles: mw.config.get('wgPageName')
+	};
+	var wpapi = new Morebits.wiki.api("retrieving...", query, Twinkle.protect.callback.protectionLevel, statelem);
+	wpapi.fetchSuccess = onSuccess;
+	wpapi.post();
+};
 
 Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtectionLevel(apiobj) {
 	var xml = apiobj.getXML();
@@ -126,29 +134,45 @@ Twinkle.protect.callback.protectionLevel = function twinkleprotectCallbackProtec
 			expiry = $protectionEntry.attr('expiry');
 			cascade = $protectionEntry.attr('cascade') === '';
 		}
+		
+		// store protection entry, for all users (used for RPP)
 		current.push({type: rawtype, level: level, expiry: expiry, cascade: cascade});
-		var boldnode = document.createElement('b');
-		boldnode.textContent = type + ": " + level;
-		result.push(boldnode);
-		if (expiry === 'infinity') {
-			result.push(" (indefinite) ");
-		} else {
-			result.push(" (expires " + new Date(expiry).toUTCString() + ") ");
-		}
-		if (cascade) {
-			result.push("(cascading) ");
+		
+		// for sysops, stringify, so they can base their decision on existing protection
+		if (Morebits.userIsInGroup('sysop')) {
+			var boldnode = document.createElement('b');
+			boldnode.textContent = type + ": " + level;
+			result.push(boldnode);
+			if (expiry === 'infinity') {
+				result.push(" (indefinite) ");
+			} else {
+				result.push(" (expires " + new Date(expiry).toUTCString() + ") ");
+			}
+			if (cascade) {
+				result.push("(cascading) ");
+			}
 		}
 	});
 
-	if (!result.length) {
-		var boldnode = document.createElement('b');
-		boldnode.textContent = "no protection";
-		result.push(boldnode);
-	}
-	Twinkle.protect.protectionLevel = result;
 	Twinkle.protect.currentProtectionLevel = current;
-	apiobj.statelem.info(result);
-	window.setTimeout(function() { Morebits.wiki.actionCompleted.postfix = "completed"; }, 500);  // restore actionCompleted message
+	
+	// show the protection level to sysops
+	if (Morebits.userIsInGroup('sysop')) {
+		if (!result.length) {
+			var boldnode = document.createElement('b');
+			boldnode.textContent = "no protection";
+			result.push(boldnode);
+		}
+		Twinkle.protect.protectionLevel = result;
+		apiobj.statelem.info(result);
+		window.setTimeout(function() { Morebits.wiki.actionCompleted.postfix = "completed"; }, 500);  // restore actionCompleted message
+	} else {
+		apiobj.statelem.info("done");
+	}
+
+	if (apiobj.fetchSuccess) {
+		apiobj.fetchSuccess();
+	}
 };
 
 Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAction(e) {
@@ -540,8 +564,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 		// re-add protection level text, if it's available
 		if (Twinkle.protect.protectionLevel) {
 			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-			// seems unneeded
-			//Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
+			Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
 		}
 
 		// reduce vertical height of dialog
@@ -1295,41 +1318,50 @@ Twinkle.protect.callbacks = {
 		newtag += "'''" + Morebits.string.toUpperCaseFirstChar(words) + ( params.reason !== '' ? ( ":''' " + 
 			Morebits.string.formatReasonText(params.reason) ) : ".'''" ) + " ~~~~";
 
-		var reg;
+		var finalWork = function() {
+			var reg;
 
-		// If either protection type results in a increased status, then post it under increase
-		// else we post it under decrease
-		var increase = false;
+			// If either protection type results in a increased status, then post it under increase
+			// else we post it under decrease
+			var increase = false;
 
-		$.each(Twinkle.protect.currentProtectionLevel, function(i,v){
-			if( Twinkle.protect.protectionWeight[Twinkle.protect.protectionPresetsInfo[params.category][v.type]] >
-				Twinkle.protect.protectionWeight[v.level] )	{
-				increase = true;
-				return false;
+			$.each(Twinkle.protect.currentProtectionLevel, function(i,v){
+				if( Twinkle.protect.protectionWeight[Twinkle.protect.protectionPresetsInfo[params.category][v.type]] >
+					Twinkle.protect.protectionWeight[v.level] )	{
+					increase = true;
+					return false;
+				}
+			});
+
+			if ( increase || Twinkle.protect.currentProtectionLevel.length === 0 ) {
+				reg = /(\n==\s*Current requests for increase in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
+			} else {
+				reg = /(\n==\s*Current requests for reduction in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
 			}
-		});
+			var originalTextLength = text.length;
+			text = text.replace( reg, "$1" + newtag + "\n");
+			if (text.length === originalTextLength)
+			{
+				var linknode = document.createElement('a');
+				linknode.setAttribute("href", mw.util.getUrl("Wikipedia:Twinkle/Fixing RPP") );
+				linknode.appendChild(document.createTextNode('How to fix RPP'));
+				statusElement.error( [ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode, '.' ] );
+				return;
+			}
+			statusElement.status( 'Adding new request...' );
+			rppPage.setEditSummary( "Requesting " + params.typename + (params.typename === "pending changes" ? ' on [[' : ' of [[') +
+				Morebits.pageNameNorm + ']].' + Twinkle.getPref('summaryAd') );
+			rppPage.setPageText( text );
+			rppPage.setCreateOption( 'recreate' );
+			rppPage.save();
+		};
 
-		if ( increase || Twinkle.protect.currentProtectionLevel.length === 0 ) {
-			reg = /(\n==\s*Current requests for increase in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
+		if (Twinkle.protect.currentProtectionLevel) {
+			finalWork();
 		} else {
-			reg = /(\n==\s*Current requests for reduction in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
+			Twinkle.protect.fetchProtectionLevel(new Morebits.status("Fetching current protection level"),
+				finalWork);
 		}
-		var originalTextLength = text.length;
-		text = text.replace( reg, "$1" + newtag + "\n");
-		if (text.length === originalTextLength)
-		{
-			var linknode = document.createElement('a');
-			linknode.setAttribute("href", mw.util.getUrl("Wikipedia:Twinkle/Fixing RPP") );
-			linknode.appendChild(document.createTextNode('How to fix RPP'));
-			statusElement.error( [ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode, '.' ] );
-			return;
-		}
-		statusElement.status( 'Adding new request...' );
-		rppPage.setEditSummary( "Requesting " + params.typename + (params.typename === "pending changes" ? ' on [[' : ' of [[') +
-			Morebits.pageNameNorm + ']].' + Twinkle.getPref('summaryAd') );
-		rppPage.setPageText( text );
-		rppPage.setCreateOption( 'recreate' );
-		rppPage.save();
 	}
 };
 })(jQuery);
