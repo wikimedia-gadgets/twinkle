@@ -50,7 +50,7 @@ Twinkle.defaultConfig.twinkle = {
 	userTalkPageMode: "window",
 	dialogLargeFont: false,
 	 // ARV
-	spiWatchReport: "default",
+	spiWatchReport: "yes",
 	 // Fluff (revert and rollback)
 	openTalkPage: [ "agf", "norm", "vand" ],
 	openTalkPageOnAutoRevert: false,
