@@ -135,13 +135,15 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		};
 
 		$.each(page.protection, function( index, protection ) {
-			current.push({
-				type: protection.type,
-				level: protection.level,
-				expiry: protection.expiry,
-				cascade: protection.cascade && protection.cascade === ''
-			});
-			updateResult( Morebits.string.toUpperCaseFirstChar(protection.type), protection.level, protection.expiry, protection.cascade );
+			if (protection.type !== "aft") {
+				current.push({
+					type: protection.type,
+					level: protection.level,
+					expiry: protection.expiry,
+					cascade: protection.cascade && protection.cascade === ''
+				});
+				updateResult( Morebits.string.toUpperCaseFirstChar(protection.type), protection.level, protection.expiry, protection.cascade );
+			}
 		});
 
 		if(page.flagged) {
