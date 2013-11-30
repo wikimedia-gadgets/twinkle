@@ -1892,6 +1892,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (ctx.editMode === 'all') {
 			ctx.loadQuery.rvprop = 'content|timestamp';  // get the page content at the same time, if needed
 		} else if (ctx.editMode === 'revert') {
+			ctx.loadQuery.rvprop = 'timestamp';
 			ctx.loadQuery.rvlimit = 1;
 			ctx.loadQuery.rvstartid = ctx.revertOldID;
 		}
