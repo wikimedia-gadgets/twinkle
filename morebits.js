@@ -1890,8 +1890,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		};
 
 		if (ctx.editMode === 'all') {
-			ctx.loadQuery.rvprop = 'content';  // get the page content at the same time, if needed
+			ctx.loadQuery.rvprop = 'content|timestamp';  // get the page content at the same time, if needed
 		} else if (ctx.editMode === 'revert') {
+			ctx.loadQuery.rvprop = 'timestamp';
 			ctx.loadQuery.rvlimit = 1;
 			ctx.loadQuery.rvstartid = ctx.revertOldID;
 		}
@@ -2265,7 +2266,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.onLoadFailure(this);
 			return;
 		}
-		ctx.lastEditTime = $(xml).find('page').attr('touched');
+		ctx.lastEditTime = $(xml).find('rev').attr('timestamp');
 		ctx.revertCurID = $(xml).find('page').attr('lastrevid');
 
 		if (ctx.editMode === 'revert') {
