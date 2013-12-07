@@ -306,7 +306,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						label: 'File for deletion',
 						value: 'ffd',
 						tooltip: 'General deletion discussion',
-						checked: true
+						checked: mw.config.get('wgNamespaceNumber') === 6
 					},
 					{
 						label: 'Possibly unfree file',
@@ -316,7 +316,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					{
 						label: 'Non-free content review',
 						value: 'nfcr',
-						tooltip: 'File\'s compliance with non-free content criteria ([[WP:NFCC]]) is disputed. User notification does not occur for NFCR, as it is not deemed relevant.'
+						tooltip: 'File\'s compliance with non-free content criteria ([[WP:NFCC]]) is disputed. User notification does not occur for NFCR, as it is not deemed relevant.',
+						checked: mw.config.get('wgNamespaceNumber') !== 6
 					}
 				]
 			} );
@@ -1628,7 +1629,9 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging file with review tag");
 				wikipedia_page.setFollowRedirect(true);
 				wikipedia_page.setPrependText("{{non-free review}}\n");
-				wikipedia_page.setEditSummary("This image has been listed for review at [[Wikipedia:Non-free content review#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+				wikipedia_page.setEditSummary("This " +
+					(mw.config.get('wgNamespaceNumber') === 6 ? "file" : "page") +
+					" has been listed for review at [[Wikipedia:Non-free content review#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 				switch (Twinkle.getPref('xfdWatchPage')) {
 					case 'yes':
 						wikipedia_page.setWatchlist(true);
