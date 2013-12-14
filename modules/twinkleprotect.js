@@ -97,8 +97,13 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	Twinkle.protect.fetchProtectionLevel();
 };
 
-Twinkle.protect.protectionLevel = null;  // a string, or null if no protection (only filled for sysops)
-Twinkle.protect.currentProtectionLevels = null;  // an array of objects { type, level, expiry, cascade }
+// Current protection level in a human-readable format
+// (a string, or null if no protection; only filled for sysops)
+Twinkle.protect.protectionLevel = null;  
+// Contains the current protection level in an object
+// Once filled, it will look something like:
+// { edit: { level: "sysop", expiry: <some date>, cascade: true }, ... }
+Twinkle.protect.currentProtectionLevels = {};
 
 Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLevel() {
 
@@ -115,7 +120,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		var pageid = data.query.pageids[0];
 		var page = data.query.pages[pageid];
 		var result = [];
-		var current = [];
+		var current = {};
 
 		var updateResult = function(label, level, expiry, cascade) {
 			// for sysops, stringify, so they can base their decision on existing protection
@@ -136,24 +141,22 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 
 		$.each(page.protection, function( index, protection ) {
 			if (protection.type !== "aft") {
-				current.push({
-					type: protection.type,
+				current[protection.type] = {
 					level: protection.level,
 					expiry: protection.expiry,
-					cascade: protection.cascade && protection.cascade === ''
-				});
+					cascade: protection.cascade === ''
+				};
 				updateResult( Morebits.string.toUpperCaseFirstChar(protection.type), protection.level, protection.expiry, protection.cascade );
 			}
 		});
 
 		if(page.flagged) {
-			current.push({
-				type: 'stabilize',
+			current.stabilize = {
 				level: page.flagged.protection_level,
 				expiry: page.flagged.protection_expiry
-			});
+			};
 			// FlaggedRevision gives bad date
-			updateResult( 'Pending Changes', page.flagged.protection_level, null , false );			
+			updateResult( 'Pending Changes', page.flagged.protection_level, page.flagged.protection_expiry, false );			
 		} 
 
 		// show the protection level to sysops
@@ -674,11 +677,16 @@ Twinkle.protect.protectionTypesCreate = [
 	}
 ];
 
+// A page with both regular and PC protection will be assigned its regular
+// protection weight plus 2 (for PC1) or 7 (for PC2)
 Twinkle.protect.protectionWeight = {
-	sysop: 3,
-	templateeditor: 2,
-	autoconfirmed: 1,
-	all: 0
+	sysop: 30,
+	templateeditor: 20,
+	flaggedrevs_review: 16,  // Pending Changes level 2 protection alone
+	flaggedrevs_autoconfirmed: 11,  // Pending Changes level 1 protection alone
+	autoconfirmed: 10,
+	all: 0,
+	flaggedrevs_none: 0  // just in case
 };
 
 // NOTICE: keep this synched with [[MediaWiki:Protect-dropdown]]
@@ -692,7 +700,7 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-dispute': {
 		edit: 'sysop',
 		move: 'sysop',
-		reason: '[[WP:PP#Content disputes|Edit warring / Content dispute]]'
+		reason: '[[WP:PP#Content disputes|Edit warring / content dispute]]'
 	},
 	'pp-vandalism': {
 		edit: 'sysop',
@@ -716,7 +724,7 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-semi-blp': {
 		edit: 'autoconfirmed',
-		reason: 'Violations of the [[WP:Biographies of living persons|biographies of living persons policy]]'
+		reason: 'Violations of the [[WP:BLP|biographies of living persons policy]]'
 	},
 	'pp-semi-usertalk': {
 		edit: 'autoconfirmed',
@@ -1315,21 +1323,43 @@ Twinkle.protect.callbacks = {
 		newtag += "'''" + Morebits.string.toUpperCaseFirstChar(words) + ( params.reason !== '' ? ( ":''' " + 
 			Morebits.string.formatReasonText(params.reason) ) : ".'''" ) + " ~~~~";
 
-		var reg;
-
 		// If either protection type results in a increased status, then post it under increase
 		// else we post it under decrease
 		var increase = false;
+		var protInfo = Twinkle.protect.protectionPresetsInfo[params.category];
 
-		$.each(Twinkle.protect.currentProtectionLevels, function(i,v){
-			if( Twinkle.protect.protectionWeight[Twinkle.protect.protectionPresetsInfo[params.category][v.type]] >
-				Twinkle.protect.protectionWeight[v.level] )	{
-				increase = true;
-				return false;
+		// function to compute protection weights (see comment at Twinkle.protect.protectionWeight)
+		var computeWeight = function(mainLevel, stabilizeLevel) {
+			var result = Twinkle.protect.protectionWeight[mainLevel || 'all'];
+			if (stabilizeLevel) {
+				if (result) {
+					if (stabilizeLevel.level === "autoconfirmed") {
+						result += 2;
+					} else if (stabilizeLevel.level === "review") {
+						result += 7;
+					}
+				} else {
+					result = Twinkle.protect.protectionWeight["flaggedrevs_" + stabilizeLevel];
+				}
 			}
-		});
+			return result;
+		};
 
-		if ( increase || Twinkle.protect.currentProtectionLevels.length === 0 ) {
+		// compare the page's current protection weights with the protection we are requesting
+		var editWeight = computeWeight(Twinkle.protect.currentProtectionLevels.edit &&
+			Twinkle.protect.currentProtectionLevels.edit.level,
+			Twinkle.protect.currentProtectionLevels.stabilize &&
+			Twinkle.protect.currentProtectionLevels.stabilize.level);
+		if (computeWeight(protInfo.edit, protInfo.stabilize) > editWeight ||
+			computeWeight(protInfo.move) > computeWeight(Twinkle.protect.currentProtectionLevels.move && 
+			Twinkle.protect.currentProtectionLevels.move.level) ||
+			computeWeight(protInfo.create) > computeWeight(Twinkle.protect.currentProtectionLevels.create && 
+			Twinkle.protect.currentProtectionLevels.create.level)) {
+			increase = true;
+		}
+
+		var reg;
+		if ( increase ) {
 			reg = /(\n==\s*Current requests for increase in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
 		} else {
 			reg = /(\n==\s*Current requests for reduction in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
