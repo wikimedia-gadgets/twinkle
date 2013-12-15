@@ -682,9 +682,9 @@ Twinkle.protect.protectionTypesCreate = [
 Twinkle.protect.protectionWeight = {
 	sysop: 30,
 	templateeditor: 20,
-	flaggedrevs_review: 16,  // Pending Changes level 2 protection alone
-	flaggedrevs_autoconfirmed: 11,  // Pending Changes level 1 protection alone
+	flaggedrevs_review: 15,  // Pending Changes level 2 protection alone
 	autoconfirmed: 10,
+	flaggedrevs_autoconfirmed: 5,  // Pending Changes level 1 protection alone
 	all: 0,
 	flaggedrevs_none: 0  // just in case
 };
