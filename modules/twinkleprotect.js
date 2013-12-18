@@ -150,7 +150,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 			}
 		});
 
-		if(page.flagged) {
+		if (page.flagged) {
 			current.stabilize = {
 				level: page.flagged.protection_level,
 				expiry: page.flagged.protection_expiry
@@ -1277,7 +1277,13 @@ Twinkle.protect.callbacks = {
 			'100': 'lp',
 			'101': 'lpt',
 			'108': 'lb',
-			'109': 'lbt'
+			'109': 'lbt',
+			'118': 'ld',
+			'119': 'ldt',
+			'710': 'lttxt',
+			'711': 'lttxtt',
+			'828': 'lmd',
+			'829': 'lmdt'
 		};
 
 		var linkTemplate = ns2tag[ mw.config.get('wgNamespaceNumber') ];
