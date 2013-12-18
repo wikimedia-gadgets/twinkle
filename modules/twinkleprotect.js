@@ -156,8 +156,8 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 				expiry: page.flagged.protection_expiry
 			};
 			// FlaggedRevision gives bad date
-			updateResult( 'Pending Changes', page.flagged.protection_level, page.flagged.protection_expiry, false );			
-		} 
+			updateResult( 'Pending Changes', page.flagged.protection_level, page.flagged.protection_expiry, false );
+		}
 
 		// show the protection level to sysops
 		if (Morebits.userIsInGroup('sysop')) {
@@ -189,10 +189,10 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					name: 'category',
 					label: 'Choose a preset:',
 					event: Twinkle.protect.callback.changePreset,
-					list: (mw.config.get('wgArticleId') ? 
+					list: (mw.config.get('wgArticleId') ?
 						Twinkle.protect.protectionTypes.filter(function(v) {
 							return isTemplate || v.label !== 'Template protection';
-						}) : 
+						}) :
 						Twinkle.protect.protectionTypesCreate)
 				});
 
@@ -1320,7 +1320,7 @@ Twinkle.protect.callbacks = {
 
 		words += params.typename;
 
-		newtag += "'''" + Morebits.string.toUpperCaseFirstChar(words) + ( params.reason !== '' ? ( ":''' " + 
+		newtag += "'''" + Morebits.string.toUpperCaseFirstChar(words) + ( params.reason !== '' ? ( ":''' " +
 			Morebits.string.formatReasonText(params.reason) ) : ".'''" ) + " ~~~~";
 
 		// If either protection type results in a increased status, then post it under increase
