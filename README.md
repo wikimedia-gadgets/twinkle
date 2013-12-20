@@ -80,4 +80,4 @@ The [jQuery Core Style Guideline][jq_style] is what we will hereafter use as our
 [Git::Repository]: http://search.cpan.org/~book/Git-Repository-1.17/lib/Git/Repository.pm
 [Mediawiki::Bot]: http://search.cpan.org/~lifeguard/MediaWiki-Bot-3.2.7/lib/MediaWiki/Bot.pm
 [App::cpanminus]: http://search.cpan.org/~miyagawa/App-cpanminus-1.4001/lib/App/cpanminus.pm
-[jq_style]: http://docs.jquery.com/JQuery_Core_Style_Guidelines
+[jq_style]: http://contribute.jquery.org/style-guide/js/
