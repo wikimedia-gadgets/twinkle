@@ -191,7 +191,16 @@ var callback_change_target = function( e ) {
 			var noticeboard = work_area.append({
 					type: "select",
 					name: "noticeboard",
-					label: "Noticeboard:"
+					label: "Noticeboard:",
+					event: function(e) {
+						if (e.target.value === "afchd") {
+							Morebits.quickForm.overrideElementLabel(e.target.form.section, "Title of draft (excluding the prefix): ");
+							Morebits.quickForm.setElementTooltipVisibility(e.target.form.section, false);
+						} else {
+							Morebits.quickForm.resetElementLabel(e.target.form.section);
+							Morebits.quickForm.setElementTooltipVisibility(e.target.form.section, true);
+						}
+					}
 				});
 			noticeboard.append({
 					type: "option",
@@ -201,7 +210,6 @@ var callback_change_target = function( e ) {
 			noticeboard.append({
 					type: "option",
 					label: "WP:AN3 (Administrators' noticeboard/Edit warring)",
-					selected: true,
 					value: "an3"
 				});
 			noticeboard.append({
@@ -209,6 +217,12 @@ var callback_change_target = function( e ) {
 					label: "WP:ANI (Administrators' noticeboard/Incidents)",
 					selected: true,
 					value: "ani"
+				});
+			// let's keep AN and its cousins at the top
+			noticeboard.append({
+					type: "option",
+					label: "WP:AFCHD (Articles for creation/Help desk)",
+					value: "afchd"
 				});
 			noticeboard.append({
 					type: "option",
@@ -222,13 +236,13 @@ var callback_change_target = function( e ) {
 				});
 			noticeboard.append({
 					type: "option",
-					label: "WP:OTRS/N (OTRS noticeboard)",
-					value: "otrs"
+					label: "WP:HD (Help desk)",
+					value: "hd"
 				});
 			noticeboard.append({
 					type: "option",
-					label: "WP:HD (Help desk)",
-					value: "hd"
+					label: "WP:OTRS/N (OTRS noticeboard)",
+					value: "otrs"
 				});
 			noticeboard.append({
 					type: "option",
@@ -333,6 +347,10 @@ var callback_evaluate = function( e ) {
 	var text;
 	if ( tbtarget === "notice" ) {
 		switch (page) {
+			case "afchd":
+				text += "\n\n{{subst:AFCHD/u|" + section + "}} ~~~~";
+				talkpage.setEditSummary( "You have replies at the [[Wikipedia:AFCHD|Articles for Creation Help Desk]]" + Twinkle.getPref("summaryAd") );
+				break;
 			case "an":
 				text = "\n\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n";
 				text += "{{subst:ANI-notice|thread=" + section + "|noticeboard=Wikipedia:Administrators' noticeboard}} ~~~~";
