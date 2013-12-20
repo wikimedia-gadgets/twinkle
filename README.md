@@ -68,15 +68,15 @@ While old legacy code has many different and incoherent styles, it has been deci
 
 The [jQuery Core Style Guideline][jq_style] is what we will hereafter use as our style guideline.
 
-[Wikipedia:Twinkle]: http://en.wikipedia.org/wiki/Wikipedia:Twinkle
-[AzaToth]: http://en.wikipedia.org/wiki/User:AzaToth
-[MediaWiki:Gadget-Twinkle.js]: http://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.js
-[User:AzaToth/twinkle.js]: http://en.wikipedia.org/wiki/User:AzaToth/twinkle.js
-[MediaWiki:Gadget-morebits.js]: http://en.wikipedia.org/wiki/MediaWiki:Gadget-morebits.js
-[User:AzaToth/morebits.js]: http://en.wikipedia.org/wiki/User:AzaToth/morebits.js
-[MediaWiki:Gadget-morebits.css]: http://en.wikipedia.org/wiki/MediaWiki:Gadget-morebits.css
-[User:AzaToth/morebits.css]: http://en.wikipedia.org/wiki/User:AzaToth/morebits.css
-[MediaWiki:Gadgets-definition]: http://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
+[Wikipedia:Twinkle]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle
+[AzaToth]: https://en.wikipedia.org/wiki/User:AzaToth
+[MediaWiki:Gadget-Twinkle.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.js
+[User:AzaToth/twinkle.js]: https://en.wikipedia.org/wiki/User:AzaToth/twinkle.js
+[MediaWiki:Gadget-morebits.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-morebits.js
+[User:AzaToth/morebits.js]: https://en.wikipedia.org/wiki/User:AzaToth/morebits.js
+[MediaWiki:Gadget-morebits.css]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-morebits.css
+[User:AzaToth/morebits.css]: https://en.wikipedia.org/wiki/User:AzaToth/morebits.css
+[MediaWiki:Gadgets-definition]: https://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
 [Git::Repository]: http://search.cpan.org/~book/Git-Repository-1.17/lib/Git/Repository.pm
 [Mediawiki::Bot]: http://search.cpan.org/~lifeguard/MediaWiki-Bot-3.2.7/lib/MediaWiki/Bot.pm
 [App::cpanminus]: http://search.cpan.org/~miyagawa/App-cpanminus-1.4001/lib/App/cpanminus.pm
