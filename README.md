@@ -77,7 +77,7 @@ The [jQuery Core Style Guideline][jq_style] is what we will hereafter use as our
 [MediaWiki:Gadget-morebits.css]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-morebits.css
 [User:AzaToth/morebits.css]: https://en.wikipedia.org/wiki/User:AzaToth/morebits.css
 [MediaWiki:Gadgets-definition]: https://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
-[Git::Repository]: http://search.cpan.org/~book/Git-Repository-1.17/lib/Git/Repository.pm
-[Mediawiki::Bot]: http://search.cpan.org/~lifeguard/MediaWiki-Bot-3.2.7/lib/MediaWiki/Bot.pm
-[App::cpanminus]: http://search.cpan.org/~miyagawa/App-cpanminus-1.4001/lib/App/cpanminus.pm
+[Git::Repository]: http://search.cpan.org/perldoc?Git%3A%3ARepository
+[MediaWiki::Bot]: http://search.cpan.org/perldoc?MediaWiki%3A%3ABot
+[App::cpanminus]: http://search.cpan.org/perldoc?App%3A%3Acpanminus
 [jq_style]: http://contribute.jquery.org/style-guide/js/
