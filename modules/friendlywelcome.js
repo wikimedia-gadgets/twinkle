@@ -223,6 +223,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			appendTemplates([
 				"welcomelaws",
 				"first article",
+				"welcometest",
 				"welcomevandal",
 				"welcomenpov",
 				"welcomespam",
@@ -385,6 +386,11 @@ Twinkle.welcome.templates = {
 		description: "for someone whose first article did not meet page creation guidelines",
 		linkedArticle: true,
 		syntax: "{{subst:first article|$ARTICLE$|$USERNAME$}}"
+	},
+	"welcometest": {
+		description: "for someone whose initial efforts appear to be tests",
+		linkedArticle: true,
+		syntax: "{{subst:welcometest|$ARTICLE$|$USERNAME$}} ~~~~"
 	},
 	"welcomevandal": {
 		description: "for someone whose initial efforts appear to be vandalism",
