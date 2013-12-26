@@ -2566,7 +2566,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 			ctx.statusElement.error( "Failed to delete the page: " + ctx.deleteProcessApi.getErrorText() );
 			if (ctx.onDeleteFailure) {
-				ctx.onDeleteFailure(this);  // invoke callback
+				ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
 			}
 		}
 	};
