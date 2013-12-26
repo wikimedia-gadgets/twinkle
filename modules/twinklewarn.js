@@ -678,7 +678,7 @@ Twinkle.warn.messages = {
 			},
 			"uw-speedy4": {
 				label: "Removing speedy deletion tags",
-				summary: "Final warning: Removing speedy deletion tags"
+				summary: "Final warning: Removing speedy-deletion tags"
 			}
 		},
 		"Other": {
@@ -847,8 +847,8 @@ Twinkle.warn.messages = {
 			suppressArticleInSummary: true  // non-standard (user name, not article), and not necessary
 		},
 		"uw-coi": {
-			label: "Conflict of Interest",
-			summary: "Notice: Conflict of Interest"
+			label: "Conflict-of-interest editing",
+			summary: "Notice: Conflict of interest"
 		},
 		"uw-controversial": {
 			label: "Introducing controversial material",
@@ -867,8 +867,8 @@ Twinkle.warn.messages = {
 			summary: "Notice: Speedy deletion declined"
 		},
 		"uw-c&pmove": {
-			label: "Cut and paste moves",
-			summary: "Notice: Cut and paste moves"
+			label: "Cut-and-paste moves",
+			summary: "Notice: Cut-and-paste moves"
 		},
 		"uw-dab": {
 			label: "Incorrect edit to a disambiguation page",
@@ -899,8 +899,8 @@ Twinkle.warn.messages = {
 			summary: "Notice: Not communicating in English"
 		},
 		"uw-fuir": {
-			label: "Fair use image has been removed from your userpage",
-			summary: "Notice: A fair use image has been removed from your userpage"
+			label: "Fair-use image has been removed from your userpage",
+			summary: "Notice: A fair-use image has been removed from your userpage"
 		},
 		"uw-hasty": {
 			label: "Hasty addition of speedy deletion tags",
@@ -963,8 +963,8 @@ Twinkle.warn.messages = {
 			summary: "Notice: Mark newpages as patrolled when patrolling"
 		},
 		"uw-plagiarism": {
-			label: "Copying from public domain sources without attribution",
-			summary: "Notice: Copying from public domain sources without attribution"
+			label: "Copying from public-domain sources without attribution",
+			summary: "Notice: Copying from public-domain sources without attribution"
 		},
 		"uw-preview": {
 			label: "Use preview button to avoid mistakes",
@@ -999,7 +999,7 @@ Twinkle.warn.messages = {
 			summary: "Notice: Rename request impossible"
 		},
 		"uw-selfrevert": {
-			label: "Reverting self tests",
+			label: "Reverting self-tests",
 			summary: "Notice: Reverting self tests"
 		},
 		"uw-socialnetwork": {
@@ -1137,7 +1137,7 @@ Twinkle.warn.messages = {
 		},
 		"uw-longterm": {
 			label: "Long term pattern of vandalism",
-			summary: "Warning: Long term pattern of vandalism"
+			summary: "Warning: Long-term pattern of vandalism"
 		},
 		"uw-multipleIPs": {
 			label: "Usage of multiple IPs",
@@ -1162,7 +1162,7 @@ Twinkle.warn.messages = {
 		},
 		"uw-coi-username": {
 			label: "Username is against policy, and conflict of interest",
-			summary: "Warning: Username and conflict of interest policy"
+			summary: "Warning: Username and conflict-of-interest policy"
 		},
 		"uw-userpage": {
 			label: "Userpage or subpage is against policy",
@@ -1282,7 +1282,7 @@ Twinkle.warn.messages = {
 			indefinite: true
 		},
 		"uw-aeblock": {
-			label: "Arbitration enforcement block",
+			label: "Arbitration-enforcement block",
 			summary: "You have been blocked from editing for violating an [[WP:Arbitration|arbitration decision]] with your edits",
 			pageParam: true,
 			reasonParam: true
