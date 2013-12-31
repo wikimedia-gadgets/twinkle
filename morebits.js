@@ -1387,7 +1387,7 @@ Morebits.wiki.api.prototype = {
 			type: 'POST',
 			url: mw.util.wikiScript('api'),
 			data: Morebits.queryString.create(this.query),
-			datatype: 'xml'
+			dataType: 'xml'
 		}, callerAjaxParameters );
 
 		return $.ajax( ajaxparams ).done(
