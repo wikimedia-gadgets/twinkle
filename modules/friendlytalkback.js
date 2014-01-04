@@ -437,7 +437,7 @@ var callback_evaluate = function( e ) {
 		                       talkpage.setEditSummary("Talkback ([[" + tbPageName + (section ? ("#" + section) : "") + "]])" + Twinkle.getPref("summaryAd"));
 		                       break;
 			       default:
-				throw "Twinkle.talkback, function callback_evaluate: default case reached";
+				       throw "Twinkle.talkback, function callback_evaluate: default case reached";
 	               }	
 		
 	} else {
