@@ -416,14 +416,12 @@ var callback_evaluate = function( e ) {
 
 	} else if ( tbtarget === "other" ){
 	               switch (page) {
-			       case "see":
+			       case "see"://{{Please see}} doesn't include support for a seperate discussion page header param. Leave it alone. 
 				       text = "{{subst:Please see|location=" + tbPageName + "}}";
 				       talkpage.setEditSummary( "Please see the discussion at [[" + tbPageName + "]]" + Twinkle.getPref("summaryAd") );
 				       break;
-	             //{{Please see}} doesn't include support for a seperate discussion page header param. Leave it alone. 
 			       case "talk":
-	                              //clean talkback heading: strip section header markers, were erroneously suggested in the documentation
-			      	       text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n{{talkback|";
+	             		       text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n{{talkback|";
 		                       text += tbPageName;
 		                       if( section ) {
 			                       text += "|" + section;
