@@ -264,14 +264,26 @@ var callback_change_target = function( e ) {
 				style: "color: red",
 				id: "twinkle-talkback-optout-message"
 			});
+			
+			work_area.append({
+					type:"option",
+					label:"Please see",
+					value: "see"
+				});
+			// We'll purposely keep talkback as default
+			work_area.append({
+					type:"option",
+					label:"Talkback",
+					selected: true,
+					value: "talk"
+				});
 			work_area.append({
 					type:"input",
 					name:"page",
 					label:"Full page name",
-					tooltip:"The full page name where you left the message. For example: 'Wikipedia talk:Twinkle'.",
+					tooltip:"The full page name where you left the message. For example: 'Wikipedia talk:Twinkle'. For please see template, please link directly to the section header.",
 					value: prev_page
 				});
-			
 			work_area.append({
 					type:"input",
 					name:"section",
@@ -402,6 +414,34 @@ var callback_evaluate = function( e ) {
 
 		talkpage.setEditSummary("Notification: You've got mail" + Twinkle.getPref("summaryAd"));
 
+	} else if ( tbtarget === "other" ){
+	               switch (page) {
+			       case "see":
+				       text = "{{subst:Please see|location=" + tbPageName + "}}";
+				       talkpage.setEditSummary( "Please see the discussion at [[" + tbPageName + "]]" + Twinkle.getPref("summaryAd") );
+				       break;
+	             //{{Please see}} doesn't include support for a seperate discussion page header param. Leave it alone. 
+			       case "talk":
+	                              //clean talkback heading: strip section header markers, were erroneously suggested in the documentation
+			      	       text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n{{talkback|";
+		                       text += tbPageName;
+		                       if( section ) {
+			                       text += "|" + section;
+				       }
+
+				       text += "|ts=~~~~~}}";
+
+		                       if( message ) {
+			                       text += "\n" + message.trim() + " ~~~~";
+		                       } else if( Twinkle.getFriendlyPref("insertTalkbackSignature") ) {
+			                       text += "\n~~~~";
+		                       }
+		                       talkpage.setEditSummary("Talkback ([[" + tbPageName + (section ? ("#" + section) : "") + "]])" + Twinkle.getPref("summaryAd"));
+		                       break;
+			       default:
+				throw "Twinkle.talkback, function callback_evaluate: default case reached";
+	               }	
+		
 	} else {
 		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
 		text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n{{talkback|";
@@ -419,7 +459,7 @@ var callback_evaluate = function( e ) {
 			text += "\n~~~~";
 		}
 
-		talkpage.setEditSummary("Talkback ([[" + (tbtarget === "other" ? "" : "User talk:") + tbPageName +
+		talkpage.setEditSummary("Talkback ([[" + tbPageName +
 			(section ? ("#" + section) : "") + "]])" + Twinkle.getPref("summaryAd"));
 	}
 
