@@ -1626,25 +1626,26 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
 
 				// Tagging file
-				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging file with review tag");
-				wikipedia_page.setFollowRedirect(true);
-				wikipedia_page.setPrependText("{{non-free review}}\n");
-				wikipedia_page.setEditSummary("This " +
-					(mw.config.get('wgNamespaceNumber') === 6 ? "file" : "page") +
-					" has been listed for review at [[Wikipedia:Non-free content review#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-				switch (Twinkle.getPref('xfdWatchPage')) {
-					case 'yes':
-						wikipedia_page.setWatchlist(true);
-						break;
-					case 'no':
-						wikipedia_page.setWatchlistFromPreferences(false);
-						break;
-					default:
-						wikipedia_page.setWatchlistFromPreferences(true);
-						break;
+				if (mw.config.get('wgNamespaceNumber') === 6) {
+					wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging file with review tag");
+					wikipedia_page.setFollowRedirect(true);
+					wikipedia_page.setPrependText("{{non-free review}}\n");
+					wikipedia_page.setEditSummary("This file" +
+						" has been listed for review at [[Wikipedia:Non-free content review#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+					switch (Twinkle.getPref('xfdWatchPage')) {
+						case 'yes':
+							wikipedia_page.setWatchlist(true);
+							break;
+						case 'no':
+							wikipedia_page.setWatchlistFromPreferences(false);
+							break;
+						default:
+							wikipedia_page.setWatchlistFromPreferences(true);
+							break;
+					}
+					wikipedia_page.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
+					wikipedia_page.prepend();
 				}
-				wikipedia_page.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
-				wikipedia_page.prepend();
 
 				// Adding discussion
 				wikipedia_page = new Morebits.wiki.page("Wikipedia:Non-free content review", "Adding discussion to the NFCR page");
