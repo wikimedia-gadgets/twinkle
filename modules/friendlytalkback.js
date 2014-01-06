@@ -58,6 +58,10 @@ Twinkle.talkback.callback = function( ) {
 						label: "\"You've got mail\"",
 						value: "mail"
 					}
+					{
+						label: "\"Please see\"",
+						value: "see"
+					}
 				],
 				event: callback_change_target
 			});
@@ -288,7 +292,23 @@ var callback_change_target = function( e ) {
 					tooltip:"The subject line of the email you sent."
 				});
 			break;
-	}
+		case "see":
+			work_area.append({
+					type:"input",
+					name:"page",
+					label:"Full page name (required)",
+					tooltip:"The full page name of where the discussion is being held. For example: 'Wikipedia talk:Twinkle'."
+					value: prev_page
+				});
+			work_area.append({
+					type:"input",
+					name:"section",
+					label:"Linked section (required)"
+					tooltip:"The full name of the section on the page where the discussion is being held."
+					value: prev_section
+				});
+			break;
+		}
 
 	if (value !== "notice") {
 		work_area.append({ type:"textarea", label:"Additional message (optional):", name:"message", tooltip:"An additional message that you would like to leave below the talkback template. Your signature will be added to the end of the message if you leave one." });
@@ -312,7 +332,7 @@ var callback_evaluate = function( e ) {
 	var section = e.target.section.value;
 	var fullUserTalkPageName = mw.config.get("wgFormattedNamespaces")[ mw.config.get("wgNamespaceIds").user_talk ] + ":" + Morebits.getPageAssociatedUser();
 
-	if( tbtarget === "usertalk" || tbtarget === "other" ) {
+	if( tbtarget === "usertalk" || tbtarget === "other" || tbtarget === "see") {
 		page = e.target.page.value;
 		
 		if( tbtarget === "usertalk" ) {
@@ -401,7 +421,18 @@ var callback_evaluate = function( e ) {
 		}
 
 		talkpage.setEditSummary("Notification: You've got mail" + Twinkle.getPref("summaryAd"));
-
+	
+	} else if ( tbtarget === "see" ) {
+		text = "{{subst:Please see|location=" + tbPageName + "#" + section + "}}"
+		
+		if( message ) {
+			text += "\n" + message.trim() + "  ~~~~";
+		} else if( Twinkle.getFriendlyPref("insertTalkbackSignature") ) {
+			text += "\n~~~~";
+		}
+		
+		talkpage.setEditSummary("Please check the discussion at [[" + tbPageName + "#" + section + "]]." + Twinkle.getPref("summaryAd"));
+		
 	} else {
 		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
 		text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n{{talkback|";
