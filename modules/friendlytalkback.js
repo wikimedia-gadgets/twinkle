@@ -51,16 +51,16 @@ Twinkle.talkback.callback = function( ) {
 						value: "other"
 					},
 					{
+						label: "\"Please see\"",
+						value: "see"
+					},
+					{
 						label: "Noticeboard notification",
 						value: "notice"
 					},
 					{
 						label: "\"You've got mail\"",
 						value: "mail"
-					}
-					{
-						label: "\"Please see\"",
-						value: "see"
 					}
 				],
 				event: callback_change_target
@@ -423,14 +423,7 @@ var callback_evaluate = function( e ) {
 		talkpage.setEditSummary("Notification: You've got mail" + Twinkle.getPref("summaryAd"));
 	
 	} else if ( tbtarget === "see" ) {
-		text = "{{subst:Please see|location=" + tbPageName + "#" + section + "}}"
-		
-		if( message ) {
-			text += "\n" + message.trim() + "  ~~~~";
-		} else if( Twinkle.getFriendlyPref("insertTalkbackSignature") ) {
-			text += "\n~~~~";
-		}
-		
+		text = "{{subst:Please see|location=" + tbPageName + "#" + section + "|more=" + message.trim() + "}}";
 		talkpage.setEditSummary("Please check the discussion at [[" + tbPageName + "#" + section + "]]." + Twinkle.getPref("summaryAd"));
 		
 	} else {
