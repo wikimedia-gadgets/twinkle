@@ -332,7 +332,7 @@ var callback_evaluate = function( e ) {
 	var section = e.target.section.value;
 	var fullUserTalkPageName = mw.config.get("wgFormattedNamespaces")[ mw.config.get("wgNamespaceIds").user_talk ] + ":" + Morebits.getPageAssociatedUser();
 
-	if( tbtarget === "usertalk" || tbtarget === "other" || tbtarget === "see") {
+	if( tbtarget === "usertalk" || tbtarget === "other" || tbtarget === "see" ) {
 		page = e.target.page.value;
 		
 		if( tbtarget === "usertalk" ) {
