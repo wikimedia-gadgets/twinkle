@@ -151,7 +151,7 @@ callback_check = function( self ) {
 
 },
 callback_deleteRedirects = function( self ) {
-	$doc = $(self.responseXML);
+	var $doc = $(self.responseXML);
 	$doc.find("backlinks bl").each(function(){
 		var title = $(this).attr('title');
 		var page = new Morebits.wiki.page(title, "Deleting redirecting page " + title);

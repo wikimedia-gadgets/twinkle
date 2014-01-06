@@ -360,7 +360,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+moment(rev.timestamp).calendar()+'</a></span>').appendTo($diffs);
 					}
 				}).fail(function(data){
-					console.log( 'API failed :(', error );
+					console.log( 'API failed :(', data );
 				});
 				var $warnings = $(root).find('[name=warnings]');
 				$warnings.find('.entry').remove();
@@ -397,7 +397,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+moment(rev.timestamp).calendar()+'</a></span>').appendTo($warnings);
 					}
 				}).fail(function(data){
-					console.log( 'API failed :(', error );
+					console.log( 'API failed :(', data );
 				});
 
 				var $resolves = $(root).find('[name=resolves]');
@@ -405,7 +405,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 
 				var t = new mw.Title(value);
 				var ns = t.getNamespaceId();
-				talk_page = (new mw.Title(t.getMain(), ns%2? ns : ns+1)).getPrefixedText();
+				var talk_page = (new mw.Title(t.getMain(), ns%2? ns : ns+1)).getPrefixedText();
 
 				api.get({
 					action: 'query',
@@ -455,7 +455,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					$free_entry.append($free_label).append($free_input).appendTo($resolves);
 
 				}).fail(function(data){
-					console.log( 'API failed :(', error );
+					console.log( 'API failed :(', data );
 				});
 			}
 		} );
@@ -536,11 +536,6 @@ Twinkle.arv.callback.evaluate = function(e) {
 				reason = 'On [[' + form.page.value.replace( /^(Image|Category|File):/i, ':$1:' ) + ']]';
 
 				if ( form.badid.value !== '' ) {
-					var query = {
-						'title': form.page.value,
-						'diff': form.badid.value,
-						'oldid': form.goodid.value
-					};
 					reason += ' ({{diff|' + form.page.value + '|' + form.badid.value + '|' + form.goodid.value + '|diff}})';
 				}
 				reason += ':';
@@ -710,7 +705,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					var page = data.query.pages[pageid];
 					an3_next(page);
 				}).fail(function(data){
-					console.log( 'API failed :(', error );
+					console.log( 'API failed :(', data );
 				});
 			} else {
 				an3_next();
@@ -799,7 +794,7 @@ Twinkle.arv.processSock = function( params ) {
 
 Twinkle.arv.processAN3 = function( params ) {
 	// prepare the AN3 report
-	var sha1, minid;
+	var minid;
 	for(var i = 0; i < params.diffs.length; ++i) {
 		if( params.diffs[i].parentid && (!minid || params.diffs[i].parentid < minid)) {
 			minid = params.diffs[i].parentid;
@@ -835,14 +830,14 @@ Twinkle.arv.processAN3 = function( params ) {
 			}
 		}
 
-		origtext = "";
+		var origtext = "";
 		if(orig) {
 			origtext = '{{diff2|' + orig.revid + '|' + orig.timestamp + '}} "' + orig.comment + '"';
 		}
 
 		var grouped_diffs = {};
 
-		var revid, parentid, lastid;
+		var parentid, lastid;
 		for(var j = 0; j < params.diffs.length; ++j) {
 			var cur = params.diffs[j];
 			if( cur.revid && cur.revid != parentid || lastid === null ) {
@@ -910,7 +905,7 @@ Twinkle.arv.processAN3 = function( params ) {
 		talkPage.append();
 		Morebits.wiki.removeCheckpoint();  // all page updates have been started
 	}).fail(function(data){
-		console.log( 'API failed :(', error );
+		console.log( 'API failed :(', data );
 	});
 };
 })(jQuery);

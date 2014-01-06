@@ -40,7 +40,7 @@ Twinkle.fluff = {
 
 		if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
 			//Get the username these contributions are for
-			username = decodeURIComponent(/wiki\/Special:Log\/(.+)$/.exec($('#contentSub').find('a[title^="Special:Log"]').last().attr("href").replace(/_/g, "%20"))[1]);
+			var username = decodeURIComponent(/wiki\/Special:Log\/(.+)$/.exec($('#contentSub').find('a[title^="Special:Log"]').last().attr("href").replace(/_/g, "%20"))[1]);
 			if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 || 
 				( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) || 
 				( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
@@ -78,8 +78,6 @@ Twinkle.fluff = {
 				//You can't rollback deleted pages!
 				return;
 			}
-
-			var body = document.getElementById('mw-content-text');
 
 			var firstRev = $("div.firstrevisionheader").length;
 			if( firstRev ) {
@@ -125,7 +123,7 @@ Twinkle.fluff = {
 
 			if( document.getElementById('differences-nextlink') ) {
 				// Not latest revision
-				curVersion = false;
+				var curVersion = false;
 
 				var new_rev_url = $("#mw-diff-ntitle1").find("strong a").attr("href");
 				query = new Morebits.queryString( new_rev_url.split( '?', 2 )[1] );
@@ -351,7 +349,6 @@ Twinkle.fluff.callbacks = {
 			case 'vand':
 				Morebits.status.info( 'Info', [ 'Vandalism revert was chosen on ', Morebits.htmlNode( 'strong', self.params.user ), '. As this is a whitelisted bot, we assume you wanted to revert vandalism made by the previous user instead.' ] );
 				index = 2;
-				vandal = revs[1].getAttribute( 'user' );
 				self.params.user = revs[1].getAttribute( 'user' );
 				break;
 			case 'agf':

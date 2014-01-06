@@ -194,12 +194,12 @@ Twinkle.delimages.callbacks = {
 			instances.push($(this).attr('title'));
 		});
 		if( instances.length === 0 ) {
-			--twinklebatchdelete.currentUnlinkCounter;
+			--Twinkle.delimages.currentUnlinkCounter;
 			return;
 		}
 
 		$.each( instances, function(k,title) {
-			page = new Morebits.wiki.page(title, "Unlinking instances on " + title);
+			var page = new Morebits.wiki.page(title, "Unlinking instances on " + title);
 			page.setFollowRedirect(true);
 			page.setCallbackParameters({'image': self.params.image, 'reason': self.params.reason});
 			page.load(Twinkle.delimages.callbacks.unlinkImageInstances);

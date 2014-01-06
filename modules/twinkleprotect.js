@@ -1177,7 +1177,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			Morebits.simpleWindow.setButtonsEnabled( false );
 			Morebits.status.init( form );
 
-			rppName = 'Wikipedia:Requests for page protection';
+			var rppName = 'Wikipedia:Requests for page protection';
 
 			// Updating data for the action completed event
 			Morebits.wiki.actionCompleted.redirect = rppName;

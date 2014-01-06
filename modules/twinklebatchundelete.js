@@ -27,7 +27,7 @@ Twinkle.batchundelete = function twinklebatchundelete() {
 Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	var Window = new Morebits.simpleWindow( 800, 400 );
 	Window.setScriptName("Twinkle");
-	Window.setTitle("Batch undelete")
+	Window.setTitle("Batch undelete");
 	var form = new Morebits.quickForm( Twinkle.batchundelete.callback.evaluate );
 	form.append( {
 			type: 'textarea',
