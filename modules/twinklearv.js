@@ -14,8 +14,8 @@
  */
 
 Twinkle.arv = function twinklearv() {
-	var username = Morebits.getPageAssociatedUser();
-	if ( username === false ) {
+	var username = mw.config.get('wgRelevantUserName');
+	if ( !username ) {
 		return;
 	}
 
