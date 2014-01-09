@@ -423,7 +423,7 @@ var callback_evaluate = function( e ) {
 		talkpage.setEditSummary("Notification: You've got mail" + Twinkle.getPref("summaryAd"));
 	
 	} else if ( tbtarget === "see" ) {
-		text = "\n\n{{subst:Please see|location=" + tbPageName + "|header=" + section + "|more=" + message.trim() + "}}";
+		text = "\n\n{{subst:Please see|location=" + tbPageName + "|heading=" + section + "|more=" + message.trim() + "}}";
 		talkpage.setEditSummary("Please check the discussion at [[" + tbPageName + "#" + section + "]]." + Twinkle.getPref("summaryAd"));
 		
 	} else {
