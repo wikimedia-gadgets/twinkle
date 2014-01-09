@@ -297,14 +297,14 @@ var callback_change_target = function( e ) {
 					type:"input",
 					name:"page",
 					label:"Full page name (required)",
-					tooltip:"The full page name of where the discussion is being held. For example: 'Wikipedia talk:Twinkle'."
+					tooltip:"The full page name of where the discussion is being held along with the section For example: 'Wikipedia talk:Twinkle#Usage'.",
 					value: prev_page
 				});
 			work_area.append({
 					type:"input",
 					name:"section",
-					label:"Linked section (required)"
-					tooltip:"The full name of the section on the page where the discussion is being held."
+					label:"Thread name",
+					tooltip:"The desired name of the section under which the template will be added.",
 					value: prev_section
 				});
 			break;
@@ -423,7 +423,7 @@ var callback_evaluate = function( e ) {
 		talkpage.setEditSummary("Notification: You've got mail" + Twinkle.getPref("summaryAd"));
 	
 	} else if ( tbtarget === "see" ) {
-		text = "{{subst:Please see|location=" + tbPageName + "#" + section + "|more=" + message.trim() + "}}";
+		text = "\n\n{{subst:Please see|location=" + tbPageName + "|header=" + section + "|more=" + message.trim() + "}}";
 		talkpage.setEditSummary("Please check the discussion at [[" + tbPageName + "#" + section + "]]." + Twinkle.getPref("summaryAd"));
 		
 	} else {
