@@ -724,7 +724,8 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-semi-blp': {
 		edit: 'autoconfirmed',
-		reason: 'Violations of the [[WP:BLP|biographies of living persons policy]]'
+		reason: 'Violations of the [[WP:BLP|biographies of living persons policy]]',
+		template: 'pp-blp'
 	},
 	'pp-semi-usertalk': {
 		edit: 'autoconfirmed',
@@ -739,7 +740,8 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-semi-sock': {
 		edit: 'autoconfirmed',
-		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]'
+		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]',
+		template: 'pp-sock'
 	},
 	'pp-semi-protected': {
 		edit: 'autoconfirmed',
@@ -813,26 +815,26 @@ Twinkle.protect.protectionTags = [
 		value: 'noop'
 	},
 	{
-		label: 'Full protection templates',
+		label: 'General protection templates',
 		list: [
+			{ label: '{{pp-vandalism}}: vandalism', value: 'pp-vandalism' },
 			{ label: '{{pp-dispute}}: dispute/edit war', value: 'pp-dispute', selected: true },
-			{ label: '{{pp-usertalk}}: blocked user talk', value: 'pp-usertalk' }
+			{ label: '{{pp-blp}}: BLP violations', value: 'pp-blp' },
+			{ label: '{{pp-sock}}: sockpuppetry', value: 'pp-sock' },
+			{ label: '{{pp-template}}: high-risk template', value: 'pp-template' },
+			{ label: '{{pp-protected}}: general protection', value: 'pp-protected' }
 		]
 	},
 	{
-		label: 'Full/semi-protection templates',
+		label: 'Full protection templates',
 		list: [
-			{ label: '{{pp-vandalism}}: vandalism', value: 'pp-vandalism' },
-			{ label: '{{pp-template}}: high-risk template', value: 'pp-template' },
-			{ label: '{{pp-protected}}: general protection', value: 'pp-protected' }
+			{ label: '{{pp-usertalk}}: blocked user talk', value: 'pp-usertalk' }
 		]
 	},
 	{
 		label: 'Semi-protection templates',
 		list: [
 			{ label: '{{pp-semi-usertalk}}: blocked user talk', value: 'pp-semi-usertalk' },
-			{ label: '{{pp-semi-sock}}: sockpuppetry', value: 'pp-semi-sock' },
-			{ label: '{{pp-semi-blp}}: BLP violations', value: 'pp-semi-blp' },
 			{ label: '{{pp-semi-indef}}: general long-term', value: 'pp-semi-indef' }
 		]
 	},
