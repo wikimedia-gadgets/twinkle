@@ -1592,17 +1592,26 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 };
 
 Twinkle.warn.callbacks = {
-	getWarningWikitext: function(templateName, article, reason) {
+	getWarningWikitext: function(templateName, article, reason, isCustom) {
 		var text = "{{subst:" + templateName;
 
 		if (article) {
 			// add linked article for user warnings (non-block templates)
 			text += '|1=' + article;
 		}
+		if (reason && !isCustom) {
+			// add extra message for non-block templates
+			if (templateName === 'uw-csd' || templateName === 'uw-probation' ||
+				templateName === 'uw-userspacenoindex' || templateName === 'uw-userpage') {
+				text += "|3=''" + reason + "''";
+			} else {
+				text += "|2=''" + reason + "''";
+			}
+		}
 		text += '}}';
 
-		// add extra message for non-block templates
-		if (reason) {
+		if (reason && isCustom) {
+			// we assume that custom warnings lack a {{{2}}} parameter
 			text += " ''" + reason + "''";
 		}
 
@@ -1639,7 +1648,8 @@ Twinkle.warn.callbacks = {
 			templatetext = Twinkle.warn.callbacks.getBlockNoticeWikitext(templatename, linkedarticle, form.block_timer.value,
 				form.block_reason.value, Twinkle.warn.messages.block[templatename].indefinite);
 		} else {
-			templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle, form.reason.value);
+			templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle, 
+				form.reason.value, form.main_group.value === 'custom');
 		}
 
 		form.previewer.beginRender(templatetext);
@@ -1709,7 +1719,8 @@ Twinkle.warn.callbacks = {
 				Morebits.status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
-			text += Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article, params.reason) + " ~~~~";
+			text += Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article, 
+				params.reason, params.main_group === 'custom') + " ~~~~";
 		}
 
 		if ( Twinkle.getPref('showSharedIPNotice') && Morebits.isIPAddress( mw.config.get('wgTitle') ) ) {
