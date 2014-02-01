@@ -51,6 +51,10 @@ Twinkle.talkback.callback = function( ) {
 						value: "other"
 					},
 					{
+						label: "\"Please see\"",
+						value: "see"
+					},
+					{
 						label: "Noticeboard notification",
 						value: "notice"
 					},
@@ -288,6 +292,22 @@ var callback_change_target = function( e ) {
 					tooltip:"The subject line of the email you sent."
 				});
 			break;
+		case "see":
+			work_area.append({
+					type:"input",
+					name:"page",
+					label:"Full page name",
+					tooltip:"The full page name of where the discussion is being held. For example: 'Wikipedia talk:Twinkle'.",
+					value: prev_page
+				});
+			work_area.append({
+					type:"input",
+					name:"section",
+					label:"Linked section (optional)",
+					tooltip:"The section heading where the discussion is being held. For example: 'Merge proposal'.",
+					value: prev_section
+				});
+			break;
 	}
 
 	if (value !== "notice") {
@@ -312,7 +332,7 @@ var callback_evaluate = function( e ) {
 	var section = e.target.section.value;
 	var fullUserTalkPageName = mw.config.get("wgFormattedNamespaces")[ mw.config.get("wgNamespaceIds").user_talk ] + ":" + mw.config.get('wgRelevantUserName');
 
-	if( tbtarget === "usertalk" || tbtarget === "other" ) {
+	if( tbtarget === "usertalk" || tbtarget === "other" || tbtarget === "see" ) {
 		page = e.target.page.value;
 		
 		if( tbtarget === "usertalk" ) {
@@ -401,7 +421,15 @@ var callback_evaluate = function( e ) {
 		}
 
 		talkpage.setEditSummary("Notification: You've got mail" + Twinkle.getPref("summaryAd"));
-
+	
+	} else if ( tbtarget === "see" ) {
+		text = "\n\n{{subst:Please see|location=" + tbPageName;
+		if (section) {
+			text += "#" + section;
+		}
+		text += "|more=" + message.trim() + "}}";
+		talkpage.setEditSummary("Please check the discussion at [[" + tbPageName + "#" + section + "]]" + Twinkle.getPref("summaryAd"));
+		
 	} else {
 		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
 		text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n{{talkback|";
