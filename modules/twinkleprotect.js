@@ -961,8 +961,12 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		tagparams = {
 			tag: form.tagtype.value,
 			reason: ((form.tagtype.value === 'pp-protected' || form.tagtype.value === 'pp-semi-protected' || form.tagtype.value === 'pp-move') && form.protectReason) ? form.protectReason.value : null,
-			expiry: (actiontype === 'protect') ? (form.editmodify.checked ? form.editexpiry.value : (form.movemodify.checked ?
-				form.moveexpiry.value : null)) : null,
+			expiry: (actiontype === 'protect') ?
+				(form.editmodify.checked ? form.editexpiry.value :
+					(form.movemodify.checked ? form.moveexpiry.value :
+						(form.pcmodify.checked ? form.pcexpiry.value : null)
+					)
+				) : null,
 			small: form.small.checked,
 			noinclude: form.noinclude.checked
 		};
