@@ -730,7 +730,8 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-semi-usertalk': {
 		edit: 'autoconfirmed',
 		move: 'sysop',
-		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]'
+		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]',
+		template: 'pp-usertalk'
 	},
 	'pp-semi-template': {  // removed for now
 		edit: 'autoconfirmed',
@@ -815,27 +816,16 @@ Twinkle.protect.protectionTags = [
 		value: 'noop'
 	},
 	{
-		label: 'General protection templates',
+		label: 'Edit protection templates',
 		list: [
 			{ label: '{{pp-vandalism}}: vandalism', value: 'pp-vandalism' },
 			{ label: '{{pp-dispute}}: dispute/edit war', value: 'pp-dispute', selected: true },
 			{ label: '{{pp-blp}}: BLP violations', value: 'pp-blp' },
 			{ label: '{{pp-sock}}: sockpuppetry', value: 'pp-sock' },
 			{ label: '{{pp-template}}: high-risk template', value: 'pp-template' },
-			{ label: '{{pp-protected}}: general protection', value: 'pp-protected' }
-		]
-	},
-	{
-		label: 'Full protection templates',
-		list: [
-			{ label: '{{pp-usertalk}}: blocked user talk', value: 'pp-usertalk' }
-		]
-	},
-	{
-		label: 'Semi-protection templates',
-		list: [
-			{ label: '{{pp-semi-usertalk}}: blocked user talk', value: 'pp-semi-usertalk' },
-			{ label: '{{pp-semi-indef}}: general long-term', value: 'pp-semi-indef' }
+			{ label: '{{pp-usertalk}}: blocked user talk', value: 'pp-usertalk' },
+			{ label: '{{pp-protected}}: general protection', value: 'pp-protected' },
+			{ label: '{{pp-semi-indef}}: general long-term semi-protection', value: 'pp-semi-indef' }
 		]
 	},
 	{
