@@ -424,8 +424,8 @@ Twinkle.welcome.templates = {
 	},
 	"welcome-image": {
 		description: "welcome with additional information about images (policy and procedure)",
-		linkedArticle: false,
-		syntax: "{{subst:welcome-image|$USERNAME$}}"
+		linkedArticle: true,
+		syntax: "{{subst:welcome-image|$USERNAME$|art=$ARTICLE$}}"
 	},
 
 	// ANONYMOUS USER WELCOMES
