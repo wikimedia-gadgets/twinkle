@@ -71,10 +71,10 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	} else if( mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex' ) {
 
 		var gapnamespace, gapprefix;
-		if(Morebits.queryString.exists( 'from' ) )
+		if(Morebits.queryString.exists( 'prefix' ) )
 		{
 			gapnamespace = Morebits.queryString.get( 'namespace' );
-			gapprefix = Morebits.string.toUpperCaseFirstChar( Morebits.queryString.get( 'from' ) );
+			gapprefix = Morebits.string.toUpperCaseFirstChar( Morebits.queryString.get( 'prefix' ) );
 		}
 		else
 		{
