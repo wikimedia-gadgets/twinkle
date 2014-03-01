@@ -671,6 +671,10 @@ Twinkle.tag.alternativeList = [
 		value: 'R from historic name'
 	},
 	{
+		label: '{{R from phrase}}: redirect from a phrase to a more general relevant article covering the topic',
+		value: 'R from phrase'
+	},
+	{
 		label: '{{R from scientific name}}: redirect from the scientific name to the common name',
 		value: 'R from scientific name'
 	},
