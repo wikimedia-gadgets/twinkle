@@ -230,6 +230,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcomeunsourced",
 				"welcomeauto",
 				"welcome-COI",
+				"welcome-delete",
 				"welcome-image"
 			]);
 			break;
@@ -421,6 +422,11 @@ Twinkle.welcome.templates = {
 		description: "for someone who has edited in areas where they may have a conflict of interest",
 		linkedArticle: true,
 		syntax: "{{subst:welcome-COI|$USERNAME$|art=$ARTICLE$}} ~~~~"
+	},
+	"welcome-delete": {
+		description: "for someone who has been removing information from articles",
+		linkedArticle: true,
+		syntax: "{{subst:welcome-delete|$ARTICLE$|$USERNAME$}} ~~~~"
 	},
 	"welcome-image": {
 		description: "welcome with additional information about images (policy and procedure)",
