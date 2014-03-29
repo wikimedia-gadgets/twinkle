@@ -424,7 +424,7 @@ Twinkle.tag.article.tags = {
 	"copypaste": "article appears to have been copied and pasted from a source",
 	"dead end": "article has no links to other articles",
 	"disputed": "article has questionable factual accuracy",
-	"essay-like": "article is written like an essay and needs cleanup",
+	"essay-like": "article is written like a personal reflection or opinion essay",
 	"expand language": "article can be expanded with material from a foreign-language Wikipedia",
 	"expert-subject": "article needs attention from an expert on the subject",
 	"external links": "article's external links may not follow content policies or guidelines",
