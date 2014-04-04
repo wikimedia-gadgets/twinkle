@@ -241,7 +241,8 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcome-anon-border",
 				"welcome-anon-test",
 				"welcome-anon-unconstructive",
-				"welcome-anon-constructive"
+				"welcome-anon-constructive",
+				"welcome-anon-delete"
 			]);
 			break;
 		case "wikiProject":
@@ -460,6 +461,11 @@ Twinkle.welcome.templates = {
 		description: "for anonymous users who fight vandalism or edit constructively",
 		linkedArticle: true,
 		syntax: "{{subst:welcome-anon-constructive|art=$ARTICLE$}}"
+	},
+	"welcome-anon-delete": {
+		description: "for anonymous users who have removed content from pages",
+		linkedArticle: true,
+		syntax: "{{subst:welcome-anon-delete|$ARTICLE$|$USERNAME$}} ~~~~"
 	},
 
 	// WIKIPROJECT-SPECIFIC WELCOMES
