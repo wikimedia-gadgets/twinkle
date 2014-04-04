@@ -1057,7 +1057,7 @@ Twinkle.speedy.reasonHash = {
 	'event': 'No explanation of the subject\'s significance (event)',
 	'a9': 'Music recording by redlinked artist and no indication of importance or significance',
 	'a10': 'Recently created article that duplicates an existing topic',
-	'madeup': 'Obviously made up',
+	'madeup': 'Made up by article creator or an associate, and no indication of importance/significance',
 // Images and media
 	'redundantimage': 'File redundant to another on Wikipedia',
 	'noimage': 'Corrupt or empty file',
@@ -1077,7 +1077,7 @@ Twinkle.speedy.reasonHash = {
 	'userreq': 'User request to delete page in own userspace',
 	'nouser': 'Userpage or subpage of a nonexistent user',
 	'gallery': '[[WP:NFC|Non-free]] [[Help:Gallery|gallery]]',
-	'notwebhost': 'Blatant [[WP:NOTWEBHOST]] violation',
+	'notwebhost': 'Blatant [[WP:NOTWEBHOST|misuse of Wikipedia as a web host]]',
 // Templates
 	'policy': 'Template that unambiguously misrepresents established policy',
 	'duplicatetemplate': 'Unused, redundant template',
