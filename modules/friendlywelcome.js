@@ -270,7 +270,8 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcome-starwars",
 				"welcome-ch",
 				"welcome-uk",
-				"welcome-videogames"
+				"welcome-videogames",
+				"TWA invite"
 			]);
 			break;
 		case "nonEnglish":
@@ -584,6 +585,11 @@ Twinkle.welcome.templates = {
 		description: "welcome for users with an apparent interest in video game topics",
 		linkedArticle: false,
 		syntax: "{{subst:welcome-videogames}}"
+	},
+	"TWA invite": {
+		description: "invite the user to The Wikipedia Adventure (not a welcome template)",
+		linkedArticle: false,
+		syntax: "{{WP:TWA/Invite|signature=~~~~}}"
 	},
 
 	// NON-ENGLISH WELCOMES
