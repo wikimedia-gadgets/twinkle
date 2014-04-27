@@ -127,8 +127,6 @@ Twinkle.fluff = {
 
 			if( document.getElementById('differences-nextlink') ) {
 				// Not latest revision
-				var curVersion = false;
-
 				var new_rev_url = $("#mw-diff-ntitle1").find("strong a").attr("href");
 				query = new Morebits.queryString( new_rev_url.split( '?', 2 )[1] );
 				var newrev = query.get('oldid');

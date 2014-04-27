@@ -209,7 +209,6 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 
 Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(form) {
 	var namespace = mw.config.get('wgNamespaceNumber');
-	var form = form;
 
 	// first figure out what mode we're in
 	var mode = Twinkle.speedy.mode.userSingleSubmit;
@@ -326,7 +325,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 	var submitSubgroupHandler = function(e) {
 		Twinkle.speedy.callback.evaluateUser(e);
 		e.stopPropagation();
-	}
+	};
 
 	return $.map(list, function(critElement) {
 		var criterion = $.extend({}, critElement);
@@ -391,7 +390,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 
 		return criterion;
 	});
-}
+};
 
 Twinkle.speedy.talkList = [
 	{
@@ -1401,7 +1400,7 @@ Twinkle.speedy.callbacks = {
 					}
 
 					var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")"),
-					    notifytext, i;
+						notifytext, i;
 
 					// specialcase "db" and "db-multiple"
 					if (params.normalizeds.length > 1) {
@@ -1540,7 +1539,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 					var u1rationale = form["csd.userreq_rationale"].value;
 					if (mw.config.get('wgNamespaceNumber') === 3 && !((/\//).test(mw.config.get('wgTitle'))) &&
 							(!u1rationale || !u1rationale.trim())) {
-						statelem.error( 'CSD U1:  Please specify a rationale when nominating user talk pages.' );
+						alert( 'CSD U1:  Please specify a rationale when nominating user talk pages.' );
 						parameters = null;
 						return false;
 					}

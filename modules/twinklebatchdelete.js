@@ -379,7 +379,7 @@ Twinkle.batchdelete.callbacks = {
 			Morebits.wiki.actionCompleted();
 			return;
 		}
-		pageobj.setEditSummary('Removing link(s) to deleted page ' + self.params.page + Twinkle.getPref('deletionSummaryAd'));
+		pageobj.setEditSummary('Removing link(s) to deleted page ' + params.page + Twinkle.getPref('deletionSummaryAd'));
 		pageobj.setPageText(text);
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(params.onsuccess);

@@ -241,6 +241,7 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 	}
 
 	//verify/normalize input
+	var skin = mw.config.get("skin");
 	type = ( skin === "vector" && type === "menu" && ( navigation === "left-navigation" || navigation === "right-navigation" )) ? "menu" : "";
 	var outerDivClass;
 	var innerDivClass;
