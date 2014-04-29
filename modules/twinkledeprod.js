@@ -75,20 +75,21 @@ callback = function() {
 			self.params.Window.setContent(  self.params.form.render() );
 		});
 
-		wikipedia_api.params = { form:form, Window:Window };
-		wikipedia_api.post();
-		var root = document.createElement( 'div' );
-		Morebits.simpleWindow.setButtonsEnabled( true );
+	wikipedia_api.params = { form:form, Window:Window };
+	wikipedia_api.post();
+	var root = document.createElement( 'div' );
+	Morebits.simpleWindow.setButtonsEnabled( true );
 
-		Morebits.status.init( root );
-		Window.setContent( root );
-		Window.display();
+	Morebits.status.init( root );
+	Window.setContent( root );
+	Window.display();
 },
 
 callback_commit = function(event) {
 	var pages = event.target.getChecked( 'pages' );
 	Morebits.status.init( event.target );
-	function toCall( work ) {
+
+	var toCall = function( work ) {
 		if( work.length === 0 ) {
 			Morebits.status.info( 'work done' );
 			window.clearInterval( currentDeletor );
@@ -111,7 +112,8 @@ callback_commit = function(event) {
 				wikipedia_api.post();
 			}
 		}
-	}
+	};
+
 	var work = Morebits.array.chunk( pages, Twinkle.getPref('proddeleteChunks') );
 	Morebits.wiki.addCheckpoint();
 	currentDeletor = window.setInterval( toCall, 1000, work );
@@ -147,8 +149,6 @@ callback_check = function( self ) {
 	page = new Morebits.wiki.page(self.params.page, "Deleting article");
 	page.setEditSummary("Expired [[WP:PROD|PROD]], concern was: " + self.params.reason + Twinkle.getPref('deletionSummaryAd'));
 	page.deletePage();
-
-
 },
 callback_deleteRedirects = function( self ) {
 	var $doc = $(self.responseXML);
