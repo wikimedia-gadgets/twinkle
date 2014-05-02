@@ -1313,6 +1313,7 @@ Twinkle.speedy.callbacks = {
 			var code, parameters, i;
 			if (params.normalizeds.length > 1) {
 				code = "{{db-multiple";
+				params.utparams = {};
 				$.each(params.normalizeds, function(index, norm) {
 					code += "|" + norm.toUpperCase();
 					parameters = params.templateParams[index] || [];
@@ -1321,9 +1322,9 @@ Twinkle.speedy.callbacks = {
 							code += "|" + i + "=" + parameters[i];
 						}
 					}
+					$.extend(params.utparams, Twinkle.speedy.getUserTalkParameters(norm, parameters));
 				});
 				code += "}}";
-				params.utparams = [];
 			} else {
 				parameters = params.templateParams[0] || [];
 				code = "{{db-" + params.values[0];
