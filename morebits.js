@@ -3241,6 +3241,20 @@ Morebits.status.error = function( text, status ) {
 	return new Morebits.status( text, status, 'error' );
 };
 
+// display the user's rationale, comments, etc. back to them after a failure,
+// so they don't use it
+Morebits.status.printUserText = function( comments, message ) {
+	var p = document.createElement( 'p' );
+	p.textContent = message;
+	var div = document.createElement( 'div' );
+	div.className = 'toccolours';
+	div.style.marginTop = '0';
+	div.style.whiteSpace = 'pre-wrap';
+	div.textContent = comments;
+	p.appendChild( div );
+	Morebits.status.root.appendChild( p );
+};
+
 
 
 /**

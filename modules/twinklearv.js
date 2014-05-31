@@ -569,7 +569,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 				// check if user has already been reported
 				if (new RegExp( "\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*" + RegExp.escape( uid, true ) + "\\s*\\}\\}" ).test(text)) {
-					aivPage.getStatusElement().info( 'Report already present, will not add a new one' );
+					aivPage.getStatusElement().error( 'Report already present, will not add a new one' );
+					Morebits.status.printUserText( reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at AIV:' );
 					return;
 				}
 				aivPage.getStatusElement().status( 'Adding new report...' );
@@ -619,6 +620,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				// check if user has already been reported
 				if (new RegExp( "\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?" + RegExp.escape(uid, true) + "\\s*(\\||\\})" ).test(text)) {
 					uaaPage.getStatusElement().error( 'User is already listed.' );
+					Morebits.status.printUserText( reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at UAA:' );
 					return;
 				}
 				uaaPage.getStatusElement().status( 'Adding new report...' );

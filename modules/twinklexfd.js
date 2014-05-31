@@ -39,14 +39,7 @@ Twinkle.xfd.currentRationale = null;
 // error callback on Morebits.status.object
 Twinkle.xfd.printRationale = function twinklexfdPrintRationale() {
 	if (Twinkle.xfd.currentRationale) {
-		var p = document.createElement("p");
-		p.textContent = "Your deletion rationale is provided below, which you can copy and paste into a new XFD dialog if you wish to try again:";
-		var pre = document.createElement("pre");
-		pre.className = "toccolours";
-		pre.style.marginTop = "0";
-		pre.textContent = Twinkle.xfd.currentRationale;
-		p.appendChild(pre);
-		Morebits.status.root.appendChild(p);
+		Morebits.status.printUserText(Twinkle.xfd.currentRationale, "Your deletion rationale is provided below, which you can copy and paste into a new XFD dialog if you wish to try again:");
 		// only need to print the rationale once
 		Twinkle.xfd.currentRationale = null;
 	}
