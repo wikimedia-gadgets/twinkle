@@ -847,8 +847,9 @@ Twinkle.warn.messages = {
 			suppressArticleInSummary: true  // non-standard (user name, not article), and not necessary
 		},
 		"uw-coi": {
-			label: "Conflict of Interest",
-			summary: "Notice: Conflict of Interest"
+			label: "Conflict of interest",
+			summary: "Notice: Conflict of interest",
+			heading: "Managing a conflict of interest"
 		},
 		"uw-controversial": {
 			label: "Introducing controversial material",
@@ -924,7 +925,8 @@ Twinkle.warn.messages = {
 		},
 		"uw-lang": {
 			label: "Unnecessarily changing between British and American English",
-			summary: "Notice: Unnecessarily changing between British and American English"
+			summary: "Notice: Unnecessarily changing between British and American English",
+			heading: "National varieties of English"
 		},
 		"uw-linking": {
 			label: "Excessive addition of redlinks or repeated blue links",
@@ -1105,7 +1107,8 @@ Twinkle.warn.messages = {
 		},
 		"uw-copyright-new": {
 			label: "Copyright violation (with explanation for new users)",
-			summary: "Notice: Avoiding copyright problems"
+			summary: "Notice: Avoiding copyright problems",
+			heading: "Wikipedia and copyright"
 		},
 		"uw-copyright-remove": {
 			label: "Removing {{copyvio}} template from articles",
@@ -1162,7 +1165,8 @@ Twinkle.warn.messages = {
 		},
 		"uw-coi-username": {
 			label: "Username is against policy, and conflict of interest",
-			summary: "Warning: Username and conflict of interest policy"
+			summary: "Warning: Username and conflict of interest policy",
+			heading: "Your username"
 		},
 		"uw-userpage": {
 			label: "Userpage or subpage is against policy",
@@ -1720,7 +1724,9 @@ Twinkle.warn.callbacks = {
 
 			text += Twinkle.warn.callbacks.getBlockNoticeWikitext(params.sub_group, params.article, params.block_timer, params.reason, messageData.indefinite);
 		} else {
-			if( !dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex ) {
+			if( messageData.heading ) {
+				text += "== " + messageData.heading + " ==\n";
+			} else if( !dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex ) {
 				Morebits.status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
 				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			}
