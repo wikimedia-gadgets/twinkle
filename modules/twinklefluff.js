@@ -201,6 +201,9 @@ Twinkle.fluff = {
 };
 
 Twinkle.fluff.revert = function revertPage( type, vandal, autoRevert, rev, page ) {
+	if (mw.util.isIPv6Address(vandal)) {
+		vandal = Morebits.sanitizeIPv6(vandal);
+	}
 
 	var pagename = page || mw.config.get('wgPageName');
 	var revid = rev || mw.config.get('wgCurRevisionId');
