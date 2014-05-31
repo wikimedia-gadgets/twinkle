@@ -316,9 +316,9 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 	var hasSubmitButton = Twinkle.speedy.mode.hasSubmitButton(mode);
 
 	var openSubgroupHandler = function(e) { 
-		$(e.target.form).find('input').attr('disabled', 'disabled');
+		$(e.target.form).find('input').prop('disabled', true);
 		$(e.target.form).children().css('color', 'gray');
-		$(e.target).parent().css('color', 'black').find('input').attr('disabled', false);
+		$(e.target).parent().css('color', 'black').find('input').prop('disabled', false);
 		$(e.target).parent().find('input:text')[0].focus();
 		e.stopPropagation();
 	};
