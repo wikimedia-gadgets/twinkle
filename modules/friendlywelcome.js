@@ -135,7 +135,11 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 			]
 		});
 
-	form.append( { type: 'div', id: 'welcomeWorkArea' } );
+	form.append( {
+			type: 'div',
+			id: 'welcomeWorkArea',
+			className: 'morebits-scrollbox'
+		} );
 
 	form.append( {
 			type: 'input',
@@ -167,16 +171,12 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 
 Twinkle.welcome.populateWelcomeList = function(e) {
 	var type = e.target.value;
-	var $workarea = $(e.target.form).find("div#welcomeWorkArea");
 
-	var div = new Morebits.quickForm.element({
-		type: "div",
-		id: "welcomeWorkArea"
-	});
+	var container = new Morebits.quickForm.element({ type: "fragment" });
 
 	if ((type === "standard" || type === "anonymous") && Twinkle.getFriendlyPref("customWelcomeList").length) {
-		div.append({ type: 'header', label: 'Custom welcome templates' });
-		div.append({
+		container.append({ type: 'header', label: 'Custom welcome templates' });
+		container.append({
 			type: 'radio',
 			name: 'template',
 			list: Twinkle.getFriendlyPref("customWelcomeList"),
@@ -185,7 +185,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 	}
 
 	var appendTemplates = function(list) {
-		div.append({
+		container.append({
 			type: 'radio',
 			name: 'template',
 			list: list.map(function(obj) {
@@ -206,7 +206,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 
 	switch (type) {
 		case "standard":
-			div.append({ type: 'header', label: 'General welcome templates' });
+			container.append({ type: 'header', label: 'General welcome templates' });
 			appendTemplates([
 				"welcome",
 				"welcome-short",
@@ -219,7 +219,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcome teacher",
 				"welcome non-latin"
 			]);
-			div.append({ type: 'header', label: 'Problem user welcome templates' });
+			container.append({ type: 'header', label: 'Problem user welcome templates' });
 			appendTemplates([
 				"welcomelaws",
 				"first article",
@@ -235,7 +235,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			]);
 			break;
 		case "anonymous":
-			div.append({ type: 'header', label: 'Anonymous user welcome templates' });
+			container.append({ type: 'header', label: 'Anonymous user welcome templates' });
 			appendTemplates([
 				"welcome-anon",
 				"welcome-anon-border",
@@ -246,7 +246,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			]);
 			break;
 		case "wikiProject":
-			div.append({ type: 'header', label: 'WikiProject-specific welcome templates' });
+			container.append({ type: 'header', label: 'WikiProject-specific welcome templates' });
 			appendTemplates([
 				"welcome-au",
 				"welcome-bd",
@@ -275,7 +275,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			]);
 			break;
 		case "nonEnglish":
-			div.append({ type: 'header', label: 'Non-English welcome templates' });
+			container.append({ type: 'header', label: 'Non-English welcome templates' });
 			appendTemplates([
 				"welcomeen-sq",
 				"welcomeen-zh",
@@ -297,13 +297,12 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			]);
 			break;
 		default:
-			div.append({ type: 'div', label: 'Twinkle.welcome.populateWelcomeList: something went wrong' });
+			container.append({ type: 'div', label: 'Twinkle.welcome.populateWelcomeList: something went wrong' });
 			break;
 	}
 
-	var rendered = div.render();
-	rendered.className = "quickform-scrollbox";
-	$workarea.replaceWith(rendered);
+	var rendered = container.render();
+	$(e.target.form).find("div#welcomeWorkArea").empty().append(rendered);
 
 	var firstRadio = e.target.form.template[0];
 	firstRadio.checked = true;

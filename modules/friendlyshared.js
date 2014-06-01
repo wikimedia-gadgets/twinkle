@@ -21,14 +21,19 @@ Twinkle.shared = function friendlyshared() {
 };
 
 Twinkle.shared.callback = function friendlysharedCallback( uid ) {
-	var Window = new Morebits.simpleWindow( 600, 400 );
+	var Window = new Morebits.simpleWindow( 600, 420 );
 	Window.setTitle( "Shared IP address tagging" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#shared" );
 
 	var form = new Morebits.quickForm( Twinkle.shared.callback.evaluate );
 
-	var div = form.append( { type: 'div', id: 'sharedip-templatelist' } );
+	var div = form.append( {
+			type: 'div',
+			id: 'sharedip-templatelist',
+			className: 'morebits-scrollbox'
+		}
+	);
 	div.append( { type: 'header', label: 'Shared IP address templates' } );
 	div.append( { type: 'radio', name: 'shared', list: Twinkle.shared.standardList,
 		event: function( e ) {
@@ -68,8 +73,6 @@ Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
-
-	$(result).find('div#sharedip-templatelist').addClass('quickform-scrollbox');
 };
 
 Twinkle.shared.standardList = [

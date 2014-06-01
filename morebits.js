@@ -3295,6 +3295,7 @@ Morebits.simpleWindow = function SimpleWindow( width, height ) {
 	var content = document.createElement( 'div' );
 	this.content = content;
 	content.className = 'morebits-dialog-content';
+	content.id = 'morebits-dialog-content-' + Math.round(Math.random() * 1e15);
 
 	this.height = height;
 
@@ -3312,8 +3313,20 @@ Morebits.simpleWindow = function SimpleWindow( width, height ) {
 				// dialogs and their content can be destroyed once closed
 				$(event.target).dialog("destroy").remove();
 			},
+			resizeStart: function(event, ui) {
+				this.scrollbox = $(this).find(".morebits-scrollbox")[0];
+				if (this.scrollbox) {
+					this.scrollbox.style.maxHeight = "none";
+				}
+			},
+			resizeEnd: function(event, ui) {
+				this.scrollbox = null;
+			},
 			resize: function(event, ui) {
 				this.style.maxHeight = "";
+				if (this.scrollbox) {
+					this.scrollbox.style.width = "";
+				}
 			}
 		});
 
@@ -3335,6 +3348,9 @@ Morebits.simpleWindow = function SimpleWindow( width, height ) {
 	var linksspan = document.createElement("span");
 	linksspan.className = "morebits-dialog-footerlinks";
 	$widget.find(".ui-dialog-buttonpane").append(buttonspan, linksspan);
+	
+	// resize the scrollbox with the dialog, if one is present
+	$widget.resizable("option", "alsoResize", "#" + this.content.id + " .morebits-scrollbox, #" + this.content.id);
 };
 
 Morebits.simpleWindow.prototype = {
