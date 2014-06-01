@@ -283,8 +283,6 @@ body .ui-dialog.morebits-dialog .ui-dialog-buttonpane {
 body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
 	float: none;
 	margin: .2em 0 -.1em;
-	padding-top: 0;
-	padding-bottom: 0;
 	cursor: auto;
 }
 
