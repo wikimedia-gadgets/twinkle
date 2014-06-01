@@ -153,8 +153,10 @@ Morebits.sanitizeIPv6 = function ( address ) {
  *              - Attributes: name, label, disabled, event
  *   textarea  A big, multi-line text box.
  *              - Attributes: name, label, value, cols, rows, disabled, readonly
+ *   fragment  A DocumentFragment object.
+ *              - No attributes, and no global attributes except adminonly
  *
- * Global attributes: id, style, tooltip, extra, adminonly
+ * Global attributes: id, className, style, tooltip, extra, adminonly
  */
 
 Morebits.quickForm = function QuickForm( event, eventType ) {
@@ -221,6 +223,10 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node.addEventListener( data.eventType || 'submit', data.event , false );
 		}
 		break;
+	case 'fragment':
+		node = document.createDocumentFragment();
+		// fragments can't have any attributes, so just return it straight away
+		return [ node, node ];
 	case 'select':
 		node = document.createElement( 'div' );
 
@@ -637,6 +643,11 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 	}
 	if( data.style ) {
 		childContainder.setAttribute( 'style', data.style );
+	}
+	if( data.className ) {
+		childContainder.className = ( childContainder.className ? 
+			childContainder.className + " " + data.className :
+			data.className );
 	}
 	childContainder.setAttribute( 'id', data.id || id );
 
