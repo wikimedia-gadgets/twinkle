@@ -410,7 +410,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		link.setAttribute("href", mw.util.getUrl("Template:" + 
 			Morebits.string.toUpperCaseFirstChar($checkbox.val())));
 		link.setAttribute("target", "_blank");
-		$checkbox.parent().append(["\uA0", link]);
+		$checkbox.parent().append(["\u00A0", link]);
 	});
 };
 
