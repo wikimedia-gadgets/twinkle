@@ -293,7 +293,8 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcomeen-ru",
 				"welcomeen-es",
 				"welcomeen-sv",
-				"welcomeen-uk"
+				"welcomeen-uk",
+				"welcomeen-ar"
 			]);
 			break;
 		default:
