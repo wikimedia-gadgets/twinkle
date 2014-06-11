@@ -278,6 +278,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			container.append({ type: 'header', label: 'Non-English welcome templates' });
 			appendTemplates([
 				"welcomeen-sq",
+				"welcomeen-ar",
 				"welcomeen-zh",
 				"welcomeen-nl",
 				"welcomeen-fi",
@@ -293,8 +294,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcomeen-ru",
 				"welcomeen-es",
 				"welcomeen-sv",
-				"welcomeen-uk",
-				"welcomeen-ar"
+				"welcomeen-uk"
 			]);
 			break;
 		default:
@@ -594,6 +594,11 @@ Twinkle.welcome.templates = {
 
 	// NON-ENGLISH WELCOMES
 
+	"welcomeen-ar": {
+		description: "welcome for users whose first language appears to be Arabic",
+		linkedArticle: false,
+		syntax: "{{subst:welcomeen-ar}}"
+	},
 	"welcomeen-sq": {
 		description: "welcome for users whose first language appears to be Albanian",
 		linkedArticle: false,
