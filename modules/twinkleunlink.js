@@ -274,6 +274,10 @@ Twinkle.unlink.callbacks = {
 
 			var result = apiobj.params.form.render();
 			apiobj.params.Window.setContent( result );
+
+			Morebits.checkboxShiftClickSupport($("input[name='imageusage']", result));
+			Morebits.checkboxShiftClickSupport($("input[name='backlinks']", result));
+
 		}
 	},
 	unlinkBacklinks: function twinkleunlinkCallbackUnlinkBacklinks(pageobj) {
