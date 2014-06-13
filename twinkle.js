@@ -86,7 +86,7 @@ Twinkle.defaultConfig.twinkle = {
 	speedyLogPageName: "CSD log",
 	noLogOnSpeedyNomination: [ "u1" ],
 	 // Unlink
-	unlinkNamespaces: [ "0", "100" ],
+	unlinkNamespaces: [ "0", "10", "100", "118" ],
 	 // Warn
 	defaultWarningGroup: "1",
 	showSharedIPNotice: true,

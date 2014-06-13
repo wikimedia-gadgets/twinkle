@@ -35,17 +35,38 @@ Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
 
 // the parameter is used when invoking unlink from admin speedy
 Twinkle.unlink.callback = function(presetReason) {
-	var Window = new Morebits.simpleWindow( 800, 400 );
+	var Window = new Morebits.simpleWindow( 600, 440 );
 	Window.setTitle( "Unlink backlinks" + (mw.config.get('wgNamespaceNumber') === 6 ? " and file usages" : "") );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#unlink" );
 
 	var form = new Morebits.quickForm( Twinkle.unlink.callback.evaluate );
+
+	// prepend some basic documentation
+	var node1 = Morebits.htmlNode("code", "[[" + Morebits.pageNameNorm + "|link text]]")
+	var node2 = Morebits.htmlNode("code", "link text");
+	node1.style.fontFamily = node2.style.fontFamily = "monospace";
+	node1.style.fontStyle = node2.style.fontStyle = "normal";
 	form.append( {
-		type: 'textarea',
+		type: 'div',
+		style: 'margin-bottom: 0.5em',
+		label: [ 
+			'This tool allows you to unlink all incoming links ("backlinks") that point to this page' + 
+				(mw.config.get('wgNamespaceNumber') === 6 ? ", and/or hide all inclusions of this file by wrapping them in <!-- --> comment markup" : "") + 
+				". For instance, ",
+			node1,
+			" would become ",
+			node2,
+			". Use it with caution."
+		]
+	} );
+
+	form.append( {
+		type: 'input',
 		name: 'reason',
 		label: 'Reason: ',
-		value: (presetReason ? presetReason : '')
+		value: (presetReason ? presetReason : ''),
+		size: 60
 	} );
 
 	var query;
@@ -175,11 +196,25 @@ Twinkle.unlink.callbacks = {
 							label: "First " + list.length.toString() + " file usages shown."
 						});
 					}
-					apiobj.params.form.append( {
+					apiobj.params.form.append({
+						type: 'button',
+						label: "Select All",
+						event: function(e) {
+							$(Morebits.quickForm.getElements(e.target.form, "imageusage")).prop('checked', true);
+						}
+					});
+					apiobj.params.form.append({
+						type: 'button',
+						label: "Deselect All",
+						event: function(e) {
+							$(Morebits.quickForm.getElements(e.target.form, "imageusage")).prop('checked', false);
+						}
+					});
+					apiobj.params.form.append({
 						type: 'checkbox',
 						name: 'imageusage',
 						list: list
-					} );
+					});
 					havecontent = true;
 				}
 			}
@@ -207,7 +242,21 @@ Twinkle.unlink.callbacks = {
 						label: "First " + list.length.toString() + " backlinks shown."
 					});
 				}
-				apiobj.params.form.append( {
+				apiobj.params.form.append({
+					type: 'button',
+					label: "Select All",
+						event: function(e) {
+							$(Morebits.quickForm.getElements(e.target.form, "backlinks")).prop('checked', true);
+						}
+				});
+				apiobj.params.form.append({
+					type: 'button',
+					label: "Deselect All",
+						event: function(e) {
+							$(Morebits.quickForm.getElements(e.target.form, "backlinks")).prop('checked', false);
+						}
+				});
+				apiobj.params.form.append({
 					type: 'checkbox',
 					name: 'backlinks',
 					list: list
