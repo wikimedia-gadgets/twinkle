@@ -129,14 +129,14 @@ div.morebits-scrollbox
 	padding: 6px 6px 0;
 }
 
-div.morebits-scrollbox h5:first-child
+div.morebits-scrollbox > h5:first-child
 {
 	border: none;
 	margin-top: 0;
 	padding-top: 0;
 }
 
-div.morebits-scrollbox :last-child
+div.morebits-scrollbox > :last-child
 {
 	margin-bottom: 6px;
 }
