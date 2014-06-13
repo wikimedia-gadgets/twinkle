@@ -251,7 +251,7 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 			if ( navigation !== "portal" && navigation !== "left-navigation" && navigation !== "right-navigation" ) {
 				navigation = "mw-panel";
 			}
-			outerDivClass = ( navigation === "mw-panel" ) ? "portal" : ( type === "menu" ? "vectorMenu extraMenu" : "vectorTabs extraMenu" );
+			outerDivClass = ( navigation === "mw-panel" ) ? "portal" : ( type === "menu" ? "vectorMenu" : "vectorTabs extraMenu" );
 			innerDivClass = ( navigation === "mw-panel" ) ? "body" : ( type === "menu" ? "menu" : "" );
 			break;
 		case "modern":
@@ -272,11 +272,6 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 	var outerDiv = document.createElement( "div" );
 	outerDiv.className = outerDivClass + " emptyPortlet";
 	outerDiv.id = id;
-	if ( type === "menu" ) {
-		// Fix drop-down arrow image in Vector skin
-		outerDiv.style.backgroundImage = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAQCAMAAAAlM38UAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA9QTFRFsbGxmpqa3d3deXl58/n79CzHcQAAAAV0Uk5T/////wD7tg5TAAAAMklEQVR42mJgwQoYBkqYiZEZAhiZUFRDxWGicEPA4nBRhNlAcYQokpVMDEwD6kuAAAMAyGMFQVv5ldcAAAAASUVORK5CYII=")';
-		outerDiv.style.backgroundPosition = "right 60%";
-	}
 	if ( nextnode && nextnode.parentNode === root ) {
 		root.insertBefore( outerDiv, nextnode );
 	} else {
@@ -300,9 +295,6 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 			}
 		});
 
-		span = document.createElement( "span" );
-		span.appendChild( document.createTextNode( text ) );
-		a.appendChild( span );
 		h5.appendChild( a );
 	} else {
 		h5.appendChild( document.createTextNode( text ) );
