@@ -3285,6 +3285,53 @@ Morebits.htmlNode = function ( type, content, color ) {
 
 
 /**
+ * **************** Morebits.checkboxClickHandler() ****************
+ * shift-click-support for checkboxes
+ * wikibits version (window.addCheckboxClickHandlers) has some restrictions, and doesn't work with checkboxes inside a sortable table, so let's build our own.
+ */
+
+Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext)
+{
+	var lastCheckbox = null;
+
+	function clickHandler(event) {
+		var cb = this;
+		if (event.shiftKey && lastCheckbox!==null)
+		{
+			var cbs = $(jQuerySelector, jQueryContext); //can't cache them, obviously, if we want to support resorting
+			var index=-1, lastIndex=-1;
+			for (var i=0; i<cbs.length; i++)
+			{
+				if (cbs[i]==cb) { index=i; if (lastIndex>-1) break; }
+				if (cbs[i]==lastCheckbox) { lastIndex=i; if (index>-1) break; }
+			}
+			if (index>-1 && lastIndex>-1)
+			{
+				//inspired by wikibits
+				var endState = cb.checked;
+				var start, finish;
+				if (index<lastIndex)
+				{
+					start = index+1;
+					finish = lastIndex;
+				}
+				else
+				{
+					start = lastIndex;
+					finish = index-1;
+				}
+				for (var i=start; i<=finish; i++) cbs[i].checked = endState;
+			}
+		}
+		lastCheckbox = cb;
+		return true;
+	};
+
+  $(jQuerySelector, jQueryContext).click(clickHandler);
+};
+
+
+/**
  * **************** Morebits.simpleWindow ****************
  * A simple draggable window
  * now a wrapper for jQuery UI's dialog feature
