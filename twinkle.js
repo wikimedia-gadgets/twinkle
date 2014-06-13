@@ -301,12 +301,14 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 	}
 	outerDiv.appendChild( h5 );
 
-	var innerDiv = document.createElement( "div" ); // Not strictly necessary with type vectorTabs, or other skins.
-	innerDiv.className = innerDivClass;
-	outerDiv.appendChild(innerDiv);
+	if ( type === "menu" ) {
+		var innerDiv = document.createElement( "div" );
+		innerDiv.className = innerDivClass;
+		outerDiv.appendChild(innerDiv);
+	}
 
 	var ul = document.createElement( "ul" );
-	innerDiv.appendChild( ul );
+	(innerDiv || outerDiv).appendChild( ul );
 
 	return outerDiv;
 };
