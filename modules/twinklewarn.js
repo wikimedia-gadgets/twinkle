@@ -1239,6 +1239,11 @@ Twinkle.warn.messages = {
 			indefinite: true,
 			pageParam: true
 		},
+		"uw-nothereblock": {
+			label: "WP:NOTHERE block (indefinite)",
+			summary: "You have been indefinitely blocked from editing because it appears that you are not here to [[WP:NOTHERE|build an encyclopedia]]",
+			indefinite: true
+		},
 		"uw-npblock": {
 			label: "Creating nonsense pages block",
 			summary: "You have been blocked from editing for creating [[WP:PN|nonsense pages]]",
