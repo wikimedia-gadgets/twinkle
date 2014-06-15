@@ -38,7 +38,7 @@ Twinkle.unlink.callback = function(presetReason) {
 	var Window = new Morebits.simpleWindow( 800, 400 );
 	Window.setTitle( "Unlink backlinks" + (mw.config.get('wgNamespaceNumber') === 6 ? " and file usages" : "") );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#unlink" );
+	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#unlink" );
 
 	var form = new Morebits.quickForm( Twinkle.unlink.callback.evaluate );
 	form.append( {

@@ -30,9 +30,9 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	var Window = new Morebits.simpleWindow( 620, 530 );
 	Window.setTitle( Morebits.userIsInGroup( 'sysop' ) ? "Apply, request or tag page protection" : "Request or tag page protection" );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Protection templates", "Template:Protection templates" );
-	Window.addFooterLink( "Protection policy", "WP:PROT" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#protect" );
+	Window.addFooterLink( "Các bản mẫu khóa trang", "Template:Protection templates" );
+	Window.addFooterLink( "Quy định khóa trang", "WP:PROT" );
+	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#protect" );
 
 	var form = new Morebits.quickForm( Twinkle.protect.callback.evaluate );
 	var actionfield = form.append( {
@@ -206,7 +206,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						event: Twinkle.protect.formevents.editmodify,
 						list: [
 							{
-								label: 'Modify edit protection',
+								label: 'Khóa sửa đổi',
 								value: 'editmodify',
 								tooltip: 'If this is turned off, the edit protection level, and expiry time, will be left as is.',
 								checked: true
@@ -221,12 +221,12 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					});
 				editlevel.append({
 						type: 'option',
-						label: 'All',
+						label: 'Tất cả',
 						value: 'all'
 					});
 				editlevel.append({
 						type: 'option',
-						label: 'Autoconfirmed',
+						label: 'Thành viên tự xác nhận',
 						value: 'autoconfirmed'
 					});
 				if (isTemplate) {
@@ -238,37 +238,37 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				}
 				editlevel.append({
 						type: 'option',
-						label: 'Sysop',
+						label: 'Bảo quản viên',
 						value: 'sysop',
 						selected: true
 					});
 				field2.append({
 						type: 'select',
 						name: 'editexpiry',
-						label: 'Expires:',
+						label: 'Hết hạn:',
 						event: function(e) {
 							if (e.target.value === 'custom') {
 								Twinkle.protect.doCustomExpiry(e.target);
 							}
 						},
 						list: [
-							{ label: '1 hour', value: '1 hour' },
-							{ label: '2 hours', value: '2 hours' },
-							{ label: '3 hours', value: '3 hours' },
-							{ label: '6 hours', value: '6 hours' },
-							{ label: '12 hours', value: '12 hours' },
-							{ label: '1 day', value: '1 day' },
-							{ label: '2 days', selected: true, value: '2 days' },
-							{ label: '3 days', value: '3 days' },
-							{ label: '4 days', value: '4 days' },
-							{ label: '1 week', value: '1 week' },
-							{ label: '2 weeks', value: '2 weeks' },
-							{ label: '1 month', value: '1 month' },
-							{ label: '2 months', value: '2 months' },
-							{ label: '3 months', value: '3 months' },
-							{ label: '1 year', value: '1 year' },
-							{ label: 'indefinite', value:'indefinite' },
-							{ label: 'Custom...', value: 'custom' }
+							{ label: '1 giờ', value: '1 hour' },
+							{ label: '2 giờ', value: '2 hours' },
+							{ label: '3 giờ', value: '3 hours' },
+							{ label: '6 giờ', value: '6 hours' },
+							{ label: '12 giờ', value: '12 hours' },
+							{ label: '1 ngày', value: '1 day' },
+							{ label: '2 ngày', selected: true, value: '2 days' },
+							{ label: '3 ngày', value: '3 days' },
+							{ label: '4 ngày', value: '4 days' },
+							{ label: '1 tuần', value: '1 week' },
+							{ label: '2 tuần', value: '2 weeks' },
+							{ label: '1 tháng', value: '1 month' },
+							{ label: '2 tháng', value: '2 months' },
+							{ label: '3 tháng', value: '3 months' },
+							{ label: '1 năm', value: '1 year' },
+							{ label: 'vô hạn', value:'indefinite' },
+							{ label: 'Khác…', value: 'custom' }
 						]
 					});
 				field2.append({
@@ -277,7 +277,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						event: Twinkle.protect.formevents.movemodify,
 						list: [
 							{
-								label: 'Modify move protection',
+								label: 'Khóa di chuyển',
 								value: 'movemodify',
 								tooltip: 'If this is turned off, the move protection level, and expiry time, will be left as is.',
 								checked: true
@@ -287,17 +287,17 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				var movelevel = field2.append({
 						type: 'select',
 						name: 'movelevel',
-						label: 'Move protection:',
+						label: 'Khóa di chuyển:',
 						event: Twinkle.protect.formevents.movelevel
 					});
 				movelevel.append({
 						type: 'option',
-						label: 'All',
+						label: 'Tất cả',
 						value: 'all'
 					});
 				movelevel.append({
 						type: 'option',
-						label: 'Autoconfirmed',
+						label: 'Thành viên tự xác nhận',
 						value: 'autoconfirmed'
 					});
 				if (isTemplate) {
@@ -309,14 +309,14 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				}
 				movelevel.append({
 						type: 'option',
-						label: 'Sysop',
+						label: 'Bảo quản viên',
 						value: 'sysop',
 						selected: true
 					});
 				field2.append({
 						type: 'select',
 						name: 'moveexpiry',
-						label: 'Expires:',
+						label: 'Hết hạn:',
 						event: function(e) {
 							if (e.target.value === 'custom') {
 								Twinkle.protect.doCustomExpiry(e.target);
@@ -380,7 +380,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				field2.append({
 						type: 'select',
 						name: 'pcexpiry',
-						label: 'Expires:',
+						label: 'Hết hạn:',
 						event: function(e) {
 							if (e.target.value === 'custom') {
 								Twinkle.protect.doCustomExpiry(e.target);
@@ -410,17 +410,17 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				var createlevel = field2.append({
 						type: 'select',
 						name: 'createlevel',
-						label: 'Create protection:',
+						label: 'Khóa tạo trang:',
 						event: Twinkle.protect.formevents.createlevel
 					});
 				createlevel.append({
 						type: 'option',
-						label: 'All',
+						label: 'Tất cả',
 						value: 'all'
 					});
 				createlevel.append({
 						type: 'option',
-						label: 'Autoconfirmed',
+						label: 'Thành viên tự xác nhận',
 						value: 'autoconfirmed'
 					});
 				if (isTemplate) {
@@ -432,14 +432,14 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				}
 				createlevel.append({
 						type: 'option',
-						label: 'Sysop',
+						label: 'Bảo quản viên',
 						value: 'sysop',
 						selected: true
 					});
 				field2.append({
 						type: 'select',
 						name: 'createexpiry',
-						label: 'Expires:',
+						label: 'Hết hạn:',
 						event: function(e) {
 							if (e.target.value === 'custom') {
 								Twinkle.protect.doCustomExpiry(e.target);
@@ -469,7 +469,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			field2.append({
 					type: 'textarea',
 					name: 'protectReason',
-					label: 'Reason (for protection log):'
+					label: 'Lý do (nhật trình khóa):'
 				});
 			if (!mw.config.get('wgArticleId')) {  // tagging isn't relevant for non-existing pages
 				break;
@@ -654,7 +654,7 @@ Twinkle.protect.protectionTypes = [
 		]
 	},
 	{
-		label: 'Move protection',
+		label: 'Khóa di chuyển',
 		list: [
 			{ label: 'Generic (move)', value: 'pp-move' },
 			{ label: 'Dispute/move warring (move)', value: 'pp-move-dispute' },
@@ -667,7 +667,7 @@ Twinkle.protect.protectionTypes = [
 Twinkle.protect.protectionTypesCreate = [
 	{ label: 'Unprotection', value: 'unprotect' },
 	{
-		label: 'Create protection',
+		label: 'Khóa tạo trang',
 		list: [
 			{ label: 'Generic ({{pp-create}})', value: 'pp-create' },
 			{ label: 'Offensive name', value: 'pp-create-offensive' },
@@ -835,7 +835,7 @@ Twinkle.protect.protectionTags = [
 		]
 	},
 	{
-		label: 'Move protection templates',
+		label: 'Bản mẫu khóa di chuyển',
 		list: [
 			{ label: '{{pp-move-dispute}}: dispute/move war', value: 'pp-move-dispute' },
 			{ label: '{{pp-move-vandalism}}: page-move vandalism', value: 'pp-move-vandalism' },
@@ -1058,7 +1058,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 			Morebits.wiki.actionCompleted.followRedirect = false;
-			Morebits.wiki.actionCompleted.notice = "Tagging complete";
+			Morebits.wiki.actionCompleted.notice = "Thêm thông báo hoàn tất";
 
 			Twinkle.protect.callbacks.taggingPageInitial(tagparams);
 			break;

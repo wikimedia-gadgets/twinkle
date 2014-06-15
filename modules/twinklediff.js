@@ -24,12 +24,12 @@ Twinkle.diff = function twinklediff() {
 		'oldid': 'prev'
 	};
 
-	Twinkle.addPortletLink( mw.util.wikiScript("index")+ "?" + $.param( query ), 'Last', 'tw-lastdiff', 'Show most recent diff' );
+	Twinkle.addPortletLink( mw.util.wikiScript("index")+ "?" + $.param( query ), 'Cuối', 'tw-lastdiff', 'Show most recent diff' );
 
 	// Show additional tabs only on diff pages
 	if (Morebits.queryString.exists('diff')) {
-		Twinkle.addPortletLink(function(){ Twinkle.diff.evaluate(false); }, 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user' );
-		Twinkle.addPortletLink( function(){ Twinkle.diff.evaluate(true); }, 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision' );
+		Twinkle.addPortletLink(function(){ Twinkle.diff.evaluate(false); }, 'Từ trước', 'tw-since', 'Xem khác biệt từ sửa đổi cuối của thành viên trước' );
+		Twinkle.addPortletLink( function(){ Twinkle.diff.evaluate(true); }, 'Từ tôi', 'tw-sincemine', 'Xem khác biệt từ sửa đổi cuối của tôi' );
 
 		var oldid = /oldid=(.+)/.exec($('#mw-diff-ntitle1').find('strong a').first().attr("href"))[1];
 		query = {
@@ -37,7 +37,7 @@ Twinkle.diff = function twinklediff() {
 			'diff': 'cur',
 			'oldid' : oldid
 		};
-		Twinkle.addPortletLink( mw.util.wikiScript("index")+ "?" + $.param( query ), 'Current', 'tw-curdiff', 'Show difference to current revision' );
+		Twinkle.addPortletLink( mw.util.wikiScript("index")+ "?" + $.param( query ), 'Hiện tại', 'tw-curdiff', 'Xem khác biệt với phiên bản hiện tại' );
 	}
 };
 

@@ -6,7 +6,7 @@
 
 /*
 ****************************************
-*** twinkledeprod.js: Batch deletion of expired PRODs (sysops only)
+*** twinkledeprod.js: Batch deletion of expired PRODs (chỉ bảo quản viên)
 ****************************************
 * Mode of invocation:     Tab ("Deprod")
 * Active on:              Categories whose name starts with "Category:Proposed deletion as of"
@@ -31,7 +31,7 @@ callback = function() {
 	Window.setTitle( "PROD cleaning" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Proposed deletion", "WP:PROD" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#deprod" );
+	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#deprod" );
 
 	var form = new Morebits.quickForm( callback_commit );
 
@@ -155,7 +155,7 @@ callback_deleteRedirects = function( self ) {
 	$doc.find("backlinks bl").each(function(){
 		var title = $(this).attr('title');
 		var page = new Morebits.wiki.page(title, "Deleting redirecting page " + title);
-		page.setEditSummary("[[WP:CSD#R1|R1]]: Redirect to deleted page \"" + self.params.page + "\"" + Twinkle.getPref('deletionSummaryAd'));
+		page.setEditSummary("[[WP:XN#X1|XN:X1]]: Redirect to deleted page \"" + self.params.page + "\"" + Twinkle.getPref('deletionSummaryAd'));
 		page.deletePage();
 	});
 };

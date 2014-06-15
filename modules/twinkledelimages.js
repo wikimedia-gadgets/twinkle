@@ -6,7 +6,7 @@
 
 /*
 ****************************************
-*** twinkledelimages.js: Batch deletion of images (sysops only)
+*** twinkledelimages.js: Batch deletion of images (chỉ bảo quản viên)
 ****************************************
 * Mode of invocation:     Tab ("Deli-batch")
 * Active on:              Existing non-special pages
@@ -27,14 +27,14 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 	var Window = new Morebits.simpleWindow( 800, 400 );
 	Window.setTitle( "Batch file deletion" );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#delimages" );
+	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#delimages" );
 
 	var form = new Morebits.quickForm( Twinkle.delimages.callback.evaluate );
 	form.append( {
 		type: 'checkbox',
 		list: [
 			{
-				label: 'Delete files',
+				label: 'Xóa tập tin',
 				name: 'delete_image',
 				value: 'delete',
 				checked: true

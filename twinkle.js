@@ -147,11 +147,11 @@ Twinkle.defaultConfig.friendly = {
 	quickWelcomeTemplate: "welcome",
 	customWelcomeList: [],
 	customWelcomeSignature: true,
-	 // Talkback
+	 // Hồi âm
 	markTalkbackAsMinor: true,
 	insertTalkbackSignature: true,  // always sign talkback templates
-	talkbackHeading: "Talkback",
-	adminNoticeHeading: "Notice",
+	talkbackHeading: "Hồi âm",
+	adminNoticeHeading: "Thông báo",
 	mailHeading: "You've got mail!",
 	 // Shared
 	markSharedIPAsMinor: true

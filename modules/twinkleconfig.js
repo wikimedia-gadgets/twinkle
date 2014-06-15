@@ -23,16 +23,16 @@
 Twinkle.config = {};
 
 Twinkle.config.commonEnums = {
-	watchlist: { yes: "Add to watchlist", no: "Don't add to watchlist", "default": "Follow your site preferences" },
+	watchlist: { yes: "Theo dõi", no: "Không theo dõi", "default": "Follow your site preferences" },
 	talkPageMode: { window: "In a window, replacing other user talks", tab: "In a new tab", blank: "In a totally new window" }
 };
 
 Twinkle.config.commonSets = {
 	csdCriteria: {
-		db: "Custom rationale ({{db}})",
-		g1: "G1", g2: "G2", g3: "G3", g4: "G4", g5: "G5", g6: "G6", g7: "G7", g8: "G8", g10: "G10", g11: "G11", g12: "G12", g13: "G13",
-		a1: "A1", a2: "A2", a3: "A3", a5: "A5", a7: "A7", a9: "A9", a10: "A10", a11: "A11",
-		u1: "U1", u2: "U2", u3: "U3", u5: "U5",
+		db: "Lý do thường gặp ({{chờ xóa}})",
+		g1: "C1", g2: "C2", g3: "C3", g4: "C4", g5: "C5", g6: "C6", g7: "C7", g8: "C8", g10: "C10", g11: "C9", g12: "C12", g13: "C13",
+		a1: "A1", a2: "A2", a3: "A3", a5: "A5", a7: "BV4", a9: "A9", a10: "A10", a11: "A11",
+		u1: "TV1", u2: "TV2", u3: "TV3", u5: "TV5",
 		f1: "F1", f2: "F2", f3: "F3", f7: "F7", f8: "F8", f9: "F9", f10: "F10",
 		c1: "C1",
 		t2: "T2", t3: "T3",
@@ -41,7 +41,7 @@ Twinkle.config.commonSets = {
 	},
 	csdCriteriaDisplayOrder: [
 		"db",
-		"g1", "g2", "g3", "g4", "g5", "g6", "g7", "g8", "g10", "g11", "g12", "g13",
+		"g1", "g2", "g3", "g4", "g5", "g6", "g7", "g8", "g11", "g10", "g12", "g13",
 		"a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11",
 		"u1", "u2", "u3", "u5",
 		"f1", "f2", "f3", "f7", "f8", "f9", "f10",
@@ -64,7 +64,7 @@ Twinkle.config.commonSets = {
 	},
 	csdCriteriaNotificationDisplayOrder: [
 		"db",
-		"g1", "g2", "g3", "g4", "g6", "g10", "g11", "g12", "g13",
+		"g1", "g2", "g3", "g4", "g6", "g11", "g10", "g12", "g13",
 		"a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11",
 		"u3", "u5",
 		"f1", "f2", "f3", "f7", "f9", "f10",
@@ -75,9 +75,9 @@ Twinkle.config.commonSets = {
 	],
 	csdAndDICriteria: {
 		db: "Custom rationale ({{db}})",
-		g1: "G1", g2: "G2", g3: "G3", g4: "G4", g5: "G5", g6: "G6", g7: "G7", g8: "G8", g10: "G10", g11: "G11", g12: "G12", g13: "G13",
-		a1: "A1", a2: "A2", a3: "A3", a5: "A5", a7: "A7", a9: "A9", a10: "A10", a11: "A11",
-		u1: "U1", u2: "U2", u3: "U3", u5: "U5",
+		g1: "C1", g2: "C2", g3: "C3", g4: "C4", g5: "C5", g6: "C6", g7: "C7", g8: "C8", g10: "C10", g11: "C9", g12: "C12", g13: "C13",
+		a1: "A1", a2: "A2", a3: "A3", a5: "A5", a7: "BV4", a9: "A9", a10: "A10", a11: "A11",
+		u1: "TV1", u2: "TV2", u3: "TV3", u5: "TV5",
 		f1: "F1", f2: "F2", f3: "F3", f4: "F4", f5: "F5", f6: "F6", f7: "F7", f8: "F8", f9: "F9", f10: "F10", f11: "F11",
 		c1: "C1",
 		t2: "T2", t3: "T3",
@@ -155,14 +155,14 @@ Twinkle.config.commonSets = {
 
 Twinkle.config.sections = [
 {
-	title: "General",
+	title: "Chung",
 	preferences: [
 		// TwinkleConfig.summaryAd (string)
 		// Text to be appended to the edit summary of edits made using Twinkle
 		{
 			name: "summaryAd",
 			label: "\"Ad\" to be appended to Twinkle's edit summaries",
-			helptip: "The summary ad should start with a space, and be kept short.",
+			helptip: "Tóm tắt bắt đầu bằng khoảng trắng và cần ngắn gọn.",
 			type: "string"
 		},
 
@@ -171,7 +171,7 @@ Twinkle.config.sections = [
 		{
 			name: "deletionSummaryAd",
 			label: "Summary ad to use for deletion summaries",
-			helptip: "Normally the same as the edit summary ad above.",
+			helptip: "Thường giống như tóm tắt sửa đổi ở trên.",
 			adminOnly: true,
 			type: "string"
 		},
@@ -181,7 +181,7 @@ Twinkle.config.sections = [
 		{
 			name: "protectionSummaryAd",
 			label: "Summary ad to use for page protections",
-			helptip: "Normally the same as the edit summary ad above.",
+			helptip: "Thường giống như tóm tắt sửa đổi ở trên.",
 			adminOnly: true,
 			type: "string"
 		},
@@ -192,7 +192,7 @@ Twinkle.config.sections = [
 		// 'blank': force open in a new window, even if such a window exists
 		{
 			name: "userTalkPageMode",
-			label: "When opening a user talk page, open it",
+			label: "Khi mở trang thảo luận thành viên, mở nó",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.talkPageMode
 		},
@@ -200,7 +200,7 @@ Twinkle.config.sections = [
 		// TwinkleConfig.dialogLargeFont (boolean)
 		{
 			name: "dialogLargeFont",
-			label: "Use larger text in Twinkle dialogs",
+			label: "Chữ lớn trong hộp Twinkle",
 			type: "boolean"
 		}
 	]
@@ -219,7 +219,7 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Image deletion (DI)",
+	title: "Xóa hình (DI)",
 	preferences: [
 		// TwinkleConfig.notifyUserOnDeli (boolean)
 		// If the user should be notified after placing a file deletion tag
@@ -233,7 +233,7 @@ Twinkle.config.sections = [
 		// The watchlist setting of the page tagged for deletion. Either "yes", "no", or "default". Default is "default" (Duh).
 		{
 			name: "deliWatchPage",
-			label: "Add image page to watchlist when tagging",
+			label: "Theo dõi trang khi thêm bản mẫu",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		},
@@ -242,7 +242,7 @@ Twinkle.config.sections = [
 		// The watchlist setting of the user talk page if a notification is placed. Either "yes", "no", or "default". Default is "default" (Duh).
 		{
 			name: "deliWatchUser",
-			label: "Add user talk page of initial uploader to watchlist when notifying",
+			label: "Theo dõi trang thảo luận thành viên của người tải lên khi thông báo",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		}
@@ -250,13 +250,13 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Proposed deletion (PROD)",
+	title: "Đề nghị xóa (Xóa)",
 	preferences: [
 		// TwinkleConfig.watchProdPages (boolean)
 		// If, when applying prod template to page, to watch the page
 		{
 			name: "watchProdPages",
-			label: "Add article to watchlist when tagging",
+			label: "Theo dõi bài viết khi thêm thông báo",
 			type: "boolean"
 		},
 
@@ -264,43 +264,43 @@ Twinkle.config.sections = [
 		// The prefilled PROD reason.
 		{
 			name: "prodReasonDefault",
-			label: "Prefilled PROD reason",
+			label: "Lý do xóa mẫu",
 			type: "string"
 		},
 
 		{
 			name: "logProdPages",
-			label: "Keep a log in userspace of all pages you tag for PROD",
-			helptip: "Since non-admins do not have access to their deleted contributions, the userspace log offers a good way to keep track of all pages you tag for PROD using Twinkle.",
+			label: "Lưu giữ nhật trình trong không gian thành viên của tất cả các trang mà bạn đề nghị xóa",
+			helptip: "Nếu không phải là bảo quản viên thì không lưu lại đóng góp đã bị xóa, không gian thành viên là cách tốt để lưu lại tất cả các trang mà bạn đề nghị xóa bằng Twinkle.",
 			type: "boolean"
 		},
 		{
 			name: "prodLogPageName",
 			label: "Keep the PROD userspace log at this user subpage",
-			helptip: "Enter a subpage name in this box. You will find your PROD log at User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the PROD userspace log.",
+			helptip: "Enter a subpage name in this box. You will find your PROD log at Thành viên:<i>tên người dùng</i>/<i>tên trang con</i>. Chỉ hoạt động nếu bạn bật nhật trình đề nghị xóa của không gian thành viên.",
 			type: "string"
 		}
 	]
 },
 
 {
-	title: "Revert and rollback",  // twinklefluff module
+	title: "Lùi sửa",  // twinklefluff module
 	preferences: [
 		// TwinkleConfig.openTalkPage (array)
 		// What types of actions that should result in opening of talk page
 		{
 			name: "openTalkPage",
-			label: "Open user talk page after these types of reversions",
+			label: "Mở trang theo luận thành viên sau khi lùi sửa theo cách này",
 			type: "set",
-			setValues: { agf: "AGF rollback", norm: "Normal rollback", vand: "Vandalism rollback", torev: "\"Restore this version\"" }
+			setValues: { agf: "Lùi sửa thiện ý", norm: "Lùi sửa bình thường", vand: "Lùi sửa phá hoại", torev: "\"Lùi về phiên bản này\"" }
 		},
 
 		// TwinkleConfig.openTalkPageOnAutoRevert (bool)
 		// Defines if talk page should be opened when calling revert from contrib page, because from there, actions may be multiple, and opening talk page not suitable. If set to true, openTalkPage defines then if talk page will be opened.
 		{
 			name: "openTalkPageOnAutoRevert",
-			label: "Open user talk page when invoking rollback from user contributions",
-			helptip: "Often, you may be rolling back many pages at a time from a vandal's contributions page, so it would be unsuitable to open the user talk page. Hence, this option is off by default. When this is on, the desired options must be enabled in the previous setting for this to work.",
+			label: "Mở trang thảo luận thành viên khi lùi sửa đổi của họ",
+			helptip: "Thông thường, bạn có thể lùi sửa nhiều trang phá hoại cùng lúc, do đó chức năng này sẽ không dễ chịu khi mở hàng loạt các trang thảo luận giống nhau. Do vậy, mặc định của chức năng này là ''. Khi bật nó lên, các tùy chọn mong muốn phản được kích hoạt trong lần cài đặt trước đó thì nó mới hoạt động.",
 			type: "boolean"
 		},
 
@@ -308,25 +308,25 @@ Twinkle.config.sections = [
 		// What types of actions that should result in marking edit as minor
 		{
 			name: "markRevertedPagesAsMinor",
-			label: "Mark as minor edit for these types of reversions",
+			label: "Đánh dấu sửa đổi nhỏ cho các kiểu lùi sửa này",
 			type: "set",
-			setValues: { agf: "AGF rollback", norm: "Normal rollback", vand: "Vandalism rollback", torev: "\"Restore this version\"" }
+			setValues: { agf: "Lùi sửa thiện ý", norm: "Lùi sửa bình thường", vand: "Lùi sửa phá hoại", torev: "\"Lùi về phiên bản này\"" }
 		},
 
 		// TwinkleConfig.watchRevertedPages (array)
 		// What types of actions that should result in forced addition to watchlist
 		{
 			name: "watchRevertedPages",
-			label: "Add pages to watchlist for these types of reversions",
+			label: "Thêm trang lùi sửa vào danh sách theo dõi",
 			type: "set",
-			setValues: { agf: "AGF rollback", norm: "Normal rollback", vand: "Vandalism rollback", torev: "\"Restore this version\"" }
+			setValues: { agf: "Lùi sửa thiện ý", norm: "Lùi sửa bình thường", vand: "Lùi sửa phá hoại", torev: "\"Lùi về phiên bản này\"" }
 		},
 
 		// TwinkleConfig.offerReasonOnNormalRevert (boolean)
 		// If to offer a prompt for extra summary reason for normal reverts, default to true
 		{
 			name: "offerReasonOnNormalRevert",
-			label: "Prompt for reason for normal rollbacks",
+			label: "Nhắc nêu lý do lùi sửa",
 			helptip: "\"Normal\" rollbacks are the ones that are invoked from the middle [rollback] link.",
 			type: "boolean"
 		},
@@ -363,7 +363,7 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Speedy deletion (CSD)",
+	title: "Xóa nhanh (XN)",
 	preferences: [
 		{
 			name: "speedySelectionStyle",
@@ -532,7 +532,7 @@ Twinkle.config.sections = [
 			name: "tagArticleSortOrder",
 			label: "Default view order for article tags",
 			type: "enum",
-			enumValues: { "cat": "By categories", "alpha": "In alphabetical order" }
+			enumValues: { "cat": "Theo thể loại", "alpha": "Theo chữ cái" }
 		},
 		{
 			name: "customTagList",
@@ -546,27 +546,27 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Talkback",
+	title: "Hồi âm",
 	inFriendlyConfig: true,
 	preferences: [
 		{
 			name: "markTalkbackAsMinor",
-			label: "Mark talkbacks as minor edits",
+			label: "Mặc định hồi âm là sửa đổi nhỏ",
 			type: "boolean"
 		},
 		{
 			name: "insertTalkbackSignature",
-			label: "Insert signature within talkbacks",
+			label: "Chèn chữ ký trong hồi âm",
 			type: "boolean"
 		},
 		{
 			name: "talkbackHeading",
-			label: "Section heading to use for talkbacks",
+			label: "Tạo đề mục cho hồi âm",
 			type: "string"
 		},
 		{
 			name: "adminNoticeHeading",
-			label: "Section heading to use for administrators' noticeboard notices",
+			label: "Tạo đề mục ở trang tin nhắn cho bảo quản viên",
 			helptip: "Only relevant for AN and ANI.",
 			type: "string"
 		},
@@ -585,7 +585,7 @@ Twinkle.config.sections = [
 		// In what namespaces unlink should happen, default in 0 (article) and 100 (portal)
 		{
 			name: "unlinkNamespaces",
-			label: "Remove links from pages in these namespaces",
+			label: "Loại bỏ các liên đến đến các trang trong các không gian này",
 			helptip: "Avoid selecting any talk namespaces, as Twinkle might end up unlinking on talk archives (a big no-no).",
 			type: "set",
 			setValues: Twinkle.config.commonSets.namespacesNoSpecial
@@ -594,7 +594,7 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Warn user",
+	title: "Cảnh báo",
 	preferences: [
 		// TwinkleConfig.defaultWarningGroup (int)
 		// if true, watch the page which has been dispatched an warning or notice, if false, default applies
@@ -603,15 +603,15 @@ Twinkle.config.sections = [
 			label: "Default warning level",
 			type: "enum",
 			enumValues: {
-				"1": "Level 1",
-				"2": "Level 2",
-				"3": "Level 3",
-				"4": "Level 4",
-				"5": "Level 4im",
-				"6": "Single-issue notices",
-				"7": "Single-issue warnings",
-				"9": "Custom warnings",
-				"8": "Block (admin only)"
+				"1": "Lần 1",
+				"2": "Lần 2",
+				"3": "Lần 3",
+				"4": "Lần 4",
+				"5": "Lần 4im",
+				"6": "Thông báo đơn",
+				"7": "Cảnh báo đơn",
+				"9": "Cảnh báo khác",
+				"8": "Cấm (chỉ BQV)"
 			}
 		},
 
@@ -621,7 +621,7 @@ Twinkle.config.sections = [
 		{
 			name: "showSharedIPNotice",
 			label: "Add extra notice on shared IP talk pages",
-			helptip: "Notice used is {{SharedIPAdvice}}",
+			helptip: "Thông báo được sử dụng là {{SharedIPAdvice}}",
 			type: "boolean"
 		},
 
@@ -629,7 +629,7 @@ Twinkle.config.sections = [
 		// if true, watch the page which has been dispatched an warning or notice, if false, default applies
 		{
 			name: "watchWarnings",
-			label: "Add user talk page to watchlist when notifying",
+			label: "Thêm trang thảo luận thành viên vào danh sách theo dõi khi thông báo",
 			type: "boolean"
 		},
 
@@ -637,8 +637,8 @@ Twinkle.config.sections = [
 		// if true, blank the talk page when issuing an indef block notice (per [[WP:UW#Indefinitely blocked users]])
 		{
 			name: "blankTalkpageOnIndefBlock",
-			label: "Blank the talk page when indefinitely blocking users",
-			helptip: "See <a href=\"" + mw.util.getUrl("WP:UW#Indefinitely blocked users") + "\">WP:UW</a> for more information.",
+			label: "Xóa trắng trang thảo luận thành viên khi thành viên bị cấm vĩnh viễn",
+			helptip: "Xem chi tiết tại <a href=\"" + mw.util.getUrl("WP:UW#Indefinitely blocked users") + "\">WP:UW</a>.",
 			adminOnly: true,
 			type: "boolean"
 		},
@@ -654,43 +654,43 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Welcome user",
+	title: "Hoan nghênh",
 	inFriendlyConfig: true,
 	preferences: [
 		{
 			name: "topWelcomes",
-			label: "Place welcomes above existing content on user talk pages",
+			label: "Thêm bản mẫu hoan nghênh ở trên cùng của trang thảo luận thành viên",
 			type: "boolean"
 		},
 		{
 			name: "watchWelcomes",
-			label: "Add user talk pages to watchlist when welcoming",
+			label: "Thêm trang thảo luận thành viên vào danh sách theo dõi khi hoan nghênh",
 			helptip: "Doing so adds to the personal element of welcoming a user - you will be able to see how they are coping as a newbie, and possibly help them.",
 			type: "boolean"
 		},
 		{
 			name: "insertUsername",
-			label: "Add your username to the template (where applicable)",
-			helptip: "Some welcome templates have an opening sentence like \"Hi, I'm &lt;username&gt;. Welcome\" etc. If you turn off this option, these templates will not display your username in that way.",
+			label: "Thêm tên bạn vào bản mẫu (nơi thích hợp)",
+			helptip: "Một số bản mẫu hoan nghênh có các câu chung chung như \"Xin chào, Tôi là &lt;username&gt;. Hoan nghênh\" .... Nếu bạn tắt lựa chọn này, các bản mẫu như thế sẽ không hiển thị tên của bạn theo cách đó.",
 			type: "boolean"
 		},
 		{
 			name: "quickWelcomeMode",
 			label: "Clicking the \"welcome\" link on a diff page will",
-			helptip: "If you choose to welcome automatically, the template you specify below will be used.",
+			helptip: "Nếu bạn chọn cách hoan nghênh tự động, bản mẫu như bên dưới sẽ được sử dụng.",
 			type: "enum",
 			enumValues: { auto: "welcome automatically", norm: "prompt you to select a template" }
 		},
 		{
 			name: "quickWelcomeTemplate",
-			label: "Template to use when welcoming automatically",
-			helptip: "Enter the name of a welcome template, without the curly brackets. A link to the given article will be added.",
+			label: "Bản mẫu sử dụng để hoan nghênh tự động",
+			helptip: "Nhập vào tên bản mẫu hoan nghênh, không cần dấu ngoặc mốc. Liên kết đến bài viết sẽ được thêm vào.",
 			type: "string"
 		},
 		{
 			name: "customWelcomeList",
 			label: "Custom welcome templates to display",
-			helptip: "You can add other welcome templates, or user subpages that are welcome templates (prefixed with \"User:\"). Don't forget that these templates are substituted onto user talk pages.",
+			helptip: "Bạn có thể thêm vào các bản mẫu hoan nghênh khác, hoặc các bản mẫu bạn mà bạn đã tạo nó trong trang thành viên của bạn như (có phần đầu là \"User:\"). Đừng quên rằng các bản mẫu này phải sử dụng cách thế (subst) trên trang thảo luận thành viên.",
 			type: "customList",
 			customListValueTitle: "Template name (no curly brackets)",
 			customListLabelTitle: "Text to show in Welcome dialog"
@@ -705,14 +705,14 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "XFD (deletion discussions)",
+	title: "Xóa (biểu quyết xóa)",
 	preferences: [
 		// TwinkleConfig.xfdWatchPage (string)
 		// The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
 		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 		{
 			name: "xfdWatchPage",
-			label: "Add the nominated page to watchlist",
+			label: "Thêm trang đề nghị xóa vào danh sách theo dõi",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		},
@@ -723,8 +723,8 @@ Twinkle.config.sections = [
 		// Either "yes" (add to watchlist), "no" (don't add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 		{
 			name: "xfdWatchDiscussion",
-			label: "Add the deletion discussion page to watchlist",
-			helptip: "This refers to the discussion subpage (for AfD and MfD) or the daily log page (for TfD, CfD, RfD and FfD)",
+			label: "Thêm trang thảo luận xóa vào danh sách theo dõi",
+			helptip: "Đây là trang thảo luận về trang biểu quyết xóa (đối với AfD và MfD) hoặc nhận trình của trang (đối với TfD, CfD, RfD và FfD)",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		},
@@ -735,7 +735,7 @@ Twinkle.config.sections = [
 		// Sorry in advance for any false positives.).
 		{
 			name: "xfdWatchList",
-			label: "Add the daily log/list page to the watchlist (where applicable)",
+			label: "Thêm trang/danh sách nhật trình vào danh sách theo dõi (where applicable)",
 			helptip: "This only applies for AfD and MfD, where the discussions are transcluded onto a daily log page (for AfD) or the main MfD page (for MfD).",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
@@ -746,7 +746,7 @@ Twinkle.config.sections = [
 		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 		{
 			name: "xfdWatchUser",
-			label: "Add the user talk page to watchlist (when notifying)",
+			label: "Thêm trang thảo luận thành viên vào danh sách theo dõi (khi thông báo)",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		}

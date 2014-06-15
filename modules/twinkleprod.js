@@ -29,7 +29,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Proposed deletion policy", "WP:PROD" );
 	Window.addFooterLink( "BLP PROD policy", "WP:BLPPROD" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#prod" );
+	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#prod" );
 
 	var form = new Morebits.quickForm( Twinkle.prod.callback.evaluate );
 	
@@ -230,7 +230,7 @@ Twinkle.prod.callbacks = {
 			return;
 		}
 
-		var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+		var usertalkpage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n{{subst:prodwarning" + (params.blp ? "BLP" : "") + "|1=" + Morebits.pageNameNorm + "|concern=" + params.reason + "}} ~~~~";
 		usertalkpage.setAppendText(notifytext);
 		usertalkpage.setEditSummary("Notification: proposed deletion of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
@@ -324,7 +324,7 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	}
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = "Tagging complete";
+	Morebits.wiki.actionCompleted.notice = "Thêm thông báo hoàn tất";
 
 	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging page");
 	wikipedia_page.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD

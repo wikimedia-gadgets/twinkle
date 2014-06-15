@@ -120,7 +120,7 @@ Twinkle.fluff = {
 				Twinkle.fluff.revertToRevision(oldrev);
 			});
 			revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
-			revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
+			revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'lùi về phiên bản này' ) );
 			revertToRevisionLink.appendChild( spanTag( 'Black', ']' ) );
 
 			otitle.insertBefore( revertToRevision, otitle.firstChild );
@@ -139,7 +139,7 @@ Twinkle.fluff = {
 					Twinkle.fluff.revertToRevision(newrev);
 				});
 				revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
-				revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
+				revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'lùi về phiên bản này' ) );
 				revertToRevisionLink.appendChild( spanTag( 'Black', ']' ) );
 				ntitle.insertBefore( revertToRevision, ntitle.firstChild );
 
@@ -173,15 +173,15 @@ Twinkle.fluff = {
 				});
 
 				agfLink.appendChild( spanTag( 'Black', '[' ) );
-				agfLink.appendChild( spanTag( 'DarkOliveGreen', 'rollback (AGF)' ) );
+				agfLink.appendChild( spanTag( 'DarkOliveGreen', 'lùi sửa (thiện ý)' ) );
 				agfLink.appendChild( spanTag( 'Black', ']' ) );
 
 				vandLink.appendChild( spanTag( 'Black', '[' ) );
-				vandLink.appendChild( spanTag( 'Red', 'rollback (VANDAL)' ) );
+				vandLink.appendChild( spanTag( 'Red', 'lùi sửa (phá hoại)' ) );
 				vandLink.appendChild( spanTag( 'Black', ']' ) );
 
 				normLink.appendChild( spanTag( 'Black', '[' ) );
-				normLink.appendChild( spanTag( 'SteelBlue', 'rollback' ) );
+				normLink.appendChild( spanTag( 'SteelBlue', 'lùi sửa' ) );
 				normLink.appendChild( spanTag( 'Black', ']' ) );
 
 				agfNode.appendChild(agfLink);
@@ -226,7 +226,7 @@ Twinkle.fluff.revert = function revertPage( type, vandal, autoRevert, rev, page 
 		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ],
 		'intoken': 'edit'
 	};
-	var wikipedia_api = new Morebits.wiki.api( 'Grabbing data of earlier revisions', query, Twinkle.fluff.callbacks.main );
+	var wikipedia_api = new Morebits.wiki.api( 'Lấy dữ liệu của các phiên bản trước đó', query, Twinkle.fluff.callbacks.main );
 	wikipedia_api.params = params;
 	wikipedia_api.post();
 };
@@ -245,7 +245,7 @@ Twinkle.fluff.revertToRevision = function revertToRevision( oldrev ) {
 		'intoken': 'edit',
 		'format': 'xml'
 	};
-	var wikipedia_api = new Morebits.wiki.api( 'Grabbing data of the earlier revision', query, Twinkle.fluff.callbacks.toRevision.main );
+	var wikipedia_api = new Morebits.wiki.api( 'Lấy dữ liệu của phiên bản trước đó', query, Twinkle.fluff.callbacks.toRevision.main );
 	wikipedia_api.params = { rev: oldrev };
 	wikipedia_api.post();
 };
@@ -271,13 +271,13 @@ Twinkle.fluff.callbacks = {
 				return;
 			}
 
-			var optional_summary = prompt( "Please specify a reason for the revert:                                ", "" );  // padded out to widen prompt in Firefox
+			var optional_summary = prompt( "Xin hãy nêu lý do cho việc lùi sửa:                                ", "" );  // padded out to widen prompt in Firefox
 			if (optional_summary === null)
 			{
-				self.statelem.error( 'Aborted by user.' );
+				self.statelem.error( 'Bạn đã hủy yêu cầu.' );
 				return;
 			}
-			var summary = Twinkle.fluff.formatSummary("Reverted to revision " + revertToRevID + " by $USER", revertToUser, optional_summary);
+			var summary = Twinkle.fluff.formatSummary("Đã lùi về phiên bản " + revertToRevID + " bởi $USER", revertToUser, optional_summary);
 
 			var query = {
 				'action': 'edit',
@@ -293,9 +293,9 @@ Twinkle.fluff.callbacks = {
 			};
 
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-			Morebits.wiki.actionCompleted.notice = "Reversion completed";
+			Morebits.wiki.actionCompleted.notice = "Lùi sửa thành công";
 
-			var wikipedia_api = new Morebits.wiki.api( 'Saving reverted contents', query, Twinkle.fluff.callbacks.complete, self.statelem);
+			var wikipedia_api = new Morebits.wiki.api( 'Đang lưu nội dung đã lùi sửa', query, Twinkle.fluff.callbacks.complete, self.statelem);
 			wikipedia_api.params = self.params;
 			wikipedia_api.post();
 
@@ -397,8 +397,8 @@ Twinkle.fluff.callbacks = {
 		var good_revision = revs[ found ];
 		var userHasAlreadyConfirmedAction = false;
 		if (self.params.type !== 'vand' && count > 1) {
-			if ( !confirm( self.params.user + ' has made ' + count + ' edits in a row. Are you sure you want to revert them all?') ) {
-				Morebits.status.info( 'Notice', 'Stopping reverting per user input' );
+			if ( !confirm( self.params.user + ' đã sửa đổi liên tiếp ' + count + ' lần. Bạn có chắc muốn lùi sửa toàn bộ?') ) {
+				Morebits.status.info( 'Thông báo', 'Đã hủy lùi sửa theo yêu cầu' );
 				return;
 			}
 			userHasAlreadyConfirmedAction = true;
@@ -414,21 +414,21 @@ Twinkle.fluff.callbacks = {
 		var summary, extra_summary;
 		switch( self.params.type ) {
 		case 'agf':
-			extra_summary = prompt( "An optional comment for the edit summary:                              ", "" );  // padded out to widen prompt in Firefox
+			extra_summary = prompt( "Tóm lược sửa đổi tùy chọn:                              ", "" );  // padded out to widen prompt in Firefox
 			if (extra_summary === null)
 			{
-				self.statelem.error( 'Aborted by user.' );
+				self.statelem.error( 'Bạn đã hủy yêu cầu.' );
 				return;
 			}
 			userHasAlreadyConfirmedAction = true;
 
-			summary = Twinkle.fluff.formatSummary("Reverted [[WP:AGF|good faith]] edits by $USER", self.params.user, extra_summary);
+			summary = Twinkle.fluff.formatSummary("Đã lùi lại sửa đổi [[WP:GTY|thiện ý]] của $USER", self.params.user, extra_summary);
 			break;
 
 		case 'vand':
 
-			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" +
-				self.params.user + "|" + self.params.user + "]] ([[User talk:" + self.params.user + "|talk]]) to last revision by " +
+			summary = "Đã lùi lại " + self.params.count + "sửa đổi của [[Đặc biệt:Đóng góp/" +
+				self.params.user + "|" + self.params.user + "]] ([[Thảo luận Thành viên:" + self.params.user + "|thảo luận]]), quay về phiên bản cuối của " +
 				self.params.gooduser + "." + Twinkle.getPref('summaryAd');
 			break;
 
@@ -436,22 +436,21 @@ Twinkle.fluff.callbacks = {
 			/* falls through */
 		default:
 			if( Twinkle.getPref('offerReasonOnNormalRevert') ) {
-				extra_summary = prompt( "An optional comment for the edit summary:                              ", "" );  // padded out to widen prompt in Firefox
+				extra_summary = prompt( "Tóm lược sửa đổi tùy chọn:                              ", "" );  // padded out to widen prompt in Firefox
 				if (extra_summary === null)
 				{
-					self.statelem.error( 'Aborted by user.' );
+					self.statelem.error( 'Bạn đã hủy yêu cầu.' );
 					return;
 				}
 				userHasAlreadyConfirmedAction = true;
 			}
 
-			summary = Twinkle.fluff.formatSummary("Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + 
-				" by $USER", self.params.user, extra_summary);
+			summary = Twinkle.fluff.formatSummary("Đã lùi lại " + self.params.count + " sửa đổi của $USER", self.params.user, extra_summary);
 			break;
 		}
 
-		if (Twinkle.getPref('confirmOnFluff') && !userHasAlreadyConfirmedAction && !confirm("Reverting page: are you sure?")) {
-			self.statelem.error( 'Aborted by user.' );
+		if (Twinkle.getPref('confirmOnFluff') && !userHasAlreadyConfirmedAction && !confirm("Bạn có chắc muốn lùi lại sửa đổi?")) {
+			self.statelem.error( 'Bạn đã hủy yêu cầu.' );
 			return;
 		}
 
@@ -462,7 +461,7 @@ Twinkle.fluff.callbacks = {
 			Morebits.status.info( 'Info', [ 'Opening user talk page edit form for user ', Morebits.htmlNode( 'strong', self.params.user ) ] );
 
 			query = {
-				'title': 'User talk:' + self.params.user,
+				'title': 'Thảo luận Thành viên:' + self.params.user,
 				'action': 'edit',
 				'preview': 'yes',
 				'vanarticle': self.params.pagename.replace(/_/g, ' '),
@@ -514,7 +513,7 @@ Twinkle.fluff.callbacks = {
 		};
 
 		Morebits.wiki.actionCompleted.redirect = self.params.pagename;
-		Morebits.wiki.actionCompleted.notice = "Reversion completed";
+		Morebits.wiki.actionCompleted.notice = "Lùi sửa thành công";
 
 		var wikipedia_api = new Morebits.wiki.api( 'Saving reverted contents', query, Twinkle.fluff.callbacks.complete, self.statelem);
 		wikipedia_api.params = self.params;
@@ -572,7 +571,7 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, userString) {
 	var contribsLink = "[[Special:Contributions/" + userName + "|" + userName + "]]";
 	var contribsLen = unescape(encodeURIComponent(contribsLink)).length;
 	if (resultLen + contribsLen <= 255) {
-		var talkLink = " ([[User talk:" + userName + "|talk]])";
+		var talkLink = " ([[Thảo luận Thành viên:" + userName + "|thảo luận]])";
 		if (resultLen + contribsLen + unescape(encodeURIComponent(talkLink)).length <= 255) {
 			result = result.replace("$USER", contribsLink + talkLink);
 		} else {

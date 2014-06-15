@@ -19,50 +19,50 @@ Twinkle.arv = function twinklearv() {
 		return;
 	}
 
-	var title = Morebits.isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
+	var title = Morebits.isIPAddress( username ) ? 'Thông báo IP đến bảo quản viên' : 'Thông báo thành viên đến bảo quản viên';
 
-	Twinkle.addPortletLink( function(){ Twinkle.arv.callback(username); }, "ARV", "tw-arv", title );
+	Twinkle.addPortletLink( function(){ Twinkle.arv.callback(username); }, "Thông báo BQV", "tw-arv", title );
 };
 
 Twinkle.arv.callback = function ( uid ) {
 	if ( uid === mw.config.get('wgUserName') ) {
-		alert( 'You don\'t want to report yourself, do you?' );
+		alert( 'Bạn không muốn tự thông báo cho mình chứ?' );
 		return;
 	}
 
 	var Window = new Morebits.simpleWindow( 600, 500 );
-	Window.setTitle( "Advance Reporting and Vetting" ); //Backronym
+	Window.setTitle( "Thông báo nâng cao" );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Guide to AIV", "WP:GAIV" );
+	Window.addFooterLink( "Hướng dẫn AIV", "WP:GAIV" );
 	Window.addFooterLink( "UAA instructions", "WP:UAAI" );
-	Window.addFooterLink( "About SPI", "WP:SPI" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#arv" );
+	Window.addFooterLink( "Về SPI", "WP:SPI" );
+	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#arv" );
 
 	var form = new Morebits.quickForm( Twinkle.arv.callback.evaluate );
 	var categories = form.append( {
 			type: 'select',
 			name: 'category',
-			label: 'Select report type: ',
+			label: 'Chọn nhóm thông báo: ',
 			event: Twinkle.arv.callback.changeCategory
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Vandalism (WP:AIV)',
+			label: 'Phá hoại (WP:AIV)',
 			value: 'aiv'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Username (WP:UAA)',
+			label: 'Tên thành viên (WP:UAA)',
 			value: 'username'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Sockpuppeteer (WP:SPI)',
+			label: 'Người dùng rối (WP:SPI)',
 			value: 'sock'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Sockpuppet (WP:SPI)',
+			label: 'Rối (WP:SPI)',
 			value: 'puppet'
 		} );
 	categories.append( {
@@ -110,8 +110,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 		work_area.append( {
 				type: 'input',
 				name: 'page',
-				label: 'Primary linked page: ',
-				tooltip: 'Leave blank to not link to the page in the report',
+				label: 'Trang liên kết ban đầu: ',
+				tooltip: 'Để trống nêu không liên kết đến trang trong báo cáo',
 				value: Morebits.queryString.exists( 'vanarticle' ) ? Morebits.queryString.get( 'vanarticle' ) : '',
 				event: function(e) {
 					var value = e.target.value;
@@ -150,24 +150,24 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'arvtype',
 				list: [
 					{
-						label: 'Vandalism after final (level 4 or 4im) warning given',
+						label: 'Phá hoại sau lần cảnh báo cuối cùng (lần 4 hoặc 4im)',
 						value: 'final'
 					},
 					{
-						label: 'Vandalism after recent (within 1 day) release of block',
+						label: 'Phá hoại gần đây (trong vòng 1 ngày)',
 						value: 'postblock'
 					},
 					{
-						label: 'Evidently a vandalism-only account',
+						label: 'Tài khoản có dấu hiệu chỉ phá hoại',
 						value: 'vandalonly',
 						disabled: Morebits.isIPAddress( root.uid.value )
 					},
 					{
-						label: 'Account is evidently a spambot or a compromised account',
+						label: 'Tài khoản có dấu hiệu là spambot hoặc tài khoản bị xân nhập',
 						value: 'spambot'
 					},
 					{
-						label: 'Account is a promotion-only account',
+						label: 'Tài khoảng chỉ dùng cho quảng bá',
 						value: 'promoonly'
 					}
 				]
@@ -183,12 +183,12 @@ Twinkle.arv.callback.changeCategory = function (e) {
 	case 'username':
 		work_area = new Morebits.quickForm.element( {
 				type: 'field',
-				label: 'Report username violation',
+				label: 'Báo cáo tên người dùng vi phạm',
 				name: 'work_area'
 			} );
 		work_area.append ( {
 				type: 'header',
-				label: 'Type(s) of inappropriate username',
+				label: 'Các kiểu tên người dùng không thích hợp',
 				tooltip: 'Wikipedia does not allow usernames that are misleading, promotional, offensive or disruptive. Domain names and email addresses are likewise prohibited. These criteria apply to both usernames and signatures. Usernames that are inappropriate in another language, or that represent an inappropriate name with misspellings and substitutions, or do so indirectly or by implication, are still considered inappropriate.'
 			} );
 		work_area.append( {
@@ -196,22 +196,22 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'arvtype',
 				list: [
 					{
-						label: 'Misleading username',
+						label: 'Tên người dùng gây hiểu nhầm',
 						value: 'misleading',
 						tooltip: 'Misleading usernames imply relevant, misleading things about the contributor. For example, misleading points of fact, an impression of undue authority, or the suggestion that the account is operated by a group, project or collective rather than one individual.'
 					},
 					{
-						label: 'Promotional username',
+						label: 'Tên người dùng quảng bá',
 						value: 'promotional',
 						tooltip: 'Promotional usernames are advertisements for a company, website or group. Please do not report these names to UAA unless the user has also made promotional edits related to the name.'
 					},
 					{
-						label: 'Offensive username',
+						label: 'Tên người dùng mục đích công kích cá nhân',
 						value: 'offensive',
 						tooltip: 'Offensive usernames make harmonious editing difficult or impossible.'
 					},
 					{
-						label: 'Disruptive username',
+						label: 'Tên người dùng gây rối',
 						value: 'disruptive',
 						tooltip: 'Disruptive usernames include outright trolling or personal attacks, or otherwise show a clear intent to disrupt Wikipedia.'
 					}
@@ -229,20 +229,20 @@ Twinkle.arv.callback.changeCategory = function (e) {
 	case 'puppet':
 		work_area = new Morebits.quickForm.element( {
 				type: 'field',
-				label: 'Report suspected sockpuppet',
+				label: 'Báo cáo rối',
 				name: 'work_area'
 			} );
 		work_area.append(
 			{
 				type: 'input',
 				name: 'sockmaster',
-				label: 'Sockpuppeteer',
-				tooltip: 'The username of the sockpuppeteer (sockmaster) without the User:-prefix'
+				label: 'Người dùng rối',
+				tooltip: 'Tên người dùng rối không có tiếp đầu ngữ Thành viên:'
 			}
 		);
 		work_area.append( {
 				type: 'textarea',
-				label: 'Evidence:',
+				label: 'Bằng chứng rối:',
 				name: 'evidence',
 				tooltip: 'Enter your evidence. It should make clear that each of these users is likely to be abusing multiple accounts. Usually this means diffs, page histories or other information that justifies why the users are a) the same and b) disruptive. This should purely be evidence and information needed to judge the matter. Avoid all other discussion that is not evidence of sockpuppetry or other multiple account abuse.'
 			} );
@@ -250,12 +250,12 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Request CheckUser evidence',
+						label: 'Yêu cầu kiểm tra người dùng',
 						name: 'checkuser',
 						tooltip: 'CheckUser is a tool used to obtain technical evidence related to a sock-puppetry allegation. It will not be used without good cause, which you must clearly demonstrate. Make sure your evidence explains why CheckUser is appropriate.'
 					},
 					{
-						label: 'Notify reported users',
+						label: 'Thông báo đến thành viên bị báo cáo',
 						name: 'notify',
 						tooltip: 'Notification is not mandatory. In many cases, especially of chronic sockpuppeteers, notification may be counterproductive. However, especially in less egregious cases involving users who has not been reported before, notification may make the cases fairer and also appear to be fairer in the eyes of the accused. Use your judgment.'
 					}
@@ -267,14 +267,14 @@ Twinkle.arv.callback.changeCategory = function (e) {
 	case 'sock':
 		work_area = new Morebits.quickForm.element( {
 				type: 'field',
-				label: 'Report suspected sockpuppeteer',
+				label: 'Báo cáo rối',
 				name: 'work_area'
 			} );
 		work_area.append(
 			{
 				type: 'dyninput',
 				name: 'sockpuppet',
-				label: 'Sockpuppets',
+				label: 'Rối',
 				sublabel: 'Sock: ',
 				tooltip: 'The username of the sockpuppet without the User:-prefix',
 				min: 2
@@ -375,7 +375,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					rvuser: mw.config.get('wgUserName'),
 					indexpageids: true,
 					redirects: true,
-					titles: 'User talk:' + uid
+					titles: 'Thảo luận Thành viên:' + uid
 				}).done(function(data){
 					var pageid = data.query.pageids[0];
 					var page = data.query.pages[pageid];
@@ -557,10 +557,10 @@ Twinkle.arv.callback.evaluate = function(e) {
 			Morebits.simpleWindow.setButtonsEnabled( false );
 			Morebits.status.init( form );
 
-			Morebits.wiki.actionCompleted.redirect = "Wikipedia:Administrator intervention against vandalism";
+			Morebits.wiki.actionCompleted.redirect = "Wikipedia:Tin nhắn cho bảo quản viên";
 			Morebits.wiki.actionCompleted.notice = "Reporting complete";
 
-			var aivPage = new Morebits.wiki.page( 'Wikipedia:Administrator intervention against vandalism', 'Processing AIV request' );
+			var aivPage = new Morebits.wiki.page( 'Wikipedia:Tin nhắn cho bảo quản viên', 'Processing AIV request' );
 			aivPage.setPageSection( 1 );
 			aivPage.setFollowRedirect( true );
 			
@@ -608,10 +608,10 @@ Twinkle.arv.callback.evaluate = function(e) {
 			Morebits.simpleWindow.setButtonsEnabled( false );
 			Morebits.status.init( form );
 
-			Morebits.wiki.actionCompleted.redirect = "Wikipedia:Usernames for administrator attention";
-			Morebits.wiki.actionCompleted.notice = "Reporting complete";
+			Morebits.wiki.actionCompleted.redirect = "Wikipedia:Tin nhắn cho bảo quản viên";
+			Morebits.wiki.actionCompleted.notice = "Báo cáo hoàn tất";
 
-			var uaaPage = new Morebits.wiki.page( 'Wikipedia:Usernames for administrator attention', 'Processing UAA request' );
+			var uaaPage = new Morebits.wiki.page( 'Wikipedia:Tin nhắn cho bảo quản viên', 'Đang xử lý yêu cầu UAA' );
 			uaaPage.setFollowRedirect( true );
 
 			uaaPage.load( function() {
@@ -726,7 +726,7 @@ Twinkle.arv.processSock = function( params ) {
 		var notifyText = "\n\n{{subst:socksuspectnotice|1=" + params.uid + "}} ~~~~";
 		
 		// notify user's master account
-		var masterTalkPage = new Morebits.wiki.page( 'User talk:' + params.uid, 'Notifying suspected sockpuppeteer' );
+		var masterTalkPage = new Morebits.wiki.page( 'Thảo luận Thành viên:' + params.uid, 'Notifying suspected sockpuppeteer' );
 		masterTalkPage.setFollowRedirect( true );
 		masterTalkPage.setEditSummary( notifyEditSummary );
 		masterTalkPage.setAppendText( notifyText );
@@ -750,7 +750,7 @@ Twinkle.arv.processSock = function( params ) {
 
 		// notify each puppet account
 		for( var i = 0; i < socks.length; ++i ) {
-			var sockTalkPage = new Morebits.wiki.page( 'User talk:' + socks[i], "Notification for " +  socks[i] );
+			var sockTalkPage = new Morebits.wiki.page( 'Thảo luận Thành viên:' + socks[i], "Notification for " +  socks[i] );
 			sockTalkPage.setFollowRedirect( true );
 			sockTalkPage.setEditSummary( notifyEditSummary );
 			sockTalkPage.setAppendText( notifyText );
@@ -900,7 +900,7 @@ Twinkle.arv.processAN3 = function( params ) {
 		var notifyEditSummary = "Notifying about edit warring noticeboard discussion." + Twinkle.getPref('summaryAd');
 		var notifyText = "\n\n{{subst:an3-notice|1=" + mw.util.wikiUrlencode(params.uid) + "|auto=1}} ~~~~";
 
-		var talkPage = new Morebits.wiki.page( 'User talk:' + params.uid, 'Notifying edit warrior' );
+		var talkPage = new Morebits.wiki.page( 'Thảo luận Thành viên:' + params.uid, 'Notifying edit warrior' );
 		talkPage.setFollowRedirect( true );
 		talkPage.setEditSummary( notifyEditSummary );
 		talkPage.setAppendText( notifyText );

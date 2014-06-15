@@ -447,7 +447,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 
 		node = document.createElement( 'div' );
 
-		label = node.appendChild( document.createElement( 'h5' ) );
+		label = node.appendChild( document.createElement( 'h3' ) );
 		label.appendChild( document.createTextNode( data.label ) );
 
 		var listNode = node.appendChild( document.createElement( 'div' ) );
@@ -549,7 +549,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 		node.setAttribute( 'name', data.name );
 		break;
 	case 'header':
-		node = document.createElement( 'h5' );
+		node = document.createElement( 'h3' );
 		node.appendChild( document.createTextNode( data.label ) );
 		break;
 	case 'div':
@@ -604,7 +604,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 		node = document.createElement( 'div' );
 		node.setAttribute( 'id', 'div_' + id );
 		if( data.label ) {
-			label = node.appendChild( document.createElement( 'h5' ) );
+			label = node.appendChild( document.createElement( 'h3' ) );
 			label.appendChild( document.createTextNode( data.label ) );
 			// TODO need to nest a <label> tag in here without creating extra vertical space
 			//label.setAttribute( 'for', id );

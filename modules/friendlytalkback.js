@@ -8,8 +8,8 @@
  ****************************************
  *** friendlytalkback.js: Talkback module
  ****************************************
- * Mode of invocation:     Tab ("TB")
- * Active on:              Existing user talk pages
+ * Mode of invocation:     Tab ("Hồi âm")
+ * Active on:              Trên trang thảo luận thành viên
  * Config directives in:   FriendlyConfig
  */
 
@@ -19,43 +19,43 @@ Twinkle.talkback = function() {
 		return;
 	}
 
-	Twinkle.addPortletLink( Twinkle.talkback.callback, "TB", "friendly-talkback", "Easy talkback" );
+	Twinkle.addPortletLink( Twinkle.talkback.callback, "Hồi âm", "friendly-talkback", "Easy talkback" );
 };
 
 Twinkle.talkback.callback = function( ) {
-	if( mw.config.get('wgRelevantUserName') === mw.config.get("wgUserName") && !confirm("Is it really so bad that you're talking back to yourself?") ){
+	if( mw.config.get('wgRelevantUserName') === mw.config.get("wgUserName") && !confirm("Bạn chắc chắn muốn hồi âm cho chính mình chứ?") ){
 		return;
 	}
 
 	var Window = new Morebits.simpleWindow( 600, 350 );
-	Window.setTitle("Talkback");
+	Window.setTitle("Hồi âm");
 	Window.setScriptName("Twinkle");
-	Window.addFooterLink( "About {{talkback}}", "Template:Talkback" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#talkback" );
+	Window.addFooterLink( "Về {{hồi âm}}", "Template:Hồi âm" );
+	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#talkback" );
 
 	var form = new Morebits.quickForm( callback_evaluate );
 
 	form.append({ type: "radio", name: "tbtarget",
 				list: [
 					{
-						label: "Talkback: my talk page",
+						label: "Hồi âm: trang thảo luận của tôi",
 						value: "mytalk",
 						checked: "true"
 					},
 					{
-						label: "Talkback: other user talk page",
+						label: "Hồi âm: trang thảo luận của thành viên khác",
 						value: "usertalk"
 					},
 					{
-						label: "Talkback: other page",
+						label: "Hồi âm: trang khác",
 						value: "other"
 					},
 					{
-						label: "\"Please see\"",
+						label: "\"Vui lòng xem\"",
 						value: "see"
 					},
 					{
-						label: "Noticeboard notification",
+						label: "Thông báo trên bàn thông báo",
 						value: "notice"
 					},
 					{
@@ -146,7 +146,7 @@ var callback_change_target = function( e ) {
 
 	var work_area = new Morebits.quickForm.element({
 			type: "field",
-			label: "Talkback information",
+			label: "Thông tin về hồi âm",
 			name: "work_area"
 		});
 
@@ -163,8 +163,8 @@ var callback_change_target = function( e ) {
 			work_area.append({
 					type:"input",
 					name:"section",
-					label:"Linked section (optional)",
-					tooltip:"The section heading on your talk page where you left a message. Leave empty for no section to be linked.",
+					label:"Đề mục liên kết (tùy chọn)",
+					tooltip:"Đề mục trên trang thảo luận mà bạn để lại lời nhắn. Để trống nếu không có liên kết đề mục.",
 					value: prev_section
 				});
 			break;
@@ -178,16 +178,16 @@ var callback_change_target = function( e ) {
 			work_area.append({
 					type:"input",
 					name:"page",
-					label:"User",
-					tooltip:"The username of the user on whose talk page you left a message.",
+					label:"Thành viên",
+					tooltip:"Tên thành viên mà bạn đã để lại tin nhắn trên trang thảo luận của họ.",
 					value: prev_page
 				});
 			
 			work_area.append({
 					type:"input",
 					name:"section",
-					label:"Linked section (optional)",
-					tooltip:"The section heading on the page where you left a message. Leave empty for no section to be linked.",
+					label:"Đề mục liên kết (tùy chọn)",
+					tooltip:"Đề mục tại trang mà bạn đã để lại tin nhắn. Để trống nếu không có đề mục liên kết.",
 					value: prev_section
 				});
 			break;
@@ -195,7 +195,7 @@ var callback_change_target = function( e ) {
 			var noticeboard = work_area.append({
 					type: "select",
 					name: "noticeboard",
-					label: "Noticeboard:",
+					label: "Bàn thông báo:",
 					event: function(e) {
 						if (e.target.value === "afchd") {
 							Morebits.quickForm.overrideElementLabel(e.target.form.section, "Title of draft (excluding the prefix): ");
@@ -208,17 +208,17 @@ var callback_change_target = function( e ) {
 				});
 			noticeboard.append({
 					type: "option",
-					label: "WP:AN (Administrators' noticeboard)",
+					label: "WP:BAOQUAN (Tin nhắn cho bảo quản viên)",
 					value: "an"
 				});
 			noticeboard.append({
 					type: "option",
-					label: "WP:AN3 (Administrators' noticeboard/Edit warring)",
+					label: "WP:AN3 (Tin nhắn cho bảo quản viên/Edit warring)",
 					value: "an3"
 				});
 			noticeboard.append({
 					type: "option",
-					label: "WP:ANI (Administrators' noticeboard/Incidents)",
+					label: "WP:ANI (Tin nhắn cho bảo quản viên/Incidents)",
 					selected: true,
 					value: "ani"
 				});
@@ -271,16 +271,16 @@ var callback_change_target = function( e ) {
 			work_area.append({
 					type:"input",
 					name:"page",
-					label:"Full page name",
-					tooltip:"The full page name where you left the message. For example: 'Wikipedia talk:Twinkle'.",
+					label:"Tên trang đầy đủ",
+					tooltip:"Tên trang đầy đủ mà bạn đã để lại tin nhắn. Ví dụ như: 'Thảo luận Wikipedia:Twinkle'.",
 					value: prev_page
 				});
 			
 			work_area.append({
 					type:"input",
 					name:"section",
-					label:"Linked section (optional)",
-					tooltip:"The section heading on the page where you left a message. Leave empty for no section to be linked.",
+					label:"Đề mục liên kết (tùy chọn)",
+					tooltip:"Đề mục tại trang mà bạn đã để lại tin nhắn. Để trống nếu không có đề mục liên kết.",
 					value: prev_section
 				});
 			break;
@@ -296,14 +296,14 @@ var callback_change_target = function( e ) {
 			work_area.append({
 					type:"input",
 					name:"page",
-					label:"Full page name",
-					tooltip:"The full page name of where the discussion is being held. For example: 'Wikipedia talk:Twinkle'.",
+					label:"Tên trang đầy đủ",
+					tooltip:"Tên trang đầy đủ mà bạn đã để lại tin nhắn. Ví dụ như: 'Thảo luận Wikipedia:Twinkle'.",
 					value: prev_page
 				});
 			work_area.append({
 					type:"input",
 					name:"section",
-					label:"Linked section (optional)",
+					label:"Đề mục liên kết (tùy chọn)",
 					tooltip:"The section heading where the discussion is being held. For example: 'Merge proposal'.",
 					value: prev_section
 				});
@@ -311,7 +311,7 @@ var callback_change_target = function( e ) {
 	}
 
 	if (value !== "notice") {
-		work_area.append({ type:"textarea", label:"Additional message (optional):", name:"message", tooltip:"An additional message that you would like to leave below the talkback template. Your signature will be added to the end of the message if you leave one." });
+		work_area.append({ type:"textarea", label:"Tin nhắn khác (tùy chọn):", name:"message", tooltip:"Tin nhắc khác mà bạn muốn để lại dưới bản mẫu hồi âm. Chữ ký của bạn sẽ được thêm vào cuối đoạn tin nhắn này." });
 	}
 
 	work_area = work_area.render();
@@ -337,12 +337,12 @@ var callback_evaluate = function( e ) {
 		
 		if( tbtarget === "usertalk" ) {
 			if( !page ) {
-				alert("You must specify the username of the user whose talk page you left a message on.");
+				alert("Bạn phải điền tên thành viên mà bạn để lại tin nhắn cho họ.");
 				return;
 			}
 		} else {
 			if( !page ) {
-				alert("You must specify the full page name when your message is not on a user talk page.");
+				alert("Bạn phải điền đầy đủ tên trang mà bạn đã để lại tin nhắn trong trang thảo luận.");
 				return;
 			}
 		}
@@ -359,7 +359,7 @@ var callback_evaluate = function( e ) {
 	Morebits.status.init( e.target );
 
 	Morebits.wiki.actionCompleted.redirect = fullUserTalkPageName;
-	Morebits.wiki.actionCompleted.notice = "Talkback complete; reloading talk page in a few seconds";
+	Morebits.wiki.actionCompleted.notice = "Hồi âm hoàn tất: sắp tải lại trang thảo luận trong vài giây";
 
 	var talkpage = new Morebits.wiki.page(fullUserTalkPageName, "Adding talkback");
 	var tbPageName = (tbtarget === "mytalk") ? mw.config.get("wgUserName") : page;
@@ -373,17 +373,17 @@ var callback_evaluate = function( e ) {
 				break;
 			case "an":
 				text = "\n\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n";
-				text += "{{subst:ANI-notice|thread=" + section + "|noticeboard=Wikipedia:Administrators' noticeboard}} ~~~~";
-				talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Administrators' noticeboard]]" + Twinkle.getPref("summaryAd") );
+				text += "{{subst:ANI-notice|thread=" + section + "|noticeboard=Wikipedia:Tin nhắn cho bảo quản viên}} ~~~~";
+				talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Tin nhắn cho bảo quản viên]]" + Twinkle.getPref("summaryAd") );
 				break;
 			case "an3":
 				text = "\n\n{{subst:An3-notice|" + section + "}} ~~~~";
-				talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Administrators' noticeboard/Edit warring]]" + Twinkle.getPref("summaryAd") );
+				talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Tin nhắn cho bảo quản viên/Edit warring]]" + Twinkle.getPref("summaryAd") );
 				break;
 			case "ani":
 				text = "\n\n== " + Twinkle.getFriendlyPref("adminNoticeHeading") + " ==\n";
-				text += "{{subst:ANI-notice|thread=" + section + "|noticeboard=Wikipedia:Administrators' noticeboard/Incidents}} ~~~~";
-				talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Administrators' noticeboard/Incidents]]" + Twinkle.getPref("summaryAd") );
+				text += "{{subst:ANI-notice|thread=" + section + "|noticeboard=Wikipedia:Tin nhắn cho bảo quản viên/Incidents}} ~~~~";
+				talkpage.setEditSummary( "Notice of discussion at [[Wikipedia:Tin nhắn cho bảo quản viên/Incidents]]" + Twinkle.getPref("summaryAd") );
 				break;
 			case "coin":
 				text = "\n\n{{subst:Coin-notice|thread=" + section + "}} ~~~~";
@@ -447,7 +447,7 @@ var callback_evaluate = function( e ) {
 			text += "\n~~~~";
 		}
 
-		talkpage.setEditSummary("Talkback ([[" + (tbtarget === "other" ? "" : "User talk:") + tbPageName +
+		talkpage.setEditSummary("Hồi âm ([[" + (tbtarget === "other" ? "" : "Thảo luận Thành viên:") + tbPageName +
 			(section ? ("#" + section) : "") + "]])" + Twinkle.getPref("summaryAd"));
 	}
 

@@ -8,8 +8,8 @@
  ****************************************
  *** friendlywelcome.js: Welcome module
  ****************************************
- * Mode of invocation:     Tab ("Wel"), or from links on diff pages
- * Active on:              Existing user talk pages, diff pages
+ * Mode of invocation:     Tab ("Chào"), or from links on diff pages
+ * Hoạt động trên:         Các trang thảo luận thành viên đã có, diff pages
  * Config directives in:   FriendlyConfig
  */
 
@@ -27,7 +27,7 @@ Twinkle.welcome = function friendlywelcome() {
 
 Twinkle.welcome.auto = function() {
 	if( Morebits.queryString.get( 'action' ) !== 'edit' ) {
-		// userpage not empty, aborting auto-welcome
+		// trang thảo luận đã có, bỏ qua hoan nghênh tự động
 		return;
 	}
 
@@ -40,7 +40,7 @@ Twinkle.welcome.semiauto = function() {
 
 Twinkle.welcome.normal = function() {
 	if( Morebits.queryString.exists( 'diff' ) ) {
-		// check whether the contributors' talk pages exist yet
+		// kiểm tra trang thảo luận thành viên có chưa
 		var $oList = $("#mw-diff-otitle2").find("span.mw-usertoollinks a.new:contains(talk)").first();
 		var $nList = $("#mw-diff-ntitle2").find("span.mw-usertoollinks a.new:contains(talk)").first();
 
@@ -86,7 +86,7 @@ Twinkle.welcome.normal = function() {
 	}
 	if( mw.config.get( 'wgNamespaceNumber' ) === 3 ) {
 		var username = mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-		Twinkle.addPortletLink( function(){ Twinkle.welcome.callback(username); }, "Wel", "friendly-welcome", "Welcome user" );
+		Twinkle.addPortletLink( function(){ Twinkle.welcome.callback(username); }, "Hoan nghênh", "friendly-welcome", "Hoan nghênh" );
 	}
 };
 
@@ -101,24 +101,24 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 	};
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
+	Morebits.wiki.actionCompleted.notice = "Hoan nghên hoàn tất, tải lại trang thảo luận thành viên trong vài giây";
 
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "User talk page modification");
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Sửa trang thảo luận thành viên");
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);
 };
 
 Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
-	if( uid === mw.config.get('wgUserName') && !confirm( 'Are you really sure you want to welcome yourself?...' ) ){
+	if( uid === mw.config.get('wgUserName') && !confirm( 'Bạn có chắc là tự hoan nghênh mình không?' ) ){
 		return;
 	}
 
 	var Window = new Morebits.simpleWindow( 600, 420 );
-	Window.setTitle( "Welcome user" );
+	Window.setTitle( "Hoan nghênh" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Welcoming Committee", "WP:WC" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#welcome" );
+	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#welcome" );
 
 	var form = new Morebits.quickForm( Twinkle.welcome.callback.evaluate );
 
@@ -144,7 +144,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	form.append( {
 			type: 'input',
 			name: 'article',
-			label: '* Linked article (if supported by template):',
+			label: '* Bài viết (nếu có bản mẫu):',
 			value:( Morebits.queryString.exists( 'vanarticle' ) ? Morebits.queryString.get( 'vanarticle' ) : '' ),
 			tooltip: 'An article might be linked from within the welcome if the template supports it. Leave empty for no article to be linked.  Templates that support a linked article are marked with an asterisk.'
 		} );
@@ -222,9 +222,9 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			container.append({ type: 'header', label: 'Problem user welcome templates' });
 			appendTemplates([
 				"welcomelaws",
-				"first article",
+				"bài viết đầu tiên",
 				"welcometest",
-				"welcomevandal",
+				"hoan nghênh phá hoại",
 				"welcomenpov",
 				"welcomespam",
 				"welcomeunsourced",
@@ -385,20 +385,20 @@ Twinkle.welcome.templates = {
 		linkedArticle: false,
 		syntax: "{{subst:welcomelaws|$USERNAME$}} ~~~~"
 	},
-	"first article": {
-		description: "for someone whose first article did not meet page creation guidelines",
+	"bài viết đầu tiên": {
+		description: "đối với các thành viên viết bài đầu tiên mà chưa thỏa tiêu chuẩn của Wikipedia",
 		linkedArticle: true,
-		syntax: "{{subst:first article|$ARTICLE$|$USERNAME$}}"
+		syntax: "{{subst:bài viết đầu tiên|$ARTICLE$|$USERNAME$}}"
 	},
 	"welcometest": {
 		description: "for someone whose initial efforts appear to be tests",
 		linkedArticle: true,
 		syntax: "{{subst:welcometest|$ARTICLE$|$USERNAME$}} ~~~~"
 	},
-	"welcomevandal": {
-		description: "for someone whose initial efforts appear to be vandalism",
+	"hoan nghênh phá hoại": {
+		description: "đối với các sửa đổi có biểu hiện phá hoại",
 		linkedArticle: true,
-		syntax: "{{subst:welcomevandal|$ARTICLE$|$USERNAME$}}"
+		syntax: "{{subst:hoan nghênh phá hoại|$ARTICLE$|$USERNAME$}}"
 	},
 	"welcomenpov": {
 		description: "for someone whose initial efforts do not adhere to the neutral point of view policy",
@@ -704,7 +704,7 @@ Twinkle.welcome.callbacks = {
 	preview: function(form) {
 		var previewDialog = new Morebits.simpleWindow(750, 400);
 		previewDialog.setTitle("Welcome template preview");
-		previewDialog.setScriptName("Welcome user");
+		previewDialog.setScriptName("Hoan nghênh");
 		previewDialog.setModality(true);
 
 		var previewdiv = document.createElement("div");
@@ -732,7 +732,7 @@ Twinkle.welcome.callbacks = {
 
 		// abort if mode is auto and form is not empty
 		if( pageobj.exists() && params.mode === 'auto' ) {
-			Morebits.status.info( 'Warning', 'User talk page not empty; aborting automatic welcome' );
+			Morebits.status.info( 'Chú ý', 'Trang thảo luận đã tồn tại; không hoan nghênh tự động' );
 			Morebits.wiki.actionCompleted.event();
 			return;
 		}
@@ -745,7 +745,7 @@ Twinkle.welcome.callbacks = {
 			text += "\n" + welcomeText;
 		}
 
-		var summaryText = "Welcome to Wikipedia!";
+		var summaryText = "Hoan nghênh tham gia Wikipedia tiếng Việt!";
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
 		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchWelcomes'));
@@ -767,9 +767,9 @@ Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) 
 	Morebits.status.init( form );
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
+	Morebits.wiki.actionCompleted.notice = "Hoan nghênh hoàn tất, đang tải lại trang thảo luận trong vài giây";
 
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "User talk page modification");
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Sửa trang thảo luận thành viên");
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);

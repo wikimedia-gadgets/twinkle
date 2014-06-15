@@ -20,17 +20,17 @@ Twinkle.tag = function friendlytag() {
 	// redirect tagging
 	if( Morebits.wiki.isPageRedirect() ) {
 		Twinkle.tag.mode = 'redirect';
-		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Tag redirect" );
+		Twinkle.addPortletLink( Twinkle.tag.callback, "Đánh dấu", "friendly-tag", "Đánh dấu đổi hướng" );
 	}
 	// file tagging
 	else if( mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory") ) {
 		Twinkle.tag.mode = 'file';
-		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to file" );
+		Twinkle.addPortletLink( Twinkle.tag.callback, "Đánh dấu", "friendly-tag", "Thêm bản mẫu bảo quản vào bài viết" );
 	}
 	// article/draft article tagging
 	else if( ( mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 118 || /^Wikipedia( talk)?\:Articles for creation\//.exec(Morebits.pageNameNorm) ) && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
-		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to article" );
+		Twinkle.addPortletLink( Twinkle.tag.callback, "Đánh dấu", "friendly-tag", "Thêm bản mẫu bảo quản vào bài viết" );
 	}
 };
 
@@ -38,7 +38,7 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 	var Window = new Morebits.simpleWindow( 630, (Twinkle.tag.mode === "article") ? 500 : 400 );
 	Window.setScriptName( "Twinkle" );
 	// anyone got a good policy/guideline/info page/instructional page link??
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#tag" );
+	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#tag" );
 
 	var form = new Morebits.quickForm( Twinkle.tag.callback.evaluate );
 
@@ -58,17 +58,17 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 
 	switch( Twinkle.tag.mode ) {
 		case 'article':
-			Window.setTitle( "Article maintenance tagging" );
+			Window.setTitle( "Bản mẫu bảo quản bài viết" );
 
 			form.append({
 				type: 'select',
 				name: 'sortorder',
-				label: 'View this list:',
-				tooltip: 'You can change the default view order in your Twinkle preferences (WP:TWPREFS).',
+				label: 'Xem danh sách này:',
+				tooltip: 'Bạn có thể thay đổi thứ tự hiển thị mặc định trong trang tham khảo Twinkle của bạn.',
 				event: Twinkle.tag.updateSortOrder,
 				list: [
-					{ type: 'option', value: 'cat', label: 'By categories', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'cat' },
-					{ type: 'option', value: 'alpha', label: 'In alphabetical order', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'alpha' }
+					{ type: 'option', value: 'cat', label: 'Theo thể loại', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'cat' },
+					{ type: 'option', value: 'alpha', label: 'Theo chữ cái', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'alpha' }
 				]
 			});
 
@@ -83,10 +83,10 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 					type: 'checkbox',
 					list: [
 						{
-							label: 'Group inside {{multiple issues}} if possible',
+							label: 'Nhóm lại thành {{multiple issues}} nếu được',
 							value: 'group',
 							name: 'group',
-							tooltip: 'If applying three or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped inside a {{multiple issues}} template.',
+							tooltip: 'Nếu sử dụng từ 3 bản mẫu trở lên được hỗ trợ {{multiple issues}} và ô này được đánh dấu, tất cả các bản mẫu được hỗ trợ sẽ được nhóm vào một bản mẫu duy nhất {{multiple issues}}.',
 							checked: Twinkle.getFriendlyPref('groupByDefault')
 						}
 					]
@@ -96,33 +96,33 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 			break;
 
 		case 'file':
-			Window.setTitle( "File maintenance tagging" );
+			Window.setTitle( "Thông báo bảo trì tập tin" );
 
 			// TODO: perhaps add custom tags TO list of checkboxes
 
-			form.append({ type: 'header', label: 'License and sourcing problem tags' });
+			form.append({ type: 'header', label: 'Có vấn đề về nguồn gốc và bản quyền' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.licenseList } );
 
-			form.append({ type: 'header', label: 'Wikimedia Commons-related tags' });
+			form.append({ type: 'header', label: 'Thông báo liên quan đến Wikimedia Commons' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.commonsList } );
 
-			form.append({ type: 'header', label: 'Cleanup tags' } );
+			form.append({ type: 'header', label: 'Thông báo cần dọn dẹp' } );
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.cleanupList } );
 
-			form.append({ type: 'header', label: 'Image quality tags' } );
+			form.append({ type: 'header', label: 'Thông báo chất lượng hình ảnh' } );
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.qualityList } );
 
-			form.append({ type: 'header', label: 'Replacement tags' });
+			form.append({ type: 'header', label: 'Thay thế' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.replacementList } );
 			break;
 
 		case 'redirect':
-			Window.setTitle( "Redirect tagging" );
+			Window.setTitle( "Đổi hướng" );
 
-			form.append({ type: 'header', label:'Spelling, misspelling, tense and capitalization templates' });
+			form.append({ type: 'header', label:'Sai phát âm, ngữ pháp và viết hoa' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.spellingList });
 
-			form.append({ type: 'header', label:'Alternative name templates' });
+			form.append({ type: 'header', label:'Bản mẫu tên thay thế' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.alternativeList });
 
 			form.append({ type: 'header', label:'Miscellaneous and administrative redirect templates' });
@@ -282,8 +282,8 @@ Twinkle.tag.updateSortOrder = function(e) {
 					{
 						name: 'translationLanguage',
 						type: 'input',
-						label: 'Language of article (if known): ',
-						tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
+						label: 'Ngôn ngữ của bài (nếu biết): ',
+						tooltip: 'Hãy tra cứu [[:en:WP:LRC]].'
 					}
 				];
 				if (tag === "not English") {
@@ -423,14 +423,14 @@ Twinkle.tag.article = {};
 // To ensure tags appear in the default "categorized" view, add them to the tagCategories hash below.
 
 Twinkle.tag.article.tags = {
-	"advert": "article is written like an advertisement",
+	"advert": "bài viết với văn phong giống quảng cáo",
 	"all plot": "article is almost entirely a plot summary",
 	"autobiography": "article is an autobiography and may not be written neutrally",
 	"BLP sources": "BLP article needs additional sources for verification",
 	"BLP unsourced": "BLP article has no sources at all (use BLP PROD instead for new articles)",
 	"citation style": "article has unclear or inconsistent inline citations",
-	"cleanup": "article may require cleanup",
-	"cleanup-reorganize": "article may be in need of reorganization to comply with Wikipedia's layout guidelines",
+	"cleanup": "bài viết cần dọp dep",
+	"cleanup-reorganize": "bài viết cần biên tập",
 	"close paraphrasing": "article contains close paraphrasing of a non-free copyrighted source",
 	"COI": "article creator or major contributor may have a conflict of interest",
 	"condense": "article may have too many section headers dividing up its content",
@@ -438,15 +438,15 @@ Twinkle.tag.article.tags = {
 	"context": "article provides insufficient context",
 	"copy edit": "article needs copy editing for grammar, style, cohesion, tone, and/or spelling",
 	"copypaste": "article appears to have been copied and pasted from a source",
-	"dead end": "article has no links to other articles",
-	"disputed": "article has questionable factual accuracy",
-	"essay-like": "article is written like a personal reflection or opinion essay",
+	"dead end": "bài có ít hoặc không có liên kết đến nó",
+	"disputed": "bài viết đang tranh luận đề độ chính xác",
+	"essay-like": "bài viết giống bài luận, cần biên tập",
 	"expand language": "article can be expanded with material from a foreign-language Wikipedia",
 	"expert-subject": "article needs attention from an expert on the subject",
-	"external links": "article's external links may not follow content policies or guidelines",
+	"quá nhiều liên kết ngoài": "bài viết cần chỉnh lại liên kết ngoài",
 	"fansite": "article resembles a fansite",
 	"fiction": "article fails to distinguish between fact and fiction",
-	"globalize": "article may not represent a worldwide view of the subject",
+	"globalize": "bài viết thể hiện tầm nhìn hẹp",
 	"GOCEinuse": "article is currently undergoing a major copy edit by the Guild of Copy Editors",
 	"hoax": "article may be a complete hoax",
 	"improve categories": "article may require additional categories",
@@ -482,23 +482,24 @@ Twinkle.tag.article.tags = {
 	"prose": "article is in a list format that may be better presented using prose",
 	"recentism": "article is slanted towards recent events",
 	"ref improve": "article needs additional references or sources for verification",
-	"rough translation": "article is poorly translated and needs cleanup",
+	"chất lượng dịch": "bài dịch chất lượng kém, cần biên tập",
 	"sections": "article needs to be broken into sections",
 	"self-published": "article may contain improper references to self-published sources",
 	"technical": "article may be too technical for the uninitiated reader",
 	"tense": "article is written in an incorrect tense",
 	"third-party": "article relies too heavily on affiliated sources, and needs third-party sources",
-	"tone": "tone of article is not appropriate",
+	"tone": "giọng văn không phù hợp",
 	"too few opinions": "article may not include all significant viewpoints",
-	"uncategorized": "article is uncategorized",
+	"uncategorized": "bài viết cần được xếp thể loại",
 	"under construction": "article is currently in the middle of an expansion or major revamping",
 	"underlinked": "article may require additional wikilinks",
 	"undue": "article lends undue weight to certain aspects of the subject but not others",
 	"unreferenced": "article has no references at all",
 	"unreliable sources": "article's references may not be reliable sources",
 	"update": "article needs additional up-to-date information added",
-	"very long": "article is too long",
-	"weasel": "article neutrality is compromised by the use of weasel words"
+	"very long": "bài viết quá dài",
+	"weasel": "article neutrality is compromised by the use of weasel words",
+	"wiki hóa": "bài viết cần được wiki hóa"
 };
 
 // A list of tags in order of category
@@ -918,7 +919,7 @@ Twinkle.tag.callbacks = {
 						currentTag += '|1=article';
 						break;
 					case 'not English':
-					case 'rough translation':
+					case 'chất lượng dịch':
 						if (params.translationLanguage) {
 							currentTag += '|1=' + params.translationLanguage;
 						}
@@ -1131,7 +1132,7 @@ Twinkle.tag.callbacks = {
 			if (params.translationNotify) {
 				pageobj.lookupCreator(function(innerPageobj) {
 					var initialContrib = innerPageobj.getCreator();
-					var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib,
+					var userTalkPage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib,
 						'Notifying initial contributor (' + initialContrib + ')');
 					var notifytext = "\n\n== Your article [[" + Morebits.pageNameNorm + "]]==\n" + 
 						"{{subst:uw-notenglish|1=" + Morebits.pageNameNorm +
@@ -1388,7 +1389,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	Morebits.status.init( form );
 
 	Morebits.wiki.actionCompleted.redirect = Morebits.pageNameNorm;
-	Morebits.wiki.actionCompleted.notice = "Tagging complete, reloading article in a few seconds";
+	Morebits.wiki.actionCompleted.notice = "Thêm thông báo hoàn tất, tải lại trang thảo luận trong vài giây";
 	if (Twinkle.tag.mode === 'redirect') {
 		Morebits.wiki.actionCompleted.followRedirect = false;
 	}

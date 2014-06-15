@@ -44,7 +44,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	Window.setTitle( "Warn/notify user" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Choosing a warning level", "WP:UWUL#Levels" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#warn" );
+	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#warn" );
 
 	var form = new Morebits.quickForm( Twinkle.warn.callback.evaluate );
 	var main_select = form.append( {
@@ -1814,7 +1814,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 	Morebits.wiki.actionCompleted.notice = "Warning complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'User talk page modification' );
+	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'Sửa trang thảo luận thành viên' );
 	wikipedia_page.setCallbackParameters( params );
 	wikipedia_page.setFollowRedirect( true );
 	wikipedia_page.load( Twinkle.warn.callbacks.main );

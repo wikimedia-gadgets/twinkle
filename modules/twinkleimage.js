@@ -18,26 +18,26 @@ Twinkle.image = function twinkleimage() {
 			!document.getElementById("mw-sharedupload") &&
 			document.getElementById("mw-imagepage-section-filehistory")) {
 
-		Twinkle.addPortletLink(Twinkle.image.callback, "DI", "tw-di", "Nominate file for delayed speedy deletion");
+		Twinkle.addPortletLink(Twinkle.image.callback, "Đề nghị xóa hình", "tw-xóa hình", "Xóa sau 7 ngày");
 	}
 };
 
 Twinkle.image.callback = function twinkleimageCallback() {
 	var Window = new Morebits.simpleWindow( 600, 330 );
-	Window.setTitle( "File for dated speedy deletion" );
+	Window.setTitle( "Tập tin sẽ bị xóa sau 7 ngày" );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Speedy deletion policy", "WP:CSD" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#image" );
+	Window.addFooterLink( "Quy định xóa nhanh", "WP:XN" );
+	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#image" );
 
 	var form = new Morebits.quickForm( Twinkle.image.callback.evaluate );
 	form.append( {
 			type: 'checkbox',
 			list: [
 				{
-					label: 'Notify original uploader',
+					label: 'Thông báo cho người tải lên',
 					value: 'notify',
 					name: 'notify',
-					tooltip: "Uncheck this if you are planning to make multiple nominations from the same user, and don't want to overload their talk page with too many notifications.",
+					tooltip: "Đừng chọn mục này nếu có nhiều thông báo hình ảnh muốn gởi đến cùng một người tải lên, và để tránh tràn ngập các thông báo trên trang thảo luận của họ.",
 					checked: Twinkle.getPref('notifyUserOnDeli')
 				}
 			]
@@ -45,7 +45,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 	);
 	var field = form.append( {
 			type: 'field',
-			label: 'Type of action wanted'
+			label: 'Tác vụ cần thực hiện'
 		} );
 	field.append( {
 			type: 'radio',
@@ -53,45 +53,45 @@ Twinkle.image.callback = function twinkleimageCallback() {
 			event: Twinkle.image.callback.choice,
 			list: [
 				{
-					label: 'No source (CSD F4)',
-					value: 'no source',
+					label: 'Thiếu nguồn gốc (CSD H4)',
+					value: 'thiếu nguồn gốc',
 					checked: true,
-					tooltip: 'Image or media has no source information'
+					tooltip: 'Hình ảnh hoặc tập tin thiếu thông tin nguồn gốc'
 				},
 				{
-					label: 'No license (CSD F4)',
-					value: 'no license',
-					tooltip: 'Image or media does not have information on its copyright status'
+					label: 'Thiếu giấy phép (CSD H4)',
+					value: 'thiếu giấy phép',
+					tooltip: 'Hình ảnh hoặc tập tin thiếu thông tin về giấy phép'
 				},
 				{
-					label: 'No source and no license (CSD F4)',
-					value: 'no source no license',
-					tooltip: 'Image or media has neither information on source nor its copyright status'
+					label: 'Thiếu nguồn gốc lẫn giấy phép (CSD H4)',
+					value: 'thiếu nguồn gốc lẫn giấy phép',
+					tooltip: 'Hình ảnh hoặc tập tin thiếu thông tin về nguồn gốc lẫn giáy phép'
 				},
 				{
-					label: 'Orphaned fair use (CSD F5)',
-					value: 'orphaned fair use',
-					tooltip: 'Image or media is unlicensed for use on Wikipedia and allowed only under a claim of fair use per Wikipedia:Non-free content, but it is not used in any articles'
+					label: 'Sử dụng hợp lý không sử dụng (CSD H5)',
+					value: 'SDHL không SD',
+					tooltip: 'Hình ảnh hoặc tập tin không được cấp phép để dùng trên Wikipedia và chỉ cho phép dùng theo tuyên bố sử dụng hợp lý như quy định Wikipedia:Nội dung không tự do, nhưng không dùng trong bài viết nào cả'
 				},
 				{
-					label: 'No fair use rationale (CSD F6)',
-					value: 'no fair use rationale',
-					tooltip: 'Image or media is claimed to be used under Wikipedia\'s fair use policy but has no explanation as to why it is permitted under the policy'
+					label: 'Thiếu cơ sở hợp lý (CSD H6)',
+					value: 'thiếu sử dụng hợp lý',
+					tooltip: 'Hình ảnh hoặc tập tin được tuyên bố là dùng theo quy định sử dụng hợp lý của Wikipedia nhưng không có lời giải thích tại sao lại được cho phép dùng theo quy định đó'
 				},
 				{
-					label: 'Disputed fair use rationale (CSD F7)',
-					value: 'disputed fair use rationale',
-					tooltip: 'Image or media has a fair use rationale that is disputed'
+					label: 'Cơ sở hợp lý gây tranh cãi (CSD H7)',
+					value: 'lý do SDHL vô lý',
+					tooltip: 'Hình ảnh hoặc tập tin có cơ sở hợp lý gây tranh cãi'
 				},
 				{
-					label: 'Replaceable fair use (CSD F7)',
-					value: 'replaceable fair use',
-					tooltip: 'Image or media may fail Wikipedia\'s first non-free content criterion ([[WP:NFCC#1]]) in that it illustrates a subject for which a free image might reasonably be found or created that adequately provides the same information'
+					label: 'Sử dụng hợp lý thay thế được (CSD H7)',
+					value: 'SDHL thay thế được',
+					tooltip: 'Hình ảnh hoặc tập tin không thỏa mãn tiêu chí không tự do đầu tiên của Wikipedia tức là nó miêu tả sự vật mà rất có khả năng tìm được hoặc tạo được một hình tự do mà có lượng thông tin tương đương'
 				},
 				{
-					label: 'No evidence of permission (CSD F11)',
-					value: 'no permission',
-					tooltip: 'Image or media does not have proof that the author agreed to licence the file'
+					label: 'Thiếu sự cho phép (CSD H11)',
+					value: 'thiếu bằng chứng',
+					tooltip: 'Hình ảnh hoặc tập tin không có bằng chứng là tác giả đồng ý cấp phép cho tập tin'
 				}
 			]
 		} );
@@ -241,7 +241,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	Morebits.status.init( event.target );
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = "Tagging complete";
+	Morebits.wiki.actionCompleted.notice = "Thêm thông báo hoàn tất";
 
 	// Tagging image
 	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'Tagging file with deletion tag' );
@@ -314,7 +314,7 @@ Twinkle.image.callbacks = {
 	userNotification: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
 		var initialContrib = pageobj.getCreator();
-		var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+		var usertalkpage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n{{subst:di-" + params.type + "-notice|1=" + mw.config.get('wgTitle');
 		if (params.type === 'no permission') {
 			notifytext += params.source ? "|source=" + params.source : "";

@@ -6,7 +6,7 @@
 
 /*
  ****************************************
- *** twinklebatchdelete.js: Batch delete module (sysops only)
+ *** twinklebatchdelete.js: Batch delete module (chỉ bảo quản viên)
  ****************************************
  * Mode of invocation:     Tab ("D-batch")
  * Active on:              Existing and non-existing non-articles, and Special:PrefixIndex
@@ -25,7 +25,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	var Window = new Morebits.simpleWindow( 800, 400 );
 	Window.setTitle( "Batch deletion" );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#batchdelete" );
+	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#batchdelete" );
 
 	var form = new Morebits.quickForm( Twinkle.batchdelete.callback.evaluate );
 	form.append( {
@@ -300,7 +300,7 @@ Twinkle.batchdelete.callbacks = {
 		for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
 			var title = snapshot.snapshotItem(i).value;
 			var wikipedia_page = new Morebits.wiki.page( title, "Deleting " + title );
-			wikipedia_page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + self.params.page + '"' + Twinkle.getPref('deletionSummaryAd'));
+			wikipedia_page.setEditSummary('[[WP:XN#X8|X8]]: Đổi hướng đến trang bị xóa "' + self.params.page + '"' + Twinkle.getPref('deletionSummaryAd'));
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.deletePage(onsuccess);
 		}

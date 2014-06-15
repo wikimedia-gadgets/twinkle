@@ -78,8 +78,8 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	dialog = Twinkle.speedy.dialog;
 	dialog.setTitle( "Choose criteria for speedy deletion" );
 	dialog.setScriptName( "Twinkle" );
-	dialog.addFooterLink( "Speedy deletion policy", "WP:CSD" );
-	dialog.addFooterLink( "Twinkle help", "WP:TW/DOC#speedy" );
+	dialog.addFooterLink( "Quy định xóa nhanh", "WP:XN" );
+	dialog.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#speedy" );
 
 	var form = new Morebits.quickForm( callbackfunc, (Twinkle.getPref('speedySelectionStyle') === 'radioClick' ? 'change' : null) );
 	if( Morebits.userIsInGroup( 'sysop' ) ) {
@@ -1206,7 +1206,7 @@ Twinkle.speedy.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			var query = {
-				'title': 'User talk:' + user,
+				'title': 'Thảo luận Thành viên:' + user,
 				'action': 'edit',
 				'preview': 'yes',
 				'vanarticle': Morebits.pageNameNorm
@@ -1217,7 +1217,7 @@ Twinkle.speedy.callbacks = {
 				var $link, $bigtext;
 				$link = $('<a/>', {
 					'href': mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ),
-					'text': 'click here to open User talk:' + user,
+					'text': 'click here to open Thảo luận Thành viên:' + user,
 					'target': '_blank',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
 				});
@@ -1278,7 +1278,7 @@ Twinkle.speedy.callbacks = {
 			$snapshot.each(function(key, value) {
 				var title = $(value).attr('title');
 				var page = new Morebits.wiki.page(title, 'Deleting redirect "' + title + '"');
-				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + Morebits.pageNameNorm + '"' + Twinkle.getPref('deletionSummaryAd'));
+				page.setEditSummary('[[WP:XN#X8|X8]]: Đổi hướng đến trang bị xóa "' + Morebits.pageNameNorm + '"' + Twinkle.getPref('deletionSummaryAd'));
 				page.deletePage(onsuccess);
 			});
 		}
@@ -1400,7 +1400,7 @@ Twinkle.speedy.callbacks = {
 						return;
 					}
 
-					var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")"),
+					var usertalkpage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")"),
 						notifytext, i;
 
 					// specialcase "db" and "db-multiple"
@@ -1868,7 +1868,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	$.each(values, function(index, value) {
 		var norm = Twinkle.speedy.normalizeHash[ value ];
 
-		// for sysops only
+		// chỉ dành cho bảo quản viên
 		if (['f4', 'f5', 'f6', 'f11'].indexOf(norm) !== -1) {
 			alert("Tagging with F4, F5, F6, and F11 is not possible using the CSD module.  Try using DI instead, or unchecking \"Tag page only\" if you meant to delete the page.");
 			return;
@@ -1936,7 +1936,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	Morebits.status.init( form );
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = "Tagging complete";
+	Morebits.wiki.actionCompleted.notice = "Thêm thông báo hoàn tất";
 
 	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging page");
 	wikipedia_page.setCallbackParameters(params);
