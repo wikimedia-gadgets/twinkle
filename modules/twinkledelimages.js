@@ -18,7 +18,7 @@ Twinkle.delimages = function twinkledeli() {
 		return;
 	}
 	if( Morebits.userIsInGroup( 'sysop' ) ) {
-		Twinkle.addPortletLink( Twinkle.delimages.callback, "Xóa các hình", "tw-deli", "Delete files found on page" );
+		Twinkle.addPortletLink( Twinkle.delimages.callback, "Xóa các hình", "tw-deli", "Xóa các tập tin trên trang này" );
 	}
 };
 

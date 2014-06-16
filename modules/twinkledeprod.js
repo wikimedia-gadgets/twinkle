@@ -17,7 +17,7 @@ Twinkle.deprod = function() {
 	if( mw.config.get( 'wgNamespaceNumber' ) !== 14 || ! Morebits.userIsInGroup( 'sysop' ) || !((/^Category:Proposed_deletion_as_of/).test(mw.config.get( 'wgPageName' ))) ) {
 		return;
 	}
-	Twinkle.addPortletLink( callback, "Deprod", "tw-deprod", "Delete prod pages found in this category");
+	Twinkle.addPortletLink( callback, "Xóa theo đề nghị", "tw-deprod", "Xóa các trang được đề nghị xóa trong thể loại này");
 };
 
 var unlinkCache = {},

@@ -18,7 +18,7 @@ Twinkle.prod = function twinkleprod() {
 		return;
 	}
 	
-	Twinkle.addPortletLink( Twinkle.prod.callback, "Đề nghị xóa", "tw-prod", "Propose deletion via WP:PROD" );
+	Twinkle.addPortletLink( Twinkle.prod.callback, "Đề nghị xóa", "tw-prod", "Đề nghị xóa theo WP:PROD" );
 };
 
 Twinkle.prod.callback = function twinkleprodCallback() {

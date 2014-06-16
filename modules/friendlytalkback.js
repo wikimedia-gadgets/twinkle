@@ -19,7 +19,7 @@ Twinkle.talkback = function() {
 		return;
 	}
 
-	Twinkle.addPortletLink( Twinkle.talkback.callback, "Hồi âm", "friendly-talkback", "Easy talkback" );
+	Twinkle.addPortletLink( Twinkle.talkback.callback, "Hồi âm", "friendly-talkback", "Hồi âm dễ dàng" );
 };
 
 Twinkle.talkback.callback = function( ) {

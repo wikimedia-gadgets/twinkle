@@ -20,19 +20,19 @@ Twinkle.batchundelete = function twinklebatchundelete() {
 		return;
 	}
 	if( Morebits.userIsInGroup( 'sysop' ) ) {
-		Twinkle.addPortletLink( Twinkle.batchundelete.callback, "Und-batch", "tw-batch-undel", "Undelete 'em all" );
+		Twinkle.addPortletLink( Twinkle.batchundelete.callback, "Phục hồi hàng loạt", "tw-batch-undel", "Phục hồi hàng loạt các trang" );
 	}
 };
 
 Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	var Window = new Morebits.simpleWindow( 800, 400 );
 	Window.setScriptName("Twinkle");
-	Window.setTitle("Batch undelete");
+	Window.setTitle("Phục hồi hàng loạt");
 	var form = new Morebits.quickForm( Twinkle.batchundelete.callback.evaluate );
 	form.append( {
 			type: 'textarea',
 			name: 'reason',
-			label: 'Reason: '
+			label: 'Lý do: '
 		} );
 
 	var query = {
@@ -41,7 +41,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		'titles': mw.config.get("wgPageName"),
 		'gpllimit' : Twinkle.getPref('batchMax') // the max for sysops
 	};
-	var wikipedia_api = new Morebits.wiki.api( 'Grabbing pages', query, function( self ) {
+	var wikipedia_api = new Morebits.wiki.api( 'Đang lấy trang', query, function( self ) {
 			var xmlDoc = self.responseXML;
 			var snapshot = xmlDoc.evaluate('//page[@missing]', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
 			var list = [];
@@ -73,7 +73,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 Twinkle.batchundelete.currentUndeleteCounter = 0;
 Twinkle.batchundelete.currentundeletor = 0;
 Twinkle.batchundelete.callback.evaluate = function( event ) {
-	Morebits.wiki.actionCompleted.notice = 'Status';
+	Morebits.wiki.actionCompleted.notice = 'Trạng thái';
 	Morebits.wiki.actionCompleted.postfix = 'batch undeletion is now completed';
 
 	var pages = event.target.getChecked( 'pages' );
@@ -113,7 +113,7 @@ Twinkle.batchundelete.callbacks = {
 					'action': 'undelete',
 					'reason': reason + Twinkle.getPref('deletionSummaryAd')
 				};
-				var wikipedia_api = new Morebits.wiki.api( "Undeleting " + title, query, function( self ) { 
+				var wikipedia_api = new Morebits.wiki.api( "Đang phục hồi " + title, query, function( self ) { 
 						--Twinkle.batchundelete.currentUndeleteCounter;
 						var link = document.createElement( 'a' );
 						link.setAttribute( 'href', mw.util.getUrl(self.itsTitle) );

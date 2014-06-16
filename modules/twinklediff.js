@@ -24,7 +24,7 @@ Twinkle.diff = function twinklediff() {
 		'oldid': 'prev'
 	};
 
-	Twinkle.addPortletLink( mw.util.wikiScript("index")+ "?" + $.param( query ), 'Cuối', 'tw-lastdiff', 'Show most recent diff' );
+	Twinkle.addPortletLink( mw.util.wikiScript("index")+ "?" + $.param( query ), 'Cuối', 'tw-lastdiff', 'Xem khác biệt gần đây nhất' );
 
 	// Show additional tabs only on diff pages
 	if (Morebits.queryString.exists('diff')) {

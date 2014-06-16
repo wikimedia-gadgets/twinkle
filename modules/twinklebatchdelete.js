@@ -16,14 +16,14 @@
 
 Twinkle.batchdelete = function twinklebatchdelete() {
 	if( Morebits.userIsInGroup( 'sysop' ) && (mw.config.get( 'wgNamespaceNumber' ) > 0 || mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex') ) {
-		Twinkle.addPortletLink( Twinkle.batchdelete.callback, "D-batch", "tw-batch", "Delete pages found in this category/on this page" );
+		Twinkle.addPortletLink( Twinkle.batchdelete.callback, "Xóa hàng loạt", "tw-batch", "Xóa các trang trong thể loại này / trên trang này" );
 	}
 };
 
 Twinkle.batchdelete.unlinkCache = {};
 Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	var Window = new Morebits.simpleWindow( 800, 400 );
-	Window.setTitle( "Batch deletion" );
+	Window.setTitle( "Xóa hàng loạt" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#batchdelete" );
 

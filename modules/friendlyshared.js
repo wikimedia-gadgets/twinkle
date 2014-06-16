@@ -16,13 +16,13 @@
 Twinkle.shared = function friendlyshared() {
 	if( mw.config.get('wgNamespaceNumber') === 3 && Morebits.isIPAddress(mw.config.get('wgTitle')) ) {
 		var username = mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-		Twinkle.addPortletLink( function(){ Twinkle.shared.callback(username); }, "Shared IP", "friendly-shared", "Shared IP tagging" );
+		Twinkle.addPortletLink( function(){ Twinkle.shared.callback(username); }, "IP dùng chung", "friendly-shared", "Đánh dấu IP dùng chung" );
 	}
 };
 
 Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 	var Window = new Morebits.simpleWindow( 600, 420 );
-	Window.setTitle( "Shared IP address tagging" );
+	Window.setTitle( "Đánh dấu địa chỉ IP dùng chung" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#shared" );
 

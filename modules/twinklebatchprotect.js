@@ -19,14 +19,14 @@ Twinkle.batchprotect = function twinklebatchprotect() {
 	if( Morebits.userIsInGroup( 'sysop' ) && ((mw.config.get( 'wgArticleId' ) > 0 && (mw.config.get( 'wgNamespaceNumber' ) === 2 ||
 		mw.config.get( 'wgNamespaceNumber' ) === 4)) || mw.config.get( 'wgNamespaceNumber' ) === 14 ||
 		mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex') ) {
-		Twinkle.addPortletLink( Twinkle.batchprotect.callback, "P-batch", "tw-pbatch", "Khóa các trang được trang này liên kết đến" );
+		Twinkle.addPortletLink( Twinkle.batchprotect.callback, "Khóa hàng loạt", "tw-pbatch", "Khóa các trang được trang này liên kết đến" );
 	}
 };
 
 Twinkle.batchprotect.unlinkCache = {};
 Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	var Window = new Morebits.simpleWindow( 800, 400 );
-	Window.setTitle( "Batch protection" );
+	Window.setTitle( "Khóa hàng loạt" );
 	Window.setScriptName( "Twinkle" );
 	//Window.addFooterLink( "Các bản mẫu khóa trang", "Template:Protection templates" );
 	Window.addFooterLink( "Quy định khóa trang", "WP:PROT" );
