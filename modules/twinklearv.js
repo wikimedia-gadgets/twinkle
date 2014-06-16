@@ -167,7 +167,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						value: 'spambot'
 					},
 					{
-						label: 'Tài khoảng chỉ dùng cho quảng bá',
+						label: 'Tài khoản chỉ dùng cho quảng bá',
 						value: 'promoonly'
 					}
 				]
