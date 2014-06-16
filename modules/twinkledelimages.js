@@ -18,14 +18,14 @@ Twinkle.delimages = function twinkledeli() {
 		return;
 	}
 	if( Morebits.userIsInGroup( 'sysop' ) ) {
-		Twinkle.addPortletLink( Twinkle.delimages.callback, "Deli-batch", "tw-deli", "Delete files found on page" );
+		Twinkle.addPortletLink( Twinkle.delimages.callback, "Xóa các hình", "tw-deli", "Delete files found on page" );
 	}
 };
 
 Twinkle.delimages.unlinkCache = {};
 Twinkle.delimages.callback = function twinkledeliCallback() {
 	var Window = new Morebits.simpleWindow( 800, 400 );
-	Window.setTitle( "Batch file deletion" );
+	Window.setTitle( "Xóa tập hình hàng loạt" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#delimages" );
 
@@ -40,7 +40,7 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 				checked: true
 			},
 			{
-				label: 'Unlink uses of this file',
+				label: 'Gỡ tập tin này khỏi các trang',
 				name: 'unlink_image',
 				value: 'unlink',
 				checked: true
@@ -73,7 +73,7 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 			'gimlimit': 'max'
 		};
 	}
-	var wikipedia_api = new Morebits.wiki.api( 'Grabbing files', query, function( self ) {
+	var wikipedia_api = new Morebits.wiki.api( 'Đang lấy các tập tin', query, function( self ) {
 		var xmlDoc = self.responseXML;
 		var images = $(xmlDoc).find('page[imagerepository="local"]');
 		var list = [];
@@ -210,7 +210,7 @@ Twinkle.delimages.callbacks = {
 		var params = self.getCallbackParameters();
 		var statelem = self.getStatusElement();
 
-		var image = params.image.replace( /^(?:Image|File):/, '' );
+		var image = params.image.replace( /^(?:Image|File|Tập[ _]tin|Hình):/, '' );
 		var old_text = self.getPageText();
 		var wikiPage = new Morebits.wikitext.page( old_text );
 		wikiPage.commentOutImage( image , 'Nêu lý do hình bị xóa' );
