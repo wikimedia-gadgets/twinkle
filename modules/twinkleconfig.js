@@ -579,7 +579,7 @@ Twinkle.config.sections = [
 },
 
 {
-	title: "Unlink",
+	title: "Gỡ lkết",
 	preferences: [
 		// TwinkleConfig.unlinkNamespaces (array)
 		// In what namespaces unlink should happen, default in 0 (article) and 100 (portal)

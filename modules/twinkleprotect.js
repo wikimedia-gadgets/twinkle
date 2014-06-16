@@ -8,7 +8,7 @@
  ****************************************
  *** twinkleprotect.js: Protect/RPP module
  ****************************************
- * Mode of invocation:     Tab ("PP"/"RPP")
+ * Mode of invocation:     Tab ("Khóa"/"Yêu cầu khóa")
  * Active on:              Non-special pages
  * Config directives in:   TwinkleConfig
  */
@@ -20,15 +20,15 @@ Twinkle.protect = function twinkleprotect() {
 		return;
 	}
 
-	Twinkle.addPortletLink(Twinkle.protect.callback, Morebits.userIsInGroup('sysop') ? "PP" : "RPP", "tw-rpp",
-		Morebits.userIsInGroup('sysop') ? "Protect page" : "Request page protection" );
+	Twinkle.addPortletLink(Twinkle.protect.callback, Morebits.userIsInGroup('sysop') ? "Khóa trang" : "Yêu cầu khóa trang", "tw-khóa",
+		Morebits.userIsInGroup('sysop') ? "Khóa trang" : "Yêu cầu khóa trang" );
 };
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
 	Twinkle.protect.protectionLevel = null;
 
 	var Window = new Morebits.simpleWindow( 620, 530 );
-	Window.setTitle( Morebits.userIsInGroup( 'sysop' ) ? "Apply, request or tag page protection" : "Request or tag page protection" );
+	Window.setTitle( Morebits.userIsInGroup( 'sysop' ) ? "Khóa trang, yêu cầu hoặc thêm bản mẫu khóa trang" : "Yêu cầu hoặc thêm bản mẫu khóa trang" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Các bản mẫu khóa trang", "Template:Protection templates" );
 	Window.addFooterLink( "Quy định khóa trang", "WP:PROT" );
@@ -37,7 +37,7 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	var form = new Morebits.quickForm( Twinkle.protect.callback.evaluate );
 	var actionfield = form.append( {
 			type: 'field',
-			label: 'Type of action'
+			label: 'Loại tác vụ'
 		} );
 	if( Morebits.userIsInGroup( 'sysop' ) ) {
 		actionfield.append( {
@@ -46,9 +46,9 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 				event: Twinkle.protect.callback.changeAction,
 				list: [
 					{
-						label: 'Protect page',
+						label: 'Khóa trang',
 						value: 'protect',
-						tooltip: 'Apply actual protection to the page.',
+						tooltip: 'Thiết lập khóa trang.',
 						checked: true
 					}
 				]
@@ -60,21 +60,21 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 			event: Twinkle.protect.callback.changeAction,
 			list: [
 				{
-					label: 'Request page protection',
+					label: 'Yêu cầu khóa trang',
 					value: 'request',
-					tooltip: 'If you want to request protection via WP:RPP' + (Morebits.userIsInGroup('sysop') ? ' instead of doing the protection by yourself.' : '.'),
+					tooltip: 'Nếu bạn muốn đề nghị khóa trang WP:Khóa trang' + (Morebits.userIsInGroup('sysop') ? ' thay vì bạn có thể tự thực hiện.' : '.'),
 					checked: !Morebits.userIsInGroup('sysop')
 				},
 				{
-					label: 'Tag page with protection template',
+					label: 'Thêm bản mẫu khóa trang',
 					value: 'tag',
-					tooltip: 'If the protecting admin forgot to apply a protection template, or you have just protected the page without tagging, you can use this to apply the appropriate protection tag.',
+					tooltip: 'Nếu bảo quản viên quên thêm bản mẫu khóa trang, hoặc bạn vừa khóa một trang mà chưa thêm bản mẫu, bạn có thể sử dụng tag này ở những trang tương ứng.',
 					disabled: mw.config.get('wgArticleId') === 0
 				}
 			]
 		} );
 
-	form.append({ type: 'field', label: 'Preset', name: 'field_preset' });
+	form.append({ type: 'field', label: 'Mức khóa', name: 'field_preset' });
 	form.append({ type: 'field', label: '1', name: 'field1' });
 	form.append({ type: 'field', label: '2', name: 'field2' });
 
@@ -129,12 +129,12 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 				boldnode.textContent = label + ": " + level;
 				result.push(boldnode);
 				if (expiry === 'infinity') {
-					result.push(" (indefinite) ");
+					result.push(" (vô hạn) ");
 				} else {
-					result.push(" (expires " + new Date(expiry).toUTCString() + ") ");
+					result.push(" (hết hạn khóa " + new Date(expiry).toUTCString() + ") ");
 				}
 				if (cascade) {
-					result.push("(cascading) ");
+					result.push("(theo tầng) ");
 				}
 			}
 		};
@@ -168,7 +168,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 			}
 			Twinkle.protect.protectionLevel = result;
 			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-			Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
+			Morebits.status.info("Mức khóa hiện tại", Twinkle.protect.protectionLevel);
 		}
 
 		Twinkle.protect.currentProtectionLevels = current;
@@ -183,11 +183,11 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 
 	switch (e.target.values) {
 		case 'protect':
-			field_preset = new Morebits.quickForm.element({ type: 'field', label: 'Preset', name: 'field_preset' });
+			field_preset = new Morebits.quickForm.element({ type: 'field', label: 'Mức khóa', name: 'field_preset' });
 			field_preset.append({
 					type: 'select',
 					name: 'category',
-					label: 'Choose a preset:',
+					label: 'Chọn mức khóa:',
 					event: Twinkle.protect.callback.changePreset,
 					list: (mw.config.get('wgArticleId') ?
 						Twinkle.protect.protectionTypes.filter(function(v) {
@@ -196,7 +196,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						Twinkle.protect.protectionTypesCreate)
 				});
 
-			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Protection options', name: 'field2' });
+			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Các tùy chọn khóa', name: 'field2' });
 			field2.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
 			// for existing pages
 			if (mw.config.get('wgArticleId')) {
@@ -206,9 +206,9 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						event: Twinkle.protect.formevents.editmodify,
 						list: [
 							{
-								label: 'Khóa sửa đổi',
+								label: 'Thay đổi mức khóa sửa đổi',
 								value: 'editmodify',
-								tooltip: 'If this is turned off, the edit protection level, and expiry time, will be left as is.',
+								tooltip: 'Nếu tắt chức năng này, mức khóa sửa đổi và thời hạn khóa sẽ được để yên.',
 								checked: true
 							}
 						]
@@ -216,7 +216,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				var editlevel = field2.append({
 						type: 'select',
 						name: 'editlevel',
-						label: 'Edit protection:',
+						label: 'Khóa sửa đổi:',
 						event: Twinkle.protect.formevents.editlevel
 					});
 				editlevel.append({
@@ -277,9 +277,9 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						event: Twinkle.protect.formevents.movemodify,
 						list: [
 							{
-								label: 'Khóa di chuyển',
+								label: 'Thay đổi mức khóa di chuyển',
 								value: 'movemodify',
-								tooltip: 'If this is turned off, the move protection level, and expiry time, will be left as is.',
+								tooltip: 'Nếu tắt chức năng này, mức khóa di chuyển và ngày hết hạn sẽ được để yên.',
 								checked: true
 							}
 						]
@@ -323,23 +323,23 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							}
 						},
 						list: [
-							{ label: '1 hour', value: '1 hour' },
-							{ label: '2 hours', value: '2 hours' },
-							{ label: '3 hours', value: '3 hours' },
-							{ label: '6 hours', value: '6 hours' },
-							{ label: '12 hours', value: '12 hours' },
-							{ label: '1 day', value: '1 day' },
-							{ label: '2 days', value: '2 days' },
-							{ label: '3 days', value: '3 days' },
-							{ label: '4 days', value: '4 days' },
-							{ label: '1 week', value: '1 week' },
-							{ label: '2 weeks', value: '2 weeks' },
-							{ label: '1 month', value: '1 month' },
-							{ label: '2 months', value: '2 months' },
-							{ label: '3 months', value: '3 months' },
-							{ label: '1 year', value: '1 year' },
-							{ label: 'indefinite', selected: true, value:'indefinite' },
-							{ label: 'Custom...', value: 'custom' }
+							{ label: '1 giờ', value: '1 hour' },
+							{ label: '2 giờ', value: '2 hours' },
+							{ label: '3 giờ', value: '3 hours' },
+							{ label: '6 giờ', value: '6 hours' },
+							{ label: '12 giờ', value: '12 hours' },
+							{ label: '1 ngày', value: '1 day' },
+							{ label: '2 ngày', value: '2 days' },
+							{ label: '3 ngày', value: '3 days' },
+							{ label: '4 ngày', value: '4 days' },
+							{ label: '1 tuần', value: '1 week' },
+							{ label: '2 tuần', value: '2 weeks' },
+							{ label: '1 tháng', value: '1 month' },
+							{ label: '2 tháng', value: '2 months' },
+							{ label: '3 tháng', value: '3 months' },
+							{ label: '1 năm', value: '1 year' },
+							{ label: 'vô hạn', selected: true, value:'indefinite' },
+							{ label: 'Khác…', value: 'custom' }
 						]
 					});
 				field2.append({
@@ -355,13 +355,13 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							}
 						]
 					});
+				//var pclevel = field2.append({
+				//		type: 'select',
+				//		name: 'pclevel',
+				//		label: 'Pending changes:',
+				//		event: Twinkle.protect.formevents.pclevel
+				//	});
 				var pclevel = field2.append({
-						type: 'select',
-						name: 'pclevel',
-						label: 'Pending changes:',
-						event: Twinkle.protect.formevents.pclevel
-					});
-				pclevel.append({
 						type: 'option',
 						label: 'None',
 						value: 'none'
@@ -387,23 +387,23 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							}
 						},
 						list: [
-							{ label: '1 hour', value: '1 hour' },
-							{ label: '2 hours', value: '2 hours' },
-							{ label: '3 hours', value: '3 hours' },
-							{ label: '6 hours', value: '6 hours' },
-							{ label: '12 hours', value: '12 hours' },
-							{ label: '1 day', value: '1 day' },
-							{ label: '2 days', value: '2 days' },
-							{ label: '3 days', value: '3 days' },
-							{ label: '4 days', value: '4 days' },
-							{ label: '1 week', value: '1 week' },
-							{ label: '2 weeks', value: '2 weeks' },
-							{ label: '1 month', selected: true, value: '1 month' },
-							{ label: '2 months', value: '2 months' },
-							{ label: '3 months', value: '3 months' },
-							{ label: '1 year', value: '1 year' },
-							{ label: 'indefinite', value:'indefinite' },
-							{ label: 'Custom...', value: 'custom' }
+							{ label: '1 giờ', value: '1 hour' },
+							{ label: '2 giờ', value: '2 hours' },
+							{ label: '3 giờ', value: '3 hours' },
+							{ label: '6 giờ', value: '6 hours' },
+							{ label: '12 giờ', value: '12 hours' },
+							{ label: '1 ngày', value: '1 day' },
+							{ label: '2 ngày', value: '2 days' },
+							{ label: '3 ngày', value: '3 days' },
+							{ label: '4 ngày', value: '4 days' },
+							{ label: '1 tuần', value: '1 week' },
+							{ label: '2 tuần', value: '2 weeks' },
+							{ label: '1 tháng', selected: true, value: '1 month' },
+							{ label: '2 tháng', value: '2 months' },
+							{ label: '3 tháng', value: '3 months' },
+							{ label: '1 năm', value: '1 year' },
+							{ label: 'vô hạn', value:'indefinite' },
+							{ label: 'Khác…', value: 'custom' }
 						]
 					});
 			} else {  // for non-existing pages
@@ -446,23 +446,23 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							}
 						},
 						list: [
-							{ label: '1 hour', value: '1 hour' },
-							{ label: '2 hours', value: '2 hours' },
-							{ label: '3 hours', value: '3 hours' },
-							{ label: '6 hours', value: '6 hours' },
-							{ label: '12 hours', value: '12 hours' },
-							{ label: '1 day', value: '1 day' },
-							{ label: '2 days', value: '2 days' },
-							{ label: '3 days', value: '3 days' },
-							{ label: '4 days', value: '4 days' },
-							{ label: '1 week', value: '1 week' },
-							{ label: '2 weeks', value: '2 weeks' },
-							{ label: '1 month', value: '1 month' },
-							{ label: '2 months', value: '2 months' },
-							{ label: '3 months', value: '3 months' },
-							{ label: '1 year', value: '1 year' },
-							{ label: 'indefinite', selected: true, value: 'indefinite' },
-							{ label: 'Custom...', value: 'custom' }
+							{ label: '1 giờ', value: '1 hour' },
+							{ label: '2 giờ', value: '2 hours' },
+							{ label: '3 giờ', value: '3 hours' },
+							{ label: '6 giờ', value: '6 hours' },
+							{ label: '12 giờ', value: '12 hours' },
+							{ label: '1 ngày', value: '1 day' },
+							{ label: '2 ngày', value: '2 days' },
+							{ label: '3 ngày', value: '3 days' },
+							{ label: '4 ngày', value: '4 days' },
+							{ label: '1 tuần', value: '1 week' },
+							{ label: '2 tuần', value: '2 weeks' },
+							{ label: '1 tháng', value: '1 month' },
+							{ label: '2 tháng', value: '2 months' },
+							{ label: '3 tháng', value: '3 months' },
+							{ label: '1 năm', value: '1 year' },
+							{ label: 'vô hạn', selected: true, value: 'indefinite' },
+							{ label: 'Khác…', value: 'custom' }
 						]
 					});
 			}
@@ -476,11 +476,11 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			}
 			/* falls through */
 		case 'tag':
-			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Tagging options', name: 'field1' });
+			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Tùy chọn', name: 'field1' });
 			field1.append( {
 					type: 'select',
 					name: 'tagtype',
-					label: 'Choose protection template:',
+					label: 'Chọn bản mẫu khóa:',
 					list: Twinkle.protect.protectionTags,
 					event: Twinkle.protect.formevents.tagtype
 				} );
@@ -489,14 +489,14 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					list: [
 						{
 							name: 'small',
-							label: 'Iconify (small=yes)',
-							tooltip: 'Will use the |small=yes feature of the template, and only render it as a keylock',
+							label: 'Biểu tượng (small=yes)',
+							tooltip: 'Sẽ sử dụng bản mẫu có thông số mở rộng |small=yes, và chỉ thể hiện nó dạng ổ khóa nhỏ bên trên góc phải',
 							checked: true
 						},
 						{
 							name: 'noinclude',
-							label: 'Wrap protection template with <noinclude>',
-							tooltip: 'Will wrap the protection template in &lt;noinclude&gt; tags, so that it won\'t transclude',
+							label: 'Để bản mẫu trong dấu  <noinclude>',
+							tooltip: 'Sẽ đặt bản mẫu trong mã &lt;noinclude&gt; tức không nhúng',
 							checked: (mw.config.get('wgNamespaceNumber') === 10)
 						}
 					]
@@ -504,30 +504,30 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			break;
 
 		case 'request':
-			field_preset = new Morebits.quickForm.element({ type: 'field', label: 'Type of protection', name: 'field_preset' });
+			field_preset = new Morebits.quickForm.element({ type: 'field', label: 'Hình thức khóa', name: 'field_preset' });
 			field_preset.append({
 					type: 'select',
 					name: 'category',
-					label: 'Type and reason:',
+					label: 'Hình thức và lý do:',
 					event: Twinkle.protect.callback.changePreset,
 					list: (mw.config.get('wgArticleId') ? Twinkle.protect.protectionTypes : Twinkle.protect.protectionTypesCreate)
 				});
 
-			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Options', name: 'field1' });
+			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Tùy chọn', name: 'field1' });
 			field1.append( {
 					type: 'select',
 					name: 'expiry',
-					label: 'Duration: ',
+					label: 'Thời gian: ',
 					list: [
-						{ label: 'Temporary', value: 'temporary' },
-						{ label: 'Indefinite', value: 'indefinite' },
+						{ label: 'Tạm thời', value: 'temporary' },
+						{ label: 'Vô hạn', value: 'indefinite' },
 						{ label: '', selected: true, value: '' }
 					]
 				} );
 			field1.append({
 					type: 'textarea',
 					name: 'reason',
-					label: 'Reason: '
+					label: 'Lý do: '
 				});
 			break;
 		default:
@@ -564,7 +564,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 		// re-add protection level text, if it's available
 		if (Twinkle.protect.protectionLevel) {
 			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-			Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
+			Morebits.status.info("Mức khóa hiện tại", Twinkle.protect.protectionLevel);
 		}
 
 		// reduce vertical height of dialog
@@ -619,60 +619,62 @@ Twinkle.protect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
 };
 
 Twinkle.protect.protectionTypes = [
-	{ label: 'Unprotection', value: 'unprotect' },
+	{ label: 'Mở khóa', value: 'unprotect' },
 	{
-		label: 'Full protection',
+		label: 'Khóa hoàn toàn',
 		list: [
-			{ label: 'Generic (full)', value: 'pp-protected' },
-			{ label: 'Content dispute/edit warring (full)', value: 'pp-dispute' },
-			{ label: 'Persistent vandalism (full)', value: 'pp-vandalism' },
-			{ label: 'User talk of blocked user (full)', value: 'pp-usertalk' }
+			{ label: 'Chung (hoàn toàn)', value: 'pp-protected' },
+			{ label: 'Tranh cãi/bút chiến (hoàn toàn)', value: 'pp-dispute' },
+			{ label: 'Phá hoại liên tục (hoàn toàn)', value: 'pp-vandalism' },
+			{ label: 'Bản mẫu được xem nhiều (hoàn toàn)', value: 'pp-template' },
+			{ label: 'Trang thảo luận của thành viên bị cấm (hoàn toàn)', value: 'pp-usertalk' }
 		]
 	},
+	//{
+	//	label: 'Template protection',
+	//	list: [
+	//		{ label: 'Highly visible template (TE)', value: 'pp-template' }
+	//	]
+	//},
 	{
-		label: 'Template protection',
+		label: 'Khóa nửa',
 		list: [
-			{ label: 'Highly visible template (TE)', value: 'pp-template' }
+			{ label: 'Chung (bán khóa)', value: 'pp-semi-protected' },
+			{ label: 'Phá hoại liên tục)', selected: true, value: 'pp-semi-vandalism' },
+			{ label: 'Vi phạm chính sách về người còn sống)', value: 'pp-semi-blp' },
+			{ label: 'Rối (bán khóa)', value: 'pp-semi-sock' },
+			{ label: 'Bản mẫu được xem nhiều (bán khóa)', value: 'pp-semi-template' },
+			{ label: 'Trang thảo luận của thành viên bị cấm (bán khóa)', value: 'pp-semi-usertalk' }
 		]
 	},
-	{
-		label: 'Semi-protection',
-		list: [
-			{ label: 'Generic (semi)', value: 'pp-semi-protected' },
-			{ label: 'Persistent vandalism (semi)', selected: true, value: 'pp-semi-vandalism' },
-			{ label: 'BLP policy violations (semi)', value: 'pp-semi-blp' },
-			{ label: 'Sockpuppetry (semi)', value: 'pp-semi-sock' },
-			{ label: 'User talk of blocked user (semi)', value: 'pp-semi-usertalk' }
-		]
-	},
-	{
-		label: 'Pending changes',
-		list: [
-			{ label: 'Generic (PC)', value: 'pp-pc-protected' },
-			{ label: 'Persistent vandalism (PC)', value: 'pp-pc-vandalism' },
-			{ label: 'BLP policy violations (PC)', value: 'pp-pc-blp' }
-		]
-	},
+	//{
+	//	label: 'Pending changes',
+	//	list: [
+	//		{ label: 'Generic (PC)', value: 'pp-pc-protected' },
+	//		{ label: 'Persistent vandalism (PC)', value: 'pp-pc-vandalism' },
+	//		{ label: 'BLP policy violations (PC)', value: 'pp-pc-blp' }
+	//	]
+	//},
 	{
 		label: 'Khóa di chuyển',
 		list: [
-			{ label: 'Generic (move)', value: 'pp-move' },
-			{ label: 'Dispute/move warring (move)', value: 'pp-move-dispute' },
-			{ label: 'Page-move vandalism (move)', value: 'pp-move-vandalism' },
-			{ label: 'Highly visible page (move)', value: 'pp-move-indef' }
+			{ label: 'Chung (di chuyển)', value: 'pp-move' },
+			{ label: 'Bút chiến (di chuyển)', value: 'pp-move-dispute' },
+			{ label: 'Phá hoại di chuyển trang)', value: 'pp-move-vandalism' },
+			{ label: 'Trang được nhiều người xem (di chuyển)', value: 'pp-move-indef' }
 		]
 	}
 ];
 
 Twinkle.protect.protectionTypesCreate = [
-	{ label: 'Unprotection', value: 'unprotect' },
+	{ label: 'Mở khóa', value: 'unprotect' },
 	{
 		label: 'Khóa tạo trang',
 		list: [
-			{ label: 'Generic ({{pp-create}})', value: 'pp-create' },
-			{ label: 'Offensive name', value: 'pp-create-offensive' },
-			{ label: 'Repeatedly recreated', selected: true, value: 'pp-create-salt' },
-			{ label: 'Recently deleted BLP', value: 'pp-create-blp' }
+			{ label: 'Chung ({{pp-create}})', value: 'pp-create' },
+			{ label: 'Tên công kích', value: 'pp-create-offensive' },
+			{ label: 'Liên tục tạo lại', selected: true, value: 'pp-create-salt' },
+			{ label: 'Về người còn sống vừa bị xóa', value: 'pp-create-blp' }
 		]
 	}
 ];
@@ -700,48 +702,50 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-dispute': {
 		edit: 'sysop',
 		move: 'sysop',
-		reason: '[[WP:PP#Content disputes|Edit warring / content dispute]]'
+		reason: '[[WP:KHOA#Tranh cãi về nội dung|Tranh cãi về nội dung]]'
 	},
 	'pp-vandalism': {
 		edit: 'sysop',
 		move: 'sysop',
-		reason: 'Persistent [[WP:Vandalism|vandalism]]'
+		reason: '[[WP:PH|Phá hoại]] liên tục'
 	},
 	'pp-usertalk': {
 		edit: 'sysop',
 		move: 'sysop',
-		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]'
+		reason: '[[WP:KHOA#Khóa trang thảo luận|Trang thảo luận của thành viên bị cấm]]'
 	},
 	'pp-template': {
-		edit: 'templateeditor',
-		move: 'templateeditor',
-		reason: '[[WP:High-risk templates|Highly visible template]]'
+		//edit: 'templateeditor',
+		//move: 'templateeditor',
+		edit: 'sysop',
+		move: 'sysop',
+		reason: 'Bản mẫu được xem nhiều'
 	},
 	'pp-semi-vandalism': {
 		edit: 'autoconfirmed',
-		reason: 'Persistent [[WP:Vandalism|vandalism]]',
+		reason: '[[WP:PH|Phá hoại]] liên tục',
 		template: 'pp-vandalism'
 	},
 	'pp-semi-blp': {
 		edit: 'autoconfirmed',
-		reason: 'Violations of the [[WP:BLP|biographies of living persons policy]]',
+		reason: 'Vi phạm [[Wikipedia:Tiểu sử người đang sống|quy định về tiểu sử người đang sống]]',
 		template: 'pp-blp'
 	},
 	'pp-semi-usertalk': {
 		edit: 'autoconfirmed',
 		move: 'sysop',
-		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]',
+		reason: '[[WP:KHOA#Khóa trang thảo luận|Trang thảo luận của thành viên bị cấm]]',
 		template: 'pp-usertalk'
 	},
 	'pp-semi-template': {  // removed for now
 		edit: 'autoconfirmed',
 		move: 'sysop',
-		reason: '[[WP:High-risk templates|Highly visible template]]',
+		reason: 'Bản mẫu được xem nhiều',
 		template: 'pp-template'
 	},
 	'pp-semi-sock': {
 		edit: 'autoconfirmed',
-		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]',
+		reason: '[[WP:ROI|Rối]]',
 		template: 'pp-sock'
 	},
 	'pp-semi-protected': {
@@ -770,15 +774,15 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-move-dispute': {
 		move: 'sysop',
-		reason: '[[WP:MOVP|Move warring]]'
+		reason: '[[WP:KHOA#Khóa khả năng di chuyển|Bút chiến di chuyển trang]]'
 	},
 	'pp-move-vandalism': {
 		move: 'sysop',
-		reason: '[[WP:MOVP|Page-move vandalism]]'
+		reason: '[[WP:KHOA#Khóa khả năng di chuyển|Bút chiến di chuyển trang]]'
 	},
 	'pp-move-indef': {
 		move: 'sysop',
-		reason: '[[WP:MOVP|Highly visible page]]'
+		reason: '[[WP:KHOA#Khóa khả năng di chuyển|Trang được xem nhiều]]'
 	},
 	'unprotect': {
 		edit: 'all',
@@ -790,11 +794,11 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-create-offensive': {
 		create: 'sysop',
-		reason: '[[WP:SALT|Offensive name]]'
+		reason: '[[WP:KHOA#Khóa khả năng tạo bài|Tên công kích]]'
 	},
 	'pp-create-salt': {
 		create: 'sysop',
-		reason: '[[WP:SALT|Repeatedly recreated]]'
+		reason: '[[WP:KHOA#Khóa khả năng tạo bài|Liên tục tạo lại]]'
 	},
 	'pp-create-blp': {
 		create: 'sysop',
@@ -808,39 +812,39 @@ Twinkle.protect.protectionPresetsInfo = {
 
 Twinkle.protect.protectionTags = [
 	{
-		label: 'None (remove existing protection templates)',
+		label: 'Không có (xóa các bãn mẫu khóa trang hiện hữu)',
 		value: 'none'
 	},
 	{
-		label: 'None (do not remove existing protection templates)',
+		label: 'Không có (đừng dời các bản mẫu khóa trang)',
 		value: 'noop'
 	},
 	{
-		label: 'Edit protection templates',
+		label: 'Các bản mẫu khóa',
 		list: [
-			{ label: '{{pp-vandalism}}: vandalism', value: 'pp-vandalism' },
-			{ label: '{{pp-dispute}}: dispute/edit war', value: 'pp-dispute', selected: true },
-			{ label: '{{pp-blp}}: BLP violations', value: 'pp-blp' },
-			{ label: '{{pp-sock}}: sockpuppetry', value: 'pp-sock' },
-			{ label: '{{pp-template}}: high-risk template', value: 'pp-template' },
-			{ label: '{{pp-usertalk}}: blocked user talk', value: 'pp-usertalk' },
-			{ label: '{{pp-protected}}: general protection', value: 'pp-protected' },
-			{ label: '{{pp-semi-indef}}: general long-term semi-protection', value: 'pp-semi-indef' }
+			{ label: '{{pp-vandalism}}: phá hoại', value: 'pp-vandalism' },
+			{ label: '{{pp-dispute}}: bút chiến', value: 'pp-dispute', selected: true },
+			{ label: '{{pp-blp}}: vi phạm về tiểu sử người còn sống', value: 'pp-blp' },
+			{ label: '{{pp-sock}}: rối', value: 'pp-sock' },
+			{ label: '{{pp-template}}: bản mẫu dùng nhiều', value: 'pp-template' },
+			{ label: '{{pp-usertalk}}: trang thảo luận thành viên bị cấm', value: 'pp-usertalk' },
+			{ label: '{{pp-protected}}: khóa chung', value: 'pp-protected' },
+			{ label: '{{pp-semi-indef}}: bán khóa dài hạn', value: 'pp-semi-indef' }
 		]
 	},
+	//{
+	//	label: 'Pending changes templates',
+	//	list: [
+	//		{ label: '{{pp-pc1}}: pending changes level 1', value: 'pp-pc1' }
+	//	]
+	//},
 	{
-		label: 'Pending changes templates',
+		label: 'Các bản mẫu khóa di chuyển',
 		list: [
-			{ label: '{{pp-pc1}}: pending changes level 1', value: 'pp-pc1' }
-		]
-	},
-	{
-		label: 'Bản mẫu khóa di chuyển',
-		list: [
-			{ label: '{{pp-move-dispute}}: dispute/move war', value: 'pp-move-dispute' },
-			{ label: '{{pp-move-vandalism}}: page-move vandalism', value: 'pp-move-vandalism' },
-			{ label: '{{pp-move-indef}}: general long-term', value: 'pp-move-indef' },
-			{ label: '{{pp-move}}: other', value: 'pp-move' }
+			{ label: '{{pp-move-dispute}}: bút chiến', value: 'pp-move-dispute' },
+			{ label: '{{pp-move-vandalism}}: phá hoại di chuyển trang', value: 'pp-move-vandalism' },
+			{ label: '{{pp-move-indef}}: khóa dài hạn', value: 'pp-move-indef' },
+			{ label: '{{pp-move}}: khác', value: 'pp-move' }
 		]
 	}
 ];
@@ -998,7 +1002,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				if (form.protectReason.value) {
 					thispage.setEditSummary(form.protectReason.value);
 				} else {
-					alert("You must enter a protect reason, which will be inscribed into the protection log.");
+					alert("Bạn phải điền vào lý do khóa trang, nó sẽ được ghi vào nhật trình khóa.");
 					return;
 				}
 
@@ -1022,7 +1026,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				if (form.protectReason.value) {
 					thispage.setEditSummary(form.protectReason.value);
 				} else {
-					alert("You must enter a protect reason, which will be inscribed into the protection log.");
+					alert("Bạn phải điền vào lý do khóa trang, nó sẽ được ghi vào nhật trình khóa.");
 					return;
 				}
 
@@ -1177,15 +1181,15 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 
 			// Updating data for the action completed event
 			Morebits.wiki.actionCompleted.redirect = rppName;
-			Morebits.wiki.actionCompleted.notice = "Nomination completed, redirecting now to the discussion page";
+			Morebits.wiki.actionCompleted.notice = "Đề xuất hoàn tất, chuyển đến trang thảo luận";
 
-			var rppPage = new Morebits.wiki.page( rppName, 'Requesting protection of page');
+			var rppPage = new Morebits.wiki.page( rppName, 'Yêu cầu khóa trang');
 			rppPage.setFollowRedirect( true );
 			rppPage.setCallbackParameters( rppparams );
 			rppPage.load( Twinkle.protect.callbacks.fileRequest );
 			break;
 		default:
-			alert("twinkleprotect: unknown kind of action");
+			alert("khóa trang bằng twinkle: không rõ tác vụ");
 			break;
 	}
 };
@@ -1193,7 +1197,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 Twinkle.protect.callbacks = {
 	taggingPageInitial: function( tagparams ) {
 		if (tagparams.tag === 'noop') {
-			Morebits.status.info("Applying protection template", "nothing to do");
+			Morebits.status.info("Gắn bản mẫu khóa", "nothing to do");
 			return;
 		}
 
@@ -1209,7 +1213,7 @@ Twinkle.protect.callbacks = {
 		var oldtag_re = /\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*/gi;
 		var re_result = oldtag_re.exec(text);
 		if (re_result) {
-			if (confirm("{{" + re_result[1] + "}} was found on the page. \nClick OK to remove it, or click Cancel to leave it there.")) {
+			if (confirm("{{" + re_result[1] + "}} tồn tại trên trang này \nChọn OK để xóa bản mẫu, hoặc chọn Hủy bỏ để giữ nó lại.")) {
 				text = text.replace( oldtag_re, '' );
 			}
 		}
@@ -1228,7 +1232,7 @@ Twinkle.protect.callbacks = {
 		}
 
 		if( params.tag === 'none' ) {
-			summary = 'Removing protection template' + Twinkle.getPref('summaryAd');
+			summary = 'Dời bản mẫu khóa trang' + Twinkle.getPref('summaryAd');
 		} else {
 			if( params.noinclude ) {
 				text = "<noinclude>{{" + tag + "}}</noinclude>" + text;
@@ -1237,7 +1241,7 @@ Twinkle.protect.callbacks = {
 			} else {
 				text = "{{" + tag + "}}\n" + text;
 			}
-			summary = "Adding {{" + params.tag + "}}" + Twinkle.getPref('summaryAd');
+			summary = "Thêm {{" + params.tag + "}}" + Twinkle.getPref('summaryAd');
 		}
 
 		protectedPage.setEditSummary( summary );

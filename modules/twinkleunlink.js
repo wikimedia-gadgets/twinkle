@@ -17,7 +17,7 @@ Twinkle.unlink = function twinkleunlink() {
 	if( mw.config.get('wgNamespaceNumber') < 0 ) {
 		return;
 	}
-	Twinkle.addPortletLink( Twinkle.unlink.callback, "Unlink", "tw-unlink", "Unlink backlinks" );
+	Twinkle.addPortletLink( Twinkle.unlink.callback, "Gỡ liên kết", "tw-unlink", "Gỡ liên kết đến trang này" );
 };
 
 Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
@@ -243,7 +243,7 @@ Twinkle.unlink.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary("Removing link(s) to \"" + Morebits.pageNameNorm + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary("Bỏ liên kết đến \"" + Morebits.pageNameNorm + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(Twinkle.unlink.callbacks.success);
 	},
@@ -253,7 +253,7 @@ Twinkle.unlink.callbacks = {
 		var params = pageobj.getCallbackParameters();
 
 		var wikiPage = new Morebits.wikitext.page(text);
-		wikiPage.commentOutImage(mw.config.get('wgTitle'), 'Commented out');
+		wikiPage.commentOutImage(mw.config.get('wgTitle'), 'Bỏ hình');
 		text = wikiPage.getText();
 		if (text === oldtext) {
 			// Nothing to do, return
@@ -263,7 +263,7 @@ Twinkle.unlink.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary("Commenting out use(s) of file \"" + Morebits.pageNameNorm + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary("Bỏ sử dụng tập tin \"" + Morebits.pageNameNorm + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(Twinkle.unlink.callbacks.success);
 	},

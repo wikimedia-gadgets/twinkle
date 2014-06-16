@@ -8,7 +8,7 @@
  ****************************************
  *** twinkleprod.js: PROD module
  ****************************************
- * Mode of invocation:     Tab ("PROD")
+ * Mode of invocation:     Tab ("Đề nghị xóa")
  * Active on:              Existing articles which are not redirects
  * Config directives in:   TwinkleConfig
  */
@@ -18,17 +18,17 @@ Twinkle.prod = function twinkleprod() {
 		return;
 	}
 	
-	Twinkle.addPortletLink( Twinkle.prod.callback, "PROD", "tw-prod", "Propose deletion via WP:PROD" );
+	Twinkle.addPortletLink( Twinkle.prod.callback, "Đề nghị xóa", "tw-prod", "Propose deletion via WP:PROD" );
 };
 
 Twinkle.prod.callback = function twinkleprodCallback() {
 	Twinkle.prod.defaultReason = Twinkle.getPref('prodReasonDefault');
 
 	var Window = new Morebits.simpleWindow( 800, 410 );
-	Window.setTitle( "Proposed deletion (PROD)" );
+	Window.setTitle( "Đề nghị xóa (PROD)" );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Proposed deletion policy", "WP:PROD" );
-	Window.addFooterLink( "BLP PROD policy", "WP:BLPPROD" );
+	Window.addFooterLink( "Quy định xóa", "WP:PROD" );
+	Window.addFooterLink( "Quy định xóa về BLP", "WP:BLPPROD" );
 	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#prod" );
 
 	var form = new Morebits.quickForm( Twinkle.prod.callback.evaluate );
@@ -43,15 +43,15 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 			event: Twinkle.prod.callback.prodtypechanged,
 			list: [
 				{
-					label: 'PROD (proposed deletion)',
+					label: 'PROD (đề nghị xóa)',
 					value: 'prod',
 					checked: true,
-					tooltip: 'Normal proposed deletion, per [[WP:PROD]]'
+					tooltip: 'Đề nghị xóa thông thường, theo [[WP:PROD]]'
 				},
 				{
-					label: 'BLP PROD (proposed deletion of unsourced BLPs)',
+					label: 'BLP PROD (đề nghị xóa về người còn sống không nguồn)',
 					value: 'prodblp',
-					tooltip: 'Proposed deletion of new, completely unsourced biographies of living persons, per [[WP:BLPPROD]]'
+					tooltip: 'Đề nghị xóa về bài viết mới về người còn sống hoàn toàn không nguồn, theo [[WP:BLPPROD]]'
 				}
 			]
 		} );
@@ -88,10 +88,10 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 					type: 'checkbox',
 					list: [
 						{
-							label: 'Notify page creator if possible',
+							label: 'Thông báo cho ngược tạo trang nếu có thể',
 							value: 'notify',
 							name: 'notify',
-							tooltip: "A notification template will be placed on the creator's talk page if this is true.",
+							tooltip: "Chèn một bản mẫu thông báo vào trang thảo luận của người tạo trang nếu thỏa.",
 							checked: true
 						}
 					]
@@ -100,7 +100,7 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 			field.append( {
 					type: 'textarea',
 					name: 'reason',
-					label: 'Reason for proposed deletion:',
+					label: 'Lý do đề nghị xóa:',
 					value: Twinkle.prod.defaultReason
 				} );
 			break;
@@ -115,10 +115,10 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 					type: 'checkbox',
 					list: [
 						{
-							label: 'Notify page creator if possible',
+							label: 'Thông báo cho người tạo trang nếu có thể',
 							value: 'notify',
 							name: 'notify',
-							tooltip: 'Creator of article has to be notified.',
+							tooltip: 'Cần thông báo cho người tạo trang.',
 							checked: true,
 							disabled: true
 						}
@@ -135,7 +135,7 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 			if (mw.config.get('wgArticleId') < 26596183) {
 				field.append({
 					type: 'header',
-					label: 'It appears that this article was created before March 18, 2010, and is thus ineligible for a BLP PROD. Please make sure that this is not the case, or use normal PROD instead.'
+					label: 'Có thể thấy rằng bài viết này được tạo trước ngày 18 tháng 3 năm 2010, và nó không thõa nãm các tiêu chuẩn về đề nghị xóa đối với bài viết về tiểu sử người còn sống (BLP PROD). Hãy chắc chắn rằng trường hợp này là ngoại lệ, hoặc có thể sử dụng đề nghị xóa thông thường.'
 				});
 			}
 			break;
@@ -152,7 +152,7 @@ Twinkle.prod.callbacks = {
 		var statelem = pageobj.getStatusElement();
 
 		if( !pageobj.exists() ) {
-			statelem.error( "It seems that the page doesn't exist.  Perhaps it has already been deleted." );
+			statelem.error( "Có thể bài chưa không tồn tại, hoặc có thể nó đã bị xóa." );
 			return;
 		}
 
@@ -161,7 +161,7 @@ Twinkle.prod.callbacks = {
 
 		var tag_re = /(\{\{(?:db-?|delete|[aitcmrs]fd|md1)[^{}]*?\|?[^{}]*?\}\})/i;
 		if( tag_re.test( text ) ) {
-			statelem.warn( 'Page already tagged with a deletion template, aborting procedure' );
+			statelem.warn( 'Một bản mẫu xóa đã được chèn vào trang này, bỏ qua tác vụ' );
 			return;
 		}
 
@@ -182,18 +182,18 @@ Twinkle.prod.callbacks = {
 				Twinkle.prod.callbacks.addToLog(params);
 			}
 
-			summaryText = "Proposing article for deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
+			summaryText = "Bài viết được đề nghị xóa theo [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
 			text = "{{subst:prod" + (params.blp ? " blp" : ("|1=" + Morebits.string.formatReasonText(params.reason))) + "}}\n" + text;
 		}
 		else {  // already tagged for PROD, so try endorsing it
 			var prod2_re = /\{\{(?:Proposed deletion endorsed|prod-?2).*?\}\}/;
 			if( prod2_re.test( text ) ) {
-				statelem.warn( 'Page already tagged with {{prod}} and {{prod-2}} templates, aborting procedure' );
+				statelem.warn( 'Bài viết đã được chèn bản mẫu {{prod}} và {{prod-2}}, bỏ qua tác vụ' );
 				return;
 			}
-			var confirmtext = "A {{prod}} tag was already found on this article. \nWould you like to add a {{prod-2}} (PROD endorsement) tag with your explanation?";
+			var confirmtext = "Bản mẫu {{prod}} đã có trong bài viết này. \nBạn có muốn thêm bản mẫu {{prod-2}} (PROD endorsement) kèm theo giải thích của bạn?";
 			if (params.blp) {
-				confirmtext = "A non-BLP {{prod}} tag was found on this article.  \nWould you like to add a {{prod-2}} (PROD endorsement) tag with explanation \"article is a biography of a living person with no sources\"?";
+				confirmtext = "Bản mẫu {{prod}} không phải BLP đã có trong bài viết này. \nBạn có muốn them bản mẫu {{prod-2}} (PROD endorsement) kèm theo lời giải thích \"article is a biography of a living person with no sources\"?";
 			}
 			if( !confirm( confirmtext ) ) {
 				statelem.warn( 'Aborted per user request' );
@@ -258,7 +258,7 @@ Twinkle.prod.callbacks = {
 			text =
 				"This is a log of all [[WP:PROD|proposed deletion]] tags applied or endorsed by this user using [[WP:TW|Twinkle]]'s PROD module.\n\n" +
 				"If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and " +
-				"nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].\n";
+				"nominate this page for speedy deletion under [[WP:XN#U1|XN U1]].\n";
 		}
 
 		// create monthly header
@@ -272,7 +272,7 @@ Twinkle.prod.callbacks = {
 		if (params.logEndorsing) {
 			text += "\n# [[" + Morebits.pageNameNorm + "]]: endorsed " + (params.blp ? "BLP " : "") + "PROD. ~~~~~";
 			if (params.reason) {
-				text += "\n#* '''Reason''': " + params.reason + "\n";
+				text += "\n#* '''Lý do''': " + params.reason + "\n";
 			}
 			summarytext = "Logging endorsement of PROD nomination of [[" + Morebits.pageNameNorm + "]].";
 		} else {
@@ -282,7 +282,7 @@ Twinkle.prod.callbacks = {
 			}
 			text += " ~~~~~\n";
 			if (!params.blp) {
-				text += "#* '''Reason''': " + params.reason + "\n";
+				text += "#* '''Lý do''': " + params.reason + "\n";
 			}
 			summarytext = "Logging PROD nomination of [[" + Morebits.pageNameNorm + "]].";
 		}

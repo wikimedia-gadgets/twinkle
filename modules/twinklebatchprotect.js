@@ -153,23 +153,23 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				}
 			},
 			list: [
-				{ label: '1 hour', value: '1 hour' },
-				{ label: '2 hours', value: '2 hours' },
-				{ label: '3 hours', value: '3 hours' },
-				{ label: '6 hours', value: '6 hours' },
-				{ label: '12 hours', value: '12 hours' },
-				{ label: '1 day', value: '1 day' },
-				{ label: '2 days', selected: true, value: '2 days' },
-				{ label: '3 days', value: '3 days' },
-				{ label: '4 days', value: '4 days' },
-				{ label: '1 week', value: '1 week' },
-				{ label: '2 weeks', value: '2 weeks' },
-				{ label: '1 month', value: '1 month' },
-				{ label: '2 months', value: '2 months' },
-				{ label: '3 months', value: '3 months' },
-				{ label: '1 year', value: '1 year' },
-				{ label: 'indefinite', value:'indefinite' },
-				{ label: 'Custom...', value: 'custom' }
+				{ label: '1 giờ', value: '1 hour' },
+				{ label: '2 giờ', value: '2 hours' },
+				{ label: '3 giờ', value: '3 hours' },
+				{ label: '6 giờ', value: '6 hours' },
+				{ label: '12 giờ', value: '12 hours' },
+				{ label: '1 ngày', value: '1 day' },
+				{ label: '2 ngày', selected: true, value: '2 days' },
+				{ label: '3 ngày', value: '3 days' },
+				{ label: '4 ngày', value: '4 days' },
+				{ label: '1 tuần', value: '1 week' },
+				{ label: '2 tuần', value: '2 weeks' },
+				{ label: '1 tháng', value: '1 month' },
+				{ label: '2 tháng', value: '2 months' },
+				{ label: '3 tháng', value: '3 months' },
+				{ label: '1 năm', value: '1 year' },
+				{ label: 'vô hạn', value:'indefinite' },
+				{ label: 'Khác…', value: 'custom' }
 			]
 		});
 
@@ -227,23 +227,23 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				}
 			},
 			list: [
-				{ label: '1 hour', value: '1 hour' },
-				{ label: '2 hours', value: '2 hours' },
-				{ label: '3 hours', value: '3 hours' },
-				{ label: '6 hours', value: '6 hours' },
-				{ label: '12 hours', value: '12 hours' },
-				{ label: '1 day', value: '1 day' },
-				{ label: '2 days', value: '2 days' },
-				{ label: '3 days', value: '3 days' },
-				{ label: '4 days', value: '4 days' },
-				{ label: '1 week', value: '1 week' },
-				{ label: '2 weeks', value: '2 weeks' },
-				{ label: '1 month', value: '1 month' },
-				{ label: '2 months', value: '2 months' },
-				{ label: '3 months', value: '3 months' },
-				{ label: '1 year', value: '1 year' },
-				{ label: 'indefinite', selected: true, value: 'indefinite' },
-				{ label: 'Custom...', value: 'custom' }
+				{ label: '1 giờ', value: '1 hour' },
+				{ label: '2 giờ', value: '2 hours' },
+				{ label: '3 giờ', value: '3 hours' },
+				{ label: '6 giờ', value: '6 hours' },
+				{ label: '12 giờ', value: '12 hours' },
+				{ label: '1 ngày', value: '1 day' },
+				{ label: '2 ngày', value: '2 days' },
+				{ label: '3 ngày', value: '3 days' },
+				{ label: '4 ngày', value: '4 days' },
+				{ label: '1 tuần', value: '1 week' },
+				{ label: '2 tuần', value: '2 weeks' },
+				{ label: '1 tháng', value: '1 month' },
+				{ label: '2 tháng', value: '2 months' },
+				{ label: '3 tháng', value: '3 months' },
+				{ label: '1 năm', value: '1 year' },
+				{ label: 'vô hạn', selected: true, value: 'indefinite' },
+				{ label: 'Khác…', value: 'custom' }
 			]
 		});
 

@@ -155,7 +155,7 @@ callback_deleteRedirects = function( self ) {
 	$doc.find("backlinks bl").each(function(){
 		var title = $(this).attr('title');
 		var page = new Morebits.wiki.page(title, "Deleting redirecting page " + title);
-		page.setEditSummary("[[WP:XN#X1|XN:X1]]: Redirect to deleted page \"" + self.params.page + "\"" + Twinkle.getPref('deletionSummaryAd'));
+		page.setEditSummary("[[WP:XN#ĐH1|ĐH1]]: Đổi hướng đến trang không tồn tại \"" + self.params.page + "\"" + Twinkle.getPref('deletionSummaryAd'));
 		page.deletePage();
 	});
 };

@@ -8,7 +8,7 @@
  ****************************************
  *** twinklespeedy.js: CSD module
  ****************************************
- * Mode of invocation:     Tab ("CSD")
+ * Mode of invocation:     Tab ("Xóa nhanh")
  * Active on:              Non-special, existing pages
  * Config directives in:   TwinkleConfig
  *
@@ -27,7 +27,7 @@ Twinkle.speedy = function twinklespeedy() {
 		return;
 	}
 
-	Twinkle.addPortletLink( Twinkle.speedy.callback, "CSD", "tw-csd", Morebits.userIsInGroup('sysop') ? "Delete page according to WP:CSD" : "Request speedy deletion according to WP:CSD" );
+	Twinkle.addPortletLink( Twinkle.speedy.callback, "Xóa nhanh", "tw-csd", Morebits.userIsInGroup('sysop') ? "Xóa trang theo WP:XN" : "Đề nghị xóa nhanh theo WP:XN" );
 };
 
 // This function is run when the CSD tab/header link is clicked
@@ -76,7 +76,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	var dialog;
 	Twinkle.speedy.dialog = new Morebits.simpleWindow( Twinkle.getPref('speedyWindowWidth'), Twinkle.getPref('speedyWindowHeight') );
 	dialog = Twinkle.speedy.dialog;
-	dialog.setTitle( "Choose criteria for speedy deletion" );
+	dialog.setTitle( "Chọn tiêu chí xóa nhanh" );
 	dialog.setScriptName( "Twinkle" );
 	dialog.addFooterLink( "Quy định xóa nhanh", "WP:XN" );
 	dialog.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#speedy" );
@@ -87,10 +87,10 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Tag page only, don\'t delete',
+						label: 'Chỉ đặt bản mẫu, không xóa bài',
 						value: 'tag_only',
 						name: 'tag_only',
-						tooltip: 'If you just want to tag the page, instead of deleting it now',
+						tooltip: 'Nếu bạn chỉ muốn đặt bản mẫu xóa vào bài thay vì xóa nó ngay lập tức',
 						checked : Twinkle.getPref('deleteSysopDefaultToTag'),
 						event: function( event ) {
 							var cForm = event.target.form;
@@ -118,16 +118,16 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					}
 				]
 			} );
-		form.append( { type: 'header', label: 'Delete-related options' } );
+		form.append( { type: 'header', label: 'Các lựa chọn xóa' } );
 		if (mw.config.get('wgNamespaceNumber') % 2 === 0 && (mw.config.get('wgNamespaceNumber') !== 2 || (/\//).test(mw.config.get('wgTitle')))) {  // hide option for user pages, to avoid accidentally deleting user talk page
 			form.append( {
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Also delete talk page',
+						label: 'Xóa trang thảo luận',
 						value: 'talkpage',
 						name: 'talkpage',
-						tooltip: "This option deletes the page's talk page in addition. If you choose the F8 (moved to Commons) criterion, this option is ignored and the talk page is *not* deleted.",
+						tooltip: "Tùy chọn này cho phép xóa cả trang thảo luận. Nếu bạn chọn tiêu chí H8 (chuyển sang Commons), tùy chọn này được bỏ qua và trang thảo luận sẽ *không* bị xóa.",
 						checked: Twinkle.getPref('deleteTalkPageOnDelete'),
 						disabled: Twinkle.getPref('deleteSysopDefaultToTag'),
 						event: function( event ) {
@@ -141,10 +141,10 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Also delete all redirects',
+						label: 'Xóa tất cả trang đổi hướng',
 						value: 'redirects',
 						name: 'redirects',
-						tooltip: "This option deletes all incoming redirects in addition. Avoid this option for procedural (e.g. move/merge) deletions.",
+						tooltip: "Tùy chọn này cho phép xóa tất cả trang đổi hướng đến đây. Tránh lựa chọn này khi thực hiện các tác vụ xóa để di chuyển/trộn trang.",
 						checked: Twinkle.getPref('deleteRedirectsOnDelete'),
 						disabled: Twinkle.getPref('deleteSysopDefaultToTag'),
 						event: function( event ) {
@@ -153,18 +153,18 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					}
 				]
 			} );
-		form.append( { type: 'header', label: 'Tag-related options' } );
+		form.append( { type: 'header', label: 'Tùy chọn thẻ' } );
 	}
 
 	form.append( {
 			type: 'checkbox',
 			list: [
 				{
-					label: 'Notify page creator if possible',
+					label: 'Nhắn tin cho người tạo trang',
 					value: 'notify',
 					name: 'notify',
-					tooltip: "A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences " +
-						"for the criterion you choose AND this box is checked. The creator may be welcomed as well.",
+					tooltip: "Một tin nhắn sẽ được gửi đến người tạo trang, NẾU bạn có sử dụng hệ thống tin nhắn trong tùy chọn Twinkle " +
+						"ứng với tiêu chí bạn chọn VÀ ô này được chọn. Người tạo trang có thể được hoan nghênh.",
 					checked: !Morebits.userIsInGroup( 'sysop' ) || Twinkle.getPref('deleteSysopDefaultToTag'),
 					disabled: Morebits.userIsInGroup( 'sysop' ) && !Twinkle.getPref('deleteSysopDefaultToTag'),
 					event: function( event ) {
@@ -177,7 +177,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 			type: 'checkbox',
 			list: [
 				{
-					label: 'Tag with multiple criteria',
+					label: 'Sử dụng nhiều tiêu chí (chưa hoạt động)',
 					value: 'multiple',
 					name: 'multiple',
 					tooltip: "When selected, you can select several criteria that apply to the page. For example, G11 and A7 are a common combination for articles.",
@@ -250,47 +250,47 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 
 	if (namespace % 2 === 1 && namespace !== 3) {
 		// show db-talk on talk pages, but not user talk pages
-		work_area.append( { type: 'header', label: 'Talk pages' } );
+		work_area.append( { type: 'header', label: 'Trang thảo luận' } );
 		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.talkList, mode) } );
 	}
 
 	switch (namespace) {
 		case 0:  // article
 		case 1:  // talk
-			work_area.append( { type: 'header', label: 'Articles' } );
+			work_area.append( { type: 'header', label: 'Bài viết' } );
 			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.articleList, mode) } );
 			break;
 
 		case 2:  // user
 		case 3:  // user talk
-			work_area.append( { type: 'header', label: 'User pages' } );
+			work_area.append( { type: 'header', label: 'Trang cá nhân' } );
 			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userList, mode) } );
 			break;
 
 		case 6:  // file
 		case 7:  // file talk
-			work_area.append( { type: 'header', label: 'Files' } );
+			work_area.append( { type: 'header', label: 'Tập tin' } );
 			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.fileList, mode) } );
 			if (!Twinkle.speedy.mode.isSysop(mode)) {
-				work_area.append( { type: 'div', label: 'Tagging for CSD F4 (no license), F5 (orphaned fair use), F6 (no fair use rationale), and F11 (no permission) can be done using Twinkle\'s "DI" tab.' } );
+				work_area.append( { type: 'div', label: 'Các trường hợp XN TT4 (không nguồn), TT5 (không tự do không được sử dụng), TT6 (thiếu sửa dụng hợp lý), và TT11 (không giấy phép) nằm ở thẻ "DI" của Twinkle.' } );
 			}
 			break;
 
 		case 10:  // template
 		case 11:  // template talk
-			work_area.append( { type: 'header', label: 'Templates' } );
+			work_area.append( { type: 'header', label: 'Bản mẫu' } );
 			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.templateList, mode) } );
 			break;
 
 		case 14:  // category
 		case 15:  // category talk
-			work_area.append( { type: 'header', label: 'Categories' } );
+			work_area.append( { type: 'header', label: 'Thể loại' } );
 			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.categoryList, mode) } );
 			break;
 
 		case 100:  // portal
 		case 101:  // portal talk
-			work_area.append( { type: 'header', label: 'Portals' } );
+			work_area.append( { type: 'header', label: 'Chủ đề' } );
 			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.portalList, mode) } );
 			break;
 
@@ -298,10 +298,10 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			break;
 	}
 
-	work_area.append( { type: 'header', label: 'General criteria' } );
+	work_area.append( { type: 'header', label: 'Tiêu chí chung' } );
 	work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.generalList, mode) });
 
-	work_area.append( { type: 'header', label: 'Redirects' } );
+	work_area.append( { type: 'header', label: 'Trang đổi hướng' } );
 	work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) } );
 
 	var old_area = Morebits.quickForm.getElements(form, "work_area")[0];
@@ -494,14 +494,14 @@ Twinkle.speedy.fileList = [
 		}
 	},
 	{
-		label: 'F10: Useless non-media file',
+		label: 'TT10: Tập tin vô ích không phải phương tiện',
 		value: 'badfiletype',
-		tooltip: 'Files uploaded that are neither image, sound, nor video files (e.g. .doc, .pdf, or .xls files) which are not used in any article and have no foreseeable encyclopedic use'
+		tooltip: 'Các tập tin gồm hoặc là hình ảnh, âm thanh hoặc các tạp tin không phải video (như .doc, .pdf, hay .xls) không được sử dụng trong bất kỳ bài viết nào và được cho là không thể sử dụng mang tính bách khoa'
 	},
 	{
-		label: 'F11: No evidence of permission',
+		label: 'TT11: Không có bằng chứng về sự cấp phép',
 		value: 'nopermission',
-		tooltip: 'If an uploader has specified a license and has named a third party as the source/copyright holder without providing evidence that this third party has in fact agreed, the item may be deleted seven days after notification of the uploader',
+		tooltip: 'Nếu người tải lên đưa ra giấy phép và có tên bên thứ 3 như người giữa bản quyền/nguồn mà không đưa ra được bằng chứng về sự đồng ý cấp phép của bên thứ 3 thì tập tin đó sẽ bị xóa sau 7 ngày kể từ ngày thông báo cho người tải lên',
 		hideWhenUser: true
 	},
 	{
@@ -513,12 +513,12 @@ Twinkle.speedy.fileList = [
 
 Twinkle.speedy.articleList = [
 	{
-		label: 'A1: No context. Articles lacking sufficient context to identify the subject of the article.',
+		label: 'BV1: Không ngữ cảnh hoặc thiếu ngữ cảnh cần thiết để người khác xác định đúng chủ thể được nói đến.',
 		value: 'nocontext',
-		tooltip: 'Example: "He is a funny man with a red car. He makes people laugh." This applies only to very short articles. Context is different from content, treated in A3, below.'
+		tooltip: 'Ví dụ: "Ông ấy là một người vui tính, có một chiếc xe hơi màu xanh lá cây. Ông chuyên gia làm người khác cười." This applies only to very short articles. Context is different from content, treated in A3, below.'
 	},
 	{
-		label: 'A2: Foreign language articles that exist on another Wikimedia project',
+		label: 'BV2: Bài viết được chép nguyên văn từ một dự án Wikipedia ngôn ngữ khác sang',
 		value: 'foreign',
 		tooltip: 'If the article in question does not exist on another project, the template {{notenglish}} should be used instead. All articles in a non-English language that do not meet this criteria (and do not meet any other criteria for speedy deletion) should be listed at Pages Needing Translation (PNT) for review and possible translation',
 		subgroup: {
@@ -529,55 +529,55 @@ Twinkle.speedy.articleList = [
 		}
 	},
 	{
-		label: 'A3: No content whatsoever',
+		label: 'BV3: Không có nội dung thực',
 		value: 'nocontent',
-		tooltip: 'Any article consisting only of links elsewhere (including hyperlinks, category tags and "see also" sections), a rephrasing of the title, and/or attempts to correspond with the person or group named by its title. This does not include disambiguation pages'
+		tooltip: 'Ví dụ, bài viết chỉ gồm các liên kết, thể loại, phần "Xem thêm" và một câu lặp lại tiêu đề. Không áp dụng cho các trang định hướng'
 	},
+	//{
+	//	label: 'A5: Transwikied articles',
+	//	value: 'transwiki',
+	//	tooltip: 'Any article that has been discussed at Articles for Deletion (et al), where the outcome was to transwiki, and where the transwikification has been properly performed and the author information recorded. Alternately, any article that consists of only a dictionary definition, where the transwikification has been properly performed and the author information recorded'
+	//},
 	{
-		label: 'A5: Transwikied articles',
-		value: 'transwiki',
-		tooltip: 'Any article that has been discussed at Articles for Deletion (et al), where the outcome was to transwiki, and where the transwikification has been properly performed and the author information recorded. Alternately, any article that consists of only a dictionary definition, where the transwikification has been properly performed and the author information recorded'
-	},
-	{
-		label: 'A7: Unremarkable people, groups, companies, web content, individual animals, or organized events',
+		label: 'BV4: Bài viết về cá nhân, tổ chức, địa danh… rõ ràng không nổi bật',
 		value: 'a7',
-		tooltip: 'An article about a real person, group of people, band, club, company, web content, individual animal, tour, or party that does not assert the importance or significance of its subject. If controversial, or if a previous AfD has resulted in the article being kept, the article should be nominated for AfD instead',
+		tooltip: 'Bài viết về người thật, nhóm người, tổ chức, địa danh mà rõ ràng chưa đáp ứng tiêu chí độ nổi bật. Nếu có tranh cãi, hoặc trước đó đã có biểu quyết xóa và bài được giữ lại, hãy đưa ra Biểu quyết xóa bài',
 		hideWhenSingle: true
 	},
 	{
-		label: 'A7: Unremarkable person',
+		label: 'BV4: Cá nhân không nổi bật',
 		value: 'person',
-		tooltip: 'An article about a real person that does not assert the importance or significance of its subject. If controversial, or if there has been a previous AfD that resulted in the article being kept, the article should be nominated for AfD instead',
+		tooltip: 'Bài viết về người thật mà rõ ràng chưa đáp ứng tiêu chí độ nổi bật. Nếu có tranh cãi, hoặc trước đó đã có biểu quyết xóa và bài được giữ lại, hãy đưa ra Biểu quyết xóa bài',
 		hideWhenMultiple: true
 	},
 	{
-		label: 'A7: Unremarkable musician(s) or band',
+		label: 'BV4: Nhóm nhạc không nổi bật',
 		value: 'band',
-		tooltip: 'Article about a band, singer, musician, or musical ensemble that does not assert the importance or significance of the subject',
+		tooltip: 'Bài viết về nhóm nhạc, ca sĩ, nhạc sĩ hoặc nhạc công mà rõ ràng chưa đáp ứng tiêu chí độ nổi bật',
 		hideWhenMultiple: true
 	},
+	//{
+	//	label: 'A7: Unremarkable club',
+	//	value: 'club',
+	//	tooltip: 'Article about a club that does not assert the importance or significance of the subject',
+	//	hideWhenMultiple: true
+	//},
 	{
-		label: 'A7: Unremarkable club',
-		value: 'club',
-		tooltip: 'Article about a club that does not assert the importance or significance of the subject',
-		hideWhenMultiple: true
-	},
-	{
-		label: 'A7: Unremarkable company or organization',
+		label: 'BV4: Tổ chức không nổi bật',
 		value: 'corp',
-		tooltip: 'Article about a company or organization that does not assert the importance or significance of the subject',
+		tooltip: 'Bài viết về công ty hay tổ chức mà rõ ràng chưa đáp ứng tiêu chí độ nổi bật',
 		hideWhenMultiple: true
 	},
 	{
-		label: 'A7: Unremarkable website or web content',
+		label: 'BV4: Trang mạng hoặc nội dung mạng không nổi bật',
 		value: 'web',
-		tooltip: 'Article about a web site, blog, online forum, webcomic, podcast, or similar web content that does not assert the importance or significance of its subject',
+		tooltip: 'Bài viết về trang mạng, blog cá nhân, diễn đàn hoặc nội dung mạng tương tự mà rõ ràng chưa đáp ứng tiêu chí độ nổi bật',
 		hideWhenMultiple: true
 	},
 	{
-		label: 'A7: Unremarkable individual animal',
+		label: 'BV4: Vật nuôi cá nhân không nổi bật',
 		value: 'animal',
-		tooltip: 'Article about an individual animal (e.g. pet) that does not assert the importance or significance of its subject',
+		tooltip: 'Bài viết về vật nuôi cá nhân mà rõ ràng chưa đáp ứng tiêu chí độ nổi bật',
 		hideWhenMultiple: true
 	},
 	{
@@ -623,9 +623,9 @@ Twinkle.speedy.categoryList = [
 
 Twinkle.speedy.userList = [
 	{
-		label: 'U1: User request',
+		label: 'TV1: Thành viên yêu cầu xóa',
 		value: 'userreq',
-		tooltip: 'Personal subpages, upon request by their user. In some rare cases there may be administrative need to retain the page. Also, sometimes, main user pages may be deleted as well. See Wikipedia:User page for full instructions and guidelines',
+		tooltip: 'Yêu cầu xóa các trang trong không gian tên thành viên. Trong một số ít trường hợp, BQV cần cân nhắc giữ lại trang cho mục đích tham khảo.',
 		subgroup: ((mw.config.get('wgNamespaceNumber') === 3 && mw.config.get('wgTitle').indexOf('/') === -1) ? {
 			name: 'userreq_rationale',
 			type: 'input',
@@ -636,14 +636,14 @@ Twinkle.speedy.userList = [
 		hideSubgroupWhenMultiple: true
 	},
 	{
-		label: 'U2: Nonexistent user',
+		label: 'TV2: Tên thành viên không tồn tại',
 		value: 'nouser',
-		tooltip: 'User pages of users that do not exist (Check Special:Listusers)'
+		tooltip: 'Trang thành viên của người dùng không có thực (kiểm tra Đặc biệt:Danh sách thành viên)'
 	},
 	{
-		label: 'U3: Non-free galleries',
+		label: 'TV3: Trang hình không tự do',
 		value: 'gallery',
-		tooltip: 'Galleries in the userspace which consist mostly of "fair use" or non-free files. Wikipedia\'s non-free content policy forbids users from displaying non-free files, even ones they have uploaded themselves, in userspace. It is acceptable to have free files, GFDL-files, Creative Commons and similar licenses along with public domain material, but not "fair use" files'
+		tooltip: 'Trang chứa hình trong không gian tên mà chỉ chứa chủ yếu các hình "sử dụng hợp lý" hoặc hình không tự do. Cho dù thành viên là người tải hình lên, việc chứa các hình như vậy trong không gian nào khác, ngoài không gian bài viết liên quan, là không được phép'
 	},
 	{
 		label: 'U5: Blatant WP:NOTWEBHOST violations',
@@ -725,28 +725,28 @@ Twinkle.speedy.generalList = [
 		hideSubgroupWhenSysop: true
 	},
 	{
-		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
+		label: 'C1: Bài viết bao gồm các văn bản hoàn toàn không mạch lạc hoặc sai ngữ pháp, nội dung hoàn toàn không có ý nghĩa.',
 		value: 'nonsense',
-		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.'
+		tooltip: 'Không bao gồm ngữ pháp cẩu thả, nội dung tục tĩu, phá hoại, nội dung hư cấu, nội dung không tiếng Việt, dịch không chuẩn xác, lý thuyết đáng nghi hoặc nội dung lừa bịp.'
 	},
 	{
-		label: 'G2: Test page',
+		label: 'C2: Thử nghiệm',
 		value: 'test',
-		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates (although criterion T3 may apply).'
+		tooltip: 'Một trang được tạo ra nhằm thử nghiệm việc sửa đổi hoặc tính năng khác của Wikipedia. Không bao gồm các trang nằm trong không gian tên Thành viên.'
 	},
 	{
-		label: 'G3: Pure vandalism',
+		label: 'C3: Phá hoại',
 		value: 'vandalism',
-		tooltip: 'Plain pure vandalism (including redirects left behind from pagemove vandalism)'
+		tooltip: 'Bao gồm việc trang mang nội dung lừa bịp và được tạo ra do phá hoại di chuyển trang.'
 	},
 	{
-		label: 'G3: Blatant hoax',
+		label: 'C3: Nội dung lừa bịp',
 		value: 'hoax',
-		tooltip: 'Blatant and obvious hoax, to the point of vandalism',
+		tooltip: 'Trang mang nội dung lừa bịp rõ ràng',
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G4: Recreation of material deleted via a deletion discussion',
+		label: 'C4: Bài viết mang nội dung của một bài khác đã bị xóa',
 		value: 'repost',
 		tooltip: 'A copy, by any title, of a page that was deleted via an XfD process or Deletion review, provided that the copy is substantially identical to the deleted version. This clause does not apply to content that has been "userfied", to content undeleted as a result of Deletion review, or if the prior deletions were proposed or speedy deletions, although in this last case, other speedy deletion criteria may still apply',
 		subgroup: {
@@ -758,9 +758,9 @@ Twinkle.speedy.generalList = [
 		}
 	},
 	{
-		label: 'G5: Banned or blocked user',
+		label: 'C5: Thành viên bị cấm',
 		value: 'banned',
-		tooltip: 'Pages created by banned or blocked users in violation of their ban or block, and which have no substantial edits by others',
+		tooltip: 'Trang được thành viên bị cấm tạo ra trong lúc đang bị cấm',
 		subgroup: {
 			name: 'banned_1',
 			type: 'input',
@@ -770,9 +770,9 @@ Twinkle.speedy.generalList = [
 		hideSubgroupWhenMultiple: true
 	},
 	{
-		label: 'G6: History merge',
+		label: 'C6: Trộn lịch sử',
 		value: 'histmerge',
-		tooltip: 'Temporarily deleting a page in order to merge page histories',
+		tooltip: 'Tạm thời xóa trang để tiến hành trộn lịch sử',
 		subgroup: {
 			name: 'histmerge_1',
 			type: 'input',
@@ -781,9 +781,9 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G6: Move',
+		label: 'C6: Di chuyển',
 		value: 'move',
-		tooltip: 'Making way for an uncontroversial move like reversing a redirect',
+		tooltip: 'Tạm thời xóa trang để có chỗ di chuyển trang',
 		subgroup: [
 			{
 				name: 'move_1',
@@ -800,9 +800,9 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G6: XfD',
+		label: 'C6: Xóa theo biểu quyết',
 		value: 'xfd',
-		tooltip: 'An admin has closed a deletion discussion (at AfD, FfD, RfD, TfD, CfD, or MfD) as "delete", but they didn\'t actually delete the page.',
+		tooltip: 'Xóa theo biểu quyết xóa bài khi có kết luận "xóa".',
 		subgroup: {
 			name: 'xfd_fullvotepage',
 			type: 'input',
@@ -812,19 +812,19 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G6: Unnecessary disambiguation page',
+		label: 'C6: Trang định hướng không cần thiết',
 		value: 'disambig',
 		tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate two or fewer existing Wikipedia pages and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguates no (zero) existing Wikipedia pages, regardless of its title.',
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G6: Redirect to malplaced disambiguation page',
+		label: 'C6: Trang đổi hướng đến trang định hướng',
 		value: 'movedab',
 		tooltip: 'This only applies for redirects to disambiguation pages ending in (disambiguation) where a primary topic does not exist.',
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G6: Copy-and-paste page move',
+		label: 'C6: Đổi hướng bằng cách chép-dán',
 		value: 'copypaste',
 		tooltip: 'This only applies for a copy-and-paste page move of another page that needs to be temporarily deleted to make room for a clean page move.',
 		subgroup: {
@@ -835,9 +835,9 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G6: Housekeeping',
+		label: 'C6: Dọn dẹp',
 		value: 'g6',
-		tooltip: 'Other non-controversial "housekeeping" tasks',
+		tooltip: 'Các tác vụ dọn dẹp',
 		subgroup: {
 			name: 'g6_rationale',
 			type: 'input',
@@ -846,9 +846,9 @@ Twinkle.speedy.generalList = [
 		}
 	},
 	{
-		label: 'G7: Author requests deletion, or author blanked',
+		label: 'C7: Tác giả yêu cầu xóa hoặc tẩy trắng',
 		value: 'author',
-		tooltip: 'Any page for which deletion is requested by the original author in good faith, provided the page\'s only substantial content was added by its author. If the author blanks the page, this can also be taken as a deletion request.',
+		tooltip: 'Trang được tác giả yêu cầu xóa một cách thiện ý. Nếu người viết bài tẩy trống trang thì cũng được xem là yêu cầu xóa.',
 		subgroup: {
 			name: 'author_rationale',
 			type: 'input',
@@ -858,9 +858,9 @@ Twinkle.speedy.generalList = [
 		}
 	},
 	{
-		label: 'G8: Pages dependent on a non-existent or deleted page',
+		label: 'C8: Trang liên quan đến trang khác không tồn tại',
 		value: 'g8',
-		tooltip: 'such as talk pages with no corresponding subject page; subpages with no parent page; file pages without a corresponding file; redirects to invalid targets, such as nonexistent targets, redirect loops, and bad titles; or categories populated by deleted or retargeted templates. This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
+		tooltip: 'Ví dụ: trang thảo luận không kèm theo trang chủ thể chính; trang con không kèm theo trang mẹ; trang tập tin không chứa tập tin; đổi hướng đến trang không tồn tại, lặp đổi hướng, trang tên sai đổi hướng. Các ngoại lệ là những trang hữu ích cho dự án: trang biểu quyết xóa, trang thành viên và thảo luận thành viên, trang lưu thảo luận, trang tập tin hoặc thảo luận tập tin của tập tin được lưu giữ tại Wikimedia Commons.',
 		subgroup: {
 			name: 'g8_rationale',
 			type: 'input',
@@ -875,7 +875,7 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G10: Attack page',
+		label: 'G10: Attack page (không hoạt động)',
 		value: 'attack',
 		tooltip: 'Pages that serve no purpose but to disparage their subject or some other entity (e.g., "John Q. Doe is an imbecile"). This includes a biography of a living person that is negative in tone and unsourced, where there is no NPOV version in the history to revert to. Administrators deleting such pages should not quote the content of the page in the deletion summary!'
 	},
@@ -886,7 +886,7 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G11: Unambiguous advertising',
+		label: 'C9: Quảng cáo',
 		value: 'spam',
 		tooltip: 'Pages which exclusively promote a company, product, group, service, or person and which would need to be fundamentally rewritten in order to become encyclopedic. Note that an article about a company or a product which describes its subject from a neutral point of view does not qualify for this criterion; an article that is blatant advertising should have inappropriate content as well'
 	},
@@ -945,31 +945,31 @@ Twinkle.speedy.redirectList = [
 
 Twinkle.speedy.normalizeHash = {
 	'reason': 'db',
-	'nonsense': 'g1',
-	'test': 'g2',
-	'vandalism': 'g3',
-	'hoax': 'g3',
-	'repost': 'g4',
-	'banned': 'g5',
-	'histmerge': 'g6',
-	'move': 'g6',
-	'xfd': 'g6',
-	'disambig': 'g6',
-	'movedab': 'g6',
-	'copypaste': 'g6',
-	'g6': 'g6',
-	'author': 'g7',
-	'g8': 'g8',
-	'talk': 'g8',
-	'subpage': 'g8',
-	'redirnone': 'g8',
-	'templatecat': 'g8',
-	'imagepage': 'g8',
-	'attack': 'g10',
-	'negublp': 'g10',
-	'spam': 'g11',
+	'nonsense': 'c1',
+	'test': 'c2',
+	'vandalism': 'c3',
+	'hoax': 'c3',
+	'repost': 'c4',
+	'banned': 'c5',
+	'histmerge': 'c6',
+	'move': 'c6',
+	'xfd': 'c6',
+	'disambig': 'c6',
+	'movedab': 'c6',
+	'copypaste': 'c6',
+	'g6': 'c6',
+	'author': 'c7',
+	'g8': 'c8',
+	'talk': 'c8',
+	'subpage': 'c8',
+	'redirnone': 'c8',
+	'templatecat': 'c8',
+	'imagepage': 'c8',
+	'attack': 'c10',
+	'negublp': 'c10',
+	'spam': 'c9',
 	'spamuser': 'g11',
-	'copyvio': 'g12',
+	'copyvio': 'c12',
 	'afc': 'g13',
 	'nocontext': 'a1',
 	'foreign': 'a2',
@@ -1016,29 +1016,29 @@ Twinkle.speedy.normalizeHash = {
 Twinkle.speedy.reasonHash = {
 	'reason': '',
 // General
-	'nonsense': '[[WP:PN|Patent nonsense]], meaningless, or incomprehensible',
-	'test': 'Test page',
-	'vandalism': '[[WP:Vandalism|Vandalism]]',
-	'hoax': 'Blatant [[WP:Do not create hoaxes|hoax]]',
-	'repost': 'Recreation of a page that was [[WP:DEL|deleted]] per a [[WP:XFD|deletion discussion]]',
-	'banned': 'Creation by a [[WP:BLOCK|blocked]] or [[WP:BAN|banned]] user in violation of block or ban',
-	'histmerge': 'Temporary deletion in order to merge page histories',
-	'move': 'Making way for a non-controversial move',
-	'xfd': 'Deleting page per result of [[WP:XfD|deletion discussion]]',
-	'disambig': 'Unnecessary disambiguation page',
+	'nonsense': 'Nội dung vô nghĩa',
+	'test': 'Thử nghiệm',
+	'vandalism': 'Phá hoại',
+	'hoax': 'Nội dung lừa bịp',
+	'repost': 'Mang nội dung của một bài khác đã bị xóa',
+	'banned': 'Tạo ra bởi thành viên bị cấm',
+	'histmerge': 'Tạm xóa để trộn lịch sử',
+	'move': 'Tạm xóa để di chuyển',
+	'xfd': 'Xóa theo biểu quyết',
+	'disambig': 'Trang định hướng không cần thiết',
 	'movedab': 'Redirect to [[WP:MALPLACED|malplaced disambiguation page]]',
-	'copypaste': '[[WP:CPMV|Copy-and-paste]] page move',
-	'g6': 'Housekeeping and routine (non-controversial) cleanup',
-	'author': 'One author who has requested deletion or blanked the page',
-	'g8': 'Page dependent on a deleted or nonexistent page',
-	'talk': '[[Help:Talk page|Talk page]] of a deleted or nonexistent page',
-	'subpage': '[[WP:Subpages|Subpage]] of a deleted or nonexistent page',
-	'redirnone': '[[Wikipedia:Redirect|redirect]] to a deleted or nonexistent page',
+	'copypaste': 'Chuyển hướng bằng cách chép-dán',
+	'g6': 'Dọn dẹp',
+	'author': 'Tác giả yêu cầu xóa hoặc tẩy trống',
+	'g8': 'Trang liên quan đến trang khác không tồn tại',
+	'talk': 'Trang thảo luận của trang không tồn tại',
+	'subpage': 'Trang con của trang khác không tồn tại',
+	'redirnone': 'Đổi hướng đến trang không tồn tại',
 	'templatecat': 'Populated by deleted or retargeted templates',
-	'imagepage': 'File description page for a file that does not exist',
+	'imagepage': 'Trang tập tin không tồn tại',
 	'attack': '[[WP:ATP|Attack page]] or negative unsourced [[WP:BLP|BLP]]',
 	'negublp': 'Negative unsourced [[WP:BLP|BLP]]',
-	'spam': 'Unambiguous [[WP:NOTADVERTISING|advertising]] or promotion',
+	'spam': 'Quảng cáo',
 	'copyvio': 'Unambiguous [[WP:C|copyright infringement]]',
 	'afc': 'Abandoned [[WP:AFC|Article for creation]] – to retrieve it, see [[WP:REFUND/G13]]',
 // Articles
@@ -1047,12 +1047,12 @@ Twinkle.speedy.reasonHash = {
 	'nocontent': 'Article that has no meaningful, substantive content',
 	'transwiki': 'Article that has been transwikied to another project',
 	'a7': 'No explanation of the subject\'s significance (real person, animal, organization, or web content)',
-	'person' : 'No explanation of the subject\'s significance (real person)',
-	'web': 'No explanation of the subject\'s significance (web content)',
-	'corp': 'No explanation of the subject\'s significance (organization)',
-	'club': 'No explanation of the subject\'s significance (organization)',
-	'band': 'No explanation of the subject\'s significance (band/musician)',
-	'animal': 'No explanation of the subject\'s significance (individual animal)',
+	'person' : 'Bài viết không cho thấy mức độ nổi bật của nhân vật',
+	'web': 'Bài viết không cho thấy mức độ nổi bật của nội dung web',
+	'corp': 'Bài viết không cho thấy mức độ nổi bật của tổ chức',
+	'club': 'Bài viết không cho thấy mức độ nổi bật của tổ chức',
+	'band': 'Bài viết không cho thấy mức độ nổi bật của nhóm nhạc',
+	'animal': 'Bài viết không cho thấy mức độ nổi bật của vật nuôi cá nhân',
 	'event': 'No explanation of the subject\'s significance (event)',
 	'a9': 'Music recording by redlinked artist and no indication of importance or significance',
 	'a10': 'Recently created article that duplicates an existing topic',
@@ -1106,13 +1106,13 @@ Twinkle.speedy.callbacks = {
 
 			// delete page
 			var reason;
-			thispage = new Morebits.wiki.page( mw.config.get('wgPageName'), "Deleting page" );
+			thispage = new Morebits.wiki.page( mw.config.get('wgPageName'), "Đang xóa trang" );
 			if (params.normalized === 'db') {
-				reason = prompt("Enter the deletion summary to use, which will be entered into the deletion log:", "");
+				reason = prompt("Nhập lý do xóa, sẽ được lưu vào nhật trình xóa:", "");
 			} else {
-				var presetReason = "[[WP:CSD#" + params.normalized.toUpperCase() + "|" + params.normalized.toUpperCase() + "]]: " + params.reason;
+				var presetReason = "[[WP:XN#" + params.normalized.toUpperCase() + "|" + params.normalized.toUpperCase() + "]]: " + params.reason;
 				if (Twinkle.getPref("promptForSpeedyDeletionSummary").indexOf(params.normalized) !== -1) {
-					reason = prompt("Enter the deletion summary to use, or press OK to accept the automatically generated one.", presetReason);
+					reason = prompt("Nhập lý do xóa, hoặc nhấn OK để chấp nhận lý do mặc định.", presetReason);
 				} else {
 					reason = presetReason;
 				}
@@ -1139,7 +1139,7 @@ Twinkle.speedy.callbacks = {
 					params.normalized !== 'f8' &&
 					document.getElementById( 'ca-talk' ).className !== 'new') {
 				var talkpage = new Morebits.wiki.page( Morebits.wikipedia.namespaces[ mw.config.get('wgNamespaceNumber') + 1 ] + ':' + mw.config.get('wgTitle'), "Deleting talk page" );
-				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page "' + Morebits.pageNameNorm + '"' + Twinkle.getPref('deletionSummaryAd'));
+				talkpage.setEditSummary('[[WP:XN#C8|C8]]: Talk page of deleted page "' + Morebits.pageNameNorm + '"' + Twinkle.getPref('deletionSummaryAd'));
 				talkpage.deletePage();
 				// this is ugly, but because of the architecture of wiki.api, it is needed
 				// (otherwise success/failure messages for the previous action would be suppressed)
@@ -1366,11 +1366,11 @@ Twinkle.speedy.callbacks = {
 				editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
 				editsummary += ').';
 			} else if (params.normalizeds[0] === "db") {
-				editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale \"' + parameters["1"] + '\".';
+				editsummary = 'Đề nghị [[WP:XN|Xóa nhanh]] với lý do \"' + parameters["1"] + '\".';
 			} else if (params.values[0] === "histmerge") {
-				editsummary = "Requesting history merge with [[" + parameters["1"] + "]] ([[WP:CSD#G6|CSD G6]]).";
+				editsummary = "Đề nghị trộn lịch sử trang với [[" + parameters["1"] + "]] ([[WP:XN#C6|XN C6]]).";
 			} else {
-				editsummary = "Requesting speedy deletion ([[WP:CSD#" + params.normalizeds[0].toUpperCase() + "|CSD " + params.normalizeds[0].toUpperCase() + "]]).";
+				editsummary = "Đề nghị xóa nhanh ([[WP:XN#" + params.normalizeds[0].toUpperCase() + "|XN " + params.normalizeds[0].toUpperCase() + "]]).";
 			}
 
 			pageobj.setPageText(code + ((params.normalizeds.indexOf('g10') !== -1) ? '' : ("\n" + text) )); // cause attack pages to be blanked
@@ -1436,7 +1436,7 @@ Twinkle.speedy.callbacks = {
 					usertalkpage.setFollowRedirect(true);
 					usertalkpage.append();
 
-					// add this nomination to the user's userspace log, if the user has enabled it
+					// thêm đề nghị này vào nhật trình không gian thành viên, nếu thành viên có kích hoạt chức năng này
 					if (params.lognomination) {
 						Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
 					}
@@ -1470,9 +1470,9 @@ Twinkle.speedy.callbacks = {
 			// add blurb if log page doesn't exist
 			if (!pageobj.exists()) {
 				appendText +=
-					"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
-					"If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and " +
-					"nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].";
+					"Đây là nhật trình liệt kê tất các các đề nghị [[WP:XN|xóa nhanh]] sử dụng công cụ [[WP:TW|Twinkle]] XN của thành viên này.\n\n" +
+					"Nếu bạn không muốn giữ nhật trình này bạn có thể tắt nó [[Wikipedia:Twinkle/Preferences|tại trang này]], và " +
+					"đề nghị xóa nhanh trang này theo tiêu chí [[WP:XN#TV1|XN TV1]].";
 				if (Morebits.userIsInGroup("sysop")) {
 					appendText += "\n\nThis log does not track outright speedy deletions made using Twinkle.";
 				}
@@ -1487,19 +1487,19 @@ Twinkle.speedy.callbacks = {
 
 			appendText += "\n# [[:" + Morebits.pageNameNorm + "]]: ";
 			if (params.fromDI) {
-				appendText += "DI [[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] (" + params.type + ")";
+				appendText += "DI [[WP:XN#" + params.normalized.toUpperCase() + "|XN " + params.normalized.toUpperCase() + "]] (" + params.type + ")";
 			} else {
 				if (params.normalizeds.length > 1) {
 					appendText += "multiple criteria (";
 					$.each(params.normalizeds, function(index, norm) {
-						appendText += "[[WP:CSD#" + norm.toUpperCase() + "|" + norm.toUpperCase() + ']], ';
+						appendText += "[[WP:XN#" + norm.toUpperCase() + "|" + norm.toUpperCase() + ']], ';
 					});
 					appendText = appendText.substr(0, appendText.length - 2);  // remove trailing comma
 					appendText += ')';
 				} else if (params.normalizeds[0] === "db") {
 					appendText += "{{tl|db-reason}}";
 				} else {
-					appendText += "[[WP:CSD#" + params.normalizeds[0].toUpperCase() + "|CSD " + params.normalizeds[0].toUpperCase() + "]] ({{tl|db-" + params.values[0] + "}})";
+					appendText += "[[WP:XN#" + params.normalizeds[0].toUpperCase() + "|XN " + params.normalizeds[0].toUpperCase() + "]] ({{tl|db-" + params.values[0] + "}})";
 				}
 			}
 

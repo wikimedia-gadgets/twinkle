@@ -213,15 +213,15 @@ Twinkle.delimages.callbacks = {
 		var image = params.image.replace( /^(?:Image|File):/, '' );
 		var old_text = self.getPageText();
 		var wikiPage = new Morebits.wikitext.page( old_text );
-		wikiPage.commentOutImage( image , 'Commented out because image was deleted' );
+		wikiPage.commentOutImage( image , 'Nêu lý do hình bị xóa' );
 		var text = wikiPage.getText();
 
 		if( text === old_text ) {
-			statelem.error( 'failed to unlink image ' + image +' from ' + self.getPageName() );
+			statelem.error( 'lỗi gỡ bỏ liên kết đến hình ' + image +' khỏi ' + self.getPageName() );
 			return;
 		}
 		self.setPageText(text);
-		self.setEditSummary('Removing instance of file ' + image + " that has been deleted because \"" + params.reason + "\")" + "; " + Twinkle.getPref('deletionSummaryAd'));
+		self.setEditSummary('Loại bỏ tập tin ví dụ ' + image + " đã bị xóa do \"" + params.reason + "\")" + "; " + Twinkle.getPref('deletionSummaryAd'));
 		self.setCreateOption('nocreate');
 		self.save();
 	}

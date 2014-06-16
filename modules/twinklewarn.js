@@ -15,7 +15,7 @@
 
 Twinkle.warn = function twinklewarn() {
 	if( mw.config.get('wgNamespaceNumber') === 3 ) {
-			Twinkle.addPortletLink( Twinkle.warn.callback, "Warn", "tw-warn", "Warn/notify user" );
+			Twinkle.addPortletLink( Twinkle.warn.callback, "Cảnh báo", "tw-warn", "Cảnh báo/thông báo thành viên" );
 	}
 
 	// modify URL of talk page on rollback success pages
@@ -41,16 +41,16 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	}
 
 	var Window = new Morebits.simpleWindow( 600, 440 );
-	Window.setTitle( "Warn/notify user" );
+	Window.setTitle( "Thông báo/cảnh báo đến thành viên" );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Choosing a warning level", "WP:UWUL#Levels" );
+	Window.addFooterLink( "Chọn mức độ cảnh báo", "WP:UWUL#Levels" );
 	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#warn" );
 
 	var form = new Morebits.quickForm( Twinkle.warn.callback.evaluate );
 	var main_select = form.append( {
 			type: 'field',
-			label: 'Choose type of warning/notice to issue',
-			tooltip: 'First choose a main warning group, then the specific warning to issue.'
+			label: 'Chọn kiểu thông báo/cảnh báo',
+			tooltip: 'Đầu tiên chọn một nhóm cảnh báo sau đó chọn các cảnh báo cụ thể.'
 		} );
 
 	var main_group = main_select.append( {
@@ -60,18 +60,18 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		} );
 
 	var defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'), 10);
-	main_group.append( { type: 'option', label: 'General note (1)', value: 'level1', selected: ( defaultGroup === 1 || defaultGroup < 1 || ( Morebits.userIsInGroup( 'sysop' ) ? defaultGroup > 8 : defaultGroup > 7 ) ) } );
-	main_group.append( { type: 'option', label: 'Caution (2)', value: 'level2', selected: ( defaultGroup === 2 ) } );
-	main_group.append( { type: 'option', label: 'Warning (3)', value: 'level3', selected: ( defaultGroup === 3 ) } );
-	main_group.append( { type: 'option', label: 'Final warning (4)', value: 'level4', selected: ( defaultGroup === 4 ) } );
-	main_group.append( { type: 'option', label: 'Only warning (4im)', value: 'level4im', selected: ( defaultGroup === 5 ) } );
-	main_group.append( { type: 'option', label: 'Single issue notices', value: 'singlenotice', selected: ( defaultGroup === 6 ) } );
-	main_group.append( { type: 'option', label: 'Single issue warnings', value: 'singlewarn', selected: ( defaultGroup === 7 ) } );
+	main_group.append( { type: 'option', label: 'Thông báo (1)', value: 'level1', selected: ( defaultGroup === 1 || defaultGroup < 1 || ( Morebits.userIsInGroup( 'sysop' ) ? defaultGroup > 8 : defaultGroup > 7 ) ) } );
+	main_group.append( { type: 'option', label: 'Chú ý (2)', value: 'level2', selected: ( defaultGroup === 2 ) } );
+	main_group.append( { type: 'option', label: 'Cảnh báo (3)', value: 'level3', selected: ( defaultGroup === 3 ) } );
+	main_group.append( { type: 'option', label: 'Cảnh báo lần cuối (4)', value: 'level4', selected: ( defaultGroup === 4 ) } );
+	main_group.append( { type: 'option', label: 'Chỉ cảnh báo (4im)', value: 'level4im', selected: ( defaultGroup === 5 ) } );
+	main_group.append( { type: 'option', label: 'Các thông báo đơn', value: 'singlenotice', selected: ( defaultGroup === 6 ) } );
+	main_group.append( { type: 'option', label: 'Các cảnh báo đơn', value: 'singlewarn', selected: ( defaultGroup === 7 ) } );
 	if( Twinkle.getPref( 'customWarningList' ).length ) {
 		main_group.append( { type: 'option', label: 'Custom warnings', value: 'custom', selected: ( defaultGroup === 9 ) } );
 	}
 	if( Morebits.userIsInGroup( 'sysop' ) ) {
-		main_group.append( { type: 'option', label: 'Blocking', value: 'block', selected: ( defaultGroup === 8 ) } );
+		main_group.append( { type: 'option', label: 'Cấm', value: 'block', selected: ( defaultGroup === 8 ) } );
 	}
 
 	main_select.append( { type: 'select', name: 'sub_group', event:Twinkle.warn.callback.change_subcategory } ); //Will be empty to begin with.
@@ -79,13 +79,13 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	form.append( {
 			type: 'input',
 			name: 'article',
-			label: 'Linked article',
+			label: 'Bài viết',
 			value:( Morebits.queryString.exists( 'vanarticle' ) ? Morebits.queryString.get( 'vanarticle' ) : '' ),
-			tooltip: 'An article can be linked within the notice, perhaps because it was a revert to said article that dispatched this notice. Leave empty for no article to be linked.'
+			tooltip: 'Thông báo liên kết đến bài viết khi bạn thực hiện lùi sửa. Nếu không cần tạo liên kết thì để trống.'
 		} );
 
-	var more = form.append( { type: 'field', name: 'reasonGroup', label: 'Warning information' } );
-	more.append( { type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' } );
+	var more = form.append( { type: 'field', name: 'reasonGroup', label: 'Thông tin cảnh báo' } );
+	more.append( { type: 'textarea', label: 'Tin nhắn khác:', name: 'reason', tooltip: 'Có thể là một lý do nào đó hoặc giải thích chi tiết hơn' } );
 
 	var previewlink = document.createElement( 'a' );
 	$(previewlink).click(function(){
@@ -118,157 +118,157 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 Twinkle.warn.messages = {
 	level1: {
 		"Common warnings": {
-			"uw-vandalism1": {
-				label: "Vandalism",
-				summary: "General note: Unconstructive editing"
+			"cb-ph1": {
+				label: "Phá hoại",
+				summary: "Thông báo: Sửa đổi không mang tính xây dựng"
 			},
-			"uw-disruptive1": {
+			"cb-disruptive1": {
 				label: "Disruptive editing",
-				summary: "General note: Unconstructive editing"
+				summary: "Thông báo: Unconstructive editing"
 			},
-			"uw-test1": {
-				label: "Editing tests",
-				summary: "General note: Editing tests"
+			"cb-tn1": {
+				label: "Thử nghiệm",
+				summary: "Thông báo: thử nghiệm"
 			},
-			"uw-delete1": {
-				label: "Removal of content, blanking",
-				summary: "General note: Removal of content, blanking"
+			"cb-xóa1": {
+				label: "Xóa nội dung, tẩy trống trang",
+				summary: "Thông báo: Xóa nội dung, tẩy trống trang"
 			}
 		},
 		"Behavior in articles": {
-			"uw-biog1": {
+			"cb-biog1": {
 				label: "Adding unreferenced controversial information about living persons",
-				summary: "General note: Adding unreferenced controversial information about living persons"
+				summary: "Thông báo: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam1": {
+			"cb-defam1": {
 				label: "Addition of defamatory content",
-				summary: "General note: Addition of defamatory content"
+				summary: "Thông báo: Addition of defamatory content"
 			},
-			"uw-error1": {
+			"cb-error1": {
 				label: "Introducing deliberate factual errors",
-				summary: "General note: Introducing factual errors"
+				summary: "Thông báo: Introducing factual errors"
 			},
-			"uw-genre1": {
+			"cb-genre1": {
 				label: "Frequent or mass changes to genres without consensus or references",
-				summary: "General note: Frequent or mass changes to genres without consensus or references"
+				summary: "Thông báo: Frequent or mass changes to genres without consensus or references"
 			},
-			"uw-image1": {
+			"cb-image1": {
 				label: "Image-related vandalism in articles",
-				summary: "General note: Image-related vandalism in articles"
+				summary: "Thông báo: Image-related vandalism in articles"
 			},
-			"uw-joke1": {
-				label: "Using improper humor in articles",
-				summary: "General note: Using improper humor in articles"
+			"cb-nghịch thử": {
+				label: "Nghịch thử",
+				summary: "Thông báo: Nghịch thử"
 			},
-			"uw-nor1": {
+			"cb-nor1": {
 				label: "Adding original research, including unpublished syntheses of sources",
-				summary: "General note: Adding original research, including unpublished syntheses of sources"
+				summary: "Thông báo: Adding original research, including unpublished syntheses of sources"
 			},
-			"uw-notcensored1": {
+			"cb-notcensored1": {
 				label: "Censorship of material",
-				summary: "General note: Censorship of material"
+				summary: "Thông báo: Censorship of material"
 			},
-			"uw-own1": {
+			"cb-own1": {
 				label: "Ownership of articles",
-				summary: "General note: Ownership of articles"
+				summary: "Thông báo: Ownership of articles"
 			},
-			"uw-tdel1": {
+			"cb-tdel1": {
 				label: "Removal of maintenance templates",
-				summary: "General note: Removal of maintenance templates"
+				summary: "Thông báo: Removal of maintenance templates"
 			},
-			"uw-unsourced1": {
+			"cb-unsourced1": {
 				label: "Addition of unsourced or improperly cited material",
-				summary: "General note: Addition of unsourced or improperly cited material"
+				summary: "Thông báo: Addition of unsourced or improperly cited material"
 			}
 		},
 		"Promotions and spam": {
-			"uw-advert1": {
-				label: "Using Wikipedia for advertising or promotion",
-				summary: "General note: Using Wikipedia for advertising or promotion"
+			"cb-qc1": {
+				label: "Dùng Wikipedia để quảng cáo hoặc quảng bá",
+				summary: "Thông báo: Dùng Wikipedia để quảng cáo hoặc quảng bá"
 			},
-			"uw-npov1": {
+			"cb-npov1": {
 				label: "Not adhering to neutral point of view",
-				summary: "General note: Not adhering to neutral point of view"
+				summary: "Thông báo: Not adhering to neutral point of view"
 			},
-			"uw-spam1": {
-				label: "Adding spam links",
-				summary: "General note: Adding spam links"
+			"cb-spam1": {
+				label: "Chèn liên kết spam",
+				summary: "Thông báo: Chèn liên kết spam"
 			}
 		},
 		"Behavior towards other editors": {
-			"uw-agf1": {
+			"cb-agf1": {
 				label: "Not assuming good faith",
-				summary: "General note: Not assuming good faith"
+				summary: "Thông báo: Not assuming good faith"
 			},
-			"uw-harass1": {
+			"cb-harass1": {
 				label: "Harassment of other users",
-				summary: "General note: Harassment of other users"
+				summary: "Thông báo: Harassment of other users"
 			},
-			"uw-npa1": {
+			"cb-npa1": {
 				label: "Personal attack directed at a specific editor",
-				summary: "General note: Personal attack directed at a specific editor"
+				summary: "Thông báo: Personal attack directed at a specific editor"
 			},
-			"uw-tempabuse1": {
+			"cb-tempabuse1": {
 				label: "Improper use of warning or blocking template",
-				summary: "General note: Improper use of warning or blocking template"
+				summary: "Thông báo: Improper use of warning or blocking template"
 			}
 		},
 		"Removal of deletion tags": {
-			"uw-afd1": {
+			"cb-afd1": {
 				label: "Removing {{afd}} templates",
-				summary: "General note: Removing {{afd}} templates"
+				summary: "Thông báo: Removing {{afd}} templates"
 			},
-			"uw-blpprod1": {
+			"cb-blpprod1": {
 				label: "Removing {{blp prod}} templates",
-				summary: "General note: Removing {{blp prod}} templates"
+				summary: "Thông báo: Removing {{blp prod}} templates"
 			},
-			"uw-idt1": {
-				label: "Removing file deletion tags",
-				summary: "General note: Removing file deletion tags"
+			"cb-idt1": {
+				label: "Dời thông báo xóa hình",
+				summary: "Thông báo: Dời thông báo xóa hình"
 			},
-			"uw-speedy1": {
+			"cb-speedy1": {
 				label: "Removing speedy deletion tags",
-				summary: "General note: Removing speedy deletion tags"
+				summary: "Thông báo: Removing speedy deletion tags"
 			}
 		},
 		"Other": {
-			"uw-chat1": {
+			"cb-chat1": {
 				label: "Using talk page as forum",
-				summary: "General note: Using talk page as forum"
+				summary: "Thông báo: Using talk page as forum"
 			},
-			"uw-create1": {
+			"cb-create1": {
 				label: "Creating inappropriate pages",
-				summary: "General note: Creating inappropriate pages"
+				summary: "Thông báo: Creating inappropriate pages"
 			},
-			"uw-mos1": {
+			"cb-mos1": {
 				label: "Manual of style",
-				summary: "General note: Formatting, date, language, etc (Manual of style)"
+				summary: "Thông báo: Formatting, date, language, etc (Manual of style)"
 			},
-			"uw-move1": {
+			"cb-move1": {
 				label: "Page moves against naming conventions or consensus",
-				summary: "General note: Page moves against naming conventions or consensus"
+				summary: "Thông báo: Page moves against naming conventions or consensus"
 			},
-			"uw-tpv1": {
+			"cb-tpv1": {
 				label: "Refactoring others' talk page comments",
-				summary: "General note: Refactoring others' talk page comments"
+				summary: "Thông báo: Refactoring others' talk page comments"
 			},
-			"uw-upload1": {
+			"cb-upload1": {
 				label: "Uploading unencyclopedic images",
-				summary: "General note: Uploading unencyclopedic images"
+				summary: "Thông báo: Uploading unencyclopedic images"
 			}
 		}/*,
 		"To be removed from Twinkle": {
-			"uw-redirect1": {
+			"cb-redirect1": {
 				label: "Creating malicious redirects",
-				summary: "General note: Creating malicious redirects"
+				summary: "Thông báo: Creating malicious redirects"
 			},
-			"uw-ics1": {
+			"cb-tdel1": {
 				label: "Uploading files missing copyright status",
-				summary: "General note: Uploading files missing copyright status"
+				summary: "Thông báo: Uploading files missing copyright status"
 			},
-			"uw-af1": {
+			"cb-af1": {
 				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "General note: Inappropriate feedback through the Article Feedback Tool"
+				summary: "Thông báo: Inappropriate feedback through the Article Feedback Tool"
 			}
 		}*/
 	},
@@ -276,157 +276,157 @@ Twinkle.warn.messages = {
 
 	level2: {
 		"Common warnings": {
-			"uw-vandalism2": {
-				label: "Vandalism",
-				summary: "Caution: Unconstructive editing"
+			"cb-ph2": {
+				label: "Phá hoại",
+				summary: "Chú ý: Phá hoại"
 			},
-			"uw-disruptive2": {
+			"cb-disruptive2": {
 				label: "Disruptive editing",
-				summary: "Caution: Unconstructive editing"
+				summary: "Chú ý: Unconstructive editing"
 			},
-			"uw-test2": {
-				label: "Editing tests",
-				summary: "Caution: Editing tests"
+			"cb-test2": {
+				label: "Sửa đổi thử nghiệm",
+				summary: "Chú ý: Sửa đổi thử nghiệm"
 			},
-			"uw-delete2": {
-				label: "Removal of content, blanking",
-				summary: "Caution: Removal of content, blanking"
+			"cb-delete2": {
+				label: "Xóa nội dung, tẩy trống trang",
+				summary: "Chú ý: Xóa nội dung, tẩy trống trang"
 			}
 		},
 		"Behavior in articles": {
-			"uw-biog2": {
+			"cb-biog2": {
 				label: "Adding unreferenced controversial information about living persons",
-				summary: "Caution: Adding unreferenced controversial information about living persons"
+				summary: "Chú ý: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam2": {
+			"cb-defam2": {
 				label: "Addition of defamatory content",
-				summary: "Caution: Addition of defamatory content"
+				summary: "Chú ý: Addition of defamatory content"
 			},
-			"uw-error2": {
+			"cb-error2": {
 				label: "Introducing deliberate factual errors",
-				summary: "Caution: Introducing factual errors"
+				summary: "Chú ý: Introducing factual errors"
 			},
-			"uw-genre2": {
+			"cb-genre2": {
 				label: "Frequent or mass changes to genres without consensus or references",
-				summary: "Caution: Frequent or mass changes to genres without consensus or references"
+				summary: "Chú ý: Frequent or mass changes to genres without consensus or references"
 			},
-			"uw-image2": {
+			"cb-image2": {
 				label: "Image-related vandalism in articles",
-				summary: "Caution: Image-related vandalism in articles"
+				summary: "Chú ý: Image-related vandalism in articles"
 			},
-			"uw-joke2": {
+			"cb-joke2": {
 				label: "Using improper humor in articles",
-				summary: "Caution: Using improper humor in articles"
+				summary: "Chú ý: Using improper humor in articles"
 			},
-			"uw-nor2": {
+			"cb-nor2": {
 				label: "Adding original research, including unpublished syntheses of sources",
-				summary: "Caution: Adding original research, including unpublished syntheses of sources"
+				summary: "Chú ý: Adding original research, including unpublished syntheses of sources"
 			},
-			"uw-notcensored2": {
+			"cb-notcensored2": {
 				label: "Censorship of material",
-				summary: "Caution: Censorship of material"
+				summary: "Chú ý: Censorship of material"
 			},
-			"uw-own2": {
+			"cb-own2": {
 				label: "Ownership of articles",
-				summary: "Caution: Ownership of articles"
+				summary: "Chú ý: Ownership of articles"
 			},
-			"uw-tdel2": {
+			"cb-tdel2": {
 				label: "Removal of maintenance templates",
-				summary: "Caution: Removal of maintenance templates"
+				summary: "Chú ý: Removal of maintenance templates"
 			},
-			"uw-unsourced2": {
+			"cb-unsourced2": {
 				label: "Addition of unsourced or improperly cited material",
-				summary: "Caution: Addition of unsourced or improperly cited material"
+				summary: "Chú ý: Addition of unsourced or improperly cited material"
 			}
 		},
 		"Promotions and spam": {
-			"uw-advert2": {
-				label: "Using Wikipedia for advertising or promotion",
-				summary: "Caution: Using Wikipedia for advertising or promotion"
+			"cb-qc2": {
+				label: "Không sử dụng Wikipedia để quảng cáo hay quảng bá",
+				summary: "Chú ý: Không sử dụng Wikipedia để quảng cáo hay quảng bá"
 			},
-			"uw-npov2": {
-				label: "Not adhering to neutral point of view",
-				summary: "Caution: Not adhering to neutral point of view"
+			"cb-npov2": {
+				label: "Văn phong không trung lập",
+				summary: "Chú ý: Văn phong không trung lập"
 			},
-			"uw-spam2": {
-				label: "Adding spam links",
-				summary: "Caution: Adding spam links"
+			"cb-spam2": {
+				label: "Không chèn liên kết spam",
+				summary: "Chú ý: Không chèn liên kết spam"
 			}
 		},
 		"Behavior towards other editors": {
-			"uw-agf2": {
+			"cb-agf2": {
 				label: "Not assuming good faith",
-				summary: "Caution: Not assuming good faith"
+				summary: "Chú ý: Not assuming good faith"
 			},
-			"uw-harass2": {
+			"cb-harass2": {
 				label: "Harassment of other users",
-				summary: "Caution: Harassment of other users"
+				summary: "Chú ý: Harassment of other users"
 			},
-			"uw-npa2": {
+			"cb-npa2": {
 				label: "Personal attack directed at a specific editor",
-				summary: "Caution: Personal attack directed at a specific editor"
+				summary: "Chú ý: Personal attack directed at a specific editor"
 			},
-			"uw-tempabuse2": {
+			"cb-tempabuse2": {
 				label: "Improper use of warning or blocking template",
-				summary: "Caution: Improper use of warning or blocking template"
+				summary: "Chú ý: Improper use of warning or blocking template"
 			}
 		},
 		"Removal of deletion tags": {
-			"uw-afd2": {
+			"cb-afd2": {
 				label: "Removing {{afd}} templates",
-				summary: "Caution: Removing {{afd}} templates"
+				summary: "Chú ý: Removing {{afd}} templates"
 			},
-			"uw-blpprod2": {
+			"cb-blpprod2": {
 				label: "Removing {{blp prod}} templates",
-				summary: "Caution: Removing {{blp prod}} templates"
+				summary: "Chú ý: Removing {{blp prod}} templates"
 			},
-			"uw-idt2": {
+			"cb-idt2": {
 				label: "Removing file deletion tags",
-				summary: "Caution: Removing file deletion tags"
+				summary: "Chú ý: Removing file deletion tags"
 			},
-			"uw-speedy2": {
+			"cb-speedy2": {
 				label: "Removing speedy deletion tags",
-				summary: "Caution: Removing speedy deletion tags"
+				summary: "Chú ý: Removing speedy deletion tags"
 			}
 		},
 		"Other": {
-			"uw-chat2": {
+			"cb-chat2": {
 				label: "Using talk page as forum",
-				summary: "Caution: Using talk page as forum"
+				summary: "Chú ý: Using talk page as forum"
 			},
-			"uw-create2": {
+			"cb-create2": {
 				label: "Creating inappropriate pages",
-				summary: "Caution: Creating inappropriate pages"
+				summary: "Chú ý: Creating inappropriate pages"
 			},
-			"uw-mos2": {
+			"cb-mos2": {
 				label: "Manual of style",
-				summary: "Caution: Formatting, date, language, etc (Manual of style)"
+				summary: "Chú ý: Formatting, date, language, etc (Manual of style)"
 			},
-			"uw-move2": {
+			"cb-move2": {
 				label: "Page moves against naming conventions or consensus",
-				summary: "Caution: Page moves against naming conventions or consensus"
+				summary: "Chú ý: Page moves against naming conventions or consensus"
 			},
-			"uw-tpv2": {
+			"cb-tpv2": {
 				label: "Refactoring others' talk page comments",
-				summary: "Caution: Refactoring others' talk page comments"
+				summary: "Chú ý: Refactoring others' talk page comments"
 			},
-			"uw-upload2": {
+			"cb-upload2": {
 				label: "Uploading unencyclopedic images",
-				summary: "Caution: Uploading unencyclopedic images"
+				summary: "Chú ý: Uploading unencyclopedic images"
 			}
 		}/*,
 		"To be removed from Twinkle": {
-			"uw-redirect2": {
+			"cb-redirect2": {
 				label: "Creating malicious redirects",
-				summary: "Caution: Creating malicious redirects"
+				summary: "Chú ý: Creating malicious redirects"
 			},
-			"uw-ics2": {
+			"cb-ics2": {
 				label: "Uploading files missing copyright status",
-				summary: "Caution: Uploading files missing copyright status"
+				summary: "Chú ý: Uploading files missing copyright status"
 			},
-			"uw-af2": {
+			"cb-af2": {
 				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "Caution: Inappropriate feedback through the Article Feedback Tool"
+				summary: "Chú ý: Inappropriate feedback through the Article Feedback Tool"
 			}
 		}*/
 	},
@@ -434,153 +434,153 @@ Twinkle.warn.messages = {
 
 	level3: {
 		"Common warnings": {
-			"uw-vandalism3": {
-				label: "Vandalism",
-				summary: "Warning: Vandalism"
+			"cb-ph3": {
+				label: "Phá hoại",
+				summary: "Cảnh báo: Phá hoại"
 			},
-			"uw-disruptive3": {
+			"cb-disruptive3": {
 				label: "Disruptive editing",
-				summary: "Warning: Disruptive editing"
+				summary: "Cảnh báo: Disruptive editing"
 			},
-			"uw-test3": {
-				label: "Editing tests",
-				summary: "Warning: Editing tests"
+			"cb-tn3": {
+				label: "Thử nghiệm",
+				summary: "Cảnh báo: Thử nghiệm"
 			},
-			"uw-delete3": {
-				label: "Removal of content, blanking",
-				summary: "Warning: Removal of content, blanking"
+			"cb-xóa3": {
+				label: "Xóa nội dung, tẩy trống trang",
+				summary: "Cảnh báo: Xóa nội dung, tẩy trống trang"
 			}
 		},
 		"Behavior in articles": {
-			"uw-biog3": {
-				label: "Adding unreferenced controversial/defamatory information about living persons",
-				summary: "Warning: Adding unreferenced controversial information about living persons"
+			"cb-biog3": {
+				label: "Thêm thông tin gây tranh cãi không nguồn về người đang sống",
+				summary: "Cảnh báo: Thêm thông tin gây tranh cãi không nguồn về người đang sống"
 			},
-			"uw-defam3": {
+			"cb-defam3": {
 				label: "Addition of defamatory content",
-				summary: "Warning: Addition of defamatory content"
+				summary: "Cảnh báo: Addition of defamatory content"
 			},
-			"uw-error3": {
-				label: "Introducing deliberate factual errors",
-				summary: "Warning: Introducing deliberate factual errors"
+			"cb-error3": {
+				label: "Chèn các lỗi cố ý",
+				summary: "Cảnh báo: Chèn các lỗi cố ý"
 			},
-			"uw-genre3": {
+			"cb-genre3": {
 				label: "Frequent or mass changes to genres without consensus or reference",
-				summary: "Warning: Frequent or mass changes to genres without consensus or reference"
+				summary: "Cảnh báo: Frequent or mass changes to genres without consensus or reference"
 			},
-			"uw-image3": {
-				label: "Image-related vandalism in articles",
-				summary: "Warning: Image-related vandalism in articles"
+			"cb-image3": {
+				label: "Phá hoại liên quan đến hình ảnh",
+				summary: "Cảnh báo: Phá hoại liên quan đến hình ảnh"
 			},
-			"uw-joke3": {
+			"cb-joke3": {
 				label: "Using improper humor in articles",
-				summary: "Warning: Using improper humor in articles"
+				summary: "Cảnh báo: Using improper humor in articles"
 			},
-			"uw-nor3": {
-				label: "Adding original research, including unpublished syntheses of sources",
-				summary: "Warning: Adding original research, including unpublished syntheses of sources"
+			"cb-nor3": {
+				label: "Thêm các nghiên cứu chưa được công bố",
+				summary: "Cảnh báo: Thêm các nghiên cứu chưa được công bố"
 			},
-			"uw-notcensored3": {
+			"cb-notcensored3": {
 				label: "Censorship of material",
-				summary: "Warning: Censorship of material"
+				summary: "Cảnh báo: Censorship of material"
 			},
-			"uw-own3": {
+			"cb-own3": {
 				label: "Ownership of articles",
-				summary: "Warning: Ownership of articles"
+				summary: "Cảnh báo: Ownership of articles"
 			},
-			"uw-tdel3": {
-				label: "Removal of maintenance templates",
-				summary: "Warning: Removal of maintenance templates"
+			"cb-tdel3": {
+				label: "Xóa các bản mẫu bảo trì",
+				summary: "Cảnh báo: Xóa các bản mẫu bảo trì"
 			},
-			"uw-unsourced3": {
-				label: "Addition of unsourced or improperly cited material",
-				summary: "Warning: Addition of unsourced or improperly cited material"
+			"cb-unsourced3": {
+				label: "Thêm thông tin không nguồn hoặc không đúng",
+				summary: "Cảnh báo: Thêm thông tin không nguồn hoặc không đúng"
 			}
 		},
 		"Promotions and spam": {
-			"uw-advert3": {
-				label: "Using Wikipedia for advertising or promotion",
-				summary: "Warning: Using Wikipedia for advertising or promotion"
+			"cb-qc3": {
+				label: "Sử dụng Wikipedia để quảng cáo hoặc quảng bá",
+				summary: "Cảnh báo: Sử dụng Wikipedia để quảng cáo hoặc quảng bá"
 			},
-			"uw-npov3": {
-				label: "Not adhering to neutral point of view",
-				summary: "Warning: Not adhering to neutral point of view"
+			"cb-npov3": {
+				label: "Sửa đổi không trung lập",
+				summary: "Cảnh báo: Sửa đổi không trung lập"
 			},
-			"uw-spam3": {
-				label: "Adding spam links",
-				summary: "Warning: Adding spam links"
+			"cb-spam3": {
+				label: "Thêm các liên kết spam",
+				summary: "Cảnh báo: Thêm các liên kết spam"
 			}
 		},
 		"Behavior towards other users": {
-			"uw-agf3": {
+			"cb-agf3": {
 				label: "Not assuming good faith",
-				summary: "Warning: Not assuming good faith"
+				summary: "Cảnh báo: Not assuming good faith"
 			},
-			"uw-harass3": {
+			"cb-harass3": {
 				label: "Harassment of other users",
-				summary: "Warning: Harassment of other users"
+				summary: "Cảnh báo: Harassment of other users"
 			},
-			"uw-npa3": {
+			"cb-npa3": {
 				label: "Personal attack directed at a specific editor",
-				summary: "Warning: Personal attack directed at a specific editor"
+				summary: "Cảnh báo: Personal attack directed at a specific editor"
 			}
 		},
 		"Removal of deletion tags": {
-			"uw-afd3": {
+			"cb-afd3": {
 				label: "Removing {{afd}} templates",
-				summary: "Warning: Removing {{afd}} templates"
+				summary: "Cảnh báo: Removing {{afd}} templates"
 			},
-			"uw-blpprod3": {
+			"cb-blpprod3": {
 				label: "Removing {{blpprod}} templates",
-				summary: "Warning: Removing {{blpprod}} templates"
+				summary: "Cảnh báo: Removing {{blpprod}} templates"
 			},
-			"uw-idt3": {
-				label: "Removing file deletion tags",
-				summary: "Warning: Removing file deletion tags"
+			"cb-idt3": {
+				label: "Xóa các bản mẫu đề nghị xóa tập tin",
+				summary: "Cảnh báo: Xóa các bản mẫu đề nghị xóa tập tin"
 			},
-			"uw-speedy3": {
+			"cb-speedy3": {
 				label: "Removing speedy deletion tags",
-				summary: "Warning: Removing speedy deletion tags"
+				summary: "Cảnh báo: Removing speedy deletion tags"
 			}
 		},
 		"Other": {
-			"uw-chat3": {
-				label: "Using talk page as forum",
-				summary: "Warning: Using talk page as forum"
+			"cb-chat3": {
+				label: "Thảo luận kiểu diễn đàn",
+				summary: "Cảnh báo: Thảo luận kiểu diễn đàn"
 			},
-			"uw-create3": {
-				label: "Creating inappropriate pages",
-				summary: "Warning: Creating inappropriate pages"
+			"cb-create3": {
+				label: "Tạo nhiều trang không phù hợp",
+				summary: "Cảnh báo: Tạo nhiều trang không phù hợp"
 			},
-			"uw-mos3": {
+			"cb-mos3": {
 				label: "Manual of style",
-				summary: "Warning: Formatting, date, language, etc (Manual of style)"
+				summary: "Cảnh báo: Formatting, date, language, etc (Manual of style)"
 			},
-			"uw-move3": {
+			"cb-move3": {
 				label: "Page moves against naming conventions or consensus",
-				summary: "Warning: Page moves against naming conventions or consensus"
+				summary: "Cảnh báo: Page moves against naming conventions or consensus"
 			},
-			"uw-tpv3": {
+			"cb-tpv3": {
 				label: "Refactoring others' talk page comments",
-				summary: "Warning: Refactoring others' talk page comments"
+				summary: "Cảnh báo: Refactoring others' talk page comments"
 			},
-			"uw-upload3": {
-				label: "Uploading unencyclopedic images",
-				summary: "Warning: Uploading unencyclopedic images"
+			"cb-upload3": {
+				label: "Tải lên nhiều hình không bách khoa",
+				summary: "Cảnh báo: Tải lên nhiều hình không bách khoa"
 			}
 		}/*,
-		"To be removed fomr Twinkle": {
-			"uw-af3": {
+		"To be removed from Twinkle": {
+			"cb-af3": {
 				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "Warning: Inappropriate feedback through the Article Feedback Tool"
+				summary: "Cảnh báo: Inappropriate feedback through the Article Feedback Tool"
 			},
-			"uw-ics3": {
-				label: "Uploading files missing copyright status",
-				summary: "Warning: Uploading files missing copyright status"
+			"cb-ics3": {
+				label: "Tải tập tin lên mà không có thẻ bản quyền",
+				summary: "Cảnh báo: Tải tập tin lên mà không có thẻ bản quyền"
 			},
-			"uw-redirect3": {
-				label: "Creating malicious redirects",
-				summary: "Warning: Creating malicious redirects"
+			"cb-redirect3": {
+				label: "Tạo nhiều trang đổi hướng không phù hợp",
+				summary: "Cảnh báo: Tạo nhiều trang đổi hướng không phù hợp"
 			}
 		}*/
 	},
@@ -588,137 +588,137 @@ Twinkle.warn.messages = {
 
 	level4: {
 		"Common warnings": {
-			"uw-generic4": {
+			"cb-generic4": {
 				label: "Generic warning (for template series missing level 4)",
-				summary: "Final warning notice"
+				summary: "Cảnh báo cuối cùng"
 			},
-			"uw-vandalism4": {
-				label: "Vandalism",
-				summary: "Final warning: Vandalism"
+			"cb-ph4": {
+				label: "Phá hoại",
+				summary: "Cảnh báo cuối cùng: Phá hoại"
 			},
-			"uw-delete4": {
+			"cb-xóa4": {
 				label: "Removal of content, blanking",
-				summary: "Final warning: Removal of content, blanking"
+				summary: "Cảnh báo cuối cùng: Removal of content, blanking"
 			}
 		},
 		"Behavior in articles": {
-			"uw-biog4": {
+			"cb-biog4": {
 				label: "Adding unreferenced defamatory information about living persons",
-				summary: "Final warning: Adding unreferenced controversial information about living persons"
+				summary: "Cảnh báo cuối cùng: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam4": {
+			"cb-defam4": {
 				label: "Addition of defamatory content",
-				summary: "Final warning: Addition of defamatory content"
+				summary: "Cảnh báo cuối cùng: Addition of defamatory content"
 			},
-			"uw-error4": {
+			"cb-error4": {
 				label: "Introducing deliberate factual errors",
-				summary: "Final warning: Introducing deliberate factual errors"
+				summary: "Cảnh báo cuối cùng: Introducing deliberate factual errors"
 			},
-			"uw-genre4": {
+			"cb-genre4": {
 				label: "Frequent or mass changes to genres without consensus or reference",
-				summary: "Final warning: Frequent or mass changes to genres without consensus or reference"
+				summary: "Cảnh báo cuối cùng: Frequent or mass changes to genres without consensus or reference"
 			},
-			"uw-image4": {
+			"cb-image4": {
 				label: "Image-related vandalism in articles",
-				summary: "Final warning: Image-related vandalism in articles"
+				summary: "Cảnh báo cuối cùng: Image-related vandalism in articles"
 			},
-			"uw-joke4": {
+			"cb-joke4": {
 				label: "Using improper humor in articles",
-				summary: "Final warning: Using improper humor in articles"
+				summary: "Cảnh báo cuối cùng: Using improper humor in articles"
 			},
-			"uw-nor4": {
+			"cb-nor4": {
 				label: "Adding original research, including unpublished syntheses of sources",
-				summary: "Final warning: Adding original research, including unpublished syntheses of sources"
+				summary: "Cảnh báo cuối cùng: Adding original research, including unpublished syntheses of sources"
 			},
-			"uw-tdel4": {
+			"cb-tdel4": {
 				label: "Removal of maintenance templates",
-				summary: "Final warning: Removal of maintenance templates"
+				summary: "Cảnh báo cuối cùng: Removal of maintenance templates"
 			},
-			"uw-unsourced4": {
+			"cb-unsourced4": {
 				label: "Addition of unsourced or improperly cited material",
-				summary: "Final warning: Addition of unsourced or improperly cited material"
+				summary: "Cảnh báo cuối cùng: Addition of unsourced or improperly cited material"
 			}
 		},
 		"Promotions and spam": {
-			"uw-advert4": {
+			"cb-advert4": {
 				label: "Using Wikipedia for advertising or promotion",
-				summary: "Final warning: Using Wikipedia for advertising or promotion"
+				summary: "Cảnh báo cuối cùng: Using Wikipedia for advertising or promotion"
 			},
-			"uw-npov4": {
+			"cb-npov4": {
 				label: "Not adhering to neutral point of view",
-				summary: "Final warning: Not adhering to neutral point of view"
+				summary: "Cảnh báo cuối cùng: Not adhering to neutral point of view"
 			},
-			"uw-spam4": {
+			"cb-spam4": {
 				label: "Adding spam links",
-				summary: "Final warning: Adding spam links"
+				summary: "Cảnh báo cuối cùng: Adding spam links"
 			}
 		},
 		"Behavior towards other editors": {
-			"uw-harass4": {
+			"cb-harass4": {
 				label: "Harassment of other users",
-				summary: "Final warning: Harassment of other users"
+				summary: "Cảnh báo cuối cùng: Harassment of other users"
 			},
-			"uw-npa4": {
+			"cb-npa4": {
 				label: "Personal attack directed at a specific editor",
-				summary: "Final warning: Personal attack directed at a specific editor"
+				summary: "Cảnh báo cuối cùng: Personal attack directed at a specific editor"
 			}
 		},
 		"Removal of deletion tags": {
-			"uw-afd4": {
+			"cb-afd4": {
 				label: "Removing {{afd}} templates",
-				summary: "Final warning: Removing {{afd}} templates"
+				summary: "Cảnh báo cuối cùng: Removing {{afd}} templates"
 			},
-			"uw-blpprod4": {
+			"cb-blpprod4": {
 				label: "Removing {{blp prod}} templates",
-				summary: "Final warning: Removing {{blp prod}} templates"
+				summary: "Cảnh báo cuối cùng: Removing {{blp prod}} templates"
 			},
-			"uw-idt4": {
+			"cb-idt4": {
 				label: "Removing file deletion tags",
-				summary: "Final warning: Removing file deletion tags"
+				summary: "Cảnh báo cuối cùng: Removing file deletion tags"
 			},
-			"uw-speedy4": {
+			"cb-speedy4": {
 				label: "Removing speedy deletion tags",
-				summary: "Final warning: Removing speedy deletion tags"
+				summary: "Cảnh báo cuối cùng: Removing speedy deletion tags"
 			}
 		},
 		"Other": {
-			"uw-chat4": {
+			"cb-chat4": {
 				label: "Using talk page as forum",
-				summary: "Final warning: Using talk page as forum"
+				summary: "Cảnh báo cuối cùng: Using talk page as forum"
 			},
-			"uw-create4": {
+			"cb-create4": {
 				label: "Creating inappropriate pages",
-				summary: "Final warning: Creating inappropriate pages"
+				summary: "Cảnh báo cuối cùng: Creating inappropriate pages"
 			},
-			"uw-mos4": {
+			"cb-mos4": {
 				label: "Manual of style",
-				summary: "Final warning: Formatting, date, language, etc (Manual of style)"
+				summary: "Cảnh báo cuối cùng: Formatting, date, language, etc (Manual of style)"
 			},
-			"uw-move4": {
+			"cb-move4": {
 				label: "Page moves against naming conventions or consensus",
-				summary: "Final warning: Page moves against naming conventions or consensus"
+				summary: "Cảnh báo cuối cùng: Page moves against naming conventions or consensus"
 			},
-			"uw-tpv4": {
+			"cb-tpv4": {
 				label: "Refactoring others' talk page comments",
-				summary: "Final warning: Refactoring others' talk page comments"
+				summary: "Cảnh báo cuối cùng: Refactoring others' talk page comments"
 			},
-			"uw-upload4": {
+			"cb-upload4": {
 				label: "Uploading unencyclopedic images",
-				summary: "Final warning: Uploading unencyclopedic images"
+				summary: "Cảnh báo cuối cùng: Uploading unencyclopedic images"
 			}
 		}/*,
 		"To be removed from Twinkle": {
-			"uw-redirect4": {
+			"cb-redirect4": {
 				label: "Creating malicious redirects",
-				summary: "Final warning: Creating malicious redirects"
+				summary: "Cảnh báo cuối cùng: Creating malicious redirects"
 			},
-			"uw-ics4": {
+			"cb-ics4": {
 				label: "Uploading files missing copyright status",
-				summary: "Final warning: Uploading files missing copyright status"
+				summary: "Cảnh báo cuối cùng: Uploading files missing copyright status"
 			},
-			"uw-af4": {
+			"cb-af4": {
 				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "Final warning: Inappropriate feedback through the Article Feedback Tool"
+				summary: "Cảnh báo cuối cùng: Inappropriate feedback through the Article Feedback Tool"
 			}
 		}*/
 	},
@@ -726,77 +726,77 @@ Twinkle.warn.messages = {
 
 	level4im: {
 		"Common warnings": {
-			"uw-vandalism4im": {
+			"cb-ph4im": {
 				label: "Vandalism",
 				summary: "Only warning: Vandalism"
 			},
-			"uw-delete4im": {
+			"cb-xóa4im": {
 				label: "Removal of content, blanking",
 				summary: "Only warning: Removal of content, blanking"
 			}
 		},
 		"Behavior in articles": {
-			"uw-biog4im": {
+			"cb-biog4im": {
 				label: "Adding unreferenced defamatory information about living persons",
 				summary: "Only warning: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam4im": {
+			"cb-defam4im": {
 				label: "Addition of defamatory content",
 				summary: "Only warning: Addition of defamatory content"
 			},
-			"uw-image4im": {
+			"cb-image4im": {
 				label: "Image-related vandalism",
 				summary: "Only warning: Image-related vandalism"
 			},
-			"uw-joke4im": {
+			"cb-joke4im": {
 				label: "Using improper humor",
 				summary: "Only warning: Using improper humor"
 			},
-			"uw-own4im": {
+			"cb-own4im": {
 				label: "Ownership of articles",
 				summary: "Only warning: Ownership of articles"
 			}
 		},
 		"Promotions and spam": {
-			"uw-advert4im": {
+			"cb-qc4im": {
 				label: "Using Wikipedia for advertising or promotion",
 				summary: "Only warning: Using Wikipedia for advertising or promotion"
 			},
-			"uw-spam4im": {
+			"cb-spam4im": {
 				label: "Adding spam links",
 				summary: "Only warning: Adding spam links"
 			}
 		},
 		"Behavior towards other editors": {
-			"uw-harass4im": {
+			"cb-harass4im": {
 				label: "Harassment of other users",
 				summary: "Only warning: Harassment of other users"
 			},
-			"uw-npa4im": {
+			"cb-npa4im": {
 				label: "Personal attack directed at a specific editor",
 				summary: "Only warning: Personal attack directed at a specific editor"
 			}
 		},
 		"Other": {
-			"uw-create4im": {
+			"cb-create4im": {
 				label: "Creating inappropriate pages",
 				summary: "Only warning: Creating inappropriate pages"
 			},
-			"uw-move4im": {
+			"cb-move4im": {
 				label: "Page moves against naming conventions or consensus",
 				summary: "Only warning: Page moves against naming conventions or consensus"
 			},
-			"uw-upload4im": {
+			"cb-upload4im": {
 				label: "Uploading unencyclopedic images",
 				summary: "Only warning: Uploading unencyclopedic images"
 			}
 		}/*,
 		"To be removed from Twinkle": {
-			"uw-af4im": {
+			"cb-af4im": {
 				label: "Inappropriate feedback through the Article Feedback Tool",
 				summary: "Only warning: Inappropriate feedback through the Article Feedback Tool"
 			},
-			"uw-redirect4im": {
+			"cb-redirect4im": {
 				label: "Creating malicious redirects",
 				summary: "Only warning: Creating malicious redirects"
 			}
@@ -805,258 +805,258 @@ Twinkle.warn.messages = {
 
 
 	singlenotice: {
-		"uw-2redirect": {
+		"cb-2redirect": {
 			label: "Creating double redirects through bad page moves",
 			summary: "Notice: Creating double redirects through bad page moves"
 		},
-		"uw-af-contact": {
+		"cb-af-contact": {
 			label: "Attempting to contact the subject of an article via article feedback",
 			summary: "Notice: Contacting the subject of an article via article feedback"
 		},
-		"uw-af-personalinfo": {
+		"cb-af-personalinfo": {
 			label: "Including personal info in article feedback",
 			summary: "Notice: Including personal info in article feedback"
 		},
-		"uw-af-question": {
+		"cb-af-question": {
 			label: "Asking questions in article feedback",
 			summary: "Notice: Asking questions in article feedback"
 		},
-		"uw-aiv": {
+		"cb-aiv": {
 			label: "Bad AIV report",
 			summary: "Notice: Bad AIV report"
 		},
-		"uw-articlesig": {
+		"cb-articlesig": {
 			label: "Adding signatures to article space",
 			summary: "Notice: Adding signatures to article space"
 		},
-		"uw-autobiography": {
+		"cb-autobiography": {
 			label: "Creating autobiographies",
 			summary: "Notice: Creating autobiographies"
 		},
-		"uw-badcat": {
+		"cb-badcat": {
 			label: "Adding incorrect categories",
 			summary: "Notice: Adding incorrect categories"
 		},
-		"uw-badlistentry": {
+		"cb-badlistentry": {
 			label: "Adding inappropriate entries to lists",
 			summary: "Notice: Adding inappropriate entries to lists"
 		},
-		"uw-bite": {
+		"cb-bite": {
 			label: "\"Biting\" newcomers",
 			summary: "Notice: \"Biting\" newcomers",
 			suppressArticleInSummary: true  // non-standard (user name, not article), and not necessary
 		},
-		"uw-coi": {
+		"cb-coi": {
 			label: "Conflict of interest",
 			summary: "Notice: Conflict of interest",
 			heading: "Managing a conflict of interest"
 		},
-		"uw-controversial": {
+		"cb-controversial": {
 			label: "Introducing controversial material",
 			summary: "Notice: Introducing controversial material"
 		},
-		"uw-copying": {
+		"cb-copying": {
 			label: "Copying text to another page",
 			summary: "Notice: Copying text to another page"
 		},
-		"uw-crystal": {
+		"cb-crystal": {
 			label: "Adding speculative or unconfirmed information",
 			summary: "Notice: Adding speculative or unconfirmed information"
 		},
-		"uw-csd": {
+		"cb-csd": {
 			label: "Speedy deletion declined",
 			summary: "Notice: Speedy deletion declined"
 		},
-		"uw-c&pmove": {
+		"cb-c&pmove": {
 			label: "Cut and paste moves",
 			summary: "Notice: Cut and paste moves"
 		},
-		"uw-dab": {
+		"cb-dab": {
 			label: "Incorrect edit to a disambiguation page",
 			summary: "Notice: Incorrect edit to a disambiguation page"
 		},
-		"uw-date": {
+		"cb-date": {
 			label: "Unnecessarily changing date formats",
 			summary: "Notice: Unnecessarily changing date formats"
 		},
-		"uw-deadlink": {
+		"cb-deadlink": {
 			label: "Removing proper sources containing dead links",
 			summary: "Notice: Removing proper sources containing dead links"
 		},
-		"uw-directcat": {
+		"cb-directcat": {
 			label: "Applying stub categories manually",
 			summary: "Notice: Applying stub categories manually"
 		},
-		"uw-draftfirst": {
+		"cb-draftfirst": {
 			label: "User should draft in userspace without the risk of speedy deletion",
 			summary: "Notice: Consider drafting your article in [[Help:Userspace draft|userspace]]"
 		},
-		"uw-editsummary": {
+		"cb-editsummary": {
 			label: "Not using edit summary",
 			summary: "Notice: Not using edit summary"
 		},
-		"uw-english": {
+		"cb-english": {
 			label: "Not communicating in English",
 			summary: "Notice: Not communicating in English"
 		},
-		"uw-fuir": {
+		"cb-fuir": {
 			label: "Fair use image has been removed from your userpage",
 			summary: "Notice: A fair use image has been removed from your userpage"
 		},
-		"uw-hasty": {
+		"cb-hasty": {
 			label: "Hasty addition of speedy deletion tags",
 			summary: "Notice: Allow creators time to improve their articles before tagging them for deletion"
 		},
-		"uw-imageuse": {
+		"cb-imageuse": {
 			label: "Incorrect image linking",
 			summary: "Notice: Incorrect image linking"
 		},
-		"uw-incompleteAFD": {
+		"cb-incompleteAFD": {
 			label: "Incomplete AFD",
 			summary: "Notice: Incomplete AFD"
 		},
-		"uw-inline-el": {
+		"cb-inline-el": {
 			label: "Adding external links to the body of an article",
 			summary: "Notice: Keep external links to External links sections at the bottom of an article"
 		},
-		"uw-italicize": {
+		"cb-italicize": {
 			label: "Italicize books, films, albums, magazines, TV series, etc within articles",
 			summary: "Notice: Italicize books, films, albums, magazines, TV series, etc within articles"
 		},
-		"uw-lang": {
+		"cb-lang": {
 			label: "Unnecessarily changing between British and American English",
 			summary: "Notice: Unnecessarily changing between British and American English",
 			heading: "National varieties of English"
 		},
-		"uw-linking": {
+		"cb-linking": {
 			label: "Excessive addition of redlinks or repeated blue links",
 			summary: "Notice: Excessive addition of redlinks or repeated blue links"
 		},
-		"uw-minor": {
+		"cb-minor": {
 			label: "Incorrect use of minor edits check box",
 			summary: "Notice: Incorrect use of minor edits check box"
 		},
-		"uw-nonfree": {
+		"cb-nonfree": {
 			label: "Uploading replaceable non-free images",
 			summary: "Notice: Uploading replaceable non-free images"
 		},
-		"uw-notaiv": {
+		"cb-notaiv": {
 			label: "Do not report complex abuse to AIV",
 			summary: "Notice: Do not report complex abuse to AIV"
 		},
-		"uw-notenglish": {
+		"cb-notenglish": {
 			label: "Creating non-English articles",
 			summary: "Notice: Creating non-English articles"
 		},
-		"uw-notifysd": {
+		"cb-notifysd": {
 			label: "Notify authors of speedy deletion tagged articles",
 			summary: "Notice: Please notify authors of articles tagged for speedy deletion"
 		},
-		"uw-notvand": {
+		"cb-notvand": {
 			label: "Mislabelling edits as vandalism",
 			summary: "Notice: Misidentifying edits as vandalism"
 		},
-		"uw-notvote": {
+		"cb-notvote": {
 			label: "We use consensus, not voting",
 			summary: "Notice: We use consensus, not voting"
 		},
-		"uw-patrolled": {
+		"cb-patrolled": {
 			label: "Mark newpages as patrolled when patrolling",
 			summary: "Notice: Mark newpages as patrolled when patrolling"
 		},
-		"uw-plagiarism": {
+		"cb-plagiarism": {
 			label: "Copying from public domain sources without attribution",
 			summary: "Notice: Copying from public domain sources without attribution"
 		},
-		"uw-preview": {
+		"cb-preview": {
 			label: "Use preview button to avoid mistakes",
 			summary: "Notice: Use preview button to avoid mistakes"
 		},
-		"uw-probation": {
+		"cb-probation": {
 			label: "Article is on probation",
 			summary: "Notice: Article is on probation"
 		},
-		"uw-redlink": {
+		"cb-redlink": {
 			label: "Indiscriminate removal of redlinks",
 			summary: "Notice: Be careful when removing redlinks"
 		},
-		"uw-refimprove": {
+		"cb-refimprove": {
 			label: "Creating unverifiable articles",
 			summary: "Notice: Creating unverifiable articles"
 		},
-		"uw-removevandalism": {
+		"cb-removevandalism": {
 			label: "Incorrect vandalism removal",
 			summary: "Notice: Incorrect vandalism removal"
 		},
-		"uw-repost": {
+		"cb-repost": {
 			label: "Recreating material previously deleted via XfD process",
 			summary: "Notice: Recreating previously deleted material"
 		},
-		"uw-salt": {
+		"cb-salt": {
 			label: "Recreating salted articles under a different title",
 			summary: "Notice: Recreating salted articles under a different title"
 		},
-		"uw-samename": {
+		"cb-samename": {
 			label: "Rename request impossible",
 			summary: "Notice: Rename request impossible"
 		},
-		"uw-selfrevert": {
+		"cb-selfrevert": {
 			label: "Reverting self tests",
 			summary: "Notice: Reverting self tests"
 		},
-		"uw-socialnetwork": {
+		"cb-socialnetwork": {
 			label: "Wikipedia is not a social network",
 			summary: "Notice: Wikipedia is not a social network"
 		},
-		"uw-sofixit": {
+		"cb-sofixit": {
 			label: "Be bold and fix things yourself",
 			summary: "Notice: You can be bold and fix things yourself"
 		},
-		"uw-spoiler": {
+		"cb-spoiler": {
 			label: "Adding spoiler alerts or removing spoilers from appropriate sections",
 			summary: "Notice: Don't delete or flag potential 'spoilers' in Wikipedia articles"
 		},
-		"uw-subst": {
+		"cb-subst": {
 			label: "Remember to subst: templates",
 			summary: "Notice: Remember to subst: templates"
 		},
-		"uw-talkinarticle": {
+		"cb-talkinarticle": {
 			label: "Talk in article",
 			summary: "Notice: Talk in article"
 		},
-		"uw-tilde": {
+		"cb-tilde": {
 			label: "Not signing posts",
 			summary: "Notice: Not signing posts"
 		},
-		"uw-toppost": {
+		"cb-toppost": {
 			label: "Posting at the top of talk pages",
 			summary: "Notice: Posting at the top of talk pages"
 		},
-		"uw-uaa": {
+		"cb-uaa": {
 			label: "Reporting of username to WP:UAA not accepted",
 			summary: "Notice: Reporting of username to WP:UAA not accepted"
 		},
-		"uw-upincat": {
+		"cb-upincat": {
 			label: "Accidentally including user page/subpage in a content category",
 			summary: "Notice: Informing user that one of his/her pages had accidentally been included in a content category"
 		},
-		"uw-uploadfirst": {
+		"cb-uploadfirst": {
 			label: "Attempting to display an external image on a page",
 			summary: "Notice: Attempting to display an external image on a page"
 		},
-		"uw-userspace draft finish": {
+		"cb-userspace draft finish": {
 			label: "Stale userspace draft",
 			summary: "Notice: Stale userspace draft"
 		},
-		"uw-userspacenoindex": {
+		"cb-userspacenoindex": {
 			label: "User page/subpage isn't appropriate for search engine indexing",
 			summary: "Notice: User (sub)page isn't appropriate for search engine indexing"
 		},
-		"uw-vgscope": {
+		"cb-vgscope": {
 			label: "Adding video game walkthroughs, cheats or instructions",
 			summary: "Notice: Adding video game walkthroughs, cheats or instructions"
 		},
-		"uw-warn": {
+		"cb-warn": {
 			label: "Place user warning templates when reverting vandalism",
 			summary: "Notice: You can use user warning templates when reverting vandalism"
 		}
@@ -1064,137 +1064,137 @@ Twinkle.warn.messages = {
 
 
 	singlewarn: {
-		"uw-3rr": {
-			label: "Violating the three-revert rule; see also uw-ew",
-			summary: "Warning: Violating the three-revert rule"
+		"cb-3rr": {
+			label: "Violating the three-revert rule; see also cb-ew",
+			summary: "Cảnh báo: Violating the three-revert rule"
 		},
-		"uw-affiliate": {
+		"cb-affiliate": {
 			label: "Affiliate marketing",
-			summary: "Warning: Affiliate marketing"
+			summary: "Cảnh báo: Affiliate marketing"
 		},
-		"uw-agf-sock": {
+		"cb-agf-sock": {
 			label: "Use of multiple accounts (assuming good faith)",
-			summary: "Warning: Using multiple accounts"
+			summary: "Cảnh báo: Using multiple accounts"
 		},
-		"uw-attack": {
+		"cb-attack": {
 			label: "Creating attack pages",
-			summary: "Warning: Creating attack pages",
+			summary: "Cảnh báo: Creating attack pages",
 			suppressArticleInSummary: true
 		},
-		"uw-attempt": {
+		"cb-attempt": {
 			label: "Triggering the edit filter",
-			summary: "Warning: Triggering the edit filter"
+			summary: "Cảnh báo: Triggering the edit filter"
 		},
-		"uw-bizlist": {
+		"cb-bizlist": {
 			label: "Business promotion",
-			summary: "Warning: Promoting a business"
+			summary: "Cảnh báo: Promoting a business"
 		},
-		"uw-botun": {
+		"cb-botun": {
 			label: "Bot username",
-			summary: "Warning: Bot username"
+			summary: "Cảnh báo: Bot username"
 		},
-		"uw-canvass": {
+		"cb-canvass": {
 			label: "Canvassing",
-			summary: "Warning: Canvassing"
+			summary: "Cảnh báo: Canvassing"
 		},
-		"uw-copyright": {
+		"cb-copyright": {
 			label: "Copyright violation",
-			summary: "Warning: Copyright violation"
+			summary: "Cảnh báo: Copyright violation"
 		},
-		"uw-copyright-link": {
+		"cb-copyright-link": {
 			label: "Linking to copyrighted works violation",
-			summary: "Warning: Linking to copyrighted works violation"
+			summary: "Cảnh báo: Linking to copyrighted works violation"
 		},
-		"uw-copyright-new": {
+		"cb-copyright-new": {
 			label: "Copyright violation (with explanation for new users)",
 			summary: "Notice: Avoiding copyright problems",
 			heading: "Wikipedia and copyright"
 		},
-		"uw-copyright-remove": {
+		"cb-copyright-remove": {
 			label: "Removing {{copyvio}} template from articles",
-			summary: "Warning: Removing {{copyvio}} templates"
+			summary: "Cảnh báo: Removing {{copyvio}} templates"
 		},
-		"uw-efsummary": {
+		"cb-efsummary": {
 			label: "Edit summary triggering the edit filter",
-			summary: "Warning: Edit summary triggering the edit filter"
+			summary: "Cảnh báo: Edit summary triggering the edit filter"
 		},
-		"uw-ew": {
+		"cb-ew": {
 			label: "Edit warring (stronger wording)",
-			summary: "Warning: Edit warring"
+			summary: "Cảnh báo: Edit warring"
 		},
-		"uw-ewsoft": {
+		"cb-ewsoft": {
 			label: "Edit warring (softer wording for newcomers)",
-			summary: "Warning: Edit warring"
+			summary: "Cảnh báo: Edit warring"
 		},
-		"uw-hoax": {
+		"cb-hoax": {
 			label: "Creating hoaxes",
-			summary: "Warning: Creating hoaxes"
+			summary: "Cảnh báo: Creating hoaxes"
 		},
-		"uw-legal": {
+		"cb-legal": {
 			label: "Making legal threats",
-			summary: "Warning: Making legal threats"
+			summary: "Cảnh báo: Making legal threats"
 		},
-		"uw-login": {
+		"cb-login": {
 			label: "Editing while logged out",
-			summary: "Warning: Editing while logged out"
+			summary: "Cảnh báo: Editing while logged out"
 		},
-		"uw-longterm": {
+		"cb-longterm": {
 			label: "Long term pattern of vandalism",
-			summary: "Warning: Long term pattern of vandalism"
+			summary: "Cảnh báo: Long term pattern of vandalism"
 		},
-		"uw-multipleIPs": {
+		"cb-multipleIPs": {
 			label: "Usage of multiple IPs",
-			summary: "Warning: Usage of multiple IPs"
+			summary: "Cảnh báo: Usage of multiple IPs"
 		},
-		"uw-pinfo": {
+		"cb-pinfo": {
 			label: "Personal info",
-			summary: "Warning: Personal info"
+			summary: "Cảnh báo: Personal info"
 		},
-		"uw-socksuspect": {
+		"cb-socksuspect": {
 			label: "Sockpuppetry",
-			summary: "Warning: You are a suspected [[WP:SOCK|sockpuppet]]"  // of User:...
+			summary: "Cảnh báo: You are a suspected [[WP:SOCK|sockpuppet]]"  // of User:...
 		},
-		"uw-upv": {
+		"cb-upv": {
 			label: "Userpage vandalism",
-			summary: "Warning: Userpage vandalism"
+			summary: "Cảnh báo: Userpage vandalism"
 		},
-		"uw-username": {
-			label: "Username is against policy",
-			summary: "Warning: Your username might be against policy",
+		"cb-username": {
+			label: "Tên không theo quy định",
+			summary: "Cảnh báo: Tên người dùng của bạn không được chấp nhận",
 			suppressArticleInSummary: true  // not relevant for this template
 		},
-		"uw-coi-username": {
+		"cb-coi-username": {
 			label: "Username is against policy, and conflict of interest",
-			summary: "Warning: Username and conflict of interest policy",
+			summary: "Cảnh báo: Username and conflict of interest policy",
 			heading: "Your username"
 		},
-		"uw-userpage": {
+		"cb-userpage": {
 			label: "Userpage or subpage is against policy",
-			summary: "Warning: Userpage or subpage is against policy"
+			summary: "Cảnh báo: Userpage or subpage is against policy"
 		},
-		"uw-wrongsummary": {
+		"cb-wrongsummary": {
 			label: "Using inaccurate or inappropriate edit summaries",
-			summary: "Warning: Using inaccurate or inappropriate edit summaries"
+			summary: "Cảnh báo: Using inaccurate or inappropriate edit summaries"
 		}
 	},
 
 
 	block: {
-		"uw-block": {
-			label: "Block",
-			summary: "You have been blocked from editing",
+		"cb-cấm": {
+			label: "Cấm",
+			summary: "Bạn đã bị cấm sửa đổi",
 			pageParam: true,
 			reasonParam: true,  // allows editing of reason for generic templates
 			suppressArticleInSummary: true
 		},
-		"uw-blocknotalk": {
+		"cb-blocknotalk": {
 			label: "Block - talk page disabled",
 			summary: "You have been blocked from editing and your user talk page has been disabled",
 			pageParam: true,
 			reasonParam: true,
 			suppressArticleInSummary: true
 		},
-		"uw-blockindef": {
+		"cb-blockindef": {
 			label: "Block - indefinite",
 			summary: "You have been indefinitely blocked from editing",
 			indefinite: true,
@@ -1202,173 +1202,173 @@ Twinkle.warn.messages = {
 			reasonParam: true,
 			suppressArticleInSummary: true
 		},
-		"uw-ablock": {
+		"cb-ablock": {
 			label: "Block - IP address",
 			summary: "Your IP address has been blocked from editing",
 			pageParam: true,
 			suppressArticleInSummary: true
 		},
-		"uw-vblock": {
+		"cb-cấm-phá hoại": {
 			label: "Vandalism block",
 			summary: "You have been blocked from editing for persistent [[WP:VAND|vandalism]]",
 			pageParam: true
 		},
-		"uw-voablock": {
+		"cb-cấm-tk chỉ phá": {
 			label: "Vandalism-only account block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]]",
+			summary: "Bạn đã bị cấm sửa đổi do tài khoản của bạn chỉ dùng để [[Wikipedia:Phá hoại|phá hoại]]",
 			indefinite: true,
 			pageParam: true
 		},
-		"uw-bioblock": {
+		"cb-bioblock": {
 			label: "BLP violations block",
 			summary: "You have been blocked from editing for violations of Wikipedia's [[WP:BLP|biographies of living persons policy]]",
 			pageParam: true
 		},
-		"uw-sblock": {
+		"cb-cấm-spam": {
 			label: "Spam block",
-			summary: "You have been blocked from editing for using Wikipedia for [[WP:SPAM|spam]] purposes"
+			summary: "Tài khoản của bạn đã bị khóa sửa đổi Wikipedia để [[WP:SPAM|spam]]"
 		},
-		"uw-adblock": {
+		"cb-adblock": {
 			label: "Advertising block",
 			summary: "You have been blocked from editing for [[WP:SOAP|advertising or self-promotion]]",
 			pageParam: true
 		},
-		"uw-soablock": {
+		"cb-soablock": {
 			label: "Spam/advertising-only account block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam, advertising, or promotion]]",
 			indefinite: true,
 			pageParam: true
 		},
-		"uw-npblock": {
+		"cb-npblock": {
 			label: "Creating nonsense pages block",
 			summary: "You have been blocked from editing for creating [[WP:PN|nonsense pages]]",
 			pageParam: true
 		},
-		"uw-copyrightblock": {
-			label: "Copyright violation block",
-			summary: "You have been blocked from editing for continued [[WP:COPYVIO|copyright infringement]]",
+		"cb-cấm-vpbq": {
+			label: "Cấm do vi phạm bản quyền",
+			summary: "Bạn đã bị cấm sửa đổi do tiếp tục [[WP:VPBQ|vi phạm bản quyền]]",
 			pageParam: true
 		},
-		"uw-spoablock": {
+		"cb-spoablock": {
 			label: "Sockpuppet account block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:SOCK|sock puppetry]]",
 			indefinite: true
 		},
-		"uw-hblock": {
+		"cb-hblock": {
 			label: "Harassment block",
 			summary: "You have been blocked from editing for attempting to [[WP:HARASS|harass]] other users",
 			pageParam: true
 		},
-		"uw-ewblock": {
+		"cb-ewblock": {
 			label: "Edit warring block",
 			summary: "You have been blocked from editing to prevent further [[WP:DE|disruption]] caused by your engagement in an [[WP:EW|edit war]]",
 			pageParam: true
 		},
-		"uw-3block": {
+		"cb-3block": {
 			label: "Three-revert rule violation block",
 			summary: "You have been blocked from editing for violation of the [[WP:3RR|three-revert rule]]",
 			pageParam: true
 		},
-		"uw-disruptblock": {
+		"cb-disruptblock": {
 			label: "Disruptive editing block",
 			summary: "You have been blocked from editing for [[WP:DE|disruptive editing]]",
 			pageParam: true
 		},
-		"uw-deoablock": {
+		"cb-deoablock": {
 			label: "Disruption/trolling-only account block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:DE|trolling, disruption or harassment]]",
 			indefinite: true,
 			pageParam: true
 		},
-		"uw-lblock": {
+		"cb-lblock": {
 			label: "Legal threat block (indefinite)",
 			summary: "You have been indefinitely blocked from editing for making [[WP:NLT|legal threats or taking legal action]]",
 			indefinite: true
 		},
-		"uw-aeblock": {
+		"cb-aeblock": {
 			label: "Arbitration enforcement block",
 			summary: "You have been blocked from editing for violating an [[WP:Arbitration|arbitration decision]] with your edits",
 			pageParam: true,
 			reasonParam: true
 		},
-		"uw-efblock": {
+		"cb-efblock": {
 			label: "Edit filter-related block",
 			summary: "You have been blocked from editing for making disruptive edits that repeatedly triggered the [[WP:EF|edit filter]]"
 		},
-		"uw-myblock": {
+		"cb-myblock": {
 			label: "Social networking block",
 			summary: "You have been blocked from editing for using user and/or article pages as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]",
 			pageParam: true
 		},
-		"uw-dblock": {
+		"cb-dblock": {
 			label: "Deletion/removal of content block",
 			summary: "You have been blocked from editing for continued [[WP:VAND|removal of material]]",
 			pageParam: true
 		},
-		"uw-compblock": {
+		"cb-compblock": {
 			label: "Possible compromised account block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because it is believed that your [[WP:SECURE|account has been compromised]]",
 			indefinite: true
 		},
-		"uw-botblock": {
+		"cb-botblock": {
 			label: "Unapproved bot block",
 			summary: "You have been blocked from editing because it appears you are running a [[WP:BOT|bot script]] without [[WP:BRFA|approval]]",
 			pageParam: true
 		},
-		"uw-ublock": {
+		"cb-ublock": {
 			label: "Username soft block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your username is a violation of the [[WP:U|username policy]]",
 			indefinite: true,
 			reasonParam: true
 		},
-		"uw-uhblock": {
+		"cb-uhblock": {
 			label: "Username hard block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]]",
 			indefinite: true,
 			reasonParam: true
 		},
-		"uw-softerblock": {
+		"cb-softerblock": {
 			label: "Promotional username soft block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] gives the impression that the account represents a group, organization or website",
 			indefinite: true
 		},
-		"uw-causeblock": {
+		"cb-causeblock": {
 			label: "Promotional username soft block, for charitable causes (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] gives the impression that the account represents a group, organization or website",
 			indefinite: true
 		},
-		"uw-botublock": {
+		"cb-botublock": {
 			label: "Bot username soft block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] indicates this is a [[WP:BOT|bot]] account, which is currently not approved",
 			indefinite: true
 		},
-		"uw-memorialblock": {
+		"cb-memorialblock": {
 			label: "Memorial username soft block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] indicates this account may be used as a memorial or tribute to someone",
 			indefinite: true
 		},
-		"uw-ublock-famous": {
+		"cb-ublock-famous": {
 			label: "Famous username soft block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] matches the name of a well-known living individual",
 			indefinite: true
 		},
-		"uw-ublock-double": {
+		"cb-ublock-double": {
 			label: "Similar username soft block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] is too similar to the username of another Wikipedia user",
 			indefinite: true
 		},
-		"uw-uhblock-double": {
+		"cb-uhblock-double": {
 			label: "Username impersonation hard block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] appears to impersonate another established Wikipedia user",
 			indefinite: true
 		},
-		"uw-vaublock": {
+		"cb-vaublock": {
 			label: "Vandalism-only account and username hard block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]] and your username is a blatant violation of the [[WP:U|username policy]]",
 			indefinite: true,
 			pageParam: true
 		},
-		"uw-spamublock": {
+		"cb-spamublock": {
 			label: "Spam-only account and promotional username hard block (indefinite)",
 			summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam or advertising]] and your username is a violation of the [[WP:U|username policy]]",
 			indefinite: true
@@ -1442,13 +1442,13 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		more.append( {
 			type: 'input',
 			name: 'block_timer',
-			label: 'Period of blocking: ',
-			tooltip: 'The period the blocking is due for, for example 24 hours, 2 weeks, indefinite etc...'
+			label: 'Thời gian cấm: ',
+			tooltip: 'Thời gian cấm tùy theo trường hợp có thể là 24 giờ, 2 tuần, hoặc vô hạn…'
 		} );
 		more.append( {
 			type: 'input',
 			name: 'block_reason',
-			label: '"You have been blocked for ..." ',
+			label: '"Bạn đã bị cấm do…" ',
 			tooltip: 'An optional reason, to replace the default generic reason. Only available for the generic block templates.'
 		} );
 		e.target.root.insertBefore( more.render(), e.target.root.lastChild );
@@ -1506,7 +1506,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	var value = e.target.form.sub_group.value;
 
 	if( main_group === 'singlenotice' || main_group === 'singlewarn' ) {
-		if( value === 'uw-bite' || value === 'uw-username' || value === 'uw-socksuspect' ) {
+		if( value === 'cb-bite' || value === 'cb-username' || value === 'cb-socksuspect' ) {
 			if(Twinkle.warn.prev_article === null) {
 				Twinkle.warn.prev_article = e.target.form.article.value;
 			}
@@ -1564,13 +1564,13 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	}
 
 	// change form labels according to the warning selected
-	if (value === "uw-socksuspect") {
+	if (value === "cb-socksuspect") {
 		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
 		Morebits.quickForm.overrideElementLabel(e.target.form.article, "Username of sock master, if known (without User:) ");
-	} else if (value === "uw-username") {
+	} else if (value === "cb-username") {
 		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
 		Morebits.quickForm.overrideElementLabel(e.target.form.article, "Username violates policy because... ");
-	} else if (value === "uw-bite") {
+	} else if (value === "cb-bite") {
 		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
 		Morebits.quickForm.overrideElementLabel(e.target.form.article, "Username of 'bitten' user (without User:) ");
 	} else {
@@ -1578,19 +1578,19 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		Morebits.quickForm.resetElementLabel(e.target.form.article);
 	}
 
-	// add big red notice, warning users about how to use {{uw-[coi-]username}} appropriately
+	// add big red notice, warning users about how to use {{cb-[coi-]username}} appropriately
 	$("#tw-warn-red-notice").remove();
 
 	var $redWarning;
-	if (value === "uw-username") {
-		$redWarning = $("<div style='color: red;' id='tw-warn-red-notice'>{{uw-username}} should <b>not</b> be used for <b>blatant</b> username policy violations. " +
+	if (value === "cb-username") {
+		$redWarning = $("<div style='color: red;' id='tw-warn-red-notice'>{{cb-username}} should <b>not</b> be used for <b>blatant</b> username policy violations. " +
 			"Blatant violations should be reported directly to UAA (via Twinkle's ARV tab). " +
-			"{{uw-username}} should only be used in edge cases in order to engage in discussion with the user.</div>");
+			"{{cb-username}} should only be used in edge cases in order to engage in discussion with the user.</div>");
 		$redWarning.insertAfter(Morebits.quickForm.getElementLabelObject(e.target.form.reasonGroup));
-	} else if (value === "uw-coi-username") {
-		$redWarning = $("<div style='color: red;' id='tw-warn-red-notice'>{{uw-coi-username}} should <b>not</b> be used for <b>blatant</b> username policy violations. " +
+	} else if (value === "cb-coi-username") {
+		$redWarning = $("<div style='color: red;' id='tw-warn-red-notice'>{{cb-coi-username}} should <b>not</b> be used for <b>blatant</b> username policy violations. " +
 			"Blatant violations should be reported directly to UAA (via Twinkle's ARV tab). " +
-			"{{uw-coi-username}} should only be used in edge cases in order to engage in discussion with the user.</div>");
+			"{{cb-coi-username}} should only be used in edge cases in order to engage in discussion with the user.</div>");
 		$redWarning.insertAfter(Morebits.quickForm.getElementLabelObject(e.target.form.reasonGroup));
 	}
 };
@@ -1605,8 +1605,8 @@ Twinkle.warn.callbacks = {
 		}
 		if (reason && !isCustom) {
 			// add extra message for non-block templates
-			if (templateName === 'uw-csd' || templateName === 'uw-probation' ||
-				templateName === 'uw-userspacenoindex' || templateName === 'uw-userpage') {
+			if (templateName === 'cb-csd' || templateName === 'cb-probation' ||
+				templateName === 'cb-userspacenoindex' || templateName === 'cb-userpage') {
 				text += "|3=''" + reason + "''";
 			} else {
 				text += "|2=''" + reason + "''";
@@ -1663,7 +1663,7 @@ Twinkle.warn.callbacks = {
 		var params = pageobj.getCallbackParameters();
 		var messageData = params.messageData;
 
-		var history_re = /<!-- Template:(uw-.*?) -->.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4}) \(UTC\)/g;
+		var history_re = /<!-- Template:(cb-.*?) -->.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4}) \(UTC\)/g;
 		var history = {};
 		var latest = { date: new Date( 0 ), type: '' };
 		var current;
@@ -1714,7 +1714,7 @@ Twinkle.warn.callbacks = {
 		}
 
 		if( params.main_group === 'block' ) {
-			if( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.sub_group !== 'uw-lblock' && ( messageData.indefinite || (/indef|\*|max/).exec( params.block_timer ) ) ) {
+			if( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.sub_group !== 'cb-lblock' && ( messageData.indefinite || (/indef|\*|max/).exec( params.block_timer ) ) ) {
 				Morebits.status.info( 'Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date' );
 				text = "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 			} else if( !dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex ) {
@@ -1770,10 +1770,10 @@ Twinkle.warn.callbacks = {
 		} else {
 			summary = messageData.summary;
 			if ( messageData.suppressArticleInSummary !== true && params.article ) {
-				if ( params.sub_group === "uw-socksuspect" ) {  // this template requires a username
-					summary += " of [[User:" + params.article + "]]";
+				if ( params.sub_group === "cb-socksuspect" ) {  // this template requires a username
+					summary += " của [[Thành viên:" + params.article + "]]";
 				} else {
-					summary += " on [[" + params.article + "]]";
+					summary += " tại trang [[" + params.article + "]]";
 				}
 			}
 		}
@@ -1788,10 +1788,10 @@ Twinkle.warn.callbacks = {
 
 Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 
-	// First, check to make sure a reason was filled in if uw-username was selected
+	// First, check to make sure a reason was filled in if cb-username was selected
 
-	if(e.target.sub_group.value === 'uw-username' && e.target.article.value.trim() === '') {
-		alert("You must supply a reason for the {{uw-username}} template.");
+	if(e.target.sub_group.value === 'cb-username' && e.target.article.value.trim() === '') {
+		alert("You must supply a reason for the {{cb-username}} template.");
 		return;
 	}
 
@@ -1812,7 +1812,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	Morebits.status.init( e.target );
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = "Warning complete, reloading talk page in a few seconds";
+	Morebits.wiki.actionCompleted.notice = "Cảnh báo hoàn tất, tải lại trang thảo luận trong vài giây";
 
 	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'Sửa trang thảo luận thành viên' );
 	wikipedia_page.setCallbackParameters( params );

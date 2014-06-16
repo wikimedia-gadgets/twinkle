@@ -245,7 +245,7 @@ Twinkle.batchdelete.callbacks = {
 				wikipedia_api.post();
 			}
 
-			var wikipedia_page = new Morebits.wiki.page( self.params.page, 'Deleting page ' + self.params.page );
+			var wikipedia_page = new Morebits.wiki.page( self.params.page, 'Đang xóa trang ' + self.params.page );
 			wikipedia_page.setEditSummary(self.params.reason + Twinkle.getPref('deletionSummaryAd'));
 			wikipedia_page.deletePage(function( apiobj ) {
 					--Twinkle.batchdelete.currentDeleteCounter;
@@ -379,7 +379,7 @@ Twinkle.batchdelete.callbacks = {
 			Morebits.wiki.actionCompleted();
 			return;
 		}
-		pageobj.setEditSummary('Removing link(s) to deleted page ' + params.page + Twinkle.getPref('deletionSummaryAd'));
+		pageobj.setEditSummary('Bỏ liên kết đến trang đã xóa ' + params.page + Twinkle.getPref('deletionSummaryAd'));
 		pageobj.setPageText(text);
 		pageobj.setCreateOption('nocreate');
 		pageobj.save(params.onsuccess);

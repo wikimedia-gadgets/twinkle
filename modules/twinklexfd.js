@@ -8,7 +8,7 @@
  ****************************************
  *** twinklexfd.js: XFD module
  ****************************************
- * Mode of invocation:     Tab ("XFD")
+ * Mode of invocation:     Tab ("ĐNX")
  * Active on:              Existing, non-special pages, except for file pages with no local (non-Commons) file which are not redirects
  * Config directives in:   TwinkleConfig
  */
@@ -22,7 +22,7 @@ Twinkle.xfd = function twinklexfd() {
 	if ( mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') || (mw.config.get('wgNamespaceNumber') === 6 && (document.getElementById('mw-sharedupload') || (!document.getElementById('mw-imagepage-section-filehistory') && !Morebits.wiki.isPageRedirect()))) ) {
 		return;
 	}
-	Twinkle.addPortletLink( Twinkle.xfd.callback, "XFD", "tw-xfd", "Nominate for deletion" );
+	Twinkle.addPortletLink( Twinkle.xfd.callback, "Đề nghị xóa", "tw-xfd", "Đề nghị xóa" );
 };
 
 Twinkle.xfd.num2order = function twinklexfdNum2order( num ) {
@@ -47,46 +47,46 @@ Twinkle.xfd.printRationale = function twinklexfdPrintRationale() {
 
 Twinkle.xfd.callback = function twinklexfdCallback() {
 	var Window = new Morebits.simpleWindow( 600, 350 );
-	Window.setTitle( "Nominate for deletion (XfD)" );
+	Window.setTitle( "Đề nghị xóa (ĐNX)" );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "About deletion discussions", "WP:XFD" );
+	Window.addFooterLink( "Về thảo luận xóa", "WP:XB" );
 	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#xfd" );
 
 	var form = new Morebits.quickForm( Twinkle.xfd.callback.evaluate );
 	var categories = form.append( {
 			type: 'select',
 			name: 'category',
-			label: 'Deletion discussion venue:',
-			tooltip: 'When activated, a default choice is made, based on what namespace you are in. This default should be the most appropriate',
+			label: 'Biểu quyết xóa bài:',
+			tooltip: 'Khi kích hoạt sẽ thực hiện tùy chọn mặc định tùy thuộc không gian mà bạn đang thực hiện. Mặc định này là phù hợp trong hầu hết các trường hợp',
 			event: Twinkle.xfd.callback.change_category
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'AfD (Articles for deletion)',
+			label: 'XBV (Đề nghị xóa bài)',
 			selected: mw.config.get('wgNamespaceNumber') === 0,  // Main namespace
 			value: 'afd'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'TfD (Templates for discussion)',
+			label: 'XBM (Đề nghị xóa bản mẫu)',
 			selected: mw.config.get('wgNamespaceNumber') === 10,  // Template namespace
 			value: 'tfd'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Discussion venues for files (FFD, PUF or NFCR)',
+			label: 'XTT (Đề nghị xóa tập tin)/PUF (Tập tin có thể không tự do)',
 			selected: mw.config.get('wgNamespaceNumber') === 6,  // File namespace
 			value: 'ffd'
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'CfD (Categories for discussion)',
+			label: 'XTL (Đề nghị xóa thể loại)',
 			selected: mw.config.get('wgNamespaceNumber') === 14,  // Category namespace
 			value: 'cfd'
 		} );
   categories.append( {
 			type: 'option',
-			label: 'CfD/S (Categories for speedy renaming)',
+			label: 'XTL/N (Đề nghị đổi tên thể loại)',
 			value: 'cfds'
 		} );
 	categories.append( {
@@ -97,7 +97,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'RfD (Redirects for discussion)',
+			label: 'XĐH (Đề nghị xóa đổi hướng)',
 			selected: Morebits.wiki.isPageRedirect(),
 			value: 'rfd'
 		} );
@@ -105,10 +105,10 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 			type: 'checkbox',
 			list: [
 				{
-					label: 'Notify page creator if possible',
+					label: 'Thông báo người tạo trang nếu được',
 					value: 'notify',
 					name: 'notify',
-					tooltip: "A notification template will be placed on the creator's talk page if this is true.",
+					tooltip: "Đặt bản mẫu thông báo vào trang thảo luận thành viên nếu thỏa điều kiện.",
 					checked: true
 				}
 			]
@@ -146,7 +146,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		work_area.append( {
 			type: 'textarea',
 			name: 'xfdreason',
-			label: 'Reason: ',
+			label: 'Lý do: ',
 			value: oldreason,
 			tooltip: 'You can use wikimarkup in your reason. Twinkle will automatically sign your post.'
 		} );
@@ -157,38 +157,38 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 	case 'afd':
 		work_area = new Morebits.quickForm.element( {
 				type: 'field',
-				label: 'Articles for deletion',
+				label: 'Đề nghị xóa bài viết',
 				name: 'work_area'
 			} );
 		work_area.append( {
 				type: 'checkbox',
 				list: [
 						{
-							label: 'Wrap deletion tag with <noinclude>',
+							label: 'Đặt thông báo xóa trong <noinclude>',
 							value: 'noinclude',
 							name: 'noinclude',
-							tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. This option is not normally required.'
+							tooltip: 'Sẽ đặt thông báo xóa trong &lt;noinclude&gt; tags, do đó nó sẽ không nhúng vào. Tùy chọn này thường không yêu cầu.'
 						}
 					]
 		} );
 		var afd_category = work_area.append( {
 				type:'select',
 				name:'xfdcat',
-				label:'Choose what category this nomination belongs in:'
+				label:'Chọn thể loại phù hợp:'
 			} );
 
-		afd_category.append( { type:'option', label:'Unknown', value:'?', selected:true } );
-		afd_category.append( { type:'option', label:'Media and music', value:'M' } );
-		afd_category.append( { type:'option', label:'Organisation, corporation, or product', value:'O' } );
-		afd_category.append( { type:'option', label:'Biographical', value:'B' } );
-		afd_category.append( { type:'option', label:'Society topics', value:'S' } );
-		afd_category.append( { type:'option', label:'Web or internet', value:'W' } );
-		afd_category.append( { type:'option', label:'Games or sports', value:'G' } );
-		afd_category.append( { type:'option', label:'Science and technology', value:'T' } );
-		afd_category.append( { type:'option', label:'Fiction and the arts', value:'F' } );
-		afd_category.append( { type:'option', label:'Places and transportation', value:'P' } );
-		afd_category.append( { type:'option', label:'Indiscernible or unclassifiable topic', value:'I' } );
-		afd_category.append( { type:'option', label:'Debate not yet sorted', value:'U' } );
+		afd_category.append( { type:'option', label:'Không rõ', value:'?', selected:true } );
+		afd_category.append( { type:'option', label:'Âm nhậc', value:'M' } );
+		afd_category.append( { type:'option', label:'Tổ chức, công ty, sản phẩm', value:'O' } );
+		afd_category.append( { type:'option', label:'Tiểu sử', value:'B' } );
+		afd_category.append( { type:'option', label:'Chủ đề xã hội', value:'S' } );
+		afd_category.append( { type:'option', label:'Web hoặc Internet', value:'W' } );
+		afd_category.append( { type:'option', label:'Trò chơi và thể thao', value:'G' } );
+		afd_category.append( { type:'option', label:'Khoa học và công nghệ', value:'T' } );
+		afd_category.append( { type:'option', label:'Tiểu thuyết và nghệ thuật', value:'F' } );
+		afd_category.append( { type:'option', label:'Địa điểm và giao thông', value:'P' } );
+		afd_category.append( { type:'option', label:'Các chủ đề không rõ hoặc không thể phân loại', value:'I' } );
+		afd_category.append( { type:'option', label:'Tranh luận chưa được sắp xếp', value:'U' } );
 
 		appendReasonBox();
 		work_area = work_area.render();
@@ -197,7 +197,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 	case 'tfd':
 		work_area = new Morebits.quickForm.element( {
 				type: 'field',
-				label: 'Templates for discussion',
+				label: 'Bản mẫu cần thảo luận',
 				name: 'work_area'
 			} );
 		work_area.append( {
@@ -206,7 +206,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			} );
 		var tfd_category = work_area.append( {
 				type: 'select',
-				label: 'Choose type of action wanted: ',
+				label: 'Chọn loại bạn cần đặt thông báo: ',
 				name: 'xfdcat',
 				event: function(e) {
 					var target = e.target;
@@ -225,8 +225,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					}
 				}
 			} );
-		tfd_category.append( { type: 'option', label: 'Deletion', value: 'tfd', selected: true } );
-		tfd_category.append( { type: 'option', label: 'Merge', value: 'tfm' } );
+		tfd_category.append( { type: 'option', label: 'Xóa', value: 'tfd', selected: true } );
+		tfd_category.append( { type: 'option', label: 'Hợp nhất', value: 'tfm' } );
 		work_area.append( {
 				type: 'checkbox',
 				list: [
@@ -356,16 +356,16 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					}
 				}
 			} );
-		cfd_category.append( { type: 'option', label: 'Deletion', value: 'cfd', selected: true } );
-		cfd_category.append( { type: 'option', label: 'Merge', value: 'cfm' } );
-		cfd_category.append( { type: 'option', label: 'Renaming', value: 'cfr' } );
-		cfd_category.append( { type: 'option', label: 'Split', value: 'cfs' } );
-		cfd_category.append( { type: 'option', label: 'Convert into article', value: 'cfc' } );
+		cfd_category.append( { type: 'option', label: 'Xóa', value: 'cfd', selected: true } );
+		cfd_category.append( { type: 'option', label: 'Hợp nhất', value: 'cfm' } );
+		cfd_category.append( { type: 'option', label: 'Đổi tên', value: 'cfr' } );
+		cfd_category.append( { type: 'option', label: 'Tách bài', value: 'cfs' } );
+		cfd_category.append( { type: 'option', label: 'Chuyển tài bài viết', value: 'cfc' } );
 
 		work_area.append( {
 				type: 'input',
 				name: 'xfdtarget',
-				label: 'Target page: ',
+				label: 'Trang đích: ',
 				disabled: true,
 				value: ''
 			} );
@@ -376,12 +376,12 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 	case 'cfds':
 		work_area = new Morebits.quickForm.element( {
 				type: 'field',
-				label: 'Categories for speedy renaming',
+				label: 'Thể loại cần đổi tên',
 				name: 'work_area'
 			} );
 		var cfds_category = work_area.append( {
 				type: 'select',
-				label: 'C2 sub-criterion: ',
+				label: 'Tiêu chí phụ C2: ',
 				name: 'xfdcat',
 				tooltip: 'See WP:CFDS for full explanations.',
 				event: function(e) {
@@ -528,7 +528,7 @@ Twinkle.xfd.callbacks = {
 			// Now we know we want to go ahead with it, trigger the other AJAX requests
 
 			// Starting discussion page
-			var wikipedia_page = new Morebits.wiki.page(params.discussionpage, "Creating article deletion discussion page");
+			var wikipedia_page = new Morebits.wiki.page(params.discussionpage, "Tạo trang thảo luận về xóa bài");
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.discussionPage);
 
@@ -557,7 +557,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>{{" : "{{") + (params.number === '' ? "subst:afd|help=off" : ('subst:afdx|' +
 				params.number + "|help=off")) + (params.noinclude ? "}}</noinclude>\n" : "}}\n") + text);
-			pageobj.setEditSummary("Nominated for deletion; see [[" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Đã đưa ra biểu quyết xóa; xem [[" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -577,7 +577,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText("{{subst:afd2|text=" + Morebits.string.formatReasonText(params.reason) +
 				" ~~~~|pg=" + Morebits.pageNameNorm + "|cat=" + params.xfdcat + "}}\n");
-			pageobj.setEditSummary("Creating deletion discussion page for [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Tạo trang biểu quyết xóa cho [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -629,7 +629,7 @@ Twinkle.xfd.callbacks = {
 			var usertalkpage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n{{subst:AFDWarning|1=" + Morebits.pageNameNorm + ( params.numbering !== '' ? '|order=&#32;' + params.numbering : '' ) + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: listing at [[WP:AFD|articles for deletion]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary("Thông báo: đưa [[" + Morebits.pageNameNorm + "]] ra [[WP:AFD|articles for deletion]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
@@ -655,7 +655,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{subst:template for discussion|help=off|" +
 				(params.tfdinline ? "type=inline|" : "") + mw.config.get('wgTitle') + (params.noinclude ? "}}</noinclude>" : "}}\n") + text);
-			pageobj.setEditSummary("Nominated for deletion; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Đã đưa ra biểu quyết xóa; xem [[" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -824,7 +824,7 @@ Twinkle.xfd.callbacks = {
 			Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
 
 			// Discussion page
-			wikipedia_page = new Morebits.wiki.page(apiobj.params.discussionpage, "Creating deletion discussion page");
+			wikipedia_page = new Morebits.wiki.page(apiobj.params.discussionpage, "Tạo trang biểu quyết xóa");
 			wikipedia_page.setCallbackParameters(apiobj.params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.mfd.discussionPage);
 
@@ -850,7 +850,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{" + ((params.number === '') ? "mfd}}\n" : ('mfdx|' + params.number + "}}\n")) +
 				(params.noinclude ? "</noinclude>" : "") + text);
-			pageobj.setEditSummary("Nominated for deletion; see [[" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Đã đưa ra biểu quyết xóa; xem [[" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -870,7 +870,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText("{{subst:mfd2|text=" + Morebits.string.formatReasonText(params.reason) +
 				" ~~~~|pg=" + Morebits.pageNameNorm + "}}\n");
-			pageobj.setEditSummary("Creating deletion discussion page for [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Tạo trang biểu quyết xóa cho [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -1002,7 +1002,7 @@ Twinkle.xfd.callbacks = {
 			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 
 			pageobj.setPageText("{{ffd|log=" + params.date + "}}\n" + text);
-			pageobj.setEditSummary("Nominated for deletion; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Đã đưa ra biểu quyết xóa; xem [[" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -1097,7 +1097,7 @@ Twinkle.xfd.callbacks = {
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
 			var usertalkpage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-			var notifytext = "\n{{subst:idw-puf|1=" + mw.config.get('wgTitle') + "}} ~~~~";
+			var notifytext = "\n{{subst:thiếu giấy phép-tb|1=" + mw.config.get('wgTitle') + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: listing at [[WP:PUF|possibly unfree files]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
@@ -1131,23 +1131,23 @@ Twinkle.xfd.callbacks = {
 			switch( params.xfdcat ) {
 			case 'cfd':
 				added_data = "{{subst:cfd}}";
-				editsummary = "Category being considered for deletion; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
+				editsummary = "Thể loại đang được đề nghị xóa; xem [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
 				break;
 			case 'cfm':
 				added_data = "{{subst:cfm|" + params.target + "}}";
-				editsummary = "Category being considered for merging; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
+				editsummary = "Thể loại đang được đề nghị sáp nhập; xem [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
 				break;
 			case 'cfr':
 				added_data = "{{subst:cfr|" + params.target + "}}";
-				editsummary = "Category being considered for renaming; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
+				editsummary = "Thể loại đang được đề nghị đổi tên; xem [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
 				break;
 			case 'cfs':
 				added_data = "{{subst:cfs|" + params.target + "|" + params.target2 + "}}";
-				editsummary = "Category being considered for splitting; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
+				editsummary = "Thể loại đang được đề nghị tách ra; xem [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
 				break;
 			case 'cfc':
 				added_data = "{{subst:cfc|" + params.target + "}}";
-				editsummary = "Category being considered for conversion to an article; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
+				editsummary = "Thể loại đang được đề nghị chuyển thành bài viết; xem [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
 				break;
 			default:
 				alert("twinklexfd in taggingCategory(): unknown CFD action");
@@ -1181,27 +1181,27 @@ Twinkle.xfd.callbacks = {
 			case 'cfd':
 				added_data = "{{subst:cfd2|text=" + Morebits.string.formatReasonText(params.reason) +
 					" ~~~~|1=" + mw.config.get('wgTitle') + "}}";
-				editsummary = "Added delete nomination of [[:" + Morebits.pageNameNorm + "]].";
+				editsummary = "Đề nghị xóa [[:" + Morebits.pageNameNorm + "]].";
 				break;
 			case 'cfm':
 				added_data = "{{subst:cfm2|text=" + Morebits.string.formatReasonText(params.reason) +
 					" ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}}";
-				editsummary = "Added merge nomination of [[:" + Morebits.pageNameNorm + "]].";
+				editsummary = "Đề nghị hợp nhất [[:" + Morebits.pageNameNorm + "]].";
 				break;
 			case 'cfr':
 				added_data = "{{subst:cfr2|text=" + Morebits.string.formatReasonText(params.reason) +
 					" ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}}";
-				editsummary = "Added rename nomination of [[:" + Morebits.pageNameNorm + "]].";
+				editsummary = "Đề nghị đổi tên [[:" + Morebits.pageNameNorm + "]].";
 				break;
 			case 'cfs':
 				added_data = "{{subst:cfs2|text=" + Morebits.string.formatReasonText(params.reason) +
 					" ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "|3=" + params.target2 + "}}";
-				editsummary = "Added split nomination of [[:" + Morebits.pageNameNorm + "]].";
+				editsummary = "Đề nghị tách ra [[:" + Morebits.pageNameNorm + "]].";
 				break;
 			case 'cfc':
 				added_data = "{{subst:cfc2|text=" + Morebits.string.formatReasonText(params.reason) +
 					" ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}}";
-				editsummary = "Added convert nomination of [[:" + Morebits.pageNameNorm + "]].";
+				editsummary = "Đề nghị chuyển thành bài [[:" + Morebits.pageNameNorm + "]].";
 				break;
 			default:
 				alert("twinklexfd in todaysList: unknown CFD action");
@@ -1327,7 +1327,7 @@ Twinkle.xfd.callbacks = {
 		},
 		main: function(params) {
 			var date = new Date();
-			params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
+			params.logpage = 'Wikipedia:Redirects for discussion/Nhật trình/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 
 			// Tagging redirect
 			var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Adding deletion tag to redirect");
@@ -1575,13 +1575,13 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 	case 'ffd': // FFD/PUF/NFCR
 		var dateString = date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
-		logpage = 'Wikipedia:Files for deletion/' + dateString;
+		logpage = 'Wikipedia:Đề nghị xóa tập tin/' + dateString;
 		params = { usertalk: usertalk, reason: reason, date: dateString, logpage: logpage };
 
 		Morebits.wiki.addCheckpoint();
 		switch( ffdvenue ) {
 			case 'puf':
-				params.logpage = logpage = 'Wikipedia:Possibly unfree files/' + dateString;
+				params.logpage = logpage = 'Wikipedia:Tập tin có thể không tự do/' + dateString;
 
 				// Updating data for the action completed event
 				Morebits.wiki.actionCompleted.redirect = logpage;
@@ -1687,16 +1687,16 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		Morebits.wiki.addCheckpoint();
 
 		if( xfdtarget ) {
-			xfdtarget = xfdtarget.replace( /^\:?Category\:/i, '' );
+			xfdtarget = xfdtarget.replace( /^\:?(?:Category|Thể[_ ]loại)\:/i, '' );
 		} else {
 			xfdtarget = '';
 		}
 
 		if( xfdtarget2 ) {
-			xfdtarget2 = xfdtarget2.replace( /^\:?Category\:/i, '' );
+			xfdtarget2 = xfdtarget2.replace( /^\:?(?:Category|Thể[_ ]loại)\:/i, '' );
 		}
 
-		logpage = 'Wikipedia:Categories for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
+		logpage = 'Wikipedia:Thể loại cần thảo luận thêm/Nhật trình/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 
 		params = { reason: reason, xfdcat: xfdcat, target: xfdtarget, target2: xfdtarget2, logpage: logpage };
 

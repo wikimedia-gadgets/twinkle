@@ -121,48 +121,48 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 		} );
 
 	switch( value ) {
-		case 'no source no license':
-		case 'no source':
+		case 'thiếu nguồn gốc lẫn giấy phép':
+		case 'thiếu nguồn gốc':
 			work_area.append( {
 					type: 'checkbox',
 					name: 'non_free',
 					list: [
 						{
-							label: 'Non-free',
-							tooltip: 'Image is licensed under a fair use claim'
+							label: 'Không tự do',
+							tooltip: 'Hình cấp phép theo tuyên bố sử dụng hợp lý'
 						}
 					]
 				} );
 			break;
-		case 'no permission':
+		case 'thiếu giấy phép':
 			work_area.append( {
 					type: 'input',
 					name: 'source',
 					label: 'Source: '
 				} );
 			break;
-		case 'disputed fair use rationale':
+		case 'lý do SDHL vô lý':
 			work_area.append( {
 					type: 'textarea',
 					name: 'reason',
 					label: 'Concern: '
 				} );
 			break;
-		case 'orphaned fair use':
+		case 'SDHL không SD':
 			work_area.append( {
 					type: 'input',
 					name: 'replacement',
 					label: 'Replacement: '
 				} );
 			break;
-		case 'replaceable fair use':
+		case 'SDHL thay thế được':
 			work_area.append( {
 					type: 'checkbox',
 					name: 'old_image',
 					list: [
 						{
-							label: 'Old image',
-							tooltip: 'Image was uploaded before 2006-07-13'
+							label: 'Hình cũ',
+							tooltip: 'Hình được tải lên trước 2006-07-13'
 						}
 					]
 				} );
@@ -203,23 +203,23 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
 	var csdcrit;
 	switch( type ) {
-		case 'no source no license':
-		case 'no source':
-		case 'no license':
-			csdcrit = "F4";
+		case 'thiếu nguồn gốc lẫn giấy phép':
+		case 'thiếu nguồn gốc':
+		case 'thiếu giấy phép':
+			csdcrit = "H4";
 			break;
-		case 'orphaned fair use':
-			csdcrit = "F5";
+		case 'SDHL không SD':
+			csdcrit = "H5";
 			break;
-		case 'no fair use rationale':
-			csdcrit = "F6";
+		case 'thiếu sử dụng hợp lý':
+			csdcrit = "H6";
 			break;
-		case 'disputed fair use rationale':
-		case 'replaceable fair use':
-			csdcrit = "F7";
+		case 'lý do SDHL vô lý':
+		case 'SDHL thay thế được':
+			csdcrit = "H7";
 			break;
-		case 'no permission':
-			csdcrit = "F11";
+		case 'thiếu giấy phép':
+			csdcrit = "H11";
 			break;
 		default:
 			throw new Error( "Twinkle.image.callback.evaluate: unknown criterion" );
@@ -244,7 +244,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	Morebits.wiki.actionCompleted.notice = "Thêm thông báo hoàn tất";
 
 	// Tagging image
-	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'Tagging file with deletion tag' );
+	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'Thêm bản mẫu xóa tập tin' );
 	wikipedia_page.setCallbackParameters( params );
 	wikipedia_page.load( Twinkle.image.callbacks.taggingImage );
 
@@ -259,7 +259,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		}
 		// No auto-notification, display what was going to be added.
 		var noteData = document.createElement( 'pre' );
-		noteData.appendChild( document.createTextNode( "{{subst:di-" + type + "-notice|1=" + mw.config.get('wgTitle') + "}} ~~~~" ) );
+		noteData.appendChild( document.createTextNode( "{{subst:xh-" + type + "-tb|1=" + mw.config.get('wgTitle') + "}} ~~~~" ) );
 		Morebits.status.info( 'Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement( 'br' ),  noteData ] );
 	}
 };
@@ -272,23 +272,23 @@ Twinkle.image.callbacks = {
 		// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
 		text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 
-		var tag = "{{di-" + params.type + "|date={{subst:#time:j F Y}}";
+		var tag = "{{xh-" + params.type + "|ngày={{subst:CURRENTDAY2}}|tháng={{subst:CURRENTMONTH}}|năm={{subst:CURRENTYEAR}}";
 		switch( params.type ) {
-			case 'no source no license':
-			case 'no source':
-				tag += params.non_free ? "|non-free=yes" : "";
+			case 'thiếu nguồn gốc lẫn giấy phép':
+			case 'thiếu nguồn gốc':
+				tag += params.non_free ? "|không tự do=có" : "";
 				break;
-			case 'no permission':
-				tag += params.source ? "|source=" + params.source : "";
+			case 'thiếu giấy phép':
+				tag += params.source ? "|nguồn=" + params.source : "";
 				break;
-			case 'disputed fair use rationale':
-				tag += params.reason ? "|concern=" + params.reason : "";
+			case 'lý do SDHL vô lý':
+				tag += params.reason ? "|lý do=" + params.reason : "";
 				break;
-			case 'orphaned fair use':
-				tag += params.replacement ? "|replacement=" + params.replacement : "";
+			case 'SDHL không SD':
+				tag += params.replacement ? "|thay thế=" + params.replacement : "";
 				break;
-			case 'replaceable fair use':
-				tag += params.old_image ? "|old image=yes" : "";
+			case 'SDHL thay thế được':
+				tag += params.old_image ? "|hình cũ=có" : "";
 				break;
 			default:
 				break;  // doesn't matter
@@ -296,7 +296,7 @@ Twinkle.image.callbacks = {
 		tag += "}}\n";
 
 		pageobj.setPageText(tag + text);
-		pageobj.setEditSummary("This file is up for deletion, per [[WP:CSD#" + params.normalized + "|CSD " + params.normalized + "]] (" + params.type + ")." + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary("Tập tin được đề nghị xóa theo [[WP:XN#" + params.normalized + "|XN " + params.normalized + "]] (" + params.type + ")." + Twinkle.getPref('summaryAd'));
 		switch (Twinkle.getPref('deliWatchPage')) {
 			case 'yes':
 				pageobj.setWatchlist(true);
@@ -315,13 +315,13 @@ Twinkle.image.callbacks = {
 		var params = pageobj.getCallbackParameters();
 		var initialContrib = pageobj.getCreator();
 		var usertalkpage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-		var notifytext = "\n{{subst:di-" + params.type + "-notice|1=" + mw.config.get('wgTitle');
+		var notifytext = "\n{{subst:xh-" + params.type + "-tb|1=" + mw.config.get('wgTitle');
 		if (params.type === 'no permission') {
-			notifytext += params.source ? "|source=" + params.source : "";
+			notifytext += params.source ? "|nguồn=" + params.source : "";
 		}
 		notifytext += "}} ~~~~";
 		usertalkpage.setAppendText(notifytext);
-		usertalkpage.setEditSummary("Notification: tagging for deletion of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+		usertalkpage.setEditSummary("Thông báo có đề nghị xóa [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 		usertalkpage.setCreateOption('recreate');
 		switch (Twinkle.getPref('deliWatchUser')) {
 			case 'yes':
@@ -337,7 +337,7 @@ Twinkle.image.callbacks = {
 		usertalkpage.setFollowRedirect(true);
 		usertalkpage.append();
 
-		// add this nomination to the user's userspace log, if the user has enabled it
+		// thêm đề nghị này vào nhật trình không gian thành viên, nếu thành viên có kích hoạt chức năng này
 		if (params.lognomination) {
 			params.fromDI = true;
 			Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
