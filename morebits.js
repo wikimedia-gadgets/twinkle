@@ -2320,6 +2320,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// do we need to fetch the edit protection expiry?
 		if (Morebits.userIsInGroup('sysop') && !ctx.suppressProtectWarning) {
+			// poor man's normalisation
+			if (mw.config.get('wgPageName').toUpperCaseFirstChar().replace(/ /g, '_').trim() !==
+			   ctx.pageName.toUpperCaseFirstChar().replace(/ /g, '_').trim()) {
+				return false;
+			}
+
 			var editRestriction = mw.config.get('wgRestrictionEdit');
 			if (!editRestriction || editRestriction.indexOf('sysop') !== -1) {
 				return false;
