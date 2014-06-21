@@ -1076,7 +1076,7 @@ Twinkle.speedy.reasonHash = {
 	'userreq': 'User request to delete page in own userspace',
 	'nouser': 'Userpage or subpage of a nonexistent user',
 	'gallery': '[[WP:NFC|Non-free]] [[Help:Gallery|gallery]]',
-	'notwebhost': 'Blatant [[WP:NOTWEBHOST|misuse of Wikipedia as a web host]]',
+	'notwebhost': '[[WP:NOTWEBHOST|Misuse of Wikipedia as a web host]]',
 // Templates
 	'policy': 'Template that unambiguously misrepresents established policy',
 	'duplicatetemplate': 'Unused, redundant template',
@@ -1867,12 +1867,6 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	var normalizeds = [];
 	$.each(values, function(index, value) {
 		var norm = Twinkle.speedy.normalizeHash[ value ];
-
-		// for sysops only
-		if (['f4', 'f5', 'f6', 'f11'].indexOf(norm) !== -1) {
-			alert("Tagging with F4, F5, F6, and F11 is not possible using the CSD module.  Try using DI instead, or unchecking \"Tag page only\" if you meant to delete the page.");
-			return;
-		}
 
 		normalizeds.push(norm);
 	});
