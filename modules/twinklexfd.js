@@ -626,6 +626,13 @@ Twinkle.xfd.callbacks = {
 		userNotification: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
 			var initialContrib = pageobj.getCreator();
+
+			// Disallow warning yourself
+			if (initialContrib === mw.config.get('wgUserName')) {
+				pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
+				return;
+			}
+
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n{{subst:AFDWarning|1=" + Morebits.pageNameNorm + ( params.numbering !== '' ? '|order=&#32;' + params.numbering : '' ) + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
@@ -739,8 +746,14 @@ Twinkle.xfd.callbacks = {
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
-			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 
+			// Disallow warning yourself
+			if (initialContrib === mw.config.get('wgUserName')) {
+				pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
+				return;
+			}
+
+			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n";
 			switch (params.xfdcat) {
 			case 'tfd':
@@ -925,8 +938,13 @@ Twinkle.xfd.callbacks = {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
 
-			// Really notify the creator
-			Twinkle.xfd.callbacks.mfd.userNotificationMain(params, initialContrib, "Notifying initial contributor");
+			// Disallow warning yourself
+			if (initialContrib === mw.config.get('wgUserName')) {
+				pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
+			} else {
+				// Really notify the creator
+				Twinkle.xfd.callbacks.mfd.userNotificationMain(params, initialContrib, "Notifying initial contributor");
+			}
 
 			// Also notify the user who owns the subpage if they are not the creator
 			if (params.notifyuserspace) {
@@ -974,25 +992,30 @@ Twinkle.xfd.callbacks = {
 			wikipedia_page.load(Twinkle.xfd.callbacks.ffd.todaysList);
 
 			// Notification to first contributor
-			if(params.usertalk) {
-				var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-				var notifytext = "\n{{subst:idw|1=" + mw.config.get('wgTitle') + "}}";
-				usertalkpage.setAppendText(notifytext);
-				usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for deletion]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-				usertalkpage.setCreateOption('recreate');
-				switch (Twinkle.getPref('xfdWatchUser')) {
-					case 'yes':
-						usertalkpage.setWatchlist(true);
-						break;
-					case 'no':
-						usertalkpage.setWatchlistFromPreferences(false);
-						break;
-					default:
-						usertalkpage.setWatchlistFromPreferences(true);
-						break;
+			if (params.usertalk) {
+				// Disallow warning yourself
+				if (initialContrib === mw.config.get('wgUserName')) {
+					pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
+				} else {
+					var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+					var notifytext = "\n{{subst:idw|1=" + mw.config.get('wgTitle') + "}}";
+					usertalkpage.setAppendText(notifytext);
+					usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for deletion]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+					usertalkpage.setCreateOption('recreate');
+					switch (Twinkle.getPref('xfdWatchUser')) {
+						case 'yes':
+							usertalkpage.setWatchlist(true);
+							break;
+						case 'no':
+							usertalkpage.setWatchlistFromPreferences(false);
+							break;
+						default:
+							usertalkpage.setWatchlistFromPreferences(true);
+							break;
+					}
+					usertalkpage.setFollowRedirect(true);
+					usertalkpage.append();
 				}
-				usertalkpage.setFollowRedirect(true);
-				usertalkpage.append();
 			}
 		},
 		taggingImage: function(pageobj) {
@@ -1096,6 +1119,13 @@ Twinkle.xfd.callbacks = {
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
+
+			// Disallow warning yourself
+			if (initialContrib === mw.config.get('wgUserName')) {
+				pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
+				return;
+			}
+
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n{{subst:idw-puf|1=" + mw.config.get('wgTitle') + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
@@ -1234,6 +1264,13 @@ Twinkle.xfd.callbacks = {
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
+
+			// Disallow warning yourself
+			if (initialContrib === mw.config.get('wgUserName')) {
+				pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
+				return;
+			}
+
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n{{subst:CFDNote|1=" + Morebits.pageNameNorm + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
@@ -1405,6 +1442,13 @@ Twinkle.xfd.callbacks = {
 		},
 		userNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
+
+			// Disallow warning yourself
+			if (initialContrib === mw.config.get('wgUserName')) {
+				pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
+				return;
+			}
+
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n{{subst:RFDNote|1=" + Morebits.pageNameNorm + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);

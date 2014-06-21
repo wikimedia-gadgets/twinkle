@@ -1388,53 +1388,55 @@ Twinkle.speedy.callbacks = {
 				var callback = function(pageobj) {
 					var initialContrib = pageobj.getCreator();
 
+					// disallow warning yourself
+					if (initialContrib === mw.config.get('wgUserName')) {
+						Morebits.status.warn("You (" + initialContrib + ") created this page; skipping user notification");
+
 					// don't notify users when their user talk page is nominated
-					if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
+					} else if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
 						Morebits.status.warn("Notifying initial contributor: this user created their own user talk page; skipping notification");
-						return;
-					}
 
-					// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page ...
-					if ((initialContrib === "Cyberbot I" || initialContrib === "SoxBot") && params.normalizeds[0]==="f2") {
+					// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page...
+					} else if ((initialContrib === "Cyberbot I" || initialContrib === "SoxBot") && params.normalizeds[0] === "f2") {
 						Morebits.status.warn("Notifying initial contributor: page created procedurally by bot; skipping notification");
-						return;
-					}
 
-					var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")"),
-						notifytext, i;
-
-					// specialcase "db" and "db-multiple"
-					if (params.normalizeds.length > 1) {
-						notifytext = "\n{{subst:db-notice-multiple|1=" + Morebits.pageNameNorm;
-						var count = 2;
-						$.each(params.normalizeds, function(index, norm) {
-							notifytext += "|" + (count++) + "=" + norm.toUpperCase();
-						});
-					} else if (params.normalizeds[0] === "db") {
-						notifytext = "\n{{subst:db-reason-notice|1=" + Morebits.pageNameNorm;
 					} else {
-						notifytext = "\n{{subst:db-csd-notice-custom|1=" + Morebits.pageNameNorm + "|2=" + params.values[0];
-					}
+						var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")"),
+							notifytext, i;
 
-					for (i in params.utparams) {
-						if (typeof params.utparams[i] === 'string') {
-							notifytext += "|" + i + "=" + params.utparams[i];
+						// specialcase "db" and "db-multiple"
+						if (params.normalizeds.length > 1) {
+							notifytext = "\n{{subst:db-notice-multiple|1=" + Morebits.pageNameNorm;
+							var count = 2;
+							$.each(params.normalizeds, function(index, norm) {
+								notifytext += "|" + (count++) + "=" + norm.toUpperCase();
+							});
+						} else if (params.normalizeds[0] === "db") {
+							notifytext = "\n{{subst:db-reason-notice|1=" + Morebits.pageNameNorm;
+						} else {
+							notifytext = "\n{{subst:db-csd-notice-custom|1=" + Morebits.pageNameNorm + "|2=" + params.values[0];
 						}
-					}
-					notifytext += (params.welcomeuser ? "" : "|nowelcome=yes") + "}} ~~~~";
 
-					var editsummary = "Notification: speedy deletion nomination";
-					if (params.normalizeds.indexOf("g10") === -1) {  // no article name in summary for G10 deletions
-						editsummary += " of [[" + Morebits.pageNameNorm + "]].";
-					} else {
-						editsummary += " of an attack page.";
-					}
+						for (i in params.utparams) {
+							if (typeof params.utparams[i] === 'string') {
+								notifytext += "|" + i + "=" + params.utparams[i];
+							}
+						}
+						notifytext += (params.welcomeuser ? "" : "|nowelcome=yes") + "}} ~~~~";
 
-					usertalkpage.setAppendText(notifytext);
-					usertalkpage.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
-					usertalkpage.setCreateOption('recreate');
-					usertalkpage.setFollowRedirect(true);
-					usertalkpage.append();
+						var editsummary = "Notification: speedy deletion nomination";
+						if (params.normalizeds.indexOf("g10") === -1) {  // no article name in summary for G10 deletions
+							editsummary += " of [[" + Morebits.pageNameNorm + "]].";
+						} else {
+							editsummary += " of an attack page.";
+						}
+
+						usertalkpage.setAppendText(notifytext);
+						usertalkpage.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
+						usertalkpage.setCreateOption('recreate');
+						usertalkpage.setFollowRedirect(true);
+						usertalkpage.append();
+					}
 
 					// add this nomination to the user's userspace log, if the user has enabled it
 					if (params.lognomination) {

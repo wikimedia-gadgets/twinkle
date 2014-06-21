@@ -1131,6 +1131,13 @@ Twinkle.tag.callbacks = {
 			if (params.translationNotify) {
 				pageobj.lookupCreator(function(innerPageobj) {
 					var initialContrib = innerPageobj.getCreator();
+
+					// Disallow warning yourself
+					if (initialContrib === mw.config.get('wgUserName')) {
+						innerPageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
+						return;
+					}
+
 					var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib,
 						'Notifying initial contributor (' + initialContrib + ')');
 					var notifytext = "\n\n== Your article [[" + Morebits.pageNameNorm + "]]==\n" + 

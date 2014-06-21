@@ -314,28 +314,34 @@ Twinkle.image.callbacks = {
 	userNotification: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
 		var initialContrib = pageobj.getCreator();
-		var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-		var notifytext = "\n{{subst:di-" + params.type + "-notice|1=" + mw.config.get('wgTitle');
-		if (params.type === 'no permission') {
-			notifytext += params.source ? "|source=" + params.source : "";
+
+		// disallow warning yourself
+		if (initialContrib === mw.config.get('wgUserName')) {
+			pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
+		} else {
+			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var notifytext = "\n{{subst:di-" + params.type + "-notice|1=" + mw.config.get('wgTitle');
+			if (params.type === 'no permission') {
+				notifytext += params.source ? "|source=" + params.source : "";
+			}
+			notifytext += "}} ~~~~";
+			usertalkpage.setAppendText(notifytext);
+			usertalkpage.setEditSummary("Notification: tagging for deletion of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			usertalkpage.setCreateOption('recreate');
+			switch (Twinkle.getPref('deliWatchUser')) {
+				case 'yes':
+					usertalkpage.setWatchlist(true);
+					break;
+				case 'no':
+					usertalkpage.setWatchlistFromPreferences(false);
+					break;
+				default:
+					usertalkpage.setWatchlistFromPreferences(true);
+					break;
+			}
+			usertalkpage.setFollowRedirect(true);
+			usertalkpage.append();
 		}
-		notifytext += "}} ~~~~";
-		usertalkpage.setAppendText(notifytext);
-		usertalkpage.setEditSummary("Notification: tagging for deletion of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-		usertalkpage.setCreateOption('recreate');
-		switch (Twinkle.getPref('deliWatchUser')) {
-			case 'yes':
-				usertalkpage.setWatchlist(true);
-				break;
-			case 'no':
-				usertalkpage.setWatchlistFromPreferences(false);
-				break;
-			default:
-				usertalkpage.setWatchlistFromPreferences(true);
-				break;
-		}
-		usertalkpage.setFollowRedirect(true);
-		usertalkpage.append();
 
 		// add this nomination to the user's userspace log, if the user has enabled it
 		if (params.lognomination) {
