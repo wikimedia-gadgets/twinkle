@@ -25,14 +25,15 @@ Twinkle.batchundelete = function twinklebatchundelete() {
 };
 
 Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
-	var Window = new Morebits.simpleWindow( 800, 400 );
+	var Window = new Morebits.simpleWindow( 600, 400 );
 	Window.setScriptName("Twinkle");
 	Window.setTitle("Batch undelete");
 	var form = new Morebits.quickForm( Twinkle.batchundelete.callback.evaluate );
 	form.append( {
-			type: 'textarea',
+			type: 'input',
 			name: 'reason',
-			label: 'Reason: '
+			label: 'Reason: ',
+			size: 60
 		} );
 
 	var query = {
@@ -41,28 +42,42 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		'titles': mw.config.get("wgPageName"),
 		'gpllimit' : Twinkle.getPref('batchMax') // the max for sysops
 	};
-	var wikipedia_api = new Morebits.wiki.api( 'Grabbing pages', query, function( self ) {
-			var xmlDoc = self.responseXML;
-			var snapshot = xmlDoc.evaluate('//page[@missing]', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );
+	var wikipedia_api = new Morebits.wiki.api( 'Grabbing pages', query, function( apiobj ) {
+			var xml = apiobj.responseXML;
+			var $pages = $(xml).find('page[missing]');
 			var list = [];
-			for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
-				var object = snapshot.snapshotItem(i);
-				var page = xmlDoc.evaluate( '@title', object, null, XPathResult.STRING_TYPE, null ).stringValue;
-				list.push( {label:page, value:page, checked: true });
-			}
-			self.params.form.append( {
+			$pages.each(function(index, page) {
+				var $page = $(page);
+				var title = $page.attr('title');
+				list.push({ label: title, value: title, checked: true });
+			});
+			apiobj.params.form.append({ type: 'header', label: 'Pages to undelete' });
+			apiobj.params.form.append({
+					type: 'button',
+					label: "Select All",
+					event: function(e) {
+						$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', true);
+					}
+				});
+			apiobj.params.form.append({
+					type: 'button',
+					label: "Deselect All",
+					event: function(e) {
+						$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', false);
+					}
+				});
+			apiobj.params.form.append( {
 					type: 'checkbox',
 					name: 'pages',
 					list: list
-				}
-			);
-			self.params.form.append( { type:'submit' } );
+				});
+			apiobj.params.form.append( { type:'submit' } );
 
-			var result = self.params.form.render();
-			self.params.Window.setContent( result );
+			var result = apiobj.params.form.render();
+			apiobj.params.Window.setContent( result );
 
-
-		}  );
+			Morebits.checkboxShiftClickSupport(Morebits.quickForm.getElements(result, 'pages'));
+		} );
 	wikipedia_api.params = { form:form, Window:Window };
 	wikipedia_api.post();
 	var root = document.createElement( 'div' );
