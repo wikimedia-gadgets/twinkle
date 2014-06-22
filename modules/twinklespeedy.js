@@ -677,7 +677,7 @@ Twinkle.speedy.templateList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'T3: Templates that are not employed in any useful fashion',
+		label: 'T3: Templates that are substantial or hardcoded duplications of another template',
 		value: 't3',
 		tooltip: 'This criterion allows you to provide a rationale. In many cases, another criterion will be more appropriate, such as G1, G2, G6, or G8.',
 		subgroup: {
