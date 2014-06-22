@@ -2321,8 +2321,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		// do we need to fetch the edit protection expiry?
 		if (Morebits.userIsInGroup('sysop') && !ctx.suppressProtectWarning) {
 			// poor man's normalisation
-			if (mw.config.get('wgPageName').toUpperCaseFirstChar().replace(/ /g, '_').trim() !==
-			   ctx.pageName.toUpperCaseFirstChar().replace(/ /g, '_').trim()) {
+			if (Morebits.string.toUpperCaseFirstChar(mw.config.get('wgPageName')).replace(/ /g, '_').trim() !==
+				Morebits.string.toUpperCaseFirstChar(ctx.pageName).replace(/ /g, '_').trim()) {
 				return false;
 			}
 
