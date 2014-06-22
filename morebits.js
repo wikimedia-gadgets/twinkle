@@ -340,7 +340,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				}
 				// styles go on the label, doesn't make sense to style a checkbox/radio
 				if( current.style ) {
-					subnode.setAttribute( 'style', current.style );
+					label.setAttribute( 'style', current.style );
 				}
 
 				var event;

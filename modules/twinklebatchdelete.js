@@ -104,8 +104,9 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			'gapnamespace': gapnamespace ,
 			'gapprefix': gapprefix,
 			'gaplimit' : Twinkle.getPref('batchMax'), // the max for sysops
-			'prop' : ['categories', 'revisions' ],
-			'rvprop': [ 'size' ]
+			'prop' : 'revisions|info',
+			'inprop': 'protection',
+			'rvprop': 'size'
 		};
 	} else {
 		query = {
@@ -113,8 +114,9 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			'generator': 'links',
 			'titles': mw.config.get( 'wgPageName' ),
 			'gpllimit' : Twinkle.getPref('batchMax'), // the max for sysops
-			'prop': [ 'categories', 'revisions' ],
-			'rvprop': [ 'size' ]
+			'prop': 'revisions|info',
+			'inprop': 'protection',
+			'rvprop': 'size'
 		};
 	}
 
@@ -126,17 +128,34 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 
 	var statelem = new Morebits.status("Grabbing list of pages");
 	var wikipedia_api = new Morebits.wiki.api( 'loading...', query, function( apiobj ) {
-			var xmlDoc = apiobj.responseXML;
-			var snapshot = xmlDoc.evaluate('//page[@ns != "6" and not(@missing)]', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );  // 6 = File: namespace
+			var xml = apiobj.responseXML;
+			var $pages = $(xml).find('page').filter(':not([missing])');
 			var list = [];
-			for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
-				var object = snapshot.snapshotItem(i);
-				var page = xmlDoc.evaluate( '@title', object, null, XPathResult.STRING_TYPE, null ).stringValue;
-				var size = xmlDoc.evaluate( 'revisions/rev/@size', object, null, XPathResult.NUMBER_TYPE, null ).numberValue;
+			$pages.each(function(index, page) {
+				var $page = $(page);
+				var title = $page.attr('title');
+				var isRedir = $page.attr('redirect') === "";
+				var $editprot = $page.find('pr[type="edit"][level="sysop"]');
+				var protected = $editprot.length > 0;
+				var size = $page.find('rev').attr('size');
 
-				var disputed = xmlDoc.evaluate( 'boolean(categories/cl[@title="Category:Contested candidates for speedy deletion"])', object, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
-				list.push( {label:page + ' (' + size + ' bytes)' + ( disputed ? ' (DISPUTED CSD)' : '' ), value:page, checked:!disputed });
-			}
+				var metadata = [];
+				if (isRedir) {
+					metadata.push("redirect");
+				}
+				if (protected) {
+					metadata.push("fully protected" + 
+						($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))));
+				}
+				metadata.push(size + " bytes");
+				list.push({
+					label: title + (metadata.length ? (' (' + metadata.join('; ') + ')') : ''),
+					value: title,
+					checked: true,
+					style: (protected ? 'color:red' : '')
+				});
+			});
+
 			apiobj.params.form.append({ type: 'header', label: 'Pages to delete' });
 			apiobj.params.form.append({
 					type: 'button',
@@ -175,6 +194,13 @@ Twinkle.batchdelete.currentdeletor = 0;
 Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvaluate(event) {
 	Morebits.wiki.actionCompleted.notice = 'Status';
 	Morebits.wiki.actionCompleted.postfix = 'batch deletion is now complete';
+
+	var numProtected = $(Morebits.quickForm.getElements(event.target, 'pages')).filter(function(index, element) {
+		return element.checked && element.nextElementSibling.style.color === 'red';
+	}).length;
+	if (numProtected > 0 && !confirm("You are about to delete " + numProtected + " fully protected page(s). Are you sure?")) {
+		return;
+	}
 
 	var pages = event.target.getChecked( 'pages' );
 	var reason = event.target.reason.value;
@@ -239,6 +265,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 
 					var wikipedia_page = new Morebits.wiki.page( page, 'Deleting page ' + page );
 					wikipedia_page.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
+					wikipedia_page.suppressProtectWarning();
 					wikipedia_page.deletePage(function( apiobj ) {
 							--Twinkle.batchdelete.currentDeleteCounter;
 							var link = document.createElement( 'a' );
