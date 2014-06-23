@@ -1393,7 +1393,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText("{{subst:rfd}}\n" + text);
+			pageobj.setPageText("{{subst:rfd|content=\n" + text + "\n}}");
 			pageobj.setEditSummary("Listed for discussion at [[" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
