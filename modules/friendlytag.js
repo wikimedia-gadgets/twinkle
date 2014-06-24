@@ -328,6 +328,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 						{ label: "{{notability|Companies}}: notability guidelines for companies and organizations", value: "Companies" },
 						{ label: "{{notability|Events}}: notability guideline for events", value: "Events" },
 						{ label: "{{notability|Films}}: notability guideline for films", value: "Films" },
+						{ label: "{{notability|Places}}: notability guideline for places", value: "Places" },
 						{ label: "{{notability|Music}}: notability guideline for music", value: "Music" },
 						{ label: "{{notability|Neologisms}}: notability guideline for neologisms", value: "Neologisms" },
 						{ label: "{{notability|Numbers}}: notability guideline for numbers", value: "Numbers" },
