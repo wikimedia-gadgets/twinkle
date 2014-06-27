@@ -269,10 +269,11 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 					wikipedia_page.deletePage(function( apiobj ) {
 							--Twinkle.batchdelete.currentDeleteCounter;
 							var link = document.createElement( 'a' );
-							link.setAttribute( 'href', mw.util.getUrl(page) );
-							link.setAttribute( 'title', page );
-							link.appendChild( document.createTextNode( page ) );
-							apiobj.statelem.info( [ 'completed (' , link , ')' ] );
+							var innerPage = apiobj.parent.getPageName();
+							link.setAttribute( 'href', mw.util.getUrl( innerPage ) );
+							link.setAttribute( 'title', innerPage );
+							link.appendChild( document.createTextNode( innerPage ) );
+							apiobj.getStatusElement().info( [ 'completed (' , link , ')' ] );
 						} );
 				} else {
 					--Twinkle.batchdelete.currentDeleteCounter;
