@@ -9,13 +9,17 @@
  *** twinklebatchdelete.js: Batch delete module (sysops only)
  ****************************************
  * Mode of invocation:     Tab ("D-batch")
- * Active on:              Existing and non-existing non-articles, and Special:PrefixIndex
+ * Active on:              Existing non-articles, and Special:PrefixIndex
  * Config directives in:   TwinkleConfig
  */
 
-
 Twinkle.batchdelete = function twinklebatchdelete() {
-	if( Morebits.userIsInGroup( 'sysop' ) && (mw.config.get( 'wgNamespaceNumber' ) > 0 || mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex') ) {
+	if(
+		Morebits.userIsInGroup( 'sysop' ) && (
+			( mw.config.get( 'wgCurRevisionId' ) && mw.config.get( 'wgNamespaceNumber' ) > 0 ) ||
+			mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex'
+		)
+	) {
 		Twinkle.addPortletLink( Twinkle.batchdelete.callback, "D-batch", "tw-batch", "Delete pages found in this category/on this page" );
 	}
 };
@@ -38,7 +42,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 					checked: true
 				},
 				{
-					label: 'Remove backlinks to the page (in Main and Portal namespaces only)',
+					label: 'Unlink backlinks to each page (in Main and Portal namespaces only)',
 					name: 'unlink_page',
 					value: 'unlink',
 					checked: false
@@ -66,8 +70,9 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			'generator': 'categorymembers',
 			'gcmtitle': mw.config.get( 'wgPageName' ),
 			'gcmlimit' : Twinkle.getPref('batchMax'), // the max for sysops
-			'prop': [ 'categories', 'revisions' ],
-			'rvprop': [ 'size' ]
+			'prop' : 'revisions|info',
+			'inprop': 'protection',
+			'rvprop': 'size'
 		};
 	} else if( mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex' ) {
 
@@ -215,56 +220,73 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 		return;
 	}
 
-	var batchOperation = new Morebits.batchOperation("Deleting pages");
-	batchOperation.setOption("chunkSize", Twinkle.getPref('batchdeleteChunks'));
+	var pageDeleter = new Morebits.batchOperation(delete_page ? "Deleting pages" : "Initiating requested tasks");
+	pageDeleter.setOption("chunkSize", Twinkle.getPref('batchdeleteChunks'));
 	// we only need the initial status lines if we're deleting the pages in the pages array
-	batchOperation.setOption("preserveIndividualStatusLines", delete_page);
-	batchOperation.setPageList(pages);
-	batchOperation.run(function(pageName) {
-		var params = { page: pageName, reason: reason, batchOperation: batchOperation };
+	pageDeleter.setOption("preserveIndividualStatusLines", delete_page);
+	pageDeleter.setPageList(pages);
+	pageDeleter.run(function(pageName) {
+		var params = {
+			page: pageName,
+			unlink_page: unlink_page,
+			delete_page: delete_page,
+			delete_redirects: delete_redirects,
+			reason: reason,
+			pageDeleter: pageDeleter
+		};
+
+		var wikipedia_page = new Morebits.wiki.page( pageName, 'Deleting page ' + pageName );
+		wikipedia_page.setCallbackParameters(params);
+		if( delete_page ) {
+			wikipedia_page.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
+			wikipedia_page.suppressProtectWarning();
+			wikipedia_page.deletePage(Twinkle.batchdelete.callbacks.doExtras, pageDeleter.workerFailure);
+		} else {
+			Twinkle.batchdelete.callbacks.doExtras(wikipedia_page);
+		}
+	});
+};
+
+Twinkle.batchdelete.callbacks = {
+	// this stupid parameter name is a temporary thing until I implement an overhaul
+	// of Morebits.wiki.* callback parameters
+	doExtras: function( thingWithParameters ) {
+		var params = thingWithParameters.parent ? thingWithParameters.parent.getCallbackParameters() :
+			thingWithParameters.getCallbackParameters();
+		// the initial batch operation's job is to delete the page, and that has
+		// succeeded by now
+		params.pageDeleter.workerSuccess(thingWithParameters);
+
 		var query, wikipedia_api;
 
-		if( unlink_page ) {
+		if( params.unlink_page ) {
 			Twinkle.batchdelete.unlinkCache = {};
 			query = {
 				'action': 'query',
 				'list': 'backlinks',
 				'blfilterredir': 'nonredirects',
 				'blnamespace': [0, 100], // main space and portal space only
-				'bltitle': pageName,
-				'bllimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
+				'bltitle': params.page,
+				'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
 			};
 			wikipedia_api = new Morebits.wiki.api( 'Grabbing backlinks', query, Twinkle.batchdelete.callbacks.unlinkBacklinksMain );
 			wikipedia_api.params = params;
 			wikipedia_api.post();
 		}
 
-		if( delete_page ) {
-			if (delete_redirects) {
-				query = {
-					'action': 'query',
-					'list': 'backlinks',
-					'blfilterredir': 'redirects',
-					'bltitle': pageName,
-					'bllimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
-				};
-				wikipedia_api = new Morebits.wiki.api( 'Grabbing redirects', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain );
-				wikipedia_api.params = params;
-				wikipedia_api.post();
-			}
-
-			var wikipedia_page = new Morebits.wiki.page( pageName, 'Deleting page ' + pageName );
-			wikipedia_page.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
-			wikipedia_page.suppressProtectWarning();
-			wikipedia_page.deletePage(batchOperation.workerSuccess, batchOperation.workerFailure);
-		} else {
-			// we've set off the subsidiary batch operations, which is a sort of success
-			batchOperation.workerSuccess();
+		if( params.delete_page && params.delete_redirects ) {
+			query = {
+				'action': 'query',
+				'list': 'backlinks',
+				'blfilterredir': 'redirects',
+				'bltitle': params.page,
+				'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
+			};
+			wikipedia_api = new Morebits.wiki.api( 'Grabbing redirects', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain );
+			wikipedia_api.params = params;
+			wikipedia_api.post();
 		}
-	});
-};
-
-Twinkle.batchdelete.callbacks = {
+	},
 	deleteRedirectsMain: function( apiobj ) {
 		var xml = apiobj.responseXML;
 		var pages = $(xml).find('bl').map(function() { return $(this).attr('title'); }).get();
