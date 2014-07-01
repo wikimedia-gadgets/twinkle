@@ -65,6 +65,12 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 			'grvprop': [ 'user' ]
 		};
 	} else {
+		// prepare for a possible merge with batchdelete
+		alert('Dear admin,  \n\n' +
+			'We are planning to overhaul the "Deli-batch" module; we are particularly wondering if it is worthwhile to maintain the functionality that allows "Deli-batch" to be used from pages other than category pages. \n\n' +
+			'Since you are invoking "Deli-batch" from a non-category page, we would appreciate it if you could inform the Twinkle team at [[WT:TW]]. If no-one responds to say they are using it, this functionality may soon be removed or altered.  \n\n' +
+			'Thanks, \nThe Twinkle team');
+	//form.append({ type:'div', style:'color:red;font-weight:bold;font-size:larger', label: 'This module is going away. Please use "D-batch" (batch deletion) instead.' });
 		query = {
 			'action': 'query',
 			'generator': 'images',
