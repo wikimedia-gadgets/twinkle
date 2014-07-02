@@ -106,40 +106,13 @@ Twinkle.unlink.callback = function(presetReason) {
 };
 
 Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event) {
-	Twinkle.unlink.backlinksdone = 0;
-	Twinkle.unlink.imageusagedone = 0;
-
-	function processunlink(pages, imageusage) {
-		var statusIndicator = new Morebits.status((imageusage ? 'Unlinking instances of file usage' : 'Unlinking backlinks'), '0%');
-		var total = pages.length;  // removing doubling of this number - no apparent reason for it
-
-		Morebits.wiki.addCheckpoint();
-
-		if( !pages.length ) {
-			statusIndicator.info( '100% (completed)' );
-			Morebits.wiki.removeCheckpoint();
-			return;
-		}
-
-		// get an edit token
-		var params = { reason: reason, imageusage: imageusage, globalstatus: statusIndicator, current: 0, total: total };
-		for (var i = 0; i < pages.length; ++i)
-		{
-			var myparams = $.extend({}, params);
-			var articlepage = new Morebits.wiki.page(pages[i], 'Unlinking in article "' + pages[i] + '"');
-			articlepage.setCallbackParameters(myparams);
-			articlepage.setBotEdit(true);  // unlink considered a floody operation
-			articlepage.load(imageusage ? Twinkle.unlink.callbacks.unlinkImageInstances : Twinkle.unlink.callbacks.unlinkBacklinks);
-		}
-	}
-
 	var reason = event.target.reason.value;
 	if (!reason) {
 		alert("You must specify a reason for unlinking.");
 		return;
 	}
 
-	var backlinks, imageusage;
+	var backlinks = [], imageusage = [];
 	if( event.target.backlinks ) {
 		backlinks = Twinkle.unlink.getChecked2(event.target.backlinks);
 	}
@@ -149,18 +122,23 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( event.target );
-	Morebits.wiki.addCheckpoint();
-	if (backlinks) {
-		processunlink(backlinks, false);
-	}
-	if (imageusage) {
-		processunlink(imageusage, true);
-	}
-	Morebits.wiki.removeCheckpoint();
-};
 
-Twinkle.unlink.backlinksdone = 0;
-Twinkle.unlink.imageusagedone = 0;
+	var pages = Morebits.array.uniq(backlinks.concat(imageusage));
+
+	var unlinker = new Morebits.batchOperation("Unlinking backlinks" + (imageusage ? " and instances of file usage" : ""));
+	unlinker.setOption("preserveIndividualStatusLines", true);
+	unlinker.setPageList(pages);
+	var params = { reason: reason, unlinker: unlinker };
+	unlinker.run(function(pageName) {
+		var wikipedia_page = new Morebits.wiki.page(pageName, "Unlinking in article \"" + pageName + "\"");
+		wikipedia_page.setBotEdit(true);  // unlink considered a floody operation
+		var innerParams = $.extend({}, params);
+		innerParams.doBacklinks = backlinks && backlinks.indexOf(pageName) !== -1;
+		innerParams.doImageusage = imageusage && imageusage.indexOf(pageName) !== -1;
+		wikipedia_page.setCallbackParameters(innerParams);
+		wikipedia_page.load(Twinkle.unlink.callbacks.unlinkBacklinks);
+	});
+};
 
 Twinkle.unlink.callbacks = {
 	display: {
@@ -283,54 +261,51 @@ Twinkle.unlink.callbacks = {
 		}
 	},
 	unlinkBacklinks: function twinkleunlinkCallbackUnlinkBacklinks(pageobj) {
-		var text, oldtext;
-		text = oldtext = pageobj.getPageText();
+		var oldtext = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
+		var wikiPage = new Morebits.wikitext.page(oldtext);
 
-		var wikiPage = new Morebits.wikitext.page(text);
-		wikiPage.removeLink(Morebits.pageNameNorm);
-		text = wikiPage.getText();
-		if (text === oldtext) {
-			// Nothing to do, return
-			Twinkle.unlink.callbacks.success(pageobj);
-			Morebits.wiki.actionCompleted();
+		var removedBacklinks = false, removedImageusage = false;
+		var summaryText = "", warningString = false;
+		var text;
+
+		// remove image usages
+		if (params.doImageusage) {
+			wikiPage.commentOutImage(mw.config.get('wgTitle'), 'Commented out');
+			text = wikiPage.getText();
+			// did we actually make any changes?
+			if (text === oldtext) {
+				warningString = "file usages";
+			} else {
+				summaryText = "Commenting out use(s) of file";
+				oldtext = text;
+			}
+		}
+
+		// remove backlinks
+		if (params.doBacklinks) {
+			wikiPage.removeLink(Morebits.pageNameNorm);
+			text = wikiPage.getText();
+			// did we actually make any changes?
+			if (text === oldtext) {
+				warningString = (warningString ? "backlinks or file usages" : "backlinks");
+			} else {
+				summaryText = (summaryText ? (summaryText + " / ") : "") + "Removing link(s) to";
+				oldtext = text;
+			}
+		}
+
+		if (warningString) {
+			// nothing to do!
+			pageobj.getStatusElement().error("Didn't find any " + warningString + " on the page.");
+			params.unlinker.workerFailure(pageobj);
 			return;
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary("Removing link(s) to \"" + Morebits.pageNameNorm + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary(summaryText + " \"" + Morebits.pageNameNorm + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('nocreate');
-		pageobj.save(Twinkle.unlink.callbacks.success);
-	},
-	unlinkImageInstances: function twinkleunlinkCallbackUnlinkImageInstances(pageobj) {
-		var text, oldtext;
-		text = oldtext = pageobj.getPageText();
-		var params = pageobj.getCallbackParameters();
-
-		var wikiPage = new Morebits.wikitext.page(text);
-		wikiPage.commentOutImage(mw.config.get('wgTitle'), 'Commented out');
-		text = wikiPage.getText();
-		if (text === oldtext) {
-			// Nothing to do, return
-			Twinkle.unlink.callbacks.success(pageobj);
-			Morebits.wiki.actionCompleted();
-			return;
-		}
-
-		pageobj.setPageText(text);
-		pageobj.setEditSummary("Commenting out use(s) of file \"" + Morebits.pageNameNorm + "\": " + params.reason + "." + Twinkle.getPref('summaryAd'));
-		pageobj.setCreateOption('nocreate');
-		pageobj.save(Twinkle.unlink.callbacks.success);
-	},
-	success: function twinkleunlinkCallbackSuccess(pageobj) {
-		var params = pageobj.getCallbackParameters();
-		var total = params.total;
-		var now = parseInt( 100 * (params.imageusage ? ++(Twinkle.unlink.imageusagedone) : ++(Twinkle.unlink.backlinksdone))/total, 10 ) + '%';
-		params.globalstatus.update( now );
-		if((params.imageusage ? Twinkle.unlink.imageusagedone : Twinkle.unlink.backlinksdone) >= total) {
-			params.globalstatus.info( now + ' (completed)' );
-			Morebits.wiki.removeCheckpoint();
-		}
+		pageobj.save(params.unlinker.workerSuccess, params.unlinker.workerFailure);
 	}
 };
 })(jQuery);
