@@ -2689,6 +2689,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.deleteProcessApi.post(); // give it another go!
 
+		} else if ( errorCode === "badtoken" ) {
+			// this is pathetic, but given the current state of Morebits.wiki.page it would
+			// be a dog's breakfast to try and fix this
+			ctx.statusElement.error("Invalid token. Please refresh the page and try again.");
+			if (ctx.onDeleteFailure) {
+				ctx.onDeleteFailure.call(this, this, ctx.deleteProcessApi);
+			}
+
 		} else if ( errorCode === "missingtitle" ) {
 		
 			ctx.statusElement.error("Cannot delete the page, because it no longer exists");
