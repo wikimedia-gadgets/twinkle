@@ -102,12 +102,9 @@ Twinkle.defaultConfig.twinkle = {
 	 // Hidden preferences
 	revertMaxRevisions: 50,
 	batchdeleteChunks: 50,
-	batchDeleteMinCutOff: 5,
 	batchMax: 5000,
 	batchProtectChunks: 50,
-	batchProtectMinCutOff: 5,
 	batchundeleteChunks: 50,
-	batchUndeleteMinCutOff: 5,
 	deliChunks: 500,
 	deliMax: 5000,
 	proddeleteChunks: 50
