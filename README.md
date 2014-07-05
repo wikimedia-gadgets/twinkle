@@ -14,7 +14,7 @@ Updating scripts on Wikipedia
 
 To generate the concatenated Twinkle script, use the following `bash` command:
 
-    awk 'FNR==1{print ""}{print}' twinkle.header.js modules/*.js twinkle.footer.js > alltwinkle.js
+    awk 'FNR==1{print ""}{print}' twinkle.js modules/*.js > alltwinkle.js
 
 Then you will be able to upload `alltwinkle.js` to [MediaWiki:Gadget-Twinkle.js][]. This does not include `morebits.js` and `morebits.css`; these have to be uploaded separately.
 
