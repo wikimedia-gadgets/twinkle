@@ -38,7 +38,7 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 	var Window = new Morebits.simpleWindow( 630, (Twinkle.tag.mode === "article") ? 500 : 400 );
 	Window.setScriptName( "Twinkle" );
 	// anyone got a good policy/guideline/info page/instructional page link??
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#tag" );
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#tag", "WP:TM" );
 
 	var form = new Morebits.quickForm( Twinkle.tag.callback.evaluate );
 
@@ -119,13 +119,13 @@ Twinkle.tag.callback = function friendlytagCallback( uid ) {
 		case 'redirect':
 			Window.setTitle( "Redirect tagging" );
 
-			form.append({ type: 'header', label:'Spelling, misspelling, tense and capitalization templates' });
+			form.append({ type: 'header', label:'Spelling, misspelling, tense and capitalization tags' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.spellingList });
 
 			form.append({ type: 'header', label:'Alternative name templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.alternativeList });
 
-			form.append({ type: 'header', label:'Miscellaneous and administrative redirect templates' });
+			form.append({ type: 'header', label:'Miscellaneous and administrative redirect tags' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.administrativeList });
 			break;
 
@@ -199,7 +199,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 					name: 'expertSubject',
 					type: 'input',
 					label: 'Name of relevant WikiProject: ',
-					tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.'
+					tooltip: 'Enter the name of a WikiProject, excluding the "WikiProject" prefix, which might be able to help recruit an expert. (optional)'
 				};
 				break;
 			case "globalize":
@@ -313,7 +313,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 					name: 'translationComments',
 					type: 'textarea',
 					label: 'Additional comments to post at PNT',
-					tooltip: 'Optional, and only relevant if "List this article ..." above is checked.'
+					tooltip: 'Only relevant if "List this article ..." above is checked. (optional)'
 				});
 				break;
 			case "notability":
@@ -428,15 +428,15 @@ Twinkle.tag.article.tags = {
 	"all plot": "article is almost entirely a plot summary",
 	"autobiography": "article is an autobiography and may not be written neutrally",
 	"BLP sources": "BLP article needs additional sources for verification",
-	"BLP unsourced": "BLP article has no sources at all (use BLP PROD instead for new articles)",
-	"citation style": "article has unclear or inconsistent inline citations",
+	"BLP unsourced": "BLP article is completely unsourced (use BLP PROD instead for articles created after March 18,2010)",
+	"citation style": "article has unclear or inconsistent citation style",
 	"cleanup": "article may require cleanup",
-	"cleanup-reorganize": "article may be in need of reorganization to comply with Wikipedia's layout guidelines",
+	"cleanup-reorganize": "article may need reorganization to comply with Wikipedia's layout guidelines",
 	"close paraphrasing": "article contains close paraphrasing of a non-free copyrighted source",
-	"COI": "article creator or major contributor may have a conflict of interest",
+	"COI": "article creator or major contributor(s) may have a conflict of interest",
 	"condense": "article may have too many section headers dividing up its content",
 	"confusing": "article may be confusing or unclear",
-	"context": "article provides insufficient context",
+	"context": "article provides insufficient context for those unfarmiliar to the subject",
 	"copy edit": "article needs copy editing for grammar, style, cohesion, tone, and/or spelling",
 	"copypaste": "article appears to have been copied and pasted from a source",
 	"dead end": "article has no links to other articles",
@@ -460,44 +460,44 @@ Twinkle.tag.article.tags = {
 	"lead too short": "article lead section is too short and should be expanded",
 	"linkrot": "article uses bare URLs for references, which are prone to link rot",
 	"merge": "article should be merged with another given article",
-	"merge from": "another given article should be merged into this one",
+	"merge from": "another article should be merged into this one",
 	"merge to": "article should be merged into another given article",
 	"metricate": "article exclusively uses non-SI units of measurement",
-	"more footnotes": "article has some references, but insufficient in-text citations",
-	"new unreviewed article": "mark article for later review",
+	"more footnotes": "article has some references, but insufficient inline citations",
+	"new unreviewed article": "marks new article as requiring review",
 	"news release": "article reads like a news release",
-	"no footnotes": "article has references, but no in-text citations",
+	"no footnotes": "article has references, but no inline citations",
 	"non-free": "article may contain excessive or improper use of copyrighted materials",
 	"notability": "article's subject may not meet the notability guideline",
-	"not English": "article is written in a language other than English and needs translation",
+	"not English": "article is written in a language other than English and requires translation",
 	"one source": "article relies largely or entirely upon a single source",
 	"original research": "article has original research or unverified claims",
-	"orphan": "article is linked to from no other articles",
-	"overcoverage": "article has an extensive bias or disproportional coverage towards one or more specific regions",
+	"orphan": "article is not linked to from any other articles",
+	"overcoverage": "article may have an extensive bias or disproportional coverage towards specific regions",
 	"overlinked": "article may have too many duplicate and/or irrelevant links",
-	"overly detailed": "article contains an excessive amount of intricate detail",
+	"overly detailed": "article may contain an excessive amount of intricate detail",
 	"peacock": "article may contain peacock terms that promote the subject without adding information",
-	"plot": "plot summary in article is too long",
-	"POV": "article does not maintain a neutral point of view",
-	"primary sources": "article relies too heavily on primary sources, and needs secondary sources",
-	"prose": "article is in a list format that may be better presented using prose",
+	"plot": "article's plot summary is too long",
+	"POV": "article does not maintain a neutral point of view throughout",
+	"primary sources": "article relies too heavily on primary sources, and requires furthur secondary sources",
+	"prose": "article is in a list format, but may be better presented using prose",
 	"recentism": "article is slanted towards recent events",
 	"ref improve": "article needs additional references or sources for verification",
-	"rough translation": "article is poorly translated and needs cleanup",
+	"rough translation": "article has been poorly translated, and requires cleanup",
 	"sections": "article needs to be broken into sections",
 	"self-published": "article may contain improper references to self-published sources",
 	"technical": "article may be too technical for the uninitiated reader",
 	"tense": "article is written in an incorrect tense",
 	"third-party": "article relies too heavily on affiliated sources, and needs third-party sources",
-	"tone": "tone of article is not appropriate",
+	"tone": "tone of article is not appropriate for an encyclopedic article",
 	"too few opinions": "article may not include all significant viewpoints",
 	"uncategorized": "article is uncategorized",
 	"under construction": "article is currently in the middle of an expansion or major revamping",
 	"underlinked": "article may require additional wikilinks",
 	"undue": "article lends undue weight to certain aspects of the subject but not others",
 	"unreferenced": "article has no references at all",
-	"unreliable sources": "article's references may not be reliable sources",
-	"update": "article needs additional up-to-date information added",
+	"unreliable sources": "the article may rely upon unreliable sources",
+	"update": "article needs to be updated with the latest events/information",
 	"very long": "article is too long",
 	"weasel": "article neutrality is compromised by the use of weasel words"
 };
@@ -763,8 +763,8 @@ Twinkle.tag.file.licenseList = [
 ];
 
 Twinkle.tag.file.commonsList = [
-	{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
-	{ label: '{{Do not move to Commons}} (PD issue): file is PD in the US but not in country of origin', value: 'Do not move to Commons' },
+	{ label: '{{Copy to Commons}}: free media that can be copied to Commons', value: 'Copy to Commons' },
+	{ label: '{{Do not move to Commons}} (PD issue): file is PD in the US, but not in country of origin', value: 'Do not move to Commons' },
 	{ label: '{{Do not move to Commons}} (other reason)', value: 'Do not move to Commons_reason' },
 	{ label: '{{Keep local}}: request to keep local copy of a Commons file', value: 'Keep local' },
 	{ label: '{{Now Commons}}: file has been copied to Commons', value: 'subst:ncd' }
@@ -816,10 +816,10 @@ Twinkle.tag.file.cleanupList = [
 ];
 
 Twinkle.tag.file.qualityList = [
-	{ label: '{{Image-blownout}}', value: 'Image-blownout' },
-	{ label: '{{Image-out-of-focus}}', value: 'Image-out-of-focus' },
-	{ label: '{{Image-Poor-Quality}}', value: 'Image-Poor-Quality' },
-	{ label: '{{Image-underexposure}}', value: 'Image-underexposure' },
+	{ label: '{{Image-blownout}}: bright areas of photo are white or lack detail', value: 'Image-blownout' },
+	{ label: '{{Image-out-of-focus}}: subject of picture is blurry or out of focus', value: 'Image-out-of-focus' },
+	{ label: '{{Image-Poor-Quality}}: image should be of higher quality', value: 'Image-Poor-Quality' },
+	{ label: '{{Image-underexposure}}: picture is underexposed', value: 'Image-underexposure' },
 	{ label: '{{Low quality chem}}: disputed chemical structures', value: 'Low quality chem' }
 ];
 
