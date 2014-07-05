@@ -48,7 +48,7 @@ Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 			name: 'organization',
 			label: 'IP address owner/operator',
 			disabled: true,
-			tooltip: 'You can optionally enter the name of the organization that owns/operates the IP address.  You can use wikimarkup if necessary.'
+			tooltip: 'You can enter the name of the organization that owns/operates the IP address.  You can use wikimarkup if necessary (optional).'
 		}
 	);
 	org.append( {
@@ -56,7 +56,7 @@ Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 			name: 'host',
 			label: 'Host name (optional)',
 			disabled: true,
-			tooltip: 'The host name (for example, proxy.example.com) can be optionally entered here and will be linked by the template.'
+			tooltip: 'If you enter the host name (for example, proxy.example.com) here, it will be linked by the template. (optional)'
 		}
 	);
 	org.append( {
@@ -64,7 +64,7 @@ Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 			name: 'contact',
 			label: 'Contact information (only if requested)',
 			disabled: true,
-			tooltip: 'You can optionally enter some contact details for the organization.  Use this parameter only if the organization has specifically requested that it be added.  You can use wikimarkup if necessary.'
+			tooltip: 'You may enter some contact details for the organization, if they specifically requested they are added.  You can use wikimarkup if necessary. (optional)'
 		}
 	);
 	
@@ -79,14 +79,14 @@ Twinkle.shared.standardList = [
 	{
 		label: '{{Shared IP}}: standard shared IP address template',
 		value: 'Shared IP',
-		tooltip: 'IP user talk page template that shows helpful information to IP users and those wishing to warn, block or ban them'
+		tooltip: 'User talk page template that shows helpful information to IP users and those wishing to warn, block or ban them'
 	},
 	{ 
 		label: '{{Shared IP edu}}: shared IP address template modified for educational institutions',
 		value: 'Shared IP edu'
 	},
 	{
-		label: '{{Shared IP corp}}: shared IP address template modified for businesses',
+		label: '{{Shared IP corp}}: shared IP address template modified for business IP addresses',
 		value: 'Shared IP corp'
 	},
 	{
@@ -98,7 +98,7 @@ Twinkle.shared.standardList = [
 		value: 'Shared IP gov'
 	},
 	{
-		label: '{{Dynamic IP}}: shared IP address template modified for organizations with dynamic addressing',
+		label: '{{Dynamic IP}}: shared IP address template modified for dynamic IP addresses',
 		value: 'Dynamic IP'
 	},
 	{
@@ -114,7 +114,7 @@ Twinkle.shared.standardList = [
 		value: 'Mobile IP'
 	},
 	{
-		label: '{{Whois}}: template for IP addresses in need of monitoring, but unknown whether static, dynamic or shared',
+		label: '{{Whois}}: template for IP addresses in need of monitoring, but when it is unknown whether static, dynamic or shared',
 		value: 'Whois'
 	}
 ];
