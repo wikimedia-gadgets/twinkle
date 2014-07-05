@@ -27,6 +27,7 @@ If `morebits.js` and/or `morebits.css` need to be updated, they should be synche
 
     * Twinkle[ResourceLoader|dependencies=jquery.ui.dialog,jquery.tipsy]|morebits.js|morebits.css|Twinkle.js
 
+<!--- currently appears non-functional for current script version; At the very least, it is outdated and appears not to function correctly (It has been discontinued on EN since Feb 2014, and my tests seem to produce a non-working version of the script
 Synchronization (for developers)
 --------------------------------
 
@@ -60,7 +61,7 @@ There is also an `deploy` command to deploy the new files live.
     make deploy
 
 The edit summary will contain the branch, the last commit sha, and the oneliner for that commit.
-
+--->
 Style guideline
 ---------------
 
