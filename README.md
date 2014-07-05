@@ -9,26 +9,38 @@ See [Wikipedia:Twinkle][] on the English Wikipedia for more information.
 
 [AzaToth][] is the original author and maintainer of the tool, as well as the `morebits.js` library.
 
+Layout of this repository
+-------------------------
+
+* `moment.js`: A copy of the [moment.js][] JavaScript library, version 2.4.0. As of July 2014, it is only used by the ARV module.
+* `morebits.js`: The central library used by Twinkle and many other scripts. Contains code to interact with the MediaWiki API, display forms and dialogs, generate status logs, and do various other useful things. The vast majority of code in here is not Twinkle-specific.
+* `morebits.css`: Styling to accompany `morebits.js`. The portlet styles relating to the Modern skin are Twinkle-specific and should arguably be in a `twinkle.css` file.
+* `sync.pl`: A Perl script to update on-wiki gadgets, or update the repository based on on-wiki changes. See below for full documentation.
+* `twinkle.js`: General Twinkle-specific code, mostly related to preferences and exposing Twinkle in the UI. Significantly, it contains the default set of preferences of Twinkle.
+* `modules`: Contains the individual Twinkle modules. Descriptions for these can be found in header comments or in the [Twinkle documentation][]. The module `twinkleconfig.js` powers the [Twinkle preferences panel][WP:TWPREFS].
+
+Other files not mentioned here are probably obsolete.
+
 Updating scripts on Wikipedia
 -----------------------------
 
-To generate the concatenated Twinkle script, use the following `bash` command:
+There are two ways to upload Twinkle scripts to Wikipedia or another destination.
 
-    awk 'FNR==1{print ""}{print}' twinkle.header.js modules/*.js twinkle.footer.js > alltwinkle.js
+### Manual concatenation
 
-Then you will be able to upload `alltwinkle.js` to [MediaWiki:Gadget-Twinkle.js][]. This does not include `morebits.js` and `morebits.css`; these have to be uploaded separately.
+To generate a concatenated Twinkle script, use the following `bash` command:
 
-If `morebits.js` and/or `morebits.css` need to be updated, they should be synched to these places:
+    awk 'FNR==1{print ""}{print}' twinkle.js modules/*.js > alltwinkle.js
 
-* _morebits.js_ at [MediaWiki:Gadget-morebits.js][] and [User:AzaToth/morebits.js][]
-* _morebits.css_ at [MediaWiki:Gadget-morebits.css][] and [User:AzaToth/morebits.css][]
+Then you will be able to upload `alltwinkle.js` to [MediaWiki:Gadget-Twinkle.js][]. The concatenation does not include `morebits.js` and `morebits.css`; these have to be uploaded separately.
 
-[MediaWiki:Gadgets-definition][] should contain the following line:
+If `morebits.js` and/or `morebits.css` need to be updated, they should be synched to [MediaWiki:Gadget-morebits.js][] and [MediaWiki:Gadget-morebits.css][].
+
+[MediaWiki:Gadgets-definition][] would then contain the following line:
 
     * Twinkle[ResourceLoader|dependencies=jquery.ui.dialog,jquery.tipsy]|morebits.js|morebits.css|Twinkle.js
 
-Synchronization (for developers)
---------------------------------
+### Synchronization using `sync.pl`
 
 There is a synchronization script called `sync.pl`, which can be used to pull and push files to Wikipedia. 
 
@@ -46,7 +58,7 @@ where `base` is the wiki path to prefix the files for `pull` and `push`.
 
 Notice that your working directory **must** be clean; if not, either `stash` or `commit` your changes.
 
-To `pull` user Foobar's changes, do:
+To `pull` user Foobar's changes (i.e. `User:Foobar/morebits.js`), do:
 
     ./sync.pl --base User:Foobar --pull morebits.js
 
@@ -54,7 +66,7 @@ To `push` your changes to Foobar's wiki page, do:
 
     ./sync.pl --base User:Foobar --push morebits.js
 
-There is also an `deploy` command to deploy the new files live.
+There is also a `deploy` command to deploy all Twinkle files live.
 
     ./sync.pl --deploy twinkle.js
     make deploy
@@ -68,14 +80,17 @@ While old legacy code has many different and incoherent styles, it has been deci
 
 The [jQuery Core Style Guideline][jq_style] is what we will hereafter use as our style guideline.
 
+Needless to say, there are exceptions. The main sticking point is spacing around parentheses. Older Twinkle code looks like `if ( condition ) {`, but newer code tends to use `if (condition) {`. The best convention here is to follow the style of surrounding code.
+
 [Wikipedia:Twinkle]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle
 [AzaToth]: https://en.wikipedia.org/wiki/User:AzaToth
+[moment.js]: http://momentjs.com/
+[Twinkle documentation]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle/doc
+[WP:TWPREFS]: https://en.wikipedia.org/wiki/WP:TWPREFS
 [MediaWiki:Gadget-Twinkle.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.js
 [User:AzaToth/twinkle.js]: https://en.wikipedia.org/wiki/User:AzaToth/twinkle.js
 [MediaWiki:Gadget-morebits.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-morebits.js
-[User:AzaToth/morebits.js]: https://en.wikipedia.org/wiki/User:AzaToth/morebits.js
 [MediaWiki:Gadget-morebits.css]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-morebits.css
-[User:AzaToth/morebits.css]: https://en.wikipedia.org/wiki/User:AzaToth/morebits.css
 [MediaWiki:Gadgets-definition]: https://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
 [Git::Repository]: http://search.cpan.org/perldoc?Git%3A%3ARepository
 [MediaWiki::Bot]: http://search.cpan.org/perldoc?MediaWiki%3A%3ABot
