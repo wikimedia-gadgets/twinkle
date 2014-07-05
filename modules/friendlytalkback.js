@@ -164,7 +164,7 @@ var callback_change_target = function( e ) {
 					type:"input",
 					name:"section",
 					label:"Linked section (optional)",
-					tooltip:"The section heading on your talk page where you left a message. Leave empty for no section to be linked.",
+					tooltip:"The section heading on your talk page where you left a message. Leave blank to not include a section link.",
 					value: prev_section
 				});
 			break;
@@ -187,7 +187,7 @@ var callback_change_target = function( e ) {
 					type:"input",
 					name:"section",
 					label:"Linked section (optional)",
-					tooltip:"The section heading on the page where you left a message. Leave empty for no section to be linked.",
+					tooltip:"The section heading on the page where you left a message. Leave blank to not include a section linke.",
 					value: prev_section
 				});
 			break;
@@ -280,7 +280,7 @@ var callback_change_target = function( e ) {
 					type:"input",
 					name:"section",
 					label:"Linked section (optional)",
-					tooltip:"The section heading on the page where you left a message. Leave empty for no section to be linked.",
+					tooltip:"The section heading on the page where you left a message. Leave empty to not include a section link.",
 					value: prev_section
 				});
 			break;
@@ -311,7 +311,7 @@ var callback_change_target = function( e ) {
 	}
 
 	if (value !== "notice") {
-		work_area.append({ type:"textarea", label:"Additional message (optional):", name:"message", tooltip:"An additional message that you would like to leave below the talkback template. Your signature will be added to the end of the message if you leave one." });
+		work_area.append({ type:"textarea", label:"Additional message (optional):", name:"message", tooltip:"An additional message that you would like to leave below the talkback template. Your signature will be added automatically." });
 	}
 
 	work_area = work_area.render();
