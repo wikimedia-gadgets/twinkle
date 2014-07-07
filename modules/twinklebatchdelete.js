@@ -73,25 +73,24 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			size: 60
 		} );
 
-	var query;
+	var query = {
+		'action': 'query',
+		'prop': 'revisions|info|imageinfo',
+		'inprop': 'protection',
+		'rvprop': 'size|user'
+	};
 	if( mw.config.get( 'wgNamespaceNumber' ) === 14 ) {  // Category:
-
-		query = {
-			'action': 'query',
-			'generator': 'categorymembers',
-			'gcmtitle': mw.config.get( 'wgPageName' ),
-			'gcmlimit' : Twinkle.getPref('batchMax'), // the max for sysops
-			'prop' : 'revisions|info',
-			'inprop': 'protection',
-			'rvprop': 'size'
-		};
+		query.generator = 'categorymembers';
+		query.gcmtitle = mw.config.get('wgPageName');
+		query.gcmlimit = Twinkle.getPref('batchMax'); // the max for sysops
 	} else if( mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex' ) {
 
-		var gapnamespace, gapprefix;
+		query.generator = 'allpages';
+		query.gaplimit = Twinkle.getPref('batchMax'); // the max for sysops
 		if(Morebits.queryString.exists( 'prefix' ) )
 		{
-			gapnamespace = Morebits.queryString.get( 'namespace' );
-			gapprefix = Morebits.string.toUpperCaseFirstChar( Morebits.queryString.get( 'prefix' ) );
+			query.gapnamespace = Morebits.queryString.get( 'namespace' );
+			query.gapprefix = Morebits.string.toUpperCaseFirstChar( Morebits.queryString.get( 'prefix' ) );
 		}
 		else
 		{
@@ -100,40 +99,23 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 				return;
 			}
 			var titleSplit = pathSplit[3].split(':');
-			gapnamespace = mw.config.get("wgNamespaceIds")[titleSplit[0].toLowerCase()];
-			if ( titleSplit.length < 2 || typeof gapnamespace === 'undefined' )
+			query.gapnamespace = mw.config.get("wgNamespaceIds")[titleSplit[0].toLowerCase()];
+			if ( titleSplit.length < 2 || typeof query.gapnamespace === 'undefined' )
 			{
-				gapnamespace = 0;  // article namespace
-				gapprefix = pathSplit.splice(3).join('/');
+				query.gapnamespace = 0;  // article namespace
+				query.gapprefix = pathSplit.splice(3).join('/');
 			}
 			else
 			{
 				pathSplit = pathSplit.splice(4);
 				pathSplit.splice(0,0,titleSplit.splice(1).join(':'));
-				gapprefix = pathSplit.join('/');
+				query.gapprefix = pathSplit.join('/');
 			}
 		}
-
-		query = {
-			'action': 'query',
-			'generator': 'allpages',
-			'gapnamespace': gapnamespace ,
-			'gapprefix': gapprefix,
-			'gaplimit' : Twinkle.getPref('batchMax'), // the max for sysops
-			'prop' : 'revisions|info',
-			'inprop': 'protection',
-			'rvprop': 'size'
-		};
 	} else {
-		query = {
-			'action': 'query',
-			'generator': 'links',
-			'titles': mw.config.get( 'wgPageName' ),
-			'gpllimit' : Twinkle.getPref('batchMax'), // the max for sysops
-			'prop': 'revisions|info',
-			'inprop': 'protection',
-			'rvprop': 'size'
-		};
+		query.generator = 'links';
+		query.titles = mw.config.get('wgPageName');
+		query.gpllimit = Twinkle.getPref('batchMax'); // the max for sysops
 	}
 
 	var statusdiv = document.createElement( 'div' );
@@ -145,21 +127,21 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	var statelem = new Morebits.status("Grabbing list of pages");
 	var wikipedia_api = new Morebits.wiki.api( 'loading...', query, function( apiobj ) {
 			var xml = apiobj.responseXML;
-			var $pages = $(xml).find('page').filter(':not([missing])');
+			var $pages = $(xml).find('page').filter(':not([missing])');  // :not([imagerepository="shared"])
 			var list = [];
 			$pages.each(function(index, page) {
 				var $page = $(page);
 				var title = $page.attr('title');
 				var isRedir = $page.attr('redirect') === "";
 				var $editprot = $page.find('pr[type="edit"][level="sysop"]');
-				var protected = $editprot.length > 0;
+				var isProtected = $editprot.length > 0;
 				var size = $page.find('rev').attr('size');
 
 				var metadata = [];
 				if (isRedir) {
 					metadata.push("redirect");
 				}
-				if (protected) {
+				if (isProtected) {
 					metadata.push("fully protected" + 
 						($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))));
 				}
@@ -168,7 +150,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 					label: title + (metadata.length ? (' (' + metadata.join('; ') + ')') : ''),
 					value: title,
 					checked: true,
-					style: (protected ? 'color:red' : '')
+					style: (isProtected ? 'color:red' : '')
 				});
 			});
 
