@@ -39,19 +39,30 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 					label: 'Delete pages',
 					name: 'delete_page',
 					value: 'delete',
-					checked: true
+					checked: true,
+					subgroup: {
+						type: 'checkbox',
+						list: [
+							{
+								label: 'Delete associated talk pages (except user talk pages)',
+								name: 'delete_talk',
+								value: 'delete_talk',
+								checked: true
+							},
+							{
+								label: 'Delete redirects to deleted pages',
+								name: 'delete_redirects',
+								value: 'delete_redirects',
+								checked: true
+							}
+						]
+					}
 				},
 				{
 					label: 'Unlink backlinks to each page (in Main and Portal namespaces only)',
 					name: 'unlink_page',
 					value: 'unlink',
 					checked: false
-				},
-				{
-					label: 'Delete redirects to deleted pages',
-					name: 'delete_redirects',
-					value: 'delete_redirects',
-					checked: true
 				}
 			]
 		} );
@@ -207,8 +218,9 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 	var pages = event.target.getChecked( 'pages' );
 	var reason = event.target.reason.value;
 	var delete_page = event.target.delete_page.checked;
+	var delete_talk = event.target.delete_talk && event.target.delete_talk.checked;
+	var delete_redirects = event.target.delete_redirects && event.target.delete_redirects.checked;
 	var unlink_page = event.target.unlink_page.checked;
-	var delete_redirects = event.target.delete_redirects.checked;
 	if( ! reason ) {
 		alert("You need to give a reason, you cabal crony!");
 		return;
@@ -230,6 +242,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 			page: pageName,
 			unlink_page: unlink_page,
 			delete_page: delete_page,
+			delete_talk: delete_talk,
 			delete_redirects: delete_redirects,
 			reason: reason,
 			pageDeleter: pageDeleter
@@ -286,6 +299,23 @@ Twinkle.batchdelete.callbacks = {
 			wikipedia_api.params = params;
 			wikipedia_api.post();
 		}
+
+		if( params.delete_page ) {
+			if ( params.delete_talk ) {
+				var pageTitle = mw.Title.newFromText(params.page);
+				if (pageTitle && pageTitle.namespace % 2 === 0 && pageTitle.namespace !== 2) {
+					pageTitle.namespace++;  // now pageTitle is the talk page title!
+					query = {
+						'action': 'query',
+						'titles': pageTitle.toText()
+					};
+					wikipedia_api = new Morebits.wiki.api( 'Checking whether talk page exists', query, Twinkle.batchdelete.callbacks.deleteTalk );
+					wikipedia_api.params = params;
+					wikipedia_api.params.talkPage = pageTitle.toText();
+					wikipedia_api.post();
+				}
+			} 
+		}
 	},
 	deleteRedirectsMain: function( apiobj ) {
 		var xml = apiobj.responseXML;
@@ -302,6 +332,19 @@ Twinkle.batchdelete.callbacks = {
 			wikipedia_page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + apiobj.params.page + '"' + Twinkle.getPref('deletionSummaryAd'));
 			wikipedia_page.deletePage(redirectDeleter.workerSuccess, redirectDeleter.workerFailure);
 		});
+	},
+	deleteTalk: function( apiobj ) {
+		var xml = apiobj.responseXML;
+		var exists = $(xml).find('page:not([missing])').length > 0;
+
+		if( !exists ) {
+			// no talk page; forget about it
+			return;
+		}
+
+		var page = new Morebits.wiki.page(apiobj.params.talkPage, "Deleting talk page of article " + apiobj.params.page);
+		page.setEditSummary("[[WP:CSD#G8|G8]]: [[Help:Talk page|Talk page]] of deleted page \"" + apiobj.params.page + "\"" + Twinkle.getPref('deletionSummaryAd'));
+		page.deletePage();
 	},
 	unlinkBacklinksMain: function( apiobj ) {
 		var xml = apiobj.responseXML;
