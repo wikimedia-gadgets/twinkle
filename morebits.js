@@ -2933,7 +2933,7 @@ Morebits.wikitext.template = {
 				++level;
 				continue;
 			}
-			if( test2 === '[[' ) {
+			if( test2 === ']]' ) {
 				current += test2;
 				++i;
 				--level;
