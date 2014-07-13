@@ -63,6 +63,12 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 					name: 'unlink_page',
 					value: 'unlink',
 					checked: false
+				},
+				{
+					label: 'Remove usages of each file (in all namespaces)',
+					name: 'unlink_file',
+					value: 'unlink_file',
+					checked: true
 				}
 			]
 		} );
@@ -131,6 +137,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			var list = [];
 			$pages.each(function(index, page) {
 				var $page = $(page);
+				var ns = $page.attr('ns');
 				var title = $page.attr('title');
 				var isRedir = $page.attr('redirect') === "";
 				var $editprot = $page.find('pr[type="edit"][level="sysop"]');
@@ -145,7 +152,12 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 					metadata.push("fully protected" + 
 						($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))));
 				}
-				metadata.push(size + " bytes");
+				if (ns === "6") {  // mimic what delimages used to show for files
+					metadata.push("uploader: " + $page.find('ii').attr('user'));
+					metadata.push("last edit from: " + $page.find('rev').attr('user'));
+				} else {
+					metadata.push(size + " bytes");
+				}
 				list.push({
 					label: title + (metadata.length ? (' (' + metadata.join('; ') + ')') : ''),
 					value: title,
@@ -203,6 +215,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 	var delete_talk = event.target.delete_talk && event.target.delete_talk.checked;
 	var delete_redirects = event.target.delete_redirects && event.target.delete_redirects.checked;
 	var unlink_page = event.target.unlink_page.checked;
+	var unlink_file = event.target.unlink_file.checked;
 	if( ! reason ) {
 		alert("You need to give a reason, you cabal crony!");
 		return;
@@ -222,10 +235,11 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 	pageDeleter.run(function(pageName) {
 		var params = {
 			page: pageName,
-			unlink_page: unlink_page,
 			delete_page: delete_page,
 			delete_talk: delete_talk,
 			delete_redirects: delete_redirects,
+			unlink_page: unlink_page,
+			unlink_file: unlink_file && /^(File|Image)\:/i.test(pageName),
 			reason: reason,
 			pageDeleter: pageDeleter
 		};
@@ -269,20 +283,31 @@ Twinkle.batchdelete.callbacks = {
 			wikipedia_api.post();
 		}
 
-		if( params.delete_page && params.delete_redirects ) {
+		if( params.unlink_file ) {
 			query = {
 				'action': 'query',
-				'list': 'backlinks',
-				'blfilterredir': 'redirects',
-				'bltitle': params.page,
-				'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
+				'list': 'imageusage',
+				'iutitle': params.page,
+				'iulimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
 			};
-			wikipedia_api = new Morebits.wiki.api( 'Grabbing redirects', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain );
-			wikipedia_api.params = params;
+			wikipedia_api = new Morebits.wiki.api( 'Grabbing file links', query, Twinkle.batchdelete.callbacks.unlinkImageInstancesMain );
+			wikipedia_api.params = self.params;
 			wikipedia_api.post();
 		}
 
 		if( params.delete_page ) {
+			if ( params.delete_redirects ) {
+				query = {
+					'action': 'query',
+					'list': 'backlinks',
+					'blfilterredir': 'redirects',
+					'bltitle': params.page,
+					'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
+				};
+				wikipedia_api = new Morebits.wiki.api( 'Grabbing redirects', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain );
+				wikipedia_api.params = params;
+				wikipedia_api.post();
+			}
 			if ( params.delete_talk ) {
 				var pageTitle = mw.Title.newFromText(params.page);
 				if (pageTitle && pageTitle.namespace % 2 === 0 && pageTitle.namespace !== 2) {
@@ -373,6 +398,57 @@ Twinkle.batchdelete.callbacks = {
 			return;
 		}
 		pageobj.setEditSummary('Removing link(s) to deleted page ' + params.page + Twinkle.getPref('deletionSummaryAd'));
+		pageobj.setPageText(text);
+		pageobj.setCreateOption('nocreate');
+		pageobj.setMaxConflictRetries(10);
+		pageobj.save(params.unlinker.workerSuccess, params.unlinker.workerFailure);
+	},
+	unlinkImageInstancesMain: function( apiobj ) {
+		var xml = apiobj.responseXML;
+		var pages = $(xml).find('iu').map(function() { return $(this).attr('title'); }).get();
+		if (!pages.length) {
+			return;
+		}
+
+		var unlinker = new Morebits.batchOperation("Unlinking backlinks to " + apiobj.params.page);
+		unlinker.setOption("chunkSize", Twinkle.getPref('batchdeleteChunks'));
+		unlinker.setPageList(pages);
+		unlinker.run(function(pageName) {
+			var wikipedia_page = new Morebits.wiki.page(pageName, "Removing file usages on " + pageName);
+			var params = $.extend({}, apiobj.params);
+			params.title = pageName;
+			params.unlinker = unlinker;
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.load(Twinkle.batchdelete.callbacks.unlinkImageInstances);
+		});
+	},
+	unlinkImageInstances: function( pageobj ) {
+		var params = pageobj.getCallbackParameters();
+		if( ! pageobj.exists() ) {
+			// we probably just deleted it, as a recursive backlink
+			params.unlinker.workerSuccess(pageobj);
+			return;
+		}
+
+		var image = params.image.replace( /^(?:Image|File):/, '' );
+		var text;
+		if( params.title in Twinkle.batchdelete.unlinkCache ) {
+			text = Twinkle.batchdelete.unlinkCache[ params.title ];
+		} else {
+			text = pageobj.getPageText();
+		}
+		var old_text = text;
+		var wikiPage = new Morebits.wikitext.page( text );
+		wikiPage.commentOutImage( image , 'Commented out because image was deleted' );
+
+		text = wikiPage.getText();
+		Twinkle.batchdelete.unlinkCache[ params.title ] = text;
+		if( text === old_text ) {
+			pageobj.getStatusElement().error( 'failed to unlink image ' + image + ' from ' + pageobj.getPageName() );
+			params.unlinker.workerFailure(pageobj);
+			return;
+		}
+		pageobj.setEditSummary('Removing instance of file ' + image + " that has been deleted because \"" + params.reason + "\")" + Twinkle.getPref('deletionSummaryAd'));
 		pageobj.setPageText(text);
 		pageobj.setCreateOption('nocreate');
 		pageobj.setMaxConflictRetries(10);

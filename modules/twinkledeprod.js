@@ -17,7 +17,7 @@ Twinkle.deprod = function() {
 	if(
 		mw.config.get( 'wgNamespaceNumber' ) !== 14 ||
 		! Morebits.userIsInGroup( 'sysop' ) ||
-		!((/^Category:Proposed_deletion_as_of/).test(mw.config.get( 'wgPageName' )))
+		!((/proposed_deletion/i).test(mw.config.get( 'wgPageName' )))
 	) {
 		return;
 	}

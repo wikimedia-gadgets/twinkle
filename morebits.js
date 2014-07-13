@@ -1477,7 +1477,11 @@ Morebits.wiki.api.prototype = {
 	},
 
 	returnError: function() {
-		this.statelem.error( this.errorText );
+		if ( this.errorCode === "badtoken" ) {
+			this.statelem.error( "Invalid token. Refresh the page and try again" );
+		} else {
+			this.statelem.error( this.errorText );
+		}
 
 		// invoke failure callback if one was supplied
 		if (this.onError) {
