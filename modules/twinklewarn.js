@@ -1707,8 +1707,12 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
-		var dateHeaderRegexResult = new RegExp( "^==+\\s*(?:" + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() + 
-			")\\s+" + date.getUTCFullYear() + "\\s*==+", 'm' ).exec( text );
+		var dateHeaderRegex = new RegExp( "^==+\\s*(?:" + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() +
+			")\\s+" + date.getUTCFullYear() + "\\s*==+", 'mg' );
+		var dateHeaderRegexLast, dateHeaderRegexResult;
+		while ((dateHeaderRegexLast = dateHeaderRegex.exec( text )) !== null) {
+			dateHeaderRegexResult = dateHeaderRegexLast;
+		}
 		// If dateHeaderRegexResult is null then lastHeaderIndex is never checked. If it is not null but
 		// \n== is not found, then the date header must be at the very start of the page. lastIndexOf
 		// returns -1 in this case, so lastHeaderIndex gets set to 0 as desired.
