@@ -357,7 +357,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						});
 						$input.data('revinfo',rev);
 						$input.appendTo($entry);
-						$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+moment(rev.timestamp).calendar()+'</a></span>').appendTo($diffs);
+						$entry.append('<span>"'+rev.parsedcomment+'" vào <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+moment(rev.timestamp).calendar()+'</a></span>').appendTo($diffs);
 					}
 				}).fail(function(data){
 					console.log( 'API failed :(', data );
@@ -508,24 +508,24 @@ Twinkle.arv.callback.evaluate = function(e) {
 		default:
 			types = form.getChecked( 'arvtype' );
 			if( !types.length && comment === '' ) {
-				alert( 'You must specify some reason' );
+				alert( 'Bạn cần phải cung cấp lý do' );
 				return;
 			}
 
 			types = types.map( function(v) {
 					switch(v) {
 						case 'final':
-							return 'vandalism after final warning';
+							return 'phá hoại sau cảnh báo cuối cùng';
 						case 'postblock':
-							return 'vandalism after recent release of block';
+							return 'phá hoại sau khi tác vụ cấm mới hết hạn';
 						case 'spambot':
-							return 'account is evidently a spambot or a compromised account';
+							return 'tài khoản hình như là spambot hoặc tài khoản đã bị xâm nhập';
 						case 'vandalonly':
-							return 'actions evidently indicate a vandalism-only account';
+							return 'tài khoản coi như chỉ có phá hoại';
 						case 'promoonly':
-							return 'account is being used only for promotional purposes';
+							return 'tài khoản chỉ dùng để quảng cáo';
 						default:
-							return 'unknown reason';
+							return 'lý do không rõ';
 					}
 				} ).join( '; ' );
 
@@ -533,7 +533,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if ( form.page.value !== '' ) {
 			
 				// add a leading : on linked page namespace to prevent transclusion
-				reason = 'On [[' + form.page.value.replace( /^(Image|Category|File):/i, ':$1:' ) + ']]';
+				reason = 'Trên [[' + form.page.value.replace( /^(Image|Hình|Category|Thể loại|File|Tập tin):/i, ':$1:' ) + ']]';
 
 				if ( form.badid.value !== '' ) {
 					reason += ' ({{diff|' + form.page.value + '|' + form.badid.value + '|' + form.goodid.value + '|diff}})';
@@ -558,7 +558,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			Morebits.status.init( form );
 
 			Morebits.wiki.actionCompleted.redirect = "Wikipedia:Tin nhắn cho bảo quản viên";
-			Morebits.wiki.actionCompleted.notice = "Reporting complete";
+			Morebits.wiki.actionCompleted.notice = "Báo cáo xong";
 
 			var aivPage = new Morebits.wiki.page( 'Wikipedia:Tin nhắn cho bảo quản viên', 'Processing AIV request' );
 			aivPage.setPageSection( 1 );
