@@ -314,28 +314,34 @@ Twinkle.image.callbacks = {
 	userNotification: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
 		var initialContrib = pageobj.getCreator();
-		var usertalkpage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-		var notifytext = "\n{{subst:xh-" + params.type + "-tb|1=" + mw.config.get('wgTitle');
-		if (params.type === 'no permission') {
-			notifytext += params.source ? "|nguồn=" + params.source : "";
+
+		// disallow warning yourself
+		if (initialContrib === mw.config.get('wgUserName')) {
+			pageobj.getStatusElement().warn("Bạn (" + initialContrib + ") đã tạo trang này; bỏ qua thông báo");
+		} else {
+			var usertalkpage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var notifytext = "\n{{subst:xh-" + params.type + "-tb|1=" + mw.config.get('wgTitle');
+			if (params.type === 'no permission') {
+				notifytext += params.source ? "|nguồn=" + params.source : "";
+			}
+			notifytext += "}} ~~~~";
+			usertalkpage.setAppendText(notifytext);
+			usertalkpage.setEditSummary("Thông báo có đề nghị xóa [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			usertalkpage.setCreateOption('recreate');
+			switch (Twinkle.getPref('deliWatchUser')) {
+				case 'yes':
+					usertalkpage.setWatchlist(true);
+					break;
+				case 'no':
+					usertalkpage.setWatchlistFromPreferences(false);
+					break;
+				default:
+					usertalkpage.setWatchlistFromPreferences(true);
+					break;
+			}
+			usertalkpage.setFollowRedirect(true);
+			usertalkpage.append();
 		}
-		notifytext += "}} ~~~~";
-		usertalkpage.setAppendText(notifytext);
-		usertalkpage.setEditSummary("Thông báo có đề nghị xóa [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-		usertalkpage.setCreateOption('recreate');
-		switch (Twinkle.getPref('deliWatchUser')) {
-			case 'yes':
-				usertalkpage.setWatchlist(true);
-				break;
-			case 'no':
-				usertalkpage.setWatchlistFromPreferences(false);
-				break;
-			default:
-				usertalkpage.setWatchlistFromPreferences(true);
-				break;
-		}
-		usertalkpage.setFollowRedirect(true);
-		usertalkpage.append();
 
 		// thêm đề nghị này vào nhật trình không gian thành viên, nếu thành viên có kích hoạt chức năng này
 		if (params.lognomination) {

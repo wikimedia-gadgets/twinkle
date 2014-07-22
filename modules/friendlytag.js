@@ -328,6 +328,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 						{ label: "{{notability|Companies}}: notability guidelines for companies and organizations", value: "Companies" },
 						{ label: "{{notability|Events}}: notability guideline for events", value: "Events" },
 						{ label: "{{notability|Films}}: notability guideline for films", value: "Films" },
+						{ label: "{{notability|Places}}: notability guideline for places", value: "Places" },
 						{ label: "{{notability|Music}}: notability guideline for music", value: "Music" },
 						{ label: "{{notability|Neologisms}}: notability guideline for neologisms", value: "Neologisms" },
 						{ label: "{{notability|Numbers}}: notability guideline for numbers", value: "Numbers" },
@@ -1132,6 +1133,13 @@ Twinkle.tag.callbacks = {
 			if (params.translationNotify) {
 				pageobj.lookupCreator(function(innerPageobj) {
 					var initialContrib = innerPageobj.getCreator();
+
+					// Disallow warning yourself
+					if (initialContrib === mw.config.get('wgUserName')) {
+						innerPageobj.getStatusElement().warn("Bạn (" + initialContrib + ") đã tạo trang này; bỏ qua thông báo");
+						return;
+					}
+
 					var userTalkPage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib,
 						'Notifying initial contributor (' + initialContrib + ')');
 					var notifytext = "\n\n== Your article [[" + Morebits.pageNameNorm + "]]==\n" + 

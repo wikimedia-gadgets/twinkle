@@ -1076,7 +1076,7 @@ Twinkle.speedy.reasonHash = {
 	'userreq': 'User request to delete page in own userspace',
 	'nouser': 'Userpage or subpage of a nonexistent user',
 	'gallery': '[[WP:NFC|Non-free]] [[Help:Gallery|gallery]]',
-	'notwebhost': 'Blatant [[WP:NOTWEBHOST|misuse of Wikipedia as a web host]]',
+	'notwebhost': '[[WP:NOTWEBHOST|Misuse of Wikipedia as a web host]]',
 // Templates
 	'policy': 'Template that unambiguously misrepresents established policy',
 	'duplicatetemplate': 'Unused, redundant template',
@@ -1388,53 +1388,55 @@ Twinkle.speedy.callbacks = {
 				var callback = function(pageobj) {
 					var initialContrib = pageobj.getCreator();
 
+					// disallow warning yourself
+					if (initialContrib === mw.config.get('wgUserName')) {
+						Morebits.status.warn("You (" + initialContrib + ") created this page; skipping user notification");
+
 					// don't notify users when their user talk page is nominated
-					if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
+					} else if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
 						Morebits.status.warn("Notifying initial contributor: this user created their own user talk page; skipping notification");
-						return;
-					}
 
-					// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page ...
-					if ((initialContrib === "Cyberbot I" || initialContrib === "SoxBot") && params.normalizeds[0]==="f2") {
+					// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page...
+					} else if ((initialContrib === "Cyberbot I" || initialContrib === "SoxBot") && params.normalizeds[0] === "f2") {
 						Morebits.status.warn("Notifying initial contributor: page created procedurally by bot; skipping notification");
-						return;
-					}
 
-					var usertalkpage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")"),
-						notifytext, i;
-
-					// specialcase "db" and "db-multiple"
-					if (params.normalizeds.length > 1) {
-						notifytext = "\n{{subst:db-notice-multiple|1=" + Morebits.pageNameNorm;
-						var count = 2;
-						$.each(params.normalizeds, function(index, norm) {
-							notifytext += "|" + (count++) + "=" + norm.toUpperCase();
-						});
-					} else if (params.normalizeds[0] === "db") {
-						notifytext = "\n{{subst:db-reason-notice|1=" + Morebits.pageNameNorm;
 					} else {
-						notifytext = "\n{{subst:db-csd-notice-custom|1=" + Morebits.pageNameNorm + "|2=" + params.values[0];
-					}
+						var usertalkpage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")"),
+							notifytext, i;
 
-					for (i in params.utparams) {
-						if (typeof params.utparams[i] === 'string') {
-							notifytext += "|" + i + "=" + params.utparams[i];
+						// specialcase "db" and "db-multiple"
+						if (params.normalizeds.length > 1) {
+							notifytext = "\n{{subst:db-notice-multiple|1=" + Morebits.pageNameNorm;
+							var count = 2;
+							$.each(params.normalizeds, function(index, norm) {
+								notifytext += "|" + (count++) + "=" + norm.toUpperCase();
+							});
+						} else if (params.normalizeds[0] === "db") {
+							notifytext = "\n{{subst:db-reason-notice|1=" + Morebits.pageNameNorm;
+						} else {
+							notifytext = "\n{{subst:db-csd-notice-custom|1=" + Morebits.pageNameNorm + "|2=" + params.values[0];
 						}
-					}
-					notifytext += (params.welcomeuser ? "" : "|nowelcome=yes") + "}} ~~~~";
 
-					var editsummary = "Notification: speedy deletion nomination";
-					if (params.normalizeds.indexOf("g10") === -1) {  // no article name in summary for G10 deletions
-						editsummary += " of [[" + Morebits.pageNameNorm + "]].";
-					} else {
-						editsummary += " of an attack page.";
-					}
+						for (i in params.utparams) {
+							if (typeof params.utparams[i] === 'string') {
+								notifytext += "|" + i + "=" + params.utparams[i];
+							}
+						}
+						notifytext += (params.welcomeuser ? "" : "|nowelcome=yes") + "}} ~~~~";
 
-					usertalkpage.setAppendText(notifytext);
-					usertalkpage.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
-					usertalkpage.setCreateOption('recreate');
-					usertalkpage.setFollowRedirect(true);
-					usertalkpage.append();
+						var editsummary = "Notification: speedy deletion nomination";
+						if (params.normalizeds.indexOf("g10") === -1) {  // no article name in summary for G10 deletions
+							editsummary += " of [[" + Morebits.pageNameNorm + "]].";
+						} else {
+							editsummary += " of an attack page.";
+						}
+
+						usertalkpage.setAppendText(notifytext);
+						usertalkpage.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
+						usertalkpage.setCreateOption('recreate');
+						usertalkpage.setFollowRedirect(true);
+						usertalkpage.append();
+					}
 
 					// thêm đề nghị này vào nhật trình không gian thành viên, nếu thành viên có kích hoạt chức năng này
 					if (params.lognomination) {
@@ -1867,12 +1869,6 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	var normalizeds = [];
 	$.each(values, function(index, value) {
 		var norm = Twinkle.speedy.normalizeHash[ value ];
-
-		// chỉ dành cho bảo quản viên
-		if (['f4', 'f5', 'f6', 'f11'].indexOf(norm) !== -1) {
-			alert("Tagging with F4, F5, F6, and F11 is not possible using the CSD module.  Try using DI instead, or unchecking \"Tag page only\" if you meant to delete the page.");
-			return;
-		}
 
 		normalizeds.push(norm);
 	});

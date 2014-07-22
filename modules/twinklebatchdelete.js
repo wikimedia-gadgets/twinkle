@@ -22,7 +22,7 @@ Twinkle.batchdelete = function twinklebatchdelete() {
 
 Twinkle.batchdelete.unlinkCache = {};
 Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
-	var Window = new Morebits.simpleWindow( 800, 400 );
+	var Window = new Morebits.simpleWindow( 600, 400 );
 	Window.setTitle( "Xóa hàng loạt" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Trợ giúp Twinkle", "WP:TW/DOC#batchdelete" );
@@ -52,9 +52,10 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			]
 		} );
 	form.append( {
-			type: 'textarea',
+			type: 'input',
 			name: 'reason',
-			label: 'Reason: '
+			label: 'Reason: ',
+			size: 60
 		} );
 
 	var query;
@@ -103,8 +104,9 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			'gapnamespace': gapnamespace ,
 			'gapprefix': gapprefix,
 			'gaplimit' : Twinkle.getPref('batchMax'), // the max for sysops
-			'prop' : ['categories', 'revisions' ],
-			'rvprop': [ 'size' ]
+			'prop' : 'revisions|info',
+			'inprop': 'protection',
+			'rvprop': 'size'
 		};
 	} else {
 		query = {
@@ -112,8 +114,9 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			'generator': 'links',
 			'titles': mw.config.get( 'wgPageName' ),
 			'gpllimit' : Twinkle.getPref('batchMax'), // the max for sysops
-			'prop': [ 'categories', 'revisions' ],
-			'rvprop': [ 'size' ]
+			'prop': 'revisions|info',
+			'inprop': 'protection',
+			'rvprop': 'size'
 		};
 	}
 
@@ -124,27 +127,61 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	Window.display();
 
 	var statelem = new Morebits.status("Grabbing list of pages");
-	var wikipedia_api = new Morebits.wiki.api( 'loading...', query, function( self ) {
-			var xmlDoc = self.responseXML;
-			var snapshot = xmlDoc.evaluate('//page[@ns != "6" and not(@missing)]', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );  // 6 = File: namespace
+	var wikipedia_api = new Morebits.wiki.api( 'loading...', query, function( apiobj ) {
+			var xml = apiobj.responseXML;
+			var $pages = $(xml).find('page').filter(':not([missing])');
 			var list = [];
-			for ( var i = 0; i < snapshot.snapshotLength; ++i ) {
-				var object = snapshot.snapshotItem(i);
-				var page = xmlDoc.evaluate( '@title', object, null, XPathResult.STRING_TYPE, null ).stringValue;
-				var size = xmlDoc.evaluate( 'revisions/rev/@size', object, null, XPathResult.NUMBER_TYPE, null ).numberValue;
+			$pages.each(function(index, page) {
+				var $page = $(page);
+				var title = $page.attr('title');
+				var isRedir = $page.attr('redirect') === "";
+				var $editprot = $page.find('pr[type="edit"][level="sysop"]');
+				var protected = $editprot.length > 0;
+				var size = $page.find('rev').attr('size');
 
-				var disputed = xmlDoc.evaluate( 'boolean(categories/cl[@title="Category:Contested candidates for speedy deletion"])', object, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
-				list.push( {label:page + ' (' + size + ' bytes)' + ( disputed ? ' (DISPUTED CSD)' : '' ), value:page, checked:!disputed });
-			}
-			self.params.form.append( {
+				var metadata = [];
+				if (isRedir) {
+					metadata.push("redirect");
+				}
+				if (protected) {
+					metadata.push("fully protected" + 
+						($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))));
+				}
+				metadata.push(size + " bytes");
+				list.push({
+					label: title + (metadata.length ? (' (' + metadata.join('; ') + ')') : ''),
+					value: title,
+					checked: true,
+					style: (protected ? 'color:red' : '')
+				});
+			});
+
+			apiobj.params.form.append({ type: 'header', label: 'Pages to delete' });
+			apiobj.params.form.append({
+					type: 'button',
+					label: "Select All",
+					event: function(e) {
+						$(Morebits.quickForm.getElements(e.target.form, "pages")).prop('checked', true);
+					}
+				});
+			apiobj.params.form.append({
+					type: 'button',
+					label: "Deselect All",
+					event: function(e) {
+						$(Morebits.quickForm.getElements(e.target.form, "pages")).prop('checked', false);
+					}
+				});
+			apiobj.params.form.append( {
 					type: 'checkbox',
 					name: 'pages',
 					list: list
 				} );
-			self.params.form.append( { type:'submit' } );
+			apiobj.params.form.append( { type:'submit' } );
 
-			var result = self.params.form.render();
-			self.params.Window.setContent( result );
+			var result = apiobj.params.form.render();
+			apiobj.params.Window.setContent( result );
+
+			Morebits.checkboxShiftClickSupport(Morebits.quickForm.getElements(result, 'pages'));
 		}, statelem );
 
 	wikipedia_api.params = { form:form, Window:Window };
@@ -158,12 +195,20 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 	Morebits.wiki.actionCompleted.notice = 'Status';
 	Morebits.wiki.actionCompleted.postfix = 'batch deletion is now complete';
 
+	var numProtected = $(Morebits.quickForm.getElements(event.target, 'pages')).filter(function(index, element) {
+		return element.checked && element.nextElementSibling.style.color === 'red';
+	}).length;
+	if (numProtected > 0 && !confirm("You are about to delete " + numProtected + " fully protected page(s). Are you sure?")) {
+		return;
+	}
+
 	var pages = event.target.getChecked( 'pages' );
 	var reason = event.target.reason.value;
 	var delete_page = event.target.delete_page.checked;
 	var unlink_page = event.target.unlink_page.checked;
 	var delete_redirects = event.target.delete_redirects.checked;
 	if( ! reason ) {
+		alert("You need to give a reason, you cabal crony!");
 		return;
 	}
 	Morebits.simpleWindow.setButtonsEnabled( false );
@@ -185,13 +230,54 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 			Twinkle.batchdelete.currentUnlinkCounter += pages.length;
 			for( var i = 0; i < pages.length; ++i ) {
 				var page = pages[i];
-				var query = {
-					'action': 'query',
-					'titles': page
-				};
-				var wikipedia_api = new Morebits.wiki.api( 'Checking if page ' + page + ' exists', query, Twinkle.batchdelete.callbacks.main );
-				wikipedia_api.params = { page:page, reason:reason, unlink_page:unlink_page, delete_page:delete_page, delete_redirects:delete_redirects };
-				wikipedia_api.post();
+				var params = { page:page, reason:reason };
+				
+				var query, wikipedia_api;
+				if( unlink_page ) {
+					query = {
+						'action': 'query',
+						'list': 'backlinks',
+						'blfilterredir': 'nonredirects',
+						'blnamespace': [0, 100], // main space and portal space only
+						'bltitle': page,
+						'bllimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
+					};
+					wikipedia_api = new Morebits.wiki.api( 'Grabbing backlinks', query, Twinkle.batchdelete.callbacks.unlinkBacklinksMain );
+					wikipedia_api.params = params;
+					wikipedia_api.post();
+				} else {
+					--Twinkle.batchdelete.currentUnlinkCounter;
+				}
+				if( delete_page ) {
+					if (delete_redirects)
+					{
+						query = {
+							'action': 'query',
+							'list': 'backlinks',
+							'blfilterredir': 'redirects',
+							'bltitle': page,
+							'bllimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
+						};
+						wikipedia_api = new Morebits.wiki.api( 'Grabbing redirects', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain );
+						wikipedia_api.params = params;
+						wikipedia_api.post();
+					}
+
+					var wikipedia_page = new Morebits.wiki.page( page, 'Deleting page ' + page );
+					wikipedia_page.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
+					wikipedia_page.suppressProtectWarning();
+					wikipedia_page.deletePage(function( apiobj ) {
+							--Twinkle.batchdelete.currentDeleteCounter;
+							var link = document.createElement( 'a' );
+							var innerPage = apiobj.parent.getPageName();
+							link.setAttribute( 'href', mw.util.getUrl( innerPage ) );
+							link.setAttribute( 'title', innerPage );
+							link.appendChild( document.createTextNode( innerPage ) );
+							apiobj.getStatusElement().info( [ 'completed (' , link , ')' ] );
+						} );
+				} else {
+					--Twinkle.batchdelete.currentDeleteCounter;
+				}
 			}
 		}
 	}
@@ -201,64 +287,6 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 };
 
 Twinkle.batchdelete.callbacks = {
-	main: function( self ) {
-		var xmlDoc = self.responseXML;
-		var normal = xmlDoc.evaluate( '//normalized/n/@to', xmlDoc, null, XPathResult.STRING_TYPE, null ).stringValue;
-		if( normal ) {
-			self.params.page = normal;
-		}
-		var exists = xmlDoc.evaluate( 'boolean(//pages/page[not(@missing)])', xmlDoc, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
-
-		if( ! exists ) {
-			self.statelem.error( "It seems that the page doesn't exist, perhaps it has already been deleted" );
-			return;
-		}
-
-		var query, wikipedia_api;
-		if( self.params.unlink_page ) {
-			query = {
-				'action': 'query',
-				'list': 'backlinks',
-				'blfilterredir': 'nonredirects',
-				'blnamespace': [0, 100], // main space and portal space only
-				'bltitle': self.params.page,
-				'bllimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
-			};
-			wikipedia_api = new Morebits.wiki.api( 'Grabbing backlinks', query, Twinkle.batchdelete.callbacks.unlinkBacklinksMain );
-			wikipedia_api.params = self.params;
-			wikipedia_api.post();
-		} else {
-			--Twinkle.batchdelete.currentUnlinkCounter;
-		}
-		if( self.params.delete_page ) {
-			if (self.params.delete_redirects)
-			{
-				query = {
-					'action': 'query',
-					'list': 'backlinks',
-					'blfilterredir': 'redirects',
-					'bltitle': self.params.page,
-					'bllimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500 // 500 is max for normal users, 5000 for bots and sysops
-				};
-				wikipedia_api = new Morebits.wiki.api( 'Grabbing redirects', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain );
-				wikipedia_api.params = self.params;
-				wikipedia_api.post();
-			}
-
-			var wikipedia_page = new Morebits.wiki.page( self.params.page, 'Đang xóa trang ' + self.params.page );
-			wikipedia_page.setEditSummary(self.params.reason + Twinkle.getPref('deletionSummaryAd'));
-			wikipedia_page.deletePage(function( apiobj ) {
-					--Twinkle.batchdelete.currentDeleteCounter;
-					var link = document.createElement( 'a' );
-					link.setAttribute( 'href', mw.util.getUrl(self.params.page) );
-					link.setAttribute( 'title', self.params.page );
-					link.appendChild( document.createTextNode( self.params.page ) );
-					apiobj.statelem.info( [ 'completed (' , link , ')' ] );
-				} );
-		} else {
-			--Twinkle.batchdelete.currentDeleteCounter;
-		}
-	},
 	deleteRedirectsMain: function( self ) {
 		var xmlDoc = self.responseXML;
 		var snapshot = xmlDoc.evaluate('//backlinks/bl/@title', xmlDoc, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null );

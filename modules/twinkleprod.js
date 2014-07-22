@@ -224,6 +224,7 @@ Twinkle.prod.callbacks = {
 
 		// Disallow warning yourself
 		if (initialContrib === mw.config.get("wgUserName")) {
+			pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
 			if (Twinkle.getPref("logProdPages")) {
 				Twinkle.prod.callbacks.addToLog(params);
 			}

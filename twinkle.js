@@ -86,7 +86,7 @@ Twinkle.defaultConfig.twinkle = {
 	speedyLogPageName: "CSD log",
 	noLogOnSpeedyNomination: [ "u1" ],
 	 // Unlink
-	unlinkNamespaces: [ "0", "100" ],
+	unlinkNamespaces: [ "0", "10", "100", "118" ],
 	 // Warn
 	defaultWarningGroup: "1",
 	showSharedIPNotice: true,
@@ -251,7 +251,7 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 			if ( navigation !== "portal" && navigation !== "left-navigation" && navigation !== "right-navigation" ) {
 				navigation = "mw-panel";
 			}
-			outerDivClass = ( navigation === "mw-panel" ) ? "portal" : ( type === "menu" ? "vectorMenu" : "vectorTabs extraMenu" );
+			outerDivClass = ( navigation === "mw-panel" ) ? "portal" : ( type === "menu" ? "vectorMenu" : "vectorTabs" );
 			innerDivClass = ( navigation === "mw-panel" ) ? "body" : ( type === "menu" ? "menu" : "" );
 			break;
 		case "modern":
@@ -301,12 +301,14 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 	}
 	outerDiv.appendChild( h5 );
 
-	var innerDiv = document.createElement( "div" ); // Not strictly necessary with type vectorTabs, or other skins.
-	innerDiv.className = innerDivClass;
-	outerDiv.appendChild(innerDiv);
+	if ( type === "menu" ) {
+		var innerDiv = document.createElement( "div" );
+		innerDiv.className = innerDivClass;
+		outerDiv.appendChild(innerDiv);
+	}
 
 	var ul = document.createElement( "ul" );
-	innerDiv.appendChild( ul );
+	(innerDiv || outerDiv).appendChild( ul );
 
 	return outerDiv;
 };
@@ -328,6 +330,9 @@ Twinkle.addPortletLink = function( task, text, id, tooltip )
 			task();
 			ev.preventDefault();
 		});
+	}
+	if ( $.collapsibleTabs ) {
+		$.collapsibleTabs.handleResize();
 	}
 	return link;
 };
