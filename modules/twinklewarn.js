@@ -1259,6 +1259,10 @@ Twinkle.warn.messages = {
 			summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:SOCK|sock puppetry]]",
 			indefinite: true
 		},
+		"uw-ipevadeblock": {
+			label: "Block-evasion block - IP address",
+			summary: "Your IP address have been blocked from editing because it has been used to [[WP:EVADE|evade a previous block]]"
+		},
 		"uw-hblock": {
 			label: "Harassment block",
 			summary: "You have been blocked from editing for attempting to [[WP:HARASS|harass]] other users",
