@@ -291,7 +291,7 @@ Twinkle.batchdelete.callbacks = {
 				'iulimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
 			};
 			wikipedia_api = new Morebits.wiki.api( 'Grabbing file links', query, Twinkle.batchdelete.callbacks.unlinkImageInstancesMain );
-			wikipedia_api.params = self.params;
+			wikipedia_api.params = params;
 			wikipedia_api.post();
 		}
 
