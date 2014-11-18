@@ -1394,7 +1394,19 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	}
 
 	// worker function to create the combo box entries
-	var createEntries = function( contents, container ) {
+	var createEntries = function( contents, container, wrapInOptgroup ) {
+		// due to an apparent iOS bug, we have to add an option-group to prevent truncation of text
+		// (search WT:TW archives for "Problem selecting warnings on an iPhone")
+		if ( wrapInOptgroup && $.client.profile().platform === "iphone" ) {
+			var wrapperOptgroup = new Morebits.quickForm.element( {
+				type: 'optgroup',
+				label: 'Available templates'
+			} );
+			wrapperOptgroup = wrapperOptgroup.render();
+			container.appendChild( wrapperOptgroup );
+			container = wrapperOptgroup;
+		}
+
 		$.each( contents, function( itemKey, itemProperties ) {
 			var key = (typeof itemKey === "string") ? itemKey : itemProperties.value;
 
@@ -1416,9 +1428,9 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 
 	if( value === "singlenotice" || value === "singlewarn" || value === "block" ) {
 		// no categories, just create the options right away
-		createEntries( Twinkle.warn.messages[ value ], sub_group );
+		createEntries( Twinkle.warn.messages[ value ], sub_group, true );
 	} else if( value === "custom" ) {
-		createEntries( Twinkle.getPref("customWarningList"), sub_group );
+		createEntries( Twinkle.getPref("customWarningList"), sub_group, true );
 	} else {
 		// create the option-groups
 		$.each( Twinkle.warn.messages[ value ], function( groupLabel, groupContents ) {
@@ -1429,7 +1441,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			optgroup = optgroup.render();
 			sub_group.appendChild( optgroup );
 			// create the options
-			createEntries( groupContents, optgroup );
+			createEntries( groupContents, optgroup, false );
 		} );
 	}
 
