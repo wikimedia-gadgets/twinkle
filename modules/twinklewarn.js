@@ -1249,7 +1249,7 @@ Twinkle.warn.messages = {
 		},
 		"uw-ipevadeblock": {
 			label: "Block-evasion block - IP address",
-			summary: "Your IP address have been blocked from editing because it has been used to [[WP:EVADE|evade a previous block]]"
+			summary: "Your IP address has been blocked from editing because it has been used to [[WP:EVADE|evade a previous block]]"
 		},
 		"uw-hblock": {
 			label: "Harassment block",
