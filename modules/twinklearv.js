@@ -198,12 +198,17 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					{
 						label: 'Misleading username',
 						value: 'misleading',
-						tooltip: 'Misleading usernames imply relevant, misleading things about the contributor. For example, misleading points of fact, an impression of undue authority, or the suggestion that the account is operated by a group, project or collective rather than one individual.'
+						tooltip: 'Misleading usernames imply relevant, misleading things about the contributor. For example, misleading points of fact, an impression of undue authority, or usernames giving the impression of a bot account.'
 					},
 					{
 						label: 'Promotional username',
 						value: 'promotional',
 						tooltip: 'Promotional usernames are advertisements for a company, website or group. Please do not report these names to UAA unless the user has also made promotional edits related to the name.'
+					},
+					{
+						label: 'Username that implies shared use',
+						value: 'shared',
+						tooltip: 'Usernames that imply the likelihood of shared use (names of companies or groups, or the names of posts within organizations) are not permitted. Usernames are acceptable if they contain a company or group name but are clearly intended to denote an individual person, such as "Mark at WidgetsUSA", "Jack Smith at the XY Foundation", "WidgetFan87", etc.'
 					},
 					{
 						label: 'Offensive username',
@@ -582,12 +587,12 @@ Twinkle.arv.callback.evaluate = function(e) {
 			
 		// Report inappropriate username
 		case 'username':
-			types = form.getChecked( 'arvtype' );
-			if( !types.length ) {
-				alert( 'You must specify at least one breached violation' );
-				return;
+			types = form.getChecked( 'arvtype' ).map( Morebits.string.toLowerCaseFirstChar );
+			
+			var hasShared = types.indexOf( 'shared' ) > -1;
+			if ( hasShared ) {
+				types.splice( types.indexOf( 'shared' ), 1 );
 			}
-			types = types.map( Morebits.string.toLowerCaseFirstChar );
 
 			if ( types.length <= 2 ) {
 				types = types.join( ' and ' );
@@ -595,11 +600,15 @@ Twinkle.arv.callback.evaluate = function(e) {
 				types = [ types.slice( 0, -1 ).join( ', ' ), types.slice( -1 ) ].join( ' and ' );
 			}
 			var article = 'a';
-			if ( /[aeiouwyh]/.test( types[0] ) ) { // non 100% correct, but whatever, inlcuding 'h' for Cockney
+			if ( /[aeiouwyh]/.test( types[0] || '' ) ) { // non 100% correct, but whatever, including 'h' for Cockney
 				article = 'an';
 			}
-			reason = "*{{user-uaa|1=" + uid + "}} &ndash; Violation of the username policy as " + article + " " + types + " username. ";
-			if (comment !== '' ) {
+			reason = "*{{user-uaa|1=" + uid + "}} &ndash; ";
+			if ( types.length || hasShared ) {
+				reason += "Violation of the username policy as " + article + " " + types + " username" +
+					( hasShared ? " that implies shared use. " : ". " );
+			}
+			if ( comment !== '' ) {
 				reason += Morebits.string.toUpperCaseFirstChar(comment) + ". ";
 			}
 			reason += "~~~~";
