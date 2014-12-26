@@ -84,7 +84,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 			selected: mw.config.get('wgNamespaceNumber') === 14,  // Category namespace
 			value: 'cfd'
 		} );
-  categories.append( {
+	categories.append( {
 			type: 'option',
 			label: 'CfD/S (Categories for speedy renaming)',
 			value: 'cfds'
