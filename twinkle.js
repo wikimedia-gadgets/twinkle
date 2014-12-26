@@ -404,7 +404,7 @@ Twinkle.load = function () {
 	    // Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
 	    isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
 
-    // Prevent users that are not autoconfirmed from loading Twinkle as well.
+	// Prevent users that are not autoconfirmed from loading Twinkle as well.
 	if ( isSpecialPage || isOldIE || !Twinkle.userAuthorized ) {
 		return;
 	}
