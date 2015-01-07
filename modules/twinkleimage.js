@@ -166,6 +166,11 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 						}
 					]
 				} );
+			work_area.append( {
+					type: 'textarea',
+					name: 'reason',
+					label: 'Reason: '
+				} );
 			break;
 		default:
 			break;
@@ -288,6 +293,7 @@ Twinkle.image.callbacks = {
 				tag += params.replacement ? "|replacement=" + params.replacement : "";
 				break;
 			case 'replaceable fair use':
+				tag += params.reason ? "|1=" + params.reason : "";
 				tag += params.old_image ? "|old image=yes" : "";
 				break;
 			default:
