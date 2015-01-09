@@ -37,7 +37,7 @@ If `morebits.js` and/or `morebits.css` need to be updated, they should be synche
 
 [MediaWiki:Gadgets-definition][] would then contain the following line:
 
-    * Twinkle[ResourceLoader|dependencies=jquery.ui.dialog,jquery.tipsy]|morebits.js|morebits.css|Twinkle.js
+    * Twinkle[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,jquery.ui.dialog,jquery.tipsy,moment]|morebits.js|morebits.css|Twinkle.js
 
 ### Synchronization using `sync.pl`
 
