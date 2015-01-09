@@ -12,7 +12,6 @@ See [Wikipedia:Twinkle][] on the English Wikipedia for more information.
 Layout of this repository
 -------------------------
 
-* `moment.js`: A copy of the [moment.js][] JavaScript library, version 2.4.0. As of July 2014, it is only used by the ARV module.
 * `morebits.js`: The central library used by Twinkle and many other scripts. Contains code to interact with the MediaWiki API, display forms and dialogs, generate status logs, and do various other useful things. The vast majority of code in here is not Twinkle-specific.
 * `morebits.css`: Styling to accompany `morebits.js`. The portlet styles relating to the Modern skin are Twinkle-specific and should arguably be in a `twinkle.css` file.
 * `sync.pl`: A Perl script to update on-wiki gadgets, or update the repository based on on-wiki changes. See below for full documentation.
@@ -42,7 +41,7 @@ If `morebits.js` and/or `morebits.css` need to be updated, they should be synche
 
 ### Synchronization using `sync.pl`
 
-There is a synchronization script called `sync.pl`, which can be used to pull and push files to Wikipedia. 
+There is a synchronization script called `sync.pl`, which can be used to pull and push files to Wikipedia.
 
 The program depends on Perl 5.10 and the modules [`Git::Repository`][Git::Repository] and [`MediaWiki::Bot`][MediaWiki::Bot], which can be installed easily using [`App::cpanminus`][App::cpanminus]:
 
@@ -84,7 +83,6 @@ Needless to say, there are exceptions. The main sticking point is spacing around
 
 [Wikipedia:Twinkle]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle
 [AzaToth]: https://en.wikipedia.org/wiki/User:AzaToth
-[moment.js]: http://momentjs.com/
 [Twinkle documentation]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle/doc
 [WP:TWPREFS]: https://en.wikipedia.org/wiki/WP:TWPREFS
 [MediaWiki:Gadget-Twinkle.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.js
