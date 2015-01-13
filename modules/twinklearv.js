@@ -634,7 +634,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				}
 				uaaPage.getStatusElement().status( 'Adding new report...' );
 				uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ Twinkle.getPref('summaryAd') );
-				uaaPage.setPageText( text.replace( /List begins below this line.\s*-->\s*/, "List begins below this line.\n-->\n" + reason + "\n\n" ) );  // add at top
+				uaaPage.setPageText( text + "\n\n" + reason );
 				uaaPage.save();
 			} );
 			break;
