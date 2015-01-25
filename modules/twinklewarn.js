@@ -390,6 +390,10 @@ Twinkle.warn.messages = {
 			}
 		},
 		"Other": {
+			"uw-attempt2": {
+				label: "Triggering the edit filter",
+				summary: "Caution: Triggering the edit filter"
+			},
 			"uw-chat2": {
 				label: "Using talk page as forum",
 				summary: "Caution: Using talk page as forum"
@@ -423,10 +427,6 @@ Twinkle.warn.messages = {
 			"uw-ics2": {
 				label: "Uploading files missing copyright status",
 				summary: "Caution: Uploading files missing copyright status"
-			},
-			"uw-af2": {
-				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "Caution: Inappropriate feedback through the Article Feedback Tool"
 			}
 		}*/
 	},
@@ -544,6 +544,10 @@ Twinkle.warn.messages = {
 			}
 		},
 		"Other": {
+			"uw-attempt3": {
+				label: "Triggering the edit filter",
+				summary: "Warning: Triggering the edit filter"
+			},
 			"uw-chat3": {
 				label: "Using talk page as forum",
 				summary: "Warning: Using talk page as forum"
@@ -570,10 +574,6 @@ Twinkle.warn.messages = {
 			}
 		}/*,
 		"To be removed fomr Twinkle": {
-			"uw-af3": {
-				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "Warning: Inappropriate feedback through the Article Feedback Tool"
-			},
 			"uw-ics3": {
 				label: "Uploading files missing copyright status",
 				summary: "Warning: Uploading files missing copyright status"
@@ -682,6 +682,10 @@ Twinkle.warn.messages = {
 			}
 		},
 		"Other": {
+			"uw-attempt4": {
+				label: "Triggering the edit filter",
+				summary: "Final warning: Triggering the edit filter"
+			},
 			"uw-chat4": {
 				label: "Using talk page as forum",
 				summary: "Final warning: Using talk page as forum"
@@ -715,10 +719,6 @@ Twinkle.warn.messages = {
 			"uw-ics4": {
 				label: "Uploading files missing copyright status",
 				summary: "Final warning: Uploading files missing copyright status"
-			},
-			"uw-af4": {
-				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "Final warning: Inappropriate feedback through the Article Feedback Tool"
 			}
 		}*/
 	},
@@ -792,10 +792,6 @@ Twinkle.warn.messages = {
 			}
 		}/*,
 		"To be removed from Twinkle": {
-			"uw-af4im": {
-				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "Only warning: Inappropriate feedback through the Article Feedback Tool"
-			},
 			"uw-redirect4im": {
 				label: "Creating malicious redirects",
 				summary: "Only warning: Creating malicious redirects"
@@ -1068,10 +1064,6 @@ Twinkle.warn.messages = {
 			label: "Creating attack pages",
 			summary: "Warning: Creating attack pages",
 			suppressArticleInSummary: true
-		},
-		"uw-attempt": {
-			label: "Triggering the edit filter",
-			summary: "Warning: Triggering the edit filter"
 		},
 		"uw-bizlist": {
 			label: "Business promotion",
