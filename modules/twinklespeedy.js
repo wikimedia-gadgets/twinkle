@@ -21,9 +21,11 @@
 
 Twinkle.speedy = function twinklespeedy() {
 	// Disable on:
+	// * Flow discussion boards
 	// * special pages
 	// * non-existent pages
-	if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId')) {
+	var ns = mw.config.get('wgNamespaceNumber');
+	if ( ns < 0 || ns == 2600 || ns == 90 || !mw.config.get('wgArticleId') ) {
 		return;
 	}
 
