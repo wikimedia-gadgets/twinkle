@@ -1585,19 +1585,24 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.load(Twinkle.xfd.callbacks.tfd.todaysList);
 
-		// Notification to first contributor
+		// Notification to first contributors
 		if (usertalk) {
-			var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
-			thispage.setCallbackParameters(params);
-			thispage.lookupCreator(Twinkle.xfd.callbacks.tfd.userNotification);
-
-			// Nice try, but what if the two page creators are the same user?
-			// Also, other XFD types don't do this... yet!
-			//if (xfdcat === "tfm") {
-			//	thispage = new Morebits.wiki.page("Template:" + xfdtarget);
-			//	thispage.setCallbackParameters(params);
-			//	thispage.lookupCreator(Twinkle.xfd.callbacks.tfd.userNotification);
-			//}
+			var involvedpages = [];
+			var seenusers = [];
+			involvedpages.push(new Morebits.wiki.page(mw.config.get('wgPageName')));
+			if (xfdcat === "tfm") {
+				involvedpages.push(new Morebits.wiki.page("Template:" + xfdtarget));
+			}
+			involvedpages.forEach(function(page) {
+				page.setCallbackParameters(params);
+				page.lookupCreator(function(innerpage) {
+					var username = innerpage.getCreator();
+					if (seenusers.indexOf(username) === -1) {
+						seenusers.push(username);
+						Twinkle.xfd.callbacks.tfd.userNotification(innerpage);
+					}
+				});
+			});
 		}
 
 		Morebits.wiki.removeCheckpoint();
