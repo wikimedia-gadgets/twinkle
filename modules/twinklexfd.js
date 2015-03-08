@@ -227,16 +227,21 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			} );
 		tfd_category.append( { type: 'option', label: 'Deletion', value: 'tfd', selected: true } );
 		tfd_category.append( { type: 'option', label: 'Merge', value: 'tfm' } );
+
+		var tfd_template_type = work_area.append( {
+			type: 'select',
+			name: 'templatetype',
+			label: 'Deletion tag display style: ',
+			tooltip: 'Which <code>type=</code> parameter to pass to the TfD tag template.'
+		} );
+		tfd_template_type.append( { type: 'option', value: 'standard', label: 'Standard', selected: true } );
+		tfd_template_type.append( { type: 'option', value: 'sidebar', label: 'Sidebar/infobox' } );
+		tfd_template_type.append( { type: 'option', value: 'inline', label: 'Inline template' } );
+		tfd_template_type.append( { type: 'option', value: 'tiny', label: 'Tiny inline' } );
+		
 		work_area.append( {
 				type: 'checkbox',
 				list: [
-						{
-							label: 'Inline deletion tag',
-							value: 'tfdinline',
-							name: 'tfdinline',
-							tooltip: 'Use {{tfd|type=inline}} to tag the page instead of {{tfd}}. Good for inline templates (those that appear amongst the words of text).',
-							checked: false
-						},
 						{
 							label: 'Wrap deletion tag with <noinclude> (for substituted templates only)',
 							value: 'noinclude',
@@ -244,7 +249,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 							tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t get substituted along with the template.'
 						}
 					]
-		} );
+			} );
+
 		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
@@ -661,7 +667,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{subst:template for discussion|help=off|" +
-				(params.tfdinline ? "type=inline|" : "") + mw.config.get('wgTitle') + (params.noinclude ? "}}</noinclude>" : "}}\n") + text);
+				(params.tfdtype !== "standard" ? "type=" + params.tfdtype +"|" : "") + mw.config.get('wgTitle') + (params.noinclude ? "}}</noinclude>" : "}}\n") + text);
 			pageobj.setEditSummary("Nominated for deletion; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
@@ -682,7 +688,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{subst:tfm|help=off|" +
-				(params.tfdinline ? "type=inline|1=" : "1=") + params.otherTemplateName.replace(/^Template:/, "") +
+				(params.tfdtype !== "standard" ? "type=" + params.tfdtype + "|" : "") + "1=" + params.otherTemplateName.replace(/^Template:/, "") +
 				(params.noinclude ? "}}</noinclude>" : "}}\n") + text);
 			pageobj.setEditSummary("Nominated for merging with [[" + params.otherTemplateName + "]]; see [[" +
 				params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
@@ -1477,7 +1483,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	var type = e.target.category.value;
 	var usertalk = e.target.notify.checked;
 	var reason = e.target.xfdreason.value;
-	var xfdcat, xfdtarget, xfdtarget2, ffdvenue, noinclude, tfdinline, notifyuserspace;
+	var xfdcat, xfdtarget, xfdtarget2, ffdvenue, noinclude, tfdtype, notifyuserspace;
 	if( type === "afd" || type === "cfd" || type === "cfds" || type === "tfd" ) {
 		xfdcat = e.target.xfdcat.value;
 	}
@@ -1502,10 +1508,10 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		noinclude = e.target.noinclude.checked;
 	}
 	if( type === 'tfd' ) {
-		tfdinline = e.target.tfdinline.checked;
 		if (e.target.xfdtarget) {
 			xfdtarget = e.target.xfdtarget.value;
 		}
+		tfdtype = e.target.templatetype.value;
 	}
 	if( type === 'mfd' ) {
 		notifyuserspace = e.target.notifyuserspace && e.target.notifyuserspace.checked;
@@ -1550,7 +1556,8 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		}
 
 		logpage = 'Wikipedia:Templates for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
-		params = { tfdinline: tfdinline, logpage: logpage, noinclude: noinclude, xfdcat: xfdcat, target: xfdtarget, reason: reason };
+
+		params = { tfdtype: tfdtype, logpage: logpage, noinclude: noinclude, xfdcat: xfdcat, target: xfdtarget, reason: reason };
 
 		// Tagging template(s)
 		if (xfdcat === "tfm") {
