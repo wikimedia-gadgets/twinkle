@@ -231,11 +231,12 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		var tfd_template_type = work_area.append( {
 			type: 'select',
 			name: 'templatetype',
-			label: 'Deletion tag display style: '
+			label: 'Deletion tag display style: ',
+			tooltip: 'Which <code>type=</code> parameter to pass to the TfD tag template.'
 		} );
-		tfd_template_type.append( { type: 'option', value: 'standard', label: 'Standard notification', selected: true } );
-		tfd_template_type.append( { type: 'option', value: 'sidebar', label: 'Sidebars and infoboxes' } );
-		tfd_template_type.append( { type: 'option', value: 'inline', label: 'Inline templates' } );
+		tfd_template_type.append( { type: 'option', value: 'standard', label: 'Standard', selected: true } );
+		tfd_template_type.append( { type: 'option', value: 'sidebar', label: 'Sidebar/infobox' } );
+		tfd_template_type.append( { type: 'option', value: 'inline', label: 'Inline template' } );
 		tfd_template_type.append( { type: 'option', value: 'tiny', label: 'Tiny inline' } );
 		
 		work_area.append( {
