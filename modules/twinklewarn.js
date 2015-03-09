@@ -976,10 +976,6 @@ Twinkle.warn.messages = {
 			label: "Recreating material previously deleted via XfD process",
 			summary: "Notice: Recreating previously deleted material"
 		},
-		"uw-salt": {
-			label: "Recreating salted articles under a different title",
-			summary: "Notice: Recreating salted articles under a different title"
-		},
 		"uw-samename": {
 			label: "Rename request impossible",
 			summary: "Notice: Rename request impossible"
@@ -1129,6 +1125,10 @@ Twinkle.warn.messages = {
 		"uw-pinfo": {
 			label: "Personal info",
 			summary: "Warning: Personal info"
+		},
+		"uw-salt": {
+			label: "Recreating salted articles under a different title",
+			summary: "Notice: Recreating creation-protected articles under a different title"
 		},
 		"uw-socksuspect": {
 			label: "Sockpuppetry",
