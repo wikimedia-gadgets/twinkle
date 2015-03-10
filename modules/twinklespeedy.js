@@ -675,19 +675,6 @@ Twinkle.speedy.templateList = [
 			tooltip: 'The "Template:" prefix is not needed.'
 		},
 		hideWhenMultiple: true
-	},
-	{
-		label: 'T3: Templates that are not employed in any useful fashion',
-		value: 't3',
-		tooltip: 'This criterion allows you to provide a rationale. In many cases, another criterion will be more appropriate, such as G1, G2, G6, or G8.',
-		subgroup: {
-			name: 't3_rationale',
-			type: 'input',
-			label: 'Rationale: ',
-			tooltip: 'The rationale is required.',
-			size: 60
-		},
-		hideWhenMultiple: true
 	}
 ];
 
@@ -1007,7 +994,6 @@ Twinkle.speedy.normalizeHash = {
 	'notwebhost': 'u5',
 	'policy': 't2',
 	'duplicatetemplate': 't3',
-	't3': 't3',
 	'p1': 'p1',
 	'emptyportal': 'p2'
 };
@@ -1080,7 +1066,6 @@ Twinkle.speedy.reasonHash = {
 // Templates
 	'policy': 'Template that unambiguously misrepresents established policy',
 	'duplicatetemplate': 'Unused, redundant template',
-	't3': 'Unused, redundant template',
 // Portals
 	'p1': '[[WP:P|Portal]] page that would be subject to speedy deletion as an article',
 	'emptyportal': '[[WP:P|Portal]] without a substantial topic base',
@@ -1755,19 +1740,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 					}
 					currentParams["1"] = "~~~~~";
 					currentParams["2"] = t3template.replace(/^\s*Template:/i, "");
-				}
-				break;
-
-			case 't3':  // T3
-				if (form["csd.t3_rationale"]) {
-					var t3rationale = form["csd.t3_rationale"].value;
-					if (!t3rationale || !t3rationale.trim()) {
-						alert( 'CSD T3:  Please specify a rationale.' );
-						parameters = null;
-						return false;
-					}
-					currentParams["1"] = "~~~~~";
-					currentParams.rationale = t3rationale;
 				}
 				break;
 
