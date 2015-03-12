@@ -182,7 +182,7 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 };
 
 Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
-	var type, non_free, source, reason, replacement;
+	var type, non_free, source, reason, replacement, derivative;
 
 	var notify = event.target.notify.checked;
 	var types = event.target.type;
