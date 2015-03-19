@@ -430,8 +430,8 @@ var callback_evaluate = function( e ) {
 		text += "|more=" + message.trim() + "}}";
 		talkpage.setEditSummary("Please check the discussion at [[" + tbPageName + "#" + section + "]]" + Twinkle.getPref("summaryAd"));
 		
-	} else {
-		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
+	} else {  // tbtarget one of mytalk, usertalk, other
+		// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
 		text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n{{talkback|";
 		text += tbPageName;
 
@@ -447,8 +447,12 @@ var callback_evaluate = function( e ) {
 			text += "\n~~~~";
 		}
 
-		talkpage.setEditSummary("Talkback ([[" + (tbtarget === "other" ? "" : "User talk:") + tbPageName +
-			(section ? ("#" + section) : "") + "]])" + Twinkle.getPref("summaryAd"));
+		var editSummary = "Talkback ([[";
+		if (tbtarget !== "other" && !/^\s*user talk:/i.test(tbPageName)) {
+			editSummary += "User talk:";
+		}
+		editSummary += tbPageName + (section ? ("#" + section) : "") + "]])";
+		talkpage.setEditSummary(editSummary + Twinkle.getPref("summaryAd"));
 	}
 
 	talkpage.setAppendText( text );
