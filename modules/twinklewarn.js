@@ -588,13 +588,13 @@ Twinkle.warn.messages = {
 
 	level4: {
 		"Common warnings": {
-			"uw-generic4": {
-				label: "Generic warning (for template series missing level 4)",
-				summary: "Final warning notice"
-			},
 			"uw-vandalism4": {
 				label: "Vandalism",
 				summary: "Final warning: Vandalism"
+			},
+			"uw-generic4": {
+				label: "Generic warning (for template series missing level 4)",
+				summary: "Final warning notice"
 			},
 			"uw-delete4": {
 				label: "Removal of content, blanking",
