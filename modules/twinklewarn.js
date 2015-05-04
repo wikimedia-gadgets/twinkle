@@ -1086,6 +1086,10 @@ Twinkle.warn.messages = {
 			summary: "Notice: Avoiding copyright problems",
 			heading: "Wikipedia and copyright"
 		},
+		"uw-dls": {
+			label: "Replacing dead links with spam links",
+			summary: "Warning: Replacing dead links with spam links"
+		},
 		"uw-copyright-remove": {
 			label: "Removing {{copyvio}} template from articles",
 			summary: "Warning: Removing {{copyvio}} templates"
