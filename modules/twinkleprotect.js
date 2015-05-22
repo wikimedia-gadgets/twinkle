@@ -1253,6 +1253,7 @@ Twinkle.protect.callbacks = {
 		var text = rppPage.getPageText();
 		var statusElement = rppPage.getStatusElement();
 
+		// TODO Remove me once RPP moves to its new format
 		var ns2tag = {
 			'0': 'la',
 			'1': 'lat',
@@ -1282,6 +1283,7 @@ Twinkle.protect.callbacks = {
 			'829': 'lmdt'
 		};
 
+		// TODO Remove me once RPP moves to its new format
 		var linkTemplate = ns2tag[ mw.config.get('wgNamespaceNumber') ];
 		// support other namespaces like TimedText
 		// (this could support talk spaces better, but doesn't seem worth it)
@@ -1289,7 +1291,9 @@ Twinkle.protect.callbacks = {
 			linkTemplate = 'ln|' + Morebits.pageNameNorm.substring(0, Morebits.pageNameNorm.indexOf(':'));
 		}
 
-		var rppRe = new RegExp( '====\\s*\\{\\{\\s*' + linkTemplate + '\\s*\\|\\s*' + RegExp.escape( mw.config.get('wgTitle'), true ) + '\\s*\\}\\}\\s*====', 'm' );
+		// TODO Remove both "=?" and the linkTemplate bit when RPP moves to its new format
+		var rppRe = new RegExp( '====?\\s*((\\[\\[)?\s*:?\s*' + RegExp.escape( Morebits.pageNameNorm, true ) + '\s*(\\]\\])?|\\{\\{\\s*' +
+			linkTemplate + '\\s*\\|\\s*' + RegExp.escape( mw.config.get('wgTitle'), true ) + '\\s*\\}\\})\\s*====?', 'm' );
 		var tag = rppRe.exec( text );
 
 		var rppLink = document.createElement('a');
@@ -1301,11 +1305,12 @@ Twinkle.protect.callbacks = {
 			return;
 		}
 
-		var newtag = '==== {{' + linkTemplate + '|' + mw.config.get('wgTitle') + '}} ====' + "\n";
+		var newtag = '=== [[:' + Morebits.pageNameNorm + ']] ===\n';
 		if( ( new RegExp( '^' + RegExp.escape( newtag ).replace( /\s+/g, '\\s*' ), 'm' ) ).test( text ) ) {
 			statusElement.error( [ 'There is already a protection request for this page at ', rppLink, ', aborting.' ] );
 			return;
 		}
+		newtag += '* {{pagelinks|' + Morebits.pageNameNorm + '}}\n\n';
 
 		var words;
 		switch( params.expiry ) {
@@ -1362,12 +1367,12 @@ Twinkle.protect.callbacks = {
 
 		var reg;
 		if ( increase ) {
-			reg = /(\n==\s*Current requests for increase in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
+			reg = /(\n==\s*Current requests for increase in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)\s*/;
 		} else {
-			reg = /(\n==\s*Current requests for reduction in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
+			reg = /(\n==\s*Current requests for reduction in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)\s*/;
 		}
 		var originalTextLength = text.length;
-		text = text.replace( reg, "$1" + newtag + "\n");
+		text = text.replace( reg, "$1" + newtag + "\n\n");
 		if (text.length === originalTextLength)
 		{
 			var linknode = document.createElement('a');
