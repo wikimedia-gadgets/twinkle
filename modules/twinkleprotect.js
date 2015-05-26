@@ -981,6 +981,12 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				}
 			};
 
+			var stabilizeValues = {
+				pclevel: form.pclevel.value,
+				pcexpiry: form.pcexpiry.value,
+				protectReason: form.protectReason.value
+			};
+
 			var protectIt = function twinkleprotectCallbackProtectIt(next) {
 				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), "Protecting page");
 				if (mw.config.get('wgArticleId')) {
@@ -1017,10 +1023,10 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				}
 
 				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), "Applying pending changes protection");
-				thispage.setFlaggedRevs(form.pclevel.value, form.pcexpiry.value);
+				thispage.setFlaggedRevs(stabilizeValues.pclevel, stabilizeValues.pcexpiry);
 
-				if (form.protectReason.value) {
-					thispage.setEditSummary(form.protectReason.value);
+				if (stabilizeValues.protectReason) {
+					thispage.setEditSummary(stabilizeValues.protectReason);
 				} else {
 					alert("You must enter a protect reason, which will be inscribed into the protection log.");
 					return;
