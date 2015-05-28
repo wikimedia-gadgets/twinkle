@@ -21,15 +21,17 @@ Twinkle.warn = function twinklewarn() {
 	// modify URL of talk page on rollback success pages
 	if( mw.config.get('wgAction') === 'rollback' ) {
 		var $vandalTalkLink = $("#mw-rollback-success").find(".mw-usertoollinks a").first();
-		$vandalTalkLink.css("font-weight", "bold");
-		$vandalTalkLink.wrapInner($("<span/>").attr("title", "If appropriate, you can use Twinkle to warn the user about their edits to this page."));
-
-		var extraParam = "vanarticle=" + mw.util.rawurlencode(Morebits.pageNameNorm);
-		var href = $vandalTalkLink.attr("href");
-		if (href.indexOf("?") === -1) {
-			$vandalTalkLink.attr("href", href + "?" + extraParam);
-		} else {
-			$vandalTalkLink.attr("href", href + "&" + extraParam);
+		if ( $vandalTalkLink.length ) {
+			$vandalTalkLink.css("font-weight", "bold");
+			$vandalTalkLink.wrapInner($("<span/>").attr("title", "If appropriate, you can use Twinkle to warn the user about their edits to this page."));
+	
+			var extraParam = "vanarticle=" + mw.util.rawurlencode(Morebits.pageNameNorm);
+			var href = $vandalTalkLink.attr("href");
+			if (href.indexOf("?") === -1) {
+				$vandalTalkLink.attr("href", href + "?" + extraParam);
+			} else {
+				$vandalTalkLink.attr("href", href + "&" + extraParam);
+			}
 		}
 	}
 };
