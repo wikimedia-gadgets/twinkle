@@ -1373,12 +1373,12 @@ Twinkle.protect.callbacks = {
 
 		var reg;
 		if ( increase ) {
-			reg = /(\n==\s*Current requests for increase in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)\s*/;
+			reg = /(\n==\s*Current requests for increase in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)([\s\S]*?)\s*(\n==[^=])/;
 		} else {
-			reg = /(\n==\s*Current requests for reduction in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)\s*/;
+			reg = /(\n==\s*Current requests for reduction in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)([\s\S]*?)\s*(\n==[^=])/;
 		}
 		var originalTextLength = text.length;
-		text = text.replace( reg, "$1" + newtag + "\n\n");
+		text = text.replace( reg, "$1$2\n\n" + newtag + "\n$3");
 		if (text.length === originalTextLength)
 		{
 			var linknode = document.createElement('a');
