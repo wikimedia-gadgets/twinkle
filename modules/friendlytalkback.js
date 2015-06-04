@@ -428,7 +428,8 @@ var callback_evaluate = function( e ) {
 			text += "#" + section;
 		}
 		text += "|more=" + message.trim() + "}}";
-		talkpage.setEditSummary("Please check the discussion at [[" + tbPageName + "#" + section + "]]" + Twinkle.getPref("summaryAd"));
+		talkpage.setEditSummary("Please check the discussion at [[" + tbPageName +
+			(section ? ("#" + section) : "") + "]]" + Twinkle.getPref("summaryAd"));
 		
 	} else {  // tbtarget one of mytalk, usertalk, other
 		// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
