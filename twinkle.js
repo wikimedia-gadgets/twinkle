@@ -51,6 +51,8 @@ Twinkle.defaultConfig.twinkle = {
 	dialogLargeFont: false,
 	 // ARV
 	spiWatchReport: "yes",
+	 // Block
+	blankTalkpageOnIndefBlock: false,
 	 // Fluff (revert and rollback)
 	openTalkPage: [ "agf", "norm", "vand" ],
 	openTalkPageOnAutoRevert: false,
@@ -91,7 +93,6 @@ Twinkle.defaultConfig.twinkle = {
 	defaultWarningGroup: "1",
 	showSharedIPNotice: true,
 	watchWarnings: true,
-	blankTalkpageOnIndefBlock: false,
 	customWarningList: [],
 	 // XfD
 	xfdWatchDiscussion: "default",
@@ -419,6 +420,9 @@ Twinkle.load = function () {
 	Twinkle.welcome();
 	Twinkle.shared();
 	Twinkle.talkback();
+	if ( Morebits.userIsInGroup('sysop') ) {
+		Twinkle.block();
+	}
 	// Deletion
 	Twinkle.speedy();
 	Twinkle.prod();

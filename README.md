@@ -27,6 +27,8 @@ There are two ways to upload Twinkle scripts to Wikipedia or another destination
 
 ### Manual concatenation
 
+**These instructions are outdated! Don't do what it says here or you'll probably blow things up.**
+
 To generate a concatenated Twinkle script, use the following `bash` command:
 
     awk 'FNR==1{print ""}{print}' twinkle.js modules/*.js > alltwinkle.js

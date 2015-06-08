@@ -61,7 +61,8 @@ my %deploys = (
 	'modules/twinklefluff.js' => 'MediaWiki:Gadget-twinklefluff.js',
 	'modules/twinkleprotect.js' => 'MediaWiki:Gadget-twinkleprotect.js',
 	'modules/twinklearv.js' => 'MediaWiki:Gadget-twinklearv.js',
-	'modules/friendlytalkback.js' => 'MediaWiki:Gadget-friendlytalkback.js'
+	'modules/friendlytalkback.js' => 'MediaWiki:Gadget-friendlytalkback.js',
+	'modules/twinkleblock.js' => 'MediaWiki:Gadget-twinkleblock.js'
 );
 
 # Config file should be an hash consisting of username and password keys
