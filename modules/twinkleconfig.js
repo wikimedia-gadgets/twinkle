@@ -8,8 +8,8 @@
  ****************************************
  *** twinkleconfig.js: Preferences module
  ****************************************
- * Mode of invocation:     Adds configuration form to Wikipedia:Twinkle/Preferences and user 
-                           subpages named "/Twinkle preferences", and adds ad box to the top of user 
+ * Mode of invocation:     Adds configuration form to Wikipedia:Twinkle/Preferences and user
+                           subpages named "/Twinkle preferences", and adds ad box to the top of user
                            subpages belonging to the currently logged-in user which end in '.js'
  * Active on:              What I just said.  Yeah.
  * Config directives in:   TwinkleConfig
@@ -214,6 +214,21 @@ Twinkle.config.sections = [
 			label: "Add sockpuppet report pages to watchlist",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
+		}
+	]
+},
+
+{
+	title: "Block user",
+	adminOnly: true,
+	preferences: [
+		// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
+		// if true, blank the talk page when issuing an indef block notice (per [[WP:UW#Indefinitely blocked users]])
+		{
+			name: "blankTalkpageOnIndefBlock",
+			label: "Blank the talk page when indefinitely blocking users",
+			helptip: "See <a href=\"" + mw.util.getUrl("WP:UW#Indefinitely blocked users") + "\">WP:UW</a> for more information.",
+			type: "boolean"
 		}
 	]
 },
@@ -633,15 +648,6 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 
-		// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
-		// if true, blank the talk page when issuing an indef block notice (per [[WP:UW#Indefinitely blocked users]])
-		{
-			name: "blankTalkpageOnIndefBlock",
-			label: "Blank the talk page when indefinitely blocking users",
-			helptip: "See <a href=\"" + mw.util.getUrl("WP:UW#Indefinitely blocked users") + "\">WP:UW</a> for more information.",
-			adminOnly: true,
-			type: "boolean"
-		},
 		{
 			name: "customWarningList",
 			label: "Custom warning templates to display",
