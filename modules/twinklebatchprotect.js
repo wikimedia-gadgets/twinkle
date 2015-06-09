@@ -378,7 +378,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 		Morebits.status.error( 'Error', 'Nothing to protect, aborting' );
 		return;
 	}
-	
+
 	var batchOperation = new Morebits.batchOperation("Applying protection settings");
 	batchOperation.setOption("chunkSize", Twinkle.getPref('batchProtectChunks'));
 	batchOperation.setOption("preserveIndividualStatusLines", true);

@@ -17,7 +17,7 @@ Twinkle.prod = function twinkleprod() {
 	if( mw.config.get('wgNamespaceNumber') !== 0 || !mw.config.get('wgCurRevisionId') || Morebits.wiki.isPageRedirect() ) {
 		return;
 	}
-	
+
 	Twinkle.addPortletLink( Twinkle.prod.callback, "PROD", "tw-prod", "Propose deletion via WP:PROD" );
 };
 
@@ -32,7 +32,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#prod" );
 
 	var form = new Morebits.quickForm( Twinkle.prod.callback.evaluate );
-	
+
 	var field = form.append( {
 			type: 'field',
 			label: 'PROD type'
@@ -67,7 +67,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
-	
+
 	// fake a change event on the first prod type radio, to initialize the type-dependent controls
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );

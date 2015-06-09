@@ -99,7 +99,7 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 
 // Current protection level in a human-readable format
 // (a string, or null if no protection; only filled for sysops)
-Twinkle.protect.protectionLevel = null;  
+Twinkle.protect.protectionLevel = null;
 // Contains the current protection level in an object
 // Once filled, it will look something like:
 // { edit: { level: "sysop", expiry: <some date>, cascade: true }, ... }
@@ -1364,9 +1364,9 @@ Twinkle.protect.callbacks = {
 			Twinkle.protect.currentProtectionLevels.stabilize &&
 			Twinkle.protect.currentProtectionLevels.stabilize.level);
 		if (computeWeight(protInfo.edit, protInfo.stabilize) > editWeight ||
-			computeWeight(protInfo.move) > computeWeight(Twinkle.protect.currentProtectionLevels.move && 
+			computeWeight(protInfo.move) > computeWeight(Twinkle.protect.currentProtectionLevels.move &&
 			Twinkle.protect.currentProtectionLevels.move.level) ||
-			computeWeight(protInfo.create) > computeWeight(Twinkle.protect.currentProtectionLevels.create && 
+			computeWeight(protInfo.create) > computeWeight(Twinkle.protect.currentProtectionLevels.create &&
 			Twinkle.protect.currentProtectionLevels.create.level)) {
 			increase = true;
 		}

@@ -73,7 +73,7 @@ Twinkle.deprod.callback = function() {
 				metadata.push(concerns[title]);
 			}
 			if (isProtected) {
-				metadata.push("fully protected" + 
+				metadata.push("fully protected" +
 					($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))));
 			}
 			list.push({
@@ -133,7 +133,7 @@ var callback_commit = function(event) {
 	batchOperation.setPageList(pages);
 	batchOperation.run(function(pageName) {
 		var params = { page: pageName, reason: concerns[page] };
-		
+
 		var query = {
 			'action': 'query',
 			'list': 'backlinks',
@@ -144,7 +144,7 @@ var callback_commit = function(event) {
 		var wikipedia_api = new Morebits.wiki.api( 'Grabbing redirects', query, callback_deleteRedirects );
 		wikipedia_api.params = params;
 		wikipedia_api.post();
-		
+
 		query = {
 			'action': 'query',
 			'titles': 'Talk:' + pageName

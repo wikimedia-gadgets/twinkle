@@ -24,7 +24,7 @@ Twinkle.warn = function twinklewarn() {
 		if ( $vandalTalkLink.length ) {
 			$vandalTalkLink.css("font-weight", "bold");
 			$vandalTalkLink.wrapInner($("<span/>").attr("title", "If appropriate, you can use Twinkle to warn the user about their edits to this page."));
-	
+
 			var extraParam = "vanarticle=" + mw.util.rawurlencode(Morebits.pageNameNorm);
 			var href = $vandalTalkLink.attr("href");
 			if (href.indexOf("?") === -1) {

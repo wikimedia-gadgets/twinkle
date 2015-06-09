@@ -238,7 +238,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		tfd_template_type.append( { type: 'option', value: 'sidebar', label: 'Sidebar/infobox' } );
 		tfd_template_type.append( { type: 'option', value: 'inline', label: 'Inline template' } );
 		tfd_template_type.append( { type: 'option', value: 'tiny', label: 'Tiny inline' } );
-		
+
 		work_area.append( {
 				type: 'checkbox',
 				list: [

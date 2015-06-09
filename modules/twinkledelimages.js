@@ -69,7 +69,7 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 			'generator': 'categorymembers',
 			'gcmtitle': mw.config.get( 'wgPageName' ),
 			'gcmnamespace': 6,  // File:
-			'gcmlimit' : Twinkle.getPref('deliMax'), 
+			'gcmlimit' : Twinkle.getPref('deliMax'),
 			'prop': [ 'imageinfo', 'categories', 'revisions' ],
 			'grvlimit': 1,
 			'grvprop': [ 'user' ]

@@ -50,9 +50,9 @@ Twinkle.unlink.callback = function(presetReason) {
 	form.append( {
 		type: 'div',
 		style: 'margin-bottom: 0.5em',
-		label: [ 
-			'This tool allows you to unlink all incoming links ("backlinks") that point to this page' + 
-				(mw.config.get('wgNamespaceNumber') === 6 ? ", and/or hide all inclusions of this file by wrapping them in <!-- --> comment markup" : "") + 
+		label: [
+			'This tool allows you to unlink all incoming links ("backlinks") that point to this page' +
+				(mw.config.get('wgNamespaceNumber') === 6 ? ", and/or hide all inclusions of this file by wrapping them in <!-- --> comment markup" : "") +
 				". For instance, ",
 			node1,
 			" would become ",

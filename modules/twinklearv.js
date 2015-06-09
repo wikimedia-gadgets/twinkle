@@ -81,7 +81,7 @@ Twinkle.arv.callback = function ( uid ) {
 			name: 'uid',
 			value: uid
 		} );
-	
+
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
@@ -536,7 +536,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 
 			if ( form.page.value !== '' ) {
-			
+
 				// add a leading : on linked page namespace to prevent transclusion
 				reason = 'On [[' + form.page.value.replace( /^(Image|Category|File):/i, ':$1:' ) + ']]';
 
@@ -568,7 +568,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			var aivPage = new Morebits.wiki.page( 'Wikipedia:Administrator intervention against vandalism', 'Processing AIV request' );
 			aivPage.setPageSection( 1 );
 			aivPage.setFollowRedirect( true );
-			
+
 			aivPage.load( function() {
 				var text = aivPage.getPageText();
 
@@ -584,11 +584,11 @@ Twinkle.arv.callback.evaluate = function(e) {
 				aivPage.append();
 			} );
 			break;
-			
+
 		// Report inappropriate username
 		case 'username':
 			types = form.getChecked( 'arvtype' ).map( Morebits.string.toLowerCaseFirstChar );
-			
+
 			var hasShared = types.indexOf( 'shared' ) > -1;
 			if ( hasShared ) {
 				types.splice( types.indexOf( 'shared' ), 1 );
@@ -625,7 +625,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 			uaaPage.load( function() {
 				var text = uaaPage.getPageText();
-				
+
 				// check if user has already been reported
 				if (new RegExp( "\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?" + RegExp.escape(uid, true) + "\\s*(\\||\\})" ).test(text)) {
 					uaaPage.getStatusElement().error( 'User is already listed.' );
@@ -638,7 +638,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				uaaPage.save();
 			} );
 			break;
-			
+
 		// WP:SPI
 		case "sock":
 			/* falls through */
@@ -727,13 +727,13 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 Twinkle.arv.processSock = function( params ) {
 	Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
-	
+
 	// notify all user accounts if requested
 	if (params.notify && params.sockpuppets.length>0) {
-	
+
 		var notifyEditSummary = "Notifying about suspicion of sockpuppeteering." + Twinkle.getPref('summaryAd');
 		var notifyText = "\n\n{{subst:socksuspectnotice|1=" + params.uid + "}} ~~~~";
-		
+
 		// notify user's master account
 		var masterTalkPage = new Morebits.wiki.page( 'User talk:' + params.uid, 'Notifying suspected sockpuppeteer' );
 		masterTalkPage.setFollowRedirect( true );
@@ -744,7 +744,7 @@ Twinkle.arv.processSock = function( params ) {
 		var statusIndicator = new Morebits.status( 'Notifying suspected sockpuppets', '0%' );
 		var total = params.sockpuppets.length;
 		var current =   0;
-		
+
 		// display status of notifications as they progress
 		var onSuccess = function( sockTalkPage ) {
 			var now = parseInt( 100 * ++(current)/total, 10 ) + '%';
@@ -754,7 +754,7 @@ Twinkle.arv.processSock = function( params ) {
 				statusIndicator.info( now + ' (completed)' );
 			}
 		};
-		
+
 		var socks = params.sockpuppets;
 
 		// notify each puppet account
@@ -772,7 +772,7 @@ Twinkle.arv.processSock = function( params ) {
 		params.sockpuppets.map( function(v) {
 				return "* {{" + ( Morebits.isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "}}";
 			} ).join( "\n" ) + "\n|evidence=" + params.evidence + " \n";
-		
+
 	if ( params.checkuser ) {
 		text += "|checkuser=yes";
 	}
@@ -799,7 +799,7 @@ Twinkle.arv.processSock = function( params ) {
 			break;
 	}
 	spiPage.append();
-	
+
 	Morebits.wiki.removeCheckpoint();  // all page updates have been started
 };
 

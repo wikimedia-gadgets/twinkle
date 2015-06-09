@@ -115,13 +115,13 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 	batchOperation.setOption("preserveIndividualStatusLines", true);
 	batchOperation.setPageList(pages);
 	batchOperation.run(function(pageName) {
-		var query = { 
+		var query = {
 			'token': mw.user.tokens.get().editToken,
 			'title': pageName,
 			'action': 'undelete',
 			'reason': reason + Twinkle.getPref('deletionSummaryAd')
 		};
-		var wikipedia_api = new Morebits.wiki.api( "Undeleting page " + pageName, query, 
+		var wikipedia_api = new Morebits.wiki.api( "Undeleting page " + pageName, query,
 			batchOperation.workerSuccess, null, batchOperation.workerFailure );
 		wikipedia_api.statelem.status("undeleting...");
 		wikipedia_api.pageName = pageName;

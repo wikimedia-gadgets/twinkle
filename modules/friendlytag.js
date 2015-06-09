@@ -157,7 +157,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	if (!Twinkle.tag.checkedTags) {
 		Twinkle.tag.checkedTags = [];
 	}
-	
+
 	var container = new Morebits.quickForm.element({ type: "fragment" });
 
 	// function to generate a checkbox, with appropriate subgroup if needed
@@ -408,7 +408,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		var $checkbox = $(checkbox);
 		var link = Morebits.htmlNode("a", ">");
 		link.setAttribute("class", "tag-template-link");
-		link.setAttribute("href", mw.util.getUrl("Template:" + 
+		link.setAttribute("href", mw.util.getUrl("Template:" +
 			Morebits.string.toUpperCaseFirstChar(checkbox.values)));
 		link.setAttribute("target", "_blank");
 		$checkbox.parent().append(["\u00A0", link]);
@@ -1143,7 +1143,7 @@ Twinkle.tag.callbacks = {
 
 					var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib,
 						'Notifying initial contributor (' + initialContrib + ')');
-					var notifytext = "\n\n== Your article [[" + Morebits.pageNameNorm + "]]==\n" + 
+					var notifytext = "\n\n== Your article [[" + Morebits.pageNameNorm + "]]==\n" +
 						"{{subst:uw-notenglish|1=" + Morebits.pageNameNorm +
 						(params.translationPostAtPNT ? "" : "|nopnt=yes") + "}} ~~~~";
 					userTalkPage.setAppendText(notifytext);

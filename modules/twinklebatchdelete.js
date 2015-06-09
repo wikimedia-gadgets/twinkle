@@ -149,7 +149,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 					metadata.push("redirect");
 				}
 				if (isProtected) {
-					metadata.push("fully protected" + 
+					metadata.push("fully protected" +
 						($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))));
 				}
 				if (ns === "6") {  // mimic what delimages used to show for files
@@ -321,7 +321,7 @@ Twinkle.batchdelete.callbacks = {
 					wikipedia_api.params.talkPage = pageTitle.toText();
 					wikipedia_api.post();
 				}
-			} 
+			}
 		}
 	},
 	deleteRedirectsMain: function( apiobj ) {
@@ -330,7 +330,7 @@ Twinkle.batchdelete.callbacks = {
 		if (!pages.length) {
 			return;
 		}
-		
+
 		var redirectDeleter = new Morebits.batchOperation("Deleting redirects to " + apiobj.params.page);
 		redirectDeleter.setOption("chunkSize", Twinkle.getPref('batchdeleteChunks'));
 		redirectDeleter.setPageList(pages);
