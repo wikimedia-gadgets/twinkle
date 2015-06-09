@@ -52,8 +52,18 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 		name: 'reason',
 		label: 'Reason: '
 	} );
+
+	var link = document.createElement( 'a' );
+	link.href = mw.util.getUrl("Wikipedia talk:Twinkle");
+	link.textContent = "WT:TW";
 	var query;
 	if( mw.config.get( 'wgNamespaceNumber' ) === 14 ) {  // Category:
+		form.append( {
+			type: 'div',
+			label: [ 'This module is obsolete and may soon be removed. Please consider using D-batch instead. If you have any questions, please post at ',
+				link, '.' ],
+			style: 'color: red; font-weight: bold; font-size: larger'
+		} );
 		query = {
 			'action': 'query',
 			'generator': 'categorymembers',
@@ -70,7 +80,12 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 			'We are planning to overhaul the "Deli-batch" module; we are particularly wondering if it is worthwhile to maintain the functionality that allows "Deli-batch" to be used from pages other than category pages. \n\n' +
 			'Since you are invoking "Deli-batch" from a non-category page, we would appreciate it if you could inform the Twinkle team at [[WT:TW]]. If no one responds to say they are using it, this functionality may soon be removed or altered. \n\n' +
 			'Thanks, \nThe Twinkle team');
-		//form.append({ type:'div', style:'color:red;font-weight:bold;font-size:larger', label: 'This module is going away. Please use "D-batch" (batch deletion) instead.' });
+		form.append( {
+			type: 'div',
+			label: [ 'This module is obsolete and may soon be removed. If you have any questions, please post at ',
+				link, '.' ],
+			style: 'color: red; font-weight: bold; font-size: larger'
+		} );
 		query = {
 			'action': 'query',
 			'generator': 'images',
