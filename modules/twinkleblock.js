@@ -350,6 +350,11 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		Morebits.status.warn(relevantUserName + ' is already blocked', 'Submit query to reblock with supplied options');
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
 	}
+
+	if ($form.find('[name=actiontype][value=template]').is(':checked')) {
+		// make sure right fields are hidden based on default template
+		Twinkle.block.callback.change_template(e);
+	}
 };
 
 /*
@@ -797,7 +802,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Inappropriate use of user talk page while blocked', value: 'blocked talk-revoked-notice' },
 			{ label: 'Legal threats', value: 'uw-lblock' },
 			{ label: 'Personal attacks or harassment', value: 'uw-aoablock' },
-			{ label: 'Possible comprimised account', value: 'uw-compblock' },
+			{ label: 'Possible compromised account', value: 'uw-compblock' },
 			{ label: 'Removal of content', value: 'uw-dblock' },
 			{ label: 'Sockpuppetry', value: 'uw-spoablock' },
 			{ label: 'Social networking', value: 'uw-myblock' },
@@ -976,7 +981,6 @@ Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 	var $form = $(e.target),
 		toBlock = $form.find('[name=actiontype][value=block]').is(':checked'),
-
 		toWarn = $form.find('[name=actiontype][value=template]').is(':checked'),
 		blockoptions = {}, templateoptions = {};
 
@@ -986,6 +990,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 	blockoptions = Twinkle.block.field_block_options;
 
 	templateoptions = Twinkle.block.field_template_options;
+	templateoptions.disabletalk = !!(templateoptions.disabletalk || blockoptions.disabletalk);
 	delete blockoptions.expiry_preset; // remove extraneous
 
 	// use block settings as warn options where not supplied
@@ -1050,9 +1055,10 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 };
 
 Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
-	var text = '{{subst:' + params.template, settings = Twinkle.block.blockPresetsInfo[params.template];
+	var text = '{{', settings = Twinkle.block.blockPresetsInfo[params.template];
 
 	if (!settings.nonstandard) {
+		text += 'subst:'+params.template;
 		if (params.article && settings.pageParam) text += '|page=' + params.article;
 
 		if (!/te?mp|^\s*$|min/.exec(params.expiry)) {
@@ -1065,6 +1071,8 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 
 		if (params.reason) text += '|reason=' + params.reason;
 		if (params.disabletalk) text += '|notalk=yes';
+	} else {
+		text += params.template;
 	}
 
 	if (settings.sig) text += '|sig=' + settings.sig;
