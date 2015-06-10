@@ -625,7 +625,7 @@ Twinkle.config.sections = [
 				"5": "Level 4im",
 				"6": "Single-issue notices",
 				"7": "Single-issue warnings",
-				"8": "Custom warnings"
+				"9": "Custom warnings"
 			}
 		},
 
