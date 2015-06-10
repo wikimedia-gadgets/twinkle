@@ -15,8 +15,8 @@
 
 
 Twinkle.batchundelete = function twinklebatchundelete() {
-	if( mw.config.get("wgNamespaceNumber") !== mw.config.get("wgNamespaceIds").user ||
-		mw.config.get("wgNamespaceNumber") !== mw.config.get("wgNamespaceIds").project ||
+	if( ( mw.config.get("wgNamespaceNumber") !== mw.config.get("wgNamespaceIds").user &&
+		mw.config.get("wgNamespaceNumber") !== mw.config.get("wgNamespaceIds").project ) ||
 		!mw.config.get("wgArticleId") ) {
 		return;
 	}
