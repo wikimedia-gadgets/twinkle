@@ -269,7 +269,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				name: 'template_expiry',
 				display: 'none',
 				label: 'Period of blocking: ',
-				value: Twinkle.block.field_template_options.template_expiry || Twinkle.block.field_block_options.expiry || $form.find('[name=template_expiry]').val() || '',
+				value: '',
 				tooltip: 'The period the blocking is due for, for example 24 hours, 2 weeks, indefinite etc...'
 			} );
 		}
