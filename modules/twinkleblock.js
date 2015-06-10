@@ -368,6 +368,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  *   pageParam: <set if the associated block template accepts a page parameter>
  *   prependReason: <string - prepends the value of 'reason' to the end of the existing reason, namely for when revoking talk page access>
  *   nocreate: <block account creation from the user's IP (for anonymous users only)>
+ *   nonstandard: <template does not conform to stewardship of WikiProject User Warnings and may not accept standard parameters>
  *   reason: <string - block rationale, as would appear in the block log,
  *            and the edit summary for when adding block template, unless 'summary' is set>
  *   reasonParam: <set if the associated block template accepts a reason parameter>
@@ -386,6 +387,7 @@ Twinkle.block.blockPresetsInfo = {
 		expiry: '31 hours',
 		forAnonOnly: true,
 		nocreate: true,
+		nonstandard: true,
 		reason: '{{anonblock}}',
 		sig: '~~~~'
 	},
@@ -393,6 +395,7 @@ Twinkle.block.blockPresetsInfo = {
 		expiry: '36 hours',
 		forAnonOnly: true,
 		nocreate: true,
+		nonstandard: true,
 		reason: '{{anonblock}} <!-- Likely a school based on behavioral evidence -->',
 		templateName: 'anonblock',
 		sig: '~~~~'
@@ -401,41 +404,49 @@ Twinkle.block.blockPresetsInfo = {
 		expiry: '1 year',
 		forAnonOnly: true,
 		nocreate: true,
+		nonstandard: true,
 		reason: '{{blocked proxy}}',
 		sig: null
 	},
 	'blocked talk-revoked-notice' : {
 		disabletalk: true,
+		nonstandard: true,
 		reason: 'Revoking talk page access: inappropriate use of user talk page while blocked',
 		prependReason: true,
 		summary: 'Your user talk page access has been disabled',
 		useInitialOptions: true
 	},
 	'CheckUser block' : {
+		nonstandard: true,
 		reason: '{{CheckUser block}}',
 		sig: '~~~~'
 	},
 	'checkuserblock-account' : {
+		nonstandard: true,
 		reason: '{{checkuserblock-account}}',
 		sig: '~~~~'
 	},
 	'checkuserblock-wide' : {
+		nonstandard: true,
 		reason: '{{checkuserblock-wide}}',
 		sig: '~~~~'
 	},
 	'colocationwebhost' : {
 		expiry: '1 year',
 		forAnonOnly: true,
+		nonstandard: true,
 		reason: '{{colocationwebhost}}',
 		sig: null
 	},
 	'oversightblock' : {
+		nonstandard: true,
 		reason: '{{OversightBlock}}',
 		sig: '~~~~'
 	},
 	'school block' : {
 		forAnonOnly: true,
 		nocreate: true,
+		nonstandard: true,
 		reason: '{{school block}}',
 		sig: '~~~~'
 	},
@@ -443,18 +454,21 @@ Twinkle.block.blockPresetsInfo = {
 	// 'rangeblock' : {
 	//   reason: '{{rangeblock}}',
 	//   nocreate: true,
+	//   nonstandard: true,
 	//   forAnonOnly: true,
 	//   sig: '~~~~'
 	// },
 	'tor' : {
 		expiry: '1 year',
 		forAnonOnly: true,
+		nonstandard: true,
 		reason: '{{Tor}}',
 		sig: null
 	},
 	'webhostblock' : {
 		expiry: '1 year',
 		forAnonOnly: true,
+		nonstandard: true,
 		reason: '{{webhostblock}}',
 		sig: null
 	},
@@ -911,7 +925,7 @@ Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemp
 	var form = e.target.form, value = form.template.value, settings = Twinkle.block.blockPresetsInfo[value];
 
 	if (!$(form).find('[name=actiontype][value=block]').is(':checked')) {
-		if (settings.indefinite) {
+		if (settings.indefinite || settings.nonstandard) {
 			if (Twinkle.block.prev_template_expiry === null) {
 				Twinkle.block.prev_template_expiry = form.template_expiry.value || '';
 			}
@@ -925,9 +939,13 @@ Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemp
 			form.template_expiry.parentNode.style.display = 'block';
 		}
 		if (Twinkle.block.prev_template_expiry) form.expiry.value = Twinkle.block.prev_template_expiry;
+		Morebits.quickForm.setElementVisibility(form.notalk.parentNode, !settings.nonstandard);
 	} else {
-		Morebits.quickForm.setElementVisibility(form.blank_duration.parentNode, !settings.indefinite);
- 	}
+		Morebits.quickForm.setElementVisibility(
+			form.blank_duration.parentNode,
+			!settings.indefinite && !settings.nonstandard
+		);
+	}
 
 	Morebits.quickForm.setElementVisibility(form.article.parentNode, !!settings.pageParam);
 	Morebits.quickForm.setElementVisibility(form.block_reason.parentNode, !!settings.reasonParam);
@@ -941,18 +959,18 @@ Twinkle.block.prev_reason = null;
 
 Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 	var params = {
-			template: form.template.value,
-			article: form.article.value,
-			expiry: form.template_expiry ? form.template_expiry.value : form.expiry.value,
-			indefinite: !!(/indef|infinity|never|\*|max/).exec( form.template_expiry ? form.template_expiry.value : form.expiry.value ),
-			blank_duration: form.blank_duration ? form.blank_duration.checked : false,
-			disabletalk: form.disabletalk.checked || (form.notalk ? form.notalk.checked : false),
-			reason: form.block_reason.value
-		};
+		template: form.template.value,
+		article: form.article.value,
+		expiry: form.template_expiry ? form.template_expiry.value : form.expiry.value,
+		indefinite: !!(/indef|infinity|never|\*|max/).exec( form.template_expiry ? form.template_expiry.value : form.expiry.value ),
+		blank_duration: form.blank_duration ? form.blank_duration.checked : false,
+		disabletalk: form.disabletalk.checked || (form.notalk ? form.notalk.checked : false),
+		reason: form.block_reason.value
+	};
 
-	var templatetext = Twinkle.block.callback.getBlockNoticeWikitext(params);
+	var templateText = Twinkle.block.callback.getBlockNoticeWikitext(params);
 
-	form.previewer.beginRender(templatetext);
+	form.previewer.beginRender(templateText);
 };
 
 Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
@@ -1018,7 +1036,6 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 
 	var params = $.extend(formData, {
 		messageData: Twinkle.block.blockPresetsInfo[formData.template],
-		messageData: Twinkle.block.blockPresetsInfo[formData.template],
 		reason: Twinkle.block.field_template_options.block_reason,
 		disabletalk: Twinkle.block.field_template_options.notalk
 	});
@@ -1035,18 +1052,22 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 	var text = '{{subst:' + params.template, settings = Twinkle.block.blockPresetsInfo[params.template];
 
-	if (params.article && settings.pageParam) text += '|page=' + params.article;
+	if (!settings.nonstandard) {
+		if (params.article && settings.pageParam) text += '|page=' + params.article;
 
-	if (!/te?mp|^\s*$|min/.exec(params.expiry)) {
-		if (params.indefinite) {
-			text += '|indef=yes';
-		} else if(!params.blank_duration) {
-			text += '|time=' + params.expiry;
+		if (!/te?mp|^\s*$|min/.exec(params.expiry)) {
+			if (params.indefinite) {
+				text += '|indef=yes';
+			} else if(!params.blank_duration) {
+				text += '|time=' + params.expiry;
+			}
 		}
+
+		if (params.reason) text += '|reason=' + params.reason;
+		if (params.disabletalk) text += '|notalk=yes';
 	}
 
-	if (params.reason) text += '|reason=' + params.reason;
-	if (params.disabletalk) text += '|notalk=yes';
+	if (settings.sig) text += '|sig=' + settings.sig;
 
 	return text + '}}';
 };
