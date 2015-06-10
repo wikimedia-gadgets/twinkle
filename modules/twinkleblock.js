@@ -260,7 +260,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				name: 'article',
 				display: 'none',
 				label: 'Linked article',
-				value: Twinkle.block.field_template_options.article || ( Morebits.queryString.exists( 'vanarticle' ) ? Morebits.queryString.get( 'vanarticle' ) : '' ),
+				value: '',
 				tooltip: 'An article can be linked within the notice, perhaps if it was the primary target of disruption. Leave empty for no article to be linked.'
 			} );
 		if (!$form.find('[name=actiontype][value=block]').is(':checked')) {
