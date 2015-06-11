@@ -641,6 +641,7 @@ Twinkle.protect.protectionTypes = [
 			{ label: 'Generic (semi)', value: 'pp-semi-protected' },
 			{ label: 'Persistent vandalism (semi)', selected: true, value: 'pp-semi-vandalism' },
 			{ label: 'Persistent disruptive editing (semi)', value: 'pp-semi-disruptive' },
+			{ label: 'Persistent addition of unsourced content (semi)', value: 'pp-semi-unsourced' },
 			{ label: 'BLP policy violations (semi)', value: 'pp-semi-blp' },
 			{ label: 'Sockpuppetry (semi)', value: 'pp-semi-sock' },
 			{ label: 'User talk of blocked user (semi)', value: 'pp-semi-usertalk' }
@@ -726,6 +727,11 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-semi-disruptive': {
 		edit: 'autoconfirmed',
 		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]]',
+		template: 'pp-protected'
+	},
+	'pp-semi-unsourced': {
+		edit: 'autoconfirmed',
+		reason: 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]',
 		template: 'pp-protected'
 	},
 	'pp-semi-blp': {
@@ -1090,6 +1096,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					break;
 				case 'pp-semi-vandalism':
 				case 'pp-semi-disruptive':
+				case 'pp-semi-unsourced':
 				case 'pp-semi-usertalk':
 				case 'pp-semi-sock':
 				case 'pp-semi-blp':
@@ -1130,6 +1137,9 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					break;
 				case 'pp-semi-disruptive':
 					typereason = 'Persistent [[Wikipedia:Disruptive editing|disruptive editing]]';
+					break;
+				case 'pp-semi-unsourced':
+					typereason = 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]';
 					break;
 				case 'pp-template':
 					typereason = 'Highly visible template';
