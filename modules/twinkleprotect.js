@@ -640,8 +640,8 @@ Twinkle.protect.protectionTypes = [
 		list: [
 			{ label: 'Generic (semi)', value: 'pp-semi-protected' },
 			{ label: 'Persistent vandalism (semi)', selected: true, value: 'pp-semi-vandalism' },
-			{ label: 'Persistent disruptive editing (semi)', value: 'pp-semi-disruptive' },
-			{ label: 'Persistent addition of unsourced content (semi)', value: 'pp-semi-unsourced' },
+			{ label: 'Disruptive editing (semi)', value: 'pp-semi-disruptive' },
+			{ label: 'Adding unsourced content (semi)', value: 'pp-semi-unsourced' },
 			{ label: 'BLP policy violations (semi)', value: 'pp-semi-blp' },
 			{ label: 'Sockpuppetry (semi)', value: 'pp-semi-sock' },
 			{ label: 'User talk of blocked user (semi)', value: 'pp-semi-usertalk' }
