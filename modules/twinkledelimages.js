@@ -135,6 +135,7 @@ Twinkle.delimages.currentDeleteCounter = 0;
 Twinkle.delimages.currentUnlinkCounter = 0;
 Twinkle.delimages.currentdeletor = 0;
 Twinkle.delimages.callback.evaluate = function twinkledeliCallbackEvaluate(event) {
+	console.log(1);
 	var images = event.target.getChecked( 'images' );
 	var reason = event.target.reason.value;
 	var delete_image = event.target.delete_image.checked;
@@ -151,7 +152,7 @@ Twinkle.delimages.callback.evaluate = function twinkledeliCallbackEvaluate(event
 			window.clearInterval( Twinkle.delimages.currentdeletor );
 			Morebits.wiki.removeCheckpoint();
 			return;
-		} else if( work.length !== 0 && Twinkle.delimages.currentDeleteCounter <= Twinkle.getPref('batchDeleteMinCutOff') && Twinkle.delimages.currentUnlinkCounter <= Twinkle.getPref('batchDeleteMinCutOff') ) {
+		} else if( work.length !== 0 && Twinkle.delimages.currentDeleteCounter <= 5 && Twinkle.delimages.currentUnlinkCounter <= 5 ) {
 			Twinkle.delimages.unlinkCache = []; // Clear the cache
 			var images = work.shift();
 			Twinkle.delimages.currentDeleteCounter = images.length;
