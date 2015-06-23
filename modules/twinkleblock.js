@@ -345,9 +345,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
 		Morebits.status.warn(relevantUserName + ' is already blocked', 'Submit query to reblock with supplied options');
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
-	}
-
-	if ($form.find('[name=actiontype][value=template]').is(':checked')) {
+	} else if ($form.find('[name=actiontype][value=template]').is(':checked')) {
 		// make sure all the fields are correct based on defaults
 		if ($form.find('[name=actiontype][value=block]').is(':checked')) {
 			Twinkle.block.callback.change_preset(e);
