@@ -224,7 +224,9 @@ body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 	height: 1em;
 	background: repeat-x 50% 80% #cfd6e1 !important;  /* the actual image is specified in morebits.js - ResourceLoader mangles data: URIs in CSS */
 	font: bold 1em sans-serif;
+	overflow: hidden;
 	padding: .4em .3em .5em !important;
+	white-space: nowrap;
 }
 
 body.skin-monobook .morebits-dialog .ui-dialog-titlebar {
