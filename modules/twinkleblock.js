@@ -511,13 +511,6 @@ Twinkle.block.blockPresetsInfo = {
 		reasonParam: true,
 		summary: 'You have been blocked from editing for violating an [[WP:Arbitration|arbitration decision]] with your edits'
 	},
-	'uw-aoablock' : {
-		autoblock: true,
-		forRegisteredOnly: true,
-		nocreate: true,
-		reason: '[[WP:No personal attacks|Personal attacks]] or [[WP:Harassment|harassment]]',
-		summary: 'You have been blocked from editing for making [[WP:NPA|personal attacks]] toward other users'
-	},
 	'uw-bioblock' : {
 		autoblock: true,
 		nocreate: true,
@@ -628,6 +621,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'uw-lblock' : {
 		autoblock: true,
+		expiry: 'infinity',
 		nocreate: true,
 		reason: 'Making [[WP:No legal threats|legal threats]]',
 		summary: 'You have been blocked from editing for making [[WP:NLT|legal threats or taking legal action]]'
@@ -659,6 +653,13 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: true,
 		reason: 'Creating [[WP:Patent nonsense|patent nonsense]] or other inappropriate pages',
 		summary: 'You have been blocked from editing for creating [[WP:PN|nonsense pages]]'
+	},
+	'uw-pablock' : {
+		autoblock: true,
+		expiry: '31 hours',
+		nocreate: true,
+		reason: '[[WP:No personal attacks|Personal attacks]] or [[WP:Harassment|harassment]]',
+		summary: 'You have been blocked from editing for making [[WP:NPA|personal attacks]] toward other users'
 	},
 	'uw-sblock' : {
 		autoblock: true,
@@ -763,10 +764,16 @@ Twinkle.block.transformBlockPresets = function twinkleblockTransformBlockPresets
 	// supply sensible defaults
 	$.each(Twinkle.block.blockPresetsInfo, function(preset, settings) {
 		settings.summary = settings.summary || settings.reason;
-		settings.expiry = settings.expiry || '31 hours';
 		settings.sig = settings.sig !== undefined ? settings.sig : 'yes';
 		// despite this it's preferred that you use 'infinity' as the value for expiry
 		settings.indefinite = settings.indefinite || settings.expiry === 'infinity' || settings.expiry === 'indefinite' || settings.expiry === 'never';
+
+		if (!Twinkle.block.isRegistered && settings.indefinite) {
+			settings.expiry = '31 hours';
+		} else {
+			settings.expiry = settings.expiry || '31 hours';
+		}
+
 		Twinkle.block.blockPresetsInfo[preset] = settings;
 	});
 };
@@ -805,7 +812,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Harassment', value: 'uw-hblock' },
 			{ label: 'Inappropriate use of user talk page while blocked', value: 'blocked talk-revoked-notice' },
 			{ label: 'Legal threats', value: 'uw-lblock' },
-			{ label: 'Personal attacks or harassment', value: 'uw-aoablock' },
+			{ label: 'Personal attacks or harassment', value: 'uw-pablock' },
 			{ label: 'Possible compromised account', value: 'uw-compblock' },
 			{ label: 'Removal of content', value: 'uw-dblock' },
 			{ label: 'Sockpuppetry', value: 'uw-spoablock' },
@@ -1072,6 +1079,10 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 			} else if(!params.blank_duration) {
 				text += '|time=' + params.expiry;
 			}
+		}
+
+		if (!Twinkle.block.isRegistered) {
+			text += '|anon=yes';
 		}
 
 		if (params.reason) text += '|reason=' + params.reason;
