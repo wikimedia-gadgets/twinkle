@@ -924,9 +924,15 @@ Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, 
 	data.disabletalk = data.disabletalk !== undefined ? data.disabletalk : false;
 	data.hardblock = data.hardblock !== undefined ? data.hardblock : false;
 
+	// disable autoblock if blocking a bot
+	if (Twinkle.block.isRegistered && relevantUserName.search(/bot$/i) > 0) {
+		data.autoblock = false;
+	}
+
 	$(form.field_block_options).find(':checkbox').each(function(i, el) {
 		// don't override original options if useInitialOptions is set
 		if (data.useInitialOptions && data[el.name] === undefined) return;
+
 		var check = data[el.name] === '' || !!data[el.name];
 		$(el).prop('checked', check);
 	});
