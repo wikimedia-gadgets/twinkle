@@ -871,7 +871,7 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
  */
 
 RegExp.escape = function( text, space_fix ) {
-	text = $.escapeRE(text);
+	text = mw.RegExp.escape(text);
 
 	// Special MediaWiki escape - underscore/space are often equivalent
 	if( space_fix ) {
