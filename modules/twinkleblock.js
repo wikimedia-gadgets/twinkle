@@ -411,14 +411,6 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '{{blocked proxy}}',
 		sig: null
 	},
-	'blocked talk-revoked-notice' : {
-		disabletalk: true,
-		nonstandard: true,
-		reason: 'Revoking talk page access: inappropriate use of user talk page while blocked',
-		prependReason: true,
-		summary: 'Your user talk page access has been disabled',
-		useInitialOptions: true
-	},
 	'CheckUser block' : {
 		nonstandard: true,
 		reason: '{{CheckUser block}}',
@@ -694,6 +686,13 @@ Twinkle.block.blockPresetsInfo = {
 		reason: 'Abusing [[WP:Sock puppetry|multiple accounts]]',
 		summary: 'You have been blocked from editing for abusing [[WP:SOCK|multiple accounts]]'
 	},
+	'uw-talkrevoked' : {
+		disabletalk: true,
+		reason: 'Revoking talk page access: inappropriate use of user talk page while blocked',
+		prependReason: true,
+		summary: 'Your user talk page access has been disabled',
+		useInitialOptions: true
+	},
 	'uw-ublock' : {
 		expiry: 'infinity',
 		forRegisteredOnly: true,
@@ -790,6 +789,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Generic block (custom reason) – IP', value: 'uw-ablock', selected: true }, // set only when blocking IP
 			{ label: 'Generic block (custom reason) – indefinite', value: 'uw-blockindef' },
 			{ label: 'Disruptive editing', value: 'uw-disruptblock' },
+			{ label: 'Inappropriate use of user talk page while blocked', value: 'uw-talkrevoked' },
 			{ label: 'Not here to contribute to the encyclopedia', value: 'uw-nothereblock' },
 			{ label: 'Vandalism', value: 'uw-vblock' },
 			{ label: 'Vandalism-only account', value: 'uw-voablock' }
@@ -808,7 +808,6 @@ Twinkle.block.blockGroups = [
 			{ label: 'Edit warring', value: 'uw-ewblock' },
 			{ label: 'Generic block with talk page access revoked', value: 'uw-blocknotalk' },
 			{ label: 'Harassment', value: 'uw-hblock' },
-			{ label: 'Inappropriate use of user talk page while blocked', value: 'blocked talk-revoked-notice' },
 			{ label: 'Legal threats', value: 'uw-lblock' },
 			{ label: 'Personal attacks or harassment', value: 'uw-pablock' },
 			{ label: 'Possible compromised account', value: 'uw-compblock' },
@@ -856,6 +855,9 @@ Twinkle.block.blockGroups = [
 Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilteredBlockGroups(show_template) {
 	return $.map(Twinkle.block.blockGroups, function(blockGroup) {
 		var list = $.map(blockGroup.list, function(blockPreset) {
+				// only show uw-talkrevoked if reblocking
+				if (!Twinkle.block.currentBlockInfo && blockPreset.value === "uw-talkrevoked") return;
+
 				var blockSettings = Twinkle.block.blockPresetsInfo[blockPreset.value];
 				var registrationRestrict = blockSettings.forRegisteredOnly ? Twinkle.block.isRegistered : (blockSettings.forAnonOnly ? !Twinkle.block.isRegistered : true);
 				if (!(blockSettings.templateName && show_template) && registrationRestrict) {
