@@ -345,9 +345,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
 		Morebits.status.warn(relevantUserName + ' is already blocked', 'Submit query to reblock with supplied options');
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
-	}
-
-	if ($form.find('[name=actiontype][value=template]').is(':checked')) {
+	} else if ($form.find('[name=actiontype][value=template]').is(':checked')) {
 		// make sure all the fields are correct based on defaults
 		if ($form.find('[name=actiontype][value=block]').is(':checked')) {
 			Twinkle.block.callback.change_preset(e);
@@ -412,14 +410,6 @@ Twinkle.block.blockPresetsInfo = {
 		nonstandard: true,
 		reason: '{{blocked proxy}}',
 		sig: null
-	},
-	'blocked talk-revoked-notice' : {
-		disabletalk: true,
-		nonstandard: true,
-		reason: 'Revoking talk page access: inappropriate use of user talk page while blocked',
-		prependReason: true,
-		summary: 'Your user talk page access has been disabled',
-		useInitialOptions: true
 	},
 	'CheckUser block' : {
 		nonstandard: true,
@@ -510,13 +500,6 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '[[WP:Arbitration enforcement|Arbitration enforcement]]',
 		reasonParam: true,
 		summary: 'You have been blocked from editing for violating an [[WP:Arbitration|arbitration decision]] with your edits'
-	},
-	'uw-aoablock' : {
-		autoblock: true,
-		forRegisteredOnly: true,
-		nocreate: true,
-		reason: '[[WP:No personal attacks|Personal attacks]] or [[WP:Harassment|harassment]]',
-		summary: 'You have been blocked from editing for making [[WP:NPA|personal attacks]] toward other users'
 	},
 	'uw-bioblock' : {
 		autoblock: true,
@@ -628,6 +611,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'uw-lblock' : {
 		autoblock: true,
+		expiry: 'infinity',
 		nocreate: true,
 		reason: 'Making [[WP:No legal threats|legal threats]]',
 		summary: 'You have been blocked from editing for making [[WP:NLT|legal threats or taking legal action]]'
@@ -659,6 +643,13 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: true,
 		reason: 'Creating [[WP:Patent nonsense|patent nonsense]] or other inappropriate pages',
 		summary: 'You have been blocked from editing for creating [[WP:PN|nonsense pages]]'
+	},
+	'uw-pablock' : {
+		autoblock: true,
+		expiry: '31 hours',
+		nocreate: true,
+		reason: '[[WP:No personal attacks|Personal attacks]] or [[WP:Harassment|harassment]]',
+		summary: 'You have been blocked from editing for making [[WP:NPA|personal attacks]] toward other users'
 	},
 	'uw-sblock' : {
 		autoblock: true,
@@ -694,6 +685,13 @@ Twinkle.block.blockPresetsInfo = {
 		nocreate: true,
 		reason: 'Abusing [[WP:Sock puppetry|multiple accounts]]',
 		summary: 'You have been blocked from editing for abusing [[WP:SOCK|multiple accounts]]'
+	},
+	'uw-talkrevoked' : {
+		disabletalk: true,
+		reason: 'Revoking talk page access: inappropriate use of user talk page while blocked',
+		prependReason: true,
+		summary: 'Your user talk page access has been disabled',
+		useInitialOptions: true
 	},
 	'uw-ublock' : {
 		expiry: 'infinity',
@@ -763,10 +761,16 @@ Twinkle.block.transformBlockPresets = function twinkleblockTransformBlockPresets
 	// supply sensible defaults
 	$.each(Twinkle.block.blockPresetsInfo, function(preset, settings) {
 		settings.summary = settings.summary || settings.reason;
-		settings.expiry = settings.expiry || '31 hours';
 		settings.sig = settings.sig !== undefined ? settings.sig : 'yes';
 		// despite this it's preferred that you use 'infinity' as the value for expiry
 		settings.indefinite = settings.indefinite || settings.expiry === 'infinity' || settings.expiry === 'indefinite' || settings.expiry === 'never';
+
+		if (!Twinkle.block.isRegistered && settings.indefinite) {
+			settings.expiry = '31 hours';
+		} else {
+			settings.expiry = settings.expiry || '31 hours';
+		}
+
 		Twinkle.block.blockPresetsInfo[preset] = settings;
 	});
 };
@@ -785,6 +789,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Generic block (custom reason) – IP', value: 'uw-ablock', selected: true }, // set only when blocking IP
 			{ label: 'Generic block (custom reason) – indefinite', value: 'uw-blockindef' },
 			{ label: 'Disruptive editing', value: 'uw-disruptblock' },
+			{ label: 'Inappropriate use of user talk page while blocked', value: 'uw-talkrevoked' },
 			{ label: 'Not here to contribute to the encyclopedia', value: 'uw-nothereblock' },
 			{ label: 'Vandalism', value: 'uw-vblock' },
 			{ label: 'Vandalism-only account', value: 'uw-voablock' }
@@ -803,9 +808,8 @@ Twinkle.block.blockGroups = [
 			{ label: 'Edit warring', value: 'uw-ewblock' },
 			{ label: 'Generic block with talk page access revoked', value: 'uw-blocknotalk' },
 			{ label: 'Harassment', value: 'uw-hblock' },
-			{ label: 'Inappropriate use of user talk page while blocked', value: 'blocked talk-revoked-notice' },
 			{ label: 'Legal threats', value: 'uw-lblock' },
-			{ label: 'Personal attacks or harassment', value: 'uw-aoablock' },
+			{ label: 'Personal attacks or harassment', value: 'uw-pablock' },
 			{ label: 'Possible compromised account', value: 'uw-compblock' },
 			{ label: 'Removal of content', value: 'uw-dblock' },
 			{ label: 'Sockpuppetry', value: 'uw-spoablock' },
@@ -851,6 +855,9 @@ Twinkle.block.blockGroups = [
 Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilteredBlockGroups(show_template) {
 	return $.map(Twinkle.block.blockGroups, function(blockGroup) {
 		var list = $.map(blockGroup.list, function(blockPreset) {
+				// only show uw-talkrevoked if reblocking
+				if (!Twinkle.block.currentBlockInfo && blockPreset.value === "uw-talkrevoked") return;
+
 				var blockSettings = Twinkle.block.blockPresetsInfo[blockPreset.value];
 				var registrationRestrict = blockSettings.forRegisteredOnly ? Twinkle.block.isRegistered : (blockSettings.forAnonOnly ? !Twinkle.block.isRegistered : true);
 				if (!(blockSettings.templateName && show_template) && registrationRestrict) {
@@ -917,9 +924,15 @@ Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, 
 	data.disabletalk = data.disabletalk !== undefined ? data.disabletalk : false;
 	data.hardblock = data.hardblock !== undefined ? data.hardblock : false;
 
+	// disable autoblock if blocking a bot
+	if (Twinkle.block.isRegistered && relevantUserName.search(/bot$/i) > 0) {
+		data.autoblock = false;
+	}
+
 	$(form.field_block_options).find(':checkbox').each(function(i, el) {
 		// don't override original options if useInitialOptions is set
 		if (data.useInitialOptions && data[el.name] === undefined) return;
+
 		var check = data[el.name] === '' || !!data[el.name];
 		$(el).prop('checked', check);
 	});
@@ -1072,6 +1085,10 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 			} else if(!params.blank_duration) {
 				text += '|time=' + params.expiry;
 			}
+		}
+
+		if (!Twinkle.block.isRegistered) {
+			text += '|anon=yes';
 		}
 
 		if (params.reason) text += '|reason=' + params.reason;
