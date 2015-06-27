@@ -993,11 +993,14 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				}
 			};
 
-			var stabilizeValues = {
-				pclevel: form.pclevel.value,
-				pcexpiry: form.pcexpiry.value,
-				protectReason: form.protectReason.value
-			};
+			var stabilizeValues = {};
+			if (form.pclevel) {
+				stabilizeValues = {
+					pclevel: form.pclevel.value,
+					pcexpiry: form.pcexpiry.value,
+					protectReason: form.protectReason.value
+				};
+			}
 
 			var protectIt = function twinkleprotectCallbackProtectIt(next) {
 				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), "Protecting page");
