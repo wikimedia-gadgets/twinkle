@@ -1282,47 +1282,7 @@ Twinkle.protect.callbacks = {
 		var text = rppPage.getPageText();
 		var statusElement = rppPage.getStatusElement();
 
-		// TODO Remove me once RPP moves to its new format
-		var ns2tag = {
-			'0': 'la',
-			'1': 'lat',
-			'2': 'lu',
-			'3': 'lut',
-			'4': 'lw',
-			'5': 'lwt',
-			'6': 'lf',
-			'7': 'lft',
-			'8': 'lm',
-			'9': 'lmt',
-			'10': 'lt',
-			'11': 'ltt',
-			'12': 'lh',
-			'13': 'lht',
-			'14': 'lc',
-			'15': 'lct',
-			'100': 'lp',
-			'101': 'lpt',
-			'108': 'lb',
-			'109': 'lbt',
-			'118': 'ld',
-			'119': 'ldt',
-			'710': 'lttxt',
-			'711': 'lttxtt',
-			'828': 'lmd',
-			'829': 'lmdt'
-		};
-
-		// TODO Remove me once RPP moves to its new format
-		var linkTemplate = ns2tag[ mw.config.get('wgNamespaceNumber') ];
-		// support other namespaces like TimedText
-		// (this could support talk spaces better, but doesn't seem worth it)
-		if (!linkTemplate) {
-			linkTemplate = 'ln|' + Morebits.pageNameNorm.substring(0, Morebits.pageNameNorm.indexOf(':'));
-		}
-
-		// TODO Remove both "=?" and the linkTemplate bit when RPP moves to its new format
-		var rppRe = new RegExp( '====?\\s*((\\[\\[)?\s*:?\s*' + RegExp.escape( Morebits.pageNameNorm, true ) + '\s*(\\]\\])?|\\{\\{\\s*' +
-			linkTemplate + '\\s*\\|\\s*' + RegExp.escape( mw.config.get('wgTitle'), true ) + '\\s*\\}\\})\\s*====?', 'm' );
+		var rppRe = new RegExp( '===\\s*(\\[\\[)?\s*:?\s*' + RegExp.escape( Morebits.pageNameNorm, true ) + '\s*(\\]\\])?\\s*===', 'm' );
 		var tag = rppRe.exec( text );
 
 		var rppLink = document.createElement('a');
