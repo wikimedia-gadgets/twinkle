@@ -35,9 +35,6 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	Window.addFooterLink( 'Block policy', 'WP:BLOCK' );
 	Window.addFooterLink( 'Twinkle help', 'WP:TW/DOC#block' );
 
-	// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
-	Twinkle.block.transformBlockPresets();
-
 	Twinkle.block.currentBlockInfo = undefined;
 	Twinkle.block.field_block_options = {};
 	Twinkle.block.field_template_options = {};
@@ -79,6 +76,9 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	result.root = result;
 
 	Twinkle.block.fetchUserInfo(function() {
+		// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
+		Twinkle.block.transformBlockPresets();
+
 		// init the controls after user and block info have been fetched
 		var evt = document.createEvent( 'Event' );
 		evt.initEvent( 'change', true, true );
@@ -982,13 +982,14 @@ Twinkle.block.prev_reason = null;
 
 Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 	var params = {
-		template: form.template.value,
 		article: form.article.value,
-		expiry: form.template_expiry ? form.template_expiry.value : form.expiry.value,
-		indefinite: !!(/indef|infinity|never|\*|max/).exec( form.template_expiry ? form.template_expiry.value : form.expiry.value ),
 		blank_duration: form.blank_duration ? form.blank_duration.checked : false,
 		disabletalk: form.disabletalk.checked || (form.notalk ? form.notalk.checked : false),
-		reason: form.block_reason.value
+		expiry: form.template_expiry ? form.template_expiry.value : form.expiry.value,
+		hardblock: Twinkle.block.isRegistered ? form.autoblock.checked : form.hardblock.checked,
+		indefinite: (/indef|infinity|never|\*|max/).test( form.template_expiry ? form.template_expiry.value : form.expiry.value ),
+		reason: form.block_reason.value,
+		template: form.template.value
 	};
 
 	var templateText = Twinkle.block.callback.getBlockNoticeWikitext(params);
@@ -1009,6 +1010,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 
 	templateoptions = Twinkle.block.field_template_options;
 	templateoptions.disabletalk = !!(templateoptions.disabletalk || blockoptions.disabletalk);
+	templateoptions.hardblock = !!blockoptions.hardblock;
 	delete blockoptions.expiry_preset; // remove extraneous
 
 	// use block settings as warn options where not supplied
@@ -1087,7 +1089,7 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 			}
 		}
 
-		if (!Twinkle.block.isRegistered) {
+		if (!Twinkle.block.isRegistered && !params.hardblock) {
 			text += '|anon=yes';
 		}
 
@@ -1123,7 +1125,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain( pageobj ) {
 		text += '\n\n';
 	}
 
-	params.indefinite = !!(/indef|infinity|never|\*|max/).exec( params.expiry );
+	params.indefinite = (/indef|infinity|never|\*|max/).test( params.expiry );
 
 	if ( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.template !== 'uw-lblock' && params.indefinite ) {
 		Morebits.status.info( 'Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date' );
