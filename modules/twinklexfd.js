@@ -533,6 +533,11 @@ Twinkle.xfd.callbacks = {
 
 			// Now we know we want to go ahead with it, trigger the other AJAX requests
 
+			// Mark the page as patrolled, if wanted
+			if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
+				pageobj.patrol();
+			}
+
 			// Starting discussion page
 			var wikipedia_page = new Morebits.wiki.page(params.discussionpage, "Creating article deletion discussion page");
 			wikipedia_page.setCallbackParameters(params);
