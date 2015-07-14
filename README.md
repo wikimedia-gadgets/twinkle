@@ -49,7 +49,7 @@ The program depends on Perl 5.10 and the modules [`Git::Repository`][Git::Reposi
 
     cpanm --sudo install Git::Repository MediaWiki::Bot
 
-Note: On some systems, additional modules such as [`File::Slurp`][File::Sulrp], [`Getopt::Long::Descriptive`][Getopt::Long::Descriptive] and other dependencies may need to be installed as well. It is preferred that you install them through your operating system's packaing tool (e.g. apt-get) although you can install them through cpanm too.
+Note: On some systems, additional modules such as `File::Slurp`, `Getopt::Long::Descriptive` and other dependencies may need to be installed as well. It is preferred that you install them through your operating system's packaing tool (e.g. `apt-get install libgetopt-long-descriptive-perl`) although you can install them through cpanm too.
 
 When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a file called `~/.mwbotrc` using the following format:
 
