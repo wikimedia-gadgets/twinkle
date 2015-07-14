@@ -49,13 +49,15 @@ The program depends on Perl 5.10 and the modules [`Git::Repository`][Git::Reposi
 
     cpanm --sudo install Git::Repository MediaWiki::Bot
 
+Note: On some systems, additional modules such as `File::Slurp`, `Getopt::Long::Descriptive` and other dependencies may need to be installed as well. It is preferred that you install them through your operating system's packaing tool (e.g. `apt-get install libgetopt-long-descriptive-perl`) although you can install them through cpanm too.
+
 When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a file called `~/.mwbotrc` using the following format:
 
     username => "Username",
     password => "password",
     base     => "User::Username"
 
-where `base` is the wiki path to prefix the files for `pull` and `push`.
+where `base` is the wiki path to prefix the files for `pull` and `push`. If you do not specify the `base` parameter, files will be pushed into the MediaWiki namespace.
 
 Notice that your working directory **must** be clean; if not, either `stash` or `commit` your changes.
 
@@ -71,6 +73,8 @@ There is also a `deploy` command to deploy all Twinkle files live.
 
     ./sync.pl --deploy twinkle.js
     make deploy
+
+Note that for syncing to a custom wiki, you will also need to specify the --lang and --family parameters too. For instance, to sync the files with `test.wmflabs.org` you should specify `--lang=test --family=wmflabs`. If you intend to use `make deploy` to deploy all the files at once, you may also need to modify the makefile to specify those parameters.
 
 The edit summary will contain the branch, the last commit sha, and the oneliner for that commit.
 
