@@ -33,6 +33,17 @@ Twinkle.addInitCallback = function twinkleAddInitCallback( func ) {
 	Twinkle.initCallbacks.push( func );
 };
 
+// Set locale to that of the interface
+$.i18n( {
+	locale : 'en'
+} );
+// Load i18n
+$.i18n().load( {
+	'en' : {
+	'tw-portlet-name' : 'TW'
+	}
+} );
+
 Twinkle.defaultConfig = {};
 /**
  * Twinkle.defaultConfig.twinkle and Twinkle.defaultConfig.friendly
@@ -115,7 +126,7 @@ Twinkle.defaultConfig.twinkle = {
 if ( mw.config.get( "skin" ) === "vector" ) {
 	Twinkle.defaultConfig.twinkle.portletArea = "right-navigation";
 	Twinkle.defaultConfig.twinkle.portletId   = "p-twinkle";
-	Twinkle.defaultConfig.twinkle.portletName = "TW";
+	Twinkle.defaultConfig.twinkle.portletName = $.i18n('tw-portlet-name');
 	Twinkle.defaultConfig.twinkle.portletType = "menu";
 	Twinkle.defaultConfig.twinkle.portletNext = "p-search";
 } else {
