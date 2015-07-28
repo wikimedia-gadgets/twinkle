@@ -666,6 +666,13 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '[[WP:Spam|Spam]] / [[WP:NOTADVERTISING|advertising]]-only account',
 		summary: 'You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam, advertising, or promotion]]'
 	},
+	'uw-sockblock' : {
+		autoblock: true,
+		forRegisteredOnly: true,
+		nocreate: true,
+		reason: 'Abusing [[WP:Sock puppetry|multiple accounts]]',
+		summary: 'You have been blocked from editing for abusing [[WP:SOCK|multiple accounts]]'
+	},
 	'uw-softerblock' : {
 		expiry: 'infinity',
 		forRegisteredOnly: true,
@@ -682,9 +689,11 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'uw-spoablock' : {
 		autoblock: true,
+		expiry: 'infinity',
+		forRegisteredOnly: true,
 		nocreate: true,
-		reason: 'Abusing [[WP:Sock puppetry|multiple accounts]]',
-		summary: 'You have been blocked from editing for abusing [[WP:SOCK|multiple accounts]]'
+		reason: '[[WP:SOCK|Sock puppetry]]',
+		summary: 'This account has been blocked as a [[WP:SOCK|sock puppet]] created to violate Wikipedia policy'
 	},
 	'uw-talkrevoked' : {
 		disabletalk: true,
@@ -812,7 +821,8 @@ Twinkle.block.blockGroups = [
 			{ label: 'Personal attacks or harassment', value: 'uw-pablock' },
 			{ label: 'Possible compromised account', value: 'uw-compblock' },
 			{ label: 'Removal of content', value: 'uw-dblock' },
-			{ label: 'Sockpuppetry', value: 'uw-spoablock' },
+			{ label: 'Sock puppetry (master)', value: 'uw-sockblock' },
+			{ label: 'Sock puppetry (puppet)', value: 'uw-spoablock' },
 			{ label: 'Social networking', value: 'uw-myblock' },
 			{ label: 'Spam', value: 'uw-sblock' },
 			{ label: 'Spam/advertising-only account', value: 'uw-soablock' },
