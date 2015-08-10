@@ -157,7 +157,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	if (!Twinkle.tag.checkedTags) {
 		Twinkle.tag.checkedTags = [];
 	}
-	
+
 	var container = new Morebits.quickForm.element({ type: "fragment" });
 
 	// function to generate a checkbox, with appropriate subgroup if needed
@@ -408,8 +408,8 @@ Twinkle.tag.updateSortOrder = function(e) {
 		var $checkbox = $(checkbox);
 		var link = Morebits.htmlNode("a", ">");
 		link.setAttribute("class", "tag-template-link");
-		link.setAttribute("href", mw.util.getUrl("Template:" + 
-			Morebits.string.toUpperCaseFirstChar($checkbox.val())));
+		link.setAttribute("href", mw.util.getUrl("Template:" +
+			Morebits.string.toUpperCaseFirstChar(checkbox.values)));
 		link.setAttribute("target", "_blank");
 		$checkbox.parent().append(["\u00A0", link]);
 	});
@@ -459,6 +459,7 @@ Twinkle.tag.article.tags = {
 	"lead too long": "article lead section is too long and should be shortened",
 	"lead too short": "article lead section is too short and should be expanded",
 	"linkrot": "article uses bare URLs for references, which are prone to link rot",
+	"manual": "article is written like a manual or guidebook",
 	"merge": "article should be merged with another given article",
 	"merge from": "another given article should be merged into this one",
 	"merge to": "article should be merged into another given article",
@@ -482,7 +483,7 @@ Twinkle.tag.article.tags = {
 	"primary sources": "article relies too heavily on primary sources, and needs secondary sources",
 	"prose": "article is in a list format that may be better presented using prose",
 	"recentism": "article is slanted towards recent events",
-	"ref improve": "article needs additional references or sources for verification",
+	"refimprove": "article needs additional references or sources for verification",
 	"chất lượng dịch": "bài dịch chất lượng kém, cần biên tập",
 	"sections": "article needs to be broken into sections",
 	"self-published": "article may contain improper references to self-published sources",
@@ -544,6 +545,7 @@ Twinkle.tag.article.tagCategories = {
 			"advert",
 			"essay-like",
 			"fansite",
+			"manual",
 			"news release",
 			"prose",
 			"technical",
@@ -583,7 +585,7 @@ Twinkle.tag.article.tagCategories = {
 			"one source",
 			"original research",
 			"primary sources",
-			"ref improve",
+			"refimprove",
 			"self-published",
 			"third-party",
 			"unreferenced",
@@ -1142,7 +1144,7 @@ Twinkle.tag.callbacks = {
 
 					var userTalkPage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib,
 						'Notifying initial contributor (' + initialContrib + ')');
-					var notifytext = "\n\n== Your article [[" + Morebits.pageNameNorm + "]]==\n" + 
+					var notifytext = "\n\n== Your article [[" + Morebits.pageNameNorm + "]]==\n" +
 						"{{subst:uw-notenglish|1=" + Morebits.pageNameNorm +
 						(params.translationPostAtPNT ? "" : "|nopnt=yes") + "}} ~~~~";
 					userTalkPage.setAppendText(notifytext);

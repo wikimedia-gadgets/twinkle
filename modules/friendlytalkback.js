@@ -182,7 +182,7 @@ var callback_change_target = function( e ) {
 					tooltip:"Tên thành viên mà bạn đã để lại tin nhắn trên trang thảo luận của họ.",
 					value: prev_page
 				});
-			
+
 			work_area.append({
 					type:"input",
 					name:"section",
@@ -275,7 +275,7 @@ var callback_change_target = function( e ) {
 					tooltip:"Tên trang đầy đủ mà bạn đã để lại tin nhắn. Ví dụ như: 'Thảo luận Wikipedia:Twinkle'.",
 					value: prev_page
 				});
-			
+
 			work_area.append({
 					type:"input",
 					name:"section",
@@ -334,7 +334,7 @@ var callback_evaluate = function( e ) {
 
 	if( tbtarget === "usertalk" || tbtarget === "other" || tbtarget === "see" ) {
 		page = e.target.page.value;
-		
+
 		if( tbtarget === "usertalk" ) {
 			if( !page ) {
 				alert("Bạn phải điền tên thành viên mà bạn để lại tin nhắn cho họ.");
@@ -421,17 +421,18 @@ var callback_evaluate = function( e ) {
 		}
 
 		talkpage.setEditSummary("Notification: You've got mail" + Twinkle.getPref("summaryAd"));
-	
+
 	} else if ( tbtarget === "see" ) {
 		text = "\n\n{{subst:Please see|location=" + tbPageName;
 		if (section) {
 			text += "#" + section;
 		}
 		text += "|more=" + message.trim() + "}}";
-		talkpage.setEditSummary("Please check the discussion at [[" + tbPageName + "#" + section + "]]" + Twinkle.getPref("summaryAd"));
-		
-	} else {
-		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
+		talkpage.setEditSummary("Please check the discussion at [[" + tbPageName +
+			(section ? ("#" + section) : "") + "]]" + Twinkle.getPref("summaryAd"));
+
+	} else {  // tbtarget one of mytalk, usertalk, other
+		// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
 		text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n{{talkback|";
 		text += tbPageName;
 
@@ -447,8 +448,12 @@ var callback_evaluate = function( e ) {
 			text += "\n~~~~";
 		}
 
-		talkpage.setEditSummary("Hồi âm ([[" + (tbtarget === "other" ? "" : "Thảo luận Thành viên:") + tbPageName +
-			(section ? ("#" + section) : "") + "]])" + Twinkle.getPref("summaryAd"));
+		var editSummary = "Hồi âm ([[";
+		if (tbtarget !== "other" && !/^\s*(?:user talk|thảo luận thành viên):/i.test(tbPageName)) {
+			editSummary += "Thảo luận Thành viên:";
+		}
+		editSummary += tbPageName + (section ? ("#" + section) : "") + "]])";
+		talkpage.setEditSummary(editSummary + Twinkle.getPref("summaryAd"));
 	}
 
 	talkpage.setAppendText( text );

@@ -99,7 +99,7 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 
 // Current protection level in a human-readable format
 // (a string, or null if no protection; only filled for sysops)
-Twinkle.protect.protectionLevel = null;  
+Twinkle.protect.protectionLevel = null;
 // Contains the current protection level in an object
 // Once filled, it will look something like:
 // { edit: { level: "sysop", expiry: <some date>, cascade: true }, ... }
@@ -640,10 +640,11 @@ Twinkle.protect.protectionTypes = [
 		label: 'Khóa nửa',
 		list: [
 			{ label: 'Chung (bán khóa)', value: 'pp-semi-protected' },
-			{ label: 'Phá hoại liên tục)', selected: true, value: 'pp-semi-vandalism' },
-			{ label: 'Vi phạm chính sách về người còn sống)', value: 'pp-semi-blp' },
+			{ label: 'Phá hoại liên tục (bán khóa)', selected: true, value: 'pp-semi-vandalism' },
+			{ label: 'Phá hoại (bán khóa)', value: 'pp-semi-disruptive' },
+			{ label: 'Thêm nội dung thiếu nguồn gốc (bán khóa)', value: 'pp-semi-unsourced' },
+			{ label: 'Vi phạm quy định Tiểu sử người đang sống (bán khóa)', value: 'pp-semi-blp' },
 			{ label: 'Rối (bán khóa)', value: 'pp-semi-sock' },
-			{ label: 'Bản mẫu được xem nhiều (bán khóa)', value: 'pp-semi-template' },
 			{ label: 'Trang thảo luận của thành viên bị cấm (bán khóa)', value: 'pp-semi-usertalk' }
 		]
 	},
@@ -725,6 +726,16 @@ Twinkle.protect.protectionPresetsInfo = {
 		edit: 'autoconfirmed',
 		reason: '[[WP:PH|Phá hoại]] liên tục',
 		template: 'pp-vandalism'
+	},
+	'pp-semi-disruptive': {
+		edit: 'autoconfirmed',
+		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]]',
+		template: 'pp-protected'
+	},
+	'pp-semi-unsourced': {
+		edit: 'autoconfirmed',
+		reason: 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]',
+		template: 'pp-protected'
 	},
 	'pp-semi-blp': {
 		edit: 'autoconfirmed',
@@ -921,7 +932,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			if( /template/.test( form.category.value ) ) {
 				form.noinclude.checked = true;
 				form.editexpiry.value = form.moveexpiry.value = form.pcexpiry.value = "indefinite";
-			} else {
+			} else if( mw.config.get('wgNamespaceNumber') !== 10 ) {
 				form.noinclude.checked = false;
 			}
 		}
@@ -985,6 +996,15 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				}
 			};
 
+			var stabilizeValues = {};
+			if (form.pclevel) {
+				stabilizeValues = {
+					pclevel: form.pclevel.value,
+					pcexpiry: form.pcexpiry.value,
+					protectReason: form.protectReason.value
+				};
+			}
+
 			var protectIt = function twinkleprotectCallbackProtectIt(next) {
 				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), "Protecting page");
 				if (mw.config.get('wgArticleId')) {
@@ -1021,10 +1041,10 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				}
 
 				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), "Applying pending changes protection");
-				thispage.setFlaggedRevs(form.pclevel.value, form.pcexpiry.value);
+				thispage.setFlaggedRevs(stabilizeValues.pclevel, stabilizeValues.pcexpiry);
 
-				if (form.protectReason.value) {
-					thispage.setEditSummary(form.protectReason.value);
+				if (stabilizeValues.protectReason) {
+					thispage.setEditSummary(stabilizeValues.protectReason);
 				} else {
 					alert("Bạn phải điền vào lý do khóa trang, nó sẽ được ghi vào nhật trình khóa.");
 					return;
@@ -1081,6 +1101,8 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typename = 'template protection';
 					break;
 				case 'pp-semi-vandalism':
+				case 'pp-semi-disruptive':
+				case 'pp-semi-unsourced':
 				case 'pp-semi-usertalk':
 				case 'pp-semi-sock':
 				case 'pp-semi-blp':
@@ -1118,6 +1140,12 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-semi-vandalism':
 				case 'pp-pc-vandalism':
 					typereason = 'Persistent vandalism';
+					break;
+				case 'pp-semi-disruptive':
+					typereason = 'Persistent [[Wikipedia:Disruptive editing|disruptive editing]]';
+					break;
+				case 'pp-semi-unsourced':
+					typereason = 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]';
 					break;
 				case 'pp-template':
 					typereason = 'Highly visible template';
@@ -1257,43 +1285,7 @@ Twinkle.protect.callbacks = {
 		var text = rppPage.getPageText();
 		var statusElement = rppPage.getStatusElement();
 
-		var ns2tag = {
-			'0': 'la',
-			'1': 'lat',
-			'2': 'lu',
-			'3': 'lut',
-			'4': 'lw',
-			'5': 'lwt',
-			'6': 'lf',
-			'7': 'lft',
-			'8': 'lm',
-			'9': 'lmt',
-			'10': 'lt',
-			'11': 'ltt',
-			'12': 'lh',
-			'13': 'lht',
-			'14': 'lc',
-			'15': 'lct',
-			'100': 'lp',
-			'101': 'lpt',
-			'108': 'lb',
-			'109': 'lbt',
-			'118': 'ld',
-			'119': 'ldt',
-			'710': 'lttxt',
-			'711': 'lttxtt',
-			'828': 'lmd',
-			'829': 'lmdt'
-		};
-
-		var linkTemplate = ns2tag[ mw.config.get('wgNamespaceNumber') ];
-		// support other namespaces like TimedText
-		// (this could support talk spaces better, but doesn't seem worth it)
-		if (!linkTemplate) {
-			linkTemplate = 'ln|' + Morebits.pageNameNorm.substring(0, Morebits.pageNameNorm.indexOf(':'));
-		}
-
-		var rppRe = new RegExp( '====\\s*\\{\\{\\s*' + linkTemplate + '\\s*\\|\\s*' + RegExp.escape( mw.config.get('wgTitle'), true ) + '\\s*\\}\\}\\s*====', 'm' );
+		var rppRe = new RegExp( '===\\s*(\\[\\[)?\s*:?\s*' + RegExp.escape( Morebits.pageNameNorm, true ) + '\s*(\\]\\])?\\s*===', 'm' );
 		var tag = rppRe.exec( text );
 
 		var rppLink = document.createElement('a');
@@ -1305,11 +1297,12 @@ Twinkle.protect.callbacks = {
 			return;
 		}
 
-		var newtag = '==== {{' + linkTemplate + '|' + mw.config.get('wgTitle') + '}} ====' + "\n";
+		var newtag = '=== [[:' + Morebits.pageNameNorm + ']] ===\n';
 		if( ( new RegExp( '^' + RegExp.escape( newtag ).replace( /\s+/g, '\\s*' ), 'm' ) ).test( text ) ) {
 			statusElement.error( [ 'There is already a protection request for this page at ', rppLink, ', aborting.' ] );
 			return;
 		}
+		newtag += '* {{pagelinks|' + Morebits.pageNameNorm + '}}\n\n';
 
 		var words;
 		switch( params.expiry ) {
@@ -1357,21 +1350,21 @@ Twinkle.protect.callbacks = {
 			Twinkle.protect.currentProtectionLevels.stabilize &&
 			Twinkle.protect.currentProtectionLevels.stabilize.level);
 		if (computeWeight(protInfo.edit, protInfo.stabilize) > editWeight ||
-			computeWeight(protInfo.move) > computeWeight(Twinkle.protect.currentProtectionLevels.move && 
+			computeWeight(protInfo.move) > computeWeight(Twinkle.protect.currentProtectionLevels.move &&
 			Twinkle.protect.currentProtectionLevels.move.level) ||
-			computeWeight(protInfo.create) > computeWeight(Twinkle.protect.currentProtectionLevels.create && 
+			computeWeight(protInfo.create) > computeWeight(Twinkle.protect.currentProtectionLevels.create &&
 			Twinkle.protect.currentProtectionLevels.create.level)) {
 			increase = true;
 		}
 
 		var reg;
 		if ( increase ) {
-			reg = /(\n==\s*Current requests for increase in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
+			reg = /(\n==\s*Current requests for increase in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)([\s\S]*?)\s*(\n==[^=])/;
 		} else {
-			reg = /(\n==\s*Current requests for reduction in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
+			reg = /(\n==\s*Current requests for reduction in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)([\s\S]*?)\s*(\n==[^=])/;
 		}
 		var originalTextLength = text.length;
-		text = text.replace( reg, "$1" + newtag + "\n");
+		text = text.replace( reg, "$1$2\n\n" + newtag + "\n$3");
 		if (text.length === originalTextLength)
 		{
 			var linknode = document.createElement('a');

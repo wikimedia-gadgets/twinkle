@@ -133,12 +133,24 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 						}
 					]
 				} );
-			break;
+		// fall through
 		case 'thiếu giấy phép':
+			work_area.append( {
+					type: 'checkbox',
+					name: 'derivative',
+					list: [
+						{
+							label: 'Derivative work which lacks a source for incorporated works',
+							tooltip: 'File is a derivative of one or more other works whose source is not specified'
+						}
+					]
+				} );
+			break;
+		case 'thiếu bằng chứng':
 			work_area.append( {
 					type: 'input',
 					name: 'source',
-					label: 'Source: '
+					label: 'Nguồn: '
 				} );
 			break;
 		case 'lý do SDHL vô lý':
@@ -175,7 +187,7 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 };
 
 Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
-	var type, non_free, source, reason, replacement, old_image;
+	var type, non_free, source, reason, replacement, derivative;
 
 	var notify = event.target.notify.checked;
 	var types = event.target.type;
@@ -197,8 +209,8 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	if( event.target.replacement ) {
 		replacement = event.target.replacement.value;
 	}
-	if( event.target.old_image ) {
-		old_image = event.target.old_image.checked;
+	if( event.target.derivative ) {
+		derivative = event.target.derivative.checked;
 	}
 
 	var csdcrit;
@@ -218,7 +230,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		case 'SDHL thay thế được':
 			csdcrit = "H7";
 			break;
-		case 'thiếu giấy phép':
+		case 'thiếu bằng chứng':
 			csdcrit = "H11";
 			break;
 		default:
@@ -226,15 +238,16 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	}
 
 	var lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit.toLowerCase()) === -1;
+	var templatename = (derivative ? ('dw ' + type) : type);
 
 	var params = {
 		'type': type,
+		'templatename': templatename,
 		'normalized': csdcrit,
 		'non_free': non_free,
 		'source': source,
 		'reason': reason,
 		'replacement': replacement,
-		'old_image': old_image,
 		'lognomination': lognomination
 	};
 	Morebits.simpleWindow.setButtonsEnabled( false );
@@ -259,7 +272,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		}
 		// No auto-notification, display what was going to be added.
 		var noteData = document.createElement( 'pre' );
-		noteData.appendChild( document.createTextNode( "{{subst:xh-" + type + "-tb|1=" + mw.config.get('wgTitle') + "}} ~~~~" ) );
+		noteData.appendChild( document.createTextNode( "{{subst:xh-" + templatename + "-tb|1=" + mw.config.get('wgTitle') + "}} ~~~~" ) );
 		Morebits.status.info( 'Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement( 'br' ),  noteData ] );
 	}
 };
@@ -272,13 +285,13 @@ Twinkle.image.callbacks = {
 		// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
 		text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 
-		var tag = "{{xh-" + params.type + "|ngày={{subst:CURRENTDAY2}}|tháng={{subst:CURRENTMONTH}}|năm={{subst:CURRENTYEAR}}";
+		var tag = "{{xh-" + params.templatename + "|ngày={{subst:CURRENTDAY2}}|tháng={{subst:CURRENTMONTH}}|năm={{subst:CURRENTYEAR}}";
 		switch( params.type ) {
 			case 'thiếu nguồn gốc lẫn giấy phép':
 			case 'thiếu nguồn gốc':
 				tag += params.non_free ? "|không tự do=có" : "";
 				break;
-			case 'thiếu giấy phép':
+			case 'thiếu bằng chứng':
 				tag += params.source ? "|nguồn=" + params.source : "";
 				break;
 			case 'lý do SDHL vô lý':
@@ -288,7 +301,7 @@ Twinkle.image.callbacks = {
 				tag += params.replacement ? "|thay thế=" + params.replacement : "";
 				break;
 			case 'SDHL thay thế được':
-				tag += params.old_image ? "|hình cũ=có" : "";
+				tag += params.reason ? "|hình cũ=có" : "";
 				break;
 			default:
 				break;  // doesn't matter
@@ -320,8 +333,8 @@ Twinkle.image.callbacks = {
 			pageobj.getStatusElement().warn("Bạn (" + initialContrib + ") đã tạo trang này; bỏ qua thông báo");
 		} else {
 			var usertalkpage = new Morebits.wiki.page('Thảo luận Thành viên:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-			var notifytext = "\n{{subst:xh-" + params.type + "-tb|1=" + mw.config.get('wgTitle');
-			if (params.type === 'no permission') {
+			var notifytext = "\n{{subst:xh-" + params.templatename + "-tb|1=" + mw.config.get('wgTitle');
+			if (params.type === 'thiếu bằng chứng') {
 				notifytext += params.source ? "|nguồn=" + params.source : "";
 			}
 			notifytext += "}} ~~~~";

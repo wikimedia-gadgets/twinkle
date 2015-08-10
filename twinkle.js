@@ -51,6 +51,8 @@ Twinkle.defaultConfig.twinkle = {
 	dialogLargeFont: false,
 	 // ARV
 	spiWatchReport: "yes",
+	 // Block
+	blankTalkpageOnIndefBlock: false,
 	 // Fluff (revert and rollback)
 	openTalkPage: [ "agf", "norm", "vand" ],
 	openTalkPageOnAutoRevert: false,
@@ -91,22 +93,19 @@ Twinkle.defaultConfig.twinkle = {
 	defaultWarningGroup: "1",
 	showSharedIPNotice: true,
 	watchWarnings: true,
-	blankTalkpageOnIndefBlock: false,
 	customWarningList: [],
 	 // XfD
 	xfdWatchDiscussion: "default",
 	xfdWatchList: "no",
 	xfdWatchPage: "default",
 	xfdWatchUser: "default",
+	markXfdPagesAsPatrolled: true,
 	 // Hidden preferences
 	revertMaxRevisions: 50,
 	batchdeleteChunks: 50,
-	batchDeleteMinCutOff: 5,
 	batchMax: 5000,
 	batchProtectChunks: 50,
-	batchProtectMinCutOff: 5,
 	batchundeleteChunks: 50,
-	batchUndeleteMinCutOff: 5,
 	deliChunks: 500,
 	deliMax: 5000,
 	proddeleteChunks: 50
@@ -404,10 +403,13 @@ Twinkle.load = function () {
 	    // Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
 	    isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
 
-    // Prevent users that are not autoconfirmed from loading Twinkle as well.
+	// Prevent users that are not autoconfirmed from loading Twinkle as well.
 	if ( isSpecialPage || isOldIE || !Twinkle.userAuthorized ) {
 		return;
 	}
+
+	// Set custom Api-User-Agent header, for server-side logging purposes
+	Morebits.wiki.api.setApiUserAgent( 'Twinkle/2.0 (' + mw.config.get( 'wgDBname' ) + ')' );
 
 	// Load the modules in the order that the tabs should appears
 	// User/user talk-related
@@ -416,6 +418,9 @@ Twinkle.load = function () {
 	Twinkle.welcome();
 	Twinkle.shared();
 	Twinkle.talkback();
+	if ( Morebits.userIsInGroup('sysop') ) {
+		Twinkle.block();
+	}
 	// Deletion
 	Twinkle.speedy();
 	Twinkle.prod();

@@ -8,8 +8,8 @@
  ****************************************
  *** twinkleconfig.js: Preferences module
  ****************************************
- * Mode of invocation:     Adds configuration form to Wikipedia:Twinkle/Preferences and user 
-                           subpages named "/Twinkle preferences", and adds ad box to the top of user 
+ * Mode of invocation:     Adds configuration form to Wikipedia:Twinkle/Preferences and user
+                           subpages named "/Twinkle preferences", and adds ad box to the top of user
                            subpages belonging to the currently logged-in user which end in '.js'
  * Active on:              What I just said.  Yeah.
  * Config directives in:   TwinkleConfig
@@ -219,6 +219,21 @@ Twinkle.config.sections = [
 },
 
 {
+	title: "Cấm người dùng",
+	adminOnly: true,
+	preferences: [
+		// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
+		// if true, blank the talk page when issuing an indef block notice (per [[WP:UW#Indefinitely blocked users]])
+		{
+			name: "blankTalkpageOnIndefBlock",
+			label: "Xóa trắng trang thảo luận thành viên khi thành viên bị cấm vĩnh viễn",
+			helptip: "Xem chi tiết tại <a href=\"" + mw.util.getUrl("en:WP:UW#Indefinitely blocked users") + "\">WP:UW</a>.",
+			type: "boolean"
+		}
+	]
+},
+
+{
 	title: "Xóa hình (DI)",
 	preferences: [
 		// TwinkleConfig.notifyUserOnDeli (boolean)
@@ -387,7 +402,6 @@ Twinkle.config.sections = [
 		{
 			name: "markSpeedyPagesAsPatrolled",
 			label: "Mark page as patrolled when tagging (if possible)",
-			helptip: "Due to technical limitations, pages are only marked as patrolled when they are reached via Special:NewPages.",
 			type: "boolean"
 		},
 
@@ -600,7 +614,7 @@ Twinkle.config.sections = [
 		// if true, watch the page which has been dispatched an warning or notice, if false, default applies
 		{
 			name: "defaultWarningGroup",
-			label: "Default warning level",
+			label: "Mức cảnh báo mặc định",
 			type: "enum",
 			enumValues: {
 				"1": "Lần 1",
@@ -610,8 +624,7 @@ Twinkle.config.sections = [
 				"5": "Lần 4im",
 				"6": "Thông báo đơn",
 				"7": "Cảnh báo đơn",
-				"9": "Cảnh báo khác",
-				"8": "Cấm (chỉ BQV)"
+				"9": "Cảnh báo khác"
 			}
 		},
 
@@ -633,15 +646,6 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 
-		// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
-		// if true, blank the talk page when issuing an indef block notice (per [[WP:UW#Indefinitely blocked users]])
-		{
-			name: "blankTalkpageOnIndefBlock",
-			label: "Xóa trắng trang thảo luận thành viên khi thành viên bị cấm vĩnh viễn",
-			helptip: "Xem chi tiết tại <a href=\"" + mw.util.getUrl("WP:UW#Indefinitely blocked users") + "\">WP:UW</a>.",
-			adminOnly: true,
-			type: "boolean"
-		},
 		{
 			name: "customWarningList",
 			label: "Custom warning templates to display",
@@ -649,6 +653,12 @@ Twinkle.config.sections = [
 			type: "customList",
 			customListValueTitle: "Template name (no curly brackets)",
 			customListLabelTitle: "Text to show in warning list (also used as edit summary)"
+		},
+
+		{
+			name: "markXfdPagesAsPatrolled",
+			label: "Mark page as patrolled when nominating for AFD (if possible)",
+			type: "boolean"
 		}
 	]
 },

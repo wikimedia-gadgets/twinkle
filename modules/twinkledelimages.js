@@ -52,14 +52,24 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 		name: 'reason',
 		label: 'Reason: '
 	} );
+
+	var link = document.createElement( 'a' );
+	link.href = mw.util.getUrl("Wikipedia talk:Twinkle");
+	link.textContent = "WT:TW";
 	var query;
 	if( mw.config.get( 'wgNamespaceNumber' ) === 14 ) {  // Category:
+		form.append( {
+			type: 'div',
+			label: [ 'This module is obsolete and is scheduled to be removed on 31 October 2015. Please consider using D-batch instead. If you have any questions, please post at ',
+				link, '.' ],
+			style: 'color: red; font-weight: bold; font-size: larger'
+		} );
 		query = {
 			'action': 'query',
 			'generator': 'categorymembers',
 			'gcmtitle': mw.config.get( 'wgPageName' ),
 			'gcmnamespace': 6,  // File:
-			'gcmlimit' : Twinkle.getPref('deliMax'), 
+			'gcmlimit' : Twinkle.getPref('deliMax'),
 			'prop': [ 'imageinfo', 'categories', 'revisions' ],
 			'grvlimit': 1,
 			'grvprop': [ 'user' ]
@@ -67,10 +77,14 @@ Twinkle.delimages.callback = function twinkledeliCallback() {
 	} else {
 		// prepare for a possible merge with batchdelete
 		alert('Dear admin, \n\n' +
-			'We are planning to overhaul the "Deli-batch" module; we are particularly wondering if it is worthwhile to maintain the functionality that allows "Deli-batch" to be used from pages other than category pages. \n\n' +
-			'Since you are invoking "Deli-batch" from a non-category page, we would appreciate it if you could inform the Twinkle team at [[WT:TW]]. If no one responds to say they are using it, this functionality may soon be removed or altered. \n\n' +
+			'IMPORTANT: Since you are invoking "Deli-batch" from a non-category page, we would appreciate it if you could inform the Twinkle team at [[WT:TW]]. If no one responds to say they are using it, this functionality will be removed on 31 October 2015. \n\n' +
 			'Thanks, \nThe Twinkle team');
-		//form.append({ type:'div', style:'color:red;font-weight:bold;font-size:larger', label: 'This module is going away. Please use "D-batch" (batch deletion) instead.' });
+		form.append( {
+			type: 'div',
+			label: [ 'This module is obsolete and is scheduled to be removed on 31 October 2015. If you have any questions, please post at ',
+				link, '.' ],
+			style: 'color: red; font-weight: bold; font-size: larger'
+		} );
 		query = {
 			'action': 'query',
 			'generator': 'images',
@@ -120,6 +134,7 @@ Twinkle.delimages.currentDeleteCounter = 0;
 Twinkle.delimages.currentUnlinkCounter = 0;
 Twinkle.delimages.currentdeletor = 0;
 Twinkle.delimages.callback.evaluate = function twinkledeliCallbackEvaluate(event) {
+	console.log(1);
 	var images = event.target.getChecked( 'images' );
 	var reason = event.target.reason.value;
 	var delete_image = event.target.delete_image.checked;
@@ -136,7 +151,7 @@ Twinkle.delimages.callback.evaluate = function twinkledeliCallbackEvaluate(event
 			window.clearInterval( Twinkle.delimages.currentdeletor );
 			Morebits.wiki.removeCheckpoint();
 			return;
-		} else if( work.length !== 0 && Twinkle.delimages.currentDeleteCounter <= Twinkle.getPref('batchDeleteMinCutOff') && Twinkle.delimages.currentUnlinkCounter <= Twinkle.getPref('batchDeleteMinCutOff') ) {
+		} else if( work.length !== 0 && Twinkle.delimages.currentDeleteCounter <= 5 && Twinkle.delimages.currentUnlinkCounter <= 5 ) {
 			Twinkle.delimages.unlinkCache = []; // Clear the cache
 			var images = work.shift();
 			Twinkle.delimages.currentDeleteCounter = images.length;

@@ -315,7 +315,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 	var wantSubgroups = Twinkle.speedy.mode.wantSubgroups(mode);
 	var hasSubmitButton = Twinkle.speedy.mode.hasSubmitButton(mode);
 
-	var openSubgroupHandler = function(e) { 
+	var openSubgroupHandler = function(e) {
 		$(e.target.form).find('input').prop('disabled', true);
 		$(e.target.form).children().css('color', 'gray');
 		$(e.target).parent().css('color', 'black').find('input').prop('disabled', false);
@@ -368,7 +368,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 
 		if (criterion.subgroup && !hasSubmitButton) {
 			if ($.isArray(criterion.subgroup)) {
-				criterion.subgroup.push({ 
+				criterion.subgroup.push({
 					type: 'button',
 					name: 'submit',
 					label: 'Submit Query',
@@ -673,19 +673,6 @@ Twinkle.speedy.templateList = [
 			type: 'input',
 			label: 'Template this is redundant to: ',
 			tooltip: 'The "Template:" prefix is not needed.'
-		},
-		hideWhenMultiple: true
-	},
-	{
-		label: 'T3: Templates that are not employed in any useful fashion',
-		value: 't3',
-		tooltip: 'This criterion allows you to provide a rationale. In many cases, another criterion will be more appropriate, such as G1, G2, G6, or G8.',
-		subgroup: {
-			name: 't3_rationale',
-			type: 'input',
-			label: 'Rationale: ',
-			tooltip: 'The rationale is required.',
-			size: 60
 		},
 		hideWhenMultiple: true
 	}
@@ -1007,7 +994,6 @@ Twinkle.speedy.normalizeHash = {
 	'notwebhost': 'u5',
 	'policy': 't2',
 	'duplicatetemplate': 't3',
-	't3': 't3',
 	'p1': 'p1',
 	'emptyportal': 'p2'
 };
@@ -1080,7 +1066,6 @@ Twinkle.speedy.reasonHash = {
 // Templates
 	'policy': 'Template that unambiguously misrepresents established policy',
 	'duplicatetemplate': 'Unused, redundant template',
-	't3': 'Unused, redundant template',
 // Portals
 	'p1': '[[WP:P|Portal]] page that would be subject to speedy deletion as an article',
 	'emptyportal': '[[WP:P|Portal]] without a substantial topic base',
@@ -1455,7 +1440,7 @@ Twinkle.speedy.callbacks = {
 		// note: this code is also invoked from twinkleimage
 		// the params used are:
 		//   for CSD: params.values, params.normalizeds  (note: normalizeds is an array)
-		//   for DI: params.fromDI = true, params.type, params.normalized  (note: normalized is a string)
+		//   for DI: params.fromDI = true, params.templatename, params.normalized  (note: normalized is a string)
 		addToLog: function(params, initialContrib) {
 			var wikipedia_page = new Morebits.wiki.page("User:" + mw.config.get('wgUserName') + "/" + Twinkle.getPref('speedyLogPageName'), "Adding entry to userspace log");
 			params.logInitialContrib = initialContrib;
@@ -1489,7 +1474,7 @@ Twinkle.speedy.callbacks = {
 
 			appendText += "\n# [[:" + Morebits.pageNameNorm + "]]: ";
 			if (params.fromDI) {
-				appendText += "DI [[WP:XN#" + params.normalized.toUpperCase() + "|XN " + params.normalized.toUpperCase() + "]] (" + params.type + ")";
+				appendText += "XH [[WP:XN#" + params.normalized.toUpperCase() + "|XN " + params.normalized.toUpperCase() + "]] ({{tl|xh-" + params.templatename + "}})";
 			} else {
 				if (params.normalizeds.length > 1) {
 					appendText += "multiple criteria (";
@@ -1680,7 +1665,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				api.post({
 					async: false
 				});
-				
+
 				break;
 
 			case 'redundantimage':  // F1
@@ -1755,19 +1740,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 					}
 					currentParams["1"] = "~~~~~";
 					currentParams["2"] = t3template.replace(/^\s*Template:/i, "");
-				}
-				break;
-
-			case 't3':  // T3
-				if (form["csd.t3_rationale"]) {
-					var t3rationale = form["csd.t3_rationale"].value;
-					if (!t3rationale || !t3rationale.trim()) {
-						alert( 'CSD T3:  Please specify a rationale.' );
-						parameters = null;
-						return false;
-					}
-					currentParams["1"] = "~~~~~";
-					currentParams.rationale = t3rationale;
 				}
 				break;
 
@@ -1856,7 +1828,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser(e) {
 	var form = (e.target.form ? e.target.form : e.target);
 
-	if (e.target.type === "checkbox" || e.target.type === "text" || 
+	if (e.target.type === "checkbox" || e.target.type === "text" ||
 			e.target.type === "select") {
 		return;
 	}
