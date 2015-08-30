@@ -74,7 +74,9 @@ There is also a `deploy` command to deploy all Twinkle files live.
     ./sync.pl --deploy twinkle.js
     make deploy
 
-Note that for syncing to a custom wiki, you will also need to specify the --lang and --family parameters too. For instance, to sync the files with `test.wmflabs.org` you should specify `--lang=test --family=wmflabs`. If you intend to use `make deploy` to deploy all the files at once, you may also need to modify the makefile to specify those parameters.
+Note that for syncing to a custom wiki, you will also need to specify the --lang and --family parameters too. For instance, to sync the files with `test.wmflabs.org` you should specify `--lang=test --family=wmflabs`. If you intend to use `make deploy` to deploy all the files at once, you may also need to pass the necessary parameters through the makefile to the sync script like this example:
+
+    make ARGS="--lang=test --family=wmflabs" deploy
 
 The edit summary will contain the branch, the last commit sha, and the oneliner for that commit.
 
