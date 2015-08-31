@@ -21,7 +21,7 @@ modules = modules/twinkleprod.js \
 		  modules/twinklearv.js \
 		  modules/friendlytalkback.js
 
-deploy: twinkle.js morebits.js morebits.css $(modules)
+deploy: twinkle.js morebits.js morebits.css jquery-i18n.js $(modules)
 	./sync.pl ${ARGS} --deploy $^
 
 .PHONY: deploy all

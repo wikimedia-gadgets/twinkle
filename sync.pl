@@ -42,6 +42,7 @@ my %deploys = (
 	'twinkle.js' => 'MediaWiki:Gadget-Twinkle.js',
 	'morebits.js' => 'MediaWiki:Gadget-morebits.js',
 	'morebits.css' => 'MediaWiki:Gadget-morebits.css',
+	'jquery-i18n.js' => 'MediaWiki:Gadget-jquery-i18n.js',
 	'modules/twinkleprod.js' => 'MediaWiki:Gadget-twinkleprod.js',
 	'modules/twinkleimage.js' => 'MediaWiki:Gadget-twinkleimage.js',
 	'modules/twinklebatchundelete.js' => 'MediaWiki:Gadget-twinklebatchundelete.js',
