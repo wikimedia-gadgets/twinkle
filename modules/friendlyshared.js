@@ -16,15 +16,17 @@
 Twinkle.shared = function friendlyshared() {
 	if( mw.config.get('wgNamespaceNumber') === 3 && Morebits.isIPAddress(mw.config.get('wgTitle')) ) {
 		var username = mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-		Twinkle.addPortletLink( function(){ Twinkle.shared.callback(username); }, "Shared IP", "friendly-shared", "Shared IP tagging" );
+		Twinkle.addPortletLink( function(){ Twinkle.shared.callback(username); }, $.i18n('tw-sharedip-label'), "friendly-shared", 'tw-sharedip-label-hover' );
 	}
 };
 
 Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 	var Window = new Morebits.simpleWindow( 600, 420 );
-	Window.setTitle( "Shared IP address tagging" );
-	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#shared" );
+	Window.setTitle( $.i18n('tw-sharedip-window-title') );
+	Window.setScriptName( $.i18n('tw-core-script-name') );
+	Window.addFooterLink( $.i18n('tw-core-help'), $.i18n('tw-core-help-page') );
+	
+	Twinkle.shared.initialize();
 
 	var form = new Morebits.quickForm( Twinkle.shared.callback.evaluate );
 
@@ -34,7 +36,7 @@ Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 			className: 'morebits-scrollbox'
 		}
 	);
-	div.append( { type: 'header', label: 'Shared IP address templates' } );
+	div.append( { type: 'header', label: $.i18n('tw-sharedip-templates') } );
 	div.append( { type: 'radio', name: 'shared', list: Twinkle.shared.standardList,
 		event: function( e ) {
 			Twinkle.shared.callback.change_shared( e );
@@ -42,29 +44,29 @@ Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 		}
 	} );
 
-	var org = form.append( { type:'field', label:'Fill in other details (optional) and click \"Submit\"' } );
+	var org = form.append( { type:'field', label: $.i18n('tw-sharedip-field-label') } );
 	org.append( {
 			type: 'input',
 			name: 'organization',
-			label: 'IP address owner/operator',
+			label: $.i18n('tw-sharedip-owner'),
 			disabled: true,
-			tooltip: 'You can optionally enter the name of the organization that owns/operates the IP address.  You can use wikimarkup if necessary.'
+			tooltip: $.i18n('tw-sharedip-owner-tooltip')
 		}
 	);
 	org.append( {
 			type: 'input',
 			name: 'host',
-			label: 'Host name (optional)',
+			label: $.i18n('tw-sharedip-host'),
 			disabled: true,
-			tooltip: 'The host name (for example, proxy.example.com) can be optionally entered here and will be linked by the template.'
+			tooltip: $.i18n('tw-sharedip-host-tooltip')
 		}
 	);
 	org.append( {
 			type: 'input',
 			name: 'contact',
-			label: 'Contact information (only if requested)',
+			label: $.i18n('tw-sharedip-contact'),
 			disabled: true,
-			tooltip: 'You can optionally enter some contact details for the organization.  Use this parameter only if the organization has specifically requested that it be added.  You can use wikimarkup if necessary.'
+			tooltip: $.i18n('tw-sharedip-contact-tooltip')
 		}
 	);
 
@@ -75,54 +77,56 @@ Twinkle.shared.callback = function friendlysharedCallback( uid ) {
 	Window.display();
 };
 
-Twinkle.shared.standardList = [
-	{
-		label: '{{Shared IP}}: standard shared IP address template',
-		value: 'Shared IP',
-		tooltip: 'IP user talk page template that shows helpful information to IP users and those wishing to warn, block or ban them'
-	},
-	{
-		label: '{{Shared IP edu}}: shared IP address template modified for educational institutions',
-		value: 'Shared IP edu'
-	},
-	{
-		label: '{{Shared IP corp}}: shared IP address template modified for businesses',
-		value: 'Shared IP corp'
-	},
-	{
-		label: '{{Shared IP public}}: shared IP address template modified for public terminals',
-		value: 'Shared IP public'
-	},
-	{
-		label: '{{Shared IP gov}}: shared IP address template modified for government agencies or facilities',
-		value: 'Shared IP gov'
-	},
-	{
-		label: '{{Dynamic IP}}: shared IP address template modified for organizations with dynamic addressing',
-		value: 'Dynamic IP'
-	},
-	{
-		label: '{{Static IP}}: shared IP address template modified for static IP addresses',
-		value: 'Static IP'
-	},
-	{
-		label: '{{ISP}}: shared IP address template modified for ISP organizations (specifically proxies)',
-		value: 'ISP'
-	},
-	{
-		label: '{{Mobile IP}}: shared IP address template modified for mobile phone companies and their customers',
-		value: 'Mobile IP'
-	},
-	{
-		label: '{{Whois}}: template for IP addresses in need of monitoring, but unknown whether static, dynamic or shared',
-		value: 'Whois'
-	}
-];
+Twinkle.shared.initialize = function() {
+	Twinkle.shared.standardList = [
+		{
+			label: '{{Shared IP}}: standard shared IP address template',
+			value: $.i18n('tw-sharedip-shared-ip'),
+			tooltip: 'IP user talk page template that shows helpful information to IP users and those wishing to warn, block or ban them'
+		},
+		{
+			label: '{{Shared IP edu}}: shared IP address template modified for educational institutions',
+			value: $.i18n('tw-sharedip-shared-ip-edu')
+		},
+		{
+			label: '{{Shared IP corp}}: shared IP address template modified for businesses',
+			value: $.i18n('tw-sharedip-shared-ip-corp')
+		},
+		{
+			label: '{{Shared IP public}}: shared IP address template modified for public terminals',
+			value: $.i18n('tw-sharedip-shared-ip-public')
+		},
+		{
+			label: '{{Shared IP gov}}: shared IP address template modified for government agencies or facilities',
+			value: $.i18n('tw-sharedip-shared-ip-gov')
+		},
+		{
+			label: '{{Dynamic IP}}: shared IP address template modified for organizations with dynamic addressing',
+			value: $.i18n('tw-sharedip-dynamic-ip')
+		},
+		{
+			label: '{{Static IP}}: shared IP address template modified for static IP addresses',
+			value: $.i18n('tw-sharedip-static-ip')
+		},
+		{
+			label: '{{ISP}}: shared IP address template modified for ISP organizations (specifically proxies)',
+			value: $.i18n('tw-sharedip-isp')
+		},
+		{
+			label: '{{Mobile IP}}: shared IP address template modified for mobile phone companies and their customers',
+			value: $.i18n('tw-sharedip-mobile-ip')
+		},
+		{
+			label: '{{Whois}}: template for IP addresses in need of monitoring, but unknown whether static, dynamic or shared',
+			value: $.i18n('tw-sharedip-whois')
+		}
+	];
+}
 
 Twinkle.shared.callback.change_shared = function friendlysharedCallbackChangeShared(e) {
-	e.target.form.contact.disabled = (e.target.value !== 'Shared IP edu');  // only supported by {{Shared IP edu}}
+	e.target.form.contact.disabled = (e.target.value !== $.i18n('tw-sharedip-shared-ip-edu'));  // only supported by {{Shared IP edu}}
 	e.target.form.organization.disabled = false;
-	e.target.form.host.disabled = (e.target.value === 'Whois');  // host= not supported by {{Whois}}
+	e.target.form.host.disabled = (e.target.value === $.i18n('tw-sharedip-whois'));  // host= not supported by {{Whois}}
 };
 
 Twinkle.shared.callbacks = {
@@ -144,7 +148,7 @@ Twinkle.shared.callbacks = {
 			return;
 		}
 
-		Morebits.status.info( 'Info', 'Will add the shared IP address template to the top of the user\'s talk page.' );
+		Morebits.status.info( $.i18n('tw-core-morebits-info'), $.i18n('tw-sharedip-will-add') );
 		text += params.value + '|' + params.organization;
 		if( params.value === 'Shared IP edu' && params.contact !== '') {
 			text += '|' + params.contact;

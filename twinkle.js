@@ -33,139 +33,131 @@ Twinkle.addInitCallback = function twinkleAddInitCallback( func ) {
 	Twinkle.initCallbacks.push( func );
 };
 
-// Set locale to that of the interface
-$.i18n( {
-	locale : 'en'
-} );
-// Load i18n
-$.i18n().load( {
-	'en' : {
-	'tw-portlet-name' : 'TW'
+Twinkle.initialize = function() {
+	// Initialize the default config values
+	Twinkle.defaultConfig = {};
+	/**
+	 * Twinkle.defaultConfig.twinkle and Twinkle.defaultConfig.friendly
+	 *
+	 * This holds the default set of preferences used by Twinkle. (The |friendly| object holds preferences stored in the FriendlyConfig object.)
+	 * It is important that all new preferences added here, especially admin-only ones, are also added to
+	 * |Twinkle.config.sections| in twinkleconfig.js, so they are configurable via the Twinkle preferences panel.
+	 * For help on the actual preferences, see the comments in twinkleconfig.js.
+	 */
+	Twinkle.defaultConfig.twinkle = {
+		 // General
+		summaryAd: " ([[WP:TW|TW]])",
+		deletionSummaryAd: " ([[WP:TW|TW]])",
+		protectionSummaryAd: " ([[WP:TW|TW]])",
+		userTalkPageMode: "window",
+		dialogLargeFont: false,
+		 // ARV
+		spiWatchReport: "yes",
+		 // Block
+		blankTalkpageOnIndefBlock: false,
+		 // Fluff (revert and rollback)
+		openTalkPage: [ "agf", "norm", "vand" ],
+		openTalkPageOnAutoRevert: false,
+		markRevertedPagesAsMinor: [ "vand" ],
+		watchRevertedPages: [ "agf", "norm", "vand", "torev" ],
+		offerReasonOnNormalRevert: true,
+		confirmOnFluff: false,
+		showRollbackLinks: [ "diff", "others" ],
+		 // DI (twinkleimage)
+		notifyUserOnDeli: true,
+		deliWatchPage: "default",
+		deliWatchUser: "default",
+		 // PROD
+		watchProdPages: true,
+		prodReasonDefault: "",
+		logProdPages: false,
+		prodLogPageName: "PROD log",
+		 // CSD
+		speedySelectionStyle: "buttonClick",
+		watchSpeedyPages: [ "g3", "g5", "g10", "g11", "g12" ],
+		markSpeedyPagesAsPatrolled: true,
+		// these next two should probably be identical by default
+		notifyUserOnSpeedyDeletionNomination:    [ "db", "g1", "g2", "g3", "g4", "g6", "g10", "g11", "g12", "g13", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "u5", "t2", "t3", "p1", "p2" ],
+		welcomeUserOnSpeedyDeletionNotification: [ "db", "g1", "g2", "g3", "g4", "g6", "g10", "g11", "g12", "g13", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "u5", "t2", "t3", "p1", "p2" ],
+		promptForSpeedyDeletionSummary: [ "db", "g1", "g2", "g3", "g4", "g6", "g7", "g8", "g10", "g11", "g12", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11", "f2", "f4", "f7", "f8", "f10", "u5", "t2", "t3", "p1", "p2" ],
+		openUserTalkPageOnSpeedyDelete: [ "db", "g1", "g2", "g3", "g4", "g5", "g10", "g11", "g12", "a1", "a3", "a7", "a9", "a10", "a11", "f3", "f7", "f9", "u3", "u5", "t2", "p1" ],
+		deleteTalkPageOnDelete: false,
+		deleteRedirectsOnDelete: true,
+		deleteSysopDefaultToTag: false,
+		speedyWindowHeight: 500,
+		speedyWindowWidth: 800,
+		logSpeedyNominations: false,
+		speedyLogPageName: "CSD log",
+		noLogOnSpeedyNomination: [ "u1" ],
+		 // Unlink
+		unlinkNamespaces: [ "0", "10", "100", "118" ],
+		 // Warn
+		defaultWarningGroup: "1",
+		showSharedIPNotice: true,
+		watchWarnings: true,
+		customWarningList: [],
+		 // XfD
+		xfdWatchDiscussion: "default",
+		xfdWatchList: "no",
+		xfdWatchPage: "default",
+		xfdWatchUser: "default",
+		markXfdPagesAsPatrolled: true,
+		 // Hidden preferences
+		revertMaxRevisions: 50,
+		batchdeleteChunks: 50,
+		batchMax: 5000,
+		batchProtectChunks: 50,
+		batchundeleteChunks: 50,
+		deliChunks: 500,
+		deliMax: 5000,
+		proddeleteChunks: 50
+	};
+
+	// now some skin dependent config.
+	if ( mw.config.get( "skin" ) === "vector" ) {
+		Twinkle.defaultConfig.twinkle.portletArea = "right-navigation";
+		Twinkle.defaultConfig.twinkle.portletId   = "p-twinkle";
+		Twinkle.defaultConfig.twinkle.portletName = $.i18n('tw-core-portlet-name');
+		Twinkle.defaultConfig.twinkle.portletType = "menu";
+		Twinkle.defaultConfig.twinkle.portletNext = "p-search";
+	} else {
+		Twinkle.defaultConfig.twinkle.portletArea =  null;
+		Twinkle.defaultConfig.twinkle.portletId   = "p-cactions";
+		Twinkle.defaultConfig.twinkle.portletName = null;
+		Twinkle.defaultConfig.twinkle.portletType = null;
+		Twinkle.defaultConfig.twinkle.portletNext = null;
 	}
-} );
 
-Twinkle.defaultConfig = {};
-/**
- * Twinkle.defaultConfig.twinkle and Twinkle.defaultConfig.friendly
- *
- * This holds the default set of preferences used by Twinkle. (The |friendly| object holds preferences stored in the FriendlyConfig object.)
- * It is important that all new preferences added here, especially admin-only ones, are also added to
- * |Twinkle.config.sections| in twinkleconfig.js, so they are configurable via the Twinkle preferences panel.
- * For help on the actual preferences, see the comments in twinkleconfig.js.
- */
-Twinkle.defaultConfig.twinkle = {
-	 // General
-	summaryAd: " ([[WP:TW|TW]])",
-	deletionSummaryAd: " ([[WP:TW|TW]])",
-	protectionSummaryAd: " ([[WP:TW|TW]])",
-	userTalkPageMode: "window",
-	dialogLargeFont: false,
-	 // ARV
-	spiWatchReport: "yes",
-	 // Block
-	blankTalkpageOnIndefBlock: false,
-	 // Fluff (revert and rollback)
-	openTalkPage: [ "agf", "norm", "vand" ],
-	openTalkPageOnAutoRevert: false,
-	markRevertedPagesAsMinor: [ "vand" ],
-	watchRevertedPages: [ "agf", "norm", "vand", "torev" ],
-	offerReasonOnNormalRevert: true,
-	confirmOnFluff: false,
-	showRollbackLinks: [ "diff", "others" ],
-	 // DI (twinkleimage)
-	notifyUserOnDeli: true,
-	deliWatchPage: "default",
-	deliWatchUser: "default",
-	 // PROD
-	watchProdPages: true,
-	prodReasonDefault: "",
-	logProdPages: false,
-	prodLogPageName: "PROD log",
-	 // CSD
-	speedySelectionStyle: "buttonClick",
-	watchSpeedyPages: [ "g3", "g5", "g10", "g11", "g12" ],
-	markSpeedyPagesAsPatrolled: true,
-	// these next two should probably be identical by default
-	notifyUserOnSpeedyDeletionNomination:    [ "db", "g1", "g2", "g3", "g4", "g6", "g10", "g11", "g12", "g13", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "u5", "t2", "t3", "p1", "p2" ],
-	welcomeUserOnSpeedyDeletionNotification: [ "db", "g1", "g2", "g3", "g4", "g6", "g10", "g11", "g12", "g13", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "u5", "t2", "t3", "p1", "p2" ],
-	promptForSpeedyDeletionSummary: [ "db", "g1", "g2", "g3", "g4", "g6", "g7", "g8", "g10", "g11", "g12", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11", "f2", "f4", "f7", "f8", "f10", "u5", "t2", "t3", "p1", "p2" ],
-	openUserTalkPageOnSpeedyDelete: [ "db", "g1", "g2", "g3", "g4", "g5", "g10", "g11", "g12", "a1", "a3", "a7", "a9", "a10", "a11", "f3", "f7", "f9", "u3", "u5", "t2", "p1" ],
-	deleteTalkPageOnDelete: false,
-	deleteRedirectsOnDelete: true,
-	deleteSysopDefaultToTag: false,
-	speedyWindowHeight: 500,
-	speedyWindowWidth: 800,
-	logSpeedyNominations: false,
-	speedyLogPageName: "CSD log",
-	noLogOnSpeedyNomination: [ "u1" ],
-	 // Unlink
-	unlinkNamespaces: [ "0", "10", "100", "118" ],
-	 // Warn
-	defaultWarningGroup: "1",
-	showSharedIPNotice: true,
-	watchWarnings: true,
-	customWarningList: [],
-	 // XfD
-	xfdWatchDiscussion: "default",
-	xfdWatchList: "no",
-	xfdWatchPage: "default",
-	xfdWatchUser: "default",
-	markXfdPagesAsPatrolled: true,
-	 // Hidden preferences
-	revertMaxRevisions: 50,
-	batchdeleteChunks: 50,
-	batchMax: 5000,
-	batchProtectChunks: 50,
-	batchundeleteChunks: 50,
-	deliChunks: 500,
-	deliMax: 5000,
-	proddeleteChunks: 50
-};
-
-// now some skin dependent config.
-if ( mw.config.get( "skin" ) === "vector" ) {
-	Twinkle.defaultConfig.twinkle.portletArea = "right-navigation";
-	Twinkle.defaultConfig.twinkle.portletId   = "p-twinkle";
-	Twinkle.defaultConfig.twinkle.portletName = $.i18n('tw-portlet-name');
-	Twinkle.defaultConfig.twinkle.portletType = "menu";
-	Twinkle.defaultConfig.twinkle.portletNext = "p-search";
-} else {
-	Twinkle.defaultConfig.twinkle.portletArea =  null;
-	Twinkle.defaultConfig.twinkle.portletId   = "p-cactions";
-	Twinkle.defaultConfig.twinkle.portletName = null;
-	Twinkle.defaultConfig.twinkle.portletType = null;
-	Twinkle.defaultConfig.twinkle.portletNext = null;
+	Twinkle.defaultConfig.friendly = {
+		 // Tag
+		groupByDefault: true,
+		watchTaggedPages: true,
+		watchMergeDiscussions: true,
+		markTaggedPagesAsMinor: false,
+		markTaggedPagesAsPatrolled: true,
+		tagArticleSortOrder: "cat",
+		customTagList: [],
+		 // Welcome
+		topWelcomes: false,
+		watchWelcomes: true,
+		welcomeHeading: "Welcome",
+		insertHeadings: true,
+		insertUsername: true,
+		insertSignature: true,  // sign welcome templates, where appropriate
+		quickWelcomeMode: "norm",
+		quickWelcomeTemplate: "welcome",
+		customWelcomeList: [],
+		customWelcomeSignature: true,
+		 // Talkback
+		markTalkbackAsMinor: true,
+		insertTalkbackSignature: true,  // always sign talkback templates
+		talkbackHeading: "Talkback",
+		adminNoticeHeading: "Notice",
+		mailHeading: "You've got mail!",
+		 // Shared
+		markSharedIPAsMinor: true
+	};
 }
-
-Twinkle.defaultConfig.friendly = {
-	 // Tag
-	groupByDefault: true,
-	watchTaggedPages: true,
-	watchMergeDiscussions: true,
-	markTaggedPagesAsMinor: false,
-	markTaggedPagesAsPatrolled: true,
-	tagArticleSortOrder: "cat",
-	customTagList: [],
-	 // Welcome
-	topWelcomes: false,
-	watchWelcomes: true,
-	welcomeHeading: "Welcome",
-	insertHeadings: true,
-	insertUsername: true,
-	insertSignature: true,  // sign welcome templates, where appropriate
-	quickWelcomeMode: "norm",
-	quickWelcomeTemplate: "welcome",
-	customWelcomeList: [],
-	customWelcomeSignature: true,
-	 // Talkback
-	markTalkbackAsMinor: true,
-	insertTalkbackSignature: true,  // always sign talkback templates
-	talkbackHeading: "Talkback",
-	adminNoticeHeading: "Notice",
-	mailHeading: "You've got mail!",
-	 // Shared
-	markSharedIPAsMinor: true
-};
 
 Twinkle.getPref = function twinkleGetPref( name ) {
 	var result;
@@ -406,13 +398,59 @@ $.ajax({
 // For example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
 
 Twinkle.load = function () {
-	    // Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
+	// Initialize i18n
+	$.i18n( {
+		locale : mw.config.get('wgUserLanguage')
+	} );
+	// Later, this object will be moved to a separate file
+	$.i18n().load( {
+		'en' : {
+			'tw-core-portlet-name' : 'TW',
+			'tw-core-summary' : ' ([[WP:TW|TW]])',
+			'tw-core-summary-del' : ' ([[WP:TW|TW]])',
+			'tw-core-summary-prot' : ' ([[WP:TW|TW]])',
+			'tw-core-script-name' : 'Twinkle',
+			'tw-core-help' : 'Twinkle Help',
+			'tw-core-help-page' : 'WP:TW/DOC#shared',
+			'tw-core-morebits-info' : 'Info',
+			'tw-sharedip-label' : 'Shared IP',
+			'tw-sharedip-label-hover' : 'Shared IP tagging',
+			'tw-sharedip-window-title' : 'Shared IP address tagging',
+			'tw-sharedip-templates' : 'Shared IP address templates',
+			'tw-sharedip-field-label' : 'Fill in other details (optional) and click \"Submit\"',
+			'tw-sharedip-owner' : 'IP address owner/operator',
+			'tw-sharedip-owner-tooltip' : 'You can optionally enter the name of the organization that owns/operates the IP address.  You can use wikimarkup if necessary.',
+			'tw-sharedip-host' : 'Host name (optional)',
+			'tw-sharedip-host-tooltip' : 'The host name (for example, proxy.example.com) can be optionally entered here and will be linked by the template.',
+			'tw-sharedip-contact' : 'Contact information (only if requested)',
+			'tw-sharedip-contact-tooltip' : 'You can optionally enter some contact details for the organization.  Use this parameter only if the organization has specifically requested that it be added.  You can use wikimarkup if necessary.',
+			'tw-sharedip-shared-ip' : 'Shared IP',
+			'tw-sharedip-shared-ip-edu' : 'Shared IP edu',
+			'tw-sharedip-shared-ip-corp' : 'Shared IP corp',
+			'tw-sharedip-shared-ip-public' : 'Shared IP public',
+			'tw-sharedip-shared-ip-public' : 'Shared IP gov',
+			'tw-sharedip-dynamic-ip' : 'Dynamic IP',
+			'tw-sharedip-static-ip' : 'Static IP',
+			'tw-sharedip-isp' : 'ISP',
+			'tw-sharedip-mobile-ip' : 'Mobile IP',
+			'tw-sharedip-whois' : 'Whois',
+			'tw-sharedip-will-add' : 'Will add the shared IP address template to the top of the user\'s talk page.',
+		},
+		'fa' : {
+			'tw-core-portlet-name' : 'توینکل',
+		}
+	} );
+
+	// Initialize the default configs
+	Twinkle.initialize();
+
+	// Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
 	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1
 	    	&& mw.config.get('wgCanonicalSpecialPageName') !== "Contributions"
 	    	&& mw.config.get('wgCanonicalSpecialPageName') !== "Prefixindex" ),
 
-	    // Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
-	    isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
+	// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
+	isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
 
 	// Prevent users that are not autoconfirmed from loading Twinkle as well.
 	if ( isSpecialPage || isOldIE || !Twinkle.userAuthorized ) {
