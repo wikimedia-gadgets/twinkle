@@ -1,6 +1,8 @@
 all:
 
-modules = modules/twinkleprod.js \
+modules = modules/twinklei18n.js \
+		  modules/twinklel10n.js \
+		  modules/twinkleprod.js \
 		  modules/twinkleimage.js \
 		  modules/twinklebatchundelete.js \
 		  modules/twinklewarn.js \
