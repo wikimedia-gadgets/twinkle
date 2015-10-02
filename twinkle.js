@@ -415,12 +415,12 @@ Twinkle.load = function () {
 	// User/user talk-related
 	Twinkle.arv();
 	Twinkle.warn();
-	Twinkle.welcome();
-	Twinkle.shared();
-	Twinkle.talkback();
 	if ( Morebits.userIsInGroup('sysop') ) {
 		Twinkle.block();
 	}
+	Twinkle.welcome();
+	Twinkle.shared();
+	Twinkle.talkback();
 	// Deletion
 	Twinkle.speedy();
 	Twinkle.prod();
