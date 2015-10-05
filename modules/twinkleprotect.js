@@ -25,8 +25,6 @@ Twinkle.protect = function twinkleprotect() {
 };
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
-	Twinkle.protect.protectionLevel = null;
-
 	var Window = new Morebits.simpleWindow( 620, 530 );
 	Window.setTitle( Morebits.userIsInGroup( 'sysop' ) ? "Apply, request or tag page protection" : "Request or tag page protection" );
 	Window.setScriptName( "Twinkle" );
@@ -89,17 +87,12 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	evt.initEvent( 'change', true, true );
 	result.actiontype[0].dispatchEvent( evt );
 
+	Morebits.wiki.actionCompleted.postfix = false;  // avoid Action: completed notice
+
 	// get current protection level asynchronously
-	if (Morebits.userIsInGroup('sysop')) {
-		Morebits.wiki.actionCompleted.postfix = false;  // avoid Action: completed notice
-		Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-	}
 	Twinkle.protect.fetchProtectionLevel();
 };
 
-// Current protection level in a human-readable format
-// (a string, or null if no protection; only filled for sysops)
-Twinkle.protect.protectionLevel = null;
 // Contains the current protection level in an object
 // Once filled, it will look something like:
 // { edit: { level: "sysop", expiry: <some date>, cascade: true }, ... }
@@ -108,36 +101,29 @@ Twinkle.protect.currentProtectionLevels = {};
 Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLevel() {
 
 	var api = new mw.Api();
-	api.get({
+	var protectDeferred = api.get({
 		format: 'json',
 		indexpageids: true,
 		action: 'query',
+		list: 'logevents',
+		letype: 'protect',
+		letitle: mw.config.get('wgPageName'),
 		prop: 'info|flagged',
 		inprop: 'protection',
 		titles: mw.config.get('wgPageName')
-	})
-	.done(function(data){
-		var pageid = data.query.pageids[0];
-		var page = data.query.pages[pageid];
-		var result = [];
-		var current = {};
+	});
+	var stableDeferred = api.get({
+		format: 'json',
+		action: 'query',
+		list: 'logevents',
+		letype: 'stable',
+		letitle: mw.config.get('wgPageName')
+	});
 
-		var updateResult = function(label, level, expiry, cascade) {
-			// for sysops, stringify, so they can base their decision on existing protection
-			if (Morebits.userIsInGroup('sysop')) {
-				var boldnode = document.createElement('b');
-				boldnode.textContent = label + ": " + level;
-				result.push(boldnode);
-				if (expiry === 'infinity') {
-					result.push(" (indefinite) ");
-				} else {
-					result.push(" (expires " + new Date(expiry).toUTCString() + ") ");
-				}
-				if (cascade) {
-					result.push("(cascading) ");
-				}
-			}
-		};
+	$.when.apply($, [protectDeferred, stableDeferred]).done(function(protectData, stableData){
+		var pageid = protectData[0].query.pageids[0];
+		var page = protectData[0].query.pages[pageid];
+		var current = {};
 
 		$.each(page.protection, function( index, protection ) {
 			if (protection.type !== "aft") {
@@ -146,7 +132,6 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 					expiry: protection.expiry,
 					cascade: protection.cascade === ''
 				};
-				updateResult( Morebits.string.toUpperCaseFirstChar(protection.type), protection.level, protection.expiry, protection.cascade );
 			}
 		});
 
@@ -155,24 +140,51 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 				level: page.flagged.protection_level,
 				expiry: page.flagged.protection_expiry
 			};
-			// FlaggedRevision gives bad date
-			updateResult( 'Pending Changes', page.flagged.protection_level, page.flagged.protection_expiry, false );
 		}
 
-		// show the protection level to sysops
-		if (Morebits.userIsInGroup('sysop')) {
-			if (!result.length) {
-				var boldnode = document.createElement('b');
-				boldnode.textContent = "no protection";
-				result.push(boldnode);
-			}
-			Twinkle.protect.protectionLevel = result;
-			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-			Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
-		}
-
+		// show the protection level and log info
+		Twinkle.protect.hasProtectLog = !!protectData[0].query.logevents.length;
+		Twinkle.protect.hasStableLog = !!stableData[0].query.logevents.length;
 		Twinkle.protect.currentProtectionLevels = current;
+		Twinkle.protect.callback.showLogAndCurrentProtectInfo();
 	});
+};
+
+Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectCallbackShowLogAndCurrentProtectInfo() {
+	if (Twinkle.protect.hasProtectLog || Twinkle.protect.hasStableLog) {
+		var $linkMarkup = $("<span>");
+
+		if (Twinkle.protect.hasProtectLog)
+			$linkMarkup.append($( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">protection log</a>' ), '&nbsp;&nbsp;');
+		if (Twinkle.protect.hasStableLog)
+			$linkMarkup.append($( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'stable'}) + '">pending changes log</a>)' ), '&nbsp;&nbsp;');
+
+		Morebits.status.init($('div[name="hasprotectlog"] span')[0]);
+		Morebits.status.warn('This page has been protected in the past', $linkMarkup[0]);
+	}
+
+	Morebits.status.init($('div[name="currentprot"] span')[0]);
+	var protectionNode = [], statusLevel = 'info';
+
+	if ($.isEmptyObject(Twinkle.protect.currentProtectionLevels)) {
+		protectionNode.push($("<b>no protection</b>")[0]);
+	} else {
+		$.each(Twinkle.protect.currentProtectionLevels, function(type, settings) {
+			var label = type === 'stabilize' ? 'Pending Changes' : Morebits.string.toUpperCaseFirstChar(type);
+			protectionNode.push($("<b>" + label + ": " + settings.level + "</b>")[0]);
+			if (settings.expiry === 'infinity') {
+				protectionNode.push(" (indefinite) ");
+			} else {
+				protectionNode.push(" (expires " + new Date(settings.expiry).toUTCString() + ") ");
+			}
+			if (settings.cascade) {
+				protectionNode.push("(cascading) ");
+			}
+			statusLevel = 'warn';
+		});
+	}
+
+	Morebits.status[statusLevel]("Current protection level", protectionNode);
 };
 
 Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAction(e) {
@@ -198,6 +210,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 
 			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Protection options', name: 'field2' });
 			field2.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
+			field2.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			// for existing pages
 			if (mw.config.get('wgArticleId')) {
 				field2.append({
@@ -477,6 +490,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			/* falls through */
 		case 'tag':
 			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Tagging options', name: 'field1' });
+			field1.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
+			field1.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			field1.append( {
 					type: 'select',
 					name: 'tagtype',
@@ -514,6 +529,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				});
 
 			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Options', name: 'field1' });
+			field1.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
+			field1.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			field1.append( {
 					type: 'select',
 					name: 'expiry',
@@ -536,6 +553,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 	}
 
 	var oldfield;
+
 	if (field_preset) {
 		oldfield = $(e.target.form).find('fieldset[name="field_preset"]')[0];
 		oldfield.parentNode.replaceChild(field_preset.render(), oldfield);
@@ -561,15 +579,12 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 		evt.initEvent( 'change', true, true );
 		e.target.form.category.dispatchEvent( evt );
 
-		// re-add protection level text, if it's available
-		if (Twinkle.protect.protectionLevel) {
-			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-			Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
-		}
-
 		// reduce vertical height of dialog
 		$(e.target.form).find('fieldset[name="field2"] select').parent().css({ display: 'inline-block', marginRight: '0.5em' });
 	}
+
+	// re-add protection level and log info, if it's available
+	Twinkle.protect.callback.showLogAndCurrentProtectInfo();
 };
 
 Twinkle.protect.formevents = {

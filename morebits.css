@@ -40,7 +40,6 @@ form.quickform
 form.quickform *
 {
 	font-family: sans-serif;
-	vertical-align: middle;
 }
 
 form.quickform fieldset
@@ -283,6 +282,10 @@ body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
 
 .ui-dialog.morebits-dialog a, .ui-dialog.morebits-dialog .ui-widget-content a {
 	color: #0645AD;  /* jQuery imposes a ridiculous nearly-black colour on <a> tags... I don't understand it */
+}
+
+.ui-icon {
+	vertical-align: middle;
 }
 
 .ui-icon-inline {
