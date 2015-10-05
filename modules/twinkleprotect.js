@@ -151,24 +151,30 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 };
 
 Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectCallbackShowLogAndCurrentProtectInfo() {
+	var currentlyProtected = !$.isEmptyObject(Twinkle.protect.currentProtectionLevels);
+
 	if (Twinkle.protect.hasProtectLog || Twinkle.protect.hasStableLog) {
 		var $linkMarkup = $("<span>");
 
 		if (Twinkle.protect.hasProtectLog)
-			$linkMarkup.append($( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">protection log</a>' ), '&nbsp;&nbsp;');
+			$linkMarkup.append(
+				$( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">protection log</a>' ),
+				Twinkle.protect.hasStableLog ? $("<span> &bull; </span>") : null
+			);
 		if (Twinkle.protect.hasStableLog)
-			$linkMarkup.append($( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'stable'}) + '">pending changes log</a>)' ), '&nbsp;&nbsp;');
+			$linkMarkup.append($( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'stable'}) + '">pending changes log</a>)' ));
 
 		Morebits.status.init($('div[name="hasprotectlog"] span')[0]);
-		Morebits.status.warn('This page has been protected in the past', $linkMarkup[0]);
+		Morebits.status.warn(
+			currentlyProtected ? 'Previous protections' : 'This page has been protected in the past',
+			$linkMarkup[0]
+		);
 	}
 
 	Morebits.status.init($('div[name="currentprot"] span')[0]);
 	var protectionNode = [], statusLevel = 'info';
 
-	if ($.isEmptyObject(Twinkle.protect.currentProtectionLevels)) {
-		protectionNode.push($("<b>no protection</b>")[0]);
-	} else {
+	if (currentlyProtected) {
 		$.each(Twinkle.protect.currentProtectionLevels, function(type, settings) {
 			var label = type === 'stabilize' ? 'Pending Changes' : Morebits.string.toUpperCaseFirstChar(type);
 			protectionNode.push($("<b>" + label + ": " + settings.level + "</b>")[0]);
@@ -180,8 +186,10 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 			if (settings.cascade) {
 				protectionNode.push("(cascading) ");
 			}
-			statusLevel = 'warn';
 		});
+		statusLevel = 'warn';
+	} else {
+		protectionNode.push($("<b>no protection</b>")[0]);
 	}
 
 	Morebits.status[statusLevel]("Current protection level", protectionNode);
