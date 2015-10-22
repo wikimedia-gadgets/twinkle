@@ -675,6 +675,8 @@ Twinkle.protect.protectionTypes = [
 		list: [
 			{ label: 'Generic (PC)', value: 'pp-pc-protected' },
 			{ label: 'Persistent vandalism (PC)', value: 'pp-pc-vandalism' },
+			{ label: 'Disruptive editing (PC)', value: 'pp-pc-disruptive' },
+			{ label: 'Adding unsourced content (PC)', value: 'pp-pc-unsourced' },
 			{ label: 'BLP policy violations (PC)', value: 'pp-pc-blp' }
 		]
 	},
@@ -787,6 +789,16 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-pc-vandalism': {
 		stabilize: 'autoconfirmed',  // stabilize = Pending Changes
 		reason: 'Persistent [[WP:Vandalism|vandalism]]',
+		template: 'pp-pc1'
+	},
+	'pp-pc-disruptive': {
+		stabilize: 'autoconfirmed',
+		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]]',
+		template: 'pp-pc1'
+	},
+	'pp-pc-unsourced': {
+		stabilize: 'autoconfirmed',
+		reason: 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]',
 		template: 'pp-pc1'
 	},
 	'pp-pc-blp': {
