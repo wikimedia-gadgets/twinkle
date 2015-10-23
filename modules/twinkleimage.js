@@ -133,7 +133,7 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 						}
 					]
 				} );
-		// fall through
+		/* falls through */
 		case 'no license':
 			work_area.append( {
 					type: 'checkbox',

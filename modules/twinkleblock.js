@@ -910,8 +910,7 @@ Twinkle.block.callback.change_expiry = function twinkleblockCallbackChangeExpiry
 };
 
 Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, data) {
-	var form = e.target.form, expiry_preset = form.expiry_preset,
-		expiry = data.expiry;
+	var form = e.target.form, expiry = data.expiry;
 
 	// don't override original expiry if useInitialOptions is set
 	if (!data.useInitialOptions) {

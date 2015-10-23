@@ -2,5 +2,15 @@
 	"maxerr": 1000,
 	"undef": true,
 	"unused": true,
-	"smarttabs": true
+	"smarttabs": true,
+	"eqeqeq": true,
+	"noarg": true,
+	"globals": {
+		"mw": false,
+		"Twinkle": false,
+		"Morebits": false
+	},
+	"browser": true,
+	"jquery": true,
+	"devel": true  // allow things like "alert", "confirm", "prompt", "console"
 }

@@ -300,8 +300,9 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 	}
 	outerDiv.appendChild( h5 );
 
+	var innerDiv = null;
 	if ( type === "menu" ) {
-		var innerDiv = document.createElement( "div" );
+		innerDiv = document.createElement( "div" );
 		innerDiv.className = innerDivClass;
 		outerDiv.appendChild(innerDiv);
 	}
@@ -395,13 +396,13 @@ $.ajax({
 // For example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
 
 Twinkle.load = function () {
-	    // Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
-	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1
-	    	&& mw.config.get('wgCanonicalSpecialPageName') !== "Contributions"
-	    	&& mw.config.get('wgCanonicalSpecialPageName') !== "Prefixindex" ),
+	// Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
+	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1 &&
+		mw.config.get('wgCanonicalSpecialPageName') !== "Contributions" &&
+		mw.config.get('wgCanonicalSpecialPageName') !== "Prefixindex" ),
 
-	    // Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
-	    isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
+		// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
+		isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
 
 	// Prevent users that are not autoconfirmed from loading Twinkle as well.
 	if ( isSpecialPage || isOldIE || !Twinkle.userAuthorized ) {
