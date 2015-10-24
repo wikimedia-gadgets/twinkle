@@ -106,8 +106,6 @@ Twinkle.defaultConfig.twinkle = {
 	batchMax: 5000,
 	batchProtectChunks: 50,
 	batchundeleteChunks: 50,
-	deliChunks: 500,
-	deliMax: 5000,
 	proddeleteChunks: 50
 };
 
@@ -436,7 +434,6 @@ Twinkle.load = function () {
 	Twinkle.config.init();
 	Twinkle.fluff.init();
 	if ( Morebits.userIsInGroup('sysop') ) {
-		Twinkle.delimages();
 		Twinkle.deprod();
 		Twinkle.batchdelete();
 		Twinkle.batchprotect();
