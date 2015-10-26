@@ -98,6 +98,26 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 // { edit: { level: "sysop", expiry: <some date>, cascade: true }, ... }
 Twinkle.protect.currentProtectionLevels = {};
 
+Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdmin(api, pageName) {
+	return api.get({
+		format: 'json',
+		action: 'query',
+		list: 'logevents',
+		letitle: pageName,
+		letype: 'protect'
+	}).then(function( data ) {
+		var event = data.query.logevents[0];
+		if (!event) {
+			// fail gracefully
+			return null;
+		} else if (event.action === "move_prot") {
+		  return twinkleprotectFetchProtectingAdmin( api, event.params.oldtitle_title );
+		} else {
+		  return event.user;
+		}
+	});
+};
+
 Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLevel() {
 
 	var api = new mw.Api();
@@ -123,7 +143,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 	$.when.apply($, [protectDeferred, stableDeferred]).done(function(protectData, stableData){
 		var pageid = protectData[0].query.pageids[0];
 		var page = protectData[0].query.pages[pageid];
-		var current = {};
+		var current = {}, adminEditDeferred;
 
 		$.each(page.protection, function( index, protection ) {
 			if (protection.type !== "aft") {
@@ -132,13 +152,17 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 					expiry: protection.expiry,
 					cascade: protection.cascade === ''
 				};
+				// logs report last admin who made changes to either edit/move/create protection, regardless if they only modified one of them
+				if(!adminEditDeferred) adminEditDeferred = Twinkle.protect.fetchProtectingAdmin(api, mw.config.get('wgPageName'));
 			}
 		});
 
 		if (page.flagged) {
+			// note that stable settings aren't logged when page is moved, so we don't need to use fetchProtectingAdmin
 			current.stabilize = {
 				level: page.flagged.protection_level,
-				expiry: page.flagged.protection_expiry
+				expiry: page.flagged.protection_expiry,
+				admin: stableData[0].query.logevents[0].user
 			};
 		}
 
@@ -146,7 +170,19 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		Twinkle.protect.hasProtectLog = !!protectData[0].query.logevents.length;
 		Twinkle.protect.hasStableLog = !!stableData[0].query.logevents.length;
 		Twinkle.protect.currentProtectionLevels = current;
-		Twinkle.protect.callback.showLogAndCurrentProtectInfo();
+
+		if (adminEditDeferred) {
+			adminEditDeferred.done(function(admin) {
+				if (admin) {
+					$.each(['edit', 'move', 'create'], function(i, type) {
+						if (Twinkle.protect.currentProtectionLevels[type]) Twinkle.protect.currentProtectionLevels[type].admin = admin;
+					});
+				}
+				Twinkle.protect.callback.showLogAndCurrentProtectInfo();
+			});
+		} else {
+			Twinkle.protect.callback.showLogAndCurrentProtectInfo();
+		}
 	});
 };
 
@@ -186,7 +222,13 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 			if (settings.cascade) {
 				protectionNode.push("(cascading) ");
 			}
+			if (settings.admin) {
+				var adminLink = '<a target="_blank" href="/wiki/User talk:' + settings.admin + '">' +  settings.admin + '</a>';
+				protectionNode.push($("<span>by " + adminLink + "&nbsp;</span>")[0]);
+			}
+			protectionNode.push($("<span> &bull; </span>")[0]);
 		});
+		protectionNode = protectionNode.slice(0, -1); // remove the trailing bullet
 		statusLevel = 'warn';
 	} else {
 		protectionNode.push($("<b>no protection</b>")[0]);
@@ -1159,7 +1201,9 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typename = 'create protection';
 					break;
 				case 'unprotect':
-					/* falls through */
+					var admins = $.map(Twinkle.protect.currentProtectionLevels, function(pl) { return pl.admin ? 'User:' + pl.admin : null; });
+					if (admins.length && !confirm('Have you attempted to contact the protecting admins (' + $.unique(admins).join(', ') + ') first?' )) return false;
+					// otherwise falls through
 				default:
 					typename = 'unprotection';
 					break;
