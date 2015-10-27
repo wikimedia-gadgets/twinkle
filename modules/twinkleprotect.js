@@ -98,6 +98,8 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 // { edit: { level: "sysop", expiry: <some date>, cascade: true }, ... }
 Twinkle.protect.currentProtectionLevels = {};
 
+// returns a jQuery Deferred object, usage:
+//   Twinkle.protect.fetchProtectingAdmin(apiObject, pageName).done(function(admin_username) { ...code... });
 Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdmin(api, pageName, logIds) {
 	logIds = logIds || [];
 
@@ -109,7 +111,7 @@ Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdm
 		letype: 'protect'
 	}).then(function( data ) {
 		// don't check log entries that have already been checked (e.g. don't go into an infinite loop!)
-		var event = $.grep(data.query.logevents, function(le) { return $.inArray(le.logid, logIds); })[0];
+		var event = data.query ? $.grep(data.query.logevents, function(le) { return $.inArray(le.logid, logIds); })[0] : null;
 		if (!event) {
 			// fail gracefully
 			return null;
@@ -156,7 +158,9 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 					cascade: protection.cascade === ''
 				};
 				// logs report last admin who made changes to either edit/move/create protection, regardless if they only modified one of them
-				if(!adminEditDeferred) adminEditDeferred = Twinkle.protect.fetchProtectingAdmin(api, mw.config.get('wgPageName'));
+				if (!adminEditDeferred) {
+					adminEditDeferred = Twinkle.protect.fetchProtectingAdmin(api, mw.config.get('wgPageName'));
+				}
 			}
 		});
 
@@ -179,7 +183,9 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 			adminEditDeferred.done(function(admin) {
 				if (admin) {
 					$.each(['edit', 'move', 'create'], function(i, type) {
-						if (Twinkle.protect.currentProtectionLevels[type]) Twinkle.protect.currentProtectionLevels[type].admin = admin;
+						if (Twinkle.protect.currentProtectionLevels[type]) {
+							Twinkle.protect.currentProtectionLevels[type].admin = admin;
+						}
 					});
 				}
 				Twinkle.protect.callback.showLogAndCurrentProtectInfo();
@@ -196,13 +202,16 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 	if (Twinkle.protect.hasProtectLog || Twinkle.protect.hasStableLog) {
 		var $linkMarkup = $("<span>");
 
-		if (Twinkle.protect.hasProtectLog)
+		if (Twinkle.protect.hasProtectLog) {
 			$linkMarkup.append(
 				$( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">protection log</a>' ),
 				Twinkle.protect.hasStableLog ? $("<span> &bull; </span>") : null
 			);
-		if (Twinkle.protect.hasStableLog)
+		}
+
+		if (Twinkle.protect.hasStableLog) {
 			$linkMarkup.append($( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'stable'}) + '">pending changes log</a>)' ));
+		}
 
 		Morebits.status.init($('div[name="hasprotectlog"] span')[0]);
 		Morebits.status.warn(
@@ -227,10 +236,10 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 				protectionNode.push("(cascading) ");
 			}
 			if (settings.admin) {
-				var adminLink = '<a target="_blank" href="/wiki/User talk:' + settings.admin + '">' +  settings.admin + '</a>';
+				var adminLink = '<a target="_blank" href="' + mw.util.getUrl('User talk:' + settings.admin) + '">' +  settings.admin + '</a>';
 				protectionNode.push($("<span>by " + adminLink + "&nbsp;</span>")[0]);
 			}
-			protectionNode.push($("<span> &bull; </span>")[0]);
+			protectionNode.push($("<span> \u2022 </span>")[0]);
 		});
 		protectionNode = protectionNode.slice(0, -1); // remove the trailing bullet
 		statusLevel = 'warn';
@@ -1206,7 +1215,9 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					break;
 				case 'unprotect':
 					var admins = $.map(Twinkle.protect.currentProtectionLevels, function(pl) { return pl.admin ? 'User:' + pl.admin : null; });
-					if (admins.length && !confirm('Have you attempted to contact the protecting admins (' + $.unique(admins).join(', ') + ') first?' )) return false;
+					if (admins.length && !confirm('Have you attempted to contact the protecting admins (' + $.unique(admins).join(', ') + ') first?' )) {
+						return false;
+					}
 					// otherwise falls through
 				default:
 					typename = 'unprotection';

@@ -4,6 +4,7 @@
 	"unused": true,
 	"smarttabs": true,
 	"eqeqeq": true,
+	"curly": true,
 	"noarg": true,
 	"globals": {
 		"mw": false,
