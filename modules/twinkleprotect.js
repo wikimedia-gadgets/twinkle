@@ -98,7 +98,9 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 // { edit: { level: "sysop", expiry: <some date>, cascade: true }, ... }
 Twinkle.protect.currentProtectionLevels = {};
 
-Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdmin(api, pageName) {
+Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdmin(api, pageName, logIds) {
+	logIds = logIds || [];
+
 	return api.get({
 		format: 'json',
 		action: 'query',
@@ -106,12 +108,13 @@ Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdm
 		letitle: pageName,
 		letype: 'protect'
 	}).then(function( data ) {
-		var event = data.query.logevents[0];
+		// don't check log entries that have already been checked (e.g. don't go into an infinite loop!)
+		var event = $.grep(data.query.logevents, function(le) { return $.inArray(le.logid, logIds); })[0];
 		if (!event) {
 			// fail gracefully
 			return null;
 		} else if (event.action === "move_prot") {
-		  return twinkleprotectFetchProtectingAdmin( api, event.params.oldtitle_title );
+		  return twinkleprotectFetchProtectingAdmin( api, event.params.oldtitle_title, logIds.concat(event.logid) );
 		} else {
 		  return event.user;
 		}
@@ -159,16 +162,17 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 
 		if (page.flagged) {
 			// note that stable settings aren't logged when page is moved, so we don't need to use fetchProtectingAdmin
+			Twinkle.protect.hasStableLog = !!stableData[0].query.logevents.length;
+
 			current.stabilize = {
 				level: page.flagged.protection_level,
 				expiry: page.flagged.protection_expiry,
-				admin: stableData[0].query.logevents[0].user
+				admin: Twinkle.protect.hasStableLog ? stableData[0].query.logevents[0].user : null
 			};
 		}
 
 		// show the protection level and log info
 		Twinkle.protect.hasProtectLog = !!protectData[0].query.logevents.length;
-		Twinkle.protect.hasStableLog = !!stableData[0].query.logevents.length;
 		Twinkle.protect.currentProtectionLevels = current;
 
 		if (adminEditDeferred) {
