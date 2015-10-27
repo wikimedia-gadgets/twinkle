@@ -160,10 +160,10 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 			}
 		});
 
+		Twinkle.protect.hasStableLog = !!stableData[0].query.logevents.length;
+
 		if (page.flagged) {
 			// note that stable settings aren't logged when page is moved, so we don't need to use fetchProtectingAdmin
-			Twinkle.protect.hasStableLog = !!stableData[0].query.logevents.length;
-
 			current.stabilize = {
 				level: page.flagged.protection_level,
 				expiry: page.flagged.protection_expiry,
