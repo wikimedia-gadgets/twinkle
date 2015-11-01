@@ -106,8 +106,6 @@ Twinkle.defaultConfig.twinkle = {
 	batchMax: 5000,
 	batchProtectChunks: 50,
 	batchundeleteChunks: 50,
-	deliChunks: 500,
-	deliMax: 5000,
 	proddeleteChunks: 50
 };
 
@@ -300,8 +298,9 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 	}
 	outerDiv.appendChild( h5 );
 
+	var innerDiv = null;
 	if ( type === "menu" ) {
-		var innerDiv = document.createElement( "div" );
+		innerDiv = document.createElement( "div" );
 		innerDiv.className = innerDivClass;
 		outerDiv.appendChild(innerDiv);
 	}
@@ -406,15 +405,13 @@ Twinkle.load = function () {
 	// Override default config that depends on i18n
 	Twinkle.defaultConfig.twinkle.portletName = $.i18n._('tw-core-portlet-name');
 	
-
-
 	// Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
-	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1
-	    	&& mw.config.get('wgCanonicalSpecialPageName') !== "Contributions"
-	    	&& mw.config.get('wgCanonicalSpecialPageName') !== "Prefixindex" ),
+	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1 &&
+		mw.config.get('wgCanonicalSpecialPageName') !== "Contributions" &&
+		mw.config.get('wgCanonicalSpecialPageName') !== "Prefixindex" ),
 
-	// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
-	isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
+		// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
+		isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
 
 	// Prevent users that are not autoconfirmed from loading Twinkle as well.
 	if ( isSpecialPage || isOldIE || !Twinkle.userAuthorized ) {
@@ -428,12 +425,12 @@ Twinkle.load = function () {
 	// User/user talk-related
 	Twinkle.arv();
 	Twinkle.warn();
-	Twinkle.welcome();
-	Twinkle.shared();
-	Twinkle.talkback();
 	if ( Morebits.userIsInGroup('sysop') ) {
 		Twinkle.block();
 	}
+	Twinkle.welcome();
+	Twinkle.shared();
+	Twinkle.talkback();
 	// Deletion
 	Twinkle.speedy();
 	Twinkle.prod();
@@ -448,7 +445,6 @@ Twinkle.load = function () {
 	Twinkle.config.init();
 	Twinkle.fluff.init();
 	if ( Morebits.userIsInGroup('sysop') ) {
-		Twinkle.delimages();
 		Twinkle.deprod();
 		Twinkle.batchdelete();
 		Twinkle.batchprotect();

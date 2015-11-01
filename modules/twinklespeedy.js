@@ -1025,32 +1025,33 @@ Twinkle.speedy.reasonHash = {
 	'attack': '[[WP:ATP|Attack page]] or negative unsourced [[WP:BLP|BLP]]',
 	'negublp': 'Negative unsourced [[WP:BLP|BLP]]',
 	'spam': 'Unambiguous [[WP:NOTADVERTISING|advertising]] or promotion',
-	'copyvio': 'Unambiguous [[WP:C|copyright infringement]]',
+	'copyvio': 'Unambiguous [[WP:CV|copyright infringement]]',
 	'afc': 'Abandoned [[WP:AFC|Article for creation]] – to retrieve it, see [[WP:REFUND/G13]]',
 // Articles
 	'nocontext': 'Short article without enough context to identify the subject',
 	'foreign': 'Article in a foreign language that exists on another project',
 	'nocontent': 'Article that has no meaningful, substantive content',
 	'transwiki': 'Article that has been transwikied to another project',
-	'a7': 'No explanation of the subject\'s significance (real person, animal, organization, or web content)',
-	'person' : 'No explanation of the subject\'s significance (real person)',
-	'web': 'No explanation of the subject\'s significance (web content)',
-	'corp': 'No explanation of the subject\'s significance (organization)',
-	'club': 'No explanation of the subject\'s significance (organization)',
-	'band': 'No explanation of the subject\'s significance (band/musician)',
-	'animal': 'No explanation of the subject\'s significance (individual animal)',
-	'event': 'No explanation of the subject\'s significance (event)',
+	'a7': 'No credible indication of importance (individuals, animals, organizations, web content, events)',
+	'person' : 'No credible indication of importance (real person)',
+	'web': 'No credible indication of importance (web content)',
+	'corp': 'No credible indication of importance (organization)',
+	'club': 'No credible indication of importance (organization)',
+	'band': 'No credible indication of importance (band/musician)',
+	'animal': 'No credible indication of importance (individual animal)',
+	'event': 'No credible indication of importance (event)',
 	'a9': 'Music recording by redlinked artist and no indication of importance or significance',
 	'a10': 'Recently created article that duplicates an existing topic',
 	'madeup': 'Made up by article creator or an associate, and no indication of importance/significance',
 // Images and media
-	'redundantimage': 'File redundant to another on Wikipedia',
+// Keep synched with [[MediaWiki:Filedelete-reason-dropdown]]
+	'redundantimage': 'Redundant copy of non-Commons file in the same file format',
 	'noimage': 'Corrupt or empty file',
 	'fpcfail': 'Unneeded file description page for a file on Commons',
-	'noncom': 'File with improper license',
+	'noncom': 'Invalid licence, eg. "for non-commercial use only" or "for Wikipedia use only"',
 	'unksource': 'Lack of licensing information',
 	'unfree': 'Unused non-free media',
-	'norat': 'Non-free file without [[WP:RAT|fair-use rationale]]',
+	'norat': 'Non-free file with no [[WP:RAT|non-free use rationale]]',
 	'badfairuse': 'Violates [[WP:F|non-free use policy]]',
 	'nowcommons': 'Media file available on Commons',
 	'imgcopyvio': 'Unambiguous [[WP:COPYVIO|copyright violation]]',
@@ -1138,10 +1139,9 @@ Twinkle.speedy.callbacks = {
 			if (params.deleteRedirects) {
 				var query = {
 					'action': 'query',
-					'list': 'backlinks',
-					'blfilterredir': 'redirects',
-					'bltitle': mw.config.get('wgPageName'),
-					'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
+					'titles': mw.config.get('wgPageName'),
+					'prop': 'redirects',
+					'rdlimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
 				};
 				var wikipedia_api = new Morebits.wiki.api( 'getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
 					new Morebits.status( 'Deleting redirects' ) );
@@ -1236,7 +1236,7 @@ Twinkle.speedy.callbacks = {
 		},
 		deleteRedirectsMain: function( apiobj ) {
 			var xmlDoc = apiobj.getXML();
-			var $snapshot = $(xmlDoc).find('backlinks bl');
+			var $snapshot = $(xmlDoc).find('redirects rd');
 			var total = $snapshot.length;
 			var statusIndicator = apiobj.statelem;
 
@@ -1317,6 +1317,9 @@ Twinkle.speedy.callbacks = {
 					if (typeof parameters[i] === 'string') {
 						code += "|" + i + "=" + parameters[i];
 					}
+				}
+				if (params.usertalk) {
+					code += "|help=off";
 				}
 				code += "}}";
 				params.utparams = Twinkle.speedy.getUserTalkParameters(params.normalizeds[0], parameters);

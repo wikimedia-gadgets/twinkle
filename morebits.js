@@ -457,7 +457,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label: 'more',
 				disabled: min >= max,
 				event: function(e) {
-					var area = e.target.area;
 					var new_node =  new Morebits.quickForm.element( e.target.sublist );
 					e.target.area.appendChild( new_node.render() );
 
@@ -1162,7 +1161,7 @@ Morebits.unbinder.prototype = {
 };
 
 Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
-	return function UnbinderCallback( match , a , b ) {
+	return function UnbinderCallback( match ) {
 		var current = self.prefix + self.counter + self.postfix;
 		self.history[current] = match;
 		++self.counter;
@@ -3390,11 +3389,11 @@ Morebits.htmlNode = function ( type, content, color ) {
 /**
  * **************** Morebits.checkboxClickHandler() ****************
  * shift-click-support for checkboxes
- * wikibits version (window.addCheckboxClickHandlers) has some restrictions, and doesn't work with checkboxes inside a sortable table, so let's build our own.
+ * wikibits version (window.addCheckboxClickHandlers) has some restrictions, and
+ * doesn't work with checkboxes inside a sortable table, so let's build our own.
  */
 
-Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext)
-{
+Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 	var lastCheckbox = null;
 
 	function clickHandler(event) {
@@ -3428,7 +3427,7 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext)
 		}
 		lastCheckbox = cb;
 		return true;
-	};
+	}
 
   $(jQuerySelector, jQueryContext).click(clickHandler);
 };
@@ -3795,7 +3794,7 @@ Morebits.simpleWindow.prototype = {
 
 		return this;
 	},
-	purgeContent: function( content ) {
+	purgeContent: function() {
 		this.buttons = [];
 		// delete all buttons in the buttonpane
 		$(this.content).dialog("widget").find(".morebits-dialog-buttons").empty();

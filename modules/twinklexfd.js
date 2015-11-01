@@ -74,7 +74,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'Discussion venues for files (FFD, PUF or NFCR)',
+			label: 'FfD (Files for deletion)/PUF (Possibly unfree files)',
 			selected: mw.config.get('wgNamespaceNumber') === 6,  // File namespace
 			value: 'ffd'
 		} );
@@ -299,24 +299,17 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		work_area.append( {
 				type: 'radio',
 				name: 'ffdvenue',
-				event: Twinkle.xfd.callback.ffdvenue_change,
 				list: [
 					{
 						label: 'File for deletion',
 						value: 'ffd',
-						tooltip: 'General deletion discussion',
-						checked: mw.config.get('wgNamespaceNumber') === 6
+						tooltip: 'File may need to be deleted, or the file\'s compliance with non-free content criteria ([[WP:NFCC]]) is disputed.',
+						checked: true
 					},
 					{
 						label: 'Possibly unfree file',
 						value: 'puf',
 						tooltip: 'File has disputed source or licensing information'
-					},
-					{
-						label: 'Non-free content review',
-						value: 'nfcr',
-						tooltip: 'File\'s compliance with non-free content criteria ([[WP:NFCC]]) is disputed. User notification does not occur for NFCR, as it is not deemed relevant.',
-						checked: mw.config.get('wgNamespaceNumber') !== 6
 					}
 				]
 			} );
@@ -445,16 +438,6 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 	} else {
 		form.notify.checked = Twinkle.xfd.previousNotify;
 		form.notify.disabled = false;
-	}
-};
-
-Twinkle.xfd.callback.ffdvenue_change = function twinklexfdCallbackFfdvenueChange(e) {
-	if (e.target.values === "nfcr") {
-		e.target.form.notify.disabled = true;
-		e.target.form.notify.checked = false;
-	} else {
-		e.target.form.notify.disabled = false;
-		e.target.form.notify.checked = true;
 	}
 };
 
@@ -1629,7 +1612,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		wikipedia_api.post();
 		break;
 
-	case 'ffd': // FFD/PUF/NFCR
+	case 'ffd': // FFD/PUF
 		var dateString = date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 		logpage = 'Wikipedia:Files for deletion/' + dateString;
 		params = { usertalk: usertalk, reason: reason, date: dateString, logpage: logpage };
@@ -1661,60 +1644,6 @@ Twinkle.xfd.callback.evaluate = function(e) {
 					wikipedia_page.setCallbackParameters(params);
 					wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.puf.userNotification);
 				}
-
-				Morebits.wiki.removeCheckpoint();
-				break;
-
-			case 'nfcr':
-				// Updating data for the action completed event
-				Morebits.wiki.actionCompleted.redirect = "Wikipedia:Non-free content review";
-				Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
-
-				// Tagging file
-				if (mw.config.get('wgNamespaceNumber') === 6) {
-					wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging file with review tag");
-					wikipedia_page.setFollowRedirect(true);
-					wikipedia_page.setPrependText("{{non-free review}}\n");
-					wikipedia_page.setEditSummary("This file" +
-						" has been listed for review at [[Wikipedia:Non-free content review#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-					switch (Twinkle.getPref('xfdWatchPage')) {
-						case 'yes':
-							wikipedia_page.setWatchlist(true);
-							break;
-						case 'no':
-							wikipedia_page.setWatchlistFromPreferences(false);
-							break;
-						default:
-							wikipedia_page.setWatchlistFromPreferences(true);
-							break;
-					}
-					wikipedia_page.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
-					wikipedia_page.prepend();
-				}
-
-				// Adding discussion
-				wikipedia_page = new Morebits.wiki.page("Wikipedia:Non-free content review", "Adding discussion to the NFCR page");
-				wikipedia_page.setFollowRedirect(true);
-				wikipedia_page.setAppendText("\n\n== [[:" + Morebits.pageNameNorm + "]] ==\n\n" +
-					Morebits.string.formatReasonText(params.reason) + " ~~~~");
-				wikipedia_page.setEditSummary("Adding [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-				switch (Twinkle.getPref('xfdWatchDiscussion')) {
-					case 'yes':
-						wikipedia_page.setWatchlist(true);
-						break;
-					case 'no':
-						wikipedia_page.setWatchlistFromPreferences(false);
-						break;
-					default:
-						wikipedia_page.setWatchlistFromPreferences(true);
-						break;
-				}
-				wikipedia_page.setCreateOption('recreate');
-				wikipedia_page.append(function() {
-					Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-				});
-
-				// can't notify user on NFCR, so don't
 
 				Morebits.wiki.removeCheckpoint();
 				break;

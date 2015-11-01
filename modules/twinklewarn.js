@@ -14,7 +14,7 @@
  */
 
 Twinkle.warn = function twinklewarn() {
-	if( mw.config.get('wgNamespaceNumber') === 3 ) {
+	if( mw.config.get( 'wgRelevantUserName' ) ) {
 			Twinkle.addPortletLink( Twinkle.warn.callback, "Warn", "tw-warn", "Warn/notify user" );
 	}
 
@@ -37,7 +37,7 @@ Twinkle.warn = function twinklewarn() {
 };
 
 Twinkle.warn.callback = function twinklewarnCallback() {
-	if( mw.config.get('wgTitle').split( '/' )[0] === mw.config.get('wgUserName') &&
+	if( mw.config.get( 'wgRelevantUserName' ) === mw.config.get( 'wgUserName' ) &&
 			!confirm( 'You are about to warn yourself! Are you sure you want to proceed?' ) ) {
 		return;
 	}
@@ -1445,6 +1445,7 @@ Twinkle.warn.callbacks = {
 };
 
 Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
+	var userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
 	// First, check to make sure a reason was filled in if uw-username was selected
 
@@ -1468,10 +1469,10 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( e.target );
 
-	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.redirect = userTalkPage;
 	Morebits.wiki.actionCompleted.notice = "Warning complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'User talk page modification' );
+	var wikipedia_page = new Morebits.wiki.page( userTalkPage, 'User talk page modification' );
 	wikipedia_page.setCallbackParameters( params );
 	wikipedia_page.setFollowRedirect( true );
 	wikipedia_page.load( Twinkle.warn.callbacks.main );

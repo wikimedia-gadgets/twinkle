@@ -20,8 +20,7 @@ Twinkle.shared = function friendlyshared() {
 	}
 };
 
-Twinkle.shared.callback = function friendlysharedCallback( uid ) {
-	console.log(Twinkle.shared.standardList);
+Twinkle.shared.callback = function friendlysharedCallback() {
 	var Window = new Morebits.simpleWindow( 600, 420 );
 	Window.setTitle( $.i18n._('tw-sharedip-window-title') );
 	Window.setScriptName( $.i18n._('tw-core-script-name') );

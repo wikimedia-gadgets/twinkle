@@ -65,7 +65,6 @@ Twinkle.deprod.callback = function() {
 			var isProtected = $editprot.length > 0;
 
 			var metadata = [];
-			var concern = '';
 			var res = re.exec(content);
 			if( res ) {
 				var parsed = Morebits.wikitext.template.parse( content, res.index );
@@ -136,10 +135,9 @@ var callback_commit = function(event) {
 
 		var query = {
 			'action': 'query',
-			'list': 'backlinks',
-			'blfilterredir': 'redirects',
-			'bltitle': pageName,
-			'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
+			'titles': pageName,
+			'prop': 'redirects',
+			'rdlimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
 		};
 		var wikipedia_api = new Morebits.wiki.api( 'Grabbing redirects', query, callback_deleteRedirects );
 		wikipedia_api.params = params;
@@ -175,7 +173,7 @@ callback_deleteTalk = function( apiobj ) {
 },
 callback_deleteRedirects = function( apiobj ) {
 	var $doc = $(apiobj.responseXML);
-	$doc.find("backlinks bl").each(function(){
+	$doc.find("redirects rd").each(function(){
 		var title = $(this).attr('title');
 		var page = new Morebits.wiki.page(title, "Deleting redirecting page " + title);
 		page.setEditSummary("[[WP:CSD#G8|G8]]: Redirect to deleted page \"" + apiobj.params.page + "\"" + Twinkle.getPref('deletionSummaryAd'));
