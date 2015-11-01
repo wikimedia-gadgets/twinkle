@@ -1318,6 +1318,9 @@ Twinkle.speedy.callbacks = {
 						code += "|" + i + "=" + parameters[i];
 					}
 				}
+				if (params.usertalk) {
+					code += "|help=off";
+				}
 				code += "}}";
 				params.utparams = Twinkle.speedy.getUserTalkParameters(params.normalizeds[0], parameters);
 			}
