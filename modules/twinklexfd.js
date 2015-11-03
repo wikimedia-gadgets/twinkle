@@ -74,7 +74,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'FfD (Files for deletion)/PUF (Possibly unfree files)',
+			label: 'FfD (Files for discussion)/PUF (Possibly unfree files)',
 			selected: mw.config.get('wgNamespaceNumber') === 6,  // File namespace
 			value: 'ffd'
 		} );
@@ -301,7 +301,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				name: 'ffdvenue',
 				list: [
 					{
-						label: 'File for deletion',
+						label: 'File for discussion',
 						value: 'ffd',
 						tooltip: 'File may need to be deleted, or the file\'s compliance with non-free content criteria ([[WP:NFCC]]) is disputed.',
 						checked: true
@@ -992,9 +992,9 @@ Twinkle.xfd.callbacks = {
 					pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
 				} else {
 					var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-					var notifytext = "\n{{subst:idw|1=" + mw.config.get('wgTitle') + "}}";
+					var notifytext = "\n{{subst:fdw|1=" + mw.config.get('wgTitle') + "}}";
 					usertalkpage.setAppendText(notifytext);
-					usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for deletion]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+					usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for discussion]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 					usertalkpage.setCreateOption('recreate');
 					switch (Twinkle.getPref('xfdWatchUser')) {
 						case 'yes':
@@ -1614,7 +1614,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 	case 'ffd': // FFD/PUF
 		var dateString = date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
-		logpage = 'Wikipedia:Files for deletion/' + dateString;
+		logpage = 'Wikipedia:Files for discussion/' + dateString;
 		params = { usertalk: usertalk, reason: reason, date: dateString, logpage: logpage };
 
 		Morebits.wiki.addCheckpoint();
