@@ -1121,7 +1121,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-			var notifytext = "\n{{subst:idw-puf|1=" + mw.config.get('wgTitle') + "}} ~~~~";
+			var notifytext = "\n{{subst:fdw-puf|1=" + mw.config.get('wgTitle') + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: listing at [[WP:PUF|possibly unfree files]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
@@ -1266,7 +1266,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-			var notifytext = "\n{{subst:CFDNote|1=" + Morebits.pageNameNorm + "}} ~~~~";
+			var notifytext = "\n{{subst:cfd-notify|1=" + Morebits.pageNameNorm + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: listing at [[WP:CFD|categories for discussion]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');

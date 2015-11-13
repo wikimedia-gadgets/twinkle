@@ -631,8 +631,12 @@ Twinkle.tag.article.tagCategories = {
 
 Twinkle.tag.spellingList = [
 	{
-		label: '{{R from abbreviation}}: redirect from a title with an abbreviation',
-		value: 'R from abbreviation'
+		label: '{{R from initialism}}: redirect from an initialism (e.g. AGF) to its expanded form',
+		value: 'R from initialism'
+	},
+	{
+		label: '{{R from acronym}}: redirect from an acronym (e.g. POTUS) to its expanded form',
+		value: 'R from acronym'
 	},
 	{
 		label: '{{R to list entry}}: redirect to a \"list of minor entities\"-type article which contains brief descriptions of subjects not notable enough to have separate articles',
@@ -678,8 +682,8 @@ Twinkle.tag.alternativeList = [
 		value: 'R from alternative name'
 	},
 	{
-		label: '{{R from full name}}: redirect from a title that is a complete or more complete name',
-		value: 'R from full name'
+		label: '{{R from long name}}: redirect from a title that is a complete or more complete name',
+		value: 'R from long name'
 	},
 	{
 		label: '{{R from surname}}: redirect from a title that is a surname',
@@ -714,8 +718,8 @@ Twinkle.tag.alternativeList = [
 		value: 'R from ASCII'
 	},
 	{
-		label: '{{R from title without diacritics}}: redirect to the article title with diacritical marks (accents, umlauts, etc.)',
-		value: 'R from title without diacritics'
+		label: '{{R to diacritics}}: redirect to the article title with diacritical marks (accents, umlauts, etc.)',
+		value: 'R to diacritics'
 	}
 ];
 
@@ -829,7 +833,7 @@ Twinkle.tag.file.replacementList = [
 	{ label: '{{Duplicate}}: exact duplicate of another file, but not yet orphaned', value: 'Duplicate' },
 	{ label: '{{Obsolete}}: improved version available', value: 'Obsolete' },
 	{ label: '{{PNG version available}}', value: 'PNG version available' },
-	{ label: '{{SVG version available}}', value: 'SVG version available' }
+	{ label: '{{Vector version available}}', value: 'Vector version available' }
 ];
 
 
@@ -1204,7 +1208,7 @@ Twinkle.tag.callbacks = {
 					"Now Commons"].indexOf(tag) !== -1) {
 					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 				}
-				if (tag === "SVG version available") {
+				if (tag === "Vector version available") {
 					text = text.replace(/\{\{((convert to |convertto|should be |shouldbe|to)?svg|badpng|vectorize)[^}]*\}\}/gi, "");
 				}
 
@@ -1265,7 +1269,7 @@ Twinkle.tag.callbacks = {
 						break;
 					case "PNG version available":
 						/* falls through */
-					case "SVG version available":
+					case "Vector version available":
 						/* falls through */
 					case "Obsolete":
 						/* falls through */

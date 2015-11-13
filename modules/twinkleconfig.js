@@ -634,7 +634,7 @@ Twinkle.config.sections = [
 		{
 			name: "showSharedIPNotice",
 			label: "Add extra notice on shared IP talk pages",
-			helptip: "Notice used is {{SharedIPAdvice}}",
+			helptip: "Notice used is {{Shared IP advice}}",
 			type: "boolean"
 		},
 

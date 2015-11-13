@@ -139,7 +139,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced controversial information about living persons",
 				summary: "General note: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam1": {
+			"uw-defamatory1": {
 				label: "Addition of defamatory content",
 				summary: "General note: Addition of defamatory content"
 			},
@@ -297,7 +297,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced controversial information about living persons",
 				summary: "Caution: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam2": {
+			"uw-defamatory2": {
 				label: "Addition of defamatory content",
 				summary: "Caution: Addition of defamatory content"
 			},
@@ -455,7 +455,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced controversial/defamatory information about living persons",
 				summary: "Warning: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam3": {
+			"uw-defamatory3": {
 				label: "Addition of defamatory content",
 				summary: "Warning: Addition of defamatory content"
 			},
@@ -605,7 +605,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced defamatory information about living persons",
 				summary: "Final warning: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam4": {
+			"uw-defamatory4": {
 				label: "Addition of defamatory content",
 				summary: "Final warning: Addition of defamatory content"
 			},
@@ -739,7 +739,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced defamatory information about living persons",
 				summary: "Only warning: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam4im": {
+			"uw-defamatory4im": {
 				label: "Addition of defamatory content",
 				summary: "Only warning: Addition of defamatory content"
 			},
@@ -1394,7 +1394,7 @@ Twinkle.warn.callbacks = {
 
 		if ( Twinkle.getPref('showSharedIPNotice') && Morebits.isIPAddress( mw.config.get('wgTitle') ) ) {
 			Morebits.status.info( 'Info', 'Adding a shared IP notice' );
-			text +=  "\n{{subst:SharedIPAdvice}}";
+			text +=  "\n{{subst:Shared IP advice}}";
 		}
 
 		// build the edit summary
