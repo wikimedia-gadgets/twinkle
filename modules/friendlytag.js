@@ -451,8 +451,8 @@ Twinkle.tag.article.tags = {
 	"GOCEinuse": "article is currently undergoing a major copy edit by the Guild of Copy Editors",
 	"hoax": "article may be a complete hoax",
 	"improve categories": "article may require additional categories",
+	"incomprehensible": "article is very hard to understand or incomprehensible",
 	"in-universe": "article subject is fictional and needs rewriting from a non-fictional perspective",
-	"incoherent": "article is incoherent or very hard to understand",
 	"in use": "article is undergoing a major edit for a short while",
 	"lead missing": "article has no lead section and one should be written",
 	"lead rewrite": "article lead section needs to be rewritten to comply with guidelines",
@@ -496,6 +496,7 @@ Twinkle.tag.article.tags = {
 	"under construction": "article is currently in the middle of an expansion or major revamping",
 	"underlinked": "article may require additional wikilinks",
 	"undue": "article lends undue weight to certain aspects of the subject but not others",
+	"unfocused": "article lacks focus or is about more than one topic",
 	"unreferenced": "article has no references at all",
 	"unreliable sources": "article's references may not be reliable sources",
 	"update": "article needs additional up-to-date information added",
@@ -553,7 +554,8 @@ Twinkle.tag.article.tagCategories = {
 		],
 		"Sense (or lack thereof)": [
 			"confusing",
-			"incoherent"
+			"incomprehensible",
+			"unfocused"
 		],
 		"Information and detail": [
 			"context",
