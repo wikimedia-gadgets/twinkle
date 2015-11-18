@@ -605,6 +605,14 @@ Twinkle.protect.formevents = {
 		e.target.form.editexpiry.disabled = (e.target.value === 'all');
 	},
 	movemodify: function twinkleprotectFormMovemodifyEvent(e) {
+		// sync move settings with edit settings if applicable
+		if (e.target.form.movelevel.disabled && !e.target.form.editlevel.disabled) {
+			e.target.form.movelevel.value = e.target.form.editlevel.value;
+			e.target.form.moveexpiry.value = e.target.form.editexpiry.value;
+		} else if (e.target.form.editlevel.disabled) {
+			e.target.form.movelevel.value = 'sysop';
+			e.target.form.moveexpiry.value = 'indefinite';
+		}
 		e.target.form.movelevel.disabled = !e.target.checked;
 		e.target.form.moveexpiry.disabled = !e.target.checked || (e.target.form.movelevel.value === 'all');
 		e.target.form.movelevel.style.color = e.target.form.moveexpiry.style.color = (e.target.checked ? "" : "transparent");
@@ -766,13 +774,13 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-semi-usertalk': {
 		edit: 'autoconfirmed',
-		move: 'sysop',
+		move: 'autoconfirmed',
 		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]',
 		template: 'pp-usertalk'
 	},
 	'pp-semi-template': {  // removed for now
 		edit: 'autoconfirmed',
-		move: 'sysop',
+		move: 'autoconfirmed',
 		reason: '[[WP:High-risk templates|Highly visible template]]',
 		template: 'pp-template'
 	},
