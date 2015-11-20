@@ -874,8 +874,6 @@ Twinkle.tag.callbacks = {
 			} else {
 				if( tagName === 'globalize' ) {
 					currentTag += '{{' + params.tagParameters.globalize;
-				} else if( tagName === 'not English' ) {
-					currentTag += '{{subst:' + tagName;
 				} else {
 					currentTag += ( Twinkle.tag.mode === 'redirect' ? '\n' : '' ) + '{{' + tagName;
 				}
