@@ -110,6 +110,9 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 							// enable/disable delete multiple
 							cForm.delmultiple.disabled = cChecked;
 							cForm.delmultiple.checked = false;
+							// enable/disable open talk page checkbox
+							cForm.openusertalk.disabled = cChecked;
+							cForm.openusertalk.checked = false;
 
 							// enable/disable notify checkbox
 							cForm.notify.disabled = !cChecked;
@@ -175,6 +178,18 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				}
 			]
 		} );
+		form.append( {
+				type: 'checkbox',
+				list: [
+					{
+						label: 'Open user talk page on submit',
+						value: 'openusertalk',
+						name: 'openusertalk',
+						tooltip: 'Use this is override your preferences for the selected rationale',
+						checked : false
+					}
+				]
+			} );
 		form.append( { type: 'header', label: 'Tag-related options' } );
 	}
 
@@ -432,8 +447,21 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 					}
 				];
 			}
+			// FIXME: does this do anything?
 			criterion.event = openSubgroupHandler;
 		}
+
+		criterion.event = function(e) {
+			if (multiple) return;
+			if( isSysop ) {
+				var normalizedCriterion = Twinkle.speedy.normalizeHash[e.target.value];
+				$('[name=openusertalk]').prop('checked',
+						Twinkle.getPref('openUserTalkPageOnSpeedyDelete').indexOf(normalizedCriterion) !== -1
+					);
+			} else {
+				$('[name=openusertalk]').prop('checked', false);
+			}
+		};
 
 		return criterion;
 	});
@@ -1133,7 +1161,7 @@ Twinkle.speedy.callbacks = {
 
 			// look up initial contributor. If prompting user for deletion reason, just display a link.
 			// Otherwise open the talk page directly
-			if( params.openusertalk ) {
+			if( params.openUserTalk ) {
 				thispage.setCallbackParameters( params );
 				thispage.lookupCreator( Twinkle.speedy.callbacks.sysop.openUserTalkPage );
 			}
@@ -1816,7 +1844,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 	});
 
 	// analyse each criterion to determine whether to watch the page, prompt for summary, or open user talk page
-	var watchPage, promptForSummary, openUserTalk;
+	var watchPage, promptForSummary;
 	normalizeds.forEach(function(norm) {
 		if (Twinkle.getPref("watchSpeedyPages").indexOf(norm) !== -1) {
 			watchPage = true;
@@ -1824,18 +1852,15 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		if (Twinkle.getPref("promptForSpeedyDeletionSummary").indexOf(norm) !== -1) {
 			promptForSummary = true;
 		}
-		if (Twinkle.getPref('openUserTalkPageOnSpeedyDelete').indexOf(norm) !== -1) {
-			openUserTalk = true;
-		}
 	});
 
 	var params = {
 		values: values,
 		normalizeds: normalizeds,
 		watch: watchPage,
-		openusertalk: openUserTalk,
 		deleteTalkPage: form.talkpage && form.talkpage.checked,
 		deleteRedirects: form.redirects.checked,
+		openUserTalk: form.openusertalk.checked,
 		promptForSummary: promptForSummary,
 		templateParams: Twinkle.speedy.getParameters( form, values )
 	};
