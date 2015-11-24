@@ -1153,6 +1153,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-pc-blp':
 				case 'pp-pc-protected':
 				case 'pp-pc-unsourced':
+				case 'pp-pc-disruptive':
 					typename = 'pending changes';
 					break;
 				case 'pp-move':
@@ -1183,6 +1184,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typereason = 'Persistent vandalism';
 					break;
 				case 'pp-semi-disruptive':
+				case 'pp-pc-disruptive':
 					typereason = 'Persistent [[Wikipedia:Disruptive editing|disruptive editing]]';
 					break;
 				case 'pp-semi-unsourced':
