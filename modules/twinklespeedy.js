@@ -451,17 +451,18 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			criterion.event = openSubgroupHandler;
 		}
 
-		criterion.event = function(e) {
-			if (multiple) return;
-			if( isSysop ) {
+		if ( isSysop ) {
+			var originalEvent = criterion.event;
+			criterion.event = function(e) {
+				if (multiple) return originalEvent(e);
+
 				var normalizedCriterion = Twinkle.speedy.normalizeHash[e.target.value];
 				$('[name=openusertalk]').prop('checked',
 						Twinkle.getPref('openUserTalkPageOnSpeedyDelete').indexOf(normalizedCriterion) !== -1
 					);
-			} else {
-				$('[name=openusertalk]').prop('checked', false);
-			}
-		};
+				return originalEvent(e);
+			};
+		}
 
 		return criterion;
 	});
