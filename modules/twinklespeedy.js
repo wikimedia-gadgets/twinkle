@@ -1121,9 +1121,14 @@ Twinkle.speedy.callbacks = {
 
 		var statusIndicator = new Morebits.status( 'Building deletion summary' );
 		var api = new Morebits.wiki.api( 'Parsing deletion template', query, function(apiObj) {
-				statusIndicator.info( 'complete' );
-				callback(apiObj);
-			},  statusIndicator);
+				var reason = decodeURIComponent($(apiObj.getXML().querySelector('text').childNodes[0].nodeValue).find('#delete-reason').text()).replace(/\+/g, ' ');
+				if (!reason) {
+					statusIndicator.warn( 'Unable to generate summary from deletion template' );
+				} else {
+					statusIndicator.info( 'complete' );
+				}
+				callback(reason);
+			}, statusIndicator);
 		api.post();
 	},
 
@@ -1136,8 +1141,7 @@ Twinkle.speedy.callbacks = {
 				Twinkle.speedy.callbacks.sysop.deletePage( reason, params );
 			} else {
 				var code = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params)[0];
-				Twinkle.speedy.callbacks.parseWikitext(code, function(apiobj) {
-					reason = decodeURIComponent($(apiobj.getXML().querySelector('text').childNodes[0].nodeValue).find('#delete-reason').text()).replace(/\+/g, ' ');
+				Twinkle.speedy.callbacks.parseWikitext(code, function(reason) {
 					if (params.promptForSummary) {
 						reason = prompt("Enter the deletion summary to use, or press OK to accept the automatically generated one.", reason);
 					}
