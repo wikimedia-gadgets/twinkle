@@ -185,7 +185,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 						label: 'Open user talk page on submit',
 						value: 'openusertalk',
 						name: 'openusertalk',
-						tooltip: 'Use this is override your preferences for the selected rationale',
+						tooltip: 'This defaults to your open-talk-page preferences when deleting pages under the currently selected rationale. It is left unchanged if you choose to delete under multiple criteria.',
 						checked : false
 					}
 				]
@@ -1120,7 +1120,7 @@ Twinkle.speedy.callbacks = {
 		};
 
 		var statusIndicator = new Morebits.status( 'Building deletion summary' );
-		var api = new Morebits.wiki.api( 'Fetching parsing deletion template', query, function(apiObj) {
+		var api = new Morebits.wiki.api( 'Parsing deletion template', query, function(apiObj) {
 				statusIndicator.info( 'complete' );
 				callback(apiObj);
 			},  statusIndicator);
@@ -1864,6 +1864,9 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		promptForSummary: promptForSummary,
 		templateParams: Twinkle.speedy.getParameters( form, values )
 	};
+	if(!params.templateParams) {
+		return;
+	}
 
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( form );
