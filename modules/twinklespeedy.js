@@ -460,7 +460,9 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 				$('[name=openusertalk]').prop('checked',
 						Twinkle.getPref('openUserTalkPageOnSpeedyDelete').indexOf(normalizedCriterion) !== -1
 					);
-				return originalEvent(e);
+				if ( originalEvent ) {
+					return originalEvent(e);
+				}
 			};
 		}
 
@@ -820,7 +822,8 @@ Twinkle.speedy.generalList = [
 			label: 'Page where the deletion discussion took place: ',
 			tooltip: 'Must start with "Wikipedia:"',
 			size: 60
-		}
+		},
+		hideSubgroupWhenMultiple: true
 	},
 	{
 		label: 'G5: Banned or blocked user',
@@ -920,7 +923,8 @@ Twinkle.speedy.generalList = [
 			label: 'Optional explanation: ',
 			tooltip: 'Perhaps linking to where the author requested this deletion.',
 			size: 60
-		}
+		},
+		hideSubgroupWhenSysop: true
 	},
 	{
 		label: 'G8: Pages dependent on a non-existent or deleted page',
