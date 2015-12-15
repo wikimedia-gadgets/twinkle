@@ -1028,10 +1028,6 @@ Twinkle.warn.messages = {
 			label: "Editing while logged out",
 			summary: "Warning: Editing while logged out"
 		},
-		"uw-longterm": {
-			label: "Long term pattern of vandalism",
-			summary: "Warning: Long term pattern of vandalism"
-		},
 		"uw-multipleIPs": {
 			label: "Usage of multiple IPs",
 			summary: "Warning: Usage of multiple IPs"
