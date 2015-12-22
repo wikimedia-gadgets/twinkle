@@ -1398,6 +1398,7 @@ Morebits.wiki.api = function( currentAction, query, onSuccess, statusElement, on
 	this.currentAction = currentAction;
 	this.query = query;
 	this.query.format = 'xml';
+	this.query.assert = 'user';
 	this.onSuccess = onSuccess;
 	this.onError = onError;
 	if( statusElement ) {
