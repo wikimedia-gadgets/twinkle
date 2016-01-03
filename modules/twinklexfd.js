@@ -119,11 +119,22 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 			label:'Work area',
 			name: 'work_area'
 		} );
+
+	var previewlink = document.createElement( 'a' );
+	$(previewlink).click(function(){
+		Twinkle.xfd.callbacks.preview(result);  // |result| is defined below
+	});
+	previewlink.style.cursor = "pointer";
+	previewlink.textContent = 'Preview';
+	form.append( { type: 'div', id: 'xfdpreview', label: [ previewlink ] } );
+	form.append( { type: 'div', id: 'twinklexfd-previewbox', style: 'display: none' } );
+
 	form.append( { type:'submit' } );
 
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
+	result.previewer = new Morebits.wiki.preview($(result).find('div#twinklexfd-previewbox').last()[0]);
 
 	// We must init the controls
 	var evt = document.createEvent( "Event" );
@@ -152,6 +163,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		} );
 		// TODO possible future "preview" link here
 	};
+
+	form.previewer.closePreview();
 
 	switch( value ) {
 	case 'afd':
@@ -442,6 +455,71 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 };
 
 Twinkle.xfd.callbacks = {
+	// Currently supports afd, mfd, tfd/tfm, ffd
+	getDiscussionWikitext: function(venue, params) {
+		var text = "{{subst:" + venue + "2",
+			reasonKey = venue === "ffd" ? "Reason" : "text";
+
+		if (params.xfdcat) {
+			text += "|cat=" + params.xfdcat;
+		}
+
+		// Add a reason unconditionally, so that at least a signature is added
+		if (params.reason) {
+			text += "|" + reasonKey + "=" + Morebits.string.formatReasonText(params.reason) + " ~~~~";
+		} else {
+			text += "|" + reasonKey + "=~~~~";
+		}
+
+		if (venue === "tfd" || venue === "tfm" || venue === "ffd") {
+			text += "|1=" + mw.config.get('wgTitle');
+		} else {
+			text += "|pg=" + Morebits.pageNameNorm;
+		}
+
+		if (params.target) {
+			text += "|2=" + params.target;
+		}
+
+		if (params.uploader) {
+			text += "|Uploader=" + params.uploader;
+		}
+
+		text += "}}";
+		return text;
+	},
+	showPreview: function(form, venue, params) {
+		templatetext = Twinkle.xfd.callbacks.getDiscussionWikitext(venue, params);
+		form.previewer.beginRender(templatetext, "Wikipedia:Null");
+	},
+	preview: function(form) {
+		var templatetext;
+		var venue = form.category.value;
+
+		if (venue !== "afd" && venue !== "mfd" && venue !== "tfd" && venue !== "tfm" && venue !== "ffd") {
+			alert("Preview is not yet supported for this discussion venue! :(");
+			return;
+		}
+		var params = {
+			reason: form.xfdreason.value,
+		};
+		if (form.xfdcat) {
+			params.xfdcat = form.xfdcat.value;
+		}
+		if (form.xfdtarget) {
+			params.target = form.xfdtarget.value;
+		}
+		if (venue === "ffd") {
+			// Fetch the uploader
+			var page = new Morebits.wiki.page(mw.config.get('wgPageName'));
+			page.lookupCreator(function() {
+				params.uploader = page.getCreator();
+				Twinkle.xfd.callbacks.showPreview(form, venue, params);
+			});
+		} else {
+			Twinkle.xfd.callbacks.showPreview(form, venue, params);
+		}
+	},
 	afd: {
 		main: function(apiobj) {
 			var xmlDoc = apiobj.responseXML;
@@ -569,8 +647,7 @@ Twinkle.xfd.callbacks = {
 		discussionPage: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText("{{subst:afd2|text=" + Morebits.string.formatReasonText(params.reason) +
-				" ~~~~|pg=" + Morebits.pageNameNorm + "|cat=" + params.xfdcat + "}}\n");
+			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext("afd", params));
 			pageobj.setEditSummary("Creating deletion discussion page for [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
@@ -699,20 +776,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var added_data = "";
-			switch( params.xfdcat ) {
-			case 'tfd':
-				added_data = "{{subst:tfd2|text=" + Morebits.string.formatReasonText(params.reason) +
-					" ~~~~|1=" + mw.config.get('wgTitle') + "}}";
-				break;
-			case 'tfm':
-				added_data = "{{subst:tfm2|text=" + Morebits.string.formatReasonText(params.reason) +
-					" ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}}";
-				break;
-			default:
-				alert("twinklexfd in todaysList: unknown TFD action");
-				break;
-			}
+			var added_data = Twinkle.xfd.callbacks.getDiscussionWikitext(params.xfdcat, params);
 
 			var text = old_text.replace( '-->', "-->\n" + added_data );
 			if( text === old_text ) {
@@ -875,8 +939,7 @@ Twinkle.xfd.callbacks = {
 		discussionPage: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText("{{subst:mfd2|text=" + Morebits.string.formatReasonText(params.reason) +
-				" ~~~~|pg=" + Morebits.pageNameNorm + "}}\n");
+			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext("mfd", params));
 			pageobj.setEditSummary("Creating deletion discussion page for [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
@@ -1043,8 +1106,7 @@ Twinkle.xfd.callbacks = {
 				text = "{{subst:Ffd log}}";
 			}
 
-			pageobj.setPageText(text + "\n{{subst:ffd2|Reason=" + Morebits.string.formatReasonText(params.reason) +
-				"|Uploader=" + params.uploader + "|1=" + mw.config.get('wgTitle') + "}} ~~~~");
+			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext("ffd", params));
 			pageobj.setEditSummary("Adding [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':

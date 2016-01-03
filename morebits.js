@@ -2859,6 +2859,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
  * beginRender(wikitext): Displays the preview box, and begins an asynchronous attempt
  *                        to render the specified wikitext.
  *    wikitext - wikitext to render; most things should work, including subst: and ~~~~
+ *    pageTitle - optional parameter for the page this should be rendered as being on
  *
  * closePreview(): Hides the preview box and clears it.
  *
@@ -2872,7 +2873,7 @@ Morebits.wiki.preview = function(previewbox) {
 	this.previewbox = previewbox;
 	$(previewbox).addClass("morebits-previewbox").hide();
 
-	this.beginRender = function(wikitext) {
+	this.beginRender = function(wikitext, pageTitle) {
 		$(previewbox).show();
 
 		var statusspan = document.createElement('span');
@@ -2884,7 +2885,7 @@ Morebits.wiki.preview = function(previewbox) {
 			prop: 'text',
 			pst: 'true',  // PST = pre-save transform; this makes substitution work properly
 			text: wikitext,
-			title: mw.config.get('wgPageName')
+			title: pageTitle || mw.config.get('wgPageName')
 		};
 		var renderApi = new Morebits.wiki.api("loading...", query, fnRenderSuccess, new Morebits.status("Preview"));
 		renderApi.post();
@@ -2898,6 +2899,7 @@ Morebits.wiki.preview = function(previewbox) {
 			return;
 		}
 		previewbox.innerHTML = html;
+		$(previewbox).find("a").attr("target", "_blank");
 	};
 
 	this.closePreview = function() {
