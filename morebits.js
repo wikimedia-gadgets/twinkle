@@ -1043,7 +1043,11 @@ Morebits.string = {
 	},
 	// for deletion/other templates taking a freeform "reason" from a textarea (e.g. PROD, XFD, RPP)
 	formatReasonText: function( str ) {
-		return str.toString().trimRight().replace(/\|/g, "{{subst:!}}");
+		var result = str.toString().trimRight();
+		var unbinder = new Morebits.unbinder(result);
+		unbinder.unbind("<nowiki>", "</nowiki>");
+		unbinder.content = unbinder.content.replace(/\|/g, "{{subst:!}}");
+		return unbinder.rebind();
 	}
 };
 
