@@ -744,6 +744,12 @@ Twinkle.speedy.userList = [
 		tooltip: 'Pages in userspace consisting of writings, information, discussions, and/or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of userspace, with the exception of plausible drafts, pages adhering to WP:UPYES, and résumé-style pages.'
 	},
 	{
+		label: 'G6: Blank draft',
+		value: 'blankdraft',
+		tooltip: 'Userspace drafts containing only the default Article Wizard text, where the author of the page has been inactive for at least one year.',
+		hideWhenMultiple: true
+	},
+	{
 		label: 'G11: Promotional user page under a promotional user name',
 		value: 'spamuser',
 		tooltip: 'A promotional user page, with a username that promotes or implies affiliation with the thing being promoted. Note that simply having a page on a company or product in one\'s userspace does not qualify it for deletion. If a user page is spammy but the username is not, then consider tagging with regular G11 instead.',
@@ -1026,6 +1032,7 @@ Twinkle.speedy.normalizeHash = {
 	'disambig': 'g6',
 	'movedab': 'g6',
 	'copypaste': 'g6',
+	'blankdraft': 'g6',
 	'g6': 'g6',
 	'author': 'g7',
 	'g8': 'g8',
