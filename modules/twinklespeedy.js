@@ -784,7 +784,7 @@ Twinkle.speedy.portalList = [
 		tooltip: 'You must specify the article criterion that applies in this case (A1, A3, A7, or A10).',
 		subgroup: {
 			name: 'p1_1',
-			type: 'select',
+			type: 'input',
 			label: 'Article criterion that would apply: '
 		},
 		hideWhenMultiple: true
