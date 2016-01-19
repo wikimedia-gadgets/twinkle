@@ -455,9 +455,20 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 };
 
 Twinkle.xfd.callbacks = {
-	// Currently supports afd, mfd, tfd/tfm, ffd
 	getDiscussionWikitext: function(venue, params) {
-		var text = "{{subst:" + venue + "2",
+		if (venue === "wait") { // For when making AJAX calls, so users don't think it's broken
+			return "''Loading . . .''";
+		}
+
+		if (venue === "cfds") { // It takes a completely different signature
+			return "* [[:" + Morebits.pageNameNorm + "]] to [[:" + params.target +
+			"]]\u00A0\u2013 " + params.xfdcat + (params.reason ? (": " +
+			Morebits.string.formatReasonText(params.reason)) : ".") + " ~~~~";
+		}
+
+		// AFD has different reasons that get passed to the template, others have unique templates
+		var template = venue === "afd" ? venue : (params.xfdcat || venue),
+			text = "{{subst:" + template + "2",
 			reasonKey = venue === "ffd" ? "Reason" : "text";
 
 		if (params.xfdcat) {
@@ -471,14 +482,20 @@ Twinkle.xfd.callbacks = {
 			text += "|" + reasonKey + "=~~~~";
 		}
 
-		if (venue === "tfd" || venue === "tfm" || venue === "ffd") {
-			text += "|1=" + mw.config.get('wgTitle');
-		} else {
+		if (venue === "afd" || venue === "mfd") {
 			text += "|pg=" + Morebits.pageNameNorm;
+		} else if (venue === "rfd") {
+			text += "|redirect=" + Morebits.pageNameNorm + "|target=" + params.target;
+		} else {
+			text += "|1=" + mw.config.get('wgTitle');
 		}
 
 		if (params.target) {
 			text += "|2=" + params.target;
+		}
+
+		if (params.target2) {
+			text += "|3=" + params.target2;
 		}
 
 		if (params.uploader) {
@@ -489,17 +506,12 @@ Twinkle.xfd.callbacks = {
 		return text;
 	},
 	showPreview: function(form, venue, params) {
-		templatetext = Twinkle.xfd.callbacks.getDiscussionWikitext(venue, params);
+		var templatetext = Twinkle.xfd.callbacks.getDiscussionWikitext(venue, params);
 		form.previewer.beginRender(templatetext, "Wikipedia:Null");
 	},
 	preview: function(form) {
-		var templatetext;
 		var venue = form.category.value;
 
-		if (venue !== "afd" && venue !== "mfd" && venue !== "tfd" && venue !== "tfm" && venue !== "ffd") {
-			alert("Preview is not yet supported for this discussion venue! :(");
-			return;
-		}
 		var params = {
 			reason: form.xfdreason.value,
 		};
@@ -509,11 +521,22 @@ Twinkle.xfd.callbacks = {
 		if (form.xfdtarget) {
 			params.target = form.xfdtarget.value;
 		}
+		if (form.xfdtarget2) {
+			params.target2 = form.xfdtarget2.value;
+		}
 		if (venue === "ffd") {
+			Twinkle.xfd.callbacks.showPreview(form, "wait");
+			params.xfdcat = form.ffdvenue.value;
 			// Fetch the uploader
 			var page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 			page.lookupCreator(function() {
 				params.uploader = page.getCreator();
+				Twinkle.xfd.callbacks.showPreview(form, venue, params);
+			});
+		} else if (venue === "rfd") {
+			Twinkle.xfd.callbacks.showPreview(form, "wait");
+			// Fetch the target
+			Twinkle.xfd.callbacks.rfd.findTarget(params, function(params) {
 				Twinkle.xfd.callbacks.showPreview(form, venue, params);
 			});
 		} else {
@@ -1154,8 +1177,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText(text + "\n{{subst:puf2|reason=" + Morebits.string.formatReasonText(params.reason) +
-				"|image=" + mw.config.get('wgTitle') + "}} ~~~~");
+			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext("puf", params));
 			pageobj.setEditSummary("Adding [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
@@ -1261,38 +1283,15 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var added_data = "";
-			var editsummary = "";
-			switch( params.xfdcat ) {
-			case 'cfd':
-				added_data = "{{subst:cfd2|text=" + Morebits.string.formatReasonText(params.reason) +
-					" ~~~~|1=" + mw.config.get('wgTitle') + "}}";
-				editsummary = "Added delete nomination of [[:" + Morebits.pageNameNorm + "]].";
-				break;
-			case 'cfm':
-				added_data = "{{subst:cfm2|text=" + Morebits.string.formatReasonText(params.reason) +
-					" ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}}";
-				editsummary = "Added merge nomination of [[:" + Morebits.pageNameNorm + "]].";
-				break;
-			case 'cfr':
-				added_data = "{{subst:cfr2|text=" + Morebits.string.formatReasonText(params.reason) +
-					" ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}}";
-				editsummary = "Added rename nomination of [[:" + Morebits.pageNameNorm + "]].";
-				break;
-			case 'cfs':
-				added_data = "{{subst:cfs2|text=" + Morebits.string.formatReasonText(params.reason) +
-					" ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "|3=" + params.target2 + "}}";
-				editsummary = "Added split nomination of [[:" + Morebits.pageNameNorm + "]].";
-				break;
-			case 'cfc':
-				added_data = "{{subst:cfc2|text=" + Morebits.string.formatReasonText(params.reason) +
-					" ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}}";
-				editsummary = "Added convert nomination of [[:" + Morebits.pageNameNorm + "]].";
-				break;
-			default:
-				alert("twinklexfd in todaysList: unknown CFD action");
-				break;
-			}
+			var added_data = Twinkle.xfd.callbacks.getDiscussionWikitext(params.xfdcat, params);
+			var summaryActions = {
+				cfd: "delete",
+				cfm: "merge",
+				cfr: "rename",
+				cfs: "split",
+				cfc: "convert"
+			};
+			var editsummary = "Added " + summaryActions[params.xfdcat] + " nomination of [[:" + Morebits.pageNameNorm + "]].";
 
 			var text = old_text.replace( 'below this line -->', "below this line -->\n" + added_data );
 			if( text === old_text ) {
@@ -1375,10 +1374,8 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var newcatname = (/^Category:/.test(params.target) ? params.target : ("Category:" + params.target));
-			var text = old_text.replace( 'BELOW THIS LINE -->', "BELOW THIS LINE -->\n* [[:" + Morebits.pageNameNorm + "]] to [[:" +
-				newcatname + "]]\u00A0\u2013 " + params.xfdcat + (params.reason ? (": " + Morebits.string.formatReasonText(params.reason)) : ".") +
-				" ~~~~" );
+			params.target = (/^Category:/.test(params.target) ? params.target : ("Category:" + params.target));
+			var text = old_text.replace( 'BELOW THIS LINE -->', "BELOW THIS LINE -->\n" + Twinkle.xfd.callbacks.getDiscussionWikitext("cfds", params));
 				// U+00A0 NO-BREAK SPACE; U+2013 EN RULE
 			if( text === old_text ) {
 				statelem.error( 'failed to find target spot for the discussion' );
@@ -1407,16 +1404,36 @@ Twinkle.xfd.callbacks = {
 
 
 	rfd: {
-		// This is a callback from an API request, which gets the target of the redirect
-		findTargetCallback: function(apiobj) {
-			var xmlDoc = apiobj.responseXML;
-			var target = $(xmlDoc).find('redirects r').first().attr('to');
-			if( !target ) {
-				apiobj.statelem.error( "This page is currently not a redirect, aborting" );
-				return;
+		// This gets called both on submit and preview to determine the redirect target
+		findTarget: function(params, callback) {
+			if (document.getElementById("softredirect")) {
+				// For soft redirects, skip straight to the callback
+				params.target = document.getElementById("softredirect").textContent.replace(/^\:+/, "");
+				callback(params);
+			} else {
+				// Find current target of redirect
+				var query = {
+					'action': 'query',
+					'titles': mw.config.get('wgPageName'),
+					'redirects': true
+				};
+				var wikipedia_api = new Morebits.wiki.api( "Finding target of redirect", query, Twinkle.xfd.callbacks.rfd.findTargetCallback(callback) );
+				wikipedia_api.params = params;
+				wikipedia_api.post();
 			}
-			apiobj.params.target = target;
-			Twinkle.xfd.callbacks.rfd.main(apiobj.params);
+		},
+		// This is a closure for the callback from the above API request, which gets the target of the redirect
+		findTargetCallback: function(callback) {
+			return function(apiobj) {
+				var xmlDoc = apiobj.responseXML;
+				var target = $(xmlDoc).find('redirects r').first().attr('to');
+				if( !target ) {
+					apiobj.statelem.error( "This page is currently not a redirect, aborting" );
+					return;
+				}
+				apiobj.params.target = target;
+				callback(apiobj.params);
+			};
 		},
 		main: function(params) {
 			var date = new Date();
@@ -1799,21 +1816,8 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 	case 'rfd':
 		params = { usertalk: usertalk, reason: reason };
-		if (document.getElementById("softredirect")) {
-			// For soft redirects, skip straight to the callback
-			params.target = document.getElementById("softredirect").textContent.replace(/^\:+/, "");
-			Twinkle.xfd.callbacks.rfd.main(params);
-		} else {
-			// Find current target of redirect
-			query = {
-				'action': 'query',
-				'titles': mw.config.get('wgPageName'),
-				'redirects': true
-			};
-			wikipedia_api = new Morebits.wiki.api( "Finding target of redirect", query, Twinkle.xfd.callbacks.rfd.findTargetCallback );
-			wikipedia_api.params = params;
-			wikipedia_api.post();
-		}
+		// find target and pass main as the callback
+		Twinkle.xfd.callbacks.rfd.findTarget(params, Twinkle.xfd.callbacks.rfd.main);
 		break;
 	default:
 		alert("twinklexfd: unknown XFD discussion venue");
