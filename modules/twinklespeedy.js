@@ -128,9 +128,17 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					}
 				]
 			} );
-		form.append( { type: 'header', label: 'Delete-related options' } );
+
+		var deleteOptions = form.append( {
+				type: 'div',
+				name: 'delete_options'
+			} );
+		deleteOptions.append( {
+				type: 'header',
+				label: 'Delete-related options'
+			} );
 		if (mw.config.get('wgNamespaceNumber') % 2 === 0 && (mw.config.get('wgNamespaceNumber') !== 2 || (/\//).test(mw.config.get('wgTitle')))) {  // hide option for user pages, to avoid accidentally deleting user talk page
-			form.append( {
+			deleteOptions.append( {
 				type: 'checkbox',
 				list: [
 					{
@@ -147,7 +155,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				]
 			} );
 		}
-		form.append( {
+		deleteOptions.append( {
 				type: 'checkbox',
 				list: [
 					{
@@ -163,7 +171,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					}
 				]
 			} );
-		form.append( {
+		deleteOptions.append( {
 			type: 'checkbox',
 			list: [
 				{
@@ -178,7 +186,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				}
 			]
 		} );
-		form.append( {
+		deleteOptions.append( {
 				type: 'checkbox',
 				list: [
 					{
@@ -190,10 +198,21 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					}
 				]
 			} );
-		form.append( { type: 'header', label: 'Tag-related options' } );
 	}
 
-	form.append( {
+	var tagOptions = form.append( {
+			type: 'div',
+			name: 'tag_options'
+		} );
+
+	if( Morebits.userIsInGroup( 'sysop' ) ) {
+		tagOptions.append( {
+				type: 'header',
+				label: 'Tag-related options'
+			} );
+	}
+
+	tagOptions.append( {
 			type: 'checkbox',
 			list: [
 				{
@@ -210,7 +229,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				}
 			]
 		} );
-	form.append( {
+	tagOptions.append( {
 			type: 'checkbox',
 			list: [
 				{
@@ -257,10 +276,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	}
 };
 
-Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(form) {
-	var namespace = mw.config.get('wgNamespaceNumber');
-
-	// first figure out what mode we're in
+Twinkle.speedy.callback.getMode = function twinklespeedyCallbackGetMode(form) {
 	var mode = Twinkle.speedy.mode.userSingleSubmit;
 	if (form.tag_only && !form.tag_only.checked) {
 		if (form.delmultiple.checked) {
@@ -277,6 +293,23 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	}
 	if (Twinkle.getPref('speedySelectionStyle') === 'radioClick') {
 		mode++;
+	}
+
+	return mode;
+};
+
+Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(form) {
+	var namespace = mw.config.get('wgNamespaceNumber');
+
+	// first figure out what mode we're in
+	var mode = Twinkle.speedy.callback.getMode(form);
+
+	if (Twinkle.speedy.mode.isSysop(mode)) {
+		$("[name=delete_options]").show();
+		$("[name=tag_options]").hide();
+	} else {
+		$("[name=delete_options]").hide();
+		$("[name=tag_options]").show();
 	}
 
 	var work_area = new Morebits.quickForm.element( {
@@ -315,48 +348,50 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.talkList, mode) } );
 	}
 
-	switch (namespace) {
-		case 0:  // article
-		case 1:  // talk
-			work_area.append( { type: 'header', label: 'Articles' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.articleList, mode) } );
-			break;
+	if (!mw.config.get('wgIsRedirect')) {
+		switch (namespace) {
+			case 0:  // article
+			case 1:  // talk
+				work_area.append( { type: 'header', label: 'Articles' } );
+				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.articleList, mode) } );
+				break;
 
-		case 2:  // user
-		case 3:  // user talk
-			work_area.append( { type: 'header', label: 'User pages' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userList, mode) } );
-			break;
+			case 2:  // user
+			case 3:  // user talk
+				work_area.append( { type: 'header', label: 'User pages' } );
+				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userList, mode) } );
+				break;
 
-		case 6:  // file
-		case 7:  // file talk
-			work_area.append( { type: 'header', label: 'Files' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.fileList, mode) } );
-			if (!Twinkle.speedy.mode.isSysop(mode)) {
-				work_area.append( { type: 'div', label: 'Tagging for CSD F4 (no license), F5 (orphaned fair use), F6 (no fair use rationale), and F11 (no permission) can be done using Twinkle\'s "DI" tab.' } );
-			}
-			break;
+			case 6:  // file
+			case 7:  // file talk
+				work_area.append( { type: 'header', label: 'Files' } );
+				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.fileList, mode) } );
+				if (!Twinkle.speedy.mode.isSysop(mode)) {
+					work_area.append( { type: 'div', label: 'Tagging for CSD F4 (no license), F5 (orphaned fair use), F6 (no fair use rationale), and F11 (no permission) can be done using Twinkle\'s "DI" tab.' } );
+				}
+				break;
 
-		case 10:  // template
-		case 11:  // template talk
-			work_area.append( { type: 'header', label: 'Templates' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.templateList, mode) } );
-			break;
+			case 10:  // template
+			case 11:  // template talk
+				work_area.append( { type: 'header', label: 'Templates' } );
+				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.templateList, mode) } );
+				break;
 
-		case 14:  // category
-		case 15:  // category talk
-			work_area.append( { type: 'header', label: 'Categories' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.categoryList, mode) } );
-			break;
+			case 14:  // category
+			case 15:  // category talk
+				work_area.append( { type: 'header', label: 'Categories' } );
+				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.categoryList, mode) } );
+				break;
 
-		case 100:  // portal
-		case 101:  // portal talk
-			work_area.append( { type: 'header', label: 'Portals' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.portalList, mode) } );
-			break;
+			case 100:  // portal
+			case 101:  // portal talk
+				work_area.append( { type: 'header', label: 'Portals' } );
+				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.portalList, mode) } );
+				break;
 
-		default:
-			break;
+			default:
+				break;
+		}
 	}
 
 	// custom rationale lives under general criteria when tagging
@@ -367,8 +402,10 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	work_area.append( { type: 'header', label: 'General criteria' } );
 	work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(generalCriteria, mode) });
 
-	work_area.append( { type: 'header', label: 'Redirects' } );
-	work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) } );
+	if(mw.config.get('wgIsRedirect')) {
+		work_area.append( { type: 'header', label: 'Redirects' } );
+		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) } );
+	}
 
 	var old_area = Morebits.quickForm.getElements(form, "work_area")[0];
 	form.replaceChild(work_area.render(), old_area);
@@ -426,6 +463,10 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			if (criterion.hideSubgroupWhenUser) {
 				criterion.subgroup = null;
 			}
+		}
+
+		if (mw.config.get('wgIsRedirect') && criterion.hideWhenRedirect) {
+			return null;
 		}
 
 		if (criterion.subgroup && !hasSubmitButton) {
@@ -489,7 +530,8 @@ Twinkle.speedy.talkList = [
 	{
 		label: 'G8: Talk pages with no corresponding subject page',
 		value: 'talk',
-		tooltip: 'This excludes any page that is useful to the project - in particular, user talk pages, talk page archives, and talk pages for files that exist on Wikimedia Commons.'
+		tooltip: 'This excludes any page that is useful to the project - in particular, user talk pages, talk page archives, and talk pages for files that exist on Wikimedia Commons.',
+		hideWhenRedirect: true
 	}
 ];
 
@@ -800,7 +842,8 @@ Twinkle.speedy.generalList = [
 	{
 		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
 		value: 'nonsense',
-		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.'
+		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.',
+		hideWhenRedirect: true
 	},
 	{
 		label: 'G2: Test page',
@@ -889,13 +932,8 @@ Twinkle.speedy.generalList = [
 		label: 'G6: Unnecessary disambiguation page',
 		value: 'disambig',
 		tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate two or fewer existing Wikipedia pages and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguates no (zero) existing Wikipedia pages, regardless of its title.',
-		hideWhenMultiple: true
-	},
-	{
-		label: 'G6: Redirect to malplaced disambiguation page',
-		value: 'movedab',
-		tooltip: 'This only applies for redirects to disambiguation pages ending in (disambiguation) where a primary topic does not exist.',
-		hideWhenMultiple: true
+		hideWhenMultiple: true,
+		hideWhenRedirect: true
 	},
 	{
 		label: 'G6: Copy-and-paste page move',
@@ -906,7 +944,8 @@ Twinkle.speedy.generalList = [
 			type: 'input',
 			label: 'Original page that was copy-pasted here: '
 		},
-		hideWhenMultiple: true
+		hideWhenMultiple: true,
+		hideWhenRedirect: true
 	},
 	{
 		label: 'G6: Housekeeping',
@@ -941,7 +980,8 @@ Twinkle.speedy.generalList = [
 			type: 'input',
 			label: 'Optional explanation: ',
 			size: 60
-		}
+		},
+		hideWhenRedirect: true
 	},
 	{
 		label: 'G8: Subpages with no parent page',
@@ -958,12 +998,14 @@ Twinkle.speedy.generalList = [
 		label: 'G10: Wholly negative, unsourced BLP',
 		value: 'negublp',
 		tooltip: 'A biography of a living person that is entirely negative in tone and unsourced, where there is no neutral version in the history to revert to.',
-		hideWhenMultiple: true
+		hideWhenMultiple: true,
+		hideWhenRedirect: true
 	},
 	{
 		label: 'G11: Unambiguous advertising',
 		value: 'spam',
-		tooltip: 'Pages which exclusively promote a company, product, group, service, or person and which would need to be fundamentally rewritten in order to become encyclopedic. Note that an article about a company or a product which describes its subject from a neutral point of view does not qualify for this criterion; an article that is blatant advertising should have inappropriate content as well'
+		tooltip: 'Pages which exclusively promote a company, product, group, service, or person and which would need to be fundamentally rewritten in order to become encyclopedic. Note that an article about a company or a product which describes its subject from a neutral point of view does not qualify for this criterion; an article that is blatant advertising should have inappropriate content as well',
+		hideWhenRedirect: true
 	},
 	{
 		label: 'G12: Unambiguous copyright infringement',
@@ -991,12 +1033,14 @@ Twinkle.speedy.generalList = [
 				tooltip: 'Optional.',
 				size: 60
 			}
-		]
+		],
+		hideWhenRedirect: true
 	},
 	{
 		label: 'G13: Old, abandoned Articles for Creation submissions',
 		value: 'afc',
-		tooltip: 'Any rejected or unsubmitted AfC submission that has not been edited for more than 6 months.'
+		tooltip: 'Any rejected or unsubmitted AfC submission that has not been edited for more than 6 months.',
+		hideWhenRedirect: true
 	}
 ];
 
@@ -1007,9 +1051,15 @@ Twinkle.speedy.redirectList = [
 		tooltip: '(this does not include the Wikipedia shortcut pseudo-namespaces). If this was the result of a page move, consider waiting a day or two before deleting the redirect'
 	},
 	{
-		label: 'R3: Redirects as a result of an implausible typo that were recently created',
+		label: 'R3: Redirects as a result of an implausible typo or misnomers that were recently created',
 		value: 'redirtypo',
 		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
+	},
+	{
+		label: 'G6: Redirect to malplaced disambiguation page',
+		value: 'movedab',
+		tooltip: 'This only applies for redirects to disambiguation pages ending in (disambiguation) where a primary topic does not exist.',
+		hideWhenMultiple: true
 	},
 	{
 		label: 'G8: Redirects to invalid targets, such as nonexistent targets, redirect loops, and bad titles',
