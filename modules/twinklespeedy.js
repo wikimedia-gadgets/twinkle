@@ -530,8 +530,7 @@ Twinkle.speedy.talkList = [
 	{
 		label: 'G8: Talk pages with no corresponding subject page',
 		value: 'talk',
-		tooltip: 'This excludes any page that is useful to the project - in particular, user talk pages, talk page archives, and talk pages for files that exist on Wikimedia Commons.',
-		hideWhenRedirect: true
+		tooltip: 'This excludes any page that is useful to the project - in particular, user talk pages, talk page archives, and talk pages for files that exist on Wikimedia Commons.'
 	}
 ];
 
@@ -842,8 +841,7 @@ Twinkle.speedy.generalList = [
 	{
 		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
 		value: 'nonsense',
-		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.',
-		hideWhenRedirect: true
+		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.'
 	},
 	{
 		label: 'G2: Test page',
@@ -944,8 +942,7 @@ Twinkle.speedy.generalList = [
 			type: 'input',
 			label: 'Original page that was copy-pasted here: '
 		},
-		hideWhenMultiple: true,
-		hideWhenRedirect: true
+		hideWhenMultiple: true
 	},
 	{
 		label: 'G6: Housekeeping',
@@ -980,8 +977,7 @@ Twinkle.speedy.generalList = [
 			type: 'input',
 			label: 'Optional explanation: ',
 			size: 60
-		},
-		hideWhenRedirect: true
+		}
 	},
 	{
 		label: 'G8: Subpages with no parent page',
@@ -998,14 +994,12 @@ Twinkle.speedy.generalList = [
 		label: 'G10: Wholly negative, unsourced BLP',
 		value: 'negublp',
 		tooltip: 'A biography of a living person that is entirely negative in tone and unsourced, where there is no neutral version in the history to revert to.',
-		hideWhenMultiple: true,
-		hideWhenRedirect: true
+		hideWhenMultiple: true
 	},
 	{
 		label: 'G11: Unambiguous advertising',
 		value: 'spam',
-		tooltip: 'Pages which exclusively promote a company, product, group, service, or person and which would need to be fundamentally rewritten in order to become encyclopedic. Note that an article about a company or a product which describes its subject from a neutral point of view does not qualify for this criterion; an article that is blatant advertising should have inappropriate content as well',
-		hideWhenRedirect: true
+		tooltip: 'Pages which exclusively promote a company, product, group, service, or person and which would need to be fundamentally rewritten in order to become encyclopedic. Note that an article about a company or a product which describes its subject from a neutral point of view does not qualify for this criterion; an article that is blatant advertising should have inappropriate content as well'
 	},
 	{
 		label: 'G12: Unambiguous copyright infringement',
@@ -1033,8 +1027,7 @@ Twinkle.speedy.generalList = [
 				tooltip: 'Optional.',
 				size: 60
 			}
-		],
-		hideWhenRedirect: true
+		]
 	},
 	{
 		label: 'G13: Old, abandoned Articles for Creation submissions',
@@ -1064,7 +1057,8 @@ Twinkle.speedy.redirectList = [
 	{
 		label: 'G8: Redirects to invalid targets, such as nonexistent targets, redirect loops, and bad titles',
 		value: 'redirnone',
-		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.'
+		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
+		hideWhenMultiple: true
 	}
 ];
 
