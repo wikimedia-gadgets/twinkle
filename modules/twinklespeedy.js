@@ -1443,7 +1443,7 @@ Twinkle.speedy.callbacks = {
 				editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
 				editsummary += ').';
 			} else if (params.normalizeds[0] === "db") {
-				editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale \"' + params["1"] + '\".';
+				editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale \"' + params.templateParams[0]["1"] + '\".';
 			} else if (params.values[0] === "histmerge") {
 				editsummary = "Requesting history merge with [[" + params["1"] + "]] ([[WP:CSD#G6|CSD G6]]).";
 			} else {
