@@ -605,6 +605,14 @@ Twinkle.protect.formevents = {
 		e.target.form.editexpiry.disabled = (e.target.value === 'all');
 	},
 	movemodify: function twinkleprotectFormMovemodifyEvent(e) {
+		// sync move settings with edit settings if applicable
+		if (e.target.form.movelevel.disabled && !e.target.form.editlevel.disabled) {
+			e.target.form.movelevel.value = e.target.form.editlevel.value;
+			e.target.form.moveexpiry.value = e.target.form.editexpiry.value;
+		} else if (e.target.form.editlevel.disabled) {
+			e.target.form.movelevel.value = 'sysop';
+			e.target.form.moveexpiry.value = 'indefinite';
+		}
 		e.target.form.movelevel.disabled = !e.target.checked;
 		e.target.form.moveexpiry.disabled = !e.target.checked || (e.target.form.movelevel.value === 'all');
 		e.target.form.movelevel.style.color = e.target.form.moveexpiry.style.color = (e.target.checked ? "" : "transparent");
@@ -766,13 +774,13 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-semi-usertalk': {
 		edit: 'autoconfirmed',
-		move: 'sysop',
+		move: 'autoconfirmed',
 		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]',
 		template: 'pp-usertalk'
 	},
 	'pp-semi-template': {  // removed for now
 		edit: 'autoconfirmed',
-		move: 'sysop',
+		move: 'autoconfirmed',
 		reason: '[[WP:High-risk templates|Highly visible template]]',
 		template: 'pp-template'
 	},
@@ -1144,6 +1152,8 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-pc-vandalism':
 				case 'pp-pc-blp':
 				case 'pp-pc-protected':
+				case 'pp-pc-unsourced':
+				case 'pp-pc-disruptive':
 					typename = 'pending changes';
 					break;
 				case 'pp-move':
@@ -1174,9 +1184,11 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typereason = 'Persistent vandalism';
 					break;
 				case 'pp-semi-disruptive':
+				case 'pp-pc-disruptive':
 					typereason = 'Persistent [[Wikipedia:Disruptive editing|disruptive editing]]';
 					break;
 				case 'pp-semi-unsourced':
+				case 'pp-pc-unsourced':
 					typereason = 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]';
 					break;
 				case 'pp-template':
@@ -1284,7 +1296,7 @@ Twinkle.protect.callbacks = {
 				tag += '|reason=' + params.reason;
 			}
 			if( ['indefinite', 'infinite', 'never', null].indexOf(params.expiry) === -1 ) {
-				tag += '|expiry={{subst:#time:j F Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
+				tag += '|expiry={{subst:#time:H:i, j F Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
 			}
 			if( params.small ) {
 				tag += '|small=yes';
@@ -1391,12 +1403,13 @@ Twinkle.protect.callbacks = {
 
 		var reg;
 		if ( increase ) {
-			reg = /(\n==\s*Current requests for increase in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)([\s\S]*?)\s*(\n==[^=])/;
+			reg = /(\n==\s*Current requests for reduction in protection level\s*==)/;
 		} else {
-			reg = /(\n==\s*Current requests for reduction in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)([\s\S]*?)\s*(\n==[^=])/;
+			reg = /(\n==\s*Current requests for edits to a protected page\s*==)/;
 		}
+
 		var originalTextLength = text.length;
-		text = text.replace( reg, "$1$2\n\n" + newtag + "\n$3");
+		text = text.replace( reg, "\n" + newtag + "\n$1");
 		if (text.length === originalTextLength)
 		{
 			var linknode = document.createElement('a');

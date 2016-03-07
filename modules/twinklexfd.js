@@ -74,7 +74,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'FfD (Files for deletion)/PUF (Possibly unfree files)',
+			label: 'FfD (Files for discussion)/PUF (Possibly unfree files)',
 			selected: mw.config.get('wgNamespaceNumber') === 6,  // File namespace
 			value: 'ffd'
 		} );
@@ -119,11 +119,22 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 			label:'Work area',
 			name: 'work_area'
 		} );
+
+	var previewlink = document.createElement( 'a' );
+	$(previewlink).click(function(){
+		Twinkle.xfd.callbacks.preview(result);  // |result| is defined below
+	});
+	previewlink.style.cursor = "pointer";
+	previewlink.textContent = 'Preview';
+	form.append( { type: 'div', id: 'xfdpreview', label: [ previewlink ] } );
+	form.append( { type: 'div', id: 'twinklexfd-previewbox', style: 'display: none' } );
+
 	form.append( { type:'submit' } );
 
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
+	result.previewer = new Morebits.wiki.preview($(result).find('div#twinklexfd-previewbox').last()[0]);
 
 	// We must init the controls
 	var evt = document.createEvent( "Event" );
@@ -152,6 +163,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		} );
 		// TODO possible future "preview" link here
 	};
+
+	form.previewer.closePreview();
 
 	switch( value ) {
 	case 'afd':
@@ -301,7 +314,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				name: 'ffdvenue',
 				list: [
 					{
-						label: 'File for deletion',
+						label: 'File for discussion',
 						value: 'ffd',
 						tooltip: 'File may need to be deleted, or the file\'s compliance with non-free content criteria ([[WP:NFCC]]) is disputed.',
 						checked: true
@@ -442,6 +455,71 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 };
 
 Twinkle.xfd.callbacks = {
+	// Currently supports afd, mfd, tfd/tfm, ffd
+	getDiscussionWikitext: function(venue, params) {
+		var text = "{{subst:" + venue + "2",
+			reasonKey = venue === "ffd" ? "Reason" : "text";
+
+		if (params.xfdcat) {
+			text += "|cat=" + params.xfdcat;
+		}
+
+		// Add a reason unconditionally, so that at least a signature is added
+		if (params.reason) {
+			text += "|" + reasonKey + "=" + Morebits.string.formatReasonText(params.reason) + " ~~~~";
+		} else {
+			text += "|" + reasonKey + "=~~~~";
+		}
+
+		if (venue === "tfd" || venue === "tfm" || venue === "ffd") {
+			text += "|1=" + mw.config.get('wgTitle');
+		} else {
+			text += "|pg=" + Morebits.pageNameNorm;
+		}
+
+		if (params.target) {
+			text += "|2=" + params.target;
+		}
+
+		if (params.uploader) {
+			text += "|Uploader=" + params.uploader;
+		}
+
+		text += "}}";
+		return text;
+	},
+	showPreview: function(form, venue, params) {
+		templatetext = Twinkle.xfd.callbacks.getDiscussionWikitext(venue, params);
+		form.previewer.beginRender(templatetext, "Wikipedia:Null");
+	},
+	preview: function(form) {
+		var templatetext;
+		var venue = form.category.value;
+
+		if (venue !== "afd" && venue !== "mfd" && venue !== "tfd" && venue !== "tfm" && venue !== "ffd") {
+			alert("Preview is not yet supported for this discussion venue! :(");
+			return;
+		}
+		var params = {
+			reason: form.xfdreason.value,
+		};
+		if (form.xfdcat) {
+			params.xfdcat = form.xfdcat.value;
+		}
+		if (form.xfdtarget) {
+			params.target = form.xfdtarget.value;
+		}
+		if (venue === "ffd") {
+			// Fetch the uploader
+			var page = new Morebits.wiki.page(mw.config.get('wgPageName'));
+			page.lookupCreator(function() {
+				params.uploader = page.getCreator();
+				Twinkle.xfd.callbacks.showPreview(form, venue, params);
+			});
+		} else {
+			Twinkle.xfd.callbacks.showPreview(form, venue, params);
+		}
+	},
 	afd: {
 		main: function(apiobj) {
 			var xmlDoc = apiobj.responseXML;
@@ -569,8 +647,7 @@ Twinkle.xfd.callbacks = {
 		discussionPage: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText("{{subst:afd2|text=" + Morebits.string.formatReasonText(params.reason) +
-				" ~~~~|pg=" + Morebits.pageNameNorm + "|cat=" + params.xfdcat + "}}\n");
+			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext("afd", params));
 			pageobj.setEditSummary("Creating deletion discussion page for [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
@@ -699,20 +776,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var added_data = "";
-			switch( params.xfdcat ) {
-			case 'tfd':
-				added_data = "{{subst:tfd2|text=" + Morebits.string.formatReasonText(params.reason) +
-					" ~~~~|1=" + mw.config.get('wgTitle') + "}}";
-				break;
-			case 'tfm':
-				added_data = "{{subst:tfm2|text=" + Morebits.string.formatReasonText(params.reason) +
-					" ~~~~|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}}";
-				break;
-			default:
-				alert("twinklexfd in todaysList: unknown TFD action");
-				break;
-			}
+			var added_data = Twinkle.xfd.callbacks.getDiscussionWikitext(params.xfdcat, params);
 
 			var text = old_text.replace( '-->', "-->\n" + added_data );
 			if( text === old_text ) {
@@ -875,8 +939,7 @@ Twinkle.xfd.callbacks = {
 		discussionPage: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText("{{subst:mfd2|text=" + Morebits.string.formatReasonText(params.reason) +
-				" ~~~~|pg=" + Morebits.pageNameNorm + "}}\n");
+			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext("mfd", params));
 			pageobj.setEditSummary("Creating deletion discussion page for [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
@@ -992,9 +1055,9 @@ Twinkle.xfd.callbacks = {
 					pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
 				} else {
 					var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-					var notifytext = "\n{{subst:idw|1=" + mw.config.get('wgTitle') + "}}";
+					var notifytext = "\n{{subst:fdw|1=" + mw.config.get('wgTitle') + "}}";
 					usertalkpage.setAppendText(notifytext);
-					usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for deletion]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+					usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for discussion]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 					usertalkpage.setCreateOption('recreate');
 					switch (Twinkle.getPref('xfdWatchUser')) {
 						case 'yes':
@@ -1019,7 +1082,7 @@ Twinkle.xfd.callbacks = {
 			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 
 			pageobj.setPageText("{{ffd|log=" + params.date + "}}\n" + text);
-			pageobj.setEditSummary("Nominated for deletion; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Listed for discussion at [[" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -1043,8 +1106,7 @@ Twinkle.xfd.callbacks = {
 				text = "{{subst:Ffd log}}";
 			}
 
-			pageobj.setPageText(text + "\n{{subst:ffd2|Reason=" + Morebits.string.formatReasonText(params.reason) +
-				"|Uploader=" + params.uploader + "|1=" + mw.config.get('wgTitle') + "}} ~~~~");
+			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext("ffd", params));
 			pageobj.setEditSummary("Adding [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
@@ -1121,7 +1183,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-			var notifytext = "\n{{subst:idw-puf|1=" + mw.config.get('wgTitle') + "}} ~~~~";
+			var notifytext = "\n{{subst:fdw-puf|1=" + mw.config.get('wgTitle') + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: listing at [[WP:PUF|possibly unfree files]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
@@ -1266,7 +1328,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-			var notifytext = "\n{{subst:CFDNote|1=" + Morebits.pageNameNorm + "}} ~~~~";
+			var notifytext = "\n{{subst:cfd-notify|1=" + Morebits.pageNameNorm + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: listing at [[WP:CFD|categories for discussion]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
@@ -1614,7 +1676,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 	case 'ffd': // FFD/PUF
 		var dateString = date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
-		logpage = 'Wikipedia:Files for deletion/' + dateString;
+		logpage = 'Wikipedia:Files for discussion/' + dateString;
 		params = { usertalk: usertalk, reason: reason, date: dateString, logpage: logpage };
 
 		Morebits.wiki.addCheckpoint();

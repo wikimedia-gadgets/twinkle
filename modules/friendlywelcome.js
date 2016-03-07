@@ -247,6 +247,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 		case "wikiProject":
 			container.append({ type: 'header', label: 'WikiProject-specific welcome templates' });
 			appendTemplates([
+				"welcome-anatomy",
 				"welcome-au",
 				"welcome-bd",
 				"welcome-bio",
@@ -465,6 +466,11 @@ Twinkle.welcome.templates = {
 
 	// WIKIPROJECT-SPECIFIC WELCOMES
 
+	"welcome-anatomy": {
+		description: "welcome for users with an apparent interest in anatomy topics",
+		linkedArticle: false,
+		syntax: "{{subst:welcome-anatomy}} ~~~~"
+	},
 	"welcome-au": {
 		description: "welcome for users with an apparent interest in Australia topics",
 		linkedArticle: false,
