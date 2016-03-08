@@ -10,7 +10,6 @@ modules = modules/twinklei18n.js \
 		  modules/friendlyshared.js \
 		  modules/twinklediff.js \
 		  modules/twinkleunlink.js \
-		  modules/twinkledelimages.js \
 		  modules/friendlytag.js \
 		  modules/twinkledeprod.js \
 		  modules/friendlywelcome.js \
