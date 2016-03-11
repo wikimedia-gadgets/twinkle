@@ -25,7 +25,7 @@ Twinkle.batchprotect = function twinklebatchprotect() {
 
 Twinkle.batchprotect.unlinkCache = {};
 Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
-	var Window = new Morebits.simpleWindow( 800, 400 );
+	var Window = new Morebits.simpleWindow( 600, 400 );
 	Window.setTitle( "Batch protection" );
 	Window.setScriptName( "Twinkle" );
 	//Window.addFooterLink( "Protection templates", "Template:Protection templates" );
@@ -248,9 +248,15 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		});
 
 	form.append( {
-			type: 'textarea',
+			type: 'header',
+			label: ''  // horizontal rule
+		} );
+	form.append( {
+			type: 'input',
 			name: 'reason',
-			label: 'Reason (for protection log): '
+			label: 'Reason: ',
+			size: 60,
+			tooltip: 'For the protection log and page history.'
 		} );
 
 	var query;
@@ -317,6 +323,20 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				list.push( { label: title + (metadata.length ? (' (' + metadata.join('; ') + ')') : '' ), value: title, checked: true });
 			});
 			form.append({ type: 'header', label: 'Pages to protect' });
+			form.append({
+					type: 'button',
+					label: "Select All",
+					event: function(e) {
+						$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', true);
+					}
+				});
+			form.append({
+					type: 'button',
+					label: "Deselect All",
+					event: function(e) {
+						$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', false);
+					}
+				});
 			form.append( {
 					type: 'checkbox',
 					name: 'pages',
@@ -359,43 +379,33 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 		return;
 	}
 
-	var toCall = function twinklebatchprotectToCall( work ) {
-		if( work.length === 0 && Twinkle.batchprotect.currentProtectCounter <= 0 ) {
-			Morebits.status.info( 'work done' );
-			window.clearInterval( Twinkle.batchprotect.currentprotector );
-			Twinkle.batchprotect.currentprotector = Twinkle.batchprotect.currentProtectCounter = 0;
-			Morebits.wiki.removeCheckpoint();
-			return;
-		} else if( work.length !== 0 && Twinkle.batchprotect.currentProtectCounter <= Twinkle.getPref('batchProtectMinCutOff') ) {
-			var pages = work.shift();
-			Twinkle.batchprotect.currentProtectCounter += pages.length;
-			for( var i = 0; i < pages.length; ++i ) {
-				var page = pages[i];
-				var query = {
-					'action': 'query',
-					'titles': page
-				};
-				var wikipedia_api = new Morebits.wiki.api( 'Checking if page ' + page + ' exists', query, Twinkle.batchprotect.callbacks.main );
-				wikipedia_api.params = {
-					page: page,
-					reason: reason,
-					editmodify: editmodify,
-					editlevel: editlevel,
-					editexpiry: editexpiry,
-					movemodify: movemodify,
-					movelevel: movelevel,
-					moveexpiry: moveexpiry,
-					createmodify: createmodify,
-					createlevel: createlevel,
-					createexpiry: createexpiry
-				};
-				wikipedia_api.post();
-			}
-		}
-	};
-	var work = Morebits.array.chunk( pages, Twinkle.getPref('batchProtectChunks') );
-	Morebits.wiki.addCheckpoint();
-	Twinkle.batchprotect.currentprotector = window.setInterval( toCall, 1000, work );
+	var batchOperation = new Morebits.batchOperation("Applying protection settings");
+	batchOperation.setOption("chunkSize", Twinkle.getPref('batchProtectChunks'));
+	batchOperation.setOption("preserveIndividualStatusLines", true);
+	batchOperation.setPageList(pages);
+	batchOperation.run(function(pageName) {
+		var query = {
+			'action': 'query',
+			'titles': pageName
+		};
+		var wikipedia_api = new Morebits.wiki.api( 'Checking if page ' + pageName + ' exists', query,
+			Twinkle.batchprotect.callbacks.main, null, batchOperation.workerFailure );
+		wikipedia_api.params = {
+			page: pageName,
+			reason: reason,
+			editmodify: editmodify,
+			editlevel: editlevel,
+			editexpiry: editexpiry,
+			movemodify: movemodify,
+			movelevel: movelevel,
+			moveexpiry: moveexpiry,
+			createmodify: createmodify,
+			createlevel: createlevel,
+			createexpiry: createexpiry,
+			batchOperation: batchOperation
+		};
+		wikipedia_api.post();
+	});
 };
 
 Twinkle.batchprotect.callbacks = {
@@ -424,18 +434,12 @@ Twinkle.batchprotect.callbacks = {
 		}
 		if (!takenAction) {
 			Morebits.status.warn("Protecting " + apiobj.params.page, "page " + (exists ? "exists" : "does not exist") + "; nothing to do, skipping");
+			apiobj.params.batchOperation.workerFailure(apiobj);
 			return;
 		}
 
 		page.setEditSummary(apiobj.params.reason);
-
-		page.protect(function(pageobj) {
-			--Twinkle.batchprotect.currentProtectCounter;
-			var link = document.createElement( 'a' );
-			link.setAttribute( 'href', mw.util.getUrl( apiobj.params.page ) );
-			link.appendChild( document.createTextNode( apiobj.params.page ) );
-			pageobj.getStatusElement().info( [ 'completed (' , link , ')' ] );
-		} );
+		page.protect(apiobj.params.batchOperation.workerSuccess, apiobj.params.batchOperation.workerFailure);
 	}
 };
 })(jQuery);

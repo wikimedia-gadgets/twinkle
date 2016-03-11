@@ -81,7 +81,7 @@ Twinkle.arv.callback = function ( uid ) {
 			name: 'uid',
 			value: uid
 		} );
-	
+
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
@@ -198,12 +198,17 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					{
 						label: 'Misleading username',
 						value: 'misleading',
-						tooltip: 'Misleading usernames imply relevant, misleading things about the contributor. For example, misleading points of fact, an impression of undue authority, or the suggestion that the account is operated by a group, project or collective rather than one individual.'
+						tooltip: 'Misleading usernames imply relevant, misleading things about the contributor. For example, misleading points of fact, an impression of undue authority, or usernames giving the impression of a bot account.'
 					},
 					{
 						label: 'Promotional username',
 						value: 'promotional',
 						tooltip: 'Promotional usernames are advertisements for a company, website or group. Please do not report these names to UAA unless the user has also made promotional edits related to the name.'
+					},
+					{
+						label: 'Username that implies shared use',
+						value: 'shared',
+						tooltip: 'Usernames that imply the likelihood of shared use (names of companies or groups, or the names of posts within organizations) are not permitted. Usernames are acceptable if they contain a company or group name but are clearly intended to denote an individual person, such as "Mark at WidgetsUSA", "Jack Smith at the XY Foundation", "WidgetFan87", etc.'
 					},
 					{
 						label: 'Offensive username',
@@ -531,7 +536,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 
 			if ( form.page.value !== '' ) {
-			
+
 				// add a leading : on linked page namespace to prevent transclusion
 				reason = 'On [[' + form.page.value.replace( /^(Image|Category|File):/i, ':$1:' ) + ']]';
 
@@ -563,7 +568,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			var aivPage = new Morebits.wiki.page( 'Wikipedia:Administrator intervention against vandalism', 'Processing AIV request' );
 			aivPage.setPageSection( 1 );
 			aivPage.setFollowRedirect( true );
-			
+
 			aivPage.load( function() {
 				var text = aivPage.getPageText();
 
@@ -579,15 +584,15 @@ Twinkle.arv.callback.evaluate = function(e) {
 				aivPage.append();
 			} );
 			break;
-			
+
 		// Report inappropriate username
 		case 'username':
-			types = form.getChecked( 'arvtype' );
-			if( !types.length ) {
-				alert( 'You must specify at least one breached violation' );
-				return;
+			types = form.getChecked( 'arvtype' ).map( Morebits.string.toLowerCaseFirstChar );
+
+			var hasShared = types.indexOf( 'shared' ) > -1;
+			if ( hasShared ) {
+				types.splice( types.indexOf( 'shared' ), 1 );
 			}
-			types = types.map( Morebits.string.toLowerCaseFirstChar );
 
 			if ( types.length <= 2 ) {
 				types = types.join( ' and ' );
@@ -595,11 +600,15 @@ Twinkle.arv.callback.evaluate = function(e) {
 				types = [ types.slice( 0, -1 ).join( ', ' ), types.slice( -1 ) ].join( ' and ' );
 			}
 			var article = 'a';
-			if ( /[aeiouwyh]/.test( types[0] ) ) { // non 100% correct, but whatever, inlcuding 'h' for Cockney
+			if ( /[aeiouwyh]/.test( types[0] || '' ) ) { // non 100% correct, but whatever, including 'h' for Cockney
 				article = 'an';
 			}
-			reason = "*{{user-uaa|1=" + uid + "}} &ndash; Violation of the username policy as " + article + " " + types + " username. ";
-			if (comment !== '' ) {
+			reason = "*{{user-uaa|1=" + uid + "}} &ndash; ";
+			if ( types.length || hasShared ) {
+				reason += "Violation of the username policy as " + article + " " + types + " username" +
+					( hasShared ? " that implies shared use. " : ". " );
+			}
+			if ( comment !== '' ) {
 				reason += Morebits.string.toUpperCaseFirstChar(comment) + ". ";
 			}
 			reason += "~~~~";
@@ -616,7 +625,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 			uaaPage.load( function() {
 				var text = uaaPage.getPageText();
-				
+
 				// check if user has already been reported
 				if (new RegExp( "\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?" + RegExp.escape(uid, true) + "\\s*(\\||\\})" ).test(text)) {
 					uaaPage.getStatusElement().error( 'User is already listed.' );
@@ -625,11 +634,11 @@ Twinkle.arv.callback.evaluate = function(e) {
 				}
 				uaaPage.getStatusElement().status( 'Adding new report...' );
 				uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ Twinkle.getPref('summaryAd') );
-				uaaPage.setPageText( text.replace( /List begins below this line.\s*-->\s*/, "List begins below this line.\n-->\n" + reason + "\n\n" ) );  // add at top
+				uaaPage.setPageText( text + "\n\n" + reason );
 				uaaPage.save();
 			} );
 			break;
-			
+
 		// WP:SPI
 		case "sock":
 			/* falls through */
@@ -718,13 +727,13 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 Twinkle.arv.processSock = function( params ) {
 	Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
-	
+
 	// notify all user accounts if requested
 	if (params.notify && params.sockpuppets.length>0) {
-	
+
 		var notifyEditSummary = "Notifying about suspicion of sockpuppeteering." + Twinkle.getPref('summaryAd');
 		var notifyText = "\n\n{{subst:socksuspectnotice|1=" + params.uid + "}} ~~~~";
-		
+
 		// notify user's master account
 		var masterTalkPage = new Morebits.wiki.page( 'User talk:' + params.uid, 'Notifying suspected sockpuppeteer' );
 		masterTalkPage.setFollowRedirect( true );
@@ -735,7 +744,7 @@ Twinkle.arv.processSock = function( params ) {
 		var statusIndicator = new Morebits.status( 'Notifying suspected sockpuppets', '0%' );
 		var total = params.sockpuppets.length;
 		var current =   0;
-		
+
 		// display status of notifications as they progress
 		var onSuccess = function( sockTalkPage ) {
 			var now = parseInt( 100 * ++(current)/total, 10 ) + '%';
@@ -745,7 +754,7 @@ Twinkle.arv.processSock = function( params ) {
 				statusIndicator.info( now + ' (completed)' );
 			}
 		};
-		
+
 		var socks = params.sockpuppets;
 
 		// notify each puppet account
@@ -763,7 +772,7 @@ Twinkle.arv.processSock = function( params ) {
 		params.sockpuppets.map( function(v) {
 				return "* {{" + ( Morebits.isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "}}";
 			} ).join( "\n" ) + "\n|evidence=" + params.evidence + " \n";
-		
+
 	if ( params.checkuser ) {
 		text += "|checkuser=yes";
 	}
@@ -790,7 +799,7 @@ Twinkle.arv.processSock = function( params ) {
 			break;
 	}
 	spiPage.append();
-	
+
 	Morebits.wiki.removeCheckpoint();  // all page updates have been started
 };
 

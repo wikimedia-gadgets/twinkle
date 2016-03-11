@@ -14,28 +14,30 @@
  */
 
 Twinkle.warn = function twinklewarn() {
-	if( mw.config.get('wgNamespaceNumber') === 3 ) {
+	if( mw.config.get( 'wgRelevantUserName' ) ) {
 			Twinkle.addPortletLink( Twinkle.warn.callback, "Warn", "tw-warn", "Warn/notify user" );
 	}
 
 	// modify URL of talk page on rollback success pages
 	if( mw.config.get('wgAction') === 'rollback' ) {
 		var $vandalTalkLink = $("#mw-rollback-success").find(".mw-usertoollinks a").first();
-		$vandalTalkLink.css("font-weight", "bold");
-		$vandalTalkLink.wrapInner($("<span/>").attr("title", "If appropriate, you can use Twinkle to warn the user about their edits to this page."));
+		if ( $vandalTalkLink.length ) {
+			$vandalTalkLink.css("font-weight", "bold");
+			$vandalTalkLink.wrapInner($("<span/>").attr("title", "If appropriate, you can use Twinkle to warn the user about their edits to this page."));
 
-		var extraParam = "vanarticle=" + mw.util.rawurlencode(Morebits.pageNameNorm);
-		var href = $vandalTalkLink.attr("href");
-		if (href.indexOf("?") === -1) {
-			$vandalTalkLink.attr("href", href + "?" + extraParam);
-		} else {
-			$vandalTalkLink.attr("href", href + "&" + extraParam);
+			var extraParam = "vanarticle=" + mw.util.rawurlencode(Morebits.pageNameNorm);
+			var href = $vandalTalkLink.attr("href");
+			if (href.indexOf("?") === -1) {
+				$vandalTalkLink.attr("href", href + "?" + extraParam);
+			} else {
+				$vandalTalkLink.attr("href", href + "&" + extraParam);
+			}
 		}
 	}
 };
 
 Twinkle.warn.callback = function twinklewarnCallback() {
-	if( mw.config.get('wgTitle').split( '/' )[0] === mw.config.get('wgUserName') &&
+	if( mw.config.get( 'wgRelevantUserName' ) === mw.config.get( 'wgUserName' ) &&
 			!confirm( 'You are about to warn yourself! Are you sure you want to proceed?' ) ) {
 		return;
 	}
@@ -69,9 +71,6 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	main_group.append( { type: 'option', label: 'Single issue warnings', value: 'singlewarn', selected: ( defaultGroup === 7 ) } );
 	if( Twinkle.getPref( 'customWarningList' ).length ) {
 		main_group.append( { type: 'option', label: 'Custom warnings', value: 'custom', selected: ( defaultGroup === 9 ) } );
-	}
-	if( Morebits.userIsInGroup( 'sysop' ) ) {
-		main_group.append( { type: 'option', label: 'Blocking', value: 'block', selected: ( defaultGroup === 8 ) } );
 	}
 
 	main_select.append( { type: 'select', name: 'sub_group', event:Twinkle.warn.callback.change_subcategory } ); //Will be empty to begin with.
@@ -140,7 +139,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced controversial information about living persons",
 				summary: "General note: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam1": {
+			"uw-defamatory1": {
 				label: "Addition of defamatory content",
 				summary: "General note: Addition of defamatory content"
 			},
@@ -298,7 +297,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced controversial information about living persons",
 				summary: "Caution: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam2": {
+			"uw-defamatory2": {
 				label: "Addition of defamatory content",
 				summary: "Caution: Addition of defamatory content"
 			},
@@ -390,6 +389,10 @@ Twinkle.warn.messages = {
 			}
 		},
 		"Other": {
+			"uw-attempt2": {
+				label: "Triggering the edit filter",
+				summary: "Caution: Triggering the edit filter"
+			},
 			"uw-chat2": {
 				label: "Using talk page as forum",
 				summary: "Caution: Using talk page as forum"
@@ -423,10 +426,6 @@ Twinkle.warn.messages = {
 			"uw-ics2": {
 				label: "Uploading files missing copyright status",
 				summary: "Caution: Uploading files missing copyright status"
-			},
-			"uw-af2": {
-				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "Caution: Inappropriate feedback through the Article Feedback Tool"
 			}
 		}*/
 	},
@@ -456,7 +455,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced controversial/defamatory information about living persons",
 				summary: "Warning: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam3": {
+			"uw-defamatory3": {
 				label: "Addition of defamatory content",
 				summary: "Warning: Addition of defamatory content"
 			},
@@ -544,6 +543,10 @@ Twinkle.warn.messages = {
 			}
 		},
 		"Other": {
+			"uw-attempt3": {
+				label: "Triggering the edit filter",
+				summary: "Warning: Triggering the edit filter"
+			},
 			"uw-chat3": {
 				label: "Using talk page as forum",
 				summary: "Warning: Using talk page as forum"
@@ -570,10 +573,6 @@ Twinkle.warn.messages = {
 			}
 		}/*,
 		"To be removed fomr Twinkle": {
-			"uw-af3": {
-				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "Warning: Inappropriate feedback through the Article Feedback Tool"
-			},
 			"uw-ics3": {
 				label: "Uploading files missing copyright status",
 				summary: "Warning: Uploading files missing copyright status"
@@ -588,13 +587,13 @@ Twinkle.warn.messages = {
 
 	level4: {
 		"Common warnings": {
-			"uw-generic4": {
-				label: "Generic warning (for template series missing level 4)",
-				summary: "Final warning notice"
-			},
 			"uw-vandalism4": {
 				label: "Vandalism",
 				summary: "Final warning: Vandalism"
+			},
+			"uw-generic4": {
+				label: "Generic warning (for template series missing level 4)",
+				summary: "Final warning notice"
 			},
 			"uw-delete4": {
 				label: "Removal of content, blanking",
@@ -606,7 +605,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced defamatory information about living persons",
 				summary: "Final warning: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam4": {
+			"uw-defamatory4": {
 				label: "Addition of defamatory content",
 				summary: "Final warning: Addition of defamatory content"
 			},
@@ -682,6 +681,10 @@ Twinkle.warn.messages = {
 			}
 		},
 		"Other": {
+			"uw-attempt4": {
+				label: "Triggering the edit filter",
+				summary: "Final warning: Triggering the edit filter"
+			},
 			"uw-chat4": {
 				label: "Using talk page as forum",
 				summary: "Final warning: Using talk page as forum"
@@ -715,10 +718,6 @@ Twinkle.warn.messages = {
 			"uw-ics4": {
 				label: "Uploading files missing copyright status",
 				summary: "Final warning: Uploading files missing copyright status"
-			},
-			"uw-af4": {
-				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "Final warning: Inappropriate feedback through the Article Feedback Tool"
 			}
 		}*/
 	},
@@ -740,7 +739,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced defamatory information about living persons",
 				summary: "Only warning: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam4im": {
+			"uw-defamatory4im": {
 				label: "Addition of defamatory content",
 				summary: "Only warning: Addition of defamatory content"
 			},
@@ -792,10 +791,6 @@ Twinkle.warn.messages = {
 			}
 		}/*,
 		"To be removed from Twinkle": {
-			"uw-af4im": {
-				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "Only warning: Inappropriate feedback through the Article Feedback Tool"
-			},
 			"uw-redirect4im": {
 				label: "Creating malicious redirects",
 				summary: "Only warning: Creating malicious redirects"
@@ -803,31 +798,10 @@ Twinkle.warn.messages = {
 		}*/
 	},
 
-
 	singlenotice: {
-		"uw-2redirect": {
-			label: "Creating double redirects through bad page moves",
-			summary: "Notice: Creating double redirects through bad page moves"
-		},
-		"uw-af-contact": {
-			label: "Attempting to contact the subject of an article via article feedback",
-			summary: "Notice: Contacting the subject of an article via article feedback"
-		},
-		"uw-af-personalinfo": {
-			label: "Including personal info in article feedback",
-			summary: "Notice: Including personal info in article feedback"
-		},
-		"uw-af-question": {
-			label: "Asking questions in article feedback",
-			summary: "Notice: Asking questions in article feedback"
-		},
 		"uw-aiv": {
 			label: "Bad AIV report",
 			summary: "Notice: Bad AIV report"
-		},
-		"uw-articlesig": {
-			label: "Adding signatures to article space",
-			summary: "Notice: Adding signatures to article space"
 		},
 		"uw-autobiography": {
 			label: "Creating autobiographies",
@@ -863,10 +837,6 @@ Twinkle.warn.messages = {
 			label: "Adding speculative or unconfirmed information",
 			summary: "Notice: Adding speculative or unconfirmed information"
 		},
-		"uw-csd": {
-			label: "Speedy deletion declined",
-			summary: "Notice: Speedy deletion declined"
-		},
 		"uw-c&pmove": {
 			label: "Cut and paste moves",
 			summary: "Notice: Cut and paste moves"
@@ -883,10 +853,6 @@ Twinkle.warn.messages = {
 			label: "Removing proper sources containing dead links",
 			summary: "Notice: Removing proper sources containing dead links"
 		},
-		"uw-directcat": {
-			label: "Applying stub categories manually",
-			summary: "Notice: Applying stub categories manually"
-		},
 		"uw-draftfirst": {
 			label: "User should draft in userspace without the risk of speedy deletion",
 			summary: "Notice: Consider drafting your article in [[Help:Userspace draft|userspace]]"
@@ -899,21 +865,9 @@ Twinkle.warn.messages = {
 			label: "Not communicating in English",
 			summary: "Notice: Not communicating in English"
 		},
-		"uw-fuir": {
-			label: "Fair use image has been removed from your userpage",
-			summary: "Notice: A fair use image has been removed from your userpage"
-		},
 		"uw-hasty": {
 			label: "Hasty addition of speedy deletion tags",
 			summary: "Notice: Allow creators time to improve their articles before tagging them for deletion"
-		},
-		"uw-imageuse": {
-			label: "Incorrect image linking",
-			summary: "Notice: Incorrect image linking"
-		},
-		"uw-incompleteAFD": {
-			label: "Incomplete AFD",
-			summary: "Notice: Incomplete AFD"
 		},
 		"uw-inline-el": {
 			label: "Adding external links to the body of an article",
@@ -936,33 +890,13 @@ Twinkle.warn.messages = {
 			label: "Incorrect use of minor edits check box",
 			summary: "Notice: Incorrect use of minor edits check box"
 		},
-		"uw-nonfree": {
-			label: "Uploading replaceable non-free images",
-			summary: "Notice: Uploading replaceable non-free images"
-		},
-		"uw-notaiv": {
-			label: "Do not report complex abuse to AIV",
-			summary: "Notice: Do not report complex abuse to AIV"
-		},
 		"uw-notenglish": {
 			label: "Creating non-English articles",
 			summary: "Notice: Creating non-English articles"
 		},
-		"uw-notifysd": {
-			label: "Notify authors of speedy deletion tagged articles",
-			summary: "Notice: Please notify authors of articles tagged for speedy deletion"
-		},
-		"uw-notvand": {
-			label: "Mislabelling edits as vandalism",
-			summary: "Notice: Misidentifying edits as vandalism"
-		},
 		"uw-notvote": {
 			label: "We use consensus, not voting",
 			summary: "Notice: We use consensus, not voting"
-		},
-		"uw-patrolled": {
-			label: "Mark newpages as patrolled when patrolling",
-			summary: "Notice: Mark newpages as patrolled when patrolling"
 		},
 		"uw-plagiarism": {
 			label: "Copying from public domain sources without attribution",
@@ -972,33 +906,9 @@ Twinkle.warn.messages = {
 			label: "Use preview button to avoid mistakes",
 			summary: "Notice: Use preview button to avoid mistakes"
 		},
-		"uw-probation": {
-			label: "Article is on probation",
-			summary: "Notice: Article is on probation"
-		},
 		"uw-redlink": {
 			label: "Indiscriminate removal of redlinks",
 			summary: "Notice: Be careful when removing redlinks"
-		},
-		"uw-refimprove": {
-			label: "Creating unverifiable articles",
-			summary: "Notice: Creating unverifiable articles"
-		},
-		"uw-removevandalism": {
-			label: "Incorrect vandalism removal",
-			summary: "Notice: Incorrect vandalism removal"
-		},
-		"uw-repost": {
-			label: "Recreating material previously deleted via XfD process",
-			summary: "Notice: Recreating previously deleted material"
-		},
-		"uw-salt": {
-			label: "Recreating salted articles under a different title",
-			summary: "Notice: Recreating salted articles under a different title"
-		},
-		"uw-samename": {
-			label: "Rename request impossible",
-			summary: "Notice: Rename request impossible"
 		},
 		"uw-selfrevert": {
 			label: "Reverting self tests",
@@ -1032,25 +942,9 @@ Twinkle.warn.messages = {
 			label: "Posting at the top of talk pages",
 			summary: "Notice: Posting at the top of talk pages"
 		},
-		"uw-uaa": {
-			label: "Reporting of username to WP:UAA not accepted",
-			summary: "Notice: Reporting of username to WP:UAA not accepted"
-		},
-		"uw-upincat": {
-			label: "Accidentally including user page/subpage in a content category",
-			summary: "Notice: Informing user that one of his/her pages had accidentally been included in a content category"
-		},
-		"uw-uploadfirst": {
-			label: "Attempting to display an external image on a page",
-			summary: "Notice: Attempting to display an external image on a page"
-		},
 		"uw-userspace draft finish": {
 			label: "Stale userspace draft",
 			summary: "Notice: Stale userspace draft"
-		},
-		"uw-userspacenoindex": {
-			label: "User page/subpage isn't appropriate for search engine indexing",
-			summary: "Notice: User (sub)page isn't appropriate for search engine indexing"
 		},
 		"uw-vgscope": {
 			label: "Adding video game walkthroughs, cheats or instructions",
@@ -1080,10 +974,6 @@ Twinkle.warn.messages = {
 			label: "Creating attack pages",
 			summary: "Warning: Creating attack pages",
 			suppressArticleInSummary: true
-		},
-		"uw-attempt": {
-			label: "Triggering the edit filter",
-			summary: "Warning: Triggering the edit filter"
 		},
 		"uw-bizlist": {
 			label: "Business promotion",
@@ -1138,10 +1028,6 @@ Twinkle.warn.messages = {
 			label: "Editing while logged out",
 			summary: "Warning: Editing while logged out"
 		},
-		"uw-longterm": {
-			label: "Long term pattern of vandalism",
-			summary: "Warning: Long term pattern of vandalism"
-		},
 		"uw-multipleIPs": {
 			label: "Usage of multiple IPs",
 			summary: "Warning: Usage of multiple IPs"
@@ -1149,6 +1035,10 @@ Twinkle.warn.messages = {
 		"uw-pinfo": {
 			label: "Personal info",
 			summary: "Warning: Personal info"
+		},
+		"uw-salt": {
+			label: "Recreating salted articles under a different title",
+			summary: "Notice: Recreating creation-protected articles under a different title"
 		},
 		"uw-socksuspect": {
 			label: "Sockpuppetry",
@@ -1176,213 +1066,9 @@ Twinkle.warn.messages = {
 			label: "Using inaccurate or inappropriate edit summaries",
 			summary: "Warning: Using inaccurate or inappropriate edit summaries"
 		}
-	},
-
-
-	block: {
-		"uw-block": {
-			label: "Block",
-			summary: "You have been blocked from editing",
-			pageParam: true,
-			reasonParam: true,  // allows editing of reason for generic templates
-			suppressArticleInSummary: true
-		},
-		"uw-blocknotalk": {
-			label: "Block - talk page disabled",
-			summary: "You have been blocked from editing and your user talk page has been disabled",
-			pageParam: true,
-			reasonParam: true,
-			suppressArticleInSummary: true
-		},
-		"uw-blockindef": {
-			label: "Block - indefinite",
-			summary: "You have been indefinitely blocked from editing",
-			indefinite: true,
-			pageParam: true,
-			reasonParam: true,
-			suppressArticleInSummary: true
-		},
-		"uw-ablock": {
-			label: "Block - IP address",
-			summary: "Your IP address has been blocked from editing",
-			pageParam: true,
-			suppressArticleInSummary: true
-		},
-		"uw-vblock": {
-			label: "Vandalism block",
-			summary: "You have been blocked from editing for persistent [[WP:VAND|vandalism]]",
-			pageParam: true
-		},
-		"uw-voablock": {
-			label: "Vandalism-only account block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]]",
-			indefinite: true,
-			pageParam: true
-		},
-		"uw-bioblock": {
-			label: "BLP violations block",
-			summary: "You have been blocked from editing for violations of Wikipedia's [[WP:BLP|biographies of living persons policy]]",
-			pageParam: true
-		},
-		"uw-sblock": {
-			label: "Spam block",
-			summary: "You have been blocked from editing for using Wikipedia for [[WP:SPAM|spam]] purposes"
-		},
-		"uw-adblock": {
-			label: "Advertising block",
-			summary: "You have been blocked from editing for [[WP:SOAP|advertising or self-promotion]]",
-			pageParam: true
-		},
-		"uw-soablock": {
-			label: "Spam/advertising-only account block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam, advertising, or promotion]]",
-			indefinite: true,
-			pageParam: true
-		},
-		"uw-nothereblock": {
-			label: "WP:NOTHERE block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because it appears that you are not here to [[WP:NOTHERE|build an encyclopedia]]",
-			indefinite: true
-		},
-		"uw-npblock": {
-			label: "Creating nonsense pages block",
-			summary: "You have been blocked from editing for creating [[WP:PN|nonsense pages]]",
-			pageParam: true
-		},
-		"uw-copyrightblock": {
-			label: "Copyright violation block",
-			summary: "You have been blocked from editing for continued [[WP:COPYVIO|copyright infringement]]",
-			pageParam: true
-		},
-		"uw-spoablock": {
-			label: "Sockpuppet account block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:SOCK|sock puppetry]]",
-			indefinite: true
-		},
-		"uw-hblock": {
-			label: "Harassment block",
-			summary: "You have been blocked from editing for attempting to [[WP:HARASS|harass]] other users",
-			pageParam: true
-		},
-		"uw-ewblock": {
-			label: "Edit warring block",
-			summary: "You have been blocked from editing to prevent further [[WP:DE|disruption]] caused by your engagement in an [[WP:EW|edit war]]",
-			pageParam: true
-		},
-		"uw-3block": {
-			label: "Three-revert rule violation block",
-			summary: "You have been blocked from editing for violation of the [[WP:3RR|three-revert rule]]",
-			pageParam: true
-		},
-		"uw-disruptblock": {
-			label: "Disruptive editing block",
-			summary: "You have been blocked from editing for [[WP:DE|disruptive editing]]",
-			pageParam: true
-		},
-		"uw-deoablock": {
-			label: "Disruption/trolling-only account block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:DE|trolling, disruption or harassment]]",
-			indefinite: true,
-			pageParam: true
-		},
-		"uw-lblock": {
-			label: "Legal threat block (indefinite)",
-			summary: "You have been indefinitely blocked from editing for making [[WP:NLT|legal threats or taking legal action]]",
-			indefinite: true
-		},
-		"uw-aeblock": {
-			label: "Arbitration enforcement block",
-			summary: "You have been blocked from editing for violating an [[WP:Arbitration|arbitration decision]] with your edits",
-			pageParam: true,
-			reasonParam: true
-		},
-		"uw-efblock": {
-			label: "Edit filter-related block",
-			summary: "You have been blocked from editing for making disruptive edits that repeatedly triggered the [[WP:EF|edit filter]]"
-		},
-		"uw-myblock": {
-			label: "Social networking block",
-			summary: "You have been blocked from editing for using user and/or article pages as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]",
-			pageParam: true
-		},
-		"uw-dblock": {
-			label: "Deletion/removal of content block",
-			summary: "You have been blocked from editing for continued [[WP:VAND|removal of material]]",
-			pageParam: true
-		},
-		"uw-compblock": {
-			label: "Possible compromised account block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because it is believed that your [[WP:SECURE|account has been compromised]]",
-			indefinite: true
-		},
-		"uw-botblock": {
-			label: "Unapproved bot block",
-			summary: "You have been blocked from editing because it appears you are running a [[WP:BOT|bot script]] without [[WP:BRFA|approval]]",
-			pageParam: true
-		},
-		"uw-ublock": {
-			label: "Username soft block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your username is a violation of the [[WP:U|username policy]]",
-			indefinite: true,
-			reasonParam: true
-		},
-		"uw-uhblock": {
-			label: "Username hard block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]]",
-			indefinite: true,
-			reasonParam: true
-		},
-		"uw-softerblock": {
-			label: "Promotional username soft block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] gives the impression that the account represents a group, organization or website",
-			indefinite: true
-		},
-		"uw-causeblock": {
-			label: "Promotional username soft block, for charitable causes (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] gives the impression that the account represents a group, organization or website",
-			indefinite: true
-		},
-		"uw-botublock": {
-			label: "Bot username soft block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] indicates this is a [[WP:BOT|bot]] account, which is currently not approved",
-			indefinite: true
-		},
-		"uw-memorialblock": {
-			label: "Memorial username soft block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] indicates this account may be used as a memorial or tribute to someone",
-			indefinite: true
-		},
-		"uw-ublock-famous": {
-			label: "Famous username soft block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] matches the name of a well-known living individual",
-			indefinite: true
-		},
-		"uw-ublock-double": {
-			label: "Similar username soft block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] is too similar to the username of another Wikipedia user",
-			indefinite: true
-		},
-		"uw-uhblock-double": {
-			label: "Username impersonation hard block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your [[WP:U|username]] appears to impersonate another established Wikipedia user",
-			indefinite: true
-		},
-		"uw-vaublock": {
-			label: "Vandalism-only account and username hard block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]] and your username is a blatant violation of the [[WP:U|username policy]]",
-			indefinite: true,
-			pageParam: true
-		},
-		"uw-spamublock": {
-			label: "Spam-only account and promotional username hard block (indefinite)",
-			summary: "You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam or advertising]] and your username is a violation of the [[WP:U|username policy]]",
-			indefinite: true
-		}
 	}
 };
 
-Twinkle.warn.prev_block_timer = null;
-Twinkle.warn.prev_block_reason = null;
 Twinkle.warn.prev_article = null;
 Twinkle.warn.prev_reason = null;
 
@@ -1394,7 +1080,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	var old_subvalue_re;
 	if( old_subvalue ) {
 		old_subvalue = old_subvalue.replace(/\d*(im)?$/, '' );
-		old_subvalue_re = new RegExp( $.escapeRE( old_subvalue ) + "(\\d*(?:im)?)$" );
+		old_subvalue_re = new RegExp( mw.RegExp.escape( old_subvalue ) + "(\\d*(?:im)?)$" );
 	}
 
 	while( sub_group.hasChildNodes() ){
@@ -1402,7 +1088,19 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	}
 
 	// worker function to create the combo box entries
-	var createEntries = function( contents, container ) {
+	var createEntries = function( contents, container, wrapInOptgroup ) {
+		// due to an apparent iOS bug, we have to add an option-group to prevent truncation of text
+		// (search WT:TW archives for "Problem selecting warnings on an iPhone")
+		if ( wrapInOptgroup && $.client.profile().platform === "iphone" ) {
+			var wrapperOptgroup = new Morebits.quickForm.element( {
+				type: 'optgroup',
+				label: 'Available templates'
+			} );
+			wrapperOptgroup = wrapperOptgroup.render();
+			container.appendChild( wrapperOptgroup );
+			container = wrapperOptgroup;
+		}
+
 		$.each( contents, function( itemKey, itemProperties ) {
 			var key = (typeof itemKey === "string") ? itemKey : itemProperties.value;
 
@@ -1422,11 +1120,11 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		} );
 	};
 
-	if( value === "singlenotice" || value === "singlewarn" || value === "block" ) {
+	if( value === "singlenotice" || value === "singlewarn" ) {
 		// no categories, just create the options right away
-		createEntries( Twinkle.warn.messages[ value ], sub_group );
+		createEntries( Twinkle.warn.messages[ value ], sub_group, true );
 	} else if( value === "custom" ) {
-		createEntries( Twinkle.getPref("customWarningList"), sub_group );
+		createEntries( Twinkle.getPref("customWarningList"), sub_group, true );
 	} else {
 		// create the option-groups
 		$.each( Twinkle.warn.messages[ value ], function( groupLabel, groupContents ) {
@@ -1437,65 +1135,8 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			optgroup = optgroup.render();
 			sub_group.appendChild( optgroup );
 			// create the options
-			createEntries( groupContents, optgroup );
+			createEntries( groupContents, optgroup, false );
 		} );
-	}
-
-	if( value === 'block' ) {
-		// create the block-related fields
-		var more = new Morebits.quickForm.element( { type: 'div', id: 'block_fields' } );
-		more.append( {
-			type: 'input',
-			name: 'block_timer',
-			label: 'Period of blocking: ',
-			tooltip: 'The period the blocking is due for, for example 24 hours, 2 weeks, indefinite etc...'
-		} );
-		more.append( {
-			type: 'input',
-			name: 'block_reason',
-			label: '"You have been blocked for ..." ',
-			tooltip: 'An optional reason, to replace the default generic reason. Only available for the generic block templates.'
-		} );
-		e.target.root.insertBefore( more.render(), e.target.root.lastChild );
-
-		// restore saved values of fields
-		if(Twinkle.warn.prev_block_timer !== null) {
-			e.target.root.block_timer.value = Twinkle.warn.prev_block_timer;
-			Twinkle.warn.prev_block_timer = null;
-		}
-		if(Twinkle.warn.prev_block_reason !== null) {
-			e.target.root.block_reason.value = Twinkle.warn.prev_block_reason;
-			Twinkle.warn.prev_block_reason = null;
-		}
-		if(Twinkle.warn.prev_article === null) {
-			Twinkle.warn.prev_article = e.target.root.article.value;
-		}
-		e.target.root.article.disabled = false;
-
-		$(e.target.root.reason).parent().hide();
-		e.target.root.previewer.closePreview();
-	} else if( e.target.root.block_timer ) {
-		// hide the block-related fields
-		if(!e.target.root.block_timer.disabled && Twinkle.warn.prev_block_timer === null) {
-			Twinkle.warn.prev_block_timer = e.target.root.block_timer.value;
-		}
-		if(!e.target.root.block_reason.disabled && Twinkle.warn.prev_block_reason === null) {
-			Twinkle.warn.prev_block_reason = e.target.root.block_reason.value;
-		}
-
-		// hack to fix something really weird - removed elements seem to somehow keep an association with the form
-		e.target.root.block_reason = null;
-
-		$(e.target.root).find("#block_fields").remove();
-
-		if(e.target.root.article.disabled && Twinkle.warn.prev_article !== null) {
-			e.target.root.article.value = Twinkle.warn.prev_article;
-			Twinkle.warn.prev_article = null;
-		}
-		e.target.root.article.disabled = false;
-
-		$(e.target.root.reason).parent().show();
-		e.target.root.previewer.closePreview();
 	}
 
 	// clear overridden label on article textbox
@@ -1523,48 +1164,6 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 				Twinkle.warn.prev_article = null;
 			}
 			e.target.form.article.notArticle = false;
-		}
-	} else if( main_group === 'block' ) {
-		if( Twinkle.warn.messages.block[value].indefinite ) {
-			if(Twinkle.warn.prev_block_timer === null) {
-				Twinkle.warn.prev_block_timer = e.target.form.block_timer.value;
-			}
-			e.target.form.block_timer.disabled = true;
-			e.target.form.block_timer.value = 'indefinite';
-		} else if( e.target.form.block_timer.disabled ) {
-			if(Twinkle.warn.prev_block_timer !== null) {
-				e.target.form.block_timer.value = Twinkle.warn.prev_block_timer;
-				Twinkle.warn.prev_block_timer = null;
-			}
-			e.target.form.block_timer.disabled = false;
-		}
-
-		if( Twinkle.warn.messages.block[value].pageParam ) {
-			if(Twinkle.warn.prev_article !== null) {
-				e.target.form.article.value = Twinkle.warn.prev_article;
-				Twinkle.warn.prev_article = null;
-			}
-			e.target.form.article.disabled = false;
-		} else if( !e.target.form.article.disabled ) {
-			if(Twinkle.warn.prev_article === null) {
-				Twinkle.warn.prev_article = e.target.form.article.value;
-			}
-			e.target.form.article.disabled = true;
-			e.target.form.article.value = '';
-		}
-
-		if( Twinkle.warn.messages.block[value].reasonParam ) {
-			if(Twinkle.warn.prev_block_reason !== null) {
-				e.target.form.block_reason.value = Twinkle.warn.prev_block_reason;
-				Twinkle.warn.prev_block_reason = null;
-			}
-			e.target.form.block_reason.disabled = false;
-		} else if( !e.target.form.block_reason.disabled ) {
-			if(Twinkle.warn.prev_block_reason === null) {
-				Twinkle.warn.prev_block_reason = e.target.form.block_reason.value;
-			}
-			e.target.form.block_reason.disabled = true;
-			e.target.form.block_reason.value = '';
 		}
 	}
 
@@ -1605,11 +1204,11 @@ Twinkle.warn.callbacks = {
 		var text = "{{subst:" + templateName;
 
 		if (article) {
-			// add linked article for user warnings (non-block templates)
+			// add linked article for user warnings
 			text += '|1=' + article;
 		}
 		if (reason && !isCustom) {
-			// add extra message for non-block templates
+			// add extra message
 			if (templateName === 'uw-csd' || templateName === 'uw-probation' ||
 				templateName === 'uw-userspacenoindex' || templateName === 'uw-userpage') {
 				text += "|3=''" + reason + "''";
@@ -1626,40 +1225,13 @@ Twinkle.warn.callbacks = {
 
 		return text;
 	},
-	getBlockNoticeWikitext: function(templateName, article, blockTime, blockReason, isIndefTemplate) {
-		var text = "{{subst:" + templateName;
-
-		if (article && Twinkle.warn.messages.block[templateName].pageParam) {
-			text += '|page=' + article;
-		}
-
-		if (!/te?mp|^\s*$|min/.exec(blockTime) && !isIndefTemplate) {
-			if (/indef|\*|max/.exec(blockTime)) {
-				text += '|indef=yes';
-			} else {
-				text += '|time=' + blockTime;
-			}
-		}
-
-		if (blockReason) {
-			text += '|reason=' + blockReason;
-		}
-
-		text += "|sig=true}}";
-		return text;
-	},
 	preview: function(form) {
 		var templatename = form.sub_group.value;
 		var linkedarticle = form.article.value;
 		var templatetext;
 
-		if (templatename in Twinkle.warn.messages.block) {
-			templatetext = Twinkle.warn.callbacks.getBlockNoticeWikitext(templatename, linkedarticle, form.block_timer.value,
-				form.block_reason.value, Twinkle.warn.messages.block[templatename].indefinite);
-		} else {
-			templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle, 
-				form.reason.value, form.main_group.value === 'custom');
-		}
+		templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle,
+			form.reason.value, form.main_group.value === 'custom');
 
 		form.previewer.beginRender(templatetext);
 	},
@@ -1716,36 +1288,24 @@ Twinkle.warn.callbacks = {
 		// If dateHeaderRegexResult is null then lastHeaderIndex is never checked. If it is not null but
 		// \n== is not found, then the date header must be at the very start of the page. lastIndexOf
 		// returns -1 in this case, so lastHeaderIndex gets set to 0 as desired.
-		var lastHeaderIndex = text.lastIndexOf( "\n==" ) + 1;   
+		var lastHeaderIndex = text.lastIndexOf( "\n==" ) + 1;
 
 		if( text.length > 0 ) {
 			text += "\n\n";
 		}
 
-		if( params.main_group === 'block' ) {
-			if( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.sub_group !== 'uw-lblock' && ( messageData.indefinite || (/indef|\*|max/).exec( params.block_timer ) ) ) {
-				Morebits.status.info( 'Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date' );
-				text = "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
-			} else if( !dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex ) {
-				Morebits.status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
-				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
-			}
-
-			text += Twinkle.warn.callbacks.getBlockNoticeWikitext(params.sub_group, params.article, params.block_timer, params.reason, messageData.indefinite);
-		} else {
-			if( messageData.heading ) {
-				text += "== " + messageData.heading + " ==\n";
-			} else if( !dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex ) {
-				Morebits.status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
-				text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
-			}
-			text += Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article, 
-				params.reason, params.main_group === 'custom') + " ~~~~";
+		if( messageData.heading ) {
+			text += "== " + messageData.heading + " ==\n";
+		} else if( !dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex ) {
+			Morebits.status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
+			text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 		}
+		text += Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article,
+			params.reason, params.main_group === 'custom') + " ~~~~";
 
 		if ( Twinkle.getPref('showSharedIPNotice') && Morebits.isIPAddress( mw.config.get('wgTitle') ) ) {
 			Morebits.status.info( 'Info', 'Adding a shared IP notice' );
-			text +=  "\n{{subst:SharedIPAdvice}}";
+			text +=  "\n{{subst:Shared IP advice}}";
 		}
 
 		// build the edit summary
@@ -1796,6 +1356,7 @@ Twinkle.warn.callbacks = {
 };
 
 Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
+	var userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
 	// First, check to make sure a reason was filled in if uw-username was selected
 
@@ -1809,21 +1370,20 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 
 	// Then, grab all the values provided by the form
 	var params = {
-		reason: e.target.block_reason ? e.target.block_reason.value : e.target.reason.value,
+		reason: e.target.reason.value,
 		main_group: e.target.main_group.value,
 		sub_group: e.target.sub_group.value,
 		article: e.target.article.value,  // .replace( /^(Image|Category):/i, ':$1:' ),  -- apparently no longer needed...
-		block_timer: e.target.block_timer ? e.target.block_timer.value : null,
 		messageData: selectedEl.data("messageData")
 	};
 
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( e.target );
 
-	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.redirect = userTalkPage;
 	Morebits.wiki.actionCompleted.notice = "Warning complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'User talk page modification' );
+	var wikipedia_page = new Morebits.wiki.page( userTalkPage, 'User talk page modification' );
 	wikipedia_page.setCallbackParameters( params );
 	wikipedia_page.setFollowRedirect( true );
 	wikipedia_page.load( Twinkle.warn.callbacks.main );

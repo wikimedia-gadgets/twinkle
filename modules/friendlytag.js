@@ -34,7 +34,7 @@ Twinkle.tag = function friendlytag() {
 	}
 };
 
-Twinkle.tag.callback = function friendlytagCallback( uid ) {
+Twinkle.tag.callback = function friendlytagCallback() {
 	var Window = new Morebits.simpleWindow( 630, (Twinkle.tag.mode === "article") ? 500 : 400 );
 	Window.setScriptName( "Twinkle" );
 	// anyone got a good policy/guideline/info page/instructional page link??
@@ -157,7 +157,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	if (!Twinkle.tag.checkedTags) {
 		Twinkle.tag.checkedTags = [];
 	}
-	
+
 	var container = new Morebits.quickForm.element({ type: "fragment" });
 
 	// function to generate a checkbox, with appropriate subgroup if needed
@@ -408,8 +408,8 @@ Twinkle.tag.updateSortOrder = function(e) {
 		var $checkbox = $(checkbox);
 		var link = Morebits.htmlNode("a", ">");
 		link.setAttribute("class", "tag-template-link");
-		link.setAttribute("href", mw.util.getUrl("Template:" + 
-			Morebits.string.toUpperCaseFirstChar($checkbox.val())));
+		link.setAttribute("href", mw.util.getUrl("Template:" +
+			Morebits.string.toUpperCaseFirstChar(checkbox.values)));
 		link.setAttribute("target", "_blank");
 		$checkbox.parent().append(["\u00A0", link]);
 	});
@@ -451,14 +451,15 @@ Twinkle.tag.article.tags = {
 	"GOCEinuse": "article is currently undergoing a major copy edit by the Guild of Copy Editors",
 	"hoax": "article may be a complete hoax",
 	"improve categories": "article may require additional categories",
+	"incomprehensible": "article is very hard to understand or incomprehensible",
 	"in-universe": "article subject is fictional and needs rewriting from a non-fictional perspective",
-	"incoherent": "article is incoherent or very hard to understand",
 	"in use": "article is undergoing a major edit for a short while",
 	"lead missing": "article has no lead section and one should be written",
 	"lead rewrite": "article lead section needs to be rewritten to comply with guidelines",
 	"lead too long": "article lead section is too long and should be shortened",
 	"lead too short": "article lead section is too short and should be expanded",
 	"linkrot": "article uses bare URLs for references, which are prone to link rot",
+	"manual": "article is written like a manual or guidebook",
 	"merge": "article should be merged with another given article",
 	"merge from": "another given article should be merged into this one",
 	"merge to": "article should be merged into another given article",
@@ -482,7 +483,7 @@ Twinkle.tag.article.tags = {
 	"primary sources": "article relies too heavily on primary sources, and needs secondary sources",
 	"prose": "article is in a list format that may be better presented using prose",
 	"recentism": "article is slanted towards recent events",
-	"ref improve": "article needs additional references or sources for verification",
+	"refimprove": "article needs additional references or sources for verification",
 	"rough translation": "article is poorly translated and needs cleanup",
 	"sections": "article needs to be broken into sections",
 	"self-published": "article may contain improper references to self-published sources",
@@ -495,6 +496,7 @@ Twinkle.tag.article.tags = {
 	"under construction": "article is currently in the middle of an expansion or major revamping",
 	"underlinked": "article may require additional wikilinks",
 	"undue": "article lends undue weight to certain aspects of the subject but not others",
+	"unfocused": "article lacks focus or is about more than one topic",
 	"unreferenced": "article has no references at all",
 	"unreliable sources": "article's references may not be reliable sources",
 	"update": "article needs additional up-to-date information added",
@@ -543,6 +545,7 @@ Twinkle.tag.article.tagCategories = {
 			"advert",
 			"essay-like",
 			"fansite",
+			"manual",
 			"news release",
 			"prose",
 			"technical",
@@ -551,7 +554,8 @@ Twinkle.tag.article.tagCategories = {
 		],
 		"Sense (or lack thereof)": [
 			"confusing",
-			"incoherent"
+			"incomprehensible",
+			"unfocused"
 		],
 		"Information and detail": [
 			"context",
@@ -582,7 +586,7 @@ Twinkle.tag.article.tagCategories = {
 			"one source",
 			"original research",
 			"primary sources",
-			"ref improve",
+			"refimprove",
 			"self-published",
 			"third-party",
 			"unreferenced",
@@ -629,8 +633,12 @@ Twinkle.tag.article.tagCategories = {
 
 Twinkle.tag.spellingList = [
 	{
-		label: '{{R from abbreviation}}: redirect from a title with an abbreviation',
-		value: 'R from abbreviation'
+		label: '{{R from initialism}}: redirect from an initialism (e.g. AGF) to its expanded form',
+		value: 'R from initialism'
+	},
+	{
+		label: '{{R from acronym}}: redirect from an acronym (e.g. POTUS) to its expanded form',
+		value: 'R from acronym'
 	},
 	{
 		label: '{{R to list entry}}: redirect to a \"list of minor entities\"-type article which contains brief descriptions of subjects not notable enough to have separate articles',
@@ -676,8 +684,8 @@ Twinkle.tag.alternativeList = [
 		value: 'R from alternative name'
 	},
 	{
-		label: '{{R from full name}}: redirect from a title that is a complete or more complete name',
-		value: 'R from full name'
+		label: '{{R from long name}}: redirect from a title that is a complete or more complete name',
+		value: 'R from long name'
 	},
 	{
 		label: '{{R from surname}}: redirect from a title that is a surname',
@@ -712,8 +720,8 @@ Twinkle.tag.alternativeList = [
 		value: 'R from ASCII'
 	},
 	{
-		label: '{{R from title without diacritics}}: redirect to the article title with diacritical marks (accents, umlauts, etc.)',
-		value: 'R from title without diacritics'
+		label: '{{R to diacritics}}: redirect to the article title with diacritical marks (accents, umlauts, etc.)',
+		value: 'R to diacritics'
 	}
 ];
 
@@ -827,7 +835,7 @@ Twinkle.tag.file.replacementList = [
 	{ label: '{{Duplicate}}: exact duplicate of another file, but not yet orphaned', value: 'Duplicate' },
 	{ label: '{{Obsolete}}: improved version available', value: 'Obsolete' },
 	{ label: '{{PNG version available}}', value: 'PNG version available' },
-	{ label: '{{SVG version available}}', value: 'SVG version available' }
+	{ label: '{{Vector version available}}', value: 'Vector version available' }
 ];
 
 
@@ -1141,7 +1149,7 @@ Twinkle.tag.callbacks = {
 
 					var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib,
 						'Notifying initial contributor (' + initialContrib + ')');
-					var notifytext = "\n\n== Your article [[" + Morebits.pageNameNorm + "]]==\n" + 
+					var notifytext = "\n\n== Your article [[" + Morebits.pageNameNorm + "]]==\n" +
 						"{{subst:uw-notenglish|1=" + Morebits.pageNameNorm +
 						(params.translationPostAtPNT ? "" : "|nopnt=yes") + "}} ~~~~";
 					userTalkPage.setAppendText(notifytext);
@@ -1202,7 +1210,7 @@ Twinkle.tag.callbacks = {
 					"Now Commons"].indexOf(tag) !== -1) {
 					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 				}
-				if (tag === "SVG version available") {
+				if (tag === "Vector version available") {
 					text = text.replace(/\{\{((convert to |convertto|should be |shouldbe|to)?svg|badpng|vectorize)[^}]*\}\}/gi, "");
 				}
 
@@ -1263,7 +1271,7 @@ Twinkle.tag.callbacks = {
 						break;
 					case "PNG version available":
 						/* falls through */
-					case "SVG version available":
+					case "Vector version available":
 						/* falls through */
 					case "Obsolete":
 						/* falls through */

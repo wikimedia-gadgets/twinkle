@@ -238,7 +238,6 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			container.append({ type: 'header', label: 'Anonymous user welcome templates' });
 			appendTemplates([
 				"welcome-anon",
-				"welcome-anon-border",
 				"welcome-anon-test",
 				"welcome-anon-unconstructive",
 				"welcome-anon-constructive",
@@ -248,6 +247,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 		case "wikiProject":
 			container.append({ type: 'header', label: 'WikiProject-specific welcome templates' });
 			appendTemplates([
+				"welcome-anatomy",
 				"welcome-au",
 				"welcome-bd",
 				"welcome-bio",
@@ -443,11 +443,6 @@ Twinkle.welcome.templates = {
 		linkedArticle: true,
 		syntax: "{{subst:welcome-anon|art=$ARTICLE$}} ~~~~"
 	},
-	"welcome-anon-border": {
-		description: "similar to {{welcome-anon}}, but has a border and uses clearer language",
-		linkedArticle: false,
-		syntax: "{{subst:welcome-anon-border}}"
-	},
 	"welcome-anon-test": {
 		description: "for anonymous users who have performed test edits",
 		linkedArticle: true,
@@ -471,6 +466,11 @@ Twinkle.welcome.templates = {
 
 	// WIKIPROJECT-SPECIFIC WELCOMES
 
+	"welcome-anatomy": {
+		description: "welcome for users with an apparent interest in anatomy topics",
+		linkedArticle: false,
+		syntax: "{{subst:welcome-anatomy}} ~~~~"
+	},
 	"welcome-au": {
 		description: "welcome for users with an apparent interest in Australia topics",
 		linkedArticle: false,

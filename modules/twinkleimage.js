@@ -129,7 +129,19 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 					list: [
 						{
 							label: 'Non-free',
-							tooltip: 'Image is licensed under a fair use claim'
+							tooltip: 'File is licensed under a fair use claim'
+						}
+					]
+				} );
+		/* falls through */
+		case 'no license':
+			work_area.append( {
+					type: 'checkbox',
+					name: 'derivative',
+					list: [
+						{
+							label: 'Derivative work which lacks a source for incorporated works',
+							tooltip: 'File is a derivative of one or more other works whose source is not specified'
 						}
 					]
 				} );
@@ -157,14 +169,9 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 			break;
 		case 'replaceable fair use':
 			work_area.append( {
-					type: 'checkbox',
-					name: 'old_image',
-					list: [
-						{
-							label: 'Old image',
-							tooltip: 'Image was uploaded before 2006-07-13'
-						}
-					]
+					type: 'textarea',
+					name: 'reason',
+					label: 'Reason: '
 				} );
 			break;
 		default:
@@ -175,7 +182,7 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 };
 
 Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
-	var type, non_free, source, reason, replacement, old_image;
+	var type, non_free, source, reason, replacement, derivative;
 
 	var notify = event.target.notify.checked;
 	var types = event.target.type;
@@ -197,8 +204,8 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	if( event.target.replacement ) {
 		replacement = event.target.replacement.value;
 	}
-	if( event.target.old_image ) {
-		old_image = event.target.old_image.checked;
+	if( event.target.derivative ) {
+		derivative = event.target.derivative.checked;
 	}
 
 	var csdcrit;
@@ -226,15 +233,16 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	}
 
 	var lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit.toLowerCase()) === -1;
+	var templatename = (derivative ? ('dw ' + type) : type);
 
 	var params = {
 		'type': type,
+		'templatename': templatename,
 		'normalized': csdcrit,
 		'non_free': non_free,
 		'source': source,
 		'reason': reason,
 		'replacement': replacement,
-		'old_image': old_image,
 		'lognomination': lognomination
 	};
 	Morebits.simpleWindow.setButtonsEnabled( false );
@@ -259,7 +267,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		}
 		// No auto-notification, display what was going to be added.
 		var noteData = document.createElement( 'pre' );
-		noteData.appendChild( document.createTextNode( "{{subst:di-" + type + "-notice|1=" + mw.config.get('wgTitle') + "}} ~~~~" ) );
+		noteData.appendChild( document.createTextNode( "{{subst:di-" + templatename + "-notice|1=" + mw.config.get('wgTitle') + "}} ~~~~" ) );
 		Morebits.status.info( 'Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement( 'br' ),  noteData ] );
 	}
 };
@@ -272,7 +280,7 @@ Twinkle.image.callbacks = {
 		// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
 		text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 
-		var tag = "{{di-" + params.type + "|date={{subst:#time:j F Y}}";
+		var tag = "{{di-" + params.templatename + "|date={{subst:#time:j F Y}}";
 		switch( params.type ) {
 			case 'no source no license':
 			case 'no source':
@@ -288,7 +296,7 @@ Twinkle.image.callbacks = {
 				tag += params.replacement ? "|replacement=" + params.replacement : "";
 				break;
 			case 'replaceable fair use':
-				tag += params.old_image ? "|old image=yes" : "";
+				tag += params.reason ? "|1=" + params.reason : "";
 				break;
 			default:
 				break;  // doesn't matter
@@ -320,7 +328,7 @@ Twinkle.image.callbacks = {
 			pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
 		} else {
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-			var notifytext = "\n{{subst:di-" + params.type + "-notice|1=" + mw.config.get('wgTitle');
+			var notifytext = "\n{{subst:di-" + params.templatename + "-notice|1=" + mw.config.get('wgTitle');
 			if (params.type === 'no permission') {
 				notifytext += params.source ? "|source=" + params.source : "";
 			}

@@ -44,25 +44,25 @@ Twinkle.fluff = {
 			if (logLink.length>0) //#215 -- there is no log link on Special:Contributions with no user
 			{
 				var username = decodeURIComponent(/wiki\/Special:Log\/(.+)$/.exec(logLink.attr("href").replace(/_/g, "%20"))[1]);
-				if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 || 
-					( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) || 
+				if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
+					( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) ||
 					( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
 					var list = $("#mw-content-text").find("ul li:has(span.mw-uctop)");
-	
+
 					var revNode = document.createElement('strong');
 					var revLink = document.createElement('a');
 					revLink.appendChild( spanTag( 'Black', '[' ) );
 					revLink.appendChild( spanTag( 'SteelBlue', 'rollback' ) );
 					revLink.appendChild( spanTag( 'Black', ']' ) );
 					revNode.appendChild(revLink);
-	
+
 					var revVandNode = document.createElement('strong');
 					var revVandLink = document.createElement('a');
 					revVandLink.appendChild( spanTag( 'Black', '[' ) );
 					revVandLink.appendChild( spanTag( 'Red', 'vandalism' ) );
 					revVandLink.appendChild( spanTag( 'Black', ']' ) );
 					revVandNode.appendChild(revVandLink);
-	
+
 					list.each(function(key, current) {
 						var href = $(current).children("a:eq(1)").attr("href");
 						current.appendChild( document.createTextNode(' ') );
@@ -77,7 +77,7 @@ Twinkle.fluff = {
 				}
 			}
 		} else {
-                        
+
 			if( mw.config.get('wgCanonicalSpecialPageName') === "Undelete" ) {
 				//You can't rollback deleted pages!
 				return;
@@ -91,8 +91,8 @@ Twinkle.fluff = {
 
 			var otitle, ntitle;
 			try {
-				var otitle1 = document.getElementById('mw-diff-otitle1'); 
-				var ntitle1 = document.getElementById('mw-diff-ntitle1'); 
+				var otitle1 = document.getElementById('mw-diff-otitle1');
+				var ntitle1 = document.getElementById('mw-diff-ntitle1');
 				if (!otitle1 || !ntitle1) {
 					return;
 				}
@@ -159,9 +159,9 @@ Twinkle.fluff = {
 				var vandLink = document.createElement('a');
 				var normLink = document.createElement('a');
 
-				agfLink.href = "#"; 
-				vandLink.href = "#"; 
-				normLink.href = "#"; 
+				agfLink.href = "#";
+				vandLink.href = "#";
+				normLink.href = "#";
 				$(agfLink).click(function(){
 					Twinkle.fluff.revert('agf', vandal);
 				});
@@ -445,7 +445,7 @@ Twinkle.fluff.callbacks = {
 				userHasAlreadyConfirmedAction = true;
 			}
 
-			summary = Twinkle.fluff.formatSummary("Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + 
+			summary = Twinkle.fluff.formatSummary("Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') +
 				" by $USER", self.params.user, extra_summary);
 			break;
 		}
@@ -553,7 +553,7 @@ Twinkle.fluff.callbacks = {
 // by an appropriate user link
 Twinkle.fluff.formatSummary = function(builtInString, userName, userString) {
 	var result = builtInString;
-	
+
 	// append user's custom reason with requisite punctuation
 	if (userString) {
 		result += ': ' + Morebits.string.toUpperCaseFirstChar(userString);
@@ -581,7 +581,7 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, userString) {
 	} else {
 		result = result.replace("$USER", userName);
 	}
-	
+
 	return result;
 };
 
@@ -591,7 +591,7 @@ Twinkle.fluff.init = function twinklefluffinit() {
 		// A list of usernames, usually only bots, that vandalism revert is jumped over; that is,
 		// if vandalism revert was chosen on such username, then its target is on the revision before.
 		// This is for handling quick bots that makes edits seconds after the original edit is made.
-		// This only affects vandalism rollback; for good faith rollback, it will stop, indicating a bot 
+		// This only affects vandalism rollback; for good faith rollback, it will stop, indicating a bot
 		// has no faith, and for normal rollback, it will rollback that edit.
 		Twinkle.fluff.whiteList = [
 			'AnomieBOT',

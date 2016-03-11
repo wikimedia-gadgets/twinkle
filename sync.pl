@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/perl
 
 use v5.10;
 
@@ -26,8 +26,8 @@ my ($opt, $usage) = describe_options(
                 ["pull" => "pull changes from wikipedia"],
                 ["push" => "push changes to wikipedia"],
                 ["deploy" => "push changes to wikipedia as gadgets"]
-            ] 
-        } 
+            ]
+        }
     ],
     [ 'strip', "strip line end spaces"],
     [],
@@ -39,7 +39,6 @@ print($usage->text), exit if $opt->help || !scalar(@ARGV);
 
 my %pages = map +("$opt->{base}/$_" => $_), @ARGV;
 my %deploys = (
-	'moment.js' => 'MediaWiki:Gadget-moment.js',
 	'twinkle.js' => 'MediaWiki:Gadget-Twinkle.js',
 	'morebits.js' => 'MediaWiki:Gadget-morebits.js',
 	'morebits.css' => 'MediaWiki:Gadget-morebits.css',
@@ -51,7 +50,6 @@ my %deploys = (
 	'modules/friendlyshared.js' => 'MediaWiki:Gadget-friendlyshared.js',
 	'modules/twinklediff.js' => 'MediaWiki:Gadget-twinklediff.js',
 	'modules/twinkleunlink.js' => 'MediaWiki:Gadget-twinkleunlink.js',
-	'modules/twinkledelimages.js' => 'MediaWiki:Gadget-twinkledelimages.js',
 	'modules/friendlytag.js' => 'MediaWiki:Gadget-friendlytag.js',
 	'modules/twinkledeprod.js' => 'MediaWiki:Gadget-twinkledeprod.js',
 	'modules/friendlywelcome.js' => 'MediaWiki:Gadget-friendlywelcome.js',
@@ -62,7 +60,8 @@ my %deploys = (
 	'modules/twinklefluff.js' => 'MediaWiki:Gadget-twinklefluff.js',
 	'modules/twinkleprotect.js' => 'MediaWiki:Gadget-twinkleprotect.js',
 	'modules/twinklearv.js' => 'MediaWiki:Gadget-twinklearv.js',
-	'modules/friendlytalkback.js' => 'MediaWiki:Gadget-friendlytalkback.js'
+	'modules/friendlytalkback.js' => 'MediaWiki:Gadget-friendlytalkback.js',
+	'modules/twinkleblock.js' => 'MediaWiki:Gadget-twinkleblock.js'
 );
 
 # Config file should be an hash consisting of username and password keys
