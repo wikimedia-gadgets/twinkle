@@ -188,12 +188,12 @@ Twinkle.prod.callbacks = {
 		else {  // already tagged for PROD, so try endorsing it
 			var prod2_re = /\{\{(?:Proposed deletion endorsed|prod-?2).*?\}\}/;
 			if( prod2_re.test( text ) ) {
-				statelem.warn( 'Page already tagged with {{prod}} and {{prod-2}} templates, aborting procedure' );
+				statelem.warn( 'Page already tagged with {{proposed deletion}} and {{proposed deletion endorsed}} templates, aborting procedure' );
 				return;
 			}
-			var confirmtext = "A {{prod}} tag was already found on this article. \nWould you like to add a {{prod-2}} (PROD endorsement) tag with your explanation?";
+			var confirmtext = "A {{proposed deletion}} tag was already found on this article. \nWould you like to add a {{proposed deletion endorsed}} tag with your explanation?";
 			if (params.blp) {
-				confirmtext = "A non-BLP {{prod}} tag was found on this article.  \nWould you like to add a {{prod-2}} (PROD endorsement) tag with explanation \"article is a biography of a living person with no sources\"?";
+				confirmtext = "A non-BLP {{proposed deletion}} tag was found on this article.  \nWould you like to add a {{proposed deletion endorsed}} tag with explanation \"article is a biography of a living person with no sources\"?";
 			}
 			if( !confirm( confirmtext ) ) {
 				statelem.warn( 'Aborted per user request' );
@@ -201,7 +201,7 @@ Twinkle.prod.callbacks = {
 			}
 
 			summaryText = "Endorsing proposed deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
-			text = text.replace( prod_re, text.match( prod_re ) + "\n{{prod-2|1=" + (params.blp ?
+			text = text.replace( prod_re, text.match( prod_re ) + "\n{{proposed deletion endorsed|1=" + (params.blp ?
 				"article is a [[WP:BLPPROD|biography of a living person with no sources]]" :
 				Morebits.string.formatReasonText(params.reason)) + "}}\n" );
 

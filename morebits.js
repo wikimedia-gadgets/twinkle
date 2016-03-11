@@ -457,7 +457,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label: 'more',
 				disabled: min >= max,
 				event: function(e) {
-					var area = e.target.area;
 					var new_node =  new Morebits.quickForm.element( e.target.sublist );
 					e.target.area.appendChild( new_node.render() );
 
@@ -1044,7 +1043,11 @@ Morebits.string = {
 	},
 	// for deletion/other templates taking a freeform "reason" from a textarea (e.g. PROD, XFD, RPP)
 	formatReasonText: function( str ) {
-		return str.toString().trimRight().replace(/\|/g, "{{subst:!}}");
+		var result = str.toString().trimRight();
+		var unbinder = new Morebits.unbinder(result);
+		unbinder.unbind("<no" + "wiki>", "</no" + "wiki>");
+		unbinder.content = unbinder.content.replace(/\|/g, "{{subst:!}}");
+		return unbinder.rebind();
 	}
 };
 
@@ -1162,7 +1165,7 @@ Morebits.unbinder.prototype = {
 };
 
 Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
-	return function UnbinderCallback( match , a , b ) {
+	return function UnbinderCallback( match ) {
 		var current = self.prefix + self.counter + self.postfix;
 		self.history[current] = match;
 		++self.counter;
@@ -1399,6 +1402,7 @@ Morebits.wiki.api = function( currentAction, query, onSuccess, statusElement, on
 	this.currentAction = currentAction;
 	this.query = query;
 	this.query.format = 'xml';
+	this.query.assert = 'user';
 	this.onSuccess = onSuccess;
 	this.onError = onError;
 	if( statusElement ) {
@@ -2859,6 +2863,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
  * beginRender(wikitext): Displays the preview box, and begins an asynchronous attempt
  *                        to render the specified wikitext.
  *    wikitext - wikitext to render; most things should work, including subst: and ~~~~
+ *    pageTitle - optional parameter for the page this should be rendered as being on
  *
  * closePreview(): Hides the preview box and clears it.
  *
@@ -2872,7 +2877,7 @@ Morebits.wiki.preview = function(previewbox) {
 	this.previewbox = previewbox;
 	$(previewbox).addClass("morebits-previewbox").hide();
 
-	this.beginRender = function(wikitext) {
+	this.beginRender = function(wikitext, pageTitle) {
 		$(previewbox).show();
 
 		var statusspan = document.createElement('span');
@@ -2884,7 +2889,7 @@ Morebits.wiki.preview = function(previewbox) {
 			prop: 'text',
 			pst: 'true',  // PST = pre-save transform; this makes substitution work properly
 			text: wikitext,
-			title: mw.config.get('wgPageName')
+			title: pageTitle || mw.config.get('wgPageName')
 		};
 		var renderApi = new Morebits.wiki.api("loading...", query, fnRenderSuccess, new Morebits.status("Preview"));
 		renderApi.post();
@@ -2898,6 +2903,7 @@ Morebits.wiki.preview = function(previewbox) {
 			return;
 		}
 		previewbox.innerHTML = html;
+		$(previewbox).find("a").attr("target", "_blank");
 	};
 
 	this.closePreview = function() {
@@ -3390,11 +3396,11 @@ Morebits.htmlNode = function ( type, content, color ) {
 /**
  * **************** Morebits.checkboxClickHandler() ****************
  * shift-click-support for checkboxes
- * wikibits version (window.addCheckboxClickHandlers) has some restrictions, and doesn't work with checkboxes inside a sortable table, so let's build our own.
+ * wikibits version (window.addCheckboxClickHandlers) has some restrictions, and
+ * doesn't work with checkboxes inside a sortable table, so let's build our own.
  */
 
-Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext)
-{
+Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 	var lastCheckbox = null;
 
 	function clickHandler(event) {
@@ -3428,7 +3434,7 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext)
 		}
 		lastCheckbox = cb;
 		return true;
-	};
+	}
 
   $(jQuerySelector, jQueryContext).click(clickHandler);
 };
@@ -3795,7 +3801,7 @@ Morebits.simpleWindow.prototype = {
 
 		return this;
 	},
-	purgeContent: function( content ) {
+	purgeContent: function() {
 		this.buttons = [];
 		// delete all buttons in the buttonpane
 		$(this.content).dialog("widget").find(".morebits-dialog-buttons").empty();

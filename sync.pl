@@ -50,7 +50,6 @@ my %deploys = (
 	'modules/friendlyshared.js' => 'MediaWiki:Gadget-friendlyshared.js',
 	'modules/twinklediff.js' => 'MediaWiki:Gadget-twinklediff.js',
 	'modules/twinkleunlink.js' => 'MediaWiki:Gadget-twinkleunlink.js',
-	'modules/twinkledelimages.js' => 'MediaWiki:Gadget-twinkledelimages.js',
 	'modules/friendlytag.js' => 'MediaWiki:Gadget-friendlytag.js',
 	'modules/twinkledeprod.js' => 'MediaWiki:Gadget-twinkledeprod.js',
 	'modules/friendlywelcome.js' => 'MediaWiki:Gadget-friendlywelcome.js',

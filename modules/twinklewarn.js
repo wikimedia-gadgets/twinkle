@@ -14,7 +14,7 @@
  */
 
 Twinkle.warn = function twinklewarn() {
-	if( mw.config.get('wgNamespaceNumber') === 3 ) {
+	if( mw.config.get( 'wgRelevantUserName' ) ) {
 			Twinkle.addPortletLink( Twinkle.warn.callback, "Warn", "tw-warn", "Warn/notify user" );
 	}
 
@@ -37,7 +37,7 @@ Twinkle.warn = function twinklewarn() {
 };
 
 Twinkle.warn.callback = function twinklewarnCallback() {
-	if( mw.config.get('wgTitle').split( '/' )[0] === mw.config.get('wgUserName') &&
+	if( mw.config.get( 'wgRelevantUserName' ) === mw.config.get( 'wgUserName' ) &&
 			!confirm( 'You are about to warn yourself! Are you sure you want to proceed?' ) ) {
 		return;
 	}
@@ -139,7 +139,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced controversial information about living persons",
 				summary: "General note: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam1": {
+			"uw-defamatory1": {
 				label: "Addition of defamatory content",
 				summary: "General note: Addition of defamatory content"
 			},
@@ -297,7 +297,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced controversial information about living persons",
 				summary: "Caution: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam2": {
+			"uw-defamatory2": {
 				label: "Addition of defamatory content",
 				summary: "Caution: Addition of defamatory content"
 			},
@@ -455,7 +455,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced controversial/defamatory information about living persons",
 				summary: "Warning: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam3": {
+			"uw-defamatory3": {
 				label: "Addition of defamatory content",
 				summary: "Warning: Addition of defamatory content"
 			},
@@ -605,7 +605,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced defamatory information about living persons",
 				summary: "Final warning: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam4": {
+			"uw-defamatory4": {
 				label: "Addition of defamatory content",
 				summary: "Final warning: Addition of defamatory content"
 			},
@@ -739,7 +739,7 @@ Twinkle.warn.messages = {
 				label: "Adding unreferenced defamatory information about living persons",
 				summary: "Only warning: Adding unreferenced controversial information about living persons"
 			},
-			"uw-defam4im": {
+			"uw-defamatory4im": {
 				label: "Addition of defamatory content",
 				summary: "Only warning: Addition of defamatory content"
 			},
@@ -798,19 +798,10 @@ Twinkle.warn.messages = {
 		}*/
 	},
 
-
 	singlenotice: {
-		"uw-2redirect": {
-			label: "Creating double redirects through bad page moves",
-			summary: "Notice: Creating double redirects through bad page moves"
-		},
 		"uw-aiv": {
 			label: "Bad AIV report",
 			summary: "Notice: Bad AIV report"
-		},
-		"uw-articlesig": {
-			label: "Adding signatures to article space",
-			summary: "Notice: Adding signatures to article space"
 		},
 		"uw-autobiography": {
 			label: "Creating autobiographies",
@@ -846,10 +837,6 @@ Twinkle.warn.messages = {
 			label: "Adding speculative or unconfirmed information",
 			summary: "Notice: Adding speculative or unconfirmed information"
 		},
-		"uw-csd": {
-			label: "Speedy deletion declined",
-			summary: "Notice: Speedy deletion declined"
-		},
 		"uw-c&pmove": {
 			label: "Cut and paste moves",
 			summary: "Notice: Cut and paste moves"
@@ -866,10 +853,6 @@ Twinkle.warn.messages = {
 			label: "Removing proper sources containing dead links",
 			summary: "Notice: Removing proper sources containing dead links"
 		},
-		"uw-directcat": {
-			label: "Applying stub categories manually",
-			summary: "Notice: Applying stub categories manually"
-		},
 		"uw-draftfirst": {
 			label: "User should draft in userspace without the risk of speedy deletion",
 			summary: "Notice: Consider drafting your article in [[Help:Userspace draft|userspace]]"
@@ -882,21 +865,9 @@ Twinkle.warn.messages = {
 			label: "Not communicating in English",
 			summary: "Notice: Not communicating in English"
 		},
-		"uw-fuir": {
-			label: "Fair use image has been removed from your userpage",
-			summary: "Notice: A fair use image has been removed from your userpage"
-		},
 		"uw-hasty": {
 			label: "Hasty addition of speedy deletion tags",
 			summary: "Notice: Allow creators time to improve their articles before tagging them for deletion"
-		},
-		"uw-imageuse": {
-			label: "Incorrect image linking",
-			summary: "Notice: Incorrect image linking"
-		},
-		"uw-incompleteAFD": {
-			label: "Incomplete AFD",
-			summary: "Notice: Incomplete AFD"
 		},
 		"uw-inline-el": {
 			label: "Adding external links to the body of an article",
@@ -919,33 +890,13 @@ Twinkle.warn.messages = {
 			label: "Incorrect use of minor edits check box",
 			summary: "Notice: Incorrect use of minor edits check box"
 		},
-		"uw-nonfree": {
-			label: "Uploading replaceable non-free images",
-			summary: "Notice: Uploading replaceable non-free images"
-		},
-		"uw-notaiv": {
-			label: "Do not report complex abuse to AIV",
-			summary: "Notice: Do not report complex abuse to AIV"
-		},
 		"uw-notenglish": {
 			label: "Creating non-English articles",
 			summary: "Notice: Creating non-English articles"
 		},
-		"uw-notifysd": {
-			label: "Notify authors of speedy deletion tagged articles",
-			summary: "Notice: Please notify authors of articles tagged for speedy deletion"
-		},
-		"uw-notvand": {
-			label: "Mislabelling edits as vandalism",
-			summary: "Notice: Misidentifying edits as vandalism"
-		},
 		"uw-notvote": {
 			label: "We use consensus, not voting",
 			summary: "Notice: We use consensus, not voting"
-		},
-		"uw-patrolled": {
-			label: "Mark newpages as patrolled when patrolling",
-			summary: "Notice: Mark newpages as patrolled when patrolling"
 		},
 		"uw-plagiarism": {
 			label: "Copying from public domain sources without attribution",
@@ -955,29 +906,9 @@ Twinkle.warn.messages = {
 			label: "Use preview button to avoid mistakes",
 			summary: "Notice: Use preview button to avoid mistakes"
 		},
-		"uw-probation": {
-			label: "Article is on probation",
-			summary: "Notice: Article is on probation"
-		},
 		"uw-redlink": {
 			label: "Indiscriminate removal of redlinks",
 			summary: "Notice: Be careful when removing redlinks"
-		},
-		"uw-refimprove": {
-			label: "Creating unverifiable articles",
-			summary: "Notice: Creating unverifiable articles"
-		},
-		"uw-removevandalism": {
-			label: "Incorrect vandalism removal",
-			summary: "Notice: Incorrect vandalism removal"
-		},
-		"uw-repost": {
-			label: "Recreating material previously deleted via XfD process",
-			summary: "Notice: Recreating previously deleted material"
-		},
-		"uw-samename": {
-			label: "Rename request impossible",
-			summary: "Notice: Rename request impossible"
 		},
 		"uw-selfrevert": {
 			label: "Reverting self tests",
@@ -1011,25 +942,9 @@ Twinkle.warn.messages = {
 			label: "Posting at the top of talk pages",
 			summary: "Notice: Posting at the top of talk pages"
 		},
-		"uw-uaa": {
-			label: "Reporting of username to WP:UAA not accepted",
-			summary: "Notice: Reporting of username to WP:UAA not accepted"
-		},
-		"uw-upincat": {
-			label: "Accidentally including user page/subpage in a content category",
-			summary: "Notice: Informing user that one of his/her pages had accidentally been included in a content category"
-		},
-		"uw-uploadfirst": {
-			label: "Attempting to display an external image on a page",
-			summary: "Notice: Attempting to display an external image on a page"
-		},
 		"uw-userspace draft finish": {
 			label: "Stale userspace draft",
 			summary: "Notice: Stale userspace draft"
-		},
-		"uw-userspacenoindex": {
-			label: "User page/subpage isn't appropriate for search engine indexing",
-			summary: "Notice: User (sub)page isn't appropriate for search engine indexing"
 		},
 		"uw-vgscope": {
 			label: "Adding video game walkthroughs, cheats or instructions",
@@ -1112,10 +1027,6 @@ Twinkle.warn.messages = {
 		"uw-login": {
 			label: "Editing while logged out",
 			summary: "Warning: Editing while logged out"
-		},
-		"uw-longterm": {
-			label: "Long term pattern of vandalism",
-			summary: "Warning: Long term pattern of vandalism"
 		},
 		"uw-multipleIPs": {
 			label: "Usage of multiple IPs",
@@ -1394,7 +1305,7 @@ Twinkle.warn.callbacks = {
 
 		if ( Twinkle.getPref('showSharedIPNotice') && Morebits.isIPAddress( mw.config.get('wgTitle') ) ) {
 			Morebits.status.info( 'Info', 'Adding a shared IP notice' );
-			text +=  "\n{{subst:SharedIPAdvice}}";
+			text +=  "\n{{subst:Shared IP advice}}";
 		}
 
 		// build the edit summary
@@ -1445,6 +1356,7 @@ Twinkle.warn.callbacks = {
 };
 
 Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
+	var userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
 	// First, check to make sure a reason was filled in if uw-username was selected
 
@@ -1468,10 +1380,10 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( e.target );
 
-	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.redirect = userTalkPage;
 	Morebits.wiki.actionCompleted.notice = "Warning complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'User talk page modification' );
+	var wikipedia_page = new Morebits.wiki.page( userTalkPage, 'User talk page modification' );
 	wikipedia_page.setCallbackParameters( params );
 	wikipedia_page.setFollowRedirect( true );
 	wikipedia_page.load( Twinkle.warn.callbacks.main );
