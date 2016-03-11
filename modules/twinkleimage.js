@@ -1,3 +1,9 @@
+//<nowiki>
+
+
+(function($){
+
+
 /*
  ****************************************
  *** twinkleimage.js: Image CSD module
@@ -8,19 +14,22 @@
  */
 
 Twinkle.image = function twinkleimage() {
-	if( wgNamespaceNumber === 6 && !document.getElementById("mw-sharedupload") && document.getElementById("mw-imagepage-section-filehistory")) {
-		twAddPortletLink( (twinkleUserAuthorized ? "javascript:Twinkle.image.callback()" : 'javascript:alert("Your account is too new to use Twinkle.");'), "DI", "tw-di", "Nominate file for relative speedy deletion", "");
+	if (mw.config.get('wgNamespaceNumber') === 6 &&
+			!document.getElementById("mw-sharedupload") &&
+			document.getElementById("mw-imagepage-section-filehistory")) {
+
+		Twinkle.addPortletLink(Twinkle.image.callback, "DI", "tw-di", "Nominate file for delayed speedy deletion");
 	}
-}
+};
 
 Twinkle.image.callback = function twinkleimageCallback() {
-	var Window = new SimpleWindow( 600, 300 );
+	var Window = new Morebits.simpleWindow( 600, 330 );
 	Window.setTitle( "File for dated speedy deletion" );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Speedy deletion policy", "WP:CSD" );
 	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#image" );
 
-	var form = new QuickForm( Twinkle.image.callback.evaluate );
+	var form = new Morebits.quickForm( Twinkle.image.callback.evaluate );
 	form.append( {
 			type: 'checkbox',
 			list: [
@@ -80,7 +89,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 					tooltip: 'Image or media may fail Wikipedia\'s first non-free content criterion ([[WP:NFCC#1]]) in that it illustrates a subject for which a free image might reasonably be found or created that adequately provides the same information'
 				},
 				{
-					label: 'No permission (CSD F11)',
+					label: 'No evidence of permission (CSD F11)',
 					value: 'no permission',
 					tooltip: 'Image or media does not have proof that the author agreed to licence the file'
 				}
@@ -101,12 +110,12 @@ Twinkle.image.callback = function twinkleimageCallback() {
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
 	result.type[0].dispatchEvent( evt );
-}
+};
 
 Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 	var value = event.target.values;
 	var root = event.target.form;
-	var work_area = new QuickForm.element( {
+	var work_area = new Morebits.quickForm.element( {
 			type: 'div',
 			name: 'work_area'
 		} );
@@ -120,7 +129,19 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 					list: [
 						{
 							label: 'Non-free',
-							tooltip: 'Image is licensed under a fair use claim'
+							tooltip: 'File is licensed under a fair use claim'
+						}
+					]
+				} );
+		/* falls through */
+		case 'no license':
+			work_area.append( {
+					type: 'checkbox',
+					name: 'derivative',
+					list: [
+						{
+							label: 'Derivative work which lacks a source for incorporated works',
+							tooltip: 'File is a derivative of one or more other works whose source is not specified'
 						}
 					]
 				} );
@@ -148,66 +169,90 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 			break;
 		case 'replaceable fair use':
 			work_area.append( {
-					type: 'checkbox',
-					name: 'old_image',
-					list: [
-						{
-							label: 'Old image',
-							tooltip: 'Image was uploaded before 2006-07-13'
-						}
-					]
+					type: 'textarea',
+					name: 'reason',
+					label: 'Reason: '
 				} );
 			break;
 		default:
 			break;
-	};
+	}
 
 	root.replaceChild( work_area.render(), $(root).find('div[name="work_area"]')[0] );
-}
+};
 
 Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
-	wgPageName = wgPageName.replace( /_/g, ' ' ); // for queen/king/whatever and country!
+	var type, non_free, source, reason, replacement, derivative;
 
 	var notify = event.target.notify.checked;
 	var types = event.target.type;
 	for( var i = 0; i < types.length; ++i ) {
 		if( types[i].checked ) {
-			var type = types[i].value;
+			type = types[i].values;
 			break;
 		}
 	}
 	if( event.target.non_free ) {
-		var non_free = event.target.non_free.checked;
+		non_free = event.target.non_free.checked;
 	}
 	if( event.target.source ) {
-		var source = event.target.source.value;
+		source = event.target.source.value;
 	}
 	if( event.target.reason ) {
-		var reason = event.target.reason.value;
+		reason = event.target.reason.value;
 	}
 	if( event.target.replacement ) {
-		var replacement = event.target.replacement.value;
+		replacement = event.target.replacement.value;
 	}
-	if( event.target.old_image ) {
-		var old_image = event.target.old_image.checked;
+	if( event.target.derivative ) {
+		derivative = event.target.derivative.checked;
 	}
+
+	var csdcrit;
+	switch( type ) {
+		case 'no source no license':
+		case 'no source':
+		case 'no license':
+			csdcrit = "F4";
+			break;
+		case 'orphaned fair use':
+			csdcrit = "F5";
+			break;
+		case 'no fair use rationale':
+			csdcrit = "F6";
+			break;
+		case 'disputed fair use rationale':
+		case 'replaceable fair use':
+			csdcrit = "F7";
+			break;
+		case 'no permission':
+			csdcrit = "F11";
+			break;
+		default:
+			throw new Error( "Twinkle.image.callback.evaluate: unknown criterion" );
+	}
+
+	var lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit.toLowerCase()) === -1;
+	var templatename = (derivative ? ('dw ' + type) : type);
 
 	var params = {
-		type: type,
-		non_free: non_free,
-		source: source,
-		reason: reason,
-		replacement: replacement,
-		old_image: old_image
+		'type': type,
+		'templatename': templatename,
+		'normalized': csdcrit,
+		'non_free': non_free,
+		'source': source,
+		'reason': reason,
+		'replacement': replacement,
+		'lognomination': lognomination
 	};
-	SimpleWindow.setButtonsEnabled( false );
-	Status.init( event.target );
+	Morebits.simpleWindow.setButtonsEnabled( false );
+	Morebits.status.init( event.target );
 
-	Wikipedia.actionCompleted.redirect = wgPageName;
-	Wikipedia.actionCompleted.notice = "Tagging complete";
+	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.notice = "Tagging complete";
 
 	// Tagging image
-	var wikipedia_page = new Wikipedia.page( wgPageName, 'Tagging file with deletion tag' );
+	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'Tagging file with deletion tag' );
 	wikipedia_page.setCallbackParameters( params );
 	wikipedia_page.load( Twinkle.image.callbacks.taggingImage );
 
@@ -215,55 +260,51 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	if( notify ) {
 		wikipedia_page.lookupCreator(Twinkle.image.callbacks.userNotification);
 	} else {
-		// No auto-notifiaction, display what was going to be added.
+		// add to CSD log if desired
+		if (lognomination) {
+			params.fromDI = true;
+			Twinkle.speedy.callbacks.user.addToLog(params, null);
+		}
+		// No auto-notification, display what was going to be added.
 		var noteData = document.createElement( 'pre' );
-		noteData.appendChild( document.createTextNode( "\{\{subst:di-" + type + "-notice|1=" + wgTitle + "\}\} \~\~\~\~" ) );
-		Status.info( 'Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement( 'br' ),  noteData ] );
+		noteData.appendChild( document.createTextNode( "{{subst:di-" + templatename + "-notice|1=" + mw.config.get('wgTitle') + "}} ~~~~" ) );
+		Morebits.status.info( 'Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement( 'br' ),  noteData ] );
 	}
-}
+};
 
 Twinkle.image.callbacks = {
 	taggingImage: function(pageobj) {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
 
-		var tag = "\{\{di-" + params.type + "|date=\{\{subst:#time:j F Y\}\}";
-		var csdcrit = "";
+		// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
+		text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
+
+		var tag = "{{di-" + params.templatename + "|date={{subst:#time:j F Y}}";
 		switch( params.type ) {
 			case 'no source no license':
 			case 'no source':
 				tag += params.non_free ? "|non-free=yes" : "";
-				csdcrit = "F4";
 				break;
 			case 'no permission':
 				tag += params.source ? "|source=" + params.source : "";
-				csdcrit = "F11";
 				break;
 			case 'disputed fair use rationale':
 				tag += params.reason ? "|concern=" + params.reason : "";
-				csdcrit = "F7";
 				break;
 			case 'orphaned fair use':
 				tag += params.replacement ? "|replacement=" + params.replacement : "";
-				csdcrit = "F5";
 				break;
 			case 'replaceable fair use':
-				tag += params.old_image ? "|old image=yes" : "";
-				csdcrit = "F7";
-				break;
-			case 'no license':
-				csdcrit = "F4";
-				break;
-			case 'no fair use rationale':
-				csdcrit = "F6";
+				tag += params.reason ? "|1=" + params.reason : "";
 				break;
 			default:
-				break;
-		};
-		tag += "\}\}\n";
+				break;  // doesn't matter
+		}
+		tag += "}}\n";
 
 		pageobj.setPageText(tag + text);
-		pageobj.setEditSummary("This file is up for deletion, per [[WP:CSD#" + csdcrit + "|CSD " + csdcrit + "]] (" + params.type + ")." + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary("This file is up for deletion, per [[WP:CSD#" + params.normalized + "|CSD " + params.normalized + "]] (" + params.type + ")." + Twinkle.getPref('summaryAd'));
 		switch (Twinkle.getPref('deliWatchPage')) {
 			case 'yes':
 				pageobj.setWatchlist(true);
@@ -281,23 +322,43 @@ Twinkle.image.callbacks = {
 	userNotification: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
 		var initialContrib = pageobj.getCreator();
-		var usertalkpage = new Wikipedia.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-		var notifytext = "\n\{\{subst:di-" + params.type + "-notice|1=" + wgTitle + "\}\} \~\~\~\~";
-		usertalkpage.setAppendText(notifytext);
-		usertalkpage.setEditSummary("Notification: tagging for deletion of [[" + wgPageName + "]]." + Twinkle.getPref('summaryAd'));
-		usertalkpage.setCreateOption('recreate');
-		switch (Twinkle.getPref('deliWatchUser')) {
-			case 'yes':
-				usertalkpage.setWatchlist(true);
-				break;
-			case 'no':
-				usertalkpage.setWatchlistFromPreferences(false);
-				break;
-			default:
-				usertalkpage.setWatchlistFromPreferences(true);
-				break;
+
+		// disallow warning yourself
+		if (initialContrib === mw.config.get('wgUserName')) {
+			pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
+		} else {
+			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
+			var notifytext = "\n{{subst:di-" + params.templatename + "-notice|1=" + mw.config.get('wgTitle');
+			if (params.type === 'no permission') {
+				notifytext += params.source ? "|source=" + params.source : "";
+			}
+			notifytext += "}} ~~~~";
+			usertalkpage.setAppendText(notifytext);
+			usertalkpage.setEditSummary("Notification: tagging for deletion of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			usertalkpage.setCreateOption('recreate');
+			switch (Twinkle.getPref('deliWatchUser')) {
+				case 'yes':
+					usertalkpage.setWatchlist(true);
+					break;
+				case 'no':
+					usertalkpage.setWatchlistFromPreferences(false);
+					break;
+				default:
+					usertalkpage.setWatchlistFromPreferences(true);
+					break;
+			}
+			usertalkpage.setFollowRedirect(true);
+			usertalkpage.append();
 		}
-		usertalkpage.setFollowRedirect(true);
-		usertalkpage.append();
+
+		// add this nomination to the user's userspace log, if the user has enabled it
+		if (params.lognomination) {
+			params.fromDI = true;
+			Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
+		}
 	}
-}
+};
+})(jQuery);
+
+
+//</nowiki>
