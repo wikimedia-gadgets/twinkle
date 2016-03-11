@@ -19,7 +19,7 @@
  *   - Morebits.quickForm tooltips rely on Tipsy (ResourceLoader module name 'jquery.tipsy').
  *     For external installations, Tipsy is available at [http://onehackoranother.com/projects/jquery/tipsy].
  *   - To create a gadget based on morebits.js, use this syntax in MediaWiki:Gadgets-definition:
- *       * GadgetName[ResourceLoader|dependencies=mediawiki.util,jquery.ui.dialog,jquery.tipsy]|morebits.js|morebits.css|GadgetName.js
+ *       * GadgetName[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.RegExp,jquery.ui.dialog,jquery.tipsy]|morebits.js|morebits.css|GadgetName.js
  *
  * Most of the stuff here doesn't work on IE < 9.  It is your script's responsibility to enforce this.
  *
@@ -118,7 +118,7 @@ Morebits.sanitizeIPv6 = function ( address ) {
 
 /**
  * **************** Morebits.quickForm ****************
- * Morebits.quickForm is a class for creation of simple and standard forms without much 
+ * Morebits.quickForm is a class for creation of simple and standard forms without much
  * specific coding.
  *
  * Index to Morebits.quickForm element types:
@@ -457,7 +457,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label: 'more',
 				disabled: min >= max,
 				event: function(e) {
-					var area = e.target.area;
 					var new_node =  new Morebits.quickForm.element( e.target.sublist );
 					e.target.area.appendChild( new_node.render() );
 
@@ -645,7 +644,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 		childContainder.setAttribute( 'style', data.style );
 	}
 	if( data.className ) {
-		childContainder.className = ( childContainder.className ? 
+		childContainder.className = ( childContainder.className ?
 			childContainder.className + " " + data.className :
 			data.className );
 	}
@@ -664,7 +663,7 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 		}).appendTo(node).tipsy({
 			'fallback': data.tooltip,
 			'fade': true,
-			'gravity': (data.type === "input" || data.type === "select") ? 
+			'gravity': (data.type === "input" || data.type === "select") ?
 				Morebits.quickForm.element.autoNWSW : $.fn.tipsy.autoWE,
 			'html': true,
 			'delayOut': 250
@@ -809,7 +808,7 @@ Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementToo
 /**
  * **************** HTMLFormElement ****************
  *
- * getChecked: 
+ * getChecked:
  *   XXX Doesn't seem to work reliably across all browsers at the moment. -- see getChecked2 in twinkleunlink.js, which is better
  *
  *   Returns an array containing the values of elements with the given name, that has it's
@@ -871,7 +870,7 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
  */
 
 RegExp.escape = function( text, space_fix ) {
-	text = $.escapeRE(text);
+	text = mw.RegExp.escape(text);
 
 	// Special MediaWiki escape - underscore/space are often equivalent
 	if( space_fix ) {
@@ -1044,7 +1043,11 @@ Morebits.string = {
 	},
 	// for deletion/other templates taking a freeform "reason" from a textarea (e.g. PROD, XFD, RPP)
 	formatReasonText: function( str ) {
-		return str.toString().trimRight().replace(/\|/g, "{{subst:!}}");
+		var result = str.toString().trimRight();
+		var unbinder = new Morebits.unbinder(result);
+		unbinder.unbind("<no" + "wiki>", "</no" + "wiki>");
+		unbinder.content = unbinder.content.replace(/\|/g, "{{subst:!}}");
+		return unbinder.rebind();
 	}
 };
 
@@ -1162,7 +1165,7 @@ Morebits.unbinder.prototype = {
 };
 
 Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
-	return function UnbinderCallback( match , a , b ) {
+	return function UnbinderCallback( match ) {
 		var current = self.prefix + self.counter + self.postfix;
 		self.history[current] = match;
 		++self.counter;
@@ -1322,7 +1325,7 @@ Morebits.wiki.isPageRedirect = function wikipediaIsPageRedirect() {
  * Use of Morebits.wiki.actionCompleted():
  *    Every call to Morebits.wiki.api.post() results in the dispatch of
  *    an asynchronous callback. Each callback can in turn
- *    make an additional call to Morebits.wiki.api.post() to continue a 
+ *    make an additional call to Morebits.wiki.api.post() to continue a
  *    processing sequence. At the conclusion of the final callback
  *    of a processing sequence, it is not possible to simply return to the
  *    original caller because there is no call stack leading back to
@@ -1333,7 +1336,7 @@ Morebits.wiki.isPageRedirect = function wikipediaIsPageRedirect() {
  *    The determination of when to call Morebits.wiki.actionCompleted.event()
  *    is managed through the globals Morebits.wiki.numberOfActionsLeft and
  *    Morebits.wiki.nbrOfCheckpointsLeft. Morebits.wiki.numberOfActionsLeft is
- *    incremented at the start of every Morebits.wiki.api call and decremented 
+ *    incremented at the start of every Morebits.wiki.api call and decremented
  *    after the completion of a callback function. If a callback function
  *    does not create a new Morebits.wiki.api object before exiting, it is the
  *    final step in the processing chain and Morebits.wiki.actionCompleted.event()
@@ -1342,7 +1345,7 @@ Morebits.wiki.isPageRedirect = function wikipediaIsPageRedirect() {
  *    Optionally, callers may use Morebits.wiki.addCheckpoint() to indicate that
  *    processing is not complete upon the conclusion of the final callback function.
  *    This is used for batch operations. The end of a batch is signaled by calling
- *    Morebits.wiki.removeCheckpoint(). 
+ *    Morebits.wiki.removeCheckpoint().
  */
 
 Morebits.wiki.numberOfActionsLeft = 0;
@@ -1399,6 +1402,7 @@ Morebits.wiki.api = function( currentAction, query, onSuccess, statusElement, on
 	this.currentAction = currentAction;
 	this.query = query;
 	this.query.format = 'xml';
+	this.query.assert = 'user';
 	this.onSuccess = onSuccess;
 	this.onError = onError;
 	if( statusElement ) {
@@ -1477,7 +1481,11 @@ Morebits.wiki.api.prototype = {
 	},
 
 	returnError: function() {
-		this.statelem.error( this.errorText );
+		if ( this.errorCode === "badtoken" ) {
+			this.statelem.error( "Invalid token. Refresh the page and try again" );
+		} else {
+			this.statelem.error( this.errorText );
+		}
 
 		// invoke failure callback if one was supplied
 		if (this.onError) {
@@ -1542,15 +1550,13 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  * load(onSuccess, onFailure): Loads the text for the page
  *    onSuccess - callback function which is called when the load has succeeded
  *    onFailure - callback function which is called when the load fails (optional)
- *                XXX onFailure for load() is not yet implemented – do we need it? -- UncleDouggie
- *                    probably not -- TTO
  *
  * save(onSuccess, onFailure): Saves the text for the page. Must be preceded by calling load().
  *    onSuccess - callback function which is called when the save has succeeded (optional)
  *    onFailure - callback function which is called when the save fails (optional)
  *    Warning: Calling save() can result in additional calls to the previous load() callbacks to
- *             recover from edit conflicts! 
- *             In this case, callers must make the same edit to the new pageText and reinvoke save(). 
+ *             recover from edit conflicts!
+ *             In this case, callers must make the same edit to the new pageText and reinvoke save().
  *             This behavior can be disabled with setMaxConflictRetries(0).
  *
  * append(onSuccess, onFailure): Adds the text provided via setAppendText() to the end of the page.
@@ -1567,24 +1573,24 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  *
  * getPageText(): returns a string containing the text of the page after a successful load()
  *
- * setPageText(pageText) 
+ * setPageText(pageText)
  *    pageText - string containing the updated page text that will be saved when save() is called
  *
- * setAppendText(appendText) 
+ * setAppendText(appendText)
  *    appendText - string containing the text that will be appended to the page when append() is called
  *
- * setPrependText(prependText) 
+ * setPrependText(prependText)
  *    prependText - string containing the text that will be prepended to the page when prepend() is called
  *
  * setEditSummary(summary)
  *    summary - string containing the text of the edit summary that will be used when save() is called
  *
- * setMinorEdit(minorEdit) 
+ * setMinorEdit(minorEdit)
  *    minorEdit is a boolean value:
  *       true  - When save is called, the resulting edit will be marked as "minor".
  *       false - When save is called, the resulting edit will not be marked as "minor". (default)
  *
- * setBotEdit(botEdit) 
+ * setBotEdit(botEdit)
  *    botEdit is a boolean value:
  *       true  - When save is called, the resulting edit will be marked as "bot".
  *       false - When save is called, the resulting edit will not be marked as "bot". (default)
@@ -1617,7 +1623,7 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  * setFollowRedirect(followRedirect)
  *    followRedirect is a boolean value:
  *       true  - a maximum of one redirect will be followed.
- *               In the event of a redirect, a message is displayed to the user and 
+ *               In the event of a redirect, a message is displayed to the user and
  *               the redirect target can be retrieved with getPageName().
  *       false - the requested pageName will be used without regard to any redirect. (default)
  *
@@ -1628,7 +1634,7 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  *
  * setWatchlistFromPreferences(watchlistOption)
  *    watchlistOption is a boolean value:
- *       true  - page watchlist status will be set based on the user's 
+ *       true  - page watchlist status will be set based on the user's
  *               preference settings when save() is called
  *       false - watchlist status of the page will not be changed (default)
  *
@@ -1656,7 +1662,7 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  * lookupCreator(onSuccess): Retrieves the username of the user who created the page
  *    onSuccess - callback function which is called when the username is found
  *                within the callback, the username can be retrieved using the getCreator() function
- * 
+ *
  * getCreator(): returns the user who created the page following lookupCreator()
  *
  * getCurrentID(): returns a string containing the current revision ID of the page
@@ -1673,25 +1679,25 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  * Call sequence for common operations (optional final user callbacks not shown):
  *
  *    Edit current contents of a page (no edit conflict):
- *       .load(userTextEditCallback) -> ctx.loadApi.post() -> ctx.loadApi.post.success() -> 
- *             ctx.fnLoadSuccess() -> userTextEditCallback() -> .save() -> 
+ *       .load(userTextEditCallback) -> ctx.loadApi.post() -> ctx.loadApi.post.success() ->
+ *             ctx.fnLoadSuccess() -> userTextEditCallback() -> .save() ->
  *             ctx.saveApi.post() -> ctx.loadApi.post.success() -> ctx.fnSaveSuccess()
  *
  *    Edit current contents of a page (with edit conflict):
- *       .load(userTextEditCallback) -> ctx.loadApi.post() -> ctx.loadApi.post.success() -> 
- *             ctx.fnLoadSuccess() -> userTextEditCallback() -> .save() -> 
+ *       .load(userTextEditCallback) -> ctx.loadApi.post() -> ctx.loadApi.post.success() ->
+ *             ctx.fnLoadSuccess() -> userTextEditCallback() -> .save() ->
  *             ctx.saveApi.post() -> ctx.loadApi.post.success() -> ctx.fnSaveError() ->
- *             ctx.loadApi.post() -> ctx.loadApi.post.success() -> 
- *             ctx.fnLoadSuccess() -> userTextEditCallback() -> .save() -> 
+ *             ctx.loadApi.post() -> ctx.loadApi.post.success() ->
+ *             ctx.fnLoadSuccess() -> userTextEditCallback() -> .save() ->
  *             ctx.saveApi.post() -> ctx.loadApi.post.success() -> ctx.fnSaveSuccess()
  *
  *    Append to a page (similar for prepend):
- *       .append() -> ctx.loadApi.post() -> ctx.loadApi.post.success() -> 
- *             ctx.fnLoadSuccess() -> ctx.fnAutoSave() -> .save() -> 
+ *       .append() -> ctx.loadApi.post() -> ctx.loadApi.post.success() ->
+ *             ctx.fnLoadSuccess() -> ctx.fnAutoSave() -> .save() ->
  *             ctx.saveApi.post() -> ctx.loadApi.post.success() -> ctx.fnSaveSuccess()
  *
- *    Notes: 
- *       1. All functions following Morebits.wiki.api.post() are invoked asynchronously 
+ *    Notes:
+ *       1. All functions following Morebits.wiki.api.post() are invoked asynchronously
  *          from the jQuery AJAX library.
  *       2. The sequence for append/prepend could be slightly shortened, but it would require
  *          significant duplication of code for little benefit.
@@ -1999,7 +2005,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		// shouldn't happen if canUseMwUserToken === true
-		if (ctx.fullyProtected && !ctx.suppressProtectWarning && 
+		if (ctx.fullyProtected && !ctx.suppressProtectWarning &&
 			!confirm('You are about to make an edit to the fully protected page "' + ctx.pageName +
 			(ctx.fullyProtected === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + ctx.fullyProtected + ')')) +
 			'.  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.')) {
@@ -2322,7 +2328,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * @param {string} action  The action being undertaken, e.g. "edit", "delete".
 	 */
 	var fnCanUseMwUserToken = function(action) {
-		// API-based redirect resolution only works for action=query and 
+		// API-based redirect resolution only works for action=query and
 		// action=edit in append/prepend modes (and section=new, but we don't
 		// really support that)
 		if (ctx.followRedirect && (action !== 'edit' ||
@@ -2596,7 +2602,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		// extract protection info
 		if (Morebits.userIsInGroup('sysop')) {
 			var editprot = $(xml).find('pr[type="edit"]');
-			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning && 
+			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
 				!confirm('You are about to move the fully protected page "' + ctx.pageName +
 				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
 				'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
@@ -2710,12 +2716,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			}
 
 		} else if ( errorCode === "missingtitle" ) {
-		
+
 			ctx.statusElement.error("Cannot delete the page, because it no longer exists");
 			if (ctx.onDeleteFailure) {
 				ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
 			}
-			
+
 		// hard error, give up
 		} else {
 
@@ -2857,6 +2863,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
  * beginRender(wikitext): Displays the preview box, and begins an asynchronous attempt
  *                        to render the specified wikitext.
  *    wikitext - wikitext to render; most things should work, including subst: and ~~~~
+ *    pageTitle - optional parameter for the page this should be rendered as being on
  *
  * closePreview(): Hides the preview box and clears it.
  *
@@ -2870,7 +2877,7 @@ Morebits.wiki.preview = function(previewbox) {
 	this.previewbox = previewbox;
 	$(previewbox).addClass("morebits-previewbox").hide();
 
-	this.beginRender = function(wikitext) {
+	this.beginRender = function(wikitext, pageTitle) {
 		$(previewbox).show();
 
 		var statusspan = document.createElement('span');
@@ -2882,7 +2889,7 @@ Morebits.wiki.preview = function(previewbox) {
 			prop: 'text',
 			pst: 'true',  // PST = pre-save transform; this makes substitution work properly
 			text: wikitext,
-			title: mw.config.get('wgPageName')
+			title: pageTitle || mw.config.get('wgPageName')
 		};
 		var renderApi = new Morebits.wiki.api("loading...", query, fnRenderSuccess, new Morebits.status("Preview"));
 		renderApi.post();
@@ -2896,6 +2903,7 @@ Morebits.wiki.preview = function(previewbox) {
 			return;
 		}
 		previewbox.innerHTML = html;
+		$(previewbox).find("a").attr("target", "_blank");
 	};
 
 	this.closePreview = function() {
@@ -3113,7 +3121,7 @@ Morebits.wikitext.page.prototype = {
  * Morebits.queryString.toString()
  *     returns the query string as a string
  * Morebits.queryString.create( hash )
- *     creates an querystring and encodes strings via encodeURIComponent and joins arrays with | 
+ *     creates an querystring and encodes strings via encodeURIComponent and joins arrays with |
  *
  * In static context, the value of location.search.substring(1), else the value given to the constructor is going to be used. The mapped hash is saved in the object.
  *
@@ -3388,11 +3396,11 @@ Morebits.htmlNode = function ( type, content, color ) {
 /**
  * **************** Morebits.checkboxClickHandler() ****************
  * shift-click-support for checkboxes
- * wikibits version (window.addCheckboxClickHandlers) has some restrictions, and doesn't work with checkboxes inside a sortable table, so let's build our own.
+ * wikibits version (window.addCheckboxClickHandlers) has some restrictions, and
+ * doesn't work with checkboxes inside a sortable table, so let's build our own.
  */
 
-Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext)
-{
+Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 	var lastCheckbox = null;
 
 	function clickHandler(event) {
@@ -3426,10 +3434,194 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext)
 		}
 		lastCheckbox = cb;
 		return true;
-	};
+	}
 
   $(jQuerySelector, jQueryContext).click(clickHandler);
 };
+
+
+
+/** **************** Morebits.batchOperation ****************
+ * Iterates over a group of pages and executes a worker function for each.
+ *
+ * Constructor: Morebits.batchOperation(currentAction)
+ *
+ * setPageList(wikitext): Sets the list of pages to work on.
+ *    It should be an array of page names (strings).
+ *
+ * setOption(optionName, optionValue): Sets a known option:
+ *    - chunkSize (integer): the size of chunks to break the array into (default 50).
+ *                           Setting this to a small value (<5) can cause problems.
+ *    - preserveIndividualStatusLines (boolean): keep each page's status element visible
+ *                                               when worker is complete?  See note below
+ *
+ * run(worker): Runs the given callback for each page in the list.
+ *    The callback must call workerSuccess when succeeding, or workerFailure
+ *    when failing.  If using Morebits.wiki.api or Morebits.wiki.page, this is easily
+ *    done by passing these two functions as parameters to the methods on those
+ *    objects, for instance, page.save(batchOp.workerSuccess, batchOp.workerFailure).
+ *    Make sure the methods are called directly if special success/failure cases arise.
+ *    If you omit to call these methods, the batch operation will stall after the first
+ *    chunk!  Also ensure that either workerSuccess or workerFailure is called no more
+ *    than once.
+ *
+ * If using preserveIndividualStatusLines, you should try to ensure that the
+ * workerSuccess callback has access to the page title.  This is no problem for
+ * Morebits.wiki.page objects.  But when using the API, please set the
+ * |pageName| property on the Morebits.wiki.api object.
+ *
+ * There are sample batchOperation implementations using Morebits.wiki.page in
+ * twinklebatchdelete.js, and using Morebits.wiki.api in twinklebatchundelete.js.
+ */
+
+Morebits.batchOperation = function(currentAction) {
+	var ctx = {
+		// backing fields for public properties
+		pageList: null,
+		options: {
+			chunkSize: 50,
+			preserveIndividualStatusLines: false
+		},
+
+		// internal counters, etc.
+		statusElement: new Morebits.status(currentAction || "Performing batch operation"),
+		worker: null,
+		countStarted: 0,
+		countFinished: 0,
+		countFinishedSuccess: 0,
+		currentChunkIndex: -1,
+		pageChunks: [],
+		running: false
+	};
+
+	// shouldn't be needed by external users, but provided anyway for maximum flexibility
+	this.getStatusElement = function() {
+		return ctx.statusElement;
+	};
+
+	this.setPageList = function(pageList) {
+		ctx.pageList = pageList;
+	};
+
+	this.setOption = function(optionName, optionValue) {
+		ctx.options[optionName] = optionValue;
+	};
+
+	this.run = function(worker) {
+		if (ctx.running) {
+			ctx.statusElement.error("Batch operation is already running");
+			return;
+		}
+		ctx.running = true;
+
+		ctx.worker = worker;
+		ctx.countStarted = 0;
+		ctx.countFinished = 0;
+		ctx.countFinishedSuccess = 0;
+		ctx.currentChunkIndex = -1;
+		ctx.pageChunks = [];
+
+		var total = ctx.pageList.length;
+		if (!total) {
+			ctx.statusElement.info("nothing to do");
+			ctx.running = false;
+			return;
+		}
+
+		// chunk page list into more manageable units
+		ctx.pageChunks = Morebits.array.chunk(ctx.pageList, ctx.options.chunkSize);
+
+		// start the process
+		Morebits.wiki.addCheckpoint();
+		ctx.statusElement.status("0%");
+		fnStartNewChunk();
+	};
+
+	this.workerSuccess = function(apiobj) {
+		// update or remove status line
+		if (apiobj && apiobj.getStatusElement) {
+			var statelem = apiobj.getStatusElement();
+			if (ctx.options.preserveIndividualStatusLines) {
+				if (apiobj.getPageName || apiobj.pageName || (apiobj.query && apiobj.query.title)) {
+					// we know the page title - display a relevant message
+					var pageName = apiobj.getPageName ? apiobj.getPageName() :
+						(apiobj.pageName || apiobj.query.title);
+					var link = document.createElement('a');
+					link.setAttribute('href', mw.util.getUrl(pageName));
+					link.appendChild(document.createTextNode(pageName));
+					statelem.info(['completed (', link, ')']);
+				} else {
+					// we don't know the page title - just display a generic message
+					statelem.info('done');
+				}
+			} else {
+				// remove the status line from display
+				statelem.unlink();
+			}
+		}
+
+		ctx.countFinishedSuccess++;
+		fnDoneOne(apiobj);
+	};
+
+	this.workerFailure = function(apiobj) {
+		fnDoneOne(apiobj);
+	};
+
+	// private functions
+
+	var thisProxy = this;
+
+	var fnStartNewChunk = function() {
+		var chunk = ctx.pageChunks[++ctx.currentChunkIndex];
+		if (!chunk) {
+			return;  // done! yay
+		}
+
+		// start workers for the current chunk
+		ctx.countStarted += chunk.length;
+		chunk.forEach(function(page) {
+			ctx.worker(page, thisProxy);
+		});
+	};
+
+	var fnDoneOne = function() {
+		ctx.countFinished++;
+
+		// update overall status line
+		var total = ctx.pageList.length;
+		if (ctx.countFinished === total) {
+			var statusString = "Done (" + ctx.countFinishedSuccess +
+				"/" + ctx.countFinished + " actions completed successfully)";
+			if (ctx.countFinishedSuccess < ctx.countFinished) {
+				ctx.statusElement.warn(statusString);
+			} else {
+				ctx.statusElement.info(statusString);
+			}
+			Morebits.wiki.removeCheckpoint();
+			ctx.running = false;
+			return;
+		}
+
+		// just for giggles! (well, serious debugging, actually)
+		if (ctx.countFinished > total) {
+			ctx.statusElement.warn("Done (overshot by " + (ctx.countFinished - total) + ")");
+			Morebits.wiki.removeCheckpoint();
+			ctx.running = false;
+			return;
+		}
+
+		ctx.statusElement.status(parseInt(100 * ctx.countFinished / total, 10) + "%");
+
+		// start a new chunk if we're close enough to the end of the previous chunk, and
+		// we haven't already started the next one
+		if (ctx.countFinished >= (ctx.countStarted - Math.max(ctx.options.chunkSize / 10, 2)) &&
+			Math.floor(ctx.countFinished / ctx.options.chunkSize) > ctx.currentChunkIndex) {
+			fnStartNewChunk();
+		}
+	};
+};
+
 
 
 /**
@@ -3496,7 +3688,7 @@ Morebits.simpleWindow = function SimpleWindow( width, height ) {
 	var linksspan = document.createElement("span");
 	linksspan.className = "morebits-dialog-footerlinks";
 	$widget.find(".ui-dialog-buttonpane").append(buttonspan, linksspan);
-	
+
 	// resize the scrollbox with the dialog, if one is present
 	$widget.resizable("option", "alsoResize", "#" + this.content.id + " .morebits-scrollbox, #" + this.content.id);
 };
@@ -3609,7 +3801,7 @@ Morebits.simpleWindow.prototype = {
 
 		return this;
 	},
-	purgeContent: function( content ) {
+	purgeContent: function() {
 		this.buttons = [];
 		// delete all buttons in the buttonpane
 		$(this.content).dialog("widget").find(".morebits-dialog-buttons").empty();

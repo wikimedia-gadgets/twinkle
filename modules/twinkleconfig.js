@@ -8,8 +8,8 @@
  ****************************************
  *** twinkleconfig.js: Preferences module
  ****************************************
- * Mode of invocation:     Adds configuration form to Wikipedia:Twinkle/Preferences and user 
-                           subpages named "/Twinkle preferences", and adds ad box to the top of user 
+ * Mode of invocation:     Adds configuration form to Wikipedia:Twinkle/Preferences and user
+                           subpages named "/Twinkle preferences", and adds ad box to the top of user
                            subpages belonging to the currently logged-in user which end in '.js'
  * Active on:              What I just said.  Yeah.
  * Config directives in:   TwinkleConfig
@@ -219,6 +219,21 @@ Twinkle.config.sections = [
 },
 
 {
+	title: "Block user",
+	adminOnly: true,
+	preferences: [
+		// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
+		// if true, blank the talk page when issuing an indef block notice (per [[WP:UW#Indefinitely blocked users]])
+		{
+			name: "blankTalkpageOnIndefBlock",
+			label: "Blank the talk page when indefinitely blocking users",
+			helptip: "See <a href=\"" + mw.util.getUrl("WP:UW#Indefinitely blocked users") + "\">WP:UW</a> for more information.",
+			type: "boolean"
+		}
+	]
+},
+
+{
 	title: "Image deletion (DI)",
 	preferences: [
 		// TwinkleConfig.notifyUserOnDeli (boolean)
@@ -387,7 +402,6 @@ Twinkle.config.sections = [
 		{
 			name: "markSpeedyPagesAsPatrolled",
 			label: "Mark page as patrolled when tagging (if possible)",
-			helptip: "Due to technical limitations, pages are only marked as patrolled when they are reached via Special:NewPages.",
 			type: "boolean"
 		},
 
@@ -610,8 +624,7 @@ Twinkle.config.sections = [
 				"5": "Level 4im",
 				"6": "Single-issue notices",
 				"7": "Single-issue warnings",
-				"9": "Custom warnings",
-				"8": "Block (admin only)"
+				"9": "Custom warnings"
 			}
 		},
 
@@ -621,7 +634,7 @@ Twinkle.config.sections = [
 		{
 			name: "showSharedIPNotice",
 			label: "Add extra notice on shared IP talk pages",
-			helptip: "Notice used is {{SharedIPAdvice}}",
+			helptip: "Notice used is {{Shared IP advice}}",
 			type: "boolean"
 		},
 
@@ -633,15 +646,6 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 
-		// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
-		// if true, blank the talk page when issuing an indef block notice (per [[WP:UW#Indefinitely blocked users]])
-		{
-			name: "blankTalkpageOnIndefBlock",
-			label: "Blank the talk page when indefinitely blocking users",
-			helptip: "See <a href=\"" + mw.util.getUrl("WP:UW#Indefinitely blocked users") + "\">WP:UW</a> for more information.",
-			adminOnly: true,
-			type: "boolean"
-		},
 		{
 			name: "customWarningList",
 			label: "Custom warning templates to display",
@@ -649,6 +653,12 @@ Twinkle.config.sections = [
 			type: "customList",
 			customListValueTitle: "Template name (no curly brackets)",
 			customListLabelTitle: "Text to show in warning list (also used as edit summary)"
+		},
+
+		{
+			name: "markXfdPagesAsPatrolled",
+			label: "Mark page as patrolled when nominating for AFD (if possible)",
+			type: "boolean"
 		}
 	]
 },
@@ -816,16 +826,6 @@ Twinkle.config.sections = [
 		// twinklebatchundelete.js: How many pages left in the process of being completed should allow a new batch to be initialized
 		{
 			name: "batchUndeleteMinCutOff",
-			type: "integer"
-		},
-		// twinkledelimages.js: How many files should be processed at a time
-		{
-			name: "deliChunks",
-			type: "integer"
-		},
-		// twinkledelimages.js: How many files should be processed maximum
-		{
-			name: "deliMax",
 			type: "integer"
 		},
 		// twinkledeprod.js: How many pages should be processed at a time

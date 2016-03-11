@@ -47,10 +47,12 @@ Twinkle.defaultConfig.twinkle = {
 	summaryAd: " ([[WP:TW|TW]])",
 	deletionSummaryAd: " ([[WP:TW|TW]])",
 	protectionSummaryAd: " ([[WP:TW|TW]])",
-	userTalkPageMode: "window",
+	userTalkPageMode: "tab",
 	dialogLargeFont: false,
 	 // ARV
 	spiWatchReport: "yes",
+	 // Block
+	blankTalkpageOnIndefBlock: false,
 	 // Fluff (revert and rollback)
 	openTalkPage: [ "agf", "norm", "vand" ],
 	openTalkPageOnAutoRevert: false,
@@ -75,9 +77,9 @@ Twinkle.defaultConfig.twinkle = {
 	// these next two should probably be identical by default
 	notifyUserOnSpeedyDeletionNomination:    [ "db", "g1", "g2", "g3", "g4", "g6", "g10", "g11", "g12", "g13", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "u5", "t2", "t3", "p1", "p2" ],
 	welcomeUserOnSpeedyDeletionNotification: [ "db", "g1", "g2", "g3", "g4", "g6", "g10", "g11", "g12", "g13", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "u5", "t2", "t3", "p1", "p2" ],
-	promptForSpeedyDeletionSummary: [ "db", "g1", "g2", "g3", "g4", "g6", "g7", "g8", "g10", "g11", "g12", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11", "f2", "f4", "f7", "f8", "f10", "u5", "t2", "t3", "p1", "p2" ],
+	promptForSpeedyDeletionSummary: [],
 	openUserTalkPageOnSpeedyDelete: [ "db", "g1", "g2", "g3", "g4", "g5", "g10", "g11", "g12", "a1", "a3", "a7", "a9", "a10", "a11", "f3", "f7", "f9", "u3", "u5", "t2", "p1" ],
-	deleteTalkPageOnDelete: false,
+	deleteTalkPageOnDelete: true,
 	deleteRedirectsOnDelete: true,
 	deleteSysopDefaultToTag: false,
 	speedyWindowHeight: 500,
@@ -91,24 +93,19 @@ Twinkle.defaultConfig.twinkle = {
 	defaultWarningGroup: "1",
 	showSharedIPNotice: true,
 	watchWarnings: true,
-	blankTalkpageOnIndefBlock: false,
 	customWarningList: [],
 	 // XfD
 	xfdWatchDiscussion: "default",
 	xfdWatchList: "no",
 	xfdWatchPage: "default",
 	xfdWatchUser: "default",
+	markXfdPagesAsPatrolled: true,
 	 // Hidden preferences
 	revertMaxRevisions: 50,
 	batchdeleteChunks: 50,
-	batchDeleteMinCutOff: 5,
 	batchMax: 5000,
 	batchProtectChunks: 50,
-	batchProtectMinCutOff: 5,
 	batchundeleteChunks: 50,
-	batchUndeleteMinCutOff: 5,
-	deliChunks: 500,
-	deliMax: 5000,
 	proddeleteChunks: 50
 };
 
@@ -301,8 +298,9 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 	}
 	outerDiv.appendChild( h5 );
 
+	var innerDiv = null;
 	if ( type === "menu" ) {
-		var innerDiv = document.createElement( "div" );
+		innerDiv = document.createElement( "div" );
 		innerDiv.className = innerDivClass;
 		outerDiv.appendChild(innerDiv);
 	}
@@ -396,13 +394,13 @@ $.ajax({
 // For example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
 
 Twinkle.load = function () {
-	    // Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
-	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1
-	    	&& mw.config.get('wgCanonicalSpecialPageName') !== "Contributions"
-	    	&& mw.config.get('wgCanonicalSpecialPageName') !== "Prefixindex" ),
+	// Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
+	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1 &&
+		mw.config.get('wgCanonicalSpecialPageName') !== "Contributions" &&
+		mw.config.get('wgCanonicalSpecialPageName') !== "Prefixindex" ),
 
-	    // Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
-	    isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
+		// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
+		isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
 
 	// Prevent users that are not autoconfirmed from loading Twinkle as well.
 	if ( isSpecialPage || isOldIE || !Twinkle.userAuthorized ) {
@@ -416,6 +414,9 @@ Twinkle.load = function () {
 	// User/user talk-related
 	Twinkle.arv();
 	Twinkle.warn();
+	if ( Morebits.userIsInGroup('sysop') ) {
+		Twinkle.block();
+	}
 	Twinkle.welcome();
 	Twinkle.shared();
 	Twinkle.talkback();
@@ -433,7 +434,6 @@ Twinkle.load = function () {
 	Twinkle.config.init();
 	Twinkle.fluff.init();
 	if ( Morebits.userIsInGroup('sysop') ) {
-		Twinkle.delimages();
 		Twinkle.deprod();
 		Twinkle.batchdelete();
 		Twinkle.batchprotect();

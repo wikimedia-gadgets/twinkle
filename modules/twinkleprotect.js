@@ -25,8 +25,6 @@ Twinkle.protect = function twinkleprotect() {
 };
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
-	Twinkle.protect.protectionLevel = null;
-
 	var Window = new Morebits.simpleWindow( 620, 530 );
 	Window.setTitle( Morebits.userIsInGroup( 'sysop' ) ? "Apply, request or tag page protection" : "Request or tag page protection" );
 	Window.setScriptName( "Twinkle" );
@@ -89,17 +87,12 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	evt.initEvent( 'change', true, true );
 	result.actiontype[0].dispatchEvent( evt );
 
+	Morebits.wiki.actionCompleted.postfix = false;  // avoid Action: completed notice
+
 	// get current protection level asynchronously
-	if (Morebits.userIsInGroup('sysop')) {
-		Morebits.wiki.actionCompleted.postfix = false;  // avoid Action: completed notice
-		Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-	}
 	Twinkle.protect.fetchProtectionLevel();
 };
 
-// Current protection level in a human-readable format
-// (a string, or null if no protection; only filled for sysops)
-Twinkle.protect.protectionLevel = null;  
 // Contains the current protection level in an object
 // Once filled, it will look something like:
 // { edit: { level: "sysop", expiry: <some date>, cascade: true }, ... }
@@ -108,36 +101,29 @@ Twinkle.protect.currentProtectionLevels = {};
 Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLevel() {
 
 	var api = new mw.Api();
-	api.get({
+	var protectDeferred = api.get({
 		format: 'json',
 		indexpageids: true,
 		action: 'query',
+		list: 'logevents',
+		letype: 'protect',
+		letitle: mw.config.get('wgPageName'),
 		prop: 'info|flagged',
 		inprop: 'protection',
 		titles: mw.config.get('wgPageName')
-	})
-	.done(function(data){
-		var pageid = data.query.pageids[0];
-		var page = data.query.pages[pageid];
-		var result = [];
-		var current = {};
+	});
+	var stableDeferred = api.get({
+		format: 'json',
+		action: 'query',
+		list: 'logevents',
+		letype: 'stable',
+		letitle: mw.config.get('wgPageName')
+	});
 
-		var updateResult = function(label, level, expiry, cascade) {
-			// for sysops, stringify, so they can base their decision on existing protection
-			if (Morebits.userIsInGroup('sysop')) {
-				var boldnode = document.createElement('b');
-				boldnode.textContent = label + ": " + level;
-				result.push(boldnode);
-				if (expiry === 'infinity') {
-					result.push(" (indefinite) ");
-				} else {
-					result.push(" (expires " + new Date(expiry).toUTCString() + ") ");
-				}
-				if (cascade) {
-					result.push("(cascading) ");
-				}
-			}
-		};
+	$.when.apply($, [protectDeferred, stableDeferred]).done(function(protectData, stableData){
+		var pageid = protectData[0].query.pageids[0];
+		var page = protectData[0].query.pages[pageid];
+		var current = {};
 
 		$.each(page.protection, function( index, protection ) {
 			if (protection.type !== "aft") {
@@ -146,7 +132,6 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 					expiry: protection.expiry,
 					cascade: protection.cascade === ''
 				};
-				updateResult( Morebits.string.toUpperCaseFirstChar(protection.type), protection.level, protection.expiry, protection.cascade );
 			}
 		});
 
@@ -155,24 +140,59 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 				level: page.flagged.protection_level,
 				expiry: page.flagged.protection_expiry
 			};
-			// FlaggedRevision gives bad date
-			updateResult( 'Pending Changes', page.flagged.protection_level, page.flagged.protection_expiry, false );
 		}
 
-		// show the protection level to sysops
-		if (Morebits.userIsInGroup('sysop')) {
-			if (!result.length) {
-				var boldnode = document.createElement('b');
-				boldnode.textContent = "no protection";
-				result.push(boldnode);
-			}
-			Twinkle.protect.protectionLevel = result;
-			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-			Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
-		}
-
+		// show the protection level and log info
+		Twinkle.protect.hasProtectLog = !!protectData[0].query.logevents.length;
+		Twinkle.protect.hasStableLog = !!stableData[0].query.logevents.length;
 		Twinkle.protect.currentProtectionLevels = current;
+		Twinkle.protect.callback.showLogAndCurrentProtectInfo();
 	});
+};
+
+Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectCallbackShowLogAndCurrentProtectInfo() {
+	var currentlyProtected = !$.isEmptyObject(Twinkle.protect.currentProtectionLevels);
+
+	if (Twinkle.protect.hasProtectLog || Twinkle.protect.hasStableLog) {
+		var $linkMarkup = $("<span>");
+
+		if (Twinkle.protect.hasProtectLog)
+			$linkMarkup.append(
+				$( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">protection log</a>' ),
+				Twinkle.protect.hasStableLog ? $("<span> &bull; </span>") : null
+			);
+		if (Twinkle.protect.hasStableLog)
+			$linkMarkup.append($( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'stable'}) + '">pending changes log</a>)' ));
+
+		Morebits.status.init($('div[name="hasprotectlog"] span')[0]);
+		Morebits.status.warn(
+			currentlyProtected ? 'Previous protections' : 'This page has been protected in the past',
+			$linkMarkup[0]
+		);
+	}
+
+	Morebits.status.init($('div[name="currentprot"] span')[0]);
+	var protectionNode = [], statusLevel = 'info';
+
+	if (currentlyProtected) {
+		$.each(Twinkle.protect.currentProtectionLevels, function(type, settings) {
+			var label = type === 'stabilize' ? 'Pending Changes' : Morebits.string.toUpperCaseFirstChar(type);
+			protectionNode.push($("<b>" + label + ": " + settings.level + "</b>")[0]);
+			if (settings.expiry === 'infinity') {
+				protectionNode.push(" (indefinite) ");
+			} else {
+				protectionNode.push(" (expires " + new Date(settings.expiry).toUTCString() + ") ");
+			}
+			if (settings.cascade) {
+				protectionNode.push("(cascading) ");
+			}
+		});
+		statusLevel = 'warn';
+	} else {
+		protectionNode.push($("<b>no protection</b>")[0]);
+	}
+
+	Morebits.status[statusLevel]("Current protection level", protectionNode);
 };
 
 Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAction(e) {
@@ -198,6 +218,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 
 			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Protection options', name: 'field2' });
 			field2.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
+			field2.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			// for existing pages
 			if (mw.config.get('wgArticleId')) {
 				field2.append({
@@ -477,6 +498,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			/* falls through */
 		case 'tag':
 			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Tagging options', name: 'field1' });
+			field1.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
+			field1.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			field1.append( {
 					type: 'select',
 					name: 'tagtype',
@@ -514,6 +537,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				});
 
 			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Options', name: 'field1' });
+			field1.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
+			field1.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			field1.append( {
 					type: 'select',
 					name: 'expiry',
@@ -536,6 +561,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 	}
 
 	var oldfield;
+
 	if (field_preset) {
 		oldfield = $(e.target.form).find('fieldset[name="field_preset"]')[0];
 		oldfield.parentNode.replaceChild(field_preset.render(), oldfield);
@@ -561,15 +587,12 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 		evt.initEvent( 'change', true, true );
 		e.target.form.category.dispatchEvent( evt );
 
-		// re-add protection level text, if it's available
-		if (Twinkle.protect.protectionLevel) {
-			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-			Morebits.status.info("Current protection level", Twinkle.protect.protectionLevel);
-		}
-
 		// reduce vertical height of dialog
 		$(e.target.form).find('fieldset[name="field2"] select').parent().css({ display: 'inline-block', marginRight: '0.5em' });
 	}
+
+	// re-add protection level and log info, if it's available
+	Twinkle.protect.callback.showLogAndCurrentProtectInfo();
 };
 
 Twinkle.protect.formevents = {
@@ -582,6 +605,14 @@ Twinkle.protect.formevents = {
 		e.target.form.editexpiry.disabled = (e.target.value === 'all');
 	},
 	movemodify: function twinkleprotectFormMovemodifyEvent(e) {
+		// sync move settings with edit settings if applicable
+		if (e.target.form.movelevel.disabled && !e.target.form.editlevel.disabled) {
+			e.target.form.movelevel.value = e.target.form.editlevel.value;
+			e.target.form.moveexpiry.value = e.target.form.editexpiry.value;
+		} else if (e.target.form.editlevel.disabled) {
+			e.target.form.movelevel.value = 'sysop';
+			e.target.form.moveexpiry.value = 'indefinite';
+		}
 		e.target.form.movelevel.disabled = !e.target.checked;
 		e.target.form.moveexpiry.disabled = !e.target.checked || (e.target.form.movelevel.value === 'all');
 		e.target.form.movelevel.style.color = e.target.form.moveexpiry.style.color = (e.target.checked ? "" : "transparent");
@@ -640,6 +671,8 @@ Twinkle.protect.protectionTypes = [
 		list: [
 			{ label: 'Generic (semi)', value: 'pp-semi-protected' },
 			{ label: 'Persistent vandalism (semi)', selected: true, value: 'pp-semi-vandalism' },
+			{ label: 'Disruptive editing (semi)', value: 'pp-semi-disruptive' },
+			{ label: 'Adding unsourced content (semi)', value: 'pp-semi-unsourced' },
 			{ label: 'BLP policy violations (semi)', value: 'pp-semi-blp' },
 			{ label: 'Sockpuppetry (semi)', value: 'pp-semi-sock' },
 			{ label: 'User talk of blocked user (semi)', value: 'pp-semi-usertalk' }
@@ -650,6 +683,8 @@ Twinkle.protect.protectionTypes = [
 		list: [
 			{ label: 'Generic (PC)', value: 'pp-pc-protected' },
 			{ label: 'Persistent vandalism (PC)', value: 'pp-pc-vandalism' },
+			{ label: 'Disruptive editing (PC)', value: 'pp-pc-disruptive' },
+			{ label: 'Adding unsourced content (PC)', value: 'pp-pc-unsourced' },
 			{ label: 'BLP policy violations (PC)', value: 'pp-pc-blp' }
 		]
 	},
@@ -722,6 +757,16 @@ Twinkle.protect.protectionPresetsInfo = {
 		reason: 'Persistent [[WP:Vandalism|vandalism]]',
 		template: 'pp-vandalism'
 	},
+	'pp-semi-disruptive': {
+		edit: 'autoconfirmed',
+		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]]',
+		template: 'pp-protected'
+	},
+	'pp-semi-unsourced': {
+		edit: 'autoconfirmed',
+		reason: 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]',
+		template: 'pp-protected'
+	},
 	'pp-semi-blp': {
 		edit: 'autoconfirmed',
 		reason: 'Violations of the [[WP:BLP|biographies of living persons policy]]',
@@ -729,13 +774,13 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-semi-usertalk': {
 		edit: 'autoconfirmed',
-		move: 'sysop',
+		move: 'autoconfirmed',
 		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]',
 		template: 'pp-usertalk'
 	},
 	'pp-semi-template': {  // removed for now
 		edit: 'autoconfirmed',
-		move: 'sysop',
+		move: 'autoconfirmed',
 		reason: '[[WP:High-risk templates|Highly visible template]]',
 		template: 'pp-template'
 	},
@@ -752,6 +797,16 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-pc-vandalism': {
 		stabilize: 'autoconfirmed',  // stabilize = Pending Changes
 		reason: 'Persistent [[WP:Vandalism|vandalism]]',
+		template: 'pp-pc1'
+	},
+	'pp-pc-disruptive': {
+		stabilize: 'autoconfirmed',
+		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]]',
+		template: 'pp-pc1'
+	},
+	'pp-pc-unsourced': {
+		stabilize: 'autoconfirmed',
+		reason: 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]',
 		template: 'pp-pc1'
 	},
 	'pp-pc-blp': {
@@ -917,7 +972,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			if( /template/.test( form.category.value ) ) {
 				form.noinclude.checked = true;
 				form.editexpiry.value = form.moveexpiry.value = form.pcexpiry.value = "indefinite";
-			} else {
+			} else if( mw.config.get('wgNamespaceNumber') !== 10 ) {
 				form.noinclude.checked = false;
 			}
 		}
@@ -981,6 +1036,15 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				}
 			};
 
+			var stabilizeValues = {};
+			if (form.pclevel) {
+				stabilizeValues = {
+					pclevel: form.pclevel.value,
+					pcexpiry: form.pcexpiry.value,
+					protectReason: form.protectReason.value
+				};
+			}
+
 			var protectIt = function twinkleprotectCallbackProtectIt(next) {
 				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), "Protecting page");
 				if (mw.config.get('wgArticleId')) {
@@ -1017,10 +1081,10 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				}
 
 				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), "Applying pending changes protection");
-				thispage.setFlaggedRevs(form.pclevel.value, form.pcexpiry.value);
+				thispage.setFlaggedRevs(stabilizeValues.pclevel, stabilizeValues.pcexpiry);
 
-				if (form.protectReason.value) {
-					thispage.setEditSummary(form.protectReason.value);
+				if (stabilizeValues.protectReason) {
+					thispage.setEditSummary(stabilizeValues.protectReason);
 				} else {
 					alert("You must enter a protect reason, which will be inscribed into the protection log.");
 					return;
@@ -1077,6 +1141,8 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typename = 'template protection';
 					break;
 				case 'pp-semi-vandalism':
+				case 'pp-semi-disruptive':
+				case 'pp-semi-unsourced':
 				case 'pp-semi-usertalk':
 				case 'pp-semi-sock':
 				case 'pp-semi-blp':
@@ -1086,6 +1152,8 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-pc-vandalism':
 				case 'pp-pc-blp':
 				case 'pp-pc-protected':
+				case 'pp-pc-unsourced':
+				case 'pp-pc-disruptive':
 					typename = 'pending changes';
 					break;
 				case 'pp-move':
@@ -1114,6 +1182,14 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-semi-vandalism':
 				case 'pp-pc-vandalism':
 					typereason = 'Persistent vandalism';
+					break;
+				case 'pp-semi-disruptive':
+				case 'pp-pc-disruptive':
+					typereason = 'Persistent [[Wikipedia:Disruptive editing|disruptive editing]]';
+					break;
+				case 'pp-semi-unsourced':
+				case 'pp-pc-unsourced':
+					typereason = 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]';
 					break;
 				case 'pp-template':
 					typereason = 'Highly visible template';
@@ -1220,7 +1296,7 @@ Twinkle.protect.callbacks = {
 				tag += '|reason=' + params.reason;
 			}
 			if( ['indefinite', 'infinite', 'never', null].indexOf(params.expiry) === -1 ) {
-				tag += '|expiry={{subst:#time:j F Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
+				tag += '|expiry={{subst:#time:H:i, j F Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
 			}
 			if( params.small ) {
 				tag += '|small=yes';
@@ -1253,43 +1329,7 @@ Twinkle.protect.callbacks = {
 		var text = rppPage.getPageText();
 		var statusElement = rppPage.getStatusElement();
 
-		var ns2tag = {
-			'0': 'la',
-			'1': 'lat',
-			'2': 'lu',
-			'3': 'lut',
-			'4': 'lw',
-			'5': 'lwt',
-			'6': 'lf',
-			'7': 'lft',
-			'8': 'lm',
-			'9': 'lmt',
-			'10': 'lt',
-			'11': 'ltt',
-			'12': 'lh',
-			'13': 'lht',
-			'14': 'lc',
-			'15': 'lct',
-			'100': 'lp',
-			'101': 'lpt',
-			'108': 'lb',
-			'109': 'lbt',
-			'118': 'ld',
-			'119': 'ldt',
-			'710': 'lttxt',
-			'711': 'lttxtt',
-			'828': 'lmd',
-			'829': 'lmdt'
-		};
-
-		var linkTemplate = ns2tag[ mw.config.get('wgNamespaceNumber') ];
-		// support other namespaces like TimedText
-		// (this could support talk spaces better, but doesn't seem worth it)
-		if (!linkTemplate) {
-			linkTemplate = 'ln|' + Morebits.pageNameNorm.substring(0, Morebits.pageNameNorm.indexOf(':'));
-		}
-
-		var rppRe = new RegExp( '====\\s*\\{\\{\\s*' + linkTemplate + '\\s*\\|\\s*' + RegExp.escape( mw.config.get('wgTitle'), true ) + '\\s*\\}\\}\\s*====', 'm' );
+		var rppRe = new RegExp( '===\\s*(\\[\\[)?\s*:?\s*' + RegExp.escape( Morebits.pageNameNorm, true ) + '\s*(\\]\\])?\\s*===', 'm' );
 		var tag = rppRe.exec( text );
 
 		var rppLink = document.createElement('a');
@@ -1301,11 +1341,12 @@ Twinkle.protect.callbacks = {
 			return;
 		}
 
-		var newtag = '==== {{' + linkTemplate + '|' + mw.config.get('wgTitle') + '}} ====' + "\n";
+		var newtag = '=== [[:' + Morebits.pageNameNorm + ']] ===\n';
 		if( ( new RegExp( '^' + RegExp.escape( newtag ).replace( /\s+/g, '\\s*' ), 'm' ) ).test( text ) ) {
 			statusElement.error( [ 'There is already a protection request for this page at ', rppLink, ', aborting.' ] );
 			return;
 		}
+		newtag += '* {{pagelinks|' + Morebits.pageNameNorm + '}}\n\n';
 
 		var words;
 		switch( params.expiry ) {
@@ -1353,21 +1394,22 @@ Twinkle.protect.callbacks = {
 			Twinkle.protect.currentProtectionLevels.stabilize &&
 			Twinkle.protect.currentProtectionLevels.stabilize.level);
 		if (computeWeight(protInfo.edit, protInfo.stabilize) > editWeight ||
-			computeWeight(protInfo.move) > computeWeight(Twinkle.protect.currentProtectionLevels.move && 
+			computeWeight(protInfo.move) > computeWeight(Twinkle.protect.currentProtectionLevels.move &&
 			Twinkle.protect.currentProtectionLevels.move.level) ||
-			computeWeight(protInfo.create) > computeWeight(Twinkle.protect.currentProtectionLevels.create && 
+			computeWeight(protInfo.create) > computeWeight(Twinkle.protect.currentProtectionLevels.create &&
 			Twinkle.protect.currentProtectionLevels.create.level)) {
 			increase = true;
 		}
 
 		var reg;
 		if ( increase ) {
-			reg = /(\n==\s*Current requests for increase in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
+			reg = /(\n==\s*Current requests for reduction in protection level\s*==)/;
 		} else {
-			reg = /(\n==\s*Current requests for reduction in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)/;
+			reg = /(\n==\s*Current requests for edits to a protected page\s*==)/;
 		}
+
 		var originalTextLength = text.length;
-		text = text.replace( reg, "$1" + newtag + "\n");
+		text = text.replace( reg, "\n" + newtag + "\n$1");
 		if (text.length === originalTextLength)
 		{
 			var linknode = document.createElement('a');

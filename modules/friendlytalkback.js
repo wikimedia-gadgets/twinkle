@@ -182,7 +182,7 @@ var callback_change_target = function( e ) {
 					tooltip:"The username of the user on whose talk page you left a message.",
 					value: prev_page
 				});
-			
+
 			work_area.append({
 					type:"input",
 					name:"section",
@@ -275,7 +275,7 @@ var callback_change_target = function( e ) {
 					tooltip:"The full page name where you left the message. For example: 'Wikipedia talk:Twinkle'.",
 					value: prev_page
 				});
-			
+
 			work_area.append({
 					type:"input",
 					name:"section",
@@ -334,7 +334,7 @@ var callback_evaluate = function( e ) {
 
 	if( tbtarget === "usertalk" || tbtarget === "other" || tbtarget === "see" ) {
 		page = e.target.page.value;
-		
+
 		if( tbtarget === "usertalk" ) {
 			if( !page ) {
 				alert("You must specify the username of the user whose talk page you left a message on.");
@@ -368,7 +368,7 @@ var callback_evaluate = function( e ) {
 	if ( tbtarget === "notice" ) {
 		switch (page) {
 			case "afchd":
-				text += "\n\n{{subst:AFCHD/u|" + section + "}} ~~~~";
+				text = "\n\n{{subst:AFCHD/u|" + section + "}} ~~~~";
 				talkpage.setEditSummary( "You have replies at the [[Wikipedia:AFCHD|Articles for Creation Help Desk]]" + Twinkle.getPref("summaryAd") );
 				break;
 			case "an":
@@ -421,17 +421,18 @@ var callback_evaluate = function( e ) {
 		}
 
 		talkpage.setEditSummary("Notification: You've got mail" + Twinkle.getPref("summaryAd"));
-	
+
 	} else if ( tbtarget === "see" ) {
 		text = "\n\n{{subst:Please see|location=" + tbPageName;
 		if (section) {
 			text += "#" + section;
 		}
 		text += "|more=" + message.trim() + "}}";
-		talkpage.setEditSummary("Please check the discussion at [[" + tbPageName + "#" + section + "]]" + Twinkle.getPref("summaryAd"));
-		
-	} else {
-		//clean talkback heading: strip section header markers, were erroneously suggested in the documentation
+		talkpage.setEditSummary("Please check the discussion at [[" + tbPageName +
+			(section ? ("#" + section) : "") + "]]" + Twinkle.getPref("summaryAd"));
+
+	} else {  // tbtarget one of mytalk, usertalk, other
+		// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
 		text = "\n\n==" + Twinkle.getFriendlyPref("talkbackHeading").replace( /^\s*=+\s*(.*?)\s*=+$\s*/, "$1" ) + "==\n{{talkback|";
 		text += tbPageName;
 
@@ -447,8 +448,12 @@ var callback_evaluate = function( e ) {
 			text += "\n~~~~";
 		}
 
-		talkpage.setEditSummary("Talkback ([[" + (tbtarget === "other" ? "" : "User talk:") + tbPageName +
-			(section ? ("#" + section) : "") + "]])" + Twinkle.getPref("summaryAd"));
+		var editSummary = "Talkback ([[";
+		if (tbtarget !== "other" && !/^\s*user talk:/i.test(tbPageName)) {
+			editSummary += "User talk:";
+		}
+		editSummary += tbPageName + (section ? ("#" + section) : "") + "]])";
+		talkpage.setEditSummary(editSummary + Twinkle.getPref("summaryAd"));
 	}
 
 	talkpage.setAppendText( text );

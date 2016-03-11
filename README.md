@@ -27,6 +27,8 @@ There are two ways to upload Twinkle scripts to Wikipedia or another destination
 
 ### Manual concatenation
 
+**These instructions are outdated! Don't do what it says here or you'll probably blow things up.**
+
 To generate a concatenated Twinkle script, use the following `bash` command:
 
     awk 'FNR==1{print ""}{print}' twinkle.js modules/*.js > alltwinkle.js
@@ -37,7 +39,7 @@ If `morebits.js` and/or `morebits.css` need to be updated, they should be synche
 
 [MediaWiki:Gadgets-definition][] would then contain the following line:
 
-    * Twinkle[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,jquery.ui.dialog,jquery.tipsy,moment]|morebits.js|morebits.css|Twinkle.js
+    * Twinkle[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.RegExp,jquery.ui.dialog,jquery.tipsy,moment|rights=autoconfirmed]|morebits.js|morebits.css|Twinkle.js|twinkleprod.js|twinkleimage.js|twinklebatchundelete.js|twinklewarn.js|twinklespeedy.js|friendlyshared.js|twinklediff.js|twinkleunlink.js|twinkledelimages.js|friendlytag.js|twinkledeprod.js|friendlywelcome.js|twinklexfd.js|twinklebatchdelete.js|twinklebatchprotect.js|twinkleconfig.js|twinklefluff.js|twinkleprotect.js|twinklearv.js|twinkleblock.js|friendlytalkback.js
 
 ### Synchronization using `sync.pl`
 
@@ -47,13 +49,15 @@ The program depends on Perl 5.10 and the modules [`Git::Repository`][Git::Reposi
 
     cpanm --sudo install Git::Repository MediaWiki::Bot
 
+Note: On some systems, additional modules such as `File::Slurp`, `Getopt::Long::Descriptive` and other dependencies may need to be installed as well. It is preferred that you install them through your operating system's packaing tool (e.g. `apt-get install libgetopt-long-descriptive-perl`) although you can install them through cpanm too.
+
 When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a file called `~/.mwbotrc` using the following format:
 
     username => "Username",
     password => "password",
     base     => "User::Username"
 
-where `base` is the wiki path to prefix the files for `pull` and `push`.
+where `base` is the wiki path to prefix the files for `pull` and `push`. If you do not specify the `base` parameter, files will be pushed into the MediaWiki namespace.
 
 Notice that your working directory **must** be clean; if not, either `stash` or `commit` your changes.
 
@@ -69,6 +73,10 @@ There is also a `deploy` command to deploy all Twinkle files live.
 
     ./sync.pl --deploy twinkle.js
     make deploy
+
+Note that for syncing to a custom wiki, you will also need to specify the --lang and --family parameters too. For instance, to sync the files with `test.wmflabs.org` you should specify `--lang=test --family=wmflabs`. If you intend to use `make deploy` to deploy all the files at once, you may also need to pass the necessary parameters through the makefile to the sync script like this example:
+
+    make ARGS="--lang=test --family=wmflabs" deploy
 
 The edit summary will contain the branch, the last commit sha, and the oneliner for that commit.
 
