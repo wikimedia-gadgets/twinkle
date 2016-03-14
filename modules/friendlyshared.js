@@ -26,8 +26,6 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 	Window.setScriptName( $.i18n._('tw-core-script-name') );
 	Window.addFooterLink( $.i18n._('tw-core-help'), $.i18n._('tw-core-help-page') );
 	
-	Twinkle.shared.initialize();
-
 	var form = new Morebits.quickForm( Twinkle.shared.callback.evaluate );
 
 	var div = form.append( {
@@ -76,54 +74,6 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 	Window.setContent( result );
 	Window.display();
 };
-
-Twinkle.shared.initialize = function() {
-	if( typeof Twinkle.shared.standardList === 'undefined' ) {
-		Twinkle.shared.standardList = [
-			{
-				label: $.i18n._('tw-sharedip-shared-ip-label'),
-				value: $.i18n._('tw-sharedip-shared-ip'),
-				tooltip: $.i18n._('tw-sharedip-share-ip-tooltip')
-			},
-			{
-				label: $.i18n._('tw-sharedip-shared-ip-edu-label'),
-				value: $.i18n._('tw-sharedip-shared-ip-edu')
-			},
-			{
-				label: $.i18n._('tw-sharedip-shared-ip-corp-label'),
-				value: $.i18n._('tw-sharedip-shared-ip-corp')
-			},
-			{
-				label: $.i18n._('tw-sharedip-shared-ip-public-label'),
-				value: $.i18n._('tw-sharedip-shared-ip-public')
-			},
-			{
-				label: $.i18n._('tw-sharedip-shared-ip-gov-label'),
-				value: $.i18n._('tw-sharedip-shared-ip-gov')
-			},
-			{
-				label: $.i18n._('tw-sharedip-dynamic-ip-label'),
-				value: $.i18n._('tw-sharedip-dynamic-ip')
-			},
-			{
-				label: $.i18n._('tw-sharedip-static-ip-label'),
-				value: $.i18n._('tw-sharedip-static-ip')
-			},
-			{
-				label: $.i18n._('tw-sharedip-isp-label'),
-				value: $.i18n._('tw-sharedip-isp')
-			},
-			{
-				label: $.i18n._('tw-sharedip-mobile-ip-label'),
-				value: $.i18n._('tw-sharedip-mobile-ip')
-			},
-			{
-				label: $.i18n._('tw-sharedip-whois-label'),
-				value: $.i18n._('tw-sharedip-whois')
-			}
-		];
-	}
-}
 
 Twinkle.shared.callback.change_shared = function friendlysharedCallbackChangeShared(e) {
 	e.target.form.contact.disabled = (e.target.value !== 'Shared IP edu');  // only supported by {{Shared IP edu}}
