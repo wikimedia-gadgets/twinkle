@@ -91,7 +91,7 @@ Twinkle.shared.callbacks = {
 		for( var i=0; i < Twinkle.shared.standardList.length; i++ ) {
 			var tagRe = new RegExp( '(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im' );
 			if( tagRe.exec( pageText ) ) {
-				Morebits.status.warn( $.i18n._('tw-morebits-info'), $.i18n._('tw-sharedip-aborting', Twinkle.shared.standardList[i].value) );
+				Morebits.status.warn( $.i18n._('morebits-info'), $.i18n._('tw-sharedip-aborting', Twinkle.shared.standardList[i].value) );
 				found = true;
 			}
 		}
