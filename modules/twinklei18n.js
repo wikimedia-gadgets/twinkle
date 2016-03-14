@@ -1,3 +1,14 @@
+//<nowiki>
+(function($){
+
+
+/*
+ ***********************************************
+ *** twinklei18n.js: Internationalization module
+ ***********************************************
+ */
+
+
 TwinkleMessages = {
 	'en': {
 		'tw-core-portlet-name': 'TW',
@@ -51,3 +62,7 @@ TwinkleMessages = {
 }
 
 window.TwinkleMessages = TwinkleMessages;
+
+})(jQuery);
+
+//</nowiki>
