@@ -150,7 +150,7 @@ Twinkle.shared.callbacks = {
 			return;
 		}
 
-		Morebits.status.info( $.i18n._('tw-core-morebits-info'), $.i18n._('tw-sharedip-will-add') );
+		Morebits.status.info( $.i18n._('morebits-info'), $.i18n._('tw-sharedip-will-add') );
 		text += params.value + '|' + params.organization;
 		if( params.value === 'Shared IP edu' && params.contact !== '') {
 			text += '|' + params.contact;

@@ -7,7 +7,7 @@ TwinkleMessages = {
 		'tw-core-script-name': 'Twinkle',
 		'tw-core-help': 'Twinkle Help',
 		'tw-core-help-page': 'WP:TW/DOC#shared',
-		'tw-morebits-info': 'Info',
+		'morebits-info': 'Info',
 		'tw-sharedip-label': 'Shared IP',
 		'tw-sharedip-label-hover': 'Shared IP tagging',
 		'tw-sharedip-window-title': 'Shared IP address tagging',
