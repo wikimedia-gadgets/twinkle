@@ -465,7 +465,7 @@ Twinkle.tag.article.tags = {
 	"merge to": "article should be merged into another given article",
 	"metricate": "article exclusively uses non-SI units of measurement",
 	"more footnotes": "article has some references, but insufficient in-text citations",
-	"new unreviewed article": "mark (your own) article for later review",
+	"new unreviewed article": "mark your own article for later review",
 	"news release": "article reads like a news release",
 	"no footnotes": "article has references, but no in-text citations",
 	"non-free": "article may contain excessive or improper use of copyrighted materials",
