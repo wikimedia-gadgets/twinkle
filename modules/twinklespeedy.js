@@ -698,7 +698,7 @@ Twinkle.speedy.articleList = [
 	//},
 	{
 		label: 'BV4: Tổ chức không nổi bật',
-		value: 'corp',
+		value: 'inc',
 		tooltip: 'Bài viết về công ty hay tổ chức mà rõ ràng chưa đáp ứng tiêu chí độ nổi bật',
 		hideWhenMultiple: true
 	},
