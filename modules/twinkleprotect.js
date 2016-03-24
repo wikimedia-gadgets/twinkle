@@ -25,8 +25,6 @@ Twinkle.protect = function twinkleprotect() {
 };
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
-	Twinkle.protect.protectionLevel = null;
-
 	var Window = new Morebits.simpleWindow( 620, 530 );
 	Window.setTitle( Morebits.userIsInGroup( 'sysop' ) ? "Khóa trang, yêu cầu hoặc thêm bản mẫu khóa trang" : "Yêu cầu hoặc thêm bản mẫu khóa trang" );
 	Window.setScriptName( "Twinkle" );
@@ -89,17 +87,12 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	evt.initEvent( 'change', true, true );
 	result.actiontype[0].dispatchEvent( evt );
 
+	Morebits.wiki.actionCompleted.postfix = false;  // avoid Action: completed notice
+
 	// get current protection level asynchronously
-	if (Morebits.userIsInGroup('sysop')) {
-		Morebits.wiki.actionCompleted.postfix = false;  // avoid Action: completed notice
-		Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-	}
 	Twinkle.protect.fetchProtectionLevel();
 };
 
-// Current protection level in a human-readable format
-// (a string, or null if no protection; only filled for sysops)
-Twinkle.protect.protectionLevel = null;
 // Contains the current protection level in an object
 // Once filled, it will look something like:
 // { edit: { level: "sysop", expiry: <some date>, cascade: true }, ... }
@@ -108,36 +101,29 @@ Twinkle.protect.currentProtectionLevels = {};
 Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLevel() {
 
 	var api = new mw.Api();
-	api.get({
+	var protectDeferred = api.get({
 		format: 'json',
 		indexpageids: true,
 		action: 'query',
+		list: 'logevents',
+		letype: 'protect',
+		letitle: mw.config.get('wgPageName'),
 		prop: 'info|flagged',
 		inprop: 'protection',
 		titles: mw.config.get('wgPageName')
-	})
-	.done(function(data){
-		var pageid = data.query.pageids[0];
-		var page = data.query.pages[pageid];
-		var result = [];
-		var current = {};
+	});
+	var stableDeferred = api.get({
+		format: 'json',
+		action: 'query',
+		list: 'logevents',
+		letype: 'stable',
+		letitle: mw.config.get('wgPageName')
+	});
 
-		var updateResult = function(label, level, expiry, cascade) {
-			// for sysops, stringify, so they can base their decision on existing protection
-			if (Morebits.userIsInGroup('sysop')) {
-				var boldnode = document.createElement('b');
-				boldnode.textContent = label + ": " + level;
-				result.push(boldnode);
-				if (expiry === 'infinity') {
-					result.push(" (vô hạn) ");
-				} else {
-					result.push(" (hết hạn khóa " + new Date(expiry).toUTCString() + ") ");
-				}
-				if (cascade) {
-					result.push("(theo tầng) ");
-				}
-			}
-		};
+	$.when.apply($, [protectDeferred, stableDeferred]).done(function(protectData, stableData){
+		var pageid = protectData[0].query.pageids[0];
+		var page = protectData[0].query.pages[pageid];
+		var current = {};
 
 		$.each(page.protection, function( index, protection ) {
 			if (protection.type !== "aft") {
@@ -146,7 +132,6 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 					expiry: protection.expiry,
 					cascade: protection.cascade === ''
 				};
-				updateResult( Morebits.string.toUpperCaseFirstChar(protection.type), protection.level, protection.expiry, protection.cascade );
 			}
 		});
 
@@ -155,24 +140,59 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 				level: page.flagged.protection_level,
 				expiry: page.flagged.protection_expiry
 			};
-			// FlaggedRevision gives bad date
-			updateResult( 'Pending Changes', page.flagged.protection_level, page.flagged.protection_expiry, false );
 		}
 
-		// show the protection level to sysops
-		if (Morebits.userIsInGroup('sysop')) {
-			if (!result.length) {
-				var boldnode = document.createElement('b');
-				boldnode.textContent = "no protection";
-				result.push(boldnode);
-			}
-			Twinkle.protect.protectionLevel = result;
-			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-			Morebits.status.info("Mức khóa hiện tại", Twinkle.protect.protectionLevel);
-		}
-
+		// show the protection level and log info
+		Twinkle.protect.hasProtectLog = !!protectData[0].query.logevents.length;
+		Twinkle.protect.hasStableLog = !!stableData[0].query.logevents.length;
 		Twinkle.protect.currentProtectionLevels = current;
+		Twinkle.protect.callback.showLogAndCurrentProtectInfo();
 	});
+};
+
+Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectCallbackShowLogAndCurrentProtectInfo() {
+	var currentlyProtected = !$.isEmptyObject(Twinkle.protect.currentProtectionLevels);
+
+	if (Twinkle.protect.hasProtectLog || Twinkle.protect.hasStableLog) {
+		var $linkMarkup = $("<span>");
+
+		if (Twinkle.protect.hasProtectLog)
+			$linkMarkup.append(
+				$( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">nhật trình khóa</a>' ),
+				Twinkle.protect.hasStableLog ? $("<span> &bull; </span>") : null
+			);
+		if (Twinkle.protect.hasStableLog)
+			$linkMarkup.append($( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'stable'}) + '">nhật trình thay đổi đang chờ</a>)' ));
+
+		Morebits.status.init($('div[name="hasprotectlog"] span')[0]);
+		Morebits.status.warn(
+			currentlyProtected ? 'Tác vụ khóa về truớc' : 'Trang này đã được khóa truớc đây',
+			$linkMarkup[0]
+		);
+	}
+
+	Morebits.status.init($('div[name="currentprot"] span')[0]);
+	var protectionNode = [], statusLevel = 'info';
+
+	if (currentlyProtected) {
+		$.each(Twinkle.protect.currentProtectionLevels, function(type, settings) {
+			var label = type === 'stabilize' ? 'Thay đổi đang chờ' : Morebits.string.toUpperCaseFirstChar(type);
+			protectionNode.push($("<b>" + label + ": " + settings.level + "</b>")[0]);
+			if (settings.expiry === 'infinity') {
+				protectionNode.push(" (vô hạn) ");
+			} else {
+				protectionNode.push(" (hết hạn khóa " + new Date(settings.expiry).toUTCString() + ") ");
+			}
+			if (settings.cascade) {
+				protectionNode.push("(theo tầng) ");
+			}
+		});
+		statusLevel = 'warn';
+	} else {
+		protectionNode.push($("<b>không được khóa</b>")[0]);
+	}
+
+	Morebits.status[statusLevel]("Mức khóa hiện tại", protectionNode);
 };
 
 Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAction(e) {
@@ -198,6 +218,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 
 			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Các tùy chọn khóa', name: 'field2' });
 			field2.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
+			field2.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			// for existing pages
 			if (mw.config.get('wgArticleId')) {
 				field2.append({
@@ -476,7 +497,9 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			}
 			/* falls through */
 		case 'tag':
-			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Tùy chọn', name: 'field1' });
+			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Tùy chọn gắn thẻ', name: 'field1' });
+			field1.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
+			field1.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			field1.append( {
 					type: 'select',
 					name: 'tagtype',
@@ -514,6 +537,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				});
 
 			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Tùy chọn', name: 'field1' });
+			field1.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
+			field1.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			field1.append( {
 					type: 'select',
 					name: 'expiry',
@@ -536,6 +561,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 	}
 
 	var oldfield;
+
 	if (field_preset) {
 		oldfield = $(e.target.form).find('fieldset[name="field_preset"]')[0];
 		oldfield.parentNode.replaceChild(field_preset.render(), oldfield);
@@ -561,15 +587,12 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 		evt.initEvent( 'change', true, true );
 		e.target.form.category.dispatchEvent( evt );
 
-		// re-add protection level text, if it's available
-		if (Twinkle.protect.protectionLevel) {
-			Morebits.status.init($('div[name="currentprot"] span').last()[0]);
-			Morebits.status.info("Mức khóa hiện tại", Twinkle.protect.protectionLevel);
-		}
-
 		// reduce vertical height of dialog
 		$(e.target.form).find('fieldset[name="field2"] select').parent().css({ display: 'inline-block', marginRight: '0.5em' });
 	}
+
+	// re-add protection level and log info, if it's available
+	Twinkle.protect.callback.showLogAndCurrentProtectInfo();
 };
 
 Twinkle.protect.formevents = {
@@ -582,6 +605,14 @@ Twinkle.protect.formevents = {
 		e.target.form.editexpiry.disabled = (e.target.value === 'all');
 	},
 	movemodify: function twinkleprotectFormMovemodifyEvent(e) {
+		// sync move settings with edit settings if applicable
+		if (e.target.form.movelevel.disabled && !e.target.form.editlevel.disabled) {
+			e.target.form.movelevel.value = e.target.form.editlevel.value;
+			e.target.form.moveexpiry.value = e.target.form.editexpiry.value;
+		} else if (e.target.form.editlevel.disabled) {
+			e.target.form.movelevel.value = 'sysop';
+			e.target.form.moveexpiry.value = 'indefinite';
+		}
 		e.target.form.movelevel.disabled = !e.target.checked;
 		e.target.form.moveexpiry.disabled = !e.target.checked || (e.target.form.movelevel.value === 'all');
 		e.target.form.movelevel.style.color = e.target.form.moveexpiry.style.color = (e.target.checked ? "" : "transparent");
@@ -653,6 +684,8 @@ Twinkle.protect.protectionTypes = [
 	//	list: [
 	//		{ label: 'Generic (PC)', value: 'pp-pc-protected' },
 	//		{ label: 'Persistent vandalism (PC)', value: 'pp-pc-vandalism' },
+	//		{ label: 'Disruptive editing (PC)', value: 'pp-pc-disruptive' },
+	//		{ label: 'Adding unsourced content (PC)', value: 'pp-pc-unsourced' },
 	//		{ label: 'BLP policy violations (PC)', value: 'pp-pc-blp' }
 	//	]
 	//},
@@ -751,7 +784,7 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-semi-template': {  // removed for now
 		edit: 'autoconfirmed',
 		move: 'sysop',
-		reason: 'Bản mẫu được xem nhiều',
+		reason: '[[WP:High-risk templates|Bản mẫu được xem nhiều]]',
 		template: 'pp-template'
 	},
 	'pp-semi-sock': {
@@ -766,7 +799,17 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-pc-vandalism': {
 		stabilize: 'autoconfirmed',  // stabilize = Pending Changes
-		reason: 'Persistent [[WP:Vandalism|vandalism]]',
+		reason: '[[WP:PH|Phá hoại]] liên tục',
+		template: 'pp-pc1'
+	},
+	'pp-pc-disruptive': {
+		stabilize: 'autoconfirmed',
+		reason: '[[Wikipedia:Sửa đổi gây hại|Sửa đổi gây hại]] liên tục',
+		template: 'pp-pc1'
+	},
+	'pp-pc-unsourced': {
+		stabilize: 'autoconfirmed',
+		reason: 'Liên tục thêm [[WP:INTREF|nội dung thiếu nguồn gốc]]',
 		template: 'pp-pc1'
 	},
 	'pp-pc-blp': {
@@ -1112,6 +1155,8 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-pc-vandalism':
 				case 'pp-pc-blp':
 				case 'pp-pc-protected':
+				case 'pp-pc-unsourced':
+				case 'pp-pc-disruptive':
 					typename = 'pending changes';
 					break;
 				case 'pp-move':
@@ -1142,9 +1187,11 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typereason = 'Persistent vandalism';
 					break;
 				case 'pp-semi-disruptive':
+				case 'pp-pc-disruptive':
 					typereason = 'Persistent [[Wikipedia:Disruptive editing|disruptive editing]]';
 					break;
 				case 'pp-semi-unsourced':
+				case 'pp-pc-unsourced':
 					typereason = 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]';
 					break;
 				case 'pp-template':
@@ -1252,7 +1299,7 @@ Twinkle.protect.callbacks = {
 				tag += '|reason=' + params.reason;
 			}
 			if( ['indefinite', 'infinite', 'never', null].indexOf(params.expiry) === -1 ) {
-				tag += '|expiry={{subst:#time:j F Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
+				tag += '|expiry={{subst:#time:H:i, j F Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
 			}
 			if( params.small ) {
 				tag += '|small=yes';
@@ -1359,12 +1406,13 @@ Twinkle.protect.callbacks = {
 
 		var reg;
 		if ( increase ) {
-			reg = /(\n==\s*Current requests for increase in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)([\s\S]*?)\s*(\n==[^=])/;
+			reg = /(\n==\s*Current requests for reduction in protection level\s*==)/;
 		} else {
-			reg = /(\n==\s*Current requests for reduction in protection level\s*==\s*\n\s*\{\{[^\}\}]+\}\}\s*\n)([\s\S]*?)\s*(\n==[^=])/;
+			reg = /(\n==\s*Current requests for edits to a protected page\s*==)/;
 		}
+
 		var originalTextLength = text.length;
-		text = text.replace( reg, "$1$2\n\n" + newtag + "\n$3");
+		text = text.replace( reg, "\n" + newtag + "\n$1");
 		if (text.length === originalTextLength)
 		{
 			var linknode = document.createElement('a');

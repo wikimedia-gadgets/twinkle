@@ -20,7 +20,7 @@ Twinkle.shared = function friendlyshared() {
 	}
 };
 
-Twinkle.shared.callback = function friendlysharedCallback( uid ) {
+Twinkle.shared.callback = function friendlysharedCallback() {
 	var Window = new Morebits.simpleWindow( 600, 420 );
 	Window.setTitle( "Đánh dấu địa chỉ IP dùng chung" );
 	Window.setScriptName( "Twinkle" );

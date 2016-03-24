@@ -133,7 +133,7 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 						}
 					]
 				} );
-		// fall through
+		/* falls through */
 		case 'thiếu giấy phép':
 			work_area.append( {
 					type: 'checkbox',

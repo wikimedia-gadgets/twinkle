@@ -299,10 +299,9 @@ Twinkle.batchdelete.callbacks = {
 			if ( params.delete_redirects ) {
 				query = {
 					'action': 'query',
-					'list': 'backlinks',
-					'blfilterredir': 'redirects',
-					'bltitle': params.page,
-					'bllimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
+					'titles': params.page,
+					'prop': 'redirects',
+					'rdlimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
 				};
 				wikipedia_api = new Morebits.wiki.api( 'Grabbing redirects', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain );
 				wikipedia_api.params = params;
@@ -326,7 +325,7 @@ Twinkle.batchdelete.callbacks = {
 	},
 	deleteRedirectsMain: function( apiobj ) {
 		var xml = apiobj.responseXML;
-		var pages = $(xml).find('bl').map(function() { return $(this).attr('title'); }).get();
+		var pages = $(xml).find('rd').map(function() { return $(this).attr('title'); }).get();
 		if (!pages.length) {
 			return;
 		}

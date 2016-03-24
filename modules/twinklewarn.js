@@ -14,7 +14,7 @@
  */
 
 Twinkle.warn = function twinklewarn() {
-	if( mw.config.get('wgNamespaceNumber') === 3 ) {
+	if( mw.config.get( 'wgRelevantUserName' ) ) {
 			Twinkle.addPortletLink( Twinkle.warn.callback, "Cảnh báo", "tw-warn", "Cảnh báo/thông báo thành viên" );
 	}
 
@@ -37,7 +37,7 @@ Twinkle.warn = function twinklewarn() {
 };
 
 Twinkle.warn.callback = function twinklewarnCallback() {
-	if( mw.config.get('wgTitle').split( '/' )[0] === mw.config.get('wgUserName') &&
+	if( mw.config.get( 'wgRelevantUserName' ) === mw.config.get( 'wgUserName' ) &&
 			!confirm( 'You are about to warn yourself! Are you sure you want to proceed?' ) ) {
 		return;
 	}
@@ -139,7 +139,7 @@ Twinkle.warn.messages = {
 				label: "Thêm thông tin gây tranh cãi không nguồn về người đang sống",
 				summary: "Thông báo: Thêm thông tin gây tranh cãi không nguồn về người đang sống"
 			},
-			"cb-defam1": {
+			"cb-defamatory1": {
 				label: "Addition of defamatory content",
 				summary: "Thông báo: Addition of defamatory content"
 			},
@@ -297,7 +297,7 @@ Twinkle.warn.messages = {
 				label: "Thêm thông tin gây tranh cãi không nguồn về người đang sống",
 				summary: "Chú ý: Thêm thông tin gây tranh cãi không nguồn về người đang sống"
 			},
-			"cb-defam2": {
+			"cb-defamatory2": {
 				label: "Addition of defamatory content",
 				summary: "Chú ý: Addition of defamatory content"
 			},
@@ -455,7 +455,7 @@ Twinkle.warn.messages = {
 				label: "Thêm thông tin gây tranh cãi không nguồn về người đang sống",
 				summary: "Cảnh báo: Thêm thông tin gây tranh cãi không nguồn về người đang sống"
 			},
-			"cb-defam3": {
+			"cb-defamatory3": {
 				label: "Addition of defamatory content",
 				summary: "Cảnh báo: Addition of defamatory content"
 			},
@@ -605,7 +605,7 @@ Twinkle.warn.messages = {
 				label: "Thêm thông tin gây tranh cãi không nguồn về người đang sống",
 				summary: "Cảnh báo cuối cùng: Thêm thông tin gây tranh cãi không nguồn về người đang sống"
 			},
-			"cb-defam4": {
+			"cb-defamatory4": {
 				label: "Addition of defamatory content",
 				summary: "Cảnh báo cuối cùng: Addition of defamatory content"
 			},
@@ -739,7 +739,7 @@ Twinkle.warn.messages = {
 				label: "Thêm thông tin gây tranh cãi không nguồn về người đang sống",
 				summary: "Cảnh báo duy nhất: Thêm thông tin gây tranh cãi không nguồn về người đang sống"
 			},
-			"cb-defam4im": {
+			"cb-defamatory4im": {
 				label: "Addition of defamatory content",
 				summary: "Cảnh báo duy nhất: Addition of defamatory content"
 			},
@@ -798,19 +798,10 @@ Twinkle.warn.messages = {
 		}*/
 	},
 
-
 	singlenotice: {
-		"cb-2redirect": {
-			label: "Creating double redirects through bad page moves",
-			summary: "Thông báo: Creating double redirects through bad page moves"
-		},
 		"cb-aiv": {
 			label: "Bad AIV report",
 			summary: "Thông báo: Bad AIV report"
-		},
-		"cb-articlesig": {
-			label: "Adding signatures to article space",
-			summary: "Thông báo: Adding signatures to article space"
 		},
 		"cb-autobiography": {
 			label: "Creating autobiographies",
@@ -846,10 +837,6 @@ Twinkle.warn.messages = {
 			label: "Adding speculative or unconfirmed information",
 			summary: "Thông báo: Adding speculative or unconfirmed information"
 		},
-		"cb-csd": {
-			label: "Speedy deletion declined",
-			summary: "Thông báo: Speedy deletion declined"
-		},
 		"cb-c&pmove": {
 			label: "Cut and paste moves",
 			summary: "Thông báo: Cut and paste moves"
@@ -866,10 +853,6 @@ Twinkle.warn.messages = {
 			label: "Removing proper sources containing dead links",
 			summary: "Thông báo: Removing proper sources containing dead links"
 		},
-		"cb-directcat": {
-			label: "Applying stub categories manually",
-			summary: "Thông báo: Applying stub categories manually"
-		},
 		"cb-draftfirst": {
 			label: "User should draft in userspace without the risk of speedy deletion",
 			summary: "Thông báo: Consider drafting your article in [[Help:Userspace draft|userspace]]"
@@ -882,21 +865,9 @@ Twinkle.warn.messages = {
 			label: "Không thảo luận bằng tiếng Việt",
 			summary: "Thông báo: Không thảo luận bằng tiếng Việt"
 		},
-		"cb-fuir": {
-			label: "Fair use image has been removed from your userpage",
-			summary: "Thông báo: A fair use image has been removed from your userpage"
-		},
 		"cb-hasty": {
 			label: "Hasty addition of speedy deletion tags",
 			summary: "Thông báo: Allow creators time to improve their articles before tagging them for deletion"
-		},
-		"cb-imageuse": {
-			label: "Incorrect image linking",
-			summary: "Thông báo: Incorrect image linking"
-		},
-		"cb-incompleteAFD": {
-			label: "Incomplete AFD",
-			summary: "Thông báo: Incomplete AFD"
 		},
 		"cb-inline-el": {
 			label: "Adding external links to the body of an article",
@@ -919,33 +890,13 @@ Twinkle.warn.messages = {
 			label: "Incorrect use of minor edits check box",
 			summary: "Thông báo: Incorrect use of minor edits check box"
 		},
-		"cb-nonfree": {
-			label: "Uploading replaceable non-free images",
-			summary: "Thông báo: Uploading replaceable non-free images"
-		},
-		"cb-notaiv": {
-			label: "Do not report complex abuse to AIV",
-			summary: "Thông báo: Do not report complex abuse to AIV"
-		},
 		"cb-notvietnamese": {
 			label: "Tạo bài ngoại ngữ",
 			summary: "Thông báo: Tạo bài ngoại ngữ"
 		},
-		"cb-notifysd": {
-			label: "Notify authors of speedy deletion tagged articles",
-			summary: "Thông báo: Please notify authors of articles tagged for speedy deletion"
-		},
-		"cb-notvand": {
-			label: "Mislabelling edits as vandalism",
-			summary: "Thông báo: Misidentifying edits as vandalism"
-		},
 		"cb-notvote": {
 			label: "We use consensus, not voting",
 			summary: "Thông báo: We use consensus, not voting"
-		},
-		"cb-patrolled": {
-			label: "Mark newpages as patrolled when patrolling",
-			summary: "Thông báo: Mark newpages as patrolled when patrolling"
 		},
 		"cb-plagiarism": {
 			label: "Copying from public domain sources without attribution",
@@ -955,29 +906,9 @@ Twinkle.warn.messages = {
 			label: "Use preview button to avoid mistakes",
 			summary: "Thông báo: Use preview button to avoid mistakes"
 		},
-		"cb-probation": {
-			label: "Article is on probation",
-			summary: "Thông báo: Article is on probation"
-		},
 		"cb-redlink": {
 			label: "Indiscriminate removal of redlinks",
 			summary: "Thông báo: Be careful when removing redlinks"
-		},
-		"cb-refimprove": {
-			label: "Creating unverifiable articles",
-			summary: "Thông báo: Creating unverifiable articles"
-		},
-		"cb-removevandalism": {
-			label: "Incorrect vandalism removal",
-			summary: "Thông báo: Incorrect vandalism removal"
-		},
-		"cb-repost": {
-			label: "Recreating material previously deleted via XfD process",
-			summary: "Thông báo: Recreating previously deleted material"
-		},
-		"cb-samename": {
-			label: "Rename request impossible",
-			summary: "Thông báo: Rename request impossible"
 		},
 		"cb-selfrevert": {
 			label: "Reverting self tests",
@@ -1011,25 +942,9 @@ Twinkle.warn.messages = {
 			label: "Posting at the top of talk pages",
 			summary: "Thông báo: Posting at the top of talk pages"
 		},
-		"cb-uaa": {
-			label: "Reporting of username to WP:UAA not accepted",
-			summary: "Thông báo: Reporting of username to WP:UAA not accepted"
-		},
-		"cb-upincat": {
-			label: "Accidentally including user page/subpage in a content category",
-			summary: "Thông báo: Informing user that one of his/her pages had accidentally been included in a content category"
-		},
-		"cb-uploadfirst": {
-			label: "Attempting to display an external image on a page",
-			summary: "Thông báo: Attempting to display an external image on a page"
-		},
 		"cb-userspace draft finish": {
 			label: "Stale userspace draft",
 			summary: "Thông báo: Stale userspace draft"
-		},
-		"cb-userspacenoindex": {
-			label: "User page/subpage isn't appropriate for search engine indexing",
-			summary: "Thông báo: User (sub)page isn't appropriate for search engine indexing"
 		},
 		"cb-vgscope": {
 			label: "Adding video game walkthroughs, cheats or instructions",
@@ -1112,10 +1027,6 @@ Twinkle.warn.messages = {
 		"cb-login": {
 			label: "Editing while logged out",
 			summary: "Cảnh báo: Editing while logged out"
-		},
-		"cb-longterm": {
-			label: "Long term pattern of vandalism",
-			summary: "Cảnh báo: Long term pattern of vandalism"
 		},
 		"cb-multipleIPs": {
 			label: "Usage of multiple IPs",
@@ -1394,7 +1305,7 @@ Twinkle.warn.callbacks = {
 
 		if ( Twinkle.getPref('showSharedIPNotice') && Morebits.isIPAddress( mw.config.get('wgTitle') ) ) {
 			Morebits.status.info( 'Info', 'Đang thêm thông báo cho IP chung' );
-			text +=  "\n{{subst:Khuyên IP chung}}";
+			text +=  "\n{{thế:Khuyên IP chung}}";
 		}
 
 		// build the edit summary
@@ -1445,6 +1356,7 @@ Twinkle.warn.callbacks = {
 };
 
 Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
+	var userTalkPage = 'Thảo_luận_Thành_viên:' + mw.config.get('wgRelevantUserName');
 
 	// First, check to make sure a reason was filled in if cb-username was selected
 
@@ -1468,10 +1380,10 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( e.target );
 
-	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	Morebits.wiki.actionCompleted.redirect = userTalkPage;
 	Morebits.wiki.actionCompleted.notice = "Cảnh báo hoàn tất, tải lại trang thảo luận trong vài giây";
 
-	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'Sửa trang thảo luận thành viên' );
+	var wikipedia_page = new Morebits.wiki.page( userTalkPage, 'Sửa trang thảo luận thành viên' );
 	wikipedia_page.setCallbackParameters( params );
 	wikipedia_page.setFollowRedirect( true );
 	wikipedia_page.load( Twinkle.warn.callbacks.main );

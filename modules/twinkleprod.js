@@ -188,12 +188,12 @@ Twinkle.prod.callbacks = {
 		else {  // already tagged for PROD, so try endorsing it
 			var prod2_re = /\{\{(?:Proposed deletion endorsed|prod-?2).*?\}\}/;
 			if( prod2_re.test( text ) ) {
-				statelem.warn( 'Bài viết đã được chèn bản mẫu {{prod}} và {{prod-2}}, bỏ qua tác vụ' );
+				statelem.warn( 'Bài viết đã được chèn bản mẫu {{proposed deletion}} và {{proposed deletion endorsed}}, bỏ qua tác vụ' );
 				return;
 			}
-			var confirmtext = "Bản mẫu {{prod}} đã có trong bài viết này. \nBạn có muốn thêm bản mẫu {{prod-2}} (PROD endorsement) kèm theo giải thích của bạn?";
+			var confirmtext = "Bản mẫu {{proposed deletion}} đã có trong bài viết này. \nBạn có muốn thêm bản mẫu {{proposed deletion endorsed}} kèm theo giải thích của bạn?";
 			if (params.blp) {
-				confirmtext = "Bản mẫu {{prod}} không phải BLP đã có trong bài viết này. \nBạn có muốn them bản mẫu {{prod-2}} (PROD endorsement) kèm theo lời giải thích \"article is a biography of a living person with no sources\"?";
+				confirmtext = "Bản mẫu {{proposed deletion}} không phải BLP đã có trong bài viết này. \nBạn có muốn them bản mẫu {{proposed deletion endorsed}} kèm theo lời giải thích “bài này là tiểu sử người đang sống mà thiếu nguồn gốc”?";
 			}
 			if( !confirm( confirmtext ) ) {
 				statelem.warn( 'Aborted per user request' );
@@ -201,8 +201,8 @@ Twinkle.prod.callbacks = {
 			}
 
 			summaryText = "Endorsing proposed deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
-			text = text.replace( prod_re, text.match( prod_re ) + "\n{{prod-2|1=" + (params.blp ?
-				"article is a [[WP:BLPPROD|biography of a living person with no sources]]" :
+			text = text.replace( prod_re, text.match( prod_re ) + "\n{{proposed deletion endorsed|1=" + (params.blp ?
+				"bài này là [[WP:BLPPROD|tiểu sử người đang sống mà thiếu nguồn gốc]]" :
 				Morebits.string.formatReasonText(params.reason)) + "}}\n" );
 
 			if( Twinkle.getPref('logProdPages') ) {

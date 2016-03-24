@@ -634,7 +634,7 @@ Twinkle.config.sections = [
 		{
 			name: "showSharedIPNotice",
 			label: "Add extra notice on shared IP talk pages",
-			helptip: "Thông báo được sử dụng là {{SharedIPAdvice}}",
+			helptip: "Thông báo được sử dụng là {{Khuyên IP chung}}",
 			type: "boolean"
 		},
 
@@ -826,16 +826,6 @@ Twinkle.config.sections = [
 		// twinklebatchundelete.js: How many pages left in the process of being completed should allow a new batch to be initialized
 		{
 			name: "batchUndeleteMinCutOff",
-			type: "integer"
-		},
-		// twinkledelimages.js: How many files should be processed at a time
-		{
-			name: "deliChunks",
-			type: "integer"
-		},
-		// twinkledelimages.js: How many files should be processed maximum
-		{
-			name: "deliMax",
 			type: "integer"
 		},
 		// twinkledeprod.js: How many pages should be processed at a time

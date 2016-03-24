@@ -368,7 +368,7 @@ var callback_evaluate = function( e ) {
 	if ( tbtarget === "notice" ) {
 		switch (page) {
 			case "afchd":
-				text += "\n\n{{subst:AFCHD/u|" + section + "}} ~~~~";
+				text = "\n\n{{subst:AFCHD/u|" + section + "}} ~~~~";
 				talkpage.setEditSummary( "You have replies at the [[Wikipedia:AFCHD|Articles for Creation Help Desk]]" + Twinkle.getPref("summaryAd") );
 				break;
 			case "an":
