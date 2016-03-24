@@ -926,13 +926,13 @@ Twinkle.speedy.generalList = [
 		},
 		hideWhenMultiple: true
 	},
-	{
-		label: 'C6: Trang định hướng không cần thiết',
-		value: 'disambig',
-		tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate two or fewer existing Wikipedia pages and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguates no (zero) existing Wikipedia pages, regardless of its title.',
-		hideWhenMultiple: true,
-		hideWhenRedirect: true
-	},
+	//{
+	//	label: 'C6: Trang định hướng không cần thiết',
+	//	value: 'disambig',
+	//	tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate two or fewer existing Wikipedia pages and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguates no (zero) existing Wikipedia pages, regardless of its title.',
+	//	hideWhenMultiple: true,
+	//	hideWhenRedirect: true
+	//},
 	{
 		label: 'C6: Đổi hướng bằng cách chép-dán',
 		value: 'copypaste',
@@ -1967,7 +1967,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	if (form.notify.checked) {
 		$.each(normalizeds, function(index, norm) {
 			if (Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1) {
-				if (norm === 'g6' && ['disambig', 'copypaste'].indexOf(values[index]) === -1) {
+				if (norm === 'c6' && ['disambig', 'copypaste'].indexOf(values[index]) === -1) {
 					return true;
 				}
 				notifyuser = true;
