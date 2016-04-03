@@ -1172,6 +1172,7 @@ Twinkle.speedy.callbacks = {
 			prop: "text",
 			pst: "true",
 			text: wikitext,
+			contentmodel: "wikitext",
 			title: mw.config.get("wgPageName")
 		};
 
