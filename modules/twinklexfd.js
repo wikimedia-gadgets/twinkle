@@ -74,7 +74,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		} );
 	categories.append( {
 			type: 'option',
-			label: 'FfD (Files for discussion)/PUF (Possibly unfree files)',
+			label: 'FfD (Files for discussion)',
 			selected: mw.config.get('wgNamespaceNumber') === 6,  // File namespace
 			value: 'ffd'
 		} );
@@ -308,23 +308,6 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'field',
 				label: 'Discussion venues for files',
 				name: 'work_area'
-			} );
-		work_area.append( {
-				type: 'radio',
-				name: 'ffdvenue',
-				list: [
-					{
-						label: 'File for discussion',
-						value: 'ffd',
-						tooltip: 'File may need to be deleted, or the file\'s compliance with non-free content criteria ([[WP:NFCC]]) is disputed.',
-						checked: true
-					},
-					{
-						label: 'Possibly unfree file',
-						value: 'puf',
-						tooltip: 'File has disputed source or licensing information'
-					}
-				]
 			} );
 		appendReasonBox();
 		work_area = work_area.render();
@@ -1127,86 +1110,6 @@ Twinkle.xfd.callbacks = {
 	},
 
 
-	puf: {
-		taggingImage: function(pageobj) {
-			var text = pageobj.getPageText();
-			var params = pageobj.getCallbackParameters();
-
-			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
-
-			pageobj.setPageText("{{puf|help=off|log=" + params.date + "}}\n" + text);
-			pageobj.setEditSummary("Listed at [[WP:PUF|possibly unfree files]]: [[" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchPage')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
-			pageobj.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
-			pageobj.save();
-		},
-		todaysList: function(pageobj) {
-			var text = pageobj.getPageText();
-			var params = pageobj.getCallbackParameters();
-
-			pageobj.setPageText(text + "\n{{subst:puf2|reason=" + Morebits.string.formatReasonText(params.reason) +
-				"|image=" + mw.config.get('wgTitle') + "}} ~~~~");
-			pageobj.setEditSummary("Adding [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchDiscussion')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
-			pageobj.setCreateOption('recreate');
-			pageobj.save(function() {
-				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-			});
-		},
-		userNotification: function(pageobj) {
-			var initialContrib = pageobj.getCreator();
-
-			// Disallow warning yourself
-			if (initialContrib === mw.config.get('wgUserName')) {
-				pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
-				return;
-			}
-
-			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-			var notifytext = "\n{{subst:fdw-puf|1=" + mw.config.get('wgTitle') + "}} ~~~~";
-			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: listing at [[WP:PUF|possibly unfree files]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-			usertalkpage.setCreateOption('recreate');
-			switch (Twinkle.getPref('xfdWatchUser')) {
-				case 'yes':
-					usertalkpage.setWatchlist(true);
-					break;
-				case 'no':
-					usertalkpage.setWatchlistFromPreferences(false);
-					break;
-				default:
-					usertalkpage.setWatchlistFromPreferences(true);
-					break;
-			}
-			usertalkpage.setFollowRedirect(true);
-			usertalkpage.append();
-		}
-	},
-
-
-	// NOTE: NFCR doesn't have any callbacks here, everything happens in callback.evaluate
-
-
 	cfd: {
 		taggingCategory: function(pageobj) {
 			var text = pageobj.getPageText();
@@ -1533,7 +1436,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	var type = e.target.category.value;
 	var usertalk = e.target.notify.checked;
 	var reason = e.target.xfdreason.value;
-	var xfdcat, xfdtarget, xfdtarget2, ffdvenue, noinclude, tfdtype, notifyuserspace;
+	var xfdcat, xfdtarget, xfdtarget2, noinclude, tfdtype, notifyuserspace;
 	if( type === "afd" || type === "cfd" || type === "cfds" || type === "tfd" ) {
 		xfdcat = e.target.xfdcat.value;
 	}
@@ -1541,17 +1444,6 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		xfdtarget = e.target.xfdtarget.value;
 		if (e.target.xfdtarget2) {
 			xfdtarget2 = e.target.xfdtarget2.value;
-		}
-	}
-	if( type === 'ffd' ) {
-		var ffdvenues = e.target.ffdvenue;
-		for( var i = 0; i < ffdvenues.length; i++ )
-		{
-			if( !ffdvenues[i].checked ) {
-				continue;
-			}
-			ffdvenue = ffdvenues[i].values;
-			break;
 		}
 	}
 	if( type === "afd" || type === "mfd" || type === "tfd" ) {
@@ -1674,59 +1566,28 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		wikipedia_api.post();
 		break;
 
-	case 'ffd': // FFD/PUF
+	case 'ffd': // FFD
 		var dateString = date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 		logpage = 'Wikipedia:Files for discussion/' + dateString;
 		params = { usertalk: usertalk, reason: reason, date: dateString, logpage: logpage };
 
 		Morebits.wiki.addCheckpoint();
-		switch( ffdvenue ) {
-			case 'puf':
-				params.logpage = logpage = 'Wikipedia:Possibly unfree files/' + dateString;
 
-				// Updating data for the action completed event
-				Morebits.wiki.actionCompleted.redirect = logpage;
-				Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to today's list";
+		// Updating data for the action completed event
+		Morebits.wiki.actionCompleted.redirect = logpage;
+		Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
 
-				// Tagging file
-				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging file with PUF tag");
-				wikipedia_page.setFollowRedirect(true);
-				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.load(Twinkle.xfd.callbacks.puf.taggingImage);
+		// Tagging file
+		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Adding deletion tag to file page");
+		wikipedia_page.setFollowRedirect(true);
+		wikipedia_page.setCallbackParameters(params);
+		wikipedia_page.load(Twinkle.xfd.callbacks.ffd.taggingImage);
 
-				// Adding discussion
-				wikipedia_page = new Morebits.wiki.page(params.logpage, "Adding discussion to today's list");
-				wikipedia_page.setFollowRedirect(true);
-				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.load(Twinkle.xfd.callbacks.puf.todaysList);
+		// Contributor specific edits
+		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
+		wikipedia_page.setCallbackParameters(params);
+		wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.ffd.main);
 
-				// Notification to first contributor
-				if (usertalk) {
-					wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
-					wikipedia_page.setCallbackParameters(params);
-					wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.puf.userNotification);
-				}
-
-				Morebits.wiki.removeCheckpoint();
-				break;
-
-			default:
-				// Updating data for the action completed event
-				Morebits.wiki.actionCompleted.redirect = logpage;
-				Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to the discussion page";
-
-				// Tagging file
-				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Adding deletion tag to file page");
-				wikipedia_page.setFollowRedirect(true);
-				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.load(Twinkle.xfd.callbacks.ffd.taggingImage);
-
-				// Contributor specific edits
-				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
-				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.ffd.main);
-				break;
-		}
 		Morebits.wiki.removeCheckpoint();
 		break;
 
