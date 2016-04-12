@@ -1089,7 +1089,7 @@ Twinkle.xfd.callbacks = {
 				text = "{{subst:Ffd log}}";
 			}
 
-			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext("ffd", params));
+			pageobj.setPageText(text + "\n\n" + Twinkle.xfd.callbacks.getDiscussionWikitext("ffd", params));
 			pageobj.setEditSummary("Adding [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
