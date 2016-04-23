@@ -288,8 +288,8 @@ Twinkle.fluff.callbacks = {
 				'undoafter': revertToRevID,
 				'basetimestamp': touched,
 				'starttimestamp': starttimestamp,
-				'watchlist': Twinkle.getPref('watchRevertedPages').indexOf( self.params.type ) !== -1 ? 'watch' : undefined,
-				'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf( self.params.type ) !== -1  ? true : undefined
+				'watchlist': Twinkle.getPref('watchRevertedPages').indexOf( 'torev' ) !== -1 ? 'watch' : undefined,
+				'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf( 'torev' ) !== -1  ? true : undefined
 			};
 
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
