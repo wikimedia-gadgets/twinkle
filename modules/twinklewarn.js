@@ -18,21 +18,74 @@ Twinkle.warn = function twinklewarn() {
 			Twinkle.addPortletLink( Twinkle.warn.callback, "Warn", "tw-warn", "Warn/notify user" );
 	}
 
-	// modify URL of talk page on rollback success pages
+	// Modify URL of talk page on rollback success pages. This is only used
+	// when a user Ctrl+clicks on a rollback link.
 	if( mw.config.get('wgAction') === 'rollback' ) {
 		var $vandalTalkLink = $("#mw-rollback-success").find(".mw-usertoollinks a").first();
 		if ( $vandalTalkLink.length ) {
+			Twinkle.warn.makeVandalTalkLink($vandalTalkLink);
 			$vandalTalkLink.css("font-weight", "bold");
-			$vandalTalkLink.wrapInner($("<span/>").attr("title", "If appropriate, you can use Twinkle to warn the user about their edits to this page."));
-
-			var extraParam = "vanarticle=" + mw.util.rawurlencode(Morebits.pageNameNorm);
-			var href = $vandalTalkLink.attr("href");
-			if (href.indexOf("?") === -1) {
-				$vandalTalkLink.attr("href", href + "?" + extraParam);
-			} else {
-				$vandalTalkLink.attr("href", href + "&" + extraParam);
-			}
 		}
+	}
+	
+	// Override the mw.notify function to allow us to inject a link into the
+	// rollback success popup. Only users with the 'rollback' right need this,
+	// but we have no nice way of knowing who has that right (what with global
+	// groups and the like)
+	else if( mw.config.get('wgAction') === 'history' ) {
+		mw.notifyOriginal = mw.notify;
+		mw.notify = function mwNotifyTwinkleOverride(message, options) {
+			// This is a horrible, awful hack to add a link to the rollback success
+			// popup. All other notification popups should be left untouched.
+			// It won't work for people whose user language is not English.
+			// As it's a hack, it's liable to stop working or break sometimes,
+			// particularly if the text or format of the confirmation message
+			// (MediaWiki:Rollback-success-notify) changes.
+			var regexMatch;
+			if ( options && options.title && mw.msg && options.title === mw.msg('actioncomplete') &&
+				message && $.isArray(message) && message[0] instanceof HTMLParagraphElement &&
+				(regexMatch = /^Reverted edits by (.+);\s+changed/.exec(message[0].innerText))
+			) {
+				// Create a nicely-styled paragraph to place the link in
+				var $p = $('<p/>');
+				$p.css("margin", "0.5em -1.5em -1.5em");
+				$p.css("padding", "0.5em 1.5em 0.8em");
+				$p.css("border-top", "1px #666 solid");
+				$p.css("cursor", "default");
+				$p.click(function(e) { e.stopPropagation(); });
+				
+				// Create the new talk link and append it to the end of the message
+				var $vandalTalkLink = $('<a/>');
+				$vandalTalkLink.text("Warn user with Twinkle");
+				//$vandalTalkLink.css("display", "block");
+				$vandalTalkLink.attr("href", mw.util.getUrl("User talk:" + regexMatch[1]));
+				Twinkle.warn.makeVandalTalkLink($vandalTalkLink);
+				
+				$p.append($vandalTalkLink);
+				message[0].appendChild($p.get()[0]);
+				
+				// Don't auto-hide the notification. It only stays around for 5 seconds by
+				// default, which might not be enough time for the user to read it and
+				// click the link
+				options.autoHide = false;
+			}
+			mw.notifyOriginal.apply(mw, arguments);
+		};
+	}
+	
+	// for testing, use:
+	// mw.notify([ $("<p>Reverted edits by foo; changed</p>")[0] ], { title: mw.msg('actioncomplete') } );
+};
+
+Twinkle.warn.makeVandalTalkLink = function($vandalTalkLink) {
+	$vandalTalkLink.wrapInner($("<span/>").attr("title", "If appropriate, you can use Twinkle to warn the user about their edits to this page."));
+
+	var extraParam = "vanarticle=" + mw.util.rawurlencode(Morebits.pageNameNorm);
+	var href = $vandalTalkLink.attr("href");
+	if (href.indexOf("?") === -1) {
+		$vandalTalkLink.attr("href", href + "?" + extraParam);
+	} else {
+		$vandalTalkLink.attr("href", href + "&" + extraParam);
 	}
 };
 
@@ -67,8 +120,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	main_group.append( { type: 'option', label: 'Warning (3)', value: 'level3', selected: ( defaultGroup === 3 ) } );
 	main_group.append( { type: 'option', label: 'Final warning (4)', value: 'level4', selected: ( defaultGroup === 4 ) } );
 	main_group.append( { type: 'option', label: 'Only warning (4im)', value: 'level4im', selected: ( defaultGroup === 5 ) } );
-	main_group.append( { type: 'option', label: 'Single issue notices', value: 'singlenotice', selected: ( defaultGroup === 6 ) } );
-	main_group.append( { type: 'option', label: 'Single issue warnings', value: 'singlewarn', selected: ( defaultGroup === 7 ) } );
+	main_group.append( { type: 'option', label: 'Single-issue notices', value: 'singlenotice', selected: ( defaultGroup === 6 ) } );
+	main_group.append( { type: 'option', label: 'Single-issue warnings', value: 'singlewarn', selected: ( defaultGroup === 7 ) } );
 	if( Twinkle.getPref( 'customWarningList' ).length ) {
 		main_group.append( { type: 'option', label: 'Custom warnings', value: 'custom', selected: ( defaultGroup === 9 ) } );
 	}
