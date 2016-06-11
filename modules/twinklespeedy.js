@@ -915,6 +915,12 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
+		label: 'G6: Obviously created in error',
+		value: 'error',
+		tooltip: 'A page that was obviously created in error, or a redirect left over from moving a page that was obviously created at the wrong title',
+		hideWhenMultiple: true
+	},
+	{
 		label: 'G6: XfD',
 		value: 'xfd',
 		tooltip: 'An admin has closed a deletion discussion (at AfD, FfD, RfD, TfD, CfD, or MfD) as "delete", but they didn\'t actually delete the page.',
