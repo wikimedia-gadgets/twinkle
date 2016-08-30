@@ -679,9 +679,13 @@ Twinkle.protect.protectionTypes = [
 		]
 	},
 	{
-		label: '30/500 protection',
+		label: 'Extended confirmed protection',
 		list: [
-			{ label: 'Arbitration enforcement (30/500)', value: 'pp-30-500' }
+			{ label: 'Arbitration enforcement (ECP)', selected: true, value: 'pp-30-500-arb' },
+			{ label: 'Persistent vandalism (ECP)', value: 'pp-30-500-vandalism' },
+			{ label: 'Disruptive editing (ECP)', value: 'pp-30-500-disruptive' },
+			{ label: 'BLP policy violations (ECP)', value: 'pp-30-500-blp' },
+			{ label: 'Sockpuppetry (ECP)', value: 'pp-30-500-sock' }
 		]
 	},
 	{
@@ -771,10 +775,34 @@ Twinkle.protect.protectionPresetsInfo = {
 		move: 'templateeditor',
 		reason: '[[WP:High-risk templates|Highly visible template]]'
 	},
-	'pp-30-500': {
+	'pp-30-500-arb': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: '[[WP:30/500|Arbitration enforcement]]',
+		template: 'pp-30-500'
+	},
+	'pp-30-500-vandalism': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		reason: 'Persistent [[WP:Vandalism|vandalism]] from (auto)confirmed accounts',
+		template: 'pp-30-500'
+	},
+	'pp-30-500-disruptive': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]] from (auto)confirmed accounts',
+		template: 'pp-30-500'
+	},
+	'pp-30-500-blp': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		reason: 'Persistent violations of the [[WP:BLP|biographies of living persons policy]] from (auto)confirmed accounts',
+		template: 'pp-30-500'
+	},
+	'pp-30-500-sock': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]',
 		template: 'pp-30-500'
 	},
 	'pp-semi-vandalism': {
@@ -906,7 +934,7 @@ Twinkle.protect.protectionTags = [
 			{ label: '{{pp-usertalk}}: blocked user talk', value: 'pp-usertalk' },
 			{ label: '{{pp-protected}}: general protection', value: 'pp-protected' },
 			{ label: '{{pp-semi-indef}}: general long-term semi-protection', value: 'pp-semi-indef' },
-			{ label: '{{pp-30-500}}: Arbitration enforcement', value: 'pp-30-500' }
+			{ label: '{{pp-30-500}}: extended confirmed protection', value: 'pp-30-500' }
 		]
 	},
 	{
@@ -941,8 +969,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 	}
 
 	if (actiontype === 'protect') {  // actually protecting the page
-		var item = Twinkle.protect.protectionPresetsInfo[form.category.value],
-			isArbEnforcement = item.edit === 'extendedconfirmed';
+		var item = Twinkle.protect.protectionPresetsInfo[form.category.value];
 
 		if (mw.config.get('wgArticleId')) {
 			if (item.edit) {
@@ -950,14 +977,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				Twinkle.protect.formevents.editmodify({ target: form.editmodify });
 				form.editlevel.value = item.edit;
 				Twinkle.protect.formevents.editlevel({ target: form.editlevel });
-
-				// NOTE: Currently extendedconfirmed protection is only for Arbitration enforcement,
-				//   and inherently of indefinite duration.
-				if (isArbEnforcement) {
-					form.editexpiry.value = 'indefinite';
-				} else {
-					form.editexpiry.value = '2 days';
-				}
+				form.editexpiry.value = '2 days';
 			} else {
 				form.editmodify.checked = false;
 				Twinkle.protect.formevents.editmodify({ target: form.editmodify });
@@ -968,11 +988,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 				form.movelevel.value = item.move;
 				Twinkle.protect.formevents.movelevel({ target: form.movelevel });
-				if (isArbEnforcement) {
-					form.moveexpiry.value = 'indefinite';
-				} else {
-					form.moveexpiry.value = '2 days';
-				}
+				form.moveexpiry.value = '2 days';
 			} else {
 				form.movemodify.checked = false;
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
@@ -1023,13 +1039,8 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			form.expiry.value = '';
 			form.expiry.disabled = true;
 		} else {
-			if( form.category.value === 'pp-30-500' ) {
-				form.expiry.value = 'indefinite';
-				form.expiry.disabled = true;
-			} else {
-				form.expiry.value = '';
-				form.expiry.disabled = false;
-			}
+			form.expiry.value = '';
+			form.expiry.disabled = false;
 		}
 	}
 };
@@ -1067,12 +1078,6 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	switch (actiontype) {
 		case 'protect':
 			// protect the page
-
-			if (form.editlevel.value === 'extendedconfirmed' && !confirm('Extended confirmed protection is only for Arbitration enforcement. ' +
-				'Please confirm that the subject of this page is a qualifying topic (see WP:30/500).')) {
-					return;
-			}
-
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 			Morebits.wiki.actionCompleted.notice = "Protection complete";
 
@@ -1180,13 +1185,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			break;
 
 		case 'request':
-			// file request at RPP
-
-			if (form.category.value === 'pp-30-500' && !confirm('Extended confirmed protection is only for Arbitration enforcement. ' +
-				'Please confirm that the subject of this page is a qualifying topic (see WP:30/500).')) {
-					return;
-			}
-
+			// file request at RFPP
 			var typename, typereason;
 			switch( form.category.value ) {
 				case 'pp-dispute':
@@ -1198,7 +1197,11 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-template':
 					typename = 'template protection';
 					break;
-				case 'pp-30-500':
+				case 'pp-30-500-arb':
+				case 'pp-30-500-vandalism':
+				case 'pp-30-500-disruptive':
+				case 'pp-30-500-blp':
+				case 'pp-30-500-sock':
 					typename = 'extended confirmed';
 					break;
 				case 'pp-semi-vandalism':
@@ -1242,10 +1245,12 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-vandalism':
 				case 'pp-semi-vandalism':
 				case 'pp-pc-vandalism':
-					typereason = 'Persistent vandalism';
+				case 'pp-30-500-vandalism':
+					typereason = 'Persistent [[WP:VAND|vandalism]]';
 					break;
 				case 'pp-semi-disruptive':
 				case 'pp-pc-disruptive':
+				case 'pp-30-500-disruptive':
 					typereason = 'Persistent [[Wikipedia:Disruptive editing|disruptive editing]]';
 					break;
 				case 'pp-semi-unsourced':
@@ -1253,9 +1258,9 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typereason = 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]';
 					break;
 				case 'pp-template':
-					typereason = 'Highly visible template';
+					typereason = '[[WP:HIGHRISK|High-risk template]]';
 					break;
-				case 'pp-30-500':
+				case 'pp-30-500-arb':
 					typereason = '[[WP:30/500|Arbitration enforcement]]';
 					break;
 				case 'pp-usertalk':
@@ -1263,10 +1268,12 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typereason = 'Inappropriate use of user talk page while blocked';
 					break;
 				case 'pp-semi-sock':
-					typereason = 'Persistent sockpuppetry';
+				case 'pp-30-500-sock':
+					typereason = 'Persistent [[WP:SOCK|sockpuppetry]]';
 					break;
 				case 'pp-semi-blp':
 				case 'pp-pc-blp':
+				case 'pp-30-500-blp':
 					typereason = '[[WP:BLP|BLP]] policy violations';
 					break;
 				case 'pp-move-dispute':
