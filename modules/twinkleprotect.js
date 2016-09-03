@@ -252,7 +252,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					});
 				editlevel.append({
 						type: 'option',
-						label: 'Extended confirmed',
+						label: '[NEW] Extended confirmed',
 						value: 'extendedconfirmed'
 					});
 				if (isTemplate) {
@@ -329,7 +329,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					});
 				movelevel.append({
 						type: 'option',
-						label: 'Extended confirmed',
+						label: '[NEW] Extended confirmed',
 						value: 'extendedconfirmed'
 					});
 				if (isTemplate) {
@@ -679,7 +679,7 @@ Twinkle.protect.protectionTypes = [
 		]
 	},
 	{
-		label: 'Extended confirmed protection',
+		label: '[NEW] Extended confirmed protection',
 		list: [
 			{ label: 'Arbitration enforcement (ECP)', selected: true, value: 'pp-30-500-arb' },
 			{ label: 'Persistent vandalism (ECP)', value: 'pp-30-500-vandalism' },
