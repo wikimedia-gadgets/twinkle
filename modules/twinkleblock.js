@@ -445,6 +445,12 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '{{school block}}',
 		sig: '~~~~'
 	},
+	'spamblacklistblock' : {
+		expiry: '1 month',
+		disabletalk: true,
+		nocreate: true,
+		reason: '{{spamblacklistblock}} <!-- editor only attempts to add blacklisted links, see [[Special:Log/spamblacklist]] -->'
+	},
 	// Placeholder for when we add support for rangeblocks
 	// 'rangeblock' : {
 	//   reason: '{{rangeblock}}',
@@ -865,6 +871,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'colocationwebhost', value: 'colocationwebhost' },
 			{ label: 'oversightblock', value: 'oversightblock' },
 			// { label: 'rangeblock', value: 'rangeblock' }, // placeholder for when we add support for rangeblocks
+			{ label: 'spamblacklistblock', value: 'spamblacklistblock' },
 			{ label: 'tor', value: 'tor' },
 			{ label: 'webhostblock', value: 'webhostblock' }
 		]
