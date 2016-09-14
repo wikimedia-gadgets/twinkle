@@ -446,6 +446,7 @@ Twinkle.block.blockPresetsInfo = {
 		sig: '~~~~'
 	},
 	'spamblacklistblock' : {
+		forAnonOnly: true,
 		expiry: '1 month',
 		disabletalk: true,
 		nocreate: true,
