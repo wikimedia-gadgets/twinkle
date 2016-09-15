@@ -893,7 +893,8 @@ Twinkle.speedy.generalList = [
 			type: 'input',
 			label: 'Page to be merged into this one: '
 		},
-		hideWhenMultiple: true
+		hideWhenMultiple: true,
+		hideWhenSysop: true
 	},
 	{
 		label: 'G6: Move',
@@ -1440,7 +1441,7 @@ Twinkle.speedy.callbacks = {
 			} else if (params.normalizeds[0] === "db") {
 				editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale \"' + params.templateParams[0]["1"] + '\".';
 			} else if (params.values[0] === "histmerge") {
-				editsummary = "Requesting history merge with [[" + params["1"] + "]] ([[WP:CSD#G6|CSD G6]]).";
+				editsummary = "Requesting history merge with [[" + params.templateParams[0]["1"] + "]] ([[WP:CSD#G6|CSD G6]]).";
 			} else {
 				editsummary = "Requesting speedy deletion ([[WP:CSD#" + params.normalizeds[0].toUpperCase() + "|CSD " + params.normalizeds[0].toUpperCase() + "]]).";
 			}
