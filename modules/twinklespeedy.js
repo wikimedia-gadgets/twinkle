@@ -359,7 +359,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			case 2:  // user
 			case 3:  // user talk
 				work_area.append( { type: 'header', label: 'User pages' } );
-				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userList, mode) } );
+				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList.concat(Twinkle.speedy.userNonRedirectList), mode) } );
 				break;
 
 			case 6:  // file
@@ -392,6 +392,9 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			default:
 				break;
 		}
+	} else if (namespace == 2 || namespace == 3) {
+		work_area.append( { type: 'header', label: 'User pages' } );
+		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList, mode) } );
 	}
 
 	// custom rationale lives under general criteria when tagging
@@ -755,7 +758,7 @@ Twinkle.speedy.categoryList = [
 	}
 ];
 
-Twinkle.speedy.userList = [
+Twinkle.speedy.userAllList = [
 	{
 		label: 'U1: User request',
 		value: 'userreq',
@@ -768,7 +771,10 @@ Twinkle.speedy.userList = [
 			size: 60
 		} : null),
 		hideSubgroupWhenMultiple: true
-	},
+	}
+];
+
+Twinkle.speedy.userNonRedirectList = [
 	{
 		label: 'U2: Nonexistent user',
 		value: 'nouser',
