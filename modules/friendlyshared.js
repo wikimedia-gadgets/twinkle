@@ -16,15 +16,15 @@
 Twinkle.shared = function friendlyshared() {
 	if( mw.config.get('wgNamespaceNumber') === 3 && Morebits.isIPAddress(mw.config.get('wgTitle')) ) {
 		var username = mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-		Twinkle.addPortletLink( function(){ Twinkle.shared.callback(username); }, $.i18n._('tw-sharedip-label'), "friendly-shared", 'tw-sharedip-label-hover' );
+		Twinkle.addPortletLink( function(){ Twinkle.shared.callback(username); }, $._._('tw-sharedip-label'), "friendly-shared", 'tw-sharedip-label-hover' );
 	}
 };
 
 Twinkle.shared.callback = function friendlysharedCallback() {
 	var Window = new Morebits.simpleWindow( 600, 420 );
-	Window.setTitle( $.i18n._('tw-sharedip-window-title') );
-	Window.setScriptName( $.i18n._('tw-core-script-name') );
-	Window.addFooterLink( $.i18n._('tw-core-help'), $.i18n._('tw-core-help-page') );
+	Window.setTitle( $._._('tw-sharedip-window-title') );
+	Window.setScriptName( $._._('tw-core-script-name') );
+	Window.addFooterLink( $._._('tw-core-help'), $._._('tw-core-help-page') );
 	
 	var form = new Morebits.quickForm( Twinkle.shared.callback.evaluate );
 
@@ -34,7 +34,7 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 			className: 'morebits-scrollbox'
 		}
 	);
-	div.append( { type: 'header', label: $.i18n._('tw-sharedip-templates') } );
+	div.append( { type: 'header', label: $._._('tw-sharedip-templates') } );
 	div.append( { type: 'radio', name: 'shared', list: Twinkle.shared.standardList,
 		event: function( e ) {
 			Twinkle.shared.callback.change_shared( e );
@@ -42,29 +42,29 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 		}
 	} );
 
-	var org = form.append( { type:'field', label: $.i18n._('tw-sharedip-field-label') } );
+	var org = form.append( { type:'field', label: $._._('tw-sharedip-field-label') } );
 	org.append( {
 			type: 'input',
 			name: 'organization',
-			label: $.i18n._('tw-sharedip-owner'),
+			label: $._._('tw-sharedip-owner'),
 			disabled: true,
-			tooltip: $.i18n._('tw-sharedip-owner-tooltip')
+			tooltip: $._._('tw-sharedip-owner-tooltip')
 		}
 	);
 	org.append( {
 			type: 'input',
 			name: 'host',
-			label: $.i18n._('tw-sharedip-host'),
+			label: $._._('tw-sharedip-host'),
 			disabled: true,
-			tooltip: $.i18n._('tw-sharedip-host-tooltip')
+			tooltip: $._._('tw-sharedip-host-tooltip')
 		}
 	);
 	org.append( {
 			type: 'input',
 			name: 'contact',
-			label: $.i18n._('tw-sharedip-contact'),
+			label: $._._('tw-sharedip-contact'),
 			disabled: true,
-			tooltip: $.i18n._('tw-sharedip-contact-tooltip')
+			tooltip: $._._('tw-sharedip-contact-tooltip')
 		}
 	);
 
@@ -91,7 +91,7 @@ Twinkle.shared.callbacks = {
 		for( var i=0; i < Twinkle.shared.standardList.length; i++ ) {
 			var tagRe = new RegExp( '(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im' );
 			if( tagRe.exec( pageText ) ) {
-				Morebits.status.warn( $.i18n._('morebits-info'), $.i18n._('tw-sharedip-aborting', Twinkle.shared.standardList[i].value) );
+				Morebits.status.warn( $._._('morebits-info'), $._._('tw-sharedip-aborting', Twinkle.shared.standardList[i].value) );
 				found = true;
 			}
 		}
@@ -100,7 +100,7 @@ Twinkle.shared.callbacks = {
 			return;
 		}
 
-		Morebits.status.info( $.i18n._('morebits-info'), $.i18n._('tw-sharedip-will-add') );
+		Morebits.status.info( $._._('morebits-info'), $._._('tw-sharedip-will-add') );
 		text += params.value + '|' + params.organization;
 		if( params.value === 'Shared IP edu' && params.contact !== '') {
 			text += '|' + params.contact;
@@ -110,7 +110,7 @@ Twinkle.shared.callbacks = {
 		}
 		text += '}}\n\n';
 
-		var summaryText = $.i18n._('tw-sharedip-added', params.value, params.value);
+		var summaryText = $._._('tw-sharedip-added', params.value, params.value);
 		pageobj.setPageText(text + pageText);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
 		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markSharedIPAsMinor'));
@@ -122,14 +122,14 @@ Twinkle.shared.callbacks = {
 Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	var shared = e.target.getChecked( 'shared' );
 	if( !shared || shared.length <= 0 ) {
-		alert( $.i18n._('tw-sharedip-alert-template') );
+		alert( $._._('tw-sharedip-alert-template') );
 		return;
 	}
 
 	var value = shared[0];
 
 	if( e.target.organization.value === '') {
-		alert( $.i18n._('tw-sharedip-alert-organization'), value );
+		alert( $._._('tw-sharedip-alert-organization'), value );
 		return;
 	}
 
@@ -144,9 +144,9 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	Morebits.status.init( e.target );
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = $.i18n._('tw-sharedip-done');
+	Morebits.wiki.actionCompleted.notice = $._._('tw-sharedip-done');
 
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), $.i18n._('tw-sharedip-action'));
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), $._._('tw-sharedip-action'));
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.shared.callbacks.main);
