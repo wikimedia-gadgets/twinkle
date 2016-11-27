@@ -30,7 +30,7 @@
 		 *
 		 * Initialize i18n
 		 *
-		 * @param	property_list options : Initernationalization options.
+		 * @param	property_list options -- Initernationalization options.
 		 */
 		init: function(options) {
 			this.locale = options.locale;
@@ -42,7 +42,7 @@
 		 *
 		 * Load	translations.
 		 *
-		 * @param	property_list dict : The dictionary to use for translation.
+		 * @param	property_list dict -- The dictionary to use for translation.
 		 */
 		load: function ( dict ) {
 			if (this.dict !== null) {
@@ -58,10 +58,10 @@
 		 * Looks the given string up in the dictionary and returns the translation if
 		 * one exists. If a translation is not found, returns the original word.
 		 *
-		 * @param	string str					 : The string to translate.
-		 * @param	property_list params.. : params for using printf() on the string.
+		 * @param	string str -- The string to translate.
+		 * @param	property_list params.. -- params for using printf() on the string.
 		 *
-		 * @return	string							 : Translated word.
+		 * @return	string -- Translated word.
 		 */
 		_: function ( str ) {
 			dict = this.dict[this.locale];
@@ -82,10 +82,10 @@
 		 *
 		 * Substitutes %s with parameters given in list. %%s is used to escape %s.
 		 *
-		 * @param	string str		: String to perform printf on.
-		 * @param	string args	 : Array of arguments for printf.
+		 * @param	string str -- String to perform printf on.
+		 * @param	string args -- Array of arguments for printf.
 		 *
-		 * @return	string result : Substituted string
+		 * @return	string result -- Substituted string
 		 */
 		printf: function( str, args ) {
 			if (arguments.length < 2) return str;
