@@ -194,9 +194,9 @@ Twinkle.tag.updateSortOrder = function(e) {
 					size: 50
 				};
 				break;
-			case "expert-subject":
+			case "expert needed":
 				checkbox.subgroup = {
-					name: 'expertSubject',
+					name: 'expertNeeded',
 					type: 'input',
 					label: 'Name of relevant WikiProject: ',
 					tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.'
@@ -443,7 +443,7 @@ Twinkle.tag.article.tags = {
 	"disputed": "article has questionable factual accuracy",
 	"essay-like": "article is written like a personal reflection or opinion essay",
 	"expand language": "article can be expanded with material from a foreign-language Wikipedia",
-	"expert-subject": "article needs attention from an expert on the subject",
+	"expert needed": "article needs attention from an expert on the subject",
 	"external links": "article's external links may not follow content policies or guidelines",
 	"fansite": "article resembles a fansite",
 	"fiction": "article fails to distinguish between fact and fiction",
@@ -465,7 +465,7 @@ Twinkle.tag.article.tags = {
 	"merge to": "article should be merged into another given article",
 	"metricate": "article exclusively uses non-SI units of measurement",
 	"more footnotes": "article has some references, but insufficient in-text citations",
-	"new unreviewed article": "mark article for later review",
+	"new unreviewed article": "mark your own article for later review",
 	"news release": "article reads like a news release",
 	"no footnotes": "article has references, but no in-text citations",
 	"non-free": "article may contain excessive or improper use of copyrighted materials",
@@ -477,6 +477,7 @@ Twinkle.tag.article.tags = {
 	"overcoverage": "article has an extensive bias or disproportional coverage towards one or more specific regions",
 	"overlinked": "article may have too many duplicate and/or irrelevant links",
 	"overly detailed": "article contains an excessive amount of intricate detail",
+	"over-quotation": "article contains too many or too-lengthy quotations for an encyclopedic entry",
 	"peacock": "article may contain peacock terms that promote the subject without adding information",
 	"plot": "plot summary in article is too long",
 	"POV": "article does not maintain a neutral point of view",
@@ -547,6 +548,7 @@ Twinkle.tag.article.tagCategories = {
 			"fansite",
 			"manual",
 			"news release",
+			"over-quotation",
 			"prose",
 			"technical",
 			"tense",
@@ -559,7 +561,7 @@ Twinkle.tag.article.tagCategories = {
 		],
 		"Information and detail": [
 			"context",
-			"expert-subject",
+			"expert needed",
 			"metricate",
 			"overly detailed",
 			"undue"
@@ -918,9 +920,9 @@ Twinkle.tag.callbacks = {
 							currentTag += '|otherarticle=' + otherart;
 						}
 						break;
-					case 'expert-subject':
-						if (params.tagParameters.expertSubject) {
-							currentTag += '|1=' + params.tagParameters.expertSubject;
+					case 'expert needed':
+						if (params.tagParameters.expertNeeded) {
+							currentTag += '|1=' + params.tagParameters.expertNeeded;
 						}
 						break;
 					case 'news release':
@@ -1351,7 +1353,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				cleanup: form["articleTags.cleanup"] ? form["articleTags.cleanup"].value : null,
 				copyEdit: form["articleTags.copyEdit"] ? form["articleTags.copyEdit"].value : null,
 				copypaste: form["articleTags.copypaste"] ? form["articleTags.copypaste"].value : null,
-				expertSubject: form["articleTags.expertSubject"] ? form["articleTags.expertSubject"].value : null,
+				expertNeeded: form["articleTags.expertNeeded"] ? form["articleTags.expertNeeded"].value : null,
 				globalize: form["articleTags.globalize"] ? form["articleTags.globalize"].value : null,
 				notability: form["articleTags.notability"] ? form["articleTags.notability"].value : null
 			};

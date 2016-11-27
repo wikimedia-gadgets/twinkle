@@ -359,7 +359,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			case 2:  // user
 			case 3:  // user talk
 				work_area.append( { type: 'header', label: 'User pages' } );
-				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userList, mode) } );
+				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList.concat(Twinkle.speedy.userNonRedirectList), mode) } );
 				break;
 
 			case 6:  // file
@@ -392,6 +392,9 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			default:
 				break;
 		}
+	} else if (namespace == 2 || namespace == 3) {
+		work_area.append( { type: 'header', label: 'User pages' } );
+		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList, mode) } );
 	}
 
 	// custom rationale lives under general criteria when tagging
@@ -746,7 +749,7 @@ Twinkle.speedy.categoryList = [
 	{
 		label: 'C1: Empty categories',
 		value: 'catempty',
-		tooltip: 'Categories that have been unpopulated for at least four days. This does not apply to categories being discussed at WP:CFD, disambiguation categories, and certain other exceptions. If the category isn\'t relatively new, it possibly contained articles earlier, and deeper investigation is needed'
+		tooltip: 'Categories that have been unpopulated for at least seven days. This does not apply to categories being discussed at WP:CFD, disambiguation categories, and certain other exceptions. If the category isn\'t relatively new, it possibly contained articles earlier, and deeper investigation is needed'
 	},
 	{
 		label: 'G8: Categories populated by a deleted or retargeted template',
@@ -755,7 +758,7 @@ Twinkle.speedy.categoryList = [
 	}
 ];
 
-Twinkle.speedy.userList = [
+Twinkle.speedy.userAllList = [
 	{
 		label: 'U1: User request',
 		value: 'userreq',
@@ -768,7 +771,10 @@ Twinkle.speedy.userList = [
 			size: 60
 		} : null),
 		hideSubgroupWhenMultiple: true
-	},
+	}
+];
+
+Twinkle.speedy.userNonRedirectList = [
 	{
 		label: 'U2: Nonexistent user',
 		value: 'nouser',
@@ -893,7 +899,8 @@ Twinkle.speedy.generalList = [
 			type: 'input',
 			label: 'Page to be merged into this one: '
 		},
-		hideWhenMultiple: true
+		hideWhenMultiple: true,
+		hideWhenSysop: true
 	},
 	{
 		label: 'G6: Move',
@@ -1172,6 +1179,7 @@ Twinkle.speedy.callbacks = {
 			prop: "text",
 			pst: "true",
 			text: wikitext,
+			contentmodel: "wikitext",
 			title: mw.config.get("wgPageName")
 		};
 
@@ -1439,7 +1447,7 @@ Twinkle.speedy.callbacks = {
 			} else if (params.normalizeds[0] === "db") {
 				editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale \"' + params.templateParams[0]["1"] + '\".';
 			} else if (params.values[0] === "histmerge") {
-				editsummary = "Requesting history merge with [[" + params["1"] + "]] ([[WP:CSD#G6|CSD G6]]).";
+				editsummary = "Requesting history merge with [[" + params.templateParams[0]["1"] + "]] ([[WP:CSD#G6|CSD G6]]).";
 			} else {
 				editsummary = "Requesting speedy deletion ([[WP:CSD#" + params.normalizeds[0].toUpperCase() + "|CSD " + params.normalizeds[0].toUpperCase() + "]]).";
 			}

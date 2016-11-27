@@ -445,6 +445,13 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '{{school block}}',
 		sig: '~~~~'
 	},
+	'spamblacklistblock' : {
+		forAnonOnly: true,
+		expiry: '1 month',
+		disabletalk: true,
+		nocreate: true,
+		reason: '{{spamblacklistblock}} <!-- editor only attempts to add blacklisted links, see [[Special:Log/spamblacklist]] -->'
+	},
 	// Placeholder for when we add support for rangeblocks
 	// 'rangeblock' : {
 	//   reason: '{{rangeblock}}',
@@ -715,6 +722,14 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '{{uw-ublock-double}} <!-- Username closely resembles another user, soft block -->',
 		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] is too similar to the username of another Wikipedia user'
 	},
+	'uw-ucblock' : {
+		autoblock: true,
+		expiry: '31 hours',
+		nocreate: true,
+		pageParam: true,
+		reason: 'Persistent addition of [[WP:INTREF|unsourced content]]',
+		summary: 'You have been blocked from editing for persistent addition of [[WP:INTREF|unsourced content]]'
+	},
 	'uw-uhblock' : {
 		autoblock: true,
 		expiry: 'infinity',
@@ -800,6 +815,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Disruptive editing', value: 'uw-disruptblock' },
 			{ label: 'Inappropriate use of user talk page while blocked', value: 'uw-talkrevoked' },
 			{ label: 'Not here to contribute to the encyclopedia', value: 'uw-nothereblock' },
+			{ label: 'Unsourced content', value: 'uw-ucblock' },
 			{ label: 'Vandalism', value: 'uw-vblock' },
 			{ label: 'Vandalism-only account', value: 'uw-voablock' }
 		],
@@ -856,6 +872,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'colocationwebhost', value: 'colocationwebhost' },
 			{ label: 'oversightblock', value: 'oversightblock' },
 			// { label: 'rangeblock', value: 'rangeblock' }, // placeholder for when we add support for rangeblocks
+			{ label: 'spamblacklistblock', value: 'spamblacklistblock' },
 			{ label: 'tor', value: 'tor' },
 			{ label: 'webhostblock', value: 'webhostblock' }
 		]

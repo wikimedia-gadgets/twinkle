@@ -250,6 +250,11 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						label: 'Autoconfirmed',
 						value: 'autoconfirmed'
 					});
+				editlevel.append({
+						type: 'option',
+						label: '[NEW] Extended confirmed',
+						value: 'extendedconfirmed'
+					});
 				if (isTemplate) {
 					editlevel.append({
 							type: 'option',
@@ -272,6 +277,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 								Twinkle.protect.doCustomExpiry(e.target);
 							}
 						},
+						// default expiry selection is conditionally set in Twinkle.protect.callback.changePreset
 						list: [
 							{ label: '1 hour', value: '1 hour' },
 							{ label: '2 hours', value: '2 hours' },
@@ -279,7 +285,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							{ label: '6 hours', value: '6 hours' },
 							{ label: '12 hours', value: '12 hours' },
 							{ label: '1 day', value: '1 day' },
-							{ label: '2 days', selected: true, value: '2 days' },
+							{ label: '2 days', value: '2 days' },
 							{ label: '3 days', value: '3 days' },
 							{ label: '4 days', value: '4 days' },
 							{ label: '1 week', value: '1 week' },
@@ -321,6 +327,11 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						label: 'Autoconfirmed',
 						value: 'autoconfirmed'
 					});
+				movelevel.append({
+						type: 'option',
+						label: '[NEW] Extended confirmed',
+						value: 'extendedconfirmed'
+					});
 				if (isTemplate) {
 					movelevel.append({
 							type: 'option',
@@ -343,6 +354,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 								Twinkle.protect.doCustomExpiry(e.target);
 							}
 						},
+						// default expiry selection is conditionally set in Twinkle.protect.callback.changePreset
 						list: [
 							{ label: '1 hour', value: '1 hour' },
 							{ label: '2 hours', value: '2 hours' },
@@ -359,7 +371,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							{ label: '2 months', value: '2 months' },
 							{ label: '3 months', value: '3 months' },
 							{ label: '1 year', value: '1 year' },
-							{ label: 'indefinite', selected: true, value:'indefinite' },
+							{ label: 'indefinite', value: 'indefinite' },
 							{ label: 'Custom...', value: 'custom' }
 						]
 					});
@@ -667,6 +679,16 @@ Twinkle.protect.protectionTypes = [
 		]
 	},
 	{
+		label: '[NEW] Extended confirmed protection',
+		list: [
+			{ label: 'Arbitration enforcement (ECP)', selected: true, value: 'pp-30-500-arb' },
+			{ label: 'Persistent vandalism (ECP)', value: 'pp-30-500-vandalism' },
+			{ label: 'Disruptive editing (ECP)', value: 'pp-30-500-disruptive' },
+			{ label: 'BLP policy violations (ECP)', value: 'pp-30-500-blp' },
+			{ label: 'Sockpuppetry (ECP)', value: 'pp-30-500-sock' }
+		]
+	},
+	{
 		label: 'Semi-protection',
 		list: [
 			{ label: 'Generic (semi)', value: 'pp-semi-protected' },
@@ -715,8 +737,9 @@ Twinkle.protect.protectionTypesCreate = [
 // A page with both regular and PC protection will be assigned its regular
 // protection weight plus 2 (for PC1) or 7 (for PC2)
 Twinkle.protect.protectionWeight = {
-	sysop: 30,
-	templateeditor: 20,
+	sysop: 40,
+	templateeditor: 30,
+	extendedconfirmed: 20,
 	flaggedrevs_review: 15,  // Pending Changes level 2 protection alone
 	autoconfirmed: 10,
 	flaggedrevs_autoconfirmed: 5,  // Pending Changes level 1 protection alone
@@ -751,6 +774,36 @@ Twinkle.protect.protectionPresetsInfo = {
 		edit: 'templateeditor',
 		move: 'templateeditor',
 		reason: '[[WP:High-risk templates|Highly visible template]]'
+	},
+	'pp-30-500-arb': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		reason: '[[WP:30/500|Arbitration enforcement]]',
+		template: 'pp-30-500'
+	},
+	'pp-30-500-vandalism': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		reason: 'Persistent [[WP:Vandalism|vandalism]] from (auto)confirmed accounts',
+		template: 'pp-30-500'
+	},
+	'pp-30-500-disruptive': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]] from (auto)confirmed accounts',
+		template: 'pp-30-500'
+	},
+	'pp-30-500-blp': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		reason: 'Persistent violations of the [[WP:BLP|biographies of living persons policy]] from (auto)confirmed accounts',
+		template: 'pp-30-500'
+	},
+	'pp-30-500-sock': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]',
+		template: 'pp-30-500'
 	},
 	'pp-semi-vandalism': {
 		edit: 'autoconfirmed',
@@ -880,7 +933,8 @@ Twinkle.protect.protectionTags = [
 			{ label: '{{pp-template}}: high-risk template', value: 'pp-template' },
 			{ label: '{{pp-usertalk}}: blocked user talk', value: 'pp-usertalk' },
 			{ label: '{{pp-protected}}: general protection', value: 'pp-protected' },
-			{ label: '{{pp-semi-indef}}: general long-term semi-protection', value: 'pp-semi-indef' }
+			{ label: '{{pp-semi-indef}}: general long-term semi-protection', value: 'pp-semi-indef' },
+			{ label: '{{pp-30-500}}: extended confirmed protection', value: 'pp-30-500' }
 		]
 	},
 	{
@@ -916,12 +970,14 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 
 	if (actiontype === 'protect') {  // actually protecting the page
 		var item = Twinkle.protect.protectionPresetsInfo[form.category.value];
+
 		if (mw.config.get('wgArticleId')) {
 			if (item.edit) {
 				form.editmodify.checked = true;
 				Twinkle.protect.formevents.editmodify({ target: form.editmodify });
 				form.editlevel.value = item.edit;
 				Twinkle.protect.formevents.editlevel({ target: form.editlevel });
+				form.editexpiry.value = '2 days';
 			} else {
 				form.editmodify.checked = false;
 				Twinkle.protect.formevents.editmodify({ target: form.editmodify });
@@ -932,6 +988,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 				form.movelevel.value = item.move;
 				Twinkle.protect.formevents.movelevel({ target: form.movelevel });
+				form.moveexpiry.value = '2 days';
 			} else {
 				form.movemodify.checked = false;
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
@@ -982,6 +1039,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			form.expiry.value = '';
 			form.expiry.disabled = true;
 		} else {
+			form.expiry.value = '';
 			form.expiry.disabled = false;
 		}
 	}
@@ -1020,7 +1078,6 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	switch (actiontype) {
 		case 'protect':
 			// protect the page
-
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 			Morebits.wiki.actionCompleted.notice = "Protection complete";
 
@@ -1128,7 +1185,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			break;
 
 		case 'request':
-			// file request at RPP
+			// file request at RFPP
 			var typename, typereason;
 			switch( form.category.value ) {
 				case 'pp-dispute':
@@ -1139,6 +1196,13 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					break;
 				case 'pp-template':
 					typename = 'template protection';
+					break;
+				case 'pp-30-500-arb':
+				case 'pp-30-500-vandalism':
+				case 'pp-30-500-disruptive':
+				case 'pp-30-500-blp':
+				case 'pp-30-500-sock':
+					typename = 'extended confirmed';
 					break;
 				case 'pp-semi-vandalism':
 				case 'pp-semi-disruptive':
@@ -1181,10 +1245,12 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-vandalism':
 				case 'pp-semi-vandalism':
 				case 'pp-pc-vandalism':
-					typereason = 'Persistent vandalism';
+				case 'pp-30-500-vandalism':
+					typereason = 'Persistent [[WP:VAND|vandalism]]';
 					break;
 				case 'pp-semi-disruptive':
 				case 'pp-pc-disruptive':
+				case 'pp-30-500-disruptive':
 					typereason = 'Persistent [[Wikipedia:Disruptive editing|disruptive editing]]';
 					break;
 				case 'pp-semi-unsourced':
@@ -1192,17 +1258,22 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typereason = 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]';
 					break;
 				case 'pp-template':
-					typereason = 'Highly visible template';
+					typereason = '[[WP:HIGHRISK|High-risk template]]';
+					break;
+				case 'pp-30-500-arb':
+					typereason = '[[WP:30/500|Arbitration enforcement]]';
 					break;
 				case 'pp-usertalk':
 				case 'pp-semi-usertalk':
 					typereason = 'Inappropriate use of user talk page while blocked';
 					break;
 				case 'pp-semi-sock':
-					typereason = 'Persistent sockpuppetry';
+				case 'pp-30-500-sock':
+					typereason = 'Persistent [[WP:SOCK|sockpuppetry]]';
 					break;
 				case 'pp-semi-blp':
 				case 'pp-pc-blp':
+				case 'pp-30-500-blp':
 					typereason = '[[WP:BLP|BLP]] policy violations';
 					break;
 				case 'pp-move-dispute':

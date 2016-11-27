@@ -589,7 +589,7 @@ Twinkle.welcome.templates = {
 	"TWA invite": {
 		description: "invite the user to The Wikipedia Adventure (not a welcome template)",
 		linkedArticle: false,
-		syntax: "{{WP:TWA/Invite|signature=~~~~}}"
+		syntax: "{{WP:TWA/InviteTW|signature=~~~~}}"
 	},
 
 	// NON-ENGLISH WELCOMES
