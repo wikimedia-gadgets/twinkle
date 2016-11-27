@@ -21,58 +21,58 @@ switch( mw.config.get('wgUserLanguage') ) {
 	case 'en':
 		Twinkle.shared.standardList = [
 			{
-				label: $.i18n._('tw-sharedip-shared-ip-label'),
-				value: $.i18n._('tw-sharedip-shared-ip'),
-				tooltip: $.i18n._('tw-sharedip-share-ip-tooltip')
+				label: $._._('tw-sharedip-shared-ip-label'),
+				value: $._._('tw-sharedip-shared-ip'),
+				tooltip: $._._('tw-sharedip-share-ip-tooltip')
 			},
 			{
-				label: $.i18n._('tw-sharedip-shared-ip-edu-label'),
-				value: $.i18n._('tw-sharedip-shared-ip-edu')
+				label: $._._('tw-sharedip-shared-ip-edu-label'),
+				value: $._._('tw-sharedip-shared-ip-edu')
 			},
 			{
-				label: $.i18n._('tw-sharedip-shared-ip-corp-label'),
-				value: $.i18n._('tw-sharedip-shared-ip-corp')
+				label: $._._('tw-sharedip-shared-ip-corp-label'),
+				value: $._._('tw-sharedip-shared-ip-corp')
 			},
 			{
-				label: $.i18n._('tw-sharedip-shared-ip-public-label'),
-				value: $.i18n._('tw-sharedip-shared-ip-public')
+				label: $._._('tw-sharedip-shared-ip-public-label'),
+				value: $._._('tw-sharedip-shared-ip-public')
 			},
 			{
-				label: $.i18n._('tw-sharedip-shared-ip-gov-label'),
-				value: $.i18n._('tw-sharedip-shared-ip-gov')
+				label: $._._('tw-sharedip-shared-ip-gov-label'),
+				value: $._._('tw-sharedip-shared-ip-gov')
 			},
 			{
-				label: $.i18n._('tw-sharedip-dynamic-ip-label'),
-				value: $.i18n._('tw-sharedip-dynamic-ip')
+				label: $._._('tw-sharedip-dynamic-ip-label'),
+				value: $._._('tw-sharedip-dynamic-ip')
 			},
 			{
-				label: $.i18n._('tw-sharedip-static-ip-label'),
-				value: $.i18n._('tw-sharedip-static-ip')
+				label: $._._('tw-sharedip-static-ip-label'),
+				value: $._._('tw-sharedip-static-ip')
 			},
 			{
-				label: $.i18n._('tw-sharedip-isp-label'),
-				value: $.i18n._('tw-sharedip-isp')
+				label: $._._('tw-sharedip-isp-label'),
+				value: $._._('tw-sharedip-isp')
 			},
 			{
-				label: $.i18n._('tw-sharedip-mobile-ip-label'),
-				value: $.i18n._('tw-sharedip-mobile-ip')
+				label: $._._('tw-sharedip-mobile-ip-label'),
+				value: $._._('tw-sharedip-mobile-ip')
 			},
 			{
-				label: $.i18n._('tw-sharedip-whois-label'),
-				value: $.i18n._('tw-sharedip-whois')
+				label: $._._('tw-sharedip-whois-label'),
+				value: $._._('tw-sharedip-whois')
 			}
 		];
 	break;
 	case 'de':
 		Twinkle.shared.standardList = [
 			{
-				label: $.i18n._('tw-sharedip-shared-ip-label'),
-				value: $.i18n._('tw-sharedip-shared-ip'),
-				tooltip: $.i18n._('tw-sharedip-share-ip-tooltip')
+				label: $._._('tw-sharedip-shared-ip-label'),
+				value: $._._('tw-sharedip-shared-ip'),
+				tooltip: $._._('tw-sharedip-share-ip-tooltip')
 			},
 			{
-				label: $.i18n._('tw-sharedip-shared-ip-edu-label'),
-				value: $.i18n._('tw-sharedip-shared-ip-edu')
+				label: $._._('tw-sharedip-shared-ip-edu-label'),
+				value: $._._('tw-sharedip-shared-ip-edu')
 			},
 		];
 	break;

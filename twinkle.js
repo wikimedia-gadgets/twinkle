@@ -394,16 +394,16 @@ $.ajax({
 // For example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
 
 // Initialize i18n
-$.i18n.init( {
+$._.init( {
 	locale: mw.config.get('wgUserLanguage')
 } );
 
-// Later, this object will be moved to a separate file
-$.i18n.load( TwinkleMessages );
+// Load messages
+$._.load( TwinkleMessages );
 
 Twinkle.load = function () {
 	// Override default config that depends on i18n
-	Twinkle.defaultConfig.twinkle.portletName = $.i18n._('tw-core-portlet-name');
+	Twinkle.defaultConfig.twinkle.portletName = $._._('tw-core-portlet-name');
 	
 	// Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
 	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1 &&

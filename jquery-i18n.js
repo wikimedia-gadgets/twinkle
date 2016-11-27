@@ -1,8 +1,8 @@
 /*!
- * jQuery i18n plugin
+ * Twinkle's i18n plugin for jQuery
  * @requires jQuery v1.1 or later
  *
- * See https://github.com/recurser/jquery-i18n
+ * Based on https://github.com/recurser/jquery-i18n
  *
  * Licensed under the MIT license.
  *
@@ -100,21 +100,5 @@
 
 	};
 
-	/*
-	 * _t()
-	 *
-	 * Allows you to translate a jQuery selector.
-	 *
-	 * eg $('h1')._t('some text')
-	 *
-	 * @param	string str					 : The string to translate .
-	 * @param	property_list params : Params for using printf() on the string.
-	 *
-	 * @return	element							: Chained and translated element(s).
-	*/
-	$.fn._t = function( str, params ) {
-		return $( this ).html( i18n._.apply( i18n, arguments ) );
-	};
-
-	$.i18n = i18n;
+	$._ = i18n;
 })(jQuery);
