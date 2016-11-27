@@ -18,7 +18,8 @@ modules = modules/twinkleprod.js \
 		  modules/twinklefluff.js \
 		  modules/twinkleprotect.js \
 		  modules/twinklearv.js \
-		  modules/friendlytalkback.js
+		  modules/friendlytalkback.js \
+		  modules/twinkleblock.js
 
 deploy: twinkle.js morebits.js morebits.css $(modules)
 	./sync.pl ${ARGS} --deploy $^
