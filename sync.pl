@@ -73,6 +73,7 @@ my $bot = MediaWiki::Bot->new({
         assert      => 'user',
         protocol    => 'https',
         host        => "$opt->{lang}.$opt->{family}.org",
+        operator    => $opt->username,
         login_data  => { username => $opt->username, password => $opt->password},
         debug => $opt->{verbose} ? 2 : 0,
 		maxlag => 1000000 # not a botty script, thus smash it!
