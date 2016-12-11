@@ -236,6 +236,40 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				value: Twinkle.block.field_block_options.reason
 			});
 
+		field_block_options.append({
+				type: 'div',
+				name: 'filerlog_label',
+				label: 'See also:',
+				style: 'display:inline-block;font-style:normal !important',
+				tooltip: 'Insert a "see also" message to indicate whether the filter log or deleted contributions played a role in the decision to block.'
+			});
+		field_block_options.append({
+				type: 'checkbox',
+				name: 'filter_see_also',
+				event: Twinkle.block.callback.toggle_see_alsos,
+				style: 'display:inline-block; margin-right:5px',
+				list: [
+					{
+						label: 'Filter log',
+						checked: false,
+						value: 'filter log'
+					}
+				]
+			} );
+		field_block_options.append({
+				type: 'checkbox',
+				name: 'deleted_see_also',
+				event: Twinkle.block.callback.toggle_see_alsos,
+				style: 'display:inline-block',
+				list: [
+					{
+						label: 'Deleted contribs',
+						checked: false,
+						value: 'deleted contribs'
+					}
+				]
+			} );
+
 		if (Twinkle.block.currentBlockInfo) {
 			field_block_options.append( { type: 'hidden', name: 'reblock', value: '1' } );
 		}
@@ -932,6 +966,28 @@ Twinkle.block.callback.change_expiry = function twinkleblockCallbackChangeExpiry
 	} else {
 		Morebits.quickForm.setElementVisibility(expiry.parentNode, false);
 		expiry.value = e.target.value;
+	}
+};
+
+Twinkle.block.seeAlsos = [];
+Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSeeAlso(e) {
+	var reason = this.form.reason.value.replace(
+		new RegExp('( <!--|;) ' + 'see also ' + Twinkle.block.seeAlsos.join(' and ') + '( -->)?'), ''
+	);
+
+	Twinkle.block.seeAlsos = Twinkle.block.seeAlsos.filter(function(el) {
+		return el !== this.value;
+	}.bind(this));
+
+	if (this.checked) Twinkle.block.seeAlsos.push(this.value);
+	var seeAlsoMessage = Twinkle.block.seeAlsos.join(' and ');
+
+	if (!Twinkle.block.seeAlsos.length) {
+		this.form.reason.value = reason;
+	} else if (reason.indexOf('{{') !== -1) {
+		this.form.reason.value = reason + ' <!-- see also ' + seeAlsoMessage + ' -->';
+	} else {
+		this.form.reason.value = reason + '; see also ' + seeAlsoMessage;
 	}
 };
 
