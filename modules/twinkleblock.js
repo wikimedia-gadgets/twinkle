@@ -827,7 +827,7 @@ Twinkle.block.blockPresetsInfo = {
 		forAnonOnly: true,
 		nocreate: true,
 		nonstandard: true,
-		reason: '{{blocked proxy}}',
+		reason: '{{zombie proxy}}',
 		sig: null
 	}
 };
