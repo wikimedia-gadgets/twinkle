@@ -821,6 +821,14 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: true,
 		reason: '[[WP:Vandalism-only account|Vandalism-only account]]',
 		summary: 'You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]]'
+	},
+	'zombie proxy' : {
+		expiry: '1 month',
+		forAnonOnly: true,
+		nocreate: true,
+		nonstandard: true,
+		reason: '{{blocked proxy}}',
+		sig: null
 	}
 };
 
@@ -917,7 +925,8 @@ Twinkle.block.blockGroups = [
 			// { label: 'rangeblock', value: 'rangeblock' }, // placeholder for when we add support for rangeblocks
 			{ label: 'spamblacklistblock', value: 'spamblacklistblock' },
 			{ label: 'tor', value: 'tor' },
-			{ label: 'webhostblock', value: 'webhostblock' }
+			{ label: 'webhostblock', value: 'webhostblock' },
+			{ label: 'zombie proxy', value: 'zombie proxy' }
 		]
 	}
 ];
