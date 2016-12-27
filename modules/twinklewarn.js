@@ -1204,35 +1204,35 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	var main_group = e.target.form.main_group.value;
 	var value = e.target.form.sub_group.value;
 
+	// Tags that don't take a linked article, but something else (often a username).
+	// The value of each tag is the label next to the input field
+	var notLinkedArticle = {
+		"uw-agf-sock": "Optional username of other account (without User:) ",
+		"uw-bite": "Username of 'bitten' user (without User:) ",
+		"uw-socksuspect": "Username of sock master, if known (without User:) ",
+		"uw-username": "Username violates policy because... "
+	};
+
 	if( main_group === 'singlenotice' || main_group === 'singlewarn' ) {
-		if( value === 'uw-bite' || value === 'uw-username' || value === 'uw-socksuspect' ) {
+		if( notLinkedArticle[value] ) {
 			if(Twinkle.warn.prev_article === null) {
 				Twinkle.warn.prev_article = e.target.form.article.value;
 			}
 			e.target.form.article.notArticle = true;
 			e.target.form.article.value = '';
+
+			// change form labels according to the warning selected
+			Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
+			Morebits.quickForm.overrideElementLabel(e.target.form.article, notLinkedArticle[value]);
 		} else if( e.target.form.article.notArticle ) {
 			if(Twinkle.warn.prev_article !== null) {
 				e.target.form.article.value = Twinkle.warn.prev_article;
 				Twinkle.warn.prev_article = null;
 			}
 			e.target.form.article.notArticle = false;
+			Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, true);
+			Morebits.quickForm.resetElementLabel(e.target.form.article);
 		}
-	}
-
-	// change form labels according to the warning selected
-	if (value === "uw-socksuspect") {
-		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
-		Morebits.quickForm.overrideElementLabel(e.target.form.article, "Username of sock master, if known (without User:) ");
-	} else if (value === "uw-username") {
-		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
-		Morebits.quickForm.overrideElementLabel(e.target.form.article, "Username violates policy because... ");
-	} else if (value === "uw-bite") {
-		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
-		Morebits.quickForm.overrideElementLabel(e.target.form.article, "Username of 'bitten' user (without User:) ");
-	} else {
-		Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, true);
-		Morebits.quickForm.resetElementLabel(e.target.form.article);
 	}
 
 	// add big red notice, warning users about how to use {{uw-[coi-]username}} appropriately
