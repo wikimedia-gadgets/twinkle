@@ -1392,7 +1392,8 @@ Twinkle.warn.callbacks = {
 		} else {
 			summary = messageData.summary;
 			if ( messageData.suppressArticleInSummary !== true && params.article ) {
-				if ( params.sub_group === "uw-socksuspect" ) {  // this template requires a username
+				if ( params.sub_group === "uw-agf-sock" ||
+						params.sub_group === "uw-socksuspect" ) {  // these templates require a username
 					summary += " of [[User:" + params.article + "]]";
 				} else {
 					summary += " on [[" + params.article + "]]";
