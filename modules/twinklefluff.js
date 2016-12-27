@@ -541,7 +541,7 @@ Twinkle.fluff.callbacks = {
 			div.style.fontWeight = "normal";
 			div.style.color = "black";
 			div.innerHTML = $edit.attr('warning');
-			apiobj.statelem.error([ 'The following warning was returned by the edit filter: ', div, 'If you wish to proceed with the rollback, please reload this page (F5 or Ctrl+R) and carry it out again. This warning wil not appear a second time.' ]);
+			apiobj.statelem.error([ 'The following warning was returned by the edit filter: ', div, 'If you wish to proceed with the rollback, please reload this page (F5 or Ctrl+R) and carry it out again. This warning will not appear a second time.' ]);
 		} else if ($edit.attr('nochange') === '') {
 			apiobj.statelem.warn("Revision we are reverting to is identical to current revision: Nothing to do");
 		} else {
