@@ -477,6 +477,9 @@ Twinkle.block.blockPresetsInfo = {
 		sig: null
 	},
 	'oversightblock' : {
+		autoblock: true,
+		expiry: 'infinity',
+		nocreate: true,
 		nonstandard: true,
 		reason: '{{OversightBlock}}',
 		sig: '~~~~'
