@@ -990,8 +990,8 @@ if (!String.prototype.trim) {
 	};
 }
 
-// Helper functions to change case of a string
 Morebits.string = {
+	// Helper functions to change case of a string
 	toUpperCaseFirstChar: function(str) {
 		str = str.toString();
 		return str.substr( 0, 1 ).toUpperCase() + str.substr( 1 );
@@ -1048,6 +1048,12 @@ Morebits.string = {
 		unbinder.unbind("<no" + "wiki>", "</no" + "wiki>");
 		unbinder.content = unbinder.content.replace(/\|/g, "{{subst:!}}");
 		return unbinder.rebind();
+	},
+	// a replacement for String.prototype.replace() when the second parameter (the
+	// replacement string) is arbitrary, such as a username or freeform user input,
+	// and may contain dollar signs
+	safeReplace: function morebitsStringSafeReplace(string, pattern, replacement) {
+		return string.replace(pattern, replacement.replace(/\$/g, "$$$$"));
 	}
 };
 

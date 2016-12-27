@@ -587,12 +587,12 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, userString) {
 	if (resultLen + contribsLen <= 255) {
 		var talkLink = " ([[User talk:" + userName + "|talk]])";
 		if (resultLen + contribsLen + unescape(encodeURIComponent(talkLink)).length <= 255) {
-			result = result.replace("$USER", contribsLink + talkLink);
+			result = Morebits.string.safeReplace(result, "$USER", contribsLink + talkLink);
 		} else {
-			result = result.replace("$USER", contribsLink);
+			result = Morebits.string.safeReplace(result, "$USER", contribsLink);
 		}
 	} else {
-		result = result.replace("$USER", userName);
+		result = Morebits.string.safeReplace(result, "$USER", userName);
 	}
 
 	return result;
