@@ -535,7 +535,7 @@ Twinkle.fluff.callbacks = {
 			apiobj.statelem.error("Could not rollback, because the wiki server wanted you to fill out a CAPTCHA.");
 		} else if ( $edit.attr('code') === 'abusefilter-disallowed' ) {
 			apiobj.statelem.error('The edit was disallowed by the edit filter rule "' + $edit.attr('info').substring(17) + '".');
-		} else if ( $edit.attr('info').indexOf('Hit AbuseFilter:') === 0 ) {
+		} else if ( $edit.attr('info') && $edit.attr('info').indexOf('Hit AbuseFilter:') === 0 ) {
 			var div = document.createElement('div');
 			div.className = "toccolours";
 			div.style.fontWeight = "normal";
