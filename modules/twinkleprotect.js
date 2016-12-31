@@ -465,9 +465,14 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				}
 				createlevel.append({
 						type: 'option',
-						label: 'Sysop',
-						value: 'sysop',
+						label: 'Extended confirmed',
+						value: 'extendedconfirmed',
 						selected: true
+					});
+				createlevel.append({
+						type: 'option',
+						label: 'Sysop',
+						value: 'sysop'
 					});
 				field2.append({
 						type: 'select',
@@ -901,15 +906,15 @@ Twinkle.protect.protectionPresetsInfo = {
 		reason: '[[WP:SALT|Offensive name]]'
 	},
 	'pp-create-salt': {
-		create: 'sysop',
+		create: 'extendedconfirmed',
 		reason: '[[WP:SALT|Repeatedly recreated]]'
 	},
 	'pp-create-blp': {
-		create: 'sysop',
+		create: 'extendedconfirmed',
 		reason: '[[WP:BLPDEL|Recently deleted BLP]]'
 	},
 	'pp-create': {
-		create: 'sysop',
+		create: 'extendedconfirmed',
 		reason: '{{pp-create}}'
 	}
 };
