@@ -393,7 +393,18 @@ $.ajax({
 // Developers: you can import custom Twinkle modules here
 // For example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
 
+// Initialize i18n
+$.i18n.init( {
+	locale: mw.config.get('wgUserLanguage')
+} );
+
+// Later, this object will be moved to a separate file
+$.i18n.load( TwinkleMessages );
+
 Twinkle.load = function () {
+	// Override default config that depends on i18n
+	Twinkle.defaultConfig.twinkle.portletName = $.i18n._('tw-core-portlet-name');
+	
 	// Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
 	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1 &&
 		mw.config.get('wgCanonicalSpecialPageName') !== "Contributions" &&

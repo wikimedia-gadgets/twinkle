@@ -1,6 +1,8 @@
 all:
 
-modules = modules/twinkleprod.js \
+modules = modules/twinklei18n.js \
+		  modules/twinklel10n.js \
+		  modules/twinkleprod.js \
 		  modules/twinkleimage.js \
 		  modules/twinklebatchundelete.js \
 		  modules/twinklewarn.js \
@@ -21,7 +23,7 @@ modules = modules/twinkleprod.js \
 		  modules/friendlytalkback.js \
 		  modules/twinkleblock.js
 
-deploy: twinkle.js morebits.js morebits.css $(modules)
+deploy: twinkle.js morebits.js morebits.css jquery-i18n.js $(modules)
 	./sync.pl ${ARGS} --deploy $^
 
 .PHONY: deploy all

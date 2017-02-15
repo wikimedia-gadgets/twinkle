@@ -16,15 +16,17 @@
 Twinkle.shared = function friendlyshared() {
 	if( mw.config.get('wgNamespaceNumber') === 3 && Morebits.isIPAddress(mw.config.get('wgTitle')) ) {
 		var username = mw.config.get('wgTitle').split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
-		Twinkle.addPortletLink( function(){ Twinkle.shared.callback(username); }, "Shared IP", "friendly-shared", "Shared IP tagging" );
+		Twinkle.addPortletLink( function(){ Twinkle.shared.callback(username); }, $.i18n._('tw-sharedip-label'), "friendly-shared", 'tw-sharedip-label-hover' );
 	}
 };
 
 Twinkle.shared.callback = function friendlysharedCallback() {
 	var Window = new Morebits.simpleWindow( 600, 420 );
-	Window.setTitle( "Shared IP address tagging" );
-	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#shared" );
+	Window.setTitle( $.i18n._('tw-sharedip-window-title') );
+	Window.setScriptName( $.i18n._('tw-core-script-name') );
+	Window.addFooterLink( $.i18n._('tw-core-help'), $.i18n._('tw-core-help-page') );
+	
+	Twinkle.shared.initialize();
 
 	var form = new Morebits.quickForm( Twinkle.shared.callback.evaluate );
 
@@ -34,7 +36,7 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 			className: 'morebits-scrollbox'
 		}
 	);
-	div.append( { type: 'header', label: 'Shared IP address templates' } );
+	div.append( { type: 'header', label: $.i18n._('tw-sharedip-templates') } );
 	div.append( { type: 'radio', name: 'shared', list: Twinkle.shared.standardList,
 		event: function( e ) {
 			Twinkle.shared.callback.change_shared( e );
@@ -42,29 +44,29 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 		}
 	} );
 
-	var org = form.append( { type:'field', label:'Fill in other details (optional) and click \"Submit\"' } );
+	var org = form.append( { type:'field', label: $.i18n._('tw-sharedip-field-label') } );
 	org.append( {
 			type: 'input',
 			name: 'organization',
-			label: 'IP address owner/operator',
+			label: $.i18n._('tw-sharedip-owner'),
 			disabled: true,
-			tooltip: 'You can optionally enter the name of the organization that owns/operates the IP address.  You can use wikimarkup if necessary.'
+			tooltip: $.i18n._('tw-sharedip-owner-tooltip')
 		}
 	);
 	org.append( {
 			type: 'input',
 			name: 'host',
-			label: 'Host name (optional)',
+			label: $.i18n._('tw-sharedip-host'),
 			disabled: true,
-			tooltip: 'The host name (for example, proxy.example.com) can be optionally entered here and will be linked by the template.'
+			tooltip: $.i18n._('tw-sharedip-host-tooltip')
 		}
 	);
 	org.append( {
 			type: 'input',
 			name: 'contact',
-			label: 'Contact information (only if requested)',
+			label: $.i18n._('tw-sharedip-contact'),
 			disabled: true,
-			tooltip: 'You can optionally enter some contact details for the organization.  Use this parameter only if the organization has specifically requested that it be added.  You can use wikimarkup if necessary.'
+			tooltip: $.i18n._('tw-sharedip-contact-tooltip')
 		}
 	);
 
@@ -75,49 +77,53 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 	Window.display();
 };
 
-Twinkle.shared.standardList = [
-	{
-		label: '{{Shared IP}}: standard shared IP address template',
-		value: 'Shared IP',
-		tooltip: 'IP user talk page template that shows helpful information to IP users and those wishing to warn, block or ban them'
-	},
-	{
-		label: '{{Shared IP edu}}: shared IP address template modified for educational institutions',
-		value: 'Shared IP edu'
-	},
-	{
-		label: '{{Shared IP corp}}: shared IP address template modified for businesses',
-		value: 'Shared IP corp'
-	},
-	{
-		label: '{{Shared IP public}}: shared IP address template modified for public terminals',
-		value: 'Shared IP public'
-	},
-	{
-		label: '{{Shared IP gov}}: shared IP address template modified for government agencies or facilities',
-		value: 'Shared IP gov'
-	},
-	{
-		label: '{{Dynamic IP}}: shared IP address template modified for organizations with dynamic addressing',
-		value: 'Dynamic IP'
-	},
-	{
-		label: '{{Static IP}}: shared IP address template modified for static IP addresses',
-		value: 'Static IP'
-	},
-	{
-		label: '{{ISP}}: shared IP address template modified for ISP organizations (specifically proxies)',
-		value: 'ISP'
-	},
-	{
-		label: '{{Mobile IP}}: shared IP address template modified for mobile phone companies and their customers',
-		value: 'Mobile IP'
-	},
-	{
-		label: '{{Whois}}: template for IP addresses in need of monitoring, but unknown whether static, dynamic or shared',
-		value: 'Whois'
+Twinkle.shared.initialize = function() {
+	if( typeof Twinkle.shared.standardList === 'undefined' ) {
+		Twinkle.shared.standardList = [
+			{
+				label: $.i18n._('tw-sharedip-shared-ip-label'),
+				value: $.i18n._('tw-sharedip-shared-ip'),
+				tooltip: $.i18n._('tw-sharedip-share-ip-tooltip')
+			},
+			{
+				label: $.i18n._('tw-sharedip-shared-ip-edu-label'),
+				value: $.i18n._('tw-sharedip-shared-ip-edu')
+			},
+			{
+				label: $.i18n._('tw-sharedip-shared-ip-corp-label'),
+				value: $.i18n._('tw-sharedip-shared-ip-corp')
+			},
+			{
+				label: $.i18n._('tw-sharedip-shared-ip-public-label'),
+				value: $.i18n._('tw-sharedip-shared-ip-public')
+			},
+			{
+				label: $.i18n._('tw-sharedip-shared-ip-gov-label'),
+				value: $.i18n._('tw-sharedip-shared-ip-gov')
+			},
+			{
+				label: $.i18n._('tw-sharedip-dynamic-ip-label'),
+				value: $.i18n._('tw-sharedip-dynamic-ip')
+			},
+			{
+				label: $.i18n._('tw-sharedip-static-ip-label'),
+				value: $.i18n._('tw-sharedip-static-ip')
+			},
+			{
+				label: $.i18n._('tw-sharedip-isp-label'),
+				value: $.i18n._('tw-sharedip-isp')
+			},
+			{
+				label: $.i18n._('tw-sharedip-mobile-ip-label'),
+				value: $.i18n._('tw-sharedip-mobile-ip')
+			},
+			{
+				label: $.i18n._('tw-sharedip-whois-label'),
+				value: $.i18n._('tw-sharedip-whois')
+			}
+		];
 	}
-];
+}
 
 Twinkle.shared.callback.change_shared = function friendlysharedCallbackChangeShared(e) {
 	e.target.form.contact.disabled = (e.target.value !== 'Shared IP edu');  // only supported by {{Shared IP edu}}
@@ -135,7 +141,7 @@ Twinkle.shared.callbacks = {
 		for( var i=0; i < Twinkle.shared.standardList.length; i++ ) {
 			var tagRe = new RegExp( '(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im' );
 			if( tagRe.exec( pageText ) ) {
-				Morebits.status.warn( 'Info', 'Found {{' + Twinkle.shared.standardList[i].value + '}} on the user\'s talk page already...aborting' );
+				Morebits.status.warn( $.i18n._('tw-morebits-info'), $.i18n._('tw-sharedip-aborting', Twinkle.shared.standardList[i].value) );
 				found = true;
 			}
 		}
@@ -144,7 +150,7 @@ Twinkle.shared.callbacks = {
 			return;
 		}
 
-		Morebits.status.info( 'Info', 'Will add the shared IP address template to the top of the user\'s talk page.' );
+		Morebits.status.info( $.i18n._('morebits-info'), $.i18n._('tw-sharedip-will-add') );
 		text += params.value + '|' + params.organization;
 		if( params.value === 'Shared IP edu' && params.contact !== '') {
 			text += '|' + params.contact;
@@ -154,7 +160,7 @@ Twinkle.shared.callbacks = {
 		}
 		text += '}}\n\n';
 
-		var summaryText = 'Added {{[[Template:' + params.value + '|' + params.value + ']]}} template.';
+		var summaryText = $.i18n._('tw-sharedip-added', params.value, params.value);
 		pageobj.setPageText(text + pageText);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
 		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markSharedIPAsMinor'));
@@ -166,14 +172,14 @@ Twinkle.shared.callbacks = {
 Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	var shared = e.target.getChecked( 'shared' );
 	if( !shared || shared.length <= 0 ) {
-		alert( 'You must select a shared IP address template to use!' );
+		alert( $.i18n._('tw-sharedip-alert-template') );
 		return;
 	}
 
 	var value = shared[0];
 
 	if( e.target.organization.value === '') {
-		alert( 'You must input an organization for the {{' + value + '}} template!' );
+		alert( $.i18n._('tw-sharedip-alert-organization'), value );
 		return;
 	}
 
@@ -188,9 +194,9 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	Morebits.status.init( e.target );
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = "Tagging complete, reloading talk page in a few seconds";
+	Morebits.wiki.actionCompleted.notice = $.i18n._('tw-sharedip-done');
 
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "User talk page modification");
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), $.i18n._('tw-sharedip-action'));
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.shared.callbacks.main);
