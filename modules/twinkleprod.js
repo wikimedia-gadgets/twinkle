@@ -132,12 +132,6 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 				type: 'div',
 				label: boldtext
 			});
-			if (mw.config.get('wgArticleId') < 26596183) {
-				field.append({
-					type: 'header',
-					label: 'It appears that this article was created before March 18, 2010, and is thus ineligible for a BLP PROD. Please make sure that this is not the case, or use normal PROD instead.'
-				});
-			}
 			break;
 
 		default:
@@ -316,13 +310,6 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( form );
-
-	if (prodtype === 'prodblp' && mw.config.get('wgArticleId') < 26596183) {
-		if (!confirm( "It appears that this article was created before March 18, 2010, and is thus ineligible for a BLP PROD. Do you want to continue tagging it?" )) {
-			Morebits.status.warn( 'Notice', 'Aborting per user input.' );
-			return;
-		}
-	}
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 	Morebits.wiki.actionCompleted.notice = "Tagging complete";
