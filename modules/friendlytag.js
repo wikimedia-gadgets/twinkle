@@ -431,6 +431,7 @@ Twinkle.tag.article.tags = {
 	"BLP unsourced": "BLP article has no sources at all (use BLP PROD instead for new articles)",
 	"citation style": "article has unclear or inconsistent inline citations",
 	"cleanup": "article may require cleanup",
+	"cleanup rewrite": "article may need to be rewritten entirely to comply with Wikipedia's quality standards",
 	"cleanup-reorganize": "article may be in need of reorganization to comply with Wikipedia's layout guidelines",
 	"close paraphrasing": "article contains close paraphrasing of a non-free copyrighted source",
 	"COI": "article creator or major contributor may have a conflict of interest",
@@ -512,6 +513,7 @@ Twinkle.tag.article.tagCategories = {
 	"Cleanup and maintenance tags": {
 		"General cleanup": [
 			"cleanup",  // has a subgroup with text input
+			"cleanup rewrite",
 			"copy edit"  // has a subgroup with text input
 		],
 		"Potentially unwanted content": [
