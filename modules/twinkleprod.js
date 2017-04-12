@@ -50,11 +50,10 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 
 	var form = new Morebits.quickForm( Twinkle.prod.callback.evaluate );
 
-	// Fieldset for PROD type, disabled if File namespace since only normal PROD is allowed
 	var field = form.append( {
 			type: 'field',
 			label: 'PROD type',
-			disabled: namespace === 'file'
+			id: 'prodtype_fieldset'
 		} );
 
 	field.append( {
@@ -92,6 +91,11 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
 	result.prodtype[0].dispatchEvent( evt );
+
+	// Hide fieldset for PROD type if File namespace since only normal PROD is allowed
+	if (namespace === 'file') {
+		$('#prodtype_fieldset').hide();
+	}
 };
 
 Twinkle.prod.callback.prodtypechanged = function(event) {
