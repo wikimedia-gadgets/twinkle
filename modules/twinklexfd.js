@@ -902,7 +902,8 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{" + ((params.number === '') ? "mfd}}\n" : ('mfdx|' + params.number + "}}\n")) +
+			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{" +
+				((params.number === '') ? "mfd" : ("mfdx|" + params.number)) + "|help=off}}\n" +
 				(params.noinclude ? "</noinclude>" : "") + text);
 			pageobj.setEditSummary("Nominated for deletion; see [[" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
@@ -1064,7 +1065,7 @@ Twinkle.xfd.callbacks = {
 
 			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 
-			pageobj.setPageText("{{ffd|log=" + params.date + "}}\n" + text);
+			pageobj.setPageText("{{ffd|log=" + params.date + "|help=off}}\n" + text);
 			pageobj.setEditSummary("Listed for discussion at [[" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':

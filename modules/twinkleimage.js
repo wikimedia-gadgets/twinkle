@@ -301,7 +301,7 @@ Twinkle.image.callbacks = {
 			default:
 				break;  // doesn't matter
 		}
-		tag += "}}\n";
+		tag += "|help=off}}\n";
 
 		pageobj.setPageText(tag + text);
 		pageobj.setEditSummary("This file is up for deletion, per [[WP:CSD#" + params.normalized + "|CSD " + params.normalized + "]] (" + params.type + ")." + Twinkle.getPref('summaryAd'));
