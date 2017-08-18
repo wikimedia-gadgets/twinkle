@@ -243,8 +243,8 @@ Twinkle.warn.messages = {
 				summary: "General note: Not adhering to neutral point of view"
 			},
 			"uw-spam1": {
-				label: "Adding spam links",
-				summary: "General note: Adding spam links"
+				label: "Adding inappropriate external links",
+				summary: "General note: Adding inappropriate external links"
 			}
 		},
 		"Behavior towards other editors": {
