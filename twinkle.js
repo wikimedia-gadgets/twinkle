@@ -322,7 +322,7 @@ Twinkle.addPortletLink = function( task, text, id, tooltip )
 	if ( Twinkle.getPref("portletArea") !== null ) {
 		Twinkle.addPortlet( Twinkle.getPref( "portletArea" ), Twinkle.getPref( "portletId" ), Twinkle.getPref( "portletName" ), Twinkle.getPref( "portletType" ), Twinkle.getPref( "portletNext" ));
 	}
-	var link = mw.util.addPortletLink( Twinkle.getPref( "portletId" ), typeof task === "string" ? task : "#", text, id, tooltip );
+	var link = mw.util.addPortletLink( Twinkle.getPref( "portletId" ), typeof task === "string" ? task : "#", text, id, tooltip, null, '#ca-view' );
 	if ( $.isFunction( task ) ) {
 		$( link ).click(function ( ev ) {
 			task();
