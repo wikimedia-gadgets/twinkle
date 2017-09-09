@@ -323,6 +323,7 @@ Twinkle.addPortletLink = function( task, text, id, tooltip )
 		Twinkle.addPortlet( Twinkle.getPref( "portletArea" ), Twinkle.getPref( "portletId" ), Twinkle.getPref( "portletName" ), Twinkle.getPref( "portletType" ), Twinkle.getPref( "portletNext" ));
 	}
 	var link = mw.util.addPortletLink( Twinkle.getPref( "portletId" ), typeof task === "string" ? task : "#", text, id, tooltip );
+	$('.client-js .skin-vector #p-cactions').css('margin-right', 'initial');
 	if ( $.isFunction( task ) ) {
 		$( link ).click(function ( ev ) {
 			task();

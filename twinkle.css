@@ -1,0 +1,5 @@
+// Explicitly set width of TW menu so that we can use a hidden peer gadget
+// to add space where the TW menu would go before it loads.
+.skin-vector #p-twinkle {
+	width: 3em;
+}
