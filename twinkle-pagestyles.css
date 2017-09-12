@@ -1,6 +1,8 @@
-// This is loaded as a hidden peer gadget of Twinkle.
-// Before core Twinkle has loaded, it adds space where the TW would go in the
-// Vector skin, so that the top bar does not "jump".
+/**
+ * This is loaded as a hidden peer gadget of Twinkle.
+ * Before core Twinkle has loaded, it adds space where the TW would go in the
+ * Vector skin, so that the top bar does not "jump".
+ */
 .client-js > body.skin-vector:not(.ns-special) #p-cactions,
 .client-js > body.skin-vector.mw-special-Contributions #p-cactions,
 .client-js > body.skin-vector.mw-special-DeletedContributions #p-cactions,
