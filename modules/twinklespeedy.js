@@ -721,7 +721,7 @@ Twinkle.speedy.articleList = [
 		label: 'A7: Unremarkable organized event',
 		value: 'event',
 		tooltip: 'Article about an organized event (tour, function, meeting, party, etc.) that does not assert the importance or significance of its subject',
-		hideWhenMultiple: true
+,		hideWhenMultiple: true
 	},
 	{
 		label: 'A9: Unremarkable musical recording where artist\'s article doesn\'t exist',
@@ -742,7 +742,12 @@ Twinkle.speedy.articleList = [
 		label: 'A11: Obviously made up by creator, and no claim of significance',
 		value: 'madeup',
 		tooltip: 'An article which plainly indicates that the subject was invented/coined/discovered by the article\'s creator or someone they know personally, and does not credibly indicate why its subject is important or significant'
-	}
+	},
+	{
+		label: 'A12: Verbal abuse',
+		value: 'abusive',
+		tooltip: 'An article that contains verbal abuse that is irrelevant to the article\'s topic'
+	}	
 ];
 
 Twinkle.speedy.categoryList = [
@@ -1113,6 +1118,7 @@ Twinkle.speedy.normalizeHash = {
 	'a9': 'a9',
 	'a10': 'a10',
 	'madeup': 'a11',
+	'abusive': 'a12',
 	'rediruser': 'r2',
 	'redirtypo': 'r3',
 	'redundantimage': 'f1',
