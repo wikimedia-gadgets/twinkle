@@ -23,7 +23,7 @@ Twinkle.block = function twinkleblock() {
 
 Twinkle.block.callback = function twinkleblockCallback() {
 	if( mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') &&
-			!confirm( 'You are about to block yourself! Are you sure you want to proceed?' ) ) {
+			!confirm( 'You are about to block yourself. Please do not try to do so.' ) ) {
 		return;
 	}
 
@@ -153,8 +153,11 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				label: 'Expiry:',
 				event: Twinkle.block.callback.change_expiry,
 				list: [
-					{ label: 'custom', value: 'custom', selected: true },
-					{ label: 'indefinite', value: 'infinity' },
+					{ label: 'Custom', value: 'custom', selected: true },
+					{ label: 'Indefinite', value: 'infinity' },
+					{ label: '1 minute', value: '1 minute' },
+					{ label: '30 minutes', value: '30 minutes' },
+					{ label: '1 hour', value: '1 hour' },
 					{ label: '3 hours', value: '3 hours' },
 					{ label: '12 hours', value: '12 hours' },
 					{ label: '24 hours', value: '24 hours' },
@@ -170,14 +173,18 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 					{ label: '6 months', value: '6 months' },
 					{ label: '1 year', value: '1 year' },
 					{ label: '2 years', value: '2 years' },
-					{ label: '3 years', value: '3 years' }
+					{ label: '3 years', value: '3 years' },
+					{ label: '1 decade', value: '10 years' },
+					{ label: '1 century', value: '100 years' },
+					{ label: '1 millenium', value: '1000 years' },
+					{ label: '10 millenia', value: '10000 years' },
 				]
 			});
 			field_block_options.append({
 					type: 'input',
 					name: 'expiry',
 					label: 'Custom expiry',
-					tooltip: 'You can use relative times, like "1 minute" or "19 days", or absolute timestamps, "yyyymmddhhmm" (e.g. "200602011405" is Feb 1, 2006, at 14:05 UTC).',
+					tooltip: 'You can use relative times, like "100 years" or "19 days", or absolute timestamps, "yyyymmddhhmm" (e.g. "200602011405" is Feb 1, 2006, at 14:05 UTC).',
 					value: Twinkle.block.field_block_options.expiry || Twinkle.block.field_template_options.template_expiry
 				});
 		var blockoptions = [
@@ -330,7 +337,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				name: 'notalk',
 				list: [
 					{
-						label: 'Talk page access disabled',
+						label: 'No access to the talk page',
 						checked: Twinkle.block.field_template_options.notalk,
 						tooltip: 'Use this to make the block template state that the user\'s talk page access has been removed'
 					}
