@@ -753,6 +753,7 @@ Twinkle.warn.messages = {
 			"uw-move4": {
 				label: "Page moves against naming conventions or consensus",
 				summary: "Final warning: Page moves against naming conventions or consensus"
+
 			},
 			"uw-tpv4": {
 				label: "Refactoring others' talk page comments",
@@ -774,6 +775,15 @@ Twinkle.warn.messages = {
 			}
 		}*/
 	},
+	
+	level5: {
+	        "Common warnings": {
+			"uw-vandalism5": {
+				label: "Vandalism"
+				summmary: "Very final warning: Vandalism"
+			}
+		}*/
+	),
 
 
 	level4im: {
