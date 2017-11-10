@@ -19,7 +19,7 @@ Twinkle.arv = function twinklearv() {
 		return;
 	}
 
-	var title = Morebits.isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
+	var title = mw.util.isIPAddress( username ) ? 'Report IP to administrators' : 'Report user to administrators';
 
 	Twinkle.addPortletLink( function(){ Twinkle.arv.callback(username); }, "ARV", "tw-arv", title );
 };
@@ -160,7 +160,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					{
 						label: 'Evidently a vandalism-only account',
 						value: 'vandalonly',
-						disabled: Morebits.isIPAddress( root.uid.value )
+						disabled: mw.util.isIPAddress( root.uid.value )
 					},
 					{
 						label: 'Account is evidently a spambot or a compromised account',
@@ -580,7 +580,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				}
 				aivPage.getStatusElement().status( 'Adding new report...' );
 				aivPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd') );
-				aivPage.setAppendText( '\n*{{' + ( Morebits.isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '}} &ndash; ' + reason );
+				aivPage.setAppendText( '\n*{{' + ( mw.util.isIPAddress( uid ) ? 'IPvandal' : 'vandal' ) + '|' + (/\=/.test( uid ) ? '1=' : '' ) + uid + '}} &ndash; ' + reason );
 				aivPage.append();
 			} );
 			break;
@@ -770,7 +770,7 @@ Twinkle.arv.processSock = function( params ) {
 	// prepare the SPI report
 	var text = "\n\n{{subst:SPI report|socksraw=" +
 		params.sockpuppets.map( function(v) {
-				return "* {{" + ( Morebits.isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "}}";
+				return "* {{" + ( mw.util.isIPAddress( v ) ? "checkip" : "checkuser" ) + "|1=" + v + "}}";
 			} ).join( "\n" ) + "\n|evidence=" + params.evidence + " \n";
 
 	if ( params.checkuser ) {
