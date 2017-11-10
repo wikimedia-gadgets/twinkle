@@ -366,7 +366,7 @@ $.ajax({
 		}
 
 		try {
-			var options = $.parseJSON( optionsText );
+			var options = JSON.parse( optionsText );
 
 			// Assuming that our options evolve, we will want to transform older versions:
 			//if ( options.optionsVersion === undefined ) {
@@ -395,14 +395,16 @@ $.ajax({
 // For example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
 
 Twinkle.load = function () {
-	// Don't activate on special pages other than "(Deleted)Contributions" so that they load faster, especially the watchlist.
+	// Don't activate on special pages other than those on the whitelist so that
+	// they load faster, especially the watchlist.
+	var specialPageWhitelist = [ 'Contributions', 'DeletedContributions', 'Prefixindex' ];
 	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1 &&
-		mw.config.get('wgCanonicalSpecialPageName') !== "Contributions" &&
-		mw.config.get('wgCanonicalSpecialPageName') !== "DeletedContributions" &&
-		mw.config.get('wgCanonicalSpecialPageName') !== "Prefixindex" ),
+		specialPageWhitelist.indexOf( mw.config.get('wgCanonicalSpecialPageName') ) === -1 );
 
-		// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
-		isOldIE = ( $.client.profile().name === 'msie' && $.client.profile().versionNumber < 9 );
+	// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower,
+	// so don't load there either.
+	var isOldIE = ( $.client.profile().name === 'msie' &&
+		$.client.profile().versionNumber < 9 );
 
 	// Prevent users that are not autoconfirmed from loading Twinkle as well.
 	if ( isSpecialPage || isOldIE || !Twinkle.userAuthorized ) {
@@ -447,7 +449,7 @@ Twinkle.load = function () {
 		Twinkle.batchundelete();
 	}
 	// Run the initialization callbacks for any custom modules
-	$( Twinkle.initCallbacks ).each(function ( k, v ) { v(); });
+	Twinkle.initCallbacks.forEach(function ( func ) { func(); });
 	Twinkle.addInitCallback = function ( func ) { func(); };
 
 	// Increases text size in Twinkle dialogs, if so configured

@@ -42,19 +42,7 @@ window.Morebits = Morebits;  // allow global access
  */
 
 Morebits.userIsInGroup = function ( group ) {
-	return $.inArray(group, mw.config.get( 'wgUserGroups' )) !== -1;
-};
-
-
-
-/**
- * **************** Morebits.isIPAddress() ****************
- * Helper function: Returns true if given string contains a valid IPv4 or
- * IPv6 address
- */
-
-Morebits.isIPAddress = function ( address ) {
-	return mw.util.isIPv4Address(address) || mw.util.isIPv6Address(address);
+	return mw.config.get( 'wgUserGroups' ).indexOf( group ) !== -1;
 };
 
 
@@ -71,7 +59,7 @@ Morebits.sanitizeIPv6 = function ( address ) {
 	if ( address === '' ) {
 		return null;
 	}
-	if ( mw.util.isIPv4Address( address ) || !mw.util.isIPv6Address( address ) ) {
+	if ( !mw.util.isIPv6Address( address ) ) {
 		return address; // nothing else to do for IPv4 addresses or invalid ones
 	}
 	// Remove any whitespaces, convert to upper case
