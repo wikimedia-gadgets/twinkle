@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -28,7 +25,7 @@ Twinkle.tag = function friendlytag() {
 		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to file" );
 	}
 	// article/draft article tagging
-	else if( ( mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 118 || /^Wikipedia( talk)?\:Articles for creation\//.exec(Morebits.pageNameNorm) ) && mw.config.get('wgCurRevisionId') ) {
+	else if( ( mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 118 || /^Wikipedia( talk)?:Articles for creation\//.exec(Morebits.pageNameNorm) ) && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
 		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to article" );
 	}
@@ -321,7 +318,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 					name: 'notability',
 					type: 'select',
 					list: [
-						{ label: "{{notability}}: article\'s subject may not meet the general notability guideline", value: "none" },
+						{ label: "{{notability}}: article's subject may not meet the general notability guideline", value: "none" },
 						{ label: "{{notability|Academics}}: notability guideline for academics", value: "Academics" },
 						{ label: "{{notability|Biographies}}: notability guideline for biographies", value: "Biographies" },
 						{ label: "{{notability|Books}}: notability guideline for books", value: "Books" },
@@ -643,7 +640,7 @@ Twinkle.tag.spellingList = [
 		value: 'R from acronym'
 	},
 	{
-		label: '{{R to list entry}}: redirect to a \"list of minor entities\"-type article which contains brief descriptions of subjects not notable enough to have separate articles',
+		label: '{{R to list entry}}: redirect to a "list of minor entities"-type article which contains brief descriptions of subjects not notable enough to have separate articles',
 		value: 'R to list entry'
 	},
 	{
@@ -753,7 +750,7 @@ Twinkle.tag.administrativeList = [
 		value: 'R from CamelCase'
 	},
 	{
-		label: '{{R from EXIF}}: redirect of a wikilink created from JPEG EXIF information (i.e. the \"metadata\" section on some image description pages)',
+		label: '{{R from EXIF}}: redirect of a wikilink created from JPEG EXIF information (i.e. the "metadata" section on some image description pages)',
 		value: 'R from EXIF'
 	},
 	{
@@ -862,8 +859,8 @@ Twinkle.tag.multipleIssuesExceptions = [
 Twinkle.tag.callbacks = {
 	main: function( pageobj ) {
 		var params = pageobj.getCallbackParameters(),
-		    tagRe, tagText = '', summaryText = 'Added',
-		    tags = [], groupableTags = [], i, totalTags;
+			tagRe, tagText = '', summaryText = 'Added',
+			tags = [], groupableTags = [], i, totalTags;
 
 		// Remove tags that become superfluous with this action
 		var pageText = pageobj.getPageText().replace(/\{\{\s*([Nn]ew unreviewed article|[Uu]nreviewed|[Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, "");
@@ -1083,7 +1080,7 @@ Twinkle.tag.callbacks = {
 
 		// avoid truncated summaries
 		if (summaryText.length > (254 - Twinkle.getPref('summaryAd').length)) {
-			summaryText = summaryText.replace(/\[\[[^\|]+\|([^\]]+)\]\]/g, "$1");
+			summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, "$1");
 		}
 
 		pageobj.setPageText(pageText);
@@ -1428,6 +1425,3 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	}
 };
 })(jQuery);
-
-
-//</nowiki>

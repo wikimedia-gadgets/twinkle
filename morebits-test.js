@@ -1,3 +1,5 @@
+/* global Twinkle, Morebits */
+
 // Script depends on jQuery dialog widget
 mw.loader.using( 'jquery.ui.dialog', function() {
 	// Construct object (to prevent namespace conflicts)
@@ -12,17 +14,17 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 			Window.setTitle( "Test morebits.js" );
 			Window.display();
 			var form = new Morebits.quickForm( null );
-			var main_group = form.append( {
-				type:'select',
-				name:'main_group',
-				event:null
+			form.append( {
+				type: 'select',
+				name: 'main_group',
+				event: null
 			} );
 			var result = form.render();
 			Window.setContent( result );
 			Window.display();
 			result.main_group.root = result;
 			Morebits.status.init( result );
-			Morebits.wiki.actionCompleted.redirect = wgPageName;
+			Morebits.wiki.actionCompleted.redirect = mw.config.get("wgPageName");
 			Morebits.wiki.actionCompleted.notice = "Test complete, reloading talk page in a few seconds";
 		},
 
@@ -48,7 +50,7 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 			if ( section != "" ) {
 				page.setPageSection( Number( section ) );
 			}
-			page.setCreateOption(morebits_test_createOption);
+			page.setCreateOption(window.morebits_test_createOption);
 
 			if ( $('#runTestForm input[name="lookupCreator"]').attr('checked') ) {
 				page.lookupCreator(Twinkle.morebitsTest.lookupCreatorCallback);
@@ -88,7 +90,7 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 			//    $('<div style="margin-top:0.4em;"></div>').html( 'Text to be added:' )
 			//  → $('<div/>', { css: { 'margin-top': '0.4em' }, text: 'Text to be added:' } )
 
-			morebits_test_createOption = null;
+			window.morebits_test_createOption = null;
 
 			Twinkle.morebitsTest.$runTests = $('<div id="runTestForm" style="position:relative;"></div>')
 				.append( $('<div style="margin-top:0.4em;"></div>').html( 'Text to be added:<br/>' ).append( $('<textarea id="message" id="runTestMessage" style="width:99%" rows="4" cols="60"></textarea>') ) )
@@ -101,10 +103,10 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 				.append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="watchlistFromPreferences"/> Add to watchlist based on preference settings') )
 				.append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="noRetries"/> Disable retries') )
 				.append( $('<div style="margin-top:0.4em;"></div>').html('<input type="checkbox" name="lookupCreator"/> Lookup page creator<hr/>') )
-				.append( $('<div style="margin-top:0.4em;"></div>').html('<input type="radio" name="createOption" value="" onclick="morebits_test_createOption=value" checked/> Create page if needed, unless deleted since loaded<br>') )
-				.append( $('<div style="margin-top:0.4em;"></div>').html('<input type="radio" name="createOption" value="recreate" onclick="morebits_test_createOption=value"/> Create page if needed<br>') )
-				.append( $('<div style="margin-top:0.4em;"></div>').html('<input type="radio" name="createOption" value="createonly" onclick="morebits_test_createOption=value"/> Only create a new page<br>') )
-				.append( $('<div style="margin-top:0.4em;"></div>').html('<input type="radio" name="createOption" value="nocreate" onclick="morebits_test_createOption=value"/> Do not create a new page<br>') )
+				.append( $('<div style="margin-top:0.4em;"></div>').html('<input type="radio" name="createOption" value="" onclick="window.morebits_test_createOption=value" checked/> Create page if needed, unless deleted since loaded<br>') )
+				.append( $('<div style="margin-top:0.4em;"></div>').html('<input type="radio" name="createOption" value="recreate" onclick="window.morebits_test_createOption=value"/> Create page if needed<br>') )
+				.append( $('<div style="margin-top:0.4em;"></div>').html('<input type="radio" name="createOption" value="createonly" onclick="window.morebits_test_createOption=value"/> Only create a new page<br>') )
+				.append( $('<div style="margin-top:0.4em;"></div>').html('<input type="radio" name="createOption" value="nocreate" onclick="window.morebits_test_createOption=value"/> Do not create a new page<br>') )
 				.dialog({
 					width: 500,
 					autoOpen: false,
@@ -115,21 +117,21 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 							$(this).dialog('close');
 							Twinkle.morebitsTest.initSimpleWindow();
 
-							var page = new Morebits.wiki.page(wgPageName);
+							var page = new Morebits.wiki.page(mw.config.get("wgPageName"));
 							page.setAppendText( $('#message').val() );
 							Twinkle.morebitsTest.setPageOptions(page);
 							page.append(Twinkle.morebitsTest.finalSaveCallback);
 						},
-						"Prepend": function(e) {
+						"Prepend": function() {
 							$(this).dialog('close');
 							Twinkle.morebitsTest.initSimpleWindow();
 
-							var page = new Morebits.wiki.page(wgPageName);
+							var page = new Morebits.wiki.page(mw.config.get("wgPageName"));
 							page.setPrependText( $('#message').val() );
 							Twinkle.morebitsTest.setPageOptions(page);
 							page.prepend(Twinkle.morebitsTest.finalSaveCallback);
 						},
-						"Insert": function(e) {
+						"Insert": function() {
 							if ( $('#beforeText').val() == "" ) {
 								alert ("Text to insert before must be specified!");
 								return;
@@ -137,19 +139,19 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 							$(this).dialog('close');
 							Twinkle.morebitsTest.initSimpleWindow();
 
-							var page = new Morebits.wiki.page(wgPageName);
+							var page = new Morebits.wiki.page(mw.config.get("wgPageName"));
 							page.setCallbackParameters( {
 								beforeText: $('#beforeText').val(),
 								newText: $('#message').val()
-								});
+							});
 							Twinkle.morebitsTest.setPageOptions(page);
 							page.load(Twinkle.morebitsTest.loadCallbackInsert);
 						},
-						"Replace": function(e) {
+						"Replace": function() {
 							$(this).dialog('close');
 							Twinkle.morebitsTest.initSimpleWindow();
 
-							var page = new Morebits.wiki.page(wgPageName);
+							var page = new Morebits.wiki.page(mw.config.get("wgPageName"));
 							page.setCallbackParameters( {
 								newText: $('#message').val()
 								});
@@ -167,8 +169,8 @@ mw.loader.using( 'jquery.ui.dialog', function() {
 }); // close mw.loader
 
 Twinkle.morebitsTestInit = function () {
-	if ( wgAction == 'view' && skin == 'vector' && wgNamespaceNumber >= 0 ) {
-		twAddPortletLink( ("javascript:Twinkle.morebitsTest.launchDialog(Twinkle.morebitsTest.$runTests)"), "Test", "tw-test", "Test morebits.js", "");
+	if ( mw.config.get("wgAction") === "view" && mw.config.get("skin") === "vector" && mw.config.get("wgNamespaceNumber") >= 0 ) {
+		Twinkle.addPortlet( ("javascript:Twinkle.morebitsTest.launchDialog(Twinkle.morebitsTest.$runTests)"), "Test", "tw-test", "Test morebits.js", "");
 	}
 }
 
@@ -176,5 +178,5 @@ Twinkle.morebitsTestInit = function () {
 var Twinkle;
 if ( typeof Twinkle === 'undefined' ) {
 	throw new Error( 'Attempt to load module "morebits-test" without having loaded Twinkle previously.' );
-};
+}
 Twinkle.addInitCallback( Twinkle.morebitsTestInit );

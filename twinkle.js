@@ -17,7 +17,7 @@
  * every Wikipedian in between. Visit [[WP:TW]] for more information.
  */
 
-//<nowiki>
+/* global Morebits */
 
 ( function ( window, document, $, undefined ) { // Wrap with anonymous function
 
@@ -43,17 +43,20 @@ Twinkle.defaultConfig = {};
  * For help on the actual preferences, see the comments in twinkleconfig.js.
  */
 Twinkle.defaultConfig.twinkle = {
-	 // General
+	// General
 	summaryAd: " ([[WP:TW|TW]])",
 	deletionSummaryAd: " ([[WP:TW|TW]])",
 	protectionSummaryAd: " ([[WP:TW|TW]])",
 	userTalkPageMode: "tab",
 	dialogLargeFont: false,
-	 // ARV
+
+	// ARV
 	spiWatchReport: "yes",
-	 // Block
+
+	// Block
 	blankTalkpageOnIndefBlock: false,
-	 // Fluff (revert and rollback)
+
+	// Fluff (revert and rollback)
 	openTalkPage: [ "agf", "norm", "vand" ],
 	openTalkPageOnAutoRevert: false,
 	markRevertedPagesAsMinor: [ "vand" ],
@@ -61,19 +64,23 @@ Twinkle.defaultConfig.twinkle = {
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
 	showRollbackLinks: [ "diff", "others" ],
-	 // DI (twinkleimage)
+
+	// DI (twinkleimage)
 	notifyUserOnDeli: true,
 	deliWatchPage: "default",
 	deliWatchUser: "default",
-	 // PROD
+
+	// PROD
 	watchProdPages: true,
 	prodReasonDefault: "",
 	logProdPages: false,
 	prodLogPageName: "PROD log",
-	 // CSD
+
+	// CSD
 	speedySelectionStyle: "buttonClick",
 	watchSpeedyPages: [ "g3", "g5", "g10", "g11", "g12" ],
 	markSpeedyPagesAsPatrolled: true,
+
 	// these next two should probably be identical by default
 	notifyUserOnSpeedyDeletionNomination:    [ "db", "g1", "g2", "g3", "g4", "g6", "g10", "g11", "g12", "g13", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "u5", "t2", "t3", "p1", "p2" ],
 	welcomeUserOnSpeedyDeletionNotification: [ "db", "g1", "g2", "g3", "g4", "g6", "g10", "g11", "g12", "g13", "a1", "a2", "a3", "a5", "a7", "a9", "a10", "a11", "f1", "f2", "f3", "f7", "f9", "f10", "u3", "u5", "t2", "t3", "p1", "p2" ],
@@ -87,20 +94,24 @@ Twinkle.defaultConfig.twinkle = {
 	logSpeedyNominations: false,
 	speedyLogPageName: "CSD log",
 	noLogOnSpeedyNomination: [ "u1" ],
-	 // Unlink
+
+	// Unlink
 	unlinkNamespaces: [ "0", "10", "100", "118" ],
-	 // Warn
+
+	// Warn
 	defaultWarningGroup: "1",
 	showSharedIPNotice: true,
 	watchWarnings: true,
 	customWarningList: [],
-	 // XfD
+
+	// XfD
 	xfdWatchDiscussion: "default",
 	xfdWatchList: "no",
 	xfdWatchPage: "default",
 	xfdWatchUser: "default",
 	markXfdPagesAsPatrolled: true,
-	 // Hidden preferences
+
+	// Hidden preferences
 	revertMaxRevisions: 50,
 	batchdeleteChunks: 50,
 	batchMax: 5000,
@@ -125,7 +136,7 @@ if ( mw.config.get( "skin" ) === "vector" ) {
 }
 
 Twinkle.defaultConfig.friendly = {
-	 // Tag
+	// Tag
 	groupByDefault: true,
 	watchTaggedPages: true,
 	watchMergeDiscussions: true,
@@ -133,7 +144,8 @@ Twinkle.defaultConfig.friendly = {
 	markTaggedPagesAsPatrolled: true,
 	tagArticleSortOrder: "cat",
 	customTagList: [],
-	 // Welcome
+
+	// Welcome
 	topWelcomes: false,
 	watchWelcomes: true,
 	welcomeHeading: "Welcome",
@@ -144,13 +156,15 @@ Twinkle.defaultConfig.friendly = {
 	quickWelcomeTemplate: "welcome",
 	customWelcomeList: [],
 	customWelcomeSignature: true,
-	 // Talkback
+
+	// Talkback
 	markTalkbackAsMinor: true,
 	insertTalkbackSignature: true,  // always sign talkback templates
 	talkbackHeading: "Talkback",
 	adminNoticeHeading: "Notice",
 	mailHeading: "You've got mail!",
-	 // Shared
+
+	// Shared
 	markSharedIPAsMinor: true
 };
 
@@ -460,5 +474,3 @@ Twinkle.load = function () {
 };
 
 } ( window, document, jQuery )); // End wrap with anonymous function
-
-// </nowiki>

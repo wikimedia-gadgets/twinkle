@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -185,7 +182,7 @@ Twinkle.prod.callbacks = {
 
 		// Remove tags that become superfluous with this action
 		text = text.replace(/\{\{\s*(new unreviewed article|unreviewed|userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/gi, "");
-		var prod_re = /\{\{\s*(?:dated prod|dated files|dated prod blp|Prod blp\/dated|Proposed deletion\/dated)\s*\|(?:\{\{[^\{\}]*\}\}|[^\}\{])*\}\}/i;
+		var prod_re = /{{\s*(?:dated prod|dated files|dated prod blp|Prod blp\/dated|Proposed deletion\/dated)\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
 		var summaryText;
 		if( !prod_re.test( text ) ) {
 			// Notification to first contributor
@@ -346,6 +343,3 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	wikipedia_page.load(Twinkle.prod.callbacks.main);
 };
 })(jQuery);
-
-
-//</nowiki>

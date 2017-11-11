@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -472,11 +469,10 @@ Twinkle.xfd.callbacks = {
 		return text;
 	},
 	showPreview: function(form, venue, params) {
-		templatetext = Twinkle.xfd.callbacks.getDiscussionWikitext(venue, params);
+		var templatetext = Twinkle.xfd.callbacks.getDiscussionWikitext(venue, params);
 		form.previewer.beginRender(templatetext, "Wikipedia:Null");
 	},
 	preview: function(form) {
-		var templatetext;
 		var venue = form.category.value;
 
 		if (venue !== "afd" && venue !== "mfd" && venue !== "tfd" && venue !== "tfm" && venue !== "ffd") {
@@ -605,7 +601,7 @@ Twinkle.xfd.callbacks = {
 			// Remove some tags that should always be removed on AfD.
 			text = text.replace(/\{\{\s*(dated prod|dated prod blp|Prod blp\/dated|Proposed deletion\/dated|prod2|Proposed deletion endorsed|New unreviewed article|Unreviewed|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 			// Then, test if there are speedy deletion-related templates on the article.
-			var textNoSd = text.replace(/\{\{\s*(db(-\w*)?|delete|(?:hang|hold)[\- ]?on)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
+			var textNoSd = text.replace(/\{\{\s*(db(-\w*)?|delete|(?:hang|hold)[- ]?on)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 			if (text !== textNoSd && confirm("A speedy deletion tag was found on this page. Should it be removed?")) {
 				text = textNoSd;
 			}
@@ -653,7 +649,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var text = old_text.replace( /(<\!-- Add new entries to the TOP of the following list -->\n+)/, "$1{{subst:afd3|pg=" + Morebits.pageNameNorm + params.numbering + "}}\n");
+			var text = old_text.replace( /(<!-- Add new entries to the TOP of the following list -->\n+)/, "$1{{subst:afd3|pg=" + Morebits.pageNameNorm + params.numbering + "}}\n");
 			if( text === old_text ) {
 				var linknode = document.createElement('a');
 				linknode.setAttribute("href", mw.util.getUrl("Wikipedia:Twinkle/Fixing AFD") + "?action=purge" );
@@ -1374,7 +1370,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var text = old_text.replace( /(<\!-- Add new entries directly below this line\.? -->)/, "$1\n{{subst:rfd2|text=" +
+			var text = old_text.replace( /(<!-- Add new entries directly below this line\.? -->)/, "$1\n{{subst:rfd2|text=" +
 				Morebits.string.formatReasonText(params.reason) + "|redirect="+ Morebits.pageNameNorm + "|target=" +
 				params.target + "}} ~~~~\n" );
 			if( text === old_text ) {
@@ -1493,7 +1489,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		Morebits.wiki.addCheckpoint();
 
 		if (xfdtarget) {
-			xfdtarget = Morebits.string.toUpperCaseFirstChar(xfdtarget.replace(/^\:?Template\:/i, ''));
+			xfdtarget = Morebits.string.toUpperCaseFirstChar(xfdtarget.replace(/^:?Template:/i, ''));
 		} else {
 			xfdtarget = '';
 		}
@@ -1596,13 +1592,13 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		Morebits.wiki.addCheckpoint();
 
 		if( xfdtarget ) {
-			xfdtarget = xfdtarget.replace( /^\:?Category\:/i, '' );
+			xfdtarget = xfdtarget.replace( /^:?Category:/i, '' );
 		} else {
 			xfdtarget = '';
 		}
 
 		if( xfdtarget2 ) {
-			xfdtarget2 = xfdtarget2.replace( /^\:?Category\:/i, '' );
+			xfdtarget2 = xfdtarget2.replace( /^:?Category:/i, '' );
 		}
 
 		logpage = 'Wikipedia:Categories for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
@@ -1638,7 +1634,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		break;
 
 	case 'cfds':
-		xfdtarget = xfdtarget.replace( /^\:?Category\:/, '' );
+		xfdtarget = xfdtarget.replace( /^:?Category:/, '' );
 
 		logpage = "Wikipedia:Categories for discussion/Speedy";
 		params = { reason: reason, xfdcat: xfdcat, target: xfdtarget };
@@ -1663,7 +1659,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		params = { usertalk: usertalk, reason: reason };
 		if (document.getElementById("softredirect")) {
 			// For soft redirects, skip straight to the callback
-			params.target = document.getElementById("softredirect").textContent.replace(/^\:+/, "");
+			params.target = document.getElementById("softredirect").textContent.replace(/^:+/, "");
 			Twinkle.xfd.callbacks.rfd.main(params);
 		} else {
 			// Find current target of redirect
@@ -1683,6 +1679,3 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	}
 };
 })(jQuery);
-
-
-//</nowiki>

@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -239,7 +236,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 			delete_talk: delete_talk,
 			delete_redirects: delete_redirects,
 			unlink_page: unlink_page,
-			unlink_file: unlink_file && /^(File|Image)\:/i.test(pageName),
+			unlink_file: unlink_file && /^(File|Image):/i.test(pageName),
 			reason: reason,
 			pageDeleter: pageDeleter
 		};
@@ -455,6 +452,3 @@ Twinkle.batchdelete.callbacks = {
 	}
 };
 })(jQuery);
-
-
-//</nowiki>
