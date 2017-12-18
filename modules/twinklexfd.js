@@ -69,7 +69,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append( {
 			type: 'option',
 			label: 'TfD (Templates for discussion)',
-			selected: [ 10, 828 ].indexOf( mw.config.get('wgNamespaceNumber') ) === 1,  // Template and module namespaces
+			selected: [ 10, 828 ].indexOf( mw.config.get('wgNamespaceNumber') ) !== -1,  // Template and module namespaces
 			value: 'tfd'
 		} );
 	categories.append( {
