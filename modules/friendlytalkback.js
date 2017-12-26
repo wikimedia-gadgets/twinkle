@@ -84,21 +84,15 @@ Twinkle.talkback.callback = function( ) {
 	result.tbtarget[0].dispatchEvent( evt );
 
 	// Check whether the user has opted out from talkback
-	// TODO: wgCategories is only set on action=view (bug 45033)
-	var wgcat = mw.config.get("wgCategories");
-	if (wgcat.length && wgcat.indexOf("Users who do not wish to receive talkbacks") === -1) {
-		Twinkle.talkback.optout = false;
-	} else {
-		var query = {
-			action: 'query',
-			prop: 'extlinks',
-			titles: mw.config.get('wgPageName'),
-			elquery: 'userjs.invalid/noTalkback',
-			ellimit: '1'
-		};
-		var wpapi = new Morebits.wiki.api("Fetching talkback opt-out status", query, Twinkle.talkback.callback.optoutStatus);
-		wpapi.post();
-	}
+	var query = {
+		action: 'query',
+		prop: 'extlinks',
+		titles: mw.config.get('wgPageName'),
+		elquery: 'userjs.invalid/noTalkback',
+		ellimit: '1'
+	};
+	var wpapi = new Morebits.wiki.api("Fetching talkback opt-out status", query, Twinkle.talkback.callback.optoutStatus);
+	wpapi.post();
 };
 
 Twinkle.talkback.optout = null;
