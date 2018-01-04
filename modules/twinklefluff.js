@@ -17,6 +17,13 @@
  Twinklefluff revert and antivandalism utility
  */
 
+var spanTag = function( color, content ) {
+	var span = document.createElement( 'span' );
+	span.style.color = color;
+	span.appendChild( document.createTextNode( content ) );
+	return span;
+};
+
 Twinkle.fluff = {
 	auto: function() {
 		if( parseInt( Morebits.queryString.get('oldid'), 10) !== mw.config.get('wgCurRevisionId') ) {
@@ -29,173 +36,174 @@ Twinkle.fluff = {
 
 		Twinkle.fluff.revert( Morebits.queryString.get( 'twinklerevert' ), vandal, true );
 	},
-	normal: function() {
 
-		var spanTag = function( color, content ) {
-			var span = document.createElement( 'span' );
-			span.style.color = color;
-			span.appendChild( document.createTextNode( content ) );
-			return span;
-		};
+	contributions: function() {
+		//Get the username these contributions are for
+		var logLink = $('#contentSub').find('a[title^="Special:Log"]').last();
+		if (logLink.length>0) //#215 -- there is no log link on Special:Contributions with no user
+		{
+			var username = decodeURIComponent(/wiki\/Special:Log\/(.+)$/.exec(logLink.attr("href").replace(/_/g, "%20"))[1]);
+			if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
+				( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) ||
+				( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
+				var list = $("#mw-content-text").find("ul li:has(span.mw-uctop)");
 
-		if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
-			//Get the username these contributions are for
-			var logLink = $('#contentSub').find('a[title^="Special:Log"]').last();
-			if (logLink.length>0) //#215 -- there is no log link on Special:Contributions with no user
-			{
-				var username = decodeURIComponent(/wiki\/Special:Log\/(.+)$/.exec(logLink.attr("href").replace(/_/g, "%20"))[1]);
-				if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
-					( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) ||
-					( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
-					var list = $("#mw-content-text").find("ul li:has(span.mw-uctop)");
+				var revNode = document.createElement('strong');
+				var revLink = document.createElement('a');
+				revLink.appendChild( spanTag( 'Black', '[' ) );
+				revLink.appendChild( spanTag( 'SteelBlue', 'rollback' ) );
+				revLink.appendChild( spanTag( 'Black', ']' ) );
+				revNode.appendChild(revLink);
 
-					var revNode = document.createElement('strong');
-					var revLink = document.createElement('a');
-					revLink.appendChild( spanTag( 'Black', '[' ) );
-					revLink.appendChild( spanTag( 'SteelBlue', 'rollback' ) );
-					revLink.appendChild( spanTag( 'Black', ']' ) );
-					revNode.appendChild(revLink);
+				var revVandNode = document.createElement('strong');
+				var revVandLink = document.createElement('a');
+				revVandLink.appendChild( spanTag( 'Black', '[' ) );
+				revVandLink.appendChild( spanTag( 'Red', 'vandalism' ) );
+				revVandLink.appendChild( spanTag( 'Black', ']' ) );
+				revVandNode.appendChild(revVandLink);
 
-					var revVandNode = document.createElement('strong');
-					var revVandLink = document.createElement('a');
-					revVandLink.appendChild( spanTag( 'Black', '[' ) );
-					revVandLink.appendChild( spanTag( 'Red', 'vandalism' ) );
-					revVandLink.appendChild( spanTag( 'Black', ']' ) );
-					revVandNode.appendChild(revVandLink);
-
-					list.each(function(key, current) {
-						var href = $(current).children("a:eq(1)").attr("href");
-						current.appendChild( document.createTextNode(' ') );
-						var tmpNode = revNode.cloneNode( true );
-						tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'norm' } ) );
-						current.appendChild( tmpNode );
-						current.appendChild( document.createTextNode(' ') );
-						tmpNode = revVandNode.cloneNode( true );
-						tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'vand' } ) );
-						current.appendChild( tmpNode );
-					});
-				}
+				list.each(function(key, current) {
+					var href = $(current).children("a:eq(1)").attr("href");
+					current.appendChild( document.createTextNode(' ') );
+					var tmpNode = revNode.cloneNode( true );
+					tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'norm' } ) );
+					current.appendChild( tmpNode );
+					current.appendChild( document.createTextNode(' ') );
+					tmpNode = revVandNode.cloneNode( true );
+					tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'vand' } ) );
+					current.appendChild( tmpNode );
+				});
 			}
-		} else {
+		}
+	},
 
-			if( mw.config.get('wgCanonicalSpecialPageName') === "Undelete" ) {
-				//You can't rollback deleted pages!
+	diff: function() {
+		if( mw.config.get('wgCanonicalSpecialPageName') === "Undelete" ) {
+			//You can't rollback deleted pages!
+			return;
+		}
+
+		var firstRev = $("div.firstrevisionheader").length;
+		if( firstRev ) {
+			// we have first revision here, nothing to do.
+			return;
+		}
+
+		var otitle, ntitle;
+		try {
+			var otitle1 = document.getElementById('mw-diff-otitle1');
+			var ntitle1 = document.getElementById('mw-diff-ntitle1');
+			if (!otitle1 || !ntitle1) {
 				return;
 			}
+			otitle = otitle1.parentNode;
+			ntitle = ntitle1.parentNode;
+		} catch( e ) {
+			// no old, nor new title, nothing to do really, return;
+			return;
+		}
 
-			var firstRev = $("div.firstrevisionheader").length;
-			if( firstRev ) {
-				// we have first revision here, nothing to do.
-				return;
-			}
+		var old_rev_url = $("#mw-diff-otitle1").find("strong a").attr("href");
+		// Lets first add a [edit this revision] link
+		var query = new Morebits.queryString( old_rev_url.split( '?', 2 )[1] );
 
-			var otitle, ntitle;
-			try {
-				var otitle1 = document.getElementById('mw-diff-otitle1');
-				var ntitle1 = document.getElementById('mw-diff-ntitle1');
-				if (!otitle1 || !ntitle1) {
-					return;
-				}
-				otitle = otitle1.parentNode;
-				ntitle = ntitle1.parentNode;
-			} catch( e ) {
-				// no old, nor new title, nothing to do really, return;
-				return;
-			}
+		var oldrev = query.get('oldid');
 
-			var old_rev_url = $("#mw-diff-otitle1").find("strong a").attr("href");
+		var revertToRevision = document.createElement('div');
+		revertToRevision.setAttribute( 'id', 'tw-revert-to-orevision' );
+		revertToRevision.style.fontWeight = 'bold';
 
-			// Lets first add a [edit this revision] link
-			var query = new Morebits.queryString( old_rev_url.split( '?', 2 )[1] );
+		var revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
+		revertToRevisionLink.href = "#";
+		$(revertToRevisionLink).click(function(){
+			Twinkle.fluff.revertToRevision(oldrev);
+		});
+		revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
+		revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
+		revertToRevisionLink.appendChild( spanTag( 'Black', ']' ) );
 
-			var oldrev = query.get('oldid');
+		otitle.insertBefore( revertToRevision, otitle.firstChild );
 
-			var revertToRevision = document.createElement('div');
-			revertToRevision.setAttribute( 'id', 'tw-revert-to-orevision' );
+		if( document.getElementById('differences-nextlink') ) {
+			// Not latest revision
+			var new_rev_url = $("#mw-diff-ntitle1").find("strong a").attr("href");
+			query = new Morebits.queryString( new_rev_url.split( '?', 2 )[1] );
+			var newrev = query.get('oldid');
+			revertToRevision = document.createElement('div');
+			revertToRevision.setAttribute( 'id', 'tw-revert-to-nrevision' );
 			revertToRevision.style.fontWeight = 'bold';
-
-			var revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
+			revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
 			revertToRevisionLink.href = "#";
 			$(revertToRevisionLink).click(function(){
-				Twinkle.fluff.revertToRevision(oldrev);
+				Twinkle.fluff.revertToRevision(newrev);
 			});
 			revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
 			revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
 			revertToRevisionLink.appendChild( spanTag( 'Black', ']' ) );
+			ntitle.insertBefore( revertToRevision, ntitle.firstChild );
 
-			otitle.insertBefore( revertToRevision, otitle.firstChild );
+			return;
+		}
+		if( Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 ) {
+			var vandal = $("#mw-diff-ntitle2").find("a").first().text();
 
-			if( document.getElementById('differences-nextlink') ) {
-				// Not latest revision
-				var new_rev_url = $("#mw-diff-ntitle1").find("strong a").attr("href");
-				query = new Morebits.queryString( new_rev_url.split( '?', 2 )[1] );
-				var newrev = query.get('oldid');
-				revertToRevision = document.createElement('div');
-				revertToRevision.setAttribute( 'id', 'tw-revert-to-nrevision' );
-				revertToRevision.style.fontWeight = 'bold';
-				revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
-				revertToRevisionLink.href = "#";
-				$(revertToRevisionLink).click(function(){
-					Twinkle.fluff.revertToRevision(newrev);
-				});
-				revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
-				revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
-				revertToRevisionLink.appendChild( spanTag( 'Black', ']' ) );
-				ntitle.insertBefore( revertToRevision, ntitle.firstChild );
+			var revertNode = document.createElement('div');
+			revertNode.setAttribute( 'id', 'tw-revert' );
 
-				return;
-			}
-			if( Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 ) {
-				var vandal = $("#mw-diff-ntitle2").find("a").first().text();
+			var agfNode = document.createElement('strong');
+			var vandNode = document.createElement('strong');
+			var normNode = document.createElement('strong');
 
-				var revertNode = document.createElement('div');
-				revertNode.setAttribute( 'id', 'tw-revert' );
+			var agfLink = document.createElement('a');
+			var vandLink = document.createElement('a');
+			var normLink = document.createElement('a');
 
-				var agfNode = document.createElement('strong');
-				var vandNode = document.createElement('strong');
-				var normNode = document.createElement('strong');
+			agfLink.href = "#";
+			vandLink.href = "#";
+			normLink.href = "#";
+			$(agfLink).click(function(){
+				Twinkle.fluff.revert('agf', vandal);
+			});
+			$(vandLink).click(function(){
+				Twinkle.fluff.revert('vand', vandal);
+			});
+			$(normLink).click(function(){
+				Twinkle.fluff.revert('norm', vandal);
+			});
 
-				var agfLink = document.createElement('a');
-				var vandLink = document.createElement('a');
-				var normLink = document.createElement('a');
+			agfLink.appendChild( spanTag( 'Black', '[' ) );
+			agfLink.appendChild( spanTag( 'DarkOliveGreen', 'rollback (AGF)' ) );
+			agfLink.appendChild( spanTag( 'Black', ']' ) );
 
-				agfLink.href = "#";
-				vandLink.href = "#";
-				normLink.href = "#";
-				$(agfLink).click(function(){
-					Twinkle.fluff.revert('agf', vandal);
-				});
-				$(vandLink).click(function(){
-					Twinkle.fluff.revert('vand', vandal);
-				});
-				$(normLink).click(function(){
-					Twinkle.fluff.revert('norm', vandal);
-				});
+			vandLink.appendChild( spanTag( 'Black', '[' ) );
+			vandLink.appendChild( spanTag( 'Red', 'rollback (VANDAL)' ) );
+			vandLink.appendChild( spanTag( 'Black', ']' ) );
 
-				agfLink.appendChild( spanTag( 'Black', '[' ) );
-				agfLink.appendChild( spanTag( 'DarkOliveGreen', 'rollback (AGF)' ) );
-				agfLink.appendChild( spanTag( 'Black', ']' ) );
+			normLink.appendChild( spanTag( 'Black', '[' ) );
+			normLink.appendChild( spanTag( 'SteelBlue', 'rollback' ) );
+			normLink.appendChild( spanTag( 'Black', ']' ) );
 
-				vandLink.appendChild( spanTag( 'Black', '[' ) );
-				vandLink.appendChild( spanTag( 'Red', 'rollback (VANDAL)' ) );
-				vandLink.appendChild( spanTag( 'Black', ']' ) );
+			agfNode.appendChild(agfLink);
+			vandNode.appendChild(vandLink);
+			normNode.appendChild(normLink);
 
-				normLink.appendChild( spanTag( 'Black', '[' ) );
-				normLink.appendChild( spanTag( 'SteelBlue', 'rollback' ) );
-				normLink.appendChild( spanTag( 'Black', ']' ) );
+			revertNode.appendChild( agfNode );
+			revertNode.appendChild( document.createTextNode(' || ') );
+			revertNode.appendChild( normNode );
+			revertNode.appendChild( document.createTextNode(' || ') );
+			revertNode.appendChild( vandNode );
 
-				agfNode.appendChild(agfLink);
-				vandNode.appendChild(vandLink);
-				normNode.appendChild(normLink);
+			ntitle.insertBefore( revertNode, ntitle.firstChild );
+		}
+	},
 
-				revertNode.appendChild( agfNode );
-				revertNode.appendChild( document.createTextNode(' || ') );
-				revertNode.appendChild( normNode );
-				revertNode.appendChild( document.createTextNode(' || ') );
-				revertNode.appendChild( vandNode );
-
-				ntitle.insertBefore( revertNode, ntitle.firstChild );
-			}
+	normal: function() {
+		if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
+			this.contributions();
+		} else {
+			mw.hook( 'wikipage.diff' ).add( function () {
+				this.diff();
+			} );
 		}
 	}
 };
