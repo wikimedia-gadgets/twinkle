@@ -19,7 +19,7 @@
 
 //<nowiki>
 
-( function ( window, document, $, undefined ) { // Wrap with anonymous function
+( function ( window, document, $, mw, undefined ) { // Wrap with anonymous function
 
 var Twinkle = {};
 window.Twinkle = Twinkle;  // allow global access
@@ -441,7 +441,9 @@ Twinkle.load = function () {
 	Twinkle.diff();
 	Twinkle.unlink();
 	Twinkle.config.init();
-	Twinkle.fluff.init();
+	mw.hook( 'wikipage.diff' ).add( function () {
+		Twinkle.fluff.init();
+	} );
 	if ( Morebits.userIsInGroup('sysop') ) {
 		Twinkle.deprod();
 		Twinkle.batchdelete();
@@ -459,6 +461,6 @@ Twinkle.load = function () {
 	}
 };
 
-} ( window, document, jQuery )); // End wrap with anonymous function
+} ( window, document, jQuery, mediaWiki )); // End wrap with anonymous function
 
 // </nowiki>
