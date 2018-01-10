@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -35,7 +32,7 @@ Twinkle.welcome.auto = function() {
 };
 
 Twinkle.welcome.semiauto = function() {
-	Twinkle.welcome.callback( mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /\"/, "\\\"") );
+	Twinkle.welcome.callback( mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /"/, "\\\"") );
 };
 
 Twinkle.welcome.normal = function() {
@@ -85,7 +82,7 @@ Twinkle.welcome.normal = function() {
 		}
 	}
 	if( mw.config.get( 'wgNamespaceNumber' ) === 3 ) {
-		var username = mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /\"/, "\\\""); // only first part before any slashes
+		var username = mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /"/, "\\\""); // only first part before any slashes
 		Twinkle.addPortletLink( function(){ Twinkle.welcome.callback(username); }, "Wel", "friendly-welcome", "Welcome user" );
 	}
 };
@@ -722,7 +719,7 @@ Twinkle.welcome.callbacks = {
 
 		previewDialog.display();
 
-		$(submit).click(function(e) {
+		$(submit).click(function() {
 			previewDialog.close();
 		});
 	},
@@ -775,6 +772,3 @@ Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) 
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);
 };
 })(jQuery);
-
-
-//</nowiki>

@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -1405,7 +1402,7 @@ Twinkle.protect.callbacks = {
 		var text = rppPage.getPageText();
 		var statusElement = rppPage.getStatusElement();
 
-		var rppRe = new RegExp( '===\\s*(\\[\\[)?\s*:?\s*' + RegExp.escape( Morebits.pageNameNorm, true ) + '\s*(\\]\\])?\\s*===', 'm' );
+		var rppRe = new RegExp( '===\\s*(\\[\\[)?\\s*:?\\s*' + RegExp.escape( Morebits.pageNameNorm, true ) + '\\s*(\\]\\])?\\s*===', 'm' );
 		var tag = rppRe.exec( text );
 
 		var rppLink = document.createElement('a');
@@ -1503,6 +1500,3 @@ Twinkle.protect.callbacks = {
 	}
 };
 })(jQuery);
-
-
-//</nowiki>

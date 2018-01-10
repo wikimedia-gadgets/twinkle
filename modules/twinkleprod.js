@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -177,15 +174,15 @@ Twinkle.prod.callbacks = {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
 
-		var tag_re = /(\{\{(?:db-?|delete|[aitcmrs]fd|md1)[^{}]*?\|?[^{}]*?\}\})/i;
+		var tag_re = /({{(?:db-?|delete|[aitcmrs]fd|md1)[^{}]*?\|?[^{}]*?}})/i;
 		if( tag_re.test( text ) ) {
 			statelem.warn( 'Page already tagged with a deletion template, aborting procedure' );
 			return;
 		}
 
 		// Remove tags that become superfluous with this action
-		text = text.replace(/\{\{\s*(new unreviewed article|unreviewed|userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/gi, "");
-		var prod_re = /\{\{\s*(?:dated prod|dated files|dated prod blp|Prod blp\/dated|Proposed deletion\/dated)\s*\|(?:\{\{[^\{\}]*\}\}|[^\}\{])*\}\}/i;
+		text = text.replace(/{{\s*(new unreviewed article|unreviewed|userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/gi, "");
+		var prod_re = /{{\s*(?:dated prod|dated files|dated prod blp|Prod blp\/dated|Proposed deletion\/dated)\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
 		var summaryText;
 		if( !prod_re.test( text ) ) {
 			// Notification to first contributor
@@ -203,7 +200,7 @@ Twinkle.prod.callbacks = {
 			text = "{{subst:prod" + (params.blp ? " blp" : ("|1=" + Morebits.string.formatReasonText(params.reason))) + "}}\n" + text;
 		}
 		else {  // already tagged for PROD, so try endorsing it
-			var prod2_re = /\{\{(?:Proposed deletion endorsed|prod-?2).*?\}\}/;
+			var prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/;
 			if( prod2_re.test( text ) ) {
 				statelem.warn( 'Page already tagged with {{proposed deletion}} and {{proposed deletion endorsed}} templates, aborting procedure' );
 				return;
@@ -346,6 +343,3 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	wikipedia_page.load(Twinkle.prod.callbacks.main);
 };
 })(jQuery);
-
-
-//</nowiki>

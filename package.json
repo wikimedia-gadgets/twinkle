@@ -1,0 +1,12 @@
+{
+  "title": "Twinkle",
+  "name": "twinkle",
+  "private": true,
+  "repository": "azatoth/twinkle",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "4.11.0"
+  }
+}

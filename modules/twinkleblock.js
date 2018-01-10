@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 var api = new mw.Api(), relevantUserName;
@@ -76,7 +73,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	result.root = result;
 
 	Twinkle.block.fetchUserInfo(function() {
-		// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
+		// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
 		Twinkle.block.transformBlockPresets();
 
 		// init the controls after user and block info have been fetched
@@ -320,7 +317,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 					{
 						label: 'Do not include expiry in template',
 						checked: Twinkle.block.field_template_options.blank_duration,
-						tooltip: 'Instead of including the duration, make the block template read \"You have been blocked from editing temporarily for...\"'
+						tooltip: 'Instead of including the duration, make the block template read "You have been blocked from editing temporarily for..."'
 					}
 				]
 			} );
@@ -982,7 +979,7 @@ Twinkle.block.callback.change_expiry = function twinkleblockCallbackChangeExpiry
 };
 
 Twinkle.block.seeAlsos = [];
-Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSeeAlso(e) {
+Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSeeAlso() {
 	var reason = this.form.reason.value.replace(
 		new RegExp('( <!--|;) ' + 'see also ' + Twinkle.block.seeAlsos.join(' and ') + '( -->)?'), ''
 	);
@@ -1141,7 +1138,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 		api.getToken('block').then(function(token) {
 			statusElement.status('Processing...');
 			blockoptions.token = token;
-			var mbApi = new Morebits.wiki.api( 'Executing block', blockoptions, function(data) {
+			var mbApi = new Morebits.wiki.api( 'Executing block', blockoptions, function() {
 				statusElement.info('Completed');
 				if (toWarn) Twinkle.block.callback.issue_template(templateoptions);
 			});
@@ -1256,5 +1253,3 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain( pageobj ) {
 };
 
 })(jQuery);
-
-//</nowiki>

@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -359,6 +356,3 @@ Twinkle.image.callbacks = {
 	}
 };
 })(jQuery);
-
-
-//</nowiki>

@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -87,6 +84,3 @@ Twinkle.diff.callbacks = {
 	}
 };
 })(jQuery);
-
-
-//</nowiki>

@@ -1,6 +1,3 @@
-//<nowiki>
-
-
 (function($){
 
 
@@ -130,6 +127,3 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 };
 
 })(jQuery);
-
-
-//</nowiki>
