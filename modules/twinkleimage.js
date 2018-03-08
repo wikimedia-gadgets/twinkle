@@ -331,7 +331,7 @@ Twinkle.image.callbacks = {
 			}
 			notifytext += "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: tagging for deletion of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary("Notification: tagging for deletion of [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('deliWatchUser')) {
 				case 'yes':

@@ -248,7 +248,7 @@ Twinkle.fluff.revertToRevision = function revertToRevision( oldrev ) {
 };
 
 Twinkle.fluff.userIpLink = function( user ) {
-	return (mw.util.isIPAddress(user) ? "[[Special:Contributions/" : "[[User:" ) + user + "|" + user + "]]";
+	return (mw.util.isIPAddress(user) ? "[[Special:Contributions/" : "[[:User:" ) + user + "|" + user + "]]";
 };
 
 Twinkle.fluff.callbacks = {

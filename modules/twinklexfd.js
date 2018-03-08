@@ -608,7 +608,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>{{" : "{{") + (params.number === '' ? "subst:afd|help=off" : ('subst:afdx|' +
 				params.number + "|help=off")) + (params.noinclude ? "}}</noinclude>\n" : "}}\n") + text);
-			pageobj.setEditSummary("Nominated for deletion; see [[" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Nominated for deletion; see [[:" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -627,7 +627,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext("afd", params));
-			pageobj.setEditSummary("Creating deletion discussion page for [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Creating deletion discussion page for [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -658,7 +658,7 @@ Twinkle.xfd.callbacks = {
 				return;
 			}
 			pageobj.setPageText(text);
-			pageobj.setEditSummary("Adding [[" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Adding [[:" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchList')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -712,7 +712,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{subst:template for discussion|help=off|" +
 				(params.tfdtype !== "standard" ? "type=" + params.tfdtype + "|" : "") + mw.config.get('wgTitle') + (params.noinclude ? "}}</noinclude>" : "}}") + text);
-			pageobj.setEditSummary("Nominated for deletion; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Nominated for deletion; see [[:" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -734,7 +734,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{subst:tfm|help=off|" +
 				(params.tfdtype !== "standard" ? "type=" + params.tfdtype + "|" : "") + "1=" + params.otherTemplateName.replace(/^Template:/, "") +
 				(params.noinclude ? "}}</noinclude>" : "}}\n") + text);
-			pageobj.setEditSummary("Nominated for merging with [[" + params.otherTemplateName + "]]; see [[" +
+			pageobj.setEditSummary("Nominated for merging with [[:" + params.otherTemplateName + "]]; see [[:" +
 				params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
@@ -805,7 +805,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: nomination at [[WP:TFD|templates for discussion]] of [[" + pageobj.getPageName() + "]]." + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary("Notification: nomination at [[WP:TFD|templates for discussion]] of [[:" + pageobj.getPageName() + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
@@ -901,7 +901,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{" +
 				((params.number === '') ? "mfd" : ("mfdx|" + params.number)) + "|help=off}}\n" +
 				(params.noinclude ? "</noinclude>" : "") + text);
-			pageobj.setEditSummary("Nominated for deletion; see [[" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Nominated for deletion; see [[:" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -920,7 +920,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext("mfd", params));
-			pageobj.setEditSummary("Creating deletion discussion page for [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Creating deletion discussion page for [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -956,7 +956,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			pageobj.setPageText(text);
-			pageobj.setEditSummary("Adding [[" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Adding [[:" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchList')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -996,7 +996,7 @@ Twinkle.xfd.callbacks = {
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, actionName + " (" + initialContrib + ")");
 			var notifytext = "\n{{subst:MFDWarning|1=" + Morebits.pageNameNorm + ( params.numbering !== '' ? '|order=&#32;' + params.numbering : '' ) + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: listing at [[WP:MFD|miscellany for deletion]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary("Notification: listing at [[WP:MFD|miscellany for deletion]] of [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
@@ -1037,7 +1037,7 @@ Twinkle.xfd.callbacks = {
 					var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 					var notifytext = "\n{{subst:fdw|1=" + mw.config.get('wgTitle') + "}}";
 					usertalkpage.setAppendText(notifytext);
-					usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for discussion]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+					usertalkpage.setEditSummary("Notification: listing at [[WP:FFD|files for discussion]] of [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 					usertalkpage.setCreateOption('recreate');
 					switch (Twinkle.getPref('xfdWatchUser')) {
 						case 'yes':
@@ -1062,7 +1062,7 @@ Twinkle.xfd.callbacks = {
 			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 
 			pageobj.setPageText("{{ffd|log=" + params.date + "|help=off}}\n" + text);
-			pageobj.setEditSummary("Listed for discussion at [[" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Listed for discussion at [[:" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -1087,7 +1087,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			pageobj.setPageText(text + "\n\n" + Twinkle.xfd.callbacks.getDiscussionWikitext("ffd", params));
-			pageobj.setEditSummary("Adding [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Adding [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -1117,23 +1117,23 @@ Twinkle.xfd.callbacks = {
 			switch( params.xfdcat ) {
 			case 'cfd':
 				added_data = "{{subst:cfd}}";
-				editsummary = "Category being considered for deletion; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
+				editsummary = "Category being considered for deletion; see [[:" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
 				break;
 			case 'cfm':
 				added_data = "{{subst:cfm|" + params.target + "}}";
-				editsummary = "Category being considered for merging; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
+				editsummary = "Category being considered for merging; see [[:" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
 				break;
 			case 'cfr':
 				added_data = "{{subst:cfr|" + params.target + "}}";
-				editsummary = "Category being considered for renaming; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
+				editsummary = "Category being considered for renaming; see [[:" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
 				break;
 			case 'cfs':
 				added_data = "{{subst:cfs|" + params.target + "|" + params.target2 + "}}";
-				editsummary = "Category being considered for splitting; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
+				editsummary = "Category being considered for splitting; see [[:" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
 				break;
 			case 'cfc':
 				added_data = "{{subst:cfc|" + params.target + "}}";
-				editsummary = "Category being considered for conversion to an article; see [[" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
+				editsummary = "Category being considered for conversion to an article; see [[:" + params.logpage + "#" + Morebits.pageNameNorm + "]].";
 				break;
 			default:
 				alert("twinklexfd in taggingCategory(): unknown CFD action");
@@ -1230,7 +1230,7 @@ Twinkle.xfd.callbacks = {
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n{{subst:cfd-notify|1=" + Morebits.pageNameNorm + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: listing at [[WP:CFD|categories for discussion]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary("Notification: listing at [[WP:CFD|categories for discussion]] of [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':
@@ -1286,7 +1286,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			pageobj.setPageText(text);
-			pageobj.setEditSummary("Adding [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Adding [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -1350,7 +1350,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText("{{subst:rfd|content=\n" + text + "\n}}");
-			pageobj.setEditSummary("Listed for discussion at [[" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Listed for discussion at [[:" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -1379,7 +1379,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			pageobj.setPageText(text);
-			pageobj.setEditSummary("Adding [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Adding [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -1408,7 +1408,7 @@ Twinkle.xfd.callbacks = {
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n{{subst:RFDNote|1=" + Morebits.pageNameNorm + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary("Notification: listing at [[WP:RFD|redirects for discussion]] of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary("Notification: listing at [[WP:RFD|redirects for discussion]] of [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('xfdWatchUser')) {
 				case 'yes':

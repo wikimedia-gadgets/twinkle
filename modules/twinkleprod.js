@@ -251,7 +251,7 @@ Twinkle.prod.callbacks = {
 		var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n{{subst:" + notifyTemplate + "|1=" + Morebits.pageNameNorm + "|concern=" + params.reason + "}} ~~~~";
 		usertalkpage.setAppendText(notifytext);
-		usertalkpage.setEditSummary("Notification: proposed deletion of [[" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+		usertalkpage.setEditSummary("Notification: proposed deletion of [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 		usertalkpage.setCreateOption('recreate');
 		usertalkpage.setFollowRedirect(true);
 		usertalkpage.append();
@@ -292,7 +292,7 @@ Twinkle.prod.callbacks = {
 			if (params.reason) {
 				text += "\n#* '''Reason''': " + params.reason + "\n";
 			}
-			summarytext = "Logging endorsement of PROD nomination of [[" + Morebits.pageNameNorm + "]].";
+			summarytext = "Logging endorsement of PROD nomination of [[:" + Morebits.pageNameNorm + "]].";
 		} else {
 			text += "\n# [[:" + Morebits.pageNameNorm + "]]: " + (params.blp ? "BLP " : "") + "PROD";
 			if (params.logInitialContrib) {
@@ -302,7 +302,7 @@ Twinkle.prod.callbacks = {
 			if (!params.blp) {
 				text += "#* '''Reason''': " + params.reason + "\n";
 			}
-			summarytext = "Logging PROD nomination of [[" + Morebits.pageNameNorm + "]].";
+			summarytext = "Logging PROD nomination of [[:" + Morebits.pageNameNorm + "]].";
 		}
 
 		pageobj.setPageText(text);

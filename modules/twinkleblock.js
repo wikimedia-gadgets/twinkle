@@ -1242,7 +1242,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain( pageobj ) {
 	// build the edit summary
 	var summary = messageData.summary;
 	if ( messageData.suppressArticleInSummary !== true && params.article ) {
-		summary += ' on [[' + params.article + ']]';
+		summary += ' on [[:' + params.article + ']]';
 	}
 	summary += '.' + Twinkle.getPref('summaryAd');
 
