@@ -24,7 +24,7 @@ Twinkle.warn = function twinklewarn() {
 			$vandalTalkLink.css("font-weight", "bold");
 		}
 	}
-	
+
 	// Override the mw.notify function to allow us to inject a link into the
 	// rollback success popup. Only users with the 'rollback' right need this,
 	// but we have no nice way of knowing who has that right (what with global
@@ -50,17 +50,17 @@ Twinkle.warn = function twinklewarn() {
 				$p.css("border-top", "1px #666 solid");
 				$p.css("cursor", "default");
 				$p.click(function(e) { e.stopPropagation(); });
-				
+
 				// Create the new talk link and append it to the end of the message
 				var $vandalTalkLink = $('<a/>');
 				$vandalTalkLink.text("Warn user with Twinkle");
 				//$vandalTalkLink.css("display", "block");
 				$vandalTalkLink.attr("href", mw.util.getUrl("User talk:" + regexMatch[1]));
 				Twinkle.warn.makeVandalTalkLink($vandalTalkLink);
-				
+
 				$p.append($vandalTalkLink);
 				message[0].appendChild($p.get()[0]);
-				
+
 				// Don't auto-hide the notification. It only stays around for 5 seconds by
 				// default, which might not be enough time for the user to read it and
 				// click the link
@@ -69,7 +69,7 @@ Twinkle.warn = function twinklewarn() {
 			mw.notifyOriginal.apply(mw, arguments);
 		};
 	}
-	
+
 	// for testing, use:
 	// mw.notify([ $("<p>Reverted edits by foo; changed</p>")[0] ], { title: mw.msg('actioncomplete') } );
 };
@@ -1391,9 +1391,9 @@ Twinkle.warn.callbacks = {
 			if ( messageData.suppressArticleInSummary !== true && params.article ) {
 				if ( params.sub_group === "uw-agf-sock" ||
 						params.sub_group === "uw-socksuspect" ) {  // these templates require a username
-					summary += " of [[User:" + params.article + "]]";
+					summary += " of [[:User:" + params.article + "]]";
 				} else {
-					summary += " on [[" + params.article + "]]";
+					summary += " on [[:" + params.article + "]]";
 				}
 			}
 		}

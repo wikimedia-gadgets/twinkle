@@ -972,7 +972,7 @@ Twinkle.tag.callbacks = {
 				}
 			}
 
-			summaryText += ' {{[[';
+			summaryText += ' {{[[:';
 			if( tagName === 'globalize' ) {
 				summaryText += "Template:" + params.tagParameters.globalize + '|' + params.tagParameters.globalize;
 			} else {
@@ -1097,8 +1097,8 @@ Twinkle.tag.callbacks = {
 
 				var talkpage = new Morebits.wiki.page("Talk:" + params.discussArticle, "Posting rationale on talk page");
 				talkpage.setAppendText(talkpageText);
-				talkpage.setEditSummary('Proposing to merge [[' + params.nonDiscussArticle + ']] ' +
-					(tags.indexOf("merge") !== -1 ? 'with' : 'into') + ' [[' + params.discussArticle + ']]' +
+				talkpage.setEditSummary('Proposing to merge [[:' + params.nonDiscussArticle + ']] ' +
+					(tags.indexOf("merge") !== -1 ? 'with' : 'into') + ' [[:' + params.discussArticle + ']]' +
 					Twinkle.getPref('summaryAd'));
 				talkpage.setWatchlist(Twinkle.getFriendlyPref('watchMergeDiscussions'));
 				talkpage.setCreateOption('recreate');
@@ -1189,7 +1189,7 @@ Twinkle.tag.callbacks = {
 			return;
 		}
 		pageobj.setPageText(text);
-		pageobj.setEditSummary(summary + " [[" + Morebits.pageNameNorm + "]]" + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary(summary + " [[:" + Morebits.pageNameNorm + "]]" + Twinkle.getPref('summaryAd'));
 		pageobj.setCreateOption('recreate');
 		pageobj.save();
 	},
