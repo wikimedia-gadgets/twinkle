@@ -374,7 +374,7 @@ Twinkle.warn.messages = {
 			"uw-speedy1": {
 				label: "Removing speedy deletion tags",
 				summary: "General note: Removing speedy deletion tags"
-			}
+			},
 			"uw-tpv1": {
 				label: "Refactoring others' talk page comments",
 				summary: "General note: Refactoring others' talk page comments"
@@ -596,7 +596,7 @@ Twinkle.warn.messages = {
 			"uw-speedy2": {
 				label: "Removing speedy deletion tags",
 				summary: "Caution: Removing speedy deletion tags"
-			}
+			},
 			"uw-tpv2": {
 				label: "Refactoring others' talk page comments",
 				summary: "Caution: Refactoring others' talk page comments"
@@ -784,7 +784,7 @@ Twinkle.warn.messages = {
 			"uw-speedy3": {
 				label: "Removing speedy deletion tags",
 				summary: "Warning: Removing speedy deletion tags"
-			}
+			},
 			"uw-tpv3": {
 				label: "Refactoring others' talk page comments",
 				summary: "Warning: Refactoring others' talk page comments"
@@ -944,7 +944,7 @@ Twinkle.warn.messages = {
 			"uw-speedy4": {
 				label: "Removing speedy deletion tags",
 				summary: "Final warning: Removing speedy deletion tags"
-			}
+			},
 			"uw-tpv4": {
 				label: "Refactoring others' talk page comments",
 				summary: "Final warning: Refactoring others' talk page comments"
@@ -980,7 +980,7 @@ Twinkle.warn.messages = {
 			"uw-own4im": {
 				label: "Ownership of articles",
 				summary: "Only warning: Ownership of articles"
-			}
+			},
 			"uw-upload4im": {
 				label: "Uploading unencyclopedic images",
 				summary: "Only warning: Uploading unencyclopedic images"
