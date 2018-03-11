@@ -168,34 +168,44 @@ Twinkle.warn.messages = {
 	level1: {
 		"Common warnings": {
 			"uw-vandalism1": {
-				label: "Vandalism",
-				summary: "General note: Unconstructive editing"
+				label: "Blatant vandalism",
+				summary: "General note: Blatant vandalism"
 			},
 			"uw-disruptive1": {
 				label: "Disruptive editing",
-				summary: "General note: Unconstructive editing"
+				summary: "General note: Disruptive editing"
 			},
 			"uw-test1": {
 				label: "Editing tests",
 				summary: "General note: Editing tests"
 			},
 			"uw-delete1": {
-				label: "Removal of content, blanking",
-				summary: "General note: Removal of content, blanking"
+				label: "Removal of content without adequate explanation",
+				summary: "General note: Removal of content without adequate explanation"
+			}
+		},
+		"Vandalism and disruptive editing": {
+			"uw-vandalism1": {
+				label: "Blatant vandalism",
+				summary: "General note: Blatant vandalism"
+			},
+			"uw-subtle1": {
+				label: "Subtle vandalism",
+				summary: "General note: Subtle vandalism"
+			},
+			"uw-disruptive1": {
+				label: "Disruptive editing",
+				summary: "General note: Disruptive editing"
 			}
 		},
 		"Behavior in articles": {
-			"uw-biog1": {
-				label: "Adding unreferenced controversial information about living persons",
-				summary: "General note: Adding unreferenced controversial information about living persons"
+			"uw-blank1": {
+				label: "Page blanking",
+				summary: "General note: Page blanking"
 			},
-			"uw-defamatory1": {
-				label: "Addition of defamatory content",
-				summary: "General note: Addition of defamatory content"
-			},
-			"uw-error1": {
-				label: "Introducing deliberate factual errors",
-				summary: "General note: Introducing factual errors"
+			"uw-delete1": {
+				label: "Removal of content without adequate explanation",
+				summary: "General note: Removal of content without adequate explanation"
 			},
 			"uw-genre1": {
 				label: "Frequent or mass changes to genres without consensus or references",
@@ -209,10 +219,6 @@ Twinkle.warn.messages = {
 				label: "Using improper humor in articles",
 				summary: "General note: Using improper humor in articles"
 			},
-			"uw-nor1": {
-				label: "Adding original research, including unpublished syntheses of sources",
-				summary: "General note: Adding original research, including unpublished syntheses of sources"
-			},
 			"uw-notcensored1": {
 				label: "Censorship of material",
 				summary: "General note: Censorship of material"
@@ -221,27 +227,25 @@ Twinkle.warn.messages = {
 				label: "Ownership of articles",
 				summary: "General note: Ownership of articles"
 			},
+			"uw-plotsum1": {
+				label: "Inappropriate expansion of plot summaries",
+				summary: "General note: Inappropriate expansion of plot summaries"
+			},
+			"uw-taxonomy1": {
+				label: "Disrupting the taxonomy templates",
+				summary: "General note: Disrupting the taxonomy templates"
+			},
 			"uw-tdel1": {
 				label: "Removal of maintenance templates",
 				summary: "General note: Removal of maintenance templates"
 			},
-			"uw-unsourced1": {
-				label: "Addition of unsourced or improperly cited material",
-				summary: "General note: Addition of unsourced or improperly cited material"
-			}
-		},
-		"Promotions and spam": {
-			"uw-advert1": {
-				label: "Using Wikipedia for advertising or promotion",
-				summary: "General note: Using Wikipedia for advertising or promotion"
+			"uw-thumb1": {
+				label: "Using thumbnails in Infoboxes",
+				summary: "General note: Using thumbnails in Infoboxes"
 			},
-			"uw-npov1": {
-				label: "Not adhering to neutral point of view",
-				summary: "General note: Not adhering to neutral point of view"
-			},
-			"uw-spam1": {
-				label: "Adding spam links",
-				summary: "General note: Adding spam links"
+			"uw-upload1": {
+				label: "Uploading unencyclopedic images",
+				summary: "General note: Uploading unencyclopedic images"
 			}
 		},
 		"Behavior towards other editors": {
@@ -262,32 +266,94 @@ Twinkle.warn.messages = {
 				summary: "General note: Improper use of warning or blocking template"
 			}
 		},
-		"Removal of deletion tags": {
+		"Promotions and spam": {
+			"uw-advert1": {
+				label: "Using Wikipedia for advertising or promotion",
+				summary: "General note: Using Wikipedia for advertising or promotion"
+			},
+			"uw-fringe1": {
+				label: "Inserting fringe or undue weight content into articles",
+				summary: "General note: Inserting fringe or undue weight content into articles"
+			},
+			"uw-npov1": {
+				label: "Not adhering to neutral point of view",
+				summary: "General note: Not adhering to neutral point of view"
+			},
+			"uw-paid1": {
+				label: "Paid editing without disclosure under the Wikimedia Terms of Use",
+				summary: "General note: Paid editing without disclosure under the Wikimedia Terms of Use"
+			},
+			"uw-spam1": {
+				label: "Adding spam links",
+				summary: "General note: Adding spam links"
+			}
+		},
+		"Inserting factual inaccuriacies and libel": {
+			"uw-accessdate1": {
+				label: "Not updating the access date parameter in citing templates",
+				summary: "General note: Not updating the access date parameter in citing templates"
+			},
+			"uw-biog1": {
+				label: "Adding unreferenced controversial information about living persons",
+				summary: "General note: Adding unreferenced controversial information about living persons"
+			},
+			"uw-defamatory1": {
+				label: "Addition of defamatory content",
+				summary: "General note: Addition of defamatory content"
+			},
+			"uw-error1": {
+				label: "Introducing deliberate factual errors",
+				summary: "General note: Introducing factual errors"
+			},
+			"uw-nor1": {
+				label: "Adding original research, including unpublished syntheses of sources",
+				summary: "General note: Adding original research, including unpublished syntheses of sources"
+			},
+			"uw-unsourced1": {
+				label: "Addition of unsourced or improperly cited material",
+				summary: "General note: Addition of unsourced or improperly cited material"
+			}
+		},
+		"Unaccepted practices, unilateral action against policies or guidelines": {
 			"uw-afd1": {
 				label: "Removing {{afd}} templates",
 				summary: "General note: Removing {{afd}} templates"
 			},
 			"uw-blpprod1": {
-				label: "Removing {{blp prod}} templates",
-				summary: "General note: Removing {{blp prod}} templates"
+				label: "Removing {{Prod blp}} templates",
+				summary: "General note: Removing {{Prod blp}} templates"
+			},
+			"uw-cfd1": {
+				label: "Removing {{cfd}} templates",
+				summary: "General note: Removing {{cfd}} templates"
+			},
+			"uw-chat1": {
+				label: "Using talk page as forum",
+				summary: "General note: Using talk page as forum"
+			},
+			"uw-color1": {
+				label: "Adding non-compliant colours",
+				summary: "General note: Adding non-compliant colours"
+			},
+			"uw-create1": {
+				label: "Creating inappropriate pages",
+				summary: "General note: Creating inappropriate pages"
+			},
+			"uw-ffd1": {
+				label: "Removing {{ffd}} templates",
+				summary: "General note: Removing {{ffd}} templates"
+			},
+			"uw-ics1": {
+				label: "Uploading files missing copyright status",
+				summary: "General note: Uploading files missing copyright status"
 			},
 			"uw-idt1": {
 				label: "Removing file deletion tags",
 				summary: "General note: Removing file deletion tags"
 			},
-			"uw-speedy1": {
-				label: "Removing speedy deletion tags",
-				summary: "General note: Removing speedy deletion tags"
-			}
-		},
-		"Other": {
-			"uw-chat1": {
-				label: "Using talk page as forum",
-				summary: "General note: Using talk page as forum"
-			},
-			"uw-create1": {
-				label: "Creating inappropriate pages",
-				summary: "General note: Creating inappropriate pages"
+			"uw-mfd1": {
+				label: "Removing {{mfd}} templates",
+				summary: "General note: Removing {{mfd}} templates"
 			},
 			"uw-mos1": {
 				label: "Manual of style",
@@ -297,29 +363,19 @@ Twinkle.warn.messages = {
 				label: "Page moves against naming conventions or consensus",
 				summary: "General note: Page moves against naming conventions or consensus"
 			},
-			"uw-tpv1": {
-				label: "Refactoring others' talk page comments",
-				summary: "General note: Refactoring others' talk page comments"
-			},
-			"uw-upload1": {
-				label: "Uploading unencyclopedic images",
-				summary: "General note: Uploading unencyclopedic images"
-			}
-		}/*,
-		"To be removed from Twinkle": {
 			"uw-redirect1": {
 				label: "Creating malicious redirects",
 				summary: "General note: Creating malicious redirects"
 			},
-			"uw-ics1": {
-				label: "Uploading files missing copyright status",
-				summary: "General note: Uploading files missing copyright status"
-			},
-			"uw-af1": {
-				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "General note: Inappropriate feedback through the Article Feedback Tool"
+			"uw-speedy1": {
+				label: "Removing speedy deletion tags",
+				summary: "General note: Removing speedy deletion tags"
 			}
-		}*/
+			"uw-tpv1": {
+				label: "Refactoring others' talk page comments",
+				summary: "General note: Refactoring others' talk page comments"
+			}
+		}
 	},
 
 
