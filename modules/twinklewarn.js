@@ -288,8 +288,8 @@ Twinkle.warn.messages = {
 				summary: "General note: Paid editing without disclosure under the Wikimedia Terms of Use"
 			},
 			"uw-spam1": {
-				label: "Adding spam links",
-				summary: "General note: Adding spam links"
+				label: "Adding inappropriate external links",
+				summary: "General note: Adding inappropriate external links"
 			}
 		},
 		"Inserting factual inaccuriacies and libel": {
