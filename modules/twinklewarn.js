@@ -168,8 +168,8 @@ Twinkle.warn.messages = {
 	level1: {
 		"Common warnings": {
 			"uw-vandalism1": {
-				label: "Blatant vandalism",
-				summary: "General note: Blatant vandalism"
+				label: "Unconstructive editing",
+				summary: "General note: Unconstructive editing"
 			},
 			"uw-disruptive1": {
 				label: "Disruptive editing",
@@ -186,8 +186,8 @@ Twinkle.warn.messages = {
 		},
 		"Vandalism and disruptive editing": {
 			"uw-vandalism1": {
-				label: "Blatant vandalism",
-				summary: "General note: Blatant vandalism"
+				label: "Unconstructive editing",
+				summary: "General note: Unconstructive editing"
 			},
 			"uw-subtle1": {
 				label: "Subtle vandalism",
@@ -292,7 +292,7 @@ Twinkle.warn.messages = {
 				summary: "General note: Adding inappropriate external links"
 			}
 		},
-		"Inserting factual inaccuriacies and libel": {
+		"Inserting factual inaccuracies and libel": {
 			"uw-accessdate1": {
 				label: "Not updating the access date parameter in citing templates",
 				summary: "General note: Not updating the access date parameter in citing templates"
@@ -510,7 +510,7 @@ Twinkle.warn.messages = {
 				summary: "Caution: Adding spam links"
 			}
 		},
-		"Inserting factual inaccuriacies and libel": {
+		"Inserting factual inaccuracies and libel": {
 			"uw-accessdate2": {
 				label: "Not updating the access date parameter in citing templates",
 				summary: "Caution: Not updating the access date parameter in citing templates"
@@ -702,7 +702,7 @@ Twinkle.warn.messages = {
 				summary: "Warning: Adding spam links"
 			}
 		},
-		"Inserting factual inaccuriacies and libel": {
+		"Inserting factual inaccuracies and libel": {
 			"uw-biog3": {
 				label: "Adding unreferenced controversial information about living persons",
 				summary: "Warning: Adding unreferenced controversial information about living persons"
@@ -862,7 +862,7 @@ Twinkle.warn.messages = {
 				summary: "Final warning: Adding spam links"
 			}
 		},
-		"Inserting factual inaccuriacies and libel": {
+		"Inserting factual inaccuracies and libel": {
 			"uw-biog4": {
 				label: "Adding unreferenced controversial information about living persons",
 				summary: "Final warning: Adding unreferenced controversial information about living persons"
@@ -1006,7 +1006,7 @@ Twinkle.warn.messages = {
 				summary: "Only warning: Adding spam links"
 			}
 		},
-		"Inserting factual inaccuriacies and libel": {
+		"Inserting factual inaccuracies and libel": {
 			"uw-biog4im": {
 				label: "Adding unreferenced controversial information about living persons",
 				summary: "Only warning: Adding unreferenced controversial information about living persons"
