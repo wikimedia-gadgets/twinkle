@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 var api = new mw.Api(), relevantUserName;
@@ -1253,3 +1256,6 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain( pageobj ) {
 };
 
 })(jQuery);
+
+
+//</nowiki>

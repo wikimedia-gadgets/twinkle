@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -452,3 +455,6 @@ Twinkle.batchdelete.callbacks = {
 	}
 };
 })(jQuery);
+
+
+//</nowiki>

@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -1425,3 +1428,6 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	}
 };
 })(jQuery);
+
+
+//</nowiki>

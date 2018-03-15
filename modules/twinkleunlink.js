@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -305,3 +308,6 @@ Twinkle.unlink.callbacks = {
 	}
 };
 })(jQuery);
+
+
+//</nowiki>
