@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -343,3 +346,6 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	wikipedia_page.load(Twinkle.prod.callbacks.main);
 };
 })(jQuery);
+
+
+//</nowiki>

@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -2025,3 +2028,6 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	wikipedia_page.load(Twinkle.speedy.callbacks.user.main);
 };
 })(jQuery);
+
+
+//</nowiki>

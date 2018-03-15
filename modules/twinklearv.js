@@ -1,3 +1,6 @@
+//<nowiki>
+
+
 (function($){
 
 
@@ -917,3 +920,6 @@ Twinkle.arv.processAN3 = function( params ) {
 	});
 };
 })(jQuery);
+
+
+//</nowiki>

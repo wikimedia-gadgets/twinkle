@@ -16,6 +16,7 @@
  * This is AzaToth's Twinkle, the popular script sidekick for newbies, admins, and
  * every Wikipedian in between. Visit [[WP:TW]] for more information.
  */
+//<nowiki>
 
 /* global Morebits */
 
@@ -474,3 +475,5 @@ Twinkle.load = function () {
 };
 
 } ( window, document, jQuery )); // End wrap with anonymous function
+
+//</nowiki>
