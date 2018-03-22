@@ -439,6 +439,7 @@ Twinkle.tag.article.tags = {
 	"context": "article provides insufficient context",
 	"copy edit": "article needs copy editing for grammar, style, cohesion, tone, and/or spelling",
 	"copypaste": "article appears to have been copied and pasted from a source",
+	"current": "article documents a current event",
 	"dead end": "article has no links to other articles",
 	"disputed": "article has questionable factual accuracy",
 	"essay-like": "article is written like a personal reflection or opinion essay",
@@ -567,7 +568,8 @@ Twinkle.tag.article.tagCategories = {
 			"undue"
 		],
 		"Timeliness": [
-			"update"
+			"current",
+			"update"			
 		],
 		"Neutrality, bias, and factual accuracy": [
 			"autobiography",
