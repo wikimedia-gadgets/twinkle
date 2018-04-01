@@ -995,6 +995,10 @@ Twinkle.warn.messages = {
 			label: "Posting at the top of talk pages",
 			summary: "Notice: Posting at the top of talk pages"
 		},
+		"uw-uploadfirst": {
+			label: "Attempting to link to an image from an external website or the editor's computer"
+			summary: "Notice: Attempting to link to an image from an external website or the editor's computer"
+		},
 		"uw-userspace draft finish": {
 			label: "Stale userspace draft",
 			summary: "Notice: Stale userspace draft"
