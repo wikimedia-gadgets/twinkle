@@ -223,11 +223,11 @@ Twinkle.config.sections = [
 	adminOnly: true,
 	preferences: [
 		// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
-		// if true, blank the talk page when issuing an indef block notice (per [[WP:UW#Indefinitely blocked users]])
+		// if true, blank the talk page when issuing an indef block notice (per [[WP:UWUL#Indefinitely blocked users]])
 		{
 			name: "blankTalkpageOnIndefBlock",
 			label: "Blank the talk page when indefinitely blocking users",
-			helptip: "See <a href=\"" + mw.util.getUrl("WP:UW#Indefinitely blocked users") + "\">WP:UW</a> for more information.",
+			helptip: "See <a href=\"" + mw.util.getUrl("Wikipedia:WikiProject_User_warnings/Usage_and_layout#Indefinitely_blocked_users") + "\">WP:UWUL</a> for more information.",
 			type: "boolean"
 		}
 	]
