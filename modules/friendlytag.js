@@ -501,6 +501,7 @@ Twinkle.tag.article.tags = {
 	"unfocused": "article lacks focus or is about more than one topic",
 	"unreferenced": "article has no references at all",
 	"unreliable sources": "article's references may not be reliable sources",
+	"undisclosed paid": "article may have been created or edited in return for undisclosed payments",
 	"update": "article needs additional up-to-date information added",
 	"very long": "article is too long",
 	"weasel": "article neutrality is compromised by the use of weasel words"
@@ -582,6 +583,7 @@ Twinkle.tag.article.tagCategories = {
 			"POV",
 			"recentism",
 			"too few opinions",
+			"undisclosed paid",
 			"weasel"
 		],
 		"Verifiability and sources": [
