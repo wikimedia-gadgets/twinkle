@@ -183,7 +183,7 @@ Twinkle.warn.messages = {
 				summary: "General note: Editing tests"
 			},
 			"uw-delete1": {
-				label: "Removal of content, blanking",
+				label: "Removal of content, section blanking",
 				summary: "General note: Removal of content, blanking"
 			}
 		},
@@ -191,6 +191,10 @@ Twinkle.warn.messages = {
 			"uw-biog1": {
 				label: "Adding unreferenced controversial information about living persons",
 				summary: "General note: Adding unreferenced controversial information about living persons"
+			},
+			"uw-blank1": {
+				label: "Blanking a whole page",
+				summary: "General note: Page blanking"
 			},
 			"uw-defamatory1": {
 				label: "Addition of defamatory content",
@@ -233,7 +237,7 @@ Twinkle.warn.messages = {
 				summary: "General note: Addition of unsourced or improperly cited material"
 			}
 		},
-		"Promotions and spam": {
+		"Promotion and spam": {
 			"uw-advert1": {
 				label: "Using Wikipedia for advertising or promotion",
 				summary: "General note: Using Wikipedia for advertising or promotion"
@@ -241,6 +245,10 @@ Twinkle.warn.messages = {
 			"uw-npov1": {
 				label: "Not adhering to neutral point of view",
 				summary: "General note: Not adhering to neutral point of view"
+			},
+			"uw-paid1": {
+				label: "Undisclosed paid editing?",
+				summary: "General note: Possible lack of disclosure"
 			},
 			"uw-spam1": {
 				label: "Adding inappropriate external links",
@@ -308,21 +316,7 @@ Twinkle.warn.messages = {
 				label: "Uploading unencyclopedic images",
 				summary: "General note: Uploading unencyclopedic images"
 			}
-		}/*,
-		"To be removed from Twinkle": {
-			"uw-redirect1": {
-				label: "Creating malicious redirects",
-				summary: "General note: Creating malicious redirects"
-			},
-			"uw-ics1": {
-				label: "Uploading files missing copyright status",
-				summary: "General note: Uploading files missing copyright status"
-			},
-			"uw-af1": {
-				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "General note: Inappropriate feedback through the Article Feedback Tool"
-			}
-		}*/
+		}
 	},
 
 
@@ -341,7 +335,7 @@ Twinkle.warn.messages = {
 				summary: "Caution: Editing tests"
 			},
 			"uw-delete2": {
-				label: "Removal of content, blanking",
+				label: "Removal of content, section blanking",
 				summary: "Caution: Removal of content, blanking"
 			}
 		},
@@ -349,6 +343,10 @@ Twinkle.warn.messages = {
 			"uw-biog2": {
 				label: "Adding unreferenced controversial information about living persons",
 				summary: "Caution: Adding unreferenced controversial information about living persons"
+			},
+			"uw-blank2": {
+				label: "Blanking a whole page",
+				summary: "Caution: Page blanking"
 			},
 			"uw-defamatory2": {
 				label: "Addition of defamatory content",
@@ -391,7 +389,7 @@ Twinkle.warn.messages = {
 				summary: "Caution: Addition of unsourced or improperly cited material"
 			}
 		},
-		"Promotions and spam": {
+		"Promotion and spam": {
 			"uw-advert2": {
 				label: "Using Wikipedia for advertising or promotion",
 				summary: "Caution: Using Wikipedia for advertising or promotion"
@@ -399,6 +397,10 @@ Twinkle.warn.messages = {
 			"uw-npov2": {
 				label: "Not adhering to neutral point of view",
 				summary: "Caution: Not adhering to neutral point of view"
+			},
+			"uw-paid2": {
+				label: "Undisclosed paid editing?",
+				summary: "Caution: No response to paid-editing clarification request"
 			},
 			"uw-spam2": {
 				label: "Adding spam links",
@@ -470,17 +472,7 @@ Twinkle.warn.messages = {
 				label: "Uploading unencyclopedic images",
 				summary: "Caution: Uploading unencyclopedic images"
 			}
-		}/*,
-		"To be removed from Twinkle": {
-			"uw-redirect2": {
-				label: "Creating malicious redirects",
-				summary: "Caution: Creating malicious redirects"
-			},
-			"uw-ics2": {
-				label: "Uploading files missing copyright status",
-				summary: "Caution: Uploading files missing copyright status"
-			}
-		}*/
+		}
 	},
 
 
@@ -549,7 +541,7 @@ Twinkle.warn.messages = {
 				summary: "Warning: Addition of unsourced or improperly cited material"
 			}
 		},
-		"Promotions and spam": {
+		"Promotion and spam": {
 			"uw-advert3": {
 				label: "Using Wikipedia for advertising or promotion",
 				summary: "Warning: Using Wikipedia for advertising or promotion"
@@ -557,6 +549,10 @@ Twinkle.warn.messages = {
 			"uw-npov3": {
 				label: "Not adhering to neutral point of view",
 				summary: "Warning: Not adhering to neutral point of view"
+			},
+			"uw-paid3": {
+				label: "Undisclosed paid editing?",
+				summary: "Warning: Not responding to the inquiry regarding undisclosed paid editing"
 			},
 			"uw-spam3": {
 				label: "Adding spam links",
@@ -624,17 +620,7 @@ Twinkle.warn.messages = {
 				label: "Uploading unencyclopedic images",
 				summary: "Warning: Uploading unencyclopedic images"
 			}
-		}/*,
-		"To be removed fomr Twinkle": {
-			"uw-ics3": {
-				label: "Uploading files missing copyright status",
-				summary: "Warning: Uploading files missing copyright status"
-			},
-			"uw-redirect3": {
-				label: "Creating malicious redirects",
-				summary: "Warning: Creating malicious redirects"
-			}
-		}*/
+		}
 	},
 
 
@@ -691,7 +677,7 @@ Twinkle.warn.messages = {
 				summary: "Final warning: Addition of unsourced or improperly cited material"
 			}
 		},
-		"Promotions and spam": {
+		"Promotion and spam": {
 			"uw-advert4": {
 				label: "Using Wikipedia for advertising or promotion",
 				summary: "Final warning: Using Wikipedia for advertising or promotion"
@@ -699,6 +685,10 @@ Twinkle.warn.messages = {
 			"uw-npov4": {
 				label: "Not adhering to neutral point of view",
 				summary: "Final warning: Not adhering to neutral point of view"
+			},
+			"uw-paid4": {
+				label: "Undisclosed paid editing?",
+				summary: "Final warning: Not responding to the inquiry regarding undisclosed paid editing"
 			},
 			"uw-spam4": {
 				label: "Adding spam links",
@@ -762,17 +752,7 @@ Twinkle.warn.messages = {
 				label: "Uploading unencyclopedic images",
 				summary: "Final warning: Uploading unencyclopedic images"
 			}
-		}/*,
-		"To be removed from Twinkle": {
-			"uw-redirect4": {
-				label: "Creating malicious redirects",
-				summary: "Final warning: Creating malicious redirects"
-			},
-			"uw-ics4": {
-				label: "Uploading files missing copyright status",
-				summary: "Final warning: Uploading files missing copyright status"
-			}
-		}*/
+		}
 	},
 
 
@@ -809,7 +789,7 @@ Twinkle.warn.messages = {
 				summary: "Only warning: Ownership of articles"
 			}
 		},
-		"Promotions and spam": {
+		"Promotion and spam": {
 			"uw-advert4im": {
 				label: "Using Wikipedia for advertising or promotion",
 				summary: "Only warning: Using Wikipedia for advertising or promotion"
@@ -842,13 +822,7 @@ Twinkle.warn.messages = {
 				label: "Uploading unencyclopedic images",
 				summary: "Only warning: Uploading unencyclopedic images"
 			}
-		}/*,
-		"To be removed from Twinkle": {
-			"uw-redirect4im": {
-				label: "Creating malicious redirects",
-				summary: "Only warning: Creating malicious redirects"
-			}
-		}*/
+		}
 	},
 
 	singlenotice: {
