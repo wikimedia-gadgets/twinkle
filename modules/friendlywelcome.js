@@ -476,7 +476,7 @@ Twinkle.welcome.templates = {
 		description: "welcome for users with an apparent interest in athletics (track and field) topics",
 		linkedArticle: false,
 		syntax: "{{subst:welcome-athletics}}"
-	}
+	},
 	"welcome-au": {
 		description: "welcome for users with an apparent interest in Australia topics",
 		linkedArticle: false,
