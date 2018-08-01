@@ -1319,6 +1319,8 @@ Twinkle.xfd.callbacks = {
 				return;
 			}
 			apiobj.params.target = target;
+			var section = $(xmlDoc).find('redirects r').first().attr('tofragment');
+			apiobj.params.section = section;
 			Twinkle.xfd.callbacks.rfd.main(apiobj.params);
 		},
 		main: function(params) {
@@ -1372,10 +1374,11 @@ Twinkle.xfd.callbacks = {
 			var old_text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
+			var sectionHash = params.section ? '#' + params.section : '';
 
 			var text = old_text.replace( /(<!-- Add new entries directly below this line\.? -->)/, "$1\n{{subst:rfd2|text=" +
 				Morebits.string.formatReasonText(params.reason) + "|redirect="+ Morebits.pageNameNorm + "|target=" +
-				params.target + "}} ~~~~\n" );
+				params.target + sectionHash + "}} ~~~~\n" );
 			if( text === old_text ) {
 				statelem.error( 'failed to find target spot for the discussion' );
 				return;
