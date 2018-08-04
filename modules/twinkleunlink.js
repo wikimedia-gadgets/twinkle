@@ -17,7 +17,12 @@ Twinkle.unlink = function twinkleunlink() {
 	if( mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgPageName') === 'Wikipedia:Sandbox' ) {
 		return;
 	}
-	Twinkle.addPortletLink( Twinkle.unlink.callback, "Unlink", "tw-unlink", "Unlink backlinks" );
+	// Restrict to extended confirmed users. This is done here instead of above to avoid an unnecessary API call.
+	mw.user.getRights().then(function (rights) {
+		if( rights.indexOf('extendedconfirmed') !== -1 ) {
+			Twinkle.addPortletLink( Twinkle.unlink.callback, "Unlink", "tw-unlink", "Unlink backlinks" );
+		}
+	});
 };
 
 Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2( nodelist ) {
