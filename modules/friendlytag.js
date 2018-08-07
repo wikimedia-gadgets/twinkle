@@ -47,7 +47,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			type: 'checkbox',
 			list: [
 				{
-					label: 'Mark the page as patrolled',
+					label: 'Đánh dấu trang là đã tuần tra',
 					value: 'patrolPage',
 					name: 'patrolPage',
 					checked: Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled')
