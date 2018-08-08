@@ -882,7 +882,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Block evasion – IP', value: 'uw-ipevadeblock' },
 			{ label: 'BLP violations', value: 'uw-bioblock' },
 			{ label: 'Copyright violations', value: 'uw-copyrightblock' },
-			{ label: 'Creating inappropriate pages', value: 'uw-npblock' },
+			{ label: 'Creating nonsense pages', value: 'uw-npblock' },
 			{ label: 'Edit filter-related', value: 'uw-efblock' },
 			{ label: 'Edit warring', value: 'uw-ewblock' },
 			{ label: 'Generic block with talk page access revoked', value: 'uw-blocknotalk' },
