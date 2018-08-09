@@ -23,7 +23,7 @@ Other files not mentioned here are probably obsolete.
 Updating scripts on Wikipedia
 -----------------------------
 
-There are two ways to upload Twinkle scripts to Wikipedia or another destination. You can do it [manually](#manual-synchronization) or with a [Python script](synchronization-using-syncpl).
+There are two ways to upload Twinkle scripts to Wikipedia or another destination. You can do it [manually](#manual-synchronization) or with a [Perl script](#synchronization-using-syncpl).
 
 After the files are synced, [MediaWiki:Gadgets-definition][] should contain the following lines:
 
