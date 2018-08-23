@@ -242,6 +242,10 @@ Twinkle.warn.messages = {
 				label: "Not adhering to neutral point of view",
 				summary: "General note: Not adhering to neutral point of view"
 			},
+			"uw-paid1": {
+				label: "Paid editing without disclosure under the Wikimedia Terms of Use",
+				summary: "General note: Paid editing without disclosure under the Wikimedia Terms of Use"
+			},
 			"uw-spam1": {
 				label: "Adding inappropriate external links",
 				summary: "General note: Adding inappropriate external links"
@@ -399,6 +403,10 @@ Twinkle.warn.messages = {
 			"uw-npov2": {
 				label: "Not adhering to neutral point of view",
 				summary: "Caution: Not adhering to neutral point of view"
+			},
+			"uw-paid2": {
+				label: "Paid editing without disclosure under the Wikimedia Terms of Use",
+				summary: "Caution: Paid editing without disclosure under the Wikimedia Terms of Use"
 			},
 			"uw-spam2": {
 				label: "Adding spam links",
@@ -558,6 +566,10 @@ Twinkle.warn.messages = {
 				label: "Not adhering to neutral point of view",
 				summary: "Warning: Not adhering to neutral point of view"
 			},
+			"uw-paid3": {
+				label: "Paid editing without disclosure under the Wikimedia Terms of Use",
+				summary: "Warning: Paid editing without disclosure under the Wikimedia Terms of Use"
+			},
 			"uw-spam3": {
 				label: "Adding spam links",
 				summary: "Warning: Adding spam links"
@@ -699,6 +711,10 @@ Twinkle.warn.messages = {
 			"uw-npov4": {
 				label: "Not adhering to neutral point of view",
 				summary: "Final warning: Not adhering to neutral point of view"
+			},
+			"uw-paid4": {
+				label: "Paid editing without disclosure under the Wikimedia Terms of Use",
+				summary: "Final warning: Paid editing without disclosure under the Wikimedia Terms of Use"
 			},
 			"uw-spam4": {
 				label: "Adding spam links",
