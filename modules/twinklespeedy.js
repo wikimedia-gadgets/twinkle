@@ -1470,14 +1470,17 @@ Twinkle.speedy.callbacks = {
 					// disallow warning yourself
 					if (initialContrib === mw.config.get('wgUserName')) {
 						Morebits.status.warn("You (" + initialContrib + ") created this page; skipping user notification");
+						initialContrib = null;
 
 					// don't notify users when their user talk page is nominated
 					} else if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
 						Morebits.status.warn("Notifying initial contributor: this user created their own user talk page; skipping notification");
+						initialContrib = null;
 
 					// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page...
 					} else if ((initialContrib === "Cyberbot I" || initialContrib === "SoxBot") && params.normalizeds[0] === "f2") {
 						Morebits.status.warn("Notifying initial contributor: page created procedurally by bot; skipping notification");
+						initialContrib = null;
 
 					} else {
 						var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")"),
