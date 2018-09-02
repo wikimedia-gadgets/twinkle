@@ -1507,7 +1507,7 @@ Twinkle.speedy.callbacks = {
 						notifytext += (params.welcomeuser ? "" : "|nowelcome=yes") + "}} ~~~~";
 
 						var editsummary = "Notification: speedy deletion nomination";
-						if (params.normalizeds.indexOf("g10") === -1) {  // no article name in summary for G10 deletions
+						if (params.normalizeds.indexOf("g10") === -1) {  // no article name in summary for G10 taggings
 							editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
 						} else {
 							editsummary += " of an attack page.";
@@ -1569,7 +1569,12 @@ Twinkle.speedy.callbacks = {
 				appendText += "\n\n=== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ===";
 			}
 
-			appendText += "\n# [[:" + Morebits.pageNameNorm + "]]: ";
+			appendText += "\n# [[:" + Morebits.pageNameNorm;
+			if (params.normalizeds.indexOf("g10") === -1) {  // no article name in log for G10 taggings
+				appendText += "]]: ";
+			} else {
+				appendText += "|This]] attack page: ";
+			}
 			if (params.fromDI) {
 				appendText += "DI [[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] ({{tl|di-" + params.templatename + "}})";
 			} else {
@@ -1593,7 +1598,15 @@ Twinkle.speedy.callbacks = {
 			appendText += " ~~~~~\n";
 
 			pageobj.setAppendText(appendText);
-			pageobj.setEditSummary("Logging speedy deletion nomination of [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+
+			var editsummary = "Logging speedy deletion nomination";
+			if (params.normalizeds.indexOf("g10") === -1) {  // no article name in summary for G10 taggings
+				editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
+			} else {
+				editsummary += " of an attack page.";
+			}
+			editsummary += Twinkle.getPref('summaryAd');
+			pageobj.setEditSummary(editsummary);
 			pageobj.setCreateOption("recreate");
 			pageobj.append();
 		}
