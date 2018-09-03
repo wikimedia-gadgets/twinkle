@@ -936,7 +936,7 @@ Twinkle.speedy.generalList = [
 	{
 		label: 'G6: Unnecessary disambiguation page',
 		value: 'disambig',
-		tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate two or fewer existing Wikipedia pages and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguates no (zero) existing Wikipedia pages, regardless of its title.',
+		tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate only one existing Wikipedia page and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguate no (zero) existing Wikipedia pages, regardless of its title.',
 		hideWhenMultiple: true,
 		hideWhenRedirect: true
 	},
