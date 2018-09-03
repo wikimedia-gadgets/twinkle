@@ -12,6 +12,8 @@
 		"moment": true
 	},
 	"rules": {
+		"no-caller": "error",
+
 		"max-len": "off"
 	}
 }

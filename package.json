@@ -7,6 +7,6 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "eslint": "4.11.0"
+    "eslint": "5.5.0"
   }
 }

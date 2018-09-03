@@ -1180,7 +1180,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 		// since all the section headers exist now, we can try going to the requested anchor
 		if (location.hash) {
-			location.hash = location.hash;
+			window.location.hash = location.hash;
 		}
 
 	} else if (mw.config.get("wgNamespaceNumber") === mw.config.get("wgNamespaceIds").user &&
