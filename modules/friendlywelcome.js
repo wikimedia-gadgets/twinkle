@@ -35,7 +35,7 @@ Twinkle.welcome.auto = function() {
 };
 
 Twinkle.welcome.semiauto = function() {
-	Twinkle.welcome.callback( mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /"/, "\\\"") );
+	Twinkle.welcome.callback( mw.config.get( 'wgRelevantUserName' ) );
 };
 
 Twinkle.welcome.normal = function() {
