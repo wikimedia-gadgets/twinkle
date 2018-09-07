@@ -38,43 +38,39 @@ Twinkle.fluff = {
 			return span;
 		};
 
-		if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
+		if( mw.config.get('wgCanonicalSpecialPageName') === "Contributions" && mw.config.exists('wgRelevantUserName') ) {
 			//Get the username these contributions are for
-			var logLink = $('#contentSub').find('a[title^="Special:Log"]').last();
-			if (logLink.length>0) //#215 -- there is no log link on Special:Contributions with no user
-			{
-				var username = decodeURIComponent(/wiki\/Special:Log\/(.+)$/.exec(logLink.attr("href").replace(/_/g, "%20"))[1]);
-				if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
-					( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) ||
-					( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
-					var list = $("#mw-content-text").find("ul li:has(span.mw-uctop)");
+			var username = mw.config.get('wgRelevantUserName');
+			if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
+				( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) ||
+				( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
+				var list = $("#mw-content-text").find("ul li:has(span.mw-uctop)");
 
-					var revNode = document.createElement('strong');
-					var revLink = document.createElement('a');
-					revLink.appendChild( spanTag( 'Black', '[' ) );
-					revLink.appendChild( spanTag( 'SteelBlue', 'rollback' ) );
-					revLink.appendChild( spanTag( 'Black', ']' ) );
-					revNode.appendChild(revLink);
+				var revNode = document.createElement('strong');
+				var revLink = document.createElement('a');
+				revLink.appendChild( spanTag( 'Black', '[' ) );
+				revLink.appendChild( spanTag( 'SteelBlue', 'rollback' ) );
+				revLink.appendChild( spanTag( 'Black', ']' ) );
+				revNode.appendChild(revLink);
 
-					var revVandNode = document.createElement('strong');
-					var revVandLink = document.createElement('a');
-					revVandLink.appendChild( spanTag( 'Black', '[' ) );
-					revVandLink.appendChild( spanTag( 'Red', 'vandalism' ) );
-					revVandLink.appendChild( spanTag( 'Black', ']' ) );
-					revVandNode.appendChild(revVandLink);
+				var revVandNode = document.createElement('strong');
+				var revVandLink = document.createElement('a');
+				revVandLink.appendChild( spanTag( 'Black', '[' ) );
+				revVandLink.appendChild( spanTag( 'Red', 'vandalism' ) );
+				revVandLink.appendChild( spanTag( 'Black', ']' ) );
+				revVandNode.appendChild(revVandLink);
 
-					list.each(function(key, current) {
-						var href = $(current).children("a:eq(1)").attr("href");
-						current.appendChild( document.createTextNode(' ') );
-						var tmpNode = revNode.cloneNode( true );
-						tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'norm' } ) );
-						current.appendChild( tmpNode );
-						current.appendChild( document.createTextNode(' ') );
-						tmpNode = revVandNode.cloneNode( true );
-						tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'vand' } ) );
-						current.appendChild( tmpNode );
-					});
-				}
+				list.each(function(key, current) {
+					var href = $(current).children("a:eq(1)").attr("href");
+					current.appendChild( document.createTextNode(' ') );
+					var tmpNode = revNode.cloneNode( true );
+					tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'norm' } ) );
+					current.appendChild( tmpNode );
+					current.appendChild( document.createTextNode(' ') );
+					tmpNode = revVandNode.cloneNode( true );
+					tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'vand' } ) );
+					current.appendChild( tmpNode );
+				});
 			}
 		} else {
 
