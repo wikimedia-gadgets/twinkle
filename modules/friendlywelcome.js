@@ -217,7 +217,8 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				"welcome-belated",
 				"welcome student",
 				"welcome teacher",
-				"welcome non-latin"
+				"welcome non-latin",
+				"Welcome to Wikipedia"
 			]);
 			container.append({ type: 'header', label: 'Problem user welcome templates' });
 			appendTemplates([
@@ -377,6 +378,11 @@ Twinkle.welcome.templates = {
 		description: "welcome for users with a username containing non-Latin characters",
 		linkedArticle: false,
 		syntax: "{{subst:welcome non-latin|$USERNAME$}} ~~~~"
+	},
+	"Welcome to Wikipedia": {
+		description: "large, structured welcome table, containing about 30 links and icons",
+		linkedArticle: false,
+		syntax: "$HEADER$ {{subst:Welcome_to_Wikipedia}}"
 	},
 
 	// PROBLEM USER WELCOMES
