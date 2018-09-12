@@ -1069,12 +1069,6 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		tagparams = {
 			tag: form.tagtype.value,
 			reason: ((form.tagtype.value === 'pp-protected' || form.tagtype.value === 'pp-semi-protected' || form.tagtype.value === 'pp-move') && form.protectReason) ? form.protectReason.value : null,
-			expiry: (actiontype === 'protect') ?
-				(form.editmodify.checked ? form.editexpiry.value :
-					(form.movemodify.checked ? form.moveexpiry.value :
-						(form.pcmodify.checked ? form.pcexpiry.value : null)
-					)
-				) : null,
 			small: form.small.checked,
 			noinclude: form.noinclude.checked
 		};
@@ -1370,9 +1364,6 @@ Twinkle.protect.callbacks = {
 			tag = params.tag;
 			if( params.reason ) {
 				tag += '|reason=' + params.reason;
-			}
-			if( ['indefinite', 'infinite', 'never', null].indexOf(params.expiry) === -1 ) {
-				tag += '|expiry={{subst:#time:H:i, j F Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
 			}
 			if( params.small ) {
 				tag += '|small=yes';
