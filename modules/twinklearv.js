@@ -651,10 +651,11 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 			var puppetReport = form.category.value === "puppet";
 			if (puppetReport && !(form.sockmaster.value.trim())) {
-				if (!confirm("You have not entered a sockmaster account for this puppet. Do you want to report this account as a sockpuppeteer instead?")) {
-					return;
-				}
-				puppetReport = false;
+				alert("You have not entered a sockmaster account for this puppet. Consider reporting this account as a sockpuppeteer instead.");
+				return;
+			} else if (!puppetReport && !(form.sockpuppet[0].value.trim())) {
+				alert("You have not entered any sockpuppet account(s) for this sockmaster. Consider reporting this account as a sockpuppet instead.");
+				return;
 			}
 
 			sockParameters.uid = puppetReport ? form.sockmaster.value.trim() : uid;
