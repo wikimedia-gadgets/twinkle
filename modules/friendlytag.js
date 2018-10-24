@@ -1071,7 +1071,24 @@ Twinkle.tag.callbacks = {
 		$.each(tags, addTag);
 
 		if( Twinkle.tag.mode === 'redirect' ) {
-			pageText += tagText;
+			// Check for all Rcat shell redirects (from #433)
+			if (pageText.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
+				// Regex courtesy [[User:Kephir/gadgets/sagittarius.js]] at [[Special:PermaLink/831402893]]
+				var oldTags = pageText.match(/(\s*{{[A-Za-z ]+\|)((?:[^|{}]*|{{[^|}]*}})+)(}})\s*/i);
+				pageText = pageText.replace(oldTags[0], oldTags[1]+tagText+oldTags[2]+oldTags[3]);
+			} else {
+				// Fold any pre-existing Rcats into taglist and under Rcatshell
+				var pageTags = pageText.match(/\n{{R(?:edirect)? .*?}}/img);
+				var oldPageTags ='';
+				if (pageTags) {
+					pageTags.forEach(function(pageTag) {
+						var pageRe = new RegExp(pageTag, 'img');
+						pageText = pageText.replace(pageRe,'');
+						oldPageTags = oldPageTags.concat(pageTag);
+					});
+				}
+				pageText += '\n{{Redirect category shell|' + tagText + oldPageTags + '\n}}';
+			}
 		} else {
 			// smartly insert the new tags after any hatnotes. Regex is a bit more
 			// complicated than it'd need to be, to allow templates as parameters,
