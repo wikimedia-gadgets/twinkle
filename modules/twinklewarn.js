@@ -288,6 +288,10 @@ Twinkle.warn.messages = {
 			}
 		},
 		"Other": {
+			"uw-attempt1": {
+				label: "Triggering the edit filter",
+				summary: "General note: Triggering the edit filter"
+			},
 			"uw-chat1": {
 				label: "Using talk page as forum",
 				summary: "General note: Using talk page as forum"
