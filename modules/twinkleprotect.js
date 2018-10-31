@@ -1419,7 +1419,7 @@ Twinkle.protect.callbacks = {
 			statusElement.error( [ 'There is already a protection request for this page at ', rppLink, ', aborting.' ] );
 			return;
 		}
-		newtag += '* {{pagelinks|' + Morebits.pageNameNorm + '}}\n\n';
+		newtag += '* {{pagelinks|1=' + Morebits.pageNameNorm + '}}\n\n';
 
 		var words;
 		switch( params.expiry ) {
