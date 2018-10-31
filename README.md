@@ -113,7 +113,7 @@ Needless to say, there are exceptions. The main sticking point is spacing around
 [Wikipedia:Twinkle]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle
 [AzaToth]: https://en.wikipedia.org/wiki/User:AzaToth
 [Twinkle documentation]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle/doc
-[WP:TWPREFS]: https://en.wikipedia.org/wiki/WP:TWPREFS
+[WP:TWPREFS]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle/Preferences
 [MediaWiki:Gadget-Twinkle.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.js
 [MediaWiki:Gadget-Twinkle.css]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.css
 [MediaWiki:Gadget-Twinkle-pagestyles.css]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle-pagestyles.css
@@ -141,7 +141,7 @@ Needless to say, there are exceptions. The main sticking point is spacing around
 [MediaWiki:Gadget-twinkleblock.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleblock.js
 [User:AzaToth/twinkle.js]: https://en.wikipedia.org/wiki/User:AzaToth/twinkle.js
 [MediaWiki:Gadgets-definition]: https://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
-[Git::Repository]: http://search.cpan.org/perldoc?Git%3A%3ARepository
-[MediaWiki::Bot]: http://search.cpan.org/perldoc?MediaWiki%3A%3ABot
-[App::cpanminus]: http://search.cpan.org/perldoc?App%3A%3Acpanminus
-[jq_style]: http://contribute.jquery.org/style-guide/js/
+[Git::Repository]: https://metacpan.org/pod/Git::Repository
+[MediaWiki::Bot]: https://metacpan.org/pod/MediaWiki::Bot
+[App::cpanminus]: https://metacpan.org/pod/App::cpanminus
+[jq_style]: https://contribute.jquery.org/style-guide/js/
