@@ -134,11 +134,6 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		});
 	movelevel.append({
 			type: 'option',
-			label: 'Autoconfirmed',
-			value: 'autoconfirmed'
-		});
-	movelevel.append({
-			type: 'option',
 			label: 'Extended confirmed',
 			value: 'extendedconfirmed'
 		});

@@ -324,11 +324,6 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					});
 				movelevel.append({
 						type: 'option',
-						label: 'Autoconfirmed',
-						value: 'autoconfirmed'
-					});
-				movelevel.append({
-						type: 'option',
 						label: 'Extended confirmed',
 						value: 'extendedconfirmed'
 					});
@@ -446,11 +441,13 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						label: 'All',
 						value: 'all'
 					});
-				createlevel.append({
-						type: 'option',
-						label: 'Autoconfirmed',
-						value: 'autoconfirmed'
-					});
+				if (mw.config.get("wgNamespaceNumber") !== 0) {
+					createlevel.append({
+							type: 'option',
+							label: 'Autoconfirmed',
+							value: 'autoconfirmed'
+						});
+				}
 				if (isTemplate) {
 					createlevel.append({
 							type: 'option',
