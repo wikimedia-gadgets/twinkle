@@ -401,14 +401,9 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					});
 				pclevel.append({
 						type: 'option',
-						label: 'Level 1',
+						label: 'Pending changes',
 						value: 'autoconfirmed',
 						selected: true
-					});
-				pclevel.append({
-						type: 'option',
-						label: 'Level 2 (do not use)',
-						value: 'review'
 					});
 				field2.append({
 						type: 'select',
@@ -740,14 +735,13 @@ Twinkle.protect.protectionTypesCreate = [
 ];
 
 // A page with both regular and PC protection will be assigned its regular
-// protection weight plus 2 (for PC1) or 7 (for PC2)
+// protection weight plus 2
 Twinkle.protect.protectionWeight = {
 	sysop: 40,
 	templateeditor: 30,
 	extendedconfirmed: 20,
-	flaggedrevs_review: 15,  // Pending Changes level 2 protection alone
 	autoconfirmed: 10,
-	flaggedrevs_autoconfirmed: 5,  // Pending Changes level 1 protection alone
+	flaggedrevs_autoconfirmed: 5,  // Pending Changes protection alone
 	all: 0,
 	flaggedrevs_none: 0  // just in case
 };
@@ -855,27 +849,27 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-pc-vandalism': {
 		stabilize: 'autoconfirmed',  // stabilize = Pending Changes
 		reason: 'Persistent [[WP:Vandalism|vandalism]]',
-		template: 'pp-pc1'
+		template: 'pp-pc'
 	},
 	'pp-pc-disruptive': {
 		stabilize: 'autoconfirmed',
 		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]]',
-		template: 'pp-pc1'
+		template: 'pp-pc'
 	},
 	'pp-pc-unsourced': {
 		stabilize: 'autoconfirmed',
 		reason: 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]',
-		template: 'pp-pc1'
+		template: 'pp-pc'
 	},
 	'pp-pc-blp': {
 		stabilize: 'autoconfirmed',
 		reason: 'Violations of the [[WP:BLP|biographies of living persons policy]]',
-		template: 'pp-pc1'
+		template: 'pp-pc'
 	},
 	'pp-pc-protected': {
 		stabilize: 'autoconfirmed',
 		reason: null,
-		template: 'pp-pc1'
+		template: 'pp-pc'
 	},
 	'pp-move': {
 		move: 'sysop',
@@ -945,7 +939,7 @@ Twinkle.protect.protectionTags = [
 	{
 		label: 'Pending changes templates',
 		list: [
-			{ label: '{{pp-pc1}}: pending changes level 1', value: 'pp-pc1' }
+			{ label: '{{pp-pc}}: pending changes', value: 'pp-pc' }
 		]
 	},
 	{
@@ -1451,8 +1445,6 @@ Twinkle.protect.callbacks = {
 				if (result) {
 					if (stabilizeLevel.level === "autoconfirmed") {
 						result += 2;
-					} else if (stabilizeLevel.level === "review") {
-						result += 7;
 					}
 				} else {
 					result = Twinkle.protect.protectionWeight["flaggedrevs_" + stabilizeLevel];
