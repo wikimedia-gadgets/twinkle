@@ -466,7 +466,6 @@ Twinkle.tag.article.tags = {
 	"merge to": "article should be merged into another given article",
 	"metricate": "article exclusively uses non-SI units of measurement",
 	"more footnotes": "article has some references, but insufficient in-text citations",
-	"new unreviewed article": "mark your own article for later review",
 	"news release": "article reads like a news release",
 	"no footnotes": "article has references, but no in-text citations",
 	"non-free": "article may contain excessive or improper use of copyrighted materials",
@@ -630,7 +629,6 @@ Twinkle.tag.article.tagCategories = {
 	"Informational": [
 		"GOCEinuse",
 		"in use",
-		"new unreviewed article",
 		"under construction"
 	]
 };
@@ -855,7 +853,6 @@ Twinkle.tag.multipleIssuesExceptions = [
 	'merge',
 	'merge from',
 	'merge to',
-	'new unreviewed article',
 	'not English',
 	'rough translation',
 	'uncategorized',
@@ -870,7 +867,7 @@ Twinkle.tag.callbacks = {
 			tags = [], groupableTags = [], i, totalTags;
 
 		// Remove tags that become superfluous with this action
-		var pageText = pageobj.getPageText().replace(/\{\{\s*([Nn]ew unreviewed article|[Uu]nreviewed|[Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, "");
+		var pageText = pageobj.getPageText().replace(/\{\{\s*([Uu]nreviewed|[Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, "");
 
 		var addTag = function friendlytagAddTag( tagIndex, tagName ) {
 			var currentTag = "";
