@@ -339,7 +339,7 @@ Twinkle.addPortletLink = function( task, text, id, tooltip )
 	}
 	var link = mw.util.addPortletLink( Twinkle.getPref( "portletId" ), typeof task === "string" ? task : "#", text, id, tooltip );
 	$('.client-js .skin-vector #p-cactions').css('margin-right', 'initial');
-	if ( $.isFunction( task ) ) {
+	if ( typeof task === "function" ) {
 		$( link ).click(function ( ev ) {
 			task();
 			ev.preventDefault();

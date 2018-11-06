@@ -338,7 +338,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				if( current.subgroup ) {
 					var tmpgroup = current.subgroup;
 
-					if( ! $.isArray( tmpgroup ) ) {
+					if( ! Array.isArray( tmpgroup ) ) {
 						tmpgroup = [ tmpgroup ];
 					}
 
@@ -548,7 +548,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node.setAttribute( 'name', data.name );
 		}
 		if (data.label) {
-			if ( ! $.isArray( data.label ) ) {
+			if ( ! Array.isArray( data.label ) ) {
 				data.label = [ data.label ];
 			}
 			var result = document.createElement( 'span' );
@@ -996,7 +996,7 @@ Morebits.string = {
 		var level = 0;
 		var initial = null;
 		var result = [];
-		if( ! $.isArray( skip ) ) {
+		if( ! Array.isArray( skip ) ) {
 			if( skip === undefined ) {
 				skip = [];
 			} else if( typeof skip === 'string' ) {
@@ -1062,7 +1062,7 @@ Morebits.string = {
 
 Morebits.array = {
 	uniq: function(arr) {
-		if ( ! $.isArray( arr ) ) {
+		if ( ! Array.isArray( arr ) ) {
 			throw "A non-array object passed to Morebits.array.uniq";
 		}
 		var result = [];
@@ -1075,7 +1075,7 @@ Morebits.array = {
 		return result;
 	},
 	dups: function(arr) {
-		if ( ! $.isArray( arr ) ) {
+		if ( ! Array.isArray( arr ) ) {
 			throw "A non-array object passed to Morebits.array.dups";
 		}
 		var uniques = [];
@@ -1091,7 +1091,7 @@ Morebits.array = {
 		return result;
 	},
 	chunk: function( arr, size ) {
-		if ( ! $.isArray( arr ) ) {
+		if ( ! Array.isArray( arr ) ) {
 			throw "A non-array object passed to Morebits.array.chunk";
 		}
 		if( typeof size !== 'number' || size <= 0 ) { // pretty impossible to do anything :)
@@ -3215,7 +3215,7 @@ Morebits.queryString.create = function( arr ) {
 			continue;
 		}
 		var res;
-		if( $.isArray( arr[i] ) ){
+		if( Array.isArray( arr[i] ) ){
 			var v = [];
 			for(var j = 0; j < arr[i].length; ++j ) {
 				v[j] = encodeURIComponent( arr[i][j] );
@@ -3267,7 +3267,7 @@ Morebits.status.init = function( root ) {
 Morebits.status.root = null;
 
 Morebits.status.onError = function( handler ) {
-	if ( $.isFunction( handler ) ) {
+	if ( typeof handler === 'function' ) {
 		Morebits.status.errorEvent = handler;
 	} else {
 		throw "Morebits.status.onError: handler is not a function";
@@ -3295,7 +3295,7 @@ Morebits.status.prototype = {
 		}
 	},
 	codify: function( obj ) {
-		if ( ! $.isArray( obj ) ) {
+		if ( ! Array.isArray( obj ) ) {
 			obj = [ obj ];
 		}
 		var result;
