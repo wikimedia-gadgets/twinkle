@@ -867,7 +867,7 @@ Twinkle.tag.callbacks = {
 			tags = [], groupableTags = [], i, totalTags;
 
 		// Remove tags that become superfluous with this action
-		var pageText = pageobj.getPageText().replace(/\{\{\s*([Uu]nreviewed|[Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, "");
+		var pageText = pageobj.getPageText().replace(/\{\{\s*([Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, "");
 
 		var addTag = function friendlytagAddTag( tagIndex, tagName ) {
 			var currentTag = "";
