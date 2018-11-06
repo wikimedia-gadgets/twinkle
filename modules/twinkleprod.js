@@ -184,7 +184,7 @@ Twinkle.prod.callbacks = {
 		}
 
 		// Remove tags that become superfluous with this action
-		text = text.replace(/{{\s*(new unreviewed article|unreviewed|userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/gi, "");
+		text = text.replace(/{{\s*(userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/gi, "");
 		var prod_re = /{{\s*(?:dated prod|dated files|dated prod blp|Prod blp\/dated|Proposed deletion\/dated)\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
 		var summaryText;
 		if( !prod_re.test( text ) ) {
