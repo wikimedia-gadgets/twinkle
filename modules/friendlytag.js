@@ -365,7 +365,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		$.each(Twinkle.tag.article.tagCategories, function(title, content) {
 			container.append({ type: "header", id: "tagHeader" + i, label: title });
 			var subdiv = container.append({ type: "div", id: "tagSubdiv" + i++ });
-			if ($.isArray(content)) {
+			if (Array.isArray(content)) {
 				doCategoryCheckboxes(subdiv, content);
 			} else {
 				$.each(content, function(subtitle, subcontent) {

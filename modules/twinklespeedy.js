@@ -473,7 +473,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 		}
 
 		if (criterion.subgroup && !hasSubmitButton) {
-			if ($.isArray(criterion.subgroup)) {
+			if (Array.isArray(criterion.subgroup)) {
 				criterion.subgroup.push({
 					type: 'button',
 					name: 'submit',
