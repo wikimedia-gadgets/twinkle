@@ -195,13 +195,26 @@ Twinkle.tag.updateSortOrder = function(e) {
 				};
 				break;
 			case "expert needed":
-				checkbox.subgroup = {
+				checkbox.subgroup = [ {
 					name: 'expertNeeded',
 					type: 'input',
 					label: 'Name of relevant WikiProject: ',
 					tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.'
-				};
-				break;
+				}, 
+				{
+					name: 'expertNeededReason',
+					type: 'input',
+					label: 'Reason: ',
+					tooltip: 'Short explanation describing the issue. Either Reason or Talk link is required.'
+				}, 
+				{
+					name: 'expertNeededTalk',
+					type: 'input',
+					label: 'Talk discussion: ',
+					tooltip: 'Name of the section of this article\'s talk page where the issue is being discussed. Do not give a link, just the name of the section. Either Reason or Talk link is required.'
+				}
+				];
+				break; 
 			case "globalize":
 				checkbox.subgroup = {
 					name: 'globalize',
@@ -408,8 +421,11 @@ Twinkle.tag.updateSortOrder = function(e) {
 		var $checkbox = $(checkbox);
 		var link = Morebits.htmlNode("a", ">");
 		link.setAttribute("class", "tag-template-link");
-		link.setAttribute("href", mw.util.getUrl("Template:" +
-			Morebits.string.toUpperCaseFirstChar(checkbox.values)));
+		var linkto = Morebits.string.toUpperCaseFirstChar(checkbox.values);
+		link.setAttribute("href", mw.util.getUrl(
+			(linkto.indexOf(":") === -1 ? "Template:" : "") +
+			(linkto.indexOf("|") === -1 ? linkto : linkto.slice(0,linkto.indexOf("|")))
+		));
 		link.setAttribute("target", "_blank");
 		$checkbox.parent().append(["\u00A0", link]);
 	});
@@ -925,8 +941,14 @@ Twinkle.tag.callbacks = {
 						}
 						break;
 					case 'expert needed':
-						if (params.tagParameters.expertNeeded) {
-							currentTag += '|1=' + params.tagParameters.expertNeeded;
+						if (params.expertNeeded) {
+							currentTag += '|1=' + params.expertNeeded;
+						}
+						if(params.expertNeededTalk) {
+							currentTag += '|talk=' + params.expertNeededTalk;
+						}
+						if(params.expertNeededReason) {
+							currentTag += '|reason=' + params.expertNeededReason;
 						}
 						break;
 					case 'news release':
@@ -982,8 +1004,18 @@ Twinkle.tag.callbacks = {
 			summaryText += ' {{[[:';
 			if( tagName === 'globalize' ) {
 				summaryText += "Template:" + params.tagParameters.globalize + '|' + params.tagParameters.globalize;
+			} else if( tagName.indexOf("|") !== -1 ) {
+				//if it is a custom tag with a parameter
+				var slicedTagName = tagName.slice(0,tagName.indexOf("|"));
+				if( tagName.indexOf(":") !== -1 ) {
+					summaryText += slicedTagName;
+				} else {
+					summaryText += "Template:" + slicedTagName + "|" + slicedTagName;
+				}
+			} else if( tagName.indexOf(":") !== -1 ) {
+				summaryText += tagName;
 			} else {
-				summaryText += (tagName.indexOf(":") !== -1 ? tagName : ("Template:" + tagName + "|" + tagName));
+				summaryText += "Template:" + tagName + "|" + tagName;
 			}
 			summaryText += ']]}}';
 		};
@@ -1361,6 +1393,9 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				globalize: form["articleTags.globalize"] ? form["articleTags.globalize"].value : null,
 				notability: form["articleTags.notability"] ? form["articleTags.notability"].value : null
 			};
+			params.expertNeeded = form["articleTags.expertNeeded"] ? form["articleTags.expertNeeded"].value : null,
+			params.expertNeededTalk = form["articleTags.expertNeededTalk"] ? form["articleTags.expertNeededTalk"].value : null,
+			params.expertNeededReason = form["articleTags.expertNeededReason"] ? form["articleTags.expertNeededReason"].value : null,
 			// common to {{merge}}, {{merge from}}, {{merge to}}
 			params.mergeTarget = form["articleTags.mergeTarget"] ? form["articleTags.mergeTarget"].value : null;
 			params.mergeReason = form["articleTags.mergeReason"] ? form["articleTags.mergeReason"].value : null;
