@@ -1515,91 +1515,6 @@ Twinkle.config.save = function twinkleconfigSave(e) {
 	return false;
 };
 
-// The JSON stringify method in the following code was excerpted from
-// http://www.JSON.org/json2.js
-// version of 2011-02-23
-
-// Douglas Crockford, the code's author, has released it into the Public Domain.
-// See http://www.JSON.org/js.html
-
-var JSON;
-if (!JSON) {
-	JSON = {};
-}
-
-(function() {
-	var escapable = /[\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g, // eslint-disable-line no-control-regex
-		gap,
-		indent = '  ',  // hardcoded indent
-		meta = { '\b': '\\b', '\t': '\\t', '\n': '\\n', '\f': '\\f', '\r': '\\r', '"' : '\\"', '\\': '\\\\' };
-
-	function quote(string) {
-		escapable.lastIndex = 0;
-		return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
-			var c = meta[a];
-			return typeof c === 'string' ? c :	'\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
-		}) + '"' : '"' + string + '"';
-	}
-
-	function str(key, holder) {
-		var i, k, v, length, mind = gap, partial, value = holder[key];
-
-		if (value && typeof value === 'object' && $.isFunction(value.toJSON)) {
-			value = value.toJSON(key);
-		}
-
-		switch (typeof value) {
-		case 'string':
-			return quote(value);
-		case 'number':
-			return isFinite(value) ? String(value) : 'null';
-		case 'boolean':
-		case 'null':
-			return String(value);
-		case 'object':
-			if (!value) {
-				return 'null';
-			}
-			gap += indent;
-			partial = [];
-			if ($.isArray(value)) {
-				length = value.length;
-				for (i = 0; i < length; ++i) {
-					partial[i] = str(i, value) || 'null';
-				}
-				v = partial.length === 0 ? '[]' : gap ?
-					'[\n' + gap + partial.join(',\n' + gap) + '\n' + mind + ']' :
-					'[' + partial.join(',') + ']';
-				gap = mind;
-				return v;
-			}
-			for (k in value) {
-				if (Object.prototype.hasOwnProperty.call(value, k)) {
-					v = str(k, value);
-					if (v) {
-						partial.push(quote(k) + (gap ? ': ' : ':') + v);
-					}
-				}
-			}
-			v = partial.length === 0 ? '{}' : gap ?
-				'{\n' + gap + partial.join(',\n' + gap) + '\n' + mind + '}' :
-				'{' + partial.join(',') + '}';
-			gap = mind;
-			return v;
-		default:
-			throw new Error( "JSON.stringify: unknown data type" );
-		}
-	}
-
-	if (!$.isFunction(JSON.stringify)) {
-		JSON.stringify = function (value, ignoredParam1, ignoredParam2) {
-			ignoredParam1 = ignoredParam2;  // boredom
-			gap = '';
-			return str('', {'': value});
-		};
-	}
-}());
-
 Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	var form = pageobj.getCallbackParameters();
 
@@ -1621,7 +1536,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	// and it is not very robust: e.g. compare([2], ["2"]) === true, and
 	// compare({}, {}) === false, but it's good enough for our purposes here
 	var compare = function(a, b) {
-		if ($.isArray(a)) {
+		if (Array.isArray(a)) {
 			if (a.length !== b.length) {
 				return false;
 			}

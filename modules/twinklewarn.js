@@ -43,7 +43,7 @@ Twinkle.warn = function twinklewarn() {
 			// (MediaWiki:Rollback-success-notify) changes.
 			var regexMatch;
 			if ( options && options.title && mw.msg && options.title === mw.msg('actioncomplete') &&
-				message && $.isArray(message) && message[0] instanceof HTMLParagraphElement &&
+				message && Array.isArray(message) && message[0] instanceof HTMLParagraphElement &&
 				(regexMatch = /^Reverted edits by (.+);\s+changed/.exec(message[0].innerText))
 			) {
 				// Create a nicely-styled paragraph to place the link in
