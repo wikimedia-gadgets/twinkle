@@ -60,28 +60,30 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 			tooltip: 'When activated, a default choice is made, based on what namespace you are in. This default should be the most appropriate',
 			event: Twinkle.xfd.callback.change_category
 		} );
+	var namespace = mw.config.get('wgNamespaceNumber');
+	
 	categories.append( {
 			type: 'option',
 			label: 'AfD (Articles for deletion)',
-			selected: mw.config.get('wgNamespaceNumber') === 0,  // Main namespace
+			selected: namespace === 0,  // Main namespace
 			value: 'afd'
 		} );
 	categories.append( {
 			type: 'option',
 			label: 'TfD (Templates for discussion)',
-			selected: [ 10, 828 ].indexOf( mw.config.get('wgNamespaceNumber') ) !== -1,  // Template and module namespaces
+			selected: [ 10, 828 ].indexOf(namespace) !== -1,  // Template and module namespaces
 			value: 'tfd'
 		} );
 	categories.append( {
 			type: 'option',
 			label: 'FfD (Files for discussion)',
-			selected: mw.config.get('wgNamespaceNumber') === 6,  // File namespace
+			selected: namespace === 6,  // File namespace
 			value: 'ffd'
 		} );
 	categories.append( {
 			type: 'option',
 			label: 'CfD (Categories for discussion)',
-			selected: mw.config.get('wgNamespaceNumber') === 14,  // Category namespace
+			selected: namespace === 14,
 			value: 'cfd'
 		} );
 	categories.append( {
@@ -92,7 +94,8 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append( {
 			type: 'option',
 			label: 'MfD (Miscellany for deletion)',
-			selected: [ 0, 6, 10, 14, 828 ].indexOf( mw.config.get('wgNamespaceNumber') ) === -1,
+			selected: [ 0, 6, 10, 14, 828 ].indexOf(namespace) === -1 || Morebits.pageNameNorm.startsWith("Template:User "),
+				//Other namespaces, and userboxes in template namespace
 			value: 'mfd'
 		} );
 	categories.append( {
