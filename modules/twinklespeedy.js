@@ -1507,10 +1507,10 @@ Twinkle.speedy.callbacks = {
 						notifytext += (params.welcomeuser ? "" : "|nowelcome=yes") + "}} ~~~~";
 
 						var editsummary = "Notification: speedy deletion nomination";
-						if (params.normalizeds.indexOf("g10") === -1) {  // no article name in summary for G10 taggings
-							editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
-						} else {
+						if (params.normalizeds && params.normalizeds.indexOf("g10") !== -1) {  // no article name in summary for G10 taggings
 							editsummary += " of an attack page.";
+						} else {
+							editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
 						}
 
 						usertalkpage.setAppendText(notifytext);
@@ -1570,10 +1570,10 @@ Twinkle.speedy.callbacks = {
 			}
 
 			appendText += "\n# [[:" + Morebits.pageNameNorm;
-			if (params.normalizeds.indexOf("g10") === -1) {  // no article name in log for G10 taggings
-				appendText += "]]: ";
-			} else {
+			if (params.normalizeds && params.normalizeds.indexOf("g10") !== -1) {  // no article name in log for G10 taggings
 				appendText += "|This]] attack page: ";
+			} else {
+				appendText += "]]: ";
 			}
 			if (params.fromDI) {
 				appendText += "DI [[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] ({{tl|di-" + params.templatename + "}})";
@@ -1600,10 +1600,10 @@ Twinkle.speedy.callbacks = {
 			pageobj.setAppendText(appendText);
 
 			var editsummary = "Logging speedy deletion nomination";
-			if (params.normalizeds.indexOf("g10") === -1) {  // no article name in summary for G10 taggings
-				editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
-			} else {
+			if (params.normalizeds && params.normalizeds.indexOf("g10") !== -1) {  // no article name in summary for G10 taggings
 				editsummary += " of an attack page.";
+			} else {
+				editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
 			}
 			editsummary += Twinkle.getPref('summaryAd');
 			pageobj.setEditSummary(editsummary);
