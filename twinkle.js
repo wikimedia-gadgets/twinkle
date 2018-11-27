@@ -364,7 +364,7 @@ $.ajax({
 	url: scriptpathbefore + "User:" + encodeURIComponent( mw.config.get("wgUserName")) + "/twinkleoptions.js" + scriptpathafter,
 	dataType: "text"
 })
-	.fail(function () {	mw.util.jsMessage( "Could not load twinkleoptions.js" ); })
+	.fail(function () {	mw.notify( "Could not load twinkleoptions.js" ); })
 	.done(function ( optionsText ) {
 
 		// Quick pass if user has no options
@@ -399,7 +399,7 @@ $.ajax({
 			}
 		}
 		catch ( e ) {
-			mw.util.jsMessage("Could not parse twinkleoptions.js");
+			mw.notify("Could not parse twinkleoptions.js");
 		}
 	})
 	.always(function () {
