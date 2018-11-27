@@ -1215,9 +1215,10 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	// clear overridden label on article textbox
 	Morebits.quickForm.setElementTooltipVisibility(e.target.root.article, true);
 	Morebits.quickForm.resetElementLabel(e.target.root.article);
-
 	// hide the big red notice
 	$("#tw-warn-red-notice").remove();
+	// add custom label.redWarning
+	Twinkle.warn.callback.change_subcategory(e);
 };
 
 Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSubcategory(e) {
@@ -1230,7 +1231,8 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		"uw-agf-sock": "Optional username of other account (without User:) ",
 		"uw-bite": "Username of 'bitten' user (without User:) ",
 		"uw-socksuspect": "Username of sock master, if known (without User:) ",
-		"uw-username": "Username violates policy because... "
+		"uw-username": "Username violates policy because... ",
+		"uw-aiv": "Optional username that was reported (without User:) "
 	};
 
 	if( main_group === 'singlenotice' || main_group === 'singlewarn' ) {
@@ -1413,7 +1415,8 @@ Twinkle.warn.callbacks = {
 			summary = messageData.summary;
 			if ( messageData.suppressArticleInSummary !== true && params.article ) {
 				if ( params.sub_group === "uw-agf-sock" ||
-						params.sub_group === "uw-socksuspect" ) {  // these templates require a username
+						params.sub_group === "uw-socksuspect" ||
+						params.sub_group === "uw-aiv" ) {  // these templates require a username
 					summary += " of [[:User:" + params.article + "]]";
 				} else {
 					summary += " on [[:" + params.article + "]]";
