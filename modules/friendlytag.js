@@ -700,6 +700,10 @@ Twinkle.tag.alternativeList = [
 		value: 'R from historic name'
 	},
 	{
+		label: '{{R from incorrect name}}: redirect from an erroneus name that is unsuitable as a title',
+		value: 'R from incorrect name'
+	},
+	{
 		label: '{{R from long name}}: redirect from a title that is a complete or more complete name',
 		value: 'R from long name'
 	},
