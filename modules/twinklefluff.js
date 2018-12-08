@@ -61,7 +61,7 @@ Twinkle.fluff = {
 				revVandNode.appendChild(revVandLink);
 
 				list.each(function(key, current) {
-					var href = $(current).children("a:eq(1)").attr("href");
+					var href = $(current).find(".mw-changeslist-diff").attr("href");
 					current.appendChild( document.createTextNode(' ') );
 					var tmpNode = revNode.cloneNode( true );
 					tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'norm' } ) );
