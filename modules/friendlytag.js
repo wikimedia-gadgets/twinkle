@@ -637,28 +637,28 @@ Twinkle.tag.article.tagCategories = {
 
 Twinkle.tag.spellingList = [
 	{
-		label: '{{R from initialism}}: redirect from an initialism (e.g. AGF) to its expanded form',
-		value: 'R from initialism'
-	},
-	{
 		label: '{{R from acronym}}: redirect from an acronym (e.g. POTUS) to its expanded form',
 		value: 'R from acronym'
 	},
 	{
-		label: '{{R to list entry}}: redirect to a "list of minor entities"-type article which contains brief descriptions of subjects not notable enough to have separate articles',
-		value: 'R to list entry'
+		label: '{{R from alternative spelling}}: redirect from a title with a different spelling',
+		value: 'R from alternative spelling'
 	},
 	{
-		label: '{{R to section}}: similar to {{R to list entry}}, but when list is organized in sections, such as list of characters in a fictional universe.',
-		value: 'R to section'
+		label: '{{R from initialism}}: redirect from an initialism (e.g. AGF) to its expanded form',
+		value: 'R from initialism'
+	},
+	{
+		label: '{{R from member}}: redirect from a member of a group to a related topic such as the group, organization, or team that he or she belongs to',
+		value: 'R from member'
 	},
 	{
 		label: '{{R from misspelling}}: redirect from a misspelling or typographical error',
 		value: 'R from misspelling'
 	},
 	{
-		label: '{{R from alternative spelling}}: redirect from a title with a different spelling',
-		value: 'R from alternative spelling'
+		label: '{{R from other capitalisation}}: redirect from a title with another method of capitalisation',
+		value: 'R from other capitalisation'
 	},
 	{
 		label: '{{R from plural}}: redirect from a plural word to the singular equivalent',
@@ -669,35 +669,47 @@ Twinkle.tag.spellingList = [
 		value: 'R from related word'
 	},
 	{
+		label: '{{R to list entry}}: redirect to a "list of minor entities"-type article which contains brief descriptions of subjects not notable enough to have separate articles',
+		value: 'R to list entry'
+	},
+	{
+		label: '{{R to section}}: similar to {{R to list entry}}, but when list is organized in sections, such as list of characters in a fictional universe.',
+		value: 'R to section'
+	},
+	{
 		label: '{{R with possibilities}}: redirect from a more specific title to a more general, less detailed article, hence something which can and should be expanded',
 		value: 'R with possibilities'
-	},
-	{
-		label: '{{R from member}}: redirect from a member of a group to a related topic such as the group, organization, or team that he or she belongs to',
-		value: 'R from member'
-	},
-	{
-		label: '{{R from other capitalisation}}: redirect from a title with another method of capitalisation',
-		value: 'R from other capitalisation'
 	}
 ];
 
 Twinkle.tag.alternativeList = [
 	{
+		label: '{{R from alternative language}}: redirect from an English name to a name in another language, or vice-versa',
+		value: 'R from alternative language'
+	},
+	{
 		label: '{{R from alternative name}}: redirect from a title that is another name, a pseudonym, a nickname, or a synonym',
 		value: 'R from alternative name'
+	},
+	{
+		label: '{{R from ASCII}}: redirect from a title in basic ASCII to the formal article title, with differences that are not diacritical marks (accents, umlauts, etc.)',
+		value: 'R from ASCII'
+	},
+	{
+		label: '{{R from historic name}}: redirect from another name with a significant historic past as a region, state, city or such, but which is no longer known by that title or name',
+		value: 'R from historic name'
+	},
+	{
+		label: '{{R from incorrect name}}: redirect from an erroneus name that is unsuitable as a title',
+		value: 'R from incorrect name'
 	},
 	{
 		label: '{{R from long name}}: redirect from a title that is a complete or more complete name',
 		value: 'R from long name'
 	},
 	{
-		label: '{{R from surname}}: redirect from a title that is a surname',
-		value: 'R from surname'
-	},
-	{
-		label: '{{R from historic name}}: redirect from another name with a significant historic past as a region, state, city or such, but which is no longer known by that title or name',
-		value: 'R from historic name'
+		label: '{{R from name and country}}: redirect from the specific name to the briefer name',
+		value: 'R from name and country'
 	},
 	{
 		label: '{{R from phrase}}: redirect from a phrase to a more general relevant article covering the topic',
@@ -708,59 +720,51 @@ Twinkle.tag.alternativeList = [
 		value: 'R from scientific name'
 	},
 	{
-		label: '{{R to scientific name}}: redirect from the common name to the scientific name',
-		value: 'R to scientific name'
-	},
-	{
-		label: '{{R from name and country}}: redirect from the specific name to the briefer name',
-		value: 'R from name and country'
-	},
-	{
-		label: '{{R from alternative language}}: redirect from an English name to a name in another language, or vice-versa',
-		value: 'R from alternative language'
-	},
-	{
-		label: '{{R from ASCII}}: redirect from a title in basic ASCII to the formal article title, with differences that are not diacritical marks (accents, umlauts, etc.)',
-		value: 'R from ASCII'
+		label: '{{R from surname}}: redirect from a title that is a surname',
+		value: 'R from surname'
 	},
 	{
 		label: '{{R to diacritics}}: redirect to the article title with diacritical marks (accents, umlauts, etc.)',
 		value: 'R to diacritics'
+	},
+	{
+		label: '{{R to scientific name}}: redirect from the common name to the scientific name',
+		value: 'R to scientific name'
 	}
 ];
 
 Twinkle.tag.administrativeList = [
 	{
-		label: '{{R from merge}}: redirect from a merged page in order to preserve its edit history',
-		value: 'R from merge'
-	},
-	{
-		label: '{{R to disambiguation page}}: redirect to a disambiguation page',
-		value: 'R to disambiguation page'
+		label: '{{R from CamelCase}}: redirect from a CamelCase title',
+		value: 'R from CamelCase'
 	},
 	{
 		label: '{{R from duplicated article}}: redirect to a similar article in order to preserve its edit history',
 		value: 'R from duplicated article'
 	},
 	{
-		label: '{{R to decade}}: redirect from a year to the decade article',
-		value: 'R to decade'
+		label: '{{R from EXIF}}: redirect of a wikilink created from JPEG EXIF information (i.e. the "metadata" section on some image description pages)',
+		value: 'R from EXIF'
+	},
+	{
+		label: '{{R from merge}}: redirect from a merged page in order to preserve its edit history',
+		value: 'R from merge'
+	},
+	{
+		label: '{{R from school}}: redirect from a school article that had very little information',
+		value: 'R from school'
 	},
 	{
 		label: '{{R from shortcut}}: redirect from a Wikipedia shortcut',
 		value: 'R from shortcut'
 	},
 	{
-		label: '{{R from CamelCase}}: redirect from a CamelCase title',
-		value: 'R from CamelCase'
+		label: '{{R to decade}}: redirect from a year to the decade article',
+		value: 'R to decade'
 	},
 	{
-		label: '{{R from EXIF}}: redirect of a wikilink created from JPEG EXIF information (i.e. the "metadata" section on some image description pages)',
-		value: 'R from EXIF'
-	},
-	{
-		label: '{{R from school}}: redirect from a school article that had very little information',
-		value: 'R from school'
+		label: '{{R to disambiguation page}}: redirect to a disambiguation page',
+		value: 'R to disambiguation page'
 	}
 ];
 
