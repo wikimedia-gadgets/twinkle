@@ -154,6 +154,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	var sortorder = e.target.value;
 
 	Twinkle.tag.checkedTags = e.target.form.getChecked("articleTags");
+	console.log(Twinkle.tag.checkedTags);
 	if (!Twinkle.tag.checkedTags) {
 		Twinkle.tag.checkedTags = [];
 	}
@@ -431,7 +432,7 @@ Twinkle.tag.article.tags = {
 	"BLP unsourced": "BLP article has no sources at all (use BLP PROD instead for new articles)",
 	"citation style": "article has unclear or inconsistent inline citations",
 	"cleanup": "article may require cleanup",
-	"cleanup-reorganize": "article may be in need of reorganization to comply with Wikipedia's layout guidelines",
+	"cleanup reorganize": "article may be in need of reorganization to comply with Wikipedia's layout guidelines",
 	"close paraphrasing": "article contains close paraphrasing of a non-free copyrighted source",
 	"COI": "article creator or major contributor may have a conflict of interest",
 	"condense": "article may have too many section headers dividing up its content",
@@ -446,7 +447,7 @@ Twinkle.tag.article.tags = {
 	"expand language": "article can be expanded with material from a foreign-language Wikipedia",
 	"expert needed": "article needs attention from an expert on the subject",
 	"external links": "article's external links may not follow content policies or guidelines",
-	"fansite": "article resembles a fansite",
+	"fanpov": "article resembles a fansite",
 	"fiction": "article fails to distinguish between fact and fiction",
 	"globalize": "article may not represent a worldwide view of the subject",
 	"GOCEinuse": "article is currently undergoing a major copy edit by the Guild of Copy Editors",
@@ -459,14 +460,14 @@ Twinkle.tag.article.tags = {
 	"lead rewrite": "article lead section needs to be rewritten to comply with guidelines",
 	"lead too long": "article lead section is too long and should be shortened",
 	"lead too short": "article lead section is too short and should be expanded",
-	"linkrot": "article uses bare URLs for references, which are prone to link rot",
+	"cleanup bare URLs": "article uses bare URLs for references, which are prone to link rot",
 	"manual": "article is written like a manual or guidebook",
 	"merge": "article should be merged with another given article",
 	"merge from": "another given article should be merged into this one",
 	"merge to": "article should be merged into another given article",
 	"metricate": "article exclusively uses non-SI units of measurement",
 	"more footnotes": "article has some references, but insufficient in-text citations",
-	"news release": "article reads like a news release",
+	"cleanup-PR": "article reads like a press release or news release",
 	"no footnotes": "article has references, but no in-text citations",
 	"non-free": "article may contain excessive or improper use of copyrighted materials",
 	"notability": "article's subject may not meet the notability guideline",
@@ -474,29 +475,29 @@ Twinkle.tag.article.tags = {
 	"one source": "article relies largely or entirely upon a single source",
 	"original research": "article has original research or unverified claims",
 	"orphan": "article is linked to from no other articles",
-	"overcoverage": "article has an extensive bias or disproportional coverage towards one or more specific regions",
+	"over-coverage": "article has an extensive bias or disproportional coverage towards one or more specific regions",
 	"overlinked": "article may have too many duplicate and/or irrelevant links",
 	"overly detailed": "article contains an excessive amount of intricate detail",
 	"over-quotation": "article contains too many or too-lengthy quotations for an encyclopedic entry",
 	"peacock": "article may contain peacock terms that promote the subject without adding information",
-	"plot": "plot summary in article is too long",
+	"long plot": "plot summary in article is too long",
 	"POV": "article does not maintain a neutral point of view",
 	"primary sources": "article relies too heavily on primary sources, and needs secondary sources",
 	"prose": "article is in a list format that may be better presented using prose",
 	"recentism": "article is slanted towards recent events",
-	"refimprove": "article needs additional references or sources for verification",
+	"more citations needed": "article needs additional references or sources for verification",
 	"rough translation": "article is poorly translated and needs cleanup",
 	"sections": "article needs to be broken into sections",
 	"self-published": "article may contain improper references to self-published sources",
 	"technical": "article may be too technical for the uninitiated reader",
-	"tense": "article is written in an incorrect tense",
+	"cleanup tense": "article is written in an incorrect tense",
 	"third-party": "article relies too heavily on affiliated sources, and needs third-party sources",
 	"tone": "tone of article is not appropriate",
 	"too few opinions": "article may not include all significant viewpoints",
 	"uncategorized": "article is uncategorized",
 	"under construction": "article is currently in the middle of an expansion or major revamping",
 	"underlinked": "article may require additional wikilinks",
-	"undue": "article lends undue weight to certain aspects of the subject but not others",
+	"undue weight": "article lends undue weight to certain aspects of the subject but not others",
 	"unfocused": "article lacks focus or is about more than one topic",
 	"unreferenced": "article has no references at all",
 	"unreliable sources": "article's references may not be reliable sources",
@@ -1429,6 +1430,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	}
 };
 })(jQuery);
+
+Twinkle.tag();  //remove later
 
 
 //</nowiki>
