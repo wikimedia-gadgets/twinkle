@@ -644,7 +644,7 @@ Twinkle.speedy.fileList = [
 	{
 		label: 'G8: File description page with no corresponding file',
 		value: 'imagepage',
-		tooltip: 'This is only for use when the file doesn\'t exist at all. Corrupt files, and local description pages for files on Commons, should use F2; implausible redirects should use R3; and broken Commons redirects should use G6.'
+		tooltip: 'This is only for use when the file doesn\'t exist at all. Corrupt files, and local description pages for files on Commons, should use F2; implausible redirects should use R3; and broken Commons redirects should use R4.'
 	}
 ];
 
@@ -791,15 +791,15 @@ Twinkle.speedy.userNonRedirectList = [
 		tooltip: 'Pages in userspace consisting of writings, information, discussions, and/or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of userspace, with the exception of plausible drafts, pages adhering to WP:UPYES, and résumé-style pages.'
 	},
 	{
-		label: 'G6: Blank draft',
-		value: 'blankdraft',
-		tooltip: 'Userspace drafts containing only the default Article Wizard text, where the author of the page has been inactive for at least one year.',
-		hideWhenMultiple: true
-	},
-	{
 		label: 'G11: Promotional user page under a promotional user name',
 		value: 'spamuser',
 		tooltip: 'A promotional user page, with a username that promotes or implies affiliation with the thing being promoted. Note that simply having a page on a company or product in one\'s userspace does not qualify it for deletion. If a user page is spammy but the username is not, then consider tagging with regular G11 instead.',
+		hideWhenMultiple: true
+	},
+	{
+		label: 'G13: AfC draft submission or a blank draft, stale by over 6 months',
+		value: 'afc',
+		tooltip: 'Any rejected or unsubmitted AfC draft submission or a blank draft, that has not been edited in over 6 months (excluding bot edits).',
 		hideWhenMultiple: true
 	}
 ];
@@ -1037,9 +1037,9 @@ Twinkle.speedy.generalList = [
 		]
 	},
 	{
-		label: 'G13: Old, abandoned Articles for Creation submissions',
+		label: 'G13: Page in draft namespace or userspace AfC submission, stale by over 6 months',
 		value: 'afc',
-		tooltip: 'Any rejected or unsubmitted AfC submission that has not been edited for more than 6 months.',
+		tooltip: 'Any rejected or unsubmitted AfC submission in userspace or any page in draft namespace, that has not been edited for more than 6 months. Blank drafts in either namespace are also included.',
 		hideWhenRedirect: true
 	}
 ];
@@ -1054,6 +1054,11 @@ Twinkle.speedy.redirectList = [
 		label: 'R3: Redirects as a result of an implausible typo or misnomers that were recently created',
 		value: 'redirtypo',
 		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
+	},
+	{
+		label: 'R4: File namespace redirect with name that matches a Commons page',
+		value: 'redircom',
+		tooltip: 'The redirect should have no incoming links (unless the links are cleary intended for the file or redirect at Commons).'
 	},
 	{
 		label: 'G6: Redirect to malplaced disambiguation page',
@@ -1083,7 +1088,6 @@ Twinkle.speedy.normalizeHash = {
 	'disambig': 'g6',
 	'movedab': 'g6',
 	'copypaste': 'g6',
-	'blankdraft': 'g6',
 	'g6': 'g6',
 	'author': 'g7',
 	'g8': 'g8',
@@ -1115,6 +1119,7 @@ Twinkle.speedy.normalizeHash = {
 	'madeup': 'a11',
 	'rediruser': 'r2',
 	'redirtypo': 'r3',
+	'redircom' : 'r4',
 	'redundantimage': 'f1',
 	'noimage': 'f2',
 	'fpcfail': 'f2',
