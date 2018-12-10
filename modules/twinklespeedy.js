@@ -1569,15 +1569,20 @@ Twinkle.speedy.callbacks = {
 				appendText += "\n\n=== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ===";
 			}
 
+			var editsummary = "Logging speedy deletion nomination";
 			appendText += "\n# [[:" + Morebits.pageNameNorm;
-			if (params.normalizeds.indexOf("g10") === -1) {  // no article name in log for G10 taggings
-				appendText += "]]: ";
-			} else {
-				appendText += "|This]] attack page: ";
-			}
+
 			if (params.fromDI) {
-				appendText += "DI [[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] ({{tl|di-" + params.templatename + "}})";
+				appendText += "]]: DI [[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] ({{tl|di-" + params.templatename + "}})";
+				editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
 			} else {
+				if (params.normalizeds.indexOf("g10") === -1) {  // no article name in log for G10 taggings
+					appendText += "]]: ";
+					editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
+				} else {
+					appendText += "|This]] attack page: ";
+					editsummary += " of an attack page.";
+				}
 				if (params.normalizeds.length > 1) {
 					appendText += "multiple criteria (";
 					$.each(params.normalizeds, function(index, norm) {
@@ -1598,15 +1603,7 @@ Twinkle.speedy.callbacks = {
 			appendText += " ~~~~~\n";
 
 			pageobj.setAppendText(appendText);
-
-			var editsummary = "Logging speedy deletion nomination";
-			if (params.normalizeds.indexOf("g10") === -1) {  // no article name in summary for G10 taggings
-				editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
-			} else {
-				editsummary += " of an attack page.";
-			}
-			editsummary += Twinkle.getPref('summaryAd');
-			pageobj.setEditSummary(editsummary);
+			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			pageobj.setCreateOption("recreate");
 			pageobj.append();
 		}
