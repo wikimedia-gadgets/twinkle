@@ -797,9 +797,9 @@ Twinkle.speedy.userNonRedirectList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G13: Old, abandoned AfC submission or blank draft',
+		label: 'G13: AfC draft submission or a blank draft, stale by over 6 months',
 		value: 'afc',
-		tooltip: 'Any rejected or unsubmitted AfC submission, or a blank draft, unedited in over 6 months,',
+		tooltip: 'Any rejected or unsubmitted AfC draft submission or a blank draft, that has not been edited in over 6 months (excluding bot edits).',
 		hideWhenMultiple: true
 	}
 ];
@@ -1037,9 +1037,9 @@ Twinkle.speedy.generalList = [
 		]
 	},
 	{
-		label: 'G13: Old, abandoned Articles for Creation submissions',
+		label: 'G13: Page in draft namespace or userspace AfC submission, stale by over 6 months',
 		value: 'afc',
-		tooltip: 'Any rejected or unsubmitted AfC submission that has not been edited for more than 6 months.',
+		tooltip: 'Any rejected or unsubmitted AfC submission in userspace or any page in draft namespace, that has not been edited for more than 6 months. Blank drafts in either namespace are also included.',
 		hideWhenRedirect: true
 	}
 ];
@@ -1088,7 +1088,6 @@ Twinkle.speedy.normalizeHash = {
 	'disambig': 'g6',
 	'movedab': 'g6',
 	'copypaste': 'g6',
-	'blankdraft': 'g6',
 	'g6': 'g6',
 	'author': 'g7',
 	'g8': 'g8',
