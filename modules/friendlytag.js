@@ -1010,7 +1010,7 @@ Twinkle.tag.callbacks = {
 				}
 			}
 
-			var miTest = /\{\{(multiple ?issues|article ?issues|mi)[^}]+\{/im.exec(pageText);
+			var miTest = /\{\{(multiple ?issues|article ?issues|mi)(?!\s*\|\s*section\s*=)[^}]+\{/im.exec(pageText);
 			var miOldStyleRegex = /\{\{(multiple ?issues|article ?issues|mi)\s*\|([^{]+)\}\}/im;
 			var miOldStyleTest = miOldStyleRegex.exec(pageText);
 
