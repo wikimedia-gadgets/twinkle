@@ -1537,72 +1537,46 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  * Callback functions may invoke any Morebits.wiki.page prototype method using this reference.
  *
  *
- * NOTE: This list of member functions is incomplete.
+ * HIGHLIGHTS:
  *
  * Constructor: Morebits.wiki.page(pageName, currentAction)
  *    pageName - the name of the page, prefixed by the namespace (if any)
  *               (for the current page, use mw.config.get('wgPageName'))
  *    currentAction - a string describing the action about to be undertaken (optional)
  *
- * load(onSuccess, onFailure): Loads the text for the page
- *    onSuccess - callback function which is called when the load has succeeded
- *    onFailure - callback function which is called when the load fails (optional)
+ * onSuccess and onFailure are callback functions called when the operation is a success or failure
+ * if enclosed in [brackets], it indicates that it is optional
+ * 
+ * load(onSuccess, [onFailure]): Loads the text for the page
+ * 
+ * getPageText(): returns a string containing the text of the page after a successful load()
  *
- * save(onSuccess, onFailure): Saves the text for the page. Must be preceded by calling load().
- *    onSuccess - callback function which is called when the save has succeeded (optional)
- *    onFailure - callback function which is called when the save fails (optional)
+ * save([onSuccess], [onFailure]):  Saves the text set via setPageText() for the page. 
+ * 									Must be preceded by calling load().
  *    Warning: Calling save() can result in additional calls to the previous load() callbacks to
  *             recover from edit conflicts!
  *             In this case, callers must make the same edit to the new pageText and reinvoke save().
  *             This behavior can be disabled with setMaxConflictRetries(0).
  *
- * append(onSuccess, onFailure): Adds the text provided via setAppendText() to the end of the page.
+ * append([onSuccess], [onFailure]): Adds the text provided via setAppendText() to the end of the page.
  *                               Does not require calling load() first.
- *    onSuccess - callback function which is called when the method has succeeded (optional)
- *    onFailure - callback function which is called when the method fails (optional)
  *
- * prepend(onSuccess, onFailure): Adds the text provided via setPrependText() to the start of the page.
+ * prepend([onSuccess], [onFailure]): Adds the text provided via setPrependText() to the start of the page.
  *                                Does not require calling load() first.
- *    onSuccess - callback function which is called when the method has succeeded (optional)
- *    onFailure - callback function which is called when the method fails (optional)
+ * 
+ * move(onSuccess, [onFailure]): Moves a page to another title
+ *
+ * deletePage(onSuccess, [onFailure]): Deletes a page (for admins only)
+ * 
+ * protect(onSuccess, [onFailure]): Protects a page
  *
  * getPageName(): returns a string containing the name of the loaded page, including the namespace
+ * 
+ * setPageText(pageText) sets the updated page text that will be saved when save() is called
  *
- * getPageText(): returns a string containing the text of the page after a successful load()
+ * setAppendText(appendText) sets the text that will be appended to the page when append() is called
  *
- * setPageText(pageText)
- *    pageText - string containing the updated page text that will be saved when save() is called
- *
- * setAppendText(appendText)
- *    appendText - string containing the text that will be appended to the page when append() is called
- *
- * setPrependText(prependText)
- *    prependText - string containing the text that will be prepended to the page when prepend() is called
- *
- * setEditSummary(summary)
- *    summary - string containing the text of the edit summary that will be used when save() is called
- *
- * setMinorEdit(minorEdit)
- *    minorEdit is a boolean value:
- *       true  - When save is called, the resulting edit will be marked as "minor".
- *       false - When save is called, the resulting edit will not be marked as "minor". (default)
- *
- * setBotEdit(botEdit)
- *    botEdit is a boolean value:
- *       true  - When save is called, the resulting edit will be marked as "bot".
- *       false - When save is called, the resulting edit will not be marked as "bot". (default)
- *
- * setPageSection(pageSection)
- *    pageSection - integer specifying the section number to load or save. The default is |null|, which means
- *                  that the entire page will be retrieved.
- *
- * setMaxConflictRetries(maxRetries)
- *    maxRetries - number of retries for save errors involving an edit conflict or loss of edit token
- *    default: 2
- *
- * setMaxRetries(maxRetries)
- *    maxRetries - number of retries for save errors not involving an edit conflict or loss of edit token
- *    default: 2
+ * setPrependText(prependText) sets the text that will be prepended to the page when prepend() is called
  *
  * setCallbackParameters(callbackParameters)
  *    callbackParameters - an object for use in a callback function
@@ -1617,58 +1591,15 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  *
  * getStatusElement(): returns the Status element created by the constructor
  *
- * setFollowRedirect(followRedirect)
- *    followRedirect is a boolean value:
- *       true  - a maximum of one redirect will be followed.
- *               In the event of a redirect, a message is displayed to the user and
- *               the redirect target can be retrieved with getPageName().
- *       false - the requested pageName will be used without regard to any redirect. (default)
- *
- * setWatchlist(watchlistOption)
- *    watchlistOption is a boolean value:
- *       true  - page will be added to the user's watchlist when save() is called
- *       false - watchlist status of the page will not be changed (default)
- *
- * setWatchlistFromPreferences(watchlistOption)
- *    watchlistOption is a boolean value:
- *       true  - page watchlist status will be set based on the user's
- *               preference settings when save() is called
- *       false - watchlist status of the page will not be changed (default)
- *
- *    Watchlist notes:
- *       1. The MediaWiki API value of 'unwatch', which explicitly removes the page from the
- *          user's watchlist, is not used.
- *       2. If both setWatchlist() and setWatchlistFromPreferences() are called,
- *          the last call takes priority.
- *       3. Twinkle modules should use the appropriate preference to set the watchlist options.
- *       4. Most Twinkle modules use setWatchlist().
- *          setWatchlistFromPreferences() is only needed for the few Twinkle watchlist preferences
- *          that accept a string value of 'default'.
- *
- * setCreateOption(createOption)
- *    createOption is a string value:
- *       'recreate'   - create the page if it does not exist, or edit it if it exists
- *       'createonly' - create the page if it does not exist, but return an error if it
- *                      already exists
- *       'nocreate'   - don't create the page, only edit it if it already exists
- *       null         - create the page if it does not exist, unless it was deleted in the moment
- *                      between retrieving the edit token and saving the edit (default)
- *
  * exists(): returns true if the page existed on the wiki when it was last loaded
  *
+ * getCurrentID(): returns a string containing the current revision ID of the page
+ * 
  * lookupCreator(onSuccess): Retrieves the username of the user who created the page
  *    onSuccess - callback function which is called when the username is found
  *                within the callback, the username can be retrieved using the getCreator() function
  *
  * getCreator(): returns the user who created the page following lookupCreator()
- *
- * getCurrentID(): returns a string containing the current revision ID of the page
- *
- * patrol(): marks the page as patrolled, if possible
- *
- * move(onSuccess, onFailure): Moves a page to another title
- *
- * deletePage(onSuccess, onFailure): Deletes a page (for admins only)
  *
  */
 
@@ -1802,258 +1733,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	var emptyFunction = function() { };
-{
-	// Public interface accessors :
-
-	/**
-	 * returns a string containing the name of the loaded page, including the namespace
-	 */
-	this.getPageName = function() {
-		return ctx.pageName;
-	};
-
-	/**
-	 * returns a string containing the text of the page after a successful load()
-	 */
-	this.getPageText = function() {
-		return ctx.pageText;
-	};
-
-	/**
-	 * `pageText` - string containing the updated page text that will be saved when save() is called
-	 */
-	this.setPageText = function(pageText) {
-		ctx.editMode = 'all';
-		ctx.pageText = pageText;
-	};
-
-	/**
-	 * `appendText` - string containing the text that will be appended to the page when append() is called
-	 */
-	this.setAppendText = function(appendText) {
-		ctx.editMode = 'append';
-		ctx.appendText = appendText;
-	};
-
-	/**
-	 * `prependText` - string containing the text that will be prepended to the page when prepend() is called
-	 */
-	this.setPrependText = function(prependText) {
-		ctx.editMode = 'prepend';
-		ctx.prependText = prependText;
-	};
-
-	/**
-	 * `summary` - string containing the text of the edit summary that will be used when save() is called
-	 */
-	this.setEditSummary = function(summary) {
-		ctx.editSummary = summary;
-	};
-
-	/**
-	 *    `createOption` is a string value:
-	 *       'recreate'   - create the page if it does not exist, or edit it if it exists
-	 *       'createonly' - create the page if it does not exist, but return an error if it
-	 *                      already exists
-	 *       'nocreate'   - don't create the page, only edit it if it already exists
-	 *       null         - create the page if it does not exist, unless it was deleted in the moment
-	 *                      between retrieving the edit token and saving the edit (default)
-	 * 
-	 */
-	this.setCreateOption = function(createOption) {
-		ctx.createOption = createOption;
-	};
-
-	/**
-	 * `minorEdit` - boolean value:
-	 * True  - When save is called, the resulting edit will be marked as "minor". 
-	 * False - When save is called, the resulting edit will not be marked as "minor". (default)
-	 */
-	this.setMinorEdit = function(minorEdit) {
-		ctx.minorEdit = minorEdit;
-	};
-
-	/**
-	 * `botEdit` is a boolean value:
-	 *       True  - When save is called, the resulting edit will be marked as "bot".
-	 *       False - When save is called, the resulting edit will not be marked as "bot". (default)
-	 */
-	this.setBotEdit = function(botEdit) {
-		ctx.botEdit = botEdit;
-	};
-
-	/**
-	 * `pageSection` - integer specifying the section number to load or save. The default is `null`, which means 
-	 * that the entire page will be retrieved.
-	 */
-	this.setPageSection = function(pageSection) {
-		ctx.pageSection = pageSection;
-	};
-
-	/**
-	 * `maxRetries` - number of retries for save errors involving an edit conflict or loss of edit token.Default: 2
-	 */
-	this.setMaxConflictRetries = function(maxRetries) {
-		ctx.maxConflictRetries = maxRetries;
-	};
-
-	/**
-	 * maxRetries - number of retries for save errors not involving an edit conflict or loss of edit token
-	 * Default:2
-	 */
-	this.setMaxRetries = function(maxRetries) {
-		ctx.maxRetries = maxRetries;
-	};
-
-	/**
-	 * `callbackParameters` - an object for use in a callback function
-	 * 
-	 * Callback notes: callbackParameters is for use by the caller only. The parameters 
-	 * allow a caller to pass the proper context into its callback function. 
-	 * Callers must ensure that any changes to the callbackParameters object 
-	 * within a load() callback still permit a proper re-entry into the 
-	 * load() callback if an edit conflict is detected upon calling save().
-	 */
-	this.setCallbackParameters = function(callbackParameters) {
-		ctx.callbackParameters = callbackParameters;
-	};
-
-	/**
-	 * returns the object previous set by setCallbackParameters()
-	 */
-	this.getCallbackParameters = function() {
-		return ctx.callbackParameters;
-	};
-
-	/**
-	 * returns the user who created the page following lookupCreator()
-	 */
-	this.getCreator = function() {
-		return ctx.creator;
-	};
-
-	this.setOldID = function(oldID) {
-		ctx.revertOldID = oldID;
-	};
-
-	/**
-	 *  returns a string containing the current revision ID of the page
-	 */
-	this.getCurrentID = function() {
-		return ctx.revertCurID;
-	};
-
-	this.getRevisionUser = function() {
-		return ctx.revertUser;
-	};
-
-	this.setMoveDestination = function(destination) {
-		ctx.moveDestination = destination;
-	};
-
-	this.setMoveTalkPage = function(flag) {
-		ctx.moveTalkPage = !!flag;
-	};
-
-	this.setMoveSubpages = function(flag) {
-		ctx.moveSubpages = !!flag;
-	};
-
-	this.setMoveSuppressRedirect = function(flag) {
-		ctx.moveSuppressRedirect = !!flag;
-	};
-
-	this.setEditProtection = function(level, expiry) {
-		ctx.protectEdit = { level: level, expiry: expiry };
-	};
-
-	this.setMoveProtection = function(level, expiry) {
-		ctx.protectMove = { level: level, expiry: expiry };
-	};
-
-	this.setCreateProtection = function(level, expiry) {
-		ctx.protectCreate = { level: level, expiry: expiry };
-	};
-
-	this.setCascadingProtection = function(flag) {
-		ctx.protectCascade = !!flag;
-	};
-
-	this.setFlaggedRevs = function(level, expiry) {
-		ctx.flaggedRevs = { level: level, expiry: expiry };
-	};
-
-	/**
-	 * returns the Status element created by the constructor
-	 */
-	this.getStatusElement = function() {
-		return ctx.statusElement;
-	};
-
-	/**
-	 *    `followRedirect` is a boolean value:
-	 *       True  - a maximum of one redirect will be followed.
-	 *               In the event of a redirect, a message is displayed to the user and
-	 *               the redirect target can be retrieved with getPageName().
-	 *       False - the requested pageName will be used without regard to any redirect. (default)
-	 */
-	this.setFollowRedirect = function(followRedirect) {
-		if (ctx.pageLoaded) {
-			ctx.statusElement.error("Internal error: cannot change redirect setting after the page has been loaded!");
-			return;
-		}
-		ctx.followRedirect = followRedirect;
-	};
-
-	/**
-	 *  `watchlistOption` is a boolean value:
-	 *       True  - page will be added to the user's watchlist when save() is called
- 	 *       False - watchlist status of the page will not be changed (default)
- 	 *
-	 */
-	this.setWatchlist = function(flag) {
-		if (flag) {
-			ctx.watchlistOption = 'watch';
-		} else {
-			ctx.watchlistOption = 'nochange';
-		}
-	};
-
-	/**
-	 *    `watchlistOption` is a boolean value:
-	 *       True  - page watchlist status will be set based on the user's
-	 *               preference settings when save() is called
-	 *       False - watchlist status of the page will not be changed (default)
-	 *
-	 *    Watchlist notes:
-	 *       1. The MediaWiki API value of 'unwatch', which explicitly removes the page from the
-	 *          user's watchlist, is not used.
-	 *       2. If both setWatchlist() and setWatchlistFromPreferences() are called,
-	 *          the last call takes priority.
-	 *       3. Twinkle modules should use the appropriate preference to set the watchlist options.
-	 *       4. Most Twinkle modules use setWatchlist().
-	 *          setWatchlistFromPreferences() is only needed for the few Twinkle watchlist preferences
-	 *          that accept a string value of 'default'.
-	 */
-	this.setWatchlistFromPreferences = function(flag) {
-		if (flag) {
-			ctx.watchlistOption = 'preferences';
-		} else {
-			ctx.watchlistOption = 'nochange';
-		}
-	};
-
-	this.suppressProtectWarning = function() {
-		ctx.suppressProtectWarning = true;
-	};
-
-	/**
-	 * returns true if the page existed on the wiki when it was last loaded
-	 */
-	this.exists = function() {
-		return ctx.pageExists;
-	};
-}
 
 	/**
 	 * Loads the text for the page
@@ -2242,8 +1921,261 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
+	 * returns a string containing the name of the loaded page, including the namespace
+	 */
+	this.getPageName = function() {
+		return ctx.pageName;
+	};
+
+	/**
+	 * returns a string containing the text of the page after a successful load()
+	 */
+	this.getPageText = function() {
+		return ctx.pageText;
+	};
+
+	/**
+	 * `pageText` - string containing the updated page text that will be saved when save() is called
+	 */
+	this.setPageText = function(pageText) {
+		ctx.editMode = 'all';
+		ctx.pageText = pageText;
+	};
+
+	/**
+	 * `appendText` - string containing the text that will be appended to the page when append() is called
+	 */
+	this.setAppendText = function(appendText) {
+		ctx.editMode = 'append';
+		ctx.appendText = appendText;
+	};
+
+	/**
+	 * `prependText` - string containing the text that will be prepended to the page when prepend() is called
+	 */
+	this.setPrependText = function(prependText) {
+		ctx.editMode = 'prepend';
+		ctx.prependText = prependText;
+	};
+
+
+
+	// Edit-related setter methods:
+	/**
+	 * `summary` - string containing the text of the edit summary that will be used when save() is called
+	 */
+	this.setEditSummary = function(summary) {
+		ctx.editSummary = summary;
+	};
+
+	/**
+	 *    `createOption` is a string value:
+	 *       'recreate'   - create the page if it does not exist, or edit it if it exists
+	 *       'createonly' - create the page if it does not exist, but return an error if it
+	 *                      already exists
+	 *       'nocreate'   - don't create the page, only edit it if it already exists
+	 *       null         - create the page if it does not exist, unless it was deleted in the moment
+	 *                      between retrieving the edit token and saving the edit (default)
+	 * 
+	 */
+	this.setCreateOption = function(createOption) {
+		ctx.createOption = createOption;
+	};
+
+	/**
+	 * `minorEdit` - boolean value:
+	 * True  - When save is called, the resulting edit will be marked as "minor". 
+	 * False - When save is called, the resulting edit will not be marked as "minor". (default)
+	 */
+	this.setMinorEdit = function(minorEdit) {
+		ctx.minorEdit = minorEdit;
+	};
+
+	/**
+	 * `botEdit` is a boolean value:
+	 *       True  - When save is called, the resulting edit will be marked as "bot".
+	 *       False - When save is called, the resulting edit will not be marked as "bot". (default)
+	 */
+	this.setBotEdit = function(botEdit) {
+		ctx.botEdit = botEdit;
+	};
+
+	/**
+	 * `pageSection` - integer specifying the section number to load or save. The default is `null`, which means 
+	 * that the entire page will be retrieved.
+	 */
+	this.setPageSection = function(pageSection) {
+		ctx.pageSection = pageSection;
+	};
+
+	/**
+	 * `maxRetries` - number of retries for save errors involving an edit conflict or loss of edit token.Default: 2
+	 */
+	this.setMaxConflictRetries = function(maxRetries) {
+		ctx.maxConflictRetries = maxRetries;
+	};
+
+	/**
+	 * maxRetries - number of retries for save errors not involving an edit conflict or loss of edit token
+	 * Default:2
+	 */
+	this.setMaxRetries = function(maxRetries) {
+		ctx.maxRetries = maxRetries;
+	};
+
+	/**
+	 *  `watchlistOption` is a boolean value:
+	 *       True  - page will be added to the user's watchlist when save() is called
+ 	 *       False - watchlist status of the page will not be changed (default)
+	 */
+	this.setWatchlist = function(watchlistOption) {
+		if (watchlistOption) {
+			ctx.watchlistOption = 'watch';
+		} else {
+			ctx.watchlistOption = 'nochange';
+		}
+	};
+
+	/**
+	 *    `watchlistOption` is a boolean value:
+	 *       True  - page watchlist status will be set based on the user's
+	 *               preference settings when save() is called
+	 *       False - watchlist status of the page will not be changed (default)
+	 *
+	 *    Watchlist notes:
+	 *       1. The MediaWiki API value of 'unwatch', which explicitly removes the page from the
+	 *          user's watchlist, is not used.
+	 *       2. If both setWatchlist() and setWatchlistFromPreferences() are called,
+	 *          the last call takes priority.
+	 *       3. Twinkle modules should use the appropriate preference to set the watchlist options.
+	 *       4. Most Twinkle modules use setWatchlist().
+	 *          setWatchlistFromPreferences() is only needed for the few Twinkle watchlist preferences
+	 *          that accept a string value of 'default'.
+	 */
+	this.setWatchlistFromPreferences = function(watchlistOption) {
+		if (watchlistOption) {
+			ctx.watchlistOption = 'preferences';
+		} else {
+			ctx.watchlistOption = 'nochange';
+		}
+	};
+
+	/**
+	 *    `followRedirect` is a boolean value:
+	 *       True  - a maximum of one redirect will be followed.
+	 *               In the event of a redirect, a message is displayed to the user and
+	 *               the redirect target can be retrieved with getPageName().
+	 *       False - the requested pageName will be used without regard to any redirect. (default)
+	 */
+	this.setFollowRedirect = function(followRedirect) {
+		if (ctx.pageLoaded) {
+			ctx.statusElement.error("Internal error: cannot change redirect setting after the page has been loaded!");
+			return;
+		}
+		ctx.followRedirect = followRedirect;
+	};
+
+	// Move-related setter functions
+	this.setMoveDestination = function(destination) {
+		ctx.moveDestination = destination;
+	};
+
+	this.setMoveTalkPage = function(flag) {
+		ctx.moveTalkPage = !!flag;
+	};
+
+	this.setMoveSubpages = function(flag) {
+		ctx.moveSubpages = !!flag;
+	};
+
+	this.setMoveSuppressRedirect = function(flag) {
+		ctx.moveSuppressRedirect = !!flag;
+	};
+
+	// Protect-related setter functions
+	this.setEditProtection = function(level, expiry) {
+		ctx.protectEdit = { level: level, expiry: expiry };
+	};
+
+	this.setMoveProtection = function(level, expiry) {
+		ctx.protectMove = { level: level, expiry: expiry };
+	};
+
+	this.setCreateProtection = function(level, expiry) {
+		ctx.protectCreate = { level: level, expiry: expiry };
+	};
+
+	this.setCascadingProtection = function(flag) {
+		ctx.protectCascade = !!flag;
+	};
+
+	// Revert-related getters/setters:
+	this.setOldID = function(oldID) {
+		ctx.revertOldID = oldID;
+	};
+
+	/**
+	 *  returns a string containing the current revision ID of the page
+	 */
+	this.getCurrentID = function() {
+		return ctx.revertCurID;
+	};
+
+	this.getRevisionUser = function() {
+		return ctx.revertUser;
+	};
+
+	// Miscellaneous getters/setters:
+
+	/**
+	 * `callbackParameters` - an object for use in a callback function
+	 * 
+	 * Callback notes: callbackParameters is for use by the caller only. The parameters 
+	 * allow a caller to pass the proper context into its callback function. 
+	 * Callers must ensure that any changes to the callbackParameters object 
+	 * within a load() callback still permit a proper re-entry into the 
+	 * load() callback if an edit conflict is detected upon calling save().
+	 */
+	this.setCallbackParameters = function(callbackParameters) {
+		ctx.callbackParameters = callbackParameters;
+	};
+
+	/**
+	 * returns the object previous set by setCallbackParameters()
+	 */
+	this.getCallbackParameters = function() {
+		return ctx.callbackParameters;
+	};
+
+	/**
+	 * returns the Status element created by the constructor
+	 */
+	this.getStatusElement = function() {
+		return ctx.statusElement;
+	};
+	
+
+	this.setFlaggedRevs = function(level, expiry) {
+		ctx.flaggedRevs = { level: level, expiry: expiry };
+	};
+
+	/**
+	 * returns true if the page existed on the wiki when it was last loaded
+	 */
+	this.exists = function() {
+		return ctx.pageExists;
+	};
+
+	/**
+	 * returns the user who created the page following lookupCreator()
+	 */
+	this.getCreator = function() {
+		return ctx.creator;
+	};
+
+	/**
 	 * Retrieves the username of the user who created the page
-	 *    @param {Function} onSuccess - callback function which is called when the username is found 
+	 *    @param {Function} onSuccess - callback function (required) which is called when the username is found 
 	 *    within the callback, the username can be retrieved using the getCreator() function
 	 */
 	this.lookupCreator = function(onSuccess) {
@@ -2299,6 +2231,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 	};
 
+	/**
+	 * Reverts a page to revertOldID
+	 * @param {Function} onSuccess - callback function to run on success
+	 * @param {Function} onFailure - callback function to run on failure (optional)
+	 */
 	this.revert = function(onSuccess, onFailure) {
 		ctx.onSaveSuccess = onSuccess;
 		ctx.onSaveFailure = onFailure || emptyFunction;
