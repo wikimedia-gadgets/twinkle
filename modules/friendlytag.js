@@ -98,8 +98,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'file':
 			Window.setTitle( "File maintenance tagging" );
 
-			// TODO: perhaps add custom tags TO list of checkboxes
-
 			form.append({ type: 'header', label: 'License and sourcing problem tags' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.licenseList } );
 
@@ -114,6 +112,11 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 			form.append({ type: 'header', label: 'Replacement tags' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.replacementList } );
+
+			if (Twinkle.getFriendlyPref('customFileTagList').length) {
+				form.append({ type: 'header', label: 'Custom tags' });
+				form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.getFriendlyPref('customFileTagList') });
+			}
 			break;
 
 		case 'redirect':
@@ -127,6 +130,11 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 			form.append({ type: 'header', label:'Miscellaneous and administrative redirect templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.administrativeList });
+
+			if (Twinkle.getFriendlyPref('customRedirectTagList').length) {
+				form.append({ type: 'header', label: 'Custom tags' });
+				form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.getFriendlyPref('customRedirectTagList') });
+			}
 			break;
 
 		default:
@@ -569,7 +577,7 @@ Twinkle.tag.article.tagCategories = {
 		],
 		"Timeliness": [
 			"current",
-			"update"			
+			"update"
 		],
 		"Neutrality, bias, and factual accuracy": [
 			"autobiography",

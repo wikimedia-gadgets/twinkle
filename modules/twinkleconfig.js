@@ -555,6 +555,22 @@ Twinkle.config.sections = [
 			type: "customList",
 			customListValueTitle: "Template name (no curly brackets)",
 			customListLabelTitle: "Text to show in Tag dialog"
+		},
+		{
+			name: "customFileTagList",
+			label: "Custom file maintenance tags to display",
+			helptip: "Additional tags that you wish to add for files.",
+			type: "customList",
+			customListValueTitle: "Template name (no curly brackets)",
+			customListLabelTitle: "Text to show in Tag dialog"
+		},
+		{
+			name: "customRedirectTagList",
+			label: "Custom redirect category tags to display",
+			helptip: "Additional tags that you wish to add for redirects.",
+			type: "customList",
+			customListValueTitle: "Template name (no curly brackets)",
+			customListLabelTitle: "Text to show in Tag dialog"
 		}
 	]
 },
