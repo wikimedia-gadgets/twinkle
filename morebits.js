@@ -977,6 +977,7 @@ if (!String.prototype.trim) {
 	String.prototype.trim = function stringPrototypeTrim( ) {
 		return this.trimRight().trimLeft();
 	};
+	Morebits.string.splitWeightedByKeys()
 }
 
 Morebits.string = {
@@ -989,26 +990,32 @@ Morebits.string = {
 		str = str.toString();
 		return str.substr( 0, 1 ).toLowerCase() + str.substr( 1 );
 	},
-	splitWeightedByKeys: function( str, start, end, skip ) {
+
+	/**
+	 * Gives an array of substrings of `str` starting with `start` and 
+	 * ending with `end`, which is not in `skiplist`
+	 * @param {string} str  @param {string} start @param {string} end @param {(array|string)} skiplist 
+	 */
+	splitWeightedByKeys: function( str, start, end, skiplist ) {
 		if( start.length !== end.length ) {
 			throw new Error( 'start marker and end marker must be of the same length' );
 		}
 		var level = 0;
 		var initial = null;
 		var result = [];
-		if( ! Array.isArray( skip ) ) {
-			if( skip === undefined ) {
-				skip = [];
-			} else if( typeof skip === 'string' ) {
-				skip = [ skip ];
+		if( ! Array.isArray( skiplist ) ) {
+			if( skiplist === undefined ) {
+				skiplist = [];
+			} else if( typeof skiplist === 'string' ) {
+				skiplist = [ skiplist ];
 			} else {
-				throw new Error( "non-applicable skip parameter" );
+				throw new Error( "non-applicable skiplist parameter" );
 			}
 		}
 		for( var i  = 0; i < str.length; ++i ) {
-			for( var j = 0; j < skip.length; ++j ) {
-				if( str.substr( i, skip[j].length ) === skip[j] ) {
-					i += skip[j].length - 1;
+			for( var j = 0; j < skiplist.length; ++j ) {
+				if( str.substr( i, skiplist[j].length ) === skiplist[j] ) {
+					i += skiplist[j].length - 1;
 					continue;
 				}
 			}
@@ -1030,7 +1037,12 @@ Morebits.string = {
 
 		return result;
 	},
-	// for deletion/other templates taking a freeform "reason" from a textarea (e.g. PROD, XFD, RPP)
+
+	/**
+	 * Formats freeform "reason" (from a textarea) for deletion/other templates 
+	 * that are going to be substituted, (e.g. PROD, XFD, RPP)
+	 * @param {string} str 
+	 */
 	formatReasonText: function( str ) {
 		var result = str.toString().trimRight();
 		var unbinder = new Morebits.unbinder(result);
@@ -1038,29 +1050,26 @@ Morebits.string = {
 		unbinder.content = unbinder.content.replace(/\|/g, "{{subst:!}}");
 		return unbinder.rebind();
 	},
-	// a replacement for String.prototype.replace() when the second parameter (the
-	// replacement string) is arbitrary, such as a username or freeform user input,
-	// and may contain dollar signs
+
+	/**
+	 * a replacement for `String.prototype.replace()` when the second parameter 
+	 * (the replacement string) is arbitrary, such as a username or freeform user input, 
+	 * and may contain dollar signs
+	 */
 	safeReplace: function morebitsStringSafeReplace(string, pattern, replacement) {
 		return string.replace(pattern, replacement.replace(/\$/g, "$$$$"));
-	}
+	} 
 };
-
 
 
 /**
  * **************** Morebits.array ****************
- *
- * uniq(arr): returns a copy of the array with duplicates removed
- *
- * dups(arr): returns a copy of the array with the first instance of each value
- *            removed; subsequent instances of those values (duplicates) remain
- *
- * chunk(arr, size): breaks up |arr| into smaller arrays of length |size|, and
- *                   returns an array of these "chunked" arrays
  */
 
 Morebits.array = {
+	/**
+	 * returns a copy of the array with duplicates removed 
+	 */
 	uniq: function(arr) {
 		if ( ! Array.isArray( arr ) ) {
 			throw "A non-array object passed to Morebits.array.uniq";
@@ -1074,6 +1083,11 @@ Morebits.array = {
 		}
 		return result;
 	},
+
+	/**
+	 * returns a copy of the array with the first instance of each value 
+	 * removed; subsequent instances of those values (duplicates) remain
+	 */
 	dups: function(arr) {
 		if ( ! Array.isArray( arr ) ) {
 			throw "A non-array object passed to Morebits.array.dups";
@@ -1090,6 +1104,14 @@ Morebits.array = {
 		}
 		return result;
 	},
+
+
+	/**
+	 * breaks up `arr` into smaller arrays of length `size`, and
+	 * returns an array of these "chunked" arrays
+	 * @param {array} arr 
+	 * @param {number} size 
+	 */
 	chunk: function( arr, size ) {
 		if ( ! Array.isArray( arr ) ) {
 			throw "A non-array object passed to Morebits.array.chunk";
@@ -1111,14 +1133,12 @@ Morebits.array = {
 };
 
 
-
 /**
  * **************** Morebits.pageNameNorm ****************
  * Stores a normalized version of the wgPageName variable (underscores converted to spaces).
  * For queen/king/whatever and country!
  */
 Morebits.pageNameNorm = mw.config.get('wgPageName').replace(/_/g, ' ');
-
 
 
 /**
@@ -1178,35 +1198,10 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
  * is fairly unlikely that anyone will iterate over a Date object.
  */
 
-Date.monthNames = [
-	'January',
-	'February',
-	'March',
-	'April',
-	'May',
-	'June',
-	'July',
-	'August',
-	'September',
-	'October',
-	'November',
-	'December'
-];
+Date.monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+	'July', 'August', 'September', 'October', 'November','December' ];
 
-Date.monthNamesAbbrev = [
-	'Jan',
-	'Feb',
-	'Mar',
-	'Apr',
-	'May',
-	'Jun',
-	'Jul',
-	'Aug',
-	'Sep',
-	'Oct',
-	'Nov',
-	'Dec'
-];
+Date.monthNamesAbbrev = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 Date.prototype.getMonthName = function() {
 	return Date.monthNames[ this.getMonth() ];
@@ -1306,8 +1301,10 @@ Morebits.wikipedia.namespacesFriendly = {
 
 Morebits.wiki = {};
 
-// Determines whether the current page is a redirect or soft redirect
-// (fails to detect soft redirects on edit, history, etc. pages)
+/**
+ * Determines whether the current page is a redirect or soft redirect
+ * (fails to detect soft redirects on edit, history, etc. pages)
+ */
 Morebits.wiki.isPageRedirect = function wikipediaIsPageRedirect() {
 	return !!(mw.config.get("wgIsRedirect") || document.getElementById("softredirect"));
 };
@@ -1385,14 +1382,16 @@ Morebits.wiki.removeCheckpoint = function() {
 /**
  * **************** Morebits.wiki.api ****************
  * An easy way to talk to the MediaWiki API.
- *
- * Constructor parameters:
- *    currentAction: the current action (required)
- *    query: the query (required)
- *    onSuccess: the function to call when request gotten
- *    statusElement: a Morebits.status object to use for status messages (optional)
- *    onError: the function to call if an error occurs (optional)
  */
+
+ /**
+  * @constructor
+  * @param {*} currentAction The current action (required)
+  * @param {*} query The query object. (required)
+  * @param {*} onSuccess The function to call when request gotten
+  * @param {*} [statusElement] A Morebits.status object to use for status messages (optional)
+  * @param {*} [onError] The function to call if an error occurs (optional)
+  */
 Morebits.wiki.api = function( currentAction, query, onSuccess, statusElement, onError ) {
 	this.currentAction = currentAction;
 	this.query = query;
@@ -1421,8 +1420,10 @@ Morebits.wiki.api.prototype = {
 	errorCode: null, // short text error code, if any, as documented in the MediaWiki API
 	errorText: null, // full error description, if any
 
-	// post(): carries out the request
-	// do not specify a parameter unless you really really want to give jQuery some extra parameters
+	/**
+	 * Carries out the request.
+	 * Do not specify a parameter unless you really really want to give jQuery some extra parameters
+	 */
 	post: function( callerAjaxParameters ) {
 
 		++Morebits.wiki.numberOfActionsLeft;
