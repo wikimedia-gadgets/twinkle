@@ -1011,10 +1011,8 @@ Twinkle.tag.callbacks = {
 			}
 
 			var miTest = /\{\{(multiple ?issues|article ?issues|mi)(?!\s*\|\s*section\s*=)[^}]+\{/im.exec(pageText);
-			var miOldStyleRegex = /\{\{(multiple ?issues|article ?issues|mi)\s*\|([^{]+)\}\}/im;
-			var miOldStyleTest = miOldStyleRegex.exec(pageText);
 
-			if( ( miTest || miOldStyleTest ) && groupableTags.length > 0 ) {
+			if( miTest && groupableTags.length > 0 ) {
 				Morebits.status.info( 'Info', 'Adding supported tags inside existing {{multiple issues}} tag' );
 
 				groupableTags.sort();
@@ -1027,19 +1025,11 @@ Twinkle.tag.callbacks = {
 				if( tags.length > 0 ) {
 					summaryText += ', and';
 				}
-
-				if( miOldStyleTest ) {
-					// convert tags from old-style to new-style
-					var split = miOldStyleTest[2].split("|");
-					$.each(split, function(index, val) {
-						split[index] = val.replace("=", "|date=").trim();
-					});
-					pageText = pageText.replace(miOldStyleRegex, "{{$1|\n{{" + split.join("}}\n{{") + "}}\n" + tagText + "}}\n");
-				} else {
-					var miRegex = new RegExp("(\\{\\{\\s*" + miTest[1] + "\\s*(?:\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?)\\}\\}\\s*", "im");
-					pageText = pageText.replace(miRegex, "$1" + tagText + "}}\n");
-				}
+				
+				var miRegex = new RegExp("(\\{\\{\\s*" + miTest[1] + "\\s*(?:\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?)\\}\\}\\s*", "im");
+				pageText = pageText.replace(miRegex, "$1" + tagText + "}}\n");
 				tagText = "";
+
 			} else if( params.group && groupableTags.length >= 3 ) {
 				Morebits.status.info( 'Info', 'Grouping supported tags inside {{multiple issues}}' );
 
