@@ -1387,11 +1387,11 @@ Morebits.wiki.removeCheckpoint = function() {
 
  /**
   * @constructor
-  * @param {*} currentAction - The current action (required)
-  * @param {*} query - The query object. (required)
-  * @param {*} onSuccess - The function to call when request gotten
-  * @param {*} [statusElement] - A Morebits.status object to use for status messages (optional)
-  * @param {*} [onError] - The function to call if an error occurs (optional)
+  * @param {string} currentAction - The current action (required)
+  * @param {Object} query - The querys (required)
+  * @param {Function} onSuccess - The function to call when request gotten
+  * @param {Object} [statusElement] - A Morebits.status object to use for status messages (optional)
+  * @param {Function} [onError] - The function to call if an error occurs (optional)
   */
 Morebits.wiki.api = function( currentAction, query, onSuccess, statusElement, onError ) {
 	this.currentAction = currentAction;
@@ -2939,7 +2939,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 }; // end Morebits.wiki.page
 
-/** Morebits.wiki.page TODO: (XXX)
+/* Morebits.wiki.page TODO: (XXX)
  * - Should we retry loads also?
  * - Need to reset current action before the save?
  * - Deal with action.completed stuff
@@ -2952,26 +2952,26 @@ Morebits.wiki.page = function(pageName, currentAction) {
  * **************** Morebits.wiki.preview ****************
  * Uses the API to parse a fragment of wikitext and render it as HTML.
  *
- * Constructor: Morebits.wiki.preview(previewbox, currentAction)
- *    previewbox - the <div> element that will contain the rendered HTML
- *
- * beginRender(wikitext): Displays the preview box, and begins an asynchronous attempt
- *                        to render the specified wikitext.
- *    wikitext - wikitext to render; most things should work, including subst: and ~~~~
- *    pageTitle - optional parameter for the page this should be rendered as being on
- *
- * closePreview(): Hides the preview box and clears it.
- *
  * The suggested implementation pattern (in Morebits.simpleWindow + Morebits.quickForm situations) is to
  * construct a Morebits.wiki.preview object after rendering a Morebits.quickForm, and bind the object
  * to an arbitrary property of the form (e.g. |previewer|).  For an example, see
  * twinklewarn.js.
  */
 
+ /**
+  * @constructor
+  * @param {HTMLDivElement} previewbox - the <div> element that will contain the rendered HTML
+  */
 Morebits.wiki.preview = function(previewbox) {
 	this.previewbox = previewbox;
 	$(previewbox).addClass("morebits-previewbox").hide();
 
+	/**
+	 * Displays the preview box, and begins an asynchronous attempt
+	 * to render the specified wikitext. 
+	 * @param {string} wikitext - wikitext to render; most things should work, including subst: and ~~~~
+	 * @param {string} pageTitle - optional parameter for the page this should be rendered as being on
+	 */
 	this.beginRender = function(wikitext, pageTitle) {
 		$(previewbox).show();
 
@@ -2998,9 +2998,12 @@ Morebits.wiki.preview = function(previewbox) {
 			return;
 		}
 		previewbox.innerHTML = html;
-		$(previewbox).find("a").attr("target", "_blank");
+		$(previewbox).find("a").attr("target", "_blank");	// this makes links open in new tab
 	};
 
+	/**
+	 * Hides the preview box and clears it.
+	 */
 	this.closePreview = function() {
 		$(previewbox).empty().hide();
 	};
