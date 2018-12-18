@@ -83,7 +83,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append( {
 			type: 'option',
 			label: 'CfD (Categories for discussion)',
-			selected: namespace === 14,
+			selected: namespace === 14,  // Category namespace
 			value: 'cfd'
 		} );
 	categories.append( {
