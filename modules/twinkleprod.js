@@ -211,7 +211,7 @@ Twinkle.prod.callbacks = {
 			}
 
 			summaryText = "Proposing " + namespace + " for deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
-			text = "{{subst:prod" + (params.blp ? " blp" : ("|1=" + Morebits.string.formatReasonText(params.reason))) + "}}\n" + text;
+			text = "{{subst:prod" + (params.blp ? " blp" : ("|1=" + Morebits.string.formatReasonText(params.reason))) + (params.usertalk ? "|help=off" : "") + "}}\n" + text;
 		}
 		else {  // already tagged for PROD, so try endorsing it
 			var prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/;
