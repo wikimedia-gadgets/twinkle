@@ -934,13 +934,6 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G6: Unnecessary disambiguation page',
-		value: 'disambig',
-		tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate only one existing Wikipedia page and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguate no (zero) existing Wikipedia pages, regardless of its title.',
-		hideWhenMultiple: true,
-		hideWhenRedirect: true
-	},
-	{
 		label: 'G6: Copy-and-paste page move',
 		value: 'copypaste',
 		tooltip: 'This only applies for a copy-and-paste page move of another page that needs to be temporarily deleted to make room for a clean page move.',
@@ -1041,6 +1034,12 @@ Twinkle.speedy.generalList = [
 		value: 'afc',
 		tooltip: 'Any rejected or unsubmitted AfC submission in userspace or any page in draft namespace, that has not been edited for more than 6 months. Blank drafts in either namespace are also included.',
 		hideWhenRedirect: true
+	},
+	{
+		label: 'G14: Unnecessary disambiguation page',
+		value: 'disambig',
+		tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate only one existing Wikipedia page and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguate no (zero) existing Wikipedia pages, regardless of its title.',
+		hideWhenRedirect: true
 	}
 ];
 
@@ -1085,7 +1084,6 @@ Twinkle.speedy.normalizeHash = {
 	'histmerge': 'g6',
 	'move': 'g6',
 	'xfd': 'g6',
-	'disambig': 'g6',
 	'movedab': 'g6',
 	'copypaste': 'g6',
 	'g6': 'g6',
@@ -1102,6 +1100,7 @@ Twinkle.speedy.normalizeHash = {
 	'spamuser': 'g11',
 	'copyvio': 'g12',
 	'afc': 'g13',
+	'disambig': 'g14',
 	'nocontext': 'a1',
 	'foreign': 'a2',
 	'nocontent': 'a3',
@@ -1993,7 +1992,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	if (form.notify.checked) {
 		$.each(normalizeds, function(index, norm) {
 			if (Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1) {
-				if (norm === 'g6' && ['disambig', 'copypaste'].indexOf(values[index]) === -1) {
+				if (norm === 'g6' && values[index] !== 'copypaste') {
 					return true;
 				}
 				notifyuser = true;
