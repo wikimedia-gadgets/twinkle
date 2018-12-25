@@ -100,7 +100,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 			form.append({ type: 'header', label: 'License and sourcing problem tags' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.licenseList } );
-		
+
 			form.append({ type: 'header', label: 'Wikimedia Commons-related tags' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.commonsList } );
 
@@ -119,7 +119,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 			form.append({ type: 'header', label:'Spelling, misspelling, tense and capitalization templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.spellingList });
-			
+
 			form.append({ type: 'header', label:'Alternative name templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.alternativeList });
 
@@ -191,6 +191,20 @@ Twinkle.tag.updateSortOrder = function(e) {
 					tooltip: 'If known.',
 					size: 50
 				};
+				break;
+			case "expand language":
+				checkbox.subgroup = [ {
+						name: 'expandLanguageLangCode',
+						type: 'input',
+						label: 'Language code: ',
+						tooltip: 'Language code of the language from which article is to be expanded from'
+					}, {
+						name: 'expandLanguageArticle',
+						type: 'input',
+						label: 'Name of article: ',
+						tooltip: 'Name of article to be expanded from, without the interwiki prefix'
+					},
+				]
 				break;
 			case "expert needed":
 				checkbox.subgroup = [
@@ -583,7 +597,7 @@ Twinkle.tag.article.tagCategories = {
 		],
 		"Timeliness": [
 			"current",
-			"update"			
+			"update"
 		],
 		"Neutrality, bias, and factual accuracy": [
 			"autobiography",
@@ -696,10 +710,10 @@ Twinkle.tag.spellingList = [
 ];
 
 Twinkle.tag.alternativeList = [
-	{ 
+	{
 		label: '{{R from alternative language}}: redirect from an English name to a name in another language, or vice-versa',
 		value: 'R from alternative language',
-		subgroup : [ 
+		subgroup : [
 			{
 				name: 'altLangFrom',
 				type: 'input',
@@ -716,7 +730,7 @@ Twinkle.tag.alternativeList = [
 				name: 'altLangInfo',
 				type: 'div',
 				label: $.parseHTML('<p>For a list of language codes, see <a href="/wiki/Wp:Template_messages/Redirect_language_codes">Wikipedia:Template messages/Redirect language codes</a></p>')
-			} 
+			}
 		]
 	},
 	{
@@ -922,9 +936,7 @@ Twinkle.tag.callbacks = {
 				// prompt for other parameters, based on the tag
 				switch( tagName ) {
 					case 'cleanup':
-						if (params.tagParameters.cleanup) {
-							currentTag += '|reason=' + params.tagParameters.cleanup;
-						}
+						currentTag += '|reason=' + params.tagParameters.cleanup;
 						break;
 					case 'copy edit':
 						if (params.tagParameters.copyEdit) {
@@ -938,21 +950,9 @@ Twinkle.tag.callbacks = {
 						break;
 					case 'expand language':
 						currentTag += '|topic=';
-						var langcode = prompt('Please enter the language code of the other wiki (e.g. "fr", "roa-rup").  \n' +
-							"This information is required.  To skip the {{expand language}} tag, click Cancel.", "");
-						if (langcode === null || langcode === "") {
-							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
-							return true;  // continue to next tag
-						} else {
-							currentTag += '|langcode=' + langcode;
-						}
-						var otherart = prompt('Please enter the name of the article in the other wiki (without interwiki prefix).  \n' +
-							"This information is optional.  To skip the {{expand language}} tag, click Cancel.", "");
-						if (otherart === null) {
-							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
-							return true;  // continue to next tag
-						} else {
-							currentTag += '|otherarticle=' + otherart;
+						currentTag += '|langcode=' + params.tagParameters.expandLanguageLangCode;
+						if (params.tagParameters.expandLanguageArticle !== null) {
+							currentTag += '|otherarticle=' + params.tagParameters.expandLanguageArticle;
 						}
 						break;
 					case 'expert needed':
@@ -1429,6 +1429,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				cleanup: form["articleTags.cleanup"] ? form["articleTags.cleanup"].value : null,
 				copyEdit: form["articleTags.copyEdit"] ? form["articleTags.copyEdit"].value : null,
 				copypaste: form["articleTags.copypaste"] ? form["articleTags.copypaste"].value : null,
+				expandLanguageLangCode: form["articleTags.expandLanguageLangCode"] ? form["articleTags.expandLanguageLangCode"].value : null,
+				expandLanguageArticle: form["articleTags.expandLanguageArticle"] ? form["articleTags.expandLanguageArticle"].value : null,
 				globalize: form["articleTags.globalize"] ? form["articleTags.globalize"].value : null,
 				notability: form["articleTags.notability"] ? form["articleTags.notability"].value : null
 			};
@@ -1483,6 +1485,11 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		return;
 	}
 
+	if(params.tags.indexOf('expand language') !== -1 && params.tagParameters.expandLanguageLangCode == null) {
+		alert('You must specify language code for the {{expand language}} tag.');
+		return;
+	}
+
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( form );
 
@@ -1511,4 +1518,3 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 })(jQuery);
 
 //</nowiki>
-	
