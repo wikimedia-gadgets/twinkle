@@ -64,6 +64,11 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		});
 	editlevel.append({
 			type: 'option',
+			label: 'Extended confirmed',
+			value: 'extendedconfirmed'
+		});
+	editlevel.append({
+			type: 'option',
 			label: 'Template editor',
 			value: 'templateeditor'
 		});
@@ -131,6 +136,11 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			type: 'option',
 			label: 'Autoconfirmed',
 			value: 'autoconfirmed'
+		});
+	movelevel.append({
+			type: 'option',
+			label: 'Extended confirmed',
+			value: 'extendedconfirmed'
 		});
 	movelevel.append({
 			type: 'option',
@@ -205,6 +215,11 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			type: 'option',
 			label: 'Autoconfirmed',
 			value: 'autoconfirmed'
+		});
+	createlevel.append({
+			type: 'option',
+			label: 'Extended confirmed',
+			value: 'extendedconfirmed'
 		});
 	createlevel.append({
 			type: 'option',

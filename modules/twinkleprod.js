@@ -177,10 +177,21 @@ Twinkle.prod.callbacks = {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
 
+		// Check for already existing deletion tags
 		var tag_re = /({{(?:db-?|delete|[aitcmrs]fd|md1)[^{}]*?\|?[^{}]*?}})/i;
 		if( tag_re.test( text ) ) {
 			statelem.warn( 'Page already tagged with a deletion template, aborting procedure' );
 			return;
+		}
+
+		// Alert if article is not in Category:Living people and BLPPROD is selected
+		if( params.blp ) {
+			var blpcheck_re = /\[\[Category:Living people\]\]/i;
+			if( !blpcheck_re.test( text ) ) {
+				if( ! confirm("Please note that the article is not in Category:Living people and hence may be ineligible for BLPPROD. Are you sure you want to continue? \n\nYou may wish to add the category if you proceed, unless the article is about a recently deceased person." ) ) {
+					return;
+				}
+			}
 		}
 
 		// Remove tags that become superfluous with this action
@@ -200,7 +211,7 @@ Twinkle.prod.callbacks = {
 			}
 
 			summaryText = "Proposing " + namespace + " for deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
-			text = "{{subst:prod" + (params.blp ? " blp" : ("|1=" + Morebits.string.formatReasonText(params.reason))) + "}}\n" + text;
+			text = "{{subst:prod" + (params.blp ? " blp" : ("|1=" + Morebits.string.formatReasonText(params.reason))) + (params.usertalk ? "|help=off" : "") + "}}\n" + text;
 		}
 		else {  // already tagged for PROD, so try endorsing it
 			var prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/;

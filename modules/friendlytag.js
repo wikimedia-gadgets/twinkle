@@ -679,10 +679,10 @@ Twinkle.tag.article.tagCategories = {
 		"Verifiability and sources": [
 			"BLP sources",
 			"BLP unsourced",
+      "More citations needed",
 			"One source",
 			"Original research",
 			"Primary sources",
-			"More citations needed",
 			"Self-published",
 			"Third-party",
 			"Unreferenced",
@@ -918,8 +918,7 @@ Twinkle.tag.file.cleanupList = [
 			]
 		}
 	},
-	{ label: '{{Should be text}}: image should be represented as text, tables, or math markup', value: 'Should be text' },
-	{ label: '{{Split media}}: there are two different images in the upload log which need to be split', value: 'Split media' }
+	{ label: '{{Should be text}}: image should be represented as text, tables, or math markup', value: 'Should be text' }
 ];
 
 Twinkle.tag.file.qualityList = [
