@@ -31,7 +31,6 @@ Twinkle.tag = function friendlytag() {
 		Twinkle.tag.mode = 'article';
 		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to article" );
 	}
-	
 };
 
 Twinkle.tag.checkedTags = [];
@@ -194,7 +193,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				Twinkle.tag.article.alreadyPresentTags.push('Improve categories');
 			}
 
-			
 		}
 
 		// fake a change event on the sort dropdown, to initialize the tag list
@@ -679,7 +677,7 @@ Twinkle.tag.article.tagCategories = {
 		"Verifiability and sources": [
 			"BLP sources",
 			"BLP unsourced",
-      "More citations needed",
+			"More citations needed",
 			"One source",
 			"Original research",
 			"Primary sources",
@@ -1173,10 +1171,9 @@ Twinkle.tag.callbacks = {
 				else
 					Twinkle.tag.article.summaryText = 'Removed';
 				
-				Twinkle.tag.numRemoved = 0; 
 				Twinkle.tag.numToRemove = Twinkle.tag.article.toRemove.length; 
 	
-				Twinkle.tag.callbacks.article.removeTag(Twinkle.tag.article.toRemove[0], 0);
+				Twinkle.tag.callbacks.article.removeTag(0);
 
 			} else {
 				Twinkle.tag.article.summaryText += ' tag' + ( tags.length > 1 ? 's' : '' ) + ' to article';
@@ -1184,8 +1181,9 @@ Twinkle.tag.callbacks = {
 			}
 		},
 
-		removeTag: function removeTag(tag, tagIndex) {
-		
+		removeTag: function removeTag(tagIndex) {
+			var tag = Twinkle.tag.article.toRemove[tagIndex];
+			
 			// Producing edit summary for current tag removal
 			if ( tagIndex > 0 ) {
 				if( tagIndex === (Twinkle.tag.numToRemove - 1) ) {
@@ -1201,9 +1199,8 @@ Twinkle.tag.callbacks = {
 			if(tag_re.test(Twinkle.tag.article.pageText)) {
 				Twinkle.tag.article.pageText = Twinkle.tag.article.pageText.replace(tag_re,'');
 
-				Twinkle.tag.numRemoved++;
-				if (Twinkle.tag.article.toRemove[Twinkle.tag.numRemoved]) {
-					Twinkle.tag.callbacks.article.removeTag(Twinkle.tag.article.toRemove[Twinkle.tag.numRemoved],Twinkle.tag.numRemoved);
+				if (Twinkle.tag.article.toRemove[tagIndex+1]) {
+					Twinkle.tag.callbacks.article.removeTag(tagIndex+1);
 				} else { 
 					Twinkle.tag.callbacks.article.postRemoval();
 				}
@@ -1216,28 +1213,27 @@ Twinkle.tag.callbacks = {
 					"lhshow": "redirect",
 					"lhlimit": "500"
 				};
-				var api = new Morebits.wiki.api( "Getting template redirects", query, Twinkle.tag.callbacks.article.removeRedirectTag );
-				api.post(); 
-			}
-		},
-
-		removeRedirectTag: function removeRedirectTag(apiobj) {
-			var redirs_xml = $(apiobj.responseXML).find('lh');
-			$.each(redirs_xml, function (idx,el) {
-				tag = $(el).attr('title').slice(9);
-				
-				tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
-				if(tag_re.test(Twinkle.tag.article.pageText)) {
-					Twinkle.tag.article.pageText = Twinkle.tag.article.pageText.replace(tag_re, '');
+				var api = new Morebits.wiki.api( "Getting template redirects", query, 
+				function removeRedirectTag(apiobj) {
+					var redirs_xml = $(apiobj.responseXML).find('lh');
+					$.each(redirs_xml, function (idx,el) {
+						var tag = $(el).attr('title').slice(9);
+		
+						var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
+						if(tag_re.test(Twinkle.tag.article.pageText)) {
+							Twinkle.tag.article.pageText = Twinkle.tag.article.pageText.replace(tag_re, '');
+							
+							return false;	// break out of $.each 
+						}
+					});
 					
-					return false;	// break out of $.each 
-				}
-			});
-			Twinkle.tag.numRemoved++;
-			if (Twinkle.tag.article.toRemove[Twinkle.tag.numRemoved]) {
-				Twinkle.tag.callbacks.article.removeTag(Twinkle.tag.article.toRemove[Twinkle.tag.numRemoved],Twinkle.tag.numRemoved);
-			} else {
-				Twinkle.tag.callbacks.article.postRemoval();
+					if (Twinkle.tag.article.toRemove[tagIndex+1]) {
+						Twinkle.tag.callbacks.article.removeTag(tagIndex+1);
+					} else {
+						Twinkle.tag.callbacks.article.postRemoval();
+					}
+				} );
+				api.post(); 
 			}
 		},
 
@@ -1275,7 +1271,7 @@ Twinkle.tag.callbacks = {
 					var talkpage = new Morebits.wiki.page("Talk:" + params.discussArticle, "Posting rationale on talk page");
 					talkpage.setAppendText(talkpageText);
 					talkpage.setEditSummary('Proposing to merge [[:' + params.nonDiscussArticle + ']] ' +
-						(tags.indexOf("Merge") !== -1 ? 'with' : 'into') + ' [[:' + params.discussArticle + ']]' +
+						(params.mergeTag === 'Merge' ? 'with' : 'into') + ' [[:' + params.discussArticle + ']]' +
 						Twinkle.getPref('summaryAd'));
 					talkpage.setWatchlist(Twinkle.getFriendlyPref('watchMergeDiscussions'));
 					talkpage.setCreateOption('recreate');
@@ -1283,11 +1279,11 @@ Twinkle.tag.callbacks = {
 				}
 				if (params.mergeTagOther) {
 					// tag the target page if requested
-					var otherTagName = "merge";
-					if (tags.indexOf("Merge from") !== -1) {
-						otherTagName = "merge to";
-					} else if (tags.indexOf("Merge to") !== -1) {
-						otherTagName = "merge from";
+					var otherTagName = "Merge";
+					if (params.mergeTag === 'Merge from') {
+						otherTagName = "Merge to";
+					} else if (params.mergeTag === 'Merge to') {
+						otherTagName = "Merge from";
 					}
 					var newParams = {
 						tags: [otherTagName],
@@ -1298,7 +1294,7 @@ Twinkle.tag.callbacks = {
 					var otherpage = new Morebits.wiki.page(params.mergeTarget, "Tagging other page (" +
 						params.mergeTarget + ")");
 					otherpage.setCallbackParameters(newParams);
-					otherpage.load(Twinkle.tag.callbacks.article);
+					otherpage.load(Twinkle.tag.callbacks.article.main);
 				}
 
 				// post at WP:PNT for {{not English}} and {{rough translation}} tag
@@ -1307,7 +1303,7 @@ Twinkle.tag.callbacks = {
 						"Listing article at Wikipedia:Pages needing translation into English");
 					pntPage.setFollowRedirect(true);
 					pntPage.setCallbackParameters({
-						template: params.tags.indexOf("Rough translation") !== -1 ? "duflu" : "needtrans",
+						template: params.roughTranslation ? "duflu" : "needtrans",
 						lang: params.translationLanguage,
 						reason: params.translationComments
 					});
@@ -1586,7 +1582,6 @@ Twinkle.tag.callbacks = {
 };
 
 Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
-	
 	var form = e.target;
 	var params = {};
 	if (form.patrolPage) {
@@ -1608,10 +1603,13 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				notability: form["articleTags.notability"] ? form["articleTags.notability"].value : null
 			};
 			// common to {{merge}}, {{merge from}}, {{merge to}}
+			params.mergeTag = params.tags.includes('Merge') ? 'Merge' : (params.tags.includes('Merge to') ? 'Merge to' : (params.tags.includes('Merge from') ? 'Merge from' : null ));
 			params.mergeTarget = form["articleTags.mergeTarget"] ? form["articleTags.mergeTarget"].value : null;
 			params.mergeReason = form["articleTags.mergeReason"] ? form["articleTags.mergeReason"].value : null;
 			params.mergeTagOther = form["articleTags.mergeTagOther"] ? form["articleTags.mergeTagOther"].checked : false;
+
 			// common to {{not English}}, {{rough translation}}
+			params.roughTranslation = params.tags.includes('Rough translation');
 			params.translationLanguage = form["articleTags.translationLanguage"] ? form["articleTags.translationLanguage"].value : null;
 			params.translationNotify = form["articleTags.translationNotify"] ? form["articleTags.translationNotify"].checked : null;
 			params.translationPostAtPNT = form["articleTags.translationPostAtPNT"] ? form["articleTags.translationPostAtPNT"].checked : null;
