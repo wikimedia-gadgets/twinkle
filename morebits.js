@@ -327,7 +327,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label.appendChild( document.createTextNode( current.label ) );
 				label.setAttribute( 'for', cur_id );
 				if( current.tooltip ) {
-					Morebits.quickForm.element.generateTooltip( label, current );
+					Morebits.quickForm.element.generateTooltip( label, current ); 
 				}
 				// styles go on the label, doesn't make sense to style a checkbox/radio
 				if( current.style ) {
@@ -850,6 +850,53 @@ HTMLFormElement.prototype.getChecked = function( name, type ) {
 	return return_array;
 };
 
+/**
+ * getUnchecked:
+ *   Does the same as getChecked above, but with unchecked elements.
+ */
+
+HTMLFormElement.prototype.getUnchecked = function( name, type ) {
+	var elements = this.elements[name];
+	if( !elements ) {
+		// if the element doesn't exists, return null.
+		return null;
+	}
+	var return_array = [];
+	var i;
+	if( elements instanceof HTMLSelectElement ) {
+		var options = elements.options;
+		for( i = 0; i < options.length; ++i ) {
+			if( !options[i].selected ) {
+				if( options[i].values ) {
+					return_array.push( options[i].values );
+				} else {
+					return_array.push( options[i].value );
+				}
+
+			}
+		}
+	} else if( elements instanceof HTMLInputElement ) {
+		if( type && elements.type !== type ) {
+			return [];
+		} else if( !elements.checked ) {
+			return [ elements.value ];
+		}
+	} else {
+		for( i = 0; i < elements.length; ++i ) {
+			if( !elements[i].checked ) {
+				if( type && elements[i].type !== type ) {
+					continue;
+				}
+				if( elements[i].values ) {
+					return_array.push( elements[i].values );
+				} else {
+					return_array.push( elements[i].value );
+				}
+			}
+		}
+	}
+	return return_array;
+};
 
 
 /**
@@ -1119,7 +1166,14 @@ Morebits.array = {
  */
 Morebits.pageNameNorm = mw.config.get('wgPageName').replace(/_/g, ' ');
 
-
+/**
+ * *************** Morebits.pageNameRegex *****************
+ * For a page name 'Foo bar', returns the string '[Ff]oo bar'
+ * @param {string} pageName - page name without namespace
+ */
+Morebits.pageNameRegex = function(pageName) {
+	return '[' + pageName[0].toUpperCase() + pageName[0].toLowerCase() + ']' + pageName.slice(1);
+};
 
 /**
  * **************** Morebits.unbinder ****************
