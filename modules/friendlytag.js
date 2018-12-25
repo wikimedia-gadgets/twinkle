@@ -174,6 +174,14 @@ Twinkle.tag.updateSortOrder = function(e) {
 					size: 35
 				};
 				break;
+			case "close paraphrasing":
+				checkbox.subgroup = {
+					name: 'closeParaphrasing',
+					type: 'input',
+					label: 'Source: ',
+					tooltip: 'Source that has been closely paraphrased'
+				};
+				break;
 			case "copy edit":
 				checkbox.subgroup = {
 					name: 'copyEdit',
@@ -938,6 +946,9 @@ Twinkle.tag.callbacks = {
 					case 'cleanup':
 						currentTag += '|reason=' + params.tagParameters.cleanup;
 						break;
+					case 'close paraphrasing':
+						currentTag += '|source=' + params.tagParameters.closeParaphrasing;
+						break;
 					case 'copy edit':
 						if (params.tagParameters.copyEdit) {
 							currentTag += '|for=' + params.tagParameters.copyEdit;
@@ -1427,6 +1438,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			params.group = form.group.checked;
 			params.tagParameters = {
 				cleanup: form["articleTags.cleanup"] ? form["articleTags.cleanup"].value : null,
+				closeParaphrasing: form["articleTags.closeParaphrasing"] ? form["articleTags.closeParaphrasing"].value : null,
 				copyEdit: form["articleTags.copyEdit"] ? form["articleTags.copyEdit"].value : null,
 				copypaste: form["articleTags.copypaste"] ? form["articleTags.copypaste"].value : null,
 				expandLanguageLangCode: form["articleTags.expandLanguageLangCode"] ? form["articleTags.expandLanguageLangCode"].value : null,
