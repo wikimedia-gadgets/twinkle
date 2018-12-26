@@ -958,9 +958,7 @@ Twinkle.tag.callbacks = {
 			
 			// Remove tags that become superfluous with this action
 			var pageText = pageobj.getPageText().replace(/\{\{\s*([Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, "");
-			
 			var summaryText;
-
 			var params = pageobj.getCallbackParameters();
 			
 			if (params.tags.length) {
@@ -1082,7 +1080,7 @@ Twinkle.tag.callbacks = {
 				};
 
 				// Check for preexisting tags and separate tags into groupable and non-groupable arrays
-				for( i = 0; i < params.tags.length; i++ ) { //        ( {{tag(| or }}) or |\s* tag \s* =[a-z ]+\d+) 
+				for( i = 0; i < params.tags.length; i++ ) {
 					tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\})|\\|\\s*' + params.tags[i] + '\\s*=[a-z ]+\\d+)', 'im' );
 					// regex check for preexistence of tag can be skipped if in untaggable mode
 					if( Twinkle.tag.untaggable || !tagRe.exec( pageText ) ) {
@@ -1159,47 +1157,54 @@ Twinkle.tag.callbacks = {
 					"$1" + tagText);
 			}
 
-			Twinkle.tag.pageText = pageText;
-			Twinkle.tag.summaryText = summaryText;
-			Twinkle.tag.pageobj = pageobj;
+			params.pageText = pageText;
+			params.summaryText = summaryText;
+			Twinkle.tag.pageobj = pageobj;		// make pageobj global so that it can be accessed from removeTag() and postRemoval() functions
 			
 			// Check if there are any tags to be removed
-			if(Twinkle.tag.toRemove && Twinkle.tag.toRemove.length) {
+			if(params.toRemove && params.toRemove.length) {
 				Morebits.status.info( 'Info', 'Removing deselected tags that were already present' );
 				if(params.tags.length > 0)
-					Twinkle.tag.summaryText += ( tags.length ? (' tag' + ( tags.length > 1 ? 's' : '' )) : '' ) + ', and removed'; 
+					params.summaryText += ( tags.length ? (' tag' + ( tags.length > 1 ? 's' : '' )) : '' ) + ', and removed'; 
 				else
-					Twinkle.tag.summaryText = 'Removed';
+					params.summaryText = 'Removed';
 				
-				Twinkle.tag.numToRemove = Twinkle.tag.toRemove.length; 
+				params.numToRemove = params.toRemove.length; 
 				Twinkle.tag.callbacks.article.removeTag(0);
 
 			} else {
-				Twinkle.tag.summaryText += ' tag' + ( tags.length > 1 ? 's' : '' ) + ' to article';
+				params.summaryText += ' tag' + ( tags.length > 1 ? 's' : '' ) + ' to article';
 				Twinkle.tag.callbacks.article.postRemoval();
 			}
 		},
 
 		removeTag: function removeTag(tagIndex) {
-			var tag = Twinkle.tag.toRemove[tagIndex];
+			var params = Twinkle.tag.pageobj.getCallbackParameters(),
+				tag = params.toRemove[tagIndex],
+				tag_re;
 			
 			// Producing edit summary for current tag removal
 			if ( tagIndex > 0 ) {
-				if( tagIndex === (Twinkle.tag.numToRemove - 1) ) {
-					Twinkle.tag.summaryText += ' and';
-				} else if ( tagIndex < (Twinkle.tag.numToRemove - 1) ) {
-					Twinkle.tag.summaryText += ',';
+				if( tagIndex === (params.numToRemove - 1) ) {
+					params.summaryText += ' and';
+				} else if ( tagIndex < (params.numToRemove - 1) ) {
+					params.summaryText += ',';
 				}
 			}
-			Twinkle.tag.summaryText += ' {{[[Template:' + tag + '|' + tag + ']]}}';
+			params.summaryText += ' {{[[Template:' + tag + '|' + tag + ']]}}';
 
 			// Removing tag from page
-			var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
-			if(tag_re.test(Twinkle.tag.pageText)) {
-				Twinkle.tag.pageText = Twinkle.tag.pageText.replace(tag_re,'');
+			if (tag === 'Globalize') {
+				// special case to catch occurrences like {{Globalize/UK}}, etc
+				tag_re = new RegExp('\\{\\{[gG]lobalize/?[^}]*\\}\\}\\n?'); 
+			} else {
+				tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
+			}
+			if(tag_re.test(params.pageText)) {
+				params.pageText = params.pageText.replace(tag_re,'');
 
-				if (Twinkle.tag.toRemove[tagIndex+1]) {
-					Twinkle.tag.callbacks.article.removeTag(tagIndex+1);
+				if (params.toRemove[tagIndex+1]) {
+					Twinkle.tag.callbacks.article.removeTag(tagIndex+1); 
 				} else { 
 					Twinkle.tag.callbacks.article.postRemoval();
 				}
@@ -1216,15 +1221,15 @@ Twinkle.tag.callbacks = {
 				function removeRedirectTag(apiobj) {
 					var redirs_xml = $(apiobj.responseXML).find('lh');
 					$.each(redirs_xml, function (idx,el) {
-						var tag = $(el).attr('title').slice(9);
-						var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
-						if(tag_re.test(Twinkle.tag.pageText)) {
-							Twinkle.tag.pageText = Twinkle.tag.pageText.replace(tag_re, '');
+						tag = $(el).attr('title').slice(9);
+						tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
+						if(tag_re.test(params.pageText)) {
+							params.pageText = params.pageText.replace(tag_re, '');
 							return false;	// break out of $.each 
 						}
 					});
 					
-					if (Twinkle.tag.toRemove[tagIndex+1]) {
+					if (params.toRemove[tagIndex+1]) {
 						Twinkle.tag.callbacks.article.removeTag(tagIndex+1);
 					} else {
 						Twinkle.tag.callbacks.article.postRemoval();
@@ -1239,22 +1244,22 @@ Twinkle.tag.callbacks = {
 			var pageobj = Twinkle.tag.pageobj,
 				params = pageobj.getCallbackParameters();
 			
-			if(Twinkle.tag.untaggable && Twinkle.tag.numToRemove) {
-				Twinkle.tag.summaryText += ' tag' + ( Twinkle.tag.numToRemove > 1 ? 's' : '') + ' from article';
+			if(Twinkle.tag.untaggable && params.numToRemove) {
+				params.summaryText += ' tag' + ( params.numToRemove > 1 ? 's' : '') + ' from article';
 
 				// Remove empty {{multiple issues}} if found
-				Twinkle.tag.pageText = Twinkle.tag.pageText.replace(/\{\{(multiple ?issues|article ?issues|mi)\s*\|\s*\}\}/im, '');
+				params.pageText = params.pageText.replace(/\{\{(multiple ?issues|article ?issues|mi)\s*\|\s*\}\}/im, '');
 				// Remove single-element {{multiple issues}} if found
-				Twinkle.tag.pageText = Twinkle.tag.pageText.replace(/\{\{(?:multiple ?issues|article ?issues|mi)\s*\|\s*(\{\{[^}]+\}\})\s*\}\}/im, '$1');
+				params.pageText = params.pageText.replace(/\{\{(?:multiple ?issues|article ?issues|mi)\s*\|\s*(\{\{[^}]+\}\})\s*\}\}/im, '$1');
 			}
 			
 			// avoid truncated summaries
-			if (Twinkle.tag.summaryText.length > (254 - Twinkle.getPref('summaryAd').length)) {
-				Twinkle.tag.summaryText = Twinkle.tag.summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, "$1");
+			if (params.summaryText.length > (254 - Twinkle.getPref('summaryAd').length)) {
+				params.summaryText = params.summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, "$1");
 			}
 
-			pageobj.setPageText(Twinkle.tag.pageText);
-			pageobj.setEditSummary(Twinkle.tag.summaryText + Twinkle.getPref('summaryAd'));
+			pageobj.setPageText(params.pageText);
+			pageobj.setEditSummary(params.summaryText + Twinkle.getPref('summaryAd'));
 			pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
 			pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
 			pageobj.setCreateOption('nocreate');
@@ -1300,7 +1305,7 @@ Twinkle.tag.callbacks = {
 						"Listing article at Wikipedia:Pages needing translation into English");
 					pntPage.setFollowRedirect(true);
 					pntPage.setCallbackParameters({
-						template: params.roughTranslation ? "duflu" : "needtrans",
+						template: params.tags.includes('Rough translation') ? "duflu" : "needtrans",
 						lang: params.translationLanguage,
 						reason: params.translationComments
 					});
@@ -1374,7 +1379,7 @@ Twinkle.tag.callbacks = {
 		if (pageText.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
 			// Regex courtesy [[User:Kephir/gadgets/sagittarius.js]] at [[Special:PermaLink/831402893]]
 			var oldTags = pageText.match(/(\s*{{[A-Za-z ]+\|)((?:[^|{}]*|{{[^|}]*}})+)(}})\s*/i);
-			pageText = pageText.replace(oldTags[0], oldTags[1]+tagText+oldTags[2]+oldTags[3]);
+			pageText = pageText.replace(oldTags[0], oldTags[1] + tagText + oldTags[2] + oldTags[3]);
 		} else {
 			// Fold any pre-existing Rcats into taglist and under Rcatshell
 			var pageTags = pageText.match(/\n{{R(?:edirect)? .*?}}/img);
@@ -1588,7 +1593,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	switch (Twinkle.tag.mode) {
 		case 'article':
 			params.tags = form.getChecked( 'articleTags' );
-			Twinkle.tag.toRemove = form.getUnchecked('alreadyPresentArticleTags');	// already present tags to remove
+			params.toRemove = form.getUnchecked('alreadyPresentArticleTags');	// already present tags to remove
 
 			params.group = form.group.checked;
 			params.tagParameters = {
@@ -1606,7 +1611,6 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			params.mergeTagOther = form["articleTags.mergeTagOther"] ? form["articleTags.mergeTagOther"].checked : false;
 
 			// common to {{not English}}, {{rough translation}}
-			params.roughTranslation = params.tags.includes('Rough translation');
 			params.translationLanguage = form["articleTags.translationLanguage"] ? form["articleTags.translationLanguage"].value : null;
 			params.translationNotify = form["articleTags.translationNotify"] ? form["articleTags.translationNotify"].checked : null;
 			params.translationPostAtPNT = form["articleTags.translationPostAtPNT"] ? form["articleTags.translationPostAtPNT"].checked : null;
@@ -1647,7 +1651,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	// File/redirect: return if no tags selected
 	// Article: return if no tag is selected and no already present tag is deselected 
-	if( params.tags.length === 0 && (Twinkle.tag.mode !== 'article' || Twinkle.tag.toRemove == null ||Twinkle.tag.toRemove.length === 0)) {
+	if( params.tags.length === 0 && (Twinkle.tag.mode !== 'article' || params.toRemove == null ||params.toRemove.length === 0)) {
 		alert( 'You must select at least one tag!' );
 		return;
 	}
