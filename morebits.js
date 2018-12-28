@@ -431,6 +431,12 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 		if( data.event ) {
 			subnode.addEventListener( 'keyup', data.event, false );
 		}
+		if( data.required ) {
+			subnode.setAttribute( 'required', 'required' );
+			var reqstar = node.appendChild( document.createElement( 'span' ) );
+			reqstar.appendChild( document.createTextNode( " *" ) );
+			reqstar.style = "font-size: 140%;";
+		}
 		break;
 	case 'dyninput':
 		var min = data.min || 1;

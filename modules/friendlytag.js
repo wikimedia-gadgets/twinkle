@@ -3,7 +3,6 @@
 
 (function($){
 
-
 /*
  ****************************************
  *** friendlytag.js: Tag module
@@ -31,6 +30,11 @@ Twinkle.tag = function friendlytag() {
 	else if( ( mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 118 || /^Wikipedia( talk)?:Articles for creation\//.exec(Morebits.pageNameNorm) ) && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
 		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to article" );
+	}
+	// talk page tagging
+	else if(mw.config.get('wgNamespaceNumber') === 1) {
+		Twinkle.tag.mode = 'talk';
+		Twinkle.addPortletLink(Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance templates to talk page");
 	}
 };
 
@@ -127,6 +131,37 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 			form.append({ type: 'header', label:'Miscellaneous and administrative redirect templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.administrativeList });
+			break;
+
+		case 'talk':
+			Window.setTitle( "Talk page tagging" );
+			
+			form.append({ type: 'header', label: 'Attribution' });
+			Twinkle.tag.talk.attributionList.forEach(function(el) {
+				form.append({
+					type: 'checkbox',
+					name: 'talkTags',
+					list: [ {
+						value: el,
+						label: Twinkle.tag.talk.tags[el].label,
+						subgroup: Twinkle.tag.talk.tags[el].subgroup 
+					} ]
+				});
+			});
+
+			form.append({ type: 'header', label: 'Other templates' });
+			Twinkle.tag.talk.otherList.forEach(function(el) {
+				form.append({
+					type: 'checkbox',
+					name: 'talkTags',
+					list: [ {
+						value: el,
+						label: Twinkle.tag.talk.tags[el].label,
+						subgroup: Twinkle.tag.talk.tags[el].subgroup 
+					} ]
+				});
+			});
+
 			break;
 
 		default:
@@ -845,6 +880,162 @@ Twinkle.tag.file.replacementList = [
 	{ label: '{{Vector version available}}', value: 'Vector version available' }
 ];
 
+Twinkle.tag.talk = {};
+
+Twinkle.tag.talk.tags = {
+	"Translated page" : {
+		label: '{{Translated page}}: to attribute translations from other language Wikipedias',
+		subgroup: [
+			{
+				name: 'translatedLangcode',
+				type: 'input',
+				label: 'Language code: ',
+				tooltip: 'The ISO 639 language code',
+				required: true
+			},
+			{
+				name: 'translatedSourceArticle',
+				type: 'input',
+				label: 'Source article name: ',
+				tooltip: 'Exact name of the source article (without the interwiki prefix. Non-English characters must be retained.',
+				required: true
+			}
+		]
+	},
+
+	"Copied": {
+		label: '{{Copied}}: ',
+		subgroup: [
+			{
+				type: 'input',
+				name: 'copiedFrom',
+				label: 'From: ',
+				param_name: 'from',
+				required: true
+			},
+			{
+				type: 'input',
+				name: 'copiedFromOldid',
+				param_name: 'from_oldid',
+				label: 'OldId: '
+			},
+			{
+				type: 'input',
+				name: 'copiedTo',
+				label: 'To: ',
+				param_name: 'to',
+				required: true
+			},
+			{
+				type: 'input',
+				name: 'copiedDiff',
+				label: 'Diff: ',
+				tooltip: 'Revision number of the page in which the copied text first appears',
+				param_name: 'diff'
+			},
+			{
+				type: 'input',
+				name: 'copiedDate',
+				label: 'Date: ',
+				param_name: 'date'
+			}
+		]
+	},
+
+	"Merged from": {
+		label: '{{Merged from}}: ',
+		subgroup: [
+			{
+				type: 'input',
+				name: 'mergedfromArticle',
+				label: 'From article: ',
+				required: true
+			},
+			{
+				type: 'input',
+				name: 'mergedfromDate',
+				label: 'Date: '
+			}
+		]
+	},
+
+	"Merged to": {
+		label: '{{Merged to}}: ',
+		subgroup: [
+			{
+				type: 'input',
+				name: 'mergedtoArticle',
+				label: 'To article: ',
+				required: true
+			},
+			{
+				type: 'input',
+				name: 'mergedtoDate',
+				label: 'Date: '
+			}
+		]
+	},
+
+	"Split article": {
+		label: '{{Split article}}: ',
+		subgroup: [
+			{
+				type: 'input',
+				name: 'splitFrom',
+				label: 'From: ',
+				tooltip: 'Name of page from which content was removed',
+				param_name: 'from',
+				required: true
+			},
+			{
+				type: 'input',
+				name: 'splitFromOldid',
+				label: 'From oldid: ',
+				tooltip: 'Permanent link url or revisionid from which the material was copied',
+				param_name: 'from_oldid'
+			},
+			{
+				type: 'input',
+				name: 'splitTo',
+				label: 'To: ',
+				tooltip: 'name of page material was copied to',
+				param_name: 'to'
+			},
+			{
+				type: 'input',
+				name: 'splitDiff',
+				label: 'Diff: ',
+				tooltip: 'URL or either a single revisionid or a diff of two revisionids separated by a slash showing the addition of the material',
+				param_name: 'diff'
+			},
+			{
+				type: 'input',
+				name: 'splitDate',
+				label: 'Date: ',
+				tooltip: 'Date and time material was moved',
+				param_name: 'date'
+			}
+		]
+	},
+
+	"Talkheader": {
+		label: '{{talkheader}}: General intro to a talk page',
+	},
+
+};
+
+Twinkle.tag.talk.attributionList = [
+	"Translated page",
+	"Copied",
+	"Merged from",
+	"Merged to",
+	"Split article"
+];
+
+Twinkle.tag.talk.otherList = [
+	"Talkheader"
+];
+
 
 // Contains those article tags that *do not* work inside {{multiple issues}}.
 Twinkle.tag.multipleIssuesExceptions = [
@@ -1356,6 +1547,42 @@ Twinkle.tag.callbacks = {
 		if( params.patrol ) {
 			pageobj.patrol();
 		}
+	},
+
+	talk: function talkCallback(pageobj) {
+		var params = pageobj.getCallbackParameters();
+		var summary = "Adding ";
+
+		var prependText = '';
+
+		params.tags.forEach( function(tag) {
+			prependText += '{{' + tag;
+
+			// add parameters for tag:
+			var parameters = Twinkle.tag.talk.tags[tag].subgroup;
+			if(parameters) {
+				parameters.forEach(function (it) {
+					if(params[it.name])
+						prependText += '|' + (it.param_name ? (it.param_name + '=') : '' ) + params[it.name];
+				});
+			}
+
+			prependText += '}}';
+
+			summary += '{{[[Template:' + tag + '|' + tag + ']]}}, ';
+		} );
+
+		pageobj.setPrependText(prependText);
+		pageobj.setEditSummary(summary.substring(0, summary.length - 2) + Twinkle.getPref('summaryAd'));
+		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
+		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
+		pageobj.setCreateOption('nocreate');
+		pageobj.prepend();
+
+		if( params.patrol ) {
+			pageobj.patrol();
+		}
+
 	}
 };
 
@@ -1394,6 +1621,36 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 		case 'redirect':
 			params.tags = form.getChecked( 'redirectTags' );
+			break;
+
+		case 'talk':
+			params.tags = form.getChecked('talkTags');
+			
+			// save parameter fields text 
+			$(form).find('input[type=text]').each(function(idx,el) {
+				params[el.name.slice(9)] = form[el.name].value;
+			});
+
+			// Are the required fields filled in?
+			// Validation for browsers that don't support HTML5-based validation
+			if ($("<input />").prop("required") === undefined) {	
+				var flag = true;
+				$.each(params.tags, function(idx, tag) { // not using JS native forEach beacause it can't be broken out of
+					var subgroup = Twinkle.tag.talk.tags[tag].subgroup
+					if(subgroup) {
+						$.each(subgroup, function(idx, p) {	// not using JS native forEach; same as above
+							if(p.required && params[p.name] === '') {
+								alert('Please fill in all required parameters for {{' + tag + '}} template');
+								flag = false; return false;
+							}
+						});
+					}
+					return flag;
+				});
+				if(!flag)
+					return;		// return on encountering the first unfilled required parameter
+			}
+
 			break;
 		default:
 			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
@@ -1443,12 +1700,15 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		case 'file':
 			wikipedia_page.load(Twinkle.tag.callbacks.file);
 			return;
+		case 'talk':
+			wikipedia_page.load(Twinkle.tag.callbacks.talk);
+			return;
 		default:
 			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
 			break;
 	}
 };
-})(jQuery);
 
+})(jQuery);
 
 //</nowiki>
