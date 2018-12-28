@@ -28,7 +28,7 @@ Twinkle.tag = function friendlytag() {
 		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to file" );
 	}
 	// article/draft article tagging
-	else if( ( mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 118 || /^Wikipedia( talk)?:Articles for creation\//.exec(Morebits.pageNameNorm) ) && mw.config.get('wgCurRevisionId') ) {
+	else if( [0,118].includes(mw.config.get('wgNamespaceNumber')) && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
 		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to article" );
 	}
@@ -879,30 +879,30 @@ Twinkle.tag.callbacks = {
 					'|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
 			} else {
 				if( tagName === 'globalize' ) {
-					currentTag += '{{' + params.tagParameters.globalize;
+					currentTag += '{{' + params.globalize;
 				} else {
 					currentTag += ( Twinkle.tag.mode === 'redirect' ? '\n' : '' ) + '{{' + tagName;
 				}
 
-				if( tagName === 'notability' && params.tagParameters.notability !== 'none' ) {
-					currentTag += '|' + params.tagParameters.notability;
+				if( tagName === 'notability' && params.notability !== 'none' ) {
+					currentTag += '|' + params.notability;
 				}
 
 				// prompt for other parameters, based on the tag
 				switch( tagName ) {
 					case 'cleanup':
-						if (params.tagParameters.cleanup) {
-							currentTag += '|reason=' + params.tagParameters.cleanup;
+						if (params.cleanup) {
+							currentTag += '|reason=' + params.cleanup;
 						}
 						break;
 					case 'copy edit':
-						if (params.tagParameters.copyEdit) {
-							currentTag += '|for=' + params.tagParameters.copyEdit;
+						if (params.copyEdit) {
+							currentTag += '|for=' + params.copyEdit;
 						}
 						break;
 					case 'copypaste':
-						if (params.tagParameters.copypaste) {
-							currentTag += '|url=' + params.tagParameters.copypaste;
+						if (params.copypaste) {
+							currentTag += '|url=' + params.copypaste;
 						}
 						break;
 					case 'expand language':
@@ -925,8 +925,8 @@ Twinkle.tag.callbacks = {
 						}
 						break;
 					case 'expert needed':
-						if (params.tagParameters.expertNeeded) {
-							currentTag += '|1=' + params.tagParameters.expertNeeded;
+						if (params.expertNeeded) {
+							currentTag += '|1=' + params.expertNeeded;
 						}
 						break;
 					case 'news release':
@@ -981,7 +981,7 @@ Twinkle.tag.callbacks = {
 
 			summaryText += ' {{[[:';
 			if( tagName === 'globalize' ) {
-				summaryText += "Template:" + params.tagParameters.globalize + '|' + params.tagParameters.globalize;
+				summaryText += "Template:" + params.globalize + '|' + params.globalize;
 			} else {
 				summaryText += (tagName.indexOf(":") !== -1 ? tagName : ("Template:" + tagName + "|" + tagName));
 			}
@@ -1370,23 +1370,17 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		case 'article':
 			params.tags = form.getChecked( 'articleTags' );
 			params.group = form.group.checked;
-			params.tagParameters = {
-				cleanup: form["articleTags.cleanup"] ? form["articleTags.cleanup"].value : null,
-				copyEdit: form["articleTags.copyEdit"] ? form["articleTags.copyEdit"].value : null,
-				copypaste: form["articleTags.copypaste"] ? form["articleTags.copypaste"].value : null,
-				expertNeeded: form["articleTags.expertNeeded"] ? form["articleTags.expertNeeded"].value : null,
-				globalize: form["articleTags.globalize"] ? form["articleTags.globalize"].value : null,
-				notability: form["articleTags.notability"] ? form["articleTags.notability"].value : null
-			};
-			// common to {{merge}}, {{merge from}}, {{merge to}}
-			params.mergeTarget = form["articleTags.mergeTarget"] ? form["articleTags.mergeTarget"].value : null;
-			params.mergeReason = form["articleTags.mergeReason"] ? form["articleTags.mergeReason"].value : null;
-			params.mergeTagOther = form["articleTags.mergeTagOther"] ? form["articleTags.mergeTagOther"].checked : false;
-			// common to {{not English}}, {{rough translation}}
-			params.translationLanguage = form["articleTags.translationLanguage"] ? form["articleTags.translationLanguage"].value : null;
-			params.translationNotify = form["articleTags.translationNotify"] ? form["articleTags.translationNotify"].checked : null;
-			params.translationPostAtPNT = form["articleTags.translationPostAtPNT"] ? form["articleTags.translationPostAtPNT"].checked : null;
-			params.translationComments = form["articleTags.translationComments"] ? form["articleTags.translationComments"].value : null;
+
+			// Save values of input text and checkbox parameters, this works as
+			// Quickform input fields within subgroups of elements with name 'articleTags'
+			// have their name attribute as 'articleTags.' + name of the subgroup element
+			$(form).find('input[type=text]').each(function(idx,el) {
+				// el are the HTMLInputElements, el.name gives their name attribute
+				params[el.name.slice(12)] = form[el.name].value;
+			});
+			$(form).find("input[type=checkbox][name^='articleTags.']").each(function(idx,el) {
+				params[el.name.slice(12)] = form[el.name].checked;
+			});
 			break;
 		case 'file':
 			params.svgSubcategory = form["imageTags.svgCategory"] ? form["imageTags.svgCategory"].value : null;
@@ -1418,7 +1412,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		alert( 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.' );
 		return;
 	}
-	if( params.tags.indexOf('cleanup') !== -1 && params.tagParameters.cleanup.trim && params.tagParameters.cleanup.trim() === "") {
+	if( params.tags.indexOf('cleanup') !== -1 && params.cleanup.trim && params.cleanup.trim() === "") {
+		console.log(params.cleanup.trim);
 		alert( 'You must specify a reason for the {{cleanup}} tag.' );
 		return;
 	}
