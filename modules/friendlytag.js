@@ -991,24 +991,27 @@ Twinkle.tag.callbacks = {
 
 		if( Twinkle.tag.mode !== 'redirect' ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
-			for( i = 0; i < params.tags.length; i++ ) {
-				tagRe = new RegExp ( '\\{\\{' + params.tags[i] + '(\\||\\}\\})', 'im' );
+			params.tags.forEach(function(tag) {
+				tagRe = new RegExp ( '\\{\\{' + tag + '(\\||\\}\\})', 'im' );
 				if( !tagRe.exec( pageText ) ) {
-					if( Twinkle.tag.multipleIssuesExceptions.indexOf(params.tags[i]) === -1 ) {
-						groupableTags = groupableTags.concat( params.tags[i] );
+					if( Twinkle.tag.multipleIssuesExceptions.indexOf(tag) === -1 ) {
+						groupableTags = groupableTags.concat( tag );
 					} else {
-						tags = tags.concat( params.tags[i] );
+						tags = tags.concat( tag );
 					}
 				} else {
-					Morebits.status.warn( 'Info', 'Found {{' + params.tags[i] +
-						'}} on the article already...excluding' );
-					// don't do anything else with merge tags
-					if (params.tags[i] === "merge" || params.tags[i] === "merge from" ||
-						params.tags[i] === "merge to") {
-						params.mergeTarget = params.mergeReason = params.mergeTagOther = false;
+					if(tag === 'merge from') {
+						tags = tags.concat( tag );
+					} else {
+						Morebits.status.warn( 'Info', 'Found {{' + tag +
+							'}} on the article already...excluding' );
+						// don't do anything else with merge tags
+						if ( ['merge', 'merge to', 'merge from'].includes(tag) ) {
+							params.mergeTarget = params.mergeReason = params.mergeTagOther = null;
+						}
 					}
 				}
-			}
+			});
 
 			var miTest = /\{\{(multiple ?issues|article ?issues|mi)(?!\s*\|\s*section\s*=)[^}]+\{/im.exec(pageText);
 
