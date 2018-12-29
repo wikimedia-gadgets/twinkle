@@ -86,7 +86,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 							label: 'Group inside {{multiple issues}} if possible',
 							value: 'group',
 							name: 'group',
-							tooltip: 'If applying three or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped inside a {{multiple issues}} template.',
+							tooltip: 'If applying two or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped inside a {{multiple issues}} template.',
 							checked: Twinkle.getFriendlyPref('groupByDefault')
 						}
 					]
@@ -569,7 +569,7 @@ Twinkle.tag.article.tagCategories = {
 		],
 		"Timeliness": [
 			"current",
-			"update"			
+			"update"
 		],
 		"Neutrality, bias, and factual accuracy": [
 			"autobiography",
@@ -1006,7 +1006,7 @@ Twinkle.tag.callbacks = {
 						Morebits.status.warn( 'Info', 'Found {{' + tag +
 							'}} on the article already...excluding' );
 						// don't do anything else with merge tags
-						if ( ['merge', 'merge to', 'merge from'].includes(tag) ) {
+						if ( ['merge', 'merge to'].indexOf(tag) !== -1 ) {
 							params.mergeTarget = params.mergeReason = params.mergeTagOther = null;
 						}
 					}
@@ -1028,12 +1028,12 @@ Twinkle.tag.callbacks = {
 				if( tags.length > 0 ) {
 					summaryText += ', and';
 				}
-				
+
 				var miRegex = new RegExp("(\\{\\{\\s*" + miTest[1] + "\\s*(?:\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?)\\}\\}\\s*", "im");
 				pageText = pageText.replace(miRegex, "$1" + tagText + "}}\n");
 				tagText = "";
 
-			} else if( params.group && groupableTags.length >= 3 ) {
+			} else if( params.group && groupableTags.length >= 2 ) {
 				Morebits.status.info( 'Info', 'Grouping supported tags inside {{multiple issues}}' );
 
 				groupableTags.sort();
