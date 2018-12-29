@@ -992,7 +992,7 @@ Twinkle.tag.callbacks = {
 		if( Twinkle.tag.mode !== 'redirect' ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
 			for( i = 0; i < params.tags.length; i++ ) {
-				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\})|\\|\\s*' + params.tags[i] + '\\s*=[a-z ]+\\d+)', 'im' );
+				tagRe = new RegExp ( '\\{\\{' + params.tags[i] + '(\\||\\}\\})', 'im' );
 				if( !tagRe.exec( pageText ) ) {
 					if( Twinkle.tag.multipleIssuesExceptions.indexOf(params.tags[i]) === -1 ) {
 						groupableTags = groupableTags.concat( params.tags[i] );
