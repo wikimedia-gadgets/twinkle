@@ -890,7 +890,7 @@ Twinkle.tag.talk.tags = {
 				name: 'translatedLangcode',
 				type: 'input',
 				label: 'Language code: ',
-				tooltip: 'The ISO 639 language code',
+				tooltip: 'The ISO 639 language code, eg. fr, de',
 				required: true
 			},
 			{
@@ -934,7 +934,7 @@ Twinkle.tag.talk.tags = {
 				param_name: 'diff'
 			},
 			{
-				type: 'input',
+				type: 'date',
 				name: 'copiedDate',
 				label: 'Date: ',
 				param_name: 'date'
@@ -952,7 +952,7 @@ Twinkle.tag.talk.tags = {
 				required: true
 			},
 			{
-				type: 'input',
+				type: 'date',
 				name: 'mergedfromDate',
 				label: 'Date: '
 			}
@@ -969,7 +969,7 @@ Twinkle.tag.talk.tags = {
 				required: true
 			},
 			{
-				type: 'input',
+				type: 'date',
 				name: 'mergedtoDate',
 				label: 'Date: '
 			}
@@ -1009,7 +1009,7 @@ Twinkle.tag.talk.tags = {
 				param_name: 'diff'
 			},
 			{
-				type: 'input',
+				type: 'date',
 				name: 'splitDate',
 				label: 'Date: ',
 				tooltip: 'Date and time material was moved',

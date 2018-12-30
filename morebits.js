@@ -399,6 +399,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			}
 		}
 		break;
+	case 'date' :  // falls through
 	case 'input':
 		node = document.createElement( 'div' );
 		node.setAttribute( 'id', 'div_' + id );
@@ -415,7 +416,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 		}
 		subnode.setAttribute( 'name', data.name );
 		subnode.setAttribute( 'id', id );
-		subnode.setAttribute( 'type', 'text' );
+		subnode.setAttribute( 'type', 'text' ); 
 		if( data.size ) {
 			subnode.setAttribute( 'size', data.size );
 		}
@@ -431,12 +432,28 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 		if( data.event ) {
 			subnode.addEventListener( 'keyup', data.event, false );
 		}
+		if( data.type === 'date' ) {
+			// If type is 'date' rather than 'input', show a icon to pre-fill current date
+			var inputToday = node.appendChild(document.createElement('a'));
+			inputToday.setAttribute('href','#');
+			var img = inputToday.appendChild(document.createElement('img'));
+			img.setAttribute('src','//upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Nuvola_apps_date.svg/20px-Nuvola_apps_date.svg.png');
+			img.setAttribute('alt','Insert current date');
+			img.setAttribute('title','Insert current date');
+			img.onclick = function(e) {
+				var d = new Date();
+				$(e.target).parent().prev().val(d.getDate() + ' ' + d.getMonthName() + ' ' + d.getFullYear());
+			};
+		}
 		if( data.required ) {
-			subnode.setAttribute( 'required', 'required' );
-			var reqstar = node.appendChild( document.createElement( 'span' ) );
-			reqstar.appendChild( document.createTextNode( " *" ) );
+			subnode.setAttribute('required', 'required');	
+			// required field validation is not universally supported (by Safari, some versions of IE),
+			// so your script should provide workarounds for cross-browser support
+			var reqstar = node.appendChild(document.createElement('span'));
+			reqstar.appendChild(document.createTextNode(" *"));
 			reqstar.style = "font-size: 140%;";
 		}
+		
 		break;
 	case 'dyninput':
 		var min = data.min || 1;
