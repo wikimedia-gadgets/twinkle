@@ -38,6 +38,7 @@ Twinkle.tag = function friendlytag() {
 	}
 };
 
+
 Twinkle.tag.callback = function friendlytagCallback() {
 	var Window = new Morebits.simpleWindow( 630, (Twinkle.tag.mode === "article") ? 500 : 400 );
 	Window.setScriptName( "Twinkle" );
@@ -135,7 +136,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 		case 'talk':
 			Window.setTitle( "Talk page tagging" );
-			
+
 			form.append({ type: 'header', label: 'Attribution' });
 			Twinkle.tag.talk.attributionList.forEach(function(el) {
 				form.append({
@@ -157,7 +158,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 					list: [ {
 						value: el,
 						label: Twinkle.tag.talk.tags[el].label,
-						subgroup: Twinkle.tag.talk.tags[el].subgroup 
+						subgroup: Twinkle.tag.talk.tags[el].subgroup,
 					} ]
 				});
 			});
@@ -668,6 +669,22 @@ Twinkle.tag.article.tagCategories = {
 	]
 };
 
+// Contains those article tags that *do not* work inside {{multiple issues}}.
+Twinkle.tag.multipleIssuesExceptions = [
+	'copypaste',
+	'expand language',
+	'GOCEinuse',
+	'improve categories',
+	'in use',
+	'merge',
+	'merge from',
+	'merge to',
+	'not English',
+	'rough translation',
+	'uncategorized',
+	'under construction'
+];
+
 // Tags for REDIRECTS start here
 
 Twinkle.tag.spellingList = [
@@ -882,8 +899,117 @@ Twinkle.tag.file.replacementList = [
 
 Twinkle.tag.talk = {};
 
+Twinkle.tag.generateAHdiv = function() {
+	
+	var container = new Morebits.quickForm.element({ type: 'div' });
+
+	var resultHash = {
+		'FAC': ['promoted', 'failed'],
+		'FAR': ['kept', 'removed'],
+		'FLC': ['promoted', 'failed'],
+		'FLR': ['kept', 'removed'],
+		'FTC': ['promoted', 'failed'],
+		'FTR': ['kept', 'removed'],
+		'GAN': ['listed', 'failed'],
+		'GAR': ['listed', 'delisted', 'kept'],
+		'PR' : ['reviewed' , 'not reviewed'],
+		'WAR': ['approved', 'failed', 'kept', 'demoted'],
+		'AFD': ['kept', 'deleted', 'merged', 'no consensus', 'speedily kept', 'speedily deleted', 'redirected', 'renamed'],
+		'DRV': ['endored', 'relisted', 'overturned', 'no consensus'],
+		'PROD': ['kept', 'deleted', 'afd'],
+		'CSD': ['kept', 'deleted', 'afd', 'prod'] 
+	};
+
+	var generateResultsMenu = function(re) {
+		var menu = new Morebits.quickForm.element({
+			type: 'select',
+			name: 'AHresult',
+			label: 'Result: ',
+			list: $.map(resultHash[re.target.value], function(el) { return {label: el, value: el}; })
+		});
+		$("#tag-AHresult-container").empty().append(menu.render());
+	};
+	
+	container.append({
+		type: 'select',
+		name: 'AHaction',
+		label: 'Nomination type: ',
+		event: generateResultsMenu,
+		list: [
+			{	label: 'Featured content processes',
+				list: [ 
+					{ label: 'FAC: Featured article candidate', value: 'FAC' }, 
+					{ label: 'FAR: Featured article review', value: 'FAR' }, 
+					{ label: 'FLC: Featured list candidate', value: 'FLC' }, 
+					{ label: 'FLR: Featured list removal candidate', value: 'FLR' }, 
+					{ label: 'FTC: Featured topic candidate', value: 'FTC' }, 
+					{ label: 'FTR: Featured topic removal candidate	', value: 'FTR' } ]
+			},
+			{	label: 'Other review processes',
+				list: [ 
+					{ label: 'GAN: Good article nomination', value: 'GAN' }, 
+					{ label: 'GAR: Good article reassessment', value: 'GAR' }, 
+					{ label: 'PR: Peer review', value: 'PR' }, 
+					{ label: 'WAR: WikiProject A-class review', value: 'WAR' } ]
+			},
+			{	label: 'Deletion processes',
+				list: [ 
+					{ label: 'AFD: Articles for deletion', value: 'AFD' }, 
+					{ label: 'DRV: Deletion review', value: 'DRV' }, 
+					{ label: 'PROD: Proposed deletion', value: 'PROD' }, 
+					{ label: 'CSD: Speedy deletion', value: 'CSD' } ]
+			}
+		]
+	});
+
+	var ahr = container.append({
+		type: 'div',
+		id: 'tag-AHresult-container'
+	});
+	ahr.append({
+		type: 'select',
+		name: 'AHresult',
+		label: 'Result: ',
+		list: [ {label: 'promoted', value: 'promoted'}, {label: 'failed', value: 'failed'} ]
+			// initialize with values corresponding to FAC
+	});
+
+	container.append({
+		type: 'input',
+		name: 'talkTags.AHlink',
+		label: 'Link: ',
+		tooltip: 'Link to the nomination page (skip this for PROD/CSD)'
+	})
+
+	container.append({
+		type: 'date',
+		name: 'talkTags.AHdate',
+		label: 'Date ended: ',
+	});
+
+	container.append({
+		type: 'input',
+		name: 'talkTags.AHoldid',
+		label: 'Oldid',
+		tooltip: 'oldid number of version'
+	});
+
+	return container.render();
+
+};
+
 Twinkle.tag.talk.tags = {
-	"Translated page" : {
+	"Article history": {
+		label: '{{Article history}}: Record of past nominations at XFD/DRV/FAC/GAN/PR etc',
+		subgroup: {
+			type: 'div',
+			name: 'AHbox',
+			id: 'tag-AHbox',
+			label: Twinkle.tag.generateAHdiv()
+		}
+	},
+
+	"Translated page": {
 		label: '{{Translated page}}: to attribute translations from other language Wikipedias',
 		subgroup: [
 			{
@@ -1019,9 +1145,8 @@ Twinkle.tag.talk.tags = {
 	},
 
 	"Talkheader": {
-		label: '{{talkheader}}: General intro to a talk page',
+		label: '{{Talkheader}}: General intro to a talk page',
 	},
-
 };
 
 Twinkle.tag.talk.attributionList = [
@@ -1033,24 +1158,8 @@ Twinkle.tag.talk.attributionList = [
 ];
 
 Twinkle.tag.talk.otherList = [
+	"Article history",
 	"Talkheader"
-];
-
-
-// Contains those article tags that *do not* work inside {{multiple issues}}.
-Twinkle.tag.multipleIssuesExceptions = [
-	'copypaste',
-	'expand language',
-	'GOCEinuse',
-	'improve categories',
-	'in use',
-	'merge',
-	'merge from',
-	'merge to',
-	'not English',
-	'rough translation',
-	'uncategorized',
-	'under construction'
 ];
 
 
@@ -1559,15 +1668,23 @@ Twinkle.tag.callbacks = {
 			prependText += '{{' + tag;
 
 			// add parameters for tag:
-			var parameters = Twinkle.tag.talk.tags[tag].subgroup;
-			if(parameters) {
-				parameters.forEach(function (it) {
-					if(params[it.name])
-						prependText += '|' + (it.param_name ? (it.param_name + '=') : '' ) + params[it.name];
-				});
+			if(tag !== 'Article history') {
+				var parameters = Twinkle.tag.talk.tags[tag].subgroup;
+				if(parameters) {
+					parameters.forEach(function (it) {
+						if(params[it.name])
+							prependText += '|' + (it.param_name ? (it.param_name + '=') : '' ) + params[it.name];
+					});
+				}
+			} else {
+				prependText += '\n|action1 = ' + params.AHaction +
+					'\n|action1date = ' + params.AHdate + 
+					'\n|action1link = ' + params.AHlink +
+					'\n|action1result = ' + params.AHresult + 
+					'\n|action1oldid = ' + params.AHoldid + '\n';
 			}
 
-			prependText += '}}';
+			prependText += '}}\n';
 
 			summary += '{{[[Template:' + tag + '|' + tag + ']]}}, ';
 		} );
@@ -1630,6 +1747,12 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			$(form).find('input[type=text]').each(function(idx,el) {
 				params[el.name.slice(9)] = form[el.name].value;
 			});
+
+			if(params.tags.includes('Article history')) {
+				$(form).find('select').each(function(idx,el) {
+					params[el.name] = form[el.name].value;
+				});
+			}
 
 			// Are the required fields filled in?
 			// Validation for browsers that don't support HTML5-based validation
