@@ -368,6 +368,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 						{ label: "{{notability|Numbers}}: notability guideline for numbers", value: "Numbers" },
 						{ label: "{{notability|Products}}: notability guideline for products and services", value: "Products" },
 						{ label: "{{notability|Sport}}: notability guideline for sports and athletics", value: "Sport" },
+						{ label: "{{notability|Television}}: notability guideline for television shows", value: "Television" },
 						{ label: "{{notability|Web}}: notability guideline for web content", value: "Web" }
 					]
 				};
@@ -1492,12 +1493,11 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		alert( 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.' );
 		return;
 	}
-	if( params.tags.indexOf('cleanup') !== -1 && params.tagParameters.cleanup.trim && params.tagParameters.cleanup.trim() === "") {
+	if( params.tags.indexOf('cleanup') !== -1 && params.tagParameters.cleanup.trim() === '') {
 		alert( 'You must specify a reason for the {{cleanup}} tag.' );
 		return;
 	}
-
-	if(params.tags.indexOf('expand language') !== -1 && params.tagParameters.expandLanguageLangCode == null) {
+	if( params.tags.indexOf('expand language') !== -1 && params.tagParameters.expandLanguageLangCode.trim() === '') {
 		alert('You must specify language code for the {{expand language}} tag.');
 		return;
 	}
