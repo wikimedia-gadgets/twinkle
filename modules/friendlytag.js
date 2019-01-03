@@ -440,7 +440,6 @@ Twinkle.tag.article.tags = {
 	"copy edit": "article needs copy editing for grammar, style, cohesion, tone, and/or spelling",
 	"copypaste": "article appears to have been copied and pasted from a source",
 	"current": "article documents a current event",
-	"dead end": "article has no links to other articles",
 	"disputed": "article has questionable factual accuracy",
 	"essay-like": "article is written like a personal reflection or opinion essay",
 	"expand language": "article can be expanded with material from a foreign-language Wikipedia",
@@ -464,7 +463,6 @@ Twinkle.tag.article.tags = {
 	"merge": "article should be merged with another given article",
 	"merge from": "another given article should be merged into this one",
 	"merge to": "article should be merged into another given article",
-	"metricate": "article exclusively uses non-SI units of measurement",
 	"more citations needed": "article needs additional references or sources for verification",
 	"more footnotes": "article has some references, but insufficient in-text citations",
 	"news release": "article reads like a news release",
@@ -563,7 +561,6 @@ Twinkle.tag.article.tagCategories = {
 		"Information and detail": [
 			"context",
 			"expert needed",
-			"metricate",
 			"overly detailed",
 			"undue"
 		],
@@ -605,7 +602,6 @@ Twinkle.tag.article.tagCategories = {
 			"expand language"
 		],
 		"Links": [
-			"dead end",
 			"orphan",
 			"overlinked",
 			"underlinked"
