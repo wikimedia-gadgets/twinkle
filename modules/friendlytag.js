@@ -145,7 +145,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 					list: [ {
 						value: el,
 						label: Twinkle.tag.talk.tags[el].label,
-						subgroup: Twinkle.tag.talk.tags[el].subgroup 
+						subgroup: Twinkle.tag.talk.tags[el].subgroup
 					} ]
 				});
 			});
@@ -605,7 +605,7 @@ Twinkle.tag.article.tagCategories = {
 		],
 		"Timeliness": [
 			"current",
-			"update"			
+			"update"
 		],
 		"Neutrality, bias, and factual accuracy": [
 			"autobiography",
@@ -899,8 +899,8 @@ Twinkle.tag.file.replacementList = [
 
 Twinkle.tag.talk = {};
 
-Twinkle.tag.generateAHdiv = function() {
-	
+var generateAHdiv = function() {
+
 	var container = new Morebits.quickForm.element({ type: 'div' });
 
 	var resultHash = {
@@ -917,7 +917,7 @@ Twinkle.tag.generateAHdiv = function() {
 		'AFD': ['kept', 'deleted', 'merged', 'no consensus', 'speedily kept', 'speedily deleted', 'redirected', 'renamed'],
 		'DRV': ['endored', 'relisted', 'overturned', 'no consensus'],
 		'PROD': ['kept', 'deleted', 'afd'],
-		'CSD': ['kept', 'deleted', 'afd', 'prod'] 
+		'CSD': ['kept', 'deleted', 'afd', 'prod']
 	};
 
 	var generateResultsMenu = function(re) {
@@ -929,7 +929,7 @@ Twinkle.tag.generateAHdiv = function() {
 		});
 		$("#tag-AHresult-container").empty().append(menu.render());
 	};
-	
+
 	container.append({
 		type: 'select',
 		name: 'AHaction',
@@ -937,26 +937,26 @@ Twinkle.tag.generateAHdiv = function() {
 		event: generateResultsMenu,
 		list: [
 			{	label: 'Featured content processes',
-				list: [ 
-					{ label: 'FAC: Featured article candidate', value: 'FAC' }, 
-					{ label: 'FAR: Featured article review', value: 'FAR' }, 
-					{ label: 'FLC: Featured list candidate', value: 'FLC' }, 
-					{ label: 'FLR: Featured list removal candidate', value: 'FLR' }, 
-					{ label: 'FTC: Featured topic candidate', value: 'FTC' }, 
+				list: [
+					{ label: 'FAC: Featured article candidate', value: 'FAC' },
+					{ label: 'FAR: Featured article review', value: 'FAR' },
+					{ label: 'FLC: Featured list candidate', value: 'FLC' },
+					{ label: 'FLR: Featured list removal candidate', value: 'FLR' },
+					{ label: 'FTC: Featured topic candidate', value: 'FTC' },
 					{ label: 'FTR: Featured topic removal candidate	', value: 'FTR' } ]
 			},
 			{	label: 'Other review processes',
-				list: [ 
-					{ label: 'GAN: Good article nomination', value: 'GAN' }, 
-					{ label: 'GAR: Good article reassessment', value: 'GAR' }, 
-					{ label: 'PR: Peer review', value: 'PR' }, 
+				list: [
+					{ label: 'GAN: Good article nomination', value: 'GAN' },
+					{ label: 'GAR: Good article reassessment', value: 'GAR' },
+					{ label: 'PR: Peer review', value: 'PR' },
 					{ label: 'WAR: WikiProject A-class review', value: 'WAR' } ]
 			},
 			{	label: 'Deletion processes',
-				list: [ 
-					{ label: 'AFD: Articles for deletion', value: 'AFD' }, 
-					{ label: 'DRV: Deletion review', value: 'DRV' }, 
-					{ label: 'PROD: Proposed deletion', value: 'PROD' }, 
+				list: [
+					{ label: 'AFD: Articles for deletion', value: 'AFD' },
+					{ label: 'DRV: Deletion review', value: 'DRV' },
+					{ label: 'PROD: Proposed deletion', value: 'PROD' },
 					{ label: 'CSD: Speedy deletion', value: 'CSD' } ]
 			}
 		]
@@ -1005,7 +1005,7 @@ Twinkle.tag.talk.tags = {
 			type: 'div',
 			name: 'AHbox',
 			id: 'tag-AHbox',
-			label: Twinkle.tag.generateAHdiv()
+			label: generateAHdiv()
 		}
 	},
 
@@ -1033,36 +1033,24 @@ Twinkle.tag.talk.tags = {
 		label: '{{Copied}}: ',
 		subgroup: [
 			{
-				type: 'input',
-				name: 'copiedFrom',
-				label: 'From: ',
-				param_name: 'from',
-				required: true
+				type: 'input', name: 'copiedFrom', label: 'From: ',
+				param_name: 'from', required: true
 			},
 			{
-				type: 'input',
-				name: 'copiedFromOldid',
-				param_name: 'from_oldid',
-				label: 'OldId: '
+				type: 'input', name: 'copiedFromOldid', label: 'OldId: ',
+				param_name: 'from_oldid'
 			},
 			{
-				type: 'input',
-				name: 'copiedTo',
-				label: 'To: ',
-				param_name: 'to',
-				required: true
+				type: 'input', name: 'copiedTo', label: 'To: ',
+				param_name: 'to', required: true
 			},
 			{
-				type: 'input',
-				name: 'copiedDiff',
-				label: 'Diff: ',
+				type: 'input', name: 'copiedDiff', label: 'Diff: ',
 				tooltip: 'Revision number of the page in which the copied text first appears',
 				param_name: 'diff'
 			},
 			{
-				type: 'date',
-				name: 'copiedDate',
-				label: 'Date: ',
+				type: 'date', name: 'copiedDate', label: 'Date: ',
 				param_name: 'date'
 			}
 		]
@@ -1072,15 +1060,11 @@ Twinkle.tag.talk.tags = {
 		label: '{{Merged from}}: ',
 		subgroup: [
 			{
-				type: 'input',
-				name: 'mergedfromArticle',
-				label: 'From article: ',
+				type: 'input', name: 'mergedfromArticle', label: 'From article: ',
 				required: true
 			},
 			{
-				type: 'date',
-				name: 'mergedfromDate',
-				label: 'Date: '
+				type: 'date', name: 'mergedfromDate', label: 'Date: '
 			}
 		]
 	},
@@ -1089,15 +1073,11 @@ Twinkle.tag.talk.tags = {
 		label: '{{Merged to}}: ',
 		subgroup: [
 			{
-				type: 'input',
-				name: 'mergedtoArticle',
-				label: 'To article: ',
+				type: 'input', name: 'mergedtoArticle', label: 'To article: ',
 				required: true
 			},
 			{
-				type: 'date',
-				name: 'mergedtoDate',
-				label: 'Date: '
+				type: 'date', name: 'mergedtoDate', label: 'Date: '
 			}
 		]
 	},
@@ -1106,38 +1086,27 @@ Twinkle.tag.talk.tags = {
 		label: '{{Split article}}: ',
 		subgroup: [
 			{
-				type: 'input',
-				name: 'splitFrom',
-				label: 'From: ',
-				tooltip: 'Name of page from which content was removed',
-				param_name: 'from',
-				required: true
+				type: 'input', name: 'splitFrom',
+				label: 'From: ', tooltip: 'Name of page from which content was removed',
+				param_name: 'from', required: true
 			},
 			{
-				type: 'input',
-				name: 'splitFromOldid',
-				label: 'From oldid: ',
+				type: 'input', name: 'splitFromOldid', label: 'From oldid: ',
 				tooltip: 'Permanent link url or revisionid from which the material was copied',
 				param_name: 'from_oldid'
 			},
 			{
-				type: 'input',
-				name: 'splitTo',
-				label: 'To: ',
+				type: 'input', name: 'splitTo', label: 'To: ',
 				tooltip: 'name of page material was copied to',
 				param_name: 'to'
 			},
 			{
-				type: 'input',
-				name: 'splitDiff',
-				label: 'Diff: ',
+				type: 'input', name: 'splitDiff', label: 'Diff: ',
 				tooltip: 'URL or either a single revisionid or a diff of two revisionids separated by a slash showing the addition of the material',
 				param_name: 'diff'
 			},
 			{
-				type: 'date',
-				name: 'splitDate',
-				label: 'Date: ',
+				type: 'date', name: 'splitDate', label: 'Date: ',
 				tooltip: 'Date and time material was moved',
 				param_name: 'date'
 			}
@@ -1678,9 +1647,9 @@ Twinkle.tag.callbacks = {
 				}
 			} else {
 				prependText += '\n|action1 = ' + params.AHaction +
-					'\n|action1date = ' + params.AHdate + 
+					'\n|action1date = ' + params.AHdate +
 					'\n|action1link = ' + params.AHlink +
-					'\n|action1result = ' + params.AHresult + 
+					'\n|action1result = ' + params.AHresult +
 					'\n|action1oldid = ' + params.AHoldid + '\n';
 			}
 
@@ -1742,13 +1711,13 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 		case 'talk':
 			params.tags = form.getChecked('talkTags');
-			
-			// save parameter fields text 
+
+			// save parameter fields text
 			$(form).find('input[type=text]').each(function(idx,el) {
 				params[el.name.slice(9)] = form[el.name].value;
 			});
 
-			if(params.tags.includes('Article history')) {
+			if(params.tags.indexOf('Article history') !== -1) {
 				$(form).find('select').each(function(idx,el) {
 					params[el.name] = form[el.name].value;
 				});
@@ -1756,7 +1725,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 			// Are the required fields filled in?
 			// Validation for browsers that don't support HTML5-based validation
-			if ($("<input />").prop("required") === undefined) {	
+			if ($("<input />").prop("required") === undefined) {
 				var flag = true;
 				$.each(params.tags, function(idx, tag) { // not using JS native forEach beacause it can't be broken out of
 					var subgroup = Twinkle.tag.talk.tags[tag].subgroup
