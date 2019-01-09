@@ -206,7 +206,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 					type: 'input',
 					label: 'Reason: ',
 					tooltip: 'Short explanation describing the issue. Either Reason or Talk link is required.'
-				}, 
+				},
 				{
 					name: 'expertNeededTalk',
 					type: 'input',
