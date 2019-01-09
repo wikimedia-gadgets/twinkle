@@ -1390,10 +1390,10 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				cleanup: form["articleTags.cleanup"] ? form["articleTags.cleanup"].value : null,
 				copyEdit: form["articleTags.copyEdit"] ? form["articleTags.copyEdit"].value : null,
 				copypaste: form["articleTags.copypaste"] ? form["articleTags.copypaste"].value : null,
-				expertNeeded: form["articleTags.expertNeeded"] ? form["articleTags.expertNeeded"].value : null,
 				globalize: form["articleTags.globalize"] ? form["articleTags.globalize"].value : null,
 				notability: form["articleTags.notability"] ? form["articleTags.notability"].value : null
 			};
+			// {{expert needed}} parameters:
 			params.expertNeeded = form["articleTags.expertNeeded"] ? form["articleTags.expertNeeded"].value : null,
 			params.expertNeededTalk = form["articleTags.expertNeededTalk"] ? form["articleTags.expertNeededTalk"].value : null,
 			params.expertNeededReason = form["articleTags.expertNeededReason"] ? form["articleTags.expertNeededReason"].value : null,
