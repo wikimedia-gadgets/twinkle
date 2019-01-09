@@ -215,7 +215,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 					tooltip: 'Name of the section of this article\'s talk page where the issue is being discussed. Do not give a link, just the name of the section. Either Reason or Talk link is required.'
 				}
 				];
-				break; 
+				break;
 			case "globalize":
 				checkbox.subgroup = {
 					name: 'globalize',
