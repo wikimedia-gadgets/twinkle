@@ -200,7 +200,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 					type: 'input',
 					label: 'Name of relevant WikiProject: ',
 					tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.'
-				}, 
+				},
 				{
 					name: 'expertNeededReason',
 					type: 'input',
