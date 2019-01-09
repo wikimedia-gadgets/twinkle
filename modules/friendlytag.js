@@ -195,7 +195,8 @@ Twinkle.tag.updateSortOrder = function(e) {
 				};
 				break;
 			case "expert needed":
-				checkbox.subgroup = [ {
+				checkbox.subgroup = [
+					{
 					name: 'expertNeeded',
 					type: 'input',
 					label: 'Name of relevant WikiProject: ',
