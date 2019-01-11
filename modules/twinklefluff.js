@@ -312,7 +312,7 @@ Twinkle.fluff.callbacks = {
 		var revs = $(xmlDoc).find('rev');
 
 		if( revs.length < 1 ) {
-			self.statelem.error( 'We have less than one additional revision, thus impossible to revert' );
+			self.statelem.error( 'We have less than one additional revision, thus impossible to revert.' );
 			return;
 		}
 		var top = revs[0];
@@ -326,7 +326,7 @@ Twinkle.fluff.callbacks = {
 			if( lastuser === self.params.user ) {
 				switch( self.params.type ) {
 				case 'vand':
-					Morebits.status.info( 'Info', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', self.params.user ) , '. As we assume vandalism, we continue to revert' ]);
+					Morebits.status.info( 'Info', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', self.params.user ) , '. As we assume vandalism, we continue to revert.' ]);
 					break;
 				case 'agf':
 					Morebits.status.warn( 'Warning', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', self.params.user ) , '. As we assume good faith, we stop reverting, as the problem might have been fixed.' ]);
@@ -342,7 +342,7 @@ Twinkle.fluff.callbacks = {
 				Morebits.status.info( 'Info', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', lastuser ), ', a trusted bot, and the revision before was made by our vandal, so we proceed with the revert.' ] );
 				index = 2;
 			} else {
-				Morebits.status.error( 'Error', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', lastuser ), ', so it might have already been reverted, stopping  reverting.'] );
+				Morebits.status.error( 'Error', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', lastuser ), ', so it might have already been reverted, stopping revert.'] );
 				return;
 			}
 
@@ -356,7 +356,7 @@ Twinkle.fluff.callbacks = {
 				self.params.user = revs[1].getAttribute( 'user' );
 				break;
 			case 'agf':
-				Morebits.status.warn( 'Notice', [ 'Good faith revert was chosen on ', Morebits.htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot, and since bots have no faith, AGF rollback will not proceed.' ] );
+				Morebits.status.warn( 'Notice', [ 'Good faith revert was chosen on ', Morebits.htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot and thus AGF rollback will not proceed.' ] );
 				return;
 			case 'norm':
 				/* falls through */
@@ -389,7 +389,7 @@ Twinkle.fluff.callbacks = {
 		}
 
 		if( ! count ) {
-			Morebits.status.error( 'Error', "We were to revert zero revisions. As that makes no sense, we'll stop reverting this time. It could be that the edit has already been reverted, but the revision ID was still the same." );
+			Morebits.status.error( 'Error', "As it is not possible to revert zero revisions, we'll stop reverting this time. It could be that the edit has already been reverted, but the revision ID was still the same." );
 			return;
 		}
 
@@ -397,7 +397,7 @@ Twinkle.fluff.callbacks = {
 		var userHasAlreadyConfirmedAction = false;
 		if (self.params.type !== 'vand' && count > 1) {
 			if ( !confirm( self.params.user + ' has made ' + count + ' edits in a row. Are you sure you want to revert them all?') ) {
-				Morebits.status.info( 'Notice', 'Stopping reverting per user input' );
+				Morebits.status.info( 'Notice', 'Stopping revert.' );
 				return;
 			}
 			userHasAlreadyConfirmedAction = true;
@@ -428,7 +428,7 @@ Twinkle.fluff.callbacks = {
 
 			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" +
 				self.params.user + "|" + self.params.user + "]] ([[User talk:" + self.params.user + "|talk]]) to last revision by " +
-				self.params.gooduser + "." + Twinkle.getPref('summaryAd');
+				self.params.gooduser + Twinkle.getPref('summaryAd');
 			break;
 
 		case 'norm':
@@ -542,7 +542,7 @@ Twinkle.fluff.callbacks = {
 			div.innerHTML = $edit.attr('warning');
 			apiobj.statelem.error([ 'The following warning was returned by the edit filter: ', div, 'If you wish to proceed with the rollback, please reload this page (F5 or Ctrl+R) and carry it out again. This warning will not appear a second time.' ]);
 		} else if ($edit.attr('nochange') === '') {
-			apiobj.statelem.warn("Revision we are reverting to is identical to current revision: Nothing to do");
+			apiobj.statelem.warn("Revision we are reverting to is identical to current revision, stopping revert.");
 		} else {
 			apiobj.statelem.info("done");
 
@@ -566,15 +566,11 @@ Twinkle.fluff.callbacks = {
 Twinkle.fluff.formatSummary = function(builtInString, userName, userString) {
 	var result = builtInString;
 
-	// append user's custom reason with requisite punctuation
+	// append user's custom reason
 	if (userString) {
 		result += ': ' + Morebits.string.toUpperCaseFirstChar(userString);
-		if (userString.search(/[.?!;]$/) === -1) {
-			result += '.';
-		}
-	} else {
-		result += '.';
 	}
+	
 	result += Twinkle.getPref('summaryAd');
 
 	// find number of UTF-8 bytes the resulting string takes up, and possibly add
