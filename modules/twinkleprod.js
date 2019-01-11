@@ -92,7 +92,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	var result = form.render();
 	Window.setContent( result );
 	Window.display();
-	
+
 	// Hide fieldset for PROD type in File and Book namespaces since only normal PROD is allowed
 	if(namespace !== 'article') {
 		$(result).find('#prodtype_fieldset').hide();
@@ -191,7 +191,7 @@ Twinkle.prod.callbacks = {
 
 		// Remove tags that become superfluous with this action
 		text = text.replace(/{{\s*(userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/gi, "");
-		var prod_re = /{{\s*(?:dated prod|dated files|dated prod blp|Prod blp\/dated|Proposed deletion\/dated|book-prod\/dated)\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
+		var prod_re = /{{\s*(?:Prod blp|Proposed deletion|book-prod)\/dated( files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
 		var summaryText;
 		if( !prod_re.test( text ) ) {
 			// Notification to first contributor
@@ -206,15 +206,15 @@ Twinkle.prod.callbacks = {
 			}
 			if(params.blp) {
 				summaryText = "Proposing article for deletion per [[WP:BLPPROD]].";
-				text = "{{subst:prod blp}}\n" + text;
+				text = "{{subst:prod blp" + (params.usertalk ? "|help=off" : "") + "}}\n" + text;
 			}
 			else if(params.book) {
 				summaryText = "Proposing book for deletion per [[WP:BOOKPROD]].";
-				text = "{{subst:book-prod|1=" + Morebits.string.formatReasonText(params.reason) + "}}\n" + text;
+				text = "{{subst:book-prod|1=" + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? "|help=off" : "") + "}}\n" + text;
 			}
 			else {
 				summaryText = "Proposing " + namespace + " for deletion per [[WP:PROD]].";
-				text = "{{subst:prod|1=" + Morebits.string.formatReasonText(params.reason) + "}}\n" + text;
+				text = "{{subst:prod|1=" + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? "|help=off" : "") + "}}\n" + text;
 			}
 		}
 		else {  // already tagged for PROD, so try endorsing it
