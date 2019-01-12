@@ -1396,7 +1396,6 @@ Morebits.wiki.removeCheckpoint = function() {
 Morebits.wiki.api = function( currentAction, query, onSuccess, statusElement, onError ) {
 	this.currentAction = currentAction;
 	this.query = query;
-	this.query.format = 'xml';
 	this.query.assert = 'user';
 	this.onSuccess = onSuccess;
 	this.onError = onError;
@@ -1406,6 +1405,11 @@ Morebits.wiki.api = function( currentAction, query, onSuccess, statusElement, on
 	} else {
 		this.statelem = new Morebits.status( currentAction );
 	}
+	if( !query.format ) {
+		this.query.format = 'xml';
+	} else if ( ['xml', 'json'].indexOf(query.format) === -1 ) {
+		this.statelem.error( 'Invalid API format: only xml and json are supported.' );
+	}
 };
 
 Morebits.wiki.api.prototype = {
@@ -1414,15 +1418,19 @@ Morebits.wiki.api.prototype = {
 	onError: null,
 	parent: window,  // use global context if there is no parent object
 	query: null,
-	responseXML: null,
+	responseXML: null,  // retained for backwards compatibility
+	response: null,
+
 	setParent: function(parent) { this.parent = parent; },  // keep track of parent object for callbacks
 	statelem: null,  // this non-standard name kept for backwards compatibility
 	statusText: null, // result received from the API, normally "success" or "error"
 	errorCode: null, // short text error code, if any, as documented in the MediaWiki API
 	errorText: null, // full error description, if any
 
-	// post(): carries out the request
-	// do not specify a parameter unless you really really want to give jQuery some extra parameters
+	/**
+	 * Carries out the request.
+	 * Do not specify a parameter unless you really really want to give jQuery some extra parameters
+	 */
 	post: function( callerAjaxParameters ) {
 
 		++Morebits.wiki.numberOfActionsLeft;
@@ -1432,18 +1440,24 @@ Morebits.wiki.api.prototype = {
 			type: 'POST',
 			url: mw.util.wikiScript('api'),
 			data: Morebits.queryString.create(this.query),
-			dataType: 'xml',
+			dataType: this.query.format,
 			headers: {
 				'Api-User-Agent': morebitsWikiApiUserAgent
 			}
 		}, callerAjaxParameters );
 
 		return $.ajax( ajaxparams ).done(
-			function(xml, statusText) {
+			function(response, statusText) {
 				this.statusText = statusText;
-				this.responseXML = xml;
-				this.errorCode = $(xml).find('error').attr('code');
-				this.errorText = $(xml).find('error').attr('info');
+				this.responseXML = response;
+				this.response = response;
+				if (this.query.format === 'json') {
+					this.errorCode = response.error && response.error.code;
+					this.errorText = response.error && response.error.info;
+				} else {
+					this.errorCode = $(response).find('error').attr('code');
+					this.errorText = $(response).find('error').attr('info');
+				}
 
 				if (typeof this.errorCode === "string") {
 
@@ -1504,9 +1518,14 @@ Morebits.wiki.api.prototype = {
 		return this.errorText;
 	},
 
-	getXML: function() {
+	getXML: function() { // retained for backwards compatibility, use getResponse() instead
 		return this.responseXML;
+	},
+
+	getResponse: function() {
+		return this.response;
 	}
+
 };
 
 // Custom user agent header, used by WMF for server-side logging
