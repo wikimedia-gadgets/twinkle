@@ -1409,7 +1409,7 @@ Twinkle.speedy.callbacks = {
 				return;
 			}
 
-			var xfd = /(?:\{\{([rsaiftcm]fd|md1|proposed deletion)[^{}]*?\}\})/i.exec( text );
+			var xfd = /\{\{((?:article for deletion|proposed deletion|prod blp|template for discussion)\/dated|[cfm]fd\b)/i.exec( text ) || /#invoke:(RfD)/.exec(text);
 			if( xfd && !confirm( "The deletion-related template {{" + xfd[1] + "}} was found on the page. Do you still want to add a CSD template?" ) ) {
 				return;
 			}
