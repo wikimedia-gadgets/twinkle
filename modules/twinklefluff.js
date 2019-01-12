@@ -266,7 +266,7 @@ Twinkle.fluff.callbacks = {
 			var revertToUser = $(xmlDoc).find('rev').attr('user');
 
 			if (revertToRevID !== self.params.rev) {
-				self.statitem.error( 'The retrieved revision does not match the requested revision.  Aborting.' );
+				self.statitem.error( 'The retrieved revision does not match the requested revision. Stopping revert.' );
 				return;
 			}
 
@@ -317,7 +317,7 @@ Twinkle.fluff.callbacks = {
 		}
 		var top = revs[0];
 		if( lastrevid < self.params.revid ) {
-			Morebits.status.error( 'Error', [ 'The most recent revision ID received from the server, ', Morebits.htmlNode( 'strong', lastrevid ), ', is less than the ID of the displayed revision. This could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Will stop proceeding at this point.' ] );
+			Morebits.status.error( 'Error', [ 'The most recent revision ID received from the server, ', Morebits.htmlNode( 'strong', lastrevid ), ', is less than the ID of the displayed revision. This could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Stopping revert.' ] );
 			return;
 		}
 		var index = 1;
@@ -326,13 +326,13 @@ Twinkle.fluff.callbacks = {
 			if( lastuser === self.params.user ) {
 				switch( self.params.type ) {
 				case 'vand':
-					Morebits.status.info( 'Info', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', self.params.user ) , '. As we assume vandalism, we continue to revert.' ]);
+					Morebits.status.info( 'Info', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', self.params.user ) , '. As we assume vandalism, we proceed to revert.' ]);
 					break;
 				case 'agf':
-					Morebits.status.warn( 'Warning', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', self.params.user ) , '. As we assume good faith, we stop reverting, as the problem might have been fixed.' ]);
+					Morebits.status.warn( 'Warning', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', self.params.user ) , '. As we assume good faith, we will stop the revert, as the problem might have been fixed.' ]);
 					return;
 				default:
-					Morebits.status.warn( 'Notice', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', self.params.user ) , ', but we will stop reverting anyway.' ] );
+					Morebits.status.warn( 'Notice', [ 'Latest revision was made by ', Morebits.htmlNode( 'strong', self.params.user ) , ', but we will stop the revert.' ] );
 					return;
 				}
 			}
@@ -367,7 +367,7 @@ Twinkle.fluff.callbacks = {
 					index = 2;
 					self.params.user = revs[1].getAttribute( 'user' );
 				} else {
-					Morebits.status.warn( 'Notice', [ 'Normal revert was chosen on ', Morebits.htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot, but per confirmation, revert on top revision will proceed.' ] );
+					Morebits.status.warn( 'Notice', [ 'Normal revert was chosen on ', Morebits.htmlNode( 'strong', self.params.user ), '. This is a whitelisted bot, but per confirmation, revert on selected revision will proceed.' ] );
 				}
 				break;
 			}
@@ -389,7 +389,7 @@ Twinkle.fluff.callbacks = {
 		}
 
 		if( ! count ) {
-			Morebits.status.error( 'Error', "As it is not possible to revert zero revisions, we'll stop reverting this time. It could be that the edit has already been reverted, but the revision ID was still the same." );
+			Morebits.status.error( 'Error', "As it is not possible to revert zero revisions, we will stop this revert. It could be that the edit has already been reverted, but the revision ID was still the same." );
 			return;
 		}
 
