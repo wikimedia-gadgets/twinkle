@@ -245,24 +245,24 @@ Twinkle.tag.updateSortOrder = function(e) {
 
 			case "Expert needed":
 				checkbox.subgroup = [
-			  {
-					name: 'expertNeeded',
-					type: 'input',
-					label: 'Name of relevant WikiProject: ',
-					tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.'
-				},
-				{
-					name: 'expertNeededReason',
-					type: 'input',
-					label: 'Reason: ',
-					tooltip: 'Short explanation describing the issue. Either Reason or Talk link is required.'
-				},
-				{
-					name: 'expertNeededTalk',
-					type: 'input',
-					label: 'Talk discussion: ',
-					tooltip: 'Name of the section of this article\'s talk page where the issue is being discussed. Do not give a link, just the name of the section. Either Reason or Talk link is required.'
-				}
+					{
+						name: 'expertNeeded',
+						type: 'input',
+						label: 'Name of relevant WikiProject: ',
+						tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.'
+					},
+					{
+						name: 'expertNeededReason',
+						type: 'input',
+						label: 'Reason: ',
+						tooltip: 'Short explanation describing the issue. Either Reason or Talk link is required.'
+					},
+					{
+						name: 'expertNeededTalk',
+						type: 'input',
+						label: 'Talk discussion: ',
+						tooltip: 'Name of the section of this article\'s talk page where the issue is being discussed. Do not give a link, just the name of the section. Either Reason or Talk link is required.'
+					}
 				];
 				break;
 			case "Globalize":
@@ -1158,7 +1158,7 @@ Twinkle.tag.callbacks = {
 				summaryText += ' tag' + ( tags.length > 1 ? 's' : '' ) + ' to article';
 
 				postRemoval();
-        
+
 			}
 		};
 
@@ -1285,13 +1285,13 @@ Twinkle.tag.callbacks = {
 				}
 
 				summaryText += ' {{[[';
-				if( tagName === 'globalize' ) {
+				if( tagName === 'Globalize' ) {
 					summaryText += "Template:" + params.tagParameters.globalize + '|' + params.tagParameters.globalize;
 				} else {
 					// if it is a custom tag with a parameter
 					if( tagName.indexOf("|") !== -1 ) {
 						tagName = tagName.slice(0,tagName.indexOf("|"));
-					} 
+					}
 					summaryText += (tagName.indexOf(":") !== -1 ? tagName : ("Template:" + tagName + "|" + tagName));
 				}
 				summaryText += ']]}}';
@@ -1322,7 +1322,7 @@ Twinkle.tag.callbacks = {
 				// regex check for preexistence of tag can be skipped if in untaggable mode
 				if( Twinkle.tag.untaggable || !tagRe.exec( pageText ) ) {
 					// condition Twinkle.tag.article.tags[params.tags[i]] to ensure that its not a custom tag
-                    // Custom tags are assumed non-groupable, since we don't whether MI template supports them
+                    // Custom tags are assumed non-groupable, since we don't know whether MI template supports them
 					if( Twinkle.tag.article.tags[params.tags[i]] && Twinkle.tag.multipleIssuesExceptions.indexOf(params.tags[i]) === -1 ) {
 						groupableTags.push( params.tags[i] );
 					} else {
