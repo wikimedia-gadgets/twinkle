@@ -38,7 +38,10 @@ Twinkle.fluff = {
 			return span;
 		};
 
-		if( mw.config.get('wgCanonicalSpecialPageName') === "Contributions" && mw.config.exists('wgRelevantUserName') ) {
+		// $('sp-contributions-footer-anon-range') relies on the fmbox
+		// id in [[MediaWiki:Sp-contributions-footer-anon-range]] and
+		// is used to show rollback/vandalism links for IP ranges
+		if( mw.config.get('wgCanonicalSpecialPageName') === "Contributions" && (mw.config.exists('wgRelevantUserName') || !!$('#sp-contributions-footer-anon-range')[0])) {
 			//Get the username these contributions are for
 			var username = mw.config.get('wgRelevantUserName');
 			if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||

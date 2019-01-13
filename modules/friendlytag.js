@@ -242,13 +242,28 @@ Twinkle.tag.updateSortOrder = function(e) {
 					size: 50
 				};
 				break;
+
 			case "Expert needed":
-				checkbox.subgroup = {
+				checkbox.subgroup = [
+			  {
 					name: 'expertNeeded',
 					type: 'input',
 					label: 'Name of relevant WikiProject: ',
 					tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.'
-				};
+				},
+				{
+					name: 'expertNeededReason',
+					type: 'input',
+					label: 'Reason: ',
+					tooltip: 'Short explanation describing the issue. Either Reason or Talk link is required.'
+				},
+				{
+					name: 'expertNeededTalk',
+					type: 'input',
+					label: 'Talk discussion: ',
+					tooltip: 'Name of the section of this article\'s talk page where the issue is being discussed. Do not give a link, just the name of the section. Either Reason or Talk link is required.'
+				}
+				];
 				break;
 			case "Globalize":
 				checkbox.subgroup = {
@@ -493,7 +508,11 @@ Twinkle.tag.updateSortOrder = function(e) {
 	var generateLinks = function(index, checkbox) {
 		var link = Morebits.htmlNode("a", ">");
 		link.setAttribute("class", "tag-template-link");
-		link.setAttribute("href", mw.util.getUrl("Template:" + checkbox.values));
+		var tagname = checkbox.values;
+		link.setAttribute("href", mw.util.getUrl(
+			(tagname.indexOf(":") === -1 ? "Template:" : "") +
+			(tagname.indexOf("|") === -1 ? tagname : tagname.slice(0,tagname.indexOf("|")))
+		));
 		link.setAttribute("target", "_blank");
 		$(checkbox).parent().append(["\u00A0", link]);
 	};
@@ -1139,6 +1158,7 @@ Twinkle.tag.callbacks = {
 				summaryText += ' tag' + ( tags.length > 1 ? 's' : '' ) + ' to article';
 
 				postRemoval();
+        
 			}
 		};
 
@@ -1204,8 +1224,14 @@ Twinkle.tag.callbacks = {
 							}
 							break;
 						case 'Expert needed':
-							if (params.tagParameters.expertNeeded) {
-								currentTag += '|1=' + params.tagParameters.expertNeeded;
+							if (params.expertNeeded) {
+								currentTag += '|1=' + params.expertNeeded;
+							}
+							if(params.expertNeededTalk) {
+								currentTag += '|talk=' + params.expertNeededTalk;
+							}
+							if(params.expertNeededReason) {
+								currentTag += '|reason=' + params.expertNeededReason;
 							}
 							break;
 						case 'News release':
@@ -1258,13 +1284,18 @@ Twinkle.tag.callbacks = {
 					}
 				}
 
-				summaryText += ' {{[[:';
-				if( tagName === 'Globalize' ) {
+				summaryText += ' {{[[';
+				if( tagName === 'globalize' ) {
 					summaryText += "Template:" + params.tagParameters.globalize + '|' + params.tagParameters.globalize;
 				} else {
+					// if it is a custom tag with a parameter
+					if( tagName.indexOf("|") !== -1 ) {
+						tagName = tagName.slice(0,tagName.indexOf("|"));
+					} 
 					summaryText += (tagName.indexOf(":") !== -1 ? tagName : ("Template:" + tagName + "|" + tagName));
 				}
 				summaryText += ']]}}';
+
 			};
 
 			/**
@@ -1290,7 +1321,9 @@ Twinkle.tag.callbacks = {
 				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\})|\\|\\s*' + params.tags[i] + '\\s*=[a-z ]+\\d+)', 'im' );
 				// regex check for preexistence of tag can be skipped if in untaggable mode
 				if( Twinkle.tag.untaggable || !tagRe.exec( pageText ) ) {
-					if( Twinkle.tag.multipleIssuesExceptions.indexOf(params.tags[i]) === -1 ) {
+					// condition Twinkle.tag.article.tags[params.tags[i]] to ensure that its not a custom tag
+                    // Custom tags are assumed non-groupable, since we don't whether MI template supports them
+					if( Twinkle.tag.article.tags[params.tags[i]] && Twinkle.tag.multipleIssuesExceptions.indexOf(params.tags[i]) === -1 ) {
 						groupableTags.push( params.tags[i] );
 					} else {
 						tags.push( params.tags[i] );
@@ -1693,10 +1726,13 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				cleanup: form["articleTags.cleanup"] ? form["articleTags.cleanup"].value : null,
 				copyEdit: form["articleTags.copyEdit"] ? form["articleTags.copyEdit"].value : null,
 				copypaste: form["articleTags.copypaste"] ? form["articleTags.copypaste"].value : null,
-				expertNeeded: form["articleTags.expertNeeded"] ? form["articleTags.expertNeeded"].value : null,
 				globalize: form["articleTags.globalize"] ? form["articleTags.globalize"].value : null,
 				notability: form["articleTags.notability"] ? form["articleTags.notability"].value : null
 			};
+			// {{expert needed}} parameters:
+			params.expertNeeded = form["articleTags.expertNeeded"] ? form["articleTags.expertNeeded"].value : null,
+			params.expertNeededTalk = form["articleTags.expertNeededTalk"] ? form["articleTags.expertNeededTalk"].value : null,
+			params.expertNeededReason = form["articleTags.expertNeededReason"] ? form["articleTags.expertNeededReason"].value : null,
 			// common to {{merge}}, {{merge from}}, {{merge to}}
 			params.mergeTag = params.tags.indexOf('Merge') !== -1 ? 'Merge' : (params.tags.indexOf('Merge to') !== -1 ? 'Merge to' : (params.tags.indexOf('Merge from') !== -1 ? 'Merge from' : null ));
 			params.mergeTarget = form["articleTags.mergeTarget"] ? form["articleTags.mergeTarget"].value : null;
