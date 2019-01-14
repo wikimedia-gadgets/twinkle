@@ -3145,6 +3145,7 @@ Morebits.wikitext.template = {
 };
 
 /**
+ * @constructor
  * @param {string} text
  */
 Morebits.wikitext.page = function mediawikiPage( text ) {
@@ -3245,7 +3246,8 @@ Morebits.wikitext.page.prototype = {
 
 	/**
 	 * Removes transclusions of template from page text
-	 * @param {string} template - Page name whose transclusions are to be removed, include namespace prefix only if not in template namespace
+	 * @param {string} template - Page name whose transclusions are to be removed,
+	 * include namespace prefix only if not in template namespace
 	 */
 	removeTemplate: function( template ) {
 		var first_char = template.substr( 0, 1 );
@@ -3653,6 +3655,10 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
  * twinklebatchdelete.js, and using Morebits.wiki.api in twinklebatchundelete.js.
  */
 
+/**
+ * @constructor
+ * @param {string} [currentAction]
+ */
 Morebits.batchOperation = function(currentAction) {
 	var ctx = {
 		// backing fields for public properties
@@ -3678,14 +3684,30 @@ Morebits.batchOperation = function(currentAction) {
 		return ctx.statusElement;
 	};
 
+	/**
+	 * Sets the list of pages to work on
+	 * @param {Array} pageList  Array of page names (strings)
+	 */
 	this.setPageList = function(pageList) {
 		ctx.pageList = pageList;
 	};
 
+	/**
+	 * Sets a known option:
+	 * - chunkSize (integer): 	the size of chunks to break the array into (default 50).
+	 * 							Setting this to a small value (<5) can cause problems.
+	 * - preserveIndividualStatusLines (boolean): keep each page's status element visible
+	 *                                            when worker is complete?
+	 */
 	this.setOption = function(optionName, optionValue) {
 		ctx.options[optionName] = optionValue;
 	};
 
+	/**
+	 * Runs the given callback for each page in the list.
+	 * The callback must call workerSuccess when succeeding, or workerFailure when failing.
+	 * @param {Function} worker
+	 */
 	this.run = function(worker) {
 		if (ctx.running) {
 			ctx.statusElement.error("Batch operation is already running");
