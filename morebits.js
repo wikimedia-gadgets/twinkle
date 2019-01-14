@@ -1178,9 +1178,23 @@ Morebits.pageNameNorm = mw.config.get('wgPageName').replace(/_/g, ' ');
 
 /**
  * **************** Morebits.unbinder ****************
+ * Used for temporarily hiding a part of a string while processing the rest of it.
+ *
+ * eg.  var u = new Morebits.unbinder("Hello world <!-- world --> world");
+ * 		u.unbind('<!--','-->');
+ * 		u.content = u.content.replace(/world/g, 'earth');
+ * 		u.rebind()	// gives "Hello earth <!-- world --> earth"
+ *
+ * Text within the 'unbinded' part (in this case, the HTML comment) remains intact
+ * unbind() can be called multiple times to unbind multiple parts of the string.
+ *
  * Used by Morebits.wikitext.page.commentOutImage
  */
 
+ /**
+  * @constructor
+  * @param {string} string
+  */
 Morebits.unbinder = function Unbinder( string ) {
 	if( typeof string !== 'string' ) {
 		throw new Error( "not a string" );
@@ -1193,10 +1207,18 @@ Morebits.unbinder = function Unbinder( string ) {
 };
 
 Morebits.unbinder.prototype = {
+	/**
+	 * @param {string} prefix
+	 * @param {string} postfix
+	 */
 	unbind: function UnbinderUnbind( prefix, postfix ) {
 		var re = new RegExp( prefix + '(.*?)' + postfix, 'g' );
 		this.content = this.content.replace( re, Morebits.unbinder.getCallback( this ) );
 	},
+
+	/**
+	 * @returns {string} The output
+	 */
 	rebind: function UnbinderRebind() {
 		var content = this.content;
 		content.self = this;
@@ -1418,14 +1440,14 @@ Morebits.wiki.removeCheckpoint = function() {
  * An easy way to talk to the MediaWiki API.
  */
 
-	/**
-	 * @constructor
-	 * @param {string} currentAction - The current action (required)
-	 * @param {Object} query - The querys (required)
-	 * @param {Function} onSuccess - The function to call when request gotten
-	 * @param {Object} [statusElement] - A Morebits.status object to use for status messages (optional)
-	 * @param {Function} [onError] - The function to call if an error occurs (optional)
-	 */
+/**
+ * @constructor
+ * @param {string} currentAction - The current action (required)
+ * @param {Object} query - The querys (required)
+ * @param {Function} onSuccess - The function to call when request gotten
+ * @param {Object} [statusElement] - A Morebits.status object to use for status messages (optional)
+ * @param {Function} [onError] - The function to call if an error occurs (optional)
+ */
 Morebits.wiki.api = function( currentAction, query, onSuccess, statusElement, onError ) {
 	this.currentAction = currentAction;
 	this.query = query;
@@ -1591,11 +1613,11 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  *             In this case, callers must make the same edit to the new pageText and reinvoke save().
  *             This behavior can be disabled with setMaxConflictRetries(0).
  *
- * append([onSuccess], [onFailure]): Adds the text provided via setAppendText() to the end of the page.
- *                               Does not require calling load() first.
+ * append([onSuccess], [onFailure]): Adds the text provided via setAppendText() to the end of
+ * the page. Does not require calling load() first.
  *
- * prepend([onSuccess], [onFailure]): Adds the text provided via setPrependText() to the start of the page.
- *                                Does not require calling load() first.
+ * prepend([onSuccess], [onFailure]): Adds the text provided via setPrependText() to the start
+ * of the page. Does not require calling load() first.
  *
  * move(onSuccess, [onFailure]): Moves a page to another title
  *
@@ -1664,12 +1686,12 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  *          significant duplication of code for little benefit.
  */
 
-	/**
-	 * @constructor
-	 * @param {string} pageName The name of the page, prefixed by the namespace (if any)
-	 * For the current page, use mw.config.get('wgPageName')
-	 * @param {string} [currentAction] A string describing the action about to be undertaken (optional)
-	 */
+/**
+ * @constructor
+ * @param {string} pageName The name of the page, prefixed by the namespace (if any)
+ * For the current page, use mw.config.get('wgPageName')
+ * @param {string} [currentAction] A string describing the action about to be undertaken (optional)
+ */
 Morebits.wiki.page = function(pageName, currentAction) {
 
 	if (!currentAction) {
@@ -1818,13 +1840,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * Saves the text for the page to Wikipedia
 	 * Must be preceded by successfully calling load().
 	 *
-	 * Warning: Calling save() can result in additional calls to the previous load() callbacks to
-	 *             recover from edit conflicts!
-	 *             In this case, callers must make the same edit to the new pageText and reinvoke save().
-	 *             This behavior can be disabled with setMaxConflictRetries(0).
-	 * @param {Function} onSuccess - callback function which is called when the save has succeeded (optional)
-	 * @param {Function} onFailure - callback function which is called when the save fails (optional)
-	 *
+	 * Warning: Calling save() can result in additional calls to the previous load() callbacks
+	 * to recover from edit conflicts!
+	 * In this case, callers must make the same edit to the new pageText and reinvoke save().
+	 * This behavior can be disabled with setMaxConflictRetries(0).
+	 * @param {Function} [onSuccess] - callback function which is called when the save has
+	 * succeeded (optional)
+	 * @param {Function} [onFailure] - callback function which is called when the save fails
+	 * (optional)
 	 */
 	this.save = function(onSuccess, onFailure) {
 		ctx.onSaveSuccess = onSuccess;
@@ -1954,14 +1977,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
-	 * @returns a string containing the name of the loaded page, including the namespace
+	 * @returns {string} string containing the name of the loaded page, including the namespace
 	 */
 	this.getPageName = function() {
 		return ctx.pageName;
 	};
 
 	/**
-	 * @returns a string containing the text of the page after a successful load()
+	 * @returns {string} string containing the text of the page after a successful load()
 	 */
 	this.getPageText = function() {
 		return ctx.pageText;
@@ -2059,7 +2082,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	/**
 	 *  `watchlistOption` is a boolean value:
 	 *       True  - page will be added to the user's watchlist when save() is called
-		 *       False - watchlist status of the page will not be changed (default)
+	 *       False - watchlist status of the page will not be changed (default)
 	 */
 	this.setWatchlist = function(watchlistOption) {
 		if (watchlistOption) {
@@ -2148,7 +2171,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
-	 *  @returns a string containing the current revision ID of the page
+	 *  @returns {string} string containing the current revision ID of the page
 	 */
 	this.getCurrentID = function() {
 		return ctx.revertCurID;
@@ -2181,7 +2204,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
-	 * @returns the Status element created by the constructor
+	 * @returns {Morebits.status} Status element created by the constructor
 	 */
 	this.getStatusElement = function() {
 		return ctx.statusElement;
@@ -2193,14 +2216,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
-	 * @returns true if the page existed on the wiki when it was last loaded
+	 * @returns {boolean} true if the page existed on the wiki when it was last loaded
 	 */
 	this.exists = function() {
 		return ctx.pageExists;
 	};
 
 	/**
-	 * @returns the user who created the page following lookupCreator()
+	 * @returns {string} the user who created the page following lookupCreator()
 	 */
 	this.getCreator = function() {
 		return ctx.creator;
