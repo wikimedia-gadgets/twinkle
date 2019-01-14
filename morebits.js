@@ -39,8 +39,9 @@ window.Morebits = Morebits;  // allow global access
 /**
  * **************** Morebits.userIsInGroup() ****************
  * Simple helper function to see what groups a user might belong
+ * @param {string} group  eg. `sysop`, `extendedconfirmed`, etc
+ * @returns {boolean}
  */
-
 Morebits.userIsInGroup = function ( group ) {
 	return mw.config.get( 'wgUserGroups' ).indexOf( group ) !== -1;
 };
@@ -53,7 +54,6 @@ Morebits.userIsInGroup = function ( group ) {
  * includes/utils/IP.php.
  * Converts an IPv6 address to the canonical form stored and used by MediaWiki.
  */
-
 Morebits.sanitizeIPv6 = function ( address ) {
 	address = address.trim();
 	if ( address === '' ) {
@@ -147,10 +147,18 @@ Morebits.sanitizeIPv6 = function ( address ) {
  * Global attributes: id, className, style, tooltip, extra, adminonly
  */
 
+/**
+ * @constructor
+ * @param {event} event   Function to execute when form is submitted
+ * @param {*} eventType
+ */
 Morebits.quickForm = function QuickForm( event, eventType ) {
 	this.root = new Morebits.quickForm.element( { type: 'form', event: event, eventType:eventType } );
 };
 
+/**
+ * Renders the HTML output of the quickForm
+ */
 Morebits.quickForm.prototype.render = function QuickFormRender() {
 	var ret = this.root.render();
 	ret.names = {};
@@ -169,6 +177,11 @@ Morebits.quickForm.element = function QuickFormElement( data ) {
 
 Morebits.quickForm.element.id = 0;
 
+/**
+ * Appends an element to current element
+ * @param {Morebits.quickForm.element} data  A quickForm element or the object required to
+ * create the quickForm element
+ */
 Morebits.quickForm.element.prototype.append = function QuickFormElementAppend( data ) {
 	var child;
 	if( data instanceof Morebits.quickForm.element ) {
@@ -180,7 +193,10 @@ Morebits.quickForm.element.prototype.append = function QuickFormElementAppend( d
 	return child;
 };
 
-// This should be called without parameters: form.render()
+/**
+ * Renders the HTML output for the quickForm element
+ * This should be called without parameters: form.render()
+ */
 Morebits.quickForm.element.prototype.render = function QuickFormElementRender( internal_subgroup_id ) {
 	var currentNode = this.compute( this.data, internal_subgroup_id );
 
@@ -661,42 +677,14 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 		});
 };
 
-/**
- * Some utility methods for manipulating quickForms after their creation
- * (None of them work for "dyninput" type fields at present)
- *
- * Morebits.quickForm.getElements(form, fieldName)
- *    Returns all form elements with a given field name or ID
- *
- * Morebits.quickForm.getCheckboxOrRadio(elementArray, value)
- *    Searches the array of elements for a checkbox or radio button with a certain |value| attribute
- *
- * Morebits.quickForm.getElementContainer(element)
- *    Returns the <div> containing the form element, or the form element itself
- *    May not work as expected on checkboxes or radios
- *
- * Morebits.quickForm.getElementLabelObject(element)
- *    Gets the HTML element that contains the label of the given form element (mainly for internal use)
- *
- * Morebits.quickForm.getElementLabel(element)
- *    Gets the label text of the element
- *
- * Morebits.quickForm.setElementLabel(element, labelText)
- *    Sets the label of the element to the given text
- *
- * Morebits.quickForm.overrideElementLabel(element, temporaryLabelText)
- *    Stores the element's current label, and temporarily sets the label to the given text
- *
- * Morebits.quickForm.resetElementLabel(element)
- *    Restores the label stored by overrideElementLabel
- *
- * Morebits.quickForm.setElementVisibility(element, visibility)
- *    Shows or hides a form element plus its label and tooltip
- *
- * Morebits.quickForm.setElementTooltipVisibility(element, visibility)
- *    Shows or hides the "question mark" icon next to a form element
- */
 
+// Some utility methods for manipulating quickForms after their creation:
+// (None of these work for "dyninput" type fields at present)
+
+
+/**
+ * Returns all form elements with a given field name or ID
+ */
 Morebits.quickForm.getElements = function QuickFormGetElements(form, fieldName) {
 	var $form = $(form);
 	var $elements = $form.find('[name="' + fieldName + '"]');
@@ -710,6 +698,11 @@ Morebits.quickForm.getElements = function QuickFormGetElements(form, fieldName) 
 	return null;
 };
 
+/**
+ * Searches the array of elements for a checkbox or radio button with a certain `value` attribute
+ * @param {Array} elementArray
+ * @param {string} value
+ */
 Morebits.quickForm.getCheckboxOrRadio = function QuickFormGetCheckboxOrRadio(elementArray, value) {
 	var found = $.grep(elementArray, function(el) {
 		return el.value === value;
@@ -720,6 +713,11 @@ Morebits.quickForm.getCheckboxOrRadio = function QuickFormGetCheckboxOrRadio(ele
 	return null;
 };
 
+/**
+ * Returns the <div> containing the form element, or the form element itself
+ * May not work as expected on checkboxes or radios
+ * @param {Element} element
+ */
 Morebits.quickForm.getElementContainer = function QuickFormGetElementContainer(element) {
 	// for divs, headings and fieldsets, the container is the element itself
 	if (element instanceof HTMLFieldSetElement || element instanceof HTMLDivElement ||
@@ -731,6 +729,10 @@ Morebits.quickForm.getElementContainer = function QuickFormGetElementContainer(e
 	return element.parentNode;
 };
 
+/**
+ * Gets the HTML element that contains the label of the given form element (mainly for internal use)
+ * @param {(Element|Morebits.quickForm.element)} element
+ */
 Morebits.quickForm.getElementLabelObject = function QuickFormGetElementLabelObject(element) {
 	// for buttons, divs and headers, the label is on the element itself
 	if (element.type === "button" || element.type === "submit" ||
@@ -751,6 +753,10 @@ Morebits.quickForm.getElementLabelObject = function QuickFormGetElementLabelObje
 	}
 };
 
+/**
+ * Gets the label text of the element
+ * @param {(Element|Morebits.quickForm.element)} element
+ */
 Morebits.quickForm.getElementLabel = function QuickFormGetElementLabel(element) {
 	var labelElement = Morebits.quickForm.getElementLabelObject(element);
 
@@ -760,6 +766,11 @@ Morebits.quickForm.getElementLabel = function QuickFormGetElementLabel(element) 
 	return labelElement.firstChild.textContent;
 };
 
+/**
+ * Sets the label of the element to the given text
+ * @param {(Element|Morebits.quickForm.element)} element
+ * @param {string} labelText
+ */
 Morebits.quickForm.setElementLabel = function QuickFormSetElementLabel(element, labelText) {
 	var labelElement = Morebits.quickForm.getElementLabelObject(element);
 
@@ -770,6 +781,11 @@ Morebits.quickForm.setElementLabel = function QuickFormSetElementLabel(element, 
 	return true;
 };
 
+/**
+ * Stores the element's current label, and temporarily sets the label to the given text
+ * @param {(Element|Morebits.quickForm.element)} element
+ * @param {string} temporaryLabelText
+ */
 Morebits.quickForm.overrideElementLabel = function QuickFormOverrideElementLabel(element, temporaryLabelText) {
 	if (!element.hasAttribute("data-oldlabel")) {
 		element.setAttribute("data-oldlabel", Morebits.quickForm.getElementLabel(element));
@@ -777,6 +793,10 @@ Morebits.quickForm.overrideElementLabel = function QuickFormOverrideElementLabel
 	return Morebits.quickForm.setElementLabel(element, temporaryLabelText);
 };
 
+/**
+ *  Restores the label stored by overrideElementLabel
+ * @param {(Element|Morebits.quickForm.element)} element
+ */
 Morebits.quickForm.resetElementLabel = function QuickFormResetElementLabel(element) {
 	if (element.hasAttribute("data-oldlabel")) {
 		return Morebits.quickForm.setElementLabel(element, element.getAttribute("data-oldlabel"));
@@ -784,10 +804,20 @@ Morebits.quickForm.resetElementLabel = function QuickFormResetElementLabel(eleme
 	return null;
 };
 
+/**
+ * Shows or hides a form element plus its label and tooltip
+ * @param {*} element
+ * @param {*} visibility
+ */
 Morebits.quickForm.setElementVisibility = function QuickFormSetElementVisibility(element, visibility) {
 	$(element).toggle(visibility);
 };
 
+/**
+ * Shows or hides the "question mark" icon (which displays the tooltip) next to a form element
+ * @param {Morebits.quickForm.element} element
+ * @param {*} visibility
+ */
 Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementTooltipVisibility(element, visibility) {
 	$(Morebits.quickForm.getElementContainer(element)).find(".morebits-tooltip").toggle(visibility);
 };
@@ -796,17 +826,18 @@ Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementToo
 
 /**
  * **************** HTMLFormElement ****************
- *
- * getChecked:
- *   XXX Doesn't seem to work reliably across all browsers at the moment. -- see getChecked2 in twinkleunlink.js, which is better
- *
+ */
+
+/**
  *   Returns an array containing the values of elements with the given name, that has it's
  *   checked property set to true. (i.e. a checkbox or a radiobutton is checked), or select options
  *   that have selected set to true. (don't try to mix selects with radio/checkboxes, please)
  *   Type is optional and can specify if either radio or checkbox (for the event
  *   that both checkboxes and radiobuttons have the same name.
+ *
+ *   XXX: Doesn't seem to work reliably across all browsers at the moment. -- see getChecked2
+ *   in twinkleunlink.js, which is better
  */
-
 HTMLFormElement.prototype.getChecked = function( name, type ) {
 	var elements = this.elements[name];
 	if( !elements ) {
@@ -1056,7 +1087,7 @@ Morebits.string = {
 	},
 
 	/**
-	 * a replacement for `String.prototype.replace()` when the second parameter
+	 * Replacement for `String.prototype.replace()` when the second parameter
 	 * (the replacement string) is arbitrary, such as a username or freeform user input,
 	 * and may contain dollar signs
 	 */
@@ -1387,14 +1418,14 @@ Morebits.wiki.removeCheckpoint = function() {
  * An easy way to talk to the MediaWiki API.
  */
 
- /**
-  * @constructor
-  * @param {string} currentAction - The current action (required)
-  * @param {Object} query - The querys (required)
-  * @param {Function} onSuccess - The function to call when request gotten
-  * @param {Object} [statusElement] - A Morebits.status object to use for status messages (optional)
-  * @param {Function} [onError] - The function to call if an error occurs (optional)
-  */
+	/**
+	 * @constructor
+	 * @param {string} currentAction - The current action (required)
+	 * @param {Object} query - The querys (required)
+	 * @param {Function} onSuccess - The function to call when request gotten
+	 * @param {Object} [statusElement] - A Morebits.status object to use for status messages (optional)
+	 * @param {Function} [onError] - The function to call if an error occurs (optional)
+	 */
 Morebits.wiki.api = function( currentAction, query, onSuccess, statusElement, onError ) {
 	this.currentAction = currentAction;
 	this.query = query;
@@ -1633,12 +1664,12 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  *          significant duplication of code for little benefit.
  */
 
- /**
-  * @constructor
-  * @param {string} pageName The name of the page, prefixed by the namespace (if any)
-  * For the current page, use mw.config.get('wgPageName')
-  * @param {string} [currentAction] A string describing the action about to be undertaken (optional)
-  */
+	/**
+	 * @constructor
+	 * @param {string} pageName The name of the page, prefixed by the namespace (if any)
+	 * For the current page, use mw.config.get('wgPageName')
+	 * @param {string} [currentAction] A string describing the action about to be undertaken (optional)
+	 */
 Morebits.wiki.page = function(pageName, currentAction) {
 
 	if (!currentAction) {
@@ -2028,7 +2059,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	/**
 	 *  `watchlistOption` is a boolean value:
 	 *       True  - page will be added to the user's watchlist when save() is called
- 	 *       False - watchlist status of the page will not be changed (default)
+		 *       False - watchlist status of the page will not be changed (default)
 	 */
 	this.setWatchlist = function(watchlistOption) {
 		if (watchlistOption) {
@@ -2413,9 +2444,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/* Private member functions
-	 *
-	 * These are not exposed outside
-	 */
+		*
+		* These are not exposed outside
+		*/
 
 	/**
 	 * Determines whether we can save an API call by using the edit token sent with the page
@@ -2943,11 +2974,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 }; // end Morebits.wiki.page
 
 /* Morebits.wiki.page TODO: (XXX)
- * - Should we retry loads also?
- * - Need to reset current action before the save?
- * - Deal with action.completed stuff
- * - Need to reset all parameters once done (e.g. edit summary, move destination, etc.)
- */
+	* - Should we retry loads also?
+	* - Need to reset current action before the save?
+	* - Deal with action.completed stuff
+	* - Need to reset all parameters once done (e.g. edit summary, move destination, etc.)
+	*/
 
 
 
@@ -2961,10 +2992,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
  * twinklewarn.js.
  */
 
- /**
-  * @constructor
-  * @param {HTMLDivElement} previewbox - the <div> element that will contain the rendered HTML
-  */
+	/**
+	 * @constructor
+	 * @param {HTMLDivElement} previewbox - the <div> element that will contain the rendered HTML
+	 */
 Morebits.wiki.preview = function(previewbox) {
 	this.previewbox = previewbox;
 	$(previewbox).addClass("morebits-previewbox").hide();
@@ -3237,22 +3268,10 @@ Morebits.wikitext.page.prototype = {
 
 /**
  * **************** Morebits.queryString ****************
- * Maps the querystring to an object
+ * Maps the querystring to an JS object
  *
- * Functions:
- *
- * Morebits.queryString.exists(key)
- *     returns true if the particular key is set
- * Morebits.queryString.get(key)
- *     returns the value associated to the key
- * Morebits.queryString.equals(key, value)
- *     returns true if the value associated with given key equals given value
- * Morebits.queryString.toString()
- *     returns the query string as a string
- * Morebits.queryString.create( hash )
- *     creates an querystring and encodes strings via encodeURIComponent and joins arrays with |
- *
- * In static context, the value of location.search.substring(1), else the value given to the constructor is going to be used. The mapped hash is saved in the object.
+ * In static context, the value of location.search.substring(1), else the value given
+ * to the constructor is going to be used. The mapped hash is saved in the object.
  *
  * Example:
  *
@@ -3260,6 +3279,11 @@ Morebits.wikitext.page.prototype = {
  * var obj = new Morebits.queryString('foo=bar&baz=quux');
  * value = obj.get('foo');
  */
+
+	/**
+	 * @constructor
+	 * @param {string} qString   The query string
+	 */
 Morebits.queryString = function QueryString(qString) {
 	this.string = qString;
 	this.params = {};
@@ -3296,17 +3320,9 @@ Morebits.queryString.get = function(key) {
 	return Morebits.queryString.staticstr.get(key);
 };
 
-Morebits.queryString.prototype.get = function(key) {
-	return this.params[key] ? this.params[key] : null;
-};
-
 Morebits.queryString.exists = function(key) {
 	Morebits.queryString.staticInit();
 	return Morebits.queryString.staticstr.exists(key);
-};
-
-Morebits.queryString.prototype.exists = function(key) {
-	return this.params[key] ? true : false;
 };
 
 Morebits.queryString.equals = function(key, value) {
@@ -3314,17 +3330,9 @@ Morebits.queryString.equals = function(key, value) {
 	return Morebits.queryString.staticstr.equals(key, value);
 };
 
-Morebits.queryString.prototype.equals = function(key, value) {
-	return this.params[key] === value ? true : false;
-};
-
 Morebits.queryString.toString = function() {
 	Morebits.queryString.staticInit();
 	return Morebits.queryString.staticstr.toString();
-};
-
-Morebits.queryString.prototype.toString = function() {
-	return this.string ? this.string : null;
 };
 
 Morebits.queryString.create = function( arr ) {
@@ -3355,6 +3363,40 @@ Morebits.queryString.create = function( arr ) {
 	}
 	return resarr.join('&');
 };
+
+/**
+ * @returns the value associated to the given `key`
+ * @param {string} key
+ */
+Morebits.queryString.prototype.get = function(key) {
+	return this.params[key] ? this.params[key] : null;
+};
+
+/**
+ * @returns true if the particular `key` is set
+ * @param {string} key
+ */
+Morebits.queryString.prototype.exists = function(key) {
+	return this.params[key] ? true : false;
+};
+
+/**
+ * @returns true if the value associated with given `key` equals given `value`
+ * @param {string} key
+ * @param {string} value
+ */
+Morebits.queryString.prototype.equals = function(key, value) {
+	return this.params[key] === value ? true : false;
+};
+
+Morebits.queryString.prototype.toString = function() {
+	return this.string ? this.string : null;
+};
+
+/**
+ * Creates an querystring and encodes strings via `encodeURIComponent` and joins arrays with `|`
+ * @param {Array} arr
+ */
 Morebits.queryString.prototype.create = Morebits.queryString.create;
 
 
@@ -3490,8 +3532,10 @@ Morebits.status.error = function( text, status ) {
 	return new Morebits.status( text, status, 'error' );
 };
 
-// display the user's rationale, comments, etc. back to them after a failure,
-// so they don't use it
+/**
+ * Display the user's rationale, comments, etc. back to them after a failure,
+ * so they don't use it
+ */
 Morebits.status.printUserText = function( comments, message ) {
 	var p = document.createElement( 'p' );
 	p.textContent = message;
@@ -3571,7 +3615,7 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 		return true;
 	}
 
-  $(jQuerySelector, jQueryContext).click(clickHandler);
+	$(jQuerySelector, jQueryContext).click(clickHandler);
 };
 
 
@@ -3765,7 +3809,11 @@ Morebits.batchOperation = function(currentAction) {
  * now a wrapper for jQuery UI's dialog feature
  */
 
-// The height passed in here is the maximum allowable height for the content area.
+/**
+ * @constructor
+ * @param {number} width
+ * @param {number} height  The maximum allowable height for the content area.
+ */
 Morebits.simpleWindow = function SimpleWindow( width, height ) {
 	var content = document.createElement( 'div' );
 	this.content = content;
@@ -3775,35 +3823,35 @@ Morebits.simpleWindow = function SimpleWindow( width, height ) {
 	this.height = height;
 
 	$(this.content).dialog({
-			autoOpen: false,
-			buttons: { "Placeholder button": function() {} },
-			dialogClass: 'morebits-dialog',
-			width: Math.min(parseInt(window.innerWidth, 10), parseInt(width ? width : 800, 10)),
-			// give jQuery the given height value (which represents the anticipated height of the dialog) here, so
-			// it can position the dialog appropriately
-			// the 20 pixels represents adjustment for the extra height of the jQuery dialog "chrome", compared
-			// to that of the old SimpleWindow
-			height: height + 20,
-			close: function(event) {
-				// dialogs and their content can be destroyed once closed
-				$(event.target).dialog("destroy").remove();
-			},
-			resizeStart: function() {
-				this.scrollbox = $(this).find(".morebits-scrollbox")[0];
-				if (this.scrollbox) {
-					this.scrollbox.style.maxHeight = "none";
-				}
-			},
-			resizeEnd: function() {
-				this.scrollbox = null;
-			},
-			resize: function() {
-				this.style.maxHeight = "";
-				if (this.scrollbox) {
-					this.scrollbox.style.width = "";
-				}
+		autoOpen: false,
+		buttons: { "Placeholder button": function() {} },
+		dialogClass: 'morebits-dialog',
+		width: Math.min(parseInt(window.innerWidth, 10), parseInt(width ? width : 800, 10)),
+		// give jQuery the given height value (which represents the anticipated height of the dialog) here, so
+		// it can position the dialog appropriately
+		// the 20 pixels represents adjustment for the extra height of the jQuery dialog "chrome", compared
+		// to that of the old SimpleWindow
+		height: height + 20,
+		close: function(event) {
+			// dialogs and their content can be destroyed once closed
+			$(event.target).dialog("destroy").remove();
+		},
+		resizeStart: function() {
+			this.scrollbox = $(this).find(".morebits-scrollbox")[0];
+			if (this.scrollbox) {
+				this.scrollbox.style.maxHeight = "none";
 			}
-		});
+		},
+		resizeEnd: function() {
+			this.scrollbox = null;
+		},
+		resize: function() {
+			this.style.maxHeight = "";
+			if (this.scrollbox) {
+				this.scrollbox.style.width = "";
+			}
+		}
+	});
 
 	var $widget = $(this.content).dialog("widget");
 
@@ -3834,13 +3882,19 @@ Morebits.simpleWindow.prototype = {
 	hasFooterLinks: false,
 	scriptName: null,
 
-	// Focuses the dialog. This might work, or on the contrary, it might not.
+	/**
+	 * Focuses the dialog. This might work, or on the contrary, it might not.
+	 */
 	focus: function() {
 		$(this.content).dialog("moveToTop");
 
 		return this;
 	},
-	// Closes the dialog.  If this is set as an event handler, it will stop the event from doing anything more.
+
+	/**
+	 * Closes the dialog. If this is set as an event handler, it will stop the event
+	 * from doing anything more.
+	 */
 	close: function(event) {
 		if (event) {
 			event.preventDefault();
@@ -3849,7 +3903,11 @@ Morebits.simpleWindow.prototype = {
 
 		return this;
 	},
-	// Shows the dialog.  Calling display() on a dialog that has previously been closed might work, but it is not guaranteed.
+
+	/**
+	 * Shows the dialog. Calling display() on a dialog that has previously been closed
+	 * might work, but it is not guaranteed.
+	 */
 	display: function() {
 		if (this.scriptName) {
 			var $widget = $(this.content).dialog("widget");
@@ -3869,33 +3927,51 @@ Morebits.simpleWindow.prototype = {
 
 		return this;
 	},
-	// Sets the dialog title.
+
+	/**
+	 * Sets the dialog title.
+	 * @param {string} title
+	 */
 	setTitle: function( title ) {
 		$(this.content).dialog("option", "title", title);
 
 		return this;
 	},
-	// Sets the script name, appearing as a prefix to the title to help users determine which
-	// user script is producing which dialog. For instance, Twinkle modules set this to "Twinkle".
+
+	/**
+	 * Sets the script name, appearing as a prefix to the title to help users determine which
+	 * user script is producing which dialog. For instance, Twinkle modules set this to "Twinkle".
+	 * @param {string} name
+	 */
 	setScriptName: function( name ) {
 		this.scriptName = name;
 
 		return this;
 	},
-	// Sets the dialog width.
+
+	/**
+	 * Sets the dialog width.
+	 * @param {number} width
+	 */
 	setWidth: function( width ) {
 		$(this.content).dialog("option", "width", width);
 
 		return this;
 	},
-	// Sets the dialog's maximum height. The dialog will auto-size to fit its contents,
-	// but the content area will grow no larger than the height given here.
+
+	/**
+	 * Sets the dialog's maximum height. The dialog will auto-size to fit its contents,
+	 * but the content area will grow no larger than the height given here.
+	 * @param {number} height
+	 */
 	setHeight: function( height ) {
 		this.height = height;
 
-		// from display time onwards, let the browser determine the optimum height, and instead limit the height at the given value
-		// note that the given height will exclude the approx. 20px that the jQuery UI chrome has in height in addition to the height
-		// of an equivalent "classic" Morebits.simpleWindow
+		// from display time onwards, let the browser determine the optimum height,
+		// and instead limit the height at the given value
+		// note that the given height will exclude the approx. 20px that the jQuery UI
+		// chrome has in height in addition to the height of an equivalent "classic"
+		// Morebits.simpleWindow
 		if (parseInt(getComputedStyle($(this.content).dialog("widget")[0], null).height, 10) > window.innerHeight) {
 			$(this.content).dialog("option", "height", window.innerHeight - 2).dialog("option", "position", "top");
 		} else {
@@ -3905,28 +3981,34 @@ Morebits.simpleWindow.prototype = {
 
 		return this;
 	},
-	// Sets the content of the dialog to the given element node, usually from rendering a Morebits.quickForm.
-	// Re-enumerates the footer buttons, but leaves the footer links as they are.
-	// Be sure to call this at least once before the dialog is displayed...
+
+	/**
+	 * Sets the content of the dialog to the given element node, usually from rendering
+	 * a Morebits.quickForm.
+	 * Re-enumerates the footer buttons, but leaves the footer links as they are.
+	 * Be sure to call this at least once before the dialog is displayed...
+	 * @param {HTMLDivElement} content
+	 */
 	setContent: function( content ) {
 		this.purgeContent();
 		this.addContent( content );
 
 		return this;
 	},
+
 	addContent: function( content ) {
 		this.content.appendChild( content );
 
 		// look for submit buttons in the content, hide them, and add a proxy button to the button pane
 		var thisproxy = this;
 		$(this.content).find('input[type="submit"], button[type="submit"]').each(function(key, value) {
-				value.style.display = "none";
-				var button = document.createElement("button");
-				button.textContent = (value.hasAttribute("value") ? value.getAttribute("value") : (value.textContent ? value.textContent : "Submit Query"));
-				// here is an instance of cheap coding, probably a memory-usage hit in using a closure here
-				button.addEventListener("click", function() { value.click(); }, false);
-				thisproxy.buttons.push(button);
-			});
+			value.style.display = "none";
+			var button = document.createElement("button");
+			button.textContent = (value.hasAttribute("value") ? value.getAttribute("value") : (value.textContent ? value.textContent : "Submit Query"));
+			// here is an instance of cheap coding, probably a memory-usage hit in using a closure here
+			button.addEventListener("click", function() { value.click(); }, false);
+			thisproxy.buttons.push(button);
+		});
 		// remove all buttons from the button pane and re-add them
 		if (this.buttons.length > 0) {
 			$(this.content).dialog("widget").find(".morebits-dialog-buttons").empty().append(this.buttons)[0].removeAttribute("data-empty");
@@ -3936,6 +4018,7 @@ Morebits.simpleWindow.prototype = {
 
 		return this;
 	},
+
 	purgeContent: function() {
 		this.buttons = [];
 		// delete all buttons in the buttonpane
@@ -3947,10 +4030,15 @@ Morebits.simpleWindow.prototype = {
 
 		return this;
 	},
-	// Adds a link in the bottom-right corner of the dialog.
-	// This can be used to provide help or policy links.
-	// For example, Twinkle's CSD module adds a link to the CSD policy page,
-	// as well as a link to Twinkle's documentation.
+
+	/**
+	 * Adds a link in the bottom-right corner of the dialog.
+	 * This can be used to provide help or policy links.
+	 * For example, Twinkle's CSD module adds a link to the CSD policy page,
+	 * as well as a link to Twinkle's documentation.
+	 * @param {string} text	  Link's text content
+	 * @param {string} wikiPage  Link target
+	 */
 	addFooterLink: function( text, wikiPage ) {
 		var $footerlinks = $(this.content).dialog("widget").find(".morebits-dialog-footerlinks");
 		if (this.hasFooterLinks) {
@@ -3968,6 +4056,7 @@ Morebits.simpleWindow.prototype = {
 
 		return this;
 	},
+
 	setModality: function( modal ) {
 		$(this.content).dialog("option", "modal", modal);
 
@@ -3975,11 +4064,14 @@ Morebits.simpleWindow.prototype = {
 	}
 };
 
-// Enables or disables all footer buttons on all Morebits.simpleWindows in the current page.
-// This should be called with |false| when the button(s) become irrelevant (e.g. just before Morebits.status.init is called).
-// This is not an instance method so that consumers don't have to keep a reference to the original
-// Morebits.simpleWindow object sitting around somewhere. Anyway, most of the time there will only be one
-// Morebits.simpleWindow open, so this shouldn't matter.
+/**
+ * Enables or disables all footer buttons on all Morebits.simpleWindows in the current page.
+ * This should be called with `false` when the button(s) become irrelevant (e.g. just before
+ * Morebits.status.init is called).
+ * This is not an instance method so that consumers don't have to keep a reference to the
+ * original Morebits.simpleWindow object sitting around somewhere. Anyway, most of the time
+ * there will only be one Morebits.simpleWindow open, so this shouldn't matter.
+ */
 Morebits.simpleWindow.setButtonsEnabled = function( enabled ) {
 	$(".morebits-dialog-buttons button").prop("disabled", !enabled);
 };
