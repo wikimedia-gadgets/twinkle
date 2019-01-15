@@ -100,7 +100,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 			form.append({ type: 'header', label: 'License and sourcing problem tags' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.licenseList } );
-
+		
 			form.append({ type: 'header', label: 'Wikimedia Commons-related tags' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.commonsList } );
 
@@ -119,7 +119,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 			form.append({ type: 'header', label:'Spelling, misspelling, tense and capitalization templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.spellingList });
-
+			
 			form.append({ type: 'header', label:'Alternative name templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.alternativeList });
 
@@ -696,9 +696,28 @@ Twinkle.tag.spellingList = [
 ];
 
 Twinkle.tag.alternativeList = [
-	{
+	{ 
 		label: '{{R from alternative language}}: redirect from an English name to a name in another language, or vice-versa',
-		value: 'R from alternative language'
+		value: 'R from alternative language',
+		subgroup : [ 
+			{
+				name: 'altLangFrom',
+				type: 'input',
+				label: 'From language (two-letter code): ',
+				tooltip: 'Enter the two-letter code of the language the redirect name is in; such as en for English, de for German'
+			},
+			{
+				name: 'altLangTo',
+				type: 'input',
+				label: 'To language (two-letter code): ',
+				tooltip: 'Enter the two-letter code of the language the target name is in; such as en for English, de for German'
+			},
+			{
+				name: 'altLangInfo',
+				type: 'div',
+				label: $.parseHTML('<p>For a list of language codes, see <a href="/wiki/Wp:Template_messages/Redirect_language_codes">Wikipedia:Template messages/Redirect language codes</a></p>')
+			} 
+		]
 	},
 	{
 		label: '{{R from alternative name}}: redirect from a title that is another name, a pseudonym, a nickname, or a synonym',
@@ -888,8 +907,7 @@ Twinkle.tag.callbacks = {
 		var addTag = function friendlytagAddTag( tagIndex, tagName ) {
 			var currentTag = "";
 			if( tagName === 'uncategorized' || tagName === 'improve categories' ) {
-				pageText += '\n\n{{' + tagName +
-					'|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
+				pageText += '\n\n{{' + tagName + '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
 			} else {
 				if( tagName === 'globalize' ) {
 					currentTag += '{{' + params.tagParameters.globalize;
@@ -980,6 +998,14 @@ Twinkle.tag.callbacks = {
 								}
 								currentTag += '|discuss=Talk:' + params.discussArticle + '#' + params.talkDiscussionTitle;
 							}
+						}
+						break;
+					case 'R from alternative language':
+						if(params.altLangFrom) {
+							currentTag += '|from=' + params.altLangFrom;
+						}
+						if(params.altLangTo) {
+							currentTag += '|to=' + params.altLangTo;
 						}
 						break;
 					default:
@@ -1426,6 +1452,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 		case 'redirect':
 			params.tags = form.getChecked( 'redirectTags' );
+			params.altLangFrom = form["redirectTags.altLangFrom"] ? form["redirectTags.altLangFrom"].value : null;
+			params.altLangTo = form["redirectTags.altLangTo"] ? form["redirectTags.altLangTo"].value : null;
 			break;
 		default:
 			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
@@ -1482,5 +1510,5 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 };
 })(jQuery);
 
-
 //</nowiki>
+	
