@@ -152,9 +152,11 @@ Twinkle.tag.callback = function friendlytagCallback() {
 	Window.display();
 
 	if (Twinkle.tag.mode === "article") {
+
+		Twinkle.tag.alreadyPresentTags = [];
+
 		if (Twinkle.tag.untaggable) {
 			// Look for existing maintenance tags in the lead section and put them in array
-			Twinkle.tag.alreadyPresentTags = [];
 
 			// All tags are HTML table elements that are direct children of .mw-parser-output,
 			// except when they are within {{multiple issues}}
@@ -170,17 +172,13 @@ Twinkle.tag.callback = function friendlytagCallback() {
 					if(e.classList[0] === 'box-Multiple_issues') {
 						$(e).find('.ambox').each(function(idx, e) {
 							var tag = e.classList[0].slice(4).replace(/_/g,' ');
-							if(Twinkle.tag.article.tags[tag]) {
-								Twinkle.tag.alreadyPresentTags.push(tag);
-							}
+							Twinkle.tag.alreadyPresentTags.push(tag);
 						});
 						return true; // continue
 					}
 
 					var tag = e.classList[0].slice(4).replace(/_/g,' ');
-					if(Twinkle.tag.article.tags[tag]) {
-						Twinkle.tag.alreadyPresentTags.push(tag);
-					}
+					Twinkle.tag.alreadyPresentTags.push(tag);
 				}
 			} );
 
@@ -420,7 +418,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 					var checkbox =
 						{
 							value: tag,
-							label: "{{" + tag + "}}: " + description,
+							label: "{{" + tag + "}}" + ( description ? (": " + description) : ""),
 							checked: true
 							//, subgroup: { type: 'input', name: 'removeReason', label: 'Reason', tooltip: 'Enter reason for removing this tag' }
 							// TODO: add option for providing reason for removal
@@ -444,7 +442,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 			var checkboxes = [];
 			$.each(array, function(k, tag) {
 				var description = Twinkle.tag.article.tags[tag];
-				if (!Twinkle.tag.untaggable || Twinkle.tag.alreadyPresentTags.indexOf(tag) === -1) {
+				if (Twinkle.tag.alreadyPresentTags.indexOf(tag) === -1) {
 					checkboxes.push(makeCheckbox(tag, description));
 				}
 			});
@@ -480,7 +478,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		}
 		var checkboxes = [];
 		$.each(Twinkle.tag.article.tags, function(tag, description) {
-			if (!Twinkle.tag.untaggable || Twinkle.tag.alreadyPresentTags.indexOf(tag) === -1) {
+			if (Twinkle.tag.alreadyPresentTags.indexOf(tag) === -1) {
 				checkboxes.push(makeCheckbox(tag, description));
 			}
 		});
@@ -981,7 +979,7 @@ Twinkle.tag.callbacks = {
 		 */
 		var postRemoval = function() {
 
-			if(Twinkle.tag.untaggable && params.toRemove && params.toRemove.length) {
+			if(Twinkle.tag.untaggable && params.toRemove.length) {
 				// Finish summary text
 				summaryText += ' tag' + ( params.toRemove.length > 1 ? 's' : '') + ' from article';
 
@@ -1084,7 +1082,7 @@ Twinkle.tag.callbacks = {
 		 */
 		var removeFromParamsToRemove = function mainRemoveTags()  {
 
-			if(params.toRemove && params.toRemove.length) {
+			if(params.toRemove.length) {
 				Morebits.status.info( 'Info', 'Removing deselected tags that were already present' );
 
 				var pendingAsyncProcesses = 0;
@@ -1134,14 +1132,21 @@ Twinkle.tag.callbacks = {
 							"lhlimit": "500"
 						}, function removeRedirectTag(apiobj) {
 							var redirs_xml = $(apiobj.responseXML).find('lh');
+							var removed = false;
 							$.each(redirs_xml, function (idx,el) {
 								tag = $(el).attr('title').slice(9);
 								tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
 								if(tag_re.test(pageText)) {
 									pageText = pageText.replace(tag_re, '');
+									removed = true;
 									return false;   // break out of $.each
 								}
 							});
+
+							if (!removed) {
+								Morebits.status.warn('Info', 'Failed to find {{' +
+								tag + '}} on the page... excluding');
+							}
 
 							// this async process has finished, decrement count
 							pendingAsyncProcesses--;
@@ -1728,8 +1733,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	switch (Twinkle.tag.mode) {
 		case 'article':
 			params.tags = form.getChecked( 'articleTags' );
-			params.toRemove = form.getUnchecked('alreadyPresentArticleTags');	// already present tags to remove
-			params.toRemain = form.getChecked('alreadyPresentArticleTags');		// already present tags to remain
+			params.toRemove = form.getUnchecked('alreadyPresentArticleTags') || [];	// already present tags to remove
+			params.toRemain = form.getChecked('alreadyPresentArticleTags') || [];		// already present tags to remain
 
 			params.group = form.group.checked;
 			params.tagParameters = {
@@ -1790,7 +1795,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	// File/redirect: return if no tags selected
 	// Article: return if no tag is selected and no already present tag is deselected
-	if( params.tags.length === 0 && (Twinkle.tag.mode !== 'article' || params.toRemove == null || params.toRemove.length === 0)) {
+	if( params.tags.length === 0 && (Twinkle.tag.mode !== 'article' || params.toRemove.length === 0)) {
 		alert( 'You must select at least one tag!' );
 		return;
 	}
