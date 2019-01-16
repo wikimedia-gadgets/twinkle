@@ -670,12 +670,6 @@ Twinkle.block.blockPresetsInfo = {
 		reason: 'Making [[WP:No legal threats|legal threats]]',
 		summary: 'You have been blocked from editing for making [[WP:NLT|legal threats or taking legal action]]'
 	},
-	'uw-memorialblock': {
-		forRegisteredOnly: true,
-		expiry: 'infinity',
-		reason: '{{uw-memorialblock}} <!-- Username indicates tribute to someone, soft block -->',
-		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] indicates this account may be used as a memorial or tribute to someone'
-	},
 	'uw-myblock': {
 		autoblock: true,
 		nocreate: true,
@@ -905,7 +899,6 @@ Twinkle.block.blockGroups = [
 		label: 'Username violations',
 		list: [
 			{ label: 'Bot username', value: 'uw-botublock' },
-			{ label: 'Memorial username soft block', value: 'uw-memorialblock' },
 			{ label: 'Promotional username, hard block', value: 'uw-spamublock' },
 			{ label: 'Promotional username, soft block', value: 'uw-softerblock' },
 			{ label: 'Similar username soft block', value: 'uw-ublock-double' },
