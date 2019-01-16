@@ -158,6 +158,7 @@ Morebits.quickForm = function QuickForm( event, eventType ) {
 
 /**
  * Renders the HTML output of the quickForm
+ * @returns {HTMLElement}
  */
 Morebits.quickForm.prototype.render = function QuickFormRender() {
 	var ret = this.root.render();
@@ -165,10 +166,18 @@ Morebits.quickForm.prototype.render = function QuickFormRender() {
 	return ret;
 };
 
+/**
+ * Append element to the form
+ * @param {Morebits.quickForm.element} data
+ */
 Morebits.quickForm.prototype.append = function QuickFormAppend( data ) {
 	return this.root.append( data );
 };
 
+/**
+ * @constructor
+ * @param {Object}
+ */
 Morebits.quickForm.element = function QuickFormElement( data ) {
 	this.data = data;
 	this.childs = [];
@@ -181,6 +190,7 @@ Morebits.quickForm.element.id = 0;
  * Appends an element to current element
  * @param {Morebits.quickForm.element} data  A quickForm element or the object required to
  * create the quickForm element
+ * @returns {Morebits.quickForm.element} The same element passed in
  */
 Morebits.quickForm.element.prototype.append = function QuickFormElementAppend( data ) {
 	var child;
@@ -196,6 +206,7 @@ Morebits.quickForm.element.prototype.append = function QuickFormElementAppend( d
 /**
  * Renders the HTML output for the quickForm element
  * This should be called without parameters: form.render()
+ * @returns {HTMLElement}
  */
 Morebits.quickForm.element.prototype.render = function QuickFormElementRender( internal_subgroup_id ) {
 	var currentNode = this.compute( this.data, internal_subgroup_id );
@@ -664,6 +675,10 @@ Morebits.quickForm.element.autoNWSW = function() {
 	return $(this).offset().top > ($(document).scrollTop() + $(window).height() / 2) ? 'sw' : 'nw';
 };
 
+/**
+ * @param {HTMLElement} node
+ * @param {Object} data
+ */
 Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTooltip( node, data ) {
 	$('<span/>', {
 			'class': 'ui-icon ui-icon-help ui-icon-inline morebits-tooltip'
@@ -684,6 +699,7 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 
 /**
  * Returns all form elements with a given field name or ID
+ * @returns {HTMLElement[]}
  */
 Morebits.quickForm.getElements = function QuickFormGetElements(form, fieldName) {
 	var $form = $(form);
@@ -699,9 +715,11 @@ Morebits.quickForm.getElements = function QuickFormGetElements(form, fieldName) 
 };
 
 /**
- * Searches the array of elements for a checkbox or radio button with a certain `value` attribute
- * @param {Array} elementArray
+ * Searches the array of elements for a checkbox or radio button with a certain
+ * `value` attribute, and returns the first such element. Returns null if not found.
+ * @param {HTMLInputElement[]} elementArray
  * @param {string} value
+ * @returns {HTMLInputElement}
  */
 Morebits.quickForm.getCheckboxOrRadio = function QuickFormGetCheckboxOrRadio(elementArray, value) {
 	var found = $.grep(elementArray, function(el) {
@@ -716,7 +734,8 @@ Morebits.quickForm.getCheckboxOrRadio = function QuickFormGetCheckboxOrRadio(ele
 /**
  * Returns the <div> containing the form element, or the form element itself
  * May not work as expected on checkboxes or radios
- * @param {Element} element
+ * @param {HTMLElement} element
+ * @returns {HTMLElement}
  */
 Morebits.quickForm.getElementContainer = function QuickFormGetElementContainer(element) {
 	// for divs, headings and fieldsets, the container is the element itself
@@ -730,8 +749,10 @@ Morebits.quickForm.getElementContainer = function QuickFormGetElementContainer(e
 };
 
 /**
- * Gets the HTML element that contains the label of the given form element (mainly for internal use)
- * @param {(Element|Morebits.quickForm.element)} element
+ * Gets the HTML element that contains the label of the given form element
+ * (mainly for internal use)
+ * @param {(HTMLElement|Morebits.quickForm.element)} element
+ * @returns {HTMLElement}
  */
 Morebits.quickForm.getElementLabelObject = function QuickFormGetElementLabelObject(element) {
 	// for buttons, divs and headers, the label is on the element itself
@@ -755,7 +776,8 @@ Morebits.quickForm.getElementLabelObject = function QuickFormGetElementLabelObje
 
 /**
  * Gets the label text of the element
- * @param {(Element|Morebits.quickForm.element)} element
+ * @param {(HTMLElement|Morebits.quickForm.element)} element
+ * @returns {string}
  */
 Morebits.quickForm.getElementLabel = function QuickFormGetElementLabel(element) {
 	var labelElement = Morebits.quickForm.getElementLabelObject(element);
@@ -768,8 +790,9 @@ Morebits.quickForm.getElementLabel = function QuickFormGetElementLabel(element) 
 
 /**
  * Sets the label of the element to the given text
- * @param {(Element|Morebits.quickForm.element)} element
+ * @param {(HTMLElement|Morebits.quickForm.element)} element
  * @param {string} labelText
+ * @returns {boolean} true if succeeded, false if the label element is unavailable
  */
 Morebits.quickForm.setElementLabel = function QuickFormSetElementLabel(element, labelText) {
 	var labelElement = Morebits.quickForm.getElementLabelObject(element);
@@ -783,8 +806,9 @@ Morebits.quickForm.setElementLabel = function QuickFormSetElementLabel(element, 
 
 /**
  * Stores the element's current label, and temporarily sets the label to the given text
- * @param {(Element|Morebits.quickForm.element)} element
+ * @param {(HTMLElement|Morebits.quickForm.element)} element
  * @param {string} temporaryLabelText
+ * @returns {boolean} true if succeeded, false if the label element is unavailable
  */
 Morebits.quickForm.overrideElementLabel = function QuickFormOverrideElementLabel(element, temporaryLabelText) {
 	if (!element.hasAttribute("data-oldlabel")) {
@@ -794,8 +818,9 @@ Morebits.quickForm.overrideElementLabel = function QuickFormOverrideElementLabel
 };
 
 /**
- *  Restores the label stored by overrideElementLabel
- * @param {(Element|Morebits.quickForm.element)} element
+ * Restores the label stored by overrideElementLabel
+ * @param {(HTMLElement|Morebits.quickForm.element)} element
+ * @returns {boolean} true if succeeded, false if the label element is unavailable
  */
 Morebits.quickForm.resetElementLabel = function QuickFormResetElementLabel(element) {
 	if (element.hasAttribute("data-oldlabel")) {
@@ -806,8 +831,8 @@ Morebits.quickForm.resetElementLabel = function QuickFormResetElementLabel(eleme
 
 /**
  * Shows or hides a form element plus its label and tooltip
- * @param {*} element
- * @param {*} visibility
+ * @param {(HTMLElement|jQuery|string)} element  HTML/jQuery element, or jQuery selector string
+ * @param {boolean} [visibility] Skip this to toggle visibility
  */
 Morebits.quickForm.setElementVisibility = function QuickFormSetElementVisibility(element, visibility) {
 	$(element).toggle(visibility);
@@ -815,8 +840,8 @@ Morebits.quickForm.setElementVisibility = function QuickFormSetElementVisibility
 
 /**
  * Shows or hides the "question mark" icon (which displays the tooltip) next to a form element
- * @param {Morebits.quickForm.element} element
- * @param {*} visibility
+ * @param {(HTMLElement|jQuery)} element
+ * @param {boolean} [visibility] Skip this to toggle visibility
  */
 Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementTooltipVisibility(element, visibility) {
 	$(Morebits.quickForm.getElementContainer(element)).find(".morebits-tooltip").toggle(visibility);
@@ -829,14 +854,15 @@ Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementToo
  */
 
 /**
- *   Returns an array containing the values of elements with the given name, that has it's
- *   checked property set to true. (i.e. a checkbox or a radiobutton is checked), or select options
- *   that have selected set to true. (don't try to mix selects with radio/checkboxes, please)
- *   Type is optional and can specify if either radio or checkbox (for the event
- *   that both checkboxes and radiobuttons have the same name.
+ * Returns an array containing the values of elements with the given name, that has it's
+ * checked property set to true. (i.e. a checkbox or a radiobutton is checked), or select
+ * options that have selected set to true. (don't try to mix selects with radio/checkboxes,
+ * please)
+ * Type is optional and can specify if either radio or checkbox (for the event
+ * that both checkboxes and radiobuttons have the same name.
  *
- *   XXX: Doesn't seem to work reliably across all browsers at the moment. -- see getChecked2
- *   in twinkleunlink.js, which is better
+ * XXX: Doesn't seem to work reliably across all browsers at the moment. -- see getChecked2
+ * in twinkleunlink.js, which is better
  */
 HTMLFormElement.prototype.getChecked = function( name, type ) {
 	var elements = this.elements[name];
@@ -1029,7 +1055,8 @@ Morebits.string = {
 	 * @param {string} str
 	 * @param {string} start
 	 * @param {string} end
-	 * @param {(array|string)} [skiplist]
+	 * @param {(string[]|string)} [skiplist]
+	 * @returns {String[]}
 	 */
 	splitWeightedByKeys: function( str, start, end, skiplist ) {
 		if( start.length !== end.length ) {
@@ -1077,6 +1104,7 @@ Morebits.string = {
 	 * Formats freeform "reason" (from a textarea) for deletion/other templates
 	 * that are going to be substituted, (e.g. PROD, XFD, RPP)
 	 * @param {string} str
+	 * @returns {string}
 	 */
 	formatReasonText: function( str ) {
 		var result = str.toString().trimRight();
@@ -1103,7 +1131,7 @@ Morebits.string = {
 
 Morebits.array = {
 	/**
-	 * @returns a copy of the array with duplicates removed
+	 * @returns {Array} a copy of the array with duplicates removed
 	 */
 	uniq: function(arr) {
 		if ( ! Array.isArray( arr ) ) {
@@ -1120,7 +1148,7 @@ Morebits.array = {
 	},
 
 	/**
-	 * @returns a copy of the array with the first instance of each value
+	 * @returns {Array} a copy of the array with the first instance of each value
 	 * removed; subsequent instances of those values (duplicates) remain
 	 */
 	dups: function(arr) {
@@ -1146,6 +1174,7 @@ Morebits.array = {
 	 * @returns an array of these "chunked" arrays
 	 * @param {array} arr
 	 * @param {number} size
+	 * @returns {Array}
 	 */
 	chunk: function( arr, size ) {
 		if ( ! Array.isArray( arr ) ) {
@@ -1191,10 +1220,10 @@ Morebits.pageNameNorm = mw.config.get('wgPageName').replace(/_/g, ' ');
  * Used by Morebits.wikitext.page.commentOutImage
  */
 
- /**
-  * @constructor
-  * @param {string} string
-  */
+/**
+ * @constructor
+ * @param {string} string
+ */
 Morebits.unbinder = function Unbinder( string ) {
 	if( typeof string !== 'string' ) {
 		throw new Error( "not a string" );
@@ -1370,7 +1399,7 @@ Morebits.wiki.isPageRedirect = function wikipediaIsPageRedirect() {
 /**
  * **************** Morebits.wiki.actionCompleted ****************
  *
- * Use of Morebits.wiki.actionCompleted():
+ *    Use of Morebits.wiki.actionCompleted():
  *    Every call to Morebits.wiki.api.post() results in the dispatch of
  *    an asynchronous callback. Each callback can in turn
  *    make an additional call to Morebits.wiki.api.post() to continue a
@@ -1443,7 +1472,7 @@ Morebits.wiki.removeCheckpoint = function() {
 /**
  * @constructor
  * @param {string} currentAction - The current action (required)
- * @param {Object} query - The querys (required)
+ * @param {Object} query - The query (required)
  * @param {Function} onSuccess - The function to call when request gotten
  * @param {Object} [statusElement] - A Morebits.status object to use for status messages (optional)
  * @param {Function} [onError] - The function to call if an error occurs (optional)
@@ -1478,7 +1507,8 @@ Morebits.wiki.api.prototype = {
 
 	/**
 	 * Carries out the request.
-	 * Do not specify a parameter unless you really really want to give jQuery some extra parameters
+	 * @param {Object} callerAjaxParameters Do not specify a parameter unless you really
+	 * really want to give jQuery some extra parameters
 	 */
 	post: function( callerAjaxParameters ) {
 
@@ -1570,7 +1600,10 @@ Morebits.wiki.api.prototype = {
 // See https://lists.wikimedia.org/pipermail/mediawiki-api-announce/2014-November/000075.html
 var morebitsWikiApiUserAgent = 'morebits.js/2.0 ([[w:WT:TW]])';
 
-// Sets the custom user agent header
+/**
+ * Sets the custom user agent header
+ * @param {string} ua   User agent
+ */
 Morebits.wiki.api.setApiUserAgent = function( ua ) {
 	morebitsWikiApiUserAgent = ( ua ? ua + ' ' : '' ) + 'morebits.js/2.0 ([[w:WT:TW]])';
 };
@@ -2291,7 +2324,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	/**
 	 * Reverts a page to revertOldID
 	 * @param {Function} onSuccess - callback function to run on success
-	 * @param {Function} onFailure - callback function to run on failure (optional)
+	 * @param {Function} [onFailure] - callback function to run on failure (optional)
 	 */
 	this.revert = function(onSuccess, onFailure) {
 		ctx.onSaveSuccess = onSuccess;
@@ -2310,7 +2343,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	/**
 	 * Moves a page to another title
 	 * @param {Function} onSuccess - callback function to run on success
-	 * @param {Function} onFailure - callback function to run on failure (optional)
+	 * @param {Function} [onFailure] - callback function to run on failure (optional)
 	 */
 	this.move = function(onSuccess, onFailure) {
 		ctx.onMoveSuccess = onSuccess;
@@ -2349,7 +2382,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	/**
 	 * Deletes a page (for admins only)
 	 * @param {Function} onSuccess - callback function to run on success
-	 * @param {Function} onFailure - callback function to run on failure (optional)
+	 * @param {Function} [onFailure] - callback function to run on failure (optional)
 	 */
 	this.deletePage = function(onSuccess, onFailure) {
 		ctx.onDeleteSuccess = onSuccess;
@@ -2387,6 +2420,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 	};
 
+	/**
+	 * Protects a page (for admins only)
+	 * @param {Function} onSuccess - callback function to run on success
+	 * @param {Function} [onFailure] - callback function to run on failure (optional)
+	 */
 	this.protect = function(onSuccess, onFailure) {
 		ctx.onProtectSuccess = onSuccess;
 		ctx.onProtectFailure = onFailure || emptyFunction;
@@ -2466,10 +2504,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.stabilizeApi.post();
 	};
 
-	/* Private member functions
-		*
-		* These are not exposed outside
-		*/
+	/*
+	 * Private member functions
+	 * These are not exposed outside
+	 */
 
 	/**
 	 * Determines whether we can save an API call by using the edit token sent with the page
@@ -2478,6 +2516,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * Currently only used for append, prepend, and deletePage.
 	 *
 	 * @param {string} action  The action being undertaken, e.g. "edit", "delete".
+	 * @returns {boolean}
 	 */
 	var fnCanUseMwUserToken = function(action) {
 		// API-based redirect resolution only works for action=query and
@@ -2997,11 +3036,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 }; // end Morebits.wiki.page
 
 /* Morebits.wiki.page TODO: (XXX)
-	* - Should we retry loads also?
-	* - Need to reset current action before the save?
-	* - Deal with action.completed stuff
-	* - Need to reset all parameters once done (e.g. edit summary, move destination, etc.)
-	*/
+* - Should we retry loads also?
+* - Need to reset current action before the save?
+* - Deal with action.completed stuff
+* - Need to reset all parameters once done (e.g. edit summary, move destination, etc.)
+*/
 
 
 
@@ -3015,10 +3054,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
  * twinklewarn.js.
  */
 
-	/**
-	 * @constructor
-	 * @param {HTMLDivElement} previewbox - the <div> element that will contain the rendered HTML
-	 */
+/**
+ * @constructor
+ * @param {HTMLDivElement} previewbox - the <div> element that will contain the rendered HTML
+ */
 Morebits.wiki.preview = function(previewbox) {
 	this.previewbox = previewbox;
 	$(previewbox).addClass("morebits-previewbox").hide();
@@ -3305,10 +3344,10 @@ Morebits.wikitext.page.prototype = {
  * value = obj.get('foo');
  */
 
-	/**
-	 * @constructor
-	 * @param {string} qString   The query string
-	 */
+/**
+ * @constructor
+ * @param {string} qString   The query string
+ */
 Morebits.queryString = function QueryString(qString) {
 	this.string = qString;
 	this.params = {};
@@ -3390,37 +3429,41 @@ Morebits.queryString.create = function( arr ) {
 };
 
 /**
- * @returns the value associated to the given `key`
+ * @returns {string} the value associated to the given `key`
  * @param {string} key
  */
 Morebits.queryString.prototype.get = function(key) {
-	return this.params[key] ? this.params[key] : null;
+	return this.params[key] || null;
 };
 
 /**
- * @returns true if the particular `key` is set
+ * @returns {boolean} true if the given `key` is set
  * @param {string} key
  */
 Morebits.queryString.prototype.exists = function(key) {
-	return this.params[key] ? true : false;
+	return !!this.params[key];
 };
 
 /**
- * @returns true if the value associated with given `key` equals given `value`
+ * @returns {boolean} true if the value associated with given `key` equals given `value`
  * @param {string} key
  * @param {string} value
  */
 Morebits.queryString.prototype.equals = function(key, value) {
-	return this.params[key] === value ? true : false;
-};
-
-Morebits.queryString.prototype.toString = function() {
-	return this.string ? this.string : null;
+	return this.params[key] === value;
 };
 
 /**
- * Creates an querystring and encodes strings via `encodeURIComponent` and joins arrays with `|`
+ * @returns {string}
+ */
+Morebits.queryString.prototype.toString = function() {
+	return this.string || null;
+};
+
+/**
+ * Creates a querystring and encodes strings via `encodeURIComponent` and joins arrays with `|`
  * @param {Array} arr
+ * @returns {string}
  */
 Morebits.queryString.prototype.create = Morebits.queryString.create;
 
@@ -3709,7 +3752,7 @@ Morebits.batchOperation = function(currentAction) {
 
 	/**
 	 * Sets the list of pages to work on
-	 * @param {Array} pageList  Array of page names (strings)
+	 * @param {String[]} pageList  Array of page names (strings)
 	 */
 	this.setPageList = function(pageList) {
 		ctx.pageList = pageList;
@@ -3717,10 +3760,11 @@ Morebits.batchOperation = function(currentAction) {
 
 	/**
 	 * Sets a known option:
-	 * - chunkSize (integer): 	the size of chunks to break the array into (default 50).
-	 * 							Setting this to a small value (<5) can cause problems.
-	 * - preserveIndividualStatusLines (boolean): keep each page's status element visible
-	 *                                            when worker is complete?
+	 * - chunkSize (integer):
+	 * 		The size of chunks to break the array into (default 50).
+	 * 		Setting this to a small value (<5) can cause problems.
+	 * - preserveIndividualStatusLines (boolean):
+	 * 		Keep each page's status element visible when worker is complete?
 	 */
 	this.setOption = function(optionName, optionValue) {
 		ctx.options[optionName] = optionValue;
@@ -3929,29 +3973,30 @@ Morebits.simpleWindow.prototype = {
 
 	/**
 	 * Focuses the dialog. This might work, or on the contrary, it might not.
+	 * @returns {Morebits.simpleWindow}
 	 */
 	focus: function() {
 		$(this.content).dialog("moveToTop");
-
 		return this;
 	},
 
 	/**
 	 * Closes the dialog. If this is set as an event handler, it will stop the event
 	 * from doing anything more.
+	 * @returns {Morebits.simpleWindow}
 	 */
 	close: function(event) {
 		if (event) {
 			event.preventDefault();
 		}
 		$(this.content).dialog("close");
-
 		return this;
 	},
 
 	/**
 	 * Shows the dialog. Calling display() on a dialog that has previously been closed
 	 * might work, but it is not guaranteed.
+	 * @returns {Morebits.simpleWindow}
 	 */
 	display: function() {
 		if (this.scriptName) {
@@ -3969,17 +4014,16 @@ Morebits.simpleWindow.prototype = {
 			window.setupTooltips(dialog.parent()[0]);
 		}
 		this.setHeight( this.height );  // init height algorithm
-
 		return this;
 	},
 
 	/**
 	 * Sets the dialog title.
 	 * @param {string} title
+	 * @returns {Morebits.simpleWindow}
 	 */
 	setTitle: function( title ) {
 		$(this.content).dialog("option", "title", title);
-
 		return this;
 	},
 
@@ -3987,20 +4031,20 @@ Morebits.simpleWindow.prototype = {
 	 * Sets the script name, appearing as a prefix to the title to help users determine which
 	 * user script is producing which dialog. For instance, Twinkle modules set this to "Twinkle".
 	 * @param {string} name
+	 * @returns {Morebits.simpleWindow}
 	 */
 	setScriptName: function( name ) {
 		this.scriptName = name;
-
 		return this;
 	},
 
 	/**
 	 * Sets the dialog width.
 	 * @param {number} width
+	 * @returns {Morebits.simpleWindow}
 	 */
 	setWidth: function( width ) {
 		$(this.content).dialog("option", "width", width);
-
 		return this;
 	},
 
@@ -4008,6 +4052,7 @@ Morebits.simpleWindow.prototype = {
 	 * Sets the dialog's maximum height. The dialog will auto-size to fit its contents,
 	 * but the content area will grow no larger than the height given here.
 	 * @param {number} height
+	 * @returns {Morebits.simpleWindow}
 	 */
 	setHeight: function( height ) {
 		this.height = height;
@@ -4023,7 +4068,6 @@ Morebits.simpleWindow.prototype = {
 			$(this.content).dialog("option", "height", "auto");
 		}
 		$(this.content).dialog("widget").find(".morebits-dialog-content")[0].style.maxHeight = parseInt(this.height - 30, 10) + "px";
-
 		return this;
 	},
 
@@ -4032,15 +4076,20 @@ Morebits.simpleWindow.prototype = {
 	 * a Morebits.quickForm.
 	 * Re-enumerates the footer buttons, but leaves the footer links as they are.
 	 * Be sure to call this at least once before the dialog is displayed...
-	 * @param {HTMLDivElement} content
+	 * @param {HTMLElement} content
+	 * @returns {Morebits.simpleWindow}
 	 */
 	setContent: function( content ) {
 		this.purgeContent();
 		this.addContent( content );
-
 		return this;
 	},
 
+	/**
+	 * Adds the given element node to the dialog content.
+	 * @param {HTMLElement} content
+	 * @returns {Morebits.simpleWindow}
+	 */
 	addContent: function( content ) {
 		this.content.appendChild( content );
 
@@ -4060,10 +4109,13 @@ Morebits.simpleWindow.prototype = {
 		} else {
 			$(this.content).dialog("widget").find(".morebits-dialog-buttons")[0].setAttribute("data-empty", "data-empty");  // used by CSS
 		}
-
 		return this;
 	},
 
+	/**
+	 * Removes all contents from the dialog, barring any footer links
+	 * @returns {Morebits.simpleWindow}
+	 */
 	purgeContent: function() {
 		this.buttons = [];
 		// delete all buttons in the buttonpane
@@ -4072,7 +4124,6 @@ Morebits.simpleWindow.prototype = {
 		while( this.content.hasChildNodes() ) {
 			this.content.removeChild( this.content.firstChild );
 		}
-
 		return this;
 	},
 
@@ -4083,6 +4134,7 @@ Morebits.simpleWindow.prototype = {
 	 * as well as a link to Twinkle's documentation.
 	 * @param {string} text	  Link's text content
 	 * @param {string} wikiPage  Link target
+	 * @returns {Morebits.simpleWindow}
 	 */
 	addFooterLink: function( text, wikiPage ) {
 		var $footerlinks = $(this.content).dialog("widget").find(".morebits-dialog-footerlinks");
@@ -4098,13 +4150,21 @@ Morebits.simpleWindow.prototype = {
 		link.textContent = text;
 		$footerlinks.append(link);
 		this.hasFooterLinks = true;
-
 		return this;
 	},
 
+	/**
+	 * Set whether the window should be modal or not.
+	 * If set to true, other items on the page will be disabled, i.e., cannot be
+	 * interacted with. Modal dialogs create an overlay below the dialog but above
+	 * other page elements.
+	 * This must be used (if necessary) before calling display()
+	 * Default: false
+	 * @param {boolean} modal
+	 * @returns {Morebits.simpleWindow}
+	 */
 	setModality: function( modal ) {
 		$(this.content).dialog("option", "modal", modal);
-
 		return this;
 	}
 };
@@ -4116,6 +4176,7 @@ Morebits.simpleWindow.prototype = {
  * This is not an instance method so that consumers don't have to keep a reference to the
  * original Morebits.simpleWindow object sitting around somewhere. Anyway, most of the time
  * there will only be one Morebits.simpleWindow open, so this shouldn't matter.
+ * @param {boolean} enabled
  */
 Morebits.simpleWindow.setButtonsEnabled = function( enabled ) {
 	$(".morebits-dialog-buttons button").prop("disabled", !enabled);
