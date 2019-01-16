@@ -27,6 +27,7 @@ Twinkle.tag = function friendlytag() {
 	// article/draft article tagging
 	else if( ( [0,118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 ) && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
+		// Can't remove tags when not viewing current version
 		Twinkle.tag.untaggable = (mw.config.get('wgCurRevisionId') === mw.config.get('wgRevisionId'));
 		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to article" );
 	}
@@ -159,19 +160,20 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			// except when they are within {{multiple issues}}
 			$('.mw-parser-output').children().each( function parsehtml(i,e) {
 
-				// break out on encountering the first heading, which means we are no longer in the lead section
+				// break out on encountering the first heading, which means we are no
+				// longer in the lead section
 				if(e.tagName === 'H2')
 					return false;
 
 				// All tags have their first class name beginning with "box-"
-				if(e.className.startsWith('box-')) {
+				if(e.className.indexOf('box-') === 0) {
 					if(e.classList[0] === 'box-Multiple_issues') {
-						$.each( $(e).find('.ambox'), function(idx, e) {
+						$(e).find('.ambox').each(function(idx, e) {
 							var tag = e.classList[0].slice(4).replace(/_/g,' ');
 							if(Twinkle.tag.article.tags[tag]) {
 								Twinkle.tag.alreadyPresentTags.push(tag);
 							}
-						} );
+						});
 						return true; // continue
 					}
 
@@ -1087,7 +1089,7 @@ Twinkle.tag.callbacks = {
 
 				/**
 				 * Removes a tag from the page text
-				 * @param {number} tagIndex - index of the tag in `params.toRemove`
+				 * @param {number} tagIndex - index of the tag in `params.toRemove` array
 				 */
 				var removeTag = function removeTag(tagIndex) {
 					var tag = params.toRemove[tagIndex], tag_re;
@@ -1117,16 +1119,14 @@ Twinkle.tag.callbacks = {
 						removeTag(tagIndex + 1);
 					} else {
 						// main template not found, so get list of redirects to template
-						var query = {
+						var api = new Morebits.wiki.api("Getting template redirects", {
 							"action": "query",
 							"prop": "linkshere",
 							"titles": "Template:" + tag,
 							"lhnamespace": "10",
 							"lhshow": "redirect",
 							"lhlimit": "500"
-						};
-						var api = new Morebits.wiki.api( "Getting template redirects", query,
-						function removeRedirectTag(apiobj) {
+						}, function removeRedirectTag(apiobj) {
 							var redirs_xml = $(apiobj.responseXML).find('lh');
 							$.each(redirs_xml, function (idx,el) {
 								tag = $(el).attr('title').slice(9);
@@ -1137,24 +1137,25 @@ Twinkle.tag.callbacks = {
 									return false;   // break out of $.each
 								}
 							});
-						} );
+						});
 						api.post();
 					}
 				};
 
-				if(params.tags.length > 0)
+				if(params.tags.length > 0) {
 					summaryText += ( tags.length ? (' tag' + ( tags.length > 1 ? 's' : '' )) : '' ) + ', and removed';
-				else
+				} else {
 					summaryText = 'Removed';
+				}
 
 				// Remove the first tag in params.toRemove array
-				// Subsequent ones are removed through recursive call from within this
+				// Subsequent ones are removed through recursive calls from within this
 				removeTag(0);
 
 			} else {
 
-				// finish summary text from adding of tags, in this case where there are no tags to
-				// be removed
+				// finish summary text from adding of tags, in this case where there are
+				// no tags to be removed
 				summaryText += ' tag' + ( tags.length > 1 ? 's' : '' ) + ' to article';
 
 				postRemoval();
@@ -1383,6 +1384,9 @@ Twinkle.tag.callbacks = {
 
 				tagText += '{{Multiple issues|\n';
 
+				/**
+				 * Adds newly added tags to MI
+				 */
 				var addNewTagsToMI = function() {
 					totalTags = groupableTags.length;
 					$.each(groupableTags, addTag);
@@ -1403,36 +1407,31 @@ Twinkle.tag.callbacks = {
 				if(params.toRemain && params.toRemain.length) {
 
 					/**
-					 * Given the index of the tag in the `groupableExistingTags` array, it repositions the tag
-					 * on the page into {{multiple issues}}
+					 * Given the index of the tag in the `groupableExistingTags` array,
+					 * it repositions the tag on the page into {{multiple issues}}
 					 * @param {number} tagIndex
 					 */
 					var repositionTagIntoMI = function repositionTagIntoMI(tagIndex) {
 						var tag = groupableExistingTags[tagIndex];
-						var processNextTag = function() {
-							if(params.toRemain[tagIndex + 1]) {
-								repositionTagIntoMI(tagIndex + 1);
-							} else {
-								addNewTagsToMI();
-							}
+						if (tag === undefined) {
+							// all tags have been processed
+							addNewTagsToMI();
 						}
 
 						var tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?)');
 						if(tag_re.test(pageText)) {
 							tagText += tag_re.exec(pageText)[1];
 							pageText = pageText.replace(tag_re, '');
-							processNextTag();
+							repositionTagIntoMI(tagIndex + 1);
 						} else {
-							var query = {
+							var api = new Morebits.wiki.api("Getting template redirects", {
 								"action": "query",
 								"prop": "linkshere",
 								"titles": "Template:" + tag,
 								"lhnamespace": "10",
 								"lhshow": "redirect",
 								"lhlimit": "500"
-							};
-							var api = new Morebits.wiki.api( "Getting template redirects", query,
-							function replaceRedirectTag(apiobj) {
+							}, function replaceRedirectTag(apiobj) {
 								var redirs_xml = $(apiobj.responseXML).find('lh');
 								$.each(redirs_xml, function (idx,el) {
 									tag = $(el).attr('title').slice(9);
@@ -1440,11 +1439,11 @@ Twinkle.tag.callbacks = {
 									if(tag_re.test(pageText)) {
 										tagText += tag_re.exec(pageText)[1];
 										pageText = pageText.replace(tag_re, '');
-										processNextTag();
+										repositionTagIntoMI(tagIndex + 1);
 										return false;   // break out of $.each
 									}
 								});
-							} );
+							});
 							api.post();
 						}
 					};
