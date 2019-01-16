@@ -1087,16 +1087,14 @@ Twinkle.tag.callbacks = {
 			if(params.toRemove && params.toRemove.length) {
 				Morebits.status.info( 'Info', 'Removing deselected tags that were already present' );
 
+				var pendingAsyncProcesses = 0;
+
 				/**
 				 * Removes a tag from the page text
-				 * @param {number} tagIndex - index of the tag in `params.toRemove` array
+				 * @param {string} tag
+				 * @param {number} tagIndex - index `params.toRemove` array
 				 */
-				var removeTag = function removeTag(tagIndex) {
-					var tag = params.toRemove[tagIndex], tag_re;
-					if(tag === undefined) {
-						postRemoval();
-						return;
-					}
+				var removeTag = function removeTag(tag, tagIndex) {
 
 					// Producing summary text for current tag removal
 					if ( tagIndex > 0 ) {
@@ -1108,17 +1106,25 @@ Twinkle.tag.callbacks = {
 					}
 					summaryText += ' {{[[Template:' + tag + '|' + tag + ']]}}';
 
+					var tag_re;
 					if (tag === 'Globalize') {
 						// special case to catch occurrences like {{Globalize/UK}}, etc
 						tag_re = new RegExp('\\{\\{[gG]lobalize/?[^}]*\\}\\}\\n?');
 					} else {
 						tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
 					}
+
 					if(tag_re.test(pageText)) {
 						pageText = pageText.replace(tag_re,'');
-						removeTag(tagIndex + 1);
+
+						// if processing the last tag, and no API calls were ever made
+						if(tagIndex === params.toRemove.length - 1 &&
+							pendingAsyncProcesses === 0) {
+							postRemoval();
+						}
 					} else {
 						// main template not found, so get list of redirects to template
+						pendingAsyncProcesses++; // increment count of pending async processes
 						var api = new Morebits.wiki.api("Getting template redirects", {
 							"action": "query",
 							"prop": "linkshere",
@@ -1133,10 +1139,17 @@ Twinkle.tag.callbacks = {
 								tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
 								if(tag_re.test(pageText)) {
 									pageText = pageText.replace(tag_re, '');
-									removeTag(tagIndex + 1);
 									return false;   // break out of $.each
 								}
 							});
+
+							// this async process has finished, decrement count
+							pendingAsyncProcesses--;
+
+							// all tags have been removed if there are no pending async processes; proceed
+							if (pendingAsyncProcesses === 0) {
+								postRemoval();
+							}
 						});
 						api.post();
 					}
@@ -1148,9 +1161,7 @@ Twinkle.tag.callbacks = {
 					summaryText = 'Removed';
 				}
 
-				// Remove the first tag in params.toRemove array
-				// Subsequent ones are removed through recursive calls from within this
-				removeTag(0);
+				params.toRemove.forEach(removeTag);
 
 			} else {
 
@@ -1323,7 +1334,7 @@ Twinkle.tag.callbacks = {
 				// regex check for preexistence of tag can be skipped if in untaggable mode
 				if( Twinkle.tag.untaggable || !tagRe.exec( pageText ) ) {
 					// condition Twinkle.tag.article.tags[params.tags[i]] to ensure that its not a custom tag
-                    // Custom tags are assumed non-groupable, since we don't know whether MI template supports them
+					// Custom tags are assumed non-groupable, since we don't know whether MI template supports them
 					if( Twinkle.tag.article.tags[params.tags[i]] && Twinkle.tag.multipleIssuesExceptions.indexOf(params.tags[i]) === -1 ) {
 						groupableTags.push( params.tags[i] );
 					} else {
@@ -1779,7 +1790,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	// File/redirect: return if no tags selected
 	// Article: return if no tag is selected and no already present tag is deselected
-	if( params.tags.length === 0 && (Twinkle.tag.mode !== 'article' || params.toRemove == null ||params.toRemove.length === 0)) {
+	if( params.tags.length === 0 && (Twinkle.tag.mode !== 'article' || params.toRemove == null || params.toRemove.length === 0)) {
 		alert( 'You must select at least one tag!' );
 		return;
 	}
