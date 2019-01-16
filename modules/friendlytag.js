@@ -112,19 +112,19 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			// TODO: perhaps add custom tags TO list of checkboxes
 
 			form.append({ type: 'header', label: 'License and sourcing problem tags' });
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.licenseList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.licenseList } );
 
 			form.append({ type: 'header', label: 'Wikimedia Commons-related tags' });
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.commonsList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.commonsList } );
 
 			form.append({ type: 'header', label: 'Cleanup tags' } );
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.cleanupList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.cleanupList } );
 
 			form.append({ type: 'header', label: 'Image quality tags' } );
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.qualityList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.qualityList } );
 
 			form.append({ type: 'header', label: 'Replacement tags' });
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.replacementList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.replacementList } );
 			break;
 
 		case 'redirect':
@@ -196,6 +196,10 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		var evt = document.createEvent("Event");
 		evt.initEvent("change", true, true);
 		result.sortorder.dispatchEvent(evt);
+
+	} else {
+		// Redirects and files: Add a link to each template's description page
+		Morebits.quickForm.getElements(result, Twinkle.tag.mode + "Tags").forEach(generateLinks);
 	}
 };
 
@@ -504,20 +508,24 @@ Twinkle.tag.updateSortOrder = function(e) {
 	$workarea.find("h5:not(:first-child)").css({ 'margin-top': '1em' });
 	$workarea.find("div").filter(":has(span.quickformDescription)").css({ 'margin-top': '0.4em' });
 
-	// add a link to each template's description page
-	var generateLinks = function(index, checkbox) {
-		var link = Morebits.htmlNode("a", ">");
-		link.setAttribute("class", "tag-template-link");
-		var tagname = checkbox.values;
-		link.setAttribute("href", mw.util.getUrl(
-			(tagname.indexOf(":") === -1 ? "Template:" : "") +
-			(tagname.indexOf("|") === -1 ? tagname : tagname.slice(0,tagname.indexOf("|")))
-		));
-		link.setAttribute("target", "_blank");
-		$(checkbox).parent().append(["\u00A0", link]);
-	};
-	$.each(Morebits.quickForm.getElements(e.target.form, "articleTags"), generateLinks);
-	$.each(Morebits.quickForm.getElements(e.target.form, "alreadyPresentArticleTags"), generateLinks);
+	Morebits.quickForm.getElements(e.target.form, "articleTags").forEach(generateLinks);
+	Morebits.quickForm.getElements(e.target.form, "alreadyPresentArticleTags").forEach(generateLinks);
+};
+
+/**
+ * Adds a link to each template's description page
+ * @param {Morebits.quickForm.element} checkbox  associated with the template
+ */
+var generateLinks = function(checkbox) {
+	var link = Morebits.htmlNode("a", ">");
+	link.setAttribute("class", "tag-template-link");
+	var tagname = checkbox.values;
+	link.setAttribute("href", mw.util.getUrl(
+		(tagname.indexOf(":") === -1 ? "Template:" : "") +
+		(tagname.indexOf("|") === -1 ? tagname : tagname.slice(0,tagname.indexOf("|")))
+	));
+	link.setAttribute("target", "_blank");
+	$(checkbox).parent().append(["\u00A0", link]);
 };
 
 
@@ -1781,8 +1789,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 
 		case 'file':
-			params.svgSubcategory = form["imageTags.svgCategory"] ? form["imageTags.svgCategory"].value : null;
-			params.tags = form.getChecked( 'imageTags' );
+			params.svgSubcategory = form["fileTags.svgCategory"] ? form["fileTags.svgCategory"].value : null;
+			params.tags = form.getChecked( 'fileTags' );
 			break;
 
 		case 'redirect':
