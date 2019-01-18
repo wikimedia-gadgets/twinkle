@@ -771,15 +771,15 @@ Twinkle.speedy.userAllList = [
 			size: 60
 		} : null),
 		hideSubgroupWhenMultiple: true
-	}
-];
-
-Twinkle.speedy.userNonRedirectList = [
+	},
 	{
 		label: 'U2: Nonexistent user',
 		value: 'nouser',
 		tooltip: 'User pages of users that do not exist (Check Special:Listusers)'
-	},
+	}
+];
+
+Twinkle.speedy.userNonRedirectList = [
 	{
 		label: 'U3: Non-free galleries',
 		value: 'gallery',
