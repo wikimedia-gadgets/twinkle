@@ -9,7 +9,7 @@
  *** twinklewarn.js: Warn module
  ****************************************
  * Mode of invocation:     Tab ("Warn")
- * Active on:              User talk pages
+ * Active on:              User (talk) pages and (deleted) Contributions
  * Config directives in:   TwinkleConfig
  */
 
