@@ -1018,7 +1018,7 @@ Twinkle.warn.messages = {
 		"uw-uploadfirst": {
 			label: "Uploading images",
 			summary: "Notice: Uploading images"
-		}
+		},
 		"uw-userspace draft finish": {
 			label: "Stale userspace draft",
 			summary: "Notice: Stale userspace draft"
