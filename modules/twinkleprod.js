@@ -97,7 +97,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	if(namespace !== 'article') {
 		$(result).find('#prodtype_fieldset').hide();
 	}
-	
+
 	// Fake a change event on the first prod type radio, to initialize the type-dependent controls
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
@@ -225,8 +225,8 @@ Twinkle.prod.callbacks = {
 			}
 			var confirmtext = "A {{proposed deletion}} tag was already found on this page. \nWould you like to add a {{proposed deletion endorsed}} tag with your explanation?";
 			if (params.blp) {
-				confirmtext = "A non-BLP {{proposed deletion}} tag was found on this article.\nWould you like to add a {{proposed deletion endorsed}} tag with explanation \"article is a biography of a living person with no sources\"?";	
-				// FIXME: this msg is shown even if it was a BLPPROD tag. 
+				confirmtext = "A non-BLP {{proposed deletion}} tag was found on this article.\nWould you like to add a {{proposed deletion endorsed}} tag with explanation \"article is a biography of a living person with no sources\"?";
+				// FIXME: this msg is shown even if it was a BLPPROD tag.
 			}
 			if( !confirm( confirmtext ) ) {
 				statelem.warn( 'Aborted per user request' );
@@ -340,7 +340,7 @@ Twinkle.prod.callbacks = {
 Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	var form = e.target;
 	var prodtype;
-	
+
 	if( namespace === 'article' ) {
 		var prodtypes = form.prodtype;
 		for( var i = 0; i < prodtypes.length; i++ ) {
