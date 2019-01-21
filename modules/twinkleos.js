@@ -191,31 +191,25 @@ Twinkle.os.evaluate = function evaluate(e) {
 	token_api.parent = params;
 	token_api.post();
 	Morebits.status.init(form);
-	//Morebits.wiki.actionCompleted.notice = "Email sent";
+	Morebits.wiki.actionCompleted.notice = "Email";
+	Morebits.wiki.actionCompleted.postfix = "Sent successfully";
 };
 
 Twinkle.os.sendEmail = function sendemail(apiobj) {
 	var params = apiobj.parent;
 	var token = $(apiobj.responseXML).find("tokens").attr("csrftoken");
-	var mail_api = new Morebits.wiki.api( 'Email', {
+	var mail_api = new Morebits.wiki.api( 'Sending email', {
 		'action': 'emailuser',
-		'target': 'SD0001',
+		'target': 'Oversight',
 		'subject': params.emailSubject,
 		'text':  params.emailBody + '\n\n' + Twinkle.getPref('emailSummaryAd'),
 		'ccme': Twinkle.getPref('ccCopyOfEmail'),
 		'token' : token
-	}, Twinkle.os.checkIfSent );
+	// onSuccess and statusElement are undefined
+	}, undefined , undefined, function onError() {
+		Morebits.status.printUserText('Subject: ' + params.emailSubject + '\n' + params.emailBody, "Your email is provided below, which you can copy and paste into a new OS dialog if you wish to try again:");
+	});
 	mail_api.post();
-};
-
-Twinkle.os.checkIfSent = function checkIfSent(apiobj) {
-	var statelem = apiobj.getStatusElement();
-	var result = $(apiobj.responseXML).find("emailuser").attr("result");
-	if (result === "Success") {
-		statelem.info("Sent successfully");
-	} else {	// usual API errors are handled directly by morebits API constructor
-		statelem.error("Unknown error: email couldn't be sent. Please try again");
-	}
 };
 
 })(jQuery);
