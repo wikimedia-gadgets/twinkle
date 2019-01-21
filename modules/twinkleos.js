@@ -10,7 +10,7 @@
 
 Twinkle.os = function twinkleos() {
 	// Disable on special pages
-	if (mw.config.get('wgNamespaceNumber') < 0) {
+	if (mw.config.get('wgNamespaceNumber') < 0 && !Morebits.userIsInGroup('oversight') ) {
 		return;
 	}
 	Twinkle.addPortletLink( Twinkle.os.callback, "OS", "tw-os", "Request oversight" );
@@ -19,7 +19,7 @@ Twinkle.os = function twinkleos() {
 Twinkle.os.callback = function oscallback() {
 	var getUrl = function(pageName, params) {
 		return "https://" + mw.config.get('wgServerName') + mw.util.getUrl(pageName, params);
-	}
+	};
 	var pageName = Morebits.pageNameNorm;
 
 	var Window = new Morebits.simpleWindow( 800, 500 );
