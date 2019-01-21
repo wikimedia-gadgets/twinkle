@@ -14,7 +14,7 @@
  */
 
 Twinkle.prod = function twinkleprod() {
-	if( [0, 6].indexOf(mw.config.get('wgNamespaceNumber')) === -1 || !mw.config.get('wgCurRevisionId') || Morebits.wiki.isPageRedirect() ) {
+	if( [0, 6, 108].indexOf(mw.config.get('wgNamespaceNumber')) === -1 || !mw.config.get('wgCurRevisionId') || Morebits.wiki.isPageRedirect() ) {
 		return;
 	}
 
@@ -27,7 +27,6 @@ var namespace;
 Twinkle.prod.callback = function twinkleprodCallback() {
 	Twinkle.prod.defaultReason = Twinkle.getPref('prodReasonDefault');
 
-	// TODO: add 'book' as well, namespace number 108
 	switch (mw.config.get('wgNamespaceNumber')) {
 		case 0:
 			namespace = 'article';
@@ -35,26 +34,31 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 		case 6:
 			namespace = 'file';
 			break;
+		case 108:
+			namespace = 'book';
+			break;
 	}
 
 	var Window = new Morebits.simpleWindow( 800, 410 );
 	Window.setTitle( "Proposed deletion (PROD)" );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Proposed deletion policy", "WP:PROD" );
-
-	if (namespace === 'article') {
-		Window.addFooterLink( "BLP PROD policy", "WP:BLPPROD" );
-	}
-
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#prod" );
 
 	var form = new Morebits.quickForm( Twinkle.prod.callback.evaluate );
 
+	if (namespace === 'article') {
+		Window.addFooterLink( "Proposed deletion policy", "WP:PROD" );
+		Window.addFooterLink( "BLP PROD policy", "WP:BLPPROD" );
+	} else if ( namespace === 'file' ) {
+		Window.addFooterLink( "Proposed deletion policy", "WP:PROD" );
+	} else {	// if namespace === 'book'
+		Window.addFooterLink( "Proposed deletion (books) policy", "WP:BOOKPROD" );
+	}
+
 	var field = form.append( {
-			type: 'field',
-			label: 'PROD type',
-			id: 'prodtype_fieldset'
-		} );
+		type: 'field',
+		label: 'PROD type',
+		id: 'prodtype_fieldset'
+	} );
 
 	field.append( {
 			type: 'radio',
@@ -75,11 +79,13 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 			]
 		} );
 
+	// Placeholder fieldset to be replaced in Twinkle.prod.callback.prodtypechanged
 	form.append( {
-			type: 'field',
-			label:'Work area',
-			name: 'work_area'
-		} );
+		type: 'field',
+		name: 'parameters'
+	} );
+
+	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#prod" );
 
 	form.append( { type:'submit', label:'Propose deletion' } );
 
@@ -87,23 +93,25 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	Window.setContent( result );
 	Window.display();
 
+	// Hide fieldset for PROD type in File and Book namespaces since only normal PROD is allowed
+	if(namespace !== 'article') {
+		$(result).find('#prodtype_fieldset').hide();
+	}
+	
 	// Fake a change event on the first prod type radio, to initialize the type-dependent controls
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
 	result.prodtype[0].dispatchEvent( evt );
 
-	// Hide fieldset for PROD type if File namespace since only normal PROD is allowed
-	if (namespace === 'file') {
-		$('#prodtype_fieldset').hide();
-	}
 };
+
 
 Twinkle.prod.callback.prodtypechanged = function(event) {
 	//prepare frame for prod type dependant controls
 	var field = new Morebits.quickForm.element( {
 			type: 'field',
 			label: 'Parameters',
-			name: 'work_area'
+			name: 'parameters'
 		} );
 	// create prod type dependant controls
 	switch( event.target.values ) {
@@ -119,8 +127,7 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 							checked: true
 						}
 					]
-				}
-			);
+				} );
 			field.append( {
 					type: 'textarea',
 					name: 'reason',
@@ -142,13 +149,12 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 							label: 'Notify page creator if possible',
 							value: 'notify',
 							name: 'notify',
-							tooltip: 'Creator of ' + namespace + ' has to be notified.',
+							tooltip: 'Creator of article has to be notified.',
 							checked: true,
 							disabled: true
 						}
 					]
-				}
-			);
+				} );
 			//temp warning, can be removed down the line once BLPPROD is more established. Amalthea, May 2010.
 			var boldtext = document.createElement('b');
 			boldtext.appendChild(document.createTextNode('Please note that only unsourced biographies of living persons are eligible for this tag, narrowly construed.'));
@@ -162,7 +168,7 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 			break;
 	}
 
-	event.target.form.replaceChild( field.render(), $(event.target.form).find('fieldset[name="work_area"]')[0] );
+	event.target.form.replaceChild( field.render(), $(event.target.form).find('fieldset[name="parameters"]')[0] );
 };
 
 Twinkle.prod.callbacks = {
@@ -196,7 +202,7 @@ Twinkle.prod.callbacks = {
 
 		// Remove tags that become superfluous with this action
 		text = text.replace(/{{\s*(userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/gi, "");
-		var prod_re = /{{\s*(?:dated prod|dated files|dated prod blp|Prod blp\/dated|Proposed deletion\/dated)\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
+		var prod_re = /{{\s*(?:Prod blp|Proposed deletion|book-prod)\/dated( files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
 		var summaryText;
 		if( !prod_re.test( text ) ) {
 			// Notification to first contributor
@@ -209,9 +215,18 @@ Twinkle.prod.callbacks = {
 			else if( Twinkle.getPref('logProdPages') ) {
 				Twinkle.prod.callbacks.addToLog(params);
 			}
-
-			summaryText = "Proposing " + namespace + " for deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
-			text = "{{subst:prod" + (params.blp ? " blp" : ("|1=" + Morebits.string.formatReasonText(params.reason))) + (params.usertalk ? "|help=off" : "") + "}}\n" + text;
+			if(params.blp) {
+				summaryText = "Proposing article for deletion per [[WP:BLPPROD]].";
+				text = "{{subst:prod blp" + (params.usertalk ? "|help=off" : "") + "}}\n" + text;
+			}
+			else if(params.book) {
+				summaryText = "Proposing book for deletion per [[WP:BOOKPROD]].";
+				text = "{{subst:book-prod|1=" + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? "|help=off" : "") + "}}\n" + text;
+			}
+			else {
+				summaryText = "Proposing " + namespace + " for deletion per [[WP:PROD]].";
+				text = "{{subst:prod|1=" + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? "|help=off" : "") + "}}\n" + text;
+			}
 		}
 		else {  // already tagged for PROD, so try endorsing it
 			var prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/;
@@ -219,16 +234,17 @@ Twinkle.prod.callbacks = {
 				statelem.warn( 'Page already tagged with {{proposed deletion}} and {{proposed deletion endorsed}} templates, aborting procedure' );
 				return;
 			}
-			var confirmtext = "A {{proposed deletion}} tag was already found on this " + namespace + ". \nWould you like to add a {{proposed deletion endorsed}} tag with your explanation?";
+			var confirmtext = "A {{proposed deletion}} tag was already found on this page. \nWould you like to add a {{proposed deletion endorsed}} tag with your explanation?";
 			if (params.blp) {
-				confirmtext = "A non-BLP {{proposed deletion}} tag was found on this article.\nWould you like to add a {{proposed deletion endorsed}} tag with explanation \"article is a biography of a living person with no sources\"?";
+				confirmtext = "A non-BLP {{proposed deletion}} tag was found on this article.\nWould you like to add a {{proposed deletion endorsed}} tag with explanation \"article is a biography of a living person with no sources\"?";	
+				// FIXME: this msg is shown even if it was a BLPPROD tag. 
 			}
 			if( !confirm( confirmtext ) ) {
 				statelem.warn( 'Aborted per user request' );
 				return;
 			}
 
-			summaryText = "Endorsing proposed deletion per [[WP:" + (params.blp ? "BLP" : "") + "PROD]].";
+			summaryText = "Endorsing proposed deletion per [[WP:" + (params.blp ? "BLP" : (params.book ? "BOOK" : "")) + "PROD]].";
 			text = text.replace( prod_re, text.match( prod_re ) + "\n{{proposed deletion endorsed|1=" + (params.blp ?
 				"article is a [[WP:BLPPROD|biography of a living person with no sources]]" :
 				Morebits.string.formatReasonText(params.reason)) + "}}\n" );
@@ -260,8 +276,14 @@ Twinkle.prod.callbacks = {
 		}
 
 		// [[Template:Proposed deletion notify]] supports File namespace
-		var notifyTemplate = params.blp ? 'prodwarningBLP' : 'proposed deletion notify';
-
+		var notifyTemplate;
+		if(params.blp) {
+			notifyTemplate = 'prodwarningBLP';
+		} else if (params.book) {
+			notifyTemplate = 'bprodwarning';
+		} else {
+			notifyTemplate = 'proposed deletion notify';
+		}
 		var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 		var notifytext = "\n{{subst:" + notifyTemplate + "|1=" + Morebits.pageNameNorm + "|concern=" + params.reason + "}} ~~~~";
 		usertalkpage.setAppendText(notifytext);
@@ -293,7 +315,7 @@ Twinkle.prod.callbacks = {
 				"nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].\n";
 		}
 
-		// create monthly header
+		// create monthly header if it doesn't exist already
 		var date = new Date();
 		var headerRe = new RegExp("^==+\\s*" + date.getUTCMonthName() + "\\s+" + date.getUTCFullYear() + "\\s*==+", "m");
 		if (!headerRe.exec(text)) {
@@ -302,13 +324,13 @@ Twinkle.prod.callbacks = {
 
 		var summarytext;
 		if (params.logEndorsing) {
-			text += "\n# [[:" + Morebits.pageNameNorm + "]]: endorsed " + (params.blp ? "BLP " : "") + "PROD. ~~~~~";
+			text += "\n# [[:" + Morebits.pageNameNorm + "]]: endorsed " + (params.blp ? "BLP " : (params.book ? "BOOK" : "")) + "PROD. ~~~~~";
 			if (params.reason) {
 				text += "\n#* '''Reason''': " + params.reason + "\n";
 			}
 			summarytext = "Logging endorsement of PROD nomination of [[:" + Morebits.pageNameNorm + "]].";
 		} else {
-			text += "\n# [[:" + Morebits.pageNameNorm + "]]: " + (params.blp ? "BLP " : "") + "PROD";
+			text += "\n# [[:" + Morebits.pageNameNorm + "]]: " + (params.blp ? "BLP " : (params.book ? "BOOK" : "")) + "PROD";
 			if (params.logInitialContrib) {
 				text += "; notified {{user|" + params.logInitialContrib + "}}";
 			}
@@ -329,19 +351,21 @@ Twinkle.prod.callbacks = {
 Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	var form = e.target;
 	var prodtype;
-
-	var prodtypes = form.prodtype;
-	for( var i = 0; i < prodtypes.length; i++ ) {
-		if( !prodtypes[i].checked ) {
-			continue;
+	
+	if( namespace === 'article' ) {
+		var prodtypes = form.prodtype;
+		for( var i = 0; i < prodtypes.length; i++ ) {
+			if( prodtypes[i].checked ) {
+				prodtype = prodtypes[i].values;
+				break;
+			}
 		}
-		prodtype = prodtypes[i].values;
-		break;
 	}
 
 	var params = {
 		usertalk: form.notify.checked,
 		blp: prodtype === 'prodblp',
+		book: namespace === 'book',
 		reason: prodtype === 'prodblp' ? '' : form.reason.value  // using an empty string here as fallback will help with prod-2.
 	};
 
