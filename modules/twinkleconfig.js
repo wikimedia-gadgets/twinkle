@@ -669,12 +669,6 @@ Twinkle.config.sections = [
 			type: "customList",
 			customListValueTitle: "Template name (no curly brackets)",
 			customListLabelTitle: "Text to show in warning list (also used as edit summary)"
-		},
-
-		{
-			name: "markXfdPagesAsPatrolled",
-			label: "Mark page as patrolled when nominating for AFD (if possible)",
-			type: "boolean"
 		}
 	]
 },
@@ -775,6 +769,12 @@ Twinkle.config.sections = [
 			label: "Add user talk page of initial contributor to watchlist (when notifying)",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+
+		{
+			name: "markXfdPagesAsPatrolled",
+			label: "Mark page as patrolled when nominating for AFD (if possible)",
+			type: "boolean"
 		}
 	]
 },
