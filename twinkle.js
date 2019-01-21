@@ -104,6 +104,7 @@ Twinkle.defaultConfig.twinkle = {
 	showSharedIPNotice: true,
 	watchWarnings: true,
 	customWarningList: [],
+	autoMenuAfterRollback: false,
 
 	// XfD
 	xfdWatchDiscussion: "default",
