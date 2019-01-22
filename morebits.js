@@ -1210,9 +1210,9 @@ Morebits.pageNameNorm = mw.config.get('wgPageName').replace(/_/g, ' ');
  * Used for temporarily hiding a part of a string while processing the rest of it.
  *
  * eg.  var u = new Morebits.unbinder("Hello world <!-- world --> world");
- * 		u.unbind('<!--','-->');
- * 		u.content = u.content.replace(/world/g, 'earth');
- * 		u.rebind()	// gives "Hello earth <!-- world --> earth"
+ *		u.unbind('<!--','-->');
+ *		u.content = u.content.replace(/world/g, 'earth');
+ *		u.rebind()	// gives "Hello earth <!-- world --> earth"
  *
  * Text within the 'unbinded' part (in this case, the HTML comment) remains intact
  * unbind() can be called multiple times to unbind multiple parts of the string.
@@ -1640,7 +1640,7 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  * getPageText(): returns a string containing the text of the page after a successful load()
  *
  * save([onSuccess], [onFailure]):  Saves the text set via setPageText() for the page.
- * 									Must be preceded by calling load().
+ *									Must be preceded by calling load().
  *    Warning: Calling save() can result in additional calls to the previous load() callbacks to
  *             recover from edit conflicts!
  *             In this case, callers must make the same edit to the new pageText and reinvoke save().
@@ -1821,6 +1821,157 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	var emptyFunction = function() { };
+
+	/**
+	 * Public interface accessors
+	 */
+	this.getPageName = function() {
+		return ctx.pageName;
+	};
+
+	this.getPageText = function() {
+		return ctx.pageText;
+	};
+
+	this.setPageText = function(pageText) {
+		ctx.editMode = 'all';
+		ctx.pageText = pageText;
+	};
+
+	this.setAppendText = function(appendText) {
+		ctx.editMode = 'append';
+		ctx.appendText = appendText;
+	};
+
+	this.setPrependText = function(prependText) {
+		ctx.editMode = 'prepend';
+		ctx.prependText = prependText;
+	};
+
+	this.setEditSummary = function(summary) {
+		ctx.editSummary = summary;
+	};
+
+	this.setCreateOption = function(createOption) {
+		ctx.createOption = createOption;
+	};
+
+	this.setMinorEdit = function(minorEdit) {
+		ctx.minorEdit = minorEdit;
+	};
+
+	this.setBotEdit = function(botEdit) {
+		ctx.botEdit = botEdit;
+	};
+
+	this.setPageSection = function(pageSection) {
+		ctx.pageSection = pageSection;
+	};
+
+	this.setMaxConflictRetries = function(maxRetries) {
+		ctx.maxConflictRetries = maxRetries;
+	};
+
+	this.setMaxRetries = function(maxRetries) {
+		ctx.maxRetries = maxRetries;
+	};
+
+	this.setCallbackParameters = function(callbackParameters) {
+		ctx.callbackParameters = callbackParameters;
+	};
+
+	this.getCallbackParameters = function() {
+		return ctx.callbackParameters;
+	};
+
+	this.getCreator = function() {
+		return ctx.creator;
+	};
+
+	this.setOldID = function(oldID) {
+		ctx.revertOldID = oldID;
+	};
+
+	this.getCurrentID = function() {
+		return ctx.revertCurID;
+	};
+
+	this.getRevisionUser = function() {
+		return ctx.revertUser;
+	};
+
+	this.setMoveDestination = function(destination) {
+		ctx.moveDestination = destination;
+	};
+
+	this.setMoveTalkPage = function(flag) {
+		ctx.moveTalkPage = !!flag;
+	};
+
+	this.setMoveSubpages = function(flag) {
+		ctx.moveSubpages = !!flag;
+	};
+
+	this.setMoveSuppressRedirect = function(flag) {
+		ctx.moveSuppressRedirect = !!flag;
+	};
+
+	this.setEditProtection = function(level, expiry) {
+		ctx.protectEdit = { level: level, expiry: expiry };
+	};
+
+	this.setMoveProtection = function(level, expiry) {
+		ctx.protectMove = { level: level, expiry: expiry };
+	};
+
+	this.setCreateProtection = function(level, expiry) {
+		ctx.protectCreate = { level: level, expiry: expiry };
+	};
+
+	this.setCascadingProtection = function(flag) {
+		ctx.protectCascade = !!flag;
+	};
+
+	this.setFlaggedRevs = function(level, expiry) {
+		ctx.flaggedRevs = { level: level, expiry: expiry };
+	};
+
+	this.getStatusElement = function() {
+		return ctx.statusElement;
+	};
+
+	this.setFollowRedirect = function(followRedirect) {
+		if (ctx.pageLoaded) {
+			ctx.statusElement.error("Internal error: cannot change redirect setting after the page has been loaded!");
+			return;
+		}
+		ctx.followRedirect = followRedirect;
+	};
+
+	this.setWatchlist = function(flag) {
+		if (flag) {
+			ctx.watchlistOption = 'watch';
+		} else {
+			ctx.watchlistOption = 'nochange';
+		}
+	};
+
+	this.setWatchlistFromPreferences = function(flag) {
+		if (flag) {
+			ctx.watchlistOption = 'preferences';
+		} else {
+			ctx.watchlistOption = 'nochange';
+		}
+	};
+
+	this.suppressProtectWarning = function() {
+		ctx.suppressProtectWarning = true;
+	};
+
+	this.exists = function() {
+		return ctx.pageExists;
+	};
+
 
 	/**
 	 * Loads the text for the page
@@ -3761,10 +3912,10 @@ Morebits.batchOperation = function(currentAction) {
 	/**
 	 * Sets a known option:
 	 * - chunkSize (integer):
-	 * 		The size of chunks to break the array into (default 50).
-	 * 		Setting this to a small value (<5) can cause problems.
+	 *		The size of chunks to break the array into (default 50).
+	 *		Setting this to a small value (<5) can cause problems.
 	 * - preserveIndividualStatusLines (boolean):
-	 * 		Keep each page's status element visible when worker is complete?
+	 *		Keep each page's status element visible when worker is complete?
 	 */
 	this.setOption = function(optionName, optionValue) {
 		ctx.options[optionName] = optionValue;
