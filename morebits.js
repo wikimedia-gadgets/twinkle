@@ -2198,6 +2198,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.protectCascade = !!flag;
 	};
 
+	this.suppressProtectWarning = function() {
+		ctx.suppressProtectWarning = true;
+	};
+
 	// Revert-related getters/setters:
 	this.setOldID = function(oldID) {
 		ctx.revertOldID = oldID;
