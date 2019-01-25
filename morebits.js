@@ -1241,7 +1241,7 @@ Morebits.unbinder.prototype = {
 	 * @param {string} postfix
 	 */
 	unbind: function UnbinderUnbind( prefix, postfix ) {
-		var re = new RegExp( prefix + '(.*?)' + postfix, 'gs' );
+		var re = new RegExp( prefix + '(.*?)' + postfix, 'g' );
 		this.content = this.content.replace( re, Morebits.unbinder.getCallback( this ) );
 	},
 
