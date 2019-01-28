@@ -23,6 +23,13 @@ var spanTag = function( color, content ) {
 	span.appendChild( document.createTextNode( content ) );
 	return span;
 };
+var buildLink = function(color, text) {
+	var link = document.createElement('a');
+	link.appendChild(spanTag('Black', '['));
+	link.appendChild(spanTag(color, text));
+	link.appendChild(spanTag('Black', ']'));
+	return link;
+};
 
 Twinkle.fluff = {
 	auto: function() {
@@ -50,17 +57,11 @@ Twinkle.fluff = {
 				var list = $("#mw-content-text").find("ul li:has(span.mw-uctop)");
 
 				var revNode = document.createElement('strong');
-				var revLink = document.createElement('a');
-				revLink.appendChild( spanTag( 'Black', '[' ) );
-				revLink.appendChild( spanTag( 'SteelBlue', 'rollback' ) );
-				revLink.appendChild( spanTag( 'Black', ']' ) );
+				var revLink = buildLink('SteelBlue', 'rollback');
 				revNode.appendChild(revLink);
 
 				var revVandNode = document.createElement('strong');
-				var revVandLink = document.createElement('a');
-				revVandLink.appendChild( spanTag( 'Black', '[' ) );
-				revVandLink.appendChild( spanTag( 'Red', 'vandalism' ) );
-				revVandLink.appendChild( spanTag( 'Black', ']' ) );
+				var revVandLink = buildLink('Red', 'vandalism');
 				revVandNode.appendChild(revVandLink);
 
 				list.each(function(key, current) {
@@ -84,12 +85,6 @@ Twinkle.fluff = {
 			return;
 		}
 
-		var firstRev = $("div.firstrevisionheader").length;
-		if( firstRev ) {
-			// we have first revision here, nothing to do.
-			return;
-		}
-
 		var otitle, ntitle;
 		try {
 			var otitle1 = document.getElementById('mw-diff-otitle1');
@@ -105,7 +100,8 @@ Twinkle.fluff = {
 		}
 
 		var old_rev_url = $("#mw-diff-otitle1").find("strong a").attr("href");
-		// Lets first add a [edit this revision] link
+
+		// Lets first add a [restore this revision] link
 		var query = new Morebits.queryString( old_rev_url.split( '?', 2 )[1] );
 
 		var oldrev = query.get('oldid');
@@ -114,15 +110,14 @@ Twinkle.fluff = {
 		revertToRevision.setAttribute( 'id', 'tw-revert-to-orevision' );
 		revertToRevision.style.fontWeight = 'bold';
 
-		var revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
+		var revertToRevisionLink = buildLink('SaddleBrown', 'restore this version');
+
 		revertToRevisionLink.href = "#";
 		$(revertToRevisionLink).click(function(){
 			Twinkle.fluff.revertToRevision(oldrev);
 		});
-		revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
-		revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
-		revertToRevisionLink.appendChild( spanTag( 'Black', ']' ) );
 
+		revertToRevision.appendChild(revertToRevisionLink);
 		otitle.insertBefore( revertToRevision, otitle.firstChild );
 
 		if( document.getElementById('differences-nextlink') ) {
@@ -133,19 +128,14 @@ Twinkle.fluff = {
 			revertToRevision = document.createElement('div');
 			revertToRevision.setAttribute( 'id', 'tw-revert-to-nrevision' );
 			revertToRevision.style.fontWeight = 'bold';
-			revertToRevisionLink = revertToRevision.appendChild( document.createElement('a') );
+			revertToRevisionLink = buildLink('SaddleBrown', 'restore this version');
 			revertToRevisionLink.href = "#";
 			$(revertToRevisionLink).click(function(){
 				Twinkle.fluff.revertToRevision(newrev);
 			});
-			revertToRevisionLink.appendChild( spanTag( 'Black', '[' ) );
-			revertToRevisionLink.appendChild( spanTag( 'SaddleBrown', 'restore this version' ) );
-			revertToRevisionLink.appendChild( spanTag( 'Black', ']' ) );
+			revertToRevision.appendChild(revertToRevisionLink);
 			ntitle.insertBefore( revertToRevision, ntitle.firstChild );
-
-			return;
-		}
-		if( Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 ) {
+		} else if( Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 ) {
 			var vandal = $("#mw-diff-ntitle2").find("a").first().text();
 
 			var revertNode = document.createElement('div');
@@ -155,9 +145,9 @@ Twinkle.fluff = {
 			var vandNode = document.createElement('strong');
 			var normNode = document.createElement('strong');
 
-			var agfLink = document.createElement('a');
-			var vandLink = document.createElement('a');
-			var normLink = document.createElement('a');
+			var agfLink = buildLink('DarkOliveGreen', 'rollback (AGF)');
+			var vandLink = buildLink('Red', 'rollback (VANDAL)');
+			var normLink = buildLink('SteelBlue', 'rollback');
 
 			agfLink.href = "#";
 			vandLink.href = "#";
@@ -171,18 +161,6 @@ Twinkle.fluff = {
 			$(normLink).click(function(){
 				Twinkle.fluff.revert('norm', vandal);
 			});
-
-			agfLink.appendChild( spanTag( 'Black', '[' ) );
-			agfLink.appendChild( spanTag( 'DarkOliveGreen', 'rollback (AGF)' ) );
-			agfLink.appendChild( spanTag( 'Black', ']' ) );
-
-			vandLink.appendChild( spanTag( 'Black', '[' ) );
-			vandLink.appendChild( spanTag( 'Red', 'rollback (VANDAL)' ) );
-			vandLink.appendChild( spanTag( 'Black', ']' ) );
-
-			normLink.appendChild( spanTag( 'Black', '[' ) );
-			normLink.appendChild( spanTag( 'SteelBlue', 'rollback' ) );
-			normLink.appendChild( spanTag( 'Black', ']' ) );
 
 			agfNode.appendChild(agfLink);
 			vandNode.appendChild(vandLink);
