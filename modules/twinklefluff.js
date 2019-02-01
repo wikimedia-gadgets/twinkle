@@ -77,99 +77,91 @@ Twinkle.fluff = {
 				});
 			}
 		} else {
-
-			if( mw.config.get('wgCanonicalSpecialPageName') === "Undelete" ) {
-				//You can't rollback deleted pages!
-				return;
-			}
-
-			var otitle, ntitle;
-			try {
-				var otitle1 = document.getElementById('mw-diff-otitle1');
-				var ntitle1 = document.getElementById('mw-diff-ntitle1');
-				if (!otitle1 || !ntitle1) {
-					return;
+			// Add a [restore this revision] link to old(er) revision
+			if (document.getElementById('mw-revision-info') || mw.config.get('wgDiffOldId')) {
+				var oldrev, onode;
+				if (document.getElementById('mw-revision-info')) { // old revision
+					oldrev = Morebits.queryString.get('oldid');
+					onode = 'mw-revision-info';
+				} else { // diff
+					var old_rev_url = $("#mw-diff-otitle1").find("strong a").attr("href");
+					oldrev = new Morebits.queryString( old_rev_url.split( '?', 2 )[1] ).get('oldid');
+					onode = 'mw-diff-otitle1';
 				}
-				otitle = otitle1.parentNode;
-				ntitle = ntitle1.parentNode;
-			} catch( e ) {
-				// no old, nor new title, nothing to do really, return;
-				return;
-			}
 
-			var old_rev_url = $("#mw-diff-otitle1").find("strong a").attr("href");
-
-			// Lets first add a [restore this revision] link
-			var query = new Morebits.queryString( old_rev_url.split( '?', 2 )[1] );
-
-			var oldrev = query.get('oldid');
-
-			var revertToRevision = document.createElement('div');
-			revertToRevision.setAttribute( 'id', 'tw-revert-to-orevision' );
-			revertToRevision.style.fontWeight = 'bold';
-
-			var revertToRevisionLink = buildLink('SaddleBrown', 'restore this version');
-			revertToRevisionLink.href = "#";
-			$(revertToRevisionLink).click(function(){
-				Twinkle.fluff.revertToRevision(oldrev);
-			});
-			revertToRevision.appendChild(revertToRevisionLink);
-
-			otitle.insertBefore( revertToRevision, otitle.firstChild );
-
-			if( document.getElementById('differences-nextlink') ) {
-				// Not latest revision
-				var new_rev_url = $("#mw-diff-ntitle1").find("strong a").attr("href");
-				query = new Morebits.queryString( new_rev_url.split( '?', 2 )[1] );
-				var newrev = query.get('oldid');
-				revertToRevision = document.createElement('div');
-				revertToRevision.setAttribute( 'id', 'tw-revert-to-nrevision' );
+				var revertToRevision = document.createElement('div');
+				revertToRevision.setAttribute( 'id', 'tw-revert-to-orevision' );
 				revertToRevision.style.fontWeight = 'bold';
-				revertToRevisionLink = buildLink('SaddleBrown', 'restore this version');
+
+				var revertToRevisionLink = buildLink('SaddleBrown', 'restore this version');
 				revertToRevisionLink.href = "#";
 				$(revertToRevisionLink).click(function(){
-					Twinkle.fluff.revertToRevision(newrev);
+					Twinkle.fluff.revertToRevision(oldrev);
 				});
 				revertToRevision.appendChild(revertToRevisionLink);
-				ntitle.insertBefore( revertToRevision, ntitle.firstChild );
-			} else if( Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 ) {
-				var vandal = $("#mw-diff-ntitle2").find("a").first().text();
 
-				var revertNode = document.createElement('div');
-				revertNode.setAttribute( 'id', 'tw-revert' );
+				var otitle = document.getElementById(onode).parentNode;
+				otitle.insertBefore( revertToRevision, otitle.firstChild );
+			}
+			// Add either restore or rollback links
+			if (mw.config.get('wgDiffNewId')) {
+				var ntitle = document.getElementById('mw-diff-ntitle1').parentNode;
+				if( document.getElementById('differences-nextlink') ) {
+					// Not latest revision
+					var new_rev_url = $("#mw-diff-ntitle1").find("strong a").attr("href");
+					var newrev = new Morebits.queryString( new_rev_url.split( '?', 2 )[1] ).get('oldid');
 
-				var agfNode = document.createElement('strong');
-				var vandNode = document.createElement('strong');
-				var normNode = document.createElement('strong');
+					var revertToRevisionN = document.createElement('div');
+					revertToRevisionN.setAttribute( 'id', 'tw-revert-to-nrevision' );
+					revertToRevisionN.style.fontWeight = 'bold';
 
-				var agfLink = buildLink('DarkOliveGreen', 'rollback (AGF)');
-				var vandLink = buildLink('Red', 'rollback (VANDAL)');
-				var normLink = buildLink('SteelBlue', 'rollback');
+					var revertToRevisionNLink = buildLink('SaddleBrown', 'restore this version');
+					revertToRevisionNLink.href = "#";
+					$(revertToRevisionNLink).click(function(){
+						Twinkle.fluff.revertToRevision(newrev);
+					});
+					revertToRevisionN.appendChild(revertToRevisionNLink);
 
-				agfLink.href = "#";
-				vandLink.href = "#";
-				normLink.href = "#";
-				$(agfLink).click(function(){
-					Twinkle.fluff.revert('agf', vandal);
-				});
-				$(vandLink).click(function(){
-					Twinkle.fluff.revert('vand', vandal);
-				});
-				$(normLink).click(function(){
-					Twinkle.fluff.revert('norm', vandal);
-				});
+					ntitle.insertBefore( revertToRevisionN, ntitle.firstChild );
+				} else if( Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 ) {
+					var vandal = $("#mw-diff-ntitle2").find("a").first().text();
 
-				agfNode.appendChild(agfLink);
-				vandNode.appendChild(vandLink);
-				normNode.appendChild(normLink);
+					var revertNode = document.createElement('div');
+					revertNode.setAttribute( 'id', 'tw-revert' );
 
-				revertNode.appendChild( agfNode );
-				revertNode.appendChild( document.createTextNode(' || ') );
-				revertNode.appendChild( normNode );
-				revertNode.appendChild( document.createTextNode(' || ') );
-				revertNode.appendChild( vandNode );
+					var agfNode = document.createElement('strong');
+					var vandNode = document.createElement('strong');
+					var normNode = document.createElement('strong');
 
-				ntitle.insertBefore( revertNode, ntitle.firstChild );
+					var agfLink = buildLink('DarkOliveGreen', 'rollback (AGF)');
+					var vandLink = buildLink('Red', 'rollback (VANDAL)');
+					var normLink = buildLink('SteelBlue', 'rollback');
+
+					agfLink.href = "#";
+					vandLink.href = "#";
+					normLink.href = "#";
+					$(agfLink).click(function(){
+						Twinkle.fluff.revert('agf', vandal);
+					});
+					$(vandLink).click(function(){
+						Twinkle.fluff.revert('vand', vandal);
+					});
+					$(normLink).click(function(){
+						Twinkle.fluff.revert('norm', vandal);
+					});
+
+					agfNode.appendChild(agfLink);
+					vandNode.appendChild(vandLink);
+					normNode.appendChild(normLink);
+
+					revertNode.appendChild( agfNode );
+					revertNode.appendChild( document.createTextNode(' || ') );
+					revertNode.appendChild( normNode );
+					revertNode.appendChild( document.createTextNode(' || ') );
+					revertNode.appendChild( vandNode );
+
+					ntitle.insertBefore( revertNode, ntitle.firstChild );
+				}
 			}
 		}
 	}
