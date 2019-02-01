@@ -80,101 +80,97 @@ Twinkle.fluff = {
 	},
 
 	diff: function() {
-		if( mw.config.get('wgCanonicalSpecialPageName') === "Undelete" ) {
-			//You can't rollback deleted pages!
-			return;
-		}
+		if (mw.config.get('wgDiffNewId') === mw.config.get('wgRevisionId')) {
+			// Add a [restore this revision] link to the older revision
+			// Don't show if there's a single revision or weird diff (cur on latest)
+			if (mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId'))) {
+				var revertToRevision = document.createElement('div');
+				revertToRevision.setAttribute( 'id', 'tw-revert-to-orevision' );
+				revertToRevision.style.fontWeight = 'bold';
 
-		var otitle, ntitle;
-		try {
-			var otitle1 = document.getElementById('mw-diff-otitle1');
-			var ntitle1 = document.getElementById('mw-diff-ntitle1');
-			if (!otitle1 || !ntitle1) {
-				return;
+				var revertToRevisionLink = buildLink('SaddleBrown', 'restore this version');
+				revertToRevisionLink.href = "#";
+				$(revertToRevisionLink).click(function(){
+					Twinkle.fluff.revertToRevision(mw.config.get('wgDiffOldId').toString());
+				});
+				revertToRevision.appendChild(revertToRevisionLink);
+
+				var otitle = document.getElementById('mw-diff-otitle1').parentNode;
+				otitle.insertBefore( revertToRevision, otitle.firstChild );
 			}
-			otitle = otitle1.parentNode;
-			ntitle = ntitle1.parentNode;
-		} catch( e ) {
-			// no old, nor new title, nothing to do really, return;
-			return;
-		}
 
-		// Lets first add a [restore this revision] link
+			// Add either restore or rollback links to the newer revision
+			// Don't show if there's a single revision or weird diff (prev on first)
+			var ntitle = document.getElementById('mw-diff-ntitle1').parentNode;
+			if( document.getElementById('differences-nextlink') ) {
+				// Not latest revision
+				var revertToRevisionN = document.createElement('div');
+				revertToRevisionN.setAttribute( 'id', 'tw-revert-to-nrevision' );
+				revertToRevisionN.style.fontWeight = 'bold';
+
+				var revertToRevisionNLink = buildLink('SaddleBrown', 'restore this version');
+				revertToRevisionNLink.href = "#";
+				$(revertToRevisionNLink).click(function(){
+					Twinkle.fluff.revertToRevision(mw.config.get('wgDiffNewId').toString());
+				});
+				revertToRevisionN.appendChild(revertToRevisionNLink);
+
+				ntitle.insertBefore( revertToRevisionN, ntitle.firstChild );
+			} else if( Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 && mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId') || document.getElementById('differences-prevlink'))) {
+				var vandal = $("#mw-diff-ntitle2").find("a").first().text();
+
+				var revertNode = document.createElement('div');
+				revertNode.setAttribute( 'id', 'tw-revert' );
+
+				var agfNode = document.createElement('strong');
+				var vandNode = document.createElement('strong');
+				var normNode = document.createElement('strong');
+
+				var agfLink = buildLink('DarkOliveGreen', 'rollback (AGF)');
+				var vandLink = buildLink('Red', 'rollback (VANDAL)');
+				var normLink = buildLink('SteelBlue', 'rollback');
+
+				agfLink.href = "#";
+				vandLink.href = "#";
+				normLink.href = "#";
+				$(agfLink).click(function(){
+					Twinkle.fluff.revert('agf', vandal);
+				});
+				$(vandLink).click(function(){
+					Twinkle.fluff.revert('vand', vandal);
+				});
+				$(normLink).click(function(){
+					Twinkle.fluff.revert('norm', vandal);
+				});
+
+				agfNode.appendChild(agfLink);
+				vandNode.appendChild(vandLink);
+				normNode.appendChild(normLink);
+
+				revertNode.appendChild( agfNode );
+				revertNode.appendChild( document.createTextNode(' || ') );
+				revertNode.appendChild( normNode );
+				revertNode.appendChild( document.createTextNode(' || ') );
+				revertNode.appendChild( vandNode );
+
+				ntitle.insertBefore( revertNode, ntitle.firstChild );
+			}
+		}
+	},
+
+	oldid: function() { // Add a [restore this revision] link on old revisions
 		var revertToRevision = document.createElement('div');
 		revertToRevision.setAttribute( 'id', 'tw-revert-to-orevision' );
 		revertToRevision.style.fontWeight = 'bold';
 
 		var revertToRevisionLink = buildLink('SaddleBrown', 'restore this version');
-
 		revertToRevisionLink.href = "#";
 		$(revertToRevisionLink).click(function(){
-			Twinkle.fluff.revertToRevision(mw.config.get('wgDiffOldId').toString());
+			Twinkle.fluff.revertToRevision(mw.config.get('wgRevisionId').toString());
 		});
-
 		revertToRevision.appendChild(revertToRevisionLink);
+		var otitle = document.getElementById('mw-revision-info').parentNode;
 		otitle.insertBefore( revertToRevision, otitle.firstChild );
-
-		if( document.getElementById('differences-nextlink') ) {
-			// Not latest revision
-			revertToRevision = document.createElement('div');
-			revertToRevision.setAttribute( 'id', 'tw-revert-to-nrevision' );
-			revertToRevision.style.fontWeight = 'bold';
-			revertToRevisionLink = buildLink('SaddleBrown', 'restore this version');
-			revertToRevisionLink.href = "#";
-			$(revertToRevisionLink).click(function(){
-				Twinkle.fluff.revertToRevision(mw.config.get('wgDiffNewId').toString());
-			});
-			revertToRevision.appendChild(revertToRevisionLink);
-			ntitle.insertBefore( revertToRevision, ntitle.firstChild );
-		} else if( Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 ) {
-			var vandal = $("#mw-diff-ntitle2").find("a").first().text();
-
-			var revertNode = document.createElement('div');
-			revertNode.setAttribute( 'id', 'tw-revert' );
-
-			var agfNode = document.createElement('strong');
-			var vandNode = document.createElement('strong');
-			var normNode = document.createElement('strong');
-
-			var agfLink = buildLink('DarkOliveGreen', 'rollback (AGF)');
-			var vandLink = buildLink('Red', 'rollback (VANDAL)');
-			var normLink = buildLink('SteelBlue', 'rollback');
-
-			agfLink.href = "#";
-			vandLink.href = "#";
-			normLink.href = "#";
-			$(agfLink).click(function(){
-				Twinkle.fluff.revert('agf', vandal);
-			});
-			$(vandLink).click(function(){
-				Twinkle.fluff.revert('vand', vandal);
-			});
-			$(normLink).click(function(){
-				Twinkle.fluff.revert('norm', vandal);
-			});
-
-			agfNode.appendChild(agfLink);
-			vandNode.appendChild(vandLink);
-			normNode.appendChild(normLink);
-
-			revertNode.appendChild( agfNode );
-			revertNode.appendChild( document.createTextNode(' || ') );
-			revertNode.appendChild( normNode );
-			revertNode.appendChild( document.createTextNode(' || ') );
-			revertNode.appendChild( vandNode );
-
-			ntitle.insertBefore( revertNode, ntitle.firstChild );
-		}
-	},
-
-	normal: function() {
-		if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
-			Twinkle.fluff.contributions();
-		} else {
-			mw.hook( 'wikipage.diff' ).add( function () {
-				Twinkle.fluff.diff();
-			} );
-		}
 	}
 };
 
@@ -586,8 +582,14 @@ Twinkle.fluff.init = function twinklefluffinit() {
 
 		if ( Morebits.queryString.exists( 'twinklerevert' ) ) {
 			Twinkle.fluff.auto();
-		} else {
-			Twinkle.fluff.normal();
+		} else if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
+			Twinkle.fluff.contributions();
+		} else if( mw.config.get('wgDiffOldId') || mw.config.get('wgDiffNewId') ) { // wgDiffOldId included for clarity in if else loop [[phab:T214985]]
+			mw.hook( 'wikipage.diff' ).add( function () { // Reload alongside the revision slider
+				Twinkle.fluff.diff();
+			} );
+		} else if( mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId') ) {
+			Twinkle.fluff.oldid();
 		}
 	}
 };
