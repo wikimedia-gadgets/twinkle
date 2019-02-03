@@ -145,6 +145,8 @@ Twinkle.defaultConfig.friendly = {
 	markTaggedPagesAsPatrolled: true,
 	tagArticleSortOrder: "cat",
 	customTagList: [],
+	customFileTagList: [],
+	customRedirectTagList: [],
 
 	// Welcome
 	topWelcomes: false,
