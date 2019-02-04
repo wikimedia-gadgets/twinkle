@@ -23,7 +23,7 @@ Other files not mentioned here are probably obsolete.
 Updating scripts on Wikipedia
 -----------------------------
 
-There are two ways to upload Twinkle scripts to Wikipedia or another destination. You can do it [manually](#manual-synchronization) or with a [Perl script](#synchronization-using-syncpl).
+There are two ways to upload Twinkle scripts to Wikipedia or another destination. You can do it [manually](#manual-synchronization) (recommended) or with a [Perl script](#synchronization-using-syncpl).
 
 After the files are synced, [MediaWiki:Gadgets-definition][] should contain the following lines:
 
@@ -66,36 +66,41 @@ Each Twinkle module and dependency lives on the wiki as a separate file. The lis
 
 There is a synchronization script called `sync.pl`, which can be used to pull and push files to Wikipedia.
 
-The program depends on Perl 5.10 and the modules [`Git::Repository`][Git::Repository] and [`MediaWiki::Bot`][MediaWiki::Bot], which can be installed easily using [`App::cpanminus`][App::cpanminus]:
+The program depends on the modules [`Git::Repository`][Git::Repository] and [`MediaWiki::API`][MediaWiki::API], which can be installed easily using [`App::cpanminus`][App::cpanminus]:
 
-    cpanm --sudo install Git::Repository MediaWiki::Bot
+    cpanm --sudo install Git::Repository MediaWiki::API
 
 Note: On some systems, additional modules such as `File::Slurp`, `Getopt::Long::Descriptive` and other dependencies may need to be installed as well. It is preferred that you install them through your operating system's packaing tool (e.g. `apt-get install libgetopt-long-descriptive-perl`) although you can install them through cpanm too.
 
-When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a file called `~/.mwbotrc` using the following format:
+When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a file called `~/.twinklerc` using the following format:
 
-    username => "Username",
-    password => "password",
-    base     => "User::Username"
+    username = username
+    password = password
+    lang     = en
+    family   = wikipedia
+    base     = User:Username
 
-where `base` is the wiki path to prefix the files for `pull` and `push`. If you do not specify the `base` parameter, files will be pushed into the MediaWiki namespace.
+where `base` is the wiki path to prefix the files for `pull` and `push`.
 
 Notice that your working directory **must** be clean; if not, either `stash` or `commit` your changes.
 
 To `pull` user Foobar's changes (i.e. `User:Foobar/morebits.js`), do:
 
-    ./sync.pl --base User:Foobar --pull morebits.js
+    ./sync.pl --base User:Foobar --pull twinkle.js morebits.js ...
 
 To `push` your changes to Foobar's wiki page, do:
 
-    ./sync.pl --base User:Foobar --push morebits.js
+    ./sync.pl --base User:Foobar --push twinkle.js morebits.js ...
 
-There is also a `deploy` command to deploy all Twinkle files live.
+There is also a `deploy` command to deploy Twinkle files live to their MediaWiki:Gadget locations.
 
-    ./sync.pl --deploy twinkle.js
+    ./sync.pl --deploy twinkle.js morebits.js ...
+
+You may also `deploy` all files via
+
     make deploy
 
-Note that for syncing to a custom wiki, you will also need to specify the --lang and --family parameters too. For instance, to sync the files with `test.wmflabs.org` you should specify `--lang=test --family=wmflabs`. If you intend to use `make deploy` to deploy all the files at once, you may also need to pass the necessary parameters through the makefile to the sync script like this example:
+Note that for syncing to a custom wiki (read: not the English Wikipedia), you will also need to specify the --lang and --family parameters too. For instance, to sync the files with `test.wmflabs.org` you should specify `--lang=test --family=wmflabs`. If you intend to use `make deploy` to deploy all the files at once, you may also need to pass the necessary parameters through the makefile to the sync script like this example:
 
     make ARGS="--lang=test --family=wmflabs" deploy
 
@@ -142,6 +147,6 @@ Needless to say, there are exceptions. The main sticking point is spacing around
 [User:AzaToth/twinkle.js]: https://en.wikipedia.org/wiki/User:AzaToth/twinkle.js
 [MediaWiki:Gadgets-definition]: https://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
 [Git::Repository]: https://metacpan.org/pod/Git::Repository
-[MediaWiki::Bot]: https://metacpan.org/pod/MediaWiki::Bot
+[MediaWiki::API]: https://metacpan.org/pod/MediaWiki::API
 [App::cpanminus]: https://metacpan.org/pod/App::cpanminus
 [jq_style]: https://contribute.jquery.org/style-guide/js/
