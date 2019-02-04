@@ -66,11 +66,11 @@ Each Twinkle module and dependency lives on the wiki as a separate file. The lis
 
 There is a synchronization script called `sync.pl`, which can be used to pull and push files to Wikipedia.
 
-The program depends on the modules [`Git::Repository`][Git::Repository] and [`MediaWiki::API`][MediaWiki::API], which can be installed easily using [`App::cpanminus`][App::cpanminus]:
+The program depends on a few modules, namely [`MediaWiki::API`][MediaWiki::API], [`Git::Repository`][Git::Repository], [`File::Slurper`][File::Slurper], and [`Getopt::Long::Descriptive`][Getopt::Long::Descriptive]. These can be installed easily using [`App::cpanminus`][App::cpanminus]:
 
-    cpanm --sudo install Git::Repository MediaWiki::API
+    cpanm --sudo install MediaWiki::API Git::Repository File::Slurper Getopt::Long::Descriptive
 
-Note: On some systems, additional modules such as `File::Slurp`, `Getopt::Long::Descriptive` and other dependencies may need to be installed as well. It is preferred that you install them through your operating system's packaing tool (e.g. `apt-get install libgetopt-long-descriptive-perl`) although you can install them through cpanm too.
+You may prefer to install them through your operating system's packaing tool (e.g. `apt-get install libgetopt-long-descriptive-perl`) although you can install them through cpanm too.
 
 When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a file called `~/.twinklerc` using the following format:
 
@@ -80,7 +80,7 @@ When running the program, you can enter your credentials on the command line usi
     family   = wikipedia
     base     = User:Username
 
-where `base` is the wiki path to prefix the files for `pull` and `push`.
+where `base` is the wiki path to prefix the files for `pull` and `push`. The script ignores the `modules/` part of the file path when downloading/uploading.
 
 Notice that your working directory **must** be clean; if not, either `stash` or `commit` your changes.
 
@@ -92,7 +92,7 @@ To `push` your changes to Foobar's wiki page, do:
 
     ./sync.pl --base User:Foobar --push twinkle.js morebits.js ...
 
-There is also a `deploy` command to deploy Twinkle files live to their MediaWiki:Gadget locations.
+There is also a `deploy` command for interface-admins to deploy Twinkle files live to their MediaWiki:Gadget locations. You will need to set up a bot password at [Special:BotPasswords][special_botpass].
 
     ./sync.pl --deploy twinkle.js morebits.js ...
 
@@ -104,7 +104,7 @@ Note that for syncing to a custom wiki (read: not the English Wikipedia), you wi
 
     make ARGS="--lang=test --family=wmflabs" deploy
 
-The edit summary will contain the branch, the last commit sha, and the oneliner for that commit.
+When `deploy`ing or `push`ing, the script will attempt to parse the latest on-wiki edit summary to find the most recently used commit, and will use that to create an edit summary from the commits since then. If it cannot find anything that looks like a commit hash, it will prompt you to enter one for each file.
 
 Style guideline
 ---------------
@@ -146,7 +146,10 @@ Needless to say, there are exceptions. The main sticking point is spacing around
 [MediaWiki:Gadget-twinkleblock.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleblock.js
 [User:AzaToth/twinkle.js]: https://en.wikipedia.org/wiki/User:AzaToth/twinkle.js
 [MediaWiki:Gadgets-definition]: https://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
-[Git::Repository]: https://metacpan.org/pod/Git::Repository
 [MediaWiki::API]: https://metacpan.org/pod/MediaWiki::API
+[Git::Repository]: https://metacpan.org/pod/Git::Repository
+[File::Slurper]: https://metacpan.org/pod/File::Slurper
+[Getopt::Long::Descriptive]: https://metacpan.org/pod/Getopt::Long::Descriptive
 [App::cpanminus]: https://metacpan.org/pod/App::cpanminus
+[special_botpass]: https://en.wikipedia.org/wiki/Special:BotPasswords
 [jq_style]: https://contribute.jquery.org/style-guide/js/
