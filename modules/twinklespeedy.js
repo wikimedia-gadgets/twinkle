@@ -397,8 +397,12 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList, mode) } );
 	}
 
-	// custom rationale lives under general criteria when tagging
 	var generalCriteria = Twinkle.speedy.generalList;
+	// G1 and G2 aren't supposed to be used on userpages
+	if (namespace !== 2) {
+		generalCriteria = Twinkle.speedy.generalNonUser.concat(generalCriteria);
+	}
+	// custom rationale lives under general criteria when tagging
 	if(!Twinkle.speedy.mode.isSysop(mode)) {
 		generalCriteria = Twinkle.speedy.customRationale.concat(generalCriteria);
 	}
@@ -843,7 +847,7 @@ Twinkle.speedy.portalList = [
 	}
 ];
 
-Twinkle.speedy.generalList = [
+Twinkle.speedy.generalNonUser = [
 	{
 		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
 		value: 'nonsense',
@@ -853,7 +857,10 @@ Twinkle.speedy.generalList = [
 		label: 'G2: Test page',
 		value: 'test',
 		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates (although criterion T3 may apply).'
-	},
+	}
+];
+
+Twinkle.speedy.generalList = [
 	{
 		label: 'G3: Pure vandalism',
 		value: 'vandalism',
