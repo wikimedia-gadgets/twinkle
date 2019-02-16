@@ -780,6 +780,17 @@ Twinkle.config.sections = [
 			enumValues: Twinkle.config.commonEnums.watchlist
 		},
 
+		// TwinkleConfig.xfdWatchRelated (string)
+		// The watchlist setting of the target of a redirect being nominated for RfD. Either "yes" (add to watchlist), "no" (don't
+		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+		{
+			name: "xfdWatchRelated",
+			label: "Add the redirect's target page to watchlist (when notifying)",
+			helptip: "This only applies for RfD, when leaving a notification on the talk page of the target of the redirect",
+			type: "enum",
+			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+
 		{
 			name: "markXfdPagesAsPatrolled",
 			label: "Mark page as patrolled when nominating for AFD (if possible)",
