@@ -84,7 +84,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 							label: 'Group inside {{multiple issues}} if possible',
 							value: 'group',
 							name: 'group',
-							tooltip: 'If applying three or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped inside a {{multiple issues}} template.',
+							tooltip: 'If applying two or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped inside a {{multiple issues}} template.',
 							checked: Twinkle.getFriendlyPref('groupByDefault')
 						}
 					]
@@ -1065,30 +1065,31 @@ Twinkle.tag.callbacks = {
 
 		if( Twinkle.tag.mode !== 'redirect' ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
-			for( i = 0; i < params.tags.length; i++ ) {
-				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\})|\\|\\s*' + params.tags[i] + '\\s*=[a-z ]+\\d+)', 'im' );
+			params.tags.forEach(function(tag) {
+				tagRe = new RegExp ( '\\{\\{' + tag + '(\\||\\}\\})', 'im' );
 				if( !tagRe.exec( pageText ) ) {
-					if( Twinkle.tag.multipleIssuesExceptions.indexOf(params.tags[i]) === -1 ) {
-						groupableTags = groupableTags.concat( params.tags[i] );
+					if( Twinkle.tag.multipleIssuesExceptions.indexOf(tag) === -1 ) {
+						groupableTags = groupableTags.concat( tag );
 					} else {
-						tags = tags.concat( params.tags[i] );
+						tags = tags.concat( tag );
 					}
 				} else {
-					Morebits.status.warn( 'Info', 'Found {{' + params.tags[i] +
-						'}} on the article already...excluding' );
-					// don't do anything else with merge tags
-					if (params.tags[i] === "merge" || params.tags[i] === "merge from" ||
-						params.tags[i] === "merge to") {
-						params.mergeTarget = params.mergeReason = params.mergeTagOther = false;
+					if(tag === 'merge from') {
+						tags = tags.concat( tag );
+					} else {
+						Morebits.status.warn( 'Info', 'Found {{' + tag +
+							'}} on the article already...excluding' );
+						// don't do anything else with merge tags
+						if ( ['merge', 'merge to'].indexOf(tag) !== -1 ) {
+							params.mergeTarget = params.mergeReason = params.mergeTagOther = null;
+						}
 					}
 				}
-			}
+			});
 
-			var miTest = /\{\{(multiple ?issues|article ?issues|mi)[^}]+\{/im.exec(pageText);
-			var miOldStyleRegex = /\{\{(multiple ?issues|article ?issues|mi)\s*\|([^{]+)\}\}/im;
-			var miOldStyleTest = miOldStyleRegex.exec(pageText);
+			var miTest = /\{\{(multiple ?issues|article ?issues|mi)(?!\s*\|\s*section\s*=)[^}]+\{/im.exec(pageText);
 
-			if( ( miTest || miOldStyleTest ) && groupableTags.length > 0 ) {
+			if( miTest && groupableTags.length > 0 ) {
 				Morebits.status.info( 'Info', 'Adding supported tags inside existing {{multiple issues}} tag' );
 
 				groupableTags.sort();
@@ -1102,19 +1103,11 @@ Twinkle.tag.callbacks = {
 					summaryText += ', and';
 				}
 
-				if( miOldStyleTest ) {
-					// convert tags from old-style to new-style
-					var split = miOldStyleTest[2].split("|");
-					$.each(split, function(index, val) {
-						split[index] = val.replace("=", "|date=").trim();
-					});
-					pageText = pageText.replace(miOldStyleRegex, "{{$1|\n{{" + split.join("}}\n{{") + "}}\n" + tagText + "}}\n");
-				} else {
-					var miRegex = new RegExp("(\\{\\{\\s*" + miTest[1] + "\\s*(?:\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?)\\}\\}\\s*", "im");
-					pageText = pageText.replace(miRegex, "$1" + tagText + "}}\n");
-				}
+				var miRegex = new RegExp("(\\{\\{\\s*" + miTest[1] + "\\s*(?:\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?)\\}\\}\\s*", "im");
+				pageText = pageText.replace(miRegex, "$1" + tagText + "}}\n");
 				tagText = "";
-			} else if( params.group && groupableTags.length >= 3 ) {
+
+			} else if( params.group && groupableTags.length >= 2 ) {
 				Morebits.status.info( 'Info', 'Grouping supported tags inside {{multiple issues}}' );
 
 				groupableTags.sort();
