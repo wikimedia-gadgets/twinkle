@@ -550,7 +550,7 @@ Twinkle.config.sections = [
 		},
 		{
 			name: "customTagList",
-			label: "Custom article maintenance tags to display",
+			label: "Custom article/draft maintenance tags to display",
 			helptip: "These appear as additional options at the bottom of the list of tags. For example, you could add new maintenance tags which have not yet been added to Twinkle's defaults.",
 			type: "customList",
 			customListValueTitle: "Template name (no curly brackets)",
