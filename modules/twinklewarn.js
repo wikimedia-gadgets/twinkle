@@ -999,10 +999,6 @@ Twinkle.warn.messages = {
 			label: "Adding spoiler alerts or removing spoilers from appropriate sections",
 			summary: "Notice: Don't delete or flag potential 'spoilers' in Wikipedia articles"
 		},
-		"uw-subst": {
-			label: "Remember to subst: templates",
-			summary: "Notice: Remember to subst: templates"
-		},
 		"uw-talkinarticle": {
 			label: "Talk in article",
 			summary: "Notice: Talk in article"
