@@ -1178,9 +1178,10 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 				selected = true;
 			}
 
+			// Slice out leading uw- from the menu display
 			var elem = new Morebits.quickForm.element( {
 				type: 'option',
-				label: "{{" + key + "}}: " + itemProperties.label,
+				label: (value === 'custom' ? "{{" + key + "}}" : key.slice(3)) + ": " + itemProperties.label,
 				value: key,
 				selected: selected
 			} );
