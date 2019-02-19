@@ -693,7 +693,7 @@ Twinkle.tag.spellingList = [
 		value: 'R from initialism'
 	},
 	{
-		label: '{{R from member}}: redirect from a member of a group to a related topic such as the group, organization, or team that he or she belongs to',
+		label: '{{R from member}}: redirect from a member of a group to a related topic such as the group, organization, or team of membership',
 		value: 'R from member'
 	},
 	{

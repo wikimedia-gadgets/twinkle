@@ -768,11 +768,11 @@ Twinkle.config.sections = [
 		},
 
 		// TwinkleConfig.xfdWatchUser (string)
-		// The watchlist setting of the user if he receives a notification. Either "yes" (add to watchlist), "no" (don't
+		// The watchlist setting of the user talk page if they receive a notification. Either "yes" (add to watchlist), "no" (don't
 		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 		{
 			name: "xfdWatchUser",
-			label: "Add the user talk page to watchlist (when notifying)",
+			label: "Add user talk page of initial contributor to watchlist (when notifying)",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
 		}

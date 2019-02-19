@@ -137,7 +137,7 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 			break;
 
 		case 'prodblp':
-			// first, remember the prod value that the user entered in the textarea, in case he wants to switch back. We can abuse the config field for that.
+			// first, remember the prod value that the user entered in the textarea, in case they want to switch back. We can abuse the config field for that.
 			if (event.target.form.reason) {
 				Twinkle.prod.defaultReason = event.target.form.reason.value;
 			}
