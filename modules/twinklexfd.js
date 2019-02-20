@@ -476,7 +476,7 @@ Twinkle.xfd.callbacks = {
 	},
 	showPreview: function(form, venue, params) {
 		var templatetext = Twinkle.xfd.callbacks.getDiscussionWikitext(venue, params);
-		form.previewer.beginRender(templatetext, "Wikipedia:Null");
+		form.previewer.beginRender(templatetext, "WP:TW"); // Force wikitext
 	},
 	preview: function(form) {
 		var venue = form.category.value;
