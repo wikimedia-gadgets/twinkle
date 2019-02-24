@@ -111,13 +111,12 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 							// enable/disable delete multiple
 							cForm.delmultiple.disabled = cChecked;
 							cForm.delmultiple.checked = false;
-							// enable/disable open talk page checkbox
-							cForm.openusertalk.disabled = cChecked;
-							cForm.openusertalk.checked = false;
-
 							// enable/disable notify checkbox
 							cForm.notify.disabled = !cChecked;
 							cForm.notify.checked = cChecked;
+							// enable/disable deletion notification checkbox
+							cForm.warnusertalk.disabled = cChecked;
+							cForm.warnusertalk.checked = !cChecked;
 							// enable/disable multiple
 							cForm.multiple.disabled = !cChecked;
 							cForm.multiple.checked = false;
@@ -191,11 +190,15 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Open user talk page on submit',
-						value: 'openusertalk',
-						name: 'openusertalk',
-						tooltip: 'This defaults to your open-talk-page preferences when deleting pages under the currently selected rationale. It is left unchanged if you choose to delete under multiple criteria.',
-						checked : false
+						label: 'Notify page creator of page deletion',
+						value: 'warnusertalk',
+						name: 'warnusertalk',
+						tooltip: "A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences " +
+						"for the criterion you choose AND this box is checked. The creator may be welcomed as well.",
+						checked: $("#delete-reason").length < 1,
+						event: function( event ) {
+							event.stopPropagation();
+						}
 					}
 				]
 			} );
@@ -503,21 +506,6 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			}
 			// FIXME: does this do anything?
 			criterion.event = openSubgroupHandler;
-		}
-
-		if ( isSysopMode ) {
-			var originalEvent = criterion.event;
-			criterion.event = function(e) {
-				if (multiple) return originalEvent(e);
-
-				var normalizedCriterion = Twinkle.speedy.normalizeHash[e.target.value];
-				$('[name=openusertalk]').prop('checked',
-						Twinkle.getPref('openUserTalkPageOnSpeedyDelete').indexOf(normalizedCriterion) !== -1
-					);
-				if ( originalEvent ) {
-					return originalEvent(e);
-				}
-			};
 		}
 
 		return criterion;
@@ -1232,10 +1220,81 @@ Twinkle.speedy.callbacks = {
 		api.post();
 	},
 
+	noteToCreator: function(pageobj) {
+		var params = pageobj.getCallbackParameters();
+		var initialContrib = pageobj.getCreator();
+
+		// disallow notifying yourself
+		if (initialContrib === mw.config.get('wgUserName')) {
+			Morebits.status.warn("You (" + initialContrib + ") created this page; skipping user notification");
+			initialContrib = null;
+
+		// don't notify users when their user talk page is nominated/deleted
+		} else if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
+			Morebits.status.warn("Notifying initial contributor: this user created their own user talk page; skipping notification");
+			initialContrib = null;
+
+		// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page...
+		} else if ((initialContrib === "Cyberbot I" || initialContrib === "SoxBot") && params.normalizeds[0] === "f2") {
+			Morebits.status.warn("Notifying initial contributor: page created procedurally by bot; skipping notification");
+			initialContrib = null;
+
+		// Check for already existing tags
+		} else if($("#delete-reason").length && params.warnUser && !confirm("The page is has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?")) {
+			Morebits.status.info("Notifying initial contributor", "canceled by user; skipping notification.");
+			initialContrib = null;
+		} else {
+			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")"),
+				notifytext, i, editsummary;
+
+			// special cases: "db" and "db-multiple"
+			if (params.normalizeds.length > 1) {
+				notifytext = "\n{{subst:db-" + (params.warnUser ? "deleted" : "notice") + "-multiple|1=" + Morebits.pageNameNorm;
+				var count = 2;
+				$.each(params.normalizeds, function(index, norm) {
+					notifytext += "|" + (count++) + "=" + norm.toUpperCase();
+				});
+			} else if (params.normalizeds[0] === "db") {
+				notifytext = "\n{{subst:db-reason-" + (params.warnUser ? "deleted" : "notice") + "|1=" + Morebits.pageNameNorm;
+			} else {
+				notifytext = "\n{{subst:db-csd-" + (params.warnUser ? "deleted" : "notice") + "-custom|1=" + Morebits.pageNameNorm + "|2=" + params.values[0];
+			}
+
+			for (i in params.utparams) {
+				if (typeof params.utparams[i] === 'string') {
+					notifytext += "|" + i + "=" + params.utparams[i];
+				}
+			}
+			notifytext += (params.welcomeuser ? "" : "|nowelcome=yes") + "}} ~~~~";
+
+			editsummary = "Notification: speedy deletion" + (params.warnUser ? "" : " nomination");
+			if (params.normalizeds.indexOf("g10") === -1) {  // no article name in summary for G10 taggings
+				editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
+			} else {
+				editsummary += " of an attack page.";
+			}
+
+			usertalkpage.setAppendText(notifytext);
+			usertalkpage.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
+			usertalkpage.setCreateOption('recreate');
+			usertalkpage.setFollowRedirect(true);
+			usertalkpage.append(function onNotifySuccess() {
+				// add this nomination to the user's userspace log, if the user has enabled it
+				if (params.lognomination) {
+					Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
+				}
+			}, function onNotifyError() {
+				// if user could not be notified, log nomination without mentioning that notification was sent
+				if (params.lognomination) {
+					Twinkle.speedy.callbacks.user.addToLog(params, null);
+				}
+			});
+		}
+	},
+
 	sysop: {
 		main: function( params ) {
 			var reason;
-
 			if (!params.normalizeds.length && params.normalizeds[0] === 'db') {
 				reason = prompt("Enter the deletion summary to use, which will be entered into the deletion log:", "");
 				Twinkle.speedy.callbacks.sysop.deletePage( reason, params );
@@ -1265,9 +1324,9 @@ Twinkle.speedy.callbacks = {
 
 			// look up initial contributor. If prompting user for deletion reason, just display a link.
 			// Otherwise open the talk page directly
-			if( params.openUserTalk ) {
-				thispage.setCallbackParameters( params );
-				thispage.lookupCreator( Twinkle.speedy.callbacks.sysop.openUserTalkPage );
+			if (params.warnUser) {
+				thispage.setCallbackParameters(params);
+				thispage.lookupCreator(Twinkle.speedy.callbacks.noteToCreator);
 			}
 		},
 		deleteTalk: function( params ) {
@@ -1334,55 +1393,6 @@ Twinkle.speedy.callbacks = {
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
 				});
 				Morebits.status.info($bigtext[0], $link[0]);
-			}
-		},
-		openUserTalkPage: function( pageobj ) {
-			pageobj.getStatusElement().unlink();  // don't need it anymore
-			var user = pageobj.getCreator();
-			var params = pageobj.getCallbackParameters();
-
-			var query = {
-				'title': 'User talk:' + user,
-				'action': 'edit',
-				'preview': 'yes',
-				'vanarticle': Morebits.pageNameNorm
-			};
-
-			if (params.normalized === 'db' || Twinkle.getPref("promptForSpeedyDeletionSummary").indexOf(params.normalized) !== -1) {
-				// provide a link to the user talk page
-				var $link, $bigtext;
-				$link = $('<a/>', {
-					'href': mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ),
-					'text': 'click here to open User talk:' + user,
-					'target': '_blank',
-					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
-				});
-				$bigtext = $('<span/>', {
-					'text': 'To notify the page creator',
-					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
-				});
-				Morebits.status.info($bigtext[0], $link[0]);
-			} else {
-				// open the initial contributor's talk page
-				var statusIndicator = new Morebits.status('Opening user talk page edit form for ' + user, 'opening...');
-
-				switch( Twinkle.getPref('userTalkPageMode') ) {
-				case 'tab':
-					window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_blank' );
-					break;
-				case 'blank':
-					window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ), '_blank', 'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
-					break;
-				case 'window':
-					/* falls through */
-				default:
-					window.open( mw.util.wikiScript('index') + '?' + Morebits.queryString.create( query ),
-						( window.name === 'twinklewarnwindow' ? '_blank' : 'twinklewarnwindow' ),
-						'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800' );
-					break;
-				}
-
-				statusIndicator.info( 'complete' );
 			}
 		},
 		deleteRedirectsMain: function( apiobj ) {
@@ -1497,78 +1507,11 @@ Twinkle.speedy.callbacks = {
 		tagComplete: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
 
-			// Notification to first contributor
+			// Notification to first contributor, will also log nomination to the user's userspace log
 			if (params.usertalk) {
-				var callback = function(pageobj) {
-					var initialContrib = pageobj.getCreator();
-
-					// disallow warning yourself
-					if (initialContrib === mw.config.get('wgUserName')) {
-						Morebits.status.warn("You (" + initialContrib + ") created this page; skipping user notification");
-						initialContrib = null;
-
-					// don't notify users when their user talk page is nominated
-					} else if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
-						Morebits.status.warn("Notifying initial contributor: this user created their own user talk page; skipping notification");
-						initialContrib = null;
-
-					// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page...
-					} else if ((initialContrib === "Cyberbot I" || initialContrib === "SoxBot") && params.normalizeds[0] === "f2") {
-						Morebits.status.warn("Notifying initial contributor: page created procedurally by bot; skipping notification");
-						initialContrib = null;
-
-					} else {
-						var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")"),
-							notifytext, i;
-
-						// specialcase "db" and "db-multiple"
-						if (params.normalizeds.length > 1) {
-							notifytext = "\n{{subst:db-notice-multiple|1=" + Morebits.pageNameNorm;
-							var count = 2;
-							$.each(params.normalizeds, function(index, norm) {
-								notifytext += "|" + (count++) + "=" + norm.toUpperCase();
-							});
-						} else if (params.normalizeds[0] === "db") {
-							notifytext = "\n{{subst:db-reason-notice|1=" + Morebits.pageNameNorm;
-						} else {
-							notifytext = "\n{{subst:db-csd-notice-custom|1=" + Morebits.pageNameNorm + "|2=" + params.values[0];
-						}
-
-						for (i in params.utparams) {
-							if (typeof params.utparams[i] === 'string') {
-								notifytext += "|" + i + "=" + params.utparams[i];
-							}
-						}
-						notifytext += (params.welcomeuser ? "" : "|nowelcome=yes") + "}} ~~~~";
-
-						var editsummary = "Notification: speedy deletion nomination";
-						if (params.normalizeds.indexOf("g10") === -1) {  // no article name in summary for G10 taggings
-							editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
-						} else {
-							editsummary += " of an attack page.";
-						}
-
-						usertalkpage.setAppendText(notifytext);
-						usertalkpage.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
-						usertalkpage.setCreateOption('recreate');
-						usertalkpage.setFollowRedirect(true);
-						usertalkpage.append(function onNotifySuccess() {
-							// add this nomination to the user's userspace log, if the user has enabled it
-							if (params.lognomination) {
-								Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
-							}
-						}, function onNotifyError() {
-							// if user could not be notified, log nomination without mentioning that notification was sent
-							if (params.lognomination) {
-								Twinkle.speedy.callbacks.user.addToLog(params, null);
-							}
-						});
-					}
-
-
-				};
 				var thispage = new Morebits.wiki.page(Morebits.pageNameNorm);
-				thispage.lookupCreator(callback);
+				thispage.setCallbackParameters(params);
+				thispage.lookupCreator(Twinkle.speedy.callbacks.noteToCreator);
 			}
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
 			else if (params.lognomination) {
@@ -2031,7 +1974,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		return Twinkle.speedy.normalizeHash[ value ];
 	});
 
-	// analyse each criterion to determine whether to watch the page, prompt for summary, or open user talk page
+	// analyse each criterion to determine whether to watch the page, prompt for summary, or notify the creator
 	var watchPage, promptForSummary;
 	normalizeds.forEach(function(norm) {
 		if (Twinkle.getPref("watchSpeedyPages").indexOf(norm) !== -1) {
@@ -2042,13 +1985,37 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		}
 	});
 
+	var warnusertalk = false;
+	if (form.warnusertalk.checked) {
+		$.each(normalizeds, function(index, norm) {
+			if (Twinkle.getPref('warnUserOnSpeedyDelete').indexOf(norm) !== -1) {
+				if (norm === 'g6' && values[index] !== 'copypaste') {
+					return true;
+				}
+				warnusertalk = true;
+				return false;  // break
+			}
+		});
+	}
+
+	var welcomeuser = false;
+	if (warnusertalk) {
+		$.each(normalizeds, function(index, norm) {
+			if (Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1) {
+				welcomeuser = true;
+				return false;  // break
+			}
+		});
+	}
+
 	var params = {
 		values: values,
 		normalizeds: normalizeds,
 		watch: watchPage,
 		deleteTalkPage: form.talkpage && form.talkpage.checked,
 		deleteRedirects: form.redirects.checked,
-		openUserTalk: form.openusertalk.checked,
+		warnUser: warnusertalk,
+		welcomeuser: welcomeuser,
 		promptForSummary: promptForSummary,
 		templateParams: Twinkle.speedy.getParameters( form, values )
 	};
