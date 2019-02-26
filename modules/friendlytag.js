@@ -1313,7 +1313,7 @@ Twinkle.tag.callbacks = {
 						/* falls through */
 					case "Keep local":
 						input = prompt( "{{" + (tag === "subst:ncd" ? "Now Commons" : tag) +
-							"}} - Enter the name of the image on Commons (if different from local name), excluding the File: prefix:", "" );
+							"}} - Enter the name of the image on Commons (if different from local name), excluding the \"File:\" prefix but including the \".format\" suffix:", "" );
 						if (input === null) {
 							return true;  // continue
 						} else if (input !== "") {
