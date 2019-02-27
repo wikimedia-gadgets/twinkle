@@ -308,6 +308,10 @@ Twinkle.warn.messages = {
 				label: "Page moves against naming conventions or consensus",
 				summary: "General note: Page moves against naming conventions or consensus"
 			},
+			"uw-subtle1": {
+				label: "Subtle vandalism",
+				summary: "General note: Possible unconstructive editing"
+			},
 			"uw-tpv1": {
 				label: "Refactoring others' talk page comments",
 				summary: "General note: Refactoring others' talk page comments"
@@ -474,6 +478,10 @@ Twinkle.warn.messages = {
 				label: "Page moves against naming conventions or consensus",
 				summary: "Caution: Page moves against naming conventions or consensus"
 			},
+			"uw-subtle2": {
+				label: "Subtle vandalism",
+				summary: "Caution: Likely unconstructive editing"
+			},
 			"uw-tpv2": {
 				label: "Refactoring others' talk page comments",
 				summary: "Caution: Refactoring others' talk page comments"
@@ -632,6 +640,10 @@ Twinkle.warn.messages = {
 				label: "Page moves against naming conventions or consensus",
 				summary: "Warning: Page moves against naming conventions or consensus"
 			},
+			"uw-subtle3": {
+				label: "Subtle vandalism",
+				summary: "Warning: Subtle vandalism"
+			},
 			"uw-tpv3": {
 				label: "Refactoring others' talk page comments",
 				summary: "Warning: Refactoring others' talk page comments"
@@ -773,6 +785,10 @@ Twinkle.warn.messages = {
 			"uw-move4": {
 				label: "Page moves against naming conventions or consensus",
 				summary: "Final warning: Page moves against naming conventions or consensus"
+			},
+			"uw-subtle4": {
+				label: "Subtle vandalism",
+				summary: "Final warning: Subtle vandalism"
 			},
 			"uw-tpv4": {
 				label: "Refactoring others' talk page comments",
