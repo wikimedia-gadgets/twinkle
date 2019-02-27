@@ -462,6 +462,24 @@ Twinkle.warn.messages = {
 					summary: 'Only warning: Ownership of articles'
 				}
 			},
+			'uw-subtle': {
+				level1: {
+					label: 'Subtle vandalism',
+					summary: 'General note: Possible unconstructive editing'
+				},
+				level2: {
+					label: 'Subtle vandalism',
+					summary: 'Caution: Likely unconstructive editing'
+				},
+				level3: {
+					label: 'Subtle vandalism',
+					summary: 'Warning: Subtle vandalism'
+				},
+				level4: {
+					label: 'Subtle vandalism',
+					summary: 'Final warning: Subtle vandalism'
+				}
+			},
 			'uw-tdel': {
 				level1: {
 					label: 'Removal of maintenance templates',
