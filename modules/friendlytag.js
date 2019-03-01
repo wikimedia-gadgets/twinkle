@@ -276,6 +276,28 @@ Twinkle.tag.updateSortOrder = function(e) {
 					]
 				};
 				break;
+			case "history merge":
+				checkbox.subgroup = [
+					{
+						name: 'histmergeOriginalPage',
+						type: 'input',
+						label: 'Other article: ',
+						tooltip: 'Name of the page that should be merged into this one (required).'
+					},
+					{
+						name: 'histmergeReason',
+						type: 'input',
+						label: 'Reason: ',
+						tooltip: 'Short explanation describing the reason a history merge is needed. Should probably begin with "because" and end with a period.'
+					},
+					{
+						name: 'histmergeSysopDetails',
+						type: 'input',
+						label: 'Extra details: ',
+						tooltip: 'For complex cases, provide extra instructions for the reviewing administrator.'
+					}
+				];
+				break;
 			case "merge":
 			case "merge from":
 			case "merge to":
@@ -496,6 +518,7 @@ Twinkle.tag.article.tags = {
 	"fiction": "article fails to distinguish between fact and fiction",
 	"globalize": "article may not represent a worldwide view of the subject",
 	"GOCEinuse": "article is currently undergoing a major copy edit by the Guild of Copy Editors",
+	"history merge": "another page should be history merged into this one",
 	"hoax": "article may be a complete hoax",
 	"improve categories": "article may require additional categories",
 	"incomprehensible": "article is very hard to understand or incomprehensible",
@@ -669,8 +692,9 @@ Twinkle.tag.article.tagCategories = {
 			"uncategorized"
 		]
 	},
-	"Merging": [  // these three have a subgroup with several options
-		"merge",
+	"Merging": [
+		"history merge",
+		"merge",   // these three have a subgroup with several options
 		"merge from",
 		"merge to"
 	],
@@ -994,6 +1018,7 @@ Twinkle.tag.multipleIssuesExceptions = [
 	'copypaste',
 	'expand language',
 	'GOCEinuse',
+	'history merge',
 	'improve categories',
 	'in use',
 	'merge',
@@ -1078,6 +1103,15 @@ Twinkle.tag.callbacks = {
 							currentTag += '|listed=yes';
 						}
 						break;
+					case 'history merge':
+						currentTag += '|originalpage=' + params.histmergeOriginalPage;
+						if (params.histmergeReason) {
+							currentTag += '|reason=' + params.histmergeReason;
+						}
+						if (params.histmergeSysopDetails) {
+							currentTag += '|details=' + params.histmergeSysopDetails;
+						}
+						break;
 					case 'merge':
 					case 'merge to':
 					case 'merge from':
@@ -1154,7 +1188,8 @@ Twinkle.tag.callbacks = {
 						tags = tags.concat( tag );
 					}
 				} else {
-					if(tag === 'merge from') {
+					// Allow multiple {{merge from}} and {{histmerge}} per page
+					if(tag === 'merge from' || tag === 'history merge') {
 						tags = tags.concat( tag );
 					} else {
 						Morebits.status.warn( 'Info', 'Found {{' + tag +
@@ -1506,6 +1541,10 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				alert( 'Please select only one of {{not English}} and {{rough translation}}.' );
 				return;
 			}
+			if( params.tags.indexOf('history merge') !== -1 && params.histmergeOriginalPage.trim() === '') {
+				alert( 'You must specify a page to be merged for the {{history merge}} tag.' );
+				return;
+			}
 			if( params.tags.indexOf('cleanup') !== -1 && params.cleanup.trim() === '') {
 				alert( 'You must specify a reason for the {{cleanup}} tag.' );
 				return;
@@ -1584,5 +1623,6 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	}
 };
 })(jQuery);
+
 
 //</nowiki>
