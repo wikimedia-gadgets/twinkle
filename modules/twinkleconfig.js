@@ -9,7 +9,7 @@
  *** twinkleconfig.js: Preferences module
  ****************************************
  * Mode of invocation:     Adds configuration form to Wikipedia:Twinkle/Preferences and user
-                           subpages named "/Twinkle preferences", and adds a box to the top of user
+                           subpages named "/Twinkle preferences", and adds an ad box to the top of user
                            subpages belonging to the currently logged-in user which end in '.js'
  * Active on:              What I just said.  Yeah.
  * Config directives in:   TwinkleConfig
