@@ -264,21 +264,7 @@ Twinkle.warn.messages = {
 				label: "Uploading unencyclopedic images",
 				summary: "General note: Uploading unencyclopedic images"
 			}
-		}/*,
-		"To be removed from Twinkle": {
-			"uw-redirect1": {
-				label: "Creating malicious redirects",
-				summary: "General note: Creating malicious redirects"
-			},
-			"uw-ics1": {
-				label: "Uploading files missing copyright status",
-				summary: "General note: Uploading files missing copyright status"
-			},
-			"uw-af1": {
-				label: "Inappropriate feedback through the Article Feedback Tool",
-				summary: "General note: Inappropriate feedback through the Article Feedback Tool"
-			}
-		}*/
+		}
 	},
 
 
@@ -430,17 +416,7 @@ Twinkle.warn.messages = {
 				label: "Uploading unencyclopedic images",
 				summary: "Caution: Uploading unencyclopedic images"
 			}
-		}/*,
-		"To be removed from Twinkle": {
-			"uw-redirect2": {
-				label: "Creating malicious redirects",
-				summary: "Caution: Creating malicious redirects"
-			},
-			"uw-ics2": {
-				label: "Uploading files missing copyright status",
-				summary: "Caution: Uploading files missing copyright status"
-			}
-		}*/
+		}
 	},
 
 
@@ -588,17 +564,7 @@ Twinkle.warn.messages = {
 				label: "Uploading unencyclopedic images",
 				summary: "Warning: Uploading unencyclopedic images"
 			}
-		}/*,
-		"To be removed fomr Twinkle": {
-			"uw-ics3": {
-				label: "Uploading files missing copyright status",
-				summary: "Warning: Uploading files missing copyright status"
-			},
-			"uw-redirect3": {
-				label: "Creating malicious redirects",
-				summary: "Warning: Creating malicious redirects"
-			}
-		}*/
+		}
 	},
 
 
@@ -730,17 +696,7 @@ Twinkle.warn.messages = {
 				label: "Uploading unencyclopedic images",
 				summary: "Final warning: Uploading unencyclopedic images"
 			}
-		}/*,
-		"To be removed from Twinkle": {
-			"uw-redirect4": {
-				label: "Creating malicious redirects",
-				summary: "Final warning: Creating malicious redirects"
-			},
-			"uw-ics4": {
-				label: "Uploading files missing copyright status",
-				summary: "Final warning: Uploading files missing copyright status"
-			}
-		}*/
+		}
 	},
 
 
@@ -810,13 +766,7 @@ Twinkle.warn.messages = {
 				label: "Uploading unencyclopedic images",
 				summary: "Only warning: Uploading unencyclopedic images"
 			}
-		}/*,
-		"To be removed from Twinkle": {
-			"uw-redirect4im": {
-				label: "Creating malicious redirects",
-				summary: "Only warning: Creating malicious redirects"
-			}
-		}*/
+		}
 	},
 
 	singlenotice: {
