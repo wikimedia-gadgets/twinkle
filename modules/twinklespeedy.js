@@ -392,9 +392,13 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			default:
 				break;
 		}
-	} else if (namespace == 2 || namespace == 3) {
-		work_area.append( { type: 'header', label: 'User pages' } );
-		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList, mode) } );
+	} else {
+		if (namespace == 2 || namespace == 3) {
+			work_area.append( { type: 'header', label: 'User pages' } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList, mode) } );
+		}
+		work_area.append( { type: 'header', label: 'Redirects' } );
+		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) } );
 	}
 
 	var generalCriteria = Twinkle.speedy.generalList;
@@ -408,11 +412,6 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	}
 	work_area.append( { type: 'header', label: 'General criteria' } );
 	work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(generalCriteria, mode) });
-
-	if(mw.config.get('wgIsRedirect')) {
-		work_area.append( { type: 'header', label: 'Redirects' } );
-		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) } );
-	}
 
 	var old_area = Morebits.quickForm.getElements(form, "work_area")[0];
 	form.replaceChild(work_area.render(), old_area);
