@@ -1604,11 +1604,15 @@ Twinkle.speedy.callbacks = {
 			};
 
 			var extraInfo = '';
+
+			// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
+			var fileLogLink = mw.config.get('wgNamespaceNumber') === 6 ? ' ([' + mw.config.get('wgServer') + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName')}) + ' log])' : '';
+
 			var editsummary = "Logging speedy deletion nomination";
 			appendText += "\n# [[:" + Morebits.pageNameNorm;
 
 			if (params.fromDI) {
-				appendText += "]]: DI [[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] ({{tl|di-" + params.templatename + "}})";
+				appendText += "]]" + fileLogLink + ": DI [[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] ({{tl|di-" + params.templatename + "}})";
 				// The params data structure when coming from DI is quite different,
 				// so this hardcodes the only interesting items worth logging
 				['reason', 'replacement', 'source'].forEach(function(item) {
@@ -1620,10 +1624,10 @@ Twinkle.speedy.callbacks = {
 				editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
 			} else {
 				if (params.normalizeds.indexOf("g10") === -1) {  // no article name in log for G10 taggings
-					appendText += "]]: ";
+					appendText += "]]" + fileLogLink + ": ";
 					editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
 				} else {
-					appendText += "|This]] attack page: ";
+					appendText += "|This]] attack page" + fileLogLink + ": ";
 					editsummary += " of an attack page.";
 				}
 				if (params.normalizeds.length > 1) {
