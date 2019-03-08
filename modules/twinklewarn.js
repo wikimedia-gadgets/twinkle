@@ -66,11 +66,11 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		} );
 
 	var defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'), 10);
-	main_group.append( { type: 'option', label: 'General note (1)', value: 'level1', selected: ( defaultGroup === 1 || defaultGroup < 1 || ( Morebits.userIsInGroup( 'sysop' ) ? defaultGroup > 8 : defaultGroup > 7 ) ) } );
-	main_group.append( { type: 'option', label: 'Caution (2)', value: 'level2', selected: ( defaultGroup === 2 ) } );
-	main_group.append( { type: 'option', label: 'Warning (3)', value: 'level3', selected: ( defaultGroup === 3 ) } );
-	main_group.append( { type: 'option', label: 'Final warning (4)', value: 'level4', selected: ( defaultGroup === 4 ) } );
-	main_group.append( { type: 'option', label: 'Only warning (4im)', value: 'level4im', selected: ( defaultGroup === 5 ) } );
+	main_group.append( { type: 'option', label: '1: General note', value: 'level1', selected: ( defaultGroup === 1 || defaultGroup < 1 || ( Morebits.userIsInGroup( 'sysop' ) ? defaultGroup > 8 : defaultGroup > 7 ) ) } );
+	main_group.append( { type: 'option', label: '2: Caution', value: 'level2', selected: ( defaultGroup === 2 ) } );
+	main_group.append( { type: 'option', label: '3: Warning', value: 'level3', selected: ( defaultGroup === 3 ) } );
+	main_group.append( { type: 'option', label: '4: Final warning', value: 'level4', selected: ( defaultGroup === 4 ) } );
+	main_group.append( { type: 'option', label: '4im: Only warning', value: 'level4im', selected: ( defaultGroup === 5 ) } );
 	main_group.append( { type: 'option', label: 'Single-issue notices', value: 'singlenotice', selected: ( defaultGroup === 6 ) } );
 	main_group.append( { type: 'option', label: 'Single-issue warnings', value: 'singlewarn', selected: ( defaultGroup === 7 ) } );
 	if( Twinkle.getPref( 'customWarningList' ).length ) {
@@ -1079,9 +1079,10 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 				selected = true;
 			}
 
+			// Slice out leading uw- from the menu display
 			var elem = new Morebits.quickForm.element( {
 				type: 'option',
-				label: "{{" + key + "}}: " + itemProperties.label,
+				label: (value === 'custom' ? "{{" + key + "}}" : key.slice(3)) + ": " + itemProperties.label,
 				value: key,
 				selected: selected
 			} );
