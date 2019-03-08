@@ -1091,7 +1091,7 @@ Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 
 	var templateText = Twinkle.block.callback.getBlockNoticeWikitext(params);
 
-	form.previewer.beginRender(templateText);
+	form.previewer.beginRender(templateText, 'WP:TW'); // Force wikitext
 };
 
 Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {

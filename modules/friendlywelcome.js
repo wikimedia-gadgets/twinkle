@@ -731,7 +731,7 @@ Twinkle.welcome.callbacks = {
 		previewDialog.setContent(previewdiv);
 
 		var previewer = new Morebits.wiki.preview(previewdiv);
-		previewer.beginRender(Twinkle.welcome.getTemplateWikitext(form.getChecked("template"), form.article.value));
+		previewer.beginRender(Twinkle.welcome.getTemplateWikitext(form.getChecked("template"), form.article.value), "WP:TW"); // Force wikitext
 
 		var submit = document.createElement("input");
 		submit.setAttribute("type", "submit");
