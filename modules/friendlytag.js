@@ -220,7 +220,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 						label: 'Name of article: ',
 						tooltip: 'Name of article to be expanded from, without the interwiki prefix'
 					},
-				]
+				];
 				break;
 			case "expert needed":
 				checkbox.subgroup = [
