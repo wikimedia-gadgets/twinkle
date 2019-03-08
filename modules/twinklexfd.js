@@ -715,9 +715,10 @@ Twinkle.xfd.callbacks = {
 		taggingTemplate: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
+			var tableNewline = (params.tfdtype === 'standard' || params.tfdtype === 'sidebar') ? '\n' : ''; // No newline for inline
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{subst:template for discussion|help=off|" +
-				(params.tfdtype !== "standard" ? "type=" + params.tfdtype + "|" : "") + mw.config.get('wgTitle') + (params.noinclude ? "}}</noinclude>" : "}}") + text);
+				(params.tfdtype !== "standard" ? "type=" + params.tfdtype + "|" : "") + mw.config.get('wgTitle') + (params.noinclude ? "}}</noinclude>" : "}}") + tableNewline + text);
 			pageobj.setEditSummary("Nominated for deletion; see [[:" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
@@ -736,10 +737,11 @@ Twinkle.xfd.callbacks = {
 		taggingTemplateForMerge: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
+			var tableNewline = (params.tfdtype === 'standard' || params.tfdtype === 'sidebar') ? '\n' : ''; // No newline for inline
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{subst:tfm|help=off|" +
 				(params.tfdtype !== "standard" ? "type=" + params.tfdtype + "|" : "") + "1=" + params.otherTemplateName.replace(/^Template:/, "") +
-				(params.noinclude ? "}}</noinclude>" : "}}\n") + text);
+				(params.noinclude ? "}}</noinclude>" : "}}") + tableNewline + text);
 			pageobj.setEditSummary("Nominated for merging with [[:" + params.otherTemplateName + "]]; see [[:" +
 				params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
