@@ -1161,10 +1161,11 @@ Twinkle.tag.callbacks = {
 				pageText += '\n{{Redirect category shell|' + tagText + oldPageTags + '\n}}';
 			}
 		} else {
-			// smartly insert the new tags after any hatnotes. Regex is a bit more
-			// complicated than it'd need to be, to allow templates as parameters,
-			// and to handle whitespace properly.
-			pageText = pageText.replace(/^\s*(?:((?:\s*\{\{\s*(?:about|correct title|dablink|distinguish|for|other\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\s?(?:also|wiktionary)|selfref|the)\d*\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\})+(?:\s*\n)?)\s*)?/i,
+			// Smartly insert the new tags after any csd or prod templates
+			// or hatnotes; afd not yet supported since it places a comment
+			// not a template first. Regex is more complicated than it needs to be,
+			// which allows templates as parameters and to handle whitespace properly.
+			pageText = pageText.replace(/^\s*(?:((?:\s*\{\{\s*(?:db|delete|db-.*?|speedy deletion-.*?|(?:proposed deletion|prod blp)\/dated|about|correct title|dablink|distinguish|for|other\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\s?(?:also|wiktionary)|selfref|the)\d*\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\})+(?:\s*\n)?)\s*)?/i,
 				"$1" + tagText);
 		}
 		summaryText += ( tags.length > 0 ? ' tag' + ( tags.length > 1 ? 's' : '' ) : '' ) +
