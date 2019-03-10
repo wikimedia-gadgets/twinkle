@@ -1481,17 +1481,23 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		alert( 'You must select at least one tag!' );
 		return;
 	}
-	if( ((params.tags.indexOf("merge") !== -1) + (params.tags.indexOf("merge from") !== -1) +
-		(params.tags.indexOf("merge to") !== -1)) > 1 ) {
-		alert( 'Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).' );
-		return;
+	if ((params.tags.indexOf("merge") !== -1) || (params.tags.indexOf("merge from") !== -1) || (params.tags.indexOf("merge to") !== -1)) {
+		if( ((params.tags.indexOf("merge") !== -1) + (params.tags.indexOf("merge from") !== -1) +
+			(params.tags.indexOf("merge to") !== -1)) > 1 ) {
+			alert( 'Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).' );
+			return;
+		}
+		if ( !params.mergeTarget ) {
+			alert( 'Please specify the title of the other article for use in the merge template.' );
+			return;
+		}
+		if( (params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1 ) {
+			alert( 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.' );
+			return;
+		}
 	}
 	if( (params.tags.indexOf("not English") !== -1) && (params.tags.indexOf("rough translation") !== -1) ) {
 		alert( 'Please select only one of {{not English}} and {{rough translation}}.' );
-		return;
-	}
-	if( (params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1 ) {
-		alert( 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.' );
 		return;
 	}
 	if( params.tags.indexOf('cleanup') !== -1 && params.tagParameters.cleanup.trim() === '') {
