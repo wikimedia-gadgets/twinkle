@@ -84,9 +84,8 @@ Twinkle.welcome.normal = function() {
 			}
 		}
 	}
-	if( mw.config.get( 'wgNamespaceNumber' ) === 3 ) {
-		var username = mw.config.get( 'wgTitle' ).split( '/' )[0].replace( /"/, "\\\""); // only first part before any slashes
-		Twinkle.addPortletLink( function(){ Twinkle.welcome.callback(username); }, "Wel", "friendly-welcome", "Welcome user" );
+	if( mw.config.get( 'wgNamespaceNumber' ) === 3 && mw.config.get( 'wgRelevantUserName' ) ) {
+		Twinkle.addPortletLink( function(){ Twinkle.welcome.callback(mw.config.get( 'wgRelevantUserName' )); }, "Wel", "friendly-welcome", "Welcome user" );
 	}
 };
 
@@ -731,7 +730,7 @@ Twinkle.welcome.callbacks = {
 		previewDialog.setContent(previewdiv);
 
 		var previewer = new Morebits.wiki.preview(previewdiv);
-		previewer.beginRender(Twinkle.welcome.getTemplateWikitext(form.getChecked("template"), form.article.value));
+		previewer.beginRender(Twinkle.welcome.getTemplateWikitext(form.getChecked("template"), form.article.value), 'User talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username
 
 		var submit = document.createElement("input");
 		submit.setAttribute("type", "submit");
