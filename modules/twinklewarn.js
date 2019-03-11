@@ -1206,7 +1206,7 @@ Twinkle.warn.callbacks = {
 		templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle,
 			form.reason.value, form.main_group.value === 'custom');
 
-		form.previewer.beginRender(templatetext, 'WP:TW'); // Force wikitext
+		form.previewer.beginRender(templatetext, 'User_talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username
 	},
 	main: function( pageobj ) {
 		var text = pageobj.getPageText();
