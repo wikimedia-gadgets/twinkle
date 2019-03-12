@@ -1112,18 +1112,10 @@ Twinkle.tag.file.cleanupList = [
 	{ label: '{{Bad GIF}}: GIF that should be PNG, JPEG, or SVG', value: 'Bad GIF' },
 	{ label: '{{Bad JPEG}}: JPEG that should be PNG or SVG', value: 'Bad JPEG' },
 	{ label: '{{Bad trace}}: auto-traced SVG requiring cleanup', value: 'Bad trace' },
-	{ 	label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image',
+	{	label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image',
 		subgroup: {
 			type: 'input',
 			name: 'cleanupimageReason',
-			label: 'Reason: ',
-			tooltip: 'Enter the reason for cleanup (required)'
-		}
-	},
-	{ 	label: '{{Cleanup SVG}}: SVG needing code and/or appearance cleanup', value: 'Cleanup SVG',
-		subgroup: {
-			type: 'input',
-			name: 'cleanupsvgReason',
 			label: 'Reason: ',
 			tooltip: 'Enter the reason for cleanup (required)'
 		}
@@ -1885,9 +1877,6 @@ Twinkle.tag.callbacks = {
 					case "Cleanup image":
 						currentTag += '|1=' + params.cleanupimageReason;
 						break;
-					case "Cleanup SVG":
-						currentTag += '|1=' + params.cleanupsvgReason;
-						break;
 					case "Image-Poor-Quality":
 						currentTag += '|1=' + params.ImagePoorQualityReason;
 						break;
@@ -2013,8 +2002,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 		case 'file':
 
-			if( (params.tags.indexOf('Cleanup image') !== -1 && params.cleanupimageReason === '') ||
-				(params.tags.indexOf('Cleanup svg') !== -1 && params.cleanupsvgReason === '') ) {
+			if( (params.tags.indexOf('Cleanup image') !== -1 && params.cleanupimageReason === '') ) {
 				alert( 'You must specify a reason for the cleanup tag.' );
 				return;
 			}
