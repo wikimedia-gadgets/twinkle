@@ -293,7 +293,19 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 		root.appendChild( outerDiv );
 	}
 
+	if( outerDivClass === "vectorMenu" ) {	
+		// add invisible checkbox to make menu keyboard accessible
+		// similar to the p-cactions ("More") menu
+		var chkbox = document.createElement( "input" );
+		chkbox.className = "vectorMenuCheckbox";
+		chkbox.setAttribute( "type","checkbox" );
+		chkbox.setAttribute( "aria-labelledby", "p-twinkle-label" );
+		outerDiv.appendChild( chkbox );
+	}
 	var h5 = document.createElement( "h3" );
+	if(outerDivClass === "vectorMenu") { 
+		h5.id = "p-twinkle-label";
+	}
 	if ( type === "menu" ) {
 		var span = document.createElement( "span" );
 		span.appendChild( document.createTextNode( text ) );
