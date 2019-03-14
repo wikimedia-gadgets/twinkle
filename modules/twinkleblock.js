@@ -289,9 +289,9 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				type: 'input',
 				name: 'article',
 				display: 'none',
-				label: 'Linked article',
+				label: 'Linked page',
 				value: '',
-				tooltip: 'An article can be linked within the notice, perhaps if it was the primary target of disruption. Leave empty for no article to be linked.'
+				tooltip: 'A page can be linked within the notice, perhaps if it was the primary target of disruption. Leave empty for no page to be linked.'
 			} );
 		if (!$form.find('[name=actiontype][value=block]').is(':checked')) {
 			field_template_options.append( {

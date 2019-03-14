@@ -82,9 +82,9 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	form.append( {
 			type: 'input',
 			name: 'article',
-			label: 'Linked article',
+			label: 'Linked page',
 			value:( Morebits.queryString.exists( 'vanarticle' ) ? Morebits.queryString.get( 'vanarticle' ) : '' ),
-			tooltip: 'An article can be linked within the notice, perhaps because it was a revert to said article that dispatched this notice. Leave empty for no article to be linked.'
+			tooltip: 'A page can be linked within the notice, perhaps because it was a revert to said page that dispatched this notice. Leave empty for no page to be linked.'
 		} );
 
 	var more = form.append( { type: 'field', name: 'reasonGroup', label: 'Warning information' } );
