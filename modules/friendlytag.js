@@ -477,8 +477,8 @@ Twinkle.tag.article.tags = {
 	"BLP unsourced": "BLP article has no sources at all (use BLP PROD instead for new articles)",
 	"citation style": "article has unclear or inconsistent inline citations",
 	"cleanup": "article may require cleanup",
+	"cleanup reorganize": "article may be in need of reorganization to comply with Wikipedia's layout guidelines",
 	"cleanup rewrite": "article may need to be rewritten entirely to comply with Wikipedia's quality standards",
-	"cleanup-reorganize": "article may be in need of reorganization to comply with Wikipedia's layout guidelines",
 	"close paraphrasing": "article contains close paraphrasing of a non-free copyrighted source",
 	"COI": "article creator or major contributor may have a conflict of interest",
 	"condense": "article may have too many section headers dividing up its content",
@@ -492,7 +492,7 @@ Twinkle.tag.article.tags = {
 	"expand language": "article can be expanded with material from a foreign-language Wikipedia",
 	"expert needed": "article needs attention from an expert on the subject",
 	"external links": "article's external links may not follow content policies or guidelines",
-	"fansite": "article resembles a fansite",
+	"fanpov": "article may be written from a fan's point of view",
 	"fiction": "article fails to distinguish between fact and fiction",
 	"globalize": "article may not represent a worldwide view of the subject",
 	"GOCEinuse": "article is currently undergoing a major copy edit by the Guild of Copy Editors",
@@ -506,6 +506,7 @@ Twinkle.tag.article.tags = {
 	"lead too long": "article lead section is too long and should be shortened",
 	"lead too short": "article lead section is too short and should be expanded",
 	"linkrot": "article uses bare URLs for references, which are prone to link rot",
+	"long plot": "plot summary in article is too long",
 	"manual": "article is written like a manual or guidebook",
 	"merge": "article should be merged with another given article",
 	"merge from": "another given article should be merged into this one",
@@ -520,12 +521,11 @@ Twinkle.tag.article.tags = {
 	"one source": "article relies largely or entirely upon a single source",
 	"original research": "article has original research or unverified claims",
 	"orphan": "article is linked to from no other articles",
-	"overcoverage": "article has an extensive bias or disproportional coverage towards one or more specific regions",
 	"overlinked": "article may have too many duplicate and/or irrelevant links",
 	"overly detailed": "article contains an excessive amount of intricate detail",
+	"over-coverage": "article has an extensive bias or disproportional coverage towards one or more specific regions",
 	"over-quotation": "article contains too many or too-lengthy quotations for an encyclopedic entry",
 	"peacock": "article may contain peacock terms that promote the subject without adding information",
-	"plot": "plot summary in article is too long",
 	"POV": "article does not maintain a neutral point of view",
 	"primary sources": "article relies too heavily on primary sources, and needs secondary sources",
 	"prose": "article is in a list format that may be better presented using prose",
@@ -541,7 +541,7 @@ Twinkle.tag.article.tags = {
 	"uncategorized": "article is uncategorized",
 	"under construction": "article is currently in the middle of an expansion or major revamping",
 	"underlinked": "article may require additional wikilinks",
-	"undue": "article lends undue weight to certain aspects of the subject but not others",
+	"undue weight": "article lends undue weight to certain ideas, incidents, or controversies",
 	"unfocused": "article lacks focus or is about more than one topic",
 	"unreferenced": "article has no references at all",
 	"unreliable sources": "article's references may not be reliable sources",
@@ -569,7 +569,7 @@ Twinkle.tag.article.tagCategories = {
 			"non-free"
 		],
 		"Structure, formatting, and lead section": [
-			"cleanup-reorganize",
+			"cleanup reorganize",
 			"condense",
 			"lead missing",
 			"lead rewrite",
@@ -582,7 +582,7 @@ Twinkle.tag.article.tagCategories = {
 			"all plot",
 			"fiction",
 			"in-universe",
-			"plot"
+			"long plot"
 		]
 	},
 	"General content issues": {
@@ -592,7 +592,7 @@ Twinkle.tag.article.tagCategories = {
 		"Style of writing": [
 			"advert",
 			"essay-like",
-			"fansite",
+			"fanpov",
 			"manual",
 			"news release",
 			"over-quotation",
@@ -610,7 +610,7 @@ Twinkle.tag.article.tagCategories = {
 			"context",
 			"expert needed",
 			"overly detailed",
-			"undue"
+			"undue weight"
 		],
 		"Timeliness": [
 			"current",
@@ -622,7 +622,7 @@ Twinkle.tag.article.tagCategories = {
 			"disputed",
 			"hoax",
 			"globalize",  // has a subgroup with subcategories
-			"overcoverage",
+			"over-coverage",
 			"peacock",
 			"POV",
 			"recentism",
