@@ -505,6 +505,7 @@ Twinkle.tag.article.tags = {
 	"lead rewrite": "article lead section needs to be rewritten to comply with guidelines",
 	"lead too long": "article lead section is too long and should be shortened",
 	"lead too short": "article lead section is too short and should be expanded",
+	"like resume": "article is written like a resume",
 	"linkrot": "article uses bare URLs for references, which are prone to link rot",
 	"long plot": "plot summary in article is too long",
 	"manual": "article is written like a manual or guidebook",
@@ -515,6 +516,7 @@ Twinkle.tag.article.tags = {
 	"more footnotes": "article has some references, but insufficient in-text citations",
 	"news release": "article reads like a news release",
 	"no footnotes": "article has references, but no in-text citations",
+	"no plot": "article is missing a plot summary",
 	"non-free": "article may contain excessive or improper use of copyrighted materials",
 	"notability": "article's subject may not meet the notability guideline",
 	"not English": "article is written in a language other than English and needs translation",
@@ -582,7 +584,8 @@ Twinkle.tag.article.tagCategories = {
 			"all plot",
 			"fiction",
 			"in-universe",
-			"long plot"
+			"long plot",
+			"no plot"
 		]
 	},
 	"General content issues": {
@@ -593,6 +596,7 @@ Twinkle.tag.article.tagCategories = {
 			"advert",
 			"essay-like",
 			"fanpov",
+			"like resume",
 			"manual",
 			"news release",
 			"over-quotation",
