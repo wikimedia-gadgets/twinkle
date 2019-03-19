@@ -397,6 +397,14 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			work_area.append( { type: 'header', label: 'User pages' } );
 			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList, mode) } );
 		}
+		else if (namespace == 1) {
+			work_area.append( { type: 'header', label: 'Mainspace redirects' } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.mainspaceRedirect, mode) } );
+		}
+		else if (namespace == 6) {
+			work_area.append( { type: 'header', label: 'Mainspace redirects' } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.fileRedirect, mode) } );
+		}
 		work_area.append( { type: 'header', label: 'Redirects' } );
 		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) } );
 	}
@@ -1051,19 +1059,9 @@ Twinkle.speedy.generalList = [
 
 Twinkle.speedy.redirectList = [
 	{
-		label: 'R2: Redirects from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
-		value: 'rediruser',
-		tooltip: '(this does not include the Wikipedia shortcut pseudo-namespaces). If this was the result of a page move, consider waiting a day or two before deleting the redirect'
-	},
-	{
 		label: 'R3: Redirects as a result of an implausible typo or misnomers that were recently created',
 		value: 'redirtypo',
 		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
-	},
-	{
-		label: 'R4: File namespace redirect with name that matches a Commons page',
-		value: 'redircom',
-		tooltip: 'The redirect should have no incoming links (unless the links are cleary intended for the file or redirect at Commons).'
 	},
 	{
 		label: 'G6: Redirect to malplaced disambiguation page',
@@ -1076,6 +1074,22 @@ Twinkle.speedy.redirectList = [
 		value: 'redirnone',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		hideWhenMultiple: true
+	}
+];
+	
+Twinkle.speedy.mainspaceRedirect = [
+	{
+		label: 'R2: Redirects from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
+		value: 'rediruser',
+		tooltip: '(this does not include the Wikipedia shortcut pseudo-namespaces). If this was the result of a page move, consider waiting a day or two before deleting the redirect'
+	}
+];
+	
+Twinkle.speedy.fileRedirect = [
+	{
+		label: 'R4: File namespace redirect with name that matches a Commons page',
+		value: 'redircom',
+		tooltip: 'The redirect should have no incoming links (unless the links are cleary intended for the file or redirect at Commons).'
 	}
 ];
 
