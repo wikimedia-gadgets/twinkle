@@ -397,7 +397,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			work_area.append( { type: 'header', label: 'User pages' } );
 			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList, mode) } );
 		}
-		else if (namespace == 1) {
+		else if (namespace == 0) {
 			work_area.append( { type: 'header', label: 'Mainspace redirects' } );
 			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.mainspaceRedirect, mode) } );
 		}
