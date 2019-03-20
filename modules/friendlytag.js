@@ -9,10 +9,8 @@
  *** friendlytag.js: Tag module
  ****************************************
  * Mode of invocation:     Tab ("Tag")
- * Active on:              Existing articles; file pages with a corresponding file
- *                         which is local (not on Commons); existing subpages of
- *                         {Wikipedia|Wikipedia talk}:Articles for creation;
- *                         all redirects
+ * Active on:              Existing articles and drafts; file pages with a corresponding file
+ *                         which is local (not on Commons); all redirects
  * Config directives in:   FriendlyConfig
  */
 
@@ -28,7 +26,7 @@ Twinkle.tag = function friendlytag() {
 		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to file" );
 	}
 	// article/draft article tagging
-	else if( ( mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 118 || /^Wikipedia( talk)?:Articles for creation\//.exec(Morebits.pageNameNorm) ) && mw.config.get('wgCurRevisionId') ) {
+	else if( ( [0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 ) && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
 		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to article" );
 	}
@@ -86,7 +84,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 							label: 'Group inside {{multiple issues}} if possible',
 							value: 'group',
 							name: 'group',
-							tooltip: 'If applying three or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped inside a {{multiple issues}} template.',
+							tooltip: 'If applying two or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped inside a {{multiple issues}} template.',
 							checked: Twinkle.getFriendlyPref('groupByDefault')
 						}
 					]
@@ -97,8 +95,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 		case 'file':
 			Window.setTitle( "File maintenance tagging" );
-
-			// TODO: perhaps add custom tags TO list of checkboxes
 
 			form.append({ type: 'header', label: 'License and sourcing problem tags' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.licenseList } );
@@ -114,6 +110,11 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 			form.append({ type: 'header', label: 'Replacement tags' });
 			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.replacementList } );
+
+			if (Twinkle.getFriendlyPref('customFileTagList').length) {
+				form.append({ type: 'header', label: 'Custom tags' });
+				form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.getFriendlyPref('customFileTagList') });
+			}
 			break;
 
 		case 'redirect':
@@ -127,6 +128,11 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 			form.append({ type: 'header', label:'Miscellaneous and administrative redirect templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.administrativeList });
+
+			if (Twinkle.getFriendlyPref('customRedirectTagList').length) {
+				form.append({ type: 'header', label: 'Custom tags' });
+				form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.getFriendlyPref('customRedirectTagList') });
+			}
 			break;
 
 		default:
@@ -176,6 +182,14 @@ Twinkle.tag.updateSortOrder = function(e) {
 					size: 35
 				};
 				break;
+			case "close paraphrasing":
+				checkbox.subgroup = {
+					name: 'closeParaphrasing',
+					type: 'input',
+					label: 'Source: ',
+					tooltip: 'Source that has been closely paraphrased'
+				};
+				break;
 			case "copy edit":
 				checkbox.subgroup = {
 					name: 'copyEdit',
@@ -193,6 +207,20 @@ Twinkle.tag.updateSortOrder = function(e) {
 					tooltip: 'If known.',
 					size: 50
 				};
+				break;
+			case "expand language":
+				checkbox.subgroup = [ {
+						name: 'expandLanguageLangCode',
+						type: 'input',
+						label: 'Language code: ',
+						tooltip: 'Language code of the language from which article is to be expanded from'
+					}, {
+						name: 'expandLanguageArticle',
+						type: 'input',
+						label: 'Name of article: ',
+						tooltip: 'Name of article to be expanded from, without the interwiki prefix'
+					},
+				];
 				break;
 			case "expert needed":
 				checkbox.subgroup = [
@@ -348,6 +376,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 						{ label: "{{notability|Numbers}}: notability guideline for numbers", value: "Numbers" },
 						{ label: "{{notability|Products}}: notability guideline for products and services", value: "Products" },
 						{ label: "{{notability|Sport}}: notability guideline for sports and athletics", value: "Sport" },
+						{ label: "{{notability|Television}}: notability guideline for television shows", value: "Television" },
 						{ label: "{{notability|Web}}: notability guideline for web content", value: "Web" }
 					]
 				};
@@ -585,7 +614,7 @@ Twinkle.tag.article.tagCategories = {
 		],
 		"Timeliness": [
 			"current",
-			"update"			
+			"update"
 		],
 		"Neutrality, bias, and factual accuracy": [
 			"autobiography",
@@ -664,7 +693,7 @@ Twinkle.tag.spellingList = [
 		value: 'R from initialism'
 	},
 	{
-		label: '{{R from member}}: redirect from a member of a group to a related topic such as the group, organization, or team that he or she belongs to',
+		label: '{{R from member}}: redirect from a member of a group to a related topic such as the group, organization, or team of membership',
 		value: 'R from member'
 	},
 	{
@@ -700,7 +729,26 @@ Twinkle.tag.spellingList = [
 Twinkle.tag.alternativeList = [
 	{
 		label: '{{R from alternative language}}: redirect from an English name to a name in another language, or vice-versa',
-		value: 'R from alternative language'
+		value: 'R from alternative language',
+		subgroup : [
+			{
+				name: 'altLangFrom',
+				type: 'input',
+				label: 'From language (two-letter code): ',
+				tooltip: 'Enter the two-letter code of the language the redirect name is in; such as en for English, de for German'
+			},
+			{
+				name: 'altLangTo',
+				type: 'input',
+				label: 'To language (two-letter code): ',
+				tooltip: 'Enter the two-letter code of the language the target name is in; such as en for English, de for German'
+			},
+			{
+				name: 'altLangInfo',
+				type: 'div',
+				label: $.parseHTML('<p>For a list of language codes, see <a href="/wiki/Wp:Template_messages/Redirect_language_codes">Wikipedia:Template messages/Redirect language codes</a></p>')
+			}
+		]
 	},
 	{
 		label: '{{R from alternative name}}: redirect from a title that is another name, a pseudonym, a nickname, or a synonym',
@@ -890,8 +938,7 @@ Twinkle.tag.callbacks = {
 		var addTag = function friendlytagAddTag( tagIndex, tagName ) {
 			var currentTag = "";
 			if( tagName === 'uncategorized' || tagName === 'improve categories' ) {
-				pageText += '\n\n{{' + tagName +
-					'|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
+				pageText += '\n\n{{' + tagName + '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
 			} else {
 				if( tagName === 'globalize' ) {
 					currentTag += '{{' + params.tagParameters.globalize;
@@ -906,9 +953,10 @@ Twinkle.tag.callbacks = {
 				// prompt for other parameters, based on the tag
 				switch( tagName ) {
 					case 'cleanup':
-						if (params.tagParameters.cleanup) {
-							currentTag += '|reason=' + params.tagParameters.cleanup;
-						}
+						currentTag += '|reason=' + params.tagParameters.cleanup;
+						break;
+					case 'close paraphrasing':
+						currentTag += '|source=' + params.tagParameters.closeParaphrasing;
 						break;
 					case 'copy edit':
 						if (params.tagParameters.copyEdit) {
@@ -922,21 +970,9 @@ Twinkle.tag.callbacks = {
 						break;
 					case 'expand language':
 						currentTag += '|topic=';
-						var langcode = prompt('Please enter the language code of the other wiki (e.g. "fr", "roa-rup").  \n' +
-							"This information is required.  To skip the {{expand language}} tag, click Cancel.", "");
-						if (langcode === null || langcode === "") {
-							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
-							return true;  // continue to next tag
-						} else {
-							currentTag += '|langcode=' + langcode;
-						}
-						var otherart = prompt('Please enter the name of the article in the other wiki (without interwiki prefix).  \n' +
-							"This information is optional.  To skip the {{expand language}} tag, click Cancel.", "");
-						if (otherart === null) {
-							Morebits.status.warn("Notice", "{{expand language}} tag skipped by user");
-							return true;  // continue to next tag
-						} else {
-							currentTag += '|otherarticle=' + otherart;
+						currentTag += '|langcode=' + params.tagParameters.expandLanguageLangCode;
+						if (params.tagParameters.expandLanguageArticle !== null) {
+							currentTag += '|otherarticle=' + params.tagParameters.expandLanguageArticle;
 						}
 						break;
 					case 'expert needed':
@@ -984,6 +1020,14 @@ Twinkle.tag.callbacks = {
 							}
 						}
 						break;
+					case 'R from alternative language':
+						if(params.altLangFrom) {
+							currentTag += '|from=' + params.altLangFrom;
+						}
+						if(params.altLangTo) {
+							currentTag += '|to=' + params.altLangTo;
+						}
+						break;
 					default:
 						break;
 				}
@@ -1021,30 +1065,31 @@ Twinkle.tag.callbacks = {
 
 		if( Twinkle.tag.mode !== 'redirect' ) {
 			// Check for preexisting tags and separate tags into groupable and non-groupable arrays
-			for( i = 0; i < params.tags.length; i++ ) {
-				tagRe = new RegExp( '(\\{\\{' + params.tags[i] + '(\\||\\}\\})|\\|\\s*' + params.tags[i] + '\\s*=[a-z ]+\\d+)', 'im' );
+			params.tags.forEach(function(tag) {
+				tagRe = new RegExp ( '\\{\\{' + tag + '(\\||\\}\\})', 'im' );
 				if( !tagRe.exec( pageText ) ) {
-					if( Twinkle.tag.multipleIssuesExceptions.indexOf(params.tags[i]) === -1 ) {
-						groupableTags = groupableTags.concat( params.tags[i] );
+					if( Twinkle.tag.multipleIssuesExceptions.indexOf(tag) === -1 ) {
+						groupableTags = groupableTags.concat( tag );
 					} else {
-						tags = tags.concat( params.tags[i] );
+						tags = tags.concat( tag );
 					}
 				} else {
-					Morebits.status.warn( 'Info', 'Found {{' + params.tags[i] +
-						'}} on the article already...excluding' );
-					// don't do anything else with merge tags
-					if (params.tags[i] === "merge" || params.tags[i] === "merge from" ||
-						params.tags[i] === "merge to") {
-						params.mergeTarget = params.mergeReason = params.mergeTagOther = false;
+					if(tag === 'merge from') {
+						tags = tags.concat( tag );
+					} else {
+						Morebits.status.warn( 'Info', 'Found {{' + tag +
+							'}} on the article already...excluding' );
+						// don't do anything else with merge tags
+						if ( ['merge', 'merge to'].indexOf(tag) !== -1 ) {
+							params.mergeTarget = params.mergeReason = params.mergeTagOther = null;
+						}
 					}
 				}
-			}
+			});
 
-			var miTest = /\{\{(multiple ?issues|article ?issues|mi)[^}]+\{/im.exec(pageText);
-			var miOldStyleRegex = /\{\{(multiple ?issues|article ?issues|mi)\s*\|([^{]+)\}\}/im;
-			var miOldStyleTest = miOldStyleRegex.exec(pageText);
+			var miTest = /\{\{(multiple ?issues|article ?issues|mi)(?!\s*\|\s*section\s*=)[^}]+\{/im.exec(pageText);
 
-			if( ( miTest || miOldStyleTest ) && groupableTags.length > 0 ) {
+			if( miTest && groupableTags.length > 0 ) {
 				Morebits.status.info( 'Info', 'Adding supported tags inside existing {{multiple issues}} tag' );
 
 				groupableTags.sort();
@@ -1058,19 +1103,11 @@ Twinkle.tag.callbacks = {
 					summaryText += ', and';
 				}
 
-				if( miOldStyleTest ) {
-					// convert tags from old-style to new-style
-					var split = miOldStyleTest[2].split("|");
-					$.each(split, function(index, val) {
-						split[index] = val.replace("=", "|date=").trim();
-					});
-					pageText = pageText.replace(miOldStyleRegex, "{{$1|\n{{" + split.join("}}\n{{") + "}}\n" + tagText + "}}\n");
-				} else {
-					var miRegex = new RegExp("(\\{\\{\\s*" + miTest[1] + "\\s*(?:\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?)\\}\\}\\s*", "im");
-					pageText = pageText.replace(miRegex, "$1" + tagText + "}}\n");
-				}
+				var miRegex = new RegExp("(\\{\\{\\s*" + miTest[1] + "\\s*(?:\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?)\\}\\}\\s*", "im");
+				pageText = pageText.replace(miRegex, "$1" + tagText + "}}\n");
 				tagText = "";
-			} else if( params.group && groupableTags.length >= 3 ) {
+
+			} else if( params.group && groupableTags.length >= 2 ) {
 				Morebits.status.info( 'Info', 'Grouping supported tags inside {{multiple issues}}' );
 
 				groupableTags.sort();
@@ -1403,8 +1440,11 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			params.group = form.group.checked;
 			params.tagParameters = {
 				cleanup: form["articleTags.cleanup"] ? form["articleTags.cleanup"].value : null,
+				closeParaphrasing: form["articleTags.closeParaphrasing"] ? form["articleTags.closeParaphrasing"].value : null,
 				copyEdit: form["articleTags.copyEdit"] ? form["articleTags.copyEdit"].value : null,
 				copypaste: form["articleTags.copypaste"] ? form["articleTags.copypaste"].value : null,
+				expandLanguageLangCode: form["articleTags.expandLanguageLangCode"] ? form["articleTags.expandLanguageLangCode"].value : null,
+				expandLanguageArticle: form["articleTags.expandLanguageArticle"] ? form["articleTags.expandLanguageArticle"].value : null,
 				globalize: form["articleTags.globalize"] ? form["articleTags.globalize"].value : null,
 				notability: form["articleTags.notability"] ? form["articleTags.notability"].value : null
 			};
@@ -1428,6 +1468,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 		case 'redirect':
 			params.tags = form.getChecked( 'redirectTags' );
+			params.altLangFrom = form["redirectTags.altLangFrom"] ? form["redirectTags.altLangFrom"].value : null;
+			params.altLangTo = form["redirectTags.altLangTo"] ? form["redirectTags.altLangTo"].value : null;
 			break;
 		default:
 			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
@@ -1439,21 +1481,31 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		alert( 'You must select at least one tag!' );
 		return;
 	}
-	if( ((params.tags.indexOf("merge") !== -1) + (params.tags.indexOf("merge from") !== -1) +
-		(params.tags.indexOf("merge to") !== -1)) > 1 ) {
-		alert( 'Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).' );
-		return;
+	if ((params.tags.indexOf("merge") !== -1) || (params.tags.indexOf("merge from") !== -1) || (params.tags.indexOf("merge to") !== -1)) {
+		if( ((params.tags.indexOf("merge") !== -1) + (params.tags.indexOf("merge from") !== -1) +
+			(params.tags.indexOf("merge to") !== -1)) > 1 ) {
+			alert( 'Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).' );
+			return;
+		}
+		if ( !params.mergeTarget ) {
+			alert( 'Please specify the title of the other article for use in the merge template.' );
+			return;
+		}
+		if( (params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1 ) {
+			alert( 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.' );
+			return;
+		}
 	}
 	if( (params.tags.indexOf("not English") !== -1) && (params.tags.indexOf("rough translation") !== -1) ) {
 		alert( 'Please select only one of {{not English}} and {{rough translation}}.' );
 		return;
 	}
-	if( (params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1 ) {
-		alert( 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.' );
+	if( params.tags.indexOf('cleanup') !== -1 && params.tagParameters.cleanup.trim() === '') {
+		alert( 'You must specify a reason for the {{cleanup}} tag.' );
 		return;
 	}
-	if( params.tags.indexOf('cleanup') !== -1 && params.tagParameters.cleanup.trim && params.tagParameters.cleanup.trim() === "") {
-		alert( 'You must specify a reason for the {{cleanup}} tag.' );
+	if( params.tags.indexOf('expand language') !== -1 && params.tagParameters.expandLanguageLangCode.trim() === '') {
+		alert('You must specify language code for the {{expand language}} tag.');
 		return;
 	}
 
@@ -1483,6 +1535,5 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	}
 };
 })(jQuery);
-
 
 //</nowiki>

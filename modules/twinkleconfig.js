@@ -9,7 +9,7 @@
  *** twinkleconfig.js: Preferences module
  ****************************************
  * Mode of invocation:     Adds configuration form to Wikipedia:Twinkle/Preferences and user
-                           subpages named "/Twinkle preferences", and adds ad box to the top of user
+                           subpages named "/Twinkle preferences", and adds an ad box to the top of user
                            subpages belonging to the currently logged-in user which end in '.js'
  * Active on:              What I just said.  Yeah.
  * Config directives in:   TwinkleConfig
@@ -301,6 +301,15 @@ Twinkle.config.sections = [
 {
 	title: "Revert and rollback",  // twinklefluff module
 	preferences: [
+		// TwinkleConfig.autoMenuAfterRollback (bool)
+		// Option to automatically open the warning menu if the user talk page is opened post-reversion
+		{
+			name: "autoMenuAfterRollback",
+			label: "Automatically open the Twinkle warn menu on a user talk page after Twinkle rollback",
+			helptip: "Only operates if the relevant box is checked below.",
+			type: "boolean"
+		},
+
 		// TwinkleConfig.openTalkPage (array)
 		// What types of actions that should result in opening of talk page
 		{
@@ -550,8 +559,24 @@ Twinkle.config.sections = [
 		},
 		{
 			name: "customTagList",
-			label: "Custom article maintenance tags to display",
+			label: "Custom article/draft maintenance tags to display",
 			helptip: "These appear as additional options at the bottom of the list of tags. For example, you could add new maintenance tags which have not yet been added to Twinkle's defaults.",
+			type: "customList",
+			customListValueTitle: "Template name (no curly brackets)",
+			customListLabelTitle: "Text to show in Tag dialog"
+		},
+		{
+			name: "customFileTagList",
+			label: "Custom file maintenance tags to display",
+			helptip: "Additional tags that you wish to add for files.",
+			type: "customList",
+			customListValueTitle: "Template name (no curly brackets)",
+			customListLabelTitle: "Text to show in Tag dialog"
+		},
+		{
+			name: "customRedirectTagList",
+			label: "Custom redirect category tags to display",
+			helptip: "Additional tags that you wish to add for redirects.",
 			type: "customList",
 			customListValueTitle: "Template name (no curly brackets)",
 			customListLabelTitle: "Text to show in Tag dialog"
@@ -653,12 +678,6 @@ Twinkle.config.sections = [
 			type: "customList",
 			customListValueTitle: "Template name (no curly brackets)",
 			customListLabelTitle: "Text to show in warning list (also used as edit summary)"
-		},
-
-		{
-			name: "markXfdPagesAsPatrolled",
-			label: "Mark page as patrolled when nominating for AFD (if possible)",
-			type: "boolean"
 		}
 	]
 },
@@ -752,13 +771,19 @@ Twinkle.config.sections = [
 		},
 
 		// TwinkleConfig.xfdWatchUser (string)
-		// The watchlist setting of the user if he receives a notification. Either "yes" (add to watchlist), "no" (don't
+		// The watchlist setting of the user talk page if they receive a notification. Either "yes" (add to watchlist), "no" (don't
 		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 		{
 			name: "xfdWatchUser",
-			label: "Add the user talk page to watchlist (when notifying)",
+			label: "Add user talk page of initial contributor to watchlist (when notifying)",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+
+		{
+			name: "markXfdPagesAsPatrolled",
+			label: "Mark page as patrolled when nominating for AFD (if possible)",
+			type: "boolean"
 		}
 	]
 },

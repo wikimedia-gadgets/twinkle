@@ -2759,7 +2759,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 			// non-admin attempting to edit a protected page - this gives a friendlier message than the default
 			if ( errorCode === "protectedpage" ) {
-				ctx.statusElement.error( "Failed to save edit: Page is fully protected" );
+				ctx.statusElement.error( "Failed to save edit: Page is protected" );
 			} else {
 				ctx.statusElement.error( "Failed to save edit: " + ctx.saveApi.getErrorText() );
 			}
