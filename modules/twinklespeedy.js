@@ -397,16 +397,18 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			work_area.append( { type: 'header', label: 'User pages' } );
 			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList, mode) } );
 		}
-		else if (namespace == 0) {
+		work_area.append( { type: 'header', label: 'Redirects' } );
+		if (namespace == 0) {
 			work_area.append( { type: 'header', label: 'Mainspace redirects' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.mainspaceRedirect, mode) } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.articleRedirect.concat(Twinkle.speedy.redirectList), mode) } );
 		}
 		else if (namespace == 6) {
 			work_area.append( { type: 'header', label: 'Mainspace redirects' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.fileRedirect, mode) } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList.concat(Twinkle.speedy.fileRedirect), mode) } );
 		}
-		work_area.append( { type: 'header', label: 'Redirects' } );
-		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) } );
+		else {
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) } );
+		}
 	}
 
 	var generalCriteria = Twinkle.speedy.generalList;
@@ -1077,7 +1079,7 @@ Twinkle.speedy.redirectList = [
 	}
 ];
 	
-Twinkle.speedy.mainspaceRedirect = [
+Twinkle.speedy.articleRedirect = [
 	{
 		label: 'R2: Redirects from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
 		value: 'rediruser',
