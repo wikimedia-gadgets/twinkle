@@ -399,11 +399,9 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		}
 		work_area.append( { type: 'header', label: 'Redirects' } );
 		if (namespace == 0) {
-			work_area.append( { type: 'header', label: 'Mainspace redirects' } );
 			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.articleRedirect.concat(Twinkle.speedy.redirectList), mode) } );
 		}
 		else if (namespace == 6) {
-			work_area.append( { type: 'header', label: 'Mainspace redirects' } );
 			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList.concat(Twinkle.speedy.fileRedirect), mode) } );
 		}
 		else {
