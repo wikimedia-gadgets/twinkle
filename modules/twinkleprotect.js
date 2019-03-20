@@ -401,14 +401,9 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					});
 				pclevel.append({
 						type: 'option',
-						label: 'Level 1',
+						label: 'Pending changes',
 						value: 'autoconfirmed',
 						selected: true
-					});
-				pclevel.append({
-						type: 'option',
-						label: 'Level 2 (do not use)',
-						value: 'review'
 					});
 				field2.append({
 						type: 'select',
@@ -740,14 +735,13 @@ Twinkle.protect.protectionTypesCreate = [
 ];
 
 // A page with both regular and PC protection will be assigned its regular
-// protection weight plus 2 (for PC1) or 7 (for PC2)
+// protection weight plus 2
 Twinkle.protect.protectionWeight = {
 	sysop: 40,
 	templateeditor: 30,
 	extendedconfirmed: 20,
-	flaggedrevs_review: 15,  // Pending Changes level 2 protection alone
 	autoconfirmed: 10,
-	flaggedrevs_autoconfirmed: 5,  // Pending Changes level 1 protection alone
+	flaggedrevs_autoconfirmed: 5,  // Pending Changes protection alone
 	all: 0,
 	flaggedrevs_none: 0  // just in case
 };
@@ -855,27 +849,27 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-pc-vandalism': {
 		stabilize: 'autoconfirmed',  // stabilize = Pending Changes
 		reason: 'Persistent [[WP:Vandalism|vandalism]]',
-		template: 'pp-pc1'
+		template: 'pp-pc'
 	},
 	'pp-pc-disruptive': {
 		stabilize: 'autoconfirmed',
 		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]]',
-		template: 'pp-pc1'
+		template: 'pp-pc'
 	},
 	'pp-pc-unsourced': {
 		stabilize: 'autoconfirmed',
 		reason: 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]',
-		template: 'pp-pc1'
+		template: 'pp-pc'
 	},
 	'pp-pc-blp': {
 		stabilize: 'autoconfirmed',
 		reason: 'Violations of the [[WP:BLP|biographies of living persons policy]]',
-		template: 'pp-pc1'
+		template: 'pp-pc'
 	},
 	'pp-pc-protected': {
 		stabilize: 'autoconfirmed',
 		reason: null,
-		template: 'pp-pc1'
+		template: 'pp-pc'
 	},
 	'pp-move': {
 		move: 'sysop',
@@ -945,7 +939,7 @@ Twinkle.protect.protectionTags = [
 	{
 		label: 'Pending changes templates',
 		list: [
-			{ label: '{{pp-pc1}}: pending changes level 1', value: 'pp-pc1' }
+			{ label: '{{pp-pc}}: pending changes', value: 'pp-pc' }
 		]
 	},
 	{
@@ -1069,12 +1063,6 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		tagparams = {
 			tag: form.tagtype.value,
 			reason: ((form.tagtype.value === 'pp-protected' || form.tagtype.value === 'pp-semi-protected' || form.tagtype.value === 'pp-move') && form.protectReason) ? form.protectReason.value : null,
-			expiry: (actiontype === 'protect') ?
-				(form.editmodify.checked ? form.editexpiry.value :
-					(form.movemodify.checked ? form.moveexpiry.value :
-						(form.pcmodify.checked ? form.pcexpiry.value : null)
-					)
-				) : null,
 			small: form.small.checked,
 			noinclude: form.noinclude.checked
 		};
@@ -1371,9 +1359,6 @@ Twinkle.protect.callbacks = {
 			if( params.reason ) {
 				tag += '|reason=' + params.reason;
 			}
-			if( ['indefinite', 'infinite', 'never', null].indexOf(params.expiry) === -1 ) {
-				tag += '|expiry={{subst:#time:H:i, j F Y|' + (/^\s*\d+\s*$/.exec(params.expiry) ? params.expiry : '+' + params.expiry) + '}}';
-			}
 			if( params.small ) {
 				tag += '|small=yes';
 			}
@@ -1382,10 +1367,16 @@ Twinkle.protect.callbacks = {
 		if( params.tag === 'none' ) {
 			summary = 'Removing protection template' + Twinkle.getPref('summaryAd');
 		} else {
-			if( params.noinclude ) {
+			if( Morebits.wiki.isPageRedirect() ) {
+				//Only tag if no {{rcat shell}} is found
+				if (!text.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
+					text = text.replace(/#REDIRECT ?(\[\[.*?\]\])(.*)/i, "#REDIRECT $1$2\n\n{{" + tag + "}}");
+				} else {
+					Morebits.status.info("Redirect category shell present", "nothing to do");
+					return;
+				}
+			} else if( params.noinclude ) {
 				text = "<noinclude>{{" + tag + "}}</noinclude>" + text;
-			} else if( Morebits.wiki.isPageRedirect() ) {
-				text = text + "\n{{" + tag + "}}";
 			} else {
 				text = "{{" + tag + "}}\n" + text;
 			}
@@ -1405,7 +1396,7 @@ Twinkle.protect.callbacks = {
 		var text = rppPage.getPageText();
 		var statusElement = rppPage.getStatusElement();
 
-		var rppRe = new RegExp( '===\\s*(\\[\\[)?\s*:?\s*' + RegExp.escape( Morebits.pageNameNorm, true ) + '\s*(\\]\\])?\\s*===', 'm' );
+		var rppRe = new RegExp( '===\\s*(\\[\\[)?\\s*:?\\s*' + RegExp.escape( Morebits.pageNameNorm, true ) + '\\s*(\\]\\])?\\s*===', 'm' );
 		var tag = rppRe.exec( text );
 
 		var rppLink = document.createElement('a');
@@ -1422,7 +1413,7 @@ Twinkle.protect.callbacks = {
 			statusElement.error( [ 'There is already a protection request for this page at ', rppLink, ', aborting.' ] );
 			return;
 		}
-		newtag += '* {{pagelinks|' + Morebits.pageNameNorm + '}}\n\n';
+		newtag += '* {{pagelinks|1=' + Morebits.pageNameNorm + '}}\n\n';
 
 		var words;
 		switch( params.expiry ) {
@@ -1454,8 +1445,6 @@ Twinkle.protect.callbacks = {
 				if (result) {
 					if (stabilizeLevel.level === "autoconfirmed") {
 						result += 2;
-					} else if (stabilizeLevel.level === "review") {
-						result += 7;
 					}
 				} else {
 					result = Twinkle.protect.protectionWeight["flaggedrevs_" + stabilizeLevel];
@@ -1495,7 +1484,7 @@ Twinkle.protect.callbacks = {
 			return;
 		}
 		statusElement.status( 'Adding new request...' );
-		rppPage.setEditSummary( "Requesting " + params.typename + (params.typename === "pending changes" ? ' on [[' : ' of [[') +
+		rppPage.setEditSummary( "Requesting " + params.typename + (params.typename === "pending changes" ? ' on [[:' : ' of [[:') +
 			Morebits.pageNameNorm + ']].' + Twinkle.getPref('summaryAd') );
 		rppPage.setPageText( text );
 		rppPage.setCreateOption( 'recreate' );

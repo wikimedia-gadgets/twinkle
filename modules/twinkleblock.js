@@ -76,7 +76,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	result.root = result;
 
 	Twinkle.block.fetchUserInfo(function() {
-		// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
+		// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
 		Twinkle.block.transformBlockPresets();
 
 		// init the controls after user and block info have been fetched
@@ -320,7 +320,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 					{
 						label: 'Do not include expiry in template',
 						checked: Twinkle.block.field_template_options.blank_duration,
-						tooltip: 'Instead of including the duration, make the block template read \"You have been blocked from editing temporarily for...\"'
+						tooltip: 'Instead of including the duration, make the block template read "You have been blocked from editing temporarily for..."'
 					}
 				]
 			} );
@@ -442,6 +442,7 @@ Twinkle.block.blockPresetsInfo = {
 		forAnonOnly: true,
 		nocreate: true,
 		nonstandard: true,
+		hardblock: true,
 		reason: '{{blocked proxy}}',
 		sig: null
 	},
@@ -669,12 +670,6 @@ Twinkle.block.blockPresetsInfo = {
 		reason: 'Making [[WP:No legal threats|legal threats]]',
 		summary: 'You have been blocked from editing for making [[WP:NLT|legal threats or taking legal action]]'
 	},
-	'uw-memorialblock': {
-		forRegisteredOnly: true,
-		expiry: 'infinity',
-		reason: '{{uw-memorialblock}} <!-- Username indicates tribute to someone, soft block -->',
-		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] indicates this account may be used as a memorial or tribute to someone'
-	},
 	'uw-myblock': {
 		autoblock: true,
 		nocreate: true,
@@ -882,7 +877,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Block evasion – IP', value: 'uw-ipevadeblock' },
 			{ label: 'BLP violations', value: 'uw-bioblock' },
 			{ label: 'Copyright violations', value: 'uw-copyrightblock' },
-			{ label: 'Creating inappropriate pages', value: 'uw-npblock' },
+			{ label: 'Creating nonsense pages', value: 'uw-npblock' },
 			{ label: 'Edit filter-related', value: 'uw-efblock' },
 			{ label: 'Edit warring', value: 'uw-ewblock' },
 			{ label: 'Generic block with talk page access revoked', value: 'uw-blocknotalk' },
@@ -904,7 +899,6 @@ Twinkle.block.blockGroups = [
 		label: 'Username violations',
 		list: [
 			{ label: 'Bot username', value: 'uw-botublock' },
-			{ label: 'Memorial username soft block', value: 'uw-memorialblock' },
 			{ label: 'Promotional username, hard block', value: 'uw-spamublock' },
 			{ label: 'Promotional username, soft block', value: 'uw-softerblock' },
 			{ label: 'Similar username soft block', value: 'uw-ublock-double' },
@@ -982,7 +976,7 @@ Twinkle.block.callback.change_expiry = function twinkleblockCallbackChangeExpiry
 };
 
 Twinkle.block.seeAlsos = [];
-Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSeeAlso(e) {
+Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSeeAlso() {
 	var reason = this.form.reason.value.replace(
 		new RegExp('( <!--|;) ' + 'see also ' + Twinkle.block.seeAlsos.join(' and ') + '( -->)?'), ''
 	);
@@ -1097,7 +1091,7 @@ Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 
 	var templateText = Twinkle.block.callback.getBlockNoticeWikitext(params);
 
-	form.previewer.beginRender(templateText);
+	form.previewer.beginRender(templateText, 'User_talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username
 };
 
 Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
@@ -1141,7 +1135,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 		api.getToken('block').then(function(token) {
 			statusElement.status('Processing...');
 			blockoptions.token = token;
-			var mbApi = new Morebits.wiki.api( 'Executing block', blockoptions, function(data) {
+			var mbApi = new Morebits.wiki.api( 'Executing block', blockoptions, function() {
 				statusElement.info('Completed');
 				if (toWarn) Twinkle.block.callback.issue_template(templateoptions);
 			});
@@ -1245,7 +1239,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain( pageobj ) {
 	// build the edit summary
 	var summary = messageData.summary;
 	if ( messageData.suppressArticleInSummary !== true && params.article ) {
-		summary += ' on [[' + params.article + ']]';
+		summary += ' on [[:' + params.article + ']]';
 	}
 	summary += '.' + Twinkle.getPref('summaryAd');
 
@@ -1256,5 +1250,6 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain( pageobj ) {
 };
 
 })(jQuery);
+
 
 //</nowiki>

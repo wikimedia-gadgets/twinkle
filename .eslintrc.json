@@ -1,0 +1,19 @@
+{
+	"extends": [
+		"eslint:recommended"
+	],
+	"root": true,
+	"env": {
+		"browser": true,
+		"jquery": true
+	},
+	"globals": {
+		"mw": true,
+		"moment": true
+	},
+	"rules": {
+		"no-caller": "error",
+
+		"max-len": "off"
+	}
+}

@@ -422,7 +422,7 @@ var callback_evaluate = function( e ) {
 			text += "#" + section;
 		}
 		text += "|more=" + message.trim() + "}}";
-		talkpage.setEditSummary("Please check the discussion at [[" + tbPageName +
+		talkpage.setEditSummary("Please check the discussion at [[:" + tbPageName +
 			(section ? ("#" + section) : "") + "]]" + Twinkle.getPref("summaryAd"));
 
 	} else {  // tbtarget one of mytalk, usertalk, other
@@ -442,7 +442,7 @@ var callback_evaluate = function( e ) {
 			text += "\n~~~~";
 		}
 
-		var editSummary = "Talkback ([[";
+		var editSummary = "Talkback ([[:";
 		if (tbtarget !== "other" && !/^\s*user talk:/i.test(tbPageName)) {
 			editSummary += "User talk:";
 		}

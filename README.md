@@ -1,4 +1,4 @@
-Twinkle
+Twinkle [![Build Status](https://travis-ci.org/azatoth/twinkle.svg?branch=master)](https://travis-ci.org/azatoth/twinkle)
 =======
 
 Twinkle is a JavaScript library and application that gives Wikipedians a quick way of performing common maintenance tasks, such as nominating pages for deletion and cleaning up vandalism.
@@ -23,11 +23,11 @@ Other files not mentioned here are probably obsolete.
 Updating scripts on Wikipedia
 -----------------------------
 
-There are two ways to upload Twinkle scripts to Wikipedia or another destination. You can do it [manually](#manual-synchronization) or with a [Python script](synchronization-using-syncpl).
+There are two ways to upload Twinkle scripts to Wikipedia or another destination. You can do it [manually](#manual-synchronization) or with a [Perl script](#synchronization-using-syncpl).
 
 After the files are synced, [MediaWiki:Gadgets-definition][] should contain the following lines:
 
-    * Twinkle[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.RegExp,jquery.ui.dialog,jquery.tipsy,moment|rights=autoconfirmed|type=general|peers=Twinkle-pagestyles]|morebits.js|morebits.css|Twinkle.js|twinkleprod.js|twinkleimage.js|twinklebatchundelete.js|twinklewarn.js|twinklespeedy.js|friendlyshared.js|twinklediff.js|twinkleunlink.js|friendlytag.js|twinkledeprod.js|friendlywelcome.js|twinklexfd.js|twinklebatchdelete.js|twinklebatchprotect.js|twinkleconfig.js|twinklefluff.js|twinkleprotect.js|twinklearv.js|twinkleblock.js|friendlytalkback.js|Twinkle.css
+    * Twinkle[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.RegExp,mediawiki.notify,jquery.ui.dialog,jquery.tipsy,moment|rights=autoconfirmed|type=general|peers=Twinkle-pagestyles]|morebits.js|morebits.css|Twinkle.js|twinkleprod.js|twinkleimage.js|twinklebatchundelete.js|twinklewarn.js|twinklespeedy.js|friendlyshared.js|twinklediff.js|twinkleunlink.js|friendlytag.js|twinkledeprod.js|friendlywelcome.js|twinklexfd.js|twinklebatchdelete.js|twinklebatchprotect.js|twinkleconfig.js|twinklefluff.js|twinkleprotect.js|twinklearv.js|twinkleblock.js|friendlytalkback.js|Twinkle.css
     * Twinkle-pagestyles[hidden|skins=vector]|Twinkle-pagestyles.css
 
 `Twinkle-pagestyles` is a hidden [peer gadget](https://www.mediawiki.org/wiki/ResourceLoader/Migration_guide_(users)#Gadget_peers) of Twinkle. Before Twinkle has loaded, it adds space where the TW menu would go in the Vector skin, so that the top bar does not "jump".
@@ -113,7 +113,7 @@ Needless to say, there are exceptions. The main sticking point is spacing around
 [Wikipedia:Twinkle]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle
 [AzaToth]: https://en.wikipedia.org/wiki/User:AzaToth
 [Twinkle documentation]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle/doc
-[WP:TWPREFS]: https://en.wikipedia.org/wiki/WP:TWPREFS
+[WP:TWPREFS]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle/Preferences
 [MediaWiki:Gadget-Twinkle.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.js
 [MediaWiki:Gadget-Twinkle.css]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.css
 [MediaWiki:Gadget-Twinkle-pagestyles.css]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle-pagestyles.css
@@ -141,7 +141,7 @@ Needless to say, there are exceptions. The main sticking point is spacing around
 [MediaWiki:Gadget-twinkleblock.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleblock.js
 [User:AzaToth/twinkle.js]: https://en.wikipedia.org/wiki/User:AzaToth/twinkle.js
 [MediaWiki:Gadgets-definition]: https://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
-[Git::Repository]: http://search.cpan.org/perldoc?Git%3A%3ARepository
-[MediaWiki::Bot]: http://search.cpan.org/perldoc?MediaWiki%3A%3ABot
-[App::cpanminus]: http://search.cpan.org/perldoc?App%3A%3Acpanminus
-[jq_style]: http://contribute.jquery.org/style-guide/js/
+[Git::Repository]: https://metacpan.org/pod/Git::Repository
+[MediaWiki::Bot]: https://metacpan.org/pod/MediaWiki::Bot
+[App::cpanminus]: https://metacpan.org/pod/App::cpanminus
+[jq_style]: https://contribute.jquery.org/style-guide/js/
