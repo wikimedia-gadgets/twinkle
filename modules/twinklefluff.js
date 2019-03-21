@@ -18,7 +18,7 @@
  */
 
 var spanTag = function( color, content ) {
-  var span = document.createElement( 'span' );
+	var span = document.createElement( 'span' );
 	span.style.color = color;
 	span.appendChild( document.createTextNode( content ) );
 	return span;
@@ -200,7 +200,7 @@ Twinkle.fluff = {
 
 	normal: function() {
 		if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
-			this.contributions();
+			Twinkle.fluff.contributions();
 		} else {
 			mw.hook( 'wikipage.diff' ).add( function () {
 				this.diff();
