@@ -203,7 +203,7 @@ Twinkle.fluff = {
 			Twinkle.fluff.contributions();
 		} else {
 			mw.hook( 'wikipage.diff' ).add( function () {
-				this.diff();
+				Twinkle.fluff.diff();
 			} );
 		}
 	}
