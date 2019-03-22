@@ -33,7 +33,7 @@ var buildLink = function(color, text) {
 
 Twinkle.fluff = {
 	auto: function() {
-		if( parseInt( Morebits.queryString.get('oldid'), 10) !== mw.config.get('wgCurRevisionId') ) {
+		if( mw.config.get('wgRevisionId') !== mw.config.get('wgCurRevisionId') ) {
 			// not latest revision
 			alert("Can't rollback, page has changed in the meantime.");
 			return;
@@ -99,13 +99,7 @@ Twinkle.fluff = {
 			return;
 		}
 
-		var old_rev_url = $("#mw-diff-otitle1").find("strong a").attr("href");
-
 		// Lets first add a [restore this revision] link
-		var query = new Morebits.queryString( old_rev_url.split( '?', 2 )[1] );
-
-		var oldrev = query.get('oldid');
-
 		var revertToRevision = document.createElement('div');
 		revertToRevision.setAttribute( 'id', 'tw-revert-to-orevision' );
 		revertToRevision.style.fontWeight = 'bold';
@@ -114,7 +108,7 @@ Twinkle.fluff = {
 
 		revertToRevisionLink.href = "#";
 		$(revertToRevisionLink).click(function(){
-			Twinkle.fluff.revertToRevision(oldrev);
+			Twinkle.fluff.revertToRevision(mw.config.get('wgDiffOldId').toString());
 		});
 
 		revertToRevision.appendChild(revertToRevisionLink);
@@ -122,16 +116,13 @@ Twinkle.fluff = {
 
 		if( document.getElementById('differences-nextlink') ) {
 			// Not latest revision
-			var new_rev_url = $("#mw-diff-ntitle1").find("strong a").attr("href");
-			query = new Morebits.queryString( new_rev_url.split( '?', 2 )[1] );
-			var newrev = query.get('oldid');
 			revertToRevision = document.createElement('div');
 			revertToRevision.setAttribute( 'id', 'tw-revert-to-nrevision' );
 			revertToRevision.style.fontWeight = 'bold';
 			revertToRevisionLink = buildLink('SaddleBrown', 'restore this version');
 			revertToRevisionLink.href = "#";
 			$(revertToRevisionLink).click(function(){
-				Twinkle.fluff.revertToRevision(newrev);
+				Twinkle.fluff.revertToRevision(mw.config.get('wgDiffNewId').toString());
 			});
 			revertToRevision.appendChild(revertToRevisionLink);
 			ntitle.insertBefore( revertToRevision, ntitle.firstChild );
