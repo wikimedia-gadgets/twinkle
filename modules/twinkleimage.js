@@ -9,15 +9,12 @@
  *** twinkleimage.js: Image CSD module
  ****************************************
  * Mode of invocation:     Tab ("DI")
- * Active on:              File pages with a corresponding file which is local (not on Commons)
+ * Active on:              Local nonredirect file pages (not on Commons)
  * Config directives in:   TwinkleConfig
  */
 
 Twinkle.image = function twinkleimage() {
-	if (mw.config.get('wgNamespaceNumber') === 6 &&
-			!document.getElementById("mw-sharedupload") &&
-			document.getElementById("mw-imagepage-section-filehistory")) {
-
+	if (mw.config.get('wgNamespaceNumber') === 6 && mw.config.get('wgArticleId') && !document.getElementById("mw-sharedupload") && !Morebits.wiki.isPageRedirect()) {
 		Twinkle.addPortletLink(Twinkle.image.callback, "DI", "tw-di", "Nominate file for delayed speedy deletion");
 	}
 };
