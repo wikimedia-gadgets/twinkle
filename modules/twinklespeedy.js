@@ -611,10 +611,10 @@ Twinkle.speedy.fileList = [
 	},
 	{
 		label: 'F8: File available as an identical or higher-resolution copy on Wikimedia Commons',
-		value: 'nowcommons',
+		value: 'commons',
 		tooltip: 'Provided the following conditions are met: 1: The file format of both images is the same. 2: The file\'s license and source status is beyond reasonable doubt, and the license is undoubtedly accepted at Commons. 3: All information on the file description page is present on the Commons file description page. That includes the complete upload history with links to the uploader\'s local user pages. 4: The file is not protected, and the file description page does not contain a request not to move it to Commons. 5: If the file is available on Commons under a different name than locally, all local references to the file must be updated to point to the title used at Commons. 6: For {{c-uploaded}} files: They may be speedily deleted as soon as they are off the Main Page',
 		subgroup: {
-			name: 'nowcommons_filename',
+			name: 'commons_filename',
 			type: 'input',
 			label: 'Filename on Commons: ',
 			value: Morebits.pageNameNorm,
@@ -1133,7 +1133,7 @@ Twinkle.speedy.normalizeHash = {
 	'unfree': 'f5',
 	'norat': 'f6',
 	'badfairuse': 'f7',
-	'nowcommons': 'f8',
+	'commons': 'f8',
 	'imgcopyvio': 'f9',
 	'badfiletype': 'f10',
 	'nopermission': 'f11',
@@ -1803,15 +1803,11 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'nowcommons':  // F8
-				if (form["csd.nowcommons_filename"]) {
-					var filename = form["csd.nowcommons_filename"].value;
+			case 'commons':  // F8
+				if (form["csd.commons_filename"]) {
+					var filename = form["csd.commons_filename"].value;
 					if (filename && filename !== Morebits.pageNameNorm) {
-						if (filename.indexOf("Image:") === 0 || filename.indexOf("File:") === 0) {
-							currentParams["1"] = filename;
-						} else {
-							currentParams["1"] = "File:" + filename;
-						}
+						currentParams.filename = (filename.indexOf("Image:") === 0 || filename.indexOf("File:") === 0) ? filename : "File:" + filename;
 					}
 				}
 				currentParams.date = "~~~~~";
