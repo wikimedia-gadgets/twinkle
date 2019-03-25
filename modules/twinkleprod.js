@@ -172,6 +172,58 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 };
 
 Twinkle.prod.callbacks = {
+	checkpriors: function(apiobj) {
+		var xmlDoc = apiobj.responseXML;
+		var statelem = apiobj.statelem;
+		var params = apiobj.params;
+
+		// Check existence of AfD, would be easier if mw.Title.exists() worked [[phab:T184953]]
+		var exists;
+		if (namespace === 'article') {
+			var query = {
+				'action': 'query',
+				'prop': 'revisions',
+				'titles': 'Wikipedia:Articles for deletion/' + Morebits.pageNameNorm
+			};
+			var wikipedia_api = new Morebits.wiki.api('Checking for prior AfDs', query, function(apiobj) {
+				var xmlDoc = apiobj.responseXML;
+				exists = $(xmlDoc).find('rev').attr('revid');
+			});
+			// Wait for API call to finish
+			wikipedia_api.post({
+				async: false
+			});
+		}
+		if (exists) {
+			statelem.warn( 'Previous AfD for this page title found, aborting procedure' );
+			return;
+		}
+
+		// Check talk page for category indicating prior PROD
+		var cats = $(xmlDoc).find('categories');
+		if(cats.length) {
+			if(params.blp) {
+				if( !confirm( 'Previous PROD nomination found on talk page. Do you still want to continue applying BLPPROD? ' ) ) {
+					statelem.warn( 'Previous PROD found on talk page, aborted by user' );
+					return;
+				} else {
+					statelem.info( 'Previous PROD found on talk page, continuing' );
+				}
+			} else {
+				statelem.warn( 'Previous PROD found on talk page, aborting procedure' );
+				return;
+			}
+		}
+
+		Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+		Morebits.wiki.actionCompleted.notice = "Tagging complete";
+
+		var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging page");
+		wikipedia_page.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
+		wikipedia_page.setCallbackParameters(params);
+		wikipedia_page.load(Twinkle.prod.callbacks.main);
+	},
+
 	main: function(pageobj) {
 		var statelem = pageobj.getStatusElement();
 
@@ -372,13 +424,17 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( form );
 
-	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = "Tagging complete";
+	var talk_title = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
+	var query = {
+		'action': 'query',
+		'prop': 'categories',
+		'titles': talk_title,
+		'clcategories': 'Category:Past proposed deletion candidates'
+	};
 
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging page");
-	wikipedia_page.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
-	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.load(Twinkle.prod.callbacks.main);
+	var wikipedia_api = new Morebits.wiki.api('Checking for prior nominations', query, Twinkle.prod.callbacks.checkpriors);
+	wikipedia_api.params = params;
+	wikipedia_api.post();
 };
 })(jQuery);
 
