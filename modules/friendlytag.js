@@ -25,7 +25,7 @@ Twinkle.tag = function friendlytag() {
 		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to file" );
 	}
 	// article/draft article tagging
-	else if( ([0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 ) && mw.config.get('wgCurRevisionId') )
+	else if( ([0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 ) && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
 		// Can't remove tags when not viewing current version
 		Twinkle.tag.untaggable = (mw.config.get('wgCurRevisionId') === mw.config.get('wgRevisionId'));
@@ -539,7 +539,10 @@ Twinkle.tag.updateSortOrder = function(e) {
 	$workarea.find("div").filter(":has(span.quickformDescription)").css({ 'margin-top': '0.4em' });
 
 	Morebits.quickForm.getElements(e.target.form, "articleTags").forEach(generateLinks);
-	Morebits.quickForm.getElements(e.target.form, "alreadyPresentArticleTags").forEach(generateLinks);
+	var alreadyPresentTags = Morebits.quickForm.getElements(e.target.form, "alreadyPresentArticleTags");
+	if(alreadyPresentTags) {
+		alreadyPresentTags.forEach(generateLinks);
+	}
 };
 
 /**
@@ -1397,7 +1400,7 @@ Twinkle.tag.callbacks = {
 						params.mergeTarget = params.mergeReason = params.mergeTagOther = false;
 					}
 				}
-			});
+			}
 
 			// To-be-retained existing tags that are groupable
 			if(params.toRemain) {
@@ -1407,7 +1410,7 @@ Twinkle.tag.callbacks = {
 					}
 				});
 			}
-      
+
 			var miTest = /\{\{(multiple ?issues|article ?issues|mi)(?!\s*\|\s*section\s*=)[^}]+\{/im.exec(pageText);
 
 			if( miTest && groupableTags.length > 0 ) {
