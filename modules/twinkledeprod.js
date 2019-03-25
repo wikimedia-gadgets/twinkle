@@ -9,7 +9,7 @@
 *** twinkledeprod.js: Batch deletion of expired PRODs (sysops only)
 ****************************************
 * Mode of invocation:     Tab ("Deprod")
-* Active on:              Categories whose name starts with "Category:Proposed deletion as of"
+* Active on:              Categories whose name contains "proposed_deletion"
 * Config directives in:   TwinkleConfig
 */
 
@@ -46,6 +46,7 @@ Twinkle.deprod.callback = function() {
 		'generator': 'categorymembers',
 		'gcmtitle': mw.config.get( 'wgPageName' ),
 		'gcmlimit' : 5000, // the max for sysops
+		"gcmnamespace" : '0|6|108|2', // mostly to ignore categories
 		'prop': [ 'info', 'revisions' ],
 		'rvprop': [ 'content' ],
 		'inprop': [ 'protection' ]
