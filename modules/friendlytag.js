@@ -122,11 +122,11 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.qualityList } );
 
 			form.append({ type: 'header', label: 'Replacement tags' });
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.replacementList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.replacementList } );
 
 			if (Twinkle.getFriendlyPref('customFileTagList').length) {
 				form.append({ type: 'header', label: 'Custom tags' });
-				form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.getFriendlyPref('customFileTagList') });
+				form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.getFriendlyPref('customFileTagList') });
 			}
 			break;
 
@@ -443,29 +443,27 @@ Twinkle.tag.updateSortOrder = function(e) {
 
 	if(Twinkle.tag.untaggable) {
 		var generateAlreadyPresentTagsCheckboxes = function() {
-			if(Twinkle.tag.alreadyPresentTags.length > 0) {
-				container.append({ type: "header", id: "tagHeader0", label: "Tags already present" });
-				var subdiv = container.append({ type: "div", id: "tagSubdiv0" });
-				var checkboxes = [];
-				Twinkle.tag.alreadyPresentTags.forEach( function(tag) {
-					var description = Twinkle.tag.article.tags[tag];
-					var checkbox =
-						{
-							value: tag,
-							label: "{{" + tag + "}}" + ( description ? (": " + description) : ""),
-							checked: true
-							//, subgroup: { type: 'input', name: 'removeReason', label: 'Reason', tooltip: 'Enter reason for removing this tag' }
-							// TODO: add option for providing reason for removal
-						};
+			container.append({ type: "header", id: "tagHeader0", label: "Tags already present" });
+			var subdiv = container.append({ type: "div", id: "tagSubdiv0" });
+			var checkboxes = [];
+			Twinkle.tag.alreadyPresentTags.forEach( function(tag) {
+				var description = Twinkle.tag.article.tags[tag];
+				var checkbox =
+					{
+						value: tag,
+						label: "{{" + tag + "}}" + ( description ? (": " + description) : ""),
+						checked: true
+						//, subgroup: { type: 'input', name: 'removeReason', label: 'Reason', tooltip: 'Enter reason for removing this tag' }
+						// TODO: add option for providing reason for removal
+					};
 
-					checkboxes.push(checkbox);
-				} );
-				subdiv.append({
-					type: "checkbox",
-					name: "alreadyPresentArticleTags",
-					list: checkboxes
-				});
-			}
+				checkboxes.push(checkbox);
+			} );
+			subdiv.append({
+				type: "checkbox",
+				name: "alreadyPresentArticleTags",
+				list: checkboxes
+			});
 		};
 	}
 
@@ -487,8 +485,9 @@ Twinkle.tag.updateSortOrder = function(e) {
 			});
 		};
 
-		if(Twinkle.tag.untaggable)
+		if(Twinkle.tag.alreadyPresentTags.length > 0) {
 			generateAlreadyPresentTagsCheckboxes();
+		}
 		var i = 1;
 		// go through each category and sub-category and append lists of checkboxes
 		$.each(Twinkle.tag.article.tagCategories, function(title, content) {
@@ -506,7 +505,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	}
 	// alphabetical sort order
 	else {
-		if(Twinkle.tag.untaggable) {
+		if(Twinkle.tag.alreadyPresentTags.length > 0) {
 			generateAlreadyPresentTagsCheckboxes();
 			container.append({ type: "header", id: "tagHeader1", label: "Available tags" });
 		}
@@ -1138,7 +1137,8 @@ Twinkle.tag.callbacks = {
 		};
 
 		/**
-		 * Removes the existing tags that were deselected
+		 * Removes the existing tags that were deselected (if any)
+		 * Calls postRemoval() when done
 		 */
 		var removeFromParamsToRemove = function mainRemoveTags()  {
 
@@ -1283,11 +1283,11 @@ Twinkle.tag.callbacks = {
 							break;
 						case 'Expand language':
 							currentTag += '|topic=';
-              currentTag += '|langcode=' + params.tagParameters.expandLanguageLangCode;
-              if (params.tagParameters.expandLanguageArticle !== null) {
-                currentTag += '|otherarticle=' + params.tagParameters.expandLanguageArticle;
-              }
-              break;
+							currentTag += '|langcode=' + params.tagParameters.expandLanguageLangCode;
+							if (params.tagParameters.expandLanguageArticle !== null) {
+								currentTag += '|otherarticle=' + params.tagParameters.expandLanguageArticle;
+							}
+							break;
 						case 'Expert needed':
 							if (params.expertNeeded) {
 								currentTag += '|1=' + params.expertNeeded;
@@ -1503,6 +1503,7 @@ Twinkle.tag.callbacks = {
 
 					// reposition first tag into MI, later tags are dealt with through
 					// recursive calls from within this
+					// When all are done, addNewTagsToMI() gets called
 					repositionTagIntoMI( 0 );
 
 				} else {
@@ -1537,15 +1538,15 @@ Twinkle.tag.callbacks = {
 
 		var addTag = function redirectAddTag( tagIndex, tagName ) {
 			tagText += "\n{{" + tagName;
-      if (tagName === 'R from alternative language') {
-        if(params.altLangFrom) {
-          tagText += '|from=' + params.altLangFrom;
-        }
-        if(params.altLangTo) {
-          tagText += '|to=' + params.altLangTo;
-        }
-      }
-      tagText += '}}';
+			if (tagName === 'R from alternative language') {
+				if(params.altLangFrom) {
+					tagText += '|from=' + params.altLangFrom;
+				}
+				if(params.altLangTo) {
+					tagText += '|to=' + params.altLangTo;
+				}
+			}
+			tagText += '}}';
 
 			if ( tagIndex > 0 ) {
 				if( tagIndex === (tags.length - 1) ) {
@@ -1810,33 +1811,34 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			params.translationComments = form["articleTags.translationComments"] ? form["articleTags.translationComments"].value : null;
 
 			// Validation
-			if ((params.tags.indexOf("Merge") !== -1) || (params.tags.indexOf("Merge from") !== -1) || (params.tags.indexOf("Merge to") !== -1)) {
-        if( ((params.tags.indexOf("Merge") !== -1) + (params.tags.indexOf("Merge from") !== -1) +
-          (params.tags.indexOf("Merge to") !== -1)) > 1 ) {
-          alert( 'Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).' );
-          return;
-        }
-        if ( !params.mergeTarget ) {
-          alert( 'Please specify the title of the other article for use in the merge template.' );
-          return;
-        }
-        if( (params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1 ) {
-          alert( 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.' );
-          return;
-        }
-      }
-      if( (params.tags.indexOf("Not English") !== -1) && (params.tags.indexOf("Rough translation") !== -1) ) {
-        alert( 'Please select only one of {{not English}} and {{rough translation}}.' );
-        return;
-      }
-      if( params.tags.indexOf('Cleanup') !== -1 && params.tagParameters.cleanup.trim() === '') {
-        alert( 'You must specify a reason for the {{cleanup}} tag.' );
-        return;
-      }
-      if( params.tags.indexOf('Expand language') !== -1 && params.tagParameters.expandLanguageLangCode.trim() === '') {
-        alert('You must specify language code for the {{expand language}} tag.');
-        return;
-      }
+			if ( (params.tags.indexOf("Merge") !== -1) || (params.tags.indexOf("Merge from") !== -1) ||
+				(params.tags.indexOf("Merge to") !== -1) ) {
+				if( ((params.tags.indexOf("Merge") !== -1) + (params.tags.indexOf("Merge from") !== -1) +
+					(params.tags.indexOf("Merge to") !== -1)) > 1 ) {
+					alert( 'Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).' );
+					return;
+				}
+				if ( !params.mergeTarget ) {
+					alert( 'Please specify the title of the other article for use in the merge template.' );
+					return;
+				}
+				if( (params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1 ) {
+					alert( 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.' );
+					return;
+				}
+			}
+			if( (params.tags.indexOf("Not English") !== -1) && (params.tags.indexOf("Rough translation") !== -1) ) {
+				alert( 'Please select only one of {{not English}} and {{rough translation}}.' );
+				return;
+			}
+			if( params.tags.indexOf('Cleanup') !== -1 && params.tagParameters.cleanup.trim() === '') {
+				alert( 'You must specify a reason for the {{cleanup}} tag.' );
+				return;
+			}
+			if( params.tags.indexOf('Expand language') !== -1 && params.tagParameters.expandLanguageLangCode.trim() === '') {
+				alert('You must specify language code for the {{expand language}} tag.');
+				return;
+			}
 			break;
 
 		case 'file':
