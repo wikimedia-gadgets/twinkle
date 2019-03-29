@@ -77,8 +77,8 @@ Twinkle.unlink.callback = function(presetReason) {
 			'list': [ 'backlinks', 'imageusage' ],
 			'bltitle': mw.config.get('wgPageName'),
 			'iutitle': mw.config.get('wgPageName'),
-			'bllimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
-			'iulimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
+			'bllimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
+			'iulimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
 			'blnamespace': Twinkle.getPref('unlinkNamespaces'),
 			'iunamespace': Twinkle.getPref('unlinkNamespaces'),
 			'rawcontinue': true
@@ -89,7 +89,7 @@ Twinkle.unlink.callback = function(presetReason) {
 			'list': 'backlinks',
 			'bltitle': mw.config.get('wgPageName'),
 			'blfilterredir': 'nonredirects',
-			'bllimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500, // 500 is max for normal users, 5000 for bots and sysops
+			'bllimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
 			'blnamespace': Twinkle.getPref('unlinkNamespaces'),
 			'rawcontinue': true
 		};
