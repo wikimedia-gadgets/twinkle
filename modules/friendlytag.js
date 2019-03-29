@@ -97,23 +97,23 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			Window.setTitle( "File maintenance tagging" );
 
 			form.append({ type: 'header', label: 'License and sourcing problem tags' });
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.licenseList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.licenseList } );
 
 			form.append({ type: 'header', label: 'Wikimedia Commons-related tags' });
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.commonsList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.commonsList } );
 
 			form.append({ type: 'header', label: 'Cleanup tags' } );
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.cleanupList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.cleanupList } );
 
 			form.append({ type: 'header', label: 'Image quality tags' } );
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.qualityList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.qualityList } );
 
 			form.append({ type: 'header', label: 'Replacement tags' });
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.replacementList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.replacementList } );
 
 			if (Twinkle.getFriendlyPref('customFileTagList').length) {
 				form.append({ type: 'header', label: 'Custom tags' });
-				form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.getFriendlyPref('customFileTagList') });
+				form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.getFriendlyPref('customFileTagList') });
 			}
 			break;
 
@@ -975,7 +975,7 @@ Twinkle.tag.file.replacementList = [
 	{ label: '{{PNG version available}}', value: 'PNG version available' },
 	{ label: '{{Vector version available}}', value: 'Vector version available' }
 ];
-Twinkle.tag.file.replacementList.forEach(function(idx,el) {
+Twinkle.tag.file.replacementList.forEach(function (el) {
 	el.subgroup = {
 		type: 'input',
 		label: 'Replacement file: ',
@@ -1029,10 +1029,10 @@ Twinkle.tag.callbacks = {
 				// prompt for other parameters, based on the tag
 				switch( tagName ) {
 					case 'cleanup':
-						currentTag += '|reason=' + params.tagParameters.cleanup;
+						currentTag += '|reason=' + params.cleanup;
 						break;
 					case 'close paraphrasing':
-						currentTag += '|source=' + params.tagParameters.closeParaphrasing;
+						currentTag += '|source=' + params.closeParaphrasing;
 						break;
 					case 'copy edit':
 						if (params.copyEdit) {
@@ -1046,19 +1046,19 @@ Twinkle.tag.callbacks = {
 						break;
 					case 'expand language':
 						currentTag += '|topic=';
-						currentTag += '|langcode=' + params.tagParameters.expandLanguageLangCode;
-						if (params.tagParameters.expandLanguageArticle !== null) {
-							currentTag += '|otherarticle=' + params.tagParameters.expandLanguageArticle;
+						currentTag += '|langcode=' + params.expandLanguageLangCode;
+						if (params.expandLanguageArticle !== null) {
+							currentTag += '|otherarticle=' + params.expandLanguageArticle;
 						}
 						break;
 					case 'expert needed':
 						if (params.expertNeeded) {
 							currentTag += '|1=' + params.expertNeeded;
 						}
-						if(params.expertNeededTalk) {
+						if (params.expertNeededTalk) {
 							currentTag += '|talk=' + params.expertNeededTalk;
 						}
-						if(params.expertNeededReason) {
+						if (params.expertNeededReason) {
 							currentTag += '|reason=' + params.expertNeededReason;
 						}
 						break;
@@ -1378,6 +1378,8 @@ Twinkle.tag.callbacks = {
 					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 				}
 
+				currentTag = "{{" + (tag === "Do not move to Commons_reason" ? "Do not move to Commons" : tag);
+
 				switch (tag) {
 					case "subst:ncd":
 						if (params.ncdName !== "") currentTag += '|1=' + params.ncdName;
@@ -1423,7 +1425,7 @@ Twinkle.tag.callbacks = {
 						currentTag += "|human=" + mw.config.get("wgUserName");
 						break;
 					case "Should be SVG":
-						currentTag += "|" + params.svgSubcategory;
+						currentTag += "|" + params.svgCategory;
 						break;
 					default:
 						break;  // don't care
@@ -1463,58 +1465,53 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		params.patrol = form.patrolPage.checked;
 	}
 
+	params.tags = form.getChecked( Twinkle.tag.mode + 'Tags' );
+
+	// Save values of input fields into params object. This works as quickform input
+	// fields within subgroups of elements with name 'articleTags' (say) have their
+	// name attribute as 'articleTags.' + name of the subgroup element
+
+	var name_prefix = Twinkle.tag.mode + 'Tags.';
+	$(form).find("[name^='" + name_prefix + "']").each(function(idx,el) {
+		// el are the HTMLInputElements, el.name gives the name attribute
+		params[el.name.slice(name_prefix.length)] =
+			(el.type === 'checkbox' ? form[el.name].checked : form[el.name].value);
+	});
+
 	switch (Twinkle.tag.mode) {
 		case 'article':
-			params.tags = form.getChecked( 'articleTags' );
 			params.group = form.group.checked;
 
-			// Save values of input text and checkbox parameters, this works as
-			// Quickform input fields within subgroups of elements with name 'articleTags'
-			// have their name attribute as 'articleTags.' + name of the subgroup element
-			$(form).find('input[type=text]').each(function(idx,el) {
-				// el are the HTMLInputElements, el.name gives their name attribute
-				params[el.name.slice(12)] = form[el.name].value;
-			});
-			$(form).find("input[type=checkbox][name^='articleTags.']").each(function(idx,el) {
-				params[el.name.slice(12)] = form[el.name].checked;
-			});
-
-      if ((params.tags.indexOf("merge") !== -1) || (params.tags.indexOf("merge from") !== -1) || (params.tags.indexOf("merge to") !== -1)) {
-        if( ((params.tags.indexOf("merge") !== -1) + (params.tags.indexOf("merge from") !== -1) +
-          (params.tags.indexOf("merge to") !== -1)) > 1 ) {
-          alert( 'Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).' );
-          return;
-        }
-        if ( !params.mergeTarget ) {
-          alert( 'Please specify the title of the other article for use in the merge template.' );
-          return;
-        }
-        if( (params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1 ) {
-          alert( 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.' );
-          return;
-        }
-      }
-      if( (params.tags.indexOf("not English") !== -1) && (params.tags.indexOf("rough translation") !== -1) ) {
-        alert( 'Please select only one of {{not English}} and {{rough translation}}.' );
-        return;
-      }
-      if( params.tags.indexOf('cleanup') !== -1 && params.tagParameters.cleanup.trim() === '') {
-        alert( 'You must specify a reason for the {{cleanup}} tag.' );
-        return;
-      }
-      if( params.tags.indexOf('expand language') !== -1 && params.tagParameters.expandLanguageLangCode.trim() === '') {
-        alert('You must specify language code for the {{expand language}} tag.');
-        return;
-      }
+			if ((params.tags.indexOf("merge") !== -1) || (params.tags.indexOf("merge from") !== -1) || (params.tags.indexOf("merge to") !== -1)) {
+				if( ((params.tags.indexOf("merge") !== -1) + (params.tags.indexOf("merge from") !== -1) +
+				(params.tags.indexOf("merge to") !== -1)) > 1 ) {
+					alert( 'Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).' );
+					return;
+				}
+				if ( !params.mergeTarget ) {
+					alert( 'Please specify the title of the other article for use in the merge template.' );
+					return;
+				}
+				if( (params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1 ) {
+					alert( 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.' );
+					return;
+				}
+			}
+			if( (params.tags.indexOf("not English") !== -1) && (params.tags.indexOf("rough translation") !== -1) ) {
+				alert( 'Please select only one of {{not English}} and {{rough translation}}.' );
+				return;
+			}
+			if( params.tags.indexOf('cleanup') !== -1 && params.cleanup.trim() === '') {
+				alert( 'You must specify a reason for the {{cleanup}} tag.' );
+				return;
+			}
+			if( params.tags.indexOf('expand language') !== -1 && params.expandLanguageLangCode.trim() === '') {
+				alert('You must specify language code for the {{expand language}} tag.');
+				return;
+			}
 			break;
 
 		case 'file':
-			params.tags = form.getChecked( 'imageTags' );
-
-			params.svgSubcategory = form["imageTags.svgCategory"] ? form["imageTags.svgCategory"].value : null;
-			$(form).find('input[type=text]').each(function(idx,el) {
-				params[el.name.slice(10)] = form[el.name].value;
-			});
 
 			if( (params.tags.indexOf('Cleanup image') !== -1 && params.cleanupimageReason === '') ||
 				(params.tags.indexOf('Cleanup svg') !== -1 && params.cleanupsvgReason === '') ) {
@@ -1544,9 +1541,6 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 
 		case 'redirect':
-			params.tags = form.getChecked( 'redirectTags' );
-			params.altLangFrom = form["redirectTags.altLangFrom"] ? form["redirectTags.altLangFrom"].value : null;
-			params.altLangTo = form["redirectTags.altLangTo"] ? form["redirectTags.altLangTo"].value : null;
 			break;
 
 		default:
