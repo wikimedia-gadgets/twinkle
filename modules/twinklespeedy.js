@@ -897,18 +897,6 @@ Twinkle.speedy.generalList = [
 		hideSubgroupWhenMultiple: true
 	},
 	{
-		label: 'G6: History merge',
-		value: 'histmerge',
-		tooltip: 'Temporarily deleting a page in order to merge page histories',
-		subgroup: {
-			name: 'histmerge_1',
-			type: 'input',
-			label: 'Page to be merged into this one: '
-		},
-		hideWhenMultiple: true,
-		hideWhenSysop: true
-	},
-	{
 		label: 'G6: Move',
 		value: 'move',
 		tooltip: 'Making way for an uncontroversial move like reversing a redirect',
@@ -1087,7 +1075,6 @@ Twinkle.speedy.normalizeHash = {
 	'hoax': 'g3',
 	'repost': 'g4',
 	'banned': 'g5',
-	'histmerge': 'g6',
 	'move': 'g6',
 	'xfd': 'g6',
 	'movedab': 'g6',
@@ -1398,7 +1385,8 @@ Twinkle.speedy.callbacks = {
 		main: function(pageobj) {
 			var statelem = pageobj.getStatusElement();
 
-			if (!pageobj.exists()) {
+			// defaults to /doc for lua modules, which may not exist
+			if (!pageobj.exists() && mw.config.get('wgPageContentModel') !== 'Scribunto') {
 				statelem.error( "It seems that the page doesn't exist; perhaps it has already been deleted" );
 				return;
 			}
@@ -1456,8 +1444,6 @@ Twinkle.speedy.callbacks = {
 				editsummary += ').';
 			} else if (params.normalizeds[0] === "db") {
 				editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale "' + params.templateParams[0]["1"] + '".';
-			} else if (params.values[0] === "histmerge") {
-				editsummary = "Requesting history merge with [[:" + params.templateParams[0]["1"] + "]] ([[WP:CSD#G6|CSD G6]]).";
 			} else {
 				editsummary = "Requesting speedy deletion ([[WP:CSD#" + params.normalizeds[0].toUpperCase() + "|CSD " + params.normalizeds[0].toUpperCase() + "]]).";
 			}
@@ -1465,7 +1451,7 @@ Twinkle.speedy.callbacks = {
 			pageobj.setPageText(code + ((params.normalizeds.indexOf('g10') !== -1) ? '' : ("\n" + text) )); // cause attack pages to be blanked
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			pageobj.setWatchlist(params.watch);
-			pageobj.setCreateOption('nocreate');
+			pageobj.setCreateOption('recreate'); // Module /doc might not exist
 			pageobj.save(Twinkle.speedy.callbacks.user.tagComplete);
 		},
 
@@ -1669,18 +1655,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 			case 'banned':  // G5
 				if (form["csd.banned_1"] && form["csd.banned_1"].value) {
 					currentParams["1"] = form["csd.banned_1"].value.replace(/^\s*User:/i, "");
-				}
-				break;
-
-			case 'histmerge':  // G6
-				if (form["csd.histmerge_1"]) {
-					var merger = form["csd.histmerge_1"].value;
-					if (!merger || !merger.trim()) {
-						alert( 'CSD G6 (histmerge):  Please specify the page to be merged.' );
-						parameters = null;
-						return false;
-					}
-					currentParams["1"] = merger;
 				}
 				break;
 
@@ -2042,7 +2016,9 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 	Morebits.wiki.actionCompleted.notice = "Tagging complete";
 
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging page");
+	// Modules can't be tagged, follow standard at TfD and place on /doc subpage
+	var isScribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
+	var wikipedia_page = isScribunto ? new Morebits.wiki.page(mw.config.get('wgPageName')+'/doc', "Tagging module documentation page") : new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging page");
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.speedy.callbacks.user.main);
 };

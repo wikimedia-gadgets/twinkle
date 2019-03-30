@@ -218,6 +218,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'div',
 				label: 'Stub types and userboxes are not eligible for TfD. Stub types go to CfD, and userboxes go to MfD.'
 			} );
+		var templateOrModule = (mw.config.get('wgPageContentModel') === 'Scribunto') ? 'module' : 'template';
 		var tfd_category = work_area.append( {
 				type: 'select',
 				label: 'Choose type of action wanted: ',
@@ -229,7 +230,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						var xfdtarget = new Morebits.quickForm.element( {
 							name: 'xfdtarget',
 							type: 'input',
-							label: 'Other template to be merged: '
+							label: 'Other ' + templateOrModule + ' to be merged: '
 						} );
 						target.parentNode.appendChild(xfdtarget.render());
 					} else {
@@ -248,10 +249,14 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			label: 'Deletion tag display style: ',
 			tooltip: 'Which <code>type=</code> parameter to pass to the TfD tag template.'
 		} );
-		tfd_template_type.append( { type: 'option', value: 'standard', label: 'Standard', selected: true } );
-		tfd_template_type.append( { type: 'option', value: 'sidebar', label: 'Sidebar/infobox' } );
-		tfd_template_type.append( { type: 'option', value: 'inline', label: 'Inline template' } );
-		tfd_template_type.append( { type: 'option', value: 'tiny', label: 'Tiny inline' } );
+		if (templateOrModule === 'module') {
+			tfd_template_type.append( { type: 'option', value: 'module', label: 'Module', selected: true } );
+		} else {
+			tfd_template_type.append( { type: 'option', value: 'standard', label: 'Standard', selected: true } );
+			tfd_template_type.append( { type: 'option', value: 'sidebar', label: 'Sidebar/infobox', selected: $('.infobox').length } );
+			tfd_template_type.append( { type: 'option', value: 'inline', label: 'Inline template' } );
+			tfd_template_type.append( { type: 'option', value: 'tiny', label: 'Tiny inline' } );
+		}
 
 		work_area.append( {
 				type: 'checkbox',
@@ -260,7 +265,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 							label: 'Wrap deletion tag with <noinclude> (for substituted templates only)',
 							value: 'noinclude',
 							name: 'noinclude',
-							tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t get substituted along with the template.'
+							tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t get substituted along with the template.',
+							disabled: templateOrModule === 'module'
 						}
 					]
 			} );
@@ -461,6 +467,9 @@ Twinkle.xfd.callbacks = {
 			text += "|redirect=" + Morebits.pageNameNorm;
 		} else {
 			text += "|1=" + mw.config.get('wgTitle');
+			if (mw.config.get('wgPageContentModel') === 'Scribunto') {
+				text += "|module=Module:";
+			}
 		}
 
 		if (params.target) {
@@ -729,8 +738,8 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var tableNewline = (params.tfdtype === 'standard' || params.tfdtype === 'sidebar') ? '\n' : ''; // No newline for inline
 
-			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{subst:template for discussion|help=off|" +
-				(params.tfdtype !== "standard" ? "type=" + params.tfdtype + "|" : "") + mw.config.get('wgTitle') + (params.noinclude ? "}}</noinclude>" : "}}") + tableNewline + text);
+			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{subst:template for discussion|help=off" +
+				(params.tfdtype !== "standard" ? "|type=" + params.tfdtype : "") + (params.noinclude ? "}}</noinclude>" : "}}") + tableNewline + text);
 			pageobj.setEditSummary("Nominated for deletion; see [[:" + params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchPage')) {
 				case 'yes':
@@ -743,7 +752,7 @@ Twinkle.xfd.callbacks = {
 					pageobj.setWatchlistFromPreferences(true);
 					break;
 			}
-			pageobj.setCreateOption('nocreate');
+			pageobj.setCreateOption('recreate'); // Module /doc might not exist
 			pageobj.save();
 		},
 		taggingTemplateForMerge: function(pageobj) {
@@ -752,7 +761,7 @@ Twinkle.xfd.callbacks = {
 			var tableNewline = (params.tfdtype === 'standard' || params.tfdtype === 'sidebar') ? '\n' : ''; // No newline for inline
 
 			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{subst:tfm|help=off|" +
-				(params.tfdtype !== "standard" ? "type=" + params.tfdtype + "|" : "") + "1=" + params.otherTemplateName.replace(/^Template:/, "") +
+				(params.tfdtype !== "standard" ? "type=" + params.tfdtype + "|" : "") + "1=" + params.otherTemplateName.replace(/^(?:Template|Module):/, "") +
 				(params.noinclude ? "}}</noinclude>" : "}}") + tableNewline + text);
 			pageobj.setEditSummary("Nominated for merging with [[:" + params.otherTemplateName + "]]; see [[:" +
 				params.logpage + "#" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
@@ -767,7 +776,7 @@ Twinkle.xfd.callbacks = {
 					pageobj.setWatchlistFromPreferences(true);
 					break;
 			}
-			pageobj.setCreateOption('nocreate');
+			pageobj.setCreateOption('recreate'); // Module /doc might not exist
 			pageobj.save();
 		},
 		todaysList: function(pageobj) {
@@ -783,7 +792,7 @@ Twinkle.xfd.callbacks = {
 				return;
 			}
 			pageobj.setPageText(text);
-			pageobj.setEditSummary("Adding [[Template:" + mw.config.get('wgTitle') + "]]." + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary("Adding [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
 					pageobj.setWatchlist(true);
@@ -812,12 +821,13 @@ Twinkle.xfd.callbacks = {
 
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n";
+			var modNotice = mw.config.get('wgPageContentModel') === 'Scribunto' ? '|module=yes' : '';
 			switch (params.xfdcat) {
 			case 'tfd':
-				notifytext += "{{subst:tfdnotice|1=" + mw.config.get('wgTitle') + "}} ~~~~";
+				notifytext += "{{subst:tfdnotice|1=" + mw.config.get('wgTitle') + modNotice + "}} ~~~~";
 				break;
 			case 'tfm':
-				notifytext += "{{subst:tfmnotice|1=" + mw.config.get('wgTitle') + "|2=" + params.target + "}} ~~~~";
+				notifytext += "{{subst:tfmnotice|1=" + mw.config.get('wgTitle') + "|2=" + params.target + modNotice + "}} ~~~~";
 				break;
 			default:
 				alert("twinklexfd in userNotification: unknown TFD action");
@@ -1503,9 +1513,8 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 	case 'tfd': // TFD
 		Morebits.wiki.addCheckpoint();
-
 		if (xfdtarget) {
-			xfdtarget = Morebits.string.toUpperCaseFirstChar(xfdtarget.replace(/^:?Template:/i, ''));
+			xfdtarget = Morebits.string.toUpperCaseFirstChar(xfdtarget.replace(/^:?(?:Template|Module):/i, ''));
 		} else {
 			xfdtarget = '';
 		}
@@ -1514,24 +1523,39 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 		params = { tfdtype: tfdtype, logpage: logpage, noinclude: noinclude, xfdcat: xfdcat, target: xfdtarget, reason: reason };
 
-		// Tagging template(s)
-		if (xfdcat === "tfm") {
-			// Tag this template
-			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging this template with merge tag");
+		// Modules can't be tagged, TfD instructions are to place on /doc subpage
+		var isScribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
+		// Tagging template(s)/module(s)
+		if (xfdcat === "tfm") { // Merge
+			// Tag this template/module
+			if (isScribunto) {
+				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName')+'/doc', "Tagging this module documentation with merge tag");
+				params.otherTemplateName = "Module:" + xfdtarget;
+			} else {
+				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging this template with merge tag");
+				params.otherTemplateName = "Template:" + xfdtarget;
+			}
 			wikipedia_page.setFollowRedirect(true);
-			params.otherTemplateName = "Template:" + xfdtarget;
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);
 
-			// Tag other template
-			wikipedia_page = new Morebits.wiki.page("Template:" + xfdtarget, "Tagging other template with merge tag");
+			// Tag other template/module
+			if (isScribunto) {
+				wikipedia_page = new Morebits.wiki.page("Module:" + xfdtarget+'/doc', "Tagging other module documentation with merge tag");
+			} else {
+				wikipedia_page = new Morebits.wiki.page("Template:" + xfdtarget, "Tagging other template with merge tag");
+			}
 			wikipedia_page.setFollowRedirect(true);
 			params = $.extend(params);
 			params.otherTemplateName = Morebits.pageNameNorm;
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);
-		} else {
-			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging template with deletion tag");
+		} else {	// delete
+			if (isScribunto) {
+				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName')+'/doc', "Tagging module documentation with deletion tag");
+			} else {
+				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging template with deletion tag");
+			}
 			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplate);
@@ -1553,7 +1577,11 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			var seenusers = [];
 			involvedpages.push(new Morebits.wiki.page(mw.config.get('wgPageName')));
 			if (xfdcat === "tfm") {
-				involvedpages.push(new Morebits.wiki.page("Template:" + xfdtarget));
+				if (isScribunto) {
+					involvedpages.push(new Morebits.wiki.page("Module:" + xfdtarget));
+				} else {
+					involvedpages.push(new Morebits.wiki.page("Template:" + xfdtarget));
+				}
 			}
 			involvedpages.forEach(function(page) {
 				page.setCallbackParameters(params);
