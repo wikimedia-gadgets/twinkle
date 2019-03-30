@@ -26,7 +26,7 @@ Twinkle.tag = function friendlytag() {
 		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to file" );
 	}
 	// article/draft article tagging
-	else if( ( [0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 ) && mw.config.get('wgCurRevisionId') ) {
+	else if( [0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
 		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to article" );
 	}
@@ -97,23 +97,23 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			Window.setTitle( "File maintenance tagging" );
 
 			form.append({ type: 'header', label: 'License and sourcing problem tags' });
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.licenseList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.licenseList } );
 
 			form.append({ type: 'header', label: 'Wikimedia Commons-related tags' });
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.commonsList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.commonsList } );
 
 			form.append({ type: 'header', label: 'Cleanup tags' } );
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.cleanupList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.cleanupList } );
 
 			form.append({ type: 'header', label: 'Image quality tags' } );
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.qualityList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.qualityList } );
 
 			form.append({ type: 'header', label: 'Replacement tags' });
-			form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.tag.file.replacementList } );
+			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.replacementList } );
 
 			if (Twinkle.getFriendlyPref('customFileTagList').length) {
 				form.append({ type: 'header', label: 'Custom tags' });
-				form.append({ type: 'checkbox', name: 'imageTags', list: Twinkle.getFriendlyPref('customFileTagList') });
+				form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.getFriendlyPref('customFileTagList') });
 			}
 			break;
 
@@ -844,9 +844,33 @@ Twinkle.tag.file.licenseList = [
 Twinkle.tag.file.commonsList = [
 	{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
 	{ label: '{{Do not move to Commons}} (PD issue): file is PD in the US but not in country of origin', value: 'Do not move to Commons' },
-	{ label: '{{Do not move to Commons}} (other reason)', value: 'Do not move to Commons_reason' },
-	{ label: '{{Keep local}}: request to keep local copy of a Commons file', value: 'Keep local' },
-	{ label: '{{Now Commons}}: file has been copied to Commons', value: 'subst:ncd' }
+	{ 	label: '{{Do not move to Commons}} (other reason)',
+		value: 'Do not move to Commons_reason',
+		subgroup: {
+			type: 'input',
+			name: 'DoNotMoveToCommons',
+			label: 'Reason: ',
+			tooltip: 'Enter the reason why this image should not be moved to Commons (required)'
+		}
+	},
+	{ 	label: '{{Keep local}}: request to keep local copy of a Commons file',
+		value: 'Keep local',
+		subgroup: {
+			type: 'input',
+			name: 'keeplocalName',
+			label: 'Commons image name if different: ',
+			tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
+		}
+	},
+	{ 	label: '{{Now Commons}}: file has been copied to Commons',
+		value: 'subst:ncd',
+		subgroup: {
+			type: 'input',
+			name: 'ncdName',
+			label: 'Commons image name if different: ',
+			tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
+		}
+	}
 ];
 
 Twinkle.tag.file.cleanupList = [
@@ -856,15 +880,45 @@ Twinkle.tag.file.cleanupList = [
 	{ label: '{{Bad GIF}}: GIF that should be PNG, JPEG, or SVG', value: 'Bad GIF' },
 	{ label: '{{Bad JPEG}}: JPEG that should be PNG or SVG', value: 'Bad JPEG' },
 	{ label: '{{Bad trace}}: auto-traced SVG requiring cleanup', value: 'Bad trace' },
-	{ label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image' },
-	{ label: '{{Cleanup SVG}}: SVG needing code and/or appearance cleanup', value: 'Cleanup SVG' },
+	{ 	label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image',
+		subgroup: {
+			type: 'input',
+			name: 'cleanupimageReason',
+			label: 'Reason: ',
+			tooltip: 'Enter the reason for cleanup (required)'
+		}
+	},
+	{ 	label: '{{Cleanup SVG}}: SVG needing code and/or appearance cleanup', value: 'Cleanup SVG',
+		subgroup: {
+			type: 'input',
+			name: 'cleanupsvgReason',
+			label: 'Reason: ',
+			tooltip: 'Enter the reason for cleanup (required)'
+		}
+	},
 	{ label: '{{ClearType}}: image (not screenshot) with ClearType anti-aliasing', value: 'ClearType' },
 	{ label: '{{Imagewatermark}}: image contains visible or invisible watermarking', value: 'Imagewatermark' },
 	{ label: '{{NoCoins}}: image using coins to indicate scale', value: 'NoCoins' },
 	{ label: '{{Overcompressed JPEG}}: JPEG with high levels of artifacts', value: 'Overcompressed JPEG' },
 	{ label: '{{Opaque}}: opaque background should be transparent', value: 'Opaque' },
 	{ label: '{{Remove border}}: unneeded border, white space, etc.', value: 'Remove border' },
-	{ label: '{{Rename media}}: file should be renamed according to the criteria at [[WP:FMV]]', value: 'Rename media' },
+	{	label: '{{Rename media}}: file should be renamed according to the criteria at [[WP:FMV]]',
+		value: 'Rename media',
+		subgroup: [
+			{
+				type: 'input',
+				name: 'renamemediaNewname',
+				label: 'New name: ',
+				tooltip: 'Enter the new name for the image (optional)'
+			},
+			{
+				type: 'input',
+				name: 'renamemediaReason',
+				label: 'Reason: ',
+				tooltip: 'Enter the reason for the rename (optional)'
+			}
+		]
+	},
 	{ label: '{{Should be PNG}}: GIF or JPEG should be lossless', value: 'Should be PNG' },
 	{
 		label: '{{Should be SVG}}: PNG, GIF or JPEG should be vector graphics', value: 'Should be SVG',
@@ -896,9 +950,23 @@ Twinkle.tag.file.cleanupList = [
 Twinkle.tag.file.qualityList = [
 	{ label: '{{Image-blownout}}', value: 'Image-blownout' },
 	{ label: '{{Image-out-of-focus}}', value: 'Image-out-of-focus' },
-	{ label: '{{Image-Poor-Quality}}', value: 'Image-Poor-Quality' },
+	{ 	label: '{{Image-Poor-Quality}}', value: 'Image-Poor-Quality',
+		subgroup: {
+			type: 'input',
+			name: 'ImagePoorQualityReason',
+			label: 'Reason: ',
+			tooltip: 'Enter the reason why this image is so bad (required)'
+		}
+	},
 	{ label: '{{Image-underexposure}}', value: 'Image-underexposure' },
-	{ label: '{{Low quality chem}}: disputed chemical structures', value: 'Low quality chem' }
+	{ 	label: '{{Low quality chem}}: disputed chemical structures', value: 'Low quality chem',
+		subgroup: {
+			type: 'input',
+			name: 'lowQualityChemReason',
+			label: 'Reason: ',
+			tooltip: 'Enter the reason why the diagram is disputed (required)'
+		}
+	},
 ];
 
 Twinkle.tag.file.replacementList = [
@@ -907,6 +975,14 @@ Twinkle.tag.file.replacementList = [
 	{ label: '{{PNG version available}}', value: 'PNG version available' },
 	{ label: '{{Vector version available}}', value: 'Vector version available' }
 ];
+Twinkle.tag.file.replacementList.forEach(function (el) {
+	el.subgroup = {
+		type: 'input',
+		label: 'Replacement file: ',
+		tooltip: 'Enter the name of the file which replaces this one (required)',
+		name: el.value.replace(/ /g,'_') + 'File'
+	}
+});
 
 
 // Contains those article tags that *do not* work inside {{multiple issues}}.
@@ -941,48 +1017,48 @@ Twinkle.tag.callbacks = {
 				pageText += '\n\n{{' + tagName + '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
 			} else {
 				if( tagName === 'globalize' ) {
-					currentTag += '{{' + params.tagParameters.globalize;
+					currentTag += '{{' + params.globalize;
 				} else {
 					currentTag += ( Twinkle.tag.mode === 'redirect' ? '\n' : '' ) + '{{' + tagName;
 				}
 
-				if( tagName === 'notability' && params.tagParameters.notability !== 'none' ) {
-					currentTag += '|' + params.tagParameters.notability;
+				if( tagName === 'notability' && params.notability !== 'none' ) {
+					currentTag += '|' + params.notability;
 				}
 
 				// prompt for other parameters, based on the tag
 				switch( tagName ) {
 					case 'cleanup':
-						currentTag += '|reason=' + params.tagParameters.cleanup;
+						currentTag += '|reason=' + params.cleanup;
 						break;
 					case 'close paraphrasing':
-						currentTag += '|source=' + params.tagParameters.closeParaphrasing;
+						currentTag += '|source=' + params.closeParaphrasing;
 						break;
 					case 'copy edit':
-						if (params.tagParameters.copyEdit) {
-							currentTag += '|for=' + params.tagParameters.copyEdit;
+						if (params.copyEdit) {
+							currentTag += '|for=' + params.copyEdit;
 						}
 						break;
 					case 'copypaste':
-						if (params.tagParameters.copypaste) {
-							currentTag += '|url=' + params.tagParameters.copypaste;
+						if (params.copypaste) {
+							currentTag += '|url=' + params.copypaste;
 						}
 						break;
 					case 'expand language':
 						currentTag += '|topic=';
-						currentTag += '|langcode=' + params.tagParameters.expandLanguageLangCode;
-						if (params.tagParameters.expandLanguageArticle !== null) {
-							currentTag += '|otherarticle=' + params.tagParameters.expandLanguageArticle;
+						currentTag += '|langcode=' + params.expandLanguageLangCode;
+						if (params.expandLanguageArticle !== null) {
+							currentTag += '|otherarticle=' + params.expandLanguageArticle;
 						}
 						break;
 					case 'expert needed':
 						if (params.expertNeeded) {
 							currentTag += '|1=' + params.expertNeeded;
 						}
-						if(params.expertNeededTalk) {
+						if (params.expertNeededTalk) {
 							currentTag += '|talk=' + params.expertNeededTalk;
 						}
-						if(params.expertNeededReason) {
+						if (params.expertNeededReason) {
 							currentTag += '|reason=' + params.expertNeededReason;
 						}
 						break;
@@ -1046,7 +1122,7 @@ Twinkle.tag.callbacks = {
 
 			summaryText += ' {{[[:';
 			if( tagName === 'globalize' ) {
-				summaryText += "Template:" + params.tagParameters.globalize + '|' + params.tagParameters.globalize;
+				summaryText += "Template:" + params.globalize + '|' + params.globalize;
 			} else if( tagName.indexOf("|") !== -1 ) {
 				//if it is a custom tag with a parameter
 				var slicedTagName = tagName.slice(0,tagName.indexOf("|"));
@@ -1301,86 +1377,44 @@ Twinkle.tag.callbacks = {
 					"Now Commons"].indexOf(tag) !== -1) {
 					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 				}
-				if (tag === "Vector version available") {
-					text = text.replace(/\{\{((convert to |convertto|should be |shouldbe|to)?svg|badpng|vectorize)[^}]*\}\}/gi, "");
-				}
 
 				currentTag = "{{" + (tag === "Do not move to Commons_reason" ? "Do not move to Commons" : tag);
 
-				var input;
 				switch (tag) {
 					case "subst:ncd":
-						/* falls through */
+						if (params.ncdName !== "") currentTag += '|1=' + params.ncdName;
+						break;
 					case "Keep local":
-						input = prompt( "{{" + (tag === "subst:ncd" ? "Now Commons" : tag) +
-							"}} - Enter the name of the image on Commons (if different from local name), excluding the File: prefix:", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += '|1=' + input;
-						}
+						if (params.keeplocalName !== "") currentTag += '|1=' + params.keeplocalName;
 						break;
 					case "Rename media":
-						input = prompt( "{{Rename media}} - Enter the new name for the image (optional):", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += "|1=" + input;
-						}
-						input = prompt( "{{Rename media}} - Enter the reason for the rename (optional):", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += "|2=" + input;
-						}
+						if (params.renamemediaNewname !== "") currentTag += '|1=' + params.renamemediaNewname;
+						if (params.renamemediaReason !== "") currentTag += '|2=' + params.renamemediaReason;
 						break;
 					case "Cleanup image":
-						/* falls through */
+						currentTag += '|1=' + params.cleanupimageReason;
+						break;
 					case "Cleanup SVG":
-						input = prompt( "{{" + tag + "}} - Enter the reason for cleanup (required). To skip the tag, click Cancel:", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += "|1=" + input;
-						}
+						currentTag += '|1=' + params.cleanupsvgReason;
 						break;
 					case "Image-Poor-Quality":
-						input = prompt( "{{Image-Poor-Quality}} - Enter the reason why this image is so bad (required). To skip the tag, click Cancel:", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += "|1=" + input;
-						}
+						currentTag += '|1=' + params.ImagePoorQualityReason;
 						break;
 					case "Low quality chem":
-						input = prompt( "{{Low quality chem}} - Enter the reason why the diagram is disputed (required). To skip the tag, click Cancel:", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += "|1=" + input;
-						}
+						currentTag += '|1=' + params.lowQualityChemReason;
 						break;
-					case "PNG version available":
-						/* falls through */
 					case "Vector version available":
+						text = text.replace(/\{\{((convert to |convertto|should be |shouldbe|to)?svg|badpng|vectorize)[^}]*\}\}/gi, "");
+						/* falls through */
+					case "PNG version available":
 						/* falls through */
 					case "Obsolete":
 						/* falls through */
 					case "Duplicate":
-						input = prompt( "{{" + tag + "}} - Enter the name of the file which replaces this one (required). To skip the tag, click Cancel:", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += "|1=" + input;
-						}
+						currentTag += "|1=" + params[tag.replace(/ /g,'_') + 'File'];
 						break;
 					case "Do not move to Commons_reason":
-						input = prompt( "{{Do not move to Commons}} - Enter the reason why this image should not be moved to Commons (required). To skip the tag, click Cancel:", "" );
-						if (input === null) {
-							return true;  // continue
-						} else if (input !== "") {
-							currentTag += "|reason=" + input;
-						}
+						currentTag += '|reason=' + params.DoNotMoveToCommons
 						break;
 					case "subst:orfurrev":
 						//remove {{non-free reduce}} and redirects
@@ -1390,20 +1424,17 @@ Twinkle.tag.callbacks = {
 					case "Copy to Commons":
 						currentTag += "|human=" + mw.config.get("wgUserName");
 						break;
+					case "Should be SVG":
+						currentTag += "|" + params.svgCategory;
+						break;
 					default:
 						break;  // don't care
-				}
-
-				if (tag === "Should be SVG") {
-					currentTag += "|" + params.svgSubcategory;
 				}
 
 				currentTag += "}}\n";
 
 				tagtext += currentTag;
 				summary += "{{" + tag + "}}, ";
-
-				return true;  // continue
 			});
 
 			if (!tagtext) {
@@ -1434,78 +1465,91 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		params.patrol = form.patrolPage.checked;
 	}
 
+	params.tags = form.getChecked( Twinkle.tag.mode + 'Tags' );
+
+	// Save values of input fields into params object. This works as quickform input
+	// fields within subgroups of elements with name 'articleTags' (say) have their
+	// name attribute as 'articleTags.' + name of the subgroup element
+
+	var name_prefix = Twinkle.tag.mode + 'Tags.';
+	$(form).find("[name^='" + name_prefix + "']").each(function(idx,el) {
+		// el are the HTMLInputElements, el.name gives the name attribute
+		params[el.name.slice(name_prefix.length)] =
+			(el.type === 'checkbox' ? form[el.name].checked : form[el.name].value);
+	});
+
 	switch (Twinkle.tag.mode) {
 		case 'article':
-			params.tags = form.getChecked( 'articleTags' );
 			params.group = form.group.checked;
-			params.tagParameters = {
-				cleanup: form["articleTags.cleanup"] ? form["articleTags.cleanup"].value : null,
-				closeParaphrasing: form["articleTags.closeParaphrasing"] ? form["articleTags.closeParaphrasing"].value : null,
-				copyEdit: form["articleTags.copyEdit"] ? form["articleTags.copyEdit"].value : null,
-				copypaste: form["articleTags.copypaste"] ? form["articleTags.copypaste"].value : null,
-				expandLanguageLangCode: form["articleTags.expandLanguageLangCode"] ? form["articleTags.expandLanguageLangCode"].value : null,
-				expandLanguageArticle: form["articleTags.expandLanguageArticle"] ? form["articleTags.expandLanguageArticle"].value : null,
-				globalize: form["articleTags.globalize"] ? form["articleTags.globalize"].value : null,
-				notability: form["articleTags.notability"] ? form["articleTags.notability"].value : null
-			};
-			// {{expert needed}} parameters:
-			params.expertNeeded = form["articleTags.expertNeeded"] ? form["articleTags.expertNeeded"].value : null,
-			params.expertNeededTalk = form["articleTags.expertNeededTalk"] ? form["articleTags.expertNeededTalk"].value : null,
-			params.expertNeededReason = form["articleTags.expertNeededReason"] ? form["articleTags.expertNeededReason"].value : null,
-			// common to {{merge}}, {{merge from}}, {{merge to}}
-			params.mergeTarget = form["articleTags.mergeTarget"] ? form["articleTags.mergeTarget"].value : null;
-			params.mergeReason = form["articleTags.mergeReason"] ? form["articleTags.mergeReason"].value : null;
-			params.mergeTagOther = form["articleTags.mergeTagOther"] ? form["articleTags.mergeTagOther"].checked : false;
-			// common to {{not English}}, {{rough translation}}
-			params.translationLanguage = form["articleTags.translationLanguage"] ? form["articleTags.translationLanguage"].value : null;
-			params.translationNotify = form["articleTags.translationNotify"] ? form["articleTags.translationNotify"].checked : null;
-			params.translationPostAtPNT = form["articleTags.translationPostAtPNT"] ? form["articleTags.translationPostAtPNT"].checked : null;
-			params.translationComments = form["articleTags.translationComments"] ? form["articleTags.translationComments"].value : null;
+
+			if ((params.tags.indexOf("merge") !== -1) || (params.tags.indexOf("merge from") !== -1) || (params.tags.indexOf("merge to") !== -1)) {
+				if( ((params.tags.indexOf("merge") !== -1) + (params.tags.indexOf("merge from") !== -1) +
+				(params.tags.indexOf("merge to") !== -1)) > 1 ) {
+					alert( 'Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).' );
+					return;
+				}
+				if ( !params.mergeTarget ) {
+					alert( 'Please specify the title of the other article for use in the merge template.' );
+					return;
+				}
+				if( (params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1 ) {
+					alert( 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.' );
+					return;
+				}
+			}
+			if( (params.tags.indexOf("not English") !== -1) && (params.tags.indexOf("rough translation") !== -1) ) {
+				alert( 'Please select only one of {{not English}} and {{rough translation}}.' );
+				return;
+			}
+			if( params.tags.indexOf('cleanup') !== -1 && params.cleanup.trim() === '') {
+				alert( 'You must specify a reason for the {{cleanup}} tag.' );
+				return;
+			}
+			if( params.tags.indexOf('expand language') !== -1 && params.expandLanguageLangCode.trim() === '') {
+				alert('You must specify language code for the {{expand language}} tag.');
+				return;
+			}
 			break;
+
 		case 'file':
-			params.svgSubcategory = form["imageTags.svgCategory"] ? form["imageTags.svgCategory"].value : null;
-			params.tags = form.getChecked( 'imageTags' );
+
+			if( (params.tags.indexOf('Cleanup image') !== -1 && params.cleanupimageReason === '') ||
+				(params.tags.indexOf('Cleanup svg') !== -1 && params.cleanupsvgReason === '') ) {
+				alert( 'You must specify a reason for the cleanup tag.' );
+				return;
+			}
+			if( params.tags.indexOf('Image-Poor-Quality') !== -1 && params.ImagePoorQualityReason === '' ) {
+				alert('You must specify a reason for the {{Image-Poor-Quality}} tag');
+				return;
+			}
+			if( params.tags.indexOf('Low Quality Chem') !== -1 && params.lowQualityChemReason === '' ) {
+				alert('You must specify a reason for the {{Low Quality Chem}} tag');
+				return;
+			}
+			if( (params.tags.indexOf('Duplicate') !== -1 && params.DuplicateFile === '') ||
+				(params.tags.indexOf('Obsolete') !== -1 && params.ObsoleteFile === '') ||
+				(params.tags.indexOf('PNG version available') !== -1 && params.PNG_version_availableFile === '') ||
+				(params.tags.indexOf('Vector version available') !== -1 && params.Vector_version_availableFile === '')
+			) {
+				alert('You must specify the replacement file name for a tag in the Replacement tags list');
+				return;
+			}
+			if( params.tags.indexOf('Do not move to Commons_reason') !== -1 && params.DoNotMoveToCommons === '' ) {
+				alert('You must specify a reason for the {{Do not move to Commons}} tag');
+				return;
+			}
 			break;
+
 		case 'redirect':
-			params.tags = form.getChecked( 'redirectTags' );
-			params.altLangFrom = form["redirectTags.altLangFrom"] ? form["redirectTags.altLangFrom"].value : null;
-			params.altLangTo = form["redirectTags.altLangTo"] ? form["redirectTags.altLangTo"].value : null;
 			break;
+
 		default:
 			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
 			break;
 	}
 
-	// form validation
 	if( !params.tags.length ) {
 		alert( 'You must select at least one tag!' );
-		return;
-	}
-	if ((params.tags.indexOf("merge") !== -1) || (params.tags.indexOf("merge from") !== -1) || (params.tags.indexOf("merge to") !== -1)) {
-		if( ((params.tags.indexOf("merge") !== -1) + (params.tags.indexOf("merge from") !== -1) +
-			(params.tags.indexOf("merge to") !== -1)) > 1 ) {
-			alert( 'Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).' );
-			return;
-		}
-		if ( !params.mergeTarget ) {
-			alert( 'Please specify the title of the other article for use in the merge template.' );
-			return;
-		}
-		if( (params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1 ) {
-			alert( 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.' );
-			return;
-		}
-	}
-	if( (params.tags.indexOf("not English") !== -1) && (params.tags.indexOf("rough translation") !== -1) ) {
-		alert( 'Please select only one of {{not English}} and {{rough translation}}.' );
-		return;
-	}
-	if( params.tags.indexOf('cleanup') !== -1 && params.tagParameters.cleanup.trim() === '') {
-		alert( 'You must specify a reason for the {{cleanup}} tag.' );
-		return;
-	}
-	if( params.tags.indexOf('expand language') !== -1 && params.tagParameters.expandLanguageLangCode.trim() === '') {
-		alert('You must specify language code for the {{expand language}} tag.');
 		return;
 	}
 
