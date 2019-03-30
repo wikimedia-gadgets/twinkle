@@ -897,18 +897,6 @@ Twinkle.speedy.generalList = [
 		hideSubgroupWhenMultiple: true
 	},
 	{
-		label: 'G6: History merge',
-		value: 'histmerge',
-		tooltip: 'Temporarily deleting a page in order to merge page histories',
-		subgroup: {
-			name: 'histmerge_1',
-			type: 'input',
-			label: 'Page to be merged into this one: '
-		},
-		hideWhenMultiple: true,
-		hideWhenSysop: true
-	},
-	{
 		label: 'G6: Move',
 		value: 'move',
 		tooltip: 'Making way for an uncontroversial move like reversing a redirect',
@@ -1087,7 +1075,6 @@ Twinkle.speedy.normalizeHash = {
 	'hoax': 'g3',
 	'repost': 'g4',
 	'banned': 'g5',
-	'histmerge': 'g6',
 	'move': 'g6',
 	'xfd': 'g6',
 	'movedab': 'g6',
@@ -1456,8 +1443,6 @@ Twinkle.speedy.callbacks = {
 				editsummary += ').';
 			} else if (params.normalizeds[0] === "db") {
 				editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale "' + params.templateParams[0]["1"] + '".';
-			} else if (params.values[0] === "histmerge") {
-				editsummary = "Requesting history merge with [[:" + params.templateParams[0]["1"] + "]] ([[WP:CSD#G6|CSD G6]]).";
 			} else {
 				editsummary = "Requesting speedy deletion ([[WP:CSD#" + params.normalizeds[0].toUpperCase() + "|CSD " + params.normalizeds[0].toUpperCase() + "]]).";
 			}
@@ -1669,18 +1654,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 			case 'banned':  // G5
 				if (form["csd.banned_1"] && form["csd.banned_1"].value) {
 					currentParams["1"] = form["csd.banned_1"].value.replace(/^\s*User:/i, "");
-				}
-				break;
-
-			case 'histmerge':  // G6
-				if (form["csd.histmerge_1"]) {
-					var merger = form["csd.histmerge_1"].value;
-					if (!merger || !merger.trim()) {
-						alert( 'CSD G6 (histmerge):  Please specify the page to be merged.' );
-						parameters = null;
-						return false;
-					}
-					currentParams["1"] = merger;
 				}
 				break;
 
