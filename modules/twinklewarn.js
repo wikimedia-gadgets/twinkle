@@ -1334,7 +1334,6 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	var userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
 	// First, check to make sure a reason was filled in if uw-username was selected
-
 	if(e.target.sub_group.value === 'uw-username' && e.target.article.value.trim() === '') {
 		alert("You must supply a reason for the {{uw-username}} template.");
 		return;
