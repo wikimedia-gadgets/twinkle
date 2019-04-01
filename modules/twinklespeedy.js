@@ -1071,6 +1071,7 @@ Twinkle.speedy.generalRedirectList = [
 		hideWhenMultiple: true
 	}
 ];
+
 Twinkle.speedy.redirectCriterion = [
 	{
 		label: 'R3: Redirects as a result of an implausible typo or misnomers that were recently created',
@@ -1078,8 +1079,6 @@ Twinkle.speedy.redirectCriterion = [
 		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
 	}
 ];
-	
-	
 Twinkle.speedy.articleRedirect = [
 	{
 		label: 'R2: Redirects from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
@@ -1087,7 +1086,6 @@ Twinkle.speedy.articleRedirect = [
 		tooltip: '(this does not include the Wikipedia shortcut pseudo-namespaces). If this was the result of a page move, consider waiting a day or two before deleting the redirect'
 	}
 ];
-	
 Twinkle.speedy.fileRedirect = [
 	{
 		label: 'R4: File namespace redirect with name that matches a Commons page',
