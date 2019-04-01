@@ -1600,11 +1600,24 @@ Twinkle.speedy.callbacks = {
 				appendText += "\n\n=== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ===";
 			}
 
+			var formatParamLog = function(normalize, csdparam, input) {
+				return ' [' + normalize + ' ' + csdparam + ': ' + input + ']';
+			};
+
+			var extraInfo = '';
 			var editsummary = "Logging speedy deletion nomination";
 			appendText += "\n# [[:" + Morebits.pageNameNorm;
 
 			if (params.fromDI) {
 				appendText += "]]: DI [[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] ({{tl|di-" + params.templatename + "}})";
+				// The params data structure when coming from DI is quite different,
+				// so this hardcodes the only interesting items worth logging
+				['reason', 'replacement', 'source'].forEach(function(item) {
+					if (params[item]) {
+						extraInfo += formatParamLog(params.normalized.toUpperCase(), item, params[item]);
+						return false;
+					}
+				});
 				editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
 			} else {
 				if (params.normalizeds.indexOf("g10") === -1) {  // no article name in log for G10 taggings
@@ -1626,8 +1639,33 @@ Twinkle.speedy.callbacks = {
 				} else {
 					appendText += "[[WP:CSD#" + params.normalizeds[0].toUpperCase() + "|CSD " + params.normalizeds[0].toUpperCase() + "]] ({{tl|db-" + params.values[0] + "}})";
 				}
+
+				// If params is "empty" it will still be full of empty arrays, but ask anyway
+				if (params.templateParams) {
+					// Treat custom rationale individually
+					if (params.normalizeds[0] && params.normalizeds[0] === 'db') {
+						extraInfo += formatParamLog('Custom', 'rationale', params.templateParams[0]["1"]);
+					} else {
+						params.templateParams.forEach(function(item, index) {
+							var keys = Object.keys(item);
+							if (keys[0] !== undefined && keys[0].length > 0) {
+								//Second loop required since G12 can have multiple urls
+								keys.forEach(function(key, keyIndex) {
+									if (keys[keyIndex] === 'blanked' || keys[keyIndex] === 'ts') {
+										return true; // Not worth logging
+									} else {
+										extraInfo += formatParamLog(params.normalizeds[index].toUpperCase(), keys[keyIndex], item[key]);
+									}
+								});
+							}
+						});
+					}
+				}
 			}
 
+			if (extraInfo) {
+				appendText += '; additional information:' + extraInfo;
+			}
 			if (params.logInitialContrib) {
 				appendText += "; notified {{user|1=" + params.logInitialContrib + "}}";
 			}
