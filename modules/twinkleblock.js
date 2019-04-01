@@ -87,7 +87,6 @@ Twinkle.block.callback = function twinkleblockCallback() {
 };
 
 Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
-
 	api.get({
 		format: 'json',
 		action: 'query',
