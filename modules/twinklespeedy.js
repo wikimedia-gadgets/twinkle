@@ -399,13 +399,13 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		}
 		work_area.append( { type: 'header', label: 'Redirects' } );
 		if (namespace == 0) {
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.articleRedirect.concat(Twinkle.speedy.redirectList), mode) } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.articleRedirect.concat(Twinkle.speedy.redirectCriterion, Twinkle.speedy.generalRedirectList), mode) } );
 		}
 		else if (namespace == 6) {
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.fileRedirect, mode) } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectCriterion.concat(Twinkle.speedy.fileRedirect, Twinkle.speedy.generalRedirectList), mode) } );
 		}
 		else {
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectCriterion.concat(Twinkle.speedy.generalRedirectList), mode) } );
 		}
 	}
 
@@ -1057,12 +1057,7 @@ Twinkle.speedy.generalList = [
 	}
 ];
 
-Twinkle.speedy.redirectList = [
-	{
-		label: 'R3: Redirects as a result of an implausible typo or misnomers that were recently created',
-		value: 'redirtypo',
-		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
-	},
+Twinkle.speedy.generalRedirectList = [
 	{
 		label: 'G6: Redirect to malplaced disambiguation page',
 		value: 'movedab',
@@ -1076,6 +1071,14 @@ Twinkle.speedy.redirectList = [
 		hideWhenMultiple: true
 	}
 ];
+Twinkle.speedy.redirectCriterion = [
+	{
+		label: 'R3: Redirects as a result of an implausible typo or misnomers that were recently created',
+		value: 'redirtypo',
+		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
+	}
+];
+	
 	
 Twinkle.speedy.articleRedirect = [
 	{
@@ -1087,26 +1090,9 @@ Twinkle.speedy.articleRedirect = [
 	
 Twinkle.speedy.fileRedirect = [
 	{
-		label: 'R3: Redirects as a result of an implausible typo or misnomers that were recently created',
-		value: 'redirtypo',
-		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
-	},
-	{
 		label: 'R4: File namespace redirect with name that matches a Commons page',
 		value: 'redircom',
 		tooltip: 'The redirect should have no incoming links (unless the links are cleary intended for the file or redirect at Commons).'
-	},
-	{
-		label: 'G6: Redirect to malplaced disambiguation page',
-		value: 'movedab',
-		tooltip: 'This only applies for redirects to disambiguation pages ending in (disambiguation) where a primary topic does not exist.',
-		hideWhenMultiple: true
-	},
-	{
-		label: 'G8: Redirects to invalid targets, such as nonexistent targets, redirect loops, and bad titles',
-		value: 'redirnone',
-		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
-		hideWhenMultiple: true
 	}
 ];
 
