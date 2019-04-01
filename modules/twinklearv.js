@@ -906,7 +906,6 @@ Twinkle.arv.processAN3 = function( params ) {
 		an3Page.append();
 
 		// notify user
-
 		var notifyEditSummary = "Notifying about edit warring noticeboard discussion." + Twinkle.getPref('summaryAd');
 		var notifyText = "\n\n{{subst:an3-notice|1=" + mw.util.wikiUrlencode(params.uid) + "|auto=1}} ~~~~";
 
@@ -915,6 +914,7 @@ Twinkle.arv.processAN3 = function( params ) {
 		talkPage.setEditSummary( notifyEditSummary );
 		talkPage.setAppendText( notifyText );
 		talkPage.append();
+		
 		Morebits.wiki.removeCheckpoint();  // all page updates have been started
 	}).fail(function(data){
 		console.log( 'API failed :(', data ); // eslint-disable-line no-console
