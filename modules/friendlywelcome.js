@@ -27,7 +27,7 @@ Twinkle.welcome = function friendlywelcome() {
 
 Twinkle.welcome.auto = function() {
 	if( Morebits.queryString.get( 'action' ) !== 'edit' ) {
-		// userpage not empty, aborting auto-welcome
+		// Userpage not empty, aborting auto-welcome
 		return;
 	}
 
@@ -40,7 +40,7 @@ Twinkle.welcome.semiauto = function() {
 
 Twinkle.welcome.normal = function() {
 	if( Morebits.queryString.exists( 'diff' ) ) {
-		// check whether the contributors' talk pages exist yet
+		// Check whether the contributors' talk pages exist yet
 		var $oList = $("#mw-diff-otitle2").find("span.mw-usertoollinks a.new:contains(talk)").first();
 		var $nList = $("#mw-diff-ntitle2").find("span.mw-usertoollinks a.new:contains(talk)").first();
 
@@ -162,7 +162,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 	Window.setContent( result );
 	Window.display();
 
-	// initialize the welcome list
+	// Initialize the welcome list
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
 	result.type.dispatchEvent( evt );
@@ -328,7 +328,6 @@ Twinkle.welcome.selectTemplate = function(e) {
 
 Twinkle.welcome.templates = {
 	// GENERAL WELCOMES
-
 	"welcome": {
 		description: "standard welcome",
 		linkedArticle: true,
@@ -381,7 +380,6 @@ Twinkle.welcome.templates = {
 	},
 
 	// PROBLEM USER WELCOMES
-
 	"welcomelaws": {
 		description: "welcome with information about copyrights, NPOV, the sandbox, and vandalism",
 		linkedArticle: false,
@@ -439,7 +437,6 @@ Twinkle.welcome.templates = {
 	},
 
 	// ANONYMOUS USER WELCOMES
-
 	"welcome-anon": {
 		description: "for anonymous users; encourages creating an account",
 		linkedArticle: true,
@@ -467,7 +464,6 @@ Twinkle.welcome.templates = {
 	},
 
 	// WIKIPROJECT-SPECIFIC WELCOMES
-
 	"welcome-anatomy": {
 		description: "welcome for users with an apparent interest in anatomy topics",
 		linkedArticle: false,
@@ -600,7 +596,6 @@ Twinkle.welcome.templates = {
 	},
 
 	// NON-ENGLISH WELCOMES
-
 	"welcomeen": {
 		description: "welcome for users whose first language is not listed here",
 		linkedArticle: false,
@@ -747,7 +742,7 @@ Twinkle.welcome.callbacks = {
 		var params = pageobj.getCallbackParameters();
 		var text = pageobj.getPageText();
 
-		// abort if mode is auto and form is not empty
+		// Abort if mode is auto and form is not empty
 		if( pageobj.exists() && params.mode === 'auto' ) {
 			Morebits.status.info( 'Warning', 'User talk page not empty; aborting automatic welcome' );
 			Morebits.wiki.actionCompleted.event();
