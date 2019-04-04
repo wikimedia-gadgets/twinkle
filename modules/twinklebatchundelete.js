@@ -98,7 +98,7 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 
 	var pages = event.target.getChecked( 'pages' );
 	var reason = event.target.reason.value;
-	if( ! reason ) {
+	if( !reason ) {
 		alert("You need to give a reason, you cabal crony!");
 		return;
 	}
@@ -128,7 +128,6 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 		wikipedia_api.post();
 	});
 };
-
 })(jQuery);
 
 
