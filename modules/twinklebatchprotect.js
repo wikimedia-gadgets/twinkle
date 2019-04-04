@@ -275,7 +275,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 
 	var query;
 
-	if( mw.config.get( 'wgNamespaceNumber' ) === 14 ) {  // categories
+	if ( mw.config.get( 'wgNamespaceNumber' ) === 14 ) {  // categories
 		query = {
 			'action': 'query',
 			'generator': 'categorymembers',
@@ -284,7 +284,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			'prop': 'revisions',
 			'rvprop': 'size'
 		};
-	} else if( mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex' ) {
+	} else if ( mw.config.get( 'wgCanonicalSpecialPageName' ) === 'Prefixindex' ) {
 		query = {
 			'action': 'query',
 			'generator': 'allpages',
@@ -380,7 +380,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	var createlevel = event.target.createlevel.value;
 	var createexpiry = event.target.createexpiry.value;
 
-	if( ! reason ) {
+	if( !reason ) {
 		alert("You've got to give a reason, you rouge admin!");
 		return;
 	}
