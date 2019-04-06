@@ -483,6 +483,11 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			return null;
 		}
 
+		if (criterion.showInNamespaces && criterion.showInNamespaces.indexOf(mw.config.get('wgNamespaceNumber')) < 0) {
+			return null;
+		}
+
+
 		if (criterion.subgroup && !hasSubmitButton) {
 			if (Array.isArray(criterion.subgroup)) {
 				criterion.subgroup = criterion.subgroup.concat({
