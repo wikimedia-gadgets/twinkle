@@ -29,7 +29,7 @@ Twinkle.tag = function friendlytag() {
 		Twinkle.tag.mode = 'article';
 		// Can't remove tags when not viewing current version
 		Twinkle.tag.untaggable = (mw.config.get('wgCurRevisionId') === mw.config.get('wgRevisionId'));
-		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add maintenance tags to article" );
+		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add/remove maintenance tags on article" );
 	}
 };
 
@@ -561,7 +561,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 
 	Morebits.quickForm.getElements(e.target.form, "articleTags").forEach(generateLinks);
 	var alreadyPresentTags = Morebits.quickForm.getElements(e.target.form, "alreadyPresentArticleTags");
-	if(alreadyPresentTags) {
+	if (alreadyPresentTags) {
 		alreadyPresentTags.forEach(generateLinks);
 	}
 };
@@ -1963,20 +1963,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	var wikipedia_page = new Morebits.wiki.page(Morebits.pageNameNorm, "Tagging " + Twinkle.tag.mode);
 	wikipedia_page.setCallbackParameters(params);
-	switch (Twinkle.tag.mode) {
-		case 'article':
-			wikipedia_page.load(Twinkle.tag.callbacks.article);
-			return;
-		case 'redirect':
-			wikipedia_page.load(Twinkle.tag.callbacks.redirect);
-			return;
-		case 'file':
-			wikipedia_page.load(Twinkle.tag.callbacks.file);
-			return;
-		default:
-			alert("Twinkle.tag: unknown mode " + Twinkle.tag.mode);
-			break;
-	}
+	wikipedia_page.load(Twinkle.tag.callbacks[Twinkle.tag.mode]);
+
 };
 
 })(jQuery);
