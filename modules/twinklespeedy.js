@@ -401,9 +401,11 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	if (namespace !== 2) {
 		generalCriteria = Twinkle.speedy.generalNonUser.concat(generalCriteria);
 	}
+	// G13 only applies to userpages and drafts
 	if (namespace == 2 || namespace == 118) {
 		generalCriteria = generalCriteria.concat(Twinkle.speedy.draftCriterion);
 	}
+	// Add G14 to the end
 	generalCriteria = generalCriteria.concat(Twinkle.speedy.generalNonDraft2);
 
 	// custom rationale lives under general criteria when tagging
