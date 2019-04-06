@@ -396,11 +396,16 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		}
 	}
 
-	var generalCriteria = Twinkle.speedy.generalList;
+	var generalCriteria = Twinkle.speedy.generalNonDraft;
 	// G1 and G2 aren't supposed to be used on userpages
 	if (namespace !== 2) {
 		generalCriteria = Twinkle.speedy.generalNonUser.concat(generalCriteria);
 	}
+	if (namespace == 2 || namespace == 118) {
+		generalCriteria = generalCriteria.concat(Twinkle.speedy.draftCriterion);
+	}
+	generalCriteria = generalCriteria.concat(Twinkle.speedy.generalNonDraft2);
+
 	// custom rationale lives under general criteria when tagging
 	if(!Twinkle.speedy.mode.isSysop(mode)) {
 		generalCriteria = Twinkle.speedy.customRationale.concat(generalCriteria);
@@ -887,7 +892,7 @@ Twinkle.speedy.generalNonUser = [
 	}
 ];
 
-Twinkle.speedy.generalList = [
+Twinkle.speedy.generalNonDraft = [
 	{
 		label: 'G3: Pure vandalism',
 		value: 'vandalism',
@@ -1050,13 +1055,19 @@ Twinkle.speedy.generalList = [
 				size: 60
 			}
 		]
-	},
+	}
+];
+
+Twinkle.speedy.draftCriterion = [
 	{
 		label: 'G13: Page in draft namespace or userspace AfC submission, stale by over 6 months',
 		value: 'afc',
 		tooltip: 'Any rejected or unsubmitted AfC submission in userspace or any page in draft namespace, that has not been edited for more than 6 months. Blank drafts in either namespace are also included.',
 		hideWhenRedirect: true
-	},
+	}
+]
+
+Twinkle.speedy.generalNonDraft2 = [
 	{
 		label: 'G14: Unnecessary disambiguation page',
 		value: 'disambig',
