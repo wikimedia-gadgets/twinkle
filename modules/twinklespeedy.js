@@ -1060,7 +1060,8 @@ Twinkle.speedy.generalList = [
 		label: 'G13: Page in draft namespace or userspace AfC submission, stale by over 6 months',
 		value: 'afc',
 		tooltip: 'Any rejected or unsubmitted AfC submission in userspace or any page in draft namespace, that has not been edited for more than 6 months. Blank drafts in either namespace are also included.',
-		hideWhenRedirect: true
+		hideWhenRedirect: true,
+		showInNamespaces: [2, 118]  // user, draft namespaces only
 	},
 	{
 		label: 'G14: Unnecessary disambiguation page',
