@@ -397,7 +397,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  * <title of block template> : {
  *   autoblock: <autoblock any IP addresses used (for registered users only)>
  *   disabletalk: <disable user from editing their own talk page while blocked>
- *   expiry: <string - expiry timestamp, can include relative times like "5 months", "2 weeks" etc, use "infinity" for indefinite>
+ *   expiry: <string - expiry timestamp, can include relative times like "5 months", "2 weeks" etc>
  *   forAnonOnly: <show block option in the interface only if the relevant user is an IP>
  *   forRegisteredOnly: <show block option in the interface only if the relevant user is registered>
  *   label: <string - label for the option of the dropdown in the interface (keep brief)>
@@ -836,7 +836,7 @@ Twinkle.block.transformBlockPresets = function twinkleblockTransformBlockPresets
 		settings.summary = settings.summary || settings.reason;
 		settings.sig = settings.sig !== undefined ? settings.sig : 'yes';
 		// despite this it's preferred that you use 'infinity' as the value for expiry
-		settings.indefinite = settings.indefinite || settings.expiry === 'infinity' || settings.expiry === 'indefinite' || settings.expiry === 'never';
+		settings.indefinite = settings.indefinite || settings.expiry === 'infinity' || settings.expiry === 'infinite' || settings.expiry === 'indefinite' || settings.expiry === 'never';
 
 		if (!Twinkle.block.isRegistered && settings.indefinite) {
 			settings.expiry = '31 hours';
@@ -1084,7 +1084,7 @@ Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 		disabletalk: form.disabletalk.checked || (form.notalk ? form.notalk.checked : false),
 		expiry: form.template_expiry ? form.template_expiry.value : form.expiry.value,
 		hardblock: Twinkle.block.isRegistered ? form.autoblock.checked : form.hardblock.checked,
-		indefinite: (/indef|infinity|never|\*|max/).test( form.template_expiry ? form.template_expiry.value : form.expiry.value ),
+		indefinite: (/indef|infinit|never|\*|max/).test( form.template_expiry ? form.template_expiry.value : form.expiry.value ),
 		reason: form.block_reason.value,
 		template: form.template.value
 	};
@@ -1127,9 +1127,6 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 		// boolean-flipped options
 		blockoptions.anononly = blockoptions.hardblock ? undefined : true;
 		blockoptions.allowusertalk = blockoptions.disabletalk ? undefined : true;
-
-		// fix for bug with block API, see [[phab:T68646]]
-		if (blockoptions.expiry === 'infinity') blockoptions.expiry = 'infinite';
 
 		// execute block
 		api.getToken('block').then(function(token) {
@@ -1222,7 +1219,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain( pageobj ) {
 		text += '\n\n';
 	}
 
-	params.indefinite = (/indef|infinity|never|\*|max/).test( params.expiry );
+	params.indefinite = (/indef|infinit|never|\*|max/).test( params.expiry );
 
 	if ( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.template !== 'uw-lblock' && params.indefinite ) {
 		Morebits.status.info( 'Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date' );
