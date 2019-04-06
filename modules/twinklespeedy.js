@@ -261,19 +261,6 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	dialog.display();
 
 	Twinkle.speedy.callback.modeChanged( result );
-
-	// if sysop, check if CSD is already on the page and fill in custom rationale
-	if (Morebits.userIsInGroup('sysop') && $("#delete-reason").length) {
-		var customOption = $("input[name=csd][value=reason]")[0];
-
-		if (Twinkle.getPref('speedySelectionStyle') !== 'radioClick') {
-			// force listeners to re-init
-			customOption.click();
-			customOption.parentNode.appendChild(customOption.subgroup);
-		}
-
-		customOption.subgroup.querySelector('input').value = decodeURIComponent($("#delete-reason").text()).replace(/\+/g, ' ');
-	}
 };
 
 Twinkle.speedy.callback.getMode = function twinklespeedyCallbackGetMode(form) {
@@ -392,9 +379,21 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			default:
 				break;
 		}
-	} else if (namespace == 2 || namespace == 3) {
-		work_area.append( { type: 'header', label: 'User pages' } );
-		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList, mode) } );
+	} else {
+		if (namespace == 2 || namespace == 3) {
+			work_area.append( { type: 'header', label: 'User pages' } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList, mode) } );
+		}
+		work_area.append( { type: 'header', label: 'Redirects' } );
+		if (namespace == 0) {
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.articleRedirect.concat(Twinkle.speedy.redirectCriterion, Twinkle.speedy.generalRedirectList), mode) } );
+		}
+		else if (namespace == 6) {
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectCriterion.concat(Twinkle.speedy.fileRedirect, Twinkle.speedy.generalRedirectList), mode) } );
+		}
+		else {
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectCriterion.concat(Twinkle.speedy.generalRedirectList), mode) } );
+		}
 	}
 
 	var generalCriteria = Twinkle.speedy.generalList;
@@ -409,13 +408,21 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	work_area.append( { type: 'header', label: 'General criteria' } );
 	work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(generalCriteria, mode) });
 
-	if(mw.config.get('wgIsRedirect')) {
-		work_area.append( { type: 'header', label: 'Redirects' } );
-		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) } );
-	}
-
 	var old_area = Morebits.quickForm.getElements(form, "work_area")[0];
 	form.replaceChild(work_area.render(), old_area);
+
+	// if sysop, check if CSD is already on the page and fill in custom rationale
+	if (Twinkle.speedy.mode.isSysop(mode) && $("#delete-reason").length) {
+		var customOption = $("input[name=csd][value=reason]")[0];
+		if (customOption) {
+			if (Twinkle.getPref('speedySelectionStyle') !== 'radioClick') {
+				// force listeners to re-init
+				customOption.click();
+				customOption.parentNode.appendChild(customOption.subgroup);
+			}
+			customOption.subgroup.querySelector('input').value = decodeURIComponent($("#delete-reason").text()).replace(/\+/g, ' ');
+		}
+	}
 };
 
 Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mode) {
@@ -478,7 +485,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 
 		if (criterion.subgroup && !hasSubmitButton) {
 			if (Array.isArray(criterion.subgroup)) {
-				criterion.subgroup.push({
+				criterion.subgroup = criterion.subgroup.concat({
 					type: 'button',
 					name: 'submit',
 					label: 'Submit Query',
@@ -592,7 +599,7 @@ Twinkle.speedy.fileList = [
 		value: 'badfairuse',  // same as below
 		tooltip: 'This is only for files with a clearly invalid fair-use tag, such as a {{Non-free logo}} tag on a photograph of a mascot. For cases that require a waiting period (replaceable images or otherwise disputed rationales), use the options on Twinkle\'s DI tab.',
 		subgroup: {
-			name: 'badfairuse_reason',
+			name: 'badfairuse_rationale',
 			type: 'input',
 			label: 'Optional explanation: ',
 			size: 60
@@ -603,7 +610,7 @@ Twinkle.speedy.fileList = [
 		value: 'badfairuse',  // same as above
 		tooltip: 'Non-free images or media from a commercial source (e.g., Associated Press, Getty), where the file itself is not the subject of sourced commentary, are considered an invalid claim of fair use and fail the strict requirements of WP:NFCC.',
 		subgroup: {
-			name: 'badfairuse_reason',
+			name: 'badfairuse_rationale',
 			type: 'input',
 			label: 'Optional explanation: ',
 			size: 60
@@ -612,10 +619,10 @@ Twinkle.speedy.fileList = [
 	},
 	{
 		label: 'F8: File available as an identical or higher-resolution copy on Wikimedia Commons',
-		value: 'nowcommons',
+		value: 'commons',
 		tooltip: 'Provided the following conditions are met: 1: The file format of both images is the same. 2: The file\'s license and source status is beyond reasonable doubt, and the license is undoubtedly accepted at Commons. 3: All information on the file description page is present on the Commons file description page. That includes the complete upload history with links to the uploader\'s local user pages. 4: The file is not protected, and the file description page does not contain a request not to move it to Commons. 5: If the file is available on Commons under a different name than locally, all local references to the file must be updated to point to the title used at Commons. 6: For {{c-uploaded}} files: They may be speedily deleted as soon as they are off the Main Page',
 		subgroup: {
-			name: 'nowcommons_filename',
+			name: 'commons_filename',
 			type: 'input',
 			label: 'Filename on Commons: ',
 			value: Morebits.pageNameNorm,
@@ -627,12 +634,20 @@ Twinkle.speedy.fileList = [
 		label: 'F9: Unambiguous copyright infringement',
 		value: 'imgcopyvio',
 		tooltip: 'The file was copied from a website or other source that does not have a license compatible with Wikipedia, and the uploader neither claims fair use nor makes a credible assertion of permission of free use. Sources that do not have a license compatible with Wikipedia include stock photo libraries such as Getty Images or Corbis. Non-blatant copyright infringements should be discussed at Wikipedia:Files for deletion',
-		subgroup: {
-			name: 'imgcopyvio_url',
-			type: 'input',
-			label: 'URL of the copyvio, including the "http://".  If you cannot provide a URL, please do not use CSD F9.  (Exception: for copyvios of non-Internet sources, leave the box blank.) ',
-			size: 60
-		}
+		subgroup: [
+			{
+				name: 'imgcopyvio_url',
+				type: 'input',
+				label: 'URL of the copyvio, including the "http://".  If the copyvio is of a non-internet source and you cannot provide a URL, you must use the deletion rationale box. ',
+				size: 60
+			},
+			{
+				name: 'imgcopyvio_rationale',
+				type: 'input',
+				label: 'Deletion rationale for non-internet copyvios: ',
+				size: 60
+			}
+		]
 	},
 	{
 		label: 'F10: Useless non-media file',
@@ -677,7 +692,13 @@ Twinkle.speedy.articleList = [
 	{
 		label: 'A5: Transwikied articles',
 		value: 'transwiki',
-		tooltip: 'Any article that has been discussed at Articles for Deletion (et al), where the outcome was to transwiki, and where the transwikification has been properly performed and the author information recorded. Alternately, any article that consists of only a dictionary definition, where the transwikification has been properly performed and the author information recorded'
+		tooltip: 'Any article that has been discussed at Articles for Deletion (et al), where the outcome was to transwiki, and where the transwikification has been properly performed and the author information recorded. Alternately, any article that consists of only a dictionary definition, where the transwikification has been properly performed and the author information recorded',
+		subgroup: {
+			name: 'transwiki_location',
+			type: 'input',
+			label: 'Link to where the page has been transwikied: ',
+			tooltip: 'For example, https://en.wiktionary.org/wiki/twinkle or [[wikt:twinkle]]'
+		}
 	},
 	{
 		label: 'A7: Unremarkable people, groups, companies, web content, individual animals, or organized events',
@@ -812,7 +833,13 @@ Twinkle.speedy.templateList = [
 	{
 		label: 'T2: Templates that are blatant misrepresentations of established policy',
 		value: 'policy',
-		tooltip: 'This includes "speedy deletion" templates for issues that are not speedy deletion criteria and disclaimer templates intended to be used in articles'
+		tooltip: 'This includes "speedy deletion" templates for issues that are not speedy deletion criteria and disclaimer templates intended to be used in articles',
+		subgroup: {
+			name: 'policy_rationale',
+			type: 'input',
+			label: 'Optional explanation: ',
+			size: 60
+		}
 	},
 	{
 		label: 'T3: Duplicate templates or hardcoded instances',
@@ -834,7 +861,7 @@ Twinkle.speedy.portalList = [
 		value: 'p1',
 		tooltip: 'You must specify the article criterion that applies in this case (A1, A3, A7, or A10).',
 		subgroup: {
-			name: 'p1_1',
+			name: 'p1_criterion',
 			type: 'input',
 			label: 'Article criterion that would apply: '
 		},
@@ -877,7 +904,7 @@ Twinkle.speedy.generalList = [
 		value: 'repost',
 		tooltip: 'A copy, by any title, of a page that was deleted via an XfD process or Deletion review, provided that the copy is substantially identical to the deleted version. This clause does not apply to content that has been "userfied", to content undeleted as a result of Deletion review, or if the prior deletions were proposed or speedy deletions, although in this last case, other speedy deletion criteria may still apply',
 		subgroup: {
-			name: 'repost_1',
+			name: 'repost_xfd',
 			type: 'input',
 			label: 'Page where the deletion discussion took place: ',
 			tooltip: 'Must start with "Wikipedia:"',
@@ -890,7 +917,7 @@ Twinkle.speedy.generalList = [
 		value: 'banned',
 		tooltip: 'Pages created by banned or blocked users in violation of their ban or block, and which have no substantial edits by others',
 		subgroup: {
-			name: 'banned_1',
+			name: 'banned_user',
 			type: 'input',
 			label: 'Username of banned user (if available): ',
 			tooltip: 'Should not start with "User:"'
@@ -898,29 +925,17 @@ Twinkle.speedy.generalList = [
 		hideSubgroupWhenMultiple: true
 	},
 	{
-		label: 'G6: History merge',
-		value: 'histmerge',
-		tooltip: 'Temporarily deleting a page in order to merge page histories',
-		subgroup: {
-			name: 'histmerge_1',
-			type: 'input',
-			label: 'Page to be merged into this one: '
-		},
-		hideWhenMultiple: true,
-		hideWhenSysop: true
-	},
-	{
 		label: 'G6: Move',
 		value: 'move',
 		tooltip: 'Making way for an uncontroversial move like reversing a redirect',
 		subgroup: [
 			{
-				name: 'move_1',
+				name: 'move_page',
 				type: 'input',
 				label: 'Page to be moved here: '
 			},
 			{
-				name: 'move_2',
+				name: 'move_reason',
 				type: 'input',
 				label: 'Reason: ',
 				size: 60
@@ -945,7 +960,7 @@ Twinkle.speedy.generalList = [
 		value: 'copypaste',
 		tooltip: 'This only applies for a copy-and-paste page move of another page that needs to be temporarily deleted to make room for a clean page move.',
 		subgroup: {
-			name: 'copypaste_1',
+			name: 'copypaste_sourcepage',
 			type: 'input',
 			label: 'Original page that was copy-pasted here: '
 		},
@@ -1050,22 +1065,7 @@ Twinkle.speedy.generalList = [
 	}
 ];
 
-Twinkle.speedy.redirectList = [
-	{
-		label: 'R2: Redirects from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
-		value: 'rediruser',
-		tooltip: '(this does not include the Wikipedia shortcut pseudo-namespaces). If this was the result of a page move, consider waiting a day or two before deleting the redirect'
-	},
-	{
-		label: 'R3: Redirects as a result of an implausible typo or misnomers that were recently created',
-		value: 'redirtypo',
-		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
-	},
-	{
-		label: 'R4: File namespace redirect with name that matches a Commons page',
-		value: 'redircom',
-		tooltip: 'The redirect should have no incoming links (unless the links are cleary intended for the file or redirect at Commons).'
-	},
+Twinkle.speedy.generalRedirectList = [
 	{
 		label: 'G6: Redirect to malplaced disambiguation page',
 		value: 'movedab',
@@ -1080,6 +1080,28 @@ Twinkle.speedy.redirectList = [
 	}
 ];
 
+Twinkle.speedy.redirectCriterion = [
+	{
+		label: 'R3: Redirects as a result of an implausible typo or misnomers that were recently created',
+		value: 'redirtypo',
+		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
+	}
+];
+Twinkle.speedy.articleRedirect = [
+	{
+		label: 'R2: Redirects from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
+		value: 'rediruser',
+		tooltip: '(this does not include the Wikipedia shortcut pseudo-namespaces). If this was the result of a page move, consider waiting a day or two before deleting the redirect'
+	}
+];
+Twinkle.speedy.fileRedirect = [
+	{
+		label: 'R4: File namespace redirect with name that matches a Commons page',
+		value: 'redircom',
+		tooltip: 'The redirect should have no incoming links (unless the links are cleary intended for the file or redirect at Commons).'
+	}
+];
+
 Twinkle.speedy.normalizeHash = {
 	'reason': 'db',
 	'nonsense': 'g1',
@@ -1088,7 +1110,6 @@ Twinkle.speedy.normalizeHash = {
 	'hoax': 'g3',
 	'repost': 'g4',
 	'banned': 'g5',
-	'histmerge': 'g6',
 	'move': 'g6',
 	'xfd': 'g6',
 	'movedab': 'g6',
@@ -1134,7 +1155,7 @@ Twinkle.speedy.normalizeHash = {
 	'unfree': 'f5',
 	'norat': 'f6',
 	'badfairuse': 'f7',
-	'nowcommons': 'f8',
+	'commons': 'f8',
 	'imgcopyvio': 'f9',
 	'badfiletype': 'f10',
 	'nopermission': 'f11',
@@ -1399,7 +1420,8 @@ Twinkle.speedy.callbacks = {
 		main: function(pageobj) {
 			var statelem = pageobj.getStatusElement();
 
-			if (!pageobj.exists()) {
+			// defaults to /doc for lua modules, which may not exist
+			if (!pageobj.exists() && mw.config.get('wgPageContentModel') !== 'Scribunto') {
 				statelem.error( "It seems that the page doesn't exist; perhaps it has already been deleted" );
 				return;
 			}
@@ -1457,8 +1479,6 @@ Twinkle.speedy.callbacks = {
 				editsummary += ').';
 			} else if (params.normalizeds[0] === "db") {
 				editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale "' + params.templateParams[0]["1"] + '".';
-			} else if (params.values[0] === "histmerge") {
-				editsummary = "Requesting history merge with [[:" + params.templateParams[0]["1"] + "]] ([[WP:CSD#G6|CSD G6]]).";
 			} else {
 				editsummary = "Requesting speedy deletion ([[WP:CSD#" + params.normalizeds[0].toUpperCase() + "|CSD " + params.normalizeds[0].toUpperCase() + "]]).";
 			}
@@ -1466,7 +1486,7 @@ Twinkle.speedy.callbacks = {
 			pageobj.setPageText(code + ((params.normalizeds.indexOf('g10') !== -1) ? '' : ("\n" + text) )); // cause attack pages to be blanked
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			pageobj.setWatchlist(params.watch);
-			pageobj.setCreateOption('nocreate');
+			pageobj.setCreateOption('recreate'); // Module /doc might not exist
 			pageobj.save(Twinkle.speedy.callbacks.user.tagComplete);
 		},
 
@@ -1580,11 +1600,24 @@ Twinkle.speedy.callbacks = {
 				appendText += "\n\n=== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ===";
 			}
 
+			var formatParamLog = function(normalize, csdparam, input) {
+				return ' [' + normalize + ' ' + csdparam + ': ' + input + ']';
+			};
+
+			var extraInfo = '';
 			var editsummary = "Logging speedy deletion nomination";
 			appendText += "\n# [[:" + Morebits.pageNameNorm;
 
 			if (params.fromDI) {
 				appendText += "]]: DI [[WP:CSD#" + params.normalized.toUpperCase() + "|CSD " + params.normalized.toUpperCase() + "]] ({{tl|di-" + params.templatename + "}})";
+				// The params data structure when coming from DI is quite different,
+				// so this hardcodes the only interesting items worth logging
+				['reason', 'replacement', 'source'].forEach(function(item) {
+					if (params[item]) {
+						extraInfo += formatParamLog(params.normalized.toUpperCase(), item, params[item]);
+						return false;
+					}
+				});
 				editsummary += " of [[:" + Morebits.pageNameNorm + "]].";
 			} else {
 				if (params.normalizeds.indexOf("g10") === -1) {  // no article name in log for G10 taggings
@@ -1606,8 +1639,33 @@ Twinkle.speedy.callbacks = {
 				} else {
 					appendText += "[[WP:CSD#" + params.normalizeds[0].toUpperCase() + "|CSD " + params.normalizeds[0].toUpperCase() + "]] ({{tl|db-" + params.values[0] + "}})";
 				}
+
+				// If params is "empty" it will still be full of empty arrays, but ask anyway
+				if (params.templateParams) {
+					// Treat custom rationale individually
+					if (params.normalizeds[0] && params.normalizeds[0] === 'db') {
+						extraInfo += formatParamLog('Custom', 'rationale', params.templateParams[0]["1"]);
+					} else {
+						params.templateParams.forEach(function(item, index) {
+							var keys = Object.keys(item);
+							if (keys[0] !== undefined && keys[0].length > 0) {
+								//Second loop required since G12 can have multiple urls
+								keys.forEach(function(key, keyIndex) {
+									if (keys[keyIndex] === 'blanked' || keys[keyIndex] === 'ts') {
+										return true; // Not worth logging
+									} else {
+										extraInfo += formatParamLog(params.normalizeds[index].toUpperCase(), keys[keyIndex], item[key]);
+									}
+								});
+							}
+						});
+					}
+				}
 			}
 
+			if (extraInfo) {
+				appendText += '; additional information:' + extraInfo;
+			}
 			if (params.logInitialContrib) {
 				appendText += "; notified {{user|1=" + params.logInitialContrib + "}}";
 			}
@@ -1654,41 +1712,29 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				break;
 
 			case 'repost':  // G4
-				if (form["csd.repost_1"]) {
-					var deldisc = form["csd.repost_1"].value;
+				if (form["csd.repost_xfd"]) {
+					var deldisc = form["csd.repost_xfd"].value;
 					if (deldisc) {
 						if (deldisc.substring(0, 9) !== "Wikipedia" && deldisc.substring(0, 3) !== "WP:") {
 							alert( 'CSD G4:  The deletion discussion page name, if provided, must start with "Wikipedia:".' );
 							parameters = null;
 							return false;
 						}
-						currentParams["1"] = deldisc;
+						currentParams.xfd = deldisc;
 					}
 				}
 				break;
 
 			case 'banned':  // G5
-				if (form["csd.banned_1"] && form["csd.banned_1"].value) {
-					currentParams["1"] = form["csd.banned_1"].value.replace(/^\s*User:/i, "");
-				}
-				break;
-
-			case 'histmerge':  // G6
-				if (form["csd.histmerge_1"]) {
-					var merger = form["csd.histmerge_1"].value;
-					if (!merger || !merger.trim()) {
-						alert( 'CSD G6 (histmerge):  Please specify the page to be merged.' );
-						parameters = null;
-						return false;
-					}
-					currentParams["1"] = merger;
+				if (form["csd.banned_user"] && form["csd.banned_user"].value) {
+					currentParams.user = form["csd.banned_user"].value.replace(/^\s*User:/i, "");
 				}
 				break;
 
 			case 'move':  // G6
-				if (form["csd.move_1"] && form["csd.move_2"]) {
-					var movepage = form["csd.move_1"].value,
-						movereason = form["csd.move_2"].value;
+				if (form["csd.move_page"] && form["csd.move_reason"]) {
+					var movepage = form["csd.move_page"].value,
+						movereason = form["csd.move_reason"].value;
 					if (!movepage || !movepage.trim()) {
 						alert( 'CSD G6 (move):  Please specify the page to be moved here.' );
 						parameters = null;
@@ -1699,8 +1745,8 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						parameters = null;
 						return false;
 					}
-					currentParams["1"] = movepage;
-					currentParams["2"] = movereason;
+					currentParams.page = movepage;
+					currentParams.reason = movereason;
 				}
 				break;
 
@@ -1719,14 +1765,14 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				break;
 
 			case 'copypaste':  // G6
-				if (form["csd.copypaste_1"]) {
-					var copypaste = form["csd.copypaste_1"].value;
+				if (form["csd.copypaste_sourcepage"]) {
+					var copypaste = form["csd.copypaste_sourcepage"].value;
 					if (!copypaste || !copypaste.trim()) {
 						alert( 'CSD G6 (copypaste):  Please specify the source page name.' );
 						parameters = null;
 						return false;
 					}
-					currentParams["1"] = copypaste;
+					currentParams.sourcepage = copypaste;
 				}
 				break;
 
@@ -1799,28 +1845,31 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				break;
 
 			case 'badfairuse':  // F7
-				if (form["csd.badfairuse_reason"] && form["csd.badfairuse_reason"].value) {
-					currentParams.reason = form["csd.badfairuse_reason"].value;
+				if (form["csd.badfairuse_rationale"] && form["csd.badfairuse_rationale"].value) {
+					currentParams.rationale = form["csd.badfairuse_rationale"].value;
 				}
 				break;
 
-			case 'nowcommons':  // F8
-				if (form["csd.nowcommons_filename"]) {
-					var filename = form["csd.nowcommons_filename"].value;
+			case 'commons':  // F8
+				if (form["csd.commons_filename"]) {
+					var filename = form["csd.commons_filename"].value;
 					if (filename && filename !== Morebits.pageNameNorm) {
-						if (filename.indexOf("Image:") === 0 || filename.indexOf("File:") === 0) {
-							currentParams["1"] = filename;
-						} else {
-							currentParams["1"] = "File:" + filename;
-						}
+						currentParams.filename = (filename.indexOf("Image:") === 0 || filename.indexOf("File:") === 0) ? filename : "File:" + filename;
 					}
 				}
-				currentParams.date = "~~~~~";
 				break;
 
 			case 'imgcopyvio':  // F9
-				if (form["csd.imgcopyvio_url"] && form["csd.imgcopyvio_url"].value) {
-					currentParams.url = form["csd.imgcopyvio_url"].value;
+				if (form["csd.imgcopyvio_url"] && form["csd.imgcopyvio_rationale"]) {
+					var f9url = form["csd.imgcopyvio_url"].value;
+					var f9rationale = form["csd.imgcopyvio_rationale"].value;
+					if ((!f9url || !f9url.trim()) && (!f9rationale || !f9rationale.trim())) {
+						alert( 'CSD F9: You must enter a url or reason (or both) when nominating a file under F9.' );
+						parameters = null;
+						return false;
+					}
+					currentParams.url = f9url;
+					currentParams.rationale = f9rationale;
 				}
 				break;
 
@@ -1836,6 +1885,12 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
+			case 'transwiki':  // A5
+				if (form["csd.transwiki_location"] && form["csd.transwiki_location"].value) {
+					currentParams.location = form["csd.transwiki_location"].value;
+				}
+				break;
+
 			case 'a10':  // A10
 				if (form["csd.a10_article"]) {
 					var duptitle = form["csd.a10_article"].value;
@@ -1848,6 +1903,12 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
+			case 'policy':  // T2
+				if (form["csd.policy_rationale"] && form["csd.policy_rationale"].value) {
+					currentParams.rationale = form["csd.policy_rationale"].value;
+				}
+				break;
+
 			case 'duplicatetemplate':  // T3
 				if (form["csd.duplicatetemplate_2"]) {
 					var t3template = form["csd.duplicatetemplate_2"].value;
@@ -1856,8 +1917,8 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						parameters = null;
 						return false;
 					}
-					currentParams["1"] = "~~~~~";
-					currentParams["2"] = t3template.replace(/^\s*Template:/i, "");
+					currentParams.ts = "~~~~~";
+					currentParams.template = t3template.replace(/^\s*Template:/i, "");
 				}
 				break;
 
@@ -1869,7 +1930,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						parameters = null;
 						return false;
 					}
-					currentParams["1"] = criterion;
+					currentParams.criterion = criterion;
 				}
 				break;
 
@@ -2047,7 +2108,9 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 	Morebits.wiki.actionCompleted.notice = "Tagging complete";
 
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging page");
+	// Modules can't be tagged, follow standard at TfD and place on /doc subpage
+	var isScribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
+	var wikipedia_page = isScribunto ? new Morebits.wiki.page(mw.config.get('wgPageName')+'/doc', "Tagging module documentation page") : new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging page");
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.speedy.callbacks.user.main);
 };

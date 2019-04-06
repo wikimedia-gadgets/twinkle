@@ -56,7 +56,7 @@ Twinkle.config.commonSets = {
 		g10: "G10", g11: "G11", g12: "G12", g13: "G13", g14: "G14",
 		a1: "A1", a2: "A2", a3: "A3", a5: "A5", a7: "A7", a9: "A9", a10: "A10", a11: "A11",
 		u3: "U3", u5: "U5",
-		f1: "F1", f2: "F2", f3: "F3", f7: "F7", f8: "F8", f9: "F9", f10: "F10",
+		f1: "F1", f2: "F2", f3: "F3", f7: "F7", f9: "F9", f10: "F10",
 		c1: "C1",
 		t2: "T2", t3: "T3",
 		r2: "R2", r3: "R3", r4: "R4",
@@ -301,6 +301,15 @@ Twinkle.config.sections = [
 {
 	title: "Revert and rollback",  // twinklefluff module
 	preferences: [
+		// TwinkleConfig.autoMenuAfterRollback (bool)
+		// Option to automatically open the warning menu if the user talk page is opened post-reversion
+		{
+			name: "autoMenuAfterRollback",
+			label: "Automatically open the Twinkle warn menu on a user talk page after Twinkle rollback",
+			helptip: "Only operates if the relevant box is checked below.",
+			type: "boolean"
+		},
+
 		// TwinkleConfig.openTalkPage (array)
 		// What types of actions that should result in opening of talk page
 		{
@@ -669,12 +678,6 @@ Twinkle.config.sections = [
 			type: "customList",
 			customListValueTitle: "Template name (no curly brackets)",
 			customListLabelTitle: "Text to show in warning list (also used as edit summary)"
-		},
-
-		{
-			name: "markXfdPagesAsPatrolled",
-			label: "Mark page as patrolled when nominating for AFD (if possible)",
-			type: "boolean"
 		}
 	]
 },
@@ -775,6 +778,23 @@ Twinkle.config.sections = [
 			label: "Add user talk page of initial contributor to watchlist (when notifying)",
 			type: "enum",
 			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+
+		// TwinkleConfig.xfdWatchRelated (string)
+		// The watchlist setting of the target of a redirect being nominated for RfD. Either "yes" (add to watchlist), "no" (don't
+		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+		{
+			name: "xfdWatchRelated",
+			label: "Add the redirect's target page to watchlist (when notifying)",
+			helptip: "This only applies for RfD, when leaving a notification on the talk page of the target of the redirect",
+			type: "enum",
+			enumValues: Twinkle.config.commonEnums.watchlist
+		},
+
+		{
+			name: "markXfdPagesAsPatrolled",
+			label: "Mark page as patrolled when nominating for AFD (if possible)",
+			type: "boolean"
 		}
 	]
 },
