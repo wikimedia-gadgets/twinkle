@@ -859,7 +859,7 @@ Twinkle.speedy.portalList = [
 	{
 		label: 'P1: Portal that would be subject to speedy deletion if it were an article',
 		value: 'p1',
-		tooltip: 'You must specify the article criterion that applies in this case (A1, A3, A7, or A10).',
+		tooltip: 'You must specify a single article criterion that applies in this case (A1, A3, A7, or A10).',
 		subgroup: {
 			name: 'p1_criterion',
 			type: 'input',
@@ -951,6 +951,7 @@ Twinkle.speedy.generalList = [
 			name: 'xfd_fullvotepage',
 			type: 'input',
 			label: 'Page where the deletion discussion was held: ',
+			tooltip: 'Must start with "Wikipedia:"',
 			size: 40
 		},
 		hideWhenMultiple: true
@@ -1032,21 +1033,21 @@ Twinkle.speedy.generalList = [
 				name: 'copyvio_url',
 				type: 'input',
 				label: 'URL (if available): ',
-				tooltip: 'If the material was copied from an online source, put the URL here, including the "http://" or "https://" protocol. If the URL is on the spam blacklist, you can leave off the protocol.',
+				tooltip: 'If the material was copied from an online source, put the URL here, including the "http://" or "https://" protocol.',
 				size: 60
 			},
 			{
 				name: 'copyvio_url2',
 				type: 'input',
 				label: 'Additional URL: ',
-				tooltip: 'Optional.',
+				tooltip: 'Optional. Should begin with "http://" or "https://"',
 				size: 60
 			},
 			{
 				name: 'copyvio_url3',
 				type: 'input',
 				label: 'Additional URL: ',
-				tooltip: 'Optional.',
+				tooltip: 'Optional. Should begin with "http://" or "https://"',
 				size: 60
 			}
 		]
@@ -1602,7 +1603,23 @@ Twinkle.speedy.callbacks = {
 			}
 
 			var formatParamLog = function(normalize, csdparam, input) {
-				return ' [' + normalize + ' ' + csdparam + ': ' + input + ']';
+				if ((normalize === 'G4' && csdparam === 'xfd') || (normalize === 'G6' && csdparam === 'page') || (normalize === 'G6' && csdparam === 'fullvotepage') || (normalize === 'G6' && csdparam === 'sourcepage')
+					|| (normalize === 'A2' && csdparam === 'source') || (normalize === 'A10' && csdparam === 'article') || (normalize === 'F5' && csdparam === 'replacement')) {
+					input = '[[:' + input + ']]';
+				} else if (normalize === 'G5' && csdparam === 'user') {
+					input = '[[:User:' + input + ']]';
+				} else if (normalize === 'G12' && csdparam.lastIndexOf('url', 0) === 0 && input.lastIndexOf('http', 0) === 0) {
+					input = '[' + input + ' ' + input + ']';
+				} else if (normalize === 'F1' && csdparam === 'filename') {
+					input = '[[:File:' + input + ']]';
+				} else if (normalize === 'T3' && csdparam === 'template') {
+					input = '[[:Template:' + input + ']]';
+				} else if (normalize === 'F8' && csdparam === 'filename') {
+					input = '[[commons:' + input + ']]';
+				} else if (normalize === 'P1' && csdparam === 'criterion') {
+					input = '[[WP:CSD#' + input + ']]';
+				}
+				return ' {' + normalize + ' ' + csdparam + ': ' + input + '}';
 			};
 
 			var extraInfo = '';
@@ -1931,7 +1948,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form["csd.p1_criterion"]) {
 					var criterion = form["csd.p1_criterion"].value;
 					if (!criterion || !criterion.trim()) {
-						alert( 'CSD P1:  Please specify a criterion and/or associated rationale.' );
+						alert( 'CSD P1:  Please specify a single criterion.' );
 						parameters = null;
 						return false;
 					}
