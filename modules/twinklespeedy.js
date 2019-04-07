@@ -389,10 +389,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	}
 
 	var generalCriteria = Twinkle.speedy.generalList;
-	// G1 and G2 aren't supposed to be used on userpages
-	if (namespace !== 2) {
-		generalCriteria = Twinkle.speedy.generalNonUser.concat(generalCriteria);
-	}
+
 	// custom rationale lives under general criteria when tagging
 	if(!Twinkle.speedy.mode.isSysop(mode)) {
 		generalCriteria = Twinkle.speedy.customRationale.concat(generalCriteria);
@@ -476,6 +473,8 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 		}
 
 		if (criterion.showInNamespaces && criterion.showInNamespaces.indexOf(mw.config.get('wgNamespaceNumber')) < 0) {
+			return null;
+		} else if (criterion.hideInNamespaces && criterion.hideInNamespaces.indexOf(mw.config.get('wgNamespaceNumber')) > -1) {
 			return null;
 		}
 
@@ -871,20 +870,19 @@ Twinkle.speedy.portalList = [
 	}
 ];
 
-Twinkle.speedy.generalNonUser = [
+Twinkle.speedy.generalList = [
 	{
 		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
 		value: 'nonsense',
-		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.'
+		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.',
+		hideInNamespaces: [ 2 ]		// Not applicable in userspace
 	},
 	{
 		label: 'G2: Test page',
 		value: 'test',
-		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates (although criterion T3 may apply).'
-	}
-];
-
-Twinkle.speedy.generalList = [
+		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates (although criterion T3 may apply).',
+		hideInNamespaces: [ 2 ]		// Not applicable in userspace
+	},
 	{
 		label: 'G3: Pure vandalism',
 		value: 'vandalism',
