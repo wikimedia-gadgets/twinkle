@@ -1650,7 +1650,7 @@ Twinkle.speedy.callbacks = {
 						params.templateParams.forEach(function(item, index) {
 							var keys = Object.keys(item);
 							if (keys[0] !== undefined && keys[0].length > 0) {
-								//Second loop required since G12 can have multiple urls
+								//Second loop required since some items (G12, F9) may have multiple keys
 								keys.forEach(function(key, keyIndex) {
 									if (keys[keyIndex] === 'blanked' || keys[keyIndex] === 'ts') {
 										return true; // Not worth logging
@@ -1869,8 +1869,12 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						parameters = null;
 						return false;
 					}
-					currentParams.url = f9url;
-					currentParams.rationale = f9rationale;
+					if (form["csd.imgcopyvio_url"].value) {
+						currentParams.url = f9url;
+					}
+					if (form["csd.imgcopyvio_rationale"].value) {
+						currentParams.rationale = f9rationale;
+					}
 				}
 				break;
 
