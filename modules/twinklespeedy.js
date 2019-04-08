@@ -478,7 +478,6 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			return null;
 		}
 
-
 		if (criterion.subgroup && !hasSubmitButton) {
 			if (Array.isArray(criterion.subgroup)) {
 				criterion.subgroup = criterion.subgroup.concat({
@@ -1000,7 +999,8 @@ Twinkle.speedy.generalList = [
 		label: 'G8: Subpages with no parent page',
 		value: 'subpage',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
-		hideWhenMultiple: true
+		hideWhenMultiple: true,
+		hideInNamespaces: [ 0, 6, 8 ]  // hide in main, file, and mediawiki-spaces
 	},
 	{
 		label: 'G10: Attack page',
