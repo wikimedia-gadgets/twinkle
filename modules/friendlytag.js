@@ -1296,6 +1296,8 @@ Twinkle.tag.callbacks = {
 					'(?:proposed deletion|prod blp)\\/dated\\n(?:\\s+\\|(?:concern|user|timestamp|help).*)+|' +
 					// various hatnote templates
 					'about|correct title|dablink|distinguish|for|other\\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\\s?(?:also|wiktionary)|selfref|the' +
+					// not a hatnote, but sometimes under a CSD or AfD
+					'|salt|proposed deletion endorsed' +
 					// end main template name, optionally with a number (such as redirect2)
 					')\\d*\\s*' +
 					// template parameters
@@ -1306,7 +1308,7 @@ Twinkle.tag.callbacks = {
 					'(?:\\s*\\n)?)' +
 					// trailing whitespace
 					'\\s*)?',
-					'i'), "$1" + tagText
+						'i'), "$1" + tagText
 			);
 		}
 		summaryText += ( tags.length > 0 ? ' tag' + ( tags.length > 1 ? 's' : '' ) : '' ) +
