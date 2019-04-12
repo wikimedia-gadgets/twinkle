@@ -511,6 +511,20 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 	}
 };
 
+Twinkle.xfd.setWatchPref = function twinklexfdsetWatchPref(pageobj, pref) {
+	switch (pref) {
+		case 'yes':
+			pageobj.setWatchlist(true);
+			break;
+		case 'no':
+			pageobj.setWatchlistFromPreferences(false);
+			break;
+		default:
+			pageobj.setWatchlistFromPreferences(true);
+			break;
+	}
+}
+
 Twinkle.xfd.callbacks = {
 	getDiscussionWikitext: function(venue, params) {
 		if (venue === "cfds") { // CfD/S takes a completely different style
@@ -723,17 +737,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setPageText((params.noinclude ? "<noinclude>{{" : "{{") + (params.number === '' ? "subst:afd|help=off" : ('subst:afdx|' +
 				params.number + "|help=off")) + (params.noinclude ? "}}</noinclude>\n" : "}}\n") + text);
 			pageobj.setEditSummary("Nominated for deletion; see [[:" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchPage')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('nocreate');
 			pageobj.save();
 		},
@@ -742,17 +746,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext("afd", params));
 			pageobj.setEditSummary("Creating deletion discussion page for [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchDiscussion')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('createonly');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -773,17 +767,7 @@ Twinkle.xfd.callbacks = {
 			}
 			pageobj.setPageText(text);
 			pageobj.setEditSummary("Adding [[:" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchList')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchList'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
@@ -802,17 +786,7 @@ Twinkle.xfd.callbacks = {
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: [[" + params.discussionpage + "|nomination]] of [[:" + Morebits.pageNameNorm + "]]  at [[WP:AFD|articles for deletion]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
-			switch (Twinkle.getPref('xfdWatchUser')) {
-				case 'yes':
-					usertalkpage.setWatchlist(true);
-					break;
-				case 'no':
-					usertalkpage.setWatchlistFromPreferences(false);
-					break;
-				default:
-					usertalkpage.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
 			usertalkpage.setFollowRedirect(true);
 			usertalkpage.append();
 		},
@@ -836,17 +810,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setPageText((params.noinclude ? "<noinclude>" : "") + "{{subst:template for discussion|help=off" +
 				(params.tfdtype !== "standard" ? "|type=" + params.tfdtype : "") + (params.noinclude ? "}}</noinclude>" : "}}") + tableNewline + text);
 			pageobj.setEditSummary("Nominated for deletion; see [[:" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchPage')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('recreate'); // Module /doc might not exist
 			pageobj.save();
 		},
@@ -859,17 +823,7 @@ Twinkle.xfd.callbacks = {
 				(params.tfdtype !== "standard" ? "type=" + params.tfdtype + "|" : "") + "1=" + params.otherTemplateName.replace(/^(?:Template|Module):/, "") +
 				(params.noinclude ? "}}</noinclude>" : "}}") + tableNewline + text);
 			pageobj.setEditSummary("Listed for merging with [[:" + params.otherTemplateName + "]]; see [[:" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchPage')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('recreate'); // Module /doc might not exist
 			pageobj.save();
 		},
@@ -887,17 +841,7 @@ Twinkle.xfd.callbacks = {
 			}
 			pageobj.setPageText(text);
 			pageobj.setEditSummary("Adding " + (params.xfdcat === 'tfd' ? 'deletion nomination' : 'merge listing') + " of [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchDiscussion')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -931,17 +875,7 @@ Twinkle.xfd.callbacks = {
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: [[" + params.discussionpage + "|listing]] of [[:" + pageobj.getPageName() + "]] at [[WP:TFD|templates for discussion]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
-			switch (Twinkle.getPref('xfdWatchUser')) {
-				case 'yes':
-					usertalkpage.setWatchlist(true);
-					break;
-				case 'no':
-					usertalkpage.setWatchlistFromPreferences(false);
-					break;
-				default:
-					usertalkpage.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
 			usertalkpage.setFollowRedirect(true);
 			usertalkpage.append();
 		}
@@ -1026,17 +960,7 @@ Twinkle.xfd.callbacks = {
 				((params.number === '') ? "mfd" : ("mfdx|" + params.number)) + "|help=off}}\n" +
 				(params.noinclude ? "</noinclude>" : "") + text);
 			pageobj.setEditSummary("Nominated for deletion; see [[:" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchPage')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('nocreate');
 			pageobj.save();
 		},
@@ -1045,17 +969,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext("mfd", params));
 			pageobj.setEditSummary("Creating deletion discussion page for [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchDiscussion')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('createonly');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -1081,17 +995,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText(text);
 			pageobj.setEditSummary("Adding [[:" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchList')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchList'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
@@ -1122,17 +1026,7 @@ Twinkle.xfd.callbacks = {
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: [[" + params.discussionpage + "|nomination]] of [[:" + Morebits.pageNameNorm + "]] at [[WP:MFD|miscellany for deletion]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
-			switch (Twinkle.getPref('xfdWatchUser')) {
-				case 'yes':
-					usertalkpage.setWatchlist(true);
-					break;
-				case 'no':
-					usertalkpage.setWatchlistFromPreferences(false);
-					break;
-				default:
-					usertalkpage.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
 			usertalkpage.setFollowRedirect(true);
 			usertalkpage.append();
 		}
@@ -1163,17 +1057,7 @@ Twinkle.xfd.callbacks = {
 					usertalkpage.setAppendText(notifytext);
 					usertalkpage.setEditSummary("Notification: [[" + params.discussionpage + "|listing]] of [[:" + Morebits.pageNameNorm + "]] at [[WP:FFD|files for discussion]]." + Twinkle.getPref('summaryAd'));
 					usertalkpage.setCreateOption('recreate');
-					switch (Twinkle.getPref('xfdWatchUser')) {
-						case 'yes':
-							usertalkpage.setWatchlist(true);
-							break;
-						case 'no':
-							usertalkpage.setWatchlistFromPreferences(false);
-							break;
-						default:
-							usertalkpage.setWatchlistFromPreferences(true);
-							break;
-					}
+					Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
 					usertalkpage.setFollowRedirect(true);
 					usertalkpage.append();
 				}
@@ -1187,17 +1071,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText("{{ffd|log=" + params.date + "|help=off}}\n" + text);
 			pageobj.setEditSummary("Listed for discussion at [[:" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchPage')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
 			pageobj.save();
 		},
@@ -1212,17 +1086,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText(text + "\n\n" + Twinkle.xfd.callbacks.getDiscussionWikitext("ffd", params));
 			pageobj.setEditSummary("Adding [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchDiscussion')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -1266,17 +1130,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText(added_data + "\n" + text);
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchPage')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
 			pageobj.save();
 		},
@@ -1303,17 +1157,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText(text);
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchDiscussion')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -1334,17 +1178,7 @@ Twinkle.xfd.callbacks = {
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: [[" + params.discussionpage + "|listing]] of [[:" + Morebits.pageNameNorm + "]] at [[WP:CFD|categories for discussion]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
-			switch (Twinkle.getPref('xfdWatchUser')) {
-				case 'yes':
-					usertalkpage.setWatchlist(true);
-					break;
-				case 'no':
-					usertalkpage.setWatchlistFromPreferences(false);
-					break;
-				default:
-					usertalkpage.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
 			usertalkpage.setFollowRedirect(true);
 			usertalkpage.append();
 		}
@@ -1358,17 +1192,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText("{{subst:cfr-speedy|1=" + params.target + "}}\n" + text);
 			pageobj.setEditSummary("Listed for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchPage')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
 			pageobj.save();
 		},
@@ -1386,17 +1210,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText(text);
 			pageobj.setEditSummary("Adding [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchDiscussion')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -1473,17 +1287,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText("{{subst:rfd|content=\n" + text + "\n}}");
 			pageobj.setEditSummary("Listed for discussion at [[:" + params.discussionpage + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchPage')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('nocreate');
 			pageobj.save();
 		},
@@ -1502,17 +1306,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setPageText(text);
 			pageobj.setEditSummary("Adding [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-			switch (Twinkle.getPref('xfdWatchDiscussion')) {
-				case 'yes':
-					pageobj.setWatchlist(true);
-					break;
-				case 'no':
-					pageobj.setWatchlistFromPreferences(false);
-					break;
-				default:
-					pageobj.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -1558,17 +1352,7 @@ Twinkle.xfd.callbacks = {
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary("Notification: [[" + params.discussionpage + "|listing]] of [[:" + Morebits.pageNameNorm + "]] at [[WP:RFD|redirects for discussion]]." + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
-			switch (Twinkle.getPref('xfdWatchUser')) {
-				case 'yes':
-					usertalkpage.setWatchlist(true);
-					break;
-				case 'no':
-					usertalkpage.setWatchlistFromPreferences(false);
-					break;
-				default:
-					usertalkpage.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
 			usertalkpage.setFollowRedirect(true);
 			usertalkpage.append();
 		},
@@ -1578,17 +1362,7 @@ Twinkle.xfd.callbacks = {
 			targettalkpage.setAppendText(notifytext);
 			targettalkpage.setEditSummary("Notification: [[" + params.discussionpage + "|listing]] of [[:" + Morebits.pageNameNorm + "]] at [[WP:RFD|redirects for discussion]]." + Twinkle.getPref('summaryAd'));
 			targettalkpage.setCreateOption('recreate');
-			switch (Twinkle.getPref('xfdWatchRelated')) {
-				case 'yes':
-					targettalkpage.setWatchlist(true);
-					break;
-				case 'no':
-					targettalkpage.setWatchlistFromPreferences(false);
-					break;
-				default:
-					targettalkpage.setWatchlistFromPreferences(true);
-					break;
-			}
+			Twinkle.xfd.setWatchPref(targettalkpage, Twinkle.getPref('xfdWatchRelated'));
 			targettalkpage.setFollowRedirect(true);
 			targettalkpage.append();
 		}
