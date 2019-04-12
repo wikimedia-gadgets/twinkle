@@ -54,7 +54,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	var form = new Morebits.quickForm( Twinkle.xfd.callback.evaluate );
 	var categories = form.append( {
 			type: 'select',
-			name: 'category',
+			name: 'type',
 			label: 'Deletion discussion venue:',
 			tooltip: 'When activated, a default choice is made, based on what namespace you are in. This default should be the most appropriate',
 			event: Twinkle.xfd.callback.change_category
@@ -140,7 +140,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	// We must init the controls
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
-	result.category.dispatchEvent( evt );
+	result.type.dispatchEvent( evt );
 };
 
 Twinkle.xfd.previousNotify = true;
@@ -506,7 +506,7 @@ Twinkle.xfd.callbacks = {
 		form.previewer.beginRender(templatetext, "WP:TW"); // Force wikitext
 	},
 	preview: function(form) {
-		var venue = form.category.value;
+		var venue = form.type.value;
 		var params = {
 			reason: form.xfdreason.value,
 		};
@@ -1514,49 +1514,28 @@ Twinkle.xfd.callbacks = {
 
 
 Twinkle.xfd.callback.evaluate = function(e) {
-	var type = e.target.category.value;
-	var usertalk = e.target.notify.checked;
-	var reason = e.target.xfdreason.value;
-	var xfdcat, xfdtarget, xfdtarget2, noinclude, tfdtype, notifyuserspace, relatedpage;
-	if( type === "afd" || type === "cfd" || type === "cfds" || type === "tfd" ) {
-		xfdcat = e.target.xfdcat.value;
-	}
-	if( type === "cfd" || type === "cfds" ) {
-		xfdtarget = e.target.xfdtarget.value;
-		if (e.target.xfdtarget2) {
-			xfdtarget2 = e.target.xfdtarget2.value;
-		}
-	}
-	if( type === "afd" || type === "mfd" || type === "tfd" ) {
-		noinclude = e.target.noinclude.checked;
-	}
-	if( type === 'tfd' ) {
-		if (e.target.xfdtarget) {
-			xfdtarget = e.target.xfdtarget.value;
-		}
-		tfdtype = e.target.templatetype.value;
-	}
-	if( type === 'mfd' ) {
-		notifyuserspace = e.target.notifyuserspace && e.target.notifyuserspace.checked;
-	}
-	if( type === 'rfd' ) {
-		relatedpage = e.target.relatedpage.checked;
-	}
+
+	// Store the values filled into form as data[<form-elementname>]
+	// Value of input field with name xyz will be available as data.xyz
+	var data = {};
+	$(e.target).find('input, select, textarea').each(function(i,el) {
+		data[el.name] = (el.type === 'checkbox' ? el.checked : el.value);
+	});
 
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( e.target );
 
-	Twinkle.xfd.currentRationale = reason;
+	Twinkle.xfd.currentRationale = data.xfdreason;
 	Morebits.status.onError(Twinkle.xfd.printRationale);
 
-	if( !type ) {
+	if( !data.type ) {
 		Morebits.status.error( 'Error', 'no action given' );
 		return;
 	}
 
 	var query, wikipedia_page, wikipedia_api, logpage, params;
 	var date = new Date();
-	switch( type ) {
+	switch( data.type ) {
 
 	case 'afd': // AFD
 		query = {
@@ -1565,29 +1544,28 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			'apprefix': 'Articles for deletion/' + Morebits.pageNameNorm,
 			'apnamespace': 4,
 			'apfilterredir': 'nonredirects',
-			'aplimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500
+			'aplimit': 'max'
 		};
 		wikipedia_api = new Morebits.wiki.api( 'Tagging article with deletion tag', query, Twinkle.xfd.callbacks.afd.main );
-		wikipedia_api.params = { usertalk:usertalk, reason:reason, noinclude:noinclude, xfdcat:xfdcat };
+		wikipedia_api.params = { usertalk: data.notify, reason: data.xfdreason, noinclude: data.noinclude, xfdcat: data.xfdcat };
 		wikipedia_api.post();
 		break;
 
 	case 'tfd': // TFD
 		Morebits.wiki.addCheckpoint();
-		if (xfdtarget) {
-			xfdtarget = Morebits.string.toUpperCaseFirstChar(xfdtarget.replace(/^:?(?:Template|Module):/i, ''));
-		} else {
-			xfdtarget = '';
+		var xfdtarget = '';
+		if (data.xfdtarget) {
+			xfdtarget = Morebits.string.toUpperCaseFirstChar(data.xfdtarget.replace(/^:?(?:Template|Module):/i, ''));
 		}
 
 		logpage = 'Wikipedia:Templates for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 
-		params = { tfdtype: tfdtype, logpage: logpage, noinclude: noinclude, xfdcat: xfdcat, target: xfdtarget, reason: reason };
+		params = { tfdtype: data.templatetype, logpage: logpage, noinclude: data.noinclude, xfdcat: data.xfdcat, target: xfdtarget, reason: data.xfdreason };
 
 		// Modules can't be tagged, TfD instructions are to place on /doc subpage
 		var isScribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
 		// Tagging template(s)/module(s)
-		if (xfdcat === "tfm") { // Merge
+		if (data.xfdcat === "tfm") { // Merge
 			// Tag this template/module
 			if (isScribunto) {
 				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName')+'/doc', "Tagging this module documentation with merge tag");
@@ -1633,11 +1611,11 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		wikipedia_page.load(Twinkle.xfd.callbacks.tfd.todaysList);
 
 		// Notification to first contributors
-		if (usertalk) {
+		if (data.notify) {
 			var involvedpages = [];
 			var seenusers = [];
 			involvedpages.push(new Morebits.wiki.page(mw.config.get('wgPageName')));
-			if (xfdcat === "tfm") {
+			if (data.xfdcat === "tfm") {
 				if (isScribunto) {
 					involvedpages.push(new Morebits.wiki.page("Module:" + xfdtarget));
 				} else {
@@ -1666,17 +1644,17 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			'apprefix': 'Miscellany for deletion/' + Morebits.pageNameNorm,
 			'apnamespace': 4,
 			'apfilterredir': 'nonredirects',
-			'aplimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500
+			'aplimit': 'max'
 		};
 		wikipedia_api = new Morebits.wiki.api( "Looking for prior nominations of this page", query, Twinkle.xfd.callbacks.mfd.main );
-		wikipedia_api.params = { usertalk: usertalk, notifyuserspace: notifyuserspace, reason: reason, noinclude: noinclude, xfdcat: xfdcat };
+		wikipedia_api.params = { usertalk: data.notify, notifyuserspace: data.notifyuserspace, reason: data.xfdreason, noinclude: data.noinclude, xfdcat: data.xfdcat };
 		wikipedia_api.post();
 		break;
 
 	case 'ffd': // FFD
 		var dateString = date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 		logpage = 'Wikipedia:Files for discussion/' + dateString;
-		params = { usertalk: usertalk, reason: reason, date: dateString, logpage: logpage };
+		params = { usertalk: data.notify, reason: data.xfdreason, date: dateString, logpage: logpage };
 
 		Morebits.wiki.addCheckpoint();
 
@@ -1701,19 +1679,19 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	case 'cfd':
 		Morebits.wiki.addCheckpoint();
 
-		if( xfdtarget ) {
-			xfdtarget = xfdtarget.replace( /^:?Category:/i, '' );
+		if( data.xfdtarget ) {
+			data.xfdtarget = data.xfdtarget.replace( /^:?Category:/i, '' );
 		} else {
-			xfdtarget = '';
+			data.xfdtarget = '';
 		}
 
-		if( xfdtarget2 ) {
-			xfdtarget2 = xfdtarget2.replace( /^:?Category:/i, '' );
+		if( data.xfdtarget2 ) {
+			data.xfdtarget2 = data.xfdtarget2.replace( /^:?Category:/i, '' );
 		}
 
 		logpage = 'Wikipedia:Categories for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 
-		params = { reason: reason, xfdcat: xfdcat, target: xfdtarget, target2: xfdtarget2, logpage: logpage };
+		params = { reason: data.xfdreason, xfdcat: data.xfdcat, target: data.xfdtarget, target2: data.xfdtarget2, logpage: logpage };
 
 		// Updating data for the action completed event
 		Morebits.wiki.actionCompleted.redirect = logpage;
@@ -1734,7 +1712,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		wikipedia_page.load(Twinkle.xfd.callbacks.cfd.todaysList);
 
 		// Notification to first contributor
-		if (usertalk) {
+		if (data.notify) {
 			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.cfd.userNotification);
@@ -1744,10 +1722,10 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		break;
 
 	case 'cfds':
-		xfdtarget = xfdtarget.replace( /^:?Category:/, '' );
+		data.xfdtarget = data.xfdtarget.replace( /^:?Category:/, '' );
 
 		logpage = "Wikipedia:Categories for discussion/Speedy";
-		params = { reason: reason, xfdcat: xfdcat, target: xfdtarget };
+		params = { reason: data.xfdreason, xfdcat: data.xfdcat, target: data.xfdtarget };
 
 		// Updating data for the action completed event
 		Morebits.wiki.actionCompleted.redirect = logpage;
@@ -1766,7 +1744,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		break;
 
 	case 'rfd':
-		params = { usertalk: usertalk, relatedpage: relatedpage, reason: reason };
+		params = { usertalk: data.notify, relatedpage: data.relatedpage, reason: data.xfdreason };
 		// find target and pass main as the callback
 		Twinkle.xfd.callbacks.rfd.findTarget(params, Twinkle.xfd.callbacks.rfd.main);
 		break;
