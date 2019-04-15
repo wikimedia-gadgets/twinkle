@@ -584,7 +584,7 @@ Twinkle.speedy.fileList = [
 	},
 	{
 		label: 'F5: Unused unfree copyrighted file',
-		value: 'unfree',
+		value: 'f5',
 		tooltip: 'Files that are not under a free license or in the public domain that are not used in any article and that have been tagged with a template that places them in a dated subcategory of Category:Orphaned fairuse files for more than seven days. Reasonable exceptions may be made for file uploaded for an upcoming article. Use the "Orphaned fair use" option in Twinkle\'s DI module to tag files for forthcoming deletion.',
 		hideWhenUser: true
 	},
@@ -1153,6 +1153,7 @@ Twinkle.speedy.normalizeHash = {
 	'noncom': 'f3',
 	'unksource': 'f4',
 	'unfree': 'f5',
+	'f5': 'f5',
 	'norat': 'f6',
 	'badfairuse': 'f7',
 	'commons': 'f8',
