@@ -3844,7 +3844,8 @@ Morebits.batchOperation = function(currentAction) {
 
 		// internal counters, etc.
 		statusElement: new Morebits.status(currentAction || "Performing batch operation"),
-		worker: null,
+		worker: null,		// function that executes for each item in pageList
+		postFinish: null,	// function that executes when the whole batch has been processed
 		countStarted: 0,
 		countFinished: 0,
 		countFinishedSuccess: 0,
@@ -3879,11 +3880,13 @@ Morebits.batchOperation = function(currentAction) {
 	};
 
 	/**
-	 * Runs the given callback for each page in the list.
+	 * Runs the first callback for each page in the list.
 	 * The callback must call workerSuccess when succeeding, or workerFailure when failing.
+	 * Runs the second callback when the whole batch has been processed (optional)
 	 * @param {Function} worker
+	 * @param {Function} [postFinish]
 	 */
-	this.run = function(worker) {
+	this.run = function(worker, postFinish) {
 		if (ctx.running) {
 			ctx.statusElement.error("Batch operation is already running");
 			return;
@@ -3891,6 +3894,7 @@ Morebits.batchOperation = function(currentAction) {
 		ctx.running = true;
 
 		ctx.worker = worker;
+		ctx.postFinish = postFinish;
 		ctx.countStarted = 0;
 		ctx.countFinished = 0;
 		ctx.countFinishedSuccess = 0;
@@ -3973,6 +3977,9 @@ Morebits.batchOperation = function(currentAction) {
 				ctx.statusElement.warn(statusString);
 			} else {
 				ctx.statusElement.info(statusString);
+			}
+			if (ctx.postFinish) {
+				ctx.postFinish();
 			}
 			Morebits.wiki.removeCheckpoint();
 			ctx.running = false;
