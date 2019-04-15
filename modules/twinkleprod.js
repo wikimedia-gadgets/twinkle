@@ -9,12 +9,14 @@
  *** twinkleprod.js: PROD module
  ****************************************
  * Mode of invocation:     Tab ("PROD")
- * Active on:              Existing articles and files which are not redirects
+ * Active on:              Existing articles, files, books which are not redirects,
+ *                         and user pages in [[:Category:Wikipedia books (user books)]]
  * Config directives in:   TwinkleConfig
  */
 
 Twinkle.prod = function twinkleprod() {
-	if( [0, 6, 108].indexOf(mw.config.get('wgNamespaceNumber')) === -1 || !mw.config.get('wgCurRevisionId') || Morebits.wiki.isPageRedirect() ) {
+	if( ([0, 6, 108].indexOf(mw.config.get('wgNamespaceNumber')) === -1) && (mw.config.get('wgNamespaceNumber') !== 2 || mw.config.get('wgCategories').indexOf('Wikipedia books (user books)') === -1) 
+		|| !mw.config.get('wgCurRevisionId') || Morebits.wiki.isPageRedirect() ) {
 		return;
 	}
 
@@ -34,6 +36,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 		case 6:
 			namespace = 'file';
 			break;
+		case 2:
 		case 108:
 			namespace = 'book';
 			break;
@@ -50,7 +53,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 		Window.addFooterLink( "BLP PROD policy", "WP:BLPPROD" );
 	} else if ( namespace === 'file' ) {
 		Window.addFooterLink( "Proposed deletion policy", "WP:PROD" );
-	} else {	// if namespace === 'book'
+	} else {	// if book
 		Window.addFooterLink( "Proposed deletion (books) policy", "WP:BOOKPROD" );
 	}
 
@@ -93,11 +96,11 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	Window.setContent( result );
 	Window.display();
 
-	// Hide fieldset for PROD type in File and Book namespaces since only normal PROD is allowed
+	// Hide fieldset for File and Book PROD types since only normal PROD is allowed
 	if(namespace !== 'article') {
 		$(result).find('#prodtype_fieldset').hide();
 	}
-	
+
 	// Fake a change event on the first prod type radio, to initialize the type-dependent controls
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
@@ -351,7 +354,7 @@ Twinkle.prod.callbacks = {
 Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	var form = e.target;
 	var prodtype;
-	
+
 	if( namespace === 'article' ) {
 		var prodtypes = form.prodtype;
 		for( var i = 0; i < prodtypes.length; i++ ) {
