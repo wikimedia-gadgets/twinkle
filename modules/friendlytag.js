@@ -28,7 +28,7 @@ Twinkle.tag = function friendlytag() {
 	else if( [0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 && mw.config.get('wgCurRevisionId') ) {
 		Twinkle.tag.mode = 'article';
 		// Can't remove tags when not viewing current version
-		Twinkle.tag.untaggable = (mw.config.get('wgCurRevisionId') === mw.config.get('wgRevisionId'));
+		Twinkle.tag.canRemove = (mw.config.get('wgCurRevisionId') === mw.config.get('wgRevisionId')) && !mw.util.getParamValue('diff');
 		Twinkle.addPortletLink( Twinkle.tag.callback, "Tag", "friendly-tag", "Add/remove maintenance tags on article" );
 	}
 };
@@ -73,7 +73,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				]
 			});
 
-			if(! Twinkle.tag.untaggable) {
+			if(! Twinkle.tag.canRemove) {
 				var divElement = document.createElement('div');
 				divElement.innerHTML = 'For removal of existing tags, please open Tag menu from the current version of article';
 				form.append({
@@ -163,7 +163,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 		Twinkle.tag.alreadyPresentTags = [];
 
-		if (Twinkle.tag.untaggable) {
+		if (Twinkle.tag.canRemove) {
 			// Look for existing maintenance tags in the lead section and put them in array
 
 			// All tags are HTML table elements that are direct children of .mw-parser-output,
@@ -463,7 +463,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		return checkbox;
 	};
 
-	if(Twinkle.tag.untaggable) {
+	if(Twinkle.tag.canRemove) {
 		var generateAlreadyPresentTagsCheckboxes = function() {
 			container.append({ type: "header", id: "tagHeader0", label: "Tags already present" });
 			var subdiv = container.append({ type: "div", id: "tagSubdiv0" });
@@ -1143,7 +1143,7 @@ Twinkle.tag.callbacks = {
 		 */
 		var postRemoval = function() {
 
-			if(Twinkle.tag.untaggable && params.toRemove.length) {
+			if(params.toRemove.length) {
 				// Finish summary text
 				summaryText += ' tag' + ( params.toRemove.length > 1 ? 's' : '') + ' from article';
 
@@ -1316,8 +1316,8 @@ Twinkle.tag.callbacks = {
 				$(apiobj.responseXML).find('page').each(function (idx,page) {
 					var removed = false;
 					$(page).find('lh').each(function(idx, el) {
-						tag = $(el).attr('title').slice(9);
-						tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
+						var tag = $(el).attr('title').slice(9);
+						var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
 						if(tag_re.test(pageText)) {
 							pageText = pageText.replace(tag_re, '');
 							removed = true;
@@ -1326,7 +1326,7 @@ Twinkle.tag.callbacks = {
 					});
 					if (!removed) {
 						Morebits.status.warn('Info', 'Failed to find {{' +
-						tag + '}} on the page... excluding');
+						$(page).attr('title').slice(9) + '}} on the page... excluding');
 					}
 
 				});
@@ -1496,7 +1496,7 @@ Twinkle.tag.callbacks = {
 			params.tags.forEach(function(tag) {
 				tagRe = new RegExp( '\\{\\{' + tag + '(\\||\\}\\})', 'im' );
 				// regex check for preexistence of tag can be skipped if in untaggable mode
-				if( Twinkle.tag.untaggable || !tagRe.exec( pageText ) ) {
+				if( Twinkle.tag.canRemove || !tagRe.exec( pageText ) ) {
 					// condition Twinkle.tag.article.tags[tag] to ensure that its not a custom tag
 					// Custom tags are assumed non-groupable, since we don't know whether MI template supports them
 					if( Twinkle.tag.article.tags[tag] && Twinkle.tag.multipleIssuesExceptions.indexOf(tag) === -1 ) {
@@ -1606,8 +1606,8 @@ Twinkle.tag.callbacks = {
 						$(apiobj.responseXML).find('page').each(function(idx, page) {
 							var found = false;
 							$(page).find('lh').each(function(idx,el) {
-								tag = $(el).attr('title').slice(9);
-								tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?)');
+								var tag = $(el).attr('title').slice(9);
+								var tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?)');
 								if(tag_re.test(pageText)) {
 									tagText += tag_re.exec(pageText)[1];
 									pageText = pageText.replace(tag_re, '');
@@ -1617,7 +1617,7 @@ Twinkle.tag.callbacks = {
 							});
 							if (!found) {
 								Morebits.status.warn('Info', 'Failed to find the existing {{' +
-								tag + '}} on the page... skip repositioning');
+								$(page).attr('title').slice(9) + '}} on the page... skip repositioning');
 							}
 						});
 						addNewTagsToMI();
