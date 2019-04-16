@@ -1549,13 +1549,20 @@ Twinkle.speedy.callbacks = {
 						usertalkpage.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 						usertalkpage.setCreateOption('recreate');
 						usertalkpage.setFollowRedirect(true);
-						usertalkpage.append();
+						usertalkpage.append(function onNotifySuccess() {
+							// add this nomination to the user's userspace log, if the user has enabled it
+							if (params.lognomination) {
+								Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
+							}
+						}, function onNotifyError() {
+							// if user could not be notified, log nomination without mentioning that notification was sent
+							if (params.lognomination) {
+								Twinkle.speedy.callbacks.user.addToLog(params, null);
+							}
+						});
 					}
 
-					// add this nomination to the user's userspace log, if the user has enabled it
-					if (params.lognomination) {
-						Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
-					}
+
 				};
 				var thispage = new Morebits.wiki.page(Morebits.pageNameNorm);
 				thispage.lookupCreator(callback);

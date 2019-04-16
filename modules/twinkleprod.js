@@ -239,8 +239,8 @@ Twinkle.prod.callbacks = {
 			}
 			var confirmtext = "A {{proposed deletion}} tag was already found on this page. \nWould you like to add a {{proposed deletion endorsed}} tag with your explanation?";
 			if (params.blp) {
-				confirmtext = "A non-BLP {{proposed deletion}} tag was found on this article.\nWould you like to add a {{proposed deletion endorsed}} tag with explanation \"article is a biography of a living person with no sources\"?";	
-				// FIXME: this msg is shown even if it was a BLPPROD tag. 
+				confirmtext = "A non-BLP {{proposed deletion}} tag was found on this article.\nWould you like to add a {{proposed deletion endorsed}} tag with explanation \"article is a biography of a living person with no sources\"?";
+				// FIXME: this msg is shown even if it was a BLPPROD tag.
 			}
 			if( !confirm( confirmtext ) ) {
 				statelem.warn( 'Aborted per user request' );
@@ -293,11 +293,18 @@ Twinkle.prod.callbacks = {
 		usertalkpage.setEditSummary("Notification: proposed deletion of [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
 		usertalkpage.setCreateOption('recreate');
 		usertalkpage.setFollowRedirect(true);
-		usertalkpage.append();
-		if (Twinkle.getPref('logProdPages')) {
-			params.logInitialContrib = initialContrib;
-			Twinkle.prod.callbacks.addToLog(params);
-		}
+		usertalkpage.append(function onNotifySuccess() {
+			// add nomination to the userspace log, if the user has enabled it
+			if (Twinkle.getPref('logProdPages')) {
+				params.logInitialContrib = initialContrib;
+				Twinkle.prod.callbacks.addToLog(params);
+			}
+		}, function onNotifyError() {
+			// if user could not be notified, log nomination without mentioning that notification was sent
+			if (Twinkle.getPref('logProdPages')) {
+				Twinkle.prod.callbacks.addToLog(params);
+			}
+		});
 	},
 
 	addToLog: function(params) {
