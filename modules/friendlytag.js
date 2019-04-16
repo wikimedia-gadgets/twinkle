@@ -1247,101 +1247,95 @@ Twinkle.tag.callbacks = {
 		 */
 		var removeFromParamsToRemove = function mainRemoveTags()  {
 
-			if(params.toRemove.length) {
-				Morebits.status.info( 'Info', 'Removing deselected tags that were already present' );
-
-				var pendingAsyncProcesses = 0;
-
-				/**
-				 * Removes a tag from the page text
-				 * @param {string} tag
-				 * @param {number} tagIndex - index `params.toRemove` array
-				 */
-				var removeTag = function removeTag(tag, tagIndex) {
-
-					// Producing summary text for current tag removal
-					if ( tagIndex > 0 ) {
-						if( tagIndex === (params.toRemove.length - 1) ) {
-							summaryText += ' and';
-						} else if ( tagIndex < (params.toRemove.length - 1) ) {
-							summaryText += ',';
-						}
-					}
-					summaryText += ' {{[[Template:' + tag + '|' + tag + ']]}}';
-
-					var tag_re;
-					if (tag === 'Globalize') {
-						// special case to catch occurrences like {{Globalize/UK}}, etc
-						tag_re = new RegExp('\\{\\{[gG]lobalize/?[^}]*\\}\\}\\n?');
-					} else {
-						tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
-					}
-
-					if(tag_re.test(pageText)) {
-						pageText = pageText.replace(tag_re,'');
-
-						// if processing the last tag, and no API calls were ever made
-						if(tagIndex === params.toRemove.length - 1 &&
-							pendingAsyncProcesses === 0) {
-							postRemoval();
-						}
-					} else {
-						// main template not found, so get list of redirects to template
-						pendingAsyncProcesses++; // increment count of pending async processes
-						var api = new Morebits.wiki.api("Getting template redirects", {
-							"action": "query",
-							"prop": "linkshere",
-							"titles": "Template:" + tag,
-							"lhnamespace": "10",
-							"lhshow": "redirect",
-							"lhlimit": "500"
-						}, function removeRedirectTag(apiobj) {
-							var redirs_xml = $(apiobj.responseXML).find('lh');
-							var removed = false;
-							$.each(redirs_xml, function (idx,el) {
-								tag = $(el).attr('title').slice(9);
-								tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
-								if(tag_re.test(pageText)) {
-									pageText = pageText.replace(tag_re, '');
-									removed = true;
-									return false;   // break out of $.each
-								}
-							});
-
-							if (!removed) {
-								Morebits.status.warn('Info', 'Failed to find {{' +
-								tag + '}} on the page... excluding');
-							}
-
-							// this async process has finished, decrement count
-							pendingAsyncProcesses--;
-
-							// all tags have been removed if there are no pending async processes; proceed
-							if (pendingAsyncProcesses === 0) {
-								postRemoval();
-							}
-						});
-						api.post();
-					}
-				};
-
-				if(params.tags.length > 0) {
-					summaryText += ( tags.length ? (' tag' + ( tags.length > 1 ? 's' : '' )) : '' ) + ', and removed';
-				} else {
-					summaryText = 'Removed';
-				}
-
-				params.toRemove.forEach(removeTag);
-
-			} else {
-
+			if (params.toRemove.length === 0) {
 				// finish summary text from adding of tags, in this case where there are
 				// no tags to be removed
 				summaryText += ' tag' + ( tags.length > 1 ? 's' : '' ) + ' to article';
 
 				postRemoval();
-
+				return;
 			}
+
+			Morebits.status.info( 'Info', 'Removing deselected tags that were already present' );
+
+			var getRedirectsFor = [];
+
+			/**
+			 * Removes a tag from the page text, if found in its proper name,
+			 * otherwise moves it to `getRedirectsFor` array earmarking it for
+			 * later removal
+			 * @param {string} tag
+			 * @param {number} tagIndex - index in `params.toRemove` array
+			 */
+			var removeTag = function removeTag(tag, tagIndex) {
+
+				// Producing summary text for current tag removal
+				if ( tagIndex > 0 ) {
+					if( tagIndex === (params.toRemove.length - 1) ) {
+						summaryText += ' and';
+					} else if ( tagIndex < (params.toRemove.length - 1) ) {
+						summaryText += ',';
+					}
+				}
+				summaryText += ' {{[[Template:' + tag + '|' + tag + ']]}}';
+
+				var tag_re;
+				if (tag === 'Globalize') {
+					// special case to catch occurrences like {{Globalize/UK}}, etc
+					tag_re = new RegExp('\\{\\{[gG]lobalize/?[^}]*\\}\\}\\n?');
+				} else {
+					tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
+				}
+
+				if(tag_re.test(pageText)) {
+					pageText = pageText.replace(tag_re,'');
+				} else {
+					getRedirectsFor.push('Template:' + tag);
+				}
+			};
+
+			if(params.tags.length > 0) {
+				summaryText += ( tags.length ? (' tag' + ( tags.length > 1 ? 's' : '' )) : '' ) + ', and removed';
+			} else {
+				summaryText = 'Removed';
+			}
+
+			params.toRemove.forEach(removeTag);
+
+			// Remove tags which appear in wikitext as redirects
+			var api = new Morebits.wiki.api("Getting template redirects", {
+				"action": "query",
+				"prop": "linkshere",
+				"titles": getRedirectsFor.join('|'),
+				"redirects": 1,
+				"lhnamespace": "10",  // template namespace only
+				"lhshow": "redirect",
+				"lhlimit": "max"
+			}, function removeRedirectTag(apiobj) {
+
+				$(apiobj.responseXML).find('page').each(function (idx,page) {
+					var removed = false;
+					$(page).find('lh').each(function(idx, el) {
+						tag = $(el).attr('title').slice(9);
+						tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
+						if(tag_re.test(pageText)) {
+							pageText = pageText.replace(tag_re, '');
+							removed = true;
+							return false;   // break out of $.each
+						}
+					});
+					if (!removed) {
+						Morebits.status.warn('Info', 'Failed to find {{' +
+						tag + '}} on the page... excluding');
+					}
+
+				});
+
+				postRemoval();
+
+			});
+			api.post();
+
 		};
 
 		// Executes first: addition of selected tags
@@ -1362,11 +1356,7 @@ Twinkle.tag.callbacks = {
 					if( tagName === 'Globalize' ) {
 						currentTag += '{{' + params.globalize;
 					} else {
-						currentTag += ( Twinkle.tag.mode === 'redirect' ? '\n' : '' ) + '{{' + tagName;
-					}
-
-					if( tagName === 'Notability' && params.notability !== 'none' ) {
-						currentTag += '|' + params.notability;
+						currentTag += '{{' + tagName;
 					}
 
 					// prompt for other parameters, based on the tag
@@ -1407,6 +1397,11 @@ Twinkle.tag.callbacks = {
 							break;
 						case 'News release':
 							currentTag += '|1=article';
+							break;
+						case 'Notability':
+							if (params.notability !== 'none' ) {
+								currentTag += '|' + params.notability;
+							}
 							break;
 						case 'Not English':
 						case 'Rough translation':
@@ -1524,13 +1519,11 @@ Twinkle.tag.callbacks = {
 			});
 
 			// To-be-retained existing tags that are groupable
-			if(params.toRemain) {
-				params.toRemain.forEach( function(tag) {
-					if(Twinkle.tag.multipleIssuesExceptions.indexOf(tag) === -1) {
-						groupableExistingTags.push(tag);
-					}
-				});
-			}
+			params.toRemain.forEach( function(tag) {
+				if (Twinkle.tag.multipleIssuesExceptions.indexOf(tag) === -1) {
+					groupableExistingTags.push(tag);
+				}
+			});
 
 			var miTest = /\{\{(multiple ?issues|article ?issues|mi)(?!\s*\|\s*section\s*=)[^}]+\{/im.exec(pageText);
 
@@ -1578,57 +1571,58 @@ Twinkle.tag.callbacks = {
 				};
 
 
-				if(params.toRemain && params.toRemain.length) {
+				var getRedirectsFor = [];
 
-					/**
-					 * Given the index of the tag in the `groupableExistingTags` array,
-					 * it repositions the tag on the page into {{multiple issues}}
-					 * @param {number} tagIndex
-					 */
-					var repositionTagIntoMI = function repositionTagIntoMI(tagIndex) {
-						var tag = groupableExistingTags[tagIndex];
-						if (tag === undefined) {
-							// all tags have been processed
-							addNewTagsToMI();
-						}
+				/**
+				 * Repositions the tag on the page into {{multiple issues}}, if found
+				 * with its proper name, else moves it to `getRedirectsFor` array to be
+				 * handled later
+				 * @param {string} tag
+				 */
+				var repositionTagIntoMI = function repositionTagIntoMI(tag) {
+					var tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?)');
+					if (tag_re.test(pageText)) {
+						tagText += tag_re.exec(pageText)[1];
+						pageText = pageText.replace(tag_re, '');
+					} else {
+						getRedirectsFor.push('Template:' + tag);
+					}
+				};
 
-						var tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?)');
-						if(tag_re.test(pageText)) {
-							tagText += tag_re.exec(pageText)[1];
-							pageText = pageText.replace(tag_re, '');
-							repositionTagIntoMI(tagIndex + 1);
-						} else {
-							var api = new Morebits.wiki.api("Getting template redirects", {
-								"action": "query",
-								"prop": "linkshere",
-								"titles": "Template:" + tag,
-								"lhnamespace": "10",
-								"lhshow": "redirect",
-								"lhlimit": "500"
-							}, function replaceRedirectTag(apiobj) {
-								var redirs_xml = $(apiobj.responseXML).find('lh');
-								$.each(redirs_xml, function (idx,el) {
-									tag = $(el).attr('title').slice(9);
-									tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?)');
-									if(tag_re.test(pageText)) {
-										tagText += tag_re.exec(pageText)[1];
-										pageText = pageText.replace(tag_re, '');
-										repositionTagIntoMI(tagIndex + 1);
-										return false;   // break out of $.each
-									}
-								});
-							});
-							api.post();
-						}
-					};
+				groupableExistingTags.forEach(repositionTagIntoMI);
 
-					// reposition first tag into MI, later tags are dealt with through
-					// recursive calls from within this
-					// When all are done, addNewTagsToMI() gets called
-					repositionTagIntoMI( 0 );
-
-				} else {
+				if(! getRedirectsFor.length) {
 					addNewTagsToMI();
+				} else {
+					var api = new Morebits.wiki.api("Getting template redirects", {
+						"action": "query",
+						"prop": "linkshere",
+						"titles": getRedirectsFor.join('|'),
+						"redirects": 1,
+						"lhnamespace": "10",	// template namespace only
+						"lhshow": "redirect",
+						"lhlimit": "max"
+					}, function replaceRedirectTag(apiobj) {
+						$(apiobj.responseXML).find('page').each(function(idx, page) {
+							var found = false;
+							$(page).find('lh').each(function(idx,el) {
+								tag = $(el).attr('title').slice(9);
+								tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?)');
+								if(tag_re.test(pageText)) {
+									tagText += tag_re.exec(pageText)[1];
+									pageText = pageText.replace(tag_re, '');
+									found = true;
+									return false;   // break out of $.each
+								}
+							});
+							if (!found) {
+								Morebits.status.warn('Info', 'Failed to find the existing {{' +
+								tag + '}} on the page... skip repositioning');
+							}
+						});
+						addNewTagsToMI();
+					});
+					api.post();
 				}
 
 			} else {
