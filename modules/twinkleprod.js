@@ -201,6 +201,17 @@ Twinkle.prod.callbacks = {
 			}
 		}
 
+		var ts = new Morebits.wiki.page(mw.config.get('wgPageName'));
+		ts.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
+		ts.setCallbackParameters(params);
+		ts.lookupCreation(Twinkle.prod.callbacks.creationInfo);
+	},
+
+	creationInfo: function(pageobj) {
+		var params = pageobj.getCallbackParameters();
+		params.initialContrib = pageobj.getCreator();
+		params.creation = pageobj.getCreationTimestamp();
+
 		Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 		Morebits.wiki.actionCompleted.notice = "Tagging complete";
 
@@ -228,10 +239,12 @@ Twinkle.prod.callbacks = {
 			return;
 		}
 
-		// Alert if article is not in Category:Living people and BLPPROD is selected
+		// Alert if article is at least three days old, not in Category:Living people, and BLPPROD is selected
 		if( params.blp ) {
+			var now = new Date().toISOString();
+			var timeDiff = (new Date(now) - new Date(params.creation))/1000/60/60/24; // days from milliseconds
 			var blpcheck_re = /\[\[Category:Living people\]\]/i;
-			if( !blpcheck_re.test( text ) ) {
+			if( !blpcheck_re.test( text ) && timeDiff > 3) {
 				if( ! confirm("Please note that the article is not in Category:Living people and hence may be ineligible for BLPPROD. Are you sure you want to continue? \n\nYou may wish to add the category if you proceed, unless the article is about a recently deceased person." ) ) {
 					return;
 				}
@@ -245,9 +258,43 @@ Twinkle.prod.callbacks = {
 		if( !prod_re.test( text ) ) {
 			// Notification to first contributor
 			if( params.usertalk ) {
-				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
-				thispage.setCallbackParameters(params);
-				thispage.lookupCreation(Twinkle.prod.callbacks.userNotification);
+				// Disallow warning yourself
+				if (params.initialContrib === mw.config.get("wgUserName")) {
+					statelem.warn("You (" + params.initialContrib + ") created this page; skipping user notification");
+					if (Twinkle.getPref("logProdPages")) {
+						Twinkle.prod.callbacks.addToLog(params);
+					}
+				} else {
+					// [[Template:Proposed deletion notify]] supports File namespace
+					var notifyTemplate;
+					if(params.blp) {
+						notifyTemplate = 'prodwarningBLP';
+					} else if (params.book) {
+						notifyTemplate = 'bprodwarning';
+					} else {
+						notifyTemplate = 'proposed deletion notify';
+					}
+					var notifytext = "\n{{subst:" + notifyTemplate + "|1=" + Morebits.pageNameNorm + "|concern=" + params.reason + "}} ~~~~";
+
+					var usertalkpage = new Morebits.wiki.page('User talk:' + params.initialContrib, "Notifying initial contributor (" + params.initialContrib + ")");
+					usertalkpage.setAppendText(notifytext);
+					usertalkpage.setEditSummary("Notification: proposed deletion of [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+					usertalkpage.setCreateOption('recreate');
+					usertalkpage.setFollowRedirect(true);
+					usertalkpage.setCallbackParameters(params);
+					usertalkpage.append(function onNotifySuccess() {
+						// add nomination to the userspace log, if the user has enabled it
+						if (Twinkle.getPref('logProdPages')) {
+							params.logInitialContrib = params.initialContrib;
+							Twinkle.prod.callbacks.addToLog(params);
+						}
+					}, function onNotifyError() {
+						// if user could not be notified, log nomination without mentioning that notification was sent
+						if (Twinkle.getPref('logProdPages')) {
+							Twinkle.prod.callbacks.addToLog(params);
+						}
+					});
+				}
 			}
 			// If not notifying, log this PROD
 			else if( Twinkle.getPref('logProdPages') ) {
@@ -308,48 +355,6 @@ Twinkle.prod.callbacks = {
 		pageobj.setWatchlist(Twinkle.getPref('watchProdPages'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
-	},
-
-	userNotification: function(pageobj) {
-		var params = pageobj.getCallbackParameters();
-		var initialContrib = pageobj.getCreator();
-
-		// Disallow warning yourself
-		if (initialContrib === mw.config.get("wgUserName")) {
-			pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
-			if (Twinkle.getPref("logProdPages")) {
-				Twinkle.prod.callbacks.addToLog(params);
-			}
-			return;
-		}
-
-		// [[Template:Proposed deletion notify]] supports File namespace
-		var notifyTemplate;
-		if(params.blp) {
-			notifyTemplate = 'prodwarningBLP';
-		} else if (params.book) {
-			notifyTemplate = 'bprodwarning';
-		} else {
-			notifyTemplate = 'proposed deletion notify';
-		}
-		var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
-		var notifytext = "\n{{subst:" + notifyTemplate + "|1=" + Morebits.pageNameNorm + "|concern=" + params.reason + "}} ~~~~";
-		usertalkpage.setAppendText(notifytext);
-		usertalkpage.setEditSummary("Notification: proposed deletion of [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
-		usertalkpage.setCreateOption('recreate');
-		usertalkpage.setFollowRedirect(true);
-		usertalkpage.append(function onNotifySuccess() {
-			// add nomination to the userspace log, if the user has enabled it
-			if (Twinkle.getPref('logProdPages')) {
-				params.logInitialContrib = initialContrib;
-				Twinkle.prod.callbacks.addToLog(params);
-			}
-		}, function onNotifyError() {
-			// if user could not be notified, log nomination without mentioning that notification was sent
-			if (Twinkle.getPref('logProdPages')) {
-				Twinkle.prod.callbacks.addToLog(params);
-			}
-		});
 	},
 
 	addToLog: function(params) {
