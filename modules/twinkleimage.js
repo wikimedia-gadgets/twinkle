@@ -255,7 +255,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
 	// Notifying uploader
 	if( notify ) {
-		wikipedia_page.lookupCreator(Twinkle.image.callbacks.userNotification);
+		wikipedia_page.lookupCreation(Twinkle.image.callbacks.userNotification);
 	} else {
 		// add to CSD log if desired
 		if (lognomination) {

@@ -1328,7 +1328,7 @@ Twinkle.tag.callbacks = {
 					});
 				}
 				if (params.translationNotify) {
-					pageobj.lookupCreator(function(innerPageobj) {
+					pageobj.lookupCreation(function(innerPageobj) {
 						var initialContrib = innerPageobj.getCreator();
 
 						// Disallow warning yourself

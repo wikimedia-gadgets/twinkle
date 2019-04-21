@@ -247,7 +247,7 @@ Twinkle.prod.callbacks = {
 			if( params.usertalk ) {
 				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				thispage.setCallbackParameters(params);
-				thispage.lookupCreator(Twinkle.prod.callbacks.userNotification);
+				thispage.lookupCreation(Twinkle.prod.callbacks.userNotification);
 			}
 			// If not notifying, log this PROD
 			else if( Twinkle.getPref('logProdPages') ) {

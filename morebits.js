@@ -1565,11 +1565,15 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  *
  * getCurrentID(): returns a string containing the current revision ID of the page
  *
- * lookupCreator(onSuccess): Retrieves the username of the user who created the page
- *    onSuccess - callback function which is called when the username is found
- *                within the callback, the username can be retrieved using the getCreator() function
+ * lookupCreation(onSuccess): Retrieves the username and timestamp of page creation
+ *    onSuccess - callback function which is called when the username and timestamp
+ *                are found within the callback.
+ *                The username can be retrieved using the getCreator() function;
+ *                the timestamp can be retrieved using the getCreationTimestamp() function
  *
- * getCreator(): returns the user who created the page following lookupCreator()
+ * getCreator(): returns the user who created the page following lookupCreation()
+ *
+ * getCreationTimestamp(): returns an ISOString timestamp of page creation following lookupCreation()
  *
  */
 
@@ -1641,6 +1645,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		followRedirect: false,
 		watchlistOption: 'nochange',
 		creator: null,
+		timestamp: null,
 
 		// - revert
 		revertOldID: null,
@@ -1677,7 +1682,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		onLoadFailure: null,
 		onSaveSuccess: null,
 		onSaveFailure: null,
-		onLookupCreatorSuccess: null,
+		onLookupCreationSuccess: null,
 		onMoveSuccess: null,
 		onMoveFailure: null,
 		onDeleteSuccess: null,
@@ -1693,7 +1698,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		loadQuery: null,
 		loadApi: null,
 		saveApi: null,
-		lookupCreatorApi: null,
+		lookupCreationApi: null,
 		moveApi: null,
 		moveProcessApi: null,
 		deleteApi: null,
@@ -2146,31 +2151,40 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
-	 * @returns {string} the user who created the page following lookupCreator()
+	 * @returns {string} the user who created the page following lookupCreation()
 	 */
 	this.getCreator = function() {
 		return ctx.creator;
 	};
 
 	/**
-	 * Retrieves the username of the user who created the page
-	 * @param {Function} onSuccess - callback function (required) which is
-	 * called when the username is found within the callback, the username
-	 * can be retrieved using the getCreator() function
+	 * @returns {string} the ISOString timestamp of page creation following lookupCreation()
 	 */
-	this.lookupCreator = function(onSuccess) {
+	this.getCreationTimestamp = function() {
+		return ctx.timestamp;
+	};
+
+	/**
+	 * Retrieves the username of the user who created the page as well as
+	 * the timestamp of creation
+	 * @param {Function} onSuccess - callback function (required) which is
+	 * called when the username and timestamp are found within the callback.
+	 * The username can be retrieved using the getCreator() function;
+	 * the timestamp can be retrieved using the getCreationTimestamp() function
+	 */
+	this.lookupCreation = function(onSuccess) {
 		if (!onSuccess) {
-			ctx.statusElement.error("Internal error: no onSuccess callback provided to lookupCreator()!");
+			ctx.statusElement.error("Internal error: no onSuccess callback provided to lookupCreation()!");
 			return;
 		}
-		ctx.onLookupCreatorSuccess = onSuccess;
+		ctx.onLookupCreationSuccess = onSuccess;
 
 		var query = {
 			'action': 'query',
 			'prop': 'revisions',
 			'titles': ctx.pageName,
 			'rvlimit': 1,
-			'rvprop': 'user',
+			'rvprop': 'user|timestamp',
 			'rvdir': 'newer'
 		};
 
@@ -2178,9 +2192,17 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.lookupCreatorApi = new Morebits.wiki.api("Retrieving page creator information", query, fnLookupCreatorSuccess, ctx.statusElement);
-		ctx.lookupCreatorApi.setParent(this);
-		ctx.lookupCreatorApi.post();
+		ctx.lookupCreationApi = new Morebits.wiki.api("Retrieving page creation information", query, fnLookupCreationSuccess, ctx.statusElement);
+		ctx.lookupCreationApi.setParent(this);
+		ctx.lookupCreationApi.post();
+	};
+	/**
+	 * @deprecated since May/June 2019, renamed to lookupCreation
+	 */
+	this.lookupCreator = function(onSuccess) {
+		console.warn("NOTE: lookupCreator() from Twinkle's Morebits has been deprecated since May/June 2019, please use lookupCreation() instead"); // eslint-disable-line no-console
+		Morebits.status.warn("NOTE", "lookupCreator() from Twinkle's Morebits has been deprecated since May/June 2019, please use lookupCreation() instead");
+		return this.lookupCreation(onSuccess);
 	};
 
 	/**
@@ -2694,8 +2716,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 	};
 
-	var fnLookupCreatorSuccess = function() {
-		var xml = ctx.lookupCreatorApi.getXML();
+	var fnLookupCreationSuccess = function() {
+		var xml = ctx.lookupCreationApi.getXML();
 
 		if ( !fnCheckPageName(xml) ) {
 			return; // abort
@@ -2706,7 +2728,13 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.statusElement.error("Could not find name of page creator");
 			return;
 		}
-		ctx.onLookupCreatorSuccess(this);
+		ctx.timestamp = $(xml).find('rev').attr('timestamp');
+		if (!ctx.timestamp) {
+			ctx.statusElement.error("Could not find timestamp of page creation");
+			return;
+		}
+
+		ctx.onLookupCreationSuccess(this);
 	};
 
 	var fnProcessMove = function() {
