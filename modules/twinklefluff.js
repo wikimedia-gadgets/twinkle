@@ -17,21 +17,38 @@
  Twinklefluff revert and antivandalism utility
  */
 
-var spanTag = function( color, content ) {
-	var span = document.createElement( 'span' );
-	span.style.color = color;
-	span.appendChild( document.createTextNode( content ) );
-	return span;
-};
-var buildLink = function(color, text) {
-	var link = document.createElement('a');
-	link.appendChild(spanTag('Black', '['));
-	link.appendChild(spanTag(color, text));
-	link.appendChild(spanTag('Black', ']'));
-	return link;
-};
+
 
 Twinkle.fluff = {
+	spanTag: function( color, content ) {
+		var span = document.createElement( 'span' );
+		span.style.color = color;
+		span.appendChild( document.createTextNode( content ) );
+		return span;
+	},
+
+	buildLink: function(color, text) {
+		var link = document.createElement('a');
+		link.appendChild(Twinkle.fluff.spanTag('Black', '['));
+		link.appendChild(Twinkle.fluff.spanTag(color, text));
+		link.appendChild(Twinkle.fluff.spanTag('Black', ']'));
+		return link;
+	},
+
+	warnFromTalk: function(talkLink) {
+		if (talkLink.length) {
+			talkLink.css('font-weight', 'bold');
+
+			var extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&' + 'noautowarn=true';
+			var href = talkLink.attr('href');
+			if (href.indexOf('?') === -1) {
+				talkLink.attr('href', href + '?' + extraParams);
+			} else {
+				talkLink.attr('href', href + '&' + extraParams);
+			}
+		}
+	},
+
 	auto: function() {
 		if( mw.config.get('wgRevisionId') !== mw.config.get('wgCurRevisionId') ) {
 			// not latest revision
@@ -57,11 +74,11 @@ Twinkle.fluff = {
 				var list = $("#mw-content-text").find("ul li:has(span.mw-uctop)");
 
 				var revNode = document.createElement('strong');
-				var revLink = buildLink('SteelBlue', 'rollback');
+				var revLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
 				revNode.appendChild(revLink);
 
 				var revVandNode = document.createElement('strong');
-				var revVandLink = buildLink('Red', 'vandalism');
+				var revVandLink = Twinkle.fluff.buildLink('Red', 'vandalism');
 				revVandNode.appendChild(revVandLink);
 
 				list.each(function(key, current) {
@@ -88,7 +105,7 @@ Twinkle.fluff = {
 				revertToRevision.setAttribute( 'id', 'tw-revert-to-orevision' );
 				revertToRevision.style.fontWeight = 'bold';
 
-				var revertToRevisionLink = buildLink('SaddleBrown', 'restore this version');
+				var revertToRevisionLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
 				revertToRevisionLink.href = "#";
 				$(revertToRevisionLink).click(function(){
 					Twinkle.fluff.revertToRevision(mw.config.get('wgDiffOldId').toString());
@@ -97,6 +114,8 @@ Twinkle.fluff = {
 
 				var otitle = document.getElementById('mw-diff-otitle1').parentNode;
 				otitle.insertBefore( revertToRevision, otitle.firstChild );
+				var otalkl = $('#mw-diff-otitle2 .mw-usertoollinks a').first();
+				Twinkle.fluff.warnFromTalk(otalkl); // Autofill user talk link with article, don't autowarn
 			}
 
 			// Add either restore or rollback links to the newer revision
@@ -108,7 +127,7 @@ Twinkle.fluff = {
 				revertToRevisionN.setAttribute( 'id', 'tw-revert-to-nrevision' );
 				revertToRevisionN.style.fontWeight = 'bold';
 
-				var revertToRevisionNLink = buildLink('SaddleBrown', 'restore this version');
+				var revertToRevisionNLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
 				revertToRevisionNLink.href = "#";
 				$(revertToRevisionNLink).click(function(){
 					Twinkle.fluff.revertToRevision(mw.config.get('wgDiffNewId').toString());
@@ -126,9 +145,9 @@ Twinkle.fluff = {
 				var vandNode = document.createElement('strong');
 				var normNode = document.createElement('strong');
 
-				var agfLink = buildLink('DarkOliveGreen', 'rollback (AGF)');
-				var vandLink = buildLink('Red', 'rollback (VANDAL)');
-				var normLink = buildLink('SteelBlue', 'rollback');
+				var agfLink = Twinkle.fluff.buildLink('DarkOliveGreen', 'rollback (AGF)');
+				var vandLink = Twinkle.fluff.buildLink('Red', 'rollback (VANDAL)');
+				var normLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
 
 				agfLink.href = "#";
 				vandLink.href = "#";
@@ -155,6 +174,8 @@ Twinkle.fluff = {
 
 				ntitle.insertBefore( revertNode, ntitle.firstChild );
 			}
+			var ntalkl = $('#mw-diff-ntitle2 .mw-usertoollinks a').first();
+			Twinkle.fluff.warnFromTalk(ntalkl); // Autofill user talk link with article, don't autowarn
 		}
 	},
 
@@ -163,7 +184,7 @@ Twinkle.fluff = {
 		revertToRevision.setAttribute( 'id', 'tw-revert-to-orevision' );
 		revertToRevision.style.fontWeight = 'bold';
 
-		var revertToRevisionLink = buildLink('SaddleBrown', 'restore this version');
+		var revertToRevisionLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
 		revertToRevisionLink.href = "#";
 		$(revertToRevisionLink).click(function(){
 			Twinkle.fluff.revertToRevision(mw.config.get('wgRevisionId').toString());

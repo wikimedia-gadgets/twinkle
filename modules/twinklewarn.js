@@ -16,7 +16,7 @@
 Twinkle.warn = function twinklewarn() {
 	if( mw.config.get( 'wgRelevantUserName' ) ) {
 			Twinkle.addPortletLink( Twinkle.warn.callback, "Warn", "tw-warn", "Warn/notify user" );
-			if (Twinkle.getPref('autoMenuAfterRollback') && mw.config.get('wgNamespaceNumber') === 3 && mw.util.getParamValue('vanarticle') && !mw.util.getParamValue('friendlywelcome')) {
+			if (Twinkle.getPref('autoMenuAfterRollback') && mw.config.get('wgNamespaceNumber') === 3 && mw.util.getParamValue('vanarticle') && !mw.util.getParamValue('friendlywelcome') && !mw.util.getParamValue('noautowarn')) {
 				Twinkle.warn.callback();
 			}
 	}
