@@ -429,7 +429,7 @@ Twinkle.batchdelete.callbacks = {
 			return;
 		}
 
-		var image = params.image.replace( /^(?:Image|File):/, '' );
+		var image = params.page.replace( /^(?:Image|File):/, '' );
 		var text;
 		if( params.title in Twinkle.batchdelete.unlinkCache ) {
 			text = Twinkle.batchdelete.unlinkCache[ params.title ];
