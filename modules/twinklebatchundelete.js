@@ -33,6 +33,17 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 
 	var form = new Morebits.quickForm( Twinkle.batchundelete.callback.evaluate );
 	form.append( {
+			type: 'checkbox',
+			list: [
+				{
+					label: 'Restore talk pages of undeleted pages if they existed',
+					name: 'undel_talk',
+					value: 'undel_talk',
+					checked: true
+				}
+			]
+		} );
+	form.append( {
 			type: 'input',
 			name: 'reason',
 			label: 'Reason: ',
@@ -98,6 +109,7 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 
 	var pages = event.target.getChecked( 'pages' );
 	var reason = event.target.reason.value;
+	var undel_talk = event.target.reason.value;
 	if( ! reason ) {
 		alert("You need to give a reason, you cabal crony!");
 		return;
@@ -119,10 +131,18 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 			'token': mw.user.tokens.get().editToken,
 			'title': pageName,
 			'action': 'undelete',
-			'reason': reason + Twinkle.getPref('deletionSummaryAd')
+			'reason': reason + Twinkle.getPref('deletionSummaryAd'),
+			'undel_talk': undel_talk	// Not used in the API request, but added here for access in onSuccess()
 		};
 		var wikipedia_api = new Morebits.wiki.api( "Undeleting page " + pageName, query,
-			batchOperation.workerSuccess, null, batchOperation.workerFailure );
+			function onSuccess(apiobj) {
+				batchOperation.workerSuccess();
+				var talkpagename = new mw.Title(apiobj.query.title).getTalkPage().getPrefixedText();
+				if (apiobj.query.undel_talk && apiobj.query.title !== talkpagename) {
+					// Restore talk page too if it existed
+					new Morebits.wiki.api("Undeleting talk page", $.extend(apiobj.query, {title: talkpagename})).post();
+				}
+			}, null, batchOperation.workerFailure);
 		wikipedia_api.statelem.status("undeleting...");
 		wikipedia_api.pageName = pageName;
 		wikipedia_api.post();
