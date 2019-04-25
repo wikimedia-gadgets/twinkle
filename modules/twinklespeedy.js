@@ -330,7 +330,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	}
 
 	if (namespace % 2 === 1 && namespace !== 3 && namespace !== 447) {
-		// show db-talk on talk pages, but not user talk pages
+		// show db-talk on talk pages, but not user talk pages or education program talk pages
 		work_area.append( { type: 'header', label: 'Talk pages' } );
 		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.talkList, mode) } );
 	}
