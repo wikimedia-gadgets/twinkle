@@ -437,7 +437,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 								label: 'Modify pending changes protection',
 								value: 'pcmodify',
 								tooltip: 'If this is turned off, the pending changes level, and expiry time, will be left as is.',
-								checked: true
+								checked: true,
+								disabled: (mw.config.get('wgNamespaceNumber') !== 0 && mw.config.get('wgNamespaceNumber') !== 4) // Hardcoded until [[phab:T218479]]
 							}
 						]
 					});
