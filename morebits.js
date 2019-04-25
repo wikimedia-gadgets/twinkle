@@ -1020,24 +1020,6 @@ Morebits.bytes.prototype.toString = function( magnitude ) {
  * **************** String; Morebits.string ****************
  */
 
-if (!String.prototype.trimLeft) {
-	String.prototype.trimLeft = function stringPrototypeLtrim( ) {
-		return this.replace( /^[\s]+/g, "" );
-	};
-}
-
-if (!String.prototype.trimRight) {
-	String.prototype.trimRight = function stringPrototypeRtrim( ) {
-		return this.replace( /[\s]+$/g, "" );
-	};
-}
-
-if (!String.prototype.trim) {
-	String.prototype.trim = function stringPrototypeTrim( ) {
-		return this.trimRight().trimLeft();
-	};
-}
-
 Morebits.string = {
 	// Helper functions to change case of a string
 	toUpperCaseFirstChar: function(str) {
@@ -1107,7 +1089,7 @@ Morebits.string = {
 	 * @returns {string}
 	 */
 	formatReasonText: function( str ) {
-		var result = str.toString().trimRight();
+		var result = str.toString().trim();
 		var unbinder = new Morebits.unbinder(result);
 		unbinder.unbind("<no" + "wiki>", "</no" + "wiki>");
 		unbinder.content = unbinder.content.replace(/\|/g, "{{subst:!}}");
