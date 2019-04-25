@@ -22,8 +22,10 @@
 Twinkle.speedy = function twinklespeedy() {
 	// Disable on:
 	// * special pages
+	// * gadget pages
 	// * non-existent pages
-	if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId')) {
+	var pageNamespace = mw.config.get('wgNamespaceNumber');
+	if (pageNamespace < 0 || !mw.config.get('wgArticleId') || pageNamespace === 2300) {
 		return;
 	}
 
