@@ -781,6 +781,12 @@ Twinkle.speedy.categoryList = [
 		label: 'G8: Categories populated by a deleted or retargeted template',
 		value: 'templatecat',
 		tooltip: 'This is for situations where a category is effectively empty, because the template(s) that formerly placed pages in that category are now deleted. This excludes categories that are still in use.'
+	},
+	{
+		label: 'G8: Redirects to invalid targets, such as nonexistent targets, redirect loops, and bad titles',
+		value: 'redirnone',
+		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
+		hideWhenMultiple: true
 	}
 ];
 
