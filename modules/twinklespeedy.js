@@ -385,22 +385,11 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList, mode) } );
 		}
 		work_area.append( { type: 'header', label: 'Redirects' } );
-		if (namespace == 0) {
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.articleRedirect.concat(Twinkle.speedy.redirectCriterion, Twinkle.speedy.generalRedirectList), mode) } );
-		}
-		else if (namespace == 6) {
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectCriterion.concat(Twinkle.speedy.fileRedirect, Twinkle.speedy.generalRedirectList), mode) } );
-		}
-		else {
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectCriterion.concat(Twinkle.speedy.generalRedirectList), mode) } );
-		}
+		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) } );
 	}
 
 	var generalCriteria = Twinkle.speedy.generalList;
-	// G1 and G2 aren't supposed to be used on userpages
-	if (namespace !== 2) {
-		generalCriteria = Twinkle.speedy.generalNonUser.concat(generalCriteria);
-	}
+
 	// custom rationale lives under general criteria when tagging
 	if(!Twinkle.speedy.mode.isSysop(mode)) {
 		generalCriteria = Twinkle.speedy.customRationale.concat(generalCriteria);
@@ -480,6 +469,12 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 		}
 
 		if (mw.config.get('wgIsRedirect') && criterion.hideWhenRedirect) {
+			return null;
+		}
+
+		if (criterion.showInNamespaces && criterion.showInNamespaces.indexOf(mw.config.get('wgNamespaceNumber')) < 0) {
+			return null;
+		} else if (criterion.hideInNamespaces && criterion.hideInNamespaces.indexOf(mw.config.get('wgNamespaceNumber')) > -1) {
 			return null;
 		}
 
@@ -874,20 +869,19 @@ Twinkle.speedy.portalList = [
 	}
 ];
 
-Twinkle.speedy.generalNonUser = [
+Twinkle.speedy.generalList = [
 	{
 		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
 		value: 'nonsense',
-		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.'
+		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.',
+		hideInNamespaces: [ 2 ]		// Not applicable in userspace
 	},
 	{
 		label: 'G2: Test page',
 		value: 'test',
-		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates (although criterion T3 may apply).'
-	}
-];
-
-Twinkle.speedy.generalList = [
+		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates (although criterion T3 may apply).',
+		hideInNamespaces: [ 2 ]		// Not applicable in userspace
+	},
 	{
 		label: 'G3: Pure vandalism',
 		value: 'vandalism',
@@ -1005,7 +999,8 @@ Twinkle.speedy.generalList = [
 		label: 'G8: Subpages with no parent page',
 		value: 'subpage',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
-		hideWhenMultiple: true
+		hideWhenMultiple: true,
+		hideInNamespaces: [ 0, 6, 8 ]  // hide in main, file, and mediawiki-spaces
 	},
 	{
 		label: 'G10: Attack page',
@@ -1055,7 +1050,8 @@ Twinkle.speedy.generalList = [
 		label: 'G13: Page in draft namespace or userspace AfC submission, stale by over 6 months',
 		value: 'afc',
 		tooltip: 'Any rejected or unsubmitted AfC submission in userspace or any page in draft namespace, that has not been edited for more than 6 months. Blank drafts in either namespace are also included.',
-		hideWhenRedirect: true
+		hideWhenRedirect: true,
+		showInNamespaces: [2, 118]  // user, draft namespaces only
 	},
 	{
 		label: 'G14: Unnecessary disambiguation page',
@@ -1065,7 +1061,24 @@ Twinkle.speedy.generalList = [
 	}
 ];
 
-Twinkle.speedy.generalRedirectList = [
+Twinkle.speedy.redirectList = [
+	{
+		label: 'R2: Redirects from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
+		value: 'rediruser',
+		tooltip: '(this does not include the Wikipedia shortcut pseudo-namespaces). If this was the result of a page move, consider waiting a day or two before deleting the redirect',
+		showInNamespaces: [ 0 ]
+	},
+	{
+		label: 'R3: Redirects as a result of an implausible typo or misnomers that were recently created',
+		value: 'redirtypo',
+		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
+	},
+	{
+		label: 'R4: File namespace redirect with name that matches a Commons page',
+		value: 'redircom',
+		tooltip: 'The redirect should have no incoming links (unless the links are cleary intended for the file or redirect at Commons).',
+		showInNamespaces: [ 6 ]
+	},
 	{
 		label: 'G6: Redirect to malplaced disambiguation page',
 		value: 'movedab',
@@ -1077,29 +1090,7 @@ Twinkle.speedy.generalRedirectList = [
 		value: 'redirnone',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		hideWhenMultiple: true
-	}
-];
-
-Twinkle.speedy.redirectCriterion = [
-	{
-		label: 'R3: Redirects as a result of an implausible typo or misnomers that were recently created',
-		value: 'redirtypo',
-		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
-	}
-];
-Twinkle.speedy.articleRedirect = [
-	{
-		label: 'R2: Redirects from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
-		value: 'rediruser',
-		tooltip: '(this does not include the Wikipedia shortcut pseudo-namespaces). If this was the result of a page move, consider waiting a day or two before deleting the redirect'
-	}
-];
-Twinkle.speedy.fileRedirect = [
-	{
-		label: 'R4: File namespace redirect with name that matches a Commons page',
-		value: 'redircom',
-		tooltip: 'The redirect should have no incoming links (unless the links are cleary intended for the file or redirect at Commons).'
-	}
+	},
 ];
 
 Twinkle.speedy.normalizeHash = {
