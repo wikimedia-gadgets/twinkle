@@ -210,7 +210,7 @@ Twinkle.unlink.callbacks = {
 				apiobj.params.form.append( { type:'header', label: 'Backlinks' } );
 				namespaces = [];
 				$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
-					namespaces.push(v === 0 ? '(Article)' : mw.config.get('wgFormattedNamespaces')[v]);
+					namespaces.push(v === '0' ? '(Article)' : mw.config.get('wgFormattedNamespaces')[v]);
 				});
 				apiobj.params.form.append( {
 					type: 'div',
