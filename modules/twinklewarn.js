@@ -1196,7 +1196,7 @@ Twinkle.warn.callbacks = {
 			text += " ''" + reason + "''";
 		}
 
-		return text;
+		return text + ' ~~~~';
 	},
 	preview: function(form) {
 		var templatename = form.sub_group.value;
@@ -1274,7 +1274,7 @@ Twinkle.warn.callbacks = {
 			text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 		}
 		text += Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article,
-			params.reason, params.main_group === 'custom') + " ~~~~";
+			params.reason, params.main_group === 'custom');
 
 		if ( Twinkle.getPref('showSharedIPNotice') && mw.util.isIPAddress( mw.config.get('wgTitle') ) ) {
 			Morebits.status.info( 'Info', 'Adding a shared IP notice' );
