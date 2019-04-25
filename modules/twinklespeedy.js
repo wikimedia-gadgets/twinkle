@@ -346,7 +346,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			case 2:  // user
 			case 3:  // user talk
 				work_area.append( { type: 'header', label: 'User pages' } );
-				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList.concat(Twinkle.speedy.userNonRedirectList), mode) } );
+				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userList, mode) } );
 				break;
 
 			case 6:  // file
@@ -382,7 +382,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	} else {
 		if (namespace == 2 || namespace == 3) {
 			work_area.append( { type: 'header', label: 'User pages' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList, mode) } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userList, mode) } );
 		}
 		work_area.append( { type: 'header', label: 'Redirects' } );
 		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) } );
@@ -778,7 +778,7 @@ Twinkle.speedy.categoryList = [
 	}
 ];
 
-Twinkle.speedy.userAllList = [
+Twinkle.speedy.userList = [
 	{
 		label: 'U1: User request',
 		value: 'userreq',
@@ -796,31 +796,32 @@ Twinkle.speedy.userAllList = [
 		label: 'U2: Nonexistent user',
 		value: 'nouser',
 		tooltip: 'User pages of users that do not exist (Check Special:Listusers)'
-	}
-];
-
-Twinkle.speedy.userNonRedirectList = [
+	},
 	{
 		label: 'U3: Non-free galleries',
 		value: 'gallery',
-		tooltip: 'Galleries in the userspace which consist mostly of "fair use" or non-free files. Wikipedia\'s non-free content policy forbids users from displaying non-free files, even ones they have uploaded themselves, in userspace. It is acceptable to have free files, GFDL-files, Creative Commons and similar licenses along with public domain material, but not "fair use" files'
+		tooltip: 'Galleries in the userspace which consist mostly of "fair use" or non-free files. Wikipedia\'s non-free content policy forbids users from displaying non-free files, even ones they have uploaded themselves, in userspace. It is acceptable to have free files, GFDL-files, Creative Commons and similar licenses along with public domain material, but not "fair use" files',
+		hideWhenRedirect: true
 	},
 	{
 		label: 'U5: Blatant WP:NOTWEBHOST violations',
 		value: 'notwebhost',
-		tooltip: 'Pages in userspace consisting of writings, information, discussions, and/or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of userspace, with the exception of plausible drafts, pages adhering to WP:UPYES, and résumé-style pages.'
+		tooltip: 'Pages in userspace consisting of writings, information, discussions, and/or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of userspace, with the exception of plausible drafts, pages adhering to WP:UPYES, and résumé-style pages.',
+		hideWhenRedirect: true
 	},
 	{
 		label: 'G11: Promotional user page under a promotional user name',
 		value: 'spamuser',
 		tooltip: 'A promotional user page, with a username that promotes or implies affiliation with the thing being promoted. Note that simply having a page on a company or product in one\'s userspace does not qualify it for deletion. If a user page is spammy but the username is not, then consider tagging with regular G11 instead.',
-		hideWhenMultiple: true
+		hideWhenMultiple: true,
+		hideWhenRedirect: true
 	},
 	{
 		label: 'G13: AfC draft submission or a blank draft, stale by over 6 months',
 		value: 'afc',
 		tooltip: 'Any rejected or unsubmitted AfC draft submission or a blank draft, that has not been edited in over 6 months (excluding bot edits).',
-		hideWhenMultiple: true
+		hideWhenMultiple: true,
+		hideWhenRedirect: true
 	}
 ];
 
