@@ -99,8 +99,8 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 Twinkle.protect.currentProtectionLevels = {};
 
 // returns a jQuery Deferred object, usage:
-//   Twinkle.protect.fetchProtectingAdmin(apiObject, pageName).done(function(admin_username) { ...code... });
-Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdmin(api, pageName, logIds) {
+//   Twinkle.protect.fetchProtectingAdmin(apiObject, pageName, protect/stable).done(function(admin_username) { ...code... });
+Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdmin(api, pageName, protType, logIds) {
 	logIds = logIds || [];
 
 	return api.get({
@@ -108,15 +108,15 @@ Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdm
 		action: 'query',
 		list: 'logevents',
 		letitle: pageName,
-		letype: 'protect'
+		letype: protType
 	}).then(function( data ) {
 		// don't check log entries that have already been checked (e.g. don't go into an infinite loop!)
 		var event = data.query ? $.grep(data.query.logevents, function(le) { return $.inArray(le.logid, logIds); })[0] : null;
 		if (!event) {
 			// fail gracefully
 			return null;
-		} else if (event.action === "move_prot") {
-			return twinkleprotectFetchProtectingAdmin( api, event.params.oldtitle_title, logIds.concat(event.logid) );
+		} else if (event.action === "move_prot" || event.action === "move_stable") {
+			return twinkleprotectFetchProtectingAdmin( api, (protType === 'protect' ? event.params.oldtitle_title : event.params.oldtitle), protType, logIds.concat(event.logid) );
 		} else {
 			return event.user;
 		}
@@ -159,30 +159,27 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 				};
 				// logs report last admin who made changes to either edit/move/create protection, regardless if they only modified one of them
 				if (!adminEditDeferred) {
-					adminEditDeferred = Twinkle.protect.fetchProtectingAdmin(api, mw.config.get('wgPageName'));
+					adminEditDeferred = Twinkle.protect.fetchProtectingAdmin(api, mw.config.get('wgPageName'), 'protect');
 				}
 			}
 		});
 
-		Twinkle.protect.hasStableLog = !!stableData[0].query.logevents.length;
-
 		if (page.flagged) {
-			// note that stable settings aren't logged when page is moved, so we don't need to use fetchProtectingAdmin
 			current.stabilize = {
 				level: page.flagged.protection_level,
-				expiry: page.flagged.protection_expiry,
-				admin: Twinkle.protect.hasStableLog ? stableData[0].query.logevents[0].user : null
+				expiry: page.flagged.protection_expiry
 			};
 		}
 
 		// show the protection level and log info
 		Twinkle.protect.hasProtectLog = !!protectData[0].query.logevents.length;
+		Twinkle.protect.hasStableLog = !!stableData[0].query.logevents.length;
 		Twinkle.protect.currentProtectionLevels = current;
 
 		if (adminEditDeferred) {
 			adminEditDeferred.done(function(admin) {
 				if (admin) {
-					$.each(['edit', 'move', 'create'], function(i, type) {
+					$.each(['edit', 'move', 'create', 'stabilize'], function(i, type) {
 						if (Twinkle.protect.currentProtectionLevels[type]) {
 							Twinkle.protect.currentProtectionLevels[type].admin = admin;
 						}
