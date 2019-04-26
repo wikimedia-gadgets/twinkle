@@ -295,8 +295,9 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 
 	// first figure out what mode we're in
 	var mode = Twinkle.speedy.callback.getMode(form);
+	var isSysop = Twinkle.speedy.mode.isSysop(mode);
 
-	if (Twinkle.speedy.mode.isSysop(mode)) {
+	if (isSysop) {
 		$("[name=delete_options]").show();
 		$("[name=tag_options]").hide();
 	} else {
@@ -310,7 +311,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		} );
 
 	if (mode === Twinkle.speedy.mode.userMultipleRadioClick || mode === Twinkle.speedy.mode.sysopMultipleRadioClick) {
-		var evaluateType = Twinkle.speedy.mode.isSysop(mode) ? 'evaluateSysop' : 'evaluateUser';
+		var evaluateType = isSysop ? 'evaluateSysop' : 'evaluateUser';
 
 		work_area.append( {
 				type: 'div',
@@ -329,7 +330,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 
 	var radioOrCheckbox = (Twinkle.speedy.mode.isMultiple(mode) ? 'checkbox' : 'radio');
 
-	if (Twinkle.speedy.mode.isSysop(mode) && !Twinkle.speedy.mode.isMultiple(mode)) {
+	if (isSysop && !Twinkle.speedy.mode.isMultiple(mode)) {
 		work_area.append( { type: 'header', label: 'Custom rationale' } );
 		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.customRationale, mode) } );
 	}
@@ -358,7 +359,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			case 7:  // file talk
 				work_area.append( { type: 'header', label: 'Files' } );
 				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.fileList, mode) } );
-				if (!Twinkle.speedy.mode.isSysop(mode)) {
+				if (!isSysop) {
 					work_area.append( { type: 'div', label: 'Tagging for CSD F4 (no license), F5 (orphaned fair use), F6 (no fair use rationale), and F11 (no permission) is done using Twinkle\'s "DI" tab.' } );
 				}
 				break;
@@ -396,7 +397,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	var generalCriteria = Twinkle.speedy.generalList;
 
 	// custom rationale lives under general criteria when tagging
-	if(!Twinkle.speedy.mode.isSysop(mode)) {
+	if(!isSysop) {
 		generalCriteria = Twinkle.speedy.customRationale.concat(generalCriteria);
 	}
 	work_area.append( { type: 'header', label: 'General criteria' } );
@@ -406,7 +407,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	form.replaceChild(work_area.render(), old_area);
 
 	// if sysop, check if CSD is already on the page and fill in custom rationale
-	if (Twinkle.speedy.mode.isSysop(mode) && $("#delete-reason").length) {
+	if (isSysop && $("#delete-reason").length) {
 		var customOption = $("input[name=csd][value=reason]")[0];
 		if (customOption) {
 			if (Twinkle.getPref('speedySelectionStyle') !== 'radioClick') {
