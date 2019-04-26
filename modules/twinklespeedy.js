@@ -82,6 +82,7 @@ Twinkle.speedy.mode = {
 // Prepares the speedy deletion dialog and displays it
 Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	var dialog;
+	var isSysop = Morebits.userIsInGroup( 'sysop' );
 	Twinkle.speedy.dialog = new Morebits.simpleWindow( Twinkle.getPref('speedyWindowWidth'), Twinkle.getPref('speedyWindowHeight') );
 	dialog = Twinkle.speedy.dialog;
 	dialog.setTitle( "Choose criteria for speedy deletion" );
@@ -90,7 +91,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	dialog.addFooterLink( "Twinkle help", "WP:TW/DOC#speedy" );
 
 	var form = new Morebits.quickForm( callbackfunc, (Twinkle.getPref('speedySelectionStyle') === 'radioClick' ? 'change' : null) );
-	if( Morebits.userIsInGroup( 'sysop' ) ) {
+	if( isSysop ) {
 		form.append( {
 				type: 'checkbox',
 				list: [
@@ -209,7 +210,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 			name: 'tag_options'
 		} );
 
-	if( Morebits.userIsInGroup( 'sysop' ) ) {
+	if( isSysop ) {
 		tagOptions.append( {
 				type: 'header',
 				label: 'Tag-related options'
@@ -225,8 +226,8 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					name: 'notify',
 					tooltip: "A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences " +
 						"for the criterion you choose AND this box is checked. The creator may be welcomed as well.",
-					checked: !Morebits.userIsInGroup( 'sysop' ) || Twinkle.getPref('deleteSysopDefaultToTag'),
-					disabled: Morebits.userIsInGroup( 'sysop' ) && !Twinkle.getPref('deleteSysopDefaultToTag'),
+					checked: !isSysop || Twinkle.getPref('deleteSysopDefaultToTag'),
+					disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
 					event: function( event ) {
 						event.stopPropagation();
 					}
@@ -241,7 +242,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					value: 'multiple',
 					name: 'multiple',
 					tooltip: "When selected, you can select several criteria that apply to the page. For example, G11 and A7 are a common combination for articles.",
-					disabled: Morebits.userIsInGroup( 'sysop' ) && !Twinkle.getPref('deleteSysopDefaultToTag'),
+					disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
 					event: function( event ) {
 						Twinkle.speedy.callback.modeChanged( event.target.form );
 						event.stopPropagation();
