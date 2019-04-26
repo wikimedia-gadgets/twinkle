@@ -479,7 +479,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			return null;
 		}
 
-		if (criterion.showInNamespaces && criterion.showInNamespaces.indexOf(pageNamespace)) < 0) {
+		if (criterion.showInNamespaces && criterion.showInNamespaces.indexOf(pageNamespace) < 0) {
 			return null;
 		}
 		if (criterion.hideInNamespaces && criterion.hideInNamespaces.indexOf(pageNamespace) > -1) {
