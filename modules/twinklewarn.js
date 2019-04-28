@@ -66,7 +66,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		} );
 
 	var defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'), 10);
-	main_group.append( { type: 'option', label: '1: General note', value: 'level1', selected: ( defaultGroup === 1 || defaultGroup < 1 || ( Morebits.userIsInGroup( 'sysop' ) ? defaultGroup > 8 : defaultGroup > 7 ) ) } );
+	main_group.append( { type: 'option', label: '1: General note', value: 'level1', selected: ( defaultGroup === 1 ) } );
 	main_group.append( { type: 'option', label: '2: Caution', value: 'level2', selected: ( defaultGroup === 2 ) } );
 	main_group.append( { type: 'option', label: '3: Warning', value: 'level3', selected: ( defaultGroup === 3 ) } );
 	main_group.append( { type: 'option', label: '4: Final warning', value: 'level4', selected: ( defaultGroup === 4 ) } );
