@@ -9,7 +9,8 @@
  *** friendlywelcome.js: Welcome module
  ****************************************
  * Mode of invocation:     Tab ("Wel"), or from links on diff pages
- * Active on:              Existing user talk pages, diff pages
+ * Active on:              Any page with relevant user name (userspace,
+ *                         contribs, etc.) and diff pages
  * Config directives in:   FriendlyConfig
  */
 
@@ -84,7 +85,7 @@ Twinkle.welcome.normal = function() {
 			}
 		}
 	}
-	if( mw.config.get( 'wgNamespaceNumber' ) === 3 && mw.config.get( 'wgRelevantUserName' ) ) {
+	if( mw.config.get( 'wgRelevantUserName' ) ) {
 		Twinkle.addPortletLink( function(){ Twinkle.welcome.callback(mw.config.get( 'wgRelevantUserName' )); }, "Wel", "friendly-welcome", "Welcome user" );
 	}
 };
@@ -99,10 +100,11 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 		mode: 'auto'
 	};
 
-	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	var userTalkPage = mw.config.get('wgFormattedNamespaces')[3] + ':' + mw.config.get('wgRelevantUserName');
+	Morebits.wiki.actionCompleted.redirect = userTalkPage;
 	Morebits.wiki.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "User talk page modification");
+	var wikipedia_page = new Morebits.wiki.page(userTalkPage, "User talk page modification");
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);
@@ -127,8 +129,8 @@ Twinkle.welcome.callback = function friendlywelcomeCallback( uid ) {
 			label: 'Type of welcome: ',
 			event: Twinkle.welcome.populateWelcomeList,
 			list: [
-				{ type: 'option', value: 'standard', label: 'Standard welcomes', selected: !mw.util.isIPAddress(mw.config.get('wgTitle')) },
-				{ type: 'option', value: 'anonymous', label: 'IP user welcomes', selected: mw.util.isIPAddress(mw.config.get('wgTitle')) },
+				{ type: 'option', value: 'standard', label: 'Standard welcomes', selected: !mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
+				{ type: 'option', value: 'anonymous', label: 'IP user welcomes', selected: mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
 				{ type: 'option', value: 'wikiProject', label: 'WikiProject welcomes' },
 				{ type: 'option', value: 'nonEnglish', label: 'Non-English welcomes' }
 			]
@@ -783,10 +785,11 @@ Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) 
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( form );
 
-	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+	var userTalkPage = mw.config.get('wgFormattedNamespaces')[3] + ':' + mw.config.get('wgRelevantUserName');
+	Morebits.wiki.actionCompleted.redirect = userTalkPage;
 	Morebits.wiki.actionCompleted.notice = "Welcoming complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "User talk page modification");
+	var wikipedia_page = new Morebits.wiki.page(userTalkPage, "User talk page modification");
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);
