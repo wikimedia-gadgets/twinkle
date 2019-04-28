@@ -282,6 +282,16 @@ Twinkle.prod.callbacks = {
 				summaryText = "Proposing " + namespace + " for deletion per [[WP:PROD]].";
 				text = "{{subst:prod|1=" + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? "|help=off" : "") + "}}\n" + text;
 			}
+
+			// Add {{Old prod}} to the talk page
+			var oldprodfull = '{{Old prod|nom=' + mw.config.get('wgUserName') + '|nomdate={{subst:#time: Y-m-d}}}}\n';
+			var talktitle = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
+			var talkpage = new Morebits.wiki.page(talktitle, 'Placing {{Old prod}} on talk page');
+			talkpage.setPrependText(oldprodfull);
+			talkpage.setEditSummary('Placing {{Old prod}} on the talk page' + Twinkle.getPref('summaryAd'));
+			talkpage.setFollowRedirect(true);  // match behavior for page tagging
+			talkpage.setCreateOption('recreate');
+			talkpage.prepend();
 		}
 		else {  // already tagged for PROD, so try endorsing it
 			var prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/;
