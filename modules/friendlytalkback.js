@@ -352,7 +352,7 @@ var callback_evaluate = function( e ) {
 	Morebits.simpleWindow.setButtonsEnabled( false );
 	Morebits.status.init( e.target );
 
-	Morebits.wiki.actionCompleted.redirect = fullUserTalkPageName;
+	Morebits.wiki.actionCompleted.redirect = fullUserTalkPageName + '#footer';
 	Morebits.wiki.actionCompleted.notice = "Talkback complete; reloading talk page in a few seconds";
 
 	var talkpage = new Morebits.wiki.page(fullUserTalkPageName, "Adding talkback");
