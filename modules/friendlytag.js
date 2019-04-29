@@ -342,7 +342,6 @@ Twinkle.tag.updateSortOrder = function(e) {
 				break;
 			case "not English":
 			case "rough translation":
-				if (mw.config.get('wgNamespaceNumber') === 0) {
 					checkbox.subgroup = [
 						{
 							name: 'translationLanguage',
@@ -363,7 +362,8 @@ Twinkle.tag.updateSortOrder = function(e) {
 								}
 							]
 						});
-					}
+					};
+				if (mw.config.get('wgNamespaceNumber') === 0) {
 					checkbox.subgroup.push({
 						name: 'translationPostAtPNT',
 						type: 'checkbox',
