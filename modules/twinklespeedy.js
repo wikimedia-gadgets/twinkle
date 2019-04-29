@@ -331,8 +331,13 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.customRationale, mode) } );
 	}
 
+<<<<<<< HEAD
 	if (namespace % 2 === 1 && namespace !== 3 && namespace !== 447) {
 		// show db-talk on talk pages, but not user talk pages or education program talk pages
+=======
+	if (namespace % 2 === 1 && namespace !== 3) {
+		// show db-talk on talk pages, but not user talk pages
+>>>>>>> parent of 397c2ad... hide TalkList in ns 447 (Education Program talk)
 		work_area.append( { type: 'header', label: 'Talk pages' } );
 		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.talkList, mode) } );
 	}
