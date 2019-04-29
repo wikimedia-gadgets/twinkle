@@ -24,14 +24,12 @@ Twinkle.speedy = function twinklespeedy() {
 	// * special pages
 	// * gadget pages
 	// * non-existent pages
-	// * mediawiki pages (for non-sysops only)
 	var pageNamespace = mw.config.get('wgNamespaceNumber');
-	var isSysop = Morebits.userIsInGroup('sysop');
-	if (pageNamespace < 0 || !mw.config.get('wgArticleId') || pageNamespace === 2300 || (!isSysop && pageNamespace === 8) ) {
+	if (pageNamespace < 0 || !mw.config.get('wgArticleId') || pageNamespace === 2300) {
 		return;
 	}
 
-	Twinkle.addPortletLink( Twinkle.speedy.callback, "CSD", "tw-csd", isSysop ? "Delete page according to WP:CSD" : "Request speedy deletion according to WP:CSD" );
+	Twinkle.addPortletLink( Twinkle.speedy.callback, "CSD", "tw-csd", Morebits.userIsInGroup('sysop') ? "Delete page according to WP:CSD" : "Request speedy deletion according to WP:CSD" );
 };
 
 // This function is run when the CSD tab/header link is clicked
