@@ -354,7 +354,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label.appendChild( document.createTextNode( current.label ) );
 				label.setAttribute( 'for', cur_id );
 				if( current.tooltip ) {
-					Morebits.quickForm.element.generateTooltip( label, current ); 
+					Morebits.quickForm.element.generateTooltip( label, current );
 				}
 				// styles go on the label, doesn't make sense to style a checkbox/radio
 				if( current.style ) {
@@ -1251,7 +1251,7 @@ Morebits.array = {
  */
 Morebits.pageNameNorm = mw.config.get('wgPageName').replace(/_/g, ' ');
 
-  
+
 /**
  * *************** Morebits.pageNameRegex *****************
  * For a page name 'Foo bar', returns the string '[Ff]oo bar'
@@ -1261,7 +1261,7 @@ Morebits.pageNameRegex = function(pageName) {
 	return '[' + pageName[0].toUpperCase() + pageName[0].toLowerCase() + ']' + pageName.slice(1);
 };
 
-  
+
 /**
  * **************** Morebits.unbinder ****************
  * Used for temporarily hiding a part of a string while processing the rest of it.
