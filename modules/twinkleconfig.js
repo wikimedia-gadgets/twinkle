@@ -1689,7 +1689,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		"// changing the configuration parameters in a valid-JavaScript way) will be\n" +
 		"// overwritten the next time you click \"save\" in the Twinkle preferences\n" +
 		"// panel.  If modifying this file, make sure to use correct JavaScript.\n" +
-	    	"// <no" + "wiki>\n"+
+		"// <no" + "wiki>\n" +
 		"\n" +
 		"window.Twinkle.prefs = ";
 	text += JSON.stringify(newConfig, null, 2);
