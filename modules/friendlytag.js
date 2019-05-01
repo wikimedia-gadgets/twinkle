@@ -342,43 +342,45 @@ Twinkle.tag.updateSortOrder = function(e) {
 				break;
 			case "not English":
 			case "rough translation":
-				checkbox.subgroup = [
-					{
-						name: 'translationLanguage',
-						type: 'input',
-						label: 'Language of article (if known): ',
-						tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
+					checkbox.subgroup = [
+						{
+							name: 'translationLanguage',
+							type: 'input',
+							label: 'Language of article (if known): ',
+							tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
+						}
+					];
+					if (tag === "not English") {
+						checkbox.subgroup.push({
+							name: 'translationNotify',
+							type: 'checkbox',
+							list: [
+								{
+									label: 'Notify article creator',
+									checked: true,
+									tooltip: "Places {{uw-notenglish}} on the creator's talk page."
+								}
+							]
+						});
 					}
-				];
-				if (tag === "not English") {
+				if (mw.config.get('wgNamespaceNumber') === 0) {
 					checkbox.subgroup.push({
-						name: 'translationNotify',
+						name: 'translationPostAtPNT',
 						type: 'checkbox',
 						list: [
 							{
-								label: 'Notify article creator',
-								checked: true,
-								tooltip: "Places {{uw-notenglish}} on the creator's talk page."
+								label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
+								checked: true
 							}
 						]
 					});
+					checkbox.subgroup.push({
+						name: 'translationComments',
+						type: 'textarea',
+						label: 'Additional comments to post at PNT',
+						tooltip: 'Optional, and only relevant if "List this article ..." above is checked.'
+					});
 				}
-				checkbox.subgroup.push({
-					name: 'translationPostAtPNT',
-					type: 'checkbox',
-					list: [
-						{
-							label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
-							checked: true
-						}
-					]
-				});
-				checkbox.subgroup.push({
-					name: 'translationComments',
-					type: 'textarea',
-					label: 'Additional comments to post at PNT',
-					tooltip: 'Optional, and only relevant if "List this article ..." above is checked.'
-				});
 				break;
 			case "notability":
 				checkbox.subgroup = {
