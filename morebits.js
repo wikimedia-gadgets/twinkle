@@ -3826,7 +3826,7 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
  * |pageName| property on the Morebits.wiki.api object.
  *
  * There are sample batchOperation implementations using Morebits.wiki.page in
- * twinklebatchdelete.js, and using Morebits.wiki.api in twinklebatchundelete.js.
+ * twinklebatchdelete.js, twinklebatchundelete.js, and twinklebatchprotect.js.
  */
 
 /**

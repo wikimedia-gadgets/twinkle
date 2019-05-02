@@ -122,30 +122,30 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 		return;
 	}
 
-	var batchOperation = new Morebits.batchOperation("Undeleting pages");
-	batchOperation.setOption("chunkSize", Twinkle.getPref('batchUndeleteChunks'));
-	batchOperation.setOption("preserveIndividualStatusLines", true);
-	batchOperation.setPageList(pages);
-	batchOperation.run(function(pageName) {
-		var query = {
-			'token': mw.user.tokens.get().editToken,
-			'title': pageName,
-			'action': 'undelete',
-			'reason': reason + Twinkle.getPref('deletionSummaryAd'),
-			'undel_talk': undel_talk	// Not used in the API request, but added here for access in onSuccess()
+
+	var pageUndeleter = new Morebits.batchOperation("Undeleting pages");
+	pageUndeleter.setOption("chunkSize", Twinkle.getPref('batchUndeleteChunks'));
+	pageUndeleter.setOption("preserveIndividualStatusLines", true);
+	pageUndeleter.setPageList(pages);
+	pageUndeleter.run(function(pageName) {
+		var params = {
+			page: pageName,
+			reason: reason,
+			pageUndeleter: pageUndeleter
 		};
-		var wikipedia_api = new Morebits.wiki.api( "Undeleting page " + pageName, query,
-			function onSuccess(apiobj) {
-				batchOperation.workerSuccess();
-				var talkpagename = new mw.Title(apiobj.query.title).getTalkPage().getPrefixedText();
-				if (apiobj.query.undel_talk && apiobj.query.title !== talkpagename) {
-					// Restore talk page too if it existed
-					new Morebits.wiki.api("Undeleting talk page", $.extend(apiobj.query, {title: talkpagename})).post();
-				}
-			}, null, batchOperation.workerFailure);
-		wikipedia_api.statelem.status("undeleting...");
-		wikipedia_api.pageName = pageName;
-		wikipedia_api.post();
+
+		var wikipedia_page = new Morebits.wiki.page( pageName, 'Undeleting page ' + pageName );
+		wikipedia_page.setCallbackParameters(params);
+		wikipedia_page.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
+		wikipedia_page.suppressProtectWarning();
+		wikipedia_page.undeletePage(function onSuccess(apiobj) {
+			pageUndeleter.workerSuccess();
+			var talkpagename = new mw.Title(apiobj.query.title).getTalkPage().getPrefixedText();
+			if (apiobj.query.undel_talk && apiobj.query.title !== talkpagename) {
+				// Restore talk page too if it existed
+				new Morebits.wiki.api("Undeleting talk page", $.extend(apiobj.query, {title: talkpagename})).post();
+			}
+		}, pageUndeleter.workerFailure);
 	});
 };
 
