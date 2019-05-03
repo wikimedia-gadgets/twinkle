@@ -138,6 +138,7 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
 		wikipedia_page.suppressProtectWarning();
+		wikipedia_page.setMaxRetries(3); // temporary increase from 2 to make batchundelete more likely to succeed [[phab:T222402]] #613
 		wikipedia_page.undeletePage(function onSuccess(apiobj) {
 			pageUndeleter.workerSuccess();
 			var talkpagename = new mw.Title(apiobj.query.title).getTalkPage().getPrefixedText();
