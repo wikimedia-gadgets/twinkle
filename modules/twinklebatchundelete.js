@@ -59,6 +59,8 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	var query = {
 		'action': 'query',
 		'generator': 'links',
+		'prop': 'info',
+		'inprop': 'protection',
 		'titles': mw.config.get("wgPageName"),
 		'gpllimit' : Twinkle.getPref('batchMax') // the max for sysops
 	};
@@ -70,7 +72,15 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 			$pages.each(function(index, page) {
 				var $page = $(page);
 				var title = $page.attr('title');
-				list.push({ label: title, value: title, checked: true });
+				var $editprot = $page.find('pr[type="create"][level="sysop"]');
+				var isProtected = $editprot.length > 0;
+
+				list.push({
+					label: title + (isProtected ? ' (fully create protected' + ($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))) + ')' : ''),
+					value: title,
+					checked: true,
+					style: (isProtected ? 'color:red' : '')
+				});
 			});
 			apiobj.params.form.append({ type: 'header', label: 'Pages to undelete' });
 			apiobj.params.form.append({
@@ -106,6 +116,13 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 Twinkle.batchundelete.callback.evaluate = function( event ) {
 	Morebits.wiki.actionCompleted.notice = 'Status';
 	Morebits.wiki.actionCompleted.postfix = 'batch undeletion is now complete';
+
+	var numProtected = $(Morebits.quickForm.getElements(event.target, 'pages')).filter(function(index, element) {
+		return element.checked && element.nextElementSibling.style.color === 'red';
+	}).length;
+	if (numProtected > 0 && !confirm("You are about to undelete " + numProtected + " fully create protected page(s). Are you sure?")) {
+		return;
+	}
 
 	var pages = event.target.getChecked( 'pages' );
 	var reason = event.target.reason.value;
