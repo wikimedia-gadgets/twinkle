@@ -130,6 +130,7 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 	pageUndeleter.run(function(pageName) {
 		var params = {
 			page: pageName,
+			undel_talk: undel_talk,
 			reason: reason,
 			pageUndeleter: pageUndeleter
 		};
@@ -139,15 +140,53 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 		wikipedia_page.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
 		wikipedia_page.suppressProtectWarning();
 		wikipedia_page.setMaxRetries(3); // temporary increase from 2 to make batchundelete more likely to succeed [[phab:T222402]] #613
-		wikipedia_page.undeletePage(function onSuccess(apiobj) {
-			pageUndeleter.workerSuccess();
-			var talkpagename = new mw.Title(apiobj.query.title).getTalkPage().getPrefixedText();
-			if (apiobj.query.undel_talk && apiobj.query.title !== talkpagename) {
-				// Restore talk page too if it existed
-				new Morebits.wiki.api("Undeleting talk page", $.extend(apiobj.query, {title: talkpagename})).post();
-			}
-		}, pageUndeleter.workerFailure);
+		wikipedia_page.undeletePage(Twinkle.batchundelete.callbacks.doExtras, pageUndeleter.workerFailure);
 	});
+};
+
+Twinkle.batchundelete.callbacks = {
+	// this stupid parameter name is a temporary thing until I implement an overhaul
+	// of Morebits.wiki.* callback parameters
+	doExtras: function( thingWithParameters ) {
+		var params = thingWithParameters.parent ? thingWithParameters.parent.getCallbackParameters() :
+			thingWithParameters.getCallbackParameters();
+		// the initial batch operation's job is to delete the page, and that has
+		// succeeded by now
+		params.pageUndeleter.workerSuccess(thingWithParameters);
+
+		var query, wikipedia_api;
+
+		if ( params.undel_talk ) {
+			var talkpagename = new mw.Title(params.page).getTalkPage().getPrefixedText();
+			if (talkpagename !== params.page) {
+				query = {
+					'action': 'query',
+					'prop': 'deletedrevisions',
+					'drvprop': 'ids',
+					'drvlimit': 1,
+					'titles': talkpagename
+				};
+				wikipedia_api = new Morebits.wiki.api( 'Checking talk page for deleted revisions', query, Twinkle.batchundelete.callbacks.undeleteTalk );
+				wikipedia_api.params = params;
+				wikipedia_api.params.talkPage = talkpagename;
+				wikipedia_api.post();
+			}
+		}
+	},
+	undeleteTalk: function( apiobj ) {
+		var xml = apiobj.responseXML;
+		var exists = $(xml).find('page:not([missing])').length > 0;
+		var delrevs = $(xml).find('rev').attr('revid');
+
+		if( exists || !delrevs ) {
+			// page exists or has no deleted revisions; forget about it
+			return;
+		}
+
+		var page = new Morebits.wiki.page(apiobj.params.talkPage, "Undeleting talk page of " + apiobj.params.page);
+		page.setEditSummary("Undeleting [[Help:Talk page|talk page]] of \"" + apiobj.params.page + "\"" + Twinkle.getPref('deletionSummaryAd'));
+		page.undeletePage();
+	}
 };
 
 })(jQuery);
