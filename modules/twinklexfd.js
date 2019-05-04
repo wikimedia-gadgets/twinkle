@@ -475,6 +475,9 @@ Twinkle.xfd.callbacks = {
 
 		if (venue === "afd" || venue === "mfd") {
 			text += "|pg=" + Morebits.pageNameNorm;
+			if (venue === "afd") {
+				text += "|cat=" + params.xfdcat;
+			}
 		} else if (venue === "rfd") {
 			text += "|redirect=" + Morebits.pageNameNorm;
 		} else {
