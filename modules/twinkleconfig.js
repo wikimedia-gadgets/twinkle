@@ -621,7 +621,7 @@ Twinkle.config.sections = [
 	title: "Unlink",
 	preferences: [
 		// TwinkleConfig.unlinkNamespaces (array)
-		// In what namespaces unlink should happen, default in 0 (article) and 100 (portal)
+		// In what namespaces unlink should happen, default in 0 (article), 10 (template), 100 (portal), and 118 (draft)
 		{
 			name: "unlinkNamespaces",
 			label: "Remove links from pages in these namespaces",
