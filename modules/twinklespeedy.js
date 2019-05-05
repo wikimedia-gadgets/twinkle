@@ -951,7 +951,7 @@ Twinkle.speedy.generalList = [
 	{
 		label: 'G6: XfD',
 		value: 'xfd',
-		tooltip: 'An admin has closed a deletion discussion (at AfD, FfD, RfD, TfD, CfD, or MfD) as "delete", but they didn\'t actually delete the page.',
+		tooltip: 'A deletion discussion (at AfD, FfD, RfD, TfD, CfD, or MfD) was closed as "delete", but they didn\'t actually delete the page.',
 		subgroup: {
 			name: 'xfd_fullvotepage',
 			type: 'input',
