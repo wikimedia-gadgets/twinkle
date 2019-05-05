@@ -78,6 +78,7 @@ Twinkle.speedy.mode = {
 // Prepares the speedy deletion dialog and displays it
 Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	var dialog;
+	var isSysop = Morebits.userIsInGroup( 'sysop' );
 	Twinkle.speedy.dialog = new Morebits.simpleWindow( Twinkle.getPref('speedyWindowWidth'), Twinkle.getPref('speedyWindowHeight') );
 	dialog = Twinkle.speedy.dialog;
 	dialog.setTitle( "Choose criteria for speedy deletion" );
@@ -86,7 +87,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	dialog.addFooterLink( "Twinkle help", "WP:TW/DOC#speedy" );
 
 	var form = new Morebits.quickForm( callbackfunc, (Twinkle.getPref('speedySelectionStyle') === 'radioClick' ? 'change' : null) );
-	if( Morebits.userIsInGroup( 'sysop' ) ) {
+	if( isSysop ) {
 		form.append( {
 				type: 'checkbox',
 				list: [
@@ -205,7 +206,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 			name: 'tag_options'
 		} );
 
-	if( Morebits.userIsInGroup( 'sysop' ) ) {
+	if( isSysop ) {
 		tagOptions.append( {
 				type: 'header',
 				label: 'Tag-related options'
@@ -221,8 +222,8 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					name: 'notify',
 					tooltip: "A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences " +
 						"for the criterion you choose AND this box is checked. The creator may be welcomed as well.",
-					checked: !Morebits.userIsInGroup( 'sysop' ) || Twinkle.getPref('deleteSysopDefaultToTag'),
-					disabled: Morebits.userIsInGroup( 'sysop' ) && !Twinkle.getPref('deleteSysopDefaultToTag'),
+					checked: !isSysop || Twinkle.getPref('deleteSysopDefaultToTag'),
+					disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
 					event: function( event ) {
 						event.stopPropagation();
 					}
@@ -237,7 +238,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					value: 'multiple',
 					name: 'multiple',
 					tooltip: "When selected, you can select several criteria that apply to the page. For example, G11 and A7 are a common combination for articles.",
-					disabled: Morebits.userIsInGroup( 'sysop' ) && !Twinkle.getPref('deleteSysopDefaultToTag'),
+					disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
 					event: function( event ) {
 						Twinkle.speedy.callback.modeChanged( event.target.form );
 						event.stopPropagation();
@@ -290,8 +291,9 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 
 	// first figure out what mode we're in
 	var mode = Twinkle.speedy.callback.getMode(form);
+	var isSysopMode = Twinkle.speedy.mode.isSysop(mode);
 
-	if (Twinkle.speedy.mode.isSysop(mode)) {
+	if (isSysopMode) {
 		$("[name=delete_options]").show();
 		$("[name=tag_options]").hide();
 	} else {
@@ -305,7 +307,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		} );
 
 	if (mode === Twinkle.speedy.mode.userMultipleRadioClick || mode === Twinkle.speedy.mode.sysopMultipleRadioClick) {
-		var evaluateType = Twinkle.speedy.mode.isSysop(mode) ? 'evaluateSysop' : 'evaluateUser';
+		var evaluateType = isSysopMode ? 'evaluateSysop' : 'evaluateUser';
 
 		work_area.append( {
 				type: 'div',
@@ -324,7 +326,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 
 	var radioOrCheckbox = (Twinkle.speedy.mode.isMultiple(mode) ? 'checkbox' : 'radio');
 
-	if (Twinkle.speedy.mode.isSysop(mode) && !Twinkle.speedy.mode.isMultiple(mode)) {
+	if (isSysopMode && !Twinkle.speedy.mode.isMultiple(mode)) {
 		work_area.append( { type: 'header', label: 'Custom rationale' } );
 		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.customRationale, mode) } );
 	}
@@ -346,14 +348,14 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			case 2:  // user
 			case 3:  // user talk
 				work_area.append( { type: 'header', label: 'User pages' } );
-				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList.concat(Twinkle.speedy.userNonRedirectList), mode) } );
+				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userList, mode) } );
 				break;
 
 			case 6:  // file
 			case 7:  // file talk
 				work_area.append( { type: 'header', label: 'Files' } );
 				work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.fileList, mode) } );
-				if (!Twinkle.speedy.mode.isSysop(mode)) {
+				if (!isSysopMode) {
 					work_area.append( { type: 'div', label: 'Tagging for CSD F4 (no license), F5 (orphaned fair use), F6 (no fair use rationale), and F11 (no permission) can be done using Twinkle\'s "DI" tab.' } );
 				}
 				break;
@@ -382,7 +384,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	} else {
 		if (namespace == 2 || namespace == 3) {
 			work_area.append( { type: 'header', label: 'User pages' } );
-			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userAllList, mode) } );
+			work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userList, mode) } );
 		}
 		work_area.append( { type: 'header', label: 'Redirects' } );
 		work_area.append( { type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) } );
@@ -391,7 +393,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	var generalCriteria = Twinkle.speedy.generalList;
 
 	// custom rationale lives under general criteria when tagging
-	if(!Twinkle.speedy.mode.isSysop(mode)) {
+	if(!isSysopMode) {
 		generalCriteria = Twinkle.speedy.customRationale.concat(generalCriteria);
 	}
 	work_area.append( { type: 'header', label: 'General criteria' } );
@@ -401,7 +403,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	form.replaceChild(work_area.render(), old_area);
 
 	// if sysop, check if CSD is already on the page and fill in custom rationale
-	if (Twinkle.speedy.mode.isSysop(mode) && $("#delete-reason").length) {
+	if (isSysopMode && $("#delete-reason").length) {
 		var customOption = $("input[name=csd][value=reason]")[0];
 		if (customOption) {
 			if (Twinkle.getPref('speedySelectionStyle') !== 'radioClick') {
@@ -416,9 +418,10 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 
 Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mode) {
 	// mode switches
-	var isSysop = Twinkle.speedy.mode.isSysop(mode);
+	var isSysopMode = Twinkle.speedy.mode.isSysop(mode);
 	var multiple = Twinkle.speedy.mode.isMultiple(mode);
 	var hasSubmitButton = Twinkle.speedy.mode.hasSubmitButton(mode);
+	var pageNamespace = mw.config.get('wgNamespaceNumber');
 
 	var openSubgroupHandler = function(e) {
 		$(e.target.form).find('input').prop('disabled', true);
@@ -452,7 +455,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			}
 		}
 
-		if (isSysop) {
+		if (isSysopMode) {
 			if (criterion.hideWhenSysop) {
 				return null;
 			}
@@ -472,9 +475,10 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			return null;
 		}
 
-		if (criterion.showInNamespaces && criterion.showInNamespaces.indexOf(mw.config.get('wgNamespaceNumber')) < 0) {
+		if (criterion.showInNamespaces && criterion.showInNamespaces.indexOf(pageNamespace) < 0) {
 			return null;
-		} else if (criterion.hideInNamespaces && criterion.hideInNamespaces.indexOf(mw.config.get('wgNamespaceNumber')) > -1) {
+		}
+		if (criterion.hideInNamespaces && criterion.hideInNamespaces.indexOf(pageNamespace) > -1) {
 			return null;
 		}
 
@@ -501,7 +505,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			criterion.event = openSubgroupHandler;
 		}
 
-		if ( isSysop ) {
+		if ( isSysopMode ) {
 			var originalEvent = criterion.event;
 			criterion.event = function(e) {
 				if (multiple) return originalEvent(e);
@@ -775,10 +779,16 @@ Twinkle.speedy.categoryList = [
 		label: 'G8: Categories populated by a deleted or retargeted template',
 		value: 'templatecat',
 		tooltip: 'This is for situations where a category is effectively empty, because the template(s) that formerly placed pages in that category are now deleted. This excludes categories that are still in use.'
+	},
+	{
+		label: 'G8: Redirects to invalid targets, such as nonexistent targets, redirect loops, and bad titles',
+		value: 'redirnone',
+		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
+		hideWhenMultiple: true
 	}
 ];
 
-Twinkle.speedy.userAllList = [
+Twinkle.speedy.userList = [
 	{
 		label: 'U1: User request',
 		value: 'userreq',
@@ -796,31 +806,32 @@ Twinkle.speedy.userAllList = [
 		label: 'U2: Nonexistent user',
 		value: 'nouser',
 		tooltip: 'User pages of users that do not exist (Check Special:Listusers)'
-	}
-];
-
-Twinkle.speedy.userNonRedirectList = [
+	},
 	{
 		label: 'U3: Non-free galleries',
 		value: 'gallery',
-		tooltip: 'Galleries in the userspace which consist mostly of "fair use" or non-free files. Wikipedia\'s non-free content policy forbids users from displaying non-free files, even ones they have uploaded themselves, in userspace. It is acceptable to have free files, GFDL-files, Creative Commons and similar licenses along with public domain material, but not "fair use" files'
+		tooltip: 'Galleries in the userspace which consist mostly of "fair use" or non-free files. Wikipedia\'s non-free content policy forbids users from displaying non-free files, even ones they have uploaded themselves, in userspace. It is acceptable to have free files, GFDL-files, Creative Commons and similar licenses along with public domain material, but not "fair use" files',
+		hideWhenRedirect: true
 	},
 	{
 		label: 'U5: Blatant WP:NOTWEBHOST violations',
 		value: 'notwebhost',
-		tooltip: 'Pages in userspace consisting of writings, information, discussions, and/or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of userspace, with the exception of plausible drafts, pages adhering to WP:UPYES, and résumé-style pages.'
+		tooltip: 'Pages in userspace consisting of writings, information, discussions, and/or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of userspace, with the exception of plausible drafts, pages adhering to WP:UPYES, and résumé-style pages.',
+		hideWhenRedirect: true
 	},
 	{
 		label: 'G11: Promotional user page under a promotional user name',
 		value: 'spamuser',
 		tooltip: 'A promotional user page, with a username that promotes or implies affiliation with the thing being promoted. Note that simply having a page on a company or product in one\'s userspace does not qualify it for deletion. If a user page is spammy but the username is not, then consider tagging with regular G11 instead.',
-		hideWhenMultiple: true
+		hideWhenMultiple: true,
+		hideWhenRedirect: true
 	},
 	{
 		label: 'G13: AfC draft submission or a blank draft, stale by over 6 months',
 		value: 'afc',
 		tooltip: 'Any rejected or unsubmitted AfC draft submission or a blank draft, that has not been edited in over 6 months (excluding bot edits).',
-		hideWhenMultiple: true
+		hideWhenMultiple: true,
+		hideWhenRedirect: true
 	}
 ];
 
