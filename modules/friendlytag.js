@@ -261,7 +261,6 @@ Twinkle.tag.updateSortOrder = function(e) {
 								{ label: "{{globalize/Europe}}: article deals primarily with the European viewpoint", value: "globalize/Europe" },
 								{ label: "{{globalize/France}}: article deals primarily with the French viewpoint", value: "globalize/France" },
 								{ label: "{{globalize/Germany}}: article deals primarily with the German viewpoint", value: "globalize/Germany" },
-								{ label: "{{globalize/India}}: article deals primarily with the Indian viewpoint", value: "globalize/India" },
 								{ label: "{{globalize/Middle East}}: article deals primarily with the Middle Eastern viewpoint", value: "globalize/Middle East" },
 								{ label: "{{globalize/North America}}: article deals primarily with the North American viewpoint", value: "globalize/North America" },
 								{ label: "{{globalize/Northern}}: article deals primarily with the northern hemisphere viewpoint", value: "globalize/Northern" },
