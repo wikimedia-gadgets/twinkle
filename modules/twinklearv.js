@@ -15,7 +15,7 @@
 
 Twinkle.arv = function twinklearv() {
 	var username = mw.config.get('wgRelevantUserName');
-	if ( !username ) {
+	if ( !username || username === mw.config.get('wgUserName') ) {
 		return;
 	}
 
@@ -25,11 +25,6 @@ Twinkle.arv = function twinklearv() {
 };
 
 Twinkle.arv.callback = function ( uid ) {
-	if ( uid === mw.config.get('wgUserName') ) {
-		alert( 'You don\'t want to report yourself, do you?' );
-		return;
-	}
-
 	var Window = new Morebits.simpleWindow( 600, 500 );
 	Window.setTitle( "Advance Reporting and Vetting" ); //Backronym
 	Window.setScriptName( "Twinkle" );
