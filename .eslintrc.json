@@ -1,7 +1,5 @@
 {
-	"extends": [
-		"eslint:recommended"
-	],
+	"extends": ["eslint:recommended"],
 	"root": true,
 	"env": {
 		"browser": true,
@@ -12,8 +10,6 @@
 		"moment": true
 	},
 	"rules": {
-		"no-caller": "error",
-
-		"max-len": "off"
+		"no-caller": "error"
 	}
 }
