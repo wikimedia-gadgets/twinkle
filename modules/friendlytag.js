@@ -1277,12 +1277,40 @@ Twinkle.tag.callbacks = {
 				pageText += '\n{{Redirect category shell|' + tagText + oldPageTags + '\n}}';
 			}
 		} else {
-			// Smartly insert the new tags after any csd or prod templates
-			// or hatnotes; afd not yet supported since it places a comment
-			// not a template first. Regex is more complicated than it needs to be,
-			// which allows templates as parameters and to handle whitespace properly.
-			pageText = pageText.replace(/^\s*(?:((?:\s*\{\{\s*(?:db|delete|db-.*?|speedy deletion-.*?|(?:proposed deletion|prod blp)\/dated|about|correct title|dablink|distinguish|for|other\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\s?(?:also|wiktionary)|selfref|the)\d*\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\})+(?:\s*\n)?)\s*)?/i,
-				"$1" + tagText);
+			// Smartly insert the new tags after any hatnotes or
+			// afd, csd, or prod templates or hatnotes. Regex is
+			// extra complicated to allow for templates with
+			// parameters and to handle whitespace properly.
+			pageText = pageText.replace(
+				new RegExp(
+					// leading whitespace
+					'^\\s*' +
+					// capture template(s)
+					'(?:((?:\\s*' +
+					// AfD is special, as the tag includes html comments before and after the actual template
+					'(?:<!--.*AfD.*\\n\\{\\{Article for deletion\\/dated.*\\}\\}\\n<!--.*\\n<!--.*AfD.*(?:\\s*\\n))?|' + // trailing whitespace/newline needed since this subst's a newline
+					// begin template format
+					'\\{\\{\\s*(?:' +
+					// CSD
+					'db|delete|db-.*?|speedy deletion-.*?|' +
+					// PROD
+					'(?:proposed deletion|prod blp)\\/dated\\n(?:\\s+\\|(?:concern|user|timestamp|help).*)+|' +
+					// various hatnote templates
+					'about|correct title|dablink|distinguish|for|other\\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\\s?(?:also|wiktionary)|selfref|the' +
+					// not a hatnote, but sometimes under a CSD or AfD
+					'|salt|proposed deletion endorsed' +
+					// end main template name, optionally with a number (such as redirect2)
+					')\\d*\\s*' +
+					// template parameters
+					'(\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?' +
+					// end template format
+					'\\}\\})+' +
+					// end capture
+					'(?:\\s*\\n)?)' +
+					// trailing whitespace
+					'\\s*)?',
+						'i'), "$1" + tagText
+			);
 		}
 		summaryText += ( tags.length > 0 ? ' tag' + ( tags.length > 1 ? 's' : '' ) : '' ) +
 			' to ' + Twinkle.tag.mode;
