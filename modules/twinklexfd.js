@@ -93,7 +93,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append( {
 			type: 'option',
 			label: 'MfD (Miscellany for deletion)',
-			selected: [ 0, 6, 10, 14, 828 ].indexOf(namespace) === -1 || Morebits.pageNameNorm.startsWith("Template:User "),
+			selected: [ 0, 6, 10, 14, 828 ].indexOf(namespace) === -1 || Morebits.pageNameNorm.indexOf("Template:User ", 0) === 0,
 				//Other namespaces, and userboxes in template namespace
 			value: 'mfd'
 		} );
