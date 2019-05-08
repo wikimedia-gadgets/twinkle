@@ -59,6 +59,8 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	var query = {
 		'action': 'query',
 		'generator': 'links',
+		'prop': 'info',
+		'inprop': 'protection',
 		'titles': mw.config.get("wgPageName"),
 		'gpllimit' : Twinkle.getPref('batchMax') // the max for sysops
 	};
@@ -70,7 +72,15 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 			$pages.each(function(index, page) {
 				var $page = $(page);
 				var title = $page.attr('title');
-				list.push({ label: title, value: title, checked: true });
+				var $editprot = $page.find('pr[type="create"][level="sysop"]');
+				var isProtected = $editprot.length > 0;
+
+				list.push({
+					label: title + (isProtected ? ' (fully create protected' + ($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))) + ')' : ''),
+					value: title,
+					checked: true,
+					style: (isProtected ? 'color:red' : '')
+				});
 			});
 			apiobj.params.form.append({ type: 'header', label: 'Pages to undelete' });
 			apiobj.params.form.append({
@@ -107,6 +117,13 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 	Morebits.wiki.actionCompleted.notice = 'Status';
 	Morebits.wiki.actionCompleted.postfix = 'batch undeletion is now complete';
 
+	var numProtected = $(Morebits.quickForm.getElements(event.target, 'pages')).filter(function(index, element) {
+		return element.checked && element.nextElementSibling.style.color === 'red';
+	}).length;
+	if (numProtected > 0 && !confirm("You are about to undelete " + numProtected + " fully create protected page(s). Are you sure?")) {
+		return;
+	}
+
 	var pages = event.target.getChecked( 'pages' );
 	var reason = event.target.reason.value;
 	var undel_talk = event.target.reason.value;
@@ -122,31 +139,71 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 		return;
 	}
 
-	var batchOperation = new Morebits.batchOperation("Undeleting pages");
-	batchOperation.setOption("chunkSize", Twinkle.getPref('batchUndeleteChunks'));
-	batchOperation.setOption("preserveIndividualStatusLines", true);
-	batchOperation.setPageList(pages);
-	batchOperation.run(function(pageName) {
-		var query = {
-			'token': mw.user.tokens.get().editToken,
-			'title': pageName,
-			'action': 'undelete',
-			'reason': reason + Twinkle.getPref('deletionSummaryAd'),
-			'undel_talk': undel_talk	// Not used in the API request, but added here for access in onSuccess()
+
+	var pageUndeleter = new Morebits.batchOperation("Undeleting pages");
+	pageUndeleter.setOption("chunkSize", Twinkle.getPref('batchUndeleteChunks'));
+	pageUndeleter.setOption("preserveIndividualStatusLines", true);
+	pageUndeleter.setPageList(pages);
+	pageUndeleter.run(function(pageName) {
+		var params = {
+			page: pageName,
+			undel_talk: undel_talk,
+			reason: reason,
+			pageUndeleter: pageUndeleter
 		};
-		var wikipedia_api = new Morebits.wiki.api( "Undeleting page " + pageName, query,
-			function onSuccess(apiobj) {
-				batchOperation.workerSuccess();
-				var talkpagename = new mw.Title(apiobj.query.title).getTalkPage().getPrefixedText();
-				if (apiobj.query.undel_talk && apiobj.query.title !== talkpagename) {
-					// Restore talk page too if it existed
-					new Morebits.wiki.api("Undeleting talk page", $.extend(apiobj.query, {title: talkpagename})).post();
-				}
-			}, null, batchOperation.workerFailure);
-		wikipedia_api.statelem.status("undeleting...");
-		wikipedia_api.pageName = pageName;
-		wikipedia_api.post();
+
+		var wikipedia_page = new Morebits.wiki.page( pageName, 'Undeleting page ' + pageName );
+		wikipedia_page.setCallbackParameters(params);
+		wikipedia_page.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
+		wikipedia_page.suppressProtectWarning();
+		wikipedia_page.setMaxRetries(3); // temporary increase from 2 to make batchundelete more likely to succeed [[phab:T222402]] #613
+		wikipedia_page.undeletePage(Twinkle.batchundelete.callbacks.doExtras, pageUndeleter.workerFailure);
 	});
+};
+
+Twinkle.batchundelete.callbacks = {
+	// this stupid parameter name is a temporary thing until I implement an overhaul
+	// of Morebits.wiki.* callback parameters
+	doExtras: function( thingWithParameters ) {
+		var params = thingWithParameters.parent ? thingWithParameters.parent.getCallbackParameters() :
+			thingWithParameters.getCallbackParameters();
+		// the initial batch operation's job is to delete the page, and that has
+		// succeeded by now
+		params.pageUndeleter.workerSuccess(thingWithParameters);
+
+		var query, wikipedia_api;
+
+		if ( params.undel_talk ) {
+			var talkpagename = new mw.Title(params.page).getTalkPage().getPrefixedText();
+			if (talkpagename !== params.page) {
+				query = {
+					'action': 'query',
+					'prop': 'deletedrevisions',
+					'drvprop': 'ids',
+					'drvlimit': 1,
+					'titles': talkpagename
+				};
+				wikipedia_api = new Morebits.wiki.api( 'Checking talk page for deleted revisions', query, Twinkle.batchundelete.callbacks.undeleteTalk );
+				wikipedia_api.params = params;
+				wikipedia_api.params.talkPage = talkpagename;
+				wikipedia_api.post();
+			}
+		}
+	},
+	undeleteTalk: function( apiobj ) {
+		var xml = apiobj.responseXML;
+		var exists = $(xml).find('page:not([missing])').length > 0;
+		var delrevs = $(xml).find('rev').attr('revid');
+
+		if( exists || !delrevs ) {
+			// page exists or has no deleted revisions; forget about it
+			return;
+		}
+
+		var page = new Morebits.wiki.page(apiobj.params.talkPage, "Undeleting talk page of " + apiobj.params.page);
+		page.setEditSummary("Undeleting [[Help:Talk page|talk page]] of \"" + apiobj.params.page + "\"" + Twinkle.getPref('deletionSummaryAd'));
+		page.undeletePage();
+	}
 };
 
 })(jQuery);
