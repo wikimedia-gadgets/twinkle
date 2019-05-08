@@ -1541,7 +1541,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	// name attribute as 'articleTags.' + name of the subgroup element
 
 	var name_prefix = Twinkle.tag.mode + 'Tags.';
-	$(form).find("[name^='" + name_prefix + "']").each(function(idx,el) {
+	$(form).find("[name^='" + name_prefix + "']:not(div)").each(function(idx,el) {
 		// el are the HTMLInputElements, el.name gives the name attribute
 		params[el.name.slice(name_prefix.length)] =
 			(el.type === 'checkbox' ? form[el.name].checked : form[el.name].value);
