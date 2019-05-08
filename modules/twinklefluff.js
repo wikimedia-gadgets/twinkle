@@ -588,7 +588,7 @@ Twinkle.fluff.init = function twinklefluffinit() {
 			mw.hook( 'wikipage.diff' ).add( function () { // Reload alongside the revision slider
 				Twinkle.fluff.diff();
 			} );
-		} else if( mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId') ) {
+		} else if( mw.config.get('wgAction') === 'view' && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId') ) {
 			Twinkle.fluff.oldid();
 		}
 	}
