@@ -203,9 +203,64 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		afd_category.append( { type:'option', label:'Indiscernible or unclassifiable topic', value:'I' } );
 		afd_category.append( { type:'option', label:'Debate not yet sorted', value:'U' } );
 
+		// delsort categories list copied off [[User:Enterprisey/delsort.js]], originally taken from [[WP:DS/C]]
+		var delsortCategories = {
+			"People": ["People", "Academics and educators", "Actors and filmmakers", "Artists", "Authors", "Bands and musicians", "Businesspeople", "Politicians", "Sportspeople", "Women", "Lists of people"],
+			"Arts": ["Arts", "Fictional elements", "Science fiction"],
+			"Arts/Culinary": ["Food and drink", "Wine"],
+			"Arts/Language": ["Language", "Academic journals", "Bibliographies", "Journalism", "Literature", "Logic", "News media", "Philosophy", "Poetry"],
+			"Arts/Performing": ["Albums and songs", "Dance", "Film", "Magic", "Music", "Radio", "Television", "Theatre", "Video games"],
+			"Arts/Visual arts": ["Visual arts", "Architecture", "Fashion", "Photography"],
+			"Arts/Comics and animation": ["Comics and animation", "Anime and manga", "Webcomics"],
+			"Places of interest": ["Museums and libraries", "Shopping malls"],
+			"Topical": ["Animal", "Bilateral relations", "Business", "Conservatism", "Conspiracy theories", "Crime", "Disability", "Discrimination", "Ethnic groups", "Events", "Games", "Health and fitness", "History", "Law", "Military", "Organizations", "Paranormal", "Piracy", "Politics", "Terrorism"],
+			"Topical/Business": ["Business", "Advertising", "Companies", "Management", "Finance"],
+			"Topical/Culture": ["Beauty pageants", "Fashion", "Mythology", "Popular culture", "Sexuality and gender"],
+			"Topical/Education": ["Education", "Fraternities and sororities", "Schools"],
+			"Topical/Religion": ["Religion", "Atheism", "Bible", "Buddhism", "Christianity", "Islam", "Judaism", "Hinduism", "Paganism", "Sikhism", "Spirituality"],
+			"Topical/Science": ["Science", "Archaeology", "Astronomy", "Behavioural science", "Economics", "Environment", "Geography", "Mathematics", "Medicine", "Organisms", "Social science", "Transportation"],
+			"Topical/Sports": ["Sports", "American football", "Baseball", "Basketball", "Bodybuilding", "Boxing", "Cricket", "Cycling", "Football", "Golf", "Horse racing", "Ice hockey", "Rugby union", "Softball", "Martial arts", "Wrestling"],
+			"Topical/Technology": ["Technology", "Aviation", "Computing", "Firearms", "Internet", "Software", "Websites"],
+			"Wikipedia page type": ["Disambiguations", "Lists"],
+			"Geographic/Africa": ["Africa", "Egypt", "Ethiopia", "Ghana", "Kenya", "Laos", "Mauritius", "Morocco", "Nigeria", "Somalia", "South Africa", "Zimbabwe"],
+			"Geographic/Asia": ["Asia", "Afghanistan", "Bangladesh", "Bahrain", "Brunei", "Cambodia", "China", "Hong Kong", "India", "Indonesia", "Japan", "Korea", "Malaysia", "Maldives", "Mongolia", "Myanmar", "Nepal", "Pakistan", "Philippines", "Singapore", "South Korea", "Sri Lanka", "Taiwan", "Thailand", "Vietnam"],
+			"Geographic/Asia/Central Asia": ["Central Asia", "Kazakhstan", "Kyrgyzstan", "Tajikistan", "Turkmenistan", "Uzbekistan"],
+			"Geographic/Asia/Middle East": ["Middle East", "Iran", "Iraq", "Israel", "Jordan", "Kuwait", "Lebanon", "Libya", "Palestine", "Saudi Arabia", "Syria", "United Arab Emirates", "Yemen", "Qatar"],
+			"Geographic/Europe": ["Europe", "Albania", "Armenia", "Austria", "Azerbaijan", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Georgia (country)", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Jersey", "Kosovo", "Latvia", "Lithuania", "Luxembourg", "Macedonia", "Malta", "Moldova", "Montenegro", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Russia", "Serbia", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine", "Yugoslavia"],
+			"Geographic/Europe/United Kingdom": ["United Kingdom", "England", "Northern Ireland", "Scotland", "Wales"],
+			"Geographic/Oceania": ["Oceania", "Antarctica", "Australia", "New Zealand"],
+			"Geographic/Americas/Canada": ["Canada", "British Columbia", "Manitoba", "Nova Scotia", "Ontario", "Quebec", "Alberta"],
+			"Geographic/Americas/Latin America": ["Latin America", "Caribbean", "South America", "Argentina", "Barbados", "Belize", "Bolivia", "Brazil", "Chile", "Colombia", "Cuba", "Ecuador", "El Salvador", "Guatemala", "Haiti", "Mexico", "Nicaragua", "Panama", "Paraguay", "Peru", "Puerto Rico", "Trinidad and Tobago", "Uruguay", "Venezuela", "Grenada"],
+			"Geographic/Americas/USA": ["United States of America", "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia (U.S. state)", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "Washington, D.C.", "West Virginia", "Wisconsin", "Wyoming"],
+			"Geographic/Unsorted": ["Islands"]
+		};
+
+		var delsort = work_area.append( {
+			type: 'select',
+			multiple: true,
+			name: 'delsort',
+			label: 'Choose deletion sorting categories: ',
+			tooltip: 'Select a few categories that are relevant to the subject of the article'
+		} );
+
+		$.each(delsortCategories, function(groupname, list) {
+			var group = delsort.append( { type: 'optgroup', label: groupname } );
+			list.forEach(function(item) {
+				group.append( { type: 'option', label: item, value: item } );
+			});
+		});
+
 		appendReasonBox();
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
+
+		// TODO: Add to the gadget definition if used elsewhere
+		mw.loader.using('jquery.chosen').then(function chosenInit() {
+			$(work_area).find('[name=delsort]')
+				.attr('data-placeholder', 'Select delsort pages')
+				.chosen({width: "100%"});
+		});
+
 		break;
 	case 'tfd':
 		work_area = new Morebits.quickForm.element( {
@@ -502,6 +557,13 @@ Twinkle.xfd.callbacks = {
 		}
 
 		text += "}}";
+
+		if (params.delsort_cats) {		// Only for AFDs
+			params.delsort_cats.forEach(function (cat) {
+				text += "\n{{subst:delsort|" + cat + "|~~~~}}";
+			});
+		}
+
 		return text;
 	},
 	showPreview: function(form, venue, params) {
@@ -523,6 +585,7 @@ Twinkle.xfd.callbacks = {
 		if (form.xfdtarget2) {
 			params.target2 = form.xfdtarget2.value;
 		}
+		params.delsort_cats = $(form.delsort).val();
 
 		if (venue === "ffd") {
 			// Fetch the uploader
@@ -640,6 +703,15 @@ Twinkle.xfd.callbacks = {
 				thispage.lookupCreator(Twinkle.xfd.callbacks.afd.userNotification);
 			}
 
+			// List at deletion sorting pages
+			if (params.delsort_cats) {
+				params.delsort_cats.forEach(function (cat) {
+					var delsortPage = new Morebits.wiki.page("Wikipedia:WikiProject Deletion sorting/" + cat, 'Adding to list of ' + cat + '-related deletion discussions');
+					delsortPage.setCallbackParameters({discussionPage: params.discussionpage});
+					delsortPage.load(Twinkle.xfd.callbacks.afd.delsortListing);
+				});
+			}
+
 			// Remove some tags that should always be removed on AfD.
 			text = text.replace(/\{\{\s*(dated prod|dated prod blp|Prod blp\/dated|Proposed deletion\/dated|prod2|Proposed deletion endorsed|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 			// Then, test if there are speedy deletion-related templates on the article.
@@ -743,6 +815,14 @@ Twinkle.xfd.callbacks = {
 			}
 			usertalkpage.setFollowRedirect(true);
 			usertalkpage.append();
+		},
+		delsortListing: function(pageobj) {
+			var discussionPage = pageobj.getCallbackParameters().discussionPage;
+			var text = pageobj.getPageText().replace("directly below this line -->", "directly below this line -->\n{{" + discussionPage + "}}");
+			pageobj.setPageText(text);
+			pageobj.setEditSummary('Listing [[:' + discussionPage +']].' + Twinkle.getPref('summaryAd'));
+			pageobj.setCreateOption('nocreate');
+			pageobj.save();
 		}
 	},
 
@@ -1521,6 +1601,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	var type = e.target.category.value;
 	var usertalk = e.target.notify.checked;
 	var reason = e.target.xfdreason.value;
+	var delsort_cats = $(e.target.delsort).val();
 	var xfdcat, xfdtarget, xfdtarget2, noinclude, tfdtype, notifyuserspace, relatedpage;
 	if( type === "afd" || type === "cfd" || type === "cfds" || type === "tfd" ) {
 		xfdcat = e.target.xfdcat.value;
@@ -1572,7 +1653,8 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			'aplimit': Morebits.userIsInGroup( 'sysop' ) ? 5000 : 500
 		};
 		wikipedia_api = new Morebits.wiki.api( 'Tagging article with deletion tag', query, Twinkle.xfd.callbacks.afd.main );
-		wikipedia_api.params = { usertalk:usertalk, reason:reason, noinclude:noinclude, xfdcat:xfdcat };
+		wikipedia_api.params = { usertalk:usertalk, reason:reason, noinclude:noinclude,
+			xfdcat:xfdcat, delsort_cats:delsort_cats };
 		wikipedia_api.post();
 		break;
 
