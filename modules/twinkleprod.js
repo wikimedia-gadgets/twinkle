@@ -180,31 +180,14 @@ Twinkle.prod.callbacks = {
 		var statelem = apiobj.statelem;
 		var params = apiobj.params;
 
-		// Check existence of AfD, would be easier if mw.Title.exists() worked [[phab:T184953]]
-		var exists;
-		if (namespace === 'article') {
-			var query = {
-				'action': 'query',
-				'prop': 'revisions',
-				'titles': 'Wikipedia:Articles for deletion/' + Morebits.pageNameNorm
-			};
-			var wikipedia_api = new Morebits.wiki.api('Checking for prior AfDs', query, function(apiobj) {
-				var xmlDoc = apiobj.responseXML;
-				exists = $(xmlDoc).find('rev').attr('revid');
-			});
-			// Wait for API call to finish
-			wikipedia_api.post({
-				async: false
-			});
-		}
-		if (exists) {
-			statelem.warn( 'Previous AfD for this page title found, aborting procedure' );
+		// Check talk page for templates indicating prior XfD
+		if($(xmlDoc).find('templates').length) {
+			statelem.warn( 'Previous XfD template found on talk page, aborting procedure' );
 			return;
 		}
 
 		// Check talk page for category indicating prior PROD
-		var cats = $(xmlDoc).find('categories');
-		if(cats.length) {
+		if($(xmlDoc).find('categories').length) {
 			if(params.blp) {
 				if( !confirm( 'Previous PROD nomination found on talk page. Do you still want to continue applying BLPPROD? ' ) ) {
 					statelem.warn( 'Previous PROD found on talk page, aborted by user' );
@@ -445,14 +428,19 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	Morebits.status.init( form );
 
 	var talk_title = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
+	// Talk page templates for PROD-able discussions
+	var blocking_templates = 'Template:Old XfD multi|Template:Old MfD|Template:Oldffdfull|' + // Common prior XfD talk page templates
+		'Template:Multidel|Template:Oldpuffull|' + // Uncommon/legacy prior XfD templates
+		'Olddrvfull|Olddelrev';	// Prior DRV templates
 	var query = {
 		'action': 'query',
-		'prop': 'categories',
 		'titles': talk_title,
-		'clcategories': 'Category:Past proposed deletion candidates'
+		'prop': 'categories|templates',
+		'clcategories': 'Category:Past proposed deletion candidates',
+		'tltemplates': blocking_templates
 	};
 
-	var wikipedia_api = new Morebits.wiki.api('Checking for prior nominations', query, Twinkle.prod.callbacks.checkpriors);
+	var wikipedia_api = new Morebits.wiki.api('Checking talk page for prior nominations', query, Twinkle.prod.callbacks.checkpriors);
 	wikipedia_api.params = params;
 	wikipedia_api.post();
 };
