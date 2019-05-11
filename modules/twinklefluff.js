@@ -67,14 +67,16 @@ Twinkle.fluff = {
 
 				list.each(function(key, current) {
 					var href = $(current).find(".mw-changeslist-diff").attr("href");
-					current.appendChild( document.createTextNode(' ') );
-					var tmpNode = revNode.cloneNode( true );
-					tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'norm' } ) );
-					current.appendChild( tmpNode );
-					current.appendChild( document.createTextNode(' ') );
-					tmpNode = revVandNode.cloneNode( true );
-					tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'vand' } ) );
-					current.appendChild( tmpNode );
+					if (href) {
+						current.appendChild( document.createTextNode(' ') );
+						var tmpNode = revNode.cloneNode( true );
+						tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'norm' } ) );
+						current.appendChild( tmpNode );
+						current.appendChild( document.createTextNode(' ') );
+						tmpNode = revVandNode.cloneNode( true );
+						tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'vand' } ) );
+						current.appendChild( tmpNode );
+					}
 				});
 			}
 		}
