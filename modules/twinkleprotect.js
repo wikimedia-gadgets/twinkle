@@ -123,6 +123,10 @@ Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdm
 	});
 };
 
+// mw.loader.getState('ext.flaggedRevs.review') returns null if the
+// FlaggedRevs extension is not registered.  Previously, this was done with
+// wgFlaggedRevsParams, but after 1.34-wmf4 it is no longer exported if empty
+// (https://gerrit.wikimedia.org/r/c/mediawiki/extensions/FlaggedRevs/+/508427)
 Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLevel() {
 
 	var api = new mw.Api();
@@ -133,7 +137,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		list: 'logevents',
 		letype: 'protect',
 		letitle: mw.config.get('wgPageName'),
-		prop: 'info|flagged',
+		prop: (mw.loader.getState('ext.flaggedRevs.review') ? 'info|flagged' : 'info'),
 		inprop: 'protection',
 		titles: mw.config.get('wgPageName')
 	});
@@ -145,7 +149,19 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		letitle: mw.config.get('wgPageName')
 	});
 
-	$.when.apply($, [protectDeferred, stableDeferred]).done(function(protectData, stableData){
+	var earlyDecision = [protectDeferred];
+	if (mw.loader.getState('ext.flaggedRevs.review')) {
+		earlyDecision.push(stableDeferred);
+	}
+
+	$.when.apply($, earlyDecision).done(function(protectData, stableData){
+		// $.when.apply is supposed to take an unknown number of promises
+		// via an array, which it does, but the type of data returned varies.
+		// If there are two or more deferreds, it returns an array (of objects),
+		// but if there's just one deferred, it retuns a simple object.
+		// This is annoying.
+		protectData = $(protectData).toArray();
+
 		var pageid = protectData[0].query.pageids[0];
 		var page = protectData[0].query.pages[pageid];
 		var current = {}, adminEditDeferred;
@@ -174,7 +190,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 
 		// show the protection level and log info
 		Twinkle.protect.hasProtectLog = !!protectData[0].query.logevents.length;
-		Twinkle.protect.hasStableLog = !!stableData[0].query.logevents.length;
+		Twinkle.protect.hasStableLog = mw.loader.getState('ext.flaggedRevs.review') ? !!stableData[0].query.logevents.length : false;
 		Twinkle.protect.currentProtectionLevels = current;
 
 		if (adminEditDeferred) {
@@ -423,66 +439,68 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							{ label: 'Custom...', value: 'custom' }
 						]
 					});
-				field2.append({
-						type: 'checkbox',
-						name: 'pcmodify',
-						event: Twinkle.protect.formevents.pcmodify,
-						list: [
-							{
-								label: 'Modify pending changes protection',
-								value: 'pcmodify',
-								tooltip: 'If this is turned off, the pending changes level, and expiry time, will be left as is.',
-								checked: true,
-								disabled: (mw.config.get('wgNamespaceNumber') !== 0 && mw.config.get('wgNamespaceNumber') !== 4) // Hardcoded until [[phab:T218479]]
-							}
-						]
-					});
-				var pclevel = field2.append({
-						type: 'select',
-						name: 'pclevel',
-						label: 'Pending changes:',
-						event: Twinkle.protect.formevents.pclevel
-					});
-				pclevel.append({
-						type: 'option',
-						label: 'None',
-						value: 'none'
-					});
-				pclevel.append({
-						type: 'option',
-						label: 'Pending changes',
-						value: 'autoconfirmed',
-						selected: true
-					});
-				field2.append({
-						type: 'select',
-						name: 'pcexpiry',
-						label: 'Expires:',
-						event: function(e) {
-							if (e.target.value === 'custom') {
-								Twinkle.protect.doCustomExpiry(e.target);
-							}
-						},
-						list: [
-							{ label: '1 hour', value: '1 hour' },
-							{ label: '2 hours', value: '2 hours' },
-							{ label: '3 hours', value: '3 hours' },
-							{ label: '6 hours', value: '6 hours' },
-							{ label: '12 hours', value: '12 hours' },
-							{ label: '1 day', value: '1 day' },
-							{ label: '2 days', value: '2 days' },
-							{ label: '3 days', value: '3 days' },
-							{ label: '4 days', value: '4 days' },
-							{ label: '1 week', value: '1 week' },
-							{ label: '2 weeks', value: '2 weeks' },
-							{ label: '1 month', selected: true, value: '1 month' },
-							{ label: '2 months', value: '2 months' },
-							{ label: '3 months', value: '3 months' },
-							{ label: '1 year', value: '1 year' },
-							{ label: 'indefinite', value:'indefinite' },
-							{ label: 'Custom...', value: 'custom' }
-						]
-					});
+				if (mw.loader.getState('ext.flaggedRevs.review')) {
+					field2.append({
+							type: 'checkbox',
+							name: 'pcmodify',
+							event: Twinkle.protect.formevents.pcmodify,
+							list: [
+								{
+									label: 'Modify pending changes protection',
+									value: 'pcmodify',
+									tooltip: 'If this is turned off, the pending changes level, and expiry time, will be left as is.',
+									checked: true,
+									disabled: (mw.config.get('wgNamespaceNumber') !== 0 && mw.config.get('wgNamespaceNumber') !== 4) // Hardcoded until [[phab:T218479]]
+								}
+							]
+						});
+					var pclevel = field2.append({
+							type: 'select',
+							name: 'pclevel',
+							label: 'Pending changes:',
+							event: Twinkle.protect.formevents.pclevel
+						});
+					pclevel.append({
+							type: 'option',
+							label: 'None',
+							value: 'none'
+						});
+					pclevel.append({
+							type: 'option',
+							label: 'Pending changes',
+							value: 'autoconfirmed',
+							selected: true
+						});
+					field2.append({
+							type: 'select',
+							name: 'pcexpiry',
+							label: 'Expires:',
+							event: function(e) {
+								if (e.target.value === 'custom') {
+									Twinkle.protect.doCustomExpiry(e.target);
+								}
+							},
+							list: [
+								{ label: '1 hour', value: '1 hour' },
+								{ label: '2 hours', value: '2 hours' },
+								{ label: '3 hours', value: '3 hours' },
+								{ label: '6 hours', value: '6 hours' },
+								{ label: '12 hours', value: '12 hours' },
+								{ label: '1 day', value: '1 day' },
+								{ label: '2 days', value: '2 days' },
+								{ label: '3 days', value: '3 days' },
+								{ label: '4 days', value: '4 days' },
+								{ label: '1 week', value: '1 week' },
+								{ label: '2 weeks', value: '2 weeks' },
+								{ label: '1 month', selected: true, value: '1 month' },
+								{ label: '2 months', value: '2 months' },
+								{ label: '3 months', value: '3 months' },
+								{ label: '1 year', value: '1 year' },
+								{ label: 'indefinite', value:'indefinite' },
+								{ label: 'Custom...', value: 'custom' }
+							]
+						});
+				}
 			} else {  // for non-existing pages
 				var createlevel = field2.append({
 						type: 'select',
@@ -1049,7 +1067,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				Twinkle.protect.formevents.pcmodify({ target: form.pcmodify });
 				form.pclevel.value = item.stabilize;
 				Twinkle.protect.formevents.pclevel({ target: form.pclevel });
-			} else {
+			} else if (form.pcmodify) {
 				form.pcmodify.checked = false;
 				Twinkle.protect.formevents.pcmodify({ target: form.pcmodify });
 			}
