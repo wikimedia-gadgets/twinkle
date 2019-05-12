@@ -1067,24 +1067,6 @@ Morebits.bytes.prototype.toString = function( magnitude ) {
  * **************** String; Morebits.string ****************
  */
 
-if (!String.prototype.trimLeft) {
-	String.prototype.trimLeft = function stringPrototypeLtrim( ) {
-		return this.replace( /^[\s]+/g, "" );
-	};
-}
-
-if (!String.prototype.trimRight) {
-	String.prototype.trimRight = function stringPrototypeRtrim( ) {
-		return this.replace( /[\s]+$/g, "" );
-	};
-}
-
-if (!String.prototype.trim) {
-	String.prototype.trim = function stringPrototypeTrim( ) {
-		return this.trimRight().trimLeft();
-	};
-}
-
 Morebits.string = {
 	// Helper functions to change case of a string
 	toUpperCaseFirstChar: function(str) {
@@ -1154,7 +1136,7 @@ Morebits.string = {
 	 * @returns {string}
 	 */
 	formatReasonText: function( str ) {
-		var result = str.toString().trimRight();
+		var result = str.toString().trim();
 		var unbinder = new Morebits.unbinder(result);
 		unbinder.unbind("<no" + "wiki>", "</no" + "wiki>");
 		unbinder.content = unbinder.content.replace(/\|/g, "{{subst:!}}");
@@ -1697,7 +1679,7 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  * getPageText(): returns a string containing the text of the page after a successful load()
  *
  * save([onSuccess], [onFailure]):  Saves the text set via setPageText() for the page.
- * 									Must be preceded by calling load().
+ * Must be preceded by calling load().
  *    Warning: Calling save() can result in additional calls to the previous load() callbacks to
  *             recover from edit conflicts!
  *             In this case, callers must make the same edit to the new pageText and reinvoke save().
@@ -1712,6 +1694,8 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  * move(onSuccess, [onFailure]): Moves a page to another title
  *
  * deletePage(onSuccess, [onFailure]): Deletes a page (for admins only)
+ *
+ * undeletePage(onSuccess, [onFailure]): Undeletes a page (for admins only)
  *
  * protect(onSuccess, [onFailure]): Protects a page
  *
@@ -1857,6 +1841,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		onMoveFailure: null,
 		onDeleteSuccess: null,
 		onDeleteFailure: null,
+		onUndeleteSuccess: null,
+		onUndeleteFailure: null,
 		onProtectSuccess: null,
 		onProtectFailure: null,
 		onStabilizeSuccess: null,
@@ -1871,6 +1857,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		moveProcessApi: null,
 		deleteApi: null,
 		deleteProcessApi: null,
+		undeleteApi: null,
+		undeleteProcessApi: null,
 		protectApi: null,
 		protectProcessApi: null,
 		stabilizeApi: null,
@@ -2482,6 +2470,44 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
+	 * Undeletes a page (for admins only)
+	 * @param {Function} onSuccess - callback function to run on success
+	 * @param {Function} [onFailure] - callback function to run on failure (optional)
+	 */
+	this.undeletePage = function(onSuccess, onFailure) {
+		ctx.onUndeleteSuccess = onSuccess;
+		ctx.onUndeleteFailure = onFailure || emptyFunction;
+
+		// if a non-admin tries to do this, don't bother
+		if (!Morebits.userIsInGroup('sysop')) {
+			ctx.statusElement.error("Cannot undelete page: only admins can do that");
+			ctx.onUndeleteFailure(this);
+			return;
+		}
+		if (!ctx.editSummary) {
+			ctx.statusElement.error("Internal error: undelete reason not set before undelete (use setEditSummary function)!");
+			ctx.onUndeleteFailure(this);
+			return;
+		}
+
+		if (fnCanUseMwUserToken('undelete')) {
+			fnProcessUndelete.call(this, this);
+		} else {
+			var query = {
+				action: 'query',
+				prop: 'info',
+				inprop: 'protection',
+				intoken: 'undelete',
+				titles: ctx.pageName
+			};
+
+			ctx.undeleteApi = new Morebits.wiki.api("retrieving undelete token...", query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
+			ctx.undeleteApi.setParent(this);
+			ctx.undeleteApi.post();
+		}
+	};
+
+	/**
 	 * Protects a page (for admins only)
 	 * @param {Function} onSuccess - callback function to run on success
 	 * @param {Function} [onFailure] - callback function to run on failure (optional)
@@ -2954,11 +2980,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// check for "Database query error"
 		if ( errorCode === "internal_api_error_DBQueryError" && ctx.retries++ < ctx.maxRetries ) {
-
 			ctx.statusElement.info("Database query error, retrying");
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.deleteProcessApi.post(); // give it another go!
-
 		} else if ( errorCode === "badtoken" ) {
 			// this is pathetic, but given the current state of Morebits.wiki.page it would
 			// be a dog's breakfast to try and fix this
@@ -2966,20 +2990,100 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			if (ctx.onDeleteFailure) {
 				ctx.onDeleteFailure.call(this, this, ctx.deleteProcessApi);
 			}
-
 		} else if ( errorCode === "missingtitle" ) {
-
 			ctx.statusElement.error("Cannot delete the page, because it no longer exists");
 			if (ctx.onDeleteFailure) {
 				ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
 			}
-
 		// hard error, give up
 		} else {
-
 			ctx.statusElement.error( "Failed to delete the page: " + ctx.deleteProcessApi.getErrorText() );
 			if (ctx.onDeleteFailure) {
 				ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
+			}
+		}
+	};
+
+	var fnProcessUndelete = function() {
+		var pageTitle, token;
+
+		// The whole handling of tokens in Morebits is outdated (#615)
+		// but has generally worked since intoken has been deprecated
+		// but remains.  intoken does not, however, take undelete, so
+		// fnCanUseMwUserToken('undelete') is no good.  Everything
+		// except watching and patrolling should eventually use csrf,
+		// but until then (#615) the stupid hack below should work for
+		// undeletion.
+		if (fnCanUseMwUserToken('undelete')) {
+			token = mw.user.tokens.get('editToken');
+			pageTitle = ctx.pageName;
+		} else {
+			var xml = ctx.undeleteApi.getXML();
+
+			if ($(xml).find('page').attr('missing') !== "") {
+				ctx.statusElement.error("Cannot undelete the page, because it already exists");
+				ctx.onUndeleteFailure(this);
+				return;
+			}
+
+			// extract protection info
+			var editprot = $(xml).find('pr[type="create"]');
+			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
+				!confirm('You are about to undelete the fully create protected page "' + ctx.pageName +
+				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
+				'.  \n\nClick OK to proceed with the undeletion, or Cancel to skip this undeletion.')) {
+				ctx.statusElement.error("Undeletion of fully create protected page was aborted.");
+				ctx.onUndeleteFailure(this);
+				return;
+			}
+
+			// KLUDGE:
+			token = mw.user.tokens.get('editToken');
+			pageTitle = ctx.pageName;
+		}
+
+		var query = {
+			'action': 'undelete',
+			'title': pageTitle,
+			'token': token,
+			'reason': ctx.editSummary
+		};
+		if (ctx.watchlistOption === 'watch') {
+			query.watch = 'true';
+		}
+
+		ctx.undeleteProcessApi = new Morebits.wiki.api("undeleting page...", query, ctx.onUndeleteSuccess, ctx.statusElement, fnProcessUndeleteError);
+		ctx.undeleteProcessApi.setParent(this);
+		ctx.undeleteProcessApi.post();
+	};
+
+	// callback from undeleteProcessApi.post()
+	var fnProcessUndeleteError = function() {
+
+		var errorCode = ctx.undeleteProcessApi.getErrorCode();
+
+		// check for "Database query error"
+		if ( errorCode === "internal_api_error_DBQueryError" && ctx.retries++ < ctx.maxRetries ) {
+			ctx.statusElement.info("Database query error, retrying");
+			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
+			ctx.undeleteProcessApi.post(); // give it another go!
+		} else if ( errorCode === "badtoken" ) {
+			// this is pathetic, but given the current state of Morebits.wiki.page it would
+			// be a dog's breakfast to try and fix this
+			ctx.statusElement.error("Invalid token. Please refresh the page and try again.");
+			if (ctx.onUndeleteFailure) {
+				ctx.onUndeleteFailure.call(this, this, ctx.undeleteProcessApi);
+			}
+		} else if ( errorCode === "cantundelete" ) {
+			ctx.statusElement.error("Cannot undelete the page, either because there are no revisions to undelete or because it has already been undeleted");
+			if (ctx.onUndeleteFailure) {
+				ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
+			}
+		// hard error, give up
+		} else {
+			ctx.statusElement.error( "Failed to undelete the page: " + ctx.undeleteProcessApi.getErrorText() );
+			if (ctx.onUndeleteFailure) {
+				ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
 			}
 		}
 	};
@@ -3779,7 +3883,7 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
  * |pageName| property on the Morebits.wiki.api object.
  *
  * There are sample batchOperation implementations using Morebits.wiki.page in
- * twinklebatchdelete.js, and using Morebits.wiki.api in twinklebatchundelete.js.
+ * twinklebatchdelete.js, twinklebatchundelete.js, and twinklebatchprotect.js.
  */
 
 /**

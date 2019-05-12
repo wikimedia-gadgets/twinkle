@@ -257,7 +257,7 @@ Twinkle.prod.callbacks = {
 
 		// Remove tags that become superfluous with this action
 		text = text.replace(/{{\s*(userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/gi, "");
-		var prod_re = /{{\s*(?:Prod blp|Proposed deletion|book-prod)\/dated( files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
+		var prod_re = /{{\s*(?:Prod blp|Proposed deletion|book-prod)\/dated(?: files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
 		var summaryText;
 		if( !prod_re.test( text ) ) {
 			// Notification to first contributor
@@ -282,6 +282,16 @@ Twinkle.prod.callbacks = {
 				summaryText = "Proposing " + namespace + " for deletion per [[WP:PROD]].";
 				text = "{{subst:prod|1=" + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? "|help=off" : "") + "}}\n" + text;
 			}
+
+			// Add {{Old prod}} to the talk page
+			var oldprodfull = '{{Old prod|nom=' + mw.config.get('wgUserName') + '|nomdate={{subst:#time: Y-m-d}}}}\n';
+			var talktitle = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
+			var talkpage = new Morebits.wiki.page(talktitle, 'Placing {{Old prod}} on talk page');
+			talkpage.setPrependText(oldprodfull);
+			talkpage.setEditSummary('Placing {{Old prod}} on the talk page' + Twinkle.getPref('summaryAd'));
+			talkpage.setFollowRedirect(true);  // match behavior for page tagging
+			talkpage.setCreateOption('recreate');
+			talkpage.prepend();
 		}
 		else {  // already tagged for PROD, so try endorsing it
 			var prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/;

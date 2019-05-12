@@ -318,7 +318,6 @@ Twinkle.tag.updateSortOrder = function(e) {
 								{ label: "{{globalize/Europe}}: article deals primarily with the European viewpoint", value: "globalize/Europe" },
 								{ label: "{{globalize/France}}: article deals primarily with the French viewpoint", value: "globalize/France" },
 								{ label: "{{globalize/Germany}}: article deals primarily with the German viewpoint", value: "globalize/Germany" },
-								{ label: "{{globalize/India}}: article deals primarily with the Indian viewpoint", value: "globalize/India" },
 								{ label: "{{globalize/Middle East}}: article deals primarily with the Middle Eastern viewpoint", value: "globalize/Middle East" },
 								{ label: "{{globalize/North America}}: article deals primarily with the North American viewpoint", value: "globalize/North America" },
 								{ label: "{{globalize/Northern}}: article deals primarily with the northern hemisphere viewpoint", value: "globalize/Northern" },
@@ -399,44 +398,46 @@ Twinkle.tag.updateSortOrder = function(e) {
 				break;
 			case "Not English":
 			case "Rough translation":
-				checkbox.subgroup = [
-					{
-						name: 'translationLanguage',
-						type: 'input',
-						label: 'Language of article (if known): ',
-						tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
-					}
-				];
-				if (tag === "not English") {
-					checkbox.subgroup.push({
-						name: 'translationNotify',
-						type: 'checkbox',
-						list: [
-							{
-								label: 'Notify article creator',
-								checked: true,
-								tooltip: "Places {{uw-notenglish}} on the creator's talk page."
-							}
-						]
-					});
-				}
-				checkbox.subgroup.push({
-					name: 'translationPostAtPNT',
-					type: 'checkbox',
-					list: [
+					checkbox.subgroup = [
 						{
-							label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
-							checked: true
+							name: 'translationLanguage',
+							type: 'input',
+							label: 'Language of article (if known): ',
+							tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
 						}
-					]
-				});
-				checkbox.subgroup.push({
-					name: 'translationComments',
-					type: 'textarea',
-					label: 'Additional comments to post at PNT',
-					tooltip: 'Optional, and only relevant if "List this article ..." above is checked.'
-				});
-				break;
+					];
+					if (tag === "not English") {
+						checkbox.subgroup.push({
+							name: 'translationNotify',
+							type: 'checkbox',
+							list: [
+								{
+									label: 'Notify article creator',
+									checked: true,
+									tooltip: "Places {{uw-notenglish}} on the creator's talk page."
+								}
+							]
+						});
+					}
+					if (mw.config.get('wgNamespaceNumber') === 0) {
+						checkbox.subgroup.push({
+							name: 'translationPostAtPNT',
+							type: 'checkbox',
+							list: [
+								{
+									label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
+									checked: true
+								}
+							]
+						});
+						checkbox.subgroup.push({
+							name: 'translationComments',
+							type: 'textarea',
+							label: 'Additional comments to post at PNT',
+							tooltip: 'Optional, and only relevant if "List this article ..." above is checked.'
+						});
+					}
+					break;
 			case "Notability":
 				checkbox.subgroup = {
 					name: 'notability',
@@ -1488,12 +1489,40 @@ Twinkle.tag.callbacks = {
 			totalTags = tags.length;
 			$.each(tags, addTag);
 
-			// Smartly insert the new tags after any csd or prod templates
-			// or hatnotes; afd not yet supported since it places a comment
-			// not a template first. Regex is more complicated than it needs to be,
-			// which allows templates as parameters and to handle whitespace properly.
-			pageText = pageText.replace(/^\s*(?:((?:\s*\{\{\s*(?:db|delete|db-.*?|speedy deletion-.*?|(?:proposed deletion|prod blp)\/dated|about|correct title|dablink|distinguish|for|other\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\s?(?:also|wiktionary)|selfref|the)\d*\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\})+(?:\s*\n)?)\s*)?/i,
-				"$1" + tagText);
+			// Smartly insert the new tags after any hatnotes or
+			// afd, csd, or prod templates or hatnotes. Regex is
+			// extra complicated to allow for templates with
+			// parameters and to handle whitespace properly.
+			pageText = pageText.replace(
+				new RegExp(
+					// leading whitespace
+					'^\\s*' +
+					// capture template(s)
+					'(?:((?:\\s*' +
+					// AfD is special, as the tag includes html comments before and after the actual template
+					'(?:<!--.*AfD.*\\n\\{\\{Article for deletion\\/dated.*\\}\\}\\n<!--.*\\n<!--.*AfD.*(?:\\s*\\n))?|' + // trailing whitespace/newline needed since this subst's a newline
+					// begin template format
+					'\\{\\{\\s*(?:' +
+					// CSD
+					'db|delete|db-.*?|speedy deletion-.*?|' +
+					// PROD
+					'(?:proposed deletion|prod blp)\\/dated\\n(?:\\s+\\|(?:concern|user|timestamp|help).*)+|' +
+					// various hatnote templates
+					'about|correct title|dablink|distinguish|for|other\\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\\s?(?:also|wiktionary)|selfref|the' +
+					// not a hatnote, but sometimes under a CSD or AfD
+					'|salt|proposed deletion endorsed' +
+					// end main template name, optionally with a number (such as redirect2)
+					')\\d*\\s*' +
+					// template parameters
+					'(\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?' +
+					// end template format
+					'\\}\\})+' +
+					// end capture
+					'(?:\\s*\\n)?)' +
+					// trailing whitespace
+					'\\s*)?',
+				'i'), "$1" + tagText
+			);
 
 			removeTags();
 		};
@@ -1855,7 +1884,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	// name attribute as 'articleTags.' + name of the subgroup element
 
 	var name_prefix = Twinkle.tag.mode + 'Tags.';
-	$(form).find("[name^='" + name_prefix + "']").each(function(idx,el) {
+	$(form).find("[name^='" + name_prefix + "']:not(div)").each(function(idx,el) {
 		// el are the HTMLInputElements, el.name gives the name attribute
 		params[el.name.slice(name_prefix.length)] =
 			(el.type === 'checkbox' ? form[el.name].checked : form[el.name].value);

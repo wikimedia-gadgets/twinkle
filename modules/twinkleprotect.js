@@ -98,6 +98,31 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 // { edit: { level: "sysop", expiry: <some date>, cascade: true }, ... }
 Twinkle.protect.currentProtectionLevels = {};
 
+// returns a jQuery Deferred object, usage:
+//   Twinkle.protect.fetchProtectingAdmin(apiObject, pageName, protect/stable).done(function(admin_username) { ...code... });
+Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdmin(api, pageName, protType, logIds) {
+	logIds = logIds || [];
+
+	return api.get({
+		format: 'json',
+		action: 'query',
+		list: 'logevents',
+		letitle: pageName,
+		letype: protType
+	}).then(function( data ) {
+		// don't check log entries that have already been checked (e.g. don't go into an infinite loop!)
+		var event = data.query ? $.grep(data.query.logevents, function(le) { return $.inArray(le.logid, logIds); })[0] : null;
+		if (!event) {
+			// fail gracefully
+			return null;
+		} else if (event.action === "move_prot" || event.action === "move_stable") {
+			return twinkleprotectFetchProtectingAdmin( api, (protType === 'protect' ? event.params.oldtitle_title : event.params.oldtitle), protType, logIds.concat(event.logid) );
+		} else {
+			return event.user;
+		}
+	});
+};
+
 Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLevel() {
 
 	var api = new mw.Api();
@@ -123,7 +148,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 	$.when.apply($, [protectDeferred, stableDeferred]).done(function(protectData, stableData){
 		var pageid = protectData[0].query.pageids[0];
 		var page = protectData[0].query.pages[pageid];
-		var current = {};
+		var current = {}, adminEditDeferred;
 
 		$.each(page.protection, function( index, protection ) {
 			if (protection.type !== "aft") {
@@ -132,6 +157,10 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 					expiry: protection.expiry,
 					cascade: protection.cascade === ''
 				};
+				// logs report last admin who made changes to either edit/move/create protection, regardless if they only modified one of them
+				if (!adminEditDeferred) {
+					adminEditDeferred = Twinkle.protect.fetchProtectingAdmin(api, mw.config.get('wgPageName'), 'protect');
+				}
 			}
 		});
 
@@ -140,13 +169,28 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 				level: page.flagged.protection_level,
 				expiry: page.flagged.protection_expiry
 			};
+			adminEditDeferred = Twinkle.protect.fetchProtectingAdmin(api, mw.config.get('wgPageName'), 'stable');
 		}
 
 		// show the protection level and log info
 		Twinkle.protect.hasProtectLog = !!protectData[0].query.logevents.length;
 		Twinkle.protect.hasStableLog = !!stableData[0].query.logevents.length;
 		Twinkle.protect.currentProtectionLevels = current;
-		Twinkle.protect.callback.showLogAndCurrentProtectInfo();
+
+		if (adminEditDeferred) {
+			adminEditDeferred.done(function(admin) {
+				if (admin) {
+					$.each(['edit', 'move', 'create', 'stabilize'], function(i, type) {
+						if (Twinkle.protect.currentProtectionLevels[type]) {
+							Twinkle.protect.currentProtectionLevels[type].admin = admin;
+						}
+					});
+				}
+				Twinkle.protect.callback.showLogAndCurrentProtectInfo();
+			});
+		} else {
+			Twinkle.protect.callback.showLogAndCurrentProtectInfo();
+		}
 	});
 };
 
@@ -156,13 +200,16 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 	if (Twinkle.protect.hasProtectLog || Twinkle.protect.hasStableLog) {
 		var $linkMarkup = $("<span>");
 
-		if (Twinkle.protect.hasProtectLog)
+		if (Twinkle.protect.hasProtectLog) {
 			$linkMarkup.append(
 				$( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">protection log</a>' ),
 				Twinkle.protect.hasStableLog ? $("<span> &bull; </span>") : null
 			);
-		if (Twinkle.protect.hasStableLog)
+		}
+
+		if (Twinkle.protect.hasStableLog) {
 			$linkMarkup.append($( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'stable'}) + '">pending changes log</a>)' ));
+		}
 
 		Morebits.status.init($('div[name="hasprotectlog"] span')[0]);
 		Morebits.status.warn(
@@ -186,7 +233,13 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 			if (settings.cascade) {
 				protectionNode.push("(cascading) ");
 			}
+			if (settings.admin) {
+				var adminLink = '<a target="_blank" href="' + mw.util.getUrl('User talk:' + settings.admin) + '">' +  settings.admin + '</a>';
+				protectionNode.push($("<span>by " + adminLink + "&nbsp;</span>")[0]);
+			}
+			protectionNode.push($("<span> \u2022 </span>")[0]);
 		});
+		protectionNode = protectionNode.slice(0, -1); // remove the trailing bullet
 		statusLevel = 'warn';
 	} else {
 		protectionNode.push($("<b>no protection</b>")[0]);
@@ -324,11 +377,6 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					});
 				movelevel.append({
 						type: 'option',
-						label: 'Autoconfirmed',
-						value: 'autoconfirmed'
-					});
-				movelevel.append({
-						type: 'option',
 						label: 'Extended confirmed',
 						value: 'extendedconfirmed'
 					});
@@ -384,7 +432,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 								label: 'Modify pending changes protection',
 								value: 'pcmodify',
 								tooltip: 'If this is turned off, the pending changes level, and expiry time, will be left as is.',
-								checked: true
+								checked: true,
+								disabled: (mw.config.get('wgNamespaceNumber') !== 0 && mw.config.get('wgNamespaceNumber') !== 4) // Hardcoded until [[phab:T218479]]
 							}
 						]
 					});
@@ -446,11 +495,13 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						label: 'All',
 						value: 'all'
 					});
-				createlevel.append({
-						type: 'option',
-						label: 'Autoconfirmed',
-						value: 'autoconfirmed'
-					});
+				if (mw.config.get("wgNamespaceNumber") !== 0) {
+					createlevel.append({
+							type: 'option',
+							label: 'Autoconfirmed',
+							value: 'autoconfirmed'
+						});
+				}
 				if (isTemplate) {
 					createlevel.append({
 							type: 'option',
@@ -1226,7 +1277,11 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typename = 'create protection';
 					break;
 				case 'unprotect':
-					/* falls through */
+					var admins = $.map(Twinkle.protect.currentProtectionLevels, function(pl) { return pl.admin ? 'User:' + pl.admin : null; });
+					if (admins.length && !confirm('Have you attempted to contact the protecting admins (' + $.unique(admins).join(', ') + ') first?' )) {
+						return false;
+					}
+					// otherwise falls through
 				default:
 					typename = 'unprotection';
 					break;

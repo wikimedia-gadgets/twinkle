@@ -15,7 +15,7 @@
 
 Twinkle.arv = function twinklearv() {
 	var username = mw.config.get('wgRelevantUserName');
-	if ( !username ) {
+	if ( !username || username === mw.config.get('wgUserName') ) {
 		return;
 	}
 
@@ -25,11 +25,6 @@ Twinkle.arv = function twinklearv() {
 };
 
 Twinkle.arv.callback = function ( uid ) {
-	if ( uid === mw.config.get('wgUserName') ) {
-		alert( 'You don\'t want to report yourself, do you?' );
-		return;
-	}
-
 	var Window = new Morebits.simpleWindow( 600, 500 );
 	Window.setTitle( "Advance Reporting and Vetting" ); //Backronym
 	Window.setScriptName( "Twinkle" );
@@ -634,7 +629,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				}
 				uaaPage.getStatusElement().status( 'Adding new report...' );
 				uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ Twinkle.getPref('summaryAd') );
-				uaaPage.setPageText( text + "\n\n" + reason );
+				uaaPage.setPageText( text + "\n" + reason );
 				uaaPage.save();
 			} );
 			break;

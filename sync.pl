@@ -195,8 +195,9 @@ sub buildEditSummary {
 	next if $arr[1] =~ /Merge pull request #\d+/;
 
 	if ($arr[1] =~ /(\S+(?:\.(?:js|css))?) ?[:|-] ?(.+)/) {
-	  $2 =~ s/\.$//; # Just in case
-	  $editSummary .= "$2; ";
+	  my $fixPer = $2;
+	  $fixPer =~ s/\.$//; # Just in case
+	  $editSummary .= "$fixPer; ";
 	}
       }
       close $nl or die $ERRNO;
