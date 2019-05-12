@@ -1266,25 +1266,12 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
  * is fairly unlikely that anyone will iterate over a Date object.
  */
 
-Date.monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-	'July', 'August', 'September', 'October', 'November','December' ];
-
-Date.monthNamesAbbrev = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-Date.prototype.getMonthName = function() {
-	return Date.monthNames[ this.getMonth() ];
-};
-
-Date.prototype.getMonthNameAbbrev = function() {
-	return Date.monthNamesAbbrev[ this.getMonth() ];
-};
-
 Date.prototype.getUTCMonthName = function() {
-	return Date.monthNames[ this.getUTCMonth() ];
+	return mw.config.get('wgMonthNames')[ this.getUTCMonth() + 1 ];
 };
 
 Date.prototype.getUTCMonthNameAbbrev = function() {
-	return Date.monthNamesAbbrev[ this.getUTCMonth() ];
+	return mw.config.get('wgMonthNamesShort')[ this.getUTCMonth() + 1 ];
 };
 
 
