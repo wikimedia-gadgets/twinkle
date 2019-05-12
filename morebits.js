@@ -3783,7 +3783,9 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 				}
 
 				for (i = start; i <= finish; i++) {
-					cbs[i].checked = endState;
+					if (cbs[i].checked !== endState) {
+						cbs[i].click();
+					}
 				}
 			}
 		}
