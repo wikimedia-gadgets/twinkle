@@ -114,8 +114,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 					checked: true
 				}
 			]
-		}
-	);
+		} );
 	form.append( {
 			type: 'field',
 			label:'Work area',
@@ -417,6 +416,19 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'field',
 				label: 'Redirects for discussion',
 				name: 'work_area'
+			} );
+
+		work_area.append( {
+				type: 'checkbox',
+				list: [
+					{
+						label: 'Notify  target page if possible',
+						value: 'relatedpage',
+						name: 'relatedpage',
+						tooltip: "A notification template will be placed on the talk page of this redirect's target if this is true.",
+						checked: true
+					}
+				]
 			} );
 		appendReasonBox();
 		work_area = work_area.render();
@@ -1364,11 +1376,11 @@ Twinkle.xfd.callbacks = {
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.rfd.todaysList);
 
-			// Notifying initial contributor
-			if (params.usertalk) {
+			// Notifications
+			if (params.usertalk || params.relatedpage) {
 				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				thispage.setCallbackParameters(params);
-				thispage.lookupCreator(Twinkle.xfd.callbacks.rfd.userNotification);
+				thispage.lookupCreator(Twinkle.xfd.callbacks.rfd.sendNotifications);
 			}
 		},
 		taggingRedirect: function(pageobj) {
@@ -1422,15 +1434,41 @@ Twinkle.xfd.callbacks = {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 			});
 		},
-		userNotification: function(pageobj) {
+		sendNotifications: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
+			var params = pageobj.getCallbackParameters();
 
-			// Disallow warning yourself
-			if (initialContrib === mw.config.get('wgUserName')) {
-				pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
-				return;
+			// Notifying initial contributor
+			if (params.usertalk) {
+				// Disallow warning yourself
+				if (initialContrib === mw.config.get('wgUserName')) {
+					pageobj.getStatusElement().warn("You (" + initialContrib + ") created this page; skipping user notification");
+				} else {
+					Twinkle.xfd.callbacks.rfd.userNotification(initialContrib);
+				}
 			}
 
+			// Notifying target page's watchers
+			if (params.relatedpage) {
+				var targetTalk = new mw.Title(params.target).getTalkPage();
+
+				// On the offchance it's a circular redirect
+				if (params.target === mw.config.get('wgPageName')) {
+					pageobj.getStatusElement().warn("Circular redirect; skipping target page notification");
+				}
+				// Don't issue if target talk is the initial contributor's talk or your own
+				else if (targetTalk.getNamespaceId() === 3) {
+					if (targetTalk.getNameText() === initialContrib) {
+						pageobj.getStatusElement().warn("Target is initial contributor; skipping target page notification");
+					} else if (targetTalk.getNameText() === mw.config.get('wgUserName')) {
+						pageobj.getStatusElement().warn("You (" + mw.config.get('wgUserName') + ") are the target; skipping target page notification");
+					}
+				} else {
+					Twinkle.xfd.callbacks.rfd.targetNotification(targetTalk);
+				}
+			}
+		},
+		userNotification: function(initialContrib) {
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, "Notifying initial contributor (" + initialContrib + ")");
 			var notifytext = "\n{{subst:RFDNote|1=" + Morebits.pageNameNorm + "}} ~~~~";
 			usertalkpage.setAppendText(notifytext);
@@ -1449,6 +1487,26 @@ Twinkle.xfd.callbacks = {
 			}
 			usertalkpage.setFollowRedirect(true);
 			usertalkpage.append();
+		},
+		targetNotification: function(targetTalk) {
+			var targettalkpage = new Morebits.wiki.page(targetTalk, "Notifying redirect target of the discussion");
+			var notifytext = "\n{{subst:RFDNote|1=" + Morebits.pageNameNorm + "}} ~~~~";
+			targettalkpage.setAppendText(notifytext);
+			targettalkpage.setEditSummary("Notification: listing at [[WP:RFD|redirects for discussion]] of [[:" + Morebits.pageNameNorm + "]]." + Twinkle.getPref('summaryAd'));
+			targettalkpage.setCreateOption('recreate');
+			switch (Twinkle.getPref('xfdWatchRelated')) {
+				case 'yes':
+					targettalkpage.setWatchlist(true);
+					break;
+				case 'no':
+					targettalkpage.setWatchlistFromPreferences(false);
+					break;
+				default:
+					targettalkpage.setWatchlistFromPreferences(true);
+					break;
+			}
+			targettalkpage.setFollowRedirect(true);
+			targettalkpage.append();
 		}
 	}
 };
@@ -1459,7 +1517,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	var type = e.target.category.value;
 	var usertalk = e.target.notify.checked;
 	var reason = e.target.xfdreason.value;
-	var xfdcat, xfdtarget, xfdtarget2, noinclude, tfdtype, notifyuserspace;
+	var xfdcat, xfdtarget, xfdtarget2, noinclude, tfdtype, notifyuserspace, relatedpage;
 	if( type === "afd" || type === "cfd" || type === "cfds" || type === "tfd" ) {
 		xfdcat = e.target.xfdcat.value;
 	}
@@ -1480,6 +1538,9 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	}
 	if( type === 'mfd' ) {
 		notifyuserspace = e.target.notifyuserspace && e.target.notifyuserspace.checked;
+	}
+	if( type === 'rfd' ) {
+		relatedpage = e.target.relatedpage.checked;
 	}
 
 	Morebits.simpleWindow.setButtonsEnabled( false );
@@ -1705,7 +1766,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		break;
 
 	case 'rfd':
-		params = { usertalk: usertalk, reason: reason };
+		params = { usertalk: usertalk, relatedpage: relatedpage, reason: reason };
 		// find target and pass main as the callback
 		Twinkle.xfd.callbacks.rfd.findTarget(params, Twinkle.xfd.callbacks.rfd.main);
 		break;

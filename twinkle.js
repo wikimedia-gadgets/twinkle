@@ -111,6 +111,7 @@ Twinkle.defaultConfig.twinkle = {
 	xfdWatchList: "no",
 	xfdWatchPage: "default",
 	xfdWatchUser: "default",
+	xfdWatchRelated: "default",
 	markXfdPagesAsPatrolled: true,
 
 	// Hidden preferences
