@@ -806,6 +806,23 @@ Twinkle.tag.article.tagCategories = {
 	]
 };
 
+// Contains those article tags that *do not* work inside {{multiple issues}}.
+Twinkle.tag.multipleIssuesExceptions = [
+	'Copypaste',
+	'Expand language',
+	'GOCEinuse',
+	'History merge',
+	'Improve categories',
+	'In use',
+	'Merge',
+	'Merge from',
+	'Merge to',
+	'Not English',
+	'Rough translation',
+	'Uncategorized',
+	'Under construction'
+];
+
 // Tags for REDIRECTS start here
 
 Twinkle.tag.spellingList = [
@@ -1114,24 +1131,6 @@ Twinkle.tag.file.replacementList.forEach(function(el) {
 });
 
 
-// Contains those article tags that *do not* work inside {{multiple issues}}.
-Twinkle.tag.multipleIssuesExceptions = [
-	'Copypaste',
-	'Expand language',
-	'GOCEinuse',
-	'History merge',
-	'Improve categories',
-	'In use',
-	'Merge',
-	'Merge from',
-	'Merge to',
-	'Not English',
-	'Rough translation',
-	'Uncategorized',
-	'Under construction'
-];
-
-
 Twinkle.tag.callbacks = {
 	article: function articleCallback(pageobj) {
 
@@ -1141,11 +1140,12 @@ Twinkle.tag.callbacks = {
 		var params = pageobj.getCallbackParameters();
 
 		/**
-		 * Saves the page following the removal of tags if any. The last step
+		 * Saves the page following the removal of tags if any. The last step.
+		 * Called from removeTags()
 		 */
 		var postRemoval = function() {
 
-			if(params.tagsToRemove.length) {
+			if (params.tagsToRemove.length) {
 				// Finish summary text
 				summaryText += ' tag' + ( params.tagsToRemove.length > 1 ? 's' : '') + ' from article';
 
@@ -1198,7 +1198,7 @@ Twinkle.tag.callbacks = {
 					var otherpage = new Morebits.wiki.page(params.mergeTarget, "Tagging other page (" +
 						params.mergeTarget + ")");
 					otherpage.setCallbackParameters(newParams);
-					otherpage.load(Twinkle.tag.callbacks.article.main);
+					otherpage.load(Twinkle.tag.callbacks.article);
 				}
 
 				// post at WP:PNT for {{not English}} and {{rough translation}} tag
@@ -1211,7 +1211,33 @@ Twinkle.tag.callbacks = {
 						lang: params.translationLanguage,
 						reason: params.translationComments
 					});
-					pntPage.load(Twinkle.tag.callbacks.translationListPage);
+					pntPage.load(function friendlytagCallbacksTranslationListPage(pageobj) {
+						var old_text = pageobj.getPageText();
+						var params = pageobj.getCallbackParameters();
+						var statelem = pageobj.getStatusElement();
+
+						var templateText = "{{subst:" + params.template + "|pg=" + Morebits.pageNameNorm + "|Language=" +
+							(params.lang || "uncertain") + "|Comments=" + params.reason.trim() + "}} ~~~~";
+
+						var text, summary;
+						if (params.template === "duflu") {
+							text = old_text + "\n\n" + templateText;
+							summary = "Translation cleanup requested on ";
+						} else {
+							text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
+								"\n\n" + templateText + "\n\n$1");
+							summary = "Translation" + (params.lang ? (" from " + params.lang) : "") + " requested on ";
+						}
+
+						if (text === old_text) {
+							statelem.error('failed to find target spot for the discussion');
+							return;
+						}
+						pageobj.setPageText(text);
+						pageobj.setEditSummary(summary + " [[:" + Morebits.pageNameNorm + "]]" + Twinkle.getPref('summaryAd'));
+						pageobj.setCreateOption('recreate');
+						pageobj.save();
+					});
 				}
 				if (params.translationNotify) {
 					pageobj.lookupCreator(function(innerPageobj) {
@@ -1268,13 +1294,9 @@ Twinkle.tag.callbacks = {
 
 			var getRedirectsFor = [];
 
-			/**
-			 * removeTag - Removes a tag from the page text, if found in its proper name,
-			 * otherwise moves it to `getRedirectsFor` array earmarking it for
-			 * later removal
-			 * @param {string} tag
-			 * @param {number} tagIndex - index in `params.tagsToRemove` array
-			 */
+			// Remove the tags from the page text, if found in its proper name,
+			// otherwise moves it to `getRedirectsFor` array earmarking it for
+			// later removal
 			params.tagsToRemove.forEach(function removeTag(tag, tagIndex) {
 
 				var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
@@ -1305,12 +1327,12 @@ Twinkle.tag.callbacks = {
 				return;
 			}
 
-			// Remove tags which appear in wikitext as redirects
+			// Remove tags which appear in page text as redirects
 			var api = new Morebits.wiki.api("Getting template redirects", {
 				"action": "query",
 				"prop": "linkshere",
 				"titles": getRedirectsFor.join('|'),
-				"redirects": 1,
+				"redirects": 1,  // follow redirect if the class name turns out to be a redirect page
 				"lhnamespace": "10",  // template namespace only
 				"lhshow": "redirect",
 				"lhlimit": "max"
@@ -1321,7 +1343,7 @@ Twinkle.tag.callbacks = {
 					$(page).find('lh').each(function(idx, el) {
 						var tag = $(el).attr('title').slice(9);
 						var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
-						if(tag_re.test(pageText)) {
+						if (tag_re.test(pageText)) {
 							pageText = pageText.replace(tag_re, '');
 							removed = true;
 							return false;   // break out of $.each
@@ -1366,7 +1388,7 @@ Twinkle.tag.callbacks = {
 					currentTag += '{{' + tagName;
 				}
 
-				// prompt for other parameters, based on the tag
+				// fill in other parameters, based on the tag
 				switch( tagName ) {
 					case 'Cleanup':
 						currentTag += '|reason=' + params.cleanup;
@@ -1608,11 +1630,8 @@ Twinkle.tag.callbacks = {
 
 			var getRedirectsFor = [];
 
-			/**
-			 * repositionTagIntoMI - Repositions the tag on the page into {{multiple issues}},
-			 * if found with its proper name, else moves it to `getRedirectsFor` array to be
-			 * handled later
-			 */
+			// Reposition the tags on the page into {{multiple issues}}, if found with its
+			// proper name, else moves it to `getRedirectsFor` array to be handled later
 			groupableExistingTags.forEach(function repositionTagIntoMI(tag) {
 				var tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?)');
 				if (tag_re.test(pageText)) {
@@ -1702,7 +1721,7 @@ Twinkle.tag.callbacks = {
 			}
 
 			summaryText += ' {{[[:' + (tagName.indexOf(":") !== -1 ? tagName : ("Template:" + tagName + "|" + tagName)) + ']]}}';
-		}
+		};
 
 		tags.sort();
 		$.each(tags, addTag);
@@ -1744,34 +1763,6 @@ Twinkle.tag.callbacks = {
 			pageobj.patrol();
 		}
 
-	},
-
-	translationListPage: function friendlytagCallbacksTranslationListPage(pageobj) {
-		var old_text = pageobj.getPageText();
-		var params = pageobj.getCallbackParameters();
-		var statelem = pageobj.getStatusElement();
-
-		var templateText = "{{subst:" + params.template + "|pg=" + Morebits.pageNameNorm + "|Language=" +
-			(params.lang || "uncertain") + "|Comments=" + params.reason.trim() + "}} ~~~~";
-
-		var text, summary;
-		if (params.template === "duflu") {
-			text = old_text + "\n\n" + templateText;
-			summary = "Translation cleanup requested on ";
-		} else {
-			text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
-				"\n\n" + templateText + "\n\n$1");
-			summary = "Translation" + (params.lang ? (" from " + params.lang) : "") + " requested on ";
-		}
-
-		if (text === old_text) {
-			statelem.error('failed to find target spot for the discussion');
-			return;
-		}
-		pageobj.setPageText(text);
-		pageobj.setEditSummary(summary + " [[:" + Morebits.pageNameNorm + "]]" + Twinkle.getPref('summaryAd'));
-		pageobj.setCreateOption('recreate');
-		pageobj.save();
 	},
 
 	file: function friendlytagCallbacksFile(pageobj) {
