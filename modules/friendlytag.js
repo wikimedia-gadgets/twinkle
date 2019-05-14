@@ -178,7 +178,11 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				if (e.tagName === 'H2')
 					return false;
 
-				// All tags have their first class name beginning with "box-"
+				// The ability to remove tags depends on the template's {{ambox}} |name=
+				// parameter bearing the template's correct name (preferably) or a name that at
+				// least redirects to the actual name
+
+				// All tags have their first class name as "box-" + template name
 				if (e.className.indexOf('box-') === 0) {
 					if (e.classList[0] === 'box-Multiple_issues') {
 						$(e).find('.ambox').each(function(idx, e) {
@@ -357,14 +361,14 @@ Twinkle.tag.updateSortOrder = function(e) {
 			case "Merge":
 			case "Merge from":
 			case "Merge to":
-				var otherTagName = "merge";
+				var otherTagName = "Merge";
 				switch (tag)
 				{
 					case "Merge from":
-						otherTagName = "merge to";
+						otherTagName = "Merge to";
 						break;
 					case "Merge to":
-						otherTagName = "merge from";
+						otherTagName = "Merge from";
 						break;
 				}
 				checkbox.subgroup = [
@@ -391,7 +395,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 						name: 'mergeReason',
 						type: 'textarea',
 						label: 'Rationale for merge (will be posted on ' +
-							(tag === "merge to" ? 'the other article\'s' : 'this article\'s') + ' talk page):',
+							(tag === "Merge to" ? 'the other article\'s' : 'this article\'s') + ' talk page):',
 						tooltip: 'Optional, but strongly recommended. Leave blank if not wanted. Only available if a single article name is entered.'
 					});
 				}
@@ -406,7 +410,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 							tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
 						}
 					];
-					if (tag === "not English") {
+					if (tag === "Not English") {
 						checkbox.subgroup.push({
 							name: 'translationNotify',
 							type: 'checkbox',
@@ -1463,9 +1467,9 @@ Twinkle.tag.callbacks = {
 							if (mw.config.get('wgNamespaceNumber') === 0 && (params.mergeReason || params.discussArticle)) {
 								if (!params.discussArticle) {
 									// discussArticle is the article whose talk page will contain the discussion
-									params.discussArticle = (tagName === "merge to" ? params.mergeTarget : mw.config.get('wgTitle'));
+									params.discussArticle = (tagName === "Merge to" ? params.mergeTarget : mw.config.get('wgTitle'));
 									// nonDiscussArticle is the article which won't have the discussion
-									params.nonDiscussArticle = (tagName === "merge to" ? mw.config.get('wgTitle') : params.mergeTarget);
+									params.nonDiscussArticle = (tagName === "Merge to" ? mw.config.get('wgTitle') : params.mergeTarget);
 									params.talkDiscussionTitle = 'Proposed merge with ' + params.nonDiscussArticle;
 								}
 								currentTag += '|discuss=Talk:' + params.discussArticle + '#' + params.talkDiscussionTitle;
@@ -1552,7 +1556,7 @@ Twinkle.tag.callbacks = {
 		// Separate tags into groupable ones (`groupableTags`) and non-groupable ones (`tags`)
 		params.tags.forEach(function(tag) {
 			tagRe = new RegExp( '\\{\\{' + tag + '(\\||\\}\\})', 'im' );
-			// regex check for preexistence of tag can be skipped if in untaggable mode
+			// regex check for preexistence of tag can be skipped if in canRemove mode
 			if( Twinkle.tag.canRemove || !tagRe.exec( pageText ) ) {
 				// condition Twinkle.tag.article.tags[tag] to ensure that its not a custom tag
 				// Custom tags are assumed non-groupable, since we don't know whether MI template supports them
