@@ -1195,6 +1195,8 @@ Twinkle.tag.callbacks = {
 					}
 					var newParams = {
 						tags: [otherTagName],
+						tagsToRemove: [],
+						tagsToRemain: [],
 						mergeTarget: Morebits.pageNameNorm,
 						discussArticle: params.discussArticle,
 						talkDiscussionTitle: params.talkDiscussionTitle
