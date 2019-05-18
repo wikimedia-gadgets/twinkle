@@ -52,7 +52,7 @@ Twinkle.config.commonSets = {
 	],
 	csdCriteriaNotification: {
 		db: "Custom rationale ({{db}})",
-		g1: "G1", g2: "G2", g3: "G3", g4: "G4", g6: 'G6 ("unnecessary disambig." and "copy-paste move" only)',
+		g1: "G1", g2: "G2", g3: "G3", g4: "G4", g6: 'G6 ("copy-paste move" only)',
 		g10: "G10", g11: "G11", g12: "G12", g13: "G13", g14: "G14",
 		a1: "A1", a2: "A2", a3: "A3", a5: "A5", a7: "A7", a9: "A9", a10: "A10", a11: "A11",
 		u3: "U3", u5: "U5",
