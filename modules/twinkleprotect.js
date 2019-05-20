@@ -16,7 +16,7 @@
 // Note: a lot of code in this module is re-used/called by batchprotect.
 
 Twinkle.protect = function twinkleprotect() {
-	if ( mw.config.get('wgNamespaceNumber') < 0 ) {
+	if ( mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgNamespaceNumber') === 8 ) {
 		return;
 	}
 
