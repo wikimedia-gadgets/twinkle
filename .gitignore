@@ -6,6 +6,7 @@ jsl.conf
 stash*.txt
 stash*.diff
 *.jsX
+.vscode/
 
 # Windows
 Thumbs.db
