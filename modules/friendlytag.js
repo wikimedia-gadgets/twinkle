@@ -1528,7 +1528,7 @@ Twinkle.tag.callbacks = {
 					// capture template(s)
 					'(?:((?:\\s*' +
 					// AfD is special, as the tag includes html comments before and after the actual template
-					'(?:<!--.*AfD.*\\n\\{\\{Article for deletion\\/dated.*\\}\\}\\n<!--.*\\n<!--.*AfD.*(?:\\s*\\n))?|' + // trailing whitespace/newline needed since this subst's a newline
+					'(?:<!--.*AfD.*\\n\\{\\{(?:Article for deletion\\/dated|AfDM).*\\}\\}\\n<!--.*(?:\\n<!--.*)?AfD.*(?:\\s*\\n))?|' + // trailing whitespace/newline needed since this subst's a newline
 					// begin template format
 					'\\{\\{\\s*(?:' +
 					// CSD
