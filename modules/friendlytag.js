@@ -1534,7 +1534,7 @@ Twinkle.tag.callbacks = {
 					// CSD
 					'db|delete|db-.*?|speedy deletion-.*?|' +
 					// PROD
-					'(?:proposed deletion|prod blp)\\/dated\\n(?:\\s+\\|(?:concern|user|timestamp|help).*)+|' +
+					'(?:proposed deletion|prod blp)\\/dated(?:\\s*\\|(?:concern|user|timestamp|help).*)+|' +
 					// various hatnote templates
 					'about|correct title|dablink|distinguish|for|other\\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\\s?(?:also|wiktionary)|selfref|the' +
 					// not a hatnote, but sometimes under a CSD or AfD
