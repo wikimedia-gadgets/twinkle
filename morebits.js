@@ -1325,7 +1325,13 @@ Morebits.wiki.actionCompleted.event = function() {
 				Morebits.wiki.actionCompleted.redirect += "?redirect=no";
 			}
 		}
-		window.setTimeout( function() { window.location = Morebits.wiki.actionCompleted.redirect; }, Morebits.wiki.actionCompleted.timeOut );
+		window.setTimeout( function() {
+			window.location = Morebits.wiki.actionCompleted.redirect;
+			// force reload if redirect location differs from current location only by the hash
+			if (Morebits.wiki.actionCompleted.redirect.indexOf(mw.util.getUrl() + '#') === 0) {
+				window.location.reload(true);
+			}
+		}, Morebits.wiki.actionCompleted.timeOut);
 	}
 };
 
