@@ -3480,6 +3480,17 @@ Morebits.queryString.prototype.create = Morebits.queryString.create;
  * **************** Morebits.status ****************
  */
 
+ /**
+  * @constructor
+  * Morebits.status.init() must be called before any status object is created, otherwise
+  * those statuses won't be visible.
+  * @param {String} text - Text before the the colon `:`
+  * @param {String} stat - Text after the colon `:`
+  * @param {String} [type='status'] - This parameter determines the font color of the status line,
+  * this can be 'status' (blue), 'info' (green), 'warn' (red), or 'error' (bold red)
+  * The default is 'status'
+  */
+
 Morebits.status = function Status( text, stat, type ) {
 	this.textRaw = text;
 	this.text = this.codify(text);
@@ -3490,6 +3501,10 @@ Morebits.status = function Status( text, stat, type ) {
 	}
 };
 
+/**
+ * Specify an area for status message elements to be added to
+ * @param {HTMLElement} root - usually a div element
+ */
 Morebits.status.init = function( root ) {
 	if( !( root instanceof Element ) ) {
 		throw new Error( 'object not an instance of Element' );
@@ -3519,18 +3534,30 @@ Morebits.status.prototype = {
 	target: null,
 	node: null,
 	linked: false,
+
+	/**
+	 * Add the status element node to the DOM
+	 */
 	link: function() {
 		if( ! this.linked && Morebits.status.root ) {
 			Morebits.status.root.appendChild( this.node );
 			this.linked = true;
 		}
 	},
+
+	/**
+	 * Remove the status element node from the DOM
+	 */
 	unlink: function() {
 		if( this.linked ) {
 			Morebits.status.root.removeChild( this.node );
 			this.linked = false;
 		}
 	},
+
+	/**
+	 * Create a document fragment with the status text
+	 */
 	codify: function( obj ) {
 		if ( ! Array.isArray( obj ) ) {
 			obj = [ obj ];
@@ -3547,6 +3574,12 @@ Morebits.status.prototype = {
 		return result;
 
 	},
+
+	/**
+	 * Update the status
+	 * @param {String} status - Part of status message after colon `:`
+	 * @param {String} type - 'status' (blue), 'info' (green), 'warn' (red), or 'error' (bold red)
+	 */
 	update: function( status, type ) {
 		this.stat = this.codify( status );
 		if( type ) {
@@ -3566,6 +3599,10 @@ Morebits.status.prototype = {
 		}
 		this.render();
 	},
+
+	/**
+	 * Produce the html for first part of the status message
+	 */
 	generate: function() {
 		this.node = document.createElement( 'div' );
 		this.node.appendChild( document.createElement('span') ).appendChild( this.text );
@@ -3573,6 +3610,10 @@ Morebits.status.prototype = {
 		this.target = this.node.appendChild( document.createElement( 'span' ) );
 		this.target.appendChild(  document.createTextNode( '' ) ); // dummy node
 	},
+
+	/**
+	 * Complete the html, for the second part of the status message
+	 */
 	render: function() {
 		this.node.className = 'tw_status_' + this.type;
 		while( this.target.hasChildNodes() ) {
