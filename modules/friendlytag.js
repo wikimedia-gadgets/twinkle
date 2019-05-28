@@ -76,6 +76,49 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				]
 			});
 
+			form.append({
+				type: 'input',
+				label: 'Quick filter: ',
+				name: 'quickfilter',
+				size: '30px',
+				event: function twinkletagquickfilter() {
+					var $form = $('#tagWorkArea');
+					// flush the DOM of all existing underline spans
+					$form.find('.search-hit').each(function(i,e) {
+						var label_element = e.parentElement;
+						var new_label = Morebits.htmlNode('label', label_element.textContent);
+						new_label.setAttribute('for', label_element.previousElementSibling.id);
+						$(label_element).replaceWith(new_label);
+					});
+					// allCheckboxDivs and allHeaders are defined globally, rather than in
+					// this function, to avoid having to recompute them on every keydown.
+					if (this.value) {
+						allCheckboxDivs.hide();
+						allHeaders.hide();
+						var searchString = this.value;
+						var searchRegex = new RegExp(mw.RegExp.escape(searchString), 'i');
+
+						$form.find('label').each(function() {
+							var label_text = this.textContent;
+							var searchHit = searchRegex.exec(label_text);
+							if (searchHit) {
+								var range = document.createRange();
+								var textnode = this.childNodes[0];
+								range.selectNodeContents(textnode);
+								range.setStart(textnode, searchHit.index);
+								range.setEnd(textnode, searchHit.index + searchString.length);
+								var underline_span = $('<span>').addClass('search-hit').css('text-decoration', 'underline')[0];
+								range.surroundContents(underline_span);
+								this.parentElement.style.display = 'block'; // un-hide
+							}
+						});
+					} else {
+						allCheckboxDivs.show();
+						allHeaders.show();
+					}
+				}
+			});
+
 			if (! Twinkle.tag.canRemove) {
 				var divElement = document.createElement('div');
 				divElement.innerHTML = 'For removal of existing tags, please open Tag menu from the current version of article';
@@ -164,6 +207,8 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	if (Twinkle.tag.mode === "article") {
 
+		result.quickfilter.focus();  // place cursor in the Quick filter field as soon as window is opened
+
 		Twinkle.tag.alreadyPresentTags = [];
 
 		if (Twinkle.tag.canRemove) {
@@ -217,6 +262,9 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		Morebits.quickForm.getElements(result, Twinkle.tag.mode + "Tags").forEach(generateLinks);
 	}
 };
+
+// Used in Quick Filter event function
+var allCheckboxDivs, allHeaders;
 
 Twinkle.tag.updateSortOrder = function(e) {
 	var sortorder = e.target.value;
@@ -559,6 +607,10 @@ Twinkle.tag.updateSortOrder = function(e) {
 	var $workarea = $(e.target.form).find("div#tagWorkArea");
 	var rendered = container.render();
 	$workarea.empty().append(rendered);
+
+	// Used in quick filter event function
+	allCheckboxDivs = $workarea.find('[name=articleTags], [name=alreadyPresentArticleTags]').parent();
+	allHeaders = $workarea.find('h5, .quickformDescription');
 
 	// style adjustments
 	$workarea.find("h5").css({ 'font-size': '110%' });
