@@ -9,14 +9,16 @@
  *** twinklewarn.js: Warn module
  ****************************************
  * Mode of invocation:     Tab ("Warn")
- * Active on:              User (talk) pages and (deleted) Contributions
+ * Active on:              Any page with relevant user name (userspace, contribs,
+ *                         etc.), as well as diffs and the rollback success page
  * Config directives in:   TwinkleConfig
  */
 
 Twinkle.warn = function twinklewarn() {
 	if( mw.config.get( 'wgRelevantUserName' ) ) {
 			Twinkle.addPortletLink( Twinkle.warn.callback, "Warn", "tw-warn", "Warn/notify user" );
-			if (Twinkle.getPref('autoMenuAfterRollback') && mw.config.get('wgNamespaceNumber') === 3 && mw.util.getParamValue('vanarticle') && !mw.util.getParamValue('friendlywelcome')) {
+			if (Twinkle.getPref('autoMenuAfterRollback') && mw.config.get('wgNamespaceNumber') === 3 &&
+				mw.util.getParamValue('vanarticle') && !mw.util.getParamValue('friendlywelcome') && !mw.util.getParamValue('noautowarn')) {
 				Twinkle.warn.callback();
 			}
 	}
@@ -37,6 +39,25 @@ Twinkle.warn = function twinklewarn() {
 				$vandalTalkLink.attr("href", href + "&" + extraParam);
 			}
 		}
+	} else if (mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId')) {
+		// Autofill user talk links on diffs with vanarticle for easy
+		// warning, but don't autowarn
+		var warnFromTalk = function(talkLink) {
+			if (talkLink.length) {
+				talkLink.css('font-weight', 'bold');
+
+				var extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&' + 'noautowarn=true';
+				var href = talkLink.attr('href');
+				if (href.indexOf('?') === -1) {
+					talkLink.attr('href', href + '?' + extraParams);
+				} else {
+					talkLink.attr('href', href + '&' + extraParams);
+				}
+			}
+		};
+
+		warnFromTalk($('#mw-diff-otitle2 .mw-usertoollinks a').first());
+		warnFromTalk($('#mw-diff-ntitle2 .mw-usertoollinks a').first());
 	}
 };
 
