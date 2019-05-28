@@ -1316,7 +1316,9 @@ Morebits.wiki.actionCompleted = function( self ) {
 
 // Change per action wanted
 Morebits.wiki.actionCompleted.event = function() {
-	new Morebits.status( Morebits.wiki.actionCompleted.notice, Morebits.wiki.actionCompleted.postfix, 'info' );
+	if (Morebits.wiki.actionCompleted.notice) {
+		Morebits.status.actionCompleted( Morebits.wiki.actionCompleted.notice );
+	}
 	if( Morebits.wiki.actionCompleted.redirect ) {
 		// if it isn't a URL, make it one. TODO: This breaks on the articles 'http://', 'ftp://', and similar ones.
 		if( !( (/^\w+:\/\//).test( Morebits.wiki.actionCompleted.redirect ) ) ) {
@@ -1331,8 +1333,7 @@ Morebits.wiki.actionCompleted.event = function() {
 
 Morebits.wiki.actionCompleted.timeOut = ( typeof window.wpActionCompletedTimeOut === 'undefined' ? 5000 : window.wpActionCompletedTimeOut );
 Morebits.wiki.actionCompleted.redirect = null;
-Morebits.wiki.actionCompleted.notice = 'Action';
-Morebits.wiki.actionCompleted.postfix = 'completed';
+Morebits.wiki.actionCompleted.notice = null;
 
 Morebits.wiki.addCheckpoint = function() {
 	++Morebits.wiki.nbrOfCheckpointsLeft;
@@ -3604,6 +3605,20 @@ Morebits.status.warn = function( text, status ) {
 
 Morebits.status.error = function( text, status ) {
 	return new Morebits.status( text, status, 'error' );
+};
+
+/**
+ * For the action complete message at the end, create a status line without
+ * a colon separator.
+ * @param {String} text
+ */
+Morebits.status.actionCompleted = function(text) {
+	var node = document.createElement( 'div' );
+	node.appendChild( document.createElement('span') ).appendChild( document.createTextNode( text ) );
+	node.className = 'tw_status_info';
+	if (Morebits.status.root) {
+		Morebits.status.root.appendChild( node );
+	}
 };
 
 /**

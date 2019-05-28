@@ -199,8 +199,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 };
 
 Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvaluate(event) {
-	Morebits.wiki.actionCompleted.notice = 'Status';
-	Morebits.wiki.actionCompleted.postfix = 'batch deletion is now complete';
+	Morebits.wiki.actionCompleted.notice = 'Batch deletion is now complete';
 
 	var numProtected = $(Morebits.quickForm.getElements(event.target, 'pages')).filter(function(index, element) {
 		return element.checked && element.nextElementSibling.style.color === 'red';
