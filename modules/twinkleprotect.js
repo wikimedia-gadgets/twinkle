@@ -87,8 +87,6 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	evt.initEvent('change', true, true);
 	result.actiontype[0].dispatchEvent(evt);
 
-	Morebits.wiki.actionCompleted.postfix = false;  // avoid Action: completed notice
-
 	// get current protection level asynchronously
 	Twinkle.protect.fetchProtectionLevel();
 };
