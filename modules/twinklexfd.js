@@ -1372,38 +1372,22 @@ Twinkle.xfd.callbacks = {
 
 
 Twinkle.xfd.callback.evaluate = function(e) {
-	var type = e.target.category.value;
-	var usertalk = e.target.notify.checked;
-	var reason = e.target.xfdreason.value;
-	var delsort_cats = $(e.target.delsort).val();
-	var xfdcat, xfdtarget, xfdtarget2, noinclude, tfdtype, notifyuserspace, relatedpage;
-	if( type === "afd" || type === "cfd" || type === "cfds" || type === "tfd" ) {
-		xfdcat = e.target.xfdcat.value;
-	}
-	if( type === "cfd" || type === "cfds" ) {
-		xfdtarget = e.target.xfdtarget.value;
-		if (e.target.xfdtarget2) {
-			xfdtarget2 = e.target.xfdtarget2.value;
-		}
-	}
-	if( type === "afd" || type === "mfd" || type === "tfd" ) {
-		noinclude = e.target.noinclude.checked;
-	}
-	if( type === 'tfd' ) {
-		if (e.target.xfdtarget) {
-			xfdtarget = e.target.xfdtarget.value;
-		}
-		tfdtype = e.target.templatetype.value;
-	}
-	if( type === 'mfd' ) {
-		notifyuserspace = e.target.notifyuserspace && e.target.notifyuserspace.checked;
-	}
-	if( type === 'rfd' ) {
-		relatedpage = e.target.relatedpage.checked;
-	}
+	var form = e.target;
+
+	var type = form.category.value;
+	var usertalk = form.notify.checked;
+	var reason = form.xfdreason.value;
+	var delsort_cats = $(form.delsort).val(); // afd
+	var xfdcat = form.xfdcat && form.xfdcat.value; // afd, cfd, cfds, tfd
+	var xfdtarget = form.xfdtarget && form.xfdtarget.value;	// cfd, cfds, tfd
+	var xfdtarget2 = form.xfdtarget2 && form.xfdtarget2.value; // cfd, cfds
+	var noinclude = form.noinclude && form.noinclude.checked; // afd, mfd, tfd
+	var tfdtype = form.templatetype && form.templatetype.value; // tfd
+	var notifyuserspace = form.notifyuserspace && form.notifyuserspace.checked; // mfd
+	var relatedpage = form.relatedpage && form.relatedpage.checked; // rfd
 
 	Morebits.simpleWindow.setButtonsEnabled( false );
-	Morebits.status.init( e.target );
+	Morebits.status.init( form );
 
 	Twinkle.xfd.currentRationale = reason;
 	Morebits.status.onError(Twinkle.xfd.printRationale);
