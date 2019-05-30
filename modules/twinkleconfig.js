@@ -397,10 +397,10 @@ Twinkle.config.sections = [
 		},
 
 		// TwinkleConfig.watchSpeedyPages (array)
-		// Whether to add speedy tagged pages to watchlist
+		// Whether to add speedy tagged or deleted pages to watchlist
 		{
 			name: "watchSpeedyPages",
-			label: "Add page to watchlist when tagging with these criteria",
+			label: "Add page to watchlist when using these criteria",
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteria,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
@@ -414,24 +414,36 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 
+		// TwinkleConfig.welcomeUserOnSpeedyDeletionNotification (array of strings)
+		// On what types of speedy deletion notifications shall the user be welcomed
+		// with a "firstarticle" notice if their talk page has not yet been created.
+		{
+			name: "welcomeUserOnSpeedyDeletionNotification",
+			label: "Welcome page creator when notifying with these criteria",
+			helptip: "The welcome is issued only if the user is notified about the deletion, and only if their talk page does not already exist. The template used is {{firstarticle}}.",
+			type: "set",
+			setValues: Twinkle.config.commonSets.csdCriteriaNotification,
+			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
+		},
+
 		// TwinkleConfig.notifyUserOnSpeedyDeletionNomination (array)
-		// What types of actions should result that the author of the page being notified of nomination
+		// What types of actions should result in the author of the page being notified of nomination
 		{
 			name: "notifyUserOnSpeedyDeletionNomination",
-			label: "Notify page creator only when tagging with these criteria",
+			label: "Notify page creator when tagging with these criteria",
 			helptip: "Even if you choose to notify from the CSD screen, the notification will only take place for those criteria selected here.",
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteriaNotification,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
 		},
 
-		// TwinkleConfig.welcomeUserOnSpeedyDeletionNotification (array of strings)
-		// On what types of speedy deletion notifications shall the user be welcomed
-		// with a "firstarticle" notice if his talk page has not yet been created.
+		// TwinkleConfig.warnUserOnSpeedyDelete (array)
+		// What types of actions should result in the author of the page being notified of speedy deletion (admin only)
 		{
-			name: "welcomeUserOnSpeedyDeletionNotification",
-			label: "Welcome page creator alongside notification when tagging with these criteria",
-			helptip: "The welcome is issued only if the user is notified about the deletion, and only if their talk page does not already exist. The template used is {{firstarticle}}.",
+			name: "warnUserOnSpeedyDelete",
+			label: "Notify page creator when deleting under these criteria",
+			helptip: "Even if you choose to notify from the CSD screen, the notification will only take place for those criteria selected here.",
+			adminOnly: true,
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteriaNotification,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
@@ -441,17 +453,6 @@ Twinkle.config.sections = [
 		{
 			name: "promptForSpeedyDeletionSummary",
 			label: "Allow editing of deletion summary when deleting under these criteria",
-			adminOnly: true,
-			type: "set",
-			setValues: Twinkle.config.commonSets.csdAndDICriteria,
-			setDisplayOrder: Twinkle.config.commonSets.csdAndDICriteriaDisplayOrder
-		},
-
-		// TwinkleConfig.openUserTalkPageOnSpeedyDelete (array of strings)
-		// What types of actions that should result user talk page to be opened when speedily deleting (admin only)
-		{
-			name: "openUserTalkPageOnSpeedyDelete",
-			label: "Open user talk page when deleting under these criteria",
 			adminOnly: true,
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdAndDICriteria,
