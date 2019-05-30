@@ -1353,7 +1353,7 @@ Morebits.wiki.removeCheckpoint = function() {
  * @constructor
  * @param {string} currentAction - The current action (required)
  * @param {Object} query - The query (required)
- * @param {Function} onSuccess - The function to call when request gotten
+ * @param {Function} [onSuccess] - The function to call when request gotten
  * @param {Object} [statusElement] - A Morebits.status object to use for status messages (optional)
  * @param {Function} [onError] - The function to call if an error occurs (optional)
  */
@@ -1532,13 +1532,13 @@ Morebits.wiki.api.setApiUserAgent = function( ua ) {
  * prepend([onSuccess], [onFailure]): Adds the text provided via setPrependText() to the start
  * of the page. Does not require calling load() first.
  *
- * move(onSuccess, [onFailure]): Moves a page to another title
+ * move([onSuccess], [onFailure]): Moves a page to another title
  *
- * deletePage(onSuccess, [onFailure]): Deletes a page (for admins only)
+ * deletePage([onSuccess], [onFailure]): Deletes a page (for admins only)
  *
- * undeletePage(onSuccess, [onFailure]): Undeletes a page (for admins only)
+ * undeletePage([onSuccess], [onFailure]): Undeletes a page (for admins only)
  *
- * protect(onSuccess, [onFailure]): Protects a page
+ * protect([onSuccess], [onFailure]): Protects a page
  *
  * getPageName(): returns a string containing the name of the loaded page, including the namespace
  *
@@ -1711,7 +1711,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	/**
 	 * Loads the text for the page
 	 * @param {Function} onSuccess - callback function which is called when the load has succeeded
-	 * @param {Function} onFailure - callback function which is called when the load fails (optional)
+	 * @param {Function} [onFailure] - callback function which is called when the load fails (optional)
 	 */
 	this.load = function(onSuccess, onFailure) {
 		ctx.onLoadSuccess = onSuccess;
@@ -1862,8 +1862,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	/**
 	 * Adds the text provided via setAppendText() to the end of the page.
 	 * Does not require calling load() first.
-	 * @param {Function} onSuccess - callback function which is called when the method has succeeded (optional)
-	 * @param {Function} onFailure - callback function which is called when the method fails (optional)
+	 * @param {Function} [onSuccess] - callback function which is called when the method has succeeded (optional)
+	 * @param {Function} [onFailure] - callback function which is called when the method fails (optional)
 	 */
 	this.append = function(onSuccess, onFailure) {
 		ctx.editMode = 'append';
@@ -1880,8 +1880,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	/**
 	 * Adds the text provided via setPrependText() to the start of the page.
 	 * Does not require calling load() first.
-	 * @param {Function}  onSuccess - callback function which is called when the method has succeeded (optional)
-	 * @param {Function}  onFailure - callback function which is called when the method fails (optional)
+	 * @param {Function}  [onSuccess] - callback function which is called when the method has succeeded (optional)
+	 * @param {Function}  [onFailure] - callback function which is called when the method fails (optional)
 	 */
 	this.prepend = function(onSuccess, onFailure) {
 		ctx.editMode = 'prepend';
@@ -2213,7 +2213,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	/**
 	 * Reverts a page to revertOldID
-	 * @param {Function} onSuccess - callback function to run on success
+	 * @param {Function} [onSuccess] - callback function to run on success (optional)
 	 * @param {Function} [onFailure] - callback function to run on failure (optional)
 	 */
 	this.revert = function(onSuccess, onFailure) {
@@ -2232,7 +2232,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	/**
 	 * Moves a page to another title
-	 * @param {Function} onSuccess - callback function to run on success
+	 * @param {Function} [onSuccess] - callback function to run on success (optional)
 	 * @param {Function} [onFailure] - callback function to run on failure (optional)
 	 */
 	this.move = function(onSuccess, onFailure) {
@@ -2271,7 +2271,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	// |delete| is a reserved word in some flavours of JS
 	/**
 	 * Deletes a page (for admins only)
-	 * @param {Function} onSuccess - callback function to run on success
+	 * @param {Function} [onSuccess] - callback function to run on success (optional)
 	 * @param {Function} [onFailure] - callback function to run on failure (optional)
 	 */
 	this.deletePage = function(onSuccess, onFailure) {
@@ -2312,7 +2312,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	/**
 	 * Undeletes a page (for admins only)
-	 * @param {Function} onSuccess - callback function to run on success
+	 * @param {Function} [onSuccess] - callback function to run on success (optional)
 	 * @param {Function} [onFailure] - callback function to run on failure (optional)
 	 */
 	this.undeletePage = function(onSuccess, onFailure) {
@@ -2350,7 +2350,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	/**
 	 * Protects a page (for admins only)
-	 * @param {Function} onSuccess - callback function to run on success
+	 * @param {Function} [onSuccess] - callback function to run on success (optional)
 	 * @param {Function} [onFailure] - callback function to run on failure (optional)
 	 */
 	this.protect = function(onSuccess, onFailure) {
@@ -3062,7 +3062,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 /**
  * @constructor
- * @param {HTMLDivElement} previewbox - the <div> element that will contain the rendered HTML
+ * @param {HTMLElement} previewbox - the element that will contain the rendered HTML,
+ * usually a <div> element
  */
 Morebits.wiki.preview = function(previewbox) {
 	this.previewbox = previewbox;
@@ -3072,7 +3073,7 @@ Morebits.wiki.preview = function(previewbox) {
 	 * Displays the preview box, and begins an asynchronous attempt
 	 * to render the specified wikitext.
 	 * @param {string} wikitext - wikitext to render; most things should work, including subst: and ~~~~
-	 * @param {string} [pageTitle] - optional parameter for the page this should be rendered as being on
+	 * @param {string} [pageTitle] - optional parameter for the page this should be rendered as being on, if omitted it is taken as the current page
 	 */
 	this.beginRender = function(wikitext, pageTitle) {
 		$(previewbox).show();
@@ -3479,6 +3480,17 @@ Morebits.queryString.prototype.create = Morebits.queryString.create;
  * **************** Morebits.status ****************
  */
 
+ /**
+  * @constructor
+  * Morebits.status.init() must be called before any status object is created, otherwise
+  * those statuses won't be visible.
+  * @param {String} text - Text before the the colon `:`
+  * @param {String} stat - Text after the colon `:`
+  * @param {String} [type='status'] - This parameter determines the font color of the status line,
+  * this can be 'status' (blue), 'info' (green), 'warn' (red), or 'error' (bold red)
+  * The default is 'status'
+  */
+
 Morebits.status = function Status( text, stat, type ) {
 	this.textRaw = text;
 	this.text = this.codify(text);
@@ -3489,6 +3501,10 @@ Morebits.status = function Status( text, stat, type ) {
 	}
 };
 
+/**
+ * Specify an area for status message elements to be added to
+ * @param {HTMLElement} root - usually a div element
+ */
 Morebits.status.init = function( root ) {
 	if( !( root instanceof Element ) ) {
 		throw new Error( 'object not an instance of Element' );
@@ -3518,18 +3534,30 @@ Morebits.status.prototype = {
 	target: null,
 	node: null,
 	linked: false,
+
+	/**
+	 * Add the status element node to the DOM
+	 */
 	link: function() {
 		if( ! this.linked && Morebits.status.root ) {
 			Morebits.status.root.appendChild( this.node );
 			this.linked = true;
 		}
 	},
+
+	/**
+	 * Remove the status element node from the DOM
+	 */
 	unlink: function() {
 		if( this.linked ) {
 			Morebits.status.root.removeChild( this.node );
 			this.linked = false;
 		}
 	},
+
+	/**
+	 * Create a document fragment with the status text
+	 */
 	codify: function( obj ) {
 		if ( ! Array.isArray( obj ) ) {
 			obj = [ obj ];
@@ -3546,6 +3574,12 @@ Morebits.status.prototype = {
 		return result;
 
 	},
+
+	/**
+	 * Update the status
+	 * @param {String} status - Part of status message after colon `:`
+	 * @param {String} type - 'status' (blue), 'info' (green), 'warn' (red), or 'error' (bold red)
+	 */
 	update: function( status, type ) {
 		this.stat = this.codify( status );
 		if( type ) {
@@ -3565,6 +3599,10 @@ Morebits.status.prototype = {
 		}
 		this.render();
 	},
+
+	/**
+	 * Produce the html for first part of the status message
+	 */
 	generate: function() {
 		this.node = document.createElement( 'div' );
 		this.node.appendChild( document.createElement('span') ).appendChild( this.text );
@@ -3572,6 +3610,10 @@ Morebits.status.prototype = {
 		this.target = this.node.appendChild( document.createElement( 'span' ) );
 		this.target.appendChild(  document.createTextNode( '' ) ); // dummy node
 	},
+
+	/**
+	 * Complete the html, for the second part of the status message
+	 */
 	render: function() {
 		this.node.className = 'tw_status_' + this.type;
 		while( this.target.hasChildNodes() ) {
@@ -3608,7 +3650,9 @@ Morebits.status.error = function( text, status ) {
 
 /**
  * Display the user's rationale, comments, etc. back to them after a failure,
- * so they don't use it
+ * so that they may re-use it
+ * @param {string} comments
+ * @param {string} message
  */
 Morebits.status.printUserText = function( comments, message ) {
 	var p = document.createElement( 'p' );
@@ -3641,7 +3685,7 @@ Morebits.htmlNode = function ( type, content, color ) {
 
 
 /**
- * **************** Morebits.checkboxClickHandler() ****************
+ * **************** Morebits.checkboxShiftClickSupport() ****************
  * shift-click-support for checkboxes
  * wikibits version (window.addCheckboxClickHandlers) has some restrictions, and
  * doesn't work with checkboxes inside a sortable table, so let's build our own.
