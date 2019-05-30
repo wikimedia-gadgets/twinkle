@@ -45,40 +45,61 @@ Twinkle.fluff = {
 		Twinkle.fluff.revert( Morebits.queryString.get( 'twinklerevert' ), vandal, true );
 	},
 
-	contributions: function() {
-		// $('sp-contributions-footer-anon-range') relies on the fmbox
-		// id in [[MediaWiki:Sp-contributions-footer-anon-range]] and
-		// is used to show rollback/vandalism links for IP ranges
-		if( mw.config.get('wgCanonicalSpecialPageName') === "Contributions" && (mw.config.exists('wgRelevantUserName') || !!$('#sp-contributions-footer-anon-range')[0])) {
-			//Get the username these contributions are for
-			var username = mw.config.get('wgRelevantUserName');
-			if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
-				( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) ||
-				( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
-				var list = $("#mw-content-text").find("ul li:has(span.mw-uctop)");
+	contributions: {
+		findPages: function() {
+			// $('sp-contributions-footer-anon-range') relies on the fmbox
+			// id in [[MediaWiki:Sp-contributions-footer-anon-range]] and
+			// is used to show rollback/vandalism links for IP ranges
+			if( mw.config.exists('wgRelevantUserName') || !!$('#sp-contributions-footer-anon-range')[0]) {
+				//Get the username these contributions are for
+				var username = mw.config.get('wgRelevantUserName');
+				if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
+					( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) ||
+					( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
+					var list = $("#mw-content-text").find("ul li:has(span.mw-uctop):has(.mw-changeslist-diff)");
+					var titles = $(list).find(".mw-changeslist-date").map(function(){return $(this).attr("title");}).get();
 
-				var revNode = document.createElement('strong');
-				var revLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
-				revNode.appendChild(revLink);
+					var query = {
+						'action': 'query',
+						'prop': 'info',
+						'intestactions': 'edit',
+						'titles': titles.join('|').replace(/ /g,'_')
+					};
 
-				var revVandNode = document.createElement('strong');
-				var revVandLink = Twinkle.fluff.buildLink('Red', 'vandalism');
-				revVandNode.appendChild(revVandLink);
-
-				list.each(function(key, current) {
-					var href = $(current).find(".mw-changeslist-diff").attr("href");
-					if (href) {
-						current.appendChild( document.createTextNode(' ') );
-						var tmpNode = revNode.cloneNode( true );
-						tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'norm' } ) );
-						current.appendChild( tmpNode );
-						current.appendChild( document.createTextNode(' ') );
-						tmpNode = revVandNode.cloneNode( true );
-						tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'vand' } ) );
-						current.appendChild( tmpNode );
-					}
-				});
+					var wikipedia_api = new Morebits.wiki.api('Checking ability to edit each page', query, Twinkle.fluff.contributions.main);
+					wikipedia_api.params = { list: list, titles: titles };
+					wikipedia_api.post();
+				}
 			}
+		},
+
+		main: function(apiobj) {
+			var xmlDoc = apiobj.responseXML;
+
+			var revNode = document.createElement('strong');
+			var revLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
+			revNode.appendChild(revLink);
+
+			var revVandNode = document.createElement('strong');
+			var revVandLink = Twinkle.fluff.buildLink('Red', 'vandalism');
+			revVandNode.appendChild(revVandLink);
+
+			apiobj.params.list.each(function(key, current) {
+				var page = $(xmlDoc).find("page[title='"+apiobj.params.titles[key]+"']");
+				var canEdit = page.find('actions').attr('edit');
+
+				if (typeof canEdit !== 'undefined') {
+					var href = $(current).find(".mw-changeslist-diff").attr("href");
+					current.appendChild( document.createTextNode(' ') );
+					var tmpNode = revNode.cloneNode( true );
+					tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'norm' } ) );
+					current.appendChild( tmpNode );
+					current.appendChild( document.createTextNode(' ') );
+					tmpNode = revVandNode.cloneNode( true );
+					tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'vand' } ) );
+					current.appendChild( tmpNode );
+				}
+			});
 		}
 	},
 
@@ -583,14 +604,22 @@ Twinkle.fluff.init = function twinklefluffinit() {
 
 		if ( Morebits.queryString.exists( 'twinklerevert' ) ) {
 			Twinkle.fluff.auto();
-		} else if( mw.config.get('wgNamespaceNumber') === -1 && mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
-			Twinkle.fluff.contributions();
-		} else if( mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId') ) { // wgDiffOldId included for clarity in if else loop [[phab:T214985]]
-			mw.hook( 'wikipage.diff' ).add( function () { // Reload alongside the revision slider
-				Twinkle.fluff.diff();
-			} );
-		} else if( mw.config.get('wgAction') === 'view' && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId') ) {
-			Twinkle.fluff.oldid();
+		} else if( mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
+			Twinkle.fluff.contributions.findPages();
+		} else if (mw.config.get('wgIsProbablyEditable')) {
+			// Only proceed if the user can actually edit the page
+			// in question (handled individually on contributions.
+			// wgIsProbablyEditable should take care of
+			// namespace/contentModel restrictions as well as
+			// explicit protections; it won't take care of
+			// cascading or TitleBlacklist restrictions
+			if( mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId') ) { // wgDiffOldId included for clarity in if else loop [[phab:T214985]]
+				mw.hook( 'wikipage.diff' ).add( function () { // Reload alongside the revision slider
+					Twinkle.fluff.diff();
+				} );
+			} else if( mw.config.get('wgAction') === 'view' && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId') ) {
+				Twinkle.fluff.oldid();
+			}
 		}
 	}
 };
