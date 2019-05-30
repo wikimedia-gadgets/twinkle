@@ -320,7 +320,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 							value: 'noinclude',
 							name: 'noinclude',
 							tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t get substituted along with the template.',
-							disabled: templateOrModule === 'module'
+							disabled: templateOrModule === 'module',
+							checked: !!$('.box-Subst_only').length // Default to checked if page carries {{subst only}} 
 						}
 					]
 			} );
