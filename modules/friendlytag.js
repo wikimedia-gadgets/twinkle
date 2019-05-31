@@ -220,10 +220,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 Twinkle.tag.updateSortOrder = function(e) {
 	var sortorder = e.target.value;
-	Twinkle.tag.checkedTags = e.target.form.getChecked("articleTags");
-	if (!Twinkle.tag.checkedTags) {
-		Twinkle.tag.checkedTags = [];
-	}
+	Twinkle.tag.checkedTags = e.target.form.getChecked("articleTags") || [];
 
 	var container = new Morebits.quickForm.element({ type: "fragment" });
 
@@ -475,13 +472,14 @@ Twinkle.tag.updateSortOrder = function(e) {
 		container.append({ type: "header", id: "tagHeader0", label: "Tags already present" });
 		var subdiv = container.append({ type: "div", id: "tagSubdiv0" });
 		var checkboxes = [];
+		var unCheckedTags = e.target.form.getUnchecked("alreadyPresentArticleTags") || [];
 		Twinkle.tag.alreadyPresentTags.forEach( function(tag) {
 			var description = Twinkle.tag.article.tags[tag];
 			var checkbox =
 				{
 					value: tag,
 					label: "{{" + tag + "}}" + ( description ? (": " + description) : ""),
-					checked: true
+					checked: unCheckedTags.indexOf(tag) === -1
 					//, subgroup: { type: 'input', name: 'removeReason', label: 'Reason', tooltip: 'Enter reason for removing this tag' }
 					// TODO: add option for providing reason for removal
 				};
