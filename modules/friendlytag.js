@@ -86,9 +86,9 @@ Twinkle.tag.callback = function friendlytagCallback() {
 					// flush the DOM of all existing underline spans
 					$form.find('.search-hit').each(function(i,e) {
 						var label_element = e.parentElement;
-						var new_label = Morebits.htmlNode('label', label_element.textContent);
-						new_label.setAttribute('for', label_element.previousElementSibling.id);
-						$(label_element).replaceWith(new_label);
+						// This would convert <label>Hello <span class=search-hit>wo</span>rld</label>
+						// to <label>Hello world</label>
+						label_element.innerHTML = label_element.textContent;
 					});
 					// allCheckboxDivs and allHeaders are defined globally, rather than in
 					// this function, to avoid having to recompute them on every keydown.
