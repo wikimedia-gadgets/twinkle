@@ -612,6 +612,9 @@ Twinkle.tag.updateSortOrder = function(e) {
 	allCheckboxDivs = $workarea.find('[name=articleTags], [name=alreadyPresentArticleTags]').parent();
 	allHeaders = $workarea.find('h5, .quickformDescription');
 
+	// clear search, because the search results are not preserved over mode change
+	e.target.form.quickfilter.value = '';
+
 	// style adjustments
 	$workarea.find("h5").css({ 'font-size': '110%' });
 	$workarea.find("h5:not(:first-child)").css({ 'margin-top': '1em' });
