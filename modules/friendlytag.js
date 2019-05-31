@@ -252,6 +252,17 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 		}
 
+		// Add status text node after Submit button
+		var statusNode = document.createElement('small');
+		statusNode.id = 'tw-tag-status';
+		Twinkle.tag.status = {
+			// initial state; defined like this because these need to be available for reference
+			// in the click event handler
+			numAdded: 0,
+			numRemoved: 0
+		};
+		$(Window.buttons[0]).after(statusNode);
+
 		// fake a change event on the sort dropdown, to initialize the tag list
 		var evt = document.createEvent("Event");
 		evt.initEvent("change", true, true);
@@ -268,10 +279,7 @@ var allCheckboxDivs, allHeaders;
 
 Twinkle.tag.updateSortOrder = function(e) {
 	var sortorder = e.target.value;
-	Twinkle.tag.checkedTags = e.target.form.getChecked("articleTags");
-	if (!Twinkle.tag.checkedTags) {
-		Twinkle.tag.checkedTags = [];
-	}
+	Twinkle.tag.checkedTags = e.target.form.getChecked("articleTags") || [];
 
 	var container = new Morebits.quickForm.element({ type: "fragment" });
 
@@ -523,13 +531,14 @@ Twinkle.tag.updateSortOrder = function(e) {
 		container.append({ type: "header", id: "tagHeader0", label: "Tags already present" });
 		var subdiv = container.append({ type: "div", id: "tagSubdiv0" });
 		var checkboxes = [];
+		var unCheckedTags = e.target.form.getUnchecked("alreadyPresentArticleTags") || [];
 		Twinkle.tag.alreadyPresentTags.forEach( function(tag) {
 			var description = Twinkle.tag.article.tags[tag];
 			var checkbox =
 				{
 					value: tag,
 					label: "{{" + tag + "}}" + ( description ? (": " + description) : ""),
-					checked: true
+					checked: unCheckedTags.indexOf(tag) === -1
 					//, subgroup: { type: 'input', name: 'removeReason', label: 'Reason', tooltip: 'Enter reason for removing this tag' }
 					// TODO: add option for providing reason for removal
 				};
@@ -625,6 +634,24 @@ Twinkle.tag.updateSortOrder = function(e) {
 	if (alreadyPresentTags) {
 		alreadyPresentTags.forEach(generateLinks);
 	}
+
+	// tally tags added/removed, update statusNode text
+	var statusNode = document.getElementById('tw-tag-status');
+	$('[name=articleTags], [name=alreadyPresentArticleTags]').click(function() {
+		if (this.name === 'articleTags') {
+			if (this.checked) Twinkle.tag.status.numAdded++;
+			else Twinkle.tag.status.numAdded--;
+		} else if (this.name === 'alreadyPresentArticleTags') {
+			if (this.checked) Twinkle.tag.status.numRemoved--;
+			else Twinkle.tag.status.numRemoved++;
+		}
+
+		var firstPart = 'Adding ' + Twinkle.tag.status.numAdded + ' tag' + (Twinkle.tag.status.numAdded > 1 ? 's' : '');
+		var secondPart = 'Removing ' + Twinkle.tag.status.numRemoved + ' tag' + (Twinkle.tag.status.numRemoved > 1 ? 's' : '');
+		statusNode.textContent =
+			( Twinkle.tag.status.numAdded ? '  ' + firstPart : '' ) +
+			( Twinkle.tag.status.numRemoved ? (Twinkle.tag.status.numAdded ? '; ' : '  ') + secondPart : '' );
+	});
 };
 
 /**
