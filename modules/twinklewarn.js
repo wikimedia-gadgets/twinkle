@@ -83,7 +83,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	var main_group = main_select.append( {
 			type: 'select',
 			name: 'main_group',
-			event:Twinkle.warn.callback.change_category
+			event: Twinkle.warn.callback.change_category
 		} );
 
 	var defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'), 10);
@@ -131,7 +131,9 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	// We must init the first choice (General Note);
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
-	result.main_group.dispatchEvent( evt );
+	mw.loader.using('jquery.chosen').then(function() {
+		result.main_group.dispatchEvent( evt );
+	});
 };
 
 // This is all the messages that might be dispatched by the code
@@ -1071,6 +1073,8 @@ Twinkle.warn.prev_article = null;
 Twinkle.warn.prev_reason = null;
 
 Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCategory(e) {
+	$("select[name=sub_group]").chosen("destroy");
+
 	var value = e.target.value;
 	var sub_group = e.target.root.sub_group;
 	sub_group.main_group = value;
@@ -1117,7 +1121,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			// Slice out leading uw- from the menu display
 			var elem = new Morebits.quickForm.element( {
 				type: 'option',
-				label: (value === 'custom' ? "{{" + key + "}}" : key.slice(3)) + level + ": " + (level ? itemProperties[value].label : itemProperties.label),
+				label: "{{" + key + level + "}}: " + (level ? itemProperties[value].label : itemProperties.label),
 				value: key + level,
 				selected: selected
 			} );
@@ -1146,6 +1150,11 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			createEntries( groupContents, optgroup, false );
 		} );
 	}
+
+	$('select[name=sub_group]').chosen({search_contains: true});
+
+	// Limit the max height of select dropdown to prevent dialog box from becoming scrollable
+	$('.chosen-results').css({'overflow': 'auto', 'max-height': '180px'});
 
 	// clear overridden label on article textbox
 	Morebits.quickForm.setElementTooltipVisibility(e.target.root.article, true);
