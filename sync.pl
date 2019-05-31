@@ -187,13 +187,11 @@ sub buildEditSummary {
     my $validC = $valid->stderr();
     if (eof $validC) {
       print "$1\n";
-      my $newLog = $repo->run(log => '--oneline', '--no-color', "$1..HEAD", $file);
+      my $newLog = $repo->run(log => '--oneline', '--no-merges', '--no-color', "$1..HEAD", $file);
       open my $nl, '<', \$newLog or die $ERRNO;
       while (<$nl>) {
 	chomp;
 	my @arr = split / /, $_, 2;
-	next if $arr[1] =~ /Merge pull request #\d+/;
-
 	if ($arr[1] =~ /(\S+(?:\.(?:js|css))?) ?[:|-] ?(.+)/) {
 	  my $fixPer = $2;
 	  $fixPer =~ s/\.$//; # Just in case
