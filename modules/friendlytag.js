@@ -207,6 +207,17 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 		}
 
+		// Add status text node after Submit button
+		var statusNode = document.createElement('small');
+		statusNode.id = 'tw-tag-status';
+		Twinkle.tag.status = {
+			// initial state; defined like this because these need to be available for reference
+			// in the click event handler
+			numAdded: 0,
+			numRemoved: 0
+		};
+		$(Window.buttons[0]).after(statusNode);
+
 		// fake a change event on the sort dropdown, to initialize the tag list
 		var evt = document.createEvent("Event");
 		evt.initEvent("change", true, true);
@@ -568,6 +579,24 @@ Twinkle.tag.updateSortOrder = function(e) {
 	if (alreadyPresentTags) {
 		alreadyPresentTags.forEach(generateLinks);
 	}
+
+	// tally tags added/removed, update statusNode text
+	var statusNode = document.getElementById('tw-tag-status');
+	$('[name=articleTags], [name=alreadyPresentArticleTags]').click(function() {
+		if (this.name === 'articleTags') {
+			if (this.checked) Twinkle.tag.status.numAdded++;
+			else Twinkle.tag.status.numAdded--;
+		} else if (this.name === 'alreadyPresentArticleTags') {
+			if (this.checked) Twinkle.tag.status.numRemoved--;
+			else Twinkle.tag.status.numRemoved++;
+		}
+
+		var firstPart = 'Adding ' + Twinkle.tag.status.numAdded + ' tag' + (Twinkle.tag.status.numAdded > 1 ? 's' : '');
+		var secondPart = 'Removing ' + Twinkle.tag.status.numRemoved + ' tag' + (Twinkle.tag.status.numRemoved > 1 ? 's' : '');
+		statusNode.textContent =
+			( Twinkle.tag.status.numAdded ? '  ' + firstPart : '' ) +
+			( Twinkle.tag.status.numRemoved ? (Twinkle.tag.status.numAdded ? '; ' : '  ') + secondPart : '' );
+	});
 };
 
 /**
