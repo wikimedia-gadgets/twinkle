@@ -616,8 +616,8 @@ Twinkle.warn.messages = {
 					summary: "Caution: Removing {{blp prod}} templates"
 				},
 				level3: {
-					label: "Removing {{blpprod}} templates",
-					summary: "Warning: Removing {{blpprod}} templates"
+					label: "Removing {{blp prod}} templates",
+					summary: "Warning: Removing {{blp prod}} templates"
 				},
 				level4: {
 					label: "Removing {{blp prod}} templates",
