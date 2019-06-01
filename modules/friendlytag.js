@@ -610,7 +610,12 @@ Twinkle.tag.updateSortOrder = function(e) {
 	// append any custom tags
 	if (Twinkle.getFriendlyPref('customTagList').length) {
 		container.append({ type: 'header', label: 'Custom tags' });
-		container.append({ type: 'checkbox', name: 'articleTags', list: Twinkle.getFriendlyPref('customTagList') });
+		container.append({ type: 'checkbox', name: 'articleTags',
+			list: Twinkle.getFriendlyPref('customTagList').map(function(el) {
+				el.checked = Twinkle.tag.checkedTags.indexOf(el.value) !== -1;
+				return el;
+			})
+		});
 	}
 
 	var $workarea = $(e.target.form).find("div#tagWorkArea");
