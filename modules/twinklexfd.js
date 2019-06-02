@@ -254,12 +254,9 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		work_area = work_area.render();
 		old_area.parentNode.replaceChild( work_area, old_area );
 
-		// TODO: Add to the gadget definition if used elsewhere
-		mw.loader.using('jquery.chosen').then(function chosenInit() {
-			$(work_area).find('[name=delsort]')
-				.attr('data-placeholder', 'Select delsort pages')
-				.chosen({width: "100%"});
-		});
+		$(work_area).find('[name=delsort]')
+			.attr('data-placeholder', 'Select delsort pages')
+			.chosen({width: "100%"});
 
 		break;
 	case 'tfd':

@@ -131,9 +131,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	// We must init the first choice (General Note);
 	var evt = document.createEvent( "Event" );
 	evt.initEvent( 'change', true, true );
-	mw.loader.using('jquery.chosen').then(function() {
-		result.main_group.dispatchEvent( evt );
-	});
+	result.main_group.dispatchEvent( evt );
 };
 
 // This is all the messages that might be dispatched by the code
