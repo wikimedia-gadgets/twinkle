@@ -1326,7 +1326,7 @@ Twinkle.speedy.callbacks = {
 			// Otherwise open the talk page directly
 			if (params.warnUser) {
 				thispage.setCallbackParameters(params);
-				thispage.lookupCreator(Twinkle.speedy.callbacks.noteToCreator);
+				thispage.lookupCreation(Twinkle.speedy.callbacks.noteToCreator);
 			}
 		},
 		deleteTalk: function( params ) {
@@ -1511,7 +1511,7 @@ Twinkle.speedy.callbacks = {
 			if (params.usertalk) {
 				var thispage = new Morebits.wiki.page(Morebits.pageNameNorm);
 				thispage.setCallbackParameters(params);
-				thispage.lookupCreator(Twinkle.speedy.callbacks.noteToCreator);
+				thispage.lookupCreation(Twinkle.speedy.callbacks.noteToCreator);
 			}
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
 			else if (params.lognomination) {

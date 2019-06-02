@@ -605,7 +605,7 @@ Twinkle.xfd.callbacks = {
 		if (venue === "ffd") {
 			// Fetch the uploader
 			var page = new Morebits.wiki.page(mw.config.get('wgPageName'));
-			page.lookupCreator(function() {
+			page.lookupCreation(function() {
 				params.uploader = page.getCreator();
 				Twinkle.xfd.callbacks.showPreview(form, venue, params);
 			});
@@ -715,7 +715,7 @@ Twinkle.xfd.callbacks = {
 			if (params.usertalk) {
 				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				thispage.setCallbackParameters(params);
-				thispage.lookupCreator(Twinkle.xfd.callbacks.afd.userNotification);
+				thispage.lookupCreation(Twinkle.xfd.callbacks.afd.userNotification);
 			}
 
 			// List at deletion sorting pages
@@ -950,7 +950,7 @@ Twinkle.xfd.callbacks = {
 			if (apiobj.params.usertalk) {
 				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				thispage.setCallbackParameters(apiobj.params);
-				thispage.lookupCreator(Twinkle.xfd.callbacks.mfd.userNotification);
+				thispage.lookupCreation(Twinkle.xfd.callbacks.mfd.userNotification);
 			}
 		},
 		taggingPage: function(pageobj) {
@@ -1036,7 +1036,7 @@ Twinkle.xfd.callbacks = {
 
 	ffd: {
 		main: function(pageobj) {
-			// this is coming in from lookupCreator...!
+			// this is coming in from lookupCreation...!
 			var params = pageobj.getCallbackParameters();
 			var initialContrib = pageobj.getCreator();
 			params.uploader = initialContrib;
@@ -1279,7 +1279,7 @@ Twinkle.xfd.callbacks = {
 			if (params.usertalk || params.relatedpage) {
 				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				thispage.setCallbackParameters(params);
-				thispage.lookupCreator(Twinkle.xfd.callbacks.rfd.sendNotifications);
+				thispage.lookupCreation(Twinkle.xfd.callbacks.rfd.sendNotifications);
 			}
 		},
 		taggingRedirect: function(pageobj) {
@@ -1492,7 +1492,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			}
 			involvedpages.forEach(function(page) {
 				page.setCallbackParameters(params);
-				page.lookupCreator(function(innerpage) {
+				page.lookupCreation(function(innerpage) {
 					var username = innerpage.getCreator();
 					if (seenusers.indexOf(username) === -1) {
 						seenusers.push(username);
@@ -1540,7 +1540,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		// Contributor specific edits
 		wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 		wikipedia_page.setCallbackParameters(params);
-		wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.ffd.main);
+		wikipedia_page.lookupCreation(Twinkle.xfd.callbacks.ffd.main);
 
 		Morebits.wiki.removeCheckpoint();
 		break;
@@ -1585,7 +1585,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		if (usertalk) {
 			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.cfd.userNotification);
+			wikipedia_page.lookupCreation(Twinkle.xfd.callbacks.cfd.userNotification);
 		}
 
 		Morebits.wiki.removeCheckpoint();
