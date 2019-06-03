@@ -867,7 +867,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Unsourced content', value: 'uw-ucblock' },
 			{ label: 'Vandalism', value: 'uw-vblock' },
 			{ label: 'Vandalism-only account', value: 'uw-voablock' }
-		],
+		]
 	},
 	{
 		label: 'Extended reasons',

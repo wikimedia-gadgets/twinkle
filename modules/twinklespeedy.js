@@ -72,7 +72,7 @@ Twinkle.speedy.mode = {
 			mode === Twinkle.speedy.mode.sysopMultipleSubmit ||
 			mode === Twinkle.speedy.mode.userMultipleRadioClick ||
 			mode === Twinkle.speedy.mode.sysopMultipleRadioClick;
-	},
+	}
 };
 
 // Prepares the speedy deletion dialog and displays it
@@ -1090,7 +1090,7 @@ Twinkle.speedy.redirectList = [
 		value: 'redirnone',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		hideWhenMultiple: true
-	},
+	}
 ];
 
 Twinkle.speedy.normalizeHash = {

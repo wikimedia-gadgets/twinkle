@@ -336,7 +336,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 					type: 'input',
 					label: 'Name of article: ',
 					tooltip: 'Name of article to be expanded from, without the interwiki prefix'
-				},
+				}
 				];
 				break;
 			case 'Expert needed':
@@ -1202,7 +1202,7 @@ Twinkle.tag.file.qualityList = [
 			label: 'Reason: ',
 			tooltip: 'Enter the reason why the diagram is disputed (required)'
 		}
-	},
+	}
 ];
 
 Twinkle.tag.file.replacementList = [

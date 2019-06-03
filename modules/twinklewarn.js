@@ -217,7 +217,7 @@ Twinkle.warn.messages = {
 					label: 'Generic warning (for template series missing level 4)',
 					summary: 'Final warning notice'
 				}
-			},
+			}
 		},
 		'Behavior in articles': {
 			'uw-biog': {
@@ -429,7 +429,7 @@ Twinkle.warn.messages = {
 					label: 'Addition of unsourced or improperly cited material',
 					summary: 'Final warning: Addition of unsourced or improperly cited material'
 				}
-			},
+			}
 		},
 		'Promotions and spam': {
 			'uw-advert': {
@@ -511,7 +511,7 @@ Twinkle.warn.messages = {
 					label: 'Adding spam links',
 					summary: 'Only warning: Adding spam links'
 				}
-			},
+			}
 		},
 		'Behavior towards other editors': {
 			'uw-agf': {
@@ -581,7 +581,7 @@ Twinkle.warn.messages = {
 					label: 'Improper use of warning or blocking template',
 					summary: 'Caution: Improper use of warning or blocking template'
 				}
-			},
+			}
 		},
 		'Removal of deletion tags': {
 			'uw-afd': {
@@ -655,7 +655,7 @@ Twinkle.warn.messages = {
 					label: 'Removing speedy deletion tags',
 					summary: 'Final warning: Removing speedy deletion tags'
 				}
-			},
+			}
 		},
 		'Other': {
 			'uw-attempt': {

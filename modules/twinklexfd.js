@@ -595,7 +595,7 @@ Twinkle.xfd.callbacks = {
 	preview: function(form) {
 		var venue = form.category.value;
 		var params = {
-			reason: form.xfdreason.value,
+			reason: form.xfdreason.value
 		};
 
 		if (form.xfdcat) {
