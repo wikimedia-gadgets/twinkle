@@ -23,4 +23,3 @@
 		"key-spacing": ["error", {"singleLine": {"beforeColon": false, "afterColon": true}}],
 		"keyword-spacing": ["error", { "after": true , "before": true}],
 		"linebreak-style": ["error", "unix"],
-		"no-array-constructor": "error",
