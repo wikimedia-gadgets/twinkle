@@ -154,7 +154,7 @@ mw.loader.using('jquery.ui.dialog', function() {
 							var page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 							page.setCallbackParameters({
 								newText: $('#message').val()
-								});
+							});
 							Twinkle.morebitsTest.setPageOptions(page);
 							page.load(Twinkle.morebitsTest.loadCallbackReplace);
 						}

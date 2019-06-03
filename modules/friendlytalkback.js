@@ -36,41 +36,41 @@ Twinkle.talkback.callback = function() {
 	var form = new Morebits.quickForm(callback_evaluate);
 
 	form.append({ type: 'radio', name: 'tbtarget',
-				list: [
-					{
-						label: 'Talkback: my talk page',
-						value: 'mytalk',
-						checked: 'true'
-					},
-					{
-						label: 'Talkback: other user talk page',
-						value: 'usertalk'
-					},
-					{
-						label: 'Talkback: other page',
-						value: 'other'
-					},
-					{
-						label: '"Please see"',
-						value: 'see'
-					},
-					{
-						label: 'Noticeboard notification',
-						value: 'notice'
-					},
-					{
-						label: "\"You've got mail\"",
-						value: 'mail'
-					}
-				],
-				event: callback_change_target
-			});
+		list: [
+			{
+				label: 'Talkback: my talk page',
+				value: 'mytalk',
+				checked: 'true'
+			},
+			{
+				label: 'Talkback: other user talk page',
+				value: 'usertalk'
+			},
+			{
+				label: 'Talkback: other page',
+				value: 'other'
+			},
+			{
+				label: '"Please see"',
+				value: 'see'
+			},
+			{
+				label: 'Noticeboard notification',
+				value: 'notice'
+			},
+			{
+				label: "\"You've got mail\"",
+				value: 'mail'
+			}
+		],
+		event: callback_change_target
+	});
 
 	form.append({
-			type: 'field',
-			label: 'Work area',
-			name: 'work_area'
-		});
+		type: 'field',
+		label: 'Work area',
+		name: 'work_area'
+	});
 
 	form.append({ type: 'submit' });
 
@@ -139,10 +139,10 @@ var callback_change_target = function(e) {
 	}
 
 	var work_area = new Morebits.quickForm.element({
-			type: 'field',
-			label: 'Talkback information',
-			name: 'work_area'
-		});
+		type: 'field',
+		label: 'Talkback information',
+		name: 'work_area'
+	});
 
 	switch (value) {
 		case 'mytalk':
@@ -155,12 +155,12 @@ var callback_change_target = function(e) {
 				id: 'twinkle-talkback-optout-message'
 			});
 			work_area.append({
-					type: 'input',
-					name: 'section',
-					label: 'Linked section (optional)',
-					tooltip: 'The section heading on your talk page where you left a message. Leave empty for no section to be linked.',
-					value: prev_section
-				});
+				type: 'input',
+				name: 'section',
+				label: 'Linked section (optional)',
+				tooltip: 'The section heading on your talk page where you left a message. Leave empty for no section to be linked.',
+				value: prev_section
+			});
 			break;
 		case 'usertalk':
 			work_area.append({
@@ -170,90 +170,90 @@ var callback_change_target = function(e) {
 				id: 'twinkle-talkback-optout-message'
 			});
 			work_area.append({
-					type: 'input',
-					name: 'page',
-					label: 'User',
-					tooltip: 'The username of the user on whose talk page you left a message.',
-					value: prev_page
-				});
+				type: 'input',
+				name: 'page',
+				label: 'User',
+				tooltip: 'The username of the user on whose talk page you left a message.',
+				value: prev_page
+			});
 
 			work_area.append({
-					type: 'input',
-					name: 'section',
-					label: 'Linked section (optional)',
-					tooltip: 'The section heading on the page where you left a message. Leave empty for no section to be linked.',
-					value: prev_section
-				});
+				type: 'input',
+				name: 'section',
+				label: 'Linked section (optional)',
+				tooltip: 'The section heading on the page where you left a message. Leave empty for no section to be linked.',
+				value: prev_section
+			});
 			break;
 		case 'notice':
 			var noticeboard = work_area.append({
-					type: 'select',
-					name: 'noticeboard',
-					label: 'Noticeboard:',
-					event: function(e) {
-						if (e.target.value === 'afchd') {
-							Morebits.quickForm.overrideElementLabel(e.target.form.section, 'Title of draft (excluding the prefix): ');
-							Morebits.quickForm.setElementTooltipVisibility(e.target.form.section, false);
-						} else {
-							Morebits.quickForm.resetElementLabel(e.target.form.section);
-							Morebits.quickForm.setElementTooltipVisibility(e.target.form.section, true);
-						}
+				type: 'select',
+				name: 'noticeboard',
+				label: 'Noticeboard:',
+				event: function(e) {
+					if (e.target.value === 'afchd') {
+						Morebits.quickForm.overrideElementLabel(e.target.form.section, 'Title of draft (excluding the prefix): ');
+						Morebits.quickForm.setElementTooltipVisibility(e.target.form.section, false);
+					} else {
+						Morebits.quickForm.resetElementLabel(e.target.form.section);
+						Morebits.quickForm.setElementTooltipVisibility(e.target.form.section, true);
 					}
-				});
+				}
+			});
 			noticeboard.append({
-					type: 'option',
-					label: "WP:AN (Administrators' noticeboard)",
-					value: 'an'
-				});
+				type: 'option',
+				label: "WP:AN (Administrators' noticeboard)",
+				value: 'an'
+			});
 			noticeboard.append({
-					type: 'option',
-					label: "WP:AN3 (Administrators' noticeboard/Edit warring)",
-					value: 'an3'
-				});
+				type: 'option',
+				label: "WP:AN3 (Administrators' noticeboard/Edit warring)",
+				value: 'an3'
+			});
 			noticeboard.append({
-					type: 'option',
-					label: "WP:ANI (Administrators' noticeboard/Incidents)",
-					selected: true,
-					value: 'ani'
-				});
+				type: 'option',
+				label: "WP:ANI (Administrators' noticeboard/Incidents)",
+				selected: true,
+				value: 'ani'
+			});
 			// let's keep AN and its cousins at the top
 			noticeboard.append({
-					type: 'option',
-					label: 'WP:AFCHD (Articles for creation/Help desk)',
-					value: 'afchd'
-				});
+				type: 'option',
+				label: 'WP:AFCHD (Articles for creation/Help desk)',
+				value: 'afchd'
+			});
 			noticeboard.append({
-					type: 'option',
-					label: 'WP:COIN (Conflict of interest noticeboard)',
-					value: 'coin'
-				});
+				type: 'option',
+				label: 'WP:COIN (Conflict of interest noticeboard)',
+				value: 'coin'
+			});
 			noticeboard.append({
-					type: 'option',
-					label: 'WP:DRN (Dispute resolution noticeboard)',
-					value: 'drn'
-				});
+				type: 'option',
+				label: 'WP:DRN (Dispute resolution noticeboard)',
+				value: 'drn'
+			});
 			noticeboard.append({
-					type: 'option',
-					label: 'WP:HD (Help desk)',
-					value: 'hd'
-				});
+				type: 'option',
+				label: 'WP:HD (Help desk)',
+				value: 'hd'
+			});
 			noticeboard.append({
-					type: 'option',
-					label: 'WP:OTRS/N (OTRS noticeboard)',
-					value: 'otrs'
-				});
+				type: 'option',
+				label: 'WP:OTRS/N (OTRS noticeboard)',
+				value: 'otrs'
+			});
 			noticeboard.append({
-					type: 'option',
-					label: 'WP:THQ (Teahouse question forum)',
-					value: 'th'
-				});
+				type: 'option',
+				label: 'WP:THQ (Teahouse question forum)',
+				value: 'th'
+			});
 			work_area.append({
-					type: 'input',
-					name: 'section',
-					label: 'Linked thread',
-					tooltip: 'The heading of the relevant thread on the noticeboard page.',
-					value: prev_section
-				});
+				type: 'input',
+				name: 'section',
+				label: 'Linked thread',
+				tooltip: 'The heading of the relevant thread on the noticeboard page.',
+				value: prev_section
+			});
 			break;
 		case 'other':
 			work_area.append({
@@ -263,44 +263,44 @@ var callback_change_target = function(e) {
 				id: 'twinkle-talkback-optout-message'
 			});
 			work_area.append({
-					type: 'input',
-					name: 'page',
-					label: 'Full page name',
-					tooltip: "The full page name where you left the message. For example: 'Wikipedia talk:Twinkle'.",
-					value: prev_page
-				});
+				type: 'input',
+				name: 'page',
+				label: 'Full page name',
+				tooltip: "The full page name where you left the message. For example: 'Wikipedia talk:Twinkle'.",
+				value: prev_page
+			});
 
 			work_area.append({
-					type: 'input',
-					name: 'section',
-					label: 'Linked section (optional)',
-					tooltip: 'The section heading on the page where you left a message. Leave empty for no section to be linked.',
-					value: prev_section
-				});
+				type: 'input',
+				name: 'section',
+				label: 'Linked section (optional)',
+				tooltip: 'The section heading on the page where you left a message. Leave empty for no section to be linked.',
+				value: prev_section
+			});
 			break;
 		case 'mail':
 			work_area.append({
-					type: 'input',
-					name: 'section',
-					label: 'Subject of email (optional)',
-					tooltip: 'The subject line of the email you sent.'
-				});
+				type: 'input',
+				name: 'section',
+				label: 'Subject of email (optional)',
+				tooltip: 'The subject line of the email you sent.'
+			});
 			break;
 		case 'see':
 			work_area.append({
-					type: 'input',
-					name: 'page',
-					label: 'Full page name',
-					tooltip: "The full page name of where the discussion is being held. For example: 'Wikipedia talk:Twinkle'.",
-					value: prev_page
-				});
+				type: 'input',
+				name: 'page',
+				label: 'Full page name',
+				tooltip: "The full page name of where the discussion is being held. For example: 'Wikipedia talk:Twinkle'.",
+				value: prev_page
+			});
 			work_area.append({
-					type: 'input',
-					name: 'section',
-					label: 'Linked section (optional)',
-					tooltip: "The section heading where the discussion is being held. For example: 'Merge proposal'.",
-					value: prev_section
-				});
+				type: 'input',
+				name: 'section',
+				label: 'Linked section (optional)',
+				tooltip: "The section heading where the discussion is being held. For example: 'Merge proposal'.",
+				value: prev_section
+			});
 			break;
 	}
 

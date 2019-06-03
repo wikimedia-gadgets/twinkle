@@ -38,78 +38,78 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 
 	var form = new Morebits.quickForm(Twinkle.batchdelete.callback.evaluate);
 	form.append({
-			type: 'checkbox',
-			list: [
-				{
-					label: 'Delete pages',
-					name: 'delete_page',
-					value: 'delete',
-					checked: true,
-					subgroup: {
-						type: 'checkbox',
-						list: [
-							{
-								label: 'Delete associated talk pages (except user talk pages)',
-								name: 'delete_talk',
-								value: 'delete_talk',
-								checked: true
-							},
-							{
-								label: 'Delete redirects to deleted pages',
-								name: 'delete_redirects',
-								value: 'delete_redirects',
-								checked: true
-							},
-							{
-								label: 'Delete subpages of deleted pages',
-								name: 'delete_subpages',
-								value: 'delete_subpages',
-								checked: false,
-								event: Twinkle.batchdelete.callback.toggleSubpages,
-								subgroup: {
-									type: 'checkbox',
-									list: [
-										{
-											label: 'Delete talk pages of deleted subpages',
-											name: 'delete_subpage_talks',
-											value: 'delete_subpage_talks'
-										},
-										{
-											label: 'Delete redirects to deleted subpages',
-											name: 'delete_subpage_redirects',
-											value: 'delete_subpage_redirects'
-										},
-										{
-											label: 'Unlink backlinks to each deleted subpage (in Main and Portal namespaces only)',
-											name: 'unlink_subpages',
-											value: 'unlink_subpages'
-										}
-									]
-								}
+		type: 'checkbox',
+		list: [
+			{
+				label: 'Delete pages',
+				name: 'delete_page',
+				value: 'delete',
+				checked: true,
+				subgroup: {
+					type: 'checkbox',
+					list: [
+						{
+							label: 'Delete associated talk pages (except user talk pages)',
+							name: 'delete_talk',
+							value: 'delete_talk',
+							checked: true
+						},
+						{
+							label: 'Delete redirects to deleted pages',
+							name: 'delete_redirects',
+							value: 'delete_redirects',
+							checked: true
+						},
+						{
+							label: 'Delete subpages of deleted pages',
+							name: 'delete_subpages',
+							value: 'delete_subpages',
+							checked: false,
+							event: Twinkle.batchdelete.callback.toggleSubpages,
+							subgroup: {
+								type: 'checkbox',
+								list: [
+									{
+										label: 'Delete talk pages of deleted subpages',
+										name: 'delete_subpage_talks',
+										value: 'delete_subpage_talks'
+									},
+									{
+										label: 'Delete redirects to deleted subpages',
+										name: 'delete_subpage_redirects',
+										value: 'delete_subpage_redirects'
+									},
+									{
+										label: 'Unlink backlinks to each deleted subpage (in Main and Portal namespaces only)',
+										name: 'unlink_subpages',
+										value: 'unlink_subpages'
+									}
+								]
 							}
-						]
-					}
-				},
-				{
-					label: 'Unlink backlinks to each page (in Main and Portal namespaces only)',
-					name: 'unlink_page',
-					value: 'unlink',
-					checked: false
-				},
-				{
-					label: 'Remove usages of each file (in all namespaces)',
-					name: 'unlink_file',
-					value: 'unlink_file',
-					checked: true
+						}
+					]
 				}
-			]
-		});
+			},
+			{
+				label: 'Unlink backlinks to each page (in Main and Portal namespaces only)',
+				name: 'unlink_page',
+				value: 'unlink',
+				checked: false
+			},
+			{
+				label: 'Remove usages of each file (in all namespaces)',
+				name: 'unlink_file',
+				value: 'unlink_file',
+				checked: true
+			}
+		]
+	});
 	form.append({
-			type: 'input',
-			name: 'reason',
-			label: 'Reason: ',
-			size: 60
-		});
+		type: 'input',
+		name: 'reason',
+		label: 'Reason: ',
+		size: 60
+	});
 
 	var query = {
 		'action': 'query',
@@ -208,32 +208,32 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		var form = apiobj.params.form;
 		form.append({ type: 'header', label: 'Pages to delete' });
 		form.append({
-				type: 'button',
-				label: 'Select All',
-				event: function dBatchSelectAll() {
-					result.getUnchecked('pages').forEach(function(e) {
-						$('input[value="' + e + '"]').click();
-					});
+			type: 'button',
+			label: 'Select All',
+			event: function dBatchSelectAll() {
+				result.getUnchecked('pages').forEach(function(e) {
+					$('input[value="' + e + '"]').click();
+				});
 
-					// Check any unchecked subpages too
-					$('input[name="pages.subpages"]').prop('checked',true);
-				}
-			});
+				// Check any unchecked subpages too
+				$('input[name="pages.subpages"]').prop('checked',true);
+			}
+		});
 		form.append({
-				type: 'button',
-				label: 'Deselect All',
-				event: function dBatchDeselectAll() {
-					result.getChecked('pages').forEach(function(e) {
-						$('input[value="' + e + '"]').click();
-					});
-				}
-			});
+			type: 'button',
+			label: 'Deselect All',
+			event: function dBatchDeselectAll() {
+				result.getChecked('pages').forEach(function(e) {
+					$('input[value="' + e + '"]').click();
+				});
+			}
+		});
 		form.append({
-				type: 'checkbox',
-				name: 'pages',
-				id: 'tw-dbatch-pages',
-				list: $.map(Twinkle.batchdelete.pages, function (e) { return e; })
-			});
+			type: 'checkbox',
+			name: 'pages',
+			id: 'tw-dbatch-pages',
+			list: $.map(Twinkle.batchdelete.pages, function (e) { return e; })
+		});
 		form.append({ type: 'submit' });
 
 		var result = form.render();

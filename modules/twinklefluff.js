@@ -299,15 +299,15 @@ Twinkle.fluff.callbacks = {
 			Morebits.status.warn('Warning', [ 'Latest revision ', Morebits.htmlNode('strong', lastrevid), ' doesn\'t equal our revision ', Morebits.htmlNode('strong', self.params.revid) ]);
 			if (lastuser === self.params.user) {
 				switch (self.params.type) {
-				case 'vand':
-					Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user) , '. As we assume vandalism, we will proceed to revert.' ]);
-					break;
-				case 'agf':
-					Morebits.status.warn('Warning', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user) , '. As we assume good faith, we will stop the revert, as the problem might have been fixed.' ]);
-					return;
-				default:
-					Morebits.status.warn('Notice', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user) , ', but we will stop the revert.' ]);
-					return;
+					case 'vand':
+						Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user) , '. As we assume vandalism, we will proceed to revert.' ]);
+						break;
+					case 'agf':
+						Morebits.status.warn('Warning', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user) , '. As we assume good faith, we will stop the revert, as the problem might have been fixed.' ]);
+						return;
+					default:
+						Morebits.status.warn('Notice', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user) , ', but we will stop the revert.' ]);
+						return;
 				}
 			}
 			else if (self.params.type === 'vand' &&
@@ -324,26 +324,26 @@ Twinkle.fluff.callbacks = {
 
 		if (Twinkle.fluff.whiteList.indexOf(self.params.user) !== -1) {
 			switch (self.params.type) {
-			case 'vand':
-				Morebits.status.info('Info', [ 'Vandalism revert was chosen on ', Morebits.htmlNode('strong', self.params.user), '. As this is a whitelisted bot, we assume you wanted to revert vandalism made by the previous user instead.' ]);
-				index = 2;
-				self.params.user = revs[1].getAttribute('user');
-				break;
-			case 'agf':
-				Morebits.status.warn('Notice', [ 'Good faith revert was chosen on ', Morebits.htmlNode('strong', self.params.user), '. This is a whitelisted bot and thus AGF rollback will not proceed.' ]);
-				return;
-			case 'norm':
-				/* falls through */
-			default:
-				var cont = confirm('Normal revert was chosen, but the most recent edit was made by a whitelisted bot (' + self.params.user + '). Do you want to revert the revision before instead?');
-				if (cont) {
-					Morebits.status.info('Info', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', self.params.user), '. This is a whitelisted bot, and per confirmation, we\'ll revert the previous revision instead.' ]);
+				case 'vand':
+					Morebits.status.info('Info', [ 'Vandalism revert was chosen on ', Morebits.htmlNode('strong', self.params.user), '. As this is a whitelisted bot, we assume you wanted to revert vandalism made by the previous user instead.' ]);
 					index = 2;
 					self.params.user = revs[1].getAttribute('user');
-				} else {
-					Morebits.status.warn('Notice', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', self.params.user), '. This is a whitelisted bot, but per confirmation, revert on selected revision will proceed.' ]);
-				}
-				break;
+					break;
+				case 'agf':
+					Morebits.status.warn('Notice', [ 'Good faith revert was chosen on ', Morebits.htmlNode('strong', self.params.user), '. This is a whitelisted bot and thus AGF rollback will not proceed.' ]);
+					return;
+				case 'norm':
+				/* falls through */
+				default:
+					var cont = confirm('Normal revert was chosen, but the most recent edit was made by a whitelisted bot (' + self.params.user + '). Do you want to revert the revision before instead?');
+					if (cont) {
+						Morebits.status.info('Info', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', self.params.user), '. This is a whitelisted bot, and per confirmation, we\'ll revert the previous revision instead.' ]);
+						index = 2;
+						self.params.user = revs[1].getAttribute('user');
+					} else {
+						Morebits.status.warn('Notice', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', self.params.user), '. This is a whitelisted bot, but per confirmation, revert on selected revision will proceed.' ]);
+					}
+					break;
 			}
 		}
 		var found = false;
@@ -386,29 +386,7 @@ Twinkle.fluff.callbacks = {
 
 		var summary, extra_summary;
 		switch (self.params.type) {
-		case 'agf':
-			extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
-			if (extra_summary === null)
-			{
-				self.statelem.error('Aborted by user.');
-				return;
-			}
-			userHasAlreadyConfirmedAction = true;
-
-			summary = Twinkle.fluff.formatSummary('Reverted [[WP:AGF|good faith]] edits by $USER', self.params.user, extra_summary);
-			break;
-
-		case 'vand':
-
-			summary = 'Reverted ' + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + ' by [[Special:Contributions/' +
-				self.params.user + '|' + self.params.user + ']] ([[User talk:' + self.params.user + '|talk]]) to last revision by ' +
-				self.params.gooduser + Twinkle.getPref('summaryAd');
-			break;
-
-		case 'norm':
-			/* falls through */
-		default:
-			if (Twinkle.getPref('offerReasonOnNormalRevert')) {
+			case 'agf':
 				extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
 				if (extra_summary === null)
 				{
@@ -416,11 +394,33 @@ Twinkle.fluff.callbacks = {
 					return;
 				}
 				userHasAlreadyConfirmedAction = true;
-			}
 
-			summary = Twinkle.fluff.formatSummary('Reverted ' + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') +
+				summary = Twinkle.fluff.formatSummary('Reverted [[WP:AGF|good faith]] edits by $USER', self.params.user, extra_summary);
+				break;
+
+			case 'vand':
+
+				summary = 'Reverted ' + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + ' by [[Special:Contributions/' +
+				self.params.user + '|' + self.params.user + ']] ([[User talk:' + self.params.user + '|talk]]) to last revision by ' +
+				self.params.gooduser + Twinkle.getPref('summaryAd');
+				break;
+
+			case 'norm':
+			/* falls through */
+			default:
+				if (Twinkle.getPref('offerReasonOnNormalRevert')) {
+					extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
+					if (extra_summary === null)
+					{
+						self.statelem.error('Aborted by user.');
+						return;
+					}
+					userHasAlreadyConfirmedAction = true;
+				}
+
+				summary = Twinkle.fluff.formatSummary('Reverted ' + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') +
 				' by $USER', self.params.user, extra_summary);
-			break;
+				break;
 		}
 
 		if (Twinkle.getPref('confirmOnFluff') && !userHasAlreadyConfirmedAction && !confirm('Reverting page: are you sure?')) {
@@ -446,20 +446,20 @@ Twinkle.fluff.callbacks = {
 			};
 
 			switch (Twinkle.getPref('userTalkPageMode')) {
-			case 'tab':
-				window.open(mw.util.wikiScript('index') + '?' + Morebits.queryString.create(query), '_blank');
-				break;
-			case 'blank':
-				window.open(mw.util.wikiScript('index') + '?' + Morebits.queryString.create(query), '_blank',
-					'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800');
-				break;
-			case 'window':
+				case 'tab':
+					window.open(mw.util.wikiScript('index') + '?' + Morebits.queryString.create(query), '_blank');
+					break;
+				case 'blank':
+					window.open(mw.util.wikiScript('index') + '?' + Morebits.queryString.create(query), '_blank',
+						'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800');
+					break;
+				case 'window':
 				/* falls through */
-			default:
-				window.open(mw.util.wikiScript('index') + '?' + Morebits.queryString.create(query),
-					(window.name === 'twinklewarnwindow' ? '_blank' : 'twinklewarnwindow'),
-					'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800');
-				break;
+				default:
+					window.open(mw.util.wikiScript('index') + '?' + Morebits.queryString.create(query),
+						(window.name === 'twinklewarnwindow' ? '_blank' : 'twinklewarnwindow'),
+						'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800');
+					break;
 			}
 		}
 

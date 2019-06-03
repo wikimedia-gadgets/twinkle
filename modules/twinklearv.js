@@ -35,47 +35,47 @@ Twinkle.arv.callback = function (uid) {
 
 	var form = new Morebits.quickForm(Twinkle.arv.callback.evaluate);
 	var categories = form.append({
-			type: 'select',
-			name: 'category',
-			label: 'Select report type: ',
-			event: Twinkle.arv.callback.changeCategory
-		});
+		type: 'select',
+		name: 'category',
+		label: 'Select report type: ',
+		event: Twinkle.arv.callback.changeCategory
+	});
 	categories.append({
-			type: 'option',
-			label: 'Vandalism (WP:AIV)',
-			value: 'aiv'
-		});
+		type: 'option',
+		label: 'Vandalism (WP:AIV)',
+		value: 'aiv'
+	});
 	categories.append({
-			type: 'option',
-			label: 'Username (WP:UAA)',
-			value: 'username'
-		});
+		type: 'option',
+		label: 'Username (WP:UAA)',
+		value: 'username'
+	});
 	categories.append({
-			type: 'option',
-			label: 'Sockpuppeteer (WP:SPI)',
-			value: 'sock'
-		});
+		type: 'option',
+		label: 'Sockpuppeteer (WP:SPI)',
+		value: 'sock'
+	});
 	categories.append({
-			type: 'option',
-			label: 'Sockpuppet (WP:SPI)',
-			value: 'puppet'
-		});
+		type: 'option',
+		label: 'Sockpuppet (WP:SPI)',
+		value: 'puppet'
+	});
 	categories.append({
-			type: 'option',
-			label: 'Edit warring (WP:AN3)',
-			value: 'an3'
-		});
+		type: 'option',
+		label: 'Edit warring (WP:AN3)',
+		value: 'an3'
+	});
 	form.append({
-			type: 'field',
-			label: 'Work area',
-			name: 'work_area'
-		});
+		type: 'field',
+		label: 'Work area',
+		name: 'work_area'
+	});
 	form.append({ type: 'submit' });
 	form.append({
-			type: 'hidden',
-			name: 'uid',
-			value: uid
-		});
+		type: 'hidden',
+		name: 'uid',
+		value: uid
+	});
 
 	var result = form.render();
 	Window.setContent(result);
@@ -94,15 +94,15 @@ Twinkle.arv.callback.changeCategory = function (e) {
 	var work_area = null;
 
 	switch (value) {
-	case 'aiv':
+		case 'aiv':
 		/* falls through */
-	default:
-		work_area = new Morebits.quickForm.element({
+		default:
+			work_area = new Morebits.quickForm.element({
 				type: 'field',
 				label: 'Report user for vandalism',
 				name: 'work_area'
 			});
-		work_area.append({
+			work_area.append({
 				type: 'input',
 				name: 'page',
 				label: 'Primary linked page: ',
@@ -119,7 +119,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					}
 				}
 			});
-		work_area.append({
+			work_area.append({
 				type: 'input',
 				name: 'badid',
 				label: 'Revision ID for target page when vandalised: ',
@@ -132,7 +132,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					root.goodid.disabled = value === '';
 				}
 			});
-		work_area.append({
+			work_area.append({
 				type: 'input',
 				name: 'goodid',
 				label: 'Last good revision ID before vandalism of target page: ',
@@ -140,7 +140,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				value: Morebits.queryString.exists('vanarticlegoodrevid') ? Morebits.queryString.get('vanarticlegoodrevid') : '',
 				disabled: !Morebits.queryString.exists('vanarticle') || Morebits.queryString.exists('vanarticlerevid')
 			});
-		work_area.append({
+			work_area.append({
 				type: 'checkbox',
 				name: 'arvtype',
 				list: [
@@ -167,26 +167,26 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					}
 				]
 			});
-		work_area.append({
+			work_area.append({
 				type: 'textarea',
 				name: 'reason',
 				label: 'Comment: '
 			});
-		work_area = work_area.render();
-		old_area.parentNode.replaceChild(work_area, old_area);
-		break;
-	case 'username':
-		work_area = new Morebits.quickForm.element({
+			work_area = work_area.render();
+			old_area.parentNode.replaceChild(work_area, old_area);
+			break;
+		case 'username':
+			work_area = new Morebits.quickForm.element({
 				type: 'field',
 				label: 'Report username violation',
 				name: 'work_area'
 			});
-		work_area.append ({
+			work_area.append ({
 				type: 'header',
 				label: 'Type(s) of inappropriate username',
 				tooltip: 'Wikipedia does not allow usernames that are misleading, promotional, offensive or disruptive. Domain names and email addresses are likewise prohibited. These criteria apply to both usernames and signatures. Usernames that are inappropriate in another language, or that represent an inappropriate name with misspellings and substitutions, or do so indirectly or by implication, are still considered inappropriate.'
 			});
-		work_area.append({
+			work_area.append({
 				type: 'checkbox',
 				name: 'arvtype',
 				list: [
@@ -217,36 +217,36 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					}
 				]
 			});
-		work_area.append({
+			work_area.append({
 				type: 'textarea',
 				name: 'reason',
 				label: 'Comment:'
 			});
-		work_area = work_area.render();
-		old_area.parentNode.replaceChild(work_area, old_area);
-		break;
+			work_area = work_area.render();
+			old_area.parentNode.replaceChild(work_area, old_area);
+			break;
 
-	case 'puppet':
-		work_area = new Morebits.quickForm.element({
+		case 'puppet':
+			work_area = new Morebits.quickForm.element({
 				type: 'field',
 				label: 'Report suspected sockpuppet',
 				name: 'work_area'
 			});
-		work_area.append(
-			{
-				type: 'input',
-				name: 'sockmaster',
-				label: 'Sockpuppeteer',
-				tooltip: 'The username of the sockpuppeteer (sockmaster) without the User:-prefix'
-			}
-		);
-		work_area.append({
+			work_area.append(
+				{
+					type: 'input',
+					name: 'sockmaster',
+					label: 'Sockpuppeteer',
+					tooltip: 'The username of the sockpuppeteer (sockmaster) without the User:-prefix'
+				}
+			);
+			work_area.append({
 				type: 'textarea',
 				label: 'Evidence:',
 				name: 'evidence',
 				tooltip: 'Enter your evidence. It should make clear that each of these users is likely to be abusing multiple accounts. Usually this means diffs, page histories or other information that justifies why the users are a) the same and b) disruptive. This should purely be evidence and information needed to judge the matter. Avoid all other discussion that is not evidence of sockpuppetry or other multiple account abuse.'
 			});
-		work_area.append({
+			work_area.append({
 				type: 'checkbox',
 				list: [
 					{
@@ -261,31 +261,31 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					}
 				]
 			});
-		work_area = work_area.render();
-		old_area.parentNode.replaceChild(work_area, old_area);
-		break;
-	case 'sock':
-		work_area = new Morebits.quickForm.element({
+			work_area = work_area.render();
+			old_area.parentNode.replaceChild(work_area, old_area);
+			break;
+		case 'sock':
+			work_area = new Morebits.quickForm.element({
 				type: 'field',
 				label: 'Report suspected sockpuppeteer',
 				name: 'work_area'
 			});
-		work_area.append(
-			{
-				type: 'dyninput',
-				name: 'sockpuppet',
-				label: 'Sockpuppets',
-				sublabel: 'Sock: ',
-				tooltip: 'The username of the sockpuppet without the User:-prefix',
-				min: 2
-			});
-		work_area.append({
+			work_area.append(
+				{
+					type: 'dyninput',
+					name: 'sockpuppet',
+					label: 'Sockpuppets',
+					sublabel: 'Sock: ',
+					tooltip: 'The username of the sockpuppet without the User:-prefix',
+					min: 2
+				});
+			work_area.append({
 				type: 'textarea',
 				label: 'Evidence:',
 				name: 'evidence',
 				tooltip: 'Enter your evidence. It should make clear that each of these users is likely to be abusing multiple accounts. Usually this means diffs, page histories or other information that justifies why the users are a) the same and b) disruptive. This should purely be evidence and information needed to judge the matter. Avoid all other discussion that is not evidence of sockpuppetry or other multiple account abuse.'
 			});
-		work_area.append({
+			work_area.append({
 				type: 'checkbox',
 				list: [ {
 					label: 'Request CheckUser evidence',
@@ -297,196 +297,196 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					tooltip: 'Notification is not mandatory. In many cases, especially of chronic sockpuppeteers, notification may be counterproductive. However, especially in less egregious cases involving users who has not been reported before, notification may make the cases fairer and also appear to be fairer in the eyes of the accused. Use your judgment.'
 				} ]
 			});
-		work_area = work_area.render();
-		old_area.parentNode.replaceChild(work_area, old_area);
-        break;
-	case 'an3':
-		work_area = new Morebits.quickForm.element({
-			type: 'field',
-			label: 'Report edit warring',
-			name: 'work_area'
-		});
+			work_area = work_area.render();
+			old_area.parentNode.replaceChild(work_area, old_area);
+			break;
+		case 'an3':
+			work_area = new Morebits.quickForm.element({
+				type: 'field',
+				label: 'Report edit warring',
+				name: 'work_area'
+			});
 
-		work_area.append({
-			type: 'input',
-			name: 'page',
-			label: 'Page',
-			tooltip: 'The page being reported'
-		});
-		work_area.append({
-			type: 'button',
-			name: 'load',
-			label: 'Load',
-			event: function(e) {
-				var root = e.target.form;
-				var value = root.page.value;
-				var uid = root.uid.value;
-				var $diffs = $(root).find('[name=diffs]');
-				$diffs.find('.entry').remove();
+			work_area.append({
+				type: 'input',
+				name: 'page',
+				label: 'Page',
+				tooltip: 'The page being reported'
+			});
+			work_area.append({
+				type: 'button',
+				name: 'load',
+				label: 'Load',
+				event: function(e) {
+					var root = e.target.form;
+					var value = root.page.value;
+					var uid = root.uid.value;
+					var $diffs = $(root).find('[name=diffs]');
+					$diffs.find('.entry').remove();
 
-				var date = new Date();
-				date.setHours(-36); // all since 36 hours
+					var date = new Date();
+					date.setHours(-36); // all since 36 hours
 
-				var api = new mw.Api();
-				api.get({
-					action: 'query',
-					prop: 'revisions',
-					format: 'json',
-					rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-					rvlimit: 500,
-					rvend: date.toISOString(),
-					rvuser: uid,
-					indexpageids: true,
-					redirects: true,
-					titles: value
-				}).done(function(data) {
-					var pageid = data.query.pageids[0];
-					var page = data.query.pages[pageid];
-					if (!page.revisions) {
-						return;
-					}
-					for (var i = 0; i < page.revisions.length; ++i) {
-						var rev = page.revisions[i];
-						var $entry = $('<div/>', {
-							'class': 'entry'
-						});
-						var $input = $('<input/>', {
-							'type': 'checkbox',
-							'name': 's_diffs',
-							'value': rev.revid
-						});
-						$input.data('revinfo',rev);
-						$input.appendTo($entry);
-						$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($diffs);
-					}
-				}).fail(function(data) {
-					console.log('API failed :(', data); // eslint-disable-line no-console
-				});
-				var $warnings = $(root).find('[name=warnings]');
-				$warnings.find('.entry').remove();
-
-				api.get({
-					action: 'query',
-					prop: 'revisions',
-					format: 'json',
-					rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-					rvlimit: 500,
-					rvend: date.toISOString(),
-					rvuser: mw.config.get('wgUserName'),
-					indexpageids: true,
-					redirects: true,
-					titles: 'User talk:' + uid
-				}).done(function(data) {
-					var pageid = data.query.pageids[0];
-					var page = data.query.pages[pageid];
-					if (!page.revisions) {
-						return;
-					}
-					for (var i = 0; i < page.revisions.length; ++i) {
-						var rev = page.revisions[i];
-						var $entry = $('<div/>', {
-							'class': 'entry'
-						});
-						var $input = $('<input/>', {
-							'type': 'checkbox',
-							'name': 's_warnings',
-							'value': rev.revid
-						});
-						$input.data('revinfo',rev);
-						$input.appendTo($entry);
-						$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($warnings);
-					}
-				}).fail(function(data) {
-					console.log('API failed :(', data); // eslint-disable-line no-console
-				});
-
-				var $resolves = $(root).find('[name=resolves]');
-				$resolves.find('.entry').remove();
-
-				var t = new mw.Title(value);
-				var ns = t.getNamespaceId();
-				var talk_page = (new mw.Title(t.getMain(), ns % 2 ? ns : ns + 1)).getPrefixedText();
-
-				api.get({
-					action: 'query',
-					prop: 'revisions',
-					format: 'json',
-					rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-					rvlimit: 500,
-					rvend: date.toISOString(),
-					rvuser: mw.config.get('wgUserName'),
-					indexpageids: true,
-					redirects: true,
-					titles: talk_page
-				}).done(function(data) {
-					var pageid = data.query.pageids[0];
-					var page = data.query.pages[pageid];
-					if (!page.revisions) {
-						return;
-					}
-					for (var i = 0; i < page.revisions.length; ++i) {
-						var rev = page.revisions[i];
-						var $entry = $('<div/>', {
-							'class': 'entry'
-						});
-						var $input = $('<input/>', {
-							'type': 'checkbox',
-							'name': 's_resolves',
-							'value': rev.revid
-						});
-						$input.data('revinfo',rev);
-						$input.appendTo($entry);
-						$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($resolves);
-					}
-
-					// add free form input
-					var $free_entry = $('<div/>', {
-						'class': 'entry'
+					var api = new mw.Api();
+					api.get({
+						action: 'query',
+						prop: 'revisions',
+						format: 'json',
+						rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
+						rvlimit: 500,
+						rvend: date.toISOString(),
+						rvuser: uid,
+						indexpageids: true,
+						redirects: true,
+						titles: value
+					}).done(function(data) {
+						var pageid = data.query.pageids[0];
+						var page = data.query.pages[pageid];
+						if (!page.revisions) {
+							return;
+						}
+						for (var i = 0; i < page.revisions.length; ++i) {
+							var rev = page.revisions[i];
+							var $entry = $('<div/>', {
+								'class': 'entry'
+							});
+							var $input = $('<input/>', {
+								'type': 'checkbox',
+								'name': 's_diffs',
+								'value': rev.revid
+							});
+							$input.data('revinfo',rev);
+							$input.appendTo($entry);
+							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($diffs);
+						}
+					}).fail(function(data) {
+						console.log('API failed :(', data); // eslint-disable-line no-console
 					});
-					var $free_input = $('<input/>', {
-						'type': 'text',
-						'name': 's_resolves_free'
+					var $warnings = $(root).find('[name=warnings]');
+					$warnings.find('.entry').remove();
+
+					api.get({
+						action: 'query',
+						prop: 'revisions',
+						format: 'json',
+						rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
+						rvlimit: 500,
+						rvend: date.toISOString(),
+						rvuser: mw.config.get('wgUserName'),
+						indexpageids: true,
+						redirects: true,
+						titles: 'User talk:' + uid
+					}).done(function(data) {
+						var pageid = data.query.pageids[0];
+						var page = data.query.pages[pageid];
+						if (!page.revisions) {
+							return;
+						}
+						for (var i = 0; i < page.revisions.length; ++i) {
+							var rev = page.revisions[i];
+							var $entry = $('<div/>', {
+								'class': 'entry'
+							});
+							var $input = $('<input/>', {
+								'type': 'checkbox',
+								'name': 's_warnings',
+								'value': rev.revid
+							});
+							$input.data('revinfo',rev);
+							$input.appendTo($entry);
+							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($warnings);
+						}
+					}).fail(function(data) {
+						console.log('API failed :(', data); // eslint-disable-line no-console
 					});
 
-					var $free_label = $('<label/>', {
-						'for': 's_resolves_free',
-						'html': 'Diff to additional discussions: '
+					var $resolves = $(root).find('[name=resolves]');
+					$resolves.find('.entry').remove();
+
+					var t = new mw.Title(value);
+					var ns = t.getNamespaceId();
+					var talk_page = (new mw.Title(t.getMain(), ns % 2 ? ns : ns + 1)).getPrefixedText();
+
+					api.get({
+						action: 'query',
+						prop: 'revisions',
+						format: 'json',
+						rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
+						rvlimit: 500,
+						rvend: date.toISOString(),
+						rvuser: mw.config.get('wgUserName'),
+						indexpageids: true,
+						redirects: true,
+						titles: talk_page
+					}).done(function(data) {
+						var pageid = data.query.pageids[0];
+						var page = data.query.pages[pageid];
+						if (!page.revisions) {
+							return;
+						}
+						for (var i = 0; i < page.revisions.length; ++i) {
+							var rev = page.revisions[i];
+							var $entry = $('<div/>', {
+								'class': 'entry'
+							});
+							var $input = $('<input/>', {
+								'type': 'checkbox',
+								'name': 's_resolves',
+								'value': rev.revid
+							});
+							$input.data('revinfo',rev);
+							$input.appendTo($entry);
+							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($resolves);
+						}
+
+						// add free form input
+						var $free_entry = $('<div/>', {
+							'class': 'entry'
+						});
+						var $free_input = $('<input/>', {
+							'type': 'text',
+							'name': 's_resolves_free'
+						});
+
+						var $free_label = $('<label/>', {
+							'for': 's_resolves_free',
+							'html': 'Diff to additional discussions: '
+						});
+						$free_entry.append($free_label).append($free_input).appendTo($resolves);
+
+					}).fail(function(data) {
+						console.log('API failed :(', data); // eslint-disable-line no-console
 					});
-					$free_entry.append($free_label).append($free_input).appendTo($resolves);
+				}
+			});
+			work_area.append({
+				type: 'field',
+				name: 'diffs',
+				label: 'User\'s reverts',
+				tooltip: 'Select the edits you believe are reverts'
+			});
+			work_area.append({
+				type: 'field',
+				name: 'warnings',
+				label: 'Warnings given to subject',
+				tooltip: 'You must have warned the subject before reporting'
+			});
+			work_area.append({
+				type: 'field',
+				name: 'resolves',
+				label: 'Resolution initiatives',
+				tooltip: 'You should have tried to resolve the issue on the talk page first'
+			});
 
-				}).fail(function(data) {
-					console.log('API failed :(', data); // eslint-disable-line no-console
-				});
-			}
-		});
-		work_area.append({
-			type: 'field',
-			name: 'diffs',
-			label: 'User\'s reverts',
-			tooltip: 'Select the edits you believe are reverts'
-		});
-		work_area.append({
-			type: 'field',
-			name: 'warnings',
-			label: 'Warnings given to subject',
-			tooltip: 'You must have warned the subject before reporting'
-		});
-		work_area.append({
-			type: 'field',
-			name: 'resolves',
-			label: 'Resolution initiatives',
-			tooltip: 'You should have tried to resolve the issue on the talk page first'
-		});
+			work_area.append({
+				type: 'textarea',
+				label: 'Comment:',
+				name: 'comment'
+			});
 
-		work_area.append({
-			type: 'textarea',
-			label: 'Comment:',
-			name: 'comment'
-		});
-
-		work_area = work_area.render();
-		old_area.parentNode.replaceChild(work_area, old_area);
-		break;
+			work_area = work_area.render();
+			old_area.parentNode.replaceChild(work_area, old_area);
+			break;
 	}
 };
 
@@ -513,21 +513,21 @@ Twinkle.arv.callback.evaluate = function(e) {
 			}
 
 			types = types.map(function(v) {
-					switch (v) {
-						case 'final':
-							return 'vandalism after final warning';
-						case 'postblock':
-							return 'vandalism after recent release of block';
-						case 'spambot':
-							return 'account is evidently a spambot or a compromised account';
-						case 'vandalonly':
-							return 'actions evidently indicate a vandalism-only account';
-						case 'promoonly':
-							return 'account is being used only for promotional purposes';
-						default:
-							return 'unknown reason';
-					}
-				}).join('; ');
+				switch (v) {
+					case 'final':
+						return 'vandalism after final warning';
+					case 'postblock':
+						return 'vandalism after recent release of block';
+					case 'spambot':
+						return 'account is evidently a spambot or a compromised account';
+					case 'vandalonly':
+						return 'actions evidently indicate a vandalism-only account';
+					case 'promoonly':
+						return 'account is being used only for promotional purposes';
+					default:
+						return 'unknown reason';
+				}
+			}).join('; ');
 
 
 			if (form.page.value !== '') {
@@ -766,8 +766,8 @@ Twinkle.arv.processSock = function(params) {
 	// prepare the SPI report
 	var text = '\n\n{{subst:SPI report|socksraw=' +
 		params.sockpuppets.map(function(v) {
-				return '* {{' + (mw.util.isIPAddress(v) ? 'checkip' : 'checkuser') + '|1=' + v + '}}';
-			}).join('\n') + '\n|evidence=' + params.evidence + ' \n';
+			return '* {{' + (mw.util.isIPAddress(v) ? 'checkip' : 'checkuser') + '|1=' + v + '}}';
+		}).join('\n') + '\n|evidence=' + params.evidence + ' \n';
 
 	if (params.checkuser) {
 		text += '|checkuser=yes';

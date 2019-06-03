@@ -29,10 +29,10 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 	var form = new Morebits.quickForm(Twinkle.shared.callback.evaluate);
 
 	var div = form.append({
-			type: 'div',
-			id: 'sharedip-templatelist',
-			className: 'morebits-scrollbox'
-		}
+		type: 'div',
+		id: 'sharedip-templatelist',
+		className: 'morebits-scrollbox'
+	}
 	);
 	div.append({ type: 'header', label: 'Shared IP address templates' });
 	div.append({ type: 'radio', name: 'shared', list: Twinkle.shared.standardList,
@@ -44,28 +44,28 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 
 	var org = form.append({ type: 'field', label: 'Fill in other details (optional) and click "Submit"' });
 	org.append({
-			type: 'input',
-			name: 'organization',
-			label: 'IP address owner/operator',
-			disabled: true,
-			tooltip: 'You can optionally enter the name of the organization that owns/operates the IP address.  You can use wikimarkup if necessary.'
-		}
+		type: 'input',
+		name: 'organization',
+		label: 'IP address owner/operator',
+		disabled: true,
+		tooltip: 'You can optionally enter the name of the organization that owns/operates the IP address.  You can use wikimarkup if necessary.'
+	}
 	);
 	org.append({
-			type: 'input',
-			name: 'host',
-			label: 'Host name (optional)',
-			disabled: true,
-			tooltip: 'The host name (for example, proxy.example.com) can be optionally entered here and will be linked by the template.'
-		}
+		type: 'input',
+		name: 'host',
+		label: 'Host name (optional)',
+		disabled: true,
+		tooltip: 'The host name (for example, proxy.example.com) can be optionally entered here and will be linked by the template.'
+	}
 	);
 	org.append({
-			type: 'input',
-			name: 'contact',
-			label: 'Contact information (only if requested)',
-			disabled: true,
-			tooltip: 'You can optionally enter some contact details for the organization.  Use this parameter only if the organization has specifically requested that it be added.  You can use wikimarkup if necessary.'
-		}
+		type: 'input',
+		name: 'contact',
+		label: 'Contact information (only if requested)',
+		disabled: true,
+		tooltip: 'You can optionally enter some contact details for the organization.  Use this parameter only if the organization has specifically requested that it be added.  You can use wikimarkup if necessary.'
+	}
 	);
 
 	form.append({ type: 'submit' });

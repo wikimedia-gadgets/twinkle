@@ -64,23 +64,23 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	});
 
 	field.append({
-			type: 'radio',
-			name: 'prodtype',
-			event: Twinkle.prod.callback.prodtypechanged,
-			list: [
-				{
-					label: 'PROD (proposed deletion)',
-					value: 'prod',
-					checked: true,
-					tooltip: 'Normal proposed deletion, per [[WP:PROD]]'
-				},
-				{
-					label: 'BLP PROD (proposed deletion of unsourced BLPs)',
-					value: 'prodblp',
-					tooltip: 'Proposed deletion of new, completely unsourced biographies of living persons, per [[WP:BLPPROD]]'
-				}
-			]
-		});
+		type: 'radio',
+		name: 'prodtype',
+		event: Twinkle.prod.callback.prodtypechanged,
+		list: [
+			{
+				label: 'PROD (proposed deletion)',
+				value: 'prod',
+				checked: true,
+				tooltip: 'Normal proposed deletion, per [[WP:PROD]]'
+			},
+			{
+				label: 'BLP PROD (proposed deletion of unsourced BLPs)',
+				value: 'prodblp',
+				tooltip: 'Proposed deletion of new, completely unsourced biographies of living persons, per [[WP:BLPPROD]]'
+			}
+		]
+	});
 
 	// Placeholder fieldset to be replaced in Twinkle.prod.callback.prodtypechanged
 	form.append({
@@ -112,31 +112,31 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 Twinkle.prod.callback.prodtypechanged = function(event) {
 	// prepare frame for prod type dependant controls
 	var field = new Morebits.quickForm.element({
-			type: 'field',
-			label: 'Parameters',
-			name: 'parameters'
-		});
+		type: 'field',
+		label: 'Parameters',
+		name: 'parameters'
+	});
 	// create prod type dependant controls
 	switch (event.target.values) {
 		case 'prod':
 			field.append({
-					type: 'checkbox',
-					list: [
-						{
-							label: 'Notify page creator if possible',
-							value: 'notify',
-							name: 'notify',
-							tooltip: "A notification template will be placed on the creator's talk page if this is true.",
-							checked: true
-						}
-					]
-				});
+				type: 'checkbox',
+				list: [
+					{
+						label: 'Notify page creator if possible',
+						value: 'notify',
+						name: 'notify',
+						tooltip: "A notification template will be placed on the creator's talk page if this is true.",
+						checked: true
+					}
+				]
+			});
 			field.append({
-					type: 'textarea',
-					name: 'reason',
-					label: 'Reason for proposed deletion:',
-					value: Twinkle.prod.defaultReason
-				});
+				type: 'textarea',
+				name: 'reason',
+				label: 'Reason for proposed deletion:',
+				value: Twinkle.prod.defaultReason
+			});
 			break;
 
 		case 'prodblp':
@@ -146,18 +146,18 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 			}
 
 			field.append({
-					type: 'checkbox',
-					list: [
-						{
-							label: 'Notify page creator if possible',
-							value: 'notify',
-							name: 'notify',
-							tooltip: 'Creator of article has to be notified.',
-							checked: true,
-							disabled: true
-						}
-					]
-				});
+				type: 'checkbox',
+				list: [
+					{
+						label: 'Notify page creator if possible',
+						value: 'notify',
+						name: 'notify',
+						tooltip: 'Creator of article has to be notified.',
+						checked: true,
+						disabled: true
+					}
+				]
+			});
 			// temp warning, can be removed down the line once BLPPROD is more established. Amalthea, May 2010.
 			var boldtext = document.createElement('b');
 			boldtext.appendChild(document.createTextNode('Please note that only unsourced biographies of living persons are eligible for this tag, narrowly construed.'));

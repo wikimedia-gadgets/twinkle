@@ -41,28 +41,28 @@ Twinkle.block.callback = function twinkleblockCallback() {
 
 	var form = new Morebits.quickForm(Twinkle.block.callback.evaluate);
 	var actionfield = form.append({
-			type: 'field',
-			label: 'Type of action'
-		});
+		type: 'field',
+		label: 'Type of action'
+	});
 	actionfield.append({
-			type: 'checkbox',
-			name: 'actiontype',
-			event: Twinkle.block.callback.change_action,
-			list: [
-				{
-					label: 'Block user',
-					value: 'block',
-					tooltip: 'Block the relevant user with given options.',
-					checked: true
-				},
-				{
-					label: 'Add block template to user talk page',
-					value: 'template',
-					tooltip: 'If the blocking admin forgot to issue a block template, or you have just blocked the user without templating them, you can use this to issue the appropriate template.',
-					checked: true
-				}
-			]
-		});
+		type: 'checkbox',
+		name: 'actiontype',
+		event: Twinkle.block.callback.change_action,
+		list: [
+			{
+				label: 'Block user',
+				value: 'block',
+				tooltip: 'Block the relevant user with given options.',
+				checked: true
+			},
+			{
+				label: 'Add block template to user talk page',
+				value: 'template',
+				tooltip: 'If the blocking admin forgot to issue a block template, or you have just blocked the user without templating them, you can use this to issue the appropriate template.',
+				checked: true
+			}
+		]
+	});
 
 	form.append({ type: 'field', label: 'Preset', name: 'field_preset' });
 	form.append({ type: 'field', label: 'Template options', name: 'field_template_options' });
@@ -98,27 +98,27 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 		ususers: mw.config.get('wgRelevantUserName'),
 		letitle: 'User:' + mw.config.get('wgRelevantUserName')
 	})
-	.then(function(data) {
-		var blockinfo = data.query.blocks[0],
-			userinfo = data.query.users[0];
+		.then(function(data) {
+			var blockinfo = data.query.blocks[0],
+				userinfo = data.query.users[0];
 
-		Twinkle.block.isRegistered = !!userinfo.userid;
-		relevantUserName = Twinkle.block.isRegistered ? 'User:' + mw.config.get('wgRelevantUserName') : mw.config.get('wgRelevantUserName');
+			Twinkle.block.isRegistered = !!userinfo.userid;
+			relevantUserName = Twinkle.block.isRegistered ? 'User:' + mw.config.get('wgRelevantUserName') : mw.config.get('wgRelevantUserName');
 
-		if (blockinfo) {
+			if (blockinfo) {
 			// handle frustrating system of inverted boolean values
-			blockinfo.disabletalk = blockinfo.allowusertalk === undefined;
-			blockinfo.hardblock = blockinfo.anononly === undefined;
-			Twinkle.block.currentBlockInfo = blockinfo;
-		}
+				blockinfo.disabletalk = blockinfo.allowusertalk === undefined;
+				blockinfo.hardblock = blockinfo.anononly === undefined;
+				Twinkle.block.currentBlockInfo = blockinfo;
+			}
 
-		Twinkle.block.hasBlockLog = !!data.query.logevents.length;
+			Twinkle.block.hasBlockLog = !!data.query.logevents.length;
 
-		if (typeof fn === 'function') return fn();
-	}, function(msg) {
-		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
-		Morebits.status.warn('Error fetching user info', msg);
-	});
+			if (typeof fn === 'function') return fn();
+		}, function(msg) {
+			Morebits.status.init($('div[name="currentblock"] span').last()[0]);
+			Morebits.status.warn('Error fetching user info', msg);
+		});
 };
 
 Twinkle.block.callback.saveFieldset = function twinkleblockCallbacksaveFieldset(fieldset) {
@@ -137,138 +137,138 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	if ($form.find('[name=actiontype][value=block]').is(':checked')) {
 		field_preset = new Morebits.quickForm.element({ type: 'field', label: 'Preset', name: 'field_preset' });
 		field_preset.append({
-				type: 'select',
-				name: 'preset',
-				label: 'Choose a preset:',
-				event: Twinkle.block.callback.change_preset,
-				list: Twinkle.block.callback.filtered_block_groups()
-			});
+			type: 'select',
+			name: 'preset',
+			label: 'Choose a preset:',
+			event: Twinkle.block.callback.change_preset,
+			list: Twinkle.block.callback.filtered_block_groups()
+		});
 
 		field_block_options = new Morebits.quickForm.element({ type: 'field', label: 'Block options', name: 'field_block_options' });
 		field_block_options.append({ type: 'div', name: 'hasblocklog', label: ' ' });
 		field_block_options.append({ type: 'div', name: 'currentblock', label: ' ' });
 		field_block_options.append({
-				type: 'select',
-				name: 'expiry_preset',
-				label: 'Expiry:',
-				event: Twinkle.block.callback.change_expiry,
-				list: [
-					{ label: 'custom', value: 'custom', selected: true },
-					{ label: 'indefinite', value: 'infinity' },
-					{ label: '3 hours', value: '3 hours' },
-					{ label: '12 hours', value: '12 hours' },
-					{ label: '24 hours', value: '24 hours' },
-					{ label: '31 hours', value: '31 hours' },
-					{ label: '36 hours', value: '36 hours' },
-					{ label: '48 hours', value: '48 hours' },
-					{ label: '60 hours', value: '60 hours' },
-					{ label: '72 hours', value: '72 hours' },
-					{ label: '1 week', value: '1 week' },
-					{ label: '2 weeks', value: '2 weeks' },
-					{ label: '1 month', value: '1 month' },
-					{ label: '3 months', value: '3 months' },
-					{ label: '6 months', value: '6 months' },
-					{ label: '1 year', value: '1 year' },
-					{ label: '2 years', value: '2 years' },
-					{ label: '3 years', value: '3 years' }
-				]
-			});
-			field_block_options.append({
-					type: 'input',
-					name: 'expiry',
-					label: 'Custom expiry',
-					tooltip: 'You can use relative times, like "1 minute" or "19 days", or absolute timestamps, "yyyymmddhhmm" (e.g. "200602011405" is Feb 1, 2006, at 14:05 UTC).',
-					value: Twinkle.block.field_block_options.expiry || Twinkle.block.field_template_options.template_expiry
-				});
+			type: 'select',
+			name: 'expiry_preset',
+			label: 'Expiry:',
+			event: Twinkle.block.callback.change_expiry,
+			list: [
+				{ label: 'custom', value: 'custom', selected: true },
+				{ label: 'indefinite', value: 'infinity' },
+				{ label: '3 hours', value: '3 hours' },
+				{ label: '12 hours', value: '12 hours' },
+				{ label: '24 hours', value: '24 hours' },
+				{ label: '31 hours', value: '31 hours' },
+				{ label: '36 hours', value: '36 hours' },
+				{ label: '48 hours', value: '48 hours' },
+				{ label: '60 hours', value: '60 hours' },
+				{ label: '72 hours', value: '72 hours' },
+				{ label: '1 week', value: '1 week' },
+				{ label: '2 weeks', value: '2 weeks' },
+				{ label: '1 month', value: '1 month' },
+				{ label: '3 months', value: '3 months' },
+				{ label: '6 months', value: '6 months' },
+				{ label: '1 year', value: '1 year' },
+				{ label: '2 years', value: '2 years' },
+				{ label: '3 years', value: '3 years' }
+			]
+		});
+		field_block_options.append({
+			type: 'input',
+			name: 'expiry',
+			label: 'Custom expiry',
+			tooltip: 'You can use relative times, like "1 minute" or "19 days", or absolute timestamps, "yyyymmddhhmm" (e.g. "200602011405" is Feb 1, 2006, at 14:05 UTC).',
+			value: Twinkle.block.field_block_options.expiry || Twinkle.block.field_template_options.template_expiry
+		});
 		var blockoptions = [
-				{
-					checked: Twinkle.block.field_block_options.nocreate,
-					label: 'Block account creation',
-					name: 'nocreate',
-					value: '1'
-				},
-				{
-					checked: Twinkle.block.field_block_options.noemail,
-					label: 'Block user from sending email',
-					name: 'noemail',
-					value: '1'
-				},
-				{
-					checked: Twinkle.block.field_block_options.disabletalk,
-					label: 'Prevent this user from editing their own talk page while blocked',
-					name: 'disabletalk',
-					value: '1'
-				}
-			];
+			{
+				checked: Twinkle.block.field_block_options.nocreate,
+				label: 'Block account creation',
+				name: 'nocreate',
+				value: '1'
+			},
+			{
+				checked: Twinkle.block.field_block_options.noemail,
+				label: 'Block user from sending email',
+				name: 'noemail',
+				value: '1'
+			},
+			{
+				checked: Twinkle.block.field_block_options.disabletalk,
+				label: 'Prevent this user from editing their own talk page while blocked',
+				name: 'disabletalk',
+				value: '1'
+			}
+		];
 
 		if (Twinkle.block.isRegistered) {
 			blockoptions.push({
-					checked: Twinkle.block.field_block_options.autoblock,
-					label: 'Autoblock any IP addresses used (hardblock)',
-					name: 'autoblock',
-					value: '1'
-				});
+				checked: Twinkle.block.field_block_options.autoblock,
+				label: 'Autoblock any IP addresses used (hardblock)',
+				name: 'autoblock',
+				value: '1'
+			});
 		} else {
 			blockoptions.push({
-					checked: Twinkle.block.field_block_options.hardblock,
-					label: 'Prevent logged-in users from editing from this IP address (hardblock)',
-					name: 'hardblock',
-					value: '1'
-				});
+				checked: Twinkle.block.field_block_options.hardblock,
+				label: 'Prevent logged-in users from editing from this IP address (hardblock)',
+				name: 'hardblock',
+				value: '1'
+			});
 		}
 
 		blockoptions.push({
-				checked: Twinkle.block.field_block_options.watchuser,
-				label: 'Watch user and user talk pages',
-				name: 'watchuser',
-				value: '1'
-			});
+			checked: Twinkle.block.field_block_options.watchuser,
+			label: 'Watch user and user talk pages',
+			name: 'watchuser',
+			value: '1'
+		});
 
 		field_block_options.append({
-				type: 'checkbox',
-				name: 'blockoptions',
-				list: blockoptions
-			});
+			type: 'checkbox',
+			name: 'blockoptions',
+			list: blockoptions
+		});
 		field_block_options.append({
-				type: 'textarea',
-				label: 'Reason (for block log):',
-				name: 'reason',
-				value: Twinkle.block.field_block_options.reason
-			});
+			type: 'textarea',
+			label: 'Reason (for block log):',
+			name: 'reason',
+			value: Twinkle.block.field_block_options.reason
+		});
 
 		field_block_options.append({
-				type: 'div',
-				name: 'filerlog_label',
-				label: 'See also:',
-				style: 'display:inline-block;font-style:normal !important',
-				tooltip: 'Insert a "see also" message to indicate whether the filter log or deleted contributions played a role in the decision to block.'
-			});
+			type: 'div',
+			name: 'filerlog_label',
+			label: 'See also:',
+			style: 'display:inline-block;font-style:normal !important',
+			tooltip: 'Insert a "see also" message to indicate whether the filter log or deleted contributions played a role in the decision to block.'
+		});
 		field_block_options.append({
-				type: 'checkbox',
-				name: 'filter_see_also',
-				event: Twinkle.block.callback.toggle_see_alsos,
-				style: 'display:inline-block; margin-right:5px',
-				list: [
-					{
-						label: 'Filter log',
-						checked: false,
-						value: 'filter log'
-					}
-				]
-			});
+			type: 'checkbox',
+			name: 'filter_see_also',
+			event: Twinkle.block.callback.toggle_see_alsos,
+			style: 'display:inline-block; margin-right:5px',
+			list: [
+				{
+					label: 'Filter log',
+					checked: false,
+					value: 'filter log'
+				}
+			]
+		});
 		field_block_options.append({
-				type: 'checkbox',
-				name: 'deleted_see_also',
-				event: Twinkle.block.callback.toggle_see_alsos,
-				style: 'display:inline-block',
-				list: [
-					{
-						label: 'Deleted contribs',
-						checked: false,
-						value: 'deleted contribs'
-					}
-				]
-			});
+			type: 'checkbox',
+			name: 'deleted_see_also',
+			event: Twinkle.block.callback.toggle_see_alsos,
+			style: 'display:inline-block',
+			list: [
+				{
+					label: 'Deleted contribs',
+					checked: false,
+					value: 'deleted contribs'
+				}
+			]
+		});
 
 		if (Twinkle.block.currentBlockInfo) {
 			field_block_options.append({ type: 'hidden', name: 'reblock', value: '1' });
@@ -278,21 +278,21 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	if ($form.find('[name=actiontype][value=template]').is(':checked')) {
 		field_template_options = new Morebits.quickForm.element({ type: 'field', label: 'Template options', name: 'field_template_options' });
 		field_template_options.append({
-				type: 'select',
-				name: 'template',
-				label: 'Choose talk page template:',
-				event: Twinkle.block.callback.change_template,
-				list: Twinkle.block.callback.filtered_block_groups(true),
-				value: Twinkle.block.field_template_options.template
-			});
+			type: 'select',
+			name: 'template',
+			label: 'Choose talk page template:',
+			event: Twinkle.block.callback.change_template,
+			list: Twinkle.block.callback.filtered_block_groups(true),
+			value: Twinkle.block.field_template_options.template
+		});
 		field_template_options.append({
-				type: 'input',
-				name: 'article',
-				display: 'none',
-				label: 'Linked page',
-				value: '',
-				tooltip: 'A page can be linked within the notice, perhaps if it was the primary target of disruption. Leave empty for no page to be linked.'
-			});
+			type: 'input',
+			name: 'article',
+			display: 'none',
+			label: 'Linked page',
+			value: '',
+			tooltip: 'A page can be linked within the notice, perhaps if it was the primary target of disruption. Leave empty for no page to be linked.'
+		});
 		if (!$form.find('[name=actiontype][value=block]').is(':checked')) {
 			field_template_options.append({
 				type: 'input',
@@ -931,28 +931,28 @@ Twinkle.block.blockGroups = [
 Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilteredBlockGroups(show_template) {
 	return $.map(Twinkle.block.blockGroups, function(blockGroup) {
 		var list = $.map(blockGroup.list, function(blockPreset) {
-				// only show uw-talkrevoked if reblocking
-				if (!Twinkle.block.currentBlockInfo && blockPreset.value === 'uw-talkrevoked') return;
+			// only show uw-talkrevoked if reblocking
+			if (!Twinkle.block.currentBlockInfo && blockPreset.value === 'uw-talkrevoked') return;
 
-				var blockSettings = Twinkle.block.blockPresetsInfo[blockPreset.value];
-				var registrationRestrict = blockSettings.forRegisteredOnly ? Twinkle.block.isRegistered : (blockSettings.forAnonOnly ? !Twinkle.block.isRegistered : true);
-				if (!(blockSettings.templateName && show_template) && registrationRestrict) {
-					var templateName = blockSettings.templateName || blockPreset.value;
-					return {
-						label: (show_template ? '{{' + templateName + '}}: ' : '') + blockPreset.label,
-						value: blockPreset.value,
-						data: [{
-							name: 'template-name',
-							value: templateName
-						}],
-						selected: !!blockPreset.selected
-					};
-				}
-			});
+			var blockSettings = Twinkle.block.blockPresetsInfo[blockPreset.value];
+			var registrationRestrict = blockSettings.forRegisteredOnly ? Twinkle.block.isRegistered : (blockSettings.forAnonOnly ? !Twinkle.block.isRegistered : true);
+			if (!(blockSettings.templateName && show_template) && registrationRestrict) {
+				var templateName = blockSettings.templateName || blockPreset.value;
+				return {
+					label: (show_template ? '{{' + templateName + '}}: ' : '') + blockPreset.label,
+					value: blockPreset.value,
+					data: [{
+						name: 'template-name',
+						value: templateName
+					}],
+					selected: !!blockPreset.selected
+				};
+			}
+		});
 		if (list.length) return {
-				label: blockGroup.label,
-				list: list
-			};
+			label: blockGroup.label,
+			list: list
+		};
 	});
 };
 

@@ -137,17 +137,17 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			});
 
 			form.append({
-					type: 'checkbox',
-					list: [
-						{
-							label: 'Group inside {{multiple issues}} if possible',
-							value: 'group',
-							name: 'group',
-							tooltip: 'If applying two or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped inside a {{multiple issues}} template.',
-							checked: Twinkle.getFriendlyPref('groupByDefault')
-						}
-					]
-				}
+				type: 'checkbox',
+				list: [
+					{
+						label: 'Group inside {{multiple issues}} if possible',
+						value: 'group',
+						name: 'group',
+						tooltip: 'If applying two or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped inside a {{multiple issues}} template.',
+						checked: Twinkle.getFriendlyPref('groupByDefault')
+					}
+				]
+			}
 			);
 
 			break;
@@ -327,16 +327,16 @@ Twinkle.tag.updateSortOrder = function(e) {
 				break;
 			case 'Expand language':
 				checkbox.subgroup = [ {
-						name: 'expandLanguageLangCode',
-						type: 'input',
-						label: 'Language code: ',
-						tooltip: 'Language code of the language from which article is to be expanded from'
-					}, {
-						name: 'expandLanguageArticle',
-						type: 'input',
-						label: 'Name of article: ',
-						tooltip: 'Name of article to be expanded from, without the interwiki prefix'
-					},
+					name: 'expandLanguageLangCode',
+					type: 'input',
+					label: 'Language code: ',
+					tooltip: 'Language code of the language from which article is to be expanded from'
+				}, {
+					name: 'expandLanguageArticle',
+					type: 'input',
+					label: 'Name of article: ',
+					tooltip: 'Name of article to be expanded from, without the interwiki prefix'
+				},
 				];
 				break;
 			case 'Expert needed':
@@ -458,46 +458,46 @@ Twinkle.tag.updateSortOrder = function(e) {
 				break;
 			case 'Not English':
 			case 'Rough translation':
-					checkbox.subgroup = [
-						{
-							name: 'translationLanguage',
-							type: 'input',
-							label: 'Language of article (if known): ',
-							tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
-						}
-					];
-					if (tag === 'Not English') {
-						checkbox.subgroup.push({
-							name: 'translationNotify',
-							type: 'checkbox',
-							list: [
-								{
-									label: 'Notify article creator',
-									checked: true,
-									tooltip: "Places {{uw-notenglish}} on the creator's talk page."
-								}
-							]
-						});
+				checkbox.subgroup = [
+					{
+						name: 'translationLanguage',
+						type: 'input',
+						label: 'Language of article (if known): ',
+						tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
 					}
-					if (mw.config.get('wgNamespaceNumber') === 0) {
-						checkbox.subgroup.push({
-							name: 'translationPostAtPNT',
-							type: 'checkbox',
-							list: [
-								{
-									label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
-									checked: true
-								}
-							]
-						});
-						checkbox.subgroup.push({
-							name: 'translationComments',
-							type: 'textarea',
-							label: 'Additional comments to post at PNT',
-							tooltip: 'Optional, and only relevant if "List this article ..." above is checked.'
-						});
-					}
-					break;
+				];
+				if (tag === 'Not English') {
+					checkbox.subgroup.push({
+						name: 'translationNotify',
+						type: 'checkbox',
+						list: [
+							{
+								label: 'Notify article creator',
+								checked: true,
+								tooltip: "Places {{uw-notenglish}} on the creator's talk page."
+							}
+						]
+					});
+				}
+				if (mw.config.get('wgNamespaceNumber') === 0) {
+					checkbox.subgroup.push({
+						name: 'translationPostAtPNT',
+						type: 'checkbox',
+						list: [
+							{
+								label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
+								checked: true
+							}
+						]
+					});
+					checkbox.subgroup.push({
+						name: 'translationComments',
+						type: 'textarea',
+						label: 'Additional comments to post at PNT',
+						tooltip: 'Optional, and only relevant if "List this article ..." above is checked.'
+					});
+				}
+				break;
 			case 'Notability':
 				checkbox.subgroup = {
 					name: 'notability',
@@ -1635,7 +1635,7 @@ Twinkle.tag.callbacks = {
 					'(?:\\s*\\n)?)' +
 					// trailing whitespace
 					'\\s*)?',
-				'i'), '$1' + tagText
+					'i'), '$1' + tagText
 			);
 
 			removeTags();

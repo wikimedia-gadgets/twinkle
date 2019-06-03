@@ -16,11 +16,11 @@
 
 Twinkle.warn = function twinklewarn() {
 	if (mw.config.get('wgRelevantUserName')) {
-			Twinkle.addPortletLink(Twinkle.warn.callback, 'Warn', 'tw-warn', 'Warn/notify user');
-			if (Twinkle.getPref('autoMenuAfterRollback') && mw.config.get('wgNamespaceNumber') === 3 &&
+		Twinkle.addPortletLink(Twinkle.warn.callback, 'Warn', 'tw-warn', 'Warn/notify user');
+		if (Twinkle.getPref('autoMenuAfterRollback') && mw.config.get('wgNamespaceNumber') === 3 &&
 				mw.util.getParamValue('vanarticle') && !mw.util.getParamValue('friendlywelcome') && !mw.util.getParamValue('noautowarn')) {
-				Twinkle.warn.callback();
-			}
+			Twinkle.warn.callback();
+		}
 	}
 
 	// Modify URL of talk page on rollback success pages, makes use of a
@@ -73,16 +73,16 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 
 	var form = new Morebits.quickForm(Twinkle.warn.callback.evaluate);
 	var main_select = form.append({
-			type: 'field',
-			label: 'Choose type of warning/notice to issue',
-			tooltip: 'First choose a main warning group, then the specific warning to issue.'
-		});
+		type: 'field',
+		label: 'Choose type of warning/notice to issue',
+		tooltip: 'First choose a main warning group, then the specific warning to issue.'
+	});
 
 	var main_group = main_select.append({
-			type: 'select',
-			name: 'main_group',
-			event: Twinkle.warn.callback.change_category
-		});
+		type: 'select',
+		name: 'main_group',
+		event: Twinkle.warn.callback.change_category
+	});
 
 	var defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'), 10);
 	main_group.append({ type: 'option', label: '1: General note', value: 'level1', selected: (defaultGroup === 1) });
@@ -99,12 +99,12 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	main_select.append({ type: 'select', name: 'sub_group', event: Twinkle.warn.callback.change_subcategory }); // Will be empty to begin with.
 
 	form.append({
-			type: 'input',
-			name: 'article',
-			label: 'Linked page',
-			value: (Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : ''),
-			tooltip: 'A page can be linked within the notice, perhaps because it was a revert to said page that dispatched this notice. Leave empty for no page to be linked.'
-		});
+		type: 'input',
+		name: 'article',
+		label: 'Linked page',
+		value: (Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : ''),
+		tooltip: 'A page can be linked within the notice, perhaps because it was a revert to said page that dispatched this notice. Leave empty for no page to be linked.'
+	});
 
 	var more = form.append({ type: 'field', name: 'reasonGroup', label: 'Warning information' });
 	more.append({ type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' });

@@ -226,16 +226,16 @@ Twinkle.unlink.callbacks = {
 				apiobj.params.form.append({
 					type: 'button',
 					label: 'Select All',
-						event: function(e) {
-							$(Morebits.quickForm.getElements(e.target.form, 'backlinks')).prop('checked', true);
-						}
+					event: function(e) {
+						$(Morebits.quickForm.getElements(e.target.form, 'backlinks')).prop('checked', true);
+					}
 				});
 				apiobj.params.form.append({
 					type: 'button',
 					label: 'Deselect All',
-						event: function(e) {
-							$(Morebits.quickForm.getElements(e.target.form, 'backlinks')).prop('checked', false);
-						}
+					event: function(e) {
+						$(Morebits.quickForm.getElements(e.target.form, 'backlinks')).prop('checked', false);
+					}
 				});
 				apiobj.params.form.append({
 					type: 'checkbox',

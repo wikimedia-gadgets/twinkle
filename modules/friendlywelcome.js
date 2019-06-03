@@ -65,9 +65,9 @@ Twinkle.welcome.normal = function() {
 
 				var oWelcomeNode = welcomeNode.cloneNode(true);
 				oWelcomeNode.firstChild.setAttribute('href', oHref + '&' + Morebits.queryString.create({
-						'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
-						'vanarticle': Morebits.pageNameNorm
-					}));
+					'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
+					'vanarticle': Morebits.pageNameNorm
+				}));
 				$oList[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
 				$oList[0].parentNode.parentNode.appendChild(oWelcomeNode);
 			}
@@ -77,9 +77,9 @@ Twinkle.welcome.normal = function() {
 
 				var nWelcomeNode = welcomeNode.cloneNode(true);
 				nWelcomeNode.firstChild.setAttribute('href', nHref + '&' + Morebits.queryString.create({
-						'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
-						'vanarticle': Morebits.pageNameNorm
-					}));
+					'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
+					'vanarticle': Morebits.pageNameNorm
+				}));
 				$nList[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
 				$nList[0].parentNode.parentNode.appendChild(nWelcomeNode);
 			}
@@ -124,31 +124,31 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 	var form = new Morebits.quickForm(Twinkle.welcome.callback.evaluate);
 
 	form.append({
-			type: 'select',
-			name: 'type',
-			label: 'Type of welcome: ',
-			event: Twinkle.welcome.populateWelcomeList,
-			list: [
-				{ type: 'option', value: 'standard', label: 'Standard welcomes', selected: !mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
-				{ type: 'option', value: 'anonymous', label: 'IP user welcomes', selected: mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
-				{ type: 'option', value: 'wikiProject', label: 'WikiProject welcomes' },
-				{ type: 'option', value: 'nonEnglish', label: 'Non-English welcomes' }
-			]
-		});
+		type: 'select',
+		name: 'type',
+		label: 'Type of welcome: ',
+		event: Twinkle.welcome.populateWelcomeList,
+		list: [
+			{ type: 'option', value: 'standard', label: 'Standard welcomes', selected: !mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
+			{ type: 'option', value: 'anonymous', label: 'IP user welcomes', selected: mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
+			{ type: 'option', value: 'wikiProject', label: 'WikiProject welcomes' },
+			{ type: 'option', value: 'nonEnglish', label: 'Non-English welcomes' }
+		]
+	});
 
 	form.append({
-			type: 'div',
-			id: 'welcomeWorkArea',
-			className: 'morebits-scrollbox'
-		});
+		type: 'div',
+		id: 'welcomeWorkArea',
+		className: 'morebits-scrollbox'
+	});
 
 	form.append({
-			type: 'input',
-			name: 'article',
-			label: '* Linked article (if supported by template):',
-			value: (Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : ''),
-			tooltip: 'An article might be linked from within the welcome if the template supports it. Leave empty for no article to be linked.  Templates that support a linked article are marked with an asterisk.'
-		});
+		type: 'input',
+		name: 'article',
+		label: '* Linked article (if supported by template):',
+		value: (Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : ''),
+		tooltip: 'An article might be linked from within the welcome if the template supports it. Leave empty for no article to be linked.  Templates that support a linked article are marked with an asterisk.'
+	});
 
 	var previewlink = document.createElement('a');
 	$(previewlink).click(function() {

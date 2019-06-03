@@ -28,75 +28,75 @@ Twinkle.image.callback = function twinkleimageCallback() {
 
 	var form = new Morebits.quickForm(Twinkle.image.callback.evaluate);
 	form.append({
-			type: 'checkbox',
-			list: [
-				{
-					label: 'Notify original uploader',
-					value: 'notify',
-					name: 'notify',
-					tooltip: "Uncheck this if you are planning to make multiple nominations from the same user, and don't want to overload their talk page with too many notifications.",
-					checked: Twinkle.getPref('notifyUserOnDeli')
-				}
-			]
-		}
+		type: 'checkbox',
+		list: [
+			{
+				label: 'Notify original uploader',
+				value: 'notify',
+				name: 'notify',
+				tooltip: "Uncheck this if you are planning to make multiple nominations from the same user, and don't want to overload their talk page with too many notifications.",
+				checked: Twinkle.getPref('notifyUserOnDeli')
+			}
+		]
+	}
 	);
 	var field = form.append({
-			type: 'field',
-			label: 'Type of action wanted'
-		});
+		type: 'field',
+		label: 'Type of action wanted'
+	});
 	field.append({
-			type: 'radio',
-			name: 'type',
-			event: Twinkle.image.callback.choice,
-			list: [
-				{
-					label: 'No source (CSD F4)',
-					value: 'no source',
-					checked: true,
-					tooltip: 'Image or media has no source information'
-				},
-				{
-					label: 'No license (CSD F4)',
-					value: 'no license',
-					tooltip: 'Image or media does not have information on its copyright status'
-				},
-				{
-					label: 'No source and no license (CSD F4)',
-					value: 'no source no license',
-					tooltip: 'Image or media has neither information on source nor its copyright status'
-				},
-				{
-					label: 'Orphaned fair use (CSD F5)',
-					value: 'orphaned fair use',
-					tooltip: 'Image or media is unlicensed for use on Wikipedia and allowed only under a claim of fair use per Wikipedia:Non-free content, but it is not used in any articles'
-				},
-				{
-					label: 'No fair use rationale (CSD F6)',
-					value: 'no fair use rationale',
-					tooltip: 'Image or media is claimed to be used under Wikipedia\'s fair use policy but has no explanation as to why it is permitted under the policy'
-				},
-				{
-					label: 'Disputed fair use rationale (CSD F7)',
-					value: 'disputed fair use rationale',
-					tooltip: 'Image or media has a fair use rationale that is disputed'
-				},
-				{
-					label: 'Replaceable fair use (CSD F7)',
-					value: 'replaceable fair use',
-					tooltip: 'Image or media may fail Wikipedia\'s first non-free content criterion ([[WP:NFCC#1]]) in that it illustrates a subject for which a free image might reasonably be found or created that adequately provides the same information'
-				},
-				{
-					label: 'No evidence of permission (CSD F11)',
-					value: 'no permission',
-					tooltip: 'Image or media does not have proof that the author agreed to licence the file'
-				}
-			]
-		});
+		type: 'radio',
+		name: 'type',
+		event: Twinkle.image.callback.choice,
+		list: [
+			{
+				label: 'No source (CSD F4)',
+				value: 'no source',
+				checked: true,
+				tooltip: 'Image or media has no source information'
+			},
+			{
+				label: 'No license (CSD F4)',
+				value: 'no license',
+				tooltip: 'Image or media does not have information on its copyright status'
+			},
+			{
+				label: 'No source and no license (CSD F4)',
+				value: 'no source no license',
+				tooltip: 'Image or media has neither information on source nor its copyright status'
+			},
+			{
+				label: 'Orphaned fair use (CSD F5)',
+				value: 'orphaned fair use',
+				tooltip: 'Image or media is unlicensed for use on Wikipedia and allowed only under a claim of fair use per Wikipedia:Non-free content, but it is not used in any articles'
+			},
+			{
+				label: 'No fair use rationale (CSD F6)',
+				value: 'no fair use rationale',
+				tooltip: 'Image or media is claimed to be used under Wikipedia\'s fair use policy but has no explanation as to why it is permitted under the policy'
+			},
+			{
+				label: 'Disputed fair use rationale (CSD F7)',
+				value: 'disputed fair use rationale',
+				tooltip: 'Image or media has a fair use rationale that is disputed'
+			},
+			{
+				label: 'Replaceable fair use (CSD F7)',
+				value: 'replaceable fair use',
+				tooltip: 'Image or media may fail Wikipedia\'s first non-free content criterion ([[WP:NFCC#1]]) in that it illustrates a subject for which a free image might reasonably be found or created that adequately provides the same information'
+			},
+			{
+				label: 'No evidence of permission (CSD F11)',
+				value: 'no permission',
+				tooltip: 'Image or media does not have proof that the author agreed to licence the file'
+			}
+		]
+	});
 	form.append({
-			type: 'div',
-			label: 'Work area',
-			name: 'work_area'
-		});
+		type: 'div',
+		label: 'Work area',
+		name: 'work_area'
+	});
 	form.append({ type: 'submit' });
 
 	var result = form.render();
@@ -113,63 +113,63 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 	var value = event.target.values;
 	var root = event.target.form;
 	var work_area = new Morebits.quickForm.element({
-			type: 'div',
-			name: 'work_area'
-		});
+		type: 'div',
+		name: 'work_area'
+	});
 
 	switch (value) {
 		case 'no source no license':
 		case 'no source':
 			work_area.append({
-					type: 'checkbox',
-					name: 'non_free',
-					list: [
-						{
-							label: 'Non-free',
-							tooltip: 'File is licensed under a fair use claim'
-						}
-					]
-				});
+				type: 'checkbox',
+				name: 'non_free',
+				list: [
+					{
+						label: 'Non-free',
+						tooltip: 'File is licensed under a fair use claim'
+					}
+				]
+			});
 		/* falls through */
 		case 'no license':
 			work_area.append({
-					type: 'checkbox',
-					name: 'derivative',
-					list: [
-						{
-							label: 'Derivative work which lacks a source for incorporated works',
-							tooltip: 'File is a derivative of one or more other works whose source is not specified'
-						}
-					]
-				});
+				type: 'checkbox',
+				name: 'derivative',
+				list: [
+					{
+						label: 'Derivative work which lacks a source for incorporated works',
+						tooltip: 'File is a derivative of one or more other works whose source is not specified'
+					}
+				]
+			});
 			break;
 		case 'no permission':
 			work_area.append({
-					type: 'input',
-					name: 'source',
-					label: 'Source: '
-				});
+				type: 'input',
+				name: 'source',
+				label: 'Source: '
+			});
 			break;
 		case 'disputed fair use rationale':
 			work_area.append({
-					type: 'textarea',
-					name: 'reason',
-					label: 'Concern: '
-				});
+				type: 'textarea',
+				name: 'reason',
+				label: 'Concern: '
+			});
 			break;
 		case 'orphaned fair use':
 			work_area.append({
-					type: 'input',
-					name: 'replacement',
-					label: 'Replacement: '
-				});
+				type: 'input',
+				name: 'replacement',
+				label: 'Replacement: '
+			});
 			break;
 		case 'replaceable fair use':
 			work_area.append({
-					type: 'textarea',
-					name: 'reason',
-					label: 'Reason: '
-				});
+				type: 'textarea',
+				name: 'reason',
+				label: 'Reason: '
+			});
 			break;
 		default:
 			break;

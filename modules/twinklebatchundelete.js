@@ -33,22 +33,22 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 
 	var form = new Morebits.quickForm(Twinkle.batchundelete.callback.evaluate);
 	form.append({
-			type: 'checkbox',
-			list: [
-				{
-					label: 'Restore talk pages of undeleted pages if they existed',
-					name: 'undel_talk',
-					value: 'undel_talk',
-					checked: true
-				}
-			]
-		});
+		type: 'checkbox',
+		list: [
+			{
+				label: 'Restore talk pages of undeleted pages if they existed',
+				name: 'undel_talk',
+				value: 'undel_talk',
+				checked: true
+			}
+		]
+	});
 	form.append({
-			type: 'input',
-			name: 'reason',
-			label: 'Reason: ',
-			size: 60
-		});
+		type: 'input',
+		name: 'reason',
+		label: 'Reason: ',
+		size: 60
+	});
 
 	var statusdiv = document.createElement('div');
 	statusdiv.style.padding = '15px';  // just so it doesn't look broken
@@ -66,49 +66,49 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	};
 	var statelem = new Morebits.status('Grabbing list of pages');
 	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
-			var xml = apiobj.responseXML;
-			var $pages = $(xml).find('page[missing]');
-			var list = [];
-			$pages.each(function(index, page) {
-				var $page = $(page);
-				var title = $page.attr('title');
-				var $editprot = $page.find('pr[type="create"][level="sysop"]');
-				var isProtected = $editprot.length > 0;
+		var xml = apiobj.responseXML;
+		var $pages = $(xml).find('page[missing]');
+		var list = [];
+		$pages.each(function(index, page) {
+			var $page = $(page);
+			var title = $page.attr('title');
+			var $editprot = $page.find('pr[type="create"][level="sysop"]');
+			var isProtected = $editprot.length > 0;
 
-				list.push({
-					label: title + (isProtected ? ' (fully create protected' + ($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))) + ')' : ''),
-					value: title,
-					checked: true,
-					style: (isProtected ? 'color:red' : '')
-				});
+			list.push({
+				label: title + (isProtected ? ' (fully create protected' + ($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))) + ')' : ''),
+				value: title,
+				checked: true,
+				style: (isProtected ? 'color:red' : '')
 			});
-			apiobj.params.form.append({ type: 'header', label: 'Pages to undelete' });
-			apiobj.params.form.append({
-					type: 'button',
-					label: 'Select All',
-					event: function(e) {
-						$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', true);
-					}
-				});
-			apiobj.params.form.append({
-					type: 'button',
-					label: 'Deselect All',
-					event: function(e) {
-						$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', false);
-					}
-				});
-			apiobj.params.form.append({
-					type: 'checkbox',
-					name: 'pages',
-					list: list
-				});
-			apiobj.params.form.append({ type: 'submit' });
+		});
+		apiobj.params.form.append({ type: 'header', label: 'Pages to undelete' });
+		apiobj.params.form.append({
+			type: 'button',
+			label: 'Select All',
+			event: function(e) {
+				$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', true);
+			}
+		});
+		apiobj.params.form.append({
+			type: 'button',
+			label: 'Deselect All',
+			event: function(e) {
+				$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', false);
+			}
+		});
+		apiobj.params.form.append({
+			type: 'checkbox',
+			name: 'pages',
+			list: list
+		});
+		apiobj.params.form.append({ type: 'submit' });
 
-			var result = apiobj.params.form.render();
-			apiobj.params.Window.setContent(result);
+		var result = apiobj.params.form.render();
+		apiobj.params.Window.setContent(result);
 
-			Morebits.checkboxShiftClickSupport(Morebits.quickForm.getElements(result, 'pages'));
-		}, statelem);
+		Morebits.checkboxShiftClickSupport(Morebits.quickForm.getElements(result, 'pages'));
+	}, statelem);
 	wikipedia_api.params = { form: form, Window: Window };
 	wikipedia_api.post();
 };

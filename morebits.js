@@ -230,247 +230,247 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 
 	var i, current, subnode;
 	switch (data.type) {
-	case 'form':
-		node = document.createElement('form');
-		node.className = 'quickform';
-		node.setAttribute('action', 'javascript:void(0);');
-		if (data.event) {
-			node.addEventListener(data.eventType || 'submit', data.event , false);
-		}
-		break;
-	case 'fragment':
-		node = document.createDocumentFragment();
-		// fragments can't have any attributes, so just return it straight away
-		return [ node, node ];
-	case 'select':
-		node = document.createElement('div');
+		case 'form':
+			node = document.createElement('form');
+			node.className = 'quickform';
+			node.setAttribute('action', 'javascript:void(0);');
+			if (data.event) {
+				node.addEventListener(data.eventType || 'submit', data.event , false);
+			}
+			break;
+		case 'fragment':
+			node = document.createDocumentFragment();
+			// fragments can't have any attributes, so just return it straight away
+			return [ node, node ];
+		case 'select':
+			node = document.createElement('div');
 
-		node.setAttribute('id', 'div_' + id);
-		if (data.label) {
-			label = node.appendChild(document.createElement('label'));
-			label.setAttribute('for', id);
+			node.setAttribute('id', 'div_' + id);
+			if (data.label) {
+				label = node.appendChild(document.createElement('label'));
+				label.setAttribute('for', id);
+				label.appendChild(document.createTextNode(data.label));
+			}
+			var select = node.appendChild(document.createElement('select'));
+			if (data.event) {
+				select.addEventListener('change', data.event, false);
+			}
+			if (data.multiple) {
+				select.setAttribute('multiple', 'multiple');
+			}
+			if (data.size) {
+				select.setAttribute('size', data.size);
+			}
+			select.setAttribute('name', data.name);
+
+			if (data.list) {
+				for (i = 0; i < data.list.length; ++i) {
+
+					current = data.list[i];
+
+					if (current.list) {
+						current.type = 'optgroup';
+					} else {
+						current.type = 'option';
+					}
+
+					subnode = this.compute(current);
+					select.appendChild(subnode[0]);
+				}
+			}
+			childContainder = select;
+			break;
+		case 'option':
+			node = document.createElement('option');
+			node.values = data.value;
+			node.setAttribute('value', data.value);
+			if (data.selected) {
+				node.setAttribute('selected', 'selected');
+			}
+			if (data.disabled) {
+				node.setAttribute('disabled', 'disabled');
+			}
+			node.setAttribute('label', data.label);
+			node.appendChild(document.createTextNode(data.label));
+			break;
+		case 'optgroup':
+			node = document.createElement('optgroup');
+			node.setAttribute('label', data.label);
+
+			if (data.list) {
+				for (i = 0; i < data.list.length; ++i) {
+
+					current = data.list[i];
+					current.type = 'option'; // must be options here
+
+					subnode = this.compute(current);
+					node.appendChild(subnode[0]);
+				}
+			}
+			break;
+		case 'field':
+			node = document.createElement('fieldset');
+			label = node.appendChild(document.createElement('legend'));
 			label.appendChild(document.createTextNode(data.label));
-		}
-		var select = node.appendChild(document.createElement('select'));
-		if (data.event) {
-			select.addEventListener('change', data.event, false);
-		}
-		if (data.multiple) {
-			select.setAttribute('multiple', 'multiple');
-		}
-		if (data.size) {
-			select.setAttribute('size', data.size);
-		}
-		select.setAttribute('name', data.name);
-
-		if (data.list) {
-			for (i = 0; i < data.list.length; ++i) {
-
-				current = data.list[i];
-
-				if (current.list) {
-					current.type = 'optgroup';
-				} else {
-					current.type = 'option';
-				}
-
-				subnode = this.compute(current);
-				select.appendChild(subnode[0]);
+			if (data.name) {
+				node.setAttribute('name', data.name);
 			}
-		}
-		childContainder = select;
-		break;
-	case 'option':
-		node = document.createElement('option');
-		node.values = data.value;
-		node.setAttribute('value', data.value);
-		if (data.selected) {
-			node.setAttribute('selected', 'selected');
-		}
-		if (data.disabled) {
-			node.setAttribute('disabled', 'disabled');
-		}
-		node.setAttribute('label', data.label);
-		node.appendChild(document.createTextNode(data.label));
-		break;
-	case 'optgroup':
-		node = document.createElement('optgroup');
-		node.setAttribute('label', data.label);
-
-		if (data.list) {
-			for (i = 0; i < data.list.length; ++i) {
-
-				current = data.list[i];
-				current.type = 'option'; // must be options here
-
-				subnode = this.compute(current);
-				node.appendChild(subnode[0]);
+			if (data.disabled) {
+				node.setAttribute('disabled', 'disabled');
 			}
-		}
-		break;
-	case 'field':
-		node = document.createElement('fieldset');
-		label = node.appendChild(document.createElement('legend'));
-		label.appendChild(document.createTextNode(data.label));
-		if (data.name) {
-			node.setAttribute('name', data.name);
-		}
-		if (data.disabled) {
-			node.setAttribute('disabled', 'disabled');
-		}
-		break;
-	case 'checkbox':
-	case 'radio':
-		node = document.createElement('div');
-		if (data.list) {
-			for (i = 0; i < data.list.length; ++i) {
-				var cur_id = id + '_' + i;
-				current = data.list[i];
-				var cur_div;
-				if (current.type === 'header') {
+			break;
+		case 'checkbox':
+		case 'radio':
+			node = document.createElement('div');
+			if (data.list) {
+				for (i = 0; i < data.list.length; ++i) {
+					var cur_id = id + '_' + i;
+					current = data.list[i];
+					var cur_div;
+					if (current.type === 'header') {
 					// inline hack
-					cur_div = node.appendChild(document.createElement('h6'));
-					cur_div.appendChild(document.createTextNode(current.label));
-					if (current.tooltip) {
-						Morebits.quickForm.element.generateTooltip(cur_div , current);
-					}
-					continue;
-				}
-				cur_div = node.appendChild(document.createElement('div'));
-				subnode = cur_div.appendChild(document.createElement('input'));
-				subnode.values = current.value;
-				subnode.setAttribute('value', current.value);
-				subnode.setAttribute('name', current.name || data.name);
-				subnode.setAttribute('type', data.type);
-				subnode.setAttribute('id', cur_id);
-
-				if (current.checked) {
-					subnode.setAttribute('checked', 'checked');
-				}
-				if (current.disabled) {
-					subnode.setAttribute('disabled', 'disabled');
-				}
-				label = cur_div.appendChild(document.createElement('label'));
-				label.appendChild(document.createTextNode(current.label));
-				label.setAttribute('for', cur_id);
-				if (current.tooltip) {
-					Morebits.quickForm.element.generateTooltip(label, current);
-				}
-				// styles go on the label, doesn't make sense to style a checkbox/radio
-				if (current.style) {
-					label.setAttribute('style', current.style);
-				}
-
-				var event;
-				if (current.subgroup) {
-					var tmpgroup = current.subgroup;
-
-					if (!Array.isArray(tmpgroup)) {
-						tmpgroup = [ tmpgroup ];
-					}
-
-					var subgroupRaw = new Morebits.quickForm.element({
-						type: 'div',
-						id: id + '_' + i + '_subgroup'
-					});
-					$.each(tmpgroup, function(idx, el) {
-						var newEl = $.extend({}, el);
-						if (!newEl.type) {
-							newEl.type = data.type;
+						cur_div = node.appendChild(document.createElement('h6'));
+						cur_div.appendChild(document.createTextNode(current.label));
+						if (current.tooltip) {
+							Morebits.quickForm.element.generateTooltip(cur_div , current);
 						}
-						newEl.name = (current.name || data.name) + '.' + newEl.name;
-						subgroupRaw.append(newEl);
-					});
+						continue;
+					}
+					cur_div = node.appendChild(document.createElement('div'));
+					subnode = cur_div.appendChild(document.createElement('input'));
+					subnode.values = current.value;
+					subnode.setAttribute('value', current.value);
+					subnode.setAttribute('name', current.name || data.name);
+					subnode.setAttribute('type', data.type);
+					subnode.setAttribute('id', cur_id);
 
-					var subgroup = subgroupRaw.render(cur_id);
-					subgroup.className = 'quickformSubgroup';
-					subnode.subgroup = subgroup;
-					subnode.shown = false;
+					if (current.checked) {
+						subnode.setAttribute('checked', 'checked');
+					}
+					if (current.disabled) {
+						subnode.setAttribute('disabled', 'disabled');
+					}
+					label = cur_div.appendChild(document.createElement('label'));
+					label.appendChild(document.createTextNode(current.label));
+					label.setAttribute('for', cur_id);
+					if (current.tooltip) {
+						Morebits.quickForm.element.generateTooltip(label, current);
+					}
+					// styles go on the label, doesn't make sense to style a checkbox/radio
+					if (current.style) {
+						label.setAttribute('style', current.style);
+					}
 
-					event = function(e) {
-						if (e.target.checked) {
-							e.target.parentNode.appendChild(e.target.subgroup);
-							if (e.target.type === 'radio') {
+					var event;
+					if (current.subgroup) {
+						var tmpgroup = current.subgroup;
+
+						if (!Array.isArray(tmpgroup)) {
+							tmpgroup = [ tmpgroup ];
+						}
+
+						var subgroupRaw = new Morebits.quickForm.element({
+							type: 'div',
+							id: id + '_' + i + '_subgroup'
+						});
+						$.each(tmpgroup, function(idx, el) {
+							var newEl = $.extend({}, el);
+							if (!newEl.type) {
+								newEl.type = data.type;
+							}
+							newEl.name = (current.name || data.name) + '.' + newEl.name;
+							subgroupRaw.append(newEl);
+						});
+
+						var subgroup = subgroupRaw.render(cur_id);
+						subgroup.className = 'quickformSubgroup';
+						subnode.subgroup = subgroup;
+						subnode.shown = false;
+
+						event = function(e) {
+							if (e.target.checked) {
+								e.target.parentNode.appendChild(e.target.subgroup);
+								if (e.target.type === 'radio') {
+									var name = e.target.name;
+									if (e.target.form.names[name] !== undefined) {
+										e.target.form.names[name].parentNode.removeChild(e.target.form.names[name].subgroup);
+									}
+									e.target.form.names[name] = e.target;
+								}
+							} else {
+								e.target.parentNode.removeChild(e.target.subgroup);
+							}
+						};
+						subnode.addEventListener('change', event, true);
+						if (current.checked) {
+							subnode.parentNode.appendChild(subgroup);
+						}
+					} else if (data.type === 'radio') {
+						event = function(e) {
+							if (e.target.checked) {
 								var name = e.target.name;
 								if (e.target.form.names[name] !== undefined) {
 									e.target.form.names[name].parentNode.removeChild(e.target.form.names[name].subgroup);
 								}
-								e.target.form.names[name] = e.target;
+								delete e.target.form.names[name];
 							}
-						} else {
-							e.target.parentNode.removeChild(e.target.subgroup);
-						}
-					};
-					subnode.addEventListener('change', event, true);
-					if (current.checked) {
-						subnode.parentNode.appendChild(subgroup);
+						};
+						subnode.addEventListener('change', event, true);
 					}
-				} else if (data.type === 'radio') {
-					event = function(e) {
-						if (e.target.checked) {
-							var name = e.target.name;
-							if (e.target.form.names[name] !== undefined) {
-								e.target.form.names[name].parentNode.removeChild(e.target.form.names[name].subgroup);
-							}
-							delete e.target.form.names[name];
-						}
-					};
-					subnode.addEventListener('change', event, true);
-				}
-				// add users' event last, so it can interact with the subgroup
-				if (data.event) {
-					subnode.addEventListener('change', data.event, false);
-				} else if (current.event) {
-					subnode.addEventListener('change', current.event, true);
+					// add users' event last, so it can interact with the subgroup
+					if (data.event) {
+						subnode.addEventListener('change', data.event, false);
+					} else if (current.event) {
+						subnode.addEventListener('change', current.event, true);
+					}
 				}
 			}
-		}
-		break;
-	case 'input':
-		node = document.createElement('div');
-		node.setAttribute('id', 'div_' + id);
+			break;
+		case 'input':
+			node = document.createElement('div');
+			node.setAttribute('id', 'div_' + id);
 
-		if (data.label) {
-			label = node.appendChild(document.createElement('label'));
+			if (data.label) {
+				label = node.appendChild(document.createElement('label'));
+				label.appendChild(document.createTextNode(data.label));
+				label.setAttribute('for', id);
+			}
+
+			subnode = node.appendChild(document.createElement('input'));
+			if (data.value) {
+				subnode.setAttribute('value', data.value);
+			}
+			subnode.setAttribute('name', data.name);
+			subnode.setAttribute('id', id);
+			subnode.setAttribute('type', 'text');
+			if (data.size) {
+				subnode.setAttribute('size', data.size);
+			}
+			if (data.disabled) {
+				subnode.setAttribute('disabled', 'disabled');
+			}
+			if (data.readonly) {
+				subnode.setAttribute('readonly', 'readonly');
+			}
+			if (data.maxlength) {
+				subnode.setAttribute('maxlength', data.maxlength);
+			}
+			if (data.event) {
+				subnode.addEventListener('keyup', data.event, false);
+			}
+			break;
+		case 'dyninput':
+			var min = data.min || 1;
+			var max = data.max || Infinity;
+
+			node = document.createElement('div');
+
+			label = node.appendChild(document.createElement('h5'));
 			label.appendChild(document.createTextNode(data.label));
-			label.setAttribute('for', id);
-		}
 
-		subnode = node.appendChild(document.createElement('input'));
-		if (data.value) {
-			subnode.setAttribute('value', data.value);
-		}
-		subnode.setAttribute('name', data.name);
-		subnode.setAttribute('id', id);
-		subnode.setAttribute('type', 'text');
-		if (data.size) {
-			subnode.setAttribute('size', data.size);
-		}
-		if (data.disabled) {
-			subnode.setAttribute('disabled', 'disabled');
-		}
-		if (data.readonly) {
-			subnode.setAttribute('readonly', 'readonly');
-		}
-		if (data.maxlength) {
-			subnode.setAttribute('maxlength', data.maxlength);
-		}
-		if (data.event) {
-			subnode.addEventListener('keyup', data.event, false);
-		}
-		break;
-	case 'dyninput':
-		var min = data.min || 1;
-		var max = data.max || Infinity;
+			var listNode = node.appendChild(document.createElement('div'));
 
-		node = document.createElement('div');
-
-		label = node.appendChild(document.createElement('h5'));
-		label.appendChild(document.createTextNode(data.label));
-
-		var listNode = node.appendChild(document.createElement('div'));
-
-		var more = this.compute({
+			var more = this.compute({
 				type: 'button',
 				label: 'more',
 				disabled: min >= max,
@@ -485,59 +485,59 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				}
 			});
 
-		node.appendChild(more[0]);
-		var moreButton = more[1];
+			node.appendChild(more[0]);
+			var moreButton = more[1];
 
-		var sublist = {
-			type: '_dyninput_element',
-			label: data.sublabel || data.label,
-			name: data.name,
-			value: data.value,
-			size: data.size,
-			remove: false,
-			maxlength: data.maxlength,
-			event: data.event
-		};
+			var sublist = {
+				type: '_dyninput_element',
+				label: data.sublabel || data.label,
+				name: data.name,
+				value: data.value,
+				size: data.size,
+				remove: false,
+				maxlength: data.maxlength,
+				event: data.event
+			};
 
-		for (i = 0; i < min; ++i) {
-			var elem = new Morebits.quickForm.element(sublist);
-			listNode.appendChild(elem.render());
-		}
-		sublist.remove = true;
-		sublist.morebutton = moreButton;
-		sublist.listnode = listNode;
+			for (i = 0; i < min; ++i) {
+				var elem = new Morebits.quickForm.element(sublist);
+				listNode.appendChild(elem.render());
+			}
+			sublist.remove = true;
+			sublist.morebutton = moreButton;
+			sublist.listnode = listNode;
 
-		moreButton.sublist = sublist;
-		moreButton.area = listNode;
-		moreButton.max = max - min;
-		moreButton.counter = 0;
-		break;
-	case '_dyninput_element': // Private, similar to normal input
-		node = document.createElement('div');
+			moreButton.sublist = sublist;
+			moreButton.area = listNode;
+			moreButton.max = max - min;
+			moreButton.counter = 0;
+			break;
+		case '_dyninput_element': // Private, similar to normal input
+			node = document.createElement('div');
 
-		if (data.label) {
-			label = node.appendChild(document.createElement('label'));
-			label.appendChild(document.createTextNode(data.label));
-			label.setAttribute('for', id);
-		}
+			if (data.label) {
+				label = node.appendChild(document.createElement('label'));
+				label.appendChild(document.createTextNode(data.label));
+				label.setAttribute('for', id);
+			}
 
-		subnode = node.appendChild(document.createElement('input'));
-		if (data.value) {
-			subnode.setAttribute('value', data.value);
-		}
-		subnode.setAttribute('name', data.name);
-		subnode.setAttribute('type', 'text');
-		if (data.size) {
-			subnode.setAttribute('size', data.size);
-		}
-		if (data.maxlength) {
-			subnode.setAttribute('maxlength', data.maxlength);
-		}
-		if (data.event) {
-			subnode.addEventListener('keyup', data.event, false);
-		}
-		if (data.remove) {
-			var remove = this.compute({
+			subnode = node.appendChild(document.createElement('input'));
+			if (data.value) {
+				subnode.setAttribute('value', data.value);
+			}
+			subnode.setAttribute('name', data.name);
+			subnode.setAttribute('type', 'text');
+			if (data.size) {
+				subnode.setAttribute('size', data.size);
+			}
+			if (data.maxlength) {
+				subnode.setAttribute('maxlength', data.maxlength);
+			}
+			if (data.event) {
+				subnode.addEventListener('keyup', data.event, false);
+			}
+			if (data.remove) {
+				var remove = this.compute({
 					type: 'button',
 					label: 'remove',
 					event: function(e) {
@@ -551,101 +551,101 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 						e.stopPropagation();
 					}
 				});
-			node.appendChild(remove[0]);
-			var removeButton = remove[1];
-			removeButton.inputnode = node;
-			removeButton.listnode = data.listnode;
-			removeButton.morebutton = data.morebutton;
-		}
-		break;
-	case 'hidden':
-		node = document.createElement('input');
-		node.setAttribute('type', 'hidden');
-		node.values = data.value;
-		node.setAttribute('value', data.value);
-		node.setAttribute('name', data.name);
-		break;
-	case 'header':
-		node = document.createElement('h5');
-		node.appendChild(document.createTextNode(data.label));
-		break;
-	case 'div':
-		node = document.createElement('div');
-		if (data.name) {
+				node.appendChild(remove[0]);
+				var removeButton = remove[1];
+				removeButton.inputnode = node;
+				removeButton.listnode = data.listnode;
+				removeButton.morebutton = data.morebutton;
+			}
+			break;
+		case 'hidden':
+			node = document.createElement('input');
+			node.setAttribute('type', 'hidden');
+			node.values = data.value;
+			node.setAttribute('value', data.value);
 			node.setAttribute('name', data.name);
-		}
-		if (data.label) {
-			if (!Array.isArray(data.label)) {
-				data.label = [ data.label ];
+			break;
+		case 'header':
+			node = document.createElement('h5');
+			node.appendChild(document.createTextNode(data.label));
+			break;
+		case 'div':
+			node = document.createElement('div');
+			if (data.name) {
+				node.setAttribute('name', data.name);
 			}
-			var result = document.createElement('span');
-			result.className = 'quickformDescription';
-			for (i = 0; i < data.label.length; ++i) {
-				if (typeof data.label[i] === 'string') {
-					result.appendChild(document.createTextNode(data.label[i]));
-				} else if (data.label[i] instanceof Element) {
-					result.appendChild(data.label[i]);
+			if (data.label) {
+				if (!Array.isArray(data.label)) {
+					data.label = [ data.label ];
 				}
+				var result = document.createElement('span');
+				result.className = 'quickformDescription';
+				for (i = 0; i < data.label.length; ++i) {
+					if (typeof data.label[i] === 'string') {
+						result.appendChild(document.createTextNode(data.label[i]));
+					} else if (data.label[i] instanceof Element) {
+						result.appendChild(data.label[i]);
+					}
+				}
+				node.appendChild(result);
 			}
-			node.appendChild(result);
-		}
-		break;
-	case 'submit':
-		node = document.createElement('span');
-		childContainder = node.appendChild(document.createElement('input'));
-		childContainder.setAttribute('type', 'submit');
-		if (data.label) {
-			childContainder.setAttribute('value', data.label);
-		}
-		childContainder.setAttribute('name', data.name || 'submit');
-		if (data.disabled) {
-			childContainder.setAttribute('disabled', 'disabled');
-		}
-		break;
-	case 'button':
-		node = document.createElement('span');
-		childContainder = node.appendChild(document.createElement('input'));
-		childContainder.setAttribute('type', 'button');
-		if (data.label) {
-			childContainder.setAttribute('value', data.label);
-		}
-		childContainder.setAttribute('name', data.name);
-		if (data.disabled) {
-			childContainder.setAttribute('disabled', 'disabled');
-		}
-		if (data.event) {
-			childContainder.addEventListener('click', data.event, false);
-		}
-		break;
-	case 'textarea':
-		node = document.createElement('div');
-		node.setAttribute('id', 'div_' + id);
-		if (data.label) {
-			label = node.appendChild(document.createElement('h5'));
-			label.appendChild(document.createTextNode(data.label));
+			break;
+		case 'submit':
+			node = document.createElement('span');
+			childContainder = node.appendChild(document.createElement('input'));
+			childContainder.setAttribute('type', 'submit');
+			if (data.label) {
+				childContainder.setAttribute('value', data.label);
+			}
+			childContainder.setAttribute('name', data.name || 'submit');
+			if (data.disabled) {
+				childContainder.setAttribute('disabled', 'disabled');
+			}
+			break;
+		case 'button':
+			node = document.createElement('span');
+			childContainder = node.appendChild(document.createElement('input'));
+			childContainder.setAttribute('type', 'button');
+			if (data.label) {
+				childContainder.setAttribute('value', data.label);
+			}
+			childContainder.setAttribute('name', data.name);
+			if (data.disabled) {
+				childContainder.setAttribute('disabled', 'disabled');
+			}
+			if (data.event) {
+				childContainder.addEventListener('click', data.event, false);
+			}
+			break;
+		case 'textarea':
+			node = document.createElement('div');
+			node.setAttribute('id', 'div_' + id);
+			if (data.label) {
+				label = node.appendChild(document.createElement('h5'));
+				label.appendChild(document.createTextNode(data.label));
 			// TODO need to nest a <label> tag in here without creating extra vertical space
 			// label.setAttribute( 'for', id );
-		}
-		subnode = node.appendChild(document.createElement('textarea'));
-		subnode.setAttribute('name', data.name);
-		if (data.cols) {
-			subnode.setAttribute('cols', data.cols);
-		}
-		if (data.rows) {
-			subnode.setAttribute('rows', data.rows);
-		}
-		if (data.disabled) {
-			subnode.setAttribute('disabled', 'disabled');
-		}
-		if (data.readonly) {
-			subnode.setAttribute('readonly', 'readonly');
-		}
-		if (data.value) {
-			subnode.value = data.value;
-		}
-		break;
-	default:
-		throw new Error('Morebits.quickForm: unknown element type ' + data.type.toString());
+			}
+			subnode = node.appendChild(document.createElement('textarea'));
+			subnode.setAttribute('name', data.name);
+			if (data.cols) {
+				subnode.setAttribute('cols', data.cols);
+			}
+			if (data.rows) {
+				subnode.setAttribute('rows', data.rows);
+			}
+			if (data.disabled) {
+				subnode.setAttribute('disabled', 'disabled');
+			}
+			if (data.readonly) {
+				subnode.setAttribute('readonly', 'readonly');
+			}
+			if (data.value) {
+				subnode.value = data.value;
+			}
+			break;
+		default:
+			throw new Error('Morebits.quickForm: unknown element type ' + data.type.toString());
 	}
 
 	if (!childContainder) {
@@ -681,15 +681,15 @@ Morebits.quickForm.element.autoNWSW = function() {
  */
 Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTooltip(node, data) {
 	$('<span/>', {
-			'class': 'ui-icon ui-icon-help ui-icon-inline morebits-tooltip'
-		}).appendTo(node).tipsy({
-			'fallback': data.tooltip,
-			'fade': true,
-			'gravity': (data.type === 'input' || data.type === 'select') ?
-				Morebits.quickForm.element.autoNWSW : $.fn.tipsy.autoWE,
-			'html': true,
-			'delayOut': 250
-		});
+		'class': 'ui-icon ui-icon-help ui-icon-inline morebits-tooltip'
+	}).appendTo(node).tipsy({
+		'fallback': data.tooltip,
+		'fade': true,
+		'gravity': (data.type === 'input' || data.type === 'select') ?
+			Morebits.quickForm.element.autoNWSW : $.fn.tipsy.autoWE,
+		'html': true,
+		'delayOut': 250
+	});
 };
 
 
@@ -1828,27 +1828,27 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		switch (ctx.editMode) {
-		case 'append':
-			query.appendtext = ctx.appendText;  // use mode to append to current page contents
-			break;
-		case 'prepend':
-			query.prependtext = ctx.prependText;  // use mode to prepend to current page contents
-			break;
-		case 'revert':
-			query.undo = ctx.revertCurID;
-			query.undoafter = ctx.revertOldID;
-			if (ctx.lastEditTime) {
-				query.basetimestamp = ctx.lastEditTime; // check that page hasn't been edited since it was loaded
-			}
-			query.starttimestamp = ctx.loadTime; // check that page hasn't been deleted since it was loaded (don't recreate bad stuff)
-			break;
-		default:
-			query.text = ctx.pageText; // replace entire contents of the page
-			if (ctx.lastEditTime) {
-				query.basetimestamp = ctx.lastEditTime; // check that page hasn't been edited since it was loaded
-			}
-			query.starttimestamp = ctx.loadTime; // check that page hasn't been deleted since it was loaded (don't recreate bad stuff)
-			break;
+			case 'append':
+				query.appendtext = ctx.appendText;  // use mode to append to current page contents
+				break;
+			case 'prepend':
+				query.prependtext = ctx.prependText;  // use mode to prepend to current page contents
+				break;
+			case 'revert':
+				query.undo = ctx.revertCurID;
+				query.undoafter = ctx.revertOldID;
+				if (ctx.lastEditTime) {
+					query.basetimestamp = ctx.lastEditTime; // check that page hasn't been edited since it was loaded
+				}
+				query.starttimestamp = ctx.loadTime; // check that page hasn't been deleted since it was loaded (don't recreate bad stuff)
+				break;
+			default:
+				query.text = ctx.pageText; // replace entire contents of the page
+				if (ctx.lastEditTime) {
+					query.basetimestamp = ctx.lastEditTime; // check that page hasn't been edited since it was loaded
+				}
+				query.starttimestamp = ctx.loadTime; // check that page hasn't been deleted since it was loaded (don't recreate bad stuff)
+				break;
 		}
 
 		if (['recreate', 'createonly', 'nocreate'].indexOf(ctx.createOption) !== -1) {
@@ -3508,7 +3508,7 @@ Morebits.queryString.prototype.create = Morebits.queryString.create;
  * **************** Morebits.status ****************
  */
 
- /**
+/**
   * @constructor
   * Morebits.status.init() must be called before any status object is created, otherwise
   * those statuses won't be visible.
