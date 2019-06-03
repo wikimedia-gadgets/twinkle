@@ -13,4 +13,3 @@
 		"no-useless-catch": "error",
 		"no-useless-return": "error",
 		"yoda": "error",
-		"block-spacing": "error",

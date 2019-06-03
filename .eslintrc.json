@@ -11,6 +11,7 @@
 	},
 	"rules": {
 		"no-caller": "error",
+		"block-spacing": "error",
 		"brace-style": ["error", "1tbs"],
 		"comma-dangle": "error",
 		"comma-spacing": ["error", { "before": false, "after": true }],
