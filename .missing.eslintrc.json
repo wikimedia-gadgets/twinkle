@@ -5,4 +5,3 @@
 		"default-case": "error",
 		"eqeqeq": "error",
 		"guard-for-in": "error",
-		"no-caller": "error",
