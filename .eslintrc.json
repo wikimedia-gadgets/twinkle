@@ -11,6 +11,7 @@
 	},
 	"rules": {
 		"no-caller": "error",
+		"linebreak-style": ["error", "unix"],
 		"no-array-constructor": "error",
 		"no-bitwise": "error",
 		"no-mixed-operators": "error",
