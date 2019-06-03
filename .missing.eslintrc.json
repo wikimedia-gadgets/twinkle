@@ -1,3 +1,2 @@
 		"no-extra-parens": ["error", "all", { "nestedBinaryExpressions": false }],
 		"no-prototype-builtins": "error",
-		"block-scoped-var": "error",

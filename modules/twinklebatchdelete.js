@@ -451,14 +451,16 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 	var subpages = form.getChecked('pages.subpages');
 	var reason = form.reason.value;
 	var delete_page = form.delete_page.checked;
+	var delete_talk, delete_redirects, delete_subpages;
+	var delete_subpage_redirects, delete_subpage_talks, unlink_subpages;
 	if (delete_page) {
-		var delete_talk = form.delete_talk.checked;
-		var delete_redirects = form.delete_redirects.checked;
-		var delete_subpages = form.delete_subpages.checked;
+		delete_talk = form.delete_talk.checked;
+		delete_redirects = form.delete_redirects.checked;
+		delete_subpages = form.delete_subpages.checked;
 		if (delete_subpages) {
-			var delete_subpage_redirects = form.delete_subpage_redirects.checked;
-			var delete_subpage_talks = form.delete_subpage_talks.checked;
-			var unlink_subpages = form.unlink_subpages.checked;
+			delete_subpage_redirects = form.delete_subpage_redirects.checked;
+			delete_subpage_talks = form.delete_subpage_talks.checked;
+			unlink_subpages = form.unlink_subpages.checked;
 		}
 	}
 	var unlink_page = form.unlink_page.checked;
