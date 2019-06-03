@@ -367,7 +367,7 @@ Twinkle.fluff.callbacks = {
 			return;
 		}
 
-		var good_revision = revs[ found ];
+		var good_revision = revs[found];
 		var userHasAlreadyConfirmedAction = false;
 		if (self.params.type !== 'vand' && count > 1) {
 			if (!confirm(self.params.user + ' has made ' + count + ' edits in a row. Are you sure you want to revert them all?')) {

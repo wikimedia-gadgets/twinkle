@@ -17,4 +17,3 @@
 		"brace-style": ["error", "1tbs"],
 		"comma-dangle": "error",
 		"comma-spacing": ["error", { "before": false, "after": true }],
-		"computed-property-spacing": ["error", "never"],

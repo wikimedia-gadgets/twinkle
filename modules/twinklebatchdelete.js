@@ -653,7 +653,7 @@ Twinkle.batchdelete.callbacks = {
 
 		var text;
 		if (params.title in Twinkle.batchdelete.unlinkCache) {
-			text = Twinkle.batchdelete.unlinkCache[ params.title ];
+			text = Twinkle.batchdelete.unlinkCache[params.title];
 		} else {
 			text = pageobj.getPageText();
 		}
@@ -662,7 +662,7 @@ Twinkle.batchdelete.callbacks = {
 		wikiPage.removeLink(params.page);
 
 		text = wikiPage.getText();
-		Twinkle.batchdelete.unlinkCache[ params.title ] = text;
+		Twinkle.batchdelete.unlinkCache[params.title] = text;
 		if (text === old_text) {
 			// Nothing to do, return
 			params.unlinker.workerSuccess(pageobj);
@@ -704,7 +704,7 @@ Twinkle.batchdelete.callbacks = {
 		var image = params.page.replace(/^(?:Image|File):/, '');
 		var text;
 		if (params.title in Twinkle.batchdelete.unlinkCache) {
-			text = Twinkle.batchdelete.unlinkCache[ params.title ];
+			text = Twinkle.batchdelete.unlinkCache[params.title];
 		} else {
 			text = pageobj.getPageText();
 		}
@@ -713,7 +713,7 @@ Twinkle.batchdelete.callbacks = {
 		wikiPage.commentOutImage(image , 'Commented out because image was deleted');
 
 		text = wikiPage.getText();
-		Twinkle.batchdelete.unlinkCache[ params.title ] = text;
+		Twinkle.batchdelete.unlinkCache[params.title] = text;
 		if (text === old_text) {
 			pageobj.getStatusElement().error('failed to unlink image ' + image + ' from ' + pageobj.getPageName());
 			params.unlinker.workerFailure(pageobj);

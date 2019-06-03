@@ -324,7 +324,7 @@ var callback_evaluate = function(e) {
 	var tbtarget = e.target.getChecked('tbtarget')[0];
 	var page = null;
 	var section = e.target.section.value;
-	var fullUserTalkPageName = mw.config.get('wgFormattedNamespaces')[ mw.config.get('wgNamespaceIds').user_talk ] + ':' + mw.config.get('wgRelevantUserName');
+	var fullUserTalkPageName = mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').user_talk] + ':' + mw.config.get('wgRelevantUserName');
 
 	if (tbtarget === 'usertalk' || tbtarget === 'other' || tbtarget === 'see') {
 		page = e.target.page.value;

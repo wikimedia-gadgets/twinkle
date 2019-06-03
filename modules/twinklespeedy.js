@@ -1334,7 +1334,7 @@ Twinkle.speedy.callbacks = {
 			if (params.deleteTalkPage &&
 					params.normalized !== 'f8' &&
 					document.getElementById('ca-talk').className !== 'new') {
-				var talkpage = new Morebits.wiki.page(mw.config.get('wgFormattedNamespaces')[ mw.config.get('wgNamespaceNumber') + 1 ] + ':' + mw.config.get('wgTitle'), 'Deleting talk page');
+				var talkpage = new Morebits.wiki.page(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceNumber') + 1] + ':' + mw.config.get('wgTitle'), 'Deleting talk page');
 				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page "' + Morebits.pageNameNorm + '"' + Twinkle.getPref('deletionSummaryAd'));
 				talkpage.deletePage();
 				// this is ugly, but because of the architecture of wiki.api, it is needed
@@ -1971,7 +1971,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 	}
 
 	var normalizeds = values.map(function(value) {
-		return Twinkle.speedy.normalizeHash[ value ];
+		return Twinkle.speedy.normalizeHash[value];
 	});
 
 	// analyse each criterion to determine whether to watch the page, prompt for summary, or notify the creator
@@ -2044,7 +2044,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	// var multiple = form.multiple.checked;
 	var normalizeds = [];
 	$.each(values, function(index, value) {
-		var norm = Twinkle.speedy.normalizeHash[ value ];
+		var norm = Twinkle.speedy.normalizeHash[value];
 
 		normalizeds.push(norm);
 	});

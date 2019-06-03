@@ -194,14 +194,14 @@ Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
 	var result;
 	if (typeof Twinkle.prefs === 'object' && typeof Twinkle.prefs.friendly === 'object') {
 		// look in Twinkle.prefs (twinkleoptions.js)
-		result = Twinkle.prefs.friendly[ name ];
+		result = Twinkle.prefs.friendly[name];
 	} else if (typeof window.FriendlyConfig === 'object') {
 		// look in FriendlyConfig
-		result = window.FriendlyConfig[ name ];
+		result = window.FriendlyConfig[name];
 	}
 
 	if (result === undefined) {
-		return Twinkle.defaultConfig.friendly[ name ];
+		return Twinkle.defaultConfig.friendly[name];
 	}
 	return result;
 };

@@ -1130,7 +1130,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 
 	if (value === 'singlenotice' || value === 'singlewarn') {
 		// no categories, just create the options right away
-		createEntries(Twinkle.warn.messages[ value ], sub_group, true);
+		createEntries(Twinkle.warn.messages[value], sub_group, true);
 	} else if (value === 'custom') {
 		createEntries(Twinkle.getPref('customWarningList'), sub_group, true);
 	} else {
@@ -1280,8 +1280,8 @@ Twinkle.warn.callbacks = {
 
 		while ((current = history_re.exec(text))) {
 			var current_date = new Date(current[2] + ' UTC');
-			if (!(current[1] in history) ||  history[ current[1] ] < current_date) {
-				history[ current[1] ] = current_date;
+			if (!(current[1] in history) ||  history[current[1]] < current_date) {
+				history[current[1]] = current_date;
 			}
 			if (current_date > latest.date) {
 				latest.date = current_date;
@@ -1292,7 +1292,7 @@ Twinkle.warn.callbacks = {
 		var date = new Date();
 
 		if (params.sub_group in history) {
-			var temp_time = new Date(history[ params.sub_group ]);
+			var temp_time = new Date(history[params.sub_group]);
 			temp_time.setUTCHours(temp_time.getUTCHours() + 24);
 
 			if (temp_time > date) {
