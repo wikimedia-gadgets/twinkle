@@ -1162,9 +1162,9 @@ Morebits.pageNameRegex = function(pageName) {
  * Used for temporarily hiding a part of a string while processing the rest of it.
  *
  * eg.  var u = new Morebits.unbinder("Hello world <!-- world --> world");
- * 		u.unbind('<!--','-->');
- * 		u.content = u.content.replace(/world/g, 'earth');
- * 		u.rebind()	// gives "Hello earth <!-- world --> earth"
+ *      u.unbind('<!--','-->');
+ *      u.content = u.content.replace(/world/g, 'earth');
+ *      u.rebind(); // gives "Hello earth <!-- world --> earth"
  *
  * Text within the 'unbinded' part (in this case, the HTML comment) remains intact
  * unbind() can be called multiple times to unbind multiple parts of the string.
@@ -3129,7 +3129,7 @@ Morebits.wiki.preview = function(previewbox) {
 			return;
 		}
 		previewbox.innerHTML = html;
-		$(previewbox).find('a').attr('target', '_blank');	// this makes links open in new tab
+		$(previewbox).find('a').attr('target', '_blank'); // this makes links open in new tab
 	};
 
 	/**
@@ -3816,8 +3816,8 @@ Morebits.batchOperation = function(currentAction) {
 
 		// internal counters, etc.
 		statusElement: new Morebits.status(currentAction || 'Performing batch operation'),
-		worker: null,		// function that executes for each item in pageList
-		postFinish: null,	// function that executes when the whole batch has been processed
+		worker: null, // function that executes for each item in pageList
+		postFinish: null, // function that executes when the whole batch has been processed
 		countStarted: 0,
 		countFinished: 0,
 		countFinishedSuccess: 0,
@@ -3842,10 +3842,10 @@ Morebits.batchOperation = function(currentAction) {
 	/**
 	 * Sets a known option:
 	 * - chunkSize (integer):
-	 * 		The size of chunks to break the array into (default 50).
-	 * 		Setting this to a small value (<5) can cause problems.
+	 *        The size of chunks to break the array into (default 50).
+	 *        Setting this to a small value (<5) can cause problems.
 	 * - preserveIndividualStatusLines (boolean):
-	 * 		Keep each page's status element visible when worker is complete?
+	 *        Keep each page's status element visible when worker is complete?
 	 */
 	this.setOption = function(optionName, optionValue) {
 		ctx.options[optionName] = optionValue;
@@ -4219,7 +4219,7 @@ Morebits.simpleWindow.prototype = {
 	 * This can be used to provide help or policy links.
 	 * For example, Twinkle's CSD module adds a link to the CSD policy page,
 	 * as well as a link to Twinkle's documentation.
-	 * @param {string} text	  Link's text content
+	 * @param {string} text  Link's text content
 	 * @param {string} wikiPage  Link target
 	 * @returns {Morebits.simpleWindow}
 	 */

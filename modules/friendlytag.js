@@ -886,7 +886,7 @@ Twinkle.tag.article.tagCategories = {
 	},
 	'Merging': [
 		'History merge',
-		'Merge',	// these three have a subgroup with several options
+		'Merge',   // these three have a subgroup with several options
 		'Merge from',
 		'Merge to'
 	],
@@ -1081,7 +1081,8 @@ Twinkle.tag.file.licenseList = [
 Twinkle.tag.file.commonsList = [
 	{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
 	{ label: '{{Do not move to Commons}} (PD issue): file is PD in the US but not in country of origin', value: 'Do not move to Commons' },
-	{ 	label: '{{Do not move to Commons}} (other reason)',
+	{
+		label: '{{Do not move to Commons}} (other reason)',
 		value: 'Do not move to Commons_reason',
 		subgroup: {
 			type: 'input',
@@ -1090,7 +1091,8 @@ Twinkle.tag.file.commonsList = [
 			tooltip: 'Enter the reason why this image should not be moved to Commons (required)'
 		}
 	},
-	{ 	label: '{{Keep local}}: request to keep local copy of a Commons file',
+	{
+		label: '{{Keep local}}: request to keep local copy of a Commons file',
 		value: 'Keep local',
 		subgroup: {
 			type: 'input',
@@ -1099,7 +1101,8 @@ Twinkle.tag.file.commonsList = [
 			tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
 		}
 	},
-	{ 	label: '{{Now Commons}}: file has been copied to Commons',
+	{
+		label: '{{Now Commons}}: file has been copied to Commons',
 		value: 'subst:ncd',
 		subgroup: {
 			type: 'input',
@@ -1117,7 +1120,8 @@ Twinkle.tag.file.cleanupList = [
 	{ label: '{{Bad GIF}}: GIF that should be PNG, JPEG, or SVG', value: 'Bad GIF' },
 	{ label: '{{Bad JPEG}}: JPEG that should be PNG or SVG', value: 'Bad JPEG' },
 	{ label: '{{Bad trace}}: auto-traced SVG requiring cleanup', value: 'Bad trace' },
-	{	label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image',
+	{
+		label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image',
 		subgroup: {
 			type: 'input',
 			name: 'cleanupimageReason',
@@ -1131,7 +1135,8 @@ Twinkle.tag.file.cleanupList = [
 	{ label: '{{Overcompressed JPEG}}: JPEG with high levels of artifacts', value: 'Overcompressed JPEG' },
 	{ label: '{{Opaque}}: opaque background should be transparent', value: 'Opaque' },
 	{ label: '{{Remove border}}: unneeded border, white space, etc.', value: 'Remove border' },
-	{	label: '{{Rename media}}: file should be renamed according to the criteria at [[WP:FMV]]',
+	{
+		label: '{{Rename media}}: file should be renamed according to the criteria at [[WP:FMV]]',
 		value: 'Rename media',
 		subgroup: [
 			{
@@ -1179,7 +1184,8 @@ Twinkle.tag.file.cleanupList = [
 Twinkle.tag.file.qualityList = [
 	{ label: '{{Image-blownout}}', value: 'Image-blownout' },
 	{ label: '{{Image-out-of-focus}}', value: 'Image-out-of-focus' },
-	{ 	label: '{{Image-Poor-Quality}}', value: 'Image-Poor-Quality',
+	{
+		label: '{{Image-Poor-Quality}}', value: 'Image-Poor-Quality',
 		subgroup: {
 			type: 'input',
 			name: 'ImagePoorQualityReason',
@@ -1188,7 +1194,8 @@ Twinkle.tag.file.qualityList = [
 		}
 	},
 	{ label: '{{Image-underexposure}}', value: 'Image-underexposure' },
-	{ 	label: '{{Low quality chem}}: disputed chemical structures', value: 'Low quality chem',
+	{
+		label: '{{Low quality chem}}: disputed chemical structures', value: 'Low quality chem',
 		subgroup: {
 			type: 'input',
 			name: 'lowQualityChemReason',
@@ -1737,7 +1744,7 @@ Twinkle.tag.callbacks = {
 				'prop': 'linkshere',
 				'titles': getRedirectsFor.join('|'),
 				'redirects': 1,
-				'lhnamespace': '10',	// template namespace only
+				'lhnamespace': '10', // template namespace only
 				'lhshow': 'redirect',
 				'lhlimit': 'max'
 			}, function replaceRedirectTag(apiobj) {

@@ -580,7 +580,7 @@ Twinkle.xfd.callbacks = {
 
 		text += '}}';
 
-		if (params.delsort_cats) {		// Only for AFDs
+		if (params.delsort_cats) { // Only for AFDs
 			params.delsort_cats.forEach(function (cat) {
 				text += '\n{{subst:delsort|' + cat + '|~~~~}}';
 			});
@@ -1387,7 +1387,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	var reason = form.xfdreason.value;
 	var delsort_cats = $(form.delsort).val(); // afd
 	var xfdcat = form.xfdcat && form.xfdcat.value; // afd, cfd, cfds, tfd
-	var xfdtarget = form.xfdtarget && form.xfdtarget.value;	// cfd, cfds, tfd
+	var xfdtarget = form.xfdtarget && form.xfdtarget.value; // cfd, cfds, tfd
 	var xfdtarget2 = form.xfdtarget2 && form.xfdtarget2.value; // cfd, cfds
 	var noinclude = form.noinclude && form.noinclude.checked; // afd, mfd, tfd
 	var tfdtype = form.templatetype && form.templatetype.value; // tfd
@@ -1464,7 +1464,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			params.otherTemplateName = Morebits.pageNameNorm;
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);
-		} else {	// delete
+		} else { // delete
 			if (isScribunto) {
 				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName') + '/doc', 'Tagging module documentation with deletion tag');
 			} else {

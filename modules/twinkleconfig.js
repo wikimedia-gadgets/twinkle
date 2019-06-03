@@ -883,12 +883,6 @@ Twinkle.config.sections = [
 
 ]; // end of Twinkle.config.sections
 
-// {
-//			name: "",
-//			label: "",
-//			type: ""
-//		},
-
 
 Twinkle.config.init = function twinkleconfigInit() {
 

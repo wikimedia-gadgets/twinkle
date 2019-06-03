@@ -873,13 +873,13 @@ Twinkle.speedy.generalList = [
 		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
 		value: 'nonsense',
 		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.',
-		hideInNamespaces: [ 2 ]		// Not applicable in userspace
+		hideInNamespaces: [ 2 ] // Not applicable in userspace
 	},
 	{
 		label: 'G2: Test page',
 		value: 'test',
 		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates (although criterion T3 may apply).',
-		hideInNamespaces: [ 2 ]		// Not applicable in userspace
+		hideInNamespaces: [ 2 ] // Not applicable in userspace
 	},
 	{
 		label: 'G3: Pure vandalism',

@@ -340,7 +340,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 				gapprefix: pageTitle.title + '/',
 				gapnamespace: pageTitle.namespace,
 				gaplimit: 'max',
-				pageNameFull: pageName		// Not used by API, but added for access in onSuccess()
+				pageNameFull: pageName // Not used by API, but added for access in onSuccess()
 			}, function onSuccess(apiobj) {
 				var xml = apiobj.responseXML;
 				var $pages = $(xml).find('page');

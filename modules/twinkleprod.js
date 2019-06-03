@@ -53,7 +53,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 		Window.addFooterLink('BLP PROD policy', 'WP:BLPPROD');
 	} else if (namespace === 'file') {
 		Window.addFooterLink('Proposed deletion policy', 'WP:PROD');
-	} else {	// if book
+	} else { // if book
 		Window.addFooterLink('Proposed deletion (books) policy', 'WP:BOOKPROD');
 	}
 
@@ -436,7 +436,7 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	// Talk page templates for PROD-able discussions
 	var blocking_templates = 'Template:Old XfD multi|Template:Old MfD|Template:Oldffdfull|' + // Common prior XfD talk page templates
 		'Template:Multidel|Template:Oldpuffull|' + // Uncommon/legacy prior XfD templates
-		'Olddrvfull|Olddelrev';	// Prior DRV templates
+		'Olddrvfull|Olddelrev'; // Prior DRV templates
 	var query = {
 		'action': 'query',
 		'titles': talk_title,
