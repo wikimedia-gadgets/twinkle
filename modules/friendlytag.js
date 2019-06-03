@@ -179,13 +179,13 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'redirect':
 			Window.setTitle('Redirect tagging');
 
-			form.append({ type: 'header', label:'Spelling, misspelling, tense and capitalization templates' });
+			form.append({ type: 'header', label: 'Spelling, misspelling, tense and capitalization templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.spellingList });
 
-			form.append({ type: 'header', label:'Alternative name templates' });
+			form.append({ type: 'header', label: 'Alternative name templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.alternativeList });
 
-			form.append({ type: 'header', label:'Miscellaneous and administrative redirect templates' });
+			form.append({ type: 'header', label: 'Miscellaneous and administrative redirect templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.administrativeList });
 
 			if (Twinkle.getFriendlyPref('customRedirectTagList').length) {
@@ -199,7 +199,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			break;
 	}
 
-	form.append({ type:'submit' });
+	form.append({ type: 'submit' });
 
 	var result = form.render();
 	Window.setContent(result);
@@ -967,7 +967,7 @@ Twinkle.tag.alternativeList = [
 	{
 		label: '{{R from alternative language}}: redirect from an English name to a name in another language, or vice-versa',
 		value: 'R from alternative language',
-		subgroup : [
+		subgroup: [
 			{
 				name: 'altLangFrom',
 				type: 'input',

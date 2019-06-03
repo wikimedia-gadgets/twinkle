@@ -42,7 +42,7 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 		}
 	});
 
-	var org = form.append({ type:'field', label:'Fill in other details (optional) and click "Submit"' });
+	var org = form.append({ type: 'field', label: 'Fill in other details (optional) and click "Submit"' });
 	org.append({
 			type: 'input',
 			name: 'organization',
@@ -68,7 +68,7 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 		}
 	);
 
-	form.append({ type:'submit' });
+	form.append({ type: 'submit' });
 
 	var result = form.render();
 	Window.setContent(result);

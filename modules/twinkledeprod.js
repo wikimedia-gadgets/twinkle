@@ -45,8 +45,8 @@ Twinkle.deprod.callback = function() {
 		'action': 'query',
 		'generator': 'categorymembers',
 		'gcmtitle': mw.config.get('wgPageName'),
-		'gcmlimit' : 5000, // the max for sysops
-		'gcmnamespace' : '0|6|108|2', // mostly to ignore categories
+		'gcmlimit': 5000, // the max for sysops
+		'gcmnamespace': '0|6|108|2', // mostly to ignore categories
 		'prop': [ 'info', 'revisions' ],
 		'rvprop': [ 'content' ],
 		'inprop': [ 'protection' ]
@@ -119,7 +119,7 @@ Twinkle.deprod.callback = function() {
 		});
 	}, statelem);
 
-	wikipedia_api.params = { form:form, Window:Window };
+	wikipedia_api.params = { form: form, Window: Window };
 	wikipedia_api.post();
 };
 

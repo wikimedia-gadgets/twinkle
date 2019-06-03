@@ -97,7 +97,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 			label: 'Work area',
 			name: 'work_area'
 		});
-	form.append({ type:'submit' });
+	form.append({ type: 'submit' });
 
 	var result = form.render();
 	Window.setContent(result);

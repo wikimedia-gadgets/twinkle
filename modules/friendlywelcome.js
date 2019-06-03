@@ -146,7 +146,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 			type: 'input',
 			name: 'article',
 			label: '* Linked article (if supported by template):',
-			value:(Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : ''),
+			value: (Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : ''),
 			tooltip: 'An article might be linked from within the welcome if the template supports it. Leave empty for no article to be linked.  Templates that support a linked article are marked with an asterisk.'
 		});
 

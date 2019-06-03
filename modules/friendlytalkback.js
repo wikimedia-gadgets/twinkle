@@ -155,10 +155,10 @@ var callback_change_target = function(e) {
 				id: 'twinkle-talkback-optout-message'
 			});
 			work_area.append({
-					type:'input',
-					name:'section',
-					label:'Linked section (optional)',
-					tooltip:'The section heading on your talk page where you left a message. Leave empty for no section to be linked.',
+					type: 'input',
+					name: 'section',
+					label: 'Linked section (optional)',
+					tooltip: 'The section heading on your talk page where you left a message. Leave empty for no section to be linked.',
 					value: prev_section
 				});
 			break;
@@ -170,18 +170,18 @@ var callback_change_target = function(e) {
 				id: 'twinkle-talkback-optout-message'
 			});
 			work_area.append({
-					type:'input',
-					name:'page',
-					label:'User',
-					tooltip:'The username of the user on whose talk page you left a message.',
+					type: 'input',
+					name: 'page',
+					label: 'User',
+					tooltip: 'The username of the user on whose talk page you left a message.',
 					value: prev_page
 				});
 
 			work_area.append({
-					type:'input',
-					name:'section',
-					label:'Linked section (optional)',
-					tooltip:'The section heading on the page where you left a message. Leave empty for no section to be linked.',
+					type: 'input',
+					name: 'section',
+					label: 'Linked section (optional)',
+					tooltip: 'The section heading on the page where you left a message. Leave empty for no section to be linked.',
 					value: prev_section
 				});
 			break;
@@ -248,10 +248,10 @@ var callback_change_target = function(e) {
 					value: 'th'
 				});
 			work_area.append({
-					type:'input',
-					name:'section',
-					label:'Linked thread',
-					tooltip:'The heading of the relevant thread on the noticeboard page.',
+					type: 'input',
+					name: 'section',
+					label: 'Linked thread',
+					tooltip: 'The heading of the relevant thread on the noticeboard page.',
 					value: prev_section
 				});
 			break;
@@ -263,49 +263,49 @@ var callback_change_target = function(e) {
 				id: 'twinkle-talkback-optout-message'
 			});
 			work_area.append({
-					type:'input',
-					name:'page',
-					label:'Full page name',
-					tooltip:"The full page name where you left the message. For example: 'Wikipedia talk:Twinkle'.",
+					type: 'input',
+					name: 'page',
+					label: 'Full page name',
+					tooltip: "The full page name where you left the message. For example: 'Wikipedia talk:Twinkle'.",
 					value: prev_page
 				});
 
 			work_area.append({
-					type:'input',
-					name:'section',
-					label:'Linked section (optional)',
-					tooltip:'The section heading on the page where you left a message. Leave empty for no section to be linked.',
+					type: 'input',
+					name: 'section',
+					label: 'Linked section (optional)',
+					tooltip: 'The section heading on the page where you left a message. Leave empty for no section to be linked.',
 					value: prev_section
 				});
 			break;
 		case 'mail':
 			work_area.append({
-					type:'input',
-					name:'section',
-					label:'Subject of email (optional)',
-					tooltip:'The subject line of the email you sent.'
+					type: 'input',
+					name: 'section',
+					label: 'Subject of email (optional)',
+					tooltip: 'The subject line of the email you sent.'
 				});
 			break;
 		case 'see':
 			work_area.append({
-					type:'input',
-					name:'page',
-					label:'Full page name',
-					tooltip:"The full page name of where the discussion is being held. For example: 'Wikipedia talk:Twinkle'.",
+					type: 'input',
+					name: 'page',
+					label: 'Full page name',
+					tooltip: "The full page name of where the discussion is being held. For example: 'Wikipedia talk:Twinkle'.",
 					value: prev_page
 				});
 			work_area.append({
-					type:'input',
-					name:'section',
-					label:'Linked section (optional)',
-					tooltip:"The section heading where the discussion is being held. For example: 'Merge proposal'.",
+					type: 'input',
+					name: 'section',
+					label: 'Linked section (optional)',
+					tooltip: "The section heading where the discussion is being held. For example: 'Merge proposal'.",
 					value: prev_section
 				});
 			break;
 	}
 
 	if (value !== 'notice') {
-		work_area.append({ type:'textarea', label:'Additional message (optional):', name:'message', tooltip:'An additional message that you would like to leave below the talkback template. Your signature will be added to the end of the message if you leave one.' });
+		work_area.append({ type: 'textarea', label: 'Additional message (optional):', name: 'message', tooltip: 'An additional message that you would like to leave below the talkback template. Your signature will be added to the end of the message if you leave one.' });
 	}
 
 	work_area = work_area.render();

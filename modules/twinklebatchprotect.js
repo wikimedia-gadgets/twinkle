@@ -102,7 +102,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				{ label: '2 months', value: '2 months' },
 				{ label: '3 months', value: '3 months' },
 				{ label: '1 year', value: '1 year' },
-				{ label: 'indefinite', value:'indefinite' },
+				{ label: 'indefinite', value: 'indefinite' },
 				{ label: 'Custom...', value: 'custom' }
 			]
 		});
@@ -172,7 +172,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				{ label: '2 months', value: '2 months' },
 				{ label: '3 months', value: '3 months' },
 				{ label: '1 year', value: '1 year' },
-				{ label: 'indefinite', value:'indefinite' },
+				{ label: 'indefinite', value: 'indefinite' },
 				{ label: 'Custom...', value: 'custom' }
 			]
 		});
@@ -275,7 +275,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			'action': 'query',
 			'generator': 'categorymembers',
 			'gcmtitle': mw.config.get('wgPageName'),
-			'gcmlimit' : Twinkle.getPref('batchMax'), // the max for sysops
+			'gcmlimit': Twinkle.getPref('batchMax'), // the max for sysops
 			'prop': 'revisions',
 			'rvprop': 'size'
 		};
@@ -286,14 +286,14 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			'gapnamespace': Morebits.queryString.exists('namespace') ? Morebits.queryString.get('namespace') : document.getElementById('namespace').value,
 			'gapprefix': Morebits.queryString.exists('from') ? Morebits.string.toUpperCaseFirstChar(Morebits.queryString.get('from').replace('+', ' ')) :
 				Morebits.string.toUpperCaseFirstChar(document.getElementById('nsfrom').value),
-			'gaplimit' : Twinkle.getPref('batchMax'), // the max for sysops
+			'gaplimit': Twinkle.getPref('batchMax'), // the max for sysops
 			'prop': 'revisions',
 			'rvprop': 'size'
 		};
 	} else {
 		query = {
 			'action': 'query',
-			'gpllimit' : Twinkle.getPref('batchMax'), // the max for sysops
+			'gpllimit': Twinkle.getPref('batchMax'), // the max for sysops
 			'generator': 'links',
 			'titles': mw.config.get('wgPageName'),
 			'prop': 'revisions',
@@ -351,7 +351,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 					name: 'pages',
 					list: list
 				});
-			form.append({ type:'submit' });
+			form.append({ type: 'submit' });
 
 			var result = form.render();
 			Window.setContent(result);

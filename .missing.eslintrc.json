@@ -20,4 +20,3 @@
 		"computed-property-spacing": ["error", "never"],
 		"func-call-spacing": ["error", "never"],
 		"indent": ["error", "tab", { "outerIIFEBody": 0, "SwitchCase": 1 }],
-		"key-spacing": ["error", {"singleLine": {"beforeColon": false, "afterColon": true}}],

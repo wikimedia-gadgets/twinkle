@@ -153,7 +153,7 @@ Morebits.sanitizeIPv6 = function (address) {
  * @param {*} eventType
  */
 Morebits.quickForm = function QuickForm(event, eventType) {
-	this.root = new Morebits.quickForm.element({ type: 'form', event: event, eventType:eventType });
+	this.root = new Morebits.quickForm.element({ type: 'form', event: event, eventType: eventType });
 };
 
 /**

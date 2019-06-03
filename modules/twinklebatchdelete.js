@@ -234,7 +234,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 				id: 'tw-dbatch-pages',
 				list: $.map(Twinkle.batchdelete.pages, function (e) { return e; })
 			});
-		form.append({ type:'submit' });
+		form.append({ type: 'submit' });
 
 		var result = form.render();
 		apiobj.params.Window.setContent(result);
@@ -245,7 +245,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 
 	}, statelem);
 
-	wikipedia_api.params = { form:form, Window:Window };
+	wikipedia_api.params = { form: form, Window: Window };
 	wikipedia_api.post();
 };
 

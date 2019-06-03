@@ -76,7 +76,7 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	form.append({ type: 'field', label: '1', name: 'field1' });
 	form.append({ type: 'field', label: '2', name: 'field2' });
 
-	form.append({ type:'submit' });
+	form.append({ type: 'submit' });
 
 	var result = form.render();
 	Window.setContent(result);
@@ -363,7 +363,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							{ label: '2 months', value: '2 months' },
 							{ label: '3 months', value: '3 months' },
 							{ label: '1 year', value: '1 year' },
-							{ label: 'indefinite', value:'indefinite' },
+							{ label: 'indefinite', value: 'indefinite' },
 							{ label: 'Custom...', value: 'custom' }
 						]
 					});
@@ -496,7 +496,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 								{ label: '2 months', value: '2 months' },
 								{ label: '3 months', value: '3 months' },
 								{ label: '1 year', value: '1 year' },
-								{ label: 'indefinite', value:'indefinite' },
+								{ label: 'indefinite', value: 'indefinite' },
 								{ label: 'Custom...', value: 'custom' }
 							]
 						});

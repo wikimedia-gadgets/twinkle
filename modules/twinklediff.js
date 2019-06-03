@@ -35,7 +35,7 @@ Twinkle.diff = function twinklediff() {
 		query = {
 			'title': mw.config.get('wgPageName'),
 			'diff': 'cur',
-			'oldid' : oldid
+			'oldid': oldid
 		};
 		Twinkle.addPortletLink(mw.util.wikiScript('index') + '?' + $.param(query), 'Current', 'tw-curdiff', 'Show difference to current revision');
 	}

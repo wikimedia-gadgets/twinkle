@@ -96,13 +96,13 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		main_group.append({ type: 'option', label: 'Custom warnings', value: 'custom', selected: (defaultGroup === 9) });
 	}
 
-	main_select.append({ type: 'select', name: 'sub_group', event:Twinkle.warn.callback.change_subcategory }); // Will be empty to begin with.
+	main_select.append({ type: 'select', name: 'sub_group', event: Twinkle.warn.callback.change_subcategory }); // Will be empty to begin with.
 
 	form.append({
 			type: 'input',
 			name: 'article',
 			label: 'Linked page',
-			value:(Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : ''),
+			value: (Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : ''),
 			tooltip: 'A page can be linked within the notice, perhaps because it was a revert to said page that dispatched this notice. Leave empty for no page to be linked.'
 		});
 

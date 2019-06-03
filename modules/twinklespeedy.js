@@ -96,7 +96,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 						value: 'tag_only',
 						name: 'tag_only',
 						tooltip: 'If you just want to tag the page, instead of deleting it now',
-						checked : Twinkle.getPref('deleteSysopDefaultToTag'),
+						checked: Twinkle.getPref('deleteSysopDefaultToTag'),
 						event: function(event) {
 							var cForm = event.target.form;
 							var cChecked = event.target.checked;
@@ -1137,7 +1137,7 @@ Twinkle.speedy.normalizeHash = {
 	'madeup': 'a11',
 	'rediruser': 'r2',
 	'redirtypo': 'r3',
-	'redircom' : 'r4',
+	'redircom': 'r4',
 	'redundantimage': 'f1',
 	'noimage': 'f2',
 	'fpcfail': 'f2',

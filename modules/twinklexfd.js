@@ -117,7 +117,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		});
 	form.append({
 			type: 'field',
-			label:'Work area',
+			label: 'Work area',
 			name: 'work_area'
 		});
 
@@ -130,7 +130,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	form.append({ type: 'div', id: 'xfdpreview', label: [ previewlink ] });
 	form.append({ type: 'div', id: 'twinklexfd-previewbox', style: 'display: none' });
 
-	form.append({ type:'submit' });
+	form.append({ type: 'submit' });
 
 	var result = form.render();
 	Window.setContent(result);
@@ -185,23 +185,23 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					]
 		});
 		var afd_category = work_area.append({
-				type:'select',
-				name:'xfdcat',
-				label:'Choose what category this nomination belongs in:'
+				type: 'select',
+				name: 'xfdcat',
+				label: 'Choose what category this nomination belongs in:'
 			});
 
-		afd_category.append({ type:'option', label:'Unknown', value:'?', selected:true });
-		afd_category.append({ type:'option', label:'Media and music', value:'M' });
-		afd_category.append({ type:'option', label:'Organisation, corporation, or product', value:'O' });
-		afd_category.append({ type:'option', label:'Biographical', value:'B' });
-		afd_category.append({ type:'option', label:'Society topics', value:'S' });
-		afd_category.append({ type:'option', label:'Web or internet', value:'W' });
-		afd_category.append({ type:'option', label:'Games or sports', value:'G' });
-		afd_category.append({ type:'option', label:'Science and technology', value:'T' });
-		afd_category.append({ type:'option', label:'Fiction and the arts', value:'F' });
-		afd_category.append({ type:'option', label:'Places and transportation', value:'P' });
-		afd_category.append({ type:'option', label:'Indiscernible or unclassifiable topic', value:'I' });
-		afd_category.append({ type:'option', label:'Debate not yet sorted', value:'U' });
+		afd_category.append({ type: 'option', label: 'Unknown', value: '?', selected: true });
+		afd_category.append({ type: 'option', label: 'Media and music', value: 'M' });
+		afd_category.append({ type: 'option', label: 'Organisation, corporation, or product', value: 'O' });
+		afd_category.append({ type: 'option', label: 'Biographical', value: 'B' });
+		afd_category.append({ type: 'option', label: 'Society topics', value: 'S' });
+		afd_category.append({ type: 'option', label: 'Web or internet', value: 'W' });
+		afd_category.append({ type: 'option', label: 'Games or sports', value: 'G' });
+		afd_category.append({ type: 'option', label: 'Science and technology', value: 'T' });
+		afd_category.append({ type: 'option', label: 'Fiction and the arts', value: 'F' });
+		afd_category.append({ type: 'option', label: 'Places and transportation', value: 'P' });
+		afd_category.append({ type: 'option', label: 'Indiscernible or unclassifiable topic', value: 'I' });
+		afd_category.append({ type: 'option', label: 'Debate not yet sorted', value: 'U' });
 
 		// delsort categories list copied off [[User:Enterprisey/delsort.js]], originally taken from [[WP:DS/C]]
 		var delsortCategories = {
@@ -1419,8 +1419,8 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			'aplimit': Morebits.userIsInGroup('sysop') ? 5000 : 500
 		};
 		wikipedia_api = new Morebits.wiki.api('Tagging article with deletion tag', query, Twinkle.xfd.callbacks.afd.main);
-		wikipedia_api.params = { usertalk:usertalk, reason:reason, noinclude:noinclude,
-			xfdcat:xfdcat, delsort_cats:delsort_cats };
+		wikipedia_api.params = { usertalk: usertalk, reason: reason, noinclude: noinclude,
+			xfdcat: xfdcat, delsort_cats: delsort_cats };
 		wikipedia_api.post();
 		break;
 

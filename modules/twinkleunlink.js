@@ -161,7 +161,7 @@ Twinkle.unlink.callbacks = {
 				}
 				else
 				{
-					apiobj.params.form.append({ type:'header', label: 'File usage' });
+					apiobj.params.form.append({ type: 'header', label: 'File usage' });
 					namespaces = [];
 					$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
 						namespaces.push(v === '0' ? '(Article)' : mw.config.get('wgFormattedNamespaces')[v]);
@@ -207,7 +207,7 @@ Twinkle.unlink.callbacks = {
 					var title = backlinks[i].getAttribute('title');
 					list.push({ label: title, value: title, checked: true });
 				}
-				apiobj.params.form.append({ type:'header', label: 'Backlinks' });
+				apiobj.params.form.append({ type: 'header', label: 'Backlinks' });
 				namespaces = [];
 				$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
 					namespaces.push(v === '0' ? '(Article)' : mw.config.get('wgFormattedNamespaces')[v]);
@@ -250,7 +250,7 @@ Twinkle.unlink.callbacks = {
 			}
 
 			if (havecontent) {
-				apiobj.params.form.append({ type:'submit' });
+				apiobj.params.form.append({ type: 'submit' });
 			}
 
 			var result = apiobj.params.form.render();

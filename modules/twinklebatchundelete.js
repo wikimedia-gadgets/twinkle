@@ -62,7 +62,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		'prop': 'info',
 		'inprop': 'protection',
 		'titles': mw.config.get('wgPageName'),
-		'gpllimit' : Twinkle.getPref('batchMax') // the max for sysops
+		'gpllimit': Twinkle.getPref('batchMax') // the max for sysops
 	};
 	var statelem = new Morebits.status('Grabbing list of pages');
 	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
@@ -102,14 +102,14 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 					name: 'pages',
 					list: list
 				});
-			apiobj.params.form.append({ type:'submit' });
+			apiobj.params.form.append({ type: 'submit' });
 
 			var result = apiobj.params.form.render();
 			apiobj.params.Window.setContent(result);
 
 			Morebits.checkboxShiftClickSupport(Morebits.quickForm.getElements(result, 'pages'));
 		}, statelem);
-	wikipedia_api.params = { form:form, Window:Window };
+	wikipedia_api.params = { form: form, Window: Window };
 	wikipedia_api.post();
 };
 
