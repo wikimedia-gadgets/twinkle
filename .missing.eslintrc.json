@@ -7,4 +7,3 @@
 		"guard-for-in": "error",
 		"no-caller": "error",
 		"no-else-return": "error",
-		"no-implicit-coercion": ["error", { "boolean": false }],
