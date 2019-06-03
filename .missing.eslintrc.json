@@ -24,4 +24,3 @@
 		"keyword-spacing": ["error", { "after": true , "before": true}],
 		"linebreak-style": ["error", "unix"],
 		"no-array-constructor": "error",
-		"no-bitwise": "error",
