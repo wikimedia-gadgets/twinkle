@@ -15,7 +15,7 @@
  */
 
 Twinkle.prod = function twinkleprod() {
-	if(([0, 6, 108].indexOf(mw.config.get('wgNamespaceNumber')) === -1) && (mw.config.get('wgNamespaceNumber') !== 2 || mw.config.get('wgCategories').indexOf('Wikipedia books (user books)') === -1) 
+	if(([0, 6, 108].indexOf(mw.config.get('wgNamespaceNumber')) === -1) && (mw.config.get('wgNamespaceNumber') !== 2 || mw.config.get('wgCategories').indexOf('Wikipedia books (user books)') === -1)
 		|| !mw.config.get('wgCurRevisionId') || Morebits.wiki.isPageRedirect()) {
 		return;
 	}

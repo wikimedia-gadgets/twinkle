@@ -28,4 +28,3 @@
 		"no-mixed-operators": "error",
 		"no-new-object": "error",
 		"no-tabs": ["error", { "allowIndentationTabs": true }],
-		"no-trailing-spaces": "error",
