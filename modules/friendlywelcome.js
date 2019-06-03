@@ -65,7 +65,7 @@ Twinkle.welcome.normal = function() {
 
 				var oWelcomeNode = welcomeNode.cloneNode( true );
 				oWelcomeNode.firstChild.setAttribute( 'href', oHref + '&' + Morebits.queryString.create( {
-						'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode') === 'auto' ? 'auto': 'norm',
+						'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
 						'vanarticle': Morebits.pageNameNorm
 					} ) );
 				$oList[0].parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );
@@ -77,7 +77,7 @@ Twinkle.welcome.normal = function() {
 
 				var nWelcomeNode = welcomeNode.cloneNode( true );
 				nWelcomeNode.firstChild.setAttribute( 'href', nHref + '&' + Morebits.queryString.create( {
-						'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode') === 'auto' ? 'auto': 'norm',
+						'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
 						'vanarticle': Morebits.pageNameNorm
 					} ) );
 				$nList[0].parentNode.parentNode.appendChild( document.createTextNode( ' ' ) );

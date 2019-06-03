@@ -802,7 +802,7 @@ Twinkle.xfd.callbacks = {
 			var discussionPage = pageobj.getCallbackParameters().discussionPage;
 			var text = pageobj.getPageText().replace("directly below this line -->", "directly below this line -->\n{{" + discussionPage + "}}");
 			pageobj.setPageText(text);
-			pageobj.setEditSummary('Listing [[:' + discussionPage +']].' + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary('Listing [[:' + discussionPage + ']].' + Twinkle.getPref('summaryAd'));
 			pageobj.setCreateOption('nocreate');
 			pageobj.save();
 		}
@@ -1443,7 +1443,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		if (xfdcat === "tfm") { // Merge
 			// Tag this template/module
 			if (isScribunto) {
-				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName')+'/doc', "Tagging this module documentation with merge tag");
+				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName') + '/doc', "Tagging this module documentation with merge tag");
 				params.otherTemplateName = "Module:" + xfdtarget;
 			} else {
 				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging this template with merge tag");
@@ -1455,7 +1455,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 			// Tag other template/module
 			if (isScribunto) {
-				wikipedia_page = new Morebits.wiki.page("Module:" + xfdtarget+'/doc', "Tagging other module documentation with merge tag");
+				wikipedia_page = new Morebits.wiki.page("Module:" + xfdtarget + '/doc', "Tagging other module documentation with merge tag");
 			} else {
 				wikipedia_page = new Morebits.wiki.page("Template:" + xfdtarget, "Tagging other template with merge tag");
 			}
@@ -1466,7 +1466,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);
 		} else {	// delete
 			if (isScribunto) {
-				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName')+'/doc', "Tagging module documentation with deletion tag");
+				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName') + '/doc', "Tagging module documentation with deletion tag");
 			} else {
 				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging template with deletion tag");
 			}

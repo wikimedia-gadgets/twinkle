@@ -1819,7 +1819,7 @@ Twinkle.tag.callbacks = {
 		} else {
 			// Fold any pre-existing Rcats into taglist and under Rcatshell
 			var pageTags = pageText.match(/\n{{R(?:edirect)? .*?}}/img);
-			var oldPageTags ='';
+			var oldPageTags = '';
 			if (pageTags) {
 				pageTags.forEach(function(pageTag) {
 					var pageRe = new RegExp(pageTag, 'img');

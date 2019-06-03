@@ -24,7 +24,7 @@ Twinkle.diff = function twinklediff() {
 		'oldid': 'prev'
 	};
 
-	Twinkle.addPortletLink( mw.util.wikiScript("index")+ "?" + $.param( query ), 'Last', 'tw-lastdiff', 'Show most recent diff' );
+	Twinkle.addPortletLink( mw.util.wikiScript("index") + "?" + $.param( query ), 'Last', 'tw-lastdiff', 'Show most recent diff' );
 
 	// Show additional tabs only on diff pages
 	if (Morebits.queryString.exists('diff')) {
@@ -37,7 +37,7 @@ Twinkle.diff = function twinklediff() {
 			'diff': 'cur',
 			'oldid' : oldid
 		};
-		Twinkle.addPortletLink( mw.util.wikiScript("index")+ "?" + $.param( query ), 'Current', 'tw-curdiff', 'Show difference to current revision' );
+		Twinkle.addPortletLink( mw.util.wikiScript("index") + "?" + $.param( query ), 'Current', 'tw-curdiff', 'Show difference to current revision' );
 	}
 };
 

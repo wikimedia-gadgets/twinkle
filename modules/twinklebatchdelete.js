@@ -331,7 +331,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 				return;
 			}
 
-			var wikipedia_api = new Morebits.wiki.api('Getting list of subpages of '+ pageName, {
+			var wikipedia_api = new Morebits.wiki.api('Getting list of subpages of ' + pageName, {
 				action: "query",
 				prop: "revisions|info|imageinfo",
 				generator: "allpages",

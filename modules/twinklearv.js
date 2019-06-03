@@ -357,7 +357,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						});
 						$input.data('revinfo',rev);
 						$input.appendTo($entry);
-						$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+moment(rev.timestamp).calendar()+'</a></span>').appendTo($diffs);
+						$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($diffs);
 					}
 				}).fail(function(data){
 					console.log( 'API failed :(', data ); // eslint-disable-line no-console
@@ -394,7 +394,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						});
 						$input.data('revinfo',rev);
 						$input.appendTo($entry);
-						$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+moment(rev.timestamp).calendar()+'</a></span>').appendTo($warnings);
+						$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($warnings);
 					}
 				}).fail(function(data){
 					console.log( 'API failed :(', data ); // eslint-disable-line no-console
@@ -405,7 +405,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 
 				var t = new mw.Title(value);
 				var ns = t.getNamespaceId();
-				var talk_page = (new mw.Title(t.getMain(), ns%2? ns : ns+1)).getPrefixedText();
+				var talk_page = (new mw.Title(t.getMain(), ns % 2 ? ns : ns + 1)).getPrefixedText();
 
 				api.get({
 					action: 'query',
@@ -436,7 +436,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						});
 						$input.data('revinfo',rev);
 						$input.appendTo($entry);
-						$entry.append('<span>"'+rev.parsedcomment+'" at <a href="'+mw.config.get('wgScript')+'?diff='+rev.revid+'">'+moment(rev.timestamp).calendar()+'</a></span>').appendTo($resolves);
+						$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($resolves);
 					}
 
 					// add free form input
@@ -628,7 +628,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					return;
 				}
 				uaaPage.getStatusElement().status( 'Adding new report...' );
-				uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].'+ Twinkle.getPref('summaryAd') );
+				uaaPage.setEditSummary( 'Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd') );
 				uaaPage.setPageText( text + "\n" + reason );
 				uaaPage.save();
 			} );
@@ -698,7 +698,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			};
 
 			if(free_resolves) {
-				var oldid=mw.util.getParamValue('oldid',free_resolves);
+				var oldid = mw.util.getParamValue('oldid',free_resolves);
 				var api = new mw.Api();
 				api.get({
 					action: 'query',
@@ -725,7 +725,7 @@ Twinkle.arv.processSock = function( params ) {
 	Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
 
 	// notify all user accounts if requested
-	if (params.notify && params.sockpuppets.length>0) {
+	if (params.notify && params.sockpuppets.length > 0) {
 
 		var notifyEditSummary = "Notifying about suspicion of sockpuppeteering." + Twinkle.getPref('summaryAd');
 		var notifyText = "\n\n{{subst:socksuspectnotice|1=" + params.uid + "}} ~~~~";
@@ -743,7 +743,7 @@ Twinkle.arv.processSock = function( params ) {
 
 		// display status of notifications as they progress
 		var onSuccess = function( sockTalkPage ) {
-			var now = parseInt( 100 * ++(current)/total, 10 ) + '%';
+			var now = parseInt( 100 * ++(current) / total, 10 ) + '%';
 			statusIndicator.update( now );
 			sockTalkPage.getStatusElement().unlink();
 			if ( current >= total ) {
@@ -781,7 +781,7 @@ Twinkle.arv.processSock = function( params ) {
 
 	var spiPage = new Morebits.wiki.page( reportpage, 'Retrieving discussion page' );
 	spiPage.setFollowRedirect( true );
-	spiPage.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ Twinkle.getPref('summaryAd') );
+	spiPage.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].' + Twinkle.getPref('summaryAd') );
 	spiPage.setAppendText( text );
 	switch( Twinkle.getPref( 'spiWatchReport' ) ) {
 		case 'yes':
@@ -861,7 +861,7 @@ Twinkle.arv.processAN3 = function( params ) {
 				var last = sub[0];
 				var first = sub.slice(-1)[0];
 				var label = "Consecutive edits made from " + moment(first.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + " to " + moment(last.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]');
-				ret = "# {{diff|oldid="+first.parentid+"|diff="+last.revid+"|label="+label+"}}\n";
+				ret = "# {{diff|oldid=" + first.parentid + "|diff=" + last.revid + "|label=" + label + "}}\n";
 			}
 			ret += sub.reverse().map(function(v){
 				return (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + moment(v.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + '}} "' + v.comment + '"';
@@ -887,7 +887,7 @@ Twinkle.arv.processAN3 = function( params ) {
 			comment += " ~~~~";
 		}
 
-		var text = "\n\n"+'{{subst:AN3 report|diffs='+difftext+'|warnings='+warningtext+'|resolves='+resolvetext+'|pagename='+params.page+'|orig='+origtext+'|comment='+comment+'|uid='+params.uid+'}}';
+		var text = "\n\n" + '{{subst:AN3 report|diffs=' + difftext + '|warnings=' + warningtext + '|resolves=' + resolvetext + '|pagename=' + params.page + '|orig=' + origtext + '|comment=' + comment + '|uid=' + params.uid + '}}';
 
 		var reportpage = 'Wikipedia:Administrators\' noticeboard/Edit warring';
 
@@ -896,7 +896,7 @@ Twinkle.arv.processAN3 = function( params ) {
 
 		var an3Page = new Morebits.wiki.page( reportpage, 'Retrieving discussion page' );
 		an3Page.setFollowRedirect( true );
-		an3Page.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].'+ Twinkle.getPref('summaryAd') );
+		an3Page.setEditSummary( 'Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].' + Twinkle.getPref('summaryAd') );
 		an3Page.setAppendText( text );
 		an3Page.append();
 

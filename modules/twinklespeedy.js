@@ -1410,7 +1410,7 @@ Twinkle.speedy.callbacks = {
 
 			var current = 0;
 			var onsuccess = function( apiobjInner ) {
-				var now = parseInt( 100 * (++current)/total, 10 ) + '%';
+				var now = parseInt( 100 * (++current) / total, 10 ) + '%';
 				statusIndicator.update( now );
 				apiobjInner.statelem.unlink();
 				if( current >= total ) {
@@ -2112,7 +2112,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 
 	// Modules can't be tagged, follow standard at TfD and place on /doc subpage
 	var isScribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
-	var wikipedia_page = isScribunto ? new Morebits.wiki.page(mw.config.get('wgPageName')+'/doc', "Tagging module documentation page") : new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging page");
+	var wikipedia_page = isScribunto ? new Morebits.wiki.page(mw.config.get('wgPageName') + '/doc', "Tagging module documentation page") : new Morebits.wiki.page(mw.config.get('wgPageName'), "Tagging page");
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.speedy.callbacks.user.main);
 };

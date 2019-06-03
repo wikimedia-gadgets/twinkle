@@ -1172,7 +1172,7 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 	var text = '{{', settings = Twinkle.block.blockPresetsInfo[params.template];
 
 	if (!settings.nonstandard) {
-		text += 'subst:'+params.template;
+		text += 'subst:' + params.template;
 		if (params.article && settings.pageParam) text += '|page=' + params.article;
 
 		if (!/te?mp|^\s*$|min/.exec(params.expiry)) {
