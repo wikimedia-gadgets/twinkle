@@ -163,7 +163,7 @@ mw.loader.using('jquery.ui.dialog', function() {
 
 		} // close initialize function
 
-	} // close Twinkle.morebitsTest object
+	}; // close Twinkle.morebitsTest object
 
 	Twinkle.morebitsTest.initialize();
 }); // close mw.loader
@@ -172,7 +172,7 @@ Twinkle.morebitsTestInit = function () {
 	if (mw.config.get("wgAction") === "view" && mw.config.get("skin") === "vector" && mw.config.get("wgNamespaceNumber") >= 0) {
 		Twinkle.addPortlet(("javascript:Twinkle.morebitsTest.launchDialog(Twinkle.morebitsTest.$runTests)"), "Test", "tw-test", "Test morebits.js", "");
 	}
-}
+};
 
 // register initialization callback
 var Twinkle;

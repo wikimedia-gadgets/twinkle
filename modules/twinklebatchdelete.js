@@ -275,7 +275,7 @@ Twinkle.batchdelete.generateNewPageList = function(form) {
 		id: 'tw-dbatch-pages',
 		list: $.map(Twinkle.batchdelete.pages, function (e) { return e; })
 	}).render();
-}
+};
 
 Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e) {
 

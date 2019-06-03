@@ -531,7 +531,7 @@ Twinkle.xfd.setWatchPref = function twinklexfdsetWatchPref(pageobj, pref) {
 			pageobj.setWatchlistFromPreferences(true);
 			break;
 	}
-}
+};
 
 Twinkle.xfd.callbacks = {
 	getDiscussionWikitext: function(venue, params) {

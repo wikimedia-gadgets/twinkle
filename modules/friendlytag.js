@@ -1210,7 +1210,7 @@ Twinkle.tag.file.replacementList.forEach(function(el) {
 		label: 'Replacement file: ',
 		tooltip: 'Enter the name of the file which replaces this one (required)',
 		name: el.value.replace(/ /g,'_') + 'File'
-	}
+	};
 });
 
 
@@ -1899,7 +1899,7 @@ Twinkle.tag.callbacks = {
 						currentTag += "|1=" + params[tag.replace(/ /g,'_') + 'File'];
 						break;
 					case "Do not move to Commons_reason":
-						currentTag += '|reason=' + params.DoNotMoveToCommons
+						currentTag += '|reason=' + params.DoNotMoveToCommons;
 						break;
 					case "subst:orfurrev":
 						// remove {{non-free reduce}} and redirects
