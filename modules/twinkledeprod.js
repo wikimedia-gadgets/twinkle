@@ -21,17 +21,17 @@ Twinkle.deprod = function() {
 	) {
 		return;
 	}
-	Twinkle.addPortletLink(Twinkle.deprod.callback, "Deprod", "tw-deprod", "Delete prod pages found in this category");
+	Twinkle.addPortletLink(Twinkle.deprod.callback, 'Deprod', 'tw-deprod', 'Delete prod pages found in this category');
 };
 
 var concerns = {};
 
 Twinkle.deprod.callback = function() {
 	var Window = new Morebits.simpleWindow(800, 400);
-	Window.setTitle("PROD cleaning");
-	Window.setScriptName("Twinkle");
-	Window.addFooterLink("Proposed deletion", "WP:PROD");
-	Window.addFooterLink("Twinkle help", "WP:TW/DOC#deprod");
+	Window.setTitle('PROD cleaning');
+	Window.setScriptName('Twinkle');
+	Window.addFooterLink('Proposed deletion', 'WP:PROD');
+	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#deprod');
 
 	var form = new Morebits.quickForm(callback_commit);
 
@@ -46,13 +46,13 @@ Twinkle.deprod.callback = function() {
 		'generator': 'categorymembers',
 		'gcmtitle': mw.config.get('wgPageName'),
 		'gcmlimit' : 5000, // the max for sysops
-		"gcmnamespace" : '0|6|108|2', // mostly to ignore categories
+		'gcmnamespace' : '0|6|108|2', // mostly to ignore categories
 		'prop': [ 'info', 'revisions' ],
 		'rvprop': [ 'content' ],
 		'inprop': [ 'protection' ]
 	};
 
-	var statelem = new Morebits.status("Grabbing list of pages");
+	var statelem = new Morebits.status('Grabbing list of pages');
 	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
 		var $doc = $(apiobj.responseXML);
 		var $pages = $doc.find('page[ns!="6"]');  // all non-files
@@ -73,7 +73,7 @@ Twinkle.deprod.callback = function() {
 				metadata.push(concerns[title]);
 			}
 			if (isProtected) {
-				metadata.push("fully protected" +
+				metadata.push('fully protected' +
 					($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))));
 			}
 			list.push({
@@ -86,14 +86,14 @@ Twinkle.deprod.callback = function() {
 		apiobj.params.form.append({ type: 'header', label: 'Pages to delete' });
 		apiobj.params.form.append({
 			type: 'button',
-			label: "Select All",
+			label: 'Select All',
 			event: function(e) {
 				$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', true);
 			}
 		});
 		apiobj.params.form.append({
 			type: 'button',
-			label: "Deselect All",
+			label: 'Deselect All',
 			event: function(e) {
 				$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', false);
 			}
@@ -111,11 +111,11 @@ Twinkle.deprod.callback = function() {
 		apiobj.params.Window.setContent(rendered);
 		$(Morebits.quickForm.getElements(rendered, 'pages')).each(function(index, checkbox) {
 			var $checkbox = $(checkbox);
-			var link = Morebits.htmlNode("a", $checkbox.val());
-			link.setAttribute("class", "deprod-page-link");
-			link.setAttribute("href", mw.util.getUrl($checkbox.val()));
-			link.setAttribute("target", "_blank");
-			$checkbox.next().prepend([link, " "]);
+			var link = Morebits.htmlNode('a', $checkbox.val());
+			link.setAttribute('class', 'deprod-page-link');
+			link.setAttribute('href', mw.util.getUrl($checkbox.val()));
+			link.setAttribute('target', '_blank');
+			$checkbox.next().prepend([link, ' ']);
 		});
 	}, statelem);
 
@@ -127,9 +127,9 @@ var callback_commit = function(event) {
 	var pages = event.target.getChecked('pages');
 	Morebits.status.init(event.target);
 
-	var batchOperation = new Morebits.batchOperation("Deleting articles");
-	batchOperation.setOption("chunkSize", Twinkle.getPref('proddeleteChunks'));
-	batchOperation.setOption("preserveIndividualStatusLines", true);
+	var batchOperation = new Morebits.batchOperation('Deleting articles');
+	batchOperation.setOption('chunkSize', Twinkle.getPref('proddeleteChunks'));
+	batchOperation.setOption('preserveIndividualStatusLines', true);
 	batchOperation.setPageList(pages);
 	batchOperation.run(function(pageName) {
 		var params = { page: pageName, reason: concerns[page] };
@@ -153,8 +153,8 @@ var callback_commit = function(event) {
 		wikipedia_api.params = params;
 		wikipedia_api.post();
 
-		var page = new Morebits.wiki.page(pageName, "Deleting article " + pageName);
-		page.setEditSummary("Expired [[WP:PROD|PROD]], concern was: " + concerns[pageName] + Twinkle.getPref('deletionSummaryAd'));
+		var page = new Morebits.wiki.page(pageName, 'Deleting article ' + pageName);
+		page.setEditSummary('Expired [[WP:PROD|PROD]], concern was: ' + concerns[pageName] + Twinkle.getPref('deletionSummaryAd'));
 		page.suppressProtectWarning();
 		page.deletePage(batchOperation.workerSuccess, batchOperation.workerFailure);
 	});
@@ -168,16 +168,16 @@ callback_deleteTalk = function(apiobj) {
 		return;
 	}
 
-	var page = new Morebits.wiki.page('Talk:' + apiobj.params.page, "Deleting talk page of article " + apiobj.params.page);
-	page.setEditSummary("[[WP:CSD#G8|G8]]: [[Help:Talk page|Talk page]] of deleted page \"" + apiobj.params.page + "\"" + Twinkle.getPref('deletionSummaryAd'));
+	var page = new Morebits.wiki.page('Talk:' + apiobj.params.page, 'Deleting talk page of article ' + apiobj.params.page);
+	page.setEditSummary('[[WP:CSD#G8|G8]]: [[Help:Talk page|Talk page]] of deleted page "' + apiobj.params.page + '"' + Twinkle.getPref('deletionSummaryAd'));
 	page.deletePage();
 },
 callback_deleteRedirects = function(apiobj) {
 	var $doc = $(apiobj.responseXML);
-	$doc.find("redirects rd").each(function() {
+	$doc.find('redirects rd').each(function() {
 		var title = $(this).attr('title');
-		var page = new Morebits.wiki.page(title, "Deleting redirecting page " + title);
-		page.setEditSummary("[[WP:CSD#G8|G8]]: Redirect to deleted page \"" + apiobj.params.page + "\"" + Twinkle.getPref('deletionSummaryAd'));
+		var page = new Morebits.wiki.page(title, 'Deleting redirecting page ' + title);
+		page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + apiobj.params.page + '"' + Twinkle.getPref('deletionSummaryAd'));
 		page.deletePage();
 	});
 };

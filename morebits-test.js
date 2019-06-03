@@ -11,7 +11,7 @@ mw.loader.using('jquery.ui.dialog', function() {
 
 		initSimpleWindow: function() {
 			var Window = new Morebits.simpleWindow(600, 400);
-			Window.setTitle("Test morebits.js");
+			Window.setTitle('Test morebits.js');
 			Window.display();
 			var form = new Morebits.quickForm(null);
 			form.append({
@@ -24,8 +24,8 @@ mw.loader.using('jquery.ui.dialog', function() {
 			Window.display();
 			result.main_group.root = result;
 			Morebits.status.init(result);
-			Morebits.wiki.actionCompleted.redirect = mw.config.get("wgPageName");
-			Morebits.wiki.actionCompleted.notice = "Test complete, reloading talk page in a few seconds";
+			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
+			Morebits.wiki.actionCompleted.notice = 'Test complete, reloading talk page in a few seconds';
 		},
 
 		setPageOptions: function(page) {
@@ -47,7 +47,7 @@ mw.loader.using('jquery.ui.dialog', function() {
 				page.setMaxRetries(0);
 			}
 			var section = $('#runTestForm input[name="sectionNumber"]').val();
-			if (section != "") {
+			if (section != '') {
 				page.setPageSection(Number(section));
 			}
 			page.setCreateOption(window.morebits_test_createOption);
@@ -76,7 +76,7 @@ mw.loader.using('jquery.ui.dialog', function() {
 		},
 
 		lookupCreationCallback: function(page) {
-			alert("Page was created by: " + page.getCreator() + " at: " + page.getCreationTimestamp());
+			alert('Page was created by: ' + page.getCreator() + ' at: ' + page.getCreationTimestamp());
 		},
 
 		finalSaveCallback: function(page) {
@@ -113,33 +113,33 @@ mw.loader.using('jquery.ui.dialog', function() {
 					title: 'Test Morebits.wiki.page class',
 					modal: true,
 					buttons: {
-						"Append": function() {
+						'Append': function() {
 							$(this).dialog('close');
 							Twinkle.morebitsTest.initSimpleWindow();
 
-							var page = new Morebits.wiki.page(mw.config.get("wgPageName"));
+							var page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 							page.setAppendText($('#message').val());
 							Twinkle.morebitsTest.setPageOptions(page);
 							page.append(Twinkle.morebitsTest.finalSaveCallback);
 						},
-						"Prepend": function() {
+						'Prepend': function() {
 							$(this).dialog('close');
 							Twinkle.morebitsTest.initSimpleWindow();
 
-							var page = new Morebits.wiki.page(mw.config.get("wgPageName"));
+							var page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 							page.setPrependText($('#message').val());
 							Twinkle.morebitsTest.setPageOptions(page);
 							page.prepend(Twinkle.morebitsTest.finalSaveCallback);
 						},
-						"Insert": function() {
-							if ($('#beforeText').val() == "") {
-								alert ("Text to insert before must be specified!");
+						'Insert': function() {
+							if ($('#beforeText').val() == '') {
+								alert ('Text to insert before must be specified!');
 								return;
 							}
 							$(this).dialog('close');
 							Twinkle.morebitsTest.initSimpleWindow();
 
-							var page = new Morebits.wiki.page(mw.config.get("wgPageName"));
+							var page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 							page.setCallbackParameters({
 								beforeText: $('#beforeText').val(),
 								newText: $('#message').val()
@@ -147,11 +147,11 @@ mw.loader.using('jquery.ui.dialog', function() {
 							Twinkle.morebitsTest.setPageOptions(page);
 							page.load(Twinkle.morebitsTest.loadCallbackInsert);
 						},
-						"Replace": function() {
+						'Replace': function() {
 							$(this).dialog('close');
 							Twinkle.morebitsTest.initSimpleWindow();
 
-							var page = new Morebits.wiki.page(mw.config.get("wgPageName"));
+							var page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 							page.setCallbackParameters({
 								newText: $('#message').val()
 								});
@@ -169,8 +169,8 @@ mw.loader.using('jquery.ui.dialog', function() {
 }); // close mw.loader
 
 Twinkle.morebitsTestInit = function () {
-	if (mw.config.get("wgAction") === "view" && mw.config.get("skin") === "vector" && mw.config.get("wgNamespaceNumber") >= 0) {
-		Twinkle.addPortlet(("javascript:Twinkle.morebitsTest.launchDialog(Twinkle.morebitsTest.$runTests)"), "Test", "tw-test", "Test morebits.js", "");
+	if (mw.config.get('wgAction') === 'view' && mw.config.get('skin') === 'vector' && mw.config.get('wgNamespaceNumber') >= 0) {
+		Twinkle.addPortlet(('javascript:Twinkle.morebitsTest.launchDialog(Twinkle.morebitsTest.$runTests)'), 'Test', 'tw-test', 'Test morebits.js', '');
 	}
 };
 

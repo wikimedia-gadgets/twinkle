@@ -21,17 +21,17 @@ Twinkle.arv = function twinklearv() {
 
 	var title = mw.util.isIPAddress(username) ? 'Report IP to administrators' : 'Report user to administrators';
 
-	Twinkle.addPortletLink(function() { Twinkle.arv.callback(username); }, "ARV", "tw-arv", title);
+	Twinkle.addPortletLink(function() { Twinkle.arv.callback(username); }, 'ARV', 'tw-arv', title);
 };
 
 Twinkle.arv.callback = function (uid) {
 	var Window = new Morebits.simpleWindow(600, 500);
-	Window.setTitle("Advance Reporting and Vetting"); // Backronym
-	Window.setScriptName("Twinkle");
-	Window.addFooterLink("Guide to AIV", "WP:GAIV");
-	Window.addFooterLink("UAA instructions", "WP:UAAI");
-	Window.addFooterLink("About SPI", "WP:SPI");
-	Window.addFooterLink("Twinkle help", "WP:TW/DOC#arv");
+	Window.setTitle('Advance Reporting and Vetting'); // Backronym
+	Window.setScriptName('Twinkle');
+	Window.addFooterLink('Guide to AIV', 'WP:GAIV');
+	Window.addFooterLink('UAA instructions', 'WP:UAAI');
+	Window.addFooterLink('About SPI', 'WP:SPI');
+	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#arv');
 
 	var form = new Morebits.quickForm(Twinkle.arv.callback.evaluate);
 	var categories = form.append({
@@ -82,7 +82,7 @@ Twinkle.arv.callback = function (uid) {
 	Window.display();
 
 	// We must init the
-	var evt = document.createEvent("Event");
+	var evt = document.createEvent('Event');
 	evt.initEvent('change', true, true);
 	result.category.dispatchEvent(evt);
 };
@@ -90,7 +90,7 @@ Twinkle.arv.callback = function (uid) {
 Twinkle.arv.callback.changeCategory = function (e) {
 	var value = e.target.value;
 	var root = e.target.form;
-	var old_area = Morebits.quickForm.getElements(root, "work_area")[0];
+	var old_area = Morebits.quickForm.getElements(root, 'work_area')[0];
 	var work_area = null;
 
 	switch(value) {
@@ -492,8 +492,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 
 Twinkle.arv.callback.evaluate = function(e) {
 	var form = e.target;
-	var reason = "";
-	var comment = "";
+	var reason = '';
+	var comment = '';
 	if (form.reason) {
 		comment = form.reason.value;
 	}
@@ -542,23 +542,23 @@ Twinkle.arv.callback.evaluate = function(e) {
 			}
 
 			if (types) {
-				reason += " " + types;
+				reason += ' ' + types;
 			}
-			if (comment !== "") {
-				reason += (reason === "" ? "" : ". ") + comment;
+			if (comment !== '') {
+				reason += (reason === '' ? '' : '. ') + comment;
 			}
 			reason = reason.trim();
 			if (reason.search(/[.?!;]$/) === -1) {
-				reason += ".";
+				reason += '.';
 			}
-			reason += " ~~~~";
-			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
+			reason += ' ~~~~';
+			reason = reason.replace(/\r?\n/g, '\n*:');  // indent newlines
 
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
 
-			Morebits.wiki.actionCompleted.redirect = "Wikipedia:Administrator intervention against vandalism";
-			Morebits.wiki.actionCompleted.notice = "Reporting complete";
+			Morebits.wiki.actionCompleted.redirect = 'Wikipedia:Administrator intervention against vandalism';
+			Morebits.wiki.actionCompleted.notice = 'Reporting complete';
 
 			var aivPage = new Morebits.wiki.page('Wikipedia:Administrator intervention against vandalism', 'Processing AIV request');
 			aivPage.setPageSection(1);
@@ -568,7 +568,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				var text = aivPage.getPageText();
 
 				// check if user has already been reported
-				if (new RegExp("\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*" + RegExp.escape(uid, true) + "\\s*\\}\\}").test(text)) {
+				if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + RegExp.escape(uid, true) + '\\s*\\}\\}').test(text)) {
 					aivPage.getStatusElement().error('Report already present, will not add a new one');
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at AIV:');
 					return;
@@ -598,22 +598,22 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if (/[aeiouwyh]/.test(types[0] || '')) { // non 100% correct, but whatever, including 'h' for Cockney
 				article = 'an';
 			}
-			reason = "*{{user-uaa|1=" + uid + "}} &ndash; ";
+			reason = '*{{user-uaa|1=' + uid + '}} &ndash; ';
 			if (types.length || hasShared) {
-				reason += "Violation of the username policy as " + article + " " + types + " username" +
-					(hasShared ? " that implies shared use. " : ". ");
+				reason += 'Violation of the username policy as ' + article + ' ' + types + ' username' +
+					(hasShared ? ' that implies shared use. ' : '. ');
 			}
 			if (comment !== '') {
-				reason += Morebits.string.toUpperCaseFirstChar(comment) + ". ";
+				reason += Morebits.string.toUpperCaseFirstChar(comment) + '. ';
 			}
-			reason += "~~~~";
-			reason = reason.replace(/\r?\n/g, "\n*:");  // indent newlines
+			reason += '~~~~';
+			reason = reason.replace(/\r?\n/g, '\n*:');  // indent newlines
 
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
 
-			Morebits.wiki.actionCompleted.redirect = "Wikipedia:Usernames for administrator attention";
-			Morebits.wiki.actionCompleted.notice = "Reporting complete";
+			Morebits.wiki.actionCompleted.redirect = 'Wikipedia:Usernames for administrator attention';
+			Morebits.wiki.actionCompleted.notice = 'Reporting complete';
 
 			var uaaPage = new Morebits.wiki.page('Wikipedia:Usernames for administrator attention', 'Processing UAA request');
 			uaaPage.setFollowRedirect(true);
@@ -622,34 +622,34 @@ Twinkle.arv.callback.evaluate = function(e) {
 				var text = uaaPage.getPageText();
 
 				// check if user has already been reported
-				if (new RegExp("\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?" + RegExp.escape(uid, true) + "\\s*(\\||\\})").test(text)) {
+				if (new RegExp('\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?' + RegExp.escape(uid, true) + '\\s*(\\||\\})').test(text)) {
 					uaaPage.getStatusElement().error('User is already listed.');
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at UAA:');
 					return;
 				}
 				uaaPage.getStatusElement().status('Adding new report...');
 				uaaPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd'));
-				uaaPage.setPageText(text + "\n" + reason);
+				uaaPage.setPageText(text + '\n' + reason);
 				uaaPage.save();
 			});
 			break;
 
 		// WP:SPI
-		case "sock":
+		case 'sock':
 			/* falls through */
-		case "puppet":
+		case 'puppet':
 			var sockParameters = {
 				evidence: form.evidence.value.trim(),
 				checkuser: form.checkuser.checked,
 				notify: form.notify.checked
 			};
 
-			var puppetReport = form.category.value === "puppet";
+			var puppetReport = form.category.value === 'puppet';
 			if (puppetReport && !(form.sockmaster.value.trim())) {
-				alert("You have not entered a sockmaster account for this puppet. Consider reporting this account as a sockpuppeteer instead.");
+				alert('You have not entered a sockmaster account for this puppet. Consider reporting this account as a sockpuppeteer instead.');
 				return;
 			} else if (!puppetReport && !(form.sockpuppet[0].value.trim())) {
-				alert("You have not entered any sockpuppet account(s) for this sockmaster. Consider reporting this account as a sockpuppet instead.");
+				alert('You have not entered any sockpuppet account(s) for this sockmaster. Consider reporting this account as a sockpuppet instead.');
 				return;
 			}
 
@@ -664,13 +664,13 @@ Twinkle.arv.callback.evaluate = function(e) {
 		case 'an3':
 			var diffs = $.map($('input:checkbox[name=s_diffs]:checked',form), function(o) { return $(o).data('revinfo'); });
 
-			if (diffs.length < 3 && !confirm("You have selected fewer than three offending edits. Do you wish to make the report anyway?")) {
+			if (diffs.length < 3 && !confirm('You have selected fewer than three offending edits. Do you wish to make the report anyway?')) {
 				return;
 			}
 
 			var warnings = $.map($('input:checkbox[name=s_warnings]:checked',form), function(o) { return $(o).data('revinfo'); });
 
-			if(!warnings.length && !confirm("You have not selected any edits where you warned the offender. Do you wish to make the report anyway?")) {
+			if(!warnings.length && !confirm('You have not selected any edits where you warned the offender. Do you wish to make the report anyway?')) {
 				return;
 			}
 
@@ -678,7 +678,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			var free_resolves = $('input[name=s_resolves_free]').val();
 
 			var an3_next = function(free_resolves) {
-				if(!resolves.length && !free_resolves && !confirm("You have not selected any edits where you tried to resolve the issue. Do you wish to make the report anyway?")) {
+				if(!resolves.length && !free_resolves && !confirm('You have not selected any edits where you tried to resolve the issue. Do you wish to make the report anyway?')) {
 					return;
 				}
 
@@ -727,8 +727,8 @@ Twinkle.arv.processSock = function(params) {
 	// notify all user accounts if requested
 	if (params.notify && params.sockpuppets.length > 0) {
 
-		var notifyEditSummary = "Notifying about suspicion of sockpuppeteering." + Twinkle.getPref('summaryAd');
-		var notifyText = "\n\n{{subst:socksuspectnotice|1=" + params.uid + "}} ~~~~";
+		var notifyEditSummary = 'Notifying about suspicion of sockpuppeteering.' + Twinkle.getPref('summaryAd');
+		var notifyText = '\n\n{{subst:socksuspectnotice|1=' + params.uid + '}} ~~~~';
 
 		// notify user's master account
 		var masterTalkPage = new Morebits.wiki.page('User talk:' + params.uid, 'Notifying suspected sockpuppeteer');
@@ -755,7 +755,7 @@ Twinkle.arv.processSock = function(params) {
 
 		// notify each puppet account
 		for(var i = 0; i < socks.length; ++i) {
-			var sockTalkPage = new Morebits.wiki.page('User talk:' + socks[i], "Notification for " +  socks[i]);
+			var sockTalkPage = new Morebits.wiki.page('User talk:' + socks[i], 'Notification for ' +  socks[i]);
 			sockTalkPage.setFollowRedirect(true);
 			sockTalkPage.setEditSummary(notifyEditSummary);
 			sockTalkPage.setAppendText(notifyText);
@@ -764,20 +764,20 @@ Twinkle.arv.processSock = function(params) {
 	}
 
 	// prepare the SPI report
-	var text = "\n\n{{subst:SPI report|socksraw=" +
+	var text = '\n\n{{subst:SPI report|socksraw=' +
 		params.sockpuppets.map(function(v) {
-				return "* {{" + (mw.util.isIPAddress(v) ? "checkip" : "checkuser") + "|1=" + v + "}}";
-			}).join("\n") + "\n|evidence=" + params.evidence + " \n";
+				return '* {{' + (mw.util.isIPAddress(v) ? 'checkip' : 'checkuser') + '|1=' + v + '}}';
+			}).join('\n') + '\n|evidence=' + params.evidence + ' \n';
 
 	if (params.checkuser) {
-		text += "|checkuser=yes";
+		text += '|checkuser=yes';
 	}
-	text += "}}";
+	text += '}}';
 
 	var reportpage = 'Wikipedia:Sockpuppet investigations/' + params.uid;
 
 	Morebits.wiki.actionCompleted.redirect = reportpage;
-	Morebits.wiki.actionCompleted.notice = "Reporting complete";
+	Morebits.wiki.actionCompleted.notice = 'Reporting complete';
 
 	var spiPage = new Morebits.wiki.page(reportpage, 'Retrieving discussion page');
 	spiPage.setFollowRedirect(true);
@@ -837,7 +837,7 @@ Twinkle.arv.processAN3 = function(params) {
 			}
 		}
 
-		var origtext = "";
+		var origtext = '';
 		if(orig) {
 			origtext = '{{diff2|' + orig.revid + '|' + orig.timestamp + '}} "' + orig.comment + '"';
 		}
@@ -856,43 +856,43 @@ Twinkle.arv.processAN3 = function(params) {
 		}
 
 		var difftext = $.map(grouped_diffs, function(sub) {
-			var ret = "";
+			var ret = '';
 			if(sub.length >= 2) {
 				var last = sub[0];
 				var first = sub.slice(-1)[0];
-				var label = "Consecutive edits made from " + moment(first.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + " to " + moment(last.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]');
-				ret = "# {{diff|oldid=" + first.parentid + "|diff=" + last.revid + "|label=" + label + "}}\n";
+				var label = 'Consecutive edits made from ' + moment(first.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + ' to ' + moment(last.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]');
+				ret = '# {{diff|oldid=' + first.parentid + '|diff=' + last.revid + '|label=' + label + '}}\n';
 			}
 			ret += sub.reverse().map(function(v) {
 				return (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + moment(v.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + '}} "' + v.comment + '"';
-			}).join("\n");
+			}).join('\n');
 			return ret;
-		}).reverse().join("\n");
+		}).reverse().join('\n');
 		var warningtext = params.warnings.reverse().map(function(v) {
 			return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + '}} "' + v.comment + '"';
-		}).join("\n");
+		}).join('\n');
 		var resolvetext = params.resolves.reverse().map(function(v) {
 			return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + '}} "' + v.comment + '"';
-		}).join("\n");
+		}).join('\n');
 
 		if(params.free_resolves) {
 			var page = params.free_resolves;
 			var rev = page.revisions[0];
-			resolvetext += "\n# " + ' {{diff2|' + rev.revid + '|' + moment(rev.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + ' on ' + page.title +  '}} "' + rev.comment + '"';
+			resolvetext += '\n# ' + ' {{diff2|' + rev.revid + '|' + moment(rev.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + ' on ' + page.title +  '}} "' + rev.comment + '"';
 		}
 
 		var comment = params.comment.replace(/~*$/g, '').trim();
 
 		if(comment) {
-			comment += " ~~~~";
+			comment += ' ~~~~';
 		}
 
-		var text = "\n\n" + '{{subst:AN3 report|diffs=' + difftext + '|warnings=' + warningtext + '|resolves=' + resolvetext + '|pagename=' + params.page + '|orig=' + origtext + '|comment=' + comment + '|uid=' + params.uid + '}}';
+		var text = '\n\n' + '{{subst:AN3 report|diffs=' + difftext + '|warnings=' + warningtext + '|resolves=' + resolvetext + '|pagename=' + params.page + '|orig=' + origtext + '|comment=' + comment + '|uid=' + params.uid + '}}';
 
 		var reportpage = 'Wikipedia:Administrators\' noticeboard/Edit warring';
 
 		Morebits.wiki.actionCompleted.redirect = reportpage;
-		Morebits.wiki.actionCompleted.notice = "Reporting complete";
+		Morebits.wiki.actionCompleted.notice = 'Reporting complete';
 
 		var an3Page = new Morebits.wiki.page(reportpage, 'Retrieving discussion page');
 		an3Page.setFollowRedirect(true);
@@ -902,8 +902,8 @@ Twinkle.arv.processAN3 = function(params) {
 
 		// notify user
 
-		var notifyEditSummary = "Notifying about edit warring noticeboard discussion." + Twinkle.getPref('summaryAd');
-		var notifyText = "\n\n{{subst:an3-notice|1=" + mw.util.wikiUrlencode(params.uid) + "|auto=1}} ~~~~";
+		var notifyEditSummary = 'Notifying about edit warring noticeboard discussion.' + Twinkle.getPref('summaryAd');
+		var notifyText = '\n\n{{subst:an3-notice|1=' + mw.util.wikiUrlencode(params.uid) + '|auto=1}} ~~~~';
 
 		var talkPage = new Morebits.wiki.page('User talk:' + params.uid, 'Notifying edit warrior');
 		talkPage.setFollowRedirect(true);

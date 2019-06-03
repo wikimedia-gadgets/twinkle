@@ -16,15 +16,15 @@
 Twinkle.shared = function friendlyshared() {
 	if(mw.config.get('wgNamespaceNumber') === 3 && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
 		var username = mw.config.get('wgRelevantUserName');
-		Twinkle.addPortletLink(function() { Twinkle.shared.callback(username); }, "Shared IP", "friendly-shared", "Shared IP tagging");
+		Twinkle.addPortletLink(function() { Twinkle.shared.callback(username); }, 'Shared IP', 'friendly-shared', 'Shared IP tagging');
 	}
 };
 
 Twinkle.shared.callback = function friendlysharedCallback() {
 	var Window = new Morebits.simpleWindow(600, 420);
-	Window.setTitle("Shared IP address tagging");
-	Window.setScriptName("Twinkle");
-	Window.addFooterLink("Twinkle help", "WP:TW/DOC#shared");
+	Window.setTitle('Shared IP address tagging');
+	Window.setScriptName('Twinkle');
+	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#shared');
 
 	var form = new Morebits.quickForm(Twinkle.shared.callback.evaluate);
 
@@ -188,9 +188,9 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	Morebits.status.init(e.target);
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = "Tagging complete, reloading talk page in a few seconds";
+	Morebits.wiki.actionCompleted.notice = 'Tagging complete, reloading talk page in a few seconds';
 
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), "User talk page modification");
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'User talk page modification');
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.shared.callbacks.main);

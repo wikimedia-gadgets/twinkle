@@ -232,7 +232,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 	switch(data.type) {
 	case 'form':
 		node = document.createElement('form');
-		node.className = "quickform";
+		node.className = 'quickform';
 		node.setAttribute('action', 'javascript:void(0);');
 		if(data.event) {
 			node.addEventListener(data.eventType || 'submit', data.event , false);
@@ -383,7 +383,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 					});
 
 					var subgroup = subgroupRaw.render(cur_id);
-					subgroup.className = "quickformSubgroup";
+					subgroup.className = 'quickformSubgroup';
 					subnode.subgroup = subgroup;
 					subnode.shown = false;
 
@@ -645,7 +645,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 		}
 		break;
 	default:
-		throw new Error("Morebits.quickForm: unknown element type " + data.type.toString());
+		throw new Error('Morebits.quickForm: unknown element type ' + data.type.toString());
 	}
 
 	if(!childContainder) {
@@ -663,7 +663,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 	}
 	if(data.className) {
 		childContainder.className = (childContainder.className ?
-			childContainder.className + " " + data.className :
+			childContainder.className + ' ' + data.className :
 			data.className);
 	}
 	childContainder.setAttribute('id', data.id || id);
@@ -685,7 +685,7 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 		}).appendTo(node).tipsy({
 			'fallback': data.tooltip,
 			'fade': true,
-			'gravity': (data.type === "input" || data.type === "select") ?
+			'gravity': (data.type === 'input' || data.type === 'select') ?
 				Morebits.quickForm.element.autoNWSW : $.fn.tipsy.autoWE,
 			'html': true,
 			'delayOut': 250
@@ -756,21 +756,21 @@ Morebits.quickForm.getElementContainer = function QuickFormGetElementContainer(e
  */
 Morebits.quickForm.getElementLabelObject = function QuickFormGetElementLabelObject(element) {
 	// for buttons, divs and headers, the label is on the element itself
-	if (element.type === "button" || element.type === "submit" ||
+	if (element.type === 'button' || element.type === 'submit' ||
 			element instanceof HTMLDivElement || element instanceof HTMLHeadingElement) {
 		return element;
 
 	// for fieldsets, the label is the child <legend> element
 	} else if (element instanceof HTMLFieldSetElement) {
-		return element.getElementsByTagName("legend")[0];
+		return element.getElementsByTagName('legend')[0];
 
 	// for textareas, the label is the sibling <h5> element
 	} else if (element instanceof HTMLTextAreaElement) {
-		return element.parentNode.getElementsByTagName("h5")[0];
+		return element.parentNode.getElementsByTagName('h5')[0];
 
 	// for others, the label is the sibling <label> element
 	} else {
-		return element.parentNode.getElementsByTagName("label")[0];
+		return element.parentNode.getElementsByTagName('label')[0];
 	}
 };
 
@@ -811,8 +811,8 @@ Morebits.quickForm.setElementLabel = function QuickFormSetElementLabel(element, 
  * @returns {boolean} true if succeeded, false if the label element is unavailable
  */
 Morebits.quickForm.overrideElementLabel = function QuickFormOverrideElementLabel(element, temporaryLabelText) {
-	if (!element.hasAttribute("data-oldlabel")) {
-		element.setAttribute("data-oldlabel", Morebits.quickForm.getElementLabel(element));
+	if (!element.hasAttribute('data-oldlabel')) {
+		element.setAttribute('data-oldlabel', Morebits.quickForm.getElementLabel(element));
 	}
 	return Morebits.quickForm.setElementLabel(element, temporaryLabelText);
 };
@@ -823,8 +823,8 @@ Morebits.quickForm.overrideElementLabel = function QuickFormOverrideElementLabel
  * @returns {boolean} true if succeeded, false if the label element is unavailable
  */
 Morebits.quickForm.resetElementLabel = function QuickFormResetElementLabel(element) {
-	if (element.hasAttribute("data-oldlabel")) {
-		return Morebits.quickForm.setElementLabel(element, element.getAttribute("data-oldlabel"));
+	if (element.hasAttribute('data-oldlabel')) {
+		return Morebits.quickForm.setElementLabel(element, element.getAttribute('data-oldlabel'));
 	}
 	return null;
 };
@@ -844,7 +844,7 @@ Morebits.quickForm.setElementVisibility = function QuickFormSetElementVisibility
  * @param {boolean} [visibility] Skip this to toggle visibility
  */
 Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementTooltipVisibility(element, visibility) {
-	$(Morebits.quickForm.getElementContainer(element)).find(".morebits-tooltip").toggle(visibility);
+	$(Morebits.quickForm.getElementContainer(element)).find('.morebits-tooltip').toggle(visibility);
 };
 
 
@@ -1013,7 +1013,7 @@ Morebits.string = {
 			} else if(typeof skiplist === 'string') {
 				skiplist = [ skiplist ];
 			} else {
-				throw new Error("non-applicable skiplist parameter");
+				throw new Error('non-applicable skiplist parameter');
 			}
 		}
 		for(var i  = 0; i < str.length; ++i) {
@@ -1051,8 +1051,8 @@ Morebits.string = {
 	formatReasonText: function(str) {
 		var result = str.toString().trim();
 		var unbinder = new Morebits.unbinder(result);
-		unbinder.unbind("<no" + "wiki>", "</no" + "wiki>");
-		unbinder.content = unbinder.content.replace(/\|/g, "{{subst:!}}");
+		unbinder.unbind('<no' + 'wiki>', '</no' + 'wiki>');
+		unbinder.content = unbinder.content.replace(/\|/g, '{{subst:!}}');
 		return unbinder.rebind();
 	},
 
@@ -1062,7 +1062,7 @@ Morebits.string = {
 	 * and may contain dollar signs
 	 */
 	safeReplace: function morebitsStringSafeReplace(string, pattern, replacement) {
-		return string.replace(pattern, replacement.replace(/\$/g, "$$$$"));
+		return string.replace(pattern, replacement.replace(/\$/g, '$$$$'));
 	}
 };
 
@@ -1077,7 +1077,7 @@ Morebits.array = {
 	 */
 	uniq: function(arr) {
 		if (!Array.isArray(arr)) {
-			throw "A non-array object passed to Morebits.array.uniq";
+			throw 'A non-array object passed to Morebits.array.uniq';
 		}
 		var result = [];
 		for(var i = 0; i < arr.length; ++i) {
@@ -1095,7 +1095,7 @@ Morebits.array = {
 	 */
 	dups: function(arr) {
 		if (!Array.isArray(arr)) {
-			throw "A non-array object passed to Morebits.array.dups";
+			throw 'A non-array object passed to Morebits.array.dups';
 		}
 		var uniques = [];
 		var result = [];
@@ -1120,7 +1120,7 @@ Morebits.array = {
 	 */
 	chunk: function(arr, size) {
 		if (!Array.isArray(arr)) {
-			throw "A non-array object passed to Morebits.array.chunk";
+			throw 'A non-array object passed to Morebits.array.chunk';
 		}
 		if(typeof size !== 'number' || size <= 0) { // pretty impossible to do anything :)
 			return [ arr ]; // we return an array consisting of this array.
@@ -1178,7 +1178,7 @@ Morebits.pageNameRegex = function(pageName) {
  */
 Morebits.unbinder = function Unbinder(string) {
 	if(typeof string !== 'string') {
-		throw new Error("not a string");
+		throw new Error('not a string');
 	}
 	this.content = string;
 	this.counter = 0;
@@ -1271,7 +1271,7 @@ Morebits.wiki = {};
  * (fails to detect soft redirects on edit, history, etc. pages)
  */
 Morebits.wiki.isPageRedirect = function wikipediaIsPageRedirect() {
-	return !!(mw.config.get("wgIsRedirect") || document.getElementById("softredirect"));
+	return !!(mw.config.get('wgIsRedirect') || document.getElementById('softredirect'));
 };
 
 
@@ -1322,7 +1322,7 @@ Morebits.wiki.actionCompleted.event = function() {
 		if(!((/^\w+:\/\//).test(Morebits.wiki.actionCompleted.redirect))) {
 			Morebits.wiki.actionCompleted.redirect = mw.util.getUrl(Morebits.wiki.actionCompleted.redirect);
 			if(Morebits.wiki.actionCompleted.followRedirect === false) {
-				Morebits.wiki.actionCompleted.redirect += "?redirect=no";
+				Morebits.wiki.actionCompleted.redirect += '?redirect=no';
 			}
 		}
 		window.setTimeout(function() { window.location = Morebits.wiki.actionCompleted.redirect; }, Morebits.wiki.actionCompleted.timeOut);
@@ -1412,7 +1412,7 @@ Morebits.wiki.api.prototype = {
 				this.errorCode = $(xml).find('error').attr('code');
 				this.errorText = $(xml).find('error').attr('info');
 
-				if (typeof this.errorCode === "string") {
+				if (typeof this.errorCode === 'string') {
 
 					// the API didn't like what we told it, e.g., bad edit token or an error creating a page
 					this.returnError();
@@ -1426,7 +1426,7 @@ Morebits.wiki.api.prototype = {
 					// as the first argument to the callback (for legacy code)
 					this.onSuccess.call(this.parent, this);
 				} else {
-					this.statelem.info("done");
+					this.statelem.info('done');
 				}
 
 				Morebits.wiki.actionCompleted();
@@ -1443,8 +1443,8 @@ Morebits.wiki.api.prototype = {
 	},
 
 	returnError: function() {
-		if (this.errorCode === "badtoken") {
-			this.statelem.error("Invalid token. Refresh the page and try again");
+		if (this.errorCode === 'badtoken') {
+			this.statelem.error('Invalid token. Refresh the page and try again');
 		} else {
 			this.statelem.error(this.errorText);
 		}
@@ -1724,7 +1724,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// Need to be able to do something after the page loads
 		if (!onSuccess) {
-			ctx.statusElement.error("Internal error: no onSuccess callback provided to load()!");
+			ctx.statusElement.error('Internal error: no onSuccess callback provided to load()!');
 			ctx.onLoadFailure(this);
 			return;
 		}
@@ -1755,7 +1755,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.loadQuery.inprop = 'protection';
 		}
 
-		ctx.loadApi = new Morebits.wiki.api("Retrieving page...", ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
+		ctx.loadApi = new Morebits.wiki.api('Retrieving page...', ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
 		ctx.loadApi.setParent(this);
 		ctx.loadApi.post();
 	};
@@ -1781,12 +1781,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var canUseMwUserToken = fnCanUseMwUserToken('edit');
 
 		if (!ctx.pageLoaded && !canUseMwUserToken) {
-			ctx.statusElement.error("Internal error: attempt to save a page that has not been loaded!");
+			ctx.statusElement.error('Internal error: attempt to save a page that has not been loaded!');
 			ctx.onSaveFailure(this);
 			return;
 		}
 		if (!ctx.editSummary) {
-			ctx.statusElement.error("Internal error: edit summary not set before save!");
+			ctx.statusElement.error('Internal error: edit summary not set before save!');
 			ctx.onSaveFailure(this);
 			return;
 		}
@@ -1796,7 +1796,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			!confirm('You are about to make an edit to the fully protected page "' + ctx.pageName +
 			(ctx.fullyProtected === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + ctx.fullyProtected + ')')) +
 			'.  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.')) {
-			ctx.statusElement.error("Edit to fully protected page was aborted.");
+			ctx.statusElement.error('Edit to fully protected page was aborted.');
 			ctx.onSaveFailure(this);
 			return;
 		}
@@ -1859,7 +1859,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.redirect = true;
 		}
 
-		ctx.saveApi = new Morebits.wiki.api("Saving page...", query, fnSaveSuccess, ctx.statusElement, fnSaveError);
+		ctx.saveApi = new Morebits.wiki.api('Saving page...', query, fnSaveSuccess, ctx.statusElement, fnSaveError);
 		ctx.saveApi.setParent(this);
 		ctx.saveApi.post();
 	};
@@ -2049,7 +2049,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 */
 	this.setFollowRedirect = function(followRedirect) {
 		if (ctx.pageLoaded) {
-			ctx.statusElement.error("Internal error: cannot change redirect setting after the page has been loaded!");
+			ctx.statusElement.error('Internal error: cannot change redirect setting after the page has been loaded!');
 			return;
 		}
 		ctx.followRedirect = followRedirect;
@@ -2174,7 +2174,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 */
 	this.lookupCreation = function(onSuccess) {
 		if (!onSuccess) {
-			ctx.statusElement.error("Internal error: no onSuccess callback provided to lookupCreation()!");
+			ctx.statusElement.error('Internal error: no onSuccess callback provided to lookupCreation()!');
 			return;
 		}
 		ctx.onLookupCreationSuccess = onSuccess;
@@ -2192,7 +2192,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.lookupCreationApi = new Morebits.wiki.api("Retrieving page creation information", query, fnLookupCreationSuccess, ctx.statusElement);
+		ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', query, fnLookupCreationSuccess, ctx.statusElement);
 		ctx.lookupCreationApi.setParent(this);
 		ctx.lookupCreationApi.post();
 	};
@@ -2201,7 +2201,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 */
 	this.lookupCreator = function(onSuccess) {
 		console.warn("NOTE: lookupCreator() from Twinkle's Morebits has been deprecated since May/June 2019, please use lookupCreation() instead"); // eslint-disable-line no-console
-		Morebits.status.warn("NOTE", "lookupCreator() from Twinkle's Morebits has been deprecated since May/June 2019, please use lookupCreation() instead");
+		Morebits.status.warn('NOTE', "lookupCreator() from Twinkle's Morebits has been deprecated since May/June 2019, please use lookupCreation() instead");
 		return this.lookupCreation(onSuccess);
 	};
 
@@ -2243,7 +2243,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onSaveFailure = onFailure || emptyFunction;
 
 		if (!ctx.revertOldID) {
-			ctx.statusElement.error("Internal error: revision ID to revert to was not set before revert!");
+			ctx.statusElement.error('Internal error: revision ID to revert to was not set before revert!');
 			ctx.onSaveFailure(this);
 			return;
 		}
@@ -2262,12 +2262,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onMoveFailure = onFailure || emptyFunction;
 
 		if (!ctx.editSummary) {
-			ctx.statusElement.error("Internal error: move reason not set before move (use setEditSummary function)!");
+			ctx.statusElement.error('Internal error: move reason not set before move (use setEditSummary function)!');
 			ctx.onMoveFailure(this);
 			return;
 		}
 		if (!ctx.moveDestination) {
-			ctx.statusElement.error("Internal error: destination page name was not set before move!");
+			ctx.statusElement.error('Internal error: destination page name was not set before move!');
 			ctx.onMoveFailure(this);
 			return;
 		}
@@ -2285,7 +2285,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.inprop = 'protection';
 		}
 
-		ctx.moveApi = new Morebits.wiki.api("retrieving move token...", query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
+		ctx.moveApi = new Morebits.wiki.api('retrieving move token...', query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
 		ctx.moveApi.setParent(this);
 		ctx.moveApi.post();
 	};
@@ -2302,12 +2302,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// if a non-admin tries to do this, don't bother
 		if (!Morebits.userIsInGroup('sysop')) {
-			ctx.statusElement.error("Cannot delete page: only admins can do that");
+			ctx.statusElement.error('Cannot delete page: only admins can do that');
 			ctx.onDeleteFailure(this);
 			return;
 		}
 		if (!ctx.editSummary) {
-			ctx.statusElement.error("Internal error: delete reason not set before delete (use setEditSummary function)!");
+			ctx.statusElement.error('Internal error: delete reason not set before delete (use setEditSummary function)!');
 			ctx.onDeleteFailure(this);
 			return;
 		}
@@ -2326,7 +2326,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				query.redirects = '';  // follow all redirects
 			}
 
-			ctx.deleteApi = new Morebits.wiki.api("retrieving delete token...", query, fnProcessDelete, ctx.statusElement, ctx.onDeleteFailure);
+			ctx.deleteApi = new Morebits.wiki.api('retrieving delete token...', query, fnProcessDelete, ctx.statusElement, ctx.onDeleteFailure);
 			ctx.deleteApi.setParent(this);
 			ctx.deleteApi.post();
 		}
@@ -2343,12 +2343,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// if a non-admin tries to do this, don't bother
 		if (!Morebits.userIsInGroup('sysop')) {
-			ctx.statusElement.error("Cannot undelete page: only admins can do that");
+			ctx.statusElement.error('Cannot undelete page: only admins can do that');
 			ctx.onUndeleteFailure(this);
 			return;
 		}
 		if (!ctx.editSummary) {
-			ctx.statusElement.error("Internal error: undelete reason not set before undelete (use setEditSummary function)!");
+			ctx.statusElement.error('Internal error: undelete reason not set before undelete (use setEditSummary function)!');
 			ctx.onUndeleteFailure(this);
 			return;
 		}
@@ -2364,7 +2364,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				titles: ctx.pageName
 			};
 
-			ctx.undeleteApi = new Morebits.wiki.api("retrieving undelete token...", query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
+			ctx.undeleteApi = new Morebits.wiki.api('retrieving undelete token...', query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
 			ctx.undeleteApi.setParent(this);
 			ctx.undeleteApi.post();
 		}
@@ -2381,17 +2381,17 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// if a non-admin tries to do this, don't bother
 		if (!Morebits.userIsInGroup('sysop')) {
-			ctx.statusElement.error("Cannot protect page: only admins can do that");
+			ctx.statusElement.error('Cannot protect page: only admins can do that');
 			ctx.onProtectFailure(this);
 			return;
 		}
 		if (!ctx.protectEdit && !ctx.protectMove && !ctx.protectCreate) {
-			ctx.statusElement.error("Internal error: you must set edit and/or move and/or create protection before calling protect()!");
+			ctx.statusElement.error('Internal error: you must set edit and/or move and/or create protection before calling protect()!');
 			ctx.onProtectFailure(this);
 			return;
 		}
 		if (!ctx.editSummary) {
-			ctx.statusElement.error("Internal error: protection reason not set before protect (use setEditSummary function)!");
+			ctx.statusElement.error('Internal error: protection reason not set before protect (use setEditSummary function)!');
 			ctx.onProtectFailure(this);
 			return;
 		}
@@ -2410,7 +2410,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.protectApi = new Morebits.wiki.api("retrieving protect token...", query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
+		ctx.protectApi = new Morebits.wiki.api('retrieving protect token...', query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
 		ctx.protectApi.setParent(this);
 		ctx.protectApi.post();
 	};
@@ -2424,17 +2424,17 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// if a non-admin tries to do this, don't bother
 		if (!Morebits.userIsInGroup('sysop')) {
-			ctx.statusElement.error("Cannot apply FlaggedRevs settings: only admins can do that");
+			ctx.statusElement.error('Cannot apply FlaggedRevs settings: only admins can do that');
 			ctx.onStabilizeFailure(this);
 			return;
 		}
 		if (!ctx.flaggedRevs) {
-			ctx.statusElement.error("Internal error: you must set flaggedRevs before calling stabilize()!");
+			ctx.statusElement.error('Internal error: you must set flaggedRevs before calling stabilize()!');
 			ctx.onStabilizeFailure(this);
 			return;
 		}
 		if (!ctx.editSummary) {
-			ctx.statusElement.error("Internal error: reason not set before calling stabilize() (use setEditSummary function)!");
+			ctx.statusElement.error('Internal error: reason not set before calling stabilize() (use setEditSummary function)!');
 			ctx.onStabilizeFailure(this);
 			return;
 		}
@@ -2449,7 +2449,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.stabilizeApi = new Morebits.wiki.api("retrieving stabilize token...", query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
+		ctx.stabilizeApi = new Morebits.wiki.api('retrieving stabilize token...', query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
 		ctx.stabilizeApi.setParent(this);
 		ctx.stabilizeApi.post();
 	};
@@ -2507,7 +2507,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return; // abort
 		}
 
-		ctx.pageExists = ($(xml).find('page').attr('missing') !== "");
+		ctx.pageExists = ($(xml).find('page').attr('missing') !== '');
 		if (ctx.pageExists) {
 			ctx.pageText = $(xml).find('rev').text();
 		} else {
@@ -2526,13 +2526,13 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		ctx.editToken = $(xml).find('page').attr('edittoken');
 		if (!ctx.editToken) {
-			ctx.statusElement.error("Failed to retrieve edit token.");
+			ctx.statusElement.error('Failed to retrieve edit token.');
 			ctx.onLoadFailure(this);
 			return;
 		}
 		ctx.loadTime = $(xml).find('page').attr('starttimestamp');
 		if (!ctx.loadTime) {
-			ctx.statusElement.error("Failed to retrieve start timestamp.");
+			ctx.statusElement.error('Failed to retrieve start timestamp.');
 			ctx.onLoadFailure(this);
 			return;
 		}
@@ -2542,22 +2542,22 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (ctx.editMode === 'revert') {
 			ctx.revertCurID = $(xml).find('rev').attr('revid');
 			if (!ctx.revertCurID) {
-				ctx.statusElement.error("Failed to retrieve current revision ID.");
+				ctx.statusElement.error('Failed to retrieve current revision ID.');
 				ctx.onLoadFailure(this);
 				return;
 			}
 			ctx.revertUser = $(xml).find('rev').attr('user');
 			if (!ctx.revertUser) {
-				if ($(xml).find('rev').attr('userhidden') === "") {  // username was RevDel'd or oversighted
-					ctx.revertUser = "<username hidden>";
+				if ($(xml).find('rev').attr('userhidden') === '') {  // username was RevDel'd or oversighted
+					ctx.revertUser = '<username hidden>';
 				} else {
-					ctx.statusElement.error("Failed to retrieve user who made the revision.");
+					ctx.statusElement.error('Failed to retrieve user who made the revision.');
 					ctx.onLoadFailure(this);
 					return;
 				}
 			}
 			// set revert edit summary
-			ctx.editSummary = "[[Help:Revert|Reverted]] to revision " + ctx.revertOldID + " by " + ctx.revertUser + ": " + ctx.editSummary;
+			ctx.editSummary = '[[Help:Revert|Reverted]] to revision ' + ctx.revertOldID + ' by ' + ctx.revertUser + ': ' + ctx.editSummary;
 		}
 
 		ctx.pageLoaded = true;
@@ -2573,8 +2573,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		// check for invalid titles
-		if ($(xml).find('page').attr('invalid') === "") {
-			ctx.statusElement.error("The page title is invalid: " + ctx.pageName);
+		if ($(xml).find('page').attr('invalid') === '') {
+			ctx.statusElement.error('The page title is invalid: ' + ctx.pageName);
 			onFailure(this);
 			return false; // abort
 		}
@@ -2585,13 +2585,13 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 			// only notify user for redirects, not normalization
 			if ($(xml).find('redirects').length > 0) {
-				Morebits.status.info("Info", "Redirected from " + ctx.pageName + " to " + resolvedName);
+				Morebits.status.info('Info', 'Redirected from ' + ctx.pageName + ' to ' + resolvedName);
 			}
 			ctx.pageName = resolvedName;  // always update in case of normalization
 		}
 		else {
 			// could be a circular redirect or other problem
-			ctx.statusElement.error("Could not resolve redirects for: " + ctx.pageName);
+			ctx.statusElement.error('Could not resolve redirects for: ' + ctx.pageName);
 			onFailure(this);
 
 			// force error to stay on the screen
@@ -2607,7 +2607,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var xml = ctx.saveApi.getXML();
 
 		// see if the API thinks we were successful
-		if ($(xml).find('edit').attr('result') === "Success") {
+		if ($(xml).find('edit').attr('result') === 'Success') {
 
 			// real success
 			// default on success action - display link for edited page
@@ -2628,24 +2628,24 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		if (blacklist) {
 			var code = document.createElement('code');
-			code.style.fontFamily = "monospace";
+			code.style.fontFamily = 'monospace';
 			code.appendChild(document.createTextNode(blacklist));
 			ctx.statusElement.error(['Could not save the page because the URL ', code, ' is on the spam blacklist.']);
 		} else if ($(xml).find('captcha').length > 0) {
-			ctx.statusElement.error("Could not save the page because the wiki server wanted you to fill out a CAPTCHA.");
+			ctx.statusElement.error('Could not save the page because the wiki server wanted you to fill out a CAPTCHA.');
 		} else if ($editNode.attr('code') === 'abusefilter-disallowed') {
 			ctx.statusElement.error('The edit was disallowed by the edit filter rule "' + $editNode.attr('info').substring(17) + '".');
 		} else if ($editNode.attr('info').indexOf('Hit AbuseFilter:') === 0) {
 			var div = document.createElement('div');
-			div.className = "toccolours";
-			div.style.fontWeight = "normal";
-			div.style.color = "black";
+			div.className = 'toccolours';
+			div.style.fontWeight = 'normal';
+			div.style.color = 'black';
 			div.innerHTML = $editNode.attr('warning');
 			ctx.statusElement.error([ 'The following warning was returned by the edit filter: ', div, 'If you wish to proceed with the edit, please carry it out again. This warning wil not appear a second time.' ]);
 			// XXX provide the user with a way to automatically retry the action if they so choose -
 			// I can't see how to do this without creating a UI dependency on Morebits.wiki.page though -- TTO
 		} else {
-			ctx.statusElement.error("Unknown error received from API while saving page");
+			ctx.statusElement.error('Unknown error received from API while saving page');
 		}
 
 		// force error to stay on the screen
@@ -2660,7 +2660,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var errorCode = ctx.saveApi.getErrorCode();
 
 		// check for edit conflict
-		if (errorCode === "editconflict" && ctx.conflictRetries++ < ctx.maxConflictRetries) {
+		if (errorCode === 'editconflict' && ctx.conflictRetries++ < ctx.maxConflictRetries) {
 
 			// edit conflicts can occur when the page needs to be purged from the server cache
 			var purgeQuery = {
@@ -2668,12 +2668,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				titles: ctx.pageName  // redirects are already resolved
 			};
 
-			var purgeApi = new Morebits.wiki.api("Edit conflict detected, purging server cache", purgeQuery, null, ctx.statusElement);
+			var purgeApi = new Morebits.wiki.api('Edit conflict detected, purging server cache', purgeQuery, null, ctx.statusElement);
 			purgeApi.post({ async: false });  // just wait for it, result is for debugging
 
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 
-			ctx.statusElement.info("Edit conflict detected, reapplying edit");
+			ctx.statusElement.info('Edit conflict detected, reapplying edit');
 			if (fnCanUseMwUserToken('edit')) {
 				ctx.saveApi.post(); // necessarily append or prepend, so this should work as desired
 			} else {
@@ -2682,9 +2682,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// check for loss of edit token
 		// it's impractical to request a new token here, so invoke edit conflict logic when this happens
-		} else if (errorCode === "notoken" && ctx.conflictRetries++ < ctx.maxConflictRetries) {
+		} else if (errorCode === 'notoken' && ctx.conflictRetries++ < ctx.maxConflictRetries) {
 
-			ctx.statusElement.info("Edit token is invalid, retrying");
+			ctx.statusElement.info('Edit token is invalid, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			if (fnCanUseMwUserToken('edit')) {
 				this.load(fnAutoSave, ctx.onSaveFailure); // try the append or prepend again
@@ -2693,10 +2693,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			}
 
 		// check for network or server error
-		} else if (errorCode === "undefined" && ctx.retries++ < ctx.maxRetries) {
+		} else if (errorCode === 'undefined' && ctx.retries++ < ctx.maxRetries) {
 
 			// the error might be transient, so try again
-			ctx.statusElement.info("Save failed, retrying");
+			ctx.statusElement.info('Save failed, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.saveApi.post(); // give it another go!
 
@@ -2704,10 +2704,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		} else {
 
 			// non-admin attempting to edit a protected page - this gives a friendlier message than the default
-			if (errorCode === "protectedpage") {
-				ctx.statusElement.error("Failed to save edit: Page is protected");
+			if (errorCode === 'protectedpage') {
+				ctx.statusElement.error('Failed to save edit: Page is protected');
 			} else {
-				ctx.statusElement.error("Failed to save edit: " + ctx.saveApi.getErrorText());
+				ctx.statusElement.error('Failed to save edit: ' + ctx.saveApi.getErrorText());
 			}
 			ctx.editMode = 'all';  // cancel append/prepend/revert modes
 			if (ctx.onSaveFailure) {
@@ -2725,12 +2725,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		ctx.creator = $(xml).find('rev').attr('user');
 		if (!ctx.creator) {
-			ctx.statusElement.error("Could not find name of page creator");
+			ctx.statusElement.error('Could not find name of page creator');
 			return;
 		}
 		ctx.timestamp = $(xml).find('rev').attr('timestamp');
 		if (!ctx.timestamp) {
-			ctx.statusElement.error("Could not find timestamp of page creation");
+			ctx.statusElement.error('Could not find timestamp of page creation');
 			return;
 		}
 
@@ -2740,8 +2740,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	var fnProcessMove = function() {
 		var xml = ctx.moveApi.getXML();
 
-		if ($(xml).find('page').attr('missing') === "") {
-			ctx.statusElement.error("Cannot move the page, because it no longer exists");
+		if ($(xml).find('page').attr('missing') === '') {
+			ctx.statusElement.error('Cannot move the page, because it no longer exists');
 			ctx.onMoveFailure(this);
 			return;
 		}
@@ -2753,7 +2753,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				!confirm('You are about to move the fully protected page "' + ctx.pageName +
 				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
 				'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
-				ctx.statusElement.error("Move of fully protected page was aborted.");
+				ctx.statusElement.error('Move of fully protected page was aborted.');
 				ctx.onMoveFailure(this);
 				return;
 			}
@@ -2761,7 +2761,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		var moveToken = $(xml).find('page').attr('movetoken');
 		if (!moveToken) {
-			ctx.statusElement.error("Failed to retrieve move token.");
+			ctx.statusElement.error('Failed to retrieve move token.');
 			ctx.onMoveFailure(this);
 			return;
 		}
@@ -2786,7 +2786,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.watch = 'true';
 		}
 
-		ctx.moveProcessApi = new Morebits.wiki.api("moving page...", query, ctx.onMoveSuccess, ctx.statusElement, ctx.onMoveFailure);
+		ctx.moveProcessApi = new Morebits.wiki.api('moving page...', query, ctx.onMoveSuccess, ctx.statusElement, ctx.onMoveFailure);
 		ctx.moveProcessApi.setParent(this);
 		ctx.moveProcessApi.post();
 	};
@@ -2800,8 +2800,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		} else {
 			var xml = ctx.deleteApi.getXML();
 
-			if ($(xml).find('page').attr('missing') === "") {
-				ctx.statusElement.error("Cannot delete the page, because it no longer exists");
+			if ($(xml).find('page').attr('missing') === '') {
+				ctx.statusElement.error('Cannot delete the page, because it no longer exists');
 				ctx.onDeleteFailure(this);
 				return;
 			}
@@ -2812,14 +2812,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				!confirm('You are about to delete the fully protected page "' + ctx.pageName +
 				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
 				'.  \n\nClick OK to proceed with the deletion, or Cancel to skip this deletion.')) {
-				ctx.statusElement.error("Deletion of fully protected page was aborted.");
+				ctx.statusElement.error('Deletion of fully protected page was aborted.');
 				ctx.onDeleteFailure(this);
 				return;
 			}
 
 			token = $(xml).find('page').attr('deletetoken');
 			if (!token) {
-				ctx.statusElement.error("Failed to retrieve delete token.");
+				ctx.statusElement.error('Failed to retrieve delete token.');
 				ctx.onDeleteFailure(this);
 				return;
 			}
@@ -2837,7 +2837,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.watch = 'true';
 		}
 
-		ctx.deleteProcessApi = new Morebits.wiki.api("deleting page...", query, ctx.onDeleteSuccess, ctx.statusElement, fnProcessDeleteError);
+		ctx.deleteProcessApi = new Morebits.wiki.api('deleting page...', query, ctx.onDeleteSuccess, ctx.statusElement, fnProcessDeleteError);
 		ctx.deleteProcessApi.setParent(this);
 		ctx.deleteProcessApi.post();
 	};
@@ -2848,25 +2848,25 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var errorCode = ctx.deleteProcessApi.getErrorCode();
 
 		// check for "Database query error"
-		if (errorCode === "internal_api_error_DBQueryError" && ctx.retries++ < ctx.maxRetries) {
-			ctx.statusElement.info("Database query error, retrying");
+		if (errorCode === 'internal_api_error_DBQueryError' && ctx.retries++ < ctx.maxRetries) {
+			ctx.statusElement.info('Database query error, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.deleteProcessApi.post(); // give it another go!
-		} else if (errorCode === "badtoken") {
+		} else if (errorCode === 'badtoken') {
 			// this is pathetic, but given the current state of Morebits.wiki.page it would
 			// be a dog's breakfast to try and fix this
-			ctx.statusElement.error("Invalid token. Please refresh the page and try again.");
+			ctx.statusElement.error('Invalid token. Please refresh the page and try again.');
 			if (ctx.onDeleteFailure) {
 				ctx.onDeleteFailure.call(this, this, ctx.deleteProcessApi);
 			}
-		} else if (errorCode === "missingtitle") {
-			ctx.statusElement.error("Cannot delete the page, because it no longer exists");
+		} else if (errorCode === 'missingtitle') {
+			ctx.statusElement.error('Cannot delete the page, because it no longer exists');
 			if (ctx.onDeleteFailure) {
 				ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
 			}
 		// hard error, give up
 		} else {
-			ctx.statusElement.error("Failed to delete the page: " + ctx.deleteProcessApi.getErrorText());
+			ctx.statusElement.error('Failed to delete the page: ' + ctx.deleteProcessApi.getErrorText());
 			if (ctx.onDeleteFailure) {
 				ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
 			}
@@ -2889,8 +2889,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		} else {
 			var xml = ctx.undeleteApi.getXML();
 
-			if ($(xml).find('page').attr('missing') !== "") {
-				ctx.statusElement.error("Cannot undelete the page, because it already exists");
+			if ($(xml).find('page').attr('missing') !== '') {
+				ctx.statusElement.error('Cannot undelete the page, because it already exists');
 				ctx.onUndeleteFailure(this);
 				return;
 			}
@@ -2901,7 +2901,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				!confirm('You are about to undelete the fully create protected page "' + ctx.pageName +
 				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
 				'.  \n\nClick OK to proceed with the undeletion, or Cancel to skip this undeletion.')) {
-				ctx.statusElement.error("Undeletion of fully create protected page was aborted.");
+				ctx.statusElement.error('Undeletion of fully create protected page was aborted.');
 				ctx.onUndeleteFailure(this);
 				return;
 			}
@@ -2921,7 +2921,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.watch = 'true';
 		}
 
-		ctx.undeleteProcessApi = new Morebits.wiki.api("undeleting page...", query, ctx.onUndeleteSuccess, ctx.statusElement, fnProcessUndeleteError);
+		ctx.undeleteProcessApi = new Morebits.wiki.api('undeleting page...', query, ctx.onUndeleteSuccess, ctx.statusElement, fnProcessUndeleteError);
 		ctx.undeleteProcessApi.setParent(this);
 		ctx.undeleteProcessApi.post();
 	};
@@ -2932,25 +2932,25 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var errorCode = ctx.undeleteProcessApi.getErrorCode();
 
 		// check for "Database query error"
-		if (errorCode === "internal_api_error_DBQueryError" && ctx.retries++ < ctx.maxRetries) {
-			ctx.statusElement.info("Database query error, retrying");
+		if (errorCode === 'internal_api_error_DBQueryError' && ctx.retries++ < ctx.maxRetries) {
+			ctx.statusElement.info('Database query error, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.undeleteProcessApi.post(); // give it another go!
-		} else if (errorCode === "badtoken") {
+		} else if (errorCode === 'badtoken') {
 			// this is pathetic, but given the current state of Morebits.wiki.page it would
 			// be a dog's breakfast to try and fix this
-			ctx.statusElement.error("Invalid token. Please refresh the page and try again.");
+			ctx.statusElement.error('Invalid token. Please refresh the page and try again.');
 			if (ctx.onUndeleteFailure) {
 				ctx.onUndeleteFailure.call(this, this, ctx.undeleteProcessApi);
 			}
-		} else if (errorCode === "cantundelete") {
-			ctx.statusElement.error("Cannot undelete the page, either because there are no revisions to undelete or because it has already been undeleted");
+		} else if (errorCode === 'cantundelete') {
+			ctx.statusElement.error('Cannot undelete the page, either because there are no revisions to undelete or because it has already been undeleted');
 			if (ctx.onUndeleteFailure) {
 				ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
 			}
 		// hard error, give up
 		} else {
-			ctx.statusElement.error("Failed to undelete the page: " + ctx.undeleteProcessApi.getErrorText());
+			ctx.statusElement.error('Failed to undelete the page: ' + ctx.undeleteProcessApi.getErrorText());
 			if (ctx.onUndeleteFailure) {
 				ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
 			}
@@ -2960,14 +2960,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	var fnProcessProtect = function() {
 		var xml = ctx.protectApi.getXML();
 
-		var missing = ($(xml).find('page').attr('missing') === "");
+		var missing = ($(xml).find('page').attr('missing') === '');
 		if (((ctx.protectEdit || ctx.protectMove) && missing)) {
-			ctx.statusElement.error("Cannot protect the page, because it no longer exists");
+			ctx.statusElement.error('Cannot protect the page, because it no longer exists');
 			ctx.onProtectFailure(this);
 			return;
 		}
 		if (ctx.protectCreate && !missing) {
-			ctx.statusElement.error("Cannot create protect the page, because it already exists");
+			ctx.statusElement.error('Cannot create protect the page, because it already exists');
 			ctx.onProtectFailure(this);
 			return;
 		}
@@ -2976,7 +2976,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		var protectToken = $(xml).find('page').attr('protecttoken');
 		if (!protectToken) {
-			ctx.statusElement.error("Failed to retrieve protect token.");
+			ctx.statusElement.error('Failed to retrieve protect token.');
 			ctx.onProtectFailure(this);
 			return;
 		}
@@ -2994,24 +2994,24 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			protections.push('edit=' + ctx.protectEdit.level);
 			expirys.push(ctx.protectEdit.expiry);
 		} else if (editprot.length) {
-			protections.push('edit=' + editprot.attr("level"));
-			expirys.push(editprot.attr("expiry").replace("infinity", "indefinite"));
+			protections.push('edit=' + editprot.attr('level'));
+			expirys.push(editprot.attr('expiry').replace('infinity', 'indefinite'));
 		}
 
 		if (ctx.protectMove) {
 			protections.push('move=' + ctx.protectMove.level);
 			expirys.push(ctx.protectMove.expiry);
 		} else if (moveprot.length) {
-			protections.push('move=' + moveprot.attr("level"));
-			expirys.push(moveprot.attr("expiry").replace("infinity", "indefinite"));
+			protections.push('move=' + moveprot.attr('level'));
+			expirys.push(moveprot.attr('expiry').replace('infinity', 'indefinite'));
 		}
 
 		if (ctx.protectCreate) {
 			protections.push('create=' + ctx.protectCreate.level);
 			expirys.push(ctx.protectCreate.expiry);
 		} else if (createprot.length) {
-			protections.push('create=' + createprot.attr("level"));
-			expirys.push(createprot.attr("expiry").replace("infinity", "indefinite"));
+			protections.push('create=' + createprot.attr('level'));
+			expirys.push(createprot.attr('expiry').replace('infinity', 'indefinite'));
 		}
 
 		var query = {
@@ -3029,7 +3029,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.watch = 'true';
 		}
 
-		ctx.protectProcessApi = new Morebits.wiki.api("protecting page...", query, ctx.onProtectSuccess, ctx.statusElement, ctx.onProtectFailure);
+		ctx.protectProcessApi = new Morebits.wiki.api('protecting page...', query, ctx.onProtectSuccess, ctx.statusElement, ctx.onProtectFailure);
 		ctx.protectProcessApi.setParent(this);
 		ctx.protectProcessApi.post();
 	};
@@ -3037,16 +3037,16 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	var fnProcessStabilize = function() {
 		var xml = ctx.stabilizeApi.getXML();
 
-		var missing = ($(xml).find('page').attr('missing') === "");
+		var missing = ($(xml).find('page').attr('missing') === '');
 		if (missing) {
-			ctx.statusElement.error("Cannot protect the page, because it no longer exists");
+			ctx.statusElement.error('Cannot protect the page, because it no longer exists');
 			ctx.onStabilizeFailure(this);
 			return;
 		}
 
 		var stabilizeToken = $(xml).find('page').attr('edittoken');
 		if (!stabilizeToken) {
-			ctx.statusElement.error("Failed to retrieve stabilize token.");
+			ctx.statusElement.error('Failed to retrieve stabilize token.');
 			ctx.onStabilizeFailure(this);
 			return;
 		}
@@ -3063,7 +3063,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.watch = 'true';
 		}
 
-		ctx.stabilizeProcessApi = new Morebits.wiki.api("configuring stabilization settings...", query, ctx.onStabilizeSuccess, ctx.statusElement, ctx.onStabilizeFailure);
+		ctx.stabilizeProcessApi = new Morebits.wiki.api('configuring stabilization settings...', query, ctx.onStabilizeSuccess, ctx.statusElement, ctx.onStabilizeFailure);
 		ctx.stabilizeProcessApi.setParent(this);
 		ctx.stabilizeProcessApi.post();
 	};
@@ -3095,7 +3095,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
  */
 Morebits.wiki.preview = function(previewbox) {
 	this.previewbox = previewbox;
-	$(previewbox).addClass("morebits-previewbox").hide();
+	$(previewbox).addClass('morebits-previewbox').hide();
 
 	/**
 	 * Displays the preview box, and begins an asynchronous attempt
@@ -3117,7 +3117,7 @@ Morebits.wiki.preview = function(previewbox) {
 			text: wikitext,
 			title: pageTitle || mw.config.get('wgPageName')
 		};
-		var renderApi = new Morebits.wiki.api("loading...", query, fnRenderSuccess, new Morebits.status("Preview"));
+		var renderApi = new Morebits.wiki.api('loading...', query, fnRenderSuccess, new Morebits.status('Preview'));
 		renderApi.post();
 	};
 
@@ -3125,11 +3125,11 @@ Morebits.wiki.preview = function(previewbox) {
 		var xml = apiobj.getXML();
 		var html = $(xml).find('text').text();
 		if (!html) {
-			apiobj.statelem.error("failed to retrieve preview, or template was blanked");
+			apiobj.statelem.error('failed to retrieve preview, or template was blanked');
 			return;
 		}
 		previewbox.innerHTML = html;
-		$(previewbox).find("a").attr("target", "_blank");	// this makes links open in new tab
+		$(previewbox).find('a').attr('target', '_blank');	// this makes links open in new tab
 	};
 
 	/**
@@ -3258,16 +3258,16 @@ Morebits.wikitext.page.prototype = {
 	 */
 	removeLink: function(link_target) {
 		var first_char = link_target.substr(0, 1);
-		var link_re_string = "[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' + RegExp.escape(link_target.substr(1), true);
+		var link_re_string = '[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + RegExp.escape(link_target.substr(1), true);
 
 		// Files and Categories become links with a leading colon.
 		// e.g. [[:File:Test.png]]
 		var special_ns_re = /^(?:[Ff]ile|[Ii]mage|[Cc]ategory):/;
 		var colon = special_ns_re.test(link_target) ? ':' : '';
 
-		var link_simple_re = new RegExp("\\[\\[" + colon + "(" + link_re_string + ")\\]\\]", 'g');
-		var link_named_re = new RegExp("\\[\\[" + colon + link_re_string + "\\|(.+?)\\]\\]", 'g');
-		this.text = this.text.replace(link_simple_re, "$1").replace(link_named_re, "$1");
+		var link_simple_re = new RegExp('\\[\\[' + colon + '(' + link_re_string + ')\\]\\]', 'g');
+		var link_named_re = new RegExp('\\[\\[' + colon + link_re_string + '\\|(.+?)\\]\\]', 'g');
+		this.text = this.text.replace(link_simple_re, '$1').replace(link_named_re, '$1');
 	},
 
 	/**
@@ -3282,11 +3282,11 @@ Morebits.wikitext.page.prototype = {
 
 		reason = reason ? (reason + ': ') : '';
 		var first_char = image.substr(0, 1);
-		var image_re_string = "[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' + RegExp.escape(image.substr(1), true);
+		var image_re_string = '[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + RegExp.escape(image.substr(1), true);
 
 		// Check for normal image links, i.e. [[File:Foobar.png|...]]
 		// Will eat the whole link
-		var links_re = new RegExp("\\[\\[(?:[Ii]mage|[Ff]ile):\\s*" + image_re_string);
+		var links_re = new RegExp('\\[\\[(?:[Ii]mage|[Ff]ile):\\s*' + image_re_string);
 		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys(unbinder.content, '[[', ']]'));
 		for(var i = 0; i < allLinks.length; ++i) {
 			if(links_re.test(allLinks[i])) {
@@ -3300,16 +3300,16 @@ Morebits.wikitext.page.prototype = {
 		// Check for gallery images, i.e. instances that must start on a new line,
 		// eventually preceded with some space, and must include File: prefix
 		// Will eat the whole line.
-		var gallery_image_re = new RegExp("(^\\s*(?:[Ii]mage|[Ff]ile):\\s*" + image_re_string + ".*?$)", 'mg');
-		unbinder.content = unbinder.content.replace(gallery_image_re, "<!-- " + reason + "$1 -->");
+		var gallery_image_re = new RegExp('(^\\s*(?:[Ii]mage|[Ff]ile):\\s*' + image_re_string + '.*?$)', 'mg');
+		unbinder.content = unbinder.content.replace(gallery_image_re, '<!-- ' + reason + '$1 -->');
 
 		// unbind the newly created comments
 		unbinder.unbind('<!--', '-->');
 
 		// Check free image usages, for example as template arguments, might have the File: prefix excluded, but must be preceeded by an |
 		// Will only eat the image name and the preceeding bar and an eventual named parameter
-		var free_image_re = new RegExp("(\\|\\s*(?:[\\w\\s]+\\=)?\\s*(?:(?:[Ii]mage|[Ff]ile):\\s*)?" + image_re_string + ")", 'mg');
-		unbinder.content = unbinder.content.replace(free_image_re, "<!-- " + reason + "$1 -->");
+		var free_image_re = new RegExp('(\\|\\s*(?:[\\w\\s]+\\=)?\\s*(?:(?:[Ii]mage|[Ff]ile):\\s*)?' + image_re_string + ')', 'mg');
+		unbinder.content = unbinder.content.replace(free_image_re, '<!-- ' + reason + '$1 -->');
 		// Rebind the content now, we are done!
 		this.text = unbinder.rebind();
 	},
@@ -3325,8 +3325,8 @@ Morebits.wikitext.page.prototype = {
 		if(first_char.toUpperCase() !== first_char.toLowerCase()) {
 			first_char_regex = '[' + RegExp.escape(first_char.toUpperCase(), true) + RegExp.escape(first_char.toLowerCase(), true) + ']';
 		}
-		var image_re_string = "(?:[Ii]mage|[Ff]ile):\\s*" + first_char_regex + RegExp.escape(image.substr(1), true);
-		var links_re = new RegExp("\\[\\[" + image_re_string);
+		var image_re_string = '(?:[Ii]mage|[Ff]ile):\\s*' + first_char_regex + RegExp.escape(image.substr(1), true);
+		var links_re = new RegExp('\\[\\[' + image_re_string);
 		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys(this.text, '[[', ']]'));
 		for(var i = 0; i < allLinks.length; ++i) {
 			if(links_re.test(allLinks[i])) {
@@ -3336,8 +3336,8 @@ Morebits.wikitext.page.prototype = {
 				this.text = this.text.replace(allLinks[i], replacement, 'g');
 			}
 		}
-		var gallery_re = new RegExp("^(\\s*" + image_re_string + '.*?)\\|?(.*?)$', 'mg');
-		var newtext = "$1|$2 " + data;
+		var gallery_re = new RegExp('^(\\s*' + image_re_string + '.*?)\\|?(.*?)$', 'mg');
+		var newtext = '$1|$2 ' + data;
 		this.text = this.text.replace(gallery_re, newtext);
 	},
 
@@ -3348,8 +3348,8 @@ Morebits.wikitext.page.prototype = {
 	 */
 	removeTemplate: function(template) {
 		var first_char = template.substr(0, 1);
-		var template_re_string = "(?:[Tt]emplate:)?\\s*[" + first_char.toUpperCase() + first_char.toLowerCase() + ']' + RegExp.escape(template.substr(1), true);
-		var links_re = new RegExp("\\{\\{" + template_re_string);
+		var template_re_string = '(?:[Tt]emplate:)?\\s*[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + RegExp.escape(template.substr(1), true);
+		var links_re = new RegExp('\\{\\{' + template_re_string);
 		var allTemplates = Morebits.array.uniq(Morebits.string.splitWeightedByKeys(this.text, '{{', '}}', [ '{{{', '}}}' ]));
 		for(var i = 0; i < allTemplates.length; ++i) {
 			if(links_re.test(allTemplates[i])) {
@@ -3550,7 +3550,7 @@ Morebits.status.onError = function(handler) {
 	if (typeof handler === 'function') {
 		Morebits.status.errorEvent = handler;
 	} else {
-		throw "Morebits.status.onError: handler is not a function";
+		throw 'Morebits.status.onError: handler is not a function';
 	}
 };
 
@@ -3622,7 +3622,7 @@ Morebits.status.prototype = {
 				}
 
 				// also log error messages in the browser console
-				console.error(this.textRaw + ": " + status); // eslint-disable-line no-console
+				console.error(this.textRaw + ': ' + status); // eslint-disable-line no-console
 			}
 		}
 		this.render();
@@ -3815,7 +3815,7 @@ Morebits.batchOperation = function(currentAction) {
 		},
 
 		// internal counters, etc.
-		statusElement: new Morebits.status(currentAction || "Performing batch operation"),
+		statusElement: new Morebits.status(currentAction || 'Performing batch operation'),
 		worker: null,		// function that executes for each item in pageList
 		postFinish: null,	// function that executes when the whole batch has been processed
 		countStarted: 0,
@@ -3860,7 +3860,7 @@ Morebits.batchOperation = function(currentAction) {
 	 */
 	this.run = function(worker, postFinish) {
 		if (ctx.running) {
-			ctx.statusElement.error("Batch operation is already running");
+			ctx.statusElement.error('Batch operation is already running');
 			return;
 		}
 		ctx.running = true;
@@ -3875,7 +3875,7 @@ Morebits.batchOperation = function(currentAction) {
 
 		var total = ctx.pageList.length;
 		if (!total) {
-			ctx.statusElement.info("nothing to do");
+			ctx.statusElement.info('nothing to do');
 			ctx.running = false;
 			return;
 		}
@@ -3885,7 +3885,7 @@ Morebits.batchOperation = function(currentAction) {
 
 		// start the process
 		Morebits.wiki.addCheckpoint();
-		ctx.statusElement.status("0%");
+		ctx.statusElement.status('0%');
 		fnStartNewChunk();
 	};
 
@@ -3943,8 +3943,8 @@ Morebits.batchOperation = function(currentAction) {
 		// update overall status line
 		var total = ctx.pageList.length;
 		if (ctx.countFinished === total) {
-			var statusString = "Done (" + ctx.countFinishedSuccess +
-				"/" + ctx.countFinished + " actions completed successfully)";
+			var statusString = 'Done (' + ctx.countFinishedSuccess +
+				'/' + ctx.countFinished + ' actions completed successfully)';
 			if (ctx.countFinishedSuccess < ctx.countFinished) {
 				ctx.statusElement.warn(statusString);
 			} else {
@@ -3960,13 +3960,13 @@ Morebits.batchOperation = function(currentAction) {
 
 		// just for giggles! (well, serious debugging, actually)
 		if (ctx.countFinished > total) {
-			ctx.statusElement.warn("Done (overshot by " + (ctx.countFinished - total) + ")");
+			ctx.statusElement.warn('Done (overshot by ' + (ctx.countFinished - total) + ')');
 			Morebits.wiki.removeCheckpoint();
 			ctx.running = false;
 			return;
 		}
 
-		ctx.statusElement.status(parseInt(100 * ctx.countFinished / total, 10) + "%");
+		ctx.statusElement.status(parseInt(100 * ctx.countFinished / total, 10) + '%');
 
 		// start a new chunk if we're close enough to the end of the previous chunk, and
 		// we haven't already started the next one
@@ -4000,7 +4000,7 @@ Morebits.simpleWindow = function SimpleWindow(width, height) {
 
 	$(this.content).dialog({
 		autoOpen: false,
-		buttons: { "Placeholder button": function() {} },
+		buttons: { 'Placeholder button': function() {} },
 		dialogClass: 'morebits-dialog',
 		width: Math.min(parseInt(window.innerWidth, 10), parseInt(width ? width : 800, 10)),
 		// give jQuery the given height value (which represents the anticipated height of the dialog) here, so
@@ -4010,46 +4010,46 @@ Morebits.simpleWindow = function SimpleWindow(width, height) {
 		height: height + 20,
 		close: function(event) {
 			// dialogs and their content can be destroyed once closed
-			$(event.target).dialog("destroy").remove();
+			$(event.target).dialog('destroy').remove();
 		},
 		resizeStart: function() {
-			this.scrollbox = $(this).find(".morebits-scrollbox")[0];
+			this.scrollbox = $(this).find('.morebits-scrollbox')[0];
 			if (this.scrollbox) {
-				this.scrollbox.style.maxHeight = "none";
+				this.scrollbox.style.maxHeight = 'none';
 			}
 		},
 		resizeEnd: function() {
 			this.scrollbox = null;
 		},
 		resize: function() {
-			this.style.maxHeight = "";
+			this.style.maxHeight = '';
 			if (this.scrollbox) {
-				this.scrollbox.style.width = "";
+				this.scrollbox.style.width = '';
 			}
 		}
 	});
 
-	var $widget = $(this.content).dialog("widget");
+	var $widget = $(this.content).dialog('widget');
 
 	// add background gradient to titlebar
-	var $titlebar = $widget.find(".ui-dialog-titlebar");
-	var oldstyle = $titlebar.attr("style");
-	$titlebar.attr("style", (oldstyle ? oldstyle : "") + '; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC) !important;');
+	var $titlebar = $widget.find('.ui-dialog-titlebar');
+	var oldstyle = $titlebar.attr('style');
+	$titlebar.attr('style', (oldstyle ? oldstyle : '') + '; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC) !important;');
 
 	// delete the placeholder button (it's only there so the buttonpane gets created)
-	$widget.find("button").each(function(key, value) {
+	$widget.find('button').each(function(key, value) {
 		value.parentNode.removeChild(value);
 	});
 
 	// add container for the buttons we add, and the footer links (if any)
-	var buttonspan = document.createElement("span");
-	buttonspan.className = "morebits-dialog-buttons";
-	var linksspan = document.createElement("span");
-	linksspan.className = "morebits-dialog-footerlinks";
-	$widget.find(".ui-dialog-buttonpane").append(buttonspan, linksspan);
+	var buttonspan = document.createElement('span');
+	buttonspan.className = 'morebits-dialog-buttons';
+	var linksspan = document.createElement('span');
+	linksspan.className = 'morebits-dialog-footerlinks';
+	$widget.find('.ui-dialog-buttonpane').append(buttonspan, linksspan);
 
 	// resize the scrollbox with the dialog, if one is present
-	$widget.resizable("option", "alsoResize", "#" + this.content.id + " .morebits-scrollbox, #" + this.content.id);
+	$widget.resizable('option', 'alsoResize', '#' + this.content.id + ' .morebits-scrollbox, #' + this.content.id);
 };
 
 Morebits.simpleWindow.prototype = {
@@ -4063,7 +4063,7 @@ Morebits.simpleWindow.prototype = {
 	 * @returns {Morebits.simpleWindow}
 	 */
 	focus: function() {
-		$(this.content).dialog("moveToTop");
+		$(this.content).dialog('moveToTop');
 		return this;
 	},
 
@@ -4076,7 +4076,7 @@ Morebits.simpleWindow.prototype = {
 		if (event) {
 			event.preventDefault();
 		}
-		$(this.content).dialog("close");
+		$(this.content).dialog('close');
 		return this;
 	},
 
@@ -4087,15 +4087,15 @@ Morebits.simpleWindow.prototype = {
 	 */
 	display: function() {
 		if (this.scriptName) {
-			var $widget = $(this.content).dialog("widget");
-			$widget.find(".morebits-dialog-scriptname").remove();
-			var scriptnamespan = document.createElement("span");
-			scriptnamespan.className = "morebits-dialog-scriptname";
-			scriptnamespan.textContent = this.scriptName + " \u00B7 ";  // U+00B7 MIDDLE DOT = &middot;
-			$widget.find(".ui-dialog-title").prepend(scriptnamespan);
+			var $widget = $(this.content).dialog('widget');
+			$widget.find('.morebits-dialog-scriptname').remove();
+			var scriptnamespan = document.createElement('span');
+			scriptnamespan.className = 'morebits-dialog-scriptname';
+			scriptnamespan.textContent = this.scriptName + ' \u00B7 ';  // U+00B7 MIDDLE DOT = &middot;
+			$widget.find('.ui-dialog-title').prepend(scriptnamespan);
 		}
 
-		var dialog = $(this.content).dialog("open");
+		var dialog = $(this.content).dialog('open');
 		if (window.setupTooltips && window.pg && window.pg.re && window.pg.re.diff) {  // tie in with NAVPOP
 			dialog.parent()[0].ranSetupTooltipsAlready = false;
 			window.setupTooltips(dialog.parent()[0]);
@@ -4110,7 +4110,7 @@ Morebits.simpleWindow.prototype = {
 	 * @returns {Morebits.simpleWindow}
 	 */
 	setTitle: function(title) {
-		$(this.content).dialog("option", "title", title);
+		$(this.content).dialog('option', 'title', title);
 		return this;
 	},
 
@@ -4131,7 +4131,7 @@ Morebits.simpleWindow.prototype = {
 	 * @returns {Morebits.simpleWindow}
 	 */
 	setWidth: function(width) {
-		$(this.content).dialog("option", "width", width);
+		$(this.content).dialog('option', 'width', width);
 		return this;
 	},
 
@@ -4149,12 +4149,12 @@ Morebits.simpleWindow.prototype = {
 		// note that the given height will exclude the approx. 20px that the jQuery UI
 		// chrome has in height in addition to the height of an equivalent "classic"
 		// Morebits.simpleWindow
-		if (parseInt(getComputedStyle($(this.content).dialog("widget")[0], null).height, 10) > window.innerHeight) {
-			$(this.content).dialog("option", "height", window.innerHeight - 2).dialog("option", "position", "top");
+		if (parseInt(getComputedStyle($(this.content).dialog('widget')[0], null).height, 10) > window.innerHeight) {
+			$(this.content).dialog('option', 'height', window.innerHeight - 2).dialog('option', 'position', 'top');
 		} else {
-			$(this.content).dialog("option", "height", "auto");
+			$(this.content).dialog('option', 'height', 'auto');
 		}
-		$(this.content).dialog("widget").find(".morebits-dialog-content")[0].style.maxHeight = parseInt(this.height - 30, 10) + "px";
+		$(this.content).dialog('widget').find('.morebits-dialog-content')[0].style.maxHeight = parseInt(this.height - 30, 10) + 'px';
 		return this;
 	},
 
@@ -4183,18 +4183,18 @@ Morebits.simpleWindow.prototype = {
 		// look for submit buttons in the content, hide them, and add a proxy button to the button pane
 		var thisproxy = this;
 		$(this.content).find('input[type="submit"], button[type="submit"]').each(function(key, value) {
-			value.style.display = "none";
-			var button = document.createElement("button");
-			button.textContent = (value.hasAttribute("value") ? value.getAttribute("value") : (value.textContent ? value.textContent : "Submit Query"));
+			value.style.display = 'none';
+			var button = document.createElement('button');
+			button.textContent = (value.hasAttribute('value') ? value.getAttribute('value') : (value.textContent ? value.textContent : 'Submit Query'));
 			// here is an instance of cheap coding, probably a memory-usage hit in using a closure here
-			button.addEventListener("click", function() { value.click(); }, false);
+			button.addEventListener('click', function() { value.click(); }, false);
 			thisproxy.buttons.push(button);
 		});
 		// remove all buttons from the button pane and re-add them
 		if (this.buttons.length > 0) {
-			$(this.content).dialog("widget").find(".morebits-dialog-buttons").empty().append(this.buttons)[0].removeAttribute("data-empty");
+			$(this.content).dialog('widget').find('.morebits-dialog-buttons').empty().append(this.buttons)[0].removeAttribute('data-empty');
 		} else {
-			$(this.content).dialog("widget").find(".morebits-dialog-buttons")[0].setAttribute("data-empty", "data-empty");  // used by CSS
+			$(this.content).dialog('widget').find('.morebits-dialog-buttons')[0].setAttribute('data-empty', 'data-empty');  // used by CSS
 		}
 		return this;
 	},
@@ -4206,7 +4206,7 @@ Morebits.simpleWindow.prototype = {
 	purgeContent: function() {
 		this.buttons = [];
 		// delete all buttons in the buttonpane
-		$(this.content).dialog("widget").find(".morebits-dialog-buttons").empty();
+		$(this.content).dialog('widget').find('.morebits-dialog-buttons').empty();
 
 		while(this.content.hasChildNodes()) {
 			this.content.removeChild(this.content.firstChild);
@@ -4224,16 +4224,16 @@ Morebits.simpleWindow.prototype = {
 	 * @returns {Morebits.simpleWindow}
 	 */
 	addFooterLink: function(text, wikiPage) {
-		var $footerlinks = $(this.content).dialog("widget").find(".morebits-dialog-footerlinks");
+		var $footerlinks = $(this.content).dialog('widget').find('.morebits-dialog-footerlinks');
 		if (this.hasFooterLinks) {
-			var bullet = document.createElement("span");
-			bullet.textContent = " \u2022 ";  // U+2022 BULLET
+			var bullet = document.createElement('span');
+			bullet.textContent = ' \u2022 ';  // U+2022 BULLET
 			$footerlinks.append(bullet);
 		}
-		var link = document.createElement("a");
-		link.setAttribute("href", mw.util.getUrl(wikiPage));
-		link.setAttribute("title", wikiPage);
-		link.setAttribute("target", "_blank");
+		var link = document.createElement('a');
+		link.setAttribute('href', mw.util.getUrl(wikiPage));
+		link.setAttribute('title', wikiPage);
+		link.setAttribute('target', '_blank');
 		link.textContent = text;
 		$footerlinks.append(link);
 		this.hasFooterLinks = true;
@@ -4251,7 +4251,7 @@ Morebits.simpleWindow.prototype = {
 	 * @returns {Morebits.simpleWindow}
 	 */
 	setModality: function(modal) {
-		$(this.content).dialog("option", "modal", modal);
+		$(this.content).dialog('option', 'modal', modal);
 		return this;
 	}
 };
@@ -4266,7 +4266,7 @@ Morebits.simpleWindow.prototype = {
  * @param {boolean} enabled
  */
 Morebits.simpleWindow.setButtonsEnabled = function(enabled) {
-	$(".morebits-dialog-buttons button").prop("disabled", !enabled);
+	$('.morebits-dialog-buttons button').prop('disabled', !enabled);
 };
 
 
@@ -4286,7 +4286,7 @@ Morebits.simpleWindow.setButtonsEnabled = function(enabled) {
  * Thanks.
  */
 
-if (typeof arguments === "undefined") {  // typeof is here for a reason...
+if (typeof arguments === 'undefined') {  // typeof is here for a reason...
 	/* global Morebits */
 	window.SimpleWindow = Morebits.simpleWindow;
 	window.QuickForm = Morebits.quickForm;

@@ -932,7 +932,7 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 	return $.map(Twinkle.block.blockGroups, function(blockGroup) {
 		var list = $.map(blockGroup.list, function(blockPreset) {
 				// only show uw-talkrevoked if reblocking
-				if (!Twinkle.block.currentBlockInfo && blockPreset.value === "uw-talkrevoked") return;
+				if (!Twinkle.block.currentBlockInfo && blockPreset.value === 'uw-talkrevoked') return;
 
 				var blockSettings = Twinkle.block.blockPresetsInfo[blockPreset.value];
 				var registrationRestrict = blockSettings.forRegisteredOnly ? Twinkle.block.isRegistered : (blockSettings.forAnonOnly ? !Twinkle.block.isRegistered : true);
@@ -1229,7 +1229,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 		text += '== ' + date.getUTCMonthName() + ' ' + date.getUTCFullYear() + ' ==\n';
 	}
 
-	params.expiry = typeof params.template_expiry !== "undefined" ? params.template_expiry : params.expiry;
+	params.expiry = typeof params.template_expiry !== 'undefined' ? params.template_expiry : params.expiry;
 
 	text += Twinkle.block.callback.getBlockNoticeWikitext(params);
 

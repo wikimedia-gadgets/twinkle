@@ -40,7 +40,7 @@ Twinkle.fluff = {
 			return;
 		}
 
-		var vandal = $("#mw-diff-ntitle2").find("a.mw-userlink").text();
+		var vandal = $('#mw-diff-ntitle2').find('a.mw-userlink').text();
 
 		Twinkle.fluff.revert(Morebits.queryString.get('twinklerevert'), vandal, true);
 	},
@@ -55,7 +55,7 @@ Twinkle.fluff = {
 			if(Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
 				(mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1) ||
 				(mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1)) {
-				var list = $("#mw-content-text").find("ul li:has(span.mw-uctop):has(.mw-changeslist-diff)");
+				var list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
 
 				var revNode = document.createElement('strong');
 				var revLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
@@ -66,7 +66,7 @@ Twinkle.fluff = {
 				revVandNode.appendChild(revVandLink);
 
 				list.each(function(key, current) {
-					var href = $(current).find(".mw-changeslist-diff").attr("href");
+					var href = $(current).find('.mw-changeslist-diff').attr('href');
 					current.appendChild(document.createTextNode(' '));
 					var tmpNode = revNode.cloneNode(true);
 					tmpNode.firstChild.setAttribute('href', href + '&' + Morebits.queryString.create({ 'twinklerevert': 'norm' }));
@@ -89,7 +89,7 @@ Twinkle.fluff = {
 			revertToRevision.style.fontWeight = 'bold';
 
 			var revertToRevisionLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
-			revertToRevisionLink.href = "#";
+			revertToRevisionLink.href = '#';
 			$(revertToRevisionLink).click(function() {
 				Twinkle.fluff.revertToRevision(mw.config.get('wgDiffOldId').toString());
 			});
@@ -109,7 +109,7 @@ Twinkle.fluff = {
 			revertToRevisionN.style.fontWeight = 'bold';
 
 			var revertToRevisionNLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
-			revertToRevisionNLink.href = "#";
+			revertToRevisionNLink.href = '#';
 			$(revertToRevisionNLink).click(function() {
 				Twinkle.fluff.revertToRevision(mw.config.get('wgDiffNewId').toString());
 			});
@@ -117,7 +117,7 @@ Twinkle.fluff = {
 
 			ntitle.insertBefore(revertToRevisionN, ntitle.firstChild);
 		} else if(Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 && mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId') || document.getElementById('differences-prevlink'))) {
-			var vandal = $("#mw-diff-ntitle2").find("a").first().text();
+			var vandal = $('#mw-diff-ntitle2').find('a').first().text();
 
 			var revertNode = document.createElement('div');
 			revertNode.setAttribute('id', 'tw-revert');
@@ -130,9 +130,9 @@ Twinkle.fluff = {
 			var vandLink = Twinkle.fluff.buildLink('Red', 'rollback (VANDAL)');
 			var normLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
 
-			agfLink.href = "#";
-			vandLink.href = "#";
-			normLink.href = "#";
+			agfLink.href = '#';
+			vandLink.href = '#';
+			normLink.href = '#';
 			$(agfLink).click(function() {
 				Twinkle.fluff.revert('agf', vandal);
 			});
@@ -163,7 +163,7 @@ Twinkle.fluff = {
 		revertToRevision.style.fontWeight = 'bold';
 
 		var revertToRevisionLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
-		revertToRevisionLink.href = "#";
+		revertToRevisionLink.href = '#';
 		$(revertToRevisionLink).click(function() {
 			Twinkle.fluff.revertToRevision(mw.config.get('wgRevisionId').toString());
 		});
@@ -224,7 +224,7 @@ Twinkle.fluff.revertToRevision = function revertToRevision(oldrev) {
 };
 
 Twinkle.fluff.userIpLink = function(user) {
-	return (mw.util.isIPAddress(user) ? "[[Special:Contributions/" : "[[:User:") + user + "|" + user + "]]";
+	return (mw.util.isIPAddress(user) ? '[[Special:Contributions/' : '[[:User:') + user + '|' + user + ']]';
 };
 
 Twinkle.fluff.callbacks = {
@@ -244,13 +244,13 @@ Twinkle.fluff.callbacks = {
 				return;
 			}
 
-			var optional_summary = prompt("Please specify a reason for the revert:                                ", "");  // padded out to widen prompt in Firefox
+			var optional_summary = prompt('Please specify a reason for the revert:                                ', '');  // padded out to widen prompt in Firefox
 			if (optional_summary === null)
 			{
 				self.statelem.error('Aborted by user.');
 				return;
 			}
-			var summary = Twinkle.fluff.formatSummary("Reverted to revision " + revertToRevID + " by $USER", revertToUser, optional_summary);
+			var summary = Twinkle.fluff.formatSummary('Reverted to revision ' + revertToRevID + ' by $USER', revertToUser, optional_summary);
 
 			var query = {
 				'action': 'edit',
@@ -266,7 +266,7 @@ Twinkle.fluff.callbacks = {
 			};
 
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-			Morebits.wiki.actionCompleted.notice = "Reversion completed";
+			Morebits.wiki.actionCompleted.notice = 'Reversion completed';
 
 			var wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.fluff.callbacks.complete, self.statelem);
 			wikipedia_api.params = self.params;
@@ -363,7 +363,7 @@ Twinkle.fluff.callbacks = {
 		}
 
 		if(!count) {
-			Morebits.status.error('Error', "As it is not possible to revert zero revisions, we will stop this revert. It could be that the edit has already been reverted, but the revision ID was still the same.");
+			Morebits.status.error('Error', 'As it is not possible to revert zero revisions, we will stop this revert. It could be that the edit has already been reverted, but the revision ID was still the same.');
 			return;
 		}
 
@@ -387,7 +387,7 @@ Twinkle.fluff.callbacks = {
 		var summary, extra_summary;
 		switch(self.params.type) {
 		case 'agf':
-			extra_summary = prompt("An optional comment for the edit summary:                              ", "");  // padded out to widen prompt in Firefox
+			extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
 			if (extra_summary === null)
 			{
 				self.statelem.error('Aborted by user.');
@@ -395,13 +395,13 @@ Twinkle.fluff.callbacks = {
 			}
 			userHasAlreadyConfirmedAction = true;
 
-			summary = Twinkle.fluff.formatSummary("Reverted [[WP:AGF|good faith]] edits by $USER", self.params.user, extra_summary);
+			summary = Twinkle.fluff.formatSummary('Reverted [[WP:AGF|good faith]] edits by $USER', self.params.user, extra_summary);
 			break;
 
 		case 'vand':
 
-			summary = "Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + " by [[Special:Contributions/" +
-				self.params.user + "|" + self.params.user + "]] ([[User talk:" + self.params.user + "|talk]]) to last revision by " +
+			summary = 'Reverted ' + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') + ' by [[Special:Contributions/' +
+				self.params.user + '|' + self.params.user + ']] ([[User talk:' + self.params.user + '|talk]]) to last revision by ' +
 				self.params.gooduser + Twinkle.getPref('summaryAd');
 			break;
 
@@ -409,7 +409,7 @@ Twinkle.fluff.callbacks = {
 			/* falls through */
 		default:
 			if(Twinkle.getPref('offerReasonOnNormalRevert')) {
-				extra_summary = prompt("An optional comment for the edit summary:                              ", "");  // padded out to widen prompt in Firefox
+				extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
 				if (extra_summary === null)
 				{
 					self.statelem.error('Aborted by user.');
@@ -418,12 +418,12 @@ Twinkle.fluff.callbacks = {
 				userHasAlreadyConfirmedAction = true;
 			}
 
-			summary = Twinkle.fluff.formatSummary("Reverted " + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') +
-				" by $USER", self.params.user, extra_summary);
+			summary = Twinkle.fluff.formatSummary('Reverted ' + self.params.count + (self.params.count > 1 ? ' edits' : ' edit') +
+				' by $USER', self.params.user, extra_summary);
 			break;
 		}
 
-		if (Twinkle.getPref('confirmOnFluff') && !userHasAlreadyConfirmedAction && !confirm("Reverting page: are you sure?")) {
+		if (Twinkle.getPref('confirmOnFluff') && !userHasAlreadyConfirmedAction && !confirm('Reverting page: are you sure?')) {
 			self.statelem.error('Aborted by user.');
 			return;
 		}
@@ -467,8 +467,8 @@ Twinkle.fluff.callbacks = {
 		var $flagged = $(xmlDoc).find('flagged');
 		if ((Morebits.userIsInGroup('reviewer') || Morebits.userIsInGroup('sysop')) &&
 				$flagged.length &&
-				$flagged.attr("stable_revid") >= self.params.goodid &&
-				$flagged.attr("pending_since")) {
+				$flagged.attr('stable_revid') >= self.params.goodid &&
+				$flagged.attr('pending_since')) {
 			self.params.reviewRevert = true;
 			self.params.edittoken = edittoken;
 		}
@@ -487,7 +487,7 @@ Twinkle.fluff.callbacks = {
 		};
 
 		Morebits.wiki.actionCompleted.redirect = self.params.pagename;
-		Morebits.wiki.actionCompleted.notice = "Reversion completed";
+		Morebits.wiki.actionCompleted.notice = 'Reversion completed';
 
 		var wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.fluff.callbacks.complete, self.statelem);
 		wikipedia_api.params = self.params;
@@ -501,24 +501,24 @@ Twinkle.fluff.callbacks = {
 		var blacklist = $edit.attr('spamblacklist');
 		if (blacklist) {
 			var code = document.createElement('code');
-			code.style.fontFamily = "monospace";
+			code.style.fontFamily = 'monospace';
 			code.appendChild(document.createTextNode(blacklist));
 			apiobj.statelem.error(['Could not rollback, because the URL ', code, ' is on the spam blacklist.']);
 		} else if ($(xml).find('captcha').length > 0) {
-			apiobj.statelem.error("Could not rollback, because the wiki server wanted you to fill out a CAPTCHA.");
+			apiobj.statelem.error('Could not rollback, because the wiki server wanted you to fill out a CAPTCHA.');
 		} else if ($edit.attr('code') === 'abusefilter-disallowed') {
 			apiobj.statelem.error('The edit was disallowed by the edit filter rule "' + $edit.attr('info').substring(17) + '".');
 		} else if ($edit.attr('info') && $edit.attr('info').indexOf('Hit AbuseFilter:') === 0) {
 			var div = document.createElement('div');
-			div.className = "toccolours";
-			div.style.fontWeight = "normal";
-			div.style.color = "black";
+			div.className = 'toccolours';
+			div.style.fontWeight = 'normal';
+			div.style.color = 'black';
 			div.innerHTML = $edit.attr('warning');
 			apiobj.statelem.error([ 'The following warning was returned by the edit filter: ', div, 'If you wish to proceed with the rollback, please reload this page (F5 or Ctrl+R) and carry it out again. This warning will not appear a second time.' ]);
 		} else if ($edit.attr('nochange') === '') {
-			apiobj.statelem.warn("Revision we are reverting to is identical to current revision, stopping revert.");
+			apiobj.statelem.warn('Revision we are reverting to is identical to current revision, stopping revert.');
 		} else {
-			apiobj.statelem.info("done");
+			apiobj.statelem.info('done');
 
 			// review the revert, if needed
 			if (apiobj.params.reviewRevert) {
@@ -549,18 +549,18 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, userString) {
 	// find number of UTF-8 bytes the resulting string takes up, and possibly add
 	// a contributions or contributions+talk link if it doesn't push the edit summary
 	// over the 255-byte limit
-	var resultLen = unescape(encodeURIComponent(result.replace("$USER", ""))).length;
-	var contribsLink = "[[Special:Contributions/" + userName + "|" + userName + "]]";
+	var resultLen = unescape(encodeURIComponent(result.replace('$USER', ''))).length;
+	var contribsLink = '[[Special:Contributions/' + userName + '|' + userName + ']]';
 	var contribsLen = unescape(encodeURIComponent(contribsLink)).length;
 	if (resultLen + contribsLen <= 255) {
-		var talkLink = " ([[User talk:" + userName + "|talk]])";
+		var talkLink = ' ([[User talk:' + userName + '|talk]])';
 		if (resultLen + contribsLen + unescape(encodeURIComponent(talkLink)).length <= 255) {
-			result = Morebits.string.safeReplace(result, "$USER", contribsLink + talkLink);
+			result = Morebits.string.safeReplace(result, '$USER', contribsLink + talkLink);
 		} else {
-			result = Morebits.string.safeReplace(result, "$USER", contribsLink);
+			result = Morebits.string.safeReplace(result, '$USER', contribsLink);
 		}
 	} else {
-		result = Morebits.string.safeReplace(result, "$USER", userName);
+		result = Morebits.string.safeReplace(result, '$USER', userName);
 	}
 
 	return result;
@@ -587,7 +587,7 @@ Twinkle.fluff.init = function twinklefluffinit() {
 			} else {
 				Twinkle.fluff.auto();
 			}
-		} else if(mw.config.get('wgCanonicalSpecialPageName') === "Contributions") {
+		} else if(mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
 			Twinkle.fluff.contributions();
 		} else if (mw.config.get('wgIsProbablyEditable')) {
 			// Only proceed if the user can actually edit the page

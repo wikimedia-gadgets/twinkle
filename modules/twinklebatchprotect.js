@@ -19,17 +19,17 @@ Twinkle.batchprotect = function twinklebatchprotect() {
 	if(Morebits.userIsInGroup('sysop') && ((mw.config.get('wgArticleId') > 0 && (mw.config.get('wgNamespaceNumber') === 2 ||
 		mw.config.get('wgNamespaceNumber') === 4)) || mw.config.get('wgNamespaceNumber') === 14 ||
 		mw.config.get('wgCanonicalSpecialPageName') === 'Prefixindex')) {
-		Twinkle.addPortletLink(Twinkle.batchprotect.callback, "P-batch", "tw-pbatch", "Protect pages linked from this page");
+		Twinkle.addPortletLink(Twinkle.batchprotect.callback, 'P-batch', 'tw-pbatch', 'Protect pages linked from this page');
 	}
 };
 
 Twinkle.batchprotect.unlinkCache = {};
 Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	var Window = new Morebits.simpleWindow(600, 400);
-	Window.setTitle("Batch protection");
-	Window.setScriptName("Twinkle");
-	Window.addFooterLink("Protection policy", "WP:PROT");
-	Window.addFooterLink("Twinkle help", "WP:TW/DOC#protect");
+	Window.setTitle('Batch protection');
+	Window.setScriptName('Twinkle');
+	Window.addFooterLink('Protection policy', 'WP:PROT');
+	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#protect');
 
 	var form = new Morebits.quickForm(Twinkle.batchprotect.callback.evaluate);
 	form.append({
@@ -183,7 +183,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			event: function twinklebatchprotectFormCreatemodifyEvent(e) {
 				e.target.form.createlevel.disabled = !e.target.checked;
 				e.target.form.createexpiry.disabled = !e.target.checked || (e.target.form.createlevel.value === 'all');
-				e.target.form.createlevel.style.color = e.target.form.createexpiry.style.color = (e.target.checked ? "" : "transparent");
+				e.target.form.createlevel.style.color = e.target.form.createexpiry.style.color = (e.target.checked ? '' : 'transparent');
 			},
 			list: [
 				{
@@ -301,13 +301,13 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		};
 	}
 
-	var statusdiv = document.createElement("div");
+	var statusdiv = document.createElement('div');
 	statusdiv.style.padding = '15px';  // just so it doesn't look broken
 	Window.setContent(statusdiv);
 	Morebits.status.init(statusdiv);
 	Window.display();
 
-	var statelem = new Morebits.status("Grabbing list of pages");
+	var statelem = new Morebits.status('Grabbing list of pages');
 
 	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
 			var xml = apiobj.responseXML;
@@ -316,32 +316,32 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			$pages.each(function(index, page) {
 				var $page = $(page);
 				var title = $page.attr('title');
-				var isRedir = $page.attr('redirect') === ""; // XXX ??
-				var missing = $page.attr('missing') === ""; // XXX ??
+				var isRedir = $page.attr('redirect') === ''; // XXX ??
+				var missing = $page.attr('missing') === ''; // XXX ??
 				var size = $page.find('rev').attr('size');
 
 				var metadata = [];
 				if (missing) {
-					metadata.push("page does not exist");
+					metadata.push('page does not exist');
 				} else {
 					if (isRedir) {
-						metadata.push("redirect");
+						metadata.push('redirect');
 					}
-					metadata.push(size + " bytes");
+					metadata.push(size + ' bytes');
 				}
 				list.push({ label: title + (metadata.length ? (' (' + metadata.join('; ') + ')') : ''), value: title, checked: true });
 			});
 			form.append({ type: 'header', label: 'Pages to protect' });
 			form.append({
 					type: 'button',
-					label: "Select All",
+					label: 'Select All',
 					event: function(e) {
 						$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', true);
 					}
 				});
 			form.append({
 					type: 'button',
-					label: "Deselect All",
+					label: 'Deselect All',
 					event: function(e) {
 						$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', false);
 					}
@@ -388,9 +388,9 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 		return;
 	}
 
-	var batchOperation = new Morebits.batchOperation("Applying protection settings");
-	batchOperation.setOption("chunkSize", Twinkle.getPref('batchProtectChunks'));
-	batchOperation.setOption("preserveIndividualStatusLines", true);
+	var batchOperation = new Morebits.batchOperation('Applying protection settings');
+	batchOperation.setOption('chunkSize', Twinkle.getPref('batchProtectChunks'));
+	batchOperation.setOption('preserveIndividualStatusLines', true);
 	batchOperation.setPageList(pages);
 	batchOperation.run(function(pageName) {
 		var query = {
@@ -425,9 +425,9 @@ Twinkle.batchprotect.callbacks = {
 			apiobj.params.page = normal;
 		}
 
-		var exists = ($(xml).find('page').attr('missing') !== "");
+		var exists = ($(xml).find('page').attr('missing') !== '');
 
-		var page = new Morebits.wiki.page(apiobj.params.page, "Protecting " + apiobj.params.page);
+		var page = new Morebits.wiki.page(apiobj.params.page, 'Protecting ' + apiobj.params.page);
 		var takenAction = false;
 		if (exists && apiobj.params.editmodify) {
 			page.setEditProtection(apiobj.params.editlevel, apiobj.params.editexpiry);
@@ -442,7 +442,7 @@ Twinkle.batchprotect.callbacks = {
 			takenAction = true;
 		}
 		if (!takenAction) {
-			Morebits.status.warn("Protecting " + apiobj.params.page, "page " + (exists ? "exists" : "does not exist") + "; nothing to do, skipping");
+			Morebits.status.warn('Protecting ' + apiobj.params.page, 'page ' + (exists ? 'exists' : 'does not exist') + '; nothing to do, skipping');
 			apiobj.params.batchOperation.workerFailure(apiobj);
 			return;
 		}
