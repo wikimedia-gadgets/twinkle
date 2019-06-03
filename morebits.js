@@ -1200,7 +1200,7 @@ Morebits.unbinder.prototype = {
 		var content = this.content;
 		content.self = this;
 		for (var current in this.history) {
-			if (this.history.hasOwnProperty(current)) {
+			if (Object.prototype.hasOwnProperty.call(this.history, current)) {
 				content = content.replace(current, this.history[current]);
 			}
 		}

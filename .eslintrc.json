@@ -10,6 +10,7 @@
 		"moment": true
 	},
 	"rules": {
+		"no-prototype-builtins": "error",
 		"block-scoped-var": "error",
 		"curly": "error",
 		"default-case": "error",
