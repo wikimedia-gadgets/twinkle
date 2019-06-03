@@ -15,7 +15,7 @@
  */
 
 Twinkle.prod = function twinkleprod() {
-	if((([0, 6, 108].indexOf(mw.config.get('wgNamespaceNumber')) === -1) && (mw.config.get('wgNamespaceNumber') !== 2 || mw.config.get('wgCategories').indexOf('Wikipedia books (user books)') === -1))
+	if ((([0, 6, 108].indexOf(mw.config.get('wgNamespaceNumber')) === -1) && (mw.config.get('wgNamespaceNumber') !== 2 || mw.config.get('wgCategories').indexOf('Wikipedia books (user books)') === -1))
 		|| !mw.config.get('wgCurRevisionId') || Morebits.wiki.isPageRedirect()) {
 		return;
 	}
@@ -97,7 +97,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	Window.display();
 
 	// Hide fieldset for File and Book PROD types since only normal PROD is allowed
-	if(namespace !== 'article') {
+	if (namespace !== 'article') {
 		$(result).find('#prodtype_fieldset').hide();
 	}
 
@@ -117,7 +117,7 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 			name: 'parameters'
 		});
 	// create prod type dependant controls
-	switch(event.target.values) {
+	switch (event.target.values) {
 		case 'prod':
 			field.append({
 					type: 'checkbox',
@@ -181,15 +181,15 @@ Twinkle.prod.callbacks = {
 		var params = apiobj.params;
 
 		// Check talk page for templates indicating prior XfD
-		if($(xmlDoc).find('templates').length) {
+		if ($(xmlDoc).find('templates').length) {
 			statelem.warn('Previous XfD template found on talk page, aborting procedure');
 			return;
 		}
 
 		// Check talk page for category indicating prior PROD
-		if($(xmlDoc).find('categories').length) {
-			if(params.blp) {
-				if(!confirm('Previous PROD nomination found on talk page. Do you still want to continue applying BLPPROD? ')) {
+		if ($(xmlDoc).find('categories').length) {
+			if (params.blp) {
+				if (!confirm('Previous PROD nomination found on talk page. Do you still want to continue applying BLPPROD? ')) {
 					statelem.warn('Previous PROD found on talk page, aborted by user');
 					return;
 				} else {
@@ -224,7 +224,7 @@ Twinkle.prod.callbacks = {
 	main: function(pageobj) {
 		var statelem = pageobj.getStatusElement();
 
-		if(!pageobj.exists()) {
+		if (!pageobj.exists()) {
 			statelem.error("It seems that the page doesn't exist. Perhaps it has already been deleted.");
 			return;
 		}
@@ -234,18 +234,18 @@ Twinkle.prod.callbacks = {
 
 		// Check for already existing deletion tags
 		var tag_re = /{{(?:db-?|delete|article for deletion\/dated|ffd\b)|#invoke:RfD/i;
-		if(tag_re.test(text)) {
+		if (tag_re.test(text)) {
 			statelem.warn('Page already tagged with a deletion template, aborting procedure');
 			return;
 		}
 
 		// Alert if article is at least three days old, not in Category:Living people, and BLPPROD is selected
-		if(params.blp) {
+		if (params.blp) {
 			var now = new Date().toISOString();
 			var timeDiff = (new Date(now) - new Date(params.creation)) / 1000 / 60 / 60 / 24; // days from milliseconds
 			var blpcheck_re = /\[\[Category:Living people\]\]/i;
-			if(!blpcheck_re.test(text) && timeDiff > 3) {
-				if(!confirm('Please note that the article is not in Category:Living people and hence may be ineligible for BLPPROD. Are you sure you want to continue? \n\nYou may wish to add the category if you proceed, unless the article is about a recently deceased person.')) {
+			if (!blpcheck_re.test(text) && timeDiff > 3) {
+				if (!confirm('Please note that the article is not in Category:Living people and hence may be ineligible for BLPPROD. Are you sure you want to continue? \n\nYou may wish to add the category if you proceed, unless the article is about a recently deceased person.')) {
 					return;
 				}
 			}
@@ -255,9 +255,9 @@ Twinkle.prod.callbacks = {
 		text = text.replace(/{{\s*(userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/gi, '');
 		var prod_re = /{{\s*(?:Prod blp|Proposed deletion|book-prod)\/dated(?: files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
 		var summaryText;
-		if(!prod_re.test(text)) {
+		if (!prod_re.test(text)) {
 			// Notification to first contributor
-			if(params.usertalk) {
+			if (params.usertalk) {
 				// Disallow warning yourself
 				if (params.initialContrib === mw.config.get('wgUserName')) {
 					statelem.warn('You (' + params.initialContrib + ') created this page; skipping user notification');
@@ -267,7 +267,7 @@ Twinkle.prod.callbacks = {
 				} else {
 					// [[Template:Proposed deletion notify]] supports File namespace
 					var notifyTemplate;
-					if(params.blp) {
+					if (params.blp) {
 						notifyTemplate = 'prodwarningBLP';
 					} else if (params.book) {
 						notifyTemplate = 'bprodwarning';
@@ -297,14 +297,14 @@ Twinkle.prod.callbacks = {
 				}
 			}
 			// If not notifying, log this PROD
-			else if(Twinkle.getPref('logProdPages')) {
+			else if (Twinkle.getPref('logProdPages')) {
 				Twinkle.prod.callbacks.addToLog(params);
 			}
-			if(params.blp) {
+			if (params.blp) {
 				summaryText = 'Proposing article for deletion per [[WP:BLPPROD]].';
 				text = '{{subst:prod blp' + (params.usertalk ? '|help=off' : '') + '}}\n' + text;
 			}
-			else if(params.book) {
+			else if (params.book) {
 				summaryText = 'Proposing book for deletion per [[WP:BOOKPROD]].';
 				text = '{{subst:book-prod|1=' + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? '|help=off' : '') + '}}\n' + text;
 			}
@@ -325,7 +325,7 @@ Twinkle.prod.callbacks = {
 		}
 		else {  // already tagged for PROD, so try endorsing it
 			var prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/;
-			if(prod2_re.test(text)) {
+			if (prod2_re.test(text)) {
 				statelem.warn('Page already tagged with {{proposed deletion}} and {{proposed deletion endorsed}} templates, aborting procedure');
 				return;
 			}
@@ -334,7 +334,7 @@ Twinkle.prod.callbacks = {
 				confirmtext = 'A non-BLP {{proposed deletion}} tag was found on this article.\nWould you like to add a {{proposed deletion endorsed}} tag with explanation "article is a biography of a living person with no sources"?';
 				// FIXME: this msg is shown even if it was a BLPPROD tag.
 			}
-			if(!confirm(confirmtext)) {
+			if (!confirm(confirmtext)) {
 				statelem.warn('Aborted per user request');
 				return;
 			}
@@ -344,7 +344,7 @@ Twinkle.prod.callbacks = {
 				'article is a [[WP:BLPPROD|biography of a living person with no sources]]' :
 				Morebits.string.formatReasonText(params.reason)) + '}}\n');
 
-			if(Twinkle.getPref('logProdPages')) {
+			if (Twinkle.getPref('logProdPages')) {
 				params.logEndorsing = true;
 				Twinkle.prod.callbacks.addToLog(params);
 			}
@@ -412,10 +412,10 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	var form = e.target;
 	var prodtype;
 
-	if(namespace === 'article') {
+	if (namespace === 'article') {
 		var prodtypes = form.prodtype;
-		for(var i = 0; i < prodtypes.length; i++) {
-			if(prodtypes[i].checked) {
+		for (var i = 0; i < prodtypes.length; i++) {
+			if (prodtypes[i].checked) {
 				prodtype = prodtypes[i].values;
 				break;
 			}

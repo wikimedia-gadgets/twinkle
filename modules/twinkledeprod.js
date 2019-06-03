@@ -14,7 +14,7 @@
 */
 
 Twinkle.deprod = function() {
-	if(
+	if (
 		mw.config.get('wgNamespaceNumber') !== 14 ||
 		!Morebits.userIsInGroup('sysop') ||
 		!((/proposed_deletion/i).test(mw.config.get('wgPageName')))
@@ -67,7 +67,7 @@ Twinkle.deprod.callback = function() {
 
 			var metadata = [];
 			var res = re.exec(content);
-			if(res) {
+			if (res) {
 				var parsed = Morebits.wikitext.template.parse(content, res.index);
 				concerns[title] = parsed.parameters.concern || '';
 				metadata.push(concerns[title]);
@@ -163,7 +163,7 @@ callback_deleteTalk = function(apiobj) {
 	var $doc = $(apiobj.responseXML);
 	var exists = $doc.find('page:not([missing])').length > 0;
 
-	if(!exists) {
+	if (!exists) {
 		// no talk page; forget about it
 		return;
 	}

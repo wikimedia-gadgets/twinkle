@@ -15,7 +15,7 @@
  */
 
 Twinkle.warn = function twinklewarn() {
-	if(mw.config.get('wgRelevantUserName')) {
+	if (mw.config.get('wgRelevantUserName')) {
 			Twinkle.addPortletLink(Twinkle.warn.callback, 'Warn', 'tw-warn', 'Warn/notify user');
 			if (Twinkle.getPref('autoMenuAfterRollback') && mw.config.get('wgNamespaceNumber') === 3 &&
 				mw.util.getParamValue('vanarticle') && !mw.util.getParamValue('friendlywelcome') && !mw.util.getParamValue('noautowarn')) {
@@ -25,7 +25,7 @@ Twinkle.warn = function twinklewarn() {
 
 	// Modify URL of talk page on rollback success pages, makes use of a
 	// custom message box in [[MediaWiki:Rollback-success]]
-	if(mw.config.get('wgAction') === 'rollback') {
+	if (mw.config.get('wgAction') === 'rollback') {
 		var $vandalTalkLink = $('#mw-rollback-success').find('.mw-usertoollinks a').first();
 		if ($vandalTalkLink.length) {
 			$vandalTalkLink.css('font-weight', 'bold');
@@ -60,7 +60,7 @@ Twinkle.warn = function twinklewarn() {
 };
 
 Twinkle.warn.callback = function twinklewarnCallback() {
-	if(mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') &&
+	if (mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') &&
 			!confirm('You are about to warn yourself! Are you sure you want to proceed?')) {
 		return;
 	}
@@ -92,7 +92,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	main_group.append({ type: 'option', label: '4im: Only warning', value: 'level4im', selected: (defaultGroup === 5) });
 	main_group.append({ type: 'option', label: 'Single-issue notices', value: 'singlenotice', selected: (defaultGroup === 6) });
 	main_group.append({ type: 'option', label: 'Single-issue warnings', value: 'singlewarn', selected: (defaultGroup === 7) });
-	if(Twinkle.getPref('customWarningList').length) {
+	if (Twinkle.getPref('customWarningList').length) {
 		main_group.append({ type: 'option', label: 'Custom warnings', value: 'custom', selected: (defaultGroup === 9) });
 	}
 
@@ -1078,12 +1078,12 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	sub_group.main_group = value;
 	var old_subvalue = sub_group.value;
 	var old_subvalue_re;
-	if(old_subvalue) {
+	if (old_subvalue) {
 		old_subvalue = old_subvalue.replace(/\d*(im)?$/, '');
 		old_subvalue_re = new RegExp(mw.RegExp.escape(old_subvalue) + '(\\d*(?:im)?)$');
 	}
 
-	while(sub_group.hasChildNodes()) {
+	while (sub_group.hasChildNodes()) {
 		sub_group.removeChild(sub_group.firstChild);
 	}
 
@@ -1112,7 +1112,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			var key = (typeof itemKey === 'string') ? itemKey : itemProperties.value;
 
 			var selected = false;
-			if(old_subvalue && old_subvalue_re.test(key)) {
+			if (old_subvalue && old_subvalue_re.test(key)) {
 				selected = true;
 			}
 
@@ -1128,10 +1128,10 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		});
 	};
 
-	if(value === 'singlenotice' || value === 'singlewarn') {
+	if (value === 'singlenotice' || value === 'singlewarn') {
 		// no categories, just create the options right away
 		createEntries(Twinkle.warn.messages[ value ], sub_group, true);
-	} else if(value === 'custom') {
+	} else if (value === 'custom') {
 		createEntries(Twinkle.getPref('customWarningList'), sub_group, true);
 	} else {
 		// create the option-groups
@@ -1193,9 +1193,9 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		'uw-aiv': 'Optional username that was reported (without User:) '
 	};
 
-	if(main_group === 'singlenotice' || main_group === 'singlewarn') {
-		if(notLinkedArticle[value]) {
-			if(Twinkle.warn.prev_article === null) {
+	if (main_group === 'singlenotice' || main_group === 'singlewarn') {
+		if (notLinkedArticle[value]) {
+			if (Twinkle.warn.prev_article === null) {
 				Twinkle.warn.prev_article = e.target.form.article.value;
 			}
 			e.target.form.article.notArticle = true;
@@ -1204,8 +1204,8 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 			// change form labels according to the warning selected
 			Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
 			Morebits.quickForm.overrideElementLabel(e.target.form.article, notLinkedArticle[value]);
-		} else if(e.target.form.article.notArticle) {
-			if(Twinkle.warn.prev_article !== null) {
+		} else if (e.target.form.article.notArticle) {
+			if (Twinkle.warn.prev_article !== null) {
 				e.target.form.article.value = Twinkle.warn.prev_article;
 				Twinkle.warn.prev_article = null;
 			}
@@ -1278,12 +1278,12 @@ Twinkle.warn.callbacks = {
 		var latest = { date: new Date(0), type: '' };
 		var current;
 
-		while((current = history_re.exec(text))) {
+		while ((current = history_re.exec(text))) {
 			var current_date = new Date(current[2] + ' UTC');
-			if(!(current[1] in history) ||  history[ current[1] ] < current_date) {
+			if (!(current[1] in history) ||  history[ current[1] ] < current_date) {
 				history[ current[1] ] = current_date;
 			}
-			if(current_date > latest.date) {
+			if (current_date > latest.date) {
 				latest.date = current_date;
 				latest.type = current[1];
 			}
@@ -1291,12 +1291,12 @@ Twinkle.warn.callbacks = {
 
 		var date = new Date();
 
-		if(params.sub_group in history) {
+		if (params.sub_group in history) {
 			var temp_time = new Date(history[ params.sub_group ]);
 			temp_time.setUTCHours(temp_time.getUTCHours() + 24);
 
-			if(temp_time > date) {
-				if(!confirm('An identical ' + params.sub_group + ' has been issued in the last 24 hours.  \nWould you still like to add this warning/notice?')) {
+			if (temp_time > date) {
+				if (!confirm('An identical ' + params.sub_group + ' has been issued in the last 24 hours.  \nWould you still like to add this warning/notice?')) {
 					pageobj.statelem.info('aborted per user request');
 					return;
 				}
@@ -1305,8 +1305,8 @@ Twinkle.warn.callbacks = {
 
 		latest.date.setUTCMinutes(latest.date.getUTCMinutes() + 1); // after long debate, one minute is max
 
-		if(latest.date > date) {
-			if(!confirm('A ' + latest.type + ' has been issued in the last minute.  \nWould you still like to add this warning/notice?')) {
+		if (latest.date > date) {
+			if (!confirm('A ' + latest.type + ' has been issued in the last minute.  \nWould you still like to add this warning/notice?')) {
 				pageobj.statelem.info('aborted per user request');
 				return;
 			}
@@ -1323,13 +1323,13 @@ Twinkle.warn.callbacks = {
 		// returns -1 in this case, so lastHeaderIndex gets set to 0 as desired.
 		var lastHeaderIndex = text.lastIndexOf('\n==') + 1;
 
-		if(text.length > 0) {
+		if (text.length > 0) {
 			text += '\n\n';
 		}
 
-		if(messageData.heading) {
+		if (messageData.heading) {
 			text += '== ' + messageData.heading + ' ==\n';
-		} else if(!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
+		} else if (!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
 			Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
 			text += '== ' + date.getUTCMonthName() + ' ' + date.getUTCFullYear() + ' ==\n';
 		}
@@ -1343,8 +1343,8 @@ Twinkle.warn.callbacks = {
 
 		// build the edit summary
 		var summary;
-		if(params.main_group === 'custom') {
-			switch(params.sub_group.substr(-1)) {
+		if (params.main_group === 'custom') {
+			switch (params.sub_group.substr(-1)) {
 				case '1':
 					summary = 'General note';
 					break;
@@ -1358,7 +1358,7 @@ Twinkle.warn.callbacks = {
 					summary = 'Final warning';
 					break;
 				case 'm':
-					if(params.sub_group.substr(-3) === '4im') {
+					if (params.sub_group.substr(-3) === '4im') {
 						summary = 'Only warning';
 						break;
 					}
@@ -1395,7 +1395,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 
 	// First, check to make sure a reason was filled in if uw-username was selected
 
-	if(e.target.sub_group.value === 'uw-username' && e.target.article.value.trim() === '') {
+	if (e.target.sub_group.value === 'uw-username' && e.target.article.value.trim() === '') {
 		alert('You must supply a reason for the {{uw-username}} template.');
 		return;
 	}

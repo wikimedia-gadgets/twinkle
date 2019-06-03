@@ -15,12 +15,12 @@
 
 
 Twinkle.batchundelete = function twinklebatchundelete() {
-	if((mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').user &&
+	if ((mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').user &&
 		mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').project) ||
 		!mw.config.get('wgArticleId')) {
 		return;
 	}
-	if(Morebits.userIsInGroup('sysop')) {
+	if (Morebits.userIsInGroup('sysop')) {
 		Twinkle.addPortletLink(Twinkle.batchundelete.callback, 'Und-batch', 'tw-batch-undel', "Undelete 'em all");
 	}
 };
@@ -127,14 +127,14 @@ Twinkle.batchundelete.callback.evaluate = function(event) {
 	var pages = event.target.getChecked('pages');
 	var reason = event.target.reason.value;
 	var undel_talk = event.target.reason.value;
-	if(!reason) {
+	if (!reason) {
 		alert('You need to give a reason, you cabal crony!');
 		return;
 	}
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(event.target);
 
-	if(!pages) {
+	if (!pages) {
 		Morebits.status.error('Error', 'nothing to undelete, aborting');
 		return;
 	}
@@ -195,7 +195,7 @@ Twinkle.batchundelete.callbacks = {
 		var exists = $(xml).find('page:not([missing])').length > 0;
 		var delrevs = $(xml).find('rev').attr('revid');
 
-		if(exists || !delrevs) {
+		if (exists || !delrevs) {
 			// page exists or has no deleted revisions; forget about it
 			return;
 		}

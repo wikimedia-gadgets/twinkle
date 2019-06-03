@@ -37,7 +37,7 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 			type: 'field',
 			label: 'Type of action'
 		});
-	if(Morebits.userIsInGroup('sysop')) {
+	if (Morebits.userIsInGroup('sysop')) {
 		actionfield.append({
 				type: 'radio',
 				name: 'actiontype',
@@ -1027,9 +1027,9 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 
 	var actiontypes = form.actiontype;
 	var actiontype;
-	for(var i = 0; i < actiontypes.length; i++)
+	for (var i = 0; i < actiontypes.length; i++)
 	{
-		if(!actiontypes[i].checked) {
+		if (!actiontypes[i].checked) {
 			continue;
 		}
 		actiontype = actiontypes[i].values;
@@ -1087,23 +1087,23 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 
 		// sort out tagging options, disabled if nonexistent or lua
 		if (mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto') {
-			if(form.category.value === 'unprotect') {
+			if (form.category.value === 'unprotect') {
 				form.tagtype.value = 'none';
 			} else {
 				form.tagtype.value = (item.template ? item.template : form.category.value);
 			}
 			Twinkle.protect.formevents.tagtype({ target: form.tagtype });
 
-			if(/template/.test(form.category.value)) {
+			if (/template/.test(form.category.value)) {
 				form.noinclude.checked = true;
 				form.editexpiry.value = form.moveexpiry.value = form.pcexpiry.value = 'indefinite';
-			} else if(mw.config.get('wgNamespaceNumber') !== 10) {
+			} else if (mw.config.get('wgNamespaceNumber') !== 10) {
 				form.noinclude.checked = false;
 			}
 		}
 
 	} else {  // RPP request
-		if(form.category.value === 'unprotect') {
+		if (form.category.value === 'unprotect') {
 			form.expiry.value = '';
 			form.expiry.disabled = true;
 		} else {
@@ -1118,9 +1118,9 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 
 	var actiontypes = form.actiontype;
 	var actiontype;
-	for(var i = 0; i < actiontypes.length; i++)
+	for (var i = 0; i < actiontypes.length; i++)
 	{
-		if(!actiontypes[i].checked) {
+		if (!actiontypes[i].checked) {
 			continue;
 		}
 		actiontype = actiontypes[i].values;
@@ -1128,7 +1128,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	}
 
 	var tagparams;
-	if(actiontype === 'tag' || (actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto')) {
+	if (actiontype === 'tag' || (actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto')) {
 		tagparams = {
 			tag: form.tagtype.value,
 			reason: ((form.tagtype.value === 'pp-protected' || form.tagtype.value === 'pp-semi-protected' || form.tagtype.value === 'pp-move') && form.protectReason) ? form.protectReason.value : null,
@@ -1249,7 +1249,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		case 'request':
 			// file request at RFPP
 			var typename, typereason;
-			switch(form.category.value) {
+			switch (form.category.value) {
 				case 'pp-dispute':
 				case 'pp-vandalism':
 				case 'pp-usertalk':
@@ -1366,13 +1366,13 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			}
 
 			var reason = typereason;
-			if(form.reason.value !== '') {
+			if (form.reason.value !== '') {
 				if (typereason !== '') {
 					reason += '\u00A0\u2013 ';  // U+00A0 NO-BREAK SPACE; U+2013 EN RULE
 				}
 				reason += form.reason.value;
 			}
-			if(reason !== '' && reason.charAt(reason.length - 1) !== '.') {
+			if (reason !== '' && reason.charAt(reason.length - 1) !== '.') {
 				reason += '.';
 			}
 
@@ -1429,18 +1429,18 @@ Twinkle.protect.callbacks = {
 
 		if (params.tag !== 'none') {
 			tag = params.tag;
-			if(params.reason) {
+			if (params.reason) {
 				tag += '|reason=' + params.reason;
 			}
-			if(params.small) {
+			if (params.small) {
 				tag += '|small=yes';
 			}
 		}
 
-		if(params.tag === 'none') {
+		if (params.tag === 'none') {
 			summary = 'Removing protection template' + Twinkle.getPref('summaryAd');
 		} else {
-			if(Morebits.wiki.isPageRedirect()) {
+			if (Morebits.wiki.isPageRedirect()) {
 				// Only tag if no {{rcat shell}} is found
 				if (!text.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
 					text = text.replace(/#REDIRECT ?(\[\[.*?\]\])(.*)/i, '#REDIRECT $1$2\n\n{{' + tag + '}}');
@@ -1448,7 +1448,7 @@ Twinkle.protect.callbacks = {
 					Morebits.status.info('Redirect category shell present', 'nothing to do');
 					return;
 				}
-			} else if(params.noinclude) {
+			} else if (params.noinclude) {
 				text = '<noinclude>{{' + tag + '}}</noinclude>' + text;
 			} else {
 				text = '{{' + tag + '}}\n' + text;
@@ -1482,14 +1482,14 @@ Twinkle.protect.callbacks = {
 		}
 
 		var newtag = '=== [[:' + Morebits.pageNameNorm + ']] ===\n';
-		if((new RegExp('^' + RegExp.escape(newtag).replace(/\s+/g, '\\s*'), 'm')).test(text)) {
+		if ((new RegExp('^' + RegExp.escape(newtag).replace(/\s+/g, '\\s*'), 'm')).test(text)) {
 			statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
 			return;
 		}
 		newtag += '* {{pagelinks|1=' + Morebits.pageNameNorm + '}}\n\n';
 
 		var words;
-		switch(params.expiry) {
+		switch (params.expiry) {
 		case 'temporary':
 			words = 'Temporary ';
 			break;

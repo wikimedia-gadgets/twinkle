@@ -25,7 +25,7 @@ Twinkle.xfd = function twinklexfd() {
 };
 
 Twinkle.xfd.num2order = function twinklexfdNum2order(num) {
-	switch(num) {
+	switch (num) {
 	case 1: return '';
 	case 2: return '2nd';
 	case 3: return '3rd';
@@ -166,7 +166,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 	form.previewer.closePreview();
 
-	switch(value) {
+	switch (value) {
 	case 'afd':
 		work_area = new Morebits.quickForm.element({
 				type: 'field',
@@ -287,7 +287,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				event: function(e) {
 					var target = e.target;
 					// add/remove extra input box
-					if(target.value === 'tfm' && !target.form.xfdtarget) { // $(target.parentNode).find("input[name='xfdtarget']").length === 0 ) {
+					if (target.value === 'tfm' && !target.form.xfdtarget) { // $(target.parentNode).find("input[name='xfdtarget']").length === 0 ) {
 						var xfdtarget = new Morebits.quickForm.element({
 							name: 'xfdtarget',
 							type: 'input',
@@ -396,21 +396,21 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					var value = e.target.value;
 					var target = e.target.form.xfdtarget;
 					// update enabled status
-					if(value === 'cfd') {
+					if (value === 'cfd') {
 						target.disabled = true;
 					} else {
 						target.disabled = false;
 					}
 					// update label
-					if(value === 'cfs') {
+					if (value === 'cfs') {
 						target.previousSibling.textContent = 'Target categories: ';
-					} else if(value === 'cfc') {
+					} else if (value === 'cfc') {
 						target.previousSibling.textContent = 'Target article: ';
 					} else {
 						target.previousSibling.textContent = 'Target category: ';
 					}
 					// add/remove extra input box
-					if(value === 'cfs' && $(target.parentNode).find("input[name='xfdtarget2']").length === 0) {
+					if (value === 'cfs' && $(target.parentNode).find("input[name='xfdtarget2']").length === 0) {
 						var xfdtarget2 = document.createElement('input');
 						xfdtarget2.setAttribute('name', 'xfdtarget2');
 						xfdtarget2.setAttribute('type', 'text');
@@ -451,7 +451,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				event: function(e) {
 					var value = e.target.value;
 					var target = e.target.form.xfdtarget;
-					if(value === 'cfd') {
+					if (value === 'cfd') {
 						target.disabled = true;
 					} else {
 						target.disabled = false;
@@ -632,15 +632,15 @@ Twinkle.xfd.callbacks = {
 			var titles = $(xmlDoc).find('allpages p');
 
 			// There has been no earlier entries with this prefix, just go on.
-			if(titles.length <= 0) {
+			if (titles.length <= 0) {
 				apiobj.params.numbering = apiobj.params.number = '';
 			} else {
 				var number = 0;
-				for(var i = 0; i < titles.length; ++i) {
+				for (var i = 0; i < titles.length; ++i) {
 					var title = titles[i].getAttribute('title');
 
 					// First, simple test, is there an instance with this exact name?
-					if(title === 'Wikipedia:Articles for deletion/' + Morebits.pageNameNorm) {
+					if (title === 'Wikipedia:Articles for deletion/' + Morebits.pageNameNorm) {
 						number = Math.max(number, 1);
 						continue;
 					}
@@ -651,7 +651,7 @@ Twinkle.xfd.callbacks = {
 					var match = order_re.exec(title);
 
 					// No match; A non-good value
-					if(!match) {
+					if (!match) {
 						continue;
 					}
 
@@ -766,7 +766,7 @@ Twinkle.xfd.callbacks = {
 			var statelem = pageobj.getStatusElement();
 
 			var text = old_text.replace(/(<!-- Add new entries to the TOP of the following list -->\n+)/, '$1{{subst:afd3|pg=' + Morebits.pageNameNorm + params.numbering + '}}\n');
-			if(text === old_text) {
+			if (text === old_text) {
 				var linknode = document.createElement('a');
 				linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing AFD') + '?action=purge');
 				linknode.appendChild(document.createTextNode('How to fix AFD'));
@@ -843,7 +843,7 @@ Twinkle.xfd.callbacks = {
 			var added_data = Twinkle.xfd.callbacks.getDiscussionWikitext(params.xfdcat, params);
 
 			var text = old_text.replace('-->', '-->\n' + added_data);
-			if(text === old_text) {
+			if (text === old_text) {
 				statelem.error('failed to find target spot for the discussion');
 				return;
 			}
@@ -896,15 +896,15 @@ Twinkle.xfd.callbacks = {
 			var titles = $(xmlDoc).find('allpages p');
 
 			// There has been no earlier entries with this prefix, just go on.
-			if(titles.length <= 0) {
+			if (titles.length <= 0) {
 				apiobj.params.numbering = apiobj.params.number = '';
 			} else {
 				var number = 0;
-				for(var i = 0; i < titles.length; ++i) {
+				for (var i = 0; i < titles.length; ++i) {
 					var title = titles[i].getAttribute('title');
 
 					// First, simple test, is there an instance with this exact name?
-					if(title === 'Wikipedia:Miscellany for deletion/' + Morebits.pageNameNorm) {
+					if (title === 'Wikipedia:Miscellany for deletion/' + Morebits.pageNameNorm) {
 						number = Math.max(number, 1);
 						continue;
 					}
@@ -915,7 +915,7 @@ Twinkle.xfd.callbacks = {
 					var match = order_re.exec(title);
 
 					// No match; A non-good value
-					if(!match) {
+					if (!match) {
 						continue;
 					}
 
@@ -993,7 +993,7 @@ Twinkle.xfd.callbacks = {
 			var date_header_regex = new RegExp('(===\\s*' + date.getUTCMonthName() + '\\s+' + date.getUTCDate() + ',\\s+' + date.getUTCFullYear() + '\\s*===)');
 			var new_data = '{{subst:mfd3|pg=' + Morebits.pageNameNorm + params.numbering + '}}';
 
-			if(date_header_regex.test(text)) { // we have a section already
+			if (date_header_regex.test(text)) { // we have a section already
 				statelem.info('Found today\'s section, proceeding to add new entry');
 				text = text.replace(date_header_regex, '$1\n' + new_data);
 			} else { // we need to create a new section
@@ -1110,7 +1110,7 @@ Twinkle.xfd.callbacks = {
 
 			var added_data = '';
 			var editsummary = '';
-			switch(params.xfdcat) {
+			switch (params.xfdcat) {
 			case 'cfd':
 				added_data = '{{subst:cfd}}';
 				editsummary = 'Category being considered for deletion; see [[:' + params.discussionpage + ']].';
@@ -1158,7 +1158,7 @@ Twinkle.xfd.callbacks = {
 			var editsummary = 'Adding ' + summaryActions[params.xfdcat] + ' nomination of [[:' + Morebits.pageNameNorm + ']].';
 
 			var text = old_text.replace('below this line -->', 'below this line -->\n' + added_data);
-			if(text === old_text) {
+			if (text === old_text) {
 				statelem.error('failed to find target spot for the discussion');
 				return;
 			}
@@ -1211,7 +1211,7 @@ Twinkle.xfd.callbacks = {
 
 			params.target = (/^Category:/.test(params.target) ? params.target : ('Category:' + params.target));
 			var text = old_text.replace('BELOW THIS LINE -->', 'BELOW THIS LINE -->\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('cfds', params));
-			if(text === old_text) {
+			if (text === old_text) {
 				statelem.error('failed to find target spot for the discussion');
 				return;
 			}
@@ -1251,7 +1251,7 @@ Twinkle.xfd.callbacks = {
 			return function(apiobj) {
 				var xmlDoc = apiobj.responseXML;
 				var target = $(xmlDoc).find('redirects r').first().attr('to');
-				if(!target) {
+				if (!target) {
 					apiobj.statelem.error('This page is currently not a redirect, aborting');
 					return;
 				}
@@ -1307,7 +1307,7 @@ Twinkle.xfd.callbacks = {
 			// params.target + sectionHash + "}} ~~~~\n" );
 			var added_data = Twinkle.xfd.callbacks.getDiscussionWikitext('rfd', params);
 			var text = old_text.replace(/(<!-- Add new entries directly below this line\.? -->)/, '$1\n' + added_data);
-			if(text === old_text) {
+			if (text === old_text) {
 				statelem.error('failed to find target spot for the discussion');
 				return;
 			}
@@ -1400,14 +1400,14 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	Twinkle.xfd.currentRationale = reason;
 	Morebits.status.onError(Twinkle.xfd.printRationale);
 
-	if(!type) {
+	if (!type) {
 		Morebits.status.error('Error', 'no action given');
 		return;
 	}
 
 	var query, wikipedia_page, wikipedia_api, logpage, params;
 	var date = new Date();
-	switch(type) {
+	switch (type) {
 
 	case 'afd': // AFD
 		query = {
@@ -1555,13 +1555,13 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	case 'cfd':
 		Morebits.wiki.addCheckpoint();
 
-		if(xfdtarget) {
+		if (xfdtarget) {
 			xfdtarget = xfdtarget.replace(/^:?Category:/i, '');
 		} else {
 			xfdtarget = '';
 		}
 
-		if(xfdtarget2) {
+		if (xfdtarget2) {
 			xfdtarget2 = xfdtarget2.replace(/^:?Category:/i, '');
 		}
 

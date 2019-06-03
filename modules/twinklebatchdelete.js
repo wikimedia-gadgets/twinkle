@@ -14,7 +14,7 @@
  */
 
 Twinkle.batchdelete = function twinklebatchdelete() {
-	if(
+	if (
 		Morebits.userIsInGroup('sysop') && (
 			(mw.config.get('wgCurRevisionId') && mw.config.get('wgNamespaceNumber') > 0) ||
 			mw.config.get('wgCanonicalSpecialPageName') === 'Prefixindex'
@@ -119,17 +119,17 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	};
 
 	// On categories
-	if(mw.config.get('wgNamespaceNumber') === 14) {
+	if (mw.config.get('wgNamespaceNumber') === 14) {
 		query.generator = 'categorymembers';
 		query.gcmtitle = mw.config.get('wgPageName');
 		query.gcmlimit = Twinkle.getPref('batchMax'); // the max for sysops
 
 	// On Special:PrefixIndex
-	} else if(mw.config.get('wgCanonicalSpecialPageName') === 'Prefixindex') {
+	} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Prefixindex') {
 
 		query.generator = 'allpages';
 		query.gaplimit = Twinkle.getPref('batchMax'); // the max for sysops
-		if(Morebits.queryString.exists('prefix'))
+		if (Morebits.queryString.exists('prefix'))
 		{
 			query.gapnamespace = Morebits.queryString.get('namespace');
 			query.gapprefix = Morebits.string.toUpperCaseFirstChar(Morebits.queryString.get('prefix'));
@@ -262,7 +262,7 @@ Twinkle.batchdelete.generateNewPageList = function(form) {
 	// Update the list of checked pages in Twinkle.batchdelete.pages object
 	var elements = form.elements.pages;
 	if (elements instanceof NodeList) { // if there are multiple pages
-		for(var i = 0; i < elements.length; ++i) {
+		for (var i = 0; i < elements.length; ++i) {
 			Twinkle.batchdelete.pages[elements[i].value].checked = elements[i].checked;
 		}
 	} else if (elements instanceof HTMLInputElement) { // if there is just one page
@@ -463,13 +463,13 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 	}
 	var unlink_page = form.unlink_page.checked;
 	var unlink_file = form.unlink_file.checked;
-	if(!reason) {
+	if (!reason) {
 		alert('You need to give a reason, you cabal crony!');
 		return;
 	}
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
-	if(!pages) {
+	if (!pages) {
 		Morebits.status.error('Error', 'nothing to delete, aborting');
 		return;
 	}
@@ -493,7 +493,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 
 		var wikipedia_page = new Morebits.wiki.page(pageName, 'Deleting page ' + pageName);
 		wikipedia_page.setCallbackParameters(params);
-		if(delete_page) {
+		if (delete_page) {
 			wikipedia_page.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
 			wikipedia_page.suppressProtectWarning();
 			wikipedia_page.deletePage(Twinkle.batchdelete.callbacks.doExtras, pageDeleter.workerFailure);
@@ -540,7 +540,7 @@ Twinkle.batchdelete.callbacks = {
 
 		var query, wikipedia_api;
 
-		if(params.unlink_page) {
+		if (params.unlink_page) {
 			Twinkle.batchdelete.unlinkCache = {};
 			query = {
 				'action': 'query',
@@ -555,7 +555,7 @@ Twinkle.batchdelete.callbacks = {
 			wikipedia_api.post();
 		}
 
-		if(params.unlink_file) {
+		if (params.unlink_file) {
 			query = {
 				'action': 'query',
 				'list': 'imageusage',
@@ -567,7 +567,7 @@ Twinkle.batchdelete.callbacks = {
 			wikipedia_api.post();
 		}
 
-		if(params.delete_page) {
+		if (params.delete_page) {
 			if (params.delete_redirects) {
 				query = {
 					'action': 'query',
@@ -615,7 +615,7 @@ Twinkle.batchdelete.callbacks = {
 		var xml = apiobj.responseXML;
 		var exists = $(xml).find('page:not([missing])').length > 0;
 
-		if(!exists) {
+		if (!exists) {
 			// no talk page; forget about it
 			return;
 		}
@@ -645,14 +645,14 @@ Twinkle.batchdelete.callbacks = {
 	},
 	unlinkBacklinks: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
-		if(!pageobj.exists()) {
+		if (!pageobj.exists()) {
 			// we probably just deleted it, as a recursive backlink
 			params.unlinker.workerSuccess(pageobj);
 			return;
 		}
 
 		var text;
-		if(params.title in Twinkle.batchdelete.unlinkCache) {
+		if (params.title in Twinkle.batchdelete.unlinkCache) {
 			text = Twinkle.batchdelete.unlinkCache[ params.title ];
 		} else {
 			text = pageobj.getPageText();
@@ -663,7 +663,7 @@ Twinkle.batchdelete.callbacks = {
 
 		text = wikiPage.getText();
 		Twinkle.batchdelete.unlinkCache[ params.title ] = text;
-		if(text === old_text) {
+		if (text === old_text) {
 			// Nothing to do, return
 			params.unlinker.workerSuccess(pageobj);
 			return;
@@ -695,7 +695,7 @@ Twinkle.batchdelete.callbacks = {
 	},
 	unlinkImageInstances: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
-		if(!pageobj.exists()) {
+		if (!pageobj.exists()) {
 			// we probably just deleted it, as a recursive backlink
 			params.unlinker.workerSuccess(pageobj);
 			return;
@@ -703,7 +703,7 @@ Twinkle.batchdelete.callbacks = {
 
 		var image = params.page.replace(/^(?:Image|File):/, '');
 		var text;
-		if(params.title in Twinkle.batchdelete.unlinkCache) {
+		if (params.title in Twinkle.batchdelete.unlinkCache) {
 			text = Twinkle.batchdelete.unlinkCache[ params.title ];
 		} else {
 			text = pageobj.getPageText();
@@ -714,7 +714,7 @@ Twinkle.batchdelete.callbacks = {
 
 		text = wikiPage.getText();
 		Twinkle.batchdelete.unlinkCache[ params.title ] = text;
-		if(text === old_text) {
+		if (text === old_text) {
 			pageobj.getStatusElement().error('failed to unlink image ' + image + ' from ' + pageobj.getPageName());
 			params.unlinker.workerFailure(pageobj);
 			return;

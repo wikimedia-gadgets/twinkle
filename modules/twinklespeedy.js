@@ -87,7 +87,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	dialog.addFooterLink('Twinkle help', 'WP:TW/DOC#speedy');
 
 	var form = new Morebits.quickForm(callbackfunc, (Twinkle.getPref('speedySelectionStyle') === 'radioClick' ? 'change' : null));
-	if(isSysop) {
+	if (isSysop) {
 		form.append({
 				type: 'checkbox',
 				list: [
@@ -209,7 +209,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 			name: 'tag_options'
 		});
 
-	if(isSysop) {
+	if (isSysop) {
 		tagOptions.append({
 				type: 'header',
 				label: 'Tag-related options'
@@ -256,7 +256,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 			label: 'Failed to initialize the CSD module. Please try again, or tell the Twinkle developers about the issue.'
 		});
 
-	if(Twinkle.getPref('speedySelectionStyle') !== 'radioClick') {
+	if (Twinkle.getPref('speedySelectionStyle') !== 'radioClick') {
 		form.append({ type: 'submit' });
 	}
 
@@ -396,7 +396,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	var generalCriteria = Twinkle.speedy.generalList;
 
 	// custom rationale lives under general criteria when tagging
-	if(!isSysopMode) {
+	if (!isSysopMode) {
 		generalCriteria = Twinkle.speedy.customRationale.concat(generalCriteria);
 	}
 	work_area.append({ type: 'header', label: 'General criteria' });
@@ -1240,7 +1240,7 @@ Twinkle.speedy.callbacks = {
 			initialContrib = null;
 
 		// Check for already existing tags
-		} else if($('#delete-reason').length && params.warnUser && !confirm('The page is has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?')) {
+		} else if ($('#delete-reason').length && params.warnUser && !confirm('The page is has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?')) {
 			Morebits.status.info('Notifying initial contributor', 'canceled by user; skipping notification.');
 			initialContrib = null;
 		} else {
@@ -1361,7 +1361,7 @@ Twinkle.speedy.callbacks = {
 
 			// promote Unlink tool
 			var $link, $bigtext;
-			if(mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8') {
+			if (mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8') {
 				$link = $('<a/>', {
 					'href': '#',
 					'text': 'click here to go to the Unlink tool',
@@ -1401,7 +1401,7 @@ Twinkle.speedy.callbacks = {
 			var total = $snapshot.length;
 			var statusIndicator = apiobj.statelem;
 
-			if(!total) {
+			if (!total) {
 				statusIndicator.status('no redirects found');
 				return;
 			}
@@ -1413,7 +1413,7 @@ Twinkle.speedy.callbacks = {
 				var now = parseInt(100 * (++current) / total, 10) + '%';
 				statusIndicator.update(now);
 				apiobjInner.statelem.unlink();
-				if(current >= total) {
+				if (current >= total) {
 					statusIndicator.info(now + ' (completed)');
 					Morebits.wiki.removeCheckpoint();
 				}
@@ -1448,12 +1448,12 @@ Twinkle.speedy.callbacks = {
 			// check for existing deletion tags
 			var tag = /(?:\{\{\s*(db|delete|db-.*?|speedy deletion-.*?)(?:\s*\||\s*\}\}))/.exec(text);
 			// This won't make use of the db-multiple template but it probably should
-			if(tag && !confirm('The page already has the CSD-related template {{' + tag[1] + '}} on it.  Do you want to add another CSD template?')) {
+			if (tag && !confirm('The page already has the CSD-related template {{' + tag[1] + '}} on it.  Do you want to add another CSD template?')) {
 				return;
 			}
 
 			var xfd = /\{\{((?:article for deletion|proposed deletion|prod blp|template for discussion)\/dated|[cfm]fd\b)/i.exec(text) || /#invoke:(RfD)/.exec(text);
-			if(xfd && !confirm('The deletion-related template {{' + xfd[1] + '}} was found on the page. Do you still want to add a CSD template?')) {
+			if (xfd && !confirm('The deletion-related template {{' + xfd[1] + '}} was found on the page. Do you still want to add a CSD template?')) {
 				return;
 			}
 
@@ -1465,7 +1465,7 @@ Twinkle.speedy.callbacks = {
 
 			var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 			// patrol the page, if reached from Special:NewPages
-			if(Twinkle.getPref('markSpeedyPagesAsPatrolled')) {
+			if (Twinkle.getPref('markSpeedyPagesAsPatrolled')) {
 				thispage.patrol();
 			}
 
@@ -1960,7 +1960,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 	}
 
 	var tag_only = form.tag_only;
-	if(tag_only && tag_only.checked) {
+	if (tag_only && tag_only.checked) {
 		Twinkle.speedy.callback.evaluateUser(e);
 		return;
 	}
@@ -2019,7 +2019,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		promptForSummary: promptForSummary,
 		templateParams: Twinkle.speedy.getParameters(form, values)
 	};
-	if(!params.templateParams) {
+	if (!params.templateParams) {
 		return;
 	}
 

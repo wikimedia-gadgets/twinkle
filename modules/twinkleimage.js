@@ -117,7 +117,7 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 			name: 'work_area'
 		});
 
-	switch(value) {
+	switch (value) {
 		case 'no source no license':
 		case 'no source':
 			work_area.append({
@@ -183,30 +183,30 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
 	var notify = event.target.notify.checked;
 	var types = event.target.type;
-	for(var i = 0; i < types.length; ++i) {
-		if(types[i].checked) {
+	for (var i = 0; i < types.length; ++i) {
+		if (types[i].checked) {
 			type = types[i].values;
 			break;
 		}
 	}
-	if(event.target.non_free) {
+	if (event.target.non_free) {
 		non_free = event.target.non_free.checked;
 	}
-	if(event.target.source) {
+	if (event.target.source) {
 		source = event.target.source.value;
 	}
-	if(event.target.reason) {
+	if (event.target.reason) {
 		reason = event.target.reason.value;
 	}
-	if(event.target.replacement) {
+	if (event.target.replacement) {
 		replacement = event.target.replacement.value;
 	}
-	if(event.target.derivative) {
+	if (event.target.derivative) {
 		derivative = event.target.derivative.checked;
 	}
 
 	var csdcrit;
-	switch(type) {
+	switch (type) {
 		case 'no source no license':
 		case 'no source':
 		case 'no license':
@@ -254,7 +254,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	wikipedia_page.load(Twinkle.image.callbacks.taggingImage);
 
 	// Notifying uploader
-	if(notify) {
+	if (notify) {
 		wikipedia_page.lookupCreation(Twinkle.image.callbacks.userNotification);
 	} else {
 		// add to CSD log if desired
@@ -278,7 +278,7 @@ Twinkle.image.callbacks = {
 		text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
 
 		var tag = '{{di-' + params.templatename + '|date={{subst:#time:j F Y}}';
-		switch(params.type) {
+		switch (params.type) {
 			case 'no source no license':
 			case 'no source':
 				tag += params.non_free ? '|non-free=yes' : '';

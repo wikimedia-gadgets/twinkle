@@ -15,8 +15,8 @@
  */
 
 Twinkle.welcome = function friendlywelcome() {
-	if(Morebits.queryString.exists('friendlywelcome')) {
-		if(Morebits.queryString.get('friendlywelcome') === 'auto') {
+	if (Morebits.queryString.exists('friendlywelcome')) {
+		if (Morebits.queryString.get('friendlywelcome') === 'auto') {
 			Twinkle.welcome.auto();
 		} else {
 			Twinkle.welcome.semiauto();
@@ -27,7 +27,7 @@ Twinkle.welcome = function friendlywelcome() {
 };
 
 Twinkle.welcome.auto = function() {
-	if(Morebits.queryString.get('action') !== 'edit') {
+	if (Morebits.queryString.get('action') !== 'edit') {
 		// userpage not empty, aborting auto-welcome
 		return;
 	}
@@ -40,12 +40,12 @@ Twinkle.welcome.semiauto = function() {
 };
 
 Twinkle.welcome.normal = function() {
-	if(Morebits.queryString.exists('diff')) {
+	if (Morebits.queryString.exists('diff')) {
 		// check whether the contributors' talk pages exist yet
 		var $oList = $('#mw-diff-otitle2').find('span.mw-usertoollinks a.new:contains(talk)').first();
 		var $nList = $('#mw-diff-ntitle2').find('span.mw-usertoollinks a.new:contains(talk)').first();
 
-		if($oList.length > 0 || $nList.length > 0) {
+		if ($oList.length > 0 || $nList.length > 0) {
 			var spanTag = function(color, content) {
 				var span = document.createElement('span');
 				span.style.color = color;
@@ -60,7 +60,7 @@ Twinkle.welcome.normal = function() {
 			welcomeLink.appendChild(spanTag('Black', ']'));
 			welcomeNode.appendChild(welcomeLink);
 
-			if($oList.length > 0) {
+			if ($oList.length > 0) {
 				var oHref = $oList.attr('href');
 
 				var oWelcomeNode = welcomeNode.cloneNode(true);
@@ -72,7 +72,7 @@ Twinkle.welcome.normal = function() {
 				$oList[0].parentNode.parentNode.appendChild(oWelcomeNode);
 			}
 
-			if($nList.length > 0) {
+			if ($nList.length > 0) {
 				var nHref = $nList.attr('href');
 
 				var nWelcomeNode = welcomeNode.cloneNode(true);
@@ -85,7 +85,7 @@ Twinkle.welcome.normal = function() {
 			}
 		}
 	}
-	if(mw.config.get('wgRelevantUserName')) {
+	if (mw.config.get('wgRelevantUserName')) {
 		Twinkle.addPortletLink(function() { Twinkle.welcome.callback(mw.config.get('wgRelevantUserName')); }, 'Wel', 'friendly-welcome', 'Welcome user');
 	}
 };
@@ -111,7 +111,7 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 };
 
 Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
-	if(uid === mw.config.get('wgUserName') && !confirm('Are you really sure you want to welcome yourself?...')) {
+	if (uid === mw.config.get('wgUserName') && !confirm('Are you really sure you want to welcome yourself?...')) {
 		return;
 	}
 
@@ -750,7 +750,7 @@ Twinkle.welcome.callbacks = {
 		var text = pageobj.getPageText();
 
 		// abort if mode is auto and form is not empty
-		if(pageobj.exists() && params.mode === 'auto') {
+		if (pageobj.exists() && params.mode === 'auto') {
 			Morebits.status.info('Warning', 'User talk page not empty; aborting automatic welcome');
 			Morebits.wiki.actionCompleted.event();
 			return;
@@ -758,7 +758,7 @@ Twinkle.welcome.callbacks = {
 
 		var welcomeText = Twinkle.welcome.getTemplateWikitext(params.value, params.article);
 
-		if(Twinkle.getFriendlyPref('topWelcomes')) {
+		if (Twinkle.getFriendlyPref('topWelcomes')) {
 			text = welcomeText + '\n\n' + text;
 		} else {
 			text += '\n' + welcomeText;

@@ -22,7 +22,7 @@ Twinkle.block = function twinkleblock() {
 };
 
 Twinkle.block.callback = function twinkleblockCallback() {
-	if(mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') &&
+	if (mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') &&
 			!confirm('You are about to block yourself! Are you sure you want to proceed?')) {
 		return;
 	}
@@ -1052,7 +1052,7 @@ Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemp
 			form.template_expiry.parentNode.style.display = 'none';
 			form.template_expiry.value = 'indefinite';
 		} else if (form.template_expiry.parentNode.style.display === 'none') {
-			if(Twinkle.block.prev_template_expiry !== null) {
+			if (Twinkle.block.prev_template_expiry !== null) {
 				form.template_expiry.value = Twinkle.block.prev_template_expiry;
 				Twinkle.block.prev_template_expiry = null;
 			}
@@ -1178,7 +1178,7 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 		if (!/te?mp|^\s*$|min/.exec(params.expiry)) {
 			if (params.indefinite) {
 				text += '|indef=yes';
-			} else if(!params.blank_duration) {
+			} else if (!params.blank_duration) {
 				text += '|time=' + params.expiry;
 			}
 		}
@@ -1224,7 +1224,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 	if (Twinkle.getPref('blankTalkpageOnIndefBlock') && params.template !== 'uw-lblock' && params.indefinite) {
 		Morebits.status.info('Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date');
 		text = '== ' + date.getUTCMonthName() + ' ' + date.getUTCFullYear() + ' ==\n';
-	} else if(!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
+	} else if (!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
 		Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
 		text += '== ' + date.getUTCMonthName() + ' ' + date.getUTCFullYear() + ' ==\n';
 	}

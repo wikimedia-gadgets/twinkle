@@ -14,7 +14,7 @@
  */
 
 Twinkle.shared = function friendlyshared() {
-	if(mw.config.get('wgNamespaceNumber') === 3 && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
+	if (mw.config.get('wgNamespaceNumber') === 3 && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
 		var username = mw.config.get('wgRelevantUserName');
 		Twinkle.addPortletLink(function() { Twinkle.shared.callback(username); }, 'Shared IP', 'friendly-shared', 'Shared IP tagging');
 	}
@@ -132,24 +132,24 @@ Twinkle.shared.callbacks = {
 		var found = false;
 		var text = '{{';
 
-		for(var i = 0; i < Twinkle.shared.standardList.length; i++) {
+		for (var i = 0; i < Twinkle.shared.standardList.length; i++) {
 			var tagRe = new RegExp('(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im');
-			if(tagRe.exec(pageText)) {
+			if (tagRe.exec(pageText)) {
 				Morebits.status.warn('Info', 'Found {{' + Twinkle.shared.standardList[i].value + '}} on the user\'s talk page already...aborting');
 				found = true;
 			}
 		}
 
-		if(found) {
+		if (found) {
 			return;
 		}
 
 		Morebits.status.info('Info', 'Will add the shared IP address template to the top of the user\'s talk page.');
 		text += params.value + '|' + params.organization;
-		if(params.value === 'Shared IP edu' && params.contact !== '') {
+		if (params.value === 'Shared IP edu' && params.contact !== '') {
 			text += '|' + params.contact;
 		}
-		if(params.value !== 'Whois' && params.host !== '') {
+		if (params.value !== 'Whois' && params.host !== '') {
 			text += '|host=' + params.host;
 		}
 		text += '}}\n\n';
@@ -165,14 +165,14 @@ Twinkle.shared.callbacks = {
 
 Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	var shared = e.target.getChecked('shared');
-	if(!shared || shared.length <= 0) {
+	if (!shared || shared.length <= 0) {
 		alert('You must select a shared IP address template to use!');
 		return;
 	}
 
 	var value = shared[0];
 
-	if(e.target.organization.value === '') {
+	if (e.target.organization.value === '') {
 		alert('You must input an organization for the {{' + value + '}} template!');
 		return;
 	}

@@ -15,17 +15,17 @@
 
 Twinkle.tag = function friendlytag() {
 	// redirect tagging
-	if(Morebits.wiki.isPageRedirect()) {
+	if (Morebits.wiki.isPageRedirect()) {
 		Twinkle.tag.mode = 'redirect';
 		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Tag redirect');
 	}
 	// file tagging
-	else if(mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById('mw-sharedupload') && document.getElementById('mw-imagepage-section-filehistory')) {
+	else if (mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById('mw-sharedupload') && document.getElementById('mw-imagepage-section-filehistory')) {
 		Twinkle.tag.mode = 'file';
 		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Add maintenance tags to file');
 	}
 	// article/draft article tagging
-	else if([0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 && mw.config.get('wgCurRevisionId')) {
+	else if ([0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 && mw.config.get('wgCurRevisionId')) {
 		Twinkle.tag.mode = 'article';
 		// Can't remove tags when not viewing current version
 		Twinkle.tag.canRemove = (mw.config.get('wgCurRevisionId') === mw.config.get('wgRevisionId')) &&
@@ -60,7 +60,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		});
 	}
 
-	switch(Twinkle.tag.mode) {
+	switch (Twinkle.tag.mode) {
 		case 'article':
 			Window.setTitle('Article maintenance tagging');
 
@@ -570,7 +570,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 			});
 		};
 
-		if(Twinkle.tag.alreadyPresentTags.length > 0) {
+		if (Twinkle.tag.alreadyPresentTags.length > 0) {
 			makeCheckboxesForAlreadyPresentTags();
 		}
 		var i = 1;
@@ -590,7 +590,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	}
 	// alphabetical sort order
 	else {
-		if(Twinkle.tag.alreadyPresentTags.length > 0) {
+		if (Twinkle.tag.alreadyPresentTags.length > 0) {
 			makeCheckboxesForAlreadyPresentTags();
 			container.append({ type: 'header', id: 'tagHeader1', label: 'Available tags' });
 		}
@@ -1356,7 +1356,7 @@ Twinkle.tag.callbacks = {
 				}
 			});
 
-			if(params.patrol) {
+			if (params.patrol) {
 				pageobj.patrol();
 			}
 		};
@@ -1397,7 +1397,7 @@ Twinkle.tag.callbacks = {
 					tag_re = new RegExp('\\{\\{[gG]lobalize/?[^}]*\\}\\}\\n?');
 				}
 
-				if(tag_re.test(pageText)) {
+				if (tag_re.test(pageText)) {
 					pageText = pageText.replace(tag_re,'');
 				} else {
 					getRedirectsFor.push('Template:' + tag);
@@ -1405,7 +1405,7 @@ Twinkle.tag.callbacks = {
 
 				// Producing summary text for current tag removal
 				if (tagIndex > 0) {
-					if(tagIndex === (params.tagsToRemove.length - 1)) {
+					if (tagIndex === (params.tagsToRemove.length - 1)) {
 						summaryText += ' and';
 					} else if (tagIndex < (params.tagsToRemove.length - 1)) {
 						summaryText += ',';
@@ -1471,17 +1471,17 @@ Twinkle.tag.callbacks = {
 		 */
 		var addTag = function articleAddTag(tagIndex, tagName) {
 			var currentTag = '';
-			if(tagName === 'Uncategorized' || tagName === 'Improve categories') {
+			if (tagName === 'Uncategorized' || tagName === 'Improve categories') {
 				pageText += '\n\n{{' + tagName + '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
 			} else {
-				if(tagName === 'Globalize') {
+				if (tagName === 'Globalize') {
 					currentTag += '{{' + params.globalize;
 				} else {
 					currentTag += '{{' + tagName;
 				}
 
 				// fill in other parameters, based on the tag
-				switch(tagName) {
+				switch (tagName) {
 					case 'Cleanup':
 						currentTag += '|reason=' + params.cleanup;
 						break;
@@ -1573,7 +1573,7 @@ Twinkle.tag.callbacks = {
 			}
 
 			if (tagIndex > 0) {
-				if(tagIndex === (totalTags - 1)) {
+				if (tagIndex === (totalTags - 1)) {
 					summaryText += ' and';
 				} else if (tagIndex < (totalTags - 1)) {
 					summaryText += ',';
@@ -1581,11 +1581,11 @@ Twinkle.tag.callbacks = {
 			}
 
 			summaryText += ' {{[[';
-			if(tagName === 'Globalize') {
+			if (tagName === 'Globalize') {
 				summaryText += 'Template:' + params.globalize + '|' + params.globalize;
 			} else {
 				// if it is a custom tag with a parameter
-				if(tagName.indexOf('|') !== -1) {
+				if (tagName.indexOf('|') !== -1) {
 					tagName = tagName.slice(0,tagName.indexOf('|'));
 				}
 				summaryText += (tagName.indexOf(':') !== -1 ? tagName : ('Template:' + tagName + '|' + tagName));
@@ -1645,10 +1645,10 @@ Twinkle.tag.callbacks = {
 		params.tags.forEach(function(tag) {
 			tagRe = new RegExp('\\{\\{' + tag + '(\\||\\}\\})', 'im');
 			// regex check for preexistence of tag can be skipped if in canRemove mode
-			if(Twinkle.tag.canRemove || !tagRe.exec(pageText)) {
+			if (Twinkle.tag.canRemove || !tagRe.exec(pageText)) {
 				// condition Twinkle.tag.article.tags[tag] to ensure that its not a custom tag
 				// Custom tags are assumed non-groupable, since we don't know whether MI template supports them
-				if(Twinkle.tag.article.tags[tag] && Twinkle.tag.multipleIssuesExceptions.indexOf(tag) === -1) {
+				if (Twinkle.tag.article.tags[tag] && Twinkle.tag.multipleIssuesExceptions.indexOf(tag) === -1) {
 					groupableTags.push(tag);
 				} else {
 					tags.push(tag);
@@ -1676,7 +1676,7 @@ Twinkle.tag.callbacks = {
 
 		var miTest = /\{\{(multiple ?issues|article ?issues|mi)(?!\s*\|\s*section\s*=)[^}]+\{/im.exec(pageText);
 
-		if(miTest && groupableTags.length > 0) {
+		if (miTest && groupableTags.length > 0) {
 			Morebits.status.info('Info', 'Adding supported tags inside existing {{multiple issues}} tag');
 
 			tagText = '';
@@ -1685,7 +1685,7 @@ Twinkle.tag.callbacks = {
 			$.each(groupableTags, addTag);
 
 			summaryText += ' tag' + (groupableTags.length > 1 ? 's' : '') + ' (within {{[[Template:multiple issues|multiple issues]]}})';
-			if(tags.length > 0) {
+			if (tags.length > 0) {
 				summaryText += ', and';
 			}
 
@@ -1695,7 +1695,7 @@ Twinkle.tag.callbacks = {
 
 			addUngroupedTags();
 
-		} else if(params.group && !miTest && (groupableExistingTags.length + groupableTags.length) >= 2) {
+		} else if (params.group && !miTest && (groupableExistingTags.length + groupableTags.length) >= 2) {
 			Morebits.status.info('Info', 'Grouping supported tags inside {{multiple issues}}');
 
 			tagText += '{{Multiple issues|\n';
@@ -1711,7 +1711,7 @@ Twinkle.tag.callbacks = {
 				} else {
 					summaryText += ' {{[[Template:multiple issues|multiple issues]]}}';
 				}
-				if(tags.length > 0) {
+				if (tags.length > 0) {
 					summaryText += ', and';
 				}
 				tagText += '}}\n';
@@ -1734,7 +1734,7 @@ Twinkle.tag.callbacks = {
 				}
 			});
 
-			if(!getRedirectsFor.length) {
+			if (!getRedirectsFor.length) {
 				addNewTagsToMI();
 				return;
 			}
@@ -1753,7 +1753,7 @@ Twinkle.tag.callbacks = {
 					$(page).find('lh').each(function(idx, el) {
 						var tag = $(el).attr('title').slice(9);
 						var tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?)');
-						if(tag_re.test(pageText)) {
+						if (tag_re.test(pageText)) {
 							tagText += tag_re.exec(pageText)[1];
 							pageText = pageText.replace(tag_re, '');
 							found = true;
@@ -1782,9 +1782,9 @@ Twinkle.tag.callbacks = {
 			tagRe, tagText = '', summaryText = 'Added',
 			tags = [], i;
 
-		for(i = 0; i < params.tags.length; i++) {
+		for (i = 0; i < params.tags.length; i++) {
 			tagRe = new RegExp('(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im');
-			if(!tagRe.exec(pageText)) {
+			if (!tagRe.exec(pageText)) {
 				tags.push(params.tags[i]);
 			} else {
 				Morebits.status.warn('Info', 'Found {{' + params.tags[i] +
@@ -1795,17 +1795,17 @@ Twinkle.tag.callbacks = {
 		var addTag = function redirectAddTag(tagIndex, tagName) {
 			tagText += '\n{{' + tagName;
 			if (tagName === 'R from alternative language') {
-				if(params.altLangFrom) {
+				if (params.altLangFrom) {
 					tagText += '|from=' + params.altLangFrom;
 				}
-				if(params.altLangTo) {
+				if (params.altLangTo) {
 					tagText += '|to=' + params.altLangTo;
 				}
 			}
 			tagText += '}}';
 
 			if (tagIndex > 0) {
-				if(tagIndex === (tags.length - 1)) {
+				if (tagIndex === (tags.length - 1)) {
 					summaryText += ' and';
 				} else if (tagIndex < (tags.length - 1)) {
 					summaryText += ',';
@@ -1851,7 +1851,7 @@ Twinkle.tag.callbacks = {
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 
-		if(params.patrol) {
+		if (params.patrol) {
 			pageobj.patrol();
 		}
 
@@ -1944,7 +1944,7 @@ Twinkle.tag.callbacks = {
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 
-		if(params.patrol) {
+		if (params.patrol) {
 			pageobj.patrol();
 		}
 	}
@@ -1980,7 +1980,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			// Validation
 			if ((params.tags.indexOf('Merge') !== -1) || (params.tags.indexOf('Merge from') !== -1) ||
 				(params.tags.indexOf('Merge to') !== -1)) {
-				if(((params.tags.indexOf('Merge') !== -1) + (params.tags.indexOf('Merge from') !== -1) +
+				if (((params.tags.indexOf('Merge') !== -1) + (params.tags.indexOf('Merge from') !== -1) +
 					(params.tags.indexOf('Merge to') !== -1)) > 1) {
 					alert('Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).');
 					return;
@@ -1989,24 +1989,24 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 					alert('Please specify the title of the other article for use in the merge template.');
 					return;
 				}
-				if((params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1) {
+				if ((params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1) {
 					alert('Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.');
 					return;
 				}
 			}
-			if((params.tags.indexOf('Not English') !== -1) && (params.tags.indexOf('Rough translation') !== -1)) {
+			if ((params.tags.indexOf('Not English') !== -1) && (params.tags.indexOf('Rough translation') !== -1)) {
 				alert('Please select only one of {{not English}} and {{rough translation}}.');
 				return;
 			}
-			if(params.tags.indexOf('History merge') !== -1 && params.histmergeOriginalPage.trim() === '') {
+			if (params.tags.indexOf('History merge') !== -1 && params.histmergeOriginalPage.trim() === '') {
 				alert('You must specify a page to be merged for the {{history merge}} tag.');
 				return;
 			}
-			if(params.tags.indexOf('Cleanup') !== -1 && params.cleanup.trim() === '') {
+			if (params.tags.indexOf('Cleanup') !== -1 && params.cleanup.trim() === '') {
 				alert('You must specify a reason for the {{cleanup}} tag.');
 				return;
 			}
-			if(params.tags.indexOf('Expand language') !== -1 && params.expandLanguageLangCode.trim() === '') {
+			if (params.tags.indexOf('Expand language') !== -1 && params.expandLanguageLangCode.trim() === '') {
 				alert('You must specify language code for the {{expand language}} tag.');
 				return;
 			}
@@ -2014,19 +2014,19 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 		case 'file':
 
-			if((params.tags.indexOf('Cleanup image') !== -1 && params.cleanupimageReason === '')) {
+			if ((params.tags.indexOf('Cleanup image') !== -1 && params.cleanupimageReason === '')) {
 				alert('You must specify a reason for the cleanup tag.');
 				return;
 			}
-			if(params.tags.indexOf('Image-Poor-Quality') !== -1 && params.ImagePoorQualityReason === '') {
+			if (params.tags.indexOf('Image-Poor-Quality') !== -1 && params.ImagePoorQualityReason === '') {
 				alert('You must specify a reason for the {{Image-Poor-Quality}} tag');
 				return;
 			}
-			if(params.tags.indexOf('Low Quality Chem') !== -1 && params.lowQualityChemReason === '') {
+			if (params.tags.indexOf('Low Quality Chem') !== -1 && params.lowQualityChemReason === '') {
 				alert('You must specify a reason for the {{Low Quality Chem}} tag');
 				return;
 			}
-			if((params.tags.indexOf('Duplicate') !== -1 && params.DuplicateFile === '') ||
+			if ((params.tags.indexOf('Duplicate') !== -1 && params.DuplicateFile === '') ||
 				(params.tags.indexOf('Obsolete') !== -1 && params.ObsoleteFile === '') ||
 				(params.tags.indexOf('PNG version available') !== -1 && params.PNG_version_availableFile === '') ||
 				(params.tags.indexOf('Vector version available') !== -1 && params.Vector_version_availableFile === '')
@@ -2034,7 +2034,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				alert('You must specify the replacement file name for a tag in the Replacement tags list');
 				return;
 			}
-			if(params.tags.indexOf('Do not move to Commons_reason') !== -1 && params.DoNotMoveToCommons === '') {
+			if (params.tags.indexOf('Do not move to Commons_reason') !== -1 && params.DoNotMoveToCommons === '') {
 				alert('You must specify a reason for the {{Do not move to Commons}} tag');
 				return;
 			}
@@ -2050,7 +2050,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	// File/redirect: return if no tags selected
 	// Article: return if no tag is selected and no already present tag is deselected
-	if(params.tags.length === 0 && (Twinkle.tag.mode !== 'article' || params.tagsToRemove.length === 0)) {
+	if (params.tags.length === 0 && (Twinkle.tag.mode !== 'article' || params.tagsToRemove.length === 0)) {
 		alert('You must select at least one tag!');
 		return;
 	}

@@ -14,7 +14,7 @@
  */
 
 Twinkle.unlink = function twinkleunlink() {
-	if(mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgPageName') === 'Wikipedia:Sandbox' ||
+	if (mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgPageName') === 'Wikipedia:Sandbox' ||
 		(!Morebits.userIsInGroup('extendedconfirmed') && !Morebits.userIsInGroup('sysop'))) {
 		return;
 	}
@@ -22,12 +22,12 @@ Twinkle.unlink = function twinkleunlink() {
 };
 
 Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2(nodelist) {
-	if(!(nodelist instanceof NodeList) && !(nodelist instanceof HTMLCollection)) {
+	if (!(nodelist instanceof NodeList) && !(nodelist instanceof HTMLCollection)) {
 		return nodelist.checked ? [ nodelist.values ] : [];
 	}
 	var result = [];
-	for(var i  = 0; i < nodelist.length; ++i) {
-		if(nodelist[i].checked) {
+	for (var i  = 0; i < nodelist.length; ++i) {
+		if (nodelist[i].checked) {
 			result.push(nodelist[i].values);
 		}
 	}
@@ -71,7 +71,7 @@ Twinkle.unlink.callback = function(presetReason) {
 	});
 
 	var query;
-	if(mw.config.get('wgNamespaceNumber') === 6) {  // File:
+	if (mw.config.get('wgNamespaceNumber') === 6) {  // File:
 		query = {
 			'action': 'query',
 			'list': [ 'backlinks', 'imageusage' ],
@@ -114,10 +114,10 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	}
 
 	var backlinks = [], imageusage = [];
-	if(event.target.backlinks) {
+	if (event.target.backlinks) {
 		backlinks = Twinkle.unlink.getChecked2(event.target.backlinks);
 	}
-	if(event.target.imageusage) {
+	if (event.target.imageusage) {
 		imageusage = Twinkle.unlink.getChecked2(event.target.imageusage);
 	}
 
@@ -148,7 +148,7 @@ Twinkle.unlink.callbacks = {
 			var havecontent = false;
 			var list, namespaces, i;
 
-			if(apiobj.params.image) {
+			if (apiobj.params.image) {
 				var imageusage = $(xmlDoc).find('query imageusage iu');
 				list = [];
 				for (i = 0; i < imageusage.length; ++i) {
@@ -201,7 +201,7 @@ Twinkle.unlink.callbacks = {
 			}
 
 			var backlinks = $(xmlDoc).find('query backlinks bl');
-			if(backlinks.length > 0) {
+			if (backlinks.length > 0) {
 				list = [];
 				for (i = 0; i < backlinks.length; ++i) {
 					var title = backlinks[i].getAttribute('title');

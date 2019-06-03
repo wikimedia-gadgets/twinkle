@@ -23,7 +23,7 @@ Twinkle.talkback = function() {
 };
 
 Twinkle.talkback.callback = function() {
-	if(mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') && !confirm("Is it really so bad that you're talking back to yourself?")) {
+	if (mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') && !confirm("Is it really so bad that you're talking back to yourself?")) {
 		return;
 	}
 
@@ -128,13 +128,13 @@ var callback_change_target = function(e) {
 	var root = e.target.form;
 	var old_area = Morebits.quickForm.getElements(root, 'work_area')[0];
 
-	if(root.section) {
+	if (root.section) {
 		prev_section = root.section.value;
 	}
-	if(root.message) {
+	if (root.message) {
 		prev_message = root.message.value;
 	}
-	if(root.page) {
+	if (root.page) {
 		prev_page = root.page.value;
 	}
 
@@ -144,7 +144,7 @@ var callback_change_target = function(e) {
 			name: 'work_area'
 		});
 
-	switch(value) {
+	switch (value) {
 		case 'mytalk':
 			/* falls through */
 		default:
@@ -326,16 +326,16 @@ var callback_evaluate = function(e) {
 	var section = e.target.section.value;
 	var fullUserTalkPageName = mw.config.get('wgFormattedNamespaces')[ mw.config.get('wgNamespaceIds').user_talk ] + ':' + mw.config.get('wgRelevantUserName');
 
-	if(tbtarget === 'usertalk' || tbtarget === 'other' || tbtarget === 'see') {
+	if (tbtarget === 'usertalk' || tbtarget === 'other' || tbtarget === 'see') {
 		page = e.target.page.value;
 
-		if(tbtarget === 'usertalk') {
-			if(!page) {
+		if (tbtarget === 'usertalk') {
+			if (!page) {
 				alert('You must specify the username of the user whose talk page you left a message on.');
 				return;
 			}
 		} else {
-			if(!page) {
+			if (!page) {
 				alert('You must specify the full page name when your message is not on a user talk page.');
 				return;
 			}
@@ -408,9 +408,9 @@ var callback_evaluate = function(e) {
 		text = '\n\n==' + Twinkle.getFriendlyPref('mailHeading') + "==\n{{you've got mail|subject=";
 		text += section + '|ts=~~~~~}}';
 
-		if(message) {
+		if (message) {
 			text += '\n' + message.trim() + '  ~~~~';
-		} else if(Twinkle.getFriendlyPref('insertTalkbackSignature')) {
+		} else if (Twinkle.getFriendlyPref('insertTalkbackSignature')) {
 			text += '\n~~~~';
 		}
 
@@ -430,15 +430,15 @@ var callback_evaluate = function(e) {
 		text = '\n\n==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') + '==\n{{talkback|';
 		text += tbPageName;
 
-		if(section) {
+		if (section) {
 			text += '|' + section;
 		}
 
 		text += '|ts=~~~~~}}';
 
-		if(message) {
+		if (message) {
 			text += '\n' + message.trim() + ' ~~~~';
-		} else if(Twinkle.getFriendlyPref('insertTalkbackSignature')) {
+		} else if (Twinkle.getFriendlyPref('insertTalkbackSignature')) {
 			text += '\n~~~~';
 		}
 

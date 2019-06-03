@@ -34,7 +34,7 @@ Twinkle.fluff = {
 	},
 
 	auto: function() {
-		if(mw.config.get('wgRevisionId') !== mw.config.get('wgCurRevisionId')) {
+		if (mw.config.get('wgRevisionId') !== mw.config.get('wgCurRevisionId')) {
 			// not latest revision
 			alert("Can't rollback, page has changed in the meantime.");
 			return;
@@ -49,10 +49,10 @@ Twinkle.fluff = {
 		// $('sp-contributions-footer-anon-range') relies on the fmbox
 		// id in [[MediaWiki:Sp-contributions-footer-anon-range]] and
 		// is used to show rollback/vandalism links for IP ranges
-		if(mw.config.exists('wgRelevantUserName') || !!$('#sp-contributions-footer-anon-range')[0]) {
+		if (mw.config.exists('wgRelevantUserName') || !!$('#sp-contributions-footer-anon-range')[0]) {
 			// Get the username these contributions are for
 			var username = mw.config.get('wgRelevantUserName');
-			if(Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
+			if (Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
 				(mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1) ||
 				(mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1)) {
 				var list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
@@ -102,7 +102,7 @@ Twinkle.fluff = {
 		// Add either restore or rollback links to the newer revision
 		// Don't show if there's a single revision or weird diff (prev on first)
 		var ntitle = document.getElementById('mw-diff-ntitle1').parentNode;
-		if(document.getElementById('differences-nextlink')) {
+		if (document.getElementById('differences-nextlink')) {
 			// Not latest revision
 			var revertToRevisionN = document.createElement('div');
 			revertToRevisionN.setAttribute('id', 'tw-revert-to-nrevision');
@@ -116,7 +116,7 @@ Twinkle.fluff = {
 			revertToRevisionN.appendChild(revertToRevisionNLink);
 
 			ntitle.insertBefore(revertToRevisionN, ntitle.firstChild);
-		} else if(Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 && mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId') || document.getElementById('differences-prevlink'))) {
+		} else if (Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 && mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId') || document.getElementById('differences-prevlink'))) {
 			var vandal = $('#mw-diff-ntitle2').find('a').first().text();
 
 			var revertNode = document.createElement('div');
@@ -285,20 +285,20 @@ Twinkle.fluff.callbacks = {
 
 		var revs = $(xmlDoc).find('rev');
 
-		if(revs.length < 1) {
+		if (revs.length < 1) {
 			self.statelem.error('We have less than one additional revision, thus impossible to revert.');
 			return;
 		}
 		var top = revs[0];
-		if(lastrevid < self.params.revid) {
+		if (lastrevid < self.params.revid) {
 			Morebits.status.error('Error', [ 'The most recent revision ID received from the server, ', Morebits.htmlNode('strong', lastrevid), ', is less than the ID of the displayed revision. This could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Stopping revert.' ]);
 			return;
 		}
 		var index = 1;
-		if(self.params.revid !== lastrevid) {
+		if (self.params.revid !== lastrevid) {
 			Morebits.status.warn('Warning', [ 'Latest revision ', Morebits.htmlNode('strong', lastrevid), ' doesn\'t equal our revision ', Morebits.htmlNode('strong', self.params.revid) ]);
-			if(lastuser === self.params.user) {
-				switch(self.params.type) {
+			if (lastuser === self.params.user) {
+				switch (self.params.type) {
 				case 'vand':
 					Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user) , '. As we assume vandalism, we will proceed to revert.' ]);
 					break;
@@ -310,7 +310,7 @@ Twinkle.fluff.callbacks = {
 					return;
 				}
 			}
-			else if(self.params.type === 'vand' &&
+			else if (self.params.type === 'vand' &&
 					Twinkle.fluff.whiteList.indexOf(top.getAttribute('user')) !== -1 && revs.length > 1 &&
 					revs[1].getAttribute('pageId') === self.params.revid) {
 				Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', a trusted bot, and the revision before was made by our vandal, so we will proceed with the revert.' ]);
@@ -322,8 +322,8 @@ Twinkle.fluff.callbacks = {
 
 		}
 
-		if(Twinkle.fluff.whiteList.indexOf(self.params.user) !== -1) {
-			switch(self.params.type) {
+		if (Twinkle.fluff.whiteList.indexOf(self.params.user) !== -1) {
+			switch (self.params.type) {
 			case 'vand':
 				Morebits.status.info('Info', [ 'Vandalism revert was chosen on ', Morebits.htmlNode('strong', self.params.user), '. As this is a whitelisted bot, we assume you wanted to revert vandalism made by the previous user instead.' ]);
 				index = 2;
@@ -336,7 +336,7 @@ Twinkle.fluff.callbacks = {
 				/* falls through */
 			default:
 				var cont = confirm('Normal revert was chosen, but the most recent edit was made by a whitelisted bot (' + self.params.user + '). Do you want to revert the revision before instead?');
-				if(cont) {
+				if (cont) {
 					Morebits.status.info('Info', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', self.params.user), '. This is a whitelisted bot, and per confirmation, we\'ll revert the previous revision instead.' ]);
 					index = 2;
 					self.params.user = revs[1].getAttribute('user');
@@ -349,20 +349,20 @@ Twinkle.fluff.callbacks = {
 		var found = false;
 		var count = 0;
 
-		for(var i = index; i < revs.length; ++i) {
+		for (var i = index; i < revs.length; ++i) {
 			++count;
-			if(revs[i].getAttribute('user') !== self.params.user) {
+			if (revs[i].getAttribute('user') !== self.params.user) {
 				found = i;
 				break;
 			}
 		}
 
-		if(!found) {
+		if (!found) {
 			self.statelem.error([ 'No previous revision found. Perhaps ', Morebits.htmlNode('strong', self.params.user), ' is the only contributor, or that the user has made more than ' + Twinkle.getPref('revertMaxRevisions') + ' edits in a row.' ]);
 			return;
 		}
 
-		if(!count) {
+		if (!count) {
 			Morebits.status.error('Error', 'As it is not possible to revert zero revisions, we will stop this revert. It could be that the edit has already been reverted, but the revision ID was still the same.');
 			return;
 		}
@@ -385,7 +385,7 @@ Twinkle.fluff.callbacks = {
 		self.statelem.status([ ' revision ', Morebits.htmlNode('strong', self.params.goodid), ' that was made ', Morebits.htmlNode('strong', count), ' revisions ago by ', Morebits.htmlNode('strong', self.params.gooduser) ]);
 
 		var summary, extra_summary;
-		switch(self.params.type) {
+		switch (self.params.type) {
 		case 'agf':
 			extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
 			if (extra_summary === null)
@@ -408,7 +408,7 @@ Twinkle.fluff.callbacks = {
 		case 'norm':
 			/* falls through */
 		default:
-			if(Twinkle.getPref('offerReasonOnNormalRevert')) {
+			if (Twinkle.getPref('offerReasonOnNormalRevert')) {
 				extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
 				if (extra_summary === null)
 				{
@@ -429,7 +429,7 @@ Twinkle.fluff.callbacks = {
 		}
 
 		var query;
-		if((!self.params.autoRevert || Twinkle.getPref('openTalkPageOnAutoRevert')) &&
+		if ((!self.params.autoRevert || Twinkle.getPref('openTalkPageOnAutoRevert')) &&
 				Twinkle.getPref('openTalkPage').indexOf(self.params.type) !== -1 &&
 				mw.config.get('wgUserName') !== self.params.user) {
 			Morebits.status.info('Info', [ 'Opening user talk page edit form for user ', Morebits.htmlNode('strong', self.params.user) ]);
@@ -445,7 +445,7 @@ Twinkle.fluff.callbacks = {
 				'count': self.params.count
 			};
 
-			switch(Twinkle.getPref('userTalkPageMode')) {
+			switch (Twinkle.getPref('userTalkPageMode')) {
 			case 'tab':
 				window.open(mw.util.wikiScript('index') + '?' + Morebits.queryString.create(query), '_blank');
 				break;
@@ -587,7 +587,7 @@ Twinkle.fluff.init = function twinklefluffinit() {
 			} else {
 				Twinkle.fluff.auto();
 			}
-		} else if(mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
+		} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
 			Twinkle.fluff.contributions();
 		} else if (mw.config.get('wgIsProbablyEditable')) {
 			// Only proceed if the user can actually edit the page
@@ -596,11 +596,11 @@ Twinkle.fluff.init = function twinklefluffinit() {
 			// namespace/contentModel restrictions as well as
 			// explicit protections; it won't take care of
 			// cascading or TitleBlacklist restrictions
-			if(mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId')) { // wgDiffOldId included for clarity in if else loop [[phab:T214985]]
+			if (mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId')) { // wgDiffOldId included for clarity in if else loop [[phab:T214985]]
 				mw.hook('wikipage.diff').add(function () { // Reload alongside the revision slider
 					Twinkle.fluff.diff();
 				});
-			} else if(mw.config.get('wgAction') === 'view' && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId')) {
+			} else if (mw.config.get('wgAction') === 'view' && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId')) {
 				Twinkle.fluff.oldid();
 			}
 		}
