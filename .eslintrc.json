@@ -11,6 +11,7 @@
 	},
 	"rules": {
 		"no-caller": "error",
+		"no-unneeded-ternary": "error",
 		"no-whitespace-before-property": "error",
 		"quotes": ["error", "single", { "avoidEscape": true }],
 		"semi": ["error", "always"],
