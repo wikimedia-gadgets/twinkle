@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($){
+(function($) {
 
 var api = new mw.Api(), relevantUserName;
 
@@ -98,7 +98,7 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 		ususers: mw.config.get('wgRelevantUserName'),
 		letitle: 'User:' + mw.config.get('wgRelevantUserName')
 	})
-	.then(function(data){
+	.then(function(data) {
 		var blockinfo = data.query.blocks[0],
 			userinfo = data.query.users[0];
 
@@ -339,7 +339,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		}
 
 		var $previewlink = $('<a id="twinkleblock-preivew-link">Preview</a>');
-		$previewlink.off('click').on('click', function(){
+		$previewlink.off('click').on('click', function() {
 			Twinkle.block.callback.preview($form[0]);
 		});
 		$previewlink.css({cursor: 'pointer'});

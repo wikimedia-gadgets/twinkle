@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($){
+(function($) {
 
 
 /*
@@ -86,7 +86,7 @@ Twinkle.welcome.normal = function() {
 		}
 	}
 	if(mw.config.get('wgRelevantUserName')) {
-		Twinkle.addPortletLink(function(){ Twinkle.welcome.callback(mw.config.get('wgRelevantUserName')); }, "Wel", "friendly-welcome", "Welcome user");
+		Twinkle.addPortletLink(function() { Twinkle.welcome.callback(mw.config.get('wgRelevantUserName')); }, "Wel", "friendly-welcome", "Welcome user");
 	}
 };
 
@@ -111,7 +111,7 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 };
 
 Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
-	if(uid === mw.config.get('wgUserName') && !confirm('Are you really sure you want to welcome yourself?...')){
+	if(uid === mw.config.get('wgUserName') && !confirm('Are you really sure you want to welcome yourself?...')) {
 		return;
 	}
 
@@ -151,7 +151,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 		});
 
 	var previewlink = document.createElement('a');
-	$(previewlink).click(function(){
+	$(previewlink).click(function() {
 		Twinkle.welcome.callbacks.preview(result);  // |result| is defined below
 	});
 	previewlink.style.cursor = "pointer";

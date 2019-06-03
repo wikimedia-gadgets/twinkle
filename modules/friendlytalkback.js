@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($){
+(function($) {
 
 
 /*
@@ -23,7 +23,7 @@ Twinkle.talkback = function() {
 };
 
 Twinkle.talkback.callback = function() {
-	if(mw.config.get('wgRelevantUserName') === mw.config.get("wgUserName") && !confirm("Is it really so bad that you're talking back to yourself?")){
+	if(mw.config.get('wgRelevantUserName') === mw.config.get("wgUserName") && !confirm("Is it really so bad that you're talking back to yourself?")) {
 		return;
 	}
 

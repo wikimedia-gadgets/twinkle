@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($){
+(function($) {
 
 
 /*
@@ -1366,7 +1366,7 @@ Twinkle.speedy.callbacks = {
 					'href': '#',
 					'text': 'click here to go to the Unlink tool',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
-					'click': function(){
+					'click': function() {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
 						Twinkle.unlink.callback("Removing usages of and/or links to deleted file " + Morebits.pageNameNorm);
@@ -1382,7 +1382,7 @@ Twinkle.speedy.callbacks = {
 					'href': '#',
 					'text': 'click here to go to the Unlink tool',
 					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
-					'click': function(){
+					'click': function() {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
 						Twinkle.unlink.callback("Removing links to deleted page " + Morebits.pageNameNorm);

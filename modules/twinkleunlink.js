@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($){
+(function($) {
 
 
 /*

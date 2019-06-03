@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($){
+(function($) {
 
 
 /*
@@ -174,7 +174,7 @@ callback_deleteTalk = function(apiobj) {
 },
 callback_deleteRedirects = function(apiobj) {
 	var $doc = $(apiobj.responseXML);
-	$doc.find("redirects rd").each(function(){
+	$doc.find("redirects rd").each(function() {
 		var title = $(this).attr('title');
 		var page = new Morebits.wiki.page(title, "Deleting redirecting page " + title);
 		page.setEditSummary("[[WP:CSD#G8|G8]]: Redirect to deleted page \"" + apiobj.params.page + "\"" + Twinkle.getPref('deletionSummaryAd'));

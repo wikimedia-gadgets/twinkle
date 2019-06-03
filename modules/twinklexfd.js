@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($){
+(function($) {
 
 
 /*
@@ -122,7 +122,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		});
 
 	var previewlink = document.createElement('a');
-	$(previewlink).click(function(){
+	$(previewlink).click(function() {
 		Twinkle.xfd.callbacks.preview(result);  // |result| is defined below
 	});
 	previewlink.style.cursor = "pointer";

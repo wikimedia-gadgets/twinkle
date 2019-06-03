@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($){
+(function($) {
 
 
 /*
@@ -90,7 +90,7 @@ Twinkle.fluff = {
 
 			var revertToRevisionLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
 			revertToRevisionLink.href = "#";
-			$(revertToRevisionLink).click(function(){
+			$(revertToRevisionLink).click(function() {
 				Twinkle.fluff.revertToRevision(mw.config.get('wgDiffOldId').toString());
 			});
 			revertToRevision.appendChild(revertToRevisionLink);
@@ -110,7 +110,7 @@ Twinkle.fluff = {
 
 			var revertToRevisionNLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
 			revertToRevisionNLink.href = "#";
-			$(revertToRevisionNLink).click(function(){
+			$(revertToRevisionNLink).click(function() {
 				Twinkle.fluff.revertToRevision(mw.config.get('wgDiffNewId').toString());
 			});
 			revertToRevisionN.appendChild(revertToRevisionNLink);
@@ -133,13 +133,13 @@ Twinkle.fluff = {
 			agfLink.href = "#";
 			vandLink.href = "#";
 			normLink.href = "#";
-			$(agfLink).click(function(){
+			$(agfLink).click(function() {
 				Twinkle.fluff.revert('agf', vandal);
 			});
-			$(vandLink).click(function(){
+			$(vandLink).click(function() {
 				Twinkle.fluff.revert('vand', vandal);
 			});
-			$(normLink).click(function(){
+			$(normLink).click(function() {
 				Twinkle.fluff.revert('norm', vandal);
 			});
 
@@ -164,7 +164,7 @@ Twinkle.fluff = {
 
 		var revertToRevisionLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
 		revertToRevisionLink.href = "#";
-		$(revertToRevisionLink).click(function(){
+		$(revertToRevisionLink).click(function() {
 			Twinkle.fluff.revertToRevision(mw.config.get('wgRevisionId').toString());
 		});
 		revertToRevision.appendChild(revertToRevisionLink);

@@ -3442,7 +3442,7 @@ Morebits.queryString.create = function(arr) {
 			continue;
 		}
 		var res;
-		if(Array.isArray(arr[i])){
+		if(Array.isArray(arr[i])) {
 			var v = [];
 			for(var j = 0; j < arr[i].length; ++j) {
 				v[j] = encodeURIComponent(arr[i][j]);

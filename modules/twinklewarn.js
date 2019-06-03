@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($){
+(function($) {
 
 
 /*
@@ -110,7 +110,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	more.append({ type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' });
 
 	var previewlink = document.createElement('a');
-	$(previewlink).click(function(){
+	$(previewlink).click(function() {
 		Twinkle.warn.callbacks.preview(result);  // |result| is defined below
 	});
 	previewlink.style.cursor = "pointer";
@@ -1083,7 +1083,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		old_subvalue_re = new RegExp(mw.RegExp.escape(old_subvalue) + "(\\d*(?:im)?)$");
 	}
 
-	while(sub_group.hasChildNodes()){
+	while(sub_group.hasChildNodes()) {
 		sub_group.removeChild(sub_group.firstChild);
 	}
 

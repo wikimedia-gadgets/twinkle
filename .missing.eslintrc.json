@@ -33,4 +33,3 @@
 		"no-whitespace-before-property": "error",
 		"quotes": ["error", "single", { "avoidEscape": true }],
 		"semi": ["error", "always"],
-		"space-before-blocks": "error",

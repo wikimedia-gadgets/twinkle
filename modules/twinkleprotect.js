@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($){
+(function($) {
 
 
 /*
@@ -154,7 +154,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		earlyDecision.push(stableDeferred);
 	}
 
-	$.when.apply($, earlyDecision).done(function(protectData, stableData){
+	$.when.apply($, earlyDecision).done(function(protectData, stableData) {
 		// $.when.apply is supposed to take an unknown number of promises
 		// via an array, which it does, but the type of data returned varies.
 		// If there are two or more deferreds, it returns an array (of objects),
