@@ -886,7 +886,7 @@ Twinkle.config.sections = [
 
 Twinkle.config.init = function twinkleconfigInit() {
 
-	if ((mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').project && mw.config.get('wgTitle') === 'Twinkle/Preferences' ||
+	if (((mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').project && mw.config.get('wgTitle') === 'Twinkle/Preferences') ||
 			(mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').user && mw.config.get('wgTitle').lastIndexOf('/Twinkle preferences') === (mw.config.get('wgTitle').length - 20))) &&
 			mw.config.get('wgAction') === 'view') {
 		// create the config page at Wikipedia:Twinkle/Preferences, and at user subpages (for testing purposes)

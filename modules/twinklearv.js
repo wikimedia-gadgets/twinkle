@@ -847,7 +847,7 @@ Twinkle.arv.processAN3 = function(params) {
 		var parentid, lastid;
 		for(var j = 0; j < params.diffs.length; ++j) {
 			var cur = params.diffs[j];
-			if(cur.revid && cur.revid != parentid || lastid === null) {
+			if((cur.revid && cur.revid != parentid) || lastid === null) {
 				lastid = cur.revid;
 				grouped_diffs[lastid] = [];
 			}

@@ -672,7 +672,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 };
 
 Morebits.quickForm.element.autoNWSW = function() {
-	return $(this).offset().top > ($(document).scrollTop() + $(window).height() / 2) ? 'sw' : 'nw';
+	return $(this).offset().top > ($(document).scrollTop() + ($(window).height() / 2)) ? 'sw' : 'nw';
 };
 
 /**
