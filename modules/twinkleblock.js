@@ -939,7 +939,7 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 			}
 
 			var blockSettings = Twinkle.block.blockPresetsInfo[blockPreset.value];
-			var registrationRestrict = blockSettings.forRegisteredOnly ? Twinkle.block.isRegistered : (blockSettings.forAnonOnly ? !Twinkle.block.isRegistered : true);
+			var registrationRestrict = blockSettings.forRegisteredOnly ? Twinkle.block.isRegistered : blockSettings.forAnonOnly ? !Twinkle.block.isRegistered : true;
 			if (!(blockSettings.templateName && show_template) && registrationRestrict) {
 				var templateName = blockSettings.templateName || blockPreset.value;
 				return {

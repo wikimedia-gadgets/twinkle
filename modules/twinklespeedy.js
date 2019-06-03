@@ -86,7 +86,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	dialog.addFooterLink('Speedy deletion policy', 'WP:CSD');
 	dialog.addFooterLink('Twinkle help', 'WP:TW/DOC#speedy');
 
-	var form = new Morebits.quickForm(callbackfunc, (Twinkle.getPref('speedySelectionStyle') === 'radioClick' ? 'change' : null));
+	var form = new Morebits.quickForm(callbackfunc, Twinkle.getPref('speedySelectionStyle') === 'radioClick' ? 'change' : null);
 	if (isSysop) {
 		form.append({
 			type: 'checkbox',
@@ -327,7 +327,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		});
 	}
 
-	var radioOrCheckbox = (Twinkle.speedy.mode.isMultiple(mode) ? 'checkbox' : 'radio');
+	var radioOrCheckbox = Twinkle.speedy.mode.isMultiple(mode) ? 'checkbox' : 'radio';
 
 	if (isSysopMode && !Twinkle.speedy.mode.isMultiple(mode)) {
 		work_area.append({ type: 'header', label: 'Custom rationale' });
@@ -781,13 +781,13 @@ Twinkle.speedy.userList = [
 		label: 'U1: User request',
 		value: 'userreq',
 		tooltip: 'Personal subpages, upon request by their user. In some rare cases there may be administrative need to retain the page. Also, sometimes, main user pages may be deleted as well. See Wikipedia:User page for full instructions and guidelines',
-		subgroup: ((mw.config.get('wgNamespaceNumber') === 3 && mw.config.get('wgTitle').indexOf('/') === -1) ? {
+		subgroup: mw.config.get('wgNamespaceNumber') === 3 && mw.config.get('wgTitle').indexOf('/') === -1 ? {
 			name: 'userreq_rationale',
 			type: 'input',
 			label: 'A mandatory rationale to explain why this user talk page should be deleted: ',
 			tooltip: 'User talk pages are deleted only in highly exceptional circumstances. See WP:DELTALK.',
 			size: 60
-		} : null),
+		} : null,
 		hideSubgroupWhenMultiple: true
 	},
 	{
@@ -1252,7 +1252,7 @@ Twinkle.speedy.callbacks = {
 				notifytext = '\n{{subst:db-' + (params.warnUser ? 'deleted' : 'notice') + '-multiple|1=' + Morebits.pageNameNorm;
 				var count = 2;
 				$.each(params.normalizeds, function(index, norm) {
-					notifytext += '|' + (count++) + '=' + norm.toUpperCase();
+					notifytext += '|' + count++ + '=' + norm.toUpperCase();
 				});
 			} else if (params.normalizeds[0] === 'db') {
 				notifytext = '\n{{subst:db-reason-' + (params.warnUser ? 'deleted' : 'notice') + '|1=' + Morebits.pageNameNorm;
@@ -1412,7 +1412,7 @@ Twinkle.speedy.callbacks = {
 
 			var current = 0;
 			var onsuccess = function(apiobjInner) {
-				var now = parseInt(100 * (++current) / total, 10) + '%';
+				var now = parseInt(100 * ++current / total, 10) + '%';
 				statusIndicator.update(now);
 				apiobjInner.statelem.unlink();
 				if (current >= total) {
@@ -1499,7 +1499,7 @@ Twinkle.speedy.callbacks = {
 				editsummary = 'Requesting speedy deletion ([[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']]).';
 			}
 
-			pageobj.setPageText(code + ((params.normalizeds.indexOf('g10') !== -1) ? '' : ('\n' + text))); // cause attack pages to be blanked
+			pageobj.setPageText(code + (params.normalizeds.indexOf('g10') !== -1 ? '' : '\n' + text)); // cause attack pages to be blanked
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			pageobj.setWatchlist(params.watch);
 			pageobj.setCreateOption('recreate'); // Module /doc might not exist
@@ -1675,7 +1675,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 			case 'userreq':  // U1
 				if (form['csd.userreq_rationale']) {
 					var u1rationale = form['csd.userreq_rationale'].value;
-					if (mw.config.get('wgNamespaceNumber') === 3 && !((/\//).test(mw.config.get('wgTitle'))) &&
+					if (mw.config.get('wgNamespaceNumber') === 3 && !(/\//).test(mw.config.get('wgTitle')) &&
 							(!u1rationale || !u1rationale.trim())) {
 						alert('CSD U1:  Please specify a rationale when nominating user talk pages.');
 						parameters = null;
@@ -1828,7 +1828,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.commons_filename']) {
 					var filename = form['csd.commons_filename'].value;
 					if (filename && filename !== Morebits.pageNameNorm) {
-						currentParams.filename = (filename.indexOf('Image:') === 0 || filename.indexOf('File:') === 0) ? filename : 'File:' + filename;
+						currentParams.filename = filename.indexOf('Image:') === 0 || filename.indexOf('File:') === 0 ? filename : 'File:' + filename;
 					}
 				}
 				break;
@@ -1952,7 +1952,7 @@ Twinkle.speedy.resolveCsdValues = function twinklespeedyResolveCsdValues(e) {
 };
 
 Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSysop(e) {
-	var form = (e.target.form ? e.target.form : e.target);
+	var form = e.target.form ? e.target.form : e.target;
 
 	if (e.target.type === 'checkbox' || e.target.type === 'text' ||
 			e.target.type === 'select') {
@@ -2030,7 +2030,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 };
 
 Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUser(e) {
-	var form = (e.target.form ? e.target.form : e.target);
+	var form = e.target.form ? e.target.form : e.target;
 
 	if (e.target.type === 'checkbox' || e.target.type === 'text' ||
 			e.target.type === 'select') {

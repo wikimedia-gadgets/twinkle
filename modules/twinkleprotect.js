@@ -118,7 +118,7 @@ Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdm
 			// fail gracefully
 			return null;
 		} else if (event.action === 'move_prot' || event.action === 'move_stable') {
-			return twinkleprotectFetchProtectingAdmin(api, (protType === 'protect' ? event.params.oldtitle_title : event.params.oldtitle), protType, logIds.concat(event.logid));
+			return twinkleprotectFetchProtectingAdmin(api, protType === 'protect' ? event.params.oldtitle_title : event.params.oldtitle, protType, logIds.concat(event.logid));
 		}
 		return event.user;
 	});
@@ -138,7 +138,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		list: 'logevents',
 		letype: 'protect',
 		letitle: mw.config.get('wgPageName'),
-		prop: (mw.loader.getState('ext.flaggedRevs.review') ? 'info|flagged' : 'info'),
+		prop: mw.loader.getState('ext.flaggedRevs.review') ? 'info|flagged' : 'info',
 		inprop: 'protection',
 		titles: mw.config.get('wgPageName')
 	});
@@ -279,11 +279,11 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				name: 'category',
 				label: 'Choose a preset:',
 				event: Twinkle.protect.callback.changePreset,
-				list: (mw.config.get('wgArticleId') ?
+				list: mw.config.get('wgArticleId') ?
 					Twinkle.protect.protectionTypes.filter(function(v) {
 						return isTemplate || v.label !== 'Template protection';
 					}) :
-					Twinkle.protect.protectionTypesCreate)
+					Twinkle.protect.protectionTypesCreate
 			});
 
 			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Protection options', name: 'field2' });
@@ -451,7 +451,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 								value: 'pcmodify',
 								tooltip: 'If this is turned off, the pending changes level, and expiry time, will be left as is.',
 								checked: true,
-								disabled: (mw.config.get('wgNamespaceNumber') !== 0 && mw.config.get('wgNamespaceNumber') !== 4) // Hardcoded until [[phab:T218479]]
+								disabled: mw.config.get('wgNamespaceNumber') !== 0 && mw.config.get('wgNamespaceNumber') !== 4 // Hardcoded until [[phab:T218479]]
 							}
 						]
 					});
@@ -602,7 +602,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						name: 'noinclude',
 						label: 'Wrap protection template with <noinclude>',
 						tooltip: 'Will wrap the protection template in &lt;noinclude&gt; tags, so that it won\'t transclude',
-						checked: (mw.config.get('wgNamespaceNumber') === 10)
+						checked: mw.config.get('wgNamespaceNumber') === 10
 					}
 				]
 			});
@@ -615,7 +615,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				name: 'category',
 				label: 'Type and reason:',
 				event: Twinkle.protect.callback.changePreset,
-				list: (mw.config.get('wgArticleId') ? Twinkle.protect.protectionTypes : Twinkle.protect.protectionTypesCreate)
+				list: mw.config.get('wgArticleId') ? Twinkle.protect.protectionTypes : Twinkle.protect.protectionTypesCreate
 			});
 
 			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Options', name: 'field1' });
@@ -681,10 +681,10 @@ Twinkle.protect.formevents = {
 	editmodify: function twinkleprotectFormEditmodifyEvent(e) {
 		e.target.form.editlevel.disabled = !e.target.checked;
 		e.target.form.editexpiry.disabled = !e.target.checked || (e.target.form.editlevel.value === 'all');
-		e.target.form.editlevel.style.color = e.target.form.editexpiry.style.color = (e.target.checked ? '' : 'transparent');
+		e.target.form.editlevel.style.color = e.target.form.editexpiry.style.color = e.target.checked ? '' : 'transparent';
 	},
 	editlevel: function twinkleprotectFormEditlevelEvent(e) {
-		e.target.form.editexpiry.disabled = (e.target.value === 'all');
+		e.target.form.editexpiry.disabled = e.target.value === 'all';
 	},
 	movemodify: function twinkleprotectFormMovemodifyEvent(e) {
 		// sync move settings with edit settings if applicable
@@ -697,21 +697,21 @@ Twinkle.protect.formevents = {
 		}
 		e.target.form.movelevel.disabled = !e.target.checked;
 		e.target.form.moveexpiry.disabled = !e.target.checked || (e.target.form.movelevel.value === 'all');
-		e.target.form.movelevel.style.color = e.target.form.moveexpiry.style.color = (e.target.checked ? '' : 'transparent');
+		e.target.form.movelevel.style.color = e.target.form.moveexpiry.style.color = e.target.checked ? '' : 'transparent';
 	},
 	movelevel: function twinkleprotectFormMovelevelEvent(e) {
-		e.target.form.moveexpiry.disabled = (e.target.value === 'all');
+		e.target.form.moveexpiry.disabled = e.target.value === 'all';
 	},
 	pcmodify: function twinkleprotectFormPcmodifyEvent(e) {
 		e.target.form.pclevel.disabled = !e.target.checked;
 		e.target.form.pcexpiry.disabled = !e.target.checked || (e.target.form.pclevel.value === 'none');
-		e.target.form.pclevel.style.color = e.target.form.pcexpiry.style.color = (e.target.checked ? '' : 'transparent');
+		e.target.form.pclevel.style.color = e.target.form.pcexpiry.style.color = e.target.checked ? '' : 'transparent';
 	},
 	pclevel: function twinkleprotectFormPclevelEvent(e) {
-		e.target.form.pcexpiry.disabled = (e.target.value === 'none');
+		e.target.form.pcexpiry.disabled = e.target.value === 'none';
 	},
 	createlevel: function twinkleprotectFormCreatelevelEvent(e) {
-		e.target.form.createexpiry.disabled = (e.target.value === 'all');
+		e.target.form.createexpiry.disabled = e.target.value === 'all';
 	},
 	tagtype: function twinkleprotectFormTagtypeEvent(e) {
 		e.target.form.small.disabled = e.target.form.noinclude.disabled = (e.target.value === 'none') || (e.target.value === 'noop');
@@ -1078,7 +1078,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			}
 		}
 
-		var reasonField = (actiontype === 'protect' ? form.protectReason : form.reason);
+		var reasonField = actiontype === 'protect' ? form.protectReason : form.reason;
 		if (item.reason) {
 			reasonField.value = item.reason;
 		} else {
@@ -1090,7 +1090,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			if (form.category.value === 'unprotect') {
 				form.tagtype.value = 'none';
 			} else {
-				form.tagtype.value = (item.template ? item.template : form.category.value);
+				form.tagtype.value = item.template ? item.template : form.category.value;
 			}
 			Twinkle.protect.formevents.tagtype({ target: form.tagtype });
 
@@ -1130,7 +1130,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	if (actiontype === 'tag' || (actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto')) {
 		tagparams = {
 			tag: form.tagtype.value,
-			reason: ((form.tagtype.value === 'pp-protected' || form.tagtype.value === 'pp-semi-protected' || form.tagtype.value === 'pp-move') && form.protectReason) ? form.protectReason.value : null,
+			reason: (form.tagtype.value === 'pp-protected' || form.tagtype.value === 'pp-semi-protected' || form.tagtype.value === 'pp-move') && form.protectReason ? form.protectReason.value : null,
 			small: form.small.checked,
 			noinclude: form.noinclude.checked
 		};
@@ -1504,8 +1504,8 @@ Twinkle.protect.callbacks = {
 
 		words += params.typename;
 
-		newtag += "'''" + Morebits.string.toUpperCaseFirstChar(words) + (params.reason !== '' ? (":''' " +
-			Morebits.string.formatReasonText(params.reason)) : ".'''") + ' ~~~~';
+		newtag += "'''" + Morebits.string.toUpperCaseFirstChar(words) + (params.reason !== '' ? ":''' " +
+			Morebits.string.formatReasonText(params.reason) : ".'''") + ' ~~~~';
 
 		// If either protection type results in a increased status, then post it under increase
 		// else we post it under decrease

@@ -66,7 +66,7 @@ Twinkle.unlink.callback = function(presetReason) {
 		type: 'input',
 		name: 'reason',
 		label: 'Reason: ',
-		value: (presetReason ? presetReason : ''),
+		value: presetReason ? presetReason : '',
 		size: 60
 	});
 
@@ -283,9 +283,9 @@ Twinkle.unlink.callbacks = {
 			text = wikiPage.getText();
 			// did we actually make any changes?
 			if (text === oldtext) {
-				warningString = (warningString ? 'backlinks or file usages' : 'backlinks');
+				warningString = warningString ? 'backlinks or file usages' : 'backlinks';
 			} else {
-				summaryText = (summaryText ? (summaryText + ' / ') : '') + 'Removing link(s) to';
+				summaryText = (summaryText ? summaryText + ' / ' : '') + 'Removing link(s) to';
 				oldtext = text;
 			}
 		}

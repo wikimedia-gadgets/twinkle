@@ -1,1 +1,1 @@
-		"no-extra-parens": ["error", "all", { "nestedBinaryExpressions": false }],
+

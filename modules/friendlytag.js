@@ -37,7 +37,7 @@ Twinkle.tag = function friendlytag() {
 Twinkle.tag.checkedTags = [];
 
 Twinkle.tag.callback = function friendlytagCallback() {
-	var Window = new Morebits.simpleWindow(630, (Twinkle.tag.mode === 'article') ? 500 : 400);
+	var Window = new Morebits.simpleWindow(630, Twinkle.tag.mode === 'article' ? 500 : 400);
 	Window.setScriptName('Twinkle');
 	// anyone got a good policy/guideline/info page/instructional page link??
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#tag');
@@ -536,7 +536,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 			var checkbox =
 				{
 					value: tag,
-					label: '{{' + tag + '}}' + (description ? (': ' + description) : ''),
+					label: '{{' + tag + '}}' + (description ? ': ' + description : ''),
 					checked: unCheckedTags.indexOf(tag) === -1
 					// , subgroup: { type: 'input', name: 'removeReason', label: 'Reason', tooltip: 'Enter reason for removing this tag' }
 					// TODO: add option for providing reason for removal
@@ -1320,7 +1320,7 @@ Twinkle.tag.callbacks = {
 						} else {
 							text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
 								'\n\n' + templateText + '\n\n$1');
-							summary = 'Translation' + (params.lang ? (' from ' + params.lang) : '') + ' requested on ';
+							summary = 'Translation' + (params.lang ? ' from ' + params.lang : '') + ' requested on ';
 						}
 
 						if (text === old_text) {
@@ -1381,7 +1381,7 @@ Twinkle.tag.callbacks = {
 			Morebits.status.info('Info', 'Removing deselected tags that were already present');
 
 			if (params.tags.length > 0) {
-				summaryText += (tags.length ? (' tag' + (tags.length > 1 ? 's' : '')) : '') + ', and removed';
+				summaryText += (tags.length ? ' tag' + (tags.length > 1 ? 's' : '') : '') + ', and removed';
 			} else {
 				summaryText = 'Removed';
 			}
@@ -1557,9 +1557,9 @@ Twinkle.tag.callbacks = {
 							if (mw.config.get('wgNamespaceNumber') === 0 && (params.mergeReason || params.discussArticle)) {
 								if (!params.discussArticle) {
 									// discussArticle is the article whose talk page will contain the discussion
-									params.discussArticle = (tagName === 'Merge to' ? params.mergeTarget : mw.config.get('wgTitle'));
+									params.discussArticle = tagName === 'Merge to' ? params.mergeTarget : mw.config.get('wgTitle');
 									// nonDiscussArticle is the article which won't have the discussion
-									params.nonDiscussArticle = (tagName === 'Merge to' ? mw.config.get('wgTitle') : params.mergeTarget);
+									params.nonDiscussArticle = tagName === 'Merge to' ? mw.config.get('wgTitle') : params.mergeTarget;
 									params.talkDiscussionTitle = 'Proposed merge with ' + params.nonDiscussArticle;
 								}
 								currentTag += '|discuss=Talk:' + params.discussArticle + '#' + params.talkDiscussionTitle;
@@ -1590,7 +1590,7 @@ Twinkle.tag.callbacks = {
 				if (tagName.indexOf('|') !== -1) {
 					tagName = tagName.slice(0, tagName.indexOf('|'));
 				}
-				summaryText += (tagName.indexOf(':') !== -1 ? tagName : ('Template:' + tagName + '|' + tagName));
+				summaryText += tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName;
 			}
 			summaryText += ']]}}';
 
@@ -1814,7 +1814,7 @@ Twinkle.tag.callbacks = {
 				}
 			}
 
-			summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : ('Template:' + tagName + '|' + tagName)) + ']]}}';
+			summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
 		};
 
 		tags.sort();
@@ -1977,7 +1977,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	$(form).find("[name^='" + name_prefix + "']:not(div)").each(function(idx, el) {
 		// el are the HTMLInputElements, el.name gives the name attribute
 		params[el.name.slice(name_prefix.length)] =
-			(el.type === 'checkbox' ? form[el.name].checked : form[el.name].value);
+			el.type === 'checkbox' ? form[el.name].checked : form[el.name].value;
 	});
 
 	switch (Twinkle.tag.mode) {
@@ -2024,7 +2024,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 		case 'file':
 
-			if ((params.tags.indexOf('Cleanup image') !== -1 && params.cleanupimageReason === '')) {
+			if (params.tags.indexOf('Cleanup image') !== -1 && params.cleanupimageReason === '') {
 				alert('You must specify a reason for the cleanup tag.');
 				return;
 			}

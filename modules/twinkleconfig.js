@@ -1356,12 +1356,12 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 	// value column header
 	dlgth = document.createElement('th');
 	dlgth.style.width = '35%';
-	dlgth.textContent = (curpref.customListValueTitle ? curpref.customListValueTitle : 'Value');
+	dlgth.textContent = curpref.customListValueTitle ? curpref.customListValueTitle : 'Value';
 	dlgtr.appendChild(dlgth);
 	// label column header
 	dlgth = document.createElement('th');
 	dlgth.style.width = '60%';
-	dlgth.textContent = (curpref.customListLabelTitle ? curpref.customListLabelTitle : 'Label');
+	dlgth.textContent = curpref.customListLabelTitle ? curpref.customListLabelTitle : 'Label';
 	dlgtr.appendChild(dlgth);
 	dlgtbody.appendChild(dlgtr);
 
@@ -1496,29 +1496,29 @@ Twinkle.config.resetPref = function twinkleconfigResetPref(pref, inFriendlyConfi
 	switch (pref.type) {
 
 		case 'boolean':
-			document.getElementById(pref.name).checked = (inFriendlyConfig ?
-				Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]);
+			document.getElementById(pref.name).checked = inFriendlyConfig ?
+				Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name];
 			break;
 
 		case 'string':
 		case 'integer':
 		case 'enum':
-			document.getElementById(pref.name).value = (inFriendlyConfig ?
-				Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]);
+			document.getElementById(pref.name).value = inFriendlyConfig ?
+				Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name];
 			break;
 
 		case 'set':
 			$.each(pref.setValues, function(itemkey) {
 				if (document.getElementById(pref.name + '_' + itemkey)) {
-					document.getElementById(pref.name + '_' + itemkey).checked = ((inFriendlyConfig ?
-						Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]).indexOf(itemkey) !== -1);
+					document.getElementById(pref.name + '_' + itemkey).checked = (inFriendlyConfig ?
+						Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]).indexOf(itemkey) !== -1;
 				}
 			});
 			break;
 
 		case 'customList':
-			$(document.getElementById(pref.name)).data('value', (inFriendlyConfig ?
-				Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]));
+			$(document.getElementById(pref.name)).data('value', inFriendlyConfig ?
+				Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]);
 			break;
 
 		default:

@@ -17,7 +17,7 @@ Twinkle.deprod = function() {
 	if (
 		mw.config.get('wgNamespaceNumber') !== 14 ||
 		!Morebits.userIsInGroup('sysop') ||
-		!((/proposed_deletion/i).test(mw.config.get('wgPageName')))
+		!(/proposed_deletion/i).test(mw.config.get('wgPageName'))
 	) {
 		return;
 	}
@@ -74,13 +74,13 @@ Twinkle.deprod.callback = function() {
 			}
 			if (isProtected) {
 				metadata.push('fully protected' +
-					($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))));
+					($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : ', expires ' + $editprot.attr('expiry')));
 			}
 			list.push({
-				label: (metadata.length ? ('(' + metadata.join('; ') + ')') : ''),
+				label: metadata.length ? '(' + metadata.join('; ') + ')' : '',
 				value: title,
 				checked: concerns[title] !== '',
-				style: (isProtected ? 'color:red' : '')
+				style: isProtected ? 'color:red' : ''
 			});
 		});
 		apiobj.params.form.append({ type: 'header', label: 'Pages to delete' });

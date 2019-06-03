@@ -70,12 +70,12 @@ Morebits.sanitizeIPv6 = function (address) {
 		// We know this is valid IPv6. Find the last index of the
 		// address before any CIDR number (e.g. "a:b:c::/24").
 		var CIDRStart = address.indexOf('/');
-		var addressEnd = (CIDRStart > -1) ? CIDRStart - 1 : address.length - 1;
+		var addressEnd = CIDRStart > -1 ? CIDRStart - 1 : address.length - 1;
 		// If the '::' is at the beginning...
 		var repeat, extra, pad;
 		if (abbrevPos === 0) {
 			repeat = '0:';
-			extra = (address === '::') ? '0' : ''; // for the address '::'
+			extra = address === '::' ? '0' : ''; // for the address '::'
 			pad = 9; // 7+2 (due to '::')
 		// If the '::' is at the end...
 		} else if (abbrevPos === (addressEnd - 1)) {
@@ -662,9 +662,9 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 		childContainder.setAttribute('style', data.style);
 	}
 	if (data.className) {
-		childContainder.className = (childContainder.className ?
+		childContainder.className = childContainder.className ?
 			childContainder.className + ' ' + data.className :
-			data.className);
+			data.className;
 	}
 	childContainder.setAttribute('id', data.id || id);
 
@@ -685,7 +685,7 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 	}).appendTo(node).tipsy({
 		'fallback': data.tooltip,
 		'fade': true,
-		'gravity': (data.type === 'input' || data.type === 'select') ?
+		'gravity': data.type === 'input' || data.type === 'select' ?
 			Morebits.quickForm.element.autoNWSW : $.fn.tipsy.autoWE,
 		'html': true,
 		'delayOut': 250
@@ -1315,7 +1315,7 @@ Morebits.wiki.actionCompleted.event = function() {
 	new Morebits.status(Morebits.wiki.actionCompleted.notice, Morebits.wiki.actionCompleted.postfix, 'info');
 	if (Morebits.wiki.actionCompleted.redirect) {
 		// if it isn't a URL, make it one. TODO: This breaks on the articles 'http://', 'ftp://', and similar ones.
-		if (!((/^\w+:\/\//).test(Morebits.wiki.actionCompleted.redirect))) {
+		if (!(/^\w+:\/\//).test(Morebits.wiki.actionCompleted.redirect)) {
 			Morebits.wiki.actionCompleted.redirect = mw.util.getUrl(Morebits.wiki.actionCompleted.redirect);
 			if (Morebits.wiki.actionCompleted.followRedirect === false) {
 				Morebits.wiki.actionCompleted.redirect += '?redirect=no';
@@ -1327,7 +1327,7 @@ Morebits.wiki.actionCompleted.event = function() {
 	}
 };
 
-Morebits.wiki.actionCompleted.timeOut = (typeof window.wpActionCompletedTimeOut === 'undefined' ? 5000 : window.wpActionCompletedTimeOut);
+Morebits.wiki.actionCompleted.timeOut = typeof window.wpActionCompletedTimeOut === 'undefined' ? 5000 : window.wpActionCompletedTimeOut;
 Morebits.wiki.actionCompleted.redirect = null;
 Morebits.wiki.actionCompleted.notice = 'Action';
 Morebits.wiki.actionCompleted.postfix = 'completed';
@@ -1794,7 +1794,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		// shouldn't happen if canUseMwUserToken === true
 		if (ctx.fullyProtected && !ctx.suppressProtectWarning &&
 			!confirm('You are about to make an edit to the fully protected page "' + ctx.pageName +
-			(ctx.fullyProtected === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + ctx.fullyProtected + ')')) +
+			(ctx.fullyProtected === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + ctx.fullyProtected + ')') +
 			'.  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.')) {
 			ctx.statusElement.error('Edit to fully protected page was aborted.');
 			ctx.onSaveFailure(this);
@@ -2507,7 +2507,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return; // abort
 		}
 
-		ctx.pageExists = ($(xml).find('page').attr('missing') !== '');
+		ctx.pageExists = $(xml).find('page').attr('missing') !== '';
 		if (ctx.pageExists) {
 			ctx.pageText = $(xml).find('rev').text();
 		} else {
@@ -2750,7 +2750,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			var editprot = $(xml).find('pr[type="edit"]');
 			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
 				!confirm('You are about to move the fully protected page "' + ctx.pageName +
-				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
+				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + editprot.attr('expiry') + ')') +
 				'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
 				ctx.statusElement.error('Move of fully protected page was aborted.');
 				ctx.onMoveFailure(this);
@@ -2809,7 +2809,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			var editprot = $(xml).find('pr[type="edit"]');
 			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
 				!confirm('You are about to delete the fully protected page "' + ctx.pageName +
-				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
+				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + editprot.attr('expiry') + ')') +
 				'.  \n\nClick OK to proceed with the deletion, or Cancel to skip this deletion.')) {
 				ctx.statusElement.error('Deletion of fully protected page was aborted.');
 				ctx.onDeleteFailure(this);
@@ -2898,7 +2898,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			var editprot = $(xml).find('pr[type="create"]');
 			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
 				!confirm('You are about to undelete the fully create protected page "' + ctx.pageName +
-				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : ('" (protection expiring ' + editprot.attr('expiry') + ')')) +
+				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + editprot.attr('expiry') + ')') +
 				'.  \n\nClick OK to proceed with the undeletion, or Cancel to skip this undeletion.')) {
 				ctx.statusElement.error('Undeletion of fully create protected page was aborted.');
 				ctx.onUndeleteFailure(this);
@@ -2959,8 +2959,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	var fnProcessProtect = function() {
 		var xml = ctx.protectApi.getXML();
 
-		var missing = ($(xml).find('page').attr('missing') === '');
-		if (((ctx.protectEdit || ctx.protectMove) && missing)) {
+		var missing = $(xml).find('page').attr('missing') === '';
+		if ((ctx.protectEdit || ctx.protectMove) && missing) {
 			ctx.statusElement.error('Cannot protect the page, because it no longer exists');
 			ctx.onProtectFailure(this);
 			return;
@@ -3036,7 +3036,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	var fnProcessStabilize = function() {
 		var xml = ctx.stabilizeApi.getXML();
 
-		var missing = ($(xml).find('page').attr('missing') === '');
+		var missing = $(xml).find('page').attr('missing') === '';
 		if (missing) {
 			ctx.statusElement.error('Cannot protect the page, because it no longer exists');
 			ctx.onStabilizeFailure(this);
@@ -3279,7 +3279,7 @@ Morebits.wikitext.page.prototype = {
 		var unbinder = new Morebits.unbinder(this.text);
 		unbinder.unbind('<!--', '-->');
 
-		reason = reason ? (reason + ': ') : '';
+		reason = reason ? reason + ': ' : '';
 		var first_char = image.substr(0, 1);
 		var image_re_string = '[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + RegExp.escape(image.substr(1), true);
 
@@ -3898,7 +3898,7 @@ Morebits.batchOperation = function(currentAction) {
 				if (apiobj.getPageName || apiobj.pageName || (apiobj.query && apiobj.query.title)) {
 					// we know the page title - display a relevant message
 					var pageName = apiobj.getPageName ? apiobj.getPageName() :
-						(apiobj.pageName || apiobj.query.title);
+						apiobj.pageName || apiobj.query.title;
 					var link = document.createElement('a');
 					link.setAttribute('href', mw.util.getUrl(pageName));
 					link.appendChild(document.createTextNode(pageName));
@@ -4186,7 +4186,7 @@ Morebits.simpleWindow.prototype = {
 		$(this.content).find('input[type="submit"], button[type="submit"]').each(function(key, value) {
 			value.style.display = 'none';
 			var button = document.createElement('button');
-			button.textContent = (value.hasAttribute('value') ? value.getAttribute('value') : (value.textContent ? value.textContent : 'Submit Query'));
+			button.textContent = value.hasAttribute('value') ? value.getAttribute('value') : value.textContent ? value.textContent : 'Submit Query';
 			// here is an instance of cheap coding, probably a memory-usage hit in using a closure here
 			button.addEventListener('click', function() {
 				value.click();

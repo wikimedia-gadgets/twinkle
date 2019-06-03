@@ -148,7 +148,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 		type: 'input',
 		name: 'article',
 		label: '* Linked article (if supported by template):',
-		value: (Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : ''),
+		value: Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : '',
 		tooltip: 'An article might be linked from within the welcome if the template supports it. Leave empty for no article to be linked.  Templates that support a linked article are marked with an asterisk.'
 	});
 
@@ -193,14 +193,14 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			name: 'template',
 			list: list.map(function(obj) {
 				var properties = Twinkle.welcome.templates[obj];
-				var result = (properties ? {
+				var result = properties ? {
 					value: obj,
 					label: '{{' + obj + '}}: ' + properties.description + (properties.linkedArticle ? '\u00A0*' : ''),  // U+00A0 NO-BREAK SPACE
 					tooltip: properties.tooltip  // may be undefined
 				} : {
 					value: obj,
 					label: '{{' + obj + '}}'
-				});
+				};
 				return result;
 			}),
 			event: Twinkle.welcome.selectTemplate
@@ -318,7 +318,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 
 Twinkle.welcome.selectTemplate = function(e) {
 	var properties = Twinkle.welcome.templates[e.target.values];
-	e.target.form.article.disabled = (properties ? !properties.linkedArticle : false);
+	e.target.form.article.disabled = properties ? !properties.linkedArticle : false;
 };
 
 
@@ -716,7 +716,7 @@ Twinkle.welcome.getTemplateWikitext = function(template, article) {
 			replace(/\$HEADER\$\s*/, '== Welcome ==\n\n').
 			replace('$EXTRA$', '');  // EXTRA is not implemented yet
 	}
-	return '{{subst:' + template + (article ? ('|art=' + article) : '') + '}}' +
+	return '{{subst:' + template + (article ? '|art=' + article : '') + '}}' +
 			(Twinkle.getFriendlyPref('customWelcomeSignature') ? ' ~~~~' : '');
 };
 

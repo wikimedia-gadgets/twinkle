@@ -258,7 +258,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 
 	// verify/normalize input
 	var skin = mw.config.get('skin');
-	type = (skin === 'vector' && type === 'menu' && (navigation === 'left-navigation' || navigation === 'right-navigation')) ? 'menu' : '';
+	type = skin === 'vector' && type === 'menu' && (navigation === 'left-navigation' || navigation === 'right-navigation') ? 'menu' : '';
 	var outerDivClass;
 	var innerDivClass;
 	switch (skin) {
@@ -266,8 +266,8 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 			if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
 				navigation = 'mw-panel';
 			}
-			outerDivClass = (navigation === 'mw-panel') ? 'portal' : (type === 'menu' ? 'vectorMenu' : 'vectorTabs');
-			innerDivClass = (navigation === 'mw-panel') ? 'body' : (type === 'menu' ? 'menu' : '');
+			outerDivClass = navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'vectorMenu' : 'vectorTabs';
+			innerDivClass = navigation === 'mw-panel' ? 'body' : type === 'menu' ? 'menu' : '';
 			break;
 		case 'modern':
 			if (navigation !== 'mw_portlets' && navigation !== 'mw_contentwrapper') {
@@ -428,13 +428,13 @@ Twinkle.load = function () {
 	// Don't activate on special pages other than those on the whitelist so that
 	// they load faster, especially the watchlist.
 	var specialPageWhitelist = [ 'Contributions', 'DeletedContributions', 'Prefixindex' ];
-	var isSpecialPage = (mw.config.get('wgNamespaceNumber') === -1 &&
-		specialPageWhitelist.indexOf(mw.config.get('wgCanonicalSpecialPageName')) === -1);
+	var isSpecialPage = mw.config.get('wgNamespaceNumber') === -1 &&
+		specialPageWhitelist.indexOf(mw.config.get('wgCanonicalSpecialPageName')) === -1;
 
 	// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower,
 	// so don't load there either.
-	var isOldIE = ($.client.profile().name === 'msie' &&
-		$.client.profile().versionNumber < 9);
+	var isOldIE = $.client.profile().name === 'msie' &&
+		$.client.profile().versionNumber < 9;
 
 	// Prevent users that are not autoconfirmed from loading Twinkle as well.
 	if (isSpecialPage || isOldIE || !Twinkle.userAuthorized) {

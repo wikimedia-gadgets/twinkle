@@ -18,7 +18,7 @@ Twinkle.xfd = function twinklexfd() {
 	// * special pages
 	// * non-existent pages
 	// * files on Commons, whether there is a local page or not (unneeded local pages of files on Commons are eligible for CSD F2, or R4 if it's a redirect)
-	if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') || (mw.config.get('wgNamespaceNumber') === 6 && (document.getElementById('mw-sharedupload')))) {
+	if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') || (mw.config.get('wgNamespaceNumber') === 6 && document.getElementById('mw-sharedupload'))) {
 		return;
 	}
 	Twinkle.addPortletLink(Twinkle.xfd.callback, 'XFD', 'tw-xfd', 'Start a deletion discussion');
@@ -152,7 +152,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 	var work_area = null;
 
 	var oldreasontextbox = form.getElementsByTagName('textarea')[0];
-	var oldreason = (oldreasontextbox ? oldreasontextbox.value : '');
+	var oldreason = oldreasontextbox ? oldreasontextbox.value : '';
 
 	var appendReasonBox = function twinklexfdAppendReasonBox() {
 		work_area.append({
@@ -279,7 +279,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'div',
 				label: 'Stub types and userboxes are not eligible for TfD. Stub types go to CfD, and userboxes go to MfD.'
 			});
-			var templateOrModule = (mw.config.get('wgPageContentModel') === 'Scribunto') ? 'module' : 'template';
+			var templateOrModule = mw.config.get('wgPageContentModel') === 'Scribunto' ? 'module' : 'template';
 			var tfd_category = work_area.append({
 				type: 'select',
 				label: 'Choose type of action wanted: ',
@@ -537,7 +537,7 @@ Twinkle.xfd.callbacks = {
 	getDiscussionWikitext: function(venue, params) {
 		if (venue === 'cfds') { // CfD/S takes a completely different style
 			return '* [[:' + Morebits.pageNameNorm + ']] to [[:' + params.target + ']]\u00A0\u2013 ' +
-				params.xfdcat + (params.reason ? (': ' + Morebits.string.formatReasonText(params.reason)) : '.') + ' ~~~~';
+				params.xfdcat + (params.reason ? ': ' + Morebits.string.formatReasonText(params.reason) : '.') + ' ~~~~';
 			// U+00A0 NO-BREAK SPACE; U+2013 EN RULE
 		}
 
@@ -742,8 +742,8 @@ Twinkle.xfd.callbacks = {
 				text = textNoSd;
 			}
 
-			pageobj.setPageText((params.noinclude ? '<noinclude>{{' : '{{') + (params.number === '' ? 'subst:afd|help=off' : ('subst:afdx|' +
-				params.number + '|help=off')) + (params.noinclude ? '}}</noinclude>\n' : '}}\n') + text);
+			pageobj.setPageText((params.noinclude ? '<noinclude>{{' : '{{') + (params.number === '' ? 'subst:afd|help=off' : 'subst:afdx|' +
+				params.number + '|help=off') + (params.noinclude ? '}}</noinclude>\n' : '}}\n') + text);
 			pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].' + Twinkle.getPref('summaryAd'));
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('nocreate');
@@ -813,7 +813,7 @@ Twinkle.xfd.callbacks = {
 		taggingTemplate: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
-			var tableNewline = (params.tfdtype === 'standard' || params.tfdtype === 'sidebar') ? '\n' : ''; // No newline for inline
+			var tableNewline = params.tfdtype === 'standard' || params.tfdtype === 'sidebar' ? '\n' : ''; // No newline for inline
 
 			pageobj.setPageText((params.noinclude ? '<noinclude>' : '') + '{{subst:template for discussion|help=off' +
 				(params.tfdtype !== 'standard' ? '|type=' + params.tfdtype : '') + (params.noinclude ? '}}</noinclude>' : '}}') + tableNewline + text);
@@ -825,7 +825,7 @@ Twinkle.xfd.callbacks = {
 		taggingTemplateForMerge: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
-			var tableNewline = (params.tfdtype === 'standard' || params.tfdtype === 'sidebar') ? '\n' : ''; // No newline for inline
+			var tableNewline = params.tfdtype === 'standard' || params.tfdtype === 'sidebar' ? '\n' : ''; // No newline for inline
 
 			pageobj.setPageText((params.noinclude ? '<noinclude>' : '') + '{{subst:tfm|help=off|' +
 				(params.tfdtype !== 'standard' ? 'type=' + params.tfdtype + '|' : '') + '1=' + params.otherTemplateName.replace(/^(?:Template|Module):/, '') +
@@ -965,7 +965,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText((params.noinclude ? '<noinclude>' : '') + '{{' +
-				((params.number === '') ? 'mfd' : ('mfdx|' + params.number)) + '|help=off}}\n' +
+				(params.number === '' ? 'mfd' : 'mfdx|' + params.number) + '|help=off}}\n' +
 				(params.noinclude ? '</noinclude>' : '') + text);
 			pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].' + Twinkle.getPref('summaryAd'));
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
@@ -1021,7 +1021,7 @@ Twinkle.xfd.callbacks = {
 
 			// Also notify the user who owns the subpage if they are not the creator
 			if (params.notifyuserspace) {
-				var userspaceOwner = ((mw.config.get('wgTitle').indexOf('/') === -1) ? mw.config.get('wgTitle') : mw.config.get('wgTitle').substring(0, mw.config.get('wgTitle').indexOf('/')));
+				var userspaceOwner = mw.config.get('wgTitle').indexOf('/') === -1 ? mw.config.get('wgTitle') : mw.config.get('wgTitle').substring(0, mw.config.get('wgTitle').indexOf('/'));
 				if (userspaceOwner !== initialContrib) {
 					Twinkle.xfd.callbacks.mfd.userNotificationMain(params, userspaceOwner, 'Notifying owner of userspace');
 				}
@@ -1208,7 +1208,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			params.target = (/^Category:/.test(params.target) ? params.target : ('Category:' + params.target));
+			params.target = /^Category:/.test(params.target) ? params.target : 'Category:' + params.target;
 			var text = old_text.replace('BELOW THIS LINE -->', 'BELOW THIS LINE -->\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('cfds', params));
 			if (text === old_text) {
 				statelem.error('failed to find target spot for the discussion');

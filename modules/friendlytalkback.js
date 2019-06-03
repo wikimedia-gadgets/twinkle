@@ -356,7 +356,7 @@ var callback_evaluate = function(e) {
 	Morebits.wiki.actionCompleted.notice = 'Talkback complete; reloading talk page in a few seconds';
 
 	var talkpage = new Morebits.wiki.page(fullUserTalkPageName, 'Adding talkback');
-	var tbPageName = (tbtarget === 'mytalk') ? mw.config.get('wgUserName') : page;
+	var tbPageName = tbtarget === 'mytalk' ? mw.config.get('wgUserName') : page;
 
 	var text;
 	if (tbtarget === 'notice') {
@@ -423,7 +423,7 @@ var callback_evaluate = function(e) {
 		}
 		text += '|more=' + message.trim() + '}}';
 		talkpage.setEditSummary('Please check the discussion at [[:' + tbPageName +
-			(section ? ('#' + section) : '') + ']]' + Twinkle.getPref('summaryAd'));
+			(section ? '#' + section : '') + ']]' + Twinkle.getPref('summaryAd'));
 
 	} else {  // tbtarget one of mytalk, usertalk, other
 		// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
@@ -446,7 +446,7 @@ var callback_evaluate = function(e) {
 		if (tbtarget !== 'other' && !/^\s*user talk:/i.test(tbPageName)) {
 			editSummary += 'User talk:';
 		}
-		editSummary += tbPageName + (section ? ('#' + section) : '') + ']])';
+		editSummary += tbPageName + (section ? '#' + section : '') + ']])';
 		talkpage.setEditSummary(editSummary + Twinkle.getPref('summaryAd'));
 	}
 

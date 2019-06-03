@@ -647,10 +647,10 @@ Twinkle.arv.callback.evaluate = function(e) {
 			};
 
 			var puppetReport = form.category.value === 'puppet';
-			if (puppetReport && !(form.sockmaster.value.trim())) {
+			if (puppetReport && !form.sockmaster.value.trim()) {
 				alert('You have not entered a sockmaster account for this puppet. Consider reporting this account as a sockpuppeteer instead.');
 				return;
-			} else if (!puppetReport && !(form.sockpuppet[0].value.trim())) {
+			} else if (!puppetReport && !form.sockpuppet[0].value.trim()) {
 				alert('You have not entered any sockpuppet account(s) for this sockmaster. Consider reporting this account as a sockpuppet instead.');
 				return;
 			}
@@ -753,7 +753,7 @@ Twinkle.arv.processSock = function(params) {
 
 		// display status of notifications as they progress
 		var onSuccess = function(sockTalkPage) {
-			var now = parseInt(100 * ++(current) / total, 10) + '%';
+			var now = parseInt(100 * ++current / total, 10) + '%';
 			statusIndicator.update(now);
 			sockTalkPage.getStatusElement().unlink();
 			if (current >= total) {

@@ -76,10 +76,10 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 			var isProtected = $editprot.length > 0;
 
 			list.push({
-				label: title + (isProtected ? ' (fully create protected' + ($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))) + ')' : ''),
+				label: title + (isProtected ? ' (fully create protected' + ($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : ', expires ' + $editprot.attr('expiry')) + ')' : ''),
 				value: title,
 				checked: true,
-				style: (isProtected ? 'color:red' : '')
+				style: isProtected ? 'color:red' : ''
 			});
 		});
 		apiobj.params.form.append({ type: 'header', label: 'Pages to undelete' });

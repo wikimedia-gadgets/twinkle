@@ -85,15 +85,15 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	});
 
 	var defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'), 10);
-	main_group.append({ type: 'option', label: '1: General note', value: 'level1', selected: (defaultGroup === 1) });
-	main_group.append({ type: 'option', label: '2: Caution', value: 'level2', selected: (defaultGroup === 2) });
-	main_group.append({ type: 'option', label: '3: Warning', value: 'level3', selected: (defaultGroup === 3) });
-	main_group.append({ type: 'option', label: '4: Final warning', value: 'level4', selected: (defaultGroup === 4) });
-	main_group.append({ type: 'option', label: '4im: Only warning', value: 'level4im', selected: (defaultGroup === 5) });
-	main_group.append({ type: 'option', label: 'Single-issue notices', value: 'singlenotice', selected: (defaultGroup === 6) });
-	main_group.append({ type: 'option', label: 'Single-issue warnings', value: 'singlewarn', selected: (defaultGroup === 7) });
+	main_group.append({ type: 'option', label: '1: General note', value: 'level1', selected: defaultGroup === 1 });
+	main_group.append({ type: 'option', label: '2: Caution', value: 'level2', selected: defaultGroup === 2 });
+	main_group.append({ type: 'option', label: '3: Warning', value: 'level3', selected: defaultGroup === 3 });
+	main_group.append({ type: 'option', label: '4: Final warning', value: 'level4', selected: defaultGroup === 4 });
+	main_group.append({ type: 'option', label: '4im: Only warning', value: 'level4im', selected: defaultGroup === 5 });
+	main_group.append({ type: 'option', label: 'Single-issue notices', value: 'singlenotice', selected: defaultGroup === 6 });
+	main_group.append({ type: 'option', label: 'Single-issue warnings', value: 'singlewarn', selected: defaultGroup === 7 });
 	if (Twinkle.getPref('customWarningList').length) {
-		main_group.append({ type: 'option', label: 'Custom warnings', value: 'custom', selected: (defaultGroup === 9) });
+		main_group.append({ type: 'option', label: 'Custom warnings', value: 'custom', selected: defaultGroup === 9 });
 	}
 
 	main_select.append({ type: 'select', name: 'sub_group', event: Twinkle.warn.callback.change_subcategory }); // Will be empty to begin with.
@@ -102,7 +102,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		type: 'input',
 		name: 'article',
 		label: 'Linked page',
-		value: (Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : ''),
+		value: Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : '',
 		tooltip: 'A page can be linked within the notice, perhaps because it was a revert to said page that dispatched this notice. Leave empty for no page to be linked.'
 	});
 
@@ -1109,7 +1109,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			if (!!level && !itemProperties[value]) {
 				return;
 			}
-			var key = (typeof itemKey === 'string') ? itemKey : itemProperties.value;
+			var key = typeof itemKey === 'string' ? itemKey : itemProperties.value;
 
 			var selected = false;
 			if (old_subvalue && old_subvalue_re.test(key)) {
@@ -1278,7 +1278,7 @@ Twinkle.warn.callbacks = {
 		var latest = { date: new Date(0), type: '' };
 		var current;
 
-		while ((current = history_re.exec(text))) {
+		while ((current = history_re.exec(text)) !== null) {
 			var current_date = new Date(current[2] + ' UTC');
 			if (!(current[1] in history) || history[current[1]] < current_date) {
 				history[current[1]] = current_date;
@@ -1370,7 +1370,7 @@ Twinkle.warn.callbacks = {
 			}
 			summary += ': ' + Morebits.string.toUpperCaseFirstChar(messageData.label);
 		} else {
-			summary = (/^\D+$/.test(params.main_group) ? messageData.summary : messageData[params.main_group].summary);
+			summary = /^\D+$/.test(params.main_group) ? messageData.summary : messageData[params.main_group].summary;
 			if (messageData.suppressArticleInSummary !== true && params.article) {
 				if (params.sub_group === 'uw-agf-sock' ||
 						params.sub_group === 'uw-socksuspect' ||

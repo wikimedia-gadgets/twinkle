@@ -334,7 +334,7 @@ Twinkle.prod.callbacks = {
 				return;
 			}
 
-			summaryText = 'Endorsing proposed deletion per [[WP:' + (params.blp ? 'BLP' : (params.book ? 'BOOK' : '')) + 'PROD]].';
+			summaryText = 'Endorsing proposed deletion per [[WP:' + (params.blp ? 'BLP' : params.book ? 'BOOK' : '') + 'PROD]].';
 			text = text.replace(prod_re, text.match(prod_re) + '\n{{proposed deletion endorsed|1=' + (params.blp ?
 				'article is a [[WP:BLPPROD|biography of a living person with no sources]]' :
 				Morebits.string.formatReasonText(params.reason)) + '}}\n');
@@ -379,13 +379,13 @@ Twinkle.prod.callbacks = {
 
 		var summarytext;
 		if (params.logEndorsing) {
-			text += '\n# [[:' + Morebits.pageNameNorm + ']]: endorsed ' + (params.blp ? 'BLP ' : (params.book ? 'BOOK' : '')) + 'PROD. ~~~~~';
+			text += '\n# [[:' + Morebits.pageNameNorm + ']]: endorsed ' + (params.blp ? 'BLP ' : params.book ? 'BOOK' : '') + 'PROD. ~~~~~';
 			if (params.reason) {
 				text += "\n#* '''Reason''': " + params.reason + '\n';
 			}
 			summarytext = 'Logging endorsement of PROD nomination of [[:' + Morebits.pageNameNorm + ']].';
 		} else {
-			text += '\n# [[:' + Morebits.pageNameNorm + ']]: ' + (params.blp ? 'BLP ' : (params.book ? 'BOOK' : '')) + 'PROD';
+			text += '\n# [[:' + Morebits.pageNameNorm + ']]: ' + (params.blp ? 'BLP ' : params.book ? 'BOOK' : '') + 'PROD';
 			if (params.logInitialContrib) {
 				text += '; notified {{user|' + params.logInitialContrib + '}}';
 			}

@@ -183,7 +183,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			}
 			if (isProtected) {
 				metadata.push('fully protected' +
-					($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))));
+					($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : ', expires ' + $editprot.attr('expiry')));
 			}
 			if (ns === '6') {  // mimic what delimages used to show for files
 				metadata.push('uploader: ' + $page.find('ii').attr('user'));
@@ -192,10 +192,10 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 				metadata.push(size + ' bytes');
 			}
 			Twinkle.batchdelete.pages[title] = {
-				label: title + (metadata.length ? (' (' + metadata.join('; ') + ')') : ''),
+				label: title + (metadata.length ? ' (' + metadata.join('; ') + ')' : ''),
 				value: title,
 				checked: true,
-				style: (isProtected ? 'color:red' : '')
+				style: isProtected ? 'color:red' : ''
 			};
 		});
 
@@ -361,7 +361,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 					}
 					if (isProtected) {
 						metadata.push('fully protected' +
-							($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : (', expires ' + $editprot.attr('expiry'))));
+							($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : ', expires ' + $editprot.attr('expiry')));
 					}
 					if (ns === '6') {  // mimic what delimages used to show for files
 						metadata.push('uploader: ' + $page.find('ii').attr('user'));
@@ -370,10 +370,10 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 						metadata.push(size + ' bytes');
 					}
 					subpageList.push({
-						label: title + (metadata.length ? (' (' + metadata.join('; ') + ')') : ''),
+						label: title + (metadata.length ? ' (' + metadata.join('; ') + ')' : ''),
 						value: title,
 						checked: true,
-						style: (isProtected ? 'color:red' : '')
+						style: isProtected ? 'color:red' : ''
 					});
 				});
 				if (subpageList.length) {
