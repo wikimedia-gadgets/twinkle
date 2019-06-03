@@ -26,4 +26,3 @@
 		"no-array-constructor": "error",
 		"no-bitwise": "error",
 		"no-mixed-operators": "error",
-		"no-new-object": "error",

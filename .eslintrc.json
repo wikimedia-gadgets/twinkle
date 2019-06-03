@@ -11,6 +11,7 @@
 	},
 	"rules": {
 		"no-caller": "error",
+		"no-new-object": "error",
 		"no-tabs": ["error", { "allowIndentationTabs": true }],
 		"no-trailing-spaces": "error",
 		"no-unneeded-ternary": "error",
