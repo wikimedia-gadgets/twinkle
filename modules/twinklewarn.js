@@ -1091,7 +1091,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	var createEntries = function(contents, container, wrapInOptgroup) {
 		// level2->2, singlewarn->''; also used to distinguish the
 		// scaled levels from singlenotice, singlewarn, and custom
-		var level = value.replace(/^\D+/g,'');
+		var level = value.replace(/^\D+/g, '');
 		// due to an apparent iOS bug, we have to add an option-group to prevent truncation of text
 		// (search WT:TW archives for "Problem selecting warnings on an iPhone")
 		if (wrapInOptgroup && $.client.profile().platform === 'iphone') {

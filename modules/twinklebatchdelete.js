@@ -150,7 +150,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			else
 			{
 				pathSplit = pathSplit.splice(4);
-				pathSplit.splice(0,0,titleSplit.splice(1).join(':'));
+				pathSplit.splice(0, 0, titleSplit.splice(1).join(':'));
 				query.gapprefix = pathSplit.join('/');
 			}
 		}
@@ -216,7 +216,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 				});
 
 				// Check any unchecked subpages too
-				$('input[name="pages.subpages"]').prop('checked',true);
+				$('input[name="pages.subpages"]').prop('checked', true);
 			}
 		});
 		form.append({
@@ -292,7 +292,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		// available without use of any API calls
 		if (subpagesLoaded) {
 
-			$.each(Twinkle.batchdelete.pages, function(i,el) {
+			$.each(Twinkle.batchdelete.pages, function(i, el) {
 				// Get back the subgroup from subgroup_, where we saved it
 				if (el.subgroup === null && el.subgroup_) {
 					el.subgroup = el.subgroup_;
@@ -317,7 +317,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		var loadingText = '<strong id="dbatch-subpage-loading">Loading... </strong>';
 		$(e.target).after(loadingText);
 
-		var pages = $(form.pages).map(function(i,el) { return el.value; }).get();
+		var pages = $(form.pages).map(function(i, el) { return el.value; }).get();
 
 		var subpageLister = new Morebits.batchOperation();
 		subpageLister.setOption('chunkSize', Twinkle.getPref('batchdeleteChunks'));
@@ -710,7 +710,7 @@ Twinkle.batchdelete.callbacks = {
 		}
 		var old_text = text;
 		var wikiPage = new Morebits.wikitext.page(text);
-		wikiPage.commentOutImage(image , 'Commented out because image was deleted');
+		wikiPage.commentOutImage(image, 'Commented out because image was deleted');
 
 		text = wikiPage.getText();
 		Twinkle.batchdelete.unlinkCache[params.title] = text;

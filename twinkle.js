@@ -300,7 +300,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid)
 		// similar to the p-cactions ("More") menu
 		var chkbox = document.createElement('input');
 		chkbox.className = 'vectorMenuCheckbox';
-		chkbox.setAttribute('type','checkbox');
+		chkbox.setAttribute('type', 'checkbox');
 		chkbox.setAttribute('aria-labelledby', 'p-twinkle-label');
 		outerDiv.appendChild(chkbox);
 	}

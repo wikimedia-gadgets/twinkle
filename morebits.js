@@ -235,7 +235,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node.className = 'quickform';
 			node.setAttribute('action', 'javascript:void(0);');
 			if (data.event) {
-				node.addEventListener(data.eventType || 'submit', data.event , false);
+				node.addEventListener(data.eventType || 'submit', data.event, false);
 			}
 			break;
 		case 'fragment':
@@ -332,7 +332,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 						cur_div = node.appendChild(document.createElement('h6'));
 						cur_div.appendChild(document.createTextNode(current.label));
 						if (current.tooltip) {
-							Morebits.quickForm.element.generateTooltip(cur_div , current);
+							Morebits.quickForm.element.generateTooltip(cur_div, current);
 						}
 						continue;
 					}
@@ -652,7 +652,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 		childContainder = node;
 	}
 	if (data.tooltip) {
-		Morebits.quickForm.element.generateTooltip(label || node , data);
+		Morebits.quickForm.element.generateTooltip(label || node, data);
 	}
 
 	if (data.extra) {
@@ -1237,7 +1237,7 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
  */
 
 Date.monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-	'July', 'August', 'September', 'October', 'November','December' ];
+	'July', 'August', 'September', 'October', 'November', 'December' ];
 
 Date.monthNamesAbbrev = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 

@@ -84,7 +84,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				event: function twinkletagquickfilter() {
 					var $form = $('#tagWorkArea');
 					// flush the DOM of all existing underline spans
-					$form.find('.search-hit').each(function(i,e) {
+					$form.find('.search-hit').each(function(i, e) {
 						var label_element = e.parentElement;
 						// This would convert <label>Hello <span class=search-hit>wo</span>rld</label>
 						// to <label>Hello world</label>
@@ -216,7 +216,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 			// All tags are HTML table elements that are direct children of .mw-parser-output,
 			// except when they are within {{multiple issues}}
-			$('.mw-parser-output').children().each(function parsehtml(i,e) {
+			$('.mw-parser-output').children().each(function parsehtml(i, e) {
 
 				// break out on encountering the first heading, which means we are no
 				// longer in the lead section
@@ -231,13 +231,13 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				if (e.className.indexOf('box-') === 0) {
 					if (e.classList[0] === 'box-Multiple_issues') {
 						$(e).find('.ambox').each(function(idx, e) {
-							var tag = e.classList[0].slice(4).replace(/_/g,' ');
+							var tag = e.classList[0].slice(4).replace(/_/g, ' ');
 							Twinkle.tag.alreadyPresentTags.push(tag);
 						});
 						return true; // continue
 					}
 
-					var tag = e.classList[0].slice(4).replace(/_/g,' ');
+					var tag = e.classList[0].slice(4).replace(/_/g, ' ');
 					Twinkle.tag.alreadyPresentTags.push(tag);
 				}
 			});
@@ -669,7 +669,7 @@ var generateLinks = function(checkbox) {
 	var tagname = checkbox.values;
 	link.setAttribute('href', mw.util.getUrl(
 		(tagname.indexOf(':') === -1 ? 'Template:' : '') +
-		(tagname.indexOf('|') === -1 ? tagname : tagname.slice(0,tagname.indexOf('|')))
+		(tagname.indexOf('|') === -1 ? tagname : tagname.slice(0, tagname.indexOf('|')))
 	));
 	link.setAttribute('target', '_blank');
 	$(checkbox).parent().append(['\u00A0', link]);
@@ -1216,7 +1216,7 @@ Twinkle.tag.file.replacementList.forEach(function(el) {
 		type: 'input',
 		label: 'Replacement file: ',
 		tooltip: 'Enter the name of the file which replaces this one (required)',
-		name: el.value.replace(/ /g,'_') + 'File'
+		name: el.value.replace(/ /g, '_') + 'File'
 	};
 });
 
@@ -1398,7 +1398,7 @@ Twinkle.tag.callbacks = {
 				}
 
 				if (tag_re.test(pageText)) {
-					pageText = pageText.replace(tag_re,'');
+					pageText = pageText.replace(tag_re, '');
 				} else {
 					getRedirectsFor.push('Template:' + tag);
 				}
@@ -1430,7 +1430,7 @@ Twinkle.tag.callbacks = {
 				'lhlimit': 'max'
 			}, function removeRedirectTag(apiobj) {
 
-				$(apiobj.responseXML).find('page').each(function(idx,page) {
+				$(apiobj.responseXML).find('page').each(function(idx, page) {
 					var removed = false;
 					$(page).find('lh').each(function(idx, el) {
 						var tag = $(el).attr('title').slice(9);
@@ -1586,7 +1586,7 @@ Twinkle.tag.callbacks = {
 			} else {
 				// if it is a custom tag with a parameter
 				if (tagName.indexOf('|') !== -1) {
-					tagName = tagName.slice(0,tagName.indexOf('|'));
+					tagName = tagName.slice(0, tagName.indexOf('|'));
 				}
 				summaryText += (tagName.indexOf(':') !== -1 ? tagName : ('Template:' + tagName + '|' + tagName));
 			}
@@ -1830,7 +1830,7 @@ Twinkle.tag.callbacks = {
 			if (pageTags) {
 				pageTags.forEach(function(pageTag) {
 					var pageRe = new RegExp(pageTag, 'img');
-					pageText = pageText.replace(pageRe,'');
+					pageText = pageText.replace(pageRe, '');
 					oldPageTags += pageTag;
 				});
 			}
@@ -1903,7 +1903,7 @@ Twinkle.tag.callbacks = {
 					case 'Obsolete':
 						/* falls through */
 					case 'Duplicate':
-						currentTag += '|1=' + params[tag.replace(/ /g,'_') + 'File'];
+						currentTag += '|1=' + params[tag.replace(/ /g, '_') + 'File'];
 						break;
 					case 'Do not move to Commons_reason':
 						currentTag += '|reason=' + params.DoNotMoveToCommons;
@@ -1964,7 +1964,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	// name attribute as 'articleTags.' + name of the subgroup element
 
 	var name_prefix = Twinkle.tag.mode + 'Tags.';
-	$(form).find("[name^='" + name_prefix + "']:not(div)").each(function(idx,el) {
+	$(form).find("[name^='" + name_prefix + "']:not(div)").each(function(idx, el) {
 		// el are the HTMLInputElements, el.name gives the name attribute
 		params[el.name.slice(name_prefix.length)] =
 			(el.type === 'checkbox' ? form[el.name].checked : form[el.name].value);

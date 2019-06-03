@@ -11,6 +11,7 @@
 	},
 	"rules": {
 		"no-caller": "error",
+		"comma-spacing": ["error", { "before": false, "after": true }],
 		"computed-property-spacing": ["error", "never"],
 		"func-call-spacing": ["error", "never"],
 		"indent": ["error", "tab", { "outerIIFEBody": 0, "SwitchCase": 1 }],

@@ -300,13 +300,13 @@ Twinkle.fluff.callbacks = {
 			if (lastuser === self.params.user) {
 				switch (self.params.type) {
 					case 'vand':
-						Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user) , '. As we assume vandalism, we will proceed to revert.' ]);
+						Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user), '. As we assume vandalism, we will proceed to revert.' ]);
 						break;
 					case 'agf':
-						Morebits.status.warn('Warning', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user) , '. As we assume good faith, we will stop the revert, as the problem might have been fixed.' ]);
+						Morebits.status.warn('Warning', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user), '. As we assume good faith, we will stop the revert, as the problem might have been fixed.' ]);
 						return;
 					default:
-						Morebits.status.warn('Notice', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user) , ', but we will stop the revert.' ]);
+						Morebits.status.warn('Notice', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user), ', but we will stop the revert.' ]);
 						return;
 				}
 			}
