@@ -114,7 +114,9 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 
 			Twinkle.block.hasBlockLog = !!data.query.logevents.length;
 
-			if (typeof fn === 'function') return fn();
+			if (typeof fn === 'function') {
+				return fn();
+			}
 		}, function(msg) {
 			Morebits.status.init($('div[name="currentblock"] span').last()[0]);
 			Morebits.status.warn('Error fetching user info', msg);
@@ -932,7 +934,9 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 	return $.map(Twinkle.block.blockGroups, function(blockGroup) {
 		var list = $.map(blockGroup.list, function(blockPreset) {
 			// only show uw-talkrevoked if reblocking
-			if (!Twinkle.block.currentBlockInfo && blockPreset.value === 'uw-talkrevoked') return;
+			if (!Twinkle.block.currentBlockInfo && blockPreset.value === 'uw-talkrevoked') {
+				return;
+			}
 
 			var blockSettings = Twinkle.block.blockPresetsInfo[blockPreset.value];
 			var registrationRestrict = blockSettings.forRegisteredOnly ? Twinkle.block.isRegistered : (blockSettings.forAnonOnly ? !Twinkle.block.isRegistered : true);
@@ -949,16 +953,20 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 				};
 			}
 		});
-		if (list.length) return {
-			label: blockGroup.label,
-			list: list
-		};
+		if (list.length) {
+			return {
+				label: blockGroup.label,
+				list: list
+			};
+		}
 	});
 };
 
 Twinkle.block.callback.change_preset = function twinkleblockCallbackChangePreset(e) {
 	var key = e.target.form.preset.value;
-	if (!key) return;
+	if (!key) {
+		return;
+	}
 
 	e.target.form.template.value = Twinkle.block.blockPresetsInfo[key].templateName || key;
 	Twinkle.block.callback.update_form(e, Twinkle.block.blockPresetsInfo[key]);
@@ -985,7 +993,9 @@ Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSee
 		return el !== this.value;
 	}.bind(this));
 
-	if (this.checked) Twinkle.block.seeAlsos.push(this.value);
+	if (this.checked) {
+		Twinkle.block.seeAlsos.push(this.value);
+	}
 	var seeAlsoMessage = Twinkle.block.seeAlsos.join(' and ');
 
 	if (!Twinkle.block.seeAlsos.length) {
@@ -1028,7 +1038,9 @@ Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, 
 
 	$(form.field_block_options).find(':checkbox').each(function(i, el) {
 		// don't override original options if useInitialOptions is set
-		if (data.useInitialOptions && data[el.name] === undefined) return;
+		if (data.useInitialOptions && data[el.name] === undefined) {
+			return;
+		}
 
 		var check = data[el.name] === '' || !!data[el.name];
 		$(el).prop('checked', check);
@@ -1058,7 +1070,9 @@ Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemp
 			}
 			form.template_expiry.parentNode.style.display = 'block';
 		}
-		if (Twinkle.block.prev_template_expiry) form.expiry.value = Twinkle.block.prev_template_expiry;
+		if (Twinkle.block.prev_template_expiry) {
+			form.expiry.value = Twinkle.block.prev_template_expiry;
+		}
 		Morebits.quickForm.setElementVisibility(form.notalk.parentNode, !settings.nonstandard);
 	} else {
 		Morebits.quickForm.setElementVisibility(
@@ -1115,8 +1129,12 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 	templateoptions.expiry = templateoptions.template_expiry || blockoptions.expiry;
 
 	if (toBlock) {
-		if (!blockoptions.expiry) return alert('Please provide an expiry!');
-		if (!blockoptions.reason) return alert('Please provide a reason for the block!');
+		if (!blockoptions.expiry) {
+			return alert('Please provide an expiry!');
+		}
+		if (!blockoptions.reason) {
+			return alert('Please provide a reason for the block!');
+		}
 
 		Morebits.simpleWindow.setButtonsEnabled(false);
 		Morebits.status.init(e.target);
@@ -1134,7 +1152,9 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 			blockoptions.token = token;
 			var mbApi = new Morebits.wiki.api('Executing block', blockoptions, function() {
 				statusElement.info('Completed');
-				if (toWarn) Twinkle.block.callback.issue_template(templateoptions);
+				if (toWarn) {
+					Twinkle.block.callback.issue_template(templateoptions);
+				}
 			});
 			mbApi.post();
 		}, function() {
@@ -1173,7 +1193,9 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 
 	if (!settings.nonstandard) {
 		text += 'subst:' + params.template;
-		if (params.article && settings.pageParam) text += '|page=' + params.article;
+		if (params.article && settings.pageParam) {
+			text += '|page=' + params.article;
+		}
 
 		if (!/te?mp|^\s*$|min/.exec(params.expiry)) {
 			if (params.indefinite) {
@@ -1187,13 +1209,19 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 			text += '|anon=yes';
 		}
 
-		if (params.reason) text += '|reason=' + params.reason;
-		if (params.disabletalk) text += '|notalk=yes';
+		if (params.reason) {
+			text += '|reason=' + params.reason;
+		}
+		if (params.disabletalk) {
+			text += '|notalk=yes';
+		}
 	} else {
 		text += params.template;
 	}
 
-	if (settings.sig) text += '|sig=' + settings.sig;
+	if (settings.sig) {
+		text += '|sig=' + settings.sig;
+	}
 
 	return text + '}}';
 };

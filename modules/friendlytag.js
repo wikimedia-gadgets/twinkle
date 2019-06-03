@@ -218,8 +218,9 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 				// break out on encountering the first heading, which means we are no
 				// longer in the lead section
-				if (e.tagName === 'H2')
+				if (e.tagName === 'H2') {
 					return false;
+				}
 
 				// The ability to remove tags depends on the template's {{ambox}} |name=
 				// parameter bearing the template's correct name (preferably) or a name that at
@@ -639,11 +640,17 @@ Twinkle.tag.updateSortOrder = function(e) {
 	var statusNode = document.getElementById('tw-tag-status');
 	$('[name=articleTags], [name=alreadyPresentArticleTags]').click(function() {
 		if (this.name === 'articleTags') {
-			if (this.checked) Twinkle.tag.status.numAdded++;
-			else Twinkle.tag.status.numAdded--;
+			if (this.checked) {
+				Twinkle.tag.status.numAdded++;
+			} else {
+				Twinkle.tag.status.numAdded--;
+			}
 		} else if (this.name === 'alreadyPresentArticleTags') {
-			if (this.checked) Twinkle.tag.status.numRemoved--;
-			else Twinkle.tag.status.numRemoved++;
+			if (this.checked) {
+				Twinkle.tag.status.numRemoved--;
+			} else {
+				Twinkle.tag.status.numRemoved++;
+			}
 		}
 
 		var firstPart = 'Adding ' + Twinkle.tag.status.numAdded + ' tag' + (Twinkle.tag.status.numAdded > 1 ? 's' : '');
@@ -1872,14 +1879,22 @@ Twinkle.tag.callbacks = {
 
 				switch (tag) {
 					case 'subst:ncd':
-						if (params.ncdName !== '') currentTag += '|1=' + params.ncdName;
+						if (params.ncdName !== '') {
+							currentTag += '|1=' + params.ncdName;
+						}
 						break;
 					case 'Keep local':
-						if (params.keeplocalName !== '') currentTag += '|1=' + params.keeplocalName;
+						if (params.keeplocalName !== '') {
+							currentTag += '|1=' + params.keeplocalName;
+						}
 						break;
 					case 'Rename media':
-						if (params.renamemediaNewname !== '') currentTag += '|1=' + params.renamemediaNewname;
-						if (params.renamemediaReason !== '') currentTag += '|2=' + params.renamemediaReason;
+						if (params.renamemediaNewname !== '') {
+							currentTag += '|1=' + params.renamemediaNewname;
+						}
+						if (params.renamemediaReason !== '') {
+							currentTag += '|2=' + params.renamemediaReason;
+						}
 						break;
 					case 'Cleanup image':
 						currentTag += '|1=' + params.cleanupimageReason;

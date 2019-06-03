@@ -10,6 +10,7 @@
 		"moment": true
 	},
 	"rules": {
+		"curly": "error",
 		"default-case": "error",
 		"eqeqeq": "error",
 		"guard-for-in": "error",
