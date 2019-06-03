@@ -236,8 +236,7 @@ Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
  *
  * @return Node -- the DOM node of the new item (a DIV element) or null
  */
-Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid)
-{
+Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	// sanity checks, and get required DOM nodes
 	var root = document.getElementById(navigation);
 	if (!root) {
@@ -262,8 +261,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid)
 	type = (skin === 'vector' && type === 'menu' && (navigation === 'left-navigation' || navigation === 'right-navigation')) ? 'menu' : '';
 	var outerDivClass;
 	var innerDivClass;
-	switch (skin)
-	{
+	switch (skin) {
 		case 'vector':
 			if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
 				navigation = 'mw-panel';
@@ -349,8 +347,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid)
  * Builds a portlet menu if it doesn't exist yet, and add the portlet link.
  * @param task: Either a URL for the portlet link or a function to execute.
  */
-Twinkle.addPortletLink = function(task, text, id, tooltip)
-{
+Twinkle.addPortletLink = function(task, text, id, tooltip) {
 	if (Twinkle.getPref('portletArea') !== null) {
 		Twinkle.addPortlet(Twinkle.getPref('portletArea'), Twinkle.getPref('portletId'), Twinkle.getPref('portletName'), Twinkle.getPref('portletType'), Twinkle.getPref('portletNext'));
 	}
@@ -381,7 +378,9 @@ $.ajax({
 	url: scriptpathbefore + 'User:' + encodeURIComponent(mw.config.get('wgUserName')) + '/twinkleoptions.js' + scriptpathafter,
 	dataType: 'text'
 })
-	.fail(function () { mw.notify('Could not load twinkleoptions.js'); })
+	.fail(function () {
+		mw.notify('Could not load twinkleoptions.js');
+	})
 	.done(function (optionsText) {
 
 		// Quick pass if user has no options
@@ -414,8 +413,7 @@ $.ajax({
 			if (options) {
 				Twinkle.prefs = options;
 			}
-		}
-		catch (e) {
+		} catch (e) {
 			mw.notify('Could not parse twinkleoptions.js');
 		}
 	})
@@ -481,8 +479,12 @@ Twinkle.load = function () {
 		Twinkle.batchundelete();
 	}
 	// Run the initialization callbacks for any custom modules
-	Twinkle.initCallbacks.forEach(function (func) { func(); });
-	Twinkle.addInitCallback = function (func) { func(); };
+	Twinkle.initCallbacks.forEach(function (func) {
+		func();
+	});
+	Twinkle.addInitCallback = function (func) {
+		func();
+	};
 
 	// Increases text size in Twinkle dialogs, if so configured
 	if (Twinkle.getPref('dialogLargeFont')) {

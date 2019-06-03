@@ -155,12 +155,9 @@ Twinkle.unlink.callbacks = {
 					var usagetitle = imageusage[i].getAttribute('title');
 					list.push({ label: usagetitle, value: usagetitle, checked: true });
 				}
-				if (!list.length)
-				{
+				if (!list.length) {
 					apiobj.params.form.append({ type: 'div', label: 'No instances of file usage found.' });
-				}
-				else
-				{
+				} else {
 					apiobj.params.form.append({ type: 'header', label: 'File usage' });
 					namespaces = [];
 					$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
@@ -243,9 +240,7 @@ Twinkle.unlink.callbacks = {
 					list: list
 				});
 				havecontent = true;
-			}
-			else
-			{
+			} else {
 				apiobj.params.form.append({ type: 'div', label: 'No backlinks found.' });
 			}
 

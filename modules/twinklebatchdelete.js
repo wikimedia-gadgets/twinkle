@@ -129,26 +129,20 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 
 		query.generator = 'allpages';
 		query.gaplimit = Twinkle.getPref('batchMax'); // the max for sysops
-		if (Morebits.queryString.exists('prefix'))
-		{
+		if (Morebits.queryString.exists('prefix')) {
 			query.gapnamespace = Morebits.queryString.get('namespace');
 			query.gapprefix = Morebits.string.toUpperCaseFirstChar(Morebits.queryString.get('prefix'));
-		}
-		else
-		{
+		} else {
 			var pathSplit = decodeURIComponent(location.pathname).split('/');
 			if (pathSplit.length < 3 || pathSplit[2] !== 'Special:PrefixIndex') {
 				return;
 			}
 			var titleSplit = pathSplit[3].split(':');
 			query.gapnamespace = mw.config.get('wgNamespaceIds')[titleSplit[0].toLowerCase()];
-			if (titleSplit.length < 2 || typeof query.gapnamespace === 'undefined')
-			{
+			if (titleSplit.length < 2 || typeof query.gapnamespace === 'undefined') {
 				query.gapnamespace = 0;  // article namespace
 				query.gapprefix = pathSplit.splice(3).join('/');
-			}
-			else
-			{
+			} else {
 				pathSplit = pathSplit.splice(4);
 				pathSplit.splice(0, 0, titleSplit.splice(1).join(':'));
 				query.gapprefix = pathSplit.join('/');
@@ -232,7 +226,9 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			type: 'checkbox',
 			name: 'pages',
 			id: 'tw-dbatch-pages',
-			list: $.map(Twinkle.batchdelete.pages, function (e) { return e; })
+			list: $.map(Twinkle.batchdelete.pages, function (e) {
+				return e;
+			})
 		});
 		form.append({ type: 'submit' });
 
@@ -273,7 +269,9 @@ Twinkle.batchdelete.generateNewPageList = function(form) {
 		type: 'checkbox',
 		name: 'pages',
 		id: 'tw-dbatch-pages',
-		list: $.map(Twinkle.batchdelete.pages, function (e) { return e; })
+		list: $.map(Twinkle.batchdelete.pages, function (e) {
+			return e;
+		})
 	}).render();
 };
 
@@ -317,7 +315,9 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		var loadingText = '<strong id="dbatch-subpage-loading">Loading... </strong>';
 		$(e.target).after(loadingText);
 
-		var pages = $(form.pages).map(function(i, el) { return el.value; }).get();
+		var pages = $(form.pages).map(function(i, el) {
+			return el.value;
+		}).get();
 
 		var subpageLister = new Morebits.batchOperation();
 		subpageLister.setOption('chunkSize', Twinkle.getPref('batchdeleteChunks'));
@@ -597,7 +597,9 @@ Twinkle.batchdelete.callbacks = {
 	},
 	deleteRedirectsMain: function(apiobj) {
 		var xml = apiobj.responseXML;
-		var pages = $(xml).find('rd').map(function() { return $(this).attr('title'); }).get();
+		var pages = $(xml).find('rd').map(function() {
+			return $(this).attr('title');
+		}).get();
 		if (!pages.length) {
 			return;
 		}
@@ -626,7 +628,9 @@ Twinkle.batchdelete.callbacks = {
 	},
 	unlinkBacklinksMain: function(apiobj) {
 		var xml = apiobj.responseXML;
-		var pages = $(xml).find('bl').map(function() { return $(this).attr('title'); }).get();
+		var pages = $(xml).find('bl').map(function() {
+			return $(this).attr('title');
+		}).get();
 		if (!pages.length) {
 			return;
 		}
@@ -676,7 +680,9 @@ Twinkle.batchdelete.callbacks = {
 	},
 	unlinkImageInstancesMain: function(apiobj) {
 		var xml = apiobj.responseXML;
-		var pages = $(xml).find('iu').map(function() { return $(this).attr('title'); }).get();
+		var pages = $(xml).find('iu').map(function() {
+			return $(this).attr('title');
+		}).get();
 		if (!pages.length) {
 			return;
 		}

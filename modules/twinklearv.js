@@ -21,7 +21,9 @@ Twinkle.arv = function twinklearv() {
 
 	var title = mw.util.isIPAddress(username) ? 'Report IP to administrators' : 'Report user to administrators';
 
-	Twinkle.addPortletLink(function() { Twinkle.arv.callback(username); }, 'ARV', 'tw-arv', title);
+	Twinkle.addPortletLink(function() {
+		Twinkle.arv.callback(username);
+	}, 'ARV', 'tw-arv', title);
 };
 
 Twinkle.arv.callback = function (uid) {
@@ -654,7 +656,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 			}
 
 			sockParameters.uid = puppetReport ? form.sockmaster.value.trim() : uid;
-			sockParameters.sockpuppets = puppetReport ? [uid] : $.map($('input:text[name=sockpuppet]', form), function(o) { return $(o).val() || null; });
+			sockParameters.sockpuppets = puppetReport ? [uid] : $.map($('input:text[name=sockpuppet]', form), function(o) {
+				return $(o).val() || null;
+			});
 
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
@@ -662,19 +666,25 @@ Twinkle.arv.callback.evaluate = function(e) {
 			break;
 
 		case 'an3':
-			var diffs = $.map($('input:checkbox[name=s_diffs]:checked', form), function(o) { return $(o).data('revinfo'); });
+			var diffs = $.map($('input:checkbox[name=s_diffs]:checked', form), function(o) {
+				return $(o).data('revinfo');
+			});
 
 			if (diffs.length < 3 && !confirm('You have selected fewer than three offending edits. Do you wish to make the report anyway?')) {
 				return;
 			}
 
-			var warnings = $.map($('input:checkbox[name=s_warnings]:checked', form), function(o) { return $(o).data('revinfo'); });
+			var warnings = $.map($('input:checkbox[name=s_warnings]:checked', form), function(o) {
+				return $(o).data('revinfo');
+			});
 
 			if (!warnings.length && !confirm('You have not selected any edits where you warned the offender. Do you wish to make the report anyway?')) {
 				return;
 			}
 
-			var resolves = $.map($('input:checkbox[name=s_resolves]:checked', form), function(o) { return $(o).data('revinfo'); });
+			var resolves = $.map($('input:checkbox[name=s_resolves]:checked', form), function(o) {
+				return $(o).data('revinfo');
+			});
 			var free_resolves = $('input[name=s_resolves_free]').val();
 
 			var an3_next = function(free_resolves) {

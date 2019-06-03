@@ -1296,7 +1296,9 @@ Twinkle.config.listDialog.addRow = function twinkleconfigListDialogAddRow(dlgtab
 	var contenttd = document.createElement('td');
 	var removeButton = document.createElement('button');
 	removeButton.setAttribute('type', 'button');
-	removeButton.addEventListener('click', function() { $(contenttr).remove(); }, false);
+	removeButton.addEventListener('click', function() {
+		$(contenttr).remove();
+	}, false);
 	removeButton.textContent = 'Remove';
 	contenttd.appendChild(removeButton);
 	contenttr.appendChild(contenttd);

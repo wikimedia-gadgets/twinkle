@@ -86,7 +86,9 @@ Twinkle.welcome.normal = function() {
 		}
 	}
 	if (mw.config.get('wgRelevantUserName')) {
-		Twinkle.addPortletLink(function() { Twinkle.welcome.callback(mw.config.get('wgRelevantUserName')); }, 'Wel', 'friendly-welcome', 'Welcome user');
+		Twinkle.addPortletLink(function() {
+			Twinkle.welcome.callback(mw.config.get('wgRelevantUserName'));
+		}, 'Wel', 'friendly-welcome', 'Welcome user');
 	}
 };
 

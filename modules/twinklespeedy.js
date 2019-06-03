@@ -1339,7 +1339,9 @@ Twinkle.speedy.callbacks = {
 				talkpage.deletePage();
 				// this is ugly, but because of the architecture of wiki.api, it is needed
 				// (otherwise success/failure messages for the previous action would be suppressed)
-				window.setTimeout(function() { Twinkle.speedy.callbacks.sysop.deleteRedirects(params); }, 1800);
+				window.setTimeout(function() {
+					Twinkle.speedy.callbacks.sysop.deleteRedirects(params);
+				}, 1800);
 			} else {
 				Twinkle.speedy.callbacks.sysop.deleteRedirects(params);
 			}
@@ -1512,9 +1514,8 @@ Twinkle.speedy.callbacks = {
 				var thispage = new Morebits.wiki.page(Morebits.pageNameNorm);
 				thispage.setCallbackParameters(params);
 				thispage.lookupCreation(Twinkle.speedy.callbacks.noteToCreator);
-			}
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
-			else if (params.lognomination) {
+			} else if (params.lognomination) {
 				Twinkle.speedy.callbacks.user.addToLog(params, null);
 			}
 		},

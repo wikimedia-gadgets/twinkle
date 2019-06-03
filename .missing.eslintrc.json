@@ -14,4 +14,3 @@
 		"no-useless-return": "error",
 		"yoda": "error",
 		"block-spacing": "error",
-		"brace-style": ["error", "1tbs"],

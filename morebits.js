@@ -1325,7 +1325,9 @@ Morebits.wiki.actionCompleted.event = function() {
 				Morebits.wiki.actionCompleted.redirect += '?redirect=no';
 			}
 		}
-		window.setTimeout(function() { window.location = Morebits.wiki.actionCompleted.redirect; }, Morebits.wiki.actionCompleted.timeOut);
+		window.setTimeout(function() {
+			window.location = Morebits.wiki.actionCompleted.redirect;
+		}, Morebits.wiki.actionCompleted.timeOut);
 	}
 };
 
@@ -1379,7 +1381,9 @@ Morebits.wiki.api.prototype = {
 	parent: window,  // use global context if there is no parent object
 	query: null,
 	responseXML: null,
-	setParent: function(parent) { this.parent = parent; },  // keep track of parent object for callbacks
+	setParent: function(parent) {
+		this.parent = parent;
+	},  // keep track of parent object for callbacks
 	statelem: null,  // this non-standard name kept for backwards compatibility
 	statusText: null, // result received from the API, normally "success" or "error"
 	errorCode: null, // short text error code, if any, as documented in the MediaWiki API
@@ -2588,8 +2592,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				Morebits.status.info('Info', 'Redirected from ' + ctx.pageName + ' to ' + resolvedName);
 			}
 			ctx.pageName = resolvedName;  // always update in case of normalization
-		}
-		else {
+		} else {
 			// could be a circular redirect or other problem
 			ctx.statusElement.error('Could not resolve redirects for: ' + ctx.pageName);
 			onFailure(this);
@@ -4187,7 +4190,9 @@ Morebits.simpleWindow.prototype = {
 			var button = document.createElement('button');
 			button.textContent = (value.hasAttribute('value') ? value.getAttribute('value') : (value.textContent ? value.textContent : 'Submit Query'));
 			// here is an instance of cheap coding, probably a memory-usage hit in using a closure here
-			button.addEventListener('click', function() { value.click(); }, false);
+			button.addEventListener('click', function() {
+				value.click();
+			}, false);
 			thisproxy.buttons.push(button);
 		});
 		// remove all buttons from the button pane and re-add them

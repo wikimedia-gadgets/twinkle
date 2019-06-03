@@ -245,8 +245,7 @@ Twinkle.fluff.callbacks = {
 			}
 
 			var optional_summary = prompt('Please specify a reason for the revert:                                ', '');  // padded out to widen prompt in Firefox
-			if (optional_summary === null)
-			{
+			if (optional_summary === null) {
 				self.statelem.error('Aborted by user.');
 				return;
 			}
@@ -309,8 +308,7 @@ Twinkle.fluff.callbacks = {
 						Morebits.status.warn('Notice', [ 'Latest revision was made by ', Morebits.htmlNode('strong', self.params.user), ', but we will stop the revert.' ]);
 						return;
 				}
-			}
-			else if (self.params.type === 'vand' &&
+			} else if (self.params.type === 'vand' &&
 					Twinkle.fluff.whiteList.indexOf(top.getAttribute('user')) !== -1 && revs.length > 1 &&
 					revs[1].getAttribute('pageId') === self.params.revid) {
 				Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', a trusted bot, and the revision before was made by our vandal, so we will proceed with the revert.' ]);
@@ -388,8 +386,7 @@ Twinkle.fluff.callbacks = {
 		switch (self.params.type) {
 			case 'agf':
 				extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
-				if (extra_summary === null)
-				{
+				if (extra_summary === null) {
 					self.statelem.error('Aborted by user.');
 					return;
 				}
@@ -410,8 +407,7 @@ Twinkle.fluff.callbacks = {
 			default:
 				if (Twinkle.getPref('offerReasonOnNormalRevert')) {
 					extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
-					if (extra_summary === null)
-					{
+					if (extra_summary === null) {
 						self.statelem.error('Aborted by user.');
 						return;
 					}
@@ -567,8 +563,7 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, userString) {
 };
 
 Twinkle.fluff.init = function twinklefluffinit() {
-	if (Twinkle.userAuthorized)
-	{
+	if (Twinkle.userAuthorized) {
 		// A list of usernames, usually only bots, that vandalism revert is jumped over; that is,
 		// if vandalism revert was chosen on such username, then its target is on the revision before.
 		// This is for handling quick bots that makes edits seconds after the original edit is made.

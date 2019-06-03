@@ -28,8 +28,12 @@ Twinkle.diff = function twinklediff() {
 
 	// Show additional tabs only on diff pages
 	if (Morebits.queryString.exists('diff')) {
-		Twinkle.addPortletLink(function() { Twinkle.diff.evaluate(false); }, 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user');
-		Twinkle.addPortletLink(function() { Twinkle.diff.evaluate(true); }, 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision');
+		Twinkle.addPortletLink(function() {
+			Twinkle.diff.evaluate(false);
+		}, 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user');
+		Twinkle.addPortletLink(function() {
+			Twinkle.diff.evaluate(true);
+		}, 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision');
 
 		var oldid = /oldid=(.+)/.exec($('#mw-diff-ntitle1').find('strong a').first().attr('href'))[1];
 		query = {

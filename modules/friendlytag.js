@@ -18,14 +18,12 @@ Twinkle.tag = function friendlytag() {
 	if (Morebits.wiki.isPageRedirect()) {
 		Twinkle.tag.mode = 'redirect';
 		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Tag redirect');
-	}
 	// file tagging
-	else if (mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById('mw-sharedupload') && document.getElementById('mw-imagepage-section-filehistory')) {
+	} else if (mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById('mw-sharedupload') && document.getElementById('mw-imagepage-section-filehistory')) {
 		Twinkle.tag.mode = 'file';
 		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Add maintenance tags to file');
-	}
 	// article/draft article tagging
-	else if ([0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 && mw.config.get('wgCurRevisionId')) {
+	} else if ([0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 && mw.config.get('wgCurRevisionId')) {
 		Twinkle.tag.mode = 'article';
 		// Can't remove tags when not viewing current version
 		Twinkle.tag.canRemove = (mw.config.get('wgCurRevisionId') === mw.config.get('wgRevisionId')) &&
@@ -418,8 +416,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 			case 'Merge from':
 			case 'Merge to':
 				var otherTagName = 'Merge';
-				switch (tag)
-				{
+				switch (tag) {
 					case 'Merge from':
 						otherTagName = 'Merge to';
 						break;
@@ -552,8 +549,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		});
 	};
 
-	// categorical sort order
-	if (sortorder === 'cat') {
+	if (sortorder === 'cat') { // categorical sort order
 		// function to iterate through the tags and create a checkbox for each one
 		var doCategoryCheckboxes = function(subdiv, array) {
 			var checkboxes = [];
@@ -587,9 +583,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 				});
 			}
 		});
-	}
-	// alphabetical sort order
-	else {
+	} else { // alphabetical sort order
 		if (Twinkle.tag.alreadyPresentTags.length > 0) {
 			makeCheckboxesForAlreadyPresentTags();
 			container.append({ type: 'header', id: 'tagHeader1', label: 'Available tags' });

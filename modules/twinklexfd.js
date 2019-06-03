@@ -1027,8 +1027,7 @@ Twinkle.xfd.callbacks = {
 				}
 			}
 		},
-		userNotificationMain: function(params, initialContrib, actionName)
-		{
+		userNotificationMain: function(params, initialContrib, actionName) {
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, actionName + ' (' + initialContrib + ')');
 			var notifytext = '\n{{subst:MFDWarning|1=' + Morebits.pageNameNorm + (params.numbering !== '' ? '|order=&#32;' + params.numbering : '') + '}} ~~~~';
 			usertalkpage.setAppendText(notifytext);
@@ -1341,9 +1340,8 @@ Twinkle.xfd.callbacks = {
 				// On the offchance it's a circular redirect
 				if (params.target === mw.config.get('wgPageName')) {
 					pageobj.getStatusElement().warn('Circular redirect; skipping target page notification');
-				}
-				// Don't issue if target talk is the initial contributor's talk or your own
-				else if (targetTalk.getNamespaceId() === 3) {
+				} else if (targetTalk.getNamespaceId() === 3) {
+					// Don't issue if target talk is the initial contributor's talk or your own
 					if (targetTalk.getNameText() === initialContrib) {
 						pageobj.getStatusElement().warn('Target is initial contributor; skipping target page notification');
 					} else if (targetTalk.getNameText() === mw.config.get('wgUserName')) {

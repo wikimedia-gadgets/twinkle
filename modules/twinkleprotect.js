@@ -111,7 +111,9 @@ Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdm
 		letype: protType
 	}).then(function(data) {
 		// don't check log entries that have already been checked (e.g. don't go into an infinite loop!)
-		var event = data.query ? $.grep(data.query.logevents, function(le) { return $.inArray(le.logid, logIds); })[0] : null;
+		var event = data.query ? $.grep(data.query.logevents, function(le) {
+			return $.inArray(le.logid, logIds);
+		})[0] : null;
 		if (!event) {
 			// fail gracefully
 			return null;
@@ -1027,8 +1029,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 
 	var actiontypes = form.actiontype;
 	var actiontype;
-	for (var i = 0; i < actiontypes.length; i++)
-	{
+	for (var i = 0; i < actiontypes.length; i++) {
 		if (!actiontypes[i].checked) {
 			continue;
 		}
@@ -1118,8 +1119,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 
 	var actiontypes = form.actiontype;
 	var actiontype;
-	for (var i = 0; i < actiontypes.length; i++)
-	{
+	for (var i = 0; i < actiontypes.length; i++) {
 		if (!actiontypes[i].checked) {
 			continue;
 		}
@@ -1295,7 +1295,9 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typename = 'create protection';
 					break;
 				case 'unprotect':
-					var admins = $.map(Twinkle.protect.currentProtectionLevels, function(pl) { return pl.admin ? 'User:' + pl.admin : null; });
+					var admins = $.map(Twinkle.protect.currentProtectionLevels, function(pl) {
+						return pl.admin ? 'User:' + pl.admin : null;
+					});
 					if (admins.length && !confirm('Have you attempted to contact the protecting admins (' + $.unique(admins).join(', ') + ') first?')) {
 						return false;
 					}
@@ -1548,8 +1550,7 @@ Twinkle.protect.callbacks = {
 
 		var originalTextLength = text.length;
 		text = text.replace(reg, '\n' + newtag + '\n$1');
-		if (text.length === originalTextLength)
-		{
+		if (text.length === originalTextLength) {
 			var linknode = document.createElement('a');
 			linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing RPP'));
 			linknode.appendChild(document.createTextNode('How to fix RPP'));

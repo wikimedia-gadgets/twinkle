@@ -295,20 +295,16 @@ Twinkle.prod.callbacks = {
 						}
 					});
 				}
-			}
-			// If not notifying, log this PROD
-			else if (Twinkle.getPref('logProdPages')) {
+			} else if (Twinkle.getPref('logProdPages')) { // If not notifying, log this PROD
 				Twinkle.prod.callbacks.addToLog(params);
 			}
 			if (params.blp) {
 				summaryText = 'Proposing article for deletion per [[WP:BLPPROD]].';
 				text = '{{subst:prod blp' + (params.usertalk ? '|help=off' : '') + '}}\n' + text;
-			}
-			else if (params.book) {
+			} else if (params.book) {
 				summaryText = 'Proposing book for deletion per [[WP:BOOKPROD]].';
 				text = '{{subst:book-prod|1=' + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? '|help=off' : '') + '}}\n' + text;
-			}
-			else {
+			} else {
 				summaryText = 'Proposing ' + namespace + ' for deletion per [[WP:PROD]].';
 				text = '{{subst:prod|1=' + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? '|help=off' : '') + '}}\n' + text;
 			}
@@ -322,8 +318,7 @@ Twinkle.prod.callbacks = {
 			talkpage.setFollowRedirect(true);  // match behavior for page tagging
 			talkpage.setCreateOption('recreate');
 			talkpage.prepend();
-		}
-		else {  // already tagged for PROD, so try endorsing it
+		} else {  // already tagged for PROD, so try endorsing it
 			var prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/;
 			if (prod2_re.test(text)) {
 				statelem.warn('Page already tagged with {{proposed deletion}} and {{proposed deletion endorsed}} templates, aborting procedure');
