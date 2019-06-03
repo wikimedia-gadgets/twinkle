@@ -1592,9 +1592,9 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 				}
 			}
 			return true;
-		} else {
-			return a === b;
 		}
+		return a === b;
+
 	};
 
 	$(Twinkle.config.sections).each(function(sectionkey, section) {

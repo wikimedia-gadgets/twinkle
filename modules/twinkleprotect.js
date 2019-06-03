@@ -119,9 +119,8 @@ Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdm
 			return null;
 		} else if (event.action === 'move_prot' || event.action === 'move_stable') {
 			return twinkleprotectFetchProtectingAdmin(api, (protType === 'protect' ? event.params.oldtitle_title : event.params.oldtitle), protType, logIds.concat(event.logid));
-		} else {
-			return event.user;
 		}
+		return event.user;
 	});
 };
 

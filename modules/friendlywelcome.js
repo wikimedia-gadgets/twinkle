@@ -715,10 +715,9 @@ Twinkle.welcome.getTemplateWikitext = function(template, article) {
 			replace('$ARTICLE$', article ? article : '').
 			replace(/\$HEADER\$\s*/, '== Welcome ==\n\n').
 			replace('$EXTRA$', '');  // EXTRA is not implemented yet
-	} else {
-		return '{{subst:' + template + (article ? ('|art=' + article) : '') + '}}' +
-			(Twinkle.getFriendlyPref('customWelcomeSignature') ? ' ~~~~' : '');
 	}
+	return '{{subst:' + template + (article ? ('|art=' + article) : '') + '}}' +
+			(Twinkle.getFriendlyPref('customWelcomeSignature') ? ' ~~~~' : '');
 };
 
 Twinkle.welcome.callbacks = {

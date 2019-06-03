@@ -759,19 +759,15 @@ Morebits.quickForm.getElementLabelObject = function QuickFormGetElementLabelObje
 	if (element.type === 'button' || element.type === 'submit' ||
 			element instanceof HTMLDivElement || element instanceof HTMLHeadingElement) {
 		return element;
-
 	// for fieldsets, the label is the child <legend> element
 	} else if (element instanceof HTMLFieldSetElement) {
 		return element.getElementsByTagName('legend')[0];
-
 	// for textareas, the label is the sibling <h5> element
 	} else if (element instanceof HTMLTextAreaElement) {
 		return element.parentNode.getElementsByTagName('h5')[0];
-
-	// for others, the label is the sibling <label> element
-	} else {
-		return element.parentNode.getElementsByTagName('label')[0];
 	}
+	// for others, the label is the sibling <label> element
+	return element.parentNode.getElementsByTagName('label')[0];
 };
 
 /**

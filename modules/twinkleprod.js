@@ -192,9 +192,8 @@ Twinkle.prod.callbacks = {
 				if (!confirm('Previous PROD nomination found on talk page. Do you still want to continue applying BLPPROD? ')) {
 					statelem.warn('Previous PROD found on talk page, aborted by user');
 					return;
-				} else {
-					statelem.info('Previous PROD found on talk page, continuing');
 				}
+				statelem.info('Previous PROD found on talk page, continuing');
 			} else {
 				statelem.warn('Previous PROD found on talk page, aborting procedure');
 				return;
