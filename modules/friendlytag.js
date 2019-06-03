@@ -423,6 +423,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 					case 'Merge to':
 						otherTagName = 'Merge from';
 						break;
+					// no default
 				}
 				checkbox.subgroup = [
 					{

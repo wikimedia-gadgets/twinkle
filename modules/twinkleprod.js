@@ -40,6 +40,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 		case 108:
 			namespace = 'book';
 			break;
+		// no default
 	}
 
 	var Window = new Morebits.simpleWindow(800, 410);
