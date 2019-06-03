@@ -14,36 +14,36 @@
  */
 
 Twinkle.shared = function friendlyshared() {
-	if( mw.config.get('wgNamespaceNumber') === 3 && mw.util.isIPAddress(mw.config.get('wgTitle')) ) {
+	if(mw.config.get('wgNamespaceNumber') === 3 && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
 		var username = mw.config.get('wgRelevantUserName');
-		Twinkle.addPortletLink( function(){ Twinkle.shared.callback(username); }, "Shared IP", "friendly-shared", "Shared IP tagging" );
+		Twinkle.addPortletLink(function(){ Twinkle.shared.callback(username); }, "Shared IP", "friendly-shared", "Shared IP tagging");
 	}
 };
 
 Twinkle.shared.callback = function friendlysharedCallback() {
-	var Window = new Morebits.simpleWindow( 600, 420 );
-	Window.setTitle( "Shared IP address tagging" );
-	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#shared" );
+	var Window = new Morebits.simpleWindow(600, 420);
+	Window.setTitle("Shared IP address tagging");
+	Window.setScriptName("Twinkle");
+	Window.addFooterLink("Twinkle help", "WP:TW/DOC#shared");
 
-	var form = new Morebits.quickForm( Twinkle.shared.callback.evaluate );
+	var form = new Morebits.quickForm(Twinkle.shared.callback.evaluate);
 
-	var div = form.append( {
+	var div = form.append({
 			type: 'div',
 			id: 'sharedip-templatelist',
 			className: 'morebits-scrollbox'
 		}
 	);
-	div.append( { type: 'header', label: 'Shared IP address templates' } );
-	div.append( { type: 'radio', name: 'shared', list: Twinkle.shared.standardList,
-		event: function( e ) {
-			Twinkle.shared.callback.change_shared( e );
+	div.append({ type: 'header', label: 'Shared IP address templates' });
+	div.append({ type: 'radio', name: 'shared', list: Twinkle.shared.standardList,
+		event: function(e) {
+			Twinkle.shared.callback.change_shared(e);
 			e.stopPropagation();
 		}
-	} );
+	});
 
-	var org = form.append( { type:'field', label:'Fill in other details (optional) and click "Submit"' } );
-	org.append( {
+	var org = form.append({ type:'field', label:'Fill in other details (optional) and click "Submit"' });
+	org.append({
 			type: 'input',
 			name: 'organization',
 			label: 'IP address owner/operator',
@@ -51,7 +51,7 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 			tooltip: 'You can optionally enter the name of the organization that owns/operates the IP address.  You can use wikimarkup if necessary.'
 		}
 	);
-	org.append( {
+	org.append({
 			type: 'input',
 			name: 'host',
 			label: 'Host name (optional)',
@@ -59,7 +59,7 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 			tooltip: 'The host name (for example, proxy.example.com) can be optionally entered here and will be linked by the template.'
 		}
 	);
-	org.append( {
+	org.append({
 			type: 'input',
 			name: 'contact',
 			label: 'Contact information (only if requested)',
@@ -68,10 +68,10 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 		}
 	);
 
-	form.append( { type:'submit' } );
+	form.append({ type:'submit' });
 
 	var result = form.render();
-	Window.setContent( result );
+	Window.setContent(result);
 	Window.display();
 };
 
@@ -126,30 +126,30 @@ Twinkle.shared.callback.change_shared = function friendlysharedCallbackChangeSha
 };
 
 Twinkle.shared.callbacks = {
-	main: function( pageobj ) {
+	main: function(pageobj) {
 		var params = pageobj.getCallbackParameters();
 		var pageText = pageobj.getPageText();
 		var found = false;
 		var text = '{{';
 
-		for( var i = 0; i < Twinkle.shared.standardList.length; i++ ) {
-			var tagRe = new RegExp( '(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im' );
-			if( tagRe.exec( pageText ) ) {
-				Morebits.status.warn( 'Info', 'Found {{' + Twinkle.shared.standardList[i].value + '}} on the user\'s talk page already...aborting' );
+		for(var i = 0; i < Twinkle.shared.standardList.length; i++) {
+			var tagRe = new RegExp('(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im');
+			if(tagRe.exec(pageText)) {
+				Morebits.status.warn('Info', 'Found {{' + Twinkle.shared.standardList[i].value + '}} on the user\'s talk page already...aborting');
 				found = true;
 			}
 		}
 
-		if( found ) {
+		if(found) {
 			return;
 		}
 
-		Morebits.status.info( 'Info', 'Will add the shared IP address template to the top of the user\'s talk page.' );
+		Morebits.status.info('Info', 'Will add the shared IP address template to the top of the user\'s talk page.');
 		text += params.value + '|' + params.organization;
-		if( params.value === 'Shared IP edu' && params.contact !== '') {
+		if(params.value === 'Shared IP edu' && params.contact !== '') {
 			text += '|' + params.contact;
 		}
-		if( params.value !== 'Whois' && params.host !== '' ) {
+		if(params.value !== 'Whois' && params.host !== '') {
 			text += '|host=' + params.host;
 		}
 		text += '}}\n\n';
@@ -164,16 +164,16 @@ Twinkle.shared.callbacks = {
 };
 
 Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
-	var shared = e.target.getChecked( 'shared' );
-	if( !shared || shared.length <= 0 ) {
-		alert( 'You must select a shared IP address template to use!' );
+	var shared = e.target.getChecked('shared');
+	if(!shared || shared.length <= 0) {
+		alert('You must select a shared IP address template to use!');
 		return;
 	}
 
 	var value = shared[0];
 
-	if( e.target.organization.value === '') {
-		alert( 'You must input an organization for the {{' + value + '}} template!' );
+	if(e.target.organization.value === '') {
+		alert('You must input an organization for the {{' + value + '}} template!');
 		return;
 	}
 
@@ -184,8 +184,8 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 		contact: e.target.contact.value
 	};
 
-	Morebits.simpleWindow.setButtonsEnabled( false );
-	Morebits.status.init( e.target );
+	Morebits.simpleWindow.setButtonsEnabled(false);
+	Morebits.status.init(e.target);
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 	Morebits.wiki.actionCompleted.notice = "Tagging complete, reloading talk page in a few seconds";

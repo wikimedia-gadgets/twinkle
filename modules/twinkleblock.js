@@ -16,34 +16,34 @@ var api = new mw.Api(), relevantUserName;
 
 Twinkle.block = function twinkleblock() {
 	// should show on Contributions pages, anywhere there's a relevant user
-	if ( Morebits.userIsInGroup('sysop') && mw.config.get('wgRelevantUserName') ) {
-		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user' );
+	if (Morebits.userIsInGroup('sysop') && mw.config.get('wgRelevantUserName')) {
+		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user');
 	}
 };
 
 Twinkle.block.callback = function twinkleblockCallback() {
-	if( mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') &&
-			!confirm( 'You are about to block yourself! Are you sure you want to proceed?' ) ) {
+	if(mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') &&
+			!confirm('You are about to block yourself! Are you sure you want to proceed?')) {
 		return;
 	}
 
-	var Window = new Morebits.simpleWindow( 650, 530 );
+	var Window = new Morebits.simpleWindow(650, 530);
 	// need to be verbose about who we're blocking
-	Window.setTitle( 'Block or issue block template to ' + mw.config.get('wgRelevantUserName') );
-	Window.setScriptName( 'Twinkle' );
-	Window.addFooterLink( 'Block templates', 'Template:Uw-block/doc/Block_templates' );
-	Window.addFooterLink( 'Block policy', 'WP:BLOCK' );
-	Window.addFooterLink( 'Twinkle help', 'WP:TW/DOC#block' );
+	Window.setTitle('Block or issue block template to ' + mw.config.get('wgRelevantUserName'));
+	Window.setScriptName('Twinkle');
+	Window.addFooterLink('Block templates', 'Template:Uw-block/doc/Block_templates');
+	Window.addFooterLink('Block policy', 'WP:BLOCK');
+	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#block');
 
 	Twinkle.block.currentBlockInfo = undefined;
 	Twinkle.block.field_block_options = {};
 	Twinkle.block.field_template_options = {};
 
-	var form = new Morebits.quickForm( Twinkle.block.callback.evaluate );
-	var actionfield = form.append( {
+	var form = new Morebits.quickForm(Twinkle.block.callback.evaluate);
+	var actionfield = form.append({
 			type: 'field',
 			label: 'Type of action'
-		} );
+		});
 	actionfield.append({
 			type: 'checkbox',
 			name: 'actiontype',
@@ -68,10 +68,10 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	form.append({ type: 'field', label: 'Template options', name: 'field_template_options' });
 	form.append({ type: 'field', label: 'Block options', name: 'field_block_options' });
 
-	form.append( { type:'submit' } );
+	form.append({ type:'submit' });
 
 	var result = form.render();
-	Window.setContent( result );
+	Window.setContent(result);
 	Window.display();
 	result.root = result;
 
@@ -80,9 +80,9 @@ Twinkle.block.callback = function twinkleblockCallback() {
 		Twinkle.block.transformBlockPresets();
 
 		// init the controls after user and block info have been fetched
-		var evt = document.createEvent( 'Event' );
-		evt.initEvent( 'change', true, true );
-		result.actiontype[0].dispatchEvent( evt );
+		var evt = document.createEvent('Event');
+		evt.initEvent('change', true, true);
+		result.actiontype[0].dispatchEvent(evt);
 	});
 };
 
@@ -255,7 +255,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 						value: 'filter log'
 					}
 				]
-			} );
+			});
 		field_block_options.append({
 				type: 'checkbox',
 				name: 'deleted_see_also',
@@ -268,52 +268,52 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 						value: 'deleted contribs'
 					}
 				]
-			} );
+			});
 
 		if (Twinkle.block.currentBlockInfo) {
-			field_block_options.append( { type: 'hidden', name: 'reblock', value: '1' } );
+			field_block_options.append({ type: 'hidden', name: 'reblock', value: '1' });
 		}
 	}
 
 	if ($form.find('[name=actiontype][value=template]').is(':checked')) {
 		field_template_options = new Morebits.quickForm.element({ type: 'field', label: 'Template options', name: 'field_template_options' });
-		field_template_options.append( {
+		field_template_options.append({
 				type: 'select',
 				name: 'template',
 				label: 'Choose talk page template:',
 				event: Twinkle.block.callback.change_template,
 				list: Twinkle.block.callback.filtered_block_groups(true),
 				value: Twinkle.block.field_template_options.template
-			} );
-		field_template_options.append( {
+			});
+		field_template_options.append({
 				type: 'input',
 				name: 'article',
 				display: 'none',
 				label: 'Linked page',
 				value: '',
 				tooltip: 'A page can be linked within the notice, perhaps if it was the primary target of disruption. Leave empty for no page to be linked.'
-			} );
+			});
 		if (!$form.find('[name=actiontype][value=block]').is(':checked')) {
-			field_template_options.append( {
+			field_template_options.append({
 				type: 'input',
 				name: 'template_expiry',
 				display: 'none',
 				label: 'Period of blocking: ',
 				value: '',
 				tooltip: 'The period the blocking is due for, for example 24 hours, 2 weeks, indefinite etc...'
-			} );
+			});
 		}
-		field_template_options.append( {
+		field_template_options.append({
 			type: 'input',
 			name: 'block_reason',
 			label: '"You have been blocked for ..." ',
 			display: 'none',
 			tooltip: 'An optional reason, to replace the default generic reason. Only available for the generic block templates.',
 			value: Twinkle.block.field_template_options.block_reason
-		} );
+		});
 
 		if ($form.find('[name=actiontype][value=block]').is(':checked')) {
-			field_template_options.append( {
+			field_template_options.append({
 				type: 'checkbox',
 				name: 'blank_duration',
 				list: [
@@ -323,9 +323,9 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 						tooltip: 'Instead of including the duration, make the block template read "You have been blocked from editing temporarily for..."'
 					}
 				]
-			} );
+			});
 		} else {
-			field_template_options.append( {
+			field_template_options.append({
 				type: 'checkbox',
 				name: 'notalk',
 				list: [
@@ -335,16 +335,16 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 						tooltip: 'Use this to make the block template state that the user\'s talk page access has been removed'
 					}
 				]
-			} );
+			});
 		}
 
-		var $previewlink = $( '<a id="twinkleblock-preivew-link">Preview</a>' );
+		var $previewlink = $('<a id="twinkleblock-preivew-link">Preview</a>');
 		$previewlink.off('click').on('click', function(){
 			Twinkle.block.callback.preview($form[0]);
 		});
 		$previewlink.css({cursor: 'pointer'});
-		field_template_options.append( { type: 'div', id: 'blockpreview', label: [ $previewlink[0] ] } );
-		field_template_options.append( { type: 'div', id: 'twinkleblock-previewbox', style: 'display: none' } );
+		field_template_options.append({ type: 'div', id: 'blockpreview', label: [ $previewlink[0] ] });
+		field_template_options.append({ type: 'div', id: 'twinkleblock-previewbox', style: 'display: none' });
 	}
 
 	var oldfield;
@@ -369,7 +369,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	}
 
 	if (Twinkle.block.hasBlockLog) {
-		var $blockloglink = $( '<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgRelevantUserName'), type: 'block'}) + '">block log</a>)' );
+		var $blockloglink = $('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgRelevantUserName'), type: 'block'}) + '">block log</a>)');
 
 		Morebits.status.init($('div[name="hasblocklog"] span').last()[0]);
 		Morebits.status.warn('This user has been blocked in the past', $blockloglink[0]);
@@ -1051,7 +1051,7 @@ Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemp
 			}
 			form.template_expiry.parentNode.style.display = 'none';
 			form.template_expiry.value = 'indefinite';
-		} else if ( form.template_expiry.parentNode.style.display === 'none' ) {
+		} else if (form.template_expiry.parentNode.style.display === 'none') {
 			if(Twinkle.block.prev_template_expiry !== null) {
 				form.template_expiry.value = Twinkle.block.prev_template_expiry;
 				Twinkle.block.prev_template_expiry = null;
@@ -1084,7 +1084,7 @@ Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 		disabletalk: form.disabletalk.checked || (form.notalk ? form.notalk.checked : false),
 		expiry: form.template_expiry ? form.template_expiry.value : form.expiry.value,
 		hardblock: Twinkle.block.isRegistered ? form.autoblock.checked : form.hardblock.checked,
-		indefinite: (/indef|infinit|never|\*|max/).test( form.template_expiry ? form.template_expiry.value : form.expiry.value ),
+		indefinite: (/indef|infinit|never|\*|max/).test(form.template_expiry ? form.template_expiry.value : form.expiry.value),
 		reason: form.block_reason.value,
 		template: form.template.value
 	};
@@ -1118,8 +1118,8 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 		if (!blockoptions.expiry) return alert('Please provide an expiry!');
 		if (!blockoptions.reason) return alert('Please provide a reason for the block!');
 
-		Morebits.simpleWindow.setButtonsEnabled( false );
-		Morebits.status.init( e.target );
+		Morebits.simpleWindow.setButtonsEnabled(false);
+		Morebits.status.init(e.target);
 		var statusElement = new Morebits.status('Executing block');
 		blockoptions.action = 'block';
 		blockoptions.user = mw.config.get('wgRelevantUserName');
@@ -1132,7 +1132,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 		api.getToken('block').then(function(token) {
 			statusElement.status('Processing...');
 			blockoptions.token = token;
-			var mbApi = new Morebits.wiki.api( 'Executing block', blockoptions, function() {
+			var mbApi = new Morebits.wiki.api('Executing block', blockoptions, function() {
 				statusElement.info('Completed');
 				if (toWarn) Twinkle.block.callback.issue_template(templateoptions);
 			});
@@ -1141,9 +1141,9 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 			statusElement.error('Unable to fetch block token');
 		});
 	} else if (toWarn) {
-		Morebits.simpleWindow.setButtonsEnabled( false );
+		Morebits.simpleWindow.setButtonsEnabled(false);
 
-		Morebits.status.init( e.target );
+		Morebits.status.init(e.target);
 		Twinkle.block.callback.issue_template(templateoptions);
 	} else {
 		return alert('Please give Twinkle something to do!');
@@ -1162,10 +1162,10 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	Morebits.wiki.actionCompleted.redirect = userTalkPage;
 	Morebits.wiki.actionCompleted.notice = 'Actions complete, loading user talk page in a few seconds';
 
-	var wikipedia_page = new Morebits.wiki.page( userTalkPage, 'User talk page modification' );
-	wikipedia_page.setCallbackParameters( params );
-	wikipedia_page.setFollowRedirect( true );
-	wikipedia_page.load( Twinkle.block.callback.main );
+	var wikipedia_page = new Morebits.wiki.page(userTalkPage, 'User talk page modification');
+	wikipedia_page.setCallbackParameters(params);
+	wikipedia_page.setFollowRedirect(true);
+	wikipedia_page.load(Twinkle.block.callback.main);
 };
 
 Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
@@ -1198,34 +1198,34 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 	return text + '}}';
 };
 
-Twinkle.block.callback.main = function twinkleblockcallbackMain( pageobj ) {
+Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 	var text = pageobj.getPageText(),
 		params = pageobj.getCallbackParameters(),
 		messageData = params.messageData,
 		date = new Date();
 
-	var dateHeaderRegex = new RegExp( '^==+\\s*(?:' + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() +
-		')\\s+' + date.getUTCFullYear() + '\\s*==+', 'mg' );
+	var dateHeaderRegex = new RegExp('^==+\\s*(?:' + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() +
+		')\\s+' + date.getUTCFullYear() + '\\s*==+', 'mg');
 	var dateHeaderRegexLast, dateHeaderRegexResult;
-	while ((dateHeaderRegexLast = dateHeaderRegex.exec( text )) !== null) {
+	while ((dateHeaderRegexLast = dateHeaderRegex.exec(text)) !== null) {
 		dateHeaderRegexResult = dateHeaderRegexLast;
 	}
 	// If dateHeaderRegexResult is null then lastHeaderIndex is never checked. If it is not null but
 	// \n== is not found, then the date header must be at the very start of the page. lastIndexOf
 	// returns -1 in this case, so lastHeaderIndex gets set to 0 as desired.
-	var lastHeaderIndex = text.lastIndexOf( '\n==' ) + 1;
+	var lastHeaderIndex = text.lastIndexOf('\n==') + 1;
 
-	if ( text.length > 0 ) {
+	if (text.length > 0) {
 		text += '\n\n';
 	}
 
-	params.indefinite = (/indef|infinit|never|\*|max/).test( params.expiry );
+	params.indefinite = (/indef|infinit|never|\*|max/).test(params.expiry);
 
-	if ( Twinkle.getPref('blankTalkpageOnIndefBlock') && params.template !== 'uw-lblock' && params.indefinite ) {
-		Morebits.status.info( 'Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date' );
+	if (Twinkle.getPref('blankTalkpageOnIndefBlock') && params.template !== 'uw-lblock' && params.indefinite) {
+		Morebits.status.info('Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date');
 		text = '== ' + date.getUTCMonthName() + ' ' + date.getUTCFullYear() + ' ==\n';
-	} else if( !dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex ) {
-		Morebits.status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
+	} else if(!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
+		Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
 		text += '== ' + date.getUTCMonthName() + ' ' + date.getUTCFullYear() + ' ==\n';
 	}
 
@@ -1235,14 +1235,14 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain( pageobj ) {
 
 	// build the edit summary
 	var summary = messageData.summary;
-	if ( messageData.suppressArticleInSummary !== true && params.article ) {
+	if (messageData.suppressArticleInSummary !== true && params.article) {
 		summary += ' on [[:' + params.article + ']]';
 	}
 	summary += '.' + Twinkle.getPref('summaryAd');
 
-	pageobj.setPageText( text );
-	pageobj.setEditSummary( summary );
-	pageobj.setWatchlist( Twinkle.getPref('watchWarnings') );
+	pageobj.setPageText(text);
+	pageobj.setEditSummary(summary);
+	pageobj.setWatchlist(Twinkle.getPref('watchWarnings'));
 	pageobj.save();
 };
 

@@ -15,8 +15,8 @@
  */
 
 Twinkle.warn = function twinklewarn() {
-	if( mw.config.get( 'wgRelevantUserName' ) ) {
-			Twinkle.addPortletLink( Twinkle.warn.callback, "Warn", "tw-warn", "Warn/notify user" );
+	if(mw.config.get('wgRelevantUserName')) {
+			Twinkle.addPortletLink(Twinkle.warn.callback, "Warn", "tw-warn", "Warn/notify user");
 			if (Twinkle.getPref('autoMenuAfterRollback') && mw.config.get('wgNamespaceNumber') === 3 &&
 				mw.util.getParamValue('vanarticle') && !mw.util.getParamValue('friendlywelcome') && !mw.util.getParamValue('noautowarn')) {
 				Twinkle.warn.callback();
@@ -25,9 +25,9 @@ Twinkle.warn = function twinklewarn() {
 
 	// Modify URL of talk page on rollback success pages, makes use of a
 	// custom message box in [[MediaWiki:Rollback-success]]
-	if( mw.config.get('wgAction') === 'rollback' ) {
+	if(mw.config.get('wgAction') === 'rollback') {
 		var $vandalTalkLink = $("#mw-rollback-success").find(".mw-usertoollinks a").first();
-		if ( $vandalTalkLink.length ) {
+		if ($vandalTalkLink.length) {
 			$vandalTalkLink.css("font-weight", "bold");
 			$vandalTalkLink.wrapInner($("<span/>").attr("title", "If appropriate, you can use Twinkle to warn the user about their edits to this page."));
 
@@ -60,76 +60,76 @@ Twinkle.warn = function twinklewarn() {
 };
 
 Twinkle.warn.callback = function twinklewarnCallback() {
-	if( mw.config.get( 'wgRelevantUserName' ) === mw.config.get( 'wgUserName' ) &&
-			!confirm( 'You are about to warn yourself! Are you sure you want to proceed?' ) ) {
+	if(mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') &&
+			!confirm('You are about to warn yourself! Are you sure you want to proceed?')) {
 		return;
 	}
 
-	var Window = new Morebits.simpleWindow( 600, 440 );
-	Window.setTitle( "Warn/notify user" );
-	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Choosing a warning level", "WP:UWUL#Levels" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#warn" );
+	var Window = new Morebits.simpleWindow(600, 440);
+	Window.setTitle("Warn/notify user");
+	Window.setScriptName("Twinkle");
+	Window.addFooterLink("Choosing a warning level", "WP:UWUL#Levels");
+	Window.addFooterLink("Twinkle help", "WP:TW/DOC#warn");
 
-	var form = new Morebits.quickForm( Twinkle.warn.callback.evaluate );
-	var main_select = form.append( {
+	var form = new Morebits.quickForm(Twinkle.warn.callback.evaluate);
+	var main_select = form.append({
 			type: 'field',
 			label: 'Choose type of warning/notice to issue',
 			tooltip: 'First choose a main warning group, then the specific warning to issue.'
-		} );
+		});
 
-	var main_group = main_select.append( {
+	var main_group = main_select.append({
 			type: 'select',
 			name: 'main_group',
 			event: Twinkle.warn.callback.change_category
-		} );
+		});
 
 	var defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'), 10);
-	main_group.append( { type: 'option', label: '1: General note', value: 'level1', selected: ( defaultGroup === 1 ) } );
-	main_group.append( { type: 'option', label: '2: Caution', value: 'level2', selected: ( defaultGroup === 2 ) } );
-	main_group.append( { type: 'option', label: '3: Warning', value: 'level3', selected: ( defaultGroup === 3 ) } );
-	main_group.append( { type: 'option', label: '4: Final warning', value: 'level4', selected: ( defaultGroup === 4 ) } );
-	main_group.append( { type: 'option', label: '4im: Only warning', value: 'level4im', selected: ( defaultGroup === 5 ) } );
-	main_group.append( { type: 'option', label: 'Single-issue notices', value: 'singlenotice', selected: ( defaultGroup === 6 ) } );
-	main_group.append( { type: 'option', label: 'Single-issue warnings', value: 'singlewarn', selected: ( defaultGroup === 7 ) } );
-	if( Twinkle.getPref( 'customWarningList' ).length ) {
-		main_group.append( { type: 'option', label: 'Custom warnings', value: 'custom', selected: ( defaultGroup === 9 ) } );
+	main_group.append({ type: 'option', label: '1: General note', value: 'level1', selected: (defaultGroup === 1) });
+	main_group.append({ type: 'option', label: '2: Caution', value: 'level2', selected: (defaultGroup === 2) });
+	main_group.append({ type: 'option', label: '3: Warning', value: 'level3', selected: (defaultGroup === 3) });
+	main_group.append({ type: 'option', label: '4: Final warning', value: 'level4', selected: (defaultGroup === 4) });
+	main_group.append({ type: 'option', label: '4im: Only warning', value: 'level4im', selected: (defaultGroup === 5) });
+	main_group.append({ type: 'option', label: 'Single-issue notices', value: 'singlenotice', selected: (defaultGroup === 6) });
+	main_group.append({ type: 'option', label: 'Single-issue warnings', value: 'singlewarn', selected: (defaultGroup === 7) });
+	if(Twinkle.getPref('customWarningList').length) {
+		main_group.append({ type: 'option', label: 'Custom warnings', value: 'custom', selected: (defaultGroup === 9) });
 	}
 
-	main_select.append( { type: 'select', name: 'sub_group', event:Twinkle.warn.callback.change_subcategory } ); // Will be empty to begin with.
+	main_select.append({ type: 'select', name: 'sub_group', event:Twinkle.warn.callback.change_subcategory }); // Will be empty to begin with.
 
-	form.append( {
+	form.append({
 			type: 'input',
 			name: 'article',
 			label: 'Linked page',
-			value:( Morebits.queryString.exists( 'vanarticle' ) ? Morebits.queryString.get( 'vanarticle' ) : '' ),
+			value:(Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : ''),
 			tooltip: 'A page can be linked within the notice, perhaps because it was a revert to said page that dispatched this notice. Leave empty for no page to be linked.'
-		} );
+		});
 
-	var more = form.append( { type: 'field', name: 'reasonGroup', label: 'Warning information' } );
-	more.append( { type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' } );
+	var more = form.append({ type: 'field', name: 'reasonGroup', label: 'Warning information' });
+	more.append({ type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' });
 
-	var previewlink = document.createElement( 'a' );
+	var previewlink = document.createElement('a');
 	$(previewlink).click(function(){
 		Twinkle.warn.callbacks.preview(result);  // |result| is defined below
 	});
 	previewlink.style.cursor = "pointer";
 	previewlink.textContent = 'Preview';
-	more.append( { type: 'div', id: 'warningpreview', label: [ previewlink ] } );
-	more.append( { type: 'div', id: 'twinklewarn-previewbox', style: 'display: none' } );
+	more.append({ type: 'div', id: 'warningpreview', label: [ previewlink ] });
+	more.append({ type: 'div', id: 'twinklewarn-previewbox', style: 'display: none' });
 
-	more.append( { type: 'submit', label: 'Submit' } );
+	more.append({ type: 'submit', label: 'Submit' });
 
 	var result = form.render();
-	Window.setContent( result );
+	Window.setContent(result);
 	Window.display();
 	result.main_group.root = result;
 	result.previewer = new Morebits.wiki.preview($(result).find('div#twinklewarn-previewbox').last()[0]);
 
 	// We must init the first choice (General Note);
-	var evt = document.createEvent( "Event" );
-	evt.initEvent( 'change', true, true );
-	result.main_group.dispatchEvent( evt );
+	var evt = document.createEvent("Event");
+	evt.initEvent('change', true, true);
+	result.main_group.dispatchEvent(evt);
 };
 
 // This is all the messages that might be dispatched by the code
@@ -1078,33 +1078,33 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	sub_group.main_group = value;
 	var old_subvalue = sub_group.value;
 	var old_subvalue_re;
-	if( old_subvalue ) {
-		old_subvalue = old_subvalue.replace(/\d*(im)?$/, '' );
-		old_subvalue_re = new RegExp( mw.RegExp.escape( old_subvalue ) + "(\\d*(?:im)?)$" );
+	if(old_subvalue) {
+		old_subvalue = old_subvalue.replace(/\d*(im)?$/, '');
+		old_subvalue_re = new RegExp(mw.RegExp.escape(old_subvalue) + "(\\d*(?:im)?)$");
 	}
 
-	while( sub_group.hasChildNodes() ){
-		sub_group.removeChild( sub_group.firstChild );
+	while(sub_group.hasChildNodes()){
+		sub_group.removeChild(sub_group.firstChild);
 	}
 
 	// worker function to create the combo box entries
-	var createEntries = function( contents, container, wrapInOptgroup ) {
+	var createEntries = function(contents, container, wrapInOptgroup) {
 		// level2->2, singlewarn->''; also used to distinguish the
 		// scaled levels from singlenotice, singlewarn, and custom
 		var level = value.replace(/^\D+/g,'');
 		// due to an apparent iOS bug, we have to add an option-group to prevent truncation of text
 		// (search WT:TW archives for "Problem selecting warnings on an iPhone")
-		if ( wrapInOptgroup && $.client.profile().platform === "iphone" ) {
-			var wrapperOptgroup = new Morebits.quickForm.element( {
+		if (wrapInOptgroup && $.client.profile().platform === "iphone") {
+			var wrapperOptgroup = new Morebits.quickForm.element({
 				type: 'optgroup',
 				label: 'Available templates'
-			} );
+			});
 			wrapperOptgroup = wrapperOptgroup.render();
-			container.appendChild( wrapperOptgroup );
+			container.appendChild(wrapperOptgroup);
 			container = wrapperOptgroup;
 		}
 
-		$.each( contents, function( itemKey, itemProperties ) {
+		$.each(contents, function(itemKey, itemProperties) {
 			// Skip if the current template doesn't have a version for the current level
 			if (!!level && !itemProperties[value]) {
 				return;
@@ -1112,41 +1112,41 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			var key = (typeof itemKey === "string") ? itemKey : itemProperties.value;
 
 			var selected = false;
-			if( old_subvalue && old_subvalue_re.test( key ) ) {
+			if(old_subvalue && old_subvalue_re.test(key)) {
 				selected = true;
 			}
 
 			// Slice out leading uw- from the menu display
-			var elem = new Morebits.quickForm.element( {
+			var elem = new Morebits.quickForm.element({
 				type: 'option',
 				label: "{{" + key + level + "}}: " + (level ? itemProperties[value].label : itemProperties.label),
 				value: key + level,
 				selected: selected
-			} );
-			var elemRendered = container.appendChild( elem.render() );
+			});
+			var elemRendered = container.appendChild(elem.render());
 			$(elemRendered).data("messageData", itemProperties);
-		} );
+		});
 	};
 
-	if( value === "singlenotice" || value === "singlewarn" ) {
+	if(value === "singlenotice" || value === "singlewarn") {
 		// no categories, just create the options right away
-		createEntries( Twinkle.warn.messages[ value ], sub_group, true );
-	} else if( value === "custom" ) {
-		createEntries( Twinkle.getPref("customWarningList"), sub_group, true );
+		createEntries(Twinkle.warn.messages[ value ], sub_group, true);
+	} else if(value === "custom") {
+		createEntries(Twinkle.getPref("customWarningList"), sub_group, true);
 	} else {
 		// create the option-groups
-		$.each( Twinkle.warn.messages.levels, function( groupLabel, groupContents ) {
+		$.each(Twinkle.warn.messages.levels, function(groupLabel, groupContents) {
 			// Creates subgroup regardless of whether there is anything to place in it;
 			// leaves "Removal of deletion tags" empty for 4im
-			var optgroup = new Morebits.quickForm.element( {
+			var optgroup = new Morebits.quickForm.element({
 				type: 'optgroup',
 				label: groupLabel
-			} );
+			});
 			optgroup = optgroup.render();
-			sub_group.appendChild( optgroup );
+			sub_group.appendChild(optgroup);
 			// create the options
-			createEntries( groupContents, optgroup, false );
-		} );
+			createEntries(groupContents, optgroup, false);
+		});
 	}
 
 	// clear overridden label on article textbox
@@ -1193,8 +1193,8 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		"uw-aiv": "Optional username that was reported (without User:) "
 	};
 
-	if( main_group === 'singlenotice' || main_group === 'singlewarn' ) {
-		if( notLinkedArticle[value] ) {
+	if(main_group === 'singlenotice' || main_group === 'singlewarn') {
+		if(notLinkedArticle[value]) {
 			if(Twinkle.warn.prev_article === null) {
 				Twinkle.warn.prev_article = e.target.form.article.value;
 			}
@@ -1204,7 +1204,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 			// change form labels according to the warning selected
 			Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
 			Morebits.quickForm.overrideElementLabel(e.target.form.article, notLinkedArticle[value]);
-		} else if( e.target.form.article.notArticle ) {
+		} else if(e.target.form.article.notArticle) {
 			if(Twinkle.warn.prev_article !== null) {
 				e.target.form.article.value = Twinkle.warn.prev_article;
 				Twinkle.warn.prev_article = null;
@@ -1268,22 +1268,22 @@ Twinkle.warn.callbacks = {
 
 		form.previewer.beginRender(templatetext, 'User_talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username
 	},
-	main: function( pageobj ) {
+	main: function(pageobj) {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
 		var messageData = params.messageData;
 
 		var history_re = /<!-- Template:(uw-.*?) -->.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4}) \(UTC\)/g;
 		var history = {};
-		var latest = { date: new Date( 0 ), type: '' };
+		var latest = { date: new Date(0), type: '' };
 		var current;
 
-		while( ( current = history_re.exec( text ) ) ) {
-			var current_date = new Date( current[2] + ' UTC' );
-			if( !( current[1] in history ) ||  history[ current[1] ] < current_date ) {
+		while((current = history_re.exec(text))) {
+			var current_date = new Date(current[2] + ' UTC');
+			if(!(current[1] in history) ||  history[ current[1] ] < current_date) {
 				history[ current[1] ] = current_date;
 			}
-			if( current_date > latest.date ) {
+			if(current_date > latest.date) {
 				latest.date = current_date;
 				latest.type = current[1];
 			}
@@ -1291,60 +1291,60 @@ Twinkle.warn.callbacks = {
 
 		var date = new Date();
 
-		if( params.sub_group in history ) {
-			var temp_time = new Date( history[ params.sub_group ] );
-			temp_time.setUTCHours( temp_time.getUTCHours() + 24 );
+		if(params.sub_group in history) {
+			var temp_time = new Date(history[ params.sub_group ]);
+			temp_time.setUTCHours(temp_time.getUTCHours() + 24);
 
-			if( temp_time > date ) {
-				if( !confirm( "An identical " + params.sub_group + " has been issued in the last 24 hours.  \nWould you still like to add this warning/notice?" ) ) {
-					pageobj.statelem.info( 'aborted per user request' );
+			if(temp_time > date) {
+				if(!confirm("An identical " + params.sub_group + " has been issued in the last 24 hours.  \nWould you still like to add this warning/notice?")) {
+					pageobj.statelem.info('aborted per user request');
 					return;
 				}
 			}
 		}
 
-		latest.date.setUTCMinutes( latest.date.getUTCMinutes() + 1 ); // after long debate, one minute is max
+		latest.date.setUTCMinutes(latest.date.getUTCMinutes() + 1); // after long debate, one minute is max
 
-		if( latest.date > date ) {
-			if( !confirm( "A " + latest.type + " has been issued in the last minute.  \nWould you still like to add this warning/notice?" ) ) {
-				pageobj.statelem.info( 'aborted per user request' );
+		if(latest.date > date) {
+			if(!confirm("A " + latest.type + " has been issued in the last minute.  \nWould you still like to add this warning/notice?")) {
+				pageobj.statelem.info('aborted per user request');
 				return;
 			}
 		}
 
-		var dateHeaderRegex = new RegExp( "^==+\\s*(?:" + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() +
-			")\\s+" + date.getUTCFullYear() + "\\s*==+", 'mg' );
+		var dateHeaderRegex = new RegExp("^==+\\s*(?:" + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() +
+			")\\s+" + date.getUTCFullYear() + "\\s*==+", 'mg');
 		var dateHeaderRegexLast, dateHeaderRegexResult;
-		while ((dateHeaderRegexLast = dateHeaderRegex.exec( text )) !== null) {
+		while ((dateHeaderRegexLast = dateHeaderRegex.exec(text)) !== null) {
 			dateHeaderRegexResult = dateHeaderRegexLast;
 		}
 		// If dateHeaderRegexResult is null then lastHeaderIndex is never checked. If it is not null but
 		// \n== is not found, then the date header must be at the very start of the page. lastIndexOf
 		// returns -1 in this case, so lastHeaderIndex gets set to 0 as desired.
-		var lastHeaderIndex = text.lastIndexOf( "\n==" ) + 1;
+		var lastHeaderIndex = text.lastIndexOf("\n==") + 1;
 
-		if( text.length > 0 ) {
+		if(text.length > 0) {
 			text += "\n\n";
 		}
 
-		if( messageData.heading ) {
+		if(messageData.heading) {
 			text += "== " + messageData.heading + " ==\n";
-		} else if( !dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex ) {
-			Morebits.status.info( 'Info', 'Will create a new level 2 heading for the date, as none was found for this month' );
+		} else if(!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
+			Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
 			text += "== " + date.getUTCMonthName() + " " + date.getUTCFullYear() + " ==\n";
 		}
 		text += Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article,
 			params.reason, params.main_group === 'custom');
 
-		if ( Twinkle.getPref('showSharedIPNotice') && mw.util.isIPAddress( mw.config.get('wgTitle') ) ) {
-			Morebits.status.info( 'Info', 'Adding a shared IP notice' );
+		if (Twinkle.getPref('showSharedIPNotice') && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
+			Morebits.status.info('Info', 'Adding a shared IP notice');
 			text +=  "\n{{subst:Shared IP advice}}";
 		}
 
 		// build the edit summary
 		var summary;
-		if( params.main_group === 'custom' ) {
-			switch( params.sub_group.substr( -1 ) ) {
+		if(params.main_group === 'custom') {
+			switch(params.sub_group.substr(-1)) {
 				case "1":
 					summary = "General note";
 					break;
@@ -1358,7 +1358,7 @@ Twinkle.warn.callbacks = {
 					summary = "Final warning";
 					break;
 				case "m":
-					if( params.sub_group.substr( -3 ) === "4im" ) {
+					if(params.sub_group.substr(-3) === "4im") {
 						summary = "Only warning";
 						break;
 					}
@@ -1371,10 +1371,10 @@ Twinkle.warn.callbacks = {
 			summary += ": " + Morebits.string.toUpperCaseFirstChar(messageData.label);
 		} else {
 			summary = (/^\D+$/.test(params.main_group) ? messageData.summary : messageData[params.main_group].summary);
-			if ( messageData.suppressArticleInSummary !== true && params.article ) {
-				if ( params.sub_group === "uw-agf-sock" ||
+			if (messageData.suppressArticleInSummary !== true && params.article) {
+				if (params.sub_group === "uw-agf-sock" ||
 						params.sub_group === "uw-socksuspect" ||
-						params.sub_group === "uw-aiv" ) {  // these templates require a username
+						params.sub_group === "uw-aiv") {  // these templates require a username
 					summary += " of [[:User:" + params.article + "]]";
 				} else {
 					summary += " on [[:" + params.article + "]]";
@@ -1383,9 +1383,9 @@ Twinkle.warn.callbacks = {
 		}
 		summary += "." + Twinkle.getPref("summaryAd");
 
-		pageobj.setPageText( text );
-		pageobj.setEditSummary( summary );
-		pageobj.setWatchlist( Twinkle.getPref('watchWarnings') );
+		pageobj.setPageText(text);
+		pageobj.setEditSummary(summary);
+		pageobj.setWatchlist(Twinkle.getPref('watchWarnings'));
 		pageobj.save();
 	}
 };
@@ -1412,16 +1412,16 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 		messageData: selectedEl.data("messageData")
 	};
 
-	Morebits.simpleWindow.setButtonsEnabled( false );
-	Morebits.status.init( e.target );
+	Morebits.simpleWindow.setButtonsEnabled(false);
+	Morebits.status.init(e.target);
 
 	Morebits.wiki.actionCompleted.redirect = userTalkPage;
 	Morebits.wiki.actionCompleted.notice = "Warning complete, reloading talk page in a few seconds";
 
-	var wikipedia_page = new Morebits.wiki.page( userTalkPage, 'User talk page modification' );
-	wikipedia_page.setCallbackParameters( params );
-	wikipedia_page.setFollowRedirect( true );
-	wikipedia_page.load( Twinkle.warn.callbacks.main );
+	var wikipedia_page = new Morebits.wiki.page(userTalkPage, 'User talk page modification');
+	wikipedia_page.setCallbackParameters(params);
+	wikipedia_page.setFollowRedirect(true);
+	wikipedia_page.load(Twinkle.warn.callbacks.main);
 };
 })(jQuery);
 

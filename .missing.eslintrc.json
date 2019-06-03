@@ -34,4 +34,3 @@
 		"quotes": ["error", "single", { "avoidEscape": true }],
 		"semi": ["error", "always"],
 		"space-before-blocks": "error",
-		"space-in-parens": ["error", "never"],

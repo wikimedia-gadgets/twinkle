@@ -20,14 +20,14 @@ Twinkle.image = function twinkleimage() {
 };
 
 Twinkle.image.callback = function twinkleimageCallback() {
-	var Window = new Morebits.simpleWindow( 600, 330 );
-	Window.setTitle( "File for dated speedy deletion" );
-	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( "Speedy deletion policy", "WP:CSD#Files" );
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#image" );
+	var Window = new Morebits.simpleWindow(600, 330);
+	Window.setTitle("File for dated speedy deletion");
+	Window.setScriptName("Twinkle");
+	Window.addFooterLink("Speedy deletion policy", "WP:CSD#Files");
+	Window.addFooterLink("Twinkle help", "WP:TW/DOC#image");
 
-	var form = new Morebits.quickForm( Twinkle.image.callback.evaluate );
-	form.append( {
+	var form = new Morebits.quickForm(Twinkle.image.callback.evaluate);
+	form.append({
 			type: 'checkbox',
 			list: [
 				{
@@ -40,11 +40,11 @@ Twinkle.image.callback = function twinkleimageCallback() {
 			]
 		}
 	);
-	var field = form.append( {
+	var field = form.append({
 			type: 'field',
 			label: 'Type of action wanted'
-		} );
-	field.append( {
+		});
+	field.append({
 			type: 'radio',
 			name: 'type',
 			event: Twinkle.image.callback.choice,
@@ -91,36 +91,36 @@ Twinkle.image.callback = function twinkleimageCallback() {
 					tooltip: 'Image or media does not have proof that the author agreed to licence the file'
 				}
 			]
-		} );
-	form.append( {
+		});
+	form.append({
 			type: 'div',
 			label: 'Work area',
 			name: 'work_area'
-		} );
-	form.append( { type:'submit' } );
+		});
+	form.append({ type:'submit' });
 
 	var result = form.render();
-	Window.setContent( result );
+	Window.setContent(result);
 	Window.display();
 
 	// We must init the parameters
-	var evt = document.createEvent( "Event" );
-	evt.initEvent( 'change', true, true );
-	result.type[0].dispatchEvent( evt );
+	var evt = document.createEvent("Event");
+	evt.initEvent('change', true, true);
+	result.type[0].dispatchEvent(evt);
 };
 
 Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 	var value = event.target.values;
 	var root = event.target.form;
-	var work_area = new Morebits.quickForm.element( {
+	var work_area = new Morebits.quickForm.element({
 			type: 'div',
 			name: 'work_area'
-		} );
+		});
 
-	switch( value ) {
+	switch(value) {
 		case 'no source no license':
 		case 'no source':
-			work_area.append( {
+			work_area.append({
 					type: 'checkbox',
 					name: 'non_free',
 					list: [
@@ -129,10 +129,10 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 							tooltip: 'File is licensed under a fair use claim'
 						}
 					]
-				} );
+				});
 		/* falls through */
 		case 'no license':
-			work_area.append( {
+			work_area.append({
 					type: 'checkbox',
 					name: 'derivative',
 					list: [
@@ -141,41 +141,41 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 							tooltip: 'File is a derivative of one or more other works whose source is not specified'
 						}
 					]
-				} );
+				});
 			break;
 		case 'no permission':
-			work_area.append( {
+			work_area.append({
 					type: 'input',
 					name: 'source',
 					label: 'Source: '
-				} );
+				});
 			break;
 		case 'disputed fair use rationale':
-			work_area.append( {
+			work_area.append({
 					type: 'textarea',
 					name: 'reason',
 					label: 'Concern: '
-				} );
+				});
 			break;
 		case 'orphaned fair use':
-			work_area.append( {
+			work_area.append({
 					type: 'input',
 					name: 'replacement',
 					label: 'Replacement: '
-				} );
+				});
 			break;
 		case 'replaceable fair use':
-			work_area.append( {
+			work_area.append({
 					type: 'textarea',
 					name: 'reason',
 					label: 'Reason: '
-				} );
+				});
 			break;
 		default:
 			break;
 	}
 
-	root.replaceChild( work_area.render(), $(root).find('div[name="work_area"]')[0] );
+	root.replaceChild(work_area.render(), $(root).find('div[name="work_area"]')[0]);
 };
 
 Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
@@ -183,30 +183,30 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
 	var notify = event.target.notify.checked;
 	var types = event.target.type;
-	for( var i = 0; i < types.length; ++i ) {
-		if( types[i].checked ) {
+	for(var i = 0; i < types.length; ++i) {
+		if(types[i].checked) {
 			type = types[i].values;
 			break;
 		}
 	}
-	if( event.target.non_free ) {
+	if(event.target.non_free) {
 		non_free = event.target.non_free.checked;
 	}
-	if( event.target.source ) {
+	if(event.target.source) {
 		source = event.target.source.value;
 	}
-	if( event.target.reason ) {
+	if(event.target.reason) {
 		reason = event.target.reason.value;
 	}
-	if( event.target.replacement ) {
+	if(event.target.replacement) {
 		replacement = event.target.replacement.value;
 	}
-	if( event.target.derivative ) {
+	if(event.target.derivative) {
 		derivative = event.target.derivative.checked;
 	}
 
 	var csdcrit;
-	switch( type ) {
+	switch(type) {
 		case 'no source no license':
 		case 'no source':
 		case 'no license':
@@ -226,7 +226,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 			csdcrit = "F11";
 			break;
 		default:
-			throw new Error( "Twinkle.image.callback.evaluate: unknown criterion" );
+			throw new Error("Twinkle.image.callback.evaluate: unknown criterion");
 	}
 
 	var lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit.toLowerCase()) === -1;
@@ -242,19 +242,19 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		'replacement': replacement,
 		'lognomination': lognomination
 	};
-	Morebits.simpleWindow.setButtonsEnabled( false );
-	Morebits.status.init( event.target );
+	Morebits.simpleWindow.setButtonsEnabled(false);
+	Morebits.status.init(event.target);
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 	Morebits.wiki.actionCompleted.notice = "Tagging complete";
 
 	// Tagging image
-	var wikipedia_page = new Morebits.wiki.page( mw.config.get('wgPageName'), 'Tagging file with deletion tag' );
-	wikipedia_page.setCallbackParameters( params );
-	wikipedia_page.load( Twinkle.image.callbacks.taggingImage );
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging file with deletion tag');
+	wikipedia_page.setCallbackParameters(params);
+	wikipedia_page.load(Twinkle.image.callbacks.taggingImage);
 
 	// Notifying uploader
-	if( notify ) {
+	if(notify) {
 		wikipedia_page.lookupCreation(Twinkle.image.callbacks.userNotification);
 	} else {
 		// add to CSD log if desired
@@ -263,9 +263,9 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 			Twinkle.speedy.callbacks.user.addToLog(params, null);
 		}
 		// No auto-notification, display what was going to be added.
-		var noteData = document.createElement( 'pre' );
-		noteData.appendChild( document.createTextNode( "{{subst:di-" + templatename + "-notice|1=" + mw.config.get('wgTitle') + "}} ~~~~" ) );
-		Morebits.status.info( 'Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement( 'br' ),  noteData ] );
+		var noteData = document.createElement('pre');
+		noteData.appendChild(document.createTextNode("{{subst:di-" + templatename + "-notice|1=" + mw.config.get('wgTitle') + "}} ~~~~"));
+		Morebits.status.info('Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement('br'),  noteData ]);
 	}
 };
 
@@ -278,7 +278,7 @@ Twinkle.image.callbacks = {
 		text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, "");
 
 		var tag = "{{di-" + params.templatename + "|date={{subst:#time:j F Y}}";
-		switch( params.type ) {
+		switch(params.type) {
 			case 'no source no license':
 			case 'no source':
 				tag += params.non_free ? "|non-free=yes" : "";

@@ -15,24 +15,24 @@
 
 
 Twinkle.batchundelete = function twinklebatchundelete() {
-	if( ( mw.config.get("wgNamespaceNumber") !== mw.config.get("wgNamespaceIds").user &&
-		mw.config.get("wgNamespaceNumber") !== mw.config.get("wgNamespaceIds").project ) ||
-		!mw.config.get("wgArticleId") ) {
+	if((mw.config.get("wgNamespaceNumber") !== mw.config.get("wgNamespaceIds").user &&
+		mw.config.get("wgNamespaceNumber") !== mw.config.get("wgNamespaceIds").project) ||
+		!mw.config.get("wgArticleId")) {
 		return;
 	}
-	if( Morebits.userIsInGroup( 'sysop' ) ) {
-		Twinkle.addPortletLink( Twinkle.batchundelete.callback, "Und-batch", "tw-batch-undel", "Undelete 'em all" );
+	if(Morebits.userIsInGroup('sysop')) {
+		Twinkle.addPortletLink(Twinkle.batchundelete.callback, "Und-batch", "tw-batch-undel", "Undelete 'em all");
 	}
 };
 
 Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
-	var Window = new Morebits.simpleWindow( 600, 400 );
+	var Window = new Morebits.simpleWindow(600, 400);
 	Window.setScriptName("Twinkle");
 	Window.setTitle("Batch undelete");
-	Window.addFooterLink( "Twinkle help", "WP:TW/DOC#batchundelete" );
+	Window.addFooterLink("Twinkle help", "WP:TW/DOC#batchundelete");
 
-	var form = new Morebits.quickForm( Twinkle.batchundelete.callback.evaluate );
-	form.append( {
+	var form = new Morebits.quickForm(Twinkle.batchundelete.callback.evaluate);
+	form.append({
 			type: 'checkbox',
 			list: [
 				{
@@ -42,15 +42,15 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 					checked: true
 				}
 			]
-		} );
-	form.append( {
+		});
+	form.append({
 			type: 'input',
 			name: 'reason',
 			label: 'Reason: ',
 			size: 60
-		} );
+		});
 
-	var statusdiv = document.createElement( 'div' );
+	var statusdiv = document.createElement('div');
 	statusdiv.style.padding = '15px';  // just so it doesn't look broken
 	Window.setContent(statusdiv);
 	Morebits.status.init(statusdiv);
@@ -65,7 +65,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		'gpllimit' : Twinkle.getPref('batchMax') // the max for sysops
 	};
 	var statelem = new Morebits.status("Grabbing list of pages");
-	var wikipedia_api = new Morebits.wiki.api( "loading...", query, function( apiobj ) {
+	var wikipedia_api = new Morebits.wiki.api("loading...", query, function(apiobj) {
 			var xml = apiobj.responseXML;
 			var $pages = $(xml).find('page[missing]');
 			var list = [];
@@ -97,23 +97,23 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 						$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', false);
 					}
 				});
-			apiobj.params.form.append( {
+			apiobj.params.form.append({
 					type: 'checkbox',
 					name: 'pages',
 					list: list
 				});
-			apiobj.params.form.append( { type:'submit' } );
+			apiobj.params.form.append({ type:'submit' });
 
 			var result = apiobj.params.form.render();
-			apiobj.params.Window.setContent( result );
+			apiobj.params.Window.setContent(result);
 
 			Morebits.checkboxShiftClickSupport(Morebits.quickForm.getElements(result, 'pages'));
-		}, statelem );
+		}, statelem);
 	wikipedia_api.params = { form:form, Window:Window };
 	wikipedia_api.post();
 };
 
-Twinkle.batchundelete.callback.evaluate = function( event ) {
+Twinkle.batchundelete.callback.evaluate = function(event) {
 	Morebits.wiki.actionCompleted.notice = 'Status';
 	Morebits.wiki.actionCompleted.postfix = 'batch undeletion is now complete';
 
@@ -124,18 +124,18 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 		return;
 	}
 
-	var pages = event.target.getChecked( 'pages' );
+	var pages = event.target.getChecked('pages');
 	var reason = event.target.reason.value;
 	var undel_talk = event.target.reason.value;
-	if( !reason ) {
+	if(!reason) {
 		alert("You need to give a reason, you cabal crony!");
 		return;
 	}
 	Morebits.simpleWindow.setButtonsEnabled(false);
-	Morebits.status.init( event.target );
+	Morebits.status.init(event.target);
 
-	if( !pages ) {
-		Morebits.status.error( 'Error', 'nothing to undelete, aborting' );
+	if(!pages) {
+		Morebits.status.error('Error', 'nothing to undelete, aborting');
 		return;
 	}
 
@@ -152,7 +152,7 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 			pageUndeleter: pageUndeleter
 		};
 
-		var wikipedia_page = new Morebits.wiki.page( pageName, 'Undeleting page ' + pageName );
+		var wikipedia_page = new Morebits.wiki.page(pageName, 'Undeleting page ' + pageName);
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
 		wikipedia_page.suppressProtectWarning();
@@ -164,7 +164,7 @@ Twinkle.batchundelete.callback.evaluate = function( event ) {
 Twinkle.batchundelete.callbacks = {
 	// this stupid parameter name is a temporary thing until I implement an overhaul
 	// of Morebits.wiki.* callback parameters
-	doExtras: function( thingWithParameters ) {
+	doExtras: function(thingWithParameters) {
 		var params = thingWithParameters.parent ? thingWithParameters.parent.getCallbackParameters() :
 			thingWithParameters.getCallbackParameters();
 		// the initial batch operation's job is to delete the page, and that has
@@ -173,7 +173,7 @@ Twinkle.batchundelete.callbacks = {
 
 		var query, wikipedia_api;
 
-		if ( params.undel_talk ) {
+		if (params.undel_talk) {
 			var talkpagename = new mw.Title(params.page).getTalkPage().getPrefixedText();
 			if (talkpagename !== params.page) {
 				query = {
@@ -183,19 +183,19 @@ Twinkle.batchundelete.callbacks = {
 					'drvlimit': 1,
 					'titles': talkpagename
 				};
-				wikipedia_api = new Morebits.wiki.api( 'Checking talk page for deleted revisions', query, Twinkle.batchundelete.callbacks.undeleteTalk );
+				wikipedia_api = new Morebits.wiki.api('Checking talk page for deleted revisions', query, Twinkle.batchundelete.callbacks.undeleteTalk);
 				wikipedia_api.params = params;
 				wikipedia_api.params.talkPage = talkpagename;
 				wikipedia_api.post();
 			}
 		}
 	},
-	undeleteTalk: function( apiobj ) {
+	undeleteTalk: function(apiobj) {
 		var xml = apiobj.responseXML;
 		var exists = $(xml).find('page:not([missing])').length > 0;
 		var delrevs = $(xml).find('rev').attr('revid');
 
-		if( exists || !delrevs ) {
+		if(exists || !delrevs) {
 			// page exists or has no deleted revisions; forget about it
 			return;
 		}

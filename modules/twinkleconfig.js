@@ -1256,7 +1256,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 				box.appendChild(document.createTextNode("You can customize Twinkle to suit your preferences by using the "));
 			}
 			link = document.createElement("a");
-			link.setAttribute("href", mw.util.getUrl(mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").project] + ":Twinkle/Preferences") );
+			link.setAttribute("href", mw.util.getUrl(mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").project] + ":Twinkle/Preferences"));
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode(", or by editing this page."));
@@ -1268,7 +1268,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 			box.appendChild(document.createTextNode("If you want to set Twinkle preferences, you can use the "));
 			link = document.createElement("a");
-			link.setAttribute("href", mw.util.getUrl(mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").project] + ":Twinkle/Preferences") );
+			link.setAttribute("href", mw.util.getUrl(mw.config.get("wgFormattedNamespaces")[mw.config.get("wgNamespaceIds").project] + ":Twinkle/Preferences"));
 			link.appendChild(document.createTextNode("Twinkle preferences panel"));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode("."));
@@ -1548,7 +1548,7 @@ Twinkle.config.resetAllPrefs = function twinkleconfigResetAllPrefs() {
 };
 
 Twinkle.config.save = function twinkleconfigSave(e) {
-	Morebits.status.init( document.getElementById("twinkle-config-content") );
+	Morebits.status.init(document.getElementById("twinkle-config-content"));
 
 	Morebits.wiki.actionCompleted.notice = "Save";
 
