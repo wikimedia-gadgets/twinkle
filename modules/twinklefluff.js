@@ -578,7 +578,6 @@ Twinkle.fluff.init = function twinklefluffinit() {
 			// Return if the user can't edit the page in question
 			if (!mw.config.get('wgIsProbablyEditable')) {
 				alert("Unable to edit the page, it's probably protected.");
-				return;
 			} else {
 				Twinkle.fluff.auto();
 			}

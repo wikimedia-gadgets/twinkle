@@ -11,4 +11,3 @@
 		"no-lone-blocks": "error",
 		"no-multi-spaces": ["error", { "ignoreEOLComments": true }],
 		"no-useless-catch": "error",
-		"no-useless-return": "error",
