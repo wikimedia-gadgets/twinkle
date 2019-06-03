@@ -412,7 +412,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 
 		});
 
-	} else if (! e.target.checked) {
+	} else if (!e.target.checked) {
 
 		$.each(Twinkle.batchdelete.pages, function(i, el) {
 			if (el.subgroup) {
@@ -463,7 +463,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 	}
 	var unlink_page = form.unlink_page.checked;
 	var unlink_file = form.unlink_file.checked;
-	if( ! reason ) {
+	if( !reason ) {
 		alert("You need to give a reason, you cabal crony!");
 		return;
 	}
@@ -645,7 +645,7 @@ Twinkle.batchdelete.callbacks = {
 	},
 	unlinkBacklinks: function( pageobj ) {
 		var params = pageobj.getCallbackParameters();
-		if( ! pageobj.exists() ) {
+		if( !pageobj.exists() ) {
 			// we probably just deleted it, as a recursive backlink
 			params.unlinker.workerSuccess(pageobj);
 			return;
@@ -695,7 +695,7 @@ Twinkle.batchdelete.callbacks = {
 	},
 	unlinkImageInstances: function( pageobj ) {
 		var params = pageobj.getCallbackParameters();
-		if( ! pageobj.exists() ) {
+		if( !pageobj.exists() ) {
 			// we probably just deleted it, as a recursive backlink
 			params.unlinker.workerSuccess(pageobj);
 			return;

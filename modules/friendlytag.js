@@ -119,7 +119,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				}
 			});
 
-			if (! Twinkle.tag.canRemove) {
+			if (!Twinkle.tag.canRemove) {
 				var divElement = document.createElement('div');
 				divElement.innerHTML = 'For removal of existing tags, please open Tag menu from the current version of article';
 				form.append({
@@ -1407,7 +1407,7 @@ Twinkle.tag.callbacks = {
 				summaryText += ' {{[[Template:' + tag + '|' + tag + ']]}}';
 			});
 
-			if (! getRedirectsFor.length) {
+			if (!getRedirectsFor.length) {
 				postRemoval();
 				return;
 			}
@@ -1448,7 +1448,7 @@ Twinkle.tag.callbacks = {
 
 		};
 
-		if (! params.tags.length) {
+		if (!params.tags.length) {
 			removeTags();
 			return;
 		}
@@ -1727,7 +1727,7 @@ Twinkle.tag.callbacks = {
 				}
 			});
 
-			if(! getRedirectsFor.length) {
+			if(!getRedirectsFor.length) {
 				addNewTagsToMI();
 				return;
 			}

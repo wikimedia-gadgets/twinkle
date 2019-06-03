@@ -48,7 +48,7 @@ Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 		user = mw.config.get('wgUserName');
 	} else {
 		var node = document.getElementById( 'mw-diff-ntitle2' );
-		if( ! node ) {
+		if( !node ) {
 			// nothing to do?
 			return;
 		}
@@ -74,7 +74,7 @@ Twinkle.diff.callbacks = {
 		var xmlDoc = self.responseXML;
 		var revid = $(xmlDoc).find('rev').attr('revid');
 
-		if( ! revid ) {
+		if( !revid ) {
 			self.statelem.error( 'no suitable earlier revision found, or ' + self.params.user + ' is the only contributor. Aborting.' );
 			return;
 		}

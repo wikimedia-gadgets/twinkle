@@ -365,7 +365,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				if( current.subgroup ) {
 					var tmpgroup = current.subgroup;
 
-					if( ! Array.isArray( tmpgroup ) ) {
+					if( !Array.isArray( tmpgroup ) ) {
 						tmpgroup = [ tmpgroup ];
 					}
 
@@ -375,7 +375,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 					});
 					$.each( tmpgroup, function( idx, el ) {
 						var newEl = $.extend( {}, el );
-						if( ! newEl.type ) {
+						if( !newEl.type ) {
 							newEl.type = data.type;
 						}
 						newEl.name = (current.name || data.name) + '.' + newEl.name;
@@ -575,7 +575,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node.setAttribute( 'name', data.name );
 		}
 		if (data.label) {
-			if ( ! Array.isArray( data.label ) ) {
+			if ( !Array.isArray( data.label ) ) {
 				data.label = [ data.label ];
 			}
 			var result = document.createElement( 'span' );
@@ -1007,7 +1007,7 @@ Morebits.string = {
 		var level = 0;
 		var initial = null;
 		var result = [];
-		if( ! Array.isArray( skiplist ) ) {
+		if( !Array.isArray( skiplist ) ) {
 			if( skiplist === undefined ) {
 				skiplist = [];
 			} else if( typeof skiplist === 'string' ) {
@@ -1076,7 +1076,7 @@ Morebits.array = {
 	 * @returns {Array} a copy of the array with duplicates removed
 	 */
 	uniq: function(arr) {
-		if ( ! Array.isArray( arr ) ) {
+		if ( !Array.isArray( arr ) ) {
 			throw "A non-array object passed to Morebits.array.uniq";
 		}
 		var result = [];
@@ -1094,7 +1094,7 @@ Morebits.array = {
 	 * removed; subsequent instances of those values (duplicates) remain
 	 */
 	dups: function(arr) {
-		if ( ! Array.isArray( arr ) ) {
+		if ( !Array.isArray( arr ) ) {
 			throw "A non-array object passed to Morebits.array.dups";
 		}
 		var uniques = [];
@@ -1119,7 +1119,7 @@ Morebits.array = {
 	 * @returns {Array}
 	 */
 	chunk: function( arr, size ) {
-		if ( ! Array.isArray( arr ) ) {
+		if ( !Array.isArray( arr ) ) {
 			throw "A non-array object passed to Morebits.array.chunk";
 		}
 		if( typeof size !== 'number' || size <= 0 ) { // pretty impossible to do anything :)
@@ -3567,7 +3567,7 @@ Morebits.status.prototype = {
 	 * Add the status element node to the DOM
 	 */
 	link: function() {
-		if( ! this.linked && Morebits.status.root ) {
+		if( !this.linked && Morebits.status.root ) {
 			Morebits.status.root.appendChild( this.node );
 			this.linked = true;
 		}
@@ -3587,7 +3587,7 @@ Morebits.status.prototype = {
 	 * Create a document fragment with the status text
 	 */
 	codify: function( obj ) {
-		if ( ! Array.isArray( obj ) ) {
+		if ( !Array.isArray( obj ) ) {
 			obj = [ obj ];
 		}
 		var result;

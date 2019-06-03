@@ -357,12 +357,12 @@ Twinkle.fluff.callbacks = {
 			}
 		}
 
-		if( ! found ) {
+		if( !found ) {
 			self.statelem.error( [ 'No previous revision found. Perhaps ', Morebits.htmlNode( 'strong', self.params.user ), ' is the only contributor, or that the user has made more than ' + Twinkle.getPref('revertMaxRevisions') + ' edits in a row.' ] );
 			return;
 		}
 
-		if( ! count ) {
+		if( !count ) {
 			Morebits.status.error( 'Error', "As it is not possible to revert zero revisions, we will stop this revert. It could be that the edit has already been reverted, but the revision ID was still the same." );
 			return;
 		}
