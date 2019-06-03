@@ -265,7 +265,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		// No auto-notification, display what was going to be added.
 		var noteData = document.createElement('pre');
 		noteData.appendChild(document.createTextNode('{{subst:di-' + templatename + '-notice|1=' + mw.config.get('wgTitle') + '}} ~~~~'));
-		Morebits.status.info('Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement('br'),  noteData ]);
+		Morebits.status.info('Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement('br'), noteData ]);
 	}
 };
 

@@ -252,7 +252,7 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 				protectionNode.push('(cascading) ');
 			}
 			if (settings.admin) {
-				var adminLink = '<a target="_blank" href="' + mw.util.getUrl('User talk:' + settings.admin) + '">' +  settings.admin + '</a>';
+				var adminLink = '<a target="_blank" href="' + mw.util.getUrl('User talk:' + settings.admin) + '">' + settings.admin + '</a>';
 				protectionNode.push($('<span>by ' + adminLink + '&nbsp;</span>')[0]);
 			}
 			protectionNode.push($('<span> \u2022 </span>')[0]);

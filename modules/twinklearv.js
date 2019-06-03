@@ -749,7 +749,7 @@ Twinkle.arv.processSock = function(params) {
 
 		var statusIndicator = new Morebits.status('Notifying suspected sockpuppets', '0%');
 		var total = params.sockpuppets.length;
-		var current =   0;
+		var current = 0;
 
 		// display status of notifications as they progress
 		var onSuccess = function(sockTalkPage) {
@@ -765,7 +765,7 @@ Twinkle.arv.processSock = function(params) {
 
 		// notify each puppet account
 		for (var i = 0; i < socks.length; ++i) {
-			var sockTalkPage = new Morebits.wiki.page('User talk:' + socks[i], 'Notification for ' +  socks[i]);
+			var sockTalkPage = new Morebits.wiki.page('User talk:' + socks[i], 'Notification for ' + socks[i]);
 			sockTalkPage.setFollowRedirect(true);
 			sockTalkPage.setEditSummary(notifyEditSummary);
 			sockTalkPage.setAppendText(notifyText);
@@ -888,7 +888,7 @@ Twinkle.arv.processAN3 = function(params) {
 		if (params.free_resolves) {
 			var page = params.free_resolves;
 			var rev = page.revisions[0];
-			resolvetext += '\n# ' + ' {{diff2|' + rev.revid + '|' + moment(rev.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + ' on ' + page.title +  '}} "' + rev.comment + '"';
+			resolvetext += '\n# ' + ' {{diff2|' + rev.revid + '|' + moment(rev.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + ' on ' + page.title + '}} "' + rev.comment + '"';
 		}
 
 		var comment = params.comment.replace(/~*$/g, '').trim();

@@ -26,7 +26,7 @@ Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2(nodelist) {
 		return nodelist.checked ? [ nodelist.values ] : [];
 	}
 	var result = [];
-	for (var i  = 0; i < nodelist.length; ++i) {
+	for (var i = 0; i < nodelist.length; ++i) {
 		if (nodelist[i].checked) {
 			result.push(nodelist[i].values);
 		}

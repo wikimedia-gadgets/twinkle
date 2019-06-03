@@ -1280,7 +1280,7 @@ Twinkle.warn.callbacks = {
 
 		while ((current = history_re.exec(text))) {
 			var current_date = new Date(current[2] + ' UTC');
-			if (!(current[1] in history) ||  history[current[1]] < current_date) {
+			if (!(current[1] in history) || history[current[1]] < current_date) {
 				history[current[1]] = current_date;
 			}
 			if (current_date > latest.date) {
@@ -1338,7 +1338,7 @@ Twinkle.warn.callbacks = {
 
 		if (Twinkle.getPref('showSharedIPNotice') && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
 			Morebits.status.info('Info', 'Adding a shared IP notice');
-			text +=  '\n{{subst:Shared IP advice}}';
+			text += '\n{{subst:Shared IP advice}}';
 		}
 
 		// build the edit summary

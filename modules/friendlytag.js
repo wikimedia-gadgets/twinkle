@@ -1359,7 +1359,7 @@ Twinkle.tag.callbacks = {
 		 * Removes the existing tags that were deselected (if any)
 		 * Calls postRemoval() when done
 		 */
-		var removeTags = function removeTags()  {
+		var removeTags = function removeTags() {
 
 			if (params.tagsToRemove.length === 0) {
 				// finish summary text from adding of tags, in this case where there are

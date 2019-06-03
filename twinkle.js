@@ -127,13 +127,13 @@ Twinkle.defaultConfig.twinkle = {
 // now some skin dependent config.
 if (mw.config.get('skin') === 'vector') {
 	Twinkle.defaultConfig.twinkle.portletArea = 'right-navigation';
-	Twinkle.defaultConfig.twinkle.portletId   = 'p-twinkle';
+	Twinkle.defaultConfig.twinkle.portletId = 'p-twinkle';
 	Twinkle.defaultConfig.twinkle.portletName = 'TW';
 	Twinkle.defaultConfig.twinkle.portletType = 'menu';
 	Twinkle.defaultConfig.twinkle.portletNext = 'p-search';
 } else {
-	Twinkle.defaultConfig.twinkle.portletArea =  null;
-	Twinkle.defaultConfig.twinkle.portletId   = 'p-cactions';
+	Twinkle.defaultConfig.twinkle.portletArea = null;
+	Twinkle.defaultConfig.twinkle.portletId = 'p-cactions';
 	Twinkle.defaultConfig.twinkle.portletName = null;
 	Twinkle.defaultConfig.twinkle.portletType = null;
 	Twinkle.defaultConfig.twinkle.portletNext = null;

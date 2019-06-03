@@ -210,7 +210,7 @@ Twinkle.fluff.revertToRevision = function revertToRevision(oldrev) {
 
 	var query = {
 		'action': 'query',
-		'prop': ['info',  'revisions'],
+		'prop': ['info', 'revisions'],
 		'titles': mw.config.get('wgPageName'),
 		'rvlimit': 1,
 		'rvstartid': oldrev,
@@ -261,7 +261,7 @@ Twinkle.fluff.callbacks = {
 				'basetimestamp': touched,
 				'starttimestamp': starttimestamp,
 				'watchlist': Twinkle.getPref('watchRevertedPages').indexOf('torev') !== -1 ? 'watch' : undefined,
-				'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf('torev') !== -1  ? true : undefined
+				'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf('torev') !== -1 ? true : undefined
 			};
 
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');

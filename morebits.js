@@ -475,7 +475,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label: 'more',
 				disabled: min >= max,
 				event: function(e) {
-					var new_node =  new Morebits.quickForm.element(e.target.sublist);
+					var new_node = new Morebits.quickForm.element(e.target.sublist);
 					e.target.area.appendChild(new_node.render());
 
 					if (++e.target.counter >= e.target.max) {
@@ -1016,7 +1016,7 @@ Morebits.string = {
 				throw new Error('non-applicable skiplist parameter');
 			}
 		}
-		for (var i  = 0; i < str.length; ++i) {
+		for (var i = 0; i < str.length; ++i) {
 			for (var j = 0; j < skiplist.length; ++j) {
 				if (str.substr(i, skiplist[j].length) === skiplist[j]) {
 					i += skiplist[j].length - 1;
