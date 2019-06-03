@@ -75,7 +75,7 @@ Morebits.sanitizeIPv6 = function (address) {
 		var repeat, extra, pad;
 		if (abbrevPos === 0) {
 			repeat = '0:';
-			extra = (address == '::') ? '0' : ''; // for the address '::'
+			extra = (address === '::') ? '0' : ''; // for the address '::'
 			pad = 9; // 7+2 (due to '::')
 		// If the '::' is at the end...
 		} else if (abbrevPos === (addressEnd - 1)) {

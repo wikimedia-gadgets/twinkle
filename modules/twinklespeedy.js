@@ -385,7 +385,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 				break;
 		}
 	} else {
-		if (namespace == 2 || namespace == 3) {
+		if (namespace === 2 || namespace === 3) {
 			work_area.append({ type: 'header', label: 'User pages' });
 			work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userList, mode) });
 		}

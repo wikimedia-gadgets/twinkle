@@ -836,7 +836,7 @@ Twinkle.arv.processAN3 = function(params) {
 		if (data.length) {
 			var sha1 = data[0].sha1;
 			for (var i = 1; i < data.length; ++i) {
-				if (data[i].sha1 == sha1) {
+				if (data[i].sha1 === sha1) {
 					orig = data[i];
 					break;
 				}
@@ -857,7 +857,7 @@ Twinkle.arv.processAN3 = function(params) {
 		var parentid, lastid;
 		for (var j = 0; j < params.diffs.length; ++j) {
 			var cur = params.diffs[j];
-			if ((cur.revid && cur.revid != parentid) || lastid === null) {
+			if ((cur.revid && cur.revid !== parentid) || lastid === null) {
 				lastid = cur.revid;
 				grouped_diffs[lastid] = [];
 			}

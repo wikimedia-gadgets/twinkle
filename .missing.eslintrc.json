@@ -3,4 +3,3 @@
 		"block-scoped-var": "error",
 		"curly": "error",
 		"default-case": "error",
-		"eqeqeq": "error",

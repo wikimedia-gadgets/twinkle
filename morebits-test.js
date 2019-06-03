@@ -47,7 +47,7 @@ mw.loader.using('jquery.ui.dialog', function() {
 				page.setMaxRetries(0);
 			}
 			var section = $('#runTestForm input[name="sectionNumber"]').val();
-			if (section != '') {
+			if (section !== '') {
 				page.setPageSection(Number(section));
 			}
 			page.setCreateOption(window.morebits_test_createOption);
@@ -61,7 +61,7 @@ mw.loader.using('jquery.ui.dialog', function() {
 			var params = page.getCallbackParameters();
 			var text = page.getPageText();
 			var pos = text.indexOf(params['beforeText']);
-			if (pos == -1) {
+			if (pos === -1) {
 				alert('Search text "' + params['beforeText'] + '" not found!');
 				return;
 			}
@@ -132,7 +132,7 @@ mw.loader.using('jquery.ui.dialog', function() {
 							page.prepend(Twinkle.morebitsTest.finalSaveCallback);
 						},
 						'Insert': function() {
-							if ($('#beforeText').val() == '') {
+							if ($('#beforeText').val() === '') {
 								alert('Text to insert before must be specified!');
 								return;
 							}
