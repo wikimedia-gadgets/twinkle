@@ -10,6 +10,7 @@
 		"moment": true
 	},
 	"rules": {
-		"no-caller": "error"
+		"no-caller": "error",
+		"switch-colon-spacing": "error"
 	}
 }
