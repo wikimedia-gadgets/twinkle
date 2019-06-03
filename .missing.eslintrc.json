@@ -30,4 +30,3 @@
 		"no-tabs": ["error", { "allowIndentationTabs": true }],
 		"no-trailing-spaces": "error",
 		"no-unneeded-ternary": "error",
-		"no-whitespace-before-property": "error",
