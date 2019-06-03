@@ -11,6 +11,7 @@
 	},
 	"rules": {
 		"no-caller": "error",
+		"func-call-spacing": ["error", "never"],
 		"indent": ["error", "tab", { "outerIIFEBody": 0, "SwitchCase": 1 }],
 		"key-spacing": ["error", {"singleLine": {"beforeColon": false, "afterColon": true}}],
 		"keyword-spacing": ["error", { "after": true , "before": true}],

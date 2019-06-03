@@ -133,7 +133,7 @@ mw.loader.using('jquery.ui.dialog', function() {
 						},
 						'Insert': function() {
 							if ($('#beforeText').val() == '') {
-								alert ('Text to insert before must be specified!');
+								alert('Text to insert before must be specified!');
 								return;
 							}
 							$(this).dialog('close');

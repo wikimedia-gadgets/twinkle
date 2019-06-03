@@ -181,7 +181,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				label: 'Report username violation',
 				name: 'work_area'
 			});
-			work_area.append ({
+			work_area.append({
 				type: 'header',
 				label: 'Type(s) of inappropriate username',
 				tooltip: 'Wikipedia does not allow usernames that are misleading, promotional, offensive or disruptive. Domain names and email addresses are likewise prohibited. These criteria apply to both usernames and signatures. Usernames that are inappropriate in another language, or that represent an inappropriate name with misspellings and substitutions, or do so indirectly or by implication, are still considered inappropriate.'

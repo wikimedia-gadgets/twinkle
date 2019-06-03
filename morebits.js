@@ -4274,7 +4274,7 @@ Morebits.simpleWindow.setButtonsEnabled = function(enabled) {
 
 
 
-} (window, document, jQuery)); // End wrap with anonymous function
+}(window, document, jQuery)); // End wrap with anonymous function
 
 
 /**
