@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 
 
 (function($){
@@ -209,4 +209,4 @@ Twinkle.batchundelete.callbacks = {
 })(jQuery);
 
 
-//</nowiki>
+// </nowiki>

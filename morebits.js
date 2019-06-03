@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 /**
  * morebits.js
  * ===========
@@ -301,7 +301,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			for( i = 0; i < data.list.length; ++i ) {
 
 				current = data.list[i];
-				current.type = 'option'; //must be options here
+				current.type = 'option'; // must be options here
 
 				subnode = this.compute( current );
 				node.appendChild( subnode[0] );
@@ -624,7 +624,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			label = node.appendChild( document.createElement( 'h5' ) );
 			label.appendChild( document.createTextNode( data.label ) );
 			// TODO need to nest a <label> tag in here without creating extra vertical space
-			//label.setAttribute( 'for', id );
+			// label.setAttribute( 'for', id );
 		}
 		subnode = node.appendChild( document.createElement( 'textarea' ) );
 		subnode.setAttribute( 'name', data.name );
@@ -3725,7 +3725,7 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 	function clickHandler(event) {
 		var thisCb = this;
 		if (event.shiftKey && lastCheckbox !== null) {
-			var cbs = $(jQuerySelector, jQueryContext); //can't cache them, obviously, if we want to support resorting
+			var cbs = $(jQuerySelector, jQueryContext); // can't cache them, obviously, if we want to support resorting
 			var index = -1, lastIndex = -1, i;
 			for (i = 0; i < cbs.length; i++) {
 				if (cbs[i] === thisCb) {
@@ -3741,7 +3741,7 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 			}
 
 			if (index > -1 && lastIndex > -1) {
-				//inspired by wikibits
+				// inspired by wikibits
 				var endState = thisCb.checked;
 				var start, finish;
 				if (index < lastIndex) {
@@ -4295,4 +4295,4 @@ if ( typeof arguments === "undefined" ) {  // typeof is here for a reason...
 	window.QueryString = Morebits.queryString;
 }
 
-//</nowiki>
+// </nowiki>

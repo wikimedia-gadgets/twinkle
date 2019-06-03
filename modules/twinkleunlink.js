@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 
 
 (function($){
@@ -311,4 +311,4 @@ Twinkle.unlink.callbacks = {
 })(jQuery);
 
 
-//</nowiki>
+// </nowiki>

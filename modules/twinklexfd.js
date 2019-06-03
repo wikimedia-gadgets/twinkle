@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 
 
 (function($){
@@ -94,7 +94,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 			type: 'option',
 			label: 'MfD (Miscellany for deletion)',
 			selected: [ 0, 6, 10, 14, 828 ].indexOf(namespace) === -1 || Morebits.pageNameNorm.indexOf("Template:User ", 0) === 0,
-				//Other namespaces, and userboxes in template namespace
+				// Other namespaces, and userboxes in template namespace
 			value: 'mfd'
 		} );
 	categories.append( {
@@ -287,7 +287,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				event: function(e) {
 					var target = e.target;
 					// add/remove extra input box
-					if( target.value === 'tfm' && !target.form.xfdtarget ) { //$(target.parentNode).find("input[name='xfdtarget']").length === 0 ) {
+					if( target.value === 'tfm' && !target.form.xfdtarget ) { // $(target.parentNode).find("input[name='xfdtarget']").length === 0 ) {
 						var xfdtarget = new Morebits.quickForm.element( {
 							name: 'xfdtarget',
 							type: 'input',
@@ -297,7 +297,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					} else {
 						$(Morebits.quickForm.getElementContainer(target.form.xfdtarget)).remove();
 						target.form.xfdtarget = null;
-						//$(target.parentNode).find("input[name='xfdtarget']").remove();
+						// $(target.parentNode).find("input[name='xfdtarget']").remove();
 					}
 				}
 			} );
@@ -946,10 +946,10 @@ Twinkle.xfd.callbacks = {
 
 			// Today's list
 			wikipedia_page = new Morebits.wiki.page("Wikipedia:Miscellany for deletion", "Adding discussion to today's list");
-			//wikipedia_page.setPageSection(2);
+			// wikipedia_page.setPageSection(2);
 				// pageSection has been disabled - the API seems to throw up with nonexistent edit conflicts
 				// it can be turned on again once the problem is fixed, to save bandwidth
-			//wikipedia_page.setFollowRedirect(true);
+			// wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(apiobj.params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.mfd.todaysList);
 
@@ -1304,7 +1304,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			//params.target + sectionHash + "}} ~~~~\n" );
+			// params.target + sectionHash + "}} ~~~~\n" );
 			var added_data = Twinkle.xfd.callbacks.getDiscussionWikitext("rfd", params);
 			var text = old_text.replace( /(<!-- Add new entries directly below this line\.? -->)/, "$1\n" + added_data );
 			if( text === old_text ) {
@@ -1581,10 +1581,10 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 		// Adding discussion to list
 		wikipedia_page = new Morebits.wiki.page(logpage, "Adding discussion to today's list");
-		//wikipedia_page.setPageSection(2);
+		// wikipedia_page.setPageSection(2);
 			// pageSection has been disabled - the API seems to throw up with nonexistent edit conflicts
 			// it can be turned on again once the problem is fixed, to save bandwidth
-		//wikipedia_page.setFollowRedirect(true);
+		// wikipedia_page.setFollowRedirect(true);
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.load(Twinkle.xfd.callbacks.cfd.todaysList);
 
@@ -1633,4 +1633,4 @@ Twinkle.xfd.callback.evaluate = function(e) {
 })(jQuery);
 
 
-//</nowiki>
+// </nowiki>

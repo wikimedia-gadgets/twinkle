@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 
 
 (function($){
@@ -185,4 +185,4 @@ callback_deleteRedirects = function( apiobj ) {
 })(jQuery);
 
 
-//</nowiki>
+// </nowiki>

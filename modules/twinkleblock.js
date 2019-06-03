@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 
 
 (function($){
@@ -1249,4 +1249,4 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain( pageobj ) {
 })(jQuery);
 
 
-//</nowiki>
+// </nowiki>

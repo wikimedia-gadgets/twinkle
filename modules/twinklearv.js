@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 
 
 (function($){
@@ -26,7 +26,7 @@ Twinkle.arv = function twinklearv() {
 
 Twinkle.arv.callback = function ( uid ) {
 	var Window = new Morebits.simpleWindow( 600, 500 );
-	Window.setTitle( "Advance Reporting and Vetting" ); //Backronym
+	Window.setTitle( "Advance Reporting and Vetting" ); // Backronym
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( "Guide to AIV", "WP:GAIV" );
 	Window.addFooterLink( "UAA instructions", "WP:UAAI" );
@@ -918,4 +918,4 @@ Twinkle.arv.processAN3 = function( params ) {
 })(jQuery);
 
 
-//</nowiki>
+// </nowiki>

@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 
 
 (function($){
@@ -50,7 +50,7 @@ Twinkle.fluff = {
 		// id in [[MediaWiki:Sp-contributions-footer-anon-range]] and
 		// is used to show rollback/vandalism links for IP ranges
 		if( mw.config.exists('wgRelevantUserName') || !!$('#sp-contributions-footer-anon-range')[0]) {
-			//Get the username these contributions are for
+			// Get the username these contributions are for
 			var username = mw.config.get('wgRelevantUserName');
 			if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
 				( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) ||
@@ -609,4 +609,4 @@ Twinkle.fluff.init = function twinklefluffinit() {
 })(jQuery);
 
 
-//</nowiki>
+// </nowiki>

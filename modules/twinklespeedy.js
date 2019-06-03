@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 
 
 (function($){
@@ -1623,7 +1623,7 @@ Twinkle.speedy.callbacks = {
 						params.templateParams.forEach(function(item, index) {
 							var keys = Object.keys(item);
 							if (keys[0] !== undefined && keys[0].length > 0) {
-								//Second loop required since some items (G12, F9) may have multiple keys
+								// Second loop required since some items (G12, F9) may have multiple keys
 								keys.forEach(function(key, keyIndex) {
 									if (keys[keyIndex] === 'blanked' || keys[keyIndex] === 'ts') {
 										return true; // Not worth logging
@@ -2041,7 +2041,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	if (!values) {
 		return;
 	}
-	//var multiple = form.multiple.checked;
+	// var multiple = form.multiple.checked;
 	var normalizeds = [];
 	$.each(values, function(index, value) {
 		var norm = Twinkle.speedy.normalizeHash[ value ];
@@ -2119,4 +2119,4 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 })(jQuery);
 
 
-//</nowiki>
+// </nowiki>

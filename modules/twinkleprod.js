@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 
 
 (function($){
@@ -110,7 +110,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 
 
 Twinkle.prod.callback.prodtypechanged = function(event) {
-	//prepare frame for prod type dependant controls
+	// prepare frame for prod type dependant controls
 	var field = new Morebits.quickForm.element( {
 			type: 'field',
 			label: 'Parameters',
@@ -158,7 +158,7 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 						}
 					]
 				} );
-			//temp warning, can be removed down the line once BLPPROD is more established. Amalthea, May 2010.
+			// temp warning, can be removed down the line once BLPPROD is more established. Amalthea, May 2010.
 			var boldtext = document.createElement('b');
 			boldtext.appendChild(document.createTextNode('Please note that only unsourced biographies of living persons are eligible for this tag, narrowly construed.'));
 			field.append({
@@ -452,4 +452,4 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 })(jQuery);
 
 
-//</nowiki>
+// </nowiki>

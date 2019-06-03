@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 
 (function($) {
 
@@ -539,7 +539,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 					value: tag,
 					label: "{{" + tag + "}}" + ( description ? (": " + description) : ""),
 					checked: unCheckedTags.indexOf(tag) === -1
-					//, subgroup: { type: 'input', name: 'removeReason', label: 'Reason', tooltip: 'Enter reason for removing this tag' }
+					// , subgroup: { type: 'input', name: 'removeReason', label: 'Reason', tooltip: 'Enter reason for removing this tag' }
 					// TODO: add option for providing reason for removal
 				};
 
@@ -1902,7 +1902,7 @@ Twinkle.tag.callbacks = {
 						currentTag += '|reason=' + params.DoNotMoveToCommons
 						break;
 					case "subst:orfurrev":
-						//remove {{non-free reduce}} and redirects
+						// remove {{non-free reduce}} and redirects
 						text = text.replace(/\{\{\s*(Template\s*:\s*)?(Non-free reduce|FairUseReduce|Fairusereduce|Fair Use Reduce|Fair use reduce|Reduce size|Reduce|Fair-use reduce|Image-toobig|Comic-ovrsize-img|Non-free-reduce|Nfr|Smaller image|Nonfree reduce)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, "");
 						currentTag += "|date={{subst:date}}";
 						break;
@@ -2064,4 +2064,4 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 };
 
 })(jQuery);
-//</nowiki>
+// </nowiki>

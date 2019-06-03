@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 
 
 (function($){ // eslint-disable-line no-unused-vars
@@ -198,4 +198,4 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 })(jQuery);
 
 
-//</nowiki>
+// </nowiki>

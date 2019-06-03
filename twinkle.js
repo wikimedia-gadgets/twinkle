@@ -16,7 +16,7 @@
  * This is AzaToth's Twinkle, the popular script sidekick for newbies, admins, and
  * every Wikipedian in between. Visit [[WP:TW]] for more information.
  */
-//<nowiki>
+// <nowiki>
 
 /* global Morebits */
 
@@ -238,7 +238,7 @@ Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
  */
 Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 {
-	//sanity checks, and get required DOM nodes
+	// sanity checks, and get required DOM nodes
 	var root = document.getElementById( navigation );
 	if ( !root ) {
 		return null;
@@ -257,7 +257,7 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 		nextnode = document.getElementById(nextnodeid);
 	}
 
-	//verify/normalize input
+	// verify/normalize input
 	var skin = mw.config.get("skin");
 	type = ( skin === "vector" && type === "menu" && ( navigation === "left-navigation" || navigation === "right-navigation" )) ? "menu" : "";
 	var outerDivClass;
@@ -401,14 +401,14 @@ $.ajax({
 			var options = JSON.parse( optionsText );
 
 			// Assuming that our options evolve, we will want to transform older versions:
-			//if ( options.optionsVersion === undefined ) {
+			// if ( options.optionsVersion === undefined ) {
 			// ...
 			// options.optionsVersion = 1;
-			//}
-			//if ( options.optionsVersion === 1 ) {
+			// }
+			// if ( options.optionsVersion === 1 ) {
 			// ...
 			// options.optionsVersion = 2;
-			//}
+			// }
 			// At the same time, twinkleconfig.js needs to be adapted to write a higher version number into the options.
 
 			if ( options ) {
@@ -493,4 +493,4 @@ Twinkle.load = function () {
 
 } ( window, document, jQuery )); // End wrap with anonymous function
 
-//</nowiki>
+// </nowiki>

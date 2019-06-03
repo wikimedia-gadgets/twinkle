@@ -1,4 +1,4 @@
-//<nowiki>
+// <nowiki>
 
 
 (function($){
@@ -1441,7 +1441,7 @@ Twinkle.protect.callbacks = {
 			summary = 'Removing protection template' + Twinkle.getPref('summaryAd');
 		} else {
 			if( Morebits.wiki.isPageRedirect() ) {
-				//Only tag if no {{rcat shell}} is found
+				// Only tag if no {{rcat shell}} is found
 				if (!text.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
 					text = text.replace(/#REDIRECT ?(\[\[.*?\]\])(.*)/i, "#REDIRECT $1$2\n\n{{" + tag + "}}");
 				} else {
@@ -1567,4 +1567,4 @@ Twinkle.protect.callbacks = {
 })(jQuery);
 
 
-//</nowiki>
+// </nowiki>
