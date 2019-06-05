@@ -1149,7 +1149,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		} );
 	}
 
-	$('select[name=sub_group]').chosen({search_contains: true});
+	$('select[name=sub_group]').chosen({width: '100%', search_contains: true});
 
 	// Limit the max height of select dropdown to prevent dialog box from becoming scrollable
 	$('.chosen-results').css({'overflow': 'auto', 'max-height': '180px'});
