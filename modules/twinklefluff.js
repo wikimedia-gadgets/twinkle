@@ -85,7 +85,7 @@ Twinkle.fluff = {
 			revVandNode.appendChild(revVandLink);
 
 			apiobj.params.list.each(function(key, current) {
-				var title = apiobj.params.titles[key].replace(/(['"])/g, '\\$1'); // Don't die on pages with ' or " in the title
+				var title = $.escapeSelector(apiobj.params.titles[key]); // Don't die on pages with ' or " in the title
 				var page = $(xmlDoc).find("page[title='" + title + "']");
 				var canEdit = page.find('actions').attr('edit');
 
