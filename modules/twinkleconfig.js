@@ -672,6 +672,14 @@ Twinkle.config.sections = [
 			type: "boolean"
 		},
 
+		// TwinkleConfig.oldSelect (boolean)
+		// if true, use the native select menu rather the jquery chosen-based one
+		{
+			name: "oldSelect",
+			label: "Use the non-searchable classic select menu",
+			type: "boolean"
+		},
+
 		{
 			name: "customWarningList",
 			label: "Custom warning templates to display",
@@ -1697,7 +1705,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	text +=
 		";\n" +
 		"\n" +
-		"// </no" + "wiki>\n" + 
+		"// </no" + "wiki>\n" +
 		"// End of twinkleoptions.js\n";
 
 	pageobj.setPageText(text);

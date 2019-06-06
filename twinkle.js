@@ -103,6 +103,7 @@ Twinkle.defaultConfig.twinkle = {
 	defaultWarningGroup: "1",
 	showSharedIPNotice: true,
 	watchWarnings: true,
+	oldSelect: false,
 	customWarningList: [],
 	autoMenuAfterRollback: false,
 
@@ -294,7 +295,7 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 		root.appendChild( outerDiv );
 	}
 
-	if( outerDivClass === "vectorMenu" ) {	
+	if( outerDivClass === "vectorMenu" ) {
 		// add invisible checkbox to make menu keyboard accessible
 		// similar to the p-cactions ("More") menu
 		var chkbox = document.createElement( "input" );
@@ -304,7 +305,7 @@ Twinkle.addPortlet = function( navigation, id, text, type, nextnodeid )
 		outerDiv.appendChild( chkbox );
 	}
 	var h5 = document.createElement( "h3" );
-	if(outerDivClass === "vectorMenu") { 
+	if(outerDivClass === "vectorMenu") {
 		h5.id = "p-twinkle-label";
 	}
 	if ( type === "menu" ) {
