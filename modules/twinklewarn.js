@@ -1071,7 +1071,9 @@ Twinkle.warn.prev_article = null;
 Twinkle.warn.prev_reason = null;
 
 Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCategory(e) {
-	$("select[name=sub_group]").chosen("destroy");
+	if (!Twinkle.getPref('oldSelect')) {
+		$("select[name=sub_group]").chosen("destroy");
+	}
 
 	var value = e.target.value;
 	var sub_group = e.target.root.sub_group;
@@ -1149,10 +1151,12 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		} );
 	}
 
-	$('select[name=sub_group]').chosen({width: '100%', search_contains: true});
+	if (!Twinkle.getPref('oldSelect')) {
+		$('select[name=sub_group]').chosen({width: '100%', search_contains: true});
 
-	// Limit the max height of select dropdown to prevent dialog box from becoming scrollable
-	$('.chosen-results').css({'overflow': 'auto', 'max-height': '180px'});
+		// Limit the max height of select dropdown to prevent dialog box from becoming scrollable
+		$('.chosen-results').css({'overflow': 'auto', 'max-height': '180px'});
+	}
 
 	// clear overridden label on article textbox
 	Morebits.quickForm.setElementTooltipVisibility(e.target.root.article, true);
