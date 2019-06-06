@@ -1151,20 +1151,22 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		} );
 	}
 
-	if (!Twinkle.getPref('oldSelect')) {
-		$('select[name=sub_group]').chosen({width: '100%', search_contains: true});
-
-		// Limit the max height of select dropdown to prevent dialog box from becoming scrollable
-		$('.chosen-results').css({'overflow': 'auto', 'max-height': '180px'});
-	}
-
 	// clear overridden label on article textbox
 	Morebits.quickForm.setElementTooltipVisibility(e.target.root.article, true);
 	Morebits.quickForm.resetElementLabel(e.target.root.article);
 	// hide the big red notice
 	$("#tw-warn-red-notice").remove();
-	// add custom label.redWarning
+	// Trigger custom label/change on main category change
 	Twinkle.warn.callback.change_subcategory(e);
+
+	// Build select menu with jquery.chosen
+	if (!Twinkle.getPref('oldSelect')) {
+		$('select[name=sub_group]').chosen({width: '100%', search_contains: true}).change(function(e) {
+			Twinkle.warn.callback.change_subcategory(e);
+		});
+		// Limit the max height of select dropdown to prevent dialog box from becoming scrollable
+		$('.chosen-results').css({'overflow': 'auto', 'max-height': '180px'});
+	}
 };
 
 Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSubcategory(e) {
