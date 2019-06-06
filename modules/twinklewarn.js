@@ -1161,11 +1161,15 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 
 	// Build select menu with jquery.chosen
 	if (!Twinkle.getPref('oldSelect')) {
-		$('select[name=sub_group]').chosen({width: '100%', search_contains: true}).change(function(e) {
-			Twinkle.warn.callback.change_subcategory(e);
-		});
+		$('select[name=sub_group]')
+			.chosen({width: '100%', search_contains: true})
+			.change(Twinkle.warn.callback.change_subcategory);
+
 		// Limit the max height of select dropdown to prevent dialog box from becoming scrollable
 		$('.chosen-results').css({'overflow': 'auto', 'max-height': '180px'});
+
+		// Remove padding
+		mw.util.addCSS('.chosen-drop .chosen-results li { padding-top: 0px; padding-bottom: 0px; }');
 	}
 };
 
