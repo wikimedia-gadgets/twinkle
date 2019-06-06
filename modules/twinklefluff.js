@@ -580,7 +580,13 @@ Twinkle.fluff.init = function twinklefluffinit() {
 		];
 
 		if ( Morebits.queryString.exists( 'twinklerevert' ) ) {
-			Twinkle.fluff.auto();
+			// Return if the user can't edit the page in question
+			if (!mw.config.get('wgIsProbablyEditable')) {
+				alert("Unable to edit the page, it's probably protected.");
+				return;
+			} else {
+				Twinkle.fluff.auto();
+			}
 		} else if( mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
 			Twinkle.fluff.contributions();
 		} else if (mw.config.get('wgIsProbablyEditable')) {
