@@ -45,51 +45,27 @@ Twinkle.fluff = {
 		Twinkle.fluff.revert( Morebits.queryString.get( 'twinklerevert' ), vandal, true );
 	},
 
-	contributions: {
-		findPages: function() {
-			// $('sp-contributions-footer-anon-range') relies on the fmbox
-			// id in [[MediaWiki:Sp-contributions-footer-anon-range]] and
-			// is used to show rollback/vandalism links for IP ranges
-			if( mw.config.exists('wgRelevantUserName') || !!$('#sp-contributions-footer-anon-range')[0]) {
-				//Get the username these contributions are for
-				var username = mw.config.get('wgRelevantUserName');
-				if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
-					( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) ||
-					( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
-					var list = $("#mw-content-text").find("ul li:has(span.mw-uctop):has(.mw-changeslist-diff)");
-					var titles = $(list).find(".mw-changeslist-date").map(function(){return $(this).attr("title");}).get();
+	contributions: function() {
+		// $('sp-contributions-footer-anon-range') relies on the fmbox
+		// id in [[MediaWiki:Sp-contributions-footer-anon-range]] and
+		// is used to show rollback/vandalism links for IP ranges
+		if( mw.config.exists('wgRelevantUserName') || !!$('#sp-contributions-footer-anon-range')[0]) {
+			//Get the username these contributions are for
+			var username = mw.config.get('wgRelevantUserName');
+			if( Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
+				( mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1 ) ||
+				( mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1 ) ) {
+				var list = $("#mw-content-text").find("ul li:has(span.mw-uctop):has(.mw-changeslist-diff)");
 
-					var query = {
-						'action': 'query',
-						'prop': 'info',
-						'intestactions': 'edit',
-						'titles': titles.join('|').replace(/ /g,'_')
-					};
+				var revNode = document.createElement('strong');
+				var revLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
+				revNode.appendChild(revLink);
 
-					var wikipedia_api = new Morebits.wiki.api('Checking ability to edit each page', query, Twinkle.fluff.contributions.main);
-					wikipedia_api.params = { list: list, titles: titles };
-					wikipedia_api.post();
-				}
-			}
-		},
+				var revVandNode = document.createElement('strong');
+				var revVandLink = Twinkle.fluff.buildLink('Red', 'vandalism');
+				revVandNode.appendChild(revVandLink);
 
-		main: function(apiobj) {
-			var xmlDoc = apiobj.responseXML;
-
-			var revNode = document.createElement('strong');
-			var revLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
-			revNode.appendChild(revLink);
-
-			var revVandNode = document.createElement('strong');
-			var revVandLink = Twinkle.fluff.buildLink('Red', 'vandalism');
-			revVandNode.appendChild(revVandLink);
-
-			apiobj.params.list.each(function(key, current) {
-				var title = apiobj.params.titles[key].replace(/(['"])/g, '\\$1'); // Don't die on pages with ' or " in the title
-				var page = $(xmlDoc).find("page[title='" + title + "']");
-				var canEdit = page.find('actions').attr('edit');
-
-				if (typeof canEdit !== 'undefined') {
+				list.each(function(key, current) {
 					var href = $(current).find(".mw-changeslist-diff").attr("href");
 					current.appendChild( document.createTextNode(' ') );
 					var tmpNode = revNode.cloneNode( true );
@@ -99,8 +75,8 @@ Twinkle.fluff = {
 					tmpNode = revVandNode.cloneNode( true );
 					tmpNode.firstChild.setAttribute( 'href', href + '&' + Morebits.queryString.create( { 'twinklerevert': 'vand' } ) );
 					current.appendChild( tmpNode );
-				}
-			});
+				});
+			}
 		}
 	},
 
@@ -606,10 +582,10 @@ Twinkle.fluff.init = function twinklefluffinit() {
 		if ( Morebits.queryString.exists( 'twinklerevert' ) ) {
 			Twinkle.fluff.auto();
 		} else if( mw.config.get('wgCanonicalSpecialPageName') === "Contributions" ) {
-			Twinkle.fluff.contributions.findPages();
+			Twinkle.fluff.contributions();
 		} else if (mw.config.get('wgIsProbablyEditable')) {
 			// Only proceed if the user can actually edit the page
-			// in question (handled individually on contributions.
+			// in question (ignored for contributions, see #632).
 			// wgIsProbablyEditable should take care of
 			// namespace/contentModel restrictions as well as
 			// explicit protections; it won't take care of
