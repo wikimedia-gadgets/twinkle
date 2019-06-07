@@ -1167,9 +1167,13 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 
 		mw.util.addCSS(
 			// Force chosen select menu to display over the dialog while overflowing
-			// https://github.com/harvesthq/chosen/issues/1390#issuecomment-21397245
+			// based on https://github.com/harvesthq/chosen/issues/1390#issuecomment-21397245
 			'.ui-dialog.morebits-dialog .morebits-dialog-content { overflow:visible !important;}' +
 			'.ui-dialog.morebits-dialog { overflow: inherit !important; }' +
+
+			// Increase height to match that of native select
+			'.morebits-dialog .chosen-drop .chosen-results { max-height: 300px; }' +
+			'.morebits-dialog .chosen-drop { height: 338px; }' +
 
 			// Remove padding
 			'.morebits-dialog .chosen-drop .chosen-results li { padding-top: 0px; padding-bottom: 0px; }'
