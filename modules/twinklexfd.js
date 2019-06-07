@@ -258,6 +258,16 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			.attr('data-placeholder', 'Select delsort pages')
 			.chosen({width: "100%"});
 
+		mw.util.addCSS(
+			// Force chosen select menu to display over the dialog while overflowing
+			// based on https://github.com/harvesthq/chosen/issues/1390#issuecomment-21397245
+			'.ui-dialog.morebits-dialog .morebits-dialog-content { overflow:visible !important;}' +
+			'.ui-dialog.morebits-dialog { overflow: inherit !important; }' +
+
+			// Reduce padding
+			'.morebits-dialog .chosen-drop .chosen-results li { padding-top: 2px; padding-bottom: 2px; }'
+		);
+
 		break;
 	case 'tfd':
 		work_area = new Morebits.quickForm.element( {
@@ -318,7 +328,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 							name: 'noinclude',
 							tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t get substituted along with the template.',
 							disabled: templateOrModule === 'module',
-							checked: !!$('.box-Subst_only').length // Default to checked if page carries {{subst only}} 
+							checked: !!$('.box-Subst_only').length // Default to checked if page carries {{subst only}}
 						}
 					]
 			} );

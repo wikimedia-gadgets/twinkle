@@ -1165,11 +1165,15 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			.chosen({width: '100%', search_contains: true})
 			.change(Twinkle.warn.callback.change_subcategory);
 
-		// Limit the max height of select dropdown to prevent dialog box from becoming scrollable
-		$('.chosen-results').css({'overflow': 'auto', 'max-height': '180px'});
+		mw.util.addCSS(
+			// Force chosen select menu to display over the dialog while overflowing
+			// https://github.com/harvesthq/chosen/issues/1390#issuecomment-21397245
+			'.ui-dialog.morebits-dialog .morebits-dialog-content { overflow:visible !important;}' +
+			'.ui-dialog.morebits-dialog { overflow: inherit !important; }' +
 
-		// Remove padding
-		mw.util.addCSS('.chosen-drop .chosen-results li { padding-top: 0px; padding-bottom: 0px; }');
+			// Remove padding
+			'.morebits-dialog .chosen-drop .chosen-results li { padding-top: 0px; padding-bottom: 0px; }'
+		);
 	}
 };
 
