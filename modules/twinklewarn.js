@@ -1163,15 +1163,18 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	if (!Twinkle.getPref('oldSelect')) {
 		$('select[name=sub_group]')
 			.chosen({width: '100%', search_contains: true})
-			.change(Twinkle.warn.callback.change_subcategory);
+			.change(Twinkle.warn.callback.change_subcategory)
+			.on('chosen:showing_dropdown', function () {
+				$(this).parents('div').css('overflow', 'visible');
+				$('#twinklewarn-previewbox').css({ 'max-height': '100px', 'overflow': 'hidden' });
+			})
+			.on('chosen:hiding_dropdown', function () {
+				$(this).parents('div').css('overflow', '');
+				$('#twinklewarn-previewbox').css({ 'max-height': '', 'overflow': '' });
+			});
 
 		mw.util.addCSS(
-			// Force chosen select menu to display over the dialog while overflowing
-			// based on https://github.com/harvesthq/chosen/issues/1390#issuecomment-21397245
-			'.ui-dialog.morebits-dialog .morebits-dialog-content { overflow:visible !important;}' +
-			'.ui-dialog.morebits-dialog { overflow: inherit !important; }' +
-
-			// Increase height to match that of native select
+			// Increase height
 			'.morebits-dialog .chosen-drop .chosen-results { max-height: 300px; }' +
 			'.morebits-dialog .chosen-drop { height: 338px; }' +
 

@@ -256,15 +256,18 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 		$(work_area).find('[name=delsort]')
 			.attr('data-placeholder', 'Select delsort pages')
-			.chosen({width: "100%"});
+			.chosen({width: "100%"})
+			.on('chosen:showing_dropdown', function () {
+				$(this).parents('div').css('overflow', 'visible');
+				$('#twinklexfd-previewbox').css({ 'max-height': '100px', 'overflow': 'hidden' });
+			})
+			.on('chosen:hiding_dropdown', function () {
+				$(this).parents('div').css('overflow', '');
+				$('#twinklexfd-previewbox').css({ 'max-height': '', 'overflow': '' });
+			});
 
+		// Reduce padding
 		mw.util.addCSS(
-			// Force chosen select menu to display over the dialog while overflowing
-			// based on https://github.com/harvesthq/chosen/issues/1390#issuecomment-21397245
-			'.ui-dialog.morebits-dialog .morebits-dialog-content { overflow:visible !important;}' +
-			'.ui-dialog.morebits-dialog { overflow: inherit !important; }' +
-
-			// Reduce padding
 			'.morebits-dialog .chosen-drop .chosen-results li { padding-top: 2px; padding-bottom: 2px; }'
 		);
 
