@@ -207,6 +207,13 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	if (Twinkle.tag.mode === "article") {
 
+		result.quickfilter.autocomplete = 'off'; // disable browser suggestions for this field
+		result.quickfilter.addEventListener('keypress', function(e) {
+			if (e.keyCode === 13) { // prevent enter key from submitting
+				e.preventDefault();
+				return false;
+			}
+		});
 		result.quickfilter.focus();  // place cursor in the Quick filter field as soon as window is opened
 
 		Twinkle.tag.alreadyPresentTags = [];
