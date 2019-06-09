@@ -44,8 +44,6 @@ Twinkle.warn = function twinklewarn() {
 		// warning, but don't autowarn
 		var warnFromTalk = function(talkLink) {
 			if (talkLink.length) {
-				talkLink.css('font-weight', 'bold');
-
 				var extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&' + 'noautowarn=true';
 				var href = talkLink.attr('href');
 				if (href.indexOf('?') === -1) {
