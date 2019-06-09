@@ -532,8 +532,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 			if ( form.page.value !== '' ) {
 
-				// add a leading : on linked page namespace to prevent transclusion
-				reason = 'On [[' + form.page.value.replace( /^(Image|Category|File):/i, ':$1:' ) + ']]';
+				// Allows linking to redirects, file and category links work as links by default
+				reason = 'On {{-r|' + form.page.value + '}}';
 
 				if ( form.badid.value !== '' ) {
 					reason += ' ({{diff|' + form.page.value + '|' + form.badid.value + '|' + form.goodid.value + '|diff}})';
