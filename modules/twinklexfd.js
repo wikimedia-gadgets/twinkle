@@ -258,15 +258,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				.attr('data-placeholder', 'Select delsort pages')
 				.chosen({width: '100%'});
 
-			mw.util.addCSS(
-			// Force chosen select menu to display over the dialog while overflowing
-			// based on https://github.com/harvesthq/chosen/issues/1390#issuecomment-21397245
-				'.ui-dialog.morebits-dialog .morebits-dialog-content { overflow:visible !important;}' +
-			'.ui-dialog.morebits-dialog { overflow: inherit !important; }' +
-
 			// Reduce padding
-			'.morebits-dialog .chosen-drop .chosen-results li { padding-top: 2px; padding-bottom: 2px; }'
-			);
+			mw.util.addCSS('.morebits-dialog .chosen-drop .chosen-results li { padding-top: 2px; padding-bottom: 2px; }');
 
 			break;
 		case 'tfd':
