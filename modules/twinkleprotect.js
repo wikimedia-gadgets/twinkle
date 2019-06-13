@@ -9,14 +9,14 @@
  *** twinkleprotect.js: Protect/RPP module
  ****************************************
  * Mode of invocation:     Tab ("PP"/"RPP")
- * Active on:              Non-special pages
+ * Active on:              Non-special, non-MediaWiki pages
  * Config directives in:   TwinkleConfig
  */
 
 // Note: a lot of code in this module is re-used/called by batchprotect.
 
 Twinkle.protect = function twinkleprotect() {
-	if (mw.config.get('wgNamespaceNumber') < 0) {
+	if (mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgNamespaceNumber') === 8) {
 		return;
 	}
 
