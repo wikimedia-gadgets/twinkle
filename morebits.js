@@ -622,9 +622,10 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node.setAttribute('id', 'div_' + id);
 			if (data.label) {
 				label = node.appendChild(document.createElement('h5'));
-				label.appendChild(document.createTextNode(data.label));
-			// TODO need to nest a <label> tag in here without creating extra vertical space
-			// label.setAttribute( 'for', id );
+				var labelElement = document.createElement('label');
+				labelElement.textContent = data.label;
+				labelElement.setAttribute('for', data.id || id);
+				label.appendChild(labelElement);
 			}
 			subnode = node.appendChild(document.createElement('textarea'));
 			subnode.setAttribute('name', data.name);
@@ -643,6 +644,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			if (data.value) {
 				subnode.value = data.value;
 			}
+			childContainder = subnode;
 			break;
 		default:
 			throw new Error('Morebits.quickForm: unknown element type ' + data.type.toString());
