@@ -9,7 +9,7 @@
  *** twinkleprotect.js: Protect/RPP module
  ****************************************
  * Mode of invocation:     Tab ("PP"/"RPP")
- * Active on:              Non-special pages
+ * Active on:              Non-special, non-MediaWiki pages
  * Config directives in:   TwinkleConfig
  */
 
