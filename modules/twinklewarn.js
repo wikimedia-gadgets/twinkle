@@ -98,6 +98,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	if (Twinkle.getPref('customWarningList').length) {
 		main_group.append({ type: 'option', label: 'Custom warnings', value: 'custom', selected: defaultGroup === 9 });
 	}
+	main_group.append({ type: 'option', label: 'All warning templates', value: 'kitchensink', selected: defaultGroup === 10 });
 
 	main_select.append({ type: 'select', name: 'sub_group', event: Twinkle.warn.callback.change_subcategory }); // Will be empty to begin with.
 
@@ -1090,19 +1091,25 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	var old_subvalue = sub_group.value;
 	var old_subvalue_re;
 	if (old_subvalue) {
-		old_subvalue = old_subvalue.replace(/\d*(im)?$/, '');
-		old_subvalue_re = new RegExp(mw.util.escapeRegExp(old_subvalue) + '(\\d*(?:im)?)$');
+		if (value === 'kitchensink') { // Exact match possible in kitchensink menu
+			old_subvalue_re = new RegExp(mw.util.escapeRegExp(old_subvalue));
+		} else {
+			old_subvalue = old_subvalue.replace(/\d*(im)?$/, '');
+			old_subvalue_re = new RegExp(mw.util.escapeRegExp(old_subvalue) + '(\\d*(?:im)?)$');
+		}
 	}
 
 	while (sub_group.hasChildNodes()) {
 		sub_group.removeChild(sub_group.firstChild);
 	}
 
+	var selected = false;
 	// worker function to create the combo box entries
-	var createEntries = function(contents, container, wrapInOptgroup) {
+	var createEntries = function(contents, container, wrapInOptgroup, val) {
+		val = typeof val !== 'undefined' ? val : value; // IE doesn't support default parameters
 		// level2->2, singlewarn->''; also used to distinguish the
 		// scaled levels from singlenotice, singlewarn, and custom
-		var level = value.replace(/^\D+/g, '');
+		var level = val.replace(/^\D+/g, '');
 		// due to an apparent iOS bug, we have to add an option-group to prevent truncation of text
 		// (search WT:TW archives for "Problem selecting warnings on an iPhone")
 		if (wrapInOptgroup && $.client.profile().platform === 'iphone') {
@@ -1117,54 +1124,74 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 
 		$.each(contents, function(itemKey, itemProperties) {
 			// Skip if the current template doesn't have a version for the current level
-			if (!!level && !itemProperties[value]) {
+			if (!!level && !itemProperties[val]) {
 				return;
 			}
 			var key = typeof itemKey === 'string' ? itemKey : itemProperties.value;
+			var template = key + level;
 
-			var selected = false;
-			if (old_subvalue && old_subvalue_re.test(key)) {
-				selected = true;
-			}
-
-			// Slice out leading uw- from the menu display
 			var elem = new Morebits.quickForm.element({
 				type: 'option',
-				label: '{{' + key + level + '}}: ' + (level ? itemProperties[value].label : itemProperties.label),
-				value: key + level,
-				selected: selected
+				label: '{{' + template + '}}: ' + (level ? itemProperties[val].label : itemProperties.label),
+				value: template
 			});
+
+			// Select item best corresponding to previous selection
+			if (!selected && old_subvalue && old_subvalue_re.test(template)) {
+				elem.data.selected = selected = true;
+			}
 			var elemRendered = container.appendChild(elem.render());
 			$(elemRendered).data('messageData', itemProperties);
 		});
 	};
 
-	if (value === 'singlenotice' || value === 'singlewarn') {
-		// no categories, just create the options right away
-		createEntries(Twinkle.warn.messages[value], sub_group, true);
-	} else if (value === 'singlecombined') {
-		var unSortedSinglets = $.extend({}, Twinkle.warn.messages.singlenotice, Twinkle.warn.messages.singlewarn);
-		var sortedSingletMessages = {};
-		Object.keys(unSortedSinglets).sort().forEach(function(key) {
-			sortedSingletMessages[key] = unSortedSinglets[key];
-		});
-		createEntries(sortedSingletMessages, sub_group, true);
-	} else if (value === 'custom') {
-		createEntries(Twinkle.getPref('customWarningList'), sub_group, true);
-	} else {
-		// create the option-groups
-		$.each(Twinkle.warn.messages.levels, function(groupLabel, groupContents) {
+	switch (value) {
+		case 'singlenotice':
+		case 'singlewarn':
+			createEntries(Twinkle.warn.messages[value], sub_group, true);
+			break;
+		case 'singlecombined':
+			var unSortedSinglets = $.extend({}, Twinkle.warn.messages.singlenotice, Twinkle.warn.messages.singlewarn);
+			var sortedSingletMessages = {};
+			Object.keys(unSortedSinglets).sort().forEach(function(key) {
+				sortedSingletMessages[key] = unSortedSinglets[key];
+			});
+			createEntries(sortedSingletMessages, sub_group, true);
+			break;
+		case 'custom':
+			createEntries(Twinkle.getPref('customWarningList'), sub_group, true);
+			break;
+		case 'kitchensink':
+			['level1', 'level2', 'level3', 'level4', 'level4im'].forEach(function(lvl) {
+				Object.values(Twinkle.warn.messages.levels).forEach(function(levelGroup) {
+					createEntries(levelGroup, sub_group, true, lvl);
+				});
+			});
+			createEntries(Twinkle.warn.messages.singlenotice, sub_group, true);
+			createEntries(Twinkle.warn.messages.singlewarn, sub_group, true);
+			createEntries(Twinkle.getPref('customWarningList'), sub_group, true);
+			break;
+		case 'level1':
+		case 'level2':
+		case 'level3':
+		case 'level4':
+		case 'level4im':
 			// Creates subgroup regardless of whether there is anything to place in it;
 			// leaves "Removal of deletion tags" empty for 4im
-			var optgroup = new Morebits.quickForm.element({
-				type: 'optgroup',
-				label: groupLabel
+			$.each(Twinkle.warn.messages.levels, function(groupLabel, groupContents) {
+				var optgroup = new Morebits.quickForm.element({
+					type: 'optgroup',
+					label: groupLabel
+				});
+				optgroup = optgroup.render();
+				sub_group.appendChild(optgroup);
+				// create the options
+				createEntries(groupContents, optgroup, false);
 			});
-			optgroup = optgroup.render();
-			sub_group.appendChild(optgroup);
-			// create the options
-			createEntries(groupContents, optgroup, false);
-		});
+			break;
+		default:
+			alert('Unknown warning group in twinklewarn');
+			break;
 	}
 
 	// clear overridden label on article textbox
@@ -1217,7 +1244,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		'uw-aiv': 'Optional username that was reported (without User:) '
 	};
 
-	if (['singlenotice', 'singlewarn', 'singlecombined'].indexOf(main_group) !== -1) {
+	if (['singlenotice', 'singlewarn', 'singlecombined', 'kitchensink'].indexOf(main_group) !== -1) {
 		if (notLinkedArticle[value]) {
 			if (Twinkle.warn.prev_article === null) {
 				Twinkle.warn.prev_article = e.target.form.article.value;
