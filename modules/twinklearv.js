@@ -533,7 +533,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if ( form.page.value !== '' ) {
 
 				// Allows linking to redirects, file and category links work as links by default
-				reason = 'On {{no redirect|' + form.page.value + '}}';
+				reason = 'On {{:no redirect|' + form.page.value + '}}';
 
 				if ( form.badid.value !== '' ) {
 					reason += ' ({{diff|' + form.page.value + '|' + form.badid.value + '|' + form.goodid.value + '|diff}})';
