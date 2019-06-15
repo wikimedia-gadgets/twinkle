@@ -283,9 +283,9 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		query = {
 			'action': 'query',
 			'generator': 'allpages',
-			'gapnamespace': Morebits.queryString.exists('namespace') ? Morebits.queryString.get('namespace') : document.getElementById('namespace').value,
+			'gapnamespace': Morebits.queryString.exists('namespace') ? Morebits.queryString.get('namespace') : $('select[name=namespace]').val(),
 			'gapprefix': Morebits.queryString.exists('from') ? Morebits.string.toUpperCaseFirstChar(Morebits.queryString.get('from').replace('+', ' ')) :
-				Morebits.string.toUpperCaseFirstChar(document.getElementById('nsfrom').value),
+				Morebits.string.toUpperCaseFirstChar($('input[name=prefix]').val()),
 			'gaplimit': Twinkle.getPref('batchMax'), // the max for sysops
 			'prop': 'revisions',
 			'rvprop': 'size'
