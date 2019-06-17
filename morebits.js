@@ -3390,7 +3390,7 @@ Morebits.queryString = function QueryString(qString) {
 		return;
 	}
 
-	qString.replace(/\+/, ' ');
+	qString = qString.replace(/\+/g, ' ');
 	var args = qString.split('&');
 
 	for (var i = 0; i < args.length; ++i) {
