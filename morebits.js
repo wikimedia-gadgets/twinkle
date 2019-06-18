@@ -2882,7 +2882,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 			if ($(xml).find('page').attr('missing') !== '') {
 				ctx.statusElement.error('Cannot undelete the page, because it already exists');
-				ctx.onUndeleteFailure(this);
+				ctx.onUndeleteFailure.call(this, ctx.undeleteApi);
 				return;
 			}
 
@@ -2893,7 +2893,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + editprot.attr('expiry') + ')') +
 				'.  \n\nClick OK to proceed with the undeletion, or Cancel to skip this undeletion.')) {
 				ctx.statusElement.error('Undeletion of fully create protected page was aborted.');
-				ctx.onUndeleteFailure(this);
+				ctx.onUndeleteFailure.call(this, ctx.undeleteApi);
 				return;
 			}
 
@@ -2931,20 +2931,15 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			// this is pathetic, but given the current state of Morebits.wiki.page it would
 			// be a dog's breakfast to try and fix this
 			ctx.statusElement.error('Invalid token. Please refresh the page and try again.');
-			if (ctx.onUndeleteFailure) {
-				ctx.onUndeleteFailure.call(this, this, ctx.undeleteProcessApi);
-			}
+			ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);
+
 		} else if (errorCode === 'cantundelete') {
 			ctx.statusElement.error('Cannot undelete the page, either because there are no revisions to undelete or because it has already been undeleted');
-			if (ctx.onUndeleteFailure) {
-				ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
-			}
+			ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
 		// hard error, give up
 		} else {
 			ctx.statusElement.error('Failed to undelete the page: ' + ctx.undeleteProcessApi.getErrorText());
-			if (ctx.onUndeleteFailure) {
-				ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
-			}
+			ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
 		}
 	};
 
