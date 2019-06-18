@@ -1276,16 +1276,17 @@ Twinkle.warn.callbacks = {
 	},
 	main: function(pageobj) {
 		var text = pageobj.getPageText();
+		var statelem = pageobj.getStatusElement();
 		var params = pageobj.getCallbackParameters();
 		var messageData = params.messageData;
 
-		var history_re = /<!-- Template:(uw-.*?) -->.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4}) \(UTC\)/g;
+		var history_re = /<!-- Template:(uw-.*?) -->.*?(\d{1,2}:\d{1,2}),( \d{1,2} \w+ \d{4}) \(UTC\)/g;
 		var history = {};
 		var latest = { date: new Date(0), type: '' };
 		var current;
 
 		while ((current = history_re.exec(text)) !== null) {
-			var current_date = new Date(current[2] + ' UTC');
+			var current_date = new Date(current[2] + current[3] + ' UTC');
 			if (!(current[1] in history) || history[current[1]] < current_date) {
 				history[current[1]] = current_date;
 			}
@@ -1303,7 +1304,7 @@ Twinkle.warn.callbacks = {
 
 			if (temp_time > date) {
 				if (!confirm('An identical ' + params.sub_group + ' has been issued in the last 24 hours.  \nWould you still like to add this warning/notice?')) {
-					pageobj.statelem.info('aborted per user request');
+					statelem.error('aborted per user request');
 					return;
 				}
 			}
@@ -1313,7 +1314,7 @@ Twinkle.warn.callbacks = {
 
 		if (latest.date > date) {
 			if (!confirm('A ' + latest.type + ' has been issued in the last minute.  \nWould you still like to add this warning/notice?')) {
-				pageobj.statelem.info('aborted per user request');
+				statelem.error('aborted per user request');
 				return;
 			}
 		}
