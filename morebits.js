@@ -2739,7 +2739,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		if ($(xml).find('page').attr('missing') === '') {
 			ctx.statusElement.error('Cannot move the page, because it no longer exists');
-			ctx.onMoveFailure(this);
+			ctx.onMoveFailure.call(this, ctx.moveApi);
 			return;
 		}
 
@@ -2751,7 +2751,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + editprot.attr('expiry') + ')') +
 				'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
 				ctx.statusElement.error('Move of fully protected page was aborted.');
-				ctx.onMoveFailure(this);
+				ctx.onMoveFailure.call(this, ctx.moveApi);
 				return;
 			}
 		}
@@ -2759,7 +2759,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var moveToken = $(xml).find('page').attr('movetoken');
 		if (!moveToken) {
 			ctx.statusElement.error('Failed to retrieve move token.');
-			ctx.onMoveFailure(this);
+			ctx.onMoveFailure.call(this, ctx.moveApi);
 			return;
 		}
 
@@ -2774,7 +2774,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.movetalk = 'true';
 		}
 		if (ctx.moveSubpages) {
-			query.movesubpages = 'true';  // XXX don't know whether this works for non-admins
+			query.movesubpages = 'true';  
 		}
 		if (ctx.moveSuppressRedirect) {
 			query.noredirect = 'true';
