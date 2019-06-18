@@ -2799,7 +2799,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 			if ($(xml).find('page').attr('missing') === '') {
 				ctx.statusElement.error('Cannot delete the page, because it no longer exists');
-				ctx.onDeleteFailure(this);
+				ctx.onDeleteFailure.call(this, ctx.deleteApi);
 				return;
 			}
 
@@ -2810,14 +2810,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + editprot.attr('expiry') + ')') +
 				'.  \n\nClick OK to proceed with the deletion, or Cancel to skip this deletion.')) {
 				ctx.statusElement.error('Deletion of fully protected page was aborted.');
-				ctx.onDeleteFailure(this);
+				ctx.onDeleteFailure.call(this, ctx.deleteApi);
 				return;
 			}
 
 			token = $(xml).find('page').attr('deletetoken');
 			if (!token) {
 				ctx.statusElement.error('Failed to retrieve delete token.');
-				ctx.onDeleteFailure(this);
+				ctx.onDeleteFailure.call(this, ctx.deleteApi);
 				return;
 			}
 
@@ -2853,20 +2853,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			// this is pathetic, but given the current state of Morebits.wiki.page it would
 			// be a dog's breakfast to try and fix this
 			ctx.statusElement.error('Invalid token. Please refresh the page and try again.');
-			if (ctx.onDeleteFailure) {
-				ctx.onDeleteFailure.call(this, this, ctx.deleteProcessApi);
-			}
+			ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);
 		} else if (errorCode === 'missingtitle') {
 			ctx.statusElement.error('Cannot delete the page, because it no longer exists');
-			if (ctx.onDeleteFailure) {
-				ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
-			}
+			ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
 		// hard error, give up
 		} else {
 			ctx.statusElement.error('Failed to delete the page: ' + ctx.deleteProcessApi.getErrorText());
-			if (ctx.onDeleteFailure) {
-				ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
-			}
+			ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
 		}
 	};
 
