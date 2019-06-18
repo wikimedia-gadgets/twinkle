@@ -2774,7 +2774,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.movetalk = 'true';
 		}
 		if (ctx.moveSubpages) {
-			query.movesubpages = 'true';  
+			query.movesubpages = 'true';
 		}
 		if (ctx.moveSuppressRedirect) {
 			query.noredirect = 'true';
@@ -2954,12 +2954,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var missing = $(xml).find('page').attr('missing') === '';
 		if ((ctx.protectEdit || ctx.protectMove) && missing) {
 			ctx.statusElement.error('Cannot protect the page, because it no longer exists');
-			ctx.onProtectFailure(this);
+			ctx.onProtectFailure.call(this, ctx.protectApi);
 			return;
 		}
 		if (ctx.protectCreate && !missing) {
 			ctx.statusElement.error('Cannot create protect the page, because it already exists');
-			ctx.onProtectFailure(this);
+			ctx.onProtectFailure.call(this, ctx.protectApi);
 			return;
 		}
 
@@ -2968,7 +2968,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var protectToken = $(xml).find('page').attr('protecttoken');
 		if (!protectToken) {
 			ctx.statusElement.error('Failed to retrieve protect token.');
-			ctx.onProtectFailure(this);
+			ctx.onProtectFailure.call(this, ctx.protectApi);
 			return;
 		}
 
