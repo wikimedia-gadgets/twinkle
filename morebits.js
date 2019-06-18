@@ -2650,7 +2650,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		// force error to stay on the screen
 		++Morebits.wiki.numberOfActionsLeft;
 
-		ctx.onSaveFailure(this);
+		ctx.onSaveFailure.call(this, ctx.saveApi);
 	};
 
 	// callback from saveApi.post()
@@ -2709,9 +2709,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				ctx.statusElement.error('Failed to save edit: ' + ctx.saveApi.getErrorText());
 			}
 			ctx.editMode = 'all';  // cancel append/prepend/revert modes
-			if (ctx.onSaveFailure) {
-				ctx.onSaveFailure(this);  // invoke callback
-			}
+			ctx.onSaveFailure.call(this, ctx.saveApi);  // invoke callback
 		}
 	};
 
