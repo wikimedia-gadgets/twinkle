@@ -2313,7 +2313,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		if (fnCanUseMwUserToken('delete')) {
-			fnProcessDelete.call(this, this);
+			fnProcessDelete.call(this);
 		} else {
 			var query = {
 				action: 'query',
@@ -2354,7 +2354,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		if (fnCanUseMwUserToken('undelete')) {
-			fnProcessUndelete.call(this, this);
+			fnProcessUndelete.call(this);
 		} else {
 			var query = {
 				action: 'query',
@@ -3901,11 +3901,11 @@ Morebits.batchOperation = function(currentAction) {
 		}
 
 		ctx.countFinishedSuccess++;
-		fnDoneOne(apiobj);
+		fnDoneOne();
 	};
 
-	this.workerFailure = function(apiobj) {
-		fnDoneOne(apiobj);
+	this.workerFailure = function() {
+		fnDoneOne();
 	};
 
 	// private functions
