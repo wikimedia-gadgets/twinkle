@@ -2600,6 +2600,24 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		return true; // all OK
 	};
 
+	// helper function to get a new token on encountering token errors
+	// in save, deletePage, and undeletePage
+	// Being a synchronous ajax call, this blocks the event loop,
+	// and hence should be used sparingly.
+	var fnGetToken = function() {
+		var token;
+		var tokenApi = new Morebits.wiki.api('Getting token', {
+			action: 'query',
+			meta: 'tokens'
+		}, function(apiobj) {
+			token = $(apiobj.responseXML).find('tokens').attr('csrftoken');
+		}, null, function() {
+			this.getStatusElement().error('Failed to get token');
+		});
+		tokenApi.post({async: false});
+		return token;
+	};
+
 	// callback from saveApi.post()
 	var fnSaveSuccess = function() {
 		ctx.editMode = 'all';  // cancel append/prepend/revert modes
