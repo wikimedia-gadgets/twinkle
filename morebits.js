@@ -2869,13 +2869,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.statusElement.info('Database query error, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.deleteProcessApi.post(); // give it another go!
-		} else if (errorCode === 'badtoken') {
-			// this is pathetic, but given the current state of Morebits.wiki.page it would
-			// be a dog's breakfast to try and fix this
-			ctx.statusElement.error('Invalid token. Please refresh the page and try again.');
-			if (ctx.onDeleteFailure) {
-				ctx.onDeleteFailure.call(this, this, ctx.deleteProcessApi);
-			}
+		} else if ((errorCode === 'badtoken' || errorCode === 'notoken') && ctx.retries++ < ctx.maxRetries) {
+			ctx.statusElement.info('Invalid token, retrying');
+			--Morebits.wiki.numberOfActionsLeft;
+			ctx.deleteProcessApi.query.token = fnGetToken.call(this);
+			ctx.deleteProcessApi.post();
 		} else if (errorCode === 'missingtitle') {
 			ctx.statusElement.error('Cannot delete the page, because it no longer exists');
 			if (ctx.onDeleteFailure) {
@@ -2953,13 +2951,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.statusElement.info('Database query error, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.undeleteProcessApi.post(); // give it another go!
-		} else if (errorCode === 'badtoken') {
-			// this is pathetic, but given the current state of Morebits.wiki.page it would
-			// be a dog's breakfast to try and fix this
-			ctx.statusElement.error('Invalid token. Please refresh the page and try again.');
-			if (ctx.onUndeleteFailure) {
-				ctx.onUndeleteFailure.call(this, this, ctx.undeleteProcessApi);
-			}
+		} else if ((errorCode === 'badtoken' || errorCode === 'notoken') && ctx.retries++ < ctx.maxRetries) {
+			ctx.statusElement.info('Invalid token, retrying');
+			--Morebits.wiki.numberOfActionsLeft;
+			ctx.undeleteProcessApi.query.token = fnGetToken.call(this);
+			ctx.undeleteProcessApi.post();
+
 		} else if (errorCode === 'cantundelete') {
 			ctx.statusElement.error('Cannot undelete the page, either because there are no revisions to undelete or because it has already been undeleted');
 			if (ctx.onUndeleteFailure) {
