@@ -2698,16 +2698,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			}
 
 		// check for loss of edit token
-		// it's impractical to request a new token here, so invoke edit conflict logic when this happens
-		} else if (errorCode === 'notoken' && ctx.conflictRetries++ < ctx.maxConflictRetries) {
+		} else if ((errorCode === 'badtoken' || errorCode === 'notoken') && ctx.retries++ < ctx.maxRetries) {
 
 			ctx.statusElement.info('Edit token is invalid, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
-			if (fnCanUseMwUserToken('edit')) {
-				this.load(fnAutoSave, ctx.onSaveFailure); // try the append or prepend again
-			} else {
-				ctx.loadApi.post(); // reload the page and reapply the edit
-			}
+			ctx.saveApi.query.token = fnGetToken.call(this);
+			ctx.saveApi.post();
 
 		// check for network or server error
 		} else if (errorCode === 'undefined' && ctx.retries++ < ctx.maxRetries) {
