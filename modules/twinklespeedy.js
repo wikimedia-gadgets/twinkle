@@ -769,7 +769,7 @@ Twinkle.speedy.categoryList = [
 		tooltip: 'This is for situations where a category is effectively empty, because the template(s) that formerly placed pages in that category are now deleted. This excludes categories that are still in use.'
 	},
 	{
-		label: 'G8: Redirects to invalid targets, such as nonexistent targets, redirect loops, and bad titles',
+		label: 'G8: Redirects to non-existent targets',
 		value: 'redirnone',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		hideWhenMultiple: true
@@ -987,7 +987,7 @@ Twinkle.speedy.generalList = [
 	{
 		label: 'G8: Pages dependent on a non-existent or deleted page',
 		value: 'g8',
-		tooltip: 'such as talk pages with no corresponding subject page; subpages with no parent page; file pages without a corresponding file; redirects to invalid targets, such as nonexistent targets, redirect loops, and bad titles; or categories populated by deleted or retargeted templates. This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
+		tooltip: 'such as talk pages with no corresponding subject page; subpages with no parent page; file pages without a corresponding file; redirects to non-existent targets; or categories populated by deleted or retargeted templates. This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		subgroup: {
 			name: 'g8_rationale',
 			type: 'input',
@@ -1056,7 +1056,7 @@ Twinkle.speedy.generalList = [
 	{
 		label: 'G14: Unnecessary disambiguation page',
 		value: 'disambig',
-		tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate only one existing Wikipedia page and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguate no (zero) existing Wikipedia pages, regardless of its title.',
+		tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate only one existing Wikipedia page and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguate no (zero) existing Wikipedia pages, regardless of its title.  It also applies to orphan "Foo (disambiguation)" redirects that target pages that are not disambiguation or similar disambiguation-like pages (such as set index articles or lists)',
 		hideWhenRedirect: true
 	}
 ];
@@ -1086,7 +1086,7 @@ Twinkle.speedy.redirectList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G8: Redirects to invalid targets, such as nonexistent targets, redirect loops, and bad titles',
+		label: 'G8: Redirects to non-existent targets',
 		value: 'redirnone',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		hideWhenMultiple: true
