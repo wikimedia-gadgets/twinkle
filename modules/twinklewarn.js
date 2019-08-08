@@ -1026,7 +1026,7 @@ Twinkle.warn.messages = {
 		},
 		'uw-multipleIPs': {
 			label: 'Usage of multiple IPs',
-			summary: 'Warning: Usage of multiple IPs'
+			summary: 'Warning: Vandalism using multiple IPs'
 		},
 		'uw-pinfo': {
 			label: 'Personal info',
