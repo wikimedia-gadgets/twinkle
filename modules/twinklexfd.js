@@ -456,6 +456,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			cfds_category.append({ type: 'option', label: 'C2C: Consistency with names of similar categories', value: 'C2C' });
 			cfds_category.append({ type: 'option', label: 'C2D: Rename to match article name', value: 'C2D' });
 			cfds_category.append({ type: 'option', label: 'C2E: Author request', value: 'C2E' });
+			cfds_category.append({ type: 'option', label: 'C2F: One eponymous article', value: 'C2F' });
 
 			work_area.append({
 				type: 'input',
