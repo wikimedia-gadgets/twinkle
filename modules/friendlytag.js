@@ -1628,7 +1628,7 @@ Twinkle.tag.callbacks = {
 					// PROD
 					'(?:proposed deletion|prod blp)\\/dated(?:\\s*\\|(?:concern|user|timestamp|help).*)+|' +
 					// various hatnote templates
-					'about|correct title|dablink|distinguish|for|other\\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\\s?(?:also|wiktionary)|selfref|the' +
+					'about|correct title|dablink|distinguish|for|other\\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\\s?(?:also|wiktionary)|selfref|short description|the' +
 					// not a hatnote, but sometimes under a CSD or AfD
 					'|salt|proposed deletion endorsed' +
 					// end main template name, optionally with a number (such as redirect2)
