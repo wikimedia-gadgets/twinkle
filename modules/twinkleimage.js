@@ -199,7 +199,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		reason = event.target.reason.value;
 	}
 	if (event.target.replacement) {
-		replacement = event.target.replacement.value;
+		replacement = event.target.replacement.value.replace(/^\s*(Image|File):/i, '');
 	}
 	if (event.target.derivative) {
 		derivative = event.target.derivative.checked;
