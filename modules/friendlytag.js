@@ -706,6 +706,7 @@ Twinkle.tag.article.tags = {
 	'Copy edit': 'requires copy editing for grammar, style, cohesion, tone, or spelling',
 	'Copypaste': 'appears to have been copied and pasted from another location',
 	'Current': 'documents a current event',
+	'Dead end': 'article has no links to other articles',
 	'Disputed': 'questionable factual accuracy',
 	'Essay-like': 'written like a personal reflection, personal essay, or argumentative essay',
 	'Expand language': 'should be expanded with text translated from a foreign-language article',
@@ -871,6 +872,7 @@ Twinkle.tag.article.tagCategories = {
 			'Expand language'
 		],
 		'Links': [
+			'Dead end',
 			'Orphan',
 			'Overlinked',
 			'Underlinked'
