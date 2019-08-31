@@ -20,6 +20,7 @@ Twinkle.xfd = function twinklexfd() {
 	if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') || (mw.config.get('wgNamespaceNumber') === 6 && document.getElementById('mw-sharedupload'))) {
 		return;
 	}
+
 	Twinkle.addPortletLink(Twinkle.xfd.callback, 'XFD', 'tw-xfd', 'Start a deletion discussion');
 };
 
@@ -260,11 +261,33 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 			$(work_area).find('[name=delsort]')
 				.attr('data-placeholder', 'Select delsort pages')
-				.chosen({width: '100%'});
+				.select2({
+					width: '100%',
+					matcher: Morebits.select2.matcher,
+					templateResult: Morebits.select2.highlightSearchMatches,
+					language: {
+						searching: Morebits.select2.queryInterceptor
+					}
+				});
 
-			// Reduce padding
-			mw.util.addCSS('.morebits-dialog .chosen-drop .chosen-results li { padding-top: 2px; padding-bottom: 2px; }');
+			mw.util.addCSS(
+				// prevent dropdown from appearing behind the dialog, just in case
+				'.select2-container { z-index: 10000; }' +
 
+				// Remove black border
+				'.select2-container--default.select2-container--focus .select2-selection--multiple { border: 1px solid #aaa; }' +
+
+				// Reduce padding
+				'.select2-results .select2-results__option { padding-top: 1px; padding-bottom: 1px; }' +
+				'.select2-results .select2-results__group { padding-top: 1px; padding-bottom: 1px; } ' +
+
+				// Adjust font size
+				'.select2-container .select2-dropdown .select2-results { font-size: 13px; }' +
+				'.select2-container .selection .select2-selection__rendered { font-size: 13px; }' +
+
+				// Make the tiny cross larger
+				'.select2-selection__choice__remove { font-size: 130%; }'
+			);
 			break;
 		case 'tfd':
 			work_area = new Morebits.quickForm.element({
