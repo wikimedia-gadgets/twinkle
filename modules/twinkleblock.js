@@ -672,13 +672,6 @@ Twinkle.block.blockPresetsInfo = {
 		reason: 'Making [[WP:No legal threats|legal threats]]',
 		summary: 'You have been blocked from editing for making [[WP:NLT|legal threats or taking legal action]]'
 	},
-	'uw-myblock': {
-		autoblock: true,
-		nocreate: true,
-		pageParam: true,
-		reason: 'Using Wikipedia as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]',
-		summary: 'You have been blocked from editing for using user and/or article pages as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]'
-	},
 	'uw-nothereblock': {
 		autoblock: true,
 		expiry: 'infinity',
@@ -715,6 +708,13 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: true,
 		reason: '[[WP:Spam|Spam]] / [[WP:NOTADVERTISING|advertising]]-only account',
 		summary: 'You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam, advertising, or promotion]]'
+	},
+	'uw-socialmediablock': {
+		autoblock: true,
+		nocreate: true,
+		pageParam: true,
+		reason: 'Using Wikipedia as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]',
+		summary: 'You have been blocked from editing for using user and/or article pages as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]'
 	},
 	'uw-sockblock': {
 		autoblock: true,
