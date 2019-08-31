@@ -15,10 +15,17 @@
  */
 
 Twinkle.warn = function twinklewarn() {
+
+	mw.loader.load('https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.10/js/select2.min.js');
+	mw.loader.load('https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.10/css/select2.min.css', 'text/css');
+
 	if (mw.config.get('wgRelevantUserName')) {
 		Twinkle.addPortletLink(Twinkle.warn.callback, 'Warn', 'tw-warn', 'Warn/notify user');
-		if (Twinkle.getPref('autoMenuAfterRollback') && mw.config.get('wgNamespaceNumber') === 3 &&
-				mw.util.getParamValue('vanarticle') && !mw.util.getParamValue('friendlywelcome') && !mw.util.getParamValue('noautowarn')) {
+		if (Twinkle.getPref('autoMenuAfterRollback') &&
+			mw.config.get('wgNamespaceNumber') === 3 &&
+			mw.util.getParamValue('vanarticle') &&
+			!mw.util.getParamValue('friendlywelcome') &&
+			!mw.util.getParamValue('noautowarn')) {
 			Twinkle.warn.callback();
 		}
 	}
@@ -61,7 +68,7 @@ Twinkle.warn = function twinklewarn() {
 
 Twinkle.warn.callback = function twinklewarnCallback() {
 	if (mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') &&
-			!confirm('You are about to warn yourself! Are you sure you want to proceed?')) {
+		!confirm('You are about to warn yourself! Are you sure you want to proceed?')) {
 		return;
 	}
 
@@ -1069,9 +1076,6 @@ Twinkle.warn.prev_article = null;
 Twinkle.warn.prev_reason = null;
 
 Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCategory(e) {
-	if (!Twinkle.getPref('oldSelect')) {
-		$('select[name=sub_group]').chosen('destroy');
-	}
 
 	var value = e.target.value;
 	var sub_group = e.target.root.sub_group;
@@ -1157,30 +1161,69 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	// Trigger custom label/change on main category change
 	Twinkle.warn.callback.change_subcategory(e);
 
-	// Build select menu with jquery.chosen
+	// Build select menu with select2
 	if (!Twinkle.getPref('oldSelect')) {
 		$('select[name=sub_group]')
-			.chosen({width: '100%', search_contains: true})
-			.change(Twinkle.warn.callback.change_subcategory);
+			.select2({ width: '100%' })
+			.change(Twinkle.warn.callback.change_subcategory)
+
+			// select2 natively doesn't support highlightening of search hits so we implement that here
+			.on('select2:open', function() {
+				$('.select2-search__field')[0].addEventListener('keyup', function() {
+					var $ul = $('.select2-results__options');
+					$ul.find('.search-hit').each(function(i, e) {
+						var li_element = e.parentElement;
+						// This would convert <li>Hello <span class=search-hit>wo</span>rld</li>
+						// to <label>Hello world</label>
+						li_element.innerHTML = li_element.textContent;
+					});
+
+					if (this.value) {
+						var searchString = this.value;
+						var searchRegex = new RegExp(mw.RegExp.escape(searchString), 'i');
+
+						var $selector;
+						// if main_group is level1/2/3/4/4im, the ul has option groups,
+						// select the group header (li > strong) and the list elements (li > ul > li),
+						// the odd way in which select2 organises the ul necessitates this hack
+						if ($('select[name=main_group]').val().indexOf('level') === 0) { // can probably write as this.value.indexOf('level') === 0
+							$selector = 'li > strong, li > ul > li';
+						} else {
+							$selector = 'li';
+						}
+
+						$ul.find($selector).each(function() {
+							var li_text = this.textContent;
+							var searchHit = searchRegex.exec(li_text);
+							if (searchHit) {
+								var range = document.createRange();
+								var textnode = this.childNodes[0];
+								range.selectNodeContents(textnode);
+								range.setStart(textnode, searchHit.index);
+								range.setEnd(textnode, searchHit.index + searchString.length);
+								var underline_span = $('<span>').addClass('search-hit').css('text-decoration', 'underline')[0];
+								range.surroundContents(underline_span);
+							}
+						});
+					}
+				});
+			});
 
 		mw.util.addCSS(
-			// Force chosen select menu to display over the dialog while overflowing
-			// based on https://github.com/harvesthq/chosen/issues/1390#issuecomment-21397245
-			'.ui-dialog.morebits-dialog .morebits-dialog-content { overflow:visible !important; }' +
-			'.ui-dialog.morebits-dialog { overflow: inherit !important; }' +
+			// prevent dropdown from appearing behind the dialog
+			'.select2-container { z-index: 10000; }' +
 
-			// Increase height to match that of native select
-			'.morebits-dialog .chosen-drop .chosen-results { max-height: 300px; }' +
-			'.morebits-dialog .chosen-drop { max-height: 338px; }' +
+			// Increase height
+			'.select2-container .select2-dropdown .select2-results > .select2-results__options { max-height: 350px; }' +
 
-			// Remove padding
-			'.morebits-dialog .chosen-drop .chosen-results li { padding-top: 0px; padding-bottom: 0px; }'
+			// Reduce padding
+			'.select2-results .select2-results__option { padding-top: 1px; padding-bottom: 1px; }' +
+			'.select2-results .select2-results__group { padding-top: 1px; padding-bottom: 1px; } ' +
+
+			// Reduce font size
+			'.select2-container .select2-dropdown .select2-results { font-size: 13px; }' +
+			'.select2-container .selection .select2-selection__rendered { font-size: 13px; }'
 		);
-		// (Hopefully) temporary fixes for visual issues caused by the above CSS, see #665 and #667
-		$('.ui-resizable-handle').remove();
-		// Jump to extend the dialog to include any previewing content
-		// without scrolling and prevent resizing
-		mw.util.addCSS('.ui-dialog.morebits-dialog .morebits-dialog-content { max-height: max-content !important; }');
 
 	}
 };
