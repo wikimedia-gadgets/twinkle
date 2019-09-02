@@ -754,6 +754,7 @@ Twinkle.tag.article.tags = {
 	'Rough translation': 'poor translation from another language',
 	'Sections': 'needs to be divided into sections by topic',
 	'Self-published': 'contains excessive or inappropriate references to self-published sources',
+	'Sources exist': 'notable topic, sources are available that could be added to article',
 	'Technical': 'too technical for most readers to understand',
 	'Third-party': 'relies too heavily on sources too closely associated with the subject',
 	'Tone': 'tone or style may not reflect the encyclopedic tone used on Wikipedia',
@@ -860,6 +861,7 @@ Twinkle.tag.article.tagCategories = {
 			'Original research',
 			'Primary sources',
 			'Self-published',
+			'Sources exist',
 			'Third-party',
 			'Unreferenced',
 			'Unreliable sources'
