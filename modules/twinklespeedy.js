@@ -1556,14 +1556,19 @@ Twinkle.speedy.callbacks = {
 			}
 
 			var formatParamLog = function(normalize, csdparam, input) {
-				if ((normalize === 'G4' && csdparam === 'xfd') || (normalize === 'G6' && csdparam === 'page') || (normalize === 'G6' && csdparam === 'fullvotepage') || (normalize === 'G6' && csdparam === 'sourcepage')
-					|| (normalize === 'A2' && csdparam === 'source') || (normalize === 'A10' && csdparam === 'article') || (normalize === 'F5' && csdparam === 'replacement')) {
+				if ((normalize === 'G4' && csdparam === 'xfd') ||
+					(normalize === 'G6' && csdparam === 'page') ||
+					(normalize === 'G6' && csdparam === 'fullvotepage') ||
+					(normalize === 'G6' && csdparam === 'sourcepage') ||
+					(normalize === 'A2' && csdparam === 'source') ||
+					(normalize === 'A10' && csdparam === 'article')) {
 					input = '[[:' + input + ']]';
 				} else if (normalize === 'G5' && csdparam === 'user') {
 					input = '[[:User:' + input + ']]';
 				} else if (normalize === 'G12' && csdparam.lastIndexOf('url', 0) === 0 && input.lastIndexOf('http', 0) === 0) {
 					input = '[' + input + ' ' + input + ']';
-				} else if (normalize === 'F1' && csdparam === 'filename') {
+				} else if ((normalize === 'F1' && csdparam === 'filename') ||
+					(normalize === 'F5' && csdparam === 'replacement')) {
 					input = '[[:File:' + input + ']]';
 				} else if (normalize === 'T3' && csdparam === 'template') {
 					input = '[[:Template:' + input + ']]';
