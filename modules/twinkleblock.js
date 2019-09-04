@@ -890,7 +890,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Removal of content', value: 'uw-dblock' },
 			{ label: 'Sock puppetry (master)', value: 'uw-sockblock' },
 			{ label: 'Sock puppetry (puppet)', value: 'uw-spoablock' },
-			{ label: 'Social networking', value: 'uw-myblock' },
+			{ label: 'Social networking', value: 'uw-socialmediablock' },
 			{ label: 'Spam', value: 'uw-sblock' },
 			{ label: 'Spam/advertising-only account', value: 'uw-soablock' },
 			{ label: 'Unapproved bot', value: 'uw-botblock' },
