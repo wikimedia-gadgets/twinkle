@@ -362,33 +362,9 @@ Twinkle.tag.updateSortOrder = function(e) {
 				break;
 			case 'Globalize':
 				checkbox.subgroup = {
-					name: 'globalize',
-					type: 'select',
-					list: [
-						{ label: '{{globalize}}: article may not represent a worldwide view of the subject', value: 'globalize' },
-						{
-							label: 'Region-specific {{globalize}} subtemplates',
-							list: [
-								{ label: '{{globalize/Australia}}: article deals primarily with the Australian viewpoint', value: 'globalize/Australia' },
-								{ label: '{{globalize/Canada}}: article deals primarily with the Canadian viewpoint', value: 'globalize/Canada' },
-								{ label: '{{globalize/China}}: article deals primarily with the Chinese viewpoint', value: 'globalize/China' },
-								{ label: '{{globalize/Common law}}: article deals primarily with the viewpoint of common law countries', value: 'globalize/Common law' },
-								{ label: '{{globalize/Eng}}: article deals primarily with the English-speaking viewpoint', value: 'globalize/Eng' },
-								{ label: '{{globalize/Europe}}: article deals primarily with the European viewpoint', value: 'globalize/Europe' },
-								{ label: '{{globalize/France}}: article deals primarily with the French viewpoint', value: 'globalize/France' },
-								{ label: '{{globalize/Germany}}: article deals primarily with the German viewpoint', value: 'globalize/Germany' },
-								{ label: '{{globalize/Middle East}}: article deals primarily with the Middle Eastern viewpoint', value: 'globalize/Middle East' },
-								{ label: '{{globalize/North America}}: article deals primarily with the North American viewpoint', value: 'globalize/North America' },
-								{ label: '{{globalize/Northern}}: article deals primarily with the northern hemisphere viewpoint', value: 'globalize/Northern' },
-								{ label: '{{globalize/Southern}}: article deals primarily with the southern hemisphere viewpoint', value: 'globalize/Southern' },
-								{ label: '{{globalize/South Africa}}: article deals primarily with the South African viewpoint', value: 'globalize/South Africa' },
-								{ label: '{{globalize/UK}}: article deals primarily with the British viewpoint', value: 'globalize/UK' },
-								{ label: '{{globalize/UK and Canada}}: article deals primarily with the British and Canadian viewpoints', value: 'globalize/UK and Canada' },
-								{ label: '{{globalize/US}}: article deals primarily with the USA viewpoint', value: 'globalize/US' },
-								{ label: '{{globalize/West}}: article deals primarily with the viewpoint of Western countries', value: 'globalize/West' }
-							]
-						}
-					]
+					name: 'globalizeRegion',
+					type: 'input',
+					label: 'Over-represented country or region'
 				};
 				break;
 			case 'History merge':
@@ -844,7 +820,7 @@ Twinkle.tag.article.tagCategories = {
 			'COI',
 			'Disputed',
 			'Hoax',
-			'Globalize',  // has a subgroup with subcategories
+			'Globalize',
 			'Over-coverage',
 			'Peacock',
 			'POV',
@@ -1396,12 +1372,7 @@ Twinkle.tag.callbacks = {
 			// otherwise moves it to `getRedirectsFor` array earmarking it for
 			// later removal
 			params.tagsToRemove.forEach(function removeTag(tag, tagIndex) {
-
 				var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
-				if (tag === 'Globalize') {
-					// special case to catch occurrences like {{Globalize/UK}}, etc
-					tag_re = new RegExp('\\{\\{[gG]lobalize/?[^}]*\\}\\}\\n?');
-				}
 
 				if (tag_re.test(pageText)) {
 					pageText = pageText.replace(tag_re, '');
@@ -1480,12 +1451,7 @@ Twinkle.tag.callbacks = {
 			if (tagName === 'Uncategorized' || tagName === 'Improve categories') {
 				pageText += '\n\n{{' + tagName + '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
 			} else {
-				if (tagName === 'Globalize') {
-					currentTag += '{{' + params.globalize;
-				} else {
-					currentTag += '{{' + tagName;
-				}
-
+				currentTag += '{{' + tagName;
 				// fill in other parameters, based on the tag
 				switch (tagName) {
 					case 'Cleanup':
@@ -1520,6 +1486,12 @@ Twinkle.tag.callbacks = {
 						}
 						if (params.expertNeededReason) {
 							currentTag += '|reason=' + params.expertNeededReason;
+						}
+						break;
+					case 'Globalize':
+						currentTag += '|1=article';
+						if (params.globalizeRegion) {
+							currentTag += '|2=' + params.globalizeRegion;
 						}
 						break;
 					case 'News release':
@@ -1587,15 +1559,11 @@ Twinkle.tag.callbacks = {
 			}
 
 			summaryText += ' {{[[';
-			if (tagName === 'Globalize') {
-				summaryText += 'Template:' + params.globalize + '|' + params.globalize;
-			} else {
-				// if it is a custom tag with a parameter
-				if (tagName.indexOf('|') !== -1) {
-					tagName = tagName.slice(0, tagName.indexOf('|'));
-				}
-				summaryText += tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName;
+			// if it is a custom tag with a parameter
+			if (tagName.indexOf('|') !== -1) {
+				tagName = tagName.slice(0, tagName.indexOf('|'));
 			}
+			summaryText += tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName;
 			summaryText += ']]}}';
 
 		};
