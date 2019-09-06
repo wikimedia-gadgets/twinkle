@@ -858,8 +858,7 @@ Twinkle.speedy.portalList = [
 			name: 'p1_criterion',
 			type: 'input',
 			label: 'Article criterion that would apply: '
-		},
-		hideWhenMultiple: true
+		}
 	},
 	{
 		label: 'P2: Underpopulated portal',
