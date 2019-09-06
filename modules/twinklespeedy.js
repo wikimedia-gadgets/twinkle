@@ -1693,7 +1693,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.repost_xfd']) {
 					var deldisc = form['csd.repost_xfd'].value;
 					if (deldisc) {
-						if (deldisc.substring(0, 9) !== 'Wikipedia' && deldisc.substring(0, 3) !== 'WP:') {
+						if (!/^(?:wp|wikipedia):/i.test(deldisc)) {
 							alert('CSD G4:  The deletion discussion page name, if provided, must start with "Wikipedia:".');
 							parameters = null;
 							return false;
@@ -1732,7 +1732,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.xfd_fullvotepage']) {
 					var xfd = form['csd.xfd_fullvotepage'].value;
 					if (xfd) {
-						if (xfd.substring(0, 9) !== 'Wikipedia' && xfd.substring(0, 3) !== 'WP:') {
+						if (!/^(?:wp|wikipedia):/i.test(xfd)) {
 							alert('CSD G6 (XFD):  The deletion discussion page name, if provided, must start with "Wikipedia:".');
 							parameters = null;
 							return false;
@@ -1938,6 +1938,10 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 		case 'a10':
 			utparams.key1 = 'article';
 			utparams.value1 = utparams.article = parameters.article;
+			break;
+		case 'g4':
+			utparams.key1 = '2';
+			utparams.value1 = parameters.xfd;
 			break;
 		default:
 			break;
