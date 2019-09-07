@@ -103,7 +103,9 @@ if ($opt->mode eq 'pull') {
     next if saltNPepa($page, $file);
   }
 } elsif ($opt->mode eq 'deploy') {
-  foreach my $file (keys %pages) {
+  # Follow order when deploying, useful mainly for keeping twinkle.js and
+  # morebits.js first with make deploy
+  foreach my $file (@ARGV) {
     if (!defined $deploys{$file}) {
       print "$file not deployable, skipping\n";
       next;
@@ -187,13 +189,11 @@ sub buildEditSummary {
     my $validC = $valid->stderr();
     if (eof $validC) {
       print "$1\n";
-      my $newLog = $repo->run(log => '--oneline', '--no-color', "$1..HEAD", $file);
+      my $newLog = $repo->run(log => '--oneline', '--no-merges', '--no-color', "$1..HEAD", $file);
       open my $nl, '<', \$newLog or die $ERRNO;
       while (<$nl>) {
 	chomp;
 	my @arr = split / /, $_, 2;
-	next if $arr[1] =~ /Merge pull request #\d+/;
-
 	if ($arr[1] =~ /(\S+(?:\.(?:js|css))?) ?[:|-] ?(.+)/) {
 	  my $fixPer = $2;
 	  $fixPer =~ s/\.$//; # Just in case
@@ -280,10 +280,6 @@ twinkle.js MediaWiki:Gadget-Twinkle.js
   twinkle-pagestyles.css MediaWiki:Gadget-Twinkle-pagestyles.css
   morebits.js MediaWiki:Gadget-morebits.js
   morebits.css MediaWiki:Gadget-morebits.css
-  modules/friendlyshared.js MediaWiki:Gadget-friendlyshared.js
-  modules/friendlytag.js MediaWiki:Gadget-friendlytag.js
-  modules/friendlytalkback.js MediaWiki:Gadget-friendlytalkback.js
-  modules/friendlywelcome.js MediaWiki:Gadget-friendlywelcome.js
   modules/twinklearv.js MediaWiki:Gadget-twinklearv.js
   modules/twinklebatchdelete.js MediaWiki:Gadget-twinklebatchdelete.js
   modules/twinklebatchprotect.js MediaWiki:Gadget-twinklebatchprotect.js
@@ -294,9 +290,13 @@ twinkle.js MediaWiki:Gadget-Twinkle.js
   modules/twinklediff.js MediaWiki:Gadget-twinklediff.js
   modules/twinklefluff.js MediaWiki:Gadget-twinklefluff.js
   modules/twinkleimage.js MediaWiki:Gadget-twinkleimage.js
+  modules/twinkleprod.js MediaWiki:Gadget-twinkleprod.js
   modules/twinkleprotect.js MediaWiki:Gadget-twinkleprotect.js
   modules/twinklespeedy.js MediaWiki:Gadget-twinklespeedy.js
   modules/twinkleunlink.js MediaWiki:Gadget-twinkleunlink.js
   modules/twinklewarn.js MediaWiki:Gadget-twinklewarn.js
   modules/twinklexfd.js MediaWiki:Gadget-twinklexfd.js
-  modules/twinkleprod.js MediaWiki:Gadget-twinkleprod.js
+  modules/friendlyshared.js MediaWiki:Gadget-friendlyshared.js
+  modules/friendlytag.js MediaWiki:Gadget-friendlytag.js
+  modules/friendlytalkback.js MediaWiki:Gadget-friendlytalkback.js
+  modules/friendlywelcome.js MediaWiki:Gadget-friendlywelcome.js
