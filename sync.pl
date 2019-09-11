@@ -229,7 +229,7 @@ sub editPage {
     print "$pTitle does not exist\n";
     exit 1;
   } else {
-    my $timestamp = $ref->{basetimestamp};
+    my $timestamp = $ref->{timestamp};
     $mw->edit({
 	       action => 'edit',
 	       title => $pTitle,
