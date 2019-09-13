@@ -72,6 +72,7 @@ my $mw = MediaWiki::API->new({
 			      api_url => "https://$opt->{lang}.$opt->{family}.org/w/api.php",
 			      max_lag => 1000000 # not a botty script, thus smash it!
 			     });
+$mw->{ua}->agent('Twinkle/sync.pl ('.$mw->{ua}->agent.')');
 $mw->login({lgname => $opt->username, lgpassword => $opt->password})
   or die "Error logging in: $mw->{error}->{code}: $mw->{error}->{details}\n";
 
@@ -188,7 +189,6 @@ sub buildEditSummary {
     my $valid = $repo->command('merge-base' => '--is-ancestor', "$1", 'HEAD');
     my $validC = $valid->stderr();
     if (eof $validC) {
-      print "$1\n";
       my $newLog = $repo->run(log => '--oneline', '--no-merges', '--no-color', "$1..HEAD", $file);
       open my $nl, '<', \$newLog or die $ERRNO;
       while (<$nl>) {
@@ -229,7 +229,7 @@ sub editPage {
     print "$pTitle does not exist\n";
     exit 1;
   } else {
-    my $timestamp = $ref->{basetimestamp};
+    my $timestamp = $ref->{timestamp};
     $mw->edit({
 	       action => 'edit',
 	       title => $pTitle,
