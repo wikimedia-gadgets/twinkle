@@ -716,6 +716,7 @@ Twinkle.xfd.callbacks = {
 			if (params.usertalk) {
 				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				thispage.setCallbackParameters(params);
+				thispage.setLookupNonRedirectCreator(true); // Look for author of first non-redirect revision
 				thispage.lookupCreation(Twinkle.xfd.callbacks.afd.userNotification);
 			}
 
