@@ -961,7 +961,7 @@ HTMLFormElement.prototype.getUnchecked = function(name, type) {
  */
 
 RegExp.escape = function(text, space_fix) {
-	text = mw.RegExp.escape(text);
+	text = mw.util.escapeRegex(text);
 
 	// Special MediaWiki escape - underscore/space are often equivalent
 	if (space_fix) {
