@@ -19,7 +19,7 @@
  *   - Morebits.quickForm tooltips rely on Tipsy (ResourceLoader module name 'jquery.tipsy').
  *     For external installations, Tipsy is available at [http://onehackoranother.com/projects/jquery/tipsy].
  *   - To create a gadget based on morebits.js, use this syntax in MediaWiki:Gadgets-definition:
- *       * GadgetName[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.RegExp,jquery.ui.dialog,jquery.tipsy]|morebits.js|morebits.css|GadgetName.js
+ *       * GadgetName[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,jquery.ui.dialog,jquery.tipsy]|morebits.js|morebits.css|GadgetName.js
  *
  * Most of the stuff here doesn't work on IE < 9.  It is your script's responsibility to enforce this.
  *
@@ -961,7 +961,7 @@ HTMLFormElement.prototype.getUnchecked = function(name, type) {
  */
 
 RegExp.escape = function(text, space_fix) {
-	text = mw.RegExp.escape(text);
+	text = mw.util.escapeRegExp(text);
 
 	// Special MediaWiki escape - underscore/space are often equivalent
 	if (space_fix) {

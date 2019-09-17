@@ -94,7 +94,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 						allCheckboxDivs.hide();
 						allHeaders.hide();
 						var searchString = this.value;
-						var searchRegex = new RegExp(mw.RegExp.escape(searchString), 'i');
+						var searchRegex = new RegExp(mw.util.escapeRegExp(searchString), 'i');
 
 						$form.find('label').each(function() {
 							var label_text = this.textContent;
