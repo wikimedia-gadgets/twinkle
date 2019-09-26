@@ -1793,7 +1793,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			action: 'edit',
 			title: ctx.pageName,
 			summary: ctx.editSummary,
-			token: canUseMwUserToken ? mw.user.tokens.get('editToken') : ctx.editToken,
+			token: canUseMwUserToken ? mw.user.tokens.get('csrfToken') : ctx.editToken,
 			watchlist: ctx.watchlistOption
 		};
 
@@ -2477,7 +2477,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			}
 		}
 
-		return !!mw.user.tokens.get('editToken');
+		return !!mw.user.tokens.get('csrfToken');
 	};
 
 	// callback from loadSuccess() for append() and prepend() threads
@@ -2775,7 +2775,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var pageTitle, token;
 
 		if (fnCanUseMwUserToken('delete')) {
-			token = mw.user.tokens.get('editToken');
+			token = mw.user.tokens.get('csrfToken');
 			pageTitle = ctx.pageName;
 		} else {
 			var xml = ctx.deleteApi.getXML();
@@ -2864,7 +2864,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		// but until then (#615) the stupid hack below should work for
 		// undeletion.
 		if (fnCanUseMwUserToken('undelete')) {
-			token = mw.user.tokens.get('editToken');
+			token = mw.user.tokens.get('csrfToken');
 			pageTitle = ctx.pageName;
 		} else {
 			var xml = ctx.undeleteApi.getXML();
@@ -2887,7 +2887,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			}
 
 			// KLUDGE:
-			token = mw.user.tokens.get('editToken');
+			token = mw.user.tokens.get('csrfToken');
 			pageTitle = ctx.pageName;
 		}
 
