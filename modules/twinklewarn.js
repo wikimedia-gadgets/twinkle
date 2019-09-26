@@ -1080,7 +1080,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	var old_subvalue_re;
 	if (old_subvalue) {
 		old_subvalue = old_subvalue.replace(/\d*(im)?$/, '');
-		old_subvalue_re = new RegExp(mw.RegExp.escape(old_subvalue) + '(\\d*(?:im)?)$');
+		old_subvalue_re = new RegExp(mw.util.escapeRegExp(old_subvalue) + '(\\d*(?:im)?)$');
 	}
 
 	while (sub_group.hasChildNodes()) {
