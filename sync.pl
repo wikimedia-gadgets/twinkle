@@ -47,6 +47,13 @@ if ($opt->help || !scalar @ARGV || !($opt->username && $opt->password)) {
   exit;
 }
 
+# Ensure we've only got one item for each confg key
+foreach my $key (sort keys %{$opt}) {
+    if (ref(${$opt}{$key}) eq 'ARRAY') {
+      print "Duplicate config found for $key, quitting\n";
+      exit 1;
+    }
+}
 # Ensure we've got a clean branch
 my $repo = Git::Repository->new();
 my @status = $repo->run(status => '--porcelain');
