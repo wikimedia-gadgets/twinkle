@@ -1285,8 +1285,7 @@ Twinkle.xfd.callbacks = {
 		taggingRedirect: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
-
-			pageobj.setPageText('{{subst:rfd|content=\n' + text + '\n}}');
+			pageobj.setPageText('{{subst:rfd|' + (mw.config.get('wgNamespaceNumber') === 10 ? 'showontransclusion=1|' : '') + 'content=\n' + text + '\n}}');
 			pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].' + Twinkle.getPref('summaryAd'));
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('nocreate');
