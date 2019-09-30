@@ -213,9 +213,9 @@ sub buildEditSummary {
 
   # Prompt for manual entry
   if (!$editSummary) {
-    my $log = $repo->run(log => '-1', '--pretty=format:%s', '--no-color', $file);
-    print "\nUnable to autogenerate edit summary for $page.  The most recent edit summary is:\n";
-    print "\t$oldCommitish\nThe most recent log entry in git is:\n";
+    my $log = $repo->run(log => '-5', '--pretty=format:%s', '--no-color', $file);
+    print "\nUnable to autogenerate edit summary for $page.  The wiki's most recent edit summary is:\n";
+    print "\t$oldCommitish\nThe most recent git log entries are:\n";
     print "\t$log\nPlease provide an edit summary (commit ref will be added automatically):\n";
     $editSummary = <STDIN>;
     chomp $editSummary;
