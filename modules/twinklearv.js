@@ -335,7 +335,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						prop: 'revisions',
 						format: 'json',
 						rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-						rvlimit: 500,
+						rvlimit: 500, // intentionally limited
 						rvend: date.toISOString(),
 						rvuser: uid,
 						indexpageids: true,
@@ -372,7 +372,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						prop: 'revisions',
 						format: 'json',
 						rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-						rvlimit: 500,
+						rvlimit: 500, // intentionally limited
 						rvend: date.toISOString(),
 						rvuser: mw.config.get('wgUserName'),
 						indexpageids: true,
@@ -414,7 +414,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						prop: 'revisions',
 						format: 'json',
 						rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-						rvlimit: 500,
+						rvlimit: 500, // intentionally limited
 						rvend: date.toISOString(),
 						rvuser: mw.config.get('wgUserName'),
 						indexpageids: true,
@@ -823,7 +823,7 @@ Twinkle.arv.processAN3 = function(params) {
 		prop: 'revisions',
 		format: 'json',
 		rvprop: 'sha1|ids|timestamp|comment',
-		rvlimit: 100,
+		rvlimit: 100, // intentionally limited
 		rvstartid: minid,
 		rvexcludeuser: params.uid,
 		indexpageids: true,

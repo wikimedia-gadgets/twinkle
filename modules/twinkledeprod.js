@@ -45,7 +45,7 @@ Twinkle.deprod.callback = function() {
 		'action': 'query',
 		'generator': 'categorymembers',
 		'gcmtitle': mw.config.get('wgPageName'),
-		'gcmlimit': 5000, // the max for sysops
+		'gcmlimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
 		'gcmnamespace': '0|6|108|2', // mostly to ignore categories
 		'prop': [ 'info', 'revisions' ],
 		'rvprop': [ 'content' ],
@@ -138,7 +138,7 @@ var callback_commit = function(event) {
 				'action': 'query',
 				'titles': pageName,
 				'prop': 'redirects',
-				'rdlimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
+				'rdlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 			};
 			var wikipedia_api = new Morebits.wiki.api('Grabbing redirects', query, callback_deleteRedirects);
 			wikipedia_api.params = params;

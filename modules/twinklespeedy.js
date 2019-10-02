@@ -1351,7 +1351,7 @@ Twinkle.speedy.callbacks = {
 					'action': 'query',
 					'titles': mw.config.get('wgPageName'),
 					'prop': 'redirects',
-					'rdlimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
+					'rdlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 				};
 				var wikipedia_api = new Morebits.wiki.api('getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
 					new Morebits.status('Deleting redirects'));

@@ -1416,7 +1416,7 @@ Twinkle.tag.callbacks = {
 				'redirects': 1,  // follow redirect if the class name turns out to be a redirect page
 				'lhnamespace': '10',  // template namespace only
 				'lhshow': 'redirect',
-				'lhlimit': 'max'
+				'lhlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 			}, function removeRedirectTag(apiobj) {
 
 				$(apiobj.responseXML).find('page').each(function(idx, page) {
@@ -1733,7 +1733,7 @@ Twinkle.tag.callbacks = {
 				'redirects': 1,
 				'lhnamespace': '10', // template namespace only
 				'lhshow': 'redirect',
-				'lhlimit': 'max'
+				'lhlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 			}, function replaceRedirectTag(apiobj) {
 				$(apiobj.responseXML).find('page').each(function(idx, page) {
 					var found = false;
