@@ -236,6 +236,7 @@ Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
  *
  * @return Node -- the DOM node of the new item (a DIV element) or null
  */
+
 Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	// sanity checks, and get required DOM nodes
 	var root = document.getElementById(navigation);
@@ -260,26 +261,23 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	var skin = mw.config.get('skin');
 	type = skin === 'vector' && type === 'menu' && (navigation === 'left-navigation' || navigation === 'right-navigation') ? 'menu' : '';
 	var outerDivClass;
-	var innerDivClass;
 	switch (skin) {
 		case 'vector':
+			// XXX: portal doesn't work
 			if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
 				navigation = 'mw-panel';
 			}
 			outerDivClass = navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'vectorMenu' : 'vectorTabs';
-			innerDivClass = navigation === 'mw-panel' ? 'body' : type === 'menu' ? 'menu' : '';
 			break;
 		case 'modern':
 			if (navigation !== 'mw_portlets' && navigation !== 'mw_contentwrapper') {
 				navigation = 'mw_portlets';
 			}
 			outerDivClass = 'portlet';
-			innerDivClass = 'pBody';
 			break;
 		default:
 			navigation = 'column-one';
 			outerDivClass = 'portlet';
-			innerDivClass = 'pBody';
 			break;
 	}
 
@@ -329,13 +327,13 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	outerDiv.appendChild(h5);
 
 	var innerDiv = null;
+	var ul = document.createElement('ul');
 	if (type === 'menu') {
 		innerDiv = document.createElement('div');
-		innerDiv.className = innerDivClass;
 		outerDiv.appendChild(innerDiv);
+		ul.className = 'menu';
 	}
 
-	var ul = document.createElement('ul');
 	(innerDiv || outerDiv).appendChild(ul);
 
 	return outerDiv;
