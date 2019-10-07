@@ -2685,7 +2685,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				}
 			// check for blacklist hits
 			} else if (errorCode === 'spamblacklist') {
-				ctx.statusElement.error(ctx.saveApi.getErrorText());
+				// .find('matches') returns an array in case multiple items are blacklisted, we only return the first
+				var spam = $(ctx.saveApi.getXML()).find('spamblacklist').find('matches').children()[0].textContent;
+				ctx.statusElement.error('Could not save the page because the URL ' + spam + ' is on the spam blacklist');
 			} else {
 				ctx.statusElement.error('Failed to save edit: ' + ctx.saveApi.getErrorText());
 			}
