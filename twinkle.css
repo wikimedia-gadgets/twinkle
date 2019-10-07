@@ -5,3 +5,42 @@
 .skin-vector #p-twinkle {
 	width: 3.24em;
 }
+
+/**
+ * Styles for menus in monobook and modern skins
+ * Adapted from [[User:Haza-w/dropdown-menus]], code at [[MediaWiki:Gadget-dropdown-menus.css]]
+ */
+#ca-twinkle-menu {
+	background-color: #EEEEEE;
+	border: 1px solid #AAAAAA;
+	border-collapse: collapse;
+	color: #638C9C;
+	font: 14px/22px Arial, Helvetica, sans-serif;
+	padding: 0.3em 0em .3em 0em;
+	position: absolute;
+	width: 78px;
+	z-index: 1000;
+}
+#ca-twinkle-menu ul {
+	list-style: none;
+	margin: 0 0 0 0;
+}
+#ca-twinkle-menu ul li {
+	display: list-item;
+	width: 70px;
+	font-size: 14px;
+	margin: 0em;
+	padding: 0 0 0 0.5em;
+	border: 0;
+	background: none;
+}
+#ca-twinkle-menu ul li a {
+	color: #002BB8 !important;
+	text-decoration: none !important;
+	background-color: #EEEEEE !important;
+	padding: 0 0 0 0;
+	text-transform: none;
+}
+#ca-twinkle-menu ul li:hover a {
+	text-decoration: underline !important;
+}
