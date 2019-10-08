@@ -362,86 +362,86 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 
 		return li;
 
-	} else { // Vector skin; and for other skins without menu
+	}
 
-		var outerDivClass;
-		switch (skin) {
-			case 'vector':
-				// XXX: portal doesn't work
-				if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
-					navigation = 'mw-panel';
-				}
-				outerDivClass = navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'vectorMenu' : 'vectorTabs';
-				break;
-			case 'modern':
-				if (navigation !== 'mw_portlets' && navigation !== 'mw_contentwrapper') {
-					navigation = 'p-cactions';
-				}
-				outerDivClass = 'portlet';
-				break;
-			default:
-				navigation = 'column-one';
-				outerDivClass = 'portlet';
-				break;
-		}
+	// Else: Vector skin; and for other skins without menu
 
-		// Build the DOM elements.
-		var outerDiv = document.createElement('div');
-		outerDiv.className = outerDivClass + ' emptyPortlet';
-		outerDiv.id = id;
-		if (nextnode && nextnode.parentNode === root) {
-			root.insertBefore(outerDiv, nextnode);
-		} else {
-			root.appendChild(outerDiv);
-		}
+	var outerDivClass;
+	switch (skin) {
+		case 'vector':
+			// XXX: portal doesn't work
+			if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
+				navigation = 'mw-panel';
+			}
+			outerDivClass = navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'vectorMenu' : 'vectorTabs';
+			break;
+		case 'modern':
+			if (navigation !== 'mw_portlets' && navigation !== 'mw_contentwrapper') {
+				navigation = 'p-cactions';
+			}
+			outerDivClass = 'portlet';
+			break;
+		default:
+			navigation = 'column-one';
+			outerDivClass = 'portlet';
+			break;
+	}
 
-		if (outerDivClass === 'vectorMenu') {
-			// add invisible checkbox to make menu keyboard accessible
-			// similar to the p-cactions ("More") menu
-			var chkbox = document.createElement('input');
-			chkbox.className = 'vectorMenuCheckbox';
-			chkbox.setAttribute('type', 'checkbox');
-			chkbox.setAttribute('aria-labelledby', 'p-twinkle-label');
-			outerDiv.appendChild(chkbox);
-		}
-		var h5 = document.createElement('h3');
-		if (outerDivClass === 'vectorMenu') {
-			h5.id = 'p-twinkle-label';
-		}
-		if (type === 'menu') {
-			var span = document.createElement('span');
-			span.appendChild(document.createTextNode(text));
-			h5.appendChild(span);
+	// Build the DOM elements.
+	var outerDiv = document.createElement('div');
+	outerDiv.className = outerDivClass + ' emptyPortlet';
+	outerDiv.id = id;
+	if (nextnode && nextnode.parentNode === root) {
+		root.insertBefore(outerDiv, nextnode);
+	} else {
+		root.appendChild(outerDiv);
+	}
 
-			var a = document.createElement('a');
-			a.href = '#';
+	var h5 = document.createElement('h3');
+	var ul = document.createElement('ul');
 
-			$(a).click(function (e) {
-				e.preventDefault();
+	if (type === 'menu') {  // menu in vector skin
 
-				if (!Twinkle.userAuthorized) {
-					alert('Sorry, your account is too new to use Twinkle.');
-				}
-			});
+		// add invisible checkbox to keep menu when clicked
+		// similar to the p-cactions ("More") menu
+		var chkbox = document.createElement('input');
+		chkbox.className = 'vectorMenuCheckbox';
+		chkbox.setAttribute('type', 'checkbox');
+		chkbox.setAttribute('aria-labelledby', 'p-twinkle-label');
+		outerDiv.appendChild(chkbox);
 
-			h5.appendChild(a);
-		} else {
-			h5.appendChild(document.createTextNode(text));
-		}
+		h5.id = 'p-twinkle-label';
+		var span = document.createElement('span');
+		span.appendChild(document.createTextNode(text));
+		h5.appendChild(span);
+
+		var a = document.createElement('a');
+		a.href = '#';
+
+		$(a).click(function (e) {
+			e.preventDefault();
+			if (!Twinkle.userAuthorized) {
+				alert('Sorry, your account is too new to use Twinkle.');
+			}
+		});
+
+		h5.appendChild(a);
 		outerDiv.appendChild(h5);
 
-		var innerDiv = null;
-		var ul = document.createElement('ul');
-		if (type === 'menu') {
-			innerDiv = document.createElement('div');
-			outerDiv.appendChild(innerDiv);
-			ul.className = 'menu';
-		}
+		ul.className = 'menu';
+		var innerDiv = document.createElement('div');
+		innerDiv.appendChild(ul);
+		outerDiv.appendChild(innerDiv);
 
-		(innerDiv || outerDiv).appendChild(ul);
+	} else {
 
-		return outerDiv;
+		h5.appendChild(document.createTextNode(text));
+		outerDiv.appendChild(h5);
+		outerDiv.appendChild(ul);
+
 	}
+
+	return outerDiv;
 
 };
 
