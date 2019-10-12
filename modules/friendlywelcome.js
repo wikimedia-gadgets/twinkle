@@ -15,8 +15,8 @@
  */
 
 Twinkle.welcome = function friendlywelcome() {
-	if (Morebits.queryString.exists('friendlywelcome')) {
-		if (Morebits.queryString.get('friendlywelcome') === 'auto') {
+	if (mw.util.getParamValue('friendlywelcome')) {
+		if (mw.util.getParamValue('friendlywelcome') === 'auto') {
 			Twinkle.welcome.auto();
 		} else {
 			Twinkle.welcome.semiauto();
@@ -27,7 +27,7 @@ Twinkle.welcome = function friendlywelcome() {
 };
 
 Twinkle.welcome.auto = function() {
-	if (Morebits.queryString.get('action') !== 'edit') {
+	if (mw.util.getParamValue('action') !== 'edit') {
 		// userpage not empty, aborting auto-welcome
 		return;
 	}
@@ -40,7 +40,7 @@ Twinkle.welcome.semiauto = function() {
 };
 
 Twinkle.welcome.normal = function() {
-	if (Morebits.queryString.exists('diff')) {
+	if (mw.util.getParamValue('diff')) {
 		// check whether the contributors' talk pages exist yet
 		var $oList = $('#mw-diff-otitle2').find('span.mw-usertoollinks a.new:contains(talk)').first();
 		var $nList = $('#mw-diff-ntitle2').find('span.mw-usertoollinks a.new:contains(talk)').first();
@@ -64,7 +64,7 @@ Twinkle.welcome.normal = function() {
 				var oHref = $oList.attr('href');
 
 				var oWelcomeNode = welcomeNode.cloneNode(true);
-				oWelcomeNode.firstChild.setAttribute('href', oHref + '&' + Morebits.queryString.create({
+				oWelcomeNode.firstChild.setAttribute('href', oHref + '&' + $.param({
 					'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
 					'vanarticle': Morebits.pageNameNorm
 				}));
@@ -76,7 +76,7 @@ Twinkle.welcome.normal = function() {
 				var nHref = $nList.attr('href');
 
 				var nWelcomeNode = welcomeNode.cloneNode(true);
-				nWelcomeNode.firstChild.setAttribute('href', nHref + '&' + Morebits.queryString.create({
+				nWelcomeNode.firstChild.setAttribute('href', nHref + '&' + $.param({
 					'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
 					'vanarticle': Morebits.pageNameNorm
 				}));
@@ -98,7 +98,7 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 
 	var params = {
 		value: Twinkle.getFriendlyPref('quickWelcomeTemplate'),
-		article: Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : '',
+		article: mw.util.getParamValue('vanarticle') || '',
 		mode: 'auto'
 	};
 
@@ -148,7 +148,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 		type: 'input',
 		name: 'article',
 		label: '* Linked article (if supported by template):',
-		value: Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : '',
+		value: mw.util.getParamValue('vanarticle') || '',
 		tooltip: 'An article might be linked from within the welcome if the template supports it. Leave empty for no article to be linked.  Templates that support a linked article are marked with an asterisk.'
 	});
 

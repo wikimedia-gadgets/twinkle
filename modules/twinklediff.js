@@ -17,17 +17,10 @@ Twinkle.diff = function twinklediff() {
 	if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId')) {
 		return;
 	}
-
-	var query = {
-		'title': mw.config.get('wgPageName'),
-		'diff': 'cur',
-		'oldid': 'prev'
-	};
-
-	Twinkle.addPortletLink(mw.util.wikiScript('index') + '?' + $.param(query), 'Last', 'tw-lastdiff', 'Show most recent diff');
+	Twinkle.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: 'prev'}), 'Last', 'tw-lastdiff', 'Show most recent diff');
 
 	// Show additional tabs only on diff pages
-	if (Morebits.queryString.exists('diff')) {
+	if (mw.util.getParamValue('diff')) {
 		Twinkle.addPortletLink(function() {
 			Twinkle.diff.evaluate(false);
 		}, 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user');
@@ -36,12 +29,7 @@ Twinkle.diff = function twinklediff() {
 		}, 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision');
 
 		var oldid = /oldid=(.+)/.exec($('#mw-diff-ntitle1').find('strong a').first().attr('href'))[1];
-		query = {
-			'title': mw.config.get('wgPageName'),
-			'diff': 'cur',
-			'oldid': oldid
-		};
-		Twinkle.addPortletLink(mw.util.wikiScript('index') + '?' + $.param(query), 'Current', 'tw-curdiff', 'Show difference to current revision');
+		Twinkle.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: oldid}), 'Current', 'tw-curdiff', 'Show difference to current revision');
 	}
 };
 
@@ -82,12 +70,10 @@ Twinkle.diff.callbacks = {
 			self.statelem.error('no suitable earlier revision found, or ' + self.params.user + ' is the only contributor. Aborting.');
 			return;
 		}
-		var query = {
-			'title': mw.config.get('wgPageName'),
-			'oldid': revid,
-			'diff': mw.config.get('wgCurRevisionId')
-		};
-		window.location = mw.util.wikiScript('index') + '?' + Morebits.queryString.create(query);
+		window.location = mw.util.getUrl(mw.config.get('wgPageName'), {
+			diff: mw.config.get('wgCurRevisionId'),
+			oldid: revid
+		});
 	}
 };
 })(jQuery);
