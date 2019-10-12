@@ -169,7 +169,14 @@ Twinkle.tag.callback = function friendlytagCallback() {
 	// for quick filter:
 	$allCheckboxDivs = $(result).find('[name$=Tags]').parent();
 	$allHeaders = $(result).find('h5');
-	result.quickfilter.focus();  // place cursor in the Quick filter field as soon as window is opened
+	result.quickfilter.focus();  // place cursor in the quick filter field as soon as window is opened
+	result.quickfilter.autocomplete = 'off'; // disable browser suggestions
+	result.quickfilter.addEventListener('keypress', function(e) {
+		if (e.keyCode === 13) { // prevent enter key from accidentally submitting the form
+			e.preventDefault();
+			return false;
+		}
+	});
 
 	if (Twinkle.tag.mode === 'article') {
 
