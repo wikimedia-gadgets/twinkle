@@ -289,8 +289,9 @@ Twinkle.tag.quickFilter = function(form) {
 };
 
 Twinkle.tag.updateSortOrder = function(e) {
+	var form = e.target.form;
 	var sortorder = e.target.value;
-	Twinkle.tag.checkedTags = e.target.form.getChecked('articleTags') || [];
+	Twinkle.tag.checkedTags = form.getChecked('articleTags') || [];
 
 	var container = new Morebits.quickForm.element({ type: 'fragment' });
 
@@ -602,23 +603,23 @@ Twinkle.tag.updateSortOrder = function(e) {
 		});
 	}
 
-	var $workarea = $(e.target.form).find('div#tagWorkArea');
+	var $workarea = $(form).find('#tagWorkArea');
 	var rendered = container.render();
 	$workarea.empty().append(rendered);
 
 	// for quick filter:
 	$allCheckboxDivs = $workarea.find('[name$=Tags]').parent();
 	$allHeaders = $workarea.find('h5, .quickformDescription');
-	e.target.form.quickfilter.value = ''; // clear search, because the search results are not preserved over mode change
-	e.target.form.quickfilter.focus();
+	form.quickfilter.value = ''; // clear search, because the search results are not preserved over mode change
+	form.quickfilter.focus();
 
 	// style adjustments
 	$workarea.find('h5').css({ 'font-size': '110%' });
 	$workarea.find('h5:not(:first-child)').css({ 'margin-top': '1em' });
 	$workarea.find('div').filter(':has(span.quickformDescription)').css({ 'margin-top': '0.4em' });
 
-	Morebits.quickForm.getElements(e.target.form, 'articleTags').forEach(generateLinks);
-	var alreadyPresentTags = Morebits.quickForm.getElements(e.target.form, 'alreadyPresentArticleTags');
+	Morebits.quickForm.getElements(form, 'articleTags').forEach(generateLinks);
+	var alreadyPresentTags = Morebits.quickForm.getElements(form, 'alreadyPresentArticleTags');
 	if (alreadyPresentTags) {
 		alreadyPresentTags.forEach(generateLinks);
 	}
@@ -627,17 +628,9 @@ Twinkle.tag.updateSortOrder = function(e) {
 	var statusNode = document.getElementById('tw-tag-status');
 	$('[name=articleTags], [name=alreadyPresentArticleTags]').click(function() {
 		if (this.name === 'articleTags') {
-			if (this.checked) {
-				Twinkle.tag.status.numAdded++;
-			} else {
-				Twinkle.tag.status.numAdded--;
-			}
+			Twinkle.tag.status.numAdded += this.checked ? 1 : -1;
 		} else if (this.name === 'alreadyPresentArticleTags') {
-			if (this.checked) {
-				Twinkle.tag.status.numRemoved--;
-			} else {
-				Twinkle.tag.status.numRemoved++;
-			}
+			Twinkle.tag.status.numRemoved += this.checked ? -1 : 1;
 		}
 
 		var firstPart = 'Adding ' + Twinkle.tag.status.numAdded + ' tag' + (Twinkle.tag.status.numAdded > 1 ? 's' : '');
