@@ -109,7 +109,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'page',
 				label: 'Primary linked page: ',
 				tooltip: 'Leave blank to not link to the page in the report',
-				value: Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : '',
+				value: mw.util.getParamValue('vanarticle') || '',
 				event: function(e) {
 					var value = e.target.value;
 					var root = e.target.form;
@@ -126,8 +126,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'badid',
 				label: 'Revision ID for target page when vandalised: ',
 				tooltip: 'Leave blank for no diff link',
-				value: Morebits.queryString.exists('vanarticlerevid') ? Morebits.queryString.get('vanarticlerevid') : '',
-				disabled: !Morebits.queryString.exists('vanarticle'),
+				value: mw.util.getParamValue('vanarticlerevid') || '',
+				disabled: !mw.util.getParamValue('vanarticle'),
 				event: function(e) {
 					var value = e.target.value;
 					var root = e.target.form;
@@ -139,8 +139,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'goodid',
 				label: 'Last good revision ID before vandalism of target page: ',
 				tooltip: 'Leave blank for diff link to previous revision',
-				value: Morebits.queryString.exists('vanarticlegoodrevid') ? Morebits.queryString.get('vanarticlegoodrevid') : '',
-				disabled: !Morebits.queryString.exists('vanarticle') || Morebits.queryString.exists('vanarticlerevid')
+				value: mw.util.getParamValue('vanarticlegoodrevid') || '',
+				disabled: !mw.util.getParamValue('vanarticle') || mw.util.getParamValue('vanarticlerevid')
 			});
 			work_area.append({
 				type: 'checkbox',

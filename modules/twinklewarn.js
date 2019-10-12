@@ -106,7 +106,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		type: 'input',
 		name: 'article',
 		label: 'Linked page',
-		value: Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : '',
+		value: mw.util.getParamValue('vanarticle') || '',
 		tooltip: 'A page can be linked within the notice, perhaps because it was a revert to said page that dispatched this notice. Leave empty for no page to be linked.'
 	});
 
