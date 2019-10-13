@@ -130,7 +130,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		query.gaplimit = Twinkle.getPref('batchMax');
 		if (mw.util.getParamValue('prefix')) {
 			query.gapnamespace = mw.util.getParamValue('namespace');
-			query.gapprefix = Morebits.string.toUpperCaseFirstChar(mw.util.getParamValue('prefix'));
+			query.gapprefix = mw.util.getParamValue('prefix');
 		} else {
 			var pathSplit = decodeURIComponent(location.pathname).split('/');
 			if (pathSplit.length < 3 || pathSplit[2] !== 'Special:PrefixIndex') {

@@ -281,7 +281,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Prefixindex') {
 		query.generator = 'allpages';
 		query.gapnamespace = mw.util.getParamValue('namespace') || $('select[name=namespace]').val();
-		query.gapprefix = Morebits.string.toUpperCaseFirstChar(mw.util.getParamValue('from') ? mw.util.getParamValue('from').replace('+', ' ') : $('input[name=prefix]').val());
+		query.gapprefix = mw.util.getParamValue('prefix') || $('input[name=prefix]').val();
 		query.gaplimit = Twinkle.getPref('batchMax');
 	} else {
 		query.generator = 'links';
