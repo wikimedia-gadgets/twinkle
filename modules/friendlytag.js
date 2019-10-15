@@ -889,6 +889,7 @@ Twinkle.tag.article.tagCategories = {
 // Contains those article tags that *do not* work inside {{multiple issues}}.
 Twinkle.tag.multipleIssuesExceptions = [
 	'Copypaste',
+	'Current', // Works but not intended for use in MI
 	'Expand language',
 	'GOCEinuse',
 	'History merge',
