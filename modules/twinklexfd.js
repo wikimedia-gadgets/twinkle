@@ -21,8 +21,10 @@ Twinkle.xfd = function twinklexfd() {
 	if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') || (mw.config.get('wgNamespaceNumber') === 6 && document.getElementById('mw-sharedupload'))) {
 		return;
 	}
-	mw.loader.load('https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.10/js/select2.min.js');
-	mw.loader.load('https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.10/css/select2.min.css', 'text/css');
+	if (!jQuery.fn.select2) {
+		mw.loader.load('https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.10/js/select2.min.js');
+		mw.loader.load('https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.10/css/select2.min.css', 'text/css');
+	}
 
 	Twinkle.addPortletLink(Twinkle.xfd.callback, 'XFD', 'tw-xfd', 'Start a deletion discussion');
 };
@@ -257,57 +259,33 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
 
-			$(work_area).find('[name=delsort]')
-				.attr('data-placeholder', 'Select delsort pages')
-				.select2({width: '100%'})
+			if ($.fn.select2) {
+				$(work_area).find('[name=delsort]')
+					.attr('data-placeholder', 'Select delsort pages')
+					.select2({width: '100%'});
 
-				// select2 natively doesn't support highlightening of search hits so we implement that here
-				.on('select2:open', function() {
-					$('.select2-search__field')[0].addEventListener('keyup', function() {
-						var $ul = $('.select2-results__options');
-						$ul.find('.search-hit').each(function(i, e) {
-							var li_element = e.parentElement;
-							// This would convert <li>Hello <span class=search-hit>wo</span>rld</li>
-							// to <label>Hello world</label>
-							li_element.innerHTML = li_element.textContent;
-						});
-
-						if (this.value) {
-							var searchString = this.value;
-							var searchRegex = new RegExp(mw.RegExp.escape(searchString), 'i');
-							$ul.find('li > strong, li > ul > li').each(function() {
-								var li_text = this.textContent;
-								var searchHit = searchRegex.exec(li_text);
-								if (searchHit) {
-									var range = document.createRange();
-									var textnode = this.childNodes[0];
-									range.selectNodeContents(textnode);
-									range.setStart(textnode, searchHit.index);
-									range.setEnd(textnode, searchHit.index + searchString.length);
-									var underline_span = $('<span>').addClass('search-hit').css('text-decoration', 'underline')[0];
-									range.surroundContents(underline_span);
-								}
-							});
-						}
-					});
-				});
-
-			// Reduce padding
-			mw.util.addCSS(
-				// prevent dropdown from appearing behind the dialog
-				'.select2-container { z-index: 10000; }' +
-
-				// Remove black border
-				'.select2-container--default.select2-container--focus .select2-selection--multiple { border: 1px solid #aaa; }' +
+				mw.select2SearchHighlights($('[name=delsort]'), true);
 
 				// Reduce padding
-				'.select2-results .select2-results__option { padding-top: 1px; padding-bottom: 1px; }' +
-				'.select2-results .select2-results__group { padding-top: 1px; padding-bottom: 1px; } ' +
+				mw.util.addCSS(
+					// prevent dropdown from appearing behind the dialog
+					'.select2-container { z-index: 10000; }' +
 
-				// Reduce font size
-				'.select2-container .select2-dropdown .select2-results { font-size: 13px; }' +
-				'.select2-container .selection .select2-selection__rendered { font-size: 13px; }'
-			);
+					// Remove black border
+					'.select2-container--default.select2-container--focus .select2-selection--multiple { border: 1px solid #aaa; }' +
+
+					// Reduce padding
+					'.select2-results .select2-results__option { padding-top: 1px; padding-bottom: 1px; }' +
+					'.select2-results .select2-results__group { padding-top: 1px; padding-bottom: 1px; } ' +
+
+					// Reduce font size
+					'.select2-container .select2-dropdown .select2-results { font-size: 13px; }' +
+					'.select2-container .selection .select2-selection__rendered { font-size: 13px; }' +
+
+					// Make the tiny cross larger
+					'.select2-selection__choice__remove { font-size: 130%; }'
+				);
+			}
 
 			break;
 		case 'tfd':

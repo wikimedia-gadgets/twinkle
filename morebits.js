@@ -678,6 +678,7 @@ Morebits.quickForm.element.autoNWSW = function() {
 /**
  * @param {HTMLElement} node
  * @param {Object} data
+ * @requires {jquery.tipsy}
  */
 Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTooltip(node, data) {
 	$('<span/>', {
@@ -1132,6 +1133,52 @@ Morebits.array = {
 		}
 		return result;
 	}
+};
+
+/**
+ * select2 doesn't natively support highlightening of search hits so we implement that here
+ * @param {jQuery} $select
+ * @param {boolean} [hasOptionGroups=false] - does the select menu have optgroups?
+ * @requires {select2}
+ */
+mw.select2SearchHighlights = function select2SearchHighlights($select, hasOptionGroups) {
+	$select.on('select2:open', function() {
+		$('.select2-search__field')[0].addEventListener('keyup', function() {
+			var $ul = $('.select2-results__options');
+			$ul.find('.search-hit').each(function(_, e) {
+				var li_element = e.parentElement;
+				// This would convert <li>Hello <span class=search-hit>wo</span>rld</li>
+				// to <label>Hello world</label>
+				li_element.innerHTML = li_element.textContent;
+			});
+
+			if (this.value) {
+				var searchString = this.value;
+				var searchRegex = new RegExp(mw.RegExp.escape(searchString), 'i');
+
+				var selectorString;
+				// the odd way in which select2 organises the ul necessitates this hack
+				if (hasOptionGroups) {
+					selectorString = 'li > strong, li > ul > li';
+				} else {
+					selectorString = 'li';
+				}
+				$ul.find(selectorString).each(function() {
+					var li_text = this.textContent;
+					var searchHit = searchRegex.exec(li_text);
+					if (searchHit) {
+						var range = document.createRange();
+						var textnode = this.childNodes[0];
+						range.selectNodeContents(textnode);
+						range.setStart(textnode, searchHit.index);
+						range.setEnd(textnode, searchHit.index + searchString.length);
+						var underline_span = $('<span>').addClass('search-hit').css('text-decoration', 'underline')[0];
+						range.surroundContents(underline_span);
+					}
+				});
+			}
+		});
+	});
 };
 
 
@@ -3984,6 +4031,7 @@ Morebits.batchOperation = function(currentAction) {
  * **************** Morebits.simpleWindow ****************
  * A simple draggable window
  * now a wrapper for jQuery UI's dialog feature
+ * @requires {jquery.ui.dialog}
  */
 
 /**
