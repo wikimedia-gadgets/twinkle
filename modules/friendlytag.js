@@ -893,6 +893,7 @@ Twinkle.tag.article.tagCategories = {
 // Contains those article tags that *do not* work inside {{multiple issues}}.
 Twinkle.tag.multipleIssuesExceptions = [
 	'Copypaste',
+	'Current', // Works but not intended for use in MI
 	'Expand language',
 	'GOCEinuse',
 	'History merge',
@@ -1251,15 +1252,15 @@ Twinkle.tag.callbacks = {
 			pageobj.save(function() {
 				// special functions for merge tags
 				if (params.mergeReason) {
+					// Use similar language for talkpage header and edit summary
+					var direction = '[[:' + params.nonDiscussArticle + ']] ' + (params.mergeTag === 'Merge' ? 'with' : 'into') + ' [[:' + params.discussArticle + ']]';
 					// post the rationale on the talk page (only operates in main namespace)
-					var talkpageText = '\n\n== Proposed merge with [[' + params.nonDiscussArticle + ']] ==\n\n';
+					var talkpageText = '\n\n== Proposed merge of ' + direction + '  ==\n\n';
 					talkpageText += params.mergeReason.trim() + ' ~~~~';
 
 					var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
 					talkpage.setAppendText(talkpageText);
-					talkpage.setEditSummary('Proposing to merge [[:' + params.nonDiscussArticle + ']] ' +
-						(params.mergeTag === 'Merge' ? 'with' : 'into') + ' [[:' + params.discussArticle + ']]' +
-						Twinkle.getPref('summaryAd'));
+					talkpage.setEditSummary('Proposing to merge ' + direction + Twinkle.getPref('summaryAd'));
 					talkpage.setWatchlist(Twinkle.getFriendlyPref('watchMergeDiscussions'));
 					talkpage.setCreateOption('recreate');
 					talkpage.append();
