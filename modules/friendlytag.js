@@ -43,20 +43,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#tag');
 
 	var form = new Morebits.quickForm(Twinkle.tag.callback.evaluate);
-
-	if (document.getElementsByClassName('patrollink').length) {
-		form.append({
-			type: 'checkbox',
-			list: [
-				{
-					label: 'Mark the page as patrolled',
-					value: 'patrolPage',
-					name: 'patrolPage',
-					checked: Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled')
-				}
-			]
-		});
-	}
+	Twinkle.tag.quickFilter(form);
 
 	switch (Twinkle.tag.mode) {
 		case 'article':
@@ -74,7 +61,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				]
 			});
 
-			Twinkle.tag.quickFilter(form);
 
 			if (!Twinkle.tag.canRemove) {
 				var divElement = document.createElement('div');
@@ -112,8 +98,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'file':
 			Window.setTitle('File maintenance tagging');
 
-			Twinkle.tag.quickFilter(form);
-
 			form.append({ type: 'header', label: 'License and sourcing problem tags' });
 			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.licenseList });
 
@@ -138,8 +122,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'redirect':
 			Window.setTitle('Redirect tagging');
 
-			Twinkle.tag.quickFilter(form);
-
 			form.append({ type: 'header', label: 'Spelling, misspelling, tense and capitalization templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.spellingList });
 
@@ -160,6 +142,19 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			break;
 	}
 
+	if (document.getElementsByClassName('patrollink').length) {
+		form.append({
+			type: 'checkbox',
+			list: [
+				{
+					label: 'Mark the page as patrolled',
+					value: 'patrolPage',
+					name: 'patrolPage',
+					checked: Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled')
+				}
+			]
+		});
+	}
 	form.append({ type: 'submit' });
 
 	var result = form.render();
