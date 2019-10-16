@@ -74,48 +74,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				]
 			});
 
-			form.append({
-				type: 'input',
-				label: 'Quick filter: ',
-				name: 'quickfilter',
-				size: '30px',
-				event: function twinkletagquickfilter() {
-					var $form = $('#tagWorkArea');
-					// flush the DOM of all existing underline spans
-					$form.find('.search-hit').each(function(i, e) {
-						var label_element = e.parentElement;
-						// This would convert <label>Hello <span class=search-hit>wo</span>rld</label>
-						// to <label>Hello world</label>
-						label_element.innerHTML = label_element.textContent;
-					});
-					// allCheckboxDivs and allHeaders are defined globally, rather than in
-					// this function, to avoid having to recompute them on every keydown.
-					if (this.value) {
-						allCheckboxDivs.hide();
-						allHeaders.hide();
-						var searchString = this.value;
-						var searchRegex = new RegExp(mw.util.escapeRegExp(searchString), 'i');
-
-						$form.find('label').each(function() {
-							var label_text = this.textContent;
-							var searchHit = searchRegex.exec(label_text);
-							if (searchHit) {
-								var range = document.createRange();
-								var textnode = this.childNodes[0];
-								range.selectNodeContents(textnode);
-								range.setStart(textnode, searchHit.index);
-								range.setEnd(textnode, searchHit.index + searchString.length);
-								var underline_span = $('<span>').addClass('search-hit').css('text-decoration', 'underline')[0];
-								range.surroundContents(underline_span);
-								this.parentElement.style.display = 'block'; // un-hide
-							}
-						});
-					} else {
-						allCheckboxDivs.show();
-						allHeaders.show();
-					}
-				}
-			});
+			Twinkle.tag.quickFilter(form);
 
 			if (!Twinkle.tag.canRemove) {
 				var divElement = document.createElement('div');
@@ -153,6 +112,8 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'file':
 			Window.setTitle('File maintenance tagging');
 
+			Twinkle.tag.quickFilter(form);
+
 			form.append({ type: 'header', label: 'License and sourcing problem tags' });
 			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.licenseList });
 
@@ -176,6 +137,8 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 		case 'redirect':
 			Window.setTitle('Redirect tagging');
+
+			Twinkle.tag.quickFilter(form);
 
 			form.append({ type: 'header', label: 'Spelling, misspelling, tense and capitalization templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.spellingList });
@@ -203,16 +166,19 @@ Twinkle.tag.callback = function friendlytagCallback() {
 	Window.setContent(result);
 	Window.display();
 
-	if (Twinkle.tag.mode === 'article') {
+	// for quick filter:
+	$allCheckboxDivs = $(result).find('[name$=Tags]').parent();
+	$allHeaders = $(result).find('h5');
+	result.quickfilter.focus();  // place cursor in the quick filter field as soon as window is opened
+	result.quickfilter.autocomplete = 'off'; // disable browser suggestions
+	result.quickfilter.addEventListener('keypress', function(e) {
+		if (e.keyCode === 13) { // prevent enter key from accidentally submitting the form
+			e.preventDefault();
+			return false;
+		}
+	});
 
-		result.quickfilter.autocomplete = 'off'; // disable browser suggestions for this field
-		result.quickfilter.addEventListener('keypress', function(e) {
-			if (e.keyCode === 13) { // prevent enter key from submitting
-				e.preventDefault();
-				return false;
-			}
-		});
-		result.quickfilter.focus();  // place cursor in the Quick filter field as soon as window is opened
+	if (Twinkle.tag.mode === 'article') {
 
 		Twinkle.tag.alreadyPresentTags = [];
 
@@ -280,12 +246,59 @@ Twinkle.tag.callback = function friendlytagCallback() {
 	}
 };
 
-// Used in Quick Filter event function
-var allCheckboxDivs, allHeaders;
+// $allCheckboxDivs and $allHeaders are defined globally, rather than in
+// the event function, to avoid having to recompute them on every keydown.
+var $allCheckboxDivs, $allHeaders;
+
+Twinkle.tag.quickFilter = function(form) {
+
+	form.append({
+		type: 'input',
+		label: 'Quick filter: ',
+		name: 'quickfilter',
+		size: '30px',
+		event: function twinkletagquickfilter() {
+			// flush the DOM of all existing underline spans
+			$allCheckboxDivs.find('.search-hit').each(function(i, e) {
+				var label_element = e.parentElement;
+				// This would convert <label>Hello <span class=search-hit>wo</span>rld</label>
+				// to <label>Hello world</label>
+				label_element.innerHTML = label_element.textContent;
+			});
+
+			if (this.value) {
+				$allCheckboxDivs.hide();
+				$allHeaders.hide();
+				var searchString = this.value;
+				var searchRegex = new RegExp(mw.util.escapeRegExp(searchString), 'i');
+
+				$allCheckboxDivs.find('label').each(function () {
+					var label_text = this.textContent;
+					var searchHit = searchRegex.exec(label_text);
+					if (searchHit) {
+						var range = document.createRange();
+						var textnode = this.childNodes[0];
+						range.selectNodeContents(textnode);
+						range.setStart(textnode, searchHit.index);
+						range.setEnd(textnode, searchHit.index + searchString.length);
+						var underline_span = $('<span>').addClass('search-hit').css('text-decoration', 'underline')[0];
+						range.surroundContents(underline_span);
+						this.parentElement.style.display = 'block'; // show
+					}
+				});
+			} else {
+				$allCheckboxDivs.show();
+				$allHeaders.show();
+			}
+		}
+	});
+
+};
 
 Twinkle.tag.updateSortOrder = function(e) {
+	var form = e.target.form;
 	var sortorder = e.target.value;
-	Twinkle.tag.checkedTags = e.target.form.getChecked('articleTags') || [];
+	Twinkle.tag.checkedTags = form.getChecked('articleTags') || [];
 
 	var container = new Morebits.quickForm.element({ type: 'fragment' });
 
@@ -597,24 +610,23 @@ Twinkle.tag.updateSortOrder = function(e) {
 		});
 	}
 
-	var $workarea = $(e.target.form).find('div#tagWorkArea');
+	var $workarea = $(form).find('#tagWorkArea');
 	var rendered = container.render();
 	$workarea.empty().append(rendered);
 
-	// Used in quick filter event function
-	allCheckboxDivs = $workarea.find('[name=articleTags], [name=alreadyPresentArticleTags]').parent();
-	allHeaders = $workarea.find('h5, .quickformDescription');
-
-	// clear search, because the search results are not preserved over mode change
-	e.target.form.quickfilter.value = '';
+	// for quick filter:
+	$allCheckboxDivs = $workarea.find('[name$=Tags]').parent();
+	$allHeaders = $workarea.find('h5, .quickformDescription');
+	form.quickfilter.value = ''; // clear search, because the search results are not preserved over mode change
+	form.quickfilter.focus();
 
 	// style adjustments
 	$workarea.find('h5').css({ 'font-size': '110%' });
 	$workarea.find('h5:not(:first-child)').css({ 'margin-top': '1em' });
 	$workarea.find('div').filter(':has(span.quickformDescription)').css({ 'margin-top': '0.4em' });
 
-	Morebits.quickForm.getElements(e.target.form, 'articleTags').forEach(generateLinks);
-	var alreadyPresentTags = Morebits.quickForm.getElements(e.target.form, 'alreadyPresentArticleTags');
+	Morebits.quickForm.getElements(form, 'articleTags').forEach(generateLinks);
+	var alreadyPresentTags = Morebits.quickForm.getElements(form, 'alreadyPresentArticleTags');
 	if (alreadyPresentTags) {
 		alreadyPresentTags.forEach(generateLinks);
 	}
@@ -623,17 +635,9 @@ Twinkle.tag.updateSortOrder = function(e) {
 	var statusNode = document.getElementById('tw-tag-status');
 	$('[name=articleTags], [name=alreadyPresentArticleTags]').click(function() {
 		if (this.name === 'articleTags') {
-			if (this.checked) {
-				Twinkle.tag.status.numAdded++;
-			} else {
-				Twinkle.tag.status.numAdded--;
-			}
+			Twinkle.tag.status.numAdded += this.checked ? 1 : -1;
 		} else if (this.name === 'alreadyPresentArticleTags') {
-			if (this.checked) {
-				Twinkle.tag.status.numRemoved--;
-			} else {
-				Twinkle.tag.status.numRemoved++;
-			}
+			Twinkle.tag.status.numRemoved += this.checked ? -1 : 1;
 		}
 
 		var firstPart = 'Adding ' + Twinkle.tag.status.numAdded + ' tag' + (Twinkle.tag.status.numAdded > 1 ? 's' : '');
