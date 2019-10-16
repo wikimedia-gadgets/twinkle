@@ -389,6 +389,10 @@ Twinkle.warn.messages = {
 					label: 'Ownership of articles',
 					summary: 'Warning: Ownership of articles'
 				},
+				level4: {
+					label: 'Ownership of articles',
+					summary: 'Final warning: Ownership of articles'
+				},
 				level4im: {
 					label: 'Ownership of articles',
 					summary: 'Only warning: Ownership of articles'
@@ -772,6 +776,10 @@ Twinkle.warn.messages = {
 				level4: {
 					label: "Refactoring others' talk page comments",
 					summary: "Final warning: Refactoring others' talk page comments"
+				},
+				level4im: {
+					label: "Refactoring others' talk page comments",
+					summary: "Only warning: Refactoring others' talk page comments"
 				}
 			},
 			'uw-upload': {
