@@ -676,7 +676,7 @@ Twinkle.block.blockPresetsInfo = {
 		autoblock: true,
 		expiry: 'infinity',
 		nocreate: true,
-		reason: 'Clearly [[WP:NOTHERE|not here to contribute to the encyclopedia]]',
+		reason: 'Clearly [[WP:NOTHERE|not here to build an encyclopedia]]',
 		forRegisteredOnly: true,
 		summary: 'You have been indefinitely blocked from editing because it appears that you are not here to [[WP:NOTHERE|build an encyclopedia]]'
 	},
@@ -865,7 +865,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Generic block (custom reason) – indefinite', value: 'uw-blockindef' },
 			{ label: 'Disruptive editing', value: 'uw-disruptblock' },
 			{ label: 'Inappropriate use of user talk page while blocked', value: 'uw-talkrevoked' },
-			{ label: 'Not here to contribute to the encyclopedia', value: 'uw-nothereblock' },
+			{ label: 'Not here to build an encyclopedia', value: 'uw-nothereblock' },
 			{ label: 'Unsourced content', value: 'uw-ucblock' },
 			{ label: 'Vandalism', value: 'uw-vblock' },
 			{ label: 'Vandalism-only account', value: 'uw-voablock' }
