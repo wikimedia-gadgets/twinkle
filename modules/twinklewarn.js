@@ -16,10 +16,6 @@
 
 Twinkle.warn = function twinklewarn() {
 
-	if (!$.fn.select2) {
-		mw.loader.load('https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.10/js/select2.min.js');
-		mw.loader.load('https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.10/css/select2.min.css', 'text/css');
-	}
 	if (mw.config.get('wgRelevantUserName')) {
 		Twinkle.addPortletLink(Twinkle.warn.callback, 'Warn', 'tw-warn', 'Warn/notify user');
 		if (Twinkle.getPref('autoMenuAfterRollback') &&

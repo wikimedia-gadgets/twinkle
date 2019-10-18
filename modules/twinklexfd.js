@@ -21,10 +21,6 @@ Twinkle.xfd = function twinklexfd() {
 	if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId') || (mw.config.get('wgNamespaceNumber') === 6 && document.getElementById('mw-sharedupload'))) {
 		return;
 	}
-	if (!jQuery.fn.select2) {
-		mw.loader.load('https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.10/js/select2.min.js');
-		mw.loader.load('https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.10/css/select2.min.css', 'text/css');
-	}
 
 	Twinkle.addPortletLink(Twinkle.xfd.callback, 'XFD', 'tw-xfd', 'Start a deletion discussion');
 };
