@@ -625,10 +625,14 @@ Twinkle.tag.updateSortOrder = function(e) {
 	$workarea.find('h5:not(:first-child)').css({ 'margin-top': '1em' });
 	$workarea.find('div').filter(':has(span.quickformDescription)').css({ 'margin-top': '0.4em' });
 
-	Morebits.quickForm.getElements(form, 'articleTags').forEach(generateLinks);
 	var alreadyPresentTags = Morebits.quickForm.getElements(form, 'alreadyPresentArticleTags');
 	if (alreadyPresentTags) {
 		alreadyPresentTags.forEach(generateLinks);
+	}
+	// in the unlikely case that *every* tag is already on the page
+	var notPresentTags = Morebits.quickForm.getElements(form, 'articleTags');
+	if (notPresentTags) {
+		notPresentTags.forEach(generateLinks);
 	}
 
 	// tally tags added/removed, update statusNode text
@@ -1952,7 +1956,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		params.patrol = form.patrolPage.checked;
 	}
 
-	params.tags = form.getChecked(Twinkle.tag.mode + 'Tags');
+	// Don't return null if there aren't any available tags
+	params.tags = form.getChecked(Twinkle.tag.mode + 'Tags') || [];
 
 	// Save values of input fields into params object. This works as quickform input
 	// fields within subgroups of elements with name 'articleTags' (say) have their
