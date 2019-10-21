@@ -574,10 +574,30 @@ Twinkle.arv.callback.evaluate = function(e) {
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at AIV:');
 					return;
 				}
-				aivPage.getStatusElement().status('Adding new report...');
-				aivPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd'));
-				aivPage.setAppendText('\n*{{' + (mw.util.isIPAddress(uid) ? 'IPvandal' : 'vandal') + '|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
-				aivPage.append();
+
+				// then check for any bot reports
+				var tb2Page = new Morebits.wiki.page('Wikipedia:Administrator intervention against vandalism/TB2', 'Checking bot reports');
+				tb2Page.load(function() {
+					var tb2Text = tb2Page.getPageText();
+					var tb2statelem = tb2Page.getStatusElement();
+
+					if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + RegExp.escape(uid, true) + '\\s*\\}\\}').test(tb2Text)) {
+						if (confirm('The user ' + uid + ' has already been reported by a bot. Do you wish to make the report anyway?')) {
+							tb2statelem.info('Proceeded despite bot report');
+						} else {
+							tb2statelem.error('Report from a bot is already present, stopping');
+							Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them at AIV:');
+							return;
+						}
+					} else {
+						tb2statelem.info('No conflicting bot reports');
+					}
+
+					aivPage.getStatusElement().status('Adding new report...');
+					aivPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd'));
+					aivPage.setAppendText('\n*{{' + (mw.util.isIPAddress(uid) ? 'IPvandal' : 'vandal') + '|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
+					aivPage.append();
+				});
 			});
 			break;
 
