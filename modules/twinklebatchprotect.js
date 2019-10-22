@@ -360,6 +360,9 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 Twinkle.batchprotect.currentProtectCounter = 0;
 Twinkle.batchprotect.currentprotector = 0;
 Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEvaluate(event) {
+	Morebits.wiki.actionCompleted.notice = 'Status';
+	Morebits.wiki.actionCompleted.postfix = 'batch protection is now complete';
+
 	var form = event.target;
 
 	var numProtected = $(Morebits.quickForm.getElements(form, 'pages')).filter(function(index, element) {
