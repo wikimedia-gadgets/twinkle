@@ -1,7 +1,8 @@
 /* global Twinkle, Morebits */
 
-// Script depends on jQuery dialog widget
-mw.loader.using('jquery.ui.dialog', function() {
+// Script depends on jQuery dialog widget, loaded through jquery.ui after
+// T219604 (1.35-wmf.2 circa 22 Oct 2019)
+mw.loader.using('jquery.ui', function() {
 	// Construct object (to prevent namespace conflicts)
 	Twinkle.morebitsTest = {
 
