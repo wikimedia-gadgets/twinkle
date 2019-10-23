@@ -12,6 +12,7 @@ use Getopt::Long::Descriptive;
 use Git::Repository;
 use MediaWiki::API;
 use File::Slurper qw(read_text write_text);
+use Term::ANSIColor;
 
 # Config file should be a simple file consisting of keys and values:
 # username = Jimbo Wales
@@ -50,7 +51,7 @@ if ($opt->help || !scalar @ARGV || !($opt->username && $opt->password)) {
 # Ensure we've only got one item for each confg key
 foreach my $key (sort keys %{$opt}) {
     if (ref(${$opt}{$key}) eq 'ARRAY') {
-      print "Duplicate config found for $key, quitting\n";
+      print color ['red'], "Duplicate config found for $key, quitting\n";
       exit 1;
     }
 }
@@ -58,7 +59,7 @@ foreach my $key (sort keys %{$opt}) {
 my $repo = Git::Repository->new();
 my @status = $repo->run(status => '--porcelain');
 if (scalar @status) {
-  print "Repository is not clean, aborting\n";
+  print colored ['red'], "Repository is not clean, aborting\n";
   exit;
 }
 # Make sure we know what we're doing before doing it
@@ -81,7 +82,7 @@ my $mw = MediaWiki::API->new({
 			     });
 $mw->{ua}->agent('Twinkle/sync.pl ('.$mw->{ua}->agent.')');
 $mw->login({lgname => $opt->username, lgpassword => $opt->password})
-  or die "Error logging in: $mw->{error}->{code}: $mw->{error}->{details}\n";
+  or die colored ['red'], "Error logging in: $mw->{error}->{code}: $mw->{error}->{details}\n";
 
 ### Main loop to parse options
 if ($opt->mode eq 'pull') {
@@ -92,7 +93,7 @@ if ($opt->mode eq 'pull') {
     my $text = $wikiPage->{q{*}}."\n"; # MediaWiki doesn't have trailing newlines
     # Might be faster to check this using git and eof, but here makes sense
     if ($text eq read_text($file)) {
-      print "... No changes found, skipping\n";
+      print colored ['blue'], "... No changes found, skipping\n";
       next;
     } else {
       print "\n";
@@ -115,7 +116,7 @@ if ($opt->mode eq 'pull') {
   # morebits.js first with make deploy
   foreach my $file (@ARGV) {
     if (!defined $deploys{$file}) {
-      print "$file not deployable, skipping\n";
+      print colored ['yellow'], "$file not deployable, skipping\n";
       next;
     }
     my $page = $deploys{$file};
@@ -132,10 +133,10 @@ sub forReal {
   my @meaningful = qw (username base lang family);
   print "Here are the current parameters specified:\n\n";
   foreach my $key (@meaningful) {
-    print "\t$key = ${$opt}{$key}\n";
+    print colored ['blue'], "\t$key = ${$opt}{$key}\n";
   }
   print "\nThis means User:$opt->{username} will ";
-  print uc $opt->{mode}.q{ };
+  print colored ['magenta'], uc $opt->{mode}.q{ };
   if ($opt->{mode} eq 'pull') {
     print "from subpages of $opt->{base}";
   } elsif ($opt->{mode} eq 'push') {
@@ -153,7 +154,7 @@ sub forReal {
       print "Aborting\n";
       exit 0;
     } elsif ($input eq 'y' || $input eq 'yes') {
-      print "Proceeding\n";
+      print "Proceeding...\n";
       return 0;
     } else {
       print 'Unknown entry... ';
@@ -168,7 +169,7 @@ sub checkFile {
   if (-e -f -r $file) {
     return 0;
   } else {
-    print "$file does not exist, skipping\n";
+    print colored ['red'], "$file does not exist, skipping\n";
     return 1;
   }
 }
@@ -176,9 +177,9 @@ sub checkFile {
 # Check if page exists
 sub checkPage {
   my $page = shift;
-  my $wikiPage = $mw->get_page({title => $page}) or die "$mw->{error}->{code}: $mw->{error}->{details}\n";
+  my $wikiPage = $mw->get_page({title => $page}) or die colored ['red'], "$mw->{error}->{code}: $mw->{error}->{details}\n";
   if (defined $wikiPage->{missing}) {
-    print "$page does not exist, skipping\n";
+    print colored ['red'], "$page does not exist, skipping\n";
     return 0;
   } else {
     return $wikiPage;
@@ -197,7 +198,7 @@ sub buildEditSummary {
     my $validC = $valid->stderr();
     if (eof $validC) {
       my $newLog = $repo->run(log => '--oneline', '--no-merges', '--no-color', "$1..HEAD", $file);
-      open my $nl, '<', \$newLog or die $ERRNO;
+      open my $nl, '<', \$newLog or die colored ['red'], "$ERRNO\n";
       while (<$nl>) {
 	chomp;
 	my @arr = split / /, $_, 2;
@@ -207,16 +208,21 @@ sub buildEditSummary {
 	  $editSummary .= "$fixPer; ";
 	}
       }
-      close $nl or die $ERRNO;
+      close $nl or die colored ['red'], "$ERRNO\n";
     }
   }
 
   # Prompt for manual entry
   if (!$editSummary) {
-    my $log = $repo->run(log => '-5', '--pretty=format:%s', '--no-color', $file);
-    print "\nUnable to autogenerate edit summary for $page.  The wiki's most recent edit summary is:\n";
-    print "\t$oldCommitish\nThe most recent git log entries are:\n";
-    print "$log\nPlease provide an edit summary (commit ref will be added automatically):\n";
+    my @log = $repo->run(log => '-5', '--pretty=format:%s (%h)', '--no-merges', '--no-color', $file);
+    print colored ['red'], "Unable to autogenerate edit summary for $page\n\n";
+    print "The most recent ON-WIKI edit summary is:\n";
+    print colored ['blue'], "\t$oldCommitish\n";
+    print "The most recent GIT LOG entries are:\n";
+    foreach (@log) {
+      print colored ['blue'], "\t$_\n";
+    }
+    print "Please provide an edit summary (commit ref will be added automatically):\n";
     $editSummary = <STDIN>;
     chomp $editSummary;
   }
@@ -233,7 +239,7 @@ sub editPage {
   my ($pTitle, $nText, $pSummary) = @_;
   my $ref = $mw->get_page({title => $pTitle});
   if (defined $ref->{missing}) {
-    print "$pTitle does not exist\n";
+    print colored ['red'], "$pTitle does not exist\n";
     exit 1;
   } else {
     my $timestamp = $ref->{timestamp};
@@ -243,7 +249,7 @@ sub editPage {
 	       basetimestamp => $timestamp, # Avoid edit conflicts
 	       text => $nText,
 	       summary => $pSummary
-	      }) || die "Error editing the page: $mw->{error}->{code}: $mw->{error}->{details}\n";
+	      }) || die colored ['red'], "Error editing the page: $mw->{error}->{code}: $mw->{error}->{details}\n";
   }
   return $mw->{response};
 }
@@ -257,20 +263,20 @@ sub saltNPepa {
   return 1 if !$wikiPage;
   # print "$file -> $opt->{lang}.$opt->{family}.org/wiki/$page";
   print ucfirst $opt->{mode};
-  print "ing $file to $page";
+  print "ing $file to $page...";
 
   my $wp = $wikiPage->{q{*}}."\n"; # MediaWiki doesn't have trailing newlines
   if ($text eq $wp) {
-    print "... No changes needed, skipping\n";
+    print colored ['green'], " No changes needed, skipping\n";
     return 1;
   } else {
     print "\n";;
     my $summary = buildEditSummary($page, $file, $wikiPage->{comment});
     my $editReturn = editPage($page, $text, $summary);
     if ($editReturn->{_msg} eq 'OK') {
-      print "$file successfully pushed to $page\n";
+      print colored ['green'], "\t$file successfully pushed to $page\n";
     } else {
-      print "Error pushing $file: $mw->{error}->{code}: $mw->{error}->{details}\n";
+      print colored ['red'], "Error pushing $file: $mw->{error}->{code}: $mw->{error}->{details}\n";
     }
     return 0;
   }
