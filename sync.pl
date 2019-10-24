@@ -78,11 +78,11 @@ my %pages = map {+(my $s = $_) =~ s/modules\///; $_ => "$opt->{base}/$s"} @ARGV;
 # Open API and log in before anything else
 my $mw = MediaWiki::API->new({
 			      api_url => "https://$opt->{lang}.$opt->{family}.org/w/api.php",
-			      max_lag => 1000000 # not a botty script, thus smash it!
+			      max_lag => 1000000, # not a botty script, thus smash it!
+			      on_error => \&dieNice
 			     });
 $mw->{ua}->agent('Twinkle/sync.pl ('.$mw->{ua}->agent.')');
-$mw->login({lgname => $opt->username, lgpassword => $opt->password})
-  or die colored ['red'], "Error logging in: $mw->{error}->{code}: $mw->{error}->{details}\n";
+$mw->login({lgname => $opt->username, lgpassword => $opt->password});
 
 ### Main loop to parse options
 if ($opt->mode eq 'pull') {
@@ -126,6 +126,23 @@ if ($opt->mode eq 'pull') {
 
 
 ### SUBROUTINES
+# Nicer handling of errors
+# Can be expanded using:
+## https://metacpan.org/release/MediaWiki-API/source/lib/MediaWiki/API.pm
+## https://www.mediawiki.org/wiki/API:Errors_and_warnings#Standard_error_messages
+sub dieNice {
+  my $code = $mw->{error}->{code};
+  my $details = $mw->{error}->{details};
+  print color 'red';
+  if ($code == 4) {
+    print "Error logging in\n";
+  } elsif ($code == 3 && $details =~ /protectednamespace-interface/) {
+    print "You do not have permission to edit interface messages\n";
+  } else {
+    print "$code: $details\n";
+  }
+  die "Quitting\n";
+}
 # Check that everything is in order
 # Data::Dumper is simpler but the output is ugly, and this ain't worth another
 # dependency
@@ -177,7 +194,7 @@ sub checkFile {
 # Check if page exists
 sub checkPage {
   my $page = shift;
-  my $wikiPage = $mw->get_page({title => $page}) or die colored ['red'], "$mw->{error}->{code}: $mw->{error}->{details}\n";
+  my $wikiPage = $mw->get_page({title => $page});
   if (defined $wikiPage->{missing}) {
     print colored ['red'], "$page does not exist, skipping\n";
     return 0;
@@ -249,7 +266,7 @@ sub editPage {
 	       basetimestamp => $timestamp, # Avoid edit conflicts
 	       text => $nText,
 	       summary => $pSummary
-	      }) || die colored ['red'], "Error editing the page: $mw->{error}->{code}: $mw->{error}->{details}\n";
+	      });
   }
   return $mw->{response};
 }
