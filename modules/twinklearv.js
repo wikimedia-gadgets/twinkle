@@ -327,7 +327,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					$diffs.find('.entry').remove();
 
 					var date = new Date();
-					date.setHours(-36); // all since 36 hours
+					date.setHours(date.getHours() - 48); // all since 48 hours
 
 					var api = new mw.Api();
 					api.get({
