@@ -433,8 +433,8 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	var talk_title = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
 	// Talk page templates for PROD-able discussions
 	var blocking_templates = 'Template:Old XfD multi|Template:Old MfD|Template:Oldffdfull|' + // Common prior XfD talk page templates
-		'Template:Multidel|Template:Oldpuffull|' + // Uncommon/legacy prior XfD templates
-		'Olddrvfull|Olddelrev|' + // Prior DRV templates
+		'Template:Oldpuffull|' + // Legacy prior XfD template
+		'Template:Olddelrev|' + // Prior DRV template
 		'Template:Old prod';
 	var query = {
 		'action': 'query',
