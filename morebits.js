@@ -433,7 +433,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			if (data.label) {
 				label = node.appendChild(document.createElement('label'));
 				label.appendChild(document.createTextNode(data.label));
-				label.setAttribute('for', id);
+				label.setAttribute('for', data.id || id);
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
@@ -441,7 +441,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				subnode.setAttribute('value', data.value);
 			}
 			subnode.setAttribute('name', data.name);
-			subnode.setAttribute('id', id);
 			subnode.setAttribute('type', 'text');
 			if (data.size) {
 				subnode.setAttribute('size', data.size);
@@ -458,6 +457,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			if (data.event) {
 				subnode.addEventListener('keyup', data.event, false);
 			}
+			childContainder = subnode;
 			break;
 		case 'dyninput':
 			var min = data.min || 1;
@@ -622,9 +622,10 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node.setAttribute('id', 'div_' + id);
 			if (data.label) {
 				label = node.appendChild(document.createElement('h5'));
-				label.appendChild(document.createTextNode(data.label));
-			// TODO need to nest a <label> tag in here without creating extra vertical space
-			// label.setAttribute( 'for', id );
+				var labelElement = document.createElement('label');
+				labelElement.textContent = data.label;
+				labelElement.setAttribute('for', data.id || id);
+				label.appendChild(labelElement);
 			}
 			subnode = node.appendChild(document.createElement('textarea'));
 			subnode.setAttribute('name', data.name);
@@ -643,6 +644,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			if (data.value) {
 				subnode.value = data.value;
 			}
+			childContainder = subnode;
 			break;
 		default:
 			throw new Error('Morebits.quickForm: unknown element type ' + data.type.toString());
