@@ -181,22 +181,25 @@ Twinkle.prod.callbacks = {
 		var statelem = apiobj.statelem;
 		var params = apiobj.params;
 
-		// Check talk page for templates indicating prior XfD
-		if ($(xmlDoc).find('templates').length) {
-			statelem.warn('Previous XfD template found on talk page, aborting procedure');
-			return;
-		}
-
-		// Check talk page for category indicating prior PROD
-		if ($(xmlDoc).find('categories').length) {
-			if (params.blp) {
-				if (!confirm('Previous PROD nomination found on talk page. Do you still want to continue applying BLPPROD? ')) {
-					statelem.warn('Previous PROD found on talk page, aborted by user');
+		// Check talk page for templates indicating prior XfD or PROD
+		var numTemplates = $(xmlDoc).find('templates tl').length;
+		if (numTemplates) {
+			var template = $(xmlDoc).find('templates tl')[0].getAttribute('title');
+			if (numTemplates === 1 && template === 'Template:Old prod') {
+				if (params.blp) {
+					if (!confirm('Previous PROD nomination found on talk page. Do you still want to continue applying BLPPROD? ')) {
+						statelem.warn('Previous PROD found on talk page, aborted by user');
+						return;
+					}
+					statelem.info('Previous PROD found on talk page, continuing');
+				} else {
+					statelem.warn('Previous PROD found on talk page, aborting procedure');
 					return;
 				}
-				statelem.info('Previous PROD found on talk page, continuing');
+
+			// if there are multiple templates, at least one of them would be a prior xfd template
 			} else {
-				statelem.warn('Previous PROD found on talk page, aborting procedure');
+				statelem.warn('Previous XfD template found on talk page, aborting procedure');
 				return;
 			}
 		}
@@ -430,13 +433,13 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	var talk_title = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
 	// Talk page templates for PROD-able discussions
 	var blocking_templates = 'Template:Old XfD multi|Template:Old MfD|Template:Oldffdfull|' + // Common prior XfD talk page templates
-		'Template:Multidel|Template:Oldpuffull|' + // Uncommon/legacy prior XfD templates
-		'Olddrvfull|Olddelrev'; // Prior DRV templates
+		'Template:Oldpuffull|' + // Legacy prior XfD template
+		'Template:Olddelrev|' + // Prior DRV template
+		'Template:Old prod';
 	var query = {
 		'action': 'query',
 		'titles': talk_title,
-		'prop': 'categories|templates',
-		'clcategories': 'Category:Past proposed deletion candidates',
+		'prop': 'templates',
 		'tltemplates': blocking_templates
 	};
 
