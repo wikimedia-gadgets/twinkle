@@ -2588,6 +2588,24 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		return true; // all OK
 	};
 
+	// helper function to get a new token on encountering token errors
+	// in save, deletePage, and undeletePage
+	// Being a synchronous ajax call, this blocks the event loop,
+	// and hence should be used sparingly.
+	var fnGetToken = function() {
+		var token;
+		var tokenApi = new Morebits.wiki.api('Getting token', {
+			action: 'query',
+			meta: 'tokens'
+		}, function(apiobj) {
+			token = $(apiobj.responseXML).find('tokens').attr('csrftoken');
+		}, null, function() {
+			this.getStatusElement().error('Failed to get token');
+		});
+		tokenApi.post({async: false});
+		return token;
+	};
+
 	// callback from saveApi.post()
 	var fnSaveSuccess = function() {
 		ctx.editMode = 'all';  // cancel append/prepend/revert modes
@@ -2648,16 +2666,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			}
 
 		// check for loss of edit token
-		// it's impractical to request a new token here, so invoke edit conflict logic when this happens
-		} else if (errorCode === 'notoken' && ctx.conflictRetries++ < ctx.maxConflictRetries) {
+		} else if ((errorCode === 'badtoken' || errorCode === 'notoken') && ctx.retries++ < ctx.maxRetries) {
 
 			ctx.statusElement.info('Edit token is invalid, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
-			if (fnCanUseMwUserToken('edit')) {
-				this.load(fnAutoSave, ctx.onSaveFailure); // try the append or prepend again
-			} else {
-				ctx.loadApi.post(); // reload the page and reapply the edit
-			}
+			ctx.saveApi.query.token = fnGetToken.call(this);
+			ctx.saveApi.post();
 
 		// check for network or server error
 		} else if (errorCode === 'undefined' && ctx.retries++ < ctx.maxRetries) {
@@ -2836,13 +2850,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.statusElement.info('Database query error, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.deleteProcessApi.post(); // give it another go!
-		} else if (errorCode === 'badtoken') {
-			// this is pathetic, but given the current state of Morebits.wiki.page it would
-			// be a dog's breakfast to try and fix this
-			ctx.statusElement.error('Invalid token. Please refresh the page and try again.');
-			if (ctx.onDeleteFailure) {
-				ctx.onDeleteFailure.call(this, this, ctx.deleteProcessApi);
-			}
+		} else if ((errorCode === 'badtoken' || errorCode === 'notoken') && ctx.retries++ < ctx.maxRetries) {
+			ctx.statusElement.info('Invalid token, retrying');
+			--Morebits.wiki.numberOfActionsLeft;
+			ctx.deleteProcessApi.query.token = fnGetToken.call(this);
+			ctx.deleteProcessApi.post();
 		} else if (errorCode === 'missingtitle') {
 			ctx.statusElement.error('Cannot delete the page, because it no longer exists');
 			if (ctx.onDeleteFailure) {
@@ -2920,13 +2932,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.statusElement.info('Database query error, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.undeleteProcessApi.post(); // give it another go!
-		} else if (errorCode === 'badtoken') {
-			// this is pathetic, but given the current state of Morebits.wiki.page it would
-			// be a dog's breakfast to try and fix this
-			ctx.statusElement.error('Invalid token. Please refresh the page and try again.');
-			if (ctx.onUndeleteFailure) {
-				ctx.onUndeleteFailure.call(this, this, ctx.undeleteProcessApi);
-			}
+		} else if ((errorCode === 'badtoken' || errorCode === 'notoken') && ctx.retries++ < ctx.maxRetries) {
+			ctx.statusElement.info('Invalid token, retrying');
+			--Morebits.wiki.numberOfActionsLeft;
+			ctx.undeleteProcessApi.query.token = fnGetToken.call(this);
+			ctx.undeleteProcessApi.post();
+
 		} else if (errorCode === 'cantundelete') {
 			ctx.statusElement.error('Cannot undelete the page, either because there are no revisions to undelete or because it has already been undeleted');
 			if (ctx.onUndeleteFailure) {
