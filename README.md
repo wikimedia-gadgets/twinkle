@@ -27,7 +27,7 @@ There are two ways to upload Twinkle scripts to Wikipedia or another destination
 
 After the files are synced, [MediaWiki:Gadgets-definition][] should contain the following lines:
 
-    * Twinkle[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.RegExp,mediawiki.notify,jquery.ui.dialog,jquery.tipsy,moment|rights=autoconfirmed|type=general|peers=Twinkle-pagestyles]|morebits.js|morebits.css|Twinkle.js|twinkleprod.js|twinkleimage.js|twinklebatchundelete.js|twinklewarn.js|twinklespeedy.js|friendlyshared.js|twinklediff.js|twinkleunlink.js|friendlytag.js|twinkledeprod.js|friendlywelcome.js|twinklexfd.js|twinklebatchdelete.js|twinklebatchprotect.js|twinkleconfig.js|twinklefluff.js|twinkleprotect.js|twinklearv.js|twinkleblock.js|friendlytalkback.js|Twinkle.css
+    * Twinkle[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.notify,jquery.ui,jquery.tipsy,jquery.chosen,moment|rights=autoconfirmed|type=general|peers=Twinkle-pagestyles]|morebits.js|morebits.css|Twinkle.js|twinkleprod.js|twinkleimage.js|twinklebatchundelete.js|twinklewarn.js|twinklespeedy.js|friendlyshared.js|twinklediff.js|twinkleunlink.js|friendlytag.js|twinkledeprod.js|friendlywelcome.js|twinklexfd.js|twinklebatchdelete.js|twinklebatchprotect.js|twinkleconfig.js|twinklefluff.js|twinkleprotect.js|twinklearv.js|twinkleblock.js|friendlytalkback.js|Twinkle.css
     * Twinkle-pagestyles[hidden|skins=vector]|Twinkle-pagestyles.css
 
 `Twinkle-pagestyles` is a hidden [peer gadget](https://www.mediawiki.org/wiki/ResourceLoader/Migration_guide_(users)#Gadget_peers) of Twinkle. Before Twinkle has loaded, it adds space where the TW menu would go in the Vector skin, so that the top bar does not "jump".
@@ -109,11 +109,7 @@ When `deploy`ing or `push`ing, the script will attempt to parse the latest on-wi
 Style guideline
 ---------------
 
-While old legacy code has many different and incoherent styles, it has been decided to utilize a more coherent style throughout the code.
-
-The [jQuery Core Style Guideline][jq_style] is what we will hereafter use as our style guideline.
-
-Needless to say, there are exceptions. The main sticking point is spacing around parentheses. Older Twinkle code looks like `if ( condition ) {`, but newer code tends to use `if (condition) {`. The best convention here is to follow the style of surrounding code.
+While old legacy code previously had many different and incoherent styles, it has been decided to utilize a more coherent style throughout the code, both for consistency and to cut down on potential errors.  [eslint][eslint.org] can be used to check your code before submission and even repair many common issues.  To install via `npm`, just run `npm install` from the main Twinkle directory in your terminal.  You can then freely check your code by running `npm run lint`, and if you run `npm run lint -- --fix` then `eslint` will clean up some (but not all!) style differences.  More information on specific style rules can be seen in [issue #500][fivehundred] and in `.eslintrc.json`, but the best advice is to just follow the style of surrounding code!
 
 [Wikipedia:Twinkle]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle
 [AzaToth]: https://en.wikipedia.org/wiki/User:AzaToth
@@ -152,4 +148,5 @@ Needless to say, there are exceptions. The main sticking point is spacing around
 [Getopt::Long::Descriptive]: https://metacpan.org/pod/Getopt::Long::Descriptive
 [App::cpanminus]: https://metacpan.org/pod/App::cpanminus
 [special_botpass]: https://en.wikipedia.org/wiki/Special:BotPasswords
-[jq_style]: https://contribute.jquery.org/style-guide/js/
+[eslint.org]: https://eslint.org/
+[fivehundred]: https://github.com/azatoth/twinkle/issues/500
