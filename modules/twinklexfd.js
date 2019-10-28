@@ -150,8 +150,6 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	result.category.dispatchEvent(evt);
 };
 
-Twinkle.xfd.previousNotify = true;
-
 Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory(e) {
 	var value = e.target.value;
 	var form = e.target.form;
@@ -543,13 +541,12 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			break;
 	}
 
-	// No creator notification for CFDS or RM
+	// Return to checked state when switching, but no creator notification for CFDS or RM
 	if (value === 'cfds' || value === 'rm') {
-		Twinkle.xfd.previousNotify = form.notify.checked;
 		form.notify.checked = false;
 		form.notify.disabled = true;
 	} else {
-		form.notify.checked = Twinkle.xfd.previousNotify;
+		form.notify.checked = true;
 		form.notify.disabled = false;
 	}
 };
