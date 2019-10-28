@@ -511,8 +511,11 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						label: 'Uncontroversial technical request',
 						value: 'rmtr',
 						name: 'rmtr',
-						tooltip: 'Use this option when you are unable to perform this uncontroversial move yourself because of a technical reason',
-						checked: false
+						tooltip: 'Use this option when you are unable to perform this uncontroversial move yourself because of a technical reason (e.g. a page already exists at the new title, or the page is protected)',
+						checked: false,
+						event: function() {
+							form.newname.required = this.checked;
+						}
 					}
 				]
 			});
@@ -520,7 +523,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'input',
 				name: 'newname',
 				label: 'New title: ',
-				tooltip: 'Required for technical requests. Otherwise, leave blank if unsure of appropriate title.'
+				tooltip: 'Required for technical requests. Otherwise, if unsure of the appropriate title, you may leave it blank.'
 			});
 
 			appendReasonBox();
@@ -1422,14 +1425,13 @@ Twinkle.xfd.callbacks = {
 
 	rm: {
 		listAtTalk: function(pageobj) {
-			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText(text + '\n\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params));
+			pageobj.setAppendText(Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params));
 			pageobj.setEditSummary('Proposing move to ' + params.newname + Twinkle.getPref('summaryAd'));
 			pageobj.setCreateOption('recreate'); // since the talk page need not exist
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
-			pageobj.save(function() {
+			pageobj.append(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 			});
 		},
@@ -1706,22 +1708,21 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 		case 'rm':
 			params = { reason: reason, newname: newname, rmtr: rmtr };
-			var talkpagename = mw.Title.newFromText(Morebits.pageNameNorm).getTalkPage().getPrefixedText();
-			Morebits.wiki.actionCompleted.redirect = rmtr ? 'Wikipedia:Requested moves/Technical requests' : talkpagename;
+			var nomPageName = rmtr ?
+				'Wikipedia:Requested moves/Technical requests' :
+				new mw.Title(Morebits.pageNameNorm).getTalkPage().toText();
+
+			Morebits.wiki.actionCompleted.redirect = nomPageName;
 			Morebits.wiki.actionCompleted.notice = 'Nomination completed, now redirecting to the discussion page';
 
+			wikipedia_page = new Morebits.wiki.page(nomPageName, rmtr ? 'Adding entry at WP:RM/TR' : 'Adding entry on talk page');
+			wikipedia_page.setCallbackParameters(params);
+
 			if (rmtr) {
-				if (!newname.trim()) {
-					alert('Please enter the destination page name');
-					return;
-				}
-				wikipedia_page = new Morebits.wiki.page('Wikipedia:Requested moves/Technical requests', 'Adding entry at WP:RM/TR');
-				wikipedia_page.setCallbackParameters(params);
 				wikipedia_page.load(Twinkle.xfd.callbacks.rm.listAtRMTR);
 			} else {
-				wikipedia_page = new Morebits.wiki.page(talkpagename, 'Adding entry on talk page');
-				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.load(Twinkle.xfd.callbacks.rm.listAtTalk);
+				// listAtTalk uses .append(), so no need to load the page
+				Twinkle.xfd.callbacks.rm.listAtTalk(wikipedia_page);
 			}
 			break;
 
