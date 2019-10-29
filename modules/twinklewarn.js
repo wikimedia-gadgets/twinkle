@@ -1296,7 +1296,7 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
-		var date = new Date();
+		var date = new Date(pageobj.getLoadTime());
 
 		if (params.sub_group in history) {
 			var temp_time = new Date(history[params.sub_group]);
