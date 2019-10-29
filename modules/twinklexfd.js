@@ -576,8 +576,9 @@ Twinkle.xfd.callbacks = {
 		}
 		if (venue === 'rm') {
 			// even if invoked from talk page, propose the subject page for move
-			var pageName = mw.Title.newFromText(Morebits.pageNameNorm).getSubjectPage().toText();
-			return '{{subst:' + (params.rmtr ? 'RMassist|' + pageName : 'Requested move') + '|' + params.newname + '|reason=' + params.reason + '}}';
+			var pageName = new mw.Title(Morebits.pageNameNorm).getSubjectPage().toText();
+			return '{{subst:' + (params.rmtr ? 'RMassist|1=' : 'Requested move|current1=') + pageName + '|' + params.newname + '|reason=' + params.reason + '}}';
+
 		}
 
 		var text = '{{subst:' + venue + '2';
@@ -1427,9 +1428,10 @@ Twinkle.xfd.callbacks = {
 		listAtTalk: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setAppendText(Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params));
-			pageobj.setEditSummary('Proposing move to ' + params.newname + Twinkle.getPref('summaryAd'));
+			pageobj.setAppendText('\n\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params));
+			pageobj.setEditSummary('Proposing move' + (params.newname ? ' to ' + params.newname : '') + Twinkle.getPref('summaryAd'));
 			pageobj.setCreateOption('recreate'); // since the talk page need not exist
+			pageobj.setFollowRedirect(true);
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.append(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
