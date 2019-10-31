@@ -9,7 +9,7 @@
  *** friendlytalkback.js: Talkback module
  ****************************************
  * Mode of invocation:     Tab ("TB")
- * Active on:              Existing user talk pages
+ * Active on:              Any page with relevant user name (userspace, contribs, etc.)
  * Config directives in:   FriendlyConfig
  */
 

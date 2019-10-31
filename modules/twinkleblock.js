@@ -10,12 +10,12 @@ var api = new mw.Api(), relevantUserName;
  *** twinkleblock.js: Block module
  ****************************************
  * Mode of invocation:     Tab ("Block")
- * Active on:              any page with relevant user name (userspace, contribs, etc.)
+ * Active on:              Any page with relevant user name (userspace, contribs, etc.)
  * Config directives in:   [soon to be TwinkleConfig]
  */
 
 Twinkle.block = function twinkleblock() {
-	// should show on Contributions pages, anywhere there's a relevant user
+	// should show on Contributions or Block pages, anywhere there's a relevant user
 	if (Morebits.userIsInGroup('sysop') && mw.config.get('wgRelevantUserName')) {
 		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user');
 	}
