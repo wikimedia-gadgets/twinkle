@@ -577,8 +577,10 @@ Twinkle.xfd.callbacks = {
 		if (venue === 'rm') {
 			// even if invoked from talk page, propose the subject page for move
 			var pageName = new mw.Title(Morebits.pageNameNorm).getSubjectPage().toText();
-			return '{{subst:' + (params.rmtr ? 'RMassist|1=' : 'Requested move|current1=') + pageName + '|' + params.newname + '|reason=' + params.reason + '}}';
-
+			return (params.rmtr ?
+				'{{subst:RMassist|1=' + pageName + '|2=' + params.newname :
+				'{{subst:Requested move|current1=' + pageName + '|new1=' + params.newname)
+				+ '|reason=' + params.reason + '}}';
 		}
 
 		var text = '{{subst:' + venue + '2';
