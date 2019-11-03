@@ -44,19 +44,46 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	var form = new Morebits.quickForm(Twinkle.tag.callback.evaluate);
 
-	if (document.getElementsByClassName('patrollink').length) {
-		form.append({
-			type: 'checkbox',
-			list: [
-				{
-					label: 'Mark the page as patrolled',
-					value: 'patrolPage',
-					name: 'patrolPage',
-					checked: Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled')
-				}
-			]
-		});
-	}
+	form.append({
+		type: 'input',
+		label: 'Quick filter: ',
+		name: 'quickfilter',
+		size: '30px',
+		event: function twinkletagquickfilter() {
+			// flush the DOM of all existing underline spans
+			$allCheckboxDivs.find('.search-hit').each(function(i, e) {
+				var label_element = e.parentElement;
+				// This would convert <label>Hello <span class=search-hit>wo</span>rld</label>
+				// to <label>Hello world</label>
+				label_element.innerHTML = label_element.textContent;
+			});
+
+			if (this.value) {
+				$allCheckboxDivs.hide();
+				$allHeaders.hide();
+				var searchString = this.value;
+				var searchRegex = new RegExp(mw.util.escapeRegExp(searchString), 'i');
+
+				$allCheckboxDivs.find('label').each(function () {
+					var label_text = this.textContent;
+					var searchHit = searchRegex.exec(label_text);
+					if (searchHit) {
+						var range = document.createRange();
+						var textnode = this.childNodes[0];
+						range.selectNodeContents(textnode);
+						range.setStart(textnode, searchHit.index);
+						range.setEnd(textnode, searchHit.index + searchString.length);
+						var underline_span = $('<span>').addClass('search-hit').css('text-decoration', 'underline')[0];
+						range.surroundContents(underline_span);
+						this.parentElement.style.display = 'block'; // show
+					}
+				});
+			} else {
+				$allCheckboxDivs.show();
+				$allHeaders.show();
+			}
+		}
+	});
 
 	switch (Twinkle.tag.mode) {
 		case 'article':
@@ -74,7 +101,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				]
 			});
 
-			Twinkle.tag.quickFilter(form);
 
 			if (!Twinkle.tag.canRemove) {
 				var divElement = document.createElement('div');
@@ -112,8 +138,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'file':
 			Window.setTitle('File maintenance tagging');
 
-			Twinkle.tag.quickFilter(form);
-
 			form.append({ type: 'header', label: 'License and sourcing problem tags' });
 			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.licenseList });
 
@@ -138,8 +162,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'redirect':
 			Window.setTitle('Redirect tagging');
 
-			Twinkle.tag.quickFilter(form);
-
 			form.append({ type: 'header', label: 'Spelling, misspelling, tense and capitalization templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.spellingList });
 
@@ -160,6 +182,19 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			break;
 	}
 
+	if (document.getElementsByClassName('patrollink').length) {
+		form.append({
+			type: 'checkbox',
+			list: [
+				{
+					label: 'Mark the page as patrolled',
+					value: 'patrolPage',
+					name: 'patrolPage',
+					checked: Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled')
+				}
+			]
+		});
+	}
 	form.append({ type: 'submit' });
 
 	var result = form.render();
@@ -246,54 +281,10 @@ Twinkle.tag.callback = function friendlytagCallback() {
 	}
 };
 
-// $allCheckboxDivs and $allHeaders are defined globally, rather than in
-// the event function, to avoid having to recompute them on every keydown.
+
+// $allCheckboxDivs and $allHeaders are defined globally, rather than in the
+// quickfilter event function, to avoid having to recompute them on every keydown
 var $allCheckboxDivs, $allHeaders;
-
-Twinkle.tag.quickFilter = function(form) {
-
-	form.append({
-		type: 'input',
-		label: 'Quick filter: ',
-		name: 'quickfilter',
-		size: '30px',
-		event: function twinkletagquickfilter() {
-			// flush the DOM of all existing underline spans
-			$allCheckboxDivs.find('.search-hit').each(function(i, e) {
-				var label_element = e.parentElement;
-				// This would convert <label>Hello <span class=search-hit>wo</span>rld</label>
-				// to <label>Hello world</label>
-				label_element.innerHTML = label_element.textContent;
-			});
-
-			if (this.value) {
-				$allCheckboxDivs.hide();
-				$allHeaders.hide();
-				var searchString = this.value;
-				var searchRegex = new RegExp(mw.util.escapeRegExp(searchString), 'i');
-
-				$allCheckboxDivs.find('label').each(function () {
-					var label_text = this.textContent;
-					var searchHit = searchRegex.exec(label_text);
-					if (searchHit) {
-						var range = document.createRange();
-						var textnode = this.childNodes[0];
-						range.selectNodeContents(textnode);
-						range.setStart(textnode, searchHit.index);
-						range.setEnd(textnode, searchHit.index + searchString.length);
-						var underline_span = $('<span>').addClass('search-hit').css('text-decoration', 'underline')[0];
-						range.surroundContents(underline_span);
-						this.parentElement.style.display = 'block'; // show
-					}
-				});
-			} else {
-				$allCheckboxDivs.show();
-				$allHeaders.show();
-			}
-		}
-	});
-
-};
 
 Twinkle.tag.updateSortOrder = function(e) {
 	var form = e.target.form;
