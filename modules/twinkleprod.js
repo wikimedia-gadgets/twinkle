@@ -207,6 +207,7 @@ Twinkle.prod.callbacks = {
 		var ts = new Morebits.wiki.page(mw.config.get('wgPageName'));
 		ts.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
 		ts.setCallbackParameters(params);
+		ts.setLookupNonRedirectCreator(true); // Look for author of first non-redirect revision
 		ts.lookupCreation(Twinkle.prod.callbacks.creationInfo);
 	},
 
