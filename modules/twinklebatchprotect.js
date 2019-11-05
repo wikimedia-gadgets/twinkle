@@ -352,6 +352,8 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 
 		var result = form.render();
 		Window.setContent(result);
+
+		Morebits.checkboxShiftClickSupport(Morebits.quickForm.getElements(result, 'pages'));
 	}, statelem);
 
 	wikipedia_api.post();
