@@ -901,17 +901,19 @@ Twinkle.config.init = function twinkleconfigInit() {
 		var contentdiv = document.getElementById('twinkle-config-content');
 		contentdiv.textContent = '';  // clear children
 
-		// let user know about possible conflict with monobook.js/vector.js file
+		// let user know about possible conflict with skin js/common.js file
 		// (settings in that file will still work, but they will be overwritten by twinkleoptions.js settings)
-		var contentnotice = document.createElement('p');
-		// I hate innerHTML, but this is one thing it *is* good for...
-		contentnotice.innerHTML = '<b>Before modifying your preferences here,</b> make sure you have removed any old <code>TwinkleConfig</code> and <code>FriendlyConfig</code> settings from your <a href="' + mw.util.getUrl('Special:MyPage/skin.js') + '" title="Special:MyPage/skin.js">user JavaScript file</a>.';
-		contentdiv.appendChild(contentnotice);
-
-		// look and see if the user does in fact have any old settings in their skin JS file
-		var skinjs = new Morebits.wiki.page('User:' + mw.config.get('wgUserName') + '/' + mw.config.get('skin') + '.js');
-		skinjs.setCallbackParameters(contentnotice);
-		skinjs.load(Twinkle.config.legacyPrefsNotice);
+		if (window.TwinkleConfig || window.FriendlyConfig) {
+			var contentnotice = document.createElement('p');
+			contentnotice.innerHTML = '<table class="plainlinks ombox ombox-content"><tr><td class="mbox-image">' +
+				'<img alt="" src="https://upload.wikimedia.org/wikipedia/commons/3/38/Imbox_content.png" /></td>' +
+				'<td class="mbox-text"><p><big><b>Before modifying your settings here,</b> you must remove your old Twinkle and Friendly settings from your personal skin JavaScript.</big></p>' +
+				'<p>To do this, you can <a href="' + mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/' + mw.config.get('skin') +
+				'.js', { action: 'edit' }) + '" target="_blank"><b>edit your personal skin javascript file</b></a> or <a href="' +
+				mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/common.js', { action: 'edit'}) + '" target="_blank"><b>your common.js file</b></a>, removing all lines of code that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
+				'</td></tr></table>';
+			contentdiv.appendChild(contentnotice);
+		}
 
 		// start a table of contents
 		var toctable = document.createElement('div');
@@ -1268,21 +1270,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 			box.appendChild(document.createTextNode('.'));
 			$(box).insertAfter($('#contentSub'));
 		}
-	}
-};
-
-// Morebits.wiki.page callback from init code
-Twinkle.config.legacyPrefsNotice = function twinkleconfigLegacyPrefsNotice(pageobj) {
-	var text = pageobj.getPageText();
-	var contentnotice = pageobj.getCallbackParameters();
-	if (text.indexOf('TwinkleConfig') !== -1 || text.indexOf('FriendlyConfig') !== -1) {
-		contentnotice.innerHTML = '<table class="plainlinks ombox ombox-content"><tr><td class="mbox-image">' +
-			'<img alt="" src="http://upload.wikimedia.org/wikipedia/en/3/38/Imbox_content.png" /></td>' +
-			'<td class="mbox-text"><p><big><b>Before modifying your settings here,</b> you must remove your old Twinkle and Friendly settings from your personal skin JavaScript.</big></p>' +
-			'<p>To do this, you can <a href="' + mw.config.get('wgScript') + '?title=User:' + encodeURIComponent(mw.config.get('wgUserName')) + '/' + mw.config.get('skin') + '.js&action=edit" target="_blank"><b>edit your personal JavaScript</b></a>, removing all lines of code that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
-			'</td></tr></table>';
-	} else {
-		$(contentnotice).remove();
 	}
 };
 
