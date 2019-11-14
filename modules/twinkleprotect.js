@@ -1211,7 +1211,11 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					statusInited = true;
 				}
 
-				thispage.stabilize(allDone);
+				thispage.stabilize(allDone, function(error) {
+					if (error.errorCode === 'stabilize_denied') { // [[phab:T234743]]
+						thispage.getStatusElement().error('Failed trying to modify pending changes settings, likely due to a mediawiki bug. Other actions (tagging or regular protection) may have taken place. Please reload the page and try again.');
+					}
+				});
 			};
 
 			if ((form.editmodify && form.editmodify.checked) || (form.movemodify && form.movemodify.checked) ||
