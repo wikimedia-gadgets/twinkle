@@ -33,7 +33,7 @@ Twinkle.talkback.callback = function() {
 	Window.addFooterLink('About {{talkback}}', 'Template:Talkback');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#talkback');
 
-	var form = new Morebits.quickForm(callback_evaluate);
+	var form = new Morebits.quickForm(Twinkle.talkback.evaluate);
 
 	form.append({ type: 'radio', name: 'tbtarget',
 		list: [
@@ -63,7 +63,7 @@ Twinkle.talkback.callback = function() {
 				value: 'mail'
 			}
 		],
-		event: callback_change_target
+		event: Twinkle.talkback.changeTarget
 	});
 
 	form.append({
@@ -123,7 +123,7 @@ var prev_page = '';
 var prev_section = '';
 var prev_message = '';
 
-var callback_change_target = function(e) {
+Twinkle.talkback.changeTarget = function(e) {
 	var value = e.target.values;
 	var root = e.target.form;
 	var old_area = Morebits.quickForm.getElements(root, 'work_area')[0];
@@ -319,7 +319,7 @@ var callback_change_target = function(e) {
 	}
 };
 
-var callback_evaluate = function(e) {
+Twinkle.talkback.evaluate = function(e) {
 
 	var tbtarget = e.target.getChecked('tbtarget')[0];
 	var page = null;
@@ -401,7 +401,7 @@ var callback_evaluate = function(e) {
 				talkpage.setEditSummary('You have replies at the [[Wikipedia:Teahouse/Questions|Teahouse question board]]' + Twinkle.getPref('summaryAd'));
 				break;
 			default:
-				throw 'Twinkle.talkback, function callback_evaluate: default case reached';
+				throw 'Twinkle.talkback.evaluate: default case reached';
 		}
 
 	} else if (tbtarget === 'mail') {
