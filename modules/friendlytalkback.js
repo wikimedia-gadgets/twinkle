@@ -378,14 +378,15 @@ Twinkle.talkback.evaluate = function(e) {
 	var talkpage = new Morebits.wiki.page(fullUserTalkPageName, 'Adding talkback');
 	var tbPageName = tbtarget === 'mytalk' ? mw.config.get('wgUserName') : page;
 
-	var text;
+	var text = '\n\n';
 	if (tbtarget === 'notice') {
-		text += '\n\n' + Morebits.string.safeReplace(Twinkle.talkback.noticeboards[page].text, '$SECTION', section);
+		text += Morebits.string.safeReplace(Twinkle.talkback.noticeboards[page].text, '$SECTION', section);
 		talkpage.setEditSummary(Twinkle.talkback.noticeboards[page].editSummary + Twinkle.getPref('summaryAd'));
 
 	} else if (tbtarget === 'mail') {
-		text = '\n\n==' + Twinkle.getFriendlyPref('mailHeading') + "==\n{{you've got mail|subject=";
-		text += section + '|ts=~~~~~}}';
+		text +=
+			'==' + Twinkle.getFriendlyPref('mailHeading') + '==\n' +
+			"{{You've got mail|subject=" + section + '|ts=~~~~~}}';
 
 		if (message) {
 			text += '\n' + message.trim() + '  ~~~~';
@@ -396,24 +397,16 @@ Twinkle.talkback.evaluate = function(e) {
 		talkpage.setEditSummary("Notification: You've got mail" + Twinkle.getPref('summaryAd'));
 
 	} else if (tbtarget === 'see') {
-		text = '\n\n{{subst:Please see|location=' + tbPageName;
-		if (section) {
-			text += '#' + section;
-		}
-		text += '|more=' + message.trim() + '}}';
+		text += '{{subst:Please see|location=' + tbPageName + (section ? '#' + section : '') + '|more=' + message.trim() + '}}';
+
 		talkpage.setEditSummary('Please check the discussion at [[:' + tbPageName +
 			(section ? '#' + section : '') + ']]' + Twinkle.getPref('summaryAd'));
 
 	} else {  // tbtarget one of mytalk, usertalk, other
 		// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
-		text = '\n\n==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') + '==\n{{talkback|';
-		text += tbPageName;
-
-		if (section) {
-			text += '|' + section;
-		}
-
-		text += '|ts=~~~~~}}';
+		text +=
+			'==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') + '==\n' +
+			'{{talkback|' + tbPageName + (section ? '|' + section : '') + '|ts=~~~~~}}';
 
 		if (message) {
 			text += '\n' + message.trim() + ' ~~~~';
