@@ -9,7 +9,7 @@
  *** twinklearv.js: ARV module
  ****************************************
  * Mode of invocation:     Tab ("ARV")
- * Active on:              Existing and non-existing user pages, user talk pages, contributions pages
+ * Active on:              Any page with relevant user name (userspace, contribs, etc.)
  * Config directives in:   TwinkleConfig
  */
 
