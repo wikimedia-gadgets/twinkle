@@ -4,7 +4,7 @@ Twinkle is a JavaScript application that gives Wikipedians a quick way of perfor
 
 See [Wikipedia:Twinkle][] on the English Wikipedia for more information.
 
-[AzaToth][] is the original author and maintainer of the tool, as well as the `morebits.js` library, which forms the basis for many Wikipedia scripts and editing tools in addition to Twinkle.
+[AzaToth][] is the original author and maintainer of the tool, as well as the `morebits.js` library gadget, which forms the basis for many Wikipedia scripts and editing tools in addition to Twinkle.
 
 ## How to file a bug report or feature request
 
