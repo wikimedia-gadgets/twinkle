@@ -3951,8 +3951,11 @@ Morebits.batchOperation = function(currentAction) {
 
 		var total = ctx.pageList.length;
 		if (!total) {
-			ctx.statusElement.info('nothing to do');
+			ctx.statusElement.info('no pages specified');
 			ctx.running = false;
+			if (ctx.postFinish) {
+				ctx.postFinish();
+			}
 			return;
 		}
 
