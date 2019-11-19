@@ -3842,7 +3842,8 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 
 
 /** **************** Morebits.batchOperation ****************
- * Iterates over a group of pages and executes a worker function for each.
+ * Iterates over a group of pages (or arbitrary objects) and executes a worker function
+ * for each.
  *
  * Constructor: Morebits.batchOperation(currentAction)
  *
@@ -3851,11 +3852,11 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
  *
  * setOption(optionName, optionValue): Sets a known option:
  *    - chunkSize (integer): the size of chunks to break the array into (default 50).
- *                           Setting this to a small value (<5) can cause problems.
+ *          Setting this to a small value (<5) can cause problems.
  *    - preserveIndividualStatusLines (boolean): keep each page's status element visible
- *                                               when worker is complete?  See note below
+ *          when worker is complete?  See note below
  *
- * run(worker): Runs the given callback for each page in the list.
+ * run(worker, postFinish): Runs the callback `worker` for each page in the list.
  *    The callback must call workerSuccess when succeeding, or workerFailure
  *    when failing.  If using Morebits.wiki.api or Morebits.wiki.page, this is easily
  *    done by passing these two functions as parameters to the methods on those
@@ -3864,6 +3865,7 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
  *    If you omit to call these methods, the batch operation will stall after the first
  *    chunk!  Also ensure that either workerSuccess or workerFailure is called no more
  *    than once.
+ *    The second callback `postFinish` is executed when the entire batch has been processed.
  *
  * If using preserveIndividualStatusLines, you should try to ensure that the
  * workerSuccess callback has access to the page title.  This is no problem for
@@ -3906,7 +3908,8 @@ Morebits.batchOperation = function(currentAction) {
 
 	/**
 	 * Sets the list of pages to work on
-	 * @param {String[]} pageList  Array of page names (strings)
+	 * @param {Array} pageList  Array of objects over which you wish to execute the worker function
+	 * This is usually the list of page names (strings).
 	 */
 	this.setPageList = function(pageList) {
 		ctx.pageList = pageList;
