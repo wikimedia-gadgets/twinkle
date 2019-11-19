@@ -3968,35 +3968,50 @@ Morebits.batchOperation = function(currentAction) {
 		fnStartNewChunk();
 	};
 
-	this.workerSuccess = function(apiobj) {
-		// update or remove status line
-		if (apiobj && apiobj.getStatusElement) {
-			var statelem = apiobj.getStatusElement();
+	/**
+	 * To be called by worker before it terminates succesfully
+	 * @param {(Morebits.wiki.page|Morebits.wiki.api|string)} arg
+	 * This should be the `Morebits.wiki.page` or `Morebits.wiki.api` object used by worker
+	 * (for the adjustment of status lines emitted by them).
+	 * If no Morebits.wiki.* object is used (eg. you're using mw.Api() or something else), and
+	 * `preserveIndividualStatusLines` option is on, give the page name (string) as argument.
+	 */
+	this.workerSuccess = function(arg) {
+
+		var createPageLink = function(pageName) {
+			var link = document.createElement('a');
+			link.setAttribute('href', mw.util.getUrl(pageName));
+			link.appendChild(document.createTextNode(pageName));
+			return link;
+		};
+
+		if (arg instanceof Morebits.wiki.api || arg instanceof Morebits.wiki.page) {
+			// update or remove status line
+			var statelem = arg.getStatusElement();
 			if (ctx.options.preserveIndividualStatusLines) {
-				if (apiobj.getPageName || apiobj.pageName || (apiobj.query && apiobj.query.title)) {
+				if (arg.getPageName || arg.pageName || (arg.query && arg.query.title)) {
 					// we know the page title - display a relevant message
-					var pageName = apiobj.getPageName ? apiobj.getPageName() :
-						apiobj.pageName || apiobj.query.title;
-					var link = document.createElement('a');
-					link.setAttribute('href', mw.util.getUrl(pageName));
-					link.appendChild(document.createTextNode(pageName));
-					statelem.info(['completed (', link, ')']);
+					var pageName = arg.getPageName ? arg.getPageName() : arg.pageName || arg.query.title;
+					statelem.info(['completed (', createPageLink(pageName), ')']);
 				} else {
 					// we don't know the page title - just display a generic message
 					statelem.info('done');
 				}
 			} else {
-				// remove the status line from display
+				// remove the status line automatically produced by Morebits.wiki.*
 				statelem.unlink();
 			}
+
+		} else if (typeof arg === 'string' && ctx.options.preserveIndividualStatusLines) {
+			new Morebits.status(arg, ['done (', createPageLink(arg), ')']);
 		}
 
 		ctx.countFinishedSuccess++;
-		fnDoneOne(apiobj);
+		fnDoneOne();
 	};
 
-	this.workerFailure = function(apiobj) {
-		fnDoneOne(apiobj);
+	this.workerFailure = function() {
+		fnDoneOne();
 	};
 
 	// private functions
