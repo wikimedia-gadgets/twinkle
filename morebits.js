@@ -268,7 +268,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 
 			if (data.list) {
 				for (i = 0; i < data.list.length; ++i) {
-
 					current = data.list[i];
 
 					if (current.list) {
@@ -302,7 +301,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 
 			if (data.list) {
 				for (i = 0; i < data.list.length; ++i) {
-
 					current = data.list[i];
 					current.type = 'option'; // must be options here
 
@@ -440,11 +438,11 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
+			subnode.setAttribute('name', data.name);
+			subnode.setAttribute('type', 'text');
 			if (data.value) {
 				subnode.setAttribute('value', data.value);
 			}
-			subnode.setAttribute('name', data.name);
-			subnode.setAttribute('type', 'text');
 			if (data.size) {
 				subnode.setAttribute('size', data.size);
 			}
@@ -597,10 +595,10 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node = document.createElement('span');
 			childContainder = node.appendChild(document.createElement('input'));
 			childContainder.setAttribute('type', 'submit');
+			childContainder.setAttribute('name', data.name || 'submit');
 			if (data.label) {
 				childContainder.setAttribute('value', data.label);
 			}
-			childContainder.setAttribute('name', data.name || 'submit');
 			if (data.disabled) {
 				childContainder.setAttribute('disabled', 'disabled');
 			}
@@ -609,10 +607,10 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node = document.createElement('span');
 			childContainder = node.appendChild(document.createElement('input'));
 			childContainder.setAttribute('type', 'button');
+			childContainder.setAttribute('name', data.name);
 			if (data.label) {
 				childContainder.setAttribute('value', data.label);
 			}
-			childContainder.setAttribute('name', data.name);
 			if (data.disabled) {
 				childContainder.setAttribute('disabled', 'disabled');
 			}
@@ -882,7 +880,6 @@ HTMLFormElement.prototype.getChecked = function(name, type) {
 				} else {
 					return_array.push(options[i].value);
 				}
-
 			}
 		}
 	} else if (elements instanceof HTMLInputElement) {
@@ -930,7 +927,6 @@ HTMLFormElement.prototype.getUnchecked = function(name, type) {
 				} else {
 					return_array.push(options[i].value);
 				}
-
 			}
 		}
 	} else if (elements instanceof HTMLInputElement) {
@@ -1388,7 +1384,6 @@ Morebits.wiki.api.prototype = {
 	 * really want to give jQuery some extra parameters
 	 */
 	post: function(callerAjaxParameters) {
-
 		++Morebits.wiki.numberOfActionsLeft;
 
 		var ajaxparams = $.extend({}, {
@@ -1415,7 +1410,6 @@ Morebits.wiki.api.prototype = {
 				}
 
 				if (typeof this.errorCode === 'string') {
-
 					// the API didn't like what we told it, e.g., bad edit token or an error creating a page
 					this.returnError();
 					return;
@@ -1423,7 +1417,6 @@ Morebits.wiki.api.prototype = {
 
 				// invoke success callback if one was supplied
 				if (this.onSuccess) {
-
 					// set the callback context to this.parent for new code and supply the API object
 					// as the first argument to the callback (for legacy code)
 					this.onSuccess.call(this.parent, this);
@@ -1453,7 +1446,6 @@ Morebits.wiki.api.prototype = {
 
 		// invoke failure callback if one was supplied
 		if (this.onError) {
-
 			// set the callback context to this.parent for new code and supply the API object
 			// as the first argument to the callback for legacy code
 			this.onError.call(this.parent, this);
@@ -1619,7 +1611,6 @@ Morebits.wiki.api.setApiUserAgent = function(ua) {
  * @param {string} [currentAction] A string describing the action about to be undertaken (optional)
  */
 Morebits.wiki.page = function(pageName, currentAction) {
-
 	if (!currentAction) {
 		currentAction = 'Opening page "' + pageName + '"';
 	}
@@ -1999,7 +1990,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
-	 * `maxRetries` - number of retries for save errors involving an edit conflict or loss of edit token.Default: 2
+	 * `maxRetries` - number of retries for save errors involving an edit conflict or loss of edit token.
+	 * Default: 2
 	 */
 	this.setMaxConflictRetries = function(maxRetries) {
 		ctx.maxConflictRetries = maxRetries;
@@ -2245,7 +2237,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			rcid = mw.util.getParamValue('rcid', patrolhref);
 
 		if (rcid) {
-
 			var patrolstat = new Morebits.status('Marking page as patrolled');
 
 			var wikipedia_api = new Morebits.wiki.api('doing...', {
@@ -2269,7 +2260,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onSaveFailure = onFailure || emptyFunction;
 
 		if (!ctx.revertOldID) {
-			ctx.statusElement.error('Internal error: revision ID to revert to was not set before revert!');
+			ctx.statusElement.error('Internal error: revision ID to revert to was not set before revert (use setOldID function)!');
 			ctx.onSaveFailure(this);
 			return;
 		}
@@ -2293,7 +2284,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 		if (!ctx.moveDestination) {
-			ctx.statusElement.error('Internal error: destination page name was not set before move!');
+			ctx.statusElement.error('Internal error: destination page name was not set before move (use setMoveDestination function)!');
 			ctx.onMoveFailure(this);
 			return;
 		}
@@ -2412,7 +2403,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 		if (!ctx.protectEdit && !ctx.protectMove && !ctx.protectCreate) {
-			ctx.statusElement.error('Internal error: you must set edit and/or move and/or create protection before calling protect()!');
+			ctx.statusElement.error('Internal error: edit and/or move and/or create protection not set before protect (use setEditProtection, setMoveProtection, or setCreateProtection functions)!');
 			ctx.onProtectFailure(this);
 			return;
 		}
@@ -2455,12 +2446,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 		if (!ctx.flaggedRevs) {
-			ctx.statusElement.error('Internal error: you must set flaggedRevs before calling stabilize()!');
+			ctx.statusElement.error('Internal error: flaggedRevs not set before calling stabilize (use setFlaggedRevs function)!');
 			ctx.onStabilizeFailure(this);
 			return;
 		}
 		if (!ctx.editSummary) {
-			ctx.statusElement.error('Internal error: reason not set before calling stabilize() (use setEditSummary function)!');
+			ctx.statusElement.error('Internal error: reason not set before calling stabilize (use setEditSummary function)!');
 			ctx.onStabilizeFailure(this);
 			return;
 		}
@@ -2651,7 +2642,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// see if the API thinks we were successful
 		if ($(xml).find('edit').attr('result') === 'Success') {
-
 			// real success
 			// default on success action - display link for edited page
 			var link = document.createElement('a');
@@ -2684,7 +2674,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// check for edit conflict
 		if (errorCode === 'editconflict' && ctx.conflictRetries++ < ctx.maxConflictRetries) {
-
 			// edit conflicts can occur when the page needs to be purged from the server cache
 			var purgeQuery = {
 				action: 'purge',
@@ -2705,7 +2694,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// check for loss of edit token
 		} else if ((errorCode === 'badtoken' || errorCode === 'notoken') && ctx.retries++ < ctx.maxRetries) {
-
 			ctx.statusElement.info('Edit token is invalid, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.saveApi.query.token = fnGetToken.call(this);
@@ -2713,7 +2701,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// check for network or server error
 		} else if (errorCode === 'undefined' && ctx.retries++ < ctx.maxRetries) {
-
 			// the error might be transient, so try again
 			ctx.statusElement.info('Save failed, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
@@ -2721,7 +2708,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// hard error, give up
 		} else {
-
 			// non-admin attempting to edit a protected page - this gives a friendlier message than the default
 			if (errorCode === 'protectedpage') {
 				ctx.statusElement.error('Failed to save edit: Page is protected');
@@ -2760,7 +2746,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		if (!ctx.lookupNonRedirectCreator || !/^\s*#redirect/i.test($(xml).find('rev').text())) {
-
 			ctx.creator = $(xml).find('rev').attr('user');
 			if (!ctx.creator) {
 				ctx.statusElement.error('Could not find name of page creator');
@@ -2772,7 +2757,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				return;
 			}
 			ctx.onLookupCreationSuccess(this);
-
 		} else {
 			ctx.lookupCreationApi.query.rvlimit = 50; // modify previous query to fetch more revisions
 			ctx.lookupCreationApi.query.titles = ctx.pageName; // update pageName if redirect resolution took place in earlier query
@@ -2855,7 +2839,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.movetalk = 'true';
 		}
 		if (ctx.moveSubpages) {
-			query.movesubpages = 'true';  // XXX don't know whether this works for non-admins
+			query.movesubpages = 'true';
 		}
 		if (ctx.moveSuppressRedirect) {
 			query.noredirect = 'true';
@@ -2922,7 +2906,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	// callback from deleteProcessApi.post()
 	var fnProcessDeleteError = function() {
-
 		var errorCode = ctx.deleteProcessApi.getErrorCode();
 
 		// check for "Database query error"
@@ -3004,7 +2987,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	// callback from undeleteProcessApi.post()
 	var fnProcessUndeleteError = function() {
-
 		var errorCode = ctx.undeleteProcessApi.getErrorCode();
 
 		// check for "Database query error"
@@ -3061,7 +3043,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var editprot = prs.filter('[type="edit"]');
 		var moveprot = prs.filter('[type="move"]');
 		var createprot = prs.filter('[type="create"]');
-
 		var protections = [], expirys = [];
 
 		// set edit protection level
