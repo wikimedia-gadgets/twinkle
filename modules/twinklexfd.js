@@ -1498,7 +1498,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				'apprefix': 'Articles for deletion/' + Morebits.pageNameNorm,
 				'apnamespace': 4,
 				'apfilterredir': 'nonredirects',
-				'aplimit': Morebits.userIsInGroup('sysop') ? 5000 : 500
+				'aplimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 			};
 			wikipedia_api = new Morebits.wiki.api('Tagging article with deletion tag', query, Twinkle.xfd.callbacks.afd.main);
 			wikipedia_api.params = { usertalk: usertalk, reason: reason, noinclude: noinclude,
@@ -1601,7 +1601,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				'apprefix': 'Miscellany for deletion/' + Morebits.pageNameNorm,
 				'apnamespace': 4,
 				'apfilterredir': 'nonredirects',
-				'aplimit': Morebits.userIsInGroup('sysop') ? 5000 : 500
+				'aplimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 			};
 			wikipedia_api = new Morebits.wiki.api('Looking for prior nominations of this page', query, Twinkle.xfd.callbacks.mfd.main);
 			wikipedia_api.params = { usertalk: usertalk, notifyuserspace: notifyuserspace, reason: reason, noinclude: noinclude, xfdcat: xfdcat };
