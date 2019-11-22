@@ -90,8 +90,12 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	main_group.append({ type: 'option', label: '3: Warning', value: 'level3', selected: defaultGroup === 3 });
 	main_group.append({ type: 'option', label: '4: Final warning', value: 'level4', selected: defaultGroup === 4 });
 	main_group.append({ type: 'option', label: '4im: Only warning', value: 'level4im', selected: defaultGroup === 5 });
-	main_group.append({ type: 'option', label: 'Single-issue notices', value: 'singlenotice', selected: defaultGroup === 6 });
-	main_group.append({ type: 'option', label: 'Single-issue warnings', value: 'singlewarn', selected: defaultGroup === 7 });
+	if (Twinkle.getPref('combinedSingletMenus')) {
+		main_group.append({ type: 'option', label: 'Single-issue messages', value: 'singlecombined', selected: defaultGroup === 6 || defaultGroup === 7 });
+	} else {
+		main_group.append({ type: 'option', label: 'Single-issue notices', value: 'singlenotice', selected: defaultGroup === 6 });
+		main_group.append({ type: 'option', label: 'Single-issue warnings', value: 'singlewarn', selected: defaultGroup === 7 });
+	}
 	if (Twinkle.getPref('customWarningList').length) {
 		main_group.append({ type: 'option', label: 'Custom warnings', value: 'custom', selected: defaultGroup === 9 });
 	}
@@ -1139,6 +1143,13 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	if (value === 'singlenotice' || value === 'singlewarn') {
 		// no categories, just create the options right away
 		createEntries(Twinkle.warn.messages[value], sub_group, true);
+	} else if (value === 'singlecombined') {
+		var unSortedSinglets = $.extend({}, Twinkle.warn.messages.singlenotice, Twinkle.warn.messages.singlewarn);
+		var sortedSingletMessages = {};
+		Object.keys(unSortedSinglets).sort().forEach(function(key) {
+			sortedSingletMessages[key] = unSortedSinglets[key];
+		});
+		createEntries(sortedSingletMessages, sub_group, true);
 	} else if (value === 'custom') {
 		createEntries(Twinkle.getPref('customWarningList'), sub_group, true);
 	} else {
@@ -1207,7 +1218,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		'uw-aiv': 'Optional username that was reported (without User:) '
 	};
 
-	if (main_group === 'singlenotice' || main_group === 'singlewarn') {
+	if (['singlenotice', 'singlewarn', 'singlecombined'].indexOf(main_group) !== -1) {
 		if (notLinkedArticle[value]) {
 			if (Twinkle.warn.prev_article === null) {
 				Twinkle.warn.prev_article = e.target.form.article.value;

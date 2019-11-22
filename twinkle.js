@@ -101,6 +101,7 @@ Twinkle.defaultConfig.twinkle = {
 
 	// Warn
 	defaultWarningGroup: '1',
+	combinedSingletMenus: false,
 	showSharedIPNotice: true,
 	watchWarnings: true,
 	oldSelect: false,
