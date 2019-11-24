@@ -211,7 +211,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			// delsort categories list copied off [[User:Enterprisey/delsort.js]], originally taken from [[WP:DS/C]]
 			var delsortCategories = {
 				'People': ['People', 'Academics and educators', 'Actors and filmmakers', 'Artists', 'Authors', 'Bands and musicians', 'Businesspeople', 'Politicians', 'Sportspeople', 'Women', 'Lists of people'],
-				'Arts': ['Arts', 'Fictional elements', 'Science fiction'],
+				'Arts': ['Arts', 'Fictional elements', 'Science fiction and fantasy'],
 				'Arts/Culinary': ['Food and drink', 'Wine'],
 				'Arts/Language': ['Language', 'Academic journals', 'Bibliographies', 'Journalism', 'Literature', 'Logic', 'News media', 'Philosophy', 'Poetry'],
 				'Arts/Performing': ['Albums and songs', 'Dance', 'Film', 'Magic', 'Music', 'Radio', 'Television', 'Theatre', 'Video games'],
@@ -780,6 +780,7 @@ Twinkle.xfd.callbacks = {
 			if (params.delsort_cats) {
 				params.delsort_cats.forEach(function (cat) {
 					var delsortPage = new Morebits.wiki.page('Wikipedia:WikiProject Deletion sorting/' + cat, 'Adding to list of ' + cat + '-related deletion discussions');
+					delsortPage.setFollowRedirect(true); // In case a category gets renamed
 					delsortPage.setCallbackParameters({discussionPage: params.discussionpage});
 					delsortPage.load(Twinkle.xfd.callbacks.afd.delsortListing);
 				});
