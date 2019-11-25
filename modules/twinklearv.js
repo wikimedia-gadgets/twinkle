@@ -329,6 +329,16 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					var date = new Date();
 					date.setHours(date.getHours() - 48); // all since 48 hours
 
+					// Format date display for diff picker
+					var localeDiffOptions = {
+						hour: 'numeric',
+						minute: 'numeric',
+						weekday: 'short',
+						day: 'numeric',
+						month: 'short',
+						year: 'numeric'
+					};
+
 					var api = new mw.Api();
 					api.get({
 						action: 'query',
@@ -359,7 +369,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 							});
 							$input.data('revinfo', rev);
 							$input.appendTo($entry);
-							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($diffs);
+							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Date(rev.timestamp).toLocaleDateString(undefined, localeDiffOptions) + '</a></span>').appendTo($diffs);
 						}
 					}).fail(function(data) {
 						console.log('API failed :(', data); // eslint-disable-line no-console
@@ -396,7 +406,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 							});
 							$input.data('revinfo', rev);
 							$input.appendTo($entry);
-							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($warnings);
+							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Date(rev.timestamp).toLocaleDateString(undefined, localeDiffOptions) + '</a></span>').appendTo($warnings);
 						}
 					}).fail(function(data) {
 						console.log('API failed :(', data); // eslint-disable-line no-console
@@ -438,7 +448,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 							});
 							$input.data('revinfo', rev);
 							$input.appendTo($entry);
-							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($resolves);
+							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Date(rev.timestamp).toLocaleDateString(undefined, localeDiffOptions) + '</a></span>').appendTo($resolves);
 						}
 
 						// add free form input
@@ -884,30 +894,41 @@ Twinkle.arv.processAN3 = function(params) {
 			grouped_diffs[lastid].push(cur);
 		}
 
+		// Define some nice display options for the diff timestamp
+		var localeOptions = {
+			hour: 'numeric',
+			hour12: false,
+			minute: 'numeric',
+			day: 'numeric',
+			month: 'long',
+			year: 'numeric',
+			timeZone: 'UTC',
+			timeZoneName: 'short'
+		};
 		var difftext = $.map(grouped_diffs, function(sub) {
 			var ret = '';
 			if (sub.length >= 2) {
 				var last = sub[0];
 				var first = sub.slice(-1)[0];
-				var label = 'Consecutive edits made from ' + moment(first.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + ' to ' + moment(last.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]');
+				var label = 'Consecutive edits made from ' + new Date(first.timestamp).toLocaleString(undefined, localeOptions) + ' to ' + new Date(last.timestamp).toLocaleString(undefined, localeOptions);
 				ret = '# {{diff|oldid=' + first.parentid + '|diff=' + last.revid + '|label=' + label + '}}\n';
 			}
 			ret += sub.reverse().map(function(v) {
-				return (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + moment(v.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + '}} "' + v.comment + '"';
+				return (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + new Date(v.timestamp).toLocaleString(undefined, localeOptions) + '}} "' + v.comment + '"';
 			}).join('\n');
 			return ret;
 		}).reverse().join('\n');
 		var warningtext = params.warnings.reverse().map(function(v) {
-			return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + '}} "' + v.comment + '"';
+			return '# ' + ' {{diff2|' + v.revid + '|' + new Date(v.timestamp).toLocaleString(undefined, localeOptions) + '}} "' + v.comment + '"';
 		}).join('\n');
 		var resolvetext = params.resolves.reverse().map(function(v) {
-			return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + '}} "' + v.comment + '"';
+			return '# ' + ' {{diff2|' + v.revid + '|' + new Date(v.timestamp).toLocaleString(undefined, localeOptions) + '}} "' + v.comment + '"';
 		}).join('\n');
 
 		if (params.free_resolves) {
 			var page = params.free_resolves;
 			var rev = page.revisions[0];
-			resolvetext += '\n# ' + ' {{diff2|' + rev.revid + '|' + moment(rev.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + ' on ' + page.title + '}} "' + rev.comment + '"';
+			resolvetext += '\n# ' + ' {{diff2|' + rev.revid + '|' + new Date(rev.timestamp).toLocaleString(undefined, localeOptions) + ' on ' + page.title + '}} "' + rev.comment + '"';
 		}
 
 		var comment = params.comment.replace(/~*$/g, '').trim();
