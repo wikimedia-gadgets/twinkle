@@ -89,7 +89,7 @@ mw.loader.using('jquery.ui', function() {
 			// Define runTest interface
 			// Can also use alternative syntax new to jQuery 1.4:
 			//    $('<div style="margin-top:0.4em;"></div>').html( 'Text to be added:' )
-			//  → $('<div/>', { css: { 'margin-top': '0.4em' }, text: 'Text to be added:' } )
+			//  -> $('<div/>', { css: { 'margin-top': '0.4em' }, text: 'Text to be added:' } )
 
 			window.morebits_test_createOption = null;
 

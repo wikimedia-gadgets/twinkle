@@ -1434,7 +1434,7 @@ Morebits.wiki.api.prototype = {
 				Morebits.wiki.actionCompleted();
 			}
 		).fail(
-			// only network and server errors reach here – complaints from the API itself are caught in success()
+			// only network and server errors reach here - complaints from the API itself are caught in success()
 			function(jqXHR, statusText, errorThrown) {
 				this.statusText = statusText;
 				this.errorThrown = errorThrown; // frequently undefined
