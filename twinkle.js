@@ -8,9 +8,6 @@
  * Imported from github [https://github.com/azatoth/twinkle].
  * All changes should be made in the repository, otherwise they will be lost.
  *
- * To update this script from github, you must have a local repository set up. Then
- * follow the instructions at [https://github.com/azatoth/twinkle/blob/master/README.md].
- *
  * ----------
  *
  * This is AzaToth's Twinkle, the popular script sidekick for newbies, admins, and
@@ -52,6 +49,8 @@ Twinkle.defaultConfig = {
 	protectionSummaryAd: ' ([[WP:TW|TW]])',
 	userTalkPageMode: 'tab',
 	dialogLargeFont: false,
+	disabledModules: [],
+	disabledSysopModules: [],
 
 	// ARV
 	spiWatchReport: 'yes',
@@ -440,35 +439,43 @@ Twinkle.load = function () {
 	// Set custom Api-User-Agent header, for server-side logging purposes
 	Morebits.wiki.api.setApiUserAgent('Twinkle/2.0 (' + mw.config.get('wgDBname') + ')');
 
+	// Don't load modules users have disabled
+	var disabledModules = Twinkle.getPref('disabledModules').concat(Twinkle.getPref('disabledSysopModules'));
+	var loadEnabledModules = function(module) {
+		// Not disabled, load normally
+		if (disabledModules.indexOf(module) === -1) {
+			Twinkle[module]();
+		}
+	};
 	// Load the modules in the order that the tabs should appear
 	// User/user talk-related
-	Twinkle.arv();
-	Twinkle.warn();
+	loadEnabledModules('arv');
+	loadEnabledModules('warn');
 	if (Morebits.userIsSysop) {
-		Twinkle.block();
+		loadEnabledModules('block');
 	}
-	Twinkle.welcome();
-	Twinkle.shared();
-	Twinkle.talkback();
+	loadEnabledModules('welcome');
+	loadEnabledModules('shared');
+	loadEnabledModules('talkback');
 	// Deletion
-	Twinkle.speedy();
-	Twinkle.prod();
-	Twinkle.xfd();
-	Twinkle.image();
+	loadEnabledModules('speedy');
+	loadEnabledModules('prod');
+	loadEnabledModules('xfd');
+	loadEnabledModules('image');
 	// Maintenance
-	Twinkle.protect();
-	Twinkle.tag();
+	loadEnabledModules('protect');
+	loadEnabledModules('tag');
 	// Misc. ones last
-	Twinkle.diff();
-	Twinkle.unlink();
-	Twinkle.config.init();
-	Twinkle.fluff();
+	loadEnabledModules('diff');
+	loadEnabledModules('unlink');
+	loadEnabledModules('fluff');
 	if (Morebits.userIsSysop) {
-		Twinkle.deprod();
-		Twinkle.batchdelete();
-		Twinkle.batchprotect();
-		Twinkle.batchundelete();
+		loadEnabledModules('deprod');
+		loadEnabledModules('batchdelete');
+		loadEnabledModules('batchprotect');
+		loadEnabledModules('batchundelete');
 	}
+	Twinkle.config.init(); // Can't turn off
 	// Run the initialization callbacks for any custom modules
 	Twinkle.initCallbacks.forEach(function (func) {
 		func();

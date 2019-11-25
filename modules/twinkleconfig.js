@@ -197,6 +197,24 @@ Twinkle.config.sections = [
 				name: 'dialogLargeFont',
 				label: 'Use larger text in Twinkle dialogs',
 				type: 'boolean'
+			},
+
+			// Twinkle.config.disabledModules (array)
+			{
+				name: 'disabledModules',
+				label: 'Turn off the selected Twinkle modules',
+				helptip: 'Anything you select here will NOT be available for use, so act with care. Uncheck to reactivate.',
+				type: 'set',
+				setValues: { arv: 'ARV', warn: 'Warn', welcome: 'Welcome', shared: 'Shared IP', talkback: 'Talkback', speedy: 'CSD', prod: 'PROD', xfd: 'XfD', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', 'fluff': 'Revert and rollback' }
+			},
+
+			// Twinkle.config.disabledSysopModules (array)
+			{
+				name: 'disabledSysopModules',
+				label: 'Turn off the selected admin-only modules',
+				helptip: 'Anything you select here will NOT be available for use, so act with care. Uncheck to reactivate.',
+				type: 'set',
+				setValues: { block: 'Block', deprod: 'DePROD', batchdelete: 'D-batch', batchprotect: 'P-batch', batchundelete: 'Und-batch' }
 			}
 		]
 	},
