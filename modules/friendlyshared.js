@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("Shared")
  * Active on:              Existing IP user talk pages
- * Config directives in:   FriendlyConfig
  */
 
 Twinkle.shared = function friendlyshared() {
@@ -159,7 +158,7 @@ Twinkle.shared.callbacks = {
 		var summaryText = 'Added {{[[Template:' + params.value + '|' + params.value + ']]}} template.';
 		pageobj.setPageText(text + pageText);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
-		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markSharedIPAsMinor'));
+		pageobj.setMinorEdit(Twinkle.getPref('markSharedIPAsMinor'));
 		pageobj.setCreateOption('recreate');
 		pageobj.save();
 	}

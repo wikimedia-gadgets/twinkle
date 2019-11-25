@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("CSD")
  * Active on:              Non-special, existing pages
- * Config directives in:   TwinkleConfig
  *
  * NOTE FOR DEVELOPERS:
  *   If adding a new criterion, add it to the appropriate places at the top of

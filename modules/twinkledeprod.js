@@ -10,7 +10,6 @@
 ****************************************
 * Mode of invocation:     Tab ("Deprod")
 * Active on:              Categories whose name contains "proposed_deletion"
-* Config directives in:   TwinkleConfig
 */
 
 Twinkle.deprod = function() {

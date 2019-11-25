@@ -20,7 +20,7 @@
 
 /* global Morebits */
 
-(function (window, document, $, undefined) { // Wrap with anonymous function
+(function (window, document, $) { // Wrap with anonymous function
 
 var Twinkle = {};
 window.Twinkle = Twinkle;  // allow global access
@@ -38,12 +38,12 @@ Twinkle.defaultConfig = {};
 /**
  * Twinkle.defaultConfig.twinkle and Twinkle.defaultConfig.friendly
  *
- * This holds the default set of preferences used by Twinkle. (The |friendly| object holds preferences stored in the FriendlyConfig object.)
+ * This holds the default set of preferences used by Twinkle.
  * It is important that all new preferences added here, especially admin-only ones, are also added to
  * |Twinkle.config.sections| in twinkleconfig.js, so they are configurable via the Twinkle preferences panel.
  * For help on the actual preferences, see the comments in twinkleconfig.js.
  */
-Twinkle.defaultConfig.twinkle = {
+Twinkle.defaultConfig = {
 	// General
 	summaryAd: ' ([[WP:TW|TW]])',
 	deletionSummaryAd: ' ([[WP:TW|TW]])',
@@ -121,25 +121,10 @@ Twinkle.defaultConfig.twinkle = {
 	batchMax: 5000,
 	batchProtectChunks: 50,
 	batchundeleteChunks: 50,
-	proddeleteChunks: 50
-};
+	proddeleteChunks: 50,
 
-// now some skin dependent config.
-if (mw.config.get('skin') === 'vector') {
-	Twinkle.defaultConfig.twinkle.portletArea = 'right-navigation';
-	Twinkle.defaultConfig.twinkle.portletId = 'p-twinkle';
-	Twinkle.defaultConfig.twinkle.portletName = 'TW';
-	Twinkle.defaultConfig.twinkle.portletType = 'menu';
-	Twinkle.defaultConfig.twinkle.portletNext = 'p-search';
-} else {
-	Twinkle.defaultConfig.twinkle.portletArea = null;
-	Twinkle.defaultConfig.twinkle.portletId = 'p-cactions';
-	Twinkle.defaultConfig.twinkle.portletName = null;
-	Twinkle.defaultConfig.twinkle.portletType = null;
-	Twinkle.defaultConfig.twinkle.portletNext = null;
-}
+	// Formerly FriendlyConfig:
 
-Twinkle.defaultConfig.friendly = {
 	// Tag
 	groupByDefault: true,
 	watchTaggedPages: true,
@@ -174,38 +159,37 @@ Twinkle.defaultConfig.friendly = {
 	markSharedIPAsMinor: true
 };
 
+// now some skin dependent config.
+if (mw.config.get('skin') === 'vector') {
+	Twinkle.defaultConfig.portletArea = 'right-navigation';
+	Twinkle.defaultConfig.portletId = 'p-twinkle';
+	Twinkle.defaultConfig.portletName = 'TW';
+	Twinkle.defaultConfig.portletType = 'menu';
+	Twinkle.defaultConfig.portletNext = 'p-search';
+} else {
+	Twinkle.defaultConfig.portletArea = null;
+	Twinkle.defaultConfig.portletId = 'p-cactions';
+	Twinkle.defaultConfig.portletName = null;
+	Twinkle.defaultConfig.portletType = null;
+	Twinkle.defaultConfig.portletNext = null;
+}
+
+
 Twinkle.getPref = function twinkleGetPref(name) {
-	var result;
-	if (typeof Twinkle.prefs === 'object' && typeof Twinkle.prefs.twinkle === 'object') {
-		// look in Twinkle.prefs (twinkleoptions.js)
-		result = Twinkle.prefs.twinkle[name];
-	} else if (typeof window.TwinkleConfig === 'object') {
-		// look in TwinkleConfig
-		result = window.TwinkleConfig[name];
+	if (typeof Twinkle.prefs === 'object') {
+		if (Twinkle.prefs[name]) {
+			return Twinkle.prefs[name];
+		}
 	}
-
-	if (result === undefined) {
-		return Twinkle.defaultConfig.twinkle[name];
+	// Old preferences format:
+	if (typeof window.TwinkleConfig === 'object' && window.TwinkleConfig[name]) {
+		return window.TwinkleConfig[name];
 	}
-	return result;
+	if (typeof window.FriendlyConfig === 'object' && window.FriendlyConfig[name]) {
+		return window.FriendlyConfig[name];
+	}
+	return Twinkle.defaultConfig[name];
 };
-
-Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
-	var result;
-	if (typeof Twinkle.prefs === 'object' && typeof Twinkle.prefs.friendly === 'object') {
-		// look in Twinkle.prefs (twinkleoptions.js)
-		result = Twinkle.prefs.friendly[name];
-	} else if (typeof window.FriendlyConfig === 'object') {
-		// look in FriendlyConfig
-		result = window.FriendlyConfig[name];
-	}
-
-	if (result === undefined) {
-		return Twinkle.defaultConfig.friendly[name];
-	}
-	return result;
-};
-
 
 
 /**
@@ -398,20 +382,12 @@ $.ajax({
 
 		try {
 			var options = JSON.parse(optionsText);
-
-			// Assuming that our options evolve, we will want to transform older versions:
-			// if ( options.optionsVersion === undefined ) {
-			// ...
-			// options.optionsVersion = 1;
-			// }
-			// if ( options.optionsVersion === 1 ) {
-			// ...
-			// options.optionsVersion = 2;
-			// }
-			// At the same time, twinkleconfig.js needs to be adapted to write a higher version number into the options.
-
 			if (options) {
-				Twinkle.prefs = options;
+				if (options.twinkle || options.friendly) {
+					Twinkle.prefs = $.extend(options.twinkle, options.friendly);
+				} else {
+					Twinkle.prefs = options;
+				}
 			}
 		} catch (e) {
 			mw.notify('Could not parse twinkleoptions.js');

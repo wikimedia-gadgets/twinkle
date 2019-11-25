@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("Unlink")
  * Active on:              Non-special pages, except Wikipedia:Sandbox
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.unlink = function twinkleunlink() {

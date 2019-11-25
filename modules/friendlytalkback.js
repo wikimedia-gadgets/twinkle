@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("TB")
  * Active on:              Any page with relevant user name (userspace, contribs, etc.)
- * Config directives in:   FriendlyConfig
  */
 
 Twinkle.talkback = function() {
@@ -366,7 +365,7 @@ var callback_evaluate = function(e) {
 				talkpage.setEditSummary('You have replies at the [[Wikipedia:AFCHD|Articles for Creation Help Desk]]' + Twinkle.getPref('summaryAd'));
 				break;
 			case 'an':
-				text = '\n\n== ' + Twinkle.getFriendlyPref('adminNoticeHeading') + ' ==\n';
+				text = '\n\n== ' + Twinkle.getPref('adminNoticeHeading') + ' ==\n';
 				text += '{{subst:ANI-notice|thread=' + section + "|noticeboard=Wikipedia:Administrators' noticeboard}} ~~~~";
 				talkpage.setEditSummary("Notice of discussion at [[Wikipedia:Administrators' noticeboard]]" + Twinkle.getPref('summaryAd'));
 				break;
@@ -375,7 +374,7 @@ var callback_evaluate = function(e) {
 				talkpage.setEditSummary("Notice of discussion at [[Wikipedia:Administrators' noticeboard/Edit warring]]" + Twinkle.getPref('summaryAd'));
 				break;
 			case 'ani':
-				text = '\n\n== ' + Twinkle.getFriendlyPref('adminNoticeHeading') + ' ==\n';
+				text = '\n\n== ' + Twinkle.getPref('adminNoticeHeading') + ' ==\n';
 				text += '{{subst:ANI-notice|thread=' + section + "|noticeboard=Wikipedia:Administrators' noticeboard/Incidents}} ~~~~";
 				talkpage.setEditSummary("Notice of discussion at [[Wikipedia:Administrators' noticeboard/Incidents]]" + Twinkle.getPref('summaryAd'));
 				break;
@@ -405,12 +404,12 @@ var callback_evaluate = function(e) {
 		}
 
 	} else if (tbtarget === 'mail') {
-		text = '\n\n==' + Twinkle.getFriendlyPref('mailHeading') + "==\n{{you've got mail|subject=";
+		text = '\n\n==' + Twinkle.getPref('mailHeading') + "==\n{{you've got mail|subject=";
 		text += section + '|ts=~~~~~}}';
 
 		if (message) {
 			text += '\n' + message.trim() + '  ~~~~';
-		} else if (Twinkle.getFriendlyPref('insertTalkbackSignature')) {
+		} else if (Twinkle.getPref('insertTalkbackSignature')) {
 			text += '\n~~~~';
 		}
 
@@ -427,7 +426,7 @@ var callback_evaluate = function(e) {
 
 	} else {  // tbtarget one of mytalk, usertalk, other
 		// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
-		text = '\n\n==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') + '==\n{{talkback|';
+		text = '\n\n==' + Twinkle.getPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') + '==\n{{talkback|';
 		text += tbPageName;
 
 		if (section) {
@@ -438,7 +437,7 @@ var callback_evaluate = function(e) {
 
 		if (message) {
 			text += '\n' + message.trim() + ' ~~~~';
-		} else if (Twinkle.getFriendlyPref('insertTalkbackSignature')) {
+		} else if (Twinkle.getPref('insertTalkbackSignature')) {
 			text += '\n~~~~';
 		}
 
@@ -452,7 +451,7 @@ var callback_evaluate = function(e) {
 
 	talkpage.setAppendText(text);
 	talkpage.setCreateOption('recreate');
-	talkpage.setMinorEdit(Twinkle.getFriendlyPref('markTalkbackAsMinor'));
+	talkpage.setMinorEdit(Twinkle.getPref('markTalkbackAsMinor'));
 	talkpage.setFollowRedirect(true);
 	talkpage.append();
 };

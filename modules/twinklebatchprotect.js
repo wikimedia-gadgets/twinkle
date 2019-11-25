@@ -11,7 +11,6 @@
  * Mode of invocation:     Tab ("P-batch")
  * Active on:              Existing project pages and user pages; existing and
  *                         non-existing categories; Special:PrefixIndex
- * Config directives in:   TwinkleConfig
  */
 
 

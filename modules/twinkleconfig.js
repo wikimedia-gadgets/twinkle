@@ -132,7 +132,6 @@ Twinkle.config.commonSets = {
  *   title: <human-readable section title>,
  *   adminOnly: <true for admin-only sections>,
  *   hidden: <true for advanced preferences that rarely need to be changed - they can still be modified by manually editing twinkleoptions.js>,
- *   inFriendlyConfig: <true for preferences located under FriendlyConfig rather than TwinkleConfig>,
  *   preferences: [
  *     {
  *       name: <TwinkleConfig property name>,
@@ -376,7 +375,6 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Shared IP tagging',
-		inFriendlyConfig: true,
 		preferences: [
 			{
 				name: 'markSharedIPAsMinor',
@@ -525,7 +523,6 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Tag',
-		inFriendlyConfig: true,
 		preferences: [
 			{
 				name: 'watchTaggedPages',
@@ -587,7 +584,6 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Talkback',
-		inFriendlyConfig: true,
 		preferences: [
 			{
 				name: 'markTalkbackAsMinor',
@@ -693,7 +689,6 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Welcome user',
-		inFriendlyConfig: true,
 		preferences: [
 			{
 				name: 'topWelcomes',
@@ -965,13 +960,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 				return true;  // i.e. "continue" in this context
 			}
 
-			var configgetter;  // retrieve the live config values
-			if (section.inFriendlyConfig) {
-				configgetter = Twinkle.getFriendlyPref;
-			} else {
-				configgetter = Twinkle.getPref;
-			}
-
 			// add to TOC
 			var tocli = document.createElement('li');
 			tocli.className = 'toclevel-1';
@@ -1020,7 +1008,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						input.setAttribute('type', 'checkbox');
 						input.setAttribute('id', pref.name);
 						input.setAttribute('name', pref.name);
-						if (configgetter(pref.name) === true) {
+						if (Twinkle.getPref(pref.name) === true) {
 							input.setAttribute('checked', 'checked');
 						}
 						label.appendChild(input);
@@ -1051,8 +1039,8 @@ Twinkle.config.init = function twinkleconfigInit() {
 							input.setAttribute('type', 'number');
 							input.setAttribute('step', '1');  // integers only
 						}
-						if (configgetter(pref.name)) {
-							input.setAttribute('value', configgetter(pref.name));
+						if (Twinkle.getPref(pref.name)) {
+							input.setAttribute('value', Twinkle.getPref(pref.name));
 						}
 						cell.appendChild(input);
 						break;
@@ -1077,7 +1065,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						$.each(pref.enumValues, function(enumvalue, enumdisplay) {
 							var option = document.createElement('option');
 							option.setAttribute('value', enumvalue);
-							if (configgetter(pref.name) === enumvalue) {
+							if (Twinkle.getPref(pref.name) === enumvalue) {
 								option.setAttribute('selected', 'selected');
 							}
 							option.appendChild(document.createTextNode(enumdisplay));
@@ -1103,12 +1091,12 @@ Twinkle.config.init = function twinkleconfigInit() {
 							check.setAttribute('type', 'checkbox');
 							check.setAttribute('id', pref.name + '_' + itemkey);
 							check.setAttribute('name', pref.name + '_' + itemkey);
-							if (configgetter(pref.name) && configgetter(pref.name).indexOf(itemkey) !== -1) {
+							if (Twinkle.getPref(pref.name) && Twinkle.getPref(pref.name).indexOf(itemkey) !== -1) {
 								check.setAttribute('checked', 'checked');
 							}
 							// cater for legacy integer array values for unlinkNamespaces (this can be removed a few years down the track...)
 							if (pref.name === 'unlinkNamespaces') {
-								if (configgetter(pref.name) && configgetter(pref.name).indexOf(parseInt(itemkey, 10)) !== -1) {
+								if (Twinkle.getPref(pref.name) && Twinkle.getPref(pref.name).indexOf(parseInt(itemkey, 10)) !== -1) {
 									check.setAttribute('checked', 'checked');
 								}
 							}
@@ -1148,9 +1136,8 @@ Twinkle.config.init = function twinkleconfigInit() {
 						button.addEventListener('click', Twinkle.config.listDialog.display, false);
 						// use jQuery data on the button to store the current config value
 						$(button).data({
-							value: configgetter(pref.name),
-							pref: pref,
-							inFriendlyConfig: section.inFriendlyConfig
+							value: Twinkle.getPref(pref.name),
+							pref: pref
 						});
 						button.appendChild(document.createTextNode('Edit items'));
 						cell.appendChild(button);
@@ -1431,7 +1418,7 @@ Twinkle.config.listDialog.reset = function twinkleconfigListDialogReset(button, 
 	var $button = $(button);
 	var curpref = $button.data('pref');
 	var oldvalue = $button.data('value');
-	Twinkle.config.resetPref(curpref, $button.data('inFriendlyConfig'));
+	Twinkle.config.resetPref(curpref);
 
 	// reset form
 	var $tbody = $(tbody);
@@ -1480,7 +1467,7 @@ Twinkle.config.resetPrefLink = function twinkleconfigResetPrefLink(e) {
 			if (pref.name !== wantedpref) {
 				return true;  // continue
 			}
-			Twinkle.config.resetPref(pref, section.inFriendlyConfig);
+			Twinkle.config.resetPref(pref);
 			foundit = true;
 			return false;  // break
 		});
@@ -1492,33 +1479,29 @@ Twinkle.config.resetPrefLink = function twinkleconfigResetPrefLink(e) {
 	return false;  // stop link from scrolling page
 };
 
-Twinkle.config.resetPref = function twinkleconfigResetPref(pref, inFriendlyConfig) {
+Twinkle.config.resetPref = function twinkleconfigResetPref(pref) {
 	switch (pref.type) {
 
 		case 'boolean':
-			document.getElementById(pref.name).checked = inFriendlyConfig ?
-				Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name];
+			document.getElementById(pref.name).checked = Twinkle.defaultConfig[pref.name];
 			break;
 
 		case 'string':
 		case 'integer':
 		case 'enum':
-			document.getElementById(pref.name).value = inFriendlyConfig ?
-				Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name];
+			document.getElementById(pref.name).value = Twinkle.defaultConfig[pref.name];
 			break;
 
 		case 'set':
 			$.each(pref.setValues, function(itemkey) {
 				if (document.getElementById(pref.name + '_' + itemkey)) {
-					document.getElementById(pref.name + '_' + itemkey).checked = (inFriendlyConfig ?
-						Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]).indexOf(itemkey) !== -1;
+					document.getElementById(pref.name + '_' + itemkey).checked = Twinkle.defaultConfig[pref.name].indexOf(itemkey) !== -1;
 				}
 			});
 			break;
 
 		case 'customList':
-			$(document.getElementById(pref.name)).data('value', inFriendlyConfig ?
-				Twinkle.defaultConfig.friendly[pref.name] : Twinkle.defaultConfig.twinkle[pref.name]);
+			$(document.getElementById(pref.name)).data('value', Twinkle.defaultConfig[pref.name]);
 			break;
 
 		default:
@@ -1535,7 +1518,7 @@ Twinkle.config.resetAllPrefs = function twinkleconfigResetAllPrefs() {
 		}
 		$(section.preferences).each(function(prefkey, pref) {
 			if (!pref.adminOnly || Morebits.userIsInGroup('sysop')) {
-				Twinkle.config.resetPref(pref, section.inFriendlyConfig);
+				Twinkle.config.resetPref(pref);
 			}
 		});
 		return true;
@@ -1560,16 +1543,13 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	var form = pageobj.getCallbackParameters();
 
 	// this is the object which gets serialized into JSON
-	var newConfig = {
-		twinkle: {},
-		friendly: {}
-	};
+	var newConfig = {};
 
 	// keeping track of all preferences that we encounter
 	// any others that are set in the user's current config are kept
 	// this way, preferences that this script doesn't know about are not lost
 	// (it does mean obsolete prefs will never go away, but... ah well...)
-	var foundTwinklePrefs = [], foundFriendlyPrefs = [];
+	var foundPrefs = [];
 
 	// a comparison function is needed later on
 	// it is just enough for our purposes (i.e. comparing strings, numbers, booleans,
@@ -1657,29 +1637,18 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 			}
 
 			// only save those preferences that are *different* from the default
-			if (section.inFriendlyConfig) {
-				if (userValue !== undefined && !compare(userValue, Twinkle.defaultConfig.friendly[pref.name])) {
-					newConfig.friendly[pref.name] = userValue;
-				}
-				foundFriendlyPrefs.push(pref.name);
-			} else {
-				if (userValue !== undefined && !compare(userValue, Twinkle.defaultConfig.twinkle[pref.name])) {
-					newConfig.twinkle[pref.name] = userValue;
-				}
-				foundTwinklePrefs.push(pref.name);
+			if (userValue !== undefined && !compare(userValue, Twinkle.defaultConfig[pref.name])) {
+				newConfig[pref.name] = userValue;
 			}
+			foundPrefs.push(pref.name);
 		});
 	});
 
+	// Retain the hidden preferences that may have customised by the user from twinkleoptions.js
 	if (Twinkle.prefs) {
-		$.each(Twinkle.prefs.twinkle, function(tkey, tvalue) {
-			if (foundTwinklePrefs.indexOf(tkey) === -1) {
-				newConfig.twinkle[tkey] = tvalue;
-			}
-		});
-		$.each(Twinkle.prefs.friendly, function(fkey, fvalue) {
-			if (foundFriendlyPrefs.indexOf(fkey) === -1) {
-				newConfig.friendly[fkey] = fvalue;
+		$.each(Twinkle.prefs, function(tkey, tvalue) {
+			if (foundPrefs.indexOf(tkey) === -1) {
+				newConfig[tkey] = tvalue;
 			}
 		});
 	}

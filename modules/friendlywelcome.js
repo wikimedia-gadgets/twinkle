@@ -11,7 +11,6 @@
  * Mode of invocation:     Tab ("Wel"), or from links on diff pages
  * Active on:              Any page with relevant user name (userspace,
  *                         contribs, etc.) and diff pages
- * Config directives in:   FriendlyConfig
  */
 
 Twinkle.welcome = function friendlywelcome() {
@@ -65,7 +64,7 @@ Twinkle.welcome.normal = function() {
 
 				var oWelcomeNode = welcomeNode.cloneNode(true);
 				oWelcomeNode.firstChild.setAttribute('href', oHref + '&' + Morebits.queryString.create({
-					'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
+					'friendlywelcome': Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
 					'vanarticle': Morebits.pageNameNorm
 				}));
 				$oList[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
@@ -77,7 +76,7 @@ Twinkle.welcome.normal = function() {
 
 				var nWelcomeNode = welcomeNode.cloneNode(true);
 				nWelcomeNode.firstChild.setAttribute('href', nHref + '&' + Morebits.queryString.create({
-					'friendlywelcome': Twinkle.getFriendlyPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
+					'friendlywelcome': Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
 					'vanarticle': Morebits.pageNameNorm
 				}));
 				$nList[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
@@ -97,7 +96,7 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 	$('#catlinks').remove();
 
 	var params = {
-		value: Twinkle.getFriendlyPref('quickWelcomeTemplate'),
+		value: Twinkle.getPref('quickWelcomeTemplate'),
 		article: Morebits.queryString.exists('vanarticle') ? Morebits.queryString.get('vanarticle') : '',
 		mode: 'auto'
 	};
@@ -177,12 +176,12 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 
 	var container = new Morebits.quickForm.element({ type: 'fragment' });
 
-	if ((type === 'standard' || type === 'anonymous') && Twinkle.getFriendlyPref('customWelcomeList').length) {
+	if ((type === 'standard' || type === 'anonymous') && Twinkle.getPref('customWelcomeList').length) {
 		container.append({ type: 'header', label: 'Custom welcome templates' });
 		container.append({
 			type: 'radio',
 			name: 'template',
-			list: Twinkle.getFriendlyPref('customWelcomeList'),
+			list: Twinkle.getPref('customWelcomeList'),
 			event: Twinkle.welcome.selectTemplate
 		});
 	}
@@ -711,13 +710,13 @@ Twinkle.welcome.getTemplateWikitext = function(template, article) {
 	var properties = Twinkle.welcome.templates[template];
 	if (properties) {
 		return properties.syntax.
-			replace('$USERNAME$', Twinkle.getFriendlyPref('insertUsername') ? mw.config.get('wgUserName') : '').
+			replace('$USERNAME$', Twinkle.getPref('insertUsername') ? mw.config.get('wgUserName') : '').
 			replace('$ARTICLE$', article ? article : '').
 			replace(/\$HEADER\$\s*/, '== Welcome ==\n\n').
 			replace('$EXTRA$', '');  // EXTRA is not implemented yet
 	}
 	return '{{subst:' + template + (article ? '|art=' + article : '') + '}}' +
-			(Twinkle.getFriendlyPref('customWelcomeSignature') ? ' ~~~~' : '');
+			(Twinkle.getPref('customWelcomeSignature') ? ' ~~~~' : '');
 };
 
 Twinkle.welcome.callbacks = {
@@ -759,7 +758,7 @@ Twinkle.welcome.callbacks = {
 
 		var welcomeText = Twinkle.welcome.getTemplateWikitext(params.value, params.article);
 
-		if (Twinkle.getFriendlyPref('topWelcomes')) {
+		if (Twinkle.getPref('topWelcomes')) {
 			text = welcomeText + '\n\n' + text;
 		} else {
 			text += '\n' + welcomeText;
@@ -768,7 +767,7 @@ Twinkle.welcome.callbacks = {
 		var summaryText = 'Welcome to Wikipedia!';
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
-		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchWelcomes'));
+		pageobj.setWatchlist(Twinkle.getPref('watchWelcomes'));
 		pageobj.setCreateOption('recreate');
 		pageobj.save();
 	}

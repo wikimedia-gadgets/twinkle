@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("ARV")
  * Active on:              Any page with relevant user name (userspace, contribs, etc.)
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.arv = function twinklearv() {
