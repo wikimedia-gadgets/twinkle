@@ -958,6 +958,10 @@ Twinkle.warn.messages = {
 		'uw-warn': {
 			label: 'Place user warning templates when reverting vandalism',
 			summary: 'Notice: You can use user warning templates when reverting vandalism'
+		},
+		'uw-wrongsummary': {
+			label: 'Using inaccurate or inappropriate edit summaries',
+			summary: 'Warning: Using inaccurate or inappropriate edit summaries'
 		}
 	},
 
@@ -1065,10 +1069,6 @@ Twinkle.warn.messages = {
 		'uw-userpage': {
 			label: 'Userpage or subpage is against policy',
 			summary: 'Warning: Userpage or subpage is against policy'
-		},
-		'uw-wrongsummary': {
-			label: 'Using inaccurate or inappropriate edit summaries',
-			summary: 'Warning: Using inaccurate or inappropriate edit summaries'
 		}
 	}
 };
