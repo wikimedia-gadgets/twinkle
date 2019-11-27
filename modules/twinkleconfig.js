@@ -157,8 +157,8 @@ Twinkle.config.sections = [
 	{
 		title: 'General',
 		preferences: [
-		// TwinkleConfig.summaryAd (string)
-		// Text to be appended to the edit summary of edits made using Twinkle
+			// TwinkleConfig.summaryAd (string)
+			// Text to be appended to the edit summary of edits made using Twinkle
 			{
 				name: 'summaryAd',
 				label: "\"Ad\" to be appended to Twinkle's edit summaries",
@@ -222,8 +222,8 @@ Twinkle.config.sections = [
 		title: 'Block user',
 		adminOnly: true,
 		preferences: [
-		// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
-		// if true, blank the talk page when issuing an indef block notice (per [[WP:UWUL#Indefinitely blocked users]])
+			// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
+			// if true, blank the talk page when issuing an indef block notice (per [[WP:UWUL#Indefinitely blocked users]])
 			{
 				name: 'blankTalkpageOnIndefBlock',
 				label: 'Blank the talk page when indefinitely blocking users',
@@ -236,8 +236,8 @@ Twinkle.config.sections = [
 	{
 		title: 'Image deletion (DI)',
 		preferences: [
-		// TwinkleConfig.notifyUserOnDeli (boolean)
-		// If the user should be notified after placing a file deletion tag
+			// TwinkleConfig.notifyUserOnDeli (boolean)
+			// If the user should be notified after placing a file deletion tag
 			{
 				name: 'notifyUserOnDeli',
 				label: 'Check the "notify initial uploader" box by default',
@@ -267,8 +267,8 @@ Twinkle.config.sections = [
 	{
 		title: 'Proposed deletion (PROD)',
 		preferences: [
-		// TwinkleConfig.watchProdPages (boolean)
-		// If, when applying prod template to page, to watch the page
+			// TwinkleConfig.watchProdPages (boolean)
+			// If, when applying prod template to page, to watch the page
 			{
 				name: 'watchProdPages',
 				label: 'Add article to watchlist when tagging',
@@ -301,8 +301,8 @@ Twinkle.config.sections = [
 	{
 		title: 'Revert and rollback',  // twinklefluff module
 		preferences: [
-		// TwinkleConfig.autoMenuAfterRollback (bool)
-		// Option to automatically open the warning menu if the user talk page is opened post-reversion
+			// TwinkleConfig.autoMenuAfterRollback (bool)
+			// Option to automatically open the warning menu if the user talk page is opened post-reversion
 			{
 				name: 'autoMenuAfterRollback',
 				label: 'Automatically open the Twinkle warn menu on a user talk page after Twinkle rollback',
@@ -621,8 +621,8 @@ Twinkle.config.sections = [
 	{
 		title: 'Unlink',
 		preferences: [
-		// TwinkleConfig.unlinkNamespaces (array)
-		// In what namespaces unlink should happen, default in 0 (article), 10 (template), 100 (portal), and 118 (draft)
+			// TwinkleConfig.unlinkNamespaces (array)
+			// In what namespaces unlink should happen, default in 0 (article), 10 (template), 100 (portal), and 118 (draft)
 			{
 				name: 'unlinkNamespaces',
 				label: 'Remove links from pages in these namespaces',
@@ -636,8 +636,8 @@ Twinkle.config.sections = [
 	{
 		title: 'Warn user',
 		preferences: [
-		// TwinkleConfig.defaultWarningGroup (int)
-		// if true, watch the page which has been dispatched an warning or notice, if false, default applies
+			// TwinkleConfig.defaultWarningGroup (int)
+			// Which level warning should be the default selected group, default is 1
 			{
 				name: 'defaultWarningGroup',
 				label: 'Default warning level',
@@ -745,9 +745,9 @@ Twinkle.config.sections = [
 	{
 		title: 'XFD (deletion discussions)',
 		preferences: [
-		// TwinkleConfig.xfdWatchPage (string)
-		// The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
-		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+			// TwinkleConfig.xfdWatchPage (string)
+			// The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
+			// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 			{
 				name: 'xfdWatchPage',
 				label: 'Add the nominated page to watchlist',
