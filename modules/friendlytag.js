@@ -295,7 +295,7 @@ var $allCheckboxDivs, $allHeaders;
 Twinkle.tag.updateSortOrder = function(e) {
 	var form = e.target.form;
 	var sortorder = e.target.value;
-	Twinkle.tag.checkedTags = form.getChecked('articleTags') || [];
+	Twinkle.tag.checkedTags = form.getChecked('articleTags');
 
 	var container = new Morebits.quickForm.element({ type: 'fragment' });
 
@@ -525,7 +525,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		container.append({ type: 'header', id: 'tagHeader0', label: 'Tags already present' });
 		var subdiv = container.append({ type: 'div', id: 'tagSubdiv0' });
 		var checkboxes = [];
-		var unCheckedTags = e.target.form.getUnchecked('alreadyPresentArticleTags') || [];
+		var unCheckedTags = e.target.form.getUnchecked('alreadyPresentArticleTags');
 		Twinkle.tag.alreadyPresentTags.forEach(function(tag) {
 			var description = Twinkle.tag.article.tags[tag];
 			var checkbox =
@@ -623,15 +623,8 @@ Twinkle.tag.updateSortOrder = function(e) {
 	$workarea.find('h5:not(:first-child)').css({ 'margin-top': '1em' });
 	$workarea.find('div').filter(':has(span.quickformDescription)').css({ 'margin-top': '0.4em' });
 
-	var alreadyPresentTags = Morebits.quickForm.getElements(form, 'alreadyPresentArticleTags');
-	if (alreadyPresentTags) {
-		alreadyPresentTags.forEach(generateLinks);
-	}
-	// in the unlikely case that *every* tag is already on the page
-	var notPresentTags = Morebits.quickForm.getElements(form, 'articleTags');
-	if (notPresentTags) {
-		notPresentTags.forEach(generateLinks);
-	}
+	Morebits.quickForm.getElements(form, 'alreadyPresentArticleTags').forEach(generateLinks);
+	Morebits.quickForm.getElements(form, 'articleTags').forEach(generateLinks);
 
 	// tally tags added/removed, update statusNode text
 	var statusNode = document.getElementById('tw-tag-status');
@@ -1971,7 +1964,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	}
 
 	// Don't return null if there aren't any available tags
-	params.tags = form.getChecked(Twinkle.tag.mode + 'Tags') || [];
+	params.tags = form.getChecked(Twinkle.tag.mode + 'Tags');
 
 	// Save values of input fields into params object. This works as quickform input
 	// fields within subgroups of elements with name 'articleTags' (say) have their
@@ -1986,8 +1979,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	switch (Twinkle.tag.mode) {
 		case 'article':
-			params.tagsToRemove = form.getUnchecked('alreadyPresentArticleTags') || [];
-			params.tagsToRemain = form.getChecked('alreadyPresentArticleTags') || [];
+			params.tagsToRemove = form.getUnchecked('alreadyPresentArticleTags');
+			params.tagsToRemain = form.getChecked('alreadyPresentArticleTags');
 			params.reason = form.reason.value.trim();
 
 			params.group = form.group.checked;

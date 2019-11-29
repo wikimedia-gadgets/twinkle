@@ -728,15 +728,13 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
  */
 Morebits.quickForm.getElements = function QuickFormGetElements(form, fieldName) {
 	var $form = $(form);
+	fieldName = $.escapeSelector(fieldName); // sanitize input
 	var $elements = $form.find('[name="' + fieldName + '"]');
 	if ($elements.length > 0) {
 		return $elements.toArray();
 	}
 	$elements = $form.find('#' + fieldName);
-	if ($elements.length > 0) {
-		return $elements.toArray();
-	}
-	return null;
+	return $elements.toArray();
 };
 
 /**
@@ -881,15 +879,11 @@ Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementToo
  * please)
  * Type is optional and can specify if either radio or checkbox (for the event
  * that both checkboxes and radiobuttons have the same name.
- *
- * XXX: Doesn't seem to work reliably across all browsers at the moment. -- see getChecked2
- * in twinkleunlink.js, which is better
  */
 HTMLFormElement.prototype.getChecked = function(name, type) {
 	var elements = this.elements[name];
 	if (!elements) {
-		// if the element doesn't exists, return null.
-		return null;
+		return [];
 	}
 	var return_array = [];
 	var i;
@@ -936,8 +930,7 @@ HTMLFormElement.prototype.getChecked = function(name, type) {
 HTMLFormElement.prototype.getUnchecked = function(name, type) {
 	var elements = this.elements[name];
 	if (!elements) {
-		// if the element doesn't exists, return null.
-		return null;
+		return [];
 	}
 	var return_array = [];
 	var i;

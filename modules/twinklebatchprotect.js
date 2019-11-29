@@ -392,7 +392,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 
-	if (!pages) {
+	if (pages.length === 0) {
 		Morebits.status.error('Error', 'Nothing to protect, aborting');
 		return;
 	}

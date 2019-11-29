@@ -234,7 +234,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		var result = form.render();
 		apiobj.params.Window.setContent(result);
 
-		var pageCheckboxes = Morebits.quickForm.getElements(result, 'pages') || [];
+		var pageCheckboxes = Morebits.quickForm.getElements(result, 'pages');
 		pageCheckboxes.forEach(generateArrowLinks);
 		Morebits.checkboxShiftClickSupport(pageCheckboxes);
 
@@ -299,11 +299,11 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 			newPageList = Twinkle.batchdelete.generateNewPageList(form);
 			$('#tw-dbatch-pages').replaceWith(newPageList);
 
-			pageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages') || [];
+			pageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages');
 			pageCheckboxes.forEach(generateArrowLinks);
 			Morebits.checkboxShiftClickSupport(pageCheckboxes);
 
-			subpageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages.subpages') || [];
+			subpageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages.subpages');
 			subpageCheckboxes.forEach(generateArrowLinks);
 			Morebits.checkboxShiftClickSupport(subpageCheckboxes);
 
@@ -396,11 +396,11 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 			newPageList = Twinkle.batchdelete.generateNewPageList(form);
 			$('#tw-dbatch-pages').replaceWith(newPageList);
 
-			pageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages') || [];
+			pageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages');
 			pageCheckboxes.forEach(generateArrowLinks);
 			Morebits.checkboxShiftClickSupport(pageCheckboxes);
 
-			subpageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages.subpages') || [];
+			subpageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages.subpages');
 			subpageCheckboxes.forEach(generateArrowLinks);
 			Morebits.checkboxShiftClickSupport(subpageCheckboxes);
 
@@ -426,7 +426,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		newPageList = Twinkle.batchdelete.generateNewPageList(form);
 		$('#tw-dbatch-pages').replaceWith(newPageList);
 
-		pageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages') || [];
+		pageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages');
 		pageCheckboxes.forEach(generateArrowLinks);
 		Morebits.checkboxShiftClickSupport(pageCheckboxes);
 
@@ -469,7 +469,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 	}
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
-	if (!pages) {
+	if (pages.length === 0) {
 		Morebits.status.error('Error', 'nothing to delete, aborting');
 		return;
 	}

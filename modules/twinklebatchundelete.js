@@ -131,7 +131,7 @@ Twinkle.batchundelete.callback.evaluate = function(event) {
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(event.target);
 
-	if (!pages) {
+	if (pages.length === 0) {
 		Morebits.status.error('Error', 'nothing to undelete, aborting');
 		return;
 	}
