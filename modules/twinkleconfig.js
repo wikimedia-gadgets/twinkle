@@ -1178,11 +1178,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 					resetlink.setAttribute('href', '#tw-reset');
 					resetlink.setAttribute('id', 'twinkle-config-reset-' + pref.name);
 					resetlink.addEventListener('click', Twinkle.config.resetPrefLink, false);
-					if (resetlink.style.styleFloat) {  // IE (inc. IE9)
-						resetlink.style.styleFloat = 'right';
-					} else {  // standards
-						resetlink.style.cssFloat = 'right';
-					}
+					resetlink.style.cssFloat = 'right';
 					resetlink.style.margin = '0 0.6em';
 					resetlink.appendChild(document.createTextNode('Reset'));
 					cell.appendChild(resetlink);
