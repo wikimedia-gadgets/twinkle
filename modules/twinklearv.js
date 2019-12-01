@@ -50,7 +50,8 @@ Twinkle.arv.callback = function (uid) {
 	categories.append({
 		type: 'option',
 		label: 'Username (WP:UAA)',
-		value: 'username'
+		value: 'username',
+		disabled: mw.util.isIPAddress(uid)
 	});
 	categories.append({
 		type: 'option',
@@ -165,7 +166,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					},
 					{
 						label: 'Account is a promotion-only account',
-						value: 'promoonly'
+						value: 'promoonly',
+						disabled: mw.util.isIPAddress(root.uid.value)
 					}
 				]
 			});
