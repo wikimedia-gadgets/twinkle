@@ -1386,6 +1386,7 @@ Morebits.wiki.api.prototype = {
 	 * Carries out the request.
 	 * @param {Object} callerAjaxParameters Do not specify a parameter unless you really
 	 * really want to give jQuery some extra parameters
+	 * @returns {promise} - a jQuery promise object that is resolved or rejected with the api object.
 	 */
 	post: function(callerAjaxParameters) {
 
@@ -1402,8 +1403,9 @@ Morebits.wiki.api.prototype = {
 			}
 		}, callerAjaxParameters);
 
-		return $.ajax(ajaxparams).done(
-			function(response, statusText) {
+		return $.ajax(ajaxparams).then(
+
+			function onAPIsuccess(response, statusText) {
 				this.statusText = statusText;
 				this.response = this.responseXML = response;
 				if (this.query.format === 'json') {
@@ -1415,15 +1417,12 @@ Morebits.wiki.api.prototype = {
 				}
 
 				if (typeof this.errorCode === 'string') {
-
 					// the API didn't like what we told it, e.g., bad edit token or an error creating a page
-					this.returnError();
-					return;
+					return this.returnError();
 				}
 
 				// invoke success callback if one was supplied
 				if (this.onSuccess) {
-
 					// set the callback context to this.parent for new code and supply the API object
 					// as the first argument to the callback (for legacy code)
 					this.onSuccess.call(this.parent, this);
@@ -1432,16 +1431,19 @@ Morebits.wiki.api.prototype = {
 				}
 
 				Morebits.wiki.actionCompleted();
-			}
-		).fail(
+
+				return $.Deferred().resolveWith(this.parent, [this]);
+			},
+
 			// only network and server errors reach here - complaints from the API itself are caught in success()
-			function(jqXHR, statusText, errorThrown) {
+			function onAPIfailure(jqXHR, statusText, errorThrown) {
 				this.statusText = statusText;
 				this.errorThrown = errorThrown; // frequently undefined
 				this.errorText = statusText + ' "' + jqXHR.statusText + '" occurred while contacting the API.';
-				this.returnError();
+				return this.returnError();
 			}
-		);  // the return value should be ignored, unless using callerAjaxParameters with |async: false|
+
+		);
 	},
 
 	returnError: function() {
@@ -1459,6 +1461,8 @@ Morebits.wiki.api.prototype = {
 			this.onError.call(this.parent, this);
 		}
 		// don't complete the action so that the error remains displayed
+
+		return $.Deferred().rejectWith(this.parent, [this]);
 	},
 
 	getStatusElement: function() {
