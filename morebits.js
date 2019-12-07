@@ -2152,6 +2152,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		return ctx.revertUser;
 	};
 
+	/** @returns {string} ISO 8601 timestamp at which the page was last edited. */
+	this.getLastEditTime = function() {
+		return ctx.lastEditTime;
+	};
+
 	// Miscellaneous getters/setters:
 
 	/**

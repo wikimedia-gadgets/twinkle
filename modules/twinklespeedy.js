@@ -1497,6 +1497,11 @@ Twinkle.speedy.callbacks = {
 				editsummary = 'Requesting speedy deletion ([[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']]).';
 			}
 
+			// Set the correct value for |ts= parameter in {{db-g13}}
+			if (params.normalizeds.indexOf('g13') !== -1) {
+				code = code.replace('$TIMESTAMP', pageobj.getLastEditTime());
+			}
+
 			pageobj.setPageText(code + (params.normalizeds.indexOf('g10') !== -1 ? '' : '\n' + text)); // cause attack pages to be blanked
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			pageobj.setWatchlist(params.watch);
@@ -1789,24 +1794,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				break;
 
 			case 'afc':  // G13
-				var query = {
-						action: 'query',
-						titles: mw.config.get('wgPageName'),
-						prop: 'revisions',
-						rvprop: 'timestamp'
-					},
-					api = new Morebits.wiki.api('Grabbing the last revision timestamp', query, function(apiobj) {
-						var xmlDoc = apiobj.getXML(),
-							isoDateString = $(xmlDoc).find('rev').attr('timestamp');
-
-						currentParams.ts = isoDateString;
-					});
-
-				// Wait for API call to finish
-				api.post({
-					async: false
-				});
-
+				currentParams.ts = '$TIMESTAMP'; // to be replaced by the last revision timestamp when page is saved
 				break;
 
 			case 'redundantimage':  // F1
