@@ -2644,22 +2644,15 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		return true; // all OK
 	};
 
-	// helper function to get a new token on encountering token errors
-	// in save, deletePage, and undeletePage
-	// Being a synchronous ajax call, this blocks the event loop,
-	// and hence should be used sparingly.
+	// helper function to get a new token on encountering token errors in save, deletePage, and undeletePage
 	var fnGetToken = function() {
-		var token;
 		var tokenApi = new Morebits.wiki.api('Getting token', {
 			action: 'query',
 			meta: 'tokens'
-		}, function(apiobj) {
-			token = $(apiobj.responseXML).find('tokens').attr('csrftoken');
-		}, null, function() {
-			this.getStatusElement().error('Failed to get token');
 		});
-		tokenApi.post({async: false});
-		return token;
+		return tokenApi.post().then(function(apiobj) {
+			return $(apiobj.responseXML).find('tokens').attr('csrftoken');
+		});
 	};
 
 	// callback from saveApi.post()
@@ -2709,25 +2702,27 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				titles: ctx.pageName  // redirects are already resolved
 			};
 
-			var purgeApi = new Morebits.wiki.api('Edit conflict detected, purging server cache', purgeQuery, null, ctx.statusElement);
-			purgeApi.post({ async: false });  // just wait for it, result is for debugging
+			var purgeApi = new Morebits.wiki.api('Edit conflict detected, purging server cache', purgeQuery, function() {
+				--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 
-			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
-
-			ctx.statusElement.info('Edit conflict detected, reapplying edit');
-			if (fnCanUseMwUserToken('edit')) {
-				ctx.saveApi.post(); // necessarily append or prepend, so this should work as desired
-			} else {
-				ctx.loadApi.post(); // reload the page and reapply the edit
-			}
+				ctx.statusElement.info('Edit conflict detected, reapplying edit');
+				if (fnCanUseMwUserToken('edit')) {
+					ctx.saveApi.post(); // necessarily append or prepend, so this should work as desired
+				} else {
+					ctx.loadApi.post(); // reload the page and reapply the edit
+				}
+			}, ctx.statusElement);
+			purgeApi.post();
 
 		// check for loss of edit token
 		} else if ((errorCode === 'badtoken' || errorCode === 'notoken') && ctx.retries++ < ctx.maxRetries) {
 
 			ctx.statusElement.info('Edit token is invalid, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
-			ctx.saveApi.query.token = fnGetToken.call(this);
-			ctx.saveApi.post();
+			fnGetToken().then(function(token) {
+				ctx.saveApi.query.token = token;
+				ctx.saveApi.post();
+			});
 
 		// check for network or server error
 		} else if (errorCode === 'undefined' && ctx.retries++ < ctx.maxRetries) {
@@ -2951,8 +2946,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		} else if ((errorCode === 'badtoken' || errorCode === 'notoken') && ctx.retries++ < ctx.maxRetries) {
 			ctx.statusElement.info('Invalid token, retrying');
 			--Morebits.wiki.numberOfActionsLeft;
-			ctx.deleteProcessApi.query.token = fnGetToken.call(this);
-			ctx.deleteProcessApi.post();
+			fnGetToken().then(function(token) {
+				ctx.deleteProcessApi.query.token = token;
+				ctx.deleteProcessApi.post();
+			});
 		} else if (errorCode === 'missingtitle') {
 			ctx.statusElement.error('Cannot delete the page, because it no longer exists');
 			if (ctx.onDeleteFailure) {
@@ -3033,9 +3030,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		} else if ((errorCode === 'badtoken' || errorCode === 'notoken') && ctx.retries++ < ctx.maxRetries) {
 			ctx.statusElement.info('Invalid token, retrying');
 			--Morebits.wiki.numberOfActionsLeft;
-			ctx.undeleteProcessApi.query.token = fnGetToken.call(this);
-			ctx.undeleteProcessApi.post();
-
+			fnGetToken().then(function(token) {
+				ctx.undeleteProcessApi.query.token = token;
+				ctx.undeleteProcessApi.post();
+			});
 		} else if (errorCode === 'cantundelete') {
 			ctx.statusElement.error('Cannot undelete the page, either because there are no revisions to undelete or because it has already been undeleted');
 			if (ctx.onUndeleteFailure) {
