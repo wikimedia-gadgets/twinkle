@@ -1340,11 +1340,14 @@ Morebits.wiki.removeCheckpoint = function() {
  */
 
 /**
+ * In new code, the use of the last 3 parameters should be avoided, instead use setStatusElement() to bind the
+ * status element (if needed) and use .then() or .catch() on the promise returned by post(), rather than specify
+ * the onSuccess or onFailure callbacks.
  * @constructor
  * @param {string} currentAction - The current action (required)
  * @param {Object} query - The query (required)
  * @param {Function} [onSuccess] - The function to call when request gotten
- * @param {Object} [statusElement] - A Morebits.status object to use for status messages (optional)
+ * @param {Morebits.status} [statusElement] - A Morebits.status object to use for status messages (optional)
  * @param {Function} [onError] - The function to call if an error occurs (optional)
  */
 Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onError) {
@@ -1354,8 +1357,7 @@ Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onE
 	this.onSuccess = onSuccess;
 	this.onError = onError;
 	if (statusElement) {
-		this.statelem = statusElement;
-		this.statelem.status(currentAction);
+		this.setStatusElement(statusElement);
 	} else {
 		this.statelem = new Morebits.status(currentAction);
 	}
@@ -1374,13 +1376,24 @@ Morebits.wiki.api.prototype = {
 	query: null,
 	response: null,
 	responseXML: null,  // use `response` instead; retained for backwards compatibility
-	setParent: function(parent) {
-		this.parent = parent;
-	},  // keep track of parent object for callbacks
 	statelem: null,  // this non-standard name kept for backwards compatibility
 	statusText: null, // result received from the API, normally "success" or "error"
 	errorCode: null, // short text error code, if any, as documented in the MediaWiki API
 	errorText: null, // full error description, if any
+
+	/**
+	 * Keep track of parent object for callbacks
+	 * @param {*} parent
+     */
+	setParent: function(parent) {
+		this.parent = parent;
+	},
+
+	/** @param {Morebits.status} statusElement */
+	setStatusElement: function(statusElement) {
+		this.statelem = statusElement;
+		this.statelem.status(this.currentAction);
+	},
 
 	/**
 	 * Carries out the request.
@@ -1448,6 +1461,7 @@ Morebits.wiki.api.prototype = {
 
 	returnError: function() {
 		if (this.errorCode === 'badtoken') {
+			// TODO: automatically retry after getting a new token
 			this.statelem.error('Invalid token. Refresh the page and try again');
 		} else {
 			this.statelem.error(this.errorText);
