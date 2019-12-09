@@ -2172,17 +2172,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * Loads the text for the page
 	 * @param {Function} onSuccess - callback function which is called when the load has succeeded
 	 * @param {Function} [onFailure] - callback function which is called when the load fails (optional)
+	 * @returns {jQuery.Promise} resolved or rejected with the Morebits.wiki.page object,
+	 * errorCode and errorText, the latter being undefined on success.
 	 */
 	this.load = function(onSuccess, onFailure) {
-		ctx.onLoadSuccess = onSuccess;
+		ctx.onLoadSuccess = onSuccess || emptyFunction;
 		ctx.onLoadFailure = onFailure || emptyFunction;
-
-		// Need to be able to do something after the page loads
-		if (!onSuccess) {
-			ctx.statusElement.error('Internal error: no onSuccess callback provided to load()!');
-			ctx.onLoadFailure(this);
-			return;
-		}
 
 		ctx.loadQuery = {
 			action: 'query',
@@ -2212,9 +2207,20 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.loadQuery.inprop = 'protection';
 		}
 
-		ctx.loadApi = new Morebits.wiki.api('Retrieving page...', ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
+		ctx.loadApi = new Morebits.wiki.api('Retrieving page...', ctx.loadQuery);
+		ctx.loadApi.setStatusElement(ctx.statusElement);
 		ctx.loadApi.setParent(this);
-		ctx.loadApi.post();
+		return ctx.loadApi.post()
+			.catch(reshapeRejectedPromise)
+			.then(fnLoadSuccess)
+			.then(function() {
+				ctx.onLoadSuccess.call(this, this);
+				return $.Deferred().resolveWith(this, [this]);
+			})
+			.catch(function(errorCode, errorText) {
+				ctx.onLoadFailure.call(this, this, errorCode, errorText);
+				return $.Deferred().rejectWith(this, [this, errorCode, errorText]);
+			});
 	};
 
 	/**
@@ -3079,8 +3085,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	var fnLoadSuccess = function() {
 		var xml = ctx.loadApi.getXML();
 
-		if (!fnCheckPageName(xml, ctx.onLoadFailure)) {
-			return; // abort
+		if (!fnCheckPageName(xml)) {
+			return $.Deferred().rejectWith(this, ['int-badpagename', 'Invalid page title, or circular redirect or other problem']);
 		}
 
 		ctx.pageExists = $(xml).find('page').attr('missing') !== '';
@@ -3121,8 +3127,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.revertCurID = $(xml).find('rev').attr('revid');
 			if (!ctx.revertCurID) {
 				ctx.statusElement.error('Failed to retrieve current revision ID.');
-				ctx.onLoadFailure(this);
-				return;
+				return $.Deferred().rejectWith(this, ['int-nocurid', 'Failed to retrieve current revision ID.']);
 			}
 			ctx.revertUser = $(xml).find('rev').attr('user');
 			if (!ctx.revertUser) {
@@ -3130,8 +3135,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 					ctx.revertUser = '<username hidden>';
 				} else {
 					ctx.statusElement.error('Failed to retrieve user who made the revision.');
-					ctx.onLoadFailure(this);
-					return;
+					return $.Deferred().rejectWith(this, ['int-norevertuser', 'Failed to retrieve user who made the revision.']);
 				}
 			}
 			// set revert edit summary
@@ -3141,7 +3145,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.pageLoaded = true;
 
 		// alert("Generate edit conflict now");  // for testing edit conflict recovery logic
-		ctx.onLoadSuccess(this);  // invoke callback
+		return $.Deferred().resolveWith(this, [this]);
 	};
 
 	// helper function to parse the page name returned from the API
@@ -3153,7 +3157,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		// check for invalid titles
 		if ($(xml).find('page').attr('invalid') === '') {
 			ctx.statusElement.error('The page title is invalid: ' + ctx.pageName);
-			onFailure(this);
 			return false; // abort
 		}
 
@@ -3180,7 +3183,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		} else {
 			// could be a circular redirect or other problem
 			ctx.statusElement.error('Could not resolve redirects for: ' + ctx.pageName);
-			onFailure(this);
 
 			// force error to stay on the screen
 			++Morebits.wiki.numberOfActionsLeft;
