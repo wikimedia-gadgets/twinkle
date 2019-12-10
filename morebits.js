@@ -2691,19 +2691,17 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	/**
 	 * Retrieves the username of the user who created the page as well as
-	 * the timestamp of creation
-	 * @param {Function} onSuccess - callback function (required) which is
-	 * called when the username and timestamp are found within the callback.
-	 * The username can be retrieved using the getCreator() function;
-	 * the timestamp can be retrieved using the getCreationTimestamp() function
+	 * the timestamp of creation. In either of the two callbacks,
+	 * the username can be retrieved using the getCreator() function;
+	 * the timestamp can be retrieved using the getCreationTimestamp() function.
 	 * Prior to June 2019 known as lookupCreator
+	 * @param {Function} [onSuccess] - callback function which is
+	 * called when the username and timestamp are found.
+	 * @returns {jQuery.Promise} resolved or rejected with the page object,
+	 * errorCode and errorText, the latter two being undefined on success.
 	 */
 	this.lookupCreation = function(onSuccess) {
-		if (!onSuccess) {
-			ctx.statusElement.error('Internal error: no onSuccess callback provided to lookupCreation()!');
-			return;
-		}
-		ctx.onLookupCreationSuccess = onSuccess;
+		ctx.onLookupCreationSuccess = onSuccess || emptyFunction;
 
 		var query = {
 			'action': 'query',
@@ -2728,9 +2726,19 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', query, fnLookupCreationSuccess, ctx.statusElement);
+		ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', query);
+		ctx.lookupCreationApi.setStatusElement(ctx.statusElement);
 		ctx.lookupCreationApi.setParent(this);
-		ctx.lookupCreationApi.post();
+		return ctx.lookupCreationApi.post()
+			.catch(reshapeRejectedPromise)
+			.then(fnLookupCreationSuccess)
+			.then(function() {
+				ctx.onLookupCreationSuccess.call(this, this);
+				return $.Deferred().resolveWith(this, [this]);
+			})
+			.catch(function(errorCode, errorText) {
+				return $.Deferred().rejectWith(this, [this, errorCode, errorText]);
+			});
 	};
 
 	/**
@@ -3303,7 +3311,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var xml = ctx.lookupCreationApi.getXML();
 
 		if (!fnCheckPageName(xml)) {
-			return; // abort
+			return $.Deferred().reject(this);
 		}
 
 		if (!ctx.lookupNonRedirectCreator || !/^\s*#redirect/i.test($(xml).find('rev').text())) {
@@ -3311,22 +3319,19 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.creator = $(xml).find('rev').attr('user');
 			if (!ctx.creator) {
 				ctx.statusElement.error('Could not find name of page creator');
-				return;
+				return $.Deferred().rejectWith(this, ['int-nocreator', 'Could not find name of page creator']);
 			}
 			ctx.timestamp = $(xml).find('rev').attr('timestamp');
 			if (!ctx.timestamp) {
 				ctx.statusElement.error('Could not find timestamp of page creation');
-				return;
+				return $.Deferred().rejectWith(this, ['int-notimestamp', 'Could not find timestamp of page creation']);
 			}
-			ctx.onLookupCreationSuccess(this);
+			return $.Deferred().resolveWith(this, [this]);
 
 		} else {
 			ctx.lookupCreationApi.query.rvlimit = 50; // modify previous query to fetch more revisions
 			ctx.lookupCreationApi.query.titles = ctx.pageName; // update pageName if redirect resolution took place in earlier query
-
-			ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', ctx.lookupCreationApi.query, fnLookupNonRedirectCreator, ctx.statusElement);
-			ctx.lookupCreationApi.setParent(this);
-			ctx.lookupCreationApi.post();
+			return ctx.lookupCreationApi.post().then(fnLookupNonRedirectCreator);
 		}
 
 	};
@@ -3348,16 +3353,15 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.timestamp = $(xml).find('rev')[0].getAttribute('timestamp');
 			if (!ctx.creator) {
 				ctx.statusElement.error('Could not find name of page creator');
-				return;
+				return $.Deferred().rejectWith(this, ['int-nocreator', 'Could not find name of page creator']);
 			}
-
 		}
-		if (!ctx.timestamp) {
+		if (!ctx.timestamp) { // unlikely to ever occur
 			ctx.statusElement.error('Could not find timestamp of page creation');
-			return;
+			return $.Deferred().rejectWith(this, ['int-notimestamp', 'Could not find timestamp of page creation']);
 		}
 
-		ctx.onLookupCreationSuccess(this);
+		return $.Deferred().resolveWith(this, [this]);
 
 	};
 

@@ -21,7 +21,6 @@
 		"eqeqeq": "error",
 		"guard-for-in": "error",
 		"no-caller": "error",
-		"no-else-return": "error",
 		"no-implicit-coercion": ["error", { "boolean": false }],
 		"no-lone-blocks": "error",
 		"no-multi-spaces": ["error", { "ignoreEOLComments": true }],
