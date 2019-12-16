@@ -2909,31 +2909,36 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * Undeletes a page (for admins only)
 	 * @param {Function} [onSuccess] - callback function to run on success (optional)
 	 * @param {Function} [onFailure] - callback function to run on failure (optional)
+	 * @returns {jQuery.Promise} resolved or rejected with the Morebits.wiki.page object, errorCode
+	 * and errorText (the latter two being undefined on success)
 	 */
 	this.undeletePage = function(onSuccess, onFailure) {
-		ctx.onUndeleteSuccess = onSuccess;
+		ctx.onUndeleteSuccess = onSuccess || emptyFunction;
 		ctx.onUndeleteFailure = onFailure || emptyFunction;
+
+		var returnError = function(errorCode, errorText) {
+			ctx.statusElement.error(errorText);
+			ctx.onUndeleteFailure.call(this, this, errorCode, errorText);
+			return $.Deferred().rejectWith(this, [this, errorCode, errorText]);
+		};
 
 		// if a non-admin tries to do this, don't bother
 		if (!Morebits.userIsSysop) {
-			ctx.statusElement.error('Cannot undelete page: only admins can do that');
-			ctx.onUndeleteFailure(this);
-			return;
+			return returnError.call(this, 'permissiondenied', 'Cannot undelete page: only admins can do that');
 		}
 		if (!ctx.editSummary) {
-			ctx.statusElement.error('Internal error: undelete reason not set before undelete (use setEditSummary function)!');
-			ctx.onUndeleteFailure(this);
-			return;
+			return returnError.call(this, 'int-noreason', 'Internal error: undelete reason not set before delete (use setEditSummary function)!');
 		}
 
 		if (fnCanUseMwUserToken('undelete')) {
-			fnProcessUndelete.call(this, this);
+			return fnProcessUndelete.call(this).catch(returnError);
 		} else {
 			var query = fnNeedTokenInfoQuery('undelete');
 
-			ctx.undeleteApi = new Morebits.wiki.api('retrieving token...', query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
+			ctx.undeleteApi = new Morebits.wiki.api('retrieving token...', query);
+			ctx.undeleteApi.setStatusElement(ctx.statusElement);
 			ctx.undeleteApi.setParent(this);
-			ctx.undeleteApi.post();
+			return ctx.undeleteApi.post().then(fnProcessUndelete).catch(returnError);
 		}
 	};
 
@@ -3600,9 +3605,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			var xml = ctx.undeleteApi.getXML();
 
 			if ($(xml).find('page').attr('missing') !== '') {
-				ctx.statusElement.error('Cannot undelete the page, because it already exists');
-				ctx.onUndeleteFailure(this);
-				return;
+				return $.Deferred().rejectWith(this, ['cantundelete', 'Cannot undelete the page, because it already exists']);
 			}
 
 			// extract protection info
@@ -3611,9 +3614,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				!confirm('You are about to undelete the fully create protected page "' + ctx.pageName +
 				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.attr('expiry')).calendar('utc') + ' (UTC))') +
 				'.  \n\nClick OK to proceed with the undeletion, or Cancel to skip this undeletion.')) {
-				ctx.statusElement.error('Undeletion of fully create protected page was aborted.');
-				ctx.onUndeleteFailure(this);
-				return;
+				return $.Deferred().rejectWith(this, ['int-aborted', 'Undeletion of fully protected page was aborted.']);
 			}
 
 			token = $(xml).find('tokens').attr('csrftoken');
@@ -3638,9 +3639,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 
-		ctx.undeleteProcessApi = new Morebits.wiki.api('undeleting page...', query, ctx.onUndeleteSuccess, ctx.statusElement, fnProcessUndeleteError);
+		ctx.undeleteProcessApi = new Morebits.wiki.api('undeleting page...', query, function() {
+			ctx.onUndeleteSuccess.call(this, this);
+		}, ctx.statusElement);
 		ctx.undeleteProcessApi.setParent(this);
-		ctx.undeleteProcessApi.post();
+		return ctx.undeleteProcessApi.post().catch(fnProcessUndeleteError).then(reshapeResolvedPromise);
 	};
 
 	// callback from undeleteProcessApi.post()
@@ -3653,24 +3656,17 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			if (ctx.retries++ < ctx.maxRetries) {
 				ctx.statusElement.info('Database query error, retrying');
 				--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
-				ctx.undeleteProcessApi.post(); // give it another go!
+				return ctx.undeleteProcessApi.post().catch(fnProcessUndeleteError); // give it another go!
 			} else {
-				ctx.statusElement.error('Repeated database query error, please try again');
-				if (ctx.onUndeleteFailure) {
-					ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
-				}
+				return $.Deferred().rejectWith(this, ['internal_api_error_DBQueryError', 'Repeated database query error, please try again']);
 			}
 		} else if (errorCode === 'cantundelete') {
-			ctx.statusElement.error('Cannot undelete the page, either because there are no revisions to undelete or because it has already been undeleted');
-			if (ctx.onUndeleteFailure) {
-				ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
-			}
+			return $.Deferred().rejectWith(this, ['cantundelete', 'Cannot undelete the page, there are no revisions to undelete or because it has already been undeleted']);
+
 		// hard error, give up
 		} else {
-			ctx.statusElement.error('Failed to undelete the page: ' + ctx.undeleteProcessApi.getErrorText());
-			if (ctx.onUndeleteFailure) {
-				ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
-			}
+			return $.Deferred().rejectWith(this, [errorCode, 'Failed to undelete the page: ' +
+				ctx.undeleteProcessApi.getErrorText()]);
 		}
 	};
 
