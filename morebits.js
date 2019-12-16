@@ -2742,6 +2742,38 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
+	 * Marks the page as patrolled, if possible
+	 * @returns {jQuery.Promise} - resolved or rejected with the page object, and with errorcode and errortext
+	 * on failure.
+	 */
+	this.patrol = function() {
+		// There's no patrol link on page, so we can't patrol
+		if (!$('.patrollink').length) {
+			return;
+		}
+
+		// Extract the Recentchanges ID (rcid) from the "Mark page as patrolled" link on page
+		var patrolhref = $('.patrollink a').attr('href'),
+			rcid = mw.util.getParamValue('rcid', patrolhref);
+
+		if (rcid) {
+			var patrolstat = new Morebits.status('Marking page as patrolled');
+
+			var wikipedia_api = new Morebits.wiki.api('doing...', {
+				action: 'patrol',
+				rcid: rcid,
+				token: mw.user.tokens.get('patrolToken')
+			});
+			wikipedia_api.setStatusElement(patrolstat);
+			wikipedia_api.setParent(this);
+			return wikipedia_api.post().then(reshapeResolvedPromise).catch(reshapeRejectedPromise);
+
+		} else {
+			return $.Deferred().rejectWith(this, [this, 'missingparam', 'No rcid available']);
+		}
+	};
+
+	/**
 	 * Reverts a page to revertOldID
 	 * @param {Function} [onSuccess] - callback function to run on success (optional)
 	 * @param {Function} [onFailure] - callback function to run on failure (optional)
