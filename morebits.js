@@ -2983,26 +2983,28 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * Protects a page (for admins only)
 	 * @param {Function} [onSuccess] - callback function to run on success (optional)
 	 * @param {Function} [onFailure] - callback function to run on failure (optional)
+	 * @returns {jQuery.Promise} - resolved or rejected with the page object, and the errorCode and errorText
+	 * on failure.
 	 */
 	this.protect = function(onSuccess, onFailure) {
-		ctx.onProtectSuccess = onSuccess;
+		ctx.onProtectSuccess = onSuccess || emptyFunction;
 		ctx.onProtectFailure = onFailure || emptyFunction;
+
+		var returnError = function(errorCode, errorText) {
+			ctx.statusElement.error(errorText);
+			ctx.onProtectFailure.call(this, this, errorCode, errorText);
+			return $.Deferred().rejectWith(this, [this, errorCode, errorText]);
+		};
 
 		// if a non-admin tries to do this, don't bother
 		if (!Morebits.userIsSysop) {
-			ctx.statusElement.error('Cannot protect page: only admins can do that');
-			ctx.onProtectFailure(this);
-			return;
+			return returnError.call(this, 'permissiondenied', 'Cannot protect page: only admins can do that');
 		}
 		if (!ctx.protectEdit && !ctx.protectMove && !ctx.protectCreate) {
-			ctx.statusElement.error('Internal error: you must set edit and/or move and/or create protection before calling protect()!');
-			ctx.onProtectFailure(this);
-			return;
+			return returnError.call(this, 'int-nosetting', 'Internal error: you must set edit and/or move and/or create protection before calling protect()!');
 		}
 		if (!ctx.editSummary) {
-			ctx.statusElement.error('Internal error: protection reason not set before protect (use setEditSummary function)!');
-			ctx.onProtectFailure(this);
-			return;
+			return returnError.call(this, 'int-noreason', 'Internal error: protection reason not set before move (use setEditSummary function)!');
 		}
 
 		// because of the way MW API interprets protection levels
@@ -3010,9 +3012,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		// protection levels from the server
 		var query = fnNeedTokenInfoQuery('protect');
 
-		ctx.protectApi = new Morebits.wiki.api('retrieving token...', query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
+		ctx.protectApi = new Morebits.wiki.api('retrieving token...', query);
+		ctx.protectApi.setStatusElement(ctx.statusElement);
 		ctx.protectApi.setParent(this);
-		ctx.protectApi.post();
+		return ctx.protectApi.post().then(fnProcessProtect).catch(returnError);
 	};
 
 	/**
@@ -3709,23 +3712,17 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		var missing = $(xml).find('page').attr('missing') === '';
 		if ((ctx.protectEdit || ctx.protectMove) && missing) {
-			ctx.statusElement.error('Cannot protect the page, because it no longer exists');
-			ctx.onProtectFailure(this);
-			return;
+			return $.Deferred().rejectWith(this, ['missingtitle', 'Cannot protect the page, because it no longer exists']);
 		}
 		if (ctx.protectCreate && !missing) {
-			ctx.statusElement.error('Cannot create protect the page, because it already exists');
-			ctx.onProtectFailure(this);
-			return;
+			return $.Deferred().rejectWith(this, ['create-titleexists', 'Cannot create protect the page, because it already exists']);
 		}
 
 		// TODO cascading protection not possible on edit<sysop
 
 		var token = $(xml).find('tokens').attr('csrftoken');
 		if (!token) {
-			ctx.statusElement.error('Failed to retrieve protect token.');
-			ctx.onProtectFailure(this);
-			return;
+			return $.Deferred().rejectWith(this, ['notoken', 'Failed to retrieve protect token.']);
 		}
 
 		var pageTitle = $(xml).find('page').attr('title');
@@ -3781,9 +3778,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.cascade = 'true';
 		}
 
-		ctx.protectProcessApi = new Morebits.wiki.api('protecting page...', query, ctx.onProtectSuccess, ctx.statusElement, ctx.onProtectFailure);
+		ctx.protectProcessApi = new Morebits.wiki.api('protecting page...', query, function() {
+			ctx.onProtectSuccess.call(this, this);
+		}, ctx.statusElement);
 		ctx.protectProcessApi.setParent(this);
-		ctx.protectProcessApi.post();
+		return ctx.protectProcessApi.post().then(reshapeResolvedPromise).catch(reshapeRejectedPromise);
 	};
 
 	var fnProcessStabilize = function() {
