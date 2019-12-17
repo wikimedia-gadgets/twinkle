@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("PP"/"RPP")
  * Active on:              Non-special, non-MediaWiki pages
- * Config directives in:   TwinkleConfig
  */
 
 // Note: a lot of code in this module is re-used/called by batchprotect.

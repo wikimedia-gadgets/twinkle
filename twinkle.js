@@ -176,12 +176,10 @@ if (mw.config.get('skin') === 'vector') {
 
 
 Twinkle.getPref = function twinkleGetPref(name) {
-	if (typeof Twinkle.prefs === 'object') {
-		if (Twinkle.prefs[name]) {
-			return Twinkle.prefs[name];
-		}
+	if (typeof Twinkle.prefs === 'object' && Twinkle.prefs[name]) {
+		return Twinkle.prefs[name];
 	}
-	// Old preferences format:
+	// Old preferences format, used before twinkleoptions.js was a thing
 	if (typeof window.TwinkleConfig === 'object' && window.TwinkleConfig[name]) {
 		return window.TwinkleConfig[name];
 	}
@@ -383,7 +381,7 @@ $.ajax({
 		try {
 			var options = JSON.parse(optionsText);
 			if (options) {
-				if (options.twinkle || options.friendly) {
+				if (options.twinkle || options.friendly) { // Old preferences format
 					Twinkle.prefs = $.extend(options.twinkle, options.friendly);
 				} else {
 					Twinkle.prefs = options;
