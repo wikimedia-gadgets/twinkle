@@ -190,12 +190,12 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 	}
 
 	var sets = Twinkle.welcome.templates[type];
-	sets.forEach(function(set) {
-		container.append({ type: 'header', label: set.label });
+	$.each(sets, function(label, templates) {
+		container.append({ type: 'header', label: label });
 		container.append({
 			type: 'radio',
 			name: 'template',
-			list: $.map(set.templates, function(properties, template) {
+			list: $.map(templates, function(properties, template) {
 				return {
 					value: template,
 					label: '{{' + template + '}}: ' + properties.description + (properties.linkedArticle ? '\u00A0*' : ''),  // U+00A0 NO-BREAK SPACE
@@ -203,7 +203,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 				};
 			}),
 			event: function(ev) {
-				ev.target.form.article.disabled = !set.templates[ev.target.value].linkedArticle;
+				ev.target.form.article.disabled = !templates[ev.target.value].linkedArticle;
 			}
 		});
 	});
@@ -213,8 +213,8 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 
 	var firstRadio = e.target.form.template[0];
 	firstRadio.checked = true;
-	e.target.form.article.disabled = sets[0].templates[firstRadio.value] ?
-		!sets[0].templates[firstRadio.value].linkedArticle :
+	e.target.form.article.disabled = Object.values(sets)[0][firstRadio.value] ?
+		!Object.values(sets)[0][firstRadio.value].linkedArticle :
 		true;
 };
 
@@ -227,9 +227,8 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 //   - $HEADER$    - adds a level 2 header (most templates already include this)
 
 Twinkle.welcome.templates = {
-	'standard': [ {
-		label: 'General welcome templates',
-		templates: {
+	'standard': {
+		'General welcome templates': {
 			'welcome': {
 				description: 'standard welcome',
 				linkedArticle: true,
@@ -271,10 +270,9 @@ Twinkle.welcome.templates = {
 				description: 'welcome for users with a username containing non-Latin characters',
 				syntax: '{{subst:welcome non-latin|$USERNAME$}} ~~~~'
 			}
-		}
-	}, {
-		label: 'Problem user welcome templates',
-		templates: {
+		},
+
+		'Problem user welcome templates': {
 			'welcomelaws': {
 				description: 'welcome with information about copyrights, NPOV, the sandbox, and vandalism',
 				syntax: '{{subst:welcomelaws|$USERNAME$}} ~~~~'
@@ -330,11 +328,10 @@ Twinkle.welcome.templates = {
 				syntax: '{{subst:welcome-image|$USERNAME$|art=$ARTICLE$}}'
 			}
 		}
-	} ],
+	},
 
-	'anonymous': [ {
-		label: 'Anonymous user welcome templates',
-		templates: {
+	'anonymous': {
+		'Anonymous user welcome templates': {
 			'welcome-anon': {
 				description: 'for anonymous users; encourages creating an account',
 				linkedArticle: true,
@@ -361,11 +358,10 @@ Twinkle.welcome.templates = {
 				syntax: '{{subst:welcome-anon-delete|$ARTICLE$|$USERNAME$}} ~~~~'
 			}
 		}
-	} ],
+	},
 
-	'wikiProject': [ {
-		label: 'WikiProject-specific welcome templates',
-		templates: {
+	'wikiProject': {
+		'WikiProject-specific welcome templates': {
 			'welcome-anatomy': {
 				description: 'welcome for users with an apparent interest in anatomy topics',
 				syntax: '{{subst:welcome-anatomy}} ~~~~'
@@ -478,11 +474,10 @@ Twinkle.welcome.templates = {
 				syntax: '{{WP:TWA/InviteTW|signature=~~~~}}'
 			}
 		}
-	} ],
+	},
 
-	'nonEnglish': [ {
-		label: 'Non-English welcome templates',
-		templates: {
+	'nonEnglish': {
+		'Non-English welcome templates': {
 			'welcomeen': {
 				description: 'welcome for users whose first language is not listed here',
 				syntax: '{{subst:welcomeen}}'
@@ -564,19 +559,19 @@ Twinkle.welcome.templates = {
 				syntax: '{{subst:welcomeen-uk}}'
 			}
 		}
-	} ]
+	}
 
 };
 
 Twinkle.welcome.getTemplateWikitext = function(type, template, article) {
 	// the iteration is required as the type=standard has two groups
 	var properties;
-	for (var i = 0; i < Twinkle.welcome.templates[type].length; i++) {
-		properties = Twinkle.welcome.templates[type][i].templates[template];
+	$.each(Twinkle.welcome.templates[type], function(label, templates) {
+		properties = templates[template];
 		if (properties) {
-			break;
+			return false; // break
 		}
-	}
+	});
 	if (properties) {
 		return properties.syntax.
 			replace('$USERNAME$', Twinkle.getFriendlyPref('insertUsername') ? mw.config.get('wgUserName') : '').
