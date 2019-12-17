@@ -3026,34 +3026,35 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * @param {function} [onFailure]
 	 */
 	this.stabilize = function(onSuccess, onFailure) {
-		ctx.onStabilizeSuccess = onSuccess;
+		ctx.onStabilizeSuccess = onSuccess || emptyFunction;
 		ctx.onStabilizeFailure = onFailure || emptyFunction;
+
+		var returnError = function(errorCode, errorText) {
+			ctx.statusElement.error(errorText);
+			ctx.onStabilizeFailure.call(this, this, errorCode, errorText);
+			return $.Deferred().rejectWith(this, [this, errorCode, errorText]);
+		};
 
 		// if a non-admin tries to do this, don't bother
 		if (!Morebits.userIsSysop) {
-			ctx.statusElement.error('Cannot apply FlaggedRevs settings: only admins can do that');
-			ctx.onStabilizeFailure(this);
-			return;
+			return returnError.call(this, 'permissiondenied', 'Cannot apply FlaggedRevs settings: only admins can do that');
 		}
 		if (!ctx.flaggedRevs) {
-			ctx.statusElement.error('Internal error: you must set flaggedRevs before calling stabilize()!');
-			ctx.onStabilizeFailure(this);
-			return;
+			return returnError.call(this, 'int-nosetting', 'Internal error: you must set flaggedRevs before calling stabilize()!');
 		}
 		if (!ctx.editSummary) {
-			ctx.statusElement.error('Internal error: reason not set before calling stabilize() (use setEditSummary function)!');
-			ctx.onStabilizeFailure(this);
-			return;
+			return returnError.call(this, 'int-noreason', 'Internal error: reason not set before calling stabilize() (use setEditSummary function)!');
 		}
 
 		if (fnCanUseMwUserToken('stabilize')) {
-			fnProcessStabilize.call(this, this);
+			return fnProcessStabilize.call(this).catch(returnError);
 		} else {
 			var query = fnNeedTokenInfoQuery('stabilize');
 
-			ctx.stabilizeApi = new Morebits.wiki.api('retrieving token...', query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
+			ctx.stabilizeApi = new Morebits.wiki.api('retrieving token...', query);
+			ctx.stabilizeApi.setStatusElement(ctx.statusElement);
 			ctx.stabilizeApi.setParent(this);
-			ctx.stabilizeApi.post();
+			return ctx.stabilizeApi.post().then(fnProcessStabilize).catch(returnError);
 		}
 	};
 
@@ -3796,16 +3797,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 			var missing = $(xml).find('page').attr('missing') === '';
 			if (missing) {
-				ctx.statusElement.error('Cannot protect the page, because it no longer exists');
-				ctx.onStabilizeFailure(this);
-				return;
+				return $.Deferred().rejectWith(this, ['missingtitle', 'Cannot protect the page, because it no longer exists']);
 			}
 
 			token = $(xml).find('tokens').attr('csrftoken');
 			if (!token) {
-				ctx.statusElement.error('Failed to retrieve stabilize token.');
-				ctx.onStabilizeFailure(this);
-				return;
+				return $.Deferred().rejectWith(this, ['notoken', 'Failed to retrieve stabilize token.']);
 			}
 
 			pageTitle = $(xml).find('page').attr('title');
@@ -3822,9 +3819,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			watchlist: ctx.watchlistOption
 		};
 
-		ctx.stabilizeProcessApi = new Morebits.wiki.api('configuring stabilization settings...', query, ctx.onStabilizeSuccess, ctx.statusElement, ctx.onStabilizeFailure);
+		ctx.stabilizeProcessApi = new Morebits.wiki.api('configuring stabilization settings...', query, function() {
+			ctx.onStabilizeSuccess.call(this, this);
+		}, ctx.statusElement);
 		ctx.stabilizeProcessApi.setParent(this);
-		ctx.stabilizeProcessApi.post();
+		return ctx.stabilizeProcessApi.post().then(reshapeResolvedPromise).catch(reshapeRejectedPromise);
 	};
 
 	var sleep = function(milliseconds) {
