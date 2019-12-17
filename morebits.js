@@ -2764,30 +2764,35 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * Moves a page to another title
 	 * @param {Function} [onSuccess] - callback function to run on success (optional)
 	 * @param {Function} [onFailure] - callback function to run on failure (optional)
+	 * @returns {jQuery.Promise} - resolved or rejected with the Morebits.wiki.page object, errorCode and
+	 * errorText, the latter two being undefined on success.
 	 */
 	this.move = function(onSuccess, onFailure) {
-		ctx.onMoveSuccess = onSuccess;
+		ctx.onMoveSuccess = onSuccess || emptyFunction;
 		ctx.onMoveFailure = onFailure || emptyFunction;
 
+		var returnError = function(errorCode, errorText) {
+			ctx.statusElement.error(errorText);
+			ctx.onMoveFailure.call(this, this, errorCode, errorText);
+			return $.Deferred().rejectWith(this, [this, errorCode, errorText]);
+		};
+
 		if (!ctx.editSummary) {
-			ctx.statusElement.error('Internal error: move reason not set before move (use setEditSummary function)!');
-			ctx.onMoveFailure(this);
-			return;
+			return returnError.call(this, 'int-noreason', 'Internal error: move reason not set before move (use setEditSummary function)!');
 		}
 		if (!ctx.moveDestination) {
-			ctx.statusElement.error('Internal error: destination page name was not set before move!');
-			ctx.onMoveFailure(this);
-			return;
+			return returnError.call(this, 'int-nodestination', 'Internal error: destination page name was not set before move!');
 		}
 
 		if (fnCanUseMwUserToken('move')) {
-			fnProcessMove.call(this, this);
+			return fnProcessMove.call(this).catch(returnError);
 		} else {
 			var query = fnNeedTokenInfoQuery('move');
 
-			ctx.moveApi = new Morebits.wiki.api('retrieving token...', query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
+			ctx.moveApi = new Morebits.wiki.api('retrieving token...', query);
+			ctx.moveApi.setStatusElement(ctx.statusElement);
 			ctx.moveApi.setParent(this);
-			ctx.moveApi.post();
+			return ctx.moveApi.post().then(fnProcessMove).catch(returnError);
 		}
 	};
 
@@ -3385,9 +3390,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			var xml = ctx.moveApi.getXML();
 
 			if ($(xml).find('page').attr('missing') === '') {
-				ctx.statusElement.error('Cannot move the page, because it no longer exists');
-				ctx.onMoveFailure(this);
-				return;
+				return $.Deferred().rejectWith(this, ['missingtitle', 'Cannot move the page, because it no longer exists']);
 			}
 
 			// extract protection info
@@ -3395,19 +3398,15 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				var editprot = $(xml).find('pr[type="edit"]');
 				if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
 					!confirm('You are about to move the fully protected page "' + ctx.pageName +
-					(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.attr('expiry')).calendar('utc') + ' (UTC))') +
-					'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
-					ctx.statusElement.error('Move of fully protected page was aborted.');
-					ctx.onMoveFailure(this);
-					return;
+						(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.attr('expiry')).calendar('utc') + ' (UTC))') +
+						'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
+					return $.Deferred().rejectWith(this, ['int-aborted', 'Move of fully protected page was aborted.']);
 				}
 			}
 
 			token = $(xml).find('tokens').attr('csrftoken');
 			if (!token) {
-				ctx.statusElement.error('Failed to retrieve move token.');
-				ctx.onMoveFailure(this);
-				return;
+				return $.Deferred().rejectWith(this, ['notoken', 'Failed to retrieve move token.']);
 			}
 
 			pageTitle = $(xml).find('page').attr('title');
@@ -3435,9 +3434,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.noredirect = 'true';
 		}
 
-		ctx.moveProcessApi = new Morebits.wiki.api('moving page...', query, ctx.onMoveSuccess, ctx.statusElement, ctx.onMoveFailure);
+		ctx.moveProcessApi = new Morebits.wiki.api('moving page...', query, function() {
+			ctx.onMoveSuccess.call(this, this);
+		});
+		ctx.moveProcessApi.setStatusElement(ctx.statusElement);
 		ctx.moveProcessApi.setParent(this);
-		ctx.moveProcessApi.post();
+		return ctx.moveProcessApi.post().then(reshapeResolvedPromise).catch(reshapeRejectedPromise);
 	};
 
 	var fnProcessPatrol = function() {
