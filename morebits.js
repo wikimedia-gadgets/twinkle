@@ -2158,6 +2158,16 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	var emptyFunction = function() { };
 
+	// Converts a promise resolved with apiobj to a promise resolved with pageobj.
+	var reshapeResolvedPromise = function() {
+		return $.Deferred().resolveWith(this, [this]);
+	};
+
+	// Converts a promise rejected with apiobj to a promise rejected with errorCode, and errorText.
+	var reshapeRejectedPromise = function(apiobj) {
+		return $.Deferred().rejectWith(this, [apiobj.getErrorCode(), apiobj.getErrorText()]);
+	};
+
 	/**
 	 * Loads the text for the page
 	 * @param {Function} onSuccess - callback function which is called when the load has succeeded
