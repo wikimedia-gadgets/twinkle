@@ -2872,31 +2872,36 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * Deletes a page (for admins only)
 	 * @param {Function} [onSuccess] - callback function to run on success (optional)
 	 * @param {Function} [onFailure] - callback function to run on failure (optional)
+	 * @returns {jQuery.Promise} resolved or rejected with the Morebits.wiki.page object, errorCode
+	 * and errorText (the latter two being undefined on success)
 	 */
 	this.deletePage = function(onSuccess, onFailure) {
-		ctx.onDeleteSuccess = onSuccess;
+		ctx.onDeleteSuccess = onSuccess || emptyFunction;
 		ctx.onDeleteFailure = onFailure || emptyFunction;
+
+		var returnError = function (errorCode, errorText) {
+			ctx.statusElement.error(errorText);
+			ctx.onDeleteFailure.call(this, this, errorCode, errorText);
+			return $.Deferred().rejectWith(this, [this, errorCode, errorText]);
+		};
 
 		// if a non-admin tries to do this, don't bother
 		if (!Morebits.userIsSysop) {
-			ctx.statusElement.error('Cannot delete page: only admins can do that');
-			ctx.onDeleteFailure(this);
-			return;
+			return returnError.call(this, 'permissiondenied', 'Cannot delete page: only admins can do that');
 		}
 		if (!ctx.editSummary) {
-			ctx.statusElement.error('Internal error: delete reason not set before delete (use setEditSummary function)!');
-			ctx.onDeleteFailure(this);
-			return;
+			return returnError.call(this, 'int-noreason', 'Internal error: delete reason not set before delete (use setEditSummary function)!');
 		}
 
 		if (fnCanUseMwUserToken('delete')) {
-			fnProcessDelete.call(this, this);
+			return fnProcessDelete.call(this).catch(returnError);
 		} else {
 			var query = fnNeedTokenInfoQuery('delete');
 
-			ctx.deleteApi = new Morebits.wiki.api('retrieving token...', query, fnProcessDelete, ctx.statusElement, ctx.onDeleteFailure);
+			ctx.deleteApi = new Morebits.wiki.api('retrieving token...', query);
+			ctx.deleteApi.setStatusElement(ctx.statusElement);
 			ctx.deleteApi.setParent(this);
-			ctx.deleteApi.post();
+			return ctx.deleteApi.post().then(fnProcessDelete).catch(returnError);
 		}
 	};
 
@@ -3526,9 +3531,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			var xml = ctx.deleteApi.getXML();
 
 			if ($(xml).find('page').attr('missing') === '') {
-				ctx.statusElement.error('Cannot delete the page, because it no longer exists');
-				ctx.onDeleteFailure(this);
-				return;
+				return $.Deferred().rejectWith(this, ['missingtitle', 'Cannot delete the page, because it no longer exists']);
 			}
 
 			// extract protection info
@@ -3537,16 +3540,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				!confirm('You are about to delete the fully protected page "' + ctx.pageName +
 				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.attr('expiry')).calendar('utc') + ' (UTC))') +
 				'.  \n\nClick OK to proceed with the deletion, or Cancel to skip this deletion.')) {
-				ctx.statusElement.error('Deletion of fully protected page was aborted.');
-				ctx.onDeleteFailure(this);
-				return;
+				return $.Deferred().rejectWith(this, ['int-aborted', 'Deletion of fully protected page was aborted.']);
 			}
 
 			token = $(xml).find('tokens').attr('csrftoken');
 			if (!token) {
-				ctx.statusElement.error('Failed to retrieve delete token.');
-				ctx.onDeleteFailure(this);
-				return;
+				return $.Deferred().rejectWith(this, ['notoken', 'Failed to retrieve delete token']);
 			}
 
 			pageTitle = $(xml).find('page').attr('title');
@@ -3564,9 +3563,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 
-		ctx.deleteProcessApi = new Morebits.wiki.api('deleting page...', query, ctx.onDeleteSuccess, ctx.statusElement, fnProcessDeleteError);
+		ctx.deleteProcessApi = new Morebits.wiki.api('deleting page...', query, function() {
+			ctx.onDeleteSuccess.call(this, this);
+		}, ctx.statusElement);
 		ctx.deleteProcessApi.setParent(this);
-		ctx.deleteProcessApi.post();
+		return ctx.deleteProcessApi.post().catch(fnProcessDeleteError).then(reshapeResolvedPromise);
 	};
 
 	// callback from deleteProcessApi.post()
@@ -3578,19 +3579,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (errorCode === 'internal_api_error_DBQueryError' && ctx.retries++ < ctx.maxRetries) {
 			ctx.statusElement.info('Database query error, retrying');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
-			ctx.deleteProcessApi.post(); // give it another go!
-
+			return ctx.deleteProcessApi.post().catch(fnProcessDeleteError); // give it another go!
 		} else if (errorCode === 'missingtitle') {
-			ctx.statusElement.error('Cannot delete the page, because it no longer exists');
-			if (ctx.onDeleteFailure) {
-				ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
-			}
+			return $.Deferred().rejectWith(this, ['missingtitle', 'Cannot delete the page, because it no longer exists']);
+
 		// hard error, give up
 		} else {
-			ctx.statusElement.error('Failed to delete the page: ' + ctx.deleteProcessApi.getErrorText());
-			if (ctx.onDeleteFailure) {
-				ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
-			}
+			return $.Deferred().rejectWith(this, [errorCode, 'Failed to delete the page: ' +
+				ctx.deleteProcessApi.getErrorText()]);
 		}
 	};
 
