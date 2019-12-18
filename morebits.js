@@ -2235,23 +2235,27 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * succeeded (optional)
 	 * @param {Function} [onFailure] - callback function which is called when the save fails
 	 * (optional)
+	 * @returns {jQuery.Promise} - resolved or rejected with the page object,
+	 * errorCode and errorText, the latter two being undefined on success.
 	 */
 	this.save = function(onSuccess, onFailure) {
-		ctx.onSaveSuccess = onSuccess;
+		ctx.onSaveSuccess = onSuccess || emptyFunction;
 		ctx.onSaveFailure = onFailure || emptyFunction;
+
+		var returnError = function(errorCode, errorText) {
+			ctx.statusElement.error(errorText);
+			ctx.onSaveFailure.call(this, this, errorCode, errorText);
+			return $.Deferred().rejectWith(this, [this, errorCode, errorText]);
+		};
 
 		// are we getting our editing token from mw.user.tokens?
 		var canUseMwUserToken = fnCanUseMwUserToken('edit');
 
 		if (!ctx.pageLoaded && !canUseMwUserToken) {
-			ctx.statusElement.error('Internal error: attempt to save a page that has not been loaded!');
-			ctx.onSaveFailure(this);
-			return;
+			return returnError.call(this, 'int-notloaded', 'Internal error: attempt to save a page that has not been loaded!');
 		}
 		if (!ctx.editSummary) {
-			ctx.statusElement.error('Internal error: edit summary not set before save!');
-			ctx.onSaveFailure(this);
-			return;
+			return returnError.call(this, 'int-noreason', 'Internal error: edit summary not set before save!');
 		}
 
 		// shouldn't happen if canUseMwUserToken === true
@@ -2259,9 +2263,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			!confirm('You are about to make an edit to the fully protected page "' + ctx.pageName +
 			(ctx.fullyProtected === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(ctx.fullyProtected).calendar('utc') + ' (UTC))') +
 			'.  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.')) {
-			ctx.statusElement.error('Edit to fully protected page was aborted.');
-			ctx.onSaveFailure(this);
-			return;
+			return returnError.call(this, 'int-aborted', 'Edit to fully protected page was aborted.');
 		}
 
 		ctx.retries = 0;
@@ -2336,9 +2338,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.redirect = true;
 		}
 
-		ctx.saveApi = new Morebits.wiki.api('Saving page...', query, fnSaveSuccess, ctx.statusElement, fnSaveError);
+		ctx.saveApi = new Morebits.wiki.api('Saving page...', query);
+		ctx.saveApi.setStatusElement(ctx.statusElement);
 		ctx.saveApi.setParent(this);
-		ctx.saveApi.post();
+		return ctx.saveApi.post().catch(fnSaveError).then(fnSaveSuccess).catch(returnError);
 	};
 
 	/**
@@ -2346,34 +2349,36 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * Does not require calling load() first.
 	 * @param {Function} [onSuccess] - callback function which is called when the method has succeeded (optional)
 	 * @param {Function} [onFailure] - callback function which is called when the method fails (optional)
+	 * @returns {jQuery.Promise}
 	 */
 	this.append = function(onSuccess, onFailure) {
 		ctx.editMode = 'append';
 
 		if (fnCanUseMwUserToken('edit')) {
-			this.save(onSuccess, onFailure);
+			return this.save(onSuccess, onFailure);
 		} else {
-			ctx.onSaveSuccess = onSuccess;
+			ctx.onSaveSuccess = onSuccess || emptyFunction;
 			ctx.onSaveFailure = onFailure || emptyFunction;
-			this.load(fnAutoSave, ctx.onSaveFailure);
+			return this.load(null, ctx.onSaveFailure).then(fnAutoSave);
 		}
 	};
 
 	/**
 	 * Adds the text provided via setPrependText() to the start of the page.
 	 * Does not require calling load() first.
-	 * @param {Function}  [onSuccess] - callback function which is called when the method has succeeded (optional)
-	 * @param {Function}  [onFailure] - callback function which is called when the method fails (optional)
+	 * @param {Function} [onSuccess] - callback function which is called when the method has succeeded (optional)
+	 * @param {Function} [onFailure] - callback function which is called when the method fails (optional)
+	 * @returns {jQuery.Promise}
 	 */
 	this.prepend = function(onSuccess, onFailure) {
 		ctx.editMode = 'prepend';
 
 		if (fnCanUseMwUserToken('edit')) {
-			this.save(onSuccess, onFailure);
+			return this.save(onSuccess, onFailure);
 		} else {
-			ctx.onSaveSuccess = onSuccess;
+			ctx.onSaveSuccess = onSuccess || emptyFunction;
 			ctx.onSaveFailure = onFailure || emptyFunction;
-			this.load(fnAutoSave, ctx.onSaveFailure);
+			return this.load(null, ctx.onSaveFailure).then(fnAutoSave);
 		}
 	};
 
@@ -2777,19 +2782,18 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * Reverts a page to revertOldID
 	 * @param {Function} [onSuccess] - callback function to run on success (optional)
 	 * @param {Function} [onFailure] - callback function to run on failure (optional)
+	 * @returns {jQuery.Promise}
 	 */
 	this.revert = function(onSuccess, onFailure) {
-		ctx.onSaveSuccess = onSuccess;
+		ctx.onSaveSuccess = onSuccess || emptyFunction;
 		ctx.onSaveFailure = onFailure || emptyFunction;
 
 		if (!ctx.revertOldID) {
-			ctx.statusElement.error('Internal error: revision ID to revert to was not set before revert!');
-			ctx.onSaveFailure(this);
-			return;
+			return $.Deferred().rejectWith(this, [this, 'int-norevertoldid', 'Internal error: revision ID to revert to was not set before revert!']);
 		}
 
 		ctx.editMode = 'revert';
-		this.load(fnAutoSave, ctx.onSaveFailure);
+		return this.load(null, ctx.onSaveFailure).then(fnAutoSave);
 	};
 
 	/**
@@ -3137,7 +3141,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	// callback from loadSuccess() for append() and prepend() threads
 	var fnAutoSave = function(pageobj) {
-		pageobj.save(ctx.onSaveSuccess, ctx.onSaveFailure);
+		return pageobj.save(ctx.onSaveSuccess, ctx.onSaveFailure);
 	};
 
 	// callback from loadApi.post()
@@ -3264,24 +3268,21 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			link.setAttribute('href', mw.util.getUrl(ctx.pageName));
 			link.appendChild(document.createTextNode(ctx.pageName));
 			ctx.statusElement.info(['completed (', link, ')']);
-			if (ctx.onSaveSuccess) {
-				ctx.onSaveSuccess(this);  // invoke callback
-			}
-			return;
-		}
 
-		// errors here are only generated by extensions which hook APIEditBeforeSave within MediaWiki,
-		// which as of 1.34.0-wmf.23 (Sept 2019) should only encompass captcha messages
-		if ($(xml).find('captcha').length > 0) {
-			ctx.statusElement.error('Could not save the page because the wiki server wanted you to fill out a CAPTCHA.');
-		} else {
-			ctx.statusElement.error('Unknown error received from API while saving page');
+			ctx.onSaveSuccess.call(this, this);  // invoke callback
+			return $.Deferred().resolveWith(this, [this]);
 		}
 
 		// force error to stay on the screen
 		++Morebits.wiki.numberOfActionsLeft;
 
-		ctx.onSaveFailure(this);
+		// errors here are only generated by extensions which hook APIEditBeforeSave within MediaWiki,
+		// which as of 1.34.0-wmf.23 (Sept 2019) should only encompass captcha messages
+		if ($(xml).find('captcha').length > 0) {
+			return $.Deferred().rejectWith(this, ['captcha', 'Could not save the page because the wiki server wanted you to fill out a CAPTCHA.']);
+		} else {
+			return $.Deferred().rejectWith(this, ['unknown', 'Unknown error received from API while saving page']);
+		}
 	};
 
 	// callback from saveApi.post()
@@ -3302,9 +3303,20 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 				ctx.statusElement.info('Edit conflict detected, reapplying edit');
 				if (fnCanUseMwUserToken('edit')) {
-					ctx.saveApi.post(); // necessarily append or prepend, so this should work as desired
+					return ctx.saveApi.post().catch(fnSaveError); // necessarily append or prepend, so this should work as desired
 				} else {
-					ctx.loadApi.post(); // reload the page and reapply the edit
+					return ctx.loadApi.post() // reload the page and reapply the edit
+					// this should be same as the return statement in this.load()
+						.catch(reshapeRejectedPromise)
+						.then(fnLoadSuccess)
+						.then(function() {
+							ctx.onLoadSuccess.call(this, this);
+							return $.Deferred().resolveWith(this, [this]);
+						})
+						.catch(function(errorCode, errorText) {
+							ctx.onLoadFailure.call(this, this, errorCode, errorText);
+							return $.Deferred().rejectWith(this, [this, errorCode, errorText]);
+						});
 				}
 			}, ctx.statusElement);
 			purgeApi.post();
@@ -3318,42 +3330,33 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 			// wait for sometime for client to regain connnectivity
 			sleep(2000).then(function() {
-				ctx.saveApi.post(); // give it another go!
+				return ctx.saveApi.post().catch(fnSaveError); // give it another go!
 			});
 
 		// hard error, give up
 		} else {
+			ctx.editMode = 'all';  // cancel append/prepend/revert modes
 
 			switch (errorCode) {
-
 				case 'protectedpage':
 					// non-admin attempting to edit a protected page - this gives a friendlier message than the default
-					ctx.statusElement.error('Failed to save edit: Page is protected');
-					break;
+					return $.Deferred().rejectWith(this, [errorCode, 'Failed to save edit: Page is protected']);
 
 				case 'abusefilter-disallowed':
-					ctx.statusElement.error('The edit was disallowed by the edit filter: "' + $(ctx.saveApi.getXML()).find('abusefilter').attr('description') + '".');
-					break;
+					return $.Deferred().rejectWith(this, [errorCode, 'The edit was disallowed by the edit filter: "' + $(ctx.saveApi.getXML()).find('abusefilter').attr('description') + '".']);
 
 				case 'abusefilter-warning':
-					ctx.statusElement.error([ 'A warning was returned by the edit filter: "', $(ctx.saveApi.getXML()).find('abusefilter').attr('description'), '". If you wish to proceed with the edit, please carry it out again. This warning will not appear a second time.' ]);
+					return $.Deferred().rejectWith(this, [errorCode, 'A warning was returned by the edit filter: "', $(ctx.saveApi.getXML()).find('abusefilter').attr('description'), '". If you wish to proceed with the edit, please carry it out again. This warning will not appear a second time.']);
 					// We should provide the user with a way to automatically retry the action if they so choose -
 					// I can't see how to do this without creating a UI dependency on Morebits.wiki.page though -- TTO
-					break;
 
 				case 'spamblacklist':
-					// .find('matches') returns an array in case multiple items are blacklisted, we only return the first
+				// .find('matches') returns an array in case multiple items are blacklisted, we only return the first
 					var spam = $(ctx.saveApi.getXML()).find('spamblacklist').find('matches').children()[0].textContent;
-					ctx.statusElement.error('Could not save the page because the URL ' + spam + ' is on the spam blacklist');
-					break;
+					return $.Deferred().rejectWith(this, [errorCode, 'Could not save the page because the URL ' + spam + ' is on the spam blacklist']);
 
 				default:
-					ctx.statusElement.error('Failed to save edit: ' + ctx.saveApi.getErrorText());
-			}
-
-			ctx.editMode = 'all';  // cancel append/prepend/revert modes
-			if (ctx.onSaveFailure) {
-				ctx.onSaveFailure(this);  // invoke callback
+					return $.Deferred().rejectWith(this, [errorCode, 'Failed to save edit: ' + ctx.saveApi.getErrorText()]);
 			}
 		}
 	};
