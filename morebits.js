@@ -1139,9 +1139,9 @@ Morebits.array = {
  * select2 doesn't natively support highlightening of search hits so we implement that here
  * @param {jQuery} $select
  * @param {boolean} [hasOptionGroups=false] - does the select menu have optgroups?
- * @requires {select2}
+ * @requires select2
  */
-mw.select2SearchHighlights = function select2SearchHighlights($select, hasOptionGroups) {
+Morebits.select2SearchHighlights = function select2SearchHighlights($select, hasOptionGroups) {
 	$select.on('select2:open', function() {
 		$('.select2-search__field')[0].addEventListener('keyup', function() {
 			var $ul = $('.select2-results__options');

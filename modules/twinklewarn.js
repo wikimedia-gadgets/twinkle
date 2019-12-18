@@ -1158,7 +1158,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	// Trigger custom label/change on main category change
 	Twinkle.warn.callback.change_subcategory(e);
 
-	// Build select menu with select2
+	// Use select2 to make the select menu searchable
 	if (!Twinkle.getPref('oldSelect') && $.fn.select2) {
 		$('select[name=sub_group]')
 			.select2({ width: '100%' })
@@ -1166,11 +1166,10 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 
 		// if main_group is level1/2/3/4/4im, the ul has option groups,
 		if ($('select[name=main_group]').val().indexOf('level') === 0) {
-			mw.select2SearchHighlights($('select[name=sub_group]'), true);
+			Morebits.select2SearchHighlights($('select[name=sub_group]'), true);
 		} else {
-			mw.select2SearchHighlights($('select[name=sub_group]'), false);
+			Morebits.select2SearchHighlights($('select[name=sub_group]'), false);
 		}
-
 
 		mw.util.addCSS(
 			// prevent dropdown from appearing behind the dialog
@@ -1187,7 +1186,6 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			'.select2-container .select2-dropdown .select2-results { font-size: 13px; }' +
 			'.select2-container .selection .select2-selection__rendered { font-size: 13px; }'
 		);
-
 	}
 };
 

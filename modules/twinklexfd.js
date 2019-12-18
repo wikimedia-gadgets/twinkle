@@ -260,9 +260,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					.attr('data-placeholder', 'Select delsort pages')
 					.select2({width: '100%'});
 
-				mw.select2SearchHighlights($('[name=delsort]'), true);
-
-				// Reduce padding
+				Morebits.select2SearchHighlights($('[name=delsort]'), true);
 				mw.util.addCSS(
 					// prevent dropdown from appearing behind the dialog
 					'.select2-container { z-index: 10000; }' +
