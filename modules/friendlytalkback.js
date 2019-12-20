@@ -10,6 +10,7 @@
  ****************************************
  * Mode of invocation:     Tab ("TB")
  * Active on:              Any page with relevant user name (userspace, contribs, etc.)
+ * Config directives in:   FriendlyConfig
  */
 
 Twinkle.talkback = function() {
@@ -289,7 +290,7 @@ Twinkle.talkback.changeTarget = function(e) {
 Twinkle.talkback.noticeboards = {
 	'an': {
 		label: "WP:AN (Administrators' noticeboard)",
-		text: '== ' + Twinkle.getFriendlyPref('adminNoticeHeading') + ' ==\n' +
+		text: '== ' + Twinkle.getPref('adminNoticeHeading') + ' ==\n' +
 		"{{subst:ANI-notice|thread=$SECTION|noticeboard=Wikipedia:Administrators' noticeboard}} ~~~~",
 		editSummary: 'Notice of discussion at [[Wikipedia:Administrators\' noticeboard]]'
 	},
@@ -300,7 +301,7 @@ Twinkle.talkback.noticeboards = {
 	},
 	'ani': {
 		label: "WP:ANI (Administrators' noticeboard/Incidents)",
-		text: '== ' + Twinkle.getFriendlyPref('adminNoticeHeading') + ' ==\n' +
+		text: '== ' + Twinkle.getPref('adminNoticeHeading') + ' ==\n' +
 		"{{subst:ANI-notice|thread=$SECTION|noticeboard=Wikipedia:Administrators' noticeboard/Incidents}} ~~~~",
 		editSummary: 'Notice of discussion at [[Wikipedia:Administrators\' noticeboard/Incidents]]',
 		defaultSelected: true
@@ -384,7 +385,7 @@ Twinkle.talkback.evaluate = function(e) {
 
 	} else if (tbtarget === 'mail') {
 		text +=
-			'==' + Twinkle.getFriendlyPref('mailHeading') + '==\n' +
+			'==' + Twinkle.getPref('mailHeading') + '==\n' +
 			"{{You've got mail|subject=" + section + '|ts=~~~~~}}';
 
 		if (message) {
@@ -404,7 +405,7 @@ Twinkle.talkback.evaluate = function(e) {
 	} else {  // tbtarget one of mytalk, usertalk, other
 		// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
 		text +=
-			'==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') + '==\n' +
+			'==' + Twinkle.getPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') + '==\n' +
 			'{{talkback|' + tbPageName + (section ? '|' + section : '') + '|ts=~~~~~}}';
 
 		if (message) {
