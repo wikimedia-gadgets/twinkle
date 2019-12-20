@@ -33,7 +33,7 @@ Twinkle.talkback.callback = function() {
 	Window.addFooterLink('About {{talkback}}', 'Template:Talkback');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#talkback');
 
-	var form = new Morebits.quickForm(callback_evaluate);
+	var form = new Morebits.quickForm(Twinkle.talkback.evaluate);
 
 	form.append({ type: 'radio', name: 'tbtarget',
 		list: [
@@ -63,7 +63,7 @@ Twinkle.talkback.callback = function() {
 				value: 'mail'
 			}
 		],
-		event: callback_change_target
+		event: Twinkle.talkback.changeTarget
 	});
 
 	form.append({
@@ -123,7 +123,7 @@ var prev_page = '';
 var prev_section = '';
 var prev_message = '';
 
-var callback_change_target = function(e) {
+Twinkle.talkback.changeTarget = function(e) {
 	var value = e.target.values;
 	var root = e.target.form;
 	var old_area = Morebits.quickForm.getElements(root, 'work_area')[0];
@@ -162,6 +162,7 @@ var callback_change_target = function(e) {
 				value: prev_section
 			});
 			break;
+
 		case 'usertalk':
 			work_area.append({
 				type: 'div',
@@ -185,6 +186,7 @@ var callback_change_target = function(e) {
 				value: prev_section
 			});
 			break;
+
 		case 'notice':
 			var noticeboard = work_area.append({
 				type: 'select',
@@ -200,53 +202,16 @@ var callback_change_target = function(e) {
 					}
 				}
 			});
-			noticeboard.append({
-				type: 'option',
-				label: "WP:AN (Administrators' noticeboard)",
-				value: 'an'
+
+			$.each(Twinkle.talkback.noticeboards, function(value, data) {
+				noticeboard.append({
+					type: 'option',
+					label: data.label,
+					value: value,
+					selected: !!data.defaultSelected
+				});
 			});
-			noticeboard.append({
-				type: 'option',
-				label: "WP:AN3 (Administrators' noticeboard/Edit warring)",
-				value: 'an3'
-			});
-			noticeboard.append({
-				type: 'option',
-				label: "WP:ANI (Administrators' noticeboard/Incidents)",
-				selected: true,
-				value: 'ani'
-			});
-			// let's keep AN and its cousins at the top
-			noticeboard.append({
-				type: 'option',
-				label: 'WP:AFCHD (Articles for creation/Help desk)',
-				value: 'afchd'
-			});
-			noticeboard.append({
-				type: 'option',
-				label: 'WP:COIN (Conflict of interest noticeboard)',
-				value: 'coin'
-			});
-			noticeboard.append({
-				type: 'option',
-				label: 'WP:DRN (Dispute resolution noticeboard)',
-				value: 'drn'
-			});
-			noticeboard.append({
-				type: 'option',
-				label: 'WP:HD (Help desk)',
-				value: 'hd'
-			});
-			noticeboard.append({
-				type: 'option',
-				label: 'WP:OTRS/N (OTRS noticeboard)',
-				value: 'otrs'
-			});
-			noticeboard.append({
-				type: 'option',
-				label: 'WP:THQ (Teahouse question forum)',
-				value: 'th'
-			});
+
 			work_area.append({
 				type: 'input',
 				name: 'section',
@@ -255,6 +220,7 @@ var callback_change_target = function(e) {
 				value: prev_section
 			});
 			break;
+
 		case 'other':
 			work_area.append({
 				type: 'div',
@@ -278,6 +244,7 @@ var callback_change_target = function(e) {
 				value: prev_section
 			});
 			break;
+
 		case 'mail':
 			work_area.append({
 				type: 'input',
@@ -286,6 +253,7 @@ var callback_change_target = function(e) {
 				tooltip: 'The subject line of the email you sent.'
 			});
 			break;
+
 		case 'see':
 			work_area.append({
 				type: 'input',
@@ -319,7 +287,59 @@ var callback_change_target = function(e) {
 	}
 };
 
-var callback_evaluate = function(e) {
+Twinkle.talkback.noticeboards = {
+	'an': {
+		label: "WP:AN (Administrators' noticeboard)",
+		text: '== ' + Twinkle.getFriendlyPref('adminNoticeHeading') + ' ==\n' +
+		"{{subst:ANI-notice|thread=$SECTION|noticeboard=Wikipedia:Administrators' noticeboard}} ~~~~",
+		editSummary: 'Notice of discussion at [[Wikipedia:Administrators\' noticeboard]]'
+	},
+	'an3': {
+		label: "WP:AN3 (Administrators' noticeboard/Edit warring)",
+		text: '{{subst:An3-notice|$SECTION}} ~~~~',
+		editSummary: "Notice of discussion at [[Wikipedia:Administrators' noticeboard/Edit warring]]"
+	},
+	'ani': {
+		label: "WP:ANI (Administrators' noticeboard/Incidents)",
+		text: '== ' + Twinkle.getFriendlyPref('adminNoticeHeading') + ' ==\n' +
+		"{{subst:ANI-notice|thread=$SECTION|noticeboard=Wikipedia:Administrators' noticeboard/Incidents}} ~~~~",
+		editSummary: 'Notice of discussion at [[Wikipedia:Administrators\' noticeboard/Incidents]]',
+		defaultSelected: true
+	},
+	// let's keep AN and its cousins at the top
+	'afchd': {
+		label: 'WP:AFCHD (Articles for creation/Help desk)',
+		text: '{{subst:AFCHD/u|$SECTION}} ~~~~',
+		editSummary: 'You have replies at the [[Wikipedia:AFCHD|Articles for Creation Help Desk]]'
+	},
+	'coin': {
+		label: 'WP:COIN (Conflict of interest noticeboard)',
+		text: '{{subst:Coin-notice|thread=$SECTION}} ~~~~',
+		editSummary: 'Notice of discussion at [[Wikipedia:Conflict of interest noticeboard]]'
+	},
+	'drn': {
+		label: 'WP:DRN (Dispute resolution noticeboard)',
+		text: '{{subst:DRN-notice|thread=$SECTION}} ~~~~',
+		editSummary: 'Notice of discussion at [[Wikipedia:Dispute resolution noticeboard]]'
+	},
+	'hd': {
+		label: 'WP:HD (Help desk)',
+		text: '== Your question at the Help desk ==\n' + '{{helpdeskreply|1=$SECTION|ts=~~~~~}}',
+		editSummary: 'You have replies at the [[Wikipedia:Help desk|Wikipedia help desk]]'
+	},
+	'th': {
+		label: 'WP:THQ (Teahouse question forum)',
+		text: "== Teahouse talkback: you've got messages! ==\n{{WP:Teahouse/Teahouse talkback|WP:Teahouse/Questions|$SECTION|ts=~~~~}}",
+		editSummary: 'You have replies at the [[Wikipedia:Teahouse/Questions|Teahouse question board]]'
+	},
+	'otrs': {
+		label: 'WP:OTRS/N (OTRS noticeboard)',
+		text: '{{OTRSreply|1=$SECTION|2=~~~~}}',
+		editSummary: 'You have replies at the [[Wikipedia:OTRS noticeboard|OTRS noticeboard]]'
+	}
+};
+
+Twinkle.talkback.evaluate = function(e) {
 
 	var tbtarget = e.target.getChecked('tbtarget')[0];
 	var page = null;
@@ -358,55 +378,15 @@ var callback_evaluate = function(e) {
 	var talkpage = new Morebits.wiki.page(fullUserTalkPageName, 'Adding talkback');
 	var tbPageName = tbtarget === 'mytalk' ? mw.config.get('wgUserName') : page;
 
-	var text;
+	var text = '\n\n';
 	if (tbtarget === 'notice') {
-		switch (page) {
-			case 'afchd':
-				text = '\n\n{{subst:AFCHD/u|' + section + '}} ~~~~';
-				talkpage.setEditSummary('You have replies at the [[Wikipedia:AFCHD|Articles for Creation Help Desk]]' + Twinkle.getPref('summaryAd'));
-				break;
-			case 'an':
-				text = '\n\n== ' + Twinkle.getFriendlyPref('adminNoticeHeading') + ' ==\n';
-				text += '{{subst:ANI-notice|thread=' + section + "|noticeboard=Wikipedia:Administrators' noticeboard}} ~~~~";
-				talkpage.setEditSummary("Notice of discussion at [[Wikipedia:Administrators' noticeboard]]" + Twinkle.getPref('summaryAd'));
-				break;
-			case 'an3':
-				text = '\n\n{{subst:An3-notice|' + section + '}} ~~~~';
-				talkpage.setEditSummary("Notice of discussion at [[Wikipedia:Administrators' noticeboard/Edit warring]]" + Twinkle.getPref('summaryAd'));
-				break;
-			case 'ani':
-				text = '\n\n== ' + Twinkle.getFriendlyPref('adminNoticeHeading') + ' ==\n';
-				text += '{{subst:ANI-notice|thread=' + section + "|noticeboard=Wikipedia:Administrators' noticeboard/Incidents}} ~~~~";
-				talkpage.setEditSummary("Notice of discussion at [[Wikipedia:Administrators' noticeboard/Incidents]]" + Twinkle.getPref('summaryAd'));
-				break;
-			case 'coin':
-				text = '\n\n{{subst:Coin-notice|thread=' + section + '}} ~~~~';
-				talkpage.setEditSummary('Notice of discussion at [[Wikipedia:Conflict of interest noticeboard]]' + Twinkle.getPref('summaryAd'));
-				break;
-			case 'drn':
-				text = '\n\n{{subst:DRN-notice|thread=' + section + '}} ~~~~';
-				talkpage.setEditSummary('Notice of discussion at [[Wikipedia:Dispute resolution noticeboard]]' + Twinkle.getPref('summaryAd'));
-				break;
-			case 'hd':
-				text = '\n\n== Your question at the Help desk ==\n';
-				text += '{{helpdeskreply|1=' + section + '|ts=~~~~~}}';
-				talkpage.setEditSummary('You have replies at the [[Wikipedia:Help desk|Wikipedia help desk]]' + Twinkle.getPref('summaryAd'));
-				break;
-			case 'otrs':
-				text = '\n\n{{OTRSreply|1=' + section + '|2=~~~~}}';
-				talkpage.setEditSummary('You have replies at the [[Wikipedia:OTRS noticeboard|OTRS noticeboard]]' + Twinkle.getPref('summaryAd'));
-				break;
-			case 'th':
-				text = "\n\n== Teahouse talkback: you've got messages! ==\n{{WP:Teahouse/Teahouse talkback|WP:Teahouse/Questions|" + section + '|ts=~~~~}}';
-				talkpage.setEditSummary('You have replies at the [[Wikipedia:Teahouse/Questions|Teahouse question board]]' + Twinkle.getPref('summaryAd'));
-				break;
-			default:
-				throw 'Twinkle.talkback, function callback_evaluate: default case reached';
-		}
+		text += Morebits.string.safeReplace(Twinkle.talkback.noticeboards[page].text, '$SECTION', section);
+		talkpage.setEditSummary(Twinkle.talkback.noticeboards[page].editSummary + Twinkle.getPref('summaryAd'));
 
 	} else if (tbtarget === 'mail') {
-		text = '\n\n==' + Twinkle.getFriendlyPref('mailHeading') + "==\n{{you've got mail|subject=";
-		text += section + '|ts=~~~~~}}';
+		text +=
+			'==' + Twinkle.getFriendlyPref('mailHeading') + '==\n' +
+			"{{You've got mail|subject=" + section + '|ts=~~~~~}}';
 
 		if (message) {
 			text += '\n' + message.trim() + '  ~~~~';
@@ -417,24 +397,16 @@ var callback_evaluate = function(e) {
 		talkpage.setEditSummary("Notification: You've got mail" + Twinkle.getPref('summaryAd'));
 
 	} else if (tbtarget === 'see') {
-		text = '\n\n{{subst:Please see|location=' + tbPageName;
-		if (section) {
-			text += '#' + section;
-		}
-		text += '|more=' + message.trim() + '}}';
+		text += '{{subst:Please see|location=' + tbPageName + (section ? '#' + section : '') + '|more=' + message.trim() + '}}';
+
 		talkpage.setEditSummary('Please check the discussion at [[:' + tbPageName +
 			(section ? '#' + section : '') + ']]' + Twinkle.getPref('summaryAd'));
 
 	} else {  // tbtarget one of mytalk, usertalk, other
 		// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
-		text = '\n\n==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') + '==\n{{talkback|';
-		text += tbPageName;
-
-		if (section) {
-			text += '|' + section;
-		}
-
-		text += '|ts=~~~~~}}';
+		text +=
+			'==' + Twinkle.getFriendlyPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') + '==\n' +
+			'{{talkback|' + tbPageName + (section ? '|' + section : '') + '|ts=~~~~~}}';
 
 		if (message) {
 			text += '\n' + message.trim() + ' ~~~~';
