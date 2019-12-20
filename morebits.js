@@ -24,7 +24,7 @@
  *       * morebits[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,jquery.ui,jquery.tipsy|hidden]|morebits.js|morebits.css
  *     and then load ext.gadget.morebits as one of the dependencies for the new gadget
  *
- * Most of the stuff here doesn't work on IE < 9.  It is your script's responsibility to enforce this.
+ * All the stuff here works on all browsers for which MediaWiki provides JavaScript support.
  *
  * This library is maintained by the maintainers of Twinkle.
  * For queries, suggestions, help, etc., head to [[Wikipedia talk:Twinkle]] on English Wikipedia [http://en.wikipedia.org].
@@ -1434,7 +1434,7 @@ Morebits.wiki.api.prototype = {
 				Morebits.wiki.actionCompleted();
 			}
 		).fail(
-			// only network and server errors reach here – complaints from the API itself are caught in success()
+			// only network and server errors reach here - complaints from the API itself are caught in success()
 			function(jqXHR, statusText, errorThrown) {
 				this.statusText = statusText;
 				this.errorThrown = errorThrown; // frequently undefined

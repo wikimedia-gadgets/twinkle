@@ -15,6 +15,7 @@
 		"block-scoped-var": "error",
 		"curly": "error",
 		"default-case": "error",
+		"dot-notation": "error",
 		"eqeqeq": "error",
 		"guard-for-in": "error",
 		"no-caller": "error",

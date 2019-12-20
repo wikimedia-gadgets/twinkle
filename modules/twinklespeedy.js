@@ -547,7 +547,7 @@ Twinkle.speedy.fileList = [
 		}
 	},
 	{
-		label: 'F2: Corrupt or blank file',
+		label: 'F2: Corrupt, mising, or empty file',
 		value: 'noimage',
 		tooltip: 'Before deleting this type of file, verify that the MediaWiki engine cannot read it by previewing a resized thumbnail of it. This also includes empty (i.e., no content) file description pages for Commons files'
 	},
@@ -569,7 +569,7 @@ Twinkle.speedy.fileList = [
 		hideWhenUser: true
 	},
 	{
-		label: 'F5: Unused unfree copyrighted file',
+		label: 'F5: Unused non-free copyrighted file',
 		value: 'f5',
 		tooltip: 'Files that are not under a free license or in the public domain that are not used in any article, whose only use is in a deleted article, and that are very unlikely to be used on any other article. Reasonable exceptions may be made for files uploaded for an upcoming article. For other unused non-free files, use the "Orphaned fair use" option in Twinkle\'s DI tab.',
 		hideWhenUser: true
@@ -803,7 +803,7 @@ Twinkle.speedy.userList = [
 	{
 		label: 'U5: Blatant WP:NOTWEBHOST violations',
 		value: 'notwebhost',
-		tooltip: 'Pages in userspace consisting of writings, information, discussions, and/or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of userspace, with the exception of plausible drafts, pages adhering to WP:UPYES, and résumé-style pages.',
+		tooltip: 'Pages in userspace consisting of writings, information, discussions, and/or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of userspace, with the exception of plausible drafts and pages adhering to WP:UPYES.',
 		hideWhenRedirect: true
 	},
 	{
@@ -860,7 +860,7 @@ Twinkle.speedy.portalList = [
 		}
 	},
 	{
-		label: 'P2: Underpopulated portal',
+		label: 'P2: Underpopulated portal (fewer than three non-stub articles)',
 		value: 'emptyportal',
 		tooltip: 'Any Portal based on a topic for which there is not a non-stub header article, and at least three non-stub articles detailing subject matter that would be appropriate to discuss under the title of that Portal'
 	}
@@ -904,7 +904,7 @@ Twinkle.speedy.generalList = [
 		hideSubgroupWhenMultiple: true
 	},
 	{
-		label: 'G5: Banned or blocked user',
+		label: 'G5: Created by a banned or blocked user',
 		value: 'banned',
 		tooltip: 'Pages created by banned or blocked users in violation of their ban or block, and which have no substantial edits by others',
 		subgroup: {
@@ -959,9 +959,9 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G6: Housekeeping',
+		label: 'G6: Housekeeping and non-controversial cleanup',
 		value: 'g6',
-		tooltip: 'Other non-controversial "housekeeping" tasks',
+		tooltip: 'Other routine maintenance tasks',
 		subgroup: {
 			name: 'g6_rationale',
 			type: 'input',
@@ -1003,7 +1003,7 @@ Twinkle.speedy.generalList = [
 	{
 		label: 'G10: Attack page',
 		value: 'attack',
-		tooltip: 'Pages that serve no purpose but to disparage their subject or some other entity (e.g., "John Q. Doe is an imbecile"). This includes a biography of a living person that is negative in tone and unsourced, where there is no NPOV version in the history to revert to. Administrators deleting such pages should not quote the content of the page in the deletion summary!'
+		tooltip: 'Pages that serve no purpose but to disparage or threaten their subject or some other entity (e.g., "John Q. Doe is an imbecile"). This includes a biography of a living person that is negative in tone and unsourced, where there is no NPOV version in the history to revert to. Administrators deleting such pages should not quote the content of the page in the deletion summary!'
 	},
 	{
 		label: 'G10: Wholly negative, unsourced BLP',
@@ -1012,7 +1012,7 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G11: Unambiguous advertising',
+		label: 'G11: Unambiguous advertising or promotion',
 		value: 'spam',
 		tooltip: 'Pages which exclusively promote a company, product, group, service, or person and which would need to be fundamentally rewritten in order to become encyclopedic. Note that an article about a company or a product which describes its subject from a neutral point of view does not qualify for this criterion; an article that is blatant advertising should have inappropriate content as well'
 	},
@@ -1047,7 +1047,7 @@ Twinkle.speedy.generalList = [
 	{
 		label: 'G13: Page in draft namespace or userspace AfC submission, stale by over 6 months',
 		value: 'afc',
-		tooltip: 'Any rejected or unsubmitted AfC submission in userspace or any page in draft namespace, that has not been edited for more than 6 months. Blank drafts in either namespace are also included.',
+		tooltip: 'Any rejected or unsubmitted AfC submission in userspace or any non-redirect page in draft namespace, that has not been edited for more than 6 months. Blank drafts in either namespace are also included.',
 		hideWhenRedirect: true,
 		showInNamespaces: [2, 118]  // user, draft namespaces only
 	},
@@ -1060,18 +1060,18 @@ Twinkle.speedy.generalList = [
 
 Twinkle.speedy.redirectList = [
 	{
-		label: 'R2: Redirects from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
+		label: 'R2: Redirect from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
 		value: 'rediruser',
-		tooltip: '(this does not include the Wikipedia shortcut pseudo-namespaces). If this was the result of a page move, consider waiting a day or two before deleting the redirect',
+		tooltip: 'This does not include the pseudo-namespace shortcuts. If this was the result of a page move, consider waiting a day or two before deleting the redirect',
 		showInNamespaces: [ 0 ]
 	},
 	{
-		label: 'R3: Redirects as a result of an implausible typo or misnomers that were recently created',
+		label: 'R3: Recently created redirect from an implausible typo or misnomer',
 		value: 'redirtypo',
 		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
 	},
 	{
-		label: 'R4: File namespace redirect with name that matches a Commons page',
+		label: 'R4: File namespace redirect with a name that matches a Commons page',
 		value: 'redircom',
 		tooltip: 'The redirect should have no incoming links (unless the links are cleary intended for the file or redirect at Commons).',
 		showInNamespaces: [ 6 ]
@@ -1350,7 +1350,7 @@ Twinkle.speedy.callbacks = {
 					'action': 'query',
 					'titles': mw.config.get('wgPageName'),
 					'prop': 'redirects',
-					'rdlimit': 5000  // 500 is max for normal users, 5000 for bots and sysops
+					'rdlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 				};
 				var wikipedia_api = new Morebits.wiki.api('getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
 					new Morebits.status('Deleting redirects'));

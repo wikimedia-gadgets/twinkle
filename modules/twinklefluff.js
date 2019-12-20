@@ -194,7 +194,7 @@ Twinkle.fluff.revert = function revertPage(type, vandal, autoRevert, rev, page) 
 		'action': 'query',
 		'prop': ['info', 'revisions', 'flagged'],
 		'titles': pagename,
-		'rvlimit': 50, // max possible
+		'rvlimit': 50, // intentionally limited
 		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ],
 		'intoken': 'edit'
 	};

@@ -155,8 +155,8 @@ Twinkle.config.sections = [
 	{
 		title: 'General',
 		preferences: [
-		// TwinkleConfig.summaryAd (string)
-		// Text to be appended to the edit summary of edits made using Twinkle
+			// TwinkleConfig.summaryAd (string)
+			// Text to be appended to the edit summary of edits made using Twinkle
 			{
 				name: 'summaryAd',
 				label: "\"Ad\" to be appended to Twinkle's edit summaries",
@@ -220,8 +220,8 @@ Twinkle.config.sections = [
 		title: 'Block user',
 		adminOnly: true,
 		preferences: [
-		// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
-		// if true, blank the talk page when issuing an indef block notice (per [[WP:UWUL#Indefinitely blocked users]])
+			// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
+			// if true, blank the talk page when issuing an indef block notice (per [[WP:UWUL#Indefinitely blocked users]])
 			{
 				name: 'blankTalkpageOnIndefBlock',
 				label: 'Blank the talk page when indefinitely blocking users',
@@ -234,8 +234,8 @@ Twinkle.config.sections = [
 	{
 		title: 'Image deletion (DI)',
 		preferences: [
-		// TwinkleConfig.notifyUserOnDeli (boolean)
-		// If the user should be notified after placing a file deletion tag
+			// TwinkleConfig.notifyUserOnDeli (boolean)
+			// If the user should be notified after placing a file deletion tag
 			{
 				name: 'notifyUserOnDeli',
 				label: 'Check the "notify initial uploader" box by default',
@@ -265,8 +265,8 @@ Twinkle.config.sections = [
 	{
 		title: 'Proposed deletion (PROD)',
 		preferences: [
-		// TwinkleConfig.watchProdPages (boolean)
-		// If, when applying prod template to page, to watch the page
+			// TwinkleConfig.watchProdPages (boolean)
+			// If, when applying prod template to page, to watch the page
 			{
 				name: 'watchProdPages',
 				label: 'Add article to watchlist when tagging',
@@ -299,8 +299,8 @@ Twinkle.config.sections = [
 	{
 		title: 'Revert and rollback',  // twinklefluff module
 		preferences: [
-		// TwinkleConfig.autoMenuAfterRollback (bool)
-		// Option to automatically open the warning menu if the user talk page is opened post-reversion
+			// TwinkleConfig.autoMenuAfterRollback (bool)
+			// Option to automatically open the warning menu if the user talk page is opened post-reversion
 			{
 				name: 'autoMenuAfterRollback',
 				label: 'Automatically open the Twinkle warn menu on a user talk page after Twinkle rollback',
@@ -616,8 +616,8 @@ Twinkle.config.sections = [
 	{
 		title: 'Unlink',
 		preferences: [
-		// TwinkleConfig.unlinkNamespaces (array)
-		// In what namespaces unlink should happen, default in 0 (article), 10 (template), 100 (portal), and 118 (draft)
+			// TwinkleConfig.unlinkNamespaces (array)
+			// In what namespaces unlink should happen, default in 0 (article), 10 (template), 100 (portal), and 118 (draft)
 			{
 				name: 'unlinkNamespaces',
 				label: 'Remove links from pages in these namespaces',
@@ -631,8 +631,8 @@ Twinkle.config.sections = [
 	{
 		title: 'Warn user',
 		preferences: [
-		// TwinkleConfig.defaultWarningGroup (int)
-		// if true, watch the page which has been dispatched an warning or notice, if false, default applies
+			// TwinkleConfig.defaultWarningGroup (int)
+			// Which level warning should be the default selected group, default is 1
 			{
 				name: 'defaultWarningGroup',
 				label: 'Default warning level',
@@ -739,9 +739,9 @@ Twinkle.config.sections = [
 	{
 		title: 'XFD (deletion discussions)',
 		preferences: [
-		// TwinkleConfig.xfdWatchPage (string)
-		// The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
-		// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+			// TwinkleConfig.xfdWatchPage (string)
+			// The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
+			// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 			{
 				name: 'xfdWatchPage',
 				label: 'Add the nominated page to watchlist',
@@ -895,17 +895,19 @@ Twinkle.config.init = function twinkleconfigInit() {
 		var contentdiv = document.getElementById('twinkle-config-content');
 		contentdiv.textContent = '';  // clear children
 
-		// let user know about possible conflict with monobook.js/vector.js file
+		// let user know about possible conflict with skin js/common.js file
 		// (settings in that file will still work, but they will be overwritten by twinkleoptions.js settings)
-		var contentnotice = document.createElement('p');
-		// I hate innerHTML, but this is one thing it *is* good for...
-		contentnotice.innerHTML = '<b>Before modifying your preferences here,</b> make sure you have removed any old <code>TwinkleConfig</code> and <code>FriendlyConfig</code> settings from your <a href="' + mw.util.getUrl('Special:MyPage/skin.js') + '" title="Special:MyPage/skin.js">user JavaScript file</a>.';
-		contentdiv.appendChild(contentnotice);
-
-		// look and see if the user does in fact have any old settings in their skin JS file
-		var skinjs = new Morebits.wiki.page('User:' + mw.config.get('wgUserName') + '/' + mw.config.get('skin') + '.js');
-		skinjs.setCallbackParameters(contentnotice);
-		skinjs.load(Twinkle.config.legacyPrefsNotice);
+		if (window.TwinkleConfig || window.FriendlyConfig) {
+			var contentnotice = document.createElement('p');
+			contentnotice.innerHTML = '<table class="plainlinks ombox ombox-content"><tr><td class="mbox-image">' +
+				'<img alt="" src="https://upload.wikimedia.org/wikipedia/commons/3/38/Imbox_content.png" /></td>' +
+				'<td class="mbox-text"><p><big><b>Before modifying your settings here,</b> you must remove your old Twinkle and Friendly settings from your personal skin JavaScript.</big></p>' +
+				'<p>To do this, you can <a href="' + mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/' + mw.config.get('skin') +
+				'.js', { action: 'edit' }) + '" target="_blank"><b>edit your personal skin javascript file</b></a> or <a href="' +
+				mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/common.js', { action: 'edit'}) + '" target="_blank"><b>your common.js file</b></a>, removing all lines of code that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
+				'</td></tr></table>';
+			contentdiv.appendChild(contentnotice);
+		}
 
 		// start a table of contents
 		var toctable = document.createElement('div');
@@ -1164,11 +1166,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 					resetlink.setAttribute('href', '#tw-reset');
 					resetlink.setAttribute('id', 'twinkle-config-reset-' + pref.name);
 					resetlink.addEventListener('click', Twinkle.config.resetPrefLink, false);
-					if (resetlink.style.styleFloat) {  // IE (inc. IE9)
-						resetlink.style.styleFloat = 'right';
-					} else {  // standards
-						resetlink.style.cssFloat = 'right';
-					}
+					resetlink.style.cssFloat = 'right';
 					resetlink.style.margin = '0 0.6em';
 					resetlink.appendChild(document.createTextNode('Reset'));
 					cell.appendChild(resetlink);
@@ -1254,21 +1252,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 			box.appendChild(document.createTextNode('.'));
 			$(box).insertAfter($('#contentSub'));
 		}
-	}
-};
-
-// Morebits.wiki.page callback from init code
-Twinkle.config.legacyPrefsNotice = function twinkleconfigLegacyPrefsNotice(pageobj) {
-	var text = pageobj.getPageText();
-	var contentnotice = pageobj.getCallbackParameters();
-	if (text.indexOf('TwinkleConfig') !== -1 || text.indexOf('FriendlyConfig') !== -1) {
-		contentnotice.innerHTML = '<table class="plainlinks ombox ombox-content"><tr><td class="mbox-image">' +
-			'<img alt="" src="http://upload.wikimedia.org/wikipedia/en/3/38/Imbox_content.png" /></td>' +
-			'<td class="mbox-text"><p><big><b>Before modifying your settings here,</b> you must remove your old Twinkle and Friendly settings from your personal skin JavaScript.</big></p>' +
-			'<p>To do this, you can <a href="' + mw.config.get('wgScript') + '?title=User:' + encodeURIComponent(mw.config.get('wgUserName')) + '/' + mw.config.get('skin') + '.js&action=edit" target="_blank"><b>edit your personal JavaScript</b></a>, removing all lines of code that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
-			'</td></tr></table>';
-	} else {
-		$(contentnotice).remove();
 	}
 };
 

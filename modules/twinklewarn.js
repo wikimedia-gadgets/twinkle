@@ -1297,7 +1297,7 @@ Twinkle.warn.callbacks = {
 			if (!(current[1] in history) || history[current[1]] < current_date) {
 				history[current[1]] = current_date;
 			}
-			if (current_date > latest.date) {
+			if (current_date >= latest.date) {
 				latest.date = current_date;
 				latest.type = current[1];
 			}
