@@ -445,82 +445,66 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 		return;
 	}
 
-	var pages = form.getChecked('pages');
-	var subpages = form.getChecked('pages.subpages');
-	var reason = form.reason.value;
-	var delete_page = form.delete_page.checked;
-	var delete_talk, delete_redirects, delete_subpages;
-	var delete_subpage_redirects, delete_subpage_talks, unlink_subpages;
-	if (delete_page) {
-		delete_talk = form.delete_talk.checked;
-		delete_redirects = form.delete_redirects.checked;
-		delete_subpages = form.delete_subpages.checked;
-		if (delete_subpages) {
-			delete_subpage_redirects = form.delete_subpage_redirects.checked;
-			delete_subpage_talks = form.delete_subpage_talks.checked;
-			unlink_subpages = form.unlink_subpages.checked;
-		}
-	}
-	var unlink_page = form.unlink_page.checked;
-	var unlink_file = form.unlink_file.checked;
-	if (!reason) {
+	var input = Morebits.quickForm.getInputData(form);
+
+	if (!input.reason) {
 		alert('You need to give a reason, you cabal crony!');
 		return;
 	}
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
-	if (pages.length === 0) {
+	if (input.pages.length === 0) {
 		Morebits.status.error('Error', 'nothing to delete, aborting');
 		return;
 	}
 
-	var pageDeleter = new Morebits.batchOperation(delete_page ? 'Deleting pages' : 'Initiating requested tasks');
+	var pageDeleter = new Morebits.batchOperation(input.delete_page ? 'Deleting pages' : 'Initiating requested tasks');
 	pageDeleter.setOption('chunkSize', Twinkle.getPref('batchdeleteChunks'));
 	// we only need the initial status lines if we're deleting the pages in the pages array
-	pageDeleter.setOption('preserveIndividualStatusLines', delete_page);
-	pageDeleter.setPageList(pages);
+	pageDeleter.setOption('preserveIndividualStatusLines', input.delete_page);
+	pageDeleter.setPageList(input.pages);
 	pageDeleter.run(function worker(pageName) {
 		var params = {
 			page: pageName,
-			delete_page: delete_page,
-			delete_talk: delete_talk,
-			delete_redirects: delete_redirects,
-			unlink_page: unlink_page,
-			unlink_file: unlink_file && /^(File|Image):/i.test(pageName),
-			reason: reason,
+			delete_page: input.delete_page,
+			delete_talk: input.delete_talk,
+			delete_redirects: input.delete_redirects,
+			unlink_page: input.unlink_page,
+			unlink_file: input.unlink_file && /^(File|Image):/i.test(pageName),
+			reason: input.reason,
 			pageDeleter: pageDeleter
 		};
 
 		var wikipedia_page = new Morebits.wiki.page(pageName, 'Deleting page ' + pageName);
 		wikipedia_page.setCallbackParameters(params);
-		if (delete_page) {
-			wikipedia_page.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
+		if (input.delete_page) {
+			wikipedia_page.setEditSummary(input.reason + Twinkle.getPref('deletionSummaryAd'));
 			wikipedia_page.suppressProtectWarning();
 			wikipedia_page.deletePage(Twinkle.batchdelete.callbacks.doExtras, pageDeleter.workerFailure);
 		} else {
 			Twinkle.batchdelete.callbacks.doExtras(wikipedia_page);
 		}
 	}, function postFinish() {
-		if (delete_subpages) {
+		if (input.delete_subpages) {
 			var subpageDeleter = new Morebits.batchOperation('Deleting subpages');
 			subpageDeleter.setOption('chunkSize', Twinkle.getPref('batchdeleteChunks'));
 			subpageDeleter.setOption('preserveIndividualStatusLines', true);
-			subpageDeleter.setPageList(subpages);
+			subpageDeleter.setPageList(input.subpages);
 			subpageDeleter.run(function(pageName) {
 				var params = {
 					page: pageName,
 					delete_page: true,
-					delete_talk: delete_subpage_talks,
-					delete_redirects: delete_subpage_redirects,
-					unlink_page: unlink_subpages,
+					delete_talk: input.delete_subpage_talks,
+					delete_redirects: input.delete_subpage_redirects,
+					unlink_page: input.unlink_subpages,
 					unlink_file: false,
-					reason: reason,
+					reason: input.reason,
 					pageDeleter: subpageDeleter
 				};
 
 				var wikipedia_page = new Morebits.wiki.page(pageName, 'Deleting subpage ' + pageName);
 				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
+				wikipedia_page.setEditSummary(input.reason + Twinkle.getPref('deletionSummaryAd'));
 				wikipedia_page.suppressProtectWarning();
 				wikipedia_page.deletePage(Twinkle.batchdelete.callbacks.doExtras, pageDeleter.workerFailure);
 			});
