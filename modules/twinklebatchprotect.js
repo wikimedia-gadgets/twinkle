@@ -33,12 +33,12 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	var form = new Morebits.quickForm(Twinkle.batchprotect.callback.evaluate);
 	form.append({
 		type: 'checkbox',
-		name: 'editmodify',
 		event: Twinkle.protect.formevents.editmodify,
 		list: [
 			{
 				label: 'Modify edit protection',
 				value: 'editmodify',
+				name: 'editmodify',
 				tooltip: 'Only for existing pages.',
 				checked: true
 			}
@@ -108,12 +108,12 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 
 	form.append({
 		type: 'checkbox',
-		name: 'movemodify',
 		event: Twinkle.protect.formevents.movemodify,
 		list: [
 			{
 				label: 'Modify move protection',
 				value: 'movemodify',
+				name: 'movemodify',
 				tooltip: 'Only for existing pages.',
 				checked: true
 			}
@@ -178,7 +178,6 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 
 	form.append({
 		type: 'checkbox',
-		name: 'createmodify',
 		event: function twinklebatchprotectFormCreatemodifyEvent(e) {
 			e.target.form.createlevel.disabled = !e.target.checked;
 			e.target.form.createexpiry.disabled = !e.target.checked || (e.target.form.createlevel.value === 'all');
@@ -188,6 +187,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			{
 				label: 'Modify create protection',
 				value: 'createmodify',
+				name: 'createmodify',
 				tooltip: 'Only for pages that do not exist.',
 				checked: true
 			}
@@ -372,19 +372,9 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 		return;
 	}
 
-	var pages = form.getChecked('pages');
-	var reason = form.reason.value;
-	var editmodify = form.editmodify.checked;
-	var editlevel = form.editlevel.value;
-	var editexpiry = form.editexpiry.value;
-	var movemodify = form.movemodify.checked;
-	var movelevel = form.movelevel.value;
-	var moveexpiry = form.moveexpiry.value;
-	var createmodify = form.createmodify.checked;
-	var createlevel = form.createlevel.value;
-	var createexpiry = form.createexpiry.value;
+	var input = Morebits.quickForm.getInputData(form);
 
-	if (!reason) {
+	if (!input.reason) {
 		alert("You've got to give a reason, you rouge admin!");
 		return;
 	}
@@ -392,7 +382,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 
-	if (pages.length === 0) {
+	if (input.pages.length === 0) {
 		Morebits.status.error('Error', 'Nothing to protect, aborting');
 		return;
 	}
@@ -400,7 +390,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	var batchOperation = new Morebits.batchOperation('Applying protection settings');
 	batchOperation.setOption('chunkSize', Twinkle.getPref('batchProtectChunks'));
 	batchOperation.setOption('preserveIndividualStatusLines', true);
-	batchOperation.setPageList(pages);
+	batchOperation.setPageList(input.pages);
 	batchOperation.run(function(pageName) {
 		var query = {
 			'action': 'query',
@@ -408,20 +398,10 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 		};
 		var wikipedia_api = new Morebits.wiki.api('Checking if page ' + pageName + ' exists', query,
 			Twinkle.batchprotect.callbacks.main, null, batchOperation.workerFailure);
-		wikipedia_api.params = {
+		wikipedia_api.params = $.extend({
 			page: pageName,
-			reason: reason,
-			editmodify: editmodify,
-			editlevel: editlevel,
-			editexpiry: editexpiry,
-			movemodify: movemodify,
-			movelevel: movelevel,
-			moveexpiry: moveexpiry,
-			createmodify: createmodify,
-			createlevel: createlevel,
-			createexpiry: createexpiry,
 			batchOperation: batchOperation
-		};
+		}, input);
 		wikipedia_api.post();
 	});
 };
