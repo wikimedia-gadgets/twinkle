@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("Und-batch")
  * Active on:              Existing user and project pages
- * Config directives in:   TwinkleConfig
  */
 
 
@@ -62,7 +61,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		'prop': 'info',
 		'inprop': 'protection',
 		'titles': mw.config.get('wgPageName'),
-		'gpllimit': Twinkle.getPref('batchMax') // the max for sysops
+		'gpllimit': Twinkle.getPref('batchMax')
 	};
 	var statelem = new Morebits.status('Grabbing list of pages');
 	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {

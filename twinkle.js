@@ -20,7 +20,7 @@
 
 /* global Morebits */
 
-(function (window, document, $, undefined) { // Wrap with anonymous function
+(function (window, document, $) { // Wrap with anonymous function
 
 var Twinkle = {};
 window.Twinkle = Twinkle;  // allow global access
@@ -36,14 +36,14 @@ Twinkle.addInitCallback = function twinkleAddInitCallback(func) {
 
 Twinkle.defaultConfig = {};
 /**
- * Twinkle.defaultConfig.twinkle and Twinkle.defaultConfig.friendly
- *
- * This holds the default set of preferences used by Twinkle. (The |friendly| object holds preferences stored in the FriendlyConfig object.)
+ * This holds the default set of preferences used by Twinkle.
  * It is important that all new preferences added here, especially admin-only ones, are also added to
  * |Twinkle.config.sections| in twinkleconfig.js, so they are configurable via the Twinkle preferences panel.
  * For help on the actual preferences, see the comments in twinkleconfig.js.
+ *
+ * Formerly Twinkle.defaultConfig.twinkle and Twinkle.defaultConfig.friendly
  */
-Twinkle.defaultConfig.twinkle = {
+Twinkle.defaultConfig = {
 	// General
 	summaryAd: ' ([[WP:TW|TW]])',
 	deletionSummaryAd: ' ([[WP:TW|TW]])',
@@ -121,25 +121,10 @@ Twinkle.defaultConfig.twinkle = {
 	batchMax: 5000,
 	batchProtectChunks: 50,
 	batchundeleteChunks: 50,
-	proddeleteChunks: 50
-};
+	proddeleteChunks: 50,
 
-// now some skin dependent config.
-if (mw.config.get('skin') === 'vector') {
-	Twinkle.defaultConfig.twinkle.portletArea = 'right-navigation';
-	Twinkle.defaultConfig.twinkle.portletId = 'p-twinkle';
-	Twinkle.defaultConfig.twinkle.portletName = 'TW';
-	Twinkle.defaultConfig.twinkle.portletType = 'menu';
-	Twinkle.defaultConfig.twinkle.portletNext = 'p-search';
-} else {
-	Twinkle.defaultConfig.twinkle.portletArea = null;
-	Twinkle.defaultConfig.twinkle.portletId = 'p-cactions';
-	Twinkle.defaultConfig.twinkle.portletName = null;
-	Twinkle.defaultConfig.twinkle.portletType = null;
-	Twinkle.defaultConfig.twinkle.portletNext = null;
-}
+	// Formerly defaultConfig.friendly:
 
-Twinkle.defaultConfig.friendly = {
 	// Tag
 	groupByDefault: true,
 	watchTaggedPages: true,
@@ -174,38 +159,44 @@ Twinkle.defaultConfig.friendly = {
 	markSharedIPAsMinor: true
 };
 
+// now some skin dependent config.
+switch (mw.config.get('skin')) {
+	case 'vector':
+		Twinkle.defaultConfig.portletArea = 'right-navigation';
+		Twinkle.defaultConfig.portletId = 'p-twinkle';
+		Twinkle.defaultConfig.portletName = 'TW';
+		Twinkle.defaultConfig.portletType = 'menu';
+		Twinkle.defaultConfig.portletNext = 'p-search';
+		break;
+	case 'timeless':
+		Twinkle.defaultConfig.portletArea = '#page-tools .sidebar-inner';
+		Twinkle.defaultConfig.portletId = 'p-twinkle';
+		Twinkle.defaultConfig.portletName = 'Twinkle';
+		Twinkle.defaultConfig.portletType = null;
+		Twinkle.defaultConfig.portletNext = 'p-userpagetools';
+		break;
+	default:
+		Twinkle.defaultConfig.portletArea = null;
+		Twinkle.defaultConfig.portletId = 'p-cactions';
+		Twinkle.defaultConfig.portletName = null;
+		Twinkle.defaultConfig.portletType = null;
+		Twinkle.defaultConfig.portletNext = null;
+}
+
+
 Twinkle.getPref = function twinkleGetPref(name) {
-	var result;
-	if (typeof Twinkle.prefs === 'object' && typeof Twinkle.prefs.twinkle === 'object') {
-		// look in Twinkle.prefs (twinkleoptions.js)
-		result = Twinkle.prefs.twinkle[name];
-	} else if (typeof window.TwinkleConfig === 'object') {
-		// look in TwinkleConfig
-		result = window.TwinkleConfig[name];
+	if (typeof Twinkle.prefs === 'object' && Twinkle.prefs[name]) {
+		return Twinkle.prefs[name];
 	}
-
-	if (result === undefined) {
-		return Twinkle.defaultConfig.twinkle[name];
+	// Old preferences format, used before twinkleoptions.js was a thing
+	if (typeof window.TwinkleConfig === 'object' && window.TwinkleConfig[name]) {
+		return window.TwinkleConfig[name];
 	}
-	return result;
+	if (typeof window.FriendlyConfig === 'object' && window.FriendlyConfig[name]) {
+		return window.FriendlyConfig[name];
+	}
+	return Twinkle.defaultConfig[name];
 };
-
-Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
-	var result;
-	if (typeof Twinkle.prefs === 'object' && typeof Twinkle.prefs.friendly === 'object') {
-		// look in Twinkle.prefs (twinkleoptions.js)
-		result = Twinkle.prefs.friendly[name];
-	} else if (typeof window.FriendlyConfig === 'object') {
-		// look in FriendlyConfig
-		result = window.FriendlyConfig[name];
-	}
-
-	if (result === undefined) {
-		return Twinkle.defaultConfig.friendly[name];
-	}
-	return result;
-};
-
 
 
 /**
@@ -238,7 +229,7 @@ Twinkle.getFriendlyPref = function twinkleGetFriendlyPref(name) {
  */
 Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	// sanity checks, and get required DOM nodes
-	var root = document.getElementById(navigation);
+	var root = document.getElementById(navigation) || document.querySelector(navigation);
 	if (!root) {
 		return null;
 	}
@@ -258,33 +249,38 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 
 	// verify/normalize input
 	var skin = mw.config.get('skin');
-	type = skin === 'vector' && type === 'menu' && (navigation === 'left-navigation' || navigation === 'right-navigation') ? 'menu' : '';
-	var outerDivClass;
-	var innerDivClass;
+	if (skin !== 'vector' || (navigation !== 'left-navigation' && navigation !== 'right-navigation')) {
+		type = null; // menu supported only in vector's #left-navigation & #right-navigation
+	}
+	var outerDivClass, innerDivClass;
 	switch (skin) {
 		case 'vector':
+			// XXX: portal doesn't work
 			if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
 				navigation = 'mw-panel';
 			}
 			outerDivClass = navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'vectorMenu' : 'vectorTabs';
-			innerDivClass = navigation === 'mw-panel' ? 'body' : type === 'menu' ? 'menu' : '';
 			break;
 		case 'modern':
 			if (navigation !== 'mw_portlets' && navigation !== 'mw_contentwrapper') {
 				navigation = 'mw_portlets';
 			}
 			outerDivClass = 'portlet';
-			innerDivClass = 'pBody';
+			break;
+		case 'timeless':
+			outerDivClass = 'mw-portlet';
+			innerDivClass = 'mw-portlet-body';
 			break;
 		default:
 			navigation = 'column-one';
 			outerDivClass = 'portlet';
-			innerDivClass = 'pBody';
 			break;
 	}
 
 	// Build the DOM elements.
 	var outerDiv = document.createElement('div');
+	outerDiv.setAttribute('role', 'navigation');
+	outerDiv.setAttribute('aria-labelledby', id + '-label');
 	outerDiv.className = outerDivClass + ' emptyPortlet';
 	outerDiv.id = id;
 	if (nextnode && nextnode.parentNode === root) {
@@ -293,20 +289,20 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 		root.appendChild(outerDiv);
 	}
 
+	var h5 = document.createElement('h3');
+	h5.id = id + '-label';
+	var ul = document.createElement('ul');
+
 	if (outerDivClass === 'vectorMenu') {
-		// add invisible checkbox to make menu keyboard accessible
+
+		// add invisible checkbox to keep menu open when clicked
 		// similar to the p-cactions ("More") menu
 		var chkbox = document.createElement('input');
 		chkbox.className = 'vectorMenuCheckbox';
 		chkbox.setAttribute('type', 'checkbox');
-		chkbox.setAttribute('aria-labelledby', 'p-twinkle-label');
+		chkbox.setAttribute('aria-labelledby', id + '-label');
 		outerDiv.appendChild(chkbox);
-	}
-	var h5 = document.createElement('h3');
-	if (outerDivClass === 'vectorMenu') {
-		h5.id = 'p-twinkle-label';
-	}
-	if (type === 'menu') {
+
 		var span = document.createElement('span');
 		span.appendChild(document.createTextNode(text));
 		h5.appendChild(span);
@@ -314,31 +310,36 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 		var a = document.createElement('a');
 		a.href = '#';
 
-		$(a).click(function (e) {
+		$(a).click(function(e) {
 			e.preventDefault();
-
 			if (!Twinkle.userAuthorized) {
 				alert('Sorry, your account is too new to use Twinkle.');
 			}
 		});
 
 		h5.appendChild(a);
+		outerDiv.appendChild(h5);
+
+		ul.className = 'menu';
+		outerDiv.appendChild(ul);
+
 	} else {
+
 		h5.appendChild(document.createTextNode(text));
-	}
-	outerDiv.appendChild(h5);
+		outerDiv.appendChild(h5);
+		if (innerDivClass) {
+			var innerDiv = document.createElement('div');
+			innerDiv.className = innerDivClass;
+			innerDiv.appendChild(ul);
+			outerDiv.appendChild(innerDiv);
+		} else {
+			outerDiv.appendChild(ul);
+		}
 
-	var innerDiv = null;
-	if (type === 'menu') {
-		innerDiv = document.createElement('div');
-		innerDiv.className = innerDivClass;
-		outerDiv.appendChild(innerDiv);
 	}
-
-	var ul = document.createElement('ul');
-	(innerDiv || outerDiv).appendChild(ul);
 
 	return outerDiv;
+
 };
 
 
@@ -398,20 +399,12 @@ $.ajax({
 
 		try {
 			var options = JSON.parse(optionsText);
-
-			// Assuming that our options evolve, we will want to transform older versions:
-			// if ( options.optionsVersion === undefined ) {
-			// ...
-			// options.optionsVersion = 1;
-			// }
-			// if ( options.optionsVersion === 1 ) {
-			// ...
-			// options.optionsVersion = 2;
-			// }
-			// At the same time, twinkleconfig.js needs to be adapted to write a higher version number into the options.
-
 			if (options) {
-				Twinkle.prefs = options;
+				if (options.twinkle || options.friendly) { // Old preferences format
+					Twinkle.prefs = $.extend(options.twinkle, options.friendly);
+				} else {
+					Twinkle.prefs = options;
+				}
 			}
 		} catch (e) {
 			mw.notify('Could not parse twinkleoptions.js');
@@ -427,17 +420,12 @@ $.ajax({
 Twinkle.load = function () {
 	// Don't activate on special pages other than those on the whitelist so that
 	// they load faster, especially the watchlist.
-	var specialPageWhitelist = [ 'Contributions', 'DeletedContributions', 'Prefixindex' ];
+	var specialPageWhitelist = [ 'Block', 'Contributions', 'DeletedContributions', 'Prefixindex' ];
 	var isSpecialPage = mw.config.get('wgNamespaceNumber') === -1 &&
 		specialPageWhitelist.indexOf(mw.config.get('wgCanonicalSpecialPageName')) === -1;
 
-	// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower,
-	// so don't load there either.
-	var isOldIE = $.client.profile().name === 'msie' &&
-		$.client.profile().versionNumber < 9;
-
 	// Prevent users that are not autoconfirmed from loading Twinkle as well.
-	if (isSpecialPage || isOldIE || !Twinkle.userAuthorized) {
+	if (isSpecialPage || !Twinkle.userAuthorized) {
 		return;
 	}
 

@@ -10,11 +10,11 @@
  ****************************************
  * Mode of invocation:     Tab ("Unlink")
  * Active on:              Non-special pages, except Wikipedia:Sandbox
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.unlink = function twinkleunlink() {
 	if (mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgPageName') === 'Wikipedia:Sandbox' ||
+		// Restrict to extended confirmed users (see #428)
 		(!Morebits.userIsInGroup('extendedconfirmed') && !Morebits.userIsInGroup('sysop'))) {
 		return;
 	}

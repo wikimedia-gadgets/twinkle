@@ -11,7 +11,6 @@
  * Mode of invocation:     Tab ("P-batch")
  * Active on:              Existing project pages and user pages; existing and
  *                         non-existing categories; Special:PrefixIndex
- * Config directives in:   TwinkleConfig
  */
 
 
@@ -278,17 +277,17 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	if (mw.config.get('wgNamespaceNumber') === 14) {  // categories
 		query.generator = 'categorymembers';
 		query.gcmtitle = mw.config.get('wgPageName');
-		query.gcmlimit = Twinkle.getPref('batchMax'); // the max for sysops
+		query.gcmlimit = Twinkle.getPref('batchMax');
 	} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Prefixindex') {
 		query.generator = 'allpages';
 		query.gapnamespace = Morebits.queryString.exists('namespace') ? Morebits.queryString.get('namespace') : $('select[name=namespace]').val();
 		query.gapprefix = Morebits.queryString.exists('from') ? Morebits.string.toUpperCaseFirstChar(Morebits.queryString.get('from').replace('+', ' ')) :
 			Morebits.string.toUpperCaseFirstChar($('input[name=prefix]').val());
-		query.gaplimit = Twinkle.getPref('batchMax'); // the max for sysops
+		query.gaplimit = Twinkle.getPref('batchMax');
 	} else {
 		query.generator = 'links';
 		query.titles = mw.config.get('wgPageName');
-		query.gpllimit = Twinkle.getPref('batchMax'); // the max for sysops
+		query.gpllimit = Twinkle.getPref('batchMax');
 	}
 
 	var statusdiv = document.createElement('div');

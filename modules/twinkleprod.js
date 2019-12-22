@@ -11,7 +11,6 @@
  * Mode of invocation:     Tab ("PROD")
  * Active on:              Existing articles, files, books which are not redirects,
  *                         and user pages in [[:Category:Wikipedia books (user books)]]
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.prod = function twinkleprod() {
@@ -318,7 +317,7 @@ Twinkle.prod.callbacks = {
 			var talktitle = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
 			var talkpage = new Morebits.wiki.page(talktitle, 'Placing {{Old prod}} on talk page');
 			talkpage.setPrependText(oldprodfull);
-			talkpage.setEditSummary('Placing {{Old prod}} on the talk page' + Twinkle.getPref('summaryAd'));
+			talkpage.setEditSummary('Adding {{Old prod}}' + Twinkle.getPref('summaryAd'));
 			talkpage.setFollowRedirect(true);  // match behavior for page tagging
 			talkpage.setCreateOption('recreate');
 			talkpage.prepend();

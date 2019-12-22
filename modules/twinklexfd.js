@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("XFD")
  * Active on:              Existing, non-special pages, except for file pages with no local (non-Commons) file which are not redirects
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.xfd = function twinklexfd() {
@@ -150,8 +149,6 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	result.category.dispatchEvent(evt);
 };
 
-Twinkle.xfd.previousNotify = true;
-
 Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory(e) {
 	var value = e.target.value;
 	var form = e.target.form;
@@ -213,7 +210,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			// delsort categories list copied off [[User:Enterprisey/delsort.js]], originally taken from [[WP:DS/C]]
 			var delsortCategories = {
 				'People': ['People', 'Academics and educators', 'Actors and filmmakers', 'Artists', 'Authors', 'Bands and musicians', 'Businesspeople', 'Politicians', 'Sportspeople', 'Women', 'Lists of people'],
-				'Arts': ['Arts', 'Fictional elements', 'Science fiction'],
+				'Arts': ['Arts', 'Fictional elements', 'Science fiction and fantasy'],
 				'Arts/Culinary': ['Food and drink', 'Wine'],
 				'Arts/Language': ['Language', 'Academic journals', 'Bibliographies', 'Journalism', 'Literature', 'Logic', 'News media', 'Philosophy', 'Poetry'],
 				'Arts/Performing': ['Albums and songs', 'Dance', 'Film', 'Magic', 'Music', 'Radio', 'Television', 'Theatre', 'Video games'],
@@ -543,13 +540,12 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			break;
 	}
 
-	// No creator notification for CFDS or RM
+	// Return to checked state when switching, but no creator notification for CFDS or RM
 	if (value === 'cfds' || value === 'rm') {
-		Twinkle.xfd.previousNotify = form.notify.checked;
 		form.notify.checked = false;
 		form.notify.disabled = true;
 	} else {
-		form.notify.checked = Twinkle.xfd.previousNotify;
+		form.notify.checked = true;
 		form.notify.disabled = false;
 	}
 };
@@ -783,6 +779,7 @@ Twinkle.xfd.callbacks = {
 			if (params.delsort_cats) {
 				params.delsort_cats.forEach(function (cat) {
 					var delsortPage = new Morebits.wiki.page('Wikipedia:WikiProject Deletion sorting/' + cat, 'Adding to list of ' + cat + '-related deletion discussions');
+					delsortPage.setFollowRedirect(true); // In case a category gets renamed
 					delsortPage.setCallbackParameters({discussionPage: params.discussionpage});
 					delsortPage.load(Twinkle.xfd.callbacks.afd.delsortListing);
 				});
@@ -1501,7 +1498,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				'apprefix': 'Articles for deletion/' + Morebits.pageNameNorm,
 				'apnamespace': 4,
 				'apfilterredir': 'nonredirects',
-				'aplimit': Morebits.userIsInGroup('sysop') ? 5000 : 500
+				'aplimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 			};
 			wikipedia_api = new Morebits.wiki.api('Tagging article with deletion tag', query, Twinkle.xfd.callbacks.afd.main);
 			wikipedia_api.params = { usertalk: usertalk, reason: reason, noinclude: noinclude,
@@ -1604,7 +1601,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				'apprefix': 'Miscellany for deletion/' + Morebits.pageNameNorm,
 				'apnamespace': 4,
 				'apfilterredir': 'nonredirects',
-				'aplimit': Morebits.userIsInGroup('sysop') ? 5000 : 500
+				'aplimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 			};
 			wikipedia_api = new Morebits.wiki.api('Looking for prior nominations of this page', query, Twinkle.xfd.callbacks.mfd.main);
 			wikipedia_api.params = { usertalk: usertalk, notifyuserspace: notifyuserspace, reason: reason, noinclude: noinclude, xfdcat: xfdcat };

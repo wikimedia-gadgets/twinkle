@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("PP"/"RPP")
  * Active on:              Non-special, non-MediaWiki pages
- * Config directives in:   TwinkleConfig
  */
 
 // Note: a lot of code in this module is re-used/called by batchprotect.
@@ -438,7 +437,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						{ label: 'Custom...', value: 'custom' }
 					]
 				});
-				if (mw.loader.getState('ext.flaggedRevs.review')) {
+				// Namespaces hardcoded until [[phab:T218479]]
+				if (mw.loader.getState('ext.flaggedRevs.review') && (mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 4)) {
 					field2.append({
 						type: 'checkbox',
 						name: 'pcmodify',
@@ -448,8 +448,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 								label: 'Modify pending changes protection',
 								value: 'pcmodify',
 								tooltip: 'If this is turned off, the pending changes level, and expiry time, will be left as is.',
-								checked: true,
-								disabled: mw.config.get('wgNamespaceNumber') !== 0 && mw.config.get('wgNamespaceNumber') !== 4 // Hardcoded until [[phab:T218479]]
+								checked: true
 							}
 						]
 					});
@@ -1439,7 +1438,7 @@ Twinkle.protect.callbacks = {
 		if (params.tag === 'none') {
 			summary = 'Removing protection template' + Twinkle.getPref('summaryAd');
 		} else {
-			if (Morebits.wiki.isPageRedirect()) {
+			if (/^\s*#redirect/i.test(text)) { // redirect page
 				// Only tag if no {{rcat shell}} is found
 				if (!text.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
 					text = text.replace(/#REDIRECT ?(\[\[.*?\]\])(.*)/i, '#REDIRECT $1$2\n\n{{' + tag + '}}');

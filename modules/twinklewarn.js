@@ -11,7 +11,6 @@
  * Mode of invocation:     Tab ("Warn")
  * Active on:              Any page with relevant user name (userspace, contribs,
  *                         etc.), as well as diffs and the rollback success page
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.warn = function twinklewarn() {
@@ -1298,7 +1297,7 @@ Twinkle.warn.callbacks = {
 			if (!(current[1] in history) || history[current[1]] < current_date) {
 				history[current[1]] = current_date;
 			}
-			if (current_date > latest.date) {
+			if (current_date >= latest.date) {
 				latest.date = current_date;
 				latest.type = current[1];
 			}

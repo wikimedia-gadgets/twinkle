@@ -10,12 +10,11 @@ var api = new mw.Api(), relevantUserName;
  *** twinkleblock.js: Block module
  ****************************************
  * Mode of invocation:     Tab ("Block")
- * Active on:              any page with relevant user name (userspace, contribs, etc.)
- * Config directives in:   [soon to be TwinkleConfig]
+ * Active on:              Any page with relevant user name (userspace, contribs, etc.)
  */
 
 Twinkle.block = function twinkleblock() {
-	// should show on Contributions pages, anywhere there's a relevant user
+	// should show on Contributions or Block pages, anywhere there's a relevant user
 	if (Morebits.userIsInGroup('sysop') && mw.config.get('wgRelevantUserName')) {
 		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user');
 	}
@@ -861,8 +860,8 @@ Twinkle.block.blockGroups = [
 			{ label: 'anonblock - likely a school', value: 'anonblock - school' },
 			{ label: 'school block', value: 'school block' },
 			{ label: 'Generic block (custom reason)', value: 'uw-block' }, // ends up being default for registered users
-			{ label: 'Generic block (custom reason) – IP', value: 'uw-ablock', selected: true }, // set only when blocking IP
-			{ label: 'Generic block (custom reason) – indefinite', value: 'uw-blockindef' },
+			{ label: 'Generic block (custom reason) - IP', value: 'uw-ablock', selected: true }, // set only when blocking IP
+			{ label: 'Generic block (custom reason) - indefinite', value: 'uw-blockindef' },
 			{ label: 'Disruptive editing', value: 'uw-disruptblock' },
 			{ label: 'Inappropriate use of user talk page while blocked', value: 'uw-talkrevoked' },
 			{ label: 'Not here to build an encyclopedia', value: 'uw-nothereblock' },
@@ -876,7 +875,7 @@ Twinkle.block.blockGroups = [
 		list: [
 			{ label: 'Advertising', value: 'uw-adblock' },
 			{ label: 'Arbitration enforcement', value: 'uw-aeblock' },
-			{ label: 'Block evasion – IP', value: 'uw-ipevadeblock' },
+			{ label: 'Block evasion - IP', value: 'uw-ipevadeblock' },
 			{ label: 'BLP violations', value: 'uw-bioblock' },
 			{ label: 'Copyright violations', value: 'uw-copyrightblock' },
 			{ label: 'Creating nonsense pages', value: 'uw-npblock' },
