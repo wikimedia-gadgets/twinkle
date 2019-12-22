@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Links on history, contributions, and diff pages
  * Active on:              Diff pages, history pages, contributions pages
- * Config directives in:   TwinkleConfig
  */
 
 /**

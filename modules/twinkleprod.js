@@ -11,7 +11,6 @@
  * Mode of invocation:     Tab ("PROD")
  * Active on:              Existing articles, files, books which are not redirects,
  *                         and user pages in [[:Category:Wikipedia books (user books)]]
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.prod = function twinkleprod() {

@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("DI")
  * Active on:              Local nonredirect file pages (not on Commons)
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.image = function twinkleimage() {

@@ -10,7 +10,6 @@
  * Mode of invocation:     Tab ("Tag")
  * Active on:              Existing articles and drafts; file pages with a corresponding file
  *                         which is local (not on Commons); all redirects
- * Config directives in:   FriendlyConfig
  */
 
 Twinkle.tag = function friendlytag() {
@@ -96,8 +95,8 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				tooltip: 'You can change the default view order in your Twinkle preferences (WP:TWPREFS).',
 				event: Twinkle.tag.updateSortOrder,
 				list: [
-					{ type: 'option', value: 'cat', label: 'By categories', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'cat' },
-					{ type: 'option', value: 'alpha', label: 'In alphabetical order', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'alpha' }
+					{ type: 'option', value: 'cat', label: 'By categories', selected: Twinkle.getPref('tagArticleSortOrder') === 'cat' },
+					{ type: 'option', value: 'alpha', label: 'In alphabetical order', selected: Twinkle.getPref('tagArticleSortOrder') === 'alpha' }
 				]
 			});
 
@@ -127,7 +126,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 						value: 'group',
 						name: 'group',
 						tooltip: 'If applying two or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped inside a {{multiple issues}} template.',
-						checked: Twinkle.getFriendlyPref('groupByDefault')
+						checked: Twinkle.getPref('groupByDefault')
 					}
 				]
 			}
@@ -153,9 +152,9 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			form.append({ type: 'header', label: 'Replacement tags' });
 			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.replacementList });
 
-			if (Twinkle.getFriendlyPref('customFileTagList').length) {
+			if (Twinkle.getPref('customFileTagList').length) {
 				form.append({ type: 'header', label: 'Custom tags' });
-				form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.getFriendlyPref('customFileTagList') });
+				form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.getPref('customFileTagList') });
 			}
 			break;
 
@@ -171,9 +170,9 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			form.append({ type: 'header', label: 'Miscellaneous and administrative redirect templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.administrativeList });
 
-			if (Twinkle.getFriendlyPref('customRedirectTagList').length) {
+			if (Twinkle.getPref('customRedirectTagList').length) {
 				form.append({ type: 'header', label: 'Custom tags' });
-				form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.getFriendlyPref('customRedirectTagList') });
+				form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.getPref('customRedirectTagList') });
 			}
 			break;
 
@@ -190,7 +189,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 					label: 'Mark the page as patrolled',
 					value: 'patrolPage',
 					name: 'patrolPage',
-					checked: Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled')
+					checked: Twinkle.getPref('markTaggedPagesAsPatrolled')
 				}
 			]
 		});
@@ -591,10 +590,10 @@ Twinkle.tag.updateSortOrder = function(e) {
 	}
 
 	// append any custom tags
-	if (Twinkle.getFriendlyPref('customTagList').length) {
+	if (Twinkle.getPref('customTagList').length) {
 		container.append({ type: 'header', label: 'Custom tags' });
 		container.append({ type: 'checkbox', name: 'articleTags',
-			list: Twinkle.getFriendlyPref('customTagList').map(function(el) {
+			list: Twinkle.getPref('customTagList').map(function(el) {
 				el.checked = Twinkle.tag.checkedTags.indexOf(el.value) !== -1;
 				return el;
 			})
@@ -1241,8 +1240,8 @@ Twinkle.tag.callbacks = {
 
 			pageobj.setPageText(pageText);
 			pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
-			pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
-			pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
+			pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
+			pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 			pageobj.setCreateOption('nocreate');
 			pageobj.save(function() {
 				// special functions for merge tags
@@ -1256,7 +1255,7 @@ Twinkle.tag.callbacks = {
 					var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
 					talkpage.setAppendText(talkpageText);
 					talkpage.setEditSummary('Proposing to merge ' + direction + Twinkle.getPref('summaryAd'));
-					talkpage.setWatchlist(Twinkle.getFriendlyPref('watchMergeDiscussions'));
+					talkpage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
 					talkpage.setCreateOption('recreate');
 					talkpage.append();
 				}
@@ -1828,8 +1827,8 @@ Twinkle.tag.callbacks = {
 
 		pageobj.setPageText(pageText);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
-		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
-		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
+		pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
+		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 
@@ -1929,8 +1928,8 @@ Twinkle.tag.callbacks = {
 
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summary.substring(0, summary.length - 2) + Twinkle.getPref('summaryAd'));
-		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
-		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
+		pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
+		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 

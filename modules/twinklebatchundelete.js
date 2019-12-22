@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("Und-batch")
  * Active on:              Existing user and project pages
- * Config directives in:   TwinkleConfig
  */
 
 

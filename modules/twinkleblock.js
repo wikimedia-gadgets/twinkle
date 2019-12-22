@@ -11,7 +11,6 @@ var api = new mw.Api(), relevantUserName;
  ****************************************
  * Mode of invocation:     Tab ("Block")
  * Active on:              Any page with relevant user name (userspace, contribs, etc.)
- * Config directives in:   [soon to be TwinkleConfig]
  */
 
 Twinkle.block = function twinkleblock() {

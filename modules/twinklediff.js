@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab on non-diff pages ("Last"); tabs on diff pages ("Since", "Since mine", "Current")
  * Active on:              Existing non-special pages
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.diff = function twinklediff() {

@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("XFD")
  * Active on:              Existing, non-special pages, except for file pages with no local (non-Commons) file which are not redirects
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.xfd = function twinklexfd() {

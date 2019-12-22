@@ -11,7 +11,6 @@
  * Mode of invocation:     Tab ("Warn")
  * Active on:              Any page with relevant user name (userspace, contribs,
  *                         etc.), as well as diffs and the rollback success page
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.warn = function twinklewarn() {
