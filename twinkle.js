@@ -125,7 +125,7 @@ Twinkle.defaultConfig = {
 
 	// Formerly defaultConfig.friendly:
 
-  // Tag
+	// Tag
 	groupByDefault: true,
 	watchTaggedPages: true,
 	watchMergeDiscussions: true,
@@ -158,7 +158,7 @@ Twinkle.defaultConfig = {
 	// Shared
 	markSharedIPAsMinor: true
 };
-  
+
 // now some skin dependent config.
 switch (mw.config.get('skin')) {
 	case 'vector':
