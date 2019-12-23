@@ -1558,15 +1558,14 @@ Twinkle.speedy.callbacks = {
 					(normalize === 'G6' && csdparam === 'fullvotepage') ||
 					(normalize === 'G6' && csdparam === 'sourcepage') ||
 					(normalize === 'A2' && csdparam === 'source') ||
-					(normalize === 'A10' && csdparam === 'article')) {
+					(normalize === 'A10' && csdparam === 'article') ||
+					(normalize === 'F1' && csdparam === 'filename') ||
+					(normalize === 'F5' && csdparam === 'replacement')) {
 					input = '[[:' + input + ']]';
 				} else if (normalize === 'G5' && csdparam === 'user') {
 					input = '[[:User:' + input + ']]';
 				} else if (normalize === 'G12' && csdparam.lastIndexOf('url', 0) === 0 && input.lastIndexOf('http', 0) === 0) {
 					input = '[' + input + ' ' + input + ']';
-				} else if ((normalize === 'F1' && csdparam === 'filename') ||
-					(normalize === 'F5' && csdparam === 'replacement')) {
-					input = '[[:File:' + input + ']]';
 				} else if (normalize === 'T3' && csdparam === 'template') {
 					input = '[[:Template:' + input + ']]';
 				} else if (normalize === 'F8' && csdparam === 'filename') {
@@ -1816,7 +1815,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						parameters = null;
 						return false;
 					}
-					currentParams.filename = redimage.replace(/^\s*(Image|File):/i, '');
+					currentParams.filename = /^\s*(Image|File):/i.test(redimage) ? redimage : 'File:' + redimage;
 				}
 				break;
 
@@ -1829,8 +1828,8 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 			case 'commons':  // F8
 				if (form['csd.commons_filename']) {
 					var filename = form['csd.commons_filename'].value;
-					if (filename && filename !== Morebits.pageNameNorm) {
-						currentParams.filename = filename.indexOf('Image:') === 0 || filename.indexOf('File:') === 0 ? filename : 'File:' + filename;
+					if (filename && filename.trim() && filename !== Morebits.pageNameNorm) {
+						currentParams.filename = /^\s*(Image|File):/i.test(filename) ? filename : 'File:' + filename;
 					}
 				}
 				break;
