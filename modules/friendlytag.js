@@ -145,23 +145,23 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			Window.setTitle('File maintenance tagging');
 
 			form.append({ type: 'header', label: 'License and sourcing problem tags' });
-			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.licenseList });
+			form.append({ type: 'checkbox', name: 'tags', list: Twinkle.tag.file.licenseList });
 
 			form.append({ type: 'header', label: 'Wikimedia Commons-related tags' });
-			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.commonsList });
+			form.append({ type: 'checkbox', name: 'tags', list: Twinkle.tag.file.commonsList });
 
 			form.append({ type: 'header', label: 'Cleanup tags' });
-			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.cleanupList });
+			form.append({ type: 'checkbox', name: 'tags', list: Twinkle.tag.file.cleanupList });
 
 			form.append({ type: 'header', label: 'Image quality tags' });
-			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.qualityList });
+			form.append({ type: 'checkbox', name: 'tags', list: Twinkle.tag.file.qualityList });
 
 			form.append({ type: 'header', label: 'Replacement tags' });
-			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.replacementList });
+			form.append({ type: 'checkbox', name: 'tags', list: Twinkle.tag.file.replacementList });
 
 			if (Twinkle.getPref('customFileTagList').length) {
 				form.append({ type: 'header', label: 'Custom tags' });
-				form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.getPref('customFileTagList') });
+				form.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customFileTagList') });
 			}
 			break;
 
@@ -169,17 +169,17 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			Window.setTitle('Redirect tagging');
 
 			form.append({ type: 'header', label: 'Spelling, misspelling, tense and capitalization templates' });
-			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.spellingList });
+			form.append({ type: 'checkbox', name: 'tags', list: Twinkle.tag.spellingList });
 
 			form.append({ type: 'header', label: 'Alternative name templates' });
-			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.alternativeList });
+			form.append({ type: 'checkbox', name: 'tags', list: Twinkle.tag.alternativeList });
 
 			form.append({ type: 'header', label: 'Miscellaneous and administrative redirect templates' });
-			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.administrativeList });
+			form.append({ type: 'checkbox', name: 'tags', list: Twinkle.tag.administrativeList });
 
 			if (Twinkle.getPref('customRedirectTagList').length) {
 				form.append({ type: 'header', label: 'Custom tags' });
-				form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.getPref('customRedirectTagList') });
+				form.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customRedirectTagList') });
 			}
 			break;
 
@@ -194,8 +194,8 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			list: [
 				{
 					label: 'Mark the page as patrolled/reviewed',
-					value: 'patrolPage',
-					name: 'patrolPage',
+					value: 'patrol',
+					name: 'patrol',
 					checked: Twinkle.getPref('markTaggedPagesAsPatrolled')
 				}
 			]
@@ -283,7 +283,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	} else {
 		// Redirects and files: Add a link to each template's description page
-		Morebits.quickForm.getElements(result, Twinkle.tag.mode + 'Tags').forEach(generateLinks);
+		Morebits.quickForm.getElements(result, 'tags').forEach(generateLinks);
 	}
 };
 
@@ -295,7 +295,7 @@ var $allCheckboxDivs, $allHeaders;
 Twinkle.tag.updateSortOrder = function(e) {
 	var form = e.target.form;
 	var sortorder = e.target.value;
-	Twinkle.tag.checkedTags = form.getChecked('articleTags');
+	Twinkle.tag.checkedTags = form.getChecked('tags');
 
 	var container = new Morebits.quickForm.element({ type: 'fragment' });
 
@@ -525,7 +525,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		container.append({ type: 'header', id: 'tagHeader0', label: 'Tags already present' });
 		var subdiv = container.append({ type: 'div', id: 'tagSubdiv0' });
 		var checkboxes = [];
-		var unCheckedTags = e.target.form.getUnchecked('alreadyPresentArticleTags');
+		var unCheckedTags = e.target.form.getUnchecked('existingTags');
 		Twinkle.tag.alreadyPresentTags.forEach(function(tag) {
 			var description = Twinkle.tag.article.tags[tag];
 			var checkbox =
@@ -540,7 +540,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		});
 		subdiv.append({
 			type: 'checkbox',
-			name: 'alreadyPresentArticleTags',
+			name: 'existingTags',
 			list: checkboxes
 		});
 	};
@@ -557,7 +557,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 			});
 			subdiv.append({
 				type: 'checkbox',
-				name: 'articleTags',
+				name: 'tags',
 				list: checkboxes
 			});
 		};
@@ -592,7 +592,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		});
 		container.append({
 			type: 'checkbox',
-			name: 'articleTags',
+			name: 'tags',
 			list: checkboxes
 		});
 	}
@@ -600,7 +600,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	// append any custom tags
 	if (Twinkle.getPref('customTagList').length) {
 		container.append({ type: 'header', label: 'Custom tags' });
-		container.append({ type: 'checkbox', name: 'articleTags',
+		container.append({ type: 'checkbox', name: 'tags',
 			list: Twinkle.getPref('customTagList').map(function(el) {
 				el.checked = Twinkle.tag.checkedTags.indexOf(el.value) !== -1;
 				return el;
@@ -613,7 +613,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	$workarea.empty().append(rendered);
 
 	// for quick filter:
-	$allCheckboxDivs = $workarea.find('[name$=Tags]').parent();
+	$allCheckboxDivs = $workarea.find('[name=tags], [name=existingTags]').parent();
 	$allHeaders = $workarea.find('h5, .quickformDescription');
 	form.quickfilter.value = ''; // clear search, because the search results are not preserved over mode change
 	form.quickfilter.focus();
@@ -623,15 +623,15 @@ Twinkle.tag.updateSortOrder = function(e) {
 	$workarea.find('h5:not(:first-child)').css({ 'margin-top': '1em' });
 	$workarea.find('div').filter(':has(span.quickformDescription)').css({ 'margin-top': '0.4em' });
 
-	Morebits.quickForm.getElements(form, 'alreadyPresentArticleTags').forEach(generateLinks);
-	Morebits.quickForm.getElements(form, 'articleTags').forEach(generateLinks);
+	Morebits.quickForm.getElements(form, 'existingTags').forEach(generateLinks);
+	Morebits.quickForm.getElements(form, 'tags').forEach(generateLinks);
 
 	// tally tags added/removed, update statusNode text
 	var statusNode = document.getElementById('tw-tag-status');
-	$('[name=articleTags], [name=alreadyPresentArticleTags]').click(function() {
-		if (this.name === 'articleTags') {
+	$('[name=tags], [name=existingTags]').click(function() {
+		if (this.name === 'tags') {
 			Twinkle.tag.status.numAdded += this.checked ? 1 : -1;
-		} else if (this.name === 'alreadyPresentArticleTags') {
+		} else if (this.name === 'existingTags') {
 			Twinkle.tag.status.numRemoved += this.checked ? -1 : 1;
 		}
 
@@ -1958,32 +1958,12 @@ Twinkle.tag.callbacks = {
 
 Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	var form = e.target;
-	var params = {};
-	if (form.patrolPage) {
-		params.patrol = form.patrolPage.checked;
-	}
-
-	// Don't return null if there aren't any available tags
-	params.tags = form.getChecked(Twinkle.tag.mode + 'Tags');
-
-	// Save values of input fields into params object. This works as quickform input
-	// fields within subgroups of elements with name 'articleTags' (say) have their
-	// name attribute as 'articleTags.' + name of the subgroup element
-
-	var name_prefix = Twinkle.tag.mode + 'Tags.';
-	$(form).find("[name^='" + name_prefix + "']:not(div)").each(function(idx, el) {
-		// el are the HTMLInputElements, el.name gives the name attribute
-		params[el.name.slice(name_prefix.length)] =
-			el.type === 'checkbox' ? form[el.name].checked : form[el.name].value;
-	});
+	var params = Morebits.quickForm.getInputData(form);
 
 	switch (Twinkle.tag.mode) {
 		case 'article':
-			params.tagsToRemove = form.getUnchecked('alreadyPresentArticleTags');
-			params.tagsToRemain = form.getChecked('alreadyPresentArticleTags');
-			params.reason = form.reason.value.trim();
-
-			params.group = form.group.checked;
+			params.tagsToRemove = form.getUnchecked('existingTags'); // not in `input`
+			params.tagsToRemain = params.existingTags;
 
 			// Validation
 			if ((params.tags.indexOf('Merge') !== -1) || (params.tags.indexOf('Merge from') !== -1) ||
