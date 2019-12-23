@@ -353,9 +353,16 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 					subnode = cur_div.appendChild(document.createElement('input'));
 					subnode.values = current.value;
 					subnode.setAttribute('value', current.value);
-					subnode.setAttribute('name', current.name || data.name);
 					subnode.setAttribute('type', data.type);
 					subnode.setAttribute('id', cur_id);
+					subnode.setAttribute('name', current.name || data.name);
+
+					// If name is provided on the individual checkbox, add a data-single
+					// attribute which indicates it isn't part of a list of checkboxes with
+					// same name. Used in getInputData()
+					if (current.name) {
+						subnode.setAttribute('data-single', 'data-single');
+					}
 
 					if (current.checked) {
 						subnode.setAttribute('checked', 'checked');
@@ -718,6 +725,59 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 
 // Some utility methods for manipulating quickForms after their creation:
 // (None of these work for "dyninput" type fields at present)
+
+/**
+ * Returns an object containing all filled form data entered by the user, with the object
+ * keys being the form element names. Disabled fields will be ignored, but not hidden fields.
+ * @param {HTMLFormElement} form
+ * @returns {Object} with field names as keys, input data as values
+ */
+Morebits.quickForm.getInputData = function(form) {
+	var result = {};
+
+	for (var i in form.elements) { // eslint-disable-line guard-for-in
+		var field = form.elements[i];
+		if (field.disabled || !field.name || !field.type ||
+			field.type === 'submit' || field.type === 'button') {
+			continue;
+		}
+
+		// For elements in subgroups, quickform prepends element names with
+		// name of the parent group followed by a period, get rid of that.
+		var fieldNameNorm = field.name.slice(field.name.indexOf('.') + 1);
+
+		switch (field.type) {
+			case 'radio':
+				if (field.checked) {
+					result[fieldNameNorm] = field.value;
+				}
+				break;
+			case 'checkbox':
+				if (field.dataset.single) {
+					result[fieldNameNorm] = field.checked; // boolean
+				} else {
+					result[fieldNameNorm] = result[fieldNameNorm] || [];
+					if (field.checked) {
+						result[fieldNameNorm].push(field.value);
+					}
+				}
+				break;
+			case 'select-multiple':
+				result[fieldNameNorm] = $(field).val(); // field.value doesn't work
+				break;
+			case 'text': // falls through
+			case 'textarea':
+				result[fieldNameNorm] = field.value.trim();
+				break;
+			default: // could be select-one, date, number, email, etc
+				if (field.value) {
+					result[fieldNameNorm] = field.value;
+				}
+				break;
+		}
+	}
+	return result;
+};
 
 
 /**
