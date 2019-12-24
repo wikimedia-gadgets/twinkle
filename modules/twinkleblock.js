@@ -781,10 +781,10 @@ Twinkle.block.blockPresetsInfo = {
 		reasonParam: true,
 		summary: 'You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]]'
 	},
-	'uw-ublock-famous': {
+	'uw-ublock-wellknown': {
 		expiry: 'infinity',
 		forRegisteredOnly: true,
-		reason: '{{uw-ublock-famous}} <!-- Username represents a famous person, soft block -->',
+		reason: '{{uw-ublock-wellknown}} <!-- Username represents a well-known person, soft block -->',
 		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] matches the name of a well-known living individual'
 	},
 	'uw-uhblock-double': {
@@ -906,7 +906,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Username violation, soft block', value: 'uw-ublock' },
 			{ label: 'Username violation, hard block', value: 'uw-uhblock' },
 			{ label: 'Username impersonation hard block', value: 'uw-uhblock-double' },
-			{ label: 'Username represents a famous person, soft block', value: 'uw-ublock-famous' },
+			{ label: 'Username represents a well-known person, soft block', value: 'uw-ublock-wellknown' },
 			{ label: 'Username represents a non-profit, soft block', value: 'uw-causeblock' },
 			{ label: 'Username violation, vandalism-only account', value: 'uw-vaublock' }
 		]
