@@ -688,7 +688,7 @@ Morebits.quickForm.element.autoNWSW = function() {
 /**
  * Create a jquery.tipsy-based tooltip.
  * @requires jquery.tipsy
- * @param {HTMLElement} node - the HTML element beside which a tooltip is to be generateed
+ * @param {HTMLElement} node - the HTML element beside which a tooltip is to be generated
  * @param {Object} data - tooltip-related configuration data
  */
 Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTooltip(node, data) {
