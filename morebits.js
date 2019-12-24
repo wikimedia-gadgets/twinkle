@@ -711,7 +711,7 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 
 /**
  * Returns all form elements with a given field name or ID
- * @param {HTMLFormElement} form - the form
+ * @param {HTMLFormElement} form
  * @param {string} fieldName - the name or id of the fields
  * @returns {HTMLElement[]} - array of matching form elements
  */
