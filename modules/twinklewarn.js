@@ -869,6 +869,10 @@ Twinkle.warn.messages = {
 			label: 'Not using edit summary',
 			summary: 'Notice: Not using edit summary'
 		},
+		'uw-elinbody': {
+			label: 'Adding external links to the body of an article',
+			summary: 'Notice: Keep external links to External links sections at the bottom of an article'
+		},
 		'uw-english': {
 			label: 'Not communicating in English',
 			summary: 'Notice: Not communicating in English'
@@ -876,10 +880,6 @@ Twinkle.warn.messages = {
 		'uw-hasty': {
 			label: 'Hasty addition of speedy deletion tags',
 			summary: 'Notice: Allow creators time to improve their articles before tagging them for deletion'
-		},
-		'uw-inline-el': {
-			label: 'Adding external links to the body of an article',
-			summary: 'Notice: Keep external links to External links sections at the bottom of an article'
 		},
 		'uw-italicize': {
 			label: 'Italicize books, films, albums, magazines, TV series, etc within articles',
