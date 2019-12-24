@@ -2049,7 +2049,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 *     true  - a maximum of one redirect will be followed.
 	 *             In the event of a redirect, a message is displayed to the user and
 	 *             the redirect target can be retrieved with getPageName().
-	 *     false - the requested pageName will be used without regard to any redirect. (default)
+	 *     false - the requested pageName will be used without regard to any redirect (default).
 	 */
 	this.setFollowRedirect = function(followRedirect) {
 		if (ctx.pageLoaded) {
