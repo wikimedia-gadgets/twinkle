@@ -971,7 +971,7 @@ HTMLFormElement.prototype.getUnchecked = function(name, type) {
  *
  * Escapes a string to be used in a RegExp
  * @param {string} text - string to be escaped
- * @param {boolean} [space_fix=false] - Set true to replace spaces and underscore with `[ _]` as they are
+ * @param {boolean} [space_fix=false] - Set true to replace spaces and underscores with `[ _]` as they are
  * often equivalent
  * @returns {string} - the escaped text
  */
