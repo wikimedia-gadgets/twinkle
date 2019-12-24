@@ -3621,7 +3621,7 @@ Morebits.status.init = function(root) {
 
 Morebits.status.root = null;
 
-/** @param {Function} hander - function to execute on error */
+/** @param {Function} handler - function to execute on error */
 Morebits.status.onError = function(handler) {
 	if (typeof handler === 'function') {
 		Morebits.status.errorEvent = handler;
