@@ -37,7 +37,7 @@ Some things to watch out for:
 - If your tests have any chance of making actual edits, consider making them in a sandbox; be aware that some things may not work properly outside the appropriate namespace.  An even better place to test is on the [test wiki](http://test.wikipedia.org)!  Some parts of Twinkle rely on specific template code or on certain wiki-preferences, so testing certain things outside of enWiki may be difficlut (e.g., pending changes).
 - The non-module scripts `morebits.js` and `twinkle.js` are usually more complicated to test.
 - The `twinkleconfig` pseudo-module holds the code to save and determine user preferences, while `twinkle.js` holds the defaults.
-- There is some variety in how the individual modules are written, in particular between the `friendly` family, as well as with `twinklefluff.js` and `twinkleconfig.js`.
+- There is some variety in how the individual modules are written, in particular among the `friendly` family as well as with `twinkleconfig.js`.
 
 As Twinkle is used many thousands of times a day, changes to how Twinkle works may be confusing or disruptive to editors.  Significant or major changes to workflow, design, or functionality should gain some modicum of consensus before being proposed or suggested, either through discussion at [Wikipedia talk:Twinkle][] or elsewhere.
 

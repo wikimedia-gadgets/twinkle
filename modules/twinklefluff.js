@@ -16,147 +16,112 @@
  Twinklefluff revert and antivandalism utility
  */
 
-Twinkle.fluff = {
-	spanTag: function(color, content) {
-		var span = document.createElement('span');
-		span.style.color = color;
-		span.appendChild(document.createTextNode(content));
-		return span;
-	},
+Twinkle.fluff = function twinklefluff() {
+	if (Twinkle.userAuthorized) {
+		// A list of usernames, usually only bots, that vandalism revert is jumped over; that is,
+		// if vandalism revert was chosen on such username, then its target is on the revision before.
+		// This is for handling quick bots that makes edits seconds after the original edit is made.
+		// This only affects vandalism rollback; for good faith rollback, it will stop, indicating a bot
+		// has no faith, and for normal rollback, it will rollback that edit.
+		Twinkle.fluff.whiteList = [
+			'AnomieBOT',
+			'SineBot'
+		];
 
-	buildLink: function(color, text) {
-		var link = document.createElement('a');
-		link.appendChild(Twinkle.fluff.spanTag('Black', '['));
-		link.appendChild(Twinkle.fluff.spanTag(color, text));
-		link.appendChild(Twinkle.fluff.spanTag('Black', ']'));
-		return link;
-	},
-
-	auto: function() {
-		if (mw.config.get('wgRevisionId') !== mw.config.get('wgCurRevisionId')) {
-			// not latest revision
-			alert("Can't rollback, page has changed in the meantime.");
-			return;
-		}
-
-		var vandal = $('#mw-diff-ntitle2').find('a.mw-userlink').text();
-
-		Twinkle.fluff.revert(Morebits.queryString.get('twinklerevert'), vandal, true);
-	},
-
-	contributions: function() {
-		// $('sp-contributions-footer-anon-range') relies on the fmbox
-		// id in [[MediaWiki:Sp-contributions-footer-anon-range]] and
-		// is used to show rollback/vandalism links for IP ranges
-		if (mw.config.exists('wgRelevantUserName') || !!$('#sp-contributions-footer-anon-range')[0]) {
-			// Get the username these contributions are for
-			var username = mw.config.get('wgRelevantUserName');
-			if (Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
-				(mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1) ||
-				(mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1)) {
-				var list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
-
-				var revNode = document.createElement('strong');
-				var revLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
-				revNode.appendChild(revLink);
-
-				var revVandNode = document.createElement('strong');
-				var revVandLink = Twinkle.fluff.buildLink('Red', 'vandalism');
-				revVandNode.appendChild(revVandLink);
-
-				list.each(function(key, current) {
-					var href = $(current).find('.mw-changeslist-diff').attr('href');
-					current.appendChild(document.createTextNode(' '));
-					var tmpNode = revNode.cloneNode(true);
-					tmpNode.firstChild.setAttribute('href', href + '&' + Morebits.queryString.create({ 'twinklerevert': 'norm' }));
-					current.appendChild(tmpNode);
-					current.appendChild(document.createTextNode(' '));
-					tmpNode = revVandNode.cloneNode(true);
-					tmpNode.firstChild.setAttribute('href', href + '&' + Morebits.queryString.create({ 'twinklerevert': 'vand' }));
-					current.appendChild(tmpNode);
+		if (Morebits.queryString.exists('twinklerevert')) {
+			// Return if the user can't edit the page in question
+			if (!mw.config.get('wgIsProbablyEditable')) {
+				alert("Unable to edit the page, it's probably protected.");
+			} else {
+				Twinkle.fluff.auto();
+			}
+		} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
+			Twinkle.fluff.contributions();
+		} else if (mw.config.get('wgIsProbablyEditable')) {
+			// Only proceed if the user can actually edit the page
+			// in question (ignored for contributions, see #632).
+			// wgIsProbablyEditable should take care of
+			// namespace/contentModel restrictions as well as
+			// explicit protections; it won't take care of
+			// cascading or TitleBlacklist restrictions
+			if (mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId')) { // wgDiffOldId included for clarity in if else loop [[phab:T214985]]
+				mw.hook('wikipage.diff').add(function () { // Reload alongside the revision slider
+					Twinkle.fluff.diff();
 				});
+			} else if (mw.config.get('wgAction') === 'view' && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId')) {
+				Twinkle.fluff.oldid();
 			}
 		}
-	},
+	}
+};
 
-	diff: function() {
-		// Add a [restore this revision] link to the older revision
-		// Don't show if there's a single revision or weird diff (cur on latest)
-		if (mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId'))) {
-			var revertToRevision = document.createElement('div');
-			revertToRevision.setAttribute('id', 'tw-revert-to-orevision');
-			revertToRevision.style.fontWeight = 'bold';
 
-			var revertToRevisionLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
-			revertToRevisionLink.href = '#';
-			$(revertToRevisionLink).click(function() {
-				Twinkle.fluff.revertToRevision(mw.config.get('wgDiffOldId').toString());
+Twinkle.fluff.spanTag = function twinklefluffspanTag(color, content) {
+	var span = document.createElement('span');
+	span.style.color = color;
+	span.appendChild(document.createTextNode(content));
+	return span;
+};
+
+Twinkle.fluff.buildLink = function twinklefluffbuildLink(color, text) {
+	var link = document.createElement('a');
+	link.appendChild(Twinkle.fluff.spanTag('Black', '['));
+	link.appendChild(Twinkle.fluff.spanTag(color, text));
+	link.appendChild(Twinkle.fluff.spanTag('Black', ']'));
+	return link;
+};
+
+Twinkle.fluff.auto = function twinklefluffauto() {
+	if (mw.config.get('wgRevisionId') !== mw.config.get('wgCurRevisionId')) {
+		// not latest revision
+		alert("Can't rollback, page has changed in the meantime.");
+		return;
+	}
+
+	var vandal = $('#mw-diff-ntitle2').find('a.mw-userlink').text();
+
+	Twinkle.fluff.revert(Morebits.queryString.get('twinklerevert'), vandal, true);
+};
+
+Twinkle.fluff.contributions = function twinklefluffcontributions() {
+	// $('sp-contributions-footer-anon-range') relies on the fmbox
+	// id in [[MediaWiki:Sp-contributions-footer-anon-range]] and
+	// is used to show rollback/vandalism links for IP ranges
+	if (mw.config.exists('wgRelevantUserName') || !!$('#sp-contributions-footer-anon-range')[0]) {
+		// Get the username these contributions are for
+		var username = mw.config.get('wgRelevantUserName');
+		if (Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
+			(mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1) ||
+			(mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1)) {
+			var list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
+
+			var revNode = document.createElement('strong');
+			var revLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
+			revNode.appendChild(revLink);
+
+			var revVandNode = document.createElement('strong');
+			var revVandLink = Twinkle.fluff.buildLink('Red', 'vandalism');
+			revVandNode.appendChild(revVandLink);
+
+			list.each(function(key, current) {
+				var href = $(current).find('.mw-changeslist-diff').attr('href');
+				current.appendChild(document.createTextNode(' '));
+				var tmpNode = revNode.cloneNode(true);
+				tmpNode.firstChild.setAttribute('href', href + '&' + Morebits.queryString.create({ 'twinklerevert': 'norm' }));
+				current.appendChild(tmpNode);
+				current.appendChild(document.createTextNode(' '));
+				tmpNode = revVandNode.cloneNode(true);
+				tmpNode.firstChild.setAttribute('href', href + '&' + Morebits.queryString.create({ 'twinklerevert': 'vand' }));
+				current.appendChild(tmpNode);
 			});
-			revertToRevision.appendChild(revertToRevisionLink);
-
-			var otitle = document.getElementById('mw-diff-otitle1').parentNode;
-			otitle.insertBefore(revertToRevision, otitle.firstChild);
 		}
+	}
+};
 
-		// Add either restore or rollback links to the newer revision
-		// Don't show if there's a single revision or weird diff (prev on first)
-		var ntitle = document.getElementById('mw-diff-ntitle1').parentNode;
-		if (document.getElementById('differences-nextlink')) {
-			// Not latest revision
-			var revertToRevisionN = document.createElement('div');
-			revertToRevisionN.setAttribute('id', 'tw-revert-to-nrevision');
-			revertToRevisionN.style.fontWeight = 'bold';
-
-			var revertToRevisionNLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
-			revertToRevisionNLink.href = '#';
-			$(revertToRevisionNLink).click(function() {
-				Twinkle.fluff.revertToRevision(mw.config.get('wgDiffNewId').toString());
-			});
-			revertToRevisionN.appendChild(revertToRevisionNLink);
-
-			ntitle.insertBefore(revertToRevisionN, ntitle.firstChild);
-		} else if (Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 && mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId') || document.getElementById('differences-prevlink'))) {
-			var vandal = $('#mw-diff-ntitle2').find('a').first().text();
-
-			var revertNode = document.createElement('div');
-			revertNode.setAttribute('id', 'tw-revert');
-
-			var agfNode = document.createElement('strong');
-			var vandNode = document.createElement('strong');
-			var normNode = document.createElement('strong');
-
-			var agfLink = Twinkle.fluff.buildLink('DarkOliveGreen', 'rollback (AGF)');
-			var vandLink = Twinkle.fluff.buildLink('Red', 'rollback (VANDAL)');
-			var normLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
-
-			agfLink.href = '#';
-			vandLink.href = '#';
-			normLink.href = '#';
-			$(agfLink).click(function() {
-				Twinkle.fluff.revert('agf', vandal);
-			});
-			$(vandLink).click(function() {
-				Twinkle.fluff.revert('vand', vandal);
-			});
-			$(normLink).click(function() {
-				Twinkle.fluff.revert('norm', vandal);
-			});
-
-			agfNode.appendChild(agfLink);
-			vandNode.appendChild(vandLink);
-			normNode.appendChild(normLink);
-
-			revertNode.appendChild(agfNode);
-			revertNode.appendChild(document.createTextNode(' || '));
-			revertNode.appendChild(normNode);
-			revertNode.appendChild(document.createTextNode(' || '));
-			revertNode.appendChild(vandNode);
-
-			ntitle.insertBefore(revertNode, ntitle.firstChild);
-		}
-	},
-
-	oldid: function() { // Add a [restore this revision] link on old revisions
+Twinkle.fluff.diff = function twinklefluffdiff() {
+	// Add a [restore this revision] link to the older revision
+	// Don't show if there's a single revision or weird diff (cur on latest)
+	if (mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId'))) {
 		var revertToRevision = document.createElement('div');
 		revertToRevision.setAttribute('id', 'tw-revert-to-orevision');
 		revertToRevision.style.fontWeight = 'bold';
@@ -164,13 +129,87 @@ Twinkle.fluff = {
 		var revertToRevisionLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
 		revertToRevisionLink.href = '#';
 		$(revertToRevisionLink).click(function() {
-			Twinkle.fluff.revertToRevision(mw.config.get('wgRevisionId').toString());
+			Twinkle.fluff.revertToRevision(mw.config.get('wgDiffOldId').toString());
 		});
 		revertToRevision.appendChild(revertToRevisionLink);
-		var otitle = document.getElementById('mw-revision-info').parentNode;
+
+		var otitle = document.getElementById('mw-diff-otitle1').parentNode;
 		otitle.insertBefore(revertToRevision, otitle.firstChild);
 	}
+
+	// Add either restore or rollback links to the newer revision
+	// Don't show if there's a single revision or weird diff (prev on first)
+	var ntitle = document.getElementById('mw-diff-ntitle1').parentNode;
+	if (document.getElementById('differences-nextlink')) {
+		// Not latest revision
+		var revertToRevisionN = document.createElement('div');
+		revertToRevisionN.setAttribute('id', 'tw-revert-to-nrevision');
+		revertToRevisionN.style.fontWeight = 'bold';
+
+		var revertToRevisionNLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
+		revertToRevisionNLink.href = '#';
+		$(revertToRevisionNLink).click(function() {
+			Twinkle.fluff.revertToRevision(mw.config.get('wgDiffNewId').toString());
+		});
+		revertToRevisionN.appendChild(revertToRevisionNLink);
+
+		ntitle.insertBefore(revertToRevisionN, ntitle.firstChild);
+	} else if (Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 && mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId') || document.getElementById('differences-prevlink'))) {
+		var vandal = $('#mw-diff-ntitle2').find('a').first().text();
+
+		var revertNode = document.createElement('div');
+		revertNode.setAttribute('id', 'tw-revert');
+
+		var agfNode = document.createElement('strong');
+		var vandNode = document.createElement('strong');
+		var normNode = document.createElement('strong');
+
+		var agfLink = Twinkle.fluff.buildLink('DarkOliveGreen', 'rollback (AGF)');
+		var vandLink = Twinkle.fluff.buildLink('Red', 'rollback (VANDAL)');
+		var normLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
+
+		agfLink.href = '#';
+		vandLink.href = '#';
+		normLink.href = '#';
+		$(agfLink).click(function() {
+			Twinkle.fluff.revert('agf', vandal);
+		});
+		$(vandLink).click(function() {
+			Twinkle.fluff.revert('vand', vandal);
+		});
+		$(normLink).click(function() {
+			Twinkle.fluff.revert('norm', vandal);
+		});
+
+		agfNode.appendChild(agfLink);
+		vandNode.appendChild(vandLink);
+		normNode.appendChild(normLink);
+
+		revertNode.appendChild(agfNode);
+		revertNode.appendChild(document.createTextNode(' || '));
+		revertNode.appendChild(normNode);
+		revertNode.appendChild(document.createTextNode(' || '));
+		revertNode.appendChild(vandNode);
+
+		ntitle.insertBefore(revertNode, ntitle.firstChild);
+	}
 };
+
+Twinkle.fluff.oldid = function twinklefluffoldid() { // Add a [restore this revision] link on old revisions
+	var revertToRevision = document.createElement('div');
+	revertToRevision.setAttribute('id', 'tw-revert-to-orevision');
+	revertToRevision.style.fontWeight = 'bold';
+
+	var revertToRevisionLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
+	revertToRevisionLink.href = '#';
+	$(revertToRevisionLink).click(function() {
+		Twinkle.fluff.revertToRevision(mw.config.get('wgRevisionId').toString());
+	});
+	revertToRevision.appendChild(revertToRevisionLink);
+	var otitle = document.getElementById('mw-revision-info').parentNode;
+	otitle.insertBefore(revertToRevision, otitle.firstChild);
+};
+
 
 Twinkle.fluff.revert = function revertPage(type, vandal, autoRevert, rev, page) {
 	if (mw.util.isIPv6Address(vandal)) {
@@ -545,45 +584,6 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, userString) {
 	}
 
 	return result;
-};
-
-Twinkle.fluff.init = function twinklefluffinit() {
-	if (Twinkle.userAuthorized) {
-		// A list of usernames, usually only bots, that vandalism revert is jumped over; that is,
-		// if vandalism revert was chosen on such username, then its target is on the revision before.
-		// This is for handling quick bots that makes edits seconds after the original edit is made.
-		// This only affects vandalism rollback; for good faith rollback, it will stop, indicating a bot
-		// has no faith, and for normal rollback, it will rollback that edit.
-		Twinkle.fluff.whiteList = [
-			'AnomieBOT',
-			'SineBot'
-		];
-
-		if (Morebits.queryString.exists('twinklerevert')) {
-			// Return if the user can't edit the page in question
-			if (!mw.config.get('wgIsProbablyEditable')) {
-				alert("Unable to edit the page, it's probably protected.");
-			} else {
-				Twinkle.fluff.auto();
-			}
-		} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
-			Twinkle.fluff.contributions();
-		} else if (mw.config.get('wgIsProbablyEditable')) {
-			// Only proceed if the user can actually edit the page
-			// in question (ignored for contributions, see #632).
-			// wgIsProbablyEditable should take care of
-			// namespace/contentModel restrictions as well as
-			// explicit protections; it won't take care of
-			// cascading or TitleBlacklist restrictions
-			if (mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId')) { // wgDiffOldId included for clarity in if else loop [[phab:T214985]]
-				mw.hook('wikipage.diff').add(function () { // Reload alongside the revision slider
-					Twinkle.fluff.diff();
-				});
-			} else if (mw.config.get('wgAction') === 'view' && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId')) {
-				Twinkle.fluff.oldid();
-			}
-		}
-	}
 };
 })(jQuery);
 
