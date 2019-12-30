@@ -119,6 +119,9 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 						// enable/disable multiple
 						cForm.multiple.disabled = !cChecked;
 						cForm.multiple.checked = false;
+						// enable/disable requesting creation protection
+						cForm.salting.disabled = !cChecked;
+						cForm.salting.checked = false;
 
 						Twinkle.speedy.callback.modeChanged(cForm);
 
@@ -243,6 +246,21 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
 				event: function(event) {
 					Twinkle.speedy.callback.modeChanged(event.target.form);
+					event.stopPropagation();
+				}
+			}
+		]
+	});
+	tagOptions.append({
+		type: 'checkbox',
+		list: [
+			{
+				label: 'Request creation protection',
+				value: 'salting',
+				name: 'salting',
+				tooltip: 'When selected, tagging the page for deletion will be accompanied by a request for the deleting administrator to apply creation protection.',
+				disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
+				event: function(event) {
 					event.stopPropagation();
 				}
 			}
@@ -1481,6 +1499,10 @@ Twinkle.speedy.callbacks = {
 				text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
 			}
 
+			if (params.requestsalt) {
+				code = '{{salt}}\n' + code;
+			}
+
 			// Generate edit summary for edit
 			var editsummary;
 			if (params.normalizeds.length > 1) {
@@ -2087,6 +2109,11 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		});
 	}
 
+	var requestsalt = false;
+	if (form.salting.checked) {
+		requestsalt = true;
+	}
+
 	var csdlog = false;
 	if (Twinkle.getPref('logSpeedyNominations')) {
 		$.each(normalizeds, function(index, norm) {
@@ -2104,6 +2131,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		usertalk: notifyuser,
 		welcomeuser: welcomeuser,
 		lognomination: csdlog,
+		requestsalt: requestsalt,
 		templateParams: Twinkle.speedy.getParameters(form, values)
 	};
 	if (!params.templateParams) {
