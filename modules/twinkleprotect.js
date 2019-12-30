@@ -1554,7 +1554,7 @@ Twinkle.protect.callbacks = {
 			return;
 		}
 		statusElement.status('Adding new request...');
-		rppPage.setEditSummary('Requesting ' + params.typename + (params.typename === 'pending changes' ? ' on [[:' : ' of [[:') +
+		rppPage.setEditSummary('/* ' + Morebits.pageNameNorm + ' */ Requesting ' + params.typename + (params.typename === 'pending changes' ? ' on [[:' : ' of [[:') +
 			Morebits.pageNameNorm + ']].' + Twinkle.getPref('summaryAd'));
 		rppPage.setPageText(text);
 		rppPage.setCreateOption('recreate');
