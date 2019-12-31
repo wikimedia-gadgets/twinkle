@@ -255,7 +255,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 		type: 'checkbox',
 		list: [
 			{
-				label: 'Request creation protection',
+				label: 'Tag for creation protection (salting) as well',
 				value: 'salting',
 				name: 'salting',
 				tooltip: 'When selected, tagging the page for deletion will be accompanied by a request for the deleting administrator to apply creation protection.',
@@ -1500,7 +1500,7 @@ Twinkle.speedy.callbacks = {
 			}
 
 			if (params.requestsalt) {
-				code = '{{salt}}\n' + code;
+				code = code + '\n{{salt}}';
 			}
 
 			// Generate edit summary for edit
