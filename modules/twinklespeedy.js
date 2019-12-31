@@ -258,7 +258,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				label: 'Tag for creation protection (salting) as well',
 				value: 'salting',
 				name: 'salting',
-				tooltip: 'When selected, tagging the page for deletion will be accompanied by a request for the deleting administrator to apply creation protection.',
+				tooltip: 'When selected, the speedy deletion tag will be accompanied by a {{salt}} tag requesting that the deleting administrator apply creation protection. Only select if this page has been repeatedly recreated.',
 				disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
 				event: function(event) {
 					event.stopPropagation();
@@ -2109,10 +2109,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		});
 	}
 
-	var requestsalt = false;
-	if (form.salting.checked) {
-		requestsalt = true;
-	}
+	var requestsalt = form.salting.checked || false;
 
 	var csdlog = false;
 	if (Twinkle.getPref('logSpeedyNominations')) {
