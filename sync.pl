@@ -244,10 +244,24 @@ sub buildEditSummary {
     chomp $editSummary;
   }
   $editSummary =~ s/[\.; ]{1,2}$//; # Tidy
-  # Be helpful
-  my $editBeg = 'Repo at ';
-  $editBeg .= $repo->run('rev-parse' => '--short', 'HEAD');
-  $editBeg .= ': ';
+
+  # 'Repo at' will add 17 characters and MW truncates at 497 to allow for '...'
+  my $maxLength = 480;
+  while (length $editSummary > $maxLength) {
+	  my $length = length $editSummary;
+	  my $over = $length - $maxLength;
+
+	  my $message = "The current edit summary is too long by $over character";
+	  $message .= $over == 1 ? q{} : 's';
+	  $message .= "and will therefore be truncated.\n";
+	  print $message;
+	  print "\t$editSummary\n";
+	  print "Please provide a shorter summary (under $maxLength characters, the latest commit ref will be added automatically):\n";
+	  $editSummary = <STDIN>;
+	  chomp $editSummary;
+  }
+
+  my $editBeg = 'Repo at '. $repo->run('rev-parse' => '--short', 'HEAD') . ': ';
   return $editBeg.$editSummary;
 }
 
