@@ -56,6 +56,8 @@ Morebits.userIsInGroup = function (group) {
  * JavaScript translation of the MediaWiki core function IP::sanitizeIP() in
  * includes/utils/IP.php.
  * Converts an IPv6 address to the canonical form stored and used by MediaWiki.
+ * @param {string} address - The IPv6 address
+ * @returns {string}
  */
 Morebits.sanitizeIPv6 = function (address) {
 	address = address.trim();
@@ -152,8 +154,8 @@ Morebits.sanitizeIPv6 = function (address) {
 
 /**
  * @constructor
- * @param {event} event   Function to execute when form is submitted
- * @param {*} eventType
+ * @param {event} event - Function to execute when form is submitted
+ * @param {string} [eventType=submit] - Type of the event (default: submit)
  */
 Morebits.quickForm = function QuickForm(event, eventType) {
 	this.root = new Morebits.quickForm.element({ type: 'form', event: event, eventType: eventType });
@@ -171,7 +173,9 @@ Morebits.quickForm.prototype.render = function QuickFormRender() {
 
 /**
  * Append element to the form
- * @param {Morebits.quickForm.element} data
+ * @param {(Object|Morebits.quickForm.element)} data - a quickform element, or the object with which
+ * a quickform element is constructed.
+ * @returns {Morebits.quickForm.element} - same as what is passed to the function
  */
 Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
 	return this.root.append(data);
@@ -179,7 +183,8 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
 
 /**
  * @constructor
- * @param {Object}
+ * @param {Object} data - Object representing the quickform element. See class documentation
+ * comment for available types and attributes for each.
  */
 Morebits.quickForm.element = function QuickFormElement(data) {
 	this.data = data;
@@ -681,8 +686,10 @@ Morebits.quickForm.element.autoNWSW = function() {
 };
 
 /**
- * @param {HTMLElement} node
- * @param {Object} data
+ * Create a jquery.tipsy-based tooltip.
+ * @requires jquery.tipsy
+ * @param {HTMLElement} node - the HTML element beside which a tooltip is to be generated
+ * @param {Object} data - tooltip-related configuration data
  */
 Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTooltip(node, data) {
 	$('<span/>', {
@@ -704,7 +711,9 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 
 /**
  * Returns all form elements with a given field name or ID
- * @returns {HTMLElement[]}
+ * @param {HTMLFormElement} form
+ * @param {string} fieldName - the name or id of the fields
+ * @returns {HTMLElement[]} - array of matching form elements
  */
 Morebits.quickForm.getElements = function QuickFormGetElements(form, fieldName) {
 	var $form = $(form);
@@ -722,8 +731,8 @@ Morebits.quickForm.getElements = function QuickFormGetElements(form, fieldName) 
 /**
  * Searches the array of elements for a checkbox or radio button with a certain
  * `value` attribute, and returns the first such element. Returns null if not found.
- * @param {HTMLInputElement[]} elementArray
- * @param {string} value
+ * @param {HTMLInputElement[]} elementArray - array of checkbox or radio elements
+ * @param {string} value - value to search for
  * @returns {HTMLInputElement}
  */
 Morebits.quickForm.getCheckboxOrRadio = function QuickFormGetCheckboxOrRadio(elementArray, value) {
@@ -962,9 +971,10 @@ HTMLFormElement.prototype.getUnchecked = function(name, type) {
  *
  * Escapes a string to be used in a RegExp
  * @param {string} text - string to be escaped
- * @param {boolean} [space_fix] - Set this true to replace spaces and underscore with `[ _]` as they are often equivalent
+ * @param {boolean} [space_fix=false] - Set true to replace spaces and underscores with `[ _]` as they are
+ * often equivalent
+ * @returns {string} - the escaped text
  */
-
 RegExp.escape = function(text, space_fix) {
 	text = mw.util.escapeRegExp(text);
 
@@ -1058,9 +1068,13 @@ Morebits.string = {
 	},
 
 	/**
-	 * Replacement for `String.prototype.replace()` when the second parameter
-	 * (the replacement string) is arbitrary, such as a username or freeform user input,
-	 * and may contain dollar signs
+	 * Like `String.prototype.replace()`, but escapes any dollar signs in the replacement string.
+	 * Useful when the the replacement string is arbitrary, such as a username or freeform user input,
+	 * and could contain dollar signs.
+	 * @param {string} string - text in which to replace
+	 * @param {(string|RegExp)} pattern
+	 * @param {string} replacement
+	 * @returns {string}
 	 */
 	safeReplace: function morebitsStringSafeReplace(string, pattern, replacement) {
 		return string.replace(pattern, replacement.replace(/\$/g, '$$$$'));
@@ -1113,11 +1127,10 @@ Morebits.array = {
 
 
 	/**
-	 * breaks up `arr` into smaller arrays of length `size`, and
-	 * @returns an array of these "chunked" arrays
-	 * @param {array} arr
-	 * @param {number} size
-	 * @returns {Array}
+	 * Break up an array into smaller arrays.
+	 * @param {Array} arr
+	 * @param {number} size - Size of each chunk (except the last, which could be different)
+	 * @returns {Array} an array of these smaller arrays
 	 */
 	chunk: function(arr, size) {
 		if (!Array.isArray(arr)) {
@@ -1152,6 +1165,7 @@ Morebits.pageNameNorm = mw.config.get('wgPageName').replace(/_/g, ' ');
  * *************** Morebits.pageNameRegex *****************
  * For a page name 'Foo bar', returns the string '[Ff]oo bar'
  * @param {string} pageName - page name without namespace
+ * @returns {string}
  */
 Morebits.pageNameRegex = function(pageName) {
 	return '[' + pageName[0].toUpperCase() + pageName[0].toLowerCase() + ']' + pageName.slice(1);
@@ -1198,9 +1212,7 @@ Morebits.unbinder.prototype = {
 		this.content = this.content.replace(re, Morebits.unbinder.getCallback(this));
 	},
 
-	/**
-	 * @returns {string} The output
-	 */
+	/** @returns {string} The output */
 	rebind: function UnbinderRebind() {
 		var content = this.content;
 		content.self = this;
@@ -1256,6 +1268,7 @@ Morebits.wiki = {};
 /**
  * Determines whether the current page is a redirect or soft redirect
  * (fails to detect soft redirects on edit, history, etc. pages)
+ * @returns {boolean}
  */
 Morebits.wiki.isPageRedirect = function wikipediaIsPageRedirect() {
 	return !!(mw.config.get('wgIsRedirect') || document.getElementById('softredirect'));
@@ -1910,39 +1923,29 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 	};
 
-	/**
-	 * @returns {string} string containing the name of the loaded page, including the namespace
-	 */
+	/** @returns {string} string containing the name of the loaded page, including the namespace */
 	this.getPageName = function() {
 		return ctx.pageName;
 	};
 
-	/**
-	 * @returns {string} string containing the text of the page after a successful load()
-	 */
+	/** @returns {string} string containing the text of the page after a successful load() */
 	this.getPageText = function() {
 		return ctx.pageText;
 	};
 
-	/**
-	 * `pageText` - string containing the updated page text that will be saved when save() is called
-	 */
+	/** @param {string} pageText - updated page text that will be saved when save() is called */
 	this.setPageText = function(pageText) {
 		ctx.editMode = 'all';
 		ctx.pageText = pageText;
 	};
 
-	/**
-	 * `appendText` - string containing the text that will be appended to the page when append() is called
-	 */
+	/** @param {string} appendText - text that will be appended to the page when append() is called */
 	this.setAppendText = function(appendText) {
 		ctx.editMode = 'append';
 		ctx.appendText = appendText;
 	};
 
-	/**
-	 * `prependText` - string containing the text that will be prepended to the page when prepend() is called
-	 */
+	/** @param {string} prependText - text that will be prepended to the page when prepend() is called */
 	this.setPrependText = function(prependText) {
 		ctx.editMode = 'prepend';
 		ctx.prependText = prependText;
@@ -1951,72 +1954,63 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 
 	// Edit-related setter methods:
-	/**
-	 * `summary` - string containing the text of the edit summary that will be used when save() is called
-	 */
+	/** @param {string} summary - text of the edit summary that will be used when save() is called */
 	this.setEditSummary = function(summary) {
 		ctx.editSummary = summary;
 	};
 
 	/**
-	 *    `createOption` is a string value:
-	 *       'recreate'   - create the page if it does not exist, or edit it if it exists
-	 *       'createonly' - create the page if it does not exist, but return an error if it
-	 *                      already exists
-	 *       'nocreate'   - don't create the page, only edit it if it already exists
-	 *       null         - create the page if it does not exist, unless it was deleted in the moment
-	 *                      between retrieving the edit token and saving the edit (default)
+	 * @param {string} createOption - can take the following four values:
+	 *     `recreate`   - create the page if it does not exist, or edit it if it exists.
+	 *     `createonly` - create the page if it does not exist, but return an error if it
+	 *                    already exists.
+	 *     `nocreate`   - don't create the page, only edit it if it already exists.
+	 *     null         - create the page if it does not exist, unless it was deleted in the moment
+	 *                    between retrieving the edit token and saving the edit (default)
 	 *
 	 */
 	this.setCreateOption = function(createOption) {
 		ctx.createOption = createOption;
 	};
 
-	/**
-	 * `minorEdit` - boolean value:
-	 * True  - When save is called, the resulting edit will be marked as "minor".
-	 * False - When save is called, the resulting edit will not be marked as "minor". (default)
-	 */
+	/** @param {boolean} minorEdit - set true to mark the edit as a minor edit. */
 	this.setMinorEdit = function(minorEdit) {
 		ctx.minorEdit = minorEdit;
 	};
 
-	/**
-	 * `botEdit` is a boolean value:
-	 *  True  - When save is called, the resulting edit will be marked as "bot".
-	 *  False - When save is called, the resulting edit will not be marked as "bot". (default)
-	 */
+	/** @param {boolean} botEdit - set true to mark the edit as a bot edit */
 	this.setBotEdit = function(botEdit) {
 		ctx.botEdit = botEdit;
 	};
 
 	/**
-	 * `pageSection` - integer specifying the section number to load or save.
-	 * The default is `null`, which means that the entire page will be retrieved.
+	 * @param {number} pageSection - integer specifying the section number to load or save.
+	 * If specified as `null`, the entire page will be retrieved.
 	 */
 	this.setPageSection = function(pageSection) {
 		ctx.pageSection = pageSection;
 	};
 
 	/**
-	 * `maxRetries` - number of retries for save errors involving an edit conflict or loss of edit token.Default: 2
+	 * @param {number} maxConflictRetries - number of retries for save errors involving an edit conflict or
+	 * loss of edit token. Default: 2
 	 */
-	this.setMaxConflictRetries = function(maxRetries) {
-		ctx.maxConflictRetries = maxRetries;
+	this.setMaxConflictRetries = function(maxConflictRetries) {
+		ctx.maxConflictRetries = maxConflictRetries;
 	};
 
 	/**
-	 * `maxRetries` - number of retries for save errors not involving an edit conflict or loss of edit token
-	 * Default: 2
+	 * @param {number} maxRetries - number of retries for save errors not involving an edit conflict or
+	 * loss of edit token. Default: 2
 	 */
 	this.setMaxRetries = function(maxRetries) {
 		ctx.maxRetries = maxRetries;
 	};
 
 	/**
-	 *  `watchlistOption` is a boolean value:
-	 *       True  - page will be added to the user's watchlist when save() is called
-	 *       False - watchlist status of the page will not be changed (default)
+	 * @param {boolean} watchlistOption
+	 *     True  - page will be added to the user's watchlist when save() is called
+	 *     False - watchlist status of the page will not be changed (default)
 	 */
 	this.setWatchlist = function(watchlistOption) {
 		if (watchlistOption) {
@@ -2027,10 +2021,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
-	 *    `watchlistOption` is a boolean value:
-	 *       True  - page watchlist status will be set based on the user's
-	 *               preference settings when save() is called
-	 *       False - watchlist status of the page will not be changed (default)
+	 * @param {boolean} watchlistOption
+	 *     True  - page watchlist status will be set based on the user's
+	 *             preference settings when save() is called.
+	 *     False - watchlist status of the page will not be changed (default)
 	 *
 	 *    Watchlist notes:
 	 *       1. The MediaWiki API value of 'unwatch', which explicitly removes the page from the
@@ -2051,11 +2045,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
-	 *    `followRedirect` is a boolean value:
-	 *       True  - a maximum of one redirect will be followed.
-	 *               In the event of a redirect, a message is displayed to the user and
-	 *               the redirect target can be retrieved with getPageName().
-	 *       False - the requested pageName will be used without regard to any redirect. (default)
+	 * @param {boolean} followRedirect
+	 *     true  - a maximum of one redirect will be followed.
+	 *             In the event of a redirect, a message is displayed to the user and
+	 *             the redirect target can be retrieved with getPageName().
+	 *     false - the requested pageName will be used without regard to any redirect (default).
 	 */
 	this.setFollowRedirect = function(followRedirect) {
 		if (ctx.pageLoaded) {
@@ -2081,18 +2075,22 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	// Move-related setter functions
+	/** @param {string} destination */
 	this.setMoveDestination = function(destination) {
 		ctx.moveDestination = destination;
 	};
 
+	/** @param {boolean} flag */
 	this.setMoveTalkPage = function(flag) {
 		ctx.moveTalkPage = !!flag;
 	};
 
+	/** @param {boolean} flag */
 	this.setMoveSubpages = function(flag) {
 		ctx.moveSubpages = !!flag;
 	};
 
+	/** @param {boolean} flag */
 	this.setMoveSuppressRedirect = function(flag) {
 		ctx.moveSuppressRedirect = !!flag;
 	};
@@ -2123,13 +2121,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.revertOldID = oldID;
 	};
 
-	/**
-	 *  @returns {string} string containing the current revision ID of the page
-	 */
+	/** @returns {string} string containing the current revision ID of the page */
 	this.getCurrentID = function() {
 		return ctx.revertCurID;
 	};
 
+	/** @returns {string} last editor of the page */
 	this.getRevisionUser = function() {
 		return ctx.revertUser;
 	};
@@ -2441,9 +2438,13 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.protectApi.post();
 	};
 
-	// apply FlaggedRevs protection-style settings
-	// only works where $wgFlaggedRevsProtection = true (i.e. where FlaggedRevs
-	// settings appear on the wiki's "protect" tab)
+	/**
+	 * Apply FlaggedRevs protection-style settings
+	 * only works where $wgFlaggedRevsProtection = true (i.e. where FlaggedRevs
+	 * settings appear on the wiki's "protect" tab)
+	 * @param {function} [onSuccess]
+	 * @param {function} [onFailure]
+	 */
 	this.stabilize = function(onSuccess, onFailure) {
 		ctx.onStabilizeSuccess = onSuccess;
 		ctx.onStabilizeFailure = onFailure || emptyFunction;
@@ -3207,9 +3208,7 @@ Morebits.wiki.preview = function(previewbox) {
 		$(previewbox).find('a').attr('target', '_blank'); // this makes links open in new tab
 	};
 
-	/**
-	 * Hides the preview box and clears it.
-	 */
+	/** Hides the preview box and clears it. */
 	this.closePreview = function() {
 		$(previewbox).empty().hide();
 	};
@@ -3433,6 +3432,7 @@ Morebits.wikitext.page.prototype = {
 		}
 	},
 
+	/** @returns {string} */
 	getText: function() {
 		return this.text;
 	}
@@ -3584,15 +3584,15 @@ Morebits.queryString.prototype.create = Morebits.queryString.create;
  */
 
 /**
-  * @constructor
-  * Morebits.status.init() must be called before any status object is created, otherwise
-  * those statuses won't be visible.
-  * @param {String} text - Text before the the colon `:`
-  * @param {String} stat - Text after the colon `:`
-  * @param {String} [type='status'] - This parameter determines the font color of the status line,
-  * this can be 'status' (blue), 'info' (green), 'warn' (red), or 'error' (bold red)
-  * The default is 'status'
-  */
+ * @constructor
+ * Morebits.status.init() must be called before any status object is created, otherwise
+ * those statuses won't be visible.
+ * @param {String} text - Text before the the colon `:`
+ * @param {String} stat - Text after the colon `:`
+ * @param {String} [type=status] - This parameter determines the font color of the status line,
+ * this can be 'status' (blue), 'info' (green), 'warn' (red), or 'error' (bold red)
+ * The default is 'status'
+ */
 
 Morebits.status = function Status(text, stat, type) {
 	this.textRaw = text;
@@ -3621,6 +3621,7 @@ Morebits.status.init = function(root) {
 
 Morebits.status.root = null;
 
+/** @param {Function} handler - function to execute on error */
 Morebits.status.onError = function(handler) {
 	if (typeof handler === 'function') {
 		Morebits.status.errorEvent = handler;
@@ -3638,9 +3639,7 @@ Morebits.status.prototype = {
 	node: null,
 	linked: false,
 
-	/**
-	 * Add the status element node to the DOM
-	 */
+	/** Add the status element node to the DOM */
 	link: function() {
 		if (!this.linked && Morebits.status.root) {
 			Morebits.status.root.appendChild(this.node);
@@ -3648,9 +3647,7 @@ Morebits.status.prototype = {
 		}
 	},
 
-	/**
-	 * Remove the status element node from the DOM
-	 */
+	/** Remove the status element node from the DOM */
 	unlink: function() {
 		if (this.linked) {
 			Morebits.status.root.removeChild(this.node);
@@ -3660,6 +3657,8 @@ Morebits.status.prototype = {
 
 	/**
 	 * Create a document fragment with the status text
+	 * @param {(string|Element|Array)} obj
+	 * @returns {DocumentFragment}
 	 */
 	codify: function(obj) {
 		if (!Array.isArray(obj)) {
@@ -3703,9 +3702,7 @@ Morebits.status.prototype = {
 		this.render();
 	},
 
-	/**
-	 * Produce the html for first part of the status message
-	 */
+	/** Produce the html for first part of the status message */
 	generate: function() {
 		this.node = document.createElement('div');
 		this.node.appendChild(document.createElement('span')).appendChild(this.text);
@@ -3714,9 +3711,7 @@ Morebits.status.prototype = {
 		this.target.appendChild(document.createTextNode('')); // dummy node
 	},
 
-	/**
-	 * Complete the html, for the second part of the status message
-	 */
+	/** Complete the html, for the second part of the status message */
 	render: function() {
 		this.node.className = 'tw_status_' + this.type;
 		while (this.target.hasChildNodes()) {
@@ -3788,8 +3783,11 @@ Morebits.status.printUserText = function(comments, message) {
 /**
  * **************** Morebits.htmlNode() ****************
  * Simple helper function to create a simple node
+ * @param {string} type - type of HTML element
+ * @param {string} text - text content
+ * @param {string} [color] - font color
+ * @returns {HTMLElement}
  */
-
 Morebits.htmlNode = function (type, content, color) {
 	var node = document.createElement(type);
 	if (color) {
@@ -3807,7 +3805,6 @@ Morebits.htmlNode = function (type, content, color) {
  * wikibits version (window.addCheckboxClickHandlers) has some restrictions, and
  * doesn't work with checkboxes inside a sortable table, so let's build our own.
  */
-
 Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 	var lastCheckbox = null;
 
