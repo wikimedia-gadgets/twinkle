@@ -86,10 +86,9 @@ Twinkle.talkback.callback = function() {
 	// Check whether the user has opted out from talkback
 	var query = {
 		action: 'query',
-		prop: 'extlinks',
+		prop: 'templates',
 		titles: 'User talk:' + mw.config.get('wgRelevantUserName'),
-		elquery: 'userjs.invalid/noTalkback',
-		ellimit: '1'
+		tltemplates: 'Template:No talkback'
 	};
 	var wpapi = new Morebits.wiki.api('Fetching talkback opt-out status', query, Twinkle.talkback.callback.optoutStatus);
 	wpapi.post();
@@ -99,23 +98,16 @@ Twinkle.talkback.optout = null;
 
 Twinkle.talkback.callback.optoutStatus = function(apiobj) {
 	var xml = apiobj.getXML();
-	var $el = $(xml).find('el');
 
-	if ($el.length) {
-		Twinkle.talkback.optout = mw.config.get('wgRelevantUserName') + ' prefers not to receive talkbacks';
-		var url = $el.text();
-		if (url.indexOf('reason=') > -1) {
-			Twinkle.talkback.optout += ': ' + decodeURIComponent(url.substring(url.indexOf('reason=') + 7));
-		} else {
-			Twinkle.talkback.optout += '.';
-		}
+	if ($(xml).find('tl').length) {
+		Twinkle.talkback.optout = mw.config.get('wgRelevantUserName') + ' prefers not to receive talkbacks.';
 	} else {
 		Twinkle.talkback.optout = false;
 	}
 
 	var $status = $('#twinkle-talkback-optout-message');
-	if ($status.length && Twinkle.talkback.optout) {
-		$status.text(Twinkle.talkback.optout);
+	if (Twinkle.talkback.optout && $status.length) {
+		$status.append(Twinkle.talkback.optout);
 	}
 };
 
@@ -283,7 +275,7 @@ Twinkle.talkback.changeTarget = function(e) {
 	}
 
 	if (Twinkle.talkback.optout) {
-		$('#twinkle-talkback-optout-message').text(Twinkle.talkback.optout);
+		$('#twinkle-talkback-optout-message').append(Twinkle.talkback.optout);
 	}
 };
 
