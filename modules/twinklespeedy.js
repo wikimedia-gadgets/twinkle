@@ -239,13 +239,12 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 		type: 'checkbox',
 		list: [
 			{
-				label: 'Tag with multiple criteria',
-				value: 'multiple',
-				name: 'multiple',
-				tooltip: 'When selected, you can select several criteria that apply to the page. For example, G11 and A7 are a common combination for articles.',
+				label: 'Tag for creation protection (salting) as well',
+				value: 'salting',
+				name: 'salting',
+				tooltip: 'When selected, the speedy deletion tag will be accompanied by a {{salt}} tag requesting that the deleting administrator apply creation protection. Only select if this page has been repeatedly recreated.',
 				disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
 				event: function(event) {
-					Twinkle.speedy.callback.modeChanged(event.target.form);
 					event.stopPropagation();
 				}
 			}
@@ -255,12 +254,13 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 		type: 'checkbox',
 		list: [
 			{
-				label: 'Tag for creation protection (salting) as well',
-				value: 'salting',
-				name: 'salting',
-				tooltip: 'When selected, the speedy deletion tag will be accompanied by a {{salt}} tag requesting that the deleting administrator apply creation protection. Only select if this page has been repeatedly recreated.',
+				label: 'Tag with multiple criteria',
+				value: 'multiple',
+				name: 'multiple',
+				tooltip: 'When selected, you can select several criteria that apply to the page. For example, G11 and A7 are a common combination for articles.',
 				disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
 				event: function(event) {
+					Twinkle.speedy.callback.modeChanged(event.target.form);
 					event.stopPropagation();
 				}
 			}
@@ -2109,8 +2109,6 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		});
 	}
 
-	var requestsalt = form.salting.checked || false;
-
 	var csdlog = false;
 	if (Twinkle.getPref('logSpeedyNominations')) {
 		$.each(normalizeds, function(index, norm) {
@@ -2128,7 +2126,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		usertalk: notifyuser,
 		welcomeuser: welcomeuser,
 		lognomination: csdlog,
-		requestsalt: requestsalt,
+		requestsalt: form.salting.checked,
 		templateParams: Twinkle.speedy.getParameters(form, values)
 	};
 	if (!params.templateParams) {
