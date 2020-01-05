@@ -649,6 +649,15 @@ Twinkle.config.sections = [
 				}
 			},
 
+			// TwinkleConfig.combinedSingletMenus (boolean)
+			// if true, show one menu with both single-issue notices and warnings instead of two separately
+			{
+				name: 'combinedSingletMenus',
+				label: 'Replace the two separate single-issue menus into one combined menu',
+				helptip: 'Selecting either single-issue notices or single-issue warnings as your default will make this your default if enabled.',
+				type: 'boolean'
+			},
+
 			// TwinkleConfig.showSharedIPNotice may take arguments:
 			// true: to show shared ip notice if an IP address
 			// false: to not print the notice
