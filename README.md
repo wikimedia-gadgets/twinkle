@@ -8,7 +8,7 @@ See [Wikipedia:Twinkle][] on the English Wikipedia for more information.
 
 ## How to file a bug report or feature request
 
-If you're unsure whether you are experiencing a Twinkle-based bug, you should first try asking at [Wikipedia talk:Twinkle][], where other editors may assist you.  Bugs may be filed either here or at [Wikipedia talk:Twinkle][].  For simple feature requests or changes (e.g., a template was deleted or renamed) feel free to open an issue or pull request here, but for more significant changes, consider discussing the idea on [Wikipedia talk:Twinkle][] and any relevant pages first to ensure there is consensus for the change and to get broader community input.
+If you're unsure whether you are experiencing a Twinkle-based bug, you should first try asking at [Wikipedia talk:Twinkle][], where other editors may assist you.  Bugs may be filed either here or at [Wikipedia talk:Twinkle][].  For simple feature requests or changes (e.g., a template was deleted or renamed) feel free to open an issue or pull request here, but for more significant changes, consider discussing the idea on [Wikipedia talk:Twinkle][] and any relevant pages first to ensure there is consensus for the change and to get broader community input.  If you believe you have found a security issue, follow the guidelines in [SECURITY.md](./SECURITY.md).
 
 If you'd like to start contributing, awesome!  Check out [CONTRIBUTING.md](CONTRIBUTING.md) to get started!
 

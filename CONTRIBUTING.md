@@ -19,6 +19,8 @@ A good bug report will include:
 - What you think *should* have happened.
 - Anything you can find in your [browser's console window][jserrors].
 
+If you believe you have found a security issue, follow the guidelines in [SECURITY.md](./SECURITY.md).
+
 ## Contributing a pull request
 ### Getting started
 
