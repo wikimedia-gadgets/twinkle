@@ -244,8 +244,7 @@ Twinkle.prod.callbacks = {
 
 		// Alert if article is at least three days old, not in Category:Living people, and BLPPROD is selected
 		if (params.blp) {
-			var now = new Date().toISOString();
-			var timeDiff = (new Date(now) - new Date(params.creation)) / 1000 / 60 / 60 / 24; // days from milliseconds
+			var timeDiff = (new Date(pageobj.getLoadTime()).getTime() - new Date(params.creation).getTime()) / 1000 / 60 / 60 / 24; // days from milliseconds
 			var blpcheck_re = /\[\[Category:Living people\]\]/i;
 			if (!blpcheck_re.test(text) && timeDiff > 3) {
 				if (!confirm('Please note that the article is not in Category:Living people and hence may be ineligible for BLPPROD. Are you sure you want to continue? \n\nYou may wish to add the category if you proceed, unless the article is about a recently deceased person.')) {
@@ -374,7 +373,7 @@ Twinkle.prod.callbacks = {
 		}
 
 		// create monthly header if it doesn't exist already
-		var date = new Date();
+		var date = new Date(pageobj.getLoadTime());
 		var headerRe = new RegExp('^==+\\s*' + date.getUTCMonthName() + '\\s+' + date.getUTCFullYear() + '\\s*==+', 'm');
 		if (!headerRe.exec(text)) {
 			text += '\n\n=== ' + date.getUTCMonthName() + ' ' + date.getUTCFullYear() + ' ===';
