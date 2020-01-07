@@ -87,7 +87,7 @@ Twinkle.talkback.callback = function() {
 	var query = {
 		action: 'query',
 		prop: 'extlinks',
-		titles: mw.config.get('wgPageName'),
+		titles: 'User talk:' + mw.config.get('wgRelevantUserName'),
 		elquery: 'userjs.invalid/noTalkback',
 		ellimit: '1'
 	};
@@ -105,7 +105,7 @@ Twinkle.talkback.callback.optoutStatus = function(apiobj) {
 		Twinkle.talkback.optout = mw.config.get('wgRelevantUserName') + ' prefers not to receive talkbacks';
 		var url = $el.text();
 		if (url.indexOf('reason=') > -1) {
-			Twinkle.talkback.optout += ': ' + decodeURIComponent(url.substring(url.indexOf('reason=') + 7)) + '.';
+			Twinkle.talkback.optout += ': ' + decodeURIComponent(url.substring(url.indexOf('reason=') + 7));
 		} else {
 			Twinkle.talkback.optout += '.';
 		}
@@ -115,7 +115,7 @@ Twinkle.talkback.callback.optoutStatus = function(apiobj) {
 
 	var $status = $('#twinkle-talkback-optout-message');
 	if ($status.length) {
-		$status.append(Twinkle.talkback.optout);
+		$status.text(Twinkle.talkback.optout);
 	}
 };
 
@@ -283,7 +283,7 @@ Twinkle.talkback.changeTarget = function(e) {
 	}
 
 	if (Twinkle.talkback.optout) {
-		$('#twinkle-talkback-optout-message').append(Twinkle.talkback.optout);
+		$('#twinkle-talkback-optout-message').text(Twinkle.talkback.optout);
 	}
 };
 
