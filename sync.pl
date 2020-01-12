@@ -267,21 +267,14 @@ sub buildEditSummary {
 
 # Edit the page
 sub editPage {
-  my ($pTitle, $nText, $pSummary) = @_;
-  my $ref = $mw->get_page({title => $pTitle});
-  if (defined $ref->{missing}) {
-    print colored ['red'], "$pTitle does not exist\n";
-    exit 1;
-  } else {
-    my $timestamp = $ref->{timestamp};
-    $mw->edit({
-	       action => 'edit',
-	       title => $pTitle,
-	       basetimestamp => $timestamp, # Avoid edit conflicts
-	       text => $nText,
-	       summary => $pSummary
-	      });
-  }
+  my ($pTitle, $nText, $pSummary, $pTimestamp) = @_;
+  $mw->edit({
+	     action => 'edit',
+	     title => $pTitle,
+	     basetimestamp => $pTimestamp, # Avoid edit conflicts
+	     text => $nText,
+	     summary => $pSummary
+	    });
   return $mw->{response};
 }
 
@@ -301,9 +294,9 @@ sub saltNPepa {
     print colored ['green'], " No changes needed, skipping\n";
     return 1;
   } else {
-    print "\n";;
+    print "\n";
     my $summary = buildEditSummary($page, $file, $wikiPage->{comment});
-    my $editReturn = editPage($page, $text, $summary);
+    my $editReturn = editPage($page, $text, $summary, $wikiPage->{timestamp});
     if ($editReturn->{_msg} eq 'OK') {
       print colored ['green'], "\t$file successfully pushed to $page\n";
     } else {
