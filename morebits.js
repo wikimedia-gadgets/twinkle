@@ -3344,10 +3344,10 @@ Morebits.wikitext.page.prototype = {
 		var first_char = link_target.substr(0, 1);
 		var link_re_string = '[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + RegExp.escape(link_target.substr(1), true);
 
-		// Files and Categories become links with a leading colon.
-		// e.g. [[:File:Test.png]]
+		// Files and Categories become links with a leading colon, e.g. [[:File:Test.png]]
+		// Otherwise, allow for an optional leading colon, e.g. [[:User:Test]]
 		var special_ns_re = /^(?:[Ff]ile|[Ii]mage|[Cc]ategory):/;
-		var colon = special_ns_re.test(link_target) ? ':' : '';
+		var colon = special_ns_re.test(link_target) ? ':' : ':?';
 
 		var link_simple_re = new RegExp('\\[\\[' + colon + '(' + link_re_string + ')\\]\\]', 'g');
 		var link_named_re = new RegExp('\\[\\[' + colon + link_re_string + '\\|(.+?)\\]\\]', 'g');
