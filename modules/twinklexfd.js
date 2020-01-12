@@ -1446,7 +1446,8 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var newtext = text.replace('---- and enter on a new line, directly below -->', '---- and enter on a new line, directly below -->\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params));
+			var hiddenComment = '---- and enter on a new line, directly below; do not add spare lines between entries, for accessibility reasons -->';
+			var newtext = text.replace(hiddenComment, hiddenComment + '\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params));
 			if (text === newtext) {
 				statelem.error('failed to find target spot for the entry');
 				return;
