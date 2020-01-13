@@ -16,7 +16,7 @@ var api = new mw.Api(), relevantUserName;
 Twinkle.block = function twinkleblock() {
 	// should show on Contributions or Block pages, anywhere there's a relevant user
 	if (Morebits.userIsInGroup('sysop') && mw.config.get('wgRelevantUserName')) {
-		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user');
+		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user sitewide');
 	}
 };
 
@@ -51,7 +51,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 			{
 				label: 'Block user',
 				value: 'block',
-				tooltip: 'Block the relevant user with given options.',
+				tooltip: 'Block the relevant user sitewide with given options.',
 				checked: true
 			},
 			{
@@ -378,7 +378,11 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 	if (Twinkle.block.currentBlockInfo) {
 		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
-		Morebits.status.warn(relevantUserName + ' is already blocked', 'Submit query to reblock with supplied options');
+		if (Twinkle.block.currentBlockInfo.partial === '') { // Partial block
+			Morebits.status.warn(relevantUserName + ' is partially blocked', 'Submit query to convert to a sitewide block with supplied options');
+		} else if (Twinkle.block.currentBlockInfo.partial === undefined) { // Sitewide block
+			Morebits.status.warn(relevantUserName + ' is already blocked', 'Submit query to reblock with supplied options');
+		}
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
 	} else if ($form.find('[name=actiontype][value=template]').is(':checked')) {
 		// make sure all the fields are correct based on defaults
