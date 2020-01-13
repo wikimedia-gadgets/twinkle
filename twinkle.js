@@ -406,6 +406,8 @@ $.ajax({
 				} else {
 					Twinkle.prefs = options;
 				}
+				// v2 established after unification of Twinkle/Friendly objects
+				Twinkle.prefs.optionsVersion = Twinkle.prefs.optionsVersion || 1;
 			}
 		} catch (e) {
 			mw.notify('Could not parse twinkleoptions.js');
