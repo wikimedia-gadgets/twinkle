@@ -2814,7 +2814,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				ctx.statusElement.error('Could not find name of page creator');
 				return;
 			}
-			
+
 		}
 		if (!ctx.timestamp) {
 			ctx.statusElement.error('Could not find timestamp of page creation');
