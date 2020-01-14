@@ -1555,11 +1555,9 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 	var text = pageobj.getPageText(),
 		params = pageobj.getCallbackParameters(),
 		messageData = params.messageData,
-		date = new Date(pageobj.getLoadTime());
+		date = new Morebits.date(pageobj.getLoadTime());
 
-	var dateHeaderRegex = new RegExp('^==+\\s*(?:' + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() +
-		')\\s+' + date.getUTCFullYear() + '\\s*==+', 'mg');
-	var dateHeaderRegexLast, dateHeaderRegexResult;
+	var dateHeaderRegex = date.monthHeaderRegex(), dateHeaderRegexLast, dateHeaderRegexResult;
 	while ((dateHeaderRegexLast = dateHeaderRegex.exec(text)) !== null) {
 		dateHeaderRegexResult = dateHeaderRegexLast;
 	}
@@ -1576,10 +1574,10 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 
 	if (Twinkle.getPref('blankTalkpageOnIndefBlock') && params.template !== 'uw-lblock' && params.indefinite) {
 		Morebits.status.info('Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date');
-		text = '== ' + date.getUTCMonthName() + ' ' + date.getUTCFullYear() + ' ==\n';
+		text = date.monthHeader() + '\n';
 	} else if (!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
 		Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
-		text += '== ' + date.getUTCMonthName() + ' ' + date.getUTCFullYear() + ' ==\n';
+		text += date.monthHeader() + '\n';
 	}
 
 	params.expiry = typeof params.template_expiry !== 'undefined' ? params.template_expiry : params.expiry;
