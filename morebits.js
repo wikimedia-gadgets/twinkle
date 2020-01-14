@@ -1332,25 +1332,223 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
 
 
 /**
- * **************** Date ****************
- * Helper functions to get the month as a string instead of a number
- *
- * Normally it is poor form to play with prototypes of primitive types, but it
- * is fairly unlikely that anyone will iterate over a Date object.
+ * **************** Morebits.date ****************
  */
 
-Date.monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-	'July', 'August', 'September', 'October', 'November', 'December' ];
+/**
+ * @constructor
+ * Create a date object. MediaWiki timestamp format is also acceptable,
+ * in addition to everything that JS Date() accepts.
+ */
+Morebits.date = function() {
+	var args = Array.prototype.slice.call(arguments);
 
-Date.monthNamesAbbrev = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)));
 
-Date.prototype.getUTCMonthName = function() {
-	return Date.monthNames[this.getUTCMonth()];
+	if (isNaN(this._d.getTime()) && typeof args[0] === 'string') {
+		// Try again after removing a comma, to get MediaWiki timestamps to parse
+		this._d = new (Function.prototype.bind.call(Date, Date, args[0].replace(/(\d\d:\d\d),/, '$1')));
+	}
+
 };
 
-Date.prototype.getUTCMonthNameAbbrev = function() {
-	return Date.monthNamesAbbrev[this.getUTCMonth()];
+Morebits.date.localeData = {
+	months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+	monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+	days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+	daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+	relativeTimes: {
+		thisDay: '[Today at] h:mm A',
+		prevDay: '[Yesterday at] h:mm A',
+		nextDay: '[Tomorrow at] h:mm A',
+		thisWeek: 'dddd [at] h:mm A',
+		pastWeek: '[Last] dddd [at] h:mm A',
+		other: 'DD/MM/YYYY'
+	}
 };
+
+// Allow native Date.prototype methods to be used on Morebits.date objects
+Object.getOwnPropertyNames(Date.prototype).forEach(function(func) {
+	Morebits.date.prototype[func] = function() {
+		return this._d[func].apply(this._d, Array.prototype.slice.call(arguments));
+	};
+});
+
+$.extend(Morebits.date.prototype, {
+
+	isValid: function() {
+		return !isNaN(this.getTime());
+	},
+
+	/** @param {(Date|Morebits.date)} date */
+	isBefore: function(date) {
+		return this.getTime() < date.getTime();
+	},
+	isAfter: function(date) {
+		return this.getTime() > date.getTime();
+	},
+
+	/** @return {string} */
+	getUTCMonthName: function() {
+		return Morebits.date.localeData.months[this.getUTCMonth()];
+	},
+	getUTCMonthNameAbbrev: function() {
+		return Morebits.date.localeData.monthsShort[this.getUTCMonth()];
+	},
+	getMonthName: function() {
+		return Morebits.date.localeData.months[this.getMonth()];
+	},
+	getMonthNameAbbrev: function() {
+		return Morebits.date.localeData.monthsShort[this.getMonth()];
+	},
+	getUTCDayName: function() {
+		return Morebits.date.localeData.days[this.getUTCDay()];
+	},
+	getUTCDayNameAbbrev: function() {
+		return Morebits.date.localeData.daysShort[this.getUTCDay()];
+	},
+	getDayName: function() {
+		return Morebits.date.localeData.days[this.getDay()];
+	},
+	getDayNameAbbrev: function() {
+		return Morebits.date.localeData.daysShort[this.getDay()];
+	},
+
+	/**
+	 * Add a given number of minutes, hours, days, months or years to the date.
+	 * This is done in-place. The modified date object is also returned, allowing chaining.
+	 * @param {number} number - should be an integer
+	 * @param {string} unit
+	 * @throws {Error} if invalid or unsupported unit is given
+	 * @returns {Morebits.date}
+	 */
+	add: function(number, unit) {
+		// mapping time units with getter/setter function names
+		var unitMap = {
+			minutes: 'Minutes',
+			hours: 'Hours',
+			days: 'Date',
+			months: 'Month',
+			years: 'FullYear'
+		};
+		var unitNorm = unitMap[unit] || unitMap[unit + 's']; // so that both singular and  plural forms work
+		if (unitNorm) {
+			this['set' + unitNorm](this['get' + unitNorm]() + number);
+			return this;
+		}
+		throw new Error('Invalid unit "' + unit + '": Only ' + Object.keys(unitMap).join(', ') + ' are allowed.');
+	},
+
+	/**
+	 * Subtracts a given number of minutes, hours, days, months or years to the date.
+	 * This is done in-place. The modified date object is also returned, allowing chaining.
+	 * @param {number} number - should be an integer
+	 * @param {string} unit
+	 * @throws {Error} if invalid or unsupported unit is given
+	 * @returns {Morebits.date}
+	 */
+	subtract: function(number, unit) {
+		return this.add(-number, unit);
+	},
+
+	/**
+	 * Formats the date into a string per the given format string.
+	 * Replacement syntax is a subset of that in moment.js.
+	 * @param {string} formatstr
+	 * @param {(string|number)} [zone=system] - 'system' (for browser-default time zone),
+	 * 'utc' (for UTC), or specify a time zone as number of minutes past UTC.
+	 * @returns {string}
+	 */
+	format: function(formatstr, zone) {
+		var udate = this;
+		// create a new date object that will contain the date to display as system time
+		if (zone === 'utc') {
+			udate = new Morebits.date(this.getTime()).add(this.getTimezoneOffset(), 'minutes');
+		} else if (typeof zone === 'number') {
+			// convert to utc, then add the utc offset given
+			udate = new Morebits.date(this.getTime()).add(this.getTimezoneOffset() + zone, 'minutes');
+		}
+
+		var pad = function(num) {
+			return num < 10 ? '0' + num : num;
+		};
+		var h24 = udate.getHours(), m = udate.getMinutes(), s = udate.getSeconds();
+		var D = udate.getDate(), M = udate.getMonth() + 1, Y = udate.getFullYear();
+		var h12 = h24 % 12 || 12, amOrPm = h24 >= 12 ? 'PM' : 'AM';
+		var replacementMap = {
+			'HH': pad(h24), 'H': h24, 'hh': pad(h12), 'h': h12, 'A': amOrPm,
+			'mm': pad(m), 'm': m,
+			'ss': pad(s), 's': s,
+			'dddd': udate.getDayName(), 'ddd': udate.getDayNameAbbrev(), 'd': udate.getDay(),
+			'DD': pad(D), 'D': D,
+			'MMMM': udate.getMonthName(), 'MMM': udate.getMonthNameAbbrev(), 'MM': pad(M), 'M': M,
+			'YYYY': Y, 'YY': pad(Y % 100), 'Y': Y
+		};
+
+		var unbinder = new Morebits.unbinder(formatstr); // escape stuff between [...]
+		unbinder.unbind('\\[', '\\]');
+		unbinder.content = unbinder.content.replace(
+			/* Regex notes:
+			 * d(d{2,3})? matches exactly 1, 3 or 4 occurrences of 'd' ('dd' is treated as a double match of 'd')
+			 * Y{1,2}(Y{2})? matches exactly 1, 2 or 4 occurrences of 'Y'
+			 */
+			/H{1,2}|h{1,2}|m{1,2}|s{1,2}|d(d{2,3})?|D{1,2}|M{1,4}|Y{1,2}(Y{2})?|A/g,
+			function(match) {
+				return replacementMap[match];
+			}
+		);
+		return unbinder.rebind().replace(/\[(.*?)\]/g, '$1');
+	},
+
+	/**
+	 * Gives a readable relative time string such as "Yesterday at 6:43 PM" or "Last Thursday at 11:45 AM".
+	 * Similar to calendar in moment.js, but with time zone support.
+	 * @param {(string|number)} [zone=system] - 'system' (for browser-default time zone),
+	 * 'utc' (for UTC), or specify a time zone as number of minutes past UTC
+	 * @returns {string}
+	 */
+	calendar: function(zone) {
+		// Zero out the hours, minutes, seconds and milliseconds - keeping only the date;
+		// find the difference. Note that setHours() returns the same thing as getTime().
+		var dateDiff = (new Date().setHours(0, 0, 0, 0) -
+			new Date(this).setHours(0, 0, 0, 0)) / 8.64e7;
+		switch (true) {
+			case dateDiff === 0:
+				return this.format(Morebits.date.localeData.relativeTimes.thisDay, zone);
+			case dateDiff === 1:
+				return this.format(Morebits.date.localeData.relativeTimes.prevDay, zone);
+			case dateDiff > 0 && dateDiff < 7:
+				return this.format(Morebits.date.localeData.relativeTimes.pastWeek, zone);
+			case dateDiff === -1:
+				return this.format(Morebits.date.localeData.relativeTimes.nextDay, zone);
+			case dateDiff < 0 && dateDiff > -7:
+				return this.format(Morebits.date.localeData.relativeTimes.thisWeek, zone);
+			default:
+				return this.format(Morebits.date.localeData.relativeTimes.other, zone);
+		}
+	},
+
+	/**
+	 * @returns {RegExp} that matches wikitext section titles such as ==December 2019== or
+	 * === Jan 2018 ===
+	 */
+	monthHeaderRegex: function() {
+		return new RegExp('^==+\\s*(?:' + this.getUTCMonthName() + '|' + this.getUTCMonthNameAbbrev() +
+			')\\s+' + this.getUTCFullYear() + '\\s*==+', 'mg');
+	},
+
+	/**
+	 * Creates a wikitext section header with the month and year.
+	 * @param {number} [level=2] - Header level (default 2)
+	 * @returns {string}
+	 */
+	monthHeader: function(level) {
+		level = level || 2;
+		var header = Array(level + 1).join('='); // String.prototype.repeat not supported in IE 11
+		return header + ' ' + this.getUTCMonthName() + ' ' + this.getUTCFullYear() + ' ' + header;
+	}
+
+});
 
 
 /**
