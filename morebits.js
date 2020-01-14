@@ -2809,16 +2809,15 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (!ctx.creator) {
 			// fallback to give first revision author if no non-redirect version in the first 50
 			ctx.creator = $(xml).find('rev')[0].getAttribute('user');
+			ctx.timestamp = $(xml).find('rev')[0].getAttribute('timestamp');
 			if (!ctx.creator) {
 				ctx.statusElement.error('Could not find name of page creator');
+				return;
 			}
-			return;
+			
 		}
 		if (!ctx.timestamp) {
-			ctx.timestamp = $(xml).find('rev')[0].getAttribute('timestamp');
-			if (!ctx.timestamp) {
-				ctx.statusElement.error('Could not find timestamp of page creation');
-			}
+			ctx.statusElement.error('Could not find timestamp of page creation');
 			return;
 		}
 
