@@ -204,8 +204,8 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			type: 'button',
 			label: 'Select All',
 			event: function dBatchSelectAll() {
-				result.getUnchecked('pages').forEach(function(e) {
-					$('input[value="' + e + '"]').click();
+				$(result).find('input[name=pages]:not(:checked)').each(function(_, e) {
+					e.click(); // check it, and invoke click event so that subgroup can be shown
 				});
 
 				// Check any unchecked subpages too
@@ -216,8 +216,8 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			type: 'button',
 			label: 'Deselect All',
 			event: function dBatchDeselectAll() {
-				result.getChecked('pages').forEach(function(e) {
-					$('input[value="' + e + '"]').click();
+				$(result).find('input[name=pages]:checked').each(function(_, e) {
+					e.click(); // uncheck it, and invoke click event so that subgroup can be hidden
 				});
 			}
 		});
