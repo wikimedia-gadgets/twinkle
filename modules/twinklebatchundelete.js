@@ -14,14 +14,12 @@
 
 
 Twinkle.batchundelete = function twinklebatchundelete() {
-	if ((mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').user &&
-		mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').project) ||
-		!mw.config.get('wgArticleId')) {
+	if (!Morebits.userIsInGroup('sysop') || !mw.config.get('wgArticleId') || (
+		mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').user &&
+		mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').project)) {
 		return;
 	}
-	if (Morebits.userIsInGroup('sysop')) {
-		Twinkle.addPortletLink(Twinkle.batchundelete.callback, 'Und-batch', 'tw-batch-undel', "Undelete 'em all");
-	}
+	Twinkle.addPortletLink(Twinkle.batchundelete.callback, 'Und-batch', 'tw-batch-undel', "Undelete 'em all");
 };
 
 Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
