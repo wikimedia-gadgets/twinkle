@@ -95,28 +95,17 @@ Twinkle.talkback.callback = function() {
 	wpapi.post();
 };
 
-Twinkle.talkback.optout = null;
+Twinkle.talkback.optout = '';
 
 Twinkle.talkback.callback.optoutStatus = function(apiobj) {
-	var xml = apiobj.getXML();
-	var $el = $(xml).find('el');
-
+	var $el = $(apiobj.getXML()).find('el');
 	if ($el.length) {
 		Twinkle.talkback.optout = mw.config.get('wgRelevantUserName') + ' prefers not to receive talkbacks';
 		var url = $el.text();
-		if (url.indexOf('reason=') > -1) {
-			Twinkle.talkback.optout += ': ' + decodeURIComponent(url.substring(url.indexOf('reason=') + 7));
-		} else {
-			Twinkle.talkback.optout += '.';
-		}
-	} else {
-		Twinkle.talkback.optout = false;
+		var reason = mw.util.getParamValue('reason', url);
+		Twinkle.talkback.optout += reason ? ': ' + reason : '.';
 	}
-
-	var $status = $('#twinkle-talkback-optout-message');
-	if ($status.length && Twinkle.talkback.optout) {
-		$status.text(Twinkle.talkback.optout);
-	}
+	$('#twinkle-talkback-optout-message').text(Twinkle.talkback.optout);
 };
 
 var prev_page = '';
@@ -282,9 +271,7 @@ Twinkle.talkback.changeTarget = function(e) {
 		root.message.value = prev_message;
 	}
 
-	if (Twinkle.talkback.optout) {
-		$('#twinkle-talkback-optout-message').text(Twinkle.talkback.optout);
-	}
+	$('#twinkle-talkback-optout-message').text(Twinkle.talkback.optout);
 };
 
 Twinkle.talkback.noticeboards = {
