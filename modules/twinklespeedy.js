@@ -1661,6 +1661,9 @@ Twinkle.speedy.callbacks = {
 				}
 			}
 
+			if (params.requestsalt) {
+				appendText += '; requested creation protection ([[WP:SALT|salting]])';
+			}
 			if (extraInfo) {
 				appendText += '; additional information:' + extraInfo;
 			}
