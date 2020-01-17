@@ -21,7 +21,7 @@ modules = modules/twinkleconfig.js \
 		  modules/friendlytalkback.js \
 		  modules/friendlywelcome.js
 
-deploy: twinkle.js twinkle.css twinkle-pagestyles.css morebits.js morebits.css $(modules)
+deploy: twinkle.js twinkle.css twinkle-pagestyles.css morebits.js morebits.css select2.min.js select2.min.css $(modules)
 	./sync.pl ${ARGS} --deploy $^
 
 .PHONY: deploy all

@@ -9,6 +9,7 @@
 		"mw": true,
 		"moment": true
 	},
+	"ignorePatterns": "select2*",
 	"rules": {
 		"no-console": "error",
 		"no-extra-parens": ["error", "all", { "nestedBinaryExpressions": false }],
