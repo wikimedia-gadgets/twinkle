@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Links on history, contributions, and diff pages
  * Active on:              Diff pages, history pages, contributions pages
- * Config directives in:   TwinkleConfig
  */
 
 /**
@@ -195,7 +194,7 @@ Twinkle.fluff.revert = function revertPage(type, vandal, autoRevert, rev, page) 
 		'action': 'query',
 		'prop': ['info', 'revisions', 'flagged'],
 		'titles': pagename,
-		'rvlimit': 50, // max possible
+		'rvlimit': 50, // intentionally limited
 		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ],
 		'intoken': 'edit'
 	};
@@ -494,23 +493,9 @@ Twinkle.fluff.callbacks = {
 		// TODO Most of this is copy-pasted from Morebits.wiki.page#fnSaveSuccess. Unify it
 		var xml = apiobj.getXML();
 		var $edit = $(xml).find('edit');
-		var blacklist = $edit.attr('spamblacklist');
-		if (blacklist) {
-			var code = document.createElement('code');
-			code.style.fontFamily = 'monospace';
-			code.appendChild(document.createTextNode(blacklist));
-			apiobj.statelem.error(['Could not rollback, because the URL ', code, ' is on the spam blacklist.']);
-		} else if ($(xml).find('captcha').length > 0) {
+
+		if ($(xml).find('captcha').length > 0) {
 			apiobj.statelem.error('Could not rollback, because the wiki server wanted you to fill out a CAPTCHA.');
-		} else if ($edit.attr('code') === 'abusefilter-disallowed') {
-			apiobj.statelem.error('The edit was disallowed by the edit filter rule "' + $edit.attr('info').substring(17) + '".');
-		} else if ($edit.attr('info') && $edit.attr('info').indexOf('Hit AbuseFilter:') === 0) {
-			var div = document.createElement('div');
-			div.className = 'toccolours';
-			div.style.fontWeight = 'normal';
-			div.style.color = 'black';
-			div.innerHTML = $edit.attr('warning');
-			apiobj.statelem.error([ 'The following warning was returned by the edit filter: ', div, 'If you wish to proceed with the rollback, please reload this page (F5 or Ctrl+R) and carry it out again. This warning will not appear a second time.' ]);
 		} else if ($edit.attr('nochange') === '') {
 			apiobj.statelem.warn('Revision we are reverting to is identical to current revision, stopping revert.');
 		} else {

@@ -10,7 +10,6 @@
  * Mode of invocation:     Tab ("Tag")
  * Active on:              Existing articles and drafts; file pages with a corresponding file
  *                         which is local (not on Commons); all redirects
- * Config directives in:   FriendlyConfig
  */
 
 Twinkle.tag = function friendlytag() {
@@ -44,19 +43,46 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	var form = new Morebits.quickForm(Twinkle.tag.callback.evaluate);
 
-	if (document.getElementsByClassName('patrollink').length) {
-		form.append({
-			type: 'checkbox',
-			list: [
-				{
-					label: 'Mark the page as patrolled',
-					value: 'patrolPage',
-					name: 'patrolPage',
-					checked: Twinkle.getFriendlyPref('markTaggedPagesAsPatrolled')
-				}
-			]
-		});
-	}
+	form.append({
+		type: 'input',
+		label: 'Quick filter: ',
+		name: 'quickfilter',
+		size: '30px',
+		event: function twinkletagquickfilter() {
+			// flush the DOM of all existing underline spans
+			$allCheckboxDivs.find('.search-hit').each(function(i, e) {
+				var label_element = e.parentElement;
+				// This would convert <label>Hello <span class=search-hit>wo</span>rld</label>
+				// to <label>Hello world</label>
+				label_element.innerHTML = label_element.textContent;
+			});
+
+			if (this.value) {
+				$allCheckboxDivs.hide();
+				$allHeaders.hide();
+				var searchString = this.value;
+				var searchRegex = new RegExp(mw.util.escapeRegExp(searchString), 'i');
+
+				$allCheckboxDivs.find('label').each(function () {
+					var label_text = this.textContent;
+					var searchHit = searchRegex.exec(label_text);
+					if (searchHit) {
+						var range = document.createRange();
+						var textnode = this.childNodes[0];
+						range.selectNodeContents(textnode);
+						range.setStart(textnode, searchHit.index);
+						range.setEnd(textnode, searchHit.index + searchString.length);
+						var underline_span = $('<span>').addClass('search-hit').css('text-decoration', 'underline')[0];
+						range.surroundContents(underline_span);
+						this.parentElement.style.display = 'block'; // show
+					}
+				});
+			} else {
+				$allCheckboxDivs.show();
+				$allHeaders.show();
+			}
+		}
+	});
 
 	switch (Twinkle.tag.mode) {
 		case 'article':
@@ -69,53 +95,11 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				tooltip: 'You can change the default view order in your Twinkle preferences (WP:TWPREFS).',
 				event: Twinkle.tag.updateSortOrder,
 				list: [
-					{ type: 'option', value: 'cat', label: 'By categories', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'cat' },
-					{ type: 'option', value: 'alpha', label: 'In alphabetical order', selected: Twinkle.getFriendlyPref('tagArticleSortOrder') === 'alpha' }
+					{ type: 'option', value: 'cat', label: 'By categories', selected: Twinkle.getPref('tagArticleSortOrder') === 'cat' },
+					{ type: 'option', value: 'alpha', label: 'In alphabetical order', selected: Twinkle.getPref('tagArticleSortOrder') === 'alpha' }
 				]
 			});
 
-			form.append({
-				type: 'input',
-				label: 'Quick filter: ',
-				name: 'quickfilter',
-				size: '30px',
-				event: function twinkletagquickfilter() {
-					var $form = $('#tagWorkArea');
-					// flush the DOM of all existing underline spans
-					$form.find('.search-hit').each(function(i, e) {
-						var label_element = e.parentElement;
-						// This would convert <label>Hello <span class=search-hit>wo</span>rld</label>
-						// to <label>Hello world</label>
-						label_element.innerHTML = label_element.textContent;
-					});
-					// allCheckboxDivs and allHeaders are defined globally, rather than in
-					// this function, to avoid having to recompute them on every keydown.
-					if (this.value) {
-						allCheckboxDivs.hide();
-						allHeaders.hide();
-						var searchString = this.value;
-						var searchRegex = new RegExp(mw.RegExp.escape(searchString), 'i');
-
-						$form.find('label').each(function() {
-							var label_text = this.textContent;
-							var searchHit = searchRegex.exec(label_text);
-							if (searchHit) {
-								var range = document.createRange();
-								var textnode = this.childNodes[0];
-								range.selectNodeContents(textnode);
-								range.setStart(textnode, searchHit.index);
-								range.setEnd(textnode, searchHit.index + searchString.length);
-								var underline_span = $('<span>').addClass('search-hit').css('text-decoration', 'underline')[0];
-								range.surroundContents(underline_span);
-								this.parentElement.style.display = 'block'; // un-hide
-							}
-						});
-					} else {
-						allCheckboxDivs.show();
-						allHeaders.show();
-					}
-				}
-			});
 
 			if (!Twinkle.tag.canRemove) {
 				var divElement = document.createElement('div');
@@ -142,7 +126,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 						value: 'group',
 						name: 'group',
 						tooltip: 'If applying two or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped inside a {{multiple issues}} template.',
-						checked: Twinkle.getFriendlyPref('groupByDefault')
+						checked: Twinkle.getPref('groupByDefault')
 					}
 				]
 			}
@@ -168,9 +152,9 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			form.append({ type: 'header', label: 'Replacement tags' });
 			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.replacementList });
 
-			if (Twinkle.getFriendlyPref('customFileTagList').length) {
+			if (Twinkle.getPref('customFileTagList').length) {
 				form.append({ type: 'header', label: 'Custom tags' });
-				form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.getFriendlyPref('customFileTagList') });
+				form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.getPref('customFileTagList') });
 			}
 			break;
 
@@ -186,9 +170,9 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			form.append({ type: 'header', label: 'Miscellaneous and administrative redirect templates' });
 			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.administrativeList });
 
-			if (Twinkle.getFriendlyPref('customRedirectTagList').length) {
+			if (Twinkle.getPref('customRedirectTagList').length) {
 				form.append({ type: 'header', label: 'Custom tags' });
-				form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.getFriendlyPref('customRedirectTagList') });
+				form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.getPref('customRedirectTagList') });
 			}
 			break;
 
@@ -197,15 +181,38 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			break;
 	}
 
+	if (document.getElementsByClassName('patrollink').length) {
+		form.append({
+			type: 'checkbox',
+			list: [
+				{
+					label: 'Mark the page as patrolled',
+					value: 'patrolPage',
+					name: 'patrolPage',
+					checked: Twinkle.getPref('markTaggedPagesAsPatrolled')
+				}
+			]
+		});
+	}
 	form.append({ type: 'submit' });
 
 	var result = form.render();
 	Window.setContent(result);
 	Window.display();
 
-	if (Twinkle.tag.mode === 'article') {
+	// for quick filter:
+	$allCheckboxDivs = $(result).find('[name$=Tags]').parent();
+	$allHeaders = $(result).find('h5');
+	result.quickfilter.focus();  // place cursor in the quick filter field as soon as window is opened
+	result.quickfilter.autocomplete = 'off'; // disable browser suggestions
+	result.quickfilter.addEventListener('keypress', function(e) {
+		if (e.keyCode === 13) { // prevent enter key from accidentally submitting the form
+			e.preventDefault();
+			return false;
+		}
+	});
 
-		result.quickfilter.focus();  // place cursor in the Quick filter field as soon as window is opened
+	if (Twinkle.tag.mode === 'article') {
 
 		Twinkle.tag.alreadyPresentTags = [];
 
@@ -273,12 +280,15 @@ Twinkle.tag.callback = function friendlytagCallback() {
 	}
 };
 
-// Used in Quick Filter event function
-var allCheckboxDivs, allHeaders;
+
+// $allCheckboxDivs and $allHeaders are defined globally, rather than in the
+// quickfilter event function, to avoid having to recompute them on every keydown
+var $allCheckboxDivs, $allHeaders;
 
 Twinkle.tag.updateSortOrder = function(e) {
+	var form = e.target.form;
 	var sortorder = e.target.value;
-	Twinkle.tag.checkedTags = e.target.form.getChecked('articleTags') || [];
+	Twinkle.tag.checkedTags = form.getChecked('articleTags') || [];
 
 	var container = new Morebits.quickForm.element({ type: 'fragment' });
 
@@ -362,33 +372,9 @@ Twinkle.tag.updateSortOrder = function(e) {
 				break;
 			case 'Globalize':
 				checkbox.subgroup = {
-					name: 'globalize',
-					type: 'select',
-					list: [
-						{ label: '{{globalize}}: article may not represent a worldwide view of the subject', value: 'globalize' },
-						{
-							label: 'Region-specific {{globalize}} subtemplates',
-							list: [
-								{ label: '{{globalize/Australia}}: article deals primarily with the Australian viewpoint', value: 'globalize/Australia' },
-								{ label: '{{globalize/Canada}}: article deals primarily with the Canadian viewpoint', value: 'globalize/Canada' },
-								{ label: '{{globalize/China}}: article deals primarily with the Chinese viewpoint', value: 'globalize/China' },
-								{ label: '{{globalize/Common law}}: article deals primarily with the viewpoint of common law countries', value: 'globalize/Common law' },
-								{ label: '{{globalize/Eng}}: article deals primarily with the English-speaking viewpoint', value: 'globalize/Eng' },
-								{ label: '{{globalize/Europe}}: article deals primarily with the European viewpoint', value: 'globalize/Europe' },
-								{ label: '{{globalize/France}}: article deals primarily with the French viewpoint', value: 'globalize/France' },
-								{ label: '{{globalize/Germany}}: article deals primarily with the German viewpoint', value: 'globalize/Germany' },
-								{ label: '{{globalize/Middle East}}: article deals primarily with the Middle Eastern viewpoint', value: 'globalize/Middle East' },
-								{ label: '{{globalize/North America}}: article deals primarily with the North American viewpoint', value: 'globalize/North America' },
-								{ label: '{{globalize/Northern}}: article deals primarily with the northern hemisphere viewpoint', value: 'globalize/Northern' },
-								{ label: '{{globalize/Southern}}: article deals primarily with the southern hemisphere viewpoint', value: 'globalize/Southern' },
-								{ label: '{{globalize/South Africa}}: article deals primarily with the South African viewpoint', value: 'globalize/South Africa' },
-								{ label: '{{globalize/UK}}: article deals primarily with the British viewpoint', value: 'globalize/UK' },
-								{ label: '{{globalize/UK and Canada}}: article deals primarily with the British and Canadian viewpoints', value: 'globalize/UK and Canada' },
-								{ label: '{{globalize/US}}: article deals primarily with the USA viewpoint', value: 'globalize/US' },
-								{ label: '{{globalize/West}}: article deals primarily with the viewpoint of Western countries', value: 'globalize/West' }
-							]
-						}
-					]
+					name: 'globalizeRegion',
+					type: 'input',
+					label: 'Over-represented country or region'
 				};
 				break;
 			case 'History merge':
@@ -604,53 +590,48 @@ Twinkle.tag.updateSortOrder = function(e) {
 	}
 
 	// append any custom tags
-	if (Twinkle.getFriendlyPref('customTagList').length) {
+	if (Twinkle.getPref('customTagList').length) {
 		container.append({ type: 'header', label: 'Custom tags' });
 		container.append({ type: 'checkbox', name: 'articleTags',
-			list: Twinkle.getFriendlyPref('customTagList').map(function(el) {
+			list: Twinkle.getPref('customTagList').map(function(el) {
 				el.checked = Twinkle.tag.checkedTags.indexOf(el.value) !== -1;
 				return el;
 			})
 		});
 	}
 
-	var $workarea = $(e.target.form).find('div#tagWorkArea');
+	var $workarea = $(form).find('#tagWorkArea');
 	var rendered = container.render();
 	$workarea.empty().append(rendered);
 
-	// Used in quick filter event function
-	allCheckboxDivs = $workarea.find('[name=articleTags], [name=alreadyPresentArticleTags]').parent();
-	allHeaders = $workarea.find('h5, .quickformDescription');
-
-	// clear search, because the search results are not preserved over mode change
-	e.target.form.quickfilter.value = '';
+	// for quick filter:
+	$allCheckboxDivs = $workarea.find('[name$=Tags]').parent();
+	$allHeaders = $workarea.find('h5, .quickformDescription');
+	form.quickfilter.value = ''; // clear search, because the search results are not preserved over mode change
+	form.quickfilter.focus();
 
 	// style adjustments
 	$workarea.find('h5').css({ 'font-size': '110%' });
 	$workarea.find('h5:not(:first-child)').css({ 'margin-top': '1em' });
 	$workarea.find('div').filter(':has(span.quickformDescription)').css({ 'margin-top': '0.4em' });
 
-	Morebits.quickForm.getElements(e.target.form, 'articleTags').forEach(generateLinks);
-	var alreadyPresentTags = Morebits.quickForm.getElements(e.target.form, 'alreadyPresentArticleTags');
+	var alreadyPresentTags = Morebits.quickForm.getElements(form, 'alreadyPresentArticleTags');
 	if (alreadyPresentTags) {
 		alreadyPresentTags.forEach(generateLinks);
+	}
+	// in the unlikely case that *every* tag is already on the page
+	var notPresentTags = Morebits.quickForm.getElements(form, 'articleTags');
+	if (notPresentTags) {
+		notPresentTags.forEach(generateLinks);
 	}
 
 	// tally tags added/removed, update statusNode text
 	var statusNode = document.getElementById('tw-tag-status');
 	$('[name=articleTags], [name=alreadyPresentArticleTags]').click(function() {
 		if (this.name === 'articleTags') {
-			if (this.checked) {
-				Twinkle.tag.status.numAdded++;
-			} else {
-				Twinkle.tag.status.numAdded--;
-			}
+			Twinkle.tag.status.numAdded += this.checked ? 1 : -1;
 		} else if (this.name === 'alreadyPresentArticleTags') {
-			if (this.checked) {
-				Twinkle.tag.status.numRemoved--;
-			} else {
-				Twinkle.tag.status.numRemoved++;
-			}
+			Twinkle.tag.status.numRemoved += this.checked ? -1 : 1;
 		}
 
 		var firstPart = 'Adding ' + Twinkle.tag.status.numAdded + ' tag' + (Twinkle.tag.status.numAdded > 1 ? 's' : '');
@@ -706,6 +687,7 @@ Twinkle.tag.article.tags = {
 	'Copy edit': 'requires copy editing for grammar, style, cohesion, tone, or spelling',
 	'Copypaste': 'appears to have been copied and pasted from another location',
 	'Current': 'documents a current event',
+	'Dead end': 'article has no links to other articles',
 	'Disputed': 'questionable factual accuracy',
 	'Essay-like': 'written like a personal reflection, personal essay, or argumentative essay',
 	'Expand language': 'should be expanded with text translated from a foreign-language article',
@@ -753,6 +735,7 @@ Twinkle.tag.article.tags = {
 	'Rough translation': 'poor translation from another language',
 	'Sections': 'needs to be divided into sections by topic',
 	'Self-published': 'contains excessive or inappropriate references to self-published sources',
+	'Sources exist': 'notable topic, sources are available that could be added to article',
 	'Technical': 'too technical for most readers to understand',
 	'Third-party': 'relies too heavily on sources too closely associated with the subject',
 	'Tone': 'tone or style may not reflect the encyclopedic tone used on Wikipedia',
@@ -842,7 +825,7 @@ Twinkle.tag.article.tagCategories = {
 			'COI',
 			'Disputed',
 			'Hoax',
-			'Globalize',  // has a subgroup with subcategories
+			'Globalize',
 			'Over-coverage',
 			'Peacock',
 			'POV',
@@ -859,6 +842,7 @@ Twinkle.tag.article.tagCategories = {
 			'Original research',
 			'Primary sources',
 			'Self-published',
+			'Sources exist',
 			'Third-party',
 			'Unreferenced',
 			'Unreliable sources'
@@ -871,6 +855,7 @@ Twinkle.tag.article.tagCategories = {
 			'Expand language'
 		],
 		'Links': [
+			'Dead end',
 			'Orphan',
 			'Overlinked',
 			'Underlinked'
@@ -902,6 +887,7 @@ Twinkle.tag.article.tagCategories = {
 // Contains those article tags that *do not* work inside {{multiple issues}}.
 Twinkle.tag.multipleIssuesExceptions = [
 	'Copypaste',
+	'Current', // Works but not intended for use in MI
 	'Expand language',
 	'GOCEinuse',
 	'History merge',
@@ -1254,22 +1240,22 @@ Twinkle.tag.callbacks = {
 
 			pageobj.setPageText(pageText);
 			pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
-			pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
-			pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
+			pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
+			pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 			pageobj.setCreateOption('nocreate');
 			pageobj.save(function() {
 				// special functions for merge tags
 				if (params.mergeReason) {
+					// Use similar language for talkpage header and edit summary
+					var direction = '[[:' + params.nonDiscussArticle + ']] ' + (params.mergeTag === 'Merge' ? 'with' : 'into') + ' [[:' + params.discussArticle + ']]';
 					// post the rationale on the talk page (only operates in main namespace)
-					var talkpageText = '\n\n== Proposed merge with [[' + params.nonDiscussArticle + ']] ==\n\n';
+					var talkpageText = '\n\n== Proposed merge of ' + direction + '  ==\n\n';
 					talkpageText += params.mergeReason.trim() + ' ~~~~';
 
 					var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
 					talkpage.setAppendText(talkpageText);
-					talkpage.setEditSummary('Proposing to merge [[:' + params.nonDiscussArticle + ']] ' +
-						(params.mergeTag === 'Merge' ? 'with' : 'into') + ' [[:' + params.discussArticle + ']]' +
-						Twinkle.getPref('summaryAd'));
-					talkpage.setWatchlist(Twinkle.getFriendlyPref('watchMergeDiscussions'));
+					talkpage.setEditSummary('Proposing to merge ' + direction + Twinkle.getPref('summaryAd'));
+					talkpage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
 					talkpage.setCreateOption('recreate');
 					talkpage.append();
 				}
@@ -1392,12 +1378,7 @@ Twinkle.tag.callbacks = {
 			// otherwise moves it to `getRedirectsFor` array earmarking it for
 			// later removal
 			params.tagsToRemove.forEach(function removeTag(tag, tagIndex) {
-
 				var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
-				if (tag === 'Globalize') {
-					// special case to catch occurrences like {{Globalize/UK}}, etc
-					tag_re = new RegExp('\\{\\{[gG]lobalize/?[^}]*\\}\\}\\n?');
-				}
 
 				if (tag_re.test(pageText)) {
 					pageText = pageText.replace(tag_re, '');
@@ -1429,7 +1410,7 @@ Twinkle.tag.callbacks = {
 				'redirects': 1,  // follow redirect if the class name turns out to be a redirect page
 				'lhnamespace': '10',  // template namespace only
 				'lhshow': 'redirect',
-				'lhlimit': 'max'
+				'lhlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 			}, function removeRedirectTag(apiobj) {
 
 				$(apiobj.responseXML).find('page').each(function(idx, page) {
@@ -1476,12 +1457,7 @@ Twinkle.tag.callbacks = {
 			if (tagName === 'Uncategorized' || tagName === 'Improve categories') {
 				pageText += '\n\n{{' + tagName + '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
 			} else {
-				if (tagName === 'Globalize') {
-					currentTag += '{{' + params.globalize;
-				} else {
-					currentTag += '{{' + tagName;
-				}
-
+				currentTag += '{{' + tagName;
 				// fill in other parameters, based on the tag
 				switch (tagName) {
 					case 'Cleanup':
@@ -1518,6 +1494,12 @@ Twinkle.tag.callbacks = {
 							currentTag += '|reason=' + params.expertNeededReason;
 						}
 						break;
+					case 'Globalize':
+						currentTag += '|1=article';
+						if (params.globalizeRegion) {
+							currentTag += '|2=' + params.globalizeRegion;
+						}
+						break;
 					case 'News release':
 						currentTag += '|1=article';
 						break;
@@ -1547,6 +1529,7 @@ Twinkle.tag.callbacks = {
 					case 'Merge':
 					case 'Merge to':
 					case 'Merge from':
+						params.mergeTag = tagName;
 						if (params.mergeTarget) {
 							// normalize the merge target for now and later
 							params.mergeTarget = Morebits.string.toUpperCaseFirstChar(params.mergeTarget.replace(/_/g, ' '));
@@ -1583,15 +1566,11 @@ Twinkle.tag.callbacks = {
 			}
 
 			summaryText += ' {{[[';
-			if (tagName === 'Globalize') {
-				summaryText += 'Template:' + params.globalize + '|' + params.globalize;
-			} else {
-				// if it is a custom tag with a parameter
-				if (tagName.indexOf('|') !== -1) {
-					tagName = tagName.slice(0, tagName.indexOf('|'));
-				}
-				summaryText += tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName;
+			// if it is a custom tag with a parameter
+			if (tagName.indexOf('|') !== -1) {
+				tagName = tagName.slice(0, tagName.indexOf('|'));
 			}
+			summaryText += tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName;
 			summaryText += ']]}}';
 
 		};
@@ -1624,7 +1603,7 @@ Twinkle.tag.callbacks = {
 					// PROD
 					'(?:proposed deletion|prod blp)\\/dated(?:\\s*\\|(?:concern|user|timestamp|help).*)+|' +
 					// various hatnote templates
-					'about|correct title|dablink|distinguish|for|other\\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\\s?(?:also|wiktionary)|selfref|the' +
+					'about|correct title|dablink|distinguish|for|other\\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\\s?(?:also|wiktionary)|selfref|short description|the' +
 					// not a hatnote, but sometimes under a CSD or AfD
 					'|salt|proposed deletion endorsed' +
 					// end main template name, optionally with a number (such as redirect2)
@@ -1748,7 +1727,7 @@ Twinkle.tag.callbacks = {
 				'redirects': 1,
 				'lhnamespace': '10', // template namespace only
 				'lhshow': 'redirect',
-				'lhlimit': 'max'
+				'lhlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 			}, function replaceRedirectTag(apiobj) {
 				$(apiobj.responseXML).find('page').each(function(idx, page) {
 					var found = false;
@@ -1822,8 +1801,8 @@ Twinkle.tag.callbacks = {
 
 		// Check for all Rcat shell redirects (from #433)
 		if (pageText.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
-			// Regex courtesy [[User:Kephir/gadgets/sagittarius.js]] at [[Special:PermaLink/831402893]]
-			var oldTags = pageText.match(/(\s*{{[A-Za-z ]+\|)((?:[^|{}]*|{{[^|}]*}})+)(}})\s*/i);
+			// Regex inspired by [[User:Kephir/gadgets/sagittarius.js]] ([[Special:PermaLink/831402893]])
+			var oldTags = pageText.match(/(\s*{{[A-Za-z ]+\|)((?:[^|{}]*|{{[^}]*}})+)(}})\s*/i);
 			pageText = pageText.replace(oldTags[0], oldTags[1] + tagText + oldTags[2] + oldTags[3]);
 		} else {
 			// Fold any pre-existing Rcats into taglist and under Rcatshell
@@ -1848,8 +1827,8 @@ Twinkle.tag.callbacks = {
 
 		pageobj.setPageText(pageText);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
-		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
-		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
+		pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
+		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 
@@ -1949,8 +1928,8 @@ Twinkle.tag.callbacks = {
 
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summary.substring(0, summary.length - 2) + Twinkle.getPref('summaryAd'));
-		pageobj.setWatchlist(Twinkle.getFriendlyPref('watchTaggedPages'));
-		pageobj.setMinorEdit(Twinkle.getFriendlyPref('markTaggedPagesAsMinor'));
+		pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
+		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 
@@ -1967,7 +1946,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		params.patrol = form.patrolPage.checked;
 	}
 
-	params.tags = form.getChecked(Twinkle.tag.mode + 'Tags');
+	// Don't return null if there aren't any available tags
+	params.tags = form.getChecked(Twinkle.tag.mode + 'Tags') || [];
 
 	// Save values of input fields into params object. This works as quickform input
 	// fields within subgroups of elements with name 'articleTags' (say) have their

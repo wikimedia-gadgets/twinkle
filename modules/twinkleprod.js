@@ -11,7 +11,6 @@
  * Mode of invocation:     Tab ("PROD")
  * Active on:              Existing articles, files, books which are not redirects,
  *                         and user pages in [[:Category:Wikipedia books (user books)]]
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.prod = function twinkleprod() {
@@ -181,22 +180,25 @@ Twinkle.prod.callbacks = {
 		var statelem = apiobj.statelem;
 		var params = apiobj.params;
 
-		// Check talk page for templates indicating prior XfD
-		if ($(xmlDoc).find('templates').length) {
-			statelem.warn('Previous XfD template found on talk page, aborting procedure');
-			return;
-		}
-
-		// Check talk page for category indicating prior PROD
-		if ($(xmlDoc).find('categories').length) {
-			if (params.blp) {
-				if (!confirm('Previous PROD nomination found on talk page. Do you still want to continue applying BLPPROD? ')) {
-					statelem.warn('Previous PROD found on talk page, aborted by user');
+		// Check talk page for templates indicating prior XfD or PROD
+		var numTemplates = $(xmlDoc).find('templates tl').length;
+		if (numTemplates) {
+			var template = $(xmlDoc).find('templates tl')[0].getAttribute('title');
+			if (numTemplates === 1 && template === 'Template:Old prod') {
+				if (params.blp) {
+					if (!confirm('Previous PROD nomination found on talk page. Do you still want to continue applying BLPPROD? ')) {
+						statelem.warn('Previous PROD found on talk page, aborted by user');
+						return;
+					}
+					statelem.info('Previous PROD found on talk page, continuing');
+				} else {
+					statelem.warn('Previous PROD found on talk page, aborting procedure');
 					return;
 				}
-				statelem.info('Previous PROD found on talk page, continuing');
+
+			// if there are multiple templates, at least one of them would be a prior xfd template
 			} else {
-				statelem.warn('Previous PROD found on talk page, aborting procedure');
+				statelem.warn('Previous XfD template found on talk page, aborting procedure');
 				return;
 			}
 		}
@@ -204,6 +206,7 @@ Twinkle.prod.callbacks = {
 		var ts = new Morebits.wiki.page(mw.config.get('wgPageName'));
 		ts.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
 		ts.setCallbackParameters(params);
+		ts.setLookupNonRedirectCreator(true); // Look for author of first non-redirect revision
 		ts.lookupCreation(Twinkle.prod.callbacks.creationInfo);
 	},
 
@@ -241,8 +244,7 @@ Twinkle.prod.callbacks = {
 
 		// Alert if article is at least three days old, not in Category:Living people, and BLPPROD is selected
 		if (params.blp) {
-			var now = new Date().toISOString();
-			var timeDiff = (new Date(now) - new Date(params.creation)) / 1000 / 60 / 60 / 24; // days from milliseconds
+			var timeDiff = (new Date(pageobj.getLoadTime()).getTime() - new Date(params.creation).getTime()) / 1000 / 60 / 60 / 24; // days from milliseconds
 			var blpcheck_re = /\[\[Category:Living people\]\]/i;
 			if (!blpcheck_re.test(text) && timeDiff > 3) {
 				if (!confirm('Please note that the article is not in Category:Living people and hence may be ineligible for BLPPROD. Are you sure you want to continue? \n\nYou may wish to add the category if you proceed, unless the article is about a recently deceased person.')) {
@@ -314,7 +316,7 @@ Twinkle.prod.callbacks = {
 			var talktitle = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
 			var talkpage = new Morebits.wiki.page(talktitle, 'Placing {{Old prod}} on talk page');
 			talkpage.setPrependText(oldprodfull);
-			talkpage.setEditSummary('Placing {{Old prod}} on the talk page' + Twinkle.getPref('summaryAd'));
+			talkpage.setEditSummary('Adding {{Old prod}}' + Twinkle.getPref('summaryAd'));
 			talkpage.setFollowRedirect(true);  // match behavior for page tagging
 			talkpage.setCreateOption('recreate');
 			talkpage.prepend();
@@ -371,7 +373,7 @@ Twinkle.prod.callbacks = {
 		}
 
 		// create monthly header if it doesn't exist already
-		var date = new Date();
+		var date = new Date(pageobj.getLoadTime());
 		var headerRe = new RegExp('^==+\\s*' + date.getUTCMonthName() + '\\s+' + date.getUTCFullYear() + '\\s*==+', 'm');
 		if (!headerRe.exec(text)) {
 			text += '\n\n=== ' + date.getUTCMonthName() + ' ' + date.getUTCFullYear() + ' ===';
@@ -430,13 +432,13 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	var talk_title = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
 	// Talk page templates for PROD-able discussions
 	var blocking_templates = 'Template:Old XfD multi|Template:Old MfD|Template:Oldffdfull|' + // Common prior XfD talk page templates
-		'Template:Multidel|Template:Oldpuffull|' + // Uncommon/legacy prior XfD templates
-		'Olddrvfull|Olddelrev'; // Prior DRV templates
+		'Template:Oldpuffull|' + // Legacy prior XfD template
+		'Template:Olddelrev|' + // Prior DRV template
+		'Template:Old prod';
 	var query = {
 		'action': 'query',
 		'titles': talk_title,
-		'prop': 'categories|templates',
-		'clcategories': 'Category:Past proposed deletion candidates',
+		'prop': 'templates',
 		'tltemplates': blocking_templates
 	};
 

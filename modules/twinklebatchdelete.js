@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("D-batch")
  * Active on:              Existing non-articles, and Special:PrefixIndex
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.batchdelete = function twinklebatchdelete() {
@@ -122,13 +121,13 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	if (mw.config.get('wgNamespaceNumber') === 14) {
 		query.generator = 'categorymembers';
 		query.gcmtitle = mw.config.get('wgPageName');
-		query.gcmlimit = Twinkle.getPref('batchMax'); // the max for sysops
+		query.gcmlimit = Twinkle.getPref('batchMax');
 
 	// On Special:PrefixIndex
 	} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Prefixindex') {
 
 		query.generator = 'allpages';
-		query.gaplimit = Twinkle.getPref('batchMax'); // the max for sysops
+		query.gaplimit = Twinkle.getPref('batchMax');
 		if (Morebits.queryString.exists('prefix')) {
 			query.gapnamespace = Morebits.queryString.get('namespace');
 			query.gapprefix = Morebits.string.toUpperCaseFirstChar(Morebits.queryString.get('prefix'));
@@ -153,7 +152,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	} else {
 		query.generator = 'links';
 		query.titles = mw.config.get('wgPageName');
-		query.gpllimit = Twinkle.getPref('batchMax'); // the max for sysops
+		query.gpllimit = Twinkle.getPref('batchMax');
 	}
 
 	var statusdiv = document.createElement('div');
@@ -205,8 +204,8 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			type: 'button',
 			label: 'Select All',
 			event: function dBatchSelectAll() {
-				result.getUnchecked('pages').forEach(function(e) {
-					$('input[value="' + e + '"]').click();
+				$(result).find('input[name=pages]:not(:checked)').each(function(_, e) {
+					e.click(); // check it, and invoke click event so that subgroup can be shown
 				});
 
 				// Check any unchecked subpages too
@@ -217,8 +216,8 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			type: 'button',
 			label: 'Deselect All',
 			event: function dBatchDeselectAll() {
-				result.getChecked('pages').forEach(function(e) {
-					$('input[value="' + e + '"]').click();
+				$(result).find('input[name=pages]:checked').each(function(_, e) {
+					e.click(); // uncheck it, and invoke click event so that subgroup can be hidden
 				});
 			}
 		});
@@ -339,7 +338,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 				inprop: 'protection',
 				gapprefix: pageTitle.title + '/',
 				gapnamespace: pageTitle.namespace,
-				gaplimit: 'max',
+				gaplimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 				pageNameFull: pageName // Not used by API, but added for access in onSuccess()
 			}, function onSuccess(apiobj) {
 				var xml = apiobj.responseXML;
@@ -435,8 +434,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 };
 
 Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvaluate(event) {
-	Morebits.wiki.actionCompleted.notice = 'Status';
-	Morebits.wiki.actionCompleted.postfix = 'batch deletion is now complete';
+	Morebits.wiki.actionCompleted.notice = 'Batch deletion is now complete';
 
 	var form = event.target;
 
@@ -550,7 +548,7 @@ Twinkle.batchdelete.callbacks = {
 				'blfilterredir': 'nonredirects',
 				'blnamespace': [0, 100], // main space and portal space only
 				'bltitle': params.page,
-				'bllimit': 'max'  // 500 is max for normal users, 5000 for bots and sysops
+				'bllimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 			};
 			wikipedia_api = new Morebits.wiki.api('Grabbing backlinks', query, Twinkle.batchdelete.callbacks.unlinkBacklinksMain);
 			wikipedia_api.params = params;
@@ -562,7 +560,7 @@ Twinkle.batchdelete.callbacks = {
 				'action': 'query',
 				'list': 'imageusage',
 				'iutitle': params.page,
-				'iulimit': 'max'  // 500 is max for normal users, 5000 for bots and sysops
+				'iulimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 			};
 			wikipedia_api = new Morebits.wiki.api('Grabbing file links', query, Twinkle.batchdelete.callbacks.unlinkImageInstancesMain);
 			wikipedia_api.params = params;
@@ -575,7 +573,7 @@ Twinkle.batchdelete.callbacks = {
 					'action': 'query',
 					'titles': params.page,
 					'prop': 'redirects',
-					'rdlimit': 'max'  // 500 is max for normal users, 5000 for bots and sysops
+					'rdlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
 				};
 				wikipedia_api = new Morebits.wiki.api('Grabbing redirects', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain);
 				wikipedia_api.params = params;

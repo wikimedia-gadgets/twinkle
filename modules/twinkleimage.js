@@ -10,7 +10,6 @@
  ****************************************
  * Mode of invocation:     Tab ("DI")
  * Active on:              Local nonredirect file pages (not on Commons)
- * Config directives in:   TwinkleConfig
  */
 
 Twinkle.image = function twinkleimage() {
@@ -161,7 +160,8 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 			work_area.append({
 				type: 'input',
 				name: 'replacement',
-				label: 'Replacement: '
+				label: 'Replacement: ',
+				tooltip: 'Optional file that replaces this one.  The "File:" prefix is optional.'
 			});
 			break;
 		case 'replaceable fair use':
@@ -198,8 +198,9 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	if (event.target.reason) {
 		reason = event.target.reason.value;
 	}
-	if (event.target.replacement) {
+	if (event.target.replacement.value && event.target.replacement.value.trim()) {
 		replacement = event.target.replacement.value;
+		replacement = /^\s*(Image|File):/i.test(replacement) ? replacement : 'File:' + replacement;
 	}
 	if (event.target.derivative) {
 		derivative = event.target.derivative.checked;

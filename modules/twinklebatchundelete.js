@@ -10,19 +10,16 @@
  ****************************************
  * Mode of invocation:     Tab ("Und-batch")
  * Active on:              Existing user and project pages
- * Config directives in:   TwinkleConfig
  */
 
 
 Twinkle.batchundelete = function twinklebatchundelete() {
-	if ((mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').user &&
-		mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').project) ||
-		!mw.config.get('wgArticleId')) {
+	if (!Morebits.userIsInGroup('sysop') || !mw.config.get('wgArticleId') || (
+		mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').user &&
+		mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').project)) {
 		return;
 	}
-	if (Morebits.userIsInGroup('sysop')) {
-		Twinkle.addPortletLink(Twinkle.batchundelete.callback, 'Und-batch', 'tw-batch-undel', "Undelete 'em all");
-	}
+	Twinkle.addPortletLink(Twinkle.batchundelete.callback, 'Und-batch', 'tw-batch-undel', "Undelete 'em all");
 };
 
 Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
@@ -62,7 +59,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		'prop': 'info',
 		'inprop': 'protection',
 		'titles': mw.config.get('wgPageName'),
-		'gpllimit': Twinkle.getPref('batchMax') // the max for sysops
+		'gpllimit': Twinkle.getPref('batchMax')
 	};
 	var statelem = new Morebits.status('Grabbing list of pages');
 	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
@@ -114,8 +111,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 };
 
 Twinkle.batchundelete.callback.evaluate = function(event) {
-	Morebits.wiki.actionCompleted.notice = 'Status';
-	Morebits.wiki.actionCompleted.postfix = 'batch undeletion is now complete';
+	Morebits.wiki.actionCompleted.notice = 'Batch undeletion is now complete';
 
 	var numProtected = $(Morebits.quickForm.getElements(event.target, 'pages')).filter(function(index, element) {
 		return element.checked && element.nextElementSibling.style.color === 'red';

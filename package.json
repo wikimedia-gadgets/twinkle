@@ -4,7 +4,8 @@
   "private": true,
   "repository": "azatoth/twinkle",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
     "eslint": "5.16.0"

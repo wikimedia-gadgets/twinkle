@@ -11,7 +11,6 @@
  * Mode of invocation:     Tab ("P-batch")
  * Active on:              Existing project pages and user pages; existing and
  *                         non-existing categories; Special:PrefixIndex
- * Config directives in:   TwinkleConfig
  */
 
 
@@ -268,37 +267,27 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		tooltip: 'For the protection log and page history.'
 	});
 
-	var query;
+	var query = {
+		'action': 'query',
+		'prop': 'revisions|info',
+		'rvprop': 'size',
+		'inprop': 'protection'
+	};
 
 	if (mw.config.get('wgNamespaceNumber') === 14) {  // categories
-		query = {
-			'action': 'query',
-			'generator': 'categorymembers',
-			'gcmtitle': mw.config.get('wgPageName'),
-			'gcmlimit': Twinkle.getPref('batchMax'), // the max for sysops
-			'prop': 'revisions',
-			'rvprop': 'size'
-		};
+		query.generator = 'categorymembers';
+		query.gcmtitle = mw.config.get('wgPageName');
+		query.gcmlimit = Twinkle.getPref('batchMax');
 	} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Prefixindex') {
-		query = {
-			'action': 'query',
-			'generator': 'allpages',
-			'gapnamespace': Morebits.queryString.exists('namespace') ? Morebits.queryString.get('namespace') : $('select[name=namespace]').val(),
-			'gapprefix': Morebits.queryString.exists('from') ? Morebits.string.toUpperCaseFirstChar(Morebits.queryString.get('from').replace('+', ' ')) :
-				Morebits.string.toUpperCaseFirstChar($('input[name=prefix]').val()),
-			'gaplimit': Twinkle.getPref('batchMax'), // the max for sysops
-			'prop': 'revisions',
-			'rvprop': 'size'
-		};
+		query.generator = 'allpages';
+		query.gapnamespace = Morebits.queryString.exists('namespace') ? Morebits.queryString.get('namespace') : $('select[name=namespace]').val();
+		query.gapprefix = Morebits.queryString.exists('from') ? Morebits.string.toUpperCaseFirstChar(Morebits.queryString.get('from').replace('+', ' ')) :
+			Morebits.string.toUpperCaseFirstChar($('input[name=prefix]').val());
+		query.gaplimit = Twinkle.getPref('batchMax');
 	} else {
-		query = {
-			'action': 'query',
-			'gpllimit': Twinkle.getPref('batchMax'), // the max for sysops
-			'generator': 'links',
-			'titles': mw.config.get('wgPageName'),
-			'prop': 'revisions',
-			'rvprop': 'size'
-		};
+		query.generator = 'links';
+		query.titles = mw.config.get('wgPageName');
+		query.gpllimit = Twinkle.getPref('batchMax');
 	}
 
 	var statusdiv = document.createElement('div');
@@ -319,17 +308,24 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			var isRedir = $page.attr('redirect') === ''; // XXX ??
 			var missing = $page.attr('missing') === ''; // XXX ??
 			var size = $page.find('rev').attr('size');
+			var $editProt;
 
 			var metadata = [];
 			if (missing) {
 				metadata.push('page does not exist');
+				$editProt = $page.find('pr[type="create"][level="sysop"]');
 			} else {
 				if (isRedir) {
 					metadata.push('redirect');
 				}
 				metadata.push(size + ' bytes');
+				$editProt = $page.find('pr[type="edit"][level="sysop"]');
 			}
-			list.push({ label: title + (metadata.length ? ' (' + metadata.join('; ') + ')' : ''), value: title, checked: true });
+			if ($editProt.length > 0) {
+				metadata.push('fully' + (missing ? ' create' : '') + ' protected' + ($editProt.attr('expiry') === 'infinity' ? ' indefinitely' : ', expires ' + $editProt.attr('expiry')));
+			}
+
+			list.push({ label: title + (metadata.length ? ' (' + metadata.join('; ') + ')' : ''), value: title, checked: true, style: $editProt.length > 0 ? 'color:red' : '' });
 		});
 		form.append({ type: 'header', label: 'Pages to protect' });
 		form.append({
@@ -355,6 +351,8 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 
 		var result = form.render();
 		Window.setContent(result);
+
+		Morebits.checkboxShiftClickSupport(Morebits.quickForm.getElements(result, 'pages'));
 	}, statelem);
 
 	wikipedia_api.post();
@@ -363,17 +361,28 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 Twinkle.batchprotect.currentProtectCounter = 0;
 Twinkle.batchprotect.currentprotector = 0;
 Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEvaluate(event) {
-	var pages = event.target.getChecked('pages');
-	var reason = event.target.reason.value;
-	var editmodify = event.target.editmodify.checked;
-	var editlevel = event.target.editlevel.value;
-	var editexpiry = event.target.editexpiry.value;
-	var movemodify = event.target.movemodify.checked;
-	var movelevel = event.target.movelevel.value;
-	var moveexpiry = event.target.moveexpiry.value;
-	var createmodify = event.target.createmodify.checked;
-	var createlevel = event.target.createlevel.value;
-	var createexpiry = event.target.createexpiry.value;
+	Morebits.wiki.actionCompleted.notice = 'Batch protection is now complete';
+
+	var form = event.target;
+
+	var numProtected = $(Morebits.quickForm.getElements(form, 'pages')).filter(function(index, element) {
+		return element.checked && element.nextElementSibling.style.color === 'red';
+	}).length;
+	if (numProtected > 0 && !confirm('You are about to act on ' + numProtected + ' fully protected page(s). Are you sure?')) {
+		return;
+	}
+
+	var pages = form.getChecked('pages');
+	var reason = form.reason.value;
+	var editmodify = form.editmodify.checked;
+	var editlevel = form.editlevel.value;
+	var editexpiry = form.editexpiry.value;
+	var movemodify = form.movemodify.checked;
+	var movelevel = form.movelevel.value;
+	var moveexpiry = form.moveexpiry.value;
+	var createmodify = form.createmodify.checked;
+	var createlevel = form.createlevel.value;
+	var createexpiry = form.createexpiry.value;
 
 	if (!reason) {
 		alert("You've got to give a reason, you rouge admin!");
@@ -381,7 +390,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	}
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
-	Morebits.status.init(event.target);
+	Morebits.status.init(form);
 
 	if (!pages) {
 		Morebits.status.error('Error', 'Nothing to protect, aborting');

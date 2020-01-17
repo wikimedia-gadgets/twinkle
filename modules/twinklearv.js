@@ -9,8 +9,7 @@
  *** twinklearv.js: ARV module
  ****************************************
  * Mode of invocation:     Tab ("ARV")
- * Active on:              Existing and non-existing user pages, user talk pages, contributions pages
- * Config directives in:   TwinkleConfig
+ * Active on:              Any page with relevant user name (userspace, contribs, etc.)
  */
 
 Twinkle.arv = function twinklearv() {
@@ -50,7 +49,8 @@ Twinkle.arv.callback = function (uid) {
 	categories.append({
 		type: 'option',
 		label: 'Username (WP:UAA)',
-		value: 'username'
+		value: 'username',
+		disabled: mw.util.isIPAddress(uid)
 	});
 	categories.append({
 		type: 'option',
@@ -165,7 +165,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					},
 					{
 						label: 'Account is a promotion-only account',
-						value: 'promoonly'
+						value: 'promoonly',
+						disabled: mw.util.isIPAddress(root.uid.value)
 					}
 				]
 			});
@@ -327,7 +328,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					$diffs.find('.entry').remove();
 
 					var date = new Date();
-					date.setHours(-36); // all since 36 hours
+					date.setHours(date.getHours() - 48); // all since 48 hours
 
 					var api = new mw.Api();
 					api.get({
@@ -335,7 +336,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						prop: 'revisions',
 						format: 'json',
 						rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-						rvlimit: 500,
+						rvlimit: 500, // intentionally limited
 						rvend: date.toISOString(),
 						rvuser: uid,
 						indexpageids: true,
@@ -372,7 +373,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						prop: 'revisions',
 						format: 'json',
 						rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-						rvlimit: 500,
+						rvlimit: 500, // intentionally limited
 						rvend: date.toISOString(),
 						rvuser: mw.config.get('wgUserName'),
 						indexpageids: true,
@@ -414,7 +415,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						prop: 'revisions',
 						format: 'json',
 						rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-						rvlimit: 500,
+						rvlimit: 500, // intentionally limited
 						rvend: date.toISOString(),
 						rvuser: mw.config.get('wgUserName'),
 						indexpageids: true,
@@ -574,10 +575,30 @@ Twinkle.arv.callback.evaluate = function(e) {
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at AIV:');
 					return;
 				}
-				aivPage.getStatusElement().status('Adding new report...');
-				aivPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd'));
-				aivPage.setAppendText('\n*{{' + (mw.util.isIPAddress(uid) ? 'IPvandal' : 'vandal') + '|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
-				aivPage.append();
+
+				// then check for any bot reports
+				var tb2Page = new Morebits.wiki.page('Wikipedia:Administrator intervention against vandalism/TB2', 'Checking bot reports');
+				tb2Page.load(function() {
+					var tb2Text = tb2Page.getPageText();
+					var tb2statelem = tb2Page.getStatusElement();
+
+					if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + RegExp.escape(uid, true) + '\\s*\\}\\}').test(tb2Text)) {
+						if (confirm('The user ' + uid + ' has already been reported by a bot. Do you wish to make the report anyway?')) {
+							tb2statelem.info('Proceeded despite bot report');
+						} else {
+							tb2statelem.error('Report from a bot is already present, stopping');
+							Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them at AIV:');
+							return;
+						}
+					} else {
+						tb2statelem.info('No conflicting bot reports');
+					}
+
+					aivPage.getStatusElement().status('Adding new report...');
+					aivPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd'));
+					aivPage.setAppendText('\n*{{' + (mw.util.isIPAddress(uid) ? 'IPvandal' : 'vandal') + '|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
+					aivPage.append();
+				});
 			});
 			break;
 
@@ -823,7 +844,7 @@ Twinkle.arv.processAN3 = function(params) {
 		prop: 'revisions',
 		format: 'json',
 		rvprop: 'sha1|ids|timestamp|comment',
-		rvlimit: 100,
+		rvlimit: 100, // intentionally limited
 		rvstartid: minid,
 		rvexcludeuser: params.uid,
 		indexpageids: true,

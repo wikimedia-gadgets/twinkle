@@ -10,14 +10,13 @@ var api = new mw.Api(), relevantUserName;
  *** twinkleblock.js: Block module
  ****************************************
  * Mode of invocation:     Tab ("Block")
- * Active on:              any page with relevant user name (userspace, contribs, etc.)
- * Config directives in:   [soon to be TwinkleConfig]
+ * Active on:              Any page with relevant user name (userspace, contribs, etc.)
  */
 
 Twinkle.block = function twinkleblock() {
-	// should show on Contributions pages, anywhere there's a relevant user
+	// should show on Contributions or Block pages, anywhere there's a relevant user
 	if (Morebits.userIsInGroup('sysop') && mw.config.get('wgRelevantUserName')) {
-		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user');
+		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user sitewide');
 	}
 };
 
@@ -52,7 +51,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 			{
 				label: 'Block user',
 				value: 'block',
-				tooltip: 'Block the relevant user with given options.',
+				tooltip: 'Block the relevant user sitewide with given options.',
 				checked: true
 			},
 			{
@@ -379,7 +378,11 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 	if (Twinkle.block.currentBlockInfo) {
 		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
-		Morebits.status.warn(relevantUserName + ' is already blocked', 'Submit query to reblock with supplied options');
+		if (Twinkle.block.currentBlockInfo.partial === '') { // Partial block
+			Morebits.status.warn(relevantUserName + ' is partially blocked', 'Submit query to convert to a sitewide block with supplied options');
+		} else if (Twinkle.block.currentBlockInfo.partial === undefined) { // Sitewide block
+			Morebits.status.warn(relevantUserName + ' is already blocked', 'Submit query to reblock with supplied options');
+		}
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
 	} else if ($form.find('[name=actiontype][value=template]').is(':checked')) {
 		// make sure all the fields are correct based on defaults
@@ -672,18 +675,11 @@ Twinkle.block.blockPresetsInfo = {
 		reason: 'Making [[WP:No legal threats|legal threats]]',
 		summary: 'You have been blocked from editing for making [[WP:NLT|legal threats or taking legal action]]'
 	},
-	'uw-myblock': {
-		autoblock: true,
-		nocreate: true,
-		pageParam: true,
-		reason: 'Using Wikipedia as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]',
-		summary: 'You have been blocked from editing for using user and/or article pages as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]'
-	},
 	'uw-nothereblock': {
 		autoblock: true,
 		expiry: 'infinity',
 		nocreate: true,
-		reason: 'Clearly [[WP:NOTHERE|not here to contribute to the encyclopedia]]',
+		reason: 'Clearly [[WP:NOTHERE|not here to build an encyclopedia]]',
 		forRegisteredOnly: true,
 		summary: 'You have been indefinitely blocked from editing because it appears that you are not here to [[WP:NOTHERE|build an encyclopedia]]'
 	},
@@ -715,6 +711,13 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: true,
 		reason: '[[WP:Spam|Spam]] / [[WP:NOTADVERTISING|advertising]]-only account',
 		summary: 'You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam, advertising, or promotion]]'
+	},
+	'uw-socialmediablock': {
+		autoblock: true,
+		nocreate: true,
+		pageParam: true,
+		reason: 'Using Wikipedia as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]',
+		summary: 'You have been blocked from editing for using user and/or article pages as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]'
 	},
 	'uw-sockblock': {
 		autoblock: true,
@@ -782,10 +785,10 @@ Twinkle.block.blockPresetsInfo = {
 		reasonParam: true,
 		summary: 'You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]]'
 	},
-	'uw-ublock-famous': {
+	'uw-ublock-wellknown': {
 		expiry: 'infinity',
 		forRegisteredOnly: true,
-		reason: '{{uw-ublock-famous}} <!-- Username represents a famous person, soft block -->',
+		reason: '{{uw-ublock-wellknown}} <!-- Username represents a well-known person, soft block -->',
 		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] matches the name of a well-known living individual'
 	},
 	'uw-uhblock-double': {
@@ -861,11 +864,11 @@ Twinkle.block.blockGroups = [
 			{ label: 'anonblock - likely a school', value: 'anonblock - school' },
 			{ label: 'school block', value: 'school block' },
 			{ label: 'Generic block (custom reason)', value: 'uw-block' }, // ends up being default for registered users
-			{ label: 'Generic block (custom reason) – IP', value: 'uw-ablock', selected: true }, // set only when blocking IP
-			{ label: 'Generic block (custom reason) – indefinite', value: 'uw-blockindef' },
+			{ label: 'Generic block (custom reason) - IP', value: 'uw-ablock', selected: true }, // set only when blocking IP
+			{ label: 'Generic block (custom reason) - indefinite', value: 'uw-blockindef' },
 			{ label: 'Disruptive editing', value: 'uw-disruptblock' },
 			{ label: 'Inappropriate use of user talk page while blocked', value: 'uw-talkrevoked' },
-			{ label: 'Not here to contribute to the encyclopedia', value: 'uw-nothereblock' },
+			{ label: 'Not here to build an encyclopedia', value: 'uw-nothereblock' },
 			{ label: 'Unsourced content', value: 'uw-ucblock' },
 			{ label: 'Vandalism', value: 'uw-vblock' },
 			{ label: 'Vandalism-only account', value: 'uw-voablock' }
@@ -876,7 +879,7 @@ Twinkle.block.blockGroups = [
 		list: [
 			{ label: 'Advertising', value: 'uw-adblock' },
 			{ label: 'Arbitration enforcement', value: 'uw-aeblock' },
-			{ label: 'Block evasion – IP', value: 'uw-ipevadeblock' },
+			{ label: 'Block evasion - IP', value: 'uw-ipevadeblock' },
 			{ label: 'BLP violations', value: 'uw-bioblock' },
 			{ label: 'Copyright violations', value: 'uw-copyrightblock' },
 			{ label: 'Creating nonsense pages', value: 'uw-npblock' },
@@ -890,7 +893,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Removal of content', value: 'uw-dblock' },
 			{ label: 'Sock puppetry (master)', value: 'uw-sockblock' },
 			{ label: 'Sock puppetry (puppet)', value: 'uw-spoablock' },
-			{ label: 'Social networking', value: 'uw-myblock' },
+			{ label: 'Social networking', value: 'uw-socialmediablock' },
 			{ label: 'Spam', value: 'uw-sblock' },
 			{ label: 'Spam/advertising-only account', value: 'uw-soablock' },
 			{ label: 'Unapproved bot', value: 'uw-botblock' },
@@ -907,7 +910,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Username violation, soft block', value: 'uw-ublock' },
 			{ label: 'Username violation, hard block', value: 'uw-uhblock' },
 			{ label: 'Username impersonation hard block', value: 'uw-uhblock-double' },
-			{ label: 'Username represents a famous person, soft block', value: 'uw-ublock-famous' },
+			{ label: 'Username represents a well-known person, soft block', value: 'uw-ublock-wellknown' },
 			{ label: 'Username represents a non-profit, soft block', value: 'uw-causeblock' },
 			{ label: 'Username violation, vandalism-only account', value: 'uw-vaublock' }
 		]
@@ -1230,7 +1233,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 	var text = pageobj.getPageText(),
 		params = pageobj.getCallbackParameters(),
 		messageData = params.messageData,
-		date = new Date();
+		date = new Date(pageobj.getLoadTime());
 
 	var dateHeaderRegex = new RegExp('^==+\\s*(?:' + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() +
 		')\\s+' + date.getUTCFullYear() + '\\s*==+', 'mg');
