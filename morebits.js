@@ -1159,7 +1159,7 @@ Morebits.array = {
  * @requires select2
  */
 Morebits.select2SearchHighlights = function select2SearchHighlights($select, hasOptionGroups) {
-	$select.on('select2:open', function() {
+	$select.off('select2:open').on('select2:open', function() {
 		$('.select2-search__field')[0].addEventListener('keyup', function() {
 			var $ul = $('.select2-results__options');
 			$ul.find('.search-hit').each(function(_, e) {
@@ -1171,7 +1171,7 @@ Morebits.select2SearchHighlights = function select2SearchHighlights($select, has
 
 			if (this.value) {
 				var searchString = this.value;
-				var searchRegex = new RegExp(mw.RegExp.escape(searchString), 'i');
+				var searchRegex = new RegExp(mw.util.escapeRegExp(searchString), 'i');
 
 				var selectorString;
 				// the odd way in which select2 organises the ul necessitates this hack
