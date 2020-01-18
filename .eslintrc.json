@@ -10,8 +10,8 @@
 		"moment": true
 	},
 	"rules": {
+		"no-console": "error",
 		"no-extra-parens": ["error", "all", { "nestedBinaryExpressions": false }],
-		"no-prototype-builtins": "error",
 		"block-scoped-var": "error",
 		"curly": "error",
 		"default-case": "error",
@@ -23,7 +23,6 @@
 		"no-implicit-coercion": ["error", { "boolean": false }],
 		"no-lone-blocks": "error",
 		"no-multi-spaces": ["error", { "ignoreEOLComments": true }],
-		"no-useless-catch": "error",
 		"no-useless-return": "error",
 		"yoda": "error",
 		"block-spacing": "error",
@@ -52,5 +51,6 @@
 		"space-unary-ops": "error",
 		"spaced-comment": ["error", "always", { "line": { "exceptions": ["-"] }, "block": { "balanced": true } }],
 		"switch-colon-spacing": "error"
-	}
+	},
+	"reportUnusedDisableDirectives": true
 }
