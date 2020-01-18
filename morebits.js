@@ -1160,8 +1160,8 @@ Morebits.array = {
  */
 Morebits.select2SearchHighlights = function select2SearchHighlights($select, hasOptionGroups) {
 	$select.off('select2:open').on('select2:open', function() {
+		var $ul = $('.select2-results__options');
 		$('.select2-search__field')[0].addEventListener('keyup', function() {
-			var $ul = $('.select2-results__options');
 			$ul.find('.search-hit').each(function(_, e) {
 				var li_element = e.parentElement;
 				// This would convert <li>Hello <span class=search-hit>wo</span>rld</li>
