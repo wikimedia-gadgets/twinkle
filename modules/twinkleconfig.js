@@ -1536,13 +1536,13 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	var form = pageobj.getCallbackParameters();
 
 	// this is the object which gets serialized into JSON
-	var newConfig = {};
+	var newConfig = {optionsVersion: 2};
 
 	// keeping track of all preferences that we encounter
 	// any others that are set in the user's current config are kept
 	// this way, preferences that this script doesn't know about are not lost
 	// (it does mean obsolete prefs will never go away, but... ah well...)
-	var foundPrefs = [];
+	var foundPrefs = ['optionsVersion'];
 
 	// a comparison function is needed later on
 	// it is just enough for our purposes (i.e. comparing strings, numbers, booleans,
