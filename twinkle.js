@@ -439,43 +439,26 @@ Twinkle.load = function () {
 	// Set custom Api-User-Agent header, for server-side logging purposes
 	Morebits.wiki.api.setApiUserAgent('Twinkle/2.0 (' + mw.config.get('wgDBname') + ')');
 
+	// Load all the modules in the order that the tabs should appear
+	var twinkleModules = [
+		// User/user talk-related
+		'arv', 'warn', 'block', 'welcome', 'shared', 'talkback',
+		// Deletion
+		'speedy', 'prod', 'xfd', 'image',
+		// Maintenance
+		'protect', 'tag',
+		// Misc. ones last
+		'diff', 'unlink', 'fluff', 'deprod', 'batchdelete', 'batchprotect', 'batchundelete'
+	];
 	// Don't load modules users have disabled
 	var disabledModules = Twinkle.getPref('disabledModules').concat(Twinkle.getPref('disabledSysopModules'));
-	var loadEnabledModules = function(module) {
-		// Not disabled, load normally
-		if (disabledModules.indexOf(module) === -1) {
-			Twinkle[module]();
-		}
-	};
-	// Load the modules in the order that the tabs should appear
-	// User/user talk-related
-	loadEnabledModules('arv');
-	loadEnabledModules('warn');
-	if (Morebits.userIsSysop) {
-		loadEnabledModules('block');
-	}
-	loadEnabledModules('welcome');
-	loadEnabledModules('shared');
-	loadEnabledModules('talkback');
-	// Deletion
-	loadEnabledModules('speedy');
-	loadEnabledModules('prod');
-	loadEnabledModules('xfd');
-	loadEnabledModules('image');
-	// Maintenance
-	loadEnabledModules('protect');
-	loadEnabledModules('tag');
-	// Misc. ones last
-	loadEnabledModules('diff');
-	loadEnabledModules('unlink');
-	loadEnabledModules('fluff');
-	if (Morebits.userIsSysop) {
-		loadEnabledModules('deprod');
-		loadEnabledModules('batchdelete');
-		loadEnabledModules('batchprotect');
-		loadEnabledModules('batchundelete');
-	}
+	twinkleModules.filter(function(mod) {
+		return disabledModules.indexOf(mod) === -1;
+	}).forEach(function(module) {
+		Twinkle[module]();
+	});
 	Twinkle.config.init(); // Can't turn off
+
 	// Run the initialization callbacks for any custom modules
 	Twinkle.initCallbacks.forEach(function (func) {
 		func();
