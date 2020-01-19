@@ -32,7 +32,7 @@
  */
 
 
-(function (window, document, $, undefined) { // Wrap entire file with anonymous function
+(function (window, document, $) { // Wrap entire file with anonymous function
 
 var Morebits = {};
 window.Morebits = Morebits;  // allow global access

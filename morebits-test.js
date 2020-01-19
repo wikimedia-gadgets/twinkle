@@ -1,4 +1,4 @@
-/* global Twinkle, Morebits */
+/* global Morebits */
 
 // Script depends on jQuery dialog widget, loaded through jquery.ui after
 // T219604 (1.35-wmf.2 circa 22 Oct 2019)

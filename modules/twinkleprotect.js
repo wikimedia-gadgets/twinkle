@@ -1480,7 +1480,7 @@ Twinkle.protect.callbacks = {
 		}
 
 		var newtag = '=== [[:' + Morebits.pageNameNorm + ']] ===\n';
-		if ((new RegExp('^' + RegExp.escape(newtag).replace(/\s+/g, '\\s*'), 'm')).test(text)) {
+		if (new RegExp('^' + RegExp.escape(newtag).replace(/\s+/g, '\\s*'), 'm').test(text)) {
 			statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
 			return;
 		}
