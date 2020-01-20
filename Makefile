@@ -1,11 +1,11 @@
 all:
 
-modules = modules/twinklearv.js \
+modules = modules/twinkleconfig.js \
+		  modules/twinklearv.js \
 		  modules/twinklebatchdelete.js \
 		  modules/twinklebatchprotect.js \
 		  modules/twinklebatchundelete.js \
 		  modules/twinkleblock.js \
-		  modules/twinkleconfig.js \
 		  modules/twinkledeprod.js \
 		  modules/twinklediff.js \
 		  modules/twinklefluff.js \

@@ -85,7 +85,18 @@ $mw->{ua}->agent('Twinkle/sync.pl ('.$mw->{ua}->agent.')');
 $mw->login({lgname => $opt->username, lgpassword => $opt->password});
 
 ### Main loop to parse options
-if ($opt->mode eq 'pull') {
+if ($opt->mode eq 'deploy') {
+  # Follow order when deploying, useful mainly for keeping twinkle.js and
+  # morebits.js first with make deploy
+  foreach my $file (@ARGV) {
+    if (!defined $deploys{$file}) {
+      print colored ['yellow'], "$file not deployable, skipping\n";
+      next;
+    }
+    my $page = $deploys{$file};
+    next if saltNPepa($page, $file);
+  }
+} elsif ($opt->mode eq 'pull') {
   while (my ($file, $page) = each %pages) {
     my $wikiPage = checkPage($page);
     next if !$wikiPage;
@@ -109,17 +120,6 @@ if ($opt->mode eq 'pull') {
   $cmd->close;
 } elsif ($opt->mode eq 'push') {
   while (my ($file, $page) = each %pages) {
-    next if saltNPepa($page, $file);
-  }
-} elsif ($opt->mode eq 'deploy') {
-  # Follow order when deploying, useful mainly for keeping twinkle.js and
-  # morebits.js first with make deploy
-  foreach my $file (@ARGV) {
-    if (!defined $deploys{$file}) {
-      print colored ['yellow'], "$file not deployable, skipping\n";
-      next;
-    }
-    my $page = $deploys{$file};
     next if saltNPepa($page, $file);
   }
 }
@@ -147,21 +147,28 @@ sub dieNice {
 # Data::Dumper is simpler but the output is ugly, and this ain't worth another
 # dependency
 sub forReal {
-  my @meaningful = qw (username base lang family);
+  my @meaningful = qw (username lang family);
+  push @meaningful, 'base' if $opt->{mode} ne 'deploy';
   print "Here are the current parameters specified:\n\n";
   foreach my $key (@meaningful) {
     print colored ['blue'], "\t$key = ${$opt}{$key}\n";
   }
-  print "\nThis means User:$opt->{username} will ";
-  print colored ['magenta'], uc $opt->{mode}.q{ };
-  if ($opt->{mode} eq 'pull') {
-    print "from subpages of $opt->{base}";
-  } elsif ($opt->{mode} eq 'push') {
-    print "to subpages of $opt->{base}";
-  } elsif ($opt->{mode} eq 'deploy') {
+  print "\nThis means ";
+  print colored ['bright_white'], "User:$opt->{username}";
+  print ' will ';
+  print colored ['bright_magenta'], uc $opt->{mode}.q{ };
+  if ($opt->{mode} eq 'deploy') {
     print 'live to the MediaWiki gadget';
+  } elsif ($opt->{mode} eq 'pull') {
+    print 'from subpages of ';
+    print colored ['bright_white'], $opt->{base};
+  } elsif ($opt->{mode} eq 'push') {
+    print 'to subpages of ';
+    print colored ['bright_white'], $opt->{base};
   }
-  print " at $opt->{lang}.$opt->{family}.org\n";
+  print ' at ';
+  print colored ['green'], "$opt->{lang}.$opt->{family}.org\n";
+
   while (42) {
     print "Enter (y)es to proceed or (n)o to cancel:\n";
     my $input = <STDIN>;
@@ -234,10 +241,10 @@ sub buildEditSummary {
     my @log = $repo->run(log => '-5', '--pretty=format:%s (%h)', '--no-merges', '--no-color', $file);
     print colored ['red'], "Unable to autogenerate edit summary for $page\n\n";
     print "The most recent ON-WIKI edit summary is:\n";
-    print colored ['blue'], "\t$oldCommitish\n";
+    print colored ['bright_cyan'], "\t$oldCommitish\n";
     print "The most recent GIT LOG entries are:\n";
     foreach (@log) {
-      print colored ['blue'], "\t$_\n";
+      print colored ['bright_cyan'], "\t$_\n";
     }
     print "Please provide an edit summary (commit ref will be added automatically):\n";
     $editSummary = <STDIN>;
@@ -291,7 +298,7 @@ sub saltNPepa {
 
   my $wp = $wikiPage->{q{*}}."\n"; # MediaWiki doesn't have trailing newlines
   if ($text eq $wp) {
-    print colored ['green'], " No changes needed, skipping\n";
+    print colored ['blue'], " No changes needed, skipping\n";
     return 1;
   } else {
     print "\n";
