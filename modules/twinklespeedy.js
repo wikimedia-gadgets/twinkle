@@ -1500,7 +1500,11 @@ Twinkle.speedy.callbacks = {
 			}
 
 			if (params.requestsalt) {
-				code = code + '\n{{salt}}';
+				if (params.normalizeds.indexOf('g10') === -1) {
+					code = code + '\n{{salt}}';
+				} else {
+					code = '{{salt}}\n' + code;
+				}
 			}
 
 			// Generate edit summary for edit
