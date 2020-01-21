@@ -1206,18 +1206,20 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	// Use select2 to make the select menu searchable
 	if (!Twinkle.getPref('oldSelect') && $.fn.select2) {
 		$('select[name=sub_group]')
-			.select2({ width: '100%' })
+			.select2({
+				width: '100%',
+				matcher: Morebits.select2.matcher,
+				templateResult: Morebits.select2.highlightSearchMatches,
+				language: {
+					searching: Morebits.select2.queryInterceptor
+				}
+			})
 			.change(Twinkle.warn.callback.change_subcategory);
 
-		// if main_group is level1/2/3/4/4im, the ul has option groups,
-		if ($('select[name=main_group]').val().indexOf('level') === 0) {
-			Morebits.select2SearchHighlights($('select[name=sub_group]'), true);
-		} else {
-			Morebits.select2SearchHighlights($('select[name=sub_group]'), false);
-		}
+		$('.select2-selection').keydown(Morebits.select2.autoStart);
 
 		mw.util.addCSS(
-			// prevent dropdown from appearing behind the dialog
+			// prevent dropdown from appearing behind the dialog, just in case
 			'.select2-container { z-index: 10000; }' +
 
 			// Increase height
@@ -1227,7 +1229,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			'.select2-results .select2-results__option { padding-top: 1px; padding-bottom: 1px; }' +
 			'.select2-results .select2-results__group { padding-top: 1px; padding-bottom: 1px; } ' +
 
-			// Reduce font size
+			// Adjust font size
 			'.select2-container .select2-dropdown .select2-results { font-size: 13px; }' +
 			'.select2-container .selection .select2-selection__rendered { font-size: 13px; }'
 		);

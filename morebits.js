@@ -1153,49 +1153,69 @@ Morebits.array = {
 };
 
 /**
- * select2 doesn't natively support highlightening of search hits so we implement that here
- * @param {jQuery} $select
- * @param {boolean} [hasOptionGroups=false] - does the select menu have optgroups?
- * @requires select2
+ * ************ Morebits.select2 ***************
+ * Utilities to enhance select2 menus
+ * See twinklewarn and twinklexfd for sample usages
  */
-Morebits.select2SearchHighlights = function select2SearchHighlights($select, hasOptionGroups) {
-	$select.off('select2:open').on('select2:open', function() {
-		var $ul = $('.select2-results__options');
-		$('.select2-search__field')[0].addEventListener('keyup', function() {
-			$ul.find('.search-hit').each(function(_, e) {
-				var li_element = e.parentElement;
-				// This would convert <li>Hello <span class=search-hit>wo</span>rld</li>
-				// to <label>Hello world</label>
-				li_element.innerHTML = li_element.textContent;
-			});
+Morebits.select2 = {
 
-			if (this.value) {
-				var searchString = this.value;
-				var searchRegex = new RegExp(mw.util.escapeRegExp(searchString), 'i');
+	/**
+	 * Custom matcher in which if the optgroup matches, all options in that group are shown,
+	 * like in jquery.chosen
+	 */
+	matcher: function(params, data) {
+		var originalMatcher = $.fn.select2.defaults.defaults.matcher;
+		var result = originalMatcher(params, data);
 
-				var selectorString;
-				// the odd way in which select2 organises the ul necessitates this hack
-				if (hasOptionGroups) {
-					selectorString = 'li > strong, li > ul > li';
-				} else {
-					selectorString = 'li';
-				}
-				$ul.find(selectorString).each(function() {
-					var li_text = this.textContent;
-					var searchHit = searchRegex.exec(li_text);
-					if (searchHit) {
-						var range = document.createRange();
-						var textnode = this.childNodes[0];
-						range.selectNodeContents(textnode);
-						range.setStart(textnode, searchHit.index);
-						range.setEnd(textnode, searchHit.index + searchString.length);
-						var underline_span = $('<span>').addClass('search-hit').css('text-decoration', 'underline')[0];
-						range.surroundContents(underline_span);
-					}
-				});
-			}
-		});
-	});
+		if (result && params.term &&
+			data.text.toUpperCase().indexOf(params.term.toUpperCase()) !== -1) {
+			result.children = data.children;
+		}
+		return result;
+	},
+
+	/** Underline matched part of options */
+	highlightSearchMatches: function(data) {
+		var searchTerm = Morebits.select2SearchQuery;
+		if (!searchTerm || data.loading) {
+			return data.text;
+		}
+		var idx = data.text.toUpperCase().indexOf(searchTerm.toUpperCase());
+		if (idx < 0) {
+			return data.text;
+		}
+
+		return $('<span>').append(
+			data.text.slice(0, idx),
+			$('<span>').css('text-decoration', 'underline').text(data.text.slice(idx, idx + searchTerm.length)),
+			data.text.slice(idx + searchTerm.length)
+		);
+	},
+
+	/** Intercept query as it is happening, for use in highlightSearchMatches */
+	queryInterceptor: function(params) {
+		Morebits.select2SearchQuery = params && params.term;
+	},
+
+	/**
+	 * Open dropdown and begin search when the .select2-selection has focus and a key is pressed
+	 * https://github.com/select2/select2/issues/3279#issuecomment-442524147
+	 */
+	autoStart: function(ev) {
+		if (ev.which < 48) {
+			return;
+		}
+		var target = $(ev.target).closest('.select2-container');
+		if (!target.length) {
+			return;
+		}
+		target = target.prev();
+		target.select2('open');
+		var search = target.data('select2').dropdown.$search ||
+			target.data('select2').selection.$search;
+		search.focus();
+	}
+
 };
 
 
