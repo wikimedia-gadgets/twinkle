@@ -119,6 +119,9 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 						// enable/disable multiple
 						cForm.multiple.disabled = !cChecked;
 						cForm.multiple.checked = false;
+						// enable/disable requesting creation protection
+						cForm.salting.disabled = !cChecked;
+						cForm.salting.checked = false;
 
 						Twinkle.speedy.callback.modeChanged(cForm);
 
@@ -225,6 +228,21 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				tooltip: 'A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences ' +
 						'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
 				checked: !isSysop || Twinkle.getPref('deleteSysopDefaultToTag'),
+				disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
+				event: function(event) {
+					event.stopPropagation();
+				}
+			}
+		]
+	});
+	tagOptions.append({
+		type: 'checkbox',
+		list: [
+			{
+				label: 'Tag for creation protection (salting) as well',
+				value: 'salting',
+				name: 'salting',
+				tooltip: 'When selected, the speedy deletion tag will be accompanied by a {{salt}} tag requesting that the deleting administrator apply creation protection. Only select if this page has been repeatedly recreated.',
 				disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
 				event: function(event) {
 					event.stopPropagation();
@@ -1481,6 +1499,14 @@ Twinkle.speedy.callbacks = {
 				text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
 			}
 
+			if (params.requestsalt) {
+				if (params.normalizeds.indexOf('g10') === -1) {
+					code = code + '\n{{salt}}';
+				} else {
+					code = '{{salt}}\n' + code;
+				}
+			}
+
 			// Generate edit summary for edit
 			var editsummary;
 			if (params.normalizeds.length > 1) {
@@ -1638,6 +1664,9 @@ Twinkle.speedy.callbacks = {
 				}
 			}
 
+			if (params.requestsalt) {
+				appendText += '; requested creation protection ([[WP:SALT|salting]])';
+			}
 			if (extraInfo) {
 				appendText += '; additional information:' + extraInfo;
 			}
@@ -2103,6 +2132,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		usertalk: notifyuser,
 		welcomeuser: welcomeuser,
 		lognomination: csdlog,
+		requestsalt: form.salting.checked,
 		templateParams: Twinkle.speedy.getParameters(form, values)
 	};
 	if (!params.templateParams) {
