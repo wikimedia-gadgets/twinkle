@@ -1249,13 +1249,19 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
  * is fairly unlikely that anyone will iterate over a Date object.
  */
 
+Date.monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+	'July', 'August', 'September', 'October', 'November', 'December' ];
+
+Date.monthNamesAbbrev = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 Date.prototype.getUTCMonthName = function() {
-	return mw.config.get('wgMonthNames')[this.getUTCMonth() + 1];
+	return Date.monthNames[this.getUTCMonth()];
 };
 
 Date.prototype.getUTCMonthNameAbbrev = function() {
-	return mw.config.get('wgMonthNamesShort')[this.getUTCMonth() + 1];
+	return Date.monthNamesAbbrev[this.getUTCMonth()];
 };
+
 
 // Morebits.wikipedia.namespaces is deprecated - use mw.config.get('wgFormattedNamespaces') or mw.config.get('wgNamespaceIds') instead
 
