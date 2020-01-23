@@ -438,10 +438,6 @@ Twinkle.load = function () {
 	// Set custom Api-User-Agent header, for server-side logging purposes
 	Morebits.wiki.api.setApiUserAgent('Twinkle/2.0 (' + mw.config.get('wgDBname') + ')');
 
-	// Load select2 library from Toolforge CDN, used in warn and xfd
-	mw.loader.load('https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.10/js/select2.min.js');
-	mw.loader.load('https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.10/css/select2.min.css', 'text/css');
-
 	// Load the modules in the order that the tabs should appear
 	// User/user talk-related
 	Twinkle.arv();
