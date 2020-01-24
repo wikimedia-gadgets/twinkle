@@ -123,7 +123,7 @@ Twinkle.deprod.callback = function() {
 };
 
 var callback_commit = function(event) {
-		var pages = event.target.getChecked('pages');
+		var pages = Morebits.quickForm.getInputData(event.target).pages;
 		Morebits.status.init(event.target);
 
 		var batchOperation = new Morebits.batchOperation('Deleting pages');
