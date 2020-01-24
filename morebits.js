@@ -1152,6 +1152,72 @@ Morebits.array = {
 	}
 };
 
+/**
+ * ************ Morebits.select2 ***************
+ * Utilities to enhance select2 menus
+ * See twinklewarn and twinklexfd for sample usages
+ */
+Morebits.select2 = {
+
+	/**
+	 * Custom matcher in which if the optgroup matches, all options in that group are shown,
+	 * like in jquery.chosen
+	 */
+	matcher: function(params, data) {
+		var originalMatcher = $.fn.select2.defaults.defaults.matcher;
+		var result = originalMatcher(params, data);
+
+		if (result && params.term &&
+			data.text.toUpperCase().indexOf(params.term.toUpperCase()) !== -1) {
+			result.children = data.children;
+		}
+		return result;
+	},
+
+	/** Underline matched part of options */
+	highlightSearchMatches: function(data) {
+		var searchTerm = Morebits.select2SearchQuery;
+		if (!searchTerm || data.loading) {
+			return data.text;
+		}
+		var idx = data.text.toUpperCase().indexOf(searchTerm.toUpperCase());
+		if (idx < 0) {
+			return data.text;
+		}
+
+		return $('<span>').append(
+			data.text.slice(0, idx),
+			$('<span>').css('text-decoration', 'underline').text(data.text.slice(idx, idx + searchTerm.length)),
+			data.text.slice(idx + searchTerm.length)
+		);
+	},
+
+	/** Intercept query as it is happening, for use in highlightSearchMatches */
+	queryInterceptor: function(params) {
+		Morebits.select2SearchQuery = params && params.term;
+	},
+
+	/**
+	 * Open dropdown and begin search when the .select2-selection has focus and a key is pressed
+	 * https://github.com/select2/select2/issues/3279#issuecomment-442524147
+	 */
+	autoStart: function(ev) {
+		if (ev.which < 48) {
+			return;
+		}
+		var target = $(ev.target).closest('.select2-container');
+		if (!target.length) {
+			return;
+		}
+		target = target.prev();
+		target.select2('open');
+		var search = target.data('select2').dropdown.$search ||
+			target.data('select2').selection.$search;
+		search.focus();
+	}
+
+};
+
 
 /**
  * **************** Morebits.pageNameNorm ****************
@@ -3975,6 +4041,7 @@ Morebits.batchOperation = function(currentAction) {
  * **************** Morebits.simpleWindow ****************
  * A simple draggable window
  * now a wrapper for jQuery UI's dialog feature
+ * @requires {jquery.ui.dialog}
  */
 
 /**
