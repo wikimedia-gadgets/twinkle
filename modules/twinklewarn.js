@@ -34,6 +34,7 @@ Twinkle.warn = function twinklewarn() {
 			$vandalTalkLink.css('font-weight', 'bold');
 			$vandalTalkLink.wrapInner($('<span/>').attr('title', 'If appropriate, you can use Twinkle to warn the user about their edits to this page.'));
 
+			// Can't provide vanarticlerevid as only wgCurRevisionId is provided
 			var extraParam = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm);
 			var href = $vandalTalkLink.attr('href');
 			if (href.indexOf('?') === -1) {
@@ -45,9 +46,14 @@ Twinkle.warn = function twinklewarn() {
 	} else if (mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId')) {
 		// Autofill user talk links on diffs with vanarticle for easy
 		// warning, but don't autowarn
-		var warnFromTalk = function(talkLink) {
+		var warnFromTalk = function(xtitle) {
+			var talkLink = $('#mw-diff-' + xtitle + '2 .mw-usertoollinks a').first();
 			if (talkLink.length) {
 				var extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&' + 'noautowarn=true';
+				// diffIDs for vanarticlerevid
+				extraParams += '&vanarticlerevid=';
+				extraParams += xtitle === 'otitle' ? mw.config.get('wgDiffOldId') : mw.config.get('wgDiffNewId');
+
 				var href = talkLink.attr('href');
 				if (href.indexOf('?') === -1) {
 					talkLink.attr('href', href + '?' + extraParams);
@@ -57,8 +63,8 @@ Twinkle.warn = function twinklewarn() {
 			}
 		};
 
-		warnFromTalk($('#mw-diff-otitle2 .mw-usertoollinks a').first());
-		warnFromTalk($('#mw-diff-ntitle2 .mw-usertoollinks a').first());
+		warnFromTalk('otitle'); // Older diff
+		warnFromTalk('ntitle'); // Newer diff
 	}
 };
 
@@ -113,6 +119,34 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		value: mw.util.getParamValue('vanarticle') || '',
 		tooltip: 'A page can be linked within the notice, perhaps because it was a revert to said page that dispatched this notice. Leave empty for no page to be linked.'
 	});
+
+	form.append({
+		type: 'div',
+		label: '',
+		style: 'color: red',
+		id: 'twinkle-warn-olddiff-message'
+	});
+
+	// Confirm edit wasn't too old for a warning
+	var vanrevid = mw.util.getParamValue('vanarticlerevid');
+	if (vanrevid) {
+		var query = {
+			action: 'query',
+			prop: 'revisions',
+			rvprop: 'timestamp',
+			revids: vanrevid
+		};
+		new Morebits.wiki.api('Grabbing the revision timestamps', query, function(apiobj) {
+			var vantimestamp = $(apiobj.getResponse()).find('revisions rev').attr('timestamp');
+			var revDate = new Date(vantimestamp);
+			if (vantimestamp && !isNaN(revDate)) {
+				revDate.setUTCHours(revDate.getUTCHours() + 24);
+				if (revDate.getTime() < new Date().getTime()) {
+					$('#twinkle-warn-olddiff-message').text('Note: This edit was made more than 24 hours ago so a warning may be stale.');
+				}
+			}
+		}).post();
+	}
 
 	var more = form.append({ type: 'field', name: 'reasonGroup', label: 'Warning information' });
 	more.append({ type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' });
@@ -1338,10 +1372,10 @@ Twinkle.warn.callbacks = {
 
 		while ((current = history_re.exec(text)) !== null) {
 			var current_date = new Date(current[2] + current[3] + ' UTC');
-			if (!(current[1] in history) || history[current[1]] < current_date) {
+			if (!(current[1] in history) || history[current[1]].getTime() < current_date.getTime()) {
 				history[current[1]] = current_date;
 			}
-			if (current_date >= latest.date) {
+			if (current_date.getTime() >= latest.date.getTime()) {
 				latest.date = current_date;
 				latest.type = current[1];
 			}
@@ -1353,7 +1387,7 @@ Twinkle.warn.callbacks = {
 			var temp_time = new Date(history[params.sub_group]);
 			temp_time.setUTCHours(temp_time.getUTCHours() + 24);
 
-			if (temp_time > date) {
+			if (temp_time.getTime() > date.getTime()) {
 				if (!confirm('An identical ' + params.sub_group + ' has been issued in the last 24 hours.  \nWould you still like to add this warning/notice?')) {
 					statelem.error('aborted per user request');
 					return;
@@ -1363,7 +1397,7 @@ Twinkle.warn.callbacks = {
 
 		latest.date.setUTCMinutes(latest.date.getUTCMinutes() + 1); // after long debate, one minute is max
 
-		if (latest.date > date) {
+		if (latest.date.getTime() > date.getTime()) {
 			if (!confirm('A ' + latest.type + ' has been issued in the last minute.  \nWould you still like to add this warning/notice?')) {
 				statelem.error('aborted per user request');
 				return;
