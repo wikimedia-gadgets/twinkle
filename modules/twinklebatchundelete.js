@@ -114,44 +114,42 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 Twinkle.batchundelete.callback.evaluate = function(event) {
 	Morebits.wiki.actionCompleted.notice = 'Batch undeletion is now complete';
 
-	var numProtected = $(Morebits.quickForm.getElements(event.target, 'pages')).filter(function(index, element) {
+	var numProtected = Morebits.quickForm.getElements(event.target, 'pages').filter(function(element) {
 		return element.checked && element.nextElementSibling.style.color === 'red';
 	}).length;
 	if (numProtected > 0 && !confirm('You are about to undelete ' + numProtected + ' fully create protected page(s). Are you sure?')) {
 		return;
 	}
 
-	var pages = event.target.getChecked('pages');
-	var reason = event.target.reason.value;
-	var undel_talk = event.target.reason.value;
-	if (!reason) {
+	var input = Morebits.quickForm.getInputData(event.target);
+
+	if (!input.reason) {
 		alert('You need to give a reason, you cabal crony!');
 		return;
 	}
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(event.target);
 
-	if (pages.length === 0) {
+	if (!input.pages || !input.pages.length) {
 		Morebits.status.error('Error', 'nothing to undelete, aborting');
 		return;
 	}
 
-
 	var pageUndeleter = new Morebits.batchOperation('Undeleting pages');
 	pageUndeleter.setOption('chunkSize', Twinkle.getPref('batchUndeleteChunks'));
 	pageUndeleter.setOption('preserveIndividualStatusLines', true);
-	pageUndeleter.setPageList(pages);
+	pageUndeleter.setPageList(input.pages);
 	pageUndeleter.run(function(pageName) {
 		var params = {
 			page: pageName,
-			undel_talk: undel_talk,
-			reason: reason,
+			undel_talk: input.undel_talk,
+			reason: input.reason,
 			pageUndeleter: pageUndeleter
 		};
 
 		var wikipedia_page = new Morebits.wiki.page(pageName, 'Undeleting page ' + pageName);
 		wikipedia_page.setCallbackParameters(params);
-		wikipedia_page.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
+		wikipedia_page.setEditSummary(input.reason + Twinkle.getPref('deletionSummaryAd'));
 		wikipedia_page.suppressProtectWarning();
 		wikipedia_page.setMaxRetries(3); // temporary increase from 2 to make batchundelete more likely to succeed [[phab:T222402]] #613
 		wikipedia_page.undeletePage(Twinkle.batchundelete.callbacks.doExtras, pageUndeleter.workerFailure);
