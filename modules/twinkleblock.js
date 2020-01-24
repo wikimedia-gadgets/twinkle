@@ -319,8 +319,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		if (Twinkle.block.currentBlockInfo) {
 			field_block_options.append({ type: 'hidden', name: 'reblock', value: '1' });
 		}
-		// Used to successfully build the blocking API parameters
-		field_block_options.append({ type: 'hidden', name: 'partial', value: partialBox });
 	}
 
 	if (templateBox) {
@@ -1258,6 +1256,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 	var $form = $(e.target),
 		toBlock = $form.find('[name=actiontype][value=block]').is(':checked'),
 		toWarn = $form.find('[name=actiontype][value=template]').is(':checked'),
+		toPartial = $form.find('[name=actiontype][value=partial]').is(':checked'),
 		blockoptions = {}, templateoptions = {};
 
 	Twinkle.block.callback.saveFieldset($form.find('[name=field_block_options]'));
@@ -1270,9 +1269,10 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 	templateoptions.hardblock = !!blockoptions.hardblock;
 	delete blockoptions.expiry_preset; // remove extraneous
 
-	// Partial stuff
-	// blockoptions.partial handled with hidden item
-	templateoptions.partial = $form.find('[name=actiontype][value=partial]').is(':checked'),
+	// Partial API requires this to be gone, not false or 0
+	if (toPartial) {
+		blockoptions.partial = templateoptions.partial = true;
+	}
 	templateoptions.pagerestrictions = $form.find('[name=pagerestrictions]').val() || [];
 	templateoptions.namespacerestrictions = $form.find('[name=namespacerestrictions]').val() || [];
 	// Format for API here rather than in saveFieldset
