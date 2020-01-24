@@ -687,7 +687,7 @@ Twinkle.config.sections = [
 			},
 
 			// TwinkleConfig.oldSelect (boolean)
-			// if true, use the native select menu rather the jquery chosen-based one
+			// if true, use the native select menu rather the select2-based one
 			{
 				name: 'oldSelect',
 				label: 'Use the non-searchable classic select menu',
