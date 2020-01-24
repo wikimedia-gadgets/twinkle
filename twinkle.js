@@ -482,6 +482,10 @@ Twinkle.load = function () {
 		mw.util.addCSS('.morebits-dialog-content, .morebits-dialog-footerlinks { font-size: 100% !important; } ' +
 			'.morebits-dialog input, .morebits-dialog select, .morebits-dialog-content button { font-size: inherit !important; }');
 	}
+
+	if ($('#p-twinkle').length === 0) {
+		$('#p-cactions').css('margin-right', 'initial');
+	}
 };
 
 }(window, document, jQuery)); // End wrap with anonymous function
