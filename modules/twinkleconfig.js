@@ -220,6 +220,14 @@ Twinkle.config.sections = [
 		title: 'Block user',
 		adminOnly: true,
 		preferences: [
+			// TwinkleConfig.defaultToPartialBlocks (boolean)
+			// Whether to default partial blocks on or off
+			{
+				name: 'defaultToPartialBlocks',
+				label: 'Select partial blocks by default when opening the block menu',
+				type: 'boolean'
+			},
+
 			// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
 			// if true, blank the talk page when issuing an indef block notice (per [[WP:UWUL#Indefinitely blocked users]])
 			{

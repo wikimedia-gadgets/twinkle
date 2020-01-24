@@ -55,6 +55,7 @@ Twinkle.defaultConfig = {
 	spiWatchReport: 'yes',
 
 	// Block
+	defaultToPartialBlocks: false,
 	blankTalkpageOnIndefBlock: false,
 
 	// Fluff (revert and rollback)

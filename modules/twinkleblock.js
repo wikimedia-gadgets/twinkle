@@ -4,6 +4,8 @@
 (function($) {
 
 var api = new mw.Api(), relevantUserName;
+var menuFormattedNamespaces = mw.config.get('wgFormattedNamespaces');
+menuFormattedNamespaces[0] = '(Article)';
 
 /*
  ****************************************
@@ -16,7 +18,7 @@ var api = new mw.Api(), relevantUserName;
 Twinkle.block = function twinkleblock() {
 	// should show on Contributions or Block pages, anywhere there's a relevant user
 	if (Morebits.userIsInGroup('sysop') && mw.config.get('wgRelevantUserName')) {
-		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user sitewide');
+		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user');
 	}
 };
 
@@ -51,13 +53,19 @@ Twinkle.block.callback = function twinkleblockCallback() {
 			{
 				label: 'Block user',
 				value: 'block',
-				tooltip: 'Block the relevant user sitewide with given options.',
+				tooltip: 'Block the relevant user with the given options. If partial block is unchecked, this will be a sitewide block.',
 				checked: true
+			},
+			{
+				label: 'Partial block',
+				value: 'partial',
+				tooltip: 'Enable partial blocks and partial block templates.',
+				checked: Twinkle.getPref('defaultToPartialBlocks')
 			},
 			{
 				label: 'Add block template to user talk page',
 				value: 'template',
-				tooltip: 'If the blocking admin forgot to issue a block template, or you have just blocked the user without templating them, you can use this to issue the appropriate template.',
+				tooltip: 'If the blocking admin forgot to issue a block template, or you have just blocked the user without templating them, you can use this to issue the appropriate template. Check the partial block box for partial block templates.',
 				checked: true
 			}
 		]
@@ -125,24 +133,34 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 Twinkle.block.callback.saveFieldset = function twinkleblockCallbacksaveFieldset(fieldset) {
 	Twinkle.block[$(fieldset).prop('name')] = {};
 	$(fieldset).serializeArray().forEach(function(el) {
+		// namespaces and pages for partial blocks are overwritten
+		// here, but we're handling them elsewhere so that's fine
 		Twinkle.block[$(fieldset).prop('name')][el.name] = el.value;
 	});
 };
 
 Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction(e) {
 	var field_preset, field_template_options, field_block_options, $form = $(e.target.form);
+	// Make ifs shorter
+	var blockBox = $form.find('[name=actiontype][value=block]').is(':checked');
+	var templateBox = $form.find('[name=actiontype][value=template]').is(':checked');
+	var partial = $form.find('[name=actiontype][value=partial]');
+	var partialBox = partial.is(':checked');
+	var blockGroup = partialBox ? Twinkle.block.blockGroupsPartial : Twinkle.block.blockGroups;
+
+	partial.prop('disabled', !blockBox && !templateBox);
 
 	Twinkle.block.callback.saveFieldset($('[name=field_block_options]'));
 	Twinkle.block.callback.saveFieldset($('[name=field_template_options]'));
 
-	if ($form.find('[name=actiontype][value=block]').is(':checked')) {
+	if (blockBox) {
 		field_preset = new Morebits.quickForm.element({ type: 'field', label: 'Preset', name: 'field_preset' });
 		field_preset.append({
 			type: 'select',
 			name: 'preset',
 			label: 'Choose a preset:',
 			event: Twinkle.block.callback.change_preset,
-			list: Twinkle.block.callback.filtered_block_groups()
+			list: Twinkle.block.callback.filtered_block_groups(blockGroup)
 		});
 
 		field_block_options = new Morebits.quickForm.element({ type: 'field', label: 'Block options', name: 'field_block_options' });
@@ -181,6 +199,32 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			tooltip: 'You can use relative times, like "1 minute" or "19 days", or absolute timestamps, "yyyymmddhhmm" (e.g. "200602011405" is Feb 1, 2006, at 14:05 UTC).',
 			value: Twinkle.block.field_block_options.expiry || Twinkle.block.field_template_options.template_expiry
 		});
+
+		if (partialBox) { // Partial block
+			field_block_options.append({
+				type: 'select',
+				multiple: true,
+				name: 'pagerestrictions',
+				label: 'Specific pages to block from editing',
+				value: '',
+				tooltip: '10 page max.'
+			});
+			var ns = field_block_options.append({
+				type: 'select',
+				multiple: true,
+				name: 'namespacerestrictions',
+				label: 'Namespace blocks',
+				value: '',
+				tooltip: 'Block from editing these namespaces.'
+			});
+			$.each(menuFormattedNamespaces, function(number, name) {
+				// Ignore -1: Special; -2: Media; and 2300-2303: Gadget (talk) and Gadget definition (talk)
+				if (number >= 0 && number < 830) {
+					ns.append({ type: 'option', label: name, value: number });
+				}
+			});
+		}
+
 		var blockoptions = [
 			{
 				checked: Twinkle.block.field_block_options.nocreate,
@@ -198,7 +242,8 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				checked: Twinkle.block.field_block_options.disabletalk,
 				label: 'Prevent this user from editing their own talk page while blocked',
 				name: 'disabletalk',
-				value: '1'
+				value: '1',
+				tooltip: partialBox ? 'If issuing a partial block, this MUST remain unchecked unless you are also preventing them from editing User talk space' : ''
 			}
 		];
 
@@ -212,7 +257,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		} else {
 			blockoptions.push({
 				checked: Twinkle.block.field_block_options.hardblock,
-				label: 'Prevent logged-in users from editing from this IP address (hardblock)',
+				label: 'Block logged-in users from using this IP address (hardblock)',
 				name: 'hardblock',
 				value: '1'
 			});
@@ -274,16 +319,18 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		if (Twinkle.block.currentBlockInfo) {
 			field_block_options.append({ type: 'hidden', name: 'reblock', value: '1' });
 		}
+		// Used to successfully build the blocking API parameters
+		field_block_options.append({ type: 'hidden', name: 'partial', value: partialBox });
 	}
 
-	if ($form.find('[name=actiontype][value=template]').is(':checked')) {
+	if (templateBox) {
 		field_template_options = new Morebits.quickForm.element({ type: 'field', label: 'Template options', name: 'field_template_options' });
 		field_template_options.append({
 			type: 'select',
 			name: 'template',
 			label: 'Choose talk page template:',
 			event: Twinkle.block.callback.change_template,
-			list: Twinkle.block.callback.filtered_block_groups(true),
+			list: Twinkle.block.callback.filtered_block_groups(blockGroup, true),
 			value: Twinkle.block.field_template_options.template
 		});
 		field_template_options.append({
@@ -294,7 +341,18 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			value: '',
 			tooltip: 'A page can be linked within the notice, perhaps if it was the primary target of disruption. Leave empty for no page to be linked.'
 		});
-		if (!$form.find('[name=actiontype][value=block]').is(':checked')) {
+
+		// Only visible if partial and not blocking
+		field_template_options.append({
+			type: 'input',
+			name: 'area',
+			display: 'none',
+			label: 'Area blocked from',
+			value: '',
+			tooltip: 'Optional explanation of the pages or namespaces the user was blocked from editing.'
+		});
+
+		if (!blockBox) {
 			field_template_options.append({
 				type: 'input',
 				name: 'template_expiry',
@@ -313,7 +371,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			value: Twinkle.block.field_template_options.block_reason
 		});
 
-		if ($form.find('[name=actiontype][value=block]').is(':checked')) {
+		if (blockBox) {
 			field_template_options.append({
 				type: 'checkbox',
 				name: 'blank_duration',
@@ -321,19 +379,31 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 					{
 						label: 'Do not include expiry in template',
 						checked: Twinkle.block.field_template_options.blank_duration,
-						tooltip: 'Instead of including the duration, make the block template read "You have been blocked from editing temporarily for..."'
+						tooltip: 'Instead of including the duration, make the block template read "You have been blocked temporarily..."'
 					}
 				]
 			});
 		} else {
 			field_template_options.append({
 				type: 'checkbox',
-				name: 'notalk',
 				list: [
 					{
 						label: 'Talk page access disabled',
+						name: 'notalk',
 						checked: Twinkle.block.field_template_options.notalk,
-						tooltip: 'Use this to make the block template state that the user\'s talk page access has been removed'
+						tooltip: 'Make the block template state that the user\'s talk page access has been removed'
+					},
+					{
+						label: 'User blocked from sending email',
+						name: 'noemail_template',
+						checked: Twinkle.block.field_template_options.noemail_template,
+						tooltip: 'If the area is not provided, make the block template state that the user\'s email access has been removed'
+					},
+					{
+						label: 'User blocked from creating accounts',
+						name: 'nocreate_template',
+						checked: Twinkle.block.field_template_options.nocreate_template,
+						tooltip: 'If the area is not provided, make the block template state that the user\'s ability to create accounts has been removed'
 					}
 				]
 			});
@@ -358,8 +428,49 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	if (field_block_options) {
 		oldfield = $form.find('fieldset[name="field_block_options"]')[0];
 		oldfield.parentNode.replaceChild(field_block_options.render(), oldfield);
+
+
+		$form.find('[name=pagerestrictions]').select2({
+			width: '100%',
+			tags: true,
+			placeholder: 'Enter pages to block user from',
+			maximumSelectionLength: 10, // Software limitation [[phab:T202776]]
+			language: {
+				noResults: function() {
+					return 'No pages entered yet';
+				}
+			}
+		});
+
+
+		$form.find('[name=namespacerestrictions]').select2({
+			width: '100%',
+			language: {
+				searching: Morebits.select2.queryInterceptor
+			},
+			templateResult: Morebits.select2.highlightSearchMatches,
+			placeholder: 'Select namespaces to block user from'
+		});
+
+		// Reduce padding
+		mw.util.addCSS(
+			// prevent dropdown from appearing behind the dialog, just in case
+			'.select2-container { z-index: 10000; }' +
+			// Reduce padding
+			'.select2-results .select2-results__option { padding-top: 1px; padding-bottom: 1px; }' +
+			// Adjust font size
+			'.select2-container .select2-dropdown .select2-results { font-size: 13px; }' +
+			'.select2-container .selection .select2-selection__rendered { font-size: 13px; }' +
+			// Remove black border
+			'.select2-container--default.select2-container--focus .select2-selection--multiple { border: 1px solid #aaa; }' +
+			// Make the tiny cross larger
+			'.select2-selection__choice__remove { font-size: 130%; }'
+		);
 	} else {
 		$form.find('fieldset[name="field_block_options"]').hide();
+		// Clear select2 options
+		$form.find('[name=pagerestrictions]').val(null).trigger('change');
+		$form.find('[name=namespacerestrictions]').val(null).trigger('change');
 	}
 	if (field_template_options) {
 		oldfield = $form.find('fieldset[name="field_template_options"]')[0];
@@ -378,15 +489,20 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 	if (Twinkle.block.currentBlockInfo) {
 		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
-		if (Twinkle.block.currentBlockInfo.partial === '') { // Partial block
-			Morebits.status.warn(relevantUserName + ' is partially blocked', 'Submit query to convert to a sitewide block with supplied options');
-		} else if (Twinkle.block.currentBlockInfo.partial === undefined) { // Sitewide block
-			Morebits.status.warn(relevantUserName + ' is already blocked', 'Submit query to reblock with supplied options');
+		// list=blocks without bkprops (as we do in fetchUerInfo)
+		// returns partial: '' if the user is partially blocked
+		var statusStr = relevantUserName + ' is ' + (Twinkle.block.currentBlockInfo.partial === '' ? 'partially blocked' : 'blocked sitewide');
+		var infoStr = 'Submit query to reblock with supplied options';
+		if (Twinkle.block.currentBlockInfo.partial === undefined && partial) {
+			infoStr += ' and convert to a partial block';
+		} else if (Twinkle.block.currentBlockInfo.partial === '' && !partial) {
+			infoStr += ' and convert to a sitewide block';
 		}
+		Morebits.status.warn(statusStr, infoStr);
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
-	} else if ($form.find('[name=actiontype][value=template]').is(':checked')) {
+	} else if (templateBox) {
 		// make sure all the fields are correct based on defaults
-		if ($form.find('[name=actiontype][value=block]').is(':checked')) {
+		if (blockBox) {
 			Twinkle.block.callback.change_preset(e);
 		} else {
 			Twinkle.block.callback.change_template(e);
@@ -832,6 +948,14 @@ Twinkle.block.blockPresetsInfo = {
 		nonstandard: true,
 		reason: '{{zombie proxy}}',
 		sig: null
+	},
+	'uw-pblock': {
+		autoblock: true,
+		expiry: '24 hours',
+		nocreate: false,
+		pageParam: false,
+		reasonParam: true,
+		summary: 'You have been [[WP:PB|partially blocked]] from certain areas of the encyclopedia'
 	}
 };
 
@@ -933,8 +1057,18 @@ Twinkle.block.blockGroups = [
 	}
 ];
 
-Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilteredBlockGroups(show_template) {
-	return $.map(Twinkle.block.blockGroups, function(blockGroup) {
+Twinkle.block.blockGroupsPartial = [
+	{
+		label: 'Partial block reasons',
+		list: [
+			{ label: 'Partial block', value: 'uw-pblock', selected: true }
+		]
+	}
+];
+
+
+Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilteredBlockGroups(group, show_template) {
+	return $.map(group, function(blockGroup) {
 		var list = $.map(blockGroup.list, function(blockPreset) {
 			// only show uw-talkrevoked if reblocking
 			if (!Twinkle.block.currentBlockInfo && blockPreset.value === 'uw-talkrevoked') {
@@ -1058,7 +1192,6 @@ Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, 
 
 Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemplate(e) {
 	var form = e.target.form, value = form.template.value, settings = Twinkle.block.blockPresetsInfo[value];
-
 	if (!$(form).find('[name=actiontype][value=block]').is(':checked')) {
 		if (settings.indefinite || settings.nonstandard) {
 			if (Twinkle.block.prev_template_expiry === null) {
@@ -1077,15 +1210,19 @@ Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemp
 			form.expiry.value = Twinkle.block.prev_template_expiry;
 		}
 		Morebits.quickForm.setElementVisibility(form.notalk.parentNode, !settings.nonstandard);
+		Morebits.quickForm.setElementVisibility(form.noemail_template.parentNode, $(form).find('[name=actiontype][value=partial]').is(':checked') && !$(form).find('[name=actiontype][value=block]').is(':checked'));
+		Morebits.quickForm.setElementVisibility(form.nocreate_template.parentNode, $(form).find('[name=actiontype][value=partial]').is(':checked') && !$(form).find('[name=actiontype][value=block]').is(':checked'));
 	} else {
 		Morebits.quickForm.setElementVisibility(
 			form.blank_duration.parentNode,
 			!settings.indefinite && !settings.nonstandard
 		);
 	}
-
 	Morebits.quickForm.setElementVisibility(form.article.parentNode, !!settings.pageParam);
 	Morebits.quickForm.setElementVisibility(form.block_reason.parentNode, !!settings.reasonParam);
+
+	// Partial block
+	Morebits.quickForm.setElementVisibility(form.area.parentNode, $(form).find('[name=actiontype][value=partial]').is(':checked') && !$(form).find('[name=actiontype][value=block]').is(':checked'));
 
 	form.root.previewer.closePreview();
 };
@@ -1103,7 +1240,13 @@ Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 		hardblock: Twinkle.block.isRegistered ? form.autoblock.checked : form.hardblock.checked,
 		indefinite: (/indef|infinit|never|\*|max/).test(form.template_expiry ? form.template_expiry.value : form.expiry.value),
 		reason: form.block_reason.value,
-		template: form.template.value
+		template: form.template.value,
+		partial: $(form).find('[name=actiontype][value=partial]').is(':checked'),
+		pagerestrictions: $(form.pagerestrictions).val() || [],
+		namespacerestrictions: $(form.namespacerestrictions).val() || [],
+		noemail: form.noemail.checked || (form.noemail_template ? form.noemail_template.checked : false),
+		nocreate: form.nocreate.checked || (form.nocreate_template ? form.nocreate_template.checked : false),
+		area: form.area.value
 	};
 
 	var templateText = Twinkle.block.callback.getBlockNoticeWikitext(params);
@@ -1127,11 +1270,32 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 	templateoptions.hardblock = !!blockoptions.hardblock;
 	delete blockoptions.expiry_preset; // remove extraneous
 
+	// Partial stuff
+	// blockoptions.partial handled with hidden item
+	templateoptions.partial = $form.find('[name=actiontype][value=partial]').is(':checked'),
+	templateoptions.pagerestrictions = $form.find('[name=pagerestrictions]').val() || [];
+	templateoptions.namespacerestrictions = $form.find('[name=namespacerestrictions]').val() || [];
+	// Format for API here rather than in saveFieldset
+	blockoptions.pagerestrictions = templateoptions.pagerestrictions.join('|');
+	blockoptions.namespacerestrictions = templateoptions.namespacerestrictions.join('|');
+
 	// use block settings as warn options where not supplied
 	templateoptions.summary = templateoptions.summary || blockoptions.reason;
 	templateoptions.expiry = templateoptions.template_expiry || blockoptions.expiry;
 
 	if (toBlock) {
+		if (blockoptions.partial) {
+			if (blockoptions.disabletalk && blockoptions.namespacerestrictions.indexOf('3') === -1) {
+				return alert('Partial blocks cannot prevent talk page access unless also restricting them from editing User talk space!');
+			}
+			if (!blockoptions.namespacerestrictions && !blockoptions.pagerestrictions) {
+				if (!blockoptions.noemail && !blockoptions.nocreate) { // Blank entries technically allowed [[phab:T208645]]
+					return alert('No pages or namespaces were selected, nor were email or account creation restrictions applied; please select at least one option to apply a partial block!');
+				} else if (!confirm('You are about to block with no restrictions on page or namespace editing, are you sure you want to proceed?')) {
+					return;
+				}
+			}
+		}
 		if (!blockoptions.expiry) {
 			return alert('Please provide an expiry!');
 		}
@@ -1179,7 +1343,9 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	var params = $.extend(formData, {
 		messageData: Twinkle.block.blockPresetsInfo[formData.template],
 		reason: Twinkle.block.field_template_options.block_reason,
-		disabletalk: Twinkle.block.field_template_options.notalk
+		disabletalk: Twinkle.block.field_template_options.notalk,
+		noemail: Twinkle.block.field_template_options.noemail_template,
+		nocreate: Twinkle.block.field_template_options.nocreate_template
 	});
 
 	Morebits.wiki.actionCompleted.redirect = userTalkPage;
@@ -1193,7 +1359,6 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 
 Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 	var text = '{{', settings = Twinkle.block.blockPresetsInfo[params.template];
-
 	if (!settings.nonstandard) {
 		text += 'subst:' + params.template;
 		if (params.article && settings.pageParam) {
@@ -1218,6 +1383,42 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 		if (params.disabletalk) {
 			text += '|notalk=yes';
 		}
+
+		// Currently, all partial block templates are "standard"
+		// Building the template, however, takes a fair bit of logic
+		if (params.partial) {
+			if (params.pagerestrictions.length || params.namespacerestrictions.length) {
+				var makeSentence = function (array) {
+					if (array.length < 3) {
+						return array.join(' and ');
+					}
+					var last = array.pop();
+					return array.join(', ') + ', and ' + last;
+
+				};
+				text += '|area=from certain ';
+				if (params.pagerestrictions.length) {
+					text += 'pages (' + makeSentence(params.pagerestrictions);
+					text += params.namespacerestrictions.length ? ') and certain ' : ')';
+				}
+				if (params.namespacerestrictions.length) {
+					// 1 => Talk, 2 => User, etc.
+					var namespaceNames = params.namespacerestrictions.map(function(id) {
+						return menuFormattedNamespaces[id];
+					});
+					text += 'namespaces (' + makeSentence(namespaceNames) + ')';
+				}
+			} else if (params.area) {
+				text += '|area=' + params.area;
+			} else {
+				if (params.noemail) {
+					text += '|email=yes';
+				}
+				if (params.nocreate) {
+					text += '|accountcreate=yes';
+				}
+			}
+		}
 	} else {
 		text += params.template;
 	}
@@ -1225,7 +1426,6 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 	if (settings.sig) {
 		text += '|sig=' + settings.sig;
 	}
-
 	return text + '}}';
 };
 
