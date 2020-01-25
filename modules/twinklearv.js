@@ -18,14 +18,58 @@ Twinkle.arv = function twinklearv() {
 		return;
 	}
 
-	var title = mw.util.isIPAddress(username) ? 'Report IP to administrators' : 'Report user to administrators';
+	var isIP = mw.util.isIPAddress(username);
+	var title = isIP ? 'Report IP to administrators' : 'Report user to administrators';
 
 	Twinkle.addPortletLink(function() {
-		Twinkle.arv.callback(username);
+		Twinkle.arv.callback(username, isIP);
 	}, 'ARV', 'tw-arv', title);
 };
 
-Twinkle.arv.callback = function (uid) {
+Twinkle.arv.callback = function (username, isIP) {
+	var params = {
+		format: 'json',
+		action: 'query',
+		list: 'blocks',
+		bkprop: 'range'
+	};
+	if (isIP) {
+		params.bkip = username;
+	} else {
+		params.bkusers = username;
+	}
+
+	new mw.Api().get(params).then(function(data) {
+		var blocklist = data.query.blocks;
+		if (blocklist.length === 0) {
+			// No blocks, proceed
+			Twinkle.arv.callback.showform(username);
+		}
+		var block = blocklist[0],
+			confirmationMessage = 'This account is already blocked.';
+		// Default to account, change if ip or range
+		if (isIP) {
+			if (block.rangestart === block.rangeend) {
+				// Start and end are the same, not a range
+				confirmationMessage = 'This IP address is already blocked.';
+			} else {
+				// Start and end differ, range blocked
+				confirmationMessage = 'This IP address is part of a blocked range.';
+			}
+		}
+		confirmationMessage += ' Are you sure you want to report it?';
+		
+		if (confirm(confirmationMessage)) {
+			Twinkle.arv.callback.showform(username);
+		}
+	}, function(err) {
+		console.log('Error fetching block info', err);
+		// If something went wrong, keep going
+		Twinkle.arv.callback.showform(username);
+	});
+}
+
+Twinkle.arv.callback.showform = function (uid) {
 	var Window = new Morebits.simpleWindow(600, 500);
 	Window.setTitle('Advance Reporting and Vetting'); // Backronym
 	Window.setScriptName('Twinkle');
