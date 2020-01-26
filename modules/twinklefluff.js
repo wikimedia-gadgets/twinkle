@@ -17,40 +17,38 @@
  */
 
 Twinkle.fluff = function twinklefluff() {
-	if (Twinkle.userAuthorized) {
-		// A list of usernames, usually only bots, that vandalism revert is jumped over; that is,
-		// if vandalism revert was chosen on such username, then its target is on the revision before.
-		// This is for handling quick bots that makes edits seconds after the original edit is made.
-		// This only affects vandalism rollback; for good faith rollback, it will stop, indicating a bot
-		// has no faith, and for normal rollback, it will rollback that edit.
-		Twinkle.fluff.whiteList = [
-			'AnomieBOT',
-			'SineBot'
-		];
+	// A list of usernames, usually only bots, that vandalism revert is jumped over; that is,
+	// if vandalism revert was chosen on such username, then its target is on the revision before.
+	// This is for handling quick bots that makes edits seconds after the original edit is made.
+	// This only affects vandalism rollback; for good faith rollback, it will stop, indicating a bot
+	// has no faith, and for normal rollback, it will rollback that edit.
+	Twinkle.fluff.whiteList = [
+		'AnomieBOT',
+		'SineBot'
+	];
 
-		if (mw.util.getParamValue('twinklerevert')) {
-			// Return if the user can't edit the page in question
-			if (!mw.config.get('wgIsProbablyEditable')) {
-				alert("Unable to edit the page, it's probably protected.");
-			} else {
-				Twinkle.fluff.auto();
-			}
-		} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
-			Twinkle.fluff.addLinks.contributions();
-		} else if (mw.config.get('wgIsProbablyEditable')) {
-			// Only proceed if the user can actually edit the page
-			// in question (ignored for contributions, see #632).
-			// wgIsProbablyEditable should take care of
-			// namespace/contentModel restrictions as well as
-			// explicit protections; it won't take care of
-			// cascading or TitleBlacklist restrictions
-			if (mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId')) { // wgDiffOldId included for clarity in if else loop [[phab:T214985]]
-				mw.hook('wikipage.diff').add(function () { // Reload alongside the revision slider
-					Twinkle.fluff.addLinks.diff();
-				});
-			} else if (mw.config.get('wgAction') === 'view' && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId')) {
-				Twinkle.fluff.addLinks.oldid();
-			}
+	if (mw.util.getParamValue('twinklerevert')) {
+		// Return if the user can't edit the page in question
+		if (!mw.config.get('wgIsProbablyEditable')) {
+			alert("Unable to edit the page, it's probably protected.");
+		} else {
+			Twinkle.fluff.auto();
+		}
+	} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
+		Twinkle.fluff.addLinks.contributions();
+	} else if (mw.config.get('wgIsProbablyEditable')) {
+		// Only proceed if the user can actually edit the page
+		// in question (ignored for contributions, see #632).
+		// wgIsProbablyEditable should take care of
+		// namespace/contentModel restrictions as well as
+		// explicit protections; it won't take care of
+		// cascading or TitleBlacklist restrictions
+		if (mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId')) { // wgDiffOldId included for clarity in if else loop [[phab:T214985]]
+			mw.hook('wikipage.diff').add(function () { // Reload alongside the revision slider
+				Twinkle.fluff.addLinks.diff();
+			});
+		} else if (mw.config.get('wgAction') === 'view' && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId')) {
+			Twinkle.fluff.addLinks.oldid();
 		}
 	}
 };
