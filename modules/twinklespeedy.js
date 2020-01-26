@@ -2013,6 +2013,10 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 	if (!values) {
 		return;
 	}
+	var templateParams = Twinkle.speedy.getParameters(form, values);
+	if (!templateParams) {
+		return;
+	}
 
 	var normalizeds = values.map(function(value) {
 		return Twinkle.speedy.normalizeHash[value];
@@ -2061,11 +2065,8 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		warnUser: warnusertalk,
 		welcomeuser: welcomeuser,
 		promptForSummary: promptForSummary,
-		templateParams: Twinkle.speedy.getParameters(form, values)
+		templateParams: templateParams
 	};
-	if (!params.templateParams) {
-		return;
-	}
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
@@ -2085,6 +2086,11 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	if (!values) {
 		return;
 	}
+	var templateParams = Twinkle.speedy.getParameters(form, values);
+	if (!templateParams) {
+		return;
+	}
+
 	// var multiple = form.multiple.checked;
 	var normalizeds = [];
 	$.each(values, function(index, value) {
@@ -2143,11 +2149,8 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		welcomeuser: welcomeuser,
 		lognomination: csdlog,
 		requestsalt: form.salting.checked,
-		templateParams: Twinkle.speedy.getParameters(form, values)
+		templateParams: templateParams
 	};
-	if (!params.templateParams) {
-		return;
-	}
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
