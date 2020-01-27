@@ -379,15 +379,18 @@ Twinkle.prod.callbacks = {
 			text += '\n\n=== ' + date.getUTCMonthName() + ' ' + date.getUTCFullYear() + ' ===';
 		}
 
+		text += '\n# [[:' + Morebits.pageNameNorm + ']]';
+		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
+		text += namespace === 'file' ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log]): ' : ': ';
 		var summarytext;
 		if (params.logEndorsing) {
-			text += '\n# [[:' + Morebits.pageNameNorm + ']]: endorsed ' + (params.blp ? 'BLP ' : params.book ? 'BOOK' : '') + 'PROD. ~~~~~';
+			text += 'endorsed ' + (params.blp ? 'BLP ' : params.book ? 'BOOK' : '') + 'PROD. ~~~~~';
 			if (params.reason) {
 				text += "\n#* '''Reason''': " + params.reason + '\n';
 			}
 			summarytext = 'Logging endorsement of PROD nomination of [[:' + Morebits.pageNameNorm + ']].';
 		} else {
-			text += '\n# [[:' + Morebits.pageNameNorm + ']]: ' + (params.blp ? 'BLP ' : params.book ? 'BOOK' : '') + 'PROD';
+			text += (params.blp ? 'BLP ' : params.book ? 'BOOK' : '') + 'PROD';
 			if (params.logInitialContrib) {
 				text += '; notified {{user|' + params.logInitialContrib + '}}';
 			}
