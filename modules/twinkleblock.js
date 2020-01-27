@@ -430,12 +430,37 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 		$form.find('[name=pagerestrictions]').select2({
 			width: '100%',
-			tags: true,
-			placeholder: 'Enter pages to block user from',
+			placeholder: 'Select pages to block user from',
 			maximumSelectionLength: 10, // Software limitation [[phab:T202776]]
-			language: {
-				noResults: function() {
-					return 'No pages entered yet';
+			minimumInputLength: 1, // prevent ajax call when empty
+			ajax: {
+				url: mw.util.wikiScript('api'),
+				dataType: 'json',
+				delay: 100,
+				data: function(params) {
+					var title = mw.Title.newFromText(params.term);
+					if (!title) {
+						return;
+					}
+					return {
+						'action': 'query',
+						'format': 'json',
+						'list': 'allpages',
+						'apfrom': title.title,
+						'apnamespace': title.namespace,
+						'aplimit': '10'
+					};
+				},
+				processResults: function(data) {
+					return {
+						results: data.query.allpages.map(function(page) {
+							var title = mw.Title.newFromText(page.title, page.ns).toText();
+							return {
+								id: title,
+								text: title
+							};
+						})
+					};
 				}
 			}
 		});
