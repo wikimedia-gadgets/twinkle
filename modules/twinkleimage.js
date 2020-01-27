@@ -198,7 +198,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	if (event.target.reason) {
 		reason = event.target.reason.value;
 	}
-	if (event.target.replacement.value && event.target.replacement.value.trim()) {
+	if (event.target.replacement && event.target.replacement.value && event.target.replacement.value.trim()) {
 		replacement = event.target.replacement.value;
 		replacement = /^\s*(Image|File):/i.test(replacement) ? replacement : 'File:' + replacement;
 	}
