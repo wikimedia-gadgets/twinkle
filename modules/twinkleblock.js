@@ -482,7 +482,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			placeholder: 'Select namespaces to block user from'
 		});
 
-		// Reduce padding
 		mw.util.addCSS(
 			// prevent dropdown from appearing behind the dialog, just in case
 			'.select2-container { z-index: 10000; }' +
