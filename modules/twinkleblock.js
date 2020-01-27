@@ -1398,7 +1398,9 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 				};
 				text += '|area=from certain ';
 				if (params.pagerestrictions.length) {
-					text += 'pages (' + makeSentence(params.pagerestrictions);
+					text += 'pages (' + makeSentence(params.pagerestrictions.map(function(p) {
+						return '[[:' + p + ']]';
+					}));
 					text += params.namespacerestrictions.length ? ') and certain ' : ')';
 				}
 				if (params.namespacerestrictions.length) {
@@ -1406,7 +1408,7 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 					var namespaceNames = params.namespacerestrictions.map(function(id) {
 						return menuFormattedNamespaces[id];
 					});
-					text += 'namespaces (' + makeSentence(namespaceNames) + ')';
+					text += '[[Wikipedia:Namespace|namespaces]] (' + makeSentence(namespaceNames) + ')';
 				}
 			} else if (params.area) {
 				text += '|area=' + params.area;
