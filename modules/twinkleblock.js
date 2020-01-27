@@ -462,6 +462,12 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 						})
 					};
 				}
+			},
+			templateSelection: function(choice) {
+				return $('<a>').text(choice.text).attr({
+					href: mw.util.getUrl(choice.text),
+					target: '_blank'
+				});
 			}
 		});
 
