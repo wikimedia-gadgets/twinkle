@@ -474,6 +474,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 		$form.find('[name=namespacerestrictions]').select2({
 			width: '100%',
+			matcher: Morebits.select2.matchers.wordBeginning,
 			language: {
 				searching: Morebits.select2.queryInterceptor
 			},

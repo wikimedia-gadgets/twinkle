@@ -1242,7 +1242,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		$('select[name=sub_group]')
 			.select2({
 				width: '100%',
-				matcher: Morebits.select2.matcher,
+				matcher: Morebits.select2.matchers.optgroupFull,
 				templateResult: Morebits.select2.highlightSearchMatches,
 				language: {
 					searching: Morebits.select2.queryInterceptor

@@ -1155,23 +1155,36 @@ Morebits.array = {
 /**
  * ************ Morebits.select2 ***************
  * Utilities to enhance select2 menus
- * See twinklewarn and twinklexfd for sample usages
+ * See twinklewarn, twinklexfd, twinkleblock for sample usages
  */
 Morebits.select2 = {
 
-	/**
-	 * Custom matcher in which if the optgroup matches, all options in that group are shown,
-	 * like in jquery.chosen
-	 */
-	matcher: function(params, data) {
-		var originalMatcher = $.fn.select2.defaults.defaults.matcher;
-		var result = originalMatcher(params, data);
+	matchers: {
+		/**
+		 * Custom matcher in which if the optgroup name matches, all options in that
+		 * group are shown, like in jquery.chosen
+		 */
+		optgroupFull: function(params, data) {
+			var originalMatcher = $.fn.select2.defaults.defaults.matcher;
+			var result = originalMatcher(params, data);
 
-		if (result && params.term &&
-			data.text.toUpperCase().indexOf(params.term.toUpperCase()) !== -1) {
-			result.children = data.children;
+			if (result && params.term &&
+				data.text.toUpperCase().indexOf(params.term.toUpperCase()) !== -1) {
+				result.children = data.children;
+			}
+			return result;
+		},
+
+		/** Custom matcher that matches from the beginning of words only */
+		wordBeginning: function(params, data) {
+			var originalMatcher = $.fn.select2.defaults.defaults.matcher;
+			var result = originalMatcher(params, data);
+			if (!params.term || (result &&
+				new RegExp('\\b' + mw.util.escapeRegExp(params.term), 'i').test(result.text))) {
+				return result;
+			}
+			return null;
 		}
-		return result;
 	},
 
 	/** Underline matched part of options */
