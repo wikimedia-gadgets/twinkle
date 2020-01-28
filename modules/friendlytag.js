@@ -1246,15 +1246,12 @@ Twinkle.tag.callbacks = {
 			pageobj.save(function() {
 				// special functions for merge tags
 				if (params.mergeReason) {
-					// Use similar language for talkpage header and edit summary
-					var direction = '[[:' + params.nonDiscussArticle + ']] ' + (params.mergeTag === 'Merge' ? 'with' : 'into') + ' [[:' + params.discussArticle + ']]';
 					// post the rationale on the talk page (only operates in main namespace)
-					var talkpageText = '\n\n== Proposed merge of ' + direction + '  ==\n\n';
+					var talkpageText = '\n\n== ' + params.talkDiscussionTitle + ' ==\n\n';
 					talkpageText += params.mergeReason.trim() + ' ~~~~';
-
 					var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
 					talkpage.setAppendText(talkpageText);
-					talkpage.setEditSummary('Proposing to merge ' + direction + Twinkle.getPref('summaryAd'));
+					talkpage.setEditSummary('/* ' + params.talkDiscussionTitle + ' */ new section' + Twinkle.getPref('summaryAd'));
 					talkpage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
 					talkpage.setCreateOption('recreate');
 					talkpage.append();
@@ -1543,7 +1540,8 @@ Twinkle.tag.callbacks = {
 									params.discussArticle = tagName === 'Merge to' ? params.mergeTarget : mw.config.get('wgTitle');
 									// nonDiscussArticle is the article which won't have the discussion
 									params.nonDiscussArticle = tagName === 'Merge to' ? mw.config.get('wgTitle') : params.mergeTarget;
-									params.talkDiscussionTitle = 'Proposed merge with ' + params.nonDiscussArticle;
+									var direction = params.nonDiscussArticle + (params.mergeTag === 'Merge' ? ' with ' : ' into ') + params.discussArticle;
+									params.talkDiscussionTitle = 'Proposed merge of ' + direction;
 								}
 								currentTag += '|discuss=Talk:' + params.discussArticle + '#' + params.talkDiscussionTitle;
 							}
