@@ -36,6 +36,8 @@ Twinkle.speedy.callback = function twinklespeedyCallback() {
 
 // Used by unlink feature
 Twinkle.speedy.dialog = null;
+// Used throughout
+Twinkle.speedy.hasCSD = !!$('#delete-reason').length;
 
 // The speedy criteria list can be in one of several modes
 Twinkle.speedy.mode = {
@@ -95,7 +97,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					value: 'tag_only',
 					name: 'tag_only',
 					tooltip: 'If you just want to tag the page, instead of deleting it now',
-					checked: Twinkle.getPref('deleteSysopDefaultToTag'),
+					checked: !(Twinkle.speedy.hasCSD || Twinkle.getPref('deleteSysopDefaultToDelete')),
 					event: function(event) {
 						var cForm = event.target.form;
 						var cChecked = event.target.checked;
@@ -110,7 +112,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 						// enable notify checkbox
 						cForm.notify.checked = cChecked;
 						// enable deletion notification checkbox
-						cForm.warnusertalk.checked = !cChecked && $('#delete-reason').length < 1;
+						cForm.warnusertalk.checked = !cChecked && !Twinkle.speedy.hasCSD;
 						// enable multiple
 						cForm.multiple.checked = false;
 						// enable requesting creation protection
@@ -188,7 +190,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					name: 'warnusertalk',
 					tooltip: 'A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences ' +
 						'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
-					checked: $('#delete-reason').length < 1,
+					checked: !Twinkle.speedy.hasCSD,
 					event: function(event) {
 						event.stopPropagation();
 					}
@@ -218,7 +220,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				name: 'notify',
 				tooltip: 'A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences ' +
 						'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
-				checked: !isSysop || Twinkle.getPref('deleteSysopDefaultToTag'),
+				checked: !isSysop || !(Twinkle.speedy.hasCSD || Twinkle.getPref('deleteSysopDefaultToDelete')),
 				event: function(event) {
 					event.stopPropagation();
 				}
@@ -411,7 +413,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	form.replaceChild(work_area.render(), old_area);
 
 	// if sysop, check if CSD is already on the page and fill in custom rationale
-	if (isSysopMode && $('#delete-reason').length) {
+	if (isSysopMode && Twinkle.speedy.hasCSD) {
 		var customOption = $('input[name=csd][value=reason]')[0];
 		if (customOption) {
 			if (Twinkle.getPref('speedySelectionStyle') !== 'radioClick') {
@@ -1243,7 +1245,7 @@ Twinkle.speedy.callbacks = {
 			initialContrib = null;
 
 		// Check for already existing tags
-		} else if ($('#delete-reason').length && params.warnUser && !confirm('The page is has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?')) {
+		} else if (Twinkle.speedy.hasCSD && params.warnUser && !confirm('The page is has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?')) {
 			Morebits.status.info('Notifying initial contributor', 'canceled by user; skipping notification.');
 			initialContrib = null;
 		} else {
