@@ -431,6 +431,11 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		$form.find('[name=pagerestrictions]').select2({
 			width: '100%',
 			placeholder: 'Select pages to block user from',
+			language: {
+				errorLoading: function() {
+					return 'Incomplete or invalid search term';
+				}
+			},
 			maximumSelectionLength: 10, // Software limitation [[phab:T202776]]
 			minimumInputLength: 1, // prevent ajax call when empty
 			ajax: {
