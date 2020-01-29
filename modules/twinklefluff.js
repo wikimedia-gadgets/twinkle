@@ -120,9 +120,29 @@ Twinkle.fluff.addLinks = {
 	},
 
 	diff: function() {
-		// Add a [restore this revision] link to the older revision
-		// Don't show if there's a single revision or weird diff (cur on latest)
+		// Autofill user talk links on diffs with vanarticle for easy warning, but don't autowarn
+		var warnFromTalk = function(xtitle) {
+			var talkLink = $('#mw-diff-' + xtitle + '2 .mw-usertoollinks a').first();
+			if (talkLink.length) {
+				var extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&' + 'noautowarn=true';
+				// diffIDs for vanarticlerevid
+				extraParams += '&vanarticlerevid=';
+				extraParams += xtitle === 'otitle' ? mw.config.get('wgDiffOldId') : mw.config.get('wgDiffNewId');
+
+				var href = talkLink.attr('href');
+				if (href.indexOf('?') === -1) {
+					talkLink.attr('href', href + '?' + extraParams);
+				} else {
+					talkLink.attr('href', href + '&' + extraParams);
+				}
+			}
+		};
+
+		// Don't load if there's a single revision or weird diff (cur on latest)
 		if (mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId'))) {
+			warnFromTalk('otitle'); // Add quick-warn link to user talk link on older diff
+
+			// Add a [restore this revision] link to the older revision
 			var revertToRevision = document.createElement('div');
 			revertToRevision.setAttribute('id', 'tw-revert-to-orevision');
 			revertToRevision.style.fontWeight = 'bold';
@@ -138,6 +158,7 @@ Twinkle.fluff.addLinks = {
 			otitle.insertBefore(revertToRevision, otitle.firstChild);
 		}
 
+		warnFromTalk('ntitle'); // Add quick-warn link to user talk link on newer diff
 		// Add either restore or rollback links to the newer revision
 		// Don't show if there's a single revision or weird diff (prev on first)
 		var ntitle = document.getElementById('mw-diff-ntitle1').parentNode;
