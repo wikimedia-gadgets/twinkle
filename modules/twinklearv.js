@@ -58,16 +58,15 @@ Twinkle.arv.callback = function (username, isIP) {
 			}
 		}
 		confirmationMessage += ' Are you sure you want to report it?';
-		
+
 		if (confirm(confirmationMessage)) {
 			Twinkle.arv.callback.showform(username);
 		}
 	}, function(err) {
-		console.log('Error fetching block info', err);
 		// If something went wrong, keep going
 		Twinkle.arv.callback.showform(username);
 	});
-}
+};
 
 Twinkle.arv.callback.showform = function (uid) {
 	var Window = new Morebits.simpleWindow(600, 500);
