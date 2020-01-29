@@ -62,7 +62,7 @@ Twinkle.arv.callback = function (username, isIP) {
 		if (confirm(confirmationMessage)) {
 			Twinkle.arv.callback.showform(username);
 		}
-	}, function(err) {
+	}, function() {
 		// If something went wrong, keep going
 		Twinkle.arv.callback.showform(username);
 	});
