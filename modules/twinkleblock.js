@@ -430,19 +430,56 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 		$form.find('[name=pagerestrictions]').select2({
 			width: '100%',
-			tags: true,
-			placeholder: 'Enter pages to block user from',
-			maximumSelectionLength: 10, // Software limitation [[phab:T202776]]
+			placeholder: 'Select pages to block user from',
 			language: {
-				noResults: function() {
-					return 'No pages entered yet';
+				errorLoading: function() {
+					return 'Incomplete or invalid search term';
 				}
+			},
+			maximumSelectionLength: 10, // Software limitation [[phab:T202776]]
+			minimumInputLength: 1, // prevent ajax call when empty
+			ajax: {
+				url: mw.util.wikiScript('api'),
+				dataType: 'json',
+				delay: 100,
+				data: function(params) {
+					var title = mw.Title.newFromText(params.term);
+					if (!title) {
+						return;
+					}
+					return {
+						'action': 'query',
+						'format': 'json',
+						'list': 'allpages',
+						'apfrom': title.title,
+						'apnamespace': title.namespace,
+						'aplimit': '10'
+					};
+				},
+				processResults: function(data) {
+					return {
+						results: data.query.allpages.map(function(page) {
+							var title = mw.Title.newFromText(page.title, page.ns).toText();
+							return {
+								id: title,
+								text: title
+							};
+						})
+					};
+				}
+			},
+			templateSelection: function(choice) {
+				return $('<a>').text(choice.text).attr({
+					href: mw.util.getUrl(choice.text),
+					target: '_blank'
+				});
 			}
 		});
 
 
 		$form.find('[name=namespacerestrictions]').select2({
 			width: '100%',
+			matcher: Morebits.select2.matchers.wordBeginning,
 			language: {
 				searching: Morebits.select2.queryInterceptor
 			},
@@ -450,7 +487,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			placeholder: 'Select namespaces to block user from'
 		});
 
-		// Reduce padding
 		mw.util.addCSS(
 			// prevent dropdown from appearing behind the dialog, just in case
 			'.select2-container { z-index: 10000; }' +
