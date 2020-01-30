@@ -1569,9 +1569,9 @@ Twinkle.xfd.callback.evaluate = function(e) {
 					wikipedia_page = new Morebits.wiki.page('Template:' + xfdtarget, 'Tagging other template with merge tag');
 				}
 				wikipedia_page.setFollowRedirect(true);
-				params = $.extend(params);
-				params.otherTemplateName = Morebits.pageNameNorm;
-				wikipedia_page.setCallbackParameters(params);
+				var otherParams = $.extend({}, params);
+				otherParams.otherTemplateName = Morebits.pageNameNorm;
+				wikipedia_page.setCallbackParameters(otherParams);
 				wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);
 			} else { // delete
 				if (isScribunto) {
