@@ -1179,32 +1179,29 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			var added_data = '';
-			var editsummary = '';
+			var editsummary = 'Category being considered for ' + params.action;
 			switch (params.xfdcat) {
 				case 'cfd':
 					added_data = '{{subst:cfd}}';
-					editsummary = 'Category being considered for deletion; see [[:' + params.discussionpage + ']].';
 					break;
 				case 'cfm':
 					added_data = '{{subst:cfm|' + params.target + '}}';
-					editsummary = 'Category being considered for merging; see [[:' + params.discussionpage + ']].';
 					break;
 				case 'cfr':
 					added_data = '{{subst:cfr|' + params.target + '}}';
-					editsummary = 'Category being considered for renaming; see [[:' + params.discussionpage + ']].';
 					break;
 				case 'cfs':
 					added_data = '{{subst:cfs|' + params.target + '|' + params.target2 + '}}';
-					editsummary = 'Category being considered for splitting; see [[:' + params.discussionpage + ']].';
 					break;
 				case 'cfc':
 					added_data = '{{subst:cfc|' + params.target + '}}';
-					editsummary = 'Category being considered for conversion to an article; see [[:' + params.discussionpage + ']].';
+					editsummary += ' to an article';
 					break;
 				default:
 					alert('twinklexfd in taggingCategory(): unknown CFD action');
 					break;
 			}
+			editsummary += '; see [[:' + params.discussionpage + ']].';
 
 			pageobj.setPageText(added_data + '\n' + text);
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
@@ -1218,14 +1215,7 @@ Twinkle.xfd.callbacks = {
 			var statelem = pageobj.getStatusElement();
 
 			var added_data = Twinkle.xfd.callbacks.getDiscussionWikitext(params.xfdcat, params);
-			var summaryActions = {
-				cfd: 'delete',
-				cfm: 'merge',
-				cfr: 'rename',
-				cfs: 'split',
-				cfc: 'convert'
-			};
-			var editsummary = 'Adding ' + summaryActions[params.xfdcat] + ' nomination of [[:' + Morebits.pageNameNorm + ']].';
+			var editsummary = 'Adding ' + params.action + ' nomination of [[:' + Morebits.pageNameNorm + ']].';
 
 			var text = old_text.replace('below this line -->', 'below this line -->\n' + added_data);
 			if (text === old_text) {
@@ -1252,7 +1242,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-			var notifytext = '\n{{subst:cfd-notify|1=' + Morebits.pageNameNorm + '}} ~~~~';
+			var notifytext = '\n{{subst:cfd-notify|1=' + Morebits.pageNameNorm + '|action=' + params.action + '}} ~~~~';
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:CFD|categories for discussion]].' + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
@@ -1676,12 +1666,22 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			params = { reason: reason, xfdcat: xfdcat, target: xfdtarget, target2: xfdtarget2, logpage: logpage };
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
 
+			// Useful for customized actions in edit summaries and the notification template
+			var summaryActions = {
+				cfd: 'deletion',
+				cfm: 'merging',
+				cfr: 'renaming',
+				cfs: 'splitting',
+				cfc: 'conversion'
+			};
+			params.action = summaryActions[params.xfdcat];
+
 			// Updating data for the action completed event
 			Morebits.wiki.actionCompleted.redirect = logpage;
 			Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
 
 			// Tagging category
-			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with deletion tag');
+			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with ' + params.action + ' tag');
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.cfd.taggingCategory);
 
