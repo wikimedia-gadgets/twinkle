@@ -467,16 +467,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'select',
 				label: 'C2 sub-criterion: ',
 				name: 'xfdcat',
-				tooltip: 'See WP:CFDS for full explanations.',
-				event: function(e) {
-					var value = e.target.value;
-					var target = e.target.form.xfdtarget;
-					if (value === 'cfd') {
-						target.disabled = true;
-					} else {
-						target.disabled = false;
-					}
-				}
+				tooltip: 'See WP:CFDS for full explanations.'
 			});
 			cfds_category.append({ type: 'option', label: 'C2A: Typographic and spelling fixes', value: 'C2A', selected: true });
 			cfds_category.append({ type: 'option', label: 'C2B: Naming conventions and disambiguation', value: 'C2B' });
