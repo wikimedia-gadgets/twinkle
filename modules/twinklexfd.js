@@ -311,7 +311,9 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						var xfdtarget = new Morebits.quickForm.element({
 							name: 'xfdtarget',
 							type: 'input',
-							label: 'Other ' + templateOrModule + ' to be merged: '
+							label: 'Other ' + templateOrModule + ' to be merged: ',
+							tooltip: 'Required',
+							required: true
 						});
 						target.parentNode.appendChild(xfdtarget.render());
 					} else {
@@ -418,8 +420,10 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					// update enabled status
 					if (value === 'cfd') {
 						target.disabled = true;
+						target.required = false;
 					} else {
 						target.disabled = false;
+						target.required = true;
 					}
 					// update label
 					if (value === 'cfs') {
@@ -434,6 +438,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						var xfdtarget2 = document.createElement('input');
 						xfdtarget2.setAttribute('name', 'xfdtarget2');
 						xfdtarget2.setAttribute('type', 'text');
+						xfdtarget2.setAttribute('required', 'true');
 						target.parentNode.appendChild(xfdtarget2);
 					} else {
 						$(target.parentNode).find("input[name='xfdtarget2']").remove();
@@ -480,7 +485,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'input',
 				name: 'xfdtarget',
 				label: 'New name: ',
-				value: ''
+				value: '',
+				required: true
 			});
 			appendReasonBox();
 			work_area = work_area.render();
@@ -1486,7 +1492,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	var delsort_cats = $(form.delsort).val(); // afd
 	var xfdcat = form.xfdcat && form.xfdcat.value; // afd, cfd, cfds, tfd
 	var xfdtarget = form.xfdtarget && form.xfdtarget.value; // cfd, cfds, tfd
-	var xfdtarget2 = form.xfdtarget2 && form.xfdtarget2.value; // cfd, cfds
+	var xfdtarget2 = form.xfdtarget2 && form.xfdtarget2.value; // cfd
 	var noinclude = form.noinclude && form.noinclude.checked; // afd, mfd, tfd
 	var tfdtype = form.templatetype && form.templatetype.value; // tfd
 	var notifyuserspace = form.notifyuserspace && form.notifyuserspace.checked; // mfd
