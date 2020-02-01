@@ -117,7 +117,7 @@ Morebits.sanitizeIPv6 = function (address) {
  * Index to Morebits.quickForm element types:
  *
  *   select    A combo box (aka drop-down).
- *              - Attributes: name, label, multiple, size, list, event
+ *              - Attributes: name, label, multiple, size, list, event, disabled
  *   option    An element for a combo box.
  *              - Attributes: value, label, selected, disabled
  *   optgroup  A group of "option"s.
@@ -268,6 +268,9 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			}
 			if (data.size) {
 				select.setAttribute('size', data.size);
+			}
+			if (data.disabled) {
+				select.setAttribute('disabled', 'disabled');
 			}
 			select.setAttribute('name', data.name);
 

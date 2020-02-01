@@ -160,7 +160,8 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			name: 'preset',
 			label: 'Choose a preset:',
 			event: Twinkle.block.callback.change_preset,
-			list: Twinkle.block.callback.filtered_block_groups(blockGroup)
+			list: Twinkle.block.callback.filtered_block_groups(blockGroup),
+			disabled: partialBox // Only one option for partial blocks
 		});
 
 		field_block_options = new Morebits.quickForm.element({ type: 'field', label: 'Block options', name: 'field_block_options' });
