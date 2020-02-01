@@ -115,7 +115,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 						cForm.notify.checked = cChecked;
 						// enable/disable deletion notification checkbox
 						cForm.warnusertalk.disabled = cChecked;
-						cForm.warnusertalk.checked = !cChecked;
+						cForm.warnusertalk.checked = !cChecked && $('#delete-reason').length < 1;
 						// enable/disable multiple
 						cForm.multiple.disabled = !cChecked;
 						cForm.multiple.checked = false;
