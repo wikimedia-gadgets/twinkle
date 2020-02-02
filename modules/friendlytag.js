@@ -1008,12 +1008,20 @@ Twinkle.tag.alternativeList = [
 		value: 'R from scientific name'
 	},
 	{
+		label: '{{R from subtopic}}: redirect from a title that is a subtopic of the target article',
+		value: 'R from subtopic'
+	},
+	{
 		label: '{{R from surname}}: redirect from a title that is a surname',
 		value: 'R from surname'
 	},
 	{
 		label: '{{R to diacritics}}: redirect to the article title with diacritical marks (accents, umlauts, etc.)',
 		value: 'R to diacritics'
+	},
+	{
+		label: '{{R to related topic}}: redirect to an article about a similar topic',
+		value: 'R to related topic'
 	},
 	{
 		label: '{{R to scientific name}}: redirect from the common name to the scientific name',
