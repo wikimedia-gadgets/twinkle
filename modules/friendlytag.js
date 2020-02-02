@@ -980,8 +980,8 @@ Twinkle.tag.alternativeList = [
 		value: 'R from alternative name'
 	},
 	{
-		label: '{{R from ASCII}}: redirect from a title in basic ASCII to the formal article title, with differences that are not diacritical marks (accents, umlauts, etc.)',
-		value: 'R from ASCII'
+		label: '{{R from ASCII-only}}: redirect from a title in only basic ASCII to the formal article title, with differences that are not diacritical marks (accents, umlauts, etc.) or ligatures',
+		value: 'R from ASCII-only'
 	},
 	{
 		label: '{{R from historic name}}: redirect from another name with a significant historic past as a region, state, city or such, but which is no longer known by that title or name',
@@ -1016,8 +1016,8 @@ Twinkle.tag.alternativeList = [
 		value: 'R from surname'
 	},
 	{
-		label: '{{R to diacritics}}: redirect to the article title with diacritical marks (accents, umlauts, etc.)',
-		value: 'R to diacritics'
+		label: '{{R to diacritic}}: redirect to the article title with diacritical marks (accents, umlauts, etc.)',
+		value: 'R to diacritic'
 	},
 	{
 		label: '{{R to related topic}}: redirect to an article about a similar topic',
@@ -1039,8 +1039,8 @@ Twinkle.tag.administrativeList = [
 		value: 'R from duplicated article'
 	},
 	{
-		label: '{{R from EXIF}}: redirect of a wikilink created from JPEG EXIF information (i.e. the "metadata" section on some image description pages)',
-		value: 'R from EXIF'
+		label: '{{R from file metadata link}}: redirect of a wikilink created from EXIF, XMP, or other information (i.e. the "metadata" section on some image description pages)',
+		value: 'R from file metadata link'
 	},
 	{
 		label: '{{R from merge}}: redirect from a merged page in order to preserve its edit history',
