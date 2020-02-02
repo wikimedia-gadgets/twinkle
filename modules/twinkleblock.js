@@ -527,9 +527,9 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		// returns partial: '' if the user is partially blocked
 		var statusStr = relevantUserName + ' is ' + (Twinkle.block.currentBlockInfo.partial === '' ? 'partially blocked' : 'blocked sitewide');
 		var infoStr = 'Submit query to reblock with supplied options';
-		if (Twinkle.block.currentBlockInfo.partial === undefined && partial) {
+		if (Twinkle.block.currentBlockInfo.partial === undefined && partialBox) {
 			infoStr += ' and convert to a partial block';
-		} else if (Twinkle.block.currentBlockInfo.partial === '' && !partial) {
+		} else if (Twinkle.block.currentBlockInfo.partial === '' && !partialBox) {
 			infoStr += ' and convert to a sitewide block';
 		}
 		Morebits.status.warn(statusStr, infoStr);
