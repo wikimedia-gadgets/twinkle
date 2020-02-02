@@ -526,11 +526,16 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		// list=blocks without bkprops (as we do in fetchUerInfo)
 		// returns partial: '' if the user is partially blocked
 		var statusStr = relevantUserName + ' is ' + (Twinkle.block.currentBlockInfo.partial === '' ? 'partially blocked' : 'blocked sitewide');
-		var infoStr = 'Submit query to reblock with supplied options';
+		if (Twinkle.block.currentBlockInfo.expiry === 'infinity') {
+			statusStr += ' (indef)';
+		} else if (new Morebits.date(Twinkle.block.currentBlockInfo.expiry).isValid()) {
+			statusStr += ' (expires ' + new Morebits.date(Twinkle.block.currentBlockInfo.expiry).calendar('utc') + ')';
+		}
+		var infoStr = 'Submit query to change the block';
 		if (Twinkle.block.currentBlockInfo.partial === undefined && partialBox) {
-			infoStr += ' and convert to a partial block';
+			infoStr += ', converting to a partial block';
 		} else if (Twinkle.block.currentBlockInfo.partial === '' && !partialBox) {
-			infoStr += ' and convert to a sitewide block';
+			infoStr += ', converting to a sitewide block';
 		}
 		Morebits.status.warn(statusStr, infoStr);
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
