@@ -1254,15 +1254,12 @@ Twinkle.tag.callbacks = {
 			pageobj.save(function() {
 				// special functions for merge tags
 				if (params.mergeReason) {
-					// Use similar language for talkpage header and edit summary
-					var direction = '[[:' + params.nonDiscussArticle + ']] ' + (params.mergeTag === 'Merge' ? 'with' : 'into') + ' [[:' + params.discussArticle + ']]';
 					// post the rationale on the talk page (only operates in main namespace)
-					var talkpageText = '\n\n== Proposed merge of ' + direction + '  ==\n\n';
+					var talkpageText = '\n\n== ' + params.talkDiscussionTitle + ' ==\n\n';
 					talkpageText += params.mergeReason.trim() + ' ~~~~';
-
 					var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
 					talkpage.setAppendText(talkpageText);
-					talkpage.setEditSummary('Proposing to merge ' + direction + Twinkle.getPref('summaryAd'));
+					talkpage.setEditSummary('/* ' + params.talkDiscussionTitle + ' */ new section' + Twinkle.getPref('summaryAd'));
 					talkpage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
 					talkpage.setCreateOption('recreate');
 					talkpage.append();
@@ -1538,23 +1535,22 @@ Twinkle.tag.callbacks = {
 					case 'Merge to':
 					case 'Merge from':
 						params.mergeTag = tagName;
-						if (params.mergeTarget) {
-							// normalize the merge target for now and later
-							params.mergeTarget = Morebits.string.toUpperCaseFirstChar(params.mergeTarget.replace(/_/g, ' '));
+						// normalize the merge target for now and later
+						params.mergeTarget = Morebits.string.toUpperCaseFirstChar(params.mergeTarget.replace(/_/g, ' '));
 
-							currentTag += '|' + params.mergeTarget;
+						currentTag += '|' + params.mergeTarget;
 
-							// link to the correct section on the talk page, for article space only
-							if (mw.config.get('wgNamespaceNumber') === 0 && (params.mergeReason || params.discussArticle)) {
-								if (!params.discussArticle) {
-									// discussArticle is the article whose talk page will contain the discussion
-									params.discussArticle = tagName === 'Merge to' ? params.mergeTarget : mw.config.get('wgTitle');
-									// nonDiscussArticle is the article which won't have the discussion
-									params.nonDiscussArticle = tagName === 'Merge to' ? mw.config.get('wgTitle') : params.mergeTarget;
-									params.talkDiscussionTitle = 'Proposed merge with ' + params.nonDiscussArticle;
-								}
-								currentTag += '|discuss=Talk:' + params.discussArticle + '#' + params.talkDiscussionTitle;
+						// link to the correct section on the talk page, for article space only
+						if (mw.config.get('wgNamespaceNumber') === 0 && (params.mergeReason || params.discussArticle)) {
+							if (!params.discussArticle) {
+								// discussArticle is the article whose talk page will contain the discussion
+								params.discussArticle = tagName === 'Merge to' ? params.mergeTarget : mw.config.get('wgTitle');
+								// nonDiscussArticle is the article which won't have the discussion
+								params.nonDiscussArticle = tagName === 'Merge to' ? mw.config.get('wgTitle') : params.mergeTarget;
+								var direction = params.nonDiscussArticle + (params.mergeTag === 'Merge' ? ' with ' : ' into ') + params.discussArticle;
+								params.talkDiscussionTitle = 'Proposed merge of ' + direction;
 							}
+							currentTag += '|discuss=Talk:' + params.discussArticle + '#' + params.talkDiscussionTitle;
 						}
 						break;
 					default:
