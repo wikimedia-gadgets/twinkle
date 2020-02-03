@@ -160,8 +160,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			name: 'preset',
 			label: 'Choose a preset:',
 			event: Twinkle.block.callback.change_preset,
-			list: Twinkle.block.callback.filtered_block_groups(blockGroup),
-			disabled: partialBox // Only one option for partial blocks
+			list: Twinkle.block.callback.filtered_block_groups(blockGroup)
 		});
 
 		field_block_options = new Morebits.quickForm.element({ type: 'field', label: 'Block options', name: 'field_block_options' });
@@ -984,6 +983,8 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '{{zombie proxy}}',
 		sig: null
 	},
+
+	// Begin partial block templates, accessed in Twinkle.block.blockGroupsPartial
 	'uw-pblock': {
 		autoblock: true,
 		expiry: '24 hours',
@@ -991,6 +992,54 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: false,
 		reasonParam: true,
 		summary: 'You have been [[WP:PB|partially blocked]] from certain areas of the encyclopedia'
+	},
+	'uw-pblockindef': {
+		autoblock: true,
+		expiry: 'infinity',
+		forRegisteredOnly: true,
+		nocreate: false,
+		pageParam: false,
+		reasonParam: true,
+		summary: 'You have been indefinitely [[WP:PB|partially blocked]] from certain areas of the encyclopedia'
+	},
+	'uw-ewpblock': {
+		autoblock: true,
+		expiry: '24 hours',
+		nocreate: false,
+		pageParam: false,
+		reasonParam: true,
+		reason: '[[WP:Edit warring|Edit warring]]',
+		summary: 'You have been [[WP:PB|blocked]] from editing certain areas of the encyclopedia to prevent further [[WP:DE|disruption]] due to [[WP:EW|edit warring]]'
+	},
+	'uw-acpblock': {
+		autoblock: true,
+		expiry: '48 hours',
+		nocreate: true,
+		pageParam: false,
+		reasonParam: true,
+		reason: 'Misusing [[WP:Sock puppetry|multiple accounts]]',
+		summary: 'You have been [[WP:PB|blocked]] from creating accounts for misusing [[WP:SOCK|multiple accounts]]'
+	},
+	'uw-acpblockindef': {
+		autoblock: true,
+		expiry: 'infinity',
+		forRegisteredOnly: true,
+		nocreate: true,
+		pageParam: false,
+		reasonParam: true,
+		reason: 'Misusing [[WP:Sock puppetry|multiple accounts]]',
+		summary: 'You have been indefinitely [[WP:PB|blocked]] from creating accounts for misusing [[WP:SOCK|multiple accounts]]'
+	},
+	'uw-epblock': {
+		autoblock: true,
+		expiry: 'infinity',
+		forRegisteredOnly: true,
+		nocreate: false,
+		noemail: true,
+		pageParam: false,
+		reasonParam: true,
+		reason: 'Email [[WP:Harassment|harassment]]',
+		summary: 'You have been [[WP:PB|blocked]] from emailing other editors for [[WP:Harassment|harassment]]'
 	}
 };
 
@@ -1096,7 +1145,12 @@ Twinkle.block.blockGroupsPartial = [
 	{
 		label: 'Partial block reasons',
 		list: [
-			{ label: 'Partial block', value: 'uw-pblock', selected: true }
+			{ label: 'Generic partial block (custom reason)', value: 'uw-pblock', selected: true },
+			{ label: 'Generic partial block (custom reason) - indefinite', value: 'uw-pblockindef' },
+			{ label: 'Edit warring', value: 'uw-ewpblock' },
+			{ label: 'Misusing multiple accounts', value: 'uw-acpblock' },
+			{ label: 'Misusing multiple accounts - indefinite', value: 'uw-acpblockindef' },
+			{ label: 'Email harassment', value: 'uw-epblock' }
 		]
 	}
 ];
