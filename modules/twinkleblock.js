@@ -1127,11 +1127,11 @@ Twinkle.block.blockGroups = [
 		label: 'Templated reasons',
 		list: [
 			{ label: 'blocked proxy', value: 'blocked proxy' },
-			{ label: 'CheckUser block', value: 'CheckUser block' },
-			{ label: 'checkuserblock-account', value: 'checkuserblock-account' },
-			{ label: 'checkuserblock-wide', value: 'checkuserblock-wide' },
+			{ label: 'CheckUser block', value: 'CheckUser block', disabled: !Morebits.userIsInGroup('checkuser') },
+			{ label: 'checkuserblock-account', value: 'checkuserblock-account', disabled: !Morebits.userIsInGroup('checkuser') },
+			{ label: 'checkuserblock-wide', value: 'checkuserblock-wide', disabled: !Morebits.userIsInGroup('checkuser') },
 			{ label: 'colocationwebhost', value: 'colocationwebhost' },
-			{ label: 'oversightblock', value: 'oversightblock' },
+			{ label: 'oversightblock', value: 'oversightblock', disabled: !Morebits.userIsInGroup('oversight') },
 			// { label: 'rangeblock', value: 'rangeblock' }, // placeholder for when we add support for rangeblocks
 			{ label: 'spamblacklistblock', value: 'spamblacklistblock' },
 			{ label: 'tor', value: 'tor' },
@@ -1175,7 +1175,8 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 						name: 'template-name',
 						value: templateName
 					}],
-					selected: !!blockPreset.selected
+					selected: !!blockPreset.selected,
+					disabled: !!blockPreset.disabled
 				};
 			}
 		});
