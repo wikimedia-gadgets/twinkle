@@ -324,8 +324,8 @@ twinkle.js MediaWiki:Gadget-Twinkle.js
   twinkle-pagestyles.css MediaWiki:Gadget-Twinkle-pagestyles.css
   morebits.js MediaWiki:Gadget-morebits.js
   morebits.css MediaWiki:Gadget-morebits.css
-  select2.min.js MediaWiki:Gadget-select2.min.js
-  select2.min.css MediaWiki:Gadget-select2.min.css
+  select2/select2.min.js MediaWiki:Gadget-select2.min.js
+  select2/select2.min.css MediaWiki:Gadget-select2.min.css
   modules/twinklearv.js MediaWiki:Gadget-twinklearv.js
   modules/twinklebatchdelete.js MediaWiki:Gadget-twinklebatchdelete.js
   modules/twinklebatchprotect.js MediaWiki:Gadget-twinklebatchprotect.js
