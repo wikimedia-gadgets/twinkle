@@ -66,7 +66,7 @@ The program depends on a few Perl modules, namely [`MediaWiki::API`][MediaWiki::
 
 You may prefer to install them through your operating system's packaing tool (e.g. `apt-get install libgetopt-long-descriptive-perl`) although you can install them through cpanm too.
 
-When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a file called `~/.twinklerc` using the following format:
+When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a `.twinklerc` file, either in this directory or in your `~` home, using the following format:
 
     username = username
     password = password

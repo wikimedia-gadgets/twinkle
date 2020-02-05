@@ -7,6 +7,7 @@ use warnings;
 use English qw(-no_match_vars);
 use utf8;
 
+use FindBin qw($Bin);
 use Config::General qw(ParseConfig);
 use Getopt::Long::Descriptive;
 use Git::Repository;
@@ -18,9 +19,16 @@ use Term::ANSIColor;
 # username = Jimbo Wales
 # lang = en
 # etc.
+my $rc = '.twinklerc';
+# Check script directory and ~ (home) for config file, preferring the former
+my @dotLocales = map { $_.q{/}.$rc } ($Bin, $ENV{HOME});
 my %conf;
-my $config_file = "$ENV{HOME}/.twinklerc";
-%conf = ParseConfig($config_file) if -e -f -r $config_file;
+foreach my $dot (@dotLocales) {
+  if (-e -f -r $dot) {
+    %conf = ParseConfig($dot);
+    last;
+  }
+}
 
 my ($opt, $usage) = describe_options(
     "$PROGRAM_NAME %o <files...>",
@@ -65,15 +73,6 @@ if (scalar @status) {
 # Make sure we know what we're doing before doing it
 forReal();
 
-# Build file->page hashes
-my %deploys;
-while (<DATA>) {
-  chomp;
-  my @map = split;
-  $deploys{$map[0]} = $map[1];
-}
-# Remove 'modules/' from ARGV input filenames
-my %pages = map {+(my $s = $_) =~ s/modules\///; $_ => "$opt->{base}/$s"} @ARGV;
 
 # Open API and log in before anything else
 my $mw = MediaWiki::API->new({
@@ -86,6 +85,14 @@ $mw->login({lgname => $opt->username, lgpassword => $opt->password});
 
 ### Main loop to parse options
 if ($opt->mode eq 'deploy') {
+  # Build file->page hashes from __DATA__
+  my %deploys;
+  while (<DATA>) {
+    chomp;
+    my @map = split;
+    $deploys{$map[0]} = $map[1];
+  }
+
   # Follow order when deploying, useful mainly for keeping twinkle.js and
   # morebits.js first with make deploy
   foreach my $file (@ARGV) {
@@ -96,31 +103,36 @@ if ($opt->mode eq 'deploy') {
     my $page = $deploys{$file};
     next if saltNPepa($page, $file);
   }
-} elsif ($opt->mode eq 'pull') {
-  while (my ($file, $page) = each %pages) {
-    my $wikiPage = checkPage($page);
-    next if !$wikiPage;
-    print "Grabbing $page";
-    my $text = $wikiPage->{q{*}}."\n"; # MediaWiki doesn't have trailing newlines
-    # Might be faster to check this using git and eof, but here makes sense
-    if ($text eq read_text($file)) {
-      print colored ['blue'], "... No changes found, skipping\n";
-      next;
-    } else {
-      print "\n";
-      write_text($file, $text);
+} else {
+  # Remove 'modules/' from ARGV input filenames
+  my %pages = map {+(my $s = $_) =~ s/modules\///; $_ => "$opt->{base}/$s"} @ARGV;
+
+  if ($opt->mode eq 'pull') {
+    while (my ($file, $page) = each %pages) {
+      my $wikiPage = checkPage($page);
+      next if !$wikiPage;
+      print "Grabbing $page";
+      my $text = $wikiPage->{q{*}}."\n"; # MediaWiki doesn't have trailing newlines
+      # Might be faster to check this using git and eof, but here makes sense
+      if ($text eq read_text($file)) {
+        print colored ['blue'], "... No changes found, skipping\n";
+        next;
+      } else {
+        print "\n";
+        write_text($file, $text);
+      }
     }
-  }
-  # Show a summary of any changes
-  my $cmd = $repo->command(diff => '--stat', '--color');
-  my $s = $cmd->stdout;
-  while (<$s>) {
-    print;
-  }
-  $cmd->close;
-} elsif ($opt->mode eq 'push') {
-  while (my ($file, $page) = each %pages) {
-    next if saltNPepa($page, $file);
+    # Show a summary of any changes
+    my $cmd = $repo->command(diff => '--stat', '--color');
+    my $s = $cmd->stdout;
+    while (<$s>) {
+      print;
+    }
+    $cmd->close;
+  } elsif ($opt->mode eq 'push') {
+    while (my ($file, $page) = each %pages) {
+      next if saltNPepa($page, $file);
+    }
   }
 }
 
