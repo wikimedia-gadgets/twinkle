@@ -4,7 +4,7 @@
 (function($) {
 
 var api = new mw.Api(), relevantUserName;
-var menuFormattedNamespaces = mw.config.get('wgFormattedNamespaces');
+var menuFormattedNamespaces = $.extend({}, mw.config.get('wgFormattedNamespaces'));
 menuFormattedNamespaces[0] = '(Article)';
 
 /*
