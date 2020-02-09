@@ -347,49 +347,41 @@ Twinkle.talkback.noticeboards = {
 };
 
 Twinkle.talkback.evaluate = function(e) {
-	var form = e.target;
-	var tbtarget = form.getChecked('tbtarget')[0];
-	var page, message;
-	var section = form.section.value;
+	var input = Morebits.quickForm.getInputData(e.target);
 
-	var editSummary;
-	if (tbtarget === 'notice') {
-		page = form.noticeboard.value;
-		editSummary = Twinkle.talkback.noticeboards[page].editSummary;
-	} else {
-
-		// usertalk, other, see
-		page = form.page ? form.page.value : mw.config.get('wgUserName');
-		if (form.message) {
-			message = form.message.value.trim();
-		}
-
-		if (tbtarget === 'mail') {
-			editSummary = "Notification: You've got mail";
-		} else if (tbtarget === 'see') {
-			editSummary = 'Please check the discussion at [[:' + page + (section ? '#' + section : '') + ']]';
-		} else {  // tbtarget one of mytalk, usertalk, other
-			editSummary = 'Talkback ([[:';
-			if (tbtarget !== 'other' && !/^\s*user talk:/i.test(page)) {
-				editSummary += 'User talk:';
-			}
-			editSummary += page + (section ? '#' + section : '') + ']])';
-		}
-	}
-	var text = '\n\n' + Twinkle.talkback.getNoticeWikitext(tbtarget, page, section, message);
+	var fullUserTalkPageName = new mw.Title(mw.config.get('wgRelevantUserName'), 3).toText();
+	var talkpage = new Morebits.wiki.page(fullUserTalkPageName, 'Adding talkback');
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
-	Morebits.status.init(form);
-
-	var fullUserTalkPageName = mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').user_talk] + ':' + mw.config.get('wgRelevantUserName');
+	Morebits.status.init(e.target);
 
 	Morebits.wiki.actionCompleted.redirect = fullUserTalkPageName;
 	Morebits.wiki.actionCompleted.notice = 'Talkback complete; reloading talk page in a few seconds';
 
-	var talkpage = new Morebits.wiki.page(fullUserTalkPageName, 'Adding talkback');
+	// Not used for notice or mail
+	input.page = input.page || mw.config.get('wgUserName');
 
-	talkpage.setAppendText(text);
-	talkpage.setEditSummary(editSummary + Twinkle.getPref('summaryAd'));
+	switch (input.tbtarget) {
+		case 'notice':
+			talkpage.setEditSummary(Twinkle.talkback.noticeboards[input.noticeboard].editSummary + Twinkle.getPref('summaryAd'));
+			break;
+		case 'mail':
+			talkpage.setEditSummary("Notification: You've got mail" + Twinkle.getPref('summaryAd'));
+			break;
+		case 'see':
+			talkpage.setEditSummary('Please check the discussion at [[:' + input.page +
+			(input.section ? '#' + input.section : '') + ']]' + Twinkle.getPref('summaryAd'));
+			break;
+		default:  // tbtarget one of mytalk, usertalk, other
+			var editSummary = 'Talkback ([[:';
+			if (input.tbtarget !== 'other' && !/^\s*user talk:/i.test(input.page)) {
+				editSummary += 'User talk:';
+			}
+			editSummary += input.page + (input.section ? '#' + input.section : '') + ']])';
+			talkpage.setEditSummary(editSummary + Twinkle.getPref('summaryAd'));
+	}
+
+	talkpage.setAppendText('\n\n' + Twinkle.talkback.getNoticeWikitext(input));
 	talkpage.setCreateOption('recreate');
 	talkpage.setMinorEdit(Twinkle.getPref('markTalkbackAsMinor'));
 	talkpage.setFollowRedirect(true);
@@ -397,46 +389,49 @@ Twinkle.talkback.evaluate = function(e) {
 };
 
 Twinkle.talkback.preview = function(form) {
-	var tbtarget = form.getChecked('tbtarget')[0];
-	var section = form.section.value;
-	var page, message;
+	var input = Morebits.quickForm.getInputData(form);
 
-	if (tbtarget === 'notice') {
-		page = form.noticeboard.value;
-	} else {
+	if (input.tbtarget !== 'notice') {
 		// usertalk, other, see
-		page = form.page ? form.page.value : mw.config.get('wgUserName');
-		if (form.message) {
-			message = form.message.value.trim();
-		}
+		input.page = input.page || mw.config.get('wgUserName');
 	}
 
-	var noticetext = Twinkle.talkback.getNoticeWikitext(tbtarget, page, section, message);
+	var noticetext = Twinkle.talkback.getNoticeWikitext(input);
 	form.previewer.beginRender(noticetext, 'User_talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username
 };
 
-Twinkle.talkback.getNoticeWikitext = function(tbtarget, page, section, message) {
+Twinkle.talkback.getNoticeWikitext = function(input) {
 	var text;
-	if (tbtarget === 'notice') {
-		text = Morebits.string.safeReplace(Twinkle.talkback.noticeboards[page].text, '$SECTION', section);
-	} else if (tbtarget === 'see') {
-		text = '{{subst:Please see|location=' + page + (section ? '#' + section : '') + '|more=' + message.trim() + '}}';
-	} else {
-		text = '==';
-		if (tbtarget === 'mail') {
-			text += Twinkle.getPref('mailHeading') + '==\n' + "{{You've got mail|subject=" + section;
-		} else {  // tbtarget one of mytalk, usertalk, other
-			// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
-			text += Twinkle.getPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') +
-				'==\n' + '{{talkback|' + page + (section ? '|' + section : '');
-		}
-		text += '|ts=~~~~~}}';
 
-		if (message) {
-			text += '\n' + message + '  ~~~~';
-		} else if (Twinkle.getPref('insertTalkbackSignature')) {
-			text += '\n~~~~';
-		}
+	switch (input.tbtarget) {
+		case 'notice':
+			text = Morebits.string.safeReplace(Twinkle.talkback.noticeboards[input.noticeboard].text, '$SECTION', input.section);
+			break;
+		case 'mail':
+			text =
+				'==' + Twinkle.getPref('mailHeading') + '==\n' +
+				"{{You've got mail|subject=" + input.section + '|ts=~~~~~}}';
+
+			if (input.message) {
+				text += '\n' + input.message + '  ~~~~';
+			} else if (Twinkle.getPref('insertTalkbackSignature')) {
+				text += '\n~~~~';
+			}
+			break;
+		case 'see':
+			text = '{{subst:Please see|location=' + input.page + (input.section ? '#' + input.section : '') + '|more=' + input.message + '}}';
+			break;
+		default:  // tbtarget one of mytalk, usertalk, other
+			// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
+			text =
+				'==' + Twinkle.getPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') + '==\n' +
+				'{{talkback|' + input.page + (input.section ? '|' + input.section : '') + '|ts=~~~~~}}';
+
+			if (input.message) {
+				text += '\n' + input.message + ' ~~~~';
+			} else if (Twinkle.getPref('insertTalkbackSignature')) {
+				text += '\n~~~~';
+			}
 	}
 	return text;
 };
