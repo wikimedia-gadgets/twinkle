@@ -838,7 +838,8 @@ Twinkle.speedy.templateList = [
 			type: 'input',
 			label: 'Optional explanation: ',
 			size: 60
-		}
+		},
+		hideSubgroupWhenSysop: true
 	},
 	{
 		label: 'T3: Duplicate templates or hardcoded instances',
@@ -997,7 +998,8 @@ Twinkle.speedy.generalList = [
 			type: 'input',
 			label: 'Optional explanation: ',
 			size: 60
-		}
+		},
+		hideSubgroupWhenSysop: true
 	},
 	{
 		label: 'G8: Subpages with no parent page',
