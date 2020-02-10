@@ -160,13 +160,13 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						disabled: mw.util.isIPAddress(root.uid.value)
 					},
 					{
-						label: 'Account is evidently a spambot or a compromised account',
-						value: 'spambot'
-					},
-					{
 						label: 'Account is a promotion-only account',
 						value: 'promoonly',
 						disabled: mw.util.isIPAddress(root.uid.value)
+					},
+					{
+						label: 'Account is evidently a spambot or a compromised account',
+						value: 'spambot'
 					}
 				]
 			});
@@ -521,12 +521,12 @@ Twinkle.arv.callback.evaluate = function(e) {
 						return 'vandalism after final warning';
 					case 'postblock':
 						return 'vandalism after recent release of block';
-					case 'spambot':
-						return 'account is evidently a spambot or a compromised account';
 					case 'vandalonly':
 						return 'actions evidently indicate a vandalism-only account';
 					case 'promoonly':
 						return 'account is being used only for promotional purposes';
+					case 'spambot':
+						return 'account is evidently a spambot or a compromised account';
 					default:
 						return 'unknown reason';
 				}
