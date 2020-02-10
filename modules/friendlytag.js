@@ -918,12 +918,20 @@ Twinkle.tag.spellingList = [
 		value: 'R from initialism'
 	},
 	{
+		label: '{{R from ASCII-only}}: redirect from a title in only basic ASCII to the formal article title, with differences that are not diacritical marks (accents, umlauts, etc.) or ligatures',
+		value: 'R from ASCII-only'
+	},
+	{
 		label: '{{R from member}}: redirect from a member of a group to a related topic such as the group, organization, or team of membership',
 		value: 'R from member'
 	},
 	{
 		label: '{{R from misspelling}}: redirect from a misspelling or typographical error',
 		value: 'R from misspelling'
+	},
+	{
+		label: '{{R from modification}}: redirect from a modification of the target\'s title, such as with words rearranged',
+		value: 'R from modification'
 	},
 	{
 		label: '{{R from other capitalisation}}: redirect from a title with another method of capitalisation',
@@ -980,8 +988,8 @@ Twinkle.tag.alternativeList = [
 		value: 'R from alternative name'
 	},
 	{
-		label: '{{R from ASCII-only}}: redirect from a title in only basic ASCII to the formal article title, with differences that are not diacritical marks (accents, umlauts, etc.) or ligatures',
-		value: 'R from ASCII-only'
+		label: '{{R from former name}}: redirect from a former name or working title',
+		value: 'R from former name'
 	},
 	{
 		label: '{{R from historic name}}: redirect from another name with a significant historic past as a region, state, city or such, but which is no longer known by that title or name',
@@ -996,6 +1004,10 @@ Twinkle.tag.alternativeList = [
 		value: 'R from long name'
 	},
 	{
+		label: '{{R from molecular formula}}: redirect from a molecular/chemical formula to its technical or trivial name',
+		value: 'R from molecular formula'
+	},
+	{
 		label: '{{R from name and country}}: redirect from the specific name to the briefer name',
 		value: 'R from name and country'
 	},
@@ -1006,6 +1018,10 @@ Twinkle.tag.alternativeList = [
 	{
 		label: '{{R from scientific name}}: redirect from the scientific name to the common name',
 		value: 'R from scientific name'
+	},
+	{
+		label: '{{R from short name}}: redirect from a title that is a shortened form of a person\'s full name, a book title, or other more complete title',
+		value: 'R from short name'
 	},
 	{
 		label: '{{R from subtopic}}: redirect from a title that is a subtopic of the target article',
@@ -1031,8 +1047,20 @@ Twinkle.tag.alternativeList = [
 
 Twinkle.tag.administrativeList = [
 	{
+		label: '{{R from ambiguous term}}: redirect from an ambiguous page name to a page that disambiguates it. This template should never appear on a page that has "(disambiguation)" in its title, use R to disambiguation page instead',
+		value: 'R from ambiguous term'
+	},
+	{
 		label: '{{R from CamelCase}}: redirect from a CamelCase title',
 		value: 'R from CamelCase'
+	},
+	{
+		label: '{{R to decade}}: redirect from a year to the decade article',
+		value: 'R to decade'
+	},
+	{
+		label: '{{R to disambiguation page}}: redirect to a disambiguation page',
+		value: 'R to disambiguation page'
 	},
 	{
 		label: '{{R from duplicated article}}: redirect to a similar article in order to preserve its edit history',
@@ -1043,8 +1071,24 @@ Twinkle.tag.administrativeList = [
 		value: 'R from file metadata link'
 	},
 	{
+		label: '{{R with history}}: redirect from a page containing substantive page history, kept to preserve content and attributions',
+		value: 'R with history'
+	},
+	{
+		label: '{{R from incomplete disambiguation}}: redirect from a page name that is too ambiguous to be the title of an article and should redirect to an appropriate disambiguation page',
+		value: 'R from incomplete disambiguation'
+	},
+	{
 		label: '{{R from merge}}: redirect from a merged page in order to preserve its edit history',
 		value: 'R from merge'
+	},
+	{
+		label: '{{R from other disambiguation}}: redirect from a page name with an alternative disambiguation qualifier',
+		value: 'R from other disambiguation'
+	},
+	{
+		label: '{{R printworthy}}: redirect from a title that would be helpful in a printed or CD/DVD version of Wikipedia',
+		value: 'R printworthy'
 	},
 	{
 		label: '{{R from school}}: redirect from a school article that had very little information',
@@ -1055,12 +1099,12 @@ Twinkle.tag.administrativeList = [
 		value: 'R from shortcut'
 	},
 	{
-		label: '{{R to decade}}: redirect from a year to the decade article',
-		value: 'R to decade'
+		label: '{{R from sort name}}: redirect from the target\'s sort name, such as beginning with their surname rather than given name',
+		value: 'R from sort name'
 	},
 	{
-		label: '{{R to disambiguation page}}: redirect to a disambiguation page',
-		value: 'R to disambiguation page'
+		label: '{{R unprintworthy}}: redirect from a title that would NOT be helpful in a printed or CD/DVD version of Wikipedia',
+		value: 'R unprintworthy'
 	}
 ];
 
