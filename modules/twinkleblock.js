@@ -708,7 +708,7 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: true,
 		reason: '[[WP:Arbitration enforcement|Arbitration enforcement]]',
 		reasonParam: true,
-		summary: 'You have been blocked from editing for violating an [[WP:Arbitration|arbitration decision]] with your edits'
+		summary: 'You have been blocked from editing for violating an [[WP:Arbitration|arbitration decision]]'
 	},
 	'uw-bioblock': {
 		autoblock: true,
@@ -1040,6 +1040,14 @@ Twinkle.block.blockPresetsInfo = {
 		reasonParam: true,
 		reason: 'Email [[WP:Harassment|harassment]]',
 		summary: 'You have been [[WP:PB|blocked]] from emailing other editors for [[WP:Harassment|harassment]]'
+	},
+	'uw-aepblock': {
+		autoblock: true,
+		nocreate: false,
+		pageParam: false,
+		reason: '[[WP:Arbitration enforcement|Arbitration enforcement]]',
+		reasonParam: true,
+		summary: 'You have been [[WP:PB|blocked]] from editing for violating an [[WP:Arbitration|arbitration decision]]'
 	}
 };
 
@@ -1150,7 +1158,8 @@ Twinkle.block.blockGroupsPartial = [
 			{ label: 'Edit warring', value: 'uw-ewpblock' },
 			{ label: 'Misusing multiple accounts', value: 'uw-acpblock' },
 			{ label: 'Misusing multiple accounts - indefinite', value: 'uw-acpblockindef' },
-			{ label: 'Email harassment', value: 'uw-epblock' }
+			{ label: 'Email harassment', value: 'uw-epblock' },
+			{ label: 'Arbitration enforcement', value: 'uw-aepblock' }
 		]
 	}
 ];
