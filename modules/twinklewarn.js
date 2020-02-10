@@ -1462,6 +1462,17 @@ Twinkle.warn.callbacks = {
 			}
 			summary += ': ' + Morebits.string.toUpperCaseFirstChar(messageData.label);
 		} else {
+			// Normalize kitchensink to the 1-4im style
+			if (params.main_group === 'kitchensink' && !/^D+$/.test(params.sub_group)) {
+				var sub = params.sub_group.substr(-1);
+				if (sub === 'm') {
+					sub = params.sub_group.substr(-3);
+				}
+				// Don't overwrite uw-3rr, technically unnecessary
+				if (/\d/.test(sub)) {
+					params.main_group = 'level' + sub;
+				}
+			}
 			summary = /^\D+$/.test(params.main_group) ? messageData.summary : messageData[params.main_group].summary;
 			if (messageData.suppressArticleInSummary !== true && params.article) {
 				if (params.sub_group === 'uw-agf-sock' ||
