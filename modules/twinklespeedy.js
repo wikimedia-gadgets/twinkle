@@ -99,28 +99,21 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					event: function(event) {
 						var cForm = event.target.form;
 						var cChecked = event.target.checked;
-						// enable/disable talk page checkbox
+						// enable talk page checkbox
 						if (cForm.talkpage) {
-							cForm.talkpage.disabled = cChecked;
 							cForm.talkpage.checked = !cChecked && Twinkle.getPref('deleteTalkPageOnDelete');
 						}
-						// enable/disable redirects checkbox
-						cForm.redirects.disabled = cChecked;
+						// enable redirects checkbox
 						cForm.redirects.checked = !cChecked;
-						// enable/disable delete multiple
-						cForm.delmultiple.disabled = cChecked;
+						// enable delete multiple
 						cForm.delmultiple.checked = false;
-						// enable/disable notify checkbox
-						cForm.notify.disabled = !cChecked;
+						// enable notify checkbox
 						cForm.notify.checked = cChecked;
-						// enable/disable deletion notification checkbox
-						cForm.warnusertalk.disabled = cChecked;
+						// enable deletion notification checkbox
 						cForm.warnusertalk.checked = !cChecked && $('#delete-reason').length < 1;
-						// enable/disable multiple
-						cForm.multiple.disabled = !cChecked;
+						// enable multiple
 						cForm.multiple.checked = false;
-						// enable/disable requesting creation protection
-						cForm.salting.disabled = !cChecked;
+						// enable requesting creation protection
 						cForm.salting.checked = false;
 
 						Twinkle.speedy.callback.modeChanged(cForm);
@@ -149,7 +142,6 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 						name: 'talkpage',
 						tooltip: "This option deletes the page's talk page in addition. If you choose the F8 (moved to Commons) criterion, this option is ignored and the talk page is *not* deleted.",
 						checked: Twinkle.getPref('deleteTalkPageOnDelete'),
-						disabled: Twinkle.getPref('deleteSysopDefaultToTag'),
 						event: function(event) {
 							event.stopPropagation();
 						}
@@ -166,7 +158,6 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					name: 'redirects',
 					tooltip: 'This option deletes all incoming redirects in addition. Avoid this option for procedural (e.g. move/merge) deletions.',
 					checked: Twinkle.getPref('deleteRedirectsOnDelete'),
-					disabled: Twinkle.getPref('deleteSysopDefaultToTag'),
 					event: function(event) {
 						event.stopPropagation();
 					}
@@ -228,7 +219,6 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				tooltip: 'A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences ' +
 						'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
 				checked: !isSysop || Twinkle.getPref('deleteSysopDefaultToTag'),
-				disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
 				event: function(event) {
 					event.stopPropagation();
 				}
@@ -243,7 +233,6 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				value: 'salting',
 				name: 'salting',
 				tooltip: 'When selected, the speedy deletion tag will be accompanied by a {{salt}} tag requesting that the deleting administrator apply creation protection. Only select if this page has been repeatedly recreated.',
-				disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
 				event: function(event) {
 					event.stopPropagation();
 				}
@@ -258,7 +247,6 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				value: 'multiple',
 				name: 'multiple',
 				tooltip: 'When selected, you can select several criteria that apply to the page. For example, G11 and A7 are a common combination for articles.',
-				disabled: isSysop && !Twinkle.getPref('deleteSysopDefaultToTag'),
 				event: function(event) {
 					Twinkle.speedy.callback.modeChanged(event.target.form);
 					event.stopPropagation();
