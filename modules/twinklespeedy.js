@@ -1938,24 +1938,38 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 	return parameters;
 };
 
-// function for processing talk page notification template parameters
+// Function for processing talk page notification template parameters
+// key1/value1 for db-csd-[notice|deleted]-custom, utparams.param for db-[notice|deleted]-multiple
 Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParameters(normalized, parameters) {
 	var utparams = [];
 	switch (normalized) {
 		case 'db':
 			utparams['2'] = parameters['1'];
 			break;
+		case 'g4':
+			utparams.key1 = '2';
+			utparams.value1 = parameters.xfd;
+			break;
+		case 'g6':
+			utparams.key1 = 'to';
+			utparams.value1 = parameters.sourcepage;
+			break;
 		case 'g12':
-			utparams.key1 = 'url';
-			utparams.value1 = utparams.url = parameters.url;
+			['url', 'url2', 'url3'].forEach(function(item, idx) {
+				idx++;
+				utparams['key' + idx] = item;
+				utparams['value' + idx] = utparams[item] = parameters[item];
+			});
+			break;
+		case 'a2':
+			utparams.source = parameters.source;
 			break;
 		case 'a10':
 			utparams.key1 = 'article';
 			utparams.value1 = utparams.article = parameters.article;
 			break;
-		case 'g4':
-			utparams.key1 = '2';
-			utparams.value1 = parameters.xfd;
+		case 'f9':
+			utparams.url = parameters.url;
 			break;
 		default:
 			break;
