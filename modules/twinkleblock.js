@@ -986,32 +986,6 @@ Twinkle.block.blockPresetsInfo = {
 	},
 
 	// Begin partial block templates, accessed in Twinkle.block.blockGroupsPartial
-	'uw-pblock': {
-		autoblock: true,
-		expiry: '24 hours',
-		nocreate: false,
-		pageParam: false,
-		reasonParam: true,
-		summary: 'You have been [[WP:PB|partially blocked]] from certain areas of the encyclopedia'
-	},
-	'uw-pblockindef': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: false,
-		pageParam: false,
-		reasonParam: true,
-		summary: 'You have been indefinitely [[WP:PB|partially blocked]] from certain areas of the encyclopedia'
-	},
-	'uw-ewpblock': {
-		autoblock: true,
-		expiry: '24 hours',
-		nocreate: false,
-		pageParam: false,
-		reasonParam: true,
-		reason: '[[WP:Edit warring|Edit warring]]',
-		summary: 'You have been [[WP:PB|blocked]] from editing certain areas of the encyclopedia to prevent further [[WP:DE|disruption]] due to [[WP:EW|edit warring]]'
-	},
 	'uw-acpblock': {
 		autoblock: true,
 		expiry: '48 hours',
@@ -1031,6 +1005,14 @@ Twinkle.block.blockPresetsInfo = {
 		reason: 'Misusing [[WP:Sock puppetry|multiple accounts]]',
 		summary: 'You have been indefinitely [[WP:PB|blocked]] from creating accounts for misusing [[WP:SOCK|multiple accounts]]'
 	},
+	'uw-aepblock': {
+		autoblock: true,
+		nocreate: false,
+		pageParam: false,
+		reason: '[[WP:Arbitration enforcement|Arbitration enforcement]]',
+		reasonParam: true,
+		summary: 'You have been [[WP:PB|blocked]] from editing for violating an [[WP:Arbitration|arbitration decision]]'
+	},
 	'uw-epblock': {
 		autoblock: true,
 		expiry: 'infinity',
@@ -1042,13 +1024,31 @@ Twinkle.block.blockPresetsInfo = {
 		reason: 'Email [[WP:Harassment|harassment]]',
 		summary: 'You have been [[WP:PB|blocked]] from emailing other editors for [[WP:Harassment|harassment]]'
 	},
-	'uw-aepblock': {
+	'uw-ewpblock': {
 		autoblock: true,
+		expiry: '24 hours',
 		nocreate: false,
 		pageParam: false,
-		reason: '[[WP:Arbitration enforcement|Arbitration enforcement]]',
 		reasonParam: true,
-		summary: 'You have been [[WP:PB|blocked]] from editing for violating an [[WP:Arbitration|arbitration decision]]'
+		reason: '[[WP:Edit warring|Edit warring]]',
+		summary: 'You have been [[WP:PB|blocked]] from editing certain areas of the encyclopedia to prevent further [[WP:DE|disruption]] due to [[WP:EW|edit warring]]'
+	},
+	'uw-pblock': {
+		autoblock: true,
+		expiry: '24 hours',
+		nocreate: false,
+		pageParam: false,
+		reasonParam: true,
+		summary: 'You have been [[WP:PB|partially blocked]] from certain areas of the encyclopedia'
+	},
+	'uw-pblockindef': {
+		autoblock: true,
+		expiry: 'infinity',
+		forRegisteredOnly: true,
+		nocreate: false,
+		pageParam: false,
+		reasonParam: true,
+		summary: 'You have been indefinitely [[WP:PB|partially blocked]] from certain areas of the encyclopedia'
 	}
 };
 
@@ -1152,15 +1152,20 @@ Twinkle.block.blockGroups = [
 
 Twinkle.block.blockGroupsPartial = [
 	{
-		label: 'Partial block reasons',
+		label: 'Common partial block reasons',
 		list: [
 			{ label: 'Generic partial block (custom reason)', value: 'uw-pblock', selected: true },
 			{ label: 'Generic partial block (custom reason) - indefinite', value: 'uw-pblockindef' },
-			{ label: 'Edit warring', value: 'uw-ewpblock' },
-			{ label: 'Misusing multiple accounts', value: 'uw-acpblock' },
-			{ label: 'Misusing multiple accounts - indefinite', value: 'uw-acpblockindef' },
+			{ label: 'Edit warring', value: 'uw-ewpblock' }
+		]
+	},
+	{
+		label: 'Extended partial block reasons',
+		list: [
+			{ label: 'Arbitration enforcement', value: 'uw-aepblock' },
 			{ label: 'Email harassment', value: 'uw-epblock' },
-			{ label: 'Arbitration enforcement', value: 'uw-aepblock' }
+			{ label: 'Misusing multiple accounts', value: 'uw-acpblock' },
+			{ label: 'Misusing multiple accounts - indefinite', value: 'uw-acpblockindef' }
 		]
 	}
 ];
