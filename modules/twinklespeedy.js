@@ -907,8 +907,7 @@ Twinkle.speedy.generalList = [
 			label: 'Page where the deletion discussion took place: ',
 			tooltip: 'Must start with "Wikipedia:"',
 			size: 60
-		},
-		hideSubgroupWhenMultiple: true
+		}
 	},
 	{
 		label: 'G5: Created by a banned or blocked user',
@@ -919,8 +918,7 @@ Twinkle.speedy.generalList = [
 			type: 'input',
 			label: 'Username of banned user (if available): ',
 			tooltip: 'Should not start with "User:"'
-		},
-		hideSubgroupWhenMultiple: true
+		}
 	},
 	{
 		label: 'G6: Move',
@@ -1950,7 +1948,7 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 			break;
 		case 'g4':
 			utparams.key1 = 'xfd';
-			utparams.value1 = parameters.xfd;
+			utparams.value1 = utparams.xfd = parameters.xfd;
 			break;
 		case 'g6':
 			utparams.key1 = 'to';
