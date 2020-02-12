@@ -186,14 +186,21 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'redirect':
 			Window.setTitle('Redirect tagging');
 
-			form.append({ type: 'header', label: 'Spelling, misspelling, tense and capitalization templates' });
-			form.append({ type: 'checkbox', name: 'tags', list: Twinkle.tag.spellingList });
-
-			form.append({ type: 'header', label: 'Alternative name templates' });
-			form.append({ type: 'checkbox', name: 'tags', list: Twinkle.tag.alternativeList });
-
-			form.append({ type: 'header', label: 'Miscellaneous and administrative redirect templates' });
-			form.append({ type: 'checkbox', name: 'tags', list: Twinkle.tag.administrativeList });
+			var i = 1;
+			$.each(Twinkle.tag.redirectList, function(groupName, group) {
+				form.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
+				var subdiv = form.append({ type: 'div', id: 'tagSubdiv' + i++ });
+				$.each(group, function(subgroupName, subgroup) {
+					subdiv.append({ type: 'div', label: [ Morebits.htmlNode('b', subgroupName) ] });
+					subdiv.append({
+						type: 'checkbox',
+						name: 'redirectTags',
+						list: subgroup.map(function (item) {
+							return { value: item.tag, label: '{{' + item.tag + '}}: ' + item.description };
+						})
+					});
+				});
+			});
 
 			if (Twinkle.getPref('customRedirectTagList').length) {
 				form.append({ type: 'header', label: 'Custom tags' });
@@ -816,210 +823,112 @@ Twinkle.tag.article.tagList = {
 };
 
 // Tags for REDIRECTS start here
-
-Twinkle.tag.spellingList = [
-	{
-		label: '{{R from acronym}}: redirect from an acronym (e.g. POTUS) to its expanded form',
-		value: 'R from acronym'
-	},
-	{
-		label: '{{R from alternative spelling}}: redirect from a title with a different spelling',
-		value: 'R from alternative spelling'
-	},
-	{
-		label: '{{R from initialism}}: redirect from an initialism (e.g. AGF) to its expanded form',
-		value: 'R from initialism'
-	},
-	{
-		label: '{{R from ASCII-only}}: redirect from a title in only basic ASCII to the formal article title, with differences that are not diacritical marks (accents, umlauts, etc.) or ligatures',
-		value: 'R from ASCII-only'
-	},
-	{
-		label: '{{R from member}}: redirect from a member of a group to a related topic such as the group, organization, or team of membership',
-		value: 'R from member'
-	},
-	{
-		label: '{{R from misspelling}}: redirect from a misspelling or typographical error',
-		value: 'R from misspelling'
-	},
-	{
-		label: '{{R from modification}}: redirect from a modification of the target\'s title, such as with words rearranged',
-		value: 'R from modification'
-	},
-	{
-		label: '{{R from other capitalisation}}: redirect from a title with another method of capitalisation',
-		value: 'R from other capitalisation'
-	},
-	{
-		label: '{{R from plural}}: redirect from a plural word to the singular equivalent',
-		value: 'R from plural'
-	},
-	{
-		label: '{{R from related word}}: redirect from a related word',
-		value: 'R from related word'
-	},
-	{
-		label: '{{R to list entry}}: redirect to a "list of minor entities"-type article which contains brief descriptions of subjects not notable enough to have separate articles',
-		value: 'R to list entry'
-	},
-	{
-		label: '{{R to section}}: similar to {{R to list entry}}, but when list is organized in sections, such as list of characters in a fictional universe.',
-		value: 'R to section'
-	},
-	{
-		label: '{{R with possibilities}}: redirect from a more specific title to a more general, less detailed article, hence something which can and should be expanded',
-		value: 'R with possibilities'
-	}
-];
-
-Twinkle.tag.alternativeList = [
-	{
-		label: '{{R from alternative language}}: redirect from an English name to a name in another language, or vice-versa',
-		value: 'R from alternative language',
-		subgroup: [
-			{
-				name: 'altLangFrom',
-				type: 'input',
-				label: 'From language (two-letter code): ',
-				tooltip: 'Enter the two-letter code of the language the redirect name is in; such as en for English, de for German'
-			},
-			{
-				name: 'altLangTo',
-				type: 'input',
-				label: 'To language (two-letter code): ',
-				tooltip: 'Enter the two-letter code of the language the target name is in; such as en for English, de for German'
-			},
-			{
-				name: 'altLangInfo',
-				type: 'div',
-				label: $.parseHTML('<p>For a list of language codes, see <a href="/wiki/Wp:Template_messages/Redirect_language_codes">Wikipedia:Template messages/Redirect language codes</a></p>')
-			}
+Twinkle.tag.redirectList = {
+	'Grammar, punctuation, and spelling': {
+		'Abbreviation': [
+			{ tag: 'R from acronym', description: 'redirect from an acronym (e.g. POTUS) to its expanded form' },
+			{ tag: 'R from initialism', description: 'redirect from an initialism (e.g. AGF) to its expanded form' }
+		],
+		'Capitalisation': [
+			{ tag: 'R from CamelCase', description: 'redirect from a CamelCase title' },
+			{ tag: 'R from other capitalisation', description: 'redirect from a title with another method of capitalisation' }
+		],
+		'Grammar & punctuation': [
+			{ tag: 'R from modification', description: 'redirect from a modification of the target\'s title, such as with words rearranged' },
+			{ tag: 'R from plural', description: 'redirect from a plural word to the singular equivalent' }
+		],
+		'Spelling': [
+			{ tag: 'R from alternative spelling', description: 'redirect from a title with a different spelling' },
+			{ tag: 'R from ASCII-only', description: 'redirect from a title in only basic ASCII to the formal article title, with differences that are not diacritical marks (accents, umlauts, etc.) or ligatures' },
+			{ tag: 'R to diacritic', description: 'redirect to the article title with diacritical marks (accents, umlauts, etc.)' },
+			{ tag: 'R from misspelling', description: 'redirect from a misspelling or typographical error' }
 		]
 	},
-	{
-		label: '{{R from alternative name}}: redirect from a title that is another name, a pseudonym, a nickname, or a synonym',
-		value: 'R from alternative name'
+	'Alternative names': {
+		'General': [
+			{
+				tag: 'R from alternative language',
+				description: 'redirect from an English name to a name in another language, or vice-versa',
+				subgroup: [
+					{
+						name: 'altLangFrom',
+						type: 'input',
+						label: 'From language (two-letter code): ',
+						tooltip: 'Enter the two-letter code of the language the redirect name is in; such as en for English, de for German'
+					},
+					{
+						name: 'altLangTo',
+						type: 'input',
+						label: 'To language (two-letter code): ',
+						tooltip: 'Enter the two-letter code of the language the target name is in; such as en for English, de for German'
+					},
+					{
+						name: 'altLangInfo',
+						type: 'div',
+						label: $.parseHTML('<p>For a list of language codes, see <a href="/wiki/Wp:Template_messages/Redirect_language_codes">Wikipedia:Template messages/Redirect language codes</a></p>')
+					}
+				]
+			},
+			{ tag: 'R from alternative name', description: 'redirect from a title that is another name, a pseudonym, a nickname, or a synonym' },
+			{ tag: 'R from former name', description: 'redirect from a former name or working title' },
+			{ tag: 'R from historic name', description: 'redirect from another name with a significant historic past as a region, state, city or such, but which is no longer known by that title or name' },
+			{ tag: 'R from incorrect name', description: 'redirect from an erroneus name that is unsuitable as a title' },
+			{ tag: 'R from long name', description: 'redirect from a title that is a complete or more complete name' },
+			{ tag: 'R from short name', description: 'redirect from a title that is a shortened form of a person\'s full name, a book title, or other more complete title' },
+			{ tag: 'R from sort name', description: 'redirect from the target\'s sort name, such as beginning with their surname rather than given name' }
+		],
+		'People': [
+			{ tag: 'R from surname', description: 'redirect from a title that is a surname' }
+		],
+		'Technical': [
+			{ tag: 'R from molecular formula', description: 'redirect from a molecular/chemical formula to its technical or trivial name' }
+		],
+		'Organisms': [
+			{ tag: 'R to scientific name', description: 'redirect from the common name to the scientific name' },
+			{ tag: 'R from scientific name', description: 'redirect from the scientific name to the common name' }
+		],
+		'Geography': [
+			{ tag: 'R from name and country', description: 'redirect from the specific name to the briefer name' }
+		]
 	},
-	{
-		label: '{{R from former name}}: redirect from a former name or working title',
-		value: 'R from former name'
+	'Navigation aids': {
+		'Navigation': [
+			{ tag: 'R to section', description: 'similar to {{R to list entry}}, but when list is organized in sections, such as list of characters in a fictional universe.' },
+			{ tag: 'R from file metadata link', description: 'redirect of a wikilink created from EXIF, XMP, or other information (i.e. the "metadata" section on some image description pages)' },
+			{ tag: 'R to list entry', description: 'redirect to a "list of minor entities"-type article which contains brief descriptions of subjects not notable enough to have separate articles' },
+			{ tag: 'R from shortcut', description: 'redirect from a Wikipedia shortcut' }
+		],
+		'Disambiguation': [
+			{ tag: 'R from ambiguous term', description: 'redirect from an ambiguous page name to a page that disambiguates it. This template should never appear on a page that has "(disambiguation)" in its title, use R to disambiguation page instead' },
+			{ tag: 'R to disambiguation page', description: 'redirect to a disambiguation page' },
+			{ tag: 'R from incomplete disambiguation', description: 'redirect from a page name that is too ambiguous to be the title of an article and should redirect to an appropriate disambiguation page' },
+			{ tag: 'R from other disambiguation', description: 'redirect from a page name with an alternative disambiguation qualifier' }
+		],
+		'Merge, duplicate & move': [
+			{ tag: 'R from duplicated article', description: 'redirect to a similar article in order to preserve its edit history' },
+			{ tag: 'R with history', description: 'redirect from a page containing substantive page history, kept to preserve content and attributions' },
+			{ tag: 'R from merge', description: 'redirect from a merged page in order to preserve its edit history' }
+		]
 	},
-	{
-		label: '{{R from historic name}}: redirect from another name with a significant historic past as a region, state, city or such, but which is no longer known by that title or name',
-		value: 'R from historic name'
-	},
-	{
-		label: '{{R from incorrect name}}: redirect from an erroneus name that is unsuitable as a title',
-		value: 'R from incorrect name'
-	},
-	{
-		label: '{{R from long name}}: redirect from a title that is a complete or more complete name',
-		value: 'R from long name'
-	},
-	{
-		label: '{{R from molecular formula}}: redirect from a molecular/chemical formula to its technical or trivial name',
-		value: 'R from molecular formula'
-	},
-	{
-		label: '{{R from name and country}}: redirect from the specific name to the briefer name',
-		value: 'R from name and country'
-	},
-	{
-		label: '{{R from phrase}}: redirect from a phrase to a more general relevant article covering the topic',
-		value: 'R from phrase'
-	},
-	{
-		label: '{{R from scientific name}}: redirect from the scientific name to the common name',
-		value: 'R from scientific name'
-	},
-	{
-		label: '{{R from short name}}: redirect from a title that is a shortened form of a person\'s full name, a book title, or other more complete title',
-		value: 'R from short name'
-	},
-	{
-		label: '{{R from subtopic}}: redirect from a title that is a subtopic of the target article',
-		value: 'R from subtopic'
-	},
-	{
-		label: '{{R from surname}}: redirect from a title that is a surname',
-		value: 'R from surname'
-	},
-	{
-		label: '{{R to diacritic}}: redirect to the article title with diacritical marks (accents, umlauts, etc.)',
-		value: 'R to diacritic'
-	},
-	{
-		label: '{{R to related topic}}: redirect to an article about a similar topic',
-		value: 'R to related topic'
-	},
-	{
-		label: '{{R to scientific name}}: redirect from the common name to the scientific name',
-		value: 'R to scientific name'
+	'Miscellaneous': {
+		'Related information': [
+			{ tag: 'R to decade', description: 'redirect from a year to the decade article' },
+			{ tag: 'R from phrase', description: 'redirect from a phrase to a more general relevant article covering the topic' },
+			{ tag: 'R from member', description: 'redirect from a member of a group to a related topic such as the group, organization, or team of membership' },
+			{ tag: 'R to related topic', description: 'redirect to an article about a similar topic' },
+			{ tag: 'R from related word', description: 'redirect from a related word' },
+			{ tag: 'R from school', description: 'redirect from a school article that had very little information' },
+			{ tag: 'R from subtopic', description: 'redirect from a title that is a subtopic of the target article' }
+		],
+		'With possibilities': [
+			{ tag: 'R with possibilities', description: 'redirect from a more specific title to a more general, less detailed article, hence something which can and should be expanded' }
+		],
+		'Printworthiness': [
+			{ tag: 'R printworthy', description: 'redirect from a title that would be helpful in a printed or CD/DVD version of Wikipedia' },
+			{ tag: 'R unprintworthy', description: 'redirect from a title that would NOT be helpful in a printed or CD/DVD version of Wikipedia' }
+		]
 	}
-];
-
-Twinkle.tag.administrativeList = [
-	{
-		label: '{{R from ambiguous term}}: redirect from an ambiguous page name to a page that disambiguates it. This template should never appear on a page that has "(disambiguation)" in its title, use R to disambiguation page instead',
-		value: 'R from ambiguous term'
-	},
-	{
-		label: '{{R from CamelCase}}: redirect from a CamelCase title',
-		value: 'R from CamelCase'
-	},
-	{
-		label: '{{R to decade}}: redirect from a year to the decade article',
-		value: 'R to decade'
-	},
-	{
-		label: '{{R to disambiguation page}}: redirect to a disambiguation page',
-		value: 'R to disambiguation page'
-	},
-	{
-		label: '{{R from duplicated article}}: redirect to a similar article in order to preserve its edit history',
-		value: 'R from duplicated article'
-	},
-	{
-		label: '{{R from file metadata link}}: redirect of a wikilink created from EXIF, XMP, or other information (i.e. the "metadata" section on some image description pages)',
-		value: 'R from file metadata link'
-	},
-	{
-		label: '{{R with history}}: redirect from a page containing substantive page history, kept to preserve content and attributions',
-		value: 'R with history'
-	},
-	{
-		label: '{{R from incomplete disambiguation}}: redirect from a page name that is too ambiguous to be the title of an article and should redirect to an appropriate disambiguation page',
-		value: 'R from incomplete disambiguation'
-	},
-	{
-		label: '{{R from merge}}: redirect from a merged page in order to preserve its edit history',
-		value: 'R from merge'
-	},
-	{
-		label: '{{R from other disambiguation}}: redirect from a page name with an alternative disambiguation qualifier',
-		value: 'R from other disambiguation'
-	},
-	{
-		label: '{{R printworthy}}: redirect from a title that would be helpful in a printed or CD/DVD version of Wikipedia',
-		value: 'R printworthy'
-	},
-	{
-		label: '{{R from school}}: redirect from a school article that had very little information',
-		value: 'R from school'
-	},
-	{
-		label: '{{R from shortcut}}: redirect from a Wikipedia shortcut',
-		value: 'R from shortcut'
-	},
-	{
-		label: '{{R from sort name}}: redirect from the target\'s sort name, such as beginning with their surname rather than given name',
-		value: 'R from sort name'
-	},
-	{
-		label: '{{R unprintworthy}}: redirect from a title that would NOT be helpful in a printed or CD/DVD version of Wikipedia',
-		value: 'R unprintworthy'
-	}
-];
+};
 
 // maintenance tags for FILES start here
 
