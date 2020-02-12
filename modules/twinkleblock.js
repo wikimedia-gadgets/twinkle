@@ -279,6 +279,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			type: 'textarea',
 			label: 'Reason (for block log):',
 			name: 'reason',
+			tooltip: 'Consider adding helpful details to the default message.',
 			value: Twinkle.block.field_block_options.reason
 		});
 
