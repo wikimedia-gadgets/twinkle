@@ -264,7 +264,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	});
 
 	if (Twinkle.getPref('speedySelectionStyle') !== 'radioClick') {
-		form.append({ type: 'submit' });
+		form.append({ type: 'submit' }); // Renamed in modeChanged
 	}
 
 	var result = form.render();
@@ -306,9 +306,11 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	if (isSysopMode) {
 		$('[name=delete_options]').show();
 		$('[name=tag_options]').hide();
+		$('.morebits-dialog-buttons button').text('Delete page'); // Submit button
 	} else {
 		$('[name=delete_options]').hide();
 		$('[name=tag_options]').show();
+		$('.morebits-dialog-buttons button').text('Tag page'); // Submit button
 	}
 
 	var work_area = new Morebits.quickForm.element({
@@ -326,7 +328,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		work_area.append({
 			type: 'button',
 			name: 'submit-multiple',
-			label: 'Submit Query',
+			label: isSysopMode ? 'Delete page' : 'Tag page',
 			event: function(event) {
 				Twinkle.speedy.callback[evaluateType](event);
 				event.stopPropagation();
@@ -497,7 +499,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 				criterion.subgroup = criterion.subgroup.concat({
 					type: 'button',
 					name: 'submit',
-					label: 'Submit Query',
+					label: isSysopMode ? 'Delete page' : 'Tag page',
 					event: submitSubgroupHandler
 				});
 			} else {
@@ -506,7 +508,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 					{
 						type: 'button',
 						name: 'submit',  // ends up being called "csd.submit" so this is OK
-						label: 'Submit Query',
+						label: isSysopMode ? 'Delete page' : 'Tag page',
 						event: submitSubgroupHandler
 					}
 				];
