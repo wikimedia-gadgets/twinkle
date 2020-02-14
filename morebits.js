@@ -3733,7 +3733,7 @@ Morebits.status.actionCompleted = function(text) {
  */
 Morebits.status.printUserText = function(comments, message) {
 	var p = document.createElement('p');
-	p.textContent = message;
+	p.innerHTML = message;
 	var div = document.createElement('div');
 	div.className = 'toccolours';
 	div.style.marginTop = '0';
