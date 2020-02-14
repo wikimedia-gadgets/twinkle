@@ -568,11 +568,12 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 			aivPage.load(function() {
 				var text = aivPage.getPageText();
+				var $aivLink = '<a target="_blank" href="/wiki/WP:AIV">WP:AIV</a>';
 
 				// check if user has already been reported
 				if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + RegExp.escape(uid, true) + '\\s*\\}\\}').test(text)) {
 					aivPage.getStatusElement().error('Report already present, will not add a new one');
-					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at AIV:');
+					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at ' + $aivLink + ':');
 					return;
 				}
 
@@ -587,7 +588,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 							tb2statelem.info('Proceeded despite bot report');
 						} else {
 							tb2statelem.error('Report from a bot is already present, stopping');
-							Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them at AIV:');
+							Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them at ' + $aivLink + ':');
 							return;
 						}
 					} else {
@@ -646,7 +647,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 				// check if user has already been reported
 				if (new RegExp('\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?' + RegExp.escape(uid, true) + '\\s*(\\||\\})').test(text)) {
 					uaaPage.getStatusElement().error('User is already listed.');
-					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at UAA:');
+					var $uaaLink = '<a target="_blank" href="/wiki/WP:UAA">WP:UAA</a>';
+					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at ' + $uaaLink + ':');
 					return;
 				}
 				uaaPage.getStatusElement().status('Adding new report...');
