@@ -2218,11 +2218,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.revertOldID = oldID;
 	};
 
-	/** @returns {string} string containing the current revision ID of the page */
-	this.getCurrentID = function() {
-		return ctx.revertCurID;
-	};
-
 	/** @returns {string} last editor of the page */
 	this.getRevisionUser = function() {
 		return ctx.revertUser;
@@ -2274,6 +2269,18 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 */
 	this.getLoadTime = function() {
 		return ctx.loadTime;
+	};
+
+	/**
+	 * @returns {string} ISO 8601 timestamp at which the page was last edited
+	 */
+	this.getLastEditTime = function() {
+		return ctx.lastEditTime;
+	};
+
+	/** @returns {string} string containing the current revision ID of the page */
+	this.getCurrentID = function() {
+		return ctx.revertCurID;
 	};
 
 	/**
