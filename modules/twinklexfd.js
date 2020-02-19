@@ -314,7 +314,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 							name: 'xfdtarget',
 							type: 'input',
 							label: 'Other ' + templateOrModule + ' to be merged: ',
-							tooltip: 'Required',
+							tooltip: 'Required. Should not include the ' + Morebits.string.toUpperCaseFirstChar(templateOrModule) + ': namespace prefix.',
 							required: true
 						});
 						target.parentNode.appendChild(xfdtarget.render());
@@ -629,6 +629,9 @@ Twinkle.xfd.callbacks = {
 			if (venue === 'rfd') {
 				text += '|target=' + params.target + (params.section ? '#' + params.section : '');
 			} else if (venue !== 'cfd') {
+				if (params.xfdcat && params.xfdcat === 'tfm') {
+					params.target = Morebits.string.toUpperCaseFirstChar(params.target.replace(/^:?(?:Template|Module):/i, ''));
+				}
 				text += '|2=' + params.target;
 			}
 		}
