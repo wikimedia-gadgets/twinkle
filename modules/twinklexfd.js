@@ -1017,10 +1017,8 @@ Twinkle.xfd.callbacks = {
 
 			// Today's list
 			wikipedia_page = new Morebits.wiki.page('Wikipedia:Miscellany for deletion', "Adding discussion to today's list");
-			// wikipedia_page.setPageSection(2);
-			// pageSection has been disabled - the API seems to throw up with nonexistent edit conflicts
-			// it can be turned on again once the problem is fixed, to save bandwidth
-			// wikipedia_page.setFollowRedirect(true);
+			wikipedia_page.setPageSection(2);
+			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(apiobj.params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.mfd.todaysList);
 
@@ -1687,10 +1685,8 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 			// Adding discussion to list
 			wikipedia_page = new Morebits.wiki.page(logpage, "Adding discussion to today's list");
-			// wikipedia_page.setPageSection(2);
-			// pageSection has been disabled - the API seems to throw up with nonexistent edit conflicts
-			// it can be turned on again once the problem is fixed, to save bandwidth
-			// wikipedia_page.setFollowRedirect(true);
+			wikipedia_page.setPageSection(2);
+			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.cfd.todaysList);
 
