@@ -131,7 +131,7 @@ Morebits.sanitizeIPv6 = function (address) {
  *              - Attributes: name, list, event
  *              - Attributes (within list): name, label, value, checked, disabled, event, subgroup
  *   input     A text box.
- *              - Attributes: name, label, value, size, disabled, readonly, maxlength, event
+ *              - Attributes: name, label, value, size, disabled, required, readonly, maxlength, event
  *   dyninput  A set of text boxes with "Remove" buttons and an "Add" button.
  *              - Attributes: name, label, min, max, sublabel, value, size, maxlength, event
  *   hidden    An invisible form field.
@@ -145,7 +145,7 @@ Morebits.sanitizeIPv6 = function (address) {
  *   button    A generic button.
  *              - Attributes: name, label, disabled, event
  *   textarea  A big, multi-line text box.
- *              - Attributes: name, label, value, cols, rows, disabled, readonly
+ *              - Attributes: name, label, value, cols, rows, disabled, required, readonly
  *   fragment  A DocumentFragment object.
  *              - No attributes, and no global attributes except adminonly
  *
@@ -459,6 +459,9 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			if (data.disabled) {
 				subnode.setAttribute('disabled', 'disabled');
 			}
+			if (data.required) {
+				subnode.setAttribute('required', 'required');
+			}
 			if (data.readonly) {
 				subnode.setAttribute('readonly', 'readonly');
 			}
@@ -648,6 +651,9 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			}
 			if (data.disabled) {
 				subnode.setAttribute('disabled', 'disabled');
+			}
+			if (data.required) {
+				subnode.setAttribute('required', 'required');
 			}
 			if (data.readonly) {
 				subnode.setAttribute('readonly', 'readonly');
