@@ -1325,7 +1325,8 @@ Twinkle.xfd.callbacks = {
 			};
 		},
 		main: function(params) {
-			var date = new Date(params.curtimestamp);
+			// Fallback to client clock for softredirects
+			var date = params.curtimestamp ? new Date(params.curtimestamp) : new Date();
 			params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
 
@@ -1385,30 +1386,33 @@ Twinkle.xfd.callbacks = {
 		sendNotifications: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
+			var statelem = pageobj.getStatusElement();
 
 			// Notifying initial contributor
 			if (params.usertalk) {
 				// Disallow warning yourself
 				if (initialContrib === mw.config.get('wgUserName')) {
-					pageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
+					statelem.warn('You (' + initialContrib + ') created this page; skipping user notification');
 				} else {
 					Twinkle.xfd.callbacks.rfd.userNotification(params, initialContrib);
 				}
 			}
 
-			// Notifying target page's watchers
+			// Notifying target page's watchers, if not a soft redirect
 			if (params.relatedpage) {
 				var targetTalk = new mw.Title(params.target).getTalkPage();
 
 				// On the offchance it's a circular redirect
 				if (params.target === mw.config.get('wgPageName')) {
-					pageobj.getStatusElement().warn('Circular redirect; skipping target page notification');
+					statelem.warn('Circular redirect; skipping target page notification');
+				} else if (document.getElementById('softredirect')) {
+					statelem.warn('Soft redirect; skipping target page notification');
 				} else if (targetTalk.getNamespaceId() === 3) {
 					// Don't issue if target talk is the initial contributor's talk or your own
 					if (targetTalk.getNameText() === initialContrib) {
-						pageobj.getStatusElement().warn('Target is initial contributor; skipping target page notification');
+						statelem.warn('Target is initial contributor; skipping target page notification');
 					} else if (targetTalk.getNameText() === mw.config.get('wgUserName')) {
-						pageobj.getStatusElement().warn('You (' + mw.config.get('wgUserName') + ') are the target; skipping target page notification');
+						statelem.warn('You (' + mw.config.get('wgUserName') + ') are the target; skipping target page notification');
 					}
 				} else {
 					Twinkle.xfd.callbacks.rfd.targetNotification(params, targetTalk);
