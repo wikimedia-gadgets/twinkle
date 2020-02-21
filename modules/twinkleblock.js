@@ -957,7 +957,7 @@ Twinkle.block.blockPresetsInfo = {
 		nocreate: true,
 		pageParam: true,
 		reason: '[[WP:PAID|Undisclosed paid editing]] in violation of the WMF [[WP:TOU|Terms of Use]]',
-		summary: 'You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam or advertising]] in violation of [[WP:PAID|Wikipedia policy on paid advocacy'
+		summary: 'You have been indefinitely blocked from editing because your account is being used in violation of [[WP:PAID|Wikipedia policy on undisclosed paid advocacy]]'
 	},
 	'uw-vaublock': {
 		autoblock: true,
