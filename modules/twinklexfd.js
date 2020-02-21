@@ -1320,7 +1320,11 @@ Twinkle.xfd.callbacks = {
 				if (!apiobj.params.target) { // Not a softredirect
 					var target = $xmlDoc.find('redirects r').first().attr('to');
 					if (!target) {
-						apiobj.statelem.error('This page is currently not a redirect, aborting');
+						var message = 'This page does not appear to be a redirect, aborting';
+						if (mw.config.get('wgAction') === 'history') {
+							message += '. If this is a soft redirect, try again from the content page, not the page history.';
+						}
+						apiobj.statelem.error(message);
 						return;
 					}
 					apiobj.params.target = target;
