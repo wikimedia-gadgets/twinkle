@@ -346,6 +346,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						var pageid = data.query.pageids[0];
 						var page = data.query.pages[pageid];
 						if (!page.revisions) {
+							$('<span class="entry">None found</span>').appendTo($diffs);
 							return;
 						}
 						for (var i = 0; i < page.revisions.length; ++i) {
@@ -383,6 +384,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						var pageid = data.query.pageids[0];
 						var page = data.query.pages[pageid];
 						if (!page.revisions) {
+							$('<span class="entry">None found</span>').appendTo($warnings);
 							return;
 						}
 						for (var i = 0; i < page.revisions.length; ++i) {
@@ -425,6 +427,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						var pageid = data.query.pageids[0];
 						var page = data.query.pages[pageid];
 						if (!page.revisions) {
+							$('<span class="entry">None found</span>').appendTo($resolves);
 							return;
 						}
 						for (var i = 0; i < page.revisions.length; ++i) {
