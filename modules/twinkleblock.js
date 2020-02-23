@@ -950,6 +950,15 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '{{uw-ublock-double}} <!-- Username closely resembles another user, hard block -->',
 		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] appears to impersonate another established Wikipedia user'
 	},
+	'uw-upeblock': {
+		autoblock: true,
+		expiry: 'infinity',
+		forRegisteredOnly: true,
+		nocreate: true,
+		pageParam: true,
+		reason: '[[WP:PAID|Undisclosed paid editing]] in violation of the WMF [[WP:TOU|Terms of Use]]',
+		summary: 'You have been indefinitely blocked from editing because your account is being used in violation of [[WP:PAID|Wikipedia policy on undisclosed paid advocacy]]'
+	},
 	'uw-vaublock': {
 		autoblock: true,
 		expiry: 'infinity',
@@ -1114,6 +1123,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Spam', value: 'uw-sblock' },
 			{ label: 'Spam/advertising-only account', value: 'uw-soablock' },
 			{ label: 'Unapproved bot', value: 'uw-botblock' },
+			{ label: 'Undisclosed paid editing', value: 'uw-upeblock' },
 			{ label: 'Violating the three-revert rule', value: 'uw-3block' }
 		]
 	},
