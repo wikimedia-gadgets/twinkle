@@ -1949,7 +1949,7 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 			utparams['2'] = parameters['1'];
 			break;
 		case 'g4':
-			utparams.key1 = '2';
+			utparams.key1 = 'xfd';
 			utparams.value1 = parameters.xfd;
 			break;
 		case 'g6':
