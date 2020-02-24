@@ -993,7 +993,7 @@ Twinkle.protect.protectionTags = [
 		label: 'Edit protection templates',
 		list: [
 			{ label: '{{pp-vandalism}}: vandalism', value: 'pp-vandalism' },
-			{ label: '{{pp-dispute}}: dispute/edit war', value: 'pp-dispute', selected: true },
+			{ label: '{{pp-dispute}}: dispute/edit war', value: 'pp-dispute' },
 			{ label: '{{pp-blp}}: BLP violations', value: 'pp-blp' },
 			{ label: '{{pp-sock}}: sockpuppetry', value: 'pp-sock' },
 			{ label: '{{pp-template}}: high-risk template', value: 'pp-template' },
