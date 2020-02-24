@@ -1059,14 +1059,16 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 			}
 
-			if (item.stabilize) {
-				form.pcmodify.checked = true;
-				Twinkle.protect.formevents.pcmodify({ target: form.pcmodify });
-				form.pclevel.value = item.stabilize;
-				Twinkle.protect.formevents.pclevel({ target: form.pclevel });
-			} else if (form.pcmodify) {
-				form.pcmodify.checked = false;
-				Twinkle.protect.formevents.pcmodify({ target: form.pcmodify });
+			if (form.pcmodify) {
+				if (item.stabilize) {
+					form.pcmodify.checked = true;
+					Twinkle.protect.formevents.pcmodify({ target: form.pcmodify });
+					form.pclevel.value = item.stabilize;
+					Twinkle.protect.formevents.pclevel({ target: form.pclevel });
+				} else {
+					form.pcmodify.checked = false;
+					Twinkle.protect.formevents.pcmodify({ target: form.pcmodify });
+				}
 			}
 		} else {
 			if (item.create) {
