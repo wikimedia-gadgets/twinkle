@@ -1964,12 +1964,20 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 		case 'a2':
 			utparams.source = parameters.source;
 			break;
+		case 'a5':
+			utparams.key1 = 'location';
+			utparams.value1 = utparams.location = parameters.location;
+			break;
 		case 'a10':
 			utparams.key1 = 'article';
 			utparams.value1 = utparams.article = parameters.article;
 			break;
 		case 'f9':
 			utparams.url = parameters.url;
+			break;
+		case 'p1':
+			utparams.key1 = 'criterion';
+			utparams.value1 = utparams.criterion = parameters.criterion;
 			break;
 		default:
 			break;
