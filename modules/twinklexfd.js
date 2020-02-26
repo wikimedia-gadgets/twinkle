@@ -56,7 +56,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		type: 'select',
 		name: 'category',
 		label: 'Deletion discussion venue:',
-		tooltip: 'When activated, a default choice is made, based on what namespace you are in. This default should be the most appropriate',
+		tooltip: 'When activated, a default choice is made, based on what namespace you are in. This default should be the most appropriate; some inappropriate options may be disabled.',
 		event: Twinkle.xfd.callback.change_category
 	});
 	var namespace = mw.config.get('wgNamespaceNumber');
@@ -77,7 +77,8 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		type: 'option',
 		label: 'FfD (Files for discussion)',
 		selected: namespace === 6,  // File namespace
-		value: 'ffd'
+		value: 'ffd',
+		disabled: namespace !== 6
 	});
 	categories.append({
 		type: 'option',
@@ -107,7 +108,8 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		type: 'option',
 		label: 'RM (Requested moves)',
 		selected: false,
-		value: 'rm'
+		value: 'rm',
+		disabled: namespace === 14
 	});
 
 	form.append({
