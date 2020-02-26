@@ -1460,8 +1460,8 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var hiddenComment = '---- and enter on a new line, directly below; do not add spare lines between entries; if you do not wish the request to be converted into an RM if contested, then add |discuss=no -->';
-			var newtext = text.replace(hiddenComment, hiddenComment + '\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params));
+			var hiddenCommentRE = /---- and enter on a new line.* -->/;
+			var newtext = text.replace(hiddenCommentRE, '$&\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params));
 			if (text === newtext) {
 				statelem.error('failed to find target spot for the entry');
 				return;
@@ -1749,6 +1749,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			wikipedia_page.setCallbackParameters(params);
 
 			if (rmtr) {
+				wikipedia_page.setPageSection(2);
 				wikipedia_page.load(Twinkle.xfd.callbacks.rm.listAtRMTR);
 			} else {
 				// listAtTalk uses .append(), so no need to load the page
