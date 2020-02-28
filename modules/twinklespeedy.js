@@ -1962,9 +1962,11 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 			break;
 		case 'g12':
 			['url', 'url2', 'url3'].forEach(function(item, idx) {
-				idx++;
-				utparams['key' + idx] = item;
-				utparams['value' + idx] = utparams[item] = parameters[item];
+				if (parameters[item]) {
+					idx++;
+					utparams['key' + idx] = item;
+					utparams['value' + idx] = utparams[item] = parameters[item];
+				}
 			});
 			break;
 		case 'a2':
