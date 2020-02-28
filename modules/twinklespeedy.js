@@ -1260,7 +1260,13 @@ Twinkle.speedy.callbacks = {
 			} else if (params.normalizeds[0] === 'db') {
 				notifytext = '\n{{subst:db-reason-' + (params.warnUser ? 'deleted' : 'notice') + '|1=' + Morebits.pageNameNorm;
 			} else {
-				notifytext = '\n{{subst:db-csd-' + (params.warnUser ? 'deleted' : 'notice') + '-custom|1=' + Morebits.pageNameNorm + '|2=' + params.values[0];
+				notifytext = '\n{{subst:db-csd-' + (params.warnUser ? 'deleted' : 'notice') + '-custom|1=';
+				if (params.values[0] === 'copypaste') {
+					notifytext += params.templateParams[0].sourcepage;
+				} else {
+					notifytext += Morebits.pageNameNorm;
+				}
+				notifytext += '|2=' + params.values[0];
 			}
 
 			for (i in params.utparams) {
@@ -1952,7 +1958,7 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 			break;
 		case 'g6':
 			utparams.key1 = 'to';
-			utparams.value1 = parameters.sourcepage;
+			utparams.value1 = Morebits.pageNameNorm;
 			break;
 		case 'g12':
 			['url', 'url2', 'url3'].forEach(function(item, idx) {
