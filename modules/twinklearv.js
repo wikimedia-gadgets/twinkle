@@ -361,7 +361,15 @@ Twinkle.arv.callback.changeCategory = function (e) {
 								});
 								$input.data('revinfo', rev);
 								$input.appendTo($entry);
-								$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Morebits.date(rev.timestamp).calendar() + '</a></span>').appendTo($field);
+								var comment = '<span>';
+								// revdel/os
+								if (typeof rev.commenthidden === 'string') {
+									comment += '(comment hidden)';
+								} else {
+									comment += '"' + rev.parsedcomment + '"';
+								}
+								comment += ' at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Morebits.date(rev.timestamp).calendar() + '</a></span>';
+								$entry.append(comment).appendTo($field);
 							}
 
 							// add free form input for resolves
@@ -797,6 +805,16 @@ Twinkle.arv.processAN3 = function(params) {
 		titles: params.page
 	}).done(function(data) {
 		Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
+
+		// In case an edit summary was revdel'd
+		var hasHiddenComment = function(rev) {
+			if (!rev.comment && typeof rev.commenthidden === 'string') {
+				return '(comment hidden)';
+			}
+			return '"' + rev.comment + '"';
+
+		};
+
 		var orig;
 		if (data.length) {
 			var sha1 = data[0].sha1;
@@ -814,7 +832,7 @@ Twinkle.arv.processAN3 = function(params) {
 
 		var origtext = '';
 		if (orig) {
-			origtext = '{{diff2|' + orig.revid + '|' + orig.timestamp + '}} "' + orig.comment + '"';
+			origtext = '{{diff2|' + orig.revid + '|' + orig.timestamp + '}} ' + hasHiddenComment(orig);
 		}
 
 		var grouped_diffs = {};
@@ -839,21 +857,21 @@ Twinkle.arv.processAN3 = function(params) {
 				ret = '# {{diff|oldid=' + first.parentid + '|diff=' + last.revid + '|label=' + label + '}}\n';
 			}
 			ret += sub.reverse().map(function(v) {
-				return (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + new Morebits.date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} "' + v.comment + '"';
+				return (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + new Morebits.date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} ' + hasHiddenComment(v);
 			}).join('\n');
 			return ret;
 		}).reverse().join('\n');
 		var warningtext = params.warnings.reverse().map(function(v) {
-			return '# ' + ' {{diff2|' + v.revid + '|' + new Morebits.date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} "' + v.comment + '"';
+			return '# ' + ' {{diff2|' + v.revid + '|' + new Morebits.date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} ' + hasHiddenComment(v);
 		}).join('\n');
 		var resolvetext = params.resolves.reverse().map(function(v) {
-			return '# ' + ' {{diff2|' + v.revid + '|' + new Morebits.date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} "' + v.comment + '"';
+			return '# ' + ' {{diff2|' + v.revid + '|' + new Morebits.date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} ' + hasHiddenComment(v);
 		}).join('\n');
 
 		if (params.free_resolves) {
 			var page = params.free_resolves;
 			var rev = page.revisions[0];
-			resolvetext += '\n# ' + ' {{diff2|' + rev.revid + '|' + new Morebits.date(rev.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) on ' + page.title + '}} "' + rev.comment + '"';
+			resolvetext += '\n# ' + ' {{diff2|' + rev.revid + '|' + new Morebits.date(rev.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) on ' + page.title + '}} ' + hasHiddenComment(rev);
 		}
 
 		var comment = params.comment.replace(/~*$/g, '').trim();
