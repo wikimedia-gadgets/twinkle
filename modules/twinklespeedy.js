@@ -1249,7 +1249,9 @@ Twinkle.speedy.callbacks = {
 		} else if (Twinkle.speedy.hasCSD && params.warnUser && !confirm('The page is has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?')) {
 			Morebits.status.info('Notifying initial contributor', 'canceled by user; skipping notification.');
 			initialContrib = null;
-		} else {
+		}
+
+		if (initialContrib) {
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')'),
 				notifytext, i, editsummary;
 
@@ -1301,6 +1303,9 @@ Twinkle.speedy.callbacks = {
 					Twinkle.speedy.callbacks.user.addToLog(params, null);
 				}
 			});
+		} else if (params.lognomination) {
+			// log nomination even if the user notification wasn't sent
+			Twinkle.speedy.callbacks.user.addToLog(params, null);
 		}
 	},
 
