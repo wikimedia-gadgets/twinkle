@@ -477,11 +477,12 @@ Twinkle.config.sections = [
 				type: 'boolean'
 			},
 
-			// TwinkleConfig.deleteSysopDefaultToTag (boolean)
-			// Make the CSD screen default to "tag" instead of "delete" (admin only)
+			// TwinkleConfig.deleteSysopDefaultToDelete (boolean)
+			// Make the CSD screen default to "delete" instead of "tag" (admin only)
 			{
-				name: 'deleteSysopDefaultToTag',
-				label: 'Default to speedy tagging instead of outright deletion',
+				name: 'deleteSysopDefaultToDelete',
+				label: 'Default to outright deletion instead of speedy tagging',
+				helptip: 'If there is a CSD tag already present, Twinkle will always default to "delete" mode',
 				adminOnly: true,
 				type: 'boolean'
 			},
