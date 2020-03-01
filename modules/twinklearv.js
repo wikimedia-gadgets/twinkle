@@ -309,7 +309,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				label: 'Report edit warring',
 				name: 'work_area'
 			});
-
 			work_area.append({
 				type: 'input',
 				name: 'page',
@@ -322,146 +321,88 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				label: 'Load',
 				event: function(e) {
 					var root = e.target.form;
-					var value = root.page.value;
+
+					var date = new Date();
+					date.setHours(date.getHours() - 48); // all since 48 hours
+
+					// Run for each AN3 field
+					var getAN3Entries = function(field, rvuser, titles) {
+						var $field = $(root).find('[name=' + field + ']');
+						$field.find('.entry').remove();
+
+						var api = new mw.Api();
+						api.get({
+							action: 'query',
+							prop: 'revisions',
+							format: 'json',
+							rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
+							rvlimit: 500, // intentionally limited
+							rvend: date.toISOString(),
+							rvuser: rvuser,
+							indexpageids: true,
+							redirects: true,
+							titles: titles
+						}).done(function(data) {
+							var pageid = data.query.pageids[0];
+							var page = data.query.pages[pageid];
+							if (!page.revisions) {
+								$('<span class="entry">None found</span>').appendTo($field);
+								return;
+							}
+							for (var i = 0; i < page.revisions.length; ++i) {
+								var rev = page.revisions[i];
+								var $entry = $('<div/>', {
+									'class': 'entry'
+								});
+								var $input = $('<input/>', {
+									'type': 'checkbox',
+									'name': 's_' + field,
+									'value': rev.revid
+								});
+								$input.data('revinfo', rev);
+								$input.appendTo($entry);
+								$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Morebits.date(rev.timestamp).calendar() + '</a></span>').appendTo($field);
+							}
+
+							// add free form input for resolves
+							if (field === 'resolves') {
+								var $free_entry = $('<div/>', {
+									'class': 'entry'
+								});
+								var $free_input = $('<input/>', {
+									'type': 'text',
+									'name': 's_resolves_free'
+								});
+
+								var $free_label = $('<label/>', {
+									'for': 's_resolves_free',
+									'html': 'Diff to additional discussions: '
+								});
+								$free_entry.append($free_label).append($free_input).appendTo($field);
+							}
+						}).fail(function() {
+							$('<span class="entry">API failure, reload page and try again</span>').appendTo($field);
+						});
+					};
+
+					// warnings
 					var uid = root.uid.value;
-					var $diffs = $(root).find('[name=diffs]');
-					$diffs.find('.entry').remove();
+					getAN3Entries('warnings', mw.config.get('wgUserName'), 'User talk:' + uid);
 
-					var date = new Morebits.date().subtract(48, 'hours'); // all since 48 hours
+					// diffs and resolves require a valid page
+					var page = root.page.value;
+					if (page) {
+						// diffs
+						getAN3Entries('diffs', uid, page);
 
-					var api = new mw.Api();
-					api.get({
-						action: 'query',
-						prop: 'revisions',
-						format: 'json',
-						rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-						rvlimit: 500, // intentionally limited
-						rvend: date.toISOString(),
-						rvuser: uid,
-						indexpageids: true,
-						redirects: true,
-						titles: value
-					}).done(function(data) {
-						var pageid = data.query.pageids[0];
-						var page = data.query.pages[pageid];
-						if (!page.revisions) {
-							$('<span class="entry">None found</span>').appendTo($diffs);
-							return;
-						}
-						for (var i = 0; i < page.revisions.length; ++i) {
-							var rev = page.revisions[i];
-							var $entry = $('<div/>', {
-								'class': 'entry'
-							});
-							var $input = $('<input/>', {
-								'type': 'checkbox',
-								'name': 's_diffs',
-								'value': rev.revid
-							});
-							$input.data('revinfo', rev);
-							$input.appendTo($entry);
-							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Morebits.date(rev.timestamp).calendar() + '</a></span>').appendTo($diffs);
-						}
-					}).fail(function(data) {
-						console.log('API failed :(', data); // eslint-disable-line no-console
-					});
-					var $warnings = $(root).find('[name=warnings]');
-					$warnings.find('.entry').remove();
-
-					api.get({
-						action: 'query',
-						prop: 'revisions',
-						format: 'json',
-						rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-						rvlimit: 500, // intentionally limited
-						rvend: date.toISOString(),
-						rvuser: mw.config.get('wgUserName'),
-						indexpageids: true,
-						redirects: true,
-						titles: 'User talk:' + uid
-					}).done(function(data) {
-						var pageid = data.query.pageids[0];
-						var page = data.query.pages[pageid];
-						if (!page.revisions) {
-							$('<span class="entry">None found</span>').appendTo($warnings);
-							return;
-						}
-						for (var i = 0; i < page.revisions.length; ++i) {
-							var rev = page.revisions[i];
-							var $entry = $('<div/>', {
-								'class': 'entry'
-							});
-							var $input = $('<input/>', {
-								'type': 'checkbox',
-								'name': 's_warnings',
-								'value': rev.revid
-							});
-							$input.data('revinfo', rev);
-							$input.appendTo($entry);
-							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Morebits.date(rev.timestamp).calendar() + '</a></span>').appendTo($warnings);
-						}
-					}).fail(function(data) {
-						console.log('API failed :(', data); // eslint-disable-line no-console
-					});
-
-					var $resolves = $(root).find('[name=resolves]');
-					$resolves.find('.entry').remove();
-
-					var t = new mw.Title(value);
-					var ns = t.getNamespaceId();
-					var talk_page = new mw.Title(t.getMain(), ns % 2 ? ns : ns + 1).getPrefixedText();
-
-					api.get({
-						action: 'query',
-						prop: 'revisions',
-						format: 'json',
-						rvprop: 'sha1|ids|timestamp|parsedcomment|comment',
-						rvlimit: 500, // intentionally limited
-						rvend: date.toISOString(),
-						rvuser: mw.config.get('wgUserName'),
-						indexpageids: true,
-						redirects: true,
-						titles: talk_page
-					}).done(function(data) {
-						var pageid = data.query.pageids[0];
-						var page = data.query.pages[pageid];
-						if (!page.revisions) {
-							$('<span class="entry">None found</span>').appendTo($resolves);
-							return;
-						}
-						for (var i = 0; i < page.revisions.length; ++i) {
-							var rev = page.revisions[i];
-							var $entry = $('<div/>', {
-								'class': 'entry'
-							});
-							var $input = $('<input/>', {
-								'type': 'checkbox',
-								'name': 's_resolves',
-								'value': rev.revid
-							});
-							$input.data('revinfo', rev);
-							$input.appendTo($entry);
-							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Morebits.date(rev.timestamp).calendar() + '</a></span>').appendTo($resolves);
-						}
-
-						// add free form input
-						var $free_entry = $('<div/>', {
-							'class': 'entry'
-						});
-						var $free_input = $('<input/>', {
-							'type': 'text',
-							'name': 's_resolves_free'
-						});
-
-						var $free_label = $('<label/>', {
-							'for': 's_resolves_free',
-							'html': 'Diff to additional discussions: '
-						});
-						$free_entry.append($free_label).append($free_input).appendTo($resolves);
-
-					}).fail(function(data) {
-						console.log('API failed :(', data); // eslint-disable-line no-console
-					});
+						// resolutions
+						var t = new mw.Title(page);
+						var talk_page = t.getTalkPage().getPrefixedText();
+						getAN3Entries('resolves', mw.config.get('wgUserName'), talk_page);
+					} else {
+						$(root).find('[name=diffs]').find('.entry').remove();
+						$(root).find('[name=resolves]').find('.entry').remove();
+					}
 				}
 			});
 			work_area.append({
@@ -894,7 +835,7 @@ Twinkle.arv.processAN3 = function(params) {
 			if (sub.length >= 2) {
 				var last = sub[0];
 				var first = sub.slice(-1)[0];
-				var label = 'Consecutive edits made from ' + new Morebits.date(first.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + '(UTC) to ' + new Morebits.date(last.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)';
+				var label = 'Consecutive edits made from ' + new Morebits.date(first.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) to ' + new Morebits.date(last.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)';
 				ret = '# {{diff|oldid=' + first.parentid + '|diff=' + last.revid + '|label=' + label + '}}\n';
 			}
 			ret += sub.reverse().map(function(v) {
