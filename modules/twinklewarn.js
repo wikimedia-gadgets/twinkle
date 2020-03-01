@@ -1309,9 +1309,14 @@ Twinkle.warn.callbacks = {
 	getWarningWikitext: function(templateName, article, reason, isCustom) {
 		var text = '{{subst:' + templateName;
 
+		// add linked article for user warnings
 		if (article) {
-			// add linked article for user warnings
-			text += '|1=' + article;
+			// c&pmove has the source as the first parameter
+			if (templateName === 'uw-c&pmove') {
+				text += '|to=' + article;
+			} else {
+				text += '|1=' + article;
+			}
 		}
 		if (reason && !isCustom) {
 			// add extra message
