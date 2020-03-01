@@ -974,7 +974,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		contentform.appendChild(container);
 
 		$(Twinkle.config.sections).each(function(sectionkey, section) {
-			if (section.hidden || (section.adminOnly && !Morebits.userIsInGroup('sysop'))) {
+			if (section.hidden || (section.adminOnly && !Morebits.userIsSysop)) {
 				return true;  // i.e. "continue" in this context
 			}
 
@@ -1003,7 +1003,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 			// add each of the preferences to the form
 			$(section.preferences).each(function(prefkey, pref) {
-				if (pref.adminOnly && !Morebits.userIsInGroup('sysop')) {
+				if (pref.adminOnly && !Morebits.userIsSysop) {
 					return true;  // i.e. "continue" in this context
 				}
 
@@ -1456,7 +1456,7 @@ Twinkle.config.resetPrefLink = function twinkleconfigResetPrefLink(e) {
 
 	// search tactics
 	$(Twinkle.config.sections).each(function(sectionkey, section) {
-		if (section.hidden || (section.adminOnly && !Morebits.userIsInGroup('sysop'))) {
+		if (section.hidden || (section.adminOnly && !Morebits.userIsSysop)) {
 			return true;  // continue: skip impossibilities
 		}
 
@@ -1512,11 +1512,11 @@ Twinkle.config.resetPref = function twinkleconfigResetPref(pref) {
 Twinkle.config.resetAllPrefs = function twinkleconfigResetAllPrefs() {
 	// no confirmation message - the user can just refresh/close the page to abort
 	$(Twinkle.config.sections).each(function(sectionkey, section) {
-		if (section.hidden || (section.adminOnly && !Morebits.userIsInGroup('sysop'))) {
+		if (section.hidden || (section.adminOnly && !Morebits.userIsSysop)) {
 			return true;  // continue: skip impossibilities
 		}
 		$(section.preferences).each(function(prefkey, pref) {
-			if (!pref.adminOnly || Morebits.userIsInGroup('sysop')) {
+			if (!pref.adminOnly || Morebits.userIsSysop) {
 				Twinkle.config.resetPref(pref);
 			}
 		});
@@ -1577,7 +1577,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	};
 
 	$(Twinkle.config.sections).each(function(sectionkey, section) {
-		if (section.adminOnly && !Morebits.userIsInGroup('sysop')) {
+		if (section.adminOnly && !Morebits.userIsSysop) {
 			return;  // i.e. "continue" in this context
 		}
 
@@ -1586,7 +1586,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 			var userValue;  // = undefined
 
 			// only read form values for those prefs that have them
-			if (!section.hidden && (!pref.adminOnly || Morebits.userIsInGroup('sysop'))) {
+			if (!section.hidden && (!pref.adminOnly || Morebits.userIsSysop)) {
 				switch (pref.type) {
 
 					case 'boolean':  // read from the checkbox

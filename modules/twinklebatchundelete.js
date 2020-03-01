@@ -14,7 +14,7 @@
 
 
 Twinkle.batchundelete = function twinklebatchundelete() {
-	if (!Morebits.userIsInGroup('sysop') || !mw.config.get('wgArticleId') || (
+	if (!Morebits.userIsSysop || !mw.config.get('wgArticleId') || (
 		mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').user &&
 		mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').project)) {
 		return;

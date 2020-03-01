@@ -424,7 +424,7 @@ Twinkle.load = function () {
 	// Don't activate on special pages other than those on the whitelist so that
 	// they load faster, especially the watchlist.
 	var specialPageWhitelist = [ 'Block', 'Contributions' ]; // wgRelevantUserName defined for non-sysops on Special:Block
-	if (Morebits.userIsInGroup('sysop')) {
+	if (Morebits.userIsSysop) {
 		specialPageWhitelist = specialPageWhitelist.concat([ 'DeletedContributions', 'Prefixindex' ]);
 	}
 	if (mw.config.get('wgNamespaceNumber') === -1 &&
@@ -444,7 +444,7 @@ Twinkle.load = function () {
 	// User/user talk-related
 	Twinkle.arv();
 	Twinkle.warn();
-	if (Morebits.userIsInGroup('sysop')) {
+	if (Morebits.userIsSysop) {
 		Twinkle.block();
 	}
 	Twinkle.welcome();
@@ -463,7 +463,7 @@ Twinkle.load = function () {
 	Twinkle.unlink();
 	Twinkle.config.init();
 	Twinkle.fluff();
-	if (Morebits.userIsInGroup('sysop')) {
+	if (Morebits.userIsSysop) {
 		Twinkle.deprod();
 		Twinkle.batchdelete();
 		Twinkle.batchprotect();
