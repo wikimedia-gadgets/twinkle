@@ -4306,21 +4306,30 @@ Morebits.simpleWindow.prototype = {
 	 * as well as a link to Twinkle's documentation.
 	 * @param {string} text  Link's text content
 	 * @param {string} wikiPage  Link target
+	 * @param {boolean} [prep=false] Set true to prepend rather than append
 	 * @returns {Morebits.simpleWindow}
 	 */
-	addFooterLink: function(text, wikiPage) {
+	addFooterLink: function(text, wikiPage, prep) {
 		var $footerlinks = $(this.content).dialog('widget').find('.morebits-dialog-footerlinks');
 		if (this.hasFooterLinks) {
 			var bullet = document.createElement('span');
 			bullet.textContent = ' \u2022 ';  // U+2022 BULLET
-			$footerlinks.append(bullet);
+			if (prep) {
+				$footerlinks.prepend(bullet);
+			} else {
+				$footerlinks.append(bullet);
+			}
 		}
 		var link = document.createElement('a');
 		link.setAttribute('href', mw.util.getUrl(wikiPage));
 		link.setAttribute('title', wikiPage);
 		link.setAttribute('target', '_blank');
 		link.textContent = text;
-		$footerlinks.append(link);
+		if (prep) {
+			$footerlinks.prepend(link);
+		} else {
+			$footerlinks.append(link);
+		}
 		this.hasFooterLinks = true;
 		return this;
 	},
