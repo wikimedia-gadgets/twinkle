@@ -1292,43 +1292,50 @@ Twinkle.xfd.callbacks = {
 	rfd: {
 		// This gets called both on submit and preview to determine the redirect target
 		findTarget: function(params, callback) {
+			// Used by regular redirects to find the target, but for all redirects,
+			// avoid relying on the client clock to build the log page
+			var query = {
+				'action': 'query',
+				'curtimestamp': true
+			};
 			if (document.getElementById('softredirect')) {
-				// For soft redirects, skip straight to the callback
+				// For soft redirects, define the target early
+				// to skip target checks in findTargetCallback
 				params.target = document.getElementById('softredirect').textContent.replace(/^:+/, '');
-				callback(params);
 			} else {
 				// Find current target of redirect
-				var query = {
-					'action': 'query',
-					'titles': mw.config.get('wgPageName'),
-					'redirects': true,
-					'curtimestamp': true
-				};
-				var wikipedia_api = new Morebits.wiki.api('Finding target of redirect', query, Twinkle.xfd.callbacks.rfd.findTargetCallback(callback));
-				wikipedia_api.params = params;
-				wikipedia_api.post();
+				query.titles = mw.config.get('wgPageName');
+				query.redirects = true;
 			}
+			var wikipedia_api = new Morebits.wiki.api('Finding target of redirect', query, Twinkle.xfd.callbacks.rfd.findTargetCallback(callback));
+			wikipedia_api.params = params;
+			wikipedia_api.post();
 		},
 		// This is a closure for the callback from the above API request, which gets the target of the redirect
 		findTargetCallback: function(callback) {
 			return function(apiobj) {
 				var $xmlDoc = $(apiobj.responseXML);
 				var curtimestamp = $xmlDoc.find('api').attr('curtimestamp');
-				var target = $xmlDoc.find('redirects r').first().attr('to');
-				if (!target) {
-					apiobj.statelem.error('This page is currently not a redirect, aborting');
-					return;
-				}
-				var section = $xmlDoc.find('redirects r').first().attr('tofragment');
 				apiobj.params.curtimestamp = curtimestamp;
-				apiobj.params.target = target;
-				apiobj.params.section = section;
+				if (!apiobj.params.target) { // Not a softredirect
+					var target = $xmlDoc.find('redirects r').first().attr('to');
+					if (!target) {
+						var message = 'This page does not appear to be a redirect, aborting';
+						if (mw.config.get('wgAction') === 'history') {
+							message += '. If this is a soft redirect, try again from the content page, not the page history.';
+						}
+						apiobj.statelem.error(message);
+						return;
+					}
+					apiobj.params.target = target;
+					var section = $xmlDoc.find('redirects r').first().attr('tofragment');
+					apiobj.params.section = section;
+				}
 				callback(apiobj.params);
 			};
 		},
 		main: function(params) {
-			// Fallback to client clock for softredirects
-			var date = params.curtimestamp ? new Date(params.curtimestamp) : new Date();
+			var date = new Date(params.curtimestamp);
 			params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
 
