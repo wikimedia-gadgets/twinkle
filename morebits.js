@@ -2174,6 +2174,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 *    less 50 revisions and all are redirects, the original creation is retrived.
 	 * 2. Revisions that the user is not privileged to access (revdeled/suppressed) will be treated
 	 *    as non-redirects.
+	 * 3. Must not be used when the page has a non-wikitext contentmodel
+	 *    such as Modulespace Lua or user JavaScript/CSS
 	 */
 	this.setLookupNonRedirectCreator = function(flag) {
 		ctx.lookupNonRedirectCreator = flag;
@@ -2318,10 +2320,19 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			'prop': 'revisions',
 			'titles': ctx.pageName,
 			'rvlimit': 1,
-			'rvprop': 'user|timestamp|content',
-			'rvsection': 0,
+			'rvprop': 'user|timestamp',
 			'rvdir': 'newer'
 		};
+
+		// Only the wikitext content model can reliably handle
+		// rvsection, others return an error when paired with the
+		// content rvprop. Relatedly, non-wikitext models don't
+		// understand the #REDIRECT concept, so we shouldn't attempt
+		// the redirect resolution in fnLookupCreationSuccess
+		if (ctx.lookupNonRedirectCreator) {
+			query.rvsection = 0;
+			query.rvprop += '|content';
+		}
 
 		if (ctx.followRedirect) {
 			query.redirects = '';  // follow all redirects

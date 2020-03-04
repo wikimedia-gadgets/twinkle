@@ -314,7 +314,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 							name: 'xfdtarget',
 							type: 'input',
 							label: 'Other ' + templateOrModule + ' to be merged: ',
-							tooltip: 'Required',
+							tooltip: 'Required. Should not include the ' + Morebits.string.toUpperCaseFirstChar(templateOrModule) + ': namespace prefix.',
 							required: true
 						});
 						target.parentNode.appendChild(xfdtarget.render());
@@ -629,6 +629,9 @@ Twinkle.xfd.callbacks = {
 			if (venue === 'rfd') {
 				text += '|target=' + params.target + (params.section ? '#' + params.section : '');
 			} else if (venue !== 'cfd') {
+				if (params.xfdcat && params.xfdcat === 'tfm') {
+					params.target = Morebits.string.toUpperCaseFirstChar(params.target.replace(/^:?(?:Template|Module):/i, ''));
+				}
 				text += '|2=' + params.target;
 			}
 		}
@@ -892,7 +895,9 @@ Twinkle.xfd.callbacks = {
 				(params.tfdtype !== 'standard' ? '|type=' + params.tfdtype : '') + (params.noinclude ? '}}</noinclude>' : '}}') + tableNewline + text);
 			pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].' + Twinkle.getPref('summaryAd'));
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			pageobj.setCreateOption('recreate'); // Module /doc might not exist
+			if (params.scribunto) {
+				pageobj.setCreateOption('recreate'); // Module /doc might not exist
+			}
 			pageobj.save();
 		},
 		taggingTemplateForMerge: function(pageobj) {
@@ -905,7 +910,9 @@ Twinkle.xfd.callbacks = {
 				(params.noinclude ? '}}</noinclude>' : '}}') + tableNewline + text);
 			pageobj.setEditSummary('Listed for merging with [[:' + params.otherTemplateName + ']]; see [[:' + params.discussionpage + ']].' + Twinkle.getPref('summaryAd'));
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			pageobj.setCreateOption('recreate'); // Module /doc might not exist
+			if (params.scribunto) {
+				pageobj.setCreateOption('recreate'); // Module /doc might not exist
+			}
 			pageobj.save();
 		},
 		todaysList: function(pageobj) {
@@ -1546,36 +1553,52 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			params = { tfdtype: tfdtype, logpage: logpage, noinclude: noinclude, xfdcat: xfdcat, target: xfdtarget, reason: reason };
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
 
-			// Modules can't be tagged, TfD instructions are to place on /doc subpage
-			var isScribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
+			// Modules can't be tagged, TfD instructions are to place
+			// on /doc subpage, so need to tag and watch specially
+			params.scribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
+			var watch_query = {
+				action: 'watch',
+				titles: mw.config.get('wgPageName'),
+				token: mw.user.tokens.get('watchToken')
+			};
 			// Tagging template(s)/module(s)
 			if (xfdcat === 'tfm') { // Merge
-			// Tag this template/module
-				if (isScribunto) {
+				var wikipedia_otherpage;
+
+				// Tag this template/module
+				if (params.scribunto) {
 					wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName') + '/doc', 'Tagging this module documentation with merge tag');
 					params.otherTemplateName = 'Module:' + xfdtarget;
+					wikipedia_otherpage = new Morebits.wiki.page(params.otherTemplateName + '/doc', 'Tagging other module documentation with merge tag');
+
+					// Watch tagged module pages as well
+					if (Twinkle.getPref('xfdWatchPage') !== 'no') {
+						watch_query.titles += '|' + params.otherTemplateName;
+						new Morebits.wiki.api('Adding Modules to watchlist', watch_query).post();
+					}
 				} else {
 					wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging this template with merge tag');
 					params.otherTemplateName = 'Template:' + xfdtarget;
+					wikipedia_otherpage = new Morebits.wiki.page(params.otherTemplateName, 'Tagging other template with merge tag');
 				}
 				wikipedia_page.setFollowRedirect(true);
 				wikipedia_page.setCallbackParameters(params);
 				wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);
 
 				// Tag other template/module
-				if (isScribunto) {
-					wikipedia_page = new Morebits.wiki.page('Module:' + xfdtarget + '/doc', 'Tagging other module documentation with merge tag');
-				} else {
-					wikipedia_page = new Morebits.wiki.page('Template:' + xfdtarget, 'Tagging other template with merge tag');
-				}
-				wikipedia_page.setFollowRedirect(true);
+				wikipedia_otherpage.setFollowRedirect(true);
 				var otherParams = $.extend({}, params);
 				otherParams.otherTemplateName = Morebits.pageNameNorm;
-				wikipedia_page.setCallbackParameters(otherParams);
-				wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);
+				wikipedia_otherpage.setCallbackParameters(otherParams);
+				wikipedia_otherpage.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);
 			} else { // delete
-				if (isScribunto) {
+				if (params.scribunto) {
 					wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName') + '/doc', 'Tagging module documentation with deletion tag');
+
+					// Watch tagged module page as well
+					if (Twinkle.getPref('xfdWatchPage') !== 'no') {
+						new Morebits.wiki.api('Adding Module to watchlist', watch_query).post();
+					}
 				} else {
 					wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging template with deletion tag');
 				}
@@ -1600,7 +1623,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				var seenusers = [];
 				involvedpages.push(new Morebits.wiki.page(mw.config.get('wgPageName')));
 				if (xfdcat === 'tfm') {
-					if (isScribunto) {
+					if (params.scribunto) {
 						involvedpages.push(new Morebits.wiki.page('Module:' + xfdtarget));
 					} else {
 						involvedpages.push(new Morebits.wiki.page('Template:' + xfdtarget));

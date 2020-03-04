@@ -1527,7 +1527,18 @@ Twinkle.speedy.callbacks = {
 			pageobj.setPageText(code + (params.normalizeds.indexOf('g10') !== -1 ? '' : '\n' + text)); // cause attack pages to be blanked
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			pageobj.setWatchlist(params.watch);
-			pageobj.setCreateOption('recreate'); // Module /doc might not exist
+			if (params.scribunto) {
+				pageobj.setCreateOption('recreate'); // Module /doc might not exist
+				if (params.watch) {
+					// Watch module in addition to /doc subpage
+					var watch_query = {
+						action: 'watch',
+						titles: mw.config.get('wgPageName'),
+						token: mw.user.tokens.get('watchToken')
+					};
+					new Morebits.wiki.api('Adding Module to watchlist', watch_query).post();
+				}
+			}
 			pageobj.save(Twinkle.speedy.callbacks.user.tagComplete);
 		},
 
@@ -2175,8 +2186,8 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	Morebits.wiki.actionCompleted.notice = 'Tagging complete';
 
 	// Modules can't be tagged, follow standard at TfD and place on /doc subpage
-	var isScribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
-	var wikipedia_page = isScribunto ? new Morebits.wiki.page(mw.config.get('wgPageName') + '/doc', 'Tagging module documentation page') : new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
+	params.scribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
+	var wikipedia_page = params.scribunto ? new Morebits.wiki.page(mw.config.get('wgPageName') + '/doc', 'Tagging module documentation page') : new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.speedy.callbacks.user.main);
 };
