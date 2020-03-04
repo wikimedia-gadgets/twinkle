@@ -272,7 +272,7 @@ sub buildEditSummary {
 
 	  my $message = "The current edit summary is too long by $over character";
 	  $message .= $over == 1 ? q{} : 's';
-	  $message .= "and will therefore be truncated.\n";
+	  $message .= " and will therefore be truncated.\n";
 	  print $message;
 	  print "\t$editSummary\n";
 	  print "Please provide a shorter summary (under $maxLength characters, the latest commit ref will be added automatically):\n";
