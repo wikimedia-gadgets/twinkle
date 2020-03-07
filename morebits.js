@@ -2546,8 +2546,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			inprop: 'protection',
 			meta: 'tokens',
 			type: 'csrf',
-			titles: ctx.pageName,
-			watchlist: ctx.watchlistOption
+			titles: ctx.pageName
 		};
 		if (ctx.followRedirect) {
 			query.redirects = '';  // follow all redirects
@@ -2972,7 +2971,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			'from': pageTitle,
 			'to': ctx.moveDestination,
 			'token': token,
-			'reason': ctx.editSummary
+			'reason': ctx.editSummary,
+			'watchlist': ctx.watchlistOption
 		};
 		if (ctx.moveTalkPage) {
 			query.movetalk = 'true';
@@ -2982,9 +2982,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 		if (ctx.moveSuppressRedirect) {
 			query.noredirect = 'true';
-		}
-		if (ctx.watchlistOption === 'watch') {
-			query.watch = 'true';
 		}
 
 		ctx.moveProcessApi = new Morebits.wiki.api('moving page...', query, ctx.onMoveSuccess, ctx.statusElement, ctx.onMoveFailure);
@@ -3032,11 +3029,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			'action': 'delete',
 			'title': pageTitle,
 			'token': token,
-			'reason': ctx.editSummary
+			'reason': ctx.editSummary,
+			'watchlist': ctx.watchlistOption
 		};
-		if (ctx.watchlistOption === 'watch') {
-			query.watch = 'true';
-		}
 
 		ctx.deleteProcessApi = new Morebits.wiki.api('deleting page...', query, ctx.onDeleteSuccess, ctx.statusElement, fnProcessDeleteError);
 		ctx.deleteProcessApi.setParent(this);
@@ -3112,11 +3107,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			'action': 'undelete',
 			'title': pageTitle,
 			'token': token,
-			'reason': ctx.editSummary
+			'reason': ctx.editSummary,
+			'watchlist': ctx.watchlistOption
 		};
-		if (ctx.watchlistOption === 'watch') {
-			query.watch = 'true';
-		}
 
 		ctx.undeleteProcessApi = new Morebits.wiki.api('undeleting page...', query, ctx.onUndeleteSuccess, ctx.statusElement, fnProcessUndeleteError);
 		ctx.undeleteProcessApi.setParent(this);
@@ -3218,13 +3211,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			token: token,
 			protections: protections.join('|'),
 			expiry: expirys.join('|'),
-			reason: ctx.editSummary
+			reason: ctx.editSummary,
+			watchlist: ctx.watchlistOption
 		};
 		if (ctx.protectCascade) {
 			query.cascade = 'true';
-		}
-		if (ctx.watchlistOption === 'watch') {
-			query.watch = 'true';
 		}
 
 		ctx.protectProcessApi = new Morebits.wiki.api('protecting page...', query, ctx.onProtectSuccess, ctx.statusElement, ctx.onProtectFailure);
@@ -3259,8 +3250,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			expiry: ctx.flaggedRevs.expiry,
 			reason: ctx.editSummary
 		};
+		// [[phab:T247915]]
 		if (ctx.watchlistOption === 'watch') {
-			query.watch = 'true';
+			query.watchlist = 'true';
 		}
 
 		ctx.stabilizeProcessApi = new Morebits.wiki.api('configuring stabilization settings...', query, ctx.onStabilizeSuccess, ctx.statusElement, ctx.onStabilizeFailure);
