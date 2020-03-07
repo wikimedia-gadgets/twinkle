@@ -194,7 +194,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			]
 		});
 	}
-	form.append({ type: 'submit' });
+	form.append({ type: 'submit', className: 'tw-tag-submit' });
 
 	var result = form.render();
 	Window.setContent(result);
@@ -267,7 +267,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			numAdded: 0,
 			numRemoved: 0
 		};
-		$(Window.buttons[0]).after(statusNode);
+		$('button.tw-tag-submit').after(statusNode);
 
 		// fake a change event on the sort dropdown, to initialize the tag list
 		var evt = document.createEvent('Event');

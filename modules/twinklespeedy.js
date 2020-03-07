@@ -263,7 +263,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	});
 
 	if (Twinkle.getPref('speedySelectionStyle') !== 'radioClick') {
-		form.append({ type: 'submit' }); // Renamed in modeChanged
+		form.append({ type: 'submit', className: 'tw-speedy-submit' }); // Renamed in modeChanged
 	}
 
 	var result = form.render();
@@ -305,11 +305,11 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	if (isSysopMode) {
 		$('[name=delete_options]').show();
 		$('[name=tag_options]').hide();
-		$('.morebits-dialog-buttons button').text('Delete page'); // Submit button
+		$('button.tw-speedy-submit').text('Delete page');
 	} else {
 		$('[name=delete_options]').hide();
 		$('[name=tag_options]').show();
-		$('.morebits-dialog-buttons button').text('Tag page'); // Submit button
+		$('button.tw-speedy-submit').text('Tag page');
 	}
 
 	var work_area = new Morebits.quickForm.element({
