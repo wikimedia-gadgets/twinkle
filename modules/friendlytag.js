@@ -490,6 +490,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 					list: [
 						{ label: "{{notability}}: article's subject may not meet the general notability guideline", value: 'none' },
 						{ label: '{{notability|Academics}}: notability guideline for academics', value: 'Academics' },
+						{ label: '{{notability|Astro}}: notability guideline for astronomical objects', value: 'Astro' },
 						{ label: '{{notability|Biographies}}: notability guideline for biographies', value: 'Biographies' },
 						{ label: '{{notability|Books}}: notability guideline for books', value: 'Books' },
 						{ label: '{{notability|Companies}}: notability guidelines for companies and organizations', value: 'Companies' },
