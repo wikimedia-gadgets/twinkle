@@ -1353,8 +1353,6 @@ Date.prototype.getUTCMonthNameAbbrev = function() {
 };
 
 
-// Morebits.wikipedia.namespaces is deprecated - use mw.config.get('wgFormattedNamespaces') or mw.config.get('wgNamespaceIds') instead
-
 /**
  * **************** Morebits.wiki ****************
  * Various objects for wiki editing and API access
@@ -2307,6 +2305,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * called when the username and timestamp are found within the callback.
 	 * The username can be retrieved using the getCreator() function;
 	 * the timestamp can be retrieved using the getCreationTimestamp() function
+	 * Prior to June 2019 known as lookupCreator
 	 */
 	this.lookupCreation = function(onSuccess) {
 		if (!onSuccess) {
@@ -2341,14 +2340,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', query, fnLookupCreationSuccess, ctx.statusElement);
 		ctx.lookupCreationApi.setParent(this);
 		ctx.lookupCreationApi.post();
-	};
-	/**
-	 * @deprecated since May/June 2019, renamed to lookupCreation
-	 */
-	this.lookupCreator = function(onSuccess) {
-		console.warn("NOTE: lookupCreator() from Twinkle's Morebits has been deprecated since May/June 2019, please use lookupCreation() instead"); // eslint-disable-line no-console
-		Morebits.status.warn('NOTE', "lookupCreator() from Twinkle's Morebits has been deprecated since May/June 2019, please use lookupCreation() instead");
-		return this.lookupCreation(onSuccess);
 	};
 
 	/**
