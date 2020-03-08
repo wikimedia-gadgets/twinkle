@@ -490,17 +490,19 @@ Twinkle.tag.updateSortOrder = function(e) {
 					list: [
 						{ label: "{{notability}}: article's subject may not meet the general notability guideline", value: 'none' },
 						{ label: '{{notability|Academics}}: notability guideline for academics', value: 'Academics' },
+						{ label: '{{notability|Astro}}: notability guideline for astronomical objects', value: 'Astro' },
 						{ label: '{{notability|Biographies}}: notability guideline for biographies', value: 'Biographies' },
 						{ label: '{{notability|Books}}: notability guideline for books', value: 'Books' },
 						{ label: '{{notability|Companies}}: notability guidelines for companies and organizations', value: 'Companies' },
 						{ label: '{{notability|Events}}: notability guideline for events', value: 'Events' },
 						{ label: '{{notability|Films}}: notability guideline for films', value: 'Films' },
-						{ label: '{{notability|Places}}: notability guideline for places', value: 'Places' },
+						{ label: '{{notability|Geographic}}: notability guideline for geographic features', value: 'Geographic' },
+						{ label: '{{notability|Lists}}: notability guideline for stand-alone lists', value: 'Lists' },
 						{ label: '{{notability|Music}}: notability guideline for music', value: 'Music' },
 						{ label: '{{notability|Neologisms}}: notability guideline for neologisms', value: 'Neologisms' },
 						{ label: '{{notability|Numbers}}: notability guideline for numbers', value: 'Numbers' },
 						{ label: '{{notability|Products}}: notability guideline for products and services', value: 'Products' },
-						{ label: '{{notability|Sport}}: notability guideline for sports and athletics', value: 'Sport' },
+						{ label: '{{notability|Sports}}: notability guideline for sports and athletics', value: 'Sports' },
 						{ label: '{{notability|Television}}: notability guideline for television shows', value: 'Television' },
 						{ label: '{{notability|Web}}: notability guideline for web content', value: 'Web' }
 					]
