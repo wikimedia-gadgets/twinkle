@@ -1426,12 +1426,14 @@ Twinkle.protect.callbacks = {
 		var oldtag_re = /\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*/gi;
 		var re_result = oldtag_re.exec(text);
 		if (re_result) {
-			if (confirm('{{' + re_result[1] + '}} was found on the page. \nClick OK to remove it, or click Cancel to leave it there.')) {
+			if (params.tag === 'none' || confirm('{{' + re_result[1] + '}} was found on the page. \nClick OK to remove it, or click Cancel to leave it there.')) {
 				text = text.replace(oldtag_re, '');
 			}
 		}
 
-		if (params.tag !== 'none') {
+		if (params.tag === 'none') {
+			summary = 'Removing protection template' + Twinkle.getPref('summaryAd');
+		} else {
 			tag = params.tag;
 			if (params.reason) {
 				tag += '|reason=' + params.reason;
@@ -1439,11 +1441,7 @@ Twinkle.protect.callbacks = {
 			if (params.small) {
 				tag += '|small=yes';
 			}
-		}
 
-		if (params.tag === 'none') {
-			summary = 'Removing protection template' + Twinkle.getPref('summaryAd');
-		} else {
 			if (/^\s*#redirect/i.test(text)) { // redirect page
 				// Only tag if no {{rcat shell}} is found
 				if (!text.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
