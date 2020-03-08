@@ -2418,19 +2418,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (fnCanUseMwUserToken('move')) {
 			fnProcessMove.call(this, this);
 		} else {
-			var query = {
-				action: 'query',
-				prop: 'info',
-				meta: 'tokens',
-				type: 'csrf',
-				titles: ctx.pageName
-			};
-			if (ctx.followRedirect) {
-				query.redirects = '';  // follow all redirects
-			}
-			if (Morebits.userIsSysop) {
-				query.inprop = 'protection';
-			}
+			var query = fnNeedTokenInfoQuery('move');
 
 			ctx.moveApi = new Morebits.wiki.api('retrieving token...', query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
 			ctx.moveApi.setParent(this);
@@ -2463,17 +2451,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (fnCanUseMwUserToken('delete')) {
 			fnProcessDelete.call(this, this);
 		} else {
-			var query = {
-				action: 'query',
-				prop: 'info',
-				inprop: 'protection',
-				meta: 'tokens',
-				type: 'csrf',
-				titles: ctx.pageName
-			};
-			if (ctx.followRedirect) {
-				query.redirects = '';  // follow all redirects
-			}
+			var query = fnNeedTokenInfoQuery('delete');
 
 			ctx.deleteApi = new Morebits.wiki.api('retrieving token...', query, fnProcessDelete, ctx.statusElement, ctx.onDeleteFailure);
 			ctx.deleteApi.setParent(this);
@@ -2505,14 +2483,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (fnCanUseMwUserToken('undelete')) {
 			fnProcessUndelete.call(this, this);
 		} else {
-			var query = {
-				action: 'query',
-				prop: 'info',
-				inprop: 'protection',
-				meta: 'tokens',
-				type: 'csrf',
-				titles: ctx.pageName
-			};
+			var query = fnNeedTokenInfoQuery('undelete');
 
 			ctx.undeleteApi = new Morebits.wiki.api('retrieving token...', query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
 			ctx.undeleteApi.setParent(this);
@@ -2546,19 +2517,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 
-		// because of the way MW API interprets protection levels (absolute, not
-		// differential), we need to request protection levels from the server
-		var query = {
-			action: 'query',
-			prop: 'info',
-			inprop: 'protection',
-			meta: 'tokens',
-			type: 'csrf',
-			titles: ctx.pageName
-		};
-		if (ctx.followRedirect) {
-			query.redirects = '';  // follow all redirects
-		}
+		// because of the way MW API interprets protection levels
+		// (absolute, not differential), we always need to request
+		// protection levels from the server
+		var query = fnNeedTokenInfoQuery('protect');
 
 		ctx.protectApi = new Morebits.wiki.api('retrieving token...', query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
 		ctx.protectApi.setParent(this);
@@ -2596,16 +2558,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (fnCanUseMwUserToken('stabilize')) {
 			fnProcessStabilize.call(this, this);
 		} else {
-			var query = {
-				action: 'query',
-				prop: 'info|flagged',
-				meta: 'tokens',
-				type: 'csrf',
-				titles: ctx.pageName
-			};
-			if (ctx.followRedirect) {
-				query.redirects = '';  // follow all redirects
-			}
+			var query = fnNeedTokenInfoQuery('stabilize');
 
 			ctx.stabilizeApi = new Morebits.wiki.api('retrieving token...', query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
 			ctx.stabilizeApi.setParent(this);
@@ -2660,6 +2613,32 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		return !!mw.user.tokens.get('csrfToken');
+	};
+
+	/**
+	 * When functions can't use fnCanUseMwUserToken or require checking
+	 * protection, maintain the query in one place. Used for delete,
+	 * undelete, protect, stabilize, and move (basically, just not load)
+	 *
+	 * @param {string} action  The action being undertaken, e.g. "edit" or
+	 * "delete"
+	 */
+	var fnNeedTokenInfoQuery = function(action) {
+		var query = {
+			action: 'query',
+			meta: 'tokens',
+			type: 'csrf',
+			titles: ctx.pageName
+		};
+		// Protection not checked for flagged-revs or non-sysop moves
+		if (action !== 'stabilize' && (action !== 'move' || Morebits.userIsSysop)) {
+			query.prop = 'info';
+			query.inprop = 'protection';
+		}
+		if (ctx.followRedirect && action !== 'undelete') {
+			query.redirects = ''; // follow all redirects
+		}
+		return query;
 	};
 
 	// callback from loadSuccess() for append() and prepend() threads
