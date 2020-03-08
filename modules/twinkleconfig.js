@@ -1528,8 +1528,6 @@ Twinkle.config.resetAllPrefs = function twinkleconfigResetAllPrefs() {
 Twinkle.config.save = function twinkleconfigSave(e) {
 	Morebits.status.init(document.getElementById('twinkle-config-content'));
 
-	Morebits.wiki.actionCompleted.notice = 'Save';
-
 	var userjs = mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').user] + ':' + mw.config.get('wgUserName') + '/twinkleoptions.js';
 	var wikipedia_page = new Morebits.wiki.page(userjs, 'Saving preferences to ' + userjs);
 	wikipedia_page.setCallbackParameters(e.target);
