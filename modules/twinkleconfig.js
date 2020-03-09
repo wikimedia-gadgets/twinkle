@@ -849,19 +849,14 @@ Twinkle.config.sections = [
 				name: 'revertMaxRevisions',
 				type: 'integer'
 			},
-			// twinklebatchdelete.js: How many pages should be processed at a time
-			{
-				name: 'batchdeleteChunks',
-				type: 'integer'
-			},
-			// twinklebatchdelete.js: How many pages left in the process of being completed should allow a new batch to be initialized
-			{
-				name: 'batchDeleteMinCutOff',
-				type: 'integer'
-			},
 			// twinklebatchdelete.js: How many pages should be processed maximum
 			{
 				name: 'batchMax',
+				type: 'integer'
+			},
+			// twinklebatchdelete.js: How many pages should be processed at a time
+			{
+				name: 'batchdeleteChunks',
 				type: 'integer'
 			},
 			// twinklebatchprotect.js: How many pages should be processed at a time
@@ -869,19 +864,9 @@ Twinkle.config.sections = [
 				name: 'batchProtectChunks',
 				type: 'integer'
 			},
-			// twinklebatchprotect.js: How many pages left in the process of being completed should allow a new batch to be initialized
-			{
-				name: 'batchProtectMinCutOff',
-				type: 'integer'
-			},
 			// twinklebatchundelete.js: How many pages should be processed at a time
 			{
 				name: 'batchundeleteChunks',
-				type: 'integer'
-			},
-			// twinklebatchundelete.js: How many pages left in the process of being completed should allow a new batch to be initialized
-			{
-				name: 'batchUndeleteMinCutOff',
 				type: 'integer'
 			},
 			// twinkledeprod.js: How many pages should be processed at a time
