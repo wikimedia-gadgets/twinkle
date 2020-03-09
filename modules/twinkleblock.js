@@ -3,7 +3,7 @@
 
 (function($) {
 
-var api = new mw.Api(), relevantUserName;
+var relevantUserName;
 var menuFormattedNamespaces = $.extend({}, mw.config.get('wgFormattedNamespaces'));
 menuFormattedNamespaces[0] = '(Article)';
 
@@ -97,7 +97,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 };
 
 Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
-
+	var api = new mw.Api();
 	api.get({
 		format: 'json',
 		action: 'query',
@@ -1434,19 +1434,14 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 		blockoptions.allowusertalk = blockoptions.disabletalk ? undefined : true;
 
 		// execute block
-		api.getToken('block').then(function(token) {
-			statusElement.status('Processing...');
-			blockoptions.token = token;
-			var mbApi = new Morebits.wiki.api('Executing block', blockoptions, function() {
-				statusElement.info('Completed');
-				if (toWarn) {
-					Twinkle.block.callback.issue_template(templateoptions);
-				}
-			});
-			mbApi.post();
-		}, function() {
-			statusElement.error('Unable to fetch block token');
+		blockoptions.token = mw.user.tokens.get('csrfToken');
+		var mbApi = new Morebits.wiki.api('Executing block', blockoptions, function() {
+			statusElement.info('Completed');
+			if (toWarn) {
+				Twinkle.block.callback.issue_template(templateoptions);
+			}
 		});
+		mbApi.post();
 	} else if (toWarn) {
 		Morebits.simpleWindow.setButtonsEnabled(false);
 
