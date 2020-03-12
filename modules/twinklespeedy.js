@@ -1333,17 +1333,25 @@ Twinkle.speedy.callbacks = {
 			} else if (!reason || !reason.replace(/^\s*/, '').replace(/\s*$/, '')) {
 				return Morebits.status.error('Asking for reason', "you didn't give one.  I don't know... what with admins and their apathetic antics... I give up...");
 			}
-			thispage.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
-			thispage.deletePage(function() {
-				thispage.getStatusElement().info('done');
-				Twinkle.speedy.callbacks.sysop.deleteTalk(params);
-			});
+
+			var deleteMain = function() {
+				thispage.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
+				thispage.deletePage(function() {
+					thispage.getStatusElement().info('done');
+					Twinkle.speedy.callbacks.sysop.deleteTalk(params);
+				});
+			};
 
 			// look up initial contributor. If prompting user for deletion reason, just display a link.
 			// Otherwise open the talk page directly
 			if (params.warnUser) {
 				thispage.setCallbackParameters(params);
-				thispage.lookupCreation(Twinkle.speedy.callbacks.noteToCreator);
+				thispage.lookupCreation(function() {
+					Twinkle.speedy.callbacks.noteToCreator();
+					deleteMain();
+				});
+			} else {
+				deleteMain();
 			}
 		},
 		deleteTalk: function(params) {
