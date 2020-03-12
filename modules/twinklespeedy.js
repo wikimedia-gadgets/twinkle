@@ -1346,8 +1346,8 @@ Twinkle.speedy.callbacks = {
 			// Otherwise open the talk page directly
 			if (params.warnUser) {
 				thispage.setCallbackParameters(params);
-				thispage.lookupCreation(function() {
-					Twinkle.speedy.callbacks.noteToCreator();
+				thispage.lookupCreation(function(pageobj) {
+					Twinkle.speedy.callbacks.noteToCreator(pageobj);
 					deleteMain();
 				});
 			} else {
