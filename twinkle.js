@@ -8,9 +8,6 @@
  * Imported from github [https://github.com/azatoth/twinkle].
  * All changes should be made in the repository, otherwise they will be lost.
  *
- * To update this script from github, you must have a local repository set up. Then
- * follow the instructions at [https://github.com/azatoth/twinkle/blob/master/README.md].
- *
  * ----------
  *
  * This is AzaToth's Twinkle, the popular script sidekick for newbies, admins, and
@@ -52,6 +49,8 @@ Twinkle.defaultConfig = {
 	protectionSummaryAd: ' ([[WP:TW|TW]])',
 	userTalkPageMode: 'tab',
 	dialogLargeFont: false,
+	disabledModules: [],
+	disabledSysopModules: [],
 
 	// ARV
 	spiWatchReport: 'yes',
@@ -440,35 +439,26 @@ Twinkle.load = function () {
 	// Set custom Api-User-Agent header, for server-side logging purposes
 	Morebits.wiki.api.setApiUserAgent('Twinkle/2.0 (' + mw.config.get('wgDBname') + ')');
 
-	// Load the modules in the order that the tabs should appear
-	// User/user talk-related
-	Twinkle.arv();
-	Twinkle.warn();
-	if (Morebits.userIsSysop) {
-		Twinkle.block();
-	}
-	Twinkle.welcome();
-	Twinkle.shared();
-	Twinkle.talkback();
-	// Deletion
-	Twinkle.speedy();
-	Twinkle.prod();
-	Twinkle.xfd();
-	Twinkle.image();
-	// Maintenance
-	Twinkle.protect();
-	Twinkle.tag();
-	// Misc. ones last
-	Twinkle.diff();
-	Twinkle.unlink();
-	Twinkle.config.init();
-	Twinkle.fluff();
-	if (Morebits.userIsSysop) {
-		Twinkle.deprod();
-		Twinkle.batchdelete();
-		Twinkle.batchprotect();
-		Twinkle.batchundelete();
-	}
+	// Load all the modules in the order that the tabs should appear
+	var twinkleModules = [
+		// User/user talk-related
+		'arv', 'warn', 'block', 'welcome', 'shared', 'talkback',
+		// Deletion
+		'speedy', 'prod', 'xfd', 'image',
+		// Maintenance
+		'protect', 'tag',
+		// Misc. ones last
+		'diff', 'unlink', 'fluff', 'deprod', 'batchdelete', 'batchprotect', 'batchundelete'
+	];
+	// Don't load modules users have disabled
+	var disabledModules = Twinkle.getPref('disabledModules').concat(Twinkle.getPref('disabledSysopModules'));
+	twinkleModules.filter(function(mod) {
+		return disabledModules.indexOf(mod) === -1;
+	}).forEach(function(module) {
+		Twinkle[module]();
+	});
+	Twinkle.config.init(); // Can't turn off
+
 	// Run the initialization callbacks for any custom modules
 	Twinkle.initCallbacks.forEach(function (func) {
 		func();
