@@ -1972,50 +1972,55 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 };
 
 // Function for processing talk page notification template parameters
-// key1/value1 for db-csd-[notice|deleted]-custom, utparams.param for db-[notice|deleted]-multiple
+// key1/value1: for {{db-criterion-[notice|deleted]}} (via {{db-csd-[notice|deleted]-custom}})
+// utparams.param: for {{db-[notice|deleted]-multiple}}
 Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParameters(normalized, parameters) {
 	var utparams = [];
-	switch (normalized) {
-		case 'db':
-			utparams['2'] = parameters['1'];
-			break;
-		case 'g4':
-			utparams.key1 = 'xfd';
-			utparams.value1 = utparams.xfd = parameters.xfd;
-			break;
-		case 'g6':
-			utparams.key1 = 'to';
-			utparams.value1 = Morebits.pageNameNorm;
-			break;
-		case 'g12':
-			['url', 'url2', 'url3'].forEach(function(item, idx) {
-				if (parameters[item]) {
-					idx++;
-					utparams['key' + idx] = item;
-					utparams['value' + idx] = utparams[item] = parameters[item];
-				}
-			});
-			break;
-		case 'a2':
-			utparams.source = parameters.source;
-			break;
-		case 'a5':
-			utparams.key1 = 'location';
-			utparams.value1 = utparams.location = parameters.location;
-			break;
-		case 'a10':
-			utparams.key1 = 'article';
-			utparams.value1 = utparams.article = parameters.article;
-			break;
-		case 'f9':
-			utparams.url = parameters.url;
-			break;
-		case 'p1':
-			utparams.key1 = 'criterion';
-			utparams.value1 = utparams.criterion = parameters.criterion;
-			break;
-		default:
-			break;
+
+	// Special cases
+	if (normalized === 'db') {
+		utparams['2'] = parameters['1'];
+	} else if (normalized === 'g6') {
+		utparams.key1 = 'to';
+		utparams.value1 = Morebits.pageNameNorm;
+	} else if (normalized === 'g12') {
+		['url', 'url2', 'url3'].forEach(function(item, idx) {
+			if (parameters[item]) {
+				idx++;
+				utparams['key' + idx] = item;
+				utparams['value' + idx] = utparams[item] = parameters[item];
+			}
+		});
+	} else {
+		// Handle the rest
+		var param;
+		switch (normalized) {
+			case 'g4':
+				param = 'xfd';
+				break;
+			case 'a2':
+				param = 'source';
+				break;
+			case 'a5':
+				param = 'location';
+				break;
+			case 'a10':
+				param = 'article';
+				break;
+			case 'f9':
+				param = 'url';
+				break;
+			case 'p1':
+				param = 'criterion';
+				break;
+			default:
+				break;
+		}
+		// No harm in providing a usertalk template with the others' parameters
+		if (param && parameters[param]) {
+			utparams.key1 = param;
+			utparams.value1 = utparams[param] = parameters[param];
+		}
 	}
 	return utparams;
 };
