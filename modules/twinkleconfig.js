@@ -785,6 +785,25 @@ Twinkle.config.sections = [
 	{
 		title: 'XFD (deletion discussions)',
 		preferences: [
+			{
+				name: 'logXfdNominations',
+				label: 'Keep a log in userspace of all pages you nominate for a deletion discussion (XfD)',
+				helptip: 'The userspace log offers a good way to keep track of all pages you nominate for XfD using Twinkle.',
+				type: 'boolean'
+			},
+			{
+				name: 'xfdLogPageName',
+				label: 'Keep the deletion discussion userspace log at this user subpage',
+				helptip: 'Enter a subpage name in this box. You will find your XfD log at User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the XfD userspace log.',
+				type: 'string'
+			},
+			{
+				name: 'noLogOnXfdNomination',
+				label: 'Do not create a userspace log entry when nominating at this venue',
+				type: 'set',
+				setValues: { afd: 'AfD', tfd: 'TfD', ffd: 'FfD', cfd: 'CfD', cfds: 'CfD/S', mfd: 'MfD', rfd: 'RfD', rm: 'RM' }
+			},
+
 			// TwinkleConfig.xfdWatchPage (string)
 			// The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
 			// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).

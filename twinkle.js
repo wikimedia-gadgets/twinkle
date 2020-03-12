@@ -112,6 +112,9 @@ Twinkle.defaultConfig = {
 	customWarningList: [],
 
 	// XfD
+	logXfdNominations: false,
+	xfdLogPageName: 'XfD log',
+	noLogOnXfdNomination: [],
 	xfdWatchDiscussion: 'default',
 	xfdWatchList: 'no',
 	xfdWatchPage: 'default',
