@@ -1273,7 +1273,6 @@ Twinkle.tag.callbacks = {
 
 		// Remove tags that become superfluous with this action
 		var pageText = pageobj.getPageText().replace(/\{\{\s*([Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, '');
-		var summaryText;
 		var params = pageobj.getCallbackParameters();
 
 		/**
@@ -1281,23 +1280,47 @@ Twinkle.tag.callbacks = {
 		 * Called from removeTags()
 		 */
 		var postRemoval = function() {
-
 			if (params.tagsToRemove.length) {
-				// Finish summary text
-				summaryText += ' tag' + (params.tagsToRemove.length > 1 ? 's' : '') + ' from article';
-
 				// Remove empty {{multiple issues}} if found
 				pageText = pageText.replace(/\{\{(multiple ?issues|article ?issues|mi)\s*\|\s*\}\}\n?/im, '');
 				// Remove single-element {{multiple issues}} if found
 				pageText = pageText.replace(/\{\{(?:multiple ?issues|article ?issues|mi)\s*\|\s*(\{\{[^}]+\}\})\s*\}\}/im, '$1');
 			}
 
+			// Build edit summary
+			var makeSentence = function(array) {
+				if (array.length < 3) {
+					return array.join(' and ');
+				}
+				var last = array.pop();
+				return array.join(', ') + ', and ' + last;
+			};
+			var makeTemplateLink = function(tag) {
+				var text = '{{[[';
+				// if it is a custom tag with a parameter
+				if (tag.indexOf('|') !== -1) {
+					tag = tag.slice(0, tag.indexOf('|'));
+				}
+				text += tag.indexOf(':') !== -1 ? tag : 'Template:' + tag + '|' + tag;
+				return text + ']]}}';
+			};
+
+			var summaryText;
+			var addedTags = params.tags.map(makeTemplateLink);
+			var removedTags = params.tagsToRemove.map(makeTemplateLink);
+			if (addedTags.length) {
+				summaryText = 'Added ' + makeSentence(addedTags);
+				summaryText += removedTags.length ? '; and removed ' + makeSentence(removedTags) : '';
+			} else {
+				summaryText = 'Removed ' + makeSentence(removedTags);
+			}
+			summaryText += ' tag' + (addedTags.length + removedTags.length > 1 ? 's' : '');
 			if (params.reason) {
 				summaryText += ': ' + params.reason;
 			}
 
 			// avoid truncated summaries
-			if (summaryText.length > (254 - Twinkle.getPref('summaryAd').length)) {
+			if (summaryText.length > (499 - Twinkle.getPref('summaryAd').length)) {
 				summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, '$1');
 			}
 
@@ -1414,28 +1437,18 @@ Twinkle.tag.callbacks = {
 		var removeTags = function removeTags() {
 
 			if (params.tagsToRemove.length === 0) {
-				// finish summary text from adding of tags, in this case where there are
-				// no tags to be removed
-				summaryText += ' tag' + (tags.length > 1 ? 's' : '') + ' to article';
-
 				postRemoval();
 				return;
 			}
 
 			Morebits.status.info('Info', 'Removing deselected tags that were already present');
 
-			if (params.tags.length > 0) {
-				summaryText += (tags.length ? ' tag' + (tags.length > 1 ? 's' : '') : '') + ', and removed';
-			} else {
-				summaryText = 'Removed';
-			}
-
 			var getRedirectsFor = [];
 
 			// Remove the tags from the page text, if found in its proper name,
 			// otherwise moves it to `getRedirectsFor` array earmarking it for
 			// later removal
-			params.tagsToRemove.forEach(function removeTag(tag, tagIndex) {
+			params.tagsToRemove.forEach(function removeTag(tag) {
 				var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
 
 				if (tag_re.test(pageText)) {
@@ -1443,16 +1456,6 @@ Twinkle.tag.callbacks = {
 				} else {
 					getRedirectsFor.push('Template:' + tag);
 				}
-
-				// Producing summary text for current tag removal
-				if (tagIndex > 0) {
-					if (tagIndex === (params.tagsToRemove.length - 1)) {
-						summaryText += ' and';
-					} else if (tagIndex < (params.tagsToRemove.length - 1)) {
-						summaryText += ',';
-					}
-				}
-				summaryText += ' {{[[Template:' + tag + '|' + tag + ']]}}';
 			});
 
 			if (!getRedirectsFor.length) {
@@ -1501,9 +1504,8 @@ Twinkle.tag.callbacks = {
 			return;
 		}
 
+		var tagRe, tagText = '', tags = [], groupableTags = [], groupableExistingTags = [];
 		// Executes first: addition of selected tags
-		summaryText = 'Added';
-		var tagRe, tagText = '', tags = [], groupableTags = [], groupableExistingTags = [], totalTags;
 
 		/**
 		 * Updates `tagText` with the syntax of `tagName` template with its parameters
@@ -1614,23 +1616,6 @@ Twinkle.tag.callbacks = {
 				currentTag += '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}\n';
 				tagText += currentTag;
 			}
-
-			if (tagIndex > 0) {
-				if (tagIndex === (totalTags - 1)) {
-					summaryText += ' and';
-				} else if (tagIndex < (totalTags - 1)) {
-					summaryText += ',';
-				}
-			}
-
-			summaryText += ' {{[[';
-			// if it is a custom tag with a parameter
-			if (tagName.indexOf('|') !== -1) {
-				tagName = tagName.slice(0, tagName.indexOf('|'));
-			}
-			summaryText += tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName;
-			summaryText += ']]}}';
-
 		};
 
 		/**
@@ -1639,7 +1624,6 @@ Twinkle.tag.callbacks = {
 		 * {{multiple issues}} is not being added to the page at all
 		 */
 		var addUngroupedTags = function() {
-			totalTags = tags.length;
 			$.each(tags, addTag);
 
 			// Smartly insert the new tags after any hatnotes or
@@ -1719,14 +1703,7 @@ Twinkle.tag.callbacks = {
 			Morebits.status.info('Info', 'Adding supported tags inside existing {{multiple issues}} tag');
 
 			tagText = '';
-
-			totalTags = groupableTags.length;
 			$.each(groupableTags, addTag);
-
-			summaryText += ' tag' + (groupableTags.length > 1 ? 's' : '') + ' (within {{[[Template:multiple issues|multiple issues]]}})';
-			if (tags.length > 0) {
-				summaryText += ', and';
-			}
 
 			var miRegex = new RegExp('(\\{\\{\\s*' + miTest[1] + '\\s*(?:\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?)\\}\\}\\s*', 'im');
 			pageText = pageText.replace(miRegex, '$1' + tagText + '}}\n');
@@ -1743,16 +1720,7 @@ Twinkle.tag.callbacks = {
 			 * Adds newly added tags to MI
 			 */
 			var addNewTagsToMI = function() {
-				totalTags = groupableTags.length;
 				$.each(groupableTags, addTag);
-				if (groupableTags.length) {
-					summaryText += ' tags (within {{[[Template:multiple issues|multiple issues]]}})';
-				} else {
-					summaryText += ' {{[[Template:multiple issues|multiple issues]]}}';
-				}
-				if (tags.length > 0) {
-					summaryText += ', and';
-				}
 				tagText += '}}\n';
 
 				addUngroupedTags();
@@ -1812,7 +1780,6 @@ Twinkle.tag.callbacks = {
 			tags = tags.concat(groupableTags);
 			addUngroupedTags();
 		}
-
 	},
 
 	redirect: function redirect(pageobj) {
@@ -1879,7 +1846,7 @@ Twinkle.tag.callbacks = {
 		summaryText += (tags.length > 0 ? ' tag' + (tags.length > 1 ? 's' : '') : '') + ' to redirect';
 
 		// avoid truncated summaries
-		if (summaryText.length > (254 - Twinkle.getPref('summaryAd').length)) {
+		if (summaryText.length > (499 - Twinkle.getPref('summaryAd').length)) {
 			summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, '$1');
 		}
 
