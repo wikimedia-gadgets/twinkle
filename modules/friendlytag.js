@@ -129,8 +129,15 @@ Twinkle.tag.callback = function friendlytagCallback() {
 						checked: Twinkle.getPref('groupByDefault')
 					}
 				]
-			}
-			);
+			});
+
+			form.append({
+				type: 'input',
+				label: 'Reason',
+				name: 'reason',
+				tooltip: 'Optional reason to be appended in edit summary. Recommended when removing tags.',
+				size: '60px'
+			});
 
 			break;
 
@@ -526,8 +533,6 @@ Twinkle.tag.updateSortOrder = function(e) {
 					value: tag,
 					label: '{{' + tag + '}}' + (description ? ': ' + description : ''),
 					checked: unCheckedTags.indexOf(tag) === -1
-					// , subgroup: { type: 'input', name: 'removeReason', label: 'Reason', tooltip: 'Enter reason for removing this tag' }
-					// TODO: add option for providing reason for removal
 				};
 
 			checkboxes.push(checkbox);
@@ -1287,6 +1292,10 @@ Twinkle.tag.callbacks = {
 				pageText = pageText.replace(/\{\{(?:multiple ?issues|article ?issues|mi)\s*\|\s*(\{\{[^}]+\}\})\s*\}\}/im, '$1');
 			}
 
+			if (params.reason) {
+				summaryText += ': ' + params.reason;
+			}
+
 			// avoid truncated summaries
 			if (summaryText.length > (254 - Twinkle.getPref('summaryAd').length)) {
 				summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, '$1');
@@ -2014,6 +2023,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		case 'article':
 			params.tagsToRemove = form.getUnchecked('alreadyPresentArticleTags') || [];
 			params.tagsToRemain = form.getChecked('alreadyPresentArticleTags') || [];
+			params.reason = form.reason.value.trim();
 
 			params.group = form.group.checked;
 
