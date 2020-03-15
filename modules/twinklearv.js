@@ -384,7 +384,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 
 								var $free_label = $('<label/>', {
 									'for': 's_resolves_free',
-									'html': 'Diff to additional discussions: '
+									'html': 'URL link of diff with additional discussions: '
 								});
 								$free_entry.append($free_label).append($free_input).appendTo($field);
 							}
@@ -681,18 +681,87 @@ Twinkle.arv.callback.evaluate = function(e) {
 			};
 
 			if (free_resolves) {
-				var oldid = mw.util.getParamValue('oldid', free_resolves);
+				var query;
+				var diff, oldid;
+				var specialDiff = /Special:Diff\/(\d+)(?:\/(\S+))?/i.exec(free_resolves);
+				if (specialDiff) {
+					if (specialDiff[2]) {
+						oldid = specialDiff[1];
+						diff = specialDiff[2];
+					} else {
+						diff = specialDiff[1];
+					}
+				} else {
+					diff = mw.util.getParamValue('diff', free_resolves);
+					oldid = mw.util.getParamValue('oldid', free_resolves);
+				}
+				var title = mw.util.getParamValue('title', free_resolves);
+				var diffNum = /^\d+$/.test(diff); // used repeatedly
+
+				// rvdiffto in prop=revisions is deprecated, but action=compare doesn't return
+				// timestamps ([[phab:T247686]]) so we can't rely on it unless necessary.
+				// Likewise, we can't rely on a meaningful comment for diff=cur.
+				// Additionally, links like Special:Diff/123/next, Special:Diff/123/456, or ?diff=next&oldid=123
+				// would each require making use of rvdir=newer in the revisions API.
+				// That requires a title parameter, so we have to use compare instead of revisions.
+				if (oldid && (diff === 'cur' || (!title && (diff === 'next' || diffNum)))) {
+					query = {
+						action: 'compare',
+						fromrev: oldid,
+						prop: 'ids|title',
+						format: 'json'
+					};
+					if (diffNum) {
+						query.torev = diff;
+					} else {
+						query.torelative = diff;
+					}
+				} else {
+					query = {
+						action: 'query',
+						prop: 'revisions',
+						rvprop: 'ids|timestamp|comment',
+						format: 'json',
+						indexpageids: true
+					};
+
+					if (diff && oldid) {
+						if (diff === 'prev') {
+							query.revids = oldid;
+						} else {
+							query.titles = title;
+							query.rvdir = 'newer';
+							query.rvstartid = oldid;
+
+							if (diff === 'next' && title) {
+								query.rvlimit = 2;
+							} else if (diffNum) {
+								// Diffs may or may not be consecutive, no limit
+								query.rvendid = diff;
+							}
+						}
+					} else {
+						// diff=next|prev|cur with no oldid
+						// Implies title= exists otherwise it's not a valid diff link (well, it is, but to the Main Page)
+						if (diff && /^\D+$/.test(diff)) {
+							query.titles = title;
+						} else {
+							query.revids = diff || oldid;
+						}
+					}
+				}
+
 				var api = new mw.Api();
-				api.get({
-					action: 'query',
-					prop: 'revisions',
-					format: 'json',
-					rvprop: 'ids|timestamp|comment',
-					indexpageids: true,
-					revids: oldid
-				}).done(function(data) {
-					var pageid = data.query.pageids[0];
-					var page = data.query.pages[pageid];
+				api.get(query).done(function(data) {
+					var page;
+					if (data.compare && data.compare.fromtitle === data.compare.totitle) {
+						page = data;
+					} else if (data.query) {
+						var pageid = data.query.pageids[0];
+						page = data.query.pages[pageid];
+					} else {
+						return;
+					}
 					an3_next(page);
 				}).fail(function(data) {
 					console.log('API failed :(', data); // eslint-disable-line no-console
@@ -870,8 +939,21 @@ Twinkle.arv.processAN3 = function(params) {
 
 		if (params.free_resolves) {
 			var page = params.free_resolves;
-			var rev = page.revisions[0];
-			resolvetext += '\n# ' + ' {{diff2|' + rev.revid + '|' + new Morebits.date(rev.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) on ' + page.title + '}} ' + hasHiddenComment(rev);
+			if (page.compare) {
+				resolvetext += '\n# ' + ' {{diff|oldid=' + page.compare.fromrevid + '|diff=' + page.compare.torevid + '|label=Consecutive edits on ' + page.compare.totitle + '}}';
+			} else if (page.revisions) {
+				var revCount = page.revisions.length;
+				var rev;
+				if (revCount < 3) { // diff=prev or next
+					rev = revCount === 1 ? page.revisions[0] : page.revisions[1];
+					resolvetext += '\n# ' + ' {{diff2|' + rev.revid + '|' + new Morebits.date(rev.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) on ' + page.title + '}} ' + hasHiddenComment(rev);
+				} else { // diff and oldid are nonconsecutive
+					rev = page.revisions[0];
+					var revLatest = page.revisions[revCount - 1];
+					var label = 'Consecutive edits made from ' + new Morebits.date(rev.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) to ' + new Morebits.date(revLatest.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) on ' + page.title;
+					resolvetext += '\n# {{diff|oldid=' + rev.revid + '|diff=' + revLatest.revid + '|label=' + label + '}}\n';
+				}
+			}
 		}
 
 		var comment = params.comment.replace(/~*$/g, '').trim();
