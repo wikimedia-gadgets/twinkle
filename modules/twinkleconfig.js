@@ -152,35 +152,6 @@ Twinkle.config.sections = [
 	{
 		title: 'General',
 		preferences: [
-			// TwinkleConfig.summaryAd (string)
-			// Text to be appended to the edit summary of edits made using Twinkle
-			{
-				name: 'summaryAd',
-				label: "\"Ad\" to be appended to Twinkle's edit summaries",
-				helptip: 'The summary ad should start with a space, and be kept short.',
-				type: 'string'
-			},
-
-			// TwinkleConfig.deletionSummaryAd (string)
-			// Text to be appended to the edit summary of deletions made using Twinkle
-			{
-				name: 'deletionSummaryAd',
-				label: 'Summary ad to use for deletion summaries',
-				helptip: 'Normally the same as the edit summary ad above.',
-				adminOnly: true,
-				type: 'string'
-			},
-
-			// TwinkleConfig.protectionSummaryAd (string)
-			// Text to be appended to the edit summary of page protections made using Twinkle
-			{
-				name: 'protectionSummaryAd',
-				label: 'Summary ad to use for page protections',
-				helptip: 'Normally the same as the edit summary ad above.',
-				adminOnly: true,
-				type: 'string'
-			},
-
 			// TwinkleConfig.userTalkPageMode may take arguments:
 			// 'window': open a new window, remember the opened window
 			// 'tab': opens in a new tab, if possible.

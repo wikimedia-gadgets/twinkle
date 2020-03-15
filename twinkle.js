@@ -31,8 +31,13 @@ window.Twinkle = Twinkle;  // allow global access
  * Twinkle-specific data shared by multiple modules
  * Likely customized per installation
  */
-// Various hatnote templates, used when tagging (csd/xfd/tag/prod/protect) to
-// ensure MOS:ORDER
+// Custom change tag(s) to be applied to all Twinkle actions, create at Special:Tags
+Twinkle.changeTags = 'twinkle';
+// Available for actions that don't (yet) support tags
+// currently: FlaggedRevs and PageTriage
+Twinkle.summaryAd = ' ([[WP:TW|TW]])';
+
+// Various hatnote templates, used when tagging (csd/xfd/tag/prod/protect) to ensure [[w:en:MOS:ORDER]]
 Twinkle.hatnoteRegex = 'short description|hatnote|main|correct title|dablink|distinguish|for|further|selfref|year dab|similar names|highway detail hatnote|broader|about(?:-distinguish| other people)?|other\\s?(?:hurricane(?: use)?s|people|persons|places|ships|uses(?: of)?)|redirect(?:-(?:distinguish|synonym|multi))?|see\\s?(?:wiktionary|also(?: if exists)?)';
 
 
@@ -58,9 +63,6 @@ Twinkle.defaultConfig = {};
  */
 Twinkle.defaultConfig = {
 	// General
-	summaryAd: ' ([[WP:TW|TW]])',
-	deletionSummaryAd: ' ([[WP:TW|TW]])',
-	protectionSummaryAd: ' ([[WP:TW|TW]])',
 	userTalkPageMode: 'tab',
 	dialogLargeFont: false,
 	disabledModules: [],
@@ -143,8 +145,12 @@ Twinkle.defaultConfig = {
 	batchMax: 5000,
 	batchChunks: 50,
 
-	// Formerly defaultConfig.friendly:
+	// Deprecated options, as a fallback for add-on scripts/modules
+	summaryAd: ' ([[WP:TW|TW]])',
+	deletionSummaryAd: ' ([[WP:TW|TW]])',
+	protectionSummaryAd: ' ([[WP:TW|TW]])',
 
+	// Formerly defaultConfig.friendly:
 	// Tag
 	groupByDefault: true,
 	watchTaggedPages: true,
