@@ -442,16 +442,23 @@ Twinkle.load = function () {
 	// Load all the modules in the order that the tabs should appear
 	var twinkleModules = [
 		// User/user talk-related
-		'arv', 'warn', 'block', 'welcome', 'shared', 'talkback',
+		'arv', 'warn', 'welcome', 'shared', 'talkback',
 		// Deletion
 		'speedy', 'prod', 'xfd', 'image',
 		// Maintenance
 		'protect', 'tag',
 		// Misc. ones last
-		'diff', 'unlink', 'fluff', 'deprod', 'batchdelete', 'batchprotect', 'batchundelete'
+		'diff', 'unlink', 'fluff'
 	];
+	var disabledModules = Twinkle.getPref('disabledModules');
+
+	if (Morebits.userIsSysop) {
+		twinkleModules.splice(2, 0, 'block'); // Insert after warn
+		twinkleModules.push('deprod', 'batchdelete', 'batchprotect', 'batchundelete');
+		disabledModules = disabledModules.concat(Twinkle.getPref('disabledSysopModules'));
+	}
+
 	// Don't load modules users have disabled
-	var disabledModules = Twinkle.getPref('disabledModules').concat(Twinkle.getPref('disabledSysopModules'));
 	twinkleModules.filter(function(mod) {
 		return disabledModules.indexOf(mod) === -1;
 	}).forEach(function(module) {
