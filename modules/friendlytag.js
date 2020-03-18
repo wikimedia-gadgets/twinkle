@@ -1161,6 +1161,7 @@ Twinkle.tag.file.cleanupList = [
 	{ label: '{{Bad format}}: PDF/DOC/... file should be converted to a more useful format', value: 'Bad format' },
 	{ label: '{{Bad GIF}}: GIF that should be PNG, JPEG, or SVG', value: 'Bad GIF' },
 	{ label: '{{Bad JPEG}}: JPEG that should be PNG or SVG', value: 'Bad JPEG' },
+	{ label: '{{Bad SVG}}: SVG containing raster grahpics', value: 'Bad SVG' },
 	{ label: '{{Bad trace}}: auto-traced SVG requiring cleanup', value: 'Bad trace' },
 	{
 		label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image',
