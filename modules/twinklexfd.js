@@ -1464,7 +1464,6 @@ Twinkle.xfd.callbacks = {
 			pageobj.setAppendText('\n\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params));
 			pageobj.setEditSummary('Proposing move' + (params.newname ? ' to ' + params.newname : '') + Twinkle.getPref('summaryAd'));
 			pageobj.setCreateOption('recreate'); // since the talk page need not exist
-			pageobj.setFollowRedirect(true);
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.append(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -1718,6 +1717,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 			// Tagging category
 			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with ' + params.action + ' tag');
+			wikipedia_page.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.cfd.taggingCategory);
 
@@ -1752,11 +1752,13 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 			// Tagging category
 			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with rename tag');
+			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.cfds.taggingCategory);
 
 			// Adding discussion to list
 			wikipedia_page = new Morebits.wiki.page(logpage, 'Adding discussion to the list');
+			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.cfds.addToList);
 
@@ -1778,6 +1780,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			Morebits.wiki.actionCompleted.notice = 'Nomination completed, now redirecting to the discussion page';
 
 			wikipedia_page = new Morebits.wiki.page(nomPageName, rmtr ? 'Adding entry at WP:RM/TR' : 'Adding entry on talk page');
+			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 
 			if (rmtr) {
