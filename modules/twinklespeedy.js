@@ -1570,34 +1570,12 @@ Twinkle.speedy.callbacks = {
 		//   for CSD: params.values, params.normalizeds  (note: normalizeds is an array)
 		//   for DI: params.fromDI = true, params.templatename, params.normalized  (note: normalized is a string)
 		addToLog: function(params, initialContrib) {
-			var wikipedia_page = new Morebits.wiki.page('User:' + mw.config.get('wgUserName') + '/' + Twinkle.getPref('speedyLogPageName'), 'Adding entry to userspace log');
-			params.logInitialContrib = initialContrib;
-			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(Twinkle.speedy.callbacks.user.saveLog);
-		},
-
-		saveLog: function(pageobj) {
-			var text = pageobj.getPageText();
-			var params = pageobj.getCallbackParameters();
-
-			var appendText = '';
-
-			// add blurb if log page doesn't exist
-			if (!pageobj.exists()) {
-				appendText +=
-					"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
-					'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
-					'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].';
-				if (Morebits.userIsSysop) {
-					appendText += '\n\nThis log does not track outright speedy deletions made using Twinkle.';
-				}
-			}
-
-			// create monthly header
-			var date = new Morebits.date(pageobj.getLoadTime());
-			if (!date.monthHeaderRegex().test(text)) {
-				appendText += '\n\n' + date.monthHeader(3);
-			}
+			var usl = new Morebits.userspaceLogger(Twinkle.getPref('speedyLogPageName'));
+			usl.initialText =
+				"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
+				'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
+				'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].' +
+				(Morebits.userIsSysop ? '\n\nThis log does not track outright speedy deletions made using Twinkle.' : '');
 
 			var formatParamLog = function(normalize, csdparam, input) {
 				if ((normalize === 'G4' && csdparam === 'xfd') ||
@@ -1629,7 +1607,7 @@ Twinkle.speedy.callbacks = {
 			var fileLogLink = mw.config.get('wgNamespaceNumber') === 6 ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])' : '';
 
 			var editsummary = 'Logging speedy deletion nomination';
-			appendText += '\n# [[:' + Morebits.pageNameNorm;
+			var appendText = '# [[:' + Morebits.pageNameNorm;
 
 			if (params.fromDI) {
 				appendText += ']]' + fileLogLink + ': DI [[WP:CSD#' + params.normalized.toUpperCase() + '|CSD ' + params.normalized.toUpperCase() + ']] ({{tl|di-' + params.templatename + '}})';
@@ -1691,15 +1669,13 @@ Twinkle.speedy.callbacks = {
 			if (extraInfo) {
 				appendText += '; additional information:' + extraInfo;
 			}
-			if (params.logInitialContrib) {
-				appendText += '; notified {{user|1=' + params.logInitialContrib + '}}';
+			if (initialContrib) {
+				appendText += '; notified {{user|1=' + initialContrib + '}}';
 			}
 			appendText += ' ~~~~~\n';
 
-			pageobj.setAppendText(appendText);
-			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
-			pageobj.setCreateOption('recreate');
-			pageobj.append();
+			usl.log(appendText, editsummary + Twinkle.getPref('summaryAd'));
+
 		}
 	}
 };
