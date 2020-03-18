@@ -37,8 +37,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 				checked: Twinkle.getPref('notifyUserOnDeli')
 			}
 		]
-	}
-	);
+	});
 	var field = form.append({
 		type: 'field',
 		label: 'Type of action wanted'
@@ -78,6 +77,11 @@ Twinkle.image.callback = function twinkleimageCallback() {
 				label: 'Disputed fair use rationale (CSD F7)',
 				value: 'disputed fair use rationale',
 				tooltip: 'Image or media has a fair use rationale that is disputed'
+			},
+			{
+				label: 'Fails NFCC (CSD F7)',
+				value: 'fails NFCC',
+				tooltip: 'Image or media fails non-free content criteria'
 			},
 			{
 				label: 'Replaceable fair use (CSD F7)',
@@ -156,6 +160,34 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 				label: 'Concern: '
 			});
 			break;
+		case 'fails NFCC':
+			work_area.append({
+				type: 'select',
+				name: 'nfccCrit',
+				label: 'Fails criteria: ',
+				required: true,
+				list: [
+					'1: replaceable by text or a free file, serving the same purposes',
+					'2: used in a manner conflicting with the market role of original copyrighted media',
+					'3a: multiple non-free files being used when one would suffice',
+					'3b: entire work is being used; a portion or a reduced-size copy would suffice',
+					'4: work has not been previously published outside Wikipedia',
+					"5: does not meet Wikipedia's content standards, or is unencyclopedic",
+					'6: does not meet the image use policy',
+					'7: is under a claim of fair use but not used in any article',
+					"8: file doesn't increase readers' understanding of topic; omission would not be detrimental",
+					'9: used on non-articles either other than or in addition to articles and article namespaces',
+					'10a: source and copyright holder are not both attributed',
+					'10b: lacks a copyright tag or detail of which Wikipedia policy is claimed to permit usage',
+					'10c: no details of articles on which file is used, or missing fair-use rationale for each use'
+				].map(function(e) {
+					return {
+						label: e,
+						value: e.match(/(.*):/)[1]
+					};
+				})
+			});
+			break;
 		case 'orphaned fair use':
 			work_area.append({
 				type: 'input',
@@ -179,7 +211,7 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 };
 
 Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
-	var type, non_free, source, reason, replacement, derivative;
+	var type, non_free, source, reason, replacement, derivative, nfccCrit;
 
 	var notify = event.target.notify.checked;
 	var types = event.target.type;
@@ -205,6 +237,9 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	if (event.target.derivative) {
 		derivative = event.target.derivative.checked;
 	}
+	if (event.target.nfccCrit) {
+		nfccCrit = event.target.nfccCrit.value;
+	}
 
 	var csdcrit;
 	switch (type) {
@@ -221,6 +256,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 			break;
 		case 'disputed fair use rationale':
 		case 'replaceable fair use':
+		case 'fails NFCC':
 			csdcrit = 'F7';
 			break;
 		case 'no permission':
@@ -241,6 +277,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		'source': source,
 		'reason': reason,
 		'replacement': replacement,
+		'nfccCrit': nfccCrit,
 		'lognomination': lognomination
 	};
 	Morebits.simpleWindow.setButtonsEnabled(false);
@@ -289,6 +326,9 @@ Twinkle.image.callbacks = {
 				break;
 			case 'disputed fair use rationale':
 				tag += params.reason ? '|concern=' + params.reason : '';
+				break;
+			case 'fails NFCC':
+				tag += '|' + params.nfccCrit + '=yes';
 				break;
 			case 'orphaned fair use':
 				tag += params.replacement ? '|replacement=' + params.replacement : '';
