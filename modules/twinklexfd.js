@@ -1462,7 +1462,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			pageobj.setAppendText('\n\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params));
-			pageobj.setEditSummary('Proposing move' + (params.newname ? ' to ' + params.newname : '') + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary('Proposing move' + (params.newname ? ' to [[:' + params.newname + ']]' : '') + Twinkle.getPref('summaryAd'));
 			pageobj.setCreateOption('recreate'); // since the talk page need not exist
 			pageobj.setFollowRedirect(true);
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
