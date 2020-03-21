@@ -1301,7 +1301,7 @@ Twinkle.tag.callbacks = {
 				// special functions for merge tags
 				if (params.mergeReason) {
 					// post the rationale on the talk page (only operates in main namespace)
-					var talkpageText = '\n\n== ' + params.talkDiscussionTitle + ' ==\n\n';
+					var talkpageText = '\n\n== ' + params.talkDiscussionTitleLinked + ' ==\n\n';
 					talkpageText += params.mergeReason.trim() + ' ~~~~';
 					var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
 					talkpage.setAppendText(talkpageText);
@@ -1324,7 +1324,8 @@ Twinkle.tag.callbacks = {
 						tagsToRemain: [],
 						mergeTarget: Morebits.pageNameNorm,
 						discussArticle: params.discussArticle,
-						talkDiscussionTitle: params.talkDiscussionTitle
+						talkDiscussionTitle: params.talkDiscussionTitle,
+						talkDiscussionTitleLinked: params.talkDiscussionTitleLinked
 					};
 					var otherpage = new Morebits.wiki.page(params.mergeTarget, 'Tagging other page (' +
 						params.mergeTarget + ')');
@@ -1593,8 +1594,9 @@ Twinkle.tag.callbacks = {
 								params.discussArticle = tagName === 'Merge to' ? params.mergeTarget : mw.config.get('wgTitle');
 								// nonDiscussArticle is the article which won't have the discussion
 								params.nonDiscussArticle = tagName === 'Merge to' ? mw.config.get('wgTitle') : params.mergeTarget;
-								var direction = params.nonDiscussArticle + (params.mergeTag === 'Merge' ? ' with ' : ' into ') + params.discussArticle;
-								params.talkDiscussionTitle = 'Proposed merge of ' + direction;
+								var direction = '[[' + params.nonDiscussArticle + ']]' + (params.mergeTag === 'Merge' ? ' with ' : ' into ') + '[[' + params.discussArticle + ']]';
+								params.talkDiscussionTitleLinked = 'Proposed merge of ' + direction;
+								params.talkDiscussionTitle = params.talkDiscussionTitleLinked.replace(/\[\[(.*?)\]\]/g, '$1');
 							}
 							currentTag += '|discuss=Talk:' + params.discussArticle + '#' + params.talkDiscussionTitle;
 						}
