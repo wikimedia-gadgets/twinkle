@@ -1301,7 +1301,7 @@ Twinkle.tag.callbacks = {
 				// special functions for merge tags
 				if (params.mergeReason) {
 					// post the rationale on the talk page (only operates in main namespace)
-					var talkpageText = '\n\n== ' + params.talkDiscussionTitleLinked + ' ==\n\n';
+					var talkpageText = '\n\n== ' + params.talkDiscussionTitleLinked + ' ==\n';
 					talkpageText += params.mergeReason.trim() + ' ~~~~';
 					var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
 					talkpage.setAppendText(talkpageText);
