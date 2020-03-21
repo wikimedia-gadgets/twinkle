@@ -1346,31 +1346,28 @@ Twinkle.tag.callbacks = {
 					var pntPage = new Morebits.wiki.page('Wikipedia:Pages needing translation into English',
 						'Listing article at Wikipedia:Pages needing translation into English');
 					pntPage.setFollowRedirect(true);
-					pntPage.setCallbackParameters({
-						template: params.tags.indexOf('Rough translation') !== -1 ? 'duflu' : 'needtrans',
-						lang: params.translationLanguage,
-						reason: params.translationComments
-					});
 					pntPage.load(function friendlytagCallbacksTranslationListPage(pageobj) {
 						var old_text = pageobj.getPageText();
-						var params = pageobj.getCallbackParameters();
-						var statelem = pageobj.getStatusElement();
 
-						var templateText = '{{subst:' + params.template + '|pg=' + Morebits.pageNameNorm + '|Language=' +
-							(params.lang || 'uncertain') + '|Comments=' + params.reason.trim() + '}} ~~~~';
+						var template = params.tags.indexOf('Rough translation') !== -1 ? 'duflu' : 'needtrans';
+						var lang = params.translationLanguage;
+						var reason = params.translationComments;
+
+						var templateText = '{{subst:' + template + '|pg=' + Morebits.pageNameNorm + '|Language=' +
+							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
 
 						var text, summary;
-						if (params.template === 'duflu') {
+						if (template === 'duflu') {
 							text = old_text + '\n\n' + templateText;
 							summary = 'Translation cleanup requested on ';
 						} else {
 							text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
 								'\n\n' + templateText + '\n\n$1');
-							summary = 'Translation' + (params.lang ? ' from ' + params.lang : '') + ' requested on ';
+							summary = 'Translation' + (lang ? ' from ' + lang : '') + ' requested on ';
 						}
 
 						if (text === old_text) {
-							statelem.error('failed to find target spot for the discussion');
+							pageobj.getStatusElement().error('failed to find target spot for the discussion');
 							return;
 						}
 						pageobj.setPageText(text);
