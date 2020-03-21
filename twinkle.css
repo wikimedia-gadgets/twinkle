@@ -5,3 +5,24 @@
 .skin-vector #p-twinkle {
 	width: 3.24em;
 }
+
+/* The additional box on user skin.js and twinklepreferences.js pages */
+#twinkle-config-headerbox {
+	border: 1px #f60 solid;
+	background: #fed;
+	padding: 0.6em;
+	margin: 0.5em auto;
+	text-align: center;
+}
+
+/* twinkleoptions.js */
+#twinkle-config-headerbox.config-twopt-box {
+	font-weight: bold;
+	width: 80%;
+	border-width: 2px;
+}
+
+/* skin-specific js */
+#twinkle-config-headerbox.config-userskin-box {
+	width: 60%;
+}
