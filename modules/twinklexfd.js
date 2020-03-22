@@ -643,9 +643,6 @@ Twinkle.xfd.callbacks = {
 			if (venue === 'rfd') {
 				text += '|target=' + params.target + (params.section ? '#' + params.section : '');
 			} else if (venue !== 'cfd' && venue !== 'sfd-t') {
-				if (params.xfdcat && params.xfdcat === 'tfm') {
-					params.target = Morebits.string.toUpperCaseFirstChar(params.target.replace(/^:?(?:Template|Module):/i, ''));
-				}
 				text += '|2=' + params.target;
 			}
 		}
@@ -683,12 +680,20 @@ Twinkle.xfd.callbacks = {
 		if (form.xfdcat) {
 			params.xfdcat = form.xfdcat.value;
 		}
-		if (form.xfdtarget) {
-			params.target = form.xfdtarget.value;
+
+		// Remove CfD or TfD namespace prefixes
+		if (venue === 'tfd' || venue === 'cfd') {
+			var namespace_re = new RegExp('^:?' + mw.config.get('wgCanonicalNamespace') + ':', 'i');
+			if (form.xfdtarget) { // CfD or TfD
+				params.target = Morebits.string.toUpperCaseFirstChar(form.xfdtarget.value.replace(namespace_re, ''));
+			}
+			if (form.xfdtarget2) { // CfD
+				params.target2 = Morebits.string.toUpperCaseFirstChar(form.xfdtarget2.value.replace(namespace_re, ''));
+			}
+		} else if (venue === 'cfds' && form.xfdtarget.value) { // Add namespace to CfD/S
+			params.target = /^Category:/.test(form.xfdtarget.value) ? form.xfdtarget.value : 'Category:' + form.xfdtarget.value;
 		}
-		if (form.xfdtarget2) {
-			params.target2 = form.xfdtarget2.value;
-		}
+
 		params.delsort_cats = $(form.delsort).val();
 		if (form.rmtr) {
 			params.rmtr = form.rmtr.checked;
@@ -1279,7 +1284,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText('{{subst:cfr-speedy|1=' + params.target + '}}\n' + text);
+			pageobj.setPageText('{{subst:cfr-speedy|1=' + params.target.replace(/^:?Category:/, '') + '}}\n' + text);
 			pageobj.setEditSummary('Listed for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]].' + Twinkle.getPref('summaryAd'));
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
@@ -1290,7 +1295,6 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			params.target = /^Category:/.test(params.target) ? params.target : 'Category:' + params.target;
 			var text = old_text.replace('BELOW THIS LINE -->', 'BELOW THIS LINE -->\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('cfds', params));
 			if (text === old_text) {
 				statelem.error('failed to find target spot for the discussion');
@@ -1554,7 +1558,8 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		case 'tfd': // TFD
 			Morebits.wiki.addCheckpoint();
 			if (xfdtarget) {
-				xfdtarget = Morebits.string.toUpperCaseFirstChar(xfdtarget.replace(/^:?(?:Template|Module):/i, ''));
+				var tfdNamespace_re = new RegExp('^:?' + mw.config.get('wgCanonicalNamespace') + ':', 'i');
+				xfdtarget = Morebits.string.toUpperCaseFirstChar(xfdtarget.replace(tfdNamespace_re, ''));
 			} else {
 				xfdtarget = '';
 			}
@@ -1698,14 +1703,14 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		case 'cfd':
 			Morebits.wiki.addCheckpoint();
 
-			var replaceNamespace_re = mw.config.get('wgNamespaceNumber') === 14 ? /^:?Category:/i : /^:?Template:/i;
+			var cfdNamespace_re = new RegExp('^:?' + mw.config.get('wgCanonicalNamespace') + ':', 'i');
 			if (xfdtarget) {
-				xfdtarget = xfdtarget.replace(replaceNamespace_re, '');
+				xfdtarget = xfdtarget.replace(cfdNamespace_re, '');
 			} else {
 				xfdtarget = '';
 			}
 			if (xfdtarget2) {
-				xfdtarget2 = xfdtarget2.replace(replaceNamespace_re, '');
+				xfdtarget2 = xfdtarget2.replace(cfdNamespace_re, '');
 			}
 
 			logpage = 'Wikipedia:Categories for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
@@ -1753,7 +1758,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			break;
 
 		case 'cfds':
-			xfdtarget = xfdtarget.replace(/^:?Category:/, '');
+			xfdtarget = /^Category:/.test(xfdtarget) ? xfdtarget : 'Category:' + xfdtarget;
 
 			logpage = 'Wikipedia:Categories for discussion/Speedy';
 			params = { reason: reason, xfdcat: xfdcat, target: xfdtarget };
