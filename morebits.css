@@ -10,19 +10,19 @@
 
 /* Morebits.status */
 
-.tw_status_status {
+.morebits_status_status {
 	color: #4682B4;
 }
 
-.tw_status_info {
+.morebits_status_info {
 	color: #228B22;
 }
 
-.tw_status_warn {
+.morebits_status_warn {
 	color: #FF4500;
 }
 
-.tw_status_error {
+.morebits_status_error {
 	color: #FF4500;
 	font-weight: bold;
 }
