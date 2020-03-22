@@ -129,8 +129,15 @@ Twinkle.tag.callback = function friendlytagCallback() {
 						checked: Twinkle.getPref('groupByDefault')
 					}
 				]
-			}
-			);
+			});
+
+			form.append({
+				type: 'input',
+				label: 'Reason',
+				name: 'reason',
+				tooltip: 'Optional reason to be appended in edit summary. Recommended when removing tags.',
+				size: '60px'
+			});
 
 			break;
 
@@ -526,8 +533,6 @@ Twinkle.tag.updateSortOrder = function(e) {
 					value: tag,
 					label: '{{' + tag + '}}' + (description ? ': ' + description : ''),
 					checked: unCheckedTags.indexOf(tag) === -1
-					// , subgroup: { type: 'input', name: 'removeReason', label: 'Reason', tooltip: 'Enter reason for removing this tag' }
-					// TODO: add option for providing reason for removal
 				};
 
 			checkboxes.push(checkbox);
@@ -1287,6 +1292,10 @@ Twinkle.tag.callbacks = {
 				pageText = pageText.replace(/\{\{(?:multiple ?issues|article ?issues|mi)\s*\|\s*(\{\{[^}]+\}\})\s*\}\}/im, '$1');
 			}
 
+			if (params.reason) {
+				summaryText += ': ' + params.reason;
+			}
+
 			// avoid truncated summaries
 			if (summaryText.length > (254 - Twinkle.getPref('summaryAd').length)) {
 				summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, '$1');
@@ -1338,31 +1347,28 @@ Twinkle.tag.callbacks = {
 					var pntPage = new Morebits.wiki.page('Wikipedia:Pages needing translation into English',
 						'Listing article at Wikipedia:Pages needing translation into English');
 					pntPage.setFollowRedirect(true);
-					pntPage.setCallbackParameters({
-						template: params.tags.indexOf('Rough translation') !== -1 ? 'duflu' : 'needtrans',
-						lang: params.translationLanguage,
-						reason: params.translationComments
-					});
 					pntPage.load(function friendlytagCallbacksTranslationListPage(pageobj) {
 						var old_text = pageobj.getPageText();
-						var params = pageobj.getCallbackParameters();
-						var statelem = pageobj.getStatusElement();
 
-						var templateText = '{{subst:' + params.template + '|pg=' + Morebits.pageNameNorm + '|Language=' +
-							(params.lang || 'uncertain') + '|Comments=' + params.reason.trim() + '}} ~~~~';
+						var template = params.tags.indexOf('Rough translation') !== -1 ? 'duflu' : 'needtrans';
+						var lang = params.translationLanguage;
+						var reason = params.translationComments;
+
+						var templateText = '{{subst:' + template + '|pg=' + Morebits.pageNameNorm + '|Language=' +
+							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
 
 						var text, summary;
-						if (params.template === 'duflu') {
+						if (template === 'duflu') {
 							text = old_text + '\n\n' + templateText;
 							summary = 'Translation cleanup requested on ';
 						} else {
 							text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
 								'\n\n' + templateText + '\n\n$1');
-							summary = 'Translation' + (params.lang ? ' from ' + params.lang : '') + ' requested on ';
+							summary = 'Translation' + (lang ? ' from ' + lang : '') + ' requested on ';
 						}
 
 						if (text === old_text) {
-							statelem.error('failed to find target spot for the discussion');
+							pageobj.getStatusElement().error('failed to find target spot for the discussion');
 							return;
 						}
 						pageobj.setPageText(text);
@@ -2016,6 +2022,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		case 'article':
 			params.tagsToRemove = form.getUnchecked('alreadyPresentArticleTags') || [];
 			params.tagsToRemain = form.getChecked('alreadyPresentArticleTags') || [];
+			params.reason = form.reason.value.trim();
 
 			params.group = form.group.checked;
 
