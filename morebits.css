@@ -298,6 +298,10 @@ body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
 	color: #0645AD;  /* jQuery imposes a ridiculous nearly-black colour on <a> tags... I don't understand it */
 }
 
+.ui-dialog.morebits-dialog a.new, .ui-dialog.morebits-dialog .ui-widget-content a.new {
+	color: #BA0000;  /* Red links */
+}
+
 .ui-icon {
 	vertical-align: -3px;
 }
