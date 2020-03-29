@@ -1991,7 +1991,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// internal status
 		pageLoaded: false,
-		editToken: null,
+		csrfToken: null,
 		loadTime: null,
 		lastEditTime: null,
 		revertCurID: null,
@@ -2056,7 +2056,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.loadQuery = {
 			action: 'query',
 			prop: 'info|revisions',
-			intoken: 'edit',  // fetch an edit token
+			curtimestamp: '',
+			meta: 'tokens',
+			type: 'csrf',
 			titles: ctx.pageName
 			// don't need rvlimit=1 because we don't need rvstartid here and only one actual rev is returned by default
 		};
@@ -2101,7 +2103,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onSaveSuccess = onSuccess;
 		ctx.onSaveFailure = onFailure || emptyFunction;
 
-		// are we getting our edit token from mw.user.tokens?
+		// are we getting our editing token from mw.user.tokens?
 		var canUseMwUserToken = fnCanUseMwUserToken('edit');
 
 		if (!ctx.pageLoaded && !canUseMwUserToken) {
@@ -2131,7 +2133,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			action: 'edit',
 			title: ctx.pageName,
 			summary: ctx.editSummary,
-			token: canUseMwUserToken ? mw.user.tokens.get('csrfToken') : ctx.editToken,
+			token: canUseMwUserToken ? mw.user.tokens.get('csrfToken') : ctx.csrfToken,
 			watchlist: ctx.watchlistOption
 		};
 
@@ -2166,7 +2168,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				}
 				query.starttimestamp = ctx.loadTime; // check that page hasn't been deleted since it was loaded (don't recreate bad stuff)
 				break;
-			default:
+			default: // 'all'
 				query.text = ctx.pageText; // replace entire contents of the page
 				if (ctx.lastEditTime) {
 					query.basetimestamp = ctx.lastEditTime; // check that page hasn't been edited since it was loaded
@@ -2267,7 +2269,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 *                    already exists.
 	 *     `nocreate`   - don't create the page, only edit it if it already exists.
 	 *     null         - create the page if it does not exist, unless it was deleted in the moment
-	 *                    between retrieving the edit token and saving the edit (default)
+	 *                    between loading the page and saving the edit (default)
 	 *
 	 */
 	this.setCreateOption = function(createOption) {
@@ -2294,7 +2296,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	/**
 	 * @param {number} maxConflictRetries - number of retries for save errors involving an edit conflict or
-	 * loss of edit token. Default: 2
+	 * loss of token. Default: 2
 	 */
 	this.setMaxConflictRetries = function(maxConflictRetries) {
 		ctx.maxConflictRetries = maxConflictRetries;
@@ -2302,7 +2304,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	/**
 	 * @param {number} maxRetries - number of retries for save errors not involving an edit conflict or
-	 * loss of edit token. Default: 2
+	 * loss of token. Default: 2
 	 */
 	this.setMaxRetries = function(maxRetries) {
 		ctx.maxRetries = maxRetries;
@@ -2463,7 +2465,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		return ctx.statusElement;
 	};
 
-
+	/**
+	 * @param {string} level  The right required for edits not to require
+	 * review. Possible options: none, autoconfirmed, review (not on enWiki).
+	 * @param {string} expiry
+	 */
 	this.setFlaggedRevs = function(level, expiry) {
 		ctx.flaggedRevs = { level: level, expiry: expiry };
 	};
@@ -2549,7 +2555,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 
-		// Extract the rcid token from the "Mark page as patrolled" link on page
+		// Extract the Recentchanges ID (rcid) from the "Mark page as patrolled" link on page
 		var patrolhref = $('.patrollink a').attr('href'),
 			rcid = mw.util.getParamValue('rcid', patrolhref);
 
@@ -2607,22 +2613,15 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 
-		var query = {
-			action: 'query',
-			prop: 'info',
-			intoken: 'move',
-			titles: ctx.pageName
-		};
-		if (ctx.followRedirect) {
-			query.redirects = '';  // follow all redirects
-		}
-		if (Morebits.userIsSysop) {
-			query.inprop = 'protection';
-		}
+		if (fnCanUseMwUserToken('move')) {
+			fnProcessMove.call(this, this);
+		} else {
+			var query = fnNeedTokenInfoQuery('move');
 
-		ctx.moveApi = new Morebits.wiki.api('retrieving move token...', query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
-		ctx.moveApi.setParent(this);
-		ctx.moveApi.post();
+			ctx.moveApi = new Morebits.wiki.api('retrieving token...', query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
+			ctx.moveApi.setParent(this);
+			ctx.moveApi.post();
+		}
 	};
 
 	// |delete| is a reserved word in some flavours of JS
@@ -2650,18 +2649,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (fnCanUseMwUserToken('delete')) {
 			fnProcessDelete.call(this, this);
 		} else {
-			var query = {
-				action: 'query',
-				prop: 'info',
-				inprop: 'protection',
-				intoken: 'delete',
-				titles: ctx.pageName
-			};
-			if (ctx.followRedirect) {
-				query.redirects = '';  // follow all redirects
-			}
+			var query = fnNeedTokenInfoQuery('delete');
 
-			ctx.deleteApi = new Morebits.wiki.api('retrieving delete token...', query, fnProcessDelete, ctx.statusElement, ctx.onDeleteFailure);
+			ctx.deleteApi = new Morebits.wiki.api('retrieving token...', query, fnProcessDelete, ctx.statusElement, ctx.onDeleteFailure);
 			ctx.deleteApi.setParent(this);
 			ctx.deleteApi.post();
 		}
@@ -2691,15 +2681,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (fnCanUseMwUserToken('undelete')) {
 			fnProcessUndelete.call(this, this);
 		} else {
-			var query = {
-				action: 'query',
-				prop: 'info',
-				inprop: 'protection',
-				intoken: 'undelete',
-				titles: ctx.pageName
-			};
+			var query = fnNeedTokenInfoQuery('undelete');
 
-			ctx.undeleteApi = new Morebits.wiki.api('retrieving undelete token...', query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
+			ctx.undeleteApi = new Morebits.wiki.api('retrieving token...', query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
 			ctx.undeleteApi.setParent(this);
 			ctx.undeleteApi.post();
 		}
@@ -2731,21 +2715,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 
-		// because of the way MW API interprets protection levels (absolute, not
-		// differential), we need to request protection levels from the server
-		var query = {
-			action: 'query',
-			prop: 'info',
-			inprop: 'protection',
-			intoken: 'protect',
-			titles: ctx.pageName,
-			watchlist: ctx.watchlistOption
-		};
-		if (ctx.followRedirect) {
-			query.redirects = '';  // follow all redirects
-		}
+		// because of the way MW API interprets protection levels
+		// (absolute, not differential), we always need to request
+		// protection levels from the server
+		var query = fnNeedTokenInfoQuery('protect');
 
-		ctx.protectApi = new Morebits.wiki.api('retrieving protect token...', query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
+		ctx.protectApi = new Morebits.wiki.api('retrieving token...', query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
 		ctx.protectApi.setParent(this);
 		ctx.protectApi.post();
 	};
@@ -2778,19 +2753,15 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 
-		var query = {
-			action: 'query',
-			prop: 'info|flagged',
-			intoken: 'edit',
-			titles: ctx.pageName
-		};
-		if (ctx.followRedirect) {
-			query.redirects = '';  // follow all redirects
-		}
+		if (fnCanUseMwUserToken('stabilize')) {
+			fnProcessStabilize.call(this, this);
+		} else {
+			var query = fnNeedTokenInfoQuery('stabilize');
 
-		ctx.stabilizeApi = new Morebits.wiki.api('retrieving stabilize token...', query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
-		ctx.stabilizeApi.setParent(this);
-		ctx.stabilizeApi.post();
+			ctx.stabilizeApi = new Morebits.wiki.api('retrieving token...', query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
+			ctx.stabilizeApi.setParent(this);
+			ctx.stabilizeApi.post();
+		}
 	};
 
 	/*
@@ -2799,15 +2770,22 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 */
 
 	/**
-	 * Determines whether we can save an API call by using the edit token sent with the page
+	 * Determines whether we can save an API call by using the csrf token sent with the page
 	 * HTML, or whether we need to ask the server for more info (e.g. protection expiry).
 	 *
-	 * Currently only used for append, prepend, and deletePage.
+	 * Only applicable for csrf token actions, e.g. not patrol
 	 *
-	 * @param {string} action  The action being undertaken, e.g. "edit", "delete".
+	 * Currently used for append, prepend, deletePage, undeletePage, move,
+	 * and stabilize.  Can't use for protect since it always needs to
+	 * request protection status.
+	 *
+	 * @param {string} [action=edit]  The action being undertaken, e.g.
+	 * "edit" or "delete". In practice, only "edit" or "notedit" matters.
 	 * @returns {boolean}
 	 */
 	var fnCanUseMwUserToken = function(action) {
+		action = typeof action !== 'undefined' ? action : 'edit'; // IE doesn't support default parameters
+
 		// API-based redirect resolution only works for action=query and
 		// action=edit in append/prepend modes (and section=new, but we don't
 		// really support that)
@@ -2824,6 +2802,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				return false;
 			}
 
+			// wgRestrictionEdit is null on non-existent pages,
+			// so this neatly handles nonexistent pages
 			var editRestriction = mw.config.get('wgRestrictionEdit');
 			if (!editRestriction || editRestriction.indexOf('sysop') !== -1) {
 				return false;
@@ -2831,6 +2811,32 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		return !!mw.user.tokens.get('csrfToken');
+	};
+
+	/**
+	 * When functions can't use fnCanUseMwUserToken or require checking
+	 * protection, maintain the query in one place. Used for delete,
+	 * undelete, protect, stabilize, and move (basically, just not load)
+	 *
+	 * @param {string} action  The action being undertaken, e.g. "edit" or
+	 * "delete"
+	 */
+	var fnNeedTokenInfoQuery = function(action) {
+		var query = {
+			action: 'query',
+			meta: 'tokens',
+			type: 'csrf',
+			titles: ctx.pageName
+		};
+		// Protection not checked for flagged-revs or non-sysop moves
+		if (action !== 'stabilize' && (action !== 'move' || Morebits.userIsSysop)) {
+			query.prop = 'info';
+			query.inprop = 'protection';
+		}
+		if (ctx.followRedirect && action !== 'undelete') {
+			query.redirects = ''; // follow all redirects
+		}
+		return query;
 	};
 
 	// callback from loadSuccess() for append() and prepend() threads
@@ -2852,6 +2858,18 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		} else {
 			ctx.pageText = '';  // allow for concatenation, etc.
 		}
+		ctx.csrfToken = $(xml).find('tokens').attr('csrftoken');
+		if (!ctx.csrfToken) {
+			ctx.statusElement.error('Failed to retrieve edit token.');
+			ctx.onLoadFailure(this);
+			return;
+		}
+		ctx.loadTime = $(xml).find('api').attr('curtimestamp');
+		if (!ctx.loadTime) {
+			ctx.statusElement.error('Failed to retrieve current timestamp.');
+			ctx.onLoadFailure(this);
+			return;
+		}
 
 		// extract protection info, to alert admins when they are about to edit a protected page
 		if (Morebits.userIsSysop) {
@@ -2863,21 +2881,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			}
 		}
 
-		ctx.editToken = $(xml).find('page').attr('edittoken');
-		if (!ctx.editToken) {
-			ctx.statusElement.error('Failed to retrieve edit token.');
-			ctx.onLoadFailure(this);
-			return;
-		}
-		ctx.loadTime = $(xml).find('page').attr('starttimestamp');
-		// XXX: starttimestamp is present because of intoken=edit parameter in the API call.
-		// When replacing that with meta=tokens (#615), add the curtimestamp parameter to the API call
-		// and change 'starttimestamp' here to 'curtimestamp'
-		if (!ctx.loadTime) {
-			ctx.statusElement.error('Failed to retrieve start timestamp.');
-			ctx.onLoadFailure(this);
-			return;
-		}
 		ctx.lastEditTime = $(xml).find('rev').attr('timestamp');
 		ctx.revertCurID = $(xml).find('page').attr('lastrevid');
 
@@ -3131,40 +3134,50 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	var fnProcessMove = function() {
-		var xml = ctx.moveApi.getXML();
+		var pageTitle, token;
 
-		if ($(xml).find('page').attr('missing') === '') {
-			ctx.statusElement.error('Cannot move the page, because it no longer exists');
-			ctx.onMoveFailure(this);
-			return;
-		}
+		if (fnCanUseMwUserToken('move')) {
+			token = mw.user.tokens.get('csrfToken');
+			pageTitle = ctx.pageName;
+		} else {
+			var xml = ctx.moveApi.getXML();
 
-		// extract protection info
-		if (Morebits.userIsSysop) {
-			var editprot = $(xml).find('pr[type="edit"]');
-			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
-				!confirm('You are about to move the fully protected page "' + ctx.pageName +
-				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + editprot.attr('expiry') + ')') +
-				'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
-				ctx.statusElement.error('Move of fully protected page was aborted.');
+			if ($(xml).find('page').attr('missing') === '') {
+				ctx.statusElement.error('Cannot move the page, because it no longer exists');
 				ctx.onMoveFailure(this);
 				return;
 			}
-		}
 
-		var moveToken = $(xml).find('page').attr('movetoken');
-		if (!moveToken) {
-			ctx.statusElement.error('Failed to retrieve move token.');
-			ctx.onMoveFailure(this);
-			return;
+			// extract protection info
+			if (Morebits.userIsSysop) {
+				var editprot = $(xml).find('pr[type="edit"]');
+				if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
+					!confirm('You are about to move the fully protected page "' + ctx.pageName +
+						(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + editprot.attr('expiry') + ')') +
+						'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
+					ctx.statusElement.error('Move of fully protected page was aborted.');
+					ctx.onMoveFailure(this);
+					return;
+				}
+			}
+
+			token = $(xml).find('tokens').attr('csrftoken');
+			if (!token) {
+				ctx.statusElement.error('Failed to retrieve move token.');
+				ctx.onMoveFailure(this);
+				return;
+			}
+
+			pageTitle = $(xml).find('page').attr('title');
 		}
 
 		var query = {
 			'action': 'move',
-			'from': $(xml).find('page').attr('title'),
+			'from': pageTitle,
 			'to': ctx.moveDestination,
-			'token': moveToken,
-			'reason': ctx.editSummary
+			'token': token,
+			'reason': ctx.editSummary,
+			'watchlist': ctx.watchlistOption
 		};
 		if (ctx.moveTalkPage) {
 			query.movetalk = 'true';
@@ -3174,9 +3187,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 		if (ctx.moveSuppressRedirect) {
 			query.noredirect = 'true';
-		}
-		if (ctx.watchlistOption === 'watch') {
-			query.watch = 'true';
 		}
 
 		ctx.moveProcessApi = new Morebits.wiki.api('moving page...', query, ctx.onMoveSuccess, ctx.statusElement, ctx.onMoveFailure);
@@ -3210,7 +3220,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				return;
 			}
 
-			token = $(xml).find('page').attr('deletetoken');
+			token = $(xml).find('tokens').attr('csrftoken');
 			if (!token) {
 				ctx.statusElement.error('Failed to retrieve delete token.');
 				ctx.onDeleteFailure(this);
@@ -3224,11 +3234,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			'action': 'delete',
 			'title': pageTitle,
 			'token': token,
-			'reason': ctx.editSummary
+			'reason': ctx.editSummary,
+			'watchlist': ctx.watchlistOption
 		};
-		if (ctx.watchlistOption === 'watch') {
-			query.watch = 'true';
-		}
 
 		ctx.deleteProcessApi = new Morebits.wiki.api('deleting page...', query, ctx.onDeleteSuccess, ctx.statusElement, fnProcessDeleteError);
 		ctx.deleteProcessApi.setParent(this);
@@ -3267,13 +3275,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	var fnProcessUndelete = function() {
 		var pageTitle, token;
 
-		// The whole handling of tokens in Morebits is outdated (#615)
-		// but has generally worked since intoken has been deprecated
-		// but remains.  intoken does not, however, take undelete, so
-		// fnCanUseMwUserToken('undelete') is no good.  Everything
-		// except watching and patrolling should eventually use csrf,
-		// but until then (#615) the stupid hack below should work for
-		// undeletion.
 		if (fnCanUseMwUserToken('undelete')) {
 			token = mw.user.tokens.get('csrfToken');
 			pageTitle = ctx.pageName;
@@ -3297,20 +3298,23 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				return;
 			}
 
-			// KLUDGE:
-			token = mw.user.tokens.get('csrfToken');
-			pageTitle = ctx.pageName;
+			token = $(xml).find('tokens').attr('csrftoken');
+			if (!token) {
+				ctx.statusElement.error('Failed to retrieve undelete token.');
+				ctx.onUndeleteFailure(this);
+				return;
+			}
+
+			pageTitle = $(xml).find('page').attr('title');
 		}
 
 		var query = {
 			'action': 'undelete',
 			'title': pageTitle,
 			'token': token,
-			'reason': ctx.editSummary
+			'reason': ctx.editSummary,
+			'watchlist': ctx.watchlistOption
 		};
-		if (ctx.watchlistOption === 'watch') {
-			query.watch = 'true';
-		}
 
 		ctx.undeleteProcessApi = new Morebits.wiki.api('undeleting page...', query, ctx.onUndeleteSuccess, ctx.statusElement, fnProcessUndeleteError);
 		ctx.undeleteProcessApi.setParent(this);
@@ -3364,12 +3368,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// TODO cascading protection not possible on edit<sysop
 
-		var protectToken = $(xml).find('page').attr('protecttoken');
-		if (!protectToken) {
+		var token = $(xml).find('tokens').attr('csrftoken');
+		if (!token) {
 			ctx.statusElement.error('Failed to retrieve protect token.');
 			ctx.onProtectFailure(this);
 			return;
 		}
+
+		var pageTitle = $(xml).find('page').attr('title');
 
 		// fetch existing protection levels
 		var prs = $(xml).find('pr');
@@ -3406,17 +3412,15 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		var query = {
 			action: 'protect',
-			title: $(xml).find('page').attr('title'),
-			token: protectToken,
+			title: pageTitle,
+			token: token,
 			protections: protections.join('|'),
 			expiry: expirys.join('|'),
-			reason: ctx.editSummary
+			reason: ctx.editSummary,
+			watchlist: ctx.watchlistOption
 		};
 		if (ctx.protectCascade) {
 			query.cascade = 'true';
-		}
-		if (ctx.watchlistOption === 'watch') {
-			query.watch = 'true';
 		}
 
 		ctx.protectProcessApi = new Morebits.wiki.api('protecting page...', query, ctx.onProtectSuccess, ctx.statusElement, ctx.onProtectFailure);
@@ -3425,32 +3429,42 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	var fnProcessStabilize = function() {
-		var xml = ctx.stabilizeApi.getXML();
+		var pageTitle, token;
 
-		var missing = $(xml).find('page').attr('missing') === '';
-		if (missing) {
-			ctx.statusElement.error('Cannot protect the page, because it no longer exists');
-			ctx.onStabilizeFailure(this);
-			return;
-		}
+		if (fnCanUseMwUserToken('stabilize')) {
+			token = mw.user.tokens.get('csrfToken');
+			pageTitle = ctx.pageName;
+		} else {
+			var xml = ctx.stabilizeApi.getXML();
 
-		var stabilizeToken = $(xml).find('page').attr('edittoken');
-		if (!stabilizeToken) {
-			ctx.statusElement.error('Failed to retrieve stabilize token.');
-			ctx.onStabilizeFailure(this);
-			return;
+			var missing = $(xml).find('page').attr('missing') === '';
+			if (missing) {
+				ctx.statusElement.error('Cannot protect the page, because it no longer exists');
+				ctx.onStabilizeFailure(this);
+				return;
+			}
+
+			token = $(xml).find('tokens').attr('csrftoken');
+			if (!token) {
+				ctx.statusElement.error('Failed to retrieve stabilize token.');
+				ctx.onStabilizeFailure(this);
+				return;
+			}
+
+			pageTitle = $(xml).find('page').attr('title');
 		}
 
 		var query = {
 			action: 'stabilize',
-			title: $(xml).find('page').attr('title'),
-			token: stabilizeToken,
+			title: pageTitle,
+			token: token,
 			protectlevel: ctx.flaggedRevs.level,
 			expiry: ctx.flaggedRevs.expiry,
 			reason: ctx.editSummary
 		};
+		// [[phab:T247915]]
 		if (ctx.watchlistOption === 'watch') {
-			query.watch = 'true';
+			query.watchlist = 'true';
 		}
 
 		ctx.stabilizeProcessApi = new Morebits.wiki.api('configuring stabilization settings...', query, ctx.onStabilizeSuccess, ctx.statusElement, ctx.onStabilizeFailure);
