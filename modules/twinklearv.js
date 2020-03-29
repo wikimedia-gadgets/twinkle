@@ -322,8 +322,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				event: function(e) {
 					var root = e.target.form;
 
-					var date = new Date();
-					date.setHours(date.getHours() - 48); // all since 48 hours
+					var date = new Morebits.date().subtract(48, 'hours'); // all since 48 hours
 
 					// Run for each AN3 field
 					var getAN3Entries = function(field, rvuser, titles) {
