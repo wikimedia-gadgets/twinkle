@@ -1363,7 +1363,7 @@ Morebits.date.localeData = {
 		nextDay: '[Tomorrow at] h:mm A',
 		thisWeek: 'dddd [at] h:mm A',
 		pastWeek: '[Last] dddd [at] h:mm A',
-		other: 'DD/MM/YYYY'
+		other: 'YYYY-MM-DD'
 	}
 };
 
@@ -1425,6 +1425,7 @@ $.extend(Morebits.date.prototype, {
 	add: function(number, unit) {
 		// mapping time units with getter/setter function names
 		var unitMap = {
+			seconds: 'Seconds',
 			minutes: 'Minutes',
 			hours: 'Hours',
 			days: 'Date',
