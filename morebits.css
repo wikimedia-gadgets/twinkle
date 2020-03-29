@@ -177,49 +177,6 @@ div.morebits-previewbox .mw-editsection
 }
 
 
-
-
-/* Portlet */
-
-.skin-modern #mw_contentwrapper div.portlet {
-	overflow: hidden;
-	height: 1.5em;
-	margin: 0 0 0 14em;
-	padding: 0;
-}
-
-.skin-modern #mw_contentwrapper div.portlet h5 {
-	display: none;
-}
-
-.skin-modern #mw_contentwrapper div.portlet div.pbody {
-	margin: 0;
-	padding: 0;
-}
-
-.skin-modern #mw_contentwrapper div.portlet div.pbody ul {
-	display: inline;
-	margin: 0;
-}
-
-.skin-modern #mw_contentwrapper div.portlet div.pbody ul li {
-	display: block;
-	float: left;
-	height: 1.5em;
-	margin: 0 .5em;
-	padding: 0 .2em;
-	text-transform: lowercase;
-}
-
-.skin-modern #mw_contentwrapper div.portlet div.pbody ul li a {
-	text-decoration: underline;
-}
-
-.skin-modern #mw_contentwrapper div.portlet div.pbody ul li.selected a {
-	text-decoration: none;
-}
-
-
 /* Morebits.simpleWindow */
 
 .morebits-dialog {
