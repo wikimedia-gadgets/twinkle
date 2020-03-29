@@ -2120,7 +2120,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		// shouldn't happen if canUseMwUserToken === true
 		if (ctx.fullyProtected && !ctx.suppressProtectWarning &&
 			!confirm('You are about to make an edit to the fully protected page "' + ctx.pageName +
-			(ctx.fullyProtected === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + ctx.fullyProtected + ')') +
+			(ctx.fullyProtected === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(ctx.fullyProtected).calendar('utc') + ' (UTC))') +
 			'.  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.')) {
 			ctx.statusElement.error('Edit to fully protected page was aborted.');
 			ctx.onSaveFailure(this);
@@ -3153,8 +3153,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				var editprot = $(xml).find('pr[type="edit"]');
 				if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
 					!confirm('You are about to move the fully protected page "' + ctx.pageName +
-						(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + editprot.attr('expiry') + ')') +
-						'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
+					(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.attr('expiry')).calendar('utc') + ' (UTC))') +
+					'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
 					ctx.statusElement.error('Move of fully protected page was aborted.');
 					ctx.onMoveFailure(this);
 					return;
@@ -3213,7 +3213,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			var editprot = $(xml).find('pr[type="edit"]');
 			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
 				!confirm('You are about to delete the fully protected page "' + ctx.pageName +
-				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + editprot.attr('expiry') + ')') +
+				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.attr('expiry')).calendar('utc') + ' (UTC))') +
 				'.  \n\nClick OK to proceed with the deletion, or Cancel to skip this deletion.')) {
 				ctx.statusElement.error('Deletion of fully protected page was aborted.');
 				ctx.onDeleteFailure(this);
@@ -3291,7 +3291,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			var editprot = $(xml).find('pr[type="create"]');
 			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
 				!confirm('You are about to undelete the fully create protected page "' + ctx.pageName +
-				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + editprot.attr('expiry') + ')') +
+				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.attr('expiry')).calendar('utc') + ' (UTC))') +
 				'.  \n\nClick OK to proceed with the undeletion, or Cancel to skip this undeletion.')) {
 				ctx.statusElement.error('Undeletion of fully create protected page was aborted.');
 				ctx.onUndeleteFailure(this);

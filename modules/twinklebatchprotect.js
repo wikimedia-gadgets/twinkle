@@ -321,7 +321,8 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				$editProt = $page.find('pr[type="edit"][level="sysop"]');
 			}
 			if ($editProt.length > 0) {
-				metadata.push('fully' + (missing ? ' create' : '') + ' protected' + ($editProt.attr('expiry') === 'infinity' ? ' indefinitely' : ', expires ' + $editProt.attr('expiry')));
+				metadata.push('fully' + (missing ? ' create' : '') + ' protected' +
+				($editProt.attr('expiry') === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date($editProt.attr('expiry')).calendar('utc') + ' (UTC)'));
 			}
 
 			list.push({ label: title + (metadata.length ? ' (' + metadata.join('; ') + ')' : ''), value: title, checked: true, style: $editProt.length > 0 ? 'color:red' : '' });

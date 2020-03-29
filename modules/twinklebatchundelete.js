@@ -73,7 +73,8 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 			var isProtected = $editprot.length > 0;
 
 			list.push({
-				label: title + (isProtected ? ' (fully create protected' + ($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : ', expires ' + $editprot.attr('expiry')) + ')' : ''),
+				label: title + (isProtected ? ' (fully create protected' +
+					($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date($editprot.attr('expiry')).calendar('utc') + ' (UTC)') + ')' : ''),
 				value: title,
 				checked: true,
 				style: isProtected ? 'color:red' : ''
