@@ -327,8 +327,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					var $diffs = $(root).find('[name=diffs]');
 					$diffs.find('.entry').remove();
 
-					var date = new Date();
-					date.setHours(date.getHours() - 48); // all since 48 hours
+					var date = new Morebits.date().subtract(48, 'hours'); // all since 48 hours
 
 					var api = new mw.Api();
 					api.get({
@@ -361,7 +360,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 							});
 							$input.data('revinfo', rev);
 							$input.appendTo($entry);
-							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($diffs);
+							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Morebits.date(rev.timestamp).calendar() + '</a></span>').appendTo($diffs);
 						}
 					}).fail(function(data) {
 						console.log('API failed :(', data); // eslint-disable-line no-console
@@ -399,7 +398,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 							});
 							$input.data('revinfo', rev);
 							$input.appendTo($entry);
-							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($warnings);
+							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Morebits.date(rev.timestamp).calendar() + '</a></span>').appendTo($warnings);
 						}
 					}).fail(function(data) {
 						console.log('API failed :(', data); // eslint-disable-line no-console
@@ -442,7 +441,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 							});
 							$input.data('revinfo', rev);
 							$input.appendTo($entry);
-							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + moment(rev.timestamp).calendar() + '</a></span>').appendTo($resolves);
+							$entry.append('<span>"' + rev.parsedcomment + '" at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Morebits.date(rev.timestamp).calendar() + '</a></span>').appendTo($resolves);
 						}
 
 						// add free form input
@@ -895,25 +894,25 @@ Twinkle.arv.processAN3 = function(params) {
 			if (sub.length >= 2) {
 				var last = sub[0];
 				var first = sub.slice(-1)[0];
-				var label = 'Consecutive edits made from ' + moment(first.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + ' to ' + moment(last.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]');
+				var label = 'Consecutive edits made from ' + new Morebits.date(first.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + '(UTC) to ' + new Morebits.date(last.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)';
 				ret = '# {{diff|oldid=' + first.parentid + '|diff=' + last.revid + '|label=' + label + '}}\n';
 			}
 			ret += sub.reverse().map(function(v) {
-				return (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + moment(v.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + '}} "' + v.comment + '"';
+				return (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + new Morebits.date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} "' + v.comment + '"';
 			}).join('\n');
 			return ret;
 		}).reverse().join('\n');
 		var warningtext = params.warnings.reverse().map(function(v) {
-			return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + '}} "' + v.comment + '"';
+			return '# ' + ' {{diff2|' + v.revid + '|' + new Morebits.date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} "' + v.comment + '"';
 		}).join('\n');
 		var resolvetext = params.resolves.reverse().map(function(v) {
-			return '# ' + ' {{diff2|' + v.revid + '|' + moment(v.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + '}} "' + v.comment + '"';
+			return '# ' + ' {{diff2|' + v.revid + '|' + new Morebits.date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} "' + v.comment + '"';
 		}).join('\n');
 
 		if (params.free_resolves) {
 			var page = params.free_resolves;
 			var rev = page.revisions[0];
-			resolvetext += '\n# ' + ' {{diff2|' + rev.revid + '|' + moment(rev.timestamp).utc().format('HH:mm, D MMMM YYYY [(UTC)]') + ' on ' + page.title + '}} "' + rev.comment + '"';
+			resolvetext += '\n# ' + ' {{diff2|' + rev.revid + '|' + new Morebits.date(rev.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) on ' + page.title + '}} "' + rev.comment + '"';
 		}
 
 		var comment = params.comment.replace(/~*$/g, '').trim();

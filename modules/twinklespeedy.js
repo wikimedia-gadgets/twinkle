@@ -1593,10 +1593,9 @@ Twinkle.speedy.callbacks = {
 			}
 
 			// create monthly header
-			var date = new Date(pageobj.getLoadTime());
-			var headerRe = new RegExp('^==+\\s*' + date.getUTCMonthName() + '\\s+' + date.getUTCFullYear() + '\\s*==+', 'm');
-			if (!headerRe.exec(text)) {
-				appendText += '\n\n=== ' + date.getUTCMonthName() + ' ' + date.getUTCFullYear() + ' ===';
+			var date = new Morebits.date(pageobj.getLoadTime());
+			if (!date.monthHeaderRegex().test(text)) {
+				appendText += '\n\n' + date.monthHeader(3);
 			}
 
 			var formatParamLog = function(normalize, csdparam, input) {

@@ -6,8 +6,7 @@
 		"jquery": true
 	},
 	"globals": {
-		"mw": true,
-		"moment": true
+		"mw": true
 	},
 	"ignorePatterns": "select2*",
 	"rules": {

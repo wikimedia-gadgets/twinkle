@@ -785,9 +785,9 @@ Twinkle.xfd.callbacks = {
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.discussionPage);
 
 			// Today's list
-			var date = new Date(pageobj.getLoadTime());
-			wikipedia_page = new Morebits.wiki.page('Wikipedia:Articles for deletion/Log/' + date.getUTCFullYear() + ' ' +
-				date.getUTCMonthName() + ' ' + date.getUTCDate(), "Adding discussion to today's list");
+			var date = new Morebits.date(pageobj.getLoadTime());
+			wikipedia_page = new Morebits.wiki.page('Wikipedia:Articles for deletion/Log/' +
+				date.format('YYYY MMMM D'), "Adding discussion to today's list");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.todaysList);
@@ -1066,9 +1066,9 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var date = new Date(pageobj.getLoadTime());
-			var date_header = '===' + date.getUTCMonthName() + ' ' + date.getUTCDate() + ', ' + date.getUTCFullYear() + '===\n';
-			var date_header_regex = new RegExp('(===\\s*' + date.getUTCMonthName() + '\\s+' + date.getUTCDate() + ',\\s+' + date.getUTCFullYear() + '\\s*===)');
+			var date = new Morebits.date(pageobj.getLoadTime());
+			var date_header = date.format('===MMMM D, YYYY===\n');
+			var date_header_regex = new RegExp(date.format('(===\\s*MMMM\\s+D,\\s+YYYY\\s*===)'));
 			var new_data = '{{subst:mfd3|pg=' + Morebits.pageNameNorm + params.numbering + '}}';
 
 			if (date_header_regex.test(text)) { // we have a section already
@@ -1340,8 +1340,8 @@ Twinkle.xfd.callbacks = {
 			};
 		},
 		main: function(params) {
-			var date = new Date(params.curtimestamp);
-			params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
+			var date = new Morebits.date(params.curtimestamp);
+			params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.format('YYYY MMMM D');
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
 
 			// Tagging redirect
@@ -1519,7 +1519,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	}
 
 	var query, wikipedia_page, wikipedia_api, logpage, params;
-	var date = new Date(); // XXX: avoid use of client clock, still used by TfD, FfD and CfD
+	var date = new Morebits.date(); // XXX: avoid use of client clock, still used by TfD, FfD and CfD
 	switch (type) {
 
 		case 'afd': // AFD
@@ -1545,7 +1545,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				xfdtarget = '';
 			}
 
-			logpage = 'Wikipedia:Templates for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
+			logpage = 'Wikipedia:Templates for discussion/Log/' + date.format('YYYY MMMM D');
 
 			params = { tfdtype: tfdtype, logpage: logpage, noinclude: noinclude, xfdcat: xfdcat, target: xfdtarget, reason: reason };
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
@@ -1656,7 +1656,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			break;
 
 		case 'ffd': // FFD
-			var dateString = date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
+			var dateString = date.format('YYYY MMMM D');
 			logpage = 'Wikipedia:Files for discussion/' + dateString;
 			params = { usertalk: usertalk, reason: reason, date: dateString, logpage: logpage };
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
@@ -1694,7 +1694,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				xfdtarget2 = xfdtarget2.replace(/^:?Category:/i, '');
 			}
 
-			logpage = 'Wikipedia:Categories for discussion/Log/' + date.getUTCFullYear() + ' ' + date.getUTCMonthName() + ' ' + date.getUTCDate();
+			logpage = 'Wikipedia:Categories for discussion/Log/' + date.format('YYYY MMMM D');
 
 			params = { reason: reason, xfdcat: xfdcat, target: xfdtarget, target2: xfdtarget2, logpage: logpage };
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;

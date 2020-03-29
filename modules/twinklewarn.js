@@ -116,10 +116,9 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		};
 		new Morebits.wiki.api('Grabbing the revision timestamps', query, function(apiobj) {
 			var vantimestamp = $(apiobj.getResponse()).find('revisions rev').attr('timestamp');
-			var revDate = new Date(vantimestamp);
-			if (vantimestamp && !isNaN(revDate)) {
-				revDate.setUTCHours(revDate.getUTCHours() + 24);
-				if (revDate.getTime() < new Date().getTime()) {
+			var revDate = new Morebits.date(vantimestamp);
+			if (vantimestamp && revDate.isValid()) {
+				if (revDate.add(24, 'hours').isBefore(new Date())) {
 					$('#twinkle-warn-olddiff-message').text('Note: This edit was made more than 24 hours ago so a warning may be stale.');
 				}
 			}
@@ -1352,29 +1351,26 @@ Twinkle.warn.callbacks = {
 		var params = pageobj.getCallbackParameters();
 		var messageData = params.messageData;
 
-		var history_re = /<!-- Template:(uw-.*?) -->.*?(\d{1,2}:\d{1,2}),( \d{1,2} \w+ \d{4}) \(UTC\)/g;
+		var history_re = /<!-- Template:(uw-.*?) -->.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4} \(UTC\))/g;
 		var history = {};
-		var latest = { date: new Date(0), type: '' };
+		var latest = { date: new Morebits.date(0), type: '' };
 		var current;
 
 		while ((current = history_re.exec(text)) !== null) {
-			var current_date = new Date(current[2] + current[3] + ' UTC');
-			if (!(current[1] in history) || history[current[1]].getTime() < current_date.getTime()) {
-				history[current[1]] = current_date;
+			var template = current[1], current_date = new Morebits.date(current[2]);
+			if (!(template in history) || history[template].isBefore(current_date)) {
+				history[template] = current_date;
 			}
 			if (current_date.getTime() >= latest.date.getTime()) {
 				latest.date = current_date;
-				latest.type = current[1];
+				latest.type = template;
 			}
 		}
 
-		var date = new Date(pageobj.getLoadTime());
+		var now = new Morebits.date(pageobj.getLoadTime());
 
 		if (params.sub_group in history) {
-			var temp_time = new Date(history[params.sub_group]);
-			temp_time.setUTCHours(temp_time.getUTCHours() + 24);
-
-			if (temp_time.getTime() > date.getTime()) {
+			if (new Morebits.date(history[params.sub_group]).add(1, 'day').isAfter(now)) {
 				if (!confirm('An identical ' + params.sub_group + ' has been issued in the last 24 hours.  \nWould you still like to add this warning/notice?')) {
 					statelem.error('aborted per user request');
 					return;
@@ -1382,18 +1378,16 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
-		latest.date.setUTCMinutes(latest.date.getUTCMinutes() + 1); // after long debate, one minute is max
+		latest.date.add(1, 'minute'); // after long debate, one minute is max
 
-		if (latest.date.getTime() > date.getTime()) {
+		if (latest.date.isAfter(now)) {
 			if (!confirm('A ' + latest.type + ' has been issued in the last minute.  \nWould you still like to add this warning/notice?')) {
 				statelem.error('aborted per user request');
 				return;
 			}
 		}
 
-		var dateHeaderRegex = new RegExp('^==+\\s*(?:' + date.getUTCMonthName() + '|' + date.getUTCMonthNameAbbrev() +
-			')\\s+' + date.getUTCFullYear() + '\\s*==+', 'mg');
-		var dateHeaderRegexLast, dateHeaderRegexResult;
+		var dateHeaderRegex = now.monthHeaderRegex(), dateHeaderRegexLast, dateHeaderRegexResult;
 		while ((dateHeaderRegexLast = dateHeaderRegex.exec(text)) !== null) {
 			dateHeaderRegexResult = dateHeaderRegexLast;
 		}
@@ -1410,7 +1404,7 @@ Twinkle.warn.callbacks = {
 			text += '== ' + messageData.heading + ' ==\n';
 		} else if (!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
 			Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
-			text += '== ' + date.getUTCMonthName() + ' ' + date.getUTCFullYear() + ' ==\n';
+			text += now.monthHeader() + '\n';
 		}
 		text += Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article,
 			params.reason, params.main_group === 'custom');
