@@ -81,7 +81,7 @@ function createTestLoader(changedFiles) {
 		${importLine('modules/twinklexfd.js')}
 	});`.replace(/^\t/mg, '').replace(/^\s*$/mg, '');
 
-	fs.writeFileSync('./dev/patch-test-loader.js', jsLoaderSource, console.log);
+	fs.writeFileSync('./scripts/patch-test-loader.js', jsLoaderSource, console.log);
 
-	console.log(`Wrote import statements for ${importsCount} modified file${importsCount > 1 ? 's' : ''} to dev/patch-test-loader.js`);
+	console.log(`Wrote import statements for ${importsCount} modified file${importsCount > 1 ? 's' : ''} to scripts/patch-test-loader.js`);
 }
