@@ -1858,6 +1858,8 @@ Morebits.wiki.api.setApiUserAgent = function(ua) {
  *
  * patrol(): Patrols a page; ignores errors
  *
+ * triage(): Marks page as reviewed using PageTriage, which implies patrolled; ignores errors
+ *
  * deletePage([onSuccess], [onFailure]): Deletes a page (for admins only)
  *
  * undeletePage([onSuccess], [onFailure]): Undeletes a page (for admins only)
@@ -2031,6 +2033,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		moveProcessApi: null,
 		patrolApi: null,
 		patrolProcessApi: null,
+		triageApi: null,
+		triageProcessApi: null,
 		deleteApi: null,
 		deleteProcessApi: null,
 		undeleteApi: null,
@@ -2647,6 +2651,38 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 	};
 
+	/**
+	 * Marks the page as reviewed by the PageTriage extension
+	 * https://www.mediawiki.org/wiki/Extension:PageTriage
+	 *
+	 * Referred to as "review" on-wiki
+	 *
+	 * Will, by it's nature, mark as patrolled as well.
+	 *
+	 * Doesn't inherently rely on loading the page in question; simply
+	 * passing a pageid to the API is sufficient, so in those cases just
+	 * using Morebits.wiki.api is probably preferable.
+	 *
+	 * No error handling since we don't actually care about the errors
+	 */
+	this.triage = function() {
+		if (!Morebits.userIsSysop && !Morebits.userIsInGroup('patroller')) {
+			return;
+		}
+
+		// If on the page in question, don't need to query for page ID
+		if (new mw.Title(Morebits.pageNameNorm).getPrefixedText() === new mw.Title(ctx.pageName).getPrefixedText()) {
+			ctx.pageID = mw.config.get('wgArticleId');
+			fnProcessTriage(this, this);
+		} else {
+			var query = fnNeedTokenInfoQuery('triage');
+
+			ctx.triageApi = new Morebits.wiki.api('retrieving token...', query, fnProcessTriage);
+			ctx.triageApi.setParent(this);
+			ctx.triageApi.post();
+		}
+	};
+
 	// |delete| is a reserved word in some flavours of JS
 	/**
 	 * Deletes a page (for admins only)
@@ -3251,6 +3287,40 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.patrolProcessApi = new Morebits.wiki.api('patrolling page...', query, null, patrolStat);
 		ctx.patrolProcessApi.setParent(this);
 		ctx.patrolProcessApi.post();
+	};
+
+	var fnProcessTriage = function() {
+		var pageID, token;
+
+		if (ctx.pageID) {
+			token = mw.user.tokens.get('csrfToken');
+			pageID = ctx.pageID;
+		} else {
+			var xml = ctx.triageApi.getXML();
+
+			pageID = $(xml).find('page').attr('pageid');
+			if (!pageID) {
+				return;
+			}
+
+			token = $(xml).find('tokens').attr('csrftoken');
+			if (!token) {
+				return;
+			}
+		}
+
+		var query = {
+			action: 'pagetriageaction',
+			pageid: pageID,
+			reviewed: 1,
+			token: token
+		};
+
+		var triageStat = new Morebits.status('Marking page as curated');
+
+		ctx.triageProcessApi = new Morebits.wiki.api('curating page...', query, null, triageStat);
+		ctx.triageProcessApi.setParent(this);
+		ctx.triageProcessApi.post();
 	};
 
 	var fnProcessDelete = function() {
