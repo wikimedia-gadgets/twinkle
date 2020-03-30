@@ -1490,10 +1490,9 @@ Twinkle.speedy.callbacks = {
 				code = buildData[0];
 			params.utparams = buildData[1];
 
-			var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
-			// patrol the page, if reached from Special:NewPages
+			// patrol the page
 			if (Twinkle.getPref('markSpeedyPagesAsPatrolled')) {
-				thispage.patrol();
+				pageobj.patrol();
 			}
 
 			// Wrap SD template in noinclude tags if we are in template space.
