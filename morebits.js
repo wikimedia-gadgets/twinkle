@@ -1997,6 +1997,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		csrfToken: null,
 		loadTime: null,
 		lastEditTime: null,
+		pageID: null,
 		revertCurID: null,
 		revertUser: null,
 		fullyProtected: false,
@@ -2487,6 +2488,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
+	 * @returns {string} Page ID of the page loaded. 0 if the page doesn't
+	 * exist.
+	 */
+	this.getPageID = function() {
+		return ctx.pageID;
+	};
+
+	/**
 	 * @returns {string} ISO 8601 timestamp at which the page was last loaded
 	 */
 	this.getLoadTime = function() {
@@ -2867,8 +2876,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.pageExists = $(xml).find('page').attr('missing') !== '';
 		if (ctx.pageExists) {
 			ctx.pageText = $(xml).find('rev').text();
+			ctx.pageID = $(xml).find('page').attr('pageid');
 		} else {
 			ctx.pageText = '';  // allow for concatenation, etc.
+			ctx.pageID = 0; // nonexistent in response, matches wgArticleId
 		}
 		ctx.csrfToken = $(xml).find('tokens').attr('csrftoken');
 		if (!ctx.csrfToken) {
