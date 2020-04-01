@@ -1490,9 +1490,9 @@ Twinkle.speedy.callbacks = {
 				code = buildData[0];
 			params.utparams = buildData[1];
 
-			// patrol the page
+			// curate/patrol the page
 			if (Twinkle.getPref('markSpeedyPagesAsPatrolled')) {
-				pageobj.patrol();
+				pageobj.triage();
 			}
 
 			// Wrap SD template in noinclude tags if we are in template space.

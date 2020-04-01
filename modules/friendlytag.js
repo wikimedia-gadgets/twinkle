@@ -193,7 +193,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			type: 'checkbox',
 			list: [
 				{
-					label: 'Mark the page as patrolled',
+					label: 'Mark the page as patrolled/reviewed',
 					value: 'patrolPage',
 					name: 'patrolPage',
 					checked: Twinkle.getPref('markTaggedPagesAsPatrolled')
@@ -1426,7 +1426,7 @@ Twinkle.tag.callbacks = {
 			});
 
 			if (params.patrol) {
-				pageobj.patrol();
+				pageobj.triage();
 			}
 		};
 
@@ -1858,7 +1858,7 @@ Twinkle.tag.callbacks = {
 		pageobj.save();
 
 		if (params.patrol) {
-			pageobj.patrol();
+			pageobj.triage();
 		}
 
 	},
@@ -1959,7 +1959,7 @@ Twinkle.tag.callbacks = {
 		pageobj.save();
 
 		if (params.patrol) {
-			pageobj.patrol();
+			pageobj.triage();
 		}
 	}
 };

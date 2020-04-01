@@ -427,10 +427,10 @@ Twinkle.config.sections = [
 			},
 
 			// TwinkleConfig.markSpeedyPagesAsPatrolled (boolean)
-			// If, when applying speedy template to page, to mark the page as patrolled (if the page was reached from NewPages)
+			// If, when applying speedy template to page, to mark the page as triaged/patrolled (if the page was reached from NewPages)
 			{
 				name: 'markSpeedyPagesAsPatrolled',
-				label: 'Mark page as patrolled when tagging (if possible)',
+				label: 'Mark page as patrolled/reviewed when tagging (if possible)',
 				type: 'boolean'
 			},
 
@@ -564,7 +564,7 @@ Twinkle.config.sections = [
 			},
 			{
 				name: 'markTaggedPagesAsPatrolled',
-				label: 'Check the "mark page as patrolled" box by default',
+				label: 'Check the "mark page as patrolled/reviewed" box by default',
 				type: 'boolean'
 			},
 			{
@@ -831,7 +831,7 @@ Twinkle.config.sections = [
 
 			{
 				name: 'markXfdPagesAsPatrolled',
-				label: 'Mark page as patrolled when nominating for AFD (if possible)',
+				label: 'Mark page as patrolled/reviewed when nominating for AFD (if possible)',
 				type: 'boolean'
 			}
 		]

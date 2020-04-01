@@ -774,9 +774,9 @@ Twinkle.xfd.callbacks = {
 
 			// Now we know we want to go ahead with it, trigger the other AJAX requests
 
-			// Mark the page as patrolled, if wanted
+			// Mark the page as curated/patrolled, if wanted
 			if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
-				pageobj.patrol();
+				pageobj.triage();
 			}
 
 			// Starting discussion page
