@@ -296,6 +296,15 @@ Twinkle.config.sections = [
 				type: 'boolean'
 			},
 
+			// TwinkleConfig.markProdPagesAsPatrolled (boolean)
+			// If, when applying prod template to page, to mark the page as curated/patrolled (if the page was reached from NewPages)
+			{
+				name: 'markProdPagesAsPatrolled',
+				label: 'Mark page as patrolled/reviewed when tagging (if possible)',
+				helptip: 'This should probably not be checked as doing so is against best practice consensus',
+				type: 'boolean'
+			},
+
 			// TwinkleConfig.prodReasonDefault (string)
 			// The prefilled PROD reason.
 			{
@@ -431,6 +440,7 @@ Twinkle.config.sections = [
 			{
 				name: 'markSpeedyPagesAsPatrolled',
 				label: 'Mark page as patrolled/reviewed when tagging (if possible)',
+				helptip: 'This should probably not be checked as doing so is against best practice consensus',
 				type: 'boolean'
 			},
 

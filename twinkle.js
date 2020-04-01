@@ -75,6 +75,7 @@ Twinkle.defaultConfig = {
 
 	// PROD
 	watchProdPages: true,
+	markProdPagesAsPatrolled: false,
 	prodReasonDefault: '',
 	logProdPages: false,
 	prodLogPageName: 'PROD log',
