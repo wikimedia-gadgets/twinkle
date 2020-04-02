@@ -1334,10 +1334,11 @@ Twinkle.speedy.callbacks = {
 				return Morebits.status.error('Asking for reason', "you didn't give one.  I don't know... what with admins and their apathetic antics... I give up...");
 			}
 
-			var deleteMain = function() {
+			var deleteMain = function(callback) {
 				thispage.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
 				thispage.deletePage(function() {
 					thispage.getStatusElement().info('done');
+					callback();
 					Twinkle.speedy.callbacks.sysop.deleteTalk(params);
 				});
 			};
@@ -1347,8 +1348,9 @@ Twinkle.speedy.callbacks = {
 			if (params.warnUser) {
 				thispage.setCallbackParameters(params);
 				thispage.lookupCreation(function(pageobj) {
-					Twinkle.speedy.callbacks.noteToCreator(pageobj);
-					deleteMain();
+					deleteMain(function() {
+						Twinkle.speedy.callbacks.noteToCreator(pageobj);
+					});
 				});
 			} else {
 				deleteMain();
