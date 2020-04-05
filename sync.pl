@@ -6,63 +6,46 @@ use warnings;
 
 use English qw(-no_match_vars);
 use utf8;
-
 use FindBin qw($Bin);
+use Getopt::Long;
+use Term::ANSIColor;
+
 use Config::General qw(ParseConfig);
-use Getopt::Long::Descriptive;
 use Git::Repository;
 use MediaWiki::API;
 use File::Slurper qw(read_text write_text);
-use Term::ANSIColor;
 
-# Config file should be a simple file consisting of keys and values:
-# username = Jimbo Wales
-# lang = en
-# etc.
+
+# Default config values, mode is intentionally absent
+my %conf = (
+            username => q{},
+            password => q{},
+            mode => q{},
+            lang => 'en',
+            family => 'wikipedia',
+            base => 'User:AzaToth'
+           );
+
 my $rc = '.twinklerc';
 # Check script directory and ~ (home) for config file, preferring the former
 my @dotLocales = map { $_.q{/}.$rc } ($Bin, $ENV{HOME});
-my %conf;
 foreach my $dot (@dotLocales) {
   if (-e -f -r $dot) {
-    %conf = ParseConfig($dot);
+    # Preserve default options if not present in twinklerc
+    %conf = ParseConfig(-DefaultConfig => \%conf,
+                        -MergeDuplicateOptions => 'true',
+                        -ConfigFile => $dot);
     last;
   }
 }
 
-my ($opt, $usage) = describe_options(
-    "$PROGRAM_NAME %o <files...>",
-    ['username|u=s', 'username for account on wikipedia', {default => $conf{username} // q{}}],
-    ['password|p=s', 'password for account on wikipedia (do not use)', {default => $conf{password} // q{}}],
-    ['lang|l=s', 'Target language', {default => $conf{lang} // 'en'}],
-    ['family|f=s', 'Target family', {default => $conf{family} // 'wikipedia'}],
-    ['base|b=s', 'base location on wikipedia where user files exist (default User:AzaToth or entry in .twinklerc)', {default => $conf{base} // 'User:AzaToth'}],
-    [],
-    ['mode' => hidden =>
-        {
-            required => 1,
-            one_of => [
-                ['pull' => 'pull changes from wikipedia'],
-                ['push' => 'push changes to wikipedia'],
-                ['deploy' => 'push changes to wikipedia as gadgets']
-            ]
-        }
-    ],
-    [],
-    ['help', 'print usage message and exit'],
-);
-if ($opt->help || !scalar @ARGV || !($opt->username && $opt->password)) {
-  print $usage->text;
-  exit;
-}
+GetOptions (\%conf, 'username|s=s', 'password|p=s', 'lang|l=s', 'family|f=s', 'base|b=s',
+            'mode=s', 'help|h' => \&usage);
 
-# Ensure we've only got one item for each confg key
-foreach my $key (sort keys %{$opt}) {
-    if (ref(${$opt}{$key}) eq 'ARRAY') {
-      print color ['red'], "Duplicate config found for $key, quitting\n";
-      exit 1;
-    }
-}
+# Make sure we know what we're doing before doing it
+# Includes checks for required parameters
+forReal();
+
 # Ensure we've got a clean branch
 my $repo = Git::Repository->new();
 my @status = $repo->run(status => '--porcelain');
@@ -70,21 +53,18 @@ if (scalar @status) {
   print colored ['red'], "Repository is not clean, aborting\n";
   exit;
 }
-# Make sure we know what we're doing before doing it
-forReal();
-
 
 # Open API and log in before anything else
 my $mw = MediaWiki::API->new({
-			      api_url => "https://$opt->{lang}.$opt->{family}.org/w/api.php",
+			      api_url => "https://$conf{lang}.$conf{family}.org/w/api.php",
 			      max_lag => 1000000, # not a botty script, thus smash it!
 			      on_error => \&dieNice
 			     });
 $mw->{ua}->agent('Twinkle/sync.pl ('.$mw->{ua}->agent.')');
-$mw->login({lgname => $opt->username, lgpassword => $opt->password});
+$mw->login({lgname => $conf{username}, lgpassword => $conf{password}});
 
 ### Main loop to parse options
-if ($opt->mode eq 'deploy') {
+if ($conf{mode} eq 'deploy') {
   # Build file->page hashes from __DATA__
   my %deploys;
   while (<DATA>) {
@@ -105,9 +85,9 @@ if ($opt->mode eq 'deploy') {
   }
 } else {
   # Remove 'modules/' from ARGV input filenames
-  my %pages = map {+(my $s = $_) =~ s/modules\///; $_ => "$opt->{base}/$s"} @ARGV;
+  my %pages = map {+(my $s = $_) =~ s/modules\///; $_ => "$conf{base}/$s"} @ARGV;
 
-  if ($opt->mode eq 'pull') {
+  if ($conf{mode} eq 'pull') {
     while (my ($file, $page) = each %pages) {
       my $wikiPage = checkPage($page);
       next if !$wikiPage;
@@ -129,7 +109,7 @@ if ($opt->mode eq 'deploy') {
       print;
     }
     $cmd->close;
-  } elsif ($opt->mode eq 'push') {
+  } elsif ($conf{mode} eq 'push') {
     while (my ($file, $page) = each %pages) {
       next if saltNPepa($page, $file);
     }
@@ -138,48 +118,48 @@ if ($opt->mode eq 'deploy') {
 
 
 ### SUBROUTINES
-# Nicer handling of errors
-# Can be expanded using:
-## https://metacpan.org/release/MediaWiki-API/source/lib/MediaWiki/API.pm
-## https://www.mediawiki.org/wiki/API:Errors_and_warnings#Standard_error_messages
-sub dieNice {
-  my $code = $mw->{error}->{code};
-  my $details = $mw->{error}->{details};
-  print color 'red';
-  if ($code == 4) {
-    print "Error logging in\n";
-  } elsif ($code == 3 && $details =~ /protectednamespace-interface/) {
-    print "You do not have permission to edit interface messages\n";
-  } else {
-    print "$code: $details\n";
-  }
-  die "Quitting\n";
-}
 # Check that everything is in order
 # Data::Dumper is simpler but the output is ugly, and this ain't worth another
 # dependency
 sub forReal {
-  my @meaningful = qw (username lang family);
-  push @meaningful, 'base' if $opt->{mode} ne 'deploy';
+  my @meaningful = qw (username mode lang family);
+  push @meaningful, 'base' if $conf{mode} ne 'deploy';
   print "Here are the current parameters specified:\n\n";
   foreach my $key (@meaningful) {
-    print colored ['blue'], "\t$key = ${$opt}{$key}\n";
+    print colored ['blue'], "\t$key = $conf{$key}\n";
   }
-  print "\nThis means ";
-  print colored ['bright_white'], "User:$opt->{username}";
+  print "\n";
+
+  # Ensure requireds are required
+  my $modeTruth = $conf{mode} && ($conf{mode} eq 'deploy' ||
+                                  $conf{mode} eq 'push' ||
+                                  $conf{mode} eq 'pull');
+  if (!@ARGV | !$modeTruth || !$conf{username} || !$conf{password}) {
+    usage();
+  }
+
+  print 'This means ';
+  print colored ['bright_white'], 'User:'.ucfirst $conf{username};
   print ' will ';
-  print colored ['bright_magenta'], uc $opt->{mode}.q{ };
-  if ($opt->{mode} eq 'deploy') {
-    print 'live to the MediaWiki gadget';
-  } elsif ($opt->{mode} eq 'pull') {
+  print colored ['bright_magenta'], uc $conf{mode}."\n\n";
+  # Print files
+  foreach (@ARGV) {
+    print colored ['blue'], "\t$_\n";
+  }
+  print "\n";
+  if ($conf{mode} eq 'deploy') {
+    print colored ['bright_magenta'], 'LIVE';
+    print ' to the ';
+    print colored ['bright_white'], 'MediaWiki gadget';
+  } elsif ($conf{mode} eq 'pull') {
     print 'from subpages of ';
-    print colored ['bright_white'], $opt->{base};
-  } elsif ($opt->{mode} eq 'push') {
+    print colored ['bright_white'], $conf{base};
+  } elsif ($conf{mode} eq 'push') {
     print 'to subpages of ';
-    print colored ['bright_white'], $opt->{base};
+    print colored ['bright_white'], $conf{base};
   }
   print ' at ';
-  print colored ['green'], "$opt->{lang}.$opt->{family}.org\n";
+  print colored ['green'], "$conf{lang}.$conf{family}.org\n";
 
   while (42) {
     print "Enter (y)es to proceed or (n)o to cancel:\n";
@@ -196,7 +176,25 @@ sub forReal {
       print 'Unknown entry... ';
     }
   }
-  return 1; # We should never get here but just in case
+  return 1;                     # We should never get here but just in case
+}
+
+# Nicer handling of errors
+# Can be expanded using:
+## https://metacpan.org/release/MediaWiki-API/source/lib/MediaWiki/API.pm
+## https://www.mediawiki.org/wiki/API:Errors_and_warnings#Standard_error_messages
+sub dieNice {
+  my $code = $mw->{error}->{code};
+  my $details = $mw->{error}->{details};
+  print color 'red';
+  if ($code == 4) {
+    print "Error logging in\n";
+  } elsif ($code == 3 && $details =~ /protectednamespace-interface/) {
+    print "You do not have permission to edit interface messages\n";
+  } else {
+    print "$code: $details\n";
+  }
+  die "Quitting\n";
 }
 
 # Check if file exists
@@ -240,7 +238,7 @@ sub buildEditSummary {
 	my @arr = split / /, $_, 2;
 	if ($arr[1] =~ /(\S+(?:\.(?:js|css))?) ?[:|-] ?(.+)/) {
 	  my $fixPer = $2;
-	  $fixPer =~ s/\.$//; # Just in case
+	  $fixPer =~ s/\.$//;   # Just in case
 	  $editSummary .= "$fixPer; ";
 	}
       }
@@ -267,17 +265,17 @@ sub buildEditSummary {
   # 'Repo at' will add 17 characters and MW truncates at 497 to allow for '...'
   my $maxLength = 480;
   while (length $editSummary > $maxLength) {
-	  my $length = length $editSummary;
-	  my $over = $length - $maxLength;
+    my $length = length $editSummary;
+    my $over = $length - $maxLength;
 
-	  my $message = "The current edit summary is too long by $over character";
-	  $message .= $over == 1 ? q{} : 's';
-	  $message .= " and will therefore be truncated.\n";
-	  print $message;
-	  print "\t$editSummary\n";
-	  print "Please provide a shorter summary (under $maxLength characters, the latest commit ref will be added automatically):\n";
-	  $editSummary = <STDIN>;
-	  chomp $editSummary;
+    my $message = "The current edit summary is too long by $over character";
+    $message .= $over == 1 ? q{} : 's';
+    $message .= " and will therefore be truncated.\n";
+    print $message;
+    print "\t$editSummary\n";
+    print "Please provide a shorter summary (under $maxLength characters, the latest commit ref will be added automatically):\n";
+    $editSummary = <STDIN>;
+    chomp $editSummary;
   }
 
   my $editBeg = 'Repo at '. $repo->run('rev-parse' => '--short', 'HEAD') . ': ';
@@ -304,8 +302,8 @@ sub saltNPepa {
   my $text = read_text($file);
   my $wikiPage = checkPage($page);
   return 1 if !$wikiPage;
-  # print "$file -> $opt->{lang}.$opt->{family}.org/wiki/$page";
-  print ucfirst $opt->{mode};
+  # print "$file -> $conf{lang}.$conf{family}.org/wiki/$page";
+  print ucfirst $conf{mode};
   print "ing $file to $page...";
 
   my $wp = $wikiPage->{q{*}}."\n"; # MediaWiki doesn't have trailing newlines
@@ -323,6 +321,37 @@ sub saltNPepa {
     }
     return 0;
   }
+}
+
+#### Usage statement ####
+# Escapes not necessary but ensure pretty colors
+# Could use POD but meh
+# Final line must be unindented?
+sub usage {
+  print <<USAGE;
+$PROGRAM_NAME --mode=deploy|pull|push [-u username] [-p password] [-l language] [-f family] [-b base]
+
+    --mode What action to perform, one of deploy, pull, or push. Required.
+        deploy: Push changes on-wiki as gadget
+        pull: Pull changes from base location
+        push: Push changes on-wiki to base location
+
+    --username, -u Username for account. Required.
+    --password, -p Password for account. Required.
+
+    --lang, -l Target language, default 'en'
+    --family, -f Target family, default 'wikipedia'
+    --base, -b Base location on-wiki where user files exist, default 'User:AzaToth'
+
+    These options can be provided in a config file, .twinklerc, in either this script's
+    or your home directory.  It should be a simple file consisting of keys and values:
+        username = Jimbo Wales
+        lang = en
+        etc.
+
+    --help, -h Print usage message and exit
+USAGE
+  exit;
 }
 
 
