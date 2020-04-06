@@ -66,30 +66,18 @@ The program depends on a few Perl modules, namely [`MediaWiki::API`][MediaWiki::
 
 You may prefer to install them through your operating system's packaing tool (e.g. `apt-get install libconfig-general-perl`) although you can install them through cpanm too.
 
-When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a `.twinklerc` file, either in this directory or in your `~` home, using the following format:
+When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a `.twinklerc` file, either in this directory or in your `~` home, using the following format (also the defaults):
 
     username = username
     password = password
 	mode     = deploy|push|pull
     lang     = en
     family   = wikipedia
-    base     = User:Username
+    base     = User:AzaToth/
 
 `username`, `password`, and `mode` (one of `deploy`, `push`, or `pull`) are required, either through the command line or configuration file; lang and family default to `en.wikipedia`. Note that your working directory **must** be clean; if not, either `stash` or `commit` your changes. The script automatically handles the directory (e.g. `modules/`) from the file path when downloading/uploading.
 
-Note that your working directory **must** be clean; if not, either `stash` or `commit` your changes.
-
-To `pull` user Foobar's changes (i.e. `User:Foobar/morebits.js`) down from the wiki, do:
-
-    ./sync.pl --base User:Foobar --mode=pull twinkle.js morebits.js ...
-
-To `push` your changes to user Foobar's wiki page, do:
-
-    ./sync.pl --base User:Foobar --mode=push twinkle.js morebits.js ...
-
-#### Deploying to the sitewide gadget
-
-There is also a `deploy` mode for [interface-admins][intadmin] to deploy Twinkle files live to their MediaWiki:Gadget locations. You will need to set up a bot password at [Special:BotPasswords][special_botpass].
+Using the `deploy` mode, [interface-admins][intadmin] can deploy Twinkle files live to their MediaWiki:Gadget locations. You will need to set up a bot password at [Special:BotPasswords][special_botpass].
 
     ./sync.pl --mode=deploy twinkle.js morebits.js ...
 
@@ -102,6 +90,15 @@ Note that for syncing to a non-Enwiki project, you will also need to specify the
     make ARGS="--lang=test --family=wmflabs" deploy
 
 When `deploy`ing or `push`ing, the script will attempt to parse the latest on-wiki edit summary for the commit of the last update, and will use that to create an edit summary using the changes committed since then. If it cannot find anything that looks like a commit hash, it will give you the most recent commits for each file and prompt you to enter an edit summary manually.
+
+To `pull` user Foobar's changes (i.e. `User:Foobar/morebits.js`) down from the wiki, do:
+
+    ./sync.pl --base User:Foobar/ --mode=pull twinkle.js morebits.js ...
+
+To `push` your changes to user Foobar's wiki page, do:
+
+    ./sync.pl --base User:Foobar/ --mode=push twinkle.js morebits.js ...
+
 
 [MediaWiki:Gadgets-definition]: https://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
 [MediaWiki:Gadget-Twinkle.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.js
