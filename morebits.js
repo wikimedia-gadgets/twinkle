@@ -1346,8 +1346,8 @@ Morebits.date = function() {
 	this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)));
 
 	if (isNaN(this._d.getTime()) && typeof args[0] === 'string') {
-		// Try again after removing a comma, to get MediaWiki timestamps to parse
-		this._d = new (Function.prototype.bind.call(Date, Date, args[0].replace(/(\d\d:\d\d),/, '$1')));
+		// Try again after removing a comma and paren-wrapped timezone, to get MediaWiki timestamps to parse
+		this._d = new (Function.prototype.bind.call(Date, Date, args[0].replace(/(\d\d:\d\d),/, '$1').replace(/\(UTC\)/, 'UTC')));
 	}
 
 };
