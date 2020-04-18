@@ -145,7 +145,8 @@ Twinkle.talkback.changeTarget = function(e) {
 			var templates = work_area.append({
 				type: 'select',
 				name: 'tbtemplate',
-				label: 'Which talkback template to use:'
+				label: 'Which talkback template to use:',
+				event: Twinkle.talkback.callback.change_template
 			});
 			$.each(Twinkle.talkback.templates.talkbacks, function(value, data) {
 				templates.append({
@@ -166,24 +167,7 @@ Twinkle.talkback.changeTarget = function(e) {
 					{ label: 'Other user\'s talk', value: 'othertalk' },
 					{ label: 'Other page', value: 'other' }
 				],
-				event: function(e) {
-					// Only needed for non-mytalk locations,
-					// but reset tooltip and label for each
-					if (e.target.form.page) {
-						$(Morebits.quickForm.getElementContainer(e.target.form.page)).remove();
-					}
-					if (e.target.value !== 'mytalk') {
-						e.target.parentNode.appendChild(new Morebits.quickForm.element({
-							type: 'input',
-							name: 'page',
-							label: e.target.value === 'othertalk' ? 'Other username' : 'Other page',
-							tooltip: (e.target.value === 'othertalk' ? 'The user on whose talk page' :
-								'Location of other page on which') + '  you left a message. Required.',
-							value: prev_page,
-							required: true
-						}).render());
-					}
-				}
+				event: Twinkle.talkback.callback.change_template
 			});
 
 			work_area.append({
@@ -252,6 +236,38 @@ Twinkle.talkback.changeTarget = function(e) {
 	$('#twinkle-talkback-optout-message').text(Twinkle.talkback.optout);
 };
 
+Twinkle.talkback.callback.change_template = function(e) {
+	var form = e.target.form;
+
+	// whisperback doesn't work with non user talk pages
+	if (form.tbtemplate.value === 'whisperback') {
+		form.location.options[2].disabled = true;
+		// Reset on non-user talk pages
+		if (form.location.options[2].selected) {
+			form.location.options[0].selected = true;
+		}
+	} else {
+		form.location.options[2].disabled = false;
+	}
+
+	// Only needed for non-mytalk locations,
+	// but reset tooltip and label for each
+	if (form.page) {
+		$(Morebits.quickForm.getElementContainer(form.page)).remove();
+	}
+	if (form.location.value !== 'mytalk') {
+		form.location.parentNode.appendChild(new Morebits.quickForm.element({
+			type: 'input',
+			name: 'page',
+			label: form.location.value === 'othertalk' ? 'Other username' : 'Other page',
+			tooltip: (form.location.value === 'othertalk' ? 'The user on whose talk page' : 'Location of other page on which') + '  you left a message. Required.',
+			value: prev_page,
+			required: true
+		}).render());
+	}
+};
+
+
 Twinkle.talkback.templates = {
 	talkbacks: {
 		'talkback': {
@@ -265,7 +281,7 @@ Twinkle.talkback.templates = {
 			editSummary: 'Please check the discussion at'
 		},
 		'whisperback': {
-			label: '{{Whisperback}}: Short user talk message',
+			label: '{{Whisperback}}: Short message (user talk pages only)',
 			text: 'Whisperback|1=$PAGE|2=$SECTION',
 			editSummary: ''
 		}
