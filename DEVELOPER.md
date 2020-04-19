@@ -58,39 +58,28 @@ Each Twinkle module and dependency lives on the wiki as a separate file. The lis
 
 ### Synchronization using `sync.pl`
 
-There is a synchronization script called `sync.pl`, which can be used to update on-wiki gadgets, or update the repository based on on-wiki changes.
+There is a synchronization script called `sync.pl`, which can be used to deploy updates to on-wiki gadgets, or update the repository based on on-wiki changes. For more detauls, run `perl sync.pl --help`.
 
-The program depends on a few Perl modules, namely [`MediaWiki::API`][MediaWiki::API], [`Git::Repository`][Git::Repository], [`File::Slurper`][File::Slurper], and [`Getopt::Long::Descriptive`][Getopt::Long::Descriptive]. These can be installed easily using [`App::cpanminus`][App::cpanminus]:
+The program depends on a few Perl modules, namely [`MediaWiki::API`][MediaWiki::API], [`Git::Repository`][Git::Repository], [`File::Slurper`][File::Slurper], and [`Config::General`][Config::General]. These can be installed easily using [`App::cpanminus`][App::cpanminus]:
 
-    cpanm --sudo install MediaWiki::API Git::Repository File::Slurper Getopt::Long::Descriptive
+    cpanm --sudo install MediaWiki::API Git::Repository File::Slurper Config::General
 
-You may prefer to install them through your operating system's packaing tool (e.g. `apt-get install libgetopt-long-descriptive-perl`) although you can install them through cpanm too.
+You may prefer to install them through your operating system's packaing tool (e.g. `apt-get install libconfig-general-perl`) although you can install them through cpanm too.
 
-When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a `.twinklerc` file, either in this directory or in your `~` home, using the following format:
+When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a `.twinklerc` file, either in this directory or in your `~` home, using the following format (also the defaults):
 
     username = username
     password = password
+	mode     = deploy|push|pull
     lang     = en
     family   = wikipedia
-    base     = User:Username
+    base     = User:AzaToth/
 
-where `base` is the wiki path to prefix the files for `pull` and `push`. The script ignores the `modules/` part of the file path when downloading/uploading.
+`username`, `password`, and `mode` (one of `deploy`, `push`, or `pull`) are required, either through the command line or configuration file; lang and family default to `en.wikipedia`. Note that your working directory **must** be clean; if not, either `stash` or `commit` your changes. The script automatically handles the directory (e.g. `modules/`) from the file path when downloading/uploading.
 
-Note that your working directory **must** be clean; if not, either `stash` or `commit` your changes.
+Using the `deploy` mode, [interface-admins][intadmin] can deploy Twinkle files live to their MediaWiki:Gadget locations. You will need to set up a bot password at [Special:BotPasswords][special_botpass].
 
-To `pull` user Foobar's changes (i.e. `User:Foobar/morebits.js`) down from the wiki, do:
-
-    ./sync.pl --base User:Foobar --pull twinkle.js morebits.js ...
-
-To `push` your changes to user Foobar's wiki page, do:
-
-    ./sync.pl --base User:Foobar --push twinkle.js morebits.js ...
-
-#### Deploying to the sitewide gadget
-
-There is also a `deploy` command for [interface-admins][intadmin] to deploy Twinkle files live to their MediaWiki:Gadget locations. You will need to set up a bot password at [Special:BotPasswords][special_botpass].
-
-    ./sync.pl --deploy twinkle.js morebits.js ...
+    ./sync.pl --mode=deploy twinkle.js morebits.js ...
 
 You may also `deploy` all files via
 
@@ -101,6 +90,15 @@ Note that for syncing to a non-Enwiki project, you will also need to specify the
     make ARGS="--lang=test --family=wmflabs" deploy
 
 When `deploy`ing or `push`ing, the script will attempt to parse the latest on-wiki edit summary for the commit of the last update, and will use that to create an edit summary using the changes committed since then. If it cannot find anything that looks like a commit hash, it will give you the most recent commits for each file and prompt you to enter an edit summary manually.
+
+To `pull` user Foobar's changes (i.e. `User:Foobar/morebits.js`) down from the wiki, do:
+
+    ./sync.pl --base User:Foobar/ --mode=pull twinkle.js morebits.js ...
+
+To `push` your changes to user Foobar's wiki page, do:
+
+    ./sync.pl --base User:Foobar/ --mode=push twinkle.js morebits.js ...
+
 
 [MediaWiki:Gadgets-definition]: https://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
 [MediaWiki:Gadget-Twinkle.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.js
@@ -135,7 +133,7 @@ When `deploy`ing or `push`ing, the script will attempt to parse the latest on-wi
 [MediaWiki::API]: https://metacpan.org/pod/MediaWiki::API
 [Git::Repository]: https://metacpan.org/pod/Git::Repository
 [File::Slurper]: https://metacpan.org/pod/File::Slurper
-[Getopt::Long::Descriptive]: https://metacpan.org/pod/Getopt::Long::Descriptive
+[Config::General]: https://metacpan.org/pod/Config::General
 [App::cpanminus]: https://metacpan.org/pod/App::cpanminus
 [intadmin]: https://en.wikipedia.org/wiki/Wikipedia:Interface_administrators
 [special_botpass]: https://en.wikipedia.org/wiki/Special:BotPasswords
