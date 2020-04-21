@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "patchtest": "node patch-test.js"
+    "patchtest": "node patch-test.js",
+    "server": "node server.js"
   },
   "devDependencies": {
     "eslint": "^7.8.1",

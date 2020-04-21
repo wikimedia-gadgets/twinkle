@@ -9,7 +9,7 @@
 	"globals": {
 		"mw": "readonly"
 	},
-	"ignorePatterns": "select2*",
+	"ignorePatterns": ["select2*", "server.js"],
 	"rules": {
 		"no-console": "error",
 		"no-extra-parens": ["error", "all", { "nestedBinaryExpressions": false }],
