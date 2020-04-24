@@ -1002,10 +1002,6 @@ Twinkle.warn.messages = {
 			summary: 'Warning: Creating attack pages',
 			suppressArticleInSummary: true
 		},
-		'uw-bizlist': {
-			label: 'Business promotion',
-			summary: 'Warning: Promoting a business'
-		},
 		'uw-botun': {
 			label: 'Bot username',
 			summary: 'Warning: Bot username'
