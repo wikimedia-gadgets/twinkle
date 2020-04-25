@@ -232,8 +232,9 @@ sub buildEditSummary {
   if ($oldCommitish =~ /(?:Repo|v2\.0) at (\w*?): / || $oldCommitish =~ /v2\.0-\d+-g(\w*?): /) {
     # Ensure it's a valid commit and no errors are reported back
     my $valid = $repo->command('merge-base' => '--is-ancestor', "$1", 'HEAD');
-    my $validC = $valid->stderr();
-    if (eof $validC) {
+    my @validE = $valid->stderr->getlines();
+    $valid->close();
+    if (!scalar @validE) {
       my $newLog = $repo->run(log => '--oneline', '--no-merges', '--no-color', "$1..HEAD", $file);
       open my $nl, '<', \$newLog or die colored ['red'], "$ERRNO\n";
       while (<$nl>) {
@@ -290,6 +291,7 @@ sub editPage {
   my ($pTitle, $nText, $pSummary, $pTimestamp) = @_;
   $mw->edit({
 	     action => 'edit',
+	     assert => 'user',
 	     title => $pTitle,
 	     basetimestamp => $pTimestamp, # Avoid edit conflicts
 	     text => $nText,
