@@ -1338,7 +1338,7 @@ Twinkle.speedy.callbacks = {
 				thispage.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
 				thispage.deletePage(function() {
 					thispage.getStatusElement().info('done');
-					callback();
+					typeof callback === 'function' && callback();
 					Twinkle.speedy.callbacks.sysop.deleteTalk(params);
 				});
 			};
