@@ -102,13 +102,37 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		type: 'div',
 		label: '',
 		style: 'color: red',
-		id: 'twinkle-warn-olddiff-message'
+		id: 'twinkle-warn-revert-messages'
 	});
 
-	// Confirm edit wasn't too old for a warning
 	var vanrevid = mw.util.getParamValue('vanarticlerevid');
 	if (vanrevid) {
-		var query = {
+		var message = '';
+		var query = {};
+
+		// If you tried reverting, check if *you* actually reverted
+		if (!mw.util.getParamValue('noautowarn') && mw.util.getParamValue('vanarticle')) { // Via fluff link
+			query = {
+				action: 'query',
+				titles: mw.util.getParamValue('vanarticle'),
+				prop: 'revisions',
+				rvstartid: vanrevid,
+				rvlimit: 2,
+				rvdir: 'newer',
+				rvprop: 'user'
+			};
+
+			new Morebits.wiki.api('Checking if you successfully reverted the page', query, function(apiobj) {
+				var revertUser = $(apiobj.getResponse()).find('revisions rev')[1].getAttribute('user');
+				if (revertUser && revertUser !== mw.config.get('wgUserName')) {
+					message += ' Someone else reverted the page and may have already warned the user.';
+					$('#twinkle-warn-revert-messages').text('Note:' + message);
+				}
+			}).post();
+		}
+
+		// Confirm edit wasn't too old for a warning
+		query = {
 			action: 'query',
 			prop: 'revisions',
 			rvprop: 'timestamp',
@@ -119,7 +143,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 			var revDate = new Morebits.date(vantimestamp);
 			if (vantimestamp && revDate.isValid()) {
 				if (revDate.add(24, 'hours').isBefore(new Date())) {
-					$('#twinkle-warn-olddiff-message').text('Note: This edit was made more than 24 hours ago so a warning may be stale.');
+					message += ' This edit was made more than 24 hours ago so a warning may be stale.';
+					$('#twinkle-warn-revert-messages').text('Note:' + message);
 				}
 			}
 		}).post();
