@@ -1856,6 +1856,10 @@ Morebits.wiki.api.setApiUserAgent = function(ua) {
  *
  * move([onSuccess], [onFailure]): Moves a page to another title
  *
+ * patrol(): Patrols a page; ignores errors
+ *
+ * triage(): Marks page as reviewed using PageTriage, which implies patrolled; ignores errors
+ *
  * deletePage([onSuccess], [onFailure]): Deletes a page (for admins only)
  *
  * undeletePage([onSuccess], [onFailure]): Undeletes a page (for admins only)
@@ -1995,6 +1999,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		csrfToken: null,
 		loadTime: null,
 		lastEditTime: null,
+		pageID: null,
 		revertCurID: null,
 		revertUser: null,
 		fullyProtected: false,
@@ -2026,6 +2031,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		lookupCreationApi: null,
 		moveApi: null,
 		moveProcessApi: null,
+		patrolApi: null,
+		patrolProcessApi: null,
+		triageApi: null,
+		triageProcessApi: null,
 		deleteApi: null,
 		deleteProcessApi: null,
 		undeleteApi: null,
@@ -2483,6 +2492,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
+	 * @returns {string} Page ID of the page loaded. 0 if the page doesn't
+	 * exist.
+	 */
+	this.getPageID = function() {
+		return ctx.pageID;
+	};
+
+	/**
 	 * @returns {string} ISO 8601 timestamp at which the page was last loaded
 	 */
 	this.getLoadTime = function() {
@@ -2548,34 +2565,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
-	 * marks the page as patrolled, if possible
-	 */
-	this.patrol = function() {
-		// There's no patrol link on page, so we can't patrol
-		if (!$('.patrollink').length) {
-			return;
-		}
-
-		// Extract the Recentchanges ID (rcid) from the "Mark page as patrolled" link on page
-		var patrolhref = $('.patrollink a').attr('href'),
-			rcid = mw.util.getParamValue('rcid', patrolhref);
-
-		if (rcid) {
-
-			var patrolstat = new Morebits.status('Marking page as patrolled');
-
-			var wikipedia_api = new Morebits.wiki.api('doing...', {
-				action: 'patrol',
-				rcid: rcid,
-				token: mw.user.tokens.get('patrolToken')
-			}, null, patrolstat);
-
-			// We don't really care about the response
-			wikipedia_api.post();
-		}
-	};
-
-	/**
 	 * Reverts a page to revertOldID
 	 * @param {Function} [onSuccess] - callback function to run on success (optional)
 	 * @param {Function} [onFailure] - callback function to run on failure (optional)
@@ -2622,6 +2611,75 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.moveApi = new Morebits.wiki.api('retrieving token...', query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
 			ctx.moveApi.setParent(this);
 			ctx.moveApi.post();
+		}
+	};
+
+	/**
+	 * Marks the page as patrolled, using rcid (if available) or revid
+	 *
+	 * Patrolling as such doesn't need to rely on loading the page in
+	 * question; simply passing a revid to the API is sufficient, so in
+	 * those cases just using Morebits.wiki.api is probably preferable.
+	 *
+	 * No error handling since we don't actually care about the errors
+	 */
+	this.patrol = function() {
+		if (!Morebits.userIsSysop && !Morebits.userIsInGroup('patroller')) {
+			return;
+		}
+
+		// If patrolling current page, don't need to query for latest revID
+		if ($('.patrollink').length) {
+			var patrolhref = $('.patrollink a').attr('href');
+			ctx.rcid = mw.util.getParamValue('rcid', patrolhref);
+			fnProcessPatrol(this, this);
+		} else if (new mw.Title(Morebits.pageNameNorm).getPrefixedText() === new mw.Title(ctx.pageName).getPrefixedText()) {
+			ctx.revid = mw.config.get('wgRevisionId') || mw.config.get('wgCurRevisionId');
+			fnProcessPatrol(this, this);
+		} else {
+			var patrolQuery = {
+				action: 'query',
+				prop: 'info',
+				meta: 'tokens',
+				type: 'patrol', // as long as we're querying, might as well get a token
+				titles: ctx.pageName
+			};
+
+			ctx.patrolApi = new Morebits.wiki.api('retrieving token...', patrolQuery, fnProcessPatrol);
+			ctx.patrolApi.setParent(this);
+			ctx.patrolApi.post();
+		}
+	};
+
+	/**
+	 * Marks the page as reviewed by the PageTriage extension
+	 * https://www.mediawiki.org/wiki/Extension:PageTriage
+	 *
+	 * Referred to as "review" on-wiki
+	 *
+	 * Will, by it's nature, mark as patrolled as well.
+	 *
+	 * Doesn't inherently rely on loading the page in question; simply
+	 * passing a pageid to the API is sufficient, so in those cases just
+	 * using Morebits.wiki.api is probably preferable.
+	 *
+	 * No error handling since we don't actually care about the errors
+	 */
+	this.triage = function() {
+		if (!Morebits.userIsSysop && !Morebits.userIsInGroup('patroller')) {
+			return;
+		}
+
+		// If on the page in question, don't need to query for page ID
+		if (new mw.Title(Morebits.pageNameNorm).getPrefixedText() === new mw.Title(ctx.pageName).getPrefixedText()) {
+			ctx.pageID = mw.config.get('wgArticleId');
+			fnProcessTriage(this, this);
+		} else {
+			var query = fnNeedTokenInfoQuery('triage');
+
+			ctx.triageApi = new Morebits.wiki.api('retrieving token...', query, fnProcessTriage);
+			ctx.triageApi.setParent(this);
+			ctx.triageApi.post();
 		}
 	};
 
@@ -2797,9 +2855,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// do we need to fetch the edit protection expiry?
 		if (Morebits.userIsSysop && !ctx.suppressProtectWarning) {
-			// poor man's normalisation
-			if (Morebits.string.toUpperCaseFirstChar(mw.config.get('wgPageName')).replace(/ /g, '_').trim() !==
-				Morebits.string.toUpperCaseFirstChar(ctx.pageName).replace(/ /g, '_').trim()) {
+			if (new mw.Title(Morebits.pageNameNorm).getPrefixedText() === new mw.Title(ctx.pageName).getPrefixedText()) {
 				return false;
 			}
 
@@ -2856,8 +2912,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.pageExists = $(xml).find('page').attr('missing') !== '';
 		if (ctx.pageExists) {
 			ctx.pageText = $(xml).find('rev').text();
+			ctx.pageID = $(xml).find('page').attr('pageid');
 		} else {
 			ctx.pageText = '';  // allow for concatenation, etc.
+			ctx.pageID = 0; // nonexistent in response, matches wgArticleId
 		}
 		ctx.csrfToken = $(xml).find('tokens').attr('csrftoken');
 		if (!ctx.csrfToken) {
@@ -3193,6 +3251,76 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.moveProcessApi = new Morebits.wiki.api('moving page...', query, ctx.onMoveSuccess, ctx.statusElement, ctx.onMoveFailure);
 		ctx.moveProcessApi.setParent(this);
 		ctx.moveProcessApi.post();
+	};
+
+	var fnProcessPatrol = function() {
+		var query = {
+			action: 'patrol'
+		};
+
+		// Didn't need to load the page
+		if (ctx.rcid) {
+			query.rcid = ctx.rcid;
+			query.token = mw.user.tokens.get('patrolToken');
+		} else if (ctx.revid) {
+			query.revid = ctx.revid;
+			query.token = mw.user.tokens.get('patrolToken');
+		} else {
+			var xml = ctx.patrolApi.getResponse();
+
+			var lastrevid = $(xml).find('page').attr('lastrevid');
+			if (!lastrevid) {
+				return;
+			}
+			query.revid = lastrevid;
+
+			var token = $(xml).find('tokens').attr('patroltoken');
+			if (!token) {
+				return;
+			}
+
+			query.token = token;
+		}
+
+		var patrolStat = new Morebits.status('Marking page as patrolled');
+
+		ctx.patrolProcessApi = new Morebits.wiki.api('patrolling page...', query, null, patrolStat);
+		ctx.patrolProcessApi.setParent(this);
+		ctx.patrolProcessApi.post();
+	};
+
+	var fnProcessTriage = function() {
+		var pageID, token;
+
+		if (ctx.pageID) {
+			token = mw.user.tokens.get('csrfToken');
+			pageID = ctx.pageID;
+		} else {
+			var xml = ctx.triageApi.getXML();
+
+			pageID = $(xml).find('page').attr('pageid');
+			if (!pageID) {
+				return;
+			}
+
+			token = $(xml).find('tokens').attr('csrftoken');
+			if (!token) {
+				return;
+			}
+		}
+
+		var query = {
+			action: 'pagetriageaction',
+			pageid: pageID,
+			reviewed: 1,
+			token: token
+		};
+
+		var triageStat = new Morebits.status('Marking page as curated');
+
+		ctx.triageProcessApi = new Morebits.wiki.api('curating page...', query, null, triageStat);
+		ctx.triageProcessApi.setParent(this);
+		ctx.triageProcessApi.post();
 	};
 
 	var fnProcessDelete = function() {

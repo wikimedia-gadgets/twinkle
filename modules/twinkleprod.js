@@ -347,6 +347,11 @@ Twinkle.prod.callbacks = {
 			}
 		}
 
+		// curate/patrol the page
+		if (Twinkle.getPref('markProdPagesAsPatrolled')) {
+			pageobj.triage();
+		}
+
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
 		pageobj.setWatchlist(Twinkle.getPref('watchProdPages'));
