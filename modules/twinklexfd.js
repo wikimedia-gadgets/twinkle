@@ -71,7 +71,8 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		type: 'option',
 		label: 'TfD (Templates for discussion)',
 		selected: [ 10, 828 ].indexOf(namespace) !== -1,  // Template and module namespaces
-		value: 'tfd'
+		value: 'tfd',
+		disabled: namespace === 10 && /-stub$/.test(Morebits.pageNameNorm) // Stub templates at CfD
 	});
 	categories.append({
 		type: 'option',
@@ -83,8 +84,9 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append({
 		type: 'option',
 		label: 'CfD (Categories for discussion)',
-		selected: namespace === 14,  // Category namespace
-		value: 'cfd'
+		selected: namespace === 14 || (namespace === 10 && /-stub$/.test(Morebits.pageNameNorm)),  // Category namespace and stub templates
+		value: 'cfd',
+		disabled: [ 10, 14 ].indexOf(namespace) === -1 // Disabled outside category and templatespace
 	});
 	categories.append({
 		type: 'option',
@@ -299,7 +301,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			});
 			work_area.append({
 				type: 'div',
-				label: 'Stub types and userboxes are not eligible for TfD. Stub types go to CfD, and userboxes go to MfD.'
+				label: 'Userboxes are not eligible for TfD; they go to MfD.'
 			});
 			var templateOrModule = mw.config.get('wgPageContentModel') === 'Scribunto' ? 'module' : 'template';
 			var tfd_category = work_area.append({
@@ -412,7 +414,9 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'Categories for discussion',
 				name: 'work_area'
 			});
-			var cfd_category = work_area.append({
+			var isCategory = mw.config.get('wgNamespaceNumber') === 14;
+			var cfd_category;
+			cfd_category = work_area.append({
 				type: 'select',
 				label: 'Choose type of action wanted: ',
 				name: 'xfdcat',
@@ -420,43 +424,53 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					var value = e.target.value;
 					var target = e.target.form.xfdtarget;
 					// update enabled status
-					if (value === 'cfd') {
+					if (value === 'cfd' || value === 'sfd-t') {
 						target.disabled = true;
 						target.required = false;
 					} else {
 						target.disabled = false;
 						target.required = true;
 					}
-					// update label
-					if (value === 'cfs') {
-						target.previousSibling.textContent = 'Target categories: ';
-					} else if (value === 'cfc') {
-						target.previousSibling.textContent = 'Target article: ';
-					} else {
-						target.previousSibling.textContent = 'Target category: ';
-					}
-					// add/remove extra input box
-					if (value === 'cfs' && $(target.parentNode).find("input[name='xfdtarget2']").length === 0) {
-						var xfdtarget2 = document.createElement('input');
-						xfdtarget2.setAttribute('name', 'xfdtarget2');
-						xfdtarget2.setAttribute('type', 'text');
-						xfdtarget2.setAttribute('required', 'true');
-						target.parentNode.appendChild(xfdtarget2);
-					} else {
-						$(target.parentNode).find("input[name='xfdtarget2']").remove();
+					if (isCategory) {
+						// update label
+						if (value === 'cfs') {
+							target.previousSibling.textContent = 'Target categories: ';
+						} else if (value === 'cfc') {
+							target.previousSibling.textContent = 'Target article: ';
+						} else {
+							target.previousSibling.textContent = 'Target category: ';
+						}
+						// add/remove extra input box
+						if (value === 'cfs' && $(target.parentNode).find("input[name='xfdtarget2']").length === 0) {
+							var xfdtarget2 = document.createElement('input');
+							xfdtarget2.setAttribute('name', 'xfdtarget2');
+							xfdtarget2.setAttribute('type', 'text');
+							xfdtarget2.setAttribute('required', 'true');
+							target.parentNode.appendChild(xfdtarget2);
+						} else {
+							$(target.parentNode).find("input[name='xfdtarget2']").remove();
+						}
+					} else { // Update stub template label
+						target.previousSibling.textContent = 'Target stub template: ';
 					}
 				}
 			});
-			cfd_category.append({ type: 'option', label: 'Deletion', value: 'cfd', selected: true });
-			cfd_category.append({ type: 'option', label: 'Merge', value: 'cfm' });
-			cfd_category.append({ type: 'option', label: 'Renaming', value: 'cfr' });
-			cfd_category.append({ type: 'option', label: 'Split', value: 'cfs' });
-			cfd_category.append({ type: 'option', label: 'Convert into article', value: 'cfc' });
+
+			if (isCategory) {
+				cfd_category.append({ type: 'option', label: 'Deletion', value: 'cfd', selected: true });
+				cfd_category.append({ type: 'option', label: 'Merge', value: 'cfm' });
+				cfd_category.append({ type: 'option', label: 'Renaming', value: 'cfr' });
+				cfd_category.append({ type: 'option', label: 'Split', value: 'cfs' });
+				cfd_category.append({ type: 'option', label: 'Convert into article', value: 'cfc' });
+			} else {
+				cfd_category.append({ type: 'option', label: 'Stub Deletion', value: 'sfd-t', selected: true });
+				cfd_category.append({ type: 'option', label: 'Stub Renaming', value: 'sfr-t' });
+			}
 
 			work_area.append({
 				type: 'input',
 				name: 'xfdtarget',
-				label: 'Target page: ',
+				label: 'Target category: ', // default, changed above
 				disabled: true,
 				value: ''
 			});
@@ -628,10 +642,7 @@ Twinkle.xfd.callbacks = {
 		if (params.target) {
 			if (venue === 'rfd') {
 				text += '|target=' + params.target + (params.section ? '#' + params.section : '');
-			} else if (venue !== 'cfd') {
-				if (params.xfdcat && params.xfdcat === 'tfm') {
-					params.target = Morebits.string.toUpperCaseFirstChar(params.target.replace(/^:?(?:Template|Module):/i, ''));
-				}
+			} else if (venue !== 'cfd' && venue !== 'sfd-t') {
 				text += '|2=' + params.target;
 			}
 		}
@@ -669,12 +680,20 @@ Twinkle.xfd.callbacks = {
 		if (form.xfdcat) {
 			params.xfdcat = form.xfdcat.value;
 		}
-		if (form.xfdtarget) {
-			params.target = form.xfdtarget.value;
+
+		// Remove CfD or TfD namespace prefixes
+		if (venue === 'tfd' || venue === 'cfd') {
+			var namespace_re = new RegExp('^:?' + mw.config.get('wgCanonicalNamespace') + ':', 'i');
+			if (form.xfdtarget) { // CfD or TfD
+				params.target = Morebits.string.toUpperCaseFirstChar(form.xfdtarget.value.replace(namespace_re, ''));
+			}
+			if (form.xfdtarget2) { // CfD
+				params.target2 = Morebits.string.toUpperCaseFirstChar(form.xfdtarget2.value.replace(namespace_re, ''));
+			}
+		} else if (venue === 'cfds' && form.xfdtarget.value) { // Add namespace to CfD/S
+			params.target = /^Category:/.test(form.xfdtarget.value) ? form.xfdtarget.value : 'Category:' + form.xfdtarget.value;
 		}
-		if (form.xfdtarget2) {
-			params.target2 = form.xfdtarget2.value;
-		}
+
 		params.delsort_cats = $(form.delsort).val();
 		if (form.rmtr) {
 			params.rmtr = form.rmtr.checked;
@@ -1185,29 +1204,29 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			var added_data = '';
-			var editsummary = 'Category being considered for ' + params.action;
+			var added_data = '{{subst:' + params.xfdcat;
+			var editsummary = (mw.config.get('wgNamespaceNumber') === 14 ? 'Category' : 'Stub template') +
+				' being considered for ' + params.action;
 			switch (params.xfdcat) {
 				case 'cfd':
-					added_data = '{{subst:cfd}}';
-					break;
-				case 'cfm':
-					added_data = '{{subst:cfm|' + params.target + '}}';
-					break;
-				case 'cfr':
-					added_data = '{{subst:cfr|' + params.target + '}}';
-					break;
-				case 'cfs':
-					added_data = '{{subst:cfs|' + params.target + '|' + params.target2 + '}}';
+				case 'sfd-t':
 					break;
 				case 'cfc':
-					added_data = '{{subst:cfc|' + params.target + '}}';
 					editsummary += ' to an article';
+					// falls through
+				case 'cfm':
+				case 'cfr':
+				case 'sfr-t':
+					added_data += '|' + params.target;
+					break;
+				case 'cfs':
+					added_data += '|' + params.target + '|' + params.target2;
 					break;
 				default:
 					alert('twinklexfd in taggingCategory(): unknown CFD action');
 					break;
 			}
+			added_data += '}}';
 			editsummary += '; see [[:' + params.discussionpage + ']].';
 
 			pageobj.setPageText(added_data + '\n' + text);
@@ -1249,7 +1268,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-			var notifytext = '\n{{subst:cfd-notify|1=' + Morebits.pageNameNorm + '|action=' + params.action + '}} ~~~~';
+			var notifytext = '\n{{subst:cfd-notify|1=' + Morebits.pageNameNorm + '|action=' + params.action + (mw.config.get('wgNamespaceNumber') === 10 ? '|stub=yes' : '') + '}} ~~~~';
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:CFD|categories for discussion]].' + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
@@ -1265,7 +1284,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText('{{subst:cfr-speedy|1=' + params.target + '}}\n' + text);
+			pageobj.setPageText('{{subst:cfr-speedy|1=' + params.target.replace(/^:?Category:/, '') + '}}\n' + text);
 			pageobj.setEditSummary('Listed for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]].' + Twinkle.getPref('summaryAd'));
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
@@ -1276,7 +1295,6 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			params.target = /^Category:/.test(params.target) ? params.target : 'Category:' + params.target;
 			var text = old_text.replace('BELOW THIS LINE -->', 'BELOW THIS LINE -->\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('cfds', params));
 			if (text === old_text) {
 				statelem.error('failed to find target spot for the discussion');
@@ -1540,7 +1558,8 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		case 'tfd': // TFD
 			Morebits.wiki.addCheckpoint();
 			if (xfdtarget) {
-				xfdtarget = Morebits.string.toUpperCaseFirstChar(xfdtarget.replace(/^:?(?:Template|Module):/i, ''));
+				var tfdNamespace_re = new RegExp('^:?' + mw.config.get('wgCanonicalNamespace') + ':', 'i');
+				xfdtarget = Morebits.string.toUpperCaseFirstChar(xfdtarget.replace(tfdNamespace_re, ''));
 			} else {
 				xfdtarget = '';
 			}
@@ -1684,14 +1703,14 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		case 'cfd':
 			Morebits.wiki.addCheckpoint();
 
+			var cfdNamespace_re = new RegExp('^:?' + mw.config.get('wgCanonicalNamespace') + ':', 'i');
 			if (xfdtarget) {
-				xfdtarget = xfdtarget.replace(/^:?Category:/i, '');
+				xfdtarget = xfdtarget.replace(cfdNamespace_re, '');
 			} else {
 				xfdtarget = '';
 			}
-
 			if (xfdtarget2) {
-				xfdtarget2 = xfdtarget2.replace(/^:?Category:/i, '');
+				xfdtarget2 = xfdtarget2.replace(cfdNamespace_re, '');
 			}
 
 			logpage = 'Wikipedia:Categories for discussion/Log/' + date.format('YYYY MMMM D');
@@ -1702,8 +1721,10 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			// Useful for customized actions in edit summaries and the notification template
 			var summaryActions = {
 				cfd: 'deletion',
+				'sfd-t': 'deletion',
 				cfm: 'merging',
 				cfr: 'renaming',
+				'sfr-t': 'renaming',
 				cfs: 'splitting',
 				cfc: 'conversion'
 			};
@@ -1737,7 +1758,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			break;
 
 		case 'cfds':
-			xfdtarget = xfdtarget.replace(/^:?Category:/, '');
+			xfdtarget = /^Category:/.test(xfdtarget) ? xfdtarget : 'Category:' + xfdtarget;
 
 			logpage = 'Wikipedia:Categories for discussion/Speedy';
 			params = { reason: reason, xfdcat: xfdcat, target: xfdtarget };
