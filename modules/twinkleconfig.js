@@ -351,11 +351,11 @@ Twinkle.config.sections = [
 			},
 
 			// TwinkleConfig.openTalkPageOnAutoRevert (bool)
-			// Defines if talk page should be opened when calling revert from contrib page, because from there, actions may be multiple, and opening talk page not suitable. If set to true, openTalkPage defines then if talk page will be opened.
+			// Defines if talk page should be opened when calling revert from contribs or recent changes pages. If set to true, openTalkPage defines then if talk page will be opened.
 			{
 				name: 'openTalkPageOnAutoRevert',
-				label: 'Open user talk page when invoking rollback from user contributions',
-				helptip: "Often, you may be rolling back many pages at a time from a vandal's contributions page, so it would be unsuitable to open the user talk page. Hence, this option is off by default. When this is on, the desired options must be enabled in the previous setting for this to work.",
+				label: 'Open user talk page when invoking rollback from user contributions or recent changes',
+				helptip: 'When this is on, the desired options must be enabled in the previous setting for this to work.',
 				type: 'boolean'
 			},
 
@@ -394,13 +394,14 @@ Twinkle.config.sections = [
 			},
 
 			// TwinkleConfig.showRollbackLinks (array)
-			// Where Twinkle should show rollback links (diff, others, mine, contribs)
+			// Where Twinkle should show rollback links:
+			// diff, others, mine, contribs, recent
 			// Note from TTO: |contribs| seems to be equal to |others| + |mine|, i.e. redundant, so I left it out heres
 			{
 				name: 'showRollbackLinks',
 				label: 'Show rollback links on these pages',
 				type: 'set',
-				setValues: { diff: 'Diff pages', others: 'Contributions pages of other users', mine: 'My contributions page' }
+				setValues: { diff: 'Diff pages', others: 'Contributions pages of other users', mine: 'My contributions page', recent: 'Recent changes and related changes special pages' }
 			}
 		]
 	},
