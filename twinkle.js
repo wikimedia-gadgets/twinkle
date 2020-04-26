@@ -381,7 +381,7 @@ $.ajax({
 	dataType: 'text'
 })
 	.fail(function () {
-		mw.notify('Could not load twinkleoptions.js');
+		mw.notify('Could not load your Twinkle preferences', {type: 'error'});
 	})
 	.done(function (optionsText) {
 
@@ -410,7 +410,7 @@ $.ajax({
 				Twinkle.prefs.optionsVersion = Twinkle.prefs.optionsVersion || 1;
 			}
 		} catch (e) {
-			mw.notify('Could not parse twinkleoptions.js');
+			mw.notify('Could not parse your Twinkle preferences', {type: 'error'});
 		}
 	})
 	.always(function () {
