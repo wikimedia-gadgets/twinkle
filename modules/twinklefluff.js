@@ -58,6 +58,8 @@ Twinkle.fluff = function twinklefluff() {
 			});
 		} else if (mw.config.get('wgAction') === 'view' && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId')) {
 			Twinkle.fluff.addLinks.oldid();
+		} else if (mw.config.get('wgAction') === 'history') {
+			Twinkle.fluff.addLinks.history();
 		}
 	}
 };
@@ -171,6 +173,74 @@ Twinkle.fluff.addLinks = {
 				tmpNode.firstChild.setAttribute('href', href + '&twinklerevert=vand');
 				current.appendChild(tmpNode);
 			});
+		}
+	},
+
+	history: function() {
+		if (Twinkle.getPref('showRollbackLinks').indexOf('history') !== -1) {
+			// All revs
+			var histList = $('#pagehistory li').toArray();
+
+			// On first page of results, so add revert/rollback
+			// links to the top revision
+			if (!$('.mw-firstlink').length) {
+				var first = histList.shift();
+				var vandal = first.querySelector('.mw-userlink').text;
+
+				var agfNode = document.createElement('strong');
+				var vandNode = document.createElement('strong');
+				var normNode = document.createElement('strong');
+
+				var agfLink = Twinkle.fluff.buildLink('DarkOliveGreen', 'rollback (AGF)');
+				var vandLink = Twinkle.fluff.buildLink('Red', 'rollback (VANDAL)');
+				var normLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
+
+				agfLink.href = '#';
+				vandLink.href = '#';
+				normLink.href = '#';
+				$(agfLink).click(function() {
+					Twinkle.fluff.revert('agf', vandal);
+				});
+				$(vandLink).click(function() {
+					Twinkle.fluff.revert('vand', vandal);
+				});
+				$(normLink).click(function() {
+					Twinkle.fluff.revert('norm', vandal);
+				});
+
+				agfNode.appendChild(agfLink);
+				vandNode.appendChild(vandLink);
+				normNode.appendChild(normLink);
+
+				first.appendChild(document.createTextNode(' '));
+				first.appendChild(agfNode);
+				first.appendChild(document.createTextNode(' '));
+				first.appendChild(normNode);
+				first.appendChild(document.createTextNode(' '));
+				first.appendChild(vandNode);
+			}
+
+			// oldid
+			histList.forEach(function(rev) {
+				// From restoreThisRevision, non-transferable
+
+				var href = rev.querySelector('.mw-changeslist-date').href;
+				var oldid = parseInt(mw.util.getParamValue('oldid', href), 10);
+
+				var revertToRevisionNode = document.createElement('strong');
+				var revertToRevisionLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
+
+				revertToRevisionLink.href = '#';
+				$(revertToRevisionLink).click(function() {
+					Twinkle.fluff.revertToRevision(oldid.toString());
+				});
+				revertToRevisionNode.appendChild(revertToRevisionLink);
+
+				rev.appendChild(document.createTextNode(' '));
+				rev.appendChild(revertToRevisionNode);
+			});
+
+
 		}
 	},
 

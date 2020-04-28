@@ -395,13 +395,13 @@ Twinkle.config.sections = [
 
 			// TwinkleConfig.showRollbackLinks (array)
 			// Where Twinkle should show rollback links:
-			// diff, others, mine, contribs, recent
+			// diff, others, mine, contribs, history, recent
 			// Note from TTO: |contribs| seems to be equal to |others| + |mine|, i.e. redundant, so I left it out heres
 			{
 				name: 'showRollbackLinks',
 				label: 'Show rollback links on these pages',
 				type: 'set',
-				setValues: { diff: 'Diff pages', others: 'Contributions pages of other users', mine: 'My contributions page', recent: 'Recent changes and related changes special pages' }
+				setValues: { diff: 'Diff pages', others: 'Contributions pages of other users', mine: 'My contributions page', recent: 'Recent changes and related changes special pages', history: 'History pages' }
 			}
 		]
 	},
