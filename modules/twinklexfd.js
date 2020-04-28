@@ -806,7 +806,7 @@ Twinkle.xfd.callbacks = {
 			// Today's list
 			var date = new Morebits.date(pageobj.getLoadTime());
 			wikipedia_page = new Morebits.wiki.page('Wikipedia:Articles for deletion/Log/' +
-				date.format('YYYY MMMM D'), "Adding discussion to today's list");
+				date.format('YYYY MMMM D', 'utc'), "Adding discussion to today's list");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.todaysList);
@@ -1086,8 +1086,8 @@ Twinkle.xfd.callbacks = {
 			var statelem = pageobj.getStatusElement();
 
 			var date = new Morebits.date(pageobj.getLoadTime());
-			var date_header = date.format('===MMMM D, YYYY===\n');
-			var date_header_regex = new RegExp(date.format('(===\\s*MMMM\\s+D,\\s+YYYY\\s*===)'));
+			var date_header = date.format('===MMMM D, YYYY===\n', 'utc');
+			var date_header_regex = new RegExp(date.format('(===\\s*MMMM\\s+D,\\s+YYYY\\s*===)', 'utc'));
 			var new_data = '{{subst:mfd3|pg=' + Morebits.pageNameNorm + params.numbering + '}}';
 
 			if (date_header_regex.test(text)) { // we have a section already
@@ -1359,7 +1359,7 @@ Twinkle.xfd.callbacks = {
 		},
 		main: function(params) {
 			var date = new Morebits.date(params.curtimestamp);
-			params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.format('YYYY MMMM D');
+			params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.format('YYYY MMMM D', 'utc');
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
 
 			// Tagging redirect
@@ -1564,7 +1564,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				xfdtarget = '';
 			}
 
-			logpage = 'Wikipedia:Templates for discussion/Log/' + date.format('YYYY MMMM D');
+			logpage = 'Wikipedia:Templates for discussion/Log/' + date.format('YYYY MMMM D', 'utc');
 
 			params = { tfdtype: tfdtype, logpage: logpage, noinclude: noinclude, xfdcat: xfdcat, target: xfdtarget, reason: reason };
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
@@ -1675,7 +1675,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			break;
 
 		case 'ffd': // FFD
-			var dateString = date.format('YYYY MMMM D');
+			var dateString = date.format('YYYY MMMM D', 'utc');
 			logpage = 'Wikipedia:Files for discussion/' + dateString;
 			params = { usertalk: usertalk, reason: reason, date: dateString, logpage: logpage };
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
@@ -1713,7 +1713,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				xfdtarget2 = xfdtarget2.replace(cfdNamespace_re, '');
 			}
 
-			logpage = 'Wikipedia:Categories for discussion/Log/' + date.format('YYYY MMMM D');
+			logpage = 'Wikipedia:Categories for discussion/Log/' + date.format('YYYY MMMM D', 'utc');
 
 			params = { reason: reason, xfdcat: xfdcat, target: xfdtarget, target2: xfdtarget2, logpage: logpage };
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
