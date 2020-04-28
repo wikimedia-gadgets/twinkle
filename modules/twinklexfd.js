@@ -885,7 +885,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-			var notifytext = '\n{{subst:AFDWarning|1=' + Morebits.pageNameNorm + (params.numbering !== '' ? '|order=&#32;' + params.numbering : '') + '}} ~~~~';
+			var notifytext = '\n{{subst:Afd notice|1=' + Morebits.pageNameNorm + (params.numbering !== '' ? '|order=&#32;' + params.numbering : '') + '}} ~~~~';
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|nomination]] of [[:' + Morebits.pageNameNorm + ']]  at [[WP:AFD|articles for deletion]].' + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
@@ -969,10 +969,10 @@ Twinkle.xfd.callbacks = {
 			var modNotice = mw.config.get('wgPageContentModel') === 'Scribunto' ? '|module=yes' : '';
 			switch (params.xfdcat) {
 				case 'tfd':
-					notifytext += '{{subst:tfdnotice|1=' + mw.config.get('wgTitle') + modNotice + '}} ~~~~';
+					notifytext += '{{subst:Tfd notice|1=' + mw.config.get('wgTitle') + modNotice + '}} ~~~~';
 					break;
 				case 'tfm':
-					notifytext += '{{subst:tfmnotice|1=' + mw.config.get('wgTitle') + '|2=' + params.target + modNotice + '}} ~~~~';
+					notifytext += '{{subst:Tfm notice|1=' + mw.config.get('wgTitle') + '|2=' + params.target + modNotice + '}} ~~~~';
 					break;
 				default:
 					alert('twinklexfd in userNotification: unknown TFD action');
@@ -1126,7 +1126,7 @@ Twinkle.xfd.callbacks = {
 		},
 		userNotificationMain: function(params, initialContrib, actionName) {
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, actionName + ' (' + initialContrib + ')');
-			var notifytext = '\n{{subst:MFDWarning|1=' + Morebits.pageNameNorm + (params.numbering !== '' ? '|order=&#32;' + params.numbering : '') + '}} ~~~~';
+			var notifytext = '\n{{subst:Mfd notice|1=' + Morebits.pageNameNorm + (params.numbering !== '' ? '|order=&#32;' + params.numbering : '') + '}} ~~~~';
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|nomination]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:MFD|miscellany for deletion]].' + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
@@ -1157,7 +1157,7 @@ Twinkle.xfd.callbacks = {
 					pageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
 				} else {
 					var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-					var notifytext = '\n{{subst:fdw|1=' + mw.config.get('wgTitle') + '}}';
+					var notifytext = '\n{{subst:Ffd notice|1=' + mw.config.get('wgTitle') + '}}';
 					usertalkpage.setAppendText(notifytext);
 					usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:FFD|files for discussion]].' + Twinkle.getPref('summaryAd'));
 					usertalkpage.setCreateOption('recreate');
@@ -1268,7 +1268,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-			var notifytext = '\n{{subst:cfd-notify|1=' + Morebits.pageNameNorm + '|action=' + params.action + (mw.config.get('wgNamespaceNumber') === 10 ? '|stub=yes' : '') + '}} ~~~~';
+			var notifytext = '\n{{subst:Cfd notice|1=' + Morebits.pageNameNorm + '|action=' + params.action + (mw.config.get('wgNamespaceNumber') === 10 ? '|stub=yes' : '') + '}} ~~~~';
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:CFD|categories for discussion]].' + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
@@ -1453,7 +1453,7 @@ Twinkle.xfd.callbacks = {
 		},
 		userNotification: function(params, initialContrib) {
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-			var notifytext = '\n{{subst:RFDNote|1=' + Morebits.pageNameNorm + '}} ~~~~';
+			var notifytext = '\n{{subst:Rfd notice|1=' + Morebits.pageNameNorm + '}} ~~~~';
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:RFD|redirects for discussion]].' + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
@@ -1463,7 +1463,7 @@ Twinkle.xfd.callbacks = {
 		},
 		targetNotification: function(params, targetTalk) {
 			var targettalkpage = new Morebits.wiki.page(targetTalk, 'Notifying redirect target of the discussion');
-			var notifytext = '\n{{subst:RFDNote|1=' + Morebits.pageNameNorm + '}} ~~~~';
+			var notifytext = '\n{{subst:Rfd notice|1=' + Morebits.pageNameNorm + '}} ~~~~';
 			targettalkpage.setAppendText(notifytext);
 			targettalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:RFD|redirects for discussion]].' + Twinkle.getPref('summaryAd'));
 			targettalkpage.setCreateOption('recreate');
