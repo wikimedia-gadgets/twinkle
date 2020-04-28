@@ -88,7 +88,7 @@ Twinkle.fluff.restoreThisRevision = function (element, revType) {
 
 
 Twinkle.fluff.auto = function twinklefluffauto() {
-	if (parseInt(mw.util.getParamValue('oldid'), 10) !== mw.config.get('wgCurRevisionId')) {
+	if (parseInt(mw.util.getParamValue('oldid', $('#mw-diff-ntitle1 a:first').attr('href')), 10) !== mw.config.get('wgCurRevisionId')) {
 		// not latest revision
 		alert("Can't rollback, page has changed in the meantime.");
 		return;
