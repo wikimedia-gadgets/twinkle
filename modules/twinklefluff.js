@@ -28,14 +28,7 @@ Twinkle.fluff = function twinklefluff() {
 		'SineBot'
 	];
 
-	if (mw.util.getParamValue('twinklerevert')) {
-		// Return if the user can't edit the page in question
-		if (!mw.config.get('wgIsProbablyEditable')) {
-			alert("Unable to edit the page, it's probably protected.");
-		} else {
-			Twinkle.fluff.auto();
-		}
-	} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
+	if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
 		Twinkle.fluff.addLinks.contributions();
 	} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Recentchanges' || mw.config.get('wgCanonicalSpecialPageName') === 'Recentchangeslinked') {
 		// Reload with recent changes updates
@@ -83,28 +76,34 @@ Twinkle.fluff.linkBuilder = {
 	},
 
 	// two links, appears multiple times, uncluttered, href
-	twoLinks: function(href, data) {
-		var revNode = document.createElement('strong');
-		var revLink = Twinkle.fluff.linkBuilder.buildLink('SteelBlue', 'rollback');
-		revNode.appendChild(revLink);
-
-		var revVandNode = document.createElement('strong');
-		var revVandLink = Twinkle.fluff.linkBuilder.buildLink('Red', 'vandalism');
-		revVandNode.appendChild(revVandLink);
-
+	twoLinks: function(vandal, rev, page) {
+		rev = parseInt(rev, 10);
 		var revSpan = document.createElement('span');
-		if (data) {
-			revSpan.setAttribute('id', 'tw-revert' + data);
-		}
+		revSpan.setAttribute('id', 'tw-revert' + rev);
+
+		var normNode = document.createElement('strong');
+		var vandNode = document.createElement('strong');
+
+		var normLink = Twinkle.fluff.linkBuilder.buildLink('SteelBlue', 'rollback');
+		var vandLink = Twinkle.fluff.linkBuilder.buildLink('Red', 'vandalism');
+
+		normLink.href = '#';
+		vandLink.href = '#';
+		$(normLink).click(function() {
+			Twinkle.fluff.revert('norm', vandal, rev, page);
+		});
+		$(vandLink).click(function() {
+			Twinkle.fluff.revert('vand', vandal, rev, page);
+		});
+
+		vandNode.appendChild(vandLink);
+		normNode.appendChild(normLink);
+
 
 		revSpan.appendChild(document.createTextNode(' '));
-		var tmpNode = revNode.cloneNode(true);
-		tmpNode.firstChild.setAttribute('href', href + '&twinklerevert=norm');
-		revSpan.appendChild(tmpNode);
+		revSpan.appendChild(normNode);
 		revSpan.appendChild(document.createTextNode(' '));
-		tmpNode = revVandNode.cloneNode(true);
-		tmpNode.firstChild.setAttribute('href', href + '&twinklerevert=vand');
-		revSpan.appendChild(tmpNode);
+		revSpan.appendChild(vandNode);
 
 		return revSpan;
 	},
@@ -182,18 +181,7 @@ Twinkle.fluff.linkBuilder = {
 };
 
 
-
-Twinkle.fluff.auto = function twinklefluffauto() {
-	if (parseInt(mw.util.getParamValue('oldid', $('#mw-diff-ntitle1 a:first').attr('href')), 10) !== mw.config.get('wgCurRevisionId')) {
-		// not latest revision
-		alert("Can't rollback, page has changed in the meantime.");
-		return;
-	}
-
-	var vandal = $('#mw-diff-ntitle2').find('a.mw-userlink').text();
-
-	Twinkle.fluff.revert(mw.util.getParamValue('twinklerevert'), vandal, true);
-};
+Twinkle.fluff.skipTalk = null; // Only set on contribs and recent changes
 
 Twinkle.fluff.addLinks = {
 	contributions: function() {
@@ -208,9 +196,13 @@ Twinkle.fluff.addLinks = {
 				(mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1)) {
 				var list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
 
+				Twinkle.fluff.skipTalk = !Twinkle.getPref('openTalkPageOnAutoRevert');
+
 				list.each(function(key, current) {
-					var href = $(current).find('.mw-changeslist-diff').attr('href');
-					current.appendChild(Twinkle.fluff.linkBuilder.twoLinks(href, current.dataset.mwRevid));
+					// revid is also available in the href of both
+					// .mw-changeslist-date or .mw-changeslist-diff
+					var page = $(current).find('.mw-contributions-title').text();
+					current.appendChild(Twinkle.fluff.linkBuilder.twoLinks(username, current.dataset.mwRevid, page));
 				});
 			}
 		}
@@ -224,10 +216,14 @@ Twinkle.fluff.addLinks = {
 			// and find only individual lines or nested lines
 			list = list.not('.mw-rcfilters-ui-highlights-enhanced-toplevel').find('.mw-changeslist-line-inner, td.mw-enhanced-rc-nested');
 
+			Twinkle.fluff.skipTalk = !Twinkle.getPref('openTalkPageOnAutoRevert');
+
 			list.each(function(key, current) {
+				var vandal = $(current).find('.mw-userlink').text();
 				var href = $(current).find('.mw-changeslist-diff').attr('href');
 				var rev = mw.util.getParamValue('diff', href);
-				current.appendChild(Twinkle.fluff.linkBuilder.twoLinks(href, rev));
+				var page = current.dataset.targetPage;
+				current.appendChild(Twinkle.fluff.linkBuilder.twoLinks(vandal, rev, page));
 			});
 		}
 	},
@@ -311,7 +307,7 @@ Twinkle.fluff.addLinks = {
 };
 
 
-Twinkle.fluff.revert = function revertPage(type, vandal, autoRevert, rev, page) {
+Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 	if (mw.util.isIPv6Address(vandal)) {
 		vandal = Morebits.sanitizeIPv6(vandal);
 	}
@@ -326,13 +322,13 @@ Twinkle.fluff.revert = function revertPage(type, vandal, autoRevert, rev, page) 
 		type: type,
 		user: vandal,
 		pagename: pagename,
-		revid: revid,
-		autoRevert: !!autoRevert
+		revid: revid
 	};
 	var query = {
 		'action': 'query',
 		'prop': ['info', 'revisions', 'flagged'],
 		'titles': pagename,
+		'intestactions': 'edit',
 		'rvlimit': 50, // intentionally limited
 		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ],
 		'curtimestamp': '',
@@ -415,6 +411,11 @@ Twinkle.fluff.callbacks = {
 	},
 	main: function(apiobj) {
 		var xmlDoc = apiobj.responseXML;
+
+		if (typeof $(xmlDoc).find('actions').attr('edit') === 'undefined') {
+			self.statelem.error("Unable to edit the page, it's probably protected.");
+			return;
+		}
 
 		var lastrevid = parseInt($(xmlDoc).find('page').attr('lastrevid'), 10);
 		var touched = $(xmlDoc).find('page').attr('touched');
@@ -568,8 +569,7 @@ Twinkle.fluff.callbacks = {
 		}
 
 		// Decide whether to notify the user on success
-		if ((!params.autoRevert || Twinkle.getPref('openTalkPageOnAutoRevert')) &&
-				Twinkle.getPref('openTalkPage').indexOf(params.type) !== -1 &&
+		if (!Twinkle.fluff.skipTalk && Twinkle.getPref('openTalkPage').indexOf(self.params.type) !== -1 &&
 				mw.config.get('wgUserName') !== params.user) {
 			params.notifyUser = true;
 		}
