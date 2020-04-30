@@ -72,14 +72,27 @@ Twinkle.fluff.linkBuilder = {
 		link.appendChild(Twinkle.fluff.linkBuilder.spanTag('Black', '['));
 		link.appendChild(Twinkle.fluff.linkBuilder.spanTag(color, text));
 		link.appendChild(Twinkle.fluff.linkBuilder.spanTag('Black', ']'));
+		link.href = '#';
 		return link;
 	},
 
-	// two links, appears multiple times, uncluttered, href
-	twoLinks: function(vandal, rev, page) {
+	/**
+	 * @param {string} vandal - Username of the editor being reverted (required)
+	 * @param {boolean} inline - True to create two links in a span, false
+	 * to create three links in a div (optional)
+	 * @param {number|string} [rev=wgCurRevisionId] - Revision ID being reverted (optional)
+	 * @param {string} [page=wgPageName] - Page being reverted (optional)
+	 */
+	rollbackLinks: function(vandal, inline, rev, page) {
+		var elem = inline ? 'span' : 'div';
+		var revNode = document.createElement(elem);
+
 		rev = parseInt(rev, 10);
-		var revSpan = document.createElement('span');
-		revSpan.setAttribute('id', 'tw-revert' + rev);
+		if (rev) {
+			revNode.setAttribute('id', 'tw-revert' + rev);
+		} else {
+			revNode.setAttribute('id', 'tw-revert');
+		}
 
 		var normNode = document.createElement('strong');
 		var vandNode = document.createElement('strong');
@@ -87,8 +100,6 @@ Twinkle.fluff.linkBuilder = {
 		var normLink = Twinkle.fluff.linkBuilder.buildLink('SteelBlue', 'rollback');
 		var vandLink = Twinkle.fluff.linkBuilder.buildLink('Red', 'vandalism');
 
-		normLink.href = '#';
-		vandLink.href = '#';
 		$(normLink).click(function() {
 			Twinkle.fluff.revert('norm', vandal, rev, page);
 		});
@@ -99,60 +110,24 @@ Twinkle.fluff.linkBuilder = {
 		vandNode.appendChild(vandLink);
 		normNode.appendChild(normLink);
 
-
-		revSpan.appendChild(document.createTextNode(' '));
-		revSpan.appendChild(normNode);
-		revSpan.appendChild(document.createTextNode(' '));
-		revSpan.appendChild(vandNode);
-
-		return revSpan;
-	},
-
-	// three links, appears once, have revid? pageid?
-	// inline=true creates a span with single-space separators
-	// inline=false creats a div with || separators
-	threeLinks: function(vandal, inline) {
-		var elem = inline ? 'span' : 'div';
-		var revNode = document.createElement(elem);
-		revNode.setAttribute('id', 'tw-revert');
-
-		var agfNode = document.createElement('strong');
-		var vandNode = document.createElement('strong');
-		var normNode = document.createElement('strong');
-
-		var agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
-		var vandLink = Twinkle.fluff.linkBuilder.buildLink('Red', 'rollback (VANDAL)');
-		var normLink = Twinkle.fluff.linkBuilder.buildLink('SteelBlue', 'rollback');
-
-		agfLink.href = '#';
-		vandLink.href = '#';
-		normLink.href = '#';
-		$(agfLink).click(function() {
-			Twinkle.fluff.revert('agf', vandal);
-		});
-		$(vandLink).click(function() {
-			Twinkle.fluff.revert('vand', vandal);
-		});
-		$(normLink).click(function() {
-			Twinkle.fluff.revert('norm', vandal);
-		});
-
-		agfNode.appendChild(agfLink);
-		vandNode.appendChild(vandLink);
-		normNode.appendChild(normLink);
-
 		var separator = inline ? ' ' : ' || ';
 
-		if (inline) {
-			revNode.appendChild(document.createTextNode(separator));
+		if (!inline) {
+			var agfNode = document.createElement('strong');
+			var agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
+			$(agfLink).click(function() {
+				Twinkle.fluff.revert('agf', vandal, rev, page);
+			});
+			agfNode.appendChild(agfLink);
+			revNode.appendChild(agfNode);
 		}
-		revNode.appendChild(agfNode);
 		revNode.appendChild(document.createTextNode(separator));
 		revNode.appendChild(normNode);
 		revNode.appendChild(document.createTextNode(separator));
 		revNode.appendChild(vandNode);
 
 		return revNode;
+
 	},
 
 	// Build [restore this revision] links
@@ -167,7 +142,6 @@ Twinkle.fluff.linkBuilder = {
 		revertToRevisionNode.style.fontWeight = 'bold';
 
 		var revertToRevisionLink = Twinkle.fluff.linkBuilder.buildLink('SaddleBrown', 'restore this version');
-		revertToRevisionLink.href = '#';
 		$(revertToRevisionLink).click(function() {
 			Twinkle.fluff.revertToRevision(revisionRef);
 		});
@@ -202,7 +176,7 @@ Twinkle.fluff.addLinks = {
 					// revid is also available in the href of both
 					// .mw-changeslist-date or .mw-changeslist-diff
 					var page = $(current).find('.mw-contributions-title').text();
-					current.appendChild(Twinkle.fluff.linkBuilder.twoLinks(username, current.dataset.mwRevid, page));
+					current.appendChild(Twinkle.fluff.linkBuilder.rollbackLinks(username, true, current.dataset.mwRevid, page));
 				});
 			}
 		}
@@ -223,7 +197,7 @@ Twinkle.fluff.addLinks = {
 				var href = $(current).find('.mw-changeslist-diff').attr('href');
 				var rev = mw.util.getParamValue('diff', href);
 				var page = current.dataset.targetPage;
-				current.appendChild(Twinkle.fluff.linkBuilder.twoLinks(vandal, rev, page));
+				current.appendChild(Twinkle.fluff.linkBuilder.rollbackLinks(vandal, true, rev, page));
 			});
 		}
 	},
@@ -239,7 +213,7 @@ Twinkle.fluff.addLinks = {
 				var first = histList.shift();
 				var vandal = first.querySelector('.mw-userlink').text;
 
-				first.appendChild(Twinkle.fluff.linkBuilder.threeLinks(vandal, true));
+				first.appendChild(Twinkle.fluff.linkBuilder.rollbackLinks(vandal, true));
 			}
 
 			// oldid
@@ -296,7 +270,7 @@ Twinkle.fluff.addLinks = {
 			var vandal = $('#mw-diff-ntitle2').find('a').first().text();
 			var ntitle = document.getElementById('mw-diff-ntitle1').parentNode;
 
-			ntitle.insertBefore(Twinkle.fluff.linkBuilder.threeLinks(vandal), ntitle.firstChild);
+			ntitle.insertBefore(Twinkle.fluff.linkBuilder.rollbackLinks(vandal), ntitle.firstChild);
 		}
 	},
 
