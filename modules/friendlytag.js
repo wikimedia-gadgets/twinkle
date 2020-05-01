@@ -1254,7 +1254,6 @@ Twinkle.tag.file.qualityList = [
 ];
 
 Twinkle.tag.file.replacementList = [
-	{ label: '{{Duplicate}}: exact duplicate of another file, but not yet orphaned', value: 'Duplicate' },
 	{ label: '{{Obsolete}}: improved version available', value: 'Obsolete' },
 	{ label: '{{PNG version available}}', value: 'PNG version available' },
 	{ label: '{{Vector version available}}', value: 'Vector version available' }
@@ -1916,8 +1915,6 @@ Twinkle.tag.callbacks = {
 					case 'PNG version available':
 						/* falls through */
 					case 'Obsolete':
-						/* falls through */
-					case 'Duplicate':
 						currentTag += '|1=' + params[tag.replace(/ /g, '_') + 'File'];
 						break;
 					case 'Do not move to Commons_reason':
@@ -2043,8 +2040,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				alert('You must specify a reason for the {{Low Quality Chem}} tag');
 				return;
 			}
-			if ((params.tags.indexOf('Duplicate') !== -1 && params.DuplicateFile === '') ||
-				(params.tags.indexOf('Obsolete') !== -1 && params.ObsoleteFile === '') ||
+			if ((params.tags.indexOf('Obsolete') !== -1 && params.ObsoleteFile === '') ||
 				(params.tags.indexOf('PNG version available') !== -1 && params.PNG_version_availableFile === '') ||
 				(params.tags.indexOf('Vector version available') !== -1 && params.Vector_version_availableFile === '')
 			) {
