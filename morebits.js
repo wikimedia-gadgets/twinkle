@@ -1362,13 +1362,12 @@ Date.prototype.getUTCMonthNameAbbrev = function() {
 Morebits.date = function() {
 	var args = Array.prototype.slice.call(arguments);
 
-	this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)));
-
-	if (isNaN(this._d.getTime()) && typeof args[0] === 'string') {
-		// Try again after removing a comma and paren-wrapped timezone, to get MediaWiki timestamps to parse
-		this._d = new (Function.prototype.bind.call(Date, Date, args[0].replace(/(\d\d:\d\d),/, '$1').replace(/\(UTC\)/, 'UTC')));
+	if (typeof args[0] === 'string') {
+		// Attempt to remove a comma and paren-wrapped timezone, to get MediaWiki timestamps to parse
+		// Firefox (at least in 75) seems to be okay with the comma, though
+		args[0] = args[0].replace(/(\d\d:\d\d),/, '$1').replace(/\(UTC\)/, 'UTC');
 	}
-
+	this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)));
 };
 
 Morebits.date.localeData = {
