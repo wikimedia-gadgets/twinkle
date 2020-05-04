@@ -1266,7 +1266,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-30-500-disruptive':
 				case 'pp-30-500-blp':
 				case 'pp-30-500-sock':
-					typename = 'extended confirmed';
+					typename = 'extended confirmed protection';
 					break;
 				case 'pp-semi-vandalism':
 				case 'pp-semi-disruptive':
