@@ -213,6 +213,7 @@ Twinkle.config.sections = [
 				name: 'disabledSysopModules',
 				label: 'Turn off the selected admin-only modules',
 				helptip: 'Anything you select here will NOT be available for use, so act with care. Uncheck to reactivate.',
+				adminOnly: true,
 				type: 'set',
 				setValues: { block: 'Block', deprod: 'DePROD', batchdelete: 'D-batch', batchprotect: 'P-batch', batchundelete: 'Und-batch' }
 			}
