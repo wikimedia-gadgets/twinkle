@@ -60,6 +60,7 @@ Twinkle.defaultConfig = {
 	blankTalkpageOnIndefBlock: false,
 
 	// Fluff (revert and rollback)
+	autoMenuAfterRollback: false,
 	openTalkPage: [ 'agf', 'norm', 'vand' ],
 	openTalkPageOnAutoRevert: false,
 	markRevertedPagesAsMinor: [ 'vand' ],
@@ -109,7 +110,6 @@ Twinkle.defaultConfig = {
 	watchWarnings: true,
 	oldSelect: false,
 	customWarningList: [],
-	autoMenuAfterRollback: false,
 
 	// XfD
 	xfdWatchDiscussion: 'default',
