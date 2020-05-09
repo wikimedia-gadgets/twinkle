@@ -233,6 +233,11 @@ Twinkle.welcome.templates = {
 				linkedArticle: true,
 				syntax: '{{subst:welcome|$USERNAME$|art=$ARTICLE$}} ~~~~'
 			},
+			'welcome-retro': {
+				description: 'a welcome message with a small list of helpful links',
+				linkedArticle: true,
+				syntax: '{{subst:welcome-retro|$USERNAME$|art=$ARTICLE$}} ~~~~'
+			},
 			'welcome-short': {
 				description: 'a shorter welcome message',
 				syntax: '{{subst:welcome-short|$USERNAME$}} $EXTRA$ ~~~~'
