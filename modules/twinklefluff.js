@@ -284,11 +284,11 @@ Twinkle.fluff.callbacks = {
 			var touched = $(xmlDoc).find('page').attr('touched');
 			var loadtimestamp = $(xmlDoc).find('api').attr('curtimestamp');
 			var csrftoken = $(xmlDoc).find('tokens').attr('csrftoken');
-			var revertToRevID = $(xmlDoc).find('rev').attr('revid');
+			var revertToRevID = parseInt($(xmlDoc).find('rev').attr('revid'), 10);
 			var revertToUser = $(xmlDoc).find('rev').attr('user');
 
 			if (revertToRevID !== self.params.rev) {
-				self.statitem.error('The retrieved revision does not match the requested revision. Stopping revert.');
+				self.statelem.error('The retrieved revision does not match the requested revision. Stopping revert.');
 				return;
 			}
 
