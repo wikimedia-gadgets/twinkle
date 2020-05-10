@@ -360,56 +360,38 @@ Twinkle.prod.callbacks = {
 	},
 
 	addToLog: function(params) {
-		var wikipedia_page = new Morebits.wiki.page('User:' + mw.config.get('wgUserName') + '/' + Twinkle.getPref('prodLogPageName'), 'Adding entry to userspace log');
-		wikipedia_page.setCallbackParameters(params);
-		wikipedia_page.load(Twinkle.prod.callbacks.saveLog);
-	},
+		var usl = new Morebits.userspaceLogger(Twinkle.getPref('prodLogPageName'));
+		usl.initialText =
+			"This is a log of all [[WP:PROD|proposed deletion]] tags applied or endorsed by this user using [[WP:TW|Twinkle]]'s PROD module.\n\n" +
+			'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
+			'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].\n';
 
-	saveLog: function(pageobj) {
-		var text = pageobj.getPageText();
-		var params = pageobj.getCallbackParameters();
-
-		// add blurb if log page doesn't exist
-		if (!pageobj.exists()) {
-			text =
-				"This is a log of all [[WP:PROD|proposed deletion]] tags applied or endorsed by this user using [[WP:TW|Twinkle]]'s PROD module.\n\n" +
-				'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
-				'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].\n';
-		}
-
-		// create monthly header if it doesn't exist already
-		var date = new Morebits.date(pageobj.getLoadTime());
-		if (!date.monthHeaderRegex().test(text)) {
-			text += '\n\n' + date.monthHeader(3);
-		}
-
-		text += '\n# [[:' + Morebits.pageNameNorm + ']]';
+		var logText = '# [[:' + Morebits.pageNameNorm + ']]';
+		var summaryText;
 		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
-		text += namespace === 'file' ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log]): ' : ': ';
-		var summarytext;
+		logText += namespace === 'file' ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log]): ' : ': ';
 		if (params.logEndorsing) {
-			text += 'endorsed ' + (params.blp ? 'BLP ' : params.book ? 'BOOK' : '') + 'PROD. ~~~~~';
+			logText += 'endorsed ' + (params.blp ? 'BLP ' : params.book ? 'BOOK' : '') + 'PROD. ~~~~~';
 			if (params.reason) {
-				text += "\n#* '''Reason''': " + params.reason + '\n';
+				logText += "\n#* '''Reason''': " + params.reason + '\n';
 			}
-			summarytext = 'Logging endorsement of PROD nomination of [[:' + Morebits.pageNameNorm + ']].';
+			summaryText = 'Logging endorsement of PROD nomination of [[:' + Morebits.pageNameNorm + ']].';
 		} else {
-			text += (params.blp ? 'BLP ' : params.book ? 'BOOK' : '') + 'PROD';
+			logText += (params.blp ? 'BLP ' : params.book ? 'BOOK' : '') + 'PROD';
 			if (params.logInitialContrib) {
-				text += '; notified {{user|' + params.logInitialContrib + '}}';
+				logText += '; notified {{user|' + params.logInitialContrib + '}}';
 			}
-			text += ' ~~~~~\n';
+			logText += ' ~~~~~\n';
 			if (!params.blp) {
-				text += "#* '''Reason''': " + params.reason + '\n';
+				logText += "#* '''Reason''': " + params.reason + '\n';
 			}
-			summarytext = 'Logging PROD nomination of [[:' + Morebits.pageNameNorm + ']].';
+			summaryText = 'Logging PROD nomination of [[:' + Morebits.pageNameNorm + ']].';
 		}
 
-		pageobj.setPageText(text);
-		pageobj.setEditSummary(summarytext + Twinkle.getPref('summaryAd'));
-		pageobj.setCreateOption('recreate');
-		pageobj.save();
+		usl.log(logText, summaryText + Twinkle.getPref('summaryAd'));
+
 	}
+
 };
 
 Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
