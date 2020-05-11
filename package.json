@@ -8,6 +8,6 @@
     "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
-    "eslint": "6.8.0"
+    "eslint": "7.2.0"
   }
 }
