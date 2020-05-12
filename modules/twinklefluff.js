@@ -475,39 +475,11 @@ Twinkle.fluff.callbacks = {
 			return;
 		}
 
-		var query;
+		// Decide whether to notify the user on success
 		if ((!params.autoRevert || Twinkle.getPref('openTalkPageOnAutoRevert')) &&
 				Twinkle.getPref('openTalkPage').indexOf(params.type) !== -1 &&
 				mw.config.get('wgUserName') !== params.user) {
-			Morebits.status.info('Info', [ 'Opening user talk page edit form for user ', Morebits.htmlNode('strong', params.user) ]);
-
-			query = {
-				'title': 'User talk:' + params.user,
-				'action': 'edit',
-				'preview': 'yes',
-				'vanarticle': params.pagename.replace(/_/g, ' '),
-				'vanarticlerevid': params.revid,
-				'vanarticlegoodrevid': params.goodid,
-				'type': params.type,
-				'count': params.count
-			};
-
-			switch (Twinkle.getPref('userTalkPageMode')) {
-				case 'tab':
-					window.open(mw.util.getUrl('', query), '_blank');
-					break;
-				case 'blank':
-					window.open(mw.util.getUrl('', query), '_blank',
-						'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800');
-					break;
-				case 'window':
-				/* falls through */
-				default:
-					window.open(mw.util.getUrl('', query),
-						window.name === 'twinklewarnwindow' ? '_blank' : 'twinklewarnwindow',
-						'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800');
-					break;
-			}
+			params.notifyUser = true;
 		}
 
 		// figure out whether we need to/can review the edit
@@ -520,7 +492,7 @@ Twinkle.fluff.callbacks = {
 			params.csrftoken = csrftoken;
 		}
 
-		query = {
+		var query = {
 			'action': 'edit',
 			'title': params.pagename,
 			'summary': summary,
@@ -552,6 +524,40 @@ Twinkle.fluff.callbacks = {
 			apiobj.statelem.warn('Revision we are reverting to is identical to current revision, stopping revert.');
 		} else {
 			apiobj.statelem.info('done');
+			var params = apiobj.params;
+
+			if (params.notifyUser) { // Only from main, not from toRevision
+				Morebits.status.info('Info', [ 'Opening user talk page edit form for user ', Morebits.htmlNode('strong', params.user) ]);
+
+				var windowQuery = {
+					'title': 'User talk:' + params.user,
+					'action': 'edit',
+					'preview': 'yes',
+					'vanarticle': params.pagename.replace(/_/g, ' '),
+					'vanarticlerevid': params.revid,
+					'vanarticlegoodrevid': params.goodid,
+					'type': params.type,
+					'count': params.count
+				};
+
+				switch (Twinkle.getPref('userTalkPageMode')) {
+					case 'tab':
+						window.open(mw.util.getUrl('', windowQuery), '_blank');
+						break;
+					case 'blank':
+						window.open(mw.util.getUrl('', windowQuery), '_blank',
+							'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800');
+						break;
+					case 'window':
+					/* falls through */
+					default:
+						window.open(mw.util.getUrl('', windowQuery),
+							window.name === 'twinklewarnwindow' ? '_blank' : 'twinklewarnwindow',
+							'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800');
+						break;
+				}
+			}
+
 
 			// review the revert, if needed
 			if (apiobj.params.reviewRevert) {
