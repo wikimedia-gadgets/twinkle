@@ -21,6 +21,7 @@ Twinkle.talkback = function() {
 
 	Twinkle.addPortletLink(Twinkle.talkback.callback, 'TB', 'friendly-talkback', 'Easy talkback');
 };
+Twinkle.addInitCallback(Twinkle.talkback, 'talkback');
 
 Twinkle.talkback.callback = function() {
 	if (mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') && !confirm("Is it really so bad that you're talking back to yourself?")) {

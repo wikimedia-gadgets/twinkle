@@ -24,6 +24,7 @@ Twinkle.welcome = function friendlywelcome() {
 		Twinkle.welcome.normal();
 	}
 };
+Twinkle.addInitCallback(Twinkle.welcome, 'welcome');
 
 Twinkle.welcome.auto = function() {
 	if (mw.util.getParamValue('action') !== 'edit') {

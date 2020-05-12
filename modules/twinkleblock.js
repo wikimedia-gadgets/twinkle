@@ -21,6 +21,7 @@ Twinkle.block = function twinkleblock() {
 		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user');
 	}
 };
+Twinkle.addInitCallback(Twinkle.block, 'block');
 
 Twinkle.block.callback = function twinkleblockCallback() {
 	if (mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') &&

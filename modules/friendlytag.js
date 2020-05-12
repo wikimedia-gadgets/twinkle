@@ -32,6 +32,7 @@ Twinkle.tag = function friendlytag() {
 		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Add or remove article maintenance tags');
 	}
 };
+Twinkle.addInitCallback(Twinkle.tag, 'tag');
 
 Twinkle.tag.checkedTags = [];
 

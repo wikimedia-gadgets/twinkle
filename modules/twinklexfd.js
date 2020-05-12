@@ -23,6 +23,7 @@ Twinkle.xfd = function twinklexfd() {
 
 	Twinkle.addPortletLink(Twinkle.xfd.callback, 'XFD', 'tw-xfd', 'Start a deletion discussion');
 };
+Twinkle.addInitCallback(Twinkle.xfd, 'xfd');
 
 Twinkle.xfd.num2order = function twinklexfdNum2order(num) {
 	switch (num) {

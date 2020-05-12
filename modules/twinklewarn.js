@@ -45,6 +45,7 @@ Twinkle.warn = function twinklewarn() {
 		}
 	}
 };
+Twinkle.addInitCallback(Twinkle.warn, 'warn');
 
 // Used to close window when switching to ARV in autolevel
 Twinkle.warn.dialog = null;

@@ -31,6 +31,7 @@ Twinkle.diff = function twinklediff() {
 		Twinkle.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: oldid}), 'Current', 'tw-curdiff', 'Show difference to current revision');
 	}
 };
+Twinkle.addInitCallback(Twinkle.diff, 'diff');
 
 Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 

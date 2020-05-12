@@ -20,6 +20,7 @@ Twinkle.shared = function friendlyshared() {
 		}, 'Shared IP', 'friendly-shared', 'Shared IP tagging');
 	}
 };
+Twinkle.addInitCallback(Twinkle.shared, 'shared');
 
 Twinkle.shared.callback = function friendlysharedCallback() {
 	var Window = new Morebits.simpleWindow(600, 420);

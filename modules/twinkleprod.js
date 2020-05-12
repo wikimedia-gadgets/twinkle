@@ -21,6 +21,7 @@ Twinkle.prod = function twinkleprod() {
 
 	Twinkle.addPortletLink(Twinkle.prod.callback, 'PROD', 'tw-prod', 'Propose deletion via WP:PROD');
 };
+Twinkle.addInitCallback(Twinkle.prod, 'prod');
 
 // Used in edit summaries, for comparisons, etc.
 var namespace;
