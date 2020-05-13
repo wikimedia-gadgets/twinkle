@@ -63,6 +63,7 @@ Twinkle.defaultConfig = {
 	autoMenuAfterRollback: false,
 	openTalkPage: [ 'agf', 'norm', 'vand' ],
 	openTalkPageOnAutoRevert: false,
+	rollbackInPlace: false,
 	markRevertedPagesAsMinor: [ 'vand' ],
 	watchRevertedPages: [ 'agf', 'norm', 'vand', 'torev' ],
 	offerReasonOnNormalRevert: true,

@@ -28,17 +28,7 @@ Twinkle.fluff = function twinklefluff() {
 		'SineBot'
 	];
 
-	if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
-		Twinkle.fluff.addLinks.contributions();
-	} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Recentchanges' || mw.config.get('wgCanonicalSpecialPageName') === 'Recentchangeslinked') {
-		// Reload with recent changes updates
-		// structuredChangeFilters.ui.initialized is just on load
-		mw.hook('wikipage.content').add(function(item) {
-			if (item.is('div')) {
-				Twinkle.fluff.addLinks.recentchanges();
-			}
-		});
-	} else if (mw.config.get('wgIsProbablyEditable')) {
+	if (mw.config.get('wgIsProbablyEditable')) {
 		// Only proceed if the user can actually edit the page
 		// in question (ignored for contributions, see #632).
 		// wgIsProbablyEditable should take care of
@@ -54,9 +44,26 @@ Twinkle.fluff = function twinklefluff() {
 		} else if (mw.config.get('wgAction') === 'history') {
 			Twinkle.fluff.addLinks.history();
 		}
+	} else if (mw.config.get('wgNamespaceNumber') === -1) {
+		Twinkle.fluff.skipTalk = !Twinkle.getPref('openTalkPageOnAutoRevert');
+		Twinkle.fluff.rollbackInPlace = Twinkle.getPref('rollbackInPlace');
+
+		if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
+			Twinkle.fluff.addLinks.contributions();
+		} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Recentchanges' || mw.config.get('wgCanonicalSpecialPageName') === 'Recentchangeslinked') {
+			// Reload with recent changes updates
+			// structuredChangeFilters.ui.initialized is just on load
+			mw.hook('wikipage.content').add(function(item) {
+				if (item.is('div')) {
+					Twinkle.fluff.addLinks.recentchanges();
+				}
+			});
+		}
 	}
 };
 
+Twinkle.fluff.skipTalk = null;
+Twinkle.fluff.rollbackInPlace = null;
 
 // Consolidated construction of fluff links
 Twinkle.fluff.linkBuilder = {
@@ -102,9 +109,11 @@ Twinkle.fluff.linkBuilder = {
 
 		$(normLink).click(function() {
 			Twinkle.fluff.revert('norm', vandal, rev, page);
+			Twinkle.fluff.disableLinks(revNode);
 		});
 		$(vandLink).click(function() {
 			Twinkle.fluff.revert('vand', vandal, rev, page);
+			Twinkle.fluff.disableLinks(revNode);
 		});
 
 		vandNode.appendChild(vandLink);
@@ -117,6 +126,7 @@ Twinkle.fluff.linkBuilder = {
 			var agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
 			$(agfLink).click(function() {
 				Twinkle.fluff.revert('agf', vandal, rev, page);
+				// Twinkle.fluff.disableLinks(revNode); // rollbackInPlace not relevant for any inline situations
 			});
 			agfNode.appendChild(agfLink);
 			revNode.appendChild(agfNode);
@@ -155,8 +165,6 @@ Twinkle.fluff.linkBuilder = {
 };
 
 
-Twinkle.fluff.skipTalk = null; // Only set on contribs and recent changes
-
 Twinkle.fluff.addLinks = {
 	contributions: function() {
 		// $('sp-contributions-footer-anon-range') relies on the fmbox
@@ -169,8 +177,6 @@ Twinkle.fluff.addLinks = {
 				(mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1) ||
 				(mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1)) {
 				var list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
-
-				Twinkle.fluff.skipTalk = !Twinkle.getPref('openTalkPageOnAutoRevert');
 
 				list.each(function(key, current) {
 					// revid is also available in the href of both
@@ -189,8 +195,6 @@ Twinkle.fluff.addLinks = {
 			// Exclude top-level header if "group changes" preference is used
 			// and find only individual lines or nested lines
 			list = list.not('.mw-rcfilters-ui-highlights-enhanced-toplevel').find('.mw-changeslist-line-inner, td.mw-enhanced-rc-nested');
-
-			Twinkle.fluff.skipTalk = !Twinkle.getPref('openTalkPageOnAutoRevert');
 
 			list.each(function(key, current) {
 				var vandal = $(current).find('.mw-userlink').text();
@@ -280,6 +284,14 @@ Twinkle.fluff.addLinks = {
 	}
 };
 
+Twinkle.fluff.disableLinks = function disablelinks(parentNode) {
+	// Array.from not available in IE11 :(
+	$(parentNode).children().each(function(_ix, node) {
+		node.innerHTML = node.textContent; // Feels like cheating
+		$(node).css('font-weight', 'normal').css('color', 'darkgray');
+	});
+};
+
 
 Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 	if (mw.util.isIPv6Address(vandal)) {
@@ -289,8 +301,18 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 	var pagename = page || mw.config.get('wgPageName');
 	var revid = rev || mw.config.get('wgCurRevisionId');
 
-	Morebits.status.init(document.getElementById('mw-content-text'));
-	$('#catlinks').remove();
+	if (Twinkle.fluff.rollbackInPlace) {
+		var notifyStatus = document.createElement('span');
+		mw.notify(notifyStatus, {
+			autoHide: false,
+			title: 'Rollback on ' + page,
+			tag: 'twinklefluff_' + rev // Shouldn't be necessary given disableLink
+		});
+		Morebits.status.init(notifyStatus);
+	} else {
+		Morebits.status.init(document.getElementById('mw-content-text'));
+		$('#catlinks').remove();
+	}
 
 	var params = {
 		type: type,
@@ -571,7 +593,9 @@ Twinkle.fluff.callbacks = {
 			'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf(params.type) !== -1 ? true : undefined
 		};
 
-		Morebits.wiki.actionCompleted.redirect = params.pagename;
+		if (!Twinkle.fluff.rollbackInPlace) {
+			Morebits.wiki.actionCompleted.redirect = params.pagename;
+		}
 		Morebits.wiki.actionCompleted.notice = 'Reversion completed';
 
 		var wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.fluff.callbacks.complete, statelem);
