@@ -1516,7 +1516,7 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 					return array.join(', ') + ', and ' + last;
 
 				};
-				text += '|area=from certain ';
+				text += '|area=' + (params.indefinite ? 'certain ' : 'from certain ');
 				if (params.pagerestrictions.length) {
 					text += 'pages (' + makeSentence(params.pagerestrictions.map(function(p) {
 						return '[[:' + p + ']]';
