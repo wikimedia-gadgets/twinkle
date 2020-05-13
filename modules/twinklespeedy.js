@@ -1291,7 +1291,7 @@ Twinkle.speedy.callbacks = {
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
-			usertalkpage.setFollowRedirect(true);
+			usertalkpage.setFollowRedirect(true, false);
 			usertalkpage.append(function onNotifySuccess() {
 				// add this nomination to the user's userspace log, if the user has enabled it
 				if (params.lognomination) {
