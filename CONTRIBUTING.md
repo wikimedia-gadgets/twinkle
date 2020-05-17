@@ -33,11 +33,11 @@ Once you've got a local fork up and running, commit your changes!
 
 ### Testing your code
 
-Testing Twinkle can be tricky, but the most straightforward way to test your code is to open up your [browser's console window][jserrors] and paste in your new code.  You'll have to load the new version by running the corresponding function in your console, e.g., `Twinkle.protect()` for twinkleprotect.js.
+Testing Twinkle can be tricky, but thankfully we've made it easy with a helper script, [patch-test.js](./dev/patch-test.js).  Simply run `npm run patchtest` in your terminal, which will generate the `patch-test-loader.js` file.  Then, run a localhost server (e.g. `php -S 127.0.0.1:5500` or `python -m SimpleHTTPServer 5500`) and paste the contents of `patch-test-loader.js` in your [browser's console window][jserrors].  You should be all set!  You can also test your code by simply pasting it into the browser console, although that's not recommended.
 
 Some things to watch out for:
 - If your tests have any chance of making actual edits, consider making them in a sandbox; be aware that some things may not work properly outside the appropriate namespace.  An even better place to test is on the [test wiki](http://test.wikipedia.org)!  Some parts of Twinkle rely on specific template code or on certain wiki-preferences, so testing certain things outside of enWiki may be difficlut (e.g., pending changes).
-- The non-module scripts `morebits.js` and `twinkle.js` are usually more complicated to test.
+- The non-module scripts `morebits.js` and `twinkle.js` can be more complicated to test.
 - The `twinkleconfig` pseudo-module holds the code to save and determine user preferences, while `twinkle.js` holds the defaults.
 - There is some variety in how the individual modules are written, in particular among the `friendly` family as well as with `twinkleconfig.js`.
 

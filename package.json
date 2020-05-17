@@ -1,15 +1,17 @@
 {
-  "title": "Twinkle",
-  "name": "twinkle",
-  "private": true,
-  "repository": "azatoth/twinkle",
-  "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "patchtest": "node patch-test.js"
-  },
-  "devDependencies": {
-    "eslint": "^7.8.1",
-    "eslint-plugin-es5": "^1.5.0"
-  }
+	"title": "Twinkle",
+	"name": "twinkle",
+	"private": true,
+	"repository": "azatoth/twinkle",
+	"scripts": {
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"patchtest": "node dev/patch-test.js",
+		"sync": "perl dev/sync.pl",
+		"deployall": "perl dev/sync.pl --mode=all --all"
+	},
+	"devDependencies": {
+		"eslint": "^7.8.1",
+		"eslint-plugin-es5": "^1.5.0"
+	}
 }

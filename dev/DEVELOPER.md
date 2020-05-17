@@ -2,11 +2,11 @@
 
 (WIP)
 
-Collaborators are encouraged to thoroughly review and [test](./CONTRIBUTING.md) each pull request, including their own.  Unless urgent or obvious, it can be helpful to leave PRs open for folks to opine.
+Collaborators are encouraged to thoroughly review and [test](../CONTRIBUTING.md#testing-your-code) each pull request, including their own.  Unless urgent or obvious, it can be helpful to leave PRs open for folks to opine.
 
 Things to watch out for:
 
-- Items and processes laid out in [CONTRIBUTING.md](./CONTRIBUTING.md) are followed.
+- Items and processes laid out in [CONTRIBUTING.md](../CONTRIBUTING.md) are followed.
 - Twinkle is meant to run on the latest weekly version of MediaWiki as rolled out every Thursday on the English Wikipedia.  Backwards compatibility is not guaranteed.
 - The goal is for Twinkle and Morebits to support the same [browsers that MediaWiki supports](https://www.mediawiki.org/wiki/Browser_compatibility).  In particular, collaborators should avoid [unsupported additions](https://kangax.github.io/compat-table/es6/) from ES6 (aka ES2015); `.includes` and `.find` are among the most likely to show up, although the jQuery `$.find()` is fine. Our ESLint configuration includes a [plugin](https://github.com/nkt/eslint-plugin-es5) that should catch most cases.
 - Certain positional jQuery selectors like `:first`, `:last`, and `:eq` were [deprecated in jQuery version 3.4.0](https://blog.jquery.com/2019/04/10/jquery-3-4-0-released/) and should probably not be reintroduced.  Instead, use methods like `.first()`, `.last()`, or `.eq()`.
@@ -71,29 +71,29 @@ When running the program, you can enter your credentials on the command line usi
     url      =
     base     = User:AzaToth/
 
-`username`, `password`, and `mode` (one of `deploy`, `push`, or `pull`) are required, either through the command line or configuration file; lang and family default to `en.wikipedia`. Note that your working directory **must** be clean; if not, either `stash` or `commit` your changes. The script automatically handles the directory (e.g. `modules/`) from the file path when downloading/uploading.
+`username`, `password`, and `mode` (one of `deploy`, `push`, or `pull`) are required, either through the command line or configuration file; lang and family default to `en.wikipedia`. Note that your working directory **must** be clean; if not, either `stash` or `commit` your changes. The script automatically handles the directory (e.g. `modules/`) from the file path when downloading/uploading. It can be run from any subdirectory of the repository.
 
 Using the `deploy` mode, [interface-admins][intadmin] can deploy Twinkle files live to their MediaWiki:Gadget locations. You will need to set up a bot password at [Special:BotPasswords][special_botpass].
 
-    ./sync.pl --mode=deploy twinkle.js morebits.js ...
+    sync.pl --mode=deploy twinkle.js morebits.js ...
 
 If no files are provided, it will just report the status of the gadget. You may also `deploy` **all** files via
 
-    ./sync.pl --mode=deploy --all
+    sync.pl --mode=deploy --all
 
 Note that for syncing to a non-Enwiki project, you will also need to specify the --lang and/or --family parameters. For instance, to sync the files with `fr.wikiquote.org` you should specify `--lang=fr --family=wikiquote`, such as
 
-    ./sync.pl --mode=deploy --lang=fr --family=wikiquote --all
+    sync.pl --mode=deploy --lang=fr --family=wikiquote --all
 
 When `deploy`ing or `push`ing, the script will attempt to parse the latest on-wiki edit summary for the commit of the last update, and will use that to create an edit summary using the changes committed since then. If it cannot find anything that looks like a commit hash, it will give you the most recent commits for each file and prompt you to enter an edit summary manually.
 
 To `pull` user Foobar's changes (i.e. `User:Foobar/morebits.js`) down from the wiki, do:
 
-    ./sync.pl --base User:Foobar/ --mode=pull twinkle.js morebits.js ...
+    sync.pl --base User:Foobar/ --mode=pull twinkle.js morebits.js ...
 
 To `push` your changes to user Foobar's wiki page, do:
 
-    ./sync.pl --base User:Foobar/ --mode=push twinkle.js morebits.js ...
+    sync.pl --base User:Foobar/ --mode=push twinkle.js morebits.js ...
 
 The `--base` flag operates as a *prefix*; note the presence of the trailing `/`.
 
