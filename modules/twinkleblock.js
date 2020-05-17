@@ -982,7 +982,7 @@ Twinkle.block.blockPresetsInfo = {
 		nocreate: true,
 		pageParam: true,
 		reason: '[[WP:Vandalism|Vandalism]]',
-		summary: 'You have been blocked from editing for persistent [[WP:VAND|vandalism]]'
+		summary: 'You have been blocked from editing to prevent further [[WP:VAND|vandalism]]'
 	},
 	'uw-voablock': {
 		autoblock: true,
