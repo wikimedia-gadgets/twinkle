@@ -2028,6 +2028,71 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 
 		case 'file':
+			if (((params.tags.indexOf('Bad GIF') !== -1) + (params.tags.indexOf('Bad JPEG') !== -1) +
+				(params.tags.indexOf('Bad SVG') !== -1) + (params.tags.indexOf('Bad format') !== -1)) > 1) {
+				alert('Please select only one of {{Bad GIF}}, {{Bad JPEG}}, {{Bad SVG}}, and {{bad format}}.');
+				return;
+			}
+			if (((params.tags.indexOf('Should be PNG') !== -1) + (params.tags.indexOf('Should be SVG') !== -1) +
+				(params.tags.indexOf('Should be text') !== -1)) > 1) {
+				alert('Please select only one of {{Should be PNG}}, {{Should be SVG}}, and {{Should be text}}.');
+				return;
+			}
+			if ((params.tags.indexOf('Bad SVG') !== -1) && (params.tags.indexOf('Vector version available') !== -1)) {
+				alert('Please select only one of {{Bad SVG}} and {{Vector version available}}.');
+				return;
+			}
+			if ((params.tags.indexOf('Bad JPEG') !== -1) && (params.tags.indexOf('Overcompressed JPEG') !== -1)) {
+				alert('Please select only one of {{Bad JPEG}} and {{Overcompressed JPEG}}.');
+				return;
+			}
+			if ((params.tags.indexOf('PNG version available') !== -1) && (params.tags.indexOf('Vector version available') !== -1)) {
+				alert('Please select only one of {{PNG version available}} and {{Vector version available}}.');
+				return;
+			}
+
+			var extension;
+			if ((extension = Morebits.pageNameNorm.match(/\.(\w+)$/)) !== null) {
+				extension = extension[1];
+				var extensionUpper = extension.toUpperCase();
+
+				// What self-respecting file format has *two* extensions?!
+				if (extensionUpper === 'JPG') {
+					extension = 'JPEG';
+				}
+
+				// We've already ensured above that there can be only one of {{Bad *}} and {{Should be *}},
+				// so these check that it actually matches the file's actual extension.  We need to check
+				// if any tags start with a string, which means using string's indexOf, since can't
+				// use ES6y things like find or findIndex.
+
+				// Bad GIF|JPEG|SVG
+				if ((params.tags.toString().indexOf('Bad ') !== -1) && (params.tags.indexOf('Bad ' + extensionUpper) === -1)) {
+					alert('This appears to be a ' + extension + ' file, please use {{Bad ' + extensionUpper + '}} instead.');
+					return;
+				}
+				// Should be PNG|SVG
+				if ((params.tags.toString().indexOf('Should be ') !== -1) && (params.tags.indexOf('Should be ' + extensionUpper) === -1)) {
+					alert('This appears to be a ' + extension + ' file, please use {{Should be ' + extensionUpper + '}} instead.');
+					return;
+				}
+
+				// Overcompressed JPEG
+				if (params.tags.indexOf('Overcompressed JPEG') !== -1 && extensionUpper !== 'JPEG') {
+					alert('This appears to be a ' + extension + ' file, so {{Overcompressed JPEG}} probably doesn\'t apply.');
+					return;
+				}
+				// Bad trace and Bad font
+				if (extensionUpper !== 'SVG') {
+					if (params.tags.indexOf('Bad trace') !== -1) {
+						alert('This appears to be a ' + extension + ' file, so {{Bad trace}} probably doesn\'t apply.');
+						return;
+					} else if (params.tags.indexOf('Bad font') !== -1) {
+						alert('This appears to be a ' + extension + ' file, so {{Bad font}} probably doesn\'t apply.');
+						return;
+					}
+				}
+			}
 
 			if (params.tags.indexOf('Cleanup image') !== -1 && params.cleanupimageReason === '') {
 				alert('You must specify a reason for the cleanup tag.');
