@@ -543,7 +543,8 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		}
 		Morebits.status.warn(statusStr, infoStr);
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
-	} else if (templateBox) {
+	}
+	if (templateBox) {
 		// make sure all the fields are correct based on defaults
 		if (blockBox) {
 			Twinkle.block.callback.change_preset(e);
