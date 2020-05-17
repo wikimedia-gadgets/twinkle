@@ -443,7 +443,7 @@ Twinkle.load = function () {
 	}
 
 	// Set custom Api-User-Agent header, for server-side logging purposes
-	Morebits.wiki.api.setApiUserAgent('Twinkle/2.0 (' + mw.config.get('wgDBname') + ')');
+	Morebits.wiki.api.setApiUserAgent('Twinkle (' + mw.config.get('wgWikiID') + ')');
 
 	// Load all the modules in the order that the tabs should appear
 	var twinkleModules = [
