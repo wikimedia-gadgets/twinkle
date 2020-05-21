@@ -1060,6 +1060,10 @@ Twinkle.warn.messages = {
 			label: 'Edit warring (stronger wording)',
 			summary: 'Warning: Edit warring'
 		},
+		'uw-ewsoft': {
+			label: 'Edit warring (softer wording for newcomers)',
+			summary: 'Warning: Edit warring'
+		},
 		'uw-hijacking': {
 			label: 'Hijacking articles',
 			summary: 'Warning: Hijacking articles'
