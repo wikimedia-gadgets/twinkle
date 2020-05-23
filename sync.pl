@@ -40,7 +40,7 @@ foreach my $dot (@dotLocales) {
 }
 
 GetOptions (\%conf, 'username|s=s', 'password|p=s', 'lang|l=s', 'family|f=s', 'base|b=s',
-            'mode=s', 'help|h' => \&usage);
+            'mode=s', 'dry|r', 'help|h' => \&usage);
 
 # Ensure we've got a clean branch
 my $repo = Git::Repository->new();
@@ -64,6 +64,7 @@ $mw->{ua}->agent('Twinkle/sync.pl ('.$mw->{ua}->agent.')');
 $mw->login({lgname => $conf{username}, lgpassword => $conf{password}});
 
 
+my $countDiff = 0;              # Only used for the --dry option
 ### Main loop through each file
 foreach my $file (@ARGV) {
   next if checkFile($file);
@@ -88,6 +89,13 @@ foreach my $file (@ARGV) {
     print colored ['blue'], " No changes found, skipping\n";
     next;
   }
+
+  if ($conf{dry}) {
+    $countDiff++;
+    print colored['magenta'], " Differences found!\n";
+    next;
+  }
+
   print "\n\t";
   if ($conf{mode} eq 'deploy' || $conf{mode} eq 'push') {
     my $summary = buildEditSummary($page, $file, $wikiPage->{comment});
@@ -105,7 +113,14 @@ foreach my $file (@ARGV) {
 }
 
 # Show a summary of any changes
-if ($conf{base} eq 'pull') {
+if ($conf{dry}) {
+  print "\n";
+  if ($countDiff) {
+    print "$countDiff ".($countDiff > 1 ? 'files need' : 'file needs')." updating\n";
+  } else {
+    print colored ['green'], "No actions needed\n";
+  }
+} elsif ($conf{base} eq 'pull') {
   my $cmd = $repo->command(diff => '--stat', '--color');
   my $s = $cmd->stdout;
   while (<$s>) {
@@ -137,6 +152,14 @@ sub forReal {
   my $modeTruth = $conf{mode} && grep {/$conf{mode}/} qw (deploy push pull);
   if (!@ARGV || !$modeTruth || !$conf{username} || !$conf{password}) {
     usage();
+  }
+
+  # Quick exit
+  if ($conf{dry}) {
+    print "Checking provided files for differences...\n\n";
+    # As below
+    $conf{base} = 'MediaWiki:Gadget-' if $conf{mode} eq 'deploy';
+    return;
   }
 
   print 'This means ';
@@ -304,7 +327,7 @@ sub editPage {
 # Final line must be unindented?
 sub usage {
   print <<"USAGE";
-Usage: $PROGRAM_NAME --mode=deploy|pull|push [-u username] [-p password] [-l language] [-f family] [-b base]
+Usage: $PROGRAM_NAME --mode=deploy|pull|push [--dry] [-u username] [-p password] [-l language] [-f family] [-b base]
 
     --mode What action to perform, one of deploy, pull, or push. Required.
         deploy: Push changes live to the gadget
@@ -317,6 +340,9 @@ Usage: $PROGRAM_NAME --mode=deploy|pull|push [-u username] [-p password] [-l lan
     --lang, -l Target language, default 'en'
     --family, -f Target family, default 'wikipedia'
     --base, -b Base page prefix where on-wiki files exist, default 'User:AzaToth/'
+
+    --dry, -r Show which files don't match on-wiki, do nothing else. A mode should still be supplied
+        in order to determine which on-wiki files to compare to.
 
     These options can be provided in a config file, .twinklerc, in either this script's
     or your home directory.  It should be a simple file consisting of keys and values:
