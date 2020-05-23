@@ -40,7 +40,7 @@ foreach my $dot (@dotLocales) {
 }
 
 GetOptions (\%conf, 'username|s=s', 'password|p=s', 'lang|l=s', 'family|f=s', 'base|b=s',
-            'mode=s', 'dry|r', 'help|h' => \&usage);
+            'mode=s', 'diff|d', 'w=s', 'dry|r', 'help|h' => \&usage);
 
 # Ensure we've got a clean branch
 my $repo = Git::Repository->new();
@@ -64,7 +64,8 @@ $mw->{ua}->agent('Twinkle/sync.pl ('.$mw->{ua}->agent.')');
 $mw->login({lgname => $conf{username}, lgpassword => $conf{password}});
 
 
-my $countDiff = 0;              # Only used for the --dry option
+my $countDiff = 0;                 # Only used for the --dry option
+my $diffFunc = $conf{w} || 'diff'; # Only used for the --diff option
 ### Main loop through each file
 foreach my $file (@ARGV) {
   next if checkFile($file);
@@ -90,9 +91,17 @@ foreach my $file (@ARGV) {
     next;
   }
 
+  if ($conf{diff}) {
+    my $name = $file.'temp';
+    write_text($name, $wpText);
+    print colored ['magenta'], " Showing diff\n";
+    system "$diffFunc $name $file";
+    unlink $name;
+  }
+
   if ($conf{dry}) {
     $countDiff++;
-    print colored['magenta'], " Differences found!\n";
+    print colored['magenta'], " Differences found!\n" if !$conf{diff};
     next;
   }
 
@@ -327,7 +336,7 @@ sub editPage {
 # Final line must be unindented?
 sub usage {
   print <<"USAGE";
-Usage: $PROGRAM_NAME --mode=deploy|pull|push [--dry] [-u username] [-p password] [-l language] [-f family] [-b base]
+Usage: $PROGRAM_NAME --mode=deploy|pull|push [--diff -w] [--dry] [-u username] [-p password] [-l language] [-f family] [-b base]
 
     --mode What action to perform, one of deploy, pull, or push. Required.
         deploy: Push changes live to the gadget
@@ -341,6 +350,8 @@ Usage: $PROGRAM_NAME --mode=deploy|pull|push [--dry] [-u username] [-p password]
     --family, -f Target family, default 'wikipedia'
     --base, -b Base page prefix where on-wiki files exist, default 'User:AzaToth/'
 
+    --diff, -d Show a diff between files and pages before proceeding
+        -w Pass an alternative diffing function instead of the default `diff`, such as `colordiff`
     --dry, -r Show which files don't match on-wiki, do nothing else. A mode should still be supplied
         in order to determine which on-wiki files to compare to.
 
