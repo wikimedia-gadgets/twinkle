@@ -1087,7 +1087,7 @@ Twinkle.xfd.callbacks = {
 
 			var date = new Morebits.date(pageobj.getLoadTime());
 			var date_header = date.format('===MMMM D, YYYY===\n', 'utc');
-			var date_header_regex = new RegExp(date.format('(===\\s*MMMM\\s+D,\\s+YYYY\\s*===)', 'utc'));
+			var date_header_regex = new RegExp(date.format('(===[\\s]*MMMM[\\s]+D,[\\s]+YYYY[\\s]*===)', 'utc'));
 			var new_data = '{{subst:mfd3|pg=' + Morebits.pageNameNorm + params.numbering + '}}';
 
 			if (date_header_regex.test(text)) { // we have a section already
