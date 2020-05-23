@@ -81,32 +81,27 @@ foreach my $file (@ARGV) {
   my $fileText = read_text($file);
   my $wpText = $wikiPage->{q{*}}."\n"; # MediaWiki doesn't have trailing newlines
 
-  if ($conf{mode} eq 'deploy' || $conf{mode} eq 'push') {
-    print ucfirst $conf{mode}."ing $file to $page...";
+  print ucfirst $conf{mode}.'ing '.($conf{mode} eq 'pull' ? "$page to $file..." : "$file to $page...");
 
-    if ($fileText eq $wpText) {
-      print colored ['blue'], " No changes needed, skipping\n";
+  # git and eof might be faster, but here makes sense
+  if ($wpText eq $fileText) {
+    print colored ['blue'], " No changes found, skipping\n";
+    next;
+  }
+  print "\n\t";
+  if ($conf{mode} eq 'deploy' || $conf{mode} eq 'push') {
+    my $summary = buildEditSummary($page, $file, $wikiPage->{comment});
+    my $editReturn = editPage($page, $fileText, $summary, $wikiPage->{timestamp});
+    if ($editReturn->{_msg} eq 'OK') {
+      print colored ['green'], "$file successfully $conf{mode}ed to $page";
     } else {
-      print "\n";
-      my $summary = buildEditSummary($page, $file, $wikiPage->{comment});
-      my $editReturn = editPage($page, $fileText, $summary, $wikiPage->{timestamp});
-      if ($editReturn->{_msg} eq 'OK') {
-        print colored ['green'], "\t$file successfully $conf{mode}ed to $page\n";
-      } else {
-        print colored ['red'], "Error $conf{mode}ing $file: $mw->{error}->{code}: $mw->{error}->{details}\n";
-      }
+      print colored ['red'], "Error $conf{mode}ing $file: $mw->{error}->{code}: $mw->{error}->{details}";
     }
   } elsif ($conf{mode} eq 'pull') {
-    print "Pulling from $page to $file";
-    # Might be faster to check this using git and eof, but here makes sense
-    if ($wpText eq $fileText) {
-      print colored ['blue'], "... No changes found, skipping\n";
-      next;
-    } else {
-      print "... Done!\n";
-      write_text($file, $wpText);
-    }
+    write_text($file, $wpText);
+    print 'Done!';
   }
+  print "\n";
 }
 
 # Show a summary of any changes
@@ -126,25 +121,27 @@ if ($conf{base} eq 'pull') {
 # Data::Dumper is simpler but the output is ugly, and this ain't worth another
 # dependency
 sub forReal {
-  my @meaningful = qw (username mode lang family);
+  my @meaningful = qw (mode lang family);
   push @meaningful, 'base' if $conf{mode} ne 'deploy';
+  push @meaningful, 'username';
   print "Here are the current parameters specified:\n\n";
   foreach my $key (@meaningful) {
     print colored ['blue'], "\t$key = $conf{$key}\n";
   }
+  if ($conf{password}) {
+    print colored ['blue'], "\tA passsword was provided\n";
+  }
   print "\n";
 
   # Ensure requireds are required
-  my $modeTruth = $conf{mode} && ($conf{mode} eq 'deploy' ||
-                                  $conf{mode} eq 'push' ||
-                                  $conf{mode} eq 'pull');
-  if (!@ARGV | !$modeTruth || !$conf{username} || !$conf{password}) {
+  my $modeTruth = $conf{mode} && grep {/$conf{mode}/} qw (deploy push pull);
+  if (!@ARGV || !$modeTruth || !$conf{username} || !$conf{password}) {
     usage();
   }
 
   print 'This means ';
   print colored ['bright_white'], 'User:'.ucfirst $conf{username};
-  print ' will ';
+  print ' will attempt to ';
   print colored ['bright_magenta'], uc $conf{mode}."\n\n";
   # Print files
   foreach (@ARGV) {
@@ -274,7 +271,7 @@ sub buildEditSummary {
 
     my $message = "The current edit summary is too long by $over character";
     $message .= $over == 1 ? q{} : 's';
-    $message .= " and will therefore be truncated.\n";
+    $message .= " and would thus be truncated.\n";
     print $message;
     print "\t$editSummary\n";
     print "Please provide a shorter summary (under $maxLength characters, the latest commit ref will be added automatically):\n";
@@ -306,8 +303,8 @@ sub editPage {
 # Could use POD but meh
 # Final line must be unindented?
 sub usage {
-  print <<USAGE;
-$PROGRAM_NAME --mode=deploy|pull|push [-u username] [-p password] [-l language] [-f family] [-b base]
+  print <<"USAGE";
+Usage: $PROGRAM_NAME --mode=deploy|pull|push [-u username] [-p password] [-l language] [-f family] [-b base]
 
     --mode What action to perform, one of deploy, pull, or push. Required.
         deploy: Push changes live to the gadget
