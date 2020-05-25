@@ -437,6 +437,7 @@ Twinkle.batchprotect.callbacks = {
 		}
 
 		page.setEditSummary(apiobj.params.reason);
+		page.setChangeTags(Twinkle.changeTags);
 		page.protect(apiobj.params.batchOperation.workerSuccess, apiobj.params.batchOperation.workerFailure);
 	}
 };

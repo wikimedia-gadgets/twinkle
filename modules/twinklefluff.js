@@ -422,6 +422,7 @@ Twinkle.fluff.callbacks = {
 			'action': 'edit',
 			'title': mw.config.get('wgPageName'),
 			'summary': summary,
+			'tags': Twinkle.changeTags,
 			'token': csrftoken,
 			'undo': lastrevid,
 			'undoafter': revertToRevID,
@@ -437,7 +438,6 @@ Twinkle.fluff.callbacks = {
 		var wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.fluff.callbacks.complete, apiobj.statelem);
 		wikipedia_api.params = apiobj.params;
 		wikipedia_api.post();
-
 	},
 	main: function(apiobj) {
 		var xmlDoc = apiobj.responseXML;
@@ -625,6 +625,7 @@ Twinkle.fluff.callbacks = {
 			'action': 'edit',
 			'title': params.pagename,
 			'summary': summary,
+			'tags': Twinkle.changeTags,
 			'token': csrftoken,
 			'undo': lastrevid,
 			'undoafter': params.goodid,
@@ -697,7 +698,8 @@ Twinkle.fluff.callbacks = {
 					'action': 'review',
 					'revid': $edit.attr('newrevid'),
 					'token': apiobj.params.csrftoken,
-					'comment': Twinkle.getPref('summaryAd').trim()
+					'comment': 'Automatically reviewing reversion' + Twinkle.summaryAd // until the below
+					// 'tags': Twinkle.changeTags // flaggedrevs tag support: [[phab:T247721]]
 				};
 				var wikipedia_api = new Morebits.wiki.api('Automatically accepting your changes', query);
 				wikipedia_api.post();
@@ -715,7 +717,6 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, customString) {
 	if (customString) {
 		result += ': ' + Morebits.string.toUpperCaseFirstChar(customString);
 	}
-	result += Twinkle.getPref('summaryAd');
 
 	// find number of UTF-8 bytes the resulting string takes up, and possibly add
 	// a contributions or contributions+talk link if it doesn't push the edit summary

@@ -149,7 +149,8 @@ Twinkle.batchundelete.callback.evaluate = function(event) {
 
 		var wikipedia_page = new Morebits.wiki.page(pageName, 'Undeleting page ' + pageName);
 		wikipedia_page.setCallbackParameters(params);
-		wikipedia_page.setEditSummary(input.reason + Twinkle.getPref('deletionSummaryAd'));
+		wikipedia_page.setEditSummary(input.reason);
+		wikipedia_page.setChangeTags(Twinkle.changeTags);
 		wikipedia_page.suppressProtectWarning();
 		wikipedia_page.setMaxRetries(3); // temporary increase from 2 to make batchundelete more likely to succeed [[phab:T222402]] #613
 		wikipedia_page.undeletePage(Twinkle.batchundelete.callbacks.doExtras, pageUndeleter.workerFailure);
@@ -196,7 +197,8 @@ Twinkle.batchundelete.callbacks = {
 		}
 
 		var page = new Morebits.wiki.page(apiobj.params.talkPage, 'Undeleting talk page of ' + apiobj.params.page);
-		page.setEditSummary('Undeleting [[Help:Talk page|talk page]] of "' + apiobj.params.page + '"' + Twinkle.getPref('deletionSummaryAd'));
+		page.setEditSummary('Undeleting [[Help:Talk page|talk page]] of "' + apiobj.params.page + '"');
+		page.setChangeTags(Twinkle.changeTags);
 		page.undeletePage();
 	}
 };

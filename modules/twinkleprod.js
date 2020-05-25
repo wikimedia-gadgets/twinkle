@@ -210,6 +210,7 @@ Twinkle.prod.callbacks = {
 
 		var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
 		wikipedia_page.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
+		wikipedia_page.setChangeTags(Twinkle.changeTags);  // Here to apply to triage
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.load(Twinkle.prod.callbacks.main);
 	},
@@ -287,7 +288,8 @@ Twinkle.prod.callbacks = {
 
 					var usertalkpage = new Morebits.wiki.page('User talk:' + params.initialContrib, 'Notifying initial contributor (' + params.initialContrib + ')');
 					usertalkpage.setAppendText(notifytext);
-					usertalkpage.setEditSummary('Notification: proposed deletion of [[:' + Morebits.pageNameNorm + ']].' + Twinkle.getPref('summaryAd'));
+					usertalkpage.setEditSummary('Notification: proposed deletion of [[:' + Morebits.pageNameNorm + ']].');
+					usertalkpage.setChangeTags(Twinkle.changeTags);
 					usertalkpage.setCreateOption('recreate');
 					usertalkpage.setFollowRedirect(true, false);
 					usertalkpage.setCallbackParameters(params);
@@ -329,7 +331,8 @@ Twinkle.prod.callbacks = {
 				var talktitle = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
 				var talkpage = new Morebits.wiki.page(talktitle, 'Placing {{Old prod}} on talk page');
 				talkpage.setPrependText(oldprodfull);
-				talkpage.setEditSummary('Adding {{Old prod}}' + Twinkle.getPref('summaryAd'));
+				talkpage.setEditSummary('Adding {{Old prod}}');
+				talkpage.setChangeTags(Twinkle.changeTags);
 				talkpage.setFollowRedirect(true);  // match behavior for page tagging
 				talkpage.setCreateOption('recreate');
 				talkpage.prepend();
@@ -366,7 +369,7 @@ Twinkle.prod.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary(summaryText);
 		pageobj.setWatchlist(Twinkle.getPref('watchProdPages'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
@@ -400,9 +403,9 @@ Twinkle.prod.callbacks = {
 			}
 			summaryText = 'Logging PROD nomination of [[:' + Morebits.pageNameNorm + ']].';
 		}
+		usl.changeTags = Twinkle.changeTags;
 
-		usl.log(logText, summaryText + Twinkle.getPref('summaryAd'));
-
+		usl.log(logText, summaryText);
 	}
 
 };
