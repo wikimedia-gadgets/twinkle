@@ -338,6 +338,11 @@ Twinkle.talkback.noticeboards = {
 		label: 'WP:OTRS/N (OTRS noticeboard)',
 		text: '{{OTRSreply|1=$SECTION|2=~~~~}}',
 		editSummary: 'You have replies at the [[Wikipedia:OTRS noticeboard|OTRS noticeboard]]'
+	},
+	'effp' {
+		label: 'WP:EFFP/R (Edit filter false positive report)',
+		text: '{{EFFPReply|1=$SECTION|2=~~~~}}',
+		editSummary: 'You have replies at the [[WP:EFFP/R|Edit filters false positive report]] page'
 	}
 };
 
