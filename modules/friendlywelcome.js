@@ -240,7 +240,7 @@ Twinkle.welcome.templates = {
 			},
 			'welcome-short': {
 				description: 'a shorter welcome message',
-				syntax: '{{subst:welcome-short|$USERNAME$}} $EXTRA$ ~~~~'
+				syntax: '$HEADER$ {{subst:w-short}} $EXTRA$ '
 			},
 			'welcome-personal': {
 				description: 'more personal welcome, including a plate of cookies',
