@@ -8,8 +8,9 @@
  ****************************************
  *** twinklefluff.js: Revert/rollback module
  ****************************************
- * Mode of invocation:     Links on history, contributions, and diff pages
- * Active on:              Diff pages, history pages, contributions pages
+ * Mode of invocation:     Links on contributions, recent changes, history, and diff pages
+ * Active on:              Diff pages, history pages, Special:RecentChanges(Linked),
+                           and Special:Contributions
  */
 
 /**
@@ -36,6 +37,14 @@ Twinkle.fluff = function twinklefluff() {
 		}
 	} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
 		Twinkle.fluff.addLinks.contributions();
+	} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Recentchanges' || mw.config.get('wgCanonicalSpecialPageName') === 'Recentchangeslinked') {
+		// Reload with recent changes updates
+		// structuredChangeFilters.ui.initialized is just on load
+		mw.hook('wikipage.content').add(function(item) {
+			if (item.is('div')) {
+				Twinkle.fluff.addLinks.recentchanges();
+			}
+		});
 	} else if (mw.config.get('wgIsProbablyEditable')) {
 		// Only proceed if the user can actually edit the page
 		// in question (ignored for contributions, see #632).
@@ -49,6 +58,8 @@ Twinkle.fluff = function twinklefluff() {
 			});
 		} else if (mw.config.get('wgAction') === 'view' && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId')) {
 			Twinkle.fluff.addLinks.oldid();
+		} else if (mw.config.get('wgAction') === 'history') {
+			Twinkle.fluff.addLinks.history();
 		}
 	}
 };
@@ -88,7 +99,7 @@ Twinkle.fluff.restoreThisRevision = function (element, revType) {
 
 
 Twinkle.fluff.auto = function twinklefluffauto() {
-	if (parseInt(mw.util.getParamValue('oldid'), 10) !== mw.config.get('wgCurRevisionId')) {
+	if (parseInt(mw.util.getParamValue('oldid', $('#mw-diff-ntitle1 a:first').attr('href')), 10) !== mw.config.get('wgCurRevisionId')) {
 		// not latest revision
 		alert("Can't rollback, page has changed in the meantime.");
 		return;
@@ -132,6 +143,104 @@ Twinkle.fluff.addLinks = {
 					current.appendChild(tmpNode);
 				});
 			}
+		}
+	},
+
+	recentchanges: function() {
+		if (Twinkle.getPref('showRollbackLinks').indexOf('recent') !== -1) {
+			// Latest and revertable (not page creations, logs, categorizations, etc.)
+			var list = $('.mw-changeslist .mw-changeslist-last.mw-changeslist-src-mw-edit');
+			// Exclude top-level header if "group changes" preference is used
+			// and find only individual lines or nested lines
+			list = list.not('.mw-rcfilters-ui-highlights-enhanced-toplevel').find('.mw-changeslist-line-inner, td.mw-enhanced-rc-nested');
+
+			var revNode = document.createElement('strong');
+			var revLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
+			revNode.appendChild(revLink);
+
+			var revVandNode = document.createElement('strong');
+			var revVandLink = Twinkle.fluff.buildLink('Red', 'vandalism');
+			revVandNode.appendChild(revVandLink);
+
+			list.each(function(key, current) {
+				current.appendChild(document.createTextNode(' '));
+				var href = $(current).find('.mw-changeslist-diff').attr('href');
+				var tmpNode = revNode.cloneNode(true);
+				tmpNode.firstChild.setAttribute('href', href + '&twinklerevert=norm');
+				current.appendChild(tmpNode);
+				current.appendChild(document.createTextNode(' '));
+				tmpNode = revVandNode.cloneNode(true);
+				tmpNode.firstChild.setAttribute('href', href + '&twinklerevert=vand');
+				current.appendChild(tmpNode);
+			});
+		}
+	},
+
+	history: function() {
+		if (Twinkle.getPref('showRollbackLinks').indexOf('history') !== -1) {
+			// All revs
+			var histList = $('#pagehistory li').toArray();
+
+			// On first page of results, so add revert/rollback
+			// links to the top revision
+			if (!$('.mw-firstlink').length) {
+				var first = histList.shift();
+				var vandal = first.querySelector('.mw-userlink').text;
+
+				var agfNode = document.createElement('strong');
+				var vandNode = document.createElement('strong');
+				var normNode = document.createElement('strong');
+
+				var agfLink = Twinkle.fluff.buildLink('DarkOliveGreen', 'rollback (AGF)');
+				var vandLink = Twinkle.fluff.buildLink('Red', 'rollback (VANDAL)');
+				var normLink = Twinkle.fluff.buildLink('SteelBlue', 'rollback');
+
+				agfLink.href = '#';
+				vandLink.href = '#';
+				normLink.href = '#';
+				$(agfLink).click(function() {
+					Twinkle.fluff.revert('agf', vandal);
+				});
+				$(vandLink).click(function() {
+					Twinkle.fluff.revert('vand', vandal);
+				});
+				$(normLink).click(function() {
+					Twinkle.fluff.revert('norm', vandal);
+				});
+
+				agfNode.appendChild(agfLink);
+				vandNode.appendChild(vandLink);
+				normNode.appendChild(normLink);
+
+				first.appendChild(document.createTextNode(' '));
+				first.appendChild(agfNode);
+				first.appendChild(document.createTextNode(' '));
+				first.appendChild(normNode);
+				first.appendChild(document.createTextNode(' '));
+				first.appendChild(vandNode);
+			}
+
+			// oldid
+			histList.forEach(function(rev) {
+				// From restoreThisRevision, non-transferable
+
+				var href = rev.querySelector('.mw-changeslist-date').href;
+				var oldid = parseInt(mw.util.getParamValue('oldid', href), 10);
+
+				var revertToRevisionNode = document.createElement('strong');
+				var revertToRevisionLink = Twinkle.fluff.buildLink('SaddleBrown', 'restore this version');
+
+				revertToRevisionLink.href = '#';
+				$(revertToRevisionLink).click(function() {
+					Twinkle.fluff.revertToRevision(oldid.toString());
+				});
+				revertToRevisionNode.appendChild(revertToRevisionLink);
+
+				rev.appendChild(document.createTextNode(' '));
+				rev.appendChild(revertToRevisionNode);
+			});
+
+
 		}
 	},
 
