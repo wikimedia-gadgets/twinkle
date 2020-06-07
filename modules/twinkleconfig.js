@@ -682,7 +682,8 @@ Twinkle.config.sections = [
 					'7': 'Single-issue warnings',
 					// 8 was used for block templates before #260
 					'9': 'Custom warnings',
-					'10': 'All warning templates'
+					'10': 'All warning templates',
+					'11': 'Auto-select level (1-4)'
 				}
 			},
 
@@ -876,6 +877,13 @@ Twinkle.config.sections = [
 			// twinklefluff.js: defines how many revision to query maximum, maximum possible is 50, default is 50
 			{
 				name: 'revertMaxRevisions',
+				type: 'integer'
+			},
+			// twinklewarn.js: When using the autolevel select option, how many days makes a prior warning stale
+			// Huggle is three days ([[Special:Diff/918980316]] and [[Special:Diff/919417999]]) while ClueBotNG is two:
+			// https://github.com/DamianZaremba/cluebotng/blob/4958e25d6874cba01c75f11debd2e511fd5a2ce5/bot/action_functions.php#L62
+			{
+				name: 'autolevelStaleDays',
 				type: 'integer'
 			},
 			// twinklebatchdelete.js: How many pages should be processed maximum
