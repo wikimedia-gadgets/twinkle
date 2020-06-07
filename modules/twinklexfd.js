@@ -91,7 +91,8 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append({
 		type: 'option',
 		label: 'CfD/S (Categories for speedy renaming)',
-		value: 'cfds'
+		value: 'cfds',
+		disabled: namespace !== 14
 	});
 	categories.append({
 		type: 'option',
