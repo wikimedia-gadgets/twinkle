@@ -532,7 +532,8 @@ Twinkle.tag.updateSortOrder = function(e) {
 				{
 					value: tag,
 					label: '{{' + tag + '}}' + (description ? ': ' + description : ''),
-					checked: unCheckedTags.indexOf(tag) === -1
+					checked: unCheckedTags.indexOf(tag) === -1,
+					style: 'font-style: italic'
 				};
 
 			checkboxes.push(checkbox);
