@@ -546,7 +546,7 @@ Twinkle.fluff.callbacks = {
 		if ($(xml).find('captcha').length > 0) {
 			apiobj.statelem.error('Could not rollback, because the wiki server wanted you to fill out a CAPTCHA.');
 		} else if ($edit.attr('nochange') === '') {
-			apiobj.statelem.warn('Revision we are reverting to is identical to current revision, stopping revert.');
+			apiobj.statelem.error('Revision we are reverting to is identical to current revision, stopping revert.');
 		} else {
 			apiobj.statelem.info('done');
 
