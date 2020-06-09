@@ -696,49 +696,49 @@ Twinkle.speedy.articleList = [
 		}
 	},
 	{
-		label: 'A7: Unremarkable people, groups, companies, web content, individual animals, or organized events',
+		label: 'A7: No indication of importance (people, groups, companies, web content, individual animals, or organized events)',
 		value: 'a7',
 		tooltip: 'An article about a real person, group of people, band, club, company, web content, individual animal, tour, or party that does not assert the importance or significance of its subject. If controversial, or if a previous AfD has resulted in the article being kept, the article should be nominated for AfD instead',
 		hideWhenSingle: true
 	},
 	{
-		label: 'A7: Unremarkable person',
+		label: 'A7: No indication of importance (person)',
 		value: 'person',
 		tooltip: 'An article about a real person that does not assert the importance or significance of its subject. If controversial, or if there has been a previous AfD that resulted in the article being kept, the article should be nominated for AfD instead',
 		hideWhenMultiple: true
 	},
 	{
-		label: 'A7: Unremarkable musician(s) or band',
+		label: 'A7: No indication of importance (musician(s) or band)',
 		value: 'band',
 		tooltip: 'Article about a band, singer, musician, or musical ensemble that does not assert the importance or significance of the subject',
 		hideWhenMultiple: true
 	},
 	{
-		label: 'A7: Unremarkable club',
+		label: 'A7: No indication of importance (club, society or group)',
 		value: 'club',
-		tooltip: 'Article about a club that does not assert the importance or significance of the subject',
+		tooltip: 'Article about a club, society or group that does not assert the importance or significance of the subject',
 		hideWhenMultiple: true
 	},
 	{
-		label: 'A7: Unremarkable company or organization',
+		label: 'A7: No indication of importance (company or organization)',
 		value: 'corp',
 		tooltip: 'Article about a company or organization that does not assert the importance or significance of the subject',
 		hideWhenMultiple: true
 	},
 	{
-		label: 'A7: Unremarkable website or web content',
+		label: 'A7: No indication of importance (website or web content)',
 		value: 'web',
 		tooltip: 'Article about a web site, blog, online forum, webcomic, podcast, or similar web content that does not assert the importance or significance of its subject',
 		hideWhenMultiple: true
 	},
 	{
-		label: 'A7: Unremarkable individual animal',
+		label: 'A7: No indication of importance (individual animal)',
 		value: 'animal',
 		tooltip: 'Article about an individual animal (e.g. pet) that does not assert the importance or significance of its subject',
 		hideWhenMultiple: true
 	},
 	{
-		label: 'A7: Unremarkable organized event',
+		label: 'A7: No indication of importance (organized event)',
 		value: 'event',
 		tooltip: 'Article about an organized event (tour, function, meeting, party, etc.) that does not assert the importance or significance of its subject',
 		hideWhenMultiple: true
