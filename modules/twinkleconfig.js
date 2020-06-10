@@ -347,7 +347,7 @@ Twinkle.config.sections = [
 				name: 'openTalkPage',
 				label: 'Open user talk page after these types of reversions',
 				type: 'set',
-				setValues: { agf: 'AGF rollback', norm: 'Normal rollback', vand: 'Vandalism rollback', torev: '"Restore this version"' }
+				setValues: { agf: 'AGF rollback', norm: 'Normal rollback', vand: 'Vandalism rollback' }
 			},
 
 			// TwinkleConfig.openTalkPageOnAutoRevert (bool)
