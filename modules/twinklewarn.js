@@ -138,14 +138,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		}
 
 		// Confirm edit wasn't too old for a warning
-		query = {
-			action: 'query',
-			prop: 'revisions',
-			rvprop: 'timestamp',
-			revids: vanrevid
-		};
-		new Morebits.wiki.api('Grabbing the revision timestamps', query, function(apiobj) {
-			var vantimestamp = $(apiobj.getResponse()).find('revisions rev').attr('timestamp');
+		var checkStale = function(vantimestamp) {
 			var revDate = new Morebits.date(vantimestamp);
 			if (vantimestamp && revDate.isValid()) {
 				if (revDate.add(24, 'hours').isBefore(new Date())) {
@@ -153,7 +146,24 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 					$('#twinkle-warn-warning-messages').text('Note:' + message);
 				}
 			}
-		}).post();
+		};
+
+		var vantimestamp = mw.util.getParamValue('vantimestamp');
+		// Provided from a fluff module-based revert, no API lookup necessary
+		if (vantimestamp) {
+			checkStale(vantimestamp);
+		} else {
+			query = {
+				action: 'query',
+				prop: 'revisions',
+				rvprop: 'timestamp',
+				revids: vanrevid
+			};
+			new Morebits.wiki.api('Grabbing the revision timestamps', query, function(apiobj) {
+				vantimestamp = $(apiobj.getResponse()).find('revisions rev').attr('timestamp');
+				checkStale(vantimestamp);
+			}).post();
+		}
 	}
 
 	var more = form.append({ type: 'field', name: 'reasonGroup', label: 'Warning information' });

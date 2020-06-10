@@ -325,7 +325,7 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 		'titles': pagename,
 		'intestactions': 'edit',
 		'rvlimit': Twinkle.getPref('revertMaxRevisions'),
-		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ],
+		'rvprop': [ 'ids', 'timestamp', 'user' ],
 		'curtimestamp': '',
 		'meta': 'tokens',
 		'type': 'csrf'
@@ -345,7 +345,7 @@ Twinkle.fluff.revertToRevision = function revertToRevision(oldrev) {
 		'titles': mw.config.get('wgPageName'),
 		'rvlimit': 1,
 		'rvstartid': oldrev,
-		'rvprop': [ 'ids', 'timestamp', 'user', 'comment' ],
+		'rvprop': [ 'ids', 'user' ],
 		'format': 'xml',
 		'curtimestamp': '',
 		'meta': 'tokens',
@@ -567,6 +567,8 @@ Twinkle.fluff.callbacks = {
 		if (!Twinkle.fluff.skipTalk && Twinkle.getPref('openTalkPage').indexOf(params.type) !== -1 &&
 				mw.config.get('wgUserName') !== params.user) {
 			params.notifyUser = true;
+			// Pass along to the warn module
+			params.vantimestamp = top.getAttribute('timestamp');
 		}
 
 		// figure out whether we need to/can review the edit
@@ -624,6 +626,7 @@ Twinkle.fluff.callbacks = {
 					'preview': 'yes',
 					'vanarticle': params.pagename.replace(/_/g, ' '),
 					'vanarticlerevid': params.revid,
+					'vantimestamp': params.vantimestamp,
 					'vanarticlegoodrevid': params.goodid,
 					'type': params.type,
 					'count': params.count
