@@ -250,7 +250,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				multiple: true,
 				name: 'delsort',
 				label: 'Choose deletion sorting categories: ',
-				tooltip: 'Select a few categories that are relevant to the subject of the article'
+				tooltip: 'Select a few categories that are specifically relevant to the subject of the article. Be as precise as possible; categories like People and USA should only be used when no other categories apply.'
 			});
 
 			$.each(delsortCategories, function(groupname, list) {
@@ -272,6 +272,13 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					templateResult: Morebits.select2.highlightSearchMatches,
 					language: {
 						searching: Morebits.select2.queryInterceptor
+					},
+					// Link text to the page itself
+					templateSelection: function(choice) {
+						return $('<a>').text(choice.text).attr({
+							href: mw.util.getUrl('Wikipedia:WikiProject_Deletion_sorting/' + choice.text),
+							target: '_blank'
+						});
 					}
 				});
 
