@@ -3,7 +3,7 @@
 
 (function($) {
 
-var relevantUserName;
+var api = new mw.Api(), relevantUserName;
 var menuFormattedNamespaces = $.extend({}, mw.config.get('wgFormattedNamespaces'));
 menuFormattedNamespaces[0] = '(Article)';
 
@@ -97,7 +97,6 @@ Twinkle.block.callback = function twinkleblockCallback() {
 };
 
 Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
-	var api = new mw.Api();
 	api.get({
 		format: 'json',
 		action: 'query',
@@ -123,6 +122,8 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 			}
 
 			Twinkle.block.hasBlockLog = !!data.query.logevents.length;
+			// Used later to check if block status changed while filling out the form
+			Twinkle.block.blockLogId = Twinkle.block.hasBlockLog ? data.query.logevents[0].logid : false;
 
 			if (typeof fn === 'function') {
 				return fn();
@@ -1439,15 +1440,83 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 		blockoptions.anononly = blockoptions.hardblock ? undefined : true;
 		blockoptions.allowusertalk = blockoptions.disabletalk ? undefined : true;
 
-		// execute block
-		blockoptions.token = mw.user.tokens.get('csrfToken');
-		var mbApi = new Morebits.wiki.api('Executing block', blockoptions, function() {
-			statusElement.info('Completed');
-			if (toWarn) {
-				Twinkle.block.callback.issue_template(templateoptions);
+		/*
+		  Check if block status changed while processing the form.
+
+		  There's a lot to consider here. list=blocks provides the
+		  current block status, but there are at least two issues with
+		  relying on it. First, the id doesn't update on a reblock,
+		  meaning the individual parameters need to be compared. This
+		  can be done roughly with JSON.stringify - we can thankfully
+		  rely on order from the server, although sorting would be
+		  fine if not - but falsey values are problematic and is
+		  non-ideal. More importantly, list=blocks won't indicate if a
+		  non-blocked user is blocked then unblocked. This should be
+		  exceedingy rare, but regardless, we thus need to check
+		  list=logevents, which has a nicely updating logid
+		  parameter. We can't rely just on that, though, since it
+		  doesn't account for blocks that have expired on their own.
+
+		  As such, we use both. Using some ternaries, the logid
+		  variables are false if there's no logevents, so if they
+		  aren't equal we defintely have a changed entry (send
+		  confirmation). If they are equal, then either the user was
+		  never blocked (the block statuses will be equal, no
+		  confirmation) or there's no new block, in which case either
+		  a block expired (different statuses, confirmation) or the
+		  same block is still active (same status, no confirmation).
+		*/
+		api.get({
+			format: 'json',
+			action: 'query',
+			list: 'blocks|logevents',
+			letype: 'block',
+			lelimit: 1,
+			letitle: 'User:' + blockoptions.user,
+			bkusers: blockoptions.user
+		}).then(function(data) {
+			var block = data.query.blocks[0];
+			var logevents = data.query.logevents[0];
+			var logid = data.query.logevents.length ? logevents.logid : false;
+
+			if (logid !== Twinkle.block.blockLogId || !!block !== !!Twinkle.block.currentBlockInfo) {
+				var message = 'The block status of ' + mw.config.get('wgRelevantUserName') + ' has changed. ';
+				if (block) {
+					message += 'New status: ';
+				} else {
+					message += 'Last entry: ';
+				}
+
+				var logExpiry = '';
+				if (logevents.params.duration) {
+					if (logevents.params.duration === 'infinity') {
+						logExpiry = 'indefinitely';
+					} else {
+						var expiryDate = new Morebits.date(logevents.params.expiry);
+						logExpiry += (expiryDate.isBefore(new Date()) ? ', expired ' : ' until ') + expiryDate.calendar();
+					}
+				} else { // no duration, action=unblock, just show timestamp
+					logExpiry = ' ' + new Morebits.date(logevents.timestamp).calendar();
+				}
+				message += Morebits.string.toUpperCaseFirstChar(logevents.action) + 'ed by ' + logevents.user + logExpiry +
+					' for "' + logevents.comment + '". Do you want to override with your settings?';
+
+				if (!confirm(message)) {
+					Morebits.status.info('Executing block', 'Canceled by user');
+					return;
+				}
+				blockoptions.reblock = 1; // Writing over a block will fail otherwise
 			}
+			// execute block
+			blockoptions.token = mw.user.tokens.get('csrfToken');
+			var mbApi = new Morebits.wiki.api('Executing block', blockoptions, function() {
+				statusElement.info('Completed');
+				if (toWarn) {
+					Twinkle.block.callback.issue_template(templateoptions);
+				}
+			});
+			mbApi.post();
 		});
-		mbApi.post();
 	} else if (toWarn) {
 		Morebits.simpleWindow.setButtonsEnabled(false);
 
