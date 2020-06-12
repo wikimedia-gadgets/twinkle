@@ -1894,7 +1894,7 @@ Morebits.wiki.api.setApiUserAgent = function(ua) {
  *
  * patrol(): Patrols a page; ignores errors
  *
- * triage(): Marks page as reviewed using PageTriage, which implies patrolled; ignores errors
+ * triage(): Marks page as reviewed using PageTriage, which implies patrolled; ignores most errors
  *
  * deletePage([onSuccess], [onFailure]): Deletes a page (for admins only)
  *
@@ -2669,13 +2669,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 
-		// If patrolling current page, don't need to query for latest revID
+		// If a link is present, don't need to check if it's patrolled
 		if ($('.patrollink').length) {
 			var patrolhref = $('.patrollink a').attr('href');
 			ctx.rcid = mw.util.getParamValue('rcid', patrolhref);
-			fnProcessPatrol(this, this);
-		} else if (new mw.Title(Morebits.pageNameNorm).getPrefixedText() === new mw.Title(ctx.pageName).getPrefixedText()) {
-			ctx.revid = mw.config.get('wgRevisionId') || mw.config.get('wgCurRevisionId');
 			fnProcessPatrol(this, this);
 		} else {
 			var patrolQuery = {
@@ -2683,7 +2680,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				prop: 'info',
 				meta: 'tokens',
 				type: 'patrol', // as long as we're querying, might as well get a token
-				titles: ctx.pageName
+				list: 'recentchanges', // check if the page is unpatrolled
+				titles: ctx.pageName,
+				rcprop: 'patrolled',
+				rctitle: ctx.pageName,
+				rclimit: 1
 			};
 
 			ctx.patrolApi = new Morebits.wiki.api('retrieving token...', patrolQuery, fnProcessPatrol);
@@ -2698,7 +2699,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 *
 	 * Referred to as "review" on-wiki
 	 *
-	 * Will, by it's nature, mark as patrolled as well.
+	 * Will, by it's nature, mark as patrolled as well. Falls back to
+	 * patrolling if not in an appropriate namespace.
 	 *
 	 * Doesn't inherently rely on loading the page in question; simply
 	 * passing a pageid to the API is sufficient, so in those cases just
@@ -2707,20 +2709,25 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * No error handling since we don't actually care about the errors
 	 */
 	this.triage = function() {
-		if (!Morebits.userIsSysop && !Morebits.userIsInGroup('patroller')) {
-			return;
-		}
-
-		// If on the page in question, don't need to query for page ID
-		if (new mw.Title(Morebits.pageNameNorm).getPrefixedText() === new mw.Title(ctx.pageName).getPrefixedText()) {
-			ctx.pageID = mw.config.get('wgArticleId');
-			fnProcessTriage(this, this);
+		// Fall back to patrol if not a valid triage namespace
+		if (mw.config.get('pageTriageNamespaces').indexOf(mw.config.get('wgNamespaceNumber')) === -1) {
+			this.patrol();
 		} else {
-			var query = fnNeedTokenInfoQuery('triage');
+			if (!Morebits.userIsSysop && !Morebits.userIsInGroup('patroller')) {
+				return;
+			}
 
-			ctx.triageApi = new Morebits.wiki.api('retrieving token...', query, fnProcessTriage);
-			ctx.triageApi.setParent(this);
-			ctx.triageApi.post();
+			// If on the page in question, don't need to query for page ID
+			if (new mw.Title(Morebits.pageNameNorm).getPrefixedText() === new mw.Title(ctx.pageName).getPrefixedText()) {
+				ctx.pageID = mw.config.get('wgArticleId');
+				fnProcessTriage(this, this);
+			} else {
+				var query = fnNeedTokenInfoQuery('triage');
+
+				ctx.triageApi = new Morebits.wiki.api('retrieving token...', query, fnProcessTriage);
+				ctx.triageApi.setParent(this);
+				ctx.triageApi.post();
+			}
 		}
 	};
 
@@ -3298,11 +3305,13 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (ctx.rcid) {
 			query.rcid = ctx.rcid;
 			query.token = mw.user.tokens.get('patrolToken');
-		} else if (ctx.revid) {
-			query.revid = ctx.revid;
-			query.token = mw.user.tokens.get('patrolToken');
 		} else {
 			var xml = ctx.patrolApi.getResponse();
+
+			// Don't patrol if not unpatrolled
+			if ($(xml).find('rc').attr('unpatrolled') !== '') {
+				return;
+			}
 
 			var lastrevid = $(xml).find('page').attr('lastrevid');
 			if (!lastrevid) {
@@ -3354,9 +3363,17 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		var triageStat = new Morebits.status('Marking page as curated');
 
-		ctx.triageProcessApi = new Morebits.wiki.api('curating page...', query, null, triageStat);
+		ctx.triageProcessApi = new Morebits.wiki.api('curating page...', query, null, triageStat, fnProcessTriageError);
 		ctx.triageProcessApi.setParent(this);
 		ctx.triageProcessApi.post();
+	};
+
+	// callback from triageProcessApi.post()
+	var fnProcessTriageError = function() {
+		// Ignore error if page not in queue, see https://github.com/azatoth/twinkle/pull/930
+		if (ctx.triageProcessApi.getErrorCode() === 'bad-pagetriage-page') {
+			ctx.triageProcessApi.getStatusElement().unlink();
+		}
 	};
 
 	var fnProcessDelete = function() {
