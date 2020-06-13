@@ -1207,7 +1207,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			break;
 		case 'kitchensink':
 			['level1', 'level2', 'level3', 'level4', 'level4im'].forEach(function(lvl) {
-				Object.values(Twinkle.warn.messages.levels).forEach(function(levelGroup) {
+				$.each(Twinkle.warn.messages.levels, function(_, levelGroup) {
 					createEntries(levelGroup, sub_group, true, lvl);
 				});
 			});
