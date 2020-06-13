@@ -58,11 +58,11 @@ Each Twinkle module and dependency lives on the wiki as a separate file. The lis
 
 ### Synchronization using `sync.pl`
 
-There is a synchronization script called `sync.pl`, which can be used to deploy updates to on-wiki gadgets, or update the repository based on on-wiki changes. For more detauls, run `perl sync.pl --help`.
+There is a synchronization script called `sync.pl`, which can be used to deploy updates to on-wiki gadgets, or update the repository based on on-wiki changes. For full details, run `perl sync.pl --help`.
 
 The program depends on a few Perl modules, namely [`MediaWiki::API`][MediaWiki::API], [`Git::Repository`][Git::Repository], [`File::Slurper`][File::Slurper], and [`Config::General`][Config::General]. These can be installed easily using [`App::cpanminus`][App::cpanminus]:
 
-    cpanm --sudo install MediaWiki::API Git::Repository File::Slurper Config::General
+    cpanm install MediaWiki::API Git::Repository File::Slurper Config::General
 
 You may prefer to install them through your operating system's packaing tool (e.g. `apt-get install libconfig-general-perl`) although you can install them through cpanm too.
 

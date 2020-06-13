@@ -40,7 +40,7 @@ foreach my $dot (@dotLocales) {
 }
 
 GetOptions (\%conf, 'username|s=s', 'password|p=s', 'lang|l=s', 'family|f=s', 'base|b=s',
-            'mode=s', 'help|h' => \&usage);
+            'mode=s', 'diff|d', 'w=s', 'dry|r', 'help|h' => \&usage);
 
 # Ensure we've got a clean branch
 my $repo = Git::Repository->new();
@@ -64,6 +64,8 @@ $mw->{ua}->agent('Twinkle/sync.pl ('.$mw->{ua}->agent.')');
 $mw->login({lgname => $conf{username}, lgpassword => $conf{password}});
 
 
+my $countDiff = 0;                 # Only used for the --dry option
+my $diffFunc = $conf{w} || 'diff'; # Only used for the --diff option
 ### Main loop through each file
 foreach my $file (@ARGV) {
   next if checkFile($file);
@@ -81,36 +83,53 @@ foreach my $file (@ARGV) {
   my $fileText = read_text($file);
   my $wpText = $wikiPage->{q{*}}."\n"; # MediaWiki doesn't have trailing newlines
 
-  if ($conf{mode} eq 'deploy' || $conf{mode} eq 'push') {
-    print ucfirst $conf{mode}."ing $file to $page...";
+  print ucfirst $conf{mode}.'ing '.($conf{mode} eq 'pull' ? "$page to $file..." : "$file to $page...");
 
-    if ($fileText eq $wpText) {
-      print colored ['blue'], " No changes needed, skipping\n";
+  # git and eof might be faster, but here makes sense
+  if ($wpText eq $fileText) {
+    print colored ['blue'], " No changes found, skipping\n";
+    next;
+  }
+
+  if ($conf{diff}) {
+    my $name = $file.'temp';
+    write_text($name, $wpText);
+    print colored ['magenta'], " Showing diff\n";
+    system "$diffFunc $name $file";
+    unlink $name;
+  }
+
+  if ($conf{dry}) {
+    $countDiff++;
+    print colored['magenta'], " Differences found!\n" if !$conf{diff};
+    next;
+  }
+
+  print "\n\t";
+  if ($conf{mode} eq 'deploy' || $conf{mode} eq 'push') {
+    my $summary = buildEditSummary($page, $file, $wikiPage->{comment});
+    my $editReturn = editPage($page, $fileText, $summary, $wikiPage->{timestamp});
+    if ($editReturn->{_msg} eq 'OK') {
+      print colored ['green'], "$file successfully $conf{mode}ed to $page";
     } else {
-      print "\n";
-      my $summary = buildEditSummary($page, $file, $wikiPage->{comment});
-      my $editReturn = editPage($page, $fileText, $summary, $wikiPage->{timestamp});
-      if ($editReturn->{_msg} eq 'OK') {
-        print colored ['green'], "\t$file successfully $conf{mode}ed to $page\n";
-      } else {
-        print colored ['red'], "Error $conf{mode}ing $file: $mw->{error}->{code}: $mw->{error}->{details}\n";
-      }
+      print colored ['red'], "Error $conf{mode}ing $file: $mw->{error}->{code}: $mw->{error}->{details}";
     }
   } elsif ($conf{mode} eq 'pull') {
-    print "Pulling from $page to $file";
-    # Might be faster to check this using git and eof, but here makes sense
-    if ($wpText eq $fileText) {
-      print colored ['blue'], "... No changes found, skipping\n";
-      next;
-    } else {
-      print "... Done!\n";
-      write_text($file, $wpText);
-    }
+    write_text($file, $wpText);
+    print 'Done!';
   }
+  print "\n";
 }
 
 # Show a summary of any changes
-if ($conf{base} eq 'pull') {
+if ($conf{dry}) {
+  print "\n";
+  if ($countDiff) {
+    print "$countDiff ".($countDiff > 1 ? 'files need' : 'file needs')." updating\n";
+  } else {
+    print colored ['green'], "No actions needed\n";
+  }
+} elsif ($conf{base} eq 'pull') {
   my $cmd = $repo->command(diff => '--stat', '--color');
   my $s = $cmd->stdout;
   while (<$s>) {
@@ -126,25 +145,35 @@ if ($conf{base} eq 'pull') {
 # Data::Dumper is simpler but the output is ugly, and this ain't worth another
 # dependency
 sub forReal {
-  my @meaningful = qw (username mode lang family);
+  my @meaningful = qw (mode lang family);
   push @meaningful, 'base' if $conf{mode} ne 'deploy';
+  push @meaningful, 'username';
   print "Here are the current parameters specified:\n\n";
   foreach my $key (@meaningful) {
     print colored ['blue'], "\t$key = $conf{$key}\n";
   }
+  if ($conf{password}) {
+    print colored ['blue'], "\tA passsword was provided\n";
+  }
   print "\n";
 
   # Ensure requireds are required
-  my $modeTruth = $conf{mode} && ($conf{mode} eq 'deploy' ||
-                                  $conf{mode} eq 'push' ||
-                                  $conf{mode} eq 'pull');
-  if (!@ARGV | !$modeTruth || !$conf{username} || !$conf{password}) {
+  my $modeTruth = $conf{mode} && grep {/$conf{mode}/} qw (deploy push pull);
+  if (!@ARGV || !$modeTruth || !$conf{username} || !$conf{password}) {
     usage();
+  }
+
+  # Quick exit
+  if ($conf{dry}) {
+    print "Checking provided files for differences...\n\n";
+    # As below
+    $conf{base} = 'MediaWiki:Gadget-' if $conf{mode} eq 'deploy';
+    return;
   }
 
   print 'This means ';
   print colored ['bright_white'], 'User:'.ucfirst $conf{username};
-  print ' will ';
+  print ' will attempt to ';
   print colored ['bright_magenta'], uc $conf{mode}."\n\n";
   # Print files
   foreach (@ARGV) {
@@ -274,7 +303,7 @@ sub buildEditSummary {
 
     my $message = "The current edit summary is too long by $over character";
     $message .= $over == 1 ? q{} : 's';
-    $message .= " and will therefore be truncated.\n";
+    $message .= " and would thus be truncated.\n";
     print $message;
     print "\t$editSummary\n";
     print "Please provide a shorter summary (under $maxLength characters, the latest commit ref will be added automatically):\n";
@@ -306,8 +335,8 @@ sub editPage {
 # Could use POD but meh
 # Final line must be unindented?
 sub usage {
-  print <<USAGE;
-$PROGRAM_NAME --mode=deploy|pull|push [-u username] [-p password] [-l language] [-f family] [-b base]
+  print <<"USAGE";
+Usage: $PROGRAM_NAME --mode=deploy|pull|push [--diff -w] [--dry] [-u username] [-p password] [-l language] [-f family] [-b base]
 
     --mode What action to perform, one of deploy, pull, or push. Required.
         deploy: Push changes live to the gadget
@@ -320,6 +349,11 @@ $PROGRAM_NAME --mode=deploy|pull|push [-u username] [-p password] [-l language] 
     --lang, -l Target language, default 'en'
     --family, -f Target family, default 'wikipedia'
     --base, -b Base page prefix where on-wiki files exist, default 'User:AzaToth/'
+
+    --diff, -d Show a diff between files and pages before proceeding
+        -w Pass an alternative diffing function instead of the default `diff`, such as `colordiff`
+    --dry, -r Show which files don't match on-wiki, do nothing else. A mode should still be supplied
+        in order to determine which on-wiki files to compare to.
 
     These options can be provided in a config file, .twinklerc, in either this script's
     or your home directory.  It should be a simple file consisting of keys and values:
