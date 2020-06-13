@@ -324,6 +324,11 @@ Twinkle.talkback.noticeboards = {
 		text: '{{subst:DRN-notice|thread=$SECTION}} ~~~~',
 		editSummary: 'Notice of discussion at [[Wikipedia:Dispute resolution noticeboard]]'
 	},
+	'effp': {
+		label: 'WP:EFFP/R (Edit filter false positive report)',
+		text: '{{EFFPReply|1=$SECTION|2=~~~~}}',
+		editSummary: 'You have replies to your [[Wikipedia:Edit filter/False positives/Reports|edit filter false positive report]]'
+	},
 	'hd': {
 		label: 'WP:HD (Help desk)',
 		text: '== Your question at the Help desk ==\n' + '{{helpdeskreply|1=$SECTION|ts=~~~~~}}',
