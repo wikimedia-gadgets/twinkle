@@ -382,7 +382,7 @@ Twinkle.prod.callbacks = {
 				logText += '; notified {{user|' + params.logInitialContrib + '}}';
 			}
 			logText += ' ~~~~~\n';
-			if (!params.blp) {
+			if (!params.blp && params.reason) {
 				logText += "#* '''Reason''': " + params.reason + '\n';
 			}
 			summaryText = 'Logging PROD nomination of [[:' + Morebits.pageNameNorm + ']].';
