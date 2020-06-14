@@ -15,13 +15,11 @@
  * Dependencies:
  *   - The whole thing relies on jQuery.  But most wikis should provide this by default.
  *   - Morebits.quickForm, Morebits.simpleWindow, and Morebits.status rely on the "morebits.css" file for their styling.
- *   - Morebits.simpleWindow relies on jquery UI Dialog (from ResourceLoader module name 'jquery.ui').
- *   - Morebits.quickForm tooltips rely on Tipsy (ResourceLoader module name 'jquery.tipsy').
- *     For external installations, Tipsy is available at [http://onehackoranother.com/projects/jquery/tipsy].
+ *   - Morebits.simpleWindow and Morebits.quickForm tooltips rely on jquery UI Dialog (from ResourceLoader module name 'jquery.ui').
  *   - To create a gadget based on morebits.js, use this syntax in MediaWiki:Gadgets-definition:
- *       * GadgetName[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.Title,jquery.ui,jquery.tipsy]|morebits.js|morebits.css|GadgetName.js
+ *       * GadgetName[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.Title,jquery.ui]|morebits.js|morebits.css|GadgetName.js
  *   - Alternatively, you can configure morebits.js as a hidden gadget in MediaWiki:Gadgets-definition:
- *       * morebits[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.Title,jquery.ui,jquery.tipsy|hidden]|morebits.js|morebits.css
+ *       * morebits[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.Title,jquery.ui|hidden]|morebits.js|morebits.css
  *     and then load ext.gadget.morebits as one of the dependencies for the new gadget
  *
  * All the stuff here works on all browsers for which MediaWiki provides JavaScript support.
@@ -707,21 +705,20 @@ Morebits.quickForm.element.autoNWSW = function() {
 };
 
 /**
- * Create a jquery.tipsy-based tooltip.
- * @requires jquery.tipsy
+ * Create a jquery.ui-based tooltip.
+ * @requires jquery.ui
  * @param {HTMLElement} node - the HTML element beside which a tooltip is to be generated
  * @param {Object} data - tooltip-related configuration data
  */
 Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTooltip(node, data) {
-	$('<span/>', {
-		'class': 'ui-icon ui-icon-help ui-icon-inline morebits-tooltip'
-	}).appendTo(node).tipsy({
-		'fallback': data.tooltip,
-		'fade': true,
-		'gravity': data.type === 'input' || data.type === 'select' ?
-			Morebits.quickForm.element.autoNWSW : $.fn.tipsy.autoWE,
-		'html': true,
-		'delayOut': 250
+	var tooltipButton = node.appendChild(document.createElement('span'));
+	tooltipButton.className = 'morebits-tooltipButton';
+	tooltipButton.title = data.tooltip; // Provides the content for jQuery UI
+	tooltipButton.appendChild(document.createTextNode('?'));
+	$(tooltipButton).tooltip({
+		position: { my: 'left top', at: 'center bottom', collision: 'flipfit' },
+		// Deprecated in UI 1.12, but MW stuck on 1.9.2 indefinitely; see #398 and T71386
+		tooltipClass: 'morebits-ui-tooltip'
 	});
 };
 
@@ -926,7 +923,7 @@ Morebits.quickForm.setElementVisibility = function QuickFormSetElementVisibility
  * @param {boolean} [visibility] Skip this to toggle visibility
  */
 Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementTooltipVisibility(element, visibility) {
-	$(Morebits.quickForm.getElementContainer(element)).find('.morebits-tooltip').toggle(visibility);
+	$(Morebits.quickForm.getElementContainer(element)).find('.morebits-tooltipButton').toggle(visibility);
 };
 
 
