@@ -185,17 +185,7 @@ Twinkle.prod.callbacks = {
 		if (numTemplates) {
 			var template = $(xmlDoc).find('templates tl')[0].getAttribute('title');
 			if (numTemplates === 1 && template === 'Template:Old prod') {
-				if (params.blp) {
-					if (!confirm('Previous PROD nomination found on talk page. Do you still want to continue applying BLPPROD? ')) {
-						statelem.warn('Previous PROD found on talk page, aborted by user');
-						return;
-					}
-					statelem.info('Previous PROD found on talk page, continuing');
-				} else {
-					statelem.warn('Previous PROD found on talk page, aborting procedure');
-					return;
-				}
-
+				params.oldProdPresent = true; // Mark for reference later, when deciding if to endorse
 			// if there are multiple templates, at least one of them would be a prior xfd template
 			} else {
 				statelem.warn('Previous XfD template found on talk page, aborting procedure');
@@ -242,22 +232,39 @@ Twinkle.prod.callbacks = {
 			return;
 		}
 
-		// Alert if article is at least three days old, not in Category:Living people, and BLPPROD is selected
-		if (params.blp) {
-			var isMoreThan3DaysOld = new Morebits.date(params.creation).add(3, 'days').isAfter(new Date(pageobj.getLoadTime()));
-			var blpcheck_re = /\[\[Category:Living people\]\]/i;
-			if (!blpcheck_re.test(text) && isMoreThan3DaysOld) {
-				if (!confirm('Please note that the article is not in Category:Living people and hence may be ineligible for BLPPROD. Are you sure you want to continue? \n\nYou may wish to add the category if you proceed, unless the article is about a recently deceased person.')) {
-					return;
-				}
-			}
-		}
 
 		// Remove tags that become superfluous with this action
 		text = text.replace(/{{\s*(userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/gi, '');
 		var prod_re = /{{\s*(?:Prod blp|Proposed deletion|book-prod)\/dated(?: files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
 		var summaryText;
+
 		if (!prod_re.test(text)) {
+
+			// Page previously PROD-ed
+			if (params.oldProdPresent) {
+				if (params.blp) {
+					if (!confirm('Previous PROD nomination found on talk page. Do you still want to continue applying BLPPROD? ')) {
+						statelem.warn('Previous PROD found on talk page, aborted by user');
+						return;
+					}
+					statelem.info('Previous PROD found on talk page, continuing');
+				} else {
+					statelem.warn('Previous PROD found on talk page, aborting procedure');
+					return;
+				}
+			}
+
+			// Alert if article is at least three days old, not in Category:Living people, and BLPPROD is selected
+			if (params.blp) {
+				var isMoreThan3DaysOld = new Morebits.date(params.creation).add(3, 'days').isAfter(new Date(pageobj.getLoadTime()));
+				var blpcheck_re = /\[\[Category:Living people\]\]/i;
+				if (!blpcheck_re.test(text) && isMoreThan3DaysOld) {
+					if (!confirm('Please note that the article is not in Category:Living people and hence may be ineligible for BLPPROD. Are you sure you want to continue? \n\nYou may wish to add the category if you proceed, unless the article is about a recently deceased person.')) {
+						return;
+					}
+				}
+			}
+
 			// Notification to first contributor
 			if (params.usertalk) {
 				// Disallow warning yourself
@@ -312,14 +319,16 @@ Twinkle.prod.callbacks = {
 			}
 
 			// Add {{Old prod}} to the talk page
-			var oldprodfull = '{{Old prod|nom=' + mw.config.get('wgUserName') + '|nomdate={{subst:#time: Y-m-d}}}}\n';
-			var talktitle = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
-			var talkpage = new Morebits.wiki.page(talktitle, 'Placing {{Old prod}} on talk page');
-			talkpage.setPrependText(oldprodfull);
-			talkpage.setEditSummary('Adding {{Old prod}}' + Twinkle.getPref('summaryAd'));
-			talkpage.setFollowRedirect(true);  // match behavior for page tagging
-			talkpage.setCreateOption('recreate');
-			talkpage.prepend();
+			if (!params.oldProdPresent) {
+				var oldprodfull = '{{Old prod|nom=' + mw.config.get('wgUserName') + '|nomdate={{subst:#time: Y-m-d}}}}\n';
+				var talktitle = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
+				var talkpage = new Morebits.wiki.page(talktitle, 'Placing {{Old prod}} on talk page');
+				talkpage.setPrependText(oldprodfull);
+				talkpage.setEditSummary('Adding {{Old prod}}' + Twinkle.getPref('summaryAd'));
+				talkpage.setFollowRedirect(true);  // match behavior for page tagging
+				talkpage.setCreateOption('recreate');
+				talkpage.prepend();
+			}
 		} else {  // already tagged for PROD, so try endorsing it
 			var prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/i;
 			if (prod2_re.test(text)) {
@@ -327,9 +336,8 @@ Twinkle.prod.callbacks = {
 				return;
 			}
 			var confirmtext = 'A {{proposed deletion}} tag was already found on this page. \nWould you like to add a {{proposed deletion endorsed}} tag with your explanation?';
-			if (params.blp) {
+			if (params.blp && !/{{\s*Prod blp\/dated/.test(text)) {
 				confirmtext = 'A non-BLP {{proposed deletion}} tag was found on this article.\nWould you like to add a {{proposed deletion endorsed}} tag with explanation "article is a biography of a living person with no sources"?';
-				// FIXME: this msg is shown even if it was a BLPPROD tag.
 			}
 			if (!confirm(confirmtext)) {
 				statelem.warn('Aborted per user request');
