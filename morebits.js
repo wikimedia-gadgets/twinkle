@@ -4796,10 +4796,6 @@ Morebits.simpleWindow.setButtonsEnabled = function(enabled) {
 };
 
 
-// Twinkle blacklist was removed per consensus at http://en.wikipedia.org/wiki/Wikipedia:Administrators%27_noticeboard/Archive221#New_Twinkle_blacklist_proposal
-
-
-
 }(window, document, jQuery)); // End wrap with anonymous function
 
 
