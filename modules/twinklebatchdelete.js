@@ -319,7 +319,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		}).get();
 
 		var subpageLister = new Morebits.batchOperation();
-		subpageLister.setOption('chunkSize', Twinkle.getPref('batchdeleteChunks'));
+		subpageLister.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		subpageLister.setPageList(pages);
 		subpageLister.run(function worker (pageName) {
 			var pageTitle = mw.Title.newFromText(pageName);
@@ -459,7 +459,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 	}
 
 	var pageDeleter = new Morebits.batchOperation(input.delete_page ? 'Deleting pages' : 'Initiating requested tasks');
-	pageDeleter.setOption('chunkSize', Twinkle.getPref('batchdeleteChunks'));
+	pageDeleter.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 	// we only need the initial status lines if we're deleting the pages in the pages array
 	pageDeleter.setOption('preserveIndividualStatusLines', input.delete_page);
 	pageDeleter.setPageList(input.pages);
@@ -487,7 +487,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 	}, function postFinish() {
 		if (input.delete_subpages) {
 			var subpageDeleter = new Morebits.batchOperation('Deleting subpages');
-			subpageDeleter.setOption('chunkSize', Twinkle.getPref('batchdeleteChunks'));
+			subpageDeleter.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 			subpageDeleter.setOption('preserveIndividualStatusLines', true);
 			subpageDeleter.setPageList(input.subpages);
 			subpageDeleter.run(function(pageName) {
@@ -589,7 +589,7 @@ Twinkle.batchdelete.callbacks = {
 		}
 
 		var redirectDeleter = new Morebits.batchOperation('Deleting redirects to ' + apiobj.params.page);
-		redirectDeleter.setOption('chunkSize', Twinkle.getPref('batchdeleteChunks'));
+		redirectDeleter.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		redirectDeleter.setPageList(pages);
 		redirectDeleter.run(function(pageName) {
 			var wikipedia_page = new Morebits.wiki.page(pageName, 'Deleting ' + pageName);
@@ -620,7 +620,7 @@ Twinkle.batchdelete.callbacks = {
 		}
 
 		var unlinker = new Morebits.batchOperation('Unlinking backlinks to ' + apiobj.params.page);
-		unlinker.setOption('chunkSize', Twinkle.getPref('batchdeleteChunks'));
+		unlinker.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		unlinker.setPageList(pages);
 		unlinker.run(function(pageName) {
 			var wikipedia_page = new Morebits.wiki.page(pageName, 'Unlinking on ' + pageName);
@@ -672,7 +672,7 @@ Twinkle.batchdelete.callbacks = {
 		}
 
 		var unlinker = new Morebits.batchOperation('Unlinking backlinks to ' + apiobj.params.page);
-		unlinker.setOption('chunkSize', Twinkle.getPref('batchdeleteChunks'));
+		unlinker.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		unlinker.setPageList(pages);
 		unlinker.run(function(pageName) {
 			var wikipedia_page = new Morebits.wiki.page(pageName, 'Removing file usages on ' + pageName);

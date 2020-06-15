@@ -388,7 +388,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	}
 
 	var batchOperation = new Morebits.batchOperation('Applying protection settings');
-	batchOperation.setOption('chunkSize', Twinkle.getPref('batchProtectChunks'));
+	batchOperation.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 	batchOperation.setOption('preserveIndividualStatusLines', true);
 	batchOperation.setPageList(input.pages);
 	batchOperation.run(function(pageName) {
