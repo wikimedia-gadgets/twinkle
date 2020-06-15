@@ -321,7 +321,7 @@ Twinkle.prod.callbacks = {
 			talkpage.setCreateOption('recreate');
 			talkpage.prepend();
 		} else {  // already tagged for PROD, so try endorsing it
-			var prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/;
+			var prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/i;
 			if (prod2_re.test(text)) {
 				statelem.warn('Page already tagged with {{proposed deletion}} and {{proposed deletion endorsed}} templates, aborting procedure');
 				return;
@@ -337,7 +337,7 @@ Twinkle.prod.callbacks = {
 			}
 
 			summaryText = 'Endorsing proposed deletion per [[WP:' + (params.blp ? 'BLP' : params.book ? 'BOOK' : '') + 'PROD]].';
-			text = text.replace(prod_re, text.match(prod_re) + '\n{{proposed deletion endorsed|1=' + (params.blp ?
+			text = text.replace(prod_re, text.match(prod_re) + '\n{{Proposed deletion endorsed|1=' + (params.blp ?
 				'article is a [[WP:BLPPROD|biography of a living person with no sources]]' :
 				Morebits.string.formatReasonText(params.reason)) + '}}\n');
 
