@@ -814,7 +814,7 @@ Twinkle.xfd.callbacks = {
 		}
 		appendText += ' ~~~~~';
 		if (params.reason) {
-			appendText += "\n#* '''Reason''': " + params.reason + '\n';
+			appendText += "\n#* '''Reason''': " + params.reason;
 		}
 
 		usl.log(appendText, editsummary + Twinkle.getPref('summaryAd'));
