@@ -745,7 +745,7 @@ Twinkle.xfd.callbacks = {
 		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
 		var fileLogLink = mw.config.get('wgNamespaceNumber') === 6 ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])' : '';
 
-		var appendText = '\n# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ' nominated at [[WP:' + params.venue.toUpperCase() + '|' + toTLACase(params.venue) + ']]';
+		var appendText = '# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ' nominated at [[WP:' + params.venue.toUpperCase() + '|' + toTLACase(params.venue) + ']]';
 		var extraInfo = '';
 
 		switch (params.venue) {
@@ -814,7 +814,7 @@ Twinkle.xfd.callbacks = {
 		}
 		appendText += ' ~~~~~';
 		if (params.reason) {
-			appendText += "\n#* '''Reason''': " + params.reason + '\n';
+			appendText += "\n#* '''Reason''': " + params.reason;
 		}
 
 		usl.log(appendText, editsummary + Twinkle.getPref('summaryAd'));
