@@ -192,11 +192,11 @@ body.skin-monobook .morebits-dialog {
 
 body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 	height: 1em;
-	background-color: #BCCADF;
-	background-image: none;
+	background-color: #BCCADF !important;
+	background-image: none !important;
 	font: bold 1em sans-serif;
 	overflow: hidden;
-	padding: .4em .3em .5em;
+	padding: .4em .3em .5em !important;
 	white-space: nowrap;
 }
 
@@ -229,7 +229,7 @@ body .ui-dialog.morebits-dialog .ui-dialog-buttonpane {
 	background-color: #BCCADF;
 	margin: 0;
 	min-height: .5em;
-	padding-left: 1.2em;
+	padding-left: 1.2em !important;
 }
 
 body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
