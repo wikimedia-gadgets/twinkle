@@ -171,7 +171,7 @@ Twinkle.unlink.callbacks = {
 					if ($(xmlDoc).find('query-continue').length) {
 						apiobj.params.form.append({
 							type: 'div',
-							label: 'First ' + list.length.toString() + ' file usages shown.'
+							label: 'First ' + mw.language.convertNumber(list.length) + ' file usages shown.'
 						});
 					}
 					apiobj.params.form.append({
@@ -217,7 +217,7 @@ Twinkle.unlink.callbacks = {
 				if ($(xmlDoc).find('query-continue').length) {
 					apiobj.params.form.append({
 						type: 'div',
-						label: 'First ' + list.length.toString() + ' backlinks shown.'
+						label: 'First ' + mw.language.convertNumber(list.length) + ' backlinks shown.'
 					});
 				}
 				apiobj.params.form.append({

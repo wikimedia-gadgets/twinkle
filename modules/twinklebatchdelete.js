@@ -188,7 +188,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 				metadata.push('uploader: ' + $page.find('ii').attr('user'));
 				metadata.push('last edit from: ' + $page.find('rev').attr('user'));
 			} else {
-				metadata.push(size + ' bytes');
+				metadata.push(mw.language.convertNumber(size) + ' bytes');
 			}
 			Twinkle.batchdelete.pages[title] = {
 				label: title + (metadata.length ? ' (' + metadata.join('; ') + ')' : ''),
@@ -366,7 +366,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 						metadata.push('uploader: ' + $page.find('ii').attr('user'));
 						metadata.push('last edit from: ' + $page.find('rev').attr('user'));
 					} else {
-						metadata.push(size + ' bytes');
+						metadata.push(mw.language.convertNumber(size) + ' bytes');
 					}
 					subpageList.push({
 						label: title + (metadata.length ? ' (' + metadata.join('; ') + ')' : ''),
@@ -441,7 +441,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 	var numProtected = $(Morebits.quickForm.getElements(form, 'pages')).filter(function(index, element) {
 		return element.checked && element.nextElementSibling.style.color === 'red';
 	}).length;
-	if (numProtected > 0 && !confirm('You are about to delete ' + numProtected + ' fully protected page(s). Are you sure?')) {
+	if (numProtected > 0 && !confirm('You are about to delete ' + mw.language.convertNumber(numProtected) + ' fully protected page(s). Are you sure?')) {
 		return;
 	}
 
