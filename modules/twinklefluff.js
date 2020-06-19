@@ -23,7 +23,7 @@ Twinkle.fluff = function twinklefluff() {
 	// This is for handling quick bots that makes edits seconds after the original edit is made.
 	// This only affects vandalism rollback; for good faith rollback, it will stop, indicating a bot
 	// has no faith, and for normal rollback, it will rollback that edit.
-	Twinkle.fluff.whiteList = [
+	Twinkle.fluff.trustedBots = [
 		'AnomieBOT',
 		'SineBot'
 	];
@@ -449,7 +449,7 @@ Twinkle.fluff.callbacks = {
 						return;
 				}
 			} else if (params.type === 'vand' &&
-					Twinkle.fluff.whiteList.indexOf(top.getAttribute('user')) !== -1 && revs.length > 1 &&
+					Twinkle.fluff.trustedBots.indexOf(top.getAttribute('user')) !== -1 && revs.length > 1 &&
 					revs[1].getAttribute('pageId') === params.revid) {
 				Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', a trusted bot, and the revision before was made by our vandal, so we will proceed with the revert.' ]);
 				index = 2;
@@ -460,26 +460,26 @@ Twinkle.fluff.callbacks = {
 
 		}
 
-		if (Twinkle.fluff.whiteList.indexOf(params.user) !== -1) {
+		if (Twinkle.fluff.trustedBots.indexOf(params.user) !== -1) {
 			switch (params.type) {
 				case 'vand':
-					Morebits.status.info('Info', [ 'Vandalism revert was chosen on ', Morebits.htmlNode('strong', params.user), '. As this is a whitelisted bot, we assume you wanted to revert vandalism made by the previous user instead.' ]);
+					Morebits.status.info('Info', [ 'Vandalism revert was chosen on ', Morebits.htmlNode('strong', params.user), '. As this is a trusted bot, we assume you wanted to revert vandalism made by the previous user instead.' ]);
 					index = 2;
 					params.user = revs[1].getAttribute('user');
 					break;
 				case 'agf':
-					Morebits.status.warn('Notice', [ 'Good faith revert was chosen on ', Morebits.htmlNode('strong', params.user), '. This is a whitelisted bot and thus AGF rollback will not proceed.' ]);
+					Morebits.status.warn('Notice', [ 'Good faith revert was chosen on ', Morebits.htmlNode('strong', params.user), '. This is a trusted bot and thus AGF rollback will not proceed.' ]);
 					return;
 				case 'norm':
 				/* falls through */
 				default:
-					var cont = confirm('Normal revert was chosen, but the most recent edit was made by a whitelisted bot (' + params.user + '). Do you want to revert the revision before instead?');
+					var cont = confirm('Normal revert was chosen, but the most recent edit was made by a trusted bot (' + params.user + '). Do you want to revert the revision before instead?');
 					if (cont) {
-						Morebits.status.info('Info', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', params.user), '. This is a whitelisted bot, and per confirmation, we\'ll revert the previous revision instead.' ]);
+						Morebits.status.info('Info', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', params.user), '. This is a trusted bot, and per confirmation, we\'ll revert the previous revision instead.' ]);
 						index = 2;
 						params.user = revs[1].getAttribute('user');
 					} else {
-						Morebits.status.warn('Notice', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', params.user), '. This is a whitelisted bot, but per confirmation, revert on selected revision will proceed.' ]);
+						Morebits.status.warn('Notice', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', params.user), '. This is a trusted bot, but per confirmation, revert on selected revision will proceed.' ]);
 					}
 					break;
 			}
