@@ -126,7 +126,7 @@ var callback_commit = function(event) {
 		var pages = event.target.getChecked('pages');
 		Morebits.status.init(event.target);
 
-		var batchOperation = new Morebits.batchOperation('Deleting articles');
+		var batchOperation = new Morebits.batchOperation('Deleting pages');
 		batchOperation.setOption('chunkSize', Twinkle.getPref('proddeleteChunks'));
 		batchOperation.setOption('preserveIndividualStatusLines', true);
 		batchOperation.setPageList(pages);
