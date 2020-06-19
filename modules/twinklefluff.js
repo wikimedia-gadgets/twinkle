@@ -493,7 +493,7 @@ Twinkle.fluff.callbacks = {
 		}
 
 		if (!found) {
-			statelem.error([ 'No previous revision found. Perhaps ', Morebits.htmlNode('strong', params.user), ' is the only contributor, or that the user has made more than ' + Twinkle.getPref('revertMaxRevisions') + ' edits in a row.' ]);
+			statelem.error([ 'No previous revision found. Perhaps ', Morebits.htmlNode('strong', params.user), ' is the only contributor, or that the user has made more than ' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + ' edits in a row.' ]);
 			return;
 		}
 
@@ -505,7 +505,7 @@ Twinkle.fluff.callbacks = {
 		var good_revision = revs[found];
 		var userHasAlreadyConfirmedAction = false;
 		if (params.type !== 'vand' && count > 1) {
-			if (!confirm(params.user + ' has made ' + count + ' edits in a row. Are you sure you want to revert them all?')) {
+			if (!confirm(params.user + ' has made ' + mw.language.convertNumber(count) + ' edits in a row. Are you sure you want to revert them all?')) {
 				Morebits.status.info('Notice', 'Stopping revert.');
 				return;
 			}
@@ -517,7 +517,7 @@ Twinkle.fluff.callbacks = {
 		params.goodid = good_revision.getAttribute('revid');
 		params.gooduser = good_revision.getAttribute('user');
 
-		statelem.status([ ' revision ', Morebits.htmlNode('strong', params.goodid), ' that was made ', Morebits.htmlNode('strong', count), ' revisions ago by ', Morebits.htmlNode('strong', params.gooduser) ]);
+		statelem.status([ ' revision ', Morebits.htmlNode('strong', params.goodid), ' that was made ', Morebits.htmlNode('strong', mw.language.convertNumber(count)), ' revisions ago by ', Morebits.htmlNode('strong', params.gooduser) ]);
 
 		var summary, extra_summary;
 		switch (params.type) {

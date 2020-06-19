@@ -317,7 +317,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				if (isRedir) {
 					metadata.push('redirect');
 				}
-				metadata.push(size + ' bytes');
+				metadata.push(mw.language.convertNumber(size) + ' bytes');
 				$editProt = $page.find('pr[type="edit"][level="sysop"]');
 			}
 			if ($editProt.length > 0) {
@@ -368,7 +368,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	var numProtected = $(Morebits.quickForm.getElements(form, 'pages')).filter(function(index, element) {
 		return element.checked && element.nextElementSibling.style.color === 'red';
 	}).length;
-	if (numProtected > 0 && !confirm('You are about to act on ' + numProtected + ' fully protected page(s). Are you sure?')) {
+	if (numProtected > 0 && !confirm('You are about to act on ' + mw.language.convertNumber(numProtected) + ' fully protected page(s). Are you sure?')) {
 		return;
 	}
 
