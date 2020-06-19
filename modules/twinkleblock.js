@@ -1352,9 +1352,6 @@ Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemp
 	form.root.previewer.closePreview();
 };
 Twinkle.block.prev_template_expiry = null;
-Twinkle.block.prev_block_reason = null;
-Twinkle.block.prev_article = null;
-Twinkle.block.prev_reason = null;
 
 Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 	var params = {
