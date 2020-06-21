@@ -17,8 +17,8 @@ There are two ways to upload Twinkle scripts to Wikipedia or another destination
 
 After the files are synced, ensure that [MediaWiki:Gadgets-definition][] contains the following lines:
 
-    * Twinkle[ResourceLoader|dependencies=ext.gadget.morebits,ext.gadget.select2|rights=autoconfirmed|type=general|peers=Twinkle-pagestyles]|Twinkle.js|twinkleprod.js|twinkleimage.js|twinklebatchundelete.js|twinklewarn.js|twinklespeedy.js|friendlyshared.js|twinklediff.js|twinkleunlink.js|friendlytag.js|twinkledeprod.js|friendlywelcome.js|twinklexfd.js|twinklebatchdelete.js|twinklebatchprotect.js|twinkleconfig.js|twinklefluff.js|twinkleprotect.js|twinklearv.js|twinkleblock.js|friendlytalkback.js|Twinkle.css
-    * morebits[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,jquery.ui,jquery.tipsy|hidden]|morebits.js|morebits.css
+    * Twinkle[ResourceLoader|dependencies=ext.gadget.morebits,ext.gadget.select2,mediawiki.api|rights=autoconfirmed|type=general|peers=Twinkle-pagestyles]|Twinkle.js|twinkleprod.js|twinkleimage.js|twinklebatchundelete.js|twinklewarn.js|twinklespeedy.js|friendlyshared.js|twinklediff.js|twinkleunlink.js|friendlytag.js|twinkledeprod.js|friendlywelcome.js|twinklexfd.js|twinklebatchdelete.js|twinklebatchprotect.js|twinkleconfig.js|twinklefluff.js|twinkleprotect.js|twinklearv.js|twinkleblock.js|friendlytalkback.js|Twinkle.css
+    * morebits[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.Title,jquery.ui,jquery.tipsy|hidden]|morebits.js|morebits.css
     * Twinkle-pagestyles[hidden|skins=vector]|Twinkle-pagestyles.css
     * select2[ResourceLoader|hidden]|select2.min.js|select2.min.css
 
