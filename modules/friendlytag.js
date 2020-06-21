@@ -1822,6 +1822,10 @@ Twinkle.tag.callbacks = {
 			summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
 		};
 
+		if (!tags.length) {
+			Morebits.status.warn('Info', 'No tags remaining to apply');
+		}
+
 		tags.sort();
 		$.each(tags, addTag);
 
@@ -1832,19 +1836,20 @@ Twinkle.tag.callbacks = {
 			pageText = pageText.replace(oldTags[0], oldTags[1] + tagText + oldTags[2] + oldTags[3]);
 		} else {
 			// Fold any pre-existing Rcats into taglist and under Rcatshell
-			var pageTags = pageText.match(/\n{{R(?:edirect)? .*?}}/img);
+			var pageTags = pageText.match(/\s*{{R(?:edirect)? .*?}}/img);
 			var oldPageTags = '';
 			if (pageTags) {
 				pageTags.forEach(function(pageTag) {
 					var pageRe = new RegExp(pageTag, 'img');
 					pageText = pageText.replace(pageRe, '');
-					oldPageTags += pageTag;
+					pageTag = pageTag.trim();
+					oldPageTags += '\n' + pageTag;
 				});
 			}
 			pageText += '\n{{Redirect category shell|' + tagText + oldPageTags + '\n}}';
 		}
 
-		summaryText += (tags.length > 0 ? ' tag' + (tags.length > 1 ? 's' : '') : '') + ' to redirect';
+		summaryText += (tags.length > 0 ? ' tag' + (tags.length > 1 ? 's' : ' ') : 'rcat shell') + ' to redirect';
 
 		// avoid truncated summaries
 		if (summaryText.length > (499 - Twinkle.getPref('summaryAd').length)) {
