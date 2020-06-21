@@ -1,18 +1,18 @@
-QUnit.module('constants');
-QUnit.test('userIsSysop', assert => {
-	assert.true(Morebits.userIsSysop, 'Is sysop');
-});
-QUnit.test('pageNameNorm', assert => {
-	assert.strictEqual(Morebits.pageNameNorm, 'Macbeth, King of Scotland', 'Normalized page title');
-});
-
-QUnit.module('methods');
+QUnit.module('Morebits methods');
 QUnit.test('userIsInGroup', assert => {
 	assert.true(Morebits.userIsInGroup('sysop'), 'Sysop');
 	assert.true(Morebits.userIsInGroup('interface-admin'), 'Int-Admin');
 	assert.false(Morebits.userIsInGroup('Founder'), 'Founder');
 });
-
+QUnit.test('userIsSysop', assert => {
+	assert.true(Morebits.userIsSysop, 'Is sysop');
+});
+QUnit.test('isPageRedirect', assert => {
+	assert.false(Morebits.isPageRedirect(), 'Is redirect');
+});
+QUnit.test('pageNameNorm', assert => {
+	assert.strictEqual(Morebits.pageNameNorm, 'Macbeth, King of Scotland', 'Normalized page title');
+});
 QUnit.test('pageNameRegex', assert => {
 	assert.strictEqual(Morebits.pageNameRegex(mw.config.get('wgPageName')), '[Mm]acbeth,[_ ]King[_ ]of[_ ]Scotland', 'First character and spaces');
 	assert.strictEqual(Morebits.pageNameRegex(''), '', 'Empty');
@@ -26,8 +26,4 @@ QUnit.test('namespaceRegex', assert => {
 	assert.strictEqual(Morebits.namespaceRegex([4, 5]), '(?:[Ww][Ii][Kk][Ii][Pp][Ee][Dd][Ii][Aa]|[Ww][Ii][Kk][Ii][Pp][Ee][Dd][Ii][Aa][_ ][Tt][Aa][Ll][Kk]|[Ww][Pp]|[Ww][Tt]|[Pp][Rr][Oo][Jj][Ee][Cc][Tt]|[Pp][Rr][Oo][Jj][Ee][Cc][Tt][_ ][Tt][Aa][Ll][Kk])', 'Project and project talk');
 	assert.strictEqual(Morebits.namespaceRegex(0), '', 'Main');
 	assert.strictEqual(Morebits.namespaceRegex(), '', 'Empty');
-});
-
-QUnit.test('isPageRedirect', assert => {
-	assert.false(Morebits.isPageRedirect(), 'Is redirect');
 });

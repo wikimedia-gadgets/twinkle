@@ -5,6 +5,7 @@
  * The highlights include:
  * - {@link Morebits.wiki.api} - make calls to the MediaWiki API
  * - {@link Morebits.wiki.page} - modify pages on the wiki (edit, revert, delete, etc.)
+ * - {@link Morebits.wiki.user} - get information on and process users (block, change user groups, etc.)
  * - {@link Morebits.date} - enhanced date object processing, sort of a light moment.js
  * - {@link Morebits.quickForm} - generate quick HTML forms on the fly
  * - {@link Morebits.simpleWindow} - a wrapper for jQuery UI Dialog with a custom look and extra features
@@ -156,6 +157,15 @@ Morebits.namespaceRegex = function(namespaces) {
 	}
 	return regex;
 };
+
+/**
+ * Additional regex used to identify usernames as likely unflagged bots.
+ *
+ * @constant
+ * @default
+ * @type {RegExp}
+ */
+Morebits.botUsernameRegex = /bot\b/i;
 
 
 /* **************** Morebits.quickForm **************** */
@@ -2041,8 +2051,9 @@ Object.getOwnPropertyNames(Date.prototype).forEach(function(func) {
 
 /* **************** Morebits.wiki **************** */
 /**
- * Various objects for wiki editing and API access, including
- * {@link Morebits.wiki.api} and {@link Morebits.wiki.page}.
+ * Useful classes for wiki editing and API access, in particular
+ * {@link Morebits.wiki.api}, and {@link Morebits.wiki.page},
+ * and {@link Morebits.wiki.user}.
  *
  * @namespace Morebits.wiki
  * @memberof Morebits
@@ -4566,6 +4577,1516 @@ Morebits.wiki.page = function(pageName, status) {
 */
 
 
+/* **************** Morebits.wiki.user **************** */
+/**
+ * Use the MediaWiki API to {@link Morebits.wiki.user#load|load info about}
+ * a user, and optionally {@link Morebits.wiki.user#block|block},
+ * {@link Morebits.wiki.user#unblock|unblock}, or
+ * {@link Morebits.wiki.user#notify|notify} them, or,
+ * {@link Morebits.wiki.user#groups|change their user groups}.
+ * Generic setters include {@link Morebits.wiki.user#setReason|setReason},
+ * {@link Morebits.wiki.user#setWatchuser|setWatchuser},
+ * and {@link Morebits.wiki.user#setChangeTags|setChangeTags}.
+ *
+ * @memberof Morebits.wiki
+ * @class
+ * @param {string} userName - The user in question.  Can be a username, IP address, or range.
+ * @param {string|Morebits.status} [currentAction='Querying user' + userName] - A string
+ * describing the action about to be undertaken, or a `Morebits.status` object.
+ * @throws {Error} If invalid username provided.
+ */
+Morebits.wiki.user = function(userName, currentAction) {
+	// Basic normalization, e.g. if namespace prefix is included
+	// Used elsewhere to get prefixed user & user talk page titles
+	var userTitle;
+	if (typeof userName !== 'string' || !(userTitle = mw.Title.newFromText(userName, 2))) {
+		throw new Error('Invalid username provided');
+	}
+	// Normalize IPv6
+	userName = Morebits.ip.sanitizeIPv6(userTitle.getMainText());
+
+	if (!currentAction) {
+		currentAction = 'Querying user "' + userName + '"';
+	}
+
+	/**
+	 * Private context variable not visible to the outside, thus all the
+	 * data here must be accessed via getter and setter functions.
+	 *
+	 * @private
+	 */
+	var ctx = {
+		userName: userName,
+		userID: null,
+		editCount: null,
+		registration: null,
+		exists: false,
+		hidden: false,
+		loadTime: null,
+		isIP: mw.util.isIPAddress(userName, true),
+		isIPRange: Morebits.ip.isRange(userName),
+
+		reason: null, // Will default to current reason if reblocking
+		changeTags: null,
+		watchuser: false,
+		watchlistExpiry: null,
+		expiry: null, // Will default to current expiry if reblocking
+		callbackParameters: null,
+		statusElement: currentAction instanceof Morebits.status ? currentAction : new Morebits.status(currentAction),
+
+		// block paramters
+		hasBlockLog: null,
+		lastBlockLogEntry: null,
+		blockInfo: null, // If blocked, an object full of block parameters
+		blockedRange: null,
+		isBlocked: null,
+		isRangeBlocked: null,
+		reblock: false,
+		useOriginalBlockParams: true,
+
+		// null before loading, array after
+		groups: null,
+		autoGroups: null,
+		userRights: null,
+		// Response is array of objects with group: name and expiry: time,
+		// but we force it into an object with groupname: expiration
+		grantedGroups: null,
+
+		/* Block */
+		// If the user is directly blocked, these defaults will be
+		// overridden with values from the active block unless
+		// useOriginalBlockParams is set
+		allowusertalk: true,
+		anononly: false,
+		autoblock: true,
+		nocreate: true,
+		noemail: false,
+		hidename: false,
+		partial: false,
+		namespacerestrictions: null,
+		pagerestrictions: null,
+
+		/* Change usergroups */
+		addGroups: null,
+		removeGroups: null,
+
+		/* Notify */
+		// talkLinks, talkTemplates, and notifySkipTemplates end up as arrays
+		talkTitle: userTitle.getTalkPage().toText(),
+		talkText: null,
+		talkExists: null,
+		talkTimestamp: null,
+		talkLastEditor: null,
+		talkTemplates: null,
+		talkLinks: null,
+		message: null,
+		sectionTitle: null,
+		notifyBots: false,
+		notifyIndef: false,
+		notifySelf: false,
+		notifySkipTemplates: null,
+		notifySkipLink: null,
+		pageobjectFunctions: null,
+
+		// Internals
+		// In theory mw.user.tokens is available as a fallback,
+		// but since we're always loading there's really no need
+		csrfToken: null,
+		userrightsToken: null,
+		userApi: null,
+		userLoaded: false,
+		blockApi: null,
+		unblockApi: null,
+		groupsApi: null,
+		actionResponse: null,
+
+		// Callbacks
+		onLoadSuccess: null,
+		onLoadFailure: null,
+		onBlockSuccess: null,
+		onBlockFailure: null,
+		onUnblockSuccess: null,
+		onUnblockFailure: null,
+		onGroupsSuccess: null,
+		onGroupsFailure: null,
+		onNotifySuccess: null,
+		onNotifyFailure: null
+	};
+
+	var emptyFunction = function() { };
+
+	/**
+	 * Loads info about the user.  Required before (nearly) all of the
+	 * object methods, but will be done automatically if forgotten.  Note
+	 * that unlike {@link Morebits.wiki.page#load}, the `onSuccess` callback
+	 * is not required.
+	 *
+	 * @param {Function} [onSuccess] - Callback function which is called when the load has succeeded.
+	 * @param {Function} [onFailure] - Callback function which is called when the load fails.
+	 */
+	this.load = function(onSuccess, onFailure) {
+		ctx.onLoadSuccess = onSuccess;
+		ctx.onLoadFailure = onFailure || emptyFunction;
+
+		ctx.loadQuery = {
+			action: 'query',
+			// Potential expansions:
+			// list=usercontribs to get timestamp of user's last
+			// edit, can skip if haven't edited in X days
+			// list=allusers for global attached stats
+			// list=globalblocks
+			// meta=globaluserinfo for locked status
+			list: 'blocks|users|logevents',
+
+			// groups technically redundant to implicit+groupmemberships, but meh
+			usprop: 'registration|editcount|rights|groups|implicitgroups|groupmemberships',
+			ususers: ctx.userName,
+
+			// bkusers or bkip set below as appropriate
+			bkprop: 'id|user|by|timestamp|expiry|reason|flags|restrictions|range',
+
+			// Just to know if there is a block log.  Logs users, IPs, and CIDR blocks,
+			// but note: no entries present for an IP caught within a range block.
+			// Moreover, semi-busted on ranges, see [[phab:T270737]] and [[phab:T146628]].
+			// Basically, logevents doesn't treat functionally-equivalent ranges
+			// as equivalent, meaning functionally-equivalent IP ranges may be
+			// misinterpreted.  Without logevents redirecting (like Special:Block does)
+			// we would need a function to parse ranges, which is a pain.
+			// IPUtils has code, but it'd be a lot of cruft for one purpose.
+			letype: 'block',
+			letitle: userTitle.toText(),
+			lelimit: 1,
+
+			// Get the talk page content, categories, etc.
+			titles: ctx.talkTitle,
+			// Redirect checking is present in morebits.wiki.page,
+			// but as this is mainly a utility in case talkpage
+			// content is desired, concerns like cross-namespace
+			// redirects aren't checked; we follow all redirects.
+			redirects: '',
+			prop: 'info|revisions|templates|extlinks',
+			// Could include intestactions but that's probably overkill
+			rvprop: 'content|timestamp|user',
+
+			curtimestamp: '',
+			meta: 'tokens',
+			type: 'csrf|userrights', // We don't yet know which we'll need
+			format: 'json'
+		};
+
+		// bkusers doesn't catch single IPs blocked as part of a range block
+		if (ctx.isIP) {
+			ctx.loadQuery.bkip = ctx.userName;
+		} else {
+			ctx.loadQuery.bkusers = ctx.userName;
+		}
+
+		// If skip templates already set, use those; if not, just get a bunch
+		if (ctx.notifySkipTemplates && ctx.notifySkipTemplates.length) {
+			ctx.loadQuery.tltemplates = ctx.notifySkipTemplates;
+		} else {
+			ctx.loadQuery.tllimit = 42; // 640K ought to be enough for anybody
+		}
+		// Likewise for external skip links.  elprotocol missing so should get everyone
+		if (ctx.notifySkipLink) {
+			ctx.loadQuery.elquery = ctx.notifySkipLink;
+		} else {
+			ctx.loadQuery.ellimit = 42;
+		}
+
+		ctx.userApi = new Morebits.wiki.api('Retrieving user information...', ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
+		ctx.userApi.setParent(this);
+		ctx.userApi.post();
+	};
+
+
+	// callback from userApi.post()
+	var fnLoadSuccess = function() {
+		var response = ctx.userApi.getResponse();
+
+		ctx.loadTime = response.curtimestamp;
+		// None of these have time-based "edit conflict"-like
+		// resolution.  If we really wanted to replicate something
+		// here (we don't), we could attempt something with logevents,
+		// but that's complicated by the fact that logevents only
+		// allows one type at a time, not to mention the extra,
+		// nearly-always unnecessary query it'd entail.  In the end,
+		// block is probably fine enough with `reblock`, unblock will
+		// just fail, and userrights will fail quietly, so it'd just
+		// be excessive.  We *do* store the last block log entry, so
+		// clients can do as they please.  This tells when the user
+		// was loaded, which is useful for time-based functions.
+		if (!ctx.loadTime) {
+			ctx.statusElement.error('Failed to retrieve current timestamp.');
+			ctx.onLoadFailure(this);
+			return;
+		}
+
+		// This is what we *really* care about...
+		response = response.query;
+
+		// Even if this is unnecessary (notification), an issue here
+		// is a likley indicates *something* went wrong.  The same
+		// as Morebits.wiki.page, though it's more necessary there.
+		if (!response.tokens.csrftoken || !response.tokens.userrightstoken) {
+			ctx.statusElement.error('Failed to retrieve tokens.');
+			ctx.onLoadFailure(this);
+			return;
+		}
+		ctx.csrfToken = response.tokens.csrftoken;
+		ctx.userrightsToken = response.tokens.userrightstoken;
+
+		var user = response.users && response.users[0];
+		// Not sure scenario could lead to this, but might as well be safe
+		if (!user) {
+			ctx.statusElement.error('Failed to retrieve user ' + ctx.userName);
+			ctx.onloadFailure(this);
+			// force error to stay on the screen
+			++Morebits.wiki.numberOfActionsLeft;
+			return;
+		}
+		// IPs and registered accounts
+		ctx.exists = !user.missing;
+		if (ctx.exists) {
+			ctx.userName = user.name; // Normalization, possibly?
+
+			// Registered account, equivalent to !!user.userid
+			// IPs and unregistered accounts default to null for ID and registration;
+			// edit count is similarly meaningless
+			if (!user.invalid) {
+				ctx.userID = user.userid;
+				ctx.registration = user.registration;
+				ctx.editCount = user.editcount;
+
+				// Username oversighted or globally hidden,
+				// mostly so advanced users know to be careful
+				ctx.hidden = !!user.hidden;
+
+				// Array
+				ctx.groups = user.groups;
+				ctx.autoGroups = user.implicitgroups;
+				ctx.userRights = user.rights;
+				// Force into object with group: expiry pairs
+				// It's negligible, but reduce seems about 10-15% slower
+				if (user.groupmemberships) {
+					ctx.grantedGroups = {};
+					user.groupmemberships.forEach(function(gm) {
+						ctx.grantedGroups[gm.group] = gm.expiry;
+					});
+				}
+			}
+
+			// Save the most recent block log entry.  It's
+			// probably most interesting for checking the last
+			// action performed or rechecking a block status using
+			// the logid.  IPs caught in a range block won't show
+			// entries here, but will be noted as blocked below,
+			// so it's possible to be currently blocked but not
+			// have a block log.
+			if (response.logevents.length) {
+				ctx.hasBlockLog = true;
+				ctx.lastBlockLogEntry = $.extend({}, response.logevents[0]);
+			}
+
+			if (response.blocks.length) {
+				// Note that this is really a marker for whether the user is covered by a known
+				// block, not whether the user in question is itself directly blocked.  That is, a single
+				// IP blocked only as part of a rangeblock will show up here, but we won't treat treat
+				// them as if they are directly blocked (such as with `reblock`).  As such, the context
+				// variables are only overwritten if the user is directly blocked, and the relevant getters
+				// all use ctx.blockInfo to derive their information.
+				ctx.isBlocked = true;
+				// In the case of multiple blocks, such as an IP blocked *and* rangeblocked,
+				// find the exact block; otherwise, fall back to the most recent.
+				// Likewise, save the widest rangeblock.
+				// Could also pre-sort this by expiry, as that may be more useful.
+				var block, subnet = 0;
+				response.blocks.reverse().forEach(function(bl, idx) {
+					if (bl.user === ctx.userName || (idx === response.blocks.length - 1 && !block)) {
+						block = bl;
+					}
+					// Always false (0.0.0.0 === 0.0.0.0) for users
+					// Ensure we get the largest range
+					if (bl.rangestart !== bl.rangeend && (!subnet || bl.user.split('/')[1] < subnet)) {
+						subnet = bl.user.split('/')[1];
+						ctx.isRangeBlocked = true;
+						ctx.blockedRange = bl.user;
+					}
+				});
+				// blockInfo object used by getters
+				ctx.blockInfo = $.extend({}, block);
+
+				// If this is the actual user in question, override the default
+				// context values in order to default a reblock to the existing parameters.
+				if (ctx.blockInfo.user === ctx.userName && ctx.useOriginalBlockParams) {
+					// Note that expiry and reason aren't here,
+					// as they can apply to non-block methods;
+					// they are handled in fnProcessBlock.
+					['allowusertalk', 'anononly', 'autoblock', 'nocreate', 'noemail', 'partial'].forEach(function(param) {
+						ctx[param] = !!block[param];
+					});
+
+					// hidename, not hidden, since when applying a block, it's hidename.
+					// See also user.hidden aka ctx.hidden.
+					ctx.hidename = !!block.hidden;
+
+					if (ctx.partial) {
+						if (block.restrictions.namespaces) {
+							ctx.namespacerestrictions = block.restrictions.namespaces;
+						}
+						// Force into array of titles, ditch ns (included in title) and page ID
+						if (block.restrictions.pages) {
+							ctx.pagerestrictions = block.restrictions.pages.map(function(rp) {
+								return rp.title;
+							});
+						}
+					}
+				}
+			}
+		} else {
+			// User doesn't exist locally
+			// Suppressed (and gsuppressed) names show
+			// up here as well to those without the permission.
+			// In the future, could consider adding cancreate to
+			// usprop if we wanted to allow for account creation
+			// Which apparently is fucking hard https://www.mediawiki.org/wiki/API:Account_creation#Creating_an_account
+			ctx.userName = '';
+		}
+
+		// Talk page stuff
+		// Ignore unresolved, invalid page titles (e.g. circular redirects)
+		var page = response.pages && response.pages[0];
+		if (page && !page.invalid) {
+			ctx.talkExists = !page.missing;
+			if (ctx.talkExists) {
+				// Update to redirect target or normalized name;
+				// no status message so as to avoid duplication when notifying
+				ctx.talkTitle = page.title;
+
+				var rev = page.revisions[0];
+				ctx.talkText = rev.content;
+				ctx.talkTimestamp = rev.timestamp;
+				ctx.talkLastEditor = rev.user;
+
+				// Force into array of titles, ditch ns (included in title)
+				if (page.templates) {
+					ctx.talkTemplates = page.templates.map(function(template) {
+						return template.title;
+					});
+				}
+				// Squash array of objects with single item
+				if (page.extlinks) {
+					ctx.talkLinks = Morebits.array.uniq(page.extlinks.map(function(link) {
+						// Remove leading protocol, be http/https insensitive
+						return link.url.replace(/^https?:\/\//, '');
+					}));
+				}
+			} else {
+				ctx.talkText = '';  // allow for concatenation, etc.
+			}
+		}
+
+		ctx.userLoaded = true;
+
+		if (ctx.onLoadSuccess) { // invoke success callback if one was supplied
+			ctx.onLoadSuccess.call(this, this);
+		}
+	};
+
+	/**
+	 * Block a user.  If already blocked, will default to any prior block
+	 * settings unless {@link Morebits.wiki.user#useOriginalBlock} is set
+	 * to `false`.  Makes use of:
+	 * - {@link Morebits.wiki.user#setExpiry|setExpiry}
+	 * - {@link Morebits.wiki.user#setAllowusertalk|setAllowusertalk}
+	 * - {@link Morebits.wiki.user#setAnononly|setAnononly}
+	 * - {@link Morebits.wiki.user#setAutoblock|setAutoblock}
+	 * - {@link Morebits.wiki.user#setNocreate|setNocreate}
+	 * - {@link Morebits.wiki.user#setNoemail|setNoemail}
+	 * - {@link Morebits.wiki.user#setReblock|setReblock}
+	 * - {@link Morebits.wiki.user#setHidename|setHidename}
+	 * - {@link Morebits.wiki.user#setPartial|setPartial}
+	 * - {@link Morebits.wiki.user#setPartialPages|setPartialPages}
+	 * - {@link Morebits.wiki.user#setPartialNamespaces|setPartialNamespaces}
+	 * - {@link Morebits.wiki.user#useOriginalBlock|useOriginalBlock}
+	 *
+	 * The actual processing is handled in `fnProcessBlock`.
+	 *
+	 * @param {Function} [onSuccess] - Callback function to run on success.
+	 * @param {Function} [onFailure] - Callback function to run on failure.
+	 */
+	this.block = function(onSuccess, onFailure) {
+		ctx.onBlockSuccess = onSuccess;
+		ctx.onBlockFailure = onFailure || emptyFunction;
+
+		// Ensure user is loaded
+		if (fnDontNeedLoad('block')) {
+			fnProcessBlock.call(this);
+		} else {
+			this.load(fnProcessBlock, ctx.onBlockFailure);
+		}
+	};
+
+	// Process the block
+	var fnProcessBlock = function() {
+		var directBlock = ctx.isBlocked && ctx.blockInfo.user === ctx.userName;
+		// Default to existing block's expiry/reason if missing; done here rather than in
+		// fnLoadSuccess so as not to provide erroneous defaults to other methods
+		if (directBlock) {
+			if (!ctx.reason) {
+				ctx.reason = ctx.blockInfo.reason;
+			}
+			if (!ctx.expiry) {
+				ctx.expiry = ctx.blockInfo.expiry;
+			}
+		}
+
+		if (!fnProcessChecks('block', ctx.onBlockFailure)) {
+			return; // abort
+		}
+
+		// If blocked and reblock is missing, assume we didn't know
+		// the user was already blocked, so ask to toggle
+		if (directBlock && !ctx.reblock) {
+			var message = ctx.userName + ' is already blocked (';
+			message += Morebits.string.isInfinity(this.getBlockExpiry()) ? 'indefinitely' : 'until ' + new Morebits.date(this.getBlockExpiry()).calendar();
+			message += '; by ' + this.getBlockingSysop() + '), would you like to override the block?';
+			if (!confirm(message)) {
+				ctx.statusElement.error('Reblock aborted.');
+				ctx.onBlockFailure(this);
+				return;
+			}
+			ctx.reblock = true;
+		}
+
+		// setExpiry allows arrays because userrights accepts it, but block doesn't
+		if (Array.isArray(ctx.expiry)) {
+			if (ctx.expiry.length !== 1) {
+				ctx.statusElement.error('You must provide a valid block expiration.');
+				ctx.onBlockFailure(this);
+				return;
+			}
+			// Single-element array fine by Morebits.wiki.api, but we can't do isInfinity checks
+			ctx.expiry = ctx.expiry[0];
+		}
+
+		// Check before indefing IPs or blocking sysops
+		if (ctx.isIP && Morebits.string.isInfinity(ctx.expiry) &&
+			!confirm(ctx.userName + ' is an IP address, do you really want to block it indefinitely?' +
+			'\n\nClick OK to proceed with the block, or Cancel to skip this block.')) {
+			ctx.statusElement.error('Infinite block of IP addressed was aborted.');
+			ctx.onBlockFailure(this);
+			return;
+		} else if (this.isSysop() &&
+			!confirm(ctx.userName + ' is an administrator' +
+			(Morebits.string.isInfinity(ctx.grantedGroups.sysop) ? '' : ' (expires ' + new Morebits.date(ctx.grantedGroups.sysop).calendar('utc') + ' (UTC))') +
+			', are you sure you want to block them?  \n\nClick OK to proceed with the block, or Cancel to skip this block.')) {
+			ctx.statusElement.error('Block of administrator was aborted.');
+			ctx.onBlockFailure(this);
+			return;
+		}
+
+
+		var query = fnBaseAction('block');
+
+		// If not altered and already blocked, these will match the
+		// current block's status thanks to fnLoadSuccess (reason and
+		// expiry already handled above).
+		['allowusertalk', 'anononly', 'autoblock', 'nocreate', 'noemail', 'reblock'].forEach(function(param) {
+			// Any value interpreted as true
+			if (ctx[param]) {
+				query[param] = ctx[param];
+			}
+		});
+
+		if (ctx.partial) {
+			query.partial = ctx.partial;
+			if (ctx.namespacerestrictions) {
+				// This awfulness is to ensure other namespaces (e.g. 13) don't get caught up in here
+				if (!ctx.allowusertalk && (
+					(Array.isArray(ctx.namespacerestrictions) && ctx.namespacerestrictions.indexOf(3) === -1 && ctx.namespacerestrictions.indexOf('3') === -1) ||
+					(typeof ctx.namespacerestrictions === 'string' && ctx.namespacerestrictions.split('|').indexOf('3') === -1) ||
+					(typeof ctx.namespacerestrictions === 'number' && ctx.namespacerestrictions !== 3))) {
+					ctx.statusElement.error('Partial blocks cannot prevent talk page access unless also restricting User talk space.');
+					ctx.onBlockFailure(this);
+					return;
+				}
+				query.namespacerestrictions = ctx.namespacerestrictions;
+			}
+			if (ctx.pagerestrictions) {
+				query.pagerestrictions = ctx.pagerestrictions;
+			}
+		}
+
+		// Only for oversighters
+		if (ctx.hidename) {
+			if (!Morebits.userIsInGroup('oversight')) {
+				ctx.statusElement.error('Username suppression only available to oversighters.');
+				ctx.onBlockFailure(this);
+				return;
+			}
+			if (ctx.partial || !Morebits.string.isInfinity(ctx.expiry)) {
+				ctx.statusElement.error('Username suppression not available for partial or non-infinite blocks.');
+				ctx.onBlockFailure(this);
+				return;
+			}
+
+			query.hidename = ctx.hidename;
+		} else if (this.getHidename()) {
+			// Warn if unsuppressing is taking place, by definition only oversighters will see this
+			if (!confirm(ctx.userName + ' has been suppressed, do you really want to unhide it?' +
+				'\n\nClick OK to proceed with the block, or Cancel to skip this block.')) {
+				ctx.statusElement.error('Unsuppression of username was aborted.');
+				ctx.onBlockFailure(this);
+				return;
+			}
+		}
+
+		ctx.blockApi = new Morebits.wiki.api('blocking user...', query, fnBlockSuccess, ctx.statusElement, fnBlockError);
+		ctx.blockApi.setParent(this);
+		ctx.blockApi.post();
+	};
+
+	/**
+	 * Unblock a user.  The actual processing is handled in `fnProcessUnblock`.
+	 *
+	 * @param {Function} [onSuccess] - Callback function to run on success.
+	 * @param {Function} [onFailure] - Callback function to run on failure.
+	 */
+	this.unblock = function(onSuccess, onFailure) {
+		ctx.onUnblockSuccess = onSuccess;
+		ctx.onUnblockFailure = onFailure || emptyFunction;
+
+		// Ensure user is loaded
+		if (fnDontNeedLoad('unblock')) {
+			fnProcessUnblock.call(this);
+		} else {
+			this.load(fnProcessUnblock, ctx.onUnblockFailure);
+		}
+	};
+
+	// Process the unblock
+	var fnProcessUnblock = function() {
+		if (!fnProcessChecks('unblock', ctx.onUnblockFailure)) {
+			return; // abort
+		}
+
+		if (!ctx.isBlocked) {
+			ctx.statusElement.error('User is not blocked.');
+			ctx.onUnblockFailure(this);
+			return;
+		} else if (ctx.blockInfo.user !== ctx.userName) {
+			ctx.statusElement.error('User is not directly blocked, but rather ' + ctx.blockInfo.user + ' is.');
+			ctx.onUnblockFailure(this);
+			return;
+		}
+
+		var query = fnBaseAction('unblock');
+
+		ctx.unblockApi = new Morebits.wiki.api('unblocking user...', query, fnUnblockSuccess, ctx.statusElement, fnUnblockError);
+		ctx.unblockApi.setParent(this);
+		ctx.unblockApi.post();
+	};
+
+	// Forgiving, hardly any errors with which to contend [[phab:T35732]]
+	/**
+	 * Change a user's usergroups.  Makes use of:
+	 * - {@link Morebits.wiki.user#setExpiry|setExpiry}
+	 * - {@link Morebits.wiki.user#setAddGroups|setAddGroups}
+	 * - {@link Morebits.wiki.user#setRemoveGroups|setRemoveGroups}
+	 *
+	 * The actual processing is handled in `fnProcessGroups`.
+	 *
+	 * @param {Function} [onSuccess] - Callback function to run on success.
+	 * @param {Function} [onFailure] - Callback function to run on failure.
+	 */
+	this.groups = function(onSuccess, onFailure) {
+		ctx.onGroupsSuccess = onSuccess;
+		ctx.onGroupsFailure = onFailure || emptyFunction;
+
+		// Ensure user is loaded
+		if (fnDontNeedLoad('groups')) {
+			fnProcessGroups.call(this);
+		} else {
+			this.load(fnProcessGroups, ctx.onGroupsFailure);
+		}
+	};
+
+	// Process changing of user groups
+	var fnProcessGroups = function() {
+		if (!fnProcessChecks('change groups', ctx.onGroupsFailure)) {
+			return; // abort
+		}
+
+		// Could be before the (required) user load, but better to fail fnProcessChecks first
+		if (ctx.isIP) {
+			ctx.statusElement.error('You can only change user groups for registered users.');
+			ctx.onGroupsFailure(this);
+			return;
+		}
+
+
+		var query = fnBaseAction('userrights');
+
+		// userrights API is otherwise fairly forgiving
+		if (ctx.addGroups) {
+			if (Array.isArray(ctx.expiry) && ctx.expiry.length !== 1 && ctx.expiry.length !== ctx.addGroups.length) {
+				ctx.statusElement.error("Number of expirations doesn't match the number of groups being added.");
+				ctx.onGroupsFailure(this);
+				return;
+			}
+			query.add = ctx.addGroups;
+		}
+		if (ctx.removeGroups) {
+			query.remove = ctx.removeGroups;
+		}
+
+
+		ctx.groupsApi = new Morebits.wiki.api('changing user groups...', query, fnGroupsSuccess, ctx.statusElement, fnGroupsError);
+		ctx.groupsApi.setParent(this);
+		ctx.groupsApi.post();
+
+	};
+
+	/**
+	 * Notify a user via {@link Morebits.wiki.page}.  Main advantages are
+	 * ability to skip notifying bots or indefinitely sitewide-blocked
+	 * users, or users with specific template or optout links.  Some
+	 * options are customizable, but implies `setCreateOption('recreate')`
+	 * and `setFollowRedirect(true, false)`; other options are available
+	 * via `setPageobjectFunctions`.  Makes use of:
+	 * - {@link Morebits.wiki.user#setMessage|setMessage}
+	 * - {@link Morebits.wiki.user#setSectionTitle|setSectionTitle}
+	 * - {@link Morebits.wiki.user#setNotifyBots|setNotifyBots}
+	 * - {@link Morebits.wiki.user#setNotifyIndef|setNotifyIndef}
+	 * - {@link Morebits.wiki.user#setNotifySelf|setNotifySelf}
+	 * - {@link Morebits.wiki.user#setNotifySkips|setNotifySkips}
+	 * - {@link Morebits.wiki.user#setPageobjectFunctions|setPageobjectFunctions}
+	 *
+	 * The actual processing is handled in `fnProcessNotify`.
+	 *
+	 * @param {Function} [onSuccess] - Callback function to run on success.
+	 * @param {Function} [onFailure] - Callback function to run on failure.
+	 */
+	this.notify = function(onSuccess, onFailure) {
+		ctx.onNotifySuccess = onSuccess;
+		ctx.onNotifyFailure = onFailure || emptyFunction;
+
+		if (ctx.isIPRange) {
+			ctx.statusElement.error('Cannot notify IP ranges');
+			ctx.onNotifyFailure(this);
+			return;
+		}
+		// Check underscores
+		if (ctx.notifySelf && ctx.userName === mw.config.get('wgUserName')) {
+			ctx.statusElement.error('Skipping self notification');
+			ctx.onNotifyFailure(this);
+			return;
+		}
+
+		// Ensure user is loaded
+		if (fnDontNeedLoad('notify')) {
+			fnProcessNotify.call(this);
+		} else {
+			this.load(fnProcessNotify, ctx.onNotifyFailure);
+		}
+	};
+
+	// Send the notification
+	var fnProcessNotify = function() {
+		// Empty reason, message, and token handled by Morebits.wiki.page
+		if (!ctx.exists) {
+			ctx.statusElement.error('Cannot notify the user because the user does not exist');
+			ctx.onNotifyFailure(this);
+			return;
+		}
+
+		if (ctx.notifySkipTemplates && ctx.notifySkipTemplates.length && ctx.talkTemplates && ctx.talkTemplates.length) {
+			// More efficient to do a for loop, but this is prettier?
+			var tlDups = Morebits.array.dups(ctx.talkTemplates.concat(ctx.notifySkipTemplates));
+			if (tlDups.length) {
+				ctx.statusElement.error('User talk page transcludes ' + tlDups[0] + ', aborting notification');
+				ctx.onNotifyFailure(this);
+				return;
+			}
+		} else if (ctx.notifySkipLink && ctx.talkLinks && ctx.talkLinks.length) {
+			// Should be without leading protocol; relying on mw.Uri could help
+			var elDups = Morebits.array.dups(ctx.talkLinks.concat(ctx.notifySkipLink));
+			if (elDups.length) {
+				ctx.statusElement.error('User has opted out of this notification, aborting');
+				ctx.onNotifyFailure(this);
+				return;
+			}
+
+		}
+
+		if (!ctx.notifyBots && this.isBot()) {
+			ctx.statusElement.error('User is a bot, aborting notification');
+			ctx.onNotifyFailure(this);
+			return;
+		}
+		// Clients may find this most useful iff notalk or the block isn't brand new
+		// ctx.isBlocked intentionally used to account for any indef block, not just direct ones
+		if (!ctx.notifyIndef && ctx.isBlocked && !this.getPartial() && Morebits.string.isInfinity(this.getBlockExpiry())) {
+			ctx.statusElement.error('User is indefinitely blocked, aborting notification');
+			ctx.onNotifyFailure(this);
+			return;
+		}
+
+		// Intentionally *not* ctx.talkTitle, as that may have followed a cross-namespace redirect
+		var exactTalkPage = mw.Title.newFromText(ctx.userName, 3).toText();
+		var usertalk = new Morebits.wiki.page(exactTalkPage, 'Notifying ' + ctx.userName);
+		// Usurp status element into new object
+		usertalk.setStatusElement(ctx.statusElement);
+
+		// Unlike with block, etc., this need not be binary.
+		// Morebits.wiki.page#setWatchlist can handle the expiry in
+		// one go, but we've kept things simpler/less repetitive here.
+		usertalk.setWatchlist(ctx.watchuser);
+		if (ctx.watchlistExpiry) {
+			usertalk.setWatchlist(ctx.watchlistExpiry);
+		}
+		if (ctx.changeTags) {
+			usertalk.setChangeTags(ctx.changeTags);
+		}
+		usertalk.setCreateOption('recreate');
+
+		// Loading via Morebits.wiki.user is set to follow all
+		// redirects, which allows us to confirm whether or not the
+		// talk page redirects.  If it doesn't, then it turns out we
+		// don't need to use setFollowRedirect which means
+		// Morebits.wiki.page might not need to (re)load the page.
+		if (!ctx.userLoaded || ctx.talkTitle !== exactTalkPage) {
+			usertalk.setFollowRedirect(true, false); // Don't follow cross-namespace-redirects
+		}
+
+		if (ctx.callbackParameters) {
+			usertalk.setCallbackParameters(ctx.callbackParameters);
+		}
+
+		// Set any additional parameters, shared by both cases but
+		// should absolutely last
+		var applyFunctions = function() {
+			if (ctx.pageobjectFunctions !== null && typeof ctx.pageobjectFunctions === 'object') {
+				Object.keys(ctx.pageobjectFunctions).forEach(function(key) {
+					usertalk[key] && usertalk[key](ctx.pageobjectFunctions[key]);
+				});
+			}
+		};
+
+		// Can't reliably use newSection as many/most notification
+		// templates already include the section header, but
+		// sectionTitle implies newSection instead of append
+		if (ctx.sectionTitle) {
+			usertalk.setNewSectionText(ctx.message);
+			usertalk.setNewSectionTitle(ctx.sectionTitle);
+			// Optional in newSection
+			if (ctx.reason) {
+				usertalk.setEditSummary(ctx.reason);
+			}
+
+			applyFunctions();
+			usertalk.newSection(ctx.onNotifySuccess, ctx.onNotifyFailure);
+		} else {
+			usertalk.setAppendText(ctx.message);
+			usertalk.setEditSummary(ctx.reason);
+
+			applyFunctions();
+			usertalk.append(ctx.onNotifySuccess, ctx.onNotifyFailure);
+		}
+	};
+
+
+	/**
+	 * Common checks for processing of the `block`, `unblock`, and
+	 * `groups` methods.  Considers: user existance, performer perms,
+	 * reason is set, and token.  Not used for notify.
+	 *
+	 * @param {string} action - The action being checked: `block`,
+	 * `unblock`, or `change groups`.
+	 * @param {string} onFailure - The ctx.on???Failure callback.
+	 * @returns {boolean}
+	 */
+	var fnProcessChecks = function(action, onFailure) {
+		if (!ctx.exists) {
+			ctx.statusElement.error('Cannot ' + action + ' the user because the user does not exist');
+			onFailure(this);
+			return false;
+		}
+
+		// Currently ignores non-sysop bureaucrats, etc.
+		// Could be dealt with by adding siprop
+		if (!Morebits.userIsSysop && (action === 'change groups' && (!Morebits.userIsInGroup('eventcoordinator') || ctx.addGroups !== 'confirmed'))) {
+			ctx.statusElement.error('Cannot ' + action + ': only admins can do that');
+			onFailure(this);
+			return false;
+		}
+
+		if (!ctx.reason) {
+			ctx.statusElement.error('Internal error: ' + action + ' reason not set (use setReason function)!');
+			onFailure(this);
+			return false;
+		}
+
+		if ((!ctx.csrfToken && (action === 'block' || action === 'unblock')) || (!ctx.userrightsToken && action === 'change groups')) {
+			ctx.statusElement.error('Failed to retrieve token.');
+			onFailure(this);
+			return false;
+		}
+		return true; // all OK
+	};
+
+
+	/**
+	 * Construct the common base for block, unblock, and userrights
+	 * actions.  Includes an api post to watch a user for unblock and
+	 * userrights actions, as they do not support the watchuser option.
+	 *
+	 * @param {string} action - The action being undertaken (`block`, `unblock`, or `userrights`).
+	 * @returns {object} Action-specific POST query.
+	 */
+	var fnBaseAction = function(action) {
+		var query = {
+			action: action,
+			user: ctx.userName,
+			reason: ctx.reason,
+			token: action === 'userrights' ? ctx.userrightsToken : ctx.csrfToken,
+			format: 'json'
+		};
+		if (ctx.changeTags) {
+			query.tags = ctx.changeTags;
+		}
+		// block or userrights
+		if (action !== 'unblock' && (ctx.expiry || (Array.isArray(ctx.expiry) && ctx.expiry.length))) {
+			query.expiry = ctx.expiry;
+		}
+		if (ctx.watchuser) {
+			if (action === 'block') {
+				query.watchuser = ctx.watchuser;
+				if (ctx.watchlistExpiry) {
+					query.watchlistexpiry = ctx.watchlistExpiry;
+				}
+			} else {
+				// Dumb hack: watchlist options not supported for
+				// unblock [[phab:T257662]] or userrights [[phab:T272294]], so fake it.
+				var watch_query = {
+					action: 'watch',
+					titles: mw.Title.newFromText(ctx.userName, 2).toText(),
+					token: mw.user.tokens.get('watchToken')
+				};
+				if (ctx.watchlistExpiry) {
+					watch_query.expiry = ctx.watchlistExpiry;
+				}
+				new Morebits.wiki.api('Watching user page', watch_query).post();
+			}
+		}
+
+		return query;
+	};
+
+	/**
+	 * Determine whether we need to first load the user.  The only
+	 * exception is notifications that don't care whether the target user
+	 * is a bot or indefinitely blocked, or if the talk page if opted-out.
+	 *
+	 * @param {string} action - The action being undertaken, e.g. `notify`
+	 * or `block`.  Only `notify` has any meaning.
+	 * @returns {boolean}
+	 */
+	var fnDontNeedLoad = function(action) {
+		if (ctx.userLoaded ||
+			(action === 'notify' && ctx.notifyBots && ctx.notifyIndef && !ctx.notifySkipLink && (!ctx.notifySkipTemplates || ctx.notifySkipTemplates.length === 0))) {
+			return true;
+		}
+		return false;
+	};
+
+
+	/*
+	  Wrappers for fnSuccess, the joint success function.  At the moment,
+	  we're not doing anything unique for any of these, so this is just
+	  for the structure.  If we do want to customize for specific
+	  scenarios, they should be broken out.
+	*/
+	var fnBlockSuccess = function() {
+		fnSuccess('block');
+	};
+	var fnUnblockSuccess = function() {
+		fnSuccess('unblock');
+	};
+	var fnGroupsSuccess = function() {
+		fnSuccess('groups');
+	};
+	var fnSuccess = function(action) {
+		ctx.actionResponse = ctx[action + 'Api'].response;
+
+		// `block: block` and `unblock: unblock`, but `groups: userrights`
+		var exactName = action === 'groups' ? 'userrights' : action;
+		// The API thinks we're successful if there's a response for the action,
+		// i.e. there isn't `result: 'Success'` like action=edit
+		// In theory, userrights could use the combined length of the
+		// returned arrays as a measure of success?
+		if (ctx.actionResponse[exactName]) {
+			action = Morebits.string.toUpperCaseFirstChar(action);
+			// Display link for user in question on success
+			var userLink;
+			if (ctx.isIP) {
+				userLink = 'Special:Contributions/' + ctx.userName;
+			} else {
+				userLink = mw.Title.newFromText(ctx.userName, 2).toText();
+			}
+			var link = document.createElement('a');
+			link.setAttribute('href', mw.util.getUrl(userLink));
+			link.appendChild(document.createTextNode(userLink));
+			ctx.statusElement.info(['completed (', link, ')']);
+			if (ctx['on' + action + 'Success']) {
+				ctx['on' + action + 'Success'](this);  // invoke callback
+			}
+			return;
+		}
+
+		// I don't think getting here is possible?
+		ctx.statusElement.error('Unknown error received from API');
+		++Morebits.wiki.numberOfActionsLeft; // force error to stay on the screen
+		ctx['on' + action + 'Failure'](this);
+	};
+
+	/*
+	  Wrappers for fnError, the joint error function.  At the moment,
+	  we're not doing anything unique for any of these, so this is just
+	  for the structure.  If we do preempt or customize for specific
+	  errors or scenarios, they should be broken out.
+	*/
+	// Callback from blockApi.post(), most likely: alreadyblocked
+	// (preempted in fnProcessBlock), invalidexpiry, invalidip,
+	// invalidrange, canthide (preempted in fnProcessBlock)
+	var fnBlockError = function() {
+		fnError('block');
+	};
+	// Callback from unblockApi.post(), most likely: blockedasrange,
+	// cantunblock (preempted in fnProcessUnblock)
+	var fnUnblockError = function() {
+		fnError('unblock');
+	};
+	// Callback from groupsApi.post(), seems unlikely given how forgiving
+	// this API is, but could be toofewexpiries
+	var fnGroupsError = function() {
+		fnError('groups');
+	};
+	var fnError = function(action) {
+		var actionApi = action + 'Api';
+		ctx.actionResponse = ctx[actionApi].response;
+		ctx.statusElement.error('Failed (' + ctx[actionApi].getErrorCode() + ') to ' +
+			(action === 'groups' ? 'change user groups' : action + ' user') + ': ' + ctx[actionApi].getErrorText());
+		action = Morebits.string.toUpperCaseFirstChar(action);
+		if (ctx['on' + action + 'Error']) {
+			ctx['on' + action + 'Error'](this);  // invoke callback
+		}
+	};
+
+
+	/* Setters */
+	/** @param {string} reason - Text of the reason that will be used for the log entry, or the edit summary if provided to `notify`. */
+	this.setReason = function(reason) {
+		ctx.reason = reason;
+	};
+
+	/**
+	 * Set any custom tag(s) to be applied to the action.
+	 *
+	 * @param {string|string[]} tags - String or array of tag(s).
+	 */
+	this.setChangeTags = function(tags) {
+		ctx.changeTags = tags;
+	};
+
+	/**
+	 * Set the expiration for a block or any added user groups.
+	 *
+	 * @param {string|number|string[]|number[]|Morebits.date|Date} [expiry=infinity] -
+	 * A date-like string or number or a date object, or an array of
+	 * strings or numbers.  Strings and numbers can be relative (2 weeks)
+	 * or other similarly date-like (i.e. NOT "potato"):
+	 * ISO 8601: 2038-01-09T03:14:07Z
+	 * MediaWiki: 20380109031407
+	 * UNIX: 2147483647
+	 * SQL: 2038-01-09 03:14:07
+	 * Can also be `infinity` or infinity-like (`infinite`, `indefinite`, and `never`).
+	 * See {@link https://phabricator.wikimedia.org/source/mediawiki-libs-Timestamp/browse/master/src/ConvertibleTimestamp.php;e60852d30c2d4ba0d249ac6ade638eb41b5191e6$60-107?as=source&blame=off}
+	 *
+	 * The `groups` method accepts an array of expirations for added
+	 * groups: it must list them in the same order and contain the same
+	 * number of entries; otherwise provide just one, which will be used
+	 * for all added groups.
+	 */
+	this.setExpiry = function(expiry) {
+		if (!expiry || (Array.isArray(expiry) && !expiry.length)) {
+			expiry = 'infinity';
+		} else if (expiry instanceof Morebits.date || expiry instanceof Date) {
+			expiry = expiry.toISOString();
+		}
+		ctx.expiry = expiry;
+	};
+
+	/**
+	 * Define an object for use in a callback function.
+	 * `callbackParameters` is for use by the caller only. The parameters
+	 * allow a caller to pass the proper context into its callback
+	 * function.
+	 *
+	 * @param {object} callbackParameters
+	 */
+	this.setCallbackParameters = function(callbackParameters) {
+		ctx.callbackParameters = callbackParameters;
+	};
+
+	/**
+	 * @returns {object} - The object previously set by `setCallbackParameters()`.
+	 */
+	this.getCallbackParameters = function() {
+		return ctx.callbackParameters;
+	};
+
+	/**
+	 * @param {Morebits.status} statusElement
+	 */
+	this.setStatusElement = function(statusElement) {
+		ctx.statusElement = statusElement;
+	};
+
+	/**
+	 * @returns {Morebits.status} Status element created by the constructor.
+	 */
+	this.getStatusElement = function() {
+		return ctx.statusElement;
+	};
+
+	/**
+	 * Whether or not to watch the user in question when performing the
+	 * chosen action.  Note that unlike {@link Morebits.wiki.page#setWatchlist},
+	 * this is a binary option.  For the notify action, however,
+	 * {@link Morebits.wiki.user#setPageobjectFunctions} can be used to set
+	 * more complex watching options.  Only works for unblock and
+	 * userrights by a hack in {@link Morebits.wiki.user#~fnBaseAction|fnBaseAction}.
+	 *
+	 * @param {boolean} watchuser - True to watch the user page, false to
+	 * make no change.
+	 */
+	this.setWatchuser = function(watchuser) {
+		ctx.watchUser = !!watchuser;
+	};
+
+	// This does not, like Morebits.wiki.page, currently take into account
+	// the prior watched status of the user page, including temporary
+	// status.  Likewise, there's currently no fnApplyWatchlistExpiry here
+	// in Morebits.wiki.user to determine whether and how to provide the
+	// expiry.  We could, but it's a lot for little payoff.
+	/**
+	 * @param {string|number|Morebits.date|Date} [watchlistExpiry=infinity] -
+	 * A date-like string or number, or a date object.  If a string or number,
+	 * can be relative (2 weeks) or other similarly date-like (i.e. NOT "potato"):
+	 * ISO 8601: 2038-01-09T03:14:07Z
+	 * MediaWiki: 20380109031407
+	 * UNIX: 2147483647
+	 * SQL: 2038-01-09 03:14:07
+	 * Can also be `infinity` or infinity-like (`infinite`, `indefinite`, and `never`).
+	 * See {@link https://phabricator.wikimedia.org/source/mediawiki-libs-Timestamp/browse/master/src/ConvertibleTimestamp.php;4e53b859a9580c55958078f46dd4f3a44d0fcaa0$57-109?as=source&blame=off}
+	 */
+	this.setWatchlistExpiry = function(watchlistExpiry) {
+		if (typeof watchlistExpiry === 'undefined') {
+			watchlistExpiry = 'infinity';
+		} else if (watchlistExpiry instanceof Morebits.date || watchlistExpiry instanceof Date) {
+			watchlistExpiry = watchlistExpiry.toISOString();
+		}
+		ctx.watchlistExpiry = watchlistExpiry;
+	};
+
+	/* Block setters */
+	/**
+	 * Determine whether to default block parameters to the preexisting
+	 * block parameters, if present.  Must be used before `load`ing the
+	 * user.
+	 *
+	 * @param {boolean} [useOriginalBlockParams=true]
+	 */
+	this.useOriginalBlock = function(useOriginalBlockParams) {
+		ctx.useOriginalBlockParams = !!useOriginalBlockParams;
+	};
+	/** @param {boolean} allowusertalk */
+	this.setAllowusertalk = function(allowusertalk) {
+		ctx.allowusertalk = !!allowusertalk;
+	};
+	/** @param {boolean} anononly */
+	this.setAnononly = function(anononly) {
+		ctx.anonOnly = !!anononly;
+	};
+	/** @param {boolean} autoblock */
+	this.setAutoblock = function(autoblock) {
+		ctx.autoblock = !!autoblock;
+	};
+	/** @param {boolean} nocreate */
+	this.setNocreate = function(nocreate) {
+		ctx.nocreate = !!nocreate;
+	};
+	/** @param {boolean} noemail */
+	this.setNoemail = function(noemail) {
+		ctx.noemail = !!noemail;
+	};
+	/** @param {boolean} reblock */
+	this.setReblock = function(reblock) {
+		ctx.reblock = !!reblock;
+	};
+	/** @param {boolean} hidename */
+	this.setHidename = function(hidename) {
+		ctx.hidename = !!hidename;
+	};
+	/* Partial blocks */
+	/** @param {boolean} partial */
+	this.setPartial = function(partial) {
+		ctx.partial = !!partial;
+	};
+	/** @param {string|string[]} pages - String or array of page name(s). */
+	this.setPartialPages = function(pages) {
+		ctx.pagerestrictions = pages;
+	};
+	/**
+	 * @param {string|number|string[]|number[]} namespaces - String(s) or
+	 * numbers() of namespace number(s).  If strings, separate namespaces
+	 * by `|`.
+	 */
+	this.setPartialNamespaces = function(namespaces) {
+		ctx.namespacerestrictions = namespaces;
+	};
+
+	/* User group setters */
+	/**
+	 * @param {string|string[]} addGroups - String or array of user group(s)
+	 * Forgiving: anything invalid is simply ignored by the API with a warning.
+	 */
+	this.setAddGroups = function(addGroups) {
+		ctx.addGroups = addGroups;
+	};
+	/**
+	 * @param {string|string[]} removeGroups - String or array of user group(s)
+	 * Forgiving: anything invalid is simply ignored by the API with a warning.
+	 */
+	this.setRemoveGroups = function(removeGroups) {
+		ctx.removeGroups = removeGroups;
+	};
+
+	/* Notification setters */
+	/** @param {boolean} [notifyBots=false] */
+	this.setNotifyBots = function(notifyBots) {
+		ctx.notifyBots = !!notifyBots;
+	};
+	/** @param {boolean} [notifyIndef=false] - Whether to notify users who are indefinitely blocked sitewide. */
+	this.setNotifyIndef = function(notifyIndef) {
+		ctx.notifyIndef = !!notifyIndef;
+	};
+	/** @param {boolean} [notifySelf=false] */
+	this.setNotifySelf = function(notifySelf) {
+		ctx.notifySelf = !!notifySelf;
+	};
+	/**
+	 * Provide templates and/or an external link, any of which, if
+	 * detected, will result in skipping a talkpage notification.  Can be
+	 * provided before or after the user is loaded.
+	 *
+	 * @param {string} [link] - An external link, either `http`, `https`,
+	 * or with no protocol provided.
+	 * @param {string|string[]} [templates] - A template or array of
+	 * templates; must include the namespace.
+	 */
+	this.setNotifySkips = function(link, templates) {
+		if (link) {
+			// Remove leading protocol, be http/https insensitive
+			ctx.notifySkipLink = link.replace(/^https?:\/\//, '');
+		}
+		if (templates) {
+			if (!Array.isArray(templates)) {
+				templates = [templates];
+			}
+			// The API will kindly ignore underscores, but if we set this
+			// before loading the page, we'll need to be able to compare
+			// the results to this list.  Alternativey, we could do regex
+			// matching in fnProcessNotify rather than checking for dups.
+			ctx.notifySkipTemplates = Morebits.array.uniq(templates).map(function(template) {
+				return template.replace(/_/, ' ');
+			});
+		}
+	};
+	/**
+	 * Set the text of the notification to be appended to user's talk
+	 * page.  If `setSectionTitle` is not used, should also contain
+	 * wikitext for the section title.
+	 *
+	 * @param {string} message
+	 */
+	this.setMessage = function(message) {
+		ctx.message = message;
+	};
+	/**
+	 * Create a new section, using this as the section title.
+	 * `setMessage` will set the section body.
+	 *
+	 * @param {string} title
+	 */
+	this.setSectionTitle = function(title) {
+		ctx.sectionTitle = title;
+	};
+	/**
+	 * Define an object of functions and values to apply to the
+	 * Morebits.wiki.page object used to notify the user talk page in
+	 * question.  Will be performed last, so is useful for applying
+	 * additional bespoke parameters, such as `setMinorEdit` or more complex
+	 * watch options to `setWatchlist`.
+	 *
+	 * @param {object} pageobjectFunctions - An object with `{function:
+	 * functionValue}` parameters.  Each key is the name of a
+	 * {@link Morebits.wiki.page} function, and its value is what will be
+	 * provided to that function.
+	 */
+	this.setPageobjectFunctions = function(pageobjectFunctions) {
+		ctx.pageobjectFunctions = pageobjectFunctions;
+	};
+
+
+	/* Getters */
+	/** @returns {string} */
+	this.getUserName = function() {
+		return ctx.userName;
+	};
+	/**
+	 * @returns {boolean} - True if the user is a registered account or an
+	 * IP, false if unregistered account.
+	 */
+	this.exists = function() {
+		return ctx.exists;
+	};
+	/** @returns {number} */
+	this.getUserID = function() {
+		return ctx.userID;
+	};
+	/** @returns {string} - ISO 8601 timestamp at which the user account was registered locally. */
+	this.getRegistration = function() {
+		return ctx.registration;
+	};
+	/** @returns {number} */
+	this.getEditCount = function() {
+		return ctx.editCount;
+	};
+	/** @returns {boolean} */
+	this.isIP = function() {
+		return ctx.isIP;
+	};
+	/** @returns {boolean} */
+	this.isIPRange = function() {
+		return ctx.isIPRange;
+	};
+	/** @returns {string[]} Array of all groups the user has. */
+	this.getGroups = function() {
+		return ctx.groups;
+	};
+	/** @returns {string[]} Array of automatically added groups, e.g. `autoconfirmed`. */
+	this.getImplicitGroups = function() {
+		return ctx.autoGroups;
+	};
+	/** @returns {string[]} Array of all granted groups. */
+	this.getGrantedGroups = function() {
+		return ctx.grantedGroups && Object.keys(ctx.grantedGroups);
+	};
+	/**
+	 * @param {string} group - e.g. `rollbacker`, `founder`.
+	 * @returns {boolean}
+	 */
+	this.isInGroup = function(group) {
+		return ctx.groups && ctx.groups.indexOf(group) !== -1;
+	};
+	/**
+	 * @param {string} group - Only valid for granted groups
+	 * (e.g. `rollbacker`, `founder`), not implicit groups like `autoconfirmed`.
+	 * @returns {string} - `Infinity` or ISO 8601 timestamp when the group will expire.
+	 */
+	this.getGroupExpiry = function(group) {
+		return ctx.grantedGroups && !!ctx.grantedGroups[group] && ctx.grantedGroups[group];
+	};
+	/** @returns {string[]} - All rights the user has. */
+	this.getRights = function() {
+		return ctx.userRights;
+	};
+	/**
+	 * @param {string} right - e.g. `minoredit`, `editsitejs`, etc.
+	 * @returns {boolean}
+	 */
+	this.hasRight = function(right) {
+		return ctx.userRights && ctx.userRights.indexOf(right) !== -1;
+	};
+	/** @returns {boolean} */
+	this.isHidden = function() {
+		return ctx.hidden;
+	};
+
+	/** @returns {boolean} */
+	this.isSysop = function() {
+		return ctx.grantedGroups && !!ctx.grantedGroups.sysop;
+	};
+	/**
+	 * @returns {boolean} - True if the user has the bot group or their
+	 * username matches {@link Morebits.botUsernameRegex}.
+	 */
+	this.isBot = function() {
+		return (ctx.grantedGroups && !!ctx.grantedGroups.bot) || (Morebits.botUsernameRegex && Morebits.botUsernameRegex.test(ctx.userName));
+	};
+	/** @returns {string} - ISO 8601 timestamp at which the user was loaded. */
+	this.getLoadTime = function() {
+		return ctx.loadTime;
+	};
+
+	/** @returns {boolean} - Whether the user has a block log. */
+	this.hasBlockLog = function() {
+		return ctx.hasBlockLog;
+	};
+	/**
+	 * @returns {object} - The full parameters of the most recent block
+	 * log entry, e.g. logid, action, params, etc.  If the user was not
+	 * directly blocked - i.e. was just rangeblocked - that block will no
+	 * appear here.
+	 */
+	this.getLastBlockLogEntry = function() {
+		return ctx.lastBlockLogEntry && $.extend({}, ctx.lastBlockLogEntry);
+	};
+	/**
+	 * @returns {boolean} - Whether the user is covered by a block.  True
+	 * regardless of whether that block is directly on the user in
+	 * question i.e. there's a rangeblock active.
+	 */
+	this.isBlocked = function() {
+		return ctx.isBlocked;
+	};
+	/** @returns {boolean} */
+	this.isRangeBlocked = function() {
+		return ctx.isRangeBlocked;
+	};
+	/** @returns {string} - The widest active rangeblock. */
+	this.getBlockedRange = function() {
+		return ctx.blockedRange;
+	};
+	/**
+	 * @returns {object} - The full parameters of the current active
+	 * block, e.g. expiry, nocreate, partial restrictions, etc.  If the
+	 * user is not directly blocked - i.e. there's just a rangeblock -
+	 * this will be the most recent active block.
+	 */
+	this.getBlockInfo = function() {
+		return ctx.blockInfo && $.extend({}, ctx.blockInfo);
+	};
+	/** @returns {string} */
+	this.getBlockingSysop = function() {
+		return ctx.blockInfo && ctx.blockInfo.by;
+	};
+	/** @returns {string} */
+	this.getBlockTimestamp = function() {
+		return ctx.blockInfo && ctx.blockInfo.timestamp;
+	};
+	/** @returns {string} */
+	this.getBlockExpiry = function() {
+		return ctx.blockInfo && ctx.blockInfo.expiry;
+	};
+	/** @returns {string} */
+	this.getBlockReason = function() {
+		return ctx.blockInfo && ctx.blockInfo.reason;
+	};
+	/** @returns {boolean} */
+	this.getAllowusertalk = function() {
+		return ctx.blockInfo && !!ctx.blockInfo.allowusertalk;
+	};
+	/** @returns {boolean} */
+	this.getAnononly = function() {
+		return ctx.blockInfo && !!ctx.blockInfo.anononly;
+	};
+	/** @returns {boolean} */
+	this.getAutoblock = function() {
+		return ctx.blockInfo && !!ctx.blockInfo.autoblock;
+	};
+	/** @returns {boolean} */
+	this.getNocreate = function() {
+		return ctx.blockInfo && !!ctx.blockInfo.nocreate;
+	};
+	/** @returns {boolean} */
+	this.getNoemail = function() {
+		return ctx.blockInfo && !!ctx.blockInfo.noemail;
+	};
+	/** @returns {boolean} */
+	this.getHidename = function() {
+		return ctx.blockInfo && !!ctx.blockInfo.hidename;
+	};
+	/** @returns {boolean} */
+	this.getPartial = function() {
+		return ctx.blockInfo && !!ctx.blockInfo.partial;
+	};
+	/** @returns {string[]} */
+	this.getPartialPages = function() {
+		// Force into array of titles, ditch ns (included in title) and page ID
+		return ctx.blockInfo && !!ctx.blockInfo.restrictions.length && ctx.blockInfo.restrictions.pages.map(function(rp) {
+			return rp.title;
+		});
+	};
+	/** @returns {number[]} */
+	this.getPartialNamespaces = function() {
+		return ctx.blockInfo && !!ctx.blockInfo.restrictions.length && ctx.blockInfo.restrictions.namespaces;
+	};
+
+	/** @returns {string} - Title of the user talk page, or where it points if a redirect. */
+	this.getTalkTitle = function() {
+		return ctx.talkTitle;
+	};
+	/** @returns {string} - Text of the user talk page. */
+	this.getTalkText = function() {
+		return ctx.talkText;
+	};
+	/** @returns {boolean} */
+	this.getTalkExists = function() {
+		return ctx.talkExists;
+	};
+	/** @returns {string} - Timestamp of the last revision. */
+	this.getTalkTimestamp = function() {
+		return ctx.talkTimestamp;
+	};
+	/** @returns {string} - Username. */
+	this.getTalkLastEditor = function() {
+		return ctx.talkLastEditor;
+	};
+
+	/**
+	 * @returns {string[]} - The templates on the user's talk page,
+	 * including the namespace prefix.  If `setNotifySkips` sets skip
+	 * templates before loading, this will only return the presence or
+	 * absence of those items.
+	 */
+	this.getTalkTemplates = function() {
+		return ctx.talkTemplates;
+	};
+	/**
+	 * @returns {string[]} - The external links on the user's talk page.
+	 * If `setNotifySkips` sets a skip link before loading, this will only
+	 * return the presence or absence of that item.
+	 */
+	this.getTalkLinks = function() {
+		return ctx.talkLinks;
+	};
+
+	/**
+	 * Get the post-action response object from the API.
+	 *
+	 * @returns {object}
+	 */
+	this.getActionResponse = function() {
+		return ctx.actionResponse;
+	};
+
+}; // end Morebits.wiki.user
+
+
 /* **************** Morebits.wiki.preview **************** */
 /**
  * Use the API to parse a fragment of wikitext and render it as HTML.
@@ -5380,9 +6901,9 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
  * entire batch has been processed.
  *
  * If using `preserveIndividualStatusLines`, you should try to ensure that the
- * `workerSuccess` callback has access to the page title.  This is no problem for
- * {@link Morebits.wiki.page} objects.  But when using the API, please set the
- * |pageName| property on the {@link Morebits.wiki.api} object.
+ * `workerSuccess` callback has access to the page title.  This is no problem
+ * for {@link Morebits.wiki.page} or {@link Morebits.wiki.user} objects.  But
+ * when using the API, please set the |pageName| property on the {@link Morebits.wiki.api} object.
  *
  * There are sample batchOperation implementations using Morebits.wiki.page in
  * twinklebatchdelete.js, twinklebatchundelete.js, and twinklebatchprotect.js.
@@ -5488,11 +7009,13 @@ Morebits.batchOperation = function(currentAction) {
 	/**
 	 * To be called by worker before it terminates succesfully.
 	 *
-	 * @param {(Morebits.wiki.page|Morebits.wiki.api|string)} arg -
-	 * This should be the `Morebits.wiki.page` or `Morebits.wiki.api` object used by worker
-	 * (for the adjustment of status lines emitted by them).
-	 * If no Morebits.wiki.* object is used (e.g. you're using `mw.Api()` or something else), and
-	 * `preserveIndividualStatusLines` option is on, give the page name (string) as argument.
+	 * @param {(Morebits.wiki.page|Morebits.wiki.user|Morebits.wiki.api|string)} arg -
+	 * This should be the `Morebits.wiki.page`, `Morebits.wiki.user`, or
+	 * `Morebits.wiki.api` object used by worker (for the adjustment of
+	 * status lines emitted by them).  If no Morebits.wiki.* object is
+	 * used (e.g. you're using `mw.Api()` or something else), and
+	 * `preserveIndividualStatusLines` option is on, give the page name
+	 * (string) as argument.
 	 */
 	this.workerSuccess = function(arg) {
 
@@ -5503,13 +7026,20 @@ Morebits.batchOperation = function(currentAction) {
 			return link;
 		};
 
-		if (arg instanceof Morebits.wiki.api || arg instanceof Morebits.wiki.page) {
+		if (arg instanceof Morebits.wiki.api || arg instanceof Morebits.wiki.page || arg instanceof Morebits.wiki.user) {
 			// update or remove status line
 			var statelem = arg.getStatusElement();
 			if (ctx.options.preserveIndividualStatusLines) {
-				if (arg.getPageName || arg.pageName || (arg.query && arg.query.title)) {
+				var pageName;
+				if (arg instanceof Morebits.wiki.api) {
+					pageName = arg.pageName || arg.query.title;
+				} else if (arg instanceof Morebits.wiki.page) {
+					pageName = arg.getPageName();
+				} else { // Morebits.wiki.user
+					pageName = mw.Title.newFromText(arg.getUserName(), 2).toText();
+				}
+				if (pageName) {
 					// we know the page title - display a relevant message
-					var pageName = arg.getPageName ? arg.getPageName() : arg.pageName || arg.query.title;
 					statelem.info(['completed (', createPageLink(pageName), ')']);
 				} else {
 					// we don't know the page title - just display a generic message
