@@ -416,27 +416,27 @@ Twinkle.talkback.preview = function(form) {
 };
 
 Twinkle.talkback.getNoticeWikitext = function(tbtarget, page, section, message) {
-	var text;
 	if (tbtarget === 'notice') {
-		text = Morebits.string.safeReplace(Twinkle.talkback.noticeboards[page].text, '$SECTION', section);
-	} else if (tbtarget === 'see') {
-		text = '{{subst:Please see|location=' + page + (section ? '#' + section : '') + '|more=' + message.trim() + '}}';
-	} else {
-		text = '==';
-		if (tbtarget === 'mail') {
-			text += Twinkle.getPref('mailHeading') + '==\n' + "{{You've got mail|subject=" + section;
-		} else {  // tbtarget one of mytalk, usertalk, other
-			// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
-			text += Twinkle.getPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') +
-				'==\n' + '{{talkback|' + page + (section ? '|' + section : '');
-		}
-		text += '|ts=~~~~~}}';
+		return Morebits.string.safeReplace(Twinkle.talkback.noticeboards[page].text, '$SECTION', section);
+	}
+	if (tbtarget === 'see') {
+		return '{{subst:Please see|location=' + page + (section ? '#' + section : '') + '|more=' + message.trim() + '}}';
+	}
 
-		if (message) {
-			text += '\n' + message + '  ~~~~';
-		} else if (Twinkle.getPref('insertTalkbackSignature')) {
-			text += '\n~~~~';
-		}
+	var text = '==';
+	if (tbtarget === 'mail') {
+		text += Twinkle.getPref('mailHeading') + '==\n' + "{{You've got mail|subject=" + section;
+	} else {  // tbtarget one of mytalk, usertalk, other
+		// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
+		text += Twinkle.getPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') +
+			'==\n' + '{{talkback|' + page + (section ? '|' + section : '');
+	}
+	text += '|ts=~~~~~}}';
+
+	if (message) {
+		text += '\n' + message + '  ~~~~';
+	} else if (Twinkle.getPref('insertTalkbackSignature')) {
+		text += '\n~~~~';
 	}
 	return text;
 };
