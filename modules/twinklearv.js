@@ -329,8 +329,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						var $field = $(root).find('[name=' + field + ']');
 						$field.find('.entry').remove();
 
-						var api = new mw.Api();
-						api.get({
+						new mw.Api().get({
 							action: 'query',
 							prop: 'revisions',
 							format: 'json',
@@ -750,8 +749,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					}
 				}
 
-				var api = new mw.Api();
-				api.get(query).done(function(data) {
+				new mw.Api().get(query).done(function(data) {
 					var page;
 					if (data.compare && data.compare.fromtitle === data.compare.totitle) {
 						page = data;
@@ -859,8 +857,7 @@ Twinkle.arv.processAN3 = function(params) {
 		}
 	}
 
-	var api = new mw.Api();
-	api.get({
+	new mw.Api().get({
 		action: 'query',
 		prop: 'revisions',
 		format: 'json',
