@@ -1984,6 +1984,35 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			el.type === 'checkbox' ? form[el.name].checked : form[el.name].value;
 	});
 
+
+	// Validation
+
+	// Given an array of incompatible tags, check if we have two or more selected
+	var checkIncompatible = function(conflicts, extra) {
+		var count = conflicts.reduce(function(sum, tag) {
+			return sum += params.tags.indexOf(tag) !== -1;
+		}, 0);
+		if (count > 1) {
+			var message = 'Please select only one of: {{' + conflicts.join('}}, {{') + '}}.';
+			message += extra ? ' ' + extra : '';
+			alert(message);
+			return true;
+		}
+	};
+	// Given a tag, ensure an associate parameter is present
+	// Maybe just sock this away in each function???
+	var checkParameter = function(tag, parameter, description) {
+		description = description || 'a reason';
+		if (params.tags.indexOf(tag) !== -1 && params[parameter].trim() === '') {
+			alert('You must specify ' + description + ' for the {{' + tag + '}} tag.');
+			return true;
+		}
+	};
+
+	// We could theoretically put them all checkIncompatible calls in a
+	// forEach loop, but it's probably clearer not to have [[array one],
+	// [array two]] devoid of context. Likewise, all the checkParameter
+	// calls could be in one if, but could be similarly confusing.
 	switch (Twinkle.tag.mode) {
 		case 'article':
 			params.tagsToRemove = form.getUnchecked('alreadyPresentArticleTags') || [];
@@ -1992,12 +2021,9 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 			params.group = form.group.checked;
 
-			// Validation
 			if ((params.tags.indexOf('Merge') !== -1) || (params.tags.indexOf('Merge from') !== -1) ||
 				(params.tags.indexOf('Merge to') !== -1)) {
-				if (((params.tags.indexOf('Merge') !== -1) + (params.tags.indexOf('Merge from') !== -1) +
-					(params.tags.indexOf('Merge to') !== -1)) > 1) {
-					alert('Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).');
+				if (checkIncompatible(['Merge', 'Merge from', 'Merge to'], 'If several merges are required, use {{Merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).')) {
 					return;
 				}
 				if (!params.mergeTarget) {
@@ -2009,51 +2035,41 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 					return;
 				}
 			}
-			if ((params.tags.indexOf('Not English') !== -1) && (params.tags.indexOf('Rough translation') !== -1)) {
-				alert('Please select only one of {{not English}} and {{rough translation}}.');
+
+			if (checkIncompatible(['Not English', 'Rough translation'])) {
 				return;
 			}
-			if (params.tags.indexOf('History merge') !== -1 && params.histmergeOriginalPage.trim() === '') {
-				alert('You must specify a page to be merged for the {{history merge}} tag.');
+			if (checkParameter('History merge', 'histmergeOriginalPage', 'a page to be merged')) {
 				return;
 			}
-			if (params.tags.indexOf('Cleanup') !== -1 && params.cleanup.trim() === '') {
-				alert('You must specify a reason for the {{cleanup}} tag.');
+			if (checkParameter('Cleanup', 'cleanup')) {
 				return;
 			}
-			if (params.tags.indexOf('Expand language') !== -1 && params.expandLanguageLangCode.trim() === '') {
-				alert('You must specify language code for the {{expand language}} tag.');
+			if (checkParameter('Expand language', 'expandLanguageLangCode', 'a language code')) {
 				return;
 			}
 			break;
 
 		case 'file':
-			if (((params.tags.indexOf('Bad GIF') !== -1) + (params.tags.indexOf('Bad JPEG') !== -1) +
-				(params.tags.indexOf('Bad SVG') !== -1) + (params.tags.indexOf('Bad format') !== -1)) > 1) {
-				alert('Please select only one of {{Bad GIF}}, {{Bad JPEG}}, {{Bad SVG}}, and {{bad format}}.');
+			if (checkIncompatible(['Bad GIF', 'Bad JPEG', 'Bad SVG', 'Bad format'])) {
 				return;
 			}
-			if (((params.tags.indexOf('Should be PNG') !== -1) + (params.tags.indexOf('Should be SVG') !== -1) +
-				(params.tags.indexOf('Should be text') !== -1)) > 1) {
-				alert('Please select only one of {{Should be PNG}}, {{Should be SVG}}, and {{Should be text}}.');
+			if (checkIncompatible(['Should be PNG', 'Should be SVG', 'Should be text'])) {
 				return;
 			}
-			if ((params.tags.indexOf('Bad SVG') !== -1) && (params.tags.indexOf('Vector version available') !== -1)) {
-				alert('Please select only one of {{Bad SVG}} and {{Vector version available}}.');
+			if (checkIncompatible(['Bad SVG', 'Vector version available'])) {
 				return;
 			}
-			if ((params.tags.indexOf('Bad JPEG') !== -1) && (params.tags.indexOf('Overcompressed JPEG') !== -1)) {
-				alert('Please select only one of {{Bad JPEG}} and {{Overcompressed JPEG}}.');
+			if (checkIncompatible(['Bad JPEG', 'Overcompressed JPEG'])) {
 				return;
 			}
-			if ((params.tags.indexOf('PNG version available') !== -1) && (params.tags.indexOf('Vector version available') !== -1)) {
-				alert('Please select only one of {{PNG version available}} and {{Vector version available}}.');
+			if (checkIncompatible(['PNG version available', 'Vector version available'])) {
 				return;
 			}
 
-			var extension;
-			if ((extension = Morebits.pageNameNorm.match(/\.(\w+)$/)) !== null) {
-				extension = extension[1];
+			// Get extension from either mime-type or title, if not present (e.g., SVGs)
+			var extension = ((extension = $('.mime-type').text()) && extension.split(/\//)[1]) || mw.Title.newFromText(Morebits.pageNameNorm).getExtension();
+			if (extension) {
 				var extensionUpper = extension.toUpperCase();
 
 				// What self-respecting file format has *two* extensions?!
@@ -2094,27 +2110,22 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				}
 			}
 
-			if (params.tags.indexOf('Cleanup image') !== -1 && params.cleanupimageReason === '') {
-				alert('You must specify a reason for the cleanup tag.');
+			if (checkParameter('Cleanup image', 'cleanupimageReason')) {
 				return;
 			}
-			if (params.tags.indexOf('Image-Poor-Quality') !== -1 && params.ImagePoorQualityReason === '') {
-				alert('You must specify a reason for the {{Image-Poor-Quality}} tag');
+			if (checkParameter('Image-Poor-Quality', 'ImagePoorQualityReason')) {
 				return;
 			}
-			if (params.tags.indexOf('Low Quality Chem') !== -1 && params.lowQualityChemReason === '') {
-				alert('You must specify a reason for the {{Low Quality Chem}} tag');
+			if (checkParameter('Low Quality Chem', 'lowQualityChemReason')) {
 				return;
 			}
-			if ((params.tags.indexOf('Obsolete') !== -1 && params.ObsoleteFile === '') ||
-				(params.tags.indexOf('PNG version available') !== -1 && params.PNG_version_availableFile === '') ||
-				(params.tags.indexOf('Vector version available') !== -1 && params.Vector_version_availableFile === '')
-			) {
-				alert('You must specify the replacement file name for a tag in the Replacement tags list');
+			// Silly to provide the same string to each of these
+			if (checkParameter('Obsolete', 'ObsoleteFile', 'the replacement file name') ||
+				checkParameter('PNG version available', 'PNG_version_availableFile', 'the replacement file name') ||
+				checkParameter('Vector version available', 'Vector_version_availableFile', 'the replacement file name')) {
 				return;
 			}
-			if (params.tags.indexOf('Do not move to Commons_reason') !== -1 && params.DoNotMoveToCommons === '') {
-				alert('You must specify a reason for the {{Do not move to Commons}} tag');
+			if (checkParameter('Do not move to Commons_reason', 'DoNotMoveToCommons')) {
 				return;
 			}
 			break;
