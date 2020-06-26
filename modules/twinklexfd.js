@@ -495,6 +495,19 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				]
 			});
 
+			work_area.append({
+				type: 'checkbox',
+				list: [
+					{
+						label: 'Notify users of the template',
+						value: 'devpages',
+						name: 'devpages',
+						tooltip: 'A notification template will be sent to Twinkle, AWB, and RedWarn if this is true.',
+						checked: true
+					}
+				]
+			});
+
 			appendReasonBox();
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
@@ -1334,6 +1347,21 @@ Twinkle.xfd.callbacks = {
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
 			} else {
 				Twinkle.xfd.callbacks.addToLog(params, null);
+			}
+
+			// Notify developer(s) of script(s) that use(s) the nominated template
+			if (params.devpages) {
+				var inCategories = mw.config.get('wgCategories');
+				var categoryNotificationPageMap = {
+					'Templates used by Twinkle': 'Wikipedia talk:Twinkle',
+					'Templates used by AutoWikiBrowser': 'Wikipedia talk:AutoWikiBrowser',
+					'Templates used by RedWarn': 'Wikipedia talk:RedWarn'
+				};
+				$.each(categoryNotificationPageMap, function(category, page) {
+					if (inCategories.indexOf(category) !== -1) {
+						Twinkle.xfd.callbacks.notifyUser(params, page, true, 'Notifying ' + page + ' of template nomination');
+					}
+				});
 			}
 
 		},
