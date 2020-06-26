@@ -122,7 +122,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 				label: 'Notify page creator if possible',
 				value: 'notify',
 				name: 'notify',
-				tooltip: "A notification template will be placed on the creator's talk page if this is true.",
+				tooltip: "A notification template will be placed on the creator's talk page if this is true. For templates or modules, also notifies Twinkle/RedWarn/AWB developers as requested.",
 				checked: true
 			}
 		]
@@ -1067,49 +1067,64 @@ Twinkle.xfd.callbacks = {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 			});
 		},
-		userNotification: function(pageobj) {
+		courtesyNotification: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
+			var inCategories = mw.config.get('wgCategories');
+			var pagesToNotify = [];
 			var params = pageobj.getCallbackParameters();
 
-			// Disallow warning yourself
-			if (initialContrib === mw.config.get('wgUserName')) {
-				pageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
-				return;
-			}
-
-			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-			var notifytext = '\n';
-			var modNotice = mw.config.get('wgPageContentModel') === 'Scribunto' ? '|module=yes' : '';
-			switch (params.xfdcat) {
-				case 'tfd':
-					notifytext += '{{subst:Tfd notice|1=' + mw.config.get('wgTitle') + modNotice + '}} ~~~~';
-					break;
-				case 'tfm':
-					notifytext += '{{subst:Tfm notice|1=' + mw.config.get('wgTitle') + '|2=' + params.target + modNotice + '}} ~~~~';
-					break;
-				default:
-					alert('twinklexfd in userNotification: unknown TFD action');
-					break;
-			}
-
-			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + pageobj.getPageName() + ']] at [[WP:TFD|templates for discussion]].' + Twinkle.getPref('summaryAd'));
-			usertalkpage.setCreateOption('recreate');
-			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
-			usertalkpage.setFollowRedirect(true);
-
-			// Add this nomination to user's userspace log, if the user has enabled it
-			// and it isn't the second template in a TfM nomination
-			if ((params.xfdcat === 'tfd' || pageobj.getPageName() === Morebits.pageNameNorm) && params.lognomination) {
-				usertalkpage.append(function onNotifySuccess() {
-					Twinkle.xfd.callbacks.addToLog(params, initialContrib);
-				}, function onNotifyError() {
-					// if user could not be notified, log without mentioning notification
-					Twinkle.xfd.callbacks.addToLog(params, null);
-				});
+			// Notify initial contributor (if it's not the nominator)
+			if (initialContrib !== mw.config.get('wgUserName')) {
+				pagesToNotify.push('User talk:' + initialContrib);
 			} else {
-				usertalkpage.append();
+				pageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
 			}
+
+			// Notify developer(s) of script(s) that use(s) the nominated template
+			if (inCategories.includes('Templates used by Twinkle')) {
+				pagesToNotify.push('Wikipedia talk:Twinkle');
+			}
+			if (inCategories.includes('Templates used by AutoWikiBrowser')) {
+				pagesToNotify.push('Wikipedia talk:AutoWikiBrowser');
+			}
+			if (inCategories.includes('Templates used by RedWarn')) {
+				pagesToNotify.push('Wikipedia talk:RedWarn');
+			}
+
+			pagesToNotify.forEach(function(pagename, i) {
+				var pageToNotify = new Morebits.wiki.page(pagename, 'Notifying of template nomination');
+				var notifytext = '\n';
+				var modNotice = mw.config.get('wgPageContentModel') === 'Scribunto' ? '|module=yes' : '';
+				switch (params.xfdcat) {
+					case 'tfd':
+						notifytext += '{{subst:Tfd notice|1=' + mw.config.get('wgTitle') + modNotice + '}} ~~~~';
+						break;
+					case 'tfm':
+						notifytext += '{{subst:Tfm notice|1=' + mw.config.get('wgTitle') + '|2=' + params.target + modNotice + '}} ~~~~';
+						break;
+					default:
+						alert('twinklexfd in courtesyNotification: unknown TFD action');
+						break;
+				}
+
+				pageToNotify.setAppendText(notifytext);
+				pageToNotify.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + pageobj.getPageName() + ']] at [[WP:TFD|templates for discussion]].' + Twinkle.getPref('summaryAd'));
+				pageToNotify.setCreateOption('recreate');
+				pageToNotify.setFollowRedirect(true);
+				Twinkle.xfd.setWatchPref(pageToNotify, Twinkle.getPref('xfdWatchUser'));
+
+				// Only add to log the first time around.
+				if (i === 1 && (params.xfdcat === 'tfd' || pageobj.getPageName() === Morebits.pageNameNorm) && params.lognomination) {
+					pageToNotify.append(function onNotifySuccess() {
+						Twinkle.xfd.callbacks.addToLog(params, initialContrib);
+					}, function onNotifyError() {
+						// if user could not be notified, log without mentioning notification
+						Twinkle.xfd.callbacks.addToLog(params, null);
+					});
+				} else {
+					pageToNotify.append();
+				}
+			});
 		}
 	},
 
@@ -1849,7 +1864,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 						var username = innerpage.getCreator();
 						if (seenusers.indexOf(username) === -1) {
 							seenusers.push(username);
-							Twinkle.xfd.callbacks.tfd.userNotification(innerpage);
+							Twinkle.xfd.callbacks.tfd.courtesyNotification(innerpage);
 						}
 					});
 				});
