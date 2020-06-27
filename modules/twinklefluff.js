@@ -18,16 +18,6 @@
  */
 
 Twinkle.fluff = function twinklefluff() {
-	// A list of usernames, usually only bots, that vandalism revert is jumped over; that is,
-	// if vandalism revert was chosen on such username, then its target is on the revision before.
-	// This is for handling quick bots that makes edits seconds after the original edit is made.
-	// This only affects vandalism rollback; for good faith rollback, it will stop, indicating a bot
-	// has no faith, and for normal rollback, it will rollback that edit.
-	Twinkle.fluff.trustedBots = [
-		'AnomieBOT',
-		'SineBot'
-	];
-
 	if (mw.config.get('wgIsProbablyEditable')) {
 		// Only proceed if the user can actually edit the page
 		// in question (ignored for contributions, see #632).
@@ -62,6 +52,13 @@ Twinkle.fluff = function twinklefluff() {
 	}
 };
 
+// A list of usernames, usually only bots, that vandalism revert is jumped
+// over; that is, if vandalism revert was chosen on such username, then its
+// target is on the revision before.  This is for handling quick bots that
+// makes edits seconds after the original edit is made.  This only affects
+// vandalism rollback; for good faith rollback, it will stop, indicating a bot
+// has no faith, and for normal rollback, it will rollback that edit.
+Twinkle.fluff.trustedBots = ['AnomieBOT', 'SineBot'];
 Twinkle.fluff.skipTalk = null;
 Twinkle.fluff.rollbackInPlace = null;
 
