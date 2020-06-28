@@ -415,6 +415,12 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 		reason: prodtype === 'prodblp' ? '' : form.reason.value  // using an empty string here as fallback will help with prod-2.
 	};
 
+	if (!params.blp && !params.reason) {
+		if (!confirm('You left the reason blank, do you really want to continue without providing one?')) {
+			return;
+		}
+	}
+
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 
