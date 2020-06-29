@@ -1081,32 +1081,33 @@ Twinkle.xfd.callbacks = {
 			}
 
 			// Notify developer(s) of script(s) that use(s) the nominated template
-			if (inCategories.includes('Templates used by Twinkle')) {
-				pagesToNotify.push('Wikipedia talk:Twinkle');
-			}
-			if (inCategories.includes('Templates used by AutoWikiBrowser')) {
-				pagesToNotify.push('Wikipedia talk:AutoWikiBrowser');
-			}
-			if (inCategories.includes('Templates used by RedWarn')) {
-				pagesToNotify.push('Wikipedia talk:RedWarn');
+			var categoryNotificationPageMap = {
+				'Templates used by Twinkle': 'Wikipedia talk:Twinkle',
+				'Templates used by AutoWikiBrowser': 'Wikipedia talk:AutoWikiBrowser',
+				'Templates used by RedWarn': 'Wikipedia talk:RedWarn'
+			};
+			$.each(categoryNotificationPageMap, function(category, page) {
+				if (inCategories.indexOf(category) !== -1) {
+					pagesToNotify.push(page);
+				}
+			});
+
+			var notifytext = '\n';
+			var modNotice = mw.config.get('wgPageContentModel') === 'Scribunto' ? '|module=yes' : '';
+			switch (params.xfdcat) {
+				case 'tfd':
+					notifytext += '{{subst:Tfd notice|1=' + mw.config.get('wgTitle') + modNotice + '}} ~~~~';
+					break;
+				case 'tfm':
+					notifytext += '{{subst:Tfm notice|1=' + mw.config.get('wgTitle') + '|2=' + params.target + modNotice + '}} ~~~~';
+					break;
+				default:
+					alert('twinklexfd in courtesyNotification: unknown TFD action');
+					break;
 			}
 
 			pagesToNotify.forEach(function(pagename, i) {
 				var pageToNotify = new Morebits.wiki.page(pagename, 'Notifying of template nomination');
-				var notifytext = '\n';
-				var modNotice = mw.config.get('wgPageContentModel') === 'Scribunto' ? '|module=yes' : '';
-				switch (params.xfdcat) {
-					case 'tfd':
-						notifytext += '{{subst:Tfd notice|1=' + mw.config.get('wgTitle') + modNotice + '}} ~~~~';
-						break;
-					case 'tfm':
-						notifytext += '{{subst:Tfm notice|1=' + mw.config.get('wgTitle') + '|2=' + params.target + modNotice + '}} ~~~~';
-						break;
-					default:
-						alert('twinklexfd in courtesyNotification: unknown TFD action');
-						break;
-				}
-
 				pageToNotify.setAppendText(notifytext);
 				pageToNotify.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + pageobj.getPageName() + ']] at [[WP:TFD|templates for discussion]].' + Twinkle.getPref('summaryAd'));
 				pageToNotify.setCreateOption('recreate');
@@ -1114,7 +1115,9 @@ Twinkle.xfd.callbacks = {
 				Twinkle.xfd.setWatchPref(pageToNotify, Twinkle.getPref('xfdWatchUser'));
 
 				// Only add to log the first time around.
-				if (i === 1 && (params.xfdcat === 'tfd' || pageobj.getPageName() === Morebits.pageNameNorm) && params.lognomination) {
+				if (i === 0 && (params.xfdcat === 'tfd' || pageobj.getPageName() === Morebits.pageNameNorm) && params.lognomination) {
+					// Add this nomination to user's userspace log, if the user has enabled it
+					// and it isn't the second template in a TfM nomination
 					pageToNotify.append(function onNotifySuccess() {
 						Twinkle.xfd.callbacks.addToLog(params, initialContrib);
 					}, function onNotifyError() {
