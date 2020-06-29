@@ -748,6 +748,10 @@ Twinkle.xfd.callbacks = {
 		}
 	},
 	addToLog: function(params, initialContrib) {
+		if (!Twinkle.getPref('logXfdNominations') || Twinkle.getPref('noLogOnXfdNomination').indexOf(params.venue) !== -1) {
+			return;
+		}
+
 		var usl = new Morebits.userspaceLogger(Twinkle.getPref('xfdLogPageName'));// , 'Adding entry to userspace log');
 
 		usl.initialText =
@@ -937,7 +941,7 @@ Twinkle.xfd.callbacks = {
 				thispage.setLookupNonRedirectCreator(true); // Look for author of first non-redirect revision
 				thispage.lookupCreation(Twinkle.xfd.callbacks.afd.userNotification);
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
-			} else if (params.lognomination) {
+			} else {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			}
 
@@ -1014,15 +1018,11 @@ Twinkle.xfd.callbacks = {
 			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
 			usertalkpage.setFollowRedirect(true, false);
 			usertalkpage.append(function onNotifySuccess() {
-				// add this nomination to the user's userspace log, if the user has enabled it
-				if (params.lognomination) {
-					Twinkle.xfd.callbacks.addToLog(params, initialContrib);
-				}
+				// add this nomination to the user's userspace log
+				Twinkle.xfd.callbacks.addToLog(params, initialContrib);
 			}, function onNotifyError() {
 				// if user could not be notified, log nomination without mentioning that notification was sent
-				if (params.lognomination) {
-					Twinkle.xfd.callbacks.addToLog(params, null);
-				}
+				Twinkle.xfd.callbacks.addToLog(params, null);
 			});
 		},
 		delsortListing: function(pageobj) {
@@ -1117,9 +1117,9 @@ Twinkle.xfd.callbacks = {
 			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
 			usertalkpage.setFollowRedirect(true, false);
 
-			// Add this nomination to user's userspace log, if the user has enabled it
-			// and it isn't the second template in a TfM nomination
-			if ((params.xfdcat === 'tfd' || pageobj.getPageName() === Morebits.pageNameNorm) && params.lognomination) {
+			// Add this nomination to user's userspace log if it isn't the second template
+			// in a TfM nomination
+			if (params.xfdcat === 'tfd' || pageobj.getPageName() === Morebits.pageNameNorm) {
 				usertalkpage.append(function onNotifySuccess() {
 					Twinkle.xfd.callbacks.addToLog(params, initialContrib);
 				}, function onNotifyError() {
@@ -1200,7 +1200,7 @@ Twinkle.xfd.callbacks = {
 				thispage.setCallbackParameters(apiobj.params);
 				thispage.lookupCreation(Twinkle.xfd.callbacks.mfd.userNotification);
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
-			} else if (apiobj.params.lognomination) {
+			} else {
 				Twinkle.xfd.callbacks.addToLog(apiobj.params, null);
 			}
 		},
@@ -1281,7 +1281,7 @@ Twinkle.xfd.callbacks = {
 			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
 			usertalkpage.setFollowRedirect(true, false);
 			// Only log once, using the initial creator's notification as our barometer
-			if (params.initialContrib === userTarget && params.lognomination) {
+			if (params.initialContrib === userTarget) {
 				usertalkpage.append(function onNotifySuccess() {
 					Twinkle.xfd.callbacks.addToLog(params, userTarget);
 				}, function onNotifyError() {
@@ -1323,19 +1323,15 @@ Twinkle.xfd.callbacks = {
 					Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
 					usertalkpage.setFollowRedirect(true, false);
 					usertalkpage.append(function onNotifySuccess() {
-						// add this nomination to the user's userspace log, if the user has enabled it
-						if (params.lognomination) {
-							Twinkle.xfd.callbacks.addToLog(params, initialContrib);
-						}
+						// add this nomination to the user's userspace log
+						Twinkle.xfd.callbacks.addToLog(params, initialContrib);
 					}, function onNotifyError() {
 						// if user could not be notified, log nomination without mentioning that notification was sent
-						if (params.lognomination) {
-							Twinkle.xfd.callbacks.addToLog(params, null);
-						}
+						Twinkle.xfd.callbacks.addToLog(params, null);
 					});
 				}
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
-			} else if (params.lognomination) {
+			} else {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			}
 		},
@@ -1447,15 +1443,11 @@ Twinkle.xfd.callbacks = {
 			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
 			usertalkpage.setFollowRedirect(true, false);
 			usertalkpage.append(function onNotifySuccess() {
-				// add this nomination to the user's userspace log, if the user has enabled it
-				if (params.lognomination) {
-					Twinkle.xfd.callbacks.addToLog(params, initialContrib);
-				}
+				// add this nomination to the user's userspace log
+				Twinkle.xfd.callbacks.addToLog(params, initialContrib);
 			}, function onNotifyError() {
 				// if user could not be notified, log nomination without mentioning that notification was sent
-				if (params.lognomination) {
-					Twinkle.xfd.callbacks.addToLog(params, null);
-				}
+				Twinkle.xfd.callbacks.addToLog(params, null);
 			});
 		}
 	},
@@ -1471,10 +1463,8 @@ Twinkle.xfd.callbacks = {
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
 			pageobj.save(function() {
-				if (params.lognomination) {
-					// No user notification for CfDS, so just add this nomination to the user's userspace log
-					Twinkle.xfd.callbacks.addToLog(params, null);
-				}
+				// No user notification for CfDS, so just add this nomination to the user's userspace log
+				Twinkle.xfd.callbacks.addToLog(params, null);
 			});
 		},
 		addToList: function(pageobj) {
@@ -1571,7 +1561,7 @@ Twinkle.xfd.callbacks = {
 				thispage.setCallbackParameters(params);
 				thispage.lookupCreation(Twinkle.xfd.callbacks.rfd.sendNotifications);
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
-			} else if (params.lognomination) {
+			} else {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			}
 		},
@@ -1650,15 +1640,11 @@ Twinkle.xfd.callbacks = {
 			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
 			usertalkpage.setFollowRedirect(true, false);
 			usertalkpage.append(function onNotifySuccess() {
-				// add this nomination to the user's userspace log, if the user has enabled it
-				if (params.lognomination) {
-					Twinkle.xfd.callbacks.addToLog(params, initialContrib);
-				}
+				// add this nomination to the user's userspace log
+				Twinkle.xfd.callbacks.addToLog(params, initialContrib);
 			}, function onNotifyError() {
 				// if user could not be notified, log nomination without mentioning that notification was sent
-				if (params.lognomination) {
-					Twinkle.xfd.callbacks.addToLog(params, null);
-				}
+				Twinkle.xfd.callbacks.addToLog(params, null);
 			});
 		},
 		targetNotification: function(params, targetTalk) {
@@ -1669,14 +1655,13 @@ Twinkle.xfd.callbacks = {
 			targettalkpage.setCreateOption('recreate');
 			Twinkle.xfd.setWatchPref(targettalkpage, Twinkle.getPref('xfdWatchRelated'));
 			targettalkpage.setFollowRedirect(true);
-			// Add to userspace log even if not notifying the creator
-			if (params.lognomination && !params.usertalk) {
-				targettalkpage.append(function() {
+			targettalkpage.append(function() {
+				// Add to userspace log if not notifying the creator
+				if (!params.usertalk) {
 					Twinkle.xfd.callbacks.addToLog(params, null);
-				});
-			} else {
-				targettalkpage.append();
-			}
+				}
+			});
+
 		}
 	},
 
@@ -1690,10 +1675,8 @@ Twinkle.xfd.callbacks = {
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.append(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-				// add this nomination to the user's userspace log, if the user has enabled it
-				if (params.lognomination) {
-					Twinkle.xfd.callbacks.addToLog(params, null);
-				}
+				// add this nomination to the user's userspace log
+				Twinkle.xfd.callbacks.addToLog(params, null);
 			});
 		},
 
@@ -1712,10 +1695,8 @@ Twinkle.xfd.callbacks = {
 			pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].' + Twinkle.getPref('summaryAd'));
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-				// add this nomination to the user's userspace log, if the user has enabled it
-				if (params.lognomination) {
-					Twinkle.xfd.callbacks.addToLog(params, null);
-				}
+				// add this nomination to the user's userspace log
+				Twinkle.xfd.callbacks.addToLog(params, null);
 			});
 		}
 	}
@@ -1727,7 +1708,6 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	var form = e.target;
 
 	var params = Morebits.quickForm.getInputData(form);
-	params.lognomination = Twinkle.getPref('logXfdNominations') && Twinkle.getPref('noLogOnXfdNomination').indexOf(params.venue) === -1;
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
@@ -1851,7 +1831,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 					});
 				});
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
-			} else if (params.lognomination) {
+			} else {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			}
 
@@ -1947,7 +1927,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				wikipedia_page.setCallbackParameters(params);
 				wikipedia_page.lookupCreation(Twinkle.xfd.callbacks.cfd.userNotification);
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
-			} else if (params.lognomination) {
+			} else {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			}
 
