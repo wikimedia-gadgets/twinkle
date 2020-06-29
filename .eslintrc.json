@@ -6,7 +6,7 @@
 		"jquery": true
 	},
 	"globals": {
-		"mw": true
+		"mw": "readonly"
 	},
 	"ignorePatterns": "select2*",
 	"rules": {
