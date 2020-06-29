@@ -1312,9 +1312,6 @@ Twinkle.warn.callback.postCategoryCleanup = function twinklewarnCallbackPostCate
 		$('.select2-selection').keydown(Morebits.select2.autoStart);
 
 		mw.util.addCSS(
-			// prevent dropdown from appearing behind the dialog, just in case
-			'.select2-container { z-index: 10000; }' +
-
 			// Increase height
 			'.select2-container .select2-dropdown .select2-results > .select2-results__options { max-height: 350px; }' +
 

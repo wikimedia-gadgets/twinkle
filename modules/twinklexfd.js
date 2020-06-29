@@ -283,9 +283,6 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				});
 
 			mw.util.addCSS(
-				// prevent dropdown from appearing behind the dialog, just in case
-				'.select2-container { z-index: 10000; }' +
-
 				// Remove black border
 				'.select2-container--default.select2-container--focus .select2-selection--multiple { border: 1px solid #aaa; }' +
 
