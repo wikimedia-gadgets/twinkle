@@ -1383,25 +1383,6 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
 };
 
 
-/**
- * **************** Date ****************
- * Helper functions to get the month as a string instead of a number
- *
- * @deprecated Since early 2020 in favor of Morebits.date (#814)
- */
-
-Date.monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-	'July', 'August', 'September', 'October', 'November', 'December' ];
-Date.monthNamesAbbrev = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-Date.prototype.getUTCMonthName = function() {
-	console.warn("NOTE: Date prototypes from Twinkle's Morebits (such as getUTCMonthName) have been deprecated, use Morebits.date instead"); // eslint-disable-line no-console
-	return Date.monthNames[this.getUTCMonth()];
-};
-Date.prototype.getUTCMonthNameAbbrev = function() {
-	console.warn("NOTE: Date prototypes from Twinkle's Morebits (such as getUTCMonthNameAbbrev) have been deprecated, use Morebits.date instead"); // eslint-disable-line no-console
-	return Date.monthNamesAbbrev[this.getUTCMonth()];
-};
-
 
 /**
  * **************** Morebits.date ****************
