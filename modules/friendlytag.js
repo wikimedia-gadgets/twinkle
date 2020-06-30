@@ -1963,7 +1963,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	switch (Twinkle.tag.mode) {
 		case 'article':
 			params.tagsToRemove = form.getUnchecked('existingTags'); // not in `input`
-			params.tagsToRemain = params.existingTags;
+			params.tagsToRemain = params.existingTags || []; // container not created if none present
 
 			// Validation
 			if ((params.tags.indexOf('Merge') !== -1) || (params.tags.indexOf('Merge from') !== -1) ||
