@@ -108,7 +108,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		type: 'div',
 		label: '',
 		style: 'color: red',
-		id: 'twinkle-warn-revert-messages'
+		id: 'twinkle-warn-warning-messages'
 	});
 
 	var vanrevid = mw.util.getParamValue('vanarticlerevid');
@@ -132,7 +132,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 				var revertUser = $(apiobj.getResponse()).find('revisions rev')[1].getAttribute('user');
 				if (revertUser && revertUser !== mw.config.get('wgUserName')) {
 					message += ' Someone else reverted the page and may have already warned the user.';
-					$('#twinkle-warn-revert-messages').text('Note:' + message);
+					$('#twinkle-warn-warning-messages').text('Note:' + message);
 				}
 			}).post();
 		}
@@ -150,7 +150,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 			if (vantimestamp && revDate.isValid()) {
 				if (revDate.add(24, 'hours').isBefore(new Date())) {
 					message += ' This edit was made more than 24 hours ago so a warning may be stale.';
-					$('#twinkle-warn-revert-messages').text('Note:' + message);
+					$('#twinkle-warn-warning-messages').text('Note:' + message);
 				}
 			}
 		}).post();
@@ -1575,9 +1575,9 @@ Twinkle.warn.callbacks = {
 		template += level;
 
 		$autolevelMessage.prepend($('<div>Will issue a <span style="font-weight: bold;">level ' + level + '</span> template.</div>'));
-		// After the only other message: the (text-only) staleness note
+		// Place after the stale and other-user-reverted (text-only) messages
 		$('#twinkle-warn-autolevel-message').remove(); // clean slate
-		$autolevelMessage.insertAfter($('#twinkle-warn-warning-message'));
+		$autolevelMessage.insertAfter($('#twinkle-warn-warning-messages'));
 
 		return [template, level];
 	},
