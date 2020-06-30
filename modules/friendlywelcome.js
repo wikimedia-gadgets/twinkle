@@ -599,7 +599,8 @@ Twinkle.welcome.callbacks = {
 		previewDialog.setContent(previewdiv);
 
 		var previewer = new Morebits.wiki.preview(previewdiv);
-		previewer.beginRender(Twinkle.welcome.getTemplateWikitext(form.type.value, form.getChecked('template'), form.article.value), 'User talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username
+		var input = Morebits.quickForm.getInputData(form);
+		previewer.beginRender(Twinkle.welcome.getTemplateWikitext(input.type, input.template, input.article), 'User talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username
 
 		var submit = document.createElement('input');
 		submit.setAttribute('type', 'submit');
@@ -623,7 +624,7 @@ Twinkle.welcome.callbacks = {
 			return;
 		}
 
-		var welcomeText = Twinkle.welcome.getTemplateWikitext(params.type, params.value, params.article);
+		var welcomeText = Twinkle.welcome.getTemplateWikitext(params.type, params.template, params.article);
 
 		if (Twinkle.getPref('topWelcomes')) {
 			text = welcomeText + '\n\n' + text;
@@ -643,12 +644,8 @@ Twinkle.welcome.callbacks = {
 Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) {
 	var form = e.target;
 
-	var params = {
-		type: form.type.value,
-		value: form.getChecked('template'),
-		article: form.article.value,
-		mode: 'manual'
-	};
+	var params = Morebits.quickForm.getInputData(form); // : type, template, article
+	params.mode = 'manual';
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);

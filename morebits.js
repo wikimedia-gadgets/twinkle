@@ -353,9 +353,16 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 					subnode = cur_div.appendChild(document.createElement('input'));
 					subnode.values = current.value;
 					subnode.setAttribute('value', current.value);
-					subnode.setAttribute('name', current.name || data.name);
 					subnode.setAttribute('type', data.type);
 					subnode.setAttribute('id', cur_id);
+					subnode.setAttribute('name', current.name || data.name);
+
+					// If name is provided on the individual checkbox, add a data-single
+					// attribute which indicates it isn't part of a list of checkboxes with
+					// same name. Used in getInputData()
+					if (current.name) {
+						subnode.setAttribute('data-single', 'data-single');
+					}
 
 					if (current.checked) {
 						subnode.setAttribute('checked', 'checked');
@@ -719,6 +726,59 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 // Some utility methods for manipulating quickForms after their creation:
 // (None of these work for "dyninput" type fields at present)
 
+/**
+ * Returns an object containing all filled form data entered by the user, with the object
+ * keys being the form element names. Disabled fields will be ignored, but not hidden fields.
+ * @param {HTMLFormElement} form
+ * @returns {Object} with field names as keys, input data as values
+ */
+Morebits.quickForm.getInputData = function(form) {
+	var result = {};
+
+	for (var i in form.elements) { // eslint-disable-line guard-for-in
+		var field = form.elements[i];
+		if (field.disabled || !field.name || !field.type ||
+			field.type === 'submit' || field.type === 'button') {
+			continue;
+		}
+
+		// For elements in subgroups, quickform prepends element names with
+		// name of the parent group followed by a period, get rid of that.
+		var fieldNameNorm = field.name.slice(field.name.indexOf('.') + 1);
+
+		switch (field.type) {
+			case 'radio':
+				if (field.checked) {
+					result[fieldNameNorm] = field.value;
+				}
+				break;
+			case 'checkbox':
+				if (field.dataset.single) {
+					result[fieldNameNorm] = field.checked; // boolean
+				} else {
+					result[fieldNameNorm] = result[fieldNameNorm] || [];
+					if (field.checked) {
+						result[fieldNameNorm].push(field.value);
+					}
+				}
+				break;
+			case 'select-multiple':
+				result[fieldNameNorm] = $(field).val(); // field.value doesn't work
+				break;
+			case 'text': // falls through
+			case 'textarea':
+				result[fieldNameNorm] = field.value.trim();
+				break;
+			default: // could be select-one, date, number, email, etc
+				if (field.value) {
+					result[fieldNameNorm] = field.value;
+				}
+				break;
+		}
+	}
+	return result;
+};
+
 
 /**
  * Returns all form elements with a given field name or ID
@@ -728,15 +788,13 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
  */
 Morebits.quickForm.getElements = function QuickFormGetElements(form, fieldName) {
 	var $form = $(form);
+	fieldName = $.escapeSelector(fieldName); // sanitize input
 	var $elements = $form.find('[name="' + fieldName + '"]');
 	if ($elements.length > 0) {
 		return $elements.toArray();
 	}
 	$elements = $form.find('#' + fieldName);
-	if ($elements.length > 0) {
-		return $elements.toArray();
-	}
-	return null;
+	return $elements.toArray();
 };
 
 /**
@@ -881,15 +939,11 @@ Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementToo
  * please)
  * Type is optional and can specify if either radio or checkbox (for the event
  * that both checkboxes and radiobuttons have the same name.
- *
- * XXX: Doesn't seem to work reliably across all browsers at the moment. -- see getChecked2
- * in twinkleunlink.js, which is better
  */
 HTMLFormElement.prototype.getChecked = function(name, type) {
 	var elements = this.elements[name];
 	if (!elements) {
-		// if the element doesn't exists, return null.
-		return null;
+		return [];
 	}
 	var return_array = [];
 	var i;
@@ -936,8 +990,7 @@ HTMLFormElement.prototype.getChecked = function(name, type) {
 HTMLFormElement.prototype.getUnchecked = function(name, type) {
 	var elements = this.elements[name];
 	if (!elements) {
-		// if the element doesn't exists, return null.
-		return null;
+		return [];
 	}
 	var return_array = [];
 	var i;
