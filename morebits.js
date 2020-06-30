@@ -2446,7 +2446,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 		ctx.followRedirect = followRedirect;
-		ctx.followCrossNsRedirect = followCrossNsRedirect;
+		ctx.followCrossNsRedirect = typeof followCrossNsRedirect !== 'undefined' ? followCrossNsRedirect : ctx.followCrossNsRedirect;
 	};
 
 	// lookup-creation setter function
