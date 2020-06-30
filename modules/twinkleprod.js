@@ -396,23 +396,13 @@ Twinkle.prod.callbacks = {
 
 Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	var form = e.target;
-	var prodtype;
-
-	if (namespace === 'article') {
-		var prodtypes = form.prodtype;
-		for (var i = 0; i < prodtypes.length; i++) {
-			if (prodtypes[i].checked) {
-				prodtype = prodtypes[i].values;
-				break;
-			}
-		}
-	}
+	var input = Morebits.quickForm.getInputData(form);
 
 	var params = {
-		usertalk: form.notify.checked,
-		blp: prodtype === 'prodblp',
+		usertalk: input.notify,
+		blp: input.prodtype === 'prodblp',
 		book: namespace === 'book',
-		reason: prodtype === 'prodblp' ? '' : form.reason.value  // using an empty string here as fallback will help with prod-2.
+		reason: input.reason || '' // using an empty string here as fallback will help with prod-2.
 	};
 
 	Morebits.simpleWindow.setButtonsEnabled(false);

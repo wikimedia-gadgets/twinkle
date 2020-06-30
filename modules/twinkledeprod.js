@@ -108,7 +108,7 @@ Twinkle.deprod.callback = function() {
 
 		var rendered = apiobj.params.form.render();
 		apiobj.params.Window.setContent(rendered);
-		$(Morebits.quickForm.getElements(rendered, 'pages')).each(function(index, checkbox) {
+		Morebits.quickForm.getElements(rendered, 'pages').forEach(function(checkbox) {
 			var $checkbox = $(checkbox);
 			var link = Morebits.htmlNode('a', $checkbox.val());
 			link.setAttribute('class', 'deprod-page-link');
@@ -123,7 +123,7 @@ Twinkle.deprod.callback = function() {
 };
 
 var callback_commit = function(event) {
-		var pages = event.target.getChecked('pages');
+		var pages = Morebits.quickForm.getInputData(event.target).pages;
 		Morebits.status.init(event.target);
 
 		var batchOperation = new Morebits.batchOperation('Deleting pages');

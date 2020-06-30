@@ -1413,13 +1413,14 @@ Twinkle.warn.callbacks = {
 		return text + ' ~~~~';
 	},
 	showPreview: function(form, templatename) {
+		var input = Morebits.quickForm.getInputData(form);
 		// Provided on autolevel, not otherwise
-		templatename = templatename || form.sub_group.value;
-		var linkedarticle = form.article.value;
+		templatename = templatename || input.sub_group;
+		var linkedarticle = input.article;
 		var templatetext;
 
 		templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle,
-			form.reason.value, form.main_group.value === 'custom');
+			input.reason, input.main_group === 'custom');
 
 		form.previewer.beginRender(templatetext, 'User_talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username
 	},
@@ -1714,24 +1715,18 @@ Twinkle.warn.callbacks = {
 Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	var userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
-	// First, check to make sure a reason was filled in if uw-username was selected
+	// reason, main_group, sub_group, article
+	var params = Morebits.quickForm.getInputData(e.target);
 
-	if (e.target.sub_group.value === 'uw-username' && e.target.article.value.trim() === '') {
+	// Check that a reason was filled in if uw-username was selected
+	if (params.sub_group === 'uw-username' && !params.article) {
 		alert('You must supply a reason for the {{uw-username}} template.');
 		return;
 	}
 
 	// Find the selected <option> element so we can fetch the data structure
-	var selectedEl = $(e.target.sub_group).find('option[value="' + $(e.target.sub_group).val() + '"]');
-
-	// Then, grab all the values provided by the form
-	var params = {
-		reason: e.target.reason.value,
-		main_group: e.target.main_group.value,
-		sub_group: e.target.sub_group.value,
-		article: e.target.article.value,  // .replace( /^(Image|Category):/i, ':$1:' ),  -- apparently no longer needed...
-		messageData: selectedEl.data('messageData')
-	};
+	var $selectedEl = $(e.target.sub_group).find('option[value="' + $(e.target.sub_group).val() + '"]');
+	params.messageData = $selectedEl.data('messageData');
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(e.target);

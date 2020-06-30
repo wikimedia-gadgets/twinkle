@@ -21,19 +21,6 @@ Twinkle.unlink = function twinkleunlink() {
 	Twinkle.addPortletLink(Twinkle.unlink.callback, 'Unlink', 'tw-unlink', 'Unlink backlinks');
 };
 
-Twinkle.unlink.getChecked2 = function twinkleunlinkGetChecked2(nodelist) {
-	if (!(nodelist instanceof NodeList) && !(nodelist instanceof HTMLCollection)) {
-		return nodelist.checked ? [ nodelist.values ] : [];
-	}
-	var result = [];
-	for (var i = 0; i < nodelist.length; ++i) {
-		if (nodelist[i].checked) {
-			result.push(nodelist[i].values);
-		}
-	}
-	return result;
-};
-
 // the parameter is used when invoking unlink from admin speedy
 Twinkle.unlink.callback = function(presetReason) {
 	var Window = new Morebits.simpleWindow(600, 440);
@@ -107,36 +94,32 @@ Twinkle.unlink.callback = function(presetReason) {
 };
 
 Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event) {
-	var reason = event.target.reason.value;
-	if (!reason) {
+	var form = event.target;
+	var input = Morebits.quickForm.getInputData(form);
+
+	if (!input.reason) {
 		alert('You must specify a reason for unlinking.');
 		return;
 	}
 
-	var backlinks = [], imageusage = [];
-	if (event.target.backlinks) {
-		backlinks = Twinkle.unlink.getChecked2(event.target.backlinks);
-	}
-	if (event.target.imageusage) {
-		imageusage = Twinkle.unlink.getChecked2(event.target.imageusage);
-	}
-
 	Morebits.simpleWindow.setButtonsEnabled(false);
-	Morebits.status.init(event.target);
+	Morebits.status.init(form);
 
-	var pages = Morebits.array.uniq(backlinks.concat(imageusage));
+	input.backlinks = input.backlinks || [];
+	input.imageusage = input.imageusage || [];
+	var pages = Morebits.array.uniq(input.backlinks.concat(input.imageusage));
 
-	var unlinker = new Morebits.batchOperation('Unlinking backlinks' + (imageusage ? ' and instances of file usage' : ''));
+	var unlinker = new Morebits.batchOperation('Unlinking backlinks' + (input.imageusage.length ? ' and instances of file usage' : ''));
 	unlinker.setOption('preserveIndividualStatusLines', true);
 	unlinker.setPageList(pages);
-	var params = { reason: reason, unlinker: unlinker };
+	var params = { reason: input.reason, unlinker: unlinker };
 	unlinker.run(function(pageName) {
 		var wikipedia_page = new Morebits.wiki.page(pageName, 'Unlinking in article "' + pageName + '"');
 		wikipedia_page.setBotEdit(true);  // unlink considered a floody operation
-		var innerParams = $.extend({}, params);
-		innerParams.doBacklinks = backlinks && backlinks.indexOf(pageName) !== -1;
-		innerParams.doImageusage = imageusage && imageusage.indexOf(pageName) !== -1;
-		wikipedia_page.setCallbackParameters(innerParams);
+		wikipedia_page.setCallbackParameters($.extend({
+			doBacklinks: input.backlinks.indexOf(pageName) !== -1,
+			doImageusage: input.imageusage.indexOf(pageName) !== -1
+		}, params));
 		wikipedia_page.load(Twinkle.unlink.callbacks.unlinkBacklinks);
 	});
 };

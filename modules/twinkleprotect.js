@@ -1114,28 +1114,19 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 
 Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	var form = e.target;
-
-	var actiontypes = form.actiontype;
-	var actiontype;
-	for (var i = 0; i < actiontypes.length; i++) {
-		if (!actiontypes[i].checked) {
-			continue;
-		}
-		actiontype = actiontypes[i].values;
-		break;
-	}
+	var input = Morebits.quickForm.getInputData(form);
 
 	var tagparams;
-	if (actiontype === 'tag' || (actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto')) {
+	if (input.actiontype === 'tag' || (input.actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto')) {
 		tagparams = {
-			tag: form.tagtype.value,
-			reason: (form.tagtype.value === 'pp-protected' || form.tagtype.value === 'pp-semi-protected' || form.tagtype.value === 'pp-move') && form.protectReason ? form.protectReason.value : null,
-			small: form.small.checked,
-			noinclude: form.noinclude.checked
+			tag: input.tagtype,
+			reason: (input.tagtype === 'pp-protected' || input.tagtype === 'pp-semi-protected' || input.tagtype === 'pp-move') && input.protectReason,
+			small: input.small,
+			noinclude: input.noinclude
 		};
 	}
 
-	switch (actiontype) {
+	switch (input.actiontype) {
 		case 'protect':
 			// protect the page
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
@@ -1154,30 +1145,30 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			};
 
 			var stabilizeValues = {};
-			if (form.pclevel) {
+			if (input.pclevel) {
 				stabilizeValues = {
-					pclevel: form.pclevel.value,
-					pcexpiry: form.pcexpiry.value,
-					protectReason: form.protectReason.value
+					pclevel: input.pclevel,
+					pcexpiry: input.pcexpiry,
+					protectReason: input.protectReason
 				};
 			}
 
 			var protectIt = function twinkleprotectCallbackProtectIt(next) {
 				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Protecting page');
 				if (mw.config.get('wgArticleId')) {
-					if (form.editmodify.checked) {
-						thispage.setEditProtection(form.editlevel.value, form.editexpiry.value);
+					if (input.editmodify) {
+						thispage.setEditProtection(input.editlevel, input.editexpiry);
 					}
-					if (form.movemodify.checked) {
-						thispage.setMoveProtection(form.movelevel.value, form.moveexpiry.value);
+					if (input.movemodify) {
+						thispage.setMoveProtection(input.movelevel, input.moveexpiry);
 					}
 				} else {
-					thispage.setCreateProtection(form.createlevel.value, form.createexpiry.value);
+					thispage.setCreateProtection(input.createlevel, input.createexpiry);
 					thispage.setWatchlist(false);
 				}
 
-				if (form.protectReason.value) {
-					thispage.setEditSummary(form.protectReason.value);
+				if (input.protectReason) {
+					thispage.setEditSummary(input.protectReason);
 				} else {
 					alert('You must enter a protect reason, which will be inscribed into the protection log.');
 					return;
@@ -1220,14 +1211,13 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				});
 			};
 
-			if ((form.editmodify && form.editmodify.checked) || (form.movemodify && form.movemodify.checked) ||
-				!mw.config.get('wgArticleId')) {
-				if (form.pcmodify && form.pcmodify.checked) {
+			if (input.editmodify || input.movemodify || !mw.config.get('wgArticleId')) {
+				if (input.pcmodify) {
 					protectIt(stabilizeIt);
 				} else {
 					protectIt(allDone);
 				}
-			} else if (form.pcmodify && form.pcmodify.checked) {
+			} else if (input.pcmodify) {
 				stabilizeIt();
 			} else {
 				alert("Please give Twinkle something to do! \nIf you just want to tag the page, you can choose the 'Tag page with protection template' option at the top.");
@@ -1251,7 +1241,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		case 'request':
 			// file request at RFPP
 			var typename, typereason;
-			switch (form.category.value) {
+			switch (input.category) {
 				case 'pp-dispute':
 				case 'pp-vandalism':
 				case 'pp-usertalk':
@@ -1300,7 +1290,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					var admins = $.map(Twinkle.protect.currentProtectionLevels, function(pl) {
 						return pl.admin ? 'User:' + pl.admin : null;
 					});
-					if (admins.length && !confirm('Have you attempted to contact the protecting admins (' + $.unique(admins).join(', ') + ') first?')) {
+					if (admins.length && !confirm('Have you attempted to contact the protecting admins (' + Morebits.array.uniq(admins).join(', ') + ') first?')) {
 						return false;
 					}
 					// otherwise falls through
@@ -1308,7 +1298,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typename = 'unprotection';
 					break;
 			}
-			switch (form.category.value) {
+			switch (input.category) {
 				case 'pp-dispute':
 					typereason = 'Content dispute/edit warring';
 					break;
@@ -1370,11 +1360,11 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			}
 
 			var reason = typereason;
-			if (form.reason.value !== '') {
+			if (input.reason !== '') {
 				if (typereason !== '') {
 					reason += '\u00A0\u2013 ';  // U+00A0 NO-BREAK SPACE; U+2013 EN RULE
 				}
-				reason += form.reason.value;
+				reason += input.reason;
 			}
 			if (reason !== '' && reason.charAt(reason.length - 1) !== '.') {
 				reason += '.';
@@ -1383,8 +1373,8 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			var rppparams = {
 				reason: reason,
 				typename: typename,
-				category: form.category.value,
-				expiry: form.expiry.value
+				category: input.category,
+				expiry: input.expiry
 			};
 
 			Morebits.simpleWindow.setButtonsEnabled(false);

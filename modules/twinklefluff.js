@@ -18,16 +18,6 @@
  */
 
 Twinkle.fluff = function twinklefluff() {
-	// A list of usernames, usually only bots, that vandalism revert is jumped over; that is,
-	// if vandalism revert was chosen on such username, then its target is on the revision before.
-	// This is for handling quick bots that makes edits seconds after the original edit is made.
-	// This only affects vandalism rollback; for good faith rollback, it will stop, indicating a bot
-	// has no faith, and for normal rollback, it will rollback that edit.
-	Twinkle.fluff.trustedBots = [
-		'AnomieBOT',
-		'SineBot'
-	];
-
 	if (mw.config.get('wgIsProbablyEditable')) {
 		// Only proceed if the user can actually edit the page
 		// in question (ignored for contributions, see #632).
@@ -62,6 +52,13 @@ Twinkle.fluff = function twinklefluff() {
 	}
 };
 
+// A list of usernames, usually only bots, that vandalism revert is jumped
+// over; that is, if vandalism revert was chosen on such username, then its
+// target is on the revision before.  This is for handling quick bots that
+// makes edits seconds after the original edit is made.  This only affects
+// vandalism rollback; for good faith rollback, it will stop, indicating a bot
+// has no faith, and for normal rollback, it will rollback that edit.
+Twinkle.fluff.trustedBots = ['AnomieBOT', 'SineBot'];
 Twinkle.fluff.skipTalk = null;
 Twinkle.fluff.rollbackInPlace = null;
 
@@ -176,9 +173,9 @@ Twinkle.fluff.addLinks = {
 			if (Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
 				(mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1) ||
 				(mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1)) {
-				var list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
+				var $list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
 
-				list.each(function(key, current) {
+				$list.each(function(key, current) {
 					// revid is also available in the href of both
 					// .mw-changeslist-date or .mw-changeslist-diff
 					var page = $(current).find('.mw-contributions-title').text();
@@ -191,12 +188,12 @@ Twinkle.fluff.addLinks = {
 	recentchanges: function() {
 		if (Twinkle.getPref('showRollbackLinks').indexOf('recent') !== -1) {
 			// Latest and revertable (not page creations, logs, categorizations, etc.)
-			var list = $('.mw-changeslist .mw-changeslist-last.mw-changeslist-src-mw-edit');
+			var $list = $('.mw-changeslist .mw-changeslist-last.mw-changeslist-src-mw-edit');
 			// Exclude top-level header if "group changes" preference is used
 			// and find only individual lines or nested lines
-			list = list.not('.mw-rcfilters-ui-highlights-enhanced-toplevel').find('.mw-changeslist-line-inner, td.mw-enhanced-rc-nested');
+			$list = $list.not('.mw-rcfilters-ui-highlights-enhanced-toplevel').find('.mw-changeslist-line-inner, td.mw-enhanced-rc-nested');
 
-			list.each(function(key, current) {
+			$list.each(function(key, current) {
 				var vandal = $(current).find('.mw-userlink').text();
 				var href = $(current).find('.mw-changeslist-diff').attr('href');
 				var rev = mw.util.getParamValue('diff', href);
@@ -409,7 +406,7 @@ Twinkle.fluff.callbacks = {
 		var xmlDoc = apiobj.responseXML;
 
 		if (typeof $(xmlDoc).find('actions').attr('edit') === 'undefined') {
-			self.statelem.error("Unable to edit the page, it's probably protected.");
+			apiobj.statelem.error("Unable to edit the page, it's probably protected.");
 			return;
 		}
 
