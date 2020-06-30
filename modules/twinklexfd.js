@@ -980,7 +980,7 @@ Twinkle.xfd.callbacks = {
 			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|nomination]] of [[:' + Morebits.pageNameNorm + ']]  at [[WP:AFD|articles for deletion]].' + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
-			usertalkpage.setFollowRedirect(true);
+			usertalkpage.setFollowRedirect(true, false);
 			usertalkpage.append(function onNotifySuccess() {
 				// add this nomination to the user's userspace log, if the user has enabled it
 				if (params.lognomination) {
@@ -1083,7 +1083,7 @@ Twinkle.xfd.callbacks = {
 			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + pageobj.getPageName() + ']] at [[WP:TFD|templates for discussion]].' + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
-			usertalkpage.setFollowRedirect(true);
+			usertalkpage.setFollowRedirect(true, false);
 
 			// Add this nomination to user's userspace log, if the user has enabled it
 			// and it isn't the second template in a TfM nomination
@@ -1247,7 +1247,7 @@ Twinkle.xfd.callbacks = {
 			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|nomination]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:MFD|miscellany for deletion]].' + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
-			usertalkpage.setFollowRedirect(true);
+			usertalkpage.setFollowRedirect(true, false);
 			// Only log once, using the initial creator's notification as our barometer
 			if (params.initialContrib === userTarget && params.lognomination) {
 				usertalkpage.append(function onNotifySuccess() {
@@ -1289,7 +1289,7 @@ Twinkle.xfd.callbacks = {
 					usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:FFD|files for discussion]].' + Twinkle.getPref('summaryAd'));
 					usertalkpage.setCreateOption('recreate');
 					Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
-					usertalkpage.setFollowRedirect(true);
+					usertalkpage.setFollowRedirect(true, false);
 					usertalkpage.append(function onNotifySuccess() {
 						// add this nomination to the user's userspace log, if the user has enabled it
 						if (params.lognomination) {
@@ -1413,7 +1413,7 @@ Twinkle.xfd.callbacks = {
 			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:CFD|categories for discussion]].' + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
-			usertalkpage.setFollowRedirect(true);
+			usertalkpage.setFollowRedirect(true, false);
 			usertalkpage.append(function onNotifySuccess() {
 				// add this nomination to the user's userspace log, if the user has enabled it
 				if (params.lognomination) {
@@ -1616,7 +1616,7 @@ Twinkle.xfd.callbacks = {
 			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:RFD|redirects for discussion]].' + Twinkle.getPref('summaryAd'));
 			usertalkpage.setCreateOption('recreate');
 			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
-			usertalkpage.setFollowRedirect(true);
+			usertalkpage.setFollowRedirect(true, false);
 			usertalkpage.append(function onNotifySuccess() {
 				// add this nomination to the user's userspace log, if the user has enabled it
 				if (params.lognomination) {

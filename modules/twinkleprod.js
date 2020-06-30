@@ -282,7 +282,7 @@ Twinkle.prod.callbacks = {
 					usertalkpage.setAppendText(notifytext);
 					usertalkpage.setEditSummary('Notification: proposed deletion of [[:' + Morebits.pageNameNorm + ']].' + Twinkle.getPref('summaryAd'));
 					usertalkpage.setCreateOption('recreate');
-					usertalkpage.setFollowRedirect(true);
+					usertalkpage.setFollowRedirect(true, false);
 					usertalkpage.setCallbackParameters(params);
 					usertalkpage.append(function onNotifySuccess() {
 						// add nomination to the userspace log, if the user has enabled it
