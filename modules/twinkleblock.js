@@ -498,8 +498,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		});
 
 		mw.util.addCSS(
-			// prevent dropdown from appearing behind the dialog, just in case
-			'.select2-container { z-index: 10000; }' +
 			// Reduce padding
 			'.select2-results .select2-results__option { padding-top: 1px; padding-bottom: 1px; }' +
 			// Adjust font size
