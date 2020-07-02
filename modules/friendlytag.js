@@ -45,7 +45,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	form.append({
 		type: 'input',
-		label: 'Quick filter: ',
+		label: 'Filter tag list: ',
 		name: 'quickfilter',
 		size: '30px',
 		event: function twinkletagquickfilter() {
