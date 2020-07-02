@@ -220,11 +220,13 @@ Twinkle.fluff.addLinks = {
 			// oldid
 			histList.forEach(function(rev) {
 				// From restoreThisRevision, non-transferable
-
+				// If the text has been revdel'd, it gets wrapped in a span with .history-deleted,
+				// and href will be undefined (and thus oldid is NaN)
 				var href = rev.querySelector('.mw-changeslist-date').href;
 				var oldid = parseInt(mw.util.getParamValue('oldid', href), 10);
-
-				rev.appendChild(Twinkle.fluff.linkBuilder.restoreThisRevisionLink(oldid, true));
+				if (!isNaN(oldid)) {
+					rev.appendChild(Twinkle.fluff.linkBuilder.restoreThisRevisionLink(oldid, true));
+				}
 			});
 
 
