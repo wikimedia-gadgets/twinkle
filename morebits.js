@@ -4009,6 +4009,72 @@ Morebits.wikitext.page.prototype = {
 		return this;
 	},
 
+	/**
+	 * Smartly insert a tag atop page text but after specified templates,
+	 * such as hatnotes, short description, or deletion and protection templates.
+	 * Notably, does *not* insert a newline after the tag
+	 *
+	 * @param {string} tag - The tag to be inserted
+	 * @param {string|string[]} regex - Templates after which to insert tag,
+	 * given as either as a (regex-valid) string or an array to be joined by pipes
+	 * @param {string} [flags=i] - Regex flags to apply. Optional, defaults to /i
+	 * @param {string|string[]} preRegex - Optional regex string or array to match
+	 * before any template matches (i.e. before `{{`), such as html comments
+	 *
+	 * @returns {Morebits.wikitext.page}
+	 */
+	insertAfterTemplates: function(tag, regex, flags, preRegex) {
+		if (!tag) {
+			throw new Error('No tag provided');
+		}
+
+		// .length is only a property of strings and arrays so we
+		// shouldn't need to check type
+		if (!regex || !regex.length) {
+			throw new Error('No regex provided');
+		} else if (Array.isArray(regex)) {
+			regex = regex.join('|');
+		}
+
+		flags = flags || 'i';
+
+		if (!preRegex || !preRegex.length) {
+			preRegex = '';
+		} else if (Array.isArray(preRegex)) {
+			preRegex = preRegex.join('|');
+		}
+
+
+		// Regex is extra complicated to allow for templates with
+		// parameters and to handle whitespace properly
+		this.text = this.text.replace(
+			new RegExp(
+				// leading whitespace
+				'^\\s*' +
+				// capture template(s)
+				'(?:((?:\\s*' +
+				// Pre-template regex, such as leading html comments
+				preRegex + '|' +
+				// begin template format
+				'\\{\\{\\s*(?:' +
+				// Template regex
+				regex +
+				// end main template name, optionally with a number
+				// Probably remove the (?:) though
+				')\\d*\\s*' +
+				// template parameters
+				'(\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?' +
+				// end template format
+				'\\}\\})+' +
+				// end capture
+				'(?:\\s*\\n)?)' +
+				// trailing whitespace
+				'\\s*)?',
+				flags), '$1' + tag
+		);
+		return this;
+	},
+
 	/** @returns {string} */
 	getText: function() {
 		return this.text;
