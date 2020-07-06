@@ -113,7 +113,15 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 				userinfo = data.query.users[0];
 
 			Twinkle.block.isRegistered = !!userinfo.userid;
-			relevantUserName = Twinkle.block.isRegistered ? 'User:' + mw.config.get('wgRelevantUserName') : mw.config.get('wgRelevantUserName');
+			if (Twinkle.block.isRegistered) {
+				relevantUserName = 'User:' + mw.config.get('wgRelevantUserName');
+				Twinkle.block.userIsBot = !!userinfo.groupmemberships && userinfo.groupmemberships.map(function(e) {
+					return e.group;
+				}).indexOf('bot') !== -1;
+			} else {
+				relevantUserName = mw.config.get('wgRelevantUserName');
+				Twinkle.block.userIsBot = false;
+			}
 
 			if (blockinfo) {
 			// handle frustrating system of inverted boolean values
@@ -125,10 +133,6 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 			Twinkle.block.hasBlockLog = !!data.query.logevents.length;
 			// Used later to check if block status changed while filling out the form
 			Twinkle.block.blockLogId = Twinkle.block.hasBlockLog ? data.query.logevents[0].logid : false;
-
-			Twinkle.block.userIsBot = userinfo.groupmemberships.map(function(e) {
-				return e.group;
-			}).indexOf('bot') !== -1;
 
 			if (typeof fn === 'function') {
 				return fn();
