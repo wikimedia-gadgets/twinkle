@@ -27,8 +27,16 @@ if (!Morebits.userIsInGroup('autoconfirmed') && !Morebits.userIsInGroup('confirm
 var Twinkle = {};
 window.Twinkle = Twinkle;  // allow global access
 
-Twinkle.initCallbacks = [];
+/**
+ * Twinkle-specific data shared by multiple modules
+ * Likely customized per installation
+ */
+// Various hatnote templates, used when tagging (csd/xfd/tag/prod/protect) to
+// ensure MOS:ORDER
+Twinkle.hatnoteRegex = 'about|correct title|dablink|distinguish|for|other\\s?(?:hurricane(?: use)?s|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\\s?(?:also|wiktionary)|selfref|short description|the';
 
+
+Twinkle.initCallbacks = [];
 /**
  * Adds a callback to execute when Twinkle has loaded.
  * @param {function} func
