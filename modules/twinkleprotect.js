@@ -94,6 +94,9 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 // Once filled, it will look something like:
 // { edit: { level: "sysop", expiry: <some date>, cascade: true }, ... }
 Twinkle.protect.currentProtectionLevels = {};
+// A list of bots who may be the protecting sysop, for whom we shouldn't
+// remind the user contact before requesting unprotection (evaluate)
+Twinkle.protect.trustedBots = ['MusikBot II', 'TFA Protector Bot'];
 
 // returns a jQuery Deferred object, usage:
 //   Twinkle.protect.fetchProtectingAdmin(apiObject, pageName, protect/stable).done(function(admin_username) { ...code... });
@@ -1288,7 +1291,10 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					break;
 				case 'unprotect':
 					var admins = $.map(Twinkle.protect.currentProtectionLevels, function(pl) {
-						return pl.admin ? 'User:' + pl.admin : null;
+						if (!pl.admin || Twinkle.protect.trustedBots.indexOf(pl.admin) !== -1) {
+							return null;
+						}
+						return 'User:' + pl.admin;
 					});
 					if (admins.length && !confirm('Have you attempted to contact the protecting admins (' + Morebits.array.uniq(admins).join(', ') + ') first?')) {
 						return false;
