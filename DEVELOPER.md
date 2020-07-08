@@ -81,13 +81,13 @@ Using the `deploy` mode, [interface-admins][intadmin] can deploy Twinkle files l
 
     ./sync.pl --mode=deploy twinkle.js morebits.js ...
 
-You may also `deploy` all files via
+You may also `deploy` **all** files via
 
-    make deploy
+    ./sync.pl --mode=deploy --all
 
-Note that for syncing to a non-Enwiki project, you will also need to specify the --lang and/or --family parameters. For instance, to sync the files with `test.wmflabs.org` you should specify `--lang=test --family=wmflabs`. If you intend to use `make deploy` to deploy all the files at once, you may also need to pass the necessary parameters through the makefile to the sync script like this example:
+Note that for syncing to a non-Enwiki project, you will also need to specify the --lang and/or --family parameters. For instance, to sync the files with `fr.wikiquote.org` you should specify `--lang=fr --family=wikiquote`, such as
 
-    make ARGS="--lang=test --family=wmflabs" deploy
+    ./sync.pl --mode=deploy --lang=fr --family=wikiquote --all
 
 When `deploy`ing or `push`ing, the script will attempt to parse the latest on-wiki edit summary for the commit of the last update, and will use that to create an edit summary using the changes committed since then. If it cannot find anything that looks like a commit hash, it will give you the most recent commits for each file and prompt you to enter an edit summary manually.
 
@@ -99,6 +99,7 @@ To `push` your changes to user Foobar's wiki page, do:
 
     ./sync.pl --base User:Foobar/ --mode=push twinkle.js morebits.js ...
 
+The `--base` flag operates as a *prefix*; note the presence of the trailing `/`.
 
 [MediaWiki:Gadgets-definition]: https://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
 [MediaWiki:Gadget-Twinkle.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.js
