@@ -3894,6 +3894,8 @@ Morebits.wikitext.page.prototype = {
 	/**
 	 * Removes links to `link_target` from the page text.
 	 * @param {string} link_target
+	 *
+	 * @returns {Morebits.wikitext.page}
 	 */
 	removeLink: function(link_target) {
 		var first_char = link_target.substr(0, 1);
@@ -3907,6 +3909,7 @@ Morebits.wikitext.page.prototype = {
 		var link_simple_re = new RegExp('\\[\\[' + colon + '(' + link_re_string + ')\\]\\]', 'g');
 		var link_named_re = new RegExp('\\[\\[' + colon + link_re_string + '\\|(.+?)\\]\\]', 'g');
 		this.text = this.text.replace(link_simple_re, '$1').replace(link_named_re, '$1');
+		return this;
 	},
 
 	/**
@@ -3914,6 +3917,8 @@ Morebits.wikitext.page.prototype = {
 	 * If used as a template argument (not necessarily with File: prefix), the template parameter is commented out.
 	 * @param {string} image - Image name without File: prefix
 	 * @param {string} reason - Reason to be included in comment, alongside the commented-out image
+	 *
+	 * @returns {Morebits.wikitext.page}
 	 */
 	commentOutImage: function(image, reason) {
 		var unbinder = new Morebits.unbinder(this.text);
@@ -3951,12 +3956,15 @@ Morebits.wikitext.page.prototype = {
 		unbinder.content = unbinder.content.replace(free_image_re, '<!-- ' + reason + '$1 -->');
 		// Rebind the content now, we are done!
 		this.text = unbinder.rebind();
+		return this;
 	},
 
 	/**
 	 * Converts first usage of [[File:`image`]] to [[File:`image`|`data`]]
 	 * @param {string} image - Image name without File: prefix
 	 * @param {string} data
+	 *
+	 * @returns {Morebits.wikitext.page}
 	 */
 	addToImageComment: function(image, data) {
 		var first_char = image.substr(0, 1);
@@ -3978,12 +3986,15 @@ Morebits.wikitext.page.prototype = {
 		var gallery_re = new RegExp('^(\\s*' + image_re_string + '.*?)\\|?(.*?)$', 'mg');
 		var newtext = '$1|$2 ' + data;
 		this.text = this.text.replace(gallery_re, newtext);
+		return this;
 	},
 
 	/**
 	 * Removes transclusions of template from page text
 	 * @param {string} template - Page name whose transclusions are to be removed,
 	 * include namespace prefix only if not in template namespace
+	 *
+	 * @returns {Morebits.wikitext.page}
 	 */
 	removeTemplate: function(template) {
 		var first_char = template.substr(0, 1);
@@ -3995,6 +4006,7 @@ Morebits.wikitext.page.prototype = {
 				this.text = this.text.replace(allTemplates[i], '', 'g');
 			}
 		}
+		return this;
 	},
 
 	/** @returns {string} */
