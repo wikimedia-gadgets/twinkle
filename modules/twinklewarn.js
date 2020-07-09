@@ -1650,33 +1650,39 @@ Twinkle.warn.callbacks = {
 		}
 
 		// build the edit summary
-		var summary;
-		if (params.main_group === 'custom') {
-			switch (params.sub_group.substr(-1)) {
+		// Function to handle generation of summary prefix for custom templates
+		var customProcess = function(template) {
+			template = template.split('|')[0];
+			var prefix;
+			switch (template.substr(-1)) {
 				case '1':
-					summary = 'General note';
+					prefix = 'General note';
 					break;
 				case '2':
-					summary = 'Caution';
+					prefix = 'Caution';
 					break;
 				case '3':
-					summary = 'Warning';
+					prefix = 'Warning';
 					break;
 				case '4':
-					summary = 'Final warning';
+					prefix = 'Final warning';
 					break;
 				case 'm':
-					if (params.sub_group.substr(-3) === '4im') {
-						summary = 'Only warning';
+					if (template.substr(-3) === '4im') {
+						prefix = 'Only warning';
 						break;
 					}
-					summary = 'Notice';
-					break;
+					// falls through
 				default:
-					summary = 'Notice';
+					prefix = 'Notice';
 					break;
 			}
-			summary += ': ' + Morebits.string.toUpperCaseFirstChar(messageData.label);
+			return prefix + ': ' + Morebits.string.toUpperCaseFirstChar(messageData.label);
+		};
+
+		var summary;
+		if (params.main_group === 'custom') {
+			summary = customProcess(params.sub_group);
 		} else {
 			// Normalize kitchensink to the 1-4im style
 			if (params.main_group === 'kitchensink' && !/^D+$/.test(params.sub_group)) {
@@ -1689,7 +1695,12 @@ Twinkle.warn.callbacks = {
 					params.main_group = 'level' + sub;
 				}
 			}
-			summary = /^\D+$/.test(params.main_group) ? messageData.summary : messageData[params.main_group].summary;
+			// singlet || level1-4im, no need to /^\D+$/.test(params.main_group)
+			summary = messageData.summary || (messageData[params.main_group] && messageData[params.main_group].summary);
+			// Not in Twinkle.warn.messages, assume custom template
+			if (!summary) {
+				summary = customProcess(params.sub_group);
+			}
 			if (messageData.suppressArticleInSummary !== true && params.article) {
 				if (params.sub_group === 'uw-agf-sock' ||
 						params.sub_group === 'uw-socksuspect' ||
