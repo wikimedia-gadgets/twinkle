@@ -290,12 +290,11 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			if (mw.config.get('wgArticleId')) {
 				field2.append({
 					type: 'checkbox',
-					name: 'editmodify',
 					event: Twinkle.protect.formevents.editmodify,
 					list: [
 						{
 							label: 'Modify edit protection',
-							value: 'editmodify',
+							name: 'editmodify',
 							tooltip: 'If this is turned off, the edit protection level, and expiry time, will be left as is.',
 							checked: true
 						}
@@ -367,12 +366,11 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				});
 				field2.append({
 					type: 'checkbox',
-					name: 'movemodify',
 					event: Twinkle.protect.formevents.movemodify,
 					list: [
 						{
 							label: 'Modify move protection',
-							value: 'movemodify',
+							name: 'movemodify',
 							tooltip: 'If this is turned off, the move protection level, and expiry time, will be left as is.',
 							checked: true
 						}
@@ -441,12 +439,11 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				if (mw.loader.getState('ext.flaggedRevs.review') && (mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 4)) {
 					field2.append({
 						type: 'checkbox',
-						name: 'pcmodify',
 						event: Twinkle.protect.formevents.pcmodify,
 						list: [
 							{
 								label: 'Modify pending changes protection',
-								value: 'pcmodify',
+								name: 'pcmodify',
 								tooltip: 'If this is turned off, the pending changes level, and expiry time, will be left as is.',
 								checked: true
 							}
