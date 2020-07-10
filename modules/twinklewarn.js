@@ -1497,15 +1497,13 @@ Twinkle.warn.callbacks = {
 	* @returns {Array} - Array that contains the full template and just the warning level
 	*/
 	autolevelParseWikitext: function(wikitext, params, latest, date, statelem) {
-		var template = params.sub_group.replace(/(.*)\d$/, '$1');
-
 		var level; // undefined rather than '' means the isNaN below will return true
 		if (/\d(?:im)?$/.test(latest.type)) { // level1-4im
 			level = parseInt(latest.type.replace(/.*(\d)(?:im)?$/, '$1'), 10);
 		} else if (latest.type) { // Non-numbered warning
 			// Try to leverage existing categorization of
 			// warnings, all but one are universally lowercased
-			var loweredType = /uw-multipleIPs/i.test(template) ? 'uw-multipleIPs' : template.toLowerCase();
+			var loweredType = /uw-multipleIPs/i.test(latest.type) ? 'uw-multipleIPs' : latest.type.toLowerCase();
 			// It would be nice to account for blocks, but in most
 			// cases the hidden message is terminal, not the sig
 			if (Twinkle.warn.messages.singlewarn[loweredType]) {
@@ -1563,6 +1561,12 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
+		$autolevelMessage.prepend($('<div>Will issue a <span style="font-weight: bold;">level ' + level + '</span> template.</div>'));
+		// Place after the stale and other-user-reverted (text-only) messages
+		$('#twinkle-warn-autolevel-message').remove(); // clean slate
+		$autolevelMessage.insertAfter($('#twinkle-warn-warning-messages'));
+
+		var template = params.sub_group.replace(/(.*)\d$/, '$1');
 		// Validate warning level, falling back to the uw-generic series.
 		// Only a few items are missing a level, and in all but a handful
 		// of cases, the uw-generic series is explicitly used elsewhere per WP:UTM.
@@ -1570,11 +1574,6 @@ Twinkle.warn.callbacks = {
 			template = 'uw-generic';
 		}
 		template += level;
-
-		$autolevelMessage.prepend($('<div>Will issue a <span style="font-weight: bold;">level ' + level + '</span> template.</div>'));
-		// Place after the stale and other-user-reverted (text-only) messages
-		$('#twinkle-warn-autolevel-message').remove(); // clean slate
-		$autolevelMessage.insertAfter($('#twinkle-warn-warning-messages'));
 
 		return [template, level];
 	},
