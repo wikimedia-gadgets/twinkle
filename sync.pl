@@ -63,80 +63,103 @@ my $mw = MediaWiki::API->new({
 $mw->{ua}->agent('Twinkle/sync.pl ('.$mw->{ua}->agent.')');
 $mw->login({lgname => $conf{username}, lgpassword => $conf{password}});
 
+### Main function
+if (@files) {
+  my $countDiff = 0;               # Only used for the --dry option
+  my $diffFunc = $conf{w} || 'diff'; # Only used for the --diff option
 
-my $countDiff = 0;                 # Only used for the --dry option
-my $diffFunc = $conf{w} || 'diff'; # Only used for the --diff option
-### Main loop through each file
-foreach my $file (@files) {
-  my $page = $file;
-  if ($page =~ /^twinkle/) {
-    $page =~ s/^twinkle\b/Twinkle/; # twinkle.js, etc. files are capitalized on-wiki
-  } else {
-    $page =~ s/\w+\///;         # Remove directories (modules/, select2/)
-  }
-  $page = $conf{base}.$page; # base set to MediaWiki:Gadget- for deploy in &forReal
-
-  my $wikiPage = checkPage($page);
-  next if !$wikiPage;
-
-  my $fileText = read_text($file);
-  my $wpText = $wikiPage->{q{*}}."\n"; # MediaWiki doesn't have trailing newlines
-
-  print ucfirst $conf{mode}.'ing '.($conf{mode} eq 'pull' ? "$page to $file..." : "$file to $page...");
-
-  # git and eof might be faster, but here makes sense
-  if ($wpText eq $fileText) {
-    print colored ['blue'], " No changes found, skipping\n";
-    next;
-  }
-
-  if ($conf{diff}) {
-    my $name = $file.'temp';
-    write_text($name, $wpText);
-    print colored ['magenta'], " Showing diff\n";
-    system "$diffFunc $name $file";
-    unlink $name;
-  }
-
-  if ($conf{dry}) {
-    $countDiff++;
-    print colored['magenta'], " Differences found!\n" if !$conf{diff};
-    next;
-  }
-
-  print "\n\t";
-  if ($conf{mode} eq 'deploy' || $conf{mode} eq 'push') {
-    my $summary = buildEditSummary($page, $file, $wikiPage->{comment});
-    my $editReturn = editPage($page, $fileText, $summary, $wikiPage->{timestamp});
-    if ($editReturn->{_msg} eq 'OK') {
-      print colored ['green'], "$file successfully $conf{mode}ed to $page";
+  # loop through each file
+  foreach my $file (@files) {
+    my $page = $file;
+    if ($page =~ /^twinkle/) {
+      $page =~ s/^twinkle\b/Twinkle/; # twinkle.js, etc. files are capitalized on-wiki
     } else {
-      print colored ['red'], "Error $conf{mode}ing $file: $mw->{error}->{code}: $mw->{error}->{details}";
+      $page =~ s/\w+\///;       # Remove directories (modules/, select2/)
     }
-  } elsif ($conf{mode} eq 'pull') {
-    write_text($file, $wpText);
-    print 'Done!';
+    $page = $conf{base}.$page; # base set to MediaWiki:Gadget- for deploy in &forReal
+
+    my $wikiPage = checkPage($page);
+    next if !$wikiPage;
+
+    my $fileText = read_text($file);
+    my $wpText = $wikiPage->{q{*}}."\n"; # MediaWiki doesn't have trailing newlines
+
+    print ucfirst $conf{mode}.'ing '.($conf{mode} eq 'pull' ? "$page to $file..." : "$file to $page...");
+
+    # git and eof might be faster, but here makes sense
+    if ($wpText eq $fileText) {
+      print colored ['blue'], " No changes found, skipping\n";
+      next;
+    }
+
+    if ($conf{diff}) {
+      my $name = $file.'temp';
+      write_text($name, $wpText);
+      print colored ['magenta'], " Showing diff\n";
+      system "$diffFunc $name $file";
+      unlink $name;
+    }
+
+    if ($conf{dry}) {
+      $countDiff++;
+      print colored['magenta'], " Differences found!\n" if !$conf{diff};
+      next;
+    }
+
+    print "\n\t";
+    if ($conf{mode} eq 'deploy' || $conf{mode} eq 'push') {
+      my $summary = buildEditSummary($page, $file, $wikiPage->{comment});
+      my $editReturn = editPage($page, $fileText, $summary, $wikiPage->{timestamp});
+      if ($editReturn->{_msg} eq 'OK') {
+        print colored ['green'], "$file successfully $conf{mode}ed to $page";
+      } else {
+        print colored ['red'], "Error $conf{mode}ing $file: $mw->{error}->{code}: $mw->{error}->{details}";
+      }
+    } elsif ($conf{mode} eq 'pull') {
+      write_text($file, $wpText);
+      print 'Done!';
+    }
+    print "\n";
   }
-  print "\n";
+
+  # Show a summary of any changes
+  if ($conf{dry}) {
+    print "\n";
+    if ($countDiff) {
+      print "$countDiff ".($countDiff > 1 ? 'files need' : 'file needs')." updating\n";
+    } else {
+      print colored ['green'], "No actions needed\n";
+    }
+  } elsif ($conf{base} eq 'pull') {
+    my $cmd = $repo->command(diff => '--stat', '--color');
+    my $s = $cmd->stdout;
+    while (<$s>) {
+      print;
+    }
+    $cmd->close;
+  }
 }
 
-# Show a summary of any changes
-if ($conf{dry}) {
-  print "\n";
-  if ($countDiff) {
-    print "$countDiff ".($countDiff > 1 ? 'files need' : 'file needs')." updating\n";
+# If deploying, check gadget file
+if ($conf{mode} eq 'deploy') {
+  my $gadgetDef = $mw->get_page({title => 'MediaWiki:Gadgets-definition'})->{q{*}};
+  my $twLine;
+  my $wikiGadgetDef = q{};
+  my @wg = split /\n/, $gadgetDef;
+  foreach (0..scalar @wg -1) {
+    $twLine = $_ if $wg[$_] =~ /\* Twinkle\[/;
+    next if !$twLine;
+    last if $_ == $twLine + 4;
+    $wikiGadgetDef .= $wg[$_]."\n";
+  }
+
+  my $localGadgetDef = read_text('Gadget.md');
+  if ($wikiGadgetDef eq $localGadgetDef) {
+    print "Gadget up-to-date\n";
   } else {
-    print colored ['green'], "No actions needed\n";
+    print colored ['red'], "MediaWiki:Gadgets-definition needs udpating!\n";
   }
-} elsif ($conf{base} eq 'pull') {
-  my $cmd = $repo->command(diff => '--stat', '--color');
-  my $s = $cmd->stdout;
-  while (<$s>) {
-    print;
-  }
-  $cmd->close;
 }
-
 
 
 ### SUBROUTINES
@@ -180,6 +203,10 @@ sub forReal {
     }
 
     if (!@inputs) {
+      # Allow checking gadget
+      if ($conf{mode} eq 'deploy') {
+        return ();
+      }
       print colored ['red'], "No valid input files provided!\n\n";
       usage();
     }
