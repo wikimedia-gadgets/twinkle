@@ -88,6 +88,24 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'article':
 			Window.setTitle('Article maintenance tagging');
 
+
+			// Build sorting and lookup object flatObject, which is always
+			// needed but also used to generate the alphabetical list
+			// Would be infinitely better with Object.values, but, alas, IE 11
+			Twinkle.tag.article.flatObject = {};
+			Object.keys(Twinkle.tag.article.tagList).forEach(function(group) {
+				Object.keys(Twinkle.tag.article.tagList[group]).forEach(function(subgroup) {
+					if (Array.isArray(Twinkle.tag.article.tagList[group][subgroup])) {
+						Twinkle.tag.article.tagList[group][subgroup].forEach(function(item) {
+							Twinkle.tag.article.flatObject[item.tag] = { description: item.description, excludeMI: !!item.excludeMI };
+						});
+					} else {
+						Twinkle.tag.article.flatObject[Twinkle.tag.article.tagList[group][subgroup].tag] = {description: Twinkle.tag.article.tagList[group][subgroup].description, excludeMI: !!Twinkle.tag.article.tagList[group][subgroup].excludeMI };
+					}
+				});
+			});
+
+
 			form.append({
 				type: 'select',
 				name: 'sortorder',
@@ -527,7 +545,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		var checkboxes = [];
 		var unCheckedTags = e.target.form.getUnchecked('existingTags');
 		Twinkle.tag.alreadyPresentTags.forEach(function(tag) {
-			var description = Twinkle.tag.article.tags[tag];
+			var description = Twinkle.tag.article.flatObject[tag].description;
 			var checkbox =
 				{
 					value: tag,
@@ -545,14 +563,14 @@ Twinkle.tag.updateSortOrder = function(e) {
 		});
 	};
 
+
 	if (sortorder === 'cat') { // categorical sort order
 		// function to iterate through the tags and create a checkbox for each one
-		var doCategoryCheckboxes = function(subdiv, array) {
+		var doCategoryCheckboxes = function(subdiv, subgroup) {
 			var checkboxes = [];
-			$.each(array, function(k, tag) {
-				var description = Twinkle.tag.article.tags[tag];
-				if (Twinkle.tag.alreadyPresentTags.indexOf(tag) === -1) {
-					checkboxes.push(makeCheckbox(tag, description));
+			$.each(subgroup, function(k, item) {
+				if (Twinkle.tag.alreadyPresentTags.indexOf(item.tag) === -1) {
+					checkboxes.push(makeCheckbox(item.tag, item.description));
 				}
 			});
 			subdiv.append({
@@ -567,15 +585,15 @@ Twinkle.tag.updateSortOrder = function(e) {
 		}
 		var i = 1;
 		// go through each category and sub-category and append lists of checkboxes
-		$.each(Twinkle.tag.article.tagCategories, function(title, content) {
-			container.append({ type: 'header', id: 'tagHeader' + i, label: title });
+		$.each(Twinkle.tag.article.tagList, function(groupName, group) {
+			container.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
 			var subdiv = container.append({ type: 'div', id: 'tagSubdiv' + i++ });
-			if (Array.isArray(content)) {
-				doCategoryCheckboxes(subdiv, content);
+			if (Array.isArray(group)) {
+				doCategoryCheckboxes(subdiv, group);
 			} else {
-				$.each(content, function(subtitle, subcontent) {
-					subdiv.append({ type: 'div', label: [ Morebits.htmlNode('b', subtitle) ] });
-					doCategoryCheckboxes(subdiv, subcontent);
+				$.each(group, function(subgroupName, subgroup) {
+					subdiv.append({ type: 'div', label: [ Morebits.htmlNode('b', subgroupName) ] });
+					doCategoryCheckboxes(subdiv, subgroup);
 				});
 			}
 		});
@@ -584,10 +602,13 @@ Twinkle.tag.updateSortOrder = function(e) {
 			makeCheckboxesForAlreadyPresentTags();
 			container.append({ type: 'header', id: 'tagHeader1', label: 'Available tags' });
 		}
+
+		// Avoid repeatedly resorting
+		Twinkle.tag.article.alphabeticalList = Twinkle.tag.article.alphabeticalList || Object.keys(Twinkle.tag.article.flatObject).sort();
 		var checkboxes = [];
-		$.each(Twinkle.tag.article.tags, function(tag, description) {
+		Twinkle.tag.article.alphabeticalList.forEach(function(tag) {
 			if (Twinkle.tag.alreadyPresentTags.indexOf(tag) === -1) {
-				checkboxes.push(makeCheckbox(tag, description));
+				checkboxes.push(makeCheckbox(tag, Twinkle.tag.article.flatObject[tag].description));
 			}
 		});
 		container.append({
@@ -661,247 +682,138 @@ var generateLinks = function(checkbox) {
 
 
 // Tags for ARTICLES start here
-
 Twinkle.tag.article = {};
 
-// A list of all article tags, in alphabetical order
-// To ensure tags appear in the default "categorized" view, add them to the tagCategories hash below.
-
-Twinkle.tag.article.tags = {
-	'Advert': 'written like an advertisement',
-	'All plot': 'almost entirely a plot summary',
-	'Autobiography': 'autobiography and may not be written neutrally',
-	'BLP sources': 'BLP that needs additional sources for verification',
-	'BLP unsourced': 'BLP that has no sources at all (use BLP PROD instead for new articles)',
-	'Citation style': 'unclear or inconsistent citation style',
-	'Cleanup': 'requires cleanup',
-	'Cleanup bare URLs': 'uses bare URLs for references, which are prone to link rot',
-	'Cleanup-PR': 'reads like a press release or news article',
-	'Cleanup reorganize': "needs reorganization to comply with Wikipedia's layout guidelines",
-	'Cleanup rewrite': "needs to be rewritten entirely to comply with Wikipedia's quality standards",
-	'Cleanup tense': 'does not follow guidelines on use of different tenses.',
-	'Close paraphrasing': 'contains close paraphrasing of a non-free copyrighted source',
-	'COI': 'creator or major contributor may have a conflict of interest',
-	'Condense': 'too many section headers dividing up content',
-	'Confusing': 'confusing or unclear',
-	'Context': 'insufficient context for those unfamiliar with the subject',
-	'Copy edit': 'requires copy editing for grammar, style, cohesion, tone, or spelling',
-	'Copypaste': 'appears to have been copied and pasted from another location',
-	'Current': 'documents a current event',
-	'Dead end': 'article has no links to other articles',
-	'Disputed': 'questionable factual accuracy',
-	'Essay-like': 'written like a personal reflection, personal essay, or argumentative essay',
-	'Expand language': 'should be expanded with text translated from a foreign-language article',
-	'Expert needed': 'needs attention from an expert on the subject',
-	'External links': 'external links may not follow content policies or guidelines',
-	'Fanpov': "written from a fan's point of view",
-	'Fiction': 'fails to distinguish between fact and fiction',
-	'Globalize': 'may not represent a worldwide view of the subject',
-	'GOCEinuse': 'currently undergoing a major copy edit by the Guild of Copy Editors',
-	'History merge': 'another page should be history merged into this one',
-	'Hoax': 'may partially or completely be a hoax',
-	'Improve categories': 'needs additional or more specific categories',
-	'Incomprehensible': 'very hard to understand or incomprehensible',
-	'In-universe': 'subject is fictional and needs rewriting to provide a non-fictional perspective',
-	'In use': 'undergoing a major edit for a short while',
-	'Lead missing': 'no lead section',
-	'Lead rewrite': 'lead section needs to be rewritten to comply with guidelines',
-	'Lead too long': 'lead section is too long for the length of the article',
-	'Lead too short': 'lead section is too short and should be expanded to summarize key points',
-	'Like resume': 'written like a resume',
-	'Long plot': 'plot summary is too long or excessively detailed',
-	'Manual': 'written like a manual or guidebook',
-	'Merge': 'should be merged with another given article',
-	'Merge from': 'another given article should be merged into this one',
-	'Merge to': 'should be merged into another given article',
-	'More citations needed': 'needs additional references or sources for verification',
-	'More footnotes': 'has some references, but insufficient inline citations',
-	'No footnotes': 'has references, but lacks inline citations',
-	'No plot': 'needs a plot summary',
-	'Non-free': 'may contain excessive or improper use of copyrighted materials',
-	'Notability': 'subject may not meet the general notability guideline',
-	'Not English': 'written in a language other than English and needs translation',
-	'One source': 'relies largely or entirely on a single source',
-	'Original research': 'contains original research',
-	'Orphan': 'linked to from no other articles',
-	'Over-coverage': 'extensive bias or disproportional coverage towards one or more specific regions',
-	'Overlinked': 'too many duplicate and/or irrelevant links to other articles',
-	'Overly detailed': 'excessive amount of intricate detail',
-	'Over-quotation': 'too many or too-lengthy quotations for an encyclopedic entry',
-	'Peacock': 'contains wording that promotes the subject in a subjective manner without adding information',
-	'POV': 'does not maintain a neutral point of view',
-	'Primary sources': 'relies too much on references to primary sources, and needs secondary sources',
-	'Prose': 'written in a list format but may read better as prose',
-	'Recentism': 'slanted towards recent events',
-	'Rough translation': 'poor translation from another language',
-	'Sections': 'needs to be divided into sections by topic',
-	'Self-published': 'contains excessive or inappropriate references to self-published sources',
-	'Sources exist': 'notable topic, sources are available that could be added to article',
-	'Technical': 'too technical for most readers to understand',
-	'Third-party': 'relies too heavily on sources too closely associated with the subject',
-	'Tone': 'tone or style may not reflect the encyclopedic tone used on Wikipedia',
-	'Too few opinions': 'may not include all significant viewpoints',
-	'Uncategorized': 'not added to any categories',
-	'Under construction': 'in the process of an expansion or major restructuring',
-	'Underlinked': 'needs more wikilinks to other articles',
-	'Undue weight': 'lends undue weight to certain ideas, incidents, or controversies',
-	'Unfocused': 'lacks focus or is about more than one topic',
-	'Unreferenced': 'does not cite any sources at all',
-	'Unreliable sources': 'some references may not be reliable',
-	'Undisclosed paid': 'may have been created or edited in return for undisclosed payments',
-	'Update': 'needs additional up-to-date information added',
-	'Very long': 'too long to read and navigate comfortably',
-	'Weasel': 'neutrality or verifiability is compromised by the use of weasel words'
-};
-
-// A list of tags in order of category
-// Tags should be in alphabetical order within the categories
+// Tags arranged by category; will be used to generate the alphabetical list,
+// but tags should be in alphabetical order within the categories
+// excludeMI: true indicate a tag that *does not* work inside {{multiple issues}}
 // Add new categories with discretion - the list is long enough as is!
-
-Twinkle.tag.article.tagCategories = {
+Twinkle.tag.article.tagList = {
 	'Cleanup and maintenance tags': {
 		'General cleanup': [
-			'Cleanup',  // has a subgroup with text input
-			'Cleanup rewrite',
-			'Copy edit'  // has a subgroup with text input
+			{ tag: 'Cleanup', description: 'requires cleanup' },  // has a subgroup with text input
+			{ tag: 'Cleanup rewrite', description: "needs to be rewritten entirely to comply with Wikipedia's quality standards" },
+			{ tag: 'Copy edit', description: 'requires copy editing for grammar, style, cohesion, tone, or spelling' }  // has a subgroup with text input
 		],
 		'Potentially unwanted content': [
-			'Close paraphrasing',
-			'Copypaste',  // has a subgroup with text input
-			'External links',
-			'Non-free'
+			{ tag: 'Close paraphrasing', description: 'contains close paraphrasing of a non-free copyrighted source' },
+			{ tag: 'Copypaste', description: 'appears to have been copied and pasted from another location', excludeMI: true },  // has a subgroup with text input
+			{ tag: 'External links', description: 'external links may not follow content policies or guidelines' },
+			{ tag: 'Non-free', description: 'may contain excessive or improper use of copyrighted materials' }
 		],
 		'Structure, formatting, and lead section': [
-			'Cleanup reorganize',
-			'Condense',
-			'Lead missing',
-			'Lead rewrite',
-			'Lead too long',
-			'Lead too short',
-			'Sections',
-			'Very long'
+			{ tag: 'Cleanup reorganize', description: "needs reorganization to comply with Wikipedia's layout guidelines" },
+			{ tag: 'Condense', description: 'too many section headers dividing up content' },
+			{ tag: 'Lead missing', description: 'no lead section' },
+			{ tag: 'Lead rewrite', description: 'lead section needs to be rewritten to comply with guidelines' },
+			{ tag: 'Lead too long', description: 'lead section is too long for the length of the article' },
+			{ tag: 'Lead too short', description: 'lead section is too short and should be expanded to summarize key points' },
+			{ tag: 'Sections', description: 'needs to be divided into sections by topic' },
+			{ tag: 'Very long', description: 'too long to read and navigate comfortably' }
 		],
 		'Fiction-related cleanup': [
-			'All plot',
-			'Fiction',
-			'In-universe',
-			'Long plot',
-			'No plot'
+			{ tag: 'All plot', description: 'almost entirely a plot summary' },
+			{ tag: 'Fiction', description: 'fails to distinguish between fact and fiction' },
+			{ tag: 'In-universe', description: 'subject is fictional and needs rewriting to provide a non-fictional perspective' },
+			{ tag: 'Long plot', description: 'plot summary is too long or excessively detailed' },
+			{ tag: 'No plot', description: 'needs a plot summary' }
 		]
 	},
 	'General content issues': {
 		'Importance and notability': [
-			'Notability'  // has a subgroup with subcategories
+			{ tag: 'Notability', description: 'subject may not meet the general notability guideline' }  // has a subgroup with subcategories
 		],
 		'Style of writing': [
-			'Advert',
-			'Cleanup tense',
-			'Essay-like',
-			'Fanpov',
-			'Like resume',
-			'Manual',
-			'Cleanup-PR',
-			'Over-quotation',
-			'Prose',
-			'Technical',
-			'Tone'
+			{ tag: 'Advert', description: 'written like an advertisement' },
+			{ tag: 'Cleanup tense', description: 'does not follow guidelines on use of different tenses.' },
+			{ tag: 'Essay-like', description: 'written like a personal reflection, personal essay, or argumentative essay' },
+			{ tag: 'Fanpov', description: "written from a fan's point of view" },
+			{ tag: 'Like resume', description: 'written like a resume' },
+			{ tag: 'Manual', description: 'written like a manual or guidebook' },
+			{ tag: 'Cleanup-PR', description: 'reads like a press release or news article' },
+			{ tag: 'Over-quotation', description: 'too many or too-lengthy quotations for an encyclopedic entry' },
+			{ tag: 'Prose', description: 'written in a list format but may read better as prose' },
+			{ tag: 'Technical', description: 'too technical for most readers to understand' },
+			{ tag: 'Tone', description: 'tone or style may not reflect the encyclopedic tone used on Wikipedia' }
 		],
 		'Sense (or lack thereof)': [
-			'Confusing',
-			'Incomprehensible',
-			'Unfocused'
+			{ tag: 'Confusing', description: 'confusing or unclear' },
+			{ tag: 'Incomprehensible', description: 'very hard to understand or incomprehensible' },
+			{ tag: 'Unfocused', description: 'lacks focus or is about more than one topic' }
 		],
 		'Information and detail': [
-			'Context',
-			'Expert needed',
-			'Overly detailed',
-			'Undue weight'
+			{ tag: 'Context', description: 'insufficient context for those unfamiliar with the subject' },
+			{ tag: 'Expert needed', description: 'needs attention from an expert on the subject' },
+			{ tag: 'Overly detailed', description: 'excessive amount of intricate detail' },
+			{ tag: 'Undue weight', description: 'lends undue weight to certain ideas, incidents, or controversies' }
 		],
 		'Timeliness': [
-			'Current',
-			'Update'
+			{ tag: 'Current', description: 'documents a current event', excludeMI: true }, // Works but not intended for use in MI
+			{ tag: 'Update', description: 'needs additional up-to-date information added' }
 		],
 		'Neutrality, bias, and factual accuracy': [
-			'Autobiography',
-			'COI',
-			'Disputed',
-			'Hoax',
-			'Globalize',
-			'Over-coverage',
-			'Peacock',
-			'POV',
-			'Recentism',
-			'Too few opinions',
-			'Undisclosed paid',
-			'Weasel'
+			{ tag: 'Autobiography', description: 'autobiography and may not be written neutrally' },
+			{ tag: 'COI', description: 'creator or major contributor may have a conflict of interest' },
+			{ tag: 'Disputed', description: 'questionable factual accuracy' },
+			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
+			{ tag: 'Globalize', description: 'may not represent a worldwide view of the subject' },
+			{ tag: 'Over-coverage', description: 'extensive bias or disproportional coverage towards one or more specific regions' },
+			{ tag: 'Peacock', description: 'contains wording that promotes the subject in a subjective manner without adding information' },
+			{ tag: 'POV', description: 'does not maintain a neutral point of view' },
+			{ tag: 'Recentism', description: 'slanted towards recent events' },
+			{ tag: 'Too few opinions', description: 'may not include all significant viewpoints' },
+			{ tag: 'Undisclosed paid', description: 'may have been created or edited in return for undisclosed payments' },
+			{ tag: 'Weasel', description: 'neutrality or verifiability is compromised by the use of weasel words' }
 		],
 		'Verifiability and sources': [
-			'BLP sources',
-			'BLP unsourced',
-			'More citations needed',
-			'One source',
-			'Original research',
-			'Primary sources',
-			'Self-published',
-			'Sources exist',
-			'Third-party',
-			'Unreferenced',
-			'Unreliable sources'
+			{ tag: 'BLP sources', description: 'BLP that needs additional sources for verification' },
+			{ tag: 'BLP unsourced', description: 'BLP that has no sources at all (use BLP PROD instead for new articles)' },
+			{ tag: 'More citations needed', description: 'needs additional references or sources for verification' },
+			{ tag: 'One source', description: 'relies largely or entirely on a single source' },
+			{ tag: 'Original research', description: 'contains original research' },
+			{ tag: 'Primary sources', description: 'relies too much on references to primary sources, and needs secondary sources' },
+			{ tag: 'Self-published', description: 'contains excessive or inappropriate references to self-published sources' },
+			{ tag: 'Sources exist', description: 'notable topic, sources are available that could be added to article' },
+			{ tag: 'Third-party', description: 'relies too heavily on sources too closely associated with the subject' },
+			{ tag: 'Unreferenced', description: 'does not cite any sources at all' },
+			{ tag: 'Unreliable sources', description: 'some references may not be reliable' }
 		]
 	},
 	'Specific content issues': {
 		'Language': [
-			'Not English',  // has a subgroup with several options
-			'Rough translation',  // has a subgroup with several options
-			'Expand language'
+			{ tag: 'Not English', description: 'written in a language other than English and needs translation', excludeMI: true },  // has a subgroup with several options
+			{ tag: 'Rough translation', description: 'poor translation from another language', excludeMI: true },  // has a subgroup with several options
+			{ tag: 'Expand language', description: 'should be expanded with text translated from a foreign-language article', excludeMI: true }
 		],
 		'Links': [
-			'Dead end',
-			'Orphan',
-			'Overlinked',
-			'Underlinked'
+			{ tag: 'Dead end', description: 'article has no links to other articles' },
+			{ tag: 'Orphan', description: 'linked to from no other articles' },
+			{ tag: 'Overlinked', description: 'too many duplicate and/or irrelevant links to other articles' },
+			{ tag: 'Underlinked', description: 'needs more wikilinks to other articles' }
 		],
 		'Referencing technique': [
-			'Citation style',
-			'Cleanup bare URLs',
-			'More footnotes',
-			'No footnotes'
+			{ tag: 'Citation style', description: 'unclear or inconsistent citation style' },
+			{ tag: 'Cleanup bare URLs', description: 'uses bare URLs for references, which are prone to link rot' },
+			{ tag: 'More footnotes', description: 'has some references, but insufficient inline citations' },
+			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' }
 		],
 		'Categories': [
-			'Improve categories',
-			'Uncategorized'
+			{ tag: 'Improve categories', description: 'needs additional or more specific categories', excludeMI: true },
+			{ tag: 'Uncategorized', description: 'not added to any categories', excludeMI: true }
 		]
 	},
 	'Merging': [
-		'History merge',
-		'Merge',   // these three have a subgroup with several options
-		'Merge from',
-		'Merge to'
+		{ tag: 'History merge', description: 'another page should be history merged into this one', excludeMI: true },
+		{ tag: 'Merge', description: 'should be merged with another given article', excludeMI: true },   // these three have a subgroup with several options
+		{ tag: 'Merge from', description: 'another given article should be merged into this one', excludeMI: true },
+		{ tag: 'Merge to', description: 'should be merged into another given article', excludeMI: true }
 	],
 	'Informational': [
-		'GOCEinuse',
-		'In use',
-		'Under construction'
+		{ tag: 'GOCEinuse', description: 'currently undergoing a major copy edit by the Guild of Copy Editors', excludeMI: true },
+		{ tag: 'In use', description: 'undergoing a major edit for a short while', excludeMI: true },
+		{ tag: 'Under construction', description: 'in the process of an expansion or major restructuring', excludeMI: true }
 	]
 };
-
-// Contains those article tags that *do not* work inside {{multiple issues}}.
-Twinkle.tag.multipleIssuesExceptions = [
-	'Copypaste',
-	'Current', // Works but not intended for use in MI
-	'Expand language',
-	'GOCEinuse',
-	'History merge',
-	'Improve categories',
-	'In use',
-	'Merge',
-	'Merge from',
-	'Merge to',
-	'Not English',
-	'Rough translation',
-	'Uncategorized',
-	'Under construction'
-];
 
 // Tags for REDIRECTS start here
 
@@ -1665,7 +1577,7 @@ Twinkle.tag.callbacks = {
 			if (Twinkle.tag.canRemove || !tagRe.exec(pageText)) {
 				// condition Twinkle.tag.article.tags[tag] to ensure that its not a custom tag
 				// Custom tags are assumed non-groupable, since we don't know whether MI template supports them
-				if (Twinkle.tag.article.tags[tag] && Twinkle.tag.multipleIssuesExceptions.indexOf(tag) === -1) {
+				if (Twinkle.tag.article.flatObject[tag] && !Twinkle.tag.article.flatObject[tag].excludeMI) {
 					groupableTags.push(tag);
 				} else {
 					tags.push(tag);
@@ -1686,7 +1598,7 @@ Twinkle.tag.callbacks = {
 
 		// To-be-retained existing tags that are groupable
 		params.tagsToRemain.forEach(function(tag) {
-			if (Twinkle.tag.multipleIssuesExceptions.indexOf(tag) === -1) {
+			if (!Twinkle.tag.article.flatObject[tag].excludeMI) {
 				groupableExistingTags.push(tag);
 			}
 		});
