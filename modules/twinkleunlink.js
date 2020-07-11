@@ -102,19 +102,24 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 		return;
 	}
 
-	Morebits.simpleWindow.setButtonsEnabled(false);
-	Morebits.status.init(form);
-
 	input.backlinks = input.backlinks || [];
 	input.imageusage = input.imageusage || [];
 	var pages = Morebits.array.uniq(input.backlinks.concat(input.imageusage));
+	if (!pages) {
+		alert('You must select at least one item to unlink.');
+		return;
+	}
 
-	var unlinker = new Morebits.batchOperation('Unlinking backlinks' + (input.imageusage.length ? ' and instances of file usage' : ''));
+	Morebits.simpleWindow.setButtonsEnabled(false);
+	Morebits.status.init(form);
+
+	var unlinker = new Morebits.batchOperation('Unlinking ' + (input.backlinks.length ? 'backlinks' +
+			(input.imageusage.length ? ' and instances of file usage' : '') : 'instances of file usage'));
 	unlinker.setOption('preserveIndividualStatusLines', true);
 	unlinker.setPageList(pages);
 	var params = { reason: input.reason, unlinker: unlinker };
 	unlinker.run(function(pageName) {
-		var wikipedia_page = new Morebits.wiki.page(pageName, 'Unlinking in article "' + pageName + '"');
+		var wikipedia_page = new Morebits.wiki.page(pageName, 'Unlinking in page "' + pageName + '"');
 		wikipedia_page.setBotEdit(true);  // unlink considered a floody operation
 		wikipedia_page.setCallbackParameters($.extend({
 			doBacklinks: input.backlinks.indexOf(pageName) !== -1,
