@@ -1413,7 +1413,7 @@ Twinkle.tag.callbacks = {
 						userTalkPage.setEditSummary('Notice: Please use English when contributing to the English Wikipedia.' +
 							Twinkle.getPref('summaryAd'));
 						userTalkPage.setCreateOption('recreate');
-						userTalkPage.setFollowRedirect(true);
+						userTalkPage.setFollowRedirect(true, false);
 						userTalkPage.append();
 					});
 				}
