@@ -44,7 +44,7 @@ Twinkle.deprod.callback = function() {
 		'action': 'query',
 		'generator': 'categorymembers',
 		'gcmtitle': mw.config.get('wgPageName'),
-		'gcmlimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
+		'gcmlimit': Twinkle.getPref('batchMax'),
 		'gcmnamespace': '0|6|108|2', // mostly to ignore categories
 		'prop': [ 'info', 'revisions' ],
 		'rvprop': [ 'content' ],
@@ -127,7 +127,7 @@ var callback_commit = function(event) {
 		Morebits.status.init(event.target);
 
 		var batchOperation = new Morebits.batchOperation('Deleting pages');
-		batchOperation.setOption('chunkSize', Twinkle.getPref('proddeleteChunks'));
+		batchOperation.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		batchOperation.setOption('preserveIndividualStatusLines', true);
 		batchOperation.setPageList(pages);
 		batchOperation.run(function(pageName) {

@@ -127,10 +127,7 @@ Twinkle.defaultConfig = {
 	autolevelStaleDays: 3, // Huggle is 3, CBNG is 2
 	revertMaxRevisions: 50, // intentionally limited
 	batchMax: 5000,
-	batchdeleteChunks: 50,
-	batchProtectChunks: 50,
-	batchundeleteChunks: 50,
-	proddeleteChunks: 50,
+	batchChunks: 50,
 
 	// Formerly defaultConfig.friendly:
 
