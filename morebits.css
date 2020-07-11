@@ -40,6 +40,7 @@ form.quickform
 form.quickform *
 {
 	font-family: sans-serif;
+	font-size: 12px;
 }
 
 form.quickform fieldset
@@ -186,10 +187,6 @@ div.morebits-previewbox .mw-editsection
 	background-image: none;
 }
 
-body.skin-monobook .morebits-dialog {
-	font-size: 125%;
-}
-
 body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 	height: 1em;
 	background-color: #BCCADF !important;
@@ -221,7 +218,6 @@ body.skin-monobook .morebits-dialog .ui-dialog-titlebar {
 }
 
 .ui-dialog.morebits-dialog .morebits-dialog-content {
-	font-size: 88%;  /* this just seems to be traditional - I don't quite see the point, in this day and age of huge monitors, etc. */
 	padding: 0;
 }
 
