@@ -518,12 +518,12 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 						return;
 					}
 					return {
-						'action': 'query',
-						'format': 'json',
-						'list': 'allpages',
-						'apfrom': title.title,
-						'apnamespace': title.namespace,
-						'aplimit': '10'
+						action: 'query',
+						format: 'json',
+						list: 'allpages',
+						apfrom: title.title,
+						apnamespace: title.namespace,
+						aplimit: '10'
 					};
 				},
 				processResults: function(data) {

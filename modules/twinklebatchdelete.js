@@ -111,11 +111,11 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	});
 
 	var query = {
-		'action': 'query',
-		'prop': 'revisions|info|imageinfo',
-		'inprop': 'protection',
-		'rvprop': 'size|user',
-		'format': 'json'
+		action: 'query',
+		prop: 'revisions|info|imageinfo',
+		inprop: 'protection',
+		rvprop: 'size|user',
+		format: 'json'
 	};
 
 	// On categories
@@ -518,13 +518,13 @@ Twinkle.batchdelete.callbacks = {
 		if (params.unlink_page) {
 			Twinkle.batchdelete.unlinkCache = {};
 			query = {
-				'action': 'query',
-				'list': 'backlinks',
-				'blfilterredir': 'nonredirects',
-				'blnamespace': [0, 100], // main space and portal space only
-				'bltitle': params.page,
-				'bllimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
-				'format': 'json'
+				action: 'query',
+				list: 'backlinks',
+				blfilterredir: 'nonredirects',
+				blnamespace: [0, 100], // main space and portal space only
+				bltitle: params.page,
+				bllimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
+				format: 'json'
 			};
 			wikipedia_api = new Morebits.wiki.api('Grabbing backlinks', query, Twinkle.batchdelete.callbacks.unlinkBacklinksMain);
 			wikipedia_api.params = params;
@@ -533,11 +533,11 @@ Twinkle.batchdelete.callbacks = {
 
 		if (params.unlink_file) {
 			query = {
-				'action': 'query',
-				'list': 'imageusage',
-				'iutitle': params.page,
-				'iulimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
-				'format': 'json'
+				action: 'query',
+				list: 'imageusage',
+				iutitle: params.page,
+				iulimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
+				format: 'json'
 			};
 			wikipedia_api = new Morebits.wiki.api('Grabbing file links', query, Twinkle.batchdelete.callbacks.unlinkImageInstancesMain);
 			wikipedia_api.params = params;
@@ -547,11 +547,11 @@ Twinkle.batchdelete.callbacks = {
 		if (params.delete_page) {
 			if (params.delete_redirects) {
 				query = {
-					'action': 'query',
-					'titles': params.page,
-					'prop': 'redirects',
-					'rdlimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
-					'format': 'json'
+					action: 'query',
+					titles: params.page,
+					prop: 'redirects',
+					rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
+					format: 'json'
 				};
 				wikipedia_api = new Morebits.wiki.api('Grabbing redirects', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain);
 				wikipedia_api.params = params;
@@ -562,9 +562,9 @@ Twinkle.batchdelete.callbacks = {
 				if (pageTitle && pageTitle.namespace % 2 === 0 && pageTitle.namespace !== 2) {
 					pageTitle.namespace++;  // now pageTitle is the talk page title!
 					query = {
-						'action': 'query',
-						'titles': pageTitle.toText(),
-						'format': 'json'
+						action: 'query',
+						titles: pageTitle.toText(),
+						format: 'json'
 					};
 					wikipedia_api = new Morebits.wiki.api('Checking whether talk page exists', query, Twinkle.batchdelete.callbacks.deleteTalk);
 					wikipedia_api.params = params;

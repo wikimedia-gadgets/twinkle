@@ -894,7 +894,7 @@ Twinkle.tag.redirectList = {
 		]
 	},
 	'Alternative names': {
-		'General': [
+		General: [
 			{
 				tag: 'R from alternative language',
 				description: 'redirect from or to a title in another language',
@@ -931,7 +931,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from sort name', description: 'redirect from the target\'s sort name, such as beginning with their surname rather than given name' },
 			{ tag: 'R from synonym', description: 'redirect from a semantic synonym of the target page title' }
 		],
-		'People': [
+		People: [
 			{ tag: 'R from birth name', description: 'redirect from a person\'s birth name to a more common name' },
 			{ tag: 'R from given name', description: 'redirect from a person\'s given name' },
 			{ tag: 'R from name with title', description: 'redirect from a person\'s name preceded or followed by a title to the name with no title or with the title in parentheses' },
@@ -940,14 +940,14 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from pseudonym', description: 'redirect from a pseudonym' },
 			{ tag: 'R from surname', description: 'redirect from a title that is a surname' }
 		],
-		'Technical': [
+		Technical: [
 			{ tag: 'R from drug trade name', description: 'redirect from (or to) the trade name of a drug to (or from) the international nonproprietary name (INN)' },
 			{ tag: 'R from filename', description: 'redirect from a title that is a filename of the target' },
 			{ tag: 'R from molecular formula', description: 'redirect from a molecular/chemical formula to its technical or trivial name' },
 
 			{ tag: 'R from gene symbol', description: 'redirect from a Human Genome Organisation (HUGO) symbol for a gene to an article about the gene' }
 		],
-		'Organisms': [
+		Organisms: [
 			{ tag: 'R to scientific name', description: 'redirect from the common name to the scientific name' },
 			{ tag: 'R from scientific name', description: 'redirect from the scientific name to the common name' },
 			{ tag: 'R from alternative scientific name', description: 'redirect from an alternative scientific name to the accepted scientific name' },
@@ -956,7 +956,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from monotypic taxon', description: 'redirect from a monotypic taxon to its only lower-ranking member' },
 			{ tag: 'R taxon with possibilities', description: 'redirect from a title related to a living organism that potentially could be expanded into an article' }
 		],
-		'Geography': [
+		Geography: [
 			{ tag: 'R from name and country', description: 'redirect from the specific name to the briefer name' },
 			{ tag: 'R from more specific geographic name', description: 'redirect from a geographic location that includes extraneous identifiers such as the county or region of a city' }
 		]
@@ -1008,13 +1008,13 @@ Twinkle.tag.redirectList = {
 		]
 	},
 	'Media': {
-		'General': [
+		General: [
 			{ tag: 'R from book', description: 'redirect from a book title to a more general, relevant article' },
 			{ tag: 'R from album', description: 'redirect from an album to a related topic such as the recording artist or a list of albums' },
 			{ tag: 'R from song', description: 'redirect from a song title to a more general, relevant article' },
 			{ tag: 'R from television episode', description: 'redirect from a television episode title to a related work or lists of episodes' }
 		],
-		'Fiction': [
+		Fiction: [
 			{ tag: 'R from fictional character', description: 'redirect from a fictional character to a related fictional work or list of characters' },
 			{ tag: 'R from fictional element', description: 'redirect from a fictional element (such as an object or concept) to a related fictional work or list of similar elements' },
 			{ tag: 'R from fictional location', description: 'redirect from a fictional location or setting to a related fictional work or list of places' }
@@ -1412,14 +1412,14 @@ Twinkle.tag.callbacks = {
 
 			// Remove tags which appear in page text as redirects
 			var api = new Morebits.wiki.api('Getting template redirects', {
-				'action': 'query',
-				'prop': 'linkshere',
-				'titles': getRedirectsFor.join('|'),
-				'redirects': 1,  // follow redirect if the class name turns out to be a redirect page
-				'lhnamespace': '10',  // template namespace only
-				'lhshow': 'redirect',
-				'lhlimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
-				'format': 'json'
+				action: 'query',
+				prop: 'linkshere',
+				titles: getRedirectsFor.join('|'),
+				redirects: 1,  // follow redirect if the class name turns out to be a redirect page
+				lhnamespace: '10',  // template namespace only
+				lhshow: 'redirect',
+				lhlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
+				format: 'json'
 			}, function removeRedirectTag(apiobj) {
 				var pages = apiobj.getResponse().query.pages.filter(function(p) {
 					return !p.missing && !!p.linkshere;
@@ -1632,14 +1632,14 @@ Twinkle.tag.callbacks = {
 			}
 
 			var api = new Morebits.wiki.api('Getting template redirects', {
-				'action': 'query',
-				'prop': 'linkshere',
-				'titles': getRedirectsFor.join('|'),
-				'redirects': 1,
-				'lhnamespace': '10', // template namespace only
-				'lhshow': 'redirect',
-				'lhlimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
-				'format': 'json'
+				action: 'query',
+				prop: 'linkshere',
+				titles: getRedirectsFor.join('|'),
+				redirects: 1,
+				lhnamespace: '10', // template namespace only
+				lhshow: 'redirect',
+				lhlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
+				format: 'json'
 			}, function replaceRedirectTag(apiobj) {
 				var pages = apiobj.getResponse().query.pages.filter(function(p) {
 					return !p.missing && !!p.linkshere;

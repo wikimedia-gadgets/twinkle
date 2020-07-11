@@ -1817,9 +1817,9 @@ Twinkle.xfd.callbacks = {
 			// Used by regular redirects to find the target, but for all redirects,
 			// avoid relying on the client clock to build the log page
 			var query = {
-				'action': 'query',
-				'curtimestamp': true,
-				'format': 'json'
+				action: 'query',
+				curtimestamp: true,
+				format: 'json'
 			};
 			if (document.getElementById('softredirect')) {
 				// For soft redirects, define the target early
@@ -2028,13 +2028,13 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 		case 'afd': // AFD
 			query = {
-				'action': 'query',
-				'list': 'allpages',
-				'apprefix': 'Articles for deletion/' + Morebits.pageNameNorm,
-				'apnamespace': 4,
-				'apfilterredir': 'nonredirects',
-				'aplimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
-				'format': 'json'
+				action: 'query',
+				list: 'allpages',
+				apprefix: 'Articles for deletion/' + Morebits.pageNameNorm,
+				apnamespace: 4,
+				apfilterredir: 'nonredirects',
+				aplimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
+				format: 'json'
 			};
 			wikipedia_api = new Morebits.wiki.api('Tagging article with deletion tag', query, Twinkle.xfd.callbacks.afd.main);
 			wikipedia_api.params = params;
@@ -2071,13 +2071,13 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 		case 'mfd': // MFD
 			query = {
-				'action': 'query',
-				'list': 'allpages',
-				'apprefix': 'Miscellany for deletion/' + Morebits.pageNameNorm,
-				'apnamespace': 4,
-				'apfilterredir': 'nonredirects',
-				'aplimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
-				'format': 'json'
+				action: 'query',
+				list: 'allpages',
+				apprefix: 'Miscellany for deletion/' + Morebits.pageNameNorm,
+				apnamespace: 4,
+				apfilterredir: 'nonredirects',
+				aplimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
+				format: 'json'
 			};
 			wikipedia_api = new Morebits.wiki.api('Looking for prior nominations of this page', query, Twinkle.xfd.callbacks.mfd.main);
 			wikipedia_api.params = params;
@@ -2107,13 +2107,13 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 			// Used for customized actions in edit summaries and the notification template
 			var summaryActions = {
-				cfd: 'deletion',
+				'cfd': 'deletion',
 				'sfd-t': 'deletion',
-				cfm: 'merging',
-				cfr: 'renaming',
+				'cfm': 'merging',
+				'cfr': 'renaming',
 				'sfr-t': 'renaming',
-				cfs: 'splitting',
-				cfc: 'conversion'
+				'cfs': 'splitting',
+				'cfc': 'conversion'
 			};
 			params.action = summaryActions[params.xfdcat];
 

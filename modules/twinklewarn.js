@@ -1329,9 +1329,9 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 					// most likely because it's a cross-namespace redirect
 					// Supersedes the typical $autolevelMessage added in autolevelParseWikitext
 					var $noTalkPageNode = $('<strong/>', {
-						'text': 'Unable to load user talk page; it might be a cross-namespace redirect.  Autolevel detection will not work.',
-						'id': 'twinkle-warn-autolevel-message',
-						'css': {'color': 'red' }
+						text: 'Unable to load user talk page; it might be a cross-namespace redirect.  Autolevel detection will not work.',
+						id: 'twinkle-warn-autolevel-message',
+						css: {color: 'red' }
 					});
 					$noTalkPageNode.insertBefore($('#twinkle-warn-warning-messages'));
 					// If a preview was opened while in a different mode, close it
@@ -1581,7 +1581,7 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
-		var $autolevelMessage = $('<div/>', {'id': 'twinkle-warn-autolevel-message'});
+		var $autolevelMessage = $('<div/>', {id: 'twinkle-warn-autolevel-message'});
 
 		if (isNaN(level)) { // No prior warnings found, this is the first
 			level = 1;
@@ -1603,10 +1603,10 @@ Twinkle.warn.callbacks = {
 					// and thus whether we can continue or need to display the warning and link
 					if (!statelem) {
 						var $link = $('<a/>', {
-							'href': '#',
-							'text': 'click here to open the ARV tool.',
-							'css': { 'fontWeight': 'bold' },
-							'click': function() {
+							href: '#',
+							text: 'click here to open the ARV tool.',
+							css: { fontWeight: 'bold' },
+							click: function() {
 								Morebits.wiki.actionCompleted.redirect = null;
 								Twinkle.warn.dialog.close();
 								Twinkle.arv.callback(mw.config.get('wgRelevantUserName'));
@@ -1615,8 +1615,8 @@ Twinkle.warn.callbacks = {
 							}
 						});
 						var statusNode = $('<div/>', {
-							'text': mw.config.get('wgRelevantUserName') + ' recently received a level 4 warning (' + latest.type + ') so it might be better to report them instead; ',
-							'css': {'color': 'red' }
+							text: mw.config.get('wgRelevantUserName') + ' recently received a level 4 warning (' + latest.type + ') so it might be better to report them instead; ',
+							css: {color: 'red' }
 						});
 						statusNode.append($link[0]);
 						$autolevelMessage.append(statusNode);
