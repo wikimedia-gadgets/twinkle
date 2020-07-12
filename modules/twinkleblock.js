@@ -163,6 +163,11 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 	partial.prop('disabled', !blockBox && !templateBox);
 
+	// Can be in preset or template field, so the old one in the template
+	// field will linger. No need to keep the old value around, so just
+	// remove it; saves trouble when hiding/evaluating
+	$form.find('[name=dstopic]').parent().remove();
+
 	Twinkle.block.callback.saveFieldset($('[name=field_block_options]'));
 	Twinkle.block.callback.saveFieldset($('[name=field_template_options]'));
 
@@ -335,6 +340,19 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		}
 	}
 
+	// DS selection visible in either the template field set or preset,
+	// joint settings saved here
+	var dsSelectSettings = {
+		type: 'select',
+		name: 'dstopic',
+		label: 'DS topic',
+		value: '',
+		tooltip: 'If selected, it will inform the template and may be added to the blocking message',
+		event: Twinkle.block.callback.toggle_ds_reason,
+		list: $.map(Twinkle.block.dsinfo, function(info, label) {
+			return {label: label, value: info.code};
+		})
+	};
 	if (templateBox) {
 		field_template_options = new Morebits.quickForm.element({ type: 'field', label: 'Template options', name: 'field_template_options' });
 		field_template_options.append({
@@ -345,10 +363,13 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			list: Twinkle.block.callback.filtered_block_groups(blockGroup, true),
 			value: Twinkle.block.field_template_options.template
 		});
+
+		// Only visible for aeblock and aepblock, toggled in change_template
+		field_template_options.append(dsSelectSettings);
+
 		field_template_options.append({
 			type: 'input',
 			name: 'article',
-			display: 'none',
 			label: 'Linked page',
 			value: '',
 			tooltip: 'A page can be linked within the notice, perhaps if it was the primary target of disruption. Leave empty for no page to be linked.'
@@ -358,7 +379,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		field_template_options.append({
 			type: 'input',
 			name: 'area',
-			display: 'none',
 			label: 'Area blocked from',
 			value: '',
 			tooltip: 'Optional explanation of the pages or namespaces the user was blocked from editing.'
@@ -368,7 +388,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			field_template_options.append({
 				type: 'input',
 				name: 'template_expiry',
-				display: 'none',
 				label: 'Period of blocking: ',
 				value: '',
 				tooltip: 'The period the blocking is due for, for example 24 hours, 2 weeks, indefinite etc...'
@@ -378,7 +397,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			type: 'input',
 			name: 'block_reason',
 			label: '"You have been blocked for ..." ',
-			display: 'none',
 			tooltip: 'An optional reason, to replace the default generic reason. Only available for the generic block templates.',
 			value: Twinkle.block.field_template_options.block_reason
 		});
@@ -428,6 +446,9 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		$previewlink.css({cursor: 'pointer'});
 		field_template_options.append({ type: 'div', id: 'blockpreview', label: [ $previewlink[0] ] });
 		field_template_options.append({ type: 'div', id: 'twinkleblock-previewbox', style: 'display: none' });
+	} else if (field_preset) {
+		// Only visible for aeblock and aepblock, toggled in change_template
+		field_preset.append(dsSelectSettings);
 	}
 
 	var oldfield;
@@ -490,7 +511,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			}
 		});
 
-
 		$form.find('[name=namespacerestrictions]').select2({
 			width: '100%',
 			matcher: Morebits.select2.matchers.wordBeginning,
@@ -518,6 +538,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		$form.find('[name=pagerestrictions]').val(null).trigger('change');
 		$form.find('[name=namespacerestrictions]').val(null).trigger('change');
 	}
+
 	if (field_template_options) {
 		oldfield = $form.find('fieldset[name="field_template_options"]')[0];
 		oldfield.parentNode.replaceChild(field_template_options.render(), oldfield);
@@ -552,13 +573,12 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		Morebits.status.warn(statusStr, infoStr);
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
 	}
-	if (templateBox) {
-		// make sure all the fields are correct based on defaults
-		if (blockBox) {
-			Twinkle.block.callback.change_preset(e);
-		} else {
-			Twinkle.block.callback.change_template(e);
-		}
+
+	// make sure all the fields are correct based on defaults
+	if (blockBox) {
+		Twinkle.block.callback.change_preset(e);
+	} else if (templateBox) {
+		Twinkle.block.callback.change_template(e);
 	}
 };
 
@@ -1078,6 +1098,138 @@ Twinkle.block.blockPresetsInfo = {
 	}
 };
 
+// Codes and links for Discretionary Sanctions, see [[Template:Ds/topics]]
+// Used for uw-ae(p)block
+Twinkle.block.dsinfo = {
+	'': {
+		code: ''
+	},
+	'Abortion': {
+		code: 'ab',
+		page: 'Wikipedia:Arbitration/Requests/Case/Abortion'
+	},
+	'American politics post-1932': {
+		code: 'ap',
+		page: 'Wikipedia:Arbitration/Requests/Case/American politics 2'
+	},
+	'Ancient Egyptian race controversy': {
+		code: 'aerc',
+		page: 'Wikipedia:Requests for arbitration/Ancient Egyptian race controversy'
+	},
+	'Arab-Israeli conflict': {
+		code: 'a-i',
+		page: 'Wikipedia:Arbitration/Index/Palestine-Israel articles'
+	},
+	'Armenia, Azerbaijan, or related conflicts': {
+		code: 'a-a',
+		page: 'Wikipedia:Requests for arbitration/Armenia-Azerbaijan 2'
+	},
+	'Biographies of Living Persons (BLPs)': {
+		code: 'blp',
+		page: 'Wikipedia:Requests for arbitration/Editing of Biographies of Living Persons'
+	},
+	'Climate change': {
+		code: 'cc',
+		page: 'Wikipedia:Arbitration/Requests/Case/Climate change'
+	},
+	'Complementary and alternative medicine': {
+		code: 'com',
+		page: 'Wikipedia:Arbitration/Requests/Case/Acupuncture'
+	},
+	'Eastern Europe or the Balkans': {
+		code: 'e-e',
+		page: 'Wikipedia:Requests for arbitration/Eastern Europe'
+	},
+	'Electronic cigarettes': {
+		code: 'ecig',
+		page: 'Wikipedia:Arbitration/Requests/Case/Editor conduct in e-cigs articles'
+	},
+	'Falun Gong': {
+		code: 'fg',
+		page: 'Wikipedia:Requests for arbitration/Falun Gong'
+	},
+	'GamerGate or any gender-related dispute or controversy': {
+		code: 'gg',
+		page: 'Wikipedia:Arbitration/Requests/Case/GamerGate'
+	},
+	'Genetically modified organisms (GMO)': {
+		code: 'gmo',
+		page: 'Wikipedia:Arbitration/Requests/Case/Genetically modified organisms'
+	},
+	'Gun control': {
+		code: 'gc',
+		page: 'Wikipedia:Arbitration/Requests/Case/Gun control'
+	},
+	'India, Pakistan, and Afghanistan': {
+		code: 'ipa',
+		page: 'Wikipedia:Requests for arbitration/India-Pakistan'
+	},
+	'Infoboxes': {
+		code: 'cid',
+		page: 'Wikipedia:Arbitration/Requests/Case/Civility in infobox discussions'
+	},
+	'Landmark Worldwide': {
+		code: 'lw',
+		page: 'Wikipedia:Arbitration/Requests/Case/Landmark Worldwide'
+	},
+	'Liancourt Rocks': {
+		code: 'lr',
+		page: 'Wikipedia:Requests for arbitration/Liancourt Rocks'
+	},
+	'Manual of Style and article titles': {
+		code: 'mos',
+		page: 'Wikipedia:Arbitration/Requests/Case/Article titles and capitalisation'
+	},
+	'Muhammad': {
+		code: 'muh-im',
+		page: 'Wikipedia:Arbitration/Requests/Case/Muhammad images'
+	},
+	'Pharmaceutical drug prices (medicine)': {
+		code: 'med',
+		page: 'Wikipedia:Arbitration/Requests/Case/Medicine'
+	},
+	'Prem Rawat': {
+		code: 'pr',
+		page: 'Wikipedia:Requests for arbitration/Prem Rawat'
+	},
+	'Pseudoscience and fringe science': {
+		code: 'ps',
+		page: 'Wikipedia:Requests for arbitration/Pseudoscience'
+	},
+	'Race/ethnicity and human abilities, behaviour, and intelligence': {
+		code: 'r-i',
+		page: 'Wikipedia:Arbitration/Requests/Case/Race and intelligence'
+	},
+	'Scientology': {
+		code: 'sci',
+		page: 'Wikipedia:Requests for arbitration/Scientology'
+	},
+	'Senkaku Islands dispute': {
+		code: 'sen',
+		page: 'Wikipedia:Arbitration/Requests/Case/Senkaku Islands'
+	},
+	'September 11 attacks': {
+		code: '9/11',
+		page: 'Wikipedia:Requests for arbitration/September 11 conspiracy theories'
+	},
+	'Shakespeare authorship question': {
+		code: 'saq',
+		page: 'Wikipedia:Arbitration/Requests/Case/Shakespeare authorship question'
+	},
+	'Transcendental Meditation movement': {
+		code: 'tm',
+		page: 'Wikipedia:Arbitration/Requests/Case/Transcendental Meditation movement'
+	},
+	'The Troubles': {
+		code: 'tt',
+		page: 'Wikipedia:Requests for arbitration/The Troubles'
+	},
+	'Waldorf education': {
+		code: 'we',
+		page: 'Wikipedia:Requests for arbitration/Waldorf education'
+	}
+};
+
 Twinkle.block.transformBlockPresets = function twinkleblockTransformBlockPresets() {
 	// supply sensible defaults
 	$.each(Twinkle.block.blockPresetsInfo, function(preset, settings) {
@@ -1276,6 +1428,20 @@ Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSee
 	}
 };
 
+Twinkle.block.dsReason = '';
+Twinkle.block.callback.toggle_ds_reason = function twinkleblockCallbackToggleDSReason() {
+	var reason = this.form.reason.value.replace(
+		new RegExp(' ?\\(\\[\\[' + Twinkle.block.dsReason + '\\]\\]\\)'), ''
+	);
+
+	Twinkle.block.dsReason = Twinkle.block.dsinfo[this.options[this.selectedIndex].label].page;
+	if (!this.value) {
+		this.form.reason.value = reason;
+	} else {
+		this.form.reason.value = reason + ' ([[' + Twinkle.block.dsReason + ']])';
+	}
+};
+
 Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, data) {
 	var form = e.target.form, expiry = data.expiry;
 
@@ -1345,11 +1511,17 @@ Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemp
 		Morebits.quickForm.setElementVisibility(form.noemail_template.parentNode, $(form).find('[name=actiontype][value=partial]').is(':checked') && !$(form).find('[name=actiontype][value=block]').is(':checked'));
 		Morebits.quickForm.setElementVisibility(form.nocreate_template.parentNode, $(form).find('[name=actiontype][value=partial]').is(':checked') && !$(form).find('[name=actiontype][value=block]').is(':checked'));
 	} else {
-		Morebits.quickForm.setElementVisibility(
-			form.blank_duration.parentNode,
-			!settings.indefinite && !settings.nonstandard
-		);
+		// Only present if block && template
+		if (form.blank_duration) {
+			Morebits.quickForm.setElementVisibility(
+				form.blank_duration.parentNode,
+				!settings.indefinite && !settings.nonstandard
+			);
+		}
 	}
+
+	Morebits.quickForm.setElementVisibility(form.dstopic.parentNode, value === 'uw-aeblock' || value === 'uw-aepblock');
+
 	Morebits.quickForm.setElementVisibility(form.article.parentNode, !!settings.pageParam);
 	Morebits.quickForm.setElementVisibility(form.block_reason.parentNode, !!settings.reasonParam);
 
@@ -1370,6 +1542,7 @@ Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 		indefinite: (/indef|infinit|never|\*|max/).test(form.template_expiry ? form.template_expiry.value : form.expiry.value),
 		reason: form.block_reason.value,
 		template: form.template.value,
+		dstopic: form.dstopic.value,
 		partial: $(form).find('[name=actiontype][value=partial]').is(':checked'),
 		pagerestrictions: $(form.pagerestrictions).val() || [],
 		namespacerestrictions: $(form.namespacerestrictions).val() || [],
@@ -1396,6 +1569,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 	blockoptions = Twinkle.block.field_block_options;
 
 	templateoptions = Twinkle.block.field_template_options;
+
 	templateoptions.disabletalk = !!(templateoptions.disabletalk || blockoptions.disabletalk);
 	templateoptions.hardblock = !!blockoptions.hardblock;
 	delete blockoptions.expiry_preset; // remove extraneous
@@ -1557,6 +1731,9 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 		text += 'subst:' + params.template;
 		if (params.article && settings.pageParam) {
 			text += '|page=' + params.article;
+		}
+		if (params.dstopic) {
+			text += '|topic=' + params.dstopic;
 		}
 
 		if (!/te?mp|^\s*$|min/.exec(params.expiry)) {
