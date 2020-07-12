@@ -499,7 +499,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				reason += (reason === '' ? '' : '. ') + comment;
 			}
 			reason = reason.trim();
-			if (reason.search(/[.?!;]$/) === -1) {
+			if (!/[.?!;]$/.test(reason)) {
 				reason += '.';
 			}
 			reason += ' ~~~~';
