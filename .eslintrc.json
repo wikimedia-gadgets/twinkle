@@ -7,7 +7,8 @@
 		"jquery": true
 	},
 	"globals": {
-		"mw": "readonly"
+		"mw": "readonly",
+		"Map": "readonly"
 	},
 	"ignorePatterns": ["dev/", "lib/"],
 	"rules": {
