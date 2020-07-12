@@ -105,7 +105,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	input.backlinks = input.backlinks || [];
 	input.imageusage = input.imageusage || [];
 	var pages = Morebits.array.uniq(input.backlinks.concat(input.imageusage));
-	if (!pages) {
+	if (!pages.length) {
 		alert('You must select at least one item to unlink.');
 		return;
 	}
