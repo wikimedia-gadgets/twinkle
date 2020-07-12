@@ -40,7 +40,7 @@ foreach my $dot (@dotLocales) {
 }
 
 GetOptions (\%conf, 'username|s=s', 'password|p=s', 'lang|l=s', 'family|f=s', 'base|b=s',
-            'mode=s', 'diff|d', 'w=s', 'dry|r', 'help|h' => \&usage);
+            'all|a', 'mode=s', 'diff|d', 'w=s', 'dry|r', 'help|h' => \&usage);
 
 # Ensure we've got a clean branch
 my $repo = Git::Repository->new();
@@ -51,8 +51,8 @@ if (scalar @status) {
 }
 
 # Make sure we know what we're doing before doing it
-# Includes checks for required parameters
-forReal();
+# Checks for required parameters, returns list of files (@ARGV or --all)
+my @files = forReal();
 
 # Open API and log in before anything else
 my $mw = MediaWiki::API->new({
@@ -67,8 +67,7 @@ $mw->login({lgname => $conf{username}, lgpassword => $conf{password}});
 my $countDiff = 0;                 # Only used for the --dry option
 my $diffFunc = $conf{w} || 'diff'; # Only used for the --diff option
 ### Main loop through each file
-foreach my $file (@ARGV) {
-  next if checkFile($file);
+foreach my $file (@files) {
   my $page = $file;
   if ($page =~ /^twinkle/) {
     $page =~ s/^twinkle\b/Twinkle/; # twinkle.js, etc. files are capitalized on-wiki
@@ -159,27 +158,51 @@ sub forReal {
 
   # Ensure requireds are required
   my $modeTruth = $conf{mode} && grep {/$conf{mode}/} qw (deploy push pull);
-  if (!@ARGV || !$modeTruth || !$conf{username} || !$conf{password}) {
+  if (!$modeTruth || !$conf{username} || !$conf{password}) {
+    print colored ['red'], "Missing information!\n\n";
     usage();
+  }
+
+  my @inputs;
+  my @allFiles = map { split } <DATA>;
+  if ($conf{all}) {
+    print "Using all gadget files\n";
+    @inputs = @allFiles;
+  } else {
+    # Confirm files are valid
+    my %checkFiles = map { $_ => 1 } @allFiles;
+    foreach my $arg (@ARGV) {
+      if (!$checkFiles{$arg}) {
+        print colored ['yellow'], "$arg not defined as part of the gadget, skipping\n";
+        next;
+      }
+      push @inputs, $arg;
+    }
+
+    if (!@inputs) {
+      print colored ['red'], "No valid input files provided!\n\n";
+      usage();
+    }
   }
 
   # Quick exit
   if ($conf{dry}) {
-    print "Checking provided files for differences...\n\n";
+    print "Dry run, checking for differences...\n";
     # As below
     $conf{base} = 'MediaWiki:Gadget-' if $conf{mode} eq 'deploy';
-    return;
+    return @inputs;
   }
 
   print 'This means ';
   print colored ['bright_white'], 'User:'.ucfirst $conf{username};
   print ' will attempt to ';
   print colored ['bright_magenta'], uc $conf{mode}."\n\n";
-  # Print files
-  foreach (@ARGV) {
+
+  foreach (@inputs) {
     print colored ['blue'], "\t$_\n";
   }
   print "\n";
+
   if ($conf{mode} eq 'deploy') {
     print colored ['bright_magenta'], 'LIVE';
     print ' to the ';
@@ -203,12 +226,12 @@ sub forReal {
       exit 0;
     } elsif ($input eq 'y' || $input eq 'yes') {
       print "Proceeding...\n";
-      return 0;
+      return @inputs;
     } else {
       print 'Unknown entry... ';
     }
   }
-  return 1;                     # We should never get here but just in case
+  exit 1; # We should never get here but just in case
 }
 
 # Nicer handling of errors
@@ -227,17 +250,6 @@ sub dieNice {
     print "$code: $details\n";
   }
   die "Quitting\n";
-}
-
-# Check if file exists
-sub checkFile {
-  my $file = shift;
-  if (-e -f -r $file) {
-    return 0;
-  } else {
-    print colored ['yellow'], "$file does not exist, skipping\n";
-    return 1;
-  }
 }
 
 # Check if page exists
@@ -336,7 +348,7 @@ sub editPage {
 # Final line must be unindented?
 sub usage {
   print <<"USAGE";
-Usage: $PROGRAM_NAME --mode=deploy|pull|push [--diff -w] [--dry] [-u username] [-p password] [-l language] [-f family] [-b base]
+Usage: $PROGRAM_NAME --mode=deploy|pull|push [--diff -w] [--dry] [-u username] [-p password] [-l language] [-f family] [-b base] [--all]
 
     --mode What action to perform, one of deploy, pull, or push. Required.
         deploy: Push changes live to the gadget
@@ -349,6 +361,8 @@ Usage: $PROGRAM_NAME --mode=deploy|pull|push [--diff -w] [--dry] [-u username] [
     --lang, -l Target language, default 'en'
     --family, -f Target family, default 'wikipedia'
     --base, -b Base page prefix where on-wiki files exist, default 'User:AzaToth/'
+
+    --all, -a Pass all available files, rather than just those on the commandline
 
     --diff, -d Show a diff between files and pages before proceeding
         -w Pass an alternative diffing function instead of the default `diff`, such as `colordiff`
@@ -365,3 +379,36 @@ Usage: $PROGRAM_NAME --mode=deploy|pull|push [--diff -w] [--dry] [-u username] [
 USAGE
   exit;
 }
+
+
+## The lines below do not represent Perl code, and are not examined by the
+## compiler.  Rather, they are used by the --all option to simplify bulk
+## updating all files.
+__DATA__
+twinkle.js
+  twinkle.css
+  twinkle-pagestyles.css
+  morebits.js
+  morebits.css
+  select2/select2.min.js
+  select2/select2.min.css
+  modules/twinkleconfig.js
+  modules/twinklearv.js
+  modules/twinklebatchdelete.js
+  modules/twinklebatchprotect.js
+  modules/twinklebatchundelete.js
+  modules/twinkleblock.js
+  modules/twinkledeprod.js
+  modules/twinklediff.js
+  modules/twinklefluff.js
+  modules/twinkleimage.js
+  modules/twinkleprod.js
+  modules/twinkleprotect.js
+  modules/twinklespeedy.js
+  modules/twinkleunlink.js
+  modules/twinklewarn.js
+  modules/twinklexfd.js
+  modules/friendlyshared.js
+  modules/friendlytag.js
+  modules/friendlytalkback.js
+  modules/friendlywelcome.js
