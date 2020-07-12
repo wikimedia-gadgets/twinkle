@@ -1774,7 +1774,7 @@ Morebits.wiki.api.prototype = {
 
 		var ajaxparams = $.extend({}, {
 			context: this,
-			type: 'POST',
+			type: this.query.action === 'query' ? 'GET' : 'POST',
 			url: mw.util.wikiScript('api'),
 			data: queryString,
 			dataType: this.query.format,
