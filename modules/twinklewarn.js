@@ -1277,10 +1277,23 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 				autolevelProc();
 			} else {
 				var usertalk_page = new Morebits.wiki.page('User_talk:' + mw.config.get('wgRelevantUserName'), 'Loading previous warnings');
-				usertalk_page.setFollowRedirect(true);
+				usertalk_page.setFollowRedirect(true, false);
 				usertalk_page.load(function(pageobj) {
 					Twinkle.warn.talkpageObj = pageobj; // Update talkpageObj
 					autolevelProc();
+				}, function() {
+					// Catch and warn if the talkpage can't load,
+					// most likely because it's a cross-namespace redirect
+					// Supersedes the typical $autolevelMessage added in autolevelParseWikitext
+					var $noTalkPageNode = $('<strong/>', {
+						'text': 'Unable to load user talk page; it might be a cross-namespace redirect.  Autolevel detection will not work.',
+						'id': 'twinkle-warn-autolevel-message',
+						'css': {'color': 'red' }
+					});
+					$noTalkPageNode.insertBefore($('#twinkle-warn-warning-messages'));
+					// If a preview was opened while in a different mode, close it
+					// Should nullify the need to catch the error in preview callback
+					e.target.root.previewer.closePreview();
 				});
 			}
 			break;
@@ -1436,7 +1449,9 @@ Twinkle.warn.callbacks = {
 		if (form.main_group.value === 'autolevel') {
 			// Always get a new, updated talkpage for autolevel processing
 			var usertalk_page = new Morebits.wiki.page('User_talk:' + mw.config.get('wgRelevantUserName'), 'Loading previous warnings');
-			usertalk_page.setFollowRedirect(true);
+			usertalk_page.setFollowRedirect(true, false);
+			// Will fail silently if the talk page is a cross-ns redirect,
+			// removal of the preview box handled when loading the menu
 			usertalk_page.load(function(pageobj) {
 				Twinkle.warn.talkpageObj = pageobj; // Update talkpageObj
 
@@ -1731,6 +1746,13 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 		return;
 	}
 
+	// The autolevel option will already know by now if a user talk page
+	// is a cross-namespace redirect (via !!Twinkle.warn.talkpageObj), so
+	// technically we could alert an error here, but the user will have
+	// already ignored the bold red error above.  Moreover, they probably
+	// *don't* want to actually issue a warning, so the error handling
+	// after the form is submitted is probably preferable
+
 	// Find the selected <option> element so we can fetch the data structure
 	var $selectedEl = $(e.target.sub_group).find('option[value="' + $(e.target.sub_group).val() + '"]');
 	params.messageData = $selectedEl.data('messageData');
@@ -1743,7 +1765,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 
 	var wikipedia_page = new Morebits.wiki.page(userTalkPage, 'User talk page modification');
 	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.setFollowRedirect(true);
+	wikipedia_page.setFollowRedirect(true, false);
 	wikipedia_page.load(Twinkle.warn.callbacks.main);
 };
 })(jQuery);
