@@ -4204,7 +4204,7 @@ Morebits.status.error = function(text, status) {
  */
 Morebits.status.actionCompleted = function(text) {
 	var node = document.createElement('div');
-	node.appendChild(document.createElement('span')).appendChild(document.createTextNode(text));
+	node.appendChild(document.createElement('b')).appendChild(document.createTextNode(text));
 	node.className = 'morebits_status_info';
 	if (Morebits.status.root) {
 		Morebits.status.root.appendChild(node);
