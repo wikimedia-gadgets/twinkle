@@ -1721,6 +1721,8 @@ Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onE
 	}
 	if (!query.format) {
 		this.query.format = 'xml';
+	} else if (query.format === 'json' && !query.formatversion) {
+		this.query.formatversion = '2';
 	} else if (['xml', 'json'].indexOf(query.format) === -1) {
 		this.statelem.error('Invalid API format: only xml and json are supported.');
 	}
