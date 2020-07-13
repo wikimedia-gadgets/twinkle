@@ -445,6 +445,9 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 					}
 				}
 			}
+			if (data.shiftClickSupport && data.type === 'checkbox') {
+				Morebits.checkboxShiftClickSupport(Morebits.quickForm.getElements(node, data.name));
+			}
 			break;
 		case 'input':
 			node = document.createElement('div');
