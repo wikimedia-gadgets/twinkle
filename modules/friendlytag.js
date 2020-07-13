@@ -194,7 +194,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 					subdiv.append({ type: 'div', label: [ Morebits.htmlNode('b', subgroupName) ] });
 					subdiv.append({
 						type: 'checkbox',
-						name: 'redirectTags',
+						name: 'tags',
 						list: subgroup.map(function (item) {
 							return { value: item.tag, label: '{{' + item.tag + '}}: ' + item.description };
 						})
