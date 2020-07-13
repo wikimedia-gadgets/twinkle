@@ -225,6 +225,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			type: 'checkbox',
 			name: 'pages',
 			id: 'tw-dbatch-pages',
+			shiftClickSupport: true,
 			list: $.map(Twinkle.batchdelete.pages, function (e) {
 				return e;
 			})
@@ -234,9 +235,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		var result = form.render();
 		apiobj.params.Window.setContent(result);
 
-		var pageCheckboxes = Morebits.quickForm.getElements(result, 'pages');
-		pageCheckboxes.forEach(generateArrowLinks);
-		Morebits.checkboxShiftClickSupport(pageCheckboxes);
+		Morebits.quickForm.getElements(result, 'pages').forEach(generateArrowLinks);
 
 	}, statelem);
 
@@ -268,6 +267,7 @@ Twinkle.batchdelete.generateNewPageList = function(form) {
 		type: 'checkbox',
 		name: 'pages',
 		id: 'tw-dbatch-pages',
+		shiftClickSupport: true,
 		list: $.map(Twinkle.batchdelete.pages, function (e) {
 			return e;
 		})
@@ -277,7 +277,7 @@ Twinkle.batchdelete.generateNewPageList = function(form) {
 Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e) {
 
 	var form = e.target.form;
-	var newPageList, pageCheckboxes, subpageCheckboxes;
+	var newPageList;
 
 	if (e.target.checked) {
 
@@ -299,13 +299,8 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 			newPageList = Twinkle.batchdelete.generateNewPageList(form);
 			$('#tw-dbatch-pages').replaceWith(newPageList);
 
-			pageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages');
-			pageCheckboxes.forEach(generateArrowLinks);
-			Morebits.checkboxShiftClickSupport(pageCheckboxes);
-
-			subpageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages.subpages');
-			subpageCheckboxes.forEach(generateArrowLinks);
-			Morebits.checkboxShiftClickSupport(subpageCheckboxes);
+			Morebits.quickForm.getElements(newPageList, 'pages').forEach(generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(generateArrowLinks);
 
 			return;
 		}
@@ -381,6 +376,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 						type: 'checkbox',
 						name: 'subpages',
 						className: 'dbatch-subpages',
+						shiftClickSupport: true,
 						list: subpageList
 					};
 				}
@@ -396,13 +392,8 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 			newPageList = Twinkle.batchdelete.generateNewPageList(form);
 			$('#tw-dbatch-pages').replaceWith(newPageList);
 
-			pageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages');
-			pageCheckboxes.forEach(generateArrowLinks);
-			Morebits.checkboxShiftClickSupport(pageCheckboxes);
-
-			subpageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages.subpages');
-			subpageCheckboxes.forEach(generateArrowLinks);
-			Morebits.checkboxShiftClickSupport(subpageCheckboxes);
+			Morebits.quickForm.getElements(newPageList, 'pages').forEach(generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(generateArrowLinks);
 
 			subpagesLoaded = true;
 
@@ -426,10 +417,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		newPageList = Twinkle.batchdelete.generateNewPageList(form);
 		$('#tw-dbatch-pages').replaceWith(newPageList);
 
-		pageCheckboxes = Morebits.quickForm.getElements(newPageList, 'pages');
-		pageCheckboxes.forEach(generateArrowLinks);
-		Morebits.checkboxShiftClickSupport(pageCheckboxes);
-
+		Morebits.quickForm.getElements(newPageList, 'pages').forEach(generateArrowLinks);
 	}
 };
 

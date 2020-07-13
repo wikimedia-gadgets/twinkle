@@ -174,6 +174,7 @@ Twinkle.unlink.callbacks = {
 					apiobj.params.form.append({
 						type: 'checkbox',
 						name: 'imageusage',
+						shiftClickSupport: true,
 						list: list
 					});
 					havecontent = true;
@@ -220,6 +221,7 @@ Twinkle.unlink.callbacks = {
 				apiobj.params.form.append({
 					type: 'checkbox',
 					name: 'backlinks',
+					shiftClickSupport: true,
 					list: list
 				});
 				havecontent = true;
@@ -233,9 +235,6 @@ Twinkle.unlink.callbacks = {
 
 			var result = apiobj.params.form.render();
 			apiobj.params.Window.setContent(result);
-
-			Morebits.checkboxShiftClickSupport($("input[name='imageusage']", result));
-			Morebits.checkboxShiftClickSupport($("input[name='backlinks']", result));
 
 		}
 	},
