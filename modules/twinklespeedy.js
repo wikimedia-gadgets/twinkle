@@ -833,18 +833,6 @@ Twinkle.speedy.userList = [
 
 Twinkle.speedy.templateList = [
 	{
-		label: 'T2: Templates that are blatant misrepresentations of established policy',
-		value: 'policy',
-		tooltip: 'This includes "speedy deletion" templates for issues that are not speedy deletion criteria and disclaimer templates intended to be used in articles',
-		subgroup: {
-			name: 'policy_rationale',
-			type: 'input',
-			label: 'Optional explanation: ',
-			size: 60
-		},
-		hideSubgroupWhenSysop: true
-	},
-	{
 		label: 'T3: Duplicate templates or hardcoded instances',
 		value: 'duplicatetemplate',
 		tooltip: 'Templates that are either substantial duplications of another template or hardcoded instances of another template where the same functionality could be provided by that other template',
@@ -1162,7 +1150,6 @@ Twinkle.speedy.normalizeHash = {
 	'nouser': 'u2',
 	'gallery': 'u3',
 	'notwebhost': 'u5',
-	'policy': 't2',
 	'duplicatetemplate': 't3',
 	'p1': 'p1',
 	'emptyportal': 'p2'
@@ -1893,12 +1880,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						return false;
 					}
 					currentParams.article = duptitle;
-				}
-				break;
-
-			case 'policy':  // T2
-				if (form['csd.policy_rationale'] && form['csd.policy_rationale'].value) {
-					currentParams.rationale = form['csd.policy_rationale'].value;
 				}
 				break;
 
