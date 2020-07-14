@@ -157,7 +157,7 @@ if ($conf{mode} eq 'deploy') {
   if ($wikiGadgetDef eq $localGadgetDef) {
     print "Gadget up-to-date\n";
   } else {
-    print colored ['red'], "MediaWiki:Gadgets-definition needs udpating!\n";
+    print colored ['red'], "MediaWiki:Gadgets-definition needs updating!\n";
   }
 }
 
