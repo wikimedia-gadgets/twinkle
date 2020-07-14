@@ -22,6 +22,7 @@ Twinkle.protect = function twinkleprotect() {
 	Twinkle.addPortletLink(Twinkle.protect.callback, Morebits.userIsSysop ? 'PP' : 'RPP', 'tw-rpp',
 		Morebits.userIsSysop ? 'Protect page' : 'Request page protection');
 };
+Twinkle.addInitCallback(Twinkle.protect, 'protect');
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
 	var Window = new Morebits.simpleWindow(620, 530);

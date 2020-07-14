@@ -1302,6 +1302,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		}
 	}
 };
+Twinkle.addInitCallback(Twinkle.config.init);
 
 // custom list-related stuff
 

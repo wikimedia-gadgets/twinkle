@@ -21,6 +21,7 @@ Twinkle.batchundelete = function twinklebatchundelete() {
 	}
 	Twinkle.addPortletLink(Twinkle.batchundelete.callback, 'Und-batch', 'tw-batch-undel', "Undelete 'em all");
 };
+Twinkle.addInitCallback(Twinkle.batchundelete, 'batchundelete');
 
 Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	var Window = new Morebits.simpleWindow(600, 400);
