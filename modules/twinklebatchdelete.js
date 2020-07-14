@@ -648,9 +648,8 @@ Twinkle.batchdelete.callbacks = {
 		}
 		var old_text = text;
 		var wikiPage = new Morebits.wikitext.page(text);
-		wikiPage.removeLink(params.page);
+		text = wikiPage.removeLink(params.page).getText();
 
-		text = wikiPage.getText();
 		Twinkle.batchdelete.unlinkCache[params.title] = text;
 		if (text === old_text) {
 			// Nothing to do, return
@@ -701,9 +700,8 @@ Twinkle.batchdelete.callbacks = {
 		}
 		var old_text = text;
 		var wikiPage = new Morebits.wikitext.page(text);
-		wikiPage.commentOutImage(image, 'Commented out because image was deleted');
+		text = wikiPage.commentOutImage(image, 'Commented out because image was deleted').getText();
 
-		text = wikiPage.getText();
 		Twinkle.batchdelete.unlinkCache[params.title] = text;
 		if (text === old_text) {
 			pageobj.getStatusElement().error('failed to unlink image ' + image + ' from ' + pageobj.getPageName());

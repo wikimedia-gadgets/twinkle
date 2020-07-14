@@ -1516,40 +1516,22 @@ Twinkle.tag.callbacks = {
 		var addUngroupedTags = function() {
 			$.each(tags, addTag);
 
-			// Smartly insert the new tags after any hatnotes or
-			// afd, csd, or prod templates or hatnotes. Regex is
-			// extra complicated to allow for templates with
-			// parameters and to handle whitespace properly.
-			pageText = pageText.replace(
-				new RegExp(
-					// leading whitespace
-					'^\\s*' +
-					// capture template(s)
-					'(?:((?:\\s*' +
-					// AfD is special, as the tag includes html comments before and after the actual template
-					'(?:<!--.*AfD.*\\n\\{\\{(?:Article for deletion\\/dated|AfDM).*\\}\\}\\n<!--.*(?:\\n<!--.*)?AfD.*(?:\\s*\\n))?|' + // trailing whitespace/newline needed since this subst's a newline
-					// begin template format
-					'\\{\\{\\s*(?:' +
-					// CSD
-					'db|delete|db-.*?|speedy deletion-.*?|' +
-					// PROD
-					'(?:proposed deletion|prod blp)\\/dated(?:\\s*\\|(?:concern|user|timestamp|help).*)+|' +
-					// various hatnote templates
-					'about|correct title|dablink|distinguish|for|other\\s?(?:hurricane(?: use)?s|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\\s?(?:also|wiktionary)|selfref|short description|the' +
-					// not a hatnote, but sometimes under a CSD or AfD
-					'|salt|proposed deletion endorsed' +
-					// end main template name, optionally with a number (such as redirect2)
-					')\\d*\\s*' +
-					// template parameters
-					'(\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?' +
-					// end template format
-					'\\}\\})+' +
-					// end capture
-					'(?:\\s*\\n)?)' +
-					// trailing whitespace
-					'\\s*)?',
-					'i'), '$1' + tagText
-			);
+			// Insert tag after short description or any hatnotes,
+			// as well as deletion/protection-related templates
+			var wikipage = new Morebits.wikitext.page(pageText);
+			var templatesAfter = Twinkle.hatnoteRegex +
+				// Protection templates
+				'pp|pp-.*?|' +
+				// CSD
+				'db|delete|db-.*?|speedy deletion-.*?|' +
+				// PROD
+				'(?:proposed deletion|prod blp)\\/dated(?:\\s*\\|(?:concern|user|timestamp|help).*)+|' +
+				// not a hatnote, but sometimes under a CSD or AfD
+				'salt|proposed deletion endorsed';
+			// AfD is special, as the tag includes html comments before and after the actual template
+			// trailing whitespace/newline needed since this subst's a newline
+			var afdRegex = '(?:<!--.*AfD.*\\n\\{\\{(?:Article for deletion\\/dated|AfDM).*\\}\\}\\n<!--.*(?:\\n<!--.*)?AfD.*(?:\\s*\\n))?';
+			pageText = wikipage.insertAfterTemplates(tagText, templatesAfter, null, afdRegex).getText();
 
 			removeTags();
 		};

@@ -308,16 +308,21 @@ Twinkle.prod.callbacks = {
 			} else if (Twinkle.getPref('logProdPages')) { // If not notifying, log this PROD
 				Twinkle.prod.callbacks.addToLog(params);
 			}
+			var tag;
 			if (params.blp) {
 				summaryText = 'Proposing article for deletion per [[WP:BLPPROD]].';
-				text = '{{subst:prod blp' + (params.usertalk ? '|help=off' : '') + '}}\n' + text;
+				tag = '{{subst:prod blp' + (params.usertalk ? '|help=off' : '') + '}}';
 			} else if (params.book) {
 				summaryText = 'Proposing book for deletion per [[WP:BOOKPROD]].';
-				text = '{{subst:book-prod|1=' + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? '|help=off' : '') + '}}\n' + text;
+				tag = '{{subst:book-prod|1=' + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? '|help=off' : '') + '}}';
 			} else {
 				summaryText = 'Proposing ' + namespace + ' for deletion per [[WP:PROD]].';
-				text = '{{subst:prod|1=' + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? '|help=off' : '') + '}}\n' + text;
+				tag = '{{subst:prod|1=' + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? '|help=off' : '') + '}}';
 			}
+
+			// Insert tag after short description or any hatnotes
+			var wikipage = new Morebits.wikitext.page(text);
+			text = wikipage.insertAfterTemplates(tag + '\n', Twinkle.hatnoteRegex).getText();
 
 			// Add {{Old prod}} to the talk page
 			if (!params.oldProdPresent) {

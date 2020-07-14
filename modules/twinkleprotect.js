@@ -1438,10 +1438,16 @@ Twinkle.protect.callbacks = {
 					Morebits.status.info('Redirect category shell present', 'nothing to do');
 					return;
 				}
-			} else if (params.noinclude) {
-				text = '<noinclude>{{' + tag + '}}</noinclude>' + text;
 			} else {
-				text = '{{' + tag + '}}\n' + text;
+				if (params.noinclude) {
+					tag = '<noinclude>{{' + tag + '}}</noinclude>';
+				} else {
+					tag = '{{' + tag + '}}\n';
+				}
+
+				// Insert tag after short description or any hatnotes
+				var wikipage = new Morebits.wikitext.page(text);
+				text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
 			}
 			summary = 'Adding {{' + params.tag + '}}' + Twinkle.getPref('summaryAd');
 		}

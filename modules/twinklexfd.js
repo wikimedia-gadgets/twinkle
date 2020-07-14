@@ -925,8 +925,14 @@ Twinkle.xfd.callbacks = {
 				text = textNoSd;
 			}
 
-			pageobj.setPageText((params.noinclude ? '<noinclude>{{' : '{{') + (params.number === '' ? 'subst:afd|help=off' : 'subst:afdx|' +
-				params.number + '|help=off') + (params.noinclude ? '}}</noinclude>\n' : '}}\n') + text);
+			var tag = (params.noinclude ? '<noinclude>{{' : '{{') + (params.number === '' ? 'subst:afd|help=off' : 'subst:afdx|' +
+					params.number + '|help=off') + (params.noinclude ? '}}</noinclude>\n' : '}}\n');
+
+			// Insert tag after short description or any hatnotes
+			var wikipage = new Morebits.wikitext.page(text);
+			text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
+
+			pageobj.setPageText(text);
 			pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].' + Twinkle.getPref('summaryAd'));
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
 			pageobj.setCreateOption('nocreate');

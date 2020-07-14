@@ -255,8 +255,7 @@ Twinkle.unlink.callbacks = {
 
 		// remove image usages
 		if (params.doImageusage) {
-			wikiPage.commentOutImage(mw.config.get('wgTitle'), 'Commented out');
-			text = wikiPage.getText();
+			text = wikiPage.commentOutImage(mw.config.get('wgTitle'), 'Commented out').getText();
 			// did we actually make any changes?
 			if (text === oldtext) {
 				warningString = 'file usages';
@@ -268,8 +267,7 @@ Twinkle.unlink.callbacks = {
 
 		// remove backlinks
 		if (params.doBacklinks) {
-			wikiPage.removeLink(Morebits.pageNameNorm);
-			text = wikiPage.getText();
+			text = wikiPage.removeLink(Morebits.pageNameNorm).getText();
 			// did we actually make any changes?
 			if (text === oldtext) {
 				warningString = warningString ? 'backlinks or file usages' : 'backlinks';

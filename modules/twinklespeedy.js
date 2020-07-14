@@ -1545,7 +1545,18 @@ Twinkle.speedy.callbacks = {
 				code = code.replace('$TIMESTAMP', pageobj.getLastEditTime());
 			}
 
-			pageobj.setPageText(code + (params.normalizeds.indexOf('g10') !== -1 ? '' : '\n' + text)); // cause attack pages to be blanked
+
+			// Blank attack pages
+			if (params.normalizeds.indexOf('g10') !== -1) {
+				text = code;
+			} else {
+				// Insert tag after short description or any hatnotes
+				var wikipage = new Morebits.wikitext.page(text);
+				text = wikipage.insertAfterTemplates(code + '\n', Twinkle.hatnoteRegex).getText();
+			}
+
+
+			pageobj.setPageText(text);
 			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
 			pageobj.setWatchlist(params.watch);
 			if (params.scribunto) {

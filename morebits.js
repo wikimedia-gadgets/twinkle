@@ -3894,6 +3894,8 @@ Morebits.wikitext.page.prototype = {
 	/**
 	 * Removes links to `link_target` from the page text.
 	 * @param {string} link_target
+	 *
+	 * @returns {Morebits.wikitext.page}
 	 */
 	removeLink: function(link_target) {
 		var first_char = link_target.substr(0, 1);
@@ -3907,6 +3909,7 @@ Morebits.wikitext.page.prototype = {
 		var link_simple_re = new RegExp('\\[\\[' + colon + '(' + link_re_string + ')\\]\\]', 'g');
 		var link_named_re = new RegExp('\\[\\[' + colon + link_re_string + '\\|(.+?)\\]\\]', 'g');
 		this.text = this.text.replace(link_simple_re, '$1').replace(link_named_re, '$1');
+		return this;
 	},
 
 	/**
@@ -3914,6 +3917,8 @@ Morebits.wikitext.page.prototype = {
 	 * If used as a template argument (not necessarily with File: prefix), the template parameter is commented out.
 	 * @param {string} image - Image name without File: prefix
 	 * @param {string} reason - Reason to be included in comment, alongside the commented-out image
+	 *
+	 * @returns {Morebits.wikitext.page}
 	 */
 	commentOutImage: function(image, reason) {
 		var unbinder = new Morebits.unbinder(this.text);
@@ -3951,12 +3956,15 @@ Morebits.wikitext.page.prototype = {
 		unbinder.content = unbinder.content.replace(free_image_re, '<!-- ' + reason + '$1 -->');
 		// Rebind the content now, we are done!
 		this.text = unbinder.rebind();
+		return this;
 	},
 
 	/**
 	 * Converts first usage of [[File:`image`]] to [[File:`image`|`data`]]
 	 * @param {string} image - Image name without File: prefix
 	 * @param {string} data
+	 *
+	 * @returns {Morebits.wikitext.page}
 	 */
 	addToImageComment: function(image, data) {
 		var first_char = image.substr(0, 1);
@@ -3978,12 +3986,15 @@ Morebits.wikitext.page.prototype = {
 		var gallery_re = new RegExp('^(\\s*' + image_re_string + '.*?)\\|?(.*?)$', 'mg');
 		var newtext = '$1|$2 ' + data;
 		this.text = this.text.replace(gallery_re, newtext);
+		return this;
 	},
 
 	/**
 	 * Removes transclusions of template from page text
 	 * @param {string} template - Page name whose transclusions are to be removed,
 	 * include namespace prefix only if not in template namespace
+	 *
+	 * @returns {Morebits.wikitext.page}
 	 */
 	removeTemplate: function(template) {
 		var first_char = template.substr(0, 1);
@@ -3995,6 +4006,73 @@ Morebits.wikitext.page.prototype = {
 				this.text = this.text.replace(allTemplates[i], '', 'g');
 			}
 		}
+		return this;
+	},
+
+	/**
+	 * Smartly insert a tag atop page text but after specified templates,
+	 * such as hatnotes, short description, or deletion and protection templates.
+	 * Notably, does *not* insert a newline after the tag
+	 *
+	 * @param {string} tag - The tag to be inserted
+	 * @param {string|string[]} regex - Templates after which to insert tag,
+	 * given as either as a (regex-valid) string or an array to be joined by pipes
+	 * @param {string} [flags=i] - Regex flags to apply. Optional, defaults to /i
+	 * @param {string|string[]} preRegex - Optional regex string or array to match
+	 * before any template matches (i.e. before `{{`), such as html comments
+	 *
+	 * @returns {Morebits.wikitext.page}
+	 */
+	insertAfterTemplates: function(tag, regex, flags, preRegex) {
+		if (!tag) {
+			throw new Error('No tag provided');
+		}
+
+		// .length is only a property of strings and arrays so we
+		// shouldn't need to check type
+		if (!regex || !regex.length) {
+			throw new Error('No regex provided');
+		} else if (Array.isArray(regex)) {
+			regex = regex.join('|');
+		}
+
+		flags = flags || 'i';
+
+		if (!preRegex || !preRegex.length) {
+			preRegex = '';
+		} else if (Array.isArray(preRegex)) {
+			preRegex = preRegex.join('|');
+		}
+
+
+		// Regex is extra complicated to allow for templates with
+		// parameters and to handle whitespace properly
+		this.text = this.text.replace(
+			new RegExp(
+				// leading whitespace
+				'^\\s*' +
+				// capture template(s)
+				'(?:((?:\\s*' +
+				// Pre-template regex, such as leading html comments
+				preRegex + '|' +
+				// begin template format
+				'\\{\\{\\s*(?:' +
+				// Template regex
+				regex +
+				// end main template name, optionally with a number
+				// Probably remove the (?:) though
+				')\\d*\\s*' +
+				// template parameters
+				'(\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?' +
+				// end template format
+				'\\}\\})+' +
+				// end capture
+				'(?:\\s*\\n)?)' +
+				// trailing whitespace
+				'\\s*)?',
+				flags), '$1' + tag
+		);
+		return this;
 	},
 
 	/** @returns {string} */
