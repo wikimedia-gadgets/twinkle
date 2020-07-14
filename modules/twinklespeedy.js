@@ -775,7 +775,13 @@ Twinkle.speedy.categoryList = [
 	{
 		label: 'G8: Categories populated by a deleted or retargeted template',
 		value: 'templatecat',
-		tooltip: 'This is for situations where a category is effectively empty, because the template(s) that formerly placed pages in that category are now deleted. This excludes categories that are still in use.'
+		tooltip: 'This is for situations where a category is effectively empty, because the template(s) that formerly placed pages in that category are now deleted. This excludes categories that are still in use.',
+		subgroup: {
+			name: 'templatecat_rationale',
+			type: 'input',
+			label: 'Optional explanation: ',
+			size: 60
+		}
 	},
 	{
 		label: 'G8: Redirects to non-existent targets',
@@ -1798,6 +1804,12 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 			case 'g8':  // G8
 				if (form['csd.g8_rationale'] && form['csd.g8_rationale'].value) {
 					currentParams.rationale = form['csd.g8_rationale'].value;
+				}
+				break;
+
+			case 'templatecat':  // G8
+				if (form['csd.templatecat_rationale'] && form['csd.templatecat_rationale'].value) {
+					currentParams.rationale = form['csd.templatecat_rationale'].value;
 				}
 				break;
 
