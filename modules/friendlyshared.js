@@ -20,7 +20,6 @@ Twinkle.shared = function friendlyshared() {
 		}, 'Shared IP', 'friendly-shared', 'Shared IP tagging');
 	}
 };
-Twinkle.addInitCallback(Twinkle.shared, 'shared');
 
 Twinkle.shared.callback = function friendlysharedCallback() {
 	var Window = new Morebits.simpleWindow(600, 420);
@@ -186,6 +185,8 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.shared.callbacks.main);
 };
+
+Twinkle.addInitCallback(Twinkle.shared, 'shared');
 })(jQuery);
 
 

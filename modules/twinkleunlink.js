@@ -20,7 +20,6 @@ Twinkle.unlink = function twinkleunlink() {
 	}
 	Twinkle.addPortletLink(Twinkle.unlink.callback, 'Unlink', 'tw-unlink', 'Unlink backlinks');
 };
-Twinkle.addInitCallback(Twinkle.unlink, 'unlink');
 
 // the parameter is used when invoking unlink from admin speedy
 Twinkle.unlink.callback = function(presetReason) {
@@ -289,6 +288,8 @@ Twinkle.unlink.callbacks = {
 		pageobj.save(params.unlinker.workerSuccess, params.unlinker.workerFailure);
 	}
 };
+
+Twinkle.addInitCallback(Twinkle.unlink, 'unlink');
 })(jQuery);
 
 

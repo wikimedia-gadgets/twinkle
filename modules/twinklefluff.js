@@ -52,8 +52,6 @@ Twinkle.fluff = function twinklefluff() {
 	}
 };
 
-Twinkle.addInitCallback(Twinkle.fluff, 'fluff');
-
 // A list of usernames, usually only bots, that vandalism revert is jumped
 // over; that is, if vandalism revert was chosen on such username, then its
 // target is on the revision before.  This is for handling quick bots that
@@ -698,6 +696,8 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, userString) {
 
 	return result;
 };
+
+Twinkle.addInitCallback(Twinkle.fluff, 'fluff');
 })(jQuery);
 
 

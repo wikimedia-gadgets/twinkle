@@ -24,7 +24,6 @@ Twinkle.arv = function twinklearv() {
 		Twinkle.arv.callback(username);
 	}, 'ARV', 'tw-arv', title);
 };
-Twinkle.addInitCallback(Twinkle.arv, 'arv');
 
 Twinkle.arv.callback = function (uid) {
 	var Window = new Morebits.simpleWindow(600, 500);
@@ -987,6 +986,8 @@ Twinkle.arv.processAN3 = function(params) {
 		console.log('API failed :(', data); // eslint-disable-line no-console
 	});
 };
+
+Twinkle.addInitCallback(Twinkle.arv, 'arv');
 })(jQuery);
 
 

@@ -1302,7 +1302,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 		}
 	}
 };
-Twinkle.addInitCallback(Twinkle.config.init);
 
 // custom list-related stuff
 
@@ -1711,6 +1710,8 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	noticeclear.style.clear = 'both';
 	Morebits.status.root.appendChild(noticeclear);
 };
+
+Twinkle.addInitCallback(Twinkle.config.init);
 })(jQuery);
 
 
