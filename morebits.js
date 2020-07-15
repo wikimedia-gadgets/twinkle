@@ -3889,8 +3889,9 @@ Morebits.wiki.preview = function(previewbox) {
 	 * to render the specified wikitext.
 	 * @param {string} wikitext - wikitext to render; most things should work, including subst: and ~~~~
 	 * @param {string} [pageTitle] - optional parameter for the page this should be rendered as being on, if omitted it is taken as the current page
+	 * @param {string} [sectionTitle] - if provided, render the text as a new section using this as the title
 	 */
-	this.beginRender = function(wikitext, pageTitle) {
+	this.beginRender = function(wikitext, pageTitle, sectionTitle) {
 		$(previewbox).show();
 
 		var statusspan = document.createElement('span');
@@ -3905,6 +3906,10 @@ Morebits.wiki.preview = function(previewbox) {
 			title: pageTitle || mw.config.get('wgPageName'),
 			disablelimitreport: true
 		};
+		if (sectionTitle) {
+			query.section = 'new';
+			query.sectiontitle = sectionTitle;
+		}
 		var renderApi = new Morebits.wiki.api('loading...', query, fnRenderSuccess, new Morebits.status('Preview'));
 		renderApi.post();
 	};
