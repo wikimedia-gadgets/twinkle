@@ -13,6 +13,7 @@
 	"rules": {
 		"no-console": "error",
 		"no-extra-parens": ["error", "all", { "nestedBinaryExpressions": false }],
+		"no-unreachable-loop": "error",
 		"block-scoped-var": "error",
 		"curly": "error",
 		"default-case": "error",
