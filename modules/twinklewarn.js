@@ -1011,6 +1011,10 @@ Twinkle.warn.messages = {
 			label: 'Posting at the top of talk pages',
 			summary: 'Notice: Posting at the top of talk pages'
 		},
+		'uw-unattribcc': {
+			label: 'Copying from compatibly-licensed sources without attribution',
+			summary: 'Notice: Copying from compatibly-licensed sources without attribution'
+		},
 		'uw-userspace draft finish': {
 			label: 'Stale userspace draft',
 			summary: 'Notice: Stale userspace draft'
