@@ -197,7 +197,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 						type: 'checkbox',
 						name: 'tags',
 						list: subgroup.map(function (item) {
-							return { value: item.tag, label: '{{' + item.tag + '}}: ' + item.description };
+							return { value: item.tag, label: '{{' + item.tag + '}}: ' + item.description, subgroup: item.subgroup };
 						})
 					});
 				});
@@ -234,7 +234,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 	Window.display();
 
 	// for quick filter:
-	$allCheckboxDivs = $(result).find('[name$=Tags]').parent();
+	$allCheckboxDivs = $(result).find('[name$=tags]').parent();
 	$allHeaders = $(result).find('h5');
 	result.quickfilter.focus();  // place cursor in the quick filter field as soon as window is opened
 	result.quickfilter.autocomplete = 'off'; // disable browser suggestions
