@@ -1161,14 +1161,9 @@ Morebits.array = {
 		if (!Array.isArray(arr)) {
 			throw 'A non-array object passed to Morebits.array.uniq';
 		}
-		var result = [];
-		for (var i = 0; i < arr.length; ++i) {
-			var current = arr[i];
-			if (result.indexOf(current) === -1) {
-				result.push(current);
-			}
-		}
-		return result;
+		return arr.filter(function(item, idx) {
+			return arr.indexOf(item) === idx;
+		});
 	},
 
 	/**
@@ -1179,17 +1174,9 @@ Morebits.array = {
 		if (!Array.isArray(arr)) {
 			throw 'A non-array object passed to Morebits.array.dups';
 		}
-		var uniques = [];
-		var result = [];
-		for (var i = 0; i < arr.length; ++i) {
-			var current = arr[i];
-			if (uniques.indexOf(current) === -1) {
-				uniques.push(current);
-			} else {
-				result.push(current);
-			}
-		}
-		return result;
+		return arr.filter(function(item, idx) {
+			return arr.indexOf(item) !== idx;
+		});
 	},
 
 
@@ -1206,14 +1193,10 @@ Morebits.array = {
 		if (typeof size !== 'number' || size <= 0) { // pretty impossible to do anything :)
 			return [ arr ]; // we return an array consisting of this array.
 		}
-		var result = [];
-		var current;
-		for (var i = 0; i < arr.length; ++i) {
-			if (i % size === 0) { // when 'i' is 0, this is always true, so we start by creating one.
-				current = [];
-				result.push(current);
-			}
-			current.push(arr[i]);
+		var numChunks = Math.ceil(arr.length / size);
+		var result = new Array(numChunks);
+		for (var i = 0; i < numChunks; i++) {
+			result[i] = arr.slice(i * size, (i + 1) * size);
 		}
 		return result;
 	}
