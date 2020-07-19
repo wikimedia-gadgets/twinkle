@@ -112,6 +112,28 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		id: 'twinkle-warn-warning-messages'
 	});
 
+
+	var more = form.append({ type: 'field', name: 'reasonGroup', label: 'Warning information' });
+	more.append({ type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' });
+
+	var previewlink = document.createElement('a');
+	$(previewlink).click(function() {
+		Twinkle.warn.callbacks.preview(result);  // |result| is defined below
+	});
+	previewlink.style.cursor = 'pointer';
+	previewlink.textContent = 'Preview';
+	more.append({ type: 'div', id: 'warningpreview', label: [ previewlink ] });
+	more.append({ type: 'div', id: 'twinklewarn-previewbox', style: 'display: none' });
+
+	more.append({ type: 'submit', label: 'Submit' });
+
+	var result = form.render();
+	dialog.setContent(result);
+	dialog.display();
+	result.main_group.root = result;
+	result.previewer = new Morebits.wiki.preview($(result).find('div#twinklewarn-previewbox').last()[0]);
+
+	// Potential notices for staleness and missed reverts
 	var vanrevid = mw.util.getParamValue('vanarticlerevid');
 	if (vanrevid) {
 		var message = '';
@@ -167,25 +189,6 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		}
 	}
 
-	var more = form.append({ type: 'field', name: 'reasonGroup', label: 'Warning information' });
-	more.append({ type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' });
-
-	var previewlink = document.createElement('a');
-	$(previewlink).click(function() {
-		Twinkle.warn.callbacks.preview(result);  // |result| is defined below
-	});
-	previewlink.style.cursor = 'pointer';
-	previewlink.textContent = 'Preview';
-	more.append({ type: 'div', id: 'warningpreview', label: [ previewlink ] });
-	more.append({ type: 'div', id: 'twinklewarn-previewbox', style: 'display: none' });
-
-	more.append({ type: 'submit', label: 'Submit' });
-
-	var result = form.render();
-	dialog.setContent(result);
-	dialog.display();
-	result.main_group.root = result;
-	result.previewer = new Morebits.wiki.preview($(result).find('div#twinklewarn-previewbox').last()[0]);
 
 	// We must init the first choice (General Note);
 	var evt = document.createEvent('Event');
