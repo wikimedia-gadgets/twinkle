@@ -363,7 +363,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						{ label: '2 months', value: '2 months' },
 						{ label: '3 months', value: '3 months' },
 						{ label: '1 year', value: '1 year' },
-						{ label: 'indefinite', value: 'indefinite' },
+						{ label: 'indefinite', value: 'infinity' },
 						{ label: 'Custom...', value: 'custom' }
 					]
 				});
@@ -434,7 +434,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						{ label: '2 months', value: '2 months' },
 						{ label: '3 months', value: '3 months' },
 						{ label: '1 year', value: '1 year' },
-						{ label: 'indefinite', value: 'indefinite' },
+						{ label: 'indefinite', value: 'infinity' },
 						{ label: 'Custom...', value: 'custom' }
 					]
 				});
@@ -494,7 +494,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							{ label: '2 months', value: '2 months' },
 							{ label: '3 months', value: '3 months' },
 							{ label: '1 year', value: '1 year' },
-							{ label: 'indefinite', value: 'indefinite' },
+							{ label: 'indefinite', value: 'infinity' },
 							{ label: 'Custom...', value: 'custom' }
 						]
 					});
@@ -561,7 +561,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						{ label: '2 months', value: '2 months' },
 						{ label: '3 months', value: '3 months' },
 						{ label: '1 year', value: '1 year' },
-						{ label: 'indefinite', selected: true, value: 'indefinite' },
+						{ label: 'indefinite', selected: true, value: 'infinity' },
 						{ label: 'Custom...', value: 'custom' }
 					]
 				});
@@ -624,7 +624,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				label: 'Duration: ',
 				list: [
 					{ label: 'Temporary', value: 'temporary' },
-					{ label: 'Indefinite', value: 'indefinite' },
+					{ label: 'Indefinite', value: 'infinity' },
 					{ label: '', selected: true, value: '' }
 				]
 			});
@@ -690,7 +690,7 @@ Twinkle.protect.formevents = {
 			e.target.form.moveexpiry.value = e.target.form.editexpiry.value;
 		} else if (e.target.form.editlevel.disabled) {
 			e.target.form.movelevel.value = 'sysop';
-			e.target.form.moveexpiry.value = 'indefinite';
+			e.target.form.moveexpiry.value = 'infinity';
 		}
 		e.target.form.movelevel.disabled = !e.target.checked;
 		e.target.form.moveexpiry.disabled = !e.target.checked || (e.target.form.movelevel.value === 'all');
@@ -1095,7 +1095,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 
 			if (/template/.test(form.category.value)) {
 				form.noinclude.checked = true;
-				form.editexpiry.value = form.moveexpiry.value = form.pcexpiry.value = 'indefinite';
+				form.editexpiry.value = form.moveexpiry.value = form.pcexpiry.value = 'infinity';
 			} else if (mw.config.get('wgNamespaceNumber') !== 10) {
 				form.noinclude.checked = false;
 			}
@@ -1494,7 +1494,7 @@ Twinkle.protect.callbacks = {
 			case 'temporary':
 				words = 'Temporary ';
 				break;
-			case 'indefinite':
+			case 'infinity':
 				words = 'Indefinite ';
 				break;
 			default:

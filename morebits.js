@@ -1142,6 +1142,16 @@ Morebits.string = {
 	 */
 	safeReplace: function morebitsStringSafeReplace(string, pattern, replacement) {
 		return string.replace(pattern, replacement.replace(/\$/g, '$$$$'));
+	},
+
+	/**
+	 * Determine if user input expiration will be translated to an
+	 * infinite-length by MW: https://phabricator.wikimedia.org/T68646
+	 * @param {string} expiry
+	 * @returns {boolean}
+	 */
+	isInfinity: function morebitsStringIsInfinity(expiry) {
+		return ['indefinite', 'infinity', 'infinite', 'never'].indexOf(expiry) !== -1;
 	}
 };
 
