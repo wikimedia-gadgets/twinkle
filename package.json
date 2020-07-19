@@ -5,7 +5,8 @@
   "repository": "azatoth/twinkle",
   "scripts": {
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "patchtest": "node patch-test.js"
   },
   "devDependencies": {
     "eslint": "7.4.0",
