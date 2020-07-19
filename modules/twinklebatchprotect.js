@@ -21,7 +21,6 @@ Twinkle.batchprotect = function twinklebatchprotect() {
 		Twinkle.addPortletLink(Twinkle.batchprotect.callback, 'P-batch', 'tw-pbatch', 'Protect pages linked from this page');
 	}
 };
-Twinkle.addInitCallback(Twinkle.batchprotect, 'batchprotect');
 
 Twinkle.batchprotect.unlinkCache = {};
 Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
@@ -441,6 +440,8 @@ Twinkle.batchprotect.callbacks = {
 		page.protect(apiobj.params.batchOperation.workerSuccess, apiobj.params.batchOperation.workerFailure);
 	}
 };
+
+Twinkle.addInitCallback(Twinkle.batchprotect, 'batchprotect');
 })(jQuery);
 
 

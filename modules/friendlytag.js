@@ -32,7 +32,6 @@ Twinkle.tag = function friendlytag() {
 		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Add or remove article maintenance tags');
 	}
 };
-Twinkle.addInitCallback(Twinkle.tag, 'tag');
 
 Twinkle.tag.checkedTags = [];
 
@@ -2016,5 +2015,6 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 };
 
+Twinkle.addInitCallback(Twinkle.tag, 'tag');
 })(jQuery);
 // </nowiki>

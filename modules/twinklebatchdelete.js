@@ -22,7 +22,6 @@ Twinkle.batchdelete = function twinklebatchdelete() {
 		Twinkle.addPortletLink(Twinkle.batchdelete.callback, 'D-batch', 'tw-batch', 'Delete pages found in this category/on this page');
 	}
 };
-Twinkle.addInitCallback(Twinkle.batchdelete, 'batchdelete');
 
 Twinkle.batchdelete.unlinkCache = {};
 
@@ -703,6 +702,8 @@ Twinkle.batchdelete.callbacks = {
 		pageobj.save(params.unlinker.workerSuccess, params.unlinker.workerFailure);
 	}
 };
+
+Twinkle.addInitCallback(Twinkle.batchdelete, 'batchdelete');
 })(jQuery);
 
 

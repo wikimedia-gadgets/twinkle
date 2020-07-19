@@ -24,7 +24,6 @@ Twinkle.welcome = function friendlywelcome() {
 		Twinkle.welcome.normal();
 	}
 };
-Twinkle.addInitCallback(Twinkle.welcome, 'welcome');
 
 Twinkle.welcome.auto = function() {
 	if (mw.util.getParamValue('action') !== 'edit') {
@@ -660,6 +659,8 @@ Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) 
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);
 };
+
+Twinkle.addInitCallback(Twinkle.welcome, 'welcome');
 })(jQuery);
 
 

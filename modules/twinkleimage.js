@@ -17,7 +17,6 @@ Twinkle.image = function twinkleimage() {
 		Twinkle.addPortletLink(Twinkle.image.callback, 'DI', 'tw-di', 'Nominate file for delayed speedy deletion');
 	}
 };
-Twinkle.addInitCallback(Twinkle.image, 'image');
 
 Twinkle.image.callback = function twinkleimageCallback() {
 	var Window = new Morebits.simpleWindow(600, 330);
@@ -330,6 +329,8 @@ Twinkle.image.callbacks = {
 		}
 	}
 };
+
+Twinkle.addInitCallback(Twinkle.image, 'image');
 })(jQuery);
 
 

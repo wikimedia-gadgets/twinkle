@@ -21,7 +21,6 @@ Twinkle.prod = function twinkleprod() {
 
 	Twinkle.addPortletLink(Twinkle.prod.callback, 'PROD', 'tw-prod', 'Propose deletion via WP:PROD');
 };
-Twinkle.addInitCallback(Twinkle.prod, 'prod');
 
 // Used in edit summaries, for comparisons, etc.
 var namespace;
@@ -445,6 +444,8 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	wikipedia_api.params = params;
 	wikipedia_api.post();
 };
+
+Twinkle.addInitCallback(Twinkle.prod, 'prod');
 })(jQuery);
 
 

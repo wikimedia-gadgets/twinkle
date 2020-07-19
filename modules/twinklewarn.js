@@ -45,7 +45,6 @@ Twinkle.warn = function twinklewarn() {
 		}
 	}
 };
-Twinkle.addInitCallback(Twinkle.warn, 'warn');
 
 // Used to close window when switching to ARV in autolevel
 Twinkle.warn.dialog = null;
@@ -1780,6 +1779,8 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	wikipedia_page.setFollowRedirect(true, false);
 	wikipedia_page.load(Twinkle.warn.callbacks.main);
 };
+
+Twinkle.addInitCallback(Twinkle.warn, 'warn');
 })(jQuery);
 
 
