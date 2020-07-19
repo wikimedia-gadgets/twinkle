@@ -63,10 +63,11 @@ my $mw = MediaWiki::API->new({
 $mw->{ua}->agent('Twinkle/sync.pl ('.$mw->{ua}->agent.')');
 $mw->login({lgname => $conf{username}, lgpassword => $conf{password}});
 
+my $diffFunc = $conf{w} || 'diff'; # Only used for the --diff option
+
 ### Main function
 if (@files) {
   my $countDiff = 0;               # Only used for the --dry option
-  my $diffFunc = $conf{w} || 'diff'; # Only used for the --diff option
 
   # loop through each file
   foreach my $file (@files) {
@@ -153,11 +154,19 @@ if ($conf{mode} eq 'deploy') {
     $wikiGadgetDef .= $wg[$_]."\n";
   }
 
-  my $localGadgetDef = read_text('Gadget.md');
+  my $gadgetFile = 'Gadget.md';
+  my $localGadgetDef = read_text($gadgetFile);
   if ($wikiGadgetDef eq $localGadgetDef) {
     print "Gadget up-to-date\n";
   } else {
     print colored ['red'], "MediaWiki:Gadgets-definition needs updating!\n";
+    if ($conf{diff}) {
+      my $name = $gadgetFile.'temp';
+      write_text($name, $wikiGadgetDef);
+      print colored ['magenta'], "Showing diff\n";
+      system "$diffFunc $name $gadgetFile";
+      unlink $name;
+    }
   }
 }
 
