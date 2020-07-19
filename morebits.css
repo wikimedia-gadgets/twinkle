@@ -114,18 +114,18 @@ form.quickform .quickformSubgroup
 	margin-left: 3em;
 }
 
-form.quickform .tooltipButtonContainer
+/* The tooltip button and the content itself */
+form.quickform .morebits-tooltipButton
 {
-	position: relative;
-	width: 100%;
-}
-
-form.quickform .tooltipButton
-{
-	color: blue;
+	color: mediumblue;
 	font-weight: bold;
 	cursor: help;
-	padding: .2em;
+	padding: .3em;
+}
+.morebits-ui-tooltip
+{
+	padding: 4px 6px 4px 6px;
+	font-size: 13px;
 }
 
 
