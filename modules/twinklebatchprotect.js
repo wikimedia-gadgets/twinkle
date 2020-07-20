@@ -260,11 +260,29 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		label: ''  // horizontal rule
 	});
 	form.append({
+		type: 'select',
+		name: 'common',
+		label: 'Common reasons: ',
+		list: [
+			{ label: '', value: '' },
+			{ label: 'Persistent vandalism', value: 'Persistent [[WP:Vandalism|vandalism]]' },
+			{ label: 'Sockpuppetry', value: '[[WP:Sock puppetry|Sockpuppetry]]' },
+			{ label: 'Persistent disruptive editing', value: 'Persistent [[WP:Disruptive editing|disruptive editing]]' },
+			{ label: 'BLP policy violations', value: 'Violations of the [[WP:BLP|Biographies of living persons policy]]' },
+			{ label: 'Arbitration enforcement', value: '[[WP:Arbitration Committee/Procedures#Enforcement|Arbitration enforcement]]' },
+			{ label: 'Content dispute/edit warring', value: '[[WP:PP#Content disputes|Content dispute/edit warring]]' },
+			{ label: 'Page-move vandalism', value: '[[WP:MOVP|Page-move vandalism]]' },
+			{ label: 'Move warring', value: '[[WP:MOVP|Move warring]]' },
+			{ label: 'Highly visible template', value: '[[WP:High-risk templates|Highly visible template]]' },
+			{ label: 'Repeatedly recreated', value: '[[WP:SALT|Repeatedly recreated]]' }
+		]
+	});
+	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason: ',
+		label: 'Additional reason:',
 		size: 60,
-		tooltip: 'For the protection log and page history.'
+		tooltip: 'Added to any common reason selected, or used in place if none were selected. It is helpful to provide a detailed reason in addition to a standard rationale.'
 	});
 
 	var query = {
@@ -374,6 +392,9 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 
 	var input = Morebits.quickForm.getInputData(form);
 
+	if (input.common) {
+		input.reason = input.common + (input.reason ? ': ' + input.reason : '');
+	}
 	if (!input.reason) {
 		alert("You've got to give a reason, you rouge admin!");
 		return;

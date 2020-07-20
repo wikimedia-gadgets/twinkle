@@ -104,10 +104,40 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		]
 	});
 	form.append({
+		type: 'select',
+		name: 'speedy',
+		label: 'Common CSD reasons: ',
+		list: [
+			{ label: '', value: '' },
+			{ label: 'G1: Patent nonsense, meaningless, or incomprehensible', value: '[[WP:CSD#G1|G1]]: [[WP:PN|Patent nonsense]], meaningless, or incomprehensible' },
+			{ label: 'G2: Test page', value: '[[WP:CSD#G2|G2]]: Test page' },
+			{ label: 'G3: Vandalism', value: '[[WP:CSD#G3|G3]]: [[WP:Vandalism|Vandalism]]' },
+			{ label: 'G4: Recreation of a page that was deleted per a deletion discussion', value: '[[WP:CSD#G4|G4]]: Recreation of a page that was [[WP:DEL|deleted]] per a [[WP:XFD|deletion discussion]]' },
+			{ label: 'G5: Creation by a blocked or banned user in violation of block or ban', value: '[[WP:CSD#G5|G5]]: Creation by a [[WP:BLOCK|blocked]] or [[WP:BAN|banned]] user in violation of block or ban' },
+			{ label: 'G6: Housekeeping and routine (non-controversial) cleanup', value: '[[WP:CSD#G6|G6]]: Housekeeping and routine (non-controversial) cleanup' },
+			{ label: 'G7: One author who has requested deletion or blanked the page', value: '[[WP:CSD#G7|G7]]: One author who has requested deletion or blanked the page' },
+			{ label: 'G8: Page dependent on a deleted or nonexistent page', value: '[[WP:CSD#G8|G8]]: Page dependent on a deleted or nonexistent page' },
+			{ label: 'G10: Attack page or negative unsourced [[WP:BLP|BLP]] ', value: '[[WP:CSD#G10|G10]]: [[WP:ATP|Attack page]] or negative unsourced [[WP:BLP|BLP]] ' },
+			{ label: 'G11: Unambiguous advertising or promotion', value: '[[WP:CSD#G11|G11]]: Unambiguous [[WP:NOTADVERTISING|advertising]] or promotion' },
+			{ label: 'G12: Unambiguous copyright infringement', value: '[[WP:CSD#G12|G12]]: Unambiguous [[WP:CV|copyright infringement]]' },
+			{ label: 'G13: Abandoned draft or Articles for Creation submission', value: '[[WP:CSD#G13|G13]]: Abandoned draft or [[WP:AFC|Articles for Creation]] submission - to retrieve it, see [[WP:REFUND/G13]]' },
+			{ label: 'U1: User request to delete page in own userspace', value: '[[WP:CSD#U1|U1]]: User request to delete page in own userspace - to retrieve it, see [[WP:REFUND]]' },
+			{ label: 'U2: Userpage or subpage of a nonexistent user', value: '[[WP:CSD#U2|U2]]: Userpage or subpage of a nonexistent user' },
+			{ label: 'U5: Misuse of Wikipedia as a web host', value: '[[WP:CSD#U5|U5]]: [[WP:NOTWEBHOST|Misuse of Wikipedia as a web host]]' },
+			{ label: 'F2: Corrupt or empty file', value: '[[WP:CSD#F2|F2]]: Corrupt or empty file' },
+			{ label: 'F2: Unneeded file description page for a file on Commons', value: '[[WP:CSD#F2|F2]]: Unneeded file description page for a file on Commons' },
+			{ label: 'C1: Empty category', value: '[[WP:CSD#C1|C1]]: Empty category' },
+			{ label: 'R3: Recently created, implausible redirect', value: '[[WP:CSD#R3|R3]]: Recently created, implausible [[WP:R|redirect]]' },
+			{ label: 'T3: Unused, redundant template', value: '[[WP:CSD#T3|T3]]: Unused, redundant template' }
+		]
+
+	});
+	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason: ',
-		size: 60
+		label: 'Additional Reason:',
+		size: 60,
+		tooltip: 'Added to any common reason selected, or used in place if none were selected. It is helpful to provide a detailed reason in addition to a standard rationale.'
 	});
 
 	var query = {
@@ -435,6 +465,9 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 
 	var input = Morebits.quickForm.getInputData(form);
 
+	if (input.speedy) {
+		input.reason = input.speedy + (input.reason ? ': ' + input.reason : '');
+	}
 	if (!input.reason) {
 		alert('You need to give a reason, you cabal crony!');
 		return;
