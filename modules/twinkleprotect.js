@@ -354,26 +354,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							Twinkle.protect.doCustomExpiry(e.target);
 						}
 					},
-					// default expiry selection is conditionally set in Twinkle.protect.callback.changePreset
-					list: [
-						{ label: '1 hour', value: '1 hour' },
-						{ label: '2 hours', value: '2 hours' },
-						{ label: '3 hours', value: '3 hours' },
-						{ label: '6 hours', value: '6 hours' },
-						{ label: '12 hours', value: '12 hours' },
-						{ label: '1 day', value: '1 day' },
-						{ label: '2 days', value: '2 days' },
-						{ label: '3 days', value: '3 days' },
-						{ label: '4 days', value: '4 days' },
-						{ label: '1 week', value: '1 week' },
-						{ label: '2 weeks', value: '2 weeks' },
-						{ label: '1 month', value: '1 month' },
-						{ label: '2 months', value: '2 months' },
-						{ label: '3 months', value: '3 months' },
-						{ label: '1 year', value: '1 year' },
-						{ label: 'indefinite', value: 'infinity' },
-						{ label: 'Custom...', value: 'custom' }
-					]
+					// default expiry selection (2 days) is conditionally set in Twinkle.protect.callback.changePreset
+					list: Twinkle.protect.protectionLengths
 				});
 				field2.append({
 					type: 'checkbox',
@@ -425,26 +407,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							Twinkle.protect.doCustomExpiry(e.target);
 						}
 					},
-					// default expiry selection is conditionally set in Twinkle.protect.callback.changePreset
-					list: [
-						{ label: '1 hour', value: '1 hour' },
-						{ label: '2 hours', value: '2 hours' },
-						{ label: '3 hours', value: '3 hours' },
-						{ label: '6 hours', value: '6 hours' },
-						{ label: '12 hours', value: '12 hours' },
-						{ label: '1 day', value: '1 day' },
-						{ label: '2 days', value: '2 days' },
-						{ label: '3 days', value: '3 days' },
-						{ label: '4 days', value: '4 days' },
-						{ label: '1 week', value: '1 week' },
-						{ label: '2 weeks', value: '2 weeks' },
-						{ label: '1 month', value: '1 month' },
-						{ label: '2 months', value: '2 months' },
-						{ label: '3 months', value: '3 months' },
-						{ label: '1 year', value: '1 year' },
-						{ label: 'indefinite', value: 'infinity' },
-						{ label: 'Custom...', value: 'custom' }
-					]
+					// default expiry selection (2 days) is conditionally set in Twinkle.protect.callback.changePreset
+					list: Twinkle.protect.protectionLengths
 				});
 				if (hasFlaggedRevs) {
 					field2.append({
@@ -485,25 +449,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 								Twinkle.protect.doCustomExpiry(e.target);
 							}
 						},
-						list: [
-							{ label: '1 hour', value: '1 hour' },
-							{ label: '2 hours', value: '2 hours' },
-							{ label: '3 hours', value: '3 hours' },
-							{ label: '6 hours', value: '6 hours' },
-							{ label: '12 hours', value: '12 hours' },
-							{ label: '1 day', value: '1 day' },
-							{ label: '2 days', value: '2 days' },
-							{ label: '3 days', value: '3 days' },
-							{ label: '4 days', value: '4 days' },
-							{ label: '1 week', value: '1 week' },
-							{ label: '2 weeks', value: '2 weeks' },
-							{ label: '1 month', selected: true, value: '1 month' },
-							{ label: '2 months', value: '2 months' },
-							{ label: '3 months', value: '3 months' },
-							{ label: '1 year', value: '1 year' },
-							{ label: 'indefinite', value: 'infinity' },
-							{ label: 'Custom...', value: 'custom' }
-						]
+						// default expiry selection (1 month) is conditionally set in Twinkle.protect.callback.changePreset
+						list: Twinkle.protect.protectionLengths
 					});
 				}
 			} else {  // for non-existing pages
@@ -552,25 +499,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							Twinkle.protect.doCustomExpiry(e.target);
 						}
 					},
-					list: [
-						{ label: '1 hour', value: '1 hour' },
-						{ label: '2 hours', value: '2 hours' },
-						{ label: '3 hours', value: '3 hours' },
-						{ label: '6 hours', value: '6 hours' },
-						{ label: '12 hours', value: '12 hours' },
-						{ label: '1 day', value: '1 day' },
-						{ label: '2 days', value: '2 days' },
-						{ label: '3 days', value: '3 days' },
-						{ label: '4 days', value: '4 days' },
-						{ label: '1 week', value: '1 week' },
-						{ label: '2 weeks', value: '2 weeks' },
-						{ label: '1 month', value: '1 month' },
-						{ label: '2 months', value: '2 months' },
-						{ label: '3 months', value: '3 months' },
-						{ label: '1 year', value: '1 year' },
-						{ label: 'indefinite', selected: true, value: 'infinity' },
-						{ label: 'Custom...', value: 'custom' }
-					]
+					// default expiry selection (indefinite) is conditionally set in Twinkle.protect.callback.changePreset
+					list: Twinkle.protect.protectionLengths
 				});
 			}
 			field2.append({
@@ -681,6 +611,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 	Twinkle.protect.callback.showLogAndCurrentProtectInfo();
 };
 
+// NOTE: This function is used by batchprotect as well
 Twinkle.protect.formevents = {
 	editmodify: function twinkleprotectFormEditmodifyEvent(e) {
 		e.target.form.editlevel.disabled = !e.target.checked;
@@ -734,6 +665,28 @@ Twinkle.protect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
 		target.selectedIndex = 0;
 	}
 };
+
+// default expiry selection is conditionally set in Twinkle.protect.callback.changePreset
+// NOTE: This list is used by batchprotect as well
+Twinkle.protect.protectionLengths = [
+	{ label: '1 hour', value: '1 hour' },
+	{ label: '2 hours', value: '2 hours' },
+	{ label: '3 hours', value: '3 hours' },
+	{ label: '6 hours', value: '6 hours' },
+	{ label: '12 hours', value: '12 hours' },
+	{ label: '1 day', value: '1 day' },
+	{ label: '2 days', value: '2 days' },
+	{ label: '3 days', value: '3 days' },
+	{ label: '4 days', value: '4 days' },
+	{ label: '1 week', value: '1 week' },
+	{ label: '2 weeks', value: '2 weeks' },
+	{ label: '1 month', value: '1 month' },
+	{ label: '2 months', value: '2 months' },
+	{ label: '3 months', value: '3 months' },
+	{ label: '1 year', value: '1 year' },
+	{ label: 'indefinite', value: 'infinity' },
+	{ label: 'Custom...', value: 'custom' }
+];
 
 Twinkle.protect.protectionTypes = [
 	{ label: 'Unprotection', value: 'unprotect' },
@@ -1055,22 +1008,22 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				Twinkle.protect.formevents.editmodify({ target: form.editmodify });
 				form.editlevel.value = item.edit;
 				Twinkle.protect.formevents.editlevel({ target: form.editlevel });
-				form.editexpiry.value = '2 days';
 			} else {
 				form.editmodify.checked = false;
 				Twinkle.protect.formevents.editmodify({ target: form.editmodify });
 			}
+			form.editexpiry.value = '2 days';
 
 			if (item.move) {
 				form.movemodify.checked = true;
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 				form.movelevel.value = item.move;
 				Twinkle.protect.formevents.movelevel({ target: form.movelevel });
-				form.moveexpiry.value = '2 days';
 			} else {
 				form.movemodify.checked = false;
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 			}
+			form.moveexpiry.value = '2 days';
 
 			// Default to indef for highly-visible template
 			if (form.category.value === 'pp-template') {
@@ -1088,12 +1041,14 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 					form.pcmodify.checked = false;
 					Twinkle.protect.formevents.pcmodify({ target: form.pcmodify });
 				}
+				form.pcexpiry.value = '1 month';
 			}
 		} else {
 			if (item.create) {
 				form.createlevel.value = item.create;
 				Twinkle.protect.formevents.createlevel({ target: form.createlevel });
 			}
+			form.createexpiry.value = 'infinity';
 		}
 
 		var reasonField = actiontype === 'protect' ? form.protectReason : form.reason;

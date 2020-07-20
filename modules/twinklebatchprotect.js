@@ -85,25 +85,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				Twinkle.protect.doCustomExpiry(e.target);
 			}
 		},
-		list: [
-			{ label: '1 hour', value: '1 hour' },
-			{ label: '2 hours', value: '2 hours' },
-			{ label: '3 hours', value: '3 hours' },
-			{ label: '6 hours', value: '6 hours' },
-			{ label: '12 hours', value: '12 hours' },
-			{ label: '1 day', value: '1 day' },
-			{ label: '2 days', selected: true, value: '2 days' },
-			{ label: '3 days', value: '3 days' },
-			{ label: '4 days', value: '4 days' },
-			{ label: '1 week', value: '1 week' },
-			{ label: '2 weeks', value: '2 weeks' },
-			{ label: '1 month', value: '1 month' },
-			{ label: '2 months', value: '2 months' },
-			{ label: '3 months', value: '3 months' },
-			{ label: '1 year', value: '1 year' },
-			{ label: 'indefinite', value: 'infinity' },
-			{ label: 'Custom...', value: 'custom' }
-		]
+		list: Twinkle.protect.protectionLengths // Default (2 days) set after render
 	});
 
 	form.append({
@@ -155,25 +137,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				Twinkle.protect.doCustomExpiry(e.target);
 			}
 		},
-		list: [
-			{ label: '1 hour', value: '1 hour' },
-			{ label: '2 hours', value: '2 hours' },
-			{ label: '3 hours', value: '3 hours' },
-			{ label: '6 hours', value: '6 hours' },
-			{ label: '12 hours', value: '12 hours' },
-			{ label: '1 day', value: '1 day' },
-			{ label: '2 days', selected: true, value: '2 days' },
-			{ label: '3 days', value: '3 days' },
-			{ label: '4 days', value: '4 days' },
-			{ label: '1 week', value: '1 week' },
-			{ label: '2 weeks', value: '2 weeks' },
-			{ label: '1 month', value: '1 month' },
-			{ label: '2 months', value: '2 months' },
-			{ label: '3 months', value: '3 months' },
-			{ label: '1 year', value: '1 year' },
-			{ label: 'indefinite', value: 'infinity' },
-			{ label: 'Custom...', value: 'custom' }
-		]
+		list: Twinkle.protect.protectionLengths // Default (2 days) set after render
 	});
 
 	form.append({
@@ -234,25 +198,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				Twinkle.protect.doCustomExpiry(e.target);
 			}
 		},
-		list: [
-			{ label: '1 hour', value: '1 hour' },
-			{ label: '2 hours', value: '2 hours' },
-			{ label: '3 hours', value: '3 hours' },
-			{ label: '6 hours', value: '6 hours' },
-			{ label: '12 hours', value: '12 hours' },
-			{ label: '1 day', value: '1 day' },
-			{ label: '2 days', value: '2 days' },
-			{ label: '3 days', value: '3 days' },
-			{ label: '4 days', value: '4 days' },
-			{ label: '1 week', value: '1 week' },
-			{ label: '2 weeks', value: '2 weeks' },
-			{ label: '1 month', value: '1 month' },
-			{ label: '2 months', value: '2 months' },
-			{ label: '3 months', value: '3 months' },
-			{ label: '1 year', value: '1 year' },
-			{ label: 'indefinite', selected: true, value: 'infinity' },
-			{ label: 'Custom...', value: 'custom' }
-		]
+		list: Twinkle.protect.protectionLengths // Default (indefinite) set after render
 	});
 
 	form.append({
@@ -352,6 +298,12 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 
 		var result = form.render();
 		Window.setContent(result);
+
+		// Set defaults
+		form.editexpiry.value = '2 days';
+		form.moveexpiry.value = '2 days';
+		form.createexpiry.value = 'indefinite';
+
 
 	}, statelem);
 
