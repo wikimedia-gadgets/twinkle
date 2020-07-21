@@ -4007,13 +4007,13 @@ Morebits.wikitext.page.prototype = {
 	 * @returns {Morebits.wikitext.page}
 	 */
 	insertAfterTemplates: function(tag, regex, flags, preRegex) {
-		if (!tag) {
+		if (typeof tag === 'undefined') {
 			throw new Error('No tag provided');
 		}
 
 		// .length is only a property of strings and arrays so we
 		// shouldn't need to check type
-		if (!regex || !regex.length) {
+		if (typeof regex === 'undefined' || !regex.length) {
 			throw new Error('No regex provided');
 		} else if (Array.isArray(regex)) {
 			regex = regex.join('|');
