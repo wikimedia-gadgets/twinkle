@@ -68,6 +68,7 @@ When running the program, you can enter your credentials on the command line usi
 	mode     = deploy|push|pull
     lang     = en
     family   = wikipedia
+    url      =
     base     = User:AzaToth/
 
 `username`, `password`, and `mode` (one of `deploy`, `push`, or `pull`) are required, either through the command line or configuration file; lang and family default to `en.wikipedia`. Note that your working directory **must** be clean; if not, either `stash` or `commit` your changes. The script automatically handles the directory (e.g. `modules/`) from the file path when downloading/uploading.

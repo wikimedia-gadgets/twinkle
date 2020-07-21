@@ -23,6 +23,7 @@ my %conf = (
             mode => q{},
             lang => 'en',
             family => 'wikipedia',
+            url => q{},
             base => 'User:AzaToth/'
            );
 
@@ -39,8 +40,8 @@ foreach my $dot (@dotLocales) {
   }
 }
 
-GetOptions (\%conf, 'username|s=s', 'password|p=s', 'lang|l=s', 'family|f=s', 'base|b=s',
-            'all|a', 'mode=s', 'diff|d', 'w=s', 'dry|r', 'help|h' => \&usage);
+GetOptions (\%conf, 'username|s=s', 'password|p=s', 'lang|l=s', 'family|f=s', 'url|u=s',
+            'base|b=s','all|a', 'mode=s', 'diff|d', 'w=s', 'dry|r', 'help|h' => \&usage);
 
 # Ensure we've got a clean branch
 my $repo = Git::Repository->new();
@@ -54,9 +55,11 @@ if (scalar @status) {
 # Checks for required parameters, returns list of files (@ARGV or --all)
 my @files = forReal();
 
+# Set base URL for the project, used for API, etc.
+my $url = $conf{url} || "https://$conf{lang}.$conf{family}.org";
 # Open API and log in before anything else
 my $mw = MediaWiki::API->new({
-			      api_url => "https://$conf{lang}.$conf{family}.org/w/api.php",
+			      api_url => "$url/w/api.php",
 			      max_lag => 1000000, # not a botty script, thus smash it!
 			      on_error => \&dieNice
 			     });
@@ -177,6 +180,7 @@ if ($conf{mode} eq 'deploy') {
 # dependency
 sub forReal {
   my @meaningful = qw (mode lang family);
+  push @meaningful, 'url' if $conf{url};
   push @meaningful, 'base' if $conf{mode} ne 'deploy';
   push @meaningful, 'username';
   print "Here are the current parameters specified:\n\n";
@@ -250,7 +254,7 @@ sub forReal {
     print colored ['bright_white'], $conf{base};
   }
   print ' at ';
-  print colored ['green'], "$conf{lang}.$conf{family}.org\n";
+  print colored ['green'], "$url\n";
 
   while (42) {
     print "Enter (y)es to proceed or (n)o to cancel:\n";
@@ -384,7 +388,7 @@ sub editPage {
 # Final line must be unindented?
 sub usage {
   print <<"USAGE";
-Usage: $PROGRAM_NAME --mode=deploy|pull|push [--diff -w] [--dry] [-u username] [-p password] [-l language] [-f family] [-b base] [--all]
+Usage: $PROGRAM_NAME --mode=deploy|pull|push [--diff -w] [--dry] [-u username] [-p password] [-l language] [-f family] [-u url] [-b base] [--all]
 
     --mode What action to perform, one of deploy, pull, or push. Required.
         deploy: Push changes live to the gadget
@@ -396,6 +400,9 @@ Usage: $PROGRAM_NAME --mode=deploy|pull|push [--diff -w] [--dry] [-u username] [
 
     --lang, -l Target language, default 'en'
     --family, -f Target family, default 'wikipedia'
+
+    --url, -u Provide the full URL, replacing above options (https://{lang}.{family}.org).
+
     --base, -b Base page prefix where on-wiki files exist, default 'User:AzaToth/'
 
     --all, -a Pass all available files, rather than just those on the commandline
