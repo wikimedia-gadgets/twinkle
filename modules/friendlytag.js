@@ -552,11 +552,10 @@ Twinkle.tag.updateSortOrder = function(e) {
 		var checkboxes = [];
 		var unCheckedTags = e.target.form.getUnchecked('existingTags');
 		Twinkle.tag.alreadyPresentTags.forEach(function(tag) {
-			var description = Twinkle.tag.article.flatObject[tag].description;
 			var checkbox =
 				{
 					value: tag,
-					label: '{{' + tag + '}}' + (description ? ': ' + description : ''),
+					label: '{{' + tag + '}}' + (Twinkle.tag.article.flatObject[tag] ? ': ' + Twinkle.tag.article.flatObject[tag].description : ''),
 					checked: unCheckedTags.indexOf(tag) === -1,
 					style: 'font-style: italic'
 				};
