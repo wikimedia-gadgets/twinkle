@@ -280,17 +280,7 @@ Twinkle.image.callbacks = {
 		pageobj.setPageText(tag + text);
 		pageobj.setEditSummary('This file is up for deletion, per [[WP:CSD#' + params.normalized + '|CSD ' + params.normalized + ']] (' + params.type + ').');
 		pageobj.setChangeTags(Twinkle.changeTags);
-		switch (Twinkle.getPref('deliWatchPage')) {
-			case 'yes':
-				pageobj.setWatchlist(true);
-				break;
-			case 'no':
-				pageobj.setWatchlistFromPreferences(false);
-				break;
-			default:
-				pageobj.setWatchlistFromPreferences(true);
-				break;
-		}
+		pageobj.setWatchlist(Twinkle.getPref('deliWatchPage'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 	},
@@ -312,17 +302,7 @@ Twinkle.image.callbacks = {
 			usertalkpage.setEditSummary('Notification: tagging for deletion of [[:' + Morebits.pageNameNorm + ']].');
 			usertalkpage.setChangeTags(Twinkle.changeTags);
 			usertalkpage.setCreateOption('recreate');
-			switch (Twinkle.getPref('deliWatchUser')) {
-				case 'yes':
-					usertalkpage.setWatchlist(true);
-					break;
-				case 'no':
-					usertalkpage.setWatchlistFromPreferences(false);
-					break;
-				default:
-					usertalkpage.setWatchlistFromPreferences(true);
-					break;
-			}
+			usertalkpage.setWatchlist(Twinkle.getPref('deliWatchUser'));
 			usertalkpage.setFollowRedirect(true, false);
 			usertalkpage.append();
 		}

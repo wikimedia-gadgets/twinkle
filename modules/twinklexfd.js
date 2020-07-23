@@ -700,19 +700,6 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 	form.notifycreator.checked = !form.notifycreator.disabled;
 };
 
-Twinkle.xfd.setWatchPref = function twinklexfdsetWatchPref(pageobj, pref) {
-	switch (pref) {
-		case 'yes':
-			pageobj.setWatchlist(true);
-			break;
-		case 'no':
-			pageobj.setWatchlistFromPreferences(false);
-			break;
-		default:
-			pageobj.setWatchlistFromPreferences(true);
-			break;
-	}
-};
 
 Twinkle.xfd.callbacks = {
 	// Requires having the tag text (params.tagText) set ahead of time
@@ -727,7 +714,7 @@ Twinkle.xfd.callbacks = {
 		talk_page.setNewSectionTitle('Edit request to complete ' + utils.toTLACase(params.venue) + ' nomination');
 		talk_page.setNewSectionText(editRequest);
 		talk_page.setCreateOption('recreate');
-		Twinkle.xfd.setWatchPref(talk_page, Twinkle.getPref('xfdWatchPage'));
+		talk_page.setWatchlist(Twinkle.getPref('xfdWatchPage'));
 		talk_page.setFollowRedirect(true);  // should never be needed, but if the article is moved, we would want to follow the redirect
 		talk_page.setChangeTags(Twinkle.changeTags);
 		talk_page.setCallbackParameters(params);
@@ -910,9 +897,9 @@ Twinkle.xfd.callbacks = {
 		usertalkpage.setCreateOption('recreate');
 		// Different pref for RfD target notifications
 		if (params.venue === 'rfd' && targetNS !== 3) {
-			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchRelated'));
+			usertalkpage.setWatchlist(Twinkle.getPref('xfdWatchRelated'));
 		} else {
-			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
+			usertalkpage.setWatchlist(Twinkle.getPref('xfdWatchUser'));
 		}
 		usertalkpage.setFollowRedirect(true, false);
 
@@ -1149,7 +1136,7 @@ Twinkle.xfd.callbacks = {
 
 				pageobj.setPageText(text);
 				pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
-				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
 				pageobj.setCreateOption('nocreate');
 				pageobj.save();
 			} else {
@@ -1162,7 +1149,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext('afd', params));
 			pageobj.setEditSummary('Creating deletion discussion page for [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('createonly');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -1206,7 +1193,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setPageText(text);
 			pageobj.setEditSummary('Adding [[:' + params.discussionpage + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchList'));
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
@@ -1323,7 +1310,7 @@ Twinkle.xfd.callbacks = {
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
 				pageobj.setChangeTags(Twinkle.changeTags);
-				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
 				if (params.scribunto) {
 					pageobj.setCreateOption('recreate'); // Module /doc might not exist
 				}
@@ -1345,7 +1332,7 @@ Twinkle.xfd.callbacks = {
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Listed for merging with [[:' + params.otherTemplateName + ']]; see [[:' + params.discussionpage + ']].');
 				pageobj.setChangeTags(Twinkle.changeTags);
-				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
 				if (params.scribunto) {
 					pageobj.setCreateOption('recreate'); // Module /doc might not exist
 				}
@@ -1377,7 +1364,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setPageText(text);
 			pageobj.setEditSummary('Adding ' + (params.xfdcat === 'tfd' ? 'deletion nomination' : 'merge listing') + ' of [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -1469,7 +1456,7 @@ Twinkle.xfd.callbacks = {
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
 				pageobj.setChangeTags(Twinkle.changeTags);
-				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
 				pageobj.setCreateOption('nocreate');
 				pageobj.save();
 			} else {
@@ -1482,7 +1469,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext('mfd', params));
 			pageobj.setEditSummary('Creating deletion discussion page for [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('createonly');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -1509,7 +1496,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setPageText(text);
 			pageobj.setEditSummary('Adding [[:' + params.discussionpage + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchList'));
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
@@ -1555,7 +1542,7 @@ Twinkle.xfd.callbacks = {
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
 				pageobj.setChangeTags(Twinkle.changeTags);
-				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
 				pageobj.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
 				pageobj.save();
 			} else {
@@ -1603,7 +1590,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setPageText(text + '\n\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('ffd', params));
 			pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -1680,7 +1667,7 @@ Twinkle.xfd.callbacks = {
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary(editsummary);
 				pageobj.setChangeTags(Twinkle.changeTags);
-				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
 				pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
 				pageobj.save();
 			} else {
@@ -1710,7 +1697,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setPageText(text);
 			pageobj.setEditSummary('Adding ' + params.action + ' nomination of [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -1729,7 +1716,7 @@ Twinkle.xfd.callbacks = {
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Listed for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]].');
 				pageobj.setChangeTags(Twinkle.changeTags);
-				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
 				pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
 				pageobj.save(function() {
 					// No user notification for CfDS, so just add this nomination to the user's userspace log
@@ -1755,7 +1742,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setPageText(text);
 			pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -1850,7 +1837,7 @@ Twinkle.xfd.callbacks = {
 				pageobj.setPageText(params.tagText + text + '\n}}');
 				pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
 				pageobj.setChangeTags(Twinkle.changeTags);
-				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
 				pageobj.setCreateOption('nocreate');
 				pageobj.save();
 			} else {
@@ -1879,7 +1866,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setPageText(text);
 			pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
@@ -1933,7 +1920,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setEditSummary('Proposing move' + (params.newname ? ' to [[:' + params.newname + ']]' : ''));
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setCreateOption('recreate'); // since the talk page need not exist
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.append(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 				// add this nomination to the user's userspace log
