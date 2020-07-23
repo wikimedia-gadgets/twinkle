@@ -735,7 +735,7 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 Morebits.quickForm.getInputData = function(form) {
 	var result = {};
 
-	for (var i in form.elements) { // eslint-disable-line guard-for-in
+	for (var i = 0; i < form.elements.length; i++) {
 		var field = form.elements[i];
 		if (field.disabled || !field.name || !field.type ||
 			field.type === 'submit' || field.type === 'button') {
