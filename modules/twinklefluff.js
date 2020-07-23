@@ -438,9 +438,24 @@ Twinkle.fluff.callbacks = {
 			'undoafter': revertToRevID,
 			'basetimestamp': touched,
 			'starttimestamp': loadtimestamp,
-			'watchlist': Twinkle.getPref('watchRevertedPages').indexOf('torev') !== -1 ? 'watch' : undefined,
 			'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf('torev') !== -1 ? true : undefined
 		};
+		// Handle watching, possible expiry
+		if (Twinkle.getPref('watchRevertedPages').indexOf('torev') !== -1) {
+			var watchOrExpiry = Twinkle.getPref('watchRevertedExpiry');
+
+			if (!watchOrExpiry || watchOrExpiry === 'no') {
+				query.watchlist = 'nochange';
+			} else if (watchOrExpiry === 'default' || watchOrExpiry === 'preferences') {
+				query.watchlist = 'preferences';
+			} else {
+				query.watchlist = 'watch';
+				// number allowed but not used in Twinkle.config.watchlistEnums
+				if (typeof watchOrExpiry === 'string' && watchOrExpiry !== 'yes') {
+					query.watchlistexpiry = watchOrExpiry;
+				}
+			}
+		}
 
 		Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 		Morebits.wiki.actionCompleted.notice = 'Reversion completed';
@@ -653,9 +668,24 @@ Twinkle.fluff.callbacks = {
 			'undoafter': params.goodid,
 			'basetimestamp': touched,
 			'starttimestamp': loadtimestamp,
-			'watchlist': Twinkle.getPref('watchRevertedPages').indexOf(params.type) !== -1 ? 'watch' : undefined,
 			'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf(params.type) !== -1 ? true : undefined
 		};
+		// Handle watching, possible expiry
+		if (Twinkle.getPref('watchRevertedPages').indexOf(params.type) !== -1) {
+			var watchOrExpiry = Twinkle.getPref('watchRevertedExpiry');
+
+			if (!watchOrExpiry || watchOrExpiry === 'no') {
+				query.watchlist = 'nochange';
+			} else if (watchOrExpiry === 'default' || watchOrExpiry === 'preferences') {
+				query.watchlist = 'preferences';
+			} else {
+				query.watchlist = 'watch';
+				// number allowed but not used in Twinkle.config.watchlistEnums
+				if (typeof watchOrExpiry === 'string' && watchOrExpiry !== 'yes') {
+					query.watchlistexpiry = watchOrExpiry;
+				}
+			}
+		}
 
 		if (!Twinkle.fluff.rollbackInPlace) {
 			Morebits.wiki.actionCompleted.redirect = params.pagename;

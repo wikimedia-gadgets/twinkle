@@ -2010,7 +2010,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 	var watchPage, promptForSummary;
 	normalizeds.forEach(function(norm) {
 		if (Twinkle.getPref('watchSpeedyPages').indexOf(norm) !== -1) {
-			watchPage = true;
+			watchPage = Twinkle.getPref('watchSpeedyExpiry');
 		}
 		if (Twinkle.getPref('promptForSpeedyDeletionSummary').indexOf(norm) !== -1) {
 			promptForSummary = true;
@@ -2068,9 +2068,8 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	});
 
 	// analyse each criterion to determine whether to watch the page/notify the creator
-
 	var watchPage = normalizeds.some(function(norm) {
-		return Twinkle.getPref('watchSpeedyPages').indexOf(norm) !== -1;
+		return Twinkle.getPref('watchSpeedyPages').indexOf(norm) !== -1 && Twinkle.getPref('watchSpeedyExpiry');
 	});
 	var notifyuser = form.notify.checked && normalizeds.some(function(norm, index) {
 		return Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1 &&

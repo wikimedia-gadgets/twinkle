@@ -1219,12 +1219,25 @@ Twinkle.xfd.callbacks = {
 			// Add log/discussion page params to the already-loaded page object
 			pageobj.setCallbackParameters(params);
 
-			// Base query for adding modules to watchlist when tagging /doc subpage
-			var watch_query = {
-				action: 'watch',
-				titles: [ mw.config.get('wgPageName') ],
-				token: mw.user.tokens.get('watchToken')
-			};
+			// Defined here rather than below to reduce duplication
+			var watchModule, watch_query;
+			if (params.scribunto) {
+				var watchPref = Twinkle.getPref('xfdWatchPage');
+				// action=watch has no way to rely on user
+				// preferences (T262912), so we do it manually.
+				// The watchdefault pref appears to reliably return '1' (string),
+				// but that's not consistent among prefs so might as well be "correct"
+				watchModule = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
+				watch_query = {
+					action: 'watch',
+					titles: [ mw.config.get('wgPageName') ],
+					token: mw.user.tokens.get('watchToken')
+				};
+				// Expiry
+				if (watchModule && watchPref !== 'default' && watchPref !== 'yes') {
+					watch_query.watchlistexpiry = watchPref;
+				}
+			}
 
 			// Tagging template(s)/module(s)
 			if (params.xfdcat === 'tfm') { // Merge
@@ -1233,7 +1246,7 @@ Twinkle.xfd.callbacks = {
 					wikipedia_otherpage = new Morebits.wiki.page(params.otherTemplateName + '/doc', 'Tagging other module documentation with merge tag');
 
 					// Watch tagged module pages as well
-					if (Twinkle.getPref('xfdWatchPage') !== 'no') {
+					if (watchModule) {
 						watch_query.titles.push(params.otherTemplateName);
 						new Morebits.wiki.api('Adding Modules to watchlist', watch_query).post();
 					}
@@ -1252,7 +1265,9 @@ Twinkle.xfd.callbacks = {
 			} else { // delete
 				if (params.scribunto && Twinkle.getPref('xfdWatchPage') !== 'no') {
 					// Watch tagged module page as well
-					new Morebits.wiki.api('Adding Module to watchlist', watch_query).post();
+					if (watchModule) {
+						new Morebits.wiki.api('Adding Module to watchlist', watch_query).post();
+					}
 				}
 				Twinkle.xfd.callbacks.tfd.taggingTemplate(pageobj);
 			}
