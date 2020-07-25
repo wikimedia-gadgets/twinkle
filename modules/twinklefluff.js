@@ -230,7 +230,15 @@ Twinkle.fluff.addLinks = {
 				var first = histList.shift();
 				var vandal = $(first).find('.mw-userlink:not(.history-deleted)').text();
 
-				first.appendChild(Twinkle.fluff.linkBuilder.rollbackLinks(vandal, true));
+				// Check for first username different than the top user,
+				// only apply rollback links if/when found
+				// for faster than every
+				for (var i = 0; i < histList.length; i++) {
+					if ($(histList[i]).find('.mw-userlink').text() !== vandal) {
+						first.appendChild(Twinkle.fluff.linkBuilder.rollbackLinks(vandal, true));
+						break;
+					}
+				}
 			}
 
 			// oldid
