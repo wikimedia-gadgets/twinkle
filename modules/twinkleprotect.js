@@ -1116,6 +1116,14 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	var form = e.target;
 	var input = Morebits.quickForm.getInputData(form);
 
+	// Define valid expirys to allow unprotection to proceed
+	// Any valid value should work, not just infinity
+	['edit', 'move', 'create', 'pc'].forEach(function(type) {
+		if (input[type + 'level'] && input[type + 'expiry'] === undefined) {
+			input[type + 'expiry'] = 'infinity';
+		}
+	});
+
 	var tagparams;
 	if (input.actiontype === 'tag' || (input.actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto')) {
 		tagparams = {
