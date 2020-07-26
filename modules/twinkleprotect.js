@@ -90,13 +90,30 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	Twinkle.protect.fetchProtectionLevel();
 };
 
+
+// A list of bots who may be the protecting sysop, for whom we shouldn't
+// remind the user contact before requesting unprotection (evaluate)
+Twinkle.protect.trustedBots = ['MusikBot II', 'TFA Protector Bot'];
+
+// Customizable namespace and FlaggedRevs settings
+// In theory it'd be nice to have restrictionlevels defined here,
+// but those are only available via a siteinfo query
+
+// mw.loader.getState('ext.flaggedRevs.review') returns null if the
+// FlaggedRevs extension is not registered.  Previously, this was done with
+// wgFlaggedRevsParams, but after 1.34-wmf4 it is no longer exported if empty
+// (https://gerrit.wikimedia.org/r/c/mediawiki/extensions/FlaggedRevs/+/508427)
+var hasFlaggedRevs = mw.loader.getState('ext.flaggedRevs.review') &&
+// FlaggedRevs only valid in some namespaces, hardcoded until [[phab:T218479]]
+(mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 4);
+// Limit template editor; a Twinkle restriction, not a site setting
+var isTemplate = mw.config.get('wgNamespaceNumber') === 10 || mw.config.get('wgNamespaceNumber') === 828;
+
+
 // Contains the current protection level in an object
 // Once filled, it will look something like:
 // { edit: { level: "sysop", expiry: <some date>, cascade: true }, ... }
 Twinkle.protect.currentProtectionLevels = {};
-// A list of bots who may be the protecting sysop, for whom we shouldn't
-// remind the user contact before requesting unprotection (evaluate)
-Twinkle.protect.trustedBots = ['MusikBot II', 'TFA Protector Bot'];
 
 // returns a jQuery Deferred object, usage:
 //   Twinkle.protect.fetchProtectingAdmin(apiObject, pageName, protect/stable).done(function(admin_username) { ...code... });
@@ -124,10 +141,6 @@ Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdm
 	});
 };
 
-// mw.loader.getState('ext.flaggedRevs.review') returns null if the
-// FlaggedRevs extension is not registered.  Previously, this was done with
-// wgFlaggedRevsParams, but after 1.34-wmf4 it is no longer exported if empty
-// (https://gerrit.wikimedia.org/r/c/mediawiki/extensions/FlaggedRevs/+/508427)
 Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLevel() {
 
 	var api = new mw.Api();
@@ -138,7 +151,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		list: 'logevents',
 		letype: 'protect',
 		letitle: mw.config.get('wgPageName'),
-		prop: mw.loader.getState('ext.flaggedRevs.review') ? 'info|flagged' : 'info',
+		prop: hasFlaggedRevs ? 'info|flagged' : 'info',
 		inprop: 'protection',
 		titles: mw.config.get('wgPageName')
 	});
@@ -151,7 +164,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 	});
 
 	var earlyDecision = [protectDeferred];
-	if (mw.loader.getState('ext.flaggedRevs.review')) {
+	if (hasFlaggedRevs) {
 		earlyDecision.push(stableDeferred);
 	}
 
@@ -191,7 +204,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 
 		// show the protection level and log info
 		Twinkle.protect.hasProtectLog = !!protectData[0].query.logevents.length;
-		Twinkle.protect.hasStableLog = mw.loader.getState('ext.flaggedRevs.review') ? !!stableData[0].query.logevents.length : false;
+		Twinkle.protect.hasStableLog = hasFlaggedRevs ? !!stableData[0].query.logevents.length : false;
 		Twinkle.protect.currentProtectionLevels = current;
 
 		if (adminEditDeferred) {
@@ -269,7 +282,6 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 	var field_preset;
 	var field1;
 	var field2;
-	var isTemplate = mw.config.get('wgNamespaceNumber') === 10 || mw.config.get('wgNamespaceNumber') === 828;
 
 	switch (e.target.values) {
 		case 'protect':
@@ -279,11 +291,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				name: 'category',
 				label: 'Choose a preset:',
 				event: Twinkle.protect.callback.changePreset,
-				list: mw.config.get('wgArticleId') ?
-					Twinkle.protect.protectionTypes.filter(function(v) {
-						return isTemplate || v.label !== 'Template protection';
-					}) :
-					Twinkle.protect.protectionTypesCreate
+				list: mw.config.get('wgArticleId') ? Twinkle.protect.protectionTypes : Twinkle.protect.protectionTypesCreate
 			});
 
 			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Protection options', name: 'field2' });
@@ -438,8 +446,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						{ label: 'Custom...', value: 'custom' }
 					]
 				});
-				// Namespaces hardcoded until [[phab:T218479]]
-				if (mw.loader.getState('ext.flaggedRevs.review') && (mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 4)) {
+				if (hasFlaggedRevs) {
 					field2.append({
 						type: 'checkbox',
 						event: Twinkle.protect.formevents.pcmodify,
@@ -786,7 +793,10 @@ Twinkle.protect.protectionTypes = [
 			{ label: 'Highly visible page (move)', value: 'pp-move-indef' }
 		]
 	}
-];
+].filter(function(type) {
+	// Filter for templates and flaggedrevs
+	return (isTemplate || type.label !== 'Template protection') && (hasFlaggedRevs || type.label !== 'Pending changes');
+});
 
 Twinkle.protect.protectionTypesCreate = [
 	{ label: 'Unprotection', value: 'unprotect' },
@@ -1018,7 +1028,10 @@ Twinkle.protect.protectionTags = [
 			{ label: '{{pp-move}}: other', value: 'pp-move' }
 		]
 	}
-];
+].filter(function(type) {
+	// Filter FlaggedRevs
+	return hasFlaggedRevs || type.label !== 'Pending changes templates';
+});
 
 Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePreset(e) {
 	var form = e.target.form;
@@ -1059,6 +1072,12 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 			}
 
+			// Default to indef for highly-visible template
+			if (form.category.value === 'pp-template') {
+				form.editexpiry.value = form.moveexpiry.value = 'infinity';
+			}
+
+
 			if (form.pcmodify) {
 				if (item.stabilize) {
 					form.pcmodify.checked = true;
@@ -1093,9 +1112,10 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			}
 			Twinkle.protect.formevents.tagtype({ target: form.tagtype });
 
-			if (/template/.test(form.category.value)) {
+			// We only have one TE template at the moment, so this
+			// should be expanded if more are added (e.g. pp-semi-template)
+			if (form.category.value === 'pp-template') {
 				form.noinclude.checked = true;
-				form.editexpiry.value = form.moveexpiry.value = form.pcexpiry.value = 'infinity';
 			} else if (mw.config.get('wgNamespaceNumber') !== 10) {
 				form.noinclude.checked = false;
 			}
