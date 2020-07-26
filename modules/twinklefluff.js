@@ -31,7 +31,7 @@ Twinkle.fluff = function twinklefluff() {
 			});
 		} else if (mw.config.get('wgAction') === 'view' && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId')) {
 			Twinkle.fluff.addLinks.oldid();
-		} else if (mw.config.get('wgAction') === 'history') {
+		} else if (mw.config.get('wgAction') === 'history' && mw.config.get('wgArticleId')) {
 			Twinkle.fluff.addLinks.history();
 		}
 	} else if (mw.config.get('wgNamespaceNumber') === -1) {
