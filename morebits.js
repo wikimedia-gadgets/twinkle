@@ -2501,16 +2501,21 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	// Protect-related setter functions
+	/**
+	 * @param {string} level  The right required for the specific action
+	 * e.g. autoconfirmed, sysop, templateeditor, extendedconfirmed (enWiki)
+	 * @param {string} [expiry=infinity]
+	 */
 	this.setEditProtection = function(level, expiry) {
-		ctx.protectEdit = { level: level, expiry: expiry };
+		ctx.protectEdit = { level: level, expiry: expiry || 'infinity' };
 	};
 
 	this.setMoveProtection = function(level, expiry) {
-		ctx.protectMove = { level: level, expiry: expiry };
+		ctx.protectMove = { level: level, expiry: expiry || 'infinity' };
 	};
 
 	this.setCreateProtection = function(level, expiry) {
-		ctx.protectCreate = { level: level, expiry: expiry };
+		ctx.protectCreate = { level: level, expiry: expiry || 'infinity' };
 	};
 
 	this.setCascadingProtection = function(flag) {
@@ -2573,10 +2578,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	/**
 	 * @param {string} level  The right required for edits not to require
 	 * review. Possible options: none, autoconfirmed, review (not on enWiki).
-	 * @param {string} expiry
+	 * @param {string} [expiry=infinity]
 	 */
 	this.setFlaggedRevs = function(level, expiry) {
-		ctx.flaggedRevs = { level: level, expiry: expiry };
+		ctx.flaggedRevs = { level: level, expiry: expiry || 'infinity' };
 	};
 
 	/**
