@@ -170,7 +170,8 @@ Twinkle.fluff.addLinks = {
 		// $('sp-contributions-footer-anon-range') relies on the fmbox
 		// id in [[MediaWiki:Sp-contributions-footer-anon-range]] and
 		// is used to show rollback/vandalism links for IP ranges
-		if (mw.config.exists('wgRelevantUserName') || !!$('#sp-contributions-footer-anon-range')[0]) {
+		var isRange = !!$('#sp-contributions-footer-anon-range')[0];
+		if (mw.config.exists('wgRelevantUserName') || isRange) {
 			// Get the username these contributions are for
 			var username = mw.config.get('wgRelevantUserName');
 			if (Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
@@ -182,6 +183,13 @@ Twinkle.fluff.addLinks = {
 					// revid is also available in the href of both
 					// .mw-changeslist-date or .mw-changeslist-diff
 					var page = $(current).find('.mw-contributions-title').text();
+
+					// Get username for IP ranges (wgRelevantUserName is null)
+					if (isRange) {
+						// The :not is possibly unnecessary, as it appears that
+						// .mw-userlink is simply not present if the username is hidden
+						username = $(current).find('.mw-userlink:not(.history-deleted)').text();
+					}
 
 					// It's unlikely, but we can't easily check for revdel'd usernames
 					// since only a strong element is provided, with no easy selector [[phab:T255903]]
