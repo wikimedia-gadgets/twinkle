@@ -44,37 +44,12 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			}
 		]
 	});
-	var editlevel = form.append({
+	form.append({
 		type: 'select',
 		name: 'editlevel',
 		label: 'Edit protection:',
-		event: Twinkle.protect.formevents.editlevel
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'All',
-		value: 'all'
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'Autoconfirmed',
-		value: 'autoconfirmed'
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'Extended confirmed',
-		value: 'extendedconfirmed'
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'Template editor',
-		value: 'templateeditor'
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'Sysop',
-		value: 'sysop',
-		selected: true
+		event: Twinkle.protect.formevents.editlevel,
+		list: Twinkle.protect.protectionLevels
 	});
 	form.append({
 		type: 'select',
@@ -101,32 +76,15 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			}
 		]
 	});
-	var movelevel = form.append({
+	form.append({
 		type: 'select',
 		name: 'movelevel',
 		label: 'Move protection:',
-		event: Twinkle.protect.formevents.movelevel
-	});
-	movelevel.append({
-		type: 'option',
-		label: 'All',
-		value: 'all'
-	});
-	movelevel.append({
-		type: 'option',
-		label: 'Extended confirmed',
-		value: 'extendedconfirmed'
-	});
-	movelevel.append({
-		type: 'option',
-		label: 'Template editor',
-		value: 'templateeditor'
-	});
-	movelevel.append({
-		type: 'option',
-		label: 'Sysop',
-		value: 'sysop',
-		selected: true
+		event: Twinkle.protect.formevents.movelevel,
+		list: Twinkle.protect.protectionLevels.filter(function(level) {
+			// Autoconfirmed is required for a move, redundant
+			return level.value !== 'autoconfirmed';
+		})
 	});
 	form.append({
 		type: 'select',
@@ -157,37 +115,12 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			}
 		]
 	});
-	var createlevel = form.append({
+	form.append({
 		type: 'select',
 		name: 'createlevel',
 		label: 'Create protection:',
-		event: Twinkle.protect.formevents.createlevel
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'All',
-		value: 'all'
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'Autoconfirmed',
-		value: 'autoconfirmed'
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'Extended confirmed',
-		value: 'extendedconfirmed'
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'Template editor',
-		value: 'templateeditor'
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'Sysop',
-		value: 'sysop',
-		selected: true
+		event: Twinkle.protect.formevents.createlevel,
+		list: Twinkle.protect.protectionLevels
 	});
 	form.append({
 		type: 'select',

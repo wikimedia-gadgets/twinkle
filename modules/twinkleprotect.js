@@ -311,39 +311,15 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						}
 					]
 				});
-				var editlevel = field2.append({
+				field2.append({
 					type: 'select',
 					name: 'editlevel',
 					label: 'Edit protection:',
-					event: Twinkle.protect.formevents.editlevel
-				});
-				editlevel.append({
-					type: 'option',
-					label: 'All',
-					value: 'all'
-				});
-				editlevel.append({
-					type: 'option',
-					label: 'Autoconfirmed',
-					value: 'autoconfirmed'
-				});
-				editlevel.append({
-					type: 'option',
-					label: 'Extended confirmed',
-					value: 'extendedconfirmed'
-				});
-				if (isTemplate) {
-					editlevel.append({
-						type: 'option',
-						label: 'Template editor',
-						value: 'templateeditor'
-					});
-				}
-				editlevel.append({
-					type: 'option',
-					label: 'Sysop',
-					value: 'sysop',
-					selected: true
+					event: Twinkle.protect.formevents.editlevel,
+					list: Twinkle.protect.protectionLevels.filter(function(level) {
+						// Filter TE outside of templates and modules
+						return isTemplate || level.value !== 'templateeditor';
+					})
 				});
 				field2.append({
 					type: 'select',
@@ -369,34 +345,15 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						}
 					]
 				});
-				var movelevel = field2.append({
+				field2.append({
 					type: 'select',
 					name: 'movelevel',
 					label: 'Move protection:',
-					event: Twinkle.protect.formevents.movelevel
-				});
-				movelevel.append({
-					type: 'option',
-					label: 'All',
-					value: 'all'
-				});
-				movelevel.append({
-					type: 'option',
-					label: 'Extended confirmed',
-					value: 'extendedconfirmed'
-				});
-				if (isTemplate) {
-					movelevel.append({
-						type: 'option',
-						label: 'Template editor',
-						value: 'templateeditor'
-					});
-				}
-				movelevel.append({
-					type: 'option',
-					label: 'Sysop',
-					value: 'sysop',
-					selected: true
+					event: Twinkle.protect.formevents.movelevel,
+					list: Twinkle.protect.protectionLevels.filter(function(level) {
+						// Autoconfirmed is required for a move, redundant
+						return level.value !== 'autoconfirmed' && (isTemplate || level.value !== 'templateeditor');
+					})
 				});
 				field2.append({
 					type: 'select',
@@ -423,22 +380,15 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							}
 						]
 					});
-					var pclevel = field2.append({
+					field2.append({
 						type: 'select',
 						name: 'pclevel',
 						label: 'Pending changes:',
-						event: Twinkle.protect.formevents.pclevel
-					});
-					pclevel.append({
-						type: 'option',
-						label: 'None',
-						value: 'none'
-					});
-					pclevel.append({
-						type: 'option',
-						label: 'Pending changes',
-						value: 'autoconfirmed',
-						selected: true
+						event: Twinkle.protect.formevents.pclevel,
+						list: [
+							{ label: 'None', value: 'none' },
+							{ label: 'Pending change', value: 'autoconfirmed', selected: true }
+						]
 					});
 					field2.append({
 						type: 'select',
@@ -454,41 +404,15 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					});
 				}
 			} else {  // for non-existing pages
-				var createlevel = field2.append({
+				field2.append({
 					type: 'select',
 					name: 'createlevel',
 					label: 'Create protection:',
-					event: Twinkle.protect.formevents.createlevel
-				});
-				createlevel.append({
-					type: 'option',
-					label: 'All',
-					value: 'all'
-				});
-				if (mw.config.get('wgNamespaceNumber') !== 0) {
-					createlevel.append({
-						type: 'option',
-						label: 'Autoconfirmed',
-						value: 'autoconfirmed'
-					});
-				}
-				if (isTemplate) {
-					createlevel.append({
-						type: 'option',
-						label: 'Template editor',
-						value: 'templateeditor'
-					});
-				}
-				createlevel.append({
-					type: 'option',
-					label: 'Extended confirmed',
-					value: 'extendedconfirmed',
-					selected: true
-				});
-				createlevel.append({
-					type: 'option',
-					label: 'Sysop',
-					value: 'sysop'
+					event: Twinkle.protect.formevents.createlevel,
+					list: Twinkle.protect.protectionLevels.filter(function(level) {
+						// Filter TE always, and autoconfirmed in mainspace, redundant since WP:ACPERM
+						return level.value !== 'templateeditor' && (mw.config.get('wgNamespaceNumber') !== 0 || level.value !== 'autoconfirmed');
+					})
 				});
 				field2.append({
 					type: 'select',
@@ -665,6 +589,15 @@ Twinkle.protect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
 		target.selectedIndex = 0;
 	}
 };
+
+// NOTE: This list is used by batchprotect as well
+Twinkle.protect.protectionLevels = [
+	{ label: 'All', value: 'all' },
+	{ label: 'Autoconfirmed', value: 'autoconfirmed' },
+	{ label: 'Extended confirmed', value: 'extendedconfirmed' },
+	{ label: 'Template editor', value: 'templateeditor' },
+	{ label: 'Sysop', value: 'sysop', selected: true }
+];
 
 // default expiry selection is conditionally set in Twinkle.protect.callback.changePreset
 // NOTE: This list is used by batchprotect as well
@@ -1012,7 +945,6 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				form.editmodify.checked = false;
 				Twinkle.protect.formevents.editmodify({ target: form.editmodify });
 			}
-			form.editexpiry.value = '2 days';
 
 			if (item.move) {
 				form.movemodify.checked = true;
@@ -1023,11 +955,12 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				form.movemodify.checked = false;
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 			}
-			form.moveexpiry.value = '2 days';
 
 			// Default to indef for highly-visible template
 			if (form.category.value === 'pp-template') {
 				form.editexpiry.value = form.moveexpiry.value = 'infinity';
+			} else {
+				form.editexpiry.value = form.moveexpiry.value = '2 days';
 			}
 
 
