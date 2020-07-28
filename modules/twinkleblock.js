@@ -1421,7 +1421,9 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 			if (!blockoptions.namespacerestrictions && !blockoptions.pagerestrictions) {
 				if (!blockoptions.noemail && !blockoptions.nocreate) { // Blank entries technically allowed [[phab:T208645]]
 					return alert('No pages or namespaces were selected, nor were email or account creation restrictions applied; please select at least one option to apply a partial block!');
-				} else if (!confirm('You are about to block with no restrictions on page or namespace editing, are you sure you want to proceed?')) {
+				} else if ((templateoptions.template !== 'uw-epblock' || $form.find('select[name="preset"]').val() !== 'uw-epblock') &&
+					// Don't require confirmation if email harassment defaults are set
+					!confirm('You are about to block with no restrictions on page or namespace editing, are you sure you want to proceed?')) {
 					return;
 				}
 			}
