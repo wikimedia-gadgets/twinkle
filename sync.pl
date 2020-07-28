@@ -40,8 +40,9 @@ foreach my $dot (@dotLocales) {
   }
 }
 
-GetOptions (\%conf, 'username|s=s', 'password|p=s', 'lang|l=s', 'family|f=s', 'url|u=s',
-            'base|b=s','all|a', 'mode=s', 'diff|d', 'w=s', 'dry|r', 'help|h' => \&usage);
+GetOptions (\%conf, 'username|s=s', 'password|p=s', 'mode|m=s',
+            'lang|l=s','family|f=s', 'url|u=s', 'base|b=s',
+            'all|a', 'append|a=s', 'diff|d', 'w=s', 'dry|r', 'help|h' => \&usage);
 
 # Ensure we've got a clean branch
 my $repo = Git::Repository->new();
@@ -341,11 +342,14 @@ sub buildEditSummary {
     foreach (@log) {
       print colored ['bright_cyan'], "\t$_\n";
     }
-    print "Please provide an edit summary (commit ref will be added automatically):\n";
+    print 'Please provide an edit summary (commit ref will be added automatically';
+    print ",\nas well as your prefix: $conf{append}" if $conf{append};
+    print "):\n";
     $editSummary = <STDIN>;
     chomp $editSummary;
   }
   $editSummary =~ s/[\.; ]{1,2}$//; # Tidy
+  $editSummary = $conf{append}.$editSummary if $conf{append};
 
   # 'Repo at' will add 17 characters and MW truncates at 497 to allow for '...'
   my $maxLength = 480;
@@ -388,12 +392,14 @@ sub editPage {
 # Final line must be unindented?
 sub usage {
   print <<"USAGE";
-Usage: $PROGRAM_NAME --mode=deploy|pull|push [--diff -w] [--dry] [-u username] [-p password] [-l language] [-f family] [-u url] [-b base] [--all]
+Usage: $PROGRAM_NAME --mode=deploy|pull|push -u username -p password [-l language] [-f family] [-u url=] [-b base] [--all] [--diff [-w diffprog]] [--dry] [-a append]
 
     --mode What action to perform, one of deploy, pull, or push. Required.
         deploy: Push changes live to the gadget
         pull: Pull changes from base-prefixed location
         push: Push changes to base-prefixed location
+
+        --append, -a String to append to a push or deploy edit summary
 
     --username, -u Username for account. Required.
     --password, -p Password for account. Required.
