@@ -101,7 +101,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			{ label: '2 months', value: '2 months' },
 			{ label: '3 months', value: '3 months' },
 			{ label: '1 year', value: '1 year' },
-			{ label: 'indefinite', value: 'indefinite' },
+			{ label: 'indefinite', value: 'infinity' },
 			{ label: 'Custom...', value: 'custom' }
 		]
 	});
@@ -171,7 +171,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			{ label: '2 months', value: '2 months' },
 			{ label: '3 months', value: '3 months' },
 			{ label: '1 year', value: '1 year' },
-			{ label: 'indefinite', value: 'indefinite' },
+			{ label: 'indefinite', value: 'infinity' },
 			{ label: 'Custom...', value: 'custom' }
 		]
 	});
@@ -250,7 +250,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			{ label: '2 months', value: '2 months' },
 			{ label: '3 months', value: '3 months' },
 			{ label: '1 year', value: '1 year' },
-			{ label: 'indefinite', selected: true, value: 'indefinite' },
+			{ label: 'indefinite', selected: true, value: 'infinity' },
 			{ label: 'Custom...', value: 'custom' }
 		]
 	});
