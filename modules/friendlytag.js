@@ -1010,7 +1010,7 @@ Twinkle.tag.file = {};
 Twinkle.tag.file.licenseList = [
 	{ label: '{{Bsr}}: source info consists of bare image URL/generic base URL only', value: 'Bsr' },
 	{ label: '{{Non-free reduce}}: non-low-resolution fair use image (or too-long audio clip, etc)', value: 'Non-free reduce' },
-	{ label: '{{Orphaned non-free revisions}}: fair use media with old revisions that need to be deleted', value: 'subst:orfurrev' }
+	{ label: '{{Orphaned non-free revisions}}: fair use media with old revisions that need to be deleted', value: 'Orphaned non-free revisions' }
 ];
 
 Twinkle.tag.file.commonsList = [
@@ -1038,10 +1038,10 @@ Twinkle.tag.file.commonsList = [
 	},
 	{
 		label: '{{Now Commons}}: file has been copied to Commons',
-		value: 'subst:ncd',
+		value: 'Now Commons',
 		subgroup: {
 			type: 'input',
-			name: 'ncdName',
+			name: 'nowcommonsName',
 			label: 'Commons image name if different: ',
 			tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
 		}
@@ -1749,17 +1749,17 @@ Twinkle.tag.callbacks = {
 			var tagtext = '', currentTag;
 			$.each(params.tags, function(k, tag) {
 				// when other commons-related tags are placed, remove "move to Commons" tag
-				if (['Keep local', 'subst:ncd', 'Do not move to Commons_reason', 'Do not move to Commons',
-					'Now Commons'].indexOf(tag) !== -1) {
+				if (['Keep local', 'Now Commons', 'Do not move to Commons_reason', 'Do not move to Commons'].indexOf(tag) !== -1) {
 					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
 				}
 
-				currentTag = '{{' + (tag === 'Do not move to Commons_reason' ? 'Do not move to Commons' : tag);
+				currentTag = tag === 'Do not move to Commons_reason' ? 'Do not move to Commons' : tag;
 
 				switch (tag) {
-					case 'subst:ncd':
-						if (params.ncdName !== '') {
-							currentTag += '|1=' + params.ncdName;
+					case 'Now Commons':
+						currentTag = 'subst:' + currentTag; // subst
+						if (params.nowcommonsName !== '') {
+							currentTag += '|1=' + params.nowcommonsName;
 						}
 						break;
 					case 'Keep local':
@@ -1795,7 +1795,8 @@ Twinkle.tag.callbacks = {
 					case 'Do not move to Commons_reason':
 						currentTag += '|reason=' + params.DoNotMoveToCommons;
 						break;
-					case 'subst:orfurrev':
+					case 'Orphaned non-free revisions':
+						currentTag = 'subst:' + currentTag; // subst
 						// remove {{non-free reduce}} and redirects
 						text = text.replace(/\{\{\s*(Template\s*:\s*)?(Non-free reduce|FairUseReduce|Fairusereduce|Fair Use Reduce|Fair use reduce|Reduce size|Reduce|Fair-use reduce|Image-toobig|Comic-ovrsize-img|Non-free-reduce|Nfr|Smaller image|Nonfree reduce)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
 						currentTag += '|date={{subst:date}}';
@@ -1810,7 +1811,7 @@ Twinkle.tag.callbacks = {
 						break;  // don't care
 				}
 
-				currentTag += '}}\n';
+				currentTag = '{{' + currentTag + '}}\n';
 
 				tagtext += currentTag;
 				summary += '{{' + tag + '}}, ';
