@@ -255,7 +255,8 @@ sub forReal {
     print colored ['bright_white'], $conf{base};
   }
   print ' at ';
-  print colored ['green'], "$url\n";
+  print colored ['green'], $conf{url} || "https://$conf{lang}.$conf{family}.org";
+  print "\n";
 
   while (42) {
     print "Enter (y)es to proceed or (n)o to cancel:\n";
