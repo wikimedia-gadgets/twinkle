@@ -623,9 +623,9 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				name: 'expiry',
 				label: 'Duration: ',
 				list: [
+					{ label: '', selected: true, value: '' },
 					{ label: 'Temporary', value: 'temporary' },
-					{ label: 'Indefinite', value: 'infinity' },
-					{ label: '', selected: true, value: '' }
+					{ label: 'Indefinite', value: 'infinity' }
 				]
 			});
 			field1.append({
@@ -1160,7 +1160,13 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 						thispage.setEditProtection(input.editlevel, input.editexpiry);
 					}
 					if (input.movemodify) {
-						thispage.setMoveProtection(input.movelevel, input.moveexpiry);
+						// Ensure a level has actually been chosen
+						if (input.movelevel) {
+							thispage.setMoveProtection(input.movelevel, input.moveexpiry);
+						} else {
+							alert('You must chose a move protection level!');
+							return;
+						}
 					}
 				} else {
 					thispage.setCreateProtection(input.createlevel, input.createexpiry);
