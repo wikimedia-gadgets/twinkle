@@ -56,11 +56,9 @@ if (scalar @status) {
 # Checks for required parameters, returns list of files (@ARGV or --all)
 my @files = forReal();
 
-# Set base URL for the project, used for API, etc.
-my $url = $conf{url} || "https://$conf{lang}.$conf{family}.org";
 # Open API and log in before anything else
 my $mw = MediaWiki::API->new({
-			      api_url => "$url/w/api.php",
+			      api_url => "$conf{url}/w/api.php",
 			      max_lag => 1000000, # not a botty script, thus smash it!
 			      on_error => \&dieNice
 			     });
@@ -255,8 +253,9 @@ sub forReal {
     print colored ['bright_white'], $conf{base};
   }
   print ' at ';
-  print colored ['green'], $conf{url} || "https://$conf{lang}.$conf{family}.org";
-  print "\n";
+  # Set base URL for the project, used for API, etc.
+  $conf{url} ||= "https://$conf{lang}.$conf{family}.org";
+  print colored ['green'], "$conf{url}\n";
 
   while (42) {
     print "Enter (y)es to proceed or (n)o to cancel:\n";
@@ -344,13 +343,13 @@ sub buildEditSummary {
       print colored ['bright_cyan'], "\t$_\n";
     }
     print 'Please provide an edit summary (commit ref will be added automatically';
-    print ",\nas well as your prefix: $conf{append}" if $conf{append};
+    print ",\nas well as your appendation: $conf{append}" if $conf{append};
     print "):\n";
     $editSummary = <STDIN>;
     chomp $editSummary;
   }
   $editSummary =~ s/[\.; ]{1,2}$//; # Tidy
-  $editSummary = $conf{append}.$editSummary if $conf{append};
+  $editSummary .= $conf{append};
 
   # 'Repo at' will add 17 characters and MW truncates at 497 to allow for '...'
   my $maxLength = 480;
@@ -400,24 +399,26 @@ Usage: $PROGRAM_NAME --mode=deploy|pull|push -u username -p password [-l languag
         pull: Pull changes from base-prefixed location
         push: Push changes to base-prefixed location
 
-        --append, -a String to append to a push or deploy edit summary
-
     --username, -u Username for account. Required.
     --password, -p Password for account. Required.
 
     --lang, -l Target language, default 'en'
     --family, -f Target family, default 'wikipedia'
 
-    --url, -u Provide the full URL, replacing above options (https://{lang}.{family}.org).
+    --all, -a Pass all available files, rather than just those on the commandline
 
     --base, -b Base page prefix where on-wiki files exist, default 'User:AzaToth/'
 
-    --all, -a Pass all available files, rather than just those on the commandline
+Less common options:
 
     --diff, -d Show a diff between files and pages before proceeding
         -w Pass an alternative diffing function instead of the default `diff`, such as `colordiff`
     --dry, -r Show which files don't match on-wiki, do nothing else. A mode should still be supplied
         in order to determine which on-wiki files to compare to.
+
+    --url, -u Provide the full URL, replacing above options (https://{lang}.{family}.org).
+
+    --append, -a String to append to a push or deploy edit summary
 
     These options can be provided in a config file, .twinklerc, in either this script's
     or your home directory.  It should be a simple file consisting of keys and values:
