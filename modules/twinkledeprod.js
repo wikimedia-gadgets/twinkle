@@ -67,7 +67,7 @@ Twinkle.deprod.callback = function() {
 			var metadata = [];
 			var res = re.exec(content);
 			if (res) {
-				var parsed = Morebits.wikitext.template.parse(content, res.index);
+				var parsed = Morebits.wikitext.parseTemplate(content, res.index);
 				concerns[title] = parsed.parameters.concern || '';
 				metadata.push(concerns[title]);
 			}

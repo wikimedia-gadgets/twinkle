@@ -3786,78 +3786,65 @@ Morebits.wiki.preview = function(previewbox) {
 
 Morebits.wikitext = {};
 
-Morebits.wikitext.template = {
-	parse: function(text, start) {
-		var count = -1;
-		var level = -1;
-		var equals = -1;
-		var current = '';
-		var result = {
-			name: '',
-			parameters: {}
-		};
-		var key, value;
+/**
+ * Get the value of every parameter found in a given template
+ * @param {string} text Wikitext containing a template
+ * @param {number} [start=0] Index noting where in the text the template begins
+ * @returns {Object} {name: templateName, parameters: {key: value}}
+ */
+Morebits.wikitext.parseTemplate = function(text, start) {
+	start = start || 0;
 
-		for (var i = start; i < text.length; ++i) {
-			var test3 = text.substr(i, 3);
-			if (test3 === '{{{') {
-				current += '{{{';
-				i += 2;
-				++level;
-				continue;
-			}
-			if (test3 === '}}}') {
-				current += '}}}';
-				i += 2;
-				--level;
-				continue;
-			}
-			var test2 = text.substr(i, 2);
-			if (test2 === '{{' || test2 === '[[') {
-				current += test2;
-				++i;
-				++level;
-				continue;
-			}
-			if (test2 === ']]') {
-				current += ']]';
-				++i;
-				--level;
-				continue;
-			}
-			if (test2 === '}}') {
-				current += test2;
-				++i;
-				--level;
+	var count = -1;
+	var level = -1;
+	var equals = -1;
+	var current = '';
+	var result = {
+		name: '',
+		parameters: {}
+	};
+	var key, value;
 
-				if (level <= 0) {
-					if (count === -1) {
-						result.name = current.substring(2).trim();
-						++count;
-					} else {
-						if (equals !== -1) {
-							key = current.substring(0, equals).trim();
-							value = current.substring(equals).trim();
-							result.parameters[key] = value;
-							equals = -1;
-						} else {
-							result.parameters[count] = current;
-							++count;
-						}
-					}
-					break;
-				}
-				continue;
-			}
+	for (var i = start; i < text.length; ++i) {
+		var test3 = text.substr(i, 3);
+		if (test3 === '{{{') {
+			current += '{{{';
+			i += 2;
+			++level;
+			continue;
+		}
+		if (test3 === '}}}') {
+			current += '}}}';
+			i += 2;
+			--level;
+			continue;
+		}
+		var test2 = text.substr(i, 2);
+		if (test2 === '{{' || test2 === '[[') {
+			current += test2;
+			++i;
+			++level;
+			continue;
+		}
+		if (test2 === ']]') {
+			current += ']]';
+			++i;
+			--level;
+			continue;
+		}
+		if (test2 === '}}') {
+			current += test2;
+			++i;
+			--level;
 
-			if (text.charAt(i) === '|' && level <= 0) {
+			if (level <= 0) {
 				if (count === -1) {
 					result.name = current.substring(2).trim();
 					++count;
 				} else {
 					if (equals !== -1) {
 						key = current.substring(0, equals).trim();
-						value = current.substring(equals + 1).trim();
+						value = current.substring(equals).trim();
 						result.parameters[key] = value;
 						equals = -1;
 					} else {
@@ -3865,17 +3852,36 @@ Morebits.wikitext.template = {
 						++count;
 					}
 				}
-				current = '';
-			} else if (equals === -1 && text.charAt(i) === '=' && level <= 0) {
-				equals = current.length;
-				current += text.charAt(i);
-			} else {
-				current += text.charAt(i);
+				break;
 			}
+			continue;
 		}
 
-		return result;
+		if (text.charAt(i) === '|' && level <= 0) {
+			if (count === -1) {
+				result.name = current.substring(2).trim();
+				++count;
+			} else {
+				if (equals !== -1) {
+					key = current.substring(0, equals).trim();
+					value = current.substring(equals + 1).trim();
+					result.parameters[key] = value;
+					equals = -1;
+				} else {
+					result.parameters[count] = current;
+					++count;
+				}
+			}
+			current = '';
+		} else if (equals === -1 && text.charAt(i) === '=' && level <= 0) {
+			equals = current.length;
+			current += text.charAt(i);
+		} else {
+			current += text.charAt(i);
+		}
 	}
+
+	return result;
 };
 
 /**
