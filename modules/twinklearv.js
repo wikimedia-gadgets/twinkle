@@ -520,7 +520,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				var $aivLink = '<a target="_blank" href="/wiki/WP:AIV">WP:AIV</a>';
 
 				// check if user has already been reported
-				if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + RegExp.escape(uid, true) + '\\s*\\}\\}').test(text)) {
+				if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(uid) + '\\s*\\}\\}').test(text)) {
 					aivPage.getStatusElement().error('Report already present, will not add a new one');
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at ' + $aivLink + ':');
 					return;
@@ -532,7 +532,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					var tb2Text = tb2Page.getPageText();
 					var tb2statelem = tb2Page.getStatusElement();
 
-					if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + RegExp.escape(uid, true) + '\\s*\\}\\}').test(tb2Text)) {
+					if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(uid) + '\\s*\\}\\}').test(tb2Text)) {
 						if (confirm('The user ' + uid + ' has already been reported by a bot. Do you wish to make the report anyway?')) {
 							tb2statelem.info('Proceeded despite bot report');
 						} else {
@@ -594,7 +594,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				var text = uaaPage.getPageText();
 
 				// check if user has already been reported
-				if (new RegExp('\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?' + RegExp.escape(uid, true) + '\\s*(\\||\\})').test(text)) {
+				if (new RegExp('\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?' + Morebits.string.escapeRegExp(uid) + '\\s*(\\||\\})').test(text)) {
 					uaaPage.getStatusElement().error('User is already listed.');
 					var $uaaLink = '<a target="_blank" href="/wiki/WP:UAA">WP:UAA</a>';
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at ' + $uaaLink + ':');
