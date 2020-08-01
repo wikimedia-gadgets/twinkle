@@ -224,6 +224,9 @@ sub forReal {
     }
   }
 
+  # Set base URL for the project, used for API, etc.
+  $conf{url} ||= "https://$conf{lang}.$conf{family}.org";
+
   # Quick exit
   if ($conf{dry}) {
     print "Dry run, checking for differences...\n";
@@ -253,8 +256,6 @@ sub forReal {
     print colored ['bright_white'], $conf{base};
   }
   print ' at ';
-  # Set base URL for the project, used for API, etc.
-  $conf{url} ||= "https://$conf{lang}.$conf{family}.org";
   print colored ['green'], "$conf{url}\n";
 
   while (42) {
@@ -349,7 +350,7 @@ sub buildEditSummary {
     chomp $editSummary;
   }
   $editSummary =~ s/[\.; ]{1,2}$//; # Tidy
-  $editSummary .= $conf{append};
+  $editSummary .= $conf{append} if $conf{append};
 
   # 'Repo at' will add 17 characters and MW truncates at 497 to allow for '...'
   my $maxLength = 480;
