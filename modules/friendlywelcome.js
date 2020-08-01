@@ -96,7 +96,7 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 	$('#catlinks').remove();
 
 	var params = {
-		value: Twinkle.getPref('quickWelcomeTemplate'),
+		template: Twinkle.getPref('quickWelcomeTemplate'),
 		article: mw.util.getParamValue('vanarticle') || '',
 		mode: 'auto'
 	};
