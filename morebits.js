@@ -1598,14 +1598,24 @@ $.extend(Morebits.date.prototype, {
 	},
 
 	/**
-	 * Creates a wikitext section header with the month and year.
-	 * @param {number} [level=2] - Header level (default 2)
+	 * Creates a section header with the month and year.
+	 * @param {number} [level=2] - Header level (default 2).  Pass 0 for
+	 * just the text with no wikitext markers (==)
 	 * @returns {string}
 	 */
 	monthHeader: function(level) {
-		level = level || 2;
+		// Default to 2, but allow for 0 or stringy numbers
+		level = parseInt(level, 10);
+		level = isNaN(level) ? 2 : level;
+
 		var header = Array(level + 1).join('='); // String.prototype.repeat not supported in IE 11
-		return header + ' ' + this.getUTCMonthName() + ' ' + this.getUTCFullYear() + ' ' + header;
+		var text = this.getUTCMonthName() + ' ' + this.getUTCFullYear();
+
+		if (header.length) { // wikitext-formatted header
+			return header + ' ' + text + ' ' + header;
+		}
+		return text; // Just the string
+
 	}
 
 });
