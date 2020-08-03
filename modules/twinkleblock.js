@@ -1892,32 +1892,36 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 };
 
 Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
-	var text = pageobj.getPageText(),
-		params = pageobj.getCallbackParameters(),
+	var params = pageobj.getCallbackParameters(),
+		date = new Morebits.date(pageobj.getLoadTime()),
 		messageData = params.messageData,
-		date = new Morebits.date(pageobj.getLoadTime());
-
-	var dateHeaderRegex = date.monthHeaderRegex(), dateHeaderRegexLast, dateHeaderRegexResult;
-	while ((dateHeaderRegexLast = dateHeaderRegex.exec(text)) !== null) {
-		dateHeaderRegexResult = dateHeaderRegexLast;
-	}
-	// If dateHeaderRegexResult is null then lastHeaderIndex is never checked. If it is not null but
-	// \n== is not found, then the date header must be at the very start of the page. lastIndexOf
-	// returns -1 in this case, so lastHeaderIndex gets set to 0 as desired.
-	var lastHeaderIndex = text.lastIndexOf('\n==') + 1;
-
-	if (text.length > 0) {
-		text += '\n\n';
-	}
+		text;
 
 	params.indefinite = Morebits.string.isInfinity(params.expiry);
 
 	if (Twinkle.getPref('blankTalkpageOnIndefBlock') && params.template !== 'uw-lblock' && params.indefinite) {
 		Morebits.status.info('Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date');
 		text = date.monthHeader() + '\n';
-	} else if (!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
-		Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
-		text += date.monthHeader() + '\n';
+	} else {
+		text = pageobj.getPageText();
+
+		var dateHeaderRegex = date.monthHeaderRegex(), dateHeaderRegexLast, dateHeaderRegexResult;
+		while ((dateHeaderRegexLast = dateHeaderRegex.exec(text)) !== null) {
+			dateHeaderRegexResult = dateHeaderRegexLast;
+		}
+		// If dateHeaderRegexResult is null then lastHeaderIndex is never checked. If it is not null but
+		// \n== is not found, then the date header must be at the very start of the page. lastIndexOf
+		// returns -1 in this case, so lastHeaderIndex gets set to 0 as desired.
+		var lastHeaderIndex = text.lastIndexOf('\n==') + 1;
+
+		if (text.length > 0) {
+			text += '\n\n';
+		}
+
+		if (!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
+			Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
+			text += date.monthHeader() + '\n';
+		}
 	}
 
 	params.expiry = typeof params.template_expiry !== 'undefined' ? params.template_expiry : params.expiry;
