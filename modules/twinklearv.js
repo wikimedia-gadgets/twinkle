@@ -571,7 +571,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if (/[aeiouwyh]/.test(types[0] || '')) { // non 100% correct, but whatever, including 'h' for Cockney
 				article = 'an';
 			}
-			reason = '*{{user-uaa|1=' + uid + '}} &ndash; ';
+			reason = '\n*{{user-uaa|1=' + uid + '}} &ndash; ';
 			if (types.length || hasShared) {
 				reason += 'Violation of the username policy as ' + article + ' ' + types + ' username' +
 					(hasShared ? ' that implies shared use. ' : '. ');
@@ -604,8 +604,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 				uaaPage.getStatusElement().status('Adding new report...');
 				uaaPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].');
 				uaaPage.setChangeTags(Twinkle.changeTags);
-				uaaPage.setPageText(text + '\n' + reason);
-				uaaPage.save();
+				uaaPage.setAppendText(reason);
+				uaaPage.append();
 			});
 			break;
 

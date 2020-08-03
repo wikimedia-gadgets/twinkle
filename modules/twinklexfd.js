@@ -1236,18 +1236,15 @@ Twinkle.xfd.callbacks = {
 
 			apiobj.statelem.info('next in order is [[' + apiobj.params.discussionpage + ']]');
 
-			// Tagging page
-			var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page with deletion tag');
-			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
-			wikipedia_page.setCallbackParameters(apiobj.params);
-			wikipedia_page.load(Twinkle.xfd.callbacks.mfd.taggingPage);
+			// Tagging page, no text manipulation needed
+			Twinkle.xfd.callbacks.mfd.taggingPage(apiobj.params);
 
 			// Updating data for the action completed event
 			Morebits.wiki.actionCompleted.redirect = apiobj.params.discussionpage;
 			Morebits.wiki.actionCompleted.notice = 'Nomination completed, now redirecting to the discussion page';
 
 			// Discussion page
-			wikipedia_page = new Morebits.wiki.page(apiobj.params.discussionpage, 'Creating deletion discussion page');
+			var wikipedia_page = new Morebits.wiki.page(apiobj.params.discussionpage, 'Creating deletion discussion page');
 			wikipedia_page.setCallbackParameters(apiobj.params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.mfd.discussionPage);
 
@@ -1268,18 +1265,18 @@ Twinkle.xfd.callbacks = {
 				Twinkle.xfd.callbacks.addToLog(apiobj.params, null);
 			}
 		},
-		taggingPage: function(pageobj) {
-			var text = pageobj.getPageText();
-			var params = pageobj.getCallbackParameters();
+		taggingPage: function(params) {
+			var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page with deletion tag');
+			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
 
-			pageobj.setPageText((params.noinclude ? '<noinclude>' : '') + '{{' +
+			wikipedia_page.setPrependText((params.noinclude ? '<noinclude>' : '') + '{{' +
 				(params.number === '' ? 'mfd' : 'mfdx|' + params.number) + '|help=off}}\n' +
-				(params.noinclude ? '</noinclude>' : '') + text);
-			pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
-			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			pageobj.setCreateOption('nocreate');
-			pageobj.save();
+				(params.noinclude ? '</noinclude>' : ''));
+			wikipedia_page.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
+			wikipedia_page.setChangeTags(Twinkle.changeTags);
+			Twinkle.xfd.setWatchPref(wikipedia_page, Twinkle.getPref('xfdWatchPage'));
+			wikipedia_page.setCreateOption('nocreate');
+			wikipedia_page.prepend();
 		},
 		discussionPage: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
@@ -1439,10 +1436,7 @@ Twinkle.xfd.callbacks = {
 
 
 	cfd: {
-		taggingCategory: function(pageobj) {
-			var text = pageobj.getPageText();
-			var params = pageobj.getCallbackParameters();
-
+		taggingCategory: function(params) {
 			var added_data = '{{subst:' + params.xfdcat;
 			var editsummary = (mw.config.get('wgNamespaceNumber') === 14 ? 'Category' : 'Stub template') +
 				' being considered for ' + params.action;
@@ -1465,15 +1459,17 @@ Twinkle.xfd.callbacks = {
 					alert('twinklexfd in taggingCategory(): unknown CFD action');
 					break;
 			}
-			added_data += '}}';
+			added_data += '}}\n';
 			editsummary += '; see [[:' + params.discussionpage + ']].';
 
-			pageobj.setPageText(added_data + '\n' + text);
-			pageobj.setEditSummary(editsummary);
-			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
-			pageobj.save();
+			var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with ' + params.action + ' tag');
+			wikipedia_page.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
+			wikipedia_page.setPrependText(added_data);
+			wikipedia_page.setEditSummary(editsummary);
+			wikipedia_page.setChangeTags(Twinkle.changeTags);
+			Twinkle.xfd.setWatchPref(wikipedia_page, Twinkle.getPref('xfdWatchPage'));
+			wikipedia_page.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
+			wikipedia_page.prepend();
 		},
 		todaysList: function(pageobj) {
 			var old_text = pageobj.getPageText();
@@ -1528,16 +1524,15 @@ Twinkle.xfd.callbacks = {
 
 
 	cfds: {
-		taggingCategory: function(pageobj) {
-			var text = pageobj.getPageText();
-			var params = pageobj.getCallbackParameters();
-
-			pageobj.setPageText('{{subst:cfr-speedy|1=' + params.cfdtarget.replace(/^:?Category:/, '') + '}}\n' + text);
-			pageobj.setEditSummary('Listed for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]].');
-			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
-			pageobj.save(function() {
+		taggingCategory: function(params) {
+			var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with rename tag');
+			wikipedia_page.setFollowRedirect(true);
+			wikipedia_page.setPrependText('{{subst:cfr-speedy|1=' + params.cfdtarget.replace(/^:?Category:/, '') + '}}\n');
+			wikipedia_page.setEditSummary('Listed for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]].');
+			wikipedia_page.setChangeTags(Twinkle.changeTags);
+			Twinkle.xfd.setWatchPref(wikipedia_page, Twinkle.getPref('xfdWatchPage'));
+			wikipedia_page.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
+			wikipedia_page.save(function() {
 				// No user notification for CfDS, so just add this nomination to the user's userspace log
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			});
@@ -1990,11 +1985,8 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			Morebits.wiki.actionCompleted.redirect = params.logpage;
 			Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
 
-			// Tagging category
-			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with ' + params.action + ' tag');
-			wikipedia_page.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
-			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(Twinkle.xfd.callbacks.cfd.taggingCategory);
+			// Tagging category, no text manipulation needed
+			Twinkle.xfd.callbacks.cfd.taggingCategory(params);
 
 			// Adding discussion to list
 			wikipedia_page = new Morebits.wiki.page(params.logpage, "Adding discussion to today's list");
@@ -2026,11 +2018,8 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			Morebits.wiki.actionCompleted.redirect = logpage;
 			Morebits.wiki.actionCompleted.notice = 'Nomination completed, now redirecting to the discussion page';
 
-			// Tagging category
-			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with rename tag');
-			wikipedia_page.setFollowRedirect(true);
-			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(Twinkle.xfd.callbacks.cfds.taggingCategory);
+			// Tagging category, no text manipulation needed
+			Twinkle.xfd.callbacks.cfds.taggingCategory(params);
 
 			// Adding discussion to list
 			wikipedia_page = new Morebits.wiki.page(logpage, 'Adding discussion to the list');
