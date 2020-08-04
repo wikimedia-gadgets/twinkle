@@ -2745,11 +2745,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onMoveSuccess = onSuccess;
 		ctx.onMoveFailure = onFailure || emptyFunction;
 
-		if (!ctx.editSummary) {
-			ctx.statusElement.error('Internal error: move reason not set before move (use setEditSummary function)!');
-			ctx.onMoveFailure(this);
-			return;
+		if (!fnPreflightChecks.call(this, 'move', ctx.onMoveFailure)) {
+			return; // abort
 		}
+
 		if (!ctx.moveDestination) {
 			ctx.statusElement.error('Internal error: destination page name was not set before move!');
 			ctx.onMoveFailure(this);
@@ -2853,16 +2852,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onDeleteSuccess = onSuccess;
 		ctx.onDeleteFailure = onFailure || emptyFunction;
 
-		// if a non-admin tries to do this, don't bother
-		if (!Morebits.userIsSysop) {
-			ctx.statusElement.error('Cannot delete page: only admins can do that');
-			ctx.onDeleteFailure(this);
-			return;
-		}
-		if (!ctx.editSummary) {
-			ctx.statusElement.error('Internal error: delete reason not set before delete (use setEditSummary function)!');
-			ctx.onDeleteFailure(this);
-			return;
+		if (!fnPreflightChecks.call(this, 'delete', ctx.onDeleteFailure)) {
+			return; // abort
 		}
 
 		if (fnCanUseMwUserToken('delete')) {
@@ -2885,16 +2876,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onUndeleteSuccess = onSuccess;
 		ctx.onUndeleteFailure = onFailure || emptyFunction;
 
-		// if a non-admin tries to do this, don't bother
-		if (!Morebits.userIsSysop) {
-			ctx.statusElement.error('Cannot undelete page: only admins can do that');
-			ctx.onUndeleteFailure(this);
-			return;
-		}
-		if (!ctx.editSummary) {
-			ctx.statusElement.error('Internal error: undelete reason not set before undelete (use setEditSummary function)!');
-			ctx.onUndeleteFailure(this);
-			return;
+		if (!fnPreflightChecks.call(this, 'undelete', ctx.onUndeleteFailure)) {
+			return; // abort
 		}
 
 		if (fnCanUseMwUserToken('undelete')) {
@@ -2917,19 +2900,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onProtectSuccess = onSuccess;
 		ctx.onProtectFailure = onFailure || emptyFunction;
 
-		// if a non-admin tries to do this, don't bother
-		if (!Morebits.userIsSysop) {
-			ctx.statusElement.error('Cannot protect page: only admins can do that');
-			ctx.onProtectFailure(this);
-			return;
+		if (!fnPreflightChecks.call(this, 'protect', ctx.onProtectFailure)) {
+			return; // abort
 		}
+
 		if (!ctx.protectEdit && !ctx.protectMove && !ctx.protectCreate) {
 			ctx.statusElement.error('Internal error: you must set edit and/or move and/or create protection before calling protect()!');
-			ctx.onProtectFailure(this);
-			return;
-		}
-		if (!ctx.editSummary) {
-			ctx.statusElement.error('Internal error: protection reason not set before protect (use setEditSummary function)!');
 			ctx.onProtectFailure(this);
 			return;
 		}
@@ -2955,19 +2931,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onStabilizeSuccess = onSuccess;
 		ctx.onStabilizeFailure = onFailure || emptyFunction;
 
-		// if a non-admin tries to do this, don't bother
-		if (!Morebits.userIsSysop) {
-			ctx.statusElement.error('Cannot apply FlaggedRevs settings: only admins can do that');
-			ctx.onStabilizeFailure(this);
-			return;
+		if (!fnPreflightChecks.call(this, 'FlaggedRevs', ctx.onStabilizeFailure)) {
+			return; // abort
 		}
+
 		if (!ctx.flaggedRevs) {
 			ctx.statusElement.error('Internal error: you must set flaggedRevs before calling stabilize()!');
-			ctx.onStabilizeFailure(this);
-			return;
-		}
-		if (!ctx.editSummary) {
-			ctx.statusElement.error('Internal error: reason not set before calling stabilize() (use setEditSummary function)!');
 			ctx.onStabilizeFailure(this);
 			return;
 		}
@@ -3349,6 +3318,65 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	};
 
+	// Common checks for action methods
+	// Used for move, undelete, delete, protect, stabilize
+	var fnPreflightChecks = function(action, onFailure) {
+		// if a non-admin tries to do this, don't bother
+		if (!Morebits.userIsSysop && action !== 'move') {
+			ctx.statusElement.error('Cannot ' + action + 'page : only admins can do that');
+			onFailure(this);
+			return false;
+		}
+
+		if (!ctx.editSummary) {
+			ctx.statusElement.error('Internal error: ' + action + ' reason not set (use setEditSummary function)!');
+			onFailure(this);
+			return false;
+		}
+		return true; // all OK
+	};
+
+	// Common checks for fnProcess functions (fnProcessDelete, fnProcessMove, etc.)
+	// Used for move, undelete, delete, protect, stabilize
+	var fnProcessChecks = function(action, onFailure, xml) {
+		var missing = $(xml).find('page').attr('missing') === '';
+
+		// No undelete as an existing page could have deleted revisions
+		var actionMissing = missing && ['delete', 'stabilize', 'move'].indexOf(action) !== -1;
+		var protectMissing = action === 'protect' && missing && (ctx.protectEdit || ctx.protectMove);
+		var saltMissing = action === 'protect' && !missing && ctx.protectCreate;
+
+		if (actionMissing || protectMissing || saltMissing) {
+			ctx.statusElement.error('Cannot ' + action + ' the page because it ' + (missing ? 'no longer' : 'already') + ' exists');
+			onFailure(this);
+			return false;
+		}
+
+		// Delete, undelete, move
+		// extract protection info
+		var editprot;
+		if (action === 'undelete') {
+			editprot = $(xml).find('pr[type="create"]');
+		} else if (action === 'delete' || action === 'move') {
+			editprot = $(xml).find('pr[type="edit"]');
+		}
+		if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
+			!confirm('You are about to ' + action + ' the fully protected page "' + ctx.pageName +
+			(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.attr('expiry')).calendar('utc') + ' (UTC))') +
+			'.  \n\nClick OK to proceed with ' + action + ', or Cancel to skip.')) {
+			ctx.statusElement.error('Aborted ' + action + ' on fully protected page.');
+			onFailure(this);
+			return false;
+		}
+
+		if (!$(xml).find('tokens').attr('csrftoken')) {
+			ctx.statusElement.error('Failed to retrieve token.');
+			onFailure(this);
+			return false;
+		}
+		return true; // all OK
+	};
+
 	var fnProcessMove = function() {
 		var pageTitle, token;
 
@@ -3358,32 +3386,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		} else {
 			var xml = ctx.moveApi.getXML();
 
-			if ($(xml).find('page').attr('missing') === '') {
-				ctx.statusElement.error('Cannot move the page, because it no longer exists');
-				ctx.onMoveFailure(this);
-				return;
-			}
-
-			// extract protection info
-			if (Morebits.userIsSysop) {
-				var editprot = $(xml).find('pr[type="edit"]');
-				if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
-					!confirm('You are about to move the fully protected page "' + ctx.pageName +
-					(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.attr('expiry')).calendar('utc') + ' (UTC))') +
-					'.  \n\nClick OK to proceed with the move, or Cancel to skip this move.')) {
-					ctx.statusElement.error('Move of fully protected page was aborted.');
-					ctx.onMoveFailure(this);
-					return;
-				}
+			if (!fnProcessChecks('move', ctx.onMoveFailure, xml)) {
+				return; // abort
 			}
 
 			token = $(xml).find('tokens').attr('csrftoken');
-			if (!token) {
-				ctx.statusElement.error('Failed to retrieve move token.');
-				ctx.onMoveFailure(this);
-				return;
-			}
-
 			pageTitle = $(xml).find('page').attr('title');
 		}
 
@@ -3517,30 +3524,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		} else {
 			var xml = ctx.deleteApi.getXML();
 
-			if ($(xml).find('page').attr('missing') === '') {
-				ctx.statusElement.error('Cannot delete the page, because it no longer exists');
-				ctx.onDeleteFailure(this);
-				return;
-			}
-
-			// extract protection info
-			var editprot = $(xml).find('pr[type="edit"]');
-			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
-				!confirm('You are about to delete the fully protected page "' + ctx.pageName +
-				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.attr('expiry')).calendar('utc') + ' (UTC))') +
-				'.  \n\nClick OK to proceed with the deletion, or Cancel to skip this deletion.')) {
-				ctx.statusElement.error('Deletion of fully protected page was aborted.');
-				ctx.onDeleteFailure(this);
-				return;
+			if (!fnProcessChecks('delete', ctx.onDeleteFailure, xml)) {
+				return; // abort
 			}
 
 			token = $(xml).find('tokens').attr('csrftoken');
-			if (!token) {
-				ctx.statusElement.error('Failed to retrieve delete token.');
-				ctx.onDeleteFailure(this);
-				return;
-			}
-
 			pageTitle = $(xml).find('page').attr('title');
 		}
 
@@ -3595,30 +3583,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		} else {
 			var xml = ctx.undeleteApi.getXML();
 
-			if ($(xml).find('page').attr('missing') !== '') {
-				ctx.statusElement.error('Cannot undelete the page, because it already exists');
-				ctx.onUndeleteFailure(this);
-				return;
-			}
-
-			// extract protection info
-			var editprot = $(xml).find('pr[type="create"]');
-			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
-				!confirm('You are about to undelete the fully create protected page "' + ctx.pageName +
-				(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.attr('expiry')).calendar('utc') + ' (UTC))') +
-				'.  \n\nClick OK to proceed with the undeletion, or Cancel to skip this undeletion.')) {
-				ctx.statusElement.error('Undeletion of fully create protected page was aborted.');
-				ctx.onUndeleteFailure(this);
-				return;
+			if (!fnProcessChecks('undelete', ctx.onUndeleteFailure, xml)) {
+				return; // abort
 			}
 
 			token = $(xml).find('tokens').attr('csrftoken');
-			if (!token) {
-				ctx.statusElement.error('Failed to retrieve undelete token.');
-				ctx.onUndeleteFailure(this);
-				return;
-			}
-
 			pageTitle = $(xml).find('page').attr('title');
 		}
 
@@ -3673,27 +3642,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	var fnProcessProtect = function() {
 		var xml = ctx.protectApi.getXML();
 
-		var missing = $(xml).find('page').attr('missing') === '';
-		if ((ctx.protectEdit || ctx.protectMove) && missing) {
-			ctx.statusElement.error('Cannot protect the page, because it no longer exists');
-			ctx.onProtectFailure(this);
-			return;
+		if (!fnProcessChecks('protect', ctx.onProtectFailure, xml)) {
+			return; // abort
 		}
-		if (ctx.protectCreate && !missing) {
-			ctx.statusElement.error('Cannot create protect the page, because it already exists');
-			ctx.onProtectFailure(this);
-			return;
-		}
-
-		// TODO cascading protection not possible on edit<sysop
 
 		var token = $(xml).find('tokens').attr('csrftoken');
-		if (!token) {
-			ctx.statusElement.error('Failed to retrieve protect token.');
-			ctx.onProtectFailure(this);
-			return;
-		}
-
 		var pageTitle = $(xml).find('page').attr('title');
 
 		// fetch existing protection levels
@@ -3761,20 +3714,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		} else {
 			var xml = ctx.stabilizeApi.getXML();
 
-			var missing = $(xml).find('page').attr('missing') === '';
-			if (missing) {
-				ctx.statusElement.error('Cannot protect the page, because it no longer exists');
-				ctx.onStabilizeFailure(this);
-				return;
+			// 'stabilize' as a verb not necessarily well understood
+			if (!fnProcessChecks('stabilize', ctx.onStabilizeFailure, xml)) {
+				return; // abort
 			}
 
 			token = $(xml).find('tokens').attr('csrftoken');
-			if (!token) {
-				ctx.statusElement.error('Failed to retrieve stabilize token.');
-				ctx.onStabilizeFailure(this);
-				return;
-			}
-
 			pageTitle = $(xml).find('page').attr('title');
 		}
 
