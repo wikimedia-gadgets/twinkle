@@ -100,7 +100,8 @@ Twinkle.talkback.callback = function() {
 		prop: 'extlinks',
 		titles: 'User talk:' + mw.config.get('wgRelevantUserName'),
 		elquery: 'userjs.invalid/noTalkback',
-		ellimit: '1'
+		ellimit: '1',
+		format: 'json'
 	};
 	var wpapi = new Morebits.wiki.api('Fetching talkback opt-out status', query, Twinkle.talkback.callback.optoutStatus);
 	wpapi.post();
@@ -109,10 +110,10 @@ Twinkle.talkback.callback = function() {
 Twinkle.talkback.optout = '';
 
 Twinkle.talkback.callback.optoutStatus = function(apiobj) {
-	var $el = $(apiobj.getXML()).find('el');
-	if ($el.length) {
+	var el = apiobj.getResponse().query.pages[0].extlinks;
+	if (el && el.length) {
 		Twinkle.talkback.optout = mw.config.get('wgRelevantUserName') + ' prefers not to receive talkbacks';
-		var url = $el.text();
+		var url = el[0].url;
 		var reason = mw.util.getParamValue('reason', url);
 		Twinkle.talkback.optout += reason ? ': ' + reason : '.';
 	}

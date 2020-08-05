@@ -59,25 +59,29 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		'prop': 'info',
 		'inprop': 'protection',
 		'titles': mw.config.get('wgPageName'),
-		'gpllimit': Twinkle.getPref('batchMax')
+		'gpllimit': Twinkle.getPref('batchMax'),
+		'format': 'json'
 	};
 	var statelem = new Morebits.status('Grabbing list of pages');
 	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
-		var xml = apiobj.responseXML;
-		var $pages = $(xml).find('page[missing]');
+		var response = apiobj.getResponse();
+		var pages = (response.query && response.query.pages) || [];
+		pages = pages.filter(function(page) {
+			return page.missing;
+		});
 		var list = [];
-		$pages.each(function(index, page) {
-			var $page = $(page);
-			var title = $page.attr('title');
-			var $editprot = $page.find('pr[type="create"][level="sysop"]');
-			var isProtected = $editprot.length > 0;
+		pages.forEach(function(page) {
+			var editProt = page.protection.filter(function(pr) {
+				return pr.type === 'create' && pr.level === 'sysop';
+			}).pop();
 
+			var title = page.title;
 			list.push({
-				label: title + (isProtected ? ' (fully create protected' +
-					($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date($editprot.attr('expiry')).calendar('utc') + ' (UTC)') + ')' : ''),
+				label: title + (editProt ? ' (fully create protected' +
+					(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)') + ')' : ''),
 				value: title,
 				checked: true,
-				style: isProtected ? 'color:red' : ''
+				style: editProt ? 'color:red' : ''
 			});
 		});
 		apiobj.params.form.append({ type: 'header', label: 'Pages to undelete' });
@@ -177,7 +181,8 @@ Twinkle.batchundelete.callbacks = {
 					'prop': 'deletedrevisions',
 					'drvprop': 'ids',
 					'drvlimit': 1,
-					'titles': talkpagename
+					'titles': talkpagename,
+					'format': 'json'
 				};
 				wikipedia_api = new Morebits.wiki.api('Checking talk page for deleted revisions', query, Twinkle.batchundelete.callbacks.undeleteTalk);
 				wikipedia_api.params = params;
@@ -187,19 +192,19 @@ Twinkle.batchundelete.callbacks = {
 		}
 	},
 	undeleteTalk: function(apiobj) {
-		var xml = apiobj.responseXML;
-		var exists = $(xml).find('page:not([missing])').length > 0;
-		var delrevs = $(xml).find('rev').attr('revid');
+		var page = apiobj.getResponse().query.pages[0];
+		var exists = !page.missing;
+		var delrevs = page.deletedrevisions && page.deletedrevisions[0].revid;
 
 		if (exists || !delrevs) {
 			// page exists or has no deleted revisions; forget about it
 			return;
 		}
 
-		var page = new Morebits.wiki.page(apiobj.params.talkPage, 'Undeleting talk page of ' + apiobj.params.page);
-		page.setEditSummary('Undeleting [[Help:Talk page|talk page]] of "' + apiobj.params.page + '"');
-		page.setChangeTags(Twinkle.changeTags);
-		page.undeletePage();
+		var talkpage = new Morebits.wiki.page(apiobj.params.talkPage, 'Undeleting talk page of ' + apiobj.params.page);
+		talkpage.setEditSummary('Undeleting [[Help:Talk page|talk page]] of "' + apiobj.params.page + '"');
+		talkpage.setChangeTags(Twinkle.changeTags);
+		talkpage.undeletePage();
 	}
 };
 

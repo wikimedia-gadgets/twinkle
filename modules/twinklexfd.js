@@ -1021,8 +1021,8 @@ Twinkle.xfd.callbacks = {
 
 	afd: {
 		main: function(apiobj) {
-			var xmlDoc = apiobj.responseXML;
-			var titles = $(xmlDoc).find('allpages p');
+			var response = apiobj.getResponse();
+			var titles = response.query.allpages;
 
 			// There has been no earlier entries with this prefix, just go on.
 			if (titles.length <= 0) {
@@ -1030,7 +1030,7 @@ Twinkle.xfd.callbacks = {
 			} else {
 				var number = 0;
 				for (var i = 0; i < titles.length; ++i) {
-					var title = titles[i].getAttribute('title');
+					var title = titles[i].title;
 
 					// First, simple test, is there an instance with this exact name?
 					if (title === 'Wikipedia:Articles for deletion/' + Morebits.pageNameNorm) {
@@ -1396,8 +1396,8 @@ Twinkle.xfd.callbacks = {
 
 	mfd: {
 		main: function(apiobj) {
-			var xmlDoc = apiobj.responseXML;
-			var titles = $(xmlDoc).find('allpages p');
+			var response = apiobj.getResponse();
+			var titles = response.query.allpages;
 
 			// There has been no earlier entries with this prefix, just go on.
 			if (titles.length <= 0) {
@@ -1405,7 +1405,7 @@ Twinkle.xfd.callbacks = {
 			} else {
 				var number = 0;
 				for (var i = 0; i < titles.length; ++i) {
-					var title = titles[i].getAttribute('title');
+					var title = titles[i].title;
 
 					// First, simple test, is there an instance with this exact name?
 					if (title === 'Wikipedia:Miscellany for deletion/' + Morebits.pageNameNorm) {
@@ -1779,7 +1779,8 @@ Twinkle.xfd.callbacks = {
 			// avoid relying on the client clock to build the log page
 			var query = {
 				'action': 'query',
-				'curtimestamp': true
+				'curtimestamp': true,
+				'format': 'json'
 			};
 			if (document.getElementById('softredirect')) {
 				// For soft redirects, define the target early
@@ -1797,11 +1798,11 @@ Twinkle.xfd.callbacks = {
 		// This is a closure for the callback from the above API request, which gets the target of the redirect
 		findTargetCallback: function(callback) {
 			return function(apiobj) {
-				var $xmlDoc = $(apiobj.responseXML);
-				var curtimestamp = $xmlDoc.find('api').attr('curtimestamp');
-				apiobj.params.curtimestamp = curtimestamp;
+				var response = apiobj.getResponse();
+				apiobj.params.curtimestamp = response.curtimestamp;
+
 				if (!apiobj.params.rfdtarget) { // Not a softredirect
-					var target = $xmlDoc.find('redirects r').first().attr('to');
+					var target = response.query.redirects && response.query.redirects[0].to;
 					if (!target) {
 						var message = 'No target found. this page does not appear to be a redirect, aborting';
 						if (mw.config.get('wgAction') === 'history') {
@@ -1811,7 +1812,7 @@ Twinkle.xfd.callbacks = {
 						return;
 					}
 					apiobj.params.rfdtarget = target;
-					var section = $xmlDoc.find('redirects r').first().attr('tofragment');
+					var section = response.query.redirects[0].tofragment;
 					apiobj.params.section = section;
 				}
 				callback(apiobj.params);
@@ -1993,7 +1994,8 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				'apprefix': 'Articles for deletion/' + Morebits.pageNameNorm,
 				'apnamespace': 4,
 				'apfilterredir': 'nonredirects',
-				'aplimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
+				'aplimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
+				'format': 'json'
 			};
 			wikipedia_api = new Morebits.wiki.api('Tagging article with deletion tag', query, Twinkle.xfd.callbacks.afd.main);
 			wikipedia_api.params = params;
@@ -2035,7 +2037,8 @@ Twinkle.xfd.callback.evaluate = function(e) {
 				'apprefix': 'Miscellany for deletion/' + Morebits.pageNameNorm,
 				'apnamespace': 4,
 				'apfilterredir': 'nonredirects',
-				'aplimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
+				'aplimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
+				'format': 'json'
 			};
 			wikipedia_api = new Morebits.wiki.api('Looking for prior nominations of this page', query, Twinkle.xfd.callbacks.mfd.main);
 			wikipedia_api.params = params;

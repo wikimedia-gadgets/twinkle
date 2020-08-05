@@ -52,7 +52,8 @@ Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 		'rvlimit': 1,
 		'rvprop': [ 'ids', 'user' ],
 		'rvstartid': mw.config.get('wgCurRevisionId') - 1, // i.e. not the current one
-		'rvuser': user
+		'rvuser': user,
+		'format': 'json'
 	};
 	Morebits.status.init(document.getElementById('mw-content-text'));
 	var wikipedia_api = new Morebits.wiki.api('Grabbing data of initial contributor', query, Twinkle.diff.callbacks.main);
@@ -62,8 +63,8 @@ Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 
 Twinkle.diff.callbacks = {
 	main: function(self) {
-		var xmlDoc = self.responseXML;
-		var revid = $(xmlDoc).find('rev').attr('revid');
+		var rev = self.response.query.pages[0].revisions;
+		var revid = rev && rev[0].revid;
 
 		if (!revid) {
 			self.statelem.error('no suitable earlier revision found, or ' + self.params.user + ' is the only contributor. Aborting.');

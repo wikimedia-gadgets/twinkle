@@ -1175,12 +1175,14 @@ Twinkle.speedy.callbacks = {
 			pst: 'true',
 			text: wikitext,
 			contentmodel: 'wikitext',
-			title: mw.config.get('wgPageName')
+			title: mw.config.get('wgPageName'),
+			disablelimitreport: true,
+			format: 'json'
 		};
 
 		var statusIndicator = new Morebits.status('Building deletion summary');
-		var api = new Morebits.wiki.api('Parsing deletion template', query, function(apiObj) {
-			var reason = decodeURIComponent($(apiObj.getXML().querySelector('text').childNodes[0].nodeValue).find('#delete-reason').text()).replace(/\+/g, ' ');
+		var api = new Morebits.wiki.api('Parsing deletion template', query, function(apiobj) {
+			var reason = decodeURIComponent($(apiobj.getResponse().parse.text).find('#delete-reason').text()).replace(/\+/g, ' ');
 			if (!reason) {
 				statusIndicator.warn('Unable to generate summary from deletion template');
 			} else {
@@ -1349,7 +1351,8 @@ Twinkle.speedy.callbacks = {
 					'action': 'query',
 					'titles': mw.config.get('wgPageName'),
 					'prop': 'redirects',
-					'rdlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
+					'rdlimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
+					'format': 'json'
 				};
 				var wikipedia_api = new Morebits.wiki.api('getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
 					new Morebits.status('Deleting redirects'));
@@ -1394,9 +1397,9 @@ Twinkle.speedy.callbacks = {
 			}
 		},
 		deleteRedirectsMain: function(apiobj) {
-			var xmlDoc = apiobj.getXML();
-			var $snapshot = $(xmlDoc).find('redirects rd');
-			var total = $snapshot.length;
+			var response = apiobj.getResponse();
+			var snapshot = response.query.pages[0].redirects || [];
+			var total = snapshot.length;
 			var statusIndicator = apiobj.statelem;
 
 			if (!total) {
@@ -1419,8 +1422,8 @@ Twinkle.speedy.callbacks = {
 
 			Morebits.wiki.addCheckpoint();
 
-			$snapshot.each(function(key, value) {
-				var title = $(value).attr('title');
+			snapshot.forEach(function(value) {
+				var title = value.title;
 				var page = new Morebits.wiki.page(title, 'Deleting redirect "' + title + '"');
 				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + Morebits.pageNameNorm + '"');
 				page.setChangeTags(Twinkle.changeTags);
