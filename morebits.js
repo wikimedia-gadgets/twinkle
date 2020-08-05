@@ -3754,7 +3754,8 @@ Morebits.wiki.preview = function(previewbox) {
 			prop: 'text',
 			pst: 'true',  // PST = pre-save transform; this makes substitution work properly
 			text: wikitext,
-			title: pageTitle || mw.config.get('wgPageName')
+			title: pageTitle || mw.config.get('wgPageName'),
+			disablelimitreport: true
 		};
 		var renderApi = new Morebits.wiki.api('loading...', query, fnRenderSuccess, new Morebits.status('Preview'));
 		renderApi.post();
