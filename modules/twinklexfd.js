@@ -714,6 +714,24 @@ Twinkle.xfd.setWatchPref = function twinklexfdsetWatchPref(pageobj, pref) {
 };
 
 Twinkle.xfd.callbacks = {
+	// Requires having the tag text (params.tagText) set ahead of time
+	autoEditRequest: function(pageobj, params) {
+		// Update the form
+		pageobj.getStatusElement().warn('Page protected, requesting edit');
+
+		var editRequest = '{{subst:Xfd edit protected|page=' + pageobj.getPageName() +
+			'|discussion=' + params.discussionpage + '|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
+
+		var talk_page = new Morebits.wiki.page(new mw.Title(pageobj.getPageName()).getTalkPage().toText(), 'Automatically posting edit request on talk page');
+		talk_page.setNewSectionTitle('Edit request to complete ' + utils.toTLACase(params.venue) + ' nomination');
+		talk_page.setNewSectionText(editRequest);
+		talk_page.setCreateOption('recreate');
+		Twinkle.xfd.setWatchPref(talk_page, Twinkle.getPref('xfdWatchPage'));
+		talk_page.setFollowRedirect(true);  // should never be needed, but if the article is moved, we would want to follow the redirect
+		talk_page.setChangeTags(Twinkle.changeTags);
+		talk_page.setCallbackParameters(params);
+		talk_page.newSection();
+	},
 	getDiscussionWikitext: function(venue, params) {
 		if (venue === 'cfds') { // CfD/S takes a completely different style
 			return '* [[:' + Morebits.pageNameNorm + ']] to [[:' + params.cfdstarget + ']]\u00A0\u2013 ' +
@@ -1010,26 +1028,30 @@ Twinkle.xfd.callbacks = {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			}
 
-			// Remove some tags that should always be removed on AfD.
-			text = text.replace(/\{\{\s*(dated prod|dated prod blp|Prod blp\/dated|Proposed deletion\/dated|prod2|Proposed deletion endorsed|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
-			// Then, test if there are speedy deletion-related templates on the article.
-			var textNoSd = text.replace(/\{\{\s*(db(-\w*)?|delete|(?:hang|hold)[- ]?on)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
-			if (text !== textNoSd && confirm('A speedy deletion tag was found on this page. Should it be removed?')) {
-				text = textNoSd;
-			}
-
-			var tag = (params.noinclude ? '<noinclude>{{' : '{{') + (params.number === '' ? 'subst:afd|help=off' : 'subst:afdx|' +
+			params.tagText = (params.noinclude ? '<noinclude>{{' : '{{') + (params.number === '' ? 'subst:afd|help=off' : 'subst:afdx|' +
 					params.number + '|help=off') + (params.noinclude ? '}}</noinclude>\n' : '}}\n');
 
-			// Insert tag after short description or any hatnotes
-			var wikipage = new Morebits.wikitext.page(text);
-			text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
+			if (pageobj.canEdit()) {
+			// Remove some tags that should always be removed on AfD.
+				text = text.replace(/\{\{\s*(dated prod|dated prod blp|Prod blp\/dated|Proposed deletion\/dated|prod2|Proposed deletion endorsed|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
+				// Then, test if there are speedy deletion-related templates on the article.
+				var textNoSd = text.replace(/\{\{\s*(db(-\w*)?|delete|(?:hang|hold)[- ]?on)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
+				if (text !== textNoSd && confirm('A speedy deletion tag was found on this page. Should it be removed?')) {
+					text = textNoSd;
+				}
 
-			pageobj.setPageText(text);
-			pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			pageobj.setCreateOption('nocreate');
-			pageobj.save();
+				// Insert tag after short description or any hatnotes
+				var wikipage = new Morebits.wikitext.page(text);
+				text = wikipage.insertAfterTemplates(params.tagText, Twinkle.hatnoteRegex).getText();
+
+				pageobj.setPageText(text);
+				pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
+				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setCreateOption('nocreate');
+				pageobj.save();
+			} else {
+				Twinkle.xfd.callbacks.autoEditRequest(pageobj, params);
+			}
 		},
 		discussionPage: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
@@ -1209,31 +1231,43 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var tableNewline = params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : ''; // No newline for inline
 
-			pageobj.setPageText((params.noinclude ? '<noinclude>' : '') + '{{subst:template for discussion|help=off' +
-				(params.templatetype !== 'standard' ? '|type=' + params.templatetype : '') + (params.noinclude ? '}}</noinclude>' : '}}') + tableNewline + text);
-			pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
-			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			if (params.scribunto) {
-				pageobj.setCreateOption('recreate'); // Module /doc might not exist
+			params.tagText = (params.noinclude ? '<noinclude>' : '') + '{{subst:template for discussion|help=off' +
+				(params.templatetype !== 'standard' ? '|type=' + params.templatetype : '') + (params.noinclude ? '}}</noinclude>' : '}}') + tableNewline;
+
+			if (pageobj.canEdit()) {
+				pageobj.setPageText(params.tagText + text);
+				pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
+				pageobj.setChangeTags(Twinkle.changeTags);
+				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				if (params.scribunto) {
+					pageobj.setCreateOption('recreate'); // Module /doc might not exist
+				}
+				pageobj.save();
+			} else {
+				Twinkle.xfd.callbacks.autoEditRequest(pageobj, params);
 			}
-			pageobj.save();
 		},
 		taggingTemplateForMerge: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 			var tableNewline = params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : ''; // No newline for inline
 
-			pageobj.setPageText((params.noinclude ? '<noinclude>' : '') + '{{subst:tfm|help=off|' +
+			params.tagText = (params.noinclude ? '<noinclude>' : '') + '{{subst:tfm|help=off|' +
 				(params.templatetype !== 'standard' ? 'type=' + params.templatetype + '|' : '') + '1=' + params.otherTemplateName.replace(/^(?:Template|Module):/, '') +
-				(params.noinclude ? '}}</noinclude>' : '}}') + tableNewline + text);
-			pageobj.setEditSummary('Listed for merging with [[:' + params.otherTemplateName + ']]; see [[:' + params.discussionpage + ']].');
-			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			if (params.scribunto) {
-				pageobj.setCreateOption('recreate'); // Module /doc might not exist
+				(params.noinclude ? '}}</noinclude>' : '}}') + tableNewline;
+
+			if (pageobj.canEdit()) {
+				pageobj.setPageText(params.tagText + text);
+				pageobj.setEditSummary('Listed for merging with [[:' + params.otherTemplateName + ']]; see [[:' + params.discussionpage + ']].');
+				pageobj.setChangeTags(Twinkle.changeTags);
+				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				if (params.scribunto) {
+					pageobj.setCreateOption('recreate'); // Module /doc might not exist
+				}
+				pageobj.save();
+			} else {
+				Twinkle.xfd.callbacks.autoEditRequest(pageobj, params);
 			}
-			pageobj.save();
 		},
 		todaysList: function(pageobj) {
 			var old_text = pageobj.getPageText();
@@ -1379,14 +1413,20 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText((params.noinclude ? '<noinclude>' : '') + '{{' +
+			params.tagText = (params.noinclude ? '<noinclude>' : '') + '{{' +
 				(params.number === '' ? 'mfd' : 'mfdx|' + params.number) + '|help=off}}\n' +
-				(params.noinclude ? '</noinclude>' : '') + text);
-			pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
-			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			pageobj.setCreateOption('nocreate');
-			pageobj.save();
+				(params.noinclude ? '</noinclude>' : '');
+
+			if (pageobj.canEdit()) {
+				pageobj.setPageText(params.tagText + text);
+				pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
+				pageobj.setChangeTags(Twinkle.changeTags);
+				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setCreateOption('nocreate');
+				pageobj.save();
+			} else {
+				Twinkle.xfd.callbacks.autoEditRequest(pageobj, params);
+			}
 		},
 		discussionPage: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
@@ -1480,14 +1520,19 @@ Twinkle.xfd.callbacks = {
 			params.logpage = 'Wikipedia:Files for discussion/' + date;
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
 
-			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
+			params.tagText = '{{ffd|log=' + date + '|help=off}}\n';
+			if (pageobj.canEdit()) {
+				text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
 
-			pageobj.setPageText('{{ffd|log=' + date + '|help=off}}\n' + text);
-			pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
-			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			pageobj.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
-			pageobj.save();
+				pageobj.setPageText(params.tagText + text);
+				pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
+				pageobj.setChangeTags(Twinkle.changeTags);
+				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
+				pageobj.save();
+			} else {
+				Twinkle.xfd.callbacks.autoEditRequest(pageobj, params);
+			}
 
 			// Updating data for the action completed event
 			Morebits.wiki.actionCompleted.redirect = params.logpage;
@@ -1596,7 +1641,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			var added_data = '{{subst:' + params.xfdcat;
+			params.tagText = '{{subst:' + params.xfdcat;
 			var editsummary = (mw.config.get('wgNamespaceNumber') === 14 ? 'Category' : 'Stub template') +
 				' being considered for ' + params.action;
 			switch (params.xfdcat) {
@@ -1609,24 +1654,28 @@ Twinkle.xfd.callbacks = {
 				case 'cfm':
 				case 'cfr':
 				case 'sfr-t':
-					added_data += '|' + params.cfdtarget;
+					params.tagText += '|' + params.cfdtarget;
 					break;
 				case 'cfs':
-					added_data += '|' + params.cfdtarget + '|' + params.cfdtarget2;
+					params.tagText += '|' + params.cfdtarget + '|' + params.cfdtarget2;
 					break;
 				default:
 					alert('twinklexfd in taggingCategory(): unknown CFD action');
 					break;
 			}
-			added_data += '}}';
+			params.tagText += '}}\n';
 			editsummary += '; see [[:' + params.discussionpage + ']].';
 
-			pageobj.setPageText(added_data + '\n' + text);
-			pageobj.setEditSummary(editsummary);
-			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
-			pageobj.save();
+			if (pageobj.canEdit()) {
+				pageobj.setPageText(params.tagText + text);
+				pageobj.setEditSummary(editsummary);
+				pageobj.setChangeTags(Twinkle.changeTags);
+				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
+				pageobj.save();
+			} else {
+				Twinkle.xfd.callbacks.autoEditRequest(pageobj, params);
+			}
 		},
 		todaysList: function(pageobj) {
 			var old_text = pageobj.getPageText();
@@ -1685,15 +1734,22 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText('{{subst:cfr-speedy|1=' + params.cfdstarget.replace(/^:?Category:/, '') + '}}\n' + text);
-			pageobj.setEditSummary('Listed for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]].');
-			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
-			pageobj.save(function() {
+			params.tagText = '{{subst:cfr-speedy|1=' + params.cfdstarget.replace(/^:?Category:/, '') + '}}\n';
+			if (pageobj.canEdit()) {
+				pageobj.setPageText(params.tagText + text);
+				pageobj.setEditSummary('Listed for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]].');
+				pageobj.setChangeTags(Twinkle.changeTags);
+				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
+				pageobj.save(function() {
+					// No user notification for CfDS, so just add this nomination to the user's userspace log
+					Twinkle.xfd.callbacks.addToLog(params, null);
+				});
+			} else {
+				Twinkle.xfd.callbacks.autoEditRequest(pageobj, params);
 				// No user notification for CfDS, so just add this nomination to the user's userspace log
 				Twinkle.xfd.callbacks.addToLog(params, null);
-			});
+			}
 		},
 		addToList: function(pageobj) {
 			var old_text = pageobj.getPageText();
@@ -1797,12 +1853,19 @@ Twinkle.xfd.callbacks = {
 		taggingRedirect: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
-			pageobj.setPageText('{{subst:rfd|' + (mw.config.get('wgNamespaceNumber') === 10 ? 'showontransclusion=1|' : '') + 'content=\n' + text + '\n}}');
-			pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
-			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			pageobj.setCreateOption('nocreate');
-			pageobj.save();
+			// Imperfect for edit request but so be it
+			params.tagText = '{{subst:rfd|' + (mw.config.get('wgNamespaceNumber') === 10 ? 'showontransclusion=1|' : '') + 'content=\n';
+
+			if (pageobj.canEdit()) {
+				pageobj.setPageText(params.tagText + text + '\n}}');
+				pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
+				pageobj.setChangeTags(Twinkle.changeTags);
+				Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+				pageobj.setCreateOption('nocreate');
+				pageobj.save();
+			} else {
+				Twinkle.xfd.callbacks.autoEditRequest(pageobj, params);
+			}
 		},
 		todaysList: function(pageobj) {
 			var old_text = pageobj.getPageText();
