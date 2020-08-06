@@ -2090,6 +2090,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		pageExists: false,
 		editSummary: null,
 		changeTags: null,
+		testActions: null,  // array if any valid actions
 		callbackParameters: null,
 		statusElement: new Morebits.status(currentAction),
 
@@ -2205,6 +2206,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.loadQuery = {
 			action: 'query',
 			prop: 'info|revisions',
+			intestactions: 'edit', // can be expanded
 			curtimestamp: '',
 			meta: 'tokens',
 			type: 'csrf',
@@ -2757,6 +2759,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		return ctx.timestamp;
 	};
 
+	/** @returns {boolean} whether or not you can edit the page */
+	this.canEdit = function() {
+		return !!ctx.testActions && ctx.testActions.indexOf('edit') !== -1;
+	};
+
 	/**
 	 * Retrieves the username of the user who created the page as well as
 	 * the timestamp of creation
@@ -3187,6 +3194,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		ctx.lastEditTime = $(xml).find('rev').attr('timestamp');
 		ctx.revertCurID = $(xml).find('page').attr('lastrevid');
+
+		var testactions = $(xml).find('actions');
+		if (testactions.length) {
+			ctx.testActions = []; // was null
+			$.each(testactions[0].attributes, function(_idx, value) {
+				ctx.testActions.push(value.name);
+			});
+		}
 
 		if (ctx.editMode === 'revert') {
 			ctx.revertCurID = $(xml).find('rev').attr('revid');
