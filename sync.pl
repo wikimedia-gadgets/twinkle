@@ -198,6 +198,9 @@ sub forReal {
     usage();
   }
 
+  # Set base URL for the project, used for API, etc.
+  $conf{url} ||= "https://$conf{lang}.$conf{family}.org";
+
   my @inputs;
   my @allFiles = map { split } <DATA>;
   if ($conf{all}) {
@@ -223,9 +226,6 @@ sub forReal {
       usage();
     }
   }
-
-  # Set base URL for the project, used for API, etc.
-  $conf{url} ||= "https://$conf{lang}.$conf{family}.org";
 
   # Quick exit
   if ($conf{dry}) {
