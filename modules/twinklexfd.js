@@ -837,7 +837,7 @@ Twinkle.xfd.callbacks = {
 		}
 		appendText += ' ~~~~~';
 		if (params.reason) {
-			appendText += "\n#* '''Reason''': " + params.reason;
+			appendText += "\n#* '''Reason''': " + params.reason.replace(/\n+/g, '{{pb}}');
 		}
 
 		usl.log(appendText, editsummary + Twinkle.getPref('summaryAd'));

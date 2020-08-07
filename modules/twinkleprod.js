@@ -386,7 +386,7 @@ Twinkle.prod.callbacks = {
 		if (params.logEndorsing) {
 			logText += 'endorsed ' + (params.blp ? 'BLP ' : params.book ? 'BOOK' : '') + 'PROD. ~~~~~';
 			if (params.reason) {
-				logText += "\n#* '''Reason''': " + params.reason + '\n';
+				logText += "\n#* '''Reason''': " + params.reason.replace(/\n+/g, '{{pb}}') + '\n';
 			}
 			summaryText = 'Logging endorsement of PROD nomination of [[:' + Morebits.pageNameNorm + ']].';
 		} else {
@@ -396,7 +396,7 @@ Twinkle.prod.callbacks = {
 			}
 			logText += ' ~~~~~\n';
 			if (!params.blp && params.reason) {
-				logText += "#* '''Reason''': " + params.reason + '\n';
+				logText += "#* '''Reason''': " + params.reason.replace(/\n+/g, '{{pb}}') + '\n';
 			}
 			summaryText = 'Logging PROD nomination of [[:' + Morebits.pageNameNorm + ']].';
 		}
