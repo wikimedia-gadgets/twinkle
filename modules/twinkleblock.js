@@ -779,8 +779,8 @@ Twinkle.block.blockPresetsInfo = {
 		expiry: 'infinity',
 		forRegisteredOnly: true,
 		nocreate: true,
-		reason: '{{uw-botuhblock}} <!-- Username implies a bot, [[WP:NOTHERE]], hard block -->',
-		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] contains the suffix "-bot" and your contributions do not suggest that you are here to contribute constructively to the encyclopedia.'
+		reason: '{{uw-botuhblock}} <!-- Username implies a bot, hard block -->',
+		summary: 'You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]].'
 	},
 	'uw-causeblock': {
 		expiry: 'infinity',
