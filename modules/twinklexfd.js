@@ -917,12 +917,7 @@ Twinkle.xfd.callbacks = {
 
 			// Now we know we want to go ahead with it, trigger the other AJAX requests
 
-			// Mark the page as curated/patrolled, if wanted
-			if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
-				pageobj.triage();
-			}
-
-			// Starting discussion page
+			// Start discussion page, will also handle pagetriage and delsort listings
 			var wikipedia_page = new Morebits.wiki.page(params.discussionpage, 'Creating article deletion discussion page');
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.discussionPage);
@@ -943,16 +938,6 @@ Twinkle.xfd.callbacks = {
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
 			} else {
 				Twinkle.xfd.callbacks.addToLog(params, null);
-			}
-
-			// List at deletion sorting pages
-			if (params.delsortCats) {
-				params.delsortCats.forEach(function (cat) {
-					var delsortPage = new Morebits.wiki.page('Wikipedia:WikiProject Deletion sorting/' + cat, 'Adding to list of ' + cat + '-related deletion discussions');
-					delsortPage.setFollowRedirect(true); // In case a category gets renamed
-					delsortPage.setCallbackParameters({discussionPage: params.discussionpage});
-					delsortPage.load(Twinkle.xfd.callbacks.afd.delsortListing);
-				});
 			}
 
 			// Remove some tags that should always be removed on AfD.
@@ -985,6 +970,22 @@ Twinkle.xfd.callbacks = {
 			pageobj.setCreateOption('createonly');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+
+				// Actions that should wait on the discussion page actually being created
+				// and whose errors shouldn't output the user rationale
+				// List at deletion sorting pages
+				if (params.delsortCats) {
+					params.delsortCats.forEach(function (cat) {
+						var delsortPage = new Morebits.wiki.page('Wikipedia:WikiProject Deletion sorting/' + cat, 'Adding to list of ' + cat + '-related deletion discussions');
+						delsortPage.setFollowRedirect(true); // In case a category gets renamed
+						delsortPage.setCallbackParameters({discussionPage: params.discussionpage});
+						delsortPage.load(Twinkle.xfd.callbacks.afd.delsortListing);
+					});
+				}
+				// Mark the page as curated/patrolled, if wanted
+				if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
+					pageobj.triage();
+				}
 			});
 		},
 		todaysList: function(pageobj) {
