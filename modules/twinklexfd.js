@@ -62,6 +62,20 @@ var utils = {
 			return title;  // user entered invalid input; do nothing
 		}
 		return title_obj.toText();
+	},
+
+	/**
+	 * Provide Wikipedian TLA style: AfD, RfD, CfDS, RM, SfD, etc.
+	 * @param {string} venue
+	 * @returns {string}
+	 */
+	toTLACase: function(venue) {
+		return venue
+			.toString()
+			// Everybody up, inclduing rm and the terminal s in cfds
+			.toUpperCase()
+			// Lowercase the central f in a given TLA and normalize sfd-t and sfr-t
+			.replace(/(.)F(.)(?:-.)?/, '$1f$2');
 	}
 };
 
@@ -516,7 +530,6 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 					// update enabled status
 					cfdtarget.disabled = value === 'cfd' || value === 'sfd-t';
-					cfdtarget.required = value !== 'cfd' && value !== 'sfd-t';
 
 					if (isCategory) {
 						// update label
@@ -528,14 +541,20 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 							Morebits.quickForm.setElementLabel(cfdtarget, 'Target category: ');
 						}
 						// add/remove extra input box
-						if (value === 'cfs' && !cfdtarget2) {
-							cfdtarget2 = document.createElement('input');
-							cfdtarget2.setAttribute('name', 'cfdtarget2');
-							cfdtarget2.setAttribute('type', 'text');
-							cfdtarget2.setAttribute('required', 'true');
-							cfdtarget.parentNode.appendChild(cfdtarget2);
+						if (value === 'cfs') {
+							if (cfdtarget2) {
+								cfdtarget2.disabled = false;
+								$(cfdtarget2).show();
+							} else {
+								cfdtarget2 = document.createElement('input');
+								cfdtarget2.setAttribute('name', 'cfdtarget2');
+								cfdtarget2.setAttribute('type', 'text');
+								cfdtarget2.setAttribute('required', 'true');
+								cfdtarget.parentNode.appendChild(cfdtarget2);
+							}
 						} else {
-							$(cfdtarget2).remove();
+							$(cfdtarget2).prop('disabled', true);
+							$(cfdtarget2).hide();
 						}
 					} else { // Update stub template label
 						Morebits.quickForm.setElementLabel(cfdtarget, 'Target stub template: ');
@@ -558,6 +577,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				name: 'cfdtarget',
 				label: 'Target category: ', // default, changed above
 				disabled: true,
+				required: true, // only when enabled
 				value: ''
 			});
 			appendReasonBox();
@@ -726,17 +746,14 @@ Twinkle.xfd.callbacks = {
 
 		if (params.rfdtarget) {
 			text += '|target=' + params.rfdtarget + (params.section ? '#' + params.section : '');
-		}
-		if (params.tfdtarget) {
+		} else if (params.tfdtarget) {
 			text += '|2=' + params.tfdtarget;
-		}
-		if (params.cfdtarget) {
+		} else if (params.cfdtarget) {
 			text += '|2=' + params.cfdtarget;
-		}
-		if (params.cfdtarget2) {
-			text += '|3=' + params.cfdtarget2;
-		}
-		if (params.uploader) {
+			if (params.cfdtarget2) {
+				text += '|3=' + params.cfdtarget2;
+			}
+		} else if (params.uploader) {
 			text += '|Uploader=' + params.uploader;
 		}
 
@@ -759,7 +776,7 @@ Twinkle.xfd.callbacks = {
 		}
 	},
 	preview: function(form) {
-		// venue, reason, xfdcat, cfdtarget, cfdtarget2, delsortCats, newname
+		// venue, reason, xfdcat, tfdtarget, cfdtarget, cfdtarget2, cfdstarget, delsortCats, newname
 		var params = Morebits.quickForm.getInputData(form);
 
 		var venue = params.venue;
@@ -767,14 +784,12 @@ Twinkle.xfd.callbacks = {
 		// Remove CfD or TfD namespace prefixes if given
 		if (params.tfdtarget) {
 			params.tfdtarget = utils.stripNs(params.tfdtarget);
-		}
-		if (params.cfdtarget) {
+		} else if (params.cfdtarget) {
 			params.cfdtarget = utils.stripNs(params.cfdtarget);
-		}
-		if (params.cfdtarget2) {
-			params.cfdtarget2 = utils.stripNs(params.cfdtarget2);
-		}
-		if (params.cfdstarget) { // Add namespace if not given (CFDS)
+			if (params.cfdtarget2) {
+				params.cfdtarget2 = utils.stripNs(params.cfdtarget2);
+			}
+		} else if (params.cfdstarget) { // Add namespace if not given (CFDS)
 			params.cfdstarget = utils.addNs(params.cfdstarget, 14);
 		}
 
@@ -808,18 +823,13 @@ Twinkle.xfd.callbacks = {
 			'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].' +
 			(Morebits.userIsSysop ? '\n\nThis log does not track XfD-related deletions made using Twinkle.' : '');
 
-		var editsummary = 'Logging ' + toTLACase(params.venue) + ' nomination of [[:' + Morebits.pageNameNorm + ']].';
-		// Provide Wikipedian TLA style: AfD, RfD, CfDS, RM, SfD, etc.
-		var toTLACase = function(str) {
-			// return str.toString().toUpperCase().replace(/\BF/, 'f');
-			return str.toString().toUpperCase().replace(/(.)F(.)(?:-.)?/, '$1f$2');
-		};
+		var editsummary = 'Logging ' + utils.toTLACase(params.venue) + ' nomination of [[:' + Morebits.pageNameNorm + ']].';
 		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
 		var fileLogLink = mw.config.get('wgNamespaceNumber') === 6 ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])' : '';
 		// CFD/S and RM don't have canonical links
 		var nominatedLink = params.discussionpage ? '[[' + params.discussionpage + '|nominated]]' : 'nominated';
 
-		var appendText = '# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ' ' + nominatedLink + ' at [[WP:' + params.venue.toUpperCase() + '|' + toTLACase(params.venue) + ']]';
+		var appendText = '# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ' ' + nominatedLink + ' at [[WP:' + params.venue.toUpperCase() + '|' + utils.toTLACase(params.venue) + ']]';
 		var extraInfo = '';
 
 		switch (params.venue) {
@@ -842,7 +852,7 @@ Twinkle.xfd.callbacks = {
 				}
 				break;
 			case 'cfd':
-				appendText += ' (' + toTLACase(params.xfdcat) + ')';
+				appendText += ' (' + utils.toTLACase(params.xfdcat) + ')';
 				if (params.cfdtarget) {
 					var categoryOrTemplate = params.xfdcat.charAt(0) === 's' ? 'Template:' : ':Category:';
 					extraInfo += '; ' + params.action + ' to: [[' + categoryOrTemplate + params.cfdtarget + ']]';
@@ -852,7 +862,7 @@ Twinkle.xfd.callbacks = {
 				}
 				break;
 			case 'cfds':
-				appendText += ' (' + toTLACase(params.xfdcat) + ')';
+				appendText += ' (' + utils.toTLACase(params.xfdcat) + ')';
 				// Ensure there's more than just 'Category:'
 				if (params.cfdstarget && params.cfdstarget.length > 9) {
 					extraInfo += '; New name: [[:' + params.cfdstarget + ']]';
@@ -1822,8 +1832,6 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			Morebits.wiki.addCheckpoint();
 			if (params.tfdtarget) { // remove namespace name
 				params.tfdtarget = utils.stripNs(params.tfdtarget);
-			} else { // XXX: is this needed?
-				params.tfdtarget = '';
 			}
 
 			params.logpage = 'Wikipedia:Templates for discussion/Log/' + date.format('YYYY MMMM D', 'utc'),
