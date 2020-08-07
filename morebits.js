@@ -1762,7 +1762,7 @@ Morebits.wiki.api.prototype = {
 		var queryString = $.map(this.query, function(val, i) {
 			if (Array.isArray(val)) {
 				return encodeURIComponent(i) + '=' + val.map(encodeURIComponent).join('|');
-			} else if (val !== undefined) {
+			} else if (val !== undefined && val !== null) {
 				return encodeURIComponent(i) + '=' + encodeURIComponent(val);
 			}
 		}).join('&').replace(/^(.*?)(\btoken=[^&]*)&(.*)/, '$1$3&$2');
