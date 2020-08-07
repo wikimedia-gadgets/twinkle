@@ -1154,7 +1154,8 @@ Twinkle.block.blockGroups = [
 	{
 		label: 'Username violations',
 		list: [
-			{ label: 'Bot username', value: 'uw-botublock' },
+			{ label: 'Bot username, soft block', value: 'uw-botublock' },
+			{ label: 'Bot username, hard block', value: 'uw-botuhblock' },
 			{ label: 'Promotional username, hard block', value: 'uw-spamublock' },
 			{ label: 'Promotional username, soft block', value: 'uw-softerblock' },
 			{ label: 'Similar username soft block', value: 'uw-ublock-double' },
