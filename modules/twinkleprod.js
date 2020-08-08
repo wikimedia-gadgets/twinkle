@@ -226,7 +226,7 @@ Twinkle.prod.callbacks = {
 		var params = pageobj.getCallbackParameters();
 
 		// Check for already existing deletion tags
-		var tag_re = /{{(?:db-?|delete|article for deletion\/dated|ffd\b)|#invoke:RfD/i;
+		var tag_re = /{{(?:db-?|delete|article for deletion\/dated|AfDM|ffd\b)|#invoke:RfD/i;
 		if (tag_re.test(text)) {
 			statelem.warn('Page already tagged with a deletion template, aborting procedure');
 			return;
