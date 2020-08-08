@@ -10,7 +10,7 @@
 		"mw": "readonly",
 		"Map": "readonly"
 	},
-	"ignorePatterns": ["scripts/", "tests/", "lib/"],
+	"ignorePatterns": ["scripts/", "tests/", "lib/", "docs/", "jsdocs/"],
 	"rules": {
 		"no-console": "error",
 		"no-extra-parens": ["error", "all", { "nestedBinaryExpressions": false }],

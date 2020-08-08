@@ -1,0 +1,23 @@
+{
+	"plugins": [
+		"plugins/summarize",
+		"plugins/markdown"
+	],
+	"source": {
+		"include": ["morebits.js"],
+		"exclude": ["*"] // Limit to just morebits.js (for now)
+	},
+	"opts": {
+		"destination": "./docs/",
+		"template": "node_modules/jsdoc-baseline"
+	},
+	"templates": {
+		"default": {
+			"outputSourceFiles": false,
+			"useLongnameInNav": true
+		}
+	},
+	"markdown": {
+		"idInHeadings": true
+	}
+}

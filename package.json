@@ -10,12 +10,21 @@
 		"server": "node scripts/server.js",
 		"sync": "perl scripts/sync.pl",
 		"test": "qunit --require ./tests/mocking/mb_repl.js ./tests/*",
-		"deployall": "perl scripts/sync.pl --mode=deploy --all"
+		"deployall": "perl scripts/sync.pl --mode=deploy --all",
+		"wiki": "jsdoc2md --no-gfm --partial jsdocs/main.hbs --helper jsdocs/generatedDate.js --files morebits.js > docs/morebits.md",
+		"ghpages": "jsdoc -c jsdocs/conf.json",
+		"docs": "jsdocs/docs.sh",
+		"jsdoc": "eslint -c jsdocs/jsdoc.json morebits.js",
+		"jsdoc:fix": "eslint -c jsdocs/jsdoc.json morebits.js --fix"
 	},
 	"devDependencies": {
 		"eslint": "^7.21.0",
 		"eslint-plugin-es5": "^1.5.0",
+		"eslint-plugin-jsdoc": "^32.2.0",
 		"jquery": "^3.6.0",
+		"jsdoc": "^3.6.6",
+		"jsdoc-baseline": "^0.1.5",
+		"jsdoc-to-markdown": "^7.0.0",
 		"jsdom": "^16.5.0",
 		"qunit": "^2.14.0"
 	}
