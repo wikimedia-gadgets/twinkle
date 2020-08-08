@@ -774,6 +774,14 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '{{uw-botublock}} <!-- Username implies a bot, soft block -->',
 		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] indicates this is a [[WP:BOT|bot]] account, which is currently not approved'
 	},
+	'uw-botuhblock': {
+		autoblock: true,
+		expiry: 'infinity',
+		forRegisteredOnly: true,
+		nocreate: true,
+		reason: '{{uw-botuhblock}} <!-- Username implies a bot, hard block -->',
+		summary: 'You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]].'
+	},
 	'uw-causeblock': {
 		expiry: 'infinity',
 		forRegisteredOnly: true,
@@ -1146,7 +1154,8 @@ Twinkle.block.blockGroups = [
 	{
 		label: 'Username violations',
 		list: [
-			{ label: 'Bot username', value: 'uw-botublock' },
+			{ label: 'Bot username, soft block', value: 'uw-botublock' },
+			{ label: 'Bot username, hard block', value: 'uw-botuhblock' },
 			{ label: 'Promotional username, hard block', value: 'uw-spamublock' },
 			{ label: 'Promotional username, soft block', value: 'uw-softerblock' },
 			{ label: 'Similar username soft block', value: 'uw-ublock-double' },
