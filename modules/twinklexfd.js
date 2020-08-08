@@ -88,7 +88,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		type: 'select',
 		name: 'venue',
 		label: 'Deletion discussion venue:',
-		tooltip: 'When activated, a default choice is made, based on what namespace you are in. This default should be the most appropriate; some inappropriate options may be disabled.',
+		tooltip: 'When activated, a default choice is made, based on what namespace you are in. This default should be the most appropriate.',
 		event: Twinkle.xfd.callback.change_category
 	});
 	var namespace = mw.config.get('wgNamespaceNumber');
@@ -103,28 +103,24 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		type: 'option',
 		label: 'TfD (Templates for discussion)',
 		selected: [ 10, 828 ].indexOf(namespace) !== -1,  // Template and module namespaces
-		value: 'tfd',
-		disabled: namespace === 10 && /-stub$/.test(Morebits.pageNameNorm) // Stub templates at CfD
+		value: 'tfd'
 	});
 	categories.append({
 		type: 'option',
 		label: 'FfD (Files for discussion)',
 		selected: namespace === 6,  // File namespace
-		value: 'ffd',
-		disabled: namespace !== 6
+		value: 'ffd'
 	});
 	categories.append({
 		type: 'option',
 		label: 'CfD (Categories for discussion)',
 		selected: namespace === 14 || (namespace === 10 && /-stub$/.test(Morebits.pageNameNorm)),  // Category namespace and stub templates
-		value: 'cfd',
-		disabled: [ 10, 14 ].indexOf(namespace) === -1 // Disabled outside category and templatespace
+		value: 'cfd'
 	});
 	categories.append({
 		type: 'option',
 		label: 'CfD/S (Categories for speedy renaming)',
-		value: 'cfds',
-		disabled: namespace !== 14
+		value: 'cfds'
 	});
 	categories.append({
 		type: 'option',
@@ -143,8 +139,13 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		type: 'option',
 		label: 'RM (Requested moves)',
 		selected: false,
-		value: 'rm',
-		disabled: namespace === 14
+		value: 'rm'
+	});
+
+	form.append({
+		type: 'div',
+		id: 'wrong-venue-warn',
+		style: 'color: red; font-style: italic'
 	});
 
 	form.append({
@@ -187,6 +188,54 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	result.venue.dispatchEvent(evt);
 };
 
+Twinkle.xfd.callback.wrongVenueWarning = function twinklexfdWrongVenueWarning(venue) {
+	var text = '';
+	var namespace = mw.config.get('wgNamespaceNumber');
+
+	switch (venue) {
+		case 'afd':
+			if (namespace !== 0) {
+				text = 'AfD is generally appropriate only for articles.';
+			} else if (mw.config.get('wgIsRedirect')) {
+				text = 'Please use RfD for redirects.';
+			}
+			break;
+		case 'tfd':
+			if (namespace === 10 && /-stub$/.test(Morebits.pageNameNorm)) {
+				text = 'Use CfD for stub templates.';
+			} else if (Morebits.pageNameNorm.indexOf('Template:User ') === 0) {
+				text = 'Please use MfD for userboxes';
+			}
+			break;
+		case 'cfd':
+			if ([ 10, 14 ].indexOf(namespace) === -1) {
+				text = 'CfD is only for categories and stub templates.';
+			}
+			break;
+		case 'cfds':
+			if (namespace !== 14) {
+				text = 'CfDS is only for categories.';
+			}
+			break;
+		case 'ffd':
+			if (namespace !== 6) {
+				text = 'FFD is selected but this page doesn\'t look like a file!';
+			}
+			break;
+		case 'rm':
+			if (namespace === 14) { // category
+				text = 'Please use CfD or CfDS for category renames.';
+			}
+			break;
+
+		default: // mfd or rfd
+			break;
+	}
+
+	$('#wrong-venue-warn').text(text);
+
+};
+
 Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory(e) {
 	var value = e.target.value;
 	var form = e.target.form;
@@ -205,6 +254,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			tooltip: 'You can use wikimarkup in your reason. Twinkle will automatically sign your post.'
 		});
 	};
+
+	Twinkle.xfd.callback.wrongVenueWarning(value);
 
 	form.previewer.closePreview();
 
@@ -338,10 +389,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'Templates for discussion',
 				name: 'work_area'
 			});
-			work_area.append({
-				type: 'div',
-				label: 'Userboxes are not eligible for TfD; they go to MfD.'
-			});
+
 			var templateOrModule = mw.config.get('wgPageContentModel') === 'Scribunto' ? 'module' : 'template';
 			work_area.append({
 				type: 'select',
