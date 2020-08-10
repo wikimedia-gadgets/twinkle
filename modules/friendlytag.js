@@ -1003,15 +1003,14 @@ Twinkle.tag.fileList = {
 	],
 	'Wikimedia Commons-related tags': [
 		{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
-		{ label: '{{Do not move to Commons}} (PD issue): file is PD in the US but not in country of origin', value: 'Do not move to Commons' },
 		{
-			label: '{{Do not move to Commons}} (other reason)',
-			value: 'Do not move to Commons_reason',
+			label: '{{Do not move to Commons}}: file not suitable for moving to Commons',
+			value: 'Do not move to Commons',
 			subgroup: {
 				type: 'input',
 				name: 'DoNotMoveToCommons',
 				label: 'Reason: ',
-				tooltip: 'Enter the reason why this image should not be moved to Commons (required)'
+				tooltip: 'Enter the reason why this image should not be moved to Commons (required). If the file is PD in the US but not in country of origin, enter "US only"'
 			}
 		},
 		{
@@ -1735,11 +1734,11 @@ Twinkle.tag.callbacks = {
 			var tagtext = '', currentTag;
 			$.each(params.tags, function(k, tag) {
 				// when other commons-related tags are placed, remove "move to Commons" tag
-				if (['Keep local', 'Now Commons', 'Do not move to Commons_reason', 'Do not move to Commons'].indexOf(tag) !== -1) {
+				if (['Keep local', 'Now Commons', 'Do not move to Commons'].indexOf(tag) !== -1) {
 					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
 				}
 
-				currentTag = tag === 'Do not move to Commons_reason' ? 'Do not move to Commons' : tag;
+				currentTag = tag;
 
 				switch (tag) {
 					case 'Now Commons':
@@ -1778,7 +1777,7 @@ Twinkle.tag.callbacks = {
 					case 'Obsolete':
 						currentTag += '|1=' + params[tag.replace(/ /g, '_') + 'File'];
 						break;
-					case 'Do not move to Commons_reason':
+					case 'Do not move to Commons':
 						currentTag += '|reason=' + params.DoNotMoveToCommons;
 						break;
 					case 'Orphaned non-free revisions':
@@ -1966,7 +1965,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				checkParameter('Vector version available', 'Vector_version_availableFile', 'the replacement file name')) {
 				return;
 			}
-			if (checkParameter('Do not move to Commons_reason', 'DoNotMoveToCommons')) {
+			if (checkParameter('Do not move to Commons', 'DoNotMoveToCommons')) {
 				return;
 			}
 			break;
