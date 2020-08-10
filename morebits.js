@@ -3568,10 +3568,17 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var errorCode = ctx.undeleteProcessApi.getErrorCode();
 
 		// check for "Database query error"
-		if (errorCode === 'internal_api_error_DBQueryError' && ctx.retries++ < ctx.maxRetries) {
-			ctx.statusElement.info('Database query error, retrying');
-			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
-			ctx.undeleteProcessApi.post(); // give it another go!
+		if (errorCode === 'internal_api_error_DBQueryError') {
+			if (ctx.retries++ < ctx.maxRetries) {
+				ctx.statusElement.info('Database query error, retrying');
+				--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
+				ctx.undeleteProcessApi.post(); // give it another go!
+			} else {
+				ctx.statusElement.error('Repeated database query error, reload the page and try again');
+				if (ctx.onUndeleteFailure) {
+					ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
+				}
+			}
 		} else if (errorCode === 'cantundelete') {
 			ctx.statusElement.error('Cannot undelete the page, either because there are no revisions to undelete or because it has already been undeleted');
 			if (ctx.onUndeleteFailure) {
