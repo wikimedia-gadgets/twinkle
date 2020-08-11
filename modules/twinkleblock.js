@@ -1437,6 +1437,8 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 		}
 		if (!blockoptions.expiry) {
 			return alert('Please provide an expiry!');
+		} else if (Morebits.string.isInfinity(blockoptions.expiry) && !Twinkle.block.isRegistered) {
+			return alert("Can't indefinitely block an IP address!");
 		}
 		if (!blockoptions.reason) {
 			return alert('Please provide a reason for the block!');
