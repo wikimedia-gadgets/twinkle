@@ -496,7 +496,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					type: 'checkbox',
 					list: [
 						{
-							label: 'Also notify owner of userspace if they are not the page creator',
+							label: 'Notify owner of userspace (if they are not the page creator)',
 							value: 'notifyuserspace',
 							name: 'notifyuserspace',
 							tooltip: 'If the user in whose userspace this page is located is not the page creator (for example, the page is a rescued article stored as a userspace draft), notify the userspace owner as well.',
@@ -818,6 +818,96 @@ Twinkle.xfd.callbacks = {
 			Twinkle.xfd.callbacks.showPreview(form, venue, params);
 		}
 	},
+	/**
+	 * Unified handler for sending {{Xfd notice}} notifications
+	 * Also handles userspace logging
+	 * @param {object} params
+	 * @param {string} notifyTarget The user or page being notified
+	 * @param {boolean} [noLog=false] Whether to skip logging to userspace
+	 * XfD log, especially useful in cases in where multiple notifications
+	 * may be sent out (MfD, TfM, RfD)
+	 * @param {string} [actionName] Alternative description of the action
+	 * being undertaken. Required if not notifying a user talk page.
+	 */
+	notifyUser: function(params, notifyTarget, noLog, actionName) {
+		// Ensure items with User talk or no namespace prefix both end
+		// up at user talkspace as expected, but retain the
+		// prefix-less username for addToLog
+		notifyTarget = mw.Title.newFromText(notifyTarget, 3);
+		var targetNS = notifyTarget.getNamespaceId();
+		var usernameOrTarget = notifyTarget.getRelativeText(3);
+		notifyTarget = notifyTarget.toText();
+		if (targetNS === 3) {
+			// Disallow warning yourself
+			if (usernameOrTarget === mw.config.get('wgUserName')) {
+				Morebits.status.warn('You (' + usernameOrTarget + ') created this page; skipping user notification');
+
+				// if we thought we would notify someone but didn't,
+				// then jump to logging.
+				Twinkle.xfd.callbacks.addToLog(params, null);
+				return;
+			}
+			// Default is notifying the initial contributor, but MfD also
+			// notifies userspace page owner
+			actionName = actionName || 'Notifying initial contributor (' + usernameOrTarget + ')';
+		}
+
+		var notifytext = '\n{{subst:' + params.venue + ' notice';
+		// Venue-specific parameters
+		switch (params.venue) {
+			case 'afd':
+			case 'mfd':
+				notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
+				break;
+			case 'tfd':
+				if (params.xfdcat === 'tfm') {
+					notifytext = '\n{{subst:Tfm notice|2=' + params.tfdtarget;
+				}
+				break;
+			case 'cfd':
+				notifytext += '|action=' + params.action + (mw.config.get('wgNamespaceNumber') === 10 ? '|stub=yes' : '');
+				break;
+			default: // ffd, rfd
+				break;
+		}
+		notifytext += '|1=' + Morebits.pageNameNorm + '}} ~~~~';
+
+		// Link to the venue; object used here rather than repetitive items in switch
+		var venueNames = {
+			afd: 'Articles for deletion',
+			tfd: 'Templates for discussion',
+			mfd: 'Miscellany for deletion',
+			cfd: 'Categories for discussion',
+			ffd: 'Files for discussion',
+			rfd: 'Redirects for discussion'
+		};
+		var editSummary = 'Notification: [[' + params.discussionpage + '|listing]] of [[:' +
+			Morebits.pageNameNorm + ']] at [[WP:' + venueNames[params.venue] + ']].';
+
+		var usertalkpage = new Morebits.wiki.page(notifyTarget, actionName);
+		usertalkpage.setAppendText(notifytext);
+		usertalkpage.setEditSummary(editSummary);
+		usertalkpage.setChangeTags(Twinkle.changeTags);
+		usertalkpage.setCreateOption('recreate');
+		Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
+		usertalkpage.setFollowRedirect(true, false);
+
+		if (noLog) {
+			usertalkpage.append();
+		} else {
+			usertalkpage.append(function onNotifySuccess() {
+				// Don't treat RfD target or MfD userspace owner as initialContrib in log
+				if (!params.notifycreator) {
+					notifyTarget = null;
+				}
+				// add this nomination to the user's userspace log
+				Twinkle.xfd.callbacks.addToLog(params, usernameOrTarget);
+			}, function onNotifyError() {
+				// if user could not be notified, log nomination without mentioning that notification was sent
+				Twinkle.xfd.callbacks.addToLog(params, null);
+			});
+		}
+	},
 	addToLog: function(params, initialContrib) {
 		if (!Twinkle.getPref('logXfdNominations') || Twinkle.getPref('noLogOnXfdNomination').indexOf(params.venue) !== -1) {
 			return;
@@ -855,8 +945,8 @@ Twinkle.xfd.callbacks = {
 				}
 				break;
 			case 'mfd':
-				if (initialContrib && params.notifyuserspace && params.userspaceOwner !== initialContrib) {
-					extraInfo += ' and {{user|1=' + params.userspaceOwner + '}}';
+				if (params.notifyuserspace && params.userspaceOwner && params.userspaceOwner !== initialContrib) {
+					extraInfo += (initialContrib ? ' and' : '; notified') + ' {{user|1=' + params.userspaceOwner + '}}';
 				}
 				break;
 			case 'cfd':
@@ -897,7 +987,7 @@ Twinkle.xfd.callbacks = {
 				break;
 		}
 
-		if (initialContrib) {
+		if (initialContrib && params.notifycreator) {
 			appendText += '; notified {{user|1=' + initialContrib + '}}';
 		}
 		if (extraInfo) {
@@ -1004,7 +1094,9 @@ Twinkle.xfd.callbacks = {
 				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				thispage.setCallbackParameters(params);
 				thispage.setLookupNonRedirectCreator(true); // Look for author of first non-redirect revision
-				thispage.lookupCreation(Twinkle.xfd.callbacks.afd.userNotification);
+				thispage.lookupCreation(function(pageobj) {
+					Twinkle.xfd.callbacks.notifyUser(pageobj.getCallbackParameters(), pageobj.getCreator());
+				});
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
 			} else {
 				Twinkle.xfd.callbacks.addToLog(params, null);
@@ -1078,32 +1170,6 @@ Twinkle.xfd.callbacks = {
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchList'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
-		},
-		userNotification: function(pageobj) {
-			var params = pageobj.getCallbackParameters();
-			var initialContrib = pageobj.getCreator();
-
-			// Disallow warning yourself
-			if (initialContrib === mw.config.get('wgUserName')) {
-				pageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
-				return;
-			}
-
-			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-			var notifytext = '\n{{subst:Afd notice|1=' + Morebits.pageNameNorm + (params.numbering !== '' ? '|order=&#32;' + params.numbering : '') + '}} ~~~~';
-			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|nomination]] of [[:' + Morebits.pageNameNorm + ']]  at [[WP:AFD|articles for deletion]].');
-			usertalkpage.setChangeTags(Twinkle.changeTags);
-			usertalkpage.setCreateOption('recreate');
-			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
-			usertalkpage.setFollowRedirect(true, false);
-			usertalkpage.append(function onNotifySuccess() {
-				// add this nomination to the user's userspace log
-				Twinkle.xfd.callbacks.addToLog(params, initialContrib);
-			}, function onNotifyError() {
-				// if user could not be notified, log nomination without mentioning that notification was sent
-				Twinkle.xfd.callbacks.addToLog(params, null);
-			});
 		},
 		delsortListing: function(pageobj) {
 			var discussionPage = pageobj.getCallbackParameters().discussionPage;
@@ -1194,7 +1260,9 @@ Twinkle.xfd.callbacks = {
 						var username = innerpage.getCreator();
 						if (seenusers.indexOf(username) === -1) {
 							seenusers.push(username);
-							Twinkle.xfd.callbacks.tfd.userNotification(innerpage);
+							// Only log once on merge nominations, for the initial template
+							Twinkle.xfd.callbacks.notifyUser(innerpage.getCallbackParameters(), username,
+								params.xfdcat === 'tfm' && innerpage.getPageName() !== Morebits.pageNameNorm);
 						}
 					});
 				});
@@ -1255,51 +1323,6 @@ Twinkle.xfd.callbacks = {
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 			});
-		},
-		userNotification: function(pageobj) {
-			var initialContrib = pageobj.getCreator();
-			var params = pageobj.getCallbackParameters();
-
-			// Disallow warning yourself
-			if (initialContrib === mw.config.get('wgUserName')) {
-				pageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
-				return;
-			}
-
-			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-			var notifytext = '\n';
-			var modNotice = mw.config.get('wgPageContentModel') === 'Scribunto' ? '|module=yes' : '';
-			switch (params.xfdcat) {
-				case 'tfd':
-					notifytext += '{{subst:Tfd notice|1=' + mw.config.get('wgTitle') + modNotice + '}} ~~~~';
-					break;
-				case 'tfm':
-					notifytext += '{{subst:Tfm notice|1=' + mw.config.get('wgTitle') + '|2=' + params.tfdtarget + modNotice + '}} ~~~~';
-					break;
-				default:
-					alert('twinklexfd in userNotification: unknown TFD action');
-					break;
-			}
-
-			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + pageobj.getPageName() + ']] at [[WP:TFD|templates for discussion]].');
-			usertalkpage.setChangeTags(Twinkle.changeTags);
-			usertalkpage.setCreateOption('recreate');
-			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
-			usertalkpage.setFollowRedirect(true, false);
-
-			// Add this nomination to user's userspace log if it isn't the second template
-			// in a TfM nomination
-			if (params.xfdcat === 'tfd' || pageobj.getPageName() === Morebits.pageNameNorm) {
-				usertalkpage.append(function onNotifySuccess() {
-					Twinkle.xfd.callbacks.addToLog(params, initialContrib);
-				}, function onNotifyError() {
-					// if user could not be notified, log without mentioning notification
-					Twinkle.xfd.callbacks.addToLog(params, null);
-				});
-			} else {
-				usertalkpage.append();
-			}
 		}
 	},
 
@@ -1365,11 +1388,11 @@ Twinkle.xfd.callbacks = {
 			wikipedia_page.setCallbackParameters(apiobj.params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.mfd.todaysList);
 
-			// Notification to first contributor, and notification to owner of userspace (if applicable and required)
-			if (apiobj.params.notifycreator) {
+			// Notification to first contributor and/or notification to owner of userspace
+			if (apiobj.params.notifycreator || apiobj.params.notifyuserspace) {
 				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				thispage.setCallbackParameters(apiobj.params);
-				thispage.lookupCreation(Twinkle.xfd.callbacks.mfd.userNotification);
+				thispage.lookupCreation(Twinkle.xfd.callbacks.mfd.sendNotifications);
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
 			} else {
 				Twinkle.xfd.callbacks.addToLog(apiobj.params, null);
@@ -1425,48 +1448,28 @@ Twinkle.xfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save();
 		},
-		userNotification: function(pageobj) {
+		sendNotifications: function(pageobj) {
 			var initialContrib = pageobj.getCreator();
 			var params = pageobj.getCallbackParameters();
 
-			// Also notify the user who owns the subpage if they are not the creator
+			// Notify the creator
+			if (params.notifycreator) {
+				Twinkle.xfd.callbacks.notifyUser(params, initialContrib);
+			}
+
+			// Notify the user who owns the subpage if they are not the creator
 			params.userspaceOwner = mw.config.get('wgRelevantUserName');
-			if (params.notifyuserspace && params.userspaceOwner !== initialContrib) {
-				Twinkle.xfd.callbacks.mfd.userNotificationMain(params, params.userspaceOwner, 'Notifying owner of userspace');
+			if (params.notifyuserspace) {
+				if (params.userspaceOwner !== initialContrib) {
+					// Don't log if notifying creator above, will log then
+					Twinkle.xfd.callbacks.notifyUser(params, params.userspaceOwner, params.notifycreator, 'Notifying owner of userspace (' + params.userspaceOwner + ')');
+				} else if (!params.notifycreator) {
+					// If we thought we would notify the owner but didn't,
+					// then we need to log if we didn't notify the creator
+					// Twinkle.xfd.callbacks.addToLog(params, null);
+					Twinkle.xfd.callbacks.addToLog(params, initialContrib);
+				}
 			}
-
-			// Disallow warning yourself
-			if (initialContrib === mw.config.get('wgUserName')) {
-				pageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
-			} else {
-				// Used to ensure we only add to the userspace
-				// log once, after notifying the initial creator
-				params.initialContrib = initialContrib;
-				// Really notify the creator
-				Twinkle.xfd.callbacks.mfd.userNotificationMain(params, initialContrib, 'Notifying initial contributor');
-			}
-		},
-		userNotificationMain: function(params, userTarget, actionName) {
-			var usertalkpage = new Morebits.wiki.page('User talk:' + userTarget, actionName + ' (' + userTarget + ')');
-			var notifytext = '\n{{subst:Mfd notice|1=' + Morebits.pageNameNorm + (params.numbering !== '' ? '|order=&#32;' + params.numbering : '') + '}} ~~~~';
-			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|nomination]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:MFD|miscellany for deletion]].');
-			usertalkpage.setChangeTags(Twinkle.changeTags);
-			usertalkpage.setCreateOption('recreate');
-			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
-			usertalkpage.setFollowRedirect(true, false);
-			// Only log once, using the initial creator's notification as our barometer
-			if (params.initialContrib === userTarget) {
-				usertalkpage.append(function onNotifySuccess() {
-					Twinkle.xfd.callbacks.addToLog(params, userTarget);
-				}, function onNotifyError() {
-					// if user could not be notified, log without mentioning notification
-					Twinkle.xfd.callbacks.addToLog(params, null);
-				});
-			} else {
-				usertalkpage.append();
-			}
-
 		}
 	},
 
@@ -1512,26 +1515,7 @@ Twinkle.xfd.callbacks = {
 
 			// Notification to first contributor
 			if (params.notifycreator) {
-				// Disallow warning yourself
-				if (initialContrib === mw.config.get('wgUserName')) {
-					pageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
-				} else {
-					var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-					var notifytext = '\n{{subst:Ffd notice|1=' + mw.config.get('wgTitle') + '}}';
-					usertalkpage.setAppendText(notifytext);
-					usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:FFD|files for discussion]].');
-					usertalkpage.setChangeTags(Twinkle.changeTags);
-					usertalkpage.setCreateOption('recreate');
-					Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
-					usertalkpage.setFollowRedirect(true, false);
-					usertalkpage.append(function onNotifySuccess() {
-						// add this nomination to the user's userspace log
-						Twinkle.xfd.callbacks.addToLog(params, initialContrib);
-					}, function onNotifyError() {
-						// if user could not be notified, log nomination without mentioning that notification was sent
-						Twinkle.xfd.callbacks.addToLog(params, null);
-					});
-				}
+				Twinkle.xfd.callbacks.notifyUser(params, initialContrib);
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
 			} else {
 				Twinkle.xfd.callbacks.addToLog(params, null);
@@ -1586,7 +1570,9 @@ Twinkle.xfd.callbacks = {
 			if (params.notifycreator) {
 				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.lookupCreation(Twinkle.xfd.callbacks.cfd.userNotification);
+				wikipedia_page.lookupCreation(function(pageobj) {
+					Twinkle.xfd.callbacks.notifyUser(pageobj.getCallbackParameters(), pageobj.getCreator());
+				});
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
 			} else {
 				Twinkle.xfd.callbacks.addToLog(params, null);
@@ -1649,32 +1635,6 @@ Twinkle.xfd.callbacks = {
 			pageobj.setCreateOption('recreate');
 			pageobj.save(function() {
 				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-			});
-		},
-		userNotification: function(pageobj) {
-			var initialContrib = pageobj.getCreator();
-			var params = pageobj.getCallbackParameters();
-
-			// Disallow warning yourself
-			if (initialContrib === mw.config.get('wgUserName')) {
-				pageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
-				return;
-			}
-
-			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-			var notifytext = '\n{{subst:Cfd notice|1=' + Morebits.pageNameNorm + '|action=' + params.action + (mw.config.get('wgNamespaceNumber') === 10 ? '|stub=yes' : '') + '}} ~~~~';
-			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:CFD|categories for discussion]].');
-			usertalkpage.setChangeTags(Twinkle.changeTags);
-			usertalkpage.setCreateOption('recreate');
-			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
-			usertalkpage.setFollowRedirect(true, false);
-			usertalkpage.append(function onNotifySuccess() {
-				// add this nomination to the user's userspace log
-				Twinkle.xfd.callbacks.addToLog(params, initialContrib);
-			}, function onNotifyError() {
-				// if user could not be notified, log nomination without mentioning that notification was sent
-				Twinkle.xfd.callbacks.addToLog(params, null);
 			});
 		}
 	},
@@ -1833,12 +1793,7 @@ Twinkle.xfd.callbacks = {
 
 			// Notifying initial contributor
 			if (params.notifycreator) {
-				// Disallow warning yourself
-				if (initialContrib === mw.config.get('wgUserName')) {
-					statelem.warn('You (' + initialContrib + ') created this page; skipping user notification');
-				} else {
-					Twinkle.xfd.callbacks.rfd.userNotification(params, initialContrib);
-				}
+				Twinkle.xfd.callbacks.notifyUser(params, initialContrib);
 			}
 
 			// Notifying target page's watchers, if not a soft redirect
@@ -1858,43 +1813,16 @@ Twinkle.xfd.callbacks = {
 						statelem.warn('You (' + mw.config.get('wgUserName') + ') are the target; skipping target page notification');
 					}
 				} else {
-					Twinkle.xfd.callbacks.rfd.targetNotification(params, targetTalk.toText());
+					// Don't log if notifying creator above, will log then
+					Twinkle.xfd.callbacks.notifyUser(params, targetTalk.toText(), params.notifycreator, 'Notifying redirect target of the discussion');
+					return;
 				}
-			}
-		},
-		userNotification: function(params, initialContrib) {
-			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-			var notifytext = '\n{{subst:Rfd notice|1=' + Morebits.pageNameNorm + '}} ~~~~';
-			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:RFD|redirects for discussion]].');
-			usertalkpage.setChangeTags(Twinkle.changeTags);
-			usertalkpage.setCreateOption('recreate');
-			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
-			usertalkpage.setFollowRedirect(true, false);
-			usertalkpage.append(function onNotifySuccess() {
-				// add this nomination to the user's userspace log
-				Twinkle.xfd.callbacks.addToLog(params, initialContrib);
-			}, function onNotifyError() {
-				// if user could not be notified, log nomination without mentioning that notification was sent
-				Twinkle.xfd.callbacks.addToLog(params, null);
-			});
-		},
-		targetNotification: function(params, targetTalk) {
-			var targettalkpage = new Morebits.wiki.page(targetTalk, 'Notifying redirect target of the discussion');
-			var notifytext = '\n{{subst:Rfd notice|1=' + Morebits.pageNameNorm + '}} ~~~~';
-			targettalkpage.setAppendText(notifytext);
-			targettalkpage.setEditSummary('Notification: [[' + params.discussionpage + '|listing]] of [[:' + Morebits.pageNameNorm + ']] at [[WP:RFD|redirects for discussion]].');
-			targettalkpage.setChangeTags(Twinkle.changeTags);
-			targettalkpage.setCreateOption('recreate');
-			Twinkle.xfd.setWatchPref(targettalkpage, Twinkle.getPref('xfdWatchRelated'));
-			targettalkpage.setFollowRedirect(true);
-			targettalkpage.append(function() {
-				// Add to userspace log if not notifying the creator
+				// If we thought we would notify the target but didn't,
+				// we need to log if we didn't notify the creator
 				if (!params.notifycreator) {
 					Twinkle.xfd.callbacks.addToLog(params, null);
 				}
-			});
-
+			}
 		}
 	},
 
