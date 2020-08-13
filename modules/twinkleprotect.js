@@ -711,6 +711,7 @@ Twinkle.protect.protectionWeight = {
 
 // NOTICE: keep this synched with [[MediaWiki:Protect-dropdown]]
 // Also note: stabilize = Pending Changes level
+// expiry will override any defaults
 Twinkle.protect.protectionPresetsInfo = {
 	'pp-protected': {
 		edit: 'sysop',
@@ -730,16 +731,19 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-usertalk': {
 		edit: 'sysop',
 		move: 'sysop',
+		level: 'infinity',
 		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]'
 	},
 	'pp-template': {
 		edit: 'templateeditor',
 		move: 'templateeditor',
+		level: 'infinity',
 		reason: '[[WP:High-risk templates|Highly visible template]]'
 	},
 	'pp-30-500-arb': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
+		expiry: 'infinity',
 		reason: '[[WP:30/500|Arbitration enforcement]]',
 		template: 'pp-30-500'
 	},
@@ -790,12 +794,14 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-semi-usertalk': {
 		edit: 'autoconfirmed',
 		move: 'autoconfirmed',
+		expiry: 'infinity',
 		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]',
 		template: 'pp-usertalk'
 	},
 	'pp-semi-template': {  // removed for now
 		edit: 'autoconfirmed',
 		move: 'autoconfirmed',
+		expiry: 'infinity',
 		reason: '[[WP:High-risk templates|Highly visible template]]',
 		template: 'pp-template'
 	},
@@ -848,6 +854,7 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-move-indef': {
 		move: 'sysop',
+		level: 'infinity',
 		reason: '[[WP:MOVP|Highly visible page]]'
 	},
 	'unprotect': {
@@ -956,12 +963,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 			}
 
-			// Default to indef for highly-visible template
-			if (form.category.value === 'pp-template') {
-				form.editexpiry.value = form.moveexpiry.value = 'infinity';
-			} else {
-				form.editexpiry.value = form.moveexpiry.value = '2 days';
-			}
+			form.editexpiry.value = form.moveexpiry.value = item.expiry || '2 days';
 
 
 			if (form.pcmodify) {
@@ -974,14 +976,14 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 					form.pcmodify.checked = false;
 					Twinkle.protect.formevents.pcmodify({ target: form.pcmodify });
 				}
-				form.pcexpiry.value = '1 month';
+				form.pcexpiry.value = item.expiry || '1 month';
 			}
 		} else {
 			if (item.create) {
 				form.createlevel.value = item.create;
 				Twinkle.protect.formevents.createlevel({ target: form.createlevel });
 			}
-			form.createexpiry.value = 'infinity';
+			form.createexpiry.value = item.expiry || 'infinity';
 		}
 
 		var reasonField = actiontype === 'protect' ? form.protectReason : form.reason;
