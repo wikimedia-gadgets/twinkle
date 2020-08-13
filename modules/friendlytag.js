@@ -1104,6 +1104,7 @@ Twinkle.tag.fileList = {
 		{ label: '{{Should be text}}: image should be represented as text, tables, or math markup', value: 'Should be text' }
 	],
 	'Image quality tags': [
+		{ label: '{{Image hoax}}: Image may be manipulated or constitute a hoax', value: 'Image hoax' },
 		{ label: '{{Image-blownout}}', value: 'Image-blownout' },
 		{ label: '{{Image-out-of-focus}}', value: 'Image-out-of-focus' },
 		{
@@ -1766,6 +1767,9 @@ Twinkle.tag.callbacks = {
 						break;
 					case 'Image-Poor-Quality':
 						currentTag += '|1=' + params.ImagePoorQualityReason;
+						break;
+					case 'Image hoax':
+						currentTag += '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}';
 						break;
 					case 'Low quality chem':
 						currentTag += '|1=' + params.lowQualityChemReason;
