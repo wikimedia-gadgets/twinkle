@@ -412,7 +412,7 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	var input = Morebits.quickForm.getInputData(form);
 
 	var params = {
-		usertalk: input.notify,
+		usertalk: input.notify || input.prodtype === 'prodblp',
 		blp: input.prodtype === 'prodblp',
 		book: namespace === 'book',
 		reason: input.reason || '' // using an empty string here as fallback will help with prod-2.
