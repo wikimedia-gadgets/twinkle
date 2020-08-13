@@ -44,37 +44,12 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			}
 		]
 	});
-	var editlevel = form.append({
+	form.append({
 		type: 'select',
 		name: 'editlevel',
 		label: 'Edit protection:',
-		event: Twinkle.protect.formevents.editlevel
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'All',
-		value: 'all'
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'Autoconfirmed',
-		value: 'autoconfirmed'
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'Extended confirmed',
-		value: 'extendedconfirmed'
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'Template editor',
-		value: 'templateeditor'
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'Sysop',
-		value: 'sysop',
-		selected: true
+		event: Twinkle.protect.formevents.editlevel,
+		list: Twinkle.protect.protectionLevels
 	});
 	form.append({
 		type: 'select',
@@ -85,25 +60,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				Twinkle.protect.doCustomExpiry(e.target);
 			}
 		},
-		list: [
-			{ label: '1 hour', value: '1 hour' },
-			{ label: '2 hours', value: '2 hours' },
-			{ label: '3 hours', value: '3 hours' },
-			{ label: '6 hours', value: '6 hours' },
-			{ label: '12 hours', value: '12 hours' },
-			{ label: '1 day', value: '1 day' },
-			{ label: '2 days', selected: true, value: '2 days' },
-			{ label: '3 days', value: '3 days' },
-			{ label: '4 days', value: '4 days' },
-			{ label: '1 week', value: '1 week' },
-			{ label: '2 weeks', value: '2 weeks' },
-			{ label: '1 month', value: '1 month' },
-			{ label: '2 months', value: '2 months' },
-			{ label: '3 months', value: '3 months' },
-			{ label: '1 year', value: '1 year' },
-			{ label: 'indefinite', value: 'infinity' },
-			{ label: 'Custom...', value: 'custom' }
-		]
+		list: Twinkle.protect.protectionLengths // Default (2 days) set after render
 	});
 
 	form.append({
@@ -119,32 +76,15 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			}
 		]
 	});
-	var movelevel = form.append({
+	form.append({
 		type: 'select',
 		name: 'movelevel',
 		label: 'Move protection:',
-		event: Twinkle.protect.formevents.movelevel
-	});
-	movelevel.append({
-		type: 'option',
-		label: 'All',
-		value: 'all'
-	});
-	movelevel.append({
-		type: 'option',
-		label: 'Extended confirmed',
-		value: 'extendedconfirmed'
-	});
-	movelevel.append({
-		type: 'option',
-		label: 'Template editor',
-		value: 'templateeditor'
-	});
-	movelevel.append({
-		type: 'option',
-		label: 'Sysop',
-		value: 'sysop',
-		selected: true
+		event: Twinkle.protect.formevents.movelevel,
+		list: Twinkle.protect.protectionLevels.filter(function(level) {
+			// Autoconfirmed is required for a move, redundant
+			return level.value !== 'autoconfirmed';
+		})
 	});
 	form.append({
 		type: 'select',
@@ -155,25 +95,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				Twinkle.protect.doCustomExpiry(e.target);
 			}
 		},
-		list: [
-			{ label: '1 hour', value: '1 hour' },
-			{ label: '2 hours', value: '2 hours' },
-			{ label: '3 hours', value: '3 hours' },
-			{ label: '6 hours', value: '6 hours' },
-			{ label: '12 hours', value: '12 hours' },
-			{ label: '1 day', value: '1 day' },
-			{ label: '2 days', selected: true, value: '2 days' },
-			{ label: '3 days', value: '3 days' },
-			{ label: '4 days', value: '4 days' },
-			{ label: '1 week', value: '1 week' },
-			{ label: '2 weeks', value: '2 weeks' },
-			{ label: '1 month', value: '1 month' },
-			{ label: '2 months', value: '2 months' },
-			{ label: '3 months', value: '3 months' },
-			{ label: '1 year', value: '1 year' },
-			{ label: 'indefinite', value: 'infinity' },
-			{ label: 'Custom...', value: 'custom' }
-		]
+		list: Twinkle.protect.protectionLengths // Default (2 days) set after render
 	});
 
 	form.append({
@@ -193,37 +115,12 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			}
 		]
 	});
-	var createlevel = form.append({
+	form.append({
 		type: 'select',
 		name: 'createlevel',
 		label: 'Create protection:',
-		event: Twinkle.protect.formevents.createlevel
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'All',
-		value: 'all'
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'Autoconfirmed',
-		value: 'autoconfirmed'
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'Extended confirmed',
-		value: 'extendedconfirmed'
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'Template editor',
-		value: 'templateeditor'
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'Sysop',
-		value: 'sysop',
-		selected: true
+		event: Twinkle.protect.formevents.createlevel,
+		list: Twinkle.protect.protectionLevels
 	});
 	form.append({
 		type: 'select',
@@ -234,25 +131,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				Twinkle.protect.doCustomExpiry(e.target);
 			}
 		},
-		list: [
-			{ label: '1 hour', value: '1 hour' },
-			{ label: '2 hours', value: '2 hours' },
-			{ label: '3 hours', value: '3 hours' },
-			{ label: '6 hours', value: '6 hours' },
-			{ label: '12 hours', value: '12 hours' },
-			{ label: '1 day', value: '1 day' },
-			{ label: '2 days', value: '2 days' },
-			{ label: '3 days', value: '3 days' },
-			{ label: '4 days', value: '4 days' },
-			{ label: '1 week', value: '1 week' },
-			{ label: '2 weeks', value: '2 weeks' },
-			{ label: '1 month', value: '1 month' },
-			{ label: '2 months', value: '2 months' },
-			{ label: '3 months', value: '3 months' },
-			{ label: '1 year', value: '1 year' },
-			{ label: 'indefinite', selected: true, value: 'infinity' },
-			{ label: 'Custom...', value: 'custom' }
-		]
+		list: Twinkle.protect.protectionLengths // Default (indefinite) set after render
 	});
 
 	form.append({
@@ -352,6 +231,12 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 
 		var result = form.render();
 		Window.setContent(result);
+
+		// Set defaults
+		form.editexpiry.value = '2 days';
+		form.moveexpiry.value = '2 days';
+		form.createexpiry.value = 'indefinite';
+
 
 	}, statelem);
 
