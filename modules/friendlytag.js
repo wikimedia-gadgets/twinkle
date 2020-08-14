@@ -1195,12 +1195,12 @@ Twinkle.tag.callbacks = {
 			}
 
 			// avoid truncated summaries
-			if (summaryText.length > (499 - Twinkle.getPref('summaryAd').length)) {
+			if (summaryText.length > 499) {
 				summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, '$1');
 			}
 
 			pageobj.setPageText(pageText);
-			pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary(summaryText);
 			pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
 			pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 			pageobj.setCreateOption('nocreate');
@@ -1212,7 +1212,8 @@ Twinkle.tag.callbacks = {
 					talkpageText += params.mergeReason.trim() + ' ~~~~';
 					var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
 					talkpage.setAppendText(talkpageText);
-					talkpage.setEditSummary('/* ' + params.talkDiscussionTitle + ' */ new section' + Twinkle.getPref('summaryAd'));
+					talkpage.setEditSummary('/* ' + params.talkDiscussionTitle + ' */ new section');
+					talkpage.setChangeTags(Twinkle.changeTags);
 					talkpage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
 					talkpage.setCreateOption('recreate');
 					talkpage.append();
@@ -1236,6 +1237,7 @@ Twinkle.tag.callbacks = {
 					};
 					var otherpage = new Morebits.wiki.page(params.mergeTarget, 'Tagging other page (' +
 						params.mergeTarget + ')');
+					otherpage.setChangeTags(Twinkle.changeTags);
 					otherpage.setCallbackParameters(newParams);
 					otherpage.load(Twinkle.tag.callbacks.article);
 				}
@@ -1270,7 +1272,8 @@ Twinkle.tag.callbacks = {
 							return;
 						}
 						pageobj.setPageText(text);
-						pageobj.setEditSummary(summary + ' [[:' + Morebits.pageNameNorm + ']]' + Twinkle.getPref('summaryAd'));
+						pageobj.setEditSummary(summary + ' [[:' + Morebits.pageNameNorm + ']]');
+						pageobj.setChangeTags(Twinkle.changeTags);
 						pageobj.setCreateOption('recreate');
 						pageobj.save();
 					});
@@ -1291,8 +1294,8 @@ Twinkle.tag.callbacks = {
 							'{{subst:uw-notenglish|1=' + Morebits.pageNameNorm +
 							(params.translationPostAtPNT ? '' : '|nopnt=yes') + '}} ~~~~';
 						userTalkPage.setAppendText(notifytext);
-						userTalkPage.setEditSummary('Notice: Please use English when contributing to the English Wikipedia.' +
-							Twinkle.getPref('summaryAd'));
+						userTalkPage.setEditSummary('Notice: Please use English when contributing to the English Wikipedia.');
+						userTalkPage.setChangeTags(Twinkle.changeTags);
 						userTalkPage.setCreateOption('recreate');
 						userTalkPage.setFollowRedirect(true, false);
 						userTalkPage.append();
@@ -1708,12 +1711,12 @@ Twinkle.tag.callbacks = {
 		summaryText += (tags.length > 0 ? ' tag' + (tags.length > 1 ? 's' : ' ') : 'rcat shell') + ' to redirect';
 
 		// avoid truncated summaries
-		if (summaryText.length > (499 - Twinkle.getPref('summaryAd').length)) {
+		if (summaryText.length > 499) {
 			summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, '$1');
 		}
 
 		pageobj.setPageText(pageText);
-		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary(summaryText);
 		pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
 		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
@@ -1816,7 +1819,8 @@ Twinkle.tag.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary(summary.substring(0, summary.length - 2) + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary(summary.substring(0, summary.length - 2));
+		pageobj.setChangeTags(Twinkle.changeTags);
 		pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
 		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
@@ -2001,6 +2005,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	var wikipedia_page = new Morebits.wiki.page(Morebits.pageNameNorm, 'Tagging ' + Twinkle.tag.mode);
 	wikipedia_page.setCallbackParameters(params);
+	wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
 	wikipedia_page.load(Twinkle.tag.callbacks[Twinkle.tag.mode]);
 
 };

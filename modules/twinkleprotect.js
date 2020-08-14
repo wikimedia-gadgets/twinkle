@@ -1087,6 +1087,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					statusInited = true;
 				}
 
+				thispage.setChangeTags(Twinkle.changeTags);
 				thispage.protect(next);
 			};
 
@@ -1099,7 +1100,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				thispage.setFlaggedRevs(input.pclevel, input.pcexpiry);
 
 				if (input.protectReason) {
-					thispage.setEditSummary(input.protectReason);
+					thispage.setEditSummary(input.protectReason + Twinkle.summaryAd); // flaggedrevs tag support: [[phab:T247721]]
 				} else {
 					alert('You must enter a protect reason, which will be inscribed into the protection log.');
 					return;
@@ -1332,7 +1333,7 @@ Twinkle.protect.callbacks = {
 		}
 
 		if (params.tag === 'none') {
-			summary = 'Removing protection template' + Twinkle.getPref('summaryAd');
+			summary = 'Removing protection template';
 		} else {
 			tag = params.tag;
 			if (params.reason) {
@@ -1361,10 +1362,11 @@ Twinkle.protect.callbacks = {
 				var wikipage = new Morebits.wikitext.page(text);
 				text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
 			}
-			summary = 'Adding {{' + params.tag + '}}' + Twinkle.getPref('summaryAd');
+			summary = 'Adding {{' + params.tag + '}}';
 		}
 
 		protectedPage.setEditSummary(summary);
+		protectedPage.setChangeTags(Twinkle.changeTags);
 		protectedPage.setPageText(text);
 		protectedPage.setCreateOption('nocreate');
 		protectedPage.suppressProtectWarning(); // no need to let admins know they are editing through protection
@@ -1465,7 +1467,8 @@ Twinkle.protect.callbacks = {
 		}
 		statusElement.status('Adding new request...');
 		rppPage.setEditSummary('/* ' + Morebits.pageNameNorm + ' */ Requesting ' + params.typename + (params.typename === 'pending changes' ? ' on [[:' : ' of [[:') +
-			Morebits.pageNameNorm + ']].' + Twinkle.getPref('summaryAd'));
+			Morebits.pageNameNorm + ']].');
+		rppPage.setChangeTags(Twinkle.changeTags);
 		rppPage.setPageText(text);
 		rppPage.setCreateOption('recreate');
 		rppPage.save();

@@ -153,7 +153,8 @@ var callback_commit = function(event) {
 			wikipedia_api.post();
 
 			var page = new Morebits.wiki.page(pageName, 'Deleting article ' + pageName);
-			page.setEditSummary('Expired [[WP:PROD|PROD]], concern was: ' + concerns[pageName] + Twinkle.getPref('deletionSummaryAd'));
+			page.setEditSummary('Expired [[WP:PROD|PROD]], concern was: ' + concerns[pageName]);
+			page.setChangeTags(Twinkle.changeTags);
 			page.suppressProtectWarning();
 			page.deletePage(batchOperation.workerSuccess, batchOperation.workerFailure);
 		});
@@ -168,7 +169,8 @@ var callback_commit = function(event) {
 		}
 
 		var page = new Morebits.wiki.page('Talk:' + apiobj.params.page, 'Deleting talk page of article ' + apiobj.params.page);
-		page.setEditSummary('[[WP:CSD#G8|G8]]: [[Help:Talk page|Talk page]] of deleted page "' + apiobj.params.page + '"' + Twinkle.getPref('deletionSummaryAd'));
+		page.setEditSummary('[[WP:CSD#G8|G8]]: [[Help:Talk page|Talk page]] of deleted page "' + apiobj.params.page + '"');
+		page.setChangeTags(Twinkle.changeTags);
 		page.deletePage();
 	},
 	callback_deleteRedirects = function(apiobj) {
@@ -176,7 +178,8 @@ var callback_commit = function(event) {
 		$doc.find('redirects rd').each(function() {
 			var title = $(this).attr('title');
 			var page = new Morebits.wiki.page(title, 'Deleting redirecting page ' + title);
-			page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + apiobj.params.page + '"' + Twinkle.getPref('deletionSummaryAd'));
+			page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + apiobj.params.page + '"');
+			page.setChangeTags(Twinkle.changeTags);
 			page.deletePage();
 		});
 	};

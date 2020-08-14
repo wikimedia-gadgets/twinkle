@@ -363,25 +363,25 @@ Twinkle.talkback.evaluate = function(e) {
 
 	switch (input.tbtarget) {
 		case 'notice':
-			talkpage.setEditSummary(Twinkle.talkback.noticeboards[input.noticeboard].editSummary + Twinkle.getPref('summaryAd'));
+			talkpage.setEditSummary(Twinkle.talkback.noticeboards[input.noticeboard].editSummary);
 			break;
 		case 'mail':
-			talkpage.setEditSummary("Notification: You've got mail" + Twinkle.getPref('summaryAd'));
+			talkpage.setEditSummary("Notification: You've got mail");
 			break;
 		case 'see':
 			talkpage.setEditSummary('Please check the discussion at [[:' + input.page +
-			(input.section ? '#' + input.section : '') + ']]' + Twinkle.getPref('summaryAd'));
+			(input.section ? '#' + input.section : '') + ']]');
 			break;
 		default:  // tbtarget one of mytalk, usertalk, other
 			var editSummary = 'Talkback ([[:';
 			if (input.tbtarget !== 'other' && !/^\s*user talk:/i.test(input.page)) {
 				editSummary += 'User talk:';
 			}
-			editSummary += input.page + (input.section ? '#' + input.section : '') + ']])';
-			talkpage.setEditSummary(editSummary + Twinkle.getPref('summaryAd'));
+			talkpage.setEditSummary(editSummary + input.page + (input.section ? '#' + input.section : '') + ']])');
 	}
 
 	talkpage.setAppendText('\n\n' + Twinkle.talkback.getNoticeWikitext(input));
+	talkpage.setChangeTags(Twinkle.changeTags);
 	talkpage.setCreateOption('recreate');
 	talkpage.setMinorEdit(Twinkle.getPref('markTalkbackAsMinor'));
 	talkpage.setFollowRedirect(true);

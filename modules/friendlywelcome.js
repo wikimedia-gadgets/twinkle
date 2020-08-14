@@ -634,7 +634,8 @@ Twinkle.welcome.callbacks = {
 
 		var summaryText = 'Welcome to Wikipedia!';
 		pageobj.setPageText(text);
-		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary(summaryText);
+		pageobj.setChangeTags(Twinkle.changeTags);
 		pageobj.setWatchlist(Twinkle.getPref('watchWelcomes'));
 		pageobj.setCreateOption('recreate');
 		pageobj.save();

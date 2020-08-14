@@ -1282,7 +1282,8 @@ Twinkle.speedy.callbacks = {
 			}
 
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary(editsummary);
+			usertalkpage.setChangeTags(Twinkle.changeTags);
 			usertalkpage.setCreateOption('recreate');
 			usertalkpage.setFollowRedirect(true, false);
 			usertalkpage.append(function onNotifySuccess() {
@@ -1328,7 +1329,8 @@ Twinkle.speedy.callbacks = {
 			}
 
 			var deleteMain = function(callback) {
-				thispage.setEditSummary(reason + Twinkle.getPref('deletionSummaryAd'));
+				thispage.setEditSummary(reason);
+				thispage.setChangeTags(Twinkle.changeTags);
 				thispage.deletePage(function() {
 					thispage.getStatusElement().info('done');
 					typeof callback === 'function' && callback();
@@ -1355,7 +1357,8 @@ Twinkle.speedy.callbacks = {
 					params.normalized !== 'f8' &&
 					document.getElementById('ca-talk').className !== 'new') {
 				var talkpage = new Morebits.wiki.page(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceNumber') + 1] + ':' + mw.config.get('wgTitle'), 'Deleting talk page');
-				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page "' + Morebits.pageNameNorm + '"' + Twinkle.getPref('deletionSummaryAd'));
+				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page "' + Morebits.pageNameNorm + '"');
+				talkpage.setChangeTags(Twinkle.changeTags);
 				talkpage.deletePage();
 				// this is ugly, but because of the architecture of wiki.api, it is needed
 				// (otherwise success/failure messages for the previous action would be suppressed)
@@ -1446,7 +1449,8 @@ Twinkle.speedy.callbacks = {
 			$snapshot.each(function(key, value) {
 				var title = $(value).attr('title');
 				var page = new Morebits.wiki.page(title, 'Deleting redirect "' + title + '"');
-				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + Morebits.pageNameNorm + '"' + Twinkle.getPref('deletionSummaryAd'));
+				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + Morebits.pageNameNorm + '"');
+				page.setChangeTags(Twinkle.changeTags);
 				page.deletePage(onsuccess);
 			});
 		}
@@ -1543,7 +1547,7 @@ Twinkle.speedy.callbacks = {
 
 
 			pageobj.setPageText(text);
-			pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary(editsummary);
 			pageobj.setWatchlist(params.watch);
 			if (params.scribunto) {
 				pageobj.setCreateOption('recreate'); // Module /doc might not exist
@@ -1683,8 +1687,8 @@ Twinkle.speedy.callbacks = {
 			}
 			appendText += ' ~~~~~\n';
 
-			usl.log(appendText, editsummary + Twinkle.getPref('summaryAd'));
-
+			usl.changeTags = Twinkle.changeTags;
+			usl.log(appendText, editsummary);
 		}
 	}
 };
@@ -2169,6 +2173,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	// Modules can't be tagged, follow standard at TfD and place on /doc subpage
 	params.scribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
 	var wikipedia_page = params.scribunto ? new Morebits.wiki.page(mw.config.get('wgPageName') + '/doc', 'Tagging module documentation page') : new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
+	wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.speedy.callbacks.user.main);
 };

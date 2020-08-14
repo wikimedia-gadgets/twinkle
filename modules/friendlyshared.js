@@ -156,7 +156,8 @@ Twinkle.shared.callbacks = {
 
 		var summaryText = 'Added {{[[Template:' + params.template + '|' + params.template + ']]}} template.';
 		pageobj.setPageText(text + pageText);
-		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary(summaryText);
+		pageobj.setChangeTags(Twinkle.changeTags);
 		pageobj.setMinorEdit(Twinkle.getPref('markSharedIPAsMinor'));
 		pageobj.setCreateOption('recreate');
 		pageobj.save();
