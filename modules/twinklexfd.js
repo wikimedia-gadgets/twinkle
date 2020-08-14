@@ -1117,6 +1117,92 @@ Twinkle.xfd.callbacks = {
 
 
 	tfd: {
+		main: function(pageobj) {
+			var params = pageobj.getCallbackParameters();
+
+			var date = new Morebits.date(pageobj.getLoadTime());
+			params.logpage = 'Wikipedia:Templates for discussion/Log/' + date.format('YYYY MMMM D', 'utc'),
+			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
+			// Add log/discussion page params to the already-loaded page object
+			pageobj.setCallbackParameters(params);
+
+			// Base query for adding modules to watchlist when tagging /doc subpage
+			var watch_query = {
+				action: 'watch',
+				titles: [ mw.config.get('wgPageName') ],
+				token: mw.user.tokens.get('watchToken')
+			};
+
+			// Tagging template(s)/module(s)
+			if (params.xfdcat === 'tfm') { // Merge
+				var wikipedia_otherpage;
+				if (params.scribunto) {
+					wikipedia_otherpage = new Morebits.wiki.page(params.otherTemplateName + '/doc', 'Tagging other module documentation with merge tag');
+
+					// Watch tagged module pages as well
+					if (Twinkle.getPref('xfdWatchPage') !== 'no') {
+						watch_query.titles.push(params.otherTemplateName);
+						new Morebits.wiki.api('Adding Modules to watchlist', watch_query).post();
+					}
+				} else {
+					wikipedia_otherpage = new Morebits.wiki.page(params.otherTemplateName, 'Tagging other template with merge tag');
+				}
+				// Tag this template/module
+				Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge(pageobj);
+
+				// Tag other template/module
+				wikipedia_otherpage.setFollowRedirect(true);
+				var otherParams = $.extend({}, params);
+				otherParams.otherTemplateName = Morebits.pageNameNorm;
+				wikipedia_otherpage.setCallbackParameters(otherParams);
+				wikipedia_otherpage.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);
+			} else { // delete
+				if (params.scribunto && Twinkle.getPref('xfdWatchPage') !== 'no') {
+					// Watch tagged module page as well
+					new Morebits.wiki.api('Adding Module to watchlist', watch_query).post();
+				}
+				Twinkle.xfd.callbacks.tfd.taggingTemplate(pageobj);
+			}
+
+
+			// Updating data for the action completed event
+			Morebits.wiki.actionCompleted.redirect = params.logpage;
+			Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
+
+			// Adding discussion
+			var wikipedia_page = new Morebits.wiki.page(params.logpage, "Adding discussion to today's log");
+			wikipedia_page.setFollowRedirect(true);
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.load(Twinkle.xfd.callbacks.tfd.todaysList);
+
+			// Notification to first contributors
+			if (params.notifycreator) {
+				var involvedpages = [];
+				var seenusers = [];
+				involvedpages.push(new Morebits.wiki.page(mw.config.get('wgPageName')));
+				if (params.xfdcat === 'tfm') {
+					if (params.scribunto) {
+						involvedpages.push(new Morebits.wiki.page('Module:' + params.tfdtarget));
+					} else {
+						involvedpages.push(new Morebits.wiki.page('Template:' + params.tfdtarget));
+					}
+				}
+				involvedpages.forEach(function(page) {
+					page.setCallbackParameters(params);
+					page.lookupCreation(function(innerpage) {
+						var username = innerpage.getCreator();
+						if (seenusers.indexOf(username) === -1) {
+							seenusers.push(username);
+							Twinkle.xfd.callbacks.tfd.userNotification(innerpage);
+						}
+					});
+				});
+			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
+			} else {
+				Twinkle.xfd.callbacks.addToLog(params, null);
+			}
+
+		},
 		taggingTemplate: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
@@ -1818,7 +1904,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	Morebits.status.onError(Twinkle.xfd.printRationale);
 
 	var query, wikipedia_page, wikipedia_api;
-	var date = new Morebits.date(); // XXX: avoid use of client clock, still used by TfD, FfD and CfD
+	var date = new Morebits.date(); // XXX: avoid use of client clock, still used by FfD and CfD
 	switch (params.venue) {
 
 		case 'afd': // AFD
@@ -1836,106 +1922,31 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			break;
 
 		case 'tfd': // TFD
-			Morebits.wiki.addCheckpoint();
 			if (params.tfdtarget) { // remove namespace name
 				params.tfdtarget = utils.stripNs(params.tfdtarget);
 			}
 
-			params.logpage = 'Wikipedia:Templates for discussion/Log/' + date.format('YYYY MMMM D', 'utc'),
-			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
-
-			// Modules can't be tagged, TfD instructions are to place
-			// on /doc subpage, so need to tag and watch specially
+			// Modules can't be tagged, TfD instructions are to place on /doc subpage
 			params.scribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
-			var watch_query = {
-				action: 'watch',
-				titles: [ mw.config.get('wgPageName') ],
-				token: mw.user.tokens.get('watchToken')
-			};
-			// Tagging template(s)/module(s)
 			if (params.xfdcat === 'tfm') { // Merge
-				var wikipedia_otherpage;
-
 				// Tag this template/module
 				if (params.scribunto) {
 					wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName') + '/doc', 'Tagging this module documentation with merge tag');
 					params.otherTemplateName = 'Module:' + params.tfdtarget;
-					wikipedia_otherpage = new Morebits.wiki.page(params.otherTemplateName + '/doc', 'Tagging other module documentation with merge tag');
-
-					// Watch tagged module pages as well
-					if (Twinkle.getPref('xfdWatchPage') !== 'no') {
-						watch_query.titles.push(params.otherTemplateName);
-						new Morebits.wiki.api('Adding Modules to watchlist', watch_query).post();
-					}
 				} else {
 					wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging this template with merge tag');
 					params.otherTemplateName = 'Template:' + params.tfdtarget;
-					wikipedia_otherpage = new Morebits.wiki.page(params.otherTemplateName, 'Tagging other template with merge tag');
 				}
-				wikipedia_page.setFollowRedirect(true);
-				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);
-
-				// Tag other template/module
-				wikipedia_otherpage.setFollowRedirect(true);
-				var otherParams = $.extend({}, params);
-				otherParams.otherTemplateName = Morebits.pageNameNorm;
-				wikipedia_otherpage.setCallbackParameters(otherParams);
-				wikipedia_otherpage.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);
 			} else { // delete
 				if (params.scribunto) {
 					wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName') + '/doc', 'Tagging module documentation with deletion tag');
-
-					// Watch tagged module page as well
-					if (Twinkle.getPref('xfdWatchPage') !== 'no') {
-						new Morebits.wiki.api('Adding Module to watchlist', watch_query).post();
-					}
 				} else {
 					wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging template with deletion tag');
 				}
-				wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
-				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.load(Twinkle.xfd.callbacks.tfd.taggingTemplate);
 			}
-
-			// Updating data for the action completed event
-			Morebits.wiki.actionCompleted.redirect = params.logpage;
-			Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
-
-			// Adding discussion
-			wikipedia_page = new Morebits.wiki.page(params.logpage, "Adding discussion to today's log");
-			wikipedia_page.setFollowRedirect(true);
+			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(Twinkle.xfd.callbacks.tfd.todaysList);
-
-			// Notification to first contributors
-			if (params.notifycreator) {
-				var involvedpages = [];
-				var seenusers = [];
-				involvedpages.push(new Morebits.wiki.page(mw.config.get('wgPageName')));
-				if (params.xfdcat === 'tfm') {
-					if (params.scribunto) {
-						involvedpages.push(new Morebits.wiki.page('Module:' + params.tfdtarget));
-					} else {
-						involvedpages.push(new Morebits.wiki.page('Template:' + params.tfdtarget));
-					}
-				}
-				involvedpages.forEach(function(page) {
-					page.setCallbackParameters(params);
-					page.lookupCreation(function(innerpage) {
-						var username = innerpage.getCreator();
-						if (seenusers.indexOf(username) === -1) {
-							seenusers.push(username);
-							Twinkle.xfd.callbacks.tfd.userNotification(innerpage);
-						}
-					});
-				});
-			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
-			} else {
-				Twinkle.xfd.callbacks.addToLog(params, null);
-			}
-
-			Morebits.wiki.removeCheckpoint();
+			wikipedia_page.load(Twinkle.xfd.callbacks.tfd.main);
 			break;
 
 		case 'mfd': // MFD
