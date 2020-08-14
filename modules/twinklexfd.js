@@ -816,8 +816,10 @@ Twinkle.xfd.callbacks = {
 		};
 		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
 		var fileLogLink = mw.config.get('wgNamespaceNumber') === 6 ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])' : '';
+		// CFD/S and RM don't have canonical links
+		var nominatedLink = params.discussionpage ? '[[' + params.discussionpage + '|nominated]]' : 'nominated';
 
-		var appendText = '# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ' nominated at [[WP:' + params.venue.toUpperCase() + '|' + toTLACase(params.venue) + ']]';
+		var appendText = '# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ' ' + nominatedLink + ' at [[WP:' + params.venue.toUpperCase() + '|' + toTLACase(params.venue) + ']]';
 		var extraInfo = '';
 
 		switch (params.venue) {
