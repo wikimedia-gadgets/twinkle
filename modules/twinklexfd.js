@@ -885,7 +885,7 @@ Twinkle.xfd.callbacks = {
 		}
 		appendText += ' ~~~~~';
 		if (params.reason) {
-			appendText += "\n#* '''Reason''': " + params.reason;
+			appendText += "\n#* '''Reason''': " + Morebits.string.formatReasonForLog(params.reason);
 		}
 
 		usl.changeTags = Twinkle.changeTags;

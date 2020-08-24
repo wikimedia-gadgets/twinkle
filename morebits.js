@@ -1132,6 +1132,20 @@ Morebits.string = {
 	},
 
 	/**
+	 * Formats a "reason" (from a textarea) for inclusion in a userspace log
+	 * @param {string} str
+	 * @returns {string}
+	 */
+	formatReasonForLog: function(str) {
+		return str
+			// handle line breaks, which otherwise break numbering
+			.replace(/\n+/g, '{{pb}}')
+			// put an extra # in front before bulleted or numbered list items
+			.replace(/^(#+)/mg, '#$1')
+			.replace(/^(\*+)/mg, '#$1');
+	},
+
+	/**
 	 * Like `String.prototype.replace()`, but escapes any dollar signs in the replacement string.
 	 * Useful when the the replacement string is arbitrary, such as a username or freeform user input,
 	 * and could contain dollar signs.
