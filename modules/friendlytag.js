@@ -1937,8 +1937,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 					return;
 				}
 				// Should be PNG|SVG
-				if ((params.tags.toString().indexOf('Should be ') !== -1) && (params.tags.indexOf('Should be ' + extensionUpper) === -1)) {
-					alert('This appears to be a ' + extension + ' file, please use {{Should be ' + extensionUpper + '}} instead.');
+				if ((params.tags.toString().indexOf('Should be ') !== -1) && (params.tags.indexOf('Should be ' + extensionUpper) !== -1)) {
+					alert('This is already a ' + extension + ' file, so {{Should be ' + extensionUpper + '}} is inappropriate.');
 					return;
 				}
 
