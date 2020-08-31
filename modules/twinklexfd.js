@@ -1532,7 +1532,7 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			pageobj.setPageText('{{subst:cfr-speedy|1=' + params.cfdtarget.replace(/^:?Category:/, '') + '}}\n' + text);
+			pageobj.setPageText('{{subst:cfr-speedy|1=' + params.cfdstarget.replace(/^:?Category:/, '') + '}}\n' + text);
 			pageobj.setEditSummary('Listed for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]].');
 			pageobj.setChangeTags(Twinkle.changeTags);
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
