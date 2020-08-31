@@ -808,7 +808,7 @@ Twinkle.xfd.callbacks = {
 			'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].' +
 			(Morebits.userIsSysop ? '\n\nThis log does not track XfD-related deletions made using Twinkle.' : '');
 
-		var editsummary = 'Logging ' + params.venue + ' nomination of [[:' + Morebits.pageNameNorm + ']].';
+		var editsummary = 'Logging ' + toTLACase(params.venue) + ' nomination of [[:' + Morebits.pageNameNorm + ']].';
 		// Provide Wikipedian TLA style: AfD, RfD, CfDS, RM, SfD, etc.
 		var toTLACase = function(str) {
 			// return str.toString().toUpperCase().replace(/\BF/, 'f');
@@ -885,7 +885,7 @@ Twinkle.xfd.callbacks = {
 		}
 		appendText += ' ~~~~~';
 		if (params.reason) {
-			appendText += "\n#* '''Reason''': " + params.reason;
+			appendText += "\n#* '''Reason''': " + Morebits.string.formatReasonForLog(params.reason);
 		}
 
 		usl.changeTags = Twinkle.changeTags;
