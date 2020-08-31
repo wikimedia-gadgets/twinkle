@@ -1841,7 +1841,7 @@ Morebits.wiki.api.prototype = {
 			});
 		}
 
-		this.statelem.error(this.errorText);
+		this.statelem.error(this.errorText + ' (' + this.errorCode + ')');
 
 		// invoke failure callback if one was supplied
 		if (this.onError) {
