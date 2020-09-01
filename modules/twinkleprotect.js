@@ -1379,7 +1379,7 @@ Twinkle.protect.callbacks = {
 		var text = rppPage.getPageText();
 		var statusElement = rppPage.getStatusElement();
 
-		var rppRe = new RegExp('===\\s*(\\[\\[)?\\s*:?\\s*' + RegExp.escape(Morebits.pageNameNorm, true) + '\\s*(\\]\\])?\\s*===', 'm');
+		var rppRe = new RegExp('===\\s*(\\[\\[)?\\s*:?\\s*' + Morebits.string.escapeRegExp(Morebits.pageNameNorm) + '\\s*(\\]\\])?\\s*===', 'm');
 		var tag = rppRe.exec(text);
 
 		var rppLink = document.createElement('a');
@@ -1392,7 +1392,7 @@ Twinkle.protect.callbacks = {
 		}
 
 		var newtag = '=== [[:' + Morebits.pageNameNorm + ']] ===\n';
-		if (new RegExp('^' + RegExp.escape(newtag).replace(/\s+/g, '\\s*'), 'm').test(text)) {
+		if (new RegExp('^' + mw.util.escapeRegExp(newtag).replace(/\s+/g, '\\s*'), 'm').test(text)) {
 			statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
 			return;
 		}

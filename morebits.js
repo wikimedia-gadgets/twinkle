@@ -1031,23 +1031,16 @@ HTMLFormElement.prototype.getUnchecked = function(name, type) {
 
 
 /**
- * **************** RegExp ****************
- *
- * Escapes a string to be used in a RegExp
- * @param {string} text - string to be escaped
- * @param {boolean} [space_fix=false] - Set true to replace spaces and underscores with `[ _]` as they are
- * often equivalent
- * @returns {string} - the escaped text
+ * @deprecated as of September 2020, use Morebits.string.escapeRegExp or
+ * mw.util.escapeRegExp
  */
 RegExp.escape = function(text, space_fix) {
-	text = mw.util.escapeRegExp(text);
-
-	// Special MediaWiki escape - underscore/space are often equivalent
 	if (space_fix) {
-		text = text.replace(/ |_/g, '[_ ]');
+		console.log('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with Morebits.string.escapeRegExp'); // eslint-disable-line no-console
+		return Morebits.string.escapeRegExp(text);
 	}
-
-	return text;
+	console.log('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with mw.util.escapeRegExp'); // eslint-disable-line no-console
+	return mw.util.escapeRegExp(text);
 };
 
 
@@ -1166,6 +1159,17 @@ Morebits.string = {
 	 */
 	isInfinity: function morebitsStringIsInfinity(expiry) {
 		return ['indefinite', 'infinity', 'infinite', 'never'].indexOf(expiry) !== -1;
+	},
+
+	/**
+	 * Escapes a string to be used in a RegExp, replacing spaces and
+	 * underscores with `[ _]` as they are often equivalent
+	 * Replaced RegExp.escape September 2020
+	 * @param {string} text - string to be escaped
+	 * @returns {string} - the escaped text
+	 */
+	escapeRegExp: function(text) {
+		return mw.util.escapeRegExp(text).replace(/ |_/g, '[_ ]');
 	}
 };
 
@@ -3965,7 +3969,7 @@ Morebits.wikitext.page.prototype = {
 	 */
 	removeLink: function(link_target) {
 		var first_char = link_target.substr(0, 1);
-		var link_re_string = '[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + RegExp.escape(link_target.substr(1), true);
+		var link_re_string = '[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + Morebits.string.escapeRegExp(link_target.substr(1));
 
 		// Files and Categories become links with a leading colon, e.g. [[:File:Test.png]]
 		// Otherwise, allow for an optional leading colon, e.g. [[:User:Test]]
@@ -3992,7 +3996,7 @@ Morebits.wikitext.page.prototype = {
 
 		reason = reason ? reason + ': ' : '';
 		var first_char = image.substr(0, 1);
-		var image_re_string = '[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + RegExp.escape(image.substr(1), true);
+		var image_re_string = '[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + Morebits.string.escapeRegExp(image.substr(1));
 
 		// Check for normal image links, i.e. [[File:Foobar.png|...]]
 		// Will eat the whole link
@@ -4034,11 +4038,11 @@ Morebits.wikitext.page.prototype = {
 	 */
 	addToImageComment: function(image, data) {
 		var first_char = image.substr(0, 1);
-		var first_char_regex = RegExp.escape(first_char, true);
+		var first_char_regex = Morebits.string.escapeRegExp(first_char);
 		if (first_char.toUpperCase() !== first_char.toLowerCase()) {
-			first_char_regex = '[' + RegExp.escape(first_char.toUpperCase(), true) + RegExp.escape(first_char.toLowerCase(), true) + ']';
+			first_char_regex = '[' + Morebits.string.escapeRegExp(first_char.toUpperCase()) + Morebits.string.escapeRegExp(first_char.toLowerCase()) + ']';
 		}
-		var image_re_string = '(?:[Ii]mage|[Ff]ile):\\s*' + first_char_regex + RegExp.escape(image.substr(1), true);
+		var image_re_string = '(?:[Ii]mage|[Ff]ile):\\s*' + first_char_regex + Morebits.string.escapeRegExp(image.substr(1));
 		var links_re = new RegExp('\\[\\[' + image_re_string);
 		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys(this.text, '[[', ']]'));
 		for (var i = 0; i < allLinks.length; ++i) {
@@ -4064,7 +4068,7 @@ Morebits.wikitext.page.prototype = {
 	 */
 	removeTemplate: function(template) {
 		var first_char = template.substr(0, 1);
-		var template_re_string = '(?:[Tt]emplate:)?\\s*[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + RegExp.escape(template.substr(1), true);
+		var template_re_string = '(?:[Tt]emplate:)?\\s*[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + Morebits.string.escapeRegExp(template.substr(1));
 		var links_re = new RegExp('\\{\\{' + template_re_string);
 		var allTemplates = Morebits.array.uniq(Morebits.string.splitWeightedByKeys(this.text, '{{', '}}', [ '{{{', '}}}' ]));
 		for (var i = 0; i < allTemplates.length; ++i) {
