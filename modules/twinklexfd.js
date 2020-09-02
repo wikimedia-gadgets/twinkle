@@ -1707,7 +1707,7 @@ Twinkle.xfd.callbacks = {
 						statelem.warn('You (' + mw.config.get('wgUserName') + ') are the target; skipping target page notification');
 					}
 				} else {
-					Twinkle.xfd.callbacks.rfd.targetNotification(params, targetTalk);
+					Twinkle.xfd.callbacks.rfd.targetNotification(params, targetTalk.toText());
 				}
 			}
 		},
@@ -1739,7 +1739,7 @@ Twinkle.xfd.callbacks = {
 			targettalkpage.setFollowRedirect(true);
 			targettalkpage.append(function() {
 				// Add to userspace log if not notifying the creator
-				if (!params.usertalk) {
+				if (!params.notifycreator) {
 					Twinkle.xfd.callbacks.addToLog(params, null);
 				}
 			});
