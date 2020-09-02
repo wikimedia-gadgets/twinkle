@@ -1559,7 +1559,7 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 
 	var wikipedia_page = new Morebits.wiki.page(userTalkPage, 'User talk page modification');
 	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.setFollowRedirect(true, false);
+	wikipedia_page.setFollowRedirect(false);
 	wikipedia_page.load(Twinkle.block.callback.main);
 };
 
