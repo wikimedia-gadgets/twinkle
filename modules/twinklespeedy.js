@@ -1331,6 +1331,7 @@ Twinkle.speedy.callbacks = {
 			var deleteMain = function(callback) {
 				thispage.setEditSummary(reason);
 				thispage.setChangeTags(Twinkle.changeTags);
+				thispage.setWatchlist(params.watch);
 				thispage.deletePage(function() {
 					thispage.getStatusElement().info('done');
 					typeof callback === 'function' && callback();
