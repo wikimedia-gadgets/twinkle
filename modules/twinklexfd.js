@@ -91,7 +91,7 @@ Twinkle.xfd.printRationale = function twinklexfdPrintRationale() {
 };
 
 Twinkle.xfd.callback = function twinklexfdCallback() {
-	var Window = new Morebits.simpleWindow(600, 350);
+	var Window = new Morebits.simpleWindow(700, 400);
 	Window.setTitle('Start a deletion discussion (XfD)');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('About deletion discussions', 'WP:XFD');
@@ -280,6 +280,13 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'Articles for deletion',
 				name: 'work_area'
 			});
+
+			work_area.append({
+				type: 'div',
+				label: Twinkle.makeFindSourcesDiv(),
+				style: 'margin-bottom: 5px;'
+			});
+
 			work_area.append({
 				type: 'checkbox',
 				list: [

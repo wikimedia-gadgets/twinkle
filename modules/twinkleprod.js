@@ -64,6 +64,12 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	});
 
 	field.append({
+		type: 'div',
+		label: Twinkle.makeFindSourcesDiv(),
+		style: 'margin-bottom: 5px;'
+	});
+
+	field.append({
 		type: 'radio',
 		name: 'prodtype',
 		event: Twinkle.prod.callback.prodtypechanged,
