@@ -731,13 +731,13 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-usertalk': {
 		edit: 'sysop',
 		move: 'sysop',
-		level: 'infinity',
+		expiry: 'infinity',
 		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]'
 	},
 	'pp-template': {
 		edit: 'templateeditor',
 		move: 'templateeditor',
-		level: 'infinity',
+		expiry: 'infinity',
 		reason: '[[WP:High-risk templates|Highly visible template]]'
 	},
 	'pp-30-500-arb': {
@@ -854,7 +854,7 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-move-indef': {
 		move: 'sysop',
-		level: 'infinity',
+		expiry: 'infinity',
 		reason: '[[WP:MOVP|Highly visible page]]'
 	},
 	'unprotect': {
