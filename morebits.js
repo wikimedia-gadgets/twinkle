@@ -4669,7 +4669,16 @@ Morebits.batchOperation = function(currentAction) {
 
 		// update overall status line
 		var total = ctx.pageList.length;
-		if (ctx.countFinished === total) {
+		if (ctx.countFinished < total) {
+			ctx.statusElement.status(parseInt(100 * ctx.countFinished / total, 10) + '%');
+
+			// start a new chunk if we're close enough to the end of the previous chunk, and
+			// we haven't already started the next one
+			if (ctx.countFinished >= (ctx.countStarted - Math.max(ctx.options.chunkSize / 10, 2)) &&
+				Math.floor(ctx.countFinished / ctx.options.chunkSize) > ctx.currentChunkIndex) {
+				fnStartNewChunk();
+			}
+		} else if (ctx.countFinished === total) {
 			var statusString = 'Done (' + ctx.countFinishedSuccess +
 				'/' + ctx.countFinished + ' actions completed successfully)';
 			if (ctx.countFinishedSuccess < ctx.countFinished) {
@@ -4682,24 +4691,12 @@ Morebits.batchOperation = function(currentAction) {
 			}
 			Morebits.wiki.removeCheckpoint();
 			ctx.running = false;
-			return;
-		}
-
-		// just for giggles! (well, serious debugging, actually)
-		if (ctx.countFinished > total) {
+		} else {
+			// ctx.countFinished > total
+			// just for giggles! (well, serious debugging, actually)
 			ctx.statusElement.warn('Done (overshot by ' + (ctx.countFinished - total) + ')');
 			Morebits.wiki.removeCheckpoint();
 			ctx.running = false;
-			return;
-		}
-
-		ctx.statusElement.status(parseInt(100 * ctx.countFinished / total, 10) + '%');
-
-		// start a new chunk if we're close enough to the end of the previous chunk, and
-		// we haven't already started the next one
-		if (ctx.countFinished >= (ctx.countStarted - Math.max(ctx.options.chunkSize / 10, 2)) &&
-			Math.floor(ctx.countFinished / ctx.options.chunkSize) > ctx.currentChunkIndex) {
-			fnStartNewChunk();
 		}
 	};
 };
