@@ -3639,7 +3639,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 				ctx.undeleteProcessApi.post(); // give it another go!
 			} else {
-				ctx.statusElement.error('Repeated database query error, reload the page and try again');
+				ctx.statusElement.error('Repeated database query error, please try again');
 				if (ctx.onUndeleteFailure) {
 					ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
 				}
