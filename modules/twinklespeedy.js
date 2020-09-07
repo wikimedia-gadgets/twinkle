@@ -1461,8 +1461,7 @@ Twinkle.speedy.callbacks = {
 		main: function(pageobj) {
 			var statelem = pageobj.getStatusElement();
 
-			// defaults to /doc for lua modules, which may not exist
-			if (!pageobj.exists() && mw.config.get('wgPageContentModel') !== 'Scribunto') {
+			if (!pageobj.exists()) {
 				statelem.error("It seems that the page doesn't exist; perhaps it has already been deleted");
 				return;
 			}
@@ -1516,6 +1515,15 @@ Twinkle.speedy.callbacks = {
 				}
 			}
 
+			// Scribunto isn't parsed like wikitext, so CSD templates on modules need special handling to work
+			if (mw.config.get('wgPageContentModel') === 'Scribunto') {
+				var equals = '';
+				while (code.indexOf(']' + equals + ']') !== -1) {
+					equals += '=';
+				}
+				code = "require('Module:Module wikitext')._addText([" + equals + '[' + code + ']' + equals + ']);';
+			}
+
 			// Generate edit summary for edit
 			var editsummary;
 			if (params.normalizeds.length > 1) {
@@ -1550,18 +1558,6 @@ Twinkle.speedy.callbacks = {
 			pageobj.setPageText(text);
 			pageobj.setEditSummary(editsummary);
 			pageobj.setWatchlist(params.watch);
-			if (params.scribunto) {
-				pageobj.setCreateOption('recreate'); // Module /doc might not exist
-				if (params.watch) {
-					// Watch module in addition to /doc subpage
-					var watch_query = {
-						action: 'watch',
-						titles: mw.config.get('wgPageName'),
-						token: mw.user.tokens.get('watchToken')
-					};
-					new Morebits.wiki.api('Adding Module to watchlist', watch_query).post();
-				}
-			}
 			pageobj.save(Twinkle.speedy.callbacks.user.tagComplete);
 		},
 
@@ -2171,9 +2167,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 	Morebits.wiki.actionCompleted.notice = 'Tagging complete';
 
-	// Modules can't be tagged, follow standard at TfD and place on /doc subpage
-	params.scribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
-	var wikipedia_page = params.scribunto ? new Morebits.wiki.page(mw.config.get('wgPageName') + '/doc', 'Tagging module documentation page') : new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
 	wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.speedy.callbacks.user.main);
