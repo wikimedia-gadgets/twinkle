@@ -314,6 +314,11 @@ Twinkle.talkback.noticeboards = {
 		text: '{{subst:AFCHD/u|$SECTION}} ~~~~',
 		editSummary: 'You have replies at the [[Wikipedia:AFCHD|Articles for Creation Help Desk]]'
 	},
+	'blpn': {
+		label: 'WP:BLPN (Biographies of living persons noticeboard)',
+		text: '{{subst:BLPN-notice|thread=$SECTION}} ~~~~',
+		editSummary: 'Notice of discussion at [[Wikipedia:Biographies of living persons noticeboard]]'
+	},
 	'coin': {
 		label: 'WP:COIN (Conflict of interest noticeboard)',
 		text: '{{subst:Coin-notice|thread=$SECTION}} ~~~~',
@@ -329,10 +334,35 @@ Twinkle.talkback.noticeboards = {
 		text: '{{EFFPReply|1=$SECTION|2=~~~~}}',
 		editSummary: 'You have replies to your [[Wikipedia:Edit filter/False positives/Reports|edit filter false positive report]]'
 	},
+	'eln': {
+		label: 'WP:ELN (External links noticeboard)',
+		text: '{{subst:ELN-notice|thread=$SECTION}} ~~~~',
+		editSummary: 'Notice of discussion at [[Wikipedia:External links/noticeboard]]'
+	},
+	'ftn': {
+		label: 'WP:FTN (Fringe theories noticeboard)',
+		text: '{{subst:Ftn-notice|thread=$SECTION}} ~~~~',
+		editSummary: 'Notice of discussion at [[Wikipedia:Fringe theories/Noticeboard]]'
+	},
 	'hd': {
 		label: 'WP:HD (Help desk)',
 		text: '== Your question at the Help desk ==\n' + '{{helpdeskreply|1=$SECTION|ts=~~~~~}}',
 		editSummary: 'You have replies at the [[Wikipedia:Help desk|Wikipedia help desk]]'
+	},
+	'norn': {
+		label: 'WP:NORN (Reliable sources noticeboard)',
+		text: '{{subst:Norn-notice|thread=$SECTION}} ~~~~',
+		editSummary: 'Notice of discussion at [[Wikipedia:Reliable sources/Noticeboard]]'
+	},
+	'npovn': {
+		label: 'WP:NPOVN (Neutral point of view noticeboard)',
+		text: '{{subst:NPOVN-notice|thread=$SECTION}} ~~~~',
+		editSummary: 'Notice of discussion at [[Wikipedia:Neutral point of view/noticeboard]]'
+	},
+	'rsn': {
+		label: 'WP:RSN (Reliable sources noticeboard)',
+		text: '{{subst:RSN-notice|thread=$SECTION}} ~~~~',
+		editSummary: 'Notice of discussion at [[Wikipedia:Reliable sources/noticeboard]]'
 	},
 	'th': {
 		label: 'WP:THQ (Teahouse question forum)',
