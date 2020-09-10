@@ -164,7 +164,6 @@ Twinkle.defaultConfig = {
 	markTalkbackAsMinor: true,
 	insertTalkbackSignature: true,  // always sign talkback templates
 	talkbackHeading: 'New message from ' + mw.config.get('wgUserName'),
-	adminNoticeHeading: 'Notice',
 	mailHeading: "You've got mail!",
 
 	// Shared

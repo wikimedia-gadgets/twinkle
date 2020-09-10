@@ -292,8 +292,7 @@ Twinkle.talkback.changeTarget = function(e) {
 Twinkle.talkback.noticeboards = {
 	'an': {
 		label: "WP:AN (Administrators' noticeboard)",
-		text: '== ' + Twinkle.getPref('adminNoticeHeading') + ' ==\n' +
-		"{{subst:ANI-notice|thread=$SECTION|noticeboard=Wikipedia:Administrators' noticeboard}} ~~~~",
+		text: '{{subst:AN-notice|thread=$SECTION}} ~~~~',
 		editSummary: 'Notice of discussion at [[Wikipedia:Administrators\' noticeboard]]'
 	},
 	'an3': {
@@ -303,8 +302,8 @@ Twinkle.talkback.noticeboards = {
 	},
 	'ani': {
 		label: "WP:ANI (Administrators' noticeboard/Incidents)",
-		text: '== ' + Twinkle.getPref('adminNoticeHeading') + ' ==\n' +
-		"{{subst:ANI-notice|thread=$SECTION|noticeboard=Wikipedia:Administrators' noticeboard/Incidents}} ~~~~",
+		text: "== Notice of Administrators' noticeboard/Incidents discussion ==\n" +
+		'{{subst:ANI-notice|thread=$SECTION}} ~~~~',
 		editSummary: 'Notice of discussion at [[Wikipedia:Administrators\' noticeboard/Incidents]]',
 		defaultSelected: true
 	},
