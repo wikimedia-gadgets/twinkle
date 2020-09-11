@@ -1545,6 +1545,39 @@ Twinkle.xfd.callbacks = {
 
 
 	cfd: {
+		main: function(pageobj) {
+			var params = pageobj.getCallbackParameters();
+
+			var date = new Morebits.date(pageobj.getLoadTime());
+			params.logpage = 'Wikipedia:Categories for discussion/Log/' + date.format('YYYY MMMM D', 'utc');
+			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
+			// Add log/discussion page params to the already-loaded page object
+			pageobj.setCallbackParameters(params);
+
+			// Tagging category
+			Twinkle.xfd.callbacks.cfd.taggingCategory(pageobj);
+
+			// Updating data for the action completed event
+			Morebits.wiki.actionCompleted.redirect = params.logpage;
+			Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
+
+			// Adding discussion to list
+			var wikipedia_page = new Morebits.wiki.page(params.logpage, "Adding discussion to today's list");
+			wikipedia_page.setPageSection(2);
+			wikipedia_page.setFollowRedirect(true);
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.load(Twinkle.xfd.callbacks.cfd.todaysList);
+
+			// Notification to first contributor
+			if (params.notifycreator) {
+				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
+				wikipedia_page.setCallbackParameters(params);
+				wikipedia_page.lookupCreation(Twinkle.xfd.callbacks.cfd.userNotification);
+			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
+			} else {
+				Twinkle.xfd.callbacks.addToLog(params, null);
+			}
+		},
 		taggingCategory: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
@@ -1904,7 +1937,6 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	Morebits.status.onError(Twinkle.xfd.printRationale);
 
 	var query, wikipedia_page, wikipedia_api;
-	var date = new Morebits.date(); // XXX: avoid use of client clock, still used by FfD and CfD
 	switch (params.venue) {
 
 		case 'afd': // AFD
@@ -1964,7 +1996,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			break;
 
 		case 'ffd': // FFD
-			params.date = date.format('YYYY MMMM D', 'utc');
+			params.date = new Morebits.date().format('YYYY MMMM D', 'utc'); // XXX: avoid use of client clock
 			params.logpage = 'Wikipedia:Files for discussion/' + params.date;
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
 
@@ -1989,21 +2021,16 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			break;
 
 		case 'cfd':
-			Morebits.wiki.addCheckpoint();
-
 			if (params.cfdtarget) {
 				params.cfdtarget = utils.stripNs(params.cfdtarget);
 			} else {
-				params.cfdtarget = '';
+				params.cfdtarget = ''; // delete
 			}
-			if (params.cfdtarget2) {
+			if (params.cfdtarget2) { // split
 				params.cfdtarget2 = utils.stripNs(params.cfdtarget2);
 			}
 
-			params.logpage = 'Wikipedia:Categories for discussion/Log/' + date.format('YYYY MMMM D', 'utc');
-			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
-
-			// Useful for customized actions in edit summaries and the notification template
+			// Used for customized actions in edit summaries and the notification template
 			var summaryActions = {
 				cfd: 'deletion',
 				'sfd-t': 'deletion',
@@ -2015,34 +2042,11 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			};
 			params.action = summaryActions[params.xfdcat];
 
-			// Updating data for the action completed event
-			Morebits.wiki.actionCompleted.redirect = params.logpage;
-			Morebits.wiki.actionCompleted.notice = "Nomination completed, now redirecting to today's log";
-
 			// Tagging category
 			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with ' + params.action + ' tag');
 			wikipedia_page.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
 			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(Twinkle.xfd.callbacks.cfd.taggingCategory);
-
-			// Adding discussion to list
-			wikipedia_page = new Morebits.wiki.page(params.logpage, "Adding discussion to today's list");
-			wikipedia_page.setPageSection(2);
-			wikipedia_page.setFollowRedirect(true);
-			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(Twinkle.xfd.callbacks.cfd.todaysList);
-
-			// Notification to first contributor
-			if (params.notifycreator) {
-				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
-				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.lookupCreation(Twinkle.xfd.callbacks.cfd.userNotification);
-			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
-			} else {
-				Twinkle.xfd.callbacks.addToLog(params, null);
-			}
-
-			Morebits.wiki.removeCheckpoint();
+			wikipedia_page.load(Twinkle.xfd.callbacks.cfd.main);
 			break;
 
 		case 'cfds':
