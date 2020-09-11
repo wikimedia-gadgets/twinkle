@@ -1471,6 +1471,32 @@ Twinkle.xfd.callbacks = {
 
 
 	ffd: {
+		taggingImage: function(pageobj) {
+			var text = pageobj.getPageText();
+			var params = pageobj.getCallbackParameters();
+
+			var date = new Morebits.date(pageobj.getLoadTime()).format('YYYY MMMM D', 'utc');
+			params.logpage = 'Wikipedia:Files for discussion/' + date;
+			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
+
+			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
+
+			pageobj.setPageText('{{ffd|log=' + date + '|help=off}}\n' + text);
+			pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
+			pageobj.setChangeTags(Twinkle.changeTags);
+			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
+			pageobj.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
+			pageobj.save();
+
+			// Updating data for the action completed event
+			Morebits.wiki.actionCompleted.redirect = params.logpage;
+			Morebits.wiki.actionCompleted.notice = 'Nomination completed, now redirecting to the discussion page';
+
+			// Contributor specific edits
+			var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
+			wikipedia_page.setCallbackParameters(params);
+			wikipedia_page.lookupCreation(Twinkle.xfd.callbacks.ffd.main);
+		},
 		main: function(pageobj) {
 			// this is coming in from lookupCreation...!
 			var params = pageobj.getCallbackParameters();
@@ -1509,19 +1535,6 @@ Twinkle.xfd.callbacks = {
 			} else {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			}
-		},
-		taggingImage: function(pageobj) {
-			var text = pageobj.getPageText();
-			var params = pageobj.getCallbackParameters();
-
-			text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
-
-			pageobj.setPageText('{{ffd|log=' + params.date + '|help=off}}\n' + text);
-			pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
-			pageobj.setChangeTags(Twinkle.changeTags);
-			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchPage'));
-			pageobj.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
-			pageobj.save();
 		},
 		todaysList: function(pageobj) {
 			var text = pageobj.getPageText();
@@ -1996,28 +2009,14 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			break;
 
 		case 'ffd': // FFD
-			params.date = new Morebits.date().format('YYYY MMMM D', 'utc'); // XXX: avoid use of client clock
-			params.logpage = 'Wikipedia:Files for discussion/' + params.date;
-			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
-
-			Morebits.wiki.addCheckpoint();
-
-			// Updating data for the action completed event
-			Morebits.wiki.actionCompleted.redirect = params.logpage;
-			Morebits.wiki.actionCompleted.notice = 'Nomination completed, now redirecting to the discussion page';
-
 			// Tagging file
+			// A little out of order with this coming before 'main',
+			// but tagging doesn't need the uploader parameter,
+			// while everything else does, so tag then get the uploader
 			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Adding deletion tag to file page');
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.ffd.taggingImage);
-
-			// Contributor specific edits
-			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
-			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.lookupCreation(Twinkle.xfd.callbacks.ffd.main);
-
-			Morebits.wiki.removeCheckpoint();
 			break;
 
 		case 'cfd':
