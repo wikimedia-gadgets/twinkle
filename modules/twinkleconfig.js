@@ -583,8 +583,14 @@ Twinkle.config.sections = [
 		module: 'tag',
 		preferences: [
 			{
+				name: 'watchTaggedVenues',
+				label: 'Add page to watchlist when tagging these type of pages',
+				type: 'set',
+				setValues: { articles: 'Articles', drafts: 'Drafts', redirects: 'Redirects', files: 'Files' }
+			},
+			{
 				name: 'watchTaggedPages',
-				label: 'Add page to watchlist when tagging',
+				label: 'When tagging a page, how long to watch it for',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
