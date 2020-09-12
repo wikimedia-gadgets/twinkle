@@ -442,10 +442,10 @@ Twinkle.tag.updateSortOrder = function(e) {
 						tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two'
 					},
 					{
-						name: 'mergeTagOther',
 						type: 'checkbox',
 						list: [
 							{
+								name: 'mergeTagOther',
 								label: 'Tag the other article with a {{' + otherTagName + '}} tag',
 								checked: true,
 								tooltip: 'Only available if a single article name is entered.'
@@ -475,10 +475,10 @@ Twinkle.tag.updateSortOrder = function(e) {
 				];
 				if (tag === 'Not English') {
 					checkbox.subgroup.push({
-						name: 'translationNotify',
 						type: 'checkbox',
 						list: [
 							{
+								name: 'translationNotify',
 								label: 'Notify article creator',
 								checked: true,
 								tooltip: "Places {{uw-notenglish}} on the creator's talk page."
@@ -488,10 +488,10 @@ Twinkle.tag.updateSortOrder = function(e) {
 				}
 				if (mw.config.get('wgNamespaceNumber') === 0) {
 					checkbox.subgroup.push({
-						name: 'translationPostAtPNT',
 						type: 'checkbox',
 						list: [
 							{
+								name: 'translationPostAtPNT',
 								label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
 								checked: true
 							}
