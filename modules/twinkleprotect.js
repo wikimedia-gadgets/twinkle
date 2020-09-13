@@ -1109,6 +1109,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				}
 
 				thispage.setChangeTags(Twinkle.changeTags);
+				thispage.setWatchlist(Twinkle.getPref('watchProtectedPages'));
 				thispage.protect(next);
 			};
 
@@ -1133,6 +1134,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					statusInited = true;
 				}
 
+				thispage.setWatchlist(Twinkle.getPref('watchProtectedPages'));
 				thispage.stabilize(allDone, function(error) {
 					if (error.errorCode === 'stabilize_denied') { // [[phab:T234743]]
 						thispage.getStatusElement().error('Failed trying to modify pending changes settings, likely due to a mediawiki bug. Other actions (tagging or regular protection) may have taken place. Please reload the page and try again.');
@@ -1388,6 +1390,7 @@ Twinkle.protect.callbacks = {
 
 		protectedPage.setEditSummary(summary);
 		protectedPage.setChangeTags(Twinkle.changeTags);
+		protectedPage.setWatchlist(Twinkle.getPref('watchPPTaggedPages'));
 		protectedPage.setPageText(text);
 		protectedPage.setCreateOption('nocreate');
 		protectedPage.suppressProtectWarning(); // no need to let admins know they are editing through protection
@@ -1492,7 +1495,25 @@ Twinkle.protect.callbacks = {
 		rppPage.setChangeTags(Twinkle.changeTags);
 		rppPage.setPageText(text);
 		rppPage.setCreateOption('recreate');
-		rppPage.save();
+		rppPage.save(function(pageobj) {
+			// Watch the page being requested
+			var watchPref = Twinkle.getPref('watchRequestedPages');
+			// action=watch has no way to rely on user preferences (T262912), so we do it manually.
+			// The watchdefault pref appears to reliably return '1' (string),
+			// but that's not consistent among prefs so might as well be "correct"
+			var watch = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
+			if (watch) {
+				var watch_query = {
+					action: 'watch',
+					titles: mw.config.get('wgPageName'),
+					token: mw.user.tokens.get('watchToken')
+				};
+				if (pageobj.getWatched() && watchPref !== 'default' && watchPref !== 'yes') {
+					watch_query.expiry = watchPref;
+				}
+				new Morebits.wiki.api('Adding requested page to watchlist', watch_query).post();
+			}
+		});
 	}
 };
 

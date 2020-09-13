@@ -79,6 +79,11 @@ Twinkle.defaultConfig = {
 	deliWatchPage: 'default',
 	deliWatchUser: 'default',
 
+	// Protect
+	watchRequestedPages: 'yes',
+	watchPPTaggedPages: 'default',
+	watchProtectedPages: 'default',
+
 	// PROD
 	watchProdPages: 'yes',
 	markProdPagesAsPatrolled: false,

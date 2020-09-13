@@ -272,6 +272,33 @@ Twinkle.config.sections = [
 	},
 
 	{
+		title: 'Page protection ' + (Morebits.userIsSysop ? '(PP)' : '(RPP)'),
+		module: 'protect',
+		preferences: [
+			{
+				name: 'watchRequestedPages',
+				label: 'Add page to watchlist when requesting protection',
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
+			},
+			{
+				name: 'watchPPTaggedPages',
+				label: 'Add page to watchlist when tagging with protection template',
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
+			},
+			{
+				name: 'watchProtectedPages',
+				label: 'Add page to watchlist when proteting',
+				helptip: 'If also tagging the page after protection, that preference will be favored.',
+				adminOnly: true,
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
+			}
+		]
+	},
+
+	{
 		title: 'Proposed deletion (PROD)',
 		module: 'prod',
 		preferences: [
