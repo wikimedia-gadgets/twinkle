@@ -40,7 +40,6 @@ form.quickform
 form.quickform *
 {
 	font-family: sans-serif;
-	font-size: 12px;
 }
 
 form.quickform fieldset
@@ -84,6 +83,7 @@ form.quickform h5
 {
 	margin: .5em 0 0;
 	padding: .3em .2em .2em;
+	font-size: 108%; /* 100% is 12px => 108% is 12.96px */
 }
 
 /* only give the top border to headers with something above them */
@@ -182,23 +182,32 @@ div.morebits-previewbox .mw-editsection
 
 .morebits-dialog {
 	border: 1px #666 solid;
-	font: small sans-serif;
+	font-family: sans-serif;
 	background-color: #F0F8FF;
 	background-image: none;
+}
+
+/* px translations in comments are w.r.t standard browser settings,
+   in other settings, the sizes would be scaled accordingly */
+.skin-vector .morebits-dialog {
+	font-size: 75%; /* 100% is 16px => 75% is 12px */
+}
+.skin-timeless .morebits-dialog {
+	font-size: 79%; /* 100% is 15.2px => 79% is 12.008px */
+}
+.skin-monobook .morebits-dialog,
+.skin-modern .morebits-dialog {
+	font-size: 120%; /* 100% is 10px => 120% is 12px */
 }
 
 body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 	height: 1em;
 	background-color: #BCCADF !important;
 	background-image: none !important;
-	font: bold 1em sans-serif;
+	font: bold 108% sans-serif; /* 100% is 12px (from above) => 108% is 12.96px */
 	overflow: hidden;
 	padding: .4em .3em .5em !important;
 	white-space: nowrap;
-}
-
-body.skin-monobook .morebits-dialog .ui-dialog-titlebar {
-	line-height: 1em;
 }
 
 .morebits-dialog-scriptname {
@@ -235,7 +244,7 @@ body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
 }
 
 .morebits-dialog-footerlinks {
-	font-size: 90%;
+	font-size: 97%; /* 100% is 12px (from above) => 97% is 11.64px */
 	float: right;
 	margin: .7em .4em 0 0;
 }
