@@ -700,10 +700,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 	return [ node, childContainder ];
 };
 
-Morebits.quickForm.element.autoNWSW = function() {
-	return $(this).offset().top > ($(document).scrollTop() + ($(window).height() / 2)) ? 'sw' : 'nw';
-};
-
 /**
  * Create a jquery.ui-based tooltip.
  * @requires jquery.ui
