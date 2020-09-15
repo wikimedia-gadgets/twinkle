@@ -1027,7 +1027,7 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: false,
 		reasonParam: true,
 		reason: 'Misusing [[WP:Sock puppetry|multiple accounts]]',
-		summary: 'You have been [[WP:PB|blocked]] from creating accounts for misusing [[WP:SOCK|multiple accounts]]'
+		summary: 'You have been [[WP:PB|blocked from creating accounts]] for misusing [[WP:SOCK|multiple accounts]]'
 	},
 	'uw-acpblockindef': {
 		autoblock: true,
@@ -1037,7 +1037,7 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: false,
 		reasonParam: true,
 		reason: 'Misusing [[WP:Sock puppetry|multiple accounts]]',
-		summary: 'You have been indefinitely [[WP:PB|blocked]] from creating accounts for misusing [[WP:SOCK|multiple accounts]]'
+		summary: 'You have been indefinitely [[WP:PB|blocked from creating accounts]] for misusing [[WP:SOCK|multiple accounts]]'
 	},
 	'uw-aepblock': {
 		autoblock: true,
@@ -1045,7 +1045,7 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: false,
 		reason: '[[WP:Arbitration enforcement|Arbitration enforcement]]',
 		reasonParam: true,
-		summary: 'You have been [[WP:PB|blocked]] from editing for violating an [[WP:Arbitration|arbitration decision]]'
+		summary: 'You have been [[WP:PB|partially blocked]] from editing for violating an [[WP:Arbitration|arbitration decision]]'
 	},
 	'uw-epblock': {
 		autoblock: true,
@@ -1056,7 +1056,7 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: false,
 		reasonParam: true,
 		reason: 'Email [[WP:Harassment|harassment]]',
-		summary: 'You have been [[WP:PB|blocked]] from emailing other editors for [[WP:Harassment|harassment]]'
+		summary: 'You have been [[WP:PB|blocked from emailing]] other editors for [[WP:Harassment|harassment]]'
 	},
 	'uw-ewpblock': {
 		autoblock: true,
@@ -1065,7 +1065,7 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: false,
 		reasonParam: true,
 		reason: '[[WP:Edit warring|Edit warring]]',
-		summary: 'You have been [[WP:PB|blocked]] from editing certain areas of the encyclopedia to prevent further [[WP:DE|disruption]] due to [[WP:EW|edit warring]]'
+		summary: 'You have been [[WP:PB|partially blocked]] from editing certain areas of the encyclopedia to prevent further [[WP:DE|disruption]] due to [[WP:EW|edit warring]]'
 	},
 	'uw-pblock': {
 		autoblock: true,
