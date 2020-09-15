@@ -1516,14 +1516,14 @@ Twinkle.speedy.callbacks = {
 			}
 
 			// Scribunto isn't parsed like wikitext, so CSD templates on modules need special handling to work
-			if (params.scribunto) {
+			if (mw.config.get('wgPageContentModel') === 'Scribunto') {
 				var equals = '';
 				while(code.indexOf(']' + equals + ']') !== -1) {
 					equals += '=';
 				}
 				code = "require('Module:Module wikitext')._addText([" + equals + '[' + code + ']' + equals + ']);';
 			}
- 
+
 			// Generate edit summary for edit
 			var editsummary;
 			if (params.normalizeds.length > 1) {
@@ -2168,7 +2168,6 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	Morebits.wiki.actionCompleted.notice = 'Tagging complete';
 
 	// Modules need special handling to be tagged
-	params.scribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
 	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
 	wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
 	wikipedia_page.setCallbackParameters(params);
