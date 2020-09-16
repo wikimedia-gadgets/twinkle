@@ -1920,20 +1920,25 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			var extension = ((extension = $('.mime-type').text()) && extension.split(/\//)[1]) || mw.Title.newFromText(Morebits.pageNameNorm).getExtension();
 			if (extension) {
 				var extensionUpper = extension.toUpperCase();
-
 				// What self-respecting file format has *two* extensions?!
 				if (extensionUpper === 'JPG') {
 					extension = 'JPEG';
 				}
 
-				// We've already ensured above that there can be only one of {{Bad *}} and {{Should be *}},
-				// so these check that it actually matches the file's actual extension.  We need to check
-				// if any tags start with a string, which means using string's indexOf, since can't
-				// use ES6y things like find or findIndex.
+				// Check that selected templates make sense given the file's extension.
 
 				// Bad GIF|JPEG|SVG
-				if ((params.tags.toString().indexOf('Bad ') !== -1) && (params.tags.indexOf('Bad ' + extensionUpper) === -1)) {
-					alert('This appears to be a ' + extension + ' file, please use {{Bad ' + extensionUpper + '}} instead.');
+				var badIndex; // Keep track of where the offending template is so we can reference it below
+				if ((extensionUpper !== 'GIF' && ((badIndex = params.tags.indexOf('Bad GIF')) !== -1)) ||
+					(extensionUpper !== 'JPEG' && ((badIndex = params.tags.indexOf('Bad JPEG')) !== -1)) ||
+					(extensionUpper !== 'SVG' && ((badIndex = params.tags.indexOf('Bad SVG')) !== -1))) {
+					var suggestion = 'This appears to be a ' + extension + ' file, ';
+					if (['GIF', 'JPEG', 'SVG'].indexOf(extensionUpper) !== -1) {
+						suggestion += 'please use {{Bad ' + extensionUpper + '}} instead.';
+					} else {
+						suggestion += 'so {{' + params.tags[badIndex] + '}} is inappropriate.';
+					}
+					alert(suggestion);
 					return;
 				}
 				// Should be PNG|SVG
