@@ -126,6 +126,7 @@ Twinkle.config.commonSets = {
  *
  * {
  *   title: <human-readable section title>,
+ *   module: <name of the associated module, used to link to sections>,
  *   adminOnly: <true for admin-only sections>,
  *   hidden: <true for advanced preferences that rarely need to be changed - they can still be modified by manually editing twinkleoptions.js>,
  *   preferences: [
@@ -151,6 +152,7 @@ Twinkle.config.commonSets = {
 Twinkle.config.sections = [
 	{
 		title: 'General',
+		module: 'general',
 		preferences: [
 			// TwinkleConfig.userTalkPageMode may take arguments:
 			// 'window': open a new window, remember the opened window
@@ -193,6 +195,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'ARV',
+		module: 'arv',
 		preferences: [
 			{
 				name: 'spiWatchReport',
@@ -205,6 +208,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Block user',
+		module: 'block',
 		adminOnly: true,
 		preferences: [
 			// TwinkleConfig.defaultToPartialBlocks (boolean)
@@ -228,6 +232,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Image deletion (DI)',
+		module: 'image',
 		preferences: [
 			// TwinkleConfig.notifyUserOnDeli (boolean)
 			// If the user should be notified after placing a file deletion tag
@@ -259,6 +264,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Proposed deletion (PROD)',
+		module: 'prod',
 		preferences: [
 			// TwinkleConfig.watchProdPages (boolean)
 			// If, when applying prod template to page, to watch the page
@@ -302,6 +308,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Revert and rollback',  // twinklefluff module
+		module: 'fluff',
 		preferences: [
 			// TwinkleConfig.autoMenuAfterRollback (bool)
 			// Option to automatically open the warning menu if the user talk page is opened post-reversion
@@ -388,6 +395,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Shared IP tagging',
+		module: 'shared',
 		preferences: [
 			{
 				name: 'markSharedIPAsMinor',
@@ -399,6 +407,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Speedy deletion (CSD)',
+		module: 'speedy',
 		preferences: [
 			{
 				name: 'speedySelectionStyle',
@@ -538,6 +547,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Tag',
+		module: 'tag',
 		preferences: [
 			{
 				name: 'watchTaggedPages',
@@ -599,6 +609,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Talkback',
+		module: 'talkback',
 		preferences: [
 			{
 				name: 'markTalkbackAsMinor',
@@ -631,6 +642,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Unlink',
+		module: 'unlink',
 		preferences: [
 			// TwinkleConfig.unlinkNamespaces (array)
 			// In what namespaces unlink should happen, default in 0 (article), 10 (template), 100 (portal), and 118 (draft)
@@ -646,6 +658,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Warn user',
+		module: 'warn',
 		preferences: [
 			// TwinkleConfig.defaultWarningGroup (int)
 			// Which level warning should be the default selected group, default is 1
@@ -716,6 +729,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Welcome user',
+		module: 'welcome',
 		preferences: [
 			{
 				name: 'topWelcomes',
@@ -766,6 +780,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'XFD (deletion discussions)',
+		module: 'xfd',
 		preferences: [
 			{
 				name: 'logXfdNominations',
@@ -970,8 +985,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 		toctable.appendChild(tocul);
 		contentdiv.appendChild(toctable);
 
-		var tocnumber = 1;
-
 		var contentform = document.createElement('form');
 		contentform.setAttribute('action', 'javascript:void(0)');  // was #tw-save - changed to void(0) to work around Chrome issue
 		contentform.addEventListener('submit', Twinkle.config.save, true);
@@ -990,7 +1003,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			var tocli = document.createElement('li');
 			tocli.className = 'toclevel-1';
 			var toca = document.createElement('a');
-			toca.setAttribute('href', '#twinkle-config-section-' + tocnumber.toString());
+			toca.setAttribute('href', '#' + section.module);
 			toca.appendChild(document.createTextNode(section.title));
 			tocli.appendChild(toca);
 			tocul.appendChild(tocli);
@@ -1001,7 +1014,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			var heading = document.createElement('h4');
 			heading.style.borderBottom = '1px solid gray';
 			heading.style.marginTop = '0.2em';
-			heading.id = 'twinkle-config-section-' + (tocnumber++).toString();
+			heading.id = section.module;
 			heading.appendChild(document.createTextNode(section.title));
 			cell.appendChild(heading);
 			row.appendChild(cell);
