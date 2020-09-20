@@ -258,6 +258,12 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 
 	form.append({
 		type: 'div',
+		id: 'prior-deletion-count',
+		style: 'font-style: italic'
+	});
+
+	form.append({
+		type: 'div',
 		name: 'work_area',
 		label: 'Failed to initialize the CSD module. Please try again, or tell the Twinkle developers about the issue.'
 	});
@@ -271,6 +277,9 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	dialog.display();
 
 	Twinkle.speedy.callback.modeChanged(result);
+
+	// Check for prior deletions.  Just once, upon init
+	Twinkle.speedy.callback.priorDeletionCount();
 };
 
 Twinkle.speedy.callback.getMode = function twinklespeedyCallbackGetMode(form) {
@@ -426,6 +435,47 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		}
 	}
 };
+
+Twinkle.speedy.callback.priorDeletionCount = function () {
+	var query = {
+		action: 'query',
+		format: 'json',
+		list: 'logevents',
+		letype: 'delete',
+		leaction: 'delete/delete', // Just pure page deletion, no redirect overwrites or revdel
+		letitle: mw.config.get('wgPageName'),
+		leprop: '', // We're just counting we don't actually care about the entries
+		lelimit: 5  // A little bit goes a long way
+	};
+
+	new Morebits.wiki.api('Checking for past deletions', query, function(apiobj) {
+		var response = apiobj.getResponse();
+		var delCount = response.query.logevents.length;
+		if (delCount) {
+			var message = delCount + ' previous deletion';
+			if (delCount > 1) {
+				message += 's';
+				if (response.continue) {
+					message = 'More than ' + message;
+				}
+
+				// 3+ seems problematic
+				if (delCount >= 3) {
+					$('#prior-deletion-count').css('color', 'red');
+				}
+			}
+
+			// Provide a link to page logs (CSD templates have one for sysops)
+			var link = Morebits.htmlNode('a', '(logs)');
+			link.setAttribute('href', mw.util.getUrl('Special:Log', {page: mw.config.get('wgPageName')}));
+			link.setAttribute('target', '_blank');
+
+			$('#prior-deletion-count').text(message + ' '); // Space before log link
+			$('#prior-deletion-count').append(link);
+		}
+	}).post();
+};
+
 
 Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mode) {
 	// mode switches
