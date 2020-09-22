@@ -1227,8 +1227,10 @@ Twinkle.config.init = function twinkleconfigInit() {
 		contentform.appendChild(footerbox);
 
 		// since all the section headers exist now, we can try going to the requested anchor
-		if (location.hash) {
-			window.location.hash = location.hash;
+		if (window.location.hash) {
+			var loc = window.location.hash;
+			window.location.hash = '';
+			window.location.hash = loc;
 		}
 
 	} else if (mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').user &&
