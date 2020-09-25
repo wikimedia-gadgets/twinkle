@@ -543,11 +543,11 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		} else if (new Morebits.date(Twinkle.block.currentBlockInfo.expiry).isValid()) {
 			statusStr += ' (expires ' + new Morebits.date(Twinkle.block.currentBlockInfo.expiry).calendar('utc') + ')';
 		}
-		var infoStr = 'Submit query to change the block';
+		var infoStr = 'This form will change that block';
 		if (Twinkle.block.currentBlockInfo.partial === undefined && partialBox) {
-			infoStr += ', converting to a partial block';
+			infoStr += ', converting it to a partial block';
 		} else if (Twinkle.block.currentBlockInfo.partial === '' && !partialBox) {
-			infoStr += ', converting to a sitewide block';
+			infoStr += ', converting it to a sitewide block';
 		}
 		Morebits.status.warn(statusStr, infoStr);
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
