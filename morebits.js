@@ -3243,7 +3243,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			purgeApi.post();
 
 		// check for network or server error
-		} else if (errorCode === 'undefined' && ctx.retries++ < ctx.maxRetries) {
+		} else if ((errorCode === null || errorCode === undefined) && ctx.retries++ < ctx.maxRetries) {
 
 			// the error might be transient, so try again
 			ctx.statusElement.info('Save failed, retrying');
@@ -3253,29 +3253,33 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		// hard error, give up
 		} else {
 
-			// non-admin attempting to edit a protected page - this gives a friendlier message than the default
-			if (errorCode === 'protectedpage') {
-				ctx.statusElement.error('Failed to save edit: Page is protected');
-			// check for absuefilter hits: disallowed or warning
-			} else if (errorCode.indexOf('abusefilter') === 0) {
-				var desc = $(ctx.saveApi.getXML()).find('abusefilter').attr('description');
-				if (errorCode === 'abusefilter-disallowed') {
-					ctx.statusElement.error('The edit was disallowed by the edit filter: "' + desc + '".');
-				} else if (errorCode === 'abusefilter-warning') {
-					ctx.statusElement.error([ 'A warning was returned by the edit filter: "', desc, '". If you wish to proceed with the edit, please carry it out again. This warning will not appear a second time.' ]);
+			switch (errorCode) {
+
+				case 'protectedpage':
+					// non-admin attempting to edit a protected page - this gives a friendlier message than the default
+					ctx.statusElement.error('Failed to save edit: Page is protected');
+					break;
+
+				case 'abusefilter-disallowed':
+					ctx.statusElement.error('The edit was disallowed by the edit filter: "' + $(ctx.saveApi.getXML()).find('abusefilter').attr('description') + '".');
+					break;
+
+				case 'abusefilter-warning':
+					ctx.statusElement.error([ 'A warning was returned by the edit filter: "', $(ctx.saveApi.getXML()).find('abusefilter').attr('description'), '". If you wish to proceed with the edit, please carry it out again. This warning will not appear a second time.' ]);
 					// We should provide the user with a way to automatically retry the action if they so choose -
 					// I can't see how to do this without creating a UI dependency on Morebits.wiki.page though -- TTO
-				} else { // shouldn't happen but...
-					ctx.statusElement.error('The edit was disallowed by the edit filter.');
-				}
-			// check for blacklist hits
-			} else if (errorCode === 'spamblacklist') {
-				// .find('matches') returns an array in case multiple items are blacklisted, we only return the first
-				var spam = $(ctx.saveApi.getXML()).find('spamblacklist').find('matches').children()[0].textContent;
-				ctx.statusElement.error('Could not save the page because the URL ' + spam + ' is on the spam blacklist');
-			} else {
-				ctx.statusElement.error('Failed to save edit: ' + ctx.saveApi.getErrorText());
+					break;
+
+				case 'spamblacklist':
+					// .find('matches') returns an array in case multiple items are blacklisted, we only return the first
+					var spam = $(ctx.saveApi.getXML()).find('spamblacklist').find('matches').children()[0].textContent;
+					ctx.statusElement.error('Could not save the page because the URL ' + spam + ' is on the spam blacklist');
+					break;
+
+				default:
+					ctx.statusElement.error('Failed to save edit: ' + ctx.saveApi.getErrorText());
 			}
+
 			ctx.editMode = 'all';  // cancel append/prepend/revert modes
 			if (ctx.onSaveFailure) {
 				ctx.onSaveFailure(this);  // invoke callback
