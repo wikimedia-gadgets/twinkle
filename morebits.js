@@ -3246,9 +3246,13 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		} else if ((errorCode === null || errorCode === undefined) && ctx.retries++ < ctx.maxRetries) {
 
 			// the error might be transient, so try again
-			ctx.statusElement.info('Save failed, retrying');
+			ctx.statusElement.info('Save failed, retrying in 2 seconds ...');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
-			ctx.saveApi.post(); // give it another go!
+
+			// wait for sometime for client to regain connnectivity
+			sleep(2000).then(function() {
+				ctx.saveApi.post(); // give it another go!
+			});
 
 		// hard error, give up
 		} else {
@@ -3788,6 +3792,13 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.stabilizeProcessApi.setParent(this);
 		ctx.stabilizeProcessApi.post();
 	};
+
+	var sleep = function(milliseconds) {
+		var deferred = $.Deferred();
+		setTimeout(deferred.resolve, milliseconds);
+		return deferred;
+	};
+
 }; // end Morebits.wiki.page
 
 /* Morebits.wiki.page TODO: (XXX)
