@@ -58,7 +58,7 @@ Twinkle.fluff = function twinklefluff() {
 // makes edits seconds after the original edit is made.  This only affects
 // vandalism rollback; for good faith rollback, it will stop, indicating a bot
 // has no faith, and for normal rollback, it will rollback that edit.
-Twinkle.fluff.trustedBots = ['AnomieBOT', 'SineBot'];
+Twinkle.fluff.trustedBots = ['AnomieBOT', 'SineBot', 'MajavahBot'];
 Twinkle.fluff.skipTalk = null;
 Twinkle.fluff.rollbackInPlace = null;
 // String to insert when a username is hidden
