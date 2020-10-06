@@ -1852,7 +1852,7 @@ Morebits.wiki.api.prototype = {
 			return Morebits.wiki.api.getToken().then(function(token) {
 				this.query.token = token;
 				return this.post(callerAjaxParameters);
-			});
+			}.bind(this));
 		}
 
 		this.statelem.error(this.errorText + ' (' + this.errorCode + ')');
