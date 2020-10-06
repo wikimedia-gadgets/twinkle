@@ -293,7 +293,6 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	// Build the DOM elements.
 	var outerNav = document.createElement('nav');
 	outerNav.setAttribute('aria-labelledby', id + '-label');
-	// Vector getting vector-menu-empty FIXME TODO
 	outerNav.className = outerNavClass + ' emptyPortlet';
 	outerNav.id = id;
 	if (nextnode && nextnode.parentNode === root) {
