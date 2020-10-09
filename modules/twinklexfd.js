@@ -1055,7 +1055,7 @@ Twinkle.xfd.callbacks = {
 				}
 				// Mark the page as curated/patrolled, if wanted
 				if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
-					pageobj.triage();
+					new Morebits.wiki.page(Morebits.pageNameNorm).triage();
 				}
 			});
 		},
