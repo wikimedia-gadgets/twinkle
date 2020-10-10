@@ -243,6 +243,10 @@ body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
 	cursor: auto;
 }
 
+.morebits-dialog-buttons {
+	font-size: 108%; /* 100% is 12px => 108% is 12.96px */
+}
+
 .morebits-dialog-footerlinks {
 	font-size: 97%; /* 100% is 12px (from above) => 97% is 11.64px */
 	float: right;
