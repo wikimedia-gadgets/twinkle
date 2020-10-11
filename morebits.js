@@ -3487,9 +3487,17 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		var triageStat = new Morebits.status('Marking page as curated');
 
-		ctx.triageProcessApi = new Morebits.wiki.api('curating page...', query, null, triageStat, fnProcessTriageError);
+		ctx.triageProcessApi = new Morebits.wiki.api('curating page...', query, fnProcessTriageSuccess, triageStat, fnProcessTriageError);
 		ctx.triageProcessApi.setParent(this);
 		ctx.triageProcessApi.post();
+	};
+
+	// callback from triageProcessApi.post()
+	var fnProcessTriageSuccess = function() {
+		// Swallow succesful return if nothing changed i.e. page in queue and already triaged
+		if ($(ctx.triageProcessApi.getResponse()).find('pagetriageaction').attr('pagetriage_unchanged_status')) {
+			ctx.triageProcessApi.getStatusElement().unlink();
+		}
 	};
 
 	// callback from triageProcessApi.post()
