@@ -3019,7 +3019,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// do we need to fetch the edit protection expiry?
 		if (Morebits.userIsSysop && !ctx.suppressProtectWarning) {
-			if (new mw.Title(Morebits.pageNameNorm).getPrefixedText() === new mw.Title(ctx.pageName).getPrefixedText()) {
+			if (new mw.Title(Morebits.pageNameNorm).getPrefixedText() !== new mw.Title(ctx.pageName).getPrefixedText()) {
 				return false;
 			}
 
