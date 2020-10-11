@@ -2822,7 +2822,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 */
 	this.triage = function() {
 		// Fall back to patrol if not a valid triage namespace
-		if (mw.config.get('pageTriageNamespaces').indexOf(mw.config.get('wgNamespaceNumber')) === -1) {
+		if (mw.config.get('pageTriageNamespaces').indexOf(new mw.Title(ctx.pageName).getNamespaceId()) === -1) {
 			this.patrol();
 		} else {
 			if (!Morebits.userIsSysop && !Morebits.userIsInGroup('patroller')) {
