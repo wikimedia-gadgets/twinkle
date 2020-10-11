@@ -9,7 +9,7 @@
 	"globals": {
 		"mw": "readonly"
 	},
-	"ignorePatterns": ["dev/", "select2/"],
+	"ignorePatterns": ["dev/", "lib/"],
 	"rules": {
 		"no-console": "error",
 		"no-extra-parens": ["error", "all", { "nestedBinaryExpressions": false }],

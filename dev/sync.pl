@@ -84,7 +84,7 @@ if (@files) {
     if ($page =~ /^twinkle/) {
       $page =~ s/^twinkle\b/Twinkle/; # twinkle.js, etc. files are capitalized on-wiki
     } else {
-      $page =~ s/\w+\///;       # Remove directories (modules/, select2/)
+      $page =~ s/\w+\///;       # Remove directories (modules/, lib/)
     }
     $page = $conf{base}.$page; # base set to MediaWiki:Gadget- for deploy in &forReal
 
@@ -453,8 +453,8 @@ twinkle.js
   twinkle-pagestyles.css
   morebits.js
   morebits.css
-  select2/select2.min.js
-  select2/select2.min.css
+  lib/select2.min.js
+  lib/select2.min.css
   modules/twinkleconfig.js
   modules/twinklearv.js
   modules/twinklebatchdelete.js
