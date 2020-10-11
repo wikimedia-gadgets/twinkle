@@ -163,7 +163,7 @@ if ($conf{mode} eq 'deploy') {
     $wikiGadgetDef .= $wg[$_]."\n";
   }
 
-  my $gadgetFile = 'Gadget.md';
+  my $gadgetFile = 'gadget.txt';
   my $localGadgetDef = read_text($gadgetFile);
   if ($wikiGadgetDef eq $localGadgetDef) {
     print "Gadget up-to-date\n";
