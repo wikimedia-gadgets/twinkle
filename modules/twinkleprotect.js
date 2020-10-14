@@ -181,7 +181,8 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		var current = {}, adminEditDeferred;
 
 		$.each(page.protection, function(index, protection) {
-			if (protection.type !== 'aft') {
+			// Don't overwrite actual page protection with cascading protection
+			if (!protection.source) {
 				current[protection.type] = {
 					level: protection.level,
 					expiry: protection.expiry,
@@ -191,6 +192,13 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 				if (!adminEditDeferred) {
 					adminEditDeferred = Twinkle.protect.fetchProtectingAdmin(api, mw.config.get('wgPageName'), 'protect');
 				}
+			} else {
+				// Account for the page being covered by cascading protection
+				current.cascading = {
+					expiry: protection.expiry,
+					source: protection.source,
+					level: protection.level // should always be sysop, unused
+				};
 			}
 		});
 
@@ -210,7 +218,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		if (adminEditDeferred) {
 			adminEditDeferred.done(function(admin) {
 				if (admin) {
-					$.each(['edit', 'move', 'create', 'stabilize'], function(i, type) {
+					$.each(['edit', 'move', 'create', 'stabilize', 'cascading'], function(i, type) {
 						if (Twinkle.protect.currentProtectionLevels[type]) {
 							Twinkle.protect.currentProtectionLevels[type].admin = admin;
 						}
@@ -254,18 +262,31 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 	if (currentlyProtected) {
 		$.each(Twinkle.protect.currentProtectionLevels, function(type, settings) {
 			var label = type === 'stabilize' ? 'Pending Changes' : Morebits.string.toUpperCaseFirstChar(type);
-			protectionNode.push($('<b>' + label + ': ' + settings.level + '</b>')[0]);
+
+			if (type === 'cascading') { // Covered by another page
+				label = 'Cascading protection ';
+				protectionNode.push($('<b>' + label + '</b>')[0]);
+				if (settings.source) { // Should by definition exist
+					var sourceLink = '<a target="_blank" href="' + mw.util.getUrl(settings.source) + '">' + settings.source + '</a>';
+					protectionNode.push($('<span>from ' + sourceLink + '</span>')[0]);
+				}
+			} else {
+				var level = settings.level;
+				// Make cascading protection more prominent
+				if (settings.cascade) {
+					level += ' (cascading)';
+				}
+				protectionNode.push($('<b>' + label + ': ' + level + '</b>')[0]);
+			}
+
 			if (settings.expiry === 'infinity') {
 				protectionNode.push(' (indefinite) ');
 			} else {
 				protectionNode.push(' (expires ' + new Date(settings.expiry).toUTCString() + ') ');
 			}
-			if (settings.cascade) {
-				protectionNode.push('(cascading) ');
-			}
 			if (settings.admin) {
 				var adminLink = '<a target="_blank" href="' + mw.util.getUrl('User talk:' + settings.admin) + '">' + settings.admin + '</a>';
-				protectionNode.push($('<span>by ' + adminLink + '&nbsp;</span>')[0]);
+				protectionNode.push($('<span>by ' + adminLink + '</span>')[0]);
 			}
 			protectionNode.push($('<span> \u2022 </span>')[0]);
 		});
