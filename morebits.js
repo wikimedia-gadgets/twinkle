@@ -2097,7 +2097,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		protectEdit: null,
 		protectMove: null,
 		protectCreate: null,
-		protectCascade: false,
+		protectCascade: null,
 
 		// - creation lookup
 		lookupNonRedirectCreator: false,
@@ -3685,8 +3685,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 
-		// TODO cascading protection not possible on edit<sysop
-
 		var token = $(xml).find('tokens').attr('csrftoken');
 		if (!token) {
 			ctx.statusElement.error('Failed to retrieve protect token.');
@@ -3696,37 +3694,59 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		var pageTitle = $(xml).find('page').attr('title');
 
-		// fetch existing protection levels
+		// Fetch existing protection levels
 		var prs = $(xml).find('pr');
 		var editprot = prs.filter('[type="edit"]:not([source])');
 		var moveprot = prs.filter('[type="move"]');
 		var createprot = prs.filter('[type="create"]');
 
-		var protections = [], expirys = [];
+		// Fall back to current levels if not explicitly set
+		if (!ctx.protectEdit && editprot.length) {
+			ctx.protectEdit = { level: editprot.attr('level'), expiry: editprot.attr('expiry') };
+		}
+		if (!ctx.protectMove && moveprot.length) {
+			ctx.protectMove = { level: moveprot.attr('level'), expiry: moveprot.attr('expiry') };
+		}
+		if (!ctx.protectCreate && createprot.length) {
+			ctx.protectCreate = { level: createprot.attr('level'), expiry: createprot.attr('expiry') };
+		}
 
-		// set edit protection level
+		// Warn if cascading protection being applied with an invalid protection level,
+		// which for edit protection will cause cascading to be silently stripped
+		// Also default to pre-existing cascading protection if unchanged (as with others)
+		if (ctx.protectCascade || (ctx.protectCascade === null && !!prs.filter('[cascade]').length)) {
+			// On move protection, this is technically stricter than the MW API,
+			// but seems reasonable to avoid dumb values and misleading log entries (T265626)
+			if (((!ctx.protectEdit || ctx.protectEdit.level !== 'sysop') ||
+				(!ctx.protectMove || ctx.protectMove.level !== 'sysop')) &&
+				!confirm('You have cascading protection enabled on "' + ctx.pageName +
+				'" but have not selected uniform sysop-level protection.\n\n' +
+				'Click OK to adjust and proceed with sysop-level cascading protection, or Cancel to skip this action.')) {
+				ctx.statusElement.error('Cascading protection was aborted.');
+				ctx.onProtectFailure(this);
+				return;
+			}
+
+			ctx.protectEdit.level = 'sysop';
+			ctx.protectMove.level = 'sysop';
+			ctx.protectCascade = 'true';
+		}
+
+		// Build protection levels and expirys (expiries?) for query
+		var protections = [], expirys = [];
 		if (ctx.protectEdit) {
 			protections.push('edit=' + ctx.protectEdit.level);
 			expirys.push(ctx.protectEdit.expiry);
-		} else if (editprot.length) {
-			protections.push('edit=' + editprot.attr('level'));
-			expirys.push(editprot.attr('expiry').replace('infinity', 'indefinite'));
 		}
 
 		if (ctx.protectMove) {
 			protections.push('move=' + ctx.protectMove.level);
 			expirys.push(ctx.protectMove.expiry);
-		} else if (moveprot.length) {
-			protections.push('move=' + moveprot.attr('level'));
-			expirys.push(moveprot.attr('expiry').replace('infinity', 'indefinite'));
 		}
 
 		if (ctx.protectCreate) {
 			protections.push('create=' + ctx.protectCreate.level);
 			expirys.push(ctx.protectCreate.expiry);
-		} else if (createprot.length) {
-			protections.push('create=' + createprot.attr('level'));
-			expirys.push(createprot.attr('expiry').replace('infinity', 'indefinite'));
 		}
 
 		var query = {
