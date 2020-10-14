@@ -3698,7 +3698,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// fetch existing protection levels
 		var prs = $(xml).find('pr');
-		var editprot = prs.filter('[type="edit"]');
+		var editprot = prs.filter('[type="edit"]:not([source])');
 		var moveprot = prs.filter('[type="move"]');
 		var createprot = prs.filter('[type="create"]');
 
