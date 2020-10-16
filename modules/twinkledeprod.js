@@ -143,16 +143,21 @@ var callback_commit = function(event) {
 			wikipedia_api.params = params;
 			wikipedia_api.post();
 
-			query = {
-				'action': 'query',
-				'titles': 'Talk:' + pageName
-			};
-			wikipedia_api = new Morebits.wiki.api('Checking whether ' + pageName + ' has a talk page', query,
-				callback_deleteTalk);
-			wikipedia_api.params = params;
-			wikipedia_api.post();
+			var pageTitle = mw.Title.newFromText(pageName);
+			// Don't delete user talk pages, essentially limiting this to Talk: and Book talk:
+			if (pageTitle && pageTitle.namespace % 2 === 0 && pageTitle.namespace !== 2) {
+				pageTitle.namespace++;  // now pageTitle is the talk page title!
+				query = {
+					'action': 'query',
+					'titles': pageTitle.toText()
+				};
+				wikipedia_api = new Morebits.wiki.api('Checking whether ' + pageName + ' has a talk page', query,
+					callback_deleteTalk);
+				wikipedia_api.params = params;
+				wikipedia_api.post();
+			}
 
-			var page = new Morebits.wiki.page(pageName, 'Deleting article ' + pageName);
+			var page = new Morebits.wiki.page(pageName, 'Deleting page ' + pageName);
 			page.setEditSummary('Expired [[WP:PROD|PROD]], concern was: ' + concerns[pageName]);
 			page.setChangeTags(Twinkle.changeTags);
 			page.suppressProtectWarning();
@@ -168,7 +173,7 @@ var callback_commit = function(event) {
 			return;
 		}
 
-		var page = new Morebits.wiki.page('Talk:' + apiobj.params.page, 'Deleting talk page of article ' + apiobj.params.page);
+		var page = new Morebits.wiki.page('Talk:' + apiobj.params.page, 'Deleting talk page of page ' + apiobj.params.page);
 		page.setEditSummary('[[WP:CSD#G8|G8]]: [[Help:Talk page|Talk page]] of deleted page "' + apiobj.params.page + '"');
 		page.setChangeTags(Twinkle.changeTags);
 		page.deletePage();
