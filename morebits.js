@@ -700,74 +700,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 	return [ node, childContainder ];
 };
 
-
-/**
- * Get checked or unchecked items in the form
- *
- * @param {string} name - Find checked property of elements (i.e. a checkbox
- * or a radiobutton) with the given name, or select options that have selected
- * set to true (don't try to mix selects with radio/checkboxes, )
- * @param {string} [type] - Optionally specify either radio or checkbox (for
- * the event that both checkboxes and radiobuttons have the same name)
- * @param {boolean} [unchecked] - True to get unchecked elements instead
- * (alternatively, see getUnchecked)
- * @returns {Array} - Contains the values of elements with the given name
- * checked property set to true
- */
-Morebits.quickForm.element.prototype.getChecked = function quickFormElementGetChecked(name, type, unchecked) {
-	var elements = this.elements[name];
-	if (!elements) {
-		return [];
-	}
-	var return_array = [];
-	var i;
-	if (elements instanceof HTMLSelectElement) {
-		var options = elements.options;
-		for (i = 0; i < options.length; ++i) {
-			if (options[i].selected !== unchecked) {
-				if (options[i].values) {
-					return_array.push(options[i].values);
-				} else {
-					return_array.push(options[i].value);
-				}
-
-			}
-		}
-	} else if (elements instanceof HTMLInputElement) {
-		if (type && elements.type !== type) {
-			return [];
-		} else if (elements.checked !== unchecked) {
-			return [ elements.value ];
-		}
-	} else {
-		for (i = 0; i < elements.length; ++i) {
-			if (elements[i].checked !== unchecked) {
-				if (type && elements[i].type !== type) {
-					continue;
-				}
-				if (elements[i].values) {
-					return_array.push(elements[i].values);
-				} else {
-					return_array.push(elements[i].value);
-				}
-			}
-		}
-	}
-	return return_array;
-};
-
-/**
- * Get unchecked items via getChecked
- *
- * @param {string} name
- * @param {string} [type]
- * @returns {Array}
- */
-Morebits.quickForm.element.prototype.getUnchecked = function quickFormElementGetUnchecked(name, type) {
-	return this.getChecked(name, type, true);
-};
-
-
 /**
  * Create a jquery.ui-based tooltip.
  * @requires jquery.ui
@@ -990,6 +922,108 @@ Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementToo
 	$(Morebits.quickForm.getElementContainer(element)).find('.morebits-tooltipButton').toggle(visibility);
 };
 
+
+
+/**
+ * **************** HTMLFormElement ****************
+ */
+
+/**
+ * Returns an array containing the values of elements with the given name, that has it's
+ * checked property set to true. (i.e. a checkbox or a radiobutton is checked), or select
+ * options that have selected set to true. (don't try to mix selects with radio/checkboxes,
+ * please)
+ * Type is optional and can specify if either radio or checkbox (for the event
+ * that both checkboxes and radiobuttons have the same name.
+ */
+HTMLFormElement.prototype.getChecked = function(name, type) {
+	var elements = this.elements[name];
+	if (!elements) {
+		return [];
+	}
+	var return_array = [];
+	var i;
+	if (elements instanceof HTMLSelectElement) {
+		var options = elements.options;
+		for (i = 0; i < options.length; ++i) {
+			if (options[i].selected) {
+				if (options[i].values) {
+					return_array.push(options[i].values);
+				} else {
+					return_array.push(options[i].value);
+				}
+
+			}
+		}
+	} else if (elements instanceof HTMLInputElement) {
+		if (type && elements.type !== type) {
+			return [];
+		} else if (elements.checked) {
+			return [ elements.value ];
+		}
+	} else {
+		for (i = 0; i < elements.length; ++i) {
+			if (elements[i].checked) {
+				if (type && elements[i].type !== type) {
+					continue;
+				}
+				if (elements[i].values) {
+					return_array.push(elements[i].values);
+				} else {
+					return_array.push(elements[i].value);
+				}
+			}
+		}
+	}
+	return return_array;
+};
+
+/**
+ * getUnchecked:
+ *   Does the same as getChecked above, but with unchecked elements.
+ */
+
+HTMLFormElement.prototype.getUnchecked = function(name, type) {
+	var elements = this.elements[name];
+	if (!elements) {
+		return [];
+	}
+	var return_array = [];
+	var i;
+	if (elements instanceof HTMLSelectElement) {
+		var options = elements.options;
+		for (i = 0; i < options.length; ++i) {
+			if (!options[i].selected) {
+				if (options[i].values) {
+					return_array.push(options[i].values);
+				} else {
+					return_array.push(options[i].value);
+				}
+
+			}
+		}
+	} else if (elements instanceof HTMLInputElement) {
+		if (type && elements.type !== type) {
+			return [];
+		} else if (!elements.checked) {
+			return [ elements.value ];
+		}
+	} else {
+		for (i = 0; i < elements.length; ++i) {
+			if (!elements[i].checked) {
+				if (type && elements[i].type !== type) {
+					continue;
+				}
+				if (elements[i].values) {
+					return_array.push(elements[i].values);
+				} else {
+					return_array.push(elements[i].value);
+				}
+			}
+		}
+	}
+	return return_array;
+};
 
 
 /**
