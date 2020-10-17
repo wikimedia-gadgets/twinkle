@@ -1994,7 +1994,10 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 	return utparams;
 };
 
-
+/**
+ * @param {Event} e
+ * @returns {Array}
+ */
 Twinkle.speedy.resolveCsdValues = function twinklespeedyResolveCsdValues(e) {
 	var values = (e.target.form ? e.target.form : e.target).getChecked('csd');
 	if (values.length === 0) {
@@ -2042,28 +2045,14 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		}
 	});
 
-	var warnusertalk = false;
-	if (form.warnusertalk.checked) {
-		$.each(normalizeds, function(index, norm) {
-			if (Twinkle.getPref('warnUserOnSpeedyDelete').indexOf(norm) !== -1) {
-				if (norm === 'g6' && values[index] !== 'copypaste') {
-					return true;
-				}
-				warnusertalk = true;
-				return false;  // break
-			}
-		});
-	}
+	var warnusertalk = form.warnusertalk.checked && normalizeds.some(function (norm, index) {
+		return Twinkle.getPref('warnUserOnSpeedyDelete').indexOf(norm) !== -1 &&
+			!(norm === 'g6' && values[index] !== 'copypaste');
+	});
 
-	var welcomeuser = false;
-	if (warnusertalk) {
-		$.each(normalizeds, function(index, norm) {
-			if (Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1) {
-				welcomeuser = true;
-				return false;  // break
-			}
-		});
-	}
+	var welcomeuser = warnusertalk && normalizeds.some(function (norm) {
+		return Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1;
+	});
 
 	var params = {
 		values: values,
@@ -2101,54 +2090,26 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	}
 
 	// var multiple = form.multiple.checked;
-	var normalizeds = [];
-	$.each(values, function(index, value) {
-		var norm = Twinkle.speedy.normalizeHash[value];
 
-		normalizeds.push(norm);
+	var normalizeds = values.map(function (value) {
+		return Twinkle.speedy.normalizeHash[value];
 	});
 
 	// analyse each criterion to determine whether to watch the page/notify the creator
-	var watchPage = false;
-	$.each(normalizeds, function(index, norm) {
-		if (Twinkle.getPref('watchSpeedyPages').indexOf(norm) !== -1) {
-			watchPage = true;
-			return false;  // break
-		}
+
+	var watchPage = normalizeds.some(function(norm) {
+		return Twinkle.getPref('watchSpeedyPages').indexOf(norm) === -1;
 	});
-
-	var notifyuser = false;
-	if (form.notify.checked) {
-		$.each(normalizeds, function(index, norm) {
-			if (Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1) {
-				if (norm === 'g6' && values[index] !== 'copypaste') {
-					return true;
-				}
-				notifyuser = true;
-				return false;  // break
-			}
-		});
-	}
-
-	var welcomeuser = false;
-	if (notifyuser) {
-		$.each(normalizeds, function(index, norm) {
-			if (Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1) {
-				welcomeuser = true;
-				return false;  // break
-			}
-		});
-	}
-
-	var csdlog = false;
-	if (Twinkle.getPref('logSpeedyNominations')) {
-		$.each(normalizeds, function(index, norm) {
-			if (Twinkle.getPref('noLogOnSpeedyNomination').indexOf(norm) === -1) {
-				csdlog = true;
-				return false;  // break
-			}
-		});
-	}
+	var notifyuser = form.notify.checked && normalizeds.some(function(index, norm) {
+		return Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1 &&
+			!(norm === 'g6' && values[index] !== 'copypaste');
+	});
+	var welcomeuser = notifyuser && normalizeds.some(function(norm) {
+		return Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1;
+	});
+	var csdlog = Twinkle.getPref('logSpeedyNominations') && normalizeds.some(function(norm) {
+		return Twinkle.getPref('noLogOnSpeedyNomination').indexOf(norm) === -1;
+	});
 
 	var params = {
 		values: values,
