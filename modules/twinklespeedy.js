@@ -159,15 +159,10 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					name: 'redirects',
 					tooltip: 'This option deletes all incoming redirects in addition. Avoid this option for procedural (e.g. move/merge) deletions.',
 					checked: Twinkle.getPref('deleteRedirectsOnDelete'),
-					event: function(event) {
+					event: function (event) {
 						event.stopPropagation();
 					}
-				}
-			]
-		});
-		deleteOptions.append({
-			type: 'checkbox',
-			list: [
+				},
 				{
 					label: 'Delete under multiple criteria',
 					value: 'delmultiple',
@@ -177,12 +172,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 						Twinkle.speedy.callback.modeChanged(event.target.form);
 						event.stopPropagation();
 					}
-				}
-			]
-		});
-		deleteOptions.append({
-			type: 'checkbox',
-			list: [
+				},
 				{
 					label: 'Notify page creator of page deletion',
 					value: 'warnusertalk',
@@ -223,12 +213,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				event: function(event) {
 					event.stopPropagation();
 				}
-			}
-		]
-	});
-	tagOptions.append({
-		type: 'checkbox',
-		list: [
+			},
 			{
 				label: 'Tag for creation protection (salting) as well',
 				value: 'salting',
@@ -237,12 +222,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				event: function(event) {
 					event.stopPropagation();
 				}
-			}
-		]
-	});
-	tagOptions.append({
-		type: 'checkbox',
-		list: [
+			},
 			{
 				label: 'Tag with multiple criteria',
 				value: 'multiple',
@@ -1509,7 +1489,7 @@ Twinkle.speedy.callbacks = {
 
 			if (params.requestsalt) {
 				if (params.normalizeds.indexOf('g10') === -1) {
-					code = code + '\n{{salt}}';
+					code += '\n{{salt}}';
 				} else {
 					code = '{{salt}}\n' + code;
 				}
