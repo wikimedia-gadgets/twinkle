@@ -8,7 +8,7 @@
 		"lint:fix": "eslint . --fix",
 		"patchtest": "node dev/patch-test.js",
 		"sync": "perl dev/sync.pl",
-		"deployall": "perl dev/sync.pl --mode=all --all"
+		"deployall": "perl dev/sync.pl --mode=deploy --all"
 	},
 	"devDependencies": {
 		"eslint": "^7.8.1",

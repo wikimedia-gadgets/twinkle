@@ -49,7 +49,7 @@ foreach my $dot (@dotLocales) {
 
 GetOptions (\%conf, 'username|s=s', 'password|p=s', 'mode|m=s',
             'lang|l=s','family|f=s', 'url|u=s', 'base|b=s',
-            'all|a', 'append|a=s', 'diff|d', 'w=s', 'dry|r', 'help|h' => \&usage);
+            'all|a', 'summary|y=s', 'append|e=s', 'diff|d', 'w=s', 'dry|r', 'help|h' => \&usage);
 
 # Ensure we've got a clean branch
 my $repo = Git::Repository->new();
@@ -322,44 +322,48 @@ sub checkPage {
 sub buildEditSummary {
   my ($page, $file, $oldCommitish) = @_;
   my $editSummary;
-  # User:Amorymeltzer & User:MusikAnimal or User:Amalthea et al.
-  if ($oldCommitish =~ /(?:Repo|v2\.0) at (\w*?): / || $oldCommitish =~ /v2\.0-\d+-g(\w*?): /) {
-    # Ensure it's a valid commit and no errors are reported back
-    my $valid = $repo->command('merge-base' => '--is-ancestor', "$1", 'HEAD');
-    my @validE = $valid->stderr->getlines();
-    $valid->close();
-    if (!scalar @validE) {
-      my $newLog = $repo->run(log => '--oneline', '--no-merges', '--no-color', "$1..HEAD", $file);
-      open my $nl, '<', \$newLog or die colored ['red'], "$ERRNO\n";
-      while (<$nl>) {
-	chomp;
-	my @arr = split / /, $_, 2;
-	if ($arr[1] =~ /(\S+(?:\.(?:js|css))?) ?[:|-] ?(.+)/) {
-	  my $fixPer = $2;
-	  $fixPer =~ s/\.$//;   # Just in case
-	  $editSummary .= "$fixPer; ";
-	}
+  if ($conf{summary}) {
+      $editSummary = $conf{summary};
+    } else {
+      # User:Amorymeltzer & User:MusikAnimal or User:Amalthea et al.
+      if ($oldCommitish =~ /(?:Repo|v2\.0) at (\w*?): / || $oldCommitish =~ /v2\.0-\d+-g(\w*?): /) {
+        # Ensure it's a valid commit and no errors are reported back
+        my $valid = $repo->command('merge-base' => '--is-ancestor', "$1", 'HEAD');
+        my @validE = $valid->stderr->getlines();
+        $valid->close();
+        if (!scalar @validE) {
+          my $newLog = $repo->run(log => '--oneline', '--no-merges', '--no-color', "$1..HEAD", $file);
+          open my $nl, '<', \$newLog or die colored ['red'], "$ERRNO\n";
+          while (<$nl>) {
+            chomp;
+            my @arr = split / /, $_, 2;
+            if ($arr[1] =~ /(\S+(?:\.(?:js|css))?) ?[:|-] ?(.+)/) {
+              my $fixPer = $2;
+              $fixPer =~ s/\.$//; # Just in case
+              $editSummary .= "$fixPer; ";
+            }
+          }
+          close $nl or die colored ['red'], "$ERRNO\n";
+        }
       }
-      close $nl or die colored ['red'], "$ERRNO\n";
-    }
-  }
 
-  # Prompt for manual entry
-  if (!$editSummary) {
-    my @log = $repo->run(log => '-5', '--pretty=format:%s (%h)', '--no-merges', '--no-color', $file);
-    print colored ['yellow'], "Unable to autogenerate edit summary for $page\n\n";
-    print "The most recent ON-WIKI edit summary is:\n";
-    print colored ['bright_cyan'], "\t$oldCommitish\n";
-    print "The most recent GIT LOG entries are:\n";
-    foreach (@log) {
-      print colored ['bright_cyan'], "\t$_\n";
+      # Prompt for manual entry
+      if (!$editSummary) {
+        my @log = $repo->run(log => '-5', '--pretty=format:%s (%h)', '--no-merges', '--no-color', $file);
+        print colored ['yellow'], "Unable to autogenerate edit summary for $page\n\n";
+        print "The most recent ON-WIKI edit summary is:\n";
+        print colored ['bright_cyan'], "\t$oldCommitish\n";
+        print "The most recent GIT LOG entries are:\n";
+        foreach (@log) {
+          print colored ['bright_cyan'], "\t$_\n";
+        }
+        print 'Please provide an edit summary (commit ref will be added automatically';
+        print ",\nas well as your appendation: $conf{append}" if $conf{append};
+        print "):\n";
+        $editSummary = <STDIN>;
+        chomp $editSummary;
+      }
     }
-    print 'Please provide an edit summary (commit ref will be added automatically';
-    print ",\nas well as your appendation: $conf{append}" if $conf{append};
-    print "):\n";
-    $editSummary = <STDIN>;
-    chomp $editSummary;
-  }
   $editSummary =~ s/[\.; ]{1,2}$//; # Tidy
   $editSummary .= $conf{append} if $conf{append};
 
@@ -404,14 +408,14 @@ sub editPage {
 # Final line must be unindented?
 sub usage {
   print <<"USAGE";
-Usage: $PROGRAM_NAME --mode=deploy|pull|push -u username -p password [-l language] [-f family] [-u url=] [-b base] [--all] [--diff [-w diffprog]] [--dry] [-a append]
+Usage: $PROGRAM_NAME --mode=deploy|pull|push --username username --password password [--lang language] [--family family] [--url url] [--base base] [--all] [--diff [-w diffprog]] [--dry] [--summary summary] [--append append]
 
-    --mode What action to perform, one of deploy, pull, or push. Required.
+    --mode, -m What action to perform, one of deploy, pull, or push. Required.
         deploy: Push changes live to the gadget
         pull: Pull changes from base-prefixed location
         push: Push changes to base-prefixed location
 
-    --username, -u Username for account. Required.
+    --username, -s Username for account. Required.
     --password, -p Password for account. Required.
 
     --lang, -l Target language, default 'en'
@@ -430,7 +434,8 @@ Less common options:
 
     --url, -u Provide the full URL, replacing above options (https://{lang}.{family}.org).
 
-    --append, -a String to append to a push or deploy edit summary
+    --summary, -y String to use in place of autogenerated edit summary
+    --append, -e String to append to a push or deploy edit summary
 
     These options can be provided in a config file, .twinklerc, in either this script's
     or your home directory.  It should be a simple file consisting of keys and values:
