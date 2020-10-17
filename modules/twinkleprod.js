@@ -185,7 +185,7 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 var params = {};
 
 Twinkle.prod.callbacks = {
-	checkpriors: function twinkleprodCheckpriors() {
+	checkPriors: function twinkleprodcheckPriors() {
 
 		var talk_title = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
 		// Talk page templates for PROD-able discussions
@@ -466,29 +466,34 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 
-	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-
 	var tm = new Morebits.taskManager();
-	var cbs = Twinkle.prod.callbacks; // shortcut reference
+	var cbs = Twinkle.prod.callbacks; // shortcut reference, cbs for `callbacks`
 
-	// checkpriors() and fetchCreationInfo() have no dependencies, they'll run first
-	tm.add(cbs.checkpriors, []);
+	// Disable Morebits.wiki.numberOfActionsLeft system
+	Morebits.wiki.numberOfActionsLeft = 1000;
+
+	// checkPriors() and fetchCreationInfo() have no dependencies, they'll run first
+	tm.add(cbs.checkPriors, []);
 	tm.add(cbs.fetchCreationInfo, []);
 	// tag the page once we're clear of the pre-requisites
-	tm.add(cbs.taggingPage, [ cbs.checkpriors ]);
+	tm.add(cbs.taggingPage, [ cbs.checkPriors ]);
 	// notify the author once we know who's the author, and also wait for the
 	// taggingPage() as we don't need to notify if tagging was not done, such as
 	// there was already a tag and the user chose not to endorse.
 	tm.add(cbs.notifyAuthor, [ cbs.fetchCreationInfo, cbs.taggingPage ]);
 	// oldProd needs to be added only if there wasn't one before, so need to wait
-	// for checkpriors() to finish
-	tm.add(cbs.addOldProd, [ cbs.checkpriors ]);
+	// for checkPriors() to finish. Also don't add oldProd if tagging itself was
+	// aborted or unsuccessful
+	tm.add(cbs.addOldProd, [ cbs.taggingPage, cbs.checkPriors ]);
 	// add to log only after notifying author so that the logging can be adjusted if
 	// notification wasn't successful. Also, don't run if tagging was not done.
 	tm.add(cbs.addToLog, [ cbs.notifyAuthor, cbs.taggingPage ]);
 	// All set, go!
 	tm.execute().then(function() {
 		Morebits.status.actionCompleted('Tagging complete');
+		setTimeout(function () {
+			window.location.href = mw.util.getUrl(mw.config.get('wgPageName'));
+		}, Morebits.wiki.actionCompleted.timeOut);
 	});
 
 };
