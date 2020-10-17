@@ -233,9 +233,9 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		Window.setContent(result);
 
 		// Set defaults
-		form.editexpiry.value = '2 days';
-		form.moveexpiry.value = '2 days';
-		form.createexpiry.value = 'indefinite';
+		result.editexpiry.value = '2 days';
+		result.moveexpiry.value = '2 days';
+		result.createexpiry.value = 'infinity';
 
 
 	}, statelem);
