@@ -1208,15 +1208,13 @@ Twinkle.tag.callbacks = {
 				// special functions for merge tags
 				if (params.mergeReason) {
 					// post the rationale on the talk page (only operates in main namespace)
-					var talkpageText = '\n\n== ' + params.talkDiscussionTitleLinked + ' ==\n\n';
-					talkpageText += params.mergeReason.trim() + ' ~~~~';
 					var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
-					talkpage.setAppendText(talkpageText);
-					talkpage.setEditSummary('/* ' + params.talkDiscussionTitle + ' */ new section');
+					talkpage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
+					talkpage.setNewSectionTitle(params.talkDiscussionTitleLinked);
 					talkpage.setChangeTags(Twinkle.changeTags);
 					talkpage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
 					talkpage.setCreateOption('recreate');
-					talkpage.append();
+					talkpage.newSection();
 				}
 				if (params.mergeTagOther) {
 					// tag the target page if requested
@@ -1290,15 +1288,14 @@ Twinkle.tag.callbacks = {
 
 						var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib,
 							'Notifying initial contributor (' + initialContrib + ')');
-						var notifytext = '\n\n== Your article [[' + Morebits.pageNameNorm + ']]==\n' +
-							'{{subst:uw-notenglish|1=' + Morebits.pageNameNorm +
-							(params.translationPostAtPNT ? '' : '|nopnt=yes') + '}} ~~~~';
-						userTalkPage.setAppendText(notifytext);
+						userTalkPage.setNewSectionTitle('Your article [[' + Morebits.pageNameNorm + ']]');
+						userTalkPage.setNewSectionText('{{subst:uw-notenglish|1=' + Morebits.pageNameNorm +
+							(params.translationPostAtPNT ? '' : '|nopnt=yes') + '}} ~~~~');
 						userTalkPage.setEditSummary('Notice: Please use English when contributing to the English Wikipedia.');
 						userTalkPage.setChangeTags(Twinkle.changeTags);
 						userTalkPage.setCreateOption('recreate');
 						userTalkPage.setFollowRedirect(true, false);
-						userTalkPage.append();
+						userTalkPage.newSection();
 					});
 				}
 			});

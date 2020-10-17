@@ -1598,14 +1598,24 @@ $.extend(Morebits.date.prototype, {
 	},
 
 	/**
-	 * Creates a wikitext section header with the month and year.
-	 * @param {number} [level=2] - Header level (default 2)
+	 * Creates a section header with the month and year.
+	 * @param {number} [level=2] - Header level (default 2).  Pass 0 for
+	 * just the text with no wikitext markers (==)
 	 * @returns {string}
 	 */
 	monthHeader: function(level) {
-		level = level || 2;
+		// Default to 2, but allow for 0 or stringy numbers
+		level = parseInt(level, 10);
+		level = isNaN(level) ? 2 : level;
+
 		var header = Array(level + 1).join('='); // String.prototype.repeat not supported in IE 11
-		return header + ' ' + this.getUTCMonthName() + ' ' + this.getUTCFullYear() + ' ' + header;
+		var text = this.getUTCMonthName() + ' ' + this.getUTCFullYear();
+
+		if (header.length) { // wikitext-formatted header
+			return header + ' ' + text + ' ' + header;
+		}
+		return text; // Just the string
+
 	}
 
 });
@@ -1963,6 +1973,9 @@ Morebits.wiki.api.getToken = function() {
  * prepend([onSuccess], [onFailure]): Adds the text provided via setPrependText() to the start
  * of the page. Does not require calling load() first.
  *
+ * newSection([onSuccess], [onFailure]): Creates a new section with the text provided via setNewSectionText()
+ * and section title via setNewSetionTitle(). Does not require calling load() first.
+ *
  * move([onSuccess], [onFailure]): Moves a page to another title
  *
  * patrol(): Patrols a page; ignores errors
@@ -1982,6 +1995,10 @@ Morebits.wiki.api.getToken = function() {
  * setAppendText(appendText) sets the text that will be appended to the page when append() is called
  *
  * setPrependText(prependText) sets the text that will be prepended to the page when prepend() is called
+ *
+ * setNewSectionText(newSectionText) sets the text that will be added in a new section when newSection() is called
+ *
+ * setNewSectionTitle(newSectionTitle) sets the title for the new section when newSection() is called
  *
  * setCallbackParameters(callbackParameters)
  *    callbackParameters - an object for use in a callback function
@@ -2028,7 +2045,7 @@ Morebits.wiki.api.getToken = function() {
  *             ctx.fnLoadSuccess() -> userTextEditCallback() -> .save() ->
  *             ctx.saveApi.post() -> ctx.loadApi.post.success() -> ctx.fnSaveSuccess()
  *
- *    Append to a page (similar for prepend):
+ *    Append to a page (similar for prepend and newSection):
  *       .append() -> ctx.loadApi.post() -> ctx.loadApi.post.success() ->
  *             ctx.fnLoadSuccess() -> ctx.fnAutoSave() -> .save() ->
  *             ctx.saveApi.post() -> ctx.loadApi.post.success() -> ctx.fnSaveSuccess()
@@ -2036,7 +2053,7 @@ Morebits.wiki.api.getToken = function() {
  *    Notes:
  *       1. All functions following Morebits.wiki.api.post() are invoked asynchronously
  *          from the jQuery AJAX library.
- *       2. The sequence for append/prepend could be slightly shortened, but it would require
+ *       2. The sequence for append/prepend/newSection could be slightly shortened, but it would require
  *          significant duplication of code for little benefit.
  */
 
@@ -2072,6 +2089,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		editMode: 'all',  // save() replaces entire contents of the page by default
 		appendText: null,   // can't reuse pageText for this because pageText is needed to follow a redirect
 		prependText: null,  // can't reuse pageText for this because pageText is needed to follow a redirect
+		newSectionText: null,
+		newSectionTitle: null,
 		createOption: null,
 		minorEdit: false,
 		botEdit: false,
@@ -2233,9 +2252,16 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return;
 		}
 		if (!ctx.editSummary) {
-			ctx.statusElement.error('Internal error: edit summary not set before save!');
-			ctx.onSaveFailure(this);
-			return;
+			// new section mode allows (nay, encourages) using the
+			// title as the edit summary, but the query needs
+			// editSummary to be undefined or '', not null
+			if (ctx.editMode === 'new' && ctx.newSectionTitle) {
+				ctx.editSummary = '';
+			} else {
+				ctx.statusElement.error('Internal error: edit summary not set before save!');
+				ctx.onSaveFailure(this);
+				return;
+			}
 		}
 
 		// shouldn't happen if canUseMwUserToken === true
@@ -2294,6 +2320,16 @@ Morebits.wiki.page = function(pageName, currentAction) {
 					return;
 				}
 				query.prependtext = ctx.prependText;  // use mode to prepend to current page contents
+				break;
+			case 'new':
+				if (!ctx.newSectionText) { // API doesn't allow empty new section text
+					ctx.statusElement.error('Internal error: new section text not set before save!');
+					ctx.onSaveFailure(this);
+					return;
+				}
+				query.section = 'new';
+				query.text = ctx.newSectionText;  // add a new section to current page
+				query.sectiontitle = ctx.newSectionTitle || ctx.editSummary; // done by the API, but non-'' values would get treated as text
 				break;
 			case 'revert':
 				query.undo = ctx.revertCurID;
@@ -2361,6 +2397,27 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 	};
 
+	/**
+	 * Creates a new section with the text provided by setNewSectionText()
+	 * and section title from setNewSectionTitle()
+	 * If editSummary is provided, that will be used instead of the
+	 * autogenerated "->Title (new section" edit summary
+	 * Does not require calling load() first
+	 * @param {Function}  [onSuccess] - callback function which is called when the method has succeeded (optional)
+	 * @param {Function}  [onFailure] - callback function which is called when the method fails (optional)
+	 */
+	this.newSection = function(onSuccess, onFailure) {
+		ctx.editMode = 'new';
+
+		if (fnCanUseMwUserToken('edit')) {
+			this.save(onSuccess, onFailure);
+		} else {
+			ctx.onSaveSuccess = onSuccess;
+			ctx.onSaveFailure = onFailure || emptyFunction;
+			this.load(fnAutoSave, ctx.onSaveFailure);
+		}
+	};
+
 	/** @returns {string} string containing the name of the loaded page, including the namespace */
 	this.getPageName = function() {
 		return ctx.pageName;
@@ -2389,10 +2446,28 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.prependText = prependText;
 	};
 
+	/** @param {string} newSectionText - text that will be added in a new section on the page when newSection() is called */
+	this.setNewSectionText = function(newSectionText) {
+		ctx.editMode = 'new';
+		ctx.newSectionText = newSectionText;
+	};
+
+	/**
+	 * @param {string} newSectionTitle - title for the new section created when newSection() is called
+	 * If missing, ctx.editSummary will be used. Issues may occur if a substituted template is used
+	 */
+	this.setNewSectionTitle = function(newSectionTitle) {
+		ctx.editMode = 'new';
+		ctx.newSectionTitle = newSectionTitle;
+	};
+
 
 
 	// Edit-related setter methods:
-	/** @param {string} summary - text of the edit summary that will be used when save() is called */
+	/**
+	 * @param {string} summary - text of the edit summary that will be used when save() is called
+	 * Unnecessary if editMode is 'new' and newSectionTitle is provided
+	 */
 	this.setEditSummary = function(summary) {
 		ctx.editSummary = summary;
 	};
@@ -2992,11 +3067,9 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * Determines whether we can save an API call by using the csrf token sent with the page
 	 * HTML, or whether we need to ask the server for more info (e.g. protection expiry).
 	 *
-	 * Only applicable for csrf token actions, e.g. not patrol
-	 *
-	 * Currently used for append, prepend, deletePage, undeletePage, move,
-	 * and stabilize.  Can't use for protect since it always needs to
-	 * request protection status.
+	 * Currently used for append, prepend, newSection, move, stabilize,
+	 * deletePage, and undeletePage. Can't use for protect since it always
+	 * needs to request protection status.
 	 *
 	 * @param {string} [action=edit]  The action being undertaken, e.g.
 	 * "edit" or "delete". In practice, only "edit" or "notedit" matters.
@@ -3006,13 +3079,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		action = typeof action !== 'undefined' ? action : 'edit'; // IE doesn't support default parameters
 
 		// API-based redirect resolution only works for action=query and
-		// action=edit in append/prepend modes (and section=new, but we don't
-		// really support that)
+		// action=edit in append/prepend/new modes
 		if (ctx.followRedirect) {
 			if (!ctx.followCrossNsRedirect) {
 				return false; // must load the page to check for cross namespace redirects
 			}
-			if (action !== 'edit' || (ctx.editMode !== 'append' && ctx.editMode !== 'prepend')) {
+			if (action !== 'edit' || (ctx.editMode === 'all' || ctx.editMode === 'revert')) {
 				return false;
 			}
 		}
@@ -3060,7 +3132,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		return query;
 	};
 
-	// callback from loadSuccess() for append() and prepend() threads
+	// callback from loadSuccess() for append(), prepend(), and newSection() threads
 	var fnAutoSave = function(pageobj) {
 		pageobj.save(ctx.onSaveSuccess, ctx.onSaveFailure);
 	};
@@ -3181,7 +3253,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	// callback from saveApi.post()
 	var fnSaveSuccess = function() {
-		ctx.editMode = 'all';  // cancel append/prepend/revert modes
+		ctx.editMode = 'all';  // cancel append/prepend/newSection/revert modes
 		var xml = ctx.saveApi.getXML();
 
 		// see if the API thinks we were successful
@@ -3231,7 +3303,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 				ctx.statusElement.info('Edit conflict detected, reapplying edit');
 				if (fnCanUseMwUserToken('edit')) {
-					ctx.saveApi.post(); // necessarily append or prepend, so this should work as desired
+					ctx.saveApi.post(); // necessarily append, prepend, or newSection, so this should work as desired
 				} else {
 					ctx.loadApi.post(); // reload the page and reapply the edit
 				}
@@ -3280,7 +3352,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 					ctx.statusElement.error('Failed to save edit: ' + ctx.saveApi.getErrorText());
 			}
 
-			ctx.editMode = 'all';  // cancel append/prepend/revert modes
+			ctx.editMode = 'all';  // cancel append/prepend/newSection/revert modes
 			if (ctx.onSaveFailure) {
 				ctx.onSaveFailure(this);  // invoke callback
 			}
@@ -3835,8 +3907,9 @@ Morebits.wiki.preview = function(previewbox) {
 	 * to render the specified wikitext.
 	 * @param {string} wikitext - wikitext to render; most things should work, including subst: and ~~~~
 	 * @param {string} [pageTitle] - optional parameter for the page this should be rendered as being on, if omitted it is taken as the current page
+	 * @param {string} [sectionTitle] - if provided, render the text as a new section using this as the title
 	 */
-	this.beginRender = function(wikitext, pageTitle) {
+	this.beginRender = function(wikitext, pageTitle, sectionTitle) {
 		$(previewbox).show();
 
 		var statusspan = document.createElement('span');
@@ -3851,6 +3924,10 @@ Morebits.wiki.preview = function(previewbox) {
 			title: pageTitle || mw.config.get('wgPageName'),
 			disablelimitreport: true
 		};
+		if (sectionTitle) {
+			query.section = 'new';
+			query.sectiontitle = sectionTitle;
+		}
 		var renderApi = new Morebits.wiki.api('loading...', query, fnRenderSuccess, new Morebits.status('Preview'));
 		renderApi.post();
 	};
