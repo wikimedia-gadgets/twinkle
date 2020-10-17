@@ -13,14 +13,16 @@
  * How to use:
  * - Run `npm run patchtest` which generates patch-test-loader.js
  * - Set up a localhost server (such as by using server.js or by running
- *   php -S localhost:5500) and load patch-test-loader.js in the wiki environment,
+ *   php -S 127.0.0.1:5500) and load patch-test-loader.js in the wiki environment,
  *   using the browser console or the common.js page.
+ * - You can provide a different port by running `npm run patchtest -- 1234`
  */
 
 const fs = require('fs');
 const {execSync} = require('child_process');
 
-const server = 'http://127.0.0.1:5500';
+const port = isNaN(Number(process.argv[2])) ? '5500' : process.argv[2];
+const server = 'http://127.0.0.1:' + port;
 
 // find the last common commit between this branch and master, and get the list
 // of files changed since that commit
@@ -84,7 +86,7 @@ function createTestLoader(changedFiles) {
 		${importLine('modules/twinklexfd.js')}
 	});`.replace(/^\t/mg, '').replace(/^\s*$/mg, '');
 
-	fs.writeFileSync('./patch-test-loader.js', jsLoaderSource, console.log);
+	fs.writeFileSync('./dev/patch-test-loader.js', jsLoaderSource, console.log);
 
-	console.log(`Wrote import statements for ${importsCount} modified file${importsCount > 1 ? 's' : ''} to patch-test-loader.js`);
+	console.log(`Wrote import statements for ${importsCount} modified file${importsCount > 1 ? 's' : ''} to dev/patch-test-loader.js`);
 }
