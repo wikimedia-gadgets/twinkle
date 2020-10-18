@@ -1960,6 +1960,16 @@ Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onE
 	this.currentAction = currentAction;
 	this.query = query;
 	this.query.assert = 'user';
+	// Enforce newer error formats, preferring html
+	if (!query.errorformat || ['wikitext', 'plaintext'].indexOf(query.errorformat) === -1) {
+		this.query.errorformat = 'html';
+	}
+	// Explicitly use the wiki's content language to minimize confusion,
+	// see #1179 for discussion
+	this.query.uselang = 'content';
+	this.query.errorlang = 'uselang';
+	this.query.errorsuselocal = 1;
+
 	this.onSuccess = onSuccess;
 	this.onError = onError;
 	if (statusElement) {
@@ -2048,12 +2058,18 @@ Morebits.wiki.api.prototype = {
 			function onAPIsuccess(response, statusText) {
 				this.statusText = statusText;
 				this.response = this.responseXML = response;
+				// Limit to first error
 				if (this.query.format === 'json') {
-					this.errorCode = response.error && response.error.code;
-					this.errorText = response.error && response.error.info;
+					this.errorCode = response.errors && response.errors[0].code;
+					if (this.query.errorformat === 'html') {
+						this.errorText = response.errors && response.errors[0].html;
+					} else if (this.query.errorformat === 'wikitext' || this.query.errorformat === 'plaintext') {
+						this.errorText = response.errors && response.errors[0].text;
+					}
 				} else {
-					this.errorCode = $(response).find('error').attr('code');
-					this.errorText = $(response).find('error').attr('info');
+					this.errorCode = $(response).find('errors error').eq(0).attr('code');
+					// Sufficient for html, wikitext, or plaintext errorformats
+					this.errorText = $(response).find('errors error').eq(0).text();
 				}
 
 				if (typeof this.errorCode === 'string') {
