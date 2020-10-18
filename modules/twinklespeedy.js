@@ -606,7 +606,7 @@ Twinkle.speedy.fileList = [
 		}
 	},
 	{
-		label: 'F2: Corrupt, mising, or empty file',
+		label: 'F2: Corrupt, missing, or empty file',
 		value: 'noimage',
 		tooltip: 'Before deleting this type of file, verify that the MediaWiki engine cannot read it by previewing a resized thumbnail of it. This also includes empty (i.e., no content) file description pages for Commons files'
 	},
