@@ -4800,7 +4800,54 @@ Morebits.batchOperation = function(currentAction) {
 	};
 };
 
+/** ********** Morebits.taskManager ****************
+ *
+ * Given a set of asynchronous functions to run along with their dependencies,
+ * Morebits.taskManager figures out an efficient sequence of running them so
+ * that multiple functions that don't depend on each other are triggered
+ * simultaneously. Where dependencies exist, it ensures that the dependency
+ * functions finish running before the dependent function runs. The values
+ * resolved by the dependencies are made available to the dependant as arguments.
+ */
+Morebits.taskManager = function() {
+	this.taskDependencyMap = new Map();
+	this.deferreds = new Map();
+	this.allDeferreds = []; // Hack: IE doesn't support Map.prototype.values
 
+	/**
+	 * Register a task along with its dependencies (tasks which should have finished
+	 * execution before we can begin this one). Each task is a function that must return
+	 * a promise. The function will get the values resolved by the dependency functions
+	 * as arguments.
+	 * @param {function} func - a task
+	 * @param {function[]} deps - its dependencies
+	 */
+	this.add = function(func, deps) {
+		this.taskDependencyMap.set(func, deps);
+		var deferred = $.Deferred();
+		this.deferreds.set(func, deferred);
+		this.allDeferreds.push(deferred);
+	};
+
+	/**
+	 * Run all the tasks. Multiple tasks may be run at once.
+	 */
+	this.execute = function() {
+		var self = this; // proxy for `this` for use inside functions where `this` is something else
+		this.taskDependencyMap.forEach(function(deps, task) {
+			var dependencyPromisesArray = deps.map(function(dep) {
+				return self.deferreds.get(dep);
+			});
+			$.when.apply(null, dependencyPromisesArray).then(function() {
+				task.apply(null, arguments).then(function() {
+					self.deferreds.get(task).resolve.apply(null, arguments);
+				});
+			});
+		});
+		return $.when.apply(null, this.allDeferreds); // resolved when everything is done!
+	};
+
+};
 
 /**
  * **************** Morebits.simpleWindow ****************
