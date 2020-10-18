@@ -70,6 +70,7 @@ Twinkle.defaultConfig = {
 	watchRevertedPages: [ 'agf', 'norm', 'vand', 'torev' ],
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
+	confirmOnMobileFluff: true,
 	showRollbackLinks: [ 'diff', 'others' ],
 
 	// DI (twinkleimage)

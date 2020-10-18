@@ -375,8 +375,15 @@ Twinkle.config.sections = [
 
 			{
 				name: 'confirmOnFluff',
-				label: 'Provide a confirmation message before reverting',
+				label: 'Require confirmation before reverting (all devices)',
 				helptip: 'For users of pen or touch devices, and chronically indecisive people.',
+				type: 'boolean'
+			},
+
+			{
+				name: 'confirmOnMobileFluff',
+				label: 'Require confirmation before reverting (mobile devices only)',
+				helptip: 'Avoid accidental reversions when on mobile devices.',
 				type: 'boolean'
 			},
 
