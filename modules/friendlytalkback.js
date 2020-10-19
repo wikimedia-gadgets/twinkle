@@ -356,7 +356,7 @@ Twinkle.talkback.noticeboards = {
 	'npovn': {
 		label: 'WP:NPOVN (Neutral point of view noticeboard)',
 		text: '{{subst:NPOVN-notice|thread=$SECTION}} ~~~~',
-		editSummary: 'Notice of discussion at [[Wikipedia:Neutral point of view/noticeboard]]'
+		editSummary: 'Notice of discussion at [[Wikipedia:Neutral point of view/Noticeboard]]'
 	},
 	'rsn': {
 		label: 'WP:RSN (Reliable sources noticeboard)',
