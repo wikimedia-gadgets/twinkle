@@ -1,10 +1,4 @@
 /* eslint-env node, es6 */
-/* eslint-disable no-console */
-/* eslint-disable es5/no-destructuring */
-/* eslint-disable es5/no-template-literals */
-/* eslint-disable es5/no-es6-methods */
-/* eslint-disable es5/no-shorthand-properties */
-/* eslint-disable es5/no-block-scoping */
 
 /**
  * Creates a file patch-test-loader.js with the necessary import statements
@@ -27,8 +21,8 @@ const server = 'http://127.0.0.1:' + port;
 // find the last common commit between this branch and master, and get the list
 // of files changed since that commit
 try {
-	var stdout = execSync('git diff $(git merge-base $(git rev-parse --abbrev-ref HEAD) master) --name-only').toString();
-	let changedFiles = stdout.split(/\r?\n/);
+	let lastCommonCommit = execSync('git merge-base HEAD master').toString().trim();
+	let changedFiles = execSync(`git diff ${lastCommonCommit} --name-only`).toString().split(/\r?\n/);
 	createTestLoader(changedFiles);
 } catch (err) {
 	console.log(err.toString());
@@ -52,6 +46,7 @@ function createTestLoader(changedFiles) {
 			importsCount++;
 			return `mw.loader.load('${server}/${file}', 'text/css');`;
 		}
+		return '';
 	};
 
 	let jsLoaderSource = `// Wait for Twinkle gadget to load, so that we can then overwrite it
