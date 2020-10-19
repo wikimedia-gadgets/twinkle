@@ -39,43 +39,6 @@ Twinkle.speedy.dialog = null;
 // Used throughout
 Twinkle.speedy.hasCSD = !!$('#delete-reason').length;
 
-// The speedy criteria list can be in one of several modes
-Twinkle.speedy.mode = {
-	sysopSingleSubmit: 1,  // radio buttons, no subgroups, submit when "Submit" button is clicked
-	sysopRadioClick: 2,  // radio buttons, no subgroups, submit when a radio button is clicked
-	sysopMultipleSubmit: 3, // check boxes, subgroups, "Submit" button already present
-	sysopMultipleRadioClick: 4, // check boxes, subgroups, need to add a "Submit" button
-	userMultipleSubmit: 5,  // check boxes, subgroups, "Submit" button already pressent
-	userMultipleRadioClick: 6,  // check boxes, subgroups, need to add a "Submit" button
-	userSingleSubmit: 7,  // radio buttons, subgroups, submit when "Submit" button is clicked
-	userSingleRadioClick: 8,  // radio buttons, subgroups, submit when a radio button is clicked
-
-	// are we in "delete page" mode?
-	// (sysops can access both "delete page" [sysop] and "tag page only" [user] modes)
-	isSysop: function twinklespeedyModeIsSysop(mode) {
-		return mode === Twinkle.speedy.mode.sysopSingleSubmit ||
-			mode === Twinkle.speedy.mode.sysopMultipleSubmit ||
-			mode === Twinkle.speedy.mode.sysopRadioClick ||
-			mode === Twinkle.speedy.mode.sysopMultipleRadioClick;
-	},
-	// do we have a "Submit" button once the form is created?
-	hasSubmitButton: function twinklespeedyModeHasSubmitButton(mode) {
-		return mode === Twinkle.speedy.mode.sysopSingleSubmit ||
-			mode === Twinkle.speedy.mode.sysopMultipleSubmit ||
-			mode === Twinkle.speedy.mode.sysopMultipleRadioClick ||
-			mode === Twinkle.speedy.mode.userMultipleSubmit ||
-			mode === Twinkle.speedy.mode.userMultipleRadioClick ||
-			mode === Twinkle.speedy.mode.userSingleSubmit;
-	},
-	// is db-multiple the outcome here?
-	isMultiple: function twinklespeedyModeIsMultiple(mode) {
-		return mode === Twinkle.speedy.mode.userMultipleSubmit ||
-			mode === Twinkle.speedy.mode.sysopMultipleSubmit ||
-			mode === Twinkle.speedy.mode.userMultipleRadioClick ||
-			mode === Twinkle.speedy.mode.sysopMultipleRadioClick;
-	}
-};
-
 // Prepares the speedy deletion dialog and displays it
 Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	var dialog;
@@ -253,36 +216,17 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	Twinkle.speedy.callback.modeChanged(result);
 };
 
-Twinkle.speedy.callback.getMode = function twinklespeedyCallbackGetMode(form) {
-	var mode = Twinkle.speedy.mode.userSingleSubmit;
-	if (form.tag_only && !form.tag_only.checked) {
-		if (form.delmultiple.checked) {
-			mode = Twinkle.speedy.mode.sysopMultipleSubmit;
-		} else {
-			mode = Twinkle.speedy.mode.sysopSingleSubmit;
-		}
-	} else {
-		if (form.multiple.checked) {
-			mode = Twinkle.speedy.mode.userMultipleSubmit;
-		} else {
-			mode = Twinkle.speedy.mode.userSingleSubmit;
-		}
-	}
-	if (Twinkle.getPref('speedySelectionStyle') === 'radioClick') {
-		mode++;
-	}
-
-	return mode;
-};
-
 Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(form) {
 	var namespace = mw.config.get('wgNamespaceNumber');
 
 	// first figure out what mode we're in
-	var mode = Twinkle.speedy.callback.getMode(form);
-	var isSysopMode = Twinkle.speedy.mode.isSysop(mode);
+	var mode = {
+		isSysop: !!form.tag_only && !form.tag_only.checked,
+		isMultiple: form.tag_only && !form.tag_only.checked ? form.delmultiple.checked : form.multiple.checked,
+		isRadioClick: Twinkle.getPref('speedySelectionStyle') === 'radioClick'
+	};
 
-	if (isSysopMode) {
+	if (mode.isSysop) {
 		$('[name=delete_options]').show();
 		$('[name=tag_options]').hide();
 		$('button.tw-speedy-submit').text('Delete page');
@@ -297,8 +241,8 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		name: 'work_area'
 	});
 
-	if (mode === Twinkle.speedy.mode.userMultipleRadioClick || mode === Twinkle.speedy.mode.sysopMultipleRadioClick) {
-		var evaluateType = isSysopMode ? 'evaluateSysop' : 'evaluateUser';
+	if (mode.isMultiple && !mode.isMultiple && mode.isRadioClick) {
+		var evaluateType = mode.isSysop ? 'evaluateSysop' : 'evaluateUser';
 
 		work_area.append({
 			type: 'div',
@@ -307,7 +251,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		work_area.append({
 			type: 'button',
 			name: 'submit-multiple',
-			label: isSysopMode ? 'Delete page' : 'Tag page',
+			label: mode.isSysop ? 'Delete page' : 'Tag page',
 			event: function(event) {
 				Twinkle.speedy.callback[evaluateType](event);
 				event.stopPropagation();
@@ -315,9 +259,9 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		});
 	}
 
-	var radioOrCheckbox = Twinkle.speedy.mode.isMultiple(mode) ? 'checkbox' : 'radio';
+	var radioOrCheckbox = mode.isMultiple ? 'checkbox' : 'radio';
 
-	if (isSysopMode && !Twinkle.speedy.mode.isMultiple(mode)) {
+	if (mode.isSysop && !mode.isMultiple) {
 		work_area.append({ type: 'header', label: 'Custom rationale' });
 		work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.customRationale, mode) });
 	}
@@ -346,7 +290,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			case 7:  // file talk
 				work_area.append({ type: 'header', label: 'Files' });
 				work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.fileList, mode) });
-				if (!isSysopMode) {
+				if (!mode.isSysop) {
 					work_area.append({ type: 'div', label: 'Tagging for CSD F4 (no license), F5 (orphaned fair use), F6 (no fair use rationale), and F11 (no permission) can be done using Twinkle\'s "DI" tab.' });
 				}
 				break;
@@ -384,7 +328,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	var generalCriteria = Twinkle.speedy.generalList;
 
 	// custom rationale lives under general criteria when tagging
-	if (!isSysopMode) {
+	if (!mode.isSysop) {
 		generalCriteria = Twinkle.speedy.customRationale.concat(generalCriteria);
 	}
 	work_area.append({ type: 'header', label: 'General criteria' });
@@ -394,7 +338,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	form.replaceChild(work_area.render(), old_area);
 
 	// if sysop, check if CSD is already on the page and fill in custom rationale
-	if (isSysopMode && Twinkle.speedy.hasCSD) {
+	if (mode.isSysop && Twinkle.speedy.hasCSD) {
 		var customOption = $('input[name=csd][value=reason]')[0];
 		if (customOption) {
 			if (Twinkle.getPref('speedySelectionStyle') !== 'radioClick') {
@@ -408,10 +352,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 };
 
 Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mode) {
-	// mode switches
-	var isSysopMode = Twinkle.speedy.mode.isSysop(mode);
-	var multiple = Twinkle.speedy.mode.isMultiple(mode);
-	var hasSubmitButton = Twinkle.speedy.mode.hasSubmitButton(mode);
+
 	var pageNamespace = mw.config.get('wgNamespaceNumber');
 
 	var openSubgroupHandler = function(e) {
@@ -422,7 +363,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 		e.stopPropagation();
 	};
 	var submitSubgroupHandler = function(e) {
-		var evaluateType = Twinkle.speedy.mode.isSysop(mode) ? 'evaluateSysop' : 'evaluateUser';
+		var evaluateType = mode.isSysop ? 'evaluateSysop' : 'evaluateUser';
 		Twinkle.speedy.callback[evaluateType](e);
 		e.stopPropagation();
 	};
@@ -430,7 +371,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 	return $.map(list, function(critElement) {
 		var criterion = $.extend({}, critElement);
 
-		if (multiple) {
+		if (mode.isMultiple) {
 			if (criterion.hideWhenMultiple) {
 				return null;
 			}
@@ -446,7 +387,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			}
 		}
 
-		if (isSysopMode) {
+		if (mode.isSysop) {
 			if (criterion.hideWhenSysop) {
 				return null;
 			}
@@ -473,12 +414,12 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			return null;
 		}
 
-		if (criterion.subgroup && !hasSubmitButton) {
+		if (criterion.subgroup && mode.isRadioClick) {
 			if (Array.isArray(criterion.subgroup)) {
 				criterion.subgroup = criterion.subgroup.concat({
 					type: 'button',
 					name: 'submit',
-					label: isSysopMode ? 'Delete page' : 'Tag page',
+					label: mode.isSysop ? 'Delete page' : 'Tag page',
 					event: submitSubgroupHandler
 				});
 			} else {
@@ -487,7 +428,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 					{
 						type: 'button',
 						name: 'submit',  // ends up being called "csd.submit" so this is OK
-						label: isSysopMode ? 'Delete page' : 'Tag page',
+						label: mode.isSysop ? 'Delete page' : 'Tag page',
 						event: submitSubgroupHandler
 					}
 				];
@@ -2071,7 +2012,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 
 	// var multiple = form.multiple.checked;
 
-	var normalizeds = values.map(function (value) {
+	var normalizeds = values.map(function(value) {
 		return Twinkle.speedy.normalizeHash[value];
 	});
 
