@@ -94,6 +94,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 		name: 'parameters'
 	});
 
+	Window.addFooterLink('PROD prefs', 'WP:TW/PREF#prod');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#prod');
 
 	form.append({ type: 'submit', label: 'Propose deletion' });

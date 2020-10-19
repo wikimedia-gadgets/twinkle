@@ -38,6 +38,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Block templates', 'Template:Uw-block/doc/Block_templates');
 	Window.addFooterLink('Block policy', 'WP:BLOCK');
+	Window.addFooterLink('Block prefs', 'WP:TW/PREF#block');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#block');
 
 	var form = new Morebits.quickForm(Twinkle.block.callback.evaluate);
