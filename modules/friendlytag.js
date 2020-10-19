@@ -918,14 +918,12 @@ Twinkle.tag.redirectList = {
 			{ 
 				tag: 'R avoided double redirect',
 				description: 'redirect from an alternative title for another redirect',
-				subgroup: [
-					{
-						name: 'doubleRedirectTarget',
-						type: 'input',
-						label: 'Redirect page name',
-						tooltip: 'Enter the page this redirect would target if the page wasn\'t also a redirect'
-					}
-				]
+				subgroup: {
+					name: 'doubleRedirectTarget',
+					type: 'input',
+					label: 'Redirect page name',
+					tooltip: 'Enter the page this redirect would target if the page wasn\'t also a redirect'
+				}
 			},
 			{ tag: 'R from file metadata link', description: 'redirect of a wikilink created from EXIF, XMP, or other information (i.e. the "metadata" section on some image description pages)' },
 			{ tag: 'R to list entry', description: 'redirect to a list which contains brief descriptions of subjects not notable enough to have separate articles' },
