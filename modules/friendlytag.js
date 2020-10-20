@@ -1680,9 +1680,8 @@ Twinkle.tag.callbacks = {
 				if (params.altLangTo) {
 					tagText += '|to=' + params.altLangTo;
 				}
-				if (params.doubleRedirectTarget) {
-					tagText += '|1=' + params.doubleRedirectTarget;
-				}
+			} else if (tagName === 'R avoided double redirect' && params.doubleRedirectTarget) {
+				tagText += '|1=' + params.doubleRedirectTarget;
 			}
 			tagText += '}}';
 
