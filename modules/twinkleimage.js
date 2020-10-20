@@ -121,10 +121,10 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 		case 'no source':
 			work_area.append({
 				type: 'checkbox',
-				name: 'non_free',
 				list: [
 					{
 						label: 'Non-free',
+						name: 'non_free',
 						tooltip: 'File is licensed under a fair use claim'
 					}
 				]
@@ -133,9 +133,9 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 		case 'no license':
 			work_area.append({
 				type: 'checkbox',
-				name: 'derivative',
 				list: [
 					{
+						name: 'derivative',
 						label: 'Derivative work which lacks a source for incorporated works',
 						tooltip: 'File is a derivative of one or more other works whose source is not specified'
 					}
@@ -179,35 +179,14 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 };
 
 Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
-	var type, non_free, source, reason, replacement, derivative;
 
-	var notify = event.target.notify.checked;
-	var types = event.target.type;
-	for (var i = 0; i < types.length; ++i) {
-		if (types[i].checked) {
-			type = types[i].values;
-			break;
-		}
-	}
-	if (event.target.non_free) {
-		non_free = event.target.non_free.checked;
-	}
-	if (event.target.source) {
-		source = event.target.source.value;
-	}
-	if (event.target.reason) {
-		reason = event.target.reason.value;
-	}
-	if (event.target.replacement && event.target.replacement.value.trim()) {
-		replacement = event.target.replacement.value;
-		replacement = /^\s*(Image|File):/i.test(replacement) ? replacement : 'File:' + replacement;
-	}
-	if (event.target.derivative) {
-		derivative = event.target.derivative.checked;
+	var input = Morebits.quickForm.getInputData(event.target);
+	if (input.replacement) {
+		input.replacement = (/^(Image|File):/i.test(input.replacement) ? '' : 'File:') + input.replacement;
 	}
 
 	var csdcrit;
-	switch (type) {
+	switch (input.type) {
 		case 'no source no license':
 		case 'no source':
 		case 'no license':
@@ -231,18 +210,14 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	}
 
 	var lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit.toLowerCase()) === -1;
-	var templatename = derivative ? 'dw ' + type : type;
+	var templatename = input.derivative ? 'dw ' + input.type : input.type;
 
-	var params = {
-		'type': type,
-		'templatename': templatename,
-		'normalized': csdcrit,
-		'non_free': non_free,
-		'source': source,
-		'reason': reason,
-		'replacement': replacement,
-		'lognomination': lognomination
-	};
+	var params = $.extend({
+		templatename: templatename,
+		normalized: csdcrit,
+		lognomination: lognomination
+	}, input);
+
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(event.target);
 
@@ -255,7 +230,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	wikipedia_page.load(Twinkle.image.callbacks.taggingImage);
 
 	// Notifying uploader
-	if (notify) {
+	if (input.notify) {
 		wikipedia_page.lookupCreation(Twinkle.image.callbacks.userNotification);
 	} else {
 		// add to CSD log if desired
@@ -302,7 +277,8 @@ Twinkle.image.callbacks = {
 		tag += '|help=off}}\n';
 
 		pageobj.setPageText(tag + text);
-		pageobj.setEditSummary('This file is up for deletion, per [[WP:CSD#' + params.normalized + '|CSD ' + params.normalized + ']] (' + params.type + ').' + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary('This file is up for deletion, per [[WP:CSD#' + params.normalized + '|CSD ' + params.normalized + ']] (' + params.type + ').');
+		pageobj.setChangeTags(Twinkle.changeTags);
 		switch (Twinkle.getPref('deliWatchPage')) {
 			case 'yes':
 				pageobj.setWatchlist(true);
@@ -332,7 +308,8 @@ Twinkle.image.callbacks = {
 			}
 			notifytext += '}} ~~~~';
 			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary('Notification: tagging for deletion of [[:' + Morebits.pageNameNorm + ']].' + Twinkle.getPref('summaryAd'));
+			usertalkpage.setEditSummary('Notification: tagging for deletion of [[:' + Morebits.pageNameNorm + ']].');
+			usertalkpage.setChangeTags(Twinkle.changeTags);
 			usertalkpage.setCreateOption('recreate');
 			switch (Twinkle.getPref('deliWatchUser')) {
 				case 'yes':
@@ -345,7 +322,7 @@ Twinkle.image.callbacks = {
 					usertalkpage.setWatchlistFromPreferences(true);
 					break;
 			}
-			usertalkpage.setFollowRedirect(true);
+			usertalkpage.setFollowRedirect(true, false);
 			usertalkpage.append();
 		}
 
@@ -356,6 +333,8 @@ Twinkle.image.callbacks = {
 		}
 	}
 };
+
+Twinkle.addInitCallback(Twinkle.image, 'image');
 })(jQuery);
 
 

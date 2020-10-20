@@ -90,6 +90,26 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	Twinkle.protect.fetchProtectionLevel();
 };
 
+
+// A list of bots who may be the protecting sysop, for whom we shouldn't
+// remind the user contact before requesting unprotection (evaluate)
+Twinkle.protect.trustedBots = ['MusikBot II', 'TFA Protector Bot'];
+
+// Customizable namespace and FlaggedRevs settings
+// In theory it'd be nice to have restrictionlevels defined here,
+// but those are only available via a siteinfo query
+
+// mw.loader.getState('ext.flaggedRevs.review') returns null if the
+// FlaggedRevs extension is not registered.  Previously, this was done with
+// wgFlaggedRevsParams, but after 1.34-wmf4 it is no longer exported if empty
+// (https://gerrit.wikimedia.org/r/c/mediawiki/extensions/FlaggedRevs/+/508427)
+var hasFlaggedRevs = mw.loader.getState('ext.flaggedRevs.review') &&
+// FlaggedRevs only valid in some namespaces, hardcoded until [[phab:T218479]]
+(mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 4);
+// Limit template editor; a Twinkle restriction, not a site setting
+var isTemplate = mw.config.get('wgNamespaceNumber') === 10 || mw.config.get('wgNamespaceNumber') === 828;
+
+
 // Contains the current protection level in an object
 // Once filled, it will look something like:
 // { edit: { level: "sysop", expiry: <some date>, cascade: true }, ... }
@@ -121,10 +141,6 @@ Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdm
 	});
 };
 
-// mw.loader.getState('ext.flaggedRevs.review') returns null if the
-// FlaggedRevs extension is not registered.  Previously, this was done with
-// wgFlaggedRevsParams, but after 1.34-wmf4 it is no longer exported if empty
-// (https://gerrit.wikimedia.org/r/c/mediawiki/extensions/FlaggedRevs/+/508427)
 Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLevel() {
 
 	var api = new mw.Api();
@@ -135,7 +151,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		list: 'logevents',
 		letype: 'protect',
 		letitle: mw.config.get('wgPageName'),
-		prop: mw.loader.getState('ext.flaggedRevs.review') ? 'info|flagged' : 'info',
+		prop: hasFlaggedRevs ? 'info|flagged' : 'info',
 		inprop: 'protection',
 		titles: mw.config.get('wgPageName')
 	});
@@ -148,7 +164,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 	});
 
 	var earlyDecision = [protectDeferred];
-	if (mw.loader.getState('ext.flaggedRevs.review')) {
+	if (hasFlaggedRevs) {
 		earlyDecision.push(stableDeferred);
 	}
 
@@ -188,7 +204,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 
 		// show the protection level and log info
 		Twinkle.protect.hasProtectLog = !!protectData[0].query.logevents.length;
-		Twinkle.protect.hasStableLog = mw.loader.getState('ext.flaggedRevs.review') ? !!stableData[0].query.logevents.length : false;
+		Twinkle.protect.hasStableLog = hasFlaggedRevs ? !!stableData[0].query.logevents.length : false;
 		Twinkle.protect.currentProtectionLevels = current;
 
 		if (adminEditDeferred) {
@@ -266,7 +282,6 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 	var field_preset;
 	var field1;
 	var field2;
-	var isTemplate = mw.config.get('wgNamespaceNumber') === 10 || mw.config.get('wgNamespaceNumber') === 828;
 
 	switch (e.target.values) {
 		case 'protect':
@@ -276,11 +291,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				name: 'category',
 				label: 'Choose a preset:',
 				event: Twinkle.protect.callback.changePreset,
-				list: mw.config.get('wgArticleId') ?
-					Twinkle.protect.protectionTypes.filter(function(v) {
-						return isTemplate || v.label !== 'Template protection';
-					}) :
-					Twinkle.protect.protectionTypesCreate
+				list: mw.config.get('wgArticleId') ? Twinkle.protect.protectionTypes : Twinkle.protect.protectionTypesCreate
 			});
 
 			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Protection options', name: 'field2' });
@@ -290,50 +301,25 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			if (mw.config.get('wgArticleId')) {
 				field2.append({
 					type: 'checkbox',
-					name: 'editmodify',
 					event: Twinkle.protect.formevents.editmodify,
 					list: [
 						{
 							label: 'Modify edit protection',
-							value: 'editmodify',
+							name: 'editmodify',
 							tooltip: 'If this is turned off, the edit protection level, and expiry time, will be left as is.',
 							checked: true
 						}
 					]
 				});
-				var editlevel = field2.append({
+				field2.append({
 					type: 'select',
 					name: 'editlevel',
 					label: 'Edit protection:',
-					event: Twinkle.protect.formevents.editlevel
-				});
-				editlevel.append({
-					type: 'option',
-					label: 'All',
-					value: 'all'
-				});
-				editlevel.append({
-					type: 'option',
-					label: 'Autoconfirmed',
-					value: 'autoconfirmed'
-				});
-				editlevel.append({
-					type: 'option',
-					label: 'Extended confirmed',
-					value: 'extendedconfirmed'
-				});
-				if (isTemplate) {
-					editlevel.append({
-						type: 'option',
-						label: 'Template editor',
-						value: 'templateeditor'
-					});
-				}
-				editlevel.append({
-					type: 'option',
-					label: 'Sysop',
-					value: 'sysop',
-					selected: true
+					event: Twinkle.protect.formevents.editlevel,
+					list: Twinkle.protect.protectionLevels.filter(function(level) {
+						// Filter TE outside of templates and modules
+						return isTemplate || level.value !== 'templateeditor';
+					})
 				});
 				field2.append({
 					type: 'select',
@@ -344,68 +330,30 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							Twinkle.protect.doCustomExpiry(e.target);
 						}
 					},
-					// default expiry selection is conditionally set in Twinkle.protect.callback.changePreset
-					list: [
-						{ label: '1 hour', value: '1 hour' },
-						{ label: '2 hours', value: '2 hours' },
-						{ label: '3 hours', value: '3 hours' },
-						{ label: '6 hours', value: '6 hours' },
-						{ label: '12 hours', value: '12 hours' },
-						{ label: '1 day', value: '1 day' },
-						{ label: '2 days', value: '2 days' },
-						{ label: '3 days', value: '3 days' },
-						{ label: '4 days', value: '4 days' },
-						{ label: '1 week', value: '1 week' },
-						{ label: '2 weeks', value: '2 weeks' },
-						{ label: '1 month', value: '1 month' },
-						{ label: '2 months', value: '2 months' },
-						{ label: '3 months', value: '3 months' },
-						{ label: '1 year', value: '1 year' },
-						{ label: 'indefinite', value: 'indefinite' },
-						{ label: 'Custom...', value: 'custom' }
-					]
+					// default expiry selection (2 days) is conditionally set in Twinkle.protect.callback.changePreset
+					list: Twinkle.protect.protectionLengths
 				});
 				field2.append({
 					type: 'checkbox',
-					name: 'movemodify',
 					event: Twinkle.protect.formevents.movemodify,
 					list: [
 						{
 							label: 'Modify move protection',
-							value: 'movemodify',
+							name: 'movemodify',
 							tooltip: 'If this is turned off, the move protection level, and expiry time, will be left as is.',
 							checked: true
 						}
 					]
 				});
-				var movelevel = field2.append({
+				field2.append({
 					type: 'select',
 					name: 'movelevel',
 					label: 'Move protection:',
-					event: Twinkle.protect.formevents.movelevel
-				});
-				movelevel.append({
-					type: 'option',
-					label: 'All',
-					value: 'all'
-				});
-				movelevel.append({
-					type: 'option',
-					label: 'Extended confirmed',
-					value: 'extendedconfirmed'
-				});
-				if (isTemplate) {
-					movelevel.append({
-						type: 'option',
-						label: 'Template editor',
-						value: 'templateeditor'
-					});
-				}
-				movelevel.append({
-					type: 'option',
-					label: 'Sysop',
-					value: 'sysop',
-					selected: true
+					event: Twinkle.protect.formevents.movelevel,
+					list: Twinkle.protect.protectionLevels.filter(function(level) {
+						// Autoconfirmed is required for a move, redundant
+						return level.value !== 'autoconfirmed' && (isTemplate || level.value !== 'templateeditor');
+					})
 				});
 				field2.append({
 					type: 'select',
@@ -416,58 +364,31 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							Twinkle.protect.doCustomExpiry(e.target);
 						}
 					},
-					// default expiry selection is conditionally set in Twinkle.protect.callback.changePreset
-					list: [
-						{ label: '1 hour', value: '1 hour' },
-						{ label: '2 hours', value: '2 hours' },
-						{ label: '3 hours', value: '3 hours' },
-						{ label: '6 hours', value: '6 hours' },
-						{ label: '12 hours', value: '12 hours' },
-						{ label: '1 day', value: '1 day' },
-						{ label: '2 days', value: '2 days' },
-						{ label: '3 days', value: '3 days' },
-						{ label: '4 days', value: '4 days' },
-						{ label: '1 week', value: '1 week' },
-						{ label: '2 weeks', value: '2 weeks' },
-						{ label: '1 month', value: '1 month' },
-						{ label: '2 months', value: '2 months' },
-						{ label: '3 months', value: '3 months' },
-						{ label: '1 year', value: '1 year' },
-						{ label: 'indefinite', value: 'indefinite' },
-						{ label: 'Custom...', value: 'custom' }
-					]
+					// default expiry selection (2 days) is conditionally set in Twinkle.protect.callback.changePreset
+					list: Twinkle.protect.protectionLengths
 				});
-				// Namespaces hardcoded until [[phab:T218479]]
-				if (mw.loader.getState('ext.flaggedRevs.review') && (mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 4)) {
+				if (hasFlaggedRevs) {
 					field2.append({
 						type: 'checkbox',
-						name: 'pcmodify',
 						event: Twinkle.protect.formevents.pcmodify,
 						list: [
 							{
 								label: 'Modify pending changes protection',
-								value: 'pcmodify',
+								name: 'pcmodify',
 								tooltip: 'If this is turned off, the pending changes level, and expiry time, will be left as is.',
 								checked: true
 							}
 						]
 					});
-					var pclevel = field2.append({
+					field2.append({
 						type: 'select',
 						name: 'pclevel',
 						label: 'Pending changes:',
-						event: Twinkle.protect.formevents.pclevel
-					});
-					pclevel.append({
-						type: 'option',
-						label: 'None',
-						value: 'none'
-					});
-					pclevel.append({
-						type: 'option',
-						label: 'Pending changes',
-						value: 'autoconfirmed',
-						selected: true
+						event: Twinkle.protect.formevents.pclevel,
+						list: [
+							{ label: 'None', value: 'none' },
+							{ label: 'Pending change', value: 'autoconfirmed', selected: true }
+						]
 					});
 					field2.append({
 						type: 'select',
@@ -478,63 +399,20 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 								Twinkle.protect.doCustomExpiry(e.target);
 							}
 						},
-						list: [
-							{ label: '1 hour', value: '1 hour' },
-							{ label: '2 hours', value: '2 hours' },
-							{ label: '3 hours', value: '3 hours' },
-							{ label: '6 hours', value: '6 hours' },
-							{ label: '12 hours', value: '12 hours' },
-							{ label: '1 day', value: '1 day' },
-							{ label: '2 days', value: '2 days' },
-							{ label: '3 days', value: '3 days' },
-							{ label: '4 days', value: '4 days' },
-							{ label: '1 week', value: '1 week' },
-							{ label: '2 weeks', value: '2 weeks' },
-							{ label: '1 month', selected: true, value: '1 month' },
-							{ label: '2 months', value: '2 months' },
-							{ label: '3 months', value: '3 months' },
-							{ label: '1 year', value: '1 year' },
-							{ label: 'indefinite', value: 'indefinite' },
-							{ label: 'Custom...', value: 'custom' }
-						]
+						// default expiry selection (1 month) is conditionally set in Twinkle.protect.callback.changePreset
+						list: Twinkle.protect.protectionLengths
 					});
 				}
 			} else {  // for non-existing pages
-				var createlevel = field2.append({
+				field2.append({
 					type: 'select',
 					name: 'createlevel',
 					label: 'Create protection:',
-					event: Twinkle.protect.formevents.createlevel
-				});
-				createlevel.append({
-					type: 'option',
-					label: 'All',
-					value: 'all'
-				});
-				if (mw.config.get('wgNamespaceNumber') !== 0) {
-					createlevel.append({
-						type: 'option',
-						label: 'Autoconfirmed',
-						value: 'autoconfirmed'
-					});
-				}
-				if (isTemplate) {
-					createlevel.append({
-						type: 'option',
-						label: 'Template editor',
-						value: 'templateeditor'
-					});
-				}
-				createlevel.append({
-					type: 'option',
-					label: 'Extended confirmed',
-					value: 'extendedconfirmed',
-					selected: true
-				});
-				createlevel.append({
-					type: 'option',
-					label: 'Sysop',
-					value: 'sysop'
+					event: Twinkle.protect.formevents.createlevel,
+					list: Twinkle.protect.protectionLevels.filter(function(level) {
+						// Filter TE always, and autoconfirmed in mainspace, redundant since WP:ACPERM
+						return level.value !== 'templateeditor' && (mw.config.get('wgNamespaceNumber') !== 0 || level.value !== 'autoconfirmed');
+					})
 				});
 				field2.append({
 					type: 'select',
@@ -545,25 +423,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 							Twinkle.protect.doCustomExpiry(e.target);
 						}
 					},
-					list: [
-						{ label: '1 hour', value: '1 hour' },
-						{ label: '2 hours', value: '2 hours' },
-						{ label: '3 hours', value: '3 hours' },
-						{ label: '6 hours', value: '6 hours' },
-						{ label: '12 hours', value: '12 hours' },
-						{ label: '1 day', value: '1 day' },
-						{ label: '2 days', value: '2 days' },
-						{ label: '3 days', value: '3 days' },
-						{ label: '4 days', value: '4 days' },
-						{ label: '1 week', value: '1 week' },
-						{ label: '2 weeks', value: '2 weeks' },
-						{ label: '1 month', value: '1 month' },
-						{ label: '2 months', value: '2 months' },
-						{ label: '3 months', value: '3 months' },
-						{ label: '1 year', value: '1 year' },
-						{ label: 'indefinite', selected: true, value: 'indefinite' },
-						{ label: 'Custom...', value: 'custom' }
-					]
+					// default expiry selection (indefinite) is conditionally set in Twinkle.protect.callback.changePreset
+					list: Twinkle.protect.protectionLengths
 				});
 			}
 			field2.append({
@@ -623,9 +484,9 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				name: 'expiry',
 				label: 'Duration: ',
 				list: [
+					{ label: '', selected: true, value: '' },
 					{ label: 'Temporary', value: 'temporary' },
-					{ label: 'Indefinite', value: 'indefinite' },
-					{ label: '', selected: true, value: '' }
+					{ label: 'Indefinite', value: 'infinity' }
 				]
 			});
 			field1.append({
@@ -674,6 +535,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 	Twinkle.protect.callback.showLogAndCurrentProtectInfo();
 };
 
+// NOTE: This function is used by batchprotect as well
 Twinkle.protect.formevents = {
 	editmodify: function twinkleprotectFormEditmodifyEvent(e) {
 		e.target.form.editlevel.disabled = !e.target.checked;
@@ -690,7 +552,7 @@ Twinkle.protect.formevents = {
 			e.target.form.moveexpiry.value = e.target.form.editexpiry.value;
 		} else if (e.target.form.editlevel.disabled) {
 			e.target.form.movelevel.value = 'sysop';
-			e.target.form.moveexpiry.value = 'indefinite';
+			e.target.form.moveexpiry.value = 'infinity';
 		}
 		e.target.form.movelevel.disabled = !e.target.checked;
 		e.target.form.moveexpiry.disabled = !e.target.checked || (e.target.form.movelevel.value === 'all');
@@ -727,6 +589,37 @@ Twinkle.protect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
 		target.selectedIndex = 0;
 	}
 };
+
+// NOTE: This list is used by batchprotect as well
+Twinkle.protect.protectionLevels = [
+	{ label: 'All', value: 'all' },
+	{ label: 'Autoconfirmed', value: 'autoconfirmed' },
+	{ label: 'Extended confirmed', value: 'extendedconfirmed' },
+	{ label: 'Template editor', value: 'templateeditor' },
+	{ label: 'Sysop', value: 'sysop', selected: true }
+];
+
+// default expiry selection is conditionally set in Twinkle.protect.callback.changePreset
+// NOTE: This list is used by batchprotect as well
+Twinkle.protect.protectionLengths = [
+	{ label: '1 hour', value: '1 hour' },
+	{ label: '2 hours', value: '2 hours' },
+	{ label: '3 hours', value: '3 hours' },
+	{ label: '6 hours', value: '6 hours' },
+	{ label: '12 hours', value: '12 hours' },
+	{ label: '1 day', value: '1 day' },
+	{ label: '2 days', value: '2 days' },
+	{ label: '3 days', value: '3 days' },
+	{ label: '4 days', value: '4 days' },
+	{ label: '1 week', value: '1 week' },
+	{ label: '2 weeks', value: '2 weeks' },
+	{ label: '1 month', value: '1 month' },
+	{ label: '2 months', value: '2 months' },
+	{ label: '3 months', value: '3 months' },
+	{ label: '1 year', value: '1 year' },
+	{ label: 'indefinite', value: 'infinity' },
+	{ label: 'Custom...', value: 'custom' }
+];
 
 Twinkle.protect.protectionTypes = [
 	{ label: 'Unprotection', value: 'unprotect' },
@@ -786,7 +679,10 @@ Twinkle.protect.protectionTypes = [
 			{ label: 'Highly visible page (move)', value: 'pp-move-indef' }
 		]
 	}
-];
+].filter(function(type) {
+	// Filter for templates and flaggedrevs
+	return (isTemplate || type.label !== 'Template protection') && (hasFlaggedRevs || type.label !== 'Pending changes');
+});
 
 Twinkle.protect.protectionTypesCreate = [
 	{ label: 'Unprotection', value: 'unprotect' },
@@ -815,6 +711,7 @@ Twinkle.protect.protectionWeight = {
 
 // NOTICE: keep this synched with [[MediaWiki:Protect-dropdown]]
 // Also note: stabilize = Pending Changes level
+// expiry will override any defaults
 Twinkle.protect.protectionPresetsInfo = {
 	'pp-protected': {
 		edit: 'sysop',
@@ -834,16 +731,19 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-usertalk': {
 		edit: 'sysop',
 		move: 'sysop',
+		expiry: 'infinity',
 		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]'
 	},
 	'pp-template': {
 		edit: 'templateeditor',
 		move: 'templateeditor',
+		expiry: 'infinity',
 		reason: '[[WP:High-risk templates|Highly visible template]]'
 	},
 	'pp-30-500-arb': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
+		expiry: 'infinity',
 		reason: '[[WP:30/500|Arbitration enforcement]]',
 		template: 'pp-30-500'
 	},
@@ -894,12 +794,14 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-semi-usertalk': {
 		edit: 'autoconfirmed',
 		move: 'autoconfirmed',
+		expiry: 'infinity',
 		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]',
 		template: 'pp-usertalk'
 	},
 	'pp-semi-template': {  // removed for now
 		edit: 'autoconfirmed',
 		move: 'autoconfirmed',
+		expiry: 'infinity',
 		reason: '[[WP:High-risk templates|Highly visible template]]',
 		template: 'pp-template'
 	},
@@ -952,6 +854,7 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-move-indef': {
 		move: 'sysop',
+		expiry: 'infinity',
 		reason: '[[WP:MOVP|Highly visible page]]'
 	},
 	'unprotect': {
@@ -1018,7 +921,10 @@ Twinkle.protect.protectionTags = [
 			{ label: '{{pp-move}}: other', value: 'pp-move' }
 		]
 	}
-];
+].filter(function(type) {
+	// Filter FlaggedRevs
+	return hasFlaggedRevs || type.label !== 'Pending changes templates';
+});
 
 Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePreset(e) {
 	var form = e.target.form;
@@ -1042,7 +948,6 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				Twinkle.protect.formevents.editmodify({ target: form.editmodify });
 				form.editlevel.value = item.edit;
 				Twinkle.protect.formevents.editlevel({ target: form.editlevel });
-				form.editexpiry.value = '2 days';
 			} else {
 				form.editmodify.checked = false;
 				Twinkle.protect.formevents.editmodify({ target: form.editmodify });
@@ -1053,11 +958,13 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 				form.movelevel.value = item.move;
 				Twinkle.protect.formevents.movelevel({ target: form.movelevel });
-				form.moveexpiry.value = '2 days';
 			} else {
 				form.movemodify.checked = false;
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 			}
+
+			form.editexpiry.value = form.moveexpiry.value = item.expiry || '2 days';
+
 
 			if (form.pcmodify) {
 				if (item.stabilize) {
@@ -1069,12 +976,14 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 					form.pcmodify.checked = false;
 					Twinkle.protect.formevents.pcmodify({ target: form.pcmodify });
 				}
+				form.pcexpiry.value = item.expiry || '1 month';
 			}
 		} else {
 			if (item.create) {
 				form.createlevel.value = item.create;
 				Twinkle.protect.formevents.createlevel({ target: form.createlevel });
 			}
+			form.createexpiry.value = item.expiry || 'infinity';
 		}
 
 		var reasonField = actiontype === 'protect' ? form.protectReason : form.reason;
@@ -1093,9 +1002,10 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			}
 			Twinkle.protect.formevents.tagtype({ target: form.tagtype });
 
-			if (/template/.test(form.category.value)) {
+			// We only have one TE template at the moment, so this
+			// should be expanded if more are added (e.g. pp-semi-template)
+			if (form.category.value === 'pp-template') {
 				form.noinclude.checked = true;
-				form.editexpiry.value = form.moveexpiry.value = form.pcexpiry.value = 'indefinite';
 			} else if (mw.config.get('wgNamespaceNumber') !== 10) {
 				form.noinclude.checked = false;
 			}
@@ -1114,28 +1024,19 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 
 Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	var form = e.target;
-
-	var actiontypes = form.actiontype;
-	var actiontype;
-	for (var i = 0; i < actiontypes.length; i++) {
-		if (!actiontypes[i].checked) {
-			continue;
-		}
-		actiontype = actiontypes[i].values;
-		break;
-	}
+	var input = Morebits.quickForm.getInputData(form);
 
 	var tagparams;
-	if (actiontype === 'tag' || (actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto')) {
+	if (input.actiontype === 'tag' || (input.actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto')) {
 		tagparams = {
-			tag: form.tagtype.value,
-			reason: (form.tagtype.value === 'pp-protected' || form.tagtype.value === 'pp-semi-protected' || form.tagtype.value === 'pp-move') && form.protectReason ? form.protectReason.value : null,
-			small: form.small.checked,
-			noinclude: form.noinclude.checked
+			tag: input.tagtype,
+			reason: (input.tagtype === 'pp-protected' || input.tagtype === 'pp-semi-protected' || input.tagtype === 'pp-move') && input.protectReason,
+			small: input.small,
+			noinclude: input.noinclude
 		};
 	}
 
-	switch (actiontype) {
+	switch (input.actiontype) {
 		case 'protect':
 			// protect the page
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
@@ -1153,31 +1054,28 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				}
 			};
 
-			var stabilizeValues = {};
-			if (form.pclevel) {
-				stabilizeValues = {
-					pclevel: form.pclevel.value,
-					pcexpiry: form.pcexpiry.value,
-					protectReason: form.protectReason.value
-				};
-			}
-
 			var protectIt = function twinkleprotectCallbackProtectIt(next) {
 				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Protecting page');
 				if (mw.config.get('wgArticleId')) {
-					if (form.editmodify.checked) {
-						thispage.setEditProtection(form.editlevel.value, form.editexpiry.value);
+					if (input.editmodify) {
+						thispage.setEditProtection(input.editlevel, input.editexpiry);
 					}
-					if (form.movemodify.checked) {
-						thispage.setMoveProtection(form.movelevel.value, form.moveexpiry.value);
+					if (input.movemodify) {
+						// Ensure a level has actually been chosen
+						if (input.movelevel) {
+							thispage.setMoveProtection(input.movelevel, input.moveexpiry);
+						} else {
+							alert('You must chose a move protection level!');
+							return;
+						}
 					}
 				} else {
-					thispage.setCreateProtection(form.createlevel.value, form.createexpiry.value);
+					thispage.setCreateProtection(input.createlevel, input.createexpiry);
 					thispage.setWatchlist(false);
 				}
 
-				if (form.protectReason.value) {
-					thispage.setEditSummary(form.protectReason.value);
+				if (input.protectReason) {
+					thispage.setEditSummary(input.protectReason);
 				} else {
 					alert('You must enter a protect reason, which will be inscribed into the protection log.');
 					return;
@@ -1189,6 +1087,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					statusInited = true;
 				}
 
+				thispage.setChangeTags(Twinkle.changeTags);
 				thispage.protect(next);
 			};
 
@@ -1198,10 +1097,10 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				}
 
 				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Applying pending changes protection');
-				thispage.setFlaggedRevs(stabilizeValues.pclevel, stabilizeValues.pcexpiry);
+				thispage.setFlaggedRevs(input.pclevel, input.pcexpiry);
 
-				if (stabilizeValues.protectReason) {
-					thispage.setEditSummary(stabilizeValues.protectReason);
+				if (input.protectReason) {
+					thispage.setEditSummary(input.protectReason + Twinkle.summaryAd); // flaggedrevs tag support: [[phab:T247721]]
 				} else {
 					alert('You must enter a protect reason, which will be inscribed into the protection log.');
 					return;
@@ -1220,14 +1119,13 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				});
 			};
 
-			if ((form.editmodify && form.editmodify.checked) || (form.movemodify && form.movemodify.checked) ||
-				!mw.config.get('wgArticleId')) {
-				if (form.pcmodify && form.pcmodify.checked) {
+			if (input.editmodify || input.movemodify || !mw.config.get('wgArticleId')) {
+				if (input.pcmodify) {
 					protectIt(stabilizeIt);
 				} else {
 					protectIt(allDone);
 				}
-			} else if (form.pcmodify && form.pcmodify.checked) {
+			} else if (input.pcmodify) {
 				stabilizeIt();
 			} else {
 				alert("Please give Twinkle something to do! \nIf you just want to tag the page, you can choose the 'Tag page with protection template' option at the top.");
@@ -1251,7 +1149,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		case 'request':
 			// file request at RFPP
 			var typename, typereason;
-			switch (form.category.value) {
+			switch (input.category) {
 				case 'pp-dispute':
 				case 'pp-vandalism':
 				case 'pp-usertalk':
@@ -1298,9 +1196,12 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					break;
 				case 'unprotect':
 					var admins = $.map(Twinkle.protect.currentProtectionLevels, function(pl) {
-						return pl.admin ? 'User:' + pl.admin : null;
+						if (!pl.admin || Twinkle.protect.trustedBots.indexOf(pl.admin) !== -1) {
+							return null;
+						}
+						return 'User:' + pl.admin;
 					});
-					if (admins.length && !confirm('Have you attempted to contact the protecting admins (' + $.unique(admins).join(', ') + ') first?')) {
+					if (admins.length && !confirm('Have you attempted to contact the protecting admins (' + Morebits.array.uniq(admins).join(', ') + ') first?')) {
 						return false;
 					}
 					// otherwise falls through
@@ -1308,7 +1209,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typename = 'unprotection';
 					break;
 			}
-			switch (form.category.value) {
+			switch (input.category) {
 				case 'pp-dispute':
 					typereason = 'Content dispute/edit warring';
 					break;
@@ -1370,11 +1271,11 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			}
 
 			var reason = typereason;
-			if (form.reason.value !== '') {
+			if (input.reason !== '') {
 				if (typereason !== '') {
 					reason += '\u00A0\u2013 ';  // U+00A0 NO-BREAK SPACE; U+2013 EN RULE
 				}
-				reason += form.reason.value;
+				reason += input.reason;
 			}
 			if (reason !== '' && reason.charAt(reason.length - 1) !== '.') {
 				reason += '.';
@@ -1383,8 +1284,8 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			var rppparams = {
 				reason: reason,
 				typename: typename,
-				category: form.category.value,
-				expiry: form.expiry.value
+				category: input.category,
+				expiry: input.expiry
 			};
 
 			Morebits.simpleWindow.setButtonsEnabled(false);
@@ -1432,7 +1333,7 @@ Twinkle.protect.callbacks = {
 		}
 
 		if (params.tag === 'none') {
-			summary = 'Removing protection template' + Twinkle.getPref('summaryAd');
+			summary = 'Removing protection template';
 		} else {
 			tag = params.tag;
 			if (params.reason) {
@@ -1450,15 +1351,22 @@ Twinkle.protect.callbacks = {
 					Morebits.status.info('Redirect category shell present', 'nothing to do');
 					return;
 				}
-			} else if (params.noinclude) {
-				text = '<noinclude>{{' + tag + '}}</noinclude>' + text;
 			} else {
-				text = '{{' + tag + '}}\n' + text;
+				if (params.noinclude) {
+					tag = '<noinclude>{{' + tag + '}}</noinclude>';
+				} else {
+					tag = '{{' + tag + '}}\n';
+				}
+
+				// Insert tag after short description or any hatnotes
+				var wikipage = new Morebits.wikitext.page(text);
+				text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
 			}
-			summary = 'Adding {{' + params.tag + '}}' + Twinkle.getPref('summaryAd');
+			summary = 'Adding {{' + params.tag + '}}';
 		}
 
 		protectedPage.setEditSummary(summary);
+		protectedPage.setChangeTags(Twinkle.changeTags);
 		protectedPage.setPageText(text);
 		protectedPage.setCreateOption('nocreate');
 		protectedPage.suppressProtectWarning(); // no need to let admins know they are editing through protection
@@ -1471,7 +1379,7 @@ Twinkle.protect.callbacks = {
 		var text = rppPage.getPageText();
 		var statusElement = rppPage.getStatusElement();
 
-		var rppRe = new RegExp('===\\s*(\\[\\[)?\\s*:?\\s*' + RegExp.escape(Morebits.pageNameNorm, true) + '\\s*(\\]\\])?\\s*===', 'm');
+		var rppRe = new RegExp('===\\s*(\\[\\[)?\\s*:?\\s*' + Morebits.string.escapeRegExp(Morebits.pageNameNorm) + '\\s*(\\]\\])?\\s*===', 'm');
 		var tag = rppRe.exec(text);
 
 		var rppLink = document.createElement('a');
@@ -1484,7 +1392,7 @@ Twinkle.protect.callbacks = {
 		}
 
 		var newtag = '=== [[:' + Morebits.pageNameNorm + ']] ===\n';
-		if (new RegExp('^' + RegExp.escape(newtag).replace(/\s+/g, '\\s*'), 'm').test(text)) {
+		if (new RegExp('^' + mw.util.escapeRegExp(newtag).replace(/\s+/g, '\\s*'), 'm').test(text)) {
 			statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
 			return;
 		}
@@ -1495,7 +1403,7 @@ Twinkle.protect.callbacks = {
 			case 'temporary':
 				words = 'Temporary ';
 				break;
-			case 'indefinite':
+			case 'infinity':
 				words = 'Indefinite ';
 				break;
 			default:
@@ -1559,12 +1467,15 @@ Twinkle.protect.callbacks = {
 		}
 		statusElement.status('Adding new request...');
 		rppPage.setEditSummary('/* ' + Morebits.pageNameNorm + ' */ Requesting ' + params.typename + (params.typename === 'pending changes' ? ' on [[:' : ' of [[:') +
-			Morebits.pageNameNorm + ']].' + Twinkle.getPref('summaryAd'));
+			Morebits.pageNameNorm + ']].');
+		rppPage.setChangeTags(Twinkle.changeTags);
 		rppPage.setPageText(text);
 		rppPage.setCreateOption('recreate');
 		rppPage.save();
 	}
 };
+
+Twinkle.addInitCallback(Twinkle.protect, 'protect');
 })(jQuery);
 
 

@@ -499,7 +499,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				reason += (reason === '' ? '' : '. ') + comment;
 			}
 			reason = reason.trim();
-			if (reason.search(/[.?!;]$/) === -1) {
+			if (!/[.?!;]$/.test(reason)) {
 				reason += '.';
 			}
 			reason += ' ~~~~';
@@ -520,7 +520,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				var $aivLink = '<a target="_blank" href="/wiki/WP:AIV">WP:AIV</a>';
 
 				// check if user has already been reported
-				if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + RegExp.escape(uid, true) + '\\s*\\}\\}').test(text)) {
+				if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(uid) + '\\s*\\}\\}').test(text)) {
 					aivPage.getStatusElement().error('Report already present, will not add a new one');
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at ' + $aivLink + ':');
 					return;
@@ -532,7 +532,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					var tb2Text = tb2Page.getPageText();
 					var tb2statelem = tb2Page.getStatusElement();
 
-					if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + RegExp.escape(uid, true) + '\\s*\\}\\}').test(tb2Text)) {
+					if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(uid) + '\\s*\\}\\}').test(tb2Text)) {
 						if (confirm('The user ' + uid + ' has already been reported by a bot. Do you wish to make the report anyway?')) {
 							tb2statelem.info('Proceeded despite bot report');
 						} else {
@@ -545,7 +545,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 					}
 
 					aivPage.getStatusElement().status('Adding new report...');
-					aivPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd'));
+					aivPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].');
+					aivPage.setChangeTags(Twinkle.changeTags);
 					aivPage.setAppendText('\n*{{' + (mw.util.isIPAddress(uid) ? 'IPvandal' : 'vandal') + '|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
 					aivPage.append();
 				});
@@ -594,14 +595,15 @@ Twinkle.arv.callback.evaluate = function(e) {
 				var text = uaaPage.getPageText();
 
 				// check if user has already been reported
-				if (new RegExp('\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?' + RegExp.escape(uid, true) + '\\s*(\\||\\})').test(text)) {
+				if (new RegExp('\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?' + Morebits.string.escapeRegExp(uid) + '\\s*(\\||\\})').test(text)) {
 					uaaPage.getStatusElement().error('User is already listed.');
 					var $uaaLink = '<a target="_blank" href="/wiki/WP:UAA">WP:UAA</a>';
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at ' + $uaaLink + ':');
 					return;
 				}
 				uaaPage.getStatusElement().status('Adding new report...');
-				uaaPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].' + Twinkle.getPref('summaryAd'));
+				uaaPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].');
+				uaaPage.setChangeTags(Twinkle.changeTags);
 				uaaPage.setPageText(text + '\n' + reason);
 				uaaPage.save();
 			});
@@ -776,13 +778,14 @@ Twinkle.arv.processSock = function(params) {
 	// notify all user accounts if requested
 	if (params.notify && params.sockpuppets.length > 0) {
 
-		var notifyEditSummary = 'Notifying about suspicion of sockpuppeteering.' + Twinkle.getPref('summaryAd');
+		var notifyEditSummary = 'Notifying about suspicion of sockpuppeteering.';
 		var notifyText = '\n\n{{subst:socksuspectnotice|1=' + params.uid + '}} ~~~~';
 
 		// notify user's master account
 		var masterTalkPage = new Morebits.wiki.page('User talk:' + params.uid, 'Notifying suspected sockpuppeteer');
 		masterTalkPage.setFollowRedirect(true);
 		masterTalkPage.setEditSummary(notifyEditSummary);
+		masterTalkPage.setChangeTags(Twinkle.changeTags);
 		masterTalkPage.setAppendText(notifyText);
 		masterTalkPage.append();
 
@@ -807,6 +810,7 @@ Twinkle.arv.processSock = function(params) {
 			var sockTalkPage = new Morebits.wiki.page('User talk:' + socks[i], 'Notification for ' + socks[i]);
 			sockTalkPage.setFollowRedirect(true);
 			sockTalkPage.setEditSummary(notifyEditSummary);
+			sockTalkPage.setChangeTags(Twinkle.changeTags);
 			sockTalkPage.setAppendText(notifyText);
 			sockTalkPage.append(onSuccess);
 		}
@@ -830,7 +834,8 @@ Twinkle.arv.processSock = function(params) {
 
 	var spiPage = new Morebits.wiki.page(reportpage, 'Retrieving discussion page');
 	spiPage.setFollowRedirect(true);
-	spiPage.setEditSummary('Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].' + Twinkle.getPref('summaryAd'));
+	spiPage.setEditSummary('Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].');
+	spiPage.setChangeTags(Twinkle.changeTags);
 	spiPage.setAppendText(text);
 	switch (Twinkle.getPref('spiWatchReport')) {
 		case 'yes':
@@ -967,18 +972,19 @@ Twinkle.arv.processAN3 = function(params) {
 
 		var an3Page = new Morebits.wiki.page(reportpage, 'Retrieving discussion page');
 		an3Page.setFollowRedirect(true);
-		an3Page.setEditSummary('Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].' + Twinkle.getPref('summaryAd'));
+		an3Page.setEditSummary('Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].');
+		an3Page.setChangeTags(Twinkle.changeTags);
 		an3Page.setAppendText(text);
 		an3Page.append();
 
 		// notify user
 
-		var notifyEditSummary = 'Notifying about edit warring noticeboard discussion.' + Twinkle.getPref('summaryAd');
 		var notifyText = '\n\n{{subst:an3-notice|1=' + mw.util.wikiUrlencode(params.uid) + '|auto=1}} ~~~~';
 
 		var talkPage = new Morebits.wiki.page('User talk:' + params.uid, 'Notifying edit warrior');
 		talkPage.setFollowRedirect(true);
-		talkPage.setEditSummary(notifyEditSummary);
+		talkPage.setEditSummary('Notifying about edit warring noticeboard discussion.');
+		talkPage.setChangeTags(Twinkle.changeTags);
 		talkPage.setAppendText(notifyText);
 		talkPage.append();
 		Morebits.wiki.removeCheckpoint();  // all page updates have been started
@@ -986,6 +992,8 @@ Twinkle.arv.processAN3 = function(params) {
 		console.log('API failed :(', data); // eslint-disable-line no-console
 	});
 };
+
+Twinkle.addInitCallback(Twinkle.arv, 'arv');
 })(jQuery);
 
 

@@ -45,7 +45,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	form.append({
 		type: 'input',
-		label: 'Quick filter: ',
+		label: 'Filter tag list: ',
 		name: 'quickfilter',
 		size: '30px',
 		event: function twinkletagquickfilter() {
@@ -87,6 +87,24 @@ Twinkle.tag.callback = function friendlytagCallback() {
 	switch (Twinkle.tag.mode) {
 		case 'article':
 			Window.setTitle('Article maintenance tagging');
+
+
+			// Build sorting and lookup object flatObject, which is always
+			// needed but also used to generate the alphabetical list
+			// Would be infinitely better with Object.values, but, alas, IE 11
+			Twinkle.tag.article.flatObject = {};
+			Object.keys(Twinkle.tag.article.tagList).forEach(function(group) {
+				Object.keys(Twinkle.tag.article.tagList[group]).forEach(function(subgroup) {
+					if (Array.isArray(Twinkle.tag.article.tagList[group][subgroup])) {
+						Twinkle.tag.article.tagList[group][subgroup].forEach(function(item) {
+							Twinkle.tag.article.flatObject[item.tag] = { description: item.description, excludeMI: !!item.excludeMI };
+						});
+					} else {
+						Twinkle.tag.article.flatObject[Twinkle.tag.article.tagList[group][subgroup].tag] = {description: Twinkle.tag.article.tagList[group][subgroup].description, excludeMI: !!Twinkle.tag.article.tagList[group][subgroup].excludeMI };
+					}
+				});
+			});
+
 
 			form.append({
 				type: 'select',
@@ -144,42 +162,39 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'file':
 			Window.setTitle('File maintenance tagging');
 
-			form.append({ type: 'header', label: 'License and sourcing problem tags' });
-			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.licenseList });
-
-			form.append({ type: 'header', label: 'Wikimedia Commons-related tags' });
-			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.commonsList });
-
-			form.append({ type: 'header', label: 'Cleanup tags' });
-			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.cleanupList });
-
-			form.append({ type: 'header', label: 'Image quality tags' });
-			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.qualityList });
-
-			form.append({ type: 'header', label: 'Replacement tags' });
-			form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.tag.file.replacementList });
+			$.each(Twinkle.tag.fileList, function(groupName, group) {
+				form.append({ type: 'header', label: groupName });
+				form.append({ type: 'checkbox', name: 'tags', list: group });
+			});
 
 			if (Twinkle.getPref('customFileTagList').length) {
 				form.append({ type: 'header', label: 'Custom tags' });
-				form.append({ type: 'checkbox', name: 'fileTags', list: Twinkle.getPref('customFileTagList') });
+				form.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customFileTagList') });
 			}
 			break;
 
 		case 'redirect':
 			Window.setTitle('Redirect tagging');
 
-			form.append({ type: 'header', label: 'Spelling, misspelling, tense and capitalization templates' });
-			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.spellingList });
-
-			form.append({ type: 'header', label: 'Alternative name templates' });
-			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.alternativeList });
-
-			form.append({ type: 'header', label: 'Miscellaneous and administrative redirect templates' });
-			form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.tag.administrativeList });
+			var i = 1;
+			$.each(Twinkle.tag.redirectList, function(groupName, group) {
+				form.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
+				var subdiv = form.append({ type: 'div', id: 'tagSubdiv' + i++ });
+				$.each(group, function(subgroupName, subgroup) {
+					subdiv.append({ type: 'div', label: [ Morebits.htmlNode('b', subgroupName) ] });
+					subdiv.append({
+						type: 'checkbox',
+						name: 'tags',
+						list: subgroup.map(function (item) {
+							return { value: item.tag, label: '{{' + item.tag + '}}: ' + item.description, subgroup: item.subgroup };
+						})
+					});
+				});
+			});
 
 			if (Twinkle.getPref('customRedirectTagList').length) {
 				form.append({ type: 'header', label: 'Custom tags' });
-				form.append({ type: 'checkbox', name: 'redirectTags', list: Twinkle.getPref('customRedirectTagList') });
+				form.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customRedirectTagList') });
 			}
 			break;
 
@@ -194,8 +209,8 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			list: [
 				{
 					label: 'Mark the page as patrolled/reviewed',
-					value: 'patrolPage',
-					name: 'patrolPage',
+					value: 'patrol',
+					name: 'patrol',
 					checked: Twinkle.getPref('markTaggedPagesAsPatrolled')
 				}
 			]
@@ -208,7 +223,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 	Window.display();
 
 	// for quick filter:
-	$allCheckboxDivs = $(result).find('[name$=Tags]').parent();
+	$allCheckboxDivs = $(result).find('[name$=tags]').parent();
 	$allHeaders = $(result).find('h5');
 	result.quickfilter.focus();  // place cursor in the quick filter field as soon as window is opened
 	result.quickfilter.autocomplete = 'off'; // disable browser suggestions
@@ -283,7 +298,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	} else {
 		// Redirects and files: Add a link to each template's description page
-		Morebits.quickForm.getElements(result, Twinkle.tag.mode + 'Tags').forEach(generateLinks);
+		Morebits.quickForm.getElements(result, 'tags').forEach(generateLinks);
 	}
 };
 
@@ -295,7 +310,7 @@ var $allCheckboxDivs, $allHeaders;
 Twinkle.tag.updateSortOrder = function(e) {
 	var form = e.target.form;
 	var sortorder = e.target.value;
-	Twinkle.tag.checkedTags = form.getChecked('articleTags') || [];
+	Twinkle.tag.checkedTags = form.getChecked('tags');
 
 	var container = new Morebits.quickForm.element({ type: 'fragment' });
 
@@ -427,10 +442,10 @@ Twinkle.tag.updateSortOrder = function(e) {
 						tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two'
 					},
 					{
-						name: 'mergeTagOther',
 						type: 'checkbox',
 						list: [
 							{
+								name: 'mergeTagOther',
 								label: 'Tag the other article with a {{' + otherTagName + '}} tag',
 								checked: true,
 								tooltip: 'Only available if a single article name is entered.'
@@ -460,10 +475,10 @@ Twinkle.tag.updateSortOrder = function(e) {
 				];
 				if (tag === 'Not English') {
 					checkbox.subgroup.push({
-						name: 'translationNotify',
 						type: 'checkbox',
 						list: [
 							{
+								name: 'translationNotify',
 								label: 'Notify article creator',
 								checked: true,
 								tooltip: "Places {{uw-notenglish}} on the creator's talk page."
@@ -473,10 +488,10 @@ Twinkle.tag.updateSortOrder = function(e) {
 				}
 				if (mw.config.get('wgNamespaceNumber') === 0) {
 					checkbox.subgroup.push({
-						name: 'translationPostAtPNT',
 						type: 'checkbox',
 						list: [
 							{
+								name: 'translationPostAtPNT',
 								label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
 								checked: true
 							}
@@ -525,13 +540,12 @@ Twinkle.tag.updateSortOrder = function(e) {
 		container.append({ type: 'header', id: 'tagHeader0', label: 'Tags already present' });
 		var subdiv = container.append({ type: 'div', id: 'tagSubdiv0' });
 		var checkboxes = [];
-		var unCheckedTags = e.target.form.getUnchecked('alreadyPresentArticleTags') || [];
+		var unCheckedTags = e.target.form.getUnchecked('existingTags');
 		Twinkle.tag.alreadyPresentTags.forEach(function(tag) {
-			var description = Twinkle.tag.article.tags[tag];
 			var checkbox =
 				{
 					value: tag,
-					label: '{{' + tag + '}}' + (description ? ': ' + description : ''),
+					label: '{{' + tag + '}}' + (Twinkle.tag.article.flatObject[tag] ? ': ' + Twinkle.tag.article.flatObject[tag].description : ''),
 					checked: unCheckedTags.indexOf(tag) === -1,
 					style: 'font-style: italic'
 				};
@@ -540,24 +554,24 @@ Twinkle.tag.updateSortOrder = function(e) {
 		});
 		subdiv.append({
 			type: 'checkbox',
-			name: 'alreadyPresentArticleTags',
+			name: 'existingTags',
 			list: checkboxes
 		});
 	};
 
+
 	if (sortorder === 'cat') { // categorical sort order
 		// function to iterate through the tags and create a checkbox for each one
-		var doCategoryCheckboxes = function(subdiv, array) {
+		var doCategoryCheckboxes = function(subdiv, subgroup) {
 			var checkboxes = [];
-			$.each(array, function(k, tag) {
-				var description = Twinkle.tag.article.tags[tag];
-				if (Twinkle.tag.alreadyPresentTags.indexOf(tag) === -1) {
-					checkboxes.push(makeCheckbox(tag, description));
+			$.each(subgroup, function(k, item) {
+				if (Twinkle.tag.alreadyPresentTags.indexOf(item.tag) === -1) {
+					checkboxes.push(makeCheckbox(item.tag, item.description));
 				}
 			});
 			subdiv.append({
 				type: 'checkbox',
-				name: 'articleTags',
+				name: 'tags',
 				list: checkboxes
 			});
 		};
@@ -567,15 +581,15 @@ Twinkle.tag.updateSortOrder = function(e) {
 		}
 		var i = 1;
 		// go through each category and sub-category and append lists of checkboxes
-		$.each(Twinkle.tag.article.tagCategories, function(title, content) {
-			container.append({ type: 'header', id: 'tagHeader' + i, label: title });
+		$.each(Twinkle.tag.article.tagList, function(groupName, group) {
+			container.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
 			var subdiv = container.append({ type: 'div', id: 'tagSubdiv' + i++ });
-			if (Array.isArray(content)) {
-				doCategoryCheckboxes(subdiv, content);
+			if (Array.isArray(group)) {
+				doCategoryCheckboxes(subdiv, group);
 			} else {
-				$.each(content, function(subtitle, subcontent) {
-					subdiv.append({ type: 'div', label: [ Morebits.htmlNode('b', subtitle) ] });
-					doCategoryCheckboxes(subdiv, subcontent);
+				$.each(group, function(subgroupName, subgroup) {
+					subdiv.append({ type: 'div', label: [ Morebits.htmlNode('b', subgroupName) ] });
+					doCategoryCheckboxes(subdiv, subgroup);
 				});
 			}
 		});
@@ -584,15 +598,18 @@ Twinkle.tag.updateSortOrder = function(e) {
 			makeCheckboxesForAlreadyPresentTags();
 			container.append({ type: 'header', id: 'tagHeader1', label: 'Available tags' });
 		}
+
+		// Avoid repeatedly resorting
+		Twinkle.tag.article.alphabeticalList = Twinkle.tag.article.alphabeticalList || Object.keys(Twinkle.tag.article.flatObject).sort();
 		var checkboxes = [];
-		$.each(Twinkle.tag.article.tags, function(tag, description) {
+		Twinkle.tag.article.alphabeticalList.forEach(function(tag) {
 			if (Twinkle.tag.alreadyPresentTags.indexOf(tag) === -1) {
-				checkboxes.push(makeCheckbox(tag, description));
+				checkboxes.push(makeCheckbox(tag, Twinkle.tag.article.flatObject[tag].description));
 			}
 		});
 		container.append({
 			type: 'checkbox',
-			name: 'articleTags',
+			name: 'tags',
 			list: checkboxes
 		});
 	}
@@ -600,7 +617,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	// append any custom tags
 	if (Twinkle.getPref('customTagList').length) {
 		container.append({ type: 'header', label: 'Custom tags' });
-		container.append({ type: 'checkbox', name: 'articleTags',
+		container.append({ type: 'checkbox', name: 'tags',
 			list: Twinkle.getPref('customTagList').map(function(el) {
 				el.checked = Twinkle.tag.checkedTags.indexOf(el.value) !== -1;
 				return el;
@@ -613,7 +630,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	$workarea.empty().append(rendered);
 
 	// for quick filter:
-	$allCheckboxDivs = $workarea.find('[name$=Tags]').parent();
+	$allCheckboxDivs = $workarea.find('[name=tags], [name=existingTags]').parent();
 	$allHeaders = $workarea.find('h5, .quickformDescription');
 	form.quickfilter.value = ''; // clear search, because the search results are not preserved over mode change
 	form.quickfilter.focus();
@@ -623,22 +640,15 @@ Twinkle.tag.updateSortOrder = function(e) {
 	$workarea.find('h5:not(:first-child)').css({ 'margin-top': '1em' });
 	$workarea.find('div').filter(':has(span.quickformDescription)').css({ 'margin-top': '0.4em' });
 
-	var alreadyPresentTags = Morebits.quickForm.getElements(form, 'alreadyPresentArticleTags');
-	if (alreadyPresentTags) {
-		alreadyPresentTags.forEach(generateLinks);
-	}
-	// in the unlikely case that *every* tag is already on the page
-	var notPresentTags = Morebits.quickForm.getElements(form, 'articleTags');
-	if (notPresentTags) {
-		notPresentTags.forEach(generateLinks);
-	}
+	Morebits.quickForm.getElements(form, 'existingTags').forEach(generateLinks);
+	Morebits.quickForm.getElements(form, 'tags').forEach(generateLinks);
 
 	// tally tags added/removed, update statusNode text
 	var statusNode = document.getElementById('tw-tag-status');
-	$('[name=articleTags], [name=alreadyPresentArticleTags]').click(function() {
-		if (this.name === 'articleTags') {
+	$('[name=tags], [name=existingTags]').click(function() {
+		if (this.name === 'tags') {
 			Twinkle.tag.status.numAdded += this.checked ? 1 : -1;
-		} else if (this.name === 'alreadyPresentArticleTags') {
+		} else if (this.name === 'existingTags') {
 			Twinkle.tag.status.numRemoved += this.checked ? -1 : 1;
 		}
 
@@ -668,600 +678,470 @@ var generateLinks = function(checkbox) {
 
 
 // Tags for ARTICLES start here
-
 Twinkle.tag.article = {};
 
-// A list of all article tags, in alphabetical order
-// To ensure tags appear in the default "categorized" view, add them to the tagCategories hash below.
-
-Twinkle.tag.article.tags = {
-	'Advert': 'written like an advertisement',
-	'All plot': 'almost entirely a plot summary',
-	'Autobiography': 'autobiography and may not be written neutrally',
-	'BLP sources': 'BLP that needs additional sources for verification',
-	'BLP unsourced': 'BLP that has no sources at all (use BLP PROD instead for new articles)',
-	'Citation style': 'unclear or inconsistent citation style',
-	'Cleanup': 'requires cleanup',
-	'Cleanup bare URLs': 'uses bare URLs for references, which are prone to link rot',
-	'Cleanup-PR': 'reads like a press release or news article',
-	'Cleanup reorganize': "needs reorganization to comply with Wikipedia's layout guidelines",
-	'Cleanup rewrite': "needs to be rewritten entirely to comply with Wikipedia's quality standards",
-	'Cleanup tense': 'does not follow guidelines on use of different tenses.',
-	'Close paraphrasing': 'contains close paraphrasing of a non-free copyrighted source',
-	'COI': 'creator or major contributor may have a conflict of interest',
-	'Condense': 'too many section headers dividing up content',
-	'Confusing': 'confusing or unclear',
-	'Context': 'insufficient context for those unfamiliar with the subject',
-	'Copy edit': 'requires copy editing for grammar, style, cohesion, tone, or spelling',
-	'Copypaste': 'appears to have been copied and pasted from another location',
-	'Current': 'documents a current event',
-	'Dead end': 'article has no links to other articles',
-	'Disputed': 'questionable factual accuracy',
-	'Essay-like': 'written like a personal reflection, personal essay, or argumentative essay',
-	'Expand language': 'should be expanded with text translated from a foreign-language article',
-	'Expert needed': 'needs attention from an expert on the subject',
-	'External links': 'external links may not follow content policies or guidelines',
-	'Fanpov': "written from a fan's point of view",
-	'Fiction': 'fails to distinguish between fact and fiction',
-	'Globalize': 'may not represent a worldwide view of the subject',
-	'GOCEinuse': 'currently undergoing a major copy edit by the Guild of Copy Editors',
-	'History merge': 'another page should be history merged into this one',
-	'Hoax': 'may partially or completely be a hoax',
-	'Improve categories': 'needs additional or more specific categories',
-	'Incomprehensible': 'very hard to understand or incomprehensible',
-	'In-universe': 'subject is fictional and needs rewriting to provide a non-fictional perspective',
-	'In use': 'undergoing a major edit for a short while',
-	'Lead missing': 'no lead section',
-	'Lead rewrite': 'lead section needs to be rewritten to comply with guidelines',
-	'Lead too long': 'lead section is too long for the length of the article',
-	'Lead too short': 'lead section is too short and should be expanded to summarize key points',
-	'Like resume': 'written like a resume',
-	'Long plot': 'plot summary is too long or excessively detailed',
-	'Manual': 'written like a manual or guidebook',
-	'Merge': 'should be merged with another given article',
-	'Merge from': 'another given article should be merged into this one',
-	'Merge to': 'should be merged into another given article',
-	'More citations needed': 'needs additional references or sources for verification',
-	'More footnotes': 'has some references, but insufficient inline citations',
-	'No footnotes': 'has references, but lacks inline citations',
-	'No plot': 'needs a plot summary',
-	'Non-free': 'may contain excessive or improper use of copyrighted materials',
-	'Notability': 'subject may not meet the general notability guideline',
-	'Not English': 'written in a language other than English and needs translation',
-	'One source': 'relies largely or entirely on a single source',
-	'Original research': 'contains original research',
-	'Orphan': 'linked to from no other articles',
-	'Over-coverage': 'extensive bias or disproportional coverage towards one or more specific regions',
-	'Overlinked': 'too many duplicate and/or irrelevant links to other articles',
-	'Overly detailed': 'excessive amount of intricate detail',
-	'Over-quotation': 'too many or too-lengthy quotations for an encyclopedic entry',
-	'Paid contributions': 'contains paid contributions, and may therefore require cleanup',
-	'Peacock': 'contains wording that promotes the subject in a subjective manner without adding information',
-	'POV': 'does not maintain a neutral point of view',
-	'Primary sources': 'relies too much on references to primary sources, and needs secondary sources',
-	'Prose': 'written in a list format but may read better as prose',
-	'Recentism': 'slanted towards recent events',
-	'Rough translation': 'poor translation from another language',
-	'Sections': 'needs to be divided into sections by topic',
-	'Self-published': 'contains excessive or inappropriate references to self-published sources',
-	'Sources exist': 'notable topic, sources are available that could be added to article',
-	'Technical': 'too technical for most readers to understand',
-	'Third-party': 'relies too heavily on sources too closely associated with the subject',
-	'Tone': 'tone or style may not reflect the encyclopedic tone used on Wikipedia',
-	'Too few opinions': 'may not include all significant viewpoints',
-	'Uncategorized': 'not added to any categories',
-	'Under construction': 'in the process of an expansion or major restructuring',
-	'Underlinked': 'needs more wikilinks to other articles',
-	'Undue weight': 'lends undue weight to certain ideas, incidents, or controversies',
-	'Unfocused': 'lacks focus or is about more than one topic',
-	'Unreferenced': 'does not cite any sources at all',
-	'Unreliable sources': 'some references may not be reliable',
-	'Undisclosed paid': 'may have been created or edited in return for undisclosed payments',
-	'Update': 'needs additional up-to-date information added',
-	'Very long': 'too long to read and navigate comfortably',
-	'Weasel': 'neutrality or verifiability is compromised by the use of weasel words'
-};
-
-// A list of tags in order of category
-// Tags should be in alphabetical order within the categories
+// Tags arranged by category; will be used to generate the alphabetical list,
+// but tags should be in alphabetical order within the categories
+// excludeMI: true indicate a tag that *does not* work inside {{multiple issues}}
 // Add new categories with discretion - the list is long enough as is!
-
-Twinkle.tag.article.tagCategories = {
+Twinkle.tag.article.tagList = {
 	'Cleanup and maintenance tags': {
 		'General cleanup': [
-			'Cleanup',  // has a subgroup with text input
-			'Cleanup rewrite',
-			'Copy edit'  // has a subgroup with text input
+			{ tag: 'Cleanup', description: 'requires cleanup' },  // has a subgroup with text input
+			{ tag: 'Cleanup rewrite', description: "needs to be rewritten entirely to comply with Wikipedia's quality standards" },
+			{ tag: 'Copy edit', description: 'requires copy editing for grammar, style, cohesion, tone, or spelling' }  // has a subgroup with text input
 		],
 		'Potentially unwanted content': [
-			'Close paraphrasing',
-			'Copypaste',  // has a subgroup with text input
-			'External links',
-			'Non-free'
+			{ tag: 'Close paraphrasing', description: 'contains close paraphrasing of a non-free copyrighted source' },
+			{ tag: 'Copypaste', description: 'appears to have been copied and pasted from another location', excludeMI: true },  // has a subgroup with text input
+			{ tag: 'External links', description: 'external links may not follow content policies or guidelines' },
+			{ tag: 'Non-free', description: 'may contain excessive or improper use of copyrighted materials' }
 		],
 		'Structure, formatting, and lead section': [
-			'Cleanup reorganize',
-			'Condense',
-			'Lead missing',
-			'Lead rewrite',
-			'Lead too long',
-			'Lead too short',
-			'Sections',
-			'Very long'
+			{ tag: 'Cleanup reorganize', description: "needs reorganization to comply with Wikipedia's layout guidelines" },
+			{ tag: 'Condense', description: 'too many section headers dividing up content' },
+			{ tag: 'Lead missing', description: 'no lead section' },
+			{ tag: 'Lead rewrite', description: 'lead section needs to be rewritten to comply with guidelines' },
+			{ tag: 'Lead too long', description: 'lead section is too long for the length of the article' },
+			{ tag: 'Lead too short', description: 'lead section is too short and should be expanded to summarize key points' },
+			{ tag: 'Sections', description: 'needs to be divided into sections by topic' },
+			{ tag: 'Very long', description: 'too long to read and navigate comfortably' }
 		],
 		'Fiction-related cleanup': [
-			'All plot',
-			'Fiction',
-			'In-universe',
-			'Long plot',
-			'No plot'
+			{ tag: 'All plot', description: 'almost entirely a plot summary' },
+			{ tag: 'Fiction', description: 'fails to distinguish between fact and fiction' },
+			{ tag: 'In-universe', description: 'subject is fictional and needs rewriting to provide a non-fictional perspective' },
+			{ tag: 'Long plot', description: 'plot summary is too long or excessively detailed' },
+			{ tag: 'No plot', description: 'needs a plot summary' }
 		]
 	},
 	'General content issues': {
 		'Importance and notability': [
-			'Notability'  // has a subgroup with subcategories
+			{ tag: 'Notability', description: 'subject may not meet the general notability guideline' }  // has a subgroup with subcategories
 		],
 		'Style of writing': [
-			'Advert',
-			'Cleanup tense',
-			'Essay-like',
-			'Fanpov',
-			'Like resume',
-			'Manual',
-			'Cleanup-PR',
-			'Over-quotation',
-			'Prose',
-			'Technical',
-			'Tone'
+			{ tag: 'Advert', description: 'written like an advertisement' },
+			{ tag: 'Cleanup tense', description: 'does not follow guidelines on use of different tenses.' },
+			{ tag: 'Essay-like', description: 'written like a personal reflection, personal essay, or argumentative essay' },
+			{ tag: 'Fanpov', description: "written from a fan's point of view" },
+			{ tag: 'Like resume', description: 'written like a resume' },
+			{ tag: 'Manual', description: 'written like a manual or guidebook' },
+			{ tag: 'Cleanup-PR', description: 'reads like a press release or news article' },
+			{ tag: 'Over-quotation', description: 'too many or too-lengthy quotations for an encyclopedic entry' },
+			{ tag: 'Prose', description: 'written in a list format but may read better as prose' },
+			{ tag: 'Technical', description: 'too technical for most readers to understand' },
+			{ tag: 'Tone', description: 'tone or style may not reflect the encyclopedic tone used on Wikipedia' }
 		],
 		'Sense (or lack thereof)': [
-			'Confusing',
-			'Incomprehensible',
-			'Unfocused'
+			{ tag: 'Confusing', description: 'confusing or unclear' },
+			{ tag: 'Incomprehensible', description: 'very hard to understand or incomprehensible' },
+			{ tag: 'Unfocused', description: 'lacks focus or is about more than one topic' }
 		],
 		'Information and detail': [
-			'Context',
-			'Expert needed',
-			'Overly detailed',
-			'Undue weight'
+			{ tag: 'Context', description: 'insufficient context for those unfamiliar with the subject' },
+			{ tag: 'Expert needed', description: 'needs attention from an expert on the subject' },
+			{ tag: 'Overly detailed', description: 'excessive amount of intricate detail' },
+			{ tag: 'Undue weight', description: 'lends undue weight to certain ideas, incidents, or controversies' }
 		],
 		'Timeliness': [
-			'Current',
-			'Update'
+			{ tag: 'Current', description: 'documents a current event', excludeMI: true }, // Works but not intended for use in MI
+			{ tag: 'Update', description: 'needs additional up-to-date information added' }
 		],
 		'Neutrality, bias, and factual accuracy': [
-			'Autobiography',
-			'COI',
-			'Disputed',
-			'Hoax',
-			'Globalize',
-			'Over-coverage',
-			'Paid contributions',
-			'Peacock',
-			'POV',
-			'Recentism',
-			'Too few opinions',
-			'Undisclosed paid',
-			'Weasel'
+			{ tag: 'Autobiography', description: 'autobiography and may not be written neutrally' },
+			{ tag: 'COI', description: 'creator or major contributor may have a conflict of interest' },
+			{ tag: 'Disputed', description: 'questionable factual accuracy' },
+			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
+			{ tag: 'Globalize', description: 'may not represent a worldwide view of the subject' },
+			{ tag: 'Over-coverage', description: 'extensive bias or disproportional coverage towards one or more specific regions' },
+			{ tag: 'Paid contributions', description: 'contains paid contributions, and may therefore require cleanup' },
+			{ tag: 'Peacock', description: 'contains wording that promotes the subject in a subjective manner without adding information' },
+			{ tag: 'POV', description: 'does not maintain a neutral point of view' },
+			{ tag: 'Recentism', description: 'slanted towards recent events' },
+			{ tag: 'Too few opinions', description: 'may not include all significant viewpoints' },
+			{ tag: 'Undisclosed paid', description: 'may have been created or edited in return for undisclosed payments' },
+			{ tag: 'Weasel', description: 'neutrality or verifiability is compromised by the use of weasel words' }
 		],
 		'Verifiability and sources': [
-			'BLP sources',
-			'BLP unsourced',
-			'More citations needed',
-			'One source',
-			'Original research',
-			'Primary sources',
-			'Self-published',
-			'Sources exist',
-			'Third-party',
-			'Unreferenced',
-			'Unreliable sources'
+			{ tag: 'BLP sources', description: 'BLP that needs additional sources for verification' },
+			{ tag: 'BLP unsourced', description: 'BLP that has no sources at all (use BLP PROD instead for new articles)' },
+			{ tag: 'More citations needed', description: 'needs additional references or sources for verification' },
+			{ tag: 'One source', description: 'relies largely or entirely on a single source' },
+			{ tag: 'Original research', description: 'contains original research' },
+			{ tag: 'Primary sources', description: 'relies too much on references to primary sources, and needs secondary sources' },
+			{ tag: 'Self-published', description: 'contains excessive or inappropriate references to self-published sources' },
+			{ tag: 'Sources exist', description: 'notable topic, sources are available that could be added to article' },
+			{ tag: 'Third-party', description: 'relies too heavily on sources too closely associated with the subject' },
+			{ tag: 'Unreferenced', description: 'does not cite any sources at all' },
+			{ tag: 'Unreliable sources', description: 'some references may not be reliable' }
 		]
 	},
 	'Specific content issues': {
 		'Language': [
-			'Not English',  // has a subgroup with several options
-			'Rough translation',  // has a subgroup with several options
-			'Expand language'
+			{ tag: 'Not English', description: 'written in a language other than English and needs translation', excludeMI: true },  // has a subgroup with several options
+			{ tag: 'Rough translation', description: 'poor translation from another language', excludeMI: true },  // has a subgroup with several options
+			{ tag: 'Expand language', description: 'should be expanded with text translated from a foreign-language article', excludeMI: true }
 		],
 		'Links': [
-			'Dead end',
-			'Orphan',
-			'Overlinked',
-			'Underlinked'
+			{ tag: 'Dead end', description: 'article has no links to other articles' },
+			{ tag: 'Orphan', description: 'linked to from no other articles' },
+			{ tag: 'Overlinked', description: 'too many duplicate and/or irrelevant links to other articles' },
+			{ tag: 'Underlinked', description: 'needs more wikilinks to other articles' }
 		],
 		'Referencing technique': [
-			'Citation style',
-			'Cleanup bare URLs',
-			'More footnotes',
-			'No footnotes'
+			{ tag: 'Citation style', description: 'unclear or inconsistent citation style' },
+			{ tag: 'Cleanup bare URLs', description: 'uses bare URLs for references, which are prone to link rot' },
+			{ tag: 'More footnotes', description: 'has some references, but insufficient inline citations' },
+			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' }
 		],
 		'Categories': [
-			'Improve categories',
-			'Uncategorized'
+			{ tag: 'Improve categories', description: 'needs additional or more specific categories', excludeMI: true },
+			{ tag: 'Uncategorized', description: 'not added to any categories', excludeMI: true }
 		]
 	},
 	'Merging': [
-		'History merge',
-		'Merge',   // these three have a subgroup with several options
-		'Merge from',
-		'Merge to'
+		{ tag: 'History merge', description: 'another page should be history merged into this one', excludeMI: true },
+		{ tag: 'Merge', description: 'should be merged with another given article', excludeMI: true },   // these three have a subgroup with several options
+		{ tag: 'Merge from', description: 'another given article should be merged into this one', excludeMI: true },
+		{ tag: 'Merge to', description: 'should be merged into another given article', excludeMI: true }
 	],
 	'Informational': [
-		'GOCEinuse',
-		'In use',
-		'Under construction'
+		{ tag: 'GOCEinuse', description: 'currently undergoing a major copy edit by the Guild of Copy Editors', excludeMI: true },
+		{ tag: 'In use', description: 'undergoing a major edit for a short while', excludeMI: true },
+		{ tag: 'Under construction', description: 'in the process of an expansion or major restructuring', excludeMI: true }
 	]
 };
 
-// Contains those article tags that *do not* work inside {{multiple issues}}.
-Twinkle.tag.multipleIssuesExceptions = [
-	'Copypaste',
-	'Current', // Works but not intended for use in MI
-	'Expand language',
-	'GOCEinuse',
-	'History merge',
-	'Improve categories',
-	'In use',
-	'Merge',
-	'Merge from',
-	'Merge to',
-	'Not English',
-	'Rough translation',
-	'Uncategorized',
-	'Under construction'
-];
-
 // Tags for REDIRECTS start here
-
-Twinkle.tag.spellingList = [
-	{
-		label: '{{R from acronym}}: redirect from an acronym (e.g. POTUS) to its expanded form',
-		value: 'R from acronym'
-	},
-	{
-		label: '{{R from alternative spelling}}: redirect from a title with a different spelling',
-		value: 'R from alternative spelling'
-	},
-	{
-		label: '{{R from initialism}}: redirect from an initialism (e.g. AGF) to its expanded form',
-		value: 'R from initialism'
-	},
-	{
-		label: '{{R from ASCII-only}}: redirect from a title in only basic ASCII to the formal article title, with differences that are not diacritical marks (accents, umlauts, etc.) or ligatures',
-		value: 'R from ASCII-only'
-	},
-	{
-		label: '{{R from member}}: redirect from a member of a group to a related topic such as the group, organization, or team of membership',
-		value: 'R from member'
-	},
-	{
-		label: '{{R from misspelling}}: redirect from a misspelling or typographical error',
-		value: 'R from misspelling'
-	},
-	{
-		label: '{{R from modification}}: redirect from a modification of the target\'s title, such as with words rearranged',
-		value: 'R from modification'
-	},
-	{
-		label: '{{R from other capitalisation}}: redirect from a title with another method of capitalisation',
-		value: 'R from other capitalisation'
-	},
-	{
-		label: '{{R from plural}}: redirect from a plural word to the singular equivalent',
-		value: 'R from plural'
-	},
-	{
-		label: '{{R from related word}}: redirect from a related word',
-		value: 'R from related word'
-	},
-	{
-		label: '{{R to list entry}}: redirect to a "list of minor entities"-type article which contains brief descriptions of subjects not notable enough to have separate articles',
-		value: 'R to list entry'
-	},
-	{
-		label: '{{R to section}}: similar to {{R to list entry}}, but when list is organized in sections, such as list of characters in a fictional universe.',
-		value: 'R to section'
-	},
-	{
-		label: '{{R with possibilities}}: redirect from a more specific title to a more general, less detailed article, hence something which can and should be expanded',
-		value: 'R with possibilities'
-	}
-];
-
-Twinkle.tag.alternativeList = [
-	{
-		label: '{{R from alternative language}}: redirect from an English name to a name in another language, or vice-versa',
-		value: 'R from alternative language',
-		subgroup: [
-			{
-				name: 'altLangFrom',
-				type: 'input',
-				label: 'From language (two-letter code): ',
-				tooltip: 'Enter the two-letter code of the language the redirect name is in; such as en for English, de for German'
-			},
-			{
-				name: 'altLangTo',
-				type: 'input',
-				label: 'To language (two-letter code): ',
-				tooltip: 'Enter the two-letter code of the language the target name is in; such as en for English, de for German'
-			},
-			{
-				name: 'altLangInfo',
-				type: 'div',
-				label: $.parseHTML('<p>For a list of language codes, see <a href="/wiki/Wp:Template_messages/Redirect_language_codes">Wikipedia:Template messages/Redirect language codes</a></p>')
-			}
+// Not by policy, but the list roughly approximates items with >500
+// transclusions from Template:R template index
+Twinkle.tag.redirectList = {
+	'Grammar, punctuation, and spelling': {
+		'Abbreviation': [
+			{ tag: 'R from acronym', description: 'redirect from an acronym (e.g. POTUS) to its expanded form' },
+			{ tag: 'R from initialism', description: 'redirect from an initialism (e.g. AGF) to its expanded form' },
+			{ tag: 'R from MathSciNet abbreviation', description: 'redirect from MathSciNet publication title abbreviation to the unabbreviated title' },
+			{ tag: 'R from NLM abbreviation', description: 'redirect from a NLM publication title abbreviation to the unabbreviated title' }
+		],
+		'Capitalisation': [
+			{ tag: 'R from CamelCase', description: 'redirect from a CamelCase title' },
+			{ tag: 'R from other capitalisation', description: 'redirect from a title with another method of capitalisation' },
+			{ tag: 'R from miscapitalisation', description: 'redirect from a capitalisation error' }
+		],
+		'Grammar & punctuation': [
+			{ tag: 'R from modification', description: 'redirect from a modification of the target\'s title, such as with words rearranged' },
+			{ tag: 'R from plural', description: 'redirect from a plural word to the singular equivalent' },
+			{ tag: 'R to plural', description: 'redirect from a singular noun to its plural form' }
+		],
+		'Parts of speech': [
+			{ tag: 'R from verb', description: 'redirect from an English-language verb or verb phrase' },
+			{ tag: 'R from adjective', description: 'redirect from an adjective (word or phrase that describes a noun)' }
+		],
+		'Spelling': [
+			{ tag: 'R from alternative spelling', description: 'redirect from a title with a different spelling' },
+			{ tag: 'R from ASCII-only', description: 'redirect from a title in only basic ASCII to the formal title, with differences that are not diacritical marks or ligatures' },
+			{ tag: 'R from diacritic', description: 'redirect from a page name that has diacritical marks (accents, umlauts, etc.)' },
+			{ tag: 'R to diacritic', description: 'redirect to the article title with diacritical marks (accents, umlauts, etc.)' },
+			{ tag: 'R from misspelling', description: 'redirect from a misspelling or typographical error' }
 		]
 	},
-	{
-		label: '{{R from alternative name}}: redirect from a title that is another name, a pseudonym, a nickname, or a synonym',
-		value: 'R from alternative name'
-	},
-	{
-		label: '{{R from former name}}: redirect from a former name or working title',
-		value: 'R from former name'
-	},
-	{
-		label: '{{R from historic name}}: redirect from another name with a significant historic past as a region, state, city or such, but which is no longer known by that title or name',
-		value: 'R from historic name'
-	},
-	{
-		label: '{{R from incorrect name}}: redirect from an erroneus name that is unsuitable as a title',
-		value: 'R from incorrect name'
-	},
-	{
-		label: '{{R from long name}}: redirect from a title that is a complete or more complete name',
-		value: 'R from long name'
-	},
-	{
-		label: '{{R from molecular formula}}: redirect from a molecular/chemical formula to its technical or trivial name',
-		value: 'R from molecular formula'
-	},
-	{
-		label: '{{R from name and country}}: redirect from the specific name to the briefer name',
-		value: 'R from name and country'
-	},
-	{
-		label: '{{R from phrase}}: redirect from a phrase to a more general relevant article covering the topic',
-		value: 'R from phrase'
-	},
-	{
-		label: '{{R from scientific name}}: redirect from the scientific name to the common name',
-		value: 'R from scientific name'
-	},
-	{
-		label: '{{R from short name}}: redirect from a title that is a shortened form of a person\'s full name, a book title, or other more complete title',
-		value: 'R from short name'
-	},
-	{
-		label: '{{R from subtopic}}: redirect from a title that is a subtopic of the target article',
-		value: 'R from subtopic'
-	},
-	{
-		label: '{{R from surname}}: redirect from a title that is a surname',
-		value: 'R from surname'
-	},
-	{
-		label: '{{R to diacritic}}: redirect to the article title with diacritical marks (accents, umlauts, etc.)',
-		value: 'R to diacritic'
-	},
-	{
-		label: '{{R to related topic}}: redirect to an article about a similar topic',
-		value: 'R to related topic'
-	},
-	{
-		label: '{{R to scientific name}}: redirect from the common name to the scientific name',
-		value: 'R to scientific name'
-	}
-];
+	'Alternative names': {
+		'General': [
+			{
+				tag: 'R from alternative language',
+				description: 'redirect from or to a title in another language',
+				subgroup: [
+					{
+						name: 'altLangFrom',
+						type: 'input',
+						label: 'From language (two-letter code): ',
+						tooltip: 'Enter the two-letter code of the language the redirect name is in; such as en for English, de for German'
+					},
+					{
+						name: 'altLangTo',
+						type: 'input',
+						label: 'To language (two-letter code): ',
+						tooltip: 'Enter the two-letter code of the language the target name is in; such as en for English, de for German'
+					},
+					{
+						name: 'altLangInfo',
+						type: 'div',
+						label: $.parseHTML('<p>For a list of language codes, see <a href="/wiki/Wp:Template_messages/Redirect_language_codes">Wikipedia:Template messages/Redirect language codes</a></p>')
+					}
+				]
+			},
+			{ tag: 'R from alternative name', description: 'redirect from a title that is another name, a pseudonym, a nickname, or a synonym' },
+			{ tag: 'R from ambiguous sort name', description: 'redirect from an ambiguous sort name to a page or list that disambiguates it' },
+			{ tag: 'R from former name', description: 'redirect from a former name or working title' },
+			{ tag: 'R from historic name', description: 'redirect from a name with a significant historic past as a region, city, etc. no longer known by that name' },
+			{ tag: 'R from incomplete name', description: 'R from incomplete name' },
+			{ tag: 'R from incorrect name', description: 'redirect from an erroneus name that is unsuitable as a title' },
+			{ tag: 'R from less specific name', description: 'redirect from a less specific title to a more specific, less general one' },
+			{ tag: 'R from long name', description: 'redirect from a more complete title' },
+			{ tag: 'R from more specific name', description: 'redirect from a more specific title to a less specific, more general one' },
+			{ tag: 'R from short name', description: 'redirect from a title that is a shortened form of a person\'s full name, a book title, or other more complete title' },
+			{ tag: 'R from sort name', description: 'redirect from the target\'s sort name, such as beginning with their surname rather than given name' },
+			{ tag: 'R from synonym', description: 'redirect from a semantic synonym of the target page title' }
+		],
+		'People': [
+			{ tag: 'R from birth name', description: 'redirect from a person\'s birth name to a more common name' },
+			{ tag: 'R from given name', description: 'redirect from a person\'s given name' },
+			{ tag: 'R from name with title', description: 'redirect from a person\'s name preceded or followed by a title to the name with no title or with the title in parentheses' },
+			{ tag: 'R from person', description: 'redirect from a person or persons to a related article' },
+			{ tag: 'R from personal name', description: 'redirect from an individual\'s personal name to an article titled with their professional or other better known moniker' },
+			{ tag: 'R from pseudonym', description: 'redirect from a pseudonym' },
+			{ tag: 'R from surname', description: 'redirect from a title that is a surname' }
+		],
+		'Technical': [
+			{ tag: 'R from drug trade name', description: 'redirect from (or to) the trade name of a drug to (or from) the international nonproprietary name (INN)' },
+			{ tag: 'R from filename', description: 'redirect from a title that is a filename of the target' },
+			{ tag: 'R from molecular formula', description: 'redirect from a molecular/chemical formula to its technical or trivial name' },
 
-Twinkle.tag.administrativeList = [
-	{
-		label: '{{R from ambiguous term}}: redirect from an ambiguous page name to a page that disambiguates it. This template should never appear on a page that has "(disambiguation)" in its title, use R to disambiguation page instead',
-		value: 'R from ambiguous term'
+			{ tag: 'R from gene symbol', description: 'redirect from a Human Genome Organisation (HUGO) symbol for a gene to an article about the gene' }
+		],
+		'Organisms': [
+			{ tag: 'R to scientific name', description: 'redirect from the common name to the scientific name' },
+			{ tag: 'R from scientific name', description: 'redirect from the scientific name to the common name' },
+			{ tag: 'R from alternative scientific name', description: 'redirect from an alternative scientific name to the accepted scientific name' },
+			{ tag: 'R from scientific abbreviation', description: 'redirect from a scientific abbreviation' },
+			{ tag: 'R to monotypic taxon', description: 'redirect from the only lower-ranking member of a monotypic taxon to its monotypic taxon' },
+			{ tag: 'R from monotypic taxon', description: 'redirect from a monotypic taxon to its only lower-ranking member' },
+			{ tag: 'R taxon with possibilities', description: 'redirect from a title related to a living organism that potentially could be expanded into an article' }
+		],
+		'Geography': [
+			{ tag: 'R from name and country', description: 'redirect from the specific name to the briefer name' },
+			{ tag: 'R from more specific geographic name', description: 'redirect from a geographic location that includes extraneous identifiers such as the county or region of a city' }
+		]
 	},
-	{
-		label: '{{R from CamelCase}}: redirect from a CamelCase title',
-		value: 'R from CamelCase'
+	'Navigation aids': {
+		'Navigation': [
+			{ tag: 'R to anchor', description: 'redirect from a topic that does not have its own page to an anchored part of a page on the subject' },
+			{ tag: 'R avoided double redirect', description: 'redirect from an alternative title for another redirect' },
+			{ tag: 'R from file metadata link', description: 'redirect of a wikilink created from EXIF, XMP, or other information (i.e. the "metadata" section on some image description pages)' },
+			{ tag: 'R to list entry', description: 'redirect to a list which contains brief descriptions of subjects not notable enough to have separate articles' },
+
+			{ tag: 'R mentioned in hatnote', description: 'redirect from a title that is mentioned in a hatnote at the redirect target' },
+			{ tag: 'R to section', description: 'similar to {{R to list entry}}, but when list is organized in sections, such as list of characters in a fictional universe' },
+			{ tag: 'R from shortcut', description: 'redirect from a Wikipedia shortcut' },
+			{ tag: 'R from template shortcut', description: 'redirect from a shortcut page name in any namespace to a page in template namespace' }
+
+		],
+		'Disambiguation': [
+			{ tag: 'R from ambiguous term', description: 'redirect from an ambiguous page name to a page that disambiguates it. This template should never appear on a page that has "(disambiguation)" in its title, use R to disambiguation page instead' },
+			{ tag: 'R to disambiguation page', description: 'redirect to a disambiguation page' },
+			{ tag: 'R from incomplete disambiguation', description: 'redirect from a page name that is too ambiguous to be the title of an article and should redirect to an appropriate disambiguation page' },
+			{ tag: 'R from incorrect disambiguation', description: 'redirect from a page name with incorrect disambiguation due to an error or previous editorial misconception' },
+			{ tag: 'R from other disambiguation', description: 'redirect from a page name with an alternative disambiguation qualifier' },
+			{ tag: 'R from unnecessary disambiguation', description: 'redirect from a page name that has an unneeded disambiguation qualifier' }
+		],
+		'Merge, duplicate & move': [
+			{ tag: 'R from duplicated article', description: 'redirect to a similar article in order to preserve its edit history' },
+			{ tag: 'R with history', description: 'redirect from a page containing substantive page history, kept to preserve content and attributions' },
+			{ tag: 'R from move', description: 'redirect from a page that has been moved/renamed' },
+			{ tag: 'R from merge', description: 'redirect from a merged page in order to preserve its edit history' }
+		],
+		'Namespace': [
+			{ tag: 'R from remote talk page', description: 'redirect from a talk page in any talk namespace to a corresponding page that is more heavily watched' },
+			{ tag: 'R to category namespace', description: 'redirect from a page outside the category namespace to a category page' },
+			{ tag: 'R to help namespace', description: 'redirect from any page inside or outside of help namespace to a page in that namespace' },
+			{ tag: 'R to main namespace', description: 'redirect from a page outside the main-article namespace to an article in mainspace' },
+			{ tag: 'R to portal namespace', description: 'redirect from any page inside or outside of portal space to a page in that namespace' },
+			{ tag: 'R to project namespace', description: 'redirect from any page inside or outside of project (Wikipedia: or WP:) space to any page in the project namespace' },
+			{ tag: 'R to user namespace', description: 'redirect from a page outside the user namespace to a user page (not to a user talk page)' }
+		]
 	},
-	{
-		label: '{{R to decade}}: redirect from a year to the decade article',
-		value: 'R to decade'
+	'Media': {
+		'General': [
+			{ tag: 'R from book', description: 'redirect from a book title to a more general, relevant article' },
+			{ tag: 'R from album', description: 'redirect from an album to a related topic such as the recording artist or a list of albums' },
+			{ tag: 'R from song', description: 'redirect from a song title to a more general, relevant article' },
+			{ tag: 'R from television episode', description: 'redirect from a television episode title to a related work or lists of episodes' }
+		],
+		'Fiction': [
+			{ tag: 'R from fictional character', description: 'redirect from a fictional character to a related fictional work or list of characters' },
+			{ tag: 'R from fictional element', description: 'redirect from a fictional element (such as an object or concept) to a related fictional work or list of similar elements' },
+			{ tag: 'R from fictional location', description: 'redirect from a fictional location or setting to a related fictional work or list of places' }
+
+		]
 	},
-	{
-		label: '{{R to disambiguation page}}: redirect to a disambiguation page',
-		value: 'R to disambiguation page'
-	},
-	{
-		label: '{{R from duplicated article}}: redirect to a similar article in order to preserve its edit history',
-		value: 'R from duplicated article'
-	},
-	{
-		label: '{{R from file metadata link}}: redirect of a wikilink created from EXIF, XMP, or other information (i.e. the "metadata" section on some image description pages)',
-		value: 'R from file metadata link'
-	},
-	{
-		label: '{{R with history}}: redirect from a page containing substantive page history, kept to preserve content and attributions',
-		value: 'R with history'
-	},
-	{
-		label: '{{R from incomplete disambiguation}}: redirect from a page name that is too ambiguous to be the title of an article and should redirect to an appropriate disambiguation page',
-		value: 'R from incomplete disambiguation'
-	},
-	{
-		label: '{{R from merge}}: redirect from a merged page in order to preserve its edit history',
-		value: 'R from merge'
-	},
-	{
-		label: '{{R from other disambiguation}}: redirect from a page name with an alternative disambiguation qualifier',
-		value: 'R from other disambiguation'
-	},
-	{
-		label: '{{R printworthy}}: redirect from a title that would be helpful in a printed or CD/DVD version of Wikipedia',
-		value: 'R printworthy'
-	},
-	{
-		label: '{{R from school}}: redirect from a school article that had very little information',
-		value: 'R from school'
-	},
-	{
-		label: '{{R from shortcut}}: redirect from a Wikipedia shortcut',
-		value: 'R from shortcut'
-	},
-	{
-		label: '{{R from sort name}}: redirect from the target\'s sort name, such as beginning with their surname rather than given name',
-		value: 'R from sort name'
-	},
-	{
-		label: '{{R unprintworthy}}: redirect from a title that would NOT be helpful in a printed or CD/DVD version of Wikipedia',
-		value: 'R unprintworthy'
+	'Miscellaneous': {
+		'Related information': [
+			{ tag: 'R to article without mention', description: 'redirect to an article without any mention of the redirected word or phrase' },
+			{ tag: 'R to decade', description: 'redirect from a year to the decade article' },
+			{ tag: 'R from domain name', description: 'redirect from a domain name to an article about a website' },
+			{ tag: 'R from phrase', description: 'redirect from a phrase to a more general relevant article covering the topic' },
+			{ tag: 'R from list topic', description: 'redirect from the topic of a list to the equivalent list' },
+			{ tag: 'R from member', description: 'redirect from a member of a group to a related topic such as the group or organization' },
+			{ tag: 'R to related topic', description: 'redirect to an article about a similar topic' },
+			{ tag: 'R from related word', description: 'redirect from a related word' },
+			{ tag: 'R from school', description: 'redirect from a school article that had very little information' },
+			{ tag: 'R from subtopic', description: 'redirect from a title that is a subtopic of the target article' },
+			{ tag: 'R to subtopic', description: 'redirect to a subtopic of the redirect\'s title' },
+			{ tag: 'R from Unicode character', description: 'redirect from a single Unicode character to an article or Wikipedia project page that infers meaning for the symbol' },
+			{ tag: 'R from Unicode code', description: 'redirect from a Unicode code point to an article about the character it represents' }
+		],
+		'With possibilities': [
+			{ tag: 'R with possibilities', description: 'redirect from a specific title to a more general, less detailed article (something which can and should be expanded)' }
+		],
+		'ISO codes': [
+			{ tag: 'R from ISO 4 abbreviation', description: 'redirect from an ISO 4 publication title abbreviation to the unabbreviated title' },
+			{ tag: 'R from ISO 639 code', description: 'redirect from a title that is an ISO 639 language code to an article about the language' }
+		],
+		'Printworthiness': [
+			{ tag: 'R printworthy', description: 'redirect from a title that would be helpful in a printed or CD/DVD version of Wikipedia' },
+			{ tag: 'R unprintworthy', description: 'redirect from a title that would NOT be helpful in a printed or CD/DVD version of Wikipedia' }
+		]
 	}
-];
+};
 
 // maintenance tags for FILES start here
 
-Twinkle.tag.file = {};
-
-Twinkle.tag.file.licenseList = [
-	{ label: '{{Bsr}}: source info consists of bare image URL/generic base URL only', value: 'Bsr' },
-	{ label: '{{Non-free reduce}}: non-low-resolution fair use image (or too-long audio clip, etc)', value: 'Non-free reduce' },
-	{ label: '{{Orphaned non-free revisions}}: fair use media with old revisions that need to be deleted', value: 'subst:orfurrev' }
-];
-
-Twinkle.tag.file.commonsList = [
-	{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
-	{ label: '{{Do not move to Commons}} (PD issue): file is PD in the US but not in country of origin', value: 'Do not move to Commons' },
-	{
-		label: '{{Do not move to Commons}} (other reason)',
-		value: 'Do not move to Commons_reason',
-		subgroup: {
-			type: 'input',
-			name: 'DoNotMoveToCommons',
-			label: 'Reason: ',
-			tooltip: 'Enter the reason why this image should not be moved to Commons (required)'
-		}
-	},
-	{
-		label: '{{Keep local}}: request to keep local copy of a Commons file',
-		value: 'Keep local',
-		subgroup: {
-			type: 'input',
-			name: 'keeplocalName',
-			label: 'Commons image name if different: ',
-			tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
-		}
-	},
-	{
-		label: '{{Now Commons}}: file has been copied to Commons',
-		value: 'subst:ncd',
-		subgroup: {
-			type: 'input',
-			name: 'ncdName',
-			label: 'Commons image name if different: ',
-			tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
-		}
-	}
-];
-
-Twinkle.tag.file.cleanupList = [
-	{ label: '{{Artifacts}}: PNG contains residual compression artifacts', value: 'Artifacts' },
-	{ label: '{{Bad font}}: SVG uses fonts not available on the thumbnail server', value: 'Bad font' },
-	{ label: '{{Bad format}}: PDF/DOC/... file should be converted to a more useful format', value: 'Bad format' },
-	{ label: '{{Bad GIF}}: GIF that should be PNG, JPEG, or SVG', value: 'Bad GIF' },
-	{ label: '{{Bad JPEG}}: JPEG that should be PNG or SVG', value: 'Bad JPEG' },
-	{ label: '{{Bad SVG}}: SVG containing raster grahpics', value: 'Bad SVG' },
-	{ label: '{{Bad trace}}: auto-traced SVG requiring cleanup', value: 'Bad trace' },
-	{
-		label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image',
-		subgroup: {
-			type: 'input',
-			name: 'cleanupimageReason',
-			label: 'Reason: ',
-			tooltip: 'Enter the reason for cleanup (required)'
-		}
-	},
-	{ label: '{{ClearType}}: image (not screenshot) with ClearType anti-aliasing', value: 'ClearType' },
-	{ label: '{{Imagewatermark}}: image contains visible or invisible watermarking', value: 'Imagewatermark' },
-	{ label: '{{NoCoins}}: image using coins to indicate scale', value: 'NoCoins' },
-	{ label: '{{Overcompressed JPEG}}: JPEG with high levels of artifacts', value: 'Overcompressed JPEG' },
-	{ label: '{{Opaque}}: opaque background should be transparent', value: 'Opaque' },
-	{ label: '{{Remove border}}: unneeded border, white space, etc.', value: 'Remove border' },
-	{
-		label: '{{Rename media}}: file should be renamed according to the criteria at [[WP:FMV]]',
-		value: 'Rename media',
-		subgroup: [
-			{
-				type: 'input',
-				name: 'renamemediaNewname',
-				label: 'New name: ',
-				tooltip: 'Enter the new name for the image (optional)'
-			},
-			{
-				type: 'input',
-				name: 'renamemediaReason',
-				label: 'Reason: ',
-				tooltip: 'Enter the reason for the rename (optional)'
-			}
-		]
-	},
-	{ label: '{{Should be PNG}}: GIF or JPEG should be lossless', value: 'Should be PNG' },
-	{
-		label: '{{Should be SVG}}: PNG, GIF or JPEG should be vector graphics', value: 'Should be SVG',
-		subgroup: {
-			name: 'svgCategory',
-			type: 'select',
-			list: [
-				{ label: '{{Should be SVG|other}}', value: 'other' },
-				{ label: '{{Should be SVG|alphabet}}: character images, font examples, etc.', value: 'alphabet' },
-				{ label: '{{Should be SVG|chemical}}: chemical diagrams, etc.', value: 'chemical' },
-				{ label: '{{Should be SVG|circuit}}: electronic circuit diagrams, etc.', value: 'circuit' },
-				{ label: '{{Should be SVG|coat of arms}}: coats of arms', value: 'coat of arms' },
-				{ label: '{{Should be SVG|diagram}}: diagrams that do not fit any other subcategory', value: 'diagram' },
-				{ label: '{{Should be SVG|emblem}}: emblems, free/libre logos, insignias, etc.', value: 'emblem' },
-				{ label: '{{Should be SVG|fair use}}: fair-use images, fair-use logos', value: 'fair use' },
-				{ label: '{{Should be SVG|flag}}: flags', value: 'flag' },
-				{ label: '{{Should be SVG|graph}}: visual plots of data', value: 'graph' },
-				{ label: '{{Should be SVG|logo}}: logos', value: 'logo' },
-				{ label: '{{Should be SVG|map}}: maps', value: 'map' },
-				{ label: '{{Should be SVG|music}}: musical scales, notes, etc.', value: 'music' },
-				{ label: '{{Should be SVG|physical}}: "realistic" images of physical objects, people, etc.', value: 'physical' },
-				{ label: '{{Should be SVG|symbol}}: miscellaneous symbols, icons, etc.', value: 'symbol' }
+Twinkle.tag.fileList = {
+	'License and sourcing problem tags': [
+		{ label: '{{Bsr}}: source info consists of bare image URL/generic base URL only', value: 'Bsr' },
+		{ label: '{{Non-free reduce}}: non-low-resolution fair use image (or too-long audio clip, etc)', value: 'Non-free reduce' },
+		{ label: '{{Orphaned non-free revisions}}: fair use media with old revisions that need to be deleted', value: 'Orphaned non-free revisions' }
+	],
+	'Wikimedia Commons-related tags': [
+		{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
+		{
+			label: '{{Do not move to Commons}}: file not suitable for moving to Commons',
+			value: 'Do not move to Commons',
+			subgroup: [
+				{
+					type: 'input',
+					name: 'DoNotMoveToCommons_reason',
+					label: 'Reason: ',
+					tooltip: 'Enter the reason why this image should not be moved to Commons (required). If the file is PD in the US but not in country of origin, enter "US only"'
+				},
+				{
+					type: 'input',
+					name: 'DoNotMoveToCommons_expiry',
+					label: 'Expiration year: ',
+					tooltip: 'If this file can be moved to Commons beginning in a certain year, you can enter it here (optional).'
+				}
 			]
+		},
+		{
+			label: '{{Keep local}}: request to keep local copy of a Commons file',
+			value: 'Keep local',
+			subgroup: {
+				type: 'input',
+				name: 'keeplocalName',
+				label: 'Commons image name if different: ',
+				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
+			}
+		},
+		{
+			label: '{{Now Commons}}: file has been copied to Commons',
+			value: 'Now Commons',
+			subgroup: {
+				type: 'input',
+				name: 'nowcommonsName',
+				label: 'Commons image name if different: ',
+				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
+			}
 		}
-	},
-	{ label: '{{Should be text}}: image should be represented as text, tables, or math markup', value: 'Should be text' }
-];
-
-Twinkle.tag.file.qualityList = [
-	{ label: '{{Image-blownout}}', value: 'Image-blownout' },
-	{ label: '{{Image-out-of-focus}}', value: 'Image-out-of-focus' },
-	{
-		label: '{{Image-Poor-Quality}}', value: 'Image-Poor-Quality',
-		subgroup: {
-			type: 'input',
-			name: 'ImagePoorQualityReason',
-			label: 'Reason: ',
-			tooltip: 'Enter the reason why this image is so bad (required)'
+	],
+	'Cleanup tags': [
+		{ label: '{{Artifacts}}: PNG contains residual compression artifacts', value: 'Artifacts' },
+		{ label: '{{Bad font}}: SVG uses fonts not available on the thumbnail server', value: 'Bad font' },
+		{ label: '{{Bad format}}: PDF/DOC/... file should be converted to a more useful format', value: 'Bad format' },
+		{ label: '{{Bad GIF}}: GIF that should be PNG, JPEG, or SVG', value: 'Bad GIF' },
+		{ label: '{{Bad JPEG}}: JPEG that should be PNG or SVG', value: 'Bad JPEG' },
+		{ label: '{{Bad SVG}}: SVG containing raster grahpics', value: 'Bad SVG' },
+		{ label: '{{Bad trace}}: auto-traced SVG requiring cleanup', value: 'Bad trace' },
+		{
+			label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image',
+			subgroup: {
+				type: 'input',
+				name: 'cleanupimageReason',
+				label: 'Reason: ',
+				tooltip: 'Enter the reason for cleanup (required)'
+			}
+		},
+		{ label: '{{ClearType}}: image (not screenshot) with ClearType anti-aliasing', value: 'ClearType' },
+		{ label: '{{Imagewatermark}}: image contains visible or invisible watermarking', value: 'Imagewatermark' },
+		{ label: '{{NoCoins}}: image using coins to indicate scale', value: 'NoCoins' },
+		{ label: '{{Overcompressed JPEG}}: JPEG with high levels of artifacts', value: 'Overcompressed JPEG' },
+		{ label: '{{Opaque}}: opaque background should be transparent', value: 'Opaque' },
+		{ label: '{{Remove border}}: unneeded border, white space, etc.', value: 'Remove border' },
+		{
+			label: '{{Rename media}}: file should be renamed according to the criteria at [[WP:FMV]]',
+			value: 'Rename media',
+			subgroup: [
+				{
+					type: 'input',
+					name: 'renamemediaNewname',
+					label: 'New name: ',
+					tooltip: 'Enter the new name for the image (optional)'
+				},
+				{
+					type: 'input',
+					name: 'renamemediaReason',
+					label: 'Reason: ',
+					tooltip: 'Enter the reason for the rename (optional)'
+				}
+			]
+		},
+		{ label: '{{Should be PNG}}: GIF or JPEG should be lossless', value: 'Should be PNG' },
+		{
+			label: '{{Should be SVG}}: PNG, GIF or JPEG should be vector graphics', value: 'Should be SVG',
+			subgroup: {
+				name: 'svgCategory',
+				type: 'select',
+				list: [
+					{ label: '{{Should be SVG|other}}', value: 'other' },
+					{ label: '{{Should be SVG|alphabet}}: character images, font examples, etc.', value: 'alphabet' },
+					{ label: '{{Should be SVG|chemical}}: chemical diagrams, etc.', value: 'chemical' },
+					{ label: '{{Should be SVG|circuit}}: electronic circuit diagrams, etc.', value: 'circuit' },
+					{ label: '{{Should be SVG|coat of arms}}: coats of arms', value: 'coat of arms' },
+					{ label: '{{Should be SVG|diagram}}: diagrams that do not fit any other subcategory', value: 'diagram' },
+					{ label: '{{Should be SVG|emblem}}: emblems, free/libre logos, insignias, etc.', value: 'emblem' },
+					{ label: '{{Should be SVG|fair use}}: fair-use images, fair-use logos', value: 'fair use' },
+					{ label: '{{Should be SVG|flag}}: flags', value: 'flag' },
+					{ label: '{{Should be SVG|graph}}: visual plots of data', value: 'graph' },
+					{ label: '{{Should be SVG|logo}}: logos', value: 'logo' },
+					{ label: '{{Should be SVG|map}}: maps', value: 'map' },
+					{ label: '{{Should be SVG|music}}: musical scales, notes, etc.', value: 'music' },
+					{ label: '{{Should be SVG|physical}}: "realistic" images of physical objects, people, etc.', value: 'physical' },
+					{ label: '{{Should be SVG|symbol}}: miscellaneous symbols, icons, etc.', value: 'symbol' }
+				]
+			}
+		},
+		{ label: '{{Should be text}}: image should be represented as text, tables, or math markup', value: 'Should be text' }
+	],
+	'Image quality tags': [
+		{ label: '{{Image hoax}}: Image may be manipulated or constitute a hoax', value: 'Image hoax' },
+		{ label: '{{Image-blownout}}', value: 'Image-blownout' },
+		{ label: '{{Image-out-of-focus}}', value: 'Image-out-of-focus' },
+		{
+			label: '{{Image-Poor-Quality}}', value: 'Image-Poor-Quality',
+			subgroup: {
+				type: 'input',
+				name: 'ImagePoorQualityReason',
+				label: 'Reason: ',
+				tooltip: 'Enter the reason why this image is so bad (required)'
+			}
+		},
+		{ label: '{{Image-underexposure}}', value: 'Image-underexposure' },
+		{
+			label: '{{Low quality chem}}: disputed chemical structures', value: 'Low quality chem',
+			subgroup: {
+				type: 'input',
+				name: 'lowQualityChemReason',
+				label: 'Reason: ',
+				tooltip: 'Enter the reason why the diagram is disputed (required)'
+			}
 		}
-	},
-	{ label: '{{Image-underexposure}}', value: 'Image-underexposure' },
-	{
-		label: '{{Low quality chem}}: disputed chemical structures', value: 'Low quality chem',
-		subgroup: {
-			type: 'input',
-			name: 'lowQualityChemReason',
-			label: 'Reason: ',
-			tooltip: 'Enter the reason why the diagram is disputed (required)'
-		}
-	}
-];
-
-Twinkle.tag.file.replacementList = [
-	{ label: '{{Obsolete}}: improved version available', value: 'Obsolete' },
-	{ label: '{{PNG version available}}', value: 'PNG version available' },
-	{ label: '{{Vector version available}}', value: 'Vector version available' }
-];
-Twinkle.tag.file.replacementList.forEach(function(el) {
+	],
+	'Replacement tags': [
+		{ label: '{{Obsolete}}: improved version available', value: 'Obsolete' },
+		{ label: '{{PNG version available}}', value: 'PNG version available' },
+		{ label: '{{Vector version available}}', value: 'Vector version available' }
+	]
+};
+Twinkle.tag.fileList['Replacement tags'].forEach(function(el) {
 	el.subgroup = {
 		type: 'input',
 		label: 'Replacement file: ',
@@ -1323,12 +1203,12 @@ Twinkle.tag.callbacks = {
 			}
 
 			// avoid truncated summaries
-			if (summaryText.length > (499 - Twinkle.getPref('summaryAd').length)) {
+			if (summaryText.length > 499) {
 				summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, '$1');
 			}
 
 			pageobj.setPageText(pageText);
-			pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
+			pageobj.setEditSummary(summaryText);
 			pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
 			pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 			pageobj.setCreateOption('nocreate');
@@ -1336,14 +1216,13 @@ Twinkle.tag.callbacks = {
 				// special functions for merge tags
 				if (params.mergeReason) {
 					// post the rationale on the talk page (only operates in main namespace)
-					var talkpageText = '\n\n== ' + params.talkDiscussionTitleLinked + ' ==\n\n';
-					talkpageText += params.mergeReason.trim() + ' ~~~~';
 					var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
-					talkpage.setAppendText(talkpageText);
-					talkpage.setEditSummary('/* ' + params.talkDiscussionTitle + ' */ new section' + Twinkle.getPref('summaryAd'));
+					talkpage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
+					talkpage.setNewSectionTitle(params.talkDiscussionTitleLinked);
+					talkpage.setChangeTags(Twinkle.changeTags);
 					talkpage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
 					talkpage.setCreateOption('recreate');
-					talkpage.append();
+					talkpage.newSection();
 				}
 				if (params.mergeTagOther) {
 					// tag the target page if requested
@@ -1364,6 +1243,7 @@ Twinkle.tag.callbacks = {
 					};
 					var otherpage = new Morebits.wiki.page(params.mergeTarget, 'Tagging other page (' +
 						params.mergeTarget + ')');
+					otherpage.setChangeTags(Twinkle.changeTags);
 					otherpage.setCallbackParameters(newParams);
 					otherpage.load(Twinkle.tag.callbacks.article);
 				}
@@ -1398,7 +1278,8 @@ Twinkle.tag.callbacks = {
 							return;
 						}
 						pageobj.setPageText(text);
-						pageobj.setEditSummary(summary + ' [[:' + Morebits.pageNameNorm + ']]' + Twinkle.getPref('summaryAd'));
+						pageobj.setEditSummary(summary + ' [[:' + Morebits.pageNameNorm + ']]');
+						pageobj.setChangeTags(Twinkle.changeTags);
 						pageobj.setCreateOption('recreate');
 						pageobj.save();
 					});
@@ -1415,15 +1296,14 @@ Twinkle.tag.callbacks = {
 
 						var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib,
 							'Notifying initial contributor (' + initialContrib + ')');
-						var notifytext = '\n\n== Your article [[' + Morebits.pageNameNorm + ']]==\n' +
-							'{{subst:uw-notenglish|1=' + Morebits.pageNameNorm +
-							(params.translationPostAtPNT ? '' : '|nopnt=yes') + '}} ~~~~';
-						userTalkPage.setAppendText(notifytext);
-						userTalkPage.setEditSummary('Notice: Please use English when contributing to the English Wikipedia.' +
-							Twinkle.getPref('summaryAd'));
+						userTalkPage.setNewSectionTitle('Your article [[' + Morebits.pageNameNorm + ']]');
+						userTalkPage.setNewSectionText('{{subst:uw-notenglish|1=' + Morebits.pageNameNorm +
+							(params.translationPostAtPNT ? '' : '|nopnt=yes') + '}} ~~~~');
+						userTalkPage.setEditSummary('Notice: Please use English when contributing to the English Wikipedia.');
+						userTalkPage.setChangeTags(Twinkle.changeTags);
 						userTalkPage.setCreateOption('recreate');
-						userTalkPage.setFollowRedirect(true);
-						userTalkPage.append();
+						userTalkPage.setFollowRedirect(true, false);
+						userTalkPage.newSection();
 					});
 				}
 			});
@@ -1629,40 +1509,22 @@ Twinkle.tag.callbacks = {
 		var addUngroupedTags = function() {
 			$.each(tags, addTag);
 
-			// Smartly insert the new tags after any hatnotes or
-			// afd, csd, or prod templates or hatnotes. Regex is
-			// extra complicated to allow for templates with
-			// parameters and to handle whitespace properly.
-			pageText = pageText.replace(
-				new RegExp(
-					// leading whitespace
-					'^\\s*' +
-					// capture template(s)
-					'(?:((?:\\s*' +
-					// AfD is special, as the tag includes html comments before and after the actual template
-					'(?:<!--.*AfD.*\\n\\{\\{(?:Article for deletion\\/dated|AfDM).*\\}\\}\\n<!--.*(?:\\n<!--.*)?AfD.*(?:\\s*\\n))?|' + // trailing whitespace/newline needed since this subst's a newline
-					// begin template format
-					'\\{\\{\\s*(?:' +
-					// CSD
-					'db|delete|db-.*?|speedy deletion-.*?|' +
-					// PROD
-					'(?:proposed deletion|prod blp)\\/dated(?:\\s*\\|(?:concern|user|timestamp|help).*)+|' +
-					// various hatnote templates
-					'about|correct title|dablink|distinguish|for|other\\s?(?:hurricaneuses|people|persons|places|uses(?:of)?)|redirect(?:-acronym)?|see\\s?(?:also|wiktionary)|selfref|short description|the' +
-					// not a hatnote, but sometimes under a CSD or AfD
-					'|salt|proposed deletion endorsed' +
-					// end main template name, optionally with a number (such as redirect2)
-					')\\d*\\s*' +
-					// template parameters
-					'(\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?' +
-					// end template format
-					'\\}\\})+' +
-					// end capture
-					'(?:\\s*\\n)?)' +
-					// trailing whitespace
-					'\\s*)?',
-					'i'), '$1' + tagText
-			);
+			// Insert tag after short description or any hatnotes,
+			// as well as deletion/protection-related templates
+			var wikipage = new Morebits.wikitext.page(pageText);
+			var templatesAfter = Twinkle.hatnoteRegex +
+				// Protection templates
+				'pp|pp-.*?|' +
+				// CSD
+				'db|delete|db-.*?|speedy deletion-.*?|' +
+				// PROD
+				'(?:proposed deletion|prod blp)\\/dated(?:\\s*\\|(?:concern|user|timestamp|help).*)+|' +
+				// not a hatnote, but sometimes under a CSD or AfD
+				'salt|proposed deletion endorsed';
+			// AfD is special, as the tag includes html comments before and after the actual template
+			// trailing whitespace/newline needed since this subst's a newline
+			var afdRegex = '(?:<!--.*AfD.*\\n\\{\\{(?:Article for deletion\\/dated|AfDM).*\\}\\}\\n<!--.*(?:\\n<!--.*)?AfD.*(?:\\s*\\n))?';
+			pageText = wikipage.insertAfterTemplates(tagText, templatesAfter, null, afdRegex).getText();
 
 			removeTags();
 		};
@@ -1674,7 +1536,7 @@ Twinkle.tag.callbacks = {
 			if (Twinkle.tag.canRemove || !tagRe.exec(pageText)) {
 				// condition Twinkle.tag.article.tags[tag] to ensure that its not a custom tag
 				// Custom tags are assumed non-groupable, since we don't know whether MI template supports them
-				if (Twinkle.tag.article.tags[tag] && Twinkle.tag.multipleIssuesExceptions.indexOf(tag) === -1) {
+				if (Twinkle.tag.article.flatObject[tag] && !Twinkle.tag.article.flatObject[tag].excludeMI) {
 					groupableTags.push(tag);
 				} else {
 					tags.push(tag);
@@ -1695,7 +1557,7 @@ Twinkle.tag.callbacks = {
 
 		// To-be-retained existing tags that are groupable
 		params.tagsToRemain.forEach(function(tag) {
-			if (Twinkle.tag.multipleIssuesExceptions.indexOf(tag) === -1) {
+			if (!Twinkle.tag.article.flatObject[tag].excludeMI) {
 				groupableExistingTags.push(tag);
 			}
 		});
@@ -1824,6 +1686,10 @@ Twinkle.tag.callbacks = {
 			summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
 		};
 
+		if (!tags.length) {
+			Morebits.status.warn('Info', 'No tags remaining to apply');
+		}
+
 		tags.sort();
 		$.each(tags, addTag);
 
@@ -1834,27 +1700,28 @@ Twinkle.tag.callbacks = {
 			pageText = pageText.replace(oldTags[0], oldTags[1] + tagText + oldTags[2] + oldTags[3]);
 		} else {
 			// Fold any pre-existing Rcats into taglist and under Rcatshell
-			var pageTags = pageText.match(/\n{{R(?:edirect)? .*?}}/img);
+			var pageTags = pageText.match(/\s*{{R(?:edirect)? .*?}}/img);
 			var oldPageTags = '';
 			if (pageTags) {
 				pageTags.forEach(function(pageTag) {
 					var pageRe = new RegExp(pageTag, 'img');
 					pageText = pageText.replace(pageRe, '');
-					oldPageTags += pageTag;
+					pageTag = pageTag.trim();
+					oldPageTags += '\n' + pageTag;
 				});
 			}
 			pageText += '\n{{Redirect category shell|' + tagText + oldPageTags + '\n}}';
 		}
 
-		summaryText += (tags.length > 0 ? ' tag' + (tags.length > 1 ? 's' : '') : '') + ' to redirect';
+		summaryText += (tags.length > 0 ? ' tag' + (tags.length > 1 ? 's' : ' ') : 'rcat shell') + ' to redirect';
 
 		// avoid truncated summaries
-		if (summaryText.length > (499 - Twinkle.getPref('summaryAd').length)) {
+		if (summaryText.length > 499) {
 			summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, '$1');
 		}
 
 		pageobj.setPageText(pageText);
-		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary(summaryText);
 		pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
 		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
@@ -1877,17 +1744,17 @@ Twinkle.tag.callbacks = {
 			var tagtext = '', currentTag;
 			$.each(params.tags, function(k, tag) {
 				// when other commons-related tags are placed, remove "move to Commons" tag
-				if (['Keep local', 'subst:ncd', 'Do not move to Commons_reason', 'Do not move to Commons',
-					'Now Commons'].indexOf(tag) !== -1) {
+				if (['Keep local', 'Now Commons', 'Do not move to Commons'].indexOf(tag) !== -1) {
 					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
 				}
 
-				currentTag = '{{' + (tag === 'Do not move to Commons_reason' ? 'Do not move to Commons' : tag);
+				currentTag = tag;
 
 				switch (tag) {
-					case 'subst:ncd':
-						if (params.ncdName !== '') {
-							currentTag += '|1=' + params.ncdName;
+					case 'Now Commons':
+						currentTag = 'subst:' + currentTag; // subst
+						if (params.nowcommonsName !== '') {
+							currentTag += '|1=' + params.nowcommonsName;
 						}
 						break;
 					case 'Keep local':
@@ -1909,6 +1776,9 @@ Twinkle.tag.callbacks = {
 					case 'Image-Poor-Quality':
 						currentTag += '|1=' + params.ImagePoorQualityReason;
 						break;
+					case 'Image hoax':
+						currentTag += '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}';
+						break;
 					case 'Low quality chem':
 						currentTag += '|1=' + params.lowQualityChemReason;
 						break;
@@ -1920,10 +1790,14 @@ Twinkle.tag.callbacks = {
 					case 'Obsolete':
 						currentTag += '|1=' + params[tag.replace(/ /g, '_') + 'File'];
 						break;
-					case 'Do not move to Commons_reason':
-						currentTag += '|reason=' + params.DoNotMoveToCommons;
+					case 'Do not move to Commons':
+						currentTag += '|reason=' + params.DoNotMoveToCommons_reason;
+						if (params.DoNotMoveToCommons_expiry) {
+							currentTag += '|expiry=' + params.DoNotMoveToCommons_expiry;
+						}
 						break;
-					case 'subst:orfurrev':
+					case 'Orphaned non-free revisions':
+						currentTag = 'subst:' + currentTag; // subst
 						// remove {{non-free reduce}} and redirects
 						text = text.replace(/\{\{\s*(Template\s*:\s*)?(Non-free reduce|FairUseReduce|Fairusereduce|Fair Use Reduce|Fair use reduce|Reduce size|Reduce|Fair-use reduce|Image-toobig|Comic-ovrsize-img|Non-free-reduce|Nfr|Smaller image|Nonfree reduce)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
 						currentTag += '|date={{subst:date}}';
@@ -1938,7 +1812,7 @@ Twinkle.tag.callbacks = {
 						break;  // don't care
 				}
 
-				currentTag += '}}\n';
+				currentTag = '{{' + currentTag + '}}\n';
 
 				tagtext += currentTag;
 				summary += '{{' + tag + '}}, ';
@@ -1953,7 +1827,8 @@ Twinkle.tag.callbacks = {
 		}
 
 		pageobj.setPageText(text);
-		pageobj.setEditSummary(summary.substring(0, summary.length - 2) + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary(summary.substring(0, summary.length - 2));
+		pageobj.setChangeTags(Twinkle.changeTags);
 		pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
 		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
@@ -1967,39 +1842,45 @@ Twinkle.tag.callbacks = {
 
 Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 	var form = e.target;
-	var params = {};
-	if (form.patrolPage) {
-		params.patrol = form.patrolPage.checked;
-	}
+	var params = Morebits.quickForm.getInputData(form);
 
-	// Don't return null if there aren't any available tags
-	params.tags = form.getChecked(Twinkle.tag.mode + 'Tags') || [];
 
-	// Save values of input fields into params object. This works as quickform input
-	// fields within subgroups of elements with name 'articleTags' (say) have their
-	// name attribute as 'articleTags.' + name of the subgroup element
+	// Validation
 
-	var name_prefix = Twinkle.tag.mode + 'Tags.';
-	$(form).find("[name^='" + name_prefix + "']:not(div)").each(function(idx, el) {
-		// el are the HTMLInputElements, el.name gives the name attribute
-		params[el.name.slice(name_prefix.length)] =
-			el.type === 'checkbox' ? form[el.name].checked : form[el.name].value;
-	});
+	// Given an array of incompatible tags, check if we have two or more selected
+	var checkIncompatible = function(conflicts, extra) {
+		var count = conflicts.reduce(function(sum, tag) {
+			return sum += params.tags.indexOf(tag) !== -1;
+		}, 0);
+		if (count > 1) {
+			var message = 'Please select only one of: {{' + conflicts.join('}}, {{') + '}}.';
+			message += extra ? ' ' + extra : '';
+			alert(message);
+			return true;
+		}
+	};
+	// Given a tag, ensure an associate parameter is present
+	// Maybe just sock this away in each function???
+	var checkParameter = function(tag, parameter, description) {
+		description = description || 'a reason';
+		if (params.tags.indexOf(tag) !== -1 && params[parameter].trim() === '') {
+			alert('You must specify ' + description + ' for the {{' + tag + '}} tag.');
+			return true;
+		}
+	};
 
+	// We could theoretically put them all checkIncompatible calls in a
+	// forEach loop, but it's probably clearer not to have [[array one],
+	// [array two]] devoid of context. Likewise, all the checkParameter
+	// calls could be in one if, but could be similarly confusing.
 	switch (Twinkle.tag.mode) {
 		case 'article':
-			params.tagsToRemove = form.getUnchecked('alreadyPresentArticleTags') || [];
-			params.tagsToRemain = form.getChecked('alreadyPresentArticleTags') || [];
-			params.reason = form.reason.value.trim();
+			params.tagsToRemove = form.getUnchecked('existingTags'); // not in `input`
+			params.tagsToRemain = params.existingTags || []; // container not created if none present
 
-			params.group = form.group.checked;
-
-			// Validation
 			if ((params.tags.indexOf('Merge') !== -1) || (params.tags.indexOf('Merge from') !== -1) ||
 				(params.tags.indexOf('Merge to') !== -1)) {
-				if (((params.tags.indexOf('Merge') !== -1) + (params.tags.indexOf('Merge from') !== -1) +
-					(params.tags.indexOf('Merge to') !== -1)) > 1) {
-					alert('Please select only one of {{merge}}, {{merge from}}, and {{merge to}}. If several merges are required, use {{merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).');
+				if (checkIncompatible(['Merge', 'Merge from', 'Merge to'], 'If several merges are required, use {{Merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).')) {
 					return;
 				}
 				if (!params.mergeTarget) {
@@ -2011,47 +1892,107 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 					return;
 				}
 			}
-			if ((params.tags.indexOf('Not English') !== -1) && (params.tags.indexOf('Rough translation') !== -1)) {
-				alert('Please select only one of {{not English}} and {{rough translation}}.');
+
+			if (checkIncompatible(['Not English', 'Rough translation'])) {
 				return;
 			}
-			if (params.tags.indexOf('History merge') !== -1 && params.histmergeOriginalPage.trim() === '') {
-				alert('You must specify a page to be merged for the {{history merge}} tag.');
+			if (checkParameter('History merge', 'histmergeOriginalPage', 'a page to be merged')) {
 				return;
 			}
-			if (params.tags.indexOf('Cleanup') !== -1 && params.cleanup.trim() === '') {
-				alert('You must specify a reason for the {{cleanup}} tag.');
+			if (checkParameter('Cleanup', 'cleanup')) {
 				return;
 			}
-			if (params.tags.indexOf('Expand language') !== -1 && params.expandLanguageLangCode.trim() === '') {
-				alert('You must specify language code for the {{expand language}} tag.');
+			if (checkParameter('Expand language', 'expandLanguageLangCode', 'a language code')) {
 				return;
 			}
 			break;
 
 		case 'file':
+			if (checkIncompatible(['Bad GIF', 'Bad JPEG', 'Bad SVG', 'Bad format'])) {
+				return;
+			}
+			if (checkIncompatible(['Should be PNG', 'Should be SVG', 'Should be text'])) {
+				return;
+			}
+			if (checkIncompatible(['Bad SVG', 'Vector version available'])) {
+				return;
+			}
+			if (checkIncompatible(['Bad JPEG', 'Overcompressed JPEG'])) {
+				return;
+			}
+			if (checkIncompatible(['PNG version available', 'Vector version available'])) {
+				return;
+			}
 
-			if (params.tags.indexOf('Cleanup image') !== -1 && params.cleanupimageReason === '') {
-				alert('You must specify a reason for the cleanup tag.');
+			// Get extension from either mime-type or title, if not present (e.g., SVGs)
+			var extension = ((extension = $('.mime-type').text()) && extension.split(/\//)[1]) || mw.Title.newFromText(Morebits.pageNameNorm).getExtension();
+			if (extension) {
+				var extensionUpper = extension.toUpperCase();
+				// What self-respecting file format has *two* extensions?!
+				if (extensionUpper === 'JPG') {
+					extension = 'JPEG';
+				}
+
+				// Check that selected templates make sense given the file's extension.
+
+				// Bad GIF|JPEG|SVG
+				var badIndex; // Keep track of where the offending template is so we can reference it below
+				if ((extensionUpper !== 'GIF' && ((badIndex = params.tags.indexOf('Bad GIF')) !== -1)) ||
+					(extensionUpper !== 'JPEG' && ((badIndex = params.tags.indexOf('Bad JPEG')) !== -1)) ||
+					(extensionUpper !== 'SVG' && ((badIndex = params.tags.indexOf('Bad SVG')) !== -1))) {
+					var suggestion = 'This appears to be a ' + extension + ' file, ';
+					if (['GIF', 'JPEG', 'SVG'].indexOf(extensionUpper) !== -1) {
+						suggestion += 'please use {{Bad ' + extensionUpper + '}} instead.';
+					} else {
+						suggestion += 'so {{' + params.tags[badIndex] + '}} is inappropriate.';
+					}
+					alert(suggestion);
+					return;
+				}
+				// Should be PNG|SVG
+				if ((params.tags.toString().indexOf('Should be ') !== -1) && (params.tags.indexOf('Should be ' + extensionUpper) !== -1)) {
+					alert('This is already a ' + extension + ' file, so {{Should be ' + extensionUpper + '}} is inappropriate.');
+					return;
+				}
+
+				// Overcompressed JPEG
+				if (params.tags.indexOf('Overcompressed JPEG') !== -1 && extensionUpper !== 'JPEG') {
+					alert('This appears to be a ' + extension + ' file, so {{Overcompressed JPEG}} probably doesn\'t apply.');
+					return;
+				}
+				// Bad trace and Bad font
+				if (extensionUpper !== 'SVG') {
+					if (params.tags.indexOf('Bad trace') !== -1) {
+						alert('This appears to be a ' + extension + ' file, so {{Bad trace}} probably doesn\'t apply.');
+						return;
+					} else if (params.tags.indexOf('Bad font') !== -1) {
+						alert('This appears to be a ' + extension + ' file, so {{Bad font}} probably doesn\'t apply.');
+						return;
+					}
+				}
+			}
+
+			if (checkParameter('Cleanup image', 'cleanupimageReason')) {
 				return;
 			}
-			if (params.tags.indexOf('Image-Poor-Quality') !== -1 && params.ImagePoorQualityReason === '') {
-				alert('You must specify a reason for the {{Image-Poor-Quality}} tag');
+			if (checkParameter('Image-Poor-Quality', 'ImagePoorQualityReason')) {
 				return;
 			}
-			if (params.tags.indexOf('Low Quality Chem') !== -1 && params.lowQualityChemReason === '') {
-				alert('You must specify a reason for the {{Low Quality Chem}} tag');
+			if (checkParameter('Low Quality Chem', 'lowQualityChemReason')) {
 				return;
 			}
-			if ((params.tags.indexOf('Obsolete') !== -1 && params.ObsoleteFile === '') ||
-				(params.tags.indexOf('PNG version available') !== -1 && params.PNG_version_availableFile === '') ||
-				(params.tags.indexOf('Vector version available') !== -1 && params.Vector_version_availableFile === '')
-			) {
-				alert('You must specify the replacement file name for a tag in the Replacement tags list');
+			// Silly to provide the same string to each of these
+			if (checkParameter('Obsolete', 'ObsoleteFile', 'the replacement file name') ||
+				checkParameter('PNG version available', 'PNG_version_availableFile', 'the replacement file name') ||
+				checkParameter('Vector version available', 'Vector_version_availableFile', 'the replacement file name')) {
 				return;
 			}
-			if (params.tags.indexOf('Do not move to Commons_reason') !== -1 && params.DoNotMoveToCommons === '') {
-				alert('You must specify a reason for the {{Do not move to Commons}} tag');
+			if (checkParameter('Do not move to Commons', 'DoNotMoveToCommons_reason')) {
+				return;
+			}
+			if (params.tags.indexOf('Do not move to Commons') !== -1 && params.DoNotMoveToCommons_expiry &&
+				(!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) || parseInt(params.DoNotMoveToCommons_expiry, 10) <= new Date().getYear() + 1900)) {
+				alert('Must be a valid future year.');
 				return;
 			}
 			break;
@@ -2082,9 +2023,11 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	var wikipedia_page = new Morebits.wiki.page(Morebits.pageNameNorm, 'Tagging ' + Twinkle.tag.mode);
 	wikipedia_page.setCallbackParameters(params);
+	wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
 	wikipedia_page.load(Twinkle.tag.callbacks[Twinkle.tag.mode]);
 
 };
 
+Twinkle.addInitCallback(Twinkle.tag, 'tag');
 })(jQuery);
 // </nowiki>

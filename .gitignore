@@ -8,6 +8,7 @@ stash*.txt
 stash*.diff
 *.jsX
 .vscode/
+patch-test-loader.js
 
 # Windows
 Thumbs.db

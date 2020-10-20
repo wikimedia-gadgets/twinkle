@@ -27,10 +27,15 @@ if (!Morebits.userIsInGroup('autoconfirmed') && !Morebits.userIsInGroup('confirm
 var Twinkle = {};
 window.Twinkle = Twinkle;  // allow global access
 
-// for use by custom modules (normally empty)
 Twinkle.initCallbacks = [];
-Twinkle.addInitCallback = function twinkleAddInitCallback(func) {
-	Twinkle.initCallbacks.push(func);
+/**
+ * Adds a callback to execute when Twinkle has loaded.
+ * @param {function} func
+ * @param {string} [name] - name of module used to check if is disabled.
+ * If name is not given, module is loaded unconditionally.
+ */
+Twinkle.addInitCallback = function twinkleAddInitCallback(func, name) {
+	Twinkle.initCallbacks.push({ func: func, name: name });
 };
 
 Twinkle.defaultConfig = {};
@@ -44,9 +49,6 @@ Twinkle.defaultConfig = {};
  */
 Twinkle.defaultConfig = {
 	// General
-	summaryAd: ' ([[WP:TW|TW]])',
-	deletionSummaryAd: ' ([[WP:TW|TW]])',
-	protectionSummaryAd: ' ([[WP:TW|TW]])',
 	userTalkPageMode: 'tab',
 	dialogLargeFont: false,
 	disabledModules: [],
@@ -68,6 +70,7 @@ Twinkle.defaultConfig = {
 	watchRevertedPages: [ 'agf', 'norm', 'vand', 'torev' ],
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
+	confirmOnMobileFluff: true,
 	showRollbackLinks: [ 'diff', 'others' ],
 
 	// DI (twinkleimage)
@@ -88,9 +91,9 @@ Twinkle.defaultConfig = {
 	markSpeedyPagesAsPatrolled: false,
 
 	// these next two should probably be identical by default
-	welcomeUserOnSpeedyDeletionNotification: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 't2', 't3', 'p1', 'p2' ],
-	notifyUserOnSpeedyDeletionNomination: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 't2', 't3', 'p1', 'p2' ],
-	warnUserOnSpeedyDelete: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 't2', 't3', 'p1', 'p2' ],
+	welcomeUserOnSpeedyDeletionNotification: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 't3', 'p1', 'p2' ],
+	notifyUserOnSpeedyDeletionNomination: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 't3', 'p1', 'p2' ],
+	warnUserOnSpeedyDelete: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 't3', 'p1', 'p2' ],
 	promptForSpeedyDeletionSummary: [],
 	deleteTalkPageOnDelete: true,
 	deleteRedirectsOnDelete: true,
@@ -124,16 +127,17 @@ Twinkle.defaultConfig = {
 	markXfdPagesAsPatrolled: true,
 
 	// Hidden preferences
-	revertMaxRevisions: 50,
 	autolevelStaleDays: 3, // Huggle is 3, CBNG is 2
+	revertMaxRevisions: 50, // intentionally limited
 	batchMax: 5000,
-	batchdeleteChunks: 50,
-	batchProtectChunks: 50,
-	batchundeleteChunks: 50,
-	proddeleteChunks: 50,
+	batchChunks: 50,
+
+	// Deprecated options, as a fallback for add-on scripts/modules
+	summaryAd: ' ([[WP:TW|TW]])',
+	deletionSummaryAd: ' ([[WP:TW|TW]])',
+	protectionSummaryAd: ' ([[WP:TW|TW]])',
 
 	// Formerly defaultConfig.friendly:
-
 	// Tag
 	groupByDefault: true,
 	watchTaggedPages: true,
@@ -161,7 +165,6 @@ Twinkle.defaultConfig = {
 	markTalkbackAsMinor: true,
 	insertTalkbackSignature: true,  // always sign talkback templates
 	talkbackHeading: 'New message from ' + mw.config.get('wgUserName'),
-	adminNoticeHeading: 'Notice',
 	mailHeading: "You've got mail!",
 
 	// Shared
@@ -217,17 +220,17 @@ Twinkle.getPref = function twinkleGetPref(name) {
  *
  * Available navigation areas depend on the skin used.
  * Vector:
- *  For each option, the outer div class contains "vector-menu", the inner div class is "vector-menu-content", and the ul is "vector-menu-content-list"
- *  "mw-panel", outer div class contains "vector-menu-portal". Existing portlets/elements: "p-logo", "p-navigation", "p-interaction", "p-tb", "p-coll-print_export"
- *  "left-navigation", outer div class contains "vector-menu-tabs" or "vector-menu-dropdown". Existing portlets: "p-namespaces", "p-variants" (menu)
- *  "right-navigation", outer div class contains "vector-menu-tabs" or "vector-menu-dropdown". Existing portlets: "p-views", "p-cactions" (menu), "p-search"
+ *  For each option, the outer nav class contains "vector-menu", the inner div class is "vector-menu-content", and the ul is "vector-menu-content-list"
+ *  "mw-panel", outer nav class contains "vector-menu-portal". Existing portlets/elements: "p-logo", "p-navigation", "p-interaction", "p-tb", "p-coll-print_export"
+ *  "left-navigation", outer nav class contains "vector-menu-tabs" or "vector-menu-dropdown". Existing portlets: "p-namespaces", "p-variants" (menu)
+ *  "right-navigation", outer nav class contains "vector-menu-tabs" or "vector-menu-dropdown". Existing portlets: "p-views", "p-cactions" (menu), "p-search"
  *  Special layout of p-personal portlet (part of "head") through specialized styles.
  * Monobook:
- *  "column-one", outer div class "portlet", inner div class "pBody". Existing portlets: "p-cactions", "p-personal", "p-logo", "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
+ *  "column-one", outer nav class "portlet", inner div class "pBody". Existing portlets: "p-cactions", "p-personal", "p-logo", "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
  *  Special layout of p-cactions and p-personal through specialized styles.
  * Modern:
- *  "mw_contentwrapper" (top nav), outer div class "portlet", inner div class "pBody". Existing portlets or elements: "p-cactions", "mw_content"
- *  "mw_portlets" (sidebar), outer div class "portlet", inner div class "pBody". Existing portlets: "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
+ *  "mw_contentwrapper" (top nav), outer nav class "portlet", inner div class "pBody". Existing portlets or elements: "p-cactions", "mw_content"
+ *  "mw_portlets" (sidebar), outer nav class "portlet", inner div class "pBody". Existing portlets: "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
  *
  * @param String navigation -- id of the target navigation area (skin dependant, on vector either of "left-navigation", "right-navigation", or "mw-panel")
  * @param String id -- id of the portlet menu to create, preferably start with "p-".
@@ -262,42 +265,41 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	if (skin !== 'vector' || (navigation !== 'left-navigation' && navigation !== 'right-navigation')) {
 		type = null; // menu supported only in vector's #left-navigation & #right-navigation
 	}
-	var outerDivClass, innerDivClass;
+	var outerNavClass, innerDivClass;
 	switch (skin) {
 		case 'vector':
 			// XXX: portal doesn't work
 			if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
 				navigation = 'mw-panel';
 			}
-			outerDivClass = 'vector-menu vector-menu-' + (navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'dropdown' : 'tabs');
+			outerNavClass = 'vector-menu vector-menu-' + (navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'dropdown' : 'tabs');
 			innerDivClass = 'vector-menu-content';
 			break;
 		case 'modern':
 			if (navigation !== 'mw_portlets' && navigation !== 'mw_contentwrapper') {
 				navigation = 'mw_portlets';
 			}
-			outerDivClass = 'portlet';
+			outerNavClass = 'portlet';
 			break;
 		case 'timeless':
-			outerDivClass = 'mw-portlet';
+			outerNavClass = 'mw-portlet';
 			innerDivClass = 'mw-portlet-body';
 			break;
 		default:
 			navigation = 'column-one';
-			outerDivClass = 'portlet';
+			outerNavClass = 'portlet';
 			break;
 	}
 
 	// Build the DOM elements.
-	var outerDiv = document.createElement('nav');
-	outerDiv.setAttribute('aria-labelledby', id + '-label');
-	// Vector getting vector-menu-empty FIXME TODO
-	outerDiv.className = outerDivClass + ' emptyPortlet';
-	outerDiv.id = id;
+	var outerNav = document.createElement('nav');
+	outerNav.setAttribute('aria-labelledby', id + '-label');
+	outerNav.className = outerNavClass + ' emptyPortlet';
+	outerNav.id = id;
 	if (nextnode && nextnode.parentNode === root) {
-		root.insertBefore(outerDiv, nextnode);
+		root.insertBefore(outerNav, nextnode);
 	} else {
-		root.appendChild(outerDiv);
+		root.appendChild(outerNav);
 	}
 
 	var h3 = document.createElement('h3');
@@ -305,15 +307,19 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	var ul = document.createElement('ul');
 
 	if (skin === 'vector') {
+		ul.className = 'vector-menu-content-list';
+
 		// add invisible checkbox to keep menu open when clicked
 		// similar to the p-cactions ("More") menu
-		if (outerDivClass.indexOf('vector-menu-dropdown') !== -1) {
+		if (outerNavClass.indexOf('vector-menu-dropdown') !== -1) {
 			var chkbox = document.createElement('input');
-			chkbox.className = 'vectorMenuCheckbox vector-menu-checkbox'; // remove vectorMenuCheckbox after 1.35-wmf.37 goes live
+			chkbox.className = 'vector-menu-checkbox';
 			chkbox.setAttribute('type', 'checkbox');
 			chkbox.setAttribute('aria-labelledby', id + '-label');
-			outerDiv.appendChild(chkbox);
+			outerNav.appendChild(chkbox);
 
+			// Vector gets its title in a span; all others except
+			// timeless have no title, and it has no span
 			var span = document.createElement('span');
 			span.appendChild(document.createTextNode(text));
 			h3.appendChild(span);
@@ -327,25 +333,24 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 
 			h3.appendChild(a);
 		}
-
-		outerDiv.appendChild(h3);
-		ul.className = 'menu vector-menu-content-list';  // remove menu after 1.35-wmf.37 goes live
 	} else {
+		// Basically just Timeless
 		h3.appendChild(document.createTextNode(text));
-		outerDiv.appendChild(h3);
 	}
+
+	outerNav.appendChild(h3);
 
 	if (innerDivClass) {
 		var innerDiv = document.createElement('div');
 		innerDiv.className = innerDivClass;
 		innerDiv.appendChild(ul);
-		outerDiv.appendChild(innerDiv);
+		outerNav.appendChild(innerDiv);
 	} else {
-		outerDiv.appendChild(ul);
+		outerNav.appendChild(ul);
 	}
 
 
-	return outerDiv;
+	return outerNav;
 
 };
 
@@ -444,35 +449,21 @@ Twinkle.load = function () {
 	}
 
 	// Set custom Api-User-Agent header, for server-side logging purposes
-	Morebits.wiki.api.setApiUserAgent('Twinkle/2.0 (' + mw.config.get('wgDBname') + ')');
+	Morebits.wiki.api.setApiUserAgent('Twinkle (' + mw.config.get('wgWikiID') + ')');
 
-	// Load all the modules in the order that the tabs should appear
-	var twinkleModules = [
-		// User/user talk-related
-		'arv', 'warn', 'block', 'welcome', 'shared', 'talkback',
-		// Deletion
-		'speedy', 'prod', 'xfd', 'image',
-		// Maintenance
-		'protect', 'tag',
-		// Misc. ones last
-		'diff', 'unlink', 'fluff', 'deprod', 'batchdelete', 'batchprotect', 'batchundelete'
-	];
-	// Don't load modules users have disabled
-	var disabledModules = Twinkle.getPref('disabledModules').concat(Twinkle.getPref('disabledSysopModules'));
-	twinkleModules.filter(function(mod) {
-		return disabledModules.indexOf(mod) === -1;
-	}).forEach(function(module) {
-		Twinkle[module]();
-	});
-	Twinkle.config.init(); // Can't turn off
+	Twinkle.disabledModules = Twinkle.getPref('disabledModules').concat(Twinkle.getPref('disabledSysopModules'));
 
-	// Run the initialization callbacks for any custom modules
-	Twinkle.initCallbacks.forEach(function (func) {
-		func();
-	});
-	Twinkle.addInitCallback = function (func) {
-		func();
+	// Redefine addInitCallback so that any modules being loaded now on are directly
+	// initialised rather than added to initCallbacks array
+	Twinkle.addInitCallback = function(func, name) {
+		if (!name || Twinkle.disabledModules.indexOf(name) === -1) {
+			func();
+		}
 	};
+	// Initialise modules that were saved in initCallbacks array
+	Twinkle.initCallbacks.forEach(function(module) {
+		Twinkle.addInitCallback(module.func, module.name);
+	});
 
 	// Increases text size in Twinkle dialogs, if so configured
 	if (Twinkle.getPref('dialogLargeFont')) {
@@ -484,6 +475,51 @@ Twinkle.load = function () {
 	if (mw.config.get('skin') === 'vector' && Twinkle.getPref('portletType') === 'menu' && $('#p-twinkle').length === 0) {
 		$('#p-cactions').css('margin-right', 'initial');
 	}
+};
+
+
+/**
+ * Twinkle-specific data shared by multiple modules
+ * Likely customized per installation
+ */
+
+// Custom change tag(s) to be applied to all Twinkle actions, create at Special:Tags
+Twinkle.changeTags = 'twinkle';
+// Available for actions that don't (yet) support tags
+// currently: FlaggedRevs and PageTriage
+Twinkle.summaryAd = ' ([[WP:TW|TW]])';
+
+// Various hatnote templates, used when tagging (csd/xfd/tag/prod/protect) to
+// ensure MOS:ORDER
+Twinkle.hatnoteRegex = 'short description|hatnote|main|correct title|dablink|distinguish|for|further|selfref|year dab|similar names|highway detail hatnote|broader|about(?:-distinguish| other people)?|other\\s?(?:hurricane(?: use)?s|people|persons|places|ships|uses(?: of)?)|redirect(?:-(?:distinguish|synonym|multi))?|see\\s?(?:wiktionary|also(?: if exists)?)';
+
+// Used in XFD and PROD
+Twinkle.makeFindSourcesDiv = function makeSourcesDiv() {
+	var makeLink = function(href, text) {
+		return $('<a>').attr({ rel: 'nofollow', class: 'external text',
+			target: '_blank', href: href }).text(text);
+	};
+	var title = encodeURIComponent(Morebits.pageNameNorm);
+	return $('<div>')
+		.addClass('plainlinks')
+		.append(
+			'(',
+			$('<i>').text('Find sources:'), ' ',
+			makeLink('//www.google.com/search?as_eq=wikipedia&q=%22' + title + '%22', 'Google'),
+			' (',
+			makeLink('//www.google.com/search?tbs=bks:1&q=%22' + title + '%22+-wikipedia', 'books'), ' - ',
+			makeLink('//www.google.com/search?tbm=nws&q=%22' + title + '%22+-wikipedia', 'news'), ' - ',
+			makeLink('//www.google.com/search?&q=%22' + title + '%22+site:news.google.com/newspapers&source=newspapers', 'newspapers'), ' - ',
+			makeLink('//scholar.google.com/scholar?q=%22' + title + '%22', 'scholar'), ' - ',
+			makeLink('https://www.google.com/search?safe=off&tbs=sur:fmc&tbm=isch&q=%22' + title + '%22+-site:wikipedia.org+-site:wikimedia.org', 'free images'), ' - ',
+			makeLink('https://www.google.com/custom?hl=en&cx=007734830908295939403%3Agalkqgoksq0&cof=FORID%3A13%3BAH%3Aleft%3BCX%3AWikipedia%2520Reference%2520Search&q=%22' + title + '%22', 'WP refs'),
+			')', ' - ',
+			makeLink('https://en.wikipedia.org/wiki/Wikipedia:Free_English_newspaper_sources', 'FENS'), ' - ',
+			makeLink('https://www.jstor.org/action/doBasicSearch?Query=%22' + title + '%22&acc=on&wc=on', 'JSTOR'), ' - ',
+			makeLink('https://www.nytimes.com/search/%22' + title + '%22', 'NYT'), ' - ',
+			makeLink('https://wikipedialibrary.wmflabs.org/partners/', 'TWL'),
+			')'
+		)[0];
 };
 
 }(window, document, jQuery)); // End wrap with anonymous function

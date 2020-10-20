@@ -31,7 +31,7 @@ Twinkle.config.commonSets = {
 		u1: 'U1', u2: 'U2', u3: 'U3', u5: 'U5',
 		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f8: 'F8', f9: 'F9', f10: 'F10',
 		c1: 'C1',
-		t2: 'T2', t3: 'T3',
+		t3: 'T3',
 		r2: 'R2', r3: 'R3', r4: 'R4',
 		p1: 'P1', p2: 'P2'
 	},
@@ -42,7 +42,7 @@ Twinkle.config.commonSets = {
 		'u1', 'u2', 'u3', 'u5',
 		'f1', 'f2', 'f3', 'f7', 'f8', 'f9', 'f10',
 		'c1',
-		't2', 't3',
+		't3',
 		'r2', 'r3', 'r4',
 		'p1', 'p2'
 	],
@@ -54,7 +54,7 @@ Twinkle.config.commonSets = {
 		u3: 'U3', u5: 'U5',
 		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f9: 'F9', f10: 'F10',
 		c1: 'C1',
-		t2: 'T2', t3: 'T3',
+		t3: 'T3',
 		r2: 'R2', r3: 'R3', r4: 'R4',
 		p1: 'P1', p2: 'P2'
 	},
@@ -65,7 +65,7 @@ Twinkle.config.commonSets = {
 		'u3', 'u5',
 		'f1', 'f2', 'f3', 'f7', 'f9', 'f10',
 		'c1',
-		't2', 't3',
+		't3',
 		'r2', 'r3', 'r4',
 		'p1', 'p2'
 	],
@@ -76,7 +76,7 @@ Twinkle.config.commonSets = {
 		u1: 'U1', u2: 'U2', u3: 'U3', u5: 'U5',
 		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f5: 'F5', f6: 'F6', f7: 'F7', f8: 'F8', f9: 'F9', f10: 'F10', f11: 'F11',
 		c1: 'C1',
-		t2: 'T2', t3: 'T3',
+		t3: 'T3',
 		r2: 'R2', r3: 'R3', r4: 'R4',
 		p1: 'P1', p2: 'P2'
 	},
@@ -87,7 +87,7 @@ Twinkle.config.commonSets = {
 		'u1', 'u2', 'u3', 'u5',
 		'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11',
 		'c1',
-		't2', 't3',
+		't3',
 		'r2', 'r3', 'r4',
 		'p1', 'p2'
 	],
@@ -126,6 +126,7 @@ Twinkle.config.commonSets = {
  *
  * {
  *   title: <human-readable section title>,
+ *   module: <name of the associated module, used to link to sections>,
  *   adminOnly: <true for admin-only sections>,
  *   hidden: <true for advanced preferences that rarely need to be changed - they can still be modified by manually editing twinkleoptions.js>,
  *   preferences: [
@@ -151,36 +152,8 @@ Twinkle.config.commonSets = {
 Twinkle.config.sections = [
 	{
 		title: 'General',
+		module: 'general',
 		preferences: [
-			// TwinkleConfig.summaryAd (string)
-			// Text to be appended to the edit summary of edits made using Twinkle
-			{
-				name: 'summaryAd',
-				label: "\"Ad\" to be appended to Twinkle's edit summaries",
-				helptip: 'The summary ad should start with a space, and be kept short.',
-				type: 'string'
-			},
-
-			// TwinkleConfig.deletionSummaryAd (string)
-			// Text to be appended to the edit summary of deletions made using Twinkle
-			{
-				name: 'deletionSummaryAd',
-				label: 'Summary ad to use for deletion summaries',
-				helptip: 'Normally the same as the edit summary ad above.',
-				adminOnly: true,
-				type: 'string'
-			},
-
-			// TwinkleConfig.protectionSummaryAd (string)
-			// Text to be appended to the edit summary of page protections made using Twinkle
-			{
-				name: 'protectionSummaryAd',
-				label: 'Summary ad to use for page protections',
-				helptip: 'Normally the same as the edit summary ad above.',
-				adminOnly: true,
-				type: 'string'
-			},
-
 			// TwinkleConfig.userTalkPageMode may take arguments:
 			// 'window': open a new window, remember the opened window
 			// 'tab': opens in a new tab, if possible.
@@ -222,6 +195,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'ARV',
+		module: 'arv',
 		preferences: [
 			{
 				name: 'spiWatchReport',
@@ -234,6 +208,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Block user',
+		module: 'block',
 		adminOnly: true,
 		preferences: [
 			// TwinkleConfig.defaultToPartialBlocks (boolean)
@@ -257,6 +232,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Image deletion (DI)',
+		module: 'image',
 		preferences: [
 			// TwinkleConfig.notifyUserOnDeli (boolean)
 			// If the user should be notified after placing a file deletion tag
@@ -288,6 +264,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Proposed deletion (PROD)',
+		module: 'prod',
 		preferences: [
 			// TwinkleConfig.watchProdPages (boolean)
 			// If, when applying prod template to page, to watch the page
@@ -331,6 +308,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Revert and rollback',  // twinklefluff module
+		module: 'fluff',
 		preferences: [
 			// TwinkleConfig.autoMenuAfterRollback (bool)
 			// Option to automatically open the warning menu if the user talk page is opened post-reversion
@@ -347,7 +325,7 @@ Twinkle.config.sections = [
 				name: 'openTalkPage',
 				label: 'Open user talk page after these types of reversions',
 				type: 'set',
-				setValues: { agf: 'AGF rollback', norm: 'Normal rollback', vand: 'Vandalism rollback', torev: '"Restore this version"' }
+				setValues: { agf: 'AGF rollback', norm: 'Normal rollback', vand: 'Vandalism rollback' }
 			},
 
 			// TwinkleConfig.openTalkPageOnAutoRevert (bool)
@@ -397,8 +375,15 @@ Twinkle.config.sections = [
 
 			{
 				name: 'confirmOnFluff',
-				label: 'Provide a confirmation message before reverting',
+				label: 'Require confirmation before reverting (all devices)',
 				helptip: 'For users of pen or touch devices, and chronically indecisive people.',
+				type: 'boolean'
+			},
+
+			{
+				name: 'confirmOnMobileFluff',
+				label: 'Require confirmation before reverting (mobile devices only)',
+				helptip: 'Avoid accidental reversions when on mobile devices.',
 				type: 'boolean'
 			},
 
@@ -417,6 +402,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Shared IP tagging',
+		module: 'shared',
 		preferences: [
 			{
 				name: 'markSharedIPAsMinor',
@@ -428,6 +414,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Speedy deletion (CSD)',
+		module: 'speedy',
 		preferences: [
 			{
 				name: 'speedySelectionStyle',
@@ -567,6 +554,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Tag',
+		module: 'tag',
 		preferences: [
 			{
 				name: 'watchTaggedPages',
@@ -628,6 +616,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Talkback',
+		module: 'talkback',
 		preferences: [
 			{
 				name: 'markTalkbackAsMinor',
@@ -645,12 +634,6 @@ Twinkle.config.sections = [
 				type: 'string'
 			},
 			{
-				name: 'adminNoticeHeading',
-				label: "Section heading to use for administrators' noticeboard notices",
-				helptip: 'Only relevant for AN and ANI.',
-				type: 'string'
-			},
-			{
 				name: 'mailHeading',
 				label: "Section heading to use for \"you've got mail\" notices",
 				type: 'string'
@@ -660,6 +643,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Unlink',
+		module: 'unlink',
 		preferences: [
 			// TwinkleConfig.unlinkNamespaces (array)
 			// In what namespaces unlink should happen, default in 0 (article), 10 (template), 100 (portal), and 118 (draft)
@@ -675,6 +659,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Warn user',
+		module: 'warn',
 		preferences: [
 			// TwinkleConfig.defaultWarningGroup (int)
 			// Which level warning should be the default selected group, default is 1
@@ -745,6 +730,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'Welcome user',
+		module: 'welcome',
 		preferences: [
 			{
 				name: 'topWelcomes',
@@ -795,6 +781,7 @@ Twinkle.config.sections = [
 
 	{
 		title: 'XFD (deletion discussions)',
+		module: 'xfd',
 		preferences: [
 			{
 				name: 'logXfdNominations',
@@ -915,33 +902,15 @@ Twinkle.config.sections = [
 				name: 'autolevelStaleDays',
 				type: 'integer'
 			},
-			// twinklebatchdelete.js: How many pages should be processed maximum
+			// How many pages should be queried by deprod and batchdelete/protect/undelete
 			{
 				name: 'batchMax',
 				type: 'integer',
 				adminOnly: true
 			},
-			// twinklebatchdelete.js: How many pages should be processed at a time
+			// How many pages should be processed at a time by deprod and batchdelete/protect/undelete
 			{
-				name: 'batchdeleteChunks',
-				type: 'integer',
-				adminOnly: true
-			},
-			// twinklebatchprotect.js: How many pages should be processed at a time
-			{
-				name: 'batchProtectChunks',
-				type: 'integer',
-				adminOnly: true
-			},
-			// twinklebatchundelete.js: How many pages should be processed at a time
-			{
-				name: 'batchundeleteChunks',
-				type: 'integer',
-				adminOnly: true
-			},
-			// twinkledeprod.js: How many pages should be processed at a time
-			{
-				name: 'proddeleteChunks',
+				name: 'batchChunks',
 				type: 'integer',
 				adminOnly: true
 			}
@@ -1017,8 +986,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 		toctable.appendChild(tocul);
 		contentdiv.appendChild(toctable);
 
-		var tocnumber = 1;
-
 		var contentform = document.createElement('form');
 		contentform.setAttribute('action', 'javascript:void(0)');  // was #tw-save - changed to void(0) to work around Chrome issue
 		contentform.addEventListener('submit', Twinkle.config.save, true);
@@ -1037,7 +1004,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			var tocli = document.createElement('li');
 			tocli.className = 'toclevel-1';
 			var toca = document.createElement('a');
-			toca.setAttribute('href', '#twinkle-config-section-' + tocnumber.toString());
+			toca.setAttribute('href', '#' + section.module);
 			toca.appendChild(document.createTextNode(section.title));
 			tocli.appendChild(toca);
 			tocul.appendChild(tocli);
@@ -1048,7 +1015,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			var heading = document.createElement('h4');
 			heading.style.borderBottom = '1px solid gray';
 			heading.style.marginTop = '0.2em';
-			heading.id = 'twinkle-config-section-' + (tocnumber++).toString();
+			heading.id = section.module;
 			heading.appendChild(document.createTextNode(section.title));
 			cell.appendChild(heading);
 			row.appendChild(cell);
@@ -1274,8 +1241,10 @@ Twinkle.config.init = function twinkleconfigInit() {
 		contentform.appendChild(footerbox);
 
 		// since all the section headers exist now, we can try going to the requested anchor
-		if (location.hash) {
-			window.location.hash = location.hash;
+		if (window.location.hash) {
+			var loc = window.location.hash;
+			window.location.hash = '';
+			window.location.hash = loc;
 		}
 
 	} else if (mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').user &&
@@ -1710,7 +1679,8 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		'// End of twinkleoptions.js\n';
 
 	pageobj.setPageText(text);
-	pageobj.setEditSummary('Saving Twinkle preferences: automatic edit from [[:' + Morebits.pageNameNorm + ']] ([[WP:TW|TW]])');
+	pageobj.setEditSummary('Saving Twinkle preferences: automatic edit from [[:' + Morebits.pageNameNorm + ']]');
+	pageobj.setChangeTags(Twinkle.changeTags);
 	pageobj.setCreateOption('recreate');
 	pageobj.save(Twinkle.config.saveSuccess);
 };
@@ -1728,6 +1698,8 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	noticeclear.style.clear = 'both';
 	Morebits.status.root.appendChild(noticeclear);
 };
+
+Twinkle.addInitCallback(Twinkle.config.init);
 })(jQuery);
 
 

@@ -33,48 +33,23 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	var form = new Morebits.quickForm(Twinkle.batchprotect.callback.evaluate);
 	form.append({
 		type: 'checkbox',
-		name: 'editmodify',
 		event: Twinkle.protect.formevents.editmodify,
 		list: [
 			{
 				label: 'Modify edit protection',
 				value: 'editmodify',
+				name: 'editmodify',
 				tooltip: 'Only for existing pages.',
 				checked: true
 			}
 		]
 	});
-	var editlevel = form.append({
+	form.append({
 		type: 'select',
 		name: 'editlevel',
 		label: 'Edit protection:',
-		event: Twinkle.protect.formevents.editlevel
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'All',
-		value: 'all'
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'Autoconfirmed',
-		value: 'autoconfirmed'
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'Extended confirmed',
-		value: 'extendedconfirmed'
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'Template editor',
-		value: 'templateeditor'
-	});
-	editlevel.append({
-		type: 'option',
-		label: 'Sysop',
-		value: 'sysop',
-		selected: true
+		event: Twinkle.protect.formevents.editlevel,
+		list: Twinkle.protect.protectionLevels
 	});
 	form.append({
 		type: 'select',
@@ -85,66 +60,31 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				Twinkle.protect.doCustomExpiry(e.target);
 			}
 		},
-		list: [
-			{ label: '1 hour', value: '1 hour' },
-			{ label: '2 hours', value: '2 hours' },
-			{ label: '3 hours', value: '3 hours' },
-			{ label: '6 hours', value: '6 hours' },
-			{ label: '12 hours', value: '12 hours' },
-			{ label: '1 day', value: '1 day' },
-			{ label: '2 days', selected: true, value: '2 days' },
-			{ label: '3 days', value: '3 days' },
-			{ label: '4 days', value: '4 days' },
-			{ label: '1 week', value: '1 week' },
-			{ label: '2 weeks', value: '2 weeks' },
-			{ label: '1 month', value: '1 month' },
-			{ label: '2 months', value: '2 months' },
-			{ label: '3 months', value: '3 months' },
-			{ label: '1 year', value: '1 year' },
-			{ label: 'indefinite', value: 'indefinite' },
-			{ label: 'Custom...', value: 'custom' }
-		]
+		list: Twinkle.protect.protectionLengths // Default (2 days) set after render
 	});
 
 	form.append({
 		type: 'checkbox',
-		name: 'movemodify',
 		event: Twinkle.protect.formevents.movemodify,
 		list: [
 			{
 				label: 'Modify move protection',
 				value: 'movemodify',
+				name: 'movemodify',
 				tooltip: 'Only for existing pages.',
 				checked: true
 			}
 		]
 	});
-	var movelevel = form.append({
+	form.append({
 		type: 'select',
 		name: 'movelevel',
 		label: 'Move protection:',
-		event: Twinkle.protect.formevents.movelevel
-	});
-	movelevel.append({
-		type: 'option',
-		label: 'All',
-		value: 'all'
-	});
-	movelevel.append({
-		type: 'option',
-		label: 'Extended confirmed',
-		value: 'extendedconfirmed'
-	});
-	movelevel.append({
-		type: 'option',
-		label: 'Template editor',
-		value: 'templateeditor'
-	});
-	movelevel.append({
-		type: 'option',
-		label: 'Sysop',
-		value: 'sysop',
-		selected: true
+		event: Twinkle.protect.formevents.movelevel,
+		list: Twinkle.protect.protectionLevels.filter(function(level) {
+			// Autoconfirmed is required for a move, redundant
+			return level.value !== 'autoconfirmed';
+		})
 	});
 	form.append({
 		type: 'select',
@@ -155,30 +95,11 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				Twinkle.protect.doCustomExpiry(e.target);
 			}
 		},
-		list: [
-			{ label: '1 hour', value: '1 hour' },
-			{ label: '2 hours', value: '2 hours' },
-			{ label: '3 hours', value: '3 hours' },
-			{ label: '6 hours', value: '6 hours' },
-			{ label: '12 hours', value: '12 hours' },
-			{ label: '1 day', value: '1 day' },
-			{ label: '2 days', selected: true, value: '2 days' },
-			{ label: '3 days', value: '3 days' },
-			{ label: '4 days', value: '4 days' },
-			{ label: '1 week', value: '1 week' },
-			{ label: '2 weeks', value: '2 weeks' },
-			{ label: '1 month', value: '1 month' },
-			{ label: '2 months', value: '2 months' },
-			{ label: '3 months', value: '3 months' },
-			{ label: '1 year', value: '1 year' },
-			{ label: 'indefinite', value: 'indefinite' },
-			{ label: 'Custom...', value: 'custom' }
-		]
+		list: Twinkle.protect.protectionLengths // Default (2 days) set after render
 	});
 
 	form.append({
 		type: 'checkbox',
-		name: 'createmodify',
 		event: function twinklebatchprotectFormCreatemodifyEvent(e) {
 			e.target.form.createlevel.disabled = !e.target.checked;
 			e.target.form.createexpiry.disabled = !e.target.checked || (e.target.form.createlevel.value === 'all');
@@ -188,42 +109,18 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			{
 				label: 'Modify create protection',
 				value: 'createmodify',
+				name: 'createmodify',
 				tooltip: 'Only for pages that do not exist.',
 				checked: true
 			}
 		]
 	});
-	var createlevel = form.append({
+	form.append({
 		type: 'select',
 		name: 'createlevel',
 		label: 'Create protection:',
-		event: Twinkle.protect.formevents.createlevel
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'All',
-		value: 'all'
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'Autoconfirmed',
-		value: 'autoconfirmed'
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'Extended confirmed',
-		value: 'extendedconfirmed'
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'Template editor',
-		value: 'templateeditor'
-	});
-	createlevel.append({
-		type: 'option',
-		label: 'Sysop',
-		value: 'sysop',
-		selected: true
+		event: Twinkle.protect.formevents.createlevel,
+		list: Twinkle.protect.protectionLevels
 	});
 	form.append({
 		type: 'select',
@@ -234,25 +131,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				Twinkle.protect.doCustomExpiry(e.target);
 			}
 		},
-		list: [
-			{ label: '1 hour', value: '1 hour' },
-			{ label: '2 hours', value: '2 hours' },
-			{ label: '3 hours', value: '3 hours' },
-			{ label: '6 hours', value: '6 hours' },
-			{ label: '12 hours', value: '12 hours' },
-			{ label: '1 day', value: '1 day' },
-			{ label: '2 days', value: '2 days' },
-			{ label: '3 days', value: '3 days' },
-			{ label: '4 days', value: '4 days' },
-			{ label: '1 week', value: '1 week' },
-			{ label: '2 weeks', value: '2 weeks' },
-			{ label: '1 month', value: '1 month' },
-			{ label: '2 months', value: '2 months' },
-			{ label: '3 months', value: '3 months' },
-			{ label: '1 year', value: '1 year' },
-			{ label: 'indefinite', selected: true, value: 'indefinite' },
-			{ label: 'Custom...', value: 'custom' }
-		]
+		list: Twinkle.protect.protectionLengths // Default (indefinite) set after render
 	});
 
 	form.append({
@@ -317,7 +196,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				if (isRedir) {
 					metadata.push('redirect');
 				}
-				metadata.push(size + ' bytes');
+				metadata.push(mw.language.convertNumber(size) + ' bytes');
 				$editProt = $page.find('pr[type="edit"][level="sysop"]');
 			}
 			if ($editProt.length > 0) {
@@ -345,6 +224,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		form.append({
 			type: 'checkbox',
 			name: 'pages',
+			shiftClickSupport: true,
 			list: list
 		});
 		form.append({ type: 'submit' });
@@ -352,7 +232,12 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		var result = form.render();
 		Window.setContent(result);
 
-		Morebits.checkboxShiftClickSupport(Morebits.quickForm.getElements(result, 'pages'));
+		// Set defaults
+		result.editexpiry.value = '2 days';
+		result.moveexpiry.value = '2 days';
+		result.createexpiry.value = 'infinity';
+
+
 	}, statelem);
 
 	wikipedia_api.post();
@@ -368,23 +253,13 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	var numProtected = $(Morebits.quickForm.getElements(form, 'pages')).filter(function(index, element) {
 		return element.checked && element.nextElementSibling.style.color === 'red';
 	}).length;
-	if (numProtected > 0 && !confirm('You are about to act on ' + numProtected + ' fully protected page(s). Are you sure?')) {
+	if (numProtected > 0 && !confirm('You are about to act on ' + mw.language.convertNumber(numProtected) + ' fully protected page(s). Are you sure?')) {
 		return;
 	}
 
-	var pages = form.getChecked('pages');
-	var reason = form.reason.value;
-	var editmodify = form.editmodify.checked;
-	var editlevel = form.editlevel.value;
-	var editexpiry = form.editexpiry.value;
-	var movemodify = form.movemodify.checked;
-	var movelevel = form.movelevel.value;
-	var moveexpiry = form.moveexpiry.value;
-	var createmodify = form.createmodify.checked;
-	var createlevel = form.createlevel.value;
-	var createexpiry = form.createexpiry.value;
+	var input = Morebits.quickForm.getInputData(form);
 
-	if (!reason) {
+	if (!input.reason) {
 		alert("You've got to give a reason, you rouge admin!");
 		return;
 	}
@@ -392,15 +267,15 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 
-	if (!pages) {
+	if (input.pages.length === 0) {
 		Morebits.status.error('Error', 'Nothing to protect, aborting');
 		return;
 	}
 
 	var batchOperation = new Morebits.batchOperation('Applying protection settings');
-	batchOperation.setOption('chunkSize', Twinkle.getPref('batchProtectChunks'));
+	batchOperation.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 	batchOperation.setOption('preserveIndividualStatusLines', true);
-	batchOperation.setPageList(pages);
+	batchOperation.setPageList(input.pages);
 	batchOperation.run(function(pageName) {
 		var query = {
 			'action': 'query',
@@ -408,20 +283,10 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 		};
 		var wikipedia_api = new Morebits.wiki.api('Checking if page ' + pageName + ' exists', query,
 			Twinkle.batchprotect.callbacks.main, null, batchOperation.workerFailure);
-		wikipedia_api.params = {
+		wikipedia_api.params = $.extend({
 			page: pageName,
-			reason: reason,
-			editmodify: editmodify,
-			editlevel: editlevel,
-			editexpiry: editexpiry,
-			movemodify: movemodify,
-			movelevel: movelevel,
-			moveexpiry: moveexpiry,
-			createmodify: createmodify,
-			createlevel: createlevel,
-			createexpiry: createexpiry,
 			batchOperation: batchOperation
-		};
+		}, input);
 		wikipedia_api.post();
 	});
 };
@@ -457,9 +322,12 @@ Twinkle.batchprotect.callbacks = {
 		}
 
 		page.setEditSummary(apiobj.params.reason);
+		page.setChangeTags(Twinkle.changeTags);
 		page.protect(apiobj.params.batchOperation.workerSuccess, apiobj.params.batchOperation.workerFailure);
 	}
 };
+
+Twinkle.addInitCallback(Twinkle.batchprotect, 'batchprotect');
 })(jQuery);
 
 

@@ -36,7 +36,7 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 	}
 	);
 	div.append({ type: 'header', label: 'Shared IP address templates' });
-	div.append({ type: 'radio', name: 'shared', list: Twinkle.shared.standardList,
+	div.append({ type: 'radio', name: 'template', list: Twinkle.shared.standardList,
 		event: function(e) {
 			Twinkle.shared.callback.change_shared(e);
 			e.stopPropagation();
@@ -131,7 +131,6 @@ Twinkle.shared.callbacks = {
 		var params = pageobj.getCallbackParameters();
 		var pageText = pageobj.getPageText();
 		var found = false;
-		var text = '{{';
 
 		for (var i = 0; i < Twinkle.shared.standardList.length; i++) {
 			var tagRe = new RegExp('(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im');
@@ -146,18 +145,19 @@ Twinkle.shared.callbacks = {
 		}
 
 		Morebits.status.info('Info', 'Will add the shared IP address template to the top of the user\'s talk page.');
-		text += params.value + '|' + params.organization;
-		if (params.value === 'Shared IP edu' && params.contact !== '') {
+		var text = '{{' + params.template + '|' + params.organization;
+		if (params.contact) {
 			text += '|' + params.contact;
 		}
-		if (params.value !== 'Whois' && params.host !== '') {
+		if (params.host) {
 			text += '|host=' + params.host;
 		}
 		text += '}}\n\n';
 
-		var summaryText = 'Added {{[[Template:' + params.value + '|' + params.value + ']]}} template.';
+		var summaryText = 'Added {{[[Template:' + params.template + '|' + params.template + ']]}} template.';
 		pageobj.setPageText(text + pageText);
-		pageobj.setEditSummary(summaryText + Twinkle.getPref('summaryAd'));
+		pageobj.setEditSummary(summaryText);
+		pageobj.setChangeTags(Twinkle.changeTags);
 		pageobj.setMinorEdit(Twinkle.getPref('markSharedIPAsMinor'));
 		pageobj.setCreateOption('recreate');
 		pageobj.save();
@@ -165,25 +165,15 @@ Twinkle.shared.callbacks = {
 };
 
 Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
-	var shared = e.target.getChecked('shared');
-	if (!shared || shared.length <= 0) {
+	var params = Morebits.quickForm.getInputData(e.target);
+	if (!params.template) {
 		alert('You must select a shared IP address template to use!');
 		return;
 	}
-
-	var value = shared[0];
-
-	if (e.target.organization.value === '') {
-		alert('You must input an organization for the {{' + value + '}} template!');
+	if (!params.organization) {
+		alert('You must input an organization for the {{' + params.template + '}} template!');
 		return;
 	}
-
-	var params = {
-		value: value,
-		organization: e.target.organization.value,
-		host: e.target.host.value,
-		contact: e.target.contact.value
-	};
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(e.target);
@@ -196,6 +186,8 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.shared.callbacks.main);
 };
+
+Twinkle.addInitCallback(Twinkle.shared, 'shared');
 })(jQuery);
 
 
