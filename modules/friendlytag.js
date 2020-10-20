@@ -921,7 +921,7 @@ Twinkle.tag.redirectList = {
 				subgroup: {
 					name: 'doubleRedirectTarget',
 					type: 'input',
-					label: 'Redirect page name',
+					label: 'Redirect target name',
 					tooltip: 'Enter the page this redirect would target if the page wasn\'t also a redirect'
 				}
 			},
