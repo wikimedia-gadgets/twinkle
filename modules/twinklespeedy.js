@@ -250,7 +250,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		name: 'work_area'
 	});
 
-	if (mode.isMultiple && !mode.isMultiple && mode.isRadioClick) {
+	if (mode.isMultiple && mode.isRadioClick) {
 		var evaluateType = mode.isSysop ? 'evaluateSysop' : 'evaluateUser';
 
 		work_area.append({
@@ -464,7 +464,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			return null;
 		}
 
-		if (criterion.subgroup && mode.isRadioClick) {
+		if (criterion.subgroup && !mode.isMultiple && mode.isRadioClick) {
 			if (Array.isArray(criterion.subgroup)) {
 				criterion.subgroup = criterion.subgroup.concat({
 					type: 'button',
