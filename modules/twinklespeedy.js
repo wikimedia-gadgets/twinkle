@@ -2069,7 +2069,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	// analyse each criterion to determine whether to watch the page/notify the creator
 
 	var watchPage = normalizeds.some(function(norm) {
-		return Twinkle.getPref('watchSpeedyPages').indexOf(norm) === -1;
+		return Twinkle.getPref('watchSpeedyPages').indexOf(norm) !== -1;
 	});
 	var notifyuser = form.notify.checked && normalizeds.some(function(index, norm) {
 		return Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1 &&
