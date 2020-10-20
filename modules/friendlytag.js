@@ -754,6 +754,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
 			{ tag: 'Globalize', description: 'may not represent a worldwide view of the subject' },
 			{ tag: 'Over-coverage', description: 'extensive bias or disproportional coverage towards one or more specific regions' },
+			{ tag: 'Paid contributions', description: 'contains paid contributions, and may therefore require cleanup' },
 			{ tag: 'Peacock', description: 'contains wording that promotes the subject in a subjective manner without adding information' },
 			{ tag: 'POV', description: 'does not maintain a neutral point of view' },
 			{ tag: 'Recentism', description: 'slanted towards recent events' },
