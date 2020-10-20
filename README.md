@@ -1,4 +1,4 @@
-# Twinkle [![Build Status](https://travis-ci.org/azatoth/twinkle.svg?branch=master)](https://travis-ci.org/azatoth/twinkle)
+# Twinkle ![Linter](https://github.com/azatoth/twinkle/workflows/Linter/badge.svg)
 
 Twinkle is a JavaScript application that gives Wikipedians a quick way of performing common maintenance tasks, such as nominating pages for deletion and cleaning up vandalism.
 
