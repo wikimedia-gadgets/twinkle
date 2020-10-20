@@ -2071,7 +2071,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	var watchPage = normalizeds.some(function(norm) {
 		return Twinkle.getPref('watchSpeedyPages').indexOf(norm) !== -1;
 	});
-	var notifyuser = form.notify.checked && normalizeds.some(function(index, norm) {
+	var notifyuser = form.notify.checked && normalizeds.some(function(norm, index) {
 		return Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1 &&
 			!(norm === 'g6' && values[index] !== 'copypaste');
 	});
