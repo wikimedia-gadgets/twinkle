@@ -175,8 +175,59 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 		case 'redirect':
 			Window.setTitle('Redirect tagging');
+			
+			var redirectTagPlainlist = [];
+			var redirectTagDescriptionPlainlist = [];
+			var redirectTagsPresent = [];
+			var existingRcats = document.getElementsByClassName("rcat");
+			var unordinaryTitles = ['R from avoided double redirect', 'R from ASCII-only title', 'R from camel case title', 'R from Unicode code point', 'R from alternative scientific name of an organism', 'R from different spelling', 'R from the <i>same page name</i> with diacritics', 'R from or to a drug trade name', 'R from longer title', 'R from page move', 'R from location and country', 'R from person(s)', 'R from the plural form', 'R from related word or phrase', 'R from scientific name of an organism', 'R from the sorting name', 'R from currently unnecessary disambiguation', 'R fentioned in a hatnote', 'R from printworthy page title', 'R from taxon with possibilities', 'R to embedded anchor', 'R from outside category namespace', 'R to the <i>same page name</i> with diacritics', 'R to help page', 'R from outside mainspace', 'R to its plural form', 'R to portal page', 'R to project page', 'R to scientific name of an organism', 'R from outside userspace', 'R from unprintworthy page title'];
+			var correctTitles = ['R avoided double redirect', 'R from ASCII-only', 'R from CamelCase', 'R from Unicode code', 'R from alternative scientific name', 'R from alternative spelling', 'R from diacritic', 'R from drug trade name', 'R from long name', 'R from move', 'R from name and country', 'R from person', 'R from plural', 'R from related word', 'R from scientific name', 'R from sort name', 'R from unnecessary disambiguation', 'R mentioned in hatnote', 'R printworthy', 'R taxon with possibilities', 'R to anchor', 'R to category namespace', 'R to diacritic', 'R to help namespace', 'R to main namespace', 'R to plural', 'R to portal namespace', 'R to project namespace', 'R to scientific name', 'R to user namespace', 'R unprintworthy'];
+			$.each(Twinkle.tag.redirectList, function(groupname, group) {
+				$.each(group, function(subgroupName, subgroup) {
+					subgroup.map(function (item) {
+						redirectTagPlainlist.push(item.tag);
+						redirectTagDescriptionPlainlist.push(item.description);
+					});
+				});
+			});
+			$.each(existingRcats, function(item) {
+    				var title = existingRcats[item].getElementsByTagName('ul')[0].getElementsByTagName('li')[0].getElementsByTagName('b')[0].getElementsByTagName('a')[0].innerHTML;
+				title = 'R f' + title.slice(1, );
+				title = title.replace('R fo ', 'R to ');
+				title = title.replace('R fith ', 'R with ');
+				title = title.replace(/R from an? /, 'R from ');
+				title = title.replace(/R to an? /, 'R to ');
+				var fixedTitle = correctTitles[unordinaryTitles.indexOf(title)];
+				if (fixedTitle !== undefined) {
+					title = fixedTitle;	
+				}
+				if(redirectTagPlainlist.indexOf(title) !== -1) {
+					redirectTagsPresent.push(title);
+				}
+			});
+			if (redirectTagsPresent.length != 0){
+				form.append({ type: 'header', id: 'tagHeader0', label: 'Tags already present' });
+				var subdiv = form.append({ type: 'div', id: 'tagSubdiv0' });
+				var checkboxes = [];
+				redirectTagsPresent.forEach(function(tag) {
+					var checkbox =
+						{
+							value: tag,
+							label: '{{' + tag + '}}: '  + redirectTagDescriptionPlainlist[redirectTagPlainlist.indexOf(tag)],
+							checked: true,
+							style: 'font-style: italic'
+						};
 
+					checkboxes.push(checkbox);
+				});
+				subdiv.append({
+					type: 'checkbox',
+					name: 'existingTags',
+					list: checkboxes
+				});
+			}
 			var i = 1;
+			var returnValue;
 			$.each(Twinkle.tag.redirectList, function(groupName, group) {
 				form.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
 				var subdiv = form.append({ type: 'div', id: 'tagSubdiv' + i++ });
@@ -186,7 +237,10 @@ Twinkle.tag.callback = function friendlytagCallback() {
 						type: 'checkbox',
 						name: 'tags',
 						list: subgroup.map(function (item) {
-							return { value: item.tag, label: '{{' + item.tag + '}}: ' + item.description, subgroup: item.subgroup };
+							if (redirectTagsPresent.indexOf(item.tag) == -1){
+								returnValue = { value: item.tag, label: '{{' + item.tag + '}}: ' + item.description, subgroup: item.subgroup };
+							}
+							return returnValue
 						})
 					});
 				});
@@ -1150,6 +1204,8 @@ Twinkle.tag.fileList['Replacement tags'].forEach(function(el) {
 	};
 });
 
+var rcatsToRemove = [];
+var rcatsToAdd = [];
 
 Twinkle.tag.callbacks = {
 	article: function articleCallback(pageobj) {
@@ -1648,45 +1704,61 @@ Twinkle.tag.callbacks = {
 	},
 
 	redirect: function redirect(pageobj) {
+		
 		var params = pageobj.getCallbackParameters(),
 			pageText = pageobj.getPageText(),
-			tagRe, tagText = '', summaryText = 'Added',
+			tagRe, tagText = '', summaryText = '',
 			tags = [], i;
-
-		for (i = 0; i < params.tags.length; i++) {
-			tagRe = new RegExp('(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im');
-			if (!tagRe.exec(pageText)) {
-				tags.push(params.tags[i]);
-			} else {
-				Morebits.status.warn('Info', 'Found {{' + params.tags[i] +
-					'}} on the redirect already...excluding');
+		if (rcatsToAdd.length) {
+			summaryText += 'Added';
+			for (i = 0; i < params.tags.length; i++) {
+				tagRe = new RegExp('(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im');
+				if (!tagRe.exec(pageText)) {
+					tags.push(params.tags[i]);
+				} else {
+					Morebits.status.warn('Info', 'Found {{' + params.tags[i] +
+						'}} on the redirect already...excluding');
+				}
 			}
+
+			var addTag = function redirectAddTag(tagIndex, tagName) {
+				tagText += '\n{{' + tagName;
+				if (tagName === 'R from alternative language') {
+					if (params.altLangFrom) {
+						tagText += '|from=' + params.altLangFrom;
+					}
+					if (params.altLangTo) {
+						tagText += '|to=' + params.altLangTo;
+					}
+				}
+				tagText += '}}';
+
+				if (tagIndex > 0) {
+					if (tagIndex === (tags.length - 1)) {
+						summaryText += ' and';
+					} else if (tagIndex < (tags.length - 1)) {
+						summaryText += ',';
+					}
+				}
+
+				summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
+			};
 		}
+		if(rcatsToAdd.length && rcatsToRemove.length){
+			summaryText += " & "	
+		}
+		rcatsToRemove.forEach(function removeTag(tag) {
+			var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
 
-		var addTag = function redirectAddTag(tagIndex, tagName) {
-			tagText += '\n{{' + tagName;
-			if (tagName === 'R from alternative language') {
-				if (params.altLangFrom) {
-					tagText += '|from=' + params.altLangFrom;
-				}
-				if (params.altLangTo) {
-					tagText += '|to=' + params.altLangTo;
-				}
+			if (tag_re.test(pageText)) {
+				pageText = pageText.replace(tag_re, '');
+			} else {
+				getRedirectsFor.push('Template:' + tag);
 			}
-			tagText += '}}';
-
-			if (tagIndex > 0) {
-				if (tagIndex === (tags.length - 1)) {
-					summaryText += ' and';
-				} else if (tagIndex < (tags.length - 1)) {
-					summaryText += ',';
-				}
-			}
-
-			summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
-		};
-
-		if (!tags.length) {
+			summaryText += 'Removed {{[[:' + (tag.indexOf(':') !== -1 ? tag : 'Template:' + tag + '|' + tag) + ']]}}';
+		});
+		
+		if (!tags.length && rcatsToRemove.length == 0) {
 			Morebits.status.warn('Info', 'No tags remaining to apply');
 		}
 
@@ -2007,7 +2079,9 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	// File/redirect: return if no tags selected
 	// Article: return if no tag is selected and no already present tag is deselected
-	if (params.tags.length === 0 && (Twinkle.tag.mode !== 'article' || params.tagsToRemove.length === 0)) {
+	rcatsToRemove = form.getUnchecked('existingTags');
+	rcatsToAdd = form.getChecked('tags');
+	if (params.tags.length === 0 && (Twinkle.tag.mode !== 'article' || params.tagsToRemove.length === 0) && (Twinkle.tag.mode !== 'redirect' || rcatsToRemove.length === 0)) {
 		alert('You must select at least one tag!');
 		return;
 	}
