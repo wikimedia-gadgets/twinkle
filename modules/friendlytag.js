@@ -1204,6 +1204,7 @@ Twinkle.tag.fileList['Replacement tags'].forEach(function(el) {
 	};
 });
 
+
 Twinkle.tag.callbacks = {
 	article: function articleCallback(pageobj) {
 
@@ -1701,7 +1702,6 @@ Twinkle.tag.callbacks = {
 	},
 
 	redirect: function redirect(pageobj) {
-		
 		var params = pageobj.getCallbackParameters(),
 			pageText = pageobj.getPageText(),
 			tagRe, tagText = '', summaryText = '',
