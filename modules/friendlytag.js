@@ -192,7 +192,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			});
 			$.each(existingRcats, function(item) {
     				var title = existingRcats[item].getElementsByTagName('ul')[0].getElementsByTagName('li')[0].getElementsByTagName('b')[0].getElementsByTagName('a')[0].innerHTML;
-				title = 'R f' + title.slice(1, );
+				title = 'R f' + title.slice(1);
 				title = title.replace('R fo ', 'R to ');
 				title = title.replace('R fith ', 'R with ');
 				title = title.replace(/R from an? /, 'R from ');
@@ -1204,9 +1204,6 @@ Twinkle.tag.fileList['Replacement tags'].forEach(function(el) {
 	};
 });
 
-var rcatsToRemove = [];
-var rcatsToAdd = [];
-
 Twinkle.tag.callbacks = {
 	article: function articleCallback(pageobj) {
 
@@ -2079,8 +2076,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	// File/redirect: return if no tags selected
 	// Article: return if no tag is selected and no already present tag is deselected
-	rcatsToRemove = form.getUnchecked('existingTags');
-	rcatsToAdd = form.getChecked('tags');
+	var rcatsToRemove = form.getUnchecked('existingTags');
+	var rcatsToAdd = form.getChecked('tags');
 	if (params.tags.length === 0 && (Twinkle.tag.mode !== 'article' || params.tagsToRemove.length === 0) && (Twinkle.tag.mode !== 'redirect' || rcatsToRemove.length === 0)) {
 		alert('You must select at least one tag!');
 		return;
