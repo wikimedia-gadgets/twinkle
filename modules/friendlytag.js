@@ -259,13 +259,15 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				if (e.className.indexOf('box-') === 0) {
 					if (e.classList[0] === 'box-Multiple_issues') {
 						$(e).find('.ambox').each(function(idx, e) {
-							var tag = e.classList[0].slice(4).replace(/_/g, ' ');
-							Twinkle.tag.alreadyPresentTags.push(tag);
+							if (e.classList[0].indexOf('box-') === 0) {
+								var tag = e.classList[0].slice('box-'.length).replace(/_/g, ' ');
+								Twinkle.tag.alreadyPresentTags.push(tag);
+							}
 						});
 						return true; // continue
 					}
 
-					var tag = e.classList[0].slice(4).replace(/_/g, ' ');
+					var tag = e.classList[0].slice('box-'.length).replace(/_/g, ' ');
 					Twinkle.tag.alreadyPresentTags.push(tag);
 				}
 			});
