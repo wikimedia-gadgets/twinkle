@@ -1559,7 +1559,8 @@ Twinkle.tag.callbacks = {
 
 		// To-be-retained existing tags that are groupable
 		params.tagsToRemain.forEach(function(tag) {
-			if (!Twinkle.tag.article.flatObject[tag].excludeMI) {
+			// If the tag is unknown to us, we consider it non-groupable
+			if (Twinkle.tag.article.flatObject[tag] && !Twinkle.tag.article.flatObject[tag].excludeMI) {
 				groupableExistingTags.push(tag);
 			}
 		});
