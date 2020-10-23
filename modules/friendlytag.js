@@ -179,7 +179,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			var redirectTagPlainlist = [];
 			var redirectTagDescriptionPlainlist = [];
 			var redirectTagsPresent = [];
-			var existingRcats = document.getElementsByClassName("rcat");
+			var existingRcats = document.getElementsByClassName('rcat');
 			var unordinaryTitles = ['R from avoided double redirect', 'R from ASCII-only title', 'R from camel case title', 'R from Unicode code point', 'R from alternative scientific name of an organism', 'R from different spelling', 'R from the <i>same page name</i> with diacritics', 'R from or to a drug trade name', 'R from longer title', 'R from page move', 'R from location and country', 'R from person(s)', 'R from the plural form', 'R from related word or phrase', 'R from scientific name of an organism', 'R from the sorting name', 'R from currently unnecessary disambiguation', 'R fentioned in a hatnote', 'R from printworthy page title', 'R from taxon with possibilities', 'R to embedded anchor', 'R from outside category namespace', 'R to the <i>same page name</i> with diacritics', 'R to help page', 'R from outside mainspace', 'R to its plural form', 'R to portal page', 'R to project page', 'R to scientific name of an organism', 'R from outside userspace', 'R from unprintworthy page title'];
 			var correctTitles = ['R avoided double redirect', 'R from ASCII-only', 'R from CamelCase', 'R from Unicode code', 'R from alternative scientific name', 'R from alternative spelling', 'R from diacritic', 'R from drug trade name', 'R from long name', 'R from move', 'R from name and country', 'R from person', 'R from plural', 'R from related word', 'R from scientific name', 'R from sort name', 'R from unnecessary disambiguation', 'R mentioned in hatnote', 'R printworthy', 'R taxon with possibilities', 'R to anchor', 'R to category namespace', 'R to diacritic', 'R to help namespace', 'R to main namespace', 'R to plural', 'R to portal namespace', 'R to project namespace', 'R to scientific name', 'R to user namespace', 'R unprintworthy'];
 			$.each(Twinkle.tag.redirectList, function(groupname, group) {
@@ -191,7 +191,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				});
 			});
 			$.each(existingRcats, function(item) {
-    				var title = existingRcats[item].getElementsByTagName('ul')[0].getElementsByTagName('li')[0].getElementsByTagName('b')[0].getElementsByTagName('a')[0].innerHTML;
+				var title = existingRcats[item].getElementsByTagName('ul')[0].getElementsByTagName('li')[0].getElementsByTagName('b')[0].getElementsByTagName('a')[0].innerHTML;
 				title = 'R f' + title.slice(1);
 				title = title.replace('R fo ', 'R to ');
 				title = title.replace('R fith ', 'R with ');
@@ -199,13 +199,13 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				title = title.replace(/R to an? /, 'R to ');
 				var fixedTitle = correctTitles[unordinaryTitles.indexOf(title)];
 				if (fixedTitle !== undefined) {
-					title = fixedTitle;	
+					title = fixedTitle;
 				}
-				if(redirectTagPlainlist.indexOf(title) !== -1) {
+				if (redirectTagPlainlist.indexOf(title) !== -1) {
 					redirectTagsPresent.push(title);
 				}
 			});
-			if (redirectTagsPresent.length != 0){
+			if (redirectTagsPresent.length !== 0) {
 				form.append({ type: 'header', id: 'tagHeader0', label: 'Tags already present' });
 				var subdiv = form.append({ type: 'div', id: 'tagSubdiv0' });
 				var checkboxes = [];
@@ -213,7 +213,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 					var checkbox =
 						{
 							value: tag,
-							label: '{{' + tag + '}}: '  + redirectTagDescriptionPlainlist[redirectTagPlainlist.indexOf(tag)],
+							label: '{{' + tag + '}}: ' + redirectTagDescriptionPlainlist[redirectTagPlainlist.indexOf(tag)],
 							checked: true,
 							style: 'font-style: italic'
 						};
@@ -237,10 +237,10 @@ Twinkle.tag.callback = function friendlytagCallback() {
 						type: 'checkbox',
 						name: 'tags',
 						list: subgroup.map(function (item) {
-							if (redirectTagsPresent.indexOf(item.tag) == -1){
+							if (redirectTagsPresent.indexOf(item.tag) === -1) {
 								returnValue = { value: item.tag, label: '{{' + item.tag + '}}: ' + item.description, subgroup: item.subgroup };
 							}
-							return returnValue
+							return returnValue;
 						})
 					});
 				});
@@ -1206,7 +1206,7 @@ Twinkle.tag.fileList['Replacement tags'].forEach(function(el) {
 
 var rcatsToRemove = [];
 var rcatsToAdd = [];
-	
+
 Twinkle.tag.callbacks = {
 	article: function articleCallback(pageobj) {
 
@@ -1743,21 +1743,18 @@ Twinkle.tag.callbacks = {
 				summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
 			};
 		}
-		if(rcatsToAdd.length && rcatsToRemove.length){
-			summaryText += " & "	
+		if (rcatsToAdd.length && rcatsToRemove.length) {
+			summaryText += ' & ';
 		}
 		rcatsToRemove.forEach(function removeTag(tag) {
 			var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
 
 			if (tag_re.test(pageText)) {
 				pageText = pageText.replace(tag_re, '');
-			} else {
-				getRedirectsFor.push('Template:' + tag);
 			}
 			summaryText += 'Removed {{[[:' + (tag.indexOf(':') !== -1 ? tag : 'Template:' + tag + '|' + tag) + ']]}}';
 		});
-		
-		if (!tags.length && rcatsToRemove.length == 0) {
+		if (!tags.length && rcatsToRemove.length === 0) {
 			Morebits.status.warn('Info', 'No tags remaining to apply');
 		}
 
