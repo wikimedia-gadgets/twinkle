@@ -1719,28 +1719,28 @@ Twinkle.tag.callbacks = {
 				}
 			}
 		}
-			var addTag = function redirectAddTag(tagIndex, tagName) {
-				tagText += '\n{{' + tagName;
-				if (tagName === 'R from alternative language') {
-					if (params.altLangFrom) {
-						tagText += '|from=' + params.altLangFrom;
-					}
-					if (params.altLangTo) {
-						tagText += '|to=' + params.altLangTo;
-					}
+		var addTag = function redirectAddTag(tagIndex, tagName) {
+			tagText += '\n{{' + tagName;
+			if (tagName === 'R from alternative language') {
+				if (params.altLangFrom) {
+					tagText += '|from=' + params.altLangFrom;
 				}
-				tagText += '}}';
-
-				if (tagIndex > 0) {
-					if (tagIndex === (tags.length - 1)) {
-						summaryText += ' and';
-					} else if (tagIndex < (tags.length - 1)) {
-						summaryText += ',';
-					}
+				if (params.altLangTo) {
+					tagText += '|to=' + params.altLangTo;
 				}
+			}
+			tagText += '}}';
 
-				summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
-			};
+			if (tagIndex > 0) {
+				if (tagIndex === (tags.length - 1)) {
+					summaryText += ' and';
+				} else if (tagIndex < (tags.length - 1)) {
+					summaryText += ',';
+				}
+			}
+
+			summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
+		};
 		if (rcatsToAdd.length && rcatsToRemove.length) {
 			summaryText += ' & ';
 		}
