@@ -1204,7 +1204,9 @@ Twinkle.tag.fileList['Replacement tags'].forEach(function(el) {
 	};
 });
 
-
+var rcatsToRemove = [];
+var rcatsToAdd = [];
+	
 Twinkle.tag.callbacks = {
 	article: function articleCallback(pageobj) {
 
@@ -2076,8 +2078,8 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 	// File/redirect: return if no tags selected
 	// Article: return if no tag is selected and no already present tag is deselected
-	var rcatsToRemove = form.getUnchecked('existingTags');
-	var rcatsToAdd = form.getChecked('tags');
+	rcatsToRemove = form.getUnchecked('existingTags');
+	rcatsToAdd = form.getChecked('tags');
 	if (params.tags.length === 0 && (Twinkle.tag.mode !== 'article' || params.tagsToRemove.length === 0) && (Twinkle.tag.mode !== 'redirect' || rcatsToRemove.length === 0)) {
 		alert('You must select at least one tag!');
 		return;
