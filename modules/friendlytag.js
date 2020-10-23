@@ -481,6 +481,7 @@ Twinkle.tag.article = {};
 var translationSubgroups = [
 	{
 		name: 'translationLanguage',
+		parameter: '1',
 		type: 'input',
 		label: 'Language of article (if known): ',
 		tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
@@ -552,6 +553,7 @@ Twinkle.tag.article.tagList = {
 				tag: 'Cleanup', description: 'requires cleanup',
 				subgroup: {
 					name: 'cleanup',
+					parameter: 'reason',
 					type: 'input',
 					label: 'Specific reason why cleanup is needed: ',
 					tooltip: 'Required.',
@@ -567,6 +569,7 @@ Twinkle.tag.article.tagList = {
 				description: 'requires copy editing for grammar, style, cohesion, tone, or spelling',
 				subgroup: {
 					name: 'copyEdit',
+					parameter: 'for',
 					type: 'input',
 					label: '"This article may require copy editing for..." ',
 					tooltip: 'e.g. "consistent spelling". Optional.',
@@ -580,6 +583,7 @@ Twinkle.tag.article.tagList = {
 				description: 'contains close paraphrasing of a non-free copyrighted source',
 				subgroup: {
 					name: 'closeParaphrasing',
+					parameter: 'source',
 					type: 'input',
 					label: 'Source: ',
 					tooltip: 'Source that has been closely paraphrased'
@@ -591,6 +595,7 @@ Twinkle.tag.article.tagList = {
 				excludeMI: true,
 				subgroup: {
 					name: 'copypaste',
+					parameter: 'url',
 					type: 'input',
 					label: 'Source URL: ',
 					tooltip: 'If known.',
@@ -623,9 +628,10 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Notability', description: 'subject may not meet the general notability guideline',
 				subgroup: {
 					name: 'notability',
+					parameter: '1',
 					type: 'select',
 					list: [
-						{ label: "{{notability}}: article's subject may not meet the general notability guideline", value: 'none' },
+						{ label: "{{notability}}: article's subject may not meet the general notability guideline", value: '' },
 						{ label: '{{notability|Academics}}: notability guideline for academics', value: 'Academics' },
 						{ label: '{{notability|Astro}}: notability guideline for astronomical objects', value: 'Astro' },
 						{ label: '{{notability|Biographies}}: notability guideline for biographies', value: 'Biographies' },
@@ -653,7 +659,14 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Fanpov', description: "written from a fan's point of view" },
 			{ tag: 'Like resume', description: 'written like a resume' },
 			{ tag: 'Manual', description: 'written like a manual or guidebook' },
-			{ tag: 'Cleanup-PR', description: 'reads like a press release or news article' },
+			{ tag: 'Cleanup-PR', description: 'reads like a press release or news article',
+				subgroup: {
+					type: 'hidden',
+					name: 'cleanupPR1',
+					parameter: '1',
+					value: 'article'
+				}
+			},
 			{ tag: 'Over-quotation', description: 'too many or too-lengthy quotations for an encyclopedic entry' },
 			{ tag: 'Prose', description: 'written in a list format but may read better as prose' },
 			{ tag: 'Technical', description: 'too technical for most readers to understand' },
@@ -670,18 +683,21 @@ Twinkle.tag.article.tagList = {
 				subgroup: [
 					{
 						name: 'expertNeeded',
+						parameter: '1',
 						type: 'input',
 						label: 'Name of relevant WikiProject: ',
 						tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.'
 					},
 					{
 						name: 'expertNeededReason',
+						parameter: 'reason',
 						type: 'input',
 						label: 'Reason: ',
 						tooltip: 'Short explanation describing the issue. Either Reason or Talk link is required.'
 					},
 					{
 						name: 'expertNeededTalk',
+						parameter: 'talk',
 						type: 'input',
 						label: 'Talk discussion: ',
 						tooltip: 'Name of the section of this article\'s talk page where the issue is being discussed. Do not give a link, just the name of the section. Either Reason or Talk link is required.'
@@ -701,11 +717,19 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Disputed', description: 'questionable factual accuracy' },
 			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
 			{ tag: 'Globalize', description: 'may not represent a worldwide view of the subject',
-				subgroup: {
-					name: 'globalizeRegion',
-					type: 'input',
-					label: 'Over-represented country or region'
-				}
+				subgroup: [
+					{
+						type: 'hidden',
+						name: 'globalize1',
+						parameter: '1',
+						value: 'article'
+					}, {
+						name: 'globalizeRegion',
+						parameter: '2',
+						type: 'input',
+						label: 'Over-represented country or region'
+					}
+				]
 			},
 			{ tag: 'Over-coverage', description: 'extensive bias or disproportional coverage towards one or more specific regions' },
 			{ tag: 'Paid contributions', description: 'contains paid contributions, and may therefore require cleanup' },
@@ -752,12 +776,19 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Expand language', description: 'should be expanded with text translated from a foreign-language article',
 				excludeMI: true,
 				subgroup: [{
+					type: 'hidden',
+					name: 'expandLangTopic',
+					parameter: 'topic',
+					required: true // force empty topic param in output
+				}, {
 					name: 'expandLanguageLangCode',
+					parameter: 'langcode',
 					type: 'input',
 					label: 'Language code: ',
 					tooltip: 'Language code of the language from which article is to be expanded from'
 				}, {
 					name: 'expandLanguageArticle',
+					parameter: 'otherarticle',
 					type: 'input',
 					label: 'Name of article: ',
 					tooltip: 'Name of article to be expanded from, without the interwiki prefix'
@@ -789,18 +820,21 @@ Twinkle.tag.article.tagList = {
 			subgroup: [
 				{
 					name: 'histmergeOriginalPage',
+					parameter: 'originalpage',
 					type: 'input',
 					label: 'Other article: ',
 					tooltip: 'Name of the page that should be merged into this one (required).'
 				},
 				{
 					name: 'histmergeReason',
+					parameter: 'reason',
 					type: 'input',
 					label: 'Reason: ',
 					tooltip: 'Short explanation describing the reason a history merge is needed. Should probably begin with "because" and end with a period.'
 				},
 				{
 					name: 'histmergeSysopDetails',
+					parameter: 'details',
 					type: 'input',
 					label: 'Extra details: ',
 					tooltip: 'For complex cases, provide extra instructions for the reviewing administrator.'
@@ -1420,71 +1454,23 @@ Twinkle.tag.callbacks = {
 			} else {
 				currentTag += '{{' + tagName;
 				// fill in other parameters, based on the tag
+
+				var subgroupObj = Twinkle.tag.article.flatObject[tagName] &&
+					Twinkle.tag.article.flatObject[tagName].subgroup;
+				if (subgroupObj) {
+					var subgroups = Array.isArray(subgroupObj) ? subgroupObj : [ subgroupObj ];
+					subgroups.forEach(function(gr) {
+						if (gr.parameter && (params[gr.name] || gr.required)) {
+							currentTag += '|' + gr.parameter + '=' + params[gr.name];
+						}
+					});
+				}
+
 				switch (tagName) {
-					case 'Cleanup':
-						currentTag += '|reason=' + params.cleanup;
-						break;
-					case 'Close paraphrasing':
-						currentTag += '|source=' + params.closeParaphrasing;
-						break;
-					case 'Copy edit':
-						if (params.copyEdit) {
-							currentTag += '|for=' + params.copyEdit;
-						}
-						break;
-					case 'Copypaste':
-						if (params.copypaste) {
-							currentTag += '|url=' + params.copypaste;
-						}
-						break;
-					case 'Expand language':
-						currentTag += '|topic=';
-						currentTag += '|langcode=' + params.expandLanguageLangCode;
-						if (params.expandLanguageArticle !== null) {
-							currentTag += '|otherarticle=' + params.expandLanguageArticle;
-						}
-						break;
-					case 'Expert needed':
-						if (params.expertNeeded) {
-							currentTag += '|1=' + params.expertNeeded;
-						}
-						if (params.expertNeededTalk) {
-							currentTag += '|talk=' + params.expertNeededTalk;
-						}
-						if (params.expertNeededReason) {
-							currentTag += '|reason=' + params.expertNeededReason;
-						}
-						break;
-					case 'Globalize':
-						currentTag += '|1=article';
-						if (params.globalizeRegion) {
-							currentTag += '|2=' + params.globalizeRegion;
-						}
-						break;
-					case 'News release':
-						currentTag += '|1=article';
-						break;
-					case 'Notability':
-						if (params.notability !== 'none') {
-							currentTag += '|' + params.notability;
-						}
-						break;
 					case 'Not English':
 					case 'Rough translation':
-						if (params.translationLanguage) {
-							currentTag += '|1=' + params.translationLanguage;
-						}
 						if (params.translationPostAtPNT) {
 							currentTag += '|listed=yes';
-						}
-						break;
-					case 'History merge':
-						currentTag += '|originalpage=' + params.histmergeOriginalPage;
-						if (params.histmergeReason) {
-							currentTag += '|reason=' + params.histmergeReason;
-						}
-						if (params.histmergeSysopDetails) {
-							currentTag += '|details=' + params.histmergeSysopDetails;
 						}
 						break;
 					case 'Merge':
