@@ -89,19 +89,30 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'article':
 			Window.setTitle('Article maintenance tagging');
 
+			// Object.values is unavailable in IE 11
+			var obj_values = Object.values || function (obj) {
+				return Object.keys(obj).map(function (key) {
+					return obj[key];
+				});
+			};
 
 			// Build sorting and lookup object flatObject, which is always
 			// needed but also used to generate the alphabetical list
-			// Would be infinitely better with Object.values, but, alas, IE 11
 			Twinkle.tag.article.flatObject = {};
-			Object.keys(Twinkle.tag.article.tagList).forEach(function(group) {
-				Object.keys(Twinkle.tag.article.tagList[group]).forEach(function(subgroup) {
-					if (Array.isArray(Twinkle.tag.article.tagList[group][subgroup])) {
-						Twinkle.tag.article.tagList[group][subgroup].forEach(function(item) {
-							Twinkle.tag.article.flatObject[item.tag] = { description: item.description, excludeMI: !!item.excludeMI };
+			obj_values(Twinkle.tag.article.tagList).forEach(function (group) {
+				obj_values(group).forEach(function (subgroup) {
+					if (Array.isArray(subgroup)) {
+						subgroup.forEach(function (item) {
+							Twinkle.tag.article.flatObject[item.tag] = {
+								description: item.description,
+								excludeMI: !!item.excludeMI
+							};
 						});
 					} else {
-						Twinkle.tag.article.flatObject[Twinkle.tag.article.tagList[group][subgroup].tag] = {description: Twinkle.tag.article.tagList[group][subgroup].description, excludeMI: !!Twinkle.tag.article.tagList[group][subgroup].excludeMI };
+						Twinkle.tag.article.flatObject[subgroup.tag] = {
+							description: subgroup.description,
+							excludeMI: !!subgroup.excludeMI
+						};
 					}
 				});
 			});
