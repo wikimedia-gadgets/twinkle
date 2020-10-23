@@ -103,16 +103,10 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				obj_values(group).forEach(function (subgroup) {
 					if (Array.isArray(subgroup)) {
 						subgroup.forEach(function (item) {
-							Twinkle.tag.article.flatObject[item.tag] = {
-								description: item.description,
-								excludeMI: !!item.excludeMI
-							};
+							Twinkle.tag.article.flatObject[item.tag] = item;
 						});
 					} else {
-						Twinkle.tag.article.flatObject[subgroup.tag] = {
-							description: subgroup.description,
-							excludeMI: !!subgroup.excludeMI
-						};
+						Twinkle.tag.article.flatObject[subgroup.tag] = subgroup;
 					}
 				});
 			});
@@ -329,224 +323,13 @@ Twinkle.tag.updateSortOrder = function(e) {
 	var container = new Morebits.quickForm.element({ type: 'fragment' });
 
 	// function to generate a checkbox, with appropriate subgroup if needed
-	var makeCheckbox = function(tag, description) {
+	var makeCheckbox = function (item) {
+		var tag = item.tag, description = item.description;
 		var checkbox = { value: tag, label: '{{' + tag + '}}: ' + description };
 		if (Twinkle.tag.checkedTags.indexOf(tag) !== -1) {
 			checkbox.checked = true;
 		}
-		switch (tag) {
-			case 'Cleanup':
-				checkbox.subgroup = {
-					name: 'cleanup',
-					type: 'input',
-					label: 'Specific reason why cleanup is needed: ',
-					tooltip: 'Required.',
-					size: 35
-				};
-				break;
-			case 'Close paraphrasing':
-				checkbox.subgroup = {
-					name: 'closeParaphrasing',
-					type: 'input',
-					label: 'Source: ',
-					tooltip: 'Source that has been closely paraphrased'
-				};
-				break;
-			case 'Copy edit':
-				checkbox.subgroup = {
-					name: 'copyEdit',
-					type: 'input',
-					label: '"This article may require copy editing for..." ',
-					tooltip: 'e.g. "consistent spelling". Optional.',
-					size: 35
-				};
-				break;
-			case 'Copypaste':
-				checkbox.subgroup = {
-					name: 'copypaste',
-					type: 'input',
-					label: 'Source URL: ',
-					tooltip: 'If known.',
-					size: 50
-				};
-				break;
-			case 'Expand language':
-				checkbox.subgroup = [ {
-					name: 'expandLanguageLangCode',
-					type: 'input',
-					label: 'Language code: ',
-					tooltip: 'Language code of the language from which article is to be expanded from'
-				}, {
-					name: 'expandLanguageArticle',
-					type: 'input',
-					label: 'Name of article: ',
-					tooltip: 'Name of article to be expanded from, without the interwiki prefix'
-				}
-				];
-				break;
-			case 'Expert needed':
-				checkbox.subgroup = [
-					{
-						name: 'expertNeeded',
-						type: 'input',
-						label: 'Name of relevant WikiProject: ',
-						tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.'
-					},
-					{
-						name: 'expertNeededReason',
-						type: 'input',
-						label: 'Reason: ',
-						tooltip: 'Short explanation describing the issue. Either Reason or Talk link is required.'
-					},
-					{
-						name: 'expertNeededTalk',
-						type: 'input',
-						label: 'Talk discussion: ',
-						tooltip: 'Name of the section of this article\'s talk page where the issue is being discussed. Do not give a link, just the name of the section. Either Reason or Talk link is required.'
-					}
-				];
-				break;
-			case 'Globalize':
-				checkbox.subgroup = {
-					name: 'globalizeRegion',
-					type: 'input',
-					label: 'Over-represented country or region'
-				};
-				break;
-			case 'History merge':
-				checkbox.subgroup = [
-					{
-						name: 'histmergeOriginalPage',
-						type: 'input',
-						label: 'Other article: ',
-						tooltip: 'Name of the page that should be merged into this one (required).'
-					},
-					{
-						name: 'histmergeReason',
-						type: 'input',
-						label: 'Reason: ',
-						tooltip: 'Short explanation describing the reason a history merge is needed. Should probably begin with "because" and end with a period.'
-					},
-					{
-						name: 'histmergeSysopDetails',
-						type: 'input',
-						label: 'Extra details: ',
-						tooltip: 'For complex cases, provide extra instructions for the reviewing administrator.'
-					}
-				];
-				break;
-			case 'Merge':
-			case 'Merge from':
-			case 'Merge to':
-				var otherTagName = 'Merge';
-				switch (tag) {
-					case 'Merge from':
-						otherTagName = 'Merge to';
-						break;
-					case 'Merge to':
-						otherTagName = 'Merge from';
-						break;
-					// no default
-				}
-				checkbox.subgroup = [
-					{
-						name: 'mergeTarget',
-						type: 'input',
-						label: 'Other article(s): ',
-						tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two'
-					},
-					{
-						type: 'checkbox',
-						list: [
-							{
-								name: 'mergeTagOther',
-								label: 'Tag the other article with a {{' + otherTagName + '}} tag',
-								checked: true,
-								tooltip: 'Only available if a single article name is entered.'
-							}
-						]
-					}
-				];
-				if (mw.config.get('wgNamespaceNumber') === 0) {
-					checkbox.subgroup.push({
-						name: 'mergeReason',
-						type: 'textarea',
-						label: 'Rationale for merge (will be posted on ' +
-							(tag === 'Merge to' ? 'the other article\'s' : 'this article\'s') + ' talk page):',
-						tooltip: 'Optional, but strongly recommended. Leave blank if not wanted. Only available if a single article name is entered.'
-					});
-				}
-				break;
-			case 'Not English':
-			case 'Rough translation':
-				checkbox.subgroup = [
-					{
-						name: 'translationLanguage',
-						type: 'input',
-						label: 'Language of article (if known): ',
-						tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
-					}
-				];
-				if (tag === 'Not English') {
-					checkbox.subgroup.push({
-						type: 'checkbox',
-						list: [
-							{
-								name: 'translationNotify',
-								label: 'Notify article creator',
-								checked: true,
-								tooltip: "Places {{uw-notenglish}} on the creator's talk page."
-							}
-						]
-					});
-				}
-				if (mw.config.get('wgNamespaceNumber') === 0) {
-					checkbox.subgroup.push({
-						type: 'checkbox',
-						list: [
-							{
-								name: 'translationPostAtPNT',
-								label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
-								checked: true
-							}
-						]
-					});
-					checkbox.subgroup.push({
-						name: 'translationComments',
-						type: 'textarea',
-						label: 'Additional comments to post at PNT',
-						tooltip: 'Optional, and only relevant if "List this article ..." above is checked.'
-					});
-				}
-				break;
-			case 'Notability':
-				checkbox.subgroup = {
-					name: 'notability',
-					type: 'select',
-					list: [
-						{ label: "{{notability}}: article's subject may not meet the general notability guideline", value: 'none' },
-						{ label: '{{notability|Academics}}: notability guideline for academics', value: 'Academics' },
-						{ label: '{{notability|Astro}}: notability guideline for astronomical objects', value: 'Astro' },
-						{ label: '{{notability|Biographies}}: notability guideline for biographies', value: 'Biographies' },
-						{ label: '{{notability|Books}}: notability guideline for books', value: 'Books' },
-						{ label: '{{notability|Companies}}: notability guidelines for companies and organizations', value: 'Companies' },
-						{ label: '{{notability|Events}}: notability guideline for events', value: 'Events' },
-						{ label: '{{notability|Films}}: notability guideline for films', value: 'Films' },
-						{ label: '{{notability|Geographic}}: notability guideline for geographic features', value: 'Geographic' },
-						{ label: '{{notability|Lists}}: notability guideline for stand-alone lists', value: 'Lists' },
-						{ label: '{{notability|Music}}: notability guideline for music', value: 'Music' },
-						{ label: '{{notability|Neologisms}}: notability guideline for neologisms', value: 'Neologisms' },
-						{ label: '{{notability|Numbers}}: notability guideline for numbers', value: 'Numbers' },
-						{ label: '{{notability|Products}}: notability guideline for products and services', value: 'Products' },
-						{ label: '{{notability|Sports}}: notability guideline for sports and athletics', value: 'Sports' },
-						{ label: '{{notability|Television}}: notability guideline for television shows', value: 'Television' },
-						{ label: '{{notability|Web}}: notability guideline for web content', value: 'Web' }
-					]
-				};
-				break;
-			default:
-				break;
-		}
+		checkbox.subgroup = item.subgroup;
 		return checkbox;
 	};
 
@@ -580,7 +363,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 			var checkboxes = [];
 			$.each(subgroup, function(k, item) {
 				if (Twinkle.tag.alreadyPresentTags.indexOf(item.tag) === -1) {
-					checkboxes.push(makeCheckbox(item.tag, item.description));
+					checkboxes.push(makeCheckbox(item));
 				}
 			});
 			subdiv.append({
@@ -618,7 +401,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		var checkboxes = [];
 		Twinkle.tag.article.alphabeticalList.forEach(function(tag) {
 			if (Twinkle.tag.alreadyPresentTags.indexOf(tag) === -1) {
-				checkboxes.push(makeCheckbox(tag, Twinkle.tag.article.flatObject[tag].description));
+				checkboxes.push(makeCheckbox(Twinkle.tag.article.flatObject[tag]));
 			}
 		});
 		container.append({
@@ -694,6 +477,70 @@ var generateLinks = function(checkbox) {
 // Tags for ARTICLES start here
 Twinkle.tag.article = {};
 
+// Shared across {{Rough translation}} and {{Not English}}
+var translationSubgroups = [
+	{
+		name: 'translationLanguage',
+		type: 'input',
+		label: 'Language of article (if known): ',
+		tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
+	}
+].concat(mw.config.get('wgNamespaceNumber') === 0 ? [
+	{
+		type: 'checkbox',
+		list: [ {
+			name: 'translationPostAtPNT',
+			label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
+			checked: true
+		} ]
+	},
+	{
+		name: 'translationComments',
+		type: 'textarea',
+		label: 'Additional comments to post at PNT',
+		tooltip: 'Optional, and only relevant if "List this article ..." above is checked.'
+	}
+] : []);
+
+// Subgroups for {{merge}}, {{merge-to}} and {{merge-from}}
+var getMergeSubgroups = function(tag) {
+	var otherTagName = 'Merge';
+	switch (tag) {
+		case 'Merge from':
+			otherTagName = 'Merge to';
+			break;
+		case 'Merge to':
+			otherTagName = 'Merge from';
+			break;
+		// no default
+	}
+	return [
+		{
+			name: 'mergeTarget',
+			type: 'input',
+			label: 'Other article(s): ',
+			tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two'
+		},
+		{
+			type: 'checkbox',
+			list: [
+				{
+					name: 'mergeTagOther',
+					label: 'Tag the other article with a {{' + otherTagName + '}} tag',
+					checked: true,
+					tooltip: 'Only available if a single article name is entered.'
+				}
+			]
+		}
+	].concat(mw.config.get('wgNamespaceNumber') === 0 ? {
+		name: 'mergeReason',
+		type: 'textarea',
+		label: 'Rationale for merge (will be posted on ' +
+			(tag === 'Merge to' ? 'the other article\'s' : 'this article\'s') + ' talk page):',
+		tooltip: 'Optional, but strongly recommended. Leave blank if not wanted. Only available if a single article name is entered.'
+	} : []);
+};
+
 // Tags arranged by category; will be used to generate the alphabetical list,
 // but tags should be in alphabetical order within the categories
 // excludeMI: true indicate a tag that *does not* work inside {{multiple issues}}
@@ -701,13 +548,55 @@ Twinkle.tag.article = {};
 Twinkle.tag.article.tagList = {
 	'Cleanup and maintenance tags': {
 		'General cleanup': [
-			{ tag: 'Cleanup', description: 'requires cleanup' },  // has a subgroup with text input
-			{ tag: 'Cleanup rewrite', description: "needs to be rewritten entirely to comply with Wikipedia's quality standards" },
-			{ tag: 'Copy edit', description: 'requires copy editing for grammar, style, cohesion, tone, or spelling' }  // has a subgroup with text input
+			{
+				tag: 'Cleanup', description: 'requires cleanup',
+				subgroup: {
+					name: 'cleanup',
+					type: 'input',
+					label: 'Specific reason why cleanup is needed: ',
+					tooltip: 'Required.',
+					size: 35
+				}
+			},  // has a subgroup with text input
+			{
+				tag: 'Cleanup rewrite',
+				description: "needs to be rewritten entirely to comply with Wikipedia's quality standards"
+			},
+			{
+				tag: 'Copy edit',
+				description: 'requires copy editing for grammar, style, cohesion, tone, or spelling',
+				subgroup: {
+					name: 'copyEdit',
+					type: 'input',
+					label: '"This article may require copy editing for..." ',
+					tooltip: 'e.g. "consistent spelling". Optional.',
+					size: 35
+				}
+			}  // has a subgroup with text input
 		],
 		'Potentially unwanted content': [
-			{ tag: 'Close paraphrasing', description: 'contains close paraphrasing of a non-free copyrighted source' },
-			{ tag: 'Copypaste', description: 'appears to have been copied and pasted from another location', excludeMI: true },  // has a subgroup with text input
+			{
+				tag: 'Close paraphrasing',
+				description: 'contains close paraphrasing of a non-free copyrighted source',
+				subgroup: {
+					name: 'closeParaphrasing',
+					type: 'input',
+					label: 'Source: ',
+					tooltip: 'Source that has been closely paraphrased'
+				}
+			},
+			{
+				tag: 'Copypaste',
+				description: 'appears to have been copied and pasted from another location',
+				excludeMI: true,
+				subgroup: {
+					name: 'copypaste',
+					type: 'input',
+					label: 'Source URL: ',
+					tooltip: 'If known.',
+					size: 50
+				}
+			},  // has a subgroup with text input
 			{ tag: 'External links', description: 'external links may not follow content policies or guidelines' },
 			{ tag: 'Non-free', description: 'may contain excessive or improper use of copyrighted materials' }
 		],
@@ -731,7 +620,31 @@ Twinkle.tag.article.tagList = {
 	},
 	'General content issues': {
 		'Importance and notability': [
-			{ tag: 'Notability', description: 'subject may not meet the general notability guideline' }  // has a subgroup with subcategories
+			{ tag: 'Notability', description: 'subject may not meet the general notability guideline',
+				subgroup: {
+					name: 'notability',
+					type: 'select',
+					list: [
+						{ label: "{{notability}}: article's subject may not meet the general notability guideline", value: 'none' },
+						{ label: '{{notability|Academics}}: notability guideline for academics', value: 'Academics' },
+						{ label: '{{notability|Astro}}: notability guideline for astronomical objects', value: 'Astro' },
+						{ label: '{{notability|Biographies}}: notability guideline for biographies', value: 'Biographies' },
+						{ label: '{{notability|Books}}: notability guideline for books', value: 'Books' },
+						{ label: '{{notability|Companies}}: notability guidelines for companies and organizations', value: 'Companies' },
+						{ label: '{{notability|Events}}: notability guideline for events', value: 'Events' },
+						{ label: '{{notability|Films}}: notability guideline for films', value: 'Films' },
+						{ label: '{{notability|Geographic}}: notability guideline for geographic features', value: 'Geographic' },
+						{ label: '{{notability|Lists}}: notability guideline for stand-alone lists', value: 'Lists' },
+						{ label: '{{notability|Music}}: notability guideline for music', value: 'Music' },
+						{ label: '{{notability|Neologisms}}: notability guideline for neologisms', value: 'Neologisms' },
+						{ label: '{{notability|Numbers}}: notability guideline for numbers', value: 'Numbers' },
+						{ label: '{{notability|Products}}: notability guideline for products and services', value: 'Products' },
+						{ label: '{{notability|Sports}}: notability guideline for sports and athletics', value: 'Sports' },
+						{ label: '{{notability|Television}}: notability guideline for television shows', value: 'Television' },
+						{ label: '{{notability|Web}}: notability guideline for web content', value: 'Web' }
+					]
+				}
+			}
 		],
 		'Style of writing': [
 			{ tag: 'Advert', description: 'written like an advertisement' },
@@ -753,7 +666,28 @@ Twinkle.tag.article.tagList = {
 		],
 		'Information and detail': [
 			{ tag: 'Context', description: 'insufficient context for those unfamiliar with the subject' },
-			{ tag: 'Expert needed', description: 'needs attention from an expert on the subject' },
+			{ tag: 'Expert needed', description: 'needs attention from an expert on the subject',
+				subgroup: [
+					{
+						name: 'expertNeeded',
+						type: 'input',
+						label: 'Name of relevant WikiProject: ',
+						tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.'
+					},
+					{
+						name: 'expertNeededReason',
+						type: 'input',
+						label: 'Reason: ',
+						tooltip: 'Short explanation describing the issue. Either Reason or Talk link is required.'
+					},
+					{
+						name: 'expertNeededTalk',
+						type: 'input',
+						label: 'Talk discussion: ',
+						tooltip: 'Name of the section of this article\'s talk page where the issue is being discussed. Do not give a link, just the name of the section. Either Reason or Talk link is required.'
+					}
+				]
+			},
 			{ tag: 'Overly detailed', description: 'excessive amount of intricate detail' },
 			{ tag: 'Undue weight', description: 'lends undue weight to certain ideas, incidents, or controversies' }
 		],
@@ -766,7 +700,13 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'COI', description: 'creator or major contributor may have a conflict of interest' },
 			{ tag: 'Disputed', description: 'questionable factual accuracy' },
 			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
-			{ tag: 'Globalize', description: 'may not represent a worldwide view of the subject' },
+			{ tag: 'Globalize', description: 'may not represent a worldwide view of the subject',
+				subgroup: {
+					name: 'globalizeRegion',
+					type: 'input',
+					label: 'Over-represented country or region'
+				}
+			},
 			{ tag: 'Over-coverage', description: 'extensive bias or disproportional coverage towards one or more specific regions' },
 			{ tag: 'Paid contributions', description: 'contains paid contributions, and may therefore require cleanup' },
 			{ tag: 'Peacock', description: 'contains wording that promotes the subject in a subjective manner without adding information' },
@@ -792,9 +732,37 @@ Twinkle.tag.article.tagList = {
 	},
 	'Specific content issues': {
 		'Language': [
-			{ tag: 'Not English', description: 'written in a language other than English and needs translation', excludeMI: true },  // has a subgroup with several options
-			{ tag: 'Rough translation', description: 'poor translation from another language', excludeMI: true },  // has a subgroup with several options
-			{ tag: 'Expand language', description: 'should be expanded with text translated from a foreign-language article', excludeMI: true }
+			{ tag: 'Not English', description: 'written in a language other than English and needs translation',
+				excludeMI: true,
+				subgroup: translationSubgroups.slice(0, 1).concat([{
+					type: 'checkbox',
+					list: [
+						{
+							name: 'translationNotify',
+							label: 'Notify article creator',
+							checked: true,
+							tooltip: "Places {{uw-notenglish}} on the creator's talk page."
+						}
+					]
+				}]).concat(translationSubgroups.slice(1))
+			},
+			{ tag: 'Rough translation', description: 'poor translation from another language', excludeMI: true,
+				subgroup: translationSubgroups
+			},
+			{ tag: 'Expand language', description: 'should be expanded with text translated from a foreign-language article',
+				excludeMI: true,
+				subgroup: [{
+					name: 'expandLanguageLangCode',
+					type: 'input',
+					label: 'Language code: ',
+					tooltip: 'Language code of the language from which article is to be expanded from'
+				}, {
+					name: 'expandLanguageArticle',
+					type: 'input',
+					label: 'Name of article: ',
+					tooltip: 'Name of article to be expanded from, without the interwiki prefix'
+				}]
+			}
 		],
 		'Links': [
 			{ tag: 'Dead end', description: 'article has no links to other articles' },
@@ -814,10 +782,37 @@ Twinkle.tag.article.tagList = {
 		]
 	},
 	'Merging': [
-		{ tag: 'History merge', description: 'another page should be history merged into this one', excludeMI: true },
-		{ tag: 'Merge', description: 'should be merged with another given article', excludeMI: true },   // these three have a subgroup with several options
-		{ tag: 'Merge from', description: 'another given article should be merged into this one', excludeMI: true },
-		{ tag: 'Merge to', description: 'should be merged into another given article', excludeMI: true }
+		{
+			tag: 'History merge',
+			description: 'another page should be history merged into this one',
+			excludeMI: true,
+			subgroup: [
+				{
+					name: 'histmergeOriginalPage',
+					type: 'input',
+					label: 'Other article: ',
+					tooltip: 'Name of the page that should be merged into this one (required).'
+				},
+				{
+					name: 'histmergeReason',
+					type: 'input',
+					label: 'Reason: ',
+					tooltip: 'Short explanation describing the reason a history merge is needed. Should probably begin with "because" and end with a period.'
+				},
+				{
+					name: 'histmergeSysopDetails',
+					type: 'input',
+					label: 'Extra details: ',
+					tooltip: 'For complex cases, provide extra instructions for the reviewing administrator.'
+				}
+			]
+		},
+		{ tag: 'Merge', description: 'should be merged with another given article', excludeMI: true,
+			subgroup: getMergeSubgroups('Merge') },
+		{ tag: 'Merge from', description: 'another given article should be merged into this one', excludeMI: true,
+			subgroup: getMergeSubgroups('Merge from') },
+		{ tag: 'Merge to', description: 'should be merged into another given article', excludeMI: true,
+			subgroup: getMergeSubgroups('Merge to') }
 	],
 	'Informational': [
 		{ tag: 'GOCEinuse', description: 'currently undergoing a major copy edit by the Guild of Copy Editors', excludeMI: true },
