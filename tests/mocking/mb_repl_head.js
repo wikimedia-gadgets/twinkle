@@ -9,6 +9,7 @@ global.window = new JSDOM('', { pretendToBeVisual: true }).window;
 global.document = window.document;
 
 global.HTMLFormElement = window.HTMLFormElement;
+global.Element = window.Element;
 
 global.jQuery = require('jquery');
 
