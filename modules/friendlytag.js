@@ -520,7 +520,8 @@ var getMergeSubgroups = function(tag) {
 			name: 'mergeTarget',
 			type: 'input',
 			label: 'Other article(s): ',
-			tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two'
+			tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two',
+			required: true
 		},
 		{
 			type: 'checkbox',
@@ -557,7 +558,8 @@ Twinkle.tag.article.tagList = {
 					type: 'input',
 					label: 'Specific reason why cleanup is needed: ',
 					tooltip: 'Required.',
-					size: 35
+					size: 35,
+					required: true
 				}
 			},  // has a subgroup with text input
 			{
@@ -785,7 +787,8 @@ Twinkle.tag.article.tagList = {
 					parameter: 'langcode',
 					type: 'input',
 					label: 'Language code: ',
-					tooltip: 'Language code of the language from which article is to be expanded from'
+					tooltip: 'Language code of the language from which article is to be expanded from',
+					required: true
 				}, {
 					name: 'expandLanguageArticle',
 					parameter: 'otherarticle',
@@ -823,7 +826,8 @@ Twinkle.tag.article.tagList = {
 					parameter: 'originalpage',
 					type: 'input',
 					label: 'Other article: ',
-					tooltip: 'Name of the page that should be merged into this one (required).'
+					tooltip: 'Name of the page that should be merged into this one (required).',
+					required: true
 				},
 				{
 					name: 'histmergeReason',
@@ -1064,7 +1068,8 @@ Twinkle.tag.fileList = {
 					type: 'input',
 					name: 'DoNotMoveToCommons_reason',
 					label: 'Reason: ',
-					tooltip: 'Enter the reason why this image should not be moved to Commons (required). If the file is PD in the US but not in country of origin, enter "US only"'
+					tooltip: 'Enter the reason why this image should not be moved to Commons (required). If the file is PD in the US but not in country of origin, enter "US only"',
+					required: true
 				},
 				{
 					type: 'input',
@@ -1109,7 +1114,8 @@ Twinkle.tag.fileList = {
 				type: 'input',
 				name: 'cleanupimageReason',
 				label: 'Reason: ',
-				tooltip: 'Enter the reason for cleanup (required)'
+				tooltip: 'Enter the reason for cleanup (required)',
+				required: true
 			}
 		},
 		{ label: '{{ClearType}}: image (not screenshot) with ClearType anti-aliasing', value: 'ClearType' },
@@ -1173,7 +1179,8 @@ Twinkle.tag.fileList = {
 				type: 'input',
 				name: 'ImagePoorQualityReason',
 				label: 'Reason: ',
-				tooltip: 'Enter the reason why this image is so bad (required)'
+				tooltip: 'Enter the reason why this image is so bad (required)',
+				required: true
 			}
 		},
 		{ label: '{{Image-underexposure}}', value: 'Image-underexposure' },
@@ -1183,7 +1190,8 @@ Twinkle.tag.fileList = {
 				type: 'input',
 				name: 'lowQualityChemReason',
 				label: 'Reason: ',
-				tooltip: 'Enter the reason why the diagram is disputed (required)'
+				tooltip: 'Enter the reason why the diagram is disputed (required)',
+				required: true
 			}
 		}
 	],
@@ -1198,7 +1206,8 @@ Twinkle.tag.fileList['Replacement tags'].forEach(function(el) {
 		type: 'input',
 		label: 'Replacement file: ',
 		tooltip: 'Enter the name of the file which replaces this one (required)',
-		name: el.value.replace(/ /g, '_') + 'File'
+		name: el.value.replace(/ /g, '_') + 'File',
+		required: true
 	};
 });
 
@@ -1866,20 +1875,10 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			return true;
 		}
 	};
-	// Given a tag, ensure an associate parameter is present
-	// Maybe just sock this away in each function???
-	var checkParameter = function(tag, parameter, description) {
-		description = description || 'a reason';
-		if (params.tags.indexOf(tag) !== -1 && params[parameter].trim() === '') {
-			alert('You must specify ' + description + ' for the {{' + tag + '}} tag.');
-			return true;
-		}
-	};
 
 	// We could theoretically put them all checkIncompatible calls in a
 	// forEach loop, but it's probably clearer not to have [[array one],
-	// [array two]] devoid of context. Likewise, all the checkParameter
-	// calls could be in one if, but could be similarly confusing.
+	// [array two]] devoid of context.
 	switch (Twinkle.tag.mode) {
 		case 'article':
 			params.tagsToRemove = form.getUnchecked('existingTags'); // not in `input`
@@ -1890,10 +1889,6 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				if (checkIncompatible(['Merge', 'Merge from', 'Merge to'], 'If several merges are required, use {{Merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).')) {
 					return;
 				}
-				if (!params.mergeTarget) {
-					alert('Please specify the title of the other article for use in the merge template.');
-					return;
-				}
 				if ((params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1) {
 					alert('Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.');
 					return;
@@ -1901,15 +1896,6 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			}
 
 			if (checkIncompatible(['Not English', 'Rough translation'])) {
-				return;
-			}
-			if (checkParameter('History merge', 'histmergeOriginalPage', 'a page to be merged')) {
-				return;
-			}
-			if (checkParameter('Cleanup', 'cleanup')) {
-				return;
-			}
-			if (checkParameter('Expand language', 'expandLanguageLangCode', 'a language code')) {
 				return;
 			}
 			break;
@@ -1979,24 +1965,6 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				}
 			}
 
-			if (checkParameter('Cleanup image', 'cleanupimageReason')) {
-				return;
-			}
-			if (checkParameter('Image-Poor-Quality', 'ImagePoorQualityReason')) {
-				return;
-			}
-			if (checkParameter('Low Quality Chem', 'lowQualityChemReason')) {
-				return;
-			}
-			// Silly to provide the same string to each of these
-			if (checkParameter('Obsolete', 'ObsoleteFile', 'the replacement file name') ||
-				checkParameter('PNG version available', 'PNG_version_availableFile', 'the replacement file name') ||
-				checkParameter('Vector version available', 'Vector_version_availableFile', 'the replacement file name')) {
-				return;
-			}
-			if (checkParameter('Do not move to Commons', 'DoNotMoveToCommons_reason')) {
-				return;
-			}
 			if (params.tags.indexOf('Do not move to Commons') !== -1 && params.DoNotMoveToCommons_expiry &&
 				(!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) || parseInt(params.DoNotMoveToCommons_expiry, 10) <= new Date().getYear() + 1900)) {
 				alert('Must be a valid future year.');
