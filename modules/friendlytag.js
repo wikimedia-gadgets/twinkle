@@ -175,7 +175,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 		case 'redirect':
 			Window.setTitle('Redirect tagging');
-			
 			var redirectTagPlainlist = [];
 			var redirectTagDescriptionPlainlist = [];
 			var redirectTagsPresent = [];
@@ -1719,7 +1718,7 @@ Twinkle.tag.callbacks = {
 						'}} on the redirect already...excluding');
 				}
 			}
-
+		}
 			var addTag = function redirectAddTag(tagIndex, tagName) {
 				tagText += '\n{{' + tagName;
 				if (tagName === 'R from alternative language') {
@@ -1742,7 +1741,6 @@ Twinkle.tag.callbacks = {
 
 				summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
 			};
-		}
 		if (rcatsToAdd.length && rcatsToRemove.length) {
 			summaryText += ' & ';
 		}
