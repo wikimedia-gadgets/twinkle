@@ -316,12 +316,12 @@ Twinkle.talkback.noticeboards = {
 	'blpn': {
 		label: 'WP:BLPN (Biographies of living persons noticeboard)',
 		text: '{{subst:BLPN-notice|thread=$SECTION}} ~~~~',
-		editSummary: 'Notice of discussion at [[Wikipedia:Biographies of living persons noticeboard]]'
+		editSummary: 'Notice of discussion at [[Wikipedia:Biographies of living persons/Noticeboard]]'
 	},
 	'coin': {
 		label: 'WP:COIN (Conflict of interest noticeboard)',
 		text: '{{subst:Coin-notice|thread=$SECTION}} ~~~~',
-		editSummary: 'Notice of discussion at [[Wikipedia:Conflict of interest noticeboard]]'
+		editSummary: 'Notice of discussion at [[Wikipedia:Conflict of interest/Noticeboard]]'
 	},
 	'drn': {
 		label: 'WP:DRN (Dispute resolution noticeboard)',
@@ -336,7 +336,7 @@ Twinkle.talkback.noticeboards = {
 	'eln': {
 		label: 'WP:ELN (External links noticeboard)',
 		text: '{{subst:ELN-notice|thread=$SECTION}} ~~~~',
-		editSummary: 'Notice of discussion at [[Wikipedia:External links/noticeboard]]'
+		editSummary: 'Notice of discussion at [[Wikipedia:External links/Noticeboard]]'
 	},
 	'ftn': {
 		label: 'WP:FTN (Fringe theories noticeboard)',
@@ -356,12 +356,12 @@ Twinkle.talkback.noticeboards = {
 	'npovn': {
 		label: 'WP:NPOVN (Neutral point of view noticeboard)',
 		text: '{{subst:NPOVN-notice|thread=$SECTION}} ~~~~',
-		editSummary: 'Notice of discussion at [[Wikipedia:Neutral point of view/noticeboard]]'
+		editSummary: 'Notice of discussion at [[Wikipedia:Neutral point of view/Noticeboard]]'
 	},
 	'rsn': {
 		label: 'WP:RSN (Reliable sources noticeboard)',
 		text: '{{subst:RSN-notice|thread=$SECTION}} ~~~~',
-		editSummary: 'Notice of discussion at [[Wikipedia:Reliable sources/noticeboard]]'
+		editSummary: 'Notice of discussion at [[Wikipedia:Reliable sources/Noticeboard]]'
 	},
 	'th': {
 		label: 'WP:THQ (Teahouse question forum)',
