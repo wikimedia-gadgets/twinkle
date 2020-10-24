@@ -190,19 +190,14 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				});
 			});
 			$.each(existingRcats, function(item) {
-				var title = existingRcats[item].getElementsByTagName('ul')[0].getElementsByTagName('li')[0].getElementsByTagName('b')[0].getElementsByTagName('a')[0].innerHTML;
-				title = 'R f' + title.slice(1);
-				title = title.replace('R fo ', 'R to ');
-				title = title.replace('R fith ', 'R with ');
-				title = title.replace(/R from an? /, 'R from ');
-				title = title.replace(/R to an? /, 'R to ');
-				var fixedTitle = correctTitles[unordinaryTitles.indexOf(title)];
-				if (fixedTitle !== undefined) {
-					title = fixedTitle;
+				var title = existingRcats[item].className;
+				title = title.slice(10);
+				title = title.replace(/_/g, ' ');
+				if (redirectTagsPresent.indexOf(title) === -1) {
+					redirectTagPlainlist.push(title);
+					redirectTagDescriptionPlainlist.push('No description available')
 				}
-				if (redirectTagPlainlist.indexOf(title) !== -1) {
-					redirectTagsPresent.push(title);
-				}
+				redirectTagsPresent.push(title);
 			});
 			if (redirectTagsPresent.length !== 0) {
 				form.append({ type: 'header', id: 'tagHeader0', label: 'Tags already present' });
