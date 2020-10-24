@@ -1498,7 +1498,13 @@ Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, 
 
 Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemplate(e) {
 	var form = e.target.form, value = form.template.value, settings = Twinkle.block.blockPresetsInfo[value];
-	if (!$(form).find('[name=actiontype][value=block]').is(':checked')) {
+
+	var blockBox = $(form).find('[name=actiontype][value=block]').is(':checked');
+	var partialBox = $(form).find('[name=actiontype][value=partial]').is(':checked');
+	var templateBox = $(form).find('[name=actiontype][value=template]').is(':checked');
+
+	// Block form is not present
+	if (!blockBox) {
 		if (settings.indefinite || settings.nonstandard) {
 			if (Twinkle.block.prev_template_expiry === null) {
 				Twinkle.block.prev_template_expiry = form.template_expiry.value || '';
@@ -1516,25 +1522,24 @@ Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemp
 			form.expiry.value = Twinkle.block.prev_template_expiry;
 		}
 		Morebits.quickForm.setElementVisibility(form.notalk.parentNode, !settings.nonstandard);
-		Morebits.quickForm.setElementVisibility(form.noemail_template.parentNode, $(form).find('[name=actiontype][value=partial]').is(':checked') && !$(form).find('[name=actiontype][value=block]').is(':checked'));
-		Morebits.quickForm.setElementVisibility(form.nocreate_template.parentNode, $(form).find('[name=actiontype][value=partial]').is(':checked') && !$(form).find('[name=actiontype][value=block]').is(':checked'));
-	} else {
-		// Only present if block && template
-		if (form.blank_duration) {
-			Morebits.quickForm.setElementVisibility(
-				form.blank_duration.parentNode,
-				!settings.indefinite && !settings.nonstandard
-			);
-		}
+		// Partial
+		Morebits.quickForm.setElementVisibility(form.noemail_template.parentNode, partialBox);
+		Morebits.quickForm.setElementVisibility(form.nocreate_template.parentNode, partialBox);
+	} else if (templateBox) { // Only present if block && template forms both visible
+		Morebits.quickForm.setElementVisibility(
+			form.blank_duration.parentNode,
+			!settings.indefinite && !settings.nonstandard
+		);
 	}
 
 	Morebits.quickForm.setElementVisibility(form.dstopic.parentNode, value === 'uw-aeblock' || value === 'uw-aepblock');
 
-	Morebits.quickForm.setElementVisibility(form.article.parentNode, !!settings.pageParam);
-	Morebits.quickForm.setElementVisibility(form.block_reason.parentNode, !!settings.reasonParam);
+	// Only particularly relevant if template form is present
+	Morebits.quickForm.setElementVisibility(form.article.parentNode, settings && !!settings.pageParam);
+	Morebits.quickForm.setElementVisibility(form.block_reason.parentNode, settings && !!settings.reasonParam);
 
 	// Partial block
-	Morebits.quickForm.setElementVisibility(form.area.parentNode, $(form).find('[name=actiontype][value=partial]').is(':checked') && !$(form).find('[name=actiontype][value=block]').is(':checked'));
+	Morebits.quickForm.setElementVisibility(form.area.parentNode, partialBox && !blockBox);
 
 	form.root.previewer.closePreview();
 };
