@@ -305,12 +305,6 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 				}
 				break;
 
-			case 10:  // template
-			case 11:  // template talk
-				work_area.append({ type: 'header', label: 'Templates' });
-				work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.templateList, mode) });
-				break;
-
 			case 14:  // category
 			case 15:  // category talk
 				work_area.append({ type: 'header', label: 'Categories' });
@@ -809,21 +803,6 @@ Twinkle.speedy.userList = [
 	}
 ];
 
-Twinkle.speedy.templateList = [
-	{
-		label: 'T3: Duplicate templates or hardcoded instances',
-		value: 'duplicatetemplate',
-		tooltip: 'Templates that are either substantial duplications of another template or hardcoded instances of another template where the same functionality could be provided by that other template',
-		subgroup: {
-			name: 'duplicatetemplate_2',
-			type: 'input',
-			label: 'Template this is redundant to: ',
-			tooltip: 'The "Template:" prefix is not needed.'
-		},
-		hideWhenMultiple: true
-	}
-];
-
 Twinkle.speedy.portalList = [
 	{
 		label: 'P1: Portal that would be subject to speedy deletion if it were an article',
@@ -852,7 +831,7 @@ Twinkle.speedy.generalList = [
 	{
 		label: 'G2: Test page',
 		value: 'test',
-		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates (although criterion T3 may apply).',
+		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates.',
 		hideInNamespaces: [ 2 ] // Not applicable in userspace
 	},
 	{
@@ -1128,7 +1107,6 @@ Twinkle.speedy.normalizeHash = {
 	nouser: 'u2',
 	gallery: 'u3',
 	notwebhost: 'u5',
-	duplicatetemplate: 't3',
 	p1: 'p1',
 	emptyportal: 'p2'
 };
@@ -1510,20 +1488,18 @@ Twinkle.speedy.callbacks = {
 					code = '/* ' + code + ' */';
 				}
 
-				// Generate edit summary for edit
-				var editsummary;
-				if (params.normalizeds.length > 1) {
-					editsummary = 'Requesting speedy deletion (';
-					$.each(params.normalizeds, function(index, norm) {
-						editsummary += '[[WP:CSD#' + norm.toUpperCase() + '|CSD ' + norm.toUpperCase() + ']], ';
-					});
-					editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
-					editsummary += ').';
-				} else if (params.normalizeds[0] === 'db') {
-					editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale "' + params.templateParams[0]['1'] + '".';
-				} else {
-					editsummary = 'Requesting speedy deletion ([[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']]).';
-				}
+			// Generate edit summary for edit
+			var editsummary;
+			if (params.normalizeds.length > 1) {
+				var criteriaText = params.normalizeds.map(function (norm) {
+					return '[[WP:CSD#' + norm.toUpperCase() + '|CSD ' + norm.toUpperCase() + ']]';
+				}).join(', ');
+				editsummary = 'Requesting speedy deletion (' + criteriaText + ').';
+			} else if (params.normalizeds[0] === 'db') {
+				editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale "' + params.templateParams[0]['1'] + '".';
+			} else {
+				editsummary = 'Requesting speedy deletion ([[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']]).';
+			}
 
 				// Blank attack pages
 				if (params.normalizeds.indexOf('g10') !== -1) {
@@ -1589,28 +1565,26 @@ Twinkle.speedy.callbacks = {
 				'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].' +
 				(Morebits.userIsSysop ? '\n\nThis log does not track outright speedy deletions made using Twinkle.' : '');
 
-			var formatParamLog = function(normalize, csdparam, input) {
-				if ((normalize === 'G4' && csdparam === 'xfd') ||
-					(normalize === 'G6' && csdparam === 'page') ||
-					(normalize === 'G6' && csdparam === 'fullvotepage') ||
-					(normalize === 'G6' && csdparam === 'sourcepage') ||
-					(normalize === 'A2' && csdparam === 'source') ||
-					(normalize === 'A10' && csdparam === 'article') ||
-					(normalize === 'F1' && csdparam === 'filename') ||
-					(normalize === 'F5' && csdparam === 'replacement')) {
+			var formatParamLog = function(criterion, csdparam, input) {
+				if ((criterion === 'G4' && csdparam === 'xfd') ||
+					(criterion === 'G6' && csdparam === 'page') ||
+					(criterion === 'G6' && csdparam === 'fullvotepage') ||
+					(criterion === 'G6' && csdparam === 'sourcepage') ||
+					(criterion === 'A2' && csdparam === 'source') ||
+					(criterion === 'A10' && csdparam === 'article') ||
+					(criterion === 'F1' && csdparam === 'filename') ||
+					(criterion === 'F5' && csdparam === 'replacement')) {
 					input = '[[:' + input + ']]';
-				} else if (normalize === 'G5' && csdparam === 'user') {
+				} else if (criterion === 'G5' && csdparam === 'user') {
 					input = '[[:User:' + input + ']]';
-				} else if (normalize === 'G12' && csdparam.lastIndexOf('url', 0) === 0 && input.lastIndexOf('http', 0) === 0) {
+				} else if (criterion === 'G12' && csdparam.lastIndexOf('url', 0) === 0 && input.lastIndexOf('http', 0) === 0) {
 					input = '[' + input + ' ' + input + ']';
-				} else if (normalize === 'T3' && csdparam === 'template') {
-					input = '[[:Template:' + input + ']]';
-				} else if (normalize === 'F8' && csdparam === 'filename') {
+				} else if (criterion === 'F8' && csdparam === 'filename') {
 					input = '[[commons:' + input + ']]';
-				} else if (normalize === 'P1' && csdparam === 'criterion') {
+				} else if (criterion === 'P1' && csdparam === 'criterion') {
 					input = '[[WP:CSD#' + input + ']]';
 				}
-				return ' {' + normalize + ' ' + csdparam + ': ' + input + '}';
+				return ' {' + criterion + ' ' + csdparam + ': ' + input + '}';
 			};
 
 			var extraInfo = '';
@@ -1909,19 +1883,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'duplicatetemplate':  // T3
-				if (form['csd.duplicatetemplate_2']) {
-					var t3template = form['csd.duplicatetemplate_2'].value;
-					if (!t3template || !t3template.trim()) {
-						alert('CSD T3:  Please specify the name of a template duplicated by this one.');
-						parameters = null;
-						return false;
-					}
-					currentParams.ts = '~~~~~';
-					currentParams.template = t3template.replace(/^\s*Template:/i, '');
-				}
-				break;
-
 			case 'p1':  // P1
 				if (form['csd.p1_criterion']) {
 					var criterion = form['csd.p1_criterion'].value;
@@ -1945,16 +1906,16 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 // Function for processing talk page notification template parameters
 // key1/value1: for {{db-criterion-[notice|deleted]}} (via {{db-csd-[notice|deleted]-custom}})
 // utparams.param: for {{db-[notice|deleted]-multiple}}
-Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParameters(normalized, parameters) {
+Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParameters(criterion, parameters) {
 	var utparams = [];
 
 	// Special cases
-	if (normalized === 'db') {
+	if (criterion === 'db') {
 		utparams['2'] = parameters['1'];
-	} else if (normalized === 'g6') {
+	} else if (criterion === 'g6') {
 		utparams.key1 = 'to';
 		utparams.value1 = Morebits.pageNameNorm;
-	} else if (normalized === 'g12') {
+	} else if (criterion === 'g12') {
 		['url', 'url2', 'url3'].forEach(function(item, idx) {
 			if (parameters[item]) {
 				idx++;
@@ -1965,7 +1926,7 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 	} else {
 		// Handle the rest
 		var param;
-		switch (normalized) {
+		switch (criterion) {
 			case 'g4':
 				param = 'xfd';
 				break;
@@ -1998,7 +1959,7 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 
 /**
  * @param {Event} e
- * @returns {Array}
+ * @returns {string[]} HTML name(s) of the radio/checkbox fields corresponding to the criteria
  */
 Twinkle.speedy.resolveCsdValues = function twinklespeedyResolveCsdValues(e) {
 	var values = (e.target.form ? e.target.form : e.target).getChecked('csd');
