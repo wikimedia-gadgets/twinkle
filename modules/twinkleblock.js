@@ -1757,9 +1757,14 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 		if (!/te?mp|^\s*$|min/.exec(params.expiry)) {
 			if (params.indefinite) {
 				text += '|indef=yes';
-			} else if (!params.blank_duration && !new Morebits.date(params.expiry).isValid()) {
+			} else if (!params.blank_duration) {
 				// Block template wants a duration, not date
-				text += '|time=' + params.expiry;
+				var date = new Morebits.date(params.expiry);
+				if (date.isValid()) {
+					text += '|time=' + date.timeBetween(Date.now());
+				} else {
+					text += '|time=' + params.expiry;
+				}
 			}
 		}
 
