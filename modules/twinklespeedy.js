@@ -495,7 +495,8 @@ Twinkle.speedy.customRationale = [
 			name: 'reason_1',
 			type: 'input',
 			label: 'Rationale: ',
-			size: 60
+			size: 60,
+			required: true
 		},
 		hideWhenMultiple: true
 	}
@@ -518,7 +519,8 @@ Twinkle.speedy.fileList = [
 			name: 'redundantimage_filename',
 			type: 'input',
 			label: 'File this is redundant to: ',
-			tooltip: 'The "File:" prefix can be left off.'
+			tooltip: 'The "File:" prefix can be left off.',
+			required: true
 		}
 	},
 	{
@@ -642,7 +644,8 @@ Twinkle.speedy.articleList = [
 			name: 'foreign_source',
 			type: 'input',
 			label: 'Interwiki link to the article on the foreign-language wiki: ',
-			tooltip: 'For example, fr:Bonjour'
+			tooltip: 'For example, fr:Bonjour',
+			required: true
 		}
 	},
 	{
@@ -721,7 +724,8 @@ Twinkle.speedy.articleList = [
 		subgroup: {
 			name: 'a10_article',
 			type: 'input',
-			label: 'Article that is duplicated: '
+			label: 'Article that is duplicated: ',
+			required: true
 		}
 	},
 	{
@@ -811,7 +815,8 @@ Twinkle.speedy.portalList = [
 		subgroup: {
 			name: 'p1_criterion',
 			type: 'input',
-			label: 'Article criterion that would apply: '
+			label: 'Article criterion that would apply: ',
+			required: true
 		}
 	},
 	{
@@ -854,7 +859,8 @@ Twinkle.speedy.generalList = [
 			type: 'input',
 			label: 'Page where the deletion discussion took place: ',
 			tooltip: 'Must start with "Wikipedia:"',
-			size: 60
+			size: 60,
+			required: true
 		}
 	},
 	{
@@ -876,13 +882,15 @@ Twinkle.speedy.generalList = [
 			{
 				name: 'move_page',
 				type: 'input',
-				label: 'Page to be moved here: '
+				label: 'Page to be moved here: ',
+				required: true
 			},
 			{
 				name: 'move_reason',
 				type: 'input',
 				label: 'Reason: ',
-				size: 60
+				size: 60,
+				required: true
 			}
 		],
 		hideWhenMultiple: true
@@ -907,7 +915,8 @@ Twinkle.speedy.generalList = [
 		subgroup: {
 			name: 'copypaste_sourcepage',
 			type: 'input',
-			label: 'Original page that was copy-pasted here: '
+			label: 'Original page that was copy-pasted here: ',
+			required: true
 		},
 		hideWhenMultiple: true
 	},
@@ -1488,18 +1497,18 @@ Twinkle.speedy.callbacks = {
 					code = '/* ' + code + ' */';
 				}
 
-			// Generate edit summary for edit
-			var editsummary;
-			if (params.normalizeds.length > 1) {
-				var criteriaText = params.normalizeds.map(function (norm) {
-					return '[[WP:CSD#' + norm.toUpperCase() + '|CSD ' + norm.toUpperCase() + ']]';
-				}).join(', ');
-				editsummary = 'Requesting speedy deletion (' + criteriaText + ').';
-			} else if (params.normalizeds[0] === 'db') {
-				editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale "' + params.templateParams[0]['1'] + '".';
-			} else {
-				editsummary = 'Requesting speedy deletion ([[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']]).';
-			}
+				// Generate edit summary for edit
+				var editsummary;
+				if (params.normalizeds.length > 1) {
+					var criteriaText = params.normalizeds.map(function (norm) {
+						return '[[WP:CSD#' + norm.toUpperCase() + '|CSD ' + norm.toUpperCase() + ']]';
+					}).join(', ');
+					editsummary = 'Requesting speedy deletion (' + criteriaText + ').';
+				} else if (params.normalizeds[0] === 'db') {
+					editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale "' + params.templateParams[0]['1'] + '".';
+				} else {
+					editsummary = 'Requesting speedy deletion ([[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']]).';
+				}
 
 				// Blank attack pages
 				if (params.normalizeds.indexOf('g10') !== -1) {
@@ -1669,121 +1678,85 @@ Twinkle.speedy.callbacks = {
 // validate subgroups in the form passed into the speedy deletion tag
 Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values) {
 	var parameters = [];
+	var input = Morebits.quickForm.getInputData(form);
 
 	$.each(values, function(index, value) {
 		var currentParams = [];
 		switch (value) {
 			case 'reason':
-				if (form['csd.reason_1']) {
-					var dbrationale = form['csd.reason_1'].value;
-					if (!dbrationale || !dbrationale.trim()) {
-						alert('Custom rationale:  Please specify a rationale.');
-						parameters = null;
-						return false;
-					}
-					currentParams['1'] = dbrationale;
-				}
+				currentParams['1'] = input.reason_1;
 				break;
 
 			case 'userreq':  // U1
-				if (form['csd.userreq_rationale']) {
-					var u1rationale = form['csd.userreq_rationale'].value;
-					if (mw.config.get('wgNamespaceNumber') === 3 && !(/\//).test(mw.config.get('wgTitle')) &&
-							(!u1rationale || !u1rationale.trim())) {
-						alert('CSD U1:  Please specify a rationale when nominating user talk pages.');
-						parameters = null;
-						return false;
-					}
-					currentParams.rationale = u1rationale;
+				if (mw.config.get('wgNamespaceNumber') === 3 && !(/\//).test(mw.config.get('wgTitle')) &&
+					!input.userreq_rationale) {
+					alert('CSD U1:  Please specify a rationale when nominating user talk pages.');
+					parameters = null;
+					return false;
+				}
+				if (input.userreq_rationale) {
+					currentParams.rationale = input.userreq_rationale;
 				}
 				break;
 
 			case 'repost':  // G4
-				if (form['csd.repost_xfd']) {
-					var deldisc = form['csd.repost_xfd'].value;
-					if (deldisc) {
-						if (!/^(?:wp|wikipedia):/i.test(deldisc)) {
-							alert('CSD G4:  The deletion discussion page name, if provided, must start with "Wikipedia:".');
-							parameters = null;
-							return false;
-						}
-						currentParams.xfd = deldisc;
+				if (input.repost_xfd) {
+					if (!/^(?:wp|wikipedia):/i.test(input.repost_xfd)) {
+						alert('CSD G4:  The deletion discussion page name, if provided, must start with "Wikipedia:".');
+						parameters = null;
+						return false;
 					}
+					currentParams.xfd = input.repost_xfd;
 				}
 				break;
 
 			case 'banned':  // G5
-				if (form['csd.banned_user'] && form['csd.banned_user'].value) {
-					currentParams.user = form['csd.banned_user'].value.replace(/^\s*User:/i, '');
+				if (input.banned_user) {
+					currentParams.user = input.banned_user.replace(/^\s*User:/i, '');
 				}
 				break;
 
 			case 'move':  // G6
-				if (form['csd.move_page'] && form['csd.move_reason']) {
-					var movepage = form['csd.move_page'].value,
-						movereason = form['csd.move_reason'].value;
-					if (!movepage || !movepage.trim()) {
-						alert('CSD G6 (move):  Please specify the page to be moved here.');
-						parameters = null;
-						return false;
-					}
-					if (!movereason || !movereason.trim()) {
-						alert('CSD G6 (move):  Please specify the reason for the move.');
-						parameters = null;
-						return false;
-					}
-					currentParams.page = movepage;
-					currentParams.reason = movereason;
-				}
+				currentParams.page = input.move_page;
+				currentParams.reason = input.move_reason;
 				break;
 
 			case 'xfd':  // G6
-				if (form['csd.xfd_fullvotepage']) {
-					var xfd = form['csd.xfd_fullvotepage'].value;
-					if (xfd) {
-						if (!/^(?:wp|wikipedia):/i.test(xfd)) {
-							alert('CSD G6 (XFD):  The deletion discussion page name, if provided, must start with "Wikipedia:".');
-							parameters = null;
-							return false;
-						}
-						currentParams.fullvotepage = xfd;
+				if (input.xfd_fullvotepage) {
+					if (!/^(?:wp|wikipedia):/i.test(input.xfd_fullvotepage)) {
+						alert('CSD G6 (XFD):  The deletion discussion page name, if provided, must start with "Wikipedia:".');
+						parameters = null;
+						return false;
 					}
+					currentParams.fullvotepage = input.xfd_fullvotepage;
 				}
 				break;
 
 			case 'copypaste':  // G6
-				if (form['csd.copypaste_sourcepage']) {
-					var copypaste = form['csd.copypaste_sourcepage'].value;
-					if (!copypaste || !copypaste.trim()) {
-						alert('CSD G6 (copypaste):  Please specify the source page name.');
-						parameters = null;
-						return false;
-					}
-					currentParams.sourcepage = copypaste;
-				}
+				currentParams.sourcepage = input.copypaste_sourcepage;
 				break;
 
 			case 'g6':  // G6
-				if (form['csd.g6_rationale'] && form['csd.g6_rationale'].value) {
-					currentParams.rationale = form['csd.g6_rationale'].value;
+				if (input.g6_rationale) {
+					currentParams.rationale = input.g6_rationale;
 				}
 				break;
 
 			case 'author':  // G7
-				if (form['csd.author_rationale'] && form['csd.author_rationale'].value) {
-					currentParams.rationale = form['csd.author_rationale'].value;
+				if (input.author_rationale) {
+					currentParams.rationale = input.author_rationale;
 				}
 				break;
 
 			case 'g8':  // G8
-				if (form['csd.g8_rationale'] && form['csd.g8_rationale'].value) {
-					currentParams.rationale = form['csd.g8_rationale'].value;
+				if (input.g8_rationale) {
+					currentParams.rationale = input.g8_rationale;
 				}
 				break;
 
 			case 'templatecat':  // G8
-				if (form['csd.templatecat_rationale'] && form['csd.templatecat_rationale'].value) {
-					currentParams.rationale = form['csd.templatecat_rationale'].value;
+				if (input.templatecat_rationale) {
+					currentParams.rationale = input.templatecat_rationale;
 				}
 				break;
 
@@ -1793,14 +1766,14 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				break;
 
 			case 'copyvio':  // G12
-				if (form['csd.copyvio_url'] && form['csd.copyvio_url'].value) {
-					currentParams.url = form['csd.copyvio_url'].value;
+				if (input.copyvio_url) {
+					currentParams.url = input.copyvio_url;
 				}
-				if (form['csd.copyvio_url2'] && form['csd.copyvio_url2'].value) {
-					currentParams.url2 = form['csd.copyvio_url2'].value;
+				if (input.copyvio_url2) {
+					currentParams.url2 = input.copyvio_url2;
 				}
-				if (form['csd.copyvio_url3'] && form['csd.copyvio_url3'].value) {
-					currentParams.url3 = form['csd.copyvio_url3'].value;
+				if (input.copyvio_url3) {
+					currentParams.url3 = input.copyvio_url3;
 				}
 				break;
 
@@ -1809,90 +1782,51 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				break;
 
 			case 'redundantimage':  // F1
-				if (form['csd.redundantimage_filename']) {
-					var redimage = form['csd.redundantimage_filename'].value;
-					if (!redimage || !redimage.trim()) {
-						alert('CSD F1:  Please specify the filename of the other file.');
-						parameters = null;
-						return false;
-					}
-					currentParams.filename = /^\s*(Image|File):/i.test(redimage) ? redimage : 'File:' + redimage;
-				}
+				currentParams.filename = new mw.Title(input.redundantimage_filename, 6).toText();
 				break;
 
 			case 'badfairuse':  // F7
-				if (form['csd.badfairuse_rationale'] && form['csd.badfairuse_rationale'].value) {
-					currentParams.rationale = form['csd.badfairuse_rationale'].value;
+				if (input.badfairuse_rationale) {
+					currentParams.rationale = input.badfairuse_rationale;
 				}
 				break;
 
 			case 'commons':  // F8
-				if (form['csd.commons_filename']) {
-					var filename = form['csd.commons_filename'].value;
-					if (filename && filename.trim() && filename !== Morebits.pageNameNorm) {
-						currentParams.filename = /^\s*(Image|File):/i.test(filename) ? filename : 'File:' + filename;
-					}
+				if (input.commons_filename && input.commons_filename !== Morebits.pageNameNorm) {
+					currentParams.filename = new mw.Title(input.commons_filename, 6).toText();
 				}
 				break;
 
 			case 'imgcopyvio':  // F9
-				if (form['csd.imgcopyvio_url'] && form['csd.imgcopyvio_rationale']) {
-					var f9url = form['csd.imgcopyvio_url'].value;
-					var f9rationale = form['csd.imgcopyvio_rationale'].value;
-					if ((!f9url || !f9url.trim()) && (!f9rationale || !f9rationale.trim())) {
-						alert('CSD F9: You must enter a url or reason (or both) when nominating a file under F9.');
-						parameters = null;
-						return false;
-					}
-					if (form['csd.imgcopyvio_url'].value) {
-						currentParams.url = f9url;
-					}
-					if (form['csd.imgcopyvio_rationale'].value) {
-						currentParams.rationale = f9rationale;
-					}
+				if (!input.imgcopyvio_url && !input.imgcopyvio_rationale) {
+					alert('CSD F9: You must enter a url or reason (or both) when nominating a file under F9.');
+					parameters = null;
+					return false;
+				}
+				if (input.imgcopyvio_url) {
+					currentParams.url = input.imgcopyvio_url;
+				}
+				if (input.imgcopyvio_rationale) {
+					currentParams.rationale = input.imgcopyvio_rationale;
 				}
 				break;
 
 			case 'foreign':  // A2
-				if (form['csd.foreign_source']) {
-					var foreignlink = form['csd.foreign_source'].value;
-					if (!foreignlink || !foreignlink.trim()) {
-						alert('CSD A2:  Please specify an interwiki link to the article of which this is a copy.');
-						parameters = null;
-						return false;
-					}
-					currentParams.source = foreignlink;
-				}
+				currentParams.source = input.foreign_source;
 				break;
 
 			case 'transwiki':  // A5
-				if (form['csd.transwiki_location'] && form['csd.transwiki_location'].value) {
-					currentParams.location = form['csd.transwiki_location'].value;
+				if (input.transwiki_location) {
+					currentParams.location = input.transwiki_location;
 				}
 				break;
 
 			case 'a10':  // A10
-				if (form['csd.a10_article']) {
-					var duptitle = form['csd.a10_article'].value;
-					if (!duptitle || !duptitle.trim()) {
-						alert('CSD A10:  Please specify the name of the article which is duplicated.');
-						parameters = null;
-						return false;
-					}
-					currentParams.article = duptitle;
-				}
+				currentParams.article = input.a10_article;
 				break;
 
 			case 'p1':  // P1
-				if (form['csd.p1_criterion']) {
-					var criterion = form['csd.p1_criterion'].value;
-					if (!criterion || !criterion.trim()) {
-						alert('CSD P1:  Please specify a single criterion.');
-						parameters = null;
-						return false;
-					}
-					currentParams.criterion = criterion;
-				}
+				currentParams.criterion = input.p1_criterion;
 				break;
 
 			default:
@@ -2041,6 +1975,17 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	if (e.target.type === 'checkbox' || e.target.type === 'text' ||
 			e.target.type === 'select') {
 		return;
+	}
+
+	// Check that no required field contains just spaces/tabs
+	var requiredFields = $(form).find('input:required').get();
+	// use the old-fashioned loop so that we can easily break and return
+	for (var i = 0; i < requiredFields.length; i++) {
+		var element = requiredFields[i];
+		if (!element.value.trim()) {
+			var label = Morebits.quickForm.getElementLabel(element);
+			return alert('Please provide a value for the "' + label + '" field.');
+		}
 	}
 
 	var values = Twinkle.speedy.resolveCsdValues(e);
