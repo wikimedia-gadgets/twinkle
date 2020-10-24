@@ -179,8 +179,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			var redirectTagDescriptionPlainlist = [];
 			var redirectTagsPresent = [];
 			var existingRcats = document.getElementsByClassName('rcat');
-			var unordinaryTitles = ['R from avoided double redirect', 'R from ASCII-only title', 'R from camel case title', 'R from Unicode code point', 'R from alternative scientific name of an organism', 'R from different spelling', 'R from the <i>same page name</i> with diacritics', 'R from or to a drug trade name', 'R from longer title', 'R from page move', 'R from location and country', 'R from person(s)', 'R from the plural form', 'R from related word or phrase', 'R from scientific name of an organism', 'R from the sorting name', 'R from currently unnecessary disambiguation', 'R fentioned in a hatnote', 'R from printworthy page title', 'R from taxon with possibilities', 'R to embedded anchor', 'R from outside category namespace', 'R to the <i>same page name</i> with diacritics', 'R to help page', 'R from outside mainspace', 'R to its plural form', 'R to portal page', 'R to project page', 'R to scientific name of an organism', 'R from outside userspace', 'R from unprintworthy page title'];
-			var correctTitles = ['R avoided double redirect', 'R from ASCII-only', 'R from CamelCase', 'R from Unicode code', 'R from alternative scientific name', 'R from alternative spelling', 'R from diacritic', 'R from drug trade name', 'R from long name', 'R from move', 'R from name and country', 'R from person', 'R from plural', 'R from related word', 'R from scientific name', 'R from sort name', 'R from unnecessary disambiguation', 'R mentioned in hatnote', 'R printworthy', 'R taxon with possibilities', 'R to anchor', 'R to category namespace', 'R to diacritic', 'R to help namespace', 'R to main namespace', 'R to plural', 'R to portal namespace', 'R to project namespace', 'R to scientific name', 'R to user namespace', 'R unprintworthy'];
 			$.each(Twinkle.tag.redirectList, function(groupname, group) {
 				$.each(group, function(subgroupName, subgroup) {
 					subgroup.map(function (item) {
@@ -195,7 +193,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				title = title.replace(/_/g, ' ');
 				if (redirectTagsPresent.indexOf(title) === -1) {
 					redirectTagPlainlist.push(title);
-					redirectTagDescriptionPlainlist.push('No description available')
+					redirectTagDescriptionPlainlist.push('No description available');
 				}
 				redirectTagsPresent.push(title);
 			});
