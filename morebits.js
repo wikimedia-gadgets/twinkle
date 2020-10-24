@@ -1432,6 +1432,14 @@ Morebits.date.localeData = {
 		thisWeek: 'dddd [at] h:mm A',
 		pastWeek: '[Last] dddd [at] h:mm A',
 		other: 'YYYY-MM-DD'
+	},
+	units: {
+		second: 'second',
+		minute: 'minute',
+		hour: 'hour',
+		day: 'day',
+		month: 'month',
+		year: 'year'
 	}
 };
 
@@ -1580,7 +1588,7 @@ $.extend(Morebits.date.prototype, {
 		// Zero out the hours, minutes, seconds and milliseconds - keeping only the date;
 		// find the difference. Note that setHours() returns the same thing as getTime().
 		var dateDiff = (new Date().setHours(0, 0, 0, 0) -
-			new Date(this).setHours(0, 0, 0, 0)) / 8.64e7;
+			new Date(this).setHours(0, 0, 0, 0)) / 8.64e7; // milliseconds in a day
 		switch (true) {
 			case dateDiff === 0:
 				return this.format(Morebits.date.localeData.relativeTimes.thisDay, zone);
@@ -1595,6 +1603,48 @@ $.extend(Morebits.date.prototype, {
 			default:
 				return this.format(Morebits.date.localeData.relativeTimes.other, zone);
 		}
+	},
+
+	/**
+	 * Gives a readable difference between two dates
+	 * Date ranges taken from moment.js: https://momentjs.com/docs/#/displaying/fromnow/
+	 *
+	 * @param {string|Date} date - Comparison date
+	 * @returns {string} Human-readable version of the absolute value of
+	 * the difference between dates
+	 */
+	timeBetween: function(date) {
+		if (!new Morebits.date(date).isValid()) {
+			throw new Error('Invalid date "' + date + '"');
+		}
+		// Round to nearest second
+		var dateDiff = Math.abs(Math.round((new Date(date) - new Date(this)) / 1000));
+		switch (true) {
+			case dateDiff < 45:
+				return dateDiff + ' ' + Morebits.date.localeData.units.second + 's';
+			case dateDiff < 90:
+				return 'one ' + Morebits.date.localeData.units.minute;
+			case dateDiff < 2700: // 45 minutes
+				return Math.round(dateDiff / 60) + ' ' + Morebits.date.localeData.units.minute + 's';
+			case dateDiff < 5400: // 90 minutes
+				return 'one ' + Morebits.date.localeData.units.hour;
+			case dateDiff < 7.92e4: // 22 hours
+				return Math.round(dateDiff / 60 / 60) + ' ' + Morebits.date.localeData.units.hour + 's';
+			case dateDiff < 1.296e5: // 36 hours
+				return 'one ' + Morebits.date.localeData.units.day;
+			case dateDiff < 2.2464e6: // 26 days
+				return Math.round(dateDiff / 24 / 60 / 60) + ' ' + Morebits.date.localeData.units.day + 's';
+			case dateDiff < 3.974e6: // 46 days
+				return 'one ' + Morebits.date.localeData.units.month;
+			case dateDiff < 2.7648e7: // 320 days
+				// Not exact, since they're so variable
+				return Math.round(dateDiff / 365.24 * 12 / 24 / 60 / 60) + ' ' + Morebits.date.localeData.units.month + 's';
+			case dateDiff < 4.72608e7: // 547 days
+				return 'one ' + Morebits.date.localeData.units.year;
+			default: // >1.5 years
+				return Math.round(dateDiff / 365.24 / 24 / 60 / 60) + ' ' + Morebits.date.localeData.units.year + 's';
+		}
+
 	},
 
 	/**
