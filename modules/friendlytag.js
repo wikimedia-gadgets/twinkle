@@ -259,13 +259,15 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				if (e.className.indexOf('box-') === 0) {
 					if (e.classList[0] === 'box-Multiple_issues') {
 						$(e).find('.ambox').each(function(idx, e) {
-							var tag = e.classList[0].slice(4).replace(/_/g, ' ');
-							Twinkle.tag.alreadyPresentTags.push(tag);
+							if (e.classList[0].indexOf('box-') === 0) {
+								var tag = e.classList[0].slice('box-'.length).replace(/_/g, ' ');
+								Twinkle.tag.alreadyPresentTags.push(tag);
+							}
 						});
 						return true; // continue
 					}
 
-					var tag = e.classList[0].slice(4).replace(/_/g, ' ');
+					var tag = e.classList[0].slice('box-'.length).replace(/_/g, ' ');
 					Twinkle.tag.alreadyPresentTags.push(tag);
 				}
 			});
@@ -1566,7 +1568,8 @@ Twinkle.tag.callbacks = {
 
 		// To-be-retained existing tags that are groupable
 		params.tagsToRemain.forEach(function(tag) {
-			if (!Twinkle.tag.article.flatObject[tag].excludeMI) {
+			// If the tag is unknown to us, we consider it non-groupable
+			if (Twinkle.tag.article.flatObject[tag] && !Twinkle.tag.article.flatObject[tag].excludeMI) {
 				groupableExistingTags.push(tag);
 			}
 		});
