@@ -1538,6 +1538,11 @@ $.extend(Morebits.date.prototype, {
 			udate = new Morebits.date(this.getTime()).add(this.getTimezoneOffset() + zone, 'minutes');
 		}
 
+		// default to ISOString
+		if (!formatstr) {
+			return udate.toISOString();
+		}
+
 		var pad = function(num) {
 			return num < 10 ? '0' + num : num;
 		};
