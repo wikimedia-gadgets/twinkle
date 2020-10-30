@@ -1403,10 +1403,19 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
 Morebits.date = function() {
 	var args = Array.prototype.slice.call(arguments);
 
+	// Date.parse implementations vary too much between browsers, and
+	// MediaWiki's format is too non-standard, so we just convert MW
+	// timestamps to ISO-8601. A paren-wrapped 'UTC' messes everyone up,
+	// and the comma after the time is only okay in modern Firefox. After
+	// this first replace, Chrome and Firefox are content. The second
+	// replace is mainly for Safari, which basically *only* accepts the
+	// simplified ECMA-262 implementation of ISO-8601.
 	if (typeof args[0] === 'string') {
-		// Attempt to remove a comma and paren-wrapped timezone, to get MediaWiki timestamps to parse
-		// Firefox (at least in 75) seems to be okay with the comma, though
 		args[0] = args[0].replace(/(\d\d:\d\d),/, '$1').replace(/\(UTC\)/, 'UTC');
+		// Safari is particular about timezone offsets, so this is intentionally specific
+		args[0] = args[0].replace(/(\d\d:\d\d) (\d{1,2}) ([A-z][a-z]+) (\d{4}) UTC$/, function(match, time, date, monthname, year) {
+			return [year, mw.config.get('wgMonthNames').indexOf(monthname), date].join('-') + 'T' + time + 'Z';
+		});
 	}
 	this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)));
 };
