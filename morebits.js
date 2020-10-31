@@ -1412,26 +1412,21 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
  */
 Morebits.date = function() {
 	var args = Array.prototype.slice.call(arguments);
-
-	// Date.parse implementations vary too much between browsers, and
-	// MediaWiki's format is too non-standard, so we just convert MW
-	// timestamps to ISO-8601. A paren-wrapped 'UTC' messes everyone up,
-	// and the comma after the time is only okay in modern Firefox. After
-	// this first replace, Chrome and Firefox are content. The second
-	// replace is mainly for Safari, which basically *only* accepts the
-	// simplified ECMA-262 implementation of ISO-8601.
-	if (typeof args[0] === 'string') {
-		args[0] = args[0].replace(/(\d\d:\d\d),/, '$1').replace(/\(UTC\)/, 'UTC');
-		// Safari is particular about timezone offsets, so this is intentionally specific
-		args[0] = args[0].replace(/(\d\d:\d\d) (\d{1,2}) ([A-Z][a-z]+) (\d{4}) UTC$/, function(match, time, date, monthname, year) {
-			// zero-pad date
-			if (date.length === 1) {
-				date = '0' + date;
-			}
-			return [year, mw.config.get('wgMonthNames').indexOf(monthname), date].join('-') + 'T' + time + 'Z';
-		});
-	}
 	this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)));
+
+	if (!this.isValid()) {
+		if (args.length === 1 && typeof args[0] === 'string') {
+			// Check if it's a MediaWiki signature timestamp (which the native Date cannot parse directly)
+			var dateParts = Morebits.date.localeData.signatureTimestampFormat(args[0]);
+			if (dateParts) {
+				this._d = new Date(Date.UTC.apply(null, dateParts));
+			}
+		}
+	}
+	// Still no?
+	if (!this.isValid()) {
+		mw.log.warn('Invalid Morebits.date initialisation:', args);
+	}
 };
 
 Morebits.date.localeData = {
@@ -1446,6 +1441,19 @@ Morebits.date.localeData = {
 		thisWeek: 'dddd [at] h:mm A',
 		pastWeek: '[Last] dddd [at] h:mm A',
 		other: 'YYYY-MM-DD'
+	},
+	signatureTimestampFormat: function (str) {
+		var rgx = /(\d{2}):(\d{2}), (\d{1,2}) (\w+) (\d{4}) \(UTC\)/;
+		var match = rgx.exec(str);
+		if (!match) {
+			return null;
+		}
+		var month = Morebits.date.localeData.months.indexOf(match[4]);
+		if (month === -1) {
+			return null;
+		}
+		// ..... year ... month .. date ... hour .... minute
+		return [match[5], month, match[3], match[1], match[2]];
 	}
 };
 
@@ -1543,6 +1551,9 @@ $.extend(Morebits.date.prototype, {
 	 * @returns {string}
 	 */
 	format: function(formatstr, zone) {
+		if (!this.isValid()) {
+			return 'Invalid date'; // Put the truth out, preferable to "NaNNaNNan NaN:NaN" or whatever
+		}
 		var udate = this;
 		// create a new date object that will contain the date to display as system time
 		if (zone === 'utc') {
