@@ -1,0 +1,13 @@
+name: "PR Labeler"
+on:
+- pull_request
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/labeler@main
+      with:
+        configuration-path: ".github/labels.yml"
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        sync-labels: true
