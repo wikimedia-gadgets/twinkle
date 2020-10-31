@@ -217,8 +217,8 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		});
 
 		field_block_options = new Morebits.quickForm.element({ type: 'field', label: 'Block options', name: 'field_block_options' });
-		field_block_options.append({ type: 'div', name: 'hasblocklog', label: ' ' });
 		field_block_options.append({ type: 'div', name: 'currentblock', label: ' ' });
+		field_block_options.append({ type: 'div', name: 'hasblocklog', label: ' ' });
 		field_block_options.append({
 			type: 'select',
 			name: 'expiry_preset',
@@ -582,19 +582,11 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		$form.find('fieldset[name="field_template_options"]').hide();
 	}
 
-	if (Twinkle.block.hasBlockLog) {
-		var $blockloglink = $('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgRelevantUserName'), type: 'block'}) + '">block log</a>)');
-
-		Morebits.status.init($('div[name="hasblocklog"] span').last()[0]);
-		Morebits.status.warn('This user has been blocked in the past', $blockloglink[0]);
-	}
-
-
 	if (Twinkle.block.currentBlockInfo) {
 		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
 		var statusStr = relevantUserName + ' is ' + (Twinkle.block.currentBlockInfo.partial === '' ? 'partially blocked' : 'blocked sitewide');
 		if (Twinkle.block.currentBlockInfo.expiry === 'infinity') {
-			statusStr += ' (indef)';
+			statusStr += ' (indefinite)';
 		} else if (new Morebits.date(Twinkle.block.currentBlockInfo.expiry).isValid()) {
 			statusStr += ' (expires ' + new Morebits.date(Twinkle.block.currentBlockInfo.expiry).calendar('utc') + ')';
 		}
@@ -604,10 +596,18 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		} else if (Twinkle.block.currentBlockInfo.partial === '' && !partialBox) {
 			infoStr += ', converting it to a sitewide block';
 		}
+		infoStr += '.';
 		Morebits.status.warn(statusStr, infoStr);
 
 		// Default to the current block conditions on intial form generation
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
+	}
+
+	if (Twinkle.block.hasBlockLog) {
+		var $blockloglink = $('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgRelevantUserName'), type: 'block'}) + '">block log</a>)');
+
+		Morebits.status.init($('div[name="hasblocklog"] span').last()[0]);
+		Morebits.status.warn(Twinkle.block.currentBlockInfo ? 'Previous blocks' : 'This user has been blocked in the past', $blockloglink[0]);
 	}
 
 	// Make sure all the fields are correct based on initial defaults

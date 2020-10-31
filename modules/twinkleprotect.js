@@ -282,7 +282,7 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 			if (settings.expiry === 'infinity') {
 				protectionNode.push(' (indefinite) ');
 			} else {
-				protectionNode.push(' (expires ' + new Date(settings.expiry).toUTCString() + ') ');
+				protectionNode.push(' (expires ' + new Morebits.date(settings.expiry).calendar('utc') + ') ');
 			}
 			if (settings.admin) {
 				var adminLink = '<a target="_blank" href="' + mw.util.getUrl('User talk:' + settings.admin) + '">' + settings.admin + '</a>';
