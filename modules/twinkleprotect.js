@@ -212,7 +212,9 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 
 		// show the protection level and log info
 		Twinkle.protect.hasProtectLog = !!protectData[0].query.logevents.length;
+		Twinkle.protect.protectLog = Twinkle.protect.hasProtectLog && protectData[0].query.logevents;
 		Twinkle.protect.hasStableLog = hasFlaggedRevs ? !!stableData[0].query.logevents.length : false;
+		Twinkle.protect.stableLog = Twinkle.protect.hasStableLog && stableData[0].query.logevents;
 		Twinkle.protect.currentProtectionLevels = current;
 
 		if (adminEditDeferred) {
@@ -240,13 +242,28 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 
 		if (Twinkle.protect.hasProtectLog) {
 			$linkMarkup.append(
-				$('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">protection log</a>'),
-				Twinkle.protect.hasStableLog ? $('<span> &bull; </span>') : null
-			);
+				$('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">protection log</a>'));
+			if (!currentlyProtected || (!Twinkle.protect.currentProtectionLevels.edit && !Twinkle.protect.currentProtectionLevels.move)) {
+				var lastProtectAction = Twinkle.protect.protectLog[0];
+				if (lastProtectAction.action === 'unprotect') {
+					$linkMarkup.append(' (unprotected ' + new Morebits.date(lastProtectAction.timestamp).calendar('utc') + ')');
+				} else { // protect or modify
+					$linkMarkup.append(' (expired ' + new Morebits.date(lastProtectAction.params.details[0].expiry).calendar('utc') + ')');
+				}
+			}
+			$linkMarkup.append(Twinkle.protect.hasStableLog ? $('<span> &bull; </span>') : null);
 		}
 
 		if (Twinkle.protect.hasStableLog) {
 			$linkMarkup.append($('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'stable'}) + '">pending changes log</a>)'));
+			if (!currentlyProtected || !Twinkle.protect.currentProtectionLevels.stabilize) {
+				var lastStabilizeAction = Twinkle.protect.stableLog[0];
+				if (lastStabilizeAction.action === 'reset') {
+					$linkMarkup.append(' (reset ' + new Morebits.date(lastStabilizeAction.timestamp).calendar('utc') + ')');
+				} else { // config or modify
+					$linkMarkup.append(' (expired ' + new Morebits.date(lastStabilizeAction.params.expiry).calendar('utc') + ')');
+				}
+			}
 		}
 
 		Morebits.status.init($('div[name="hasprotectlog"] span')[0]);

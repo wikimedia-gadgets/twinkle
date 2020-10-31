@@ -139,6 +139,7 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 			}
 
 			Twinkle.block.hasBlockLog = !!data.query.logevents.length;
+			Twinkle.block.blockLog = Twinkle.block.hasBlockLog && data.query.logevents;
 			// Used later to check if block status changed while filling out the form
 			Twinkle.block.blockLogId = Twinkle.block.hasBlockLog ? data.query.logevents[0].logid : false;
 
@@ -604,7 +605,15 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	}
 
 	if (Twinkle.block.hasBlockLog) {
-		var $blockloglink = $('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgRelevantUserName'), type: 'block'}) + '">block log</a>)');
+		var $blockloglink = $('<span>').append($('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgRelevantUserName'), type: 'block'}) + '">block log</a>)'));
+		if (!Twinkle.block.currentBlockInfo) {
+			var lastBlockAction = Twinkle.block.blockLog[0];
+			if (lastBlockAction.action === 'unblock') {
+				$blockloglink.append(' (unblocked ' + new Morebits.date(lastBlockAction.timestamp).calendar('utc') + ')');
+			} else { // block or reblock
+				$blockloglink.append(' (expired ' + new Morebits.date(lastBlockAction.params.expiry).calendar('utc') + ')');
+			}
+		}
 
 		Morebits.status.init($('div[name="hasblocklog"] span').last()[0]);
 		Morebits.status.warn(Twinkle.block.currentBlockInfo ? 'Previous blocks' : 'This user has been blocked in the past', $blockloglink[0]);
