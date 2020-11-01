@@ -1639,10 +1639,11 @@ Morebits.wiki = {};
 /**
  * Determines whether the current page is a redirect or soft redirect
  * (fails to detect soft redirects on edit, history, etc. pages)
+ * Will attempt to detect Module:RfD, with the same failure points
  * @returns {boolean}
  */
 Morebits.wiki.isPageRedirect = function wikipediaIsPageRedirect() {
-	return !!(mw.config.get('wgIsRedirect') || document.getElementById('softredirect'));
+	return !!(mw.config.get('wgIsRedirect') || document.getElementById('softredirect') || $('.box-RfD').length);
 };
 
 

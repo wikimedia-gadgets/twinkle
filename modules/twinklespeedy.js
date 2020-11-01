@@ -281,7 +281,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.talkList, mode) });
 	}
 
-	if (!mw.config.get('wgIsRedirect')) {
+	if (!Morebits.wiki.isPageRedirect()) {
 		switch (namespace) {
 			case 0:  // article
 			case 1:  // talk
@@ -453,7 +453,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 			}
 		}
 
-		if (mw.config.get('wgIsRedirect') && criterion.hideWhenRedirect) {
+		if (Morebits.wiki.isPageRedirect() && criterion.hideWhenRedirect) {
 			return null;
 		}
 
