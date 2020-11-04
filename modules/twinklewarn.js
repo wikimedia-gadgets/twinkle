@@ -934,6 +934,10 @@ Twinkle.warn.messages = {
 			label: 'Not using edit summary',
 			summary: 'Notice: Not using edit summary'
 		},
+		'uw-editsummary2': {
+			label: 'Experienced user not using edit summary',
+			summary: 'Notice: Not using edit summary'
+		},
 		'uw-elinbody': {
 			label: 'Adding external links to the body of an article',
 			summary: 'Notice: Keep external links to External links sections at the bottom of an article'
