@@ -931,7 +931,7 @@ Twinkle.warn.messages = {
 			summary: 'Notice: Consider drafting your article in [[Help:Userspace draft|userspace]]'
 		},
 		'uw-editsummary': {
-			label: 'Not using edit summary',
+			label: 'New user not using edit summary',
 			summary: 'Notice: Not using edit summary'
 		},
 		'uw-editsummary2': {
