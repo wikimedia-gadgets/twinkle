@@ -1032,10 +1032,10 @@ HTMLFormElement.prototype.getUnchecked = function(name, type) {
  */
 RegExp.escape = function(text, space_fix) {
 	if (space_fix) {
-		console.log('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with Morebits.string.escapeRegExp'); // eslint-disable-line no-console
+		console.warn('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with Morebits.string.escapeRegExp'); // eslint-disable-line no-console
 		return Morebits.string.escapeRegExp(text);
 	}
-	console.log('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with mw.util.escapeRegExp'); // eslint-disable-line no-console
+	console.warn('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with mw.util.escapeRegExp'); // eslint-disable-line no-console
 	return mw.util.escapeRegExp(text);
 };
 
@@ -1302,6 +1302,16 @@ Morebits.select2 = {
 
 };
 
+
+/**
+ * Determines whether the current page is a redirect or soft redirect
+ * (fails to detect soft redirects on edit, history, etc. pages)
+ * Will attempt to detect Module:RfD, with the same failure points
+ * @returns {boolean}
+ */
+Morebits.isPageRedirect = function() {
+	return !!(mw.config.get('wgIsRedirect') || document.getElementById('softredirect') || $('.box-RfD').length);
+};
 
 /**
  * **************** Morebits.pageNameNorm ****************
@@ -1640,16 +1650,11 @@ $.extend(Morebits.date.prototype, {
  */
 Morebits.wiki = {};
 
-/**
- * Determines whether the current page is a redirect or soft redirect
- * (fails to detect soft redirects on edit, history, etc. pages)
- * Will attempt to detect Module:RfD, with the same failure points
- * @returns {boolean}
- */
+/** @deprecated in favor of Morebits.isPageRedirect */
 Morebits.wiki.isPageRedirect = function wikipediaIsPageRedirect() {
-	return !!(mw.config.get('wgIsRedirect') || document.getElementById('softredirect') || $('.box-RfD').length);
+	console.warn('NOTE: Morebits.wiki.isPageRedirect has been deprecated, use Morebits.isPageRedirect instead.'); // eslint-disable-line no-console
+	return Morebits.isPageRedirect();
 };
-
 
 
 /**

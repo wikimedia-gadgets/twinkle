@@ -14,7 +14,7 @@
 
 Twinkle.tag = function friendlytag() {
 	// redirect tagging
-	if (Morebits.wiki.isPageRedirect()) {
+	if (Morebits.isPageRedirect()) {
 		Twinkle.tag.mode = 'redirect';
 		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Tag redirect');
 	// file tagging
