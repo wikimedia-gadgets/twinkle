@@ -1415,7 +1415,7 @@ Morebits.date = function() {
 		// Safari is particular about timezone offsets, so this is intentionally specific
 		args[0] = args[0].replace(/(\d\d:\d\d) (\d{1,2}) ([A-Z][a-z]+) (\d{4}) UTC$/, function(match, time, date, monthname, year) {
 			// zero-pad date
-			if (date < 10) {
+			if (date.length === 1) {
 				date = '0' + date;
 			}
 			return [year, mw.config.get('wgMonthNames').indexOf(monthname), date].join('-') + 'T' + time + 'Z';
