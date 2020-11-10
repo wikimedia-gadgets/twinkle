@@ -146,7 +146,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append({
 		type: 'option',
 		label: 'RfD (Redirects for discussion)',
-		selected: Morebits.wiki.isPageRedirect(),
+		selected: mw.config.get('wgIsRedirect'),
 		value: 'rfd'
 	});
 	categories.append({
@@ -1749,7 +1749,7 @@ Twinkle.xfd.callbacks = {
 				if (!apiobj.params.rfdtarget) { // Not a softredirect
 					var target = $xmlDoc.find('redirects r').first().attr('to');
 					if (!target) {
-						var message = 'This page does not appear to be a redirect, aborting';
+						var message = 'No target found. this page does not appear to be a redirect, aborting';
 						if (mw.config.get('wgAction') === 'history') {
 							message += '. If this is a soft redirect, try again from the content page, not the page history.';
 						}
