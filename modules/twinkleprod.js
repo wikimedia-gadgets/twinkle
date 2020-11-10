@@ -354,7 +354,7 @@ Twinkle.prod.callbacks = {
 		}
 
 		// Add {{Old prod}} to the talk page
-		var oldprodfull = '{{Old prod|nom=' + mw.config.get('wgUserName') + '|nomdate={{subst:#time: Y-m-d}}}}\n';
+		var oldprodfull = '{{Old prod|nom=' + mw.config.get('wgUserName') + '|nomdate={{subst:#time: Y-m-d}}|nomreason=' + Morebits.string.formatReasonText(params.reason) + '}}\n';
 		var talktitle = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
 		var talkpage = new Morebits.wiki.page(talktitle, 'Placing {{Old prod}} on talk page');
 		talkpage.setPrependText(oldprodfull);
