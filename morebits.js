@@ -2178,6 +2178,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		patrolApi: null,
 		patrolProcessApi: null,
 		triageApi: null,
+		triageProcessListApi: null,
 		triageProcessApi: null,
 		deleteApi: null,
 		deleteProcessApi: null,
@@ -2906,6 +2907,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 * passing a pageid to the API is sufficient, so in those cases just
 	 * using Morebits.wiki.api is probably preferable.
 	 *
+	 * Will first check if the page is queued via fnProcessTriageList
+	 *
 	 * No error handling since we don't actually care about the errors
 	 */
 	this.triage = function() {
@@ -2920,11 +2923,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			// If on the page in question, don't need to query for page ID
 			if (new mw.Title(Morebits.pageNameNorm).getPrefixedText() === new mw.Title(ctx.pageName).getPrefixedText()) {
 				ctx.pageID = mw.config.get('wgArticleId');
-				fnProcessTriage(this, this);
+				fnProcessTriageList(this, this);
 			} else {
 				var query = fnNeedTokenInfoQuery('triage');
 
-				ctx.triageApi = new Morebits.wiki.api('retrieving token...', query, fnProcessTriage);
+				ctx.triageApi = new Morebits.wiki.api('retrieving token...', query, fnProcessTriageList);
 				ctx.triageApi.setParent(this);
 				ctx.triageApi.post();
 			}
@@ -3548,56 +3551,56 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.patrolProcessApi.post();
 	};
 
-	var fnProcessTriage = function() {
-		var pageID, token;
-
+	// Ensure that the page is curatable
+	var fnProcessTriageList = function() {
 		if (ctx.pageID) {
-			token = mw.user.tokens.get('csrfToken');
-			pageID = ctx.pageID;
+			ctx.csrfToken = mw.user.tokens.get('csrfToken');
 		} else {
 			var xml = ctx.triageApi.getXML();
 
-			pageID = $(xml).find('page').attr('pageid');
-			if (!pageID) {
+			ctx.pageID = $(xml).find('page').attr('pageid');
+			if (!ctx.pageID) {
 				return;
 			}
 
-			token = $(xml).find('tokens').attr('csrftoken');
-			if (!token) {
+			ctx.csrfToken = $(xml).find('tokens').attr('csrftoken');
+			if (!ctx.csrfToken) {
 				return;
 			}
 		}
 
 		var query = {
-			action: 'pagetriageaction',
-			pageid: pageID,
-			reviewed: 1,
-			// tags: ctx.changeTags, // pagetriage tag support: [[phab:T252980]]
-			// Could use an adder to modify/create note:
-			// summaryAd, but that seems overwrought
-			token: token
+			action: 'pagetriagelist',
+			page_id: ctx.pageID
 		};
 
-		var triageStat = new Morebits.status('Marking page as curated');
-
-		ctx.triageProcessApi = new Morebits.wiki.api('curating page...', query, fnProcessTriageSuccess, triageStat, fnProcessTriageError);
-		ctx.triageProcessApi.setParent(this);
-		ctx.triageProcessApi.post();
+		ctx.triageProcessListApi = new Morebits.wiki.api('checking curation status...', query, fnProcessTriage);
+		ctx.triageProcessListApi.setParent(this);
+		ctx.triageProcessListApi.post();
 	};
 
-	// callback from triageProcessApi.post()
-	var fnProcessTriageSuccess = function() {
-		// Swallow succesful return if nothing changed i.e. page in queue and already triaged
-		if ($(ctx.triageProcessApi.getResponse()).find('pagetriageaction').attr('pagetriage_unchanged_status')) {
-			ctx.triageProcessApi.getStatusElement().unlink();
+	var fnProcessTriage = function() {
+		var $xml = $(ctx.triageProcessListApi.getXML());
+		// Exit if not in the queue
+		if ($xml.find('pagetriagelist').attr('result') !== 'success') {
+			return;
 		}
-	};
-
-	// callback from triageProcessApi.post()
-	var fnProcessTriageError = function() {
-		// Ignore error if page not in queue, see https://github.com/azatoth/twinkle/pull/930
-		if (ctx.triageProcessApi.getErrorCode() === 'bad-pagetriage-page') {
-			ctx.triageProcessApi.getStatusElement().unlink();
+		var page = $xml.find('pages _v');
+		// Nothing if page already triaged/patrolled
+		if (!page || !parseInt(page.attr('patrol_status'), 10)) {
+			var query = {
+				action: 'pagetriageaction',
+				pageid: ctx.pageID,
+				reviewed: 1,
+				// tags: ctx.changeTags, // pagetriage tag support: [[phab:T252980]]
+				// Could use an adder to modify/create note:
+				// summaryAd, but that seems overwrought
+				token: ctx.csrfToken
+			};
+			var triageStat = new Morebits.status('Marking page as curated');
+			ctx.triageProcessApi = new Morebits.wiki.api('curating page...', query, null, triageStat);
+			ctx.triageProcessApi.setParent(this);
+			ctx.triageProcessApi.post();
 		}
 	};
 

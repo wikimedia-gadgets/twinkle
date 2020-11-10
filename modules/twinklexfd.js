@@ -987,6 +987,11 @@ Twinkle.xfd.callbacks = {
 
 			// Now we know we want to go ahead with it, trigger the other AJAX requests
 
+			// Mark the page as curated/patrolled, if wanted
+			if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
+				new Morebits.wiki.page(Morebits.pageNameNorm).triage();
+			}
+
 			// Start discussion page, will also handle pagetriage and delsort listings
 			var wikipedia_page = new Morebits.wiki.page(params.discussionpage, 'Creating article deletion discussion page');
 			wikipedia_page.setCallbackParameters(params);
@@ -1052,10 +1057,6 @@ Twinkle.xfd.callbacks = {
 						delsortPage.setCallbackParameters({discussionPage: params.discussionpage});
 						delsortPage.load(Twinkle.xfd.callbacks.afd.delsortListing);
 					});
-				}
-				// Mark the page as curated/patrolled, if wanted
-				if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
-					new Morebits.wiki.page(Morebits.pageNameNorm).triage();
 				}
 			});
 		},
