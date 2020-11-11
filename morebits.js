@@ -3449,7 +3449,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		} else if (action === 'delete' || action === 'move') {
 			editprot = $(xml).find('pr[type="edit"]');
 		}
-		if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
+		if (editprot && editprot.length && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
 			!confirm('You are about to ' + action + ' the fully protected page "' + ctx.pageName +
 			(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.attr('expiry')).calendar('utc') + ' (UTC))') +
 			'.  \n\nClick OK to proceed with ' + action + ', or Cancel to skip.')) {
