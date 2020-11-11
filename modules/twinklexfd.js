@@ -889,7 +889,12 @@ Twinkle.xfd.callbacks = {
 		usertalkpage.setEditSummary(editSummary);
 		usertalkpage.setChangeTags(Twinkle.changeTags);
 		usertalkpage.setCreateOption('recreate');
-		Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
+		// Different pref for RfD target notifications
+		if (params.venue === 'rfd' && targetNS !== 3) {
+			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchRelated'));
+		} else {
+			Twinkle.xfd.setWatchPref(usertalkpage, Twinkle.getPref('xfdWatchUser'));
+		}
 		usertalkpage.setFollowRedirect(true, false);
 
 		if (noLog) {
