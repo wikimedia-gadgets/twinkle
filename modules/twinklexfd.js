@@ -1158,18 +1158,28 @@ Twinkle.xfd.callbacks = {
 			});
 		},
 		todaysList: function(pageobj) {
-			var old_text = pageobj.getPageText() + '\n';  // MW strips trailing blanks, but we like them, so we add a fake one
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var text = old_text.replace(/(<!-- Add new entries to the TOP of the following list -->\n+)/, '$1{{subst:afd3|pg=' + Morebits.pageNameNorm + params.numbering + '}}\n');
-			if (text === old_text) {
-				var linknode = document.createElement('a');
-				linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing AFD') + '?action=purge');
-				linknode.appendChild(document.createTextNode('How to fix AFD'));
-				statelem.error([ 'Could not find the target spot for the discussion. To fix this problem, please see ', linknode, '.' ]);
-				return;
+			var added_data = '{{subst:afd3|pg=' + Morebits.pageNameNorm + params.numbering + '}}\n';
+			var text;
+
+			// add date header if the log is found to be empty (a bot should do this automatically)
+			if (!pageobj.exists()) {
+				text = '{{subst:AfD log}}\n' + added_data;
+			} else {
+				var old_text = pageobj.getPageText() + '\n';  // MW strips trailing blanks, but we like them, so we add a fake one
+
+				text = old_text.replace(/(<!-- Add new entries to the TOP of the following list -->\n+)/, '$1' + added_data);
+				if (text === old_text) {
+					var linknode = document.createElement('a');
+					linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing AFD') + '?action=purge');
+					linknode.appendChild(document.createTextNode('How to fix AFD'));
+					statelem.error([ 'Could not find the target spot for the discussion. To fix this problem, please see ', linknode, '.' ]);
+					return;
+				}
 			}
+
 			pageobj.setPageText(text);
 			pageobj.setEditSummary('Adding [[:' + params.discussionpage + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
@@ -1310,17 +1320,25 @@ Twinkle.xfd.callbacks = {
 			pageobj.save();
 		},
 		todaysList: function(pageobj) {
-			var old_text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
 			var added_data = Twinkle.xfd.callbacks.getDiscussionWikitext(params.xfdcat, params);
+			var text;
 
-			var text = old_text.replace('-->', '-->\n' + added_data);
-			if (text === old_text) {
-				statelem.error('failed to find target spot for the discussion');
-				return;
+			// add date header if the log is found to be empty (a bot should do this automatically)
+			if (!pageobj.exists()) {
+				text = '{{subst:TfD log}}\n' + added_data;
+			} else {
+				var old_text = pageobj.getPageText();
+
+				text = old_text.replace('-->', '-->\n' + added_data);
+				if (text === old_text) {
+					statelem.error('failed to find target spot for the discussion');
+					return;
+				}
 			}
+
 			pageobj.setPageText(text);
 			pageobj.setEditSummary('Adding ' + (params.xfdcat === 'tfd' ? 'deletion nomination' : 'merge listing') + ' of [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
@@ -1437,14 +1455,14 @@ Twinkle.xfd.callbacks = {
 			var date = new Morebits.date(pageobj.getLoadTime());
 			var date_header = date.format('===MMMM D, YYYY===\n', 'utc');
 			var date_header_regex = new RegExp(date.format('(===[\\s]*MMMM[\\s]+D,[\\s]+YYYY[\\s]*===)', 'utc'));
-			var new_data = '{{subst:mfd3|pg=' + Morebits.pageNameNorm + params.numbering + '}}';
+			var added_data = '{{subst:mfd3|pg=' + Morebits.pageNameNorm + params.numbering + '}}';
 
 			if (date_header_regex.test(text)) { // we have a section already
 				statelem.info('Found today\'s section, proceeding to add new entry');
-				text = text.replace(date_header_regex, '$1\n' + new_data);
+				text = text.replace(date_header_regex, '$1\n' + added_data);
 			} else { // we need to create a new section
 				statelem.info('No section for today found, proceeding to create one');
-				text = text.replace('===', date_header + new_data + '\n\n===');
+				text = text.replace('===', date_header + added_data + '\n\n===');
 			}
 
 			pageobj.setPageText(text);
@@ -1531,9 +1549,9 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			// add date header if the log is found to be empty (a bot should do this automatically, but it sometimes breaks down)
+			// add date header if the log is found to be empty (a bot should do this automatically)
 			if (!pageobj.exists()) {
-				text = '{{subst:Ffd log}}';
+				text = '{{subst:FfD log}}';
 			}
 
 			pageobj.setPageText(text + '\n\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('ffd', params));
@@ -1567,7 +1585,6 @@ Twinkle.xfd.callbacks = {
 
 			// Adding discussion to list
 			var wikipedia_page = new Morebits.wiki.page(params.logpage, "Adding discussion to today's list");
-			wikipedia_page.setPageSection(2);
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.cfd.todaysList);
@@ -1621,21 +1638,27 @@ Twinkle.xfd.callbacks = {
 			pageobj.save();
 		},
 		todaysList: function(pageobj) {
-			var old_text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
 			var added_data = Twinkle.xfd.callbacks.getDiscussionWikitext(params.xfdcat, params);
-			var editsummary = 'Adding ' + params.action + ' nomination of [[:' + Morebits.pageNameNorm + ']].';
+			var text;
 
-			var text = old_text.replace('below this line -->', 'below this line -->\n' + added_data);
-			if (text === old_text) {
-				statelem.error('failed to find target spot for the discussion');
-				return;
+			// add date header if the log is found to be empty (a bot should do this automatically)
+			if (!pageobj.exists()) {
+				text = '{{subst:CfD log}}\n' + added_data;
+			} else {
+				var old_text = pageobj.getPageText();
+
+				text = old_text.replace('below this line -->', 'below this line -->\n' + added_data);
+				if (text === old_text) {
+					statelem.error('failed to find target spot for the discussion');
+					return;
+				}
 			}
 
 			pageobj.setPageText(text);
-			pageobj.setEditSummary(editsummary);
+			pageobj.setEditSummary('Adding ' + params.action + ' nomination of [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
 			Twinkle.xfd.setWatchPref(pageobj, Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
@@ -1771,16 +1794,22 @@ Twinkle.xfd.callbacks = {
 			pageobj.save();
 		},
 		todaysList: function(pageobj) {
-			var old_text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			// params.rfdtarget + sectionHash + "}} ~~~~\n" );
 			var added_data = Twinkle.xfd.callbacks.getDiscussionWikitext('rfd', params);
-			var text = old_text.replace(/(<!-- Add new entries directly below this line\.? -->)/, '$1\n' + added_data);
-			if (text === old_text) {
-				statelem.error('failed to find target spot for the discussion');
-				return;
+			var text;
+
+			// add date header if the log is found to be empty (a bot should do this automatically)
+			if (!pageobj.exists()) {
+				text = '{{subst:RfD log}}' + added_data;
+			} else {
+				var old_text = pageobj.getPageText();
+				text = old_text.replace(/(<!-- Add new entries directly below this line\.? -->)/, '$1\n' + added_data);
+				if (text === old_text) {
+					statelem.error('failed to find target spot for the discussion');
+					return;
+				}
 			}
 
 			pageobj.setPageText(text);
