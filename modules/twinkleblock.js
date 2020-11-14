@@ -61,7 +61,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 				label: 'Partial block',
 				value: 'partial',
 				tooltip: 'Enable partial blocks and partial block templates.',
-				checked: Twinkle.getPref('defaultToPartialBlocks')
+				checked: Twinkle.getPref('defaultToPartialBlocks') // Overridden if already blocked
 			},
 			{
 				label: 'Add block template to user talk page',
@@ -84,6 +84,12 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	result.root = result;
 
 	Twinkle.block.fetchUserInfo(function() {
+		// Toggle initial partial state depending on prior block type,
+		// will override the defaultToPartialBlocks pref
+		if (Twinkle.block.currentBlockInfo) {
+			$(result).find('[name=actiontype][value=partial]').prop('checked', Twinkle.block.currentBlockInfo.partial === '');
+		}
+
 		// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
 		Twinkle.block.transformBlockPresets();
 		if (Twinkle.block.currentBlockInfo) {
@@ -105,6 +111,7 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 		letype: 'block',
 		lelimit: 1,
 		bkusers: mw.config.get('wgRelevantUserName'),
+		bkprop: 'expiry|reason|flags|restrictions',
 		ususers: mw.config.get('wgRelevantUserName'),
 		usprop: 'groupmemberships',
 		letitle: 'User:' + mw.config.get('wgRelevantUserName')
@@ -163,6 +170,33 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	var blockGroup = partialBox ? Twinkle.block.blockGroupsPartial : Twinkle.block.blockGroups;
 
 	partial.prop('disabled', !blockBox && !templateBox);
+
+	// Add current block parameters as default preset
+	if (Twinkle.block.currentBlockInfo) {
+		Twinkle.block.blockPresetsInfo.prior = Twinkle.block.currentBlockInfo;
+		var prior = {
+			label: 'Prior block',
+			// value not a valid template selection, chosen below by setting templateName
+			list: [{ label: 'Prior block settings', value: 'prior', selected: true }]
+		};
+		// Arrays of objects are annoying to check
+		if (!blockGroup.some(function(bg) {
+			return bg.label === prior.label;
+		})) {
+			blockGroup.push(prior);
+		}
+
+		// Always ensure proper template exists/is selected when switching modes
+		if (partialBox) {
+			Twinkle.block.blockPresetsInfo.prior.templateName = Morebits.string.isInfinity(Twinkle.block.currentBlockInfo.expiry) ? 'uw-pblockindef' : 'uw-pblock';
+		} else {
+			if (!Twinkle.block.isRegistered) {
+				Twinkle.block.blockPresetsInfo.prior.templateName = 'uw-ablock';
+			} else {
+				Twinkle.block.blockPresetsInfo.prior.templateName = Morebits.string.isInfinity(Twinkle.block.currentBlockInfo.expiry) ? 'uw-blockindef' : 'uw-block';
+			}
+		}
+	}
 
 	// Can be in preset or template field, so the old one in the template
 	// field will linger. No need to keep the old value around, so just
@@ -555,10 +589,9 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		Morebits.status.warn('This user has been blocked in the past', $blockloglink[0]);
 	}
 
+
 	if (Twinkle.block.currentBlockInfo) {
 		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
-		// list=blocks without bkprops (as we do in fetchUerInfo)
-		// returns partial: '' if the user is partially blocked
 		var statusStr = relevantUserName + ' is ' + (Twinkle.block.currentBlockInfo.partial === '' ? 'partially blocked' : 'blocked sitewide');
 		if (Twinkle.block.currentBlockInfo.expiry === 'infinity') {
 			statusStr += ' (indef)';
@@ -572,10 +605,12 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			infoStr += ', converting it to a sitewide block';
 		}
 		Morebits.status.warn(statusStr, infoStr);
+
+		// Default to the current block conditions on intial form generation
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
 	}
 
-	// make sure all the fields are correct based on defaults
+	// Make sure all the fields are correct based on initial defaults
 	if (blockBox) {
 		Twinkle.block.callback.change_preset(e);
 	} else if (templateBox) {
@@ -1494,6 +1529,40 @@ Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, 
 		form.reason.value = data.reason + '; ' + form.reason.value;
 	} else {
 		form.reason.value = data.reason || '';
+	}
+
+	// Clear and/or set any partial page or namespace restrictions
+	if (form.pagerestrictions) {
+		var $pageSelect = $(form).find('[name=pagerestrictions]');
+		var $namespaceSelect = $(form).find('[name=namespacerestrictions]');
+
+		// Respect useInitialOptions by clearing data when switching presets
+		// In practice, this will always clear, since no partial presets use it
+		if (!data.useInitialOptions) {
+			$pageSelect.val(null).trigger('change');
+			$namespaceSelect.val(null).trigger('change');
+		}
+
+		// Add any preset options; in practice, just used for prior block settings
+		if (data.restrictions) {
+			if (data.restrictions.pages && !$pageSelect.val().length) {
+				var pages = data.restrictions.pages.map(function(pr) {
+					return pr.title;
+				});
+				// since page restrictions use an ajax source, we
+				// short-circuit that and just add a new option
+				pages.forEach(function(page) {
+					if (!$pageSelect.find("option[value='" + $.escapeSelector(page) + "']").length) {
+						var newOption = new Option(page, page, true, true);
+						$pageSelect.append(newOption);
+					}
+				});
+				$pageSelect.val($pageSelect.val().concat(pages)).trigger('change');
+			}
+			if (data.restrictions.namespaces) {
+				$namespaceSelect.val($namespaceSelect.val().concat(data.restrictions.namespaces)).trigger('change');
+			}
+		}
 	}
 };
 
