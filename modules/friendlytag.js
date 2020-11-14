@@ -39,6 +39,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 	var Window = new Morebits.simpleWindow(630, Twinkle.tag.mode === 'article' ? 500 : 400);
 	Window.setScriptName('Twinkle');
 	// anyone got a good policy/guideline/info page/instructional page link??
+	Window.addFooterLink('Tag prefs', 'WP:TW/PREF#tag');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#tag');
 
 	var form = new Morebits.quickForm(Twinkle.tag.callback.evaluate);

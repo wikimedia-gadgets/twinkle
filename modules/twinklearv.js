@@ -32,6 +32,7 @@ Twinkle.arv.callback = function (uid) {
 	Window.addFooterLink('Guide to AIV', 'WP:GAIV');
 	Window.addFooterLink('UAA instructions', 'WP:UAAI');
 	Window.addFooterLink('About SPI', 'WP:SPI');
+	Window.addFooterLink('ARV prefs', 'WP:TW/PREF#arv');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#arv');
 
 	var form = new Morebits.quickForm(Twinkle.arv.callback.evaluate);
