@@ -927,6 +927,10 @@ Twinkle.warn.messages = {
 			label: 'Removing proper sources containing dead links',
 			summary: 'Notice: Removing proper sources containing dead links'
 		},
+		'uw-displaytitle': {
+			label: 'Incorrect use of DISPLAYTITLE',
+			summary: 'Notice: Incorrect use of DISPLAYTITLE'
+		},
 		'uw-draftfirst': {
 			label: 'User should draft in userspace without the risk of speedy deletion',
 			summary: 'Notice: Consider drafting your article in [[Help:Userspace draft|userspace]]'
