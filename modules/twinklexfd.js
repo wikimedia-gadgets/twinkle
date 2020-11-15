@@ -21,7 +21,7 @@ Twinkle.xfd = function twinklexfd() {
 		return;
 	}
 
-	Twinkle.addPortletLink(Twinkle.xfd.callback, 'XFD', 'tw-xfd', 'Start a deletion discussion');
+	Twinkle.addPortletLink(Twinkle.xfd.callback, 'XFD', 'tw-xfd', 'Start a discussion');
 };
 
 
