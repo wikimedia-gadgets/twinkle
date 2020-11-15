@@ -716,7 +716,12 @@ Twinkle.tag.article.tagList = {
 		],
 		'Neutrality, bias, and factual accuracy': [
 			{ tag: 'Autobiography', description: 'autobiography and may not be written neutrally' },
-			{ tag: 'COI', description: 'creator or major contributor may have a conflict of interest' },
+			{ tag: 'COI', description: 'creator or major contributor may have a conflict of interest', subgroup: mw.config.get('wgNamespaceNumber') === 0 ? {
+				name: 'coiReason',
+				type: 'textarea',
+				label: 'Explanation for COI tag (will be posted on this article\'s talk page):',
+				tooltip: 'Optional, but strongly recommended. Leave blank if not wanted.'
+			} : [] },
 			{ tag: 'Disputed', description: 'questionable factual accuracy' },
 			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
 			{ tag: 'Globalize', description: 'may not represent a worldwide view of the subject',
@@ -1278,19 +1283,29 @@ Twinkle.tag.callbacks = {
 			pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 			pageobj.setCreateOption('nocreate');
 			pageobj.save(function() {
-				// special functions for merge tags
-				if (params.mergeReason) {
-					// post the rationale on the talk page (only operates in main namespace)
-					var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
-					talkpage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
-					talkpage.setNewSectionTitle(params.talkDiscussionTitleLinked);
-					talkpage.setChangeTags(Twinkle.changeTags);
-					talkpage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
-					talkpage.setCreateOption('recreate');
-					talkpage.newSection();
+				// COI: Start the discussion on the talk page (mainspace only)
+				if (params.coiReason) {
+					var coiTalkPage = new Morebits.wiki.page('Talk:' + Morebits.pageNameNorm, 'Starting discussion on talk page');
+					coiTalkPage.setNewSectionText(params.coiReason + ' ~~~~');
+					coiTalkPage.setNewSectionTitle('COI tag (' + new Morebits.date(pageobj.getLoadTime()).format('MMMM Y', 'utc') + ')');
+					coiTalkPage.setChangeTags(Twinkle.changeTags);
+					coiTalkPage.setCreateOption('recreate');
+					coiTalkPage.newSection();
 				}
+
+				// Special functions for merge tags
+				// Post a rationale on the talk page (mainspace only)
+				if (params.mergeReason) {
+					var mergeTalkPage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
+					mergeTalkPage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
+					mergeTalkPage.setNewSectionTitle(params.talkDiscussionTitleLinked);
+					mergeTalkPage.setChangeTags(Twinkle.changeTags);
+					mergeTalkPage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
+					mergeTalkPage.setCreateOption('recreate');
+					mergeTalkPage.newSection();
+				}
+				// Tag the target page (if requested)
 				if (params.mergeTagOther) {
-					// tag the target page if requested
 					var otherTagName = 'Merge';
 					if (params.mergeTag === 'Merge from') {
 						otherTagName = 'Merge to';
@@ -1313,7 +1328,8 @@ Twinkle.tag.callbacks = {
 					otherpage.load(Twinkle.tag.callbacks.article);
 				}
 
-				// post at WP:PNT for {{not English}} and {{rough translation}} tag
+				// Special functions for {{not English}} and {{rough translation}}
+				// Post at WP:PNT (mainspace only)
 				if (params.translationPostAtPNT) {
 					var pntPage = new Morebits.wiki.page('Wikipedia:Pages needing translation into English',
 						'Listing article at Wikipedia:Pages needing translation into English');
@@ -1348,6 +1364,7 @@ Twinkle.tag.callbacks = {
 						pageobj.save();
 					});
 				}
+				// Notify the user ({{Not English}} only)
 				if (params.translationNotify) {
 					pageobj.lookupCreation(function(innerPageobj) {
 						var initialContrib = innerPageobj.getCreator();
