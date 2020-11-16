@@ -339,36 +339,35 @@ Twinkle.arv.callback.changeCategory = function (e) {
 							rvend: date.toISOString(),
 							rvuser: rvuser,
 							indexpageids: true,
-							redirects: true,
 							titles: titles
 						}).done(function(data) {
 							var pageid = data.query.pageids[0];
 							var page = data.query.pages[pageid];
 							if (!page.revisions) {
 								$('<span class="entry">None found</span>').appendTo($field);
-								return;
-							}
-							for (var i = 0; i < page.revisions.length; ++i) {
-								var rev = page.revisions[i];
-								var $entry = $('<div/>', {
-									'class': 'entry'
-								});
-								var $input = $('<input/>', {
-									'type': 'checkbox',
-									'name': 's_' + field,
-									'value': rev.revid
-								});
-								$input.data('revinfo', rev);
-								$input.appendTo($entry);
-								var comment = '<span>';
-								// revdel/os
-								if (typeof rev.commenthidden === 'string') {
-									comment += '(comment hidden)';
-								} else {
-									comment += '"' + rev.parsedcomment + '"';
+							} else {
+								for (var i = 0; i < page.revisions.length; ++i) {
+									var rev = page.revisions[i];
+									var $entry = $('<div/>', {
+										'class': 'entry'
+									});
+									var $input = $('<input/>', {
+										'type': 'checkbox',
+										'name': 's_' + field,
+										'value': rev.revid
+									});
+									$input.data('revinfo', rev);
+									$input.appendTo($entry);
+									var comment = '<span>';
+									// revdel/os
+									if (typeof rev.commenthidden === 'string') {
+										comment += '(comment hidden)';
+									} else {
+										comment += '"' + rev.parsedcomment + '"';
+									}
+									comment += ' at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Morebits.date(rev.timestamp).calendar() + '</a></span>';
+									$entry.append(comment).appendTo($field);
 								}
-								comment += ' at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Morebits.date(rev.timestamp).calendar() + '</a></span>';
-								$entry.append(comment).appendTo($field);
 							}
 
 							// add free form input for resolves
@@ -872,7 +871,6 @@ Twinkle.arv.processAN3 = function(params) {
 		rvstartid: minid,
 		rvexcludeuser: params.uid,
 		indexpageids: true,
-		redirects: true,
 		titles: params.page
 	}).done(function(data) {
 		Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
