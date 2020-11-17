@@ -994,6 +994,10 @@ Twinkle.warn.messages = {
 			label: 'Creating non-English articles',
 			summary: 'Notice: Creating non-English articles'
 		},
+		'uw-notenglishedit': {
+			label: 'Adding non-English content to articles',
+			summary: 'Notice: Adding non-English content to articles'
+		},
 		'uw-notvote': {
 			label: 'We use consensus, not voting',
 			summary: 'Notice: We use consensus, not voting'
