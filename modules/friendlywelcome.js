@@ -242,9 +242,9 @@ Twinkle.welcome.templates = {
 				description: 'a shorter welcome message',
 				syntax: '{{subst:w-short|heading=yes|$EXTRA$}}'
 			},
-			'welcome-personal': {
-				description: 'more personal welcome, including a plate of cookies',
-				syntax: '{{subst:welcome-personal|$USERNAME$}} ~~~~'
+			'welcome-cookie': {
+				description: 'a welcome message with some helpful links and a plate of cookies',
+				syntax: '{{subst:welcome cookie}} ~~~~'
 			},
 			'welcome-graphical': {
 				description: 'colorful welcome message with table of about 20 links',
