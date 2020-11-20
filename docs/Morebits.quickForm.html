@@ -1,0 +1,756 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Class: quickForm</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <div class="symbol-detail-labels"><span class="label label-kind">class</span>&nbsp;<span class="label label-static">static</span></div>
+            <h1><small><a href="Morebits.html">Morebits</a>.<wbr></small><span class="symbol-name">quickForm</span></h1>
+            <p class="source-link">Source: <a href="morebits.js.html#source-line-162">morebits.<wbr>js:162</a></p>
+            <dl class="dl-compact">
+            </dl>
+          </header>
+          <section id="summary">
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Child class</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.quickForm.element.html">element(data)</a></dt>
+                    <dd>
+                      <p>Create a new element for the the form.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                </div>
+                <div class="summary-column">
+                </div>
+              </div>
+            </div>
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Methods</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.quickForm.html#.getCheckboxOrRadio">getCheckboxOrRadio(elementArray, value)</a></dt>
+                    <dd>
+                      <p>Searches the array of elements for a checkbox or radio button with a certain
+                        <code>value</code> attribute, and returns the first such element.
+                      </p>
+                    </dd>
+                    <dt><a href="Morebits.quickForm.html#.getElementContainer">getElementContainer(element)</a></dt>
+                    <dd>
+                      <p>Returns the &lt;div&gt; containing the form element, or the form element itself
+                        May not work as expected on checkboxes or radios.</p>
+                    </dd>
+                    <dt><a href="Morebits.quickForm.html#.getElementLabel">getElementLabel(element)</a></dt>
+                    <dd>
+                      <p>Gets the label text of the element.</p>
+                    </dd>
+                    <dt><a href="Morebits.quickForm.html#.getElementLabelObject">getElementLabelObject(element)</a></dt>
+                    <dd>
+                      <p>Gets the HTML element that contains the label of the given form element
+                        (mainly for internal use).</p>
+                    </dd>
+                    <dt><a href="Morebits.quickForm.html#.getElements">getElements(form, fieldName)</a></dt>
+                    <dd>
+                      <p>Returns all form elements with a given field name or ID.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.quickForm.html#.getInputData">getInputData(form)</a></dt>
+                    <dd>
+                      <p>Returns an object containing all filled form data entered by the user, with the object
+                        keys being the form element names.</p>
+                    </dd>
+                    <dt><a href="Morebits.quickForm.html#.overrideElementLabel">overrideElementLabel(element, temporaryLabelText)</a></dt>
+                    <dd>
+                      <p>Stores the element's current label, and temporarily sets the label to the given text.</p>
+                    </dd>
+                    <dt><a href="Morebits.quickForm.html#.resetElementLabel">resetElementLabel(element)</a></dt>
+                    <dd>
+                      <p>Restores the label stored by overrideElementLabel.</p>
+                    </dd>
+                    <dt><a href="Morebits.quickForm.html#.setElementLabel">setElementLabel(element, labelText)</a></dt>
+                    <dd>
+                      <p>Sets the label of the element to the given text.</p>
+                    </dd>
+                    <dt><a href="Morebits.quickForm.html#.setElementTooltipVisibility">setElementTooltipVisibility(element[, visibility])</a></dt>
+                    <dd>
+                      <p>Shows or hides the question mark icon (which displays the tooltip) next to a form element.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.quickForm.html#.setElementVisibility">setElementVisibility(element[, visibility])</a></dt>
+                    <dd>
+                      <p>Shows or hides a form element plus its label and tooltip.</p>
+                    </dd>
+                    <dt><a href="Morebits.quickForm.html#append">append(data)</a></dt>
+                    <dd>
+                      <p>Append element to the form.</p>
+                    </dd>
+                    <dt><a href="Morebits.quickForm.html#render">render()</a></dt>
+                    <dd>
+                      <p>Renders the HTML output of the quickForm.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2 id="quickForm">new&nbsp;<span class="symbol-name">quickForm</span><span class="signature"><span class="signature-params">(event[, eventType])</span></span></h2>
+            <p>Creation of simple and standard forms without much specific coding.</p>
+            <section>
+              <h3>Parameters</h3>
+              <table class="jsdoc-details-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Optional</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <p>event</p>
+                    </td>
+                    <td>
+                      <p>event</p>
+                    </td>
+                    <td>
+                      <p>&nbsp;</p>
+                    </td>
+                    <td>
+                      <p>Function to execute when form is submitted.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <p>eventType</p>
+                    </td>
+                    <td>
+                      <p>string</p>
+                    </td>
+                    <td>
+                      <p>Yes</p>
+                    </td>
+                    <td>
+                      <p>Type of the event.</p>
+                      <p>Defaults to <code>submit</code>.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            <dl class="dl-compact">
+            </dl>
+          </section>
+          <section>
+            <h2>Class</h2>
+            <section id='members-links'>
+              <h3><a href="Morebits.quickForm.element.html">element</a></h3>
+              <p>Create a new element for the the form.</p>
+            </section>
+            <h2>Methods</h2>
+            <section>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".getCheckboxOrRadio"><span class="symbol-name">getCheckboxOrRadio</span><span class="signature"><span class="signature-params">(elementArray, value)</span>&nbsp;&rarr; <span class="signature-returns"> HTMLInputElement</span></span></h3>
+              <p>Searches the array of elements for a checkbox or radio button with a certain
+                <code>value</code> attribute, and returns the first such element. Returns null if not found.
+              </p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>elementArray</p>
+                      </td>
+                      <td>
+                        <p>Array of HTMLInputElement</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Array of checkbox or radio elements.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>value</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Value to search for.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>HTMLInputElement</code> </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".getElementContainer"><span class="symbol-name">getElementContainer</span><span class="signature"><span class="signature-params">(element)</span>&nbsp;&rarr; <span class="signature-returns"> HTMLElement</span></span></h3>
+              <p>Returns the &lt;div&gt; containing the form element, or the form element itself
+                May not work as expected on checkboxes or radios.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>element</p>
+                      </td>
+                      <td>
+                        <p>HTMLElement</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>HTMLElement</code> </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".getElementLabel"><span class="symbol-name">getElementLabel</span><span class="signature"><span class="signature-params">(element)</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <p>Gets the label text of the element.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>element</p>
+                      </td>
+                      <td>
+                        <p>(HTMLElement or <a href="Morebits.quickForm.element.html">Morebits.quickForm.element</a>)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".getElementLabelObject"><span class="symbol-name">getElementLabelObject</span><span class="signature"><span class="signature-params">(element)</span>&nbsp;&rarr; <span class="signature-returns"> HTMLElement</span></span></h3>
+              <p>Gets the HTML element that contains the label of the given form element
+                (mainly for internal use).</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>element</p>
+                      </td>
+                      <td>
+                        <p>(HTMLElement or <a href="Morebits.quickForm.element.html">Morebits.quickForm.element</a>)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>HTMLElement</code> </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".getElements"><span class="symbol-name">getElements</span><span class="signature"><span class="signature-params">(form, fieldName)</span>&nbsp;&rarr; <span class="signature-returns"> Array of HTMLElement</span></span></h3>
+              <p>Returns all form elements with a given field name or ID.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>form</p>
+                      </td>
+                      <td>
+                        <p>HTMLFormElement</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>fieldName</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>The name or id of the fields.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>Array of HTMLElement</code> 
+                  <ul>
+                    </p>
+                    <li>Array of matching form elements.</li>
+                  </ul>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".getInputData"><span class="symbol-name">getInputData</span><span class="signature"><span class="signature-params">(form)</span>&nbsp;&rarr; <span class="signature-returns"> object</span></span></h3>
+              <p>Returns an object containing all filled form data entered by the user, with the object
+                keys being the form element names. Disabled fields will be ignored, but not hidden fields.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>form</p>
+                      </td>
+                      <td>
+                        <p>HTMLFormElement</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>object</code> 
+                  <p>With field names as keys, input data as values.</p>
+                  </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".overrideElementLabel"><span class="symbol-name">overrideElementLabel</span><span class="signature"><span class="signature-params">(element, temporaryLabelText)</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <p>Stores the element's current label, and temporarily sets the label to the given text.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>element</p>
+                      </td>
+                      <td>
+                        <p>(HTMLElement or <a href="Morebits.quickForm.element.html">Morebits.quickForm.element</a>)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>temporaryLabelText</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> 
+                  <p><code>true</code> if succeeded, <code>false</code> if the label element is unavailable.</p>
+                  </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".resetElementLabel"><span class="symbol-name">resetElementLabel</span><span class="signature"><span class="signature-params">(element)</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <p>Restores the label stored by overrideElementLabel.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>element</p>
+                      </td>
+                      <td>
+                        <p>(HTMLElement or <a href="Morebits.quickForm.element.html">Morebits.quickForm.element</a>)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> 
+                  <p>True if succeeded, false if the label element is unavailable.</p>
+                  </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".setElementLabel"><span class="symbol-name">setElementLabel</span><span class="signature"><span class="signature-params">(element, labelText)</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <p>Sets the label of the element to the given text.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>element</p>
+                      </td>
+                      <td>
+                        <p>(HTMLElement or <a href="Morebits.quickForm.element.html">Morebits.quickForm.element</a>)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>labelText</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> 
+                  <p>True if succeeded, false if the label element is unavailable.</p>
+                  </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".setElementTooltipVisibility"><span class="symbol-name">setElementTooltipVisibility</span><span class="signature"><span class="signature-params">(element[, visibility])</span></span></h3>
+              <p>Shows or hides the question mark icon (which displays the tooltip) next to a form element.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>element</p>
+                      </td>
+                      <td>
+                        <p>(HTMLElement or jQuery)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>visibility</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Skip this to toggle visibility.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".setElementVisibility"><span class="symbol-name">setElementVisibility</span><span class="signature"><span class="signature-params">(element[, visibility])</span></span></h3>
+              <p>Shows or hides a form element plus its label and tooltip.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>element</p>
+                      </td>
+                      <td>
+                        <p>(HTMLElement, jQuery, or string)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>HTML/jQuery element, or jQuery selector string.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>visibility</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Skip this to toggle visibility.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="append"><span class="symbol-name">append</span><span class="signature"><span class="signature-params">(data)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.quickForm.element.html">Morebits.quickForm.element</a></span></span></h3>
+              <p>Append element to the form.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>data</p>
+                      </td>
+                      <td>
+                        <p>(object or <a href="Morebits.quickForm.element.html">Morebits.quickForm.element</a>)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>A quickform element, or the object with which
+                          a quickform element is constructed.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.quickForm.element.html">Morebits.quickForm.element</a></code> 
+                  <ul>
+                    </p>
+                    <li>Same as what is passed to the function.</li>
+                  </ul>
+                </dd>
+              </dl>
+              <h3 id="render"><span class="symbol-name">render</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> HTMLElement</span></span></h3>
+              <p>Renders the HTML output of the quickForm.</p>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>HTMLElement</code> </p>
+                </dd>
+              </dl>
+            </section>
+          </section>
+        </div>
+      </div>
+      <nav id="jsdoc-toc-nav" role="navigation"></nav>
+    </div>
+  </div>
+  <footer id="jsdoc-footer" class="jsdoc-footer">
+    <div id="jsdoc-footer-container">
+      <p>
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+      </p>
+    </div>
+  </footer>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/tree.jquery.js"></script>
+  <script src="scripts/prettify.js"></script>
+  <script src="scripts/jsdoc-toc.js"></script>
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/scrollanchor.js"></script>
+</body>
+
+</html>

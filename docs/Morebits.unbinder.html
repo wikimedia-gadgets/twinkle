@@ -1,0 +1,225 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Class: unbinder</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <div class="symbol-detail-labels"><span class="label label-kind">class</span>&nbsp;<span class="label label-static">static</span></div>
+            <h1><small><a href="Morebits.html">Morebits</a>.<wbr></small><span class="symbol-name">unbinder</span></h1>
+            <p class="source-link">Source: <a href="morebits.js.html#source-line-1611">morebits.<wbr>js:1611</a></p>
+            <dl class="dl-compact">
+            </dl>
+          </header>
+          <section id="summary">
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Property</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.unbinder.html#content">content</a></dt>
+                    <dd>
+                      <p>The text being processed.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                </div>
+                <div class="summary-column">
+                </div>
+              </div>
+            </div>
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Methods</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.unbinder.html#.getCallback">getCallback()</a></dt>
+                    <dd>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.unbinder.html#rebind">rebind()</a></dt>
+                    <dd>
+                      <p>Restore the hidden portion of the <code>content</code> string.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.unbinder.html#unbind">unbind(prefix, postfix)</a></dt>
+                    <dd>
+                      <p>Hide the region encapsulated by the <code>prefix</code> and <code>postfix</code> from
+                        string processing.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2 id="unbinder">new&nbsp;<span class="symbol-name">unbinder</span><span class="signature"><span class="signature-params">(string)</span></span></h2>
+            <p>Temporarily hide a part of a string while processing the rest of it.
+              Used by <a href="Morebits.wikitext.page.html#commentOutImage">Morebits.wikitext.page.commentOutImage</a>.</p>
+            <section>
+              <h3>
+                Example
+              </h3>
+              <div>
+                <pre class="prettyprint"><code>var u &#x3D; new Morebits.unbinder(&#x27;Hello world &lt;!-- world --&gt; world&#x27;);
+u.unbind(&#x27;&lt;!--&#x27;, &#x27;--&gt;&#x27;); // text inside comment remains intact
+u.content &#x3D; u.content.replace(/world/g, &#x27;earth&#x27;);
+u.rebind(); // gives &#x27;Hello earth &lt;!-- world --&gt; earth&#x27;</code></pre>
+              </div>
+            </section>
+            <section>
+              <h3>Parameter</h3>
+              <table class="jsdoc-details-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Optional</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <p>string</p>
+                    </td>
+                    <td>
+                      <p>string</p>
+                    </td>
+                    <td>
+                      <p>&nbsp;</p>
+                    </td>
+                    <td>
+                      <p>The initial text to process.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            <dl class="dl-compact">
+            </dl>
+          </section>
+          <section>
+            <h2>Property</h2>
+            <section>
+              <h3 id="content"><span class="symbol-name">content</span></h3>
+              <p>The text being processed.</p>
+              <dl class="dl-compact">
+              </dl>
+            </section>
+            <h2>Methods</h2>
+            <section>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".getCallback"><span class="symbol-name">getCallback</span><span class="signature"><span class="signature-params">()</span></span></h3>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="rebind"><span class="symbol-name">rebind</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <p>Restore the hidden portion of the <code>content</code> string.</p>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <p>The processed output.</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="unbind"><span class="symbol-name">unbind</span><span class="signature"><span class="signature-params">(prefix, postfix)</span></span></h3>
+              <p>Hide the region encapsulated by the <code>prefix</code> and <code>postfix</code> from
+                string processing. <code>prefix</code> and <code>postfix</code> will be used in a
+                RegExp, so items that need escaping should be use <code>\\</code>.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>prefix</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>postfix</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Throws</dt>
+                <dd>
+                  <p>If either <code>prefix</code> or <code>postfix</code> is missing.</p>
+                </dd>
+              </dl>
+            </section>
+          </section>
+        </div>
+      </div>
+      <nav id="jsdoc-toc-nav" role="navigation"></nav>
+    </div>
+  </div>
+  <footer id="jsdoc-footer" class="jsdoc-footer">
+    <div id="jsdoc-footer-container">
+      <p>
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+      </p>
+    </div>
+  </footer>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/tree.jquery.js"></script>
+  <script src="scripts/prettify.js"></script>
+  <script src="scripts/jsdoc-toc.js"></script>
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/scrollanchor.js"></script>
+</body>
+
+</html>

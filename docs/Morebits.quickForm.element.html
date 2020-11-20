@@ -1,0 +1,353 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Class: element</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <div class="symbol-detail-labels"><span class="label label-kind">class</span>&nbsp;<span class="label label-static">static</span></div>
+            <h1><small><a href="Morebits.html">Morebits</a>.<wbr><a href="Morebits.quickForm.html">quickForm</a>.<wbr></small><span class="symbol-name">element</span></h1>
+            <p class="source-link">Source: <a href="morebits.js.html#source-line-252">morebits.<wbr>js:252</a></p>
+            <dl class="dl-compact">
+            </dl>
+          </header>
+          <section id="summary">
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Property</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.quickForm.element.html#.id">id</a></dt>
+                    <dd>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                </div>
+                <div class="summary-column">
+                </div>
+              </div>
+            </div>
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Methods</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.quickForm.element.html#.generateTooltip">generateTooltip(node, data)</a></dt>
+                    <dd>
+                      <p>Create a jQuery UI-based tooltip.</p>
+                    </dd>
+                    <dt><a href="Morebits.quickForm.element.html#append">append(data)</a></dt>
+                    <dd>
+                      <p>Appends an element to current element.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.quickForm.element.html#compute">compute()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.quickForm.element.html#render">render()</a></dt>
+                    <dd>
+                      <p>Renders the HTML output for the quickForm element.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2 id="element">new&nbsp;<span class="symbol-name">element</span><span class="signature"><span class="signature-params">(data)</span></span></h2>
+            <p>Create a new element for the the form.</p>
+            <p>Index to Morebits.quickForm.element types:</p>
+            <ul>
+              <li>Global attributes: id, className, style, tooltip, extra, adminonly</li>
+              <li><code>select</code>: A combo box (aka drop-down).
+                <ul>
+                  <li>Attributes: name, label, multiple, size, list, event, disabled</li>
+                </ul>
+              </li>
+              <li><code>option</code>: An element for a combo box.
+                <ul>
+                  <li>Attributes: value, label, selected, disabled</li>
+                </ul>
+              </li>
+              <li><code>optgroup</code>: A group of &quot;option&quot;s.
+                <ul>
+                  <li>Attributes: label, list</li>
+                </ul>
+              </li>
+              <li><code>field</code>: A fieldset (aka group box).
+                <ul>
+                  <li>Attributes: name, label, disabled</li>
+                </ul>
+              </li>
+              <li><code>checkbox</code>: A checkbox. Must use &quot;list&quot; parameter.
+                <ul>
+                  <li>Attributes: name, list, event</li>
+                  <li>Attributes (within list): name, label, value, checked, disabled, event, subgroup</li>
+                </ul>
+              </li>
+              <li><code>radio</code>: A radio button. Must use &quot;list&quot; parameter.
+                <ul>
+                  <li>Attributes: name, list, event</li>
+                  <li>Attributes (within list): name, label, value, checked, disabled, event, subgroup</li>
+                </ul>
+              </li>
+              <li><code>input</code>: A text input box.
+                <ul>
+                  <li>Attributes: name, label, value, size, placeholder, maxlength, disabled, required, readonly, event</li>
+                </ul>
+              </li>
+              <li><code>number</code>: A number input box.
+                <ul>
+                  <li>Attributes: Everything the text <code>input</code> has, as well as: min, max, step, list</li>
+                </ul>
+              </li>
+              <li><code>dyninput</code>: A set of text boxes with &quot;Remove&quot; buttons and an &quot;Add&quot; button.
+                <ul>
+                  <li>Attributes: name, label, min, max, sublabel, value, size, maxlength, event</li>
+                </ul>
+              </li>
+              <li><code>hidden</code>: An invisible form field.
+                <ul>
+                  <li>Attributes: name, value</li>
+                </ul>
+              </li>
+              <li><code>header</code>: A level 5 header.
+                <ul>
+                  <li>Attributes: label</li>
+                </ul>
+              </li>
+              <li><code>div</code>: A generic placeholder element or label.
+                <ul>
+                  <li>Attributes: name, label</li>
+                </ul>
+              </li>
+              <li><code>submit</code>: A submit button. Morebits.simpleWindow moves these to the footer of the dialog.
+                <ul>
+                  <li>Attributes: name, label, disabled</li>
+                </ul>
+              </li>
+              <li><code>button</code>: A generic button.
+                <ul>
+                  <li>Attributes: name, label, disabled, event</li>
+                </ul>
+              </li>
+              <li><code>textarea</code>: A big, multi-line text box.
+                <ul>
+                  <li>Attributes: name, label, value, cols, rows, disabled, required, readonly</li>
+                </ul>
+              </li>
+              <li><code>fragment</code>: A DocumentFragment object.
+                <ul>
+                  <li>No attributes, and no global attributes except adminonly.</li>
+                </ul>
+              </li>
+            </ul>
+            <section>
+              <h3>
+                Example
+              </h3>
+              <div>
+                <pre class="prettyprint"><code>new Morebits.quickForm.element({
+    name: &#x27;target&#x27;,
+    type: &#x27;input&#x27;,
+    label: &#x27;Your target:&#x27;,
+    tooltip: &#x27;Enter your target. Required.&#x27;,
+    required: true
+});</code></pre>
+              </div>
+            </section>
+            <section>
+              <h3>Parameter</h3>
+              <table class="jsdoc-details-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Optional</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <p>data</p>
+                    </td>
+                    <td>
+                      <p>object</p>
+                    </td>
+                    <td>
+                      <p>&nbsp;</p>
+                    </td>
+                    <td>
+                      <p>Object representing the quickform element. Should
+                        specify one of the available types from the index above, as well as any
+                        relevant and available attributes.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            <dl class="dl-compact">
+            </dl>
+          </section>
+          <section>
+            <h2>Property</h2>
+            <section>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".id"><span class="symbol-name">id</span><small class="property-type">
+                  &nbsp;number</small></h3>
+              <dl class="dl-compact">
+              </dl>
+            </section>
+            <h2>Methods</h2>
+            <section>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".generateTooltip"><span class="symbol-name">generateTooltip</span><span class="signature"><span class="signature-params">(node, data)</span></span></h3>
+              <p>Create a jQuery UI-based tooltip.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>node</p>
+                      </td>
+                      <td>
+                        <p>HTMLElement</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>The HTML element beside which a tooltip is to be generated.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>data</p>
+                      </td>
+                      <td>
+                        <p>object</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Tooltip-related configuration data.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Requires</dt>
+                <dd>module:jquery.ui</dd>
+              </dl>
+              <h3 id="append"><span class="symbol-name">append</span><span class="signature"><span class="signature-params">(data)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.quickForm.element.html">Morebits.quickForm.element</a></span></span></h3>
+              <p>Appends an element to current element.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>data</p>
+                      </td>
+                      <td>
+                        <p><a href="Morebits.quickForm.element.html">Morebits.quickForm.element</a></p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>A quickForm element or the object required to
+                          create the quickForm element.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.quickForm.element.html">Morebits.quickForm.element</a></code> 
+                  <p>The same element passed in.</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="compute"><span class="symbol-name">compute</span><span class="signature"><span class="signature-params">()</span></span></h3>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="render"><span class="symbol-name">render</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> HTMLElement</span></span></h3>
+              <p>Renders the HTML output for the quickForm element. This should be called
+                without parameters: <code>form.render()</code>.</p>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>HTMLElement</code> </p>
+                </dd>
+              </dl>
+            </section>
+          </section>
+        </div>
+      </div>
+      <nav id="jsdoc-toc-nav" role="navigation"></nav>
+    </div>
+  </div>
+  <footer id="jsdoc-footer" class="jsdoc-footer">
+    <div id="jsdoc-footer-container">
+      <p>
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+      </p>
+    </div>
+  </footer>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/tree.jquery.js"></script>
+  <script src="scripts/prettify.js"></script>
+  <script src="scripts/jsdoc-toc.js"></script>
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/scrollanchor.js"></script>
+</body>
+
+</html>

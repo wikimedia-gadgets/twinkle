@@ -1,0 +1,200 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Class: userspaceLogger</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <div class="symbol-detail-labels"><span class="label label-kind">class</span>&nbsp;<span class="label label-static">static</span></div>
+            <h1><small><a href="Morebits.html">Morebits</a>.<wbr></small><span class="symbol-name">userspaceLogger</span></h1>
+            <p class="source-link">Source: <a href="morebits.js.html#source-line-4980">morebits.<wbr>js:4980</a></p>
+            <dl class="dl-compact">
+            </dl>
+          </header>
+          <section id="summary">
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Properties</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.userspaceLogger.html#headerLevel">headerLevel</a></dt>
+                    <dd>
+                      <p>The header level to use for months, defaults to 3 (<code>===</code>).</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.userspaceLogger.html#initialText">initialText</a></dt>
+                    <dd>
+                      <p>The text to prefix the log with upon creation, defaults to empty.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                </div>
+              </div>
+            </div>
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Method</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.userspaceLogger.html#log">log(logText, summaryText)</a></dt>
+                    <dd>
+                      <p>Log the entry.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                </div>
+                <div class="summary-column">
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2 id="userspaceLogger">new&nbsp;<span class="symbol-name">userspaceLogger</span><span class="signature"><span class="signature-params">(logPageName)</span></span></h2>
+            <p>Handles logging actions to a userspace log.
+              Used in CSD, PROD, and XFD.</p>
+            <section>
+              <h3>Parameter</h3>
+              <table class="jsdoc-details-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Optional</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <p>logPageName</p>
+                    </td>
+                    <td>
+                      <p>string</p>
+                    </td>
+                    <td>
+                      <p>&nbsp;</p>
+                    </td>
+                    <td>
+                      <p>Title of the subpage of the current user's log.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            <dl class="dl-compact">
+            </dl>
+          </section>
+          <section>
+            <h2>Properties</h2>
+            <section>
+              <h3 id="headerLevel"><span class="symbol-name">headerLevel</span><small class="property-type">
+                  &nbsp;number</small></h3>
+              <p>The header level to use for months, defaults to 3 (<code>===</code>).</p>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="initialText"><span class="symbol-name">initialText</span><small class="property-type">
+                  &nbsp;string</small></h3>
+              <p>The text to prefix the log with upon creation, defaults to empty.</p>
+              <dl class="dl-compact">
+              </dl>
+            </section>
+            <h2>Method</h2>
+            <section>
+              <h3 id="log"><span class="symbol-name">log</span><span class="signature"><span class="signature-params">(logText, summaryText)</span>&nbsp;&rarr; <span class="signature-returns"> JQuery.Promise</span></span></h3>
+              <p>Log the entry.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>logText</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Doesn't include leading <code>#</code> or <code>*</code>.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>summaryText</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Edit summary.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>JQuery.Promise</code> </p>
+                </dd>
+              </dl>
+            </section>
+          </section>
+        </div>
+      </div>
+      <nav id="jsdoc-toc-nav" role="navigation"></nav>
+    </div>
+  </div>
+  <footer id="jsdoc-footer" class="jsdoc-footer">
+    <div id="jsdoc-footer-container">
+      <p>
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+      </p>
+    </div>
+  </footer>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/tree.jquery.js"></script>
+  <script src="scripts/prettify.js"></script>
+  <script src="scripts/jsdoc-toc.js"></script>
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/scrollanchor.js"></script>
+</body>
+
+</html>

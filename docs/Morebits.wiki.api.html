@@ -1,0 +1,382 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Class: api</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <div class="symbol-detail-labels"><span class="label label-kind">class</span>&nbsp;<span class="label label-static">static</span></div>
+            <h1><small><a href="Morebits.html">Morebits</a>.<wbr><a href="Morebits.wiki.html">wiki</a>.<wbr></small><span class="symbol-name">api</span></h1>
+            <p class="source-link">Source: <a href="morebits.js.html#source-line-2171">morebits.<wbr>js:2171</a></p>
+            <dl class="dl-compact">
+            </dl>
+          </header>
+          <section id="summary">
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Property</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.wiki.api.html#.morebitsWikiChangeTag">morebitsWikiChangeTag</a></dt>
+                    <dd>
+                      <p>Change/revision tag applied to Morebits actions when no other tags are specified.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                </div>
+                <div class="summary-column">
+                </div>
+              </div>
+            </div>
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Methods</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.wiki.api.html#.getToken">getToken()</a></dt>
+                    <dd>
+                      <p>Get a new CSRF token on encountering token errors.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.api.html#.setApiUserAgent">setApiUserAgent([ua])</a></dt>
+                    <dd>
+                      <p>Set the custom user agent header, which is used for server-side logging.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.wiki.api.html#post">post(callerAjaxParameters)</a></dt>
+                    <dd>
+                      <p>Carry out the request.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.api.html#setParent">setParent(parent)</a></dt>
+                    <dd>
+                      <p>Keep track of parent object for callbacks.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.wiki.api.html#setStatusElement">setStatusElement(statusElement)</a></dt>
+                    <dd>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2 id="api">new&nbsp;<span class="symbol-name">api</span><span class="signature"><span class="signature-params">(currentAction, query[, onSuccess][, statusElement][, onError])</span></span></h2>
+            <p>An easy way to talk to the MediaWiki API. Accepts either json or xml
+              (default) formats; if json is selected, will default to <code>formatversion=2</code>
+              unless otherwise specified. Similarly, enforces newer <code>errorformat</code>s,
+              defaulting to <code>html</code> if unspecified. <code>uselang</code> enforced to the wiki's
+              content language.</p>
+            <p>In new code, the use of the last 3 parameters should be avoided, instead
+              use <a href="Morebits.wiki.api.html#setStatusElement">setStatusElement()</a> to bind
+              the status element (if needed) and use <code>.then()</code> or <code>.catch()</code> on the
+              promise returned by <code>post()</code>, rather than specify the <code>onSuccess</code> or
+              <code>onFailure</code> callbacks.
+            </p>
+            <section>
+              <h3>Parameters</h3>
+              <table class="jsdoc-details-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Optional</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <p>currentAction</p>
+                    </td>
+                    <td>
+                      <p>string</p>
+                    </td>
+                    <td>
+                      <p>&nbsp;</p>
+                    </td>
+                    <td>
+                      <p>The current action (required).</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <p>query</p>
+                    </td>
+                    <td>
+                      <p>object</p>
+                    </td>
+                    <td>
+                      <p>&nbsp;</p>
+                    </td>
+                    <td>
+                      <p>The query (required).</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <p>onSuccess</p>
+                    </td>
+                    <td>
+                      <p>function()</p>
+                    </td>
+                    <td>
+                      <p>Yes</p>
+                    </td>
+                    <td>
+                      <p>The function to call when request is successful.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <p>statusElement</p>
+                    </td>
+                    <td>
+                      <p><a href="Morebits.status.html">Morebits.status</a></p>
+                    </td>
+                    <td>
+                      <p>Yes</p>
+                    </td>
+                    <td>
+                      <p>A Morebits.status object to use for status messages.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <p>onError</p>
+                    </td>
+                    <td>
+                      <p>function()</p>
+                    </td>
+                    <td>
+                      <p>Yes</p>
+                    </td>
+                    <td>
+                      <p>The function to call if an error occurs.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            <dl class="dl-compact">
+            </dl>
+          </section>
+          <section>
+            <h2>Property</h2>
+            <section>
+              <div class="symbol-detail-labels"><span class="label label-constant">constant</span>&nbsp;<span class="label label-static">static</span></div>
+              <h3 id=".morebitsWikiChangeTag"><span class="symbol-name">morebitsWikiChangeTag</span><small class="property-type">
+                  &nbsp;string</small></h3>
+              <p>Change/revision tag applied to Morebits actions when no other tags are specified.
+                Unused by default per <a href="https://en.wikipedia.org/w/index.php?oldid=970618849#Adding_tags_to_Twinkle_edits_and_actions">EnWiki consensus</a>.</p>
+              <dl class="dl-compact">
+              </dl>
+            </section>
+            <h2>Methods</h2>
+            <section>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".getToken"><span class="symbol-name">getToken</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <p>Get a new CSRF token on encountering token errors.</p>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <p>MediaWiki CSRF token.</p>
+                  </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".setApiUserAgent"><span class="symbol-name">setApiUserAgent</span><span class="signature"><span class="signature-params">([ua])</span></span></h3>
+              <p>Set the custom user agent header, which is used for server-side logging.
+                Note that doing so will set the useragent for every <code>Morebits.wiki.api</code>
+                process performed thereafter.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>ua</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>User agent. The default
+                          value of <code>morebits.js ([[w:WT:TW]])</code> will be appended to any provided
+                          value.</p>
+                        <p>Defaults to <code>morebits.js ([[w:WT:TW]])</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>See also</dt>
+                <dd><a href="https://lists.wikimedia.org/pipermail/mediawiki-api-announce/2014-November/000075.html">https://lists.wikimedia.org/pipermail/mediawiki-api-announce/2014-November/000075.html</a>
+                  for original announcement.</dd>
+              </dl>
+              <h3 id="post"><span class="symbol-name">post</span><span class="signature"><span class="signature-params">(callerAjaxParameters)</span>&nbsp;&rarr; <span class="signature-returns"> promise</span></span></h3>
+              <p>Carry out the request.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>callerAjaxParameters</p>
+                      </td>
+                      <td>
+                        <p>object</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Do not specify a parameter unless you really
+                          really want to give jQuery some extra parameters.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>promise</code> 
+                  <ul>
+                    </p>
+                    <li>A jQuery promise object that is resolved or rejected with the api object.</li>
+                  </ul>
+                </dd>
+              </dl>
+              <h3 id="setParent"><span class="symbol-name">setParent</span><span class="signature"><span class="signature-params">(parent)</span></span></h3>
+              <p>Keep track of parent object for callbacks.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>parent</p>
+                      </td>
+                      <td>
+                        <p>any type</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setStatusElement"><span class="symbol-name">setStatusElement</span><span class="signature"><span class="signature-params">(statusElement)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>statusElement</p>
+                      </td>
+                      <td>
+                        <p><a href="Morebits.status.html">Morebits.status</a></p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+            </section>
+          </section>
+        </div>
+      </div>
+      <nav id="jsdoc-toc-nav" role="navigation"></nav>
+    </div>
+  </div>
+  <footer id="jsdoc-footer" class="jsdoc-footer">
+    <div id="jsdoc-footer-container">
+      <p>
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+      </p>
+    </div>
+  </footer>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/tree.jquery.js"></script>
+  <script src="scripts/prettify.js"></script>
+  <script src="scripts/jsdoc-toc.js"></script>
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/scrollanchor.js"></script>
+</body>
+
+</html>

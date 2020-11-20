@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Namespace: ip</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <div class="symbol-detail-labels"><span class="label label-kind">namespace</span>&nbsp;<span class="label label-static">static</span></div>
+            <h1><small><a href="Morebits.html">Morebits</a>.<wbr></small><span class="symbol-name">ip</span></h1>
+            <p class="source-link">Source: <a href="morebits.js.html#source-line-1140">morebits.<wbr>js:1140</a></p>
+            <div class="symbol-description">
+              <p>Utilities to help process IP addresses.</p>
+            </div>
+            <dl class="dl-compact">
+            </dl>
+          </header>
+          <section id="summary">
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Methods</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.ip.html#.get64">get64(ipv6)</a></dt>
+                    <dd>
+                      <p>Get the /64 subnet for an IPv6 address.</p>
+                    </dd>
+                    <dt><a href="Morebits.ip.html#.isRange">isRange(ip)</a></dt>
+                    <dd>
+                      <p>Determine if the given IP address is a range.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.ip.html#.sanitizeIPv6">sanitizeIPv6(address)</a></dt>
+                    <dd>
+                      <p>Converts an IPv6 address to the canonical form stored and used by MediaWiki.</p>
+                    </dd>
+                    <dt><a href="Morebits.ip.html#.validCIDR">validCIDR()</a></dt>
+                    <dd>
+                      <p>Check that an IP range is within the CIDR limits.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2>Methods</h2>
+            <section>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".get64"><span class="symbol-name">get64</span><span class="signature"><span class="signature-params">(ipv6)</span>&nbsp;&rarr; <span class="signature-returns"> (boolean or string)</span></span></h3>
+              <p>Get the /64 subnet for an IPv6 address.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>ipv6</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>The IPv6 address, with or without a subnet.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>(boolean or string)</code> 
+                  <ul>
+                    </p>
+                    <li>False if not IPv6 or bigger than a 64,
+                      otherwise the (sanitized) /64 address.</li>
+                  </ul>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".isRange"><span class="symbol-name">isRange</span><span class="signature"><span class="signature-params">(ip)</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <p>Determine if the given IP address is a range. Just conjoins
+                <code>mw.util.isIPAddress</code> with and without the <code>allowBlock</code> option.
+              </p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>ip</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> 
+                  <ul>
+                    </p>
+                    <li>True if given a valid IP address range, false otherwise.</li>
+                  </ul>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".sanitizeIPv6"><span class="symbol-name">sanitizeIPv6</span><span class="signature"><span class="signature-params">(address)</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <p>Converts an IPv6 address to the canonical form stored and used by MediaWiki.
+                JavaScript translation of the <a href="https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/8eb6ac3e84ea3312d391ca96c12c49e3ad0753bb/includes/utils/IP.php#131"><code>IP::sanitizeIP()</code></a>
+                function from the IPUtils library. Adddresses are verbose, uppercase,
+                normalized, and expanded to 8 words.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>address</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>The IPv6 address, with or without CIDR.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".validCIDR"><span class="symbol-name">validCIDR</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <p>Check that an IP range is within the CIDR limits. Most likely to be useful
+                in conjunction with <code>wgRelevantUserName</code>. CIDR limits are harcoded as /16
+                for IPv4 and /32 for IPv6.</p>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> 
+                  <ul>
+                    </p>
+                    <li>True for valid ranges within the CIDR limits,
+                      otherwise false (ranges outside the limit, single IPs, non-IPs).</li>
+                  </ul>
+                </dd>
+              </dl>
+            </section>
+          </section>
+        </div>
+      </div>
+      <nav id="jsdoc-toc-nav" role="navigation"></nav>
+    </div>
+  </div>
+  <footer id="jsdoc-footer" class="jsdoc-footer">
+    <div id="jsdoc-footer-container">
+      <p>
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+      </p>
+    </div>
+  </footer>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/tree.jquery.js"></script>
+  <script src="scripts/prettify.js"></script>
+  <script src="scripts/jsdoc-toc.js"></script>
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/scrollanchor.js"></script>
+</body>
+
+</html>

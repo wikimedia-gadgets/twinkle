@@ -1,0 +1,495 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Class: page</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <div class="symbol-detail-labels"><span class="label label-kind">class</span>&nbsp;<span class="label label-static">static</span></div>
+            <h1><small><a href="Morebits.html">Morebits</a>.<wbr><a href="Morebits.wikitext.html">wikitext</a>.<wbr></small><span class="symbol-name">page</span></h1>
+            <p class="source-link">Source: <a href="morebits.js.html#source-line-4763">morebits.<wbr>js:4763</a></p>
+            <dl class="dl-compact">
+            </dl>
+          </header>
+          <section id="summary">
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Methods</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.wikitext.page.html#addToImageComment">addToImageComment(image, data)</a></dt>
+                    <dd>
+                      <p>Converts uses of [[File:<code>image</code>]] to [[File:<code>image</code>|<code>data</code>]].</p>
+                    </dd>
+                    <dt><a href="Morebits.wikitext.page.html#commentOutImage">commentOutImage(image[, reason])</a></dt>
+                    <dd>
+                      <p>Comments out images from page text; if used in a gallery, deletes the whole line.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.wikitext.page.html#getText">getText()</a></dt>
+                    <dd>
+                      <p>Get the manipulated wikitext.</p>
+                    </dd>
+                    <dt><a href="Morebits.wikitext.page.html#insertAfterTemplates">insertAfterTemplates(tag, regex[, flags][, preRegex])</a></dt>
+                    <dd>
+                      <p>Smartly insert a tag atop page text but after specified templates,
+                        such as hatnotes, short description, or deletion and protection templates.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.wikitext.page.html#removeLink">removeLink(link_target)</a></dt>
+                    <dd>
+                      <p>Removes links to <code>link_target</code> from the page text.</p>
+                    </dd>
+                    <dt><a href="Morebits.wikitext.page.html#removeTemplate">removeTemplate(template)</a></dt>
+                    <dd>
+                      <p>Remove all transclusions of a template from page text.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2 id="page">new&nbsp;<span class="symbol-name">page</span><span class="signature"><span class="signature-params">(text)</span></span></h2>
+            <p>Adjust and manipulate the wikitext of a page.</p>
+            <section>
+              <h3>Parameter</h3>
+              <table class="jsdoc-details-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Optional</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <p>text</p>
+                    </td>
+                    <td>
+                      <p>string</p>
+                    </td>
+                    <td>
+                      <p>&nbsp;</p>
+                    </td>
+                    <td>
+                      <p>Wikitext to be manipulated.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            <dl class="dl-compact">
+            </dl>
+          </section>
+          <section>
+            <h2>Methods</h2>
+            <section>
+              <h3 id="addToImageComment"><span class="symbol-name">addToImageComment</span><span class="signature"><span class="signature-params">(image, data)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.wikitext.page.html">Morebits.wikitext.page</a></span></span></h3>
+              <p>Converts uses of [[File:<code>image</code>]] to [[File:<code>image</code>|<code>data</code>]].</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>image</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Image name without File: prefix.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>data</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>The display options.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.wikitext.page.html">Morebits.wikitext.page</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="commentOutImage"><span class="symbol-name">commentOutImage</span><span class="signature"><span class="signature-params">(image[, reason])</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.wikitext.page.html">Morebits.wikitext.page</a></span></span></h3>
+              <p>Comments out images from page text; if used in a gallery, deletes the whole line.
+                If used as a template argument (not necessarily with <code>File:</code> prefix), the template parameter is commented out.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>image</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Image name without <code>File:</code> prefix.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>reason</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Reason to be included in comment, alongside the commented-out image.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.wikitext.page.html">Morebits.wikitext.page</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="getText"><span class="symbol-name">getText</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <p>Get the manipulated wikitext.</p>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <h3 id="insertAfterTemplates"><span class="symbol-name">insertAfterTemplates</span><span class="signature"><span class="signature-params">(tag, regex[, flags][, preRegex])</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.wikitext.page.html">Morebits.wikitext.page</a></span></span></h3>
+              <p>Smartly insert a tag atop page text but after specified templates,
+                such as hatnotes, short description, or deletion and protection templates.
+                Notably, does <em>not</em> insert a newline after the tag.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>tag</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>The tag to be inserted.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>regex</p>
+                      </td>
+                      <td>
+                        <p>(string or Array of string)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Templates after which to insert tag,
+                          given as either as a (regex-valid) string or an array to be joined by pipes.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>flags</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Regex flags to apply. <code>''</code> to provide no flags;
+                          other falsey values will default to <code>i</code>.</p>
+                        <p>Defaults to <code>i</code>.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>preRegex</p>
+                      </td>
+                      <td>
+                        <p>(string or Array of string)</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Optional regex string or array to match
+                          before any template matches (i.e. before <code>{{</code>), such as html comments.</p>
+        </td>
+</tr>
+
+        </tbody>
+</table>
+
+    </section>
+
+        
+
+        <dl class="dl-compact">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <dt>Returns</dt>
+        <dd><p><code><a href="Morebits.wikitext.page.html">Morebits.wikitext.page</a></code> </p></dd>
+
+
+
+        </dl>
+
+                <h3 id="removeLink"><span class="symbol-name">removeLink</span><span class="signature"><span class="signature-params">(link_target)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.wikitext.page.html">Morebits.wikitext.page</a></span></span></h3>            <p>Removes links to <code>link_target</code> from the page text.</p>
+
+        
+            <section>
+        <h4>Parameter</h4>
+            <table class="jsdoc-details-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Optional</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+        <td>
+            <p>link_target</p>
+        </td>
+        <td>
+                <p>string</p>
+        </td>
+        <td>
+                <p>&nbsp;</p>
+        </td>
+        <td>
+        </td>
+</tr>
+
+        </tbody>
+</table>
+
+    </section>
+
+        
+
+        <dl class="dl-compact">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <dt>Returns</dt>
+        <dd><p><code><a href="Morebits.wikitext.page.html">Morebits.wikitext.page</a></code> </p></dd>
+
+
+
+        </dl>
+
+                <h3 id="removeTemplate"><span class="symbol-name">removeTemplate</span><span class="signature"><span class="signature-params">(template)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.wikitext.page.html">Morebits.wikitext.page</a></span></span></h3>            <p>Remove all transclusions of a template from page text.</p>
+
+        
+            <section>
+        <h4>Parameter</h4>
+            <table class="jsdoc-details-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Optional</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+        <td>
+            <p>template</p>
+        </td>
+        <td>
+                <p>string</p>
+        </td>
+        <td>
+                <p>&nbsp;</p>
+        </td>
+        <td>
+                <p>Page name whose transclusions are to be removed,
+include namespace prefix only if not in template namespace.</p>
+        </td>
+</tr>
+
+        </tbody>
+</table>
+
+    </section>
+
+        
+
+        <dl class="dl-compact">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <dt>Returns</dt>
+        <dd><p><code><a href="Morebits.wikitext.page.html">Morebits.wikitext.page</a></code> </p></dd>
+
+
+
+        </dl>
+
+    </section>
+
+
+            
+
+            
+</section>
+
+                                        </div>
+                                </div>
+                                <nav id="jsdoc-toc-nav" role="navigation"></nav>
+                        </div>
+                </div>
+                    <footer id="jsdoc-footer" class="jsdoc-footer">
+                            <div id="jsdoc-footer-container">
+                                    <p>
+                                      Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+                                    </p>
+                            </div>
+                    </footer>
+                <script src="scripts/jquery.min.js"></script>
+                <script src="scripts/tree.jquery.js"></script>
+                <script src="scripts/prettify.js"></script>
+                <script src="scripts/jsdoc-toc.js"></script>
+                <script src="scripts/linenumber.js"></script>
+                <script src="scripts/scrollanchor.js"></script>
+        </body>
+</html>

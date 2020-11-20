@@ -1,0 +1,613 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Class: simpleWindow</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <div class="symbol-detail-labels"><span class="label label-kind">class</span>&nbsp;<span class="label label-static">static</span></div>
+            <h1><small><a href="Morebits.html">Morebits</a>.<wbr></small><span class="symbol-name">simpleWindow</span></h1>
+            <p class="source-link">Source: <a href="morebits.js.html#source-line-5668">morebits.<wbr>js:5668</a></p>
+            <dl class="dl-compact">
+            </dl>
+          </header>
+          <section id="summary">
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Methods</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.simpleWindow.html#.setButtonsEnabled">setButtonsEnabled(enabled)</a></dt>
+                    <dd>
+                      <p>Enables or disables all footer buttons on all <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a>s in the current page.</p>
+                    </dd>
+                    <dt><a href="Morebits.simpleWindow.html#addContent">addContent(content)</a></dt>
+                    <dd>
+                      <p>Adds the given element node to the dialog content.</p>
+                    </dd>
+                    <dt><a href="Morebits.simpleWindow.html#addFooterLink">addFooterLink(text, wikiPage[, prep])</a></dt>
+                    <dd>
+                      <p>Adds a link in the bottom-right corner of the dialog.</p>
+                    </dd>
+                    <dt><a href="Morebits.simpleWindow.html#close">close([event])</a></dt>
+                    <dd>
+                      <p>Closes the dialog.</p>
+                    </dd>
+                    <dt><a href="Morebits.simpleWindow.html#display">display()</a></dt>
+                    <dd>
+                      <p>Shows the dialog.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.simpleWindow.html#focus">focus()</a></dt>
+                    <dd>
+                      <p>Focuses the dialog.</p>
+                    </dd>
+                    <dt><a href="Morebits.simpleWindow.html#purgeContent">purgeContent()</a></dt>
+                    <dd>
+                      <p>Removes all contents from the dialog, barring any footer links.</p>
+                    </dd>
+                    <dt><a href="Morebits.simpleWindow.html#setContent">setContent(content)</a></dt>
+                    <dd>
+                      <p>Sets the content of the dialog to the given element node, usually from rendering
+                        a <a href="Morebits.quickForm.html">Morebits.quickForm</a>.</p>
+                    </dd>
+                    <dt><a href="Morebits.simpleWindow.html#setHeight">setHeight(height)</a></dt>
+                    <dd>
+                      <p>Sets the dialog's maximum height.</p>
+                    </dd>
+                    <dt><a href="Morebits.simpleWindow.html#setModality">setModality([modal])</a></dt>
+                    <dd>
+                      <p>Sets whether the window should be modal or not.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.simpleWindow.html#setScriptName">setScriptName(name)</a></dt>
+                    <dd>
+                      <p>Sets the script name, appearing as a prefix to the title to help users determine which
+                        user script is producing which dialog.</p>
+                    </dd>
+                    <dt><a href="Morebits.simpleWindow.html#setTitle">setTitle(title)</a></dt>
+                    <dd>
+                      <p>Sets the dialog title.</p>
+                    </dd>
+                    <dt><a href="Morebits.simpleWindow.html#setWidth">setWidth(width)</a></dt>
+                    <dd>
+                      <p>Sets the dialog width.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2 id="simpleWindow">new&nbsp;<span class="symbol-name">simpleWindow</span><span class="signature"><span class="signature-params">(width, height)</span></span></h2>
+            <p>A simple draggable window, now a wrapper for jQuery UI's dialog feature.</p>
+            <section>
+              <h3>Parameters</h3>
+              <table class="jsdoc-details-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Optional</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <p>width</p>
+                    </td>
+                    <td>
+                      <p>number</p>
+                    </td>
+                    <td>
+                      <p>&nbsp;</p>
+                    </td>
+                    <td>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <p>height</p>
+                    </td>
+                    <td>
+                      <p>number</p>
+                    </td>
+                    <td>
+                      <p>&nbsp;</p>
+                    </td>
+                    <td>
+                      <p>The maximum allowable height for the content area.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            <dl class="dl-compact">
+              <dt>Requires</dt>
+              <dd>module:jquery.ui.dialog</dd>
+            </dl>
+          </section>
+          <section>
+            <h2>Methods</h2>
+            <section>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".setButtonsEnabled"><span class="symbol-name">setButtonsEnabled</span><span class="signature"><span class="signature-params">(enabled)</span></span></h3>
+              <p>Enables or disables all footer buttons on all <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a>s in the current page.
+                This should be called with <code>false</code> when the button(s) become irrelevant (e.g. just before
+                <a href="Morebits.status.html#.init">Morebits.status.init</a> is called).
+                This is not an instance method so that consumers don't have to keep a reference to the
+                original <code>Morebits.simpleWindow</code> object sitting around somewhere. Anyway, most of the time
+                there will only be one <code>Morebits.simpleWindow</code> open, so this shouldn't matter.
+              </p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>enabled</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="addContent"><span class="symbol-name">addContent</span><span class="signature"><span class="signature-params">(content)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></span></span></h3>
+              <p>Adds the given element node to the dialog content.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>content</p>
+                      </td>
+                      <td>
+                        <p>HTMLElement</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="addFooterLink"><span class="symbol-name">addFooterLink</span><span class="signature"><span class="signature-params">(text, wikiPage[, prep])</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></span></span></h3>
+              <p>Adds a link in the bottom-right corner of the dialog.
+                This can be used to provide help or policy links.
+                For example, Twinkle's CSD module adds a link to the CSD policy page,
+                as well as a link to Twinkle's documentation.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>text</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Display text.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>wikiPage</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Link target.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>prep</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Set true to prepend rather than append.</p>
+                        <p>Defaults to <code>false</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="close"><span class="symbol-name">close</span><span class="signature"><span class="signature-params">([event])</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></span></span></h3>
+              <p>Closes the dialog. If this is set as an event handler, it will stop the event
+                from doing anything more.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>event</p>
+                      </td>
+                      <td>
+                        <p>event</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="display"><span class="symbol-name">display</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></span></span></h3>
+              <p>Shows the dialog. Calling display() on a dialog that has previously been closed
+                might work, but it is not guaranteed.</p>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="focus"><span class="symbol-name">focus</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></span></span></h3>
+              <p>Focuses the dialog. This might work, or on the contrary, it might not.</p>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="purgeContent"><span class="symbol-name">purgeContent</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></span></span></h3>
+              <p>Removes all contents from the dialog, barring any footer links.</p>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="setContent"><span class="symbol-name">setContent</span><span class="signature"><span class="signature-params">(content)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></span></span></h3>
+              <p>Sets the content of the dialog to the given element node, usually from rendering
+                a <a href="Morebits.quickForm.html">Morebits.quickForm</a>.
+                Re-enumerates the footer buttons, but leaves the footer links as they are.
+                Be sure to call this at least once before the dialog is displayed...</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>content</p>
+                      </td>
+                      <td>
+                        <p>HTMLElement</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="setHeight"><span class="symbol-name">setHeight</span><span class="signature"><span class="signature-params">(height)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></span></span></h3>
+              <p>Sets the dialog's maximum height. The dialog will auto-size to fit its contents,
+                but the content area will grow no larger than the height given here.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>height</p>
+                      </td>
+                      <td>
+                        <p>number</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="setModality"><span class="symbol-name">setModality</span><span class="signature"><span class="signature-params">([modal])</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></span></span></h3>
+              <p>Sets whether the window should be modal or not. Modal dialogs create
+                an overlay below the dialog but above other page elements. This
+                must be used (if necessary) before calling display().</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>modal</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>If set to true, other items on the
+                          page will be disabled, i.e., cannot be interacted with.</p>
+                        <p>Defaults to <code>false</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="setScriptName"><span class="symbol-name">setScriptName</span><span class="signature"><span class="signature-params">(name)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></span></span></h3>
+              <p>Sets the script name, appearing as a prefix to the title to help users determine which
+                user script is producing which dialog. For instance, Twinkle modules set this to &quot;Twinkle&quot;.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>name</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="setTitle"><span class="symbol-name">setTitle</span><span class="signature"><span class="signature-params">(title)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></span></span></h3>
+              <p>Sets the dialog title.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>title</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="setWidth"><span class="symbol-name">setWidth</span><span class="signature"><span class="signature-params">(width)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></span></span></h3>
+              <p>Sets the dialog width.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>width</p>
+                      </td>
+                      <td>
+                        <p>number</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a></code> </p>
+                </dd>
+              </dl>
+            </section>
+          </section>
+        </div>
+      </div>
+      <nav id="jsdoc-toc-nav" role="navigation"></nav>
+    </div>
+  </div>
+  <footer id="jsdoc-footer" class="jsdoc-footer">
+    <div id="jsdoc-footer-container">
+      <p>
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+      </p>
+    </div>
+  </footer>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/tree.jquery.js"></script>
+  <script src="scripts/prettify.js"></script>
+  <script src="scripts/jsdoc-toc.js"></script>
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/scrollanchor.js"></script>
+</body>
+
+</html>

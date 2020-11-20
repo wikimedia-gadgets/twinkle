@@ -1,0 +1,764 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Class: date</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <div class="symbol-detail-labels"><span class="label label-kind">class</span>&nbsp;<span class="label label-static">static</span></div>
+            <h1><small><a href="Morebits.html">Morebits</a>.<wbr></small><span class="symbol-name">date</span></h1>
+            <p class="source-link">Source: <a href="morebits.js.html#source-line-1683">morebits.<wbr>js:1683</a></p>
+            <dl class="dl-compact">
+            </dl>
+          </header>
+          <section id="summary">
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Property</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.date.html#.unitMap">unitMap</a></dt>
+                    <dd>
+                      <p>Map units with getter/setter function names, for <code>add</code> and <code>subtract</code>
+                        methods.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                </div>
+                <div class="summary-column">
+                </div>
+              </div>
+            </div>
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Methods</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.date.html#add">add(number, unit)</a></dt>
+                    <dd>
+                      <p>Add a given number of minutes, hours, days, weeks, months, or years to the date.</p>
+                    </dd>
+                    <dt><a href="Morebits.date.html#calendar">calendar([zone])</a></dt>
+                    <dd>
+                      <p>Gives a readable relative time string such as &quot;Yesterday at 6:43 PM&quot; or &quot;Last Thursday at 11:45 AM&quot;.</p>
+                    </dd>
+                    <dt><a href="Morebits.date.html#format">format(formatstr[, zone])</a></dt>
+                    <dd>
+                      <p>Format the date into a string per the given format string.</p>
+                    </dd>
+                    <dt><a href="Morebits.date.html#getDayName">getDayName()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.date.html#getDayNameAbbrev">getDayNameAbbrev()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.date.html#getMonthName">getMonthName()</a></dt>
+                    <dd>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.date.html#getMonthNameAbbrev">getMonthNameAbbrev()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.date.html#getUTCDayName">getUTCDayName()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.date.html#getUTCDayNameAbbrev">getUTCDayNameAbbrev()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.date.html#getUTCMonthName">getUTCMonthName()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.date.html#getUTCMonthNameAbbrev">getUTCMonthNameAbbrev()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.date.html#isAfter">isAfter(date)</a></dt>
+                    <dd>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.date.html#isBefore">isBefore(date)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.date.html#isValid">isValid()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.date.html#monthHeader">monthHeader([level])</a></dt>
+                    <dd>
+                      <p>Creates a wikitext section header with the month and year.</p>
+                    </dd>
+                    <dt><a href="Morebits.date.html#monthHeaderRegex">monthHeaderRegex()</a></dt>
+                    <dd>
+                      <p>Get a regular expression that matches wikitext section titles, such
+                        as <code>==December 2019==</code> or <code>=== Jan 2018 ===</code>.</p>
+                    </dd>
+                    <dt><a href="Morebits.date.html#subtract">subtract(number, unit)</a></dt>
+                    <dd>
+                      <p>Subtracts a given number of minutes, hours, days, weeks, months, or years to the date.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2 id="date">new&nbsp;<span class="symbol-name">date</span><span class="signature"><span class="signature-params">()</span></span></h2>
+            <p>Create a date object with enhanced processing capabilities, a la
+              <a href="https://momentjs.com/">moment.js</a>. MediaWiki timestamp format is also
+              acceptable, in addition to everything that JS Date() accepts.
+            </p>
+            <dl class="dl-compact">
+            </dl>
+          </section>
+          <section>
+            <h2>Property</h2>
+            <section>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".unitMap"><span class="symbol-name">unitMap</span><small class="property-type">
+                  &nbsp;Object with string properties</small></h3>
+              <p>Map units with getter/setter function names, for <code>add</code> and <code>subtract</code>
+                methods.</p>
+              <section>
+                <h4>Properties</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>seconds</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>minutes</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>hours</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>days</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>weeks</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>months</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>years</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+            </section>
+            <h2>Methods</h2>
+            <section>
+              <h3 id="add"><span class="symbol-name">add</span><span class="signature"><span class="signature-params">(number, unit)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.date.html">Morebits.date</a></span></span></h3>
+              <p>Add a given number of minutes, hours, days, weeks, months, or years to the date.
+                This is done in-place. The modified date object is also returned, allowing chaining.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>number</p>
+                      </td>
+                      <td>
+                        <p>number</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Should be an integer.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>unit</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Throws</dt>
+                <dd>
+                  <p>If invalid or unsupported unit is given.</p>
+                </dd>
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.date.html">Morebits.date</a></code> </p>
+                </dd>
+              </dl>
+              <h3 id="calendar"><span class="symbol-name">calendar</span><span class="signature"><span class="signature-params">([zone])</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <p>Gives a readable relative time string such as &quot;Yesterday at 6:43 PM&quot; or &quot;Last Thursday at 11:45 AM&quot;.
+                Similar to <code>calendar</code> in moment.js, but with time zone support.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>zone</p>
+                      </td>
+                      <td>
+                        <p>(string or number)</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>'system' (for browser-default time zone),
+                          'utc' (for UTC), or specify a time zone as number of minutes past UTC.</p>
+                        <p>Defaults to <code>system</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <h3 id="format"><span class="symbol-name">format</span><span class="signature"><span class="signature-params">(formatstr[, zone])</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <p>Format the date into a string per the given format string.
+                Replacement syntax is a subset of that in moment.js:</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Syntax</th>
+                    <th>Output</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>H</td>
+                    <td>Hours (24-hour)</td>
+                  </tr>
+                  <tr>
+                    <td>HH</td>
+                    <td>Hours (24-hour, padded)</td>
+                  </tr>
+                  <tr>
+                    <td>h</td>
+                    <td>Hours (12-hour)</td>
+                  </tr>
+                  <tr>
+                    <td>hh</td>
+                    <td>Hours (12-hour, padded)</td>
+                  </tr>
+                  <tr>
+                    <td>A</td>
+                    <td>AM or PM</td>
+                  </tr>
+                  <tr>
+                    <td>m</td>
+                    <td>Minutes</td>
+                  </tr>
+                  <tr>
+                    <td>mm</td>
+                    <td>Minutes (padded)</td>
+                  </tr>
+                  <tr>
+                    <td>s</td>
+                    <td>Seconds</td>
+                  </tr>
+                  <tr>
+                    <td>ss</td>
+                    <td>Seconds (padded)</td>
+                  </tr>
+                  <tr>
+                    <td>SSS</td>
+                    <td>Milliseconds fragment, padded</td>
+                  </tr>
+                  <tr>
+                    <td>d</td>
+                    <td>Day number of the week (Sun=0)</td>
+                  </tr>
+                  <tr>
+                    <td>ddd</td>
+                    <td>Abbreviated day name</td>
+                  </tr>
+                  <tr>
+                    <td>dddd</td>
+                    <td>Full day name</td>
+                  </tr>
+                  <tr>
+                    <td>D</td>
+                    <td>Date</td>
+                  </tr>
+                  <tr>
+                    <td>DD</td>
+                    <td>Date (padded)</td>
+                  </tr>
+                  <tr>
+                    <td>M</td>
+                    <td>Month number (0-indexed)</td>
+                  </tr>
+                  <tr>
+                    <td>MM</td>
+                    <td>Month number (0-indexed, padded)</td>
+                  </tr>
+                  <tr>
+                    <td>MMM</td>
+                    <td>Abbreviated month name</td>
+                  </tr>
+                  <tr>
+                    <td>MMMM</td>
+                    <td>Full month name</td>
+                  </tr>
+                  <tr>
+                    <td>Y</td>
+                    <td>Year</td>
+                  </tr>
+                  <tr>
+                    <td>YY</td>
+                    <td>Final two digits of year (20 for 2020, 42 for 1942)</td>
+                  </tr>
+                  <tr>
+                    <td>YYYY</td>
+                    <td>Year (same as <code>Y</code>)</td>
+                  </tr>
+                </tbody>
+              </table>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>formatstr</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Format the date into a string, using
+                          the replacement syntax. Use <code>[</code> and <code>]</code> to escape items. If not
+                          provided, will return the ISO-8601-formatted string.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>zone</p>
+                      </td>
+                      <td>
+                        <p>(string or number)</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p><code>system</code> (for browser-default time zone),
+                          <code>utc</code>, or specify a time zone as number of minutes relative to UTC.
+                        </p>
+                        <p>Defaults to <code>system</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <h3 id="getDayName"><span class="symbol-name">getDayName</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <h3 id="getDayNameAbbrev"><span class="symbol-name">getDayNameAbbrev</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <h3 id="getMonthName"><span class="symbol-name">getMonthName</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <h3 id="getMonthNameAbbrev"><span class="symbol-name">getMonthNameAbbrev</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <h3 id="getUTCDayName"><span class="symbol-name">getUTCDayName</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <h3 id="getUTCDayNameAbbrev"><span class="symbol-name">getUTCDayNameAbbrev</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <h3 id="getUTCMonthName"><span class="symbol-name">getUTCMonthName</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <h3 id="getUTCMonthNameAbbrev"><span class="symbol-name">getUTCMonthNameAbbrev</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <h3 id="isAfter"><span class="symbol-name">isAfter</span><span class="signature"><span class="signature-params">(date)</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>date</p>
+                      </td>
+                      <td>
+                        <p>(Date or <a href="Morebits.date.html">Morebits.date</a>)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> </p>
+                </dd>
+              </dl>
+              <h3 id="isBefore"><span class="symbol-name">isBefore</span><span class="signature"><span class="signature-params">(date)</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>date</p>
+                      </td>
+                      <td>
+                        <p>(Date or <a href="Morebits.date.html">Morebits.date</a>)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> </p>
+                </dd>
+              </dl>
+              <h3 id="isValid"><span class="symbol-name">isValid</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> </p>
+                </dd>
+              </dl>
+              <h3 id="monthHeader"><span class="symbol-name">monthHeader</span><span class="signature"><span class="signature-params">([level])</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <p>Creates a wikitext section header with the month and year.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>level</p>
+                      </td>
+                      <td>
+                        <p>number</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Header level. Pass 0 for just the text
+                          with no wikitext markers (==).</p>
+                        <p>Defaults to <code>2</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <h3 id="monthHeaderRegex"><span class="symbol-name">monthHeaderRegex</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> RegExp</span></span></h3>
+              <p>Get a regular expression that matches wikitext section titles, such
+                as <code>==December 2019==</code> or <code>=== Jan 2018 ===</code>.</p>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>RegExp</code> </p>
+                </dd>
+              </dl>
+              <h3 id="subtract"><span class="symbol-name">subtract</span><span class="signature"><span class="signature-params">(number, unit)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.date.html">Morebits.date</a></span></span></h3>
+              <p>Subtracts a given number of minutes, hours, days, weeks, months, or years to the date.
+                This is done in-place. The modified date object is also returned, allowing chaining.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>number</p>
+                      </td>
+                      <td>
+                        <p>number</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Should be an integer.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>unit</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Throws</dt>
+                <dd>
+                  <p>If invalid or unsupported unit is given.</p>
+                </dd>
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.date.html">Morebits.date</a></code> </p>
+                </dd>
+              </dl>
+            </section>
+          </section>
+        </div>
+      </div>
+      <nav id="jsdoc-toc-nav" role="navigation"></nav>
+    </div>
+  </div>
+  <footer id="jsdoc-footer" class="jsdoc-footer">
+    <div id="jsdoc-footer-container">
+      <p>
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+      </p>
+    </div>
+  </footer>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/tree.jquery.js"></script>
+  <script src="scripts/prettify.js"></script>
+  <script src="scripts/jsdoc-toc.js"></script>
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/scrollanchor.js"></script>
+</body>
+
+</html>

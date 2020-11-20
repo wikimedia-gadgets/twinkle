@@ -1,0 +1,676 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Class: status</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <div class="symbol-detail-labels"><span class="label label-kind">class</span>&nbsp;<span class="label label-static">static</span></div>
+            <h1><small><a href="Morebits.html">Morebits</a>.<wbr></small><span class="symbol-name">status</span></h1>
+            <p class="source-link">Source: <a href="morebits.js.html#source-line-5048">morebits.<wbr>js:5048</a></p>
+            <dl class="dl-compact">
+            </dl>
+          </header>
+          <section id="summary">
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Methods</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.status.html#.actionCompleted">actionCompleted(text)</a></dt>
+                    <dd>
+                      <p>For the action complete message at the end, create a status line without
+                        a colon separator.</p>
+                    </dd>
+                    <dt><a href="Morebits.status.html#.error">error(text, status)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.status.html#.info">info(text, status)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.status.html#.init">init(root)</a></dt>
+                    <dd>
+                      <p>Specify an area for status message elements to be added to.</p>
+                    </dd>
+                    <dt><a href="Morebits.status.html#.onError">onError(handler)</a></dt>
+                    <dd>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.status.html#.printUserText">printUserText(comments, message)</a></dt>
+                    <dd>
+                      <p>Display the user's rationale, comments, etc.</p>
+                    </dd>
+                    <dt><a href="Morebits.status.html#.status">status(text, status)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.status.html#.warn">warn(text, status)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.status.html#codify">codify(obj)</a></dt>
+                    <dd>
+                      <p>Create a document fragment with the status text, parsing as HTML.</p>
+                    </dd>
+                    <dt><a href="Morebits.status.html#generate">generate()</a></dt>
+                    <dd>
+                      <p>Produce the html for first part of the status message.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.status.html#link">link()</a></dt>
+                    <dd>
+                      <p>Add the status element node to the DOM.</p>
+                    </dd>
+                    <dt><a href="Morebits.status.html#render">render()</a></dt>
+                    <dd>
+                      <p>Complete the html, for the second part of the status message.</p>
+                    </dd>
+                    <dt><a href="Morebits.status.html#unlink">unlink()</a></dt>
+                    <dd>
+                      <p>Remove the status element node from the DOM.</p>
+                    </dd>
+                    <dt><a href="Morebits.status.html#update">update(status, type)</a></dt>
+                    <dd>
+                      <p>Update the status.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2 id="status">new&nbsp;<span class="symbol-name">status</span><span class="signature"><span class="signature-params">(text, stat[, type])</span></span></h2>
+            <p>Create and show status messages of varying urgency.
+              <a href="Morebits.status.html#.init">Morebits.status.init()</a> must be called before
+              any status object is created, otherwise those statuses won't be visible.
+            </p>
+            <section>
+              <h3>Parameters</h3>
+              <table class="jsdoc-details-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Optional</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <p>text</p>
+                    </td>
+                    <td>
+                      <p>string</p>
+                    </td>
+                    <td>
+                      <p>&nbsp;</p>
+                    </td>
+                    <td>
+                      <p>Text before the the colon <code>:</code>.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <p>stat</p>
+                    </td>
+                    <td>
+                      <p>string</p>
+                    </td>
+                    <td>
+                      <p>&nbsp;</p>
+                    </td>
+                    <td>
+                      <p>Text after the colon <code>:</code>.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <p>type</p>
+                    </td>
+                    <td>
+                      <p>string</p>
+                    </td>
+                    <td>
+                      <p>Yes</p>
+                    </td>
+                    <td>
+                      <p>Determine the font color of the status
+                        line, allowable values are: <code>status</code> (blue), <code>info</code> (green), <code>warn</code> (red),
+                        or <code>error</code> (bold red).</p>
+                      <p>Defaults to <code>status</code>.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            <dl class="dl-compact">
+            </dl>
+          </section>
+          <section>
+            <h2>Methods</h2>
+            <section>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".actionCompleted"><span class="symbol-name">actionCompleted</span><span class="signature"><span class="signature-params">(text)</span></span></h3>
+              <p>For the action complete message at the end, create a status line without
+                a colon separator.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>text</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".error"><span class="symbol-name">error</span><span class="signature"><span class="signature-params">(text, status)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.status.html">Morebits.status</a></span></span></h3>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>text</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Before colon</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>status</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>After colon</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.status.html">Morebits.status</a></code> 
+                  <ul>
+                    </p>
+                    <li><code>error</code>-type (bold red)</li>
+                  </ul>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".info"><span class="symbol-name">info</span><span class="signature"><span class="signature-params">(text, status)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.status.html">Morebits.status</a></span></span></h3>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>text</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Before colon</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>status</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>After colon</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.status.html">Morebits.status</a></code> 
+                  <ul>
+                    </p>
+                    <li><code>info</code>-type (green)</li>
+                  </ul>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".init"><span class="symbol-name">init</span><span class="signature"><span class="signature-params">(root)</span></span></h3>
+              <p>Specify an area for status message elements to be added to.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>root</p>
+                      </td>
+                      <td>
+                        <p>HTMLElement</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Usually a div element.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Throws</dt>
+                <dd>
+                  <p>If <code>root</code> is not an <code>HTMLElement</code>.</p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".onError"><span class="symbol-name">onError</span><span class="signature"><span class="signature-params">(handler)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>handler</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Function to execute on error.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Throws</dt>
+                <dd>
+                  <p>When <code>handler</code> is not a function.</p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".printUserText"><span class="symbol-name">printUserText</span><span class="signature"><span class="signature-params">(comments, message)</span></span></h3>
+              <p>Display the user's rationale, comments, etc. Back to them after a failure,
+                so that they may re-use it.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>comments</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>message</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".status"><span class="symbol-name">status</span><span class="signature"><span class="signature-params">(text, status)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.status.html">Morebits.status</a></span></span></h3>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>text</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Before colon</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>status</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>After colon</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.status.html">Morebits.status</a></code> 
+                  <ul>
+                    </p>
+                    <li><code>status</code>-type (blue)</li>
+                  </ul>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".warn"><span class="symbol-name">warn</span><span class="signature"><span class="signature-params">(text, status)</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.status.html">Morebits.status</a></span></span></h3>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>text</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Before colon</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>status</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>After colon</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.status.html">Morebits.status</a></code> 
+                  <ul>
+                    </p>
+                    <li><code>warn</code>-type (red)</li>
+                  </ul>
+                </dd>
+              </dl>
+              <h3 id="codify"><span class="symbol-name">codify</span><span class="signature"><span class="signature-params">(obj)</span>&nbsp;&rarr; <span class="signature-returns"> DocumentFragment</span></span></h3>
+              <p>Create a document fragment with the status text, parsing as HTML.
+                Runs upon construction for text (part before colon) and upon
+                render/update for status (part after colon).</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>obj</p>
+                      </td>
+                      <td>
+                        <p>(string, Element, or Array)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>DocumentFragment</code> </p>
+                </dd>
+              </dl>
+              <h3 id="generate"><span class="symbol-name">generate</span><span class="signature"><span class="signature-params">()</span></span></h3>
+              <p>Produce the html for first part of the status message.</p>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="link"><span class="symbol-name">link</span><span class="signature"><span class="signature-params">()</span></span></h3>
+              <p>Add the status element node to the DOM.</p>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="render"><span class="symbol-name">render</span><span class="signature"><span class="signature-params">()</span></span></h3>
+              <p>Complete the html, for the second part of the status message.</p>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="unlink"><span class="symbol-name">unlink</span><span class="signature"><span class="signature-params">()</span></span></h3>
+              <p>Remove the status element node from the DOM.</p>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="update"><span class="symbol-name">update</span><span class="signature"><span class="signature-params">(status, type)</span></span></h3>
+              <p>Update the status.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>status</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Part of status message after colon.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>type</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>'status' (blue), 'info' (green), 'warn'
+                          (red), or 'error' (bold red).</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+            </section>
+          </section>
+        </div>
+      </div>
+      <nav id="jsdoc-toc-nav" role="navigation"></nav>
+    </div>
+  </div>
+  <footer id="jsdoc-footer" class="jsdoc-footer">
+    <div id="jsdoc-footer-container">
+      <p>
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+      </p>
+    </div>
+  </footer>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/tree.jquery.js"></script>
+  <script src="scripts/prettify.js"></script>
+  <script src="scripts/jsdoc-toc.js"></script>
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/scrollanchor.js"></script>
+</body>
+
+</html>

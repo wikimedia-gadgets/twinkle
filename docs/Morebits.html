@@ -1,0 +1,631 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Namespace: Morebits</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <div class="symbol-detail-labels"><span class="label label-kind">namespace</span></div>
+            <h1><small></small><span class="symbol-name">Morebits</span></h1>
+            <p class="source-link">Source: <a href="morebits.js.html#source-line-2">morebits.<wbr>js:2</a></p>
+            <div class="symbol-description">
+              <p>A library full of lots of goodness for user scripts on MediaWiki wikis, including Wikipedia.</p>
+              <p>The highlights include:</p>
+              <ul>
+                <li><a href="Morebits.wiki.api.html">Morebits.wiki.api</a> - make calls to the MediaWiki API</li>
+                <li><a href="Morebits.wiki.page.html">Morebits.wiki.page</a> - modify pages on the wiki (edit, revert, delete, etc.)</li>
+                <li><a href="Morebits.date.html">Morebits.date</a> - enhanced date object processing, sort of a light moment.js</li>
+                <li><a href="Morebits.quickForm.html">Morebits.quickForm</a> - generate quick HTML forms on the fly</li>
+                <li><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a> - a wrapper for jQuery UI Dialog with a custom look and extra features</li>
+                <li><a href="Morebits.status.html">Morebits.status</a> - a rough-and-ready status message displayer, used by the Morebits.wiki classes</li>
+                <li><a href="Morebits.wikitext.html">Morebits.wikitext</a> - utilities for dealing with wikitext</li>
+                <li><a href="Morebits.string.html">Morebits.string</a> - utilities for manipulating strings</li>
+                <li><a href="Morebits.array.html">Morebits.array</a> - utilities for manipulating arrays</li>
+                <li><a href="Morebits.ip.html">Morebits.ip</a> - utilities to help process IP addresses</li>
+              </ul>
+              <p>Dependencies:</p>
+              <ul>
+                <li>The whole thing relies on jQuery. But most wikis should provide this by default.</li>
+                <li><a href="Morebits.quickForm.html">Morebits.quickForm</a>, <a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a>, and <a href="Morebits.status.html">Morebits.status</a> rely on the &quot;morebits.css&quot; file for their styling.</li>
+                <li><a href="Morebits.simpleWindow.html">Morebits.simpleWindow</a> and <a href="Morebits.quickForm.html">Morebits.quickForm</a> tooltips rely on jQuery UI Dialog (from ResourceLoader module name 'jquery.ui').</li>
+                <li>To create a gadget based on morebits.js, use this syntax in MediaWiki:Gadgets-definition:
+                  <ul>
+                    <li><code>*GadgetName[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.Title,jquery.ui]|morebits.js|morebits.css|GadgetName.js</code></li>
+                  </ul>
+                </li>
+                <li>Alternatively, you can configure morebits.js as a hidden gadget in MediaWiki:Gadgets-definition:
+                  <ul>
+                    <li><code>*morebits[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.Title,jquery.ui|hidden]|morebits.js|morebits.css</code>
+                      and then load ext.gadget.morebits as one of the dependencies for the new gadget.</li>
+                  </ul>
+                </li>
+              </ul>
+              <p>All the stuff here works on all browsers for which MediaWiki provides JavaScript support.</p>
+              <p>This library is maintained by the maintainers of Twinkle.
+                For queries, suggestions, help, etc., head to <a href="http://en.wikipedia.org/wiki/WT:TW">Wikipedia talk:Twinkle on English Wikipedia</a>.
+                The latest development source is available at <a href="https://github.com/wikimedia-gadgets/twinkle/blob/master/morebits.js">GitHub</a>.</p>
+            </div>
+            <dl class="dl-compact">
+            </dl>
+          </header>
+          <section id="summary">
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Child classes</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.batchOperation.html">batchOperation([currentAction])</a></dt>
+                    <dd>
+                      <p>Iterates over a group of pages (or arbitrary objects) and executes a worker function
+                        for each.</p>
+                    </dd>
+                    <dt><a href="Morebits.date.html">date()</a></dt>
+                    <dd>
+                      <p>Create a date object with enhanced processing capabilities, a la
+                        <a href="https://momentjs.com/">moment.js</a>.
+                      </p>
+                    </dd>
+                    <dt><a href="Morebits.quickForm.html">quickForm(event[, eventType])</a></dt>
+                    <dd>
+                      <p>Creation of simple and standard forms without much specific coding.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.simpleWindow.html">simpleWindow(width, height)</a></dt>
+                    <dd>
+                      <p>A simple draggable window, now a wrapper for jQuery UI's dialog feature.</p>
+                    </dd>
+                    <dt><a href="Morebits.status.html">status(text, stat[, type])</a></dt>
+                    <dd>
+                      <p>Create and show status messages of varying urgency.</p>
+                    </dd>
+                    <dt><a href="Morebits.taskManager.html">taskManager()</a></dt>
+                    <dd>
+                      <p>Given a set of asynchronous functions to run along with their dependencies,
+                        run them in an efficient sequence so that multiple functions
+                        that don't depend on each other are triggered simultaneously.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.unbinder.html">unbinder(string)</a></dt>
+                    <dd>
+                      <p>Temporarily hide a part of a string while processing the rest of it.</p>
+                    </dd>
+                    <dt><a href="Morebits.userspaceLogger.html">userspaceLogger(logPageName)</a></dt>
+                    <dd>
+                      <p>Handles logging actions to a userspace log.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Namespaces</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.array.html">array</a></dt>
+                    <dd>
+                      <p>Helper functions to manipulate arrays.</p>
+                    </dd>
+                    <dt><a href="Morebits.ip.html">ip</a></dt>
+                    <dd>
+                      <p>Utilities to help process IP addresses.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.select2.html">select2</a></dt>
+                    <dd>
+                      <p>Utilities to enhance select2 menus.</p>
+                    </dd>
+                    <dt><a href="Morebits.string.html">string</a></dt>
+                    <dd>
+                      <p>Helper functions to manipulate strings.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.wiki.html">wiki</a></dt>
+                    <dd>
+                      <p>Various objects for wiki editing and API access, including
+                        <a href="Morebits.wiki.api.html">Morebits.wiki.api</a> and <a href="Morebits.wiki.page.html">Morebits.wiki.page</a>.
+                      </p>
+                    </dd>
+                    <dt><a href="Morebits.wikitext.html">wikitext</a></dt>
+                    <dd>
+                      <p>Wikitext manipulation.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Properties</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.html#.pageNameNorm">pageNameNorm</a></dt>
+                    <dd>
+                      <p>Stores a normalized (underscores converted to spaces) version of the
+                        <code>wgPageName</code> variable.
+                      </p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.html#.userIsSysop">userIsSysop</a></dt>
+                    <dd>
+                      <p>Hardcodes whether the user is a sysop, used a lot.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                </div>
+              </div>
+            </div>
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Methods</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.html#.checkboxShiftClickSupport">checkboxShiftClickSupport(jQuerySelector, jQueryContext)</a></dt>
+                    <dd>
+                      <p>Add shift-click support for checkboxes.</p>
+                    </dd>
+                    <dt><a href="Morebits.html#.htmlNode">htmlNode(type, content[, color])</a></dt>
+                    <dd>
+                      <p>Simple helper function to create a simple node.</p>
+                    </dd>
+                    <dt><a href="Morebits.html#.isPageRedirect">isPageRedirect()</a></dt>
+                    <dd>
+                      <p>Determines whether the current page is a redirect or soft redirect.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.html#.namespaceRegex">namespaceRegex(namespaces)</a></dt>
+                    <dd>
+                      <p>Create a string for use in regex matching all namespace aliases, regardless
+                        of the capitalization and underscores/spaces.</p>
+                    </dd>
+                    <dt><a href="Morebits.html#.pageNameRegex">pageNameRegex(pageName)</a></dt>
+                    <dd>
+                      <p>Create a string for use in regex matching a page name.</p>
+                    </dd>
+                    <dt><a href="Morebits.html#.sanitizeIPv6">sanitizeIPv6(address)</a></dt>
+                    <dd>
+                      <p>Deprecated as of February 2021, use <a href="Morebits.ip.html#.sanitizeIPv6">Morebits.ip.sanitizeIPv6</a>.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.html#.userIsInGroup">userIsInGroup(group)</a></dt>
+                    <dd>
+                      <p>Simple helper function to see what groups a user might belong.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2>Classes</h2>
+            <section id='members-links'>
+              <h3><a href="Morebits.batchOperation.html">batchOperation</a></h3>
+              <p>Iterates over a group of pages (or arbitrary objects) and executes a worker function
+                for each.</p>
+              <h3><a href="Morebits.date.html">date</a></h3>
+              <p>Create a date object with enhanced processing capabilities, a la
+                <a href="https://momentjs.com/">moment.js</a>.
+              </p>
+              <h3><a href="Morebits.quickForm.html">quickForm</a></h3>
+              <p>Creation of simple and standard forms without much specific coding.</p>
+              <h3><a href="Morebits.simpleWindow.html">simpleWindow</a></h3>
+              <p>A simple draggable window, now a wrapper for jQuery UI's dialog feature.</p>
+              <h3><a href="Morebits.status.html">status</a></h3>
+              <p>Create and show status messages of varying urgency.</p>
+              <h3><a href="Morebits.taskManager.html">taskManager</a></h3>
+              <p>Given a set of asynchronous functions to run along with their dependencies,
+                run them in an efficient sequence so that multiple functions
+                that don't depend on each other are triggered simultaneously.</p>
+              <h3><a href="Morebits.unbinder.html">unbinder</a></h3>
+              <p>Temporarily hide a part of a string while processing the rest of it.</p>
+              <h3><a href="Morebits.userspaceLogger.html">userspaceLogger</a></h3>
+              <p>Handles logging actions to a userspace log.</p>
+            </section>
+            <h2>Namespaces</h2>
+            <section id='members-links'>
+              <h3><a href="Morebits.array.html">array</a></h3>
+              <p>Helper functions to manipulate arrays.</p>
+              <h3><a href="Morebits.ip.html">ip</a></h3>
+              <p>Utilities to help process IP addresses.</p>
+              <h3><a href="Morebits.select2.html">select2</a></h3>
+              <p>Utilities to enhance select2 menus.</p>
+              <h3><a href="Morebits.string.html">string</a></h3>
+              <p>Helper functions to manipulate strings.</p>
+              <h3><a href="Morebits.wiki.html">wiki</a></h3>
+              <p>Various objects for wiki editing and API access, including
+                <a href="Morebits.wiki.api.html">Morebits.wiki.api</a> and <a href="Morebits.wiki.page.html">Morebits.wiki.page</a>.
+              </p>
+              <h3><a href="Morebits.wikitext.html">wikitext</a></h3>
+              <p>Wikitext manipulation.</p>
+            </section>
+            <h2>Properties</h2>
+            <section>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".pageNameNorm"><span class="symbol-name">pageNameNorm</span><small class="property-type">
+                  &nbsp;string</small></h3>
+              <p>Stores a normalized (underscores converted to spaces) version of the
+                <code>wgPageName</code> variable.
+              </p>
+              <dl class="dl-compact">
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".userIsSysop"><span class="symbol-name">userIsSysop</span><small class="property-type">
+                  &nbsp;boolean</small></h3>
+              <p>Hardcodes whether the user is a sysop, used a lot.</p>
+              <dl class="dl-compact">
+              </dl>
+            </section>
+            <h2>Methods</h2>
+            <section>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".checkboxShiftClickSupport"><span class="symbol-name">checkboxShiftClickSupport</span><span class="signature"><span class="signature-params">(jQuerySelector, jQueryContext)</span></span></h3>
+              <p>Add shift-click support for checkboxes. The wikibits version
+                (<code>window.addCheckboxClickHandlers</code>) has some restrictions, and doesn't work
+                with checkboxes inside a sortable table, so let's build our own.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>jQuerySelector</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>jQueryContext</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".htmlNode"><span class="symbol-name">htmlNode</span><span class="signature"><span class="signature-params">(type, content[, color])</span>&nbsp;&rarr; <span class="signature-returns"> HTMLElement</span></span></h3>
+              <p>Simple helper function to create a simple node.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>type</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Type of HTML element.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>content</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Text content.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>color</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Font color.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>HTMLElement</code> </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".isPageRedirect"><span class="symbol-name">isPageRedirect</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <p>Determines whether the current page is a redirect or soft redirect. Fails
+                to detect soft redirects on edit, history, etc. pages. Will attempt to
+                detect [[Module:Redirect for discussion]], with the same failure points.</p>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".namespaceRegex"><span class="symbol-name">namespaceRegex</span><span class="signature"><span class="signature-params">(namespaces)</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <p>Create a string for use in regex matching all namespace aliases, regardless
+                of the capitalization and underscores/spaces. Doesn't include the optional
+                leading <code>:</code>, but if there's more than one item, wraps the list in a
+                non-capturing group. This means you can do <code>Morebits.namespaceRegex([4]) + ':' + Morebits.pageNameRegex('Twinkle')</code> to match a full page. Uses
+                <a href="Morebits.html#.pageNameRegex">Morebits.pageNameRegex</a>.
+              </p>
+              <section>
+                <h4>
+                  Example
+                </h4>
+                <div>
+                  <pre class="prettyprint"><code>// returns &#x27;(?:[Ff][Ii][Ll][Ee]|[Ii][Mm][Aa][Gg][Ee])&#x27;
+Morebits.namespaceRegex([6])</code></pre>
+                </div>
+              </section>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>namespaces</p>
+                      </td>
+                      <td>
+                        <p>Array of number</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Array of namespace numbers. Unused/invalid
+                          namespace numbers are silently discarded.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <ul>
+                    </p>
+                    <li>Regex-suitable string of all namespace aliases.</li>
+                  </ul>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".pageNameRegex"><span class="symbol-name">pageNameRegex</span><span class="signature"><span class="signature-params">(pageName)</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <p>Create a string for use in regex matching a page name. Accounts for
+                leading character's capitalization, underscores as spaces, and special
+                characters being escaped. See also <a href="Morebits.html#.namespaceRegex">Morebits.namespaceRegex</a>.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>pageName</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Page name without namespace.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <ul>
+                    </p>
+                    <li>For a page name <code>Foo bar</code>, returns the string <code>[Ff]oo[_ ]bar</code>.</li>
+                  </ul>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".sanitizeIPv6"><span class="symbol-name">sanitizeIPv6</span><span class="signature"><span class="signature-params">(address)</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <p>Deprecated as of February 2021, use <a href="Morebits.ip.html#.sanitizeIPv6">Morebits.ip.sanitizeIPv6</a>.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>address</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>The IPv6 address, with or without CIDR.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Deprecated</dt>
+                <dd>Use <a href="Morebits.ip.html#.sanitizeIPv6">Morebits.ip.sanitizeIPv6</a>.
+                  Converts an IPv6 address to the canonical form stored and used by MediaWiki.
+                  JavaScript translation of the <a href="https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/8eb6ac3e84ea3312d391ca96c12c49e3ad0753bb/includes/utils/IP.php#131">`IP::sanitizeIP()`</a>
+                  function from the IPUtils library. Adddresses are verbose, uppercase,
+                  normalized, and expanded to 8 words.</dd>
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".userIsInGroup"><span class="symbol-name">userIsInGroup</span><span class="signature"><span class="signature-params">(group)</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <p>Simple helper function to see what groups a user might belong.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>group</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>e.g. <code>sysop</code>, <code>extendedconfirmed</code>, etc.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> </p>
+                </dd>
+              </dl>
+            </section>
+          </section>
+        </div>
+      </div>
+      <nav id="jsdoc-toc-nav" role="navigation"></nav>
+    </div>
+  </div>
+  <footer id="jsdoc-footer" class="jsdoc-footer">
+    <div id="jsdoc-footer-container">
+      <p>
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+      </p>
+    </div>
+  </footer>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/tree.jquery.js"></script>
+  <script src="scripts/prettify.js"></script>
+  <script src="scripts/jsdoc-toc.js"></script>
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/scrollanchor.js"></script>
+</body>
+
+</html>

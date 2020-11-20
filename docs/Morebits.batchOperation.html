@@ -1,0 +1,327 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Class: batchOperation</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <div class="symbol-detail-labels"><span class="label label-kind">class</span>&nbsp;<span class="label label-static">static</span></div>
+            <h1><small><a href="Morebits.html">Morebits</a>.<wbr></small><span class="symbol-name">batchOperation</span></h1>
+            <p class="source-link">Source: <a href="morebits.js.html#source-line-5394">morebits.<wbr>js:5394</a></p>
+            <dl class="dl-compact">
+            </dl>
+          </header>
+          <section id="summary">
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Methods</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.batchOperation.html#run">run(worker[, postFinish])</a></dt>
+                    <dd>
+                      <p>Runs the first callback for each page in the list.</p>
+                    </dd>
+                    <dt><a href="Morebits.batchOperation.html#setOption">setOption(optionName, optionValue)</a></dt>
+                    <dd>
+                      <p>Sets a known option.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.batchOperation.html#setPageList">setPageList(pageList)</a></dt>
+                    <dd>
+                      <p>Sets the list of pages to work on.</p>
+                    </dd>
+                    <dt><a href="Morebits.batchOperation.html#workerSuccess">workerSuccess(arg)</a></dt>
+                    <dd>
+                      <p>To be called by worker before it terminates succesfully.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2 id="batchOperation">new&nbsp;<span class="symbol-name">batchOperation</span><span class="signature"><span class="signature-params">([currentAction])</span></span></h2>
+            <p>Iterates over a group of pages (or arbitrary objects) and executes a worker function
+              for each.</p>
+            <p><code>setPageList(pageList)</code>: Sets the list of pages to work on. It should be an
+              array of page names strings.</p>
+            <p><code>setOption(optionName, optionValue)</code>: Sets a known option:</p>
+            <ul>
+              <li><code>chunkSize</code> (integer): The size of chunks to break the array into (default
+                50). Setting this to a small value (&lt;5) can cause problems.</li>
+              <li><code>preserveIndividualStatusLines</code> (boolean): Keep each page's status element
+                visible when worker is complete? See note below.</li>
+            </ul>
+            <p><code>run(worker, postFinish)</code>: Runs the callback <code>worker</code> for each page in the
+              list. The callback must call <code>workerSuccess</code> when succeeding, or
+              <code>workerFailure</code> when failing. If using <a href="Morebits.wiki.api.html">Morebits.wiki.api</a> or
+              <a href="Morebits.wiki.page.html">Morebits.wiki.page</a>, this is easily done by passing these two
+              functions as parameters to the methods on those objects: for instance,
+              <code>page.save(batchOp.workerSuccess, batchOp.workerFailure)</code>. Make sure the
+              methods are called directly if special success/failure cases arise. If you
+              omit to call these methods, the batch operation will stall after the first
+              chunk! Also ensure that either workerSuccess or workerFailure is called no
+              more than once. The second callback <code>postFinish</code> is executed when the
+              entire batch has been processed.
+            </p>
+            <p>If using <code>preserveIndividualStatusLines</code>, you should try to ensure that the
+              <code>workerSuccess</code> callback has access to the page title. This is no problem for
+              <a href="Morebits.wiki.page.html">Morebits.wiki.page</a> objects. But when using the API, please set the
+              |pageName| property on the <a href="Morebits.wiki.api.html">Morebits.wiki.api</a> object.
+            </p>
+            <p>There are sample batchOperation implementations using Morebits.wiki.page in
+              twinklebatchdelete.js, twinklebatchundelete.js, and twinklebatchprotect.js.</p>
+            <section>
+              <h3>Parameter</h3>
+              <table class="jsdoc-details-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Optional</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <p>currentAction</p>
+                    </td>
+                    <td>
+                      <p>string</p>
+                    </td>
+                    <td>
+                      <p>Yes</p>
+                    </td>
+                    <td>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            <dl class="dl-compact">
+            </dl>
+          </section>
+          <section>
+            <h2>Methods</h2>
+            <section>
+              <h3 id="run"><span class="symbol-name">run</span><span class="signature"><span class="signature-params">(worker[, postFinish])</span></span></h3>
+              <p>Runs the first callback for each page in the list.
+                The callback must call workerSuccess when succeeding, or workerFailure when failing.
+                Runs the optional second callback when the whole batch has been processed.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>worker</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>postFinish</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setOption"><span class="symbol-name">setOption</span><span class="signature"><span class="signature-params">(optionName, optionValue)</span></span></h3>
+              <p>Sets a known option.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>optionName</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Name of the option:</p>
+                        <ul>
+                          <li>chunkSize (integer): The size of chunks to break the array into
+                            (default 50). Setting this to a small value (&lt;5) can cause problems.</li>
+                          <li>preserveIndividualStatusLines (boolean): Keep each page's status
+                            element visible when worker is complete?</li>
+                        </ul>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>optionValue</p>
+                      </td>
+                      <td>
+                        <p>(number or boolean)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Value to which the option is
+                          to be set. Should be an integer for chunkSize and a boolean for
+                          preserveIndividualStatusLines.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setPageList"><span class="symbol-name">setPageList</span><span class="signature"><span class="signature-params">(pageList)</span></span></h3>
+              <p>Sets the list of pages to work on.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>pageList</p>
+                      </td>
+                      <td>
+                        <p>Array</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Array of objects over which you wish to execute the worker function
+                          This is usually the list of page names (strings).</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="workerSuccess"><span class="symbol-name">workerSuccess</span><span class="signature"><span class="signature-params">(arg)</span></span></h3>
+              <p>To be called by worker before it terminates succesfully.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>arg</p>
+                      </td>
+                      <td>
+                        <p>(<a href="Morebits.wiki.page.html">Morebits.wiki.page</a>, <a href="Morebits.wiki.api.html">Morebits.wiki.api</a>, or string)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>This should be the <code>Morebits.wiki.page</code> or <code>Morebits.wiki.api</code> object used by worker
+                          (for the adjustment of status lines emitted by them).
+                          If no Morebits.wiki.* object is used (e.g. you're using <code>mw.Api()</code> or something else), and
+                          <code>preserveIndividualStatusLines</code> option is on, give the page name (string) as argument.
+                        </p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+            </section>
+          </section>
+        </div>
+      </div>
+      <nav id="jsdoc-toc-nav" role="navigation"></nav>
+    </div>
+  </div>
+  <footer id="jsdoc-footer" class="jsdoc-footer">
+    <div id="jsdoc-footer-container">
+      <p>
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+      </p>
+    </div>
+  </footer>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/tree.jquery.js"></script>
+  <script src="scripts/prettify.js"></script>
+  <script src="scripts/jsdoc-toc.js"></script>
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/scrollanchor.js"></script>
+</body>
+
+</html>

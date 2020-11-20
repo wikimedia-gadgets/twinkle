@@ -1,0 +1,2350 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="generator" content="JSDoc 3.6.6">
+  <meta charset="utf-8">
+  <title>Class: page</title>
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Karla:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Noto+Serif:400,400i,700,700i" type="text/css">
+  <link rel="stylesheet" href="https://brick.a.ssl.fastly.net/Inconsolata:500" type="text/css">
+  <link href="css/baseline.css" rel="stylesheet">
+</head>
+
+<body onload="prettyPrint()">
+  <nav id="jsdoc-navbar" role="navigation" class="jsdoc-navbar">
+    <div id="jsdoc-navbar-container">
+      <div id="jsdoc-navbar-content">
+        <a href="index.html" class="jsdoc-navbar-package-name">Home</a>
+      </div>
+    </div>
+  </nav>
+  <div id="jsdoc-body-container">
+    <div id="jsdoc-content">
+      <div id="jsdoc-content-container">
+        <div id="jsdoc-main" role="main">
+          <header class="page-header">
+            <div class="symbol-detail-labels"><span class="label label-kind">class</span>&nbsp;<span class="label label-static">static</span></div>
+            <h1><small><a href="Morebits.html">Morebits</a>.<wbr><a href="Morebits.wiki.html">wiki</a>.<wbr></small><span class="symbol-name">page</span></h1>
+            <p class="source-link">Source: <a href="morebits.js.html#source-line-2464">morebits.<wbr>js:2464</a></p>
+            <dl class="dl-compact">
+            </dl>
+          </header>
+          <section id="summary">
+            <div class="summary-callout">
+              <h2 class="summary-callout-heading">Methods</h2>
+              <div class="summary-content">
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.wiki.page.html#append">append([onSuccess][, onFailure])</a></dt>
+                    <dd>
+                      <p>Adds the text provided via <code>setAppendText()</code> to the end of the
+                        page.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#canEdit">canEdit()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#deletePage">deletePage([onSuccess][, onFailure])</a></dt>
+                    <dd>
+                      <p>Deletes a page (for admins only).</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#exists">exists()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#getCallbackParameters">getCallbackParameters()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#getContentModel">getContentModel()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#getCreationTimestamp">getCreationTimestamp()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#getCreator">getCreator()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#getCurrentID">getCurrentID()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#getLastEditTime">getLastEditTime()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#getLoadTime">getLoadTime()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#getPageID">getPageID()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#getPageName">getPageName()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#getPageText">getPageText()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#getRevisionUser">getRevisionUser()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#getStatusElement">getStatusElement()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#getWatched">getWatched()</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#load">load(onSuccess[, onFailure])</a></dt>
+                    <dd>
+                      <p>Loads the text for the page.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#lookupCreation">lookupCreation(onSuccess[, onFailure])</a></dt>
+                    <dd>
+                      <p>Retrieves the username of the user who created the page as well as
+                        the timestamp of creation.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#move">move([onSuccess][, onFailure])</a></dt>
+                    <dd>
+                      <p>Moves a page to another title.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.wiki.page.html#newSection">newSection([onSuccess][, onFailure])</a></dt>
+                    <dd>
+                      <p>Creates a new section with the text provided by <code>setNewSectionText()</code>
+                        and section title from <code>setNewSectionTitle()</code>.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#patrol">patrol()</a></dt>
+                    <dd>
+                      <p>Marks the page as patrolled, using <code>rcid</code> (if available) or <code>revid</code>.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#prepend">prepend([onSuccess][, onFailure])</a></dt>
+                    <dd>
+                      <p>Adds the text provided via <code>setPrependText()</code> to the start of the
+                        page.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#protect">protect([onSuccess][, onFailure])</a></dt>
+                    <dd>
+                      <p>Protects a page (for admins only).</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#revert">revert([onSuccess][, onFailure])</a></dt>
+                    <dd>
+                      <p>Reverts a page to <code>revertOldID</code> set by <code>setOldID</code>.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#save">save([onSuccess][, onFailure])</a></dt>
+                    <dd>
+                      <p>Saves the text for the page to Wikipedia.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setAppendText">setAppendText(appendText)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setBotEdit">setBotEdit(botEdit)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setCallbackParameters">setCallbackParameters(callbackParameters)</a></dt>
+                    <dd>
+                      <p>Define an object for use in a callback function.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setChangeTags">setChangeTags(tags)</a></dt>
+                    <dd>
+                      <p>Set any custom tag(s) to be applied to the API action.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setCreateOption">setCreateOption([createOption])</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setEditProtection">setEditProtection(level[, expiry])</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setEditSummary">setEditSummary(summary)</a></dt>
+                    <dd>
+                      <p>Set the edit summary that will be used when <code>save()</code> is called.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setFlaggedRevs">setFlaggedRevs(level[, expiry])</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setFollowRedirect">setFollowRedirect([followRedirect][, followCrossNsRedirect])</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setLookupNonRedirectCreator">setLookupNonRedirectCreator(flag)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setMaxConflictRetries">setMaxConflictRetries(maxConflictRetries)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setMaxRetries">setMaxRetries(maxRetries)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setMinorEdit">setMinorEdit(minorEdit)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setMoveDestination">setMoveDestination(destination)</a></dt>
+                    <dd>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.wiki.page.html#setMoveSubpages">setMoveSubpages(flag)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setMoveSuppressRedirect">setMoveSuppressRedirect(flag)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setMoveTalkPage">setMoveTalkPage(flag)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setNewSectionText">setNewSectionText(newSectionText)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setNewSectionTitle">setNewSectionTitle(newSectionTitle)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setPageSection">setPageSection(pageSection)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setPageText">setPageText(pageText)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setPrependText">setPrependText(prependText)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setStatusElement">setStatusElement(statusElement)</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setWatchlist">setWatchlist([watchlistOption][, watchlistExpiry])</a></dt>
+                    <dd>
+                      <p>Set whether and how to watch the page, including setting an expiry.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setWatchlistExpiry">setWatchlistExpiry([watchlistExpiry])</a></dt>
+                    <dd>
+                      <p>Set a watchlist expiry.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#setWatchlistFromPreferences">setWatchlistFromPreferences([watchlistOption])</a></dt>
+                    <dd>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#stabilize">stabilize([onSuccess][, onFailure])</a></dt>
+                    <dd>
+                      <p>Apply FlaggedRevs protection settings.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#triage">triage()</a></dt>
+                    <dd>
+                      <p>Marks the page as reviewed by the PageTriage extension.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#undeletePage">undeletePage([onSuccess][, onFailure])</a></dt>
+                    <dd>
+                      <p>Undeletes a page (for admins only).</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#~fnApplyWatchlistExpiry">fnApplyWatchlistExpiry()</a></dt>
+                    <dd>
+                      <p>Determine whether we should provide a watchlist expiry.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#~fnCanUseMwUserToken">fnCanUseMwUserToken([action])</a></dt>
+                    <dd>
+                      <p>Determines whether we can save an API call by using the csrf token
+                        sent with the page HTML, or whether we need to ask the server for
+                        more info (e.g.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#~fnNeedTokenInfoQuery">fnNeedTokenInfoQuery(action)</a></dt>
+                    <dd>
+                      <p>When functions can't use
+                        <a href="Morebits.wiki.page.html#~fnCanUseMwUserToken">fnCanUseMwUserToken</a>
+                        or require checking protection or watched status, maintain the query
+                        in one place.
+                      </p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#~fnPreflightChecks">fnPreflightChecks(action, onFailure)</a></dt>
+                    <dd>
+                      <p>Common checks for action methods.</p>
+                    </dd>
+                    <dt><a href="Morebits.wiki.page.html#~fnProcessChecks">fnProcessChecks(action, onFailure, response)</a></dt>
+                    <dd>
+                      <p>Common checks for fnProcess functions (<code>fnProcessDelete</code>, <code>fnProcessMove</code>, etc.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h2 id="page">new&nbsp;<span class="symbol-name">page</span><span class="signature"><span class="signature-params">(pageName[, status])</span></span></h2>
+            <p>Use the MediaWiki API to load a page and optionally edit it, move it, etc.</p>
+            <p>Callers are not permitted to directly access the properties of this class!
+              All property access is through the appropriate get___() or set___() method.</p>
+            <p>Callers should set <a href="Morebits.wiki.html#.actionCompleted#.notice">Morebits.wiki.actionCompleted.notice</a> and <a href="Morebits.wiki.html#.actionCompleted#.redirect">Morebits.wiki.actionCompleted.redirect</a>
+              before the first call to Morebits.wiki.page.load().</p>
+            <p>Each of the callback functions takes one parameter, which is a
+              reference to the Morebits.wiki.page object that registered the callback.
+              Callback functions may invoke any Morebits.wiki.page prototype method using this reference.</p>
+            <p>Call sequence for common operations (optional final user callbacks not shown):</p>
+            <ul>
+              <li>
+                <p>Edit current contents of a page (no edit conflict):
+                  <code>.load(userTextEditCallback) -&gt; ctx.loadApi.post() -&gt; ctx.loadApi.post.success() -&gt; ctx.fnLoadSuccess() -&gt; userTextEditCallback() -&gt; .save() -&gt; ctx.saveApi.post() -&gt; ctx.loadApi.post.success() -&gt; ctx.fnSaveSuccess()</code>
+                </p>
+              </li>
+              <li>
+                <p>Edit current contents of a page (with edit conflict):
+                  <code>.load(userTextEditCallback) -&gt; ctx.loadApi.post() -&gt; ctx.loadApi.post.success() -&gt; ctx.fnLoadSuccess() -&gt; userTextEditCallback() -&gt; .save() -&gt; ctx.saveApi.post() -&gt; ctx.loadApi.post.success() -&gt; ctx.fnSaveError() -&gt; ctx.loadApi.post() -&gt; ctx.loadApi.post.success() -&gt; ctx.fnLoadSuccess() -&gt; userTextEditCallback() -&gt; .save() -&gt; ctx.saveApi.post() -&gt; ctx.loadApi.post.success() -&gt; ctx.fnSaveSuccess()</code>
+                </p>
+              </li>
+              <li>
+                <p>Append to a page (similar for prepend and newSection):
+                  <code>.append() -&gt; ctx.loadApi.post() -&gt; ctx.loadApi.post.success() -&gt; ctx.fnLoadSuccess() -&gt; ctx.fnAutoSave() -&gt; .save() -&gt; ctx.saveApi.post() -&gt; ctx.loadApi.post.success() -&gt; ctx.fnSaveSuccess()</code>
+                </p>
+              </li>
+            </ul>
+            <p>Notes:</p>
+            <ol>
+              <li>All functions following Morebits.wiki.api.post() are invoked asynchronously from the jQuery AJAX library.</li>
+              <li>The sequence for append/prepend/newSection could be slightly shortened,
+                but it would require significant duplication of code for little benefit.</li>
+            </ol>
+            <section>
+              <h3>Parameters</h3>
+              <table class="jsdoc-details-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Optional</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <p>pageName</p>
+                    </td>
+                    <td>
+                      <p>string</p>
+                    </td>
+                    <td>
+                      <p>&nbsp;</p>
+                    </td>
+                    <td>
+                      <p>The name of the page, prefixed by the namespace (if any).
+                        For the current page, use <code>mw.config.get('wgPageName')</code>.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <p>status</p>
+                    </td>
+                    <td>
+                      <p>(string or <a href="Morebits.status.html">Morebits.status</a>)</p>
+                    </td>
+                    <td>
+                      <p>Yes</p>
+                    </td>
+                    <td>
+                      <p>A string describing the action about to be undertaken,
+                        or a Morebits.status object</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+            <dl class="dl-compact">
+            </dl>
+          </section>
+          <section>
+            <h2>Methods</h2>
+            <section>
+              <h3 id="append"><span class="symbol-name">append</span><span class="signature"><span class="signature-params">([onSuccess][, onFailure])</span></span></h3>
+              <p>Adds the text provided via <code>setAppendText()</code> to the end of the
+                page. Does not require calling <code>load()</code> first, unless a watchlist
+                expiry is used.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>onSuccess</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function which is called when the method has succeeded.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function which is called when the method fails.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="canEdit"><span class="symbol-name">canEdit</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> 
+                  <p>whether or not you can edit the page</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="deletePage"><span class="symbol-name">deletePage</span><span class="signature"><span class="signature-params">([onSuccess][, onFailure])</span></span></h3>
+              <p>Deletes a page (for admins only).</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>onSuccess</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function to run on success.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function to run on failure.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="exists"><span class="symbol-name">exists</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> 
+                  <p>True if the page existed on the wiki when it was last loaded.</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="getCallbackParameters"><span class="symbol-name">getCallbackParameters</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> object</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>object</code> 
+                  <ul>
+                    </p>
+                    <li>The object previously set by <code>setCallbackParameters()</code>.</li>
+                  </ul>
+                </dd>
+              </dl>
+              <h3 id="getContentModel"><span class="symbol-name">getContentModel</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <ul>
+                    </p>
+                    <li>Content model of the page. Possible values
+                      include (but may not be limited to): <code>wikitext</code>, <code>javascript</code>,
+                      <code>css</code>, <code>json</code>, <code>Scribunto</code>, <code>sanitized-css</code>, <code>MassMessageListContent</code>.
+                      Also gettable via <code>mw.config.get('wgPageContentModel')</code>.
+                    </li>
+                  </ul>
+                </dd>
+              </dl>
+              <h3 id="getCreationTimestamp"><span class="symbol-name">getCreationTimestamp</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <p>The ISOString timestamp of page creation following <code>lookupCreation()</code>.</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="getCreator"><span class="symbol-name">getCreator</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <p>The user who created the page following <code>lookupCreation()</code>.</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="getCurrentID"><span class="symbol-name">getCurrentID</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <p>The current revision ID of the page</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="getLastEditTime"><span class="symbol-name">getLastEditTime</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <p>ISO 8601 timestamp at which the page was last edited.</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="getLoadTime"><span class="symbol-name">getLoadTime</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <p>ISO 8601 timestamp at which the page was last loaded.</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="getPageID"><span class="symbol-name">getPageID</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <p>Page ID of the page loaded. 0 if the page doesn't
+                    exist.</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="getPageName"><span class="symbol-name">getPageName</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <p>The name of the loaded page, including the namespace</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="getPageText"><span class="symbol-name">getPageText</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <p>The text of the page after a successful load()</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="getRevisionUser"><span class="symbol-name">getRevisionUser</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> string</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>string</code> 
+                  <p>Last editor of the page</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="getStatusElement"><span class="symbol-name">getStatusElement</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> <a href="Morebits.status.html">Morebits.status</a></span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code><a href="Morebits.status.html">Morebits.status</a></code> 
+                  <p>Status element created by the constructor.</p>
+                  </p>
+                </dd>
+              </dl>
+              <h3 id="getWatched"><span class="symbol-name">getWatched</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> (boolean or string)</span></span></h3>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>(boolean or string)</code> 
+                  <ul>
+                    </p>
+                    <li>Watched status of the page. Boolean
+                      unless it's being watched temporarily, in which case returns the
+                      expiry string.</li>
+                  </ul>
+                </dd>
+              </dl>
+              <h3 id="load"><span class="symbol-name">load</span><span class="signature"><span class="signature-params">(onSuccess[, onFailure])</span></span></h3>
+              <p>Loads the text for the page.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>onSuccess</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Callback function which is called when the load has succeeded.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function which is called when the load fails.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="lookupCreation"><span class="symbol-name">lookupCreation</span><span class="signature"><span class="signature-params">(onSuccess[, onFailure])</span></span></h3>
+              <p>Retrieves the username of the user who created the page as well as
+                the timestamp of creation. The username can be retrieved using the
+                <code>getCreator()</code> function; the timestamp can be retrieved using the
+                <code>getCreationTimestamp()</code> function.
+                Prior to June 2019 known as <code>lookupCreator()</code>.
+              </p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>onSuccess</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Callback function to be called when
+                          the username and timestamp are found within the callback.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function to be called when
+                          the lookup fails</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="move"><span class="symbol-name">move</span><span class="signature"><span class="signature-params">([onSuccess][, onFailure])</span></span></h3>
+              <p>Moves a page to another title.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>onSuccess</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function to run on success.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function to run on failure.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="newSection"><span class="symbol-name">newSection</span><span class="signature"><span class="signature-params">([onSuccess][, onFailure])</span></span></h3>
+              <p>Creates a new section with the text provided by <code>setNewSectionText()</code>
+                and section title from <code>setNewSectionTitle()</code>.
+                If <code>editSummary</code> is provided, that will be used instead of the
+                autogenerated &quot;-&gt;Title (new section&quot; edit summary.
+                Does not require calling <code>load()</code> first, unless a watchlist expiry
+                is used.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>onSuccess</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function which is called when the method has succeeded.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function which is called when the method fails.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="patrol"><span class="symbol-name">patrol</span><span class="signature"><span class="signature-params">()</span></span></h3>
+              <p>Marks the page as patrolled, using <code>rcid</code> (if available) or <code>revid</code>.</p>
+              <p>Patrolling as such doesn't need to rely on loading the page in
+                question; simply passing a revid to the API is sufficient, so in
+                those cases just using <a href="Morebits.wiki.api.html">Morebits.wiki.api</a> is probably preferable.</p>
+              <p>No error handling since we don't actually care about the errors.</p>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="prepend"><span class="symbol-name">prepend</span><span class="signature"><span class="signature-params">([onSuccess][, onFailure])</span></span></h3>
+              <p>Adds the text provided via <code>setPrependText()</code> to the start of the
+                page. Does not require calling <code>load()</code> first, unless a watchlist
+                expiry is used.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>onSuccess</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function which is called when the method has succeeded.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function which is called when the method fails.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="protect"><span class="symbol-name">protect</span><span class="signature"><span class="signature-params">([onSuccess][, onFailure])</span></span></h3>
+              <p>Protects a page (for admins only).</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>onSuccess</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function to run on success.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function to run on failure.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="revert"><span class="symbol-name">revert</span><span class="signature"><span class="signature-params">([onSuccess][, onFailure])</span></span></h3>
+              <p>Reverts a page to <code>revertOldID</code> set by <code>setOldID</code>.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>onSuccess</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function to run on success.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function to run on failure.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="save"><span class="symbol-name">save</span><span class="signature"><span class="signature-params">([onSuccess][, onFailure])</span></span></h3>
+              <p>Saves the text for the page to Wikipedia.
+                Must be preceded by successfully calling <code>load()</code>.</p>
+              <p>Warning: Calling <code>save()</code> can result in additional calls to the
+                previous <code>load()</code> callbacks to recover from edit conflicts! In this
+                case, callers must make the same edit to the new pageText and
+                reinvoke <code>save()</code>. This behavior can be disabled with
+                <code>setMaxConflictRetries(0)</code>.
+              </p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>onSuccess</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function which is called when the save has succeeded.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function which is called when the save fails.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setAppendText"><span class="symbol-name">setAppendText</span><span class="signature"><span class="signature-params">(appendText)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>appendText</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Text that will be appended to the page when <code>append()</code> is called</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setBotEdit"><span class="symbol-name">setBotEdit</span><span class="signature"><span class="signature-params">(botEdit)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>botEdit</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Set true to mark the edit as a bot edit</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setCallbackParameters"><span class="symbol-name">setCallbackParameters</span><span class="signature"><span class="signature-params">(callbackParameters)</span></span></h3>
+              <p>Define an object for use in a callback function.</p>
+              <p><code>callbackParameters</code> is for use by the caller only. The parameters
+                allow a caller to pass the proper context into its callback
+                function. Callers must ensure that any changes to the
+                callbackParameters object within a <code>load()</code> callback still permit a
+                proper re-entry into the <code>load()</code> callback if an edit conflict is
+                detected upon calling <code>save()</code>.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>callbackParameters</p>
+                      </td>
+                      <td>
+                        <p>object</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setChangeTags"><span class="symbol-name">setChangeTags</span><span class="signature"><span class="signature-params">(tags)</span></span></h3>
+              <p>Set any custom tag(s) to be applied to the API action.
+                A number of actions don't support it, most notably watch, review,
+                and stabilize (<a href="https://phabricator.wikimedia.org/T247721">T247721</a>), and
+                pagetriageaction (<a href="https://phabricator.wikimedia.org/T252980">T252980</a>).</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>tags</p>
+                      </td>
+                      <td>
+                        <p>(string or Array of string)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>String or array of tag(s).</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setCreateOption"><span class="symbol-name">setCreateOption</span><span class="signature"><span class="signature-params">([createOption])</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>createOption</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Can take the following four values:</p>
+                        <ul>
+                          <li>recreate: create the page if it does not exist, or edit it if it exists.</li>
+                          <li>createonly: create the page if it does not exist, but return an
+                            error if it already exists.</li>
+                          <li>nocreate: don't create the page, only edit it if it already exists.</li>
+                          <li><code>null</code>: create the page if it does not exist, unless it was deleted
+                            in the moment between loading the page and saving the edit (default).</li>
+                        </ul>
+                        <p>Defaults to <code>null</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setEditProtection"><span class="symbol-name">setEditProtection</span><span class="signature"><span class="signature-params">(level[, expiry])</span></span></h3>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>level</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>The right required for the specific action
+                          e.g. autoconfirmed, sysop, templateeditor, extendedconfirmed
+                          (enWiki-only).</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>expiry</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Defaults to <code>infinity</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setEditSummary"><span class="symbol-name">setEditSummary</span><span class="signature"><span class="signature-params">(summary)</span></span></h3>
+              <p>Set the edit summary that will be used when <code>save()</code> is called.
+                Unnecessary if editMode is 'new' and newSectionTitle is provided.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>summary</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setFlaggedRevs"><span class="symbol-name">setFlaggedRevs</span><span class="signature"><span class="signature-params">(level[, expiry])</span></span></h3>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>level</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>The right required for edits not to require
+                          review. Possible options: none, autoconfirmed, review (not on enWiki).</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>expiry</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Defaults to <code>infinity</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setFollowRedirect"><span class="symbol-name">setFollowRedirect</span><span class="signature"><span class="signature-params">([followRedirect][, followCrossNsRedirect])</span></span></h3>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>followRedirect</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <ul>
+                          <li><code>true</code>: a maximum of one redirect will be followed. In the event
+                            of a redirect, a message is displayed to the user and the redirect
+                            target can be retrieved with getPageName().</li>
+                          <li><code>false</code>: (default) the requested pageName will be used without regard to any redirect.</li>
+                        </ul>
+                        <p>Defaults to <code>false</code>.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>followCrossNsRedirect</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Not applicable if <code>followRedirect</code> is not set true.</p>
+                        <ul>
+                          <li><code>true</code>: (default) follow redirect even if it is a cross-namespace redirect</li>
+                          <li><code>false</code>: don't follow redirect if it is cross-namespace, edit the redirect itself.</li>
+                        </ul>
+                        <p>Defaults to <code>true</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setLookupNonRedirectCreator"><span class="symbol-name">setLookupNonRedirectCreator</span><span class="signature"><span class="signature-params">(flag)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>flag</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>If set true, the author and timestamp of
+                          the first non-redirect version of the page is retrieved.</p>
+                        <p>Warning:</p>
+                        <ol>
+                          <li>If there are no revisions among the first 50 that are
+                            non-redirects, or if there are less 50 revisions and all are
+                            redirects, the original creation is retrived.</li>
+                          <li>Revisions that the user is not privileged to access
+                            (revdeled/suppressed) will be treated as non-redirects.</li>
+                          <li>Must not be used when the page has a non-wikitext contentmodel
+                            such as Modulespace Lua or user JavaScript/CSS.</li>
+                        </ol>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setMaxConflictRetries"><span class="symbol-name">setMaxConflictRetries</span><span class="signature"><span class="signature-params">(maxConflictRetries)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>maxConflictRetries</p>
+                      </td>
+                      <td>
+                        <p>number</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Number of retries for save errors involving an edit conflict or
+                          loss of token. Default: 2.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setMaxRetries"><span class="symbol-name">setMaxRetries</span><span class="signature"><span class="signature-params">(maxRetries)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>maxRetries</p>
+                      </td>
+                      <td>
+                        <p>number</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Number of retries for save errors not involving an edit conflict or
+                          loss of token. Default: 2.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setMinorEdit"><span class="symbol-name">setMinorEdit</span><span class="signature"><span class="signature-params">(minorEdit)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>minorEdit</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Set true to mark the edit as a minor edit.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setMoveDestination"><span class="symbol-name">setMoveDestination</span><span class="signature"><span class="signature-params">(destination)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>destination</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setMoveSubpages"><span class="symbol-name">setMoveSubpages</span><span class="signature"><span class="signature-params">(flag)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>flag</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setMoveSuppressRedirect"><span class="symbol-name">setMoveSuppressRedirect</span><span class="signature"><span class="signature-params">(flag)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>flag</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setMoveTalkPage"><span class="symbol-name">setMoveTalkPage</span><span class="signature"><span class="signature-params">(flag)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>flag</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setNewSectionText"><span class="symbol-name">setNewSectionText</span><span class="signature"><span class="signature-params">(newSectionText)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>newSectionText</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Text that will be added in a new section on the page when <code>newSection()</code> is called</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setNewSectionTitle"><span class="symbol-name">setNewSectionTitle</span><span class="signature"><span class="signature-params">(newSectionTitle)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>newSectionTitle</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Title for the new section created when <code>newSection()</code> is called
+                          If missing, <code>ctx.editSummary</code> will be used. Issues may occur if a substituted template is used.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setPageSection"><span class="symbol-name">setPageSection</span><span class="signature"><span class="signature-params">(pageSection)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>pageSection</p>
+                      </td>
+                      <td>
+                        <p>number</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Integer specifying the section number to load or save.
+                          If specified as <code>null</code>, the entire page will be retrieved.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setPageText"><span class="symbol-name">setPageText</span><span class="signature"><span class="signature-params">(pageText)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>pageText</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Updated page text that will be saved when <code>save()</code> is called</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setPrependText"><span class="symbol-name">setPrependText</span><span class="signature"><span class="signature-params">(prependText)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>prependText</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Text that will be prepended to the page when <code>prepend()</code> is called</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setStatusElement"><span class="symbol-name">setStatusElement</span><span class="signature"><span class="signature-params">(statusElement)</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>statusElement</p>
+                      </td>
+                      <td>
+                        <p><a href="Morebits.status.html">Morebits.status</a></p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setWatchlist"><span class="symbol-name">setWatchlist</span><span class="signature"><span class="signature-params">([watchlistOption][, watchlistExpiry])</span></span></h3>
+              <p>Set whether and how to watch the page, including setting an expiry.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>watchlistOption</p>
+                      </td>
+                      <td>
+                        <p>(boolean, string, <a href="Morebits.date.html">Morebits.date</a>, or Date)</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Basically a mix of MW API and Twinkley options available pre-expiry:</p>
+                        <ul>
+                          <li><code>true</code>|<code>'yes'</code>|<code>'watch'</code>: page will be added to the user's
+                            watchlist when the action is called. Defaults to an indefinite
+                            watch unless <code>watchlistExpiry</code> is provided.</li>
+                          <li><code>false</code>|<code>'no'</code>|<code>'nochange'</code>: watchlist status of the page (including expiry) will not be changed.</li>
+                          <li><code>'default'</code>|<code>'preferences'</code>: watchlist status of the page will be
+                            set based on the user's preference settings when the action is
+                            called. Defaults to an indefinite watch unless <code>watchlistExpiry</code> is
+                            provided.</li>
+                          <li><code>'unwatch'</code>: explicitly unwatch the page.</li>
+                          <li>Any other <code>string</code> or <code>number</code>, or a <code>Morebits.date</code> or <code>Date</code>
+                            object: watch page until the specified time, deferring to
+                            <code>watchlistExpiry</code> if provided.
+                          </li>
+                        </ul>
+                        <p>Defaults to <code>false</code>.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>watchlistExpiry</p>
+                      </td>
+                      <td>
+                        <p>(string, number, <a href="Morebits.date.html">Morebits.date</a>, or Date)</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>A date-like string or number, or a date object. If a string or number,
+                          can be relative (2 weeks) or other similarly date-like (i.e. NOT &quot;potato&quot;):
+                          ISO 8601: 2038-01-09T03:14:07Z
+                          MediaWiki: 20380109031407
+                          UNIX: 2147483647
+                          SQL: 2038-01-09 03:14:07
+                          Can also be <code>infinity</code> or infinity-like (<code>infinite</code>, <code>indefinite</code>, and <code>never</code>).
+                          See <a href="https://phabricator.wikimedia.org/source/mediawiki-libs-Timestamp/browse/master/src/ConvertibleTimestamp.php;4e53b859a9580c55958078f46dd4f3a44d0fcaa0$57-109?as=source&amp;blame=off">https://phabricator.wikimedia.org/source/mediawiki-libs-Timestamp/browse/master/src/ConvertibleTimestamp.php;4e53b859a9580c55958078f46dd4f3a44d0fcaa0$57-109?as=source&amp;blame=off</a></p>
+                        <p>Defaults to <code>infinity</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setWatchlistExpiry"><span class="symbol-name">setWatchlistExpiry</span><span class="signature"><span class="signature-params">([watchlistExpiry])</span></span></h3>
+              <p>Set a watchlist expiry. setWatchlist can mostly handle this by
+                itself, so this is here largely for completeness and compatibility
+                with the full suite of options.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>watchlistExpiry</p>
+                      </td>
+                      <td>
+                        <p>(string, number, <a href="Morebits.date.html">Morebits.date</a>, or Date)</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>A date-like string or number, or a date object. If a string or number,
+                          can be relative (2 weeks) or other similarly date-like (i.e. NOT &quot;potato&quot;):
+                          ISO 8601: 2038-01-09T03:14:07Z
+                          MediaWiki: 20380109031407
+                          UNIX: 2147483647
+                          SQL: 2038-01-09 03:14:07
+                          Can also be <code>infinity</code> or infinity-like (<code>infinite</code>, <code>indefinite</code>, and <code>never</code>).
+                          See <a href="https://phabricator.wikimedia.org/source/mediawiki-libs-Timestamp/browse/master/src/ConvertibleTimestamp.php;4e53b859a9580c55958078f46dd4f3a44d0fcaa0$57-109?as=source&amp;blame=off">https://phabricator.wikimedia.org/source/mediawiki-libs-Timestamp/browse/master/src/ConvertibleTimestamp.php;4e53b859a9580c55958078f46dd4f3a44d0fcaa0$57-109?as=source&amp;blame=off</a></p>
+                        <p>Defaults to <code>infinity</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <h3 id="setWatchlistFromPreferences"><span class="symbol-name">setWatchlistFromPreferences</span><span class="signature"><span class="signature-params">([watchlistOption])</span></span></h3>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>watchlistOption</p>
+                      </td>
+                      <td>
+                        <p>boolean</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <ul>
+                          <li><code>True</code>: page watchlist status will be set based on the user's
+                            preference settings when <code>save()</code> is called.</li>
+                          <li><code>False</code>: watchlist status of the page will not be changed.</li>
+                        </ul>
+                        <p>Watchlist notes:</p>
+                        <ol>
+                          <li>The MediaWiki API value of 'unwatch', which explicitly removes
+                            the page from the user's watchlist, is not used.</li>
+                          <li>If both <code>setWatchlist()</code> and <code>setWatchlistFromPreferences()</code> are
+                            called, the last call takes priority.</li>
+                          <li>Twinkle modules should use the appropriate preference to set the watchlist options.</li>
+                          <li>Most Twinkle modules use <code>setWatchlist()</code>. <code>setWatchlistFromPreferences()</code>
+                            is only needed for the few Twinkle watchlist preferences that
+                            accept a string value of <code>default</code>.</li>
+                        </ol>
+                        <p>Defaults to <code>false</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Deprecated</dt>
+                <dd>As of December 2020, use setWatchlist.</dd>
+              </dl>
+              <h3 id="stabilize"><span class="symbol-name">stabilize</span><span class="signature"><span class="signature-params">([onSuccess][, onFailure])</span></span></h3>
+              <p>Apply FlaggedRevs protection settings. Only works on wikis where
+                the extension is installed (<code>$wgFlaggedRevsProtection = true</code>
+                i.e. where FlaggedRevs settings appear on the &quot;protect&quot; tab).</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>onSuccess</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>See also</dt>
+                <dd><a href="https://www.mediawiki.org/wiki/Extension:FlaggedRevs">https://www.mediawiki.org/wiki/Extension:FlaggedRevs</a>
+                  Referred to as "pending changes" on-wiki.</dd>
+              </dl>
+              <h3 id="triage"><span class="symbol-name">triage</span><span class="signature"><span class="signature-params">()</span></span></h3>
+              <p>Marks the page as reviewed by the PageTriage extension.</p>
+              <p>Will, by it's nature, mark as patrolled as well. Falls back to
+                patrolling if not in an appropriate namespace.</p>
+              <p>Doesn't inherently rely on loading the page in question; simply
+                passing a <code>pageid</code> to the API is sufficient, so in those cases just
+                using <a href="Morebits.wiki.api.html">Morebits.wiki.api</a> is probably preferable.</p>
+              <p>Will first check if the page is queued via
+                fnProcessTriageList.</p>
+              <p>No error handling since we don't actually care about the errors.</p>
+              <dl class="dl-compact">
+                <dt>See also</dt>
+                <dd><a href="https://www.mediawiki.org/wiki/Extension:PageTriage">https://www.mediawiki.org/wiki/Extension:PageTriage</a> Referred to as "review" on-wiki.</dd>
+              </dl>
+              <h3 id="undeletePage"><span class="symbol-name">undeletePage</span><span class="signature"><span class="signature-params">([onSuccess][, onFailure])</span></span></h3>
+              <p>Undeletes a page (for admins only).</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>onSuccess</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function to run on success.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>function()</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>Callback function to run on failure.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-inner">inner</span></div>
+              <h3 id="~fnApplyWatchlistExpiry"><span class="symbol-name">fnApplyWatchlistExpiry</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <p>Determine whether we should provide a watchlist expiry. Will not
+                do so if the page is currently permanently watched, or the current
+                expiry is <em>after</em> the new, provided expiry. Only handles strings
+                recognized by <a href="Morebits.date.html">Morebits.date</a> or relative timeframes with
+                unit it can process. Relies on the fact that fnCanUseMwUserToken
+                requires page loading if a watchlistexpiry is provided, so we are
+                ensured of knowing the watch status by the use of this.</p>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-inner">inner</span></div>
+              <h3 id="~fnCanUseMwUserToken"><span class="symbol-name">fnCanUseMwUserToken</span><span class="signature"><span class="signature-params">([action])</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <p>Determines whether we can save an API call by using the csrf token
+                sent with the page HTML, or whether we need to ask the server for
+                more info (e.g. protection or watchlist expiry).</p>
+              <p>Currently used for <code>append</code>, <code>prepend</code>, <code>newSection</code>, <code>move</code>,
+                <code>stabilize</code>, <code>deletePage</code>, and <code>undeletePage</code>. Not used for
+                <code>protect</code> since it always needs to request protection status.
+              </p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>action</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>Yes</p>
+                      </td>
+                      <td>
+                        <p>The action being undertaken, e.g.
+                          &quot;edit&quot; or &quot;delete&quot;. In practice, only &quot;edit&quot; or &quot;notedit&quot; matters.</p>
+                        <p>Defaults to <code>edit</code>.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-inner">inner</span></div>
+              <h3 id="~fnNeedTokenInfoQuery"><span class="symbol-name">fnNeedTokenInfoQuery</span><span class="signature"><span class="signature-params">(action)</span>&nbsp;&rarr; <span class="signature-returns"> object</span></span></h3>
+              <p>When functions can't use
+                <a href="Morebits.wiki.page.html#~fnCanUseMwUserToken">fnCanUseMwUserToken</a>
+                or require checking protection or watched status, maintain the query
+                in one place. Used for <a href="Morebits.wiki.page.html#deletePage">delete</a>,
+                <a href="Morebits.wiki.page.html#undeletePage">undelete</a>,
+                {@link* Morebits.wiki.page#protect|protect},
+                <a href="Morebits.wiki.page.html#stabilize">stabilize</a>,
+                and <a href="Morebits.wiki.page.html#move">move</a>
+                (basically, just not <a href="Morebits.wiki.page.html#load">load</a>).
+              </p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>action</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>The action being undertaken, e.g. &quot;edit&quot; or
+                          &quot;delete&quot;.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>object</code> 
+                  <p>Appropriate query.</p>
+                  </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-inner">inner</span></div>
+              <h3 id="~fnPreflightChecks"><span class="symbol-name">fnPreflightChecks</span><span class="signature"><span class="signature-params">(action, onFailure)</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <p>Common checks for action methods. Used for move, undelete, delete,
+                protect, stabilize.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>action</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>The action being checked.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Failure callback.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-inner">inner</span></div>
+              <h3 id="~fnProcessChecks"><span class="symbol-name">fnProcessChecks</span><span class="signature"><span class="signature-params">(action, onFailure, response)</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
+              <p>Common checks for fnProcess functions (<code>fnProcessDelete</code>, <code>fnProcessMove</code>, etc.
+                Used for move, undelete, delete, protect, stabilize.</p>
+              <section>
+                <h4>Parameters</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>action</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>The action being checked.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>onFailure</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>Failure callback.</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <p>response</p>
+                      </td>
+                      <td>
+                        <p>string</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>The response document from the API call.</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>boolean</code> </p>
+                </dd>
+              </dl>
+            </section>
+          </section>
+        </div>
+      </div>
+      <nav id="jsdoc-toc-nav" role="navigation"></nav>
+    </div>
+  </div>
+  <footer id="jsdoc-footer" class="jsdoc-footer">
+    <div id="jsdoc-footer-container">
+      <p>
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+      </p>
+    </div>
+  </footer>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/tree.jquery.js"></script>
+  <script src="scripts/prettify.js"></script>
+  <script src="scripts/jsdoc-toc.js"></script>
+  <script src="scripts/linenumber.js"></script>
+  <script src="scripts/scrollanchor.js"></script>
+</body>
+
+</html>
