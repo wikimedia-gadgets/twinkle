@@ -200,6 +200,37 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 			}
 		]
 	});
+
+	// Notify devs of common tools, regardless of venue
+	var pageCategories = mw.config.get('wgCategories');
+	Twinkle.xfd.devPages = [];
+	if (namespace === 10 && pageCategories.length) {
+		var devNotificationPageMap = {
+			'Templates used by Twinkle': 'Wikipedia talk:Twinkle',
+			'Templates used by AutoWikiBrowser': 'Wikipedia talk:AutoWikiBrowser',
+			'Templates used by RedWarn': 'Wikipedia talk:RedWarn'
+		};
+		$.each(devNotificationPageMap, function(category, page) {
+			if (pageCategories.indexOf(category) !== -1) {
+				Twinkle.xfd.devPages.push(page);
+			}
+		});
+		if (Twinkle.xfd.devPages.length) {
+			form.append({
+				type: 'checkbox',
+				list: [
+					{
+						label: 'Notify developers of template nomination',
+						value: 'devpages',
+						name: 'devpages',
+						tooltip: 'A notification template will be sent to developers (e.g. Twinkle, AWB, RedWarn) if this is true.  Recommended.',
+						checked: true
+					}
+				]
+			});
+		}
+	}
+
 	form.append({
 		type: 'field',
 		label: 'Work area',
@@ -491,19 +522,6 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t get substituted along with the template.',
 						disabled: templateOrModule === 'module',
 						checked: !!$('.box-Subst_only').length // Default to checked if page carries {{subst only}}
-					}
-				]
-			});
-
-			work_area.append({
-				type: 'checkbox',
-				list: [
-					{
-						label: 'Notify users of the template',
-						value: 'devpages',
-						name: 'devpages',
-						tooltip: 'A notification template will be sent to Twinkle, AWB, and RedWarn if this is true.',
-						checked: true
 					}
 				]
 			});
@@ -898,37 +916,51 @@ Twinkle.xfd.callbacks = {
 			actionName = actionName || 'Notifying initial contributor (' + usernameOrTarget + ')';
 		}
 
-		var notifytext = '\n{{subst:' + params.venue + ' notice';
-		// Venue-specific parameters
-		switch (params.venue) {
-			case 'afd':
-			case 'mfd':
-				notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
-				break;
-			case 'tfd':
-				if (params.xfdcat === 'tfm') {
-					notifytext = '\n{{subst:Tfm notice|2=' + params.tfdtarget;
-				}
-				break;
-			case 'cfd':
-				notifytext += '|action=' + params.action + (mw.config.get('wgNamespaceNumber') === 10 ? '|stub=yes' : '');
-				break;
-			default: // ffd, rfd
-				break;
-		}
-		notifytext += '|1=' + Morebits.pageNameNorm + '}} ~~~~';
+		var editSummary = 'Notification: ';
+		var notifytext;
+		if (params.venue === 'rm') {
+			notifytext = '\n\n== Requested move of [[:' + Morebits.pageNameNorm + ']]  ==\n' +
+				'{{subst:RM notification|1=' + Morebits.pageNameNorm + '|alttalk=' + params.nomPageName;
+			// XXX: Uses client date
+			notifytext += '|section=' + (params.rmtr ? 'Uncontroversial technical requests' : 'Requested move ' + new Morebits.date().format('D MMM Y'));
+			if (params.newname) {
+				notifytext += '|2=' + params.newname;
+			}
+			notifytext += '}} ~~~~';
+			editSummary += 'of requested move of [[:' + Morebits.pageNameNorm + ']] at [[' + params.nomPageName + ']].';
+		} else {
+			notifytext = '\n{{subst:' + params.venue + ' notice';
+			// Venue-specific parameters
+			switch (params.venue) {
+				case 'afd':
+				case 'mfd':
+					notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
+					break;
+				case 'tfd':
+					if (params.xfdcat === 'tfm') {
+						notifytext = '\n{{subst:Tfm notice|2=' + params.tfdtarget;
+					}
+					break;
+				case 'cfd':
+					notifytext += '|action=' + params.action + (mw.config.get('wgNamespaceNumber') === 10 ? '|stub=yes' : '');
+					break;
+				default: // ffd, rfd
+					break;
+			}
+			notifytext += '|1=' + Morebits.pageNameNorm + '}} ~~~~';
 
-		// Link to the venue; object used here rather than repetitive items in switch
-		var venueNames = {
-			afd: 'Articles for deletion',
-			tfd: 'Templates for discussion',
-			mfd: 'Miscellany for deletion',
-			cfd: 'Categories for discussion',
-			ffd: 'Files for discussion',
-			rfd: 'Redirects for discussion'
-		};
-		var editSummary = 'Notification: [[' + params.discussionpage + '|listing]] of [[:' +
-			Morebits.pageNameNorm + ']] at [[WP:' + venueNames[params.venue] + ']].';
+			// Link to the venue; object used here rather than repetitive items in switch
+			var venueNames = {
+				afd: 'Articles for deletion',
+				tfd: 'Templates for discussion',
+				mfd: 'Miscellany for deletion',
+				cfd: 'Categories for discussion',
+				ffd: 'Files for discussion',
+				rfd: 'Redirects for discussion'
+			};
+			editSummary += '[[' + params.discussionpage + '|listing]] of [[:' +
+				Morebits.pageNameNorm + ']] at [[WP:' + venueNames[params.venue] + ']].';
+		}
 
 		var usertalkpage = new Morebits.wiki.page(notifyTarget, actionName);
 		usertalkpage.setAppendText(notifytext);
@@ -938,7 +970,7 @@ Twinkle.xfd.callbacks = {
 		// Different pref for RfD target notifications
 		if (params.venue === 'rfd' && targetNS !== 3) {
 			usertalkpage.setWatchlist(Twinkle.getPref('xfdWatchRelated'));
-		} else {
+		} else if (params.venue !== 'rm') {
 			usertalkpage.setWatchlist(Twinkle.getPref('xfdWatchUser'));
 		}
 		usertalkpage.setFollowRedirect(true, false);
@@ -1348,22 +1380,6 @@ Twinkle.xfd.callbacks = {
 			} else {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			}
-
-			// Notify developer(s) of script(s) that use(s) the nominated template
-			if (params.devpages) {
-				var inCategories = mw.config.get('wgCategories');
-				var categoryNotificationPageMap = {
-					'Templates used by Twinkle': 'Wikipedia talk:Twinkle',
-					'Templates used by AutoWikiBrowser': 'Wikipedia talk:AutoWikiBrowser',
-					'Templates used by RedWarn': 'Wikipedia talk:RedWarn'
-				};
-				$.each(categoryNotificationPageMap, function(category, page) {
-					if (inCategories.indexOf(category) !== -1) {
-						Twinkle.xfd.callbacks.notifyUser(params, page, true, 'Notifying ' + page + ' of template nomination');
-					}
-				});
-			}
-
 		},
 		taggingTemplate: function(pageobj) {
 			var text = pageobj.getPageText();
@@ -2182,14 +2198,14 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			break;
 
 		case 'rm':
-			var nomPageName = params.rmtr ?
+			params.nomPageName = params.rmtr ?
 				'Wikipedia:Requested moves/Technical requests' :
 				new mw.Title(Morebits.pageNameNorm).getTalkPage().toText();
 
-			Morebits.wiki.actionCompleted.redirect = nomPageName;
+			Morebits.wiki.actionCompleted.redirect = params.nomPageName;
 			Morebits.wiki.actionCompleted.notice = 'Nomination completed, now redirecting to the discussion page';
 
-			wikipedia_page = new Morebits.wiki.page(nomPageName, params.rmtr ? 'Adding entry at WP:RM/TR' : 'Adding entry on talk page');
+			wikipedia_page = new Morebits.wiki.page(params.nomPageName, params.rmtr ? 'Adding entry at WP:RM/TR' : 'Adding entry on talk page');
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 
@@ -2205,6 +2221,13 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		default:
 			alert('twinklexfd: unknown XFD discussion venue');
 			break;
+	}
+
+	// Notify developer(s) of script(s) that use(s) the nominated template
+	if (params.devpages) {
+		Twinkle.xfd.devPages.forEach(function(page) {
+			Twinkle.xfd.callbacks.notifyUser(params, page, true, 'Notifying ' + page + ' of template nomination');
+		});
 	}
 };
 
