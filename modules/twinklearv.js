@@ -18,14 +18,15 @@ Twinkle.arv = function twinklearv() {
 		return;
 	}
 
-	var title = mw.util.isIPAddress(username) ? 'Report IP to administrators' : 'Report user to administrators';
+	var isIP = mw.util.isIPAddress(username);
+	var title = isIP ? 'Report IP to administrators' : 'Report user to administrators';
 
 	Twinkle.addPortletLink(function() {
-		Twinkle.arv.callback(username);
+		Twinkle.arv.callback(username, isIP);
 	}, 'ARV', 'tw-arv', title);
 };
 
-Twinkle.arv.callback = function (uid) {
+Twinkle.arv.callback = function (uid, isIP) {
 	var Window = new Morebits.simpleWindow(600, 500);
 	Window.setTitle('Advance Reporting and Vetting'); // Backronym
 	Window.setScriptName('Twinkle');
@@ -69,6 +70,13 @@ Twinkle.arv.callback = function (uid) {
 		value: 'an3'
 	});
 	form.append({
+		type: 'div',
+		label: '',
+		style: 'color: red',
+		id: 'twinkle-arv-blockwarning'
+	});
+
+	form.append({
 		type: 'field',
 		label: 'Work area',
 		name: 'work_area'
@@ -83,6 +91,30 @@ Twinkle.arv.callback = function (uid) {
 	var result = form.render();
 	Window.setContent(result);
 	Window.display();
+
+	// Check if the user is blocked, update notice
+	var query = {
+		action: 'query',
+		list: 'blocks',
+		bkprop: 'range',
+		format: 'json'
+	};
+	if (isIP) {
+		query.bkip = uid;
+	} else {
+		query.bkusers = uid;
+	}
+	new Morebits.wiki.api("Checking the user's block status", query, function(apiobj) {
+		var blocklist = apiobj.getResponse().query.blocks;
+		if (blocklist.length) {
+			var block = blocklist[0];
+			var message = (isIP ? 'This IP address' : 'This account') + ' is already blocked';
+			// Start and end differ, range blocked
+			message += block.rangestart !== block.rangeend ? ' as part of a rangeblock.' : '.';
+			$('#twinkle-arv-blockwarning').text(message);
+		}
+	}).post();
+
 
 	// We must init the
 	var evt = document.createEvent('Event');
