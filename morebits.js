@@ -2297,6 +2297,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		loadTime: null,
 		lastEditTime: null,
 		pageID: null,
+		contentModel: null,
 		revertCurID: null,
 		revertUser: null,
 		fullyProtected: false,
@@ -2907,6 +2908,16 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
+	 * @returns {string} - Content model of the page.  Possible values
+	 * include (but may not be limited to): `wikitext`, `javascript`,
+	 * `css`, `json`, `Scribunto`, `sanitized-css`, `MassMessageListContent`.
+	 * Also gettable via `mw.config.get('wgPageContentModel')`.
+	 */
+	this.getContentModel = function() {
+		return ctx.contentModel;
+	};
+
+	/**
 	 * @returns {string} ISO 8601 timestamp at which the page was last loaded.
 	 */
 	this.getLoadTime = function() {
@@ -3337,6 +3348,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.onLoadFailure(this);
 			return;
 		}
+
+		ctx.contentModel = $(xml).find('page').attr('contentmodel');
 
 		// extract protection info, to alert admins when they are about to edit a protected page
 		if (Morebits.userIsSysop) {
