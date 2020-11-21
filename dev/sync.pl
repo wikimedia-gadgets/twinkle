@@ -118,7 +118,7 @@ if (@files) {
 
     print "\n\t";
     if ($conf{mode} eq 'deploy' || $conf{mode} eq 'push') {
-      my $summary = buildEditSummary($page, $file, $wikiPage->{comment});
+      my $summary = buildEditSummary($page, $file, $wikiPage->{comment}, $wikiPage->{timestamp});
       my $editReturn = editPage($page, $fileText, $summary, $wikiPage->{timestamp});
       if ($editReturn->{_msg} eq 'OK') {
         print colored ['green'], "$file successfully $conf{mode}ed to $page";
@@ -320,7 +320,7 @@ sub checkPage {
 # Tries to figure out a good edit summary by using the last one onwiki to find
 # the latest changes; prompts user if it can't find a commit hash
 sub buildEditSummary {
-  my ($page, $file, $oldCommitish) = @_;
+  my ($page, $file, $oldCommitish, $timestamp) = @_;
   my $editSummary;
   if ($conf{summary}) {
       $editSummary = $conf{summary};
@@ -337,11 +337,10 @@ sub buildEditSummary {
           while (<$nl>) {
             chomp;
             my @arr = split / /, $_, 2;
-            if ($arr[1] =~ /(\S+(?:\.(?:js|css))?) ?[:|-] ?(.+)/) {
-              my $fixPer = $2;
-              $fixPer =~ s/\.$//; # Just in case
-              $editSummary .= "$fixPer; ";
-            }
+            # Remove leading file names, trailing period
+            my $portion = $arr[1] =~ s/^\S+(?::| -) //r;
+            $portion =~ s/\.$//;
+            $editSummary .= "$portion; ";
           }
           close $nl or die colored ['red'], "$ERRNO\n";
         }
@@ -349,10 +348,10 @@ sub buildEditSummary {
 
       # Prompt for manual entry
       if (!$editSummary) {
-        my @log = $repo->run(log => '-5', '--pretty=format:%s (%h)', '--no-merges', '--no-color', $file);
+        my @log = $repo->run(log => '-5', '--pretty=format:%s (%h, %ad)', '--no-merges', '--no-color', '--date=short', $file);
         print colored ['yellow'], "Unable to autogenerate edit summary for $page\n\n";
         print "The most recent ON-WIKI edit summary is:\n";
-        print colored ['bright_cyan'], "\t$oldCommitish\n";
+        print colored ['bright_cyan'], "\t$oldCommitish ($timestamp))\n";
         print "The most recent GIT LOG entries are:\n";
         foreach (@log) {
           print colored ['bright_cyan'], "\t$_\n";
@@ -364,7 +363,7 @@ sub buildEditSummary {
         chomp $editSummary;
       }
     }
-  $editSummary =~ s/[\.; ]{1,2}$//; # Tidy
+  $editSummary =~ s/[\.; ]+$//; # Tidy
   $editSummary .= $conf{append} if $conf{append};
 
   # 'Repo at' will add 17 characters and MW truncates at 497 to allow for '...'
