@@ -1452,7 +1452,7 @@ Twinkle.speedy.callbacks = {
 			}
 
 			// Tag if possible, post on talk if not
-			if (pageobj.canEdit()) {
+			if (pageobj.canEdit() && ['wikitext', 'Scribunto', 'javascript', 'css', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
 				var text = pageobj.getPageText();
 
 				statelem.status('Checking for tags on the page...');
@@ -1495,13 +1495,16 @@ Twinkle.speedy.callbacks = {
 					}
 				}
 
-				// Scribunto isn't parsed like wikitext, so CSD templates on modules need special handling to work
 				if (mw.config.get('wgPageContentModel') === 'Scribunto') {
+					// Scribunto isn't parsed like wikitext, so CSD templates on modules need special handling to work
 					var equals = '';
 					while (code.indexOf(']' + equals + ']') !== -1) {
 						equals += '=';
 					}
 					code = "require('Module:Module wikitext')._addText([" + equals + '[' + code + ']' + equals + ']);';
+				} else if (['javascript', 'css', 'sanitized-css'].indexOf(mw.config.get('wgPageContentModel')) !== -1) {
+					// Likewise for JS/CSS pages
+					code = '/* ' + code + ' */';
 				}
 
 				// Generate edit summary for edit
