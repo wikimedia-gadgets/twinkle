@@ -1,11 +1,15 @@
 QUnit.module('Morebits.date');
 var now = Date.now();
-var timestamp = '16:26, 7 November 2020 (UTC)';
+var timestamp = '16:26, 7 November 2020 (UTC)', ts_iso = '2020-11-07T16:26:00.000Z', naive = 20201107162600;
 QUnit.test('Construction', assert => {
 	assert.strictEqual(new Morebits.date().getTime(), new Date().getTime(), 'Basic constructor');
 	assert.strictEqual(new Morebits.date(now).getTime(), new Date(now).getTime(), 'Constructor from timestring');
 	assert.strictEqual(new Morebits.date(2020, 11, 7, 16, 26).getTime(), new Date(2020, 11, 7, 16, 26).getTime(), 'Constructor from parts');
-	assert.strictEqual(new Morebits.date(timestamp).toISOString(), '2020-11-07T16:26:00.000Z', 'enWiki timestamp format');
+	assert.strictEqual(new Morebits.date(timestamp).toISOString(), ts_iso, 'enWiki timestamp format');
+	assert.strictEqual(new Morebits.date(naive).toISOString(), ts_iso, 'MediaWiki 14-digit number');
+	assert.strictEqual(new Morebits.date(naive.toString()).toISOString(), ts_iso, 'MediaWiki 14-digit string');
+	assert.strictEqual(new Morebits.date(parseInt(naive / 10, 10)).toISOString(), new Date(parseInt(naive / 10, 10)).toISOString(), 'native 13 digit');
+	assert.strictEqual(new Morebits.date(naive * 10).toISOString(), new Date(naive * 10).toISOString(), 'native 15 digit');
 });
 var date = new Morebits.date(timestamp);
 QUnit.test('Formats', assert => {

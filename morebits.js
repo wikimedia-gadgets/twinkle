@@ -1519,13 +1519,29 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
 Morebits.date = function() {
 	var args = Array.prototype.slice.call(arguments);
 
-	// Check if it's a MediaWiki signature timestamp (which the native Date cannot parse directly)
-	// Must be first since firefox erroneously accepts the format, sans timezone
-	// See also: #921, #936, #1174, #1187
-	var dateParts;
-	if (args.length === 1 && typeof args[0] === 'string' && (dateParts = Morebits.date.localeData.signatureTimestampFormat(args[0]))) {
-		this._d = new Date(Date.UTC.apply(null, dateParts));
-	} else {
+	// Check MediaWiki formats
+	// Must be first since firefox erroneously accepts the timestamp
+	// format, sans timezone (See also: #921, #936, #1174, #1187), and the
+	// 14-digit string will be interpreted differently.
+	if (args.length === 1) {
+		var param = args[0];
+		if (/^\d{14}$/.test(param)) {
+			// YYYYMMDDHHmmss
+			var digitMatch = /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(param);
+			if (digitMatch) {
+				// ..... year ... month .. date ... hour .... minute ..... second
+				this._d = new Date(Date.UTC.apply(null, [digitMatch[1], digitMatch[2] - 1, digitMatch[3], digitMatch[4], digitMatch[5], digitMatch[6]]));
+			}
+		} else if (typeof param === 'string') {
+			// Wikitext signature timestamp
+			var dateParts = Morebits.date.localeData.signatureTimestampFormat(param);
+			if (dateParts) {
+				this._d = new Date(Date.UTC.apply(null, dateParts));
+			}
+		}
+	}
+
+	if (!this._d) {
 		// Try standard date
 		this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)));
 	}
@@ -1562,6 +1578,7 @@ Morebits.date.localeData = {
 		other: 'YYYY-MM-DD'
 	},
 	signatureTimestampFormat: function (str) {
+		// HH:mm, DD Month YYYY (UTC)
 		var rgx = /(\d{2}):(\d{2}), (\d{1,2}) (\w+) (\d{4}) \(UTC\)/;
 		var match = rgx.exec(str);
 		if (!match) {
