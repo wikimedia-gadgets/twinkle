@@ -1518,17 +1518,18 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
  */
 Morebits.date = function() {
 	var args = Array.prototype.slice.call(arguments);
-	this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)));
 
-	if (!this.isValid()) {
-		if (args.length === 1 && typeof args[0] === 'string') {
-			// Check if it's a MediaWiki signature timestamp (which the native Date cannot parse directly)
-			var dateParts = Morebits.date.localeData.signatureTimestampFormat(args[0]);
-			if (dateParts) {
-				this._d = new Date(Date.UTC.apply(null, dateParts));
-			}
-		}
+	// Check if it's a MediaWiki signature timestamp (which the native Date cannot parse directly)
+	// Must be first since firefox erroneously accepts the format, sans timezone
+	// See also: #921, #936, #1174, #1187
+	var dateParts;
+	if (args.length === 1 && typeof args[0] === 'string' && (dateParts = Morebits.date.localeData.signatureTimestampFormat(args[0]))) {
+		this._d = new Date(Date.UTC.apply(null, dateParts));
+	} else {
+		// Try standard date
+		this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)));
 	}
+
 	// Still no?
 	if (!this.isValid()) {
 		mw.log.warn('Invalid Morebits.date initialisation:', args);
