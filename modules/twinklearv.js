@@ -96,7 +96,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 	var query = {
 		action: 'query',
 		list: 'blocks',
-		bkprop: 'range',
+		bkprop: 'range|flags',
 		format: 'json'
 	};
 	if (isIP) {
@@ -108,9 +108,12 @@ Twinkle.arv.callback = function (uid, isIP) {
 		var blocklist = apiobj.getResponse().query.blocks;
 		if (blocklist.length) {
 			var block = blocklist[0];
-			var message = (isIP ? 'This IP address' : 'This account') + ' is already blocked';
+			var message = (isIP ? 'This IP address' : 'This account') + ' is ' + (block.partial ? 'partially' : 'already') + ' blocked';
 			// Start and end differ, range blocked
 			message += block.rangestart !== block.rangeend ? ' as part of a rangeblock.' : '.';
+			if (block.partial) {
+				$('#twinkle-arv-blockwarning').css('color', 'black'); // Less severe
+			}
 			$('#twinkle-arv-blockwarning').text(message);
 		}
 	}).post();
