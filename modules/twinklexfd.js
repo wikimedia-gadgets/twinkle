@@ -1314,12 +1314,19 @@ Twinkle.xfd.callbacks = {
 		taggingTemplate: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
-			var tableNewline = params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : ''; // No newline for inline
 
-			params.tagText = (params.noinclude ? '<noinclude>' : '') + '{{subst:template for discussion|help=off' +
-				(params.templatetype !== 'standard' ? '|type=' + params.templatetype : '') + (params.noinclude ? '}}</noinclude>' : '}}') + tableNewline;
+			params.tagText = '{{subst:template for discussion|help=off' + (params.templatetype !== 'standard' ? '|type=' + params.templatetype : '') + '}}';
 
-			if (pageobj.canEdit()) {
+			if (pageobj.getContentModel() === 'sanitized-css') {
+				params.tagText = '/* ' + params.tagText + ' */';
+			} else {
+				if (params.noinclude) {
+					params.tagText = '<noinclude>' + params.tagText + '</noinclude>';
+				}
+				params.tagText += params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : ''; // No newline for inline
+			}
+
+			if (pageobj.canEdit() && ['wikitext', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
 				pageobj.setChangeTags(Twinkle.changeTags);
@@ -1335,13 +1342,20 @@ Twinkle.xfd.callbacks = {
 		taggingTemplateForMerge: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
-			var tableNewline = params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : ''; // No newline for inline
 
-			params.tagText = (params.noinclude ? '<noinclude>' : '') + '{{subst:tfm|help=off|' +
-				(params.templatetype !== 'standard' ? 'type=' + params.templatetype + '|' : '') + '1=' + params.otherTemplateName.replace(/^(?:Template|Module):/, '') +
-				(params.noinclude ? '}}</noinclude>' : '}}') + tableNewline;
+			params.tagText = '{{subst:tfm|help=off|' + (params.templatetype !== 'standard' ? 'type=' + params.templatetype + '|' : '') +
+				'1=' + params.otherTemplateName.replace(/^(?:Template|Module):/, '') + '}}';
 
-			if (pageobj.canEdit()) {
+			if (pageobj.getContentModel() === 'sanitized-css') {
+				params.tagText = '/* ' + params.tagText + ' */';
+			} else {
+				if (params.noinclude) {
+					params.tagText = '<noinclude>' + params.tagText + '</noinclude>';
+				}
+				params.tagText += params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : ''; // No newline for inline
+			}
+
+			if (pageobj.canEdit() && ['wikitext', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Listed for merging with [[:' + params.otherTemplateName + ']]; see [[:' + params.discussionpage + ']].');
 				pageobj.setChangeTags(Twinkle.changeTags);
@@ -1461,11 +1475,18 @@ Twinkle.xfd.callbacks = {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
 
-			params.tagText = (params.noinclude ? '<noinclude>' : '') + '{{' +
-				(params.number === '' ? 'mfd' : 'mfdx|' + params.number) + '|help=off}}\n' +
-				(params.noinclude ? '</noinclude>' : '');
+			params.tagText = '{{' + (params.number === '' ? 'mfd' : 'mfdx|' + params.number) + '|help=off}}';
 
-			if (pageobj.canEdit()) {
+			if (['javascript', 'css', 'sanitized-css'].indexOf(mw.config.get('wgPageContentModel')) !== -1) {
+				params.tagText = '/* ' + params.tagText + ' */\n';
+			} else {
+				params.tagText += '\n';
+				if (params.noinclude) {
+					params.tagText = '<noinclude>' + params.tagText + '</noinclude>';
+				}
+			}
+
+			if (pageobj.canEdit() && ['wikitext', 'javascript', 'css', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
 				pageobj.setChangeTags(Twinkle.changeTags);
