@@ -702,12 +702,12 @@ Twinkle.tag.article.tagList = {
 		],
 		'Structure, formatting, and lead section': [
 			{ tag: 'Cleanup reorganize', description: "needs reorganization to comply with Wikipedia's layout guidelines" },
-			{ tag: 'Condense', description: 'too many section headers dividing up content' },
 			{ tag: 'Lead missing', description: 'no lead section' },
 			{ tag: 'Lead rewrite', description: 'lead section needs to be rewritten to comply with guidelines' },
 			{ tag: 'Lead too long', description: 'lead section is too long for the length of the article' },
 			{ tag: 'Lead too short', description: 'lead section is too short and should be expanded to summarize key points' },
 			{ tag: 'Sections', description: 'needs to be divided into sections by topic' },
+			{ tag: 'Too many sections', description: 'too many section headers dividing up content, should be condensed' },
 			{ tag: 'Very long', description: 'too long to read and navigate comfortably' }
 		],
 		'Fiction-related cleanup': [
