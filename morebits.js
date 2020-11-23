@@ -1819,9 +1819,12 @@ Morebits.date.prototype = {
 
 // Allow native Date.prototype methods to be used on Morebits.date objects
 Object.getOwnPropertyNames(Date.prototype).forEach(function(func) {
-	Morebits.date.prototype[func] = function() {
-		return this._d[func].apply(this._d, Array.prototype.slice.call(arguments));
-	};
+	// Exclude methods that collide with PageTriage's Date.js external, which clobbers native Date: [[phab:T268513]]
+	if (['add', 'getDayName', 'getMonthName'].indexOf(func) === -1) {
+		Morebits.date.prototype[func] = function() {
+			return this._d[func].apply(this._d, Array.prototype.slice.call(arguments));
+		};
+	}
 });
 
 
