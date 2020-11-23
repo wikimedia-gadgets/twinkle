@@ -1768,7 +1768,7 @@ Twinkle.warn.callbacks = {
 				sectionNumber = 0;
 				// Find this month's section, preferring the bottom-most
 				sectionExists = sections.reverse().some(function(sec, idx) {
-					return dateHeaderRegex.test(sec) && (sectionNumber = sections.length - 1 - idx);
+					return dateHeaderRegex.test(sec) && typeof (sectionNumber = sections.length - 1 - idx) === 'number';
 				});
 			}
 		}
