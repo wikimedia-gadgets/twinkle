@@ -40,6 +40,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	Window.addFooterLink('Block policy', 'WP:BLOCK');
 	Window.addFooterLink('Block prefs', 'WP:TW/PREF#block');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#block');
+	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.block.callback.evaluate);
 	var actionfield = form.append({
