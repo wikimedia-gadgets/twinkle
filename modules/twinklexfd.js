@@ -704,21 +704,27 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 Twinkle.xfd.callbacks = {
 	// Requires having the tag text (params.tagText) set ahead of time
 	autoEditRequest: function(pageobj, params) {
-		// Update the form
-		pageobj.getStatusElement().warn('Page protected, requesting edit');
+		var talkName = new mw.Title(pageobj.getPageName()).getTalkPage().toText();
+		if (talkName === pageobj.getPageName()) {
+			pageobj.getStatusElement().error('Page protected and nowhere to add an edit request, aborting');
+		} else {
+			pageobj.getStatusElement().warn('Page protected, requesting edit');
 
-		var editRequest = '{{subst:Xfd edit protected|page=' + pageobj.getPageName() +
-			'|discussion=' + params.discussionpage + '|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
+			var editRequest = '{{subst:Xfd edit protected|page=' + pageobj.getPageName() +
+				'|discussion=' + params.discussionpage + '|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
 
-		var talk_page = new Morebits.wiki.page(new mw.Title(pageobj.getPageName()).getTalkPage().toText(), 'Automatically posting edit request on talk page');
-		talk_page.setNewSectionTitle('Edit request to complete ' + utils.toTLACase(params.venue) + ' nomination');
-		talk_page.setNewSectionText(editRequest);
-		talk_page.setCreateOption('recreate');
-		talk_page.setWatchlist(Twinkle.getPref('xfdWatchPage'));
-		talk_page.setFollowRedirect(true);  // should never be needed, but if the article is moved, we would want to follow the redirect
-		talk_page.setChangeTags(Twinkle.changeTags);
-		talk_page.setCallbackParameters(params);
-		talk_page.newSection();
+			var talk_page = new Morebits.wiki.page(talkName, 'Automatically posting edit request on talk page');
+			talk_page.setNewSectionTitle('Edit request to complete ' + utils.toTLACase(params.venue) + ' nomination');
+			talk_page.setNewSectionText(editRequest);
+			talk_page.setCreateOption('recreate');
+			talk_page.setWatchlist(Twinkle.getPref('xfdWatchPage'));
+			talk_page.setFollowRedirect(true);  // should never be needed, but if the article is moved, we would want to follow the redirect
+			talk_page.setChangeTags(Twinkle.changeTags);
+			talk_page.setCallbackParameters(params);
+			talk_page.newSection(null, function() {
+				talk_page.getStatusElement().warn('Unable to add edit request, the talk page may be protected');
+			});
+		}
 	},
 	getDiscussionWikitext: function(venue, params) {
 		if (venue === 'cfds') { // CfD/S takes a completely different style
