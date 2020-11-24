@@ -49,6 +49,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	dialog.addFooterLink('Speedy deletion policy', 'WP:CSD');
 	dialog.addFooterLink('CSD prefs', 'WP:TW/PREF#speedy');
 	dialog.addFooterLink('Twinkle help', 'WP:TW/DOC#speedy');
+	dialog.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(callbackfunc, Twinkle.getPref('speedySelectionStyle') === 'radioClick' ? 'change' : null);
 	if (Morebits.userIsSysop) {

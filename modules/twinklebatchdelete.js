@@ -34,6 +34,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	Window.setTitle('Batch deletion');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#batchdelete');
+	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.batchdelete.callback.evaluate);
 	form.append({
