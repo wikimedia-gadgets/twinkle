@@ -31,7 +31,6 @@ Twinkle.deprod.callback = function() {
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Proposed deletion', 'WP:PROD');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#deprod');
-  Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(callback_commit);
 
