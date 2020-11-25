@@ -4234,7 +4234,7 @@ Morebits.wikitext = {};
  * @memberof Morebits.wikitext
  * @param {string} text - Wikitext containing a template.
  * @param {number} [start=0] - Index noting where in the text the template begins.
- * @returns {object} {name: templateName, parameters: {key: value}}.FIXME TODO
+ * @returns {object} `{name: templateName, parameters: {key: value}}`.
  */
 Morebits.wikitext.parseTemplate = function(text, start) {
 	start = start || 0;
@@ -4904,8 +4904,8 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
  * Iterates over a group of pages (or arbitrary objects) and executes a worker function
  * for each.
  *
- * `setPageList(wikitext)`: Sets the list of pages to work on. It should be an
- * array of page names (strings).
+ * `setPageList(pageList)`: Sets the list of pages to work on. It should be an
+ * array of page names strings.
  *
  * `setOption(optionName, optionValue)`: Sets a known option:
  * - `chunkSize` (integer): The size of chunks to break the array into (default
