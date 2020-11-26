@@ -6,7 +6,7 @@
  *
  * How to use:
  * - Run `npm run patchtest` which generates patch-test-loader.js
- * - Set up a localhost server (such as by using server.js or by running
+ * - Set up a localhost server (such as by using npm run server or by running
  *   php -S 127.0.0.1:5500) and load patch-test-loader.js in the wiki environment,
  *   using the browser console or the common.js page.
  * - You can provide a different port by running `npm run patchtest -- 1234`

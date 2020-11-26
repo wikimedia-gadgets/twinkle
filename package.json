@@ -7,6 +7,7 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"patchtest": "node dev/patch-test.js",
+	  	"server": "node dev/server.js",
 		"sync": "perl dev/sync.pl",
 		"deployall": "perl dev/sync.pl --mode=deploy --all"
 	},
