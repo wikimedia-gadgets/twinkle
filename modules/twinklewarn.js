@@ -1762,7 +1762,7 @@ Twinkle.warn.callbacks = {
 		if (!messageData.heading && text.length) {
 			// Get all L2 sections
 			var sections = text.match(/^(==)[^=].+\1/gm);
-			if (sections.length !== 0) {
+			if (sections && sections.length !== 0) {
 				// Find the index of the section header in question
 				var dateHeaderRegex = now.monthHeaderRegex();
 				sectionNumber = 0;
