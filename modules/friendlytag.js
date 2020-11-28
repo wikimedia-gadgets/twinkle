@@ -1010,7 +1010,7 @@ Twinkle.tag.redirectList = {
 
 Twinkle.tag.fileList = {
 	'License and sourcing problem tags': [
-		{ label: '{{Bsr}}: source info consists of bare image URL/generic base URL only', value: 'Bsr' },
+		{ label: '{{Better source requested}}: source info consists of bare image URL/generic base URL only', value: 'Better source requested' },
 		{ label: '{{Non-free reduce}}: non-low-resolution fair use image (or too-long audio clip, etc)', value: 'Non-free reduce' },
 		{ label: '{{Orphaned non-free revisions}}: fair use media with old revisions that need to be deleted', value: 'Orphaned non-free revisions' }
 	],
