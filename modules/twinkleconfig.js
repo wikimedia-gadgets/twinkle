@@ -21,7 +21,15 @@
 
 Twinkle.config = {};
 
-Twinkle.config.watchlistEnums = { yes: 'Add to watchlist', no: "Don't add to watchlist", 'default': 'Follow your site preferences' };
+Twinkle.config.watchlistEnums = {
+	yes: 'Add to watchlist (indefinitely)',
+	no: "Don't add to watchlist",
+	'default': 'Follow your site preferences',
+	'1 week': 'Watch for 1 week',
+	'1 month': 'Watch for 1 month',
+	'3 months': 'Watch for 3 months',
+	'6 months': 'Watch for 6 months'
+};
 
 Twinkle.config.commonSets = {
 	csdCriteria: {
@@ -244,7 +252,7 @@ Twinkle.config.sections = [
 			},
 
 			// TwinkleConfig.deliWatchPage (string)
-			// The watchlist setting of the page tagged for deletion. Either "yes", "no", or "default". Default is "default" (Duh).
+			// The watchlist setting of the page tagged for deletion.
 			{
 				name: 'deliWatchPage',
 				label: 'Add image page to watchlist when tagging',
@@ -253,7 +261,7 @@ Twinkle.config.sections = [
 			},
 
 			// TwinkleConfig.deliWatchUser (string)
-			// The watchlist setting of the user talk page if a notification is placed. Either "yes", "no", or "default". Default is "default" (Duh).
+			// The watchlist setting of the user talk page if a notification is placed.
 			{
 				name: 'deliWatchUser',
 				label: 'Add user talk page of initial uploader to watchlist when notifying',
@@ -267,12 +275,13 @@ Twinkle.config.sections = [
 		title: 'Proposed deletion (PROD)',
 		module: 'prod',
 		preferences: [
-			// TwinkleConfig.watchProdPages (boolean)
-			// If, when applying prod template to page, to watch the page
+			// TwinkleConfig.watchProdPages (string)
+			// Watchlist setting when applying prod template to page
 			{
 				name: 'watchProdPages',
 				label: 'Add article to watchlist when tagging',
-				type: 'boolean'
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
 			},
 
 			// TwinkleConfig.markProdPagesAsPatrolled (boolean)
@@ -364,6 +373,14 @@ Twinkle.config.sections = [
 				type: 'set',
 				setValues: { agf: 'AGF rollback', norm: 'Normal rollback', vand: 'Vandalism rollback', torev: '"Restore this version"' }
 			},
+			// TwinkleConfig.watchRevertedExpiry
+			// If any of the above items are selected, whether to expire the watch
+			{
+				name: 'watchRevertedExpiry',
+				label: 'When reverting a page, how long to watch it for',
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
+			},
 
 			// TwinkleConfig.offerReasonOnNormalRevert (boolean)
 			// If to offer a prompt for extra summary reason for normal reverts, default to true
@@ -432,6 +449,14 @@ Twinkle.config.sections = [
 				type: 'set',
 				setValues: Twinkle.config.commonSets.csdCriteria,
 				setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
+			},
+			// TwinkleConfig.watchSpeedyExpiry
+			// If any of the above items are selected, whether to expire the watch
+			{
+				name: 'watchSpeedyExpiry',
+				label: 'When tagging a page, how long to watch it for',
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
 			},
 
 			// TwinkleConfig.markSpeedyPagesAsPatrolled (boolean)
@@ -560,12 +585,14 @@ Twinkle.config.sections = [
 			{
 				name: 'watchTaggedPages',
 				label: 'Add page to watchlist when tagging',
-				type: 'boolean'
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
 			},
 			{
 				name: 'watchMergeDiscussions',
 				label: 'Add talk pages to watchlist when starting merge discussions',
-				type: 'boolean'
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
 			},
 			{
 				name: 'markTaggedPagesAsMinor',
@@ -702,12 +729,13 @@ Twinkle.config.sections = [
 				type: 'boolean'
 			},
 
-			// TwinkleConfig.watchWarnings (boolean)
-			// if true, watch the page which has been dispatched an warning or notice, if false, default applies
+			// TwinkleConfig.watchWarnings (string)
+			// Watchlist setting for the page which has been dispatched an warning or notice
 			{
 				name: 'watchWarnings',
 				label: 'Add user talk page to watchlist when notifying',
-				type: 'boolean'
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
 			},
 
 			// TwinkleConfig.oldSelect (boolean)
@@ -742,7 +770,8 @@ Twinkle.config.sections = [
 				name: 'watchWelcomes',
 				label: 'Add user talk pages to watchlist when welcoming',
 				helptip: 'Doing so adds to the personal element of welcoming a user - you will be able to see how they are coping as a newbie, and possibly help them.',
-				type: 'boolean'
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
 			},
 			{
 				name: 'insertUsername',
@@ -804,8 +833,7 @@ Twinkle.config.sections = [
 			},
 
 			// TwinkleConfig.xfdWatchPage (string)
-			// The watchlist setting of the page being nominated for XfD. Either "yes" (add to watchlist), "no" (don't
-			// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+			// The watchlist setting of the page being nominated for XfD.
 			{
 				name: 'xfdWatchPage',
 				label: 'Add the nominated page to watchlist',
@@ -816,7 +844,6 @@ Twinkle.config.sections = [
 			// TwinkleConfig.xfdWatchDiscussion (string)
 			// The watchlist setting of the newly created XfD page (for those processes that create discussion pages for each nomination),
 			// or the list page for the other processes.
-			// Either "yes" (add to watchlist), "no" (don't add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
 			{
 				name: 'xfdWatchDiscussion',
 				label: 'Add the deletion discussion page to watchlist',
@@ -826,9 +853,7 @@ Twinkle.config.sections = [
 			},
 
 			// TwinkleConfig.xfdWatchList (string)
-			// The watchlist setting of the XfD list page, *if* the discussion is on a separate page. Either "yes" (add to watchlist), "no" (don't
-			// add to watchlist), or "default" (use setting from preferences). Default is "no" (Hehe. Seriously though, who wants to watch it?
-			// Sorry in advance for any false positives.).
+			// The watchlist setting of the XfD list page, *if* the discussion is on a separate page.
 			{
 				name: 'xfdWatchList',
 				label: 'Add the daily log/list page to the watchlist (where applicable)',
@@ -838,8 +863,7 @@ Twinkle.config.sections = [
 			},
 
 			// TwinkleConfig.xfdWatchUser (string)
-			// The watchlist setting of the user talk page if they receive a notification. Either "yes" (add to watchlist), "no" (don't
-			// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+			// The watchlist setting of the user talk page if they receive a notification.
 			{
 				name: 'xfdWatchUser',
 				label: 'Add user talk page of initial contributor to watchlist (when notifying)',
@@ -848,8 +872,7 @@ Twinkle.config.sections = [
 			},
 
 			// TwinkleConfig.xfdWatchRelated (string)
-			// The watchlist setting of the target of a redirect being nominated for RfD. Either "yes" (add to watchlist), "no" (don't
-			// add to watchlist), or "default" (use setting from preferences). Default is "default" (duh).
+			// The watchlist setting of the target of a redirect being nominated for RfD.
 			{
 				name: 'xfdWatchRelated',
 				label: "Add the redirect's target page to watchlist (when notifying)",
@@ -1038,7 +1061,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 				}
 				cell = document.createElement('td');
 
-				var label, input;
+				var label, input, gotPref = Twinkle.getPref(pref.name);
 				switch (pref.type) {
 
 					case 'boolean':  // create a checkbox
@@ -1049,7 +1072,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						input.setAttribute('type', 'checkbox');
 						input.setAttribute('id', pref.name);
 						input.setAttribute('name', pref.name);
-						if (Twinkle.getPref(pref.name) === true) {
+						if (gotPref === true) {
 							input.setAttribute('checked', 'checked');
 						}
 						label.appendChild(input);
@@ -1080,8 +1103,8 @@ Twinkle.config.init = function twinkleconfigInit() {
 							input.setAttribute('type', 'number');
 							input.setAttribute('step', '1');  // integers only
 						}
-						if (Twinkle.getPref(pref.name)) {
-							input.setAttribute('value', Twinkle.getPref(pref.name));
+						if (gotPref) {
+							input.setAttribute('value', gotPref);
 						}
 						cell.appendChild(input);
 						break;
@@ -1106,7 +1129,12 @@ Twinkle.config.init = function twinkleconfigInit() {
 						$.each(pref.enumValues, function(enumvalue, enumdisplay) {
 							var option = document.createElement('option');
 							option.setAttribute('value', enumvalue);
-							if (Twinkle.getPref(pref.name) === enumvalue) {
+							if ((gotPref === enumvalue) ||
+								// Hack to convert old boolean watchlist prefs
+								// to corresponding enums (added in v2.1)
+								(typeof gotPref === 'boolean' &&
+								((gotPref && enumvalue === 'yes') ||
+								(!gotPref && enumvalue === 'no')))) {
 								option.setAttribute('selected', 'selected');
 							}
 							option.appendChild(document.createTextNode(enumdisplay));
@@ -1132,12 +1160,12 @@ Twinkle.config.init = function twinkleconfigInit() {
 							check.setAttribute('type', 'checkbox');
 							check.setAttribute('id', pref.name + '_' + itemkey);
 							check.setAttribute('name', pref.name + '_' + itemkey);
-							if (Twinkle.getPref(pref.name) && Twinkle.getPref(pref.name).indexOf(itemkey) !== -1) {
+							if (gotPref && gotPref.indexOf(itemkey) !== -1) {
 								check.setAttribute('checked', 'checked');
 							}
 							// cater for legacy integer array values for unlinkNamespaces (this can be removed a few years down the track...)
 							if (pref.name === 'unlinkNamespaces') {
-								if (Twinkle.getPref(pref.name) && Twinkle.getPref(pref.name).indexOf(parseInt(itemkey, 10)) !== -1) {
+								if (gotPref && gotPref.indexOf(parseInt(itemkey, 10)) !== -1) {
 									check.setAttribute('checked', 'checked');
 								}
 							}
@@ -1177,7 +1205,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						button.addEventListener('click', Twinkle.config.listDialog.display, false);
 						// use jQuery data on the button to store the current config value
 						$(button).data({
-							value: Twinkle.getPref(pref.name),
+							value: gotPref,
 							pref: pref
 						});
 						button.appendChild(document.createTextNode('Edit items'));
@@ -1560,7 +1588,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 
 	// this is the object which gets serialized into JSON; only
 	// preferences that this script knows about are kept
-	var newConfig = {optionsVersion: 2};
+	var newConfig = {optionsVersion: 2.1};
 
 	// a comparison function is needed later on
 	// it is just enough for our purposes (i.e. comparing strings, numbers, booleans,

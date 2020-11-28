@@ -870,17 +870,7 @@ Twinkle.arv.processSock = function(params) {
 	spiPage.setEditSummary('Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].');
 	spiPage.setChangeTags(Twinkle.changeTags);
 	spiPage.setAppendText(text);
-	switch (Twinkle.getPref('spiWatchReport')) {
-		case 'yes':
-			spiPage.setWatchlist(true);
-			break;
-		case 'no':
-			spiPage.setWatchlistFromPreferences(false);
-			break;
-		default:
-			spiPage.setWatchlistFromPreferences(true);
-			break;
-	}
+	spiPage.setWatchlist(Twinkle.getPref('spiWatchReport'));
 	spiPage.append();
 
 	Morebits.wiki.removeCheckpoint();  // all page updates have been started

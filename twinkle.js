@@ -68,6 +68,7 @@ Twinkle.defaultConfig = {
 	rollbackInPlace: false,
 	markRevertedPagesAsMinor: [ 'vand' ],
 	watchRevertedPages: [ 'agf', 'norm', 'vand', 'torev' ],
+	watchRevertedExpiry: 'yes',
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
 	confirmOnMobileFluff: true,
@@ -79,7 +80,7 @@ Twinkle.defaultConfig = {
 	deliWatchUser: 'default',
 
 	// PROD
-	watchProdPages: true,
+	watchProdPages: 'yes',
 	markProdPagesAsPatrolled: false,
 	prodReasonDefault: '',
 	logProdPages: false,
@@ -88,6 +89,7 @@ Twinkle.defaultConfig = {
 	// CSD
 	speedySelectionStyle: 'buttonClick',
 	watchSpeedyPages: [ 'g3', 'g5', 'g10', 'g11', 'g12' ],
+	watchSpeedyExpiry: 'yes',
 	markSpeedyPagesAsPatrolled: false,
 
 	// these next two should probably be identical by default
@@ -111,7 +113,7 @@ Twinkle.defaultConfig = {
 	defaultWarningGroup: '1',
 	combinedSingletMenus: false,
 	showSharedIPNotice: true,
-	watchWarnings: true,
+	watchWarnings: 'yes',
 	oldSelect: false,
 	customWarningList: [],
 
@@ -140,8 +142,8 @@ Twinkle.defaultConfig = {
 	// Formerly defaultConfig.friendly:
 	// Tag
 	groupByDefault: true,
-	watchTaggedPages: true,
-	watchMergeDiscussions: true,
+	watchTaggedPages: 'yes',
+	watchMergeDiscussions: 'yes',
 	markTaggedPagesAsMinor: false,
 	markTaggedPagesAsPatrolled: true,
 	tagArticleSortOrder: 'cat',
@@ -151,7 +153,7 @@ Twinkle.defaultConfig = {
 
 	// Welcome
 	topWelcomes: false,
-	watchWelcomes: true,
+	watchWelcomes: 'yes',
 	welcomeHeading: 'Welcome',
 	insertHeadings: true,
 	insertUsername: true,
