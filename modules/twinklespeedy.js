@@ -305,12 +305,6 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 				}
 				break;
 
-			case 10:  // template
-			case 11:  // template talk
-				work_area.append({ type: 'header', label: 'Templates' });
-				work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.templateList, mode) });
-				break;
-
 			case 14:  // category
 			case 15:  // category talk
 				work_area.append({ type: 'header', label: 'Categories' });
@@ -809,21 +803,6 @@ Twinkle.speedy.userList = [
 	}
 ];
 
-Twinkle.speedy.templateList = [
-	{
-		label: 'T3: Duplicate templates or hardcoded instances',
-		value: 'duplicatetemplate',
-		tooltip: 'Templates that are either substantial duplications of another template or hardcoded instances of another template where the same functionality could be provided by that other template',
-		subgroup: {
-			name: 'duplicatetemplate_2',
-			type: 'input',
-			label: 'Template this is redundant to: ',
-			tooltip: 'The "Template:" prefix is not needed.'
-		},
-		hideWhenMultiple: true
-	}
-];
-
 Twinkle.speedy.portalList = [
 	{
 		label: 'P1: Portal that would be subject to speedy deletion if it were an article',
@@ -852,7 +831,7 @@ Twinkle.speedy.generalList = [
 	{
 		label: 'G2: Test page',
 		value: 'test',
-		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates (although criterion T3 may apply).',
+		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates.',
 		hideInNamespaces: [ 2 ] // Not applicable in userspace
 	},
 	{
@@ -1128,7 +1107,6 @@ Twinkle.speedy.normalizeHash = {
 	nouser: 'u2',
 	gallery: 'u3',
 	notwebhost: 'u5',
-	duplicatetemplate: 't3',
 	p1: 'p1',
 	emptyportal: 'p2'
 };
@@ -1603,8 +1581,6 @@ Twinkle.speedy.callbacks = {
 					input = '[[:User:' + input + ']]';
 				} else if (normalize === 'G12' && csdparam.lastIndexOf('url', 0) === 0 && input.lastIndexOf('http', 0) === 0) {
 					input = '[' + input + ' ' + input + ']';
-				} else if (normalize === 'T3' && csdparam === 'template') {
-					input = '[[:Template:' + input + ']]';
 				} else if (normalize === 'F8' && csdparam === 'filename') {
 					input = '[[commons:' + input + ']]';
 				} else if (normalize === 'P1' && csdparam === 'criterion') {
@@ -1906,19 +1882,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						return false;
 					}
 					currentParams.article = duptitle;
-				}
-				break;
-
-			case 'duplicatetemplate':  // T3
-				if (form['csd.duplicatetemplate_2']) {
-					var t3template = form['csd.duplicatetemplate_2'].value;
-					if (!t3template || !t3template.trim()) {
-						alert('CSD T3:  Please specify the name of a template duplicated by this one.');
-						parameters = null;
-						return false;
-					}
-					currentParams.ts = '~~~~~';
-					currentParams.template = t3template.replace(/^\s*Template:/i, '');
 				}
 				break;
 
