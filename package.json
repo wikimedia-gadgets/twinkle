@@ -7,12 +7,15 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"patchtest": "node dev/patch-test.js",
-	  	"server": "node dev/server.js",
+		"server": "node dev/server.js",
 		"sync": "perl dev/sync.pl",
-		"deployall": "perl dev/sync.pl --mode=deploy --all"
+		"deployall": "perl dev/sync.pl --mode=deploy --all",
+		"build": "npx tsc -p ./tsconfig.json"
 	},
 	"devDependencies": {
-		"eslint": "^7.13.0",
-		"eslint-plugin-es5": "^1.5.0"
+	  "@types/jquery": "^3.5.4",
+	  "eslint": "^7.13.0",
+	  "eslint-plugin-es5": "^1.5.0",
+	  "typescript": "^4.1.2"
 	}
 }
