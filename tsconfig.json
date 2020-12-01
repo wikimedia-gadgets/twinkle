@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+	/* Visit https://aka.ms/tsconfig.json to read more about this file */
+	"target": "ES5",
+	"module": "none",
+	"lib": [
+	  "dom",
+	  "es5",
+	  "es2015.collection" // Only Map and Set from this are supported in IE 11.
+	],
+	"sourceMap": true,
+	"moduleResolution": "node",
+	"typeRoots": [
+	  "./types"
+	],
+	"esModuleInterop": true,
+	"newLine": "lf"
+  }
+}

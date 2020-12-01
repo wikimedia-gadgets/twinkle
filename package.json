@@ -10,13 +10,16 @@
 		"server": "node scripts/server.js",
 		"sync": "perl scripts/sync.pl",
 		"test": "qunit --require ./tests/mocking/mb_repl.js ./tests/*",
-		"deployall": "perl scripts/sync.pl --mode=deploy --all"
+		"deployall": "perl scripts/sync.pl --mode=deploy --all",
+		"build": "npx tsc -p ./tsconfig.json"
 	},
 	"devDependencies": {
+		"@types/jquery": "^3.5.4",
 		"eslint": "^7.15.0",
 		"eslint-plugin-es5": "^1.5.0",
 		"jsdom": "^16.4.0",
 		"jquery": "^3.5.1",
-		"qunit": "^2.13.0"
+		"qunit": "^2.13.0",
+		"typescript": "^4.1.2"
 	}
 }
