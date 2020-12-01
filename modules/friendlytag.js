@@ -240,6 +240,26 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		}
 	});
 
+	// Hacky handling of form submission when quickfilter hides required fields that weren't filled in:
+	// Remove the form submit handler
+	/** @param {HTMLFormElement} form */
+	var submitForm = function(form) {
+		if (form.checkValidity()) {
+			Twinkle.tag.callback.evaluate({target: form});
+		} else {
+			$(form.quickfilter).val('');
+			// XXX: $(form.quickfilter).keyup() doesn't seem to work, so manually doing what the
+			// keyup handler should do
+			$allCheckboxDivs.show();
+			$allHeaders.show();
+			$(form).find('input[type=submit]').click(); // triggers browser validation which should fail
+		}
+	};
+	result.removeEventListener('submit', Twinkle.tag.callback.evaluate);
+	$('.tw-tag-submit').off('click').on('click', function() {
+		submitForm(result);
+	});
+
 	if (Twinkle.tag.mode === 'article') {
 
 		Twinkle.tag.alreadyPresentTags = [];
