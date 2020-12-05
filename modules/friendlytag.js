@@ -170,7 +170,15 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 			$.each(Twinkle.tag.fileList, function(groupName, group) {
 				form.append({ type: 'header', label: groupName });
-				form.append({ type: 'checkbox', name: 'tags', list: group });
+				form.append({ type: 'checkbox', name: 'tags',
+					list: group.map(function(item) {
+						return {
+							label: '{{' + item.tag + '}}' + (item.description ? ': ' + item.description : ''),
+							value: item.tag,
+							subgroup: item.subgroup
+						};
+					})
+				});
 			});
 
 			if (Twinkle.getPref('customFileTagList').length) {
@@ -1054,15 +1062,13 @@ Twinkle.tag.redirectList = {
 
 Twinkle.tag.fileList = {
 	'License and sourcing problem tags': [
-		{ label: '{{Better source requested}}: source info consists of bare image URL/generic base URL only', value: 'Better source requested' },
-		{ label: '{{Non-free reduce}}: non-low-resolution fair use image (or too-long audio clip, etc)', value: 'Non-free reduce' },
-		{ label: '{{Orphaned non-free revisions}}: fair use media with old revisions that need to be deleted', value: 'Orphaned non-free revisions' }
+		{ tag: 'Better source requested', description: 'source info consists of bare image URL/generic base URL only' },
+		{ tag: 'Non-free reduce', description: 'non-low-resolution fair use image (or too-long audio clip, etc)' },
+		{ tag: 'Orphaned non-free revisions', description: 'fair use media with old revisions that need to be deleted' }
 	],
 	'Wikimedia Commons-related tags': [
-		{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
-		{
-			label: '{{Do not move to Commons}}: file not suitable for moving to Commons',
-			value: 'Do not move to Commons',
+		{ tag: 'Copy to Commons', description: 'free media that should be copied to Commons' },
+		{ tag: 'Do not move to Commons', description: 'file not suitable for moving to Commons',
 			subgroup: [
 				{
 					type: 'input',
@@ -1079,9 +1085,7 @@ Twinkle.tag.fileList = {
 				}
 			]
 		},
-		{
-			label: '{{Keep local}}: request to keep local copy of a Commons file',
-			value: 'Keep local',
+		{ tag: 'Keep local', description: 'request to keep local copy of a Commons file',
 			subgroup: {
 				type: 'input',
 				name: 'keeplocalName',
@@ -1089,9 +1093,7 @@ Twinkle.tag.fileList = {
 				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
 			}
 		},
-		{
-			label: '{{Now Commons}}: file has been copied to Commons',
-			value: 'Now Commons',
+		{ tag: 'Now Commons', description: 'file has been copied to Commons',
 			subgroup: {
 				type: 'input',
 				name: 'nowcommonsName',
@@ -1101,15 +1103,15 @@ Twinkle.tag.fileList = {
 		}
 	],
 	'Cleanup tags': [
-		{ label: '{{Artifacts}}: PNG contains residual compression artifacts', value: 'Artifacts' },
-		{ label: '{{Bad font}}: SVG uses fonts not available on the thumbnail server', value: 'Bad font' },
-		{ label: '{{Bad format}}: PDF/DOC/... file should be converted to a more useful format', value: 'Bad format' },
-		{ label: '{{Bad GIF}}: GIF that should be PNG, JPEG, or SVG', value: 'Bad GIF' },
-		{ label: '{{Bad JPEG}}: JPEG that should be PNG or SVG', value: 'Bad JPEG' },
-		{ label: '{{Bad SVG}}: SVG containing raster grahpics', value: 'Bad SVG' },
-		{ label: '{{Bad trace}}: auto-traced SVG requiring cleanup', value: 'Bad trace' },
+		{ tag: 'Artifacts', description: 'PNG contains residual compression artifacts' },
+		{ tag: 'Bad font', description: 'SVG uses fonts not available on the thumbnail server' },
+		{ tag: 'Bad format', description: 'PDF/DOC/... file should be converted to a more useful format' },
+		{ tag: 'Bad GIF', description: 'GIF that should be PNG, JPEG, or SVG' },
+		{ tag: 'Bad JPEG', description: 'JPEG that should be PNG or SVG' },
+		{ tag: 'Bad SVG', description: 'SVG containing raster grahpics' },
+		{ tag: 'Bad trace', description: 'auto-traced SVG requiring cleanup' },
 		{
-			label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image',
+			tag: 'Cleanup image', description: 'general cleanup',
 			subgroup: {
 				type: 'input',
 				name: 'cleanupimageReason',
@@ -1118,15 +1120,13 @@ Twinkle.tag.fileList = {
 				required: true
 			}
 		},
-		{ label: '{{ClearType}}: image (not screenshot) with ClearType anti-aliasing', value: 'ClearType' },
-		{ label: '{{Imagewatermark}}: image contains visible or invisible watermarking', value: 'Imagewatermark' },
-		{ label: '{{NoCoins}}: image using coins to indicate scale', value: 'NoCoins' },
-		{ label: '{{Overcompressed JPEG}}: JPEG with high levels of artifacts', value: 'Overcompressed JPEG' },
-		{ label: '{{Opaque}}: opaque background should be transparent', value: 'Opaque' },
-		{ label: '{{Remove border}}: unneeded border, white space, etc.', value: 'Remove border' },
-		{
-			label: '{{Rename media}}: file should be renamed according to the criteria at [[WP:FMV]]',
-			value: 'Rename media',
+		{ tag: 'ClearType', description: 'image (not screenshot) with ClearType anti-aliasing' },
+		{ tag: 'Imagewatermark', description: 'image contains visible or invisible watermarking' },
+		{ tag: 'NoCoins', description: 'image using coins to indicate scale' },
+		{ tag: 'Overcompressed JPEG', description: 'JPEG with high levels of artifacts' },
+		{ tag: 'Opaque', description: 'opaque background should be transparent' },
+		{ tag: 'Remove border', description: 'unneeded border, white space, etc.' },
+		{ tag: 'Rename media', description: 'file should be renamed according to the criteria at [[WP:FMV]]',
 			subgroup: [
 				{
 					type: 'input',
@@ -1142,9 +1142,8 @@ Twinkle.tag.fileList = {
 				}
 			]
 		},
-		{ label: '{{Should be PNG}}: GIF or JPEG should be lossless', value: 'Should be PNG' },
-		{
-			label: '{{Should be SVG}}: PNG, GIF or JPEG should be vector graphics', value: 'Should be SVG',
+		{ tag: 'Should be PNG', description: 'GIF or JPEG should be lossless' },
+		{ tag: 'Should be SVG', description: 'PNG, GIF or JPEG should be vector graphics',
 			subgroup: {
 				name: 'svgCategory',
 				type: 'select',
@@ -1167,14 +1166,13 @@ Twinkle.tag.fileList = {
 				]
 			}
 		},
-		{ label: '{{Should be text}}: image should be represented as text, tables, or math markup', value: 'Should be text' }
+		{ tag: 'Should be text', description: 'image should be represented as text, tables, or math markup' }
 	],
 	'Image quality tags': [
-		{ label: '{{Image hoax}}: Image may be manipulated or constitute a hoax', value: 'Image hoax' },
-		{ label: '{{Image-blownout}}', value: 'Image-blownout' },
-		{ label: '{{Image-out-of-focus}}', value: 'Image-out-of-focus' },
-		{
-			label: '{{Image-Poor-Quality}}', value: 'Image-Poor-Quality',
+		{ tag: 'Image hoax', description: 'Image may be manipulated or constitute a hoax' },
+		{ tag: 'Image-blownout' },
+		{ tag: 'Image-out-of-focus' },
+		{ tag: 'Image-Poor-Quality',
 			subgroup: {
 				type: 'input',
 				name: 'ImagePoorQualityReason',
@@ -1183,9 +1181,8 @@ Twinkle.tag.fileList = {
 				required: true
 			}
 		},
-		{ label: '{{Image-underexposure}}', value: 'Image-underexposure' },
-		{
-			label: '{{Low quality chem}}: disputed chemical structures', value: 'Low quality chem',
+		{ tag: 'Image-underexposure' },
+		{ tag: 'Low quality chem', description: 'disputed chemical structures',
 			subgroup: {
 				type: 'input',
 				name: 'lowQualityChemReason',
@@ -1196,17 +1193,18 @@ Twinkle.tag.fileList = {
 		}
 	],
 	'Replacement tags': [
-		{ label: '{{Obsolete}}: improved version available', value: 'Obsolete' },
-		{ label: '{{PNG version available}}', value: 'PNG version available' },
-		{ label: '{{Vector version available}}', value: 'Vector version available' }
+		{ tag: 'Obsolete', description: 'improved version available' },
+		{ tag: 'PNG version available' },
+		{ tag: 'Vector version available' }
 	]
 };
+
 Twinkle.tag.fileList['Replacement tags'].forEach(function(el) {
 	el.subgroup = {
 		type: 'input',
 		label: 'Replacement file: ',
 		tooltip: 'Enter the name of the file which replaces this one (required)',
-		name: el.value.replace(/ /g, '_') + 'File',
+		name: el.tag.replace(/ /g, '_') + 'File',
 		required: true
 	};
 });
@@ -1648,7 +1646,7 @@ Twinkle.tag.callbacks = {
 					});
 					if (!found) {
 						Morebits.status.warn('Info', 'Failed to find the existing {{' +
-						$(page).attr('title').slice(9) + '}} on the page... skip repositioning');
+							$(page).attr('title').slice(9) + '}} on the page... skip repositioning');
 					}
 				});
 				addNewTagsToMI();
