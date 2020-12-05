@@ -9,7 +9,7 @@ QUnit.test('Construction', assert => {
 });
 var date = new Morebits.date(timestamp);
 QUnit.test('Formats', assert => {
-	assert.strictEqual(date.format('YYYY-MM-DDTHH:mm:ssZ', 'utc'), '2020-11-07T16:26:00Z', 'ISOish');
+	assert.strictEqual(new Morebits.date(now).format('YYYY-MM-DDTHH:mm:ss.SSSZ', 'utc'), new Date(now).toISOString(), 'ISO format');
 	assert.strictEqual(date.format('dddd D MMMM YY h:mA', 'utc'), 'Saturday 7 November 20 4:26PM', 'Some weirder stuff');
 	assert.strictEqual(date.format('MMt[h month], [d]a[y] D, h [o\'clock] A', 'utc'), '11th month, day 7, 4 o\'clock PM', 'Format escapes');
 });

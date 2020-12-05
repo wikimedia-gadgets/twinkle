@@ -1685,6 +1685,7 @@ Morebits.date.prototype = {
 	 * | mm | Minutes (padded) |
 	 * | s | Seconds |
 	 * | ss | Seconds (padded) |
+	 * | SSS | Milliseconds fragment, padded |
 	 * | d | Day number of the week (Sun=0) |
 	 * | ddd | Abbreviated day name |
 	 * | dddd | Full day name |
@@ -1723,16 +1724,18 @@ Morebits.date.prototype = {
 			return udate.toISOString();
 		}
 
-		var pad = function(num) {
-			return num < 10 ? '0' + num : num;
+		var pad = function(num, len) {
+			len = len || 2; // Up to length of 00 + 1
+			return ('00' + num).toString().slice(0 - len);
 		};
-		var h24 = udate.getHours(), m = udate.getMinutes(), s = udate.getSeconds();
+		var h24 = udate.getHours(), m = udate.getMinutes(), s = udate.getSeconds(), ms = udate.getMilliseconds();
 		var D = udate.getDate(), M = udate.getMonth() + 1, Y = udate.getFullYear();
 		var h12 = h24 % 12 || 12, amOrPm = h24 >= 12 ? 'PM' : 'AM';
 		var replacementMap = {
 			'HH': pad(h24), 'H': h24, 'hh': pad(h12), 'h': h12, 'A': amOrPm,
 			'mm': pad(m), 'm': m,
 			'ss': pad(s), 's': s,
+			'SSS': pad(ms, 3),
 			'dddd': udate.getDayName(), 'ddd': udate.getDayNameAbbrev(), 'd': udate.getDay(),
 			'DD': pad(D), 'D': D,
 			'MMMM': udate.getMonthName(), 'MMM': udate.getMonthNameAbbrev(), 'MM': pad(M), 'M': M,
@@ -1746,7 +1749,7 @@ Morebits.date.prototype = {
 			 * d(d{2,3})? matches exactly 1, 3 or 4 occurrences of 'd' ('dd' is treated as a double match of 'd')
 			 * Y{1,2}(Y{2})? matches exactly 1, 2 or 4 occurrences of 'Y'
 			 */
-			/H{1,2}|h{1,2}|m{1,2}|s{1,2}|d(d{2,3})?|D{1,2}|M{1,4}|Y{1,2}(Y{2})?|A/g,
+			/H{1,2}|h{1,2}|m{1,2}|s{1,2}|SSS|d(d{2,3})?|D{1,2}|M{1,4}|Y{1,2}(Y{2})?|A/g,
 			function(match) {
 				return replacementMap[match];
 			}
