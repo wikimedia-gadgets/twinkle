@@ -31,6 +31,18 @@ QUnit.test('parseTemplate', assert => {
 	// Try a variety of whitespace options
 	var whitespace = '{{' + involved.name + ' |concern = ' + involved.parameters.concern + ' | timestamp =' + involved.parameters.timestamp + '| nom= ' + involved.parameters.nom + '|help = ' + involved.parameters.help + ' }}';
 	assert.deepEqual(Morebits.wikitext.parseTemplate(whitespace), involved, 'Involved parameters with whitespace');
+
+	var unnamed = {
+		name: 'db-meta',
+		parameters: {
+			criterion: 'G13',
+			1: ' reason ', // Note the surrounding whitespace, unnamed parameters can retain these
+			middle: '',
+			2: 'extra'
+		}
+	};
+	var unnamedTemplate = '{{' + unnamed.name + '|criterion=' + unnamed.parameters.criterion + '||' + unnamed.parameters['1'] + '| middle =|2= ' + unnamed.parameters['2'] + '|}}';
+	assert.deepEqual(Morebits.wikitext.parseTemplate(unnamedTemplate), unnamed, 'Unnamed and empty parameters');
 });
 QUnit.test('Morebits.wikitext.page', assert => {
 	var text = '{{short description}}{{about}}[[File:Fee.svg]]O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!';

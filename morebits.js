@@ -4244,9 +4244,10 @@ Morebits.wikitext = {};
 Morebits.wikitext.parseTemplate = function(text, start) {
 	start = start || 0;
 
-	var count = -1;
-	var level = -1;
-	var equals = -1;
+	var count = -1;  // Number of parameters found
+	var unnamed = 0; // Keep track of what number an unnamed parameter should receive
+	var level = -1;  // How many levels deep of template code we're in, 0-based
+	var equals = -1; // After finding "=" before a parameter, the index; otherwise, -1
 	var current = '';
 	var result = {
 		name: '',
@@ -4269,36 +4270,47 @@ Morebits.wikitext.parseTemplate = function(text, start) {
 			continue;
 		}
 		var test2 = text.substr(i, 2);
+		// Entering a template (or link)
 		if (test2 === '{{' || test2 === '[[') {
 			current += test2;
 			++i;
 			++level;
 			continue;
 		}
+		// Leaving a link
 		if (test2 === ']]') {
 			current += ']]';
 			++i;
 			--level;
 			continue;
 		}
+		// Leaving a template
 		if (test2 === '}}') {
 			current += test2;
 			++i;
 			--level;
 
+			// Find the final parameter if this is the end of the template
 			if (level <= 0) {
+				// Nothing found yet, this must be the template name
 				if (count === -1) {
 					result.name = current.substring(2).trim();
 					++count;
 				} else {
+					// In a parameter
 					if (equals !== -1) {
+						// We found an equals, so save the parameter as key: value
 						key = current.substring(0, equals).trim();
 						value = current.substring(equals + 1, current.length - 2).trim();
 						result.parameters[key] = value;
 						equals = -1;
 					} else {
-						result.parameters[count] = current;
-						++count;
+						// No equals, so it must be unnamed; no trim since whitespace allowed
+						var param = current.substring(equals + 1, current.length - 2);
+						if (param) {
+							result.parameters[++unnamed] = param;
+							++count;
+						}
 					}
 				}
 				break;
@@ -4307,25 +4319,34 @@ Morebits.wikitext.parseTemplate = function(text, start) {
 		}
 
 		if (text.charAt(i) === '|' && level <= 0) {
+			// Pipe found, so parameter coming up!
 			if (count === -1) {
+				// Nothing found yet, this must be the template name
 				result.name = current.substring(2).trim();
 				++count;
 			} else {
+				// In a parameter
 				if (equals !== -1) {
+					// We found an equals, so save the parameter as key: value
 					key = current.substring(0, equals).trim();
 					value = current.substring(equals + 1).trim();
 					result.parameters[key] = value;
 					equals = -1;
 				} else {
-					result.parameters[count] = current;
-					++count;
+					// No equals, so it must be unnamed; no trim since whitespace allowed
+					if (current) {
+						result.parameters[++unnamed] = current;
+						++count;
+					}
 				}
 			}
 			current = '';
 		} else if (equals === -1 && text.charAt(i) === '=' && level <= 0) {
+			// Equals found
 			equals = current.length;
 			current += text.charAt(i);
 		} else {
+			// Nothing to do, advance the position
 			current += text.charAt(i);
 		}
 	}
