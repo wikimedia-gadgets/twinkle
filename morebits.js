@@ -4293,7 +4293,7 @@ Morebits.wikitext.parseTemplate = function(text, start) {
 				} else {
 					if (equals !== -1) {
 						key = current.substring(0, equals).trim();
-						value = current.substring(equals).trim();
+						value = current.substring(equals + 1, current.length - 2).trim();
 						result.parameters[key] = value;
 						equals = -1;
 					} else {

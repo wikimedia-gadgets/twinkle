@@ -1,6 +1,5 @@
 QUnit.module('Morebits.wikitext');
-// Skip until fixing a bug in parseTemplate (#1214)
-QUnit.skip('parseTemplate', assert => {
+QUnit.test('parseTemplate', assert => {
 	// Function to help build a template from a sample object
 	var makeTemplate = function(data) {
 		var template = '{{' + data.name;
@@ -10,16 +9,16 @@ QUnit.skip('parseTemplate', assert => {
 		return template + '}}';
 	};
 
-	var simpleTemplate = {
+	var simple = {
 		name: 'prod',
 		parameters: {
 			reason: 'because',
 			morereason: 'I said so',
 			timestamp: '42'
 		}};
-	assert.deepEqual(Morebits.wikitext.parseTemplate('Template: ' + makeTemplate(simpleTemplate) + ' in text', 10), simpleTemplate, 'Basic parameter test');
+	assert.deepEqual(Morebits.wikitext.parseTemplate('Template: ' + makeTemplate(simple) + ' in text', 10), simple, 'Basic parameter test');
 
-	var involvedTemplate = {
+	var involved = {
 		name: 'Proposed deletion/dated',
 		parameters: {
 			concern: 'Text (paren) then [[piped|link]] and [[WP:WP/LINK]] {{{plural|with|a|template}}} then question?',
@@ -27,7 +26,11 @@ QUnit.skip('parseTemplate', assert => {
 			nom: 'Jimbo Wales',
 			help: 'off'
 		}};
-	assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(involvedTemplate)), involvedTemplate, 'Involved parameter test');
+	assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(involved)), involved, 'Involved parameter test');
+
+	// Try a variety of whitespace options
+	var whitespace = '{{' + involved.name + ' |concern = ' + involved.parameters.concern + ' | timestamp =' + involved.parameters.timestamp + '| nom= ' + involved.parameters.nom + '|help = ' + involved.parameters.help + ' }}';
+	assert.deepEqual(Morebits.wikitext.parseTemplate(whitespace), involved, 'Involved parameters with whitespace');
 });
 QUnit.test('Morebits.wikitext.page', assert => {
 	var text = '{{short description}}{{about}}[[File:Fee.svg]]O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!';
