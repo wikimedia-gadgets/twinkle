@@ -33,11 +33,17 @@ QUnit.test('safeReplace', assert => {
 	assert.strictEqual(Morebits.string.safeReplace(string, '$SECTIONAL', 'thread$'), string, 'No replacement');
 	assert.strictEqual(Morebits.string.safeReplace(string, '$SECTION', 'thread$'), '{{subst:board|thread=thread$|but=$NOTTHIS}} ~~~~', 'Replacement');
 });
-
-// QUnit.test('splitWeightedByKeys', assert => {
-// 	assert.strictEqual(Morebits.string.splitWeightedByKeys(), '', '');
-// });
-
+QUnit.test('splitWeightedByKeys', assert => {
+	var split = ['{{thisis|one|template}}', '{{another|one}}', '[[heresalink]]', '[[thislink|ispiped]]'];
+	var text = split.join(' also ');
+	assert.deepEqual(Morebits.string.splitWeightedByKeys(text, '{{', '}}'), split.slice(0, 2), 'Templates');
+	assert.deepEqual(Morebits.string.splitWeightedByKeys(text, '[[', ']]'), split.slice(2), 'Links');
+	assert.deepEqual(Morebits.string.splitWeightedByKeys(text, '{{', '}}', split[0]), [split[1]], 'Skiplist, non-array');
+	assert.deepEqual(Morebits.string.splitWeightedByKeys(text, '[[', ']]', split[2]), [split[3]], 'Skiplist, array');
+	assert.deepEqual(Morebits.string.splitWeightedByKeys(text, '[[', ']]', split.slice(2)), [], 'Skiplist, multi-array');
+	assert.throws(() => Morebits.string.splitWeightedByKeys (text, '{{', '}'), 'throws: not same length');
+	assert.throws(() => Morebits.string.splitWeightedByKeys(text, '[[', ']]', {}), 'throws: skiplist not string or array');
+});
 QUnit.test('toLowerCaseFirstChar', assert => {
 	assert.strictEqual(Morebits.string.toLowerCaseFirstChar('River tam'), 'river tam', 'Lower first');
 });

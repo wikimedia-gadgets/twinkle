@@ -1163,8 +1163,9 @@ Morebits.string = {
 	},
 
 	/**
-	 * Gives an array of substrings of `str` starting with `start` and
-	 * ending with `end`, which is not in `skiplist`.
+	 * Gives an array of substrings of `str` - starting with `start` and
+	 * ending with `end` - which is not in `skiplist`.  Intended for use
+	 * on wikitext with templates or links.
 	 *
 	 * @param {string} str
 	 * @param {string} start
@@ -1172,6 +1173,7 @@ Morebits.string = {
 	 * @param {(string[]|string)} [skiplist]
 	 * @returns {string[]}
 	 * @throws If the `start` and `end` strings aren't of the same length.
+	 * @throws If `skiplist` isn't an array or string
 	 */
 	splitWeightedByKeys: function(str, start, end, skiplist) {
 		if (start.length !== end.length) {
