@@ -7,16 +7,12 @@ type namespaceId = number
 
 declare namespace mw {
 
-
 	class Api {
 		constructor(options?: any)
 		abort(): void
 		get(parameters: any, ajaxOptions?: JQuery.AjaxSettings): JQuery.Promise<any>
 		post(parameters: any, ajaxOptions?: JQuery.AjaxSettings): JQuery.Promise<any>
 
-		/**
-		 * @private
-		 */
 		preprocessParameters( parameters: any, useUS: boolean ): void
 
 		// index.js
@@ -142,15 +138,28 @@ declare namespace mw {
 		function escapeRegExp(str: string): string;
 	}
 
-	namespace config {
-
-		// get() and set() are actually on mw.Map() but I guess all that isn't necessary to document
-		// here as we'd never use them
-		function get(configKey: string | string[], fallback?: any): any
-		function set(configKey: string, configValue: any): boolean
-		function exists(configKey: string): boolean
+	namespace Map {
+		function get(selection: string | string[], fallback?: any): any
+		function set(selection: string | Record<string, any>, value?: any): boolean
+		function exists(selection: string): boolean
 	}
 
+	namespace user {
+		const options: typeof mw.Map
+		const tokens: typeof mw.Map
+		function generateRandomSessionId(): string
+		function getPageviewToken(): string
+		function getId(): number
+		function getName(): string | null
+		function getRegistration(): boolean | null | Date
+		function isAnon(): boolean
+		function sessionId(): string
+		function id(): string
+		function getGroups(callback?: Function): JQuery.Promise<string[]>
+		function getRights(callback?: Function): JQuery.Promise<string[]>
+	}
+
+	const config: typeof mw.Map
 
 	// Not everything is included
 	namespace loader {
@@ -201,6 +210,11 @@ declare namespace mw {
 	 */
 	function notify(message: string | JQuery | HTMLElement | HTMLElement[],
 		options?: { tag?: string, type?: string, title?: string }): JQuery.Promise<any>;
+
+	// Incomplete
+	namespace language {
+		function listToText(list: string[]): string
+	}
 
 }
 

@@ -22,18 +22,18 @@ declare namespace Morebits {
 	class quickForm {
 		constructor(event: ((e: FormSubmitEvent) => void), eventType?: string)
 		render(): HTMLFormElement
-		append(quickFormElement): quickFormElement
+		append(data: quickFormElementData): quickFormElement
 		static getInputData(form: HTMLFormElement): Record<string, string>
 		static getElements(form: HTMLFormElement, fieldName: string): HTMLElement[]
 		static getCheckboxOrRadio(elementArray: HTMLInputElement[], value: string): HTMLInputElement
-		static getElementContainer()
-		static getElementLabelObject()
-		static getElementLabel()
-		static setElementLabel()
-		static overrideElementLabel()
-		static resetElementLabel()
-		static setElementVisibility()
-		static setElementTooltipVisibility()
+		static getElementContainer(element: HTMLElement): HTMLElement
+		static getElementLabelObject(element: HTMLElement): HTMLElement
+		static getElementLabel(element: HTMLElement): string
+		static setElementLabel(element: HTMLElement, label: string): boolean
+		static overrideElementLabel(element: HTMLElement, temporaryLabelText: string): boolean
+		static resetElementLabel(element: HTMLElement): boolean | null
+		static setElementVisibility(element: HTMLElement | JQuery | string, visibility?: boolean): void
+		static setElementTooltipVisibility(element: HTMLElement | JQuery | string, visibility?: boolean): void
 		static element: typeof quickFormElement
 	}
 
@@ -41,7 +41,7 @@ declare namespace Morebits {
 		function toUpperCaseFirstChar(str: string): string
 		function toLowerCaseFirstChar(str: string): string
 		function splitWeightedByKeys(str: string, start: string, end: string, skiplist: string | string[]): string[]
-		function formatReasonText(str: string): string
+		function formatReasonText(str: string, addSig?: boolean): string
 		function formatReasonForLog(str: string): string
 		function safeReplace(string: string, pattern: string | RegExp, replacement: string): string
 		function isInfinity(expiry: string): boolean
@@ -87,7 +87,7 @@ declare namespace Morebits {
 		let actionCompleted: {
 			(): void
 			event: (() => void)
-			timeout: number
+			timeOut: number
 			redirect: string
 			notice: string
 			followRedirect: boolean
@@ -113,7 +113,7 @@ declare namespace Morebits {
 		}
 
 		class page {
-			constructor(pageName: string, currentAction?: string)
+			constructor(pageName: string, status?: Morebits.status | string)
 			load(onSuccess: ((pageobj: page) => void)): void
 			save(onSuccess?: ((pageobj: page) => void), onFailure?: ((pageobj: page) => void)): void
 			append(onSuccess?: ((pageobj: page) => void), onFailure?: ((pageobj: page) => void)): void
@@ -121,23 +121,23 @@ declare namespace Morebits {
 			newSection(onSuccess?: ((pageobj: page) => void), onFailure?: ((pageobj: page) => void)): void
 			getPageName(): string
 			getPageText(): string
-			setPageText(pageText: string)
-			setAppendText(appendText: string)
-			setPrependText(prependText: string)
-			setNewSectionText(newSectionText: string)
-			setNewSectionTitle(newSectionTitle: string)
+			setPageText(pageText: string): void
+			setAppendText(appendText: string): void
+			setPrependText(prependText: string): void
+			setNewSectionText(newSectionText: string): void
+			setNewSectionTitle(newSectionTitle: string): void
 			setEditSummary(summary: string): void
 			setChangeTags(tags: string | string[]): void
 			setCreateOption(createOption: string): void
 			setMinorEdit(minorEdit: string): void
 			setBotEdit(botEdit: boolean): void
-			setPageSection(pageSection: string): void
+			setPageSection(pageSection: number): void
 			setMaxConflictRetries(maxConflictRetries: number): void
 			setMaxRetries(maxRetries: number): void
 			setWatchlist(watchlistOption: string): void
 			setWatchlistExpiry(watchlistExpiry: string): void
 			setWatchlistFromPreferences(watchlistOption: string): void
-			setFollowRedirect(followRedirect, followCrossNsRedirect: string): void
+			setFollowRedirect(followRedirect: boolean, followCrossNsRedirect?: boolean): void
 			setLookupNonRedirectCreator(flag: boolean): void
 			setMoveDestination(destination: string): void
 			setMoveTalkPage(flag: boolean): void
@@ -158,6 +158,7 @@ declare namespace Morebits {
 			setFlaggedRevs(level: string, expiry: string)
 			exists(): boolean
 			getPageID(): string
+			getContentModel(): string
 			getLoadTime(): string
 			getCreator(): string
 			getCreationTimestamp(): string
@@ -176,7 +177,7 @@ declare namespace Morebits {
 		class preview {
 			constructor(previewbox: HTMLElement)
 			previewbox: HTMLElement
-			beginRender(wikitext: string, pageTitle: string, sectionTitle: string): void
+			beginRender(wikitext: string, pageTitle: string, sectionTitle?: string): void
 			closePreview(): void
 		}
 
@@ -186,11 +187,12 @@ declare namespace Morebits {
 		function parseTemplate(text: string, start: number): {name: string, parameters: {[key: string]: string}}
 		class page {
 			text: string
+			constructor(text: string)
 			removeLink(link_target: string)
 			commentOutImage(image: string, reason: string)
 			addToImageComment(image: string, data: string)
 			removeTemplate(template: string)
-			insertAfterTemplates(tag: string, regex: string | string[], flags: string, preRegex: string | string[])
+			insertAfterTemplates(tag: string, regex: string | string[], flags?: string, preRegex?: string | string[])
 			getText(): string
 		}
 	}
@@ -199,17 +201,19 @@ declare namespace Morebits {
 		initialText: string
 		headerLevel: number
 		changeTags: string | string[]
+		constructor(logPageName: string)
 		log(logText: string, summaryText: string): void
 	}
 
 
 	class status {
+		constructor(text: string, stat?: string, type?: 'status' | 'info' | 'warn' | 'error')
 		textRaw: string
 		text: DocumentFragment
 		type: 'status' | 'info' | 'warn' | 'error'
 		static init(root: HTMLElement): void
 		static root: HTMLElement
-		onError(handler: ((arg: any) => any)): void // XXX: check handler types
+		static onError(handler: (() => any)): void
 		link(): void
 		unlink(): void
 		codify(obj: (string | HTMLElement)[])
@@ -219,7 +223,7 @@ declare namespace Morebits {
 		status(status: string)
 		info(status: string)
 		warn(status: string)
-		error(status: string)
+		error(status: string | (string | HTMLElement)[])
 		static info(text: string, status: string): void
 		static warn(text: string, status: string): void
 		static error(text: string, status: string): void
@@ -235,7 +239,6 @@ declare namespace Morebits {
 		setPageList(pageList: T[]): void
 
 		// Overloaded definition
-		setOption(optionName: any, optionValue: any)
 		setOption(optionName: 'chunkSize', optionValue: number)
 		setOption(optionName: 'preserveIndividualStatusLines', optionValue: boolean)
 
@@ -245,6 +248,7 @@ declare namespace Morebits {
 	}
 
 	class taskManager {
+		constructor(context: any)
 		taskDependencyMap: Map<Function, Function[]>
 		deferreds: Map<Function, JQuery.Deferred<any>[]>
 		allDeferreds: JQuery.Deferred<any>[]
@@ -279,9 +283,38 @@ declare namespace Morebits {
 declare class quickFormElement {
 	constructor(data: any)
 	static id: number
-	append(data: quickFormElement): quickFormElement
+	append(data: quickFormElementData): quickFormElement
 	render(): HTMLElement
-	compute(data: any): any
+	private compute(data: quickFormElementData): [HTMLElement, HTMLElement]
 	static generateTooltip(node: HTMLElement, data: any): void
 }
 
+interface quickFormElementData {
+	type?: 'input' | 'textarea' | 'submit' | 'checkbox' | 'radio' | 'select' |
+		'option' | 'optgroup' | 'field' | 'dyninput' | 'hidden' | 'header' |
+		'div' | 'button' | 'fragment'
+	name?: string
+	id?: string
+	className?: string
+	style?: string
+	tooltip?: string
+	extra?: any
+	adminonly?: boolean
+	label?: string | HTMLElement | (string | HTMLElement)[] // non-string cases applicable for type=div only
+	value?: string
+	size?: string // for input
+	multiple?: boolean // for select
+	checked?: boolean // for radio, checkbox
+	selected?: boolean // for select
+	disabled?: boolean
+	event?: ((event: QuickFormEvent) => void)
+	list?: quickFormElementData[]
+	subgroup?: quickFormElementData | quickFormElementData[]
+	required?: boolean // for input, textarea
+	readonly?: boolean // for input, textarea
+	maxlength?: number // for input, textarea
+}
+
+interface QuickFormEvent extends Event {
+	target: HTMLInputElement
+}
