@@ -1216,8 +1216,9 @@ Morebits.string = {
 	},
 
 	/**
-	 * Formats freeform "reason" (from a textarea) for deletion/other templates
-	 * that are going to be substituted, (e.g. PROD, XFD, RPP).
+	 * Formats freeform "reason" (from a textarea) for deletion/other
+	 * templates that are going to be substituted, (e.g. PROD, XFD, RPP).
+	 * Handles `|` outside a nowiki tag.
 	 *
 	 * @param {string} str
 	 * @returns {string}
@@ -1231,7 +1232,9 @@ Morebits.string = {
 	},
 
 	/**
-	 * Formats a "reason" (from a textarea) for inclusion in a userspace log.
+	 * Formats a "reason" (from a textarea) for inclusion in a userspace
+	 * log.  Replaces newlines with {{Pb}}, and adds an extra `#` before
+	 * list items for proper formatting.
 	 *
 	 * @param {string} str
 	 * @returns {string}
