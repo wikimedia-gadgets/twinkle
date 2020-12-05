@@ -1960,6 +1960,16 @@ Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onE
 	this.currentAction = currentAction;
 	this.query = query;
 	this.query.assert = 'user';
+	// Enforce newer error formats, preferring html
+	if (!query.errorformat || ['wikitext', 'plaintext'].indexOf(query.errorformat) === -1) {
+		this.query.errorformat = 'html';
+	}
+	// Explicitly use the wiki's content language to minimize confusion,
+	// see #1179 for discussion
+	this.query.uselang = 'content';
+	this.query.errorlang = 'uselang';
+	this.query.errorsuselocal = 1;
+
 	this.onSuccess = onSuccess;
 	this.onError = onError;
 	if (statusElement) {
@@ -2048,12 +2058,18 @@ Morebits.wiki.api.prototype = {
 			function onAPIsuccess(response, statusText) {
 				this.statusText = statusText;
 				this.response = this.responseXML = response;
+				// Limit to first error
 				if (this.query.format === 'json') {
-					this.errorCode = response.error && response.error.code;
-					this.errorText = response.error && response.error.info;
+					this.errorCode = response.errors && response.errors[0].code;
+					if (this.query.errorformat === 'html') {
+						this.errorText = response.errors && response.errors[0].html;
+					} else if (this.query.errorformat === 'wikitext' || this.query.errorformat === 'plaintext') {
+						this.errorText = response.errors && response.errors[0].text;
+					}
 				} else {
-					this.errorCode = $(response).find('error').attr('code');
-					this.errorText = $(response).find('error').attr('info');
+					this.errorCode = $(response).find('errors error').eq(0).attr('code');
+					// Sufficient for html, wikitext, or plaintext errorformats
+					this.errorText = $(response).find('errors error').eq(0).text();
 				}
 
 				if (typeof this.errorCode === 'string') {
@@ -4645,6 +4661,7 @@ Morebits.status.onError = function(handler) {
 
 Morebits.status.prototype = {
 	stat: null,
+	statRaw: null,
 	text: null,
 	textRaw: null,
 	type: 'status',
@@ -4669,7 +4686,9 @@ Morebits.status.prototype = {
 	},
 
 	/**
-	 * Create a document fragment with the status text.
+	 * Create a document fragment with the status text, parsing as HTML.
+	 * Runs upon construction for text (part before colon) and upon
+	 * render/update for status (part after colon).
 	 *
 	 * @param {(string|Element|Array)} obj
 	 * @returns {DocumentFragment}
@@ -4681,11 +4700,13 @@ Morebits.status.prototype = {
 		var result;
 		result = document.createDocumentFragment();
 		for (var i = 0; i < obj.length; ++i) {
-			if (typeof obj[i] === 'string') {
-				result.appendChild(document.createTextNode(obj[i]));
-			} else if (obj[i] instanceof Element) {
+			if (obj[i] instanceof Element) {
 				result.appendChild(obj[i]);
-			} // Else cosmic radiation made something shit
+			} else {
+				$.parseHTML(obj[i]).forEach(function(elem) {
+					result.appendChild(elem);
+				});
+			}
 		}
 		return result;
 
@@ -4699,6 +4720,7 @@ Morebits.status.prototype = {
 	 * (red), or 'error' (bold red). FIXME TODO possible options
 	 */
 	update: function(status, type) {
+		this.statRaw = status;
 		this.stat = this.codify(status);
 		if (type) {
 			this.type = type;
@@ -4712,7 +4734,7 @@ Morebits.status.prototype = {
 				}
 
 				// also log error messages in the browser console
-				console.error(this.textRaw + ': ' + status); // eslint-disable-line no-console
+				console.error(this.textRaw + ': ' + this.statRaw); // eslint-disable-line no-console
 			}
 		}
 		this.render();
