@@ -454,4 +454,3 @@ $.ajax({
 });
 window.Twinkle = Twinkle; // allow global access
 // </nowiki>
-//# sourceMappingURL=twinkle.js.map

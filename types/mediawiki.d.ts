@@ -202,5 +202,10 @@ declare namespace mw {
 	function notify(message: string | JQuery | HTMLElement | HTMLElement[],
 		options?: { tag?: string, type?: string, title?: string }): JQuery.Promise<any>;
 
+
+	namespace language {
+		function listToText(arr: string[]): string
+	}
+
 }
 

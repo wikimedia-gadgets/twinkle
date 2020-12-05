@@ -242,6 +242,7 @@ var RedirectMode = /** @class */ (function (_super) {
     function RedirectMode() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.name = 'redirect';
+        _this.tagList = redirectTagList;
         return _this;
     }
     RedirectMode.isActive = function () {
@@ -256,7 +257,7 @@ var RedirectMode = /** @class */ (function (_super) {
     RedirectMode.prototype.makeForm = function (Window) {
         var form = _super.prototype.makeForm.call(this, Window);
         var i = 1;
-        $.each(RedirectMode.redirectList, function (groupName, group) {
+        $.each(this.tagList, function (groupName, group) {
             form.append({
                 type: 'header',
                 id: 'tagHeader' + i,
@@ -299,14 +300,13 @@ var RedirectMode = /** @class */ (function (_super) {
         this.formAppendSubmitButton();
         return this.form;
     };
-    RedirectMode.prototype.captureFormData = function () {
-        _super.prototype.captureFormData.call(this);
-    };
+    // public captureFormData() {
+    // 	super.captureFormData();
+    // }
     RedirectMode.prototype.action = function () {
         var _this = this;
         _super.prototype.action.call(this);
         var wikipedia_page = new Morebits.wiki.page(Morebits.pageNameNorm, 'Tagging ' + this.name);
-        wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
         wikipedia_page.load(function (pageobj) {
             var pageText = pageobj.getPageText(), tagRe, tagText = '', tags = [], i;
             for (i = 0; i < _this.params.tags.length; i++) {
@@ -321,6 +321,7 @@ var RedirectMode = /** @class */ (function (_super) {
             }
             if (!tags.length) {
                 Morebits.status.warn('Info', 'No tags remaining to apply');
+                return;
             }
             tags.forEach(function (tagName) {
                 tagText += '\n{{' + tagName;
@@ -364,18 +365,245 @@ var RedirectMode = /** @class */ (function (_super) {
             pageobj.setCreateOption('nocreate');
             pageobj.save();
             if (_this.params.patrol) {
+                pageobj.setChangeTags(Twinkle.changeTags);
                 pageobj.triage();
             }
         });
     };
-    RedirectMode.redirectList = redirectTagList;
     return RedirectMode;
+}(TagMode));
+var FileMode = /** @class */ (function (_super) {
+    __extends(FileMode, _super);
+    function FileMode() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.name = 'file';
+        _this.tagList = fileTagList;
+        return _this;
+    }
+    FileMode.isActive = function () {
+        return mw.config.get('wgNamespaceNumber') === 6 &&
+            !document.getElementById('mw-sharedupload') &&
+            !!document.getElementById('mw-imagepage-section-filehistory');
+    };
+    FileMode.prototype.getMenuTooltip = function () {
+        return 'Add maintenance tags to file';
+    };
+    FileMode.prototype.getWindowTitle = function () {
+        return 'File maintenance tagging';
+    };
+    FileMode.prototype.makeForm = function (Window) {
+        var form = _super.prototype.makeForm.call(this, Window);
+        $.each(this.tagList, function (groupName, group) {
+            form.append({
+                type: 'header',
+                label: groupName
+            });
+            form.append({
+                type: 'checkbox',
+                name: 'tags',
+                list: group.map(function (item) { return ({
+                    label: '{{' + item.tag + '}}' + (item.description ? ': ' + item.description : ''),
+                    value: item.tag,
+                    subgroup: item.subgroup
+                }); })
+            });
+        });
+        if (Twinkle.getPref('customFileTagList').length) {
+            form.append({
+                type: 'header',
+                label: 'Custom tags'
+            });
+            form.append({
+                type: 'checkbox',
+                name: 'tags',
+                list: Twinkle.getPref('customFileTagList')
+            });
+        }
+        this.formAppendPatrolLink();
+        this.formAppendSubmitButton();
+        return this.form;
+    };
+    FileMode.prototype.validateInput = function () {
+        // Given an array of incompatible tags, check if we have two or more selected
+        var params = this.params, tags = this.params.tags;
+        var checkIncompatible = function (conflicts, extra) {
+            var count = conflicts.reduce(function (sum, tag) {
+                return sum += Number(tags.indexOf(tag) !== -1);
+            }, 0);
+            if (count > 1) {
+                var message = 'Please select only one of: {{' + conflicts.join('}}, {{') + '}}.';
+                message += extra ? ' ' + extra : '';
+                alert(message);
+                return true;
+            }
+        };
+        if (checkIncompatible(['Bad GIF', 'Bad JPEG', 'Bad SVG', 'Bad format']) ||
+            checkIncompatible(['Should be PNG', 'Should be SVG', 'Should be text']) ||
+            checkIncompatible(['Bad SVG', 'Vector version available']) ||
+            checkIncompatible(['Bad JPEG', 'Overcompressed JPEG']) ||
+            checkIncompatible(['PNG version available', 'Vector version available'])) {
+            return false;
+        }
+        // Get extension from either mime-type or title, if not present (e.g., SVGs)
+        var extension = ((extension = $('.mime-type').text()) && extension.split(/\//)[1]) ||
+            mw.Title.newFromText(Morebits.pageNameNorm).getExtension();
+        if (extension) {
+            var extensionUpper = extension.toUpperCase();
+            // What self-respecting file format has *two* extensions?!
+            if (extensionUpper === 'JPG') {
+                extension = 'JPEG';
+            }
+            // Check that selected templates make sense given the file's extension.
+            // Bad GIF|JPEG|SVG
+            var badIndex; // Keep track of where the offending template is so we can reference it below
+            if ((extensionUpper !== 'GIF' && ((badIndex = tags.indexOf('Bad GIF')) !== -1)) ||
+                (extensionUpper !== 'JPEG' && ((badIndex = tags.indexOf('Bad JPEG')) !== -1)) ||
+                (extensionUpper !== 'SVG' && ((badIndex = tags.indexOf('Bad SVG')) !== -1))) {
+                var suggestion = 'This appears to be a ' + extension + ' file, ';
+                if (['GIF', 'JPEG', 'SVG'].indexOf(extensionUpper) !== -1) {
+                    suggestion += 'please use {{Bad ' + extensionUpper + '}} instead.';
+                }
+                else {
+                    suggestion += 'so {{' + tags[badIndex] + '}} is inappropriate.';
+                }
+                alert(suggestion);
+                return false;
+            }
+            // Should be PNG|SVG
+            if ((tags.toString().indexOf('Should be ') !== -1) && (tags.indexOf('Should be ' + extensionUpper) !== -1)) {
+                alert('This is already a ' + extension + ' file, so {{Should be ' + extensionUpper + '}} is inappropriate.');
+                return false;
+            }
+            // Overcompressed JPEG
+            if (tags.indexOf('Overcompressed JPEG') !== -1 && extensionUpper !== 'JPEG') {
+                alert('This appears to be a ' + extension + ' file, so {{Overcompressed JPEG}} probably doesn\'t apply.');
+                return false;
+            }
+            // Bad trace and Bad font
+            if (extensionUpper !== 'SVG') {
+                if (tags.indexOf('Bad trace') !== -1) {
+                    alert('This appears to be a ' + extension + ' file, so {{Bad trace}} probably doesn\'t apply.');
+                    return false;
+                }
+                else if (tags.indexOf('Bad font') !== -1) {
+                    alert('This appears to be a ' + extension + ' file, so {{Bad font}} probably doesn\'t apply.');
+                    return false;
+                }
+            }
+        }
+        if (tags.indexOf('Do not move to Commons') !== -1 && params.DoNotMoveToCommons_expiry &&
+            (!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) || parseInt(params.DoNotMoveToCommons_expiry, 10) <= new Date().getFullYear())) {
+            alert('Must be a valid future year.');
+            return false;
+        }
+        return true;
+    };
+    FileMode.prototype.action = function () {
+        var _this = this;
+        _super.prototype.action.call(this);
+        var wikipedia_page = new Morebits.wiki.page(Morebits.pageNameNorm, 'Tagging ' + this.name);
+        wikipedia_page.load(function (pageobj) {
+            var text = pageobj.getPageText();
+            var params = _this.params;
+            // Add maintenance tags
+            if (params.tags.length) {
+                var tagtext = '', currentTag;
+                $.each(params.tags, function (k, tag) {
+                    // when other commons-related tags are placed, remove "move to Commons" tag
+                    if (['Keep local', 'Now Commons', 'Do not move to Commons'].indexOf(tag) !== -1) {
+                        text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
+                    }
+                    currentTag = tag;
+                    switch (tag) {
+                        case 'Now Commons':
+                            currentTag = 'subst:' + currentTag; // subst
+                            if (params.nowcommonsName !== '') {
+                                currentTag += '|1=' + params.nowcommonsName;
+                            }
+                            break;
+                        case 'Keep local':
+                            if (params.keeplocalName !== '') {
+                                currentTag += '|1=' + params.keeplocalName;
+                            }
+                            break;
+                        case 'Rename media':
+                            if (params.renamemediaNewname !== '') {
+                                currentTag += '|1=' + params.renamemediaNewname;
+                            }
+                            if (params.renamemediaReason !== '') {
+                                currentTag += '|2=' + params.renamemediaReason;
+                            }
+                            break;
+                        case 'Cleanup image':
+                            currentTag += '|1=' + params.cleanupimageReason;
+                            break;
+                        case 'Image-Poor-Quality':
+                            currentTag += '|1=' + params.ImagePoorQualityReason;
+                            break;
+                        case 'Image hoax':
+                            currentTag += '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}';
+                            break;
+                        case 'Low quality chem':
+                            currentTag += '|1=' + params.lowQualityChemReason;
+                            break;
+                        case 'Vector version available':
+                            text = text.replace(/\{\{((convert to |convertto|should be |shouldbe|to)?svg|badpng|vectorize)[^}]*\}\}/gi, '');
+                        /* falls through */
+                        case 'PNG version available':
+                        /* falls through */
+                        case 'Obsolete':
+                            currentTag += '|1=' + params[tag.replace(/ /g, '_') + 'File'];
+                            break;
+                        case 'Do not move to Commons':
+                            currentTag += '|reason=' + params.DoNotMoveToCommons_reason;
+                            if (params.DoNotMoveToCommons_expiry) {
+                                currentTag += '|expiry=' + params.DoNotMoveToCommons_expiry;
+                            }
+                            break;
+                        case 'Orphaned non-free revisions':
+                            currentTag = 'subst:' + currentTag; // subst
+                            // remove {{non-free reduce}} and redirects
+                            text = text.replace(/\{\{\s*(Template\s*:\s*)?(Non-free reduce|FairUseReduce|Fairusereduce|Fair Use Reduce|Fair use reduce|Reduce size|Reduce|Fair-use reduce|Image-toobig|Comic-ovrsize-img|Non-free-reduce|Nfr|Smaller image|Nonfree reduce)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
+                            currentTag += '|date={{subst:date}}';
+                            break;
+                        case 'Copy to Commons':
+                            currentTag += '|human=' + mw.config.get('wgUserName');
+                            break;
+                        case 'Should be SVG':
+                            currentTag += '|' + params.svgCategory;
+                            break;
+                        default:
+                            break; // don't care
+                    }
+                    currentTag = '{{' + currentTag + '}}\n';
+                    tagtext += currentTag;
+                });
+                if (!tagtext) {
+                    pageobj.getStatusElement().warn('User canceled operation; nothing to do');
+                    return;
+                }
+                text = tagtext + text;
+            }
+            pageobj.setPageText(text);
+            pageobj.setEditSummary(Tag.makeEditSummary(params.tags));
+            pageobj.setChangeTags(Twinkle.changeTags);
+            pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
+            pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
+            pageobj.setCreateOption('nocreate');
+            pageobj.save();
+            if (params.patrol) {
+                pageobj.setChangeTags(Twinkle.changeTags);
+                pageobj.triage();
+            }
+        });
+    };
+    return FileMode;
 }(TagMode));
 // Override to change modes available,
 // each mode is a class extending TagMode
 Tag.modeList = [
     // ArticleMode,
     RedirectMode,
+    FileMode
 ];
 Twinkle.addInitCallback(function () { new Tag(); }, 'Tag');
-//# sourceMappingURL=tag.js.map
