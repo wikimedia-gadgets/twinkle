@@ -29,6 +29,7 @@ class Tag extends TwinkleModule {
 		this.portletTooltip = this.mode.getMenuTooltip();
 		this.addMenu();
 	}
+
 	makeWindow = () => {
 		var Window = new Morebits.simpleWindow(630, 500);
 		Window.setScriptName('Twinkle');
@@ -37,6 +38,51 @@ class Tag extends TwinkleModule {
 		this.mode.makeForm(Window);
 		this.mode.formRender();
 		this.mode.postRender();
+	}
+
+	/**
+	 * Adds a link to each template's description page
+	 * @param {Morebits.quickForm.element} checkbox  associated with the template
+	 */
+	static makeArrowLinks(checkbox: HTMLInputElement) {
+		var link = Morebits.htmlNode('a', '>');
+		link.setAttribute('class', 'tag-template-link');
+		var tagname = checkbox.values;
+		link.setAttribute('href', mw.util.getUrl(
+			(tagname.indexOf(':') === -1 ? 'Template:' : '') +
+			(tagname.indexOf('|') === -1 ? tagname : tagname.slice(0, tagname.indexOf('|')))
+		));
+		link.setAttribute('target', '_blank');
+		$(checkbox).parent().append(['\u00A0', link]);
+	}
+
+	static makeEditSummary(addedTags: string[], removedTags?: string[], reason?: string) {
+		let makeTemplateLink = function(tag: string) {
+			let text = '{{[[';
+			// if it is a custom tag with a parameter
+			if (tag.indexOf('|') !== -1) {
+				tag = tag.slice(0, tag.indexOf('|'));
+			}
+			text += tag.indexOf(':') !== -1 ? tag : 'Template:' + tag + '|' + tag;
+			return text + ']]}}';
+		};
+		let summaryText;
+		if (addedTags.length) {
+			summaryText = 'Added ' + mw.language.listToText(addedTags.map(makeTemplateLink));
+			summaryText += removedTags?.length ? '; and removed ' +
+				mw.language.listToText(removedTags.map(makeTemplateLink)) : '';
+		} else {
+			summaryText = 'Removed ' + mw.language.listToText(removedTags);
+		}
+		summaryText += ' tag' + (addedTags.length + removedTags?.length > 1 ? 's' : '');
+		if (reason) {
+			summaryText += ': ' + reason;
+		}
+		// avoid long summaries
+		if (summaryText.length > 499) {
+			summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, '$1');
+		}
+		return summaryText;
 	}
 }
 
@@ -103,7 +149,7 @@ abstract class TagMode {
 
 	}
 	postRender() {
-		Morebits.quickForm.getElements(this.result, 'tags').forEach(generateLinks);
+		Morebits.quickForm.getElements(this.result, 'tags').forEach(Tag.makeArrowLinks);
 	}
 	evaluate() {
 		this.captureFormData();
@@ -117,7 +163,7 @@ abstract class TagMode {
 	validateInput(): boolean {
 		// File/redirect: return if no tags selected
 		// Article: return if no tag is selected and no already present tag is deselected
-		if (this.params.tags.length === 0 && (this.name !== 'article' || this.params.tagsToRemove.length === 0)) {
+		if (this.params.tags.length === 0 && (!this.canRemove || this.params.tagsToRemove.length === 0)) {
 			alert('You must select at least one tag!');
 			return false;
 		}
@@ -137,22 +183,6 @@ abstract class TagMode {
 			Morebits.wiki.actionCompleted.followRedirect = false;
 		}
 	}
-}
-
-/**
- * Adds a link to each template's description page
- * @param {Morebits.quickForm.element} checkbox  associated with the template
- */
-function generateLinks(checkbox) {
-	var link = Morebits.htmlNode('a', '>');
-	link.setAttribute('class', 'tag-template-link');
-	var tagname = checkbox.values;
-	link.setAttribute('href', mw.util.getUrl(
-		(tagname.indexOf(':') === -1 ? 'Template:' : '') +
-		(tagname.indexOf('|') === -1 ? tagname : tagname.slice(0, tagname.indexOf('|')))
-	));
-	link.setAttribute('target', '_blank');
-	$(checkbox).parent().append(['\u00A0', link]);
 }
 
 class QuickFilter {
@@ -280,8 +310,7 @@ class RedirectMode extends TagMode {
 		wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
 		wikipedia_page.load((pageobj) => {
 			var pageText = pageobj.getPageText(),
-				tagRe, tagText = '', summaryText = 'Added',
-				tags = [], i;
+				tagRe, tagText = '', tags = [], i;
 
 			for (i = 0; i < this.params.tags.length; i++) {
 				tagRe = new RegExp('(\\{\\{' + this.params.tags[i] + '(\\||\\}\\}))', 'im');
@@ -293,7 +322,11 @@ class RedirectMode extends TagMode {
 				}
 			}
 
-			var addTag = (tagIndex, tagName) => {
+			if (!tags.length) {
+				Morebits.status.warn('Info', 'No tags remaining to apply');
+			}
+
+			tags.forEach((tagName) => {
 				tagText += '\n{{' + tagName;
 				if (tagName === 'R from alternative language') {
 					if (this.params.altLangFrom) {
@@ -306,24 +339,7 @@ class RedirectMode extends TagMode {
 					tagText += '|1=' + this.params.doubleRedirectTarget;
 				}
 				tagText += '}}';
-
-				if (tagIndex > 0) {
-					if (tagIndex === (tags.length - 1)) {
-						summaryText += ' and';
-					} else if (tagIndex < (tags.length - 1)) {
-						summaryText += ',';
-					}
-				}
-
-				summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
-			};
-
-			if (!tags.length) {
-				Morebits.status.warn('Info', 'No tags remaining to apply');
-			}
-
-			tags.sort();
-			$.each(tags, addTag);
+			});
 
 			// Check for all Rcat shell redirects (from #433)
 			if (pageText.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
@@ -345,15 +361,8 @@ class RedirectMode extends TagMode {
 				pageText += '\n{{Redirect category shell|' + tagText + oldPageTags + '\n}}';
 			}
 
-			summaryText += (tags.length > 0 ? ' tag' + (tags.length > 1 ? 's' : ' ') : 'rcat shell') + ' to redirect';
-
-			// avoid truncated summaries
-			if (summaryText.length > 499) {
-				summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, '$1');
-			}
-
 			pageobj.setPageText(pageText);
-			pageobj.setEditSummary(summaryText);
+			pageobj.setEditSummary(Tag.makeEditSummary(tags));
 			pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
 			pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 			pageobj.setCreateOption('nocreate');

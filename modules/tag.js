@@ -46,6 +46,48 @@ var Tag = /** @class */ (function (_super) {
         _this.addMenu();
         return _this;
     }
+    /**
+     * Adds a link to each template's description page
+     * @param {Morebits.quickForm.element} checkbox  associated with the template
+     */
+    Tag.makeArrowLinks = function (checkbox) {
+        var link = Morebits.htmlNode('a', '>');
+        link.setAttribute('class', 'tag-template-link');
+        var tagname = checkbox.values;
+        link.setAttribute('href', mw.util.getUrl((tagname.indexOf(':') === -1 ? 'Template:' : '') +
+            (tagname.indexOf('|') === -1 ? tagname : tagname.slice(0, tagname.indexOf('|')))));
+        link.setAttribute('target', '_blank');
+        $(checkbox).parent().append(['\u00A0', link]);
+    };
+    Tag.makeEditSummary = function (addedTags, removedTags, reason) {
+        var makeTemplateLink = function (tag) {
+            var text = '{{[[';
+            // if it is a custom tag with a parameter
+            if (tag.indexOf('|') !== -1) {
+                tag = tag.slice(0, tag.indexOf('|'));
+            }
+            text += tag.indexOf(':') !== -1 ? tag : 'Template:' + tag + '|' + tag;
+            return text + ']]}}';
+        };
+        var summaryText;
+        if (addedTags.length) {
+            summaryText = 'Added ' + mw.language.listToText(addedTags.map(makeTemplateLink));
+            summaryText += (removedTags === null || removedTags === void 0 ? void 0 : removedTags.length) ? '; and removed ' +
+                mw.language.listToText(removedTags.map(makeTemplateLink)) : '';
+        }
+        else {
+            summaryText = 'Removed ' + mw.language.listToText(removedTags);
+        }
+        summaryText += ' tag' + (addedTags.length + (removedTags === null || removedTags === void 0 ? void 0 : removedTags.length) > 1 ? 's' : '');
+        if (reason) {
+            summaryText += ': ' + reason;
+        }
+        // avoid long summaries
+        if (summaryText.length > 499) {
+            summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, '$1');
+        }
+        return summaryText;
+    };
     return Tag;
 }(TwinkleModule));
 var TagMode = /** @class */ (function () {
@@ -111,7 +153,7 @@ var TagMode = /** @class */ (function () {
         QuickFilter.init(this.result);
     };
     TagMode.prototype.postRender = function () {
-        Morebits.quickForm.getElements(this.result, 'tags').forEach(generateLinks);
+        Morebits.quickForm.getElements(this.result, 'tags').forEach(Tag.makeArrowLinks);
     };
     TagMode.prototype.evaluate = function () {
         this.captureFormData();
@@ -125,7 +167,7 @@ var TagMode = /** @class */ (function () {
     TagMode.prototype.validateInput = function () {
         // File/redirect: return if no tags selected
         // Article: return if no tag is selected and no already present tag is deselected
-        if (this.params.tags.length === 0 && (this.name !== 'article' || this.params.tagsToRemove.length === 0)) {
+        if (this.params.tags.length === 0 && (!this.canRemove || this.params.tagsToRemove.length === 0)) {
             alert('You must select at least one tag!');
             return false;
         }
@@ -145,19 +187,6 @@ var TagMode = /** @class */ (function () {
     };
     return TagMode;
 }());
-/**
- * Adds a link to each template's description page
- * @param {Morebits.quickForm.element} checkbox  associated with the template
- */
-function generateLinks(checkbox) {
-    var link = Morebits.htmlNode('a', '>');
-    link.setAttribute('class', 'tag-template-link');
-    var tagname = checkbox.values;
-    link.setAttribute('href', mw.util.getUrl((tagname.indexOf(':') === -1 ? 'Template:' : '') +
-        (tagname.indexOf('|') === -1 ? tagname : tagname.slice(0, tagname.indexOf('|')))));
-    link.setAttribute('target', '_blank');
-    $(checkbox).parent().append(['\u00A0', link]);
-}
 var QuickFilter = /** @class */ (function () {
     function QuickFilter() {
     }
@@ -279,7 +308,7 @@ var RedirectMode = /** @class */ (function (_super) {
         var wikipedia_page = new Morebits.wiki.page(Morebits.pageNameNorm, 'Tagging ' + this.name);
         wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
         wikipedia_page.load(function (pageobj) {
-            var pageText = pageobj.getPageText(), tagRe, tagText = '', summaryText = 'Added', tags = [], i;
+            var pageText = pageobj.getPageText(), tagRe, tagText = '', tags = [], i;
             for (i = 0; i < _this.params.tags.length; i++) {
                 tagRe = new RegExp('(\\{\\{' + _this.params.tags[i] + '(\\||\\}\\}))', 'im');
                 if (!tagRe.exec(pageText)) {
@@ -290,7 +319,10 @@ var RedirectMode = /** @class */ (function (_super) {
                         '}} on the redirect already...excluding');
                 }
             }
-            var addTag = function (tagIndex, tagName) {
+            if (!tags.length) {
+                Morebits.status.warn('Info', 'No tags remaining to apply');
+            }
+            tags.forEach(function (tagName) {
                 tagText += '\n{{' + tagName;
                 if (tagName === 'R from alternative language') {
                     if (_this.params.altLangFrom) {
@@ -304,21 +336,7 @@ var RedirectMode = /** @class */ (function (_super) {
                     tagText += '|1=' + _this.params.doubleRedirectTarget;
                 }
                 tagText += '}}';
-                if (tagIndex > 0) {
-                    if (tagIndex === (tags.length - 1)) {
-                        summaryText += ' and';
-                    }
-                    else if (tagIndex < (tags.length - 1)) {
-                        summaryText += ',';
-                    }
-                }
-                summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
-            };
-            if (!tags.length) {
-                Morebits.status.warn('Info', 'No tags remaining to apply');
-            }
-            tags.sort();
-            $.each(tags, addTag);
+            });
             // Check for all Rcat shell redirects (from #433)
             if (pageText.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
                 // Regex inspired by [[User:Kephir/gadgets/sagittarius.js]] ([[Special:PermaLink/831402893]])
@@ -339,13 +357,8 @@ var RedirectMode = /** @class */ (function (_super) {
                 }
                 pageText += '\n{{Redirect category shell|' + tagText + oldPageTags + '\n}}';
             }
-            summaryText += (tags.length > 0 ? ' tag' + (tags.length > 1 ? 's' : ' ') : 'rcat shell') + ' to redirect';
-            // avoid truncated summaries
-            if (summaryText.length > 499) {
-                summaryText = summaryText.replace(/\[\[[^|]+\|([^\]]+)\]\]/g, '$1');
-            }
             pageobj.setPageText(pageText);
-            pageobj.setEditSummary(summaryText);
+            pageobj.setEditSummary(Tag.makeEditSummary(tags));
             pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
             pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
             pageobj.setCreateOption('nocreate');
