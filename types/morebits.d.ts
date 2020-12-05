@@ -22,18 +22,18 @@ declare namespace Morebits {
 	class quickForm {
 		constructor(event: ((e: FormSubmitEvent) => void), eventType?: string)
 		render(): HTMLFormElement
-		append(quickFormElement): quickFormElement
+		append(data: quickFormElementData): quickFormElement
 		static getInputData(form: HTMLFormElement): Record<string, string>
 		static getElements(form: HTMLFormElement, fieldName: string): HTMLElement[]
 		static getCheckboxOrRadio(elementArray: HTMLInputElement[], value: string): HTMLInputElement
-		static getElementContainer()
-		static getElementLabelObject()
-		static getElementLabel()
-		static setElementLabel()
-		static overrideElementLabel()
-		static resetElementLabel()
-		static setElementVisibility()
-		static setElementTooltipVisibility()
+		static getElementContainer(element: HTMLElement): HTMLElement
+		static getElementLabelObject(element: HTMLElement): HTMLElement
+		static getElementLabel(element: HTMLElement): string
+		static setElementLabel(element: HTMLElement): boolean
+		static overrideElementLabel(element: HTMLElement, temporaryLabelText: string): boolean
+		static resetElementLabel(element: HTMLElement): boolean | null
+		static setElementVisibility(element: HTMLElement | JQuery | string): void
+		static setElementTooltipVisibility(element: HTMLElement | JQuery | string, visibility?: boolean): void
 		static element: typeof quickFormElement
 	}
 
@@ -235,7 +235,6 @@ declare namespace Morebits {
 		setPageList(pageList: T[]): void
 
 		// Overloaded definition
-		setOption(optionName: any, optionValue: any)
 		setOption(optionName: 'chunkSize', optionValue: number)
 		setOption(optionName: 'preserveIndividualStatusLines', optionValue: boolean)
 
@@ -279,9 +278,34 @@ declare namespace Morebits {
 declare class quickFormElement {
 	constructor(data: any)
 	static id: number
-	append(data: quickFormElement): quickFormElement
+	append(data: quickFormElementData): quickFormElement
 	render(): HTMLElement
-	compute(data: any): any
+	private compute(data: quickFormElementData): [HTMLElement, HTMLElement]
 	static generateTooltip(node: HTMLElement, data: any): void
+}
+
+interface quickFormElementData {
+	type?: 'input' | 'textarea' | 'submit' | 'checkbox' | 'radio' | 'select' |
+		'option' | 'optgroup' | 'field' | 'dyninput' | 'hidden' | 'header' |
+		'div' | 'button' | 'fragment'
+	name?: string
+	id?: string
+	className?: string
+	style?: string
+	tooltip?: string
+	extra?: any
+	adminonly?: boolean
+	label?: string | HTMLElement
+	value?: string
+	size?: string // for input
+	multiple?: boolean // for select
+	checked?: boolean
+	disabled?: boolean
+	event?: ((event?: Event) => void)
+	list?: quickFormElementData[]
+	subgroup?: quickFormElementData | quickFormElementData[]
+	required?: boolean // for input, textarea
+	readonly?: boolean // for input, textarea
+	maxlength?: number // for input, textarea
 }
 
