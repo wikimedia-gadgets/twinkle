@@ -85,32 +85,31 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		}
 	});
 
+	// Object.values is unavailable in IE 11
+	var obj_values = Object.values || function (obj) {
+		return Object.keys(obj).map(function (key) {
+			return obj[key];
+		});
+	};
+
+	// Build sorting and lookup object flatObject, which is always
+	// needed but also used to generate the alphabetical list
+	Twinkle.tag.flatObject = {};
+	obj_values(Twinkle.tag.list[Twinkle.tag.mode]).forEach(function (group) {
+		obj_values(group).forEach(function (subgroup) {
+			if (Array.isArray(subgroup)) {
+				subgroup.forEach(function (item) {
+					Twinkle.tag.flatObject[item.tag] = item;
+				});
+			} else {
+				Twinkle.tag.flatObject[subgroup.tag] = subgroup;
+			}
+		});
+	});
+
 	switch (Twinkle.tag.mode) {
 		case 'article':
 			Window.setTitle('Article maintenance tagging');
-
-			// Object.values is unavailable in IE 11
-			var obj_values = Object.values || function (obj) {
-				return Object.keys(obj).map(function (key) {
-					return obj[key];
-				});
-			};
-
-			// Build sorting and lookup object flatObject, which is always
-			// needed but also used to generate the alphabetical list
-			Twinkle.tag.article.flatObject = {};
-			obj_values(Twinkle.tag.article.tagList).forEach(function (group) {
-				obj_values(group).forEach(function (subgroup) {
-					if (Array.isArray(subgroup)) {
-						subgroup.forEach(function (item) {
-							Twinkle.tag.article.flatObject[item.tag] = item;
-						});
-					} else {
-						Twinkle.tag.article.flatObject[subgroup.tag] = subgroup;
-					}
-				});
-			});
-
 
 			form.append({
 				type: 'select',
@@ -168,7 +167,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'file':
 			Window.setTitle('File maintenance tagging');
 
-			$.each(Twinkle.tag.fileList, function(groupName, group) {
+			$.each(Twinkle.tag.list.file, function(groupName, group) {
 				form.append({ type: 'header', label: groupName });
 				form.append({ type: 'checkbox', name: 'tags',
 					list: group.map(function(item) {
@@ -191,7 +190,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			Window.setTitle('Redirect tagging');
 
 			var i = 1;
-			$.each(Twinkle.tag.redirectList, function(groupName, group) {
+			$.each(Twinkle.tag.list.redirect, function(groupName, group) {
 				form.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
 				var subdiv = form.append({ type: 'div', id: 'tagSubdiv' + i++ });
 				$.each(group, function(subgroupName, subgroup) {
@@ -350,7 +349,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 			var checkbox =
 				{
 					value: tag,
-					label: '{{' + tag + '}}' + (Twinkle.tag.article.flatObject[tag] ? ': ' + Twinkle.tag.article.flatObject[tag].description : ''),
+					label: '{{' + tag + '}}' + (Twinkle.tag.flatObject[tag] ? ': ' + Twinkle.tag.flatObject[tag].description : ''),
 					checked: unCheckedTags.indexOf(tag) === -1,
 					style: 'font-style: italic'
 				};
@@ -386,7 +385,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		}
 		var i = 1;
 		// go through each category and sub-category and append lists of checkboxes
-		$.each(Twinkle.tag.article.tagList, function(groupName, group) {
+		$.each(Twinkle.tag.list.article, function(groupName, group) {
 			container.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
 			var subdiv = container.append({ type: 'div', id: 'tagSubdiv' + i++ });
 			if (Array.isArray(group)) {
@@ -405,11 +404,11 @@ Twinkle.tag.updateSortOrder = function(e) {
 		}
 
 		// Avoid repeatedly resorting
-		Twinkle.tag.article.alphabeticalList = Twinkle.tag.article.alphabeticalList || Object.keys(Twinkle.tag.article.flatObject).sort();
+		Twinkle.tag.article.alphabeticalList = Twinkle.tag.article.alphabeticalList || Object.keys(Twinkle.tag.flatObject).sort();
 		var checkboxes = [];
 		Twinkle.tag.article.alphabeticalList.forEach(function(tag) {
 			if (Twinkle.tag.alreadyPresentTags.indexOf(tag) === -1) {
-				checkboxes.push(makeCheckbox(Twinkle.tag.article.flatObject[tag]));
+				checkboxes.push(makeCheckbox(Twinkle.tag.flatObject[tag]));
 			}
 		});
 		container.append({
@@ -551,11 +550,13 @@ var getMergeSubgroups = function(tag) {
 	} : []);
 };
 
+Twinkle.tag.list = {};
+
 // Tags arranged by category; will be used to generate the alphabetical list,
 // but tags should be in alphabetical order within the categories
 // excludeMI: true indicate a tag that *does not* work inside {{multiple issues}}
 // Add new categories with discretion - the list is long enough as is!
-Twinkle.tag.article.tagList = {
+Twinkle.tag.list.article = {
 	'Cleanup and maintenance tags': {
 		'General cleanup': [
 			{
@@ -870,7 +871,7 @@ Twinkle.tag.article.tagList = {
 // Tags for REDIRECTS start here
 // Not by policy, but the list roughly approximates items with >500
 // transclusions from Template:R template index
-Twinkle.tag.redirectList = {
+Twinkle.tag.list.redirect = {
 	'Grammar, punctuation, and spelling': {
 		'Abbreviation': [
 			{ tag: 'R from acronym', description: 'redirect from an acronym (e.g. POTUS) to its expanded form' },
@@ -1060,7 +1061,7 @@ Twinkle.tag.redirectList = {
 
 // maintenance tags for FILES start here
 
-Twinkle.tag.fileList = {
+Twinkle.tag.list.file = {
 	'License and sourcing problem tags': [
 		{ tag: 'Better source requested', description: 'source info consists of bare image URL/generic base URL only' },
 		{ tag: 'Non-free reduce', description: 'non-low-resolution fair use image (or too-long audio clip, etc)' },
@@ -1199,7 +1200,7 @@ Twinkle.tag.fileList = {
 	]
 };
 
-Twinkle.tag.fileList['Replacement tags'].forEach(function(el) {
+Twinkle.tag.list.file['Replacement tags'].forEach(function(el) {
 	el.subgroup = {
 		type: 'input',
 		label: 'Replacement file: ',
@@ -1462,8 +1463,8 @@ Twinkle.tag.callbacks = {
 				currentTag += '{{' + tagName;
 				// fill in other parameters, based on the tag
 
-				var subgroupObj = Twinkle.tag.article.flatObject[tagName] &&
-					Twinkle.tag.article.flatObject[tagName].subgroup;
+				var subgroupObj = Twinkle.tag.flatObject[tagName] &&
+					Twinkle.tag.flatObject[tagName].subgroup;
 				if (subgroupObj) {
 					var subgroups = Array.isArray(subgroupObj) ? subgroupObj : [ subgroupObj ];
 					subgroups.forEach(function(gr) {
@@ -1547,7 +1548,7 @@ Twinkle.tag.callbacks = {
 			if (Twinkle.tag.canRemove || !tagRe.exec(pageText)) {
 				// condition Twinkle.tag.article.tags[tag] to ensure that its not a custom tag
 				// Custom tags are assumed non-groupable, since we don't know whether MI template supports them
-				if (Twinkle.tag.article.flatObject[tag] && !Twinkle.tag.article.flatObject[tag].excludeMI) {
+				if (Twinkle.tag.flatObject[tag] && !Twinkle.tag.flatObject[tag].excludeMI) {
 					groupableTags.push(tag);
 				} else {
 					tags.push(tag);
@@ -1569,7 +1570,7 @@ Twinkle.tag.callbacks = {
 		// To-be-retained existing tags that are groupable
 		params.tagsToRemain.forEach(function(tag) {
 			// If the tag is unknown to us, we consider it non-groupable
-			if (Twinkle.tag.article.flatObject[tag] && !Twinkle.tag.article.flatObject[tag].excludeMI) {
+			if (Twinkle.tag.flatObject[tag] && !Twinkle.tag.flatObject[tag].excludeMI) {
 				groupableExistingTags.push(tag);
 			}
 		});
