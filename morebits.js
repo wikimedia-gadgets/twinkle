@@ -4255,18 +4255,42 @@ Morebits.wikitext.parseTemplate = function(text, start) {
 	};
 	var key, value;
 
+	/**
+	 * Function to handle finding parameter values.
+	 *
+	 * @param {boolean} [final=false] - Whether this is the final
+	 * parameter and we need to remove the trailing `}}`.
+	 */
+	var findParam = function(final) {
+		// Nothing found yet, this must be the template name
+		if (count === -1) {
+			result.name = current.substring(2).trim();
+			++count;
+		} else {
+			// In a parameter
+			if (equals !== -1) {
+				// We found an equals, so save the parameter as key: value
+				key = current.substring(0, equals).trim();
+				value = final ? current.substring(equals + 1, current.length - 2).trim() : current.substring(equals + 1).trim();
+				result.parameters[key] = value;
+				equals = -1;
+			} else {
+				// No equals, so it must be unnamed; no trim since whitespace allowed
+				var param = final ? current.substring(equals + 1, current.length - 2) : current;
+				if (param) {
+					result.parameters[++unnamed] = param;
+					++count;
+				}
+			}
+		}
+	};
+
 	for (var i = start; i < text.length; ++i) {
 		var test3 = text.substr(i, 3);
-		if (test3 === '{{{') {
-			current += '{{{';
+		if (test3 === '{{{' || test3 === '}}}') {
+			current += test3;
 			i += 2;
-			++level;
-			continue;
-		}
-		if (test3 === '}}}') {
-			current += '}}}';
-			i += 2;
-			--level;
+			test3 === '}}}' ? --level : ++level;
 			continue;
 		}
 		var test2 = text.substr(i, 2);
@@ -4292,27 +4316,7 @@ Morebits.wikitext.parseTemplate = function(text, start) {
 
 			// Find the final parameter if this is the end of the template
 			if (level <= 0) {
-				// Nothing found yet, this must be the template name
-				if (count === -1) {
-					result.name = current.substring(2).trim();
-					++count;
-				} else {
-					// In a parameter
-					if (equals !== -1) {
-						// We found an equals, so save the parameter as key: value
-						key = current.substring(0, equals).trim();
-						value = current.substring(equals + 1, current.length - 2).trim();
-						result.parameters[key] = value;
-						equals = -1;
-					} else {
-						// No equals, so it must be unnamed; no trim since whitespace allowed
-						var param = current.substring(equals + 1, current.length - 2);
-						if (param) {
-							result.parameters[++unnamed] = param;
-							++count;
-						}
-					}
-				}
+				findParam(true);
 				break;
 			}
 			continue;
@@ -4320,26 +4324,7 @@ Morebits.wikitext.parseTemplate = function(text, start) {
 
 		if (text.charAt(i) === '|' && level <= 0) {
 			// Pipe found, so parameter coming up!
-			if (count === -1) {
-				// Nothing found yet, this must be the template name
-				result.name = current.substring(2).trim();
-				++count;
-			} else {
-				// In a parameter
-				if (equals !== -1) {
-					// We found an equals, so save the parameter as key: value
-					key = current.substring(0, equals).trim();
-					value = current.substring(equals + 1).trim();
-					result.parameters[key] = value;
-					equals = -1;
-				} else {
-					// No equals, so it must be unnamed; no trim since whitespace allowed
-					if (current) {
-						result.parameters[++unnamed] = current;
-						++count;
-					}
-				}
-			}
+			findParam();
 			current = '';
 		} else if (equals === -1 && text.charAt(i) === '=' && level <= 0) {
 			// Equals found

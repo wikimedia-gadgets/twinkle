@@ -16,7 +16,7 @@ QUnit.test('parseTemplate', assert => {
 			morereason: 'I said so',
 			timestamp: '42'
 		}};
-	assert.deepEqual(Morebits.wikitext.parseTemplate('Template: ' + makeTemplate(simple) + ' in text', 10), simple, 'Basic parameter test');
+	assert.deepEqual(Morebits.wikitext.parseTemplate('Template: ' + makeTemplate(simple) + ' in text', 10), simple, 'Basic parameters');
 
 	var involved = {
 		name: 'Proposed deletion/dated',
@@ -26,7 +26,7 @@ QUnit.test('parseTemplate', assert => {
 			nom: 'Jimbo Wales',
 			help: 'off'
 		}};
-	assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(involved)), involved, 'Involved parameter test');
+	assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(involved)), involved, 'Involved parameters');
 
 	// Try a variety of whitespace options
 	var whitespace = '{{' + involved.name + ' |concern = ' + involved.parameters.concern + ' | timestamp =' + involved.parameters.timestamp + '| nom= ' + involved.parameters.nom + '|help = ' + involved.parameters.help + ' }}';
@@ -43,6 +43,17 @@ QUnit.test('parseTemplate', assert => {
 	};
 	var unnamedTemplate = '{{' + unnamed.name + '|criterion=' + unnamed.parameters.criterion + '||' + unnamed.parameters['1'] + '| middle =|2= ' + unnamed.parameters['2'] + '|}}';
 	assert.deepEqual(Morebits.wikitext.parseTemplate(unnamedTemplate), unnamed, 'Unnamed and empty parameters');
+
+	var multiLevel = {
+		name: 'toplevel',
+		parameters: {
+			named: 'namedtop',
+			other: '{{{namedintro|{{{3|asd}}}|really=yes|a}}}',
+			1: 'onetop',
+			final: '{{{last|iswear}}}'
+		}
+	};
+	assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(multiLevel)), multiLevel, 'Multiple levels');
 });
 QUnit.test('Morebits.wikitext.page', assert => {
 	var text = '{{short description}}{{about}}[[File:Fee.svg]]O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!';
