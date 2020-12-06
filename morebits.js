@@ -4308,30 +4308,31 @@ Morebits.wikitext.parseTemplate = function(text, start) {
 			--level;
 			continue;
 		}
-		// Leaving a template
+		// Either leaving a template or an internal template/parser function
 		if (test2 === '}}') {
+			// Regardless, decrement the level
 			current += test2;
 			++i;
 			--level;
 
-			// Find the final parameter if this is the end of the template
-			if (level <= 0) {
+			// Find the final parameter if this really is the end
+			if (level === -1) {
 				findParam(true);
 				break;
 			}
 			continue;
 		}
 
-		if (text.charAt(i) === '|' && level <= 0) {
-			// Pipe found, so parameter coming up!
+		if (text.charAt(i) === '|' && level === 0) {
+			// Another pipe found, toplevel, so parameter coming up!
 			findParam();
 			current = '';
-		} else if (equals === -1 && text.charAt(i) === '=' && level <= 0) {
-			// Equals found
+		} else if (equals === -1 && text.charAt(i) === '=' && level === 0) {
+			// Equals found, toplevel
 			equals = current.length;
 			current += text.charAt(i);
 		} else {
-			// Nothing to do, advance the position
+			// Just advance the position
 			current += text.charAt(i);
 		}
 	}

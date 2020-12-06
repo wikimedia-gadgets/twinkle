@@ -54,6 +54,27 @@ QUnit.test('parseTemplate', assert => {
 		}
 	};
 	assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(multiLevel)), multiLevel, 'Multiple levels');
+	var parser = {
+		name: 'toplevel',
+		parameters: {
+			named: 'namedtop',
+			other: '{{#if:{{{namedintro|{{{3|asd}}}|really=yes|a}}}|true|false}}',
+			1: 'onetop',
+			final: '{{{last|iswear}}}'
+		}
+	};
+	assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(parser)), parser, 'Parser function');
+
+	var internal = {
+		name: 'internal',
+		parameters: {
+			named: 'parameter {{tq|with an internal}} template',
+			other: '{{#if:{{{namedintro|{{{3|asd}}}|really=yes|a}}}|true|false}}',
+			1: 'onetop',
+			final: '{{{last|iswear}}}'
+		}
+	};
+	assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(internal)), internal, 'Internal templates');
 });
 QUnit.test('Morebits.wikitext.page', assert => {
 	var text = '{{short description}}{{about}}[[File:Fee.svg]]O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!';
