@@ -911,13 +911,15 @@ Twinkle.tag.list.redirect = {
 						name: 'altLangFrom',
 						type: 'input',
 						label: 'From language (two-letter code): ',
-						tooltip: 'Enter the two-letter code of the language the redirect name is in; such as en for English, de for German'
+						tooltip: 'Enter the two-letter code of the language the redirect name is in; such as en for English, de for German',
+						parameter: 'from'
 					},
 					{
 						name: 'altLangTo',
 						type: 'input',
 						label: 'To language (two-letter code): ',
-						tooltip: 'Enter the two-letter code of the language the target name is in; such as en for English, de for German'
+						tooltip: 'Enter the two-letter code of the language the target name is in; such as en for English, de for German',
+						parameter: 'to'
 					},
 					{
 						name: 'altLangInfo',
@@ -979,7 +981,8 @@ Twinkle.tag.list.redirect = {
 					name: 'doubleRedirectTarget',
 					type: 'input',
 					label: 'Redirect target name',
-					tooltip: 'Enter the page this redirect would target if the page wasn\'t also a redirect'
+					tooltip: 'Enter the page this redirect would target if the page wasn\'t also a redirect',
+					parameter: '1'
 				}
 			},
 			{ tag: 'R from file metadata link', description: 'redirect of a wikilink created from EXIF, XMP, or other information (i.e. the "metadata" section on some image description pages)' },
@@ -1709,15 +1712,15 @@ Twinkle.tag.callbacks = {
 
 		var addTag = function redirectAddTag(tagIndex, tagName) {
 			tagText += '\n{{' + tagName;
-			if (tagName === 'R from alternative language') {
-				if (params.altLangFrom) {
-					tagText += '|from=' + params.altLangFrom;
-				}
-				if (params.altLangTo) {
-					tagText += '|to=' + params.altLangTo;
-				}
-			} else if (tagName === 'R avoided double redirect' && params.doubleRedirectTarget) {
-				tagText += '|1=' + params.doubleRedirectTarget;
+			var subgroupObj = Twinkle.tag.flatObject[tagName] &&
+				Twinkle.tag.flatObject[tagName].subgroup;
+			if (subgroupObj) {
+				var subgroups = Array.isArray(subgroupObj) ? subgroupObj : [ subgroupObj ];
+				subgroups.forEach(function(gr) {
+					if (gr.parameter && (params[gr.name] || gr.required)) {
+						tagText += '|' + gr.parameter + '=' + params[gr.name];
+					}
+				});
 			}
 			tagText += '}}';
 
