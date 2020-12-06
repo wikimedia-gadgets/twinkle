@@ -1065,10 +1065,24 @@ Twinkle.tag.list.file = {
 	'License and sourcing problem tags': [
 		{ tag: 'Better source requested', description: 'source info consists of bare image URL/generic base URL only' },
 		{ tag: 'Non-free reduce', description: 'non-low-resolution fair use image (or too-long audio clip, etc)' },
-		{ tag: 'Orphaned non-free revisions', description: 'fair use media with old revisions that need to be deleted' }
+		{ tag: 'Orphaned non-free revisions', description: 'fair use media with old revisions that need to be deleted',
+			subgroup: {
+				type: 'hidden',
+				name: 'OrphanedNonFreeRevisionsDate',
+				parameter: 'date',
+				value: '{{subst:date}}'
+			}
+		}
 	],
 	'Wikimedia Commons-related tags': [
-		{ tag: 'Copy to Commons', description: 'free media that should be copied to Commons' },
+		{ tag: 'Copy to Commons', description: 'free media that should be copied to Commons',
+			subgroup: {
+				type: 'hidden',
+				name: 'CopyToCommonsHuman',
+				parameter: 'human',
+				value: mw.config.get('wgUserName')
+			}
+		},
 		{ tag: 'Do not move to Commons', description: 'file not suitable for moving to Commons',
 			subgroup: [
 				{
@@ -1076,13 +1090,15 @@ Twinkle.tag.list.file = {
 					name: 'DoNotMoveToCommons_reason',
 					label: 'Reason: ',
 					tooltip: 'Enter the reason why this image should not be moved to Commons (required). If the file is PD in the US but not in country of origin, enter "US only"',
-					required: true
+					required: true,
+					parameter: 'reason'
 				},
 				{
 					type: 'input',
 					name: 'DoNotMoveToCommons_expiry',
 					label: 'Expiration year: ',
-					tooltip: 'If this file can be moved to Commons beginning in a certain year, you can enter it here (optional).'
+					tooltip: 'If this file can be moved to Commons beginning in a certain year, you can enter it here (optional).',
+					parameter: 'expiry'
 				}
 			]
 		},
@@ -1091,7 +1107,8 @@ Twinkle.tag.list.file = {
 				type: 'input',
 				name: 'keeplocalName',
 				label: 'Commons image name if different: ',
-				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
+				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:',
+				parameter: '1'
 			}
 		},
 		{ tag: 'Now Commons', description: 'file has been copied to Commons',
@@ -1099,7 +1116,8 @@ Twinkle.tag.list.file = {
 				type: 'input',
 				name: 'nowcommonsName',
 				label: 'Commons image name if different: ',
-				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
+				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:',
+				parameter: '1'
 			}
 		}
 	],
@@ -1111,14 +1129,14 @@ Twinkle.tag.list.file = {
 		{ tag: 'Bad JPEG', description: 'JPEG that should be PNG or SVG' },
 		{ tag: 'Bad SVG', description: 'SVG containing raster grahpics' },
 		{ tag: 'Bad trace', description: 'auto-traced SVG requiring cleanup' },
-		{
-			tag: 'Cleanup image', description: 'general cleanup',
+		{ tag: 'Cleanup image', description: 'general cleanup',
 			subgroup: {
 				type: 'input',
 				name: 'cleanupimageReason',
 				label: 'Reason: ',
 				tooltip: 'Enter the reason for cleanup (required)',
-				required: true
+				required: true,
+				parameter: '1'
 			}
 		},
 		{ tag: 'ClearType', description: 'image (not screenshot) with ClearType anti-aliasing' },
@@ -1133,13 +1151,15 @@ Twinkle.tag.list.file = {
 					type: 'input',
 					name: 'renamemediaNewname',
 					label: 'New name: ',
-					tooltip: 'Enter the new name for the image (optional)'
+					tooltip: 'Enter the new name for the image (optional)',
+					parameter: '1'
 				},
 				{
 					type: 'input',
 					name: 'renamemediaReason',
 					label: 'Reason: ',
-					tooltip: 'Enter the reason for the rename (optional)'
+					tooltip: 'Enter the reason for the rename (optional)',
+					parameter: '2'
 				}
 			]
 		},
@@ -1164,13 +1184,21 @@ Twinkle.tag.list.file = {
 					{ label: '{{Should be SVG|music}}: musical scales, notes, etc.', value: 'music' },
 					{ label: '{{Should be SVG|physical}}: "realistic" images of physical objects, people, etc.', value: 'physical' },
 					{ label: '{{Should be SVG|symbol}}: miscellaneous symbols, icons, etc.', value: 'symbol' }
-				]
+				],
+				parameter: '1'
 			}
 		},
 		{ tag: 'Should be text', description: 'image should be represented as text, tables, or math markup' }
 	],
 	'Image quality tags': [
-		{ tag: 'Image hoax', description: 'Image may be manipulated or constitute a hoax' },
+		{ tag: 'Image hoax', description: 'Image may be manipulated or constitute a hoax',
+			subgroup: {
+				type: 'hidden',
+				name: 'ImageHoaxDate',
+				parameter: 'date',
+				value: '{{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}'
+			}
+		},
 		{ tag: 'Image-blownout' },
 		{ tag: 'Image-out-of-focus' },
 		{ tag: 'Image-Poor-Quality',
@@ -1179,7 +1207,8 @@ Twinkle.tag.list.file = {
 				name: 'ImagePoorQualityReason',
 				label: 'Reason: ',
 				tooltip: 'Enter the reason why this image is so bad (required)',
-				required: true
+				required: true,
+				parameter: '1'
 			}
 		},
 		{ tag: 'Image-underexposure' },
@@ -1189,7 +1218,8 @@ Twinkle.tag.list.file = {
 				name: 'lowQualityChemReason',
 				label: 'Reason: ',
 				tooltip: 'Enter the reason why the diagram is disputed (required)',
-				required: true
+				required: true,
+				parameter: '1'
 			}
 		}
 	],
@@ -1206,7 +1236,8 @@ Twinkle.tag.list.file['Replacement tags'].forEach(function(el) {
 		label: 'Replacement file: ',
 		tooltip: 'Enter the name of the file which replaces this one (required)',
 		name: el.tag.replace(/ /g, '_') + 'File',
-		required: true
+		required: true,
+		parameter: '1'
 	};
 });
 
@@ -1765,63 +1796,28 @@ Twinkle.tag.callbacks = {
 
 				currentTag = tag;
 
+				var subgroupObj = Twinkle.tag.flatObject[tag] &&
+					Twinkle.tag.flatObject[tag].subgroup;
+				if (subgroupObj) {
+					var subgroups = Array.isArray(subgroupObj) ? subgroupObj : [ subgroupObj ];
+					subgroups.forEach(function(gr) {
+						if (gr.parameter && (params[gr.name] || gr.required)) {
+							currentTag += '|' + gr.parameter + '=' + params[gr.name];
+						}
+					});
+				}
+
 				switch (tag) {
 					case 'Now Commons':
 						currentTag = 'subst:' + currentTag; // subst
-						if (params.nowcommonsName !== '') {
-							currentTag += '|1=' + params.nowcommonsName;
-						}
-						break;
-					case 'Keep local':
-						if (params.keeplocalName !== '') {
-							currentTag += '|1=' + params.keeplocalName;
-						}
-						break;
-					case 'Rename media':
-						if (params.renamemediaNewname !== '') {
-							currentTag += '|1=' + params.renamemediaNewname;
-						}
-						if (params.renamemediaReason !== '') {
-							currentTag += '|2=' + params.renamemediaReason;
-						}
-						break;
-					case 'Cleanup image':
-						currentTag += '|1=' + params.cleanupimageReason;
-						break;
-					case 'Image-Poor-Quality':
-						currentTag += '|1=' + params.ImagePoorQualityReason;
-						break;
-					case 'Image hoax':
-						currentTag += '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}';
-						break;
-					case 'Low quality chem':
-						currentTag += '|1=' + params.lowQualityChemReason;
 						break;
 					case 'Vector version available':
 						text = text.replace(/\{\{((convert to |convertto|should be |shouldbe|to)?svg|badpng|vectorize)[^}]*\}\}/gi, '');
-						/* falls through */
-					case 'PNG version available':
-						/* falls through */
-					case 'Obsolete':
-						currentTag += '|1=' + params[tag.replace(/ /g, '_') + 'File'];
-						break;
-					case 'Do not move to Commons':
-						currentTag += '|reason=' + params.DoNotMoveToCommons_reason;
-						if (params.DoNotMoveToCommons_expiry) {
-							currentTag += '|expiry=' + params.DoNotMoveToCommons_expiry;
-						}
 						break;
 					case 'Orphaned non-free revisions':
 						currentTag = 'subst:' + currentTag; // subst
 						// remove {{non-free reduce}} and redirects
 						text = text.replace(/\{\{\s*(Template\s*:\s*)?(Non-free reduce|FairUseReduce|Fairusereduce|Fair Use Reduce|Fair use reduce|Reduce size|Reduce|Fair-use reduce|Image-toobig|Comic-ovrsize-img|Non-free-reduce|Nfr|Smaller image|Nonfree reduce)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
-						currentTag += '|date={{subst:date}}';
-						break;
-					case 'Copy to Commons':
-						currentTag += '|human=' + mw.config.get('wgUserName');
-						break;
-					case 'Should be SVG':
-						currentTag += '|' + params.svgCategory;
 						break;
 					default:
 						break;  // don't care
