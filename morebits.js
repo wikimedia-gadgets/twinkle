@@ -1469,12 +1469,18 @@ Morebits.unbinder = function Unbinder(string) {
 
 Morebits.unbinder.prototype = {
 	/**
-	 * Hide the region encapsulated by the `prefix` and `postfix` from string processing.
+	 * Hide the region encapsulated by the `prefix` and `postfix` from
+	 * string processing.  `prefix` and `postfix` will be used in a
+	 * RegExp, so items that need escaping should be use `\\`.
 	 *
 	 * @param {string} prefix
 	 * @param {string} postfix
+	 * @throws If either `prefix` or `postfix` is missing.
 	 */
 	unbind: function UnbinderUnbind(prefix, postfix) {
+		if (!prefix || !postfix) {
+			throw new Error('Both prefix and postfix must be provided');
+		}
 		var re = new RegExp(prefix + '([\\s\\S]*?)' + postfix, 'g');
 		this.content = this.content.replace(re, Morebits.unbinder.getCallback(this));
 	},
