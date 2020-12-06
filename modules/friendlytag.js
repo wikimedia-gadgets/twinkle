@@ -189,10 +189,9 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'redirect':
 			Window.setTitle('Redirect tagging');
 
-			var i = 1;
 			$.each(Twinkle.tag.list.redirect, function(groupName, group) {
-				form.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
-				var subdiv = form.append({ type: 'div', id: 'tagSubdiv' + i++ });
+				form.append({ type: 'header', label: groupName });
+				var subdiv = form.append({ type: 'div' });
 				$.each(group, function(subgroupName, subgroup) {
 					subdiv.append({ type: 'div', label: [ Morebits.htmlNode('b', subgroupName) ] });
 					subdiv.append({
@@ -341,8 +340,8 @@ Twinkle.tag.updateSortOrder = function(e) {
 	};
 
 	var makeCheckboxesForAlreadyPresentTags = function() {
-		container.append({ type: 'header', id: 'tagHeader0', label: 'Tags already present' });
-		var subdiv = container.append({ type: 'div', id: 'tagSubdiv0' });
+		container.append({ type: 'header', label: 'Tags already present' });
+		var subdiv = container.append({ type: 'div' });
 		var checkboxes = [];
 		var unCheckedTags = e.target.form.getUnchecked('existingTags');
 		Twinkle.tag.alreadyPresentTags.forEach(function(tag) {
@@ -383,11 +382,11 @@ Twinkle.tag.updateSortOrder = function(e) {
 		if (Twinkle.tag.alreadyPresentTags.length > 0) {
 			makeCheckboxesForAlreadyPresentTags();
 		}
-		var i = 1;
+
 		// go through each category and sub-category and append lists of checkboxes
 		$.each(Twinkle.tag.list.article, function(groupName, group) {
-			container.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
-			var subdiv = container.append({ type: 'div', id: 'tagSubdiv' + i++ });
+			container.append({ type: 'header', label: groupName });
+			var subdiv = container.append({ type: 'div' });
 			if (Array.isArray(group)) {
 				doCategoryCheckboxes(subdiv, group);
 			} else {
@@ -400,7 +399,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	} else { // alphabetical sort order
 		if (Twinkle.tag.alreadyPresentTags.length > 0) {
 			makeCheckboxesForAlreadyPresentTags();
-			container.append({ type: 'header', id: 'tagHeader1', label: 'Available tags' });
+			container.append({ type: 'header', label: 'Available tags' });
 		}
 
 		// Avoid repeatedly resorting
