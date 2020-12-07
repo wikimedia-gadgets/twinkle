@@ -781,6 +781,7 @@ Twinkle.tag.article.tagList = {
 					type: 'hidden',
 					name: 'expandLangTopic',
 					parameter: 'topic',
+					value: '',
 					required: true // force empty topic param in output
 				}, {
 					name: 'expandLanguageLangCode',
