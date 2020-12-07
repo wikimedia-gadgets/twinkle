@@ -1130,10 +1130,10 @@ HTMLFormElement.prototype.getUnchecked = function(name, type) {
  */
 RegExp.escape = function(text, space_fix) {
 	if (space_fix) {
-		console.warn('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with Morebits.string.escapeRegExp'); // eslint-disable-line no-console
+		console.error('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with Morebits.string.escapeRegExp'); // eslint-disable-line no-console
 		return Morebits.string.escapeRegExp(text);
 	}
-	console.warn('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with mw.util.escapeRegExp'); // eslint-disable-line no-console
+	console.error('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with mw.util.escapeRegExp'); // eslint-disable-line no-console
 	return mw.util.escapeRegExp(text);
 };
 
@@ -1854,7 +1854,7 @@ Object.getOwnPropertyNames(Date.prototype).forEach(function(func) {
 Morebits.wiki = {};
 
 /**
- * @deprecated in favor of Morebits.isPageRedirect
+ * @deprecated in favor of Morebits.isPageRedirect as of November 2020
  * @memberof Morebits.wiki
  * @returns {boolean}
  */
@@ -2784,7 +2784,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	/**
-	 * @deprecated Use setWatchlist.
+	 * @deprecated As of December 2020, use setWatchlist.
 	 * @param {boolean} [watchlistOption=false] -
 	 * - `True`: page watchlist status will be set based on the user's
 	 * preference settings when `save()` is called.
