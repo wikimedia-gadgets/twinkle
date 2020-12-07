@@ -295,7 +295,7 @@ interface quickFormElementData {
 	tooltip?: string
 	extra?: any
 	adminonly?: boolean
-	label?: string | HTMLElement
+	label?: string | HTMLElement | (string | HTMLElement)[] // non-string cases applicable for type=div only
 	value?: string
 	size?: string // for input
 	multiple?: boolean // for select

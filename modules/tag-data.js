@@ -38,13 +38,15 @@ var redirectTagList = {
                         name: 'altLangFrom',
                         type: 'input',
                         label: 'From language (two-letter code): ',
-                        tooltip: 'Enter the two-letter code of the language the redirect name is in; such as en for English, de for German'
+                        tooltip: 'Enter the two-letter code of the language the redirect name is in; such as en for English, de for German',
+                        parameter: 'from'
                     },
                     {
                         name: 'altLangTo',
                         type: 'input',
                         label: 'To language (two-letter code): ',
-                        tooltip: 'Enter the two-letter code of the language the target name is in; such as en for English, de for German'
+                        tooltip: 'Enter the two-letter code of the language the target name is in; such as en for English, de for German',
+                        parameter: 'to'
                     },
                     {
                         name: 'altLangInfo',
@@ -105,7 +107,8 @@ var redirectTagList = {
                     name: 'doubleRedirectTarget',
                     type: 'input',
                     label: 'Redirect target name',
-                    tooltip: 'Enter the page this redirect would target if the page wasn\'t also a redirect'
+                    tooltip: 'Enter the page this redirect would target if the page wasn\'t also a redirect',
+                    parameter: '1'
                 }
             },
             { tag: 'R from file metadata link', description: 'redirect of a wikilink created from EXIF, XMP, or other information (i.e. the "metadata" section on some image description pages)' },
@@ -185,10 +188,24 @@ var fileTagList = {
     'License and sourcing problem tags': [
         { tag: 'Better source requested', description: 'source info consists of bare image URL/generic base URL only' },
         { tag: 'Non-free reduce', description: 'non-low-resolution fair use image (or too-long audio clip, etc)' },
-        { tag: 'Orphaned non-free revisions', description: 'fair use media with old revisions that need to be deleted' }
+        { tag: 'Orphaned non-free revisions', description: 'fair use media with old revisions that need to be deleted',
+            subgroup: {
+                type: 'hidden',
+                name: 'OrphanedNonFreeRevisionsDate',
+                parameter: 'date',
+                value: '{{subst:date}}'
+            }
+        }
     ],
     'Wikimedia Commons-related tags': [
-        { tag: 'Copy to Commons', description: 'free media that should be copied to Commons' },
+        { tag: 'Copy to Commons', description: 'free media that should be copied to Commons',
+            subgroup: {
+                type: 'hidden',
+                name: 'CopyToCommonsHuman',
+                parameter: 'human',
+                value: mw.config.get('wgUserName')
+            }
+        },
         { tag: 'Do not move to Commons', description: 'file not suitable for moving to Commons',
             subgroup: [
                 {
@@ -196,13 +213,15 @@ var fileTagList = {
                     name: 'DoNotMoveToCommons_reason',
                     label: 'Reason: ',
                     tooltip: 'Enter the reason why this image should not be moved to Commons (required). If the file is PD in the US but not in country of origin, enter "US only"',
-                    required: true
+                    required: true,
+                    parameter: 'reason'
                 },
                 {
                     type: 'input',
                     name: 'DoNotMoveToCommons_expiry',
                     label: 'Expiration year: ',
-                    tooltip: 'If this file can be moved to Commons beginning in a certain year, you can enter it here (optional).'
+                    tooltip: 'If this file can be moved to Commons beginning in a certain year, you can enter it here (optional).',
+                    parameter: 'expiry'
                 }
             ]
         },
@@ -211,7 +230,8 @@ var fileTagList = {
                 type: 'input',
                 name: 'keeplocalName',
                 label: 'Commons image name if different: ',
-                tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
+                tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:',
+                parameter: '1'
             }
         },
         { tag: 'Now Commons', description: 'file has been copied to Commons',
@@ -219,7 +239,8 @@ var fileTagList = {
                 type: 'input',
                 name: 'nowcommonsName',
                 label: 'Commons image name if different: ',
-                tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
+                tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:',
+                parameter: '1'
             }
         }
     ],
@@ -231,14 +252,14 @@ var fileTagList = {
         { tag: 'Bad JPEG', description: 'JPEG that should be PNG or SVG' },
         { tag: 'Bad SVG', description: 'SVG containing raster grahpics' },
         { tag: 'Bad trace', description: 'auto-traced SVG requiring cleanup' },
-        {
-            tag: 'Cleanup image', description: 'general cleanup',
+        { tag: 'Cleanup image', description: 'general cleanup',
             subgroup: {
                 type: 'input',
                 name: 'cleanupimageReason',
                 label: 'Reason: ',
                 tooltip: 'Enter the reason for cleanup (required)',
-                required: true
+                required: true,
+                parameter: '1'
             }
         },
         { tag: 'ClearType', description: 'image (not screenshot) with ClearType anti-aliasing' },
@@ -253,13 +274,15 @@ var fileTagList = {
                     type: 'input',
                     name: 'renamemediaNewname',
                     label: 'New name: ',
-                    tooltip: 'Enter the new name for the image (optional)'
+                    tooltip: 'Enter the new name for the image (optional)',
+                    parameter: '1'
                 },
                 {
                     type: 'input',
                     name: 'renamemediaReason',
                     label: 'Reason: ',
-                    tooltip: 'Enter the reason for the rename (optional)'
+                    tooltip: 'Enter the reason for the rename (optional)',
+                    parameter: '2'
                 }
             ]
         },
@@ -284,13 +307,21 @@ var fileTagList = {
                     { label: '{{Should be SVG|music}}: musical scales, notes, etc.', value: 'music' },
                     { label: '{{Should be SVG|physical}}: "realistic" images of physical objects, people, etc.', value: 'physical' },
                     { label: '{{Should be SVG|symbol}}: miscellaneous symbols, icons, etc.', value: 'symbol' }
-                ]
+                ],
+                parameter: '1'
             }
         },
         { tag: 'Should be text', description: 'image should be represented as text, tables, or math markup' }
     ],
     'Image quality tags': [
-        { tag: 'Image hoax', description: 'Image may be manipulated or constitute a hoax' },
+        { tag: 'Image hoax', description: 'Image may be manipulated or constitute a hoax',
+            subgroup: {
+                type: 'hidden',
+                name: 'ImageHoaxDate',
+                parameter: 'date',
+                value: '{{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}'
+            }
+        },
         { tag: 'Image-blownout' },
         { tag: 'Image-out-of-focus' },
         { tag: 'Image-Poor-Quality',
@@ -299,7 +330,8 @@ var fileTagList = {
                 name: 'ImagePoorQualityReason',
                 label: 'Reason: ',
                 tooltip: 'Enter the reason why this image is so bad (required)',
-                required: true
+                required: true,
+                parameter: '1'
             }
         },
         { tag: 'Image-underexposure' },
@@ -309,7 +341,8 @@ var fileTagList = {
                 name: 'lowQualityChemReason',
                 label: 'Reason: ',
                 tooltip: 'Enter the reason why the diagram is disputed (required)',
-                required: true
+                required: true,
+                parameter: '1'
             }
         }
     ],
@@ -325,7 +358,8 @@ fileTagList['Replacement tags'].forEach(function (el) {
         label: 'Replacement file: ',
         tooltip: 'Enter the name of the file which replaces this one (required)',
         name: el.tag.replace(/ /g, '_') + 'File',
-        required: true
+        required: true,
+        parameter: '1'
     };
 });
 window.fileTagList = fileTagList;

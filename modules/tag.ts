@@ -11,6 +11,16 @@ class TwinkleModule {
 	}
 }
 
+interface tagSubgroupType extends quickFormElementData {
+	parameter: string
+}
+type tagData = {
+	tag: string
+	description?: string
+	subgroup?: tagSubgroupType | tagSubgroupType[]
+}
+type tagListType = tagData[] | Record<string, (tagData[] | Record<string, tagData[]>)>
+
 class Tag extends TwinkleModule {
 	mode: TagMode
 	static modeList: (typeof TagMode)[]
@@ -23,6 +33,9 @@ class Tag extends TwinkleModule {
 				this.mode = new mode();
 				break;
 			}
+		}
+		if (!this.mode) { // no mode is active
+			return;
 		}
 		this.portletName = 'Tag';
 		this.portletId = 'friendly-tag';
@@ -88,7 +101,9 @@ class Tag extends TwinkleModule {
 
 abstract class TagMode {
 	abstract name: string
-	abstract tagList: any
+	abstract tagList: tagListType
+	flatObject: Record<string, tagData>
+
 	Window: Morebits.simpleWindow
 	form: Morebits.quickForm
 	result: HTMLFormElement
@@ -111,6 +126,8 @@ abstract class TagMode {
 		this.Window.setTitle(this.getWindowTitle());
 		this.form = new Morebits.quickForm(() => { this.evaluate() });
 		this.formAppendQuickFilter();
+
+		this.constructFlatObject();
 		return this.form;
 	}
 	formAppendQuickFilter() {
@@ -122,6 +139,67 @@ abstract class TagMode {
 			event: QuickFilter.onInputChange
 		});
 	}
+	makeTagList() {
+		if (Array.isArray(this.tagList)) {
+			this.makeTagListGroup(this.tagList, this.form);
+		} else {
+			$.each(this.tagList, (groupName, group) => {
+				this.form.append({ type: 'header', label: groupName });
+				if (Array.isArray(group)) { // if group is a list of tags
+					this.makeTagListGroup(group, this.form);
+				} else { // if group is a list of subgroups
+					let subdiv = this.form.append({ type: 'div' });
+					$.each(group, (subgroupName: string, subgroup: any[]) => {
+						subdiv.append({ type: 'div', label: [Morebits.htmlNode('b', subgroupName)] });
+						this.makeTagListGroup(subgroup, subdiv);
+					});
+				}
+			});
+		}
+	}
+
+	// helper function for makeTagList()
+	makeTagListGroup(list: tagData[], container: quickFormElement | Morebits.quickForm = this.form) {
+		container.append({
+			type: 'checkbox',
+			name: 'tags',
+			list: list.map((item) => ({
+				label: '{{' + item.tag + '}}' + (item.description ? ': ' + item.description : ''),
+				value: item.tag,
+				subgroup: item.subgroup
+			}))
+		});
+	}
+
+	constructFlatObject() {	// Object.values is unavailable in IE 11
+		var obj_values = Object.values || function (obj) {
+			return Object.keys(obj).map(function (key) {
+				return obj[key];
+			});
+		};
+		this.flatObject = {};
+
+		if (Array.isArray(this.tagList)) {
+			// this.tagList is of type tagData[]
+			this.tagList.forEach((item) => {
+				this.flatObject[item.tag] = item;
+			});
+		} else {
+			obj_values(this.tagList).forEach((group: tagData[] | Record<string, tagData[]>) => {
+				obj_values(group).forEach((subgroup: tagData | tagData[]) => {
+					if (Array.isArray(subgroup)) {
+						subgroup.forEach((item) => {
+							this.flatObject[item.tag] = item;
+						});
+					} else {
+						this.flatObject[subgroup.tag] = subgroup;
+					}
+				});
+			});
+		}
+		return this.flatObject;
+	}
+
 	formAppendPatrolLink() {
 		if (!document.getElementsByClassName('patrollink').length) {
 			return;
@@ -147,7 +225,6 @@ abstract class TagMode {
 		this.Window.setContent(this.result);
 		this.Window.display();
 		QuickFilter.init(this.result);
-
 	}
 	postRender() {
 		Morebits.quickForm.getElements(this.result, 'tags').forEach(Tag.makeArrowLinks);
@@ -183,6 +260,20 @@ abstract class TagMode {
 		if (this.name === 'redirect') {
 			Morebits.wiki.actionCompleted.followRedirect = false;
 		}
+	}
+
+	getParameterText(tagName: string) {
+		let parameterText = '';
+		let subgroupObj = this.flatObject[tagName] && this.flatObject[tagName].subgroup;
+		if (subgroupObj) {
+			let subgroups = Array.isArray(subgroupObj) ? subgroupObj : [ subgroupObj ];
+			subgroups.forEach((gr) => {
+				if (gr.parameter && (this.params[gr.name] || gr.required)) {
+					parameterText += '|' + gr.parameter + '=' + (this.params[gr.name] || '');
+				}
+			});
+		}
+		return parameterText;
 	}
 }
 
@@ -252,57 +343,18 @@ class RedirectMode extends TagMode {
 		return 'Redirect tagging';
 	}
 	makeForm(Window) {
-		let form = super.makeForm(Window);
-		var i = 1;
-		$.each(this.tagList, function (groupName, group) {
-			form.append({
-				type: 'header',
-				id: 'tagHeader' + i,
-				label: groupName
-			});
-			var subdiv = form.append({
-				type: 'div',
-				id: 'tagSubdiv' + i++
-			});
-			$.each(group, function (subgroupName: string, subgroup: any[]) {
-				subdiv.append({
-					type: 'div',
-					label: [Morebits.htmlNode('b', subgroupName)]
-				});
-				subdiv.append({
-					type: 'checkbox',
-					name: 'tags',
-					list: subgroup.map(function (item) {
-						return {
-							value: item.tag,
-							label: '{{' + item.tag + '}}: ' + item.description,
-							subgroup: item.subgroup
-						};
-					})
-				});
-			});
-		});
+		super.makeForm(Window);
+		this.makeTagList();
 
 		if (Twinkle.getPref('customRedirectTagList').length) {
-			form.append({
-				type: 'header',
-				label: 'Custom tags'
-			});
-			form.append({
-				type: 'checkbox',
-				name: 'tags',
-				list: Twinkle.getPref('customRedirectTagList')
-			});
+			this.form.append({ type: 'header', label: 'Custom tags' });
+			this.form.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customRedirectTagList') });
 		}
 
 		this.formAppendPatrolLink();
 		this.formAppendSubmitButton();
 		return this.form;
 	}
-
-	// public captureFormData() {
-	// 	super.captureFormData();
-	// }
 
 	action() {
 		super.action();
@@ -328,18 +380,7 @@ class RedirectMode extends TagMode {
 			}
 
 			tags.forEach((tagName) => {
-				tagText += '\n{{' + tagName;
-				if (tagName === 'R from alternative language') {
-					if (this.params.altLangFrom) {
-						tagText += '|from=' + this.params.altLangFrom;
-					}
-					if (this.params.altLangTo) {
-						tagText += '|to=' + this.params.altLangTo;
-					}
-				} else if (tagName === 'R avoided double redirect' && this.params.doubleRedirectTarget) {
-					tagText += '|1=' + this.params.doubleRedirectTarget;
-				}
-				tagText += '}}';
+				tagText += '\n{{' + tagName + this.getParameterText(tagName) + '}}';
 			});
 
 			// Check for all Rcat shell redirects (from #433)
@@ -398,33 +439,12 @@ class FileMode extends TagMode {
 	}
 
 	makeForm(Window) {
-		let form = super.makeForm(Window);
-		$.each(this.tagList, function(groupName, group) {
-			form.append({
-				type: 'header',
-				label: groupName
-			});
-			form.append({
-				type: 'checkbox',
-				name: 'tags',
-				list: group.map((item) => ({
-					label: '{{' + item.tag + '}}' + (item.description ? ': ' + item.description : ''),
-					value: item.tag,
-					subgroup: item.subgroup
-				}))
-			});
-		});
+		super.makeForm(Window);
+		this.makeTagList();
 
 		if (Twinkle.getPref('customFileTagList').length) {
-			form.append({
-				type: 'header',
-				label: 'Custom tags'
-			});
-			form.append({
-				type: 'checkbox',
-				name: 'tags',
-				list: Twinkle.getPref('customFileTagList')
-			});
+			this.form.append({ type: 'header', label: 'Custom tags' });
+			this.form.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customFileTagList') });
 		}
 
 		this.formAppendPatrolLink();
@@ -525,71 +545,25 @@ class FileMode extends TagMode {
 			if (params.tags.length) {
 
 				var tagtext = '', currentTag;
-				$.each(params.tags, function(k, tag) {
+				$.each(params.tags, (k, tag) => {
 					// when other commons-related tags are placed, remove "move to Commons" tag
 					if (['Keep local', 'Now Commons', 'Do not move to Commons'].indexOf(tag) !== -1) {
 						text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
 					}
 
-					currentTag = tag;
+					currentTag = tag + this.getParameterText(tag);
 
 					switch (tag) {
 						case 'Now Commons':
 							currentTag = 'subst:' + currentTag; // subst
-							if (params.nowcommonsName !== '') {
-								currentTag += '|1=' + params.nowcommonsName;
-							}
-							break;
-						case 'Keep local':
-							if (params.keeplocalName !== '') {
-								currentTag += '|1=' + params.keeplocalName;
-							}
-							break;
-						case 'Rename media':
-							if (params.renamemediaNewname !== '') {
-								currentTag += '|1=' + params.renamemediaNewname;
-							}
-							if (params.renamemediaReason !== '') {
-								currentTag += '|2=' + params.renamemediaReason;
-							}
-							break;
-						case 'Cleanup image':
-							currentTag += '|1=' + params.cleanupimageReason;
-							break;
-						case 'Image-Poor-Quality':
-							currentTag += '|1=' + params.ImagePoorQualityReason;
-							break;
-						case 'Image hoax':
-							currentTag += '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}';
-							break;
-						case 'Low quality chem':
-							currentTag += '|1=' + params.lowQualityChemReason;
 							break;
 						case 'Vector version available':
 							text = text.replace(/\{\{((convert to |convertto|should be |shouldbe|to)?svg|badpng|vectorize)[^}]*\}\}/gi, '');
-						/* falls through */
-						case 'PNG version available':
-						/* falls through */
-						case 'Obsolete':
-							currentTag += '|1=' + params[tag.replace(/ /g, '_') + 'File'];
-							break;
-						case 'Do not move to Commons':
-							currentTag += '|reason=' + params.DoNotMoveToCommons_reason;
-							if (params.DoNotMoveToCommons_expiry) {
-								currentTag += '|expiry=' + params.DoNotMoveToCommons_expiry;
-							}
 							break;
 						case 'Orphaned non-free revisions':
 							currentTag = 'subst:' + currentTag; // subst
 							// remove {{non-free reduce}} and redirects
 							text = text.replace(/\{\{\s*(Template\s*:\s*)?(Non-free reduce|FairUseReduce|Fairusereduce|Fair Use Reduce|Fair use reduce|Reduce size|Reduce|Fair-use reduce|Image-toobig|Comic-ovrsize-img|Non-free-reduce|Nfr|Smaller image|Nonfree reduce)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
-							currentTag += '|date={{subst:date}}';
-							break;
-						case 'Copy to Commons':
-							currentTag += '|human=' + mw.config.get('wgUserName');
-							break;
-						case 'Should be SVG':
-							currentTag += '|' + params.svgCategory;
 							break;
 						default:
 							break;  // don't care
