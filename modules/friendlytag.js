@@ -1470,7 +1470,7 @@ Twinkle.tag.callbacks = {
 					var subgroups = Array.isArray(subgroupObj) ? subgroupObj : [ subgroupObj ];
 					subgroups.forEach(function(gr) {
 						if (gr.parameter && (params[gr.name] || gr.required)) {
-							currentTag += '|' + gr.parameter + '=' + params[gr.name];
+							currentTag += '|' + gr.parameter + '=' + (params[gr.name] || '');
 						}
 					});
 				}
