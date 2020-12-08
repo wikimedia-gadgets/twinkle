@@ -1952,7 +1952,12 @@ Morebits.wiki.removeCheckpoint = function() {
 
 /* **************** Morebits.wiki.api **************** */
 /**
- * An easy way to talk to the MediaWiki API.
+ * An easy way to talk to the MediaWiki API.  Accepts either json or xml
+ * (default) formats; if json is selected, will default to `formatversion=2`
+ * unless otherwise specified.  Similarly, enforces newer `errorformat`s,
+ * defaulting to `html` if unspecified.  `uselang` enforced to the wiki's
+ * content language.
+ *
  * In new code, the use of the last 3 parameters should be avoided, instead
  * use {@link Morebits.wiki.api#setStatusElement|setStatusElement()} to bind
  * the status element (if needed) and use `.then()` or `.catch()` on the
