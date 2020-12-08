@@ -10,6 +10,8 @@ const server = http.createServer((request, response) => {
 		contentType = 'text/javascript';
 	} else if (request.url.endsWith('.css')) {
 		contentType = 'text/css';
+	} else {
+		contentType = 'text/plain';
 	}
 	fs.readFile(filePath, function(error, content) {
 		if (error) {
