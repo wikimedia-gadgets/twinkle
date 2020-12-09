@@ -474,7 +474,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			});
 		}
 
-		var $previewlink = $('<a id="twinkleblock-preivew-link">Preview</a>');
+		var $previewlink = $('<a id="twinkleblock-preview-link">Preview</a>');
 		$previewlink.off('click').on('click', function() {
 			Twinkle.block.callback.preview($form[0]);
 		});
