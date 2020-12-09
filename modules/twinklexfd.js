@@ -1240,8 +1240,8 @@ Twinkle.xfd.callbacks = {
 					token: mw.user.tokens.get('watchToken')
 				};
 				// Expiry
-				if (watchModule && watchPref !== 'default' && watchPref !== 'yes') {
-					watch_query.watchlistexpiry = watchPref;
+				if (!pageobj.getWatched() && watchModule && watchPref !== 'default' && watchPref !== 'yes') {
+					watch_query.expiry = watchPref;
 				}
 			}
 
