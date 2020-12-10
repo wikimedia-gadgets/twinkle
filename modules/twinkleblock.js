@@ -1204,6 +1204,10 @@ Twinkle.block.dsinfo = {
 		code: 'gc',
 		page: 'Wikipedia:Arbitration/Requests/Case/Gun control'
 	},
+	'Horn of Africa (Ethiopia, Somalia, Eritrea, Djibouti)': {
+		code: 'horn',
+		page: 'Wikipedia:Arbitration/Requests/Case/Horn of Africa'
+	},
 	'India, Pakistan, and Afghanistan': {
 		code: 'ipa',
 		page: 'Wikipedia:Requests for arbitration/India-Pakistan'
