@@ -1912,13 +1912,11 @@ Twinkle.xfd.callbacks = {
 					statelem.warn('Circular redirect; skipping target page notification');
 				} else if (document.getElementById('softredirect')) {
 					statelem.warn('Soft redirect; skipping target page notification');
-				} else if (targetTalk.getNamespaceId() === 3) {
-					// Don't issue if target talk is the initial contributor's talk or your own
-					if (targetTalk.getNameText() === initialContrib) {
-						statelem.warn('Target is initial contributor; skipping target page notification');
-					} else if (targetTalk.getNameText() === mw.config.get('wgUserName')) {
-						statelem.warn('You (' + mw.config.get('wgUserName') + ') are the target; skipping target page notification');
-					}
+				// Don't issue if target talk is the initial contributor's talk or your own
+				} else if (targetTalk.getNamespaceId() === 3 && targetTalk.getNameText() === initialContrib) {
+					statelem.warn('Target is initial contributor; skipping target page notification');
+				} else if (targetTalk.getNamespaceId() === 3 && targetTalk.getNameText() === mw.config.get('wgUserName')) {
+					statelem.warn('You (' + mw.config.get('wgUserName') + ') are the target; skipping target page notification');
 				} else {
 					// Don't log if notifying creator above, will log then
 					Twinkle.xfd.callbacks.notifyUser(params, targetTalk.toText(), params.notifycreator, 'Notifying redirect target of the discussion');
