@@ -84,6 +84,11 @@ QUnit.test('Morebits.wikitext.page', assert => {
 	assert.strictEqual(page.getText(), text, 'Got text');
 
 	// Throws
+	assert.throws(() => new Morebits.wikitext.page(text).removeLink(), 'throws: no link');
+	assert.throws(() => new Morebits.wikitext.page(text).commentOutImage(), 'throws: no image');
+	assert.throws(() => new Morebits.wikitext.page(text).addToImageComment(), 'throws: no file name');
+	assert.throws(() => new Morebits.wikitext.page(text).addToImageComment('Fee.svg'), 'throws: no display options');
+	assert.throws(() => new Morebits.wikitext.page(text).removeTemplate(), 'throws: no template');
 	assert.throws(() => new Morebits.wikitext.page(text).insertAfterTemplates(), 'throws: no tag');
 	assert.throws(() => new Morebits.wikitext.page(text).insertAfterTemplates('tag'), 'throws: no regex');
 

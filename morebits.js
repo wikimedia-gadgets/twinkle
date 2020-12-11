@@ -4481,10 +4481,14 @@ Morebits.wikitext.page.prototype = {
 	 * colon (e.g. [[:User:Test]]).
 	 *
 	 * @param {string} link_target
-	 *
 	 * @returns {Morebits.wikitext.page}
+	 * @throws If no link is provided.
 	 */
 	removeLink: function(link_target) {
+		if (typeof link_target === 'undefined') {
+			throw new Error('No link target provided');
+		}
+
 		var first_char = link_target.substr(0, 1);
 		var link_re_string = '[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + Morebits.string.escapeRegExp(link_target.substr(1));
 
@@ -4502,11 +4506,15 @@ Morebits.wikitext.page.prototype = {
 	 * If used as a template argument (not necessarily with `File:` prefix), the template parameter is commented out.
 	 *
 	 * @param {string} image - Image name without `File:` prefix.
-	 * @param {string} reason - Reason to be included in comment, alongside the commented-out image.
-	 *
+	 * @param {string} [reason] - Optional reason to be included in comment, alongside the commented-out image.
 	 * @returns {Morebits.wikitext.page}
+	 * @throws If no image is provided.
 	 */
 	commentOutImage: function(image, reason) {
+		if (typeof image === 'undefined') {
+			throw new Error('No file name provided');
+		}
+
 		var unbinder = new Morebits.unbinder(this.text);
 		unbinder.unbind('<!--', '-->');
 
@@ -4550,10 +4558,16 @@ Morebits.wikitext.page.prototype = {
 	 *
 	 * @param {string} image - Image name without File: prefix.
 	 * @param {string} data - The display options.
-	 *
 	 * @returns {Morebits.wikitext.page}
+	 * @throws If no image or display options are provided.
 	 */
 	addToImageComment: function(image, data) {
+		if (typeof image === 'undefined') {
+			throw new Error('No file name provided');
+		} else if (typeof data === 'undefined') {
+			throw new Error('No display options provided');
+		}
+
 		var first_char = image.substr(0, 1);
 		var first_char_regex = Morebits.string.escapeRegExp(first_char);
 		if (first_char.toUpperCase() !== first_char.toLowerCase()) {
@@ -4581,10 +4595,14 @@ Morebits.wikitext.page.prototype = {
 	 *
 	 * @param {string} template - Page name whose transclusions are to be removed,
 	 * include namespace prefix only if not in template namespace.
-	 *
 	 * @returns {Morebits.wikitext.page}
+	 * @throws If no template is provided.
 	 */
 	removeTemplate: function(template) {
+		if (typeof template === 'undefined') {
+			throw new Error('No template provided');
+		}
+
 		var first_char = template.substr(0, 1);
 		var template_re_string = '(?:[Tt]emplate:)?\\s*[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + Morebits.string.escapeRegExp(template.substr(1));
 		var links_re = new RegExp('\\{\\{' + template_re_string + '\\s*[\\|(?:\\}\\})]');
@@ -4606,7 +4624,7 @@ Morebits.wikitext.page.prototype = {
 	 * @param {string|string[]} regex - Templates after which to insert tag,
 	 * given as either as a (regex-valid) string or an array to be joined by pipes.
 	 * @param {string} [flags=i] - Regex flags to apply.
-	 * @param {string|string[]} preRegex - Optional regex string or array to match
+	 * @param {string|string[]} [preRegex] - Optional regex string or array to match
 	 * before any template matches (i.e. before `{{`), such as html comments.
 	 * @returns {Morebits.wikitext.page}
 	 * @throws If no tag or regex are provided.
