@@ -4623,7 +4623,8 @@ Morebits.wikitext.page.prototype = {
 	 * @param {string} tag - The tag to be inserted.
 	 * @param {string|string[]} regex - Templates after which to insert tag,
 	 * given as either as a (regex-valid) string or an array to be joined by pipes.
-	 * @param {string} [flags=i] - Regex flags to apply.
+	 * @param {string} [flags=i] - Regex flags to apply.  `''` to provide no flags;
+	 * other falsey values will default to `i`.
 	 * @param {string|string[]} [preRegex] - Optional regex string or array to match
 	 * before any template matches (i.e. before `{{`), such as html comments.
 	 * @returns {Morebits.wikitext.page}
@@ -4642,7 +4643,9 @@ Morebits.wikitext.page.prototype = {
 			regex = regex.join('|');
 		}
 
-		flags = flags || 'i';
+		if (typeof flags !== 'string') {
+			flags = 'i';
+		}
 
 		if (!preRegex || !preRegex.length) {
 			preRegex = '';
