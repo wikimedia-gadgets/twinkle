@@ -4481,7 +4481,6 @@ Morebits.wikitext.page.prototype = {
 	 * colon (e.g. [[:User:Test]]).
 	 *
 	 * @param {string} link_target
-	 *
 	 * @returns {Morebits.wikitext.page}
 	 */
 	removeLink: function(link_target) {
@@ -4502,8 +4501,7 @@ Morebits.wikitext.page.prototype = {
 	 * If used as a template argument (not necessarily with `File:` prefix), the template parameter is commented out.
 	 *
 	 * @param {string} image - Image name without `File:` prefix.
-	 * @param {string} reason - Reason to be included in comment, alongside the commented-out image.
-	 *
+	 * @param {string} [reason] - Reason to be included in comment, alongside the commented-out image.
 	 * @returns {Morebits.wikitext.page}
 	 */
 	commentOutImage: function(image, reason) {
@@ -4550,7 +4548,6 @@ Morebits.wikitext.page.prototype = {
 	 *
 	 * @param {string} image - Image name without File: prefix.
 	 * @param {string} data - The display options.
-	 *
 	 * @returns {Morebits.wikitext.page}
 	 */
 	addToImageComment: function(image, data) {
@@ -4581,7 +4578,6 @@ Morebits.wikitext.page.prototype = {
 	 *
 	 * @param {string} template - Page name whose transclusions are to be removed,
 	 * include namespace prefix only if not in template namespace.
-	 *
 	 * @returns {Morebits.wikitext.page}
 	 */
 	removeTemplate: function(template) {
@@ -4605,11 +4601,11 @@ Morebits.wikitext.page.prototype = {
 	 * @param {string} tag - The tag to be inserted.
 	 * @param {string|string[]} regex - Templates after which to insert tag,
 	 * given as either as a (regex-valid) string or an array to be joined by pipes.
-	 * @param {string} [flags=i] - Regex flags to apply.
-	 * @param {string|string[]} preRegex - Optional regex string or array to match
+	 * @param {string} [flags=i] - Regex flags to apply.  `''` to provide no flags;
+	 * other falsey values will default to `i`.
+	 * @param {string|string[]} [preRegex] - Optional regex string or array to match
 	 * before any template matches (i.e. before `{{`), such as html comments.
 	 * @returns {Morebits.wikitext.page}
-	 * @throws If no tag or regex are provided.
 	 */
 	insertAfterTemplates: function(tag, regex, flags, preRegex) {
 		if (typeof tag === 'undefined') {
@@ -4624,7 +4620,9 @@ Morebits.wikitext.page.prototype = {
 			regex = regex.join('|');
 		}
 
-		flags = flags || 'i';
+		if (typeof flags !== 'string') {
+			flags = 'i';
+		}
 
 		if (!preRegex || !preRegex.length) {
 			preRegex = '';

@@ -168,6 +168,13 @@ QUnit.test('Morebits.wikitext.page', assert => {
 			params: ['o']
 		},
 		{
+			name: 'no flag',
+			method: 'insertAfterTemplates',
+			input: '{{short description}}{{About}}O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!',
+			expected: '{{short description}}{{newtag}}{{About}}O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!',
+			params: ['{{newtag}}', 'short description|about|Juliet', '']
+		},
+		{
 			name: 'preRegex',
 			method: 'insertAfterTemplates',
 			input: '{{short description}}{{About}}<!-- random -->{{xfd}}O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!',
