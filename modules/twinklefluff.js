@@ -364,6 +364,7 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 		'action': 'query',
 		'prop': ['info', 'revisions', 'flagged'],
 		'titles': pagename,
+		'inprop': 'watched',
 		'intestactions': 'edit',
 		'rvlimit': Twinkle.getPref('revertMaxRevisions'),
 		'rvprop': [ 'ids', 'timestamp', 'user' ],
@@ -385,6 +386,7 @@ Twinkle.fluff.revertToRevision = function revertToRevision(oldrev) {
 		'action': 'query',
 		'prop': ['info', 'revisions'],
 		'titles': mw.config.get('wgPageName'),
+		'inprop': 'watched',
 		'rvlimit': 1,
 		'rvstartid': oldrev,
 		'rvprop': [ 'ids', 'user' ],
@@ -456,8 +458,8 @@ Twinkle.fluff.callbacks = {
 			} else {
 				query.watchlist = 'watch';
 				// number allowed but not used in Twinkle.config.watchlistEnums
-				if (typeof watchOrExpiry === 'string' && watchOrExpiry !== 'yes') {
-					query.watchlistexpiry = watchOrExpiry;
+				if (!page.watched && typeof watchOrExpiry === 'string' && watchOrExpiry !== 'yes') {
+					query.expiry = watchOrExpiry;
 				}
 			}
 		}
@@ -689,8 +691,8 @@ Twinkle.fluff.callbacks = {
 			} else {
 				query.watchlist = 'watch';
 				// number allowed but not used in Twinkle.config.watchlistEnums
-				if (typeof watchOrExpiry === 'string' && watchOrExpiry !== 'yes') {
-					query.watchlistexpiry = watchOrExpiry;
+				if (!page.watched && typeof watchOrExpiry === 'string' && watchOrExpiry !== 'yes') {
+					query.expiry = watchOrExpiry;
 				}
 			}
 		}

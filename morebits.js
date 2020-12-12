@@ -2359,6 +2359,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		contentModel: null,
 		revertCurID: null,
 		revertUser: null,
+		watched: false,
 		fullyProtected: false,
 		suppressProtectWarning: false,
 		conflictRetries: 0,
@@ -2425,6 +2426,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.loadQuery = {
 			action: 'query',
 			prop: 'info|revisions',
+			inprop: 'watched',
 			intestactions: 'edit', // can be expanded
 			curtimestamp: '',
 			meta: 'tokens',
@@ -2449,7 +2451,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.loadQuery.rvsection = ctx.pageSection;
 		}
 		if (Morebits.userIsSysop) {
-			ctx.loadQuery.inprop = 'protection';
+			ctx.loadQuery.inprop += '|protection';
 		}
 
 		ctx.loadApi = new Morebits.wiki.api('Retrieving page...', ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
@@ -2519,7 +2521,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry) {
+		if (ctx.watchlistExpiry && !ctx.watched) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 
@@ -3006,6 +3008,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		return ctx.contentModel;
 	};
 
+	/** @returns {boolean} - Watched status of the page. */
+	this.getWatched = function () {
+		return ctx.watched;
+	};
+
 	/**
 	 * @returns {string} ISO 8601 timestamp at which the page was last loaded.
 	 */
@@ -3445,6 +3452,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		ctx.contentModel = page.contentmodel;
+		ctx.watched = page.watched;
 
 		// extract protection info, to alert admins when they are about to edit a protected page
 		// Includes cascading protection
@@ -3825,7 +3833,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry) {
+		if (ctx.watchlistExpiry && !ctx.watched) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 		if (ctx.moveTalkPage) {
@@ -3969,7 +3977,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry) {
+		if (ctx.watchlistExpiry && !ctx.watched) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 
@@ -4032,7 +4040,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry) {
+		if (ctx.watchlistExpiry && !ctx.watched) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 
@@ -4165,7 +4173,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry) {
+		if (ctx.watchlistExpiry && !ctx.watched) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 		if (ctx.protectCascade) {
