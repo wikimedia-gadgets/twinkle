@@ -3,7 +3,7 @@ QUnit.test('userIsSysop', assert => {
 	assert.true(Morebits.userIsSysop, 'Is sysop');
 });
 QUnit.test('pageNameNorm', assert => {
-	assert.strictEqual(Morebits.pageNameNorm, 'Macbeth', 'Normalized page title');
+	assert.strictEqual(Morebits.pageNameNorm, 'Macbeth, King of Scotland', 'Normalized page title');
 });
 
 QUnit.module('methods');
@@ -19,8 +19,11 @@ QUnit.test('sanitizeIPv6', assert => {
 });
 
 QUnit.test('pageNameRegex', assert => {
-	assert.strictEqual(Morebits.pageNameRegex(mw.config.get('wgPageName')), '[Mm]acbeth', 'Normalized page title');
-	assert.strictEqual(Morebits.pageNameRegex('foo bar'), '[Ff]oo bar', 'foo bar');
+	assert.strictEqual(Morebits.pageNameRegex(mw.config.get('wgPageName')), '[Mm]acbeth,[_ ]King[_ ]of[_ ]Scotland', 'First character and spaces');
+	assert.strictEqual(Morebits.pageNameRegex(''), '', 'Empty');
+	assert.strictEqual(Morebits.pageNameRegex('a'), '[Aa]', 'Single character');
+	assert.strictEqual(Morebits.pageNameRegex('#'), '#', 'Single same-case');
+	assert.strictEqual(Morebits.pageNameRegex('*$, \{}(a) |.?+-^ [ ]'), '\\*\\$,[_ ]\\{\\}\\(a\\)[_ ]\\|\\.\\?\\+\\-\\^\[_ ]\\[[_ ]\\]', 'Special characters');
 });
 QUnit.test('isPageRedirect', assert => {
 	assert.false(Morebits.isPageRedirect(), 'Is redirect');

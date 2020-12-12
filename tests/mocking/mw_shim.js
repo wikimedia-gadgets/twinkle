@@ -11,14 +11,14 @@
  *         - getUrl needs wikiScript, wikiUrlEncode, escapeIdForLink
  *     - twinkle.js would need: addPortletLink
  *     - modules would need: addCSS, isIPAddress, rawurlencode, wikiUrlencode
+ * Title (phpCharToUpper only, otherwise the rest is just used in Morebits.wiki.page)
  *
  * Not funtional/done:
  * user.tokens (nonfunctional, only used in Morebits.wiki.page)
- * Title (only used in Morebits.wiki.page)
  */
 
 /**
- * The MediaWiki code base islicensed under GPL2; see https://www.gnu.org/licenses/gpl-2.0.html
+ * The MediaWiki code base is licensed under GPL2; see https://www.gnu.org/licenses/gpl-2.0.html
  * and https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/master/COPYING
  */
 
@@ -853,9 +853,29 @@ mw.user = {
 
 /**
  * mw.Title TODO
+ * Loads phpCharToUpper.json: https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/a27e2f17c22b98fd95e449396b26e4e7d77e299f/resources/src/mediawiki.Title/phpCharToUpper.json
  * Might need some of: wgNamespaceIds, wgFormattedNamespaces, wgLegalTitleChars, wgIllegalFileChars, wgExtraSignatureNamespaces, wgCaseSensitiveNamespaces
  * https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/a27e2f17c22b98fd95e449396b26e4e7d77e299f/resources/src/mediawiki.Title/Title.js
  */
-
+var toUpperMap;
+mw.Title = {
+	/**
+	 * PHP's strtoupper differs from String.toUpperCase in a number of cases (T147646).
+	 *
+	 * @param {string} chr Unicode character
+	 * @return {string} Unicode character, in upper case, according to the same rules as in PHP
+	 */
+	phpCharToUpper: function ( chr ) {
+		if ( !toUpperMap ) {
+			toUpperMap = require( './phpCharToUpper.json' );
+		}
+		if ( toUpperMap[ chr ] === '' ) {
+			// Optimisation: When the override is to keep the character unchanged,
+			// we use an empty string in JSON. This reduces the data by 50%.
+			return chr;
+		}
+		return toUpperMap[ chr ] || chr.toUpperCase();
+	}
+};
 
 exports.mw = mw;
