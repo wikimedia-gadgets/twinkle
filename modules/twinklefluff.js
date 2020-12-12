@@ -18,18 +18,18 @@
  */
 
 Twinkle.fluff = function twinklefluff() {
+	// Only proceed if the user can actually edit the page in question
+	// (see #632 for contribs issue).  wgIsProbablyEditable should take
+	// care of namespace/contentModel restrictions as well as explicit
+	// protections; it won't take care of cascading or TitleBlacklist.
 	if (mw.config.get('wgIsProbablyEditable')) {
-		// Only proceed if the user can actually edit the page
-		// in question (ignored for contributions, see #632).
-		// wgIsProbablyEditable should take care of
-		// namespace/contentModel restrictions as well as
-		// explicit protections; it won't take care of
-		// cascading or TitleBlacklist restrictions
-		if (mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId')) { // wgDiffOldId included for clarity in if else loop [[phab:T214985]]
-			mw.hook('wikipage.diff').add(function () { // Reload alongside the revision slider
+		// wgDiffOldId included for clarity in if else loop [[phab:T214985]]
+		if (mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId')) {
+			// Reload alongside the revision slider
+			mw.hook('wikipage.diff').add(function () {
 				Twinkle.fluff.addLinks.diff();
 			});
-		} else if (mw.config.get('wgAction') === 'view' && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId')) {
+		} else if (mw.config.get('wgAction') === 'view' && mw.config.get('wgRevisionId') && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId')) {
 			Twinkle.fluff.addLinks.oldid();
 		} else if (mw.config.get('wgAction') === 'history' && mw.config.get('wgArticleId')) {
 			Twinkle.fluff.addLinks.history();
