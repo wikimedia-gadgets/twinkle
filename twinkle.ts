@@ -411,9 +411,43 @@ var Twinkle = {
 	},
 
 
+	// Non-polluting shims for common ES6 functions
+	// Use destructuring on the Twinkle.shims object for convenient usage;
+	// eg. const {arr_includes, str_startsWith} = Twinkle.shims;
+	shims: {
+		obj_values(obj) {
+			return Object.values ? Object.values(obj) : Object.keys(obj).map(k => obj[k]);
+		},
+		obj_entries(obj) {
+			return Object.entries ? Object.entries(obj) : Object.keys(obj).map(k => [k, obj[k]]);
+		},
+		arr_includes<T>(arr: Array<T>, item: T): boolean {
+			return arr.indexOf(item) !== -1;
+		},
+		arr_find<T>(arr: Array<T>, predicate: ((item: T) => boolean)) {
+			return Array.prototype.find ? arr.find(predicate) : arr.filter(predicate)[0];
+		},
+		str_includes(str, item): boolean {
+			return str.indexOf(item) !== -1;
+		},
+		str_startsWith(str, text): boolean {
+			return String.prototype.startsWith ? str.startsWith(text) : str.indexOf(text) === 0;
+		},
+		str_endsWith(str, text): boolean {
+			if (String.prototype.endsWith) {
+				return str.endsWith(text);
+			} else {
+				let lastIdx = str.lastIndexOf(text);
+				return lastIdx !== -1 && lastIdx === str.length - text.length;
+			}
+		}
+	},
+
+
 	/**
 	 * Twinkle-specific data shared by multiple modules
 	 * Likely customized per installation
+	 * TODO: move these to a separate file?
 	 */
 
 	// Custom change tag(s) to be applied to all Twinkle actions, create at Special:Tags
@@ -532,6 +566,21 @@ $.ajax({
 		$(Twinkle.load);
 	});
 
-window.Twinkle = Twinkle;  // allow global access
+
+var TwinkleModule = class {
+	moduleName: string
+	portletName: string
+	portletId: string
+	portletTooltip: string
+	makeWindow: string | (() => void)
+	addMenu() {
+		Twinkle.addPortletLink(this.makeWindow, this.portletName, this.portletId,
+			this.portletTooltip)
+	}
+}
+
+// allow global access
+window.Twinkle = Twinkle;
+window.TwinkleModule = TwinkleModule;
 
 // </nowiki>
