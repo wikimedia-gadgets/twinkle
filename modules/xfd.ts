@@ -423,7 +423,6 @@ class Cfd extends XfdMode {
 			(mw.config.get('wgNamespaceNumber') === 10 && /-stub$/.test(Morebits.pageNameNorm));
 	}
 
-
 	getFieldsetLabel() {
 		return 'Categories for discussion';
 	}
@@ -432,16 +431,209 @@ class Cfd extends XfdMode {
 		return 'Nominate article for deletion or move';
 	}
 
+	public generateFieldset(): quickFormElement {
+		this.fieldset = super.generateFieldset();
+		var isCategory = mw.config.get('wgNamespaceNumber') === 14;
+		this.fieldset.append({
+			type: 'select',
+			label: 'Choose type of action wanted: ',
+			name: 'xfdcat',
+			list: isCategory ? [
+				{ type: 'option', label: 'Deletion', value: 'cfd', selected: true },
+				{ type: 'option', label: 'Merge', value: 'cfm' },
+				{ type: 'option', label: 'Renaming', value: 'cfr' },
+				{ type: 'option', label: 'Split', value: 'cfs' },
+				{ type: 'option', label: 'Convert into article', value: 'cfc' }
+			] : [
+				{ type: 'option', label: 'Stub Deletion', value: 'sfd-t', selected: true },
+				{ type: 'option', label: 'Stub Renaming', value: 'sfr-t' }
+			],
+			event: function(e) {
+				var value = e.target.value,
+					cfdtarget = e.target.form.cfdtarget,
+					cfdtarget2 = e.target.form.cfdtarget2;
+
+				// update enabled status
+				cfdtarget.disabled = value === 'cfd' || value === 'sfd-t';
+
+				if (isCategory) {
+					// update label
+					if (value === 'cfs') {
+						Morebits.quickForm.setElementLabel(cfdtarget, 'Target categories: ');
+					} else if (value === 'cfc') {
+						Morebits.quickForm.setElementLabel(cfdtarget, 'Target article: ');
+					} else {
+						Morebits.quickForm.setElementLabel(cfdtarget, 'Target category: ');
+					}
+					// add/remove extra input box
+					if (value === 'cfs') {
+						if (cfdtarget2) {
+							cfdtarget2.disabled = false;
+							$(cfdtarget2).show();
+						} else {
+							cfdtarget2 = document.createElement('input');
+							cfdtarget2.setAttribute('name', 'cfdtarget2');
+							cfdtarget2.setAttribute('type', 'text');
+							cfdtarget2.setAttribute('required', 'true');
+							cfdtarget.parentNode.appendChild(cfdtarget2);
+						}
+					} else {
+						$(cfdtarget2).prop('disabled', true);
+						$(cfdtarget2).hide();
+					}
+				} else { // Update stub template label
+					Morebits.quickForm.setElementLabel(cfdtarget, 'Target stub template: ');
+				}
+			}
+		});
+
+		this.fieldset.append({
+			type: 'input',
+			name: 'cfdtarget',
+			label: 'Target category: ', // default, changed above
+			disabled: true,
+			required: true, // only when enabled
+			value: ''
+		});
+		this.appendReasonArea();
+		return this.fieldset;
+	}
+
 	preprocessParams() {
 		if (this.params.cfdtarget) {
 			this.params.cfdtarget = utils.stripNs(this.params.cfdtarget);
-			if (this.params.cfdtarget2) {
-				this.params.cfdtarget2 = utils.stripNs(this.params.cfdtarget2);
-			}
+		}
+		if (this.params.cfdtarget2) {
+			this.params.cfdtarget2 = utils.stripNs(this.params.cfdtarget2);
 		}
 	}
+
+	evaluate() {
+		super.evaluate();
+
+		// Used for customized actions in edit summaries and the notification template
+		let summaryActions = {
+			'cfd': 'deletion',
+			'sfd-t': 'deletion',
+			'cfm': 'merging',
+			'cfr': 'renaming',
+			'sfr-t': 'renaming',
+			'cfs': 'splitting',
+			'cfc': 'conversion'
+		};
+		this.params.action = summaryActions[this.params.xfdcat];
+		this.params.stub = mw.config.get('wgNamespaceNumber') !== 14;
+
+		let tm = new Morebits.taskManager(this);
+		tm.add(this.tagPage, []);
+		tm.add(this.addToList, [this.tagPage]);
+		tm.add(this.fetchCreatorInfo, []);
+		tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
+		tm.add(this.addToLog, [this.notifyCreator]);
+		tm.execute().then(() => {
+			Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
+			setTimeout(() => {
+				window.location.href = mw.util.getUrl(this.params.logpage);
+			}, 50000);
+		});
+	}
+
+	tagPage() {
+		var params = this.params;
+		var def = $.Deferred();
+		var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with ' + params.action + ' tag');
+		pageobj.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
+		pageobj.load((pageobj) => {
+
+			// Set data for future actions first
+			var date = new Morebits.date(pageobj.getLoadTime());
+			params.logpage = 'Wikipedia:Categories for discussion/Log/' + date.format('YYYY MMMM D', 'utc');
+			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
+
+			var text = pageobj.getPageText();
+			params.tagText = new Template('subst:' + params.xfdcat, {
+				1: params.cfdtarget, // for cfm, cfr, cfc, cfs, sfr-t
+				2: params.cfdtarget2 // for cfs
+			}).toString() + '\n';
+
+			var editsummary = (params.stub ? 'Stub template' : 'Category') +
+				' being considered for ' + params.action + (params.xfdcat === 'cfc' ? ' to an article' : '') +
+				'; see [[:' + params.discussionpage + ']].';
+
+			if (pageobj.canEdit()) {
+				pageobj.setPageText(params.tagText + text);
+				pageobj.setEditSummary(editsummary);
+				pageobj.setChangeTags(Twinkle.changeTags);
+				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
+				pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
+				pageobj.save(def.resolve, def.reject);
+			} else {
+				Xfd.autoEditRequest(pageobj, params);
+			}
+		});
+		return def;
+	}
+
+	addToList() {
+		var params = this.params;
+		var def = $.Deferred();
+		var pageobj = new Morebits.wiki.page(params.logpage, "Adding discussion to today's list");
+		pageobj.setFollowRedirect(true);
+		pageobj.load((pageobj) => {
+			var statelem = pageobj.getStatusElement();
+
+			var added_data = this.getDiscussionWikitext();
+			var text;
+
+			// add date header if the log is found to be empty (a bot should do this automatically)
+			if (!pageobj.exists()) {
+				text = '{{subst:CfD log}}\n' + added_data;
+			} else {
+				var old_text = pageobj.getPageText();
+
+				text = old_text.replace('below this line -->', 'below this line -->\n' + added_data);
+				if (text === old_text) {
+					statelem.error('failed to find target spot for the discussion');
+					return def.reject();
+				}
+			}
+
+			pageobj.setPageText(text);
+			pageobj.setEditSummary('Adding ' + params.action + ' nomination of [[:' + Morebits.pageNameNorm + ']].');
+			pageobj.setChangeTags(Twinkle.changeTags);
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
+			pageobj.setCreateOption('recreate');
+			pageobj.save(function() {
+				Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+				def.resolve();
+			}, def.reject);
+		});
+		return def;
+	}
+
 	getDiscussionWikitext(): string {
-		return '';
+		return new Template('subst:' + this.params.xfdcat + '2', {
+			text: Morebits.string.formatReasonText(this.params.reason, true),
+			1: mw.config.get('wgTitle'),
+			2: this.params.cfdtarget,
+			3: this.params.cfdtarget2
+		}).toString();
+	}
+
+	notifyCreator(): JQuery.Promise<void> {
+		if (!this.params.notifycreator) {
+			this.params.intialContrib = null;
+			return $.Deferred().resolve();
+		}
+		return this.notifyTalkPage(this.params.initialContrib);
+	}
+
+	getNotifyText(): string {
+		return new Template('subst:cfd notice', {
+			action: this.params.action,
+			1: Morebits.pageNameNorm,
+			stub: mw.config.get('wgNamespaceNumber') === 10 ? 'yes' : null
+		}).toString() + ' ~~~~';
 	}
 
 	getUserspaceLoggingExtraInfo() {
@@ -455,14 +647,6 @@ class Cfd extends XfdMode {
 			}
 		}
 		return text;
-	}
-
-	public getNotifyText(): string {
-		return new Template('subst:tfd notice', {
-			action: this.params.action,
-			1: Morebits.pageNameNorm,
-			stub: mw.config.get('wgNamespaceNumber') === 10 ? 'yes' : null
-		}).toString() + ' ~~~~';
 	}
 
 
@@ -961,6 +1145,7 @@ let utils = {
 
 Xfd.modeList = [
 	Rfd,
+	Cfd,
 	Rm
 ];
 
