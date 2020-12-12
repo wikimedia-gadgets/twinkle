@@ -1441,22 +1441,7 @@ Twinkle.speedy.callbacks = {
 				return;
 			}
 
-			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
-
-			statelem.status('Checking for tags on the page...');
-
-			// check for existing deletion tags
-			var tag = /(?:\{\{\s*(db|delete|db-.*?|speedy deletion-.*?)(?:\s*\||\s*\}\}))/.exec(text);
-			// This won't make use of the db-multiple template but it probably should
-			if (tag && !confirm('The page already has the CSD-related template {{' + tag[1] + '}} on it.  Do you want to add another CSD template?')) {
-				return;
-			}
-
-			var xfd = /\{\{((?:article for deletion|proposed deletion|prod blp|template for discussion)\/dated|[cfm]fd\b)/i.exec(text) || /#invoke:(RfD)/.exec(text);
-			if (xfd && !confirm('The deletion-related template {{' + xfd[1] + '}} was found on the page. Do you still want to add a CSD template?')) {
-				return;
-			}
 
 			// given the params, builds the template and also adds the user talk page parameters to the params that were passed in
 			// returns => [<string> wikitext, <object> utparams]
@@ -1464,76 +1449,118 @@ Twinkle.speedy.callbacks = {
 				code = buildData[0];
 			params.utparams = buildData[1];
 
-			// curate/patrol the page
-			if (Twinkle.getPref('markSpeedyPagesAsPatrolled')) {
-				pageobj.triage();
-			}
-
-			// Wrap SD template in noinclude tags if we are in template space.
-			// Won't work with userboxes in userspace, or any other transcluded page outside template space
-			if (mw.config.get('wgNamespaceNumber') === 10) {  // Template:
-				code = '<noinclude>' + code + '</noinclude>';
-			}
-
-			// Remove tags that become superfluous with this action
-			text = text.replace(/\{\{\s*([Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, '');
-			if (mw.config.get('wgNamespaceNumber') === 6) {
-				// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
-				text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
-			}
-
-			if (params.requestsalt) {
-				if (params.normalizeds.indexOf('g10') === -1) {
-					code += '\n{{salt}}';
-				} else {
-					code = '{{salt}}\n' + code;
-				}
-			}
-
-			// Scribunto isn't parsed like wikitext, so CSD templates on modules need special handling to work
-			if (mw.config.get('wgPageContentModel') === 'Scribunto') {
-				var equals = '';
-				while (code.indexOf(']' + equals + ']') !== -1) {
-					equals += '=';
-				}
-				code = "require('Module:Module wikitext')._addText([" + equals + '[' + code + ']' + equals + ']);';
-			}
-
-			// Generate edit summary for edit
-			var editsummary;
-			if (params.normalizeds.length > 1) {
-				editsummary = 'Requesting speedy deletion (';
-				$.each(params.normalizeds, function(index, norm) {
-					editsummary += '[[WP:CSD#' + norm.toUpperCase() + '|CSD ' + norm.toUpperCase() + ']], ';
-				});
-				editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
-				editsummary += ').';
-			} else if (params.normalizeds[0] === 'db') {
-				editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale "' + params.templateParams[0]['1'] + '".';
-			} else {
-				editsummary = 'Requesting speedy deletion ([[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']]).';
-			}
-
 			// Set the correct value for |ts= parameter in {{db-g13}}
 			if (params.normalizeds.indexOf('g13') !== -1) {
 				code = code.replace('$TIMESTAMP', pageobj.getLastEditTime());
 			}
 
+			// Tag if possible, post on talk if not
+			if (pageobj.canEdit() && ['wikitext', 'Scribunto', 'javascript', 'css', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
+				var text = pageobj.getPageText();
 
-			// Blank attack pages
-			if (params.normalizeds.indexOf('g10') !== -1) {
-				text = code;
-			} else {
-				// Insert tag after short description or any hatnotes
-				var wikipage = new Morebits.wikitext.page(text);
-				text = wikipage.insertAfterTemplates(code + '\n', Twinkle.hatnoteRegex).getText();
+				statelem.status('Checking for tags on the page...');
+
+				// check for existing deletion tags
+				var tag = /(?:\{\{\s*(db|delete|db-.*?|speedy deletion-.*?)(?:\s*\||\s*\}\}))/.exec(text);
+				// This won't make use of the db-multiple template but it probably should
+				if (tag && !confirm('The page already has the CSD-related template {{' + tag[1] + '}} on it.  Do you want to add another CSD template?')) {
+					return;
+				}
+
+				var xfd = /\{\{((?:article for deletion|proposed deletion|prod blp|template for discussion)\/dated|[cfm]fd\b)/i.exec(text) || /#invoke:(RfD)/.exec(text);
+				if (xfd && !confirm('The deletion-related template {{' + xfd[1] + '}} was found on the page. Do you still want to add a CSD template?')) {
+					return;
+				}
+
+				// curate/patrol the page
+				if (Twinkle.getPref('markSpeedyPagesAsPatrolled')) {
+					pageobj.triage();
+				}
+
+				// Wrap SD template in noinclude tags if we are in template space.
+				// Won't work with userboxes in userspace, or any other transcluded page outside template space
+				if (mw.config.get('wgNamespaceNumber') === 10) {  // Template:
+					code = '<noinclude>' + code + '</noinclude>';
+				}
+
+				// Remove tags that become superfluous with this action
+				text = text.replace(/\{\{\s*([Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, '');
+				if (mw.config.get('wgNamespaceNumber') === 6) {
+					// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
+					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
+				}
+
+				if (params.requestsalt) {
+					if (params.normalizeds.indexOf('g10') === -1) {
+						code += '\n{{salt}}';
+					} else {
+						code = '{{salt}}\n' + code;
+					}
+				}
+
+				if (mw.config.get('wgPageContentModel') === 'Scribunto') {
+					// Scribunto isn't parsed like wikitext, so CSD templates on modules need special handling to work
+					var equals = '';
+					while (code.indexOf(']' + equals + ']') !== -1) {
+						equals += '=';
+					}
+					code = "require('Module:Module wikitext')._addText([" + equals + '[' + code + ']' + equals + ']);';
+				} else if (['javascript', 'css', 'sanitized-css'].indexOf(mw.config.get('wgPageContentModel')) !== -1) {
+					// Likewise for JS/CSS pages
+					code = '/* ' + code + ' */';
+				}
+
+				// Generate edit summary for edit
+				var editsummary;
+				if (params.normalizeds.length > 1) {
+					editsummary = 'Requesting speedy deletion (';
+					$.each(params.normalizeds, function(index, norm) {
+						editsummary += '[[WP:CSD#' + norm.toUpperCase() + '|CSD ' + norm.toUpperCase() + ']], ';
+					});
+					editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
+					editsummary += ').';
+				} else if (params.normalizeds[0] === 'db') {
+					editsummary = 'Requesting [[WP:CSD|speedy deletion]] with rationale "' + params.templateParams[0]['1'] + '".';
+				} else {
+					editsummary = 'Requesting speedy deletion ([[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']]).';
+				}
+
+				// Blank attack pages
+				if (params.normalizeds.indexOf('g10') !== -1) {
+					text = code;
+				} else {
+					// Insert tag after short description or any hatnotes
+					var wikipage = new Morebits.wikitext.page(text);
+					text = wikipage.insertAfterTemplates(code + '\n', Twinkle.hatnoteRegex).getText();
+				}
+
+
+				pageobj.setPageText(text);
+				pageobj.setEditSummary(editsummary);
+				pageobj.setWatchlist(params.watch);
+				pageobj.save(Twinkle.speedy.callbacks.user.tagComplete);
+			} else { // Attempt to place on talk page
+				var talkName = new mw.Title(pageobj.getPageName()).getTalkPage().toText();
+				if (talkName !== pageobj.getPageName()) {
+					if (params.requestsalt) {
+						code += '\n{{salt}}';
+					}
+
+					pageobj.getStatusElement().warn('Unable to edit page, placing tag on talk page');
+
+					var talk_page = new Morebits.wiki.page(talkName, 'Automatically placing tag on talk page');
+					talk_page.setNewSectionTitle(pageobj.getPageName() + ' nominated for CSD, request deletion');
+					talk_page.setNewSectionText(code + '\n\nI was unable to tag ' + pageobj.getPageName() + ' so please delete it. ~~~~');
+					talk_page.setCreateOption('recreate');
+					talk_page.setFollowRedirect(true);
+					talk_page.setWatchlist(params.watch);
+					talk_page.setChangeTags(Twinkle.changeTags);
+					talk_page.setCallbackParameters(params);
+					talk_page.newSection(Twinkle.speedy.callbacks.user.tagComplete);
+				} else {
+					pageobj.getStatusElement().error('Page protected and nowhere to add an edit request, aborting');
+				}
 			}
-
-
-			pageobj.setPageText(text);
-			pageobj.setEditSummary(editsummary);
-			pageobj.setWatchlist(params.watch);
-			pageobj.save(Twinkle.speedy.callbacks.user.tagComplete);
 		},
 
 		tagComplete: function(pageobj) {
