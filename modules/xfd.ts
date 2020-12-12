@@ -665,10 +665,110 @@ class Cfds extends XfdMode {
 		return 'Categories for speedy renaming';
 	}
 
+	public generateFieldset(): quickFormElement {
+		this.fieldset = super.generateFieldset();
+		this.fieldset.append({
+			type: 'select',
+			label: 'C2 sub-criterion: ',
+			name: 'xfdcat',
+			tooltip: 'See WP:CFDS for full explanations.',
+			list: [
+				{ type: 'option', label: 'C2A: Typographic and spelling fixes', value: 'C2A', selected: true },
+				{ type: 'option', label: 'C2B: Naming conventions and disambiguation', value: 'C2B' },
+				{ type: 'option', label: 'C2C: Consistency with names of similar categories', value: 'C2C' },
+				{ type: 'option', label: 'C2D: Rename to match article name', value: 'C2D' },
+				{ type: 'option', label: 'C2E: Author request', value: 'C2E' },
+				{ type: 'option', label: 'C2F: One eponymous article', value: 'C2F' }
+			]
+		});
+
+		this.fieldset.append({
+			type: 'input',
+			name: 'cfdstarget',
+			label: 'New name: ',
+			required: true
+		});
+		this.appendReasonArea();
+		return this.fieldset;
+	}
+
 	preprocessParams() {
 		if (this.params.cfdstarget) { // Add namespace if not given (CFDS)
 			this.params.cfdstarget = utils.addNs(this.params.cfdstarget, 14);
 		}
+	}
+
+	evaluate() {
+		super.evaluate();
+
+		let tm = new Morebits.taskManager(this);
+		tm.add(this.tagPage, []);
+		tm.add(this.addToList, []);
+		tm.add(this.addToLog, [this.addToList]);
+		tm.execute().then(() => {
+			Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
+			setTimeout(() => {
+				window.location.href = mw.util.getUrl(this.params.logpage);
+			}, 50000);
+		});
+
+	}
+
+	tagPage() {
+		let params = this.params;
+		let def = $.Deferred();
+		let pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with rename tag');
+		pageobj.setFollowRedirect(true);
+		pageobj.load((pageobj) => {
+			var text = pageobj.getPageText();
+			params.tagText = '{{subst:cfr-speedy|1=' + params.cfdstarget.replace(/^:?Category:/, '') + '}}\n';
+			if (pageobj.canEdit()) {
+				pageobj.setPageText(params.tagText + text);
+				pageobj.setEditSummary('Listed for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]].');
+				pageobj.setChangeTags(Twinkle.changeTags);
+				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
+				pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
+				pageobj.save(def.resolve, def.reject);
+			} else {
+				Xfd.autoEditRequest(pageobj, params);
+			}
+		});
+		return def;
+	}
+
+	addToList() {
+		let params = this.params;
+		let def = $.Deferred();
+		let pageobj = new Morebits.wiki.page('Wikipedia:Categories for discussion/Speedy', 'Adding discussion to the list');
+		pageobj.setFollowRedirect(true);
+		pageobj.load((pageobj) => {
+			var old_text = pageobj.getPageText();
+			var statelem = pageobj.getStatusElement();
+
+			var text = old_text.replace('BELOW THIS LINE -->', 'BELOW THIS LINE -->\n' + this.getDiscussionWikitext());
+			if (text === old_text) {
+				statelem.error('failed to find target spot for the discussion');
+				return def.reject();
+			}
+
+			pageobj.setPageText(text);
+			pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
+			pageobj.setChangeTags(Twinkle.changeTags);
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
+			pageobj.setCreateOption('recreate');
+			pageobj.save(function() {
+				Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+				def.resolve();
+			}, def.reject);
+		});
+		return def;
+	}
+
+	getDiscussionWikitext(): string {
+		let params = this.params;
+		return '* [[:' + Morebits.pageNameNorm + ']] to [[:' + params.cfdstarget + ']]\u00A0\u2013 ' +
+			params.xfdcat + (params.reason ? ': ' + Morebits.string.formatReasonText(params.reason) : '.') + ' ~~~~';
+		// U+00A0 NO-BREAK SPACE; U+2013 EN RULE
 	}
 
 	getUserspaceLoggingExtraInfo() {
@@ -679,13 +779,6 @@ class Cfds extends XfdMode {
 			text += '; New name: [[:' + params.cfdstarget + ']]';
 		}
 		return text;
-	}
-
-	getDiscussionWikitext(): string {
-		let params = this.params;
-		return '* [[:' + Morebits.pageNameNorm + ']] to [[:' + params.cfdstarget + ']]\u00A0\u2013 ' +
-			params.xfdcat + (params.reason ? ': ' + Morebits.string.formatReasonText(params.reason) : '.') + ' ~~~~';
-		// U+00A0 NO-BREAK SPACE; U+2013 EN RULE
 	}
 
 }
@@ -1146,7 +1239,8 @@ let utils = {
 Xfd.modeList = [
 	Rfd,
 	Cfd,
-	Rm
+	Rm,
+	Cfds
 ];
 
 Twinkle.addInitCallback(function() { new Xfd(); }, 'XFD');
