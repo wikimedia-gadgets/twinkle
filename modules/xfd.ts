@@ -1,0 +1,967 @@
+
+class Xfd extends TwinkleModule {
+	mode: XfdMode
+	static modeList: (typeof XfdMode)[]
+
+	Window: Morebits.simpleWindow;
+	fieldset: quickFormElement;
+	result: HTMLFormElement;
+
+	static currentRationale: string;
+
+	constructor() {
+		super();
+		for (let mode of Xfd.modeList) {
+			if (mode.isDefaultChoice()) {
+				// @ts-ignore
+				this.mode = new mode();
+				break;
+			}
+		}
+		this.portletName = 'XFD';
+		this.portletId = 'twinkle-xfd';
+		this.portletTooltip = this.getMenuTooltip();
+		this.addMenu();
+	}
+
+	getMenuTooltip() {
+		if (this.mode) {
+			return this.mode.getMenuTooltip();
+		} else {
+			return 'Start a deletion discussion';
+		}
+	}
+
+	makeWindow = () => {
+		var Window = new Morebits.simpleWindow(700, 400);
+		Window.setTitle('Start a deletion discussion (XfD)');
+		Window.setScriptName('Twinkle');
+		Window.addFooterLink('About deletion discussions', 'WP:XFD');
+		Window.addFooterLink('XfD prefs', 'WP:TW/PREF#xfd');
+		Window.addFooterLink('Twinkle help', 'WP:TW/DOC#xfd');
+		this.makeForm(Window);
+	}
+
+	// invoked only once
+	makeForm(Window) {
+		this.Window = Window;
+		let form = new Morebits.quickForm(() => { this.mode.evaluate(); });
+
+		form.append({
+			type: 'select',
+			name: 'venue',
+			label: 'Deletion discussion venue:',
+			tooltip: 'When activated, a default choice is made, based on what namespace you are in. This default should be the most appropriate.',
+			event: this.onCategoryChange.bind(this),
+			list: Xfd.modeList.map((mode) => ({
+				type: 'option',
+				label: mode.venueLabel,
+				selected: this.mode instanceof mode,
+				value: mode.venueCode
+			}))
+		});
+
+		form.append({
+			type: 'div',
+			id: 'wrong-venue-warn',
+			style: 'color: red; font-style: italic'
+		});
+
+		form.append({
+			type: 'checkbox',
+			list: [
+				{
+					label: 'Notify page creator if possible',
+					value: 'notify',
+					name: 'notifycreator',
+					tooltip: "A notification template will be placed on the creator's talk page if this is true.",
+					checked: true
+				}
+			]
+		});
+
+		this.fieldset = form.append({
+			type: 'field',
+			label: 'Work area',
+			name: 'work_area'
+		});
+
+		var previewlink = document.createElement('a');
+		$(previewlink).click(() => {
+			this.mode.preview(this.result);  // |result| is defined below
+		});
+		previewlink.style.cursor = 'pointer';
+		previewlink.textContent = 'Preview';
+		form.append({ type: 'div', id: 'xfdpreview', label: [ previewlink ] });
+		form.append({ type: 'div', id: 'twinklexfd-previewbox', style: 'display: none' });
+
+		form.append({ type: 'submit' });
+
+		this.result = form.render();
+		Window.setContent(this.result);
+		Window.display();
+		this.result.previewer = new Morebits.wiki.preview(document.getElementById('twinklexfd-previewbox'));
+
+		// We must init the controls
+		var evt = document.createEvent('Event');
+		evt.initEvent('change', true, true);
+		this.result.venue.dispatchEvent(evt);
+
+		return form;
+	}
+
+	// invoked on every mode change
+	onCategoryChange(evt: Event) {
+		// @ts-ignore
+		var venueCode = evt.target.value;
+		// @ts-ignore
+		var form = evt.target.form;
+
+		let mode = Xfd.modeList.filter((mode) => {
+			return mode.venueCode === venueCode;
+		})[0];
+		if (!mode) {
+			throw new Error('Unrecognized venue: ' +  venueCode); // should never happen
+		}
+		// @ts-ignore
+		this.mode = new mode();
+		this.mode.result = this.result;
+		this.mode.Window = this.Window;
+
+		$('#wrong-venue-warn').text(this.mode.getVenueWarning());
+		form.previewer.closePreview();
+
+		let fieldset = this.mode.generateFieldset();
+		let renderedFieldset = fieldset.render();
+		$(this.result).find('fieldset[name=work_area]')
+			.replaceWith(renderedFieldset);
+		this.mode.postRender(renderedFieldset as HTMLFieldSetElement);
+	}
+}
+
+
+abstract class XfdMode {
+	static venueCode: string
+	static venueLabel: string
+
+	// must be overridden, unless the venue is never the default choice
+	static isDefaultChoice(): boolean {
+		return false;
+	}
+
+	Window: Morebits.simpleWindow
+	fieldset: quickFormElement
+	result: HTMLFormElement
+	params: Record<string, any>
+
+	getMenuTooltip(): string {
+		return 'Nominate page for deletion';
+	}
+
+	generateFieldset(): quickFormElement {
+		this.fieldset = new Morebits.quickForm.element({
+			type: 'field',
+			label: this.getFieldsetLabel(),
+			name: 'work_area'
+		});
+		return this.fieldset;
+	}
+	appendReasonArea() {
+		this.fieldset.append({
+			type: 'textarea',
+			name: 'reason',
+			label: 'Reason: ',
+			value: $(this.result).find('textarea').val() as string || '',
+			tooltip: 'You can use wikimarkup in your reason. Twinkle will automatically sign your post.'
+		});
+	}
+
+	// Used as the label for the fieldset in the UI, and in the default notification edit summary
+	abstract getFieldsetLabel()
+
+	postRender(renderedFieldset: HTMLFieldSetElement) {}
+
+	getVenueWarning(): string {
+		return '';
+	}
+
+	// Overridden for tfd, cfd, cfds
+	preprocessParams(): void {}
+
+	// Overridden for ffd and rfd, which need special treatment
+	preview(form: HTMLFormElement) {
+		this.params = Morebits.quickForm.getInputData(form);
+		this.preprocessParams();
+		this.showPreview(form);
+	}
+
+	// This is good enough to use without override for all venues except rm
+	showPreview(form: HTMLFormElement) {
+		let templatetext = this.getDiscussionWikitext();
+		form.previewer.beginRender(templatetext, 'WP:TW'); // Force wikitext
+	}
+
+	abstract getDiscussionWikitext(): string
+
+	evaluate() {
+		this.params = Morebits.quickForm.getInputData(this.result);
+		this.preprocessParams();
+		Morebits.simpleWindow.setButtonsEnabled(false);
+		Morebits.status.init(this.result);
+	}
+
+	fetchCreatorInfo() {
+		let def = $.Deferred();
+		let thispage = new Morebits.wiki.page(Morebits.pageNameNorm, 'Finding page creator');
+		thispage.lookupCreation((pageobj) => {
+			this.params.initialContrib = pageobj.getCreator();
+			pageobj.getStatusElement().info('Found ' + pageobj.getCreator());
+			def.resolve();
+		});
+		return def;
+	}
+
+	notifyTalkPage(notifyTarget: string, statusElement?: Morebits.status) {
+		// Ensure items with User talk or no namespace prefix both end
+		// up at user talkspace as expected, but retain the
+		// prefix-less username for addToLog
+		let params = this.params;
+		let def = $.Deferred();
+
+		var notifyTitle = mw.Title.newFromText(notifyTarget, 3); // 3: user talk
+		var targetNS = notifyTitle.getNamespaceId();
+		var usernameOrTarget = notifyTitle.getRelativeText(3);
+		statusElement = statusElement || new Morebits.status('Notifying initial contributor (' + usernameOrTarget + ')');
+
+		let notifyPageTitle = notifyTitle.toText();
+		if (targetNS === 3) {
+			// Disallow warning yourself
+			if (usernameOrTarget === mw.config.get('wgUserName')) {
+				params.initialContrib = null; // disable initial contributor logging in userspace log
+				statusElement.warn('You (' + usernameOrTarget + ') created this page; skipping user notification');
+				return def.resolve();
+			}
+		}
+
+		var usertalkpage = new Morebits.wiki.page(notifyPageTitle, statusElement);
+		usertalkpage.setAppendText('\n\n' + this.getNotifyText());
+		usertalkpage.setEditSummary(this.getNotifyEditSummary());
+		usertalkpage.setChangeTags(Twinkle.changeTags);
+		usertalkpage.setCreateOption('recreate');
+		// Different pref for RfD target notifications: XXX: handle this better!
+		if (params.venue === 'rfd' && targetNS !== 3) {
+			usertalkpage.setWatchlist(Twinkle.getPref('xfdWatchRelated'));
+		} else {
+			usertalkpage.setWatchlist(Twinkle.getPref('xfdWatchUser'));
+		}
+		usertalkpage.setFollowRedirect(true, false);
+		usertalkpage.append(def.resolve, function onNotifyError() {
+			// if user could not be notified, null this out for correct userspace logging
+			params.initialContrib = null;
+			def.resolve();
+		});
+		return def;
+	}
+
+	// Overridden for all venues except FFD and RFD
+	getNotifyText(): string {
+		return `{{subst:${this.params.venue} notice|1=${Morebits.pageNameNorm}}} ~~~~`;
+	}
+
+	// Not overridden for any venue
+	getNotifyEditSummary(): string {
+		return 'Notification: [[' + this.params.discussionpage + '|listing]] of [[:' +
+		Morebits.pageNameNorm + ']] at [[WP:' + this.getFieldsetLabel() + ']].';
+	}
+
+	// Should be called after notifyTalkPage() which may unset this.params.intialContrib
+	addToLog() {
+		let params = this.params,
+			initialContrib = params.initialContrib;
+
+		if (!Twinkle.getPref('logXfdNominations') ||
+			Twinkle.getPref('noLogOnXfdNomination').indexOf(params.venue) !== -1) {
+			return $.Deferred().resolve();
+		}
+
+		var usl = new Morebits.userspaceLogger(Twinkle.getPref('xfdLogPageName'));// , 'Adding entry to userspace log');
+
+		usl.initialText =
+			"This is a log of all [[WP:XFD|deletion discussion]] nominations made by this user using [[WP:TW|Twinkle]]'s XfD module.\n\n" +
+			'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
+			'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].' +
+			(Morebits.userIsSysop ? '\n\nThis log does not track XfD-related deletions made using Twinkle.' : '');
+
+		usl.changeTags = Twinkle.changeTags;
+		return usl.log(this.getUserspaceLoggingText(), this.getUserspaceLoggingEditSummary());
+	}
+
+	getUserspaceLoggingEditSummary() {
+		return 'Logging ' + utils.toTLACase(this.params.venue) + ' nomination of [[:' + Morebits.pageNameNorm + ']].';
+	}
+
+	getUserspaceLoggingText(): string {
+		let params = this.params;
+
+		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
+		var fileLogLink = mw.config.get('wgNamespaceNumber') === 6 ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])' : '';
+		// CFD/S and RM don't have canonical links
+		var nominatedLink = params.discussionpage ? '[[' + params.discussionpage + '|nominated]]' : 'nominated';
+
+		var appendText = '# [[:' + Morebits.pageNameNorm + ']]:' + fileLogLink + ' ' + nominatedLink + ' at [[WP:' + params.venue.toUpperCase() + '|' + utils.toTLACase(params.venue) + ']]';
+
+		appendText += this.getUserspaceLoggingExtraInfo();
+
+		if (params.initialContrib && params.notifycreator) {
+			appendText += '; notified {{user|1=' + params.initialContrib + '}}';
+		}
+		appendText += ' ~~~~~';
+		if (params.reason) {
+			appendText += "\n#* '''Reason''': " + Morebits.string.formatReasonForLog(params.reason);
+		}
+		return appendText;
+	}
+
+	getUserspaceLoggingExtraInfo() {
+		return '';
+	}
+
+}
+
+class Tfd extends XfdMode {
+	static venueCode = 'tfd';
+	static venueLabel = 'TfD (Templates for discussion)';
+
+	getFieldsetLabel() {
+		return 'Templates for discussion';
+	}
+	static isDefaultChoice() {
+		return [ 10, 828 ].indexOf(mw.config.get('wgNamespaceNumber')) !== -1;
+	}
+
+	getUserspaceLoggingExtraInfo() {
+		let params = this.params, text = '';
+		if (params.xfdcat === 'tfm') {
+			text += ' (merge)';
+			if (params.tfdtarget) {
+				var contentModel = mw.config.get('wgPageContentModel') === 'Scribunto' ? 'Module:' : 'Template:';
+				text += '; Other ' + contentModel.toLowerCase() + ' [[';
+				if (!/^:?(?:template|module):/i.test(params.tfdtarget)) {
+					text += contentModel;
+				}
+				text += params.tfdtarget + ']]';
+			}
+		}
+		return text;
+
+	}
+
+	getMenuTooltip(): string {
+		return 'Nominate article for deletion or move';
+	}
+
+	preprocessParams() {
+		if (this.params.tfdtarget) {
+			this.params.tfdtarget = utils.stripNs(this.params.tfdtarget);
+		}
+	}
+
+	getDiscussionWikitext(): string {
+		return '';
+	}
+	public getNotifyText(): string {
+		let text = `{{subst:tfd notice`;
+		if (this.params.xfdcat === 'tfm') {
+			text = '\n{{subst:Tfm notice|2=' + this.params.tfdtarget;
+		}
+		text += `|1=${Morebits.pageNameNorm}}} ~~~~`;
+		return text;
+	}
+
+}
+
+
+class Ffd extends XfdMode {
+	static venueCode = 'ffd';
+	static venueLabel = 'FfD (Files for discussion)';
+
+	static isDefaultChoice() {
+		return mw.config.get('wgNamespaceNumber') === 6;
+	}
+
+	getMenuTooltip(): string {
+		return 'Nominate article for deletion or move';
+	}
+
+	preview(form: HTMLFormElement) {
+		this.params = Morebits.quickForm.getInputData(form);
+		this.preprocessParams();
+		var page = new Morebits.wiki.page(mw.config.get('wgPageName'));
+		page.lookupCreation(() => {
+			this.params.uploader = page.getCreator();
+			this.showPreview(form);
+		});
+	}
+
+	getDiscussionWikitext(): string {
+		return '';
+	}
+
+	getFieldsetLabel() {
+		return 'Files for discussion';
+	}
+
+}
+
+
+class Cfd extends XfdMode {
+	static venueCode = 'cfd';
+	static venueLabel = 'CfD (Categories for discussion)';
+
+	static isDefaultChoice() {
+		return mw.config.get('wgNamespaceNumber') === 14 ||
+			(mw.config.get('wgNamespaceNumber') === 10 && /-stub$/.test(Morebits.pageNameNorm));
+	}
+
+
+	getFieldsetLabel() {
+		return 'Categories for discussion';
+	}
+
+	getMenuTooltip(): string {
+		return 'Nominate article for deletion or move';
+	}
+
+	preprocessParams() {
+		if (this.params.cfdtarget) {
+			this.params.cfdtarget = utils.stripNs(this.params.cfdtarget);
+			if (this.params.cfdtarget2) {
+				this.params.cfdtarget2 = utils.stripNs(this.params.cfdtarget2);
+			}
+		}
+	}
+	getDiscussionWikitext(): string {
+		return '';
+	}
+
+	getUserspaceLoggingExtraInfo() {
+		let params = this.params, text = '';
+		text += ' (' + utils.toTLACase(params.xfdcat) + ')';
+		if (params.cfdtarget) {
+			var categoryOrTemplate = params.xfdcat.charAt(0) === 's' ? 'Template:' : ':Category:';
+			text += '; ' + params.action + ' to [[' + categoryOrTemplate + params.cfdtarget + ']]';
+			if (params.xfdcat === 'cfs' && params.cfdtarget2) {
+				text += ', [[' + categoryOrTemplate + params.cfdtarget2 + ']]';
+			}
+		}
+		return text;
+	}
+
+	public getNotifyText(): string {
+		return new Template('subst:tfd notice', {
+			action: this.params.action,
+			1: Morebits.pageNameNorm,
+			stub: mw.config.get('wgNamespaceNumber') === 10 ? 'yes' : null
+		}).toString() + ' ~~~~';
+	}
+
+
+}
+
+
+class Cfds extends XfdMode {
+	static venueCode = 'cfds';
+	static venueLabel = 'CfDS (Categories for speedy renaming)';
+
+	getMenuTooltip(): string {
+		return 'Nominate article for deletion or move';
+	}
+
+	getFieldsetLabel() {
+		return 'Categories for speedy renaming';
+	}
+
+	preprocessParams() {
+		if (this.params.cfdstarget) { // Add namespace if not given (CFDS)
+			this.params.cfdstarget = utils.addNs(this.params.cfdstarget, 14);
+		}
+	}
+
+	getUserspaceLoggingExtraInfo() {
+		let params = this.params, text = '';
+		text += ' (' + utils.toTLACase(params.xfdcat) + ')';
+		// Ensure there's more than just 'Category:'
+		if (params.cfdstarget && params.cfdstarget.length > 9) {
+			text += '; New name: [[:' + params.cfdstarget + ']]';
+		}
+		return text;
+	}
+
+	getDiscussionWikitext(): string {
+		let params = this.params;
+		return '* [[:' + Morebits.pageNameNorm + ']] to [[:' + params.cfdstarget + ']]\u00A0\u2013 ' +
+			params.xfdcat + (params.reason ? ': ' + Morebits.string.formatReasonText(params.reason) : '.') + ' ~~~~';
+		// U+00A0 NO-BREAK SPACE; U+2013 EN RULE
+	}
+
+}
+
+
+class Mfd extends XfdMode {
+	static venueCode = 'mfd';
+	static venueLabel = 'MfD (Miscellany for deletion)';
+
+	static isDefaultChoice() {
+		return [ 0, 6, 10, 14, 828 ].indexOf(mw.config.get('wgNamespaceNumber')) === -1 ||
+			Morebits.pageNameNorm.indexOf('Template:User ', 0) === 0;
+	}
+
+	getMenuTooltip(): string {
+		return 'Nominate article for deletion or move';
+	}
+
+	getFieldsetLabel() {
+		return 'Miscellany for deletion';
+	}
+
+	getDiscussionWikitext(): string {
+		return '';
+	}
+
+	public getUserspaceLoggingExtraInfo() {
+		let params = this.params, text = '';
+		if (params.notifyuserspace && params.userspaceOwner && params.userspaceOwner !== params.initialContrib) {
+			text += '; notified {{user|1=' + params.userspaceOwner + '}}';
+		}
+		return text;
+	}
+
+	public getNotifyText(): string {
+		let text = `{{subst:afd notice`;
+		if (this.params.numbering) {
+			text += `|order=&#32;${this.params.numbering}`;
+		}
+		text += `|1=${Morebits.pageNameNorm}}} ~~~~`;
+		return text;
+	}
+
+}
+
+
+class Rfd extends XfdMode {
+	static venueCode = 'rfd';
+	static venueLabel = 'RfD (Redirects for discussion)';
+
+	static isDefaultChoice() {
+		return mw.config.get('wgIsRedirect') || document.getElementById('softredirect');
+	}
+
+	getFieldsetLabel() {
+		return 'Redirects for discussion';
+	}
+
+	getMenuTooltip(): string {
+		return 'Nominate redirect to be deleted or retargeted';
+	}
+
+	getUserspaceLoggingExtraInfo() {
+		let params = this.params, text = '';
+		if (params.rfdtarget) {
+			text += '; Target: [[:' + params.rfdtarget + ']]';
+			if (params.relatedpage) {
+				text += ' (notified)';
+			}
+		}
+		return text;
+	}
+
+	public generateFieldset(): quickFormElement {
+		this.fieldset = super.generateFieldset();
+		this.fieldset.append({
+			type: 'checkbox',
+			list: [
+				{
+					label: 'Notify target page if possible',
+					value: 'relatedpage',
+					name: 'relatedpage',
+					tooltip: "A notification template will be placed on the talk page of this redirect's target if this is true.",
+					checked: true
+				}
+			]
+		});
+		this.appendReasonArea();
+		return this.fieldset;
+	}
+
+	preview(form: HTMLFormElement) {
+		this.params = Morebits.quickForm.getInputData(form);
+		this.findTarget().then(() => {
+			this.showPreview(form);
+		});
+	}
+
+	public evaluate() {
+		super.evaluate();
+		let tm = new Morebits.taskManager(this);
+		tm.add(this.findTarget, []);
+		tm.add(this.tagPage, [this.findTarget]);
+		tm.add(this.addToList, [this.tagPage]);
+		tm.add(this.fetchCreatorInfo, []);
+		tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
+		tm.add(this.notifyTargetTalk, [this.fetchCreatorInfo, this.tagPage]);
+		tm.add(this.addToLog, [this.notifyCreator]);
+		tm.execute().then(() => {
+			Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
+			setTimeout(() => {
+				window.location.href = mw.util.getUrl(this.params.logpage);
+			}, Morebits.wiki.actionCompleted.timeOut);
+		});
+	}
+
+	// Creates: params.rfdtarget, params.curtimestamp, params.section, params.logpage, params.discussionpage
+	findTarget(): JQuery.Promise<void> {
+		// Used by regular redirects to find the target, but for all redirects,
+		// avoid relying on the client clock to build the log page
+		var query = {
+			'action': 'query',
+			'curtimestamp': true
+		};
+		if (document.getElementById('softredirect')) {
+			// For soft redirects, define the target early
+			// to skip target checks in findTargetCallback
+			this.params.rfdtarget = document.getElementById('softredirect').textContent.replace(/^:+/, '');
+		} else {
+			// Find current target of redirect
+			query.titles = mw.config.get('wgPageName');
+			query.redirects = true;
+		}
+		var wikipedia_api = new Morebits.wiki.api('Finding target of redirect', query);
+		return wikipedia_api.post().then((apiobj) => {
+			var $xmlDoc = $(apiobj.responseXML);
+			this.params.curtimestamp = $xmlDoc.find('api').attr('curtimestamp');
+			var date = new Morebits.date(this.params.curtimestamp);
+			this.params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.format('YYYY MMMM D', 'utc');
+			this.params.discussionpage = this.params.logpage + '#' + Morebits.pageNameNorm;
+
+			if (!this.params.rfdtarget) { // Not a softredirect
+				var target = $xmlDoc.find('redirects r').first().attr('to');
+				if (!target) {
+					var message = 'No target found. this page does not appear to be a redirect, aborting';
+					if (mw.config.get('wgAction') === 'history') {
+						message += '. If this is a soft redirect, try again from the content page, not the page history.';
+					}
+					apiobj.getStatusElement().error(message);
+					return $.Deferred().reject();
+				}
+				this.params.rfdtarget = target;
+				this.params.section = $xmlDoc.find('redirects r').first().attr('tofragment');
+			}
+		});
+	}
+
+	// Creates: params.tagText
+	tagPage(): JQuery.Promise<void> {
+		let def = $.Deferred();
+		let params = this.params;
+
+		var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Adding deletion tag to redirect');
+		pageobj.setFollowRedirect(false);
+		pageobj.load((pageobj) => {
+			var text = pageobj.getPageText();
+			// Imperfect for edit request but so be it
+			params.tagText = '{{subst:rfd|' + (mw.config.get('wgNamespaceNumber') === 10 ? 'showontransclusion=1|' : '') + 'content=\n';
+
+			if (pageobj.canEdit()) {
+				pageobj.setPageText(params.tagText + text + '\n}}');
+				pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
+				pageobj.setChangeTags(Twinkle.changeTags);
+				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
+				pageobj.setCreateOption('nocreate');
+				pageobj.save(def.resolve, def.reject);
+			} else {
+				Xfd.autoEditRequest(pageobj, params).then(def.resolve, def.reject);
+			}
+		});
+		return def;
+	}
+
+	getDiscussionWikitext(): string {
+		let params = this.params;
+		return new Template('subst:rfd2', {
+			text: (params.reason ? Morebits.string.formatReasonText(params.reason) : '') + ' ~~~~',
+			redirect: Morebits.pageNameNorm,
+			target: params.rfdtarget && (params.rfdtarget + (params.section ? '#' + params.section : ''))
+		}).toString();
+	}
+
+	addToList(): JQuery.Promise<void> {
+		let def = $.Deferred();
+		let params = this.params;
+		let pageobj = new Morebits.wiki.page(params.logpage, 'Adding discussion to today\'s log');
+		pageobj.setFollowRedirect(true);
+		pageobj.load((pageobj) => {
+			var statelem = pageobj.getStatusElement();
+			var added_data = this.getDiscussionWikitext();
+			var text;
+
+			// add date header if the log is found to be empty (a bot should do this automatically)
+			if (!pageobj.exists()) {
+				text = '{{subst:RfD log}}' + added_data;
+			} else {
+				var old_text = pageobj.getPageText();
+				text = old_text.replace(/(<!-- Add new entries directly below this line\.? -->)/, '$1\n' + added_data);
+				if (text === old_text) {
+					statelem.error('failed to find target spot for the discussion');
+					return;
+				}
+			}
+
+			pageobj.setPageText(text);
+			pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
+			pageobj.setChangeTags(Twinkle.changeTags);
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
+			pageobj.setCreateOption('recreate');
+			pageobj.save(function() {
+				def.resolve();
+				Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			}, def.reject);
+		});
+		return def;
+	}
+
+	notifyCreator(): JQuery.Promise<void> {
+		if (!this.params.notifycreator) {
+			this.params.intialContrib = null;
+			return $.Deferred().resolve();
+		}
+		return this.notifyTalkPage(this.params.initialContrib);
+	}
+
+	notifyTargetTalk(): JQuery.Promise<void> {
+		if (!this.params.relatedpage) {
+			return $.Deferred().resolve();
+		}
+		var targetTalk = new mw.Title(this.params.rfdtarget).getTalkPage();
+		let statelem = new Morebits.status('Notifying target talk page', 'doing');
+
+		// On the offchance it's a circular redirect
+		if (this.params.rfdtarget === mw.config.get('wgPageName')) {
+			statelem.warn('Circular redirect; skipping target page notification');
+			return $.Deferred().resolve();
+		} else if (document.getElementById('softredirect')) {
+			statelem.warn('Soft redirect; skipping target page notification');
+			return $.Deferred().resolve();
+			// Don't issue if target talk is the initial contributor's talk or your own
+		} else if (targetTalk.getNamespaceId() === 3 && targetTalk.getNameText() === this.params.initialContrib) {
+			statelem.warn('Target is initial contributor; skipping target page notification');
+			return $.Deferred().resolve();
+		} else if (targetTalk.getNamespaceId() === 3 && targetTalk.getNameText() === mw.config.get('wgUserName')) {
+			statelem.warn('You (' + mw.config.get('wgUserName') + ') are the target; skipping target page notification');
+			return $.Deferred().resolve();
+		} else {
+			return this.notifyTalkPage(targetTalk.toText(), statelem);
+		}
+	}
+}
+
+
+class Rm extends XfdMode {
+	static venueCode = 'rm';
+	static venueLabel = 'RM (Requested moves)';
+
+	public getFieldsetLabel() {
+		return 'Requested moves';
+	}
+
+	public generateFieldset(): quickFormElement {
+		this.fieldset = super.generateFieldset();
+		this.fieldset.append({
+			type: 'checkbox',
+			list: [
+				{
+					label: 'Uncontroversial technical request',
+					value: 'rmtr',
+					name: 'rmtr',
+					tooltip: 'Use this option when you are unable to perform this uncontroversial move yourself because of a technical reason (e.g. a page already exists at the new title, or the page is protected)',
+					checked: false,
+					event: (evt) => {
+						this.result.newname.required = evt.target.checked;
+					}
+				}
+			]
+		});
+		this.fieldset.append({
+			type: 'input',
+			name: 'newname',
+			label: 'New title: ',
+			tooltip: 'Required for technical requests. Otherwise, if unsure of the appropriate title, you may leave it blank.'
+		});
+
+		this.appendReasonArea();
+		return this.fieldset;
+	}
+
+	public getDiscussionWikitext(): string {
+		let pageName = new mw.Title(Morebits.pageNameNorm).getSubjectPage().toText();
+		let params = this.params;
+		return (params.rmtr ?
+			'{{subst:RMassist|1=' + pageName + '|2=' + params.newname :
+			'{{subst:Requested move|current1=' + pageName + '|new1=' + params.newname)
+			+ '|reason=' + params.reason + '}}';
+	}
+
+	showPreview(form: HTMLFormElement) {
+		let templatetext = this.getDiscussionWikitext();
+		form.previewer.beginRender(templatetext, this.params.rmtr ?
+			'Wikipedia:Requested moves/Technical requests' :
+			new mw.Title(Morebits.pageNameNorm).getTalkPage().toText());
+	}
+
+	evaluate() {
+		super.evaluate();
+		var nomPageName = this.params.rmtr ?
+			'Wikipedia:Requested moves/Technical requests' :
+			new mw.Title(Morebits.pageNameNorm).getTalkPage().toText();
+
+		Morebits.wiki.actionCompleted.redirect = nomPageName;
+		Morebits.wiki.actionCompleted.notice = 'Nomination completed, now redirecting to the discussion page';
+
+		let pageobj = new Morebits.wiki.page(nomPageName, this.params.rmtr ? 'Adding entry at WP:RM/TR' : 'Adding entry on talk page');
+		pageobj.setFollowRedirect(true);
+
+		if (this.params.rmtr) {
+			pageobj.setPageSection(2);
+			pageobj.load((pageobj) => {
+				var text = pageobj.getPageText();
+				var statelem = pageobj.getStatusElement();
+				var hiddenCommentRE = /---- and enter on a new line.* -->/;
+				var newtext = text.replace(hiddenCommentRE, '$&\n' + this.getDiscussionWikitext());
+				if (text === newtext) {
+					statelem.error('failed to find target spot for the entry');
+					return;
+				}
+				pageobj.setPageText(newtext);
+				pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
+				pageobj.setChangeTags(Twinkle.changeTags);
+				pageobj.save(() => {
+					Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+					// add this nomination to the user's userspace log
+					this.addToLog();
+				});
+			});
+		} else {
+			// listAtTalk uses .append(), so no need to load the page
+			this.listAtTalk(pageobj);
+		}
+	}
+
+	listAtTalk(pageobj) {
+		var params = this.params;
+		pageobj.setAppendText('\n\n' + this.getDiscussionWikitext());
+		pageobj.setEditSummary('Proposing move' + (params.newname ? ' to [[:' + params.newname + ']]' : ''));
+		pageobj.setChangeTags(Twinkle.changeTags);
+		pageobj.setCreateOption('recreate'); // since the talk page need not exist
+		pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
+		pageobj.append(() => {
+			Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+			// add this nomination to the user's userspace log
+			this.addToLog();
+		});
+	}
+
+	getUserspaceLoggingExtraInfo() {
+		let params = this.params, text = '';
+		if (params.rmtr) {
+			text += ' (technical)';
+		}
+		if (params.newname) {
+			text += '; New name: [[:' + params.newname + ']]';
+		}
+		return text;
+	}
+
+}
+
+const {obj_entries} = Twinkle.shims;
+
+class Template extends String {
+	parameters: [name: string, value: string][]
+	name: string
+	constructor(name: string, parameters: any = {}) {
+		super();
+		this.name = name;
+		this.parameters = obj_entries(parameters).filter(([k, v]) => !!v);
+	}
+	addParam(name: string, value: string) {
+		this.parameters.push([name, value]);
+	}
+	toString() {
+		return `{{${this.name}` +
+			this.parameters.map(([name, value]) => {
+				return `|${name}=${value}`;
+			}).join('') + '}}';
+	}
+}
+
+
+let utils = {
+	/** Get ordinal number figure */
+	num2order: function(num) {
+		switch (num) {
+			case 1: return '';
+			case 2: return '2nd';
+			case 3: return '3rd';
+			default: return num + 'th';
+		}
+	},
+
+	/**
+	 * Remove namespace name from title if present
+	 * Exception-safe wrapper around mw.Title
+	 * @param {string} title
+	 */
+	stripNs: function(title) {
+		var title_obj = mw.Title.newFromUserInput(title);
+		if (!title_obj) {
+			return title; // user entered invalid input; do nothing
+		}
+		return title_obj.getNameText();
+	},
+
+	/**
+	 * Add namespace name to page title if not already given
+	 * CAUTION: namespace name won't be added if a namespace (*not* necessarily
+	 * the same as the one given) already is there in the title
+	 * @param {string} title
+	 * @param {number} namespaceNumber
+	 */
+	addNs: function(title, namespaceNumber) {
+		var title_obj = mw.Title.newFromUserInput(title, namespaceNumber);
+		if (!title_obj) {
+			return title;  // user entered invalid input; do nothing
+		}
+		return title_obj.toText();
+	},
+
+	/**
+	 * Provide Wikipedian TLA style: AfD, RfD, CfDS, RM, SfD, etc.
+	 * @param {string} venue
+	 * @returns {string}
+	 */
+	toTLACase: function(venue) {
+		return venue
+			.toString()
+			// Everybody up, inclduing rm and the terminal s in cfds
+			.toUpperCase()
+			// Lowercase the central f in a given TLA and normalize sfd-t and sfr-t
+			.replace(/(.)F(.)(?:-.)?/, '$1f$2');
+	}
+};
+
+
+Xfd.modeList = [
+	Rfd,
+	Rm
+];
+
+Twinkle.addInitCallback(function() { new Xfd(); }, 'XFD');
