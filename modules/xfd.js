@@ -240,6 +240,13 @@ var XfdMode = /** @class */ (function () {
         return 'Notification: [[' + this.params.discussionpage + '|listing]] of [[:' +
             Morebits.pageNameNorm + ']] at [[WP:' + this.getFieldsetLabel() + ']].';
     };
+    XfdMode.prototype.notifyCreator = function () {
+        if (!this.params.notifycreator) {
+            this.params.intialContrib = null;
+            return $.Deferred().resolve();
+        }
+        return this.notifyTalkPage(this.params.initialContrib);
+    };
     // Should be called after notifyTalkPage() which may unset this.params.intialContrib
     XfdMode.prototype.addToLog = function () {
         var params = this.params, initialContrib = params.initialContrib;
@@ -553,13 +560,6 @@ var Cfd = /** @class */ (function (_super) {
             3: this.params.cfdtarget2
         }).toString();
     };
-    Cfd.prototype.notifyCreator = function () {
-        if (!this.params.notifycreator) {
-            this.params.intialContrib = null;
-            return $.Deferred().resolve();
-        }
-        return this.notifyTalkPage(this.params.initialContrib);
-    };
     Cfd.prototype.getNotifyText = function () {
         return new Template('subst:cfd notice', {
             action: this.params.action,
@@ -720,22 +720,212 @@ var Mfd = /** @class */ (function (_super) {
     Mfd.prototype.getFieldsetLabel = function () {
         return 'Miscellany for deletion';
     };
+    Mfd.prototype.generateFieldset = function () {
+        this.fieldset = _super.prototype.generateFieldset.call(this);
+        this.fieldset.append({
+            type: 'checkbox',
+            list: [
+                {
+                    label: 'Wrap deletion tag with <noinclude>',
+                    value: 'noinclude',
+                    name: 'noinclude',
+                    tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. Select this option for userboxes.'
+                }
+            ]
+        });
+        if ((mw.config.get('wgNamespaceNumber') === 2 /* User: */ || mw.config.get('wgNamespaceNumber') === 3 /* User talk: */) && mw.config.exists('wgRelevantUserName')) {
+            this.fieldset.append({
+                type: 'checkbox',
+                list: [
+                    {
+                        label: 'Notify owner of userspace (if they are not the page creator)',
+                        value: 'notifyuserspace',
+                        name: 'notifyuserspace',
+                        tooltip: 'If the user in whose userspace this page is located is not the page creator (for example, the page is a rescued article stored as a userspace draft), notify the userspace owner as well.',
+                        checked: true
+                    }
+                ]
+            });
+        }
+        this.appendReasonArea();
+        return this.fieldset;
+    };
+    Mfd.prototype.preprocessParams = function () {
+        this.params.userspaceOwner = mw.config.get('wgRelevantUserName');
+    };
+    Mfd.prototype.evaluate = function () {
+        var _this = this;
+        _super.prototype.evaluate.call(this);
+        var tm = new Morebits.taskManager(this);
+        tm.add(this.determineDiscussionPage, []);
+        tm.add(this.tagPage, [this.determineDiscussionPage]);
+        tm.add(this.addToList, [this.determineDiscussionPage]);
+        tm.add(this.createDiscussionPage, [this.determineDiscussionPage]);
+        tm.add(this.fetchCreatorInfo, []);
+        tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
+        tm.add(this.notifyUserspaceOwner, [this.fetchCreatorInfo]);
+        tm.add(this.addToLog, [this.notifyCreator, this.notifyUserspaceOwner]);
+        tm.execute().then(function () {
+            Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
+            setTimeout(function () {
+                window.location.href = mw.util.getUrl(_this.params.discussionpage);
+            }, 50000);
+        });
+    };
+    Mfd.prototype.determineDiscussionPage = function () {
+        var params = this.params;
+        var wikipedia_api = new Morebits.wiki.api('Looking for prior nominations of this page', {
+            'action': 'query',
+            'list': 'allpages',
+            'apprefix': 'Miscellany for deletion/' + Morebits.pageNameNorm,
+            'apnamespace': 4,
+            'apfilterredir': 'nonredirects',
+            'aplimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
+        });
+        return wikipedia_api.post().then(function (apiobj) {
+            var xmlDoc = apiobj.responseXML;
+            var titles = $(xmlDoc).find('allpages p');
+            // There has been no earlier entries with this prefix, just go on.
+            if (titles.length <= 0) {
+                params.numbering = params.number = '';
+            }
+            else {
+                var number = 0;
+                for (var i = 0; i < titles.length; ++i) {
+                    var title = titles[i].getAttribute('title');
+                    // First, simple test, is there an instance with this exact name?
+                    if (title === 'Wikipedia:Miscellany for deletion/' + Morebits.pageNameNorm) {
+                        number = Math.max(number, 1);
+                        continue;
+                    }
+                    var order_re = new RegExp('^' +
+                        Morebits.string.escapeRegExp('Wikipedia:Miscellany for deletion/' + Morebits.pageNameNorm) +
+                        '\\s*\\(\\s*(\\d+)(?:(?:th|nd|rd|st) nom(?:ination)?)?\\s*\\)\\s*$');
+                    var match = order_re.exec(title);
+                    // No match; A non-good value
+                    if (!match) {
+                        continue;
+                    }
+                    // A match, set number to the max of current
+                    number = Math.max(number, Number(match[1]));
+                }
+                params.number = utils.num2order(parseInt(number, 10) + 1);
+                params.numbering = number > 0 ? ' (' + params.number + ' nomination)' : '';
+            }
+            params.discussionpage = 'Wikipedia:Miscellany for deletion/' + Morebits.pageNameNorm + params.numbering;
+            apiobj.getStatusElement().info('next in order is [[' + params.discussionpage + ']]');
+        });
+    };
+    Mfd.prototype.tagPage = function () {
+        var params = this.params;
+        var def = $.Deferred();
+        var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page with deletion tag');
+        pageobj.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
+        pageobj.load(function (pageobj) {
+            var text = pageobj.getPageText();
+            params.tagText = '{{' + (params.number === '' ? 'mfd' : 'mfdx|' + params.number) + '|help=off}}';
+            if (['javascript', 'css', 'sanitized-css'].indexOf(mw.config.get('wgPageContentModel')) !== -1) {
+                params.tagText = '/* ' + params.tagText + ' */\n';
+            }
+            else {
+                params.tagText += '\n';
+                if (params.noinclude) {
+                    params.tagText = '<noinclude>' + params.tagText + '</noinclude>';
+                }
+            }
+            if (pageobj.canEdit() && ['wikitext', 'javascript', 'css', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
+                pageobj.setPageText(params.tagText + text);
+                pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
+                pageobj.setChangeTags(Twinkle.changeTags);
+                pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
+                pageobj.setCreateOption('nocreate');
+                pageobj.save(def.resolve, def.reject);
+            }
+            else {
+                Xfd.autoEditRequest(pageobj, params);
+            }
+        });
+        return def;
+    };
+    Mfd.prototype.createDiscussionPage = function () {
+        var _this = this;
+        var params = this.params;
+        var def = $.Deferred();
+        var pageobj = new Morebits.wiki.page(params.discussionpage, 'Creating deletion discussion page');
+        pageobj.load(function (pageobj) {
+            var params = pageobj.getCallbackParameters();
+            pageobj.setPageText(_this.getDiscussionWikitext());
+            pageobj.setEditSummary('Creating deletion discussion page for [[:' + Morebits.pageNameNorm + ']].');
+            pageobj.setChangeTags(Twinkle.changeTags);
+            pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
+            pageobj.setCreateOption('createonly');
+            pageobj.save(function () {
+                Xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+                def.resolve();
+            }, def.reject);
+        });
+        return def;
+    };
     Mfd.prototype.getDiscussionWikitext = function () {
-        return '';
+        return new Template('subst:mfd2', {
+            text: Morebits.string.formatReasonText(this.params.reason, true),
+            pg: Morebits.pageNameNorm
+        }).toString();
+    };
+    Mfd.prototype.addToList = function () {
+        var params = this.params;
+        var def = $.Deferred();
+        var pageobj = new Morebits.wiki.page('Wikipedia:Miscellany for deletion', "Adding discussion to today's list");
+        pageobj.setPageSection(2);
+        pageobj.setFollowRedirect(true);
+        pageobj.load(function (pageobj) {
+            var text = pageobj.getPageText();
+            var statelem = pageobj.getStatusElement();
+            var date = new Morebits.date(pageobj.getLoadTime());
+            var date_header = date.format('===MMMM D, YYYY===\n', 'utc');
+            var date_header_regex = new RegExp(date.format('(===[\\s]*MMMM[\\s]+D,[\\s]+YYYY[\\s]*===)', 'utc'));
+            var added_data = '{{subst:mfd3|pg=' + Morebits.pageNameNorm + params.numbering + '}}';
+            if (date_header_regex.test(text)) { // we have a section already
+                statelem.info('Found today\'s section, proceeding to add new entry');
+                text = text.replace(date_header_regex, '$1\n' + added_data);
+            }
+            else { // we need to create a new section
+                statelem.info('No section for today found, proceeding to create one');
+                text = text.replace('===', date_header + added_data + '\n\n===');
+            }
+            pageobj.setPageText(text);
+            pageobj.setEditSummary('Adding [[:' + params.discussionpage + ']].');
+            pageobj.setChangeTags(Twinkle.changeTags);
+            pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
+            pageobj.setCreateOption('recreate');
+            pageobj.save(def.resolve, def.reject);
+        });
+        return def;
+    };
+    Mfd.prototype.notifyUserspaceOwner = function () {
+        var params = this.params;
+        // Notify the user who owns the subpage if they are not the creator
+        if (params.notifyuserspace && params.userspaceOwner !== params.initialContrib) {
+            // Don't log if notifying creator above, will log then
+            return this.notifyTalkPage(params.userspaceOwner, new Morebits.status('Notifying owner of userspace (' + params.userspaceOwner + ')'));
+        }
+        else {
+            return $.Deferred().resolve();
+        }
+    };
+    Mfd.prototype.getNotifyText = function () {
+        var text = "{{subst:mfd notice";
+        if (this.params.numbering) {
+            text += "|order=&#32;" + this.params.numbering;
+        }
+        text += "|1=" + Morebits.pageNameNorm + "}} ~~~~";
+        return text;
     };
     Mfd.prototype.getUserspaceLoggingExtraInfo = function () {
         var params = this.params, text = '';
         if (params.notifyuserspace && params.userspaceOwner && params.userspaceOwner !== params.initialContrib) {
             text += '; notified {{user|1=' + params.userspaceOwner + '}}';
         }
-        return text;
-    };
-    Mfd.prototype.getNotifyText = function () {
-        var text = "{{subst:afd notice";
-        if (this.params.numbering) {
-            text += "|order=&#32;" + this.params.numbering;
-        }
-        text += "|1=" + Morebits.pageNameNorm + "}} ~~~~";
         return text;
     };
     Mfd.venueCode = 'mfd';
@@ -914,13 +1104,6 @@ var Rfd = /** @class */ (function (_super) {
             }, def.reject);
         });
         return def;
-    };
-    Rfd.prototype.notifyCreator = function () {
-        if (!this.params.notifycreator) {
-            this.params.intialContrib = null;
-            return $.Deferred().resolve();
-        }
-        return this.notifyTalkPage(this.params.initialContrib);
     };
     Rfd.prototype.notifyTargetTalk = function () {
         if (!this.params.relatedpage) {
@@ -1146,7 +1329,8 @@ Xfd.modeList = [
     Rfd,
     Cfd,
     Rm,
-    Cfds
+    Cfds,
+    Mfd
 ];
 Twinkle.addInitCallback(function () { new Xfd(); }, 'XFD');
 //# sourceMappingURL=xfd.js.map
