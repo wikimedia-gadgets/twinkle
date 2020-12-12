@@ -4590,14 +4590,16 @@ Morebits.userspaceLogger = function(logPageName) {
 	 *
 	 * @param {string} logText - Doesn't include leading `#` or `*`.
 	 * @param {string} summaryText - Edit summary.
+	 * @returns {JQuery.Promise}
 	 */
 	this.log = function(logText, summaryText) {
+		var def = $.Deferred();
 		if (!logText) {
-			return;
+			return def.reject();
 		}
 		var page = new Morebits.wiki.page('User:' + mw.config.get('wgUserName') + '/' + logPageName,
 			'Adding entry to userspace log'); // make this '... to ' + logPageName ?
-		return page.load(function(pageobj) {
+		page.load(function(pageobj) {
 			// add blurb if log page doesn't exist or is blank
 			var text = pageobj.getPageText() || this.initialText;
 
@@ -4611,8 +4613,9 @@ Morebits.userspaceLogger = function(logPageName) {
 			pageobj.setEditSummary(summaryText);
 			pageobj.setChangeTags(this.changeTags);
 			pageobj.setCreateOption('recreate');
-			pageobj.save();
+			pageobj.save(def.resolve, def.reject);
 		}.bind(this));
+		return def;
 	};
 };
 

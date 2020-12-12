@@ -438,11 +438,7 @@ Twinkle.prod.callbacks = {
 		}
 		usl.changeTags = Twinkle.changeTags;
 
-		usl.log(logText, summaryText);
-		return $.Deferred().resolve(); // KLUDGE: this should actually return resolved/
-		// rejected after the logging succeeded/failed, but Morebits.userspaceLogger#log
-		// doesn't support callbacks, and it seems wasteful to add them just for this.
-		// This isn't a real issue since no other task depend on this one.
+		return usl.log(logText, summaryText);
 	}
 
 };
