@@ -1821,8 +1821,8 @@ Morebits.date.prototype = {
 	 * @returns {RegExp}
 	 */
 	monthHeaderRegex: function() {
-		return new RegExp('^==+\\s*(?:' + this.getUTCMonthName() + '|' + this.getUTCMonthNameAbbrev() +
-			')\\s+' + this.getUTCFullYear() + '\\s*==+', 'mg');
+		return new RegExp('^(==+)\\s*(?:' + this.getUTCMonthName() + '|' + this.getUTCMonthNameAbbrev() +
+			')\\s+' + this.getUTCFullYear() + '\\s*\\1', 'mg');
 	},
 
 	/**

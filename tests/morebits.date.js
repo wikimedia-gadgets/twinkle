@@ -46,7 +46,7 @@ QUnit.test('RegEx headers', assert => {
 	assert.true(date.monthHeaderRegex().test('==November 2020=='), 'Header RegEx');
 	assert.true(date.monthHeaderRegex().test('====November 2020===='), 'Deeper');
 	assert.true(date.monthHeaderRegex().test('== Nov 2020 =='), 'Shortened month');
-	// assert.false(date.monthHeaderRegex().test('=== Nov 2020 =='), 'Mismatched level');
+	assert.false(date.monthHeaderRegex().test('=== Nov 2020 =='), 'Mismatched level');
 	assert.false(date.monthHeaderRegex().test('==December 2020=='), 'Wrong month');
 });
 QUnit.test('add/subtract', assert => {
