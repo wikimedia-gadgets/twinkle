@@ -21,7 +21,32 @@ Twinkle.xfd = function twinklexfd() {
 		return;
 	}
 
-	Twinkle.addPortletLink(Twinkle.xfd.callback, 'XFD', 'tw-xfd', 'Start a deletion discussion');
+	var tooltip = 'Start a discussion for deleting';
+	if (mw.config.get('wgIsRedirect')) {
+		tooltip += ' or retargeting this redirect';
+	} else {
+		switch (mw.config.get('wgNamespaceNumber')) {
+			case 0:
+				tooltip += ' or moving this article';
+				break;
+			case 10:
+				tooltip += ' or merging this template';
+				break;
+			case 828:
+				tooltip += ' or merging this module';
+				break;
+			case 6:
+				tooltip += ' this file';
+				break;
+			case 14:
+				tooltip += ', merging or renaming this category';
+				break;
+			default:
+				tooltip += ' this page';
+				break;
+		}
+	}
+	Twinkle.addPortletLink(Twinkle.xfd.callback, 'XFD', 'tw-xfd', tooltip);
 };
 
 
