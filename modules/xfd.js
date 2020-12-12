@@ -163,6 +163,9 @@ var XfdMode = /** @class */ (function () {
         return '';
     };
     // Overridden for tfd, cfd, cfds
+    /**
+     * Pre-process parameters, called from evaluate() and preview().
+     */
     XfdMode.prototype.preprocessParams = function () { };
     // Overridden for ffd and rfd, which need special treatment
     XfdMode.prototype.preview = function (form) {
@@ -180,6 +183,32 @@ var XfdMode = /** @class */ (function () {
         this.preprocessParams();
         Morebits.simpleWindow.setButtonsEnabled(false);
         Morebits.status.init(this.result);
+    };
+    XfdMode.prototype.autoEditRequest = function (pageobj) {
+        var params = this.params;
+        var def = $.Deferred();
+        var talkName = new mw.Title(pageobj.getPageName()).getTalkPage().toText();
+        if (talkName === pageobj.getPageName()) {
+            pageobj.getStatusElement().error('Page protected and nowhere to add an edit request, aborting');
+            return def.reject();
+        }
+        else {
+            pageobj.getStatusElement().warn('Page protected, requesting edit');
+            var editRequest = '{{subst:Xfd edit protected|page=' + pageobj.getPageName() +
+                '|discussion=' + params.discussionpage + '|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
+            var talk_page = new Morebits.wiki.page(talkName, 'Automatically posting edit request on talk page');
+            talk_page.setNewSectionTitle('Edit request to complete ' + utils.toTLACase(params.venue) + ' nomination');
+            talk_page.setNewSectionText(editRequest);
+            talk_page.setCreateOption('recreate');
+            talk_page.setWatchlist(Twinkle.getPref('xfdWatchPage'));
+            talk_page.setFollowRedirect(true); // should never be needed, but if the article is moved, we would want to follow the redirect
+            talk_page.setChangeTags(Twinkle.changeTags);
+            talk_page.newSection(def.resolve, function () {
+                talk_page.getStatusElement().warn('Unable to add edit request, the talk page may be protected');
+                def.reject();
+            });
+        }
+        return def;
     };
     XfdMode.prototype.fetchCreatorInfo = function () {
         var _this = this;
@@ -487,6 +516,7 @@ var Cfd = /** @class */ (function (_super) {
         });
     };
     Cfd.prototype.tagPage = function () {
+        var _this = this;
         var params = this.params;
         var def = $.Deferred();
         var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with ' + params.action + ' tag');
@@ -497,10 +527,10 @@ var Cfd = /** @class */ (function (_super) {
             params.logpage = 'Wikipedia:Categories for discussion/Log/' + date.format('YYYY MMMM D', 'utc');
             params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
             var text = pageobj.getPageText();
-            params.tagText = new Template('subst:' + params.xfdcat, {
+            params.tagText = utils.makeTemplate('subst:' + params.xfdcat, {
                 1: params.cfdtarget,
                 2: params.cfdtarget2 // for cfs
-            }).toString() + '\n';
+            }) + '\n';
             var editsummary = (params.stub ? 'Stub template' : 'Category') +
                 ' being considered for ' + params.action + (params.xfdcat === 'cfc' ? ' to an article' : '') +
                 '; see [[:' + params.discussionpage + ']].';
@@ -513,7 +543,7 @@ var Cfd = /** @class */ (function (_super) {
                 pageobj.save(def.resolve, def.reject);
             }
             else {
-                Xfd.autoEditRequest(pageobj, params);
+                _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
             }
         });
         return def;
@@ -553,19 +583,19 @@ var Cfd = /** @class */ (function (_super) {
         return def;
     };
     Cfd.prototype.getDiscussionWikitext = function () {
-        return new Template('subst:' + this.params.xfdcat + '2', {
+        return utils.makeTemplate('subst:' + this.params.xfdcat + '2', {
             text: Morebits.string.formatReasonText(this.params.reason, true),
             1: mw.config.get('wgTitle'),
             2: this.params.cfdtarget,
             3: this.params.cfdtarget2
-        }).toString();
+        });
     };
     Cfd.prototype.getNotifyText = function () {
-        return new Template('subst:cfd notice', {
+        return utils.makeTemplate('subst:cfd notice', {
             action: this.params.action,
             1: Morebits.pageNameNorm,
             stub: mw.config.get('wgNamespaceNumber') === 10 ? 'yes' : null
-        }).toString() + ' ~~~~';
+        }) + ' ~~~~';
     };
     Cfd.prototype.getUserspaceLoggingExtraInfo = function () {
         var params = this.params, text = '';
@@ -639,6 +669,7 @@ var Cfds = /** @class */ (function (_super) {
         });
     };
     Cfds.prototype.tagPage = function () {
+        var _this = this;
         var params = this.params;
         var def = $.Deferred();
         var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with rename tag');
@@ -655,7 +686,7 @@ var Cfds = /** @class */ (function (_super) {
                 pageobj.save(def.resolve, def.reject);
             }
             else {
-                Xfd.autoEditRequest(pageobj, params);
+                _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
             }
         });
         return def;
@@ -817,6 +848,7 @@ var Mfd = /** @class */ (function (_super) {
         });
     };
     Mfd.prototype.tagPage = function () {
+        var _this = this;
         var params = this.params;
         var def = $.Deferred();
         var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page with deletion tag');
@@ -842,7 +874,7 @@ var Mfd = /** @class */ (function (_super) {
                 pageobj.save(def.resolve, def.reject);
             }
             else {
-                Xfd.autoEditRequest(pageobj, params);
+                _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
             }
         });
         return def;
@@ -867,10 +899,10 @@ var Mfd = /** @class */ (function (_super) {
         return def;
     };
     Mfd.prototype.getDiscussionWikitext = function () {
-        return new Template('subst:mfd2', {
+        return utils.makeTemplate('subst:mfd2', {
             text: Morebits.string.formatReasonText(this.params.reason, true),
             pg: Morebits.pageNameNorm
-        }).toString();
+        });
     };
     Mfd.prototype.addToList = function () {
         var params = this.params;
@@ -1065,11 +1097,11 @@ var Rfd = /** @class */ (function (_super) {
     };
     Rfd.prototype.getDiscussionWikitext = function () {
         var params = this.params;
-        return new Template('subst:rfd2', {
+        return utils.makeTemplate('subst:rfd2', {
             text: (params.reason ? Morebits.string.formatReasonText(params.reason) : '') + ' ~~~~',
             redirect: Morebits.pageNameNorm,
             target: params.rfdtarget && (params.rfdtarget + (params.section ? '#' + params.section : ''))
-        }).toString();
+        });
     };
     Rfd.prototype.addToList = function () {
         var _this = this;
@@ -1323,6 +1355,27 @@ var utils = {
             .toUpperCase()
             // Lowercase the central f in a given TLA and normalize sfd-t and sfr-t
             .replace(/(.)F(.)(?:-.)?/, '$1f$2');
+    },
+    /**
+     * Make template wikitext from the template name and parameters
+     * @param {string} name - name of the template. Include "subst:" if necessary
+     * @param {Object} parameters - object with keys and values being the template param names and values.
+     * Use numbers as keys for unnamed parameters.
+     * If a value is falsy (undefined or null or empty string), the param doesn't appear in output.
+     * @returns {string}
+     */
+    makeTemplate: function (name, parameters) {
+        var parameterText = obj_entries(parameters)
+            .filter(function (_a) {
+            var k = _a[0], v = _a[1];
+            return !!v;
+        }) // ignore params with no value
+            .map(function (_a) {
+            var name = _a[0], value = _a[1];
+            return "|" + name + "=" + value;
+        })
+            .join('');
+        return '{{' + name + parameterText + '}}';
     }
 };
 Xfd.modeList = [

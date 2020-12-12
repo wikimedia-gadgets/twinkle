@@ -186,6 +186,9 @@ abstract class XfdMode {
 	}
 
 	// Overridden for tfd, cfd, cfds
+	/**
+	 * Pre-process parameters, called from evaluate() and preview().
+	 */
 	preprocessParams(): void {}
 
 	// Overridden for ffd and rfd, which need special treatment
@@ -208,6 +211,34 @@ abstract class XfdMode {
 		this.preprocessParams();
 		Morebits.simpleWindow.setButtonsEnabled(false);
 		Morebits.status.init(this.result);
+	}
+
+	autoEditRequest(pageobj: Morebits.wiki.page) {
+		let params = this.params;
+		let def = $.Deferred();
+		var talkName = new mw.Title(pageobj.getPageName()).getTalkPage().toText();
+		if (talkName === pageobj.getPageName()) {
+			pageobj.getStatusElement().error('Page protected and nowhere to add an edit request, aborting');
+			return def.reject();
+		} else {
+			pageobj.getStatusElement().warn('Page protected, requesting edit');
+
+			var editRequest = '{{subst:Xfd edit protected|page=' + pageobj.getPageName() +
+				'|discussion=' + params.discussionpage + '|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
+
+			var talk_page = new Morebits.wiki.page(talkName, 'Automatically posting edit request on talk page');
+			talk_page.setNewSectionTitle('Edit request to complete ' + utils.toTLACase(params.venue) + ' nomination');
+			talk_page.setNewSectionText(editRequest);
+			talk_page.setCreateOption('recreate');
+			talk_page.setWatchlist(Twinkle.getPref('xfdWatchPage'));
+			talk_page.setFollowRedirect(true);  // should never be needed, but if the article is moved, we would want to follow the redirect
+			talk_page.setChangeTags(Twinkle.changeTags);
+			talk_page.newSection(def.resolve, function() {
+				talk_page.getStatusElement().warn('Unable to add edit request, the talk page may be protected');
+				def.reject();
+			});
+		}
+		return def;
 	}
 
 	fetchCreatorInfo() {
@@ -559,10 +590,10 @@ class Cfd extends XfdMode {
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
 
 			var text = pageobj.getPageText();
-			params.tagText = new Template('subst:' + params.xfdcat, {
+			params.tagText = utils.makeTemplate('subst:' + params.xfdcat, {
 				1: params.cfdtarget, // for cfm, cfr, cfc, cfs, sfr-t
 				2: params.cfdtarget2 // for cfs
-			}).toString() + '\n';
+			}) + '\n';
 
 			var editsummary = (params.stub ? 'Stub template' : 'Category') +
 				' being considered for ' + params.action + (params.xfdcat === 'cfc' ? ' to an article' : '') +
@@ -576,7 +607,7 @@ class Cfd extends XfdMode {
 				pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
 				pageobj.save(def.resolve, def.reject);
 			} else {
-				Xfd.autoEditRequest(pageobj, params);
+				this.autoEditRequest(pageobj).then(def.resolve, def.reject);
 			}
 		});
 		return def;
@@ -620,20 +651,20 @@ class Cfd extends XfdMode {
 	}
 
 	getDiscussionWikitext(): string {
-		return new Template('subst:' + this.params.xfdcat + '2', {
+		return utils.makeTemplate('subst:' + this.params.xfdcat + '2', {
 			text: Morebits.string.formatReasonText(this.params.reason, true),
 			1: mw.config.get('wgTitle'),
 			2: this.params.cfdtarget,
 			3: this.params.cfdtarget2
-		}).toString();
+		});
 	}
 
 	getNotifyText(): string {
-		return new Template('subst:cfd notice', {
+		return utils.makeTemplate('subst:cfd notice', {
 			action: this.params.action,
 			1: Morebits.pageNameNorm,
 			stub: mw.config.get('wgNamespaceNumber') === 10 ? 'yes' : null
-		}).toString() + ' ~~~~';
+		}) + ' ~~~~';
 	}
 
 	getUserspaceLoggingExtraInfo() {
@@ -730,7 +761,7 @@ class Cfds extends XfdMode {
 				pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
 				pageobj.save(def.resolve, def.reject);
 			} else {
-				Xfd.autoEditRequest(pageobj, params);
+				this.autoEditRequest(pageobj).then(def.resolve, def.reject);
 			}
 		});
 		return def;
@@ -933,7 +964,7 @@ class Mfd extends XfdMode {
 				pageobj.setCreateOption('nocreate');
 				pageobj.save(def.resolve, def.reject);
 			} else {
-				Xfd.autoEditRequest(pageobj, params);
+				this.autoEditRequest(pageobj).then(def.resolve, def.reject);
 			}
 		});
 		return def;
@@ -960,10 +991,10 @@ class Mfd extends XfdMode {
 	}
 
 	getDiscussionWikitext(): string {
-		return new Template('subst:mfd2', {
+		return utils.makeTemplate('subst:mfd2', {
 			text: Morebits.string.formatReasonText(this.params.reason, true),
 			pg: Morebits.pageNameNorm
-		}).toString();
+		});
 	}
 
 	addToList() {
@@ -1169,11 +1200,11 @@ class Rfd extends XfdMode {
 
 	getDiscussionWikitext(): string {
 		let params = this.params;
-		return new Template('subst:rfd2', {
+		return utils.makeTemplate('subst:rfd2', {
 			text: (params.reason ? Morebits.string.formatReasonText(params.reason) : '') + ' ~~~~',
 			redirect: Morebits.pageNameNorm,
 			target: params.rfdtarget && (params.rfdtarget + (params.section ? '#' + params.section : ''))
-		}).toString();
+		});
 	}
 
 	addToList(): JQuery.Promise<void> {
@@ -1380,7 +1411,7 @@ class Template extends String {
 
 let utils = {
 	/** Get ordinal number figure */
-	num2order: function(num) {
+	num2order(num: number): string {
 		switch (num) {
 			case 1: return '';
 			case 2: return '2nd';
@@ -1394,7 +1425,7 @@ let utils = {
 	 * Exception-safe wrapper around mw.Title
 	 * @param {string} title
 	 */
-	stripNs: function(title) {
+	stripNs(title: string): string {
 		var title_obj = mw.Title.newFromUserInput(title);
 		if (!title_obj) {
 			return title; // user entered invalid input; do nothing
@@ -1409,7 +1440,7 @@ let utils = {
 	 * @param {string} title
 	 * @param {number} namespaceNumber
 	 */
-	addNs: function(title, namespaceNumber) {
+	addNs(title: string, namespaceNumber: number): string {
 		var title_obj = mw.Title.newFromUserInput(title, namespaceNumber);
 		if (!title_obj) {
 			return title;  // user entered invalid input; do nothing
@@ -1422,13 +1453,29 @@ let utils = {
 	 * @param {string} venue
 	 * @returns {string}
 	 */
-	toTLACase: function(venue) {
+	toTLACase(venue: string): string {
 		return venue
 			.toString()
 			// Everybody up, inclduing rm and the terminal s in cfds
 			.toUpperCase()
 			// Lowercase the central f in a given TLA and normalize sfd-t and sfr-t
 			.replace(/(.)F(.)(?:-.)?/, '$1f$2');
+	},
+
+	/**
+	 * Make template wikitext from the template name and parameters
+	 * @param {string} name - name of the template. Include "subst:" if necessary
+	 * @param {Object} parameters - object with keys and values being the template param names and values.
+	 * Use numbers as keys for unnamed parameters.
+	 * If a value is falsy (undefined or null or empty string), the param doesn't appear in output.
+	 * @returns {string}
+	 */
+	makeTemplate(name: string, parameters: Record<string | number, string>): string {
+		let parameterText = obj_entries(parameters)
+			.filter(([k, v]) => !!v) // ignore params with no value
+			.map(([name, value]) => `|${name}=${value}`)
+			.join('');
+		return '{{' + name + parameterText + '}}';
 	}
 };
 
