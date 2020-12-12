@@ -189,6 +189,34 @@ QUnit.test('Morebits.wikitext.page', assert => {
 			params: ['Fee.svg', 'size=42']
 		},
 		{
+			name: 'Underscores',
+			method: 'removeLink',
+			input: 'O, [[Romeo and Juliet|she]] [[Romeo_and Juliet|doth]] {{plural|teach}} [[Romeo|the]] [[:Romeo_and_Juliet|torches]] [[Romeo and_Juliet|to]] burn bright!',
+			expected: 'O, she doth {{plural|teach}} [[Romeo|the]] torches to burn bright!',
+			params: ['Romeo and Juliet']
+		},
+		{
+			name: 'Underscores',
+			method: 'commentOutImage',
+			input: 'O, [[File:Fee cool.svg]] she [[File:Fee_cool.svg|doth|teach]] the torches to burn bright!',
+			expected: 'O, <!-- [[File:Fee cool.svg]] --> she <!-- [[File:Fee_cool.svg|doth|teach]] --> the torches to burn bright!',
+			params: ['Fee cool.svg']
+		},
+		{
+			name: 'Underscores',
+			method: 'addToImageComment',
+			input: 'O, [[File:Fee cool.svg]] she [[File:Fee_cool.svg|doth|teach]] the torches to burn bright!',
+			expected: 'O, [[File:Fee cool.svg|thumb|size=42]] she [[File:Fee_cool.svg|doth|teach|thumb|size=42]] the torches to burn bright!',
+			params: ['Fee cool.svg', 'thumb|size=42']
+		},
+		{
+			name: 'Underscores',
+			method: 'removeTemplate',
+			input: 'O, {{plural_template|she}} doth {{plural template|teach}} the {{Plural_template|torches}} to burn bright!',
+			expected: 'O,  doth  the  to burn bright!',
+			params: ['plural_template']
+		},
+		{
 			name: 'Alt namespace',
 			method: 'removeTemplate',
 			input: 'O, she doth {{User:ThisIsaTest/plural|teach}} the torches to burn bright!',
