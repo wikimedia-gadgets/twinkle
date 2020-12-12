@@ -4272,9 +4272,10 @@ Morebits.wikitext = {};
 Morebits.wikitext.parseTemplate = function(text, start) {
 	start = start || 0;
 
-	var count = -1;
-	var level = -1;
-	var equals = -1;
+	var count = -1;  // Number of parameters found
+	var unnamed = 0; // Keep track of what number an unnamed parameter should receive
+	var level = -1;  // How many levels deep of template code we're in, 0-based
+	var equals = -1; // After finding "=" before a parameter, the index; otherwise, -1
 	var current = '';
 	var result = {
 		name: '',
@@ -4282,78 +4283,84 @@ Morebits.wikitext.parseTemplate = function(text, start) {
 	};
 	var key, value;
 
+	/**
+	 * Function to handle finding parameter values.
+	 *
+	 * @param {boolean} [final=false] - Whether this is the final
+	 * parameter and we need to remove the trailing `}}`.
+	 */
+	var findParam = function(final) {
+		// Nothing found yet, this must be the template name
+		if (count === -1) {
+			result.name = current.substring(2).trim();
+			++count;
+		} else {
+			// In a parameter
+			if (equals !== -1) {
+				// We found an equals, so save the parameter as key: value
+				key = current.substring(0, equals).trim();
+				value = final ? current.substring(equals + 1, current.length - 2).trim() : current.substring(equals + 1).trim();
+				result.parameters[key] = value;
+				equals = -1;
+			} else {
+				// No equals, so it must be unnamed; no trim since whitespace allowed
+				var param = final ? current.substring(equals + 1, current.length - 2) : current;
+				if (param) {
+					result.parameters[++unnamed] = param;
+					++count;
+				}
+			}
+		}
+	};
+
 	for (var i = start; i < text.length; ++i) {
 		var test3 = text.substr(i, 3);
-		if (test3 === '{{{') {
-			current += '{{{';
+		if (test3 === '{{{' || test3 === '}}}') {
+			current += test3;
 			i += 2;
-			++level;
-			continue;
-		}
-		if (test3 === '}}}') {
-			current += '}}}';
-			i += 2;
-			--level;
+			test3 === '}}}' ? --level : ++level;
 			continue;
 		}
 		var test2 = text.substr(i, 2);
+		// Entering a template (or link)
 		if (test2 === '{{' || test2 === '[[') {
 			current += test2;
 			++i;
 			++level;
 			continue;
 		}
+		// Leaving a link
 		if (test2 === ']]') {
 			current += ']]';
 			++i;
 			--level;
 			continue;
 		}
+		// Either leaving a template or an internal template/parser function
 		if (test2 === '}}') {
+			// Regardless, decrement the level
 			current += test2;
 			++i;
 			--level;
 
-			if (level <= 0) {
-				if (count === -1) {
-					result.name = current.substring(2).trim();
-					++count;
-				} else {
-					if (equals !== -1) {
-						key = current.substring(0, equals).trim();
-						value = current.substring(equals + 1, current.length - 2).trim();
-						result.parameters[key] = value;
-						equals = -1;
-					} else {
-						result.parameters[count] = current;
-						++count;
-					}
-				}
+			// Find the final parameter if this really is the end
+			if (level === -1) {
+				findParam(true);
 				break;
 			}
 			continue;
 		}
 
-		if (text.charAt(i) === '|' && level <= 0) {
-			if (count === -1) {
-				result.name = current.substring(2).trim();
-				++count;
-			} else {
-				if (equals !== -1) {
-					key = current.substring(0, equals).trim();
-					value = current.substring(equals + 1).trim();
-					result.parameters[key] = value;
-					equals = -1;
-				} else {
-					result.parameters[count] = current;
-					++count;
-				}
-			}
+		if (text.charAt(i) === '|' && level === 0) {
+			// Another pipe found, toplevel, so parameter coming up!
+			findParam();
 			current = '';
-		} else if (equals === -1 && text.charAt(i) === '=' && level <= 0) {
+		} else if (equals === -1 && text.charAt(i) === '=' && level === 0) {
+			// Equals found, toplevel
 			equals = current.length;
 			current += text.charAt(i);
 		} else {
+			// Just advance the position
 			current += text.charAt(i);
 		}
 	}
