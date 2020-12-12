@@ -1,8 +1,8 @@
 QUnit.module('Morebits.batchOperation');
-var batch = new Morebits.batchOperation();
 QUnit.test('Contruction', assert => {
-	assert.true(batch instanceof Morebits.batchOperation, 'Correct instance');
+	assert.true(new Morebits.batchOperation() instanceof Morebits.batchOperation, 'Correct instance');
 });
+var batch = new Morebits.batchOperation();
 var pageList = ['Macbeth', 'Hamlet', 'Romeo and Juliet', 'Much Ado About Nothing', 'Tempest'];
 batch.setPageList(pageList);
 var chunkLength = 2;

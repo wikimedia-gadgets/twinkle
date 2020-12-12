@@ -35,6 +35,7 @@ QUnit.test('parseTemplate', assert => {
 QUnit.test('Morebits.wikitext.page', assert => {
 	var text = '{{short description}}{{about}}[[File:Fee.svg]]O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!';
 	var page = new Morebits.wikitext.page(text);
+	assert.true(page instanceof Morebits.wikitext.page, 'Correct instance');
 	assert.strictEqual(page.getText(), text, 'text');
 	assert.strictEqual(page.addToImageComment('Fee.svg', 'thumb|size=42').getText(), '{{short description}}{{about}}[[File:Fee.svg|thumb|size=42]]O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!', 'Add data');
 	assert.strictEqual(page.commentOutImage('Fee.svg', 'too pretty').getText(), '{{short description}}{{about}}<!-- too pretty: [[File:Fee.svg|thumb|size=42]] -->O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!', 'Comment out');
