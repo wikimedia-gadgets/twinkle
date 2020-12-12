@@ -149,11 +149,13 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 				rvstartid: vanrevid,
 				rvlimit: 2,
 				rvdir: 'newer',
-				rvprop: 'user'
+				rvprop: 'user',
+				format: 'json'
 			};
 
 			new Morebits.wiki.api('Checking if you successfully reverted the page', query, function(apiobj) {
-				var revertUser = $(apiobj.getResponse()).find('revisions rev')[1].getAttribute('user');
+				var rev = apiobj.getResponse().query.pages[0].revisions;
+				var revertUser = rev && rev[1].user;
 				if (revertUser && revertUser !== mw.config.get('wgUserName')) {
 					message += ' Someone else reverted the page and may have already warned the user.';
 					$('#twinkle-warn-warning-messages').text('Note:' + message);
@@ -181,10 +183,12 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 				action: 'query',
 				prop: 'revisions',
 				rvprop: 'timestamp',
-				revids: vanrevid
+				revids: vanrevid,
+				format: 'json'
 			};
 			new Morebits.wiki.api('Grabbing the revision timestamps', query, function(apiobj) {
-				vantimestamp = $(apiobj.getResponse()).find('revisions rev').attr('timestamp');
+				var rev = apiobj.getResponse().query.pages[0].revisions;
+				vantimestamp = rev && rev[0].timestamp;
 				checkStale(vantimestamp);
 			}).post();
 		}

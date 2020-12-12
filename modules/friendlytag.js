@@ -1416,13 +1416,16 @@ Twinkle.tag.callbacks = {
 				'redirects': 1,  // follow redirect if the class name turns out to be a redirect page
 				'lhnamespace': '10',  // template namespace only
 				'lhshow': 'redirect',
-				'lhlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
+				'lhlimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
+				'format': 'json'
 			}, function removeRedirectTag(apiobj) {
-
-				$(apiobj.responseXML).find('page').each(function(idx, page) {
+				var pages = apiobj.getResponse().query.pages.filter(function(p) {
+					return !p.missing && !!p.linkshere;
+				});
+				pages.forEach(function(page) {
 					var removed = false;
-					$(page).find('lh').each(function(idx, el) {
-						var tag = $(el).attr('title').slice(9);
+					page.linkshere.forEach(function(el) {
+						var tag = el.title.slice(9);
 						var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
 						if (tag_re.test(pageText)) {
 							pageText = pageText.replace(tag_re, '');
@@ -1432,7 +1435,7 @@ Twinkle.tag.callbacks = {
 					});
 					if (!removed) {
 						Morebits.status.warn('Info', 'Failed to find {{' +
-						$(page).attr('title').slice(9) + '}} on the page... excluding');
+						page.title.slice(9) + '}} on the page... excluding');
 					}
 
 				});
@@ -1633,12 +1636,16 @@ Twinkle.tag.callbacks = {
 				'redirects': 1,
 				'lhnamespace': '10', // template namespace only
 				'lhshow': 'redirect',
-				'lhlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
+				'lhlimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
+				'format': 'json'
 			}, function replaceRedirectTag(apiobj) {
-				$(apiobj.responseXML).find('page').each(function(idx, page) {
+				var pages = apiobj.getResponse().query.pages.filter(function(p) {
+					return !p.missing && !!p.linkshere;
+				});
+				pages.forEach(function(page) {
 					var found = false;
-					$(page).find('lh').each(function(idx, el) {
-						var tag = $(el).attr('title').slice(9);
+					page.linkshere.forEach(function(el) {
+						var tag = el.title.slice(9);
 						var tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?)');
 						if (tag_re.test(pageText)) {
 							tagText += tag_re.exec(pageText)[1];
@@ -1649,7 +1656,7 @@ Twinkle.tag.callbacks = {
 					});
 					if (!found) {
 						Morebits.status.warn('Info', 'Failed to find the existing {{' +
-						$(page).attr('title').slice(9) + '}} on the page... skip repositioning');
+						page.title.slice(9) + '}} on the page... skip repositioning');
 					}
 				});
 				addNewTagsToMI();

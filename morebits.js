@@ -2010,6 +2010,7 @@ Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onE
 	} else {
 		this.statelem = new Morebits.status(currentAction);
 	}
+	// JSON is used throughout Morebits/Twinkle, but xml remains the default for backwards compatibility
 	if (!query.format) {
 		this.query.format = 'xml';
 	} else if (query.format === 'json' && !query.formatversion) {
@@ -2228,10 +2229,11 @@ Morebits.wiki.api.getToken = function() {
 	var tokenApi = new Morebits.wiki.api('Getting token', {
 		action: 'query',
 		meta: 'tokens',
-		type: 'csrf'
+		type: 'csrf',
+		format: 'json'
 	});
 	return tokenApi.post().then(function(apiobj) {
-		return $(apiobj.responseXML).find('tokens').attr('csrftoken');
+		return apiobj.response.query.tokens.csrftoken;
 	});
 };
 
@@ -2427,7 +2429,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			curtimestamp: '',
 			meta: 'tokens',
 			type: 'csrf',
-			titles: ctx.pageName
+			titles: ctx.pageName,
+			format: 'json'
 			// don't need rvlimit=1 because we don't need rvstartid here and only one actual rev is returned by default
 		};
 
@@ -2509,7 +2512,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			title: ctx.pageName,
 			summary: ctx.editSummary,
 			token: canUseMwUserToken ? mw.user.tokens.get('csrfToken') : ctx.csrfToken,
-			watchlist: ctx.watchlistOption
+			watchlist: ctx.watchlistOption,
+			format: 'json'
 		};
 		if (ctx.changeTags) {
 			query.tags = ctx.changeTags;
@@ -3051,7 +3055,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			'titles': ctx.pageName,
 			'rvlimit': 1,
 			'rvprop': 'user|timestamp',
-			'rvdir': 'newer'
+			'rvdir': 'newer',
+			'format': 'json'
 		};
 
 		// Only the wikitext content model can reliably handle
@@ -3153,7 +3158,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				titles: ctx.pageName,
 				rcprop: 'patrolled',
 				rctitle: ctx.pageName,
-				rclimit: 1
+				rclimit: 1,
+				format: 'json'
 			};
 
 			ctx.patrolApi = new Morebits.wiki.api('retrieving token...', patrolQuery, fnProcessPatrol);
@@ -3387,7 +3393,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			action: 'query',
 			meta: 'tokens',
 			type: 'csrf',
-			titles: ctx.pageName
+			titles: ctx.pageName,
+			format: 'json'
 		};
 		// Protection not checked for flagged-revs or non-sysop moves
 		if (action !== 'stabilize' && (action !== 'move' || Morebits.userIsSysop)) {
@@ -3407,66 +3414,71 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	// callback from loadApi.post()
 	var fnLoadSuccess = function() {
-		var xml = ctx.loadApi.getXML();
+		var response = ctx.loadApi.getResponse().query;
 
-		if (!fnCheckPageName(xml, ctx.onLoadFailure)) {
+		if (!fnCheckPageName(response, ctx.onLoadFailure)) {
 			return; // abort
 		}
 
-		ctx.pageExists = $(xml).find('page').attr('missing') !== '';
+		var page = response.pages[0], rev;
+		ctx.pageExists = !page.missing;
 		if (ctx.pageExists) {
-			ctx.pageText = $(xml).find('rev').text();
-			ctx.pageID = $(xml).find('page').attr('pageid');
+			rev = page.revisions[0];
+			ctx.lastEditTime = rev.timestamp;
+			ctx.pageText = rev.content;
+			ctx.pageID = page.pageid;
 		} else {
 			ctx.pageText = '';  // allow for concatenation, etc.
 			ctx.pageID = 0; // nonexistent in response, matches wgArticleId
 		}
-		ctx.csrfToken = $(xml).find('tokens').attr('csrftoken');
+		ctx.csrfToken = response.tokens.csrftoken;
 		if (!ctx.csrfToken) {
 			ctx.statusElement.error('Failed to retrieve edit token.');
 			ctx.onLoadFailure(this);
 			return;
 		}
-		ctx.loadTime = $(xml).find('api').attr('curtimestamp');
+		ctx.loadTime = ctx.loadApi.getResponse().curtimestamp;
 		if (!ctx.loadTime) {
 			ctx.statusElement.error('Failed to retrieve current timestamp.');
 			ctx.onLoadFailure(this);
 			return;
 		}
 
-		ctx.contentModel = $(xml).find('page').attr('contentmodel');
+		ctx.contentModel = page.contentmodel;
 
 		// extract protection info, to alert admins when they are about to edit a protected page
+		// Includes cascading protection
 		if (Morebits.userIsSysop) {
-			var editprot = $(xml).find('pr[type="edit"]');
-			if (editprot.length > 0 && editprot.attr('level') === 'sysop') {
-				ctx.fullyProtected = editprot.attr('expiry');
+			var editProt = page.protection.filter(function(pr) {
+				return pr.type === 'edit' && pr.level === 'sysop';
+			}).pop();
+			if (editProt) {
+				ctx.fullyProtected = editProt.expiry;
 			} else {
 				ctx.fullyProtected = false;
 			}
 		}
 
-		ctx.lastEditTime = $(xml).find('rev').attr('timestamp');
-		ctx.revertCurID = $(xml).find('page').attr('lastrevid');
+		ctx.revertCurID = page.lastrevid;
 
-		var testactions = $(xml).find('actions');
-		if (testactions.length) {
-			ctx.testActions = []; // was null
-			$.each(testactions[0].attributes, function(_idx, value) {
-				ctx.testActions.push(value.name);
-			});
-		}
+		var testactions = page.actions;
+		ctx.testActions = []; // was null
+		Object.keys(testactions).forEach(function(action) {
+			if (testactions[action]) {
+				ctx.testActions.push(action);
+			}
+		});
 
 		if (ctx.editMode === 'revert') {
-			ctx.revertCurID = $(xml).find('rev').attr('revid');
+			ctx.revertCurID = rev && rev.revid;
 			if (!ctx.revertCurID) {
 				ctx.statusElement.error('Failed to retrieve current revision ID.');
 				ctx.onLoadFailure(this);
 				return;
 			}
-			ctx.revertUser = $(xml).find('rev').attr('user');
+			ctx.revertUser = rev && rev.user;
 			if (!ctx.revertUser) {
-				if ($(xml).find('rev').attr('userhidden') === '') {  // username was RevDel'd or oversighted
+				if (rev && rev.userhidden) {  // username was RevDel'd or oversighted
 					ctx.revertUser = '<username hidden>';
 				} else {
 					ctx.statusElement.error('Failed to retrieve user who made the revision.');
@@ -3485,23 +3497,24 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	// helper function to parse the page name returned from the API
-	var fnCheckPageName = function(xml, onFailure) {
+	var fnCheckPageName = function(response, onFailure) {
 		if (!onFailure) {
 			onFailure = emptyFunction;
 		}
 
+		var page = response.pages[0];
 		// check for invalid titles
-		if ($(xml).find('page').attr('invalid') === '') {
+		if (page.invalid) {
 			ctx.statusElement.error('The page title is invalid: ' + ctx.pageName);
 			onFailure(this);
 			return false; // abort
 		}
 
 		// retrieve actual title of the page after normalization and redirects
-		if ($(xml).find('page').attr('title')) {
-			var resolvedName = $(xml).find('page').attr('title');
+		if (page.title) {
+			var resolvedName = page.title;
 
-			if ($(xml).find('redirects').length > 0) {
+			if (response.redirects) {
 				// check for cross-namespace redirect:
 				var origNs = new mw.Title(ctx.pageName).namespace;
 				var newNs = new mw.Title(resolvedName).namespace;
@@ -3532,10 +3545,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	// callback from saveApi.post()
 	var fnSaveSuccess = function() {
 		ctx.editMode = 'all';  // cancel append/prepend/newSection/revert modes
-		var xml = ctx.saveApi.getXML();
+		var response = ctx.saveApi.getResponse();
 
 		// see if the API thinks we were successful
-		if ($(xml).find('edit').attr('result') === 'Success') {
+		if (response.edit.result === 'Success') {
 
 			// real success
 			// default on success action - display link for edited page
@@ -3551,7 +3564,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// errors here are only generated by extensions which hook APIEditBeforeSave within MediaWiki,
 		// which as of 1.34.0-wmf.23 (Sept 2019) should only encompass captcha messages
-		if ($(xml).find('captcha').length > 0) {
+		if (response.edit.captcha) {
 			ctx.statusElement.error('Could not save the page because the wiki server wanted you to fill out a CAPTCHA.');
 		} else {
 			ctx.statusElement.error('Unknown error received from API while saving page');
@@ -3611,18 +3624,18 @@ Morebits.wiki.page = function(pageName, currentAction) {
 					break;
 
 				case 'abusefilter-disallowed':
-					ctx.statusElement.error('The edit was disallowed by the edit filter: "' + $(ctx.saveApi.getXML()).find('abusefilter').attr('description') + '".');
+					ctx.statusElement.error('The edit was disallowed by the edit filter: "' + ctx.saveApi.getResponse().error.abusefilter.description + '".');
 					break;
 
 				case 'abusefilter-warning':
-					ctx.statusElement.error([ 'A warning was returned by the edit filter: "', $(ctx.saveApi.getXML()).find('abusefilter').attr('description'), '". If you wish to proceed with the edit, please carry it out again. This warning will not appear a second time.' ]);
+					ctx.statusElement.error([ 'A warning was returned by the edit filter: "', ctx.saveApi.getResponse().error.abusefilter.description, '". If you wish to proceed with the edit, please carry it out again. This warning will not appear a second time.' ]);
 					// We should provide the user with a way to automatically retry the action if they so choose -
 					// I can't see how to do this without creating a UI dependency on Morebits.wiki.page though -- TTO
 					break;
 
 				case 'spamblacklist':
-					// .find('matches') returns an array in case multiple items are blacklisted, we only return the first
-					var spam = $(ctx.saveApi.getXML()).find('spamblacklist').find('matches').children()[0].textContent;
+					// If multiple items are blacklisted, we only return the first
+					var spam = ctx.saveApi.getResponse().error.spamblacklist.matches[0];
 					ctx.statusElement.error('Could not save the page because the URL ' + spam + ' is on the spam blacklist');
 					break;
 
@@ -3638,20 +3651,26 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	var fnLookupCreationSuccess = function() {
-		var xml = ctx.lookupCreationApi.getXML();
+		var response = ctx.lookupCreationApi.getResponse().query;
 
-		if (!fnCheckPageName(xml)) {
+		if (!fnCheckPageName(response)) {
 			return; // abort
 		}
 
-		if (!ctx.lookupNonRedirectCreator || !/^\s*#redirect/i.test($(xml).find('rev').text())) {
+		var rev = response.pages[0].revisions && response.pages[0].revisions[0];
+		if (!rev) {
+			ctx.statusElement.error('Could not find any revisions of ' + ctx.pageName);
+			return;
+		}
 
-			ctx.creator = $(xml).find('rev').attr('user');
+		if (!ctx.lookupNonRedirectCreator || !/^\s*#redirect/i.test(rev.content)) {
+
+			ctx.creator = rev.user;
 			if (!ctx.creator) {
 				ctx.statusElement.error('Could not find name of page creator');
 				return;
 			}
-			ctx.timestamp = $(xml).find('rev').attr('timestamp');
+			ctx.timestamp = rev.timestamp;
 			if (!ctx.timestamp) {
 				ctx.statusElement.error('Could not find timestamp of page creation');
 				return;
@@ -3670,20 +3689,21 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	var fnLookupNonRedirectCreator = function() {
-		var xml = ctx.lookupCreationApi.getXML();
+		var response = ctx.ookupCreationApi.getResponse().query;
+		var revs = response.pages[0].revisions;
 
-		$(xml).find('rev').each(function(_, rev) {
+		revs.forEach(function(rev) {
 			if (!/^\s*#redirect/i.test(rev.textContent)) { // inaccessible revisions also check out
-				ctx.creator = rev.getAttribute('user');
-				ctx.timestamp = rev.getAttribute('timestamp');
+				ctx.creator = rev.user;
+				ctx.timestamp = rev.timestamp;
 				return false; // break
 			}
 		});
 
 		if (!ctx.creator) {
 			// fallback to give first revision author if no non-redirect version in the first 50
-			ctx.creator = $(xml).find('rev')[0].getAttribute('user');
-			ctx.timestamp = $(xml).find('rev')[0].getAttribute('timestamp');
+			ctx.creator = revs[0].user;
+			ctx.timestamp = revs[0].timestamp;
 			if (!ctx.creator) {
 				ctx.statusElement.error('Could not find name of page creator');
 				return;
@@ -3729,11 +3749,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 *
 	 * @param {string} action - The action being checked.
 	 * @param {string} onFailure - Failure callback.
-	 * @param {string} xml - The response document from the API call.
+	 * @param {string} response - The response document from the API call.
 	 * @returns {boolean}
 	 */
-	var fnProcessChecks = function(action, onFailure, xml) {
-		var missing = $(xml).find('page').attr('missing') === '';
+	var fnProcessChecks = function(action, onFailure, response) {
+		var missing = response.pages[0].missing;
 
 		// No undelete as an existing page could have deleted revisions
 		var actionMissing = missing && ['delete', 'stabilize', 'move'].indexOf(action) !== -1;
@@ -3750,20 +3770,24 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		// extract protection info
 		var editprot;
 		if (action === 'undelete') {
-			editprot = $(xml).find('pr[type="create"]');
+			editprot = response.pages[0].protection.filter(function(pr) {
+				return pr.type === 'create' && pr.level === 'sysop';
+			}).pop();
 		} else if (action === 'delete' || action === 'move') {
-			editprot = $(xml).find('pr[type="edit"]');
+			editprot = response.pages[0].protection.filter(function(pr) {
+				return pr.type === 'edit' && pr.level === 'sysop';
+			}).pop();
 		}
-		if (editprot && editprot.length && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
+		if (editprot && !ctx.suppressProtectWarning &&
 			!confirm('You are about to ' + action + ' the fully protected page "' + ctx.pageName +
-			(editprot.attr('expiry') === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.attr('expiry')).calendar('utc') + ' (UTC))') +
+			(editprot.expiry === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.expiry).calendar('utc') + ' (UTC))') +
 			'.  \n\nClick OK to proceed with ' + action + ', or Cancel to skip.')) {
 			ctx.statusElement.error('Aborted ' + action + ' on fully protected page.');
 			onFailure(this);
 			return false;
 		}
 
-		if (!$(xml).find('tokens').attr('csrftoken')) {
+		if (!response.tokens.csrftoken) {
 			ctx.statusElement.error('Failed to retrieve token.');
 			onFailure(this);
 			return false;
@@ -3778,14 +3802,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			token = mw.user.tokens.get('csrfToken');
 			pageTitle = ctx.pageName;
 		} else {
-			var xml = ctx.moveApi.getXML();
+			var response = ctx.moveApi.getResponse().query;
 
-			if (!fnProcessChecks('move', ctx.onMoveFailure, xml)) {
+			if (!fnProcessChecks('move', ctx.onMoveFailure, response)) {
 				return; // abort
 			}
 
-			token = $(xml).find('tokens').attr('csrftoken');
-			pageTitle = $(xml).find('page').attr('title');
+			token = response.tokens.csrftoken;
+			pageTitle = response.pages[0].title;
 		}
 
 		var query = {
@@ -3794,7 +3818,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			'to': ctx.moveDestination,
 			'token': token,
 			'reason': ctx.editSummary,
-			'watchlist': ctx.watchlistOption
+			'watchlist': ctx.watchlistOption,
+			'format': 'json'
 		};
 		if (ctx.changeTags) {
 			query.tags = ctx.changeTags;
@@ -3820,7 +3845,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 	var fnProcessPatrol = function() {
 		var query = {
-			action: 'patrol'
+			action: 'patrol',
+			format: 'json'
 		};
 
 		// Didn't need to load the page
@@ -3828,24 +3854,23 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.rcid = ctx.rcid;
 			query.token = mw.user.tokens.get('patrolToken');
 		} else {
-			var xml = ctx.patrolApi.getResponse();
+			var response = ctx.patrolApi.getResponse().query;
 
 			// Don't patrol if not unpatrolled
-			if ($(xml).find('rc').attr('unpatrolled') !== '') {
+			if (!response.recentchanges[0].unpatrolled) {
 				return;
 			}
 
-			var lastrevid = $(xml).find('page').attr('lastrevid');
+			var lastrevid = response.pages[0].lastrevid;
 			if (!lastrevid) {
 				return;
 			}
 			query.revid = lastrevid;
 
-			var token = $(xml).find('tokens').attr('patroltoken');
+			var token = response.tokens.csrftoken;
 			if (!token) {
 				return;
 			}
-
 			query.token = token;
 		}
 		if (ctx.changeTags) {
@@ -3864,14 +3889,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (ctx.pageID) {
 			ctx.csrfToken = mw.user.tokens.get('csrfToken');
 		} else {
-			var xml = ctx.triageApi.getXML();
+			var response = ctx.triageApi.getResponse().query;
 
-			ctx.pageID = $(xml).find('page').attr('pageid');
+			ctx.pageID = response.pages[0].pageid;
 			if (!ctx.pageID) {
 				return;
 			}
 
-			ctx.csrfToken = $(xml).find('tokens').attr('csrftoken');
+			ctx.csrfToken = response.tokens.csrftoken;
 			if (!ctx.csrfToken) {
 				return;
 			}
@@ -3879,7 +3904,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		var query = {
 			action: 'pagetriagelist',
-			page_id: ctx.pageID
+			page_id: ctx.pageID,
+			format: 'json'
 		};
 
 		ctx.triageProcessListApi = new Morebits.wiki.api('checking curation status...', query, fnProcessTriage);
@@ -3887,15 +3913,16 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.triageProcessListApi.post();
 	};
 
+	// callback from triageProcessListApi.post()
 	var fnProcessTriage = function() {
-		var $xml = $(ctx.triageProcessListApi.getXML());
+		var responseList = ctx.triageProcessListApi.getResponse().pagetriagelist;
 		// Exit if not in the queue
-		if ($xml.find('pagetriagelist').attr('result') !== 'success') {
+		if (!responseList || responseList.result !== 'success') {
 			return;
 		}
-		var page = $xml.find('pages _v');
-		// Nothing if page already triaged/patrolled
-		if (!page || !parseInt(page.attr('patrol_status'), 10)) {
+		var page = responseList.pages && responseList.pages[0];
+		// Do nothing if page already triaged/patrolled
+		if (!page || !parseInt(page.patrol_status, 10)) {
 			var query = {
 				action: 'pagetriageaction',
 				pageid: ctx.pageID,
@@ -3903,7 +3930,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				// tags: ctx.changeTags, // pagetriage tag support: [[phab:T252980]]
 				// Could use an adder to modify/create note:
 				// summaryAd, but that seems overwrought
-				token: ctx.csrfToken
+				token: ctx.csrfToken,
+				format: 'json'
 			};
 			var triageStat = new Morebits.status('Marking page as curated');
 			ctx.triageProcessApi = new Morebits.wiki.api('curating page...', query, null, triageStat);
@@ -3919,14 +3947,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			token = mw.user.tokens.get('csrfToken');
 			pageTitle = ctx.pageName;
 		} else {
-			var xml = ctx.deleteApi.getXML();
+			var response = ctx.deleteApi.getResponse().query;
 
-			if (!fnProcessChecks('delete', ctx.onDeleteFailure, xml)) {
+			if (!fnProcessChecks('delete', ctx.onDeleteFailure, response)) {
 				return; // abort
 			}
 
-			token = $(xml).find('tokens').attr('csrftoken');
-			pageTitle = $(xml).find('page').attr('title');
+			token = response.tokens.csrftoken;
+			pageTitle = response.pages[0].title;
 		}
 
 		var query = {
@@ -3934,7 +3962,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			'title': pageTitle,
 			'token': token,
 			'reason': ctx.editSummary,
-			'watchlist': ctx.watchlistOption
+			'watchlist': ctx.watchlistOption,
+			'format': 'json'
 		};
 		if (ctx.changeTags) {
 			query.tags = ctx.changeTags;
@@ -3981,14 +4010,14 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			token = mw.user.tokens.get('csrfToken');
 			pageTitle = ctx.pageName;
 		} else {
-			var xml = ctx.undeleteApi.getXML();
+			var response = ctx.undeleteApi.getResponse().query;
 
-			if (!fnProcessChecks('undelete', ctx.onUndeleteFailure, xml)) {
+			if (!fnProcessChecks('undelete', ctx.onUndeleteFailure, response)) {
 				return; // abort
 			}
 
-			token = $(xml).find('tokens').attr('csrftoken');
-			pageTitle = $(xml).find('page').attr('title');
+			token = response.tokens.csrftoken;
+			pageTitle = response.pages[0].title;
 		}
 
 		var query = {
@@ -3996,7 +4025,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			'title': pageTitle,
 			'token': token,
 			'reason': ctx.editSummary,
-			'watchlist': ctx.watchlistOption
+			'watchlist': ctx.watchlistOption,
+			'format': 'json'
 		};
 		if (ctx.changeTags) {
 			query.tags = ctx.changeTags;
@@ -4043,36 +4073,50 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	};
 
 	var fnProcessProtect = function() {
-		var xml = ctx.protectApi.getXML();
+		var response = ctx.protectApi.getResponse().query;
 
-		if (!fnProcessChecks('protect', ctx.onProtectFailure, xml)) {
+		if (!fnProcessChecks('protect', ctx.onProtectFailure, response)) {
 			return; // abort
 		}
 
-		var token = $(xml).find('tokens').attr('csrftoken');
-		var pageTitle = $(xml).find('page').attr('title');
+		var token = response.tokens.csrftoken;
+		var pageTitle = response.pages[0].title;
 
 		// Fetch existing protection levels
-		var prs = $(xml).find('pr');
-		var editprot = prs.filter('[type="edit"]:not([source])');
-		var moveprot = prs.filter('[type="move"]');
-		var createprot = prs.filter('[type="create"]');
+		var prs = response.pages[0].protection;
+		var editprot, moveprot, createprot;
+		prs.forEach(function(pr) {
+			// Filter out protection from cascading
+			if (pr.type === 'edit' && !pr.source) {
+				editprot = pr;
+			} else if (pr.type === 'move') {
+				moveprot = pr;
+			} else if (pr.type === 'create') {
+				createprot = pr;
+			}
+		});
+
 
 		// Fall back to current levels if not explicitly set
-		if (!ctx.protectEdit && editprot.length) {
-			ctx.protectEdit = { level: editprot.attr('level'), expiry: editprot.attr('expiry') };
+		if (!ctx.protectEdit && editprot) {
+			ctx.protectEdit = { level: editprot.level, expiry: editprot.expiry };
 		}
-		if (!ctx.protectMove && moveprot.length) {
-			ctx.protectMove = { level: moveprot.attr('level'), expiry: moveprot.attr('expiry') };
+		if (!ctx.protectMove && moveprot) {
+			ctx.protectMove = { level: moveprot.level, expiry: moveprot.expiry };
 		}
-		if (!ctx.protectCreate && createprot.length) {
-			ctx.protectCreate = { level: createprot.attr('level'), expiry: createprot.attr('expiry') };
+		if (!ctx.protectCreate && createprot) {
+			ctx.protectCreate = { level: createprot.level, expiry: createprot.expiry };
 		}
 
+		// Default to pre-existing cascading protection if unchanged (similar to above)
+		if (ctx.protectCascade === null) {
+			ctx.protectCascade = !!prs.filter(function(pr) {
+				return pr.cascade;
+			}).length;
+		}
 		// Warn if cascading protection being applied with an invalid protection level,
 		// which for edit protection will cause cascading to be silently stripped
-		// Also default to pre-existing cascading protection if unchanged (as with others)
-		if (ctx.protectCascade || (ctx.protectCascade === null && !!prs.filter('[cascade]').length)) {
+		if (ctx.protectCascade) {
 			// On move protection, this is technically stricter than the MW API,
 			// but seems reasonable to avoid dumb values and misleading log entries (T265626)
 			if (((!ctx.protectEdit || ctx.protectEdit.level !== 'sysop') ||
@@ -4087,7 +4131,6 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 			ctx.protectEdit.level = 'sysop';
 			ctx.protectMove.level = 'sysop';
-			ctx.protectCascade = 'true';
 		}
 
 		// Build protection levels and expirys (expiries?) for query
@@ -4114,7 +4157,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			protections: protections.join('|'),
 			expiry: expirys.join('|'),
 			reason: ctx.editSummary,
-			watchlist: ctx.watchlistOption
+			watchlist: ctx.watchlistOption,
+			format: 'json'
 		};
 		// Only shows up in logs, not page history [[phab:T259983]]
 		if (ctx.changeTags) {
@@ -4140,15 +4184,15 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			token = mw.user.tokens.get('csrfToken');
 			pageTitle = ctx.pageName;
 		} else {
-			var xml = ctx.stabilizeApi.getXML();
+			var response = ctx.stabilizeApi.getResponse().query;
 
 			// 'stabilize' as a verb not necessarily well understood
-			if (!fnProcessChecks('stabilize', ctx.onStabilizeFailure, xml)) {
+			if (!fnProcessChecks('stabilize', ctx.onStabilizeFailure, response)) {
 				return; // abort
 			}
 
-			token = $(xml).find('tokens').attr('csrftoken');
-			pageTitle = $(xml).find('page').attr('title');
+			token = response.tokens.csrftoken;
+			pageTitle = response.pages[0].title;
 		}
 
 		var query = {
@@ -4159,7 +4203,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			expiry: ctx.flaggedRevs.expiry,
 			// tags: ctx.changeTags, // flaggedrevs tag support: [[phab:T247721]]
 			reason: ctx.editSummary,
-			watchlist: ctx.watchlistOption // Doesn't support watchlist expiry [[phab:T263336]]
+			watchlist: ctx.watchlistOption, // Doesn't support watchlist expiry [[phab:T263336]]
+			format: 'json'
 		};
 
 		ctx.stabilizeProcessApi = new Morebits.wiki.api('configuring stabilization settings...', query, ctx.onStabilizeSuccess, ctx.statusElement, ctx.onStabilizeFailure);
@@ -4223,7 +4268,8 @@ Morebits.wiki.preview = function(previewbox) {
 			pst: 'true',  // PST = pre-save transform; this makes substitution work properly
 			text: wikitext,
 			title: pageTitle || mw.config.get('wgPageName'),
-			disablelimitreport: true
+			disablelimitreport: true,
+			format: 'json'
 		};
 		if (sectionTitle) {
 			query.section = 'new';
@@ -4234,8 +4280,7 @@ Morebits.wiki.preview = function(previewbox) {
 	};
 
 	var fnRenderSuccess = function(apiobj) {
-		var xml = apiobj.getXML();
-		var html = $(xml).find('text').text();
+		var html = apiobj.getResponse().parse.text;
 		if (!html) {
 			apiobj.statelem.error('failed to retrieve preview, or template was blanked');
 			return;
