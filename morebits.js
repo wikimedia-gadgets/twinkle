@@ -1221,16 +1221,25 @@ Morebits.string = {
 	 * Formats freeform "reason" (from a textarea) for deletion/other
 	 * templates that are going to be substituted, (e.g. PROD, XFD, RPP).
 	 * Handles `|` outside a nowiki tag.
+	 * Optionally, also adds a signature if not present already.
 	 *
 	 * @param {string} str
+	 * @param {boolean} [addSig]
 	 * @returns {string}
 	 */
-	formatReasonText: function(str) {
-		var result = str.toString().trim();
-		var unbinder = new Morebits.unbinder(result);
+	formatReasonText: function(str, addSig) {
+		var reason = (str || '').toString().trim();
+		var unbinder = new Morebits.unbinder(reason);
 		unbinder.unbind('<no' + 'wiki>', '</no' + 'wiki>');
 		unbinder.content = unbinder.content.replace(/\|/g, '{{subst:!}}');
-		return unbinder.rebind();
+		reason = unbinder.rebind();
+		if (addSig) {
+			var sig = '~~~~', sigIndex = reason.lastIndexOf(sig);
+			if (sigIndex === -1 || sigIndex !== reason.length - sig.length) {
+				reason += ' ' + sig;
+			}
+		}
+		return reason.trim();
 	},
 
 	/**
