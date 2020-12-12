@@ -374,24 +374,98 @@ var Ffd = /** @class */ (function (_super) {
     Ffd.isDefaultChoice = function () {
         return mw.config.get('wgNamespaceNumber') === 6;
     };
+    Ffd.prototype.getFieldsetLabel = function () {
+        return 'Files for discussion';
+    };
     Ffd.prototype.getMenuTooltip = function () {
-        return 'Nominate article for deletion or move';
+        return 'Start a discussion for deleting this file';
+    };
+    Ffd.prototype.generateFieldset = function () {
+        this.fieldset = _super.prototype.generateFieldset.call(this);
+        this.appendReasonArea();
+        return this.fieldset;
     };
     Ffd.prototype.preview = function (form) {
         var _this = this;
         this.params = Morebits.quickForm.getInputData(form);
         this.preprocessParams();
-        var page = new Morebits.wiki.page(mw.config.get('wgPageName'));
-        page.lookupCreation(function () {
-            _this.params.uploader = page.getCreator();
+        this.fetchCreatorInfo().then(function () {
             _this.showPreview(form);
         });
     };
-    Ffd.prototype.getDiscussionWikitext = function () {
-        return '';
+    Ffd.prototype.evaluate = function () {
+        var _this = this;
+        _super.prototype.evaluate.call(this);
+        var tm = new Morebits.taskManager(this);
+        tm.add(this.fetchCreatorInfo, []);
+        tm.add(this.tagPage, []);
+        tm.add(this.addToList, [this.fetchCreatorInfo, this.tagPage]);
+        tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
+        tm.add(this.addToLog, [this.notifyCreator]);
+        tm.execute().then(function () {
+            Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
+            setTimeout(function () {
+                window.location.href = mw.util.getUrl(_this.params.logpage);
+            }, 50000);
+        });
     };
-    Ffd.prototype.getFieldsetLabel = function () {
-        return 'Files for discussion';
+    Ffd.prototype.tagPage = function () {
+        var _this = this;
+        var params = this.params;
+        var def = $.Deferred();
+        var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Adding deletion tag to file page');
+        pageobj.setFollowRedirect(true);
+        pageobj.load(function (pageobj) {
+            var text = pageobj.getPageText();
+            var date = new Morebits.date(pageobj.getLoadTime()).format('YYYY MMMM D', 'utc');
+            params.logpage = 'Wikipedia:Files for discussion/' + date;
+            params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
+            params.tagText = '{{ffd|log=' + date + '|help=off}}\n';
+            if (pageobj.canEdit()) {
+                text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
+                pageobj.setPageText(params.tagText + text);
+                pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
+                pageobj.setChangeTags(Twinkle.changeTags);
+                pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
+                pageobj.setCreateOption('recreate'); // it might be possible for a file to exist without a description page
+                pageobj.save(def.resolve, def.reject);
+            }
+            else {
+                _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
+            }
+        });
+        return def;
+    };
+    Ffd.prototype.addToList = function () {
+        var _this = this;
+        var params = this.params;
+        var def = $.Deferred();
+        var wikipedia_page = new Morebits.wiki.page(params.logpage, "Adding discussion to today's list");
+        wikipedia_page.setFollowRedirect(true);
+        wikipedia_page.load(function (pageobj) {
+            var text = pageobj.getPageText();
+            // add date header if the log is found to be empty (a bot should do this automatically)
+            if (!pageobj.exists()) {
+                text = '{{subst:FfD log}}';
+            }
+            pageobj.setPageText(text + '\n\n' + _this.getDiscussionWikitext());
+            pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
+            pageobj.setChangeTags(Twinkle.changeTags);
+            pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
+            pageobj.setCreateOption('recreate');
+            pageobj.save(function () {
+                Xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+                def.resolve();
+            }, def.reject);
+        });
+        return def;
+    };
+    Ffd.prototype.getDiscussionWikitext = function () {
+        return utils.makeTemplate('subst:ffd2', {
+            Reason: Morebits.string.formatReasonText(this.params.reason, true),
+            1: mw.config.get('wgTitle'),
+            Uploader: this.params.initialContrib
+        });
     };
     Ffd.venueCode = 'ffd';
     Ffd.venueLabel = 'FfD (Files for discussion)';
@@ -1383,7 +1457,8 @@ Xfd.modeList = [
     Cfd,
     Rm,
     Cfds,
-    Mfd
+    Mfd,
+    Ffd
 ];
 Twinkle.addInitCallback(function () { new Xfd(); }, 'XFD');
 //# sourceMappingURL=xfd.js.map

@@ -428,26 +428,106 @@ class Ffd extends XfdMode {
 		return mw.config.get('wgNamespaceNumber') === 6;
 	}
 
+	getFieldsetLabel() {
+		return 'Files for discussion';
+	}
+
 	getMenuTooltip(): string {
-		return 'Nominate article for deletion or move';
+		return 'Start a discussion for deleting this file';
+	}
+
+	public generateFieldset(): quickFormElement {
+		this.fieldset = super.generateFieldset();
+		this.appendReasonArea();
+		return this.fieldset;
 	}
 
 	preview(form: HTMLFormElement) {
 		this.params = Morebits.quickForm.getInputData(form);
 		this.preprocessParams();
-		var page = new Morebits.wiki.page(mw.config.get('wgPageName'));
-		page.lookupCreation(() => {
-			this.params.uploader = page.getCreator();
+		this.fetchCreatorInfo().then(() => {
 			this.showPreview(form);
 		});
 	}
 
-	getDiscussionWikitext(): string {
-		return '';
+	public evaluate() {
+		super.evaluate();
+
+		let tm = new Morebits.taskManager(this);
+		tm.add(this.fetchCreatorInfo, []);
+		tm.add(this.tagPage, []);
+		tm.add(this.addToList, [this.fetchCreatorInfo, this.tagPage]);
+		tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
+		tm.add(this.addToLog, [this.notifyCreator]);
+		tm.execute().then(() => {
+			Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
+			setTimeout(() => {
+				window.location.href = mw.util.getUrl(this.params.logpage);
+			}, 50000);
+		});
 	}
 
-	getFieldsetLabel() {
-		return 'Files for discussion';
+	tagPage() {
+		let params = this.params;
+		let def = $.Deferred();
+		let pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Adding deletion tag to file page');
+		pageobj.setFollowRedirect(true);
+		pageobj.load((pageobj) => {
+			var text = pageobj.getPageText();
+
+			var date = new Morebits.date(pageobj.getLoadTime()).format('YYYY MMMM D', 'utc');
+			params.logpage = 'Wikipedia:Files for discussion/' + date;
+			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
+
+			params.tagText = '{{ffd|log=' + date + '|help=off}}\n';
+			if (pageobj.canEdit()) {
+				text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
+
+				pageobj.setPageText(params.tagText + text);
+				pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
+				pageobj.setChangeTags(Twinkle.changeTags);
+				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
+				pageobj.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
+				pageobj.save(def.resolve, def.reject);
+			} else {
+				this.autoEditRequest(pageobj).then(def.resolve, def.reject);
+			}
+		});
+		return def;
+	}
+
+	addToList() {
+		let params = this.params;
+		let def = $.Deferred();
+		var wikipedia_page = new Morebits.wiki.page(params.logpage, "Adding discussion to today's list");
+		wikipedia_page.setFollowRedirect(true);
+		wikipedia_page.load((pageobj) => {
+			var text = pageobj.getPageText();
+
+			// add date header if the log is found to be empty (a bot should do this automatically)
+			if (!pageobj.exists()) {
+				text = '{{subst:FfD log}}';
+			}
+
+			pageobj.setPageText(text + '\n\n' + this.getDiscussionWikitext());
+			pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
+			pageobj.setChangeTags(Twinkle.changeTags);
+			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
+			pageobj.setCreateOption('recreate');
+			pageobj.save(function() {
+				Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+				def.resolve();
+			}, def.reject);
+		});
+		return def;
+	}
+
+	getDiscussionWikitext(): string {
+		return utils.makeTemplate('subst:ffd2', {
+			Reason: Morebits.string.formatReasonText(this.params.reason, true),
+			1: mw.config.get('wgTitle'),
+			Uploader: this.params.initialContrib
+		});
 	}
 
 }
@@ -1485,7 +1565,8 @@ Xfd.modeList = [
 	Cfd,
 	Rm,
 	Cfds,
-	Mfd
+	Mfd,
+	Ffd
 ];
 
 Twinkle.addInitCallback(function() { new Xfd(); }, 'XFD');
