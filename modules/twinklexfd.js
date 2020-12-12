@@ -964,13 +964,13 @@ Twinkle.xfd.callbacks = {
 			(Morebits.userIsSysop ? '\n\nThis log does not track XfD-related deletions made using Twinkle.' : '');
 
 		var editsummary = 'Logging ' + utils.toTLACase(params.venue) + ' nomination of [[:' + Morebits.pageNameNorm + ']].';
+
 		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
 		var fileLogLink = mw.config.get('wgNamespaceNumber') === 6 ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])' : '';
 		// CFD/S and RM don't have canonical links
 		var nominatedLink = params.discussionpage ? '[[' + params.discussionpage + '|nominated]]' : 'nominated';
 
-		var appendText = '# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ' ' + nominatedLink + ' at [[WP:' + params.venue.toUpperCase() + '|' + utils.toTLACase(params.venue) + ']]';
-		var extraInfo = '';
+		var appendText = '# [[:' + Morebits.pageNameNorm + ']]:' + fileLogLink + ' ' + nominatedLink + ' at [[WP:' + params.venue.toUpperCase() + '|' + utils.toTLACase(params.venue) + ']]';
 
 		switch (params.venue) {
 			case 'tfd':
@@ -978,26 +978,26 @@ Twinkle.xfd.callbacks = {
 					appendText += ' (merge)';
 					if (params.tfdtarget) {
 						var contentModel = mw.config.get('wgPageContentModel') === 'Scribunto' ? 'Module:' : 'Template:';
-						extraInfo += '; Other ' + contentModel.toLowerCase() + ' [[';
+						appendText += '; Other ' + contentModel.toLowerCase() + ' [[';
 						if (!/^:?(?:template|module):/i.test(params.tfdtarget)) {
-							extraInfo += contentModel;
+							appendText += contentModel;
 						}
-						extraInfo += params.tfdtarget + ']]';
+						appendText += params.tfdtarget + ']]';
 					}
 				}
 				break;
 			case 'mfd':
 				if (params.notifyuserspace && params.userspaceOwner && params.userspaceOwner !== initialContrib) {
-					extraInfo += (initialContrib ? ' and' : '; notified') + ' {{user|1=' + params.userspaceOwner + '}}';
+					appendText += '; notified {{user|1=' + params.userspaceOwner + '}}';
 				}
 				break;
 			case 'cfd':
 				appendText += ' (' + utils.toTLACase(params.xfdcat) + ')';
 				if (params.cfdtarget) {
 					var categoryOrTemplate = params.xfdcat.charAt(0) === 's' ? 'Template:' : ':Category:';
-					extraInfo += '; ' + params.action + ' to: [[' + categoryOrTemplate + params.cfdtarget + ']]';
+					appendText += '; ' + params.action + ' to [[' + categoryOrTemplate + params.cfdtarget + ']]';
 					if (params.xfdcat === 'cfs' && params.cfdtarget2) {
-						extraInfo += ', [[' + categoryOrTemplate + params.cfdtarget2 + ']]';
+						appendText += ', [[' + categoryOrTemplate + params.cfdtarget2 + ']]';
 					}
 				}
 				break;
@@ -1005,14 +1005,14 @@ Twinkle.xfd.callbacks = {
 				appendText += ' (' + utils.toTLACase(params.xfdcat) + ')';
 				// Ensure there's more than just 'Category:'
 				if (params.cfdstarget && params.cfdstarget.length > 9) {
-					extraInfo += '; New name: [[:' + params.cfdstarget + ']]';
+					appendText += '; New name: [[:' + params.cfdstarget + ']]';
 				}
 				break;
 			case 'rfd':
 				if (params.rfdtarget) {
-					extraInfo += '; Target: [[:' + params.rfdtarget + ']]';
+					appendText += '; Target: [[:' + params.rfdtarget + ']]';
 					if (params.relatedpage) {
-						extraInfo += ' (notified)';
+						appendText += ' (notified)';
 					}
 				}
 				break;
@@ -1021,7 +1021,7 @@ Twinkle.xfd.callbacks = {
 					appendText += ' (technical)';
 				}
 				if (params.newname) {
-					extraInfo += '; New name: [[:' + params.newname + ']]';
+					appendText += '; New name: [[:' + params.newname + ']]';
 				}
 				break;
 
@@ -1031,9 +1031,6 @@ Twinkle.xfd.callbacks = {
 
 		if (initialContrib && params.notifycreator) {
 			appendText += '; notified {{user|1=' + initialContrib + '}}';
-		}
-		if (extraInfo) {
-			appendText += extraInfo;
 		}
 		appendText += ' ~~~~~';
 		if (params.reason) {
