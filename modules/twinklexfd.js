@@ -744,11 +744,7 @@ Twinkle.xfd.callbacks = {
 		var text = '{{subst:' + venue + '2';
 		var reasonKey = venue === 'ffd' ? 'Reason' : 'text';
 		// Add a reason unconditionally, so that at least a signature is added
-		if (params.reason) {
-			text += '|' + reasonKey + '=' + Morebits.string.formatReasonText(params.reason) + ' ~~~~';
-		} else {
-			text += '|' + reasonKey + '=~~~~';
-		}
+		text += '|' + reasonKey + '=' + Morebits.string.formatReasonText(params.reason, true);
 
 		if (venue === 'afd' || venue === 'mfd') {
 			text += '|pg=' + Morebits.pageNameNorm;

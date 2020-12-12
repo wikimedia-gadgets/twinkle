@@ -14,10 +14,19 @@ QUnit.test('formatReasonForLog', assert => {
 QUnit.test('formatReasonText', assert => {
 	var reason = 'They were correct';
 	assert.strictEqual(Morebits.string.formatReasonText(reason), reason, 'Simple, unchanged');
+	assert.strictEqual(Morebits.string.formatReasonText(reason, true), reason + ' ~~~~', 'Simple');
 	var more = 'Technically correct';
 	assert.strictEqual(Morebits.string.formatReasonText(reason + '|' + more ), reason + '{{subst:!}}' + more, 'Replace pipe');
+	assert.strictEqual(Morebits.string.formatReasonText(reason + '|' + more, true), reason + '{{subst:!}}' + more + ' ~~~~', 'Replace pipe');
 	reason += 'The <nowiki>{{best|kind|of}}</nowiki> correct: ';
 	assert.strictEqual(Morebits.string.formatReasonText(reason + more ), reason + more, 'No replace in nowiki');
+	assert.strictEqual(Morebits.string.formatReasonText(), '', 'Empty');
+	var alreadySigned = 'already signed ~~~~';
+	assert.strictEqual(Morebits.string.formatReasonText(alreadySigned, true), alreadySigned, 'No sig duplication');
+	assert.strictEqual(Morebits.string.formatReasonText('alreadySigned~~~~  ', true), 'alreadySigned~~~~', 'trims and avoids duplicating sig');
+	assert.strictEqual(Morebits.string.formatReasonText('Wow', true), 'Wow ~~~~', '3-letter reason');
+	assert.strictEqual(Morebits.string.formatReasonText('', true), '~~~~', 'Empty');
+	assert.strictEqual(Morebits.string.formatReasonText(undefined, true), '~~~~', 'Undefined');
 });
 QUnit.test('isInfinity', assert => {
 	assert.true(Morebits.string.isInfinity('infinity'), 'Infinity');
