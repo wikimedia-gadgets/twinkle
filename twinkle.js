@@ -142,6 +142,7 @@ Twinkle.defaultConfig = {
 	// Formerly defaultConfig.friendly:
 	// Tag
 	groupByDefault: true,
+	watchTaggedVenues: ['articles', 'drafts', 'redirects', 'files'],
 	watchTaggedPages: 'yes',
 	watchMergeDiscussions: 'yes',
 	markTaggedPagesAsMinor: false,

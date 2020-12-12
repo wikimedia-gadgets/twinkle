@@ -1271,7 +1271,9 @@ Twinkle.tag.callbacks = {
 
 			pageobj.setPageText(pageText);
 			pageobj.setEditSummary(summaryText);
-			pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
+			if ((mw.config.get('wgNamespaceNumber') === 0 && Twinkle.getPref('watchTaggedVenues').indexOf('articles') !== -1) || (mw.config.get('wgNamespaceNumber') === 118 && Twinkle.getPref('watchTaggedVenues').indexOf('drafts') !== -1)) {
+				pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
+			}
 			pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 			pageobj.setCreateOption('nocreate');
 			pageobj.save(function() {
@@ -1746,7 +1748,9 @@ Twinkle.tag.callbacks = {
 
 		pageobj.setPageText(pageText);
 		pageobj.setEditSummary(summaryText);
-		pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
+		if (Twinkle.getPref('watchTaggedPages').indexOf('redirects') !== -1) {
+			pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
+		}
 		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
@@ -1853,7 +1857,9 @@ Twinkle.tag.callbacks = {
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summary.substring(0, summary.length - 2));
 		pageobj.setChangeTags(Twinkle.changeTags);
-		pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
+		if (Twinkle.getPref('watchTaggedPages').indexOf('files') !== -1) {
+			pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
+		}
 		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
