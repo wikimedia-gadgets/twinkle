@@ -4469,7 +4469,7 @@ Morebits.wikitext.page.prototype = {
 
 		// Check for normal image links, i.e. [[File:Foobar.png|...]]
 		// Will eat the whole link
-		var links_re = new RegExp('\\[\\[(?:[Ii]mage|[Ff]ile):\\s*' + image_re_string);
+		var links_re = new RegExp('\\[\\[(?:[Ii]mage|[Ff]ile):\\s*' + image_re_string + '\\s*[\\|(?:\\]\\])]');
 		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys(unbinder.content, '[[', ']]'));
 		for (var i = 0; i < allLinks.length; ++i) {
 			if (links_re.test(allLinks[i])) {
@@ -4483,7 +4483,7 @@ Morebits.wikitext.page.prototype = {
 		// Check for gallery images, i.e. instances that must start on a new line,
 		// eventually preceded with some space, and must include File: prefix
 		// Will eat the whole line.
-		var gallery_image_re = new RegExp('(^\\s*(?:[Ii]mage|[Ff]ile):\\s*' + image_re_string + '.*?$)', 'mg');
+		var gallery_image_re = new RegExp('(^\\s*(?:[Ii]mage|[Ff]ile):\\s*' + image_re_string + '\\s*(?:\\|.*?$|$))', 'mg');
 		unbinder.content = unbinder.content.replace(gallery_image_re, '<!-- ' + reason + '$1 -->');
 
 		// unbind the newly created comments
@@ -4513,7 +4513,7 @@ Morebits.wikitext.page.prototype = {
 			first_char_regex = '[' + Morebits.string.escapeRegExp(first_char.toUpperCase()) + Morebits.string.escapeRegExp(first_char.toLowerCase()) + ']';
 		}
 		var image_re_string = '(?:[Ii]mage|[Ff]ile):\\s*' + first_char_regex + Morebits.string.escapeRegExp(image.substr(1));
-		var links_re = new RegExp('\\[\\[' + image_re_string);
+		var links_re = new RegExp('\\[\\[' + image_re_string + '\\s*[\\|(?:\\]\\])]');
 		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys(this.text, '[[', ']]'));
 		for (var i = 0; i < allLinks.length; ++i) {
 			if (links_re.test(allLinks[i])) {
@@ -4540,7 +4540,7 @@ Morebits.wikitext.page.prototype = {
 	removeTemplate: function(template) {
 		var first_char = template.substr(0, 1);
 		var template_re_string = '(?:[Tt]emplate:)?\\s*[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + Morebits.string.escapeRegExp(template.substr(1));
-		var links_re = new RegExp('\\{\\{' + template_re_string);
+		var links_re = new RegExp('\\{\\{' + template_re_string + '\\s*[\\|(?:\\}\\})]');
 		var allTemplates = Morebits.array.uniq(Morebits.string.splitWeightedByKeys(this.text, '{{', '}}', [ '{{{', '}}}' ]));
 		for (var i = 0; i < allTemplates.length; ++i) {
 			if (links_re.test(allTemplates[i])) {
