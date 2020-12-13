@@ -1769,14 +1769,14 @@ Morebits.date.prototype = {
 		var D = udate.getDate(), M = udate.getMonth() + 1, Y = udate.getFullYear();
 		var h12 = h24 % 12 || 12, amOrPm = h24 >= 12 ? 'PM' : 'AM';
 		var replacementMap = {
-			'HH': pad(h24), 'H': h24, 'hh': pad(h12), 'h': h12, 'A': amOrPm,
-			'mm': pad(m), 'm': m,
-			'ss': pad(s), 's': s,
-			'SSS': pad(ms, 3),
-			'dddd': udate.getDayName(), 'ddd': udate.getDayNameAbbrev(), 'd': udate.getDay(),
-			'DD': pad(D), 'D': D,
-			'MMMM': udate.getMonthName(), 'MMM': udate.getMonthNameAbbrev(), 'MM': pad(M), 'M': M,
-			'YYYY': Y, 'YY': pad(Y % 100), 'Y': Y
+			HH: pad(h24), H: h24, hh: pad(h12), h: h12, A: amOrPm,
+			mm: pad(m), m: m,
+			ss: pad(s), s: s,
+			SSS: pad(ms, 3),
+			dddd: udate.getDayName(), ddd: udate.getDayNameAbbrev(), d: udate.getDay(),
+			DD: pad(D), D: D,
+			MMMM: udate.getMonthName(), MMM: udate.getMonthNameAbbrev(), MM: pad(M), M: M,
+			YYYY: Y, YY: pad(Y % 100), Y: Y
 		};
 
 		var unbinder = new Morebits.unbinder(formatstr); // escape stuff between [...]
@@ -3066,13 +3066,13 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onLookupCreationSuccess = onSuccess;
 
 		var query = {
-			'action': 'query',
-			'prop': 'revisions',
-			'titles': ctx.pageName,
-			'rvlimit': 1,
-			'rvprop': 'user|timestamp',
-			'rvdir': 'newer',
-			'format': 'json'
+			action: 'query',
+			prop: 'revisions',
+			titles: ctx.pageName,
+			rvlimit: 1,
+			rvprop: 'user|timestamp',
+			rvdir: 'newer',
+			format: 'json'
 		};
 
 		// Only the wikitext content model can reliably handle
@@ -3830,13 +3830,13 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		var query = {
-			'action': 'move',
-			'from': pageTitle,
-			'to': ctx.moveDestination,
-			'token': token,
-			'reason': ctx.editSummary,
-			'watchlist': ctx.watchlistOption,
-			'format': 'json'
+			action: 'move',
+			from: pageTitle,
+			to: ctx.moveDestination,
+			token: token,
+			reason: ctx.editSummary,
+			watchlist: ctx.watchlistOption,
+			format: 'json'
 		};
 		if (ctx.changeTags) {
 			query.tags = ctx.changeTags;
@@ -3975,12 +3975,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		var query = {
-			'action': 'delete',
-			'title': pageTitle,
-			'token': token,
-			'reason': ctx.editSummary,
-			'watchlist': ctx.watchlistOption,
-			'format': 'json'
+			action: 'delete',
+			title: pageTitle,
+			token: token,
+			reason: ctx.editSummary,
+			watchlist: ctx.watchlistOption,
+			format: 'json'
 		};
 		if (ctx.changeTags) {
 			query.tags = ctx.changeTags;
@@ -4038,12 +4038,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		var query = {
-			'action': 'undelete',
-			'title': pageTitle,
-			'token': token,
-			'reason': ctx.editSummary,
-			'watchlist': ctx.watchlistOption,
-			'format': 'json'
+			action: 'undelete',
+			title: pageTitle,
+			token: token,
+			reason: ctx.editSummary,
+			watchlist: ctx.watchlistOption,
+			format: 'json'
 		};
 		if (ctx.changeTags) {
 			query.tags = ctx.changeTags;

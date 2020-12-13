@@ -361,17 +361,17 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 	};
 
 	var query = {
-		'action': 'query',
-		'prop': ['info', 'revisions', 'flagged'],
-		'titles': pagename,
-		'inprop': 'watched',
-		'intestactions': 'edit',
-		'rvlimit': Twinkle.getPref('revertMaxRevisions'),
-		'rvprop': [ 'ids', 'timestamp', 'user' ],
-		'curtimestamp': '',
-		'meta': 'tokens',
-		'type': 'csrf',
-		'format': 'json'
+		action: 'query',
+		prop: ['info', 'revisions', 'flagged'],
+		titles: pagename,
+		inprop: 'watched',
+		intestactions: 'edit',
+		rvlimit: Twinkle.getPref('revertMaxRevisions'),
+		rvprop: [ 'ids', 'timestamp', 'user' ],
+		curtimestamp: '',
+		meta: 'tokens',
+		type: 'csrf',
+		format: 'json'
 	};
 	var wikipedia_api = new Morebits.wiki.api('Grabbing data of earlier revisions', query, Twinkle.fluff.callbacks.main);
 	wikipedia_api.params = params;
@@ -383,17 +383,17 @@ Twinkle.fluff.revertToRevision = function revertToRevision(oldrev) {
 	Morebits.status.init(document.getElementById('mw-content-text'));
 
 	var query = {
-		'action': 'query',
-		'prop': ['info', 'revisions'],
-		'titles': mw.config.get('wgPageName'),
-		'inprop': 'watched',
-		'rvlimit': 1,
-		'rvstartid': oldrev,
-		'rvprop': [ 'ids', 'user' ],
-		'curtimestamp': '',
-		'meta': 'tokens',
-		'type': 'csrf',
-		'format': 'json'
+		action: 'query',
+		prop: ['info', 'revisions'],
+		titles: mw.config.get('wgPageName'),
+		inprop: 'watched',
+		rvlimit: 1,
+		rvstartid: oldrev,
+		rvprop: [ 'ids', 'user' ],
+		curtimestamp: '',
+		meta: 'tokens',
+		type: 'csrf',
+		format: 'json'
 	};
 	var wikipedia_api = new Morebits.wiki.api('Grabbing data of the earlier revision', query, Twinkle.fluff.callbacks.toRevision);
 	wikipedia_api.params = { rev: oldrev };
@@ -435,17 +435,17 @@ Twinkle.fluff.callbacks = {
 			revertToUserHidden ? null : revertToUser, optional_summary);
 
 		var query = {
-			'action': 'edit',
-			'title': mw.config.get('wgPageName'),
-			'summary': summary,
-			'tags': Twinkle.changeTags,
-			'token': csrftoken,
-			'undo': lastrevid,
-			'undoafter': revertToRevID,
-			'basetimestamp': touched,
-			'starttimestamp': loadtimestamp,
-			'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf('torev') !== -1 ? true : undefined,
-			'format': 'json'
+			action: 'edit',
+			title: mw.config.get('wgPageName'),
+			summary: summary,
+			tags: Twinkle.changeTags,
+			token: csrftoken,
+			undo: lastrevid,
+			undoafter: revertToRevID,
+			basetimestamp: touched,
+			starttimestamp: loadtimestamp,
+			minor: Twinkle.getPref('markRevertedPagesAsMinor').indexOf('torev') !== -1 ? true : undefined,
+			format: 'json'
 		};
 		// Handle watching, possible expiry
 		if (Twinkle.getPref('watchRevertedPages').indexOf('torev') !== -1) {
@@ -668,17 +668,17 @@ Twinkle.fluff.callbacks = {
 		}
 
 		var query = {
-			'action': 'edit',
-			'title': params.pagename,
-			'summary': summary,
-			'tags': Twinkle.changeTags,
-			'token': csrftoken,
-			'undo': lastrevid,
-			'undoafter': params.goodid,
-			'basetimestamp': touched,
-			'starttimestamp': loadtimestamp,
-			'minor': Twinkle.getPref('markRevertedPagesAsMinor').indexOf(params.type) !== -1 ? true : undefined,
-			'format': 'json'
+			action: 'edit',
+			title: params.pagename,
+			summary: summary,
+			tags: Twinkle.changeTags,
+			token: csrftoken,
+			undo: lastrevid,
+			undoafter: params.goodid,
+			basetimestamp: touched,
+			starttimestamp: loadtimestamp,
+			minor: Twinkle.getPref('markRevertedPagesAsMinor').indexOf(params.type) !== -1 ? true : undefined,
+			format: 'json'
 		};
 		// Handle watching, possible expiry
 		if (Twinkle.getPref('watchRevertedPages').indexOf(params.type) !== -1) {
@@ -724,15 +724,15 @@ Twinkle.fluff.callbacks = {
 				Morebits.status.info('Info', [ 'Opening user talk page edit form for user ', Morebits.htmlNode('strong', params.user) ]);
 
 				var windowQuery = {
-					'title': 'User talk:' + params.user,
-					'action': 'edit',
-					'preview': 'yes',
-					'vanarticle': params.pagename.replace(/_/g, ' '),
-					'vanarticlerevid': params.revid,
-					'vantimestamp': params.vantimestamp,
-					'vanarticlegoodrevid': params.goodid,
-					'type': params.type,
-					'count': params.count
+					title: 'User talk:' + params.user,
+					action: 'edit',
+					preview: 'yes',
+					vanarticle: params.pagename.replace(/_/g, ' '),
+					vanarticlerevid: params.revid,
+					vantimestamp: params.vantimestamp,
+					vanarticlegoodrevid: params.goodid,
+					type: params.type,
+					count: params.count
 				};
 
 				switch (Twinkle.getPref('userTalkPageMode')) {
@@ -757,10 +757,10 @@ Twinkle.fluff.callbacks = {
 			// review the revert, if needed
 			if (apiobj.params.reviewRevert) {
 				var query = {
-					'action': 'review',
-					'revid': edit.newrevid,
-					'token': apiobj.params.csrftoken,
-					'comment': 'Automatically reviewing reversion' + Twinkle.summaryAd // until the below
+					action: 'review',
+					revid: edit.newrevid,
+					token: apiobj.params.csrftoken,
+					comment: 'Automatically reviewing reversion' + Twinkle.summaryAd // until the below
 					// 'tags': Twinkle.changeTags // flaggedrevs tag support: [[phab:T247721]]
 				};
 				var wikipedia_api = new Morebits.wiki.api('Automatically accepting your changes', query);

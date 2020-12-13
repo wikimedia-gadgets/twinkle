@@ -22,8 +22,8 @@
 Twinkle.config = {};
 
 Twinkle.config.watchlistEnums = {
-	yes: 'Add to watchlist (indefinitely)',
-	no: "Don't add to watchlist",
+	'yes': 'Add to watchlist (indefinitely)',
+	'no': "Don't add to watchlist",
 	'default': 'Follow your site preferences',
 	'1 week': 'Watch for 1 week',
 	'1 month': 'Watch for 1 month',
@@ -100,32 +100,32 @@ Twinkle.config.commonSets = {
 		'p1', 'p2'
 	],
 	namespacesNoSpecial: {
-		'0': 'Article',
-		'1': 'Talk (article)',
-		'2': 'User',
-		'3': 'User talk',
-		'4': 'Wikipedia',
-		'5': 'Wikipedia talk',
-		'6': 'File',
-		'7': 'File talk',
-		'8': 'MediaWiki',
-		'9': 'MediaWiki talk',
-		'10': 'Template',
-		'11': 'Template talk',
-		'12': 'Help',
-		'13': 'Help talk',
-		'14': 'Category',
-		'15': 'Category talk',
-		'100': 'Portal',
-		'101': 'Portal talk',
-		'108': 'Book',
-		'109': 'Book talk',
-		'118': 'Draft',
-		'119': 'Draft talk',
-		'710': 'TimedText',
-		'711': 'TimedText talk',
-		'828': 'Module',
-		'829': 'Module talk'
+		0: 'Article',
+		1: 'Talk (article)',
+		2: 'User',
+		3: 'User talk',
+		4: 'Wikipedia',
+		5: 'Wikipedia talk',
+		6: 'File',
+		7: 'File talk',
+		8: 'MediaWiki',
+		9: 'MediaWiki talk',
+		10: 'Template',
+		11: 'Template talk',
+		12: 'Help',
+		13: 'Help talk',
+		14: 'Category',
+		15: 'Category talk',
+		100: 'Portal',
+		101: 'Portal talk',
+		108: 'Book',
+		109: 'Book talk',
+		118: 'Draft',
+		119: 'Draft talk',
+		710: 'TimedText',
+		711: 'TimedText talk',
+		828: 'Module',
+		829: 'Module talk'
 	}
 };
 
@@ -186,7 +186,7 @@ Twinkle.config.sections = [
 				label: 'Turn off the selected Twinkle modules',
 				helptip: 'Anything you select here will NOT be available for use, so act with care. Uncheck to reactivate.',
 				type: 'set',
-				setValues: { arv: 'ARV', warn: 'Warn', welcome: 'Welcome', shared: 'Shared IP', talkback: 'Talkback', speedy: 'CSD', prod: 'PROD', xfd: 'XfD', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', 'fluff': 'Revert and rollback' }
+				setValues: { arv: 'ARV', warn: 'Warn', welcome: 'Welcome', shared: 'Shared IP', talkback: 'Talkback', speedy: 'CSD', prod: 'PROD', xfd: 'XfD', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', fluff: 'Revert and rollback' }
 			},
 
 			// Twinkle.config.disabledSysopModules (array)
@@ -465,7 +465,7 @@ Twinkle.config.sections = [
 				name: 'speedySelectionStyle',
 				label: 'When to go ahead and tag/delete the page',
 				type: 'enum',
-				enumValues: { 'buttonClick': 'When I click "Submit"', 'radioClick': 'As soon as I click an option' }
+				enumValues: { buttonClick: 'When I click "Submit"', radioClick: 'As soon as I click an option' }
 			},
 
 			// TwinkleConfig.watchSpeedyPages (array)
@@ -646,7 +646,7 @@ Twinkle.config.sections = [
 				name: 'tagArticleSortOrder',
 				label: 'Default view order for article tags',
 				type: 'enum',
-				enumValues: { 'cat': 'By categories', 'alpha': 'In alphabetical order' }
+				enumValues: { cat: 'By categories', alpha: 'In alphabetical order' }
 			},
 			{
 				name: 'customTagList',
@@ -729,17 +729,17 @@ Twinkle.config.sections = [
 				label: 'Default warning level',
 				type: 'enum',
 				enumValues: {
-					'1': 'Level 1',
-					'2': 'Level 2',
-					'3': 'Level 3',
-					'4': 'Level 4',
-					'5': 'Level 4im',
-					'6': 'Single-issue notices',
-					'7': 'Single-issue warnings',
+					1: 'Level 1',
+					2: 'Level 2',
+					3: 'Level 3',
+					4: 'Level 4',
+					5: 'Level 4im',
+					6: 'Single-issue notices',
+					7: 'Single-issue warnings',
 					// 8 was used for block templates before #260
-					'9': 'Custom warnings',
-					'10': 'All warning templates',
-					'11': 'Auto-select level (1-4)'
+					9: 'Custom warnings',
+					10: 'All warning templates',
+					11: 'Auto-select level (1-4)'
 				}
 			},
 

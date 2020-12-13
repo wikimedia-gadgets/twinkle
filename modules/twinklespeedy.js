@@ -1066,71 +1066,71 @@ Twinkle.speedy.redirectList = [
 ];
 
 Twinkle.speedy.normalizeHash = {
-	'reason': 'db',
-	'nonsense': 'g1',
-	'test': 'g2',
-	'vandalism': 'g3',
-	'hoax': 'g3',
-	'repost': 'g4',
-	'banned': 'g5',
-	'move': 'g6',
-	'xfd': 'g6',
-	'movedab': 'g6',
-	'copypaste': 'g6',
-	'g6': 'g6',
-	'author': 'g7',
-	'g8': 'g8',
-	'talk': 'g8',
-	'subpage': 'g8',
-	'redirnone': 'g8',
-	'templatecat': 'g8',
-	'imagepage': 'g8',
-	'attack': 'g10',
-	'negublp': 'g10',
-	'spam': 'g11',
-	'spamuser': 'g11',
-	'copyvio': 'g12',
-	'afc': 'g13',
-	'disambig': 'g14',
-	'nocontext': 'a1',
-	'foreign': 'a2',
-	'nocontent': 'a3',
-	'transwiki': 'a5',
-	'a7': 'a7',
-	'person': 'a7',
-	'corp': 'a7',
-	'web': 'a7',
-	'band': 'a7',
-	'club': 'a7',
-	'animal': 'a7',
-	'event': 'a7',
-	'a9': 'a9',
-	'a10': 'a10',
-	'madeup': 'a11',
-	'rediruser': 'r2',
-	'redirtypo': 'r3',
-	'redircom': 'r4',
-	'redundantimage': 'f1',
-	'noimage': 'f2',
-	'fpcfail': 'f2',
-	'noncom': 'f3',
-	'unksource': 'f4',
-	'unfree': 'f5',
-	'f5': 'f5',
-	'norat': 'f6',
-	'badfairuse': 'f7',
-	'commons': 'f8',
-	'imgcopyvio': 'f9',
-	'badfiletype': 'f10',
-	'nopermission': 'f11',
-	'catempty': 'c1',
-	'userreq': 'u1',
-	'nouser': 'u2',
-	'gallery': 'u3',
-	'notwebhost': 'u5',
-	'duplicatetemplate': 't3',
-	'p1': 'p1',
-	'emptyportal': 'p2'
+	reason: 'db',
+	nonsense: 'g1',
+	test: 'g2',
+	vandalism: 'g3',
+	hoax: 'g3',
+	repost: 'g4',
+	banned: 'g5',
+	move: 'g6',
+	xfd: 'g6',
+	movedab: 'g6',
+	copypaste: 'g6',
+	g6: 'g6',
+	author: 'g7',
+	g8: 'g8',
+	talk: 'g8',
+	subpage: 'g8',
+	redirnone: 'g8',
+	templatecat: 'g8',
+	imagepage: 'g8',
+	attack: 'g10',
+	negublp: 'g10',
+	spam: 'g11',
+	spamuser: 'g11',
+	copyvio: 'g12',
+	afc: 'g13',
+	disambig: 'g14',
+	nocontext: 'a1',
+	foreign: 'a2',
+	nocontent: 'a3',
+	transwiki: 'a5',
+	a7: 'a7',
+	person: 'a7',
+	corp: 'a7',
+	web: 'a7',
+	band: 'a7',
+	club: 'a7',
+	animal: 'a7',
+	event: 'a7',
+	a9: 'a9',
+	a10: 'a10',
+	madeup: 'a11',
+	rediruser: 'r2',
+	redirtypo: 'r3',
+	redircom: 'r4',
+	redundantimage: 'f1',
+	noimage: 'f2',
+	fpcfail: 'f2',
+	noncom: 'f3',
+	unksource: 'f4',
+	unfree: 'f5',
+	f5: 'f5',
+	norat: 'f6',
+	badfairuse: 'f7',
+	commons: 'f8',
+	imgcopyvio: 'f9',
+	badfiletype: 'f10',
+	nopermission: 'f11',
+	catempty: 'c1',
+	userreq: 'u1',
+	nouser: 'u2',
+	gallery: 'u3',
+	notwebhost: 'u5',
+	duplicatetemplate: 't3',
+	p1: 'p1',
+	emptyportal: 'p2'
 };
 
 Twinkle.speedy.callbacks = {
@@ -1348,11 +1348,11 @@ Twinkle.speedy.callbacks = {
 			// delete redirects
 			if (params.deleteRedirects) {
 				var query = {
-					'action': 'query',
-					'titles': mw.config.get('wgPageName'),
-					'prop': 'redirects',
-					'rdlimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
-					'format': 'json'
+					action: 'query',
+					titles: mw.config.get('wgPageName'),
+					prop: 'redirects',
+					rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
+					format: 'json'
 				};
 				var wikipedia_api = new Morebits.wiki.api('getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
 					new Morebits.status('Deleting redirects'));
@@ -1364,34 +1364,34 @@ Twinkle.speedy.callbacks = {
 			var $link, $bigtext;
 			if (mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8') {
 				$link = $('<a/>', {
-					'href': '#',
-					'text': 'click here to go to the Unlink tool',
-					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
-					'click': function() {
+					href: '#',
+					text: 'click here to go to the Unlink tool',
+					css: { fontSize: '130%', fontWeight: 'bold' },
+					click: function() {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
 						Twinkle.unlink.callback('Removing usages of and/or links to deleted file ' + Morebits.pageNameNorm);
 					}
 				});
 				$bigtext = $('<span/>', {
-					'text': 'To orphan backlinks and remove instances of file usage',
-					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
+					text: 'To orphan backlinks and remove instances of file usage',
+					css: { fontSize: '130%', fontWeight: 'bold' }
 				});
 				Morebits.status.info($bigtext[0], $link[0]);
 			} else if (params.normalized !== 'f8') {
 				$link = $('<a/>', {
-					'href': '#',
-					'text': 'click here to go to the Unlink tool',
-					'css': { 'fontSize': '130%', 'fontWeight': 'bold' },
-					'click': function() {
+					href: '#',
+					text: 'click here to go to the Unlink tool',
+					css: { fontSize: '130%', fontWeight: 'bold' },
+					click: function() {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
 						Twinkle.unlink.callback('Removing links to deleted page ' + Morebits.pageNameNorm);
 					}
 				});
 				$bigtext = $('<span/>', {
-					'text': 'To orphan backlinks',
-					'css': { 'fontSize': '130%', 'fontWeight': 'bold' }
+					text: 'To orphan backlinks',
+					css: { fontSize: '130%', fontWeight: 'bold' }
 				});
 				Morebits.status.info($bigtext[0], $link[0]);
 			}

@@ -41,15 +41,15 @@ Twinkle.deprod.callback = function() {
 	Window.display();
 
 	var query = {
-		'action': 'query',
-		'generator': 'categorymembers',
-		'gcmtitle': mw.config.get('wgPageName'),
-		'gcmlimit': Twinkle.getPref('batchMax'),
-		'gcmnamespace': '0|6|108|2', // mostly to ignore categories
-		'prop': [ 'info', 'revisions' ],
-		'rvprop': [ 'content' ],
-		'inprop': [ 'protection' ],
-		'format': 'json'
+		action: 'query',
+		generator: 'categorymembers',
+		gcmtitle: mw.config.get('wgPageName'),
+		gcmlimit: Twinkle.getPref('batchMax'),
+		gcmnamespace: '0|6|108|2', // mostly to ignore categories
+		prop: [ 'info', 'revisions' ],
+		rvprop: [ 'content' ],
+		inprop: [ 'protection' ],
+		format: 'json'
 	};
 
 	var statelem = new Morebits.status('Grabbing list of pages');
@@ -104,12 +104,12 @@ Twinkle.deprod.callback = function() {
 			}
 		});
 		apiobj.params.form.append({
-			'type': 'checkbox',
-			'name': 'pages',
-			'list': list
+			type: 'checkbox',
+			name: 'pages',
+			list: list
 		});
 		apiobj.params.form.append({
-			'type': 'submit'
+			type: 'submit'
 		});
 
 		var rendered = apiobj.params.form.render();
@@ -140,11 +140,11 @@ var callback_commit = function(event) {
 			var params = { page: pageName, reason: concerns[page] };
 
 			var query = {
-				'action': 'query',
-				'titles': pageName,
-				'prop': 'redirects',
-				'rdlimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
-				'format': 'json'
+				action: 'query',
+				titles: pageName,
+				prop: 'redirects',
+				rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
+				format: 'json'
 			};
 			var wikipedia_api = new Morebits.wiki.api('Grabbing redirects', query, callback_deleteRedirects);
 			wikipedia_api.params = params;
@@ -155,9 +155,9 @@ var callback_commit = function(event) {
 			if (pageTitle && pageTitle.namespace % 2 === 0 && pageTitle.namespace !== 2) {
 				pageTitle.namespace++;  // now pageTitle is the talk page title!
 				query = {
-					'action': 'query',
-					'titles': pageTitle.toText(),
-					'format': 'json'
+					action: 'query',
+					titles: pageTitle.toText(),
+					format: 'json'
 				};
 				wikipedia_api = new Morebits.wiki.api('Checking whether ' + pageName + ' has a talk page', query,
 					callback_deleteTalk);

@@ -147,11 +147,11 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	});
 
 	var query = {
-		'action': 'query',
-		'prop': 'revisions|info',
-		'rvprop': 'size',
-		'inprop': 'protection',
-		'format': 'json'
+		action: 'query',
+		prop: 'revisions|info',
+		rvprop: 'size',
+		inprop: 'protection',
+		format: 'json'
 	};
 
 	if (mw.config.get('wgNamespaceNumber') === 14) {  // categories
@@ -280,9 +280,9 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	batchOperation.setPageList(input.pages);
 	batchOperation.run(function(pageName) {
 		var query = {
-			'action': 'query',
-			'titles': pageName,
-			'format': 'json'
+			action: 'query',
+			titles: pageName,
+			format: 'json'
 		};
 		var wikipedia_api = new Morebits.wiki.api('Checking if page ' + pageName + ' exists', query,
 			Twinkle.batchprotect.callbacks.main, null, batchOperation.workerFailure);

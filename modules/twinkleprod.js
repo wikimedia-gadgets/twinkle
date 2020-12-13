@@ -194,11 +194,11 @@ Twinkle.prod.callbacks = {
 			'Template:Olddelrev|' + // Prior DRV template
 			'Template:Old prod';
 		var query = {
-			'action': 'query',
-			'titles': talk_title,
-			'prop': 'templates',
-			'tltemplates': blocking_templates,
-			'format': 'json'
+			action: 'query',
+			titles: talk_title,
+			prop: 'templates',
+			tltemplates: blocking_templates,
+			format: 'json'
 		};
 
 		var wikipedia_api = new Morebits.wiki.api('Checking talk page for prior nominations', query);
