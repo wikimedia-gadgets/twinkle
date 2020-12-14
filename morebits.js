@@ -2292,12 +2292,13 @@ Morebits.wiki.api.getToken = function() {
  * @class
  * @param {string} pageName - The name of the page, prefixed by the namespace (if any).
  * For the current page, use `mw.config.get('wgPageName')`.
- * @param {string} [currentAction] - A string describing the action about to be undertaken.
+ * @param {string|Morebits.status} [status] - A string describing the action about to be undertaken,
+ * or a Morebits.status object
  */
-Morebits.wiki.page = function(pageName, currentAction) {
+Morebits.wiki.page = function(pageName, status) {
 
-	if (!currentAction) {
-		currentAction = 'Opening page "' + pageName + '"';
+	if (!status) {
+		status = 'Opening page "' + pageName + '"';
 	}
 
 	/**
@@ -2316,7 +2317,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		changeTags: null,
 		testActions: null,  // array if any valid actions
 		callbackParameters: null,
-		statusElement: new Morebits.status(currentAction),
+		statusElement: status instanceof Morebits.status ? status : new Morebits.status(status),
 
 		// - edit
 		pageText: null,
@@ -2974,6 +2975,13 @@ Morebits.wiki.page = function(pageName, currentAction) {
 	 */
 	this.getCallbackParameters = function() {
 		return ctx.callbackParameters;
+	};
+
+	/**
+	 * @param {Morebits.status} statusElement
+	 */
+	this.setStatusElement = function(statusElement) {
+		ctx.statusElement = statusElement;
 	};
 
 	/**
