@@ -159,9 +159,7 @@ var XfdMode = /** @class */ (function () {
         });
     };
     XfdMode.prototype.postRender = function (renderedFieldset) { };
-    XfdMode.prototype.getVenueWarning = function () {
-        return '';
-    };
+    XfdMode.prototype.getVenueWarning = function () { };
     // Overridden for tfd, cfd, cfds
     /**
      * Pre-process parameters, called from evaluate() and preview().
@@ -712,9 +710,6 @@ var Tfd = /** @class */ (function (_super) {
         }
         return text;
     };
-    Tfd.prototype.getMenuTooltip = function () {
-        return 'Nominate article for deletion or move';
-    };
     Tfd.prototype.preprocessParams = function () {
         if (this.params.tfdtarget) {
             this.params.tfdtarget = utils.stripNs(this.params.tfdtarget);
@@ -748,6 +743,11 @@ var Ffd = /** @class */ (function (_super) {
     };
     Ffd.prototype.getMenuTooltip = function () {
         return 'Start a discussion for deleting this file';
+    };
+    Ffd.prototype.getVenueWarning = function () {
+        if (mw.config.get('wgNamespaceNumber') !== 6) {
+            return 'FFD is selected but this page doesn\'t look like a file!';
+        }
     };
     Ffd.prototype.generateFieldset = function () {
         this.fieldset = _super.prototype.generateFieldset.call(this);
@@ -854,6 +854,11 @@ var Cfd = /** @class */ (function (_super) {
     };
     Cfd.prototype.getMenuTooltip = function () {
         return 'Nominate article for deletion or move';
+    };
+    Cfd.prototype.getVenueWarning = function () {
+        if ([10, 14].indexOf(mw.config.get('wgNamespaceNumber')) === -1) {
+            return 'CfD is only for categories and stub templates.';
+        }
     };
     Cfd.prototype.generateFieldset = function () {
         this.fieldset = _super.prototype.generateFieldset.call(this);
@@ -1066,6 +1071,11 @@ var Cfds = /** @class */ (function (_super) {
     };
     Cfds.prototype.getFieldsetLabel = function () {
         return 'Categories for speedy renaming';
+    };
+    Cfds.prototype.getVenueWarning = function () {
+        if ([10, 14].indexOf(mw.config.get('wgNamespaceNumber')) === -1) {
+            return 'CfD is only for categories and stub templates.';
+        }
     };
     Cfds.prototype.generateFieldset = function () {
         this.fieldset = _super.prototype.generateFieldset.call(this);
@@ -1619,6 +1629,11 @@ var Rm = /** @class */ (function (_super) {
     }
     Rm.prototype.getFieldsetLabel = function () {
         return 'Requested moves';
+    };
+    Rm.prototype.getVenueWarning = function () {
+        if (mw.config.get('wgNamespaceNumber') === 14) { // category
+            return 'Please use CfD or CfDS for category renames.';
+        }
     };
     Rm.prototype.generateFieldset = function () {
         var _this = this;

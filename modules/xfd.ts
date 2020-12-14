@@ -181,9 +181,7 @@ abstract class XfdMode {
 
 	postRender(renderedFieldset: HTMLFieldSetElement) {}
 
-	getVenueWarning(): string {
-		return '';
-	}
+	getVenueWarning(): string | void {}
 
 	// Overridden for tfd, cfd, cfds
 	/**
@@ -841,6 +839,12 @@ class Ffd extends XfdMode {
 		return 'Start a discussion for deleting this file';
 	}
 
+	public getVenueWarning(): string | void {
+		if (mw.config.get('wgNamespaceNumber') !== 6) {
+			return 'FFD is selected but this page doesn\'t look like a file!';
+		}
+	}
+
 	public generateFieldset(): quickFormElement {
 		this.fieldset = super.generateFieldset();
 		this.appendReasonArea();
@@ -953,6 +957,12 @@ class Cfd extends XfdMode {
 
 	getMenuTooltip(): string {
 		return 'Nominate article for deletion or move';
+	}
+
+	public getVenueWarning(): string {
+		if ([ 10, 14 ].indexOf(mw.config.get('wgNamespaceNumber')) === -1) {
+			return 'CfD is only for categories and stub templates.';
+		}
 	}
 
 	public generateFieldset(): quickFormElement {
@@ -1179,6 +1189,12 @@ class Cfds extends XfdMode {
 
 	getFieldsetLabel() {
 		return 'Categories for speedy renaming';
+	}
+
+	public getVenueWarning() {
+		if ([ 10, 14 ].indexOf(mw.config.get('wgNamespaceNumber')) === -1) {
+			return 'CfD is only for categories and stub templates.';
+		}
 	}
 
 	public generateFieldset(): quickFormElement {
@@ -1761,6 +1777,12 @@ class Rm extends XfdMode {
 
 	public getFieldsetLabel() {
 		return 'Requested moves';
+	}
+
+	public getVenueWarning(): string | void {
+		if (mw.config.get('wgNamespaceNumber') === 14) { // category
+			return 'Please use CfD or CfDS for category renames.';
+		}
 	}
 
 	public generateFieldset(): quickFormElement {
