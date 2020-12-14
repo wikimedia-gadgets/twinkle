@@ -209,6 +209,19 @@ abstract class XfdMode {
 		this.preprocessParams();
 		Morebits.simpleWindow.setButtonsEnabled(false);
 		Morebits.status.init(this.result);
+
+		// XXX: Copied from the original twinklexfd, but this isn't great.
+		// Errors in tasks that execute early but don't affect creation of discussion page
+		// such as fetchCreatorInfo() should not print trigger this.
+		// But fetchCreatorInfo() is unlikely to error out so we're good for now.
+		Xfd.currentRationale = this.params.reason;
+		Morebits.status.onError(() => {
+			if (Xfd.currentRationale) {
+				Morebits.status.printUserText(Xfd.currentRationale, 'Your deletion rationale is provided below, which you can copy and paste into a new XFD dialog if you wish to try again:');
+				// only need to print the rationale once
+				Xfd.currentRationale = null;
+			}
+		});
 	}
 
 	autoEditRequest(pageobj: Morebits.wiki.page) {
