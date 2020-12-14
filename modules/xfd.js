@@ -214,6 +214,7 @@ var XfdMode = /** @class */ (function () {
         var _this = this;
         var def = $.Deferred();
         var thispage = new Morebits.wiki.page(Morebits.pageNameNorm, 'Finding page creator');
+        thispage.setLookupNonRedirectCreator(this.params.lookupNonRedirectCreator);
         thispage.lookupCreation(function (pageobj) {
             _this.params.initialContrib = pageobj.getCreator();
             pageobj.getStatusElement().info('Found ' + pageobj.getCreator());
@@ -317,6 +318,374 @@ var XfdMode = /** @class */ (function () {
     };
     return XfdMode;
 }());
+var Afd = /** @class */ (function (_super) {
+    __extends(Afd, _super);
+    function Afd() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Afd.isDefaultChoice = function () {
+        return mw.config.get('wgNamespaceNumber') === 0;
+    };
+    Afd.prototype.getFieldsetLabel = function () {
+        return 'Articles for deletion';
+    };
+    Afd.prototype.getVenueWarning = function () {
+        if (mw.config.get('wgNamespaceNumber') !== 0) {
+            return 'AfD is generally appropriate only for articles.';
+        }
+        else if (mw.config.get('wgIsRedirect')) {
+            return 'Please use RfD for redirects.';
+        }
+    };
+    Afd.prototype.getMenuTooltip = function () {
+        return 'Nominate article for deletion or move';
+    };
+    Afd.prototype.generateFieldset = function () {
+        this.fieldset = _super.prototype.generateFieldset.call(this);
+        this.fieldset.append({
+            type: 'div',
+            label: Twinkle.makeFindSourcesDiv(),
+            style: 'margin-bottom: 5px;'
+        });
+        this.fieldset.append({
+            type: 'checkbox',
+            list: [
+                {
+                    label: 'Wrap deletion tag with <noinclude>',
+                    value: 'noinclude',
+                    name: 'noinclude',
+                    tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. This option is not normally required.'
+                }
+            ]
+        });
+        this.fieldset.append({
+            type: 'select',
+            name: 'xfdcat',
+            label: 'Choose what category this nomination belongs in:',
+            list: [
+                { type: 'option', label: 'Unknown', value: '?', selected: true },
+                { type: 'option', label: 'Media and music', value: 'M' },
+                { type: 'option', label: 'Organisation, corporation, or product', value: 'O' },
+                { type: 'option', label: 'Biographical', value: 'B' },
+                { type: 'option', label: 'Society topics', value: 'S' },
+                { type: 'option', label: 'Web or internet', value: 'W' },
+                { type: 'option', label: 'Games or sports', value: 'G' },
+                { type: 'option', label: 'Science and technology', value: 'T' },
+                { type: 'option', label: 'Fiction and the arts', value: 'F' },
+                { type: 'option', label: 'Places and transportation', value: 'P' },
+                { type: 'option', label: 'Indiscernible or unclassifiable topic', value: 'I' },
+                { type: 'option', label: 'Debate not yet sorted', value: 'U' }
+            ]
+        });
+        // delsort categories taken from [[WP:DS/C]], inspired by off [[User:Enterprisey/delsort.js]]
+        var delsortCategories = {
+            'People': ['People', 'Academics and educators', 'Actors and filmmakers', 'Artists', 'Authors', 'Bands and musicians', 'Businesspeople', 'Politicians', 'Sportspeople', 'Women', 'Lists of people'],
+            'Arts': ['Arts', 'Fictional elements', 'Science fiction and fantasy'],
+            'Arts/Culinary': ['Food and drink', 'Wine'],
+            'Arts/Language': ['Language', 'Academic journals', 'Bibliographies', 'Journalism', 'Literature', 'Logic', 'News media', 'Philosophy', 'Poetry'],
+            'Arts/Performing': ['Albums and songs', 'Dance', 'Film', 'Magic', 'Music', 'Radio', 'Television', 'Theatre', 'Video games'],
+            'Arts/Visual arts': ['Visual arts', 'Architecture', 'Fashion', 'Photography'],
+            'Arts/Comics and animation': ['Comics and animation', 'Anime and manga', 'Webcomics'],
+            'Places of interest': ['Museums and libraries', 'Shopping malls'],
+            'Topical': ['Animal', 'Bilateral relations', 'Conservatism', 'Conspiracy theories', 'Crime', 'Disability', 'Discrimination', 'Entertainment', 'Ethnic groups', 'Events', 'Finance', 'Games', 'Health and fitness', 'History', 'Law', 'Military', 'Organizations', 'Paranormal', 'Piracy', 'Politics', 'Terrorism'],
+            'Topical/Business': ['Business', 'Advertising', 'Companies', 'Management', 'Products'],
+            'Topical/Culture': ['Beauty pageants', 'Fashion', 'Mythology', 'Popular culture', 'Sexuality and gender'],
+            'Topical/Education': ['Education', 'Fraternities and sororities', 'Schools'],
+            'Topical/Religion': ['Religion', 'Atheism', 'Bible', 'Buddhism', 'Christianity', 'Islam', 'Judaism', 'Hinduism', 'Paganism', 'Sikhism', 'Spirituality'],
+            'Topical/Science': ['Science', 'Archaeology', 'Astronomy', 'Behavioural science', 'Biology', 'Economics', 'Engineering', 'Environment', 'Geography', 'Mathematics', 'Medicine', 'Organisms', 'Psychiatry', 'Psychology', 'Social science'],
+            'Topical/Sports': ['Sports', 'American football', 'Baseball', 'Basketball', 'Bodybuilding', 'Boxing', 'Cricket', 'Cycling', 'Football', 'Golf', 'Handball', 'Horse racing', 'Ice hockey', 'Motorsport', 'Rugby union', 'Softball', 'Martial arts', 'Wrestling'],
+            'Topical/Technology': ['Technology', 'Aviation', 'Computing', 'Firearms', 'Internet', 'Software', 'Transportation', 'Websites'],
+            'Wikipedia page type': ['Disambiguations', 'Lists'],
+            'Geographic/Africa': ['Africa', 'Algeria', 'Democratic Republic of the Congo', 'Egypt', 'Ethiopia', 'Ghana', 'Kenya', 'Libya', 'Mauritius', 'Morocco', 'Nigeria', 'Somalia', 'South Africa', 'Zimbabwe'],
+            'Geographic/Asia': ['Asia', 'Afghanistan', 'Bangladesh', 'Brunei', 'Cambodia', 'China', 'Hong Kong', 'Indonesia', 'Japan', 'Korea', 'Laos', 'Malaysia', 'Maldives', 'Mongolia', 'Myanmar', 'Nepal', 'Pakistan', 'Philippines', 'Singapore', 'South Korea', 'Sri Lanka', 'Taiwan', 'Thailand', 'Vietnam'],
+            'Geographic/Asia/Central Asia': ['Central Asia', 'Kazakhstan', 'Kyrgyzstan', 'Tajikistan', 'Turkmenistan', 'Uzbekistan'],
+            'Geographic/Asia/Middle East': ['Middle East', 'Bahrain', 'Iran', 'Iraq', 'Israel', 'Jordan', 'Kuwait', 'Lebanon', 'Libya', 'Palestine', 'Qatar', 'Saudi Arabia', 'Syria', 'United Arab Emirates', 'Yemen'],
+            'Geographic/Asia/India': ['India', 'Kerala'],
+            'Geographic/Europe': ['Europe', 'Albania', 'Armenia', 'Austria', 'Azerbaijan', 'Belarus', 'Belgium', 'Bosnia and Herzegovina', 'Bulgaria', 'Croatia', 'Cyprus', 'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Georgia (country)', 'Germany', 'Greece', 'Hungary', 'Iceland', 'Ireland', 'Italy', 'Jersey', 'Kosovo', 'Latvia', 'Lithuania', 'Luxembourg', 'Malta', 'Moldova', 'Montenegro', 'Netherlands', 'North Macedonia', 'Norway', 'Poland', 'Portugal', 'Romania', 'Russia', 'Serbia', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Switzerland', 'Turkey', 'Ukraine', 'Yugoslavia'],
+            'Geographic/Europe/United Kingdom': ['United Kingdom', 'England', 'Northern Ireland', 'Scotland', 'Wales'],
+            'Geographic/Oceania': ['Oceania', 'Antarctica', 'Australia', 'New Zealand'],
+            'Geographic/Americas/Canada': ['Canada', 'Alberta', 'British Columbia', 'Manitoba', 'Nova Scotia', 'Ontario', 'Quebec'],
+            'Geographic/Americas/Latin America': ['Latin America', 'Caribbean', 'South America', 'Argentina', 'Barbados', 'Belize', 'Bolivia', 'Brazil', 'Chile', 'Colombia', 'Costa Rica', 'Cuba', 'Ecuador', 'El Salvador', 'Grenada', 'Guatemala', 'Haiti', 'Mexico', 'Nicaragua', 'Panama', 'Paraguay', 'Peru', 'Puerto Rico', 'Trinidad and Tobago', 'Uruguay', 'Venezuela'],
+            'Geographic/Americas/USA': ['United States of America', 'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia (U.S. state)', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'Washington, D.C.', 'West Virginia', 'Wisconsin', 'Wyoming'],
+            'Geographic/Unsorted': ['Islands']
+        };
+        var delsort = this.fieldset.append({
+            type: 'select',
+            multiple: true,
+            name: 'delsortCats',
+            label: 'Choose deletion sorting categories: ',
+            tooltip: 'Select a few categories that are specifically relevant to the subject of the article. Be as precise as possible; categories like People and USA should only be used when no other categories apply.'
+        });
+        $.each(delsortCategories, function (groupname, list) {
+            var group = delsort.append({ type: 'optgroup', label: groupname });
+            list.forEach(function (item) {
+                group.append({ type: 'option', label: item, value: item });
+            });
+        });
+        this.appendReasonArea();
+        return this.fieldset;
+    };
+    Afd.prototype.postRender = function (renderedFieldset) {
+        $(renderedFieldset).find('[name=delsortCats]')
+            .attr('data-placeholder', 'Select delsort pages')
+            .select2({
+            width: '100%',
+            matcher: Morebits.select2.matcher,
+            templateResult: Morebits.select2.highlightSearchMatches,
+            language: {
+                searching: Morebits.select2.queryInterceptor
+            },
+            // Link text to the page itself
+            templateSelection: function (choice) {
+                return $('<a>').text(choice.text).attr({
+                    href: mw.util.getUrl('Wikipedia:WikiProject_Deletion_sorting/' + choice.text),
+                    target: '_blank'
+                });
+            }
+        });
+        mw.util.addCSS(
+        // Remove black border
+        '.select2-container--default.select2-container--focus .select2-selection--multiple { border: 1px solid #aaa; }' +
+            // Reduce padding
+            '.select2-results .select2-results__option { padding-top: 1px; padding-bottom: 1px; }' +
+            '.select2-results .select2-results__group { padding-top: 1px; padding-bottom: 1px; } ' +
+            // Adjust font size
+            '.select2-container .select2-dropdown .select2-results { font-size: 13px; }' +
+            '.select2-container .selection .select2-selection__rendered { font-size: 13px; }' +
+            // Make the tiny cross larger
+            '.select2-selection__choice__remove { font-size: 130%; }');
+    };
+    Afd.prototype.evaluate = function () {
+        var _this = this;
+        _super.prototype.evaluate.call(this);
+        var tm = new Morebits.taskManager(this);
+        tm.add(this.checkPage, []);
+        tm.add(this.determineDiscussionPage, []);
+        tm.add(this.createDiscussionPage, [this.checkPage, this.determineDiscussionPage]);
+        // create discussion page before linking or transcluding it from anywhere, so that
+        // there's no need to do any purging to prevent the red links
+        tm.add(this.tagPage, [this.createDiscussionPage]);
+        tm.add(this.addToList, [this.createDiscussionPage]);
+        tm.add(this.addToDelsortLists, [this.createDiscussionPage]);
+        tm.add(this.patrolPage, [this.checkPage]);
+        tm.add(this.fetchCreatorInfo, []);
+        tm.add(this.notifyCreator, [this.createDiscussionPage, this.fetchCreatorInfo]);
+        tm.add(this.addToLog, [this.notifyCreator]);
+        tm.execute().then(function () {
+            Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
+            setTimeout(function () {
+                window.location.href = mw.util.getUrl(_this.params.discussionpage);
+            }, 50000);
+        });
+    };
+    Afd.prototype.preprocessParams = function () {
+        this.params.lookupNonRedirectCreator = true; // for this.fetchCreatorInfo()
+    };
+    Afd.prototype.determineDiscussionPage = function () {
+        var params = this.params;
+        return new Morebits.wiki.api('Determining discussion page', {
+            'action': 'query',
+            'list': 'allpages',
+            'apprefix': 'Articles for deletion/' + Morebits.pageNameNorm,
+            'apnamespace': 4,
+            'apfilterredir': 'nonredirects',
+            'aplimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
+        }).post().then(function (apiobj) {
+            var xmlDoc = apiobj.responseXML;
+            var titles = $(xmlDoc).find('allpages p');
+            // There has been no earlier entries with this prefix, just go on.
+            if (titles.length <= 0) {
+                params.numbering = params.number = '';
+            }
+            else {
+                var number = 0;
+                for (var i = 0; i < titles.length; ++i) {
+                    var title = titles[i].getAttribute('title');
+                    // First, simple test, is there an instance with this exact name?
+                    if (title === 'Wikipedia:Articles for deletion/' + Morebits.pageNameNorm) {
+                        number = Math.max(number, 1);
+                        continue;
+                    }
+                    var order_re = new RegExp('^' +
+                        Morebits.string.escapeRegExp('Wikipedia:Articles for deletion/' + Morebits.pageNameNorm) +
+                        '\\s*\\(\\s*(\\d+)(?:(?:th|nd|rd|st) nom(?:ination)?)?\\s*\\)\\s*$');
+                    var match = order_re.exec(title);
+                    // No match; A non-good value
+                    if (!match) {
+                        continue;
+                    }
+                    // A match, set number to the max of current
+                    number = Math.max(number, Number(match[1]));
+                }
+                params.number = utils.num2order(parseInt(number, 10) + 1);
+                params.numbering = number > 0 ? ' (' + params.number + ' nomination)' : '';
+            }
+            params.discussionpage = 'Wikipedia:Articles for deletion/' + Morebits.pageNameNorm + params.numbering;
+            apiobj.getStatusElement().info(params.discussionpage);
+        });
+    };
+    /**
+     * Check to see that the page still exists, is not already tagged for AfD, etc.
+     */
+    Afd.prototype.checkPage = function () {
+        var _this = this;
+        var def = $.Deferred();
+        var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Adding deletion tag to article');
+        pageobj.setFollowRedirect(true); // should never be needed, but if the article is moved, we would want to follow the redirect
+        pageobj.setChangeTags(Twinkle.changeTags); // Here to apply to triage
+        pageobj.load(function (pageobj) {
+            var text = pageobj.getPageText();
+            var statelem = pageobj.getStatusElement();
+            _this.params.articleLoadTime = pageobj.getLoadTime();
+            if (!pageobj.exists()) {
+                statelem.error("It seems that the page doesn't exist; perhaps it has already been deleted");
+                return def.reject(); // Cancel future operations
+            }
+            // Check for existing AfD tag, for the benefit of new page patrollers
+            var textNoAfd = text.replace(/<!--.*AfD.*\n\{\{(?:Article for deletion\/dated|AfDM).*\}\}\n<!--.*(?:\n<!--.*)?AfD.*(?:\s*\n)?/g, '');
+            if (text !== textNoAfd) {
+                if (confirm('An AfD tag was found on this article. Maybe someone beat you to it.  \nClick OK to replace the current AfD tag (not recommended), or Cancel to abandon your nomination.')) {
+                    text = textNoAfd;
+                }
+                else {
+                    statelem.error('Article already tagged with AfD tag, and you chose to abort');
+                    window.location.reload();
+                    return def.reject(); // Cancel future operations
+                }
+            }
+            def.resolve(pageobj);
+        });
+        return def;
+    };
+    Afd.prototype.tagPage = function (pageobj) {
+        var params = this.params;
+        var def = $.Deferred();
+        params.tagText = (params.noinclude ? '<noinclude>{{' : '{{') + (params.number === '' ? 'subst:afd|help=off' : 'subst:afdx|' +
+            params.number + '|help=off') + (params.noinclude ? '}}</noinclude>\n' : '}}\n');
+        if (pageobj.canEdit()) {
+            var text = pageobj.getPageText();
+            // Remove some tags that should always be removed on AfD.
+            text = text.replace(/\{\{\s*(dated prod|dated prod blp|Prod blp\/dated|Proposed deletion\/dated|prod2|Proposed deletion endorsed|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
+            // Then, test if there are speedy deletion-related templates on the article.
+            var textNoSd = text.replace(/\{\{\s*(db(-\w*)?|delete|(?:hang|hold)[- ]?on)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
+            if (text !== textNoSd && confirm('A speedy deletion tag was found on this page. Should it be removed?')) {
+                text = textNoSd;
+            }
+            // Insert tag after short description or any hatnotes
+            var wikipage = new Morebits.wikitext.page(text);
+            text = wikipage.insertAfterTemplates(params.tagText, Twinkle.hatnoteRegex).getText();
+            pageobj.setPageText(text);
+            pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
+            pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
+            pageobj.setCreateOption('nocreate');
+            pageobj.save(def.resolve, def.reject);
+        }
+        else {
+            this.autoEditRequest(pageobj).then(def.resolve, def.reject);
+        }
+        return def;
+    };
+    Afd.prototype.getDiscussionWikitext = function () {
+        var params = this.params;
+        return utils.makeTemplate('subst:afd2', {
+            text: Morebits.string.formatReasonText(params.reason, true),
+            pg: Morebits.pageNameNorm,
+            cat: params.xfdcat
+        }) + params.delsortCats.map(function (cat) {
+            return '\n{{subst:delsort|' + cat + '|~~~~}}';
+        }).join('');
+    };
+    Afd.prototype.createDiscussionPage = function () {
+        var _this = this;
+        var params = this.params;
+        var def = $.Deferred();
+        var pageobj = new Morebits.wiki.page(params.discussionpage, 'Creating article deletion discussion page');
+        pageobj.load(function (pageobj) {
+            pageobj.setPageText(_this.getDiscussionWikitext());
+            pageobj.setEditSummary('Creating deletion discussion page for [[:' + Morebits.pageNameNorm + ']].');
+            pageobj.setChangeTags(Twinkle.changeTags);
+            pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
+            pageobj.setCreateOption('createonly');
+            pageobj.save(function () {
+                Xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+                def.resolve();
+            }, def.reject);
+        });
+        return def;
+    };
+    Afd.prototype.addToList = function () {
+        var params = this.params;
+        var def = $.Deferred();
+        var date = new Morebits.date(params.articleLoadTime);
+        var pageobj = new Morebits.wiki.page('Wikipedia:Articles for deletion/Log/' +
+            date.format('YYYY MMMM D', 'utc'), "Adding discussion to today's list");
+        pageobj.setFollowRedirect(true);
+        pageobj.load(function (pageobj) {
+            var statelem = pageobj.getStatusElement();
+            var added_data = '{{subst:afd3|pg=' + Morebits.pageNameNorm + params.numbering + '}}\n';
+            var text;
+            // add date header if the log is found to be empty (a bot should do this automatically)
+            if (!pageobj.exists()) {
+                text = '{{subst:AfD log}}\n' + added_data;
+            }
+            else {
+                var old_text = pageobj.getPageText() + '\n'; // MW strips trailing blanks, but we like them, so we add a fake one
+                text = old_text.replace(/(<!-- Add new entries to the TOP of the following list -->\n+)/, '$1' + added_data);
+                if (text === old_text) {
+                    var linknode = document.createElement('a');
+                    linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing AFD') + '?action=purge');
+                    linknode.appendChild(document.createTextNode('How to fix AFD'));
+                    statelem.error(['Could not find the target spot for the discussion. To fix this problem, please see ', linknode, '.']);
+                    return def.reject();
+                }
+            }
+            pageobj.setPageText(text);
+            pageobj.setEditSummary('Adding [[:' + params.discussionpage + ']].');
+            pageobj.setChangeTags(Twinkle.changeTags);
+            pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
+            pageobj.setCreateOption('recreate');
+            pageobj.save(def.resolve, def.reject);
+        });
+        return def;
+    };
+    Afd.prototype.addToDelsortLists = function () {
+        var params = this.params;
+        var defs = new Array(params.delsortCats.length);
+        for (var i = 0; i < defs.length; i++) {
+            // ugly, would be a lot better when mb.w.page#load and #save return promises
+            defs[i] = $.Deferred();
+        }
+        params.delsortCats.forEach(function (cat, idx) {
+            var delsortPage = new Morebits.wiki.page('Wikipedia:WikiProject Deletion sorting/' + cat, 'Adding to list of ' + cat + '-related deletion discussions');
+            delsortPage.setFollowRedirect(true); // In case a category gets renamed
+            delsortPage.load(function (pageobj) {
+                var discussionPage = params.discussionpage;
+                var text = pageobj.getPageText().replace('directly below this line -->', 'directly below this line -->\n{{' + discussionPage + '}}');
+                pageobj.setPageText(text);
+                pageobj.setEditSummary('Listing [[:' + discussionPage + ']].');
+                pageobj.setChangeTags(Twinkle.changeTags);
+                pageobj.setCreateOption('nocreate');
+                pageobj.save(defs[idx].resolve, defs[idx].resolve); // failures aren't important
+            });
+        });
+        return $.when.apply($, defs);
+    };
+    Afd.prototype.patrolPage = function () {
+        if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
+            new Morebits.wiki.page(Morebits.pageNameNorm).triage();
+        }
+        return $.Deferred().resolve(); // XXX
+    };
+    Afd.prototype.getNotifyText = function () {
+        return utils.makeTemplate('subst:afd notice', {
+            1: Morebits.pageNameNorm,
+            order: this.params.numbering ? "|order=&#32;" + this.params.numbering : ''
+        }) + ' ~~~~';
+    };
+    Afd.venueCode = 'afd';
+    Afd.venueLabel = 'AfD (Articles for deletion)';
+    return Afd;
+}(XfdMode));
 var Tfd = /** @class */ (function (_super) {
     __extends(Tfd, _super);
     function Tfd() {
@@ -1454,6 +1823,7 @@ var utils = {
 };
 Xfd.modeList = [
     Rfd,
+    Afd,
     Cfd,
     Rm,
     Cfds,
