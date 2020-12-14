@@ -5268,7 +5268,7 @@ Morebits.batchOperation = function(currentAction) {
 
 /**
  * Given a set of asynchronous functions to run along with their dependencies,
- * figure out an efficient sequence of running them so that multiple functions
+ * run them in an efficient sequence so that multiple functions
  * that don't depend on each other are triggered simultaneously. Where
  * dependencies exist, it ensures that the dependency functions finish running
  * before the dependent function runs. The values resolved by the dependencies
@@ -5277,10 +5277,11 @@ Morebits.batchOperation = function(currentAction) {
  * @memberof Morebits
  * @class
  */
-Morebits.taskManager = function() {
+Morebits.taskManager = function(context) {
 	this.taskDependencyMap = new Map();
 	this.deferreds = new Map();
 	this.allDeferreds = []; // Hack: IE doesn't support Map.prototype.values
+	this.context = context || window;
 
 	/**
 	 * Register a task along with its dependencies (tasks which should have finished
@@ -5310,7 +5311,7 @@ Morebits.taskManager = function() {
 				return self.deferreds.get(dep);
 			});
 			$.when.apply(null, dependencyPromisesArray).then(function() {
-				task.apply(null, arguments).then(function() {
+				task.apply(self.context, arguments).then(function() {
 					self.deferreds.get(task).resolve.apply(null, arguments);
 				});
 			});
