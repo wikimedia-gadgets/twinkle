@@ -121,7 +121,7 @@ var Xfd = /** @class */ (function (_super) {
         this.mode = new mode();
         this.mode.result = this.result;
         this.mode.Window = this.Window;
-        $('#wrong-venue-warn').text(this.mode.getVenueWarning());
+        $('#wrong-venue-warn').text(this.mode.getVenueWarning() || '');
         form.previewer.closePreview();
         var fieldset = this.mode.generateFieldset();
         var renderedFieldset = fieldset.render();
@@ -277,7 +277,7 @@ var XfdMode = /** @class */ (function () {
     };
     // Should be called after notifyTalkPage() which may unset this.params.intialContrib
     XfdMode.prototype.addToLog = function () {
-        var params = this.params, initialContrib = params.initialContrib;
+        var params = this.params;
         if (!Twinkle.getPref('logXfdNominations') ||
             Twinkle.getPref('noLogOnXfdNomination').indexOf(params.venue) !== -1) {
             return $.Deferred().resolve();
@@ -473,7 +473,7 @@ var Afd = /** @class */ (function (_super) {
             Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
             setTimeout(function () {
                 window.location.href = mw.util.getUrl(_this.params.discussionpage);
-            }, 50000);
+            }, Morebits.wiki.actionCompleted.timeOut);
         });
     };
     Afd.prototype.preprocessParams = function () {
@@ -543,7 +543,7 @@ var Afd = /** @class */ (function (_super) {
             var textNoAfd = text.replace(/<!--.*AfD.*\n\{\{(?:Article for deletion\/dated|AfDM).*\}\}\n<!--.*(?:\n<!--.*)?AfD.*(?:\s*\n)?/g, '');
             if (text !== textNoAfd) {
                 if (confirm('An AfD tag was found on this article. Maybe someone beat you to it.  \nClick OK to replace the current AfD tag (not recommended), or Cancel to abandon your nomination.')) {
-                    text = textNoAfd;
+                    pageobj.setPageText(textNoAfd);
                 }
                 else {
                     statelem.error('Article already tagged with AfD tag, and you chose to abort');
@@ -783,7 +783,7 @@ var Tfd = /** @class */ (function (_super) {
             Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
             setTimeout(function () {
                 window.location.href = mw.util.getUrl(_this.params.logpage);
-            }, 50000);
+            }, Morebits.wiki.actionCompleted.timeOut);
         });
     };
     Tfd.prototype.tagPage = function () {
@@ -1031,7 +1031,7 @@ var Ffd = /** @class */ (function (_super) {
             Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
             setTimeout(function () {
                 window.location.href = mw.util.getUrl(_this.params.logpage);
-            }, 50000);
+            }, Morebits.wiki.actionCompleted.timeOut);
         });
     };
     Ffd.prototype.tagPage = function () {
@@ -1190,10 +1190,6 @@ var Cfd = /** @class */ (function (_super) {
         if (this.params.cfdtarget2) {
             this.params.cfdtarget2 = utils.stripNs(this.params.cfdtarget2);
         }
-    };
-    Cfd.prototype.evaluate = function () {
-        var _this = this;
-        _super.prototype.evaluate.call(this);
         // Used for customized actions in edit summaries and the notification template
         var summaryActions = {
             'cfd': 'deletion',
@@ -1206,6 +1202,10 @@ var Cfd = /** @class */ (function (_super) {
         };
         this.params.action = summaryActions[this.params.xfdcat];
         this.params.stub = mw.config.get('wgNamespaceNumber') !== 14;
+    };
+    Cfd.prototype.evaluate = function () {
+        var _this = this;
+        _super.prototype.evaluate.call(this);
         var tm = new Morebits.taskManager(this);
         tm.add(this.tagPage, []);
         tm.add(this.addToList, [this.tagPage]);
@@ -1216,7 +1216,7 @@ var Cfd = /** @class */ (function (_super) {
             Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
             setTimeout(function () {
                 window.location.href = mw.util.getUrl(_this.params.logpage);
-            }, 50000);
+            }, Morebits.wiki.actionCompleted.timeOut);
         });
     };
     Cfd.prototype.tagPage = function () {
@@ -1374,7 +1374,7 @@ var Cfds = /** @class */ (function (_super) {
             Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
             setTimeout(function () {
                 window.location.href = mw.util.getUrl(_this.params.logpage);
-            }, 50000);
+            }, Morebits.wiki.actionCompleted.timeOut);
         });
     };
     Cfds.prototype.tagPage = function () {
@@ -1402,7 +1402,6 @@ var Cfds = /** @class */ (function (_super) {
     };
     Cfds.prototype.addToList = function () {
         var _this = this;
-        var params = this.params;
         var def = $.Deferred();
         var pageobj = new Morebits.wiki.page('Wikipedia:Categories for discussion/Speedy', 'Adding discussion to the list');
         pageobj.setFollowRedirect(true);
@@ -1509,7 +1508,7 @@ var Mfd = /** @class */ (function (_super) {
             Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
             setTimeout(function () {
                 window.location.href = mw.util.getUrl(_this.params.discussionpage);
-            }, 50000);
+            }, Morebits.wiki.actionCompleted.timeOut);
         });
     };
     Mfd.prototype.determineDiscussionPage = function () {
@@ -1594,7 +1593,6 @@ var Mfd = /** @class */ (function (_super) {
         var def = $.Deferred();
         var pageobj = new Morebits.wiki.page(params.discussionpage, 'Creating deletion discussion page');
         pageobj.load(function (pageobj) {
-            var params = pageobj.getCallbackParameters();
             pageobj.setPageText(_this.getDiscussionWikitext());
             pageobj.setEditSummary('Creating deletion discussion page for [[:' + Morebits.pageNameNorm + ']].');
             pageobj.setChangeTags(Twinkle.changeTags);
@@ -1780,8 +1778,8 @@ var Rfd = /** @class */ (function (_super) {
             }
         });
     };
-    // Creates: params.tagText
     Rfd.prototype.tagPage = function () {
+        var _this = this;
         var def = $.Deferred();
         var params = this.params;
         var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Adding deletion tag to redirect');
@@ -1799,7 +1797,7 @@ var Rfd = /** @class */ (function (_super) {
                 pageobj.save(def.resolve, def.reject);
             }
             else {
-                Xfd.autoEditRequest(pageobj, params).then(def.resolve, def.reject);
+                _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
             }
         });
         return def;
@@ -1997,30 +1995,6 @@ var Rm = /** @class */ (function (_super) {
     return Rm;
 }(XfdMode));
 var obj_entries = Twinkle.shims.obj_entries;
-var Template = /** @class */ (function (_super) {
-    __extends(Template, _super);
-    function Template(name, parameters) {
-        if (parameters === void 0) { parameters = {}; }
-        var _this = _super.call(this) || this;
-        _this.name = name;
-        _this.parameters = obj_entries(parameters).filter(function (_a) {
-            var k = _a[0], v = _a[1];
-            return !!v;
-        });
-        return _this;
-    }
-    Template.prototype.addParam = function (name, value) {
-        this.parameters.push([name, value]);
-    };
-    Template.prototype.toString = function () {
-        return "{{" + this.name +
-            this.parameters.map(function (_a) {
-                var name = _a[0], value = _a[1];
-                return "|" + name + "=" + value;
-            }).join('') + '}}';
-    };
-    return Template;
-}(String));
 var utils = {
     /** Get ordinal number figure */
     num2order: function (num) {
@@ -2065,7 +2039,7 @@ var utils = {
     toTLACase: function (venue) {
         return venue
             .toString()
-            // Everybody up, inclduing rm and the terminal s in cfds
+            // Everybody up, including rm and the terminal s in cfds
             .toUpperCase()
             // Lowercase the central f in a given TLA and normalize sfd-t and sfr-t
             .replace(/(.)F(.)(?:-.)?/, '$1f$2');
@@ -2092,15 +2066,6 @@ var utils = {
         return '{{' + name + parameterText + '}}';
     }
 };
-Xfd.modeList = [
-    Rfd,
-    Afd,
-    Cfd,
-    Tfd,
-    Rm,
-    Cfds,
-    Mfd,
-    Ffd
-];
+Xfd.modeList = [Rfd, Afd, Cfd, Tfd, Rm, Cfds, Mfd, Ffd];
 Twinkle.addInitCallback(function () { new Xfd(); }, 'XFD');
 //# sourceMappingURL=xfd.js.map
