@@ -692,8 +692,280 @@ var Tfd = /** @class */ (function (_super) {
     Tfd.prototype.getFieldsetLabel = function () {
         return 'Templates for discussion';
     };
+    Tfd.prototype.getMenuTooltip = function () {
+        return 'Start a discussion for deleting or merging this template';
+    };
     Tfd.isDefaultChoice = function () {
         return [10, 828].indexOf(mw.config.get('wgNamespaceNumber')) !== -1;
+    };
+    Tfd.prototype.generateFieldset = function () {
+        this.fieldset = _super.prototype.generateFieldset.call(this);
+        var templateOrModule = mw.config.get('wgPageContentModel') === 'Scribunto' ? 'module' : 'template';
+        this.fieldset.append({
+            type: 'select',
+            label: 'Choose type of action wanted: ',
+            name: 'xfdcat',
+            event: function (e) {
+                var target = e.target, tfdtarget = target.form.tfdtarget;
+                // add/remove extra input box
+                if (target.value === 'tfm' && !tfdtarget) {
+                    tfdtarget = new Morebits.quickForm.element({
+                        name: 'tfdtarget',
+                        type: 'input',
+                        label: 'Other ' + templateOrModule + ' to be merged: ',
+                        tooltip: 'Required. Should not include the ' + Morebits.string.toUpperCaseFirstChar(templateOrModule) + ': namespace prefix.',
+                        required: true
+                    });
+                    target.parentNode.appendChild(tfdtarget.render());
+                }
+                else {
+                    $(Morebits.quickForm.getElementContainer(tfdtarget)).remove();
+                    tfdtarget = null;
+                }
+            },
+            list: [
+                { type: 'option', label: 'Deletion', value: 'tfd', selected: true },
+                { type: 'option', label: 'Merge', value: 'tfm' }
+            ]
+        });
+        this.fieldset.append({
+            type: 'select',
+            name: 'templatetype',
+            label: 'Deletion tag display style: ',
+            tooltip: 'Which <code>type=</code> parameter to pass to the TfD tag template.',
+            list: templateOrModule === 'module' ? [
+                { type: 'option', value: 'module', label: 'Module', selected: true }
+            ] : [
+                { type: 'option', value: 'standard', label: 'Standard', selected: true },
+                { type: 'option', value: 'sidebar', label: 'Sidebar/infobox', selected: !!$('.infobox').length },
+                { type: 'option', value: 'inline', label: 'Inline template', selected: !!$('.mw-parser-output > p .Inline-Template').length },
+                { type: 'option', value: 'tiny', label: 'Tiny inline' }
+            ]
+        });
+        this.fieldset.append({
+            type: 'checkbox',
+            list: [
+                {
+                    label: 'Wrap deletion tag with <noinclude> (for substituted templates only)',
+                    value: 'noinclude',
+                    name: 'noinclude',
+                    tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t get substituted along with the template.',
+                    disabled: templateOrModule === 'module',
+                    checked: !!$('.box-Subst_only').length // Default to checked if page carries {{subst only}}
+                }
+            ]
+        });
+        this.appendReasonArea();
+        return this.fieldset;
+    };
+    Tfd.prototype.preprocessParams = function () {
+        if (this.params.tfdtarget) {
+            this.params.tfdtarget = utils.stripNs(this.params.tfdtarget);
+        }
+        // Modules can't be tagged, TfD instructions are to place on /doc subpage
+        this.params.scribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
+        if (this.params.xfdcat === 'tfm') {
+            this.params.otherTemplateName = (this.params.scribunto ? 'Module:' : 'Template:') + this.params.tfdtarget;
+        }
+    };
+    Tfd.prototype.evaluate = function () {
+        var _this = this;
+        _super.prototype.evaluate.call(this);
+        var tm = new Morebits.taskManager(this);
+        tm.add(this.tagPage, []);
+        tm.add(this.addToList, [this.tagPage]);
+        tm.add(this.watchModule, []);
+        tm.add(this.fetchCreatorInfo, []);
+        tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
+        tm.add(this.notifyOtherCreator, [this.fetchCreatorInfo]);
+        tm.add(this.addToLog, [this.notifyCreator]);
+        tm.execute().then(function () {
+            Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
+            setTimeout(function () {
+                window.location.href = mw.util.getUrl(_this.params.logpage);
+            }, 50000);
+        });
+    };
+    Tfd.prototype.tagPage = function () {
+        return this.params.xfdcat === 'tfm' ? this.tagPagesForMerge() : this.tagPageForDeletion();
+    };
+    // One of the oddities due to our choice of not relying on the local time.
+    Tfd.prototype.setLogPageAndDiscussionPage = function (timestamp) {
+        var date = new Morebits.date(timestamp);
+        this.params.logpage = 'Wikipedia:Templates for discussion/Log/' + date.format('YYYY MMMM D', 'utc');
+        this.params.discussionpage = this.params.logpage + '#' + Morebits.pageNameNorm;
+    };
+    Tfd.prototype.tagPageForDeletion = function () {
+        var _this = this;
+        var params = this.params;
+        var def = $.Deferred();
+        var pageobj = new Morebits.wiki.page(Morebits.pageNameNorm + (params.scribunto ? '/doc' : ''), 'Tagging ' + (params.scribunto ? 'module documentation' : 'template') + ' with ' +
+            'deletion tag');
+        pageobj.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
+        pageobj.load(function (pageobj) {
+            _this.setLogPageAndDiscussionPage(pageobj.getLoadTime());
+            var text = pageobj.getPageText();
+            var tableNewline = params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : ''; // No newline for inline
+            params.tagText = (params.noinclude ? '<noinclude>' : '') + '{{subst:template for discussion|help=off' +
+                (params.templatetype !== 'standard' ? '|type=' + params.templatetype : '') +
+                (params.noinclude ? '}}</noinclude>' : '}}') + tableNewline;
+            if (pageobj.canEdit()) {
+                pageobj.setPageText(params.tagText + text);
+                pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
+                pageobj.setChangeTags(Twinkle.changeTags);
+                pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
+                if (params.scribunto) {
+                    pageobj.setCreateOption('recreate'); // Module /doc might not exist
+                }
+                pageobj.save(def.resolve, def.reject);
+            }
+            else {
+                _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
+            }
+        });
+        return def;
+    };
+    Tfd.prototype.tagPagesForMerge = function () {
+        var _this = this;
+        var params = this.params;
+        var defs = [$.Deferred(), $.Deferred()];
+        var docOrNot = params.scribunto ? '/doc' : '';
+        var moduleDocOrTemplate = params.scribunto ? 'module documentation' : 'template';
+        var pageobj = new Morebits.wiki.page("" + Morebits.pageNameNorm + docOrNot, "Tagging " + moduleDocOrTemplate + " with merge tag");
+        pageobj.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
+        pageobj.load(function (pageobj) {
+            _this.setLogPageAndDiscussionPage(pageobj.getLoadTime());
+            _this.tagForMerge(pageobj, _this.params).then(defs[0].resolve, defs[0].reject);
+        });
+        var otherpageobj = new Morebits.wiki.page("" + params.otherTemplateName + docOrNot, "Tagging other " + moduleDocOrTemplate + " with merge tag");
+        otherpageobj.setFollowRedirect(true);
+        otherpageobj.load(function (otherpageobj) {
+            _this.setLogPageAndDiscussionPage(pageobj.getLoadTime());
+            _this.tagForMerge(otherpageobj, $.extend({}, params, {
+                otherTemplateName: Morebits.pageNameNorm
+            })).then(defs[1].resolve, defs[1].reject);
+        });
+        return $.when.apply($, defs);
+    };
+    /**
+     * @param {Morebits.wiki.page} pageobj - pageobj should be already loaded
+     * @param {Object} params - we can't just use this.params since
+     * that would be incorrect when tagging the "other" page
+     */
+    Tfd.prototype.tagForMerge = function (pageobj, params) {
+        var def = $.Deferred();
+        var text = pageobj.getPageText();
+        var tableNewline = params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : ''; // No newline for inline
+        params.tagText = (params.noinclude ? '<noinclude>' : '') + '{{subst:tfm|help=off|' +
+            (params.templatetype !== 'standard' ? 'type=' + params.templatetype + '|' : '') + '1=' + params.otherTemplateName.replace(/^(?:Template|Module):/, '') +
+            (params.noinclude ? '}}</noinclude>' : '}}') + tableNewline;
+        if (pageobj.canEdit()) {
+            pageobj.setPageText(params.tagText + text);
+            pageobj.setEditSummary('Listed for merging with [[:' + params.otherTemplateName + ']]; see [[:' + params.discussionpage + ']].');
+            pageobj.setChangeTags(Twinkle.changeTags);
+            pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
+            if (params.scribunto) {
+                pageobj.setCreateOption('recreate'); // Module /doc might not exist
+            }
+            pageobj.save(def.resolve, def.reject);
+        }
+        else {
+            this.autoEditRequest(pageobj).then(def.resolve, def.reject);
+        }
+        return def;
+    };
+    Tfd.prototype.addToList = function () {
+        var _this = this;
+        var params = this.params;
+        var def = $.Deferred();
+        var pageobj = new Morebits.wiki.page(params.logpage, "Adding discussion to today's log");
+        pageobj.setFollowRedirect(true);
+        pageobj.load(function (pageobj) {
+            var statelem = pageobj.getStatusElement();
+            var added_data = _this.getDiscussionWikitext();
+            var text;
+            // add date header if the log is found to be empty (a bot should do this automatically)
+            if (!pageobj.exists()) {
+                text = '{{subst:TfD log}}\n' + added_data;
+            }
+            else {
+                var old_text = pageobj.getPageText();
+                text = old_text.replace('-->', '-->\n' + added_data);
+                if (text === old_text) {
+                    statelem.error('failed to find target spot for the discussion');
+                    return;
+                }
+            }
+            pageobj.setPageText(text);
+            pageobj.setEditSummary('Adding ' + (params.xfdcat === 'tfd' ? 'deletion nomination' : 'merge listing') + ' of [[:' + Morebits.pageNameNorm + ']].');
+            pageobj.setChangeTags(Twinkle.changeTags);
+            pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
+            pageobj.setCreateOption('recreate');
+            pageobj.save(function () {
+                Xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+                def.resolve();
+            }, def.reject);
+        });
+        return def;
+    };
+    Tfd.prototype.notifyOtherCreator = function () {
+        var _this = this;
+        var def = $.Deferred();
+        if (!this.params.otherTemplateName) {
+            return def.resolve();
+        }
+        new Morebits.wiki.page(this.params.otherTemplateName, 'Finding other page creator').lookupCreation(function (page) {
+            var otherpagecreator = page.getCreator();
+            page.getStatusElement().info('Found ' + otherpagecreator);
+            if (otherpagecreator === _this.params.initialContrib) {
+                return def.resolve();
+            }
+            _this.notifyTalkPage(otherpagecreator).then(def.resolve, def.reject);
+        });
+        return def;
+    };
+    Tfd.prototype.watchModule = function () {
+        var params = this.params;
+        if (!params.scribunto) {
+            return $.Deferred().resolve();
+        }
+        var watchPref = Twinkle.getPref('xfdWatchPage');
+        // action=watch has no way to rely on user
+        // preferences (T262912), so we do it manually.
+        // The watchdefault pref appears to reliably return '1' (string),
+        // but that's not consistent among prefs so might as well be "correct"
+        var watchModule = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
+        if (!watchModule) {
+            return $.Deferred().resolve();
+        }
+        var watch_query = {
+            action: 'watch',
+            titles: [mw.config.get('wgPageName')],
+            token: mw.user.tokens.get('watchToken'),
+            // Expiry (note: mb.w.api delete params with value false)
+            watchlistexpiry: watchPref !== 'default' && watchPref !== 'yes' && watchPref
+        };
+        if (params.xfdcat === 'tfm') {
+            // Watch other module too
+            watch_query.titles.push(params.otherTemplateName);
+        }
+        return new Morebits.wiki.api('Adding Module to watchlist', watch_query).post();
+    };
+    Tfd.prototype.getDiscussionWikitext = function () {
+        return utils.makeTemplate('subst:' + this.params.xfdcat + '2', {
+            text: Morebits.string.formatReasonText(this.params.reason, true),
+            1: mw.config.get('wgTitle'),
+            module: this.params.scribunto ? 'Module:' : '',
+            2: this.params.tfdtarget
+        });
+    };
+    Tfd.prototype.getNotifyText = function () {
+        var text = "{{subst:tfd notice";
+        if (this.params.xfdcat === 'tfm') {
+            text = '\n{{subst:Tfm notice|2=' + this.params.tfdtarget;
+        }
+        text += "|1=" + Morebits.pageNameNorm + "}} ~~~~";
+        return text;
     };
     Tfd.prototype.getUserspaceLoggingExtraInfo = function () {
         var params = this.params, text = '';
@@ -708,22 +980,6 @@ var Tfd = /** @class */ (function (_super) {
                 text += params.tfdtarget + ']]';
             }
         }
-        return text;
-    };
-    Tfd.prototype.preprocessParams = function () {
-        if (this.params.tfdtarget) {
-            this.params.tfdtarget = utils.stripNs(this.params.tfdtarget);
-        }
-    };
-    Tfd.prototype.getDiscussionWikitext = function () {
-        return '';
-    };
-    Tfd.prototype.getNotifyText = function () {
-        var text = "{{subst:tfd notice";
-        if (this.params.xfdcat === 'tfm') {
-            text = '\n{{subst:Tfm notice|2=' + this.params.tfdtarget;
-        }
-        text += "|1=" + Morebits.pageNameNorm + "}} ~~~~";
         return text;
     };
     Tfd.venueCode = 'tfd';
@@ -1840,6 +2096,7 @@ Xfd.modeList = [
     Rfd,
     Afd,
     Cfd,
+    Tfd,
     Rm,
     Cfds,
     Mfd,
