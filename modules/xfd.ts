@@ -128,7 +128,7 @@ class Xfd extends TwinkleModule {
 		this.mode.result = this.result;
 		this.mode.Window = this.Window;
 
-		$('#wrong-venue-warn').text(this.mode.getVenueWarning());
+		$('#wrong-venue-warn').text(this.mode.getVenueWarning() || '');
 		form.previewer.closePreview();
 
 		let fieldset = this.mode.generateFieldset();
@@ -314,8 +314,7 @@ abstract class XfdMode {
 
 	// Should be called after notifyTalkPage() which may unset this.params.intialContrib
 	addToLog() {
-		let params = this.params,
-			initialContrib = params.initialContrib;
+		let params = this.params;
 
 		if (!Twinkle.getPref('logXfdNominations') ||
 			Twinkle.getPref('noLogOnXfdNomination').indexOf(params.venue) !== -1) {
@@ -538,7 +537,7 @@ class Afd extends XfdMode {
 			Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
 			setTimeout(() => {
 				window.location.href = mw.util.getUrl(this.params.discussionpage);
-			}, 50000);
+			}, Morebits.wiki.actionCompleted.timeOut);
 		});
 	}
 
@@ -618,7 +617,7 @@ class Afd extends XfdMode {
 			var textNoAfd = text.replace(/<!--.*AfD.*\n\{\{(?:Article for deletion\/dated|AfDM).*\}\}\n<!--.*(?:\n<!--.*)?AfD.*(?:\s*\n)?/g, '');
 			if (text !== textNoAfd) {
 				if (confirm('An AfD tag was found on this article. Maybe someone beat you to it.  \nClick OK to replace the current AfD tag (not recommended), or Cancel to abandon your nomination.')) {
-					text = textNoAfd;
+					pageobj.setPageText(textNoAfd);
 				} else {
 					statelem.error('Article already tagged with AfD tag, and you chose to abort');
 					window.location.reload();
@@ -875,7 +874,7 @@ class Tfd extends XfdMode {
 			Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
 			setTimeout(() => {
 				window.location.href = mw.util.getUrl(this.params.logpage);
-			}, 50000);
+			}, Morebits.wiki.actionCompleted.timeOut);
 		});
 	}
 
@@ -1114,13 +1113,13 @@ class Ffd extends XfdMode {
 		return 'Start a discussion for deleting this file';
 	}
 
-	public getVenueWarning(): string | void {
+	getVenueWarning() {
 		if (mw.config.get('wgNamespaceNumber') !== 6) {
 			return 'FFD is selected but this page doesn\'t look like a file!';
 		}
 	}
 
-	public generateFieldset(): quickFormElement {
+	generateFieldset(): quickFormElement {
 		this.fieldset = super.generateFieldset();
 		this.appendReasonArea();
 		return this.fieldset;
@@ -1134,7 +1133,7 @@ class Ffd extends XfdMode {
 		});
 	}
 
-	public evaluate() {
+	evaluate() {
 		super.evaluate();
 
 		let tm = new Morebits.taskManager(this);
@@ -1147,7 +1146,7 @@ class Ffd extends XfdMode {
 			Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
 			setTimeout(() => {
 				window.location.href = mw.util.getUrl(this.params.logpage);
-			}, 50000);
+			}, Morebits.wiki.actionCompleted.timeOut);
 		});
 	}
 
@@ -1234,13 +1233,13 @@ class Cfd extends XfdMode {
 		return 'Nominate article for deletion or move';
 	}
 
-	public getVenueWarning(): string {
+	getVenueWarning(): string {
 		if ([ 10, 14 ].indexOf(mw.config.get('wgNamespaceNumber')) === -1) {
 			return 'CfD is only for categories and stub templates.';
 		}
 	}
 
-	public generateFieldset(): quickFormElement {
+	generateFieldset(): quickFormElement {
 		this.fieldset = super.generateFieldset();
 		var isCategory = mw.config.get('wgNamespaceNumber') === 14;
 		this.fieldset.append({
@@ -1315,11 +1314,6 @@ class Cfd extends XfdMode {
 		if (this.params.cfdtarget2) {
 			this.params.cfdtarget2 = utils.stripNs(this.params.cfdtarget2);
 		}
-	}
-
-	evaluate() {
-		super.evaluate();
-
 		// Used for customized actions in edit summaries and the notification template
 		let summaryActions = {
 			'cfd': 'deletion',
@@ -1332,6 +1326,10 @@ class Cfd extends XfdMode {
 		};
 		this.params.action = summaryActions[this.params.xfdcat];
 		this.params.stub = mw.config.get('wgNamespaceNumber') !== 14;
+	}
+
+	evaluate() {
+		super.evaluate();
 
 		let tm = new Morebits.taskManager(this);
 		tm.add(this.tagPage, []);
@@ -1343,7 +1341,7 @@ class Cfd extends XfdMode {
 			Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
 			setTimeout(() => {
 				window.location.href = mw.util.getUrl(this.params.logpage);
-			}, 50000);
+			}, Morebits.wiki.actionCompleted.timeOut);
 		});
 	}
 
@@ -1466,13 +1464,13 @@ class Cfds extends XfdMode {
 		return 'Categories for speedy renaming';
 	}
 
-	public getVenueWarning() {
+	getVenueWarning() {
 		if ([ 10, 14 ].indexOf(mw.config.get('wgNamespaceNumber')) === -1) {
 			return 'CfD is only for categories and stub templates.';
 		}
 	}
 
-	public generateFieldset(): quickFormElement {
+	generateFieldset(): quickFormElement {
 		this.fieldset = super.generateFieldset();
 		this.fieldset.append({
 			type: 'select',
@@ -1516,7 +1514,7 @@ class Cfds extends XfdMode {
 			Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
 			setTimeout(() => {
 				window.location.href = mw.util.getUrl(this.params.logpage);
-			}, 50000);
+			}, Morebits.wiki.actionCompleted.timeOut);
 		});
 
 	}
@@ -1544,7 +1542,6 @@ class Cfds extends XfdMode {
 	}
 
 	addToList() {
-		let params = this.params;
 		let def = $.Deferred();
 		let pageobj = new Morebits.wiki.page('Wikipedia:Categories for discussion/Speedy', 'Adding discussion to the list');
 		pageobj.setFollowRedirect(true);
@@ -1659,7 +1656,7 @@ class Mfd extends XfdMode {
 			Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
 			setTimeout(() => {
 				window.location.href = mw.util.getUrl(this.params.discussionpage);
-			}, 50000);
+			}, Morebits.wiki.actionCompleted.timeOut);
 		});
 	}
 
@@ -1751,8 +1748,6 @@ class Mfd extends XfdMode {
 		let def = $.Deferred();
 		let pageobj = new Morebits.wiki.page(params.discussionpage, 'Creating deletion discussion page');
 		pageobj.load((pageobj) => {
-			var params = pageobj.getCallbackParameters();
-
 			pageobj.setPageText(this.getDiscussionWikitext());
 			pageobj.setEditSummary('Creating deletion discussion page for [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
@@ -1864,7 +1859,7 @@ class Rfd extends XfdMode {
 		return text;
 	}
 
-	public generateFieldset(): quickFormElement {
+	generateFieldset(): quickFormElement {
 		this.fieldset = super.generateFieldset();
 		this.fieldset.append({
 			type: 'checkbox',
@@ -1889,7 +1884,7 @@ class Rfd extends XfdMode {
 		});
 	}
 
-	public evaluate() {
+	evaluate() {
 		super.evaluate();
 		let tm = new Morebits.taskManager(this);
 		tm.add(this.findTarget, []);
@@ -1948,7 +1943,6 @@ class Rfd extends XfdMode {
 		});
 	}
 
-	// Creates: params.tagText
 	tagPage(): JQuery.Promise<void> {
 		let def = $.Deferred();
 		let params = this.params;
@@ -1968,7 +1962,7 @@ class Rfd extends XfdMode {
 				pageobj.setCreateOption('nocreate');
 				pageobj.save(def.resolve, def.reject);
 			} else {
-				Xfd.autoEditRequest(pageobj, params).then(def.resolve, def.reject);
+				this.autoEditRequest(pageobj).then(def.resolve, def.reject);
 			}
 		});
 		return def;
@@ -2050,17 +2044,17 @@ class Rm extends XfdMode {
 	static venueCode = 'rm';
 	static venueLabel = 'RM (Requested moves)';
 
-	public getFieldsetLabel() {
+	getFieldsetLabel() {
 		return 'Requested moves';
 	}
 
-	public getVenueWarning(): string | void {
+	getVenueWarning(): string | void {
 		if (mw.config.get('wgNamespaceNumber') === 14) { // category
 			return 'Please use CfD or CfDS for category renames.';
 		}
 	}
 
-	public generateFieldset(): quickFormElement {
+	generateFieldset(): quickFormElement {
 		this.fieldset = super.generateFieldset();
 		this.fieldset.append({
 			type: 'checkbox',
@@ -2088,7 +2082,7 @@ class Rm extends XfdMode {
 		return this.fieldset;
 	}
 
-	public getDiscussionWikitext(): string {
+	getDiscussionWikitext(): string {
 		let pageName = new mw.Title(Morebits.pageNameNorm).getSubjectPage().toText();
 		let params = this.params;
 		return (params.rmtr ?
@@ -2171,26 +2165,6 @@ class Rm extends XfdMode {
 
 const {obj_entries} = Twinkle.shims;
 
-class Template extends String {
-	parameters: [name: string, value: string][]
-	name: string
-	constructor(name: string, parameters: any = {}) {
-		super();
-		this.name = name;
-		this.parameters = obj_entries(parameters).filter(([k, v]) => !!v);
-	}
-	addParam(name: string, value: string) {
-		this.parameters.push([name, value]);
-	}
-	toString() {
-		return `{{${this.name}` +
-			this.parameters.map(([name, value]) => {
-				return `|${name}=${value}`;
-			}).join('') + '}}';
-	}
-}
-
-
 let utils = {
 	/** Get ordinal number figure */
 	num2order(num: number): string {
@@ -2238,7 +2212,7 @@ let utils = {
 	toTLACase(venue: string): string {
 		return venue
 			.toString()
-			// Everybody up, inclduing rm and the terminal s in cfds
+			// Everybody up, including rm and the terminal s in cfds
 			.toUpperCase()
 			// Lowercase the central f in a given TLA and normalize sfd-t and sfr-t
 			.replace(/(.)F(.)(?:-.)?/, '$1f$2');
@@ -2262,15 +2236,6 @@ let utils = {
 };
 
 
-Xfd.modeList = [
-	Rfd,
-	Afd,
-	Cfd,
-	Tfd,
-	Rm,
-	Cfds,
-	Mfd,
-	Ffd
-];
+Xfd.modeList = [ Rfd, Afd, Cfd, Tfd, Rm, Cfds, Mfd, Ffd ];
 
 Twinkle.addInitCallback(function() { new Xfd(); }, 'XFD');
