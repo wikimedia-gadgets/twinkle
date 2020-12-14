@@ -988,7 +988,7 @@ Twinkle.xfd.callbacks = {
 					if (params.tfdtarget) {
 						var contentModel = mw.config.get('wgPageContentModel') === 'Scribunto' ? 'Module:' : 'Template:';
 						appendText += '; Other ' + contentModel.toLowerCase() + ' [[';
-						if (!/^:?(?:template|module):/i.test(params.tfdtarget)) {
+						if (!new RegExp('^:?' + Morebits.namespaceRegex([10, 828]) + ':', 'i').test(params.tfdtarget)) {
 							appendText += contentModel;
 						}
 						appendText += params.tfdtarget + ']]';
@@ -1398,7 +1398,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			params.tagText = '{{subst:tfm|help=off|' + (params.templatetype !== 'standard' ? 'type=' + params.templatetype + '|' : '') +
-				'1=' + params.otherTemplateName.replace(/^(?:Template|Module):/, '') + '}}';
+				'1=' + params.otherTemplateName.replace(new RegExp('^' + Morebits.namespaceRegex([10, 828]) + ':'), '') + '}}';
 
 			if (pageobj.getContentModel() === 'sanitized-css') {
 				params.tagText = '/* ' + params.tagText + ' */';
