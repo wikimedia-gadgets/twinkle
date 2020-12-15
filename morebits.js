@@ -3714,7 +3714,7 @@ Morebits.wiki.page = function(pageName, status) {
 	};
 
 	var fnLookupNonRedirectCreator = function() {
-		var response = ctx.ookupCreationApi.getResponse().query;
+		var response = ctx.lookupCreationApi.getResponse().query;
 		var revs = response.pages[0].revisions;
 
 		revs.forEach(function(rev) {
