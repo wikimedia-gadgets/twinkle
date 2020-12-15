@@ -105,6 +105,13 @@ QUnit.test('Morebits.wikitext.page', assert => {
 			params: ['Fee.svg', 'too pretty']
 		},
 		{
+			name: 'simple gallery',
+			method: 'commentOutImage',
+			input: '<gallery>\nFile:Fee.svg|1\nFile:Gvs.eef|2\n</gallery>',
+			expected: '<gallery>\n<!-- too pretty: File:Fee.svg|1 -->\nFile:Gvs.eef|2\n</gallery>',
+			params: ['Fee.svg', 'too pretty']
+		},
+		{
 			name: 'simple',
 			method: 'addToImageComment',
 			input: text,
@@ -131,6 +138,20 @@ QUnit.test('Morebits.wikitext.page', assert => {
 			input: 'O, [[Juliet|she]] [[juliet|doth]] {{plural|teach}} [[Romeo|the]] [[:Juliet|torches]] [[juliet|to]] burn bright!',
 			expected: 'O, she doth {{plural|teach}} [[Romeo|the]] torches to burn bright!',
 			params: ['juliet']
+		},
+		{
+			name: 'multiple',
+			method: 'commentOutImage',
+			input: 'O, [[File:Fee.svg]] she [[File:Fee.svg|doth|teach]] the [[File:Fee.svg|torches]] to burn bright!',
+			expected: 'O, <!-- [[File:Fee.svg]] --> she <!-- [[File:Fee.svg|doth|teach]] --> the <!-- [[File:Fee.svg|torches]] --> to burn bright!',
+			params: ['Fee.svg']
+		},
+		{
+			name: 'multiple gallery',
+			method: 'commentOutImage',
+			input: '<gallery>\nFile:Fee.svg|1\nFile:Gvs.eef|2\nFile:Fee.svg    |\n</gallery>',
+			expected: '<gallery>\n<!-- too pretty: File:Fee.svg|1 -->\nFile:Gvs.eef|2\n<!-- too pretty: File:Fee.svg    | -->\n</gallery>',
+			params: ['Fee.svg', 'too pretty']
 		},
 		{
 			name: 'multiple',
@@ -229,6 +250,34 @@ QUnit.test('Morebits.wikitext.page', assert => {
 			input: 'O, she doth {{Template:plural|teach}} the torches to burn bright!',
 			expected: 'O, she doth  the torches to burn bright!',
 			params: ['Template:plural']
+		},
+		{
+			name: 'Similar names',
+			method: 'commentOutImage',
+			input: 'O, [[File:Fee.tif|she]] doth [[File:Fee.tiff|teach]] the [[File:Fee.tifff]] torches to burn bright!',
+			expected: 'O, <!-- [[File:Fee.tif|she]] --> doth [[File:Fee.tiff|teach]] the [[File:Fee.tifff]] torches to burn bright!',
+			params: ['Fee.tif']
+		},
+		{
+			name: 'Similar gallery',
+			method: 'commentOutImage',
+			input: '<gallery>\nFile:Fee.tif|1\nFile:Fee.tiff|2\nFile:Fee.tifff    |\n</gallery>',
+			expected: '<gallery>\n<!-- File:Fee.tif|1 -->\nFile:Fee.tiff|2\nFile:Fee.tifff    |\n</gallery>',
+			params: ['Fee.tif']
+		},
+		{
+			name: 'Similar names',
+			method: 'addToImageComment',
+			input: 'O, [[File:Fee.tif|she]] doth [[File:Fee.tiff|teach]] the [[File:Fee.tifff]] torches to burn bright!',
+			expected: 'O, [[File:Fee.tif|she|thumb|size=42]] doth [[File:Fee.tiff|teach]] the [[File:Fee.tifff]] torches to burn bright!',
+			params: ['Fee.tif', 'thumb|size=42']
+		},
+		{
+			name: 'Similar names',
+			method: 'removeTemplate',
+			input: 'O, {{plural|she|}} doth {{pluralize|teach}} the {{plural  | torches}} t{{plural \n\n |}}o {{plural temp|burn}} bright!',
+			expected: 'O,  doth {{pluralize|teach}} the  to {{plural temp|burn}} bright!',
+			params: ['plural']
 		}
 	];
 
