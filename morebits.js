@@ -3550,7 +3550,7 @@ Morebits.wiki.page = function(pageName, status) {
 				}
 
 				// only notify user for redirects, not normalization
-				Morebits.status.info('Info', 'Redirected from ' + ctx.pageName + ' to ' + resolvedName);
+				new Morebits.status('Note', 'Redirected from ' + ctx.pageName + ' to ' + resolvedName);
 			}
 
 			ctx.pageName = resolvedName; // update to redirect target or normalized name
