@@ -131,14 +131,23 @@ Morebits.pageNameNorm = mw.config.get('wgPageName').replace(/_/g, ' ');
 
 
 /**
- * Create a string for use in regex matching a page name, regardless of the
- * leading character's capitalization.
+ * Create a string for use in regex matching a page name.  Accounts for
+ * leading character's capitalization, underscores as spaces, and special
+ * characters being escaped.
  *
  * @param {string} pageName - Page name without namespace.
- * @returns {string} - For a page name `Foo bar`, returns the string `[Ff]oo bar`.
+ * @returns {string} - For a page name `Foo bar`, returns the string `[Ff]oo[_ ]bar`.
  */
 Morebits.pageNameRegex = function(pageName) {
-	return '[' + pageName[0].toUpperCase() + pageName[0].toLowerCase() + ']' + pageName.slice(1);
+	if (pageName === '') {
+		return '';
+	}
+	var firstChar = pageName[0],
+		remainder = Morebits.string.escapeRegExp(pageName.slice(1));
+	if (mw.Title.phpCharToUpper(firstChar) !== firstChar.toLowerCase()) {
+		return '[' + mw.Title.phpCharToUpper(firstChar) + firstChar.toLowerCase() + ']' + remainder;
+	}
+	return Morebits.string.escapeRegExp(firstChar) + remainder;
 };
 
 
@@ -1289,7 +1298,7 @@ Morebits.string = {
 
 	/**
 	 * Escapes a string to be used in a RegExp, replacing spaces and
-	 * underscores with `[ _]` as they are often equivalent.
+	 * underscores with `[_ ]` as they are often equivalent.
 	 * Replaced RegExp.escape September 2020.
 	 *
 	 * @param {string} text - String to be escaped.
@@ -4484,8 +4493,7 @@ Morebits.wikitext.page.prototype = {
 	 * @returns {Morebits.wikitext.page}
 	 */
 	removeLink: function(link_target) {
-		var first_char = link_target.substr(0, 1);
-		var link_re_string = '[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + Morebits.string.escapeRegExp(link_target.substr(1));
+		var link_re_string = Morebits.pageNameRegex(link_target);
 
 		var special_ns_re = /^(?:[Ff]ile|[Ii]mage|[Cc]ategory):/;
 		var colon = special_ns_re.test(link_target) ? ':' : ':?';
@@ -4509,8 +4517,7 @@ Morebits.wikitext.page.prototype = {
 		unbinder.unbind('<!--', '-->');
 
 		reason = reason ? reason + ': ' : '';
-		var first_char = image.substr(0, 1);
-		var image_re_string = '[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + Morebits.string.escapeRegExp(image.substr(1));
+		var image_re_string = Morebits.pageNameRegex(image);
 
 		// Check for normal image links, i.e. [[File:Foobar.png|...]]
 		// Will eat the whole link
@@ -4551,13 +4558,8 @@ Morebits.wikitext.page.prototype = {
 	 * @returns {Morebits.wikitext.page}
 	 */
 	addToImageComment: function(image, data) {
-		var first_char = image.substr(0, 1);
-		var first_char_regex = Morebits.string.escapeRegExp(first_char);
-		if (first_char.toUpperCase() !== first_char.toLowerCase()) {
-			first_char_regex = '[' + Morebits.string.escapeRegExp(first_char.toUpperCase()) + Morebits.string.escapeRegExp(first_char.toLowerCase()) + ']';
-		}
-		var image_re_string = '(?:[Ii]mage|[Ff]ile):\\s*' + first_char_regex + Morebits.string.escapeRegExp(image.substr(1));
-		var links_re = new RegExp('\\[\\[' + image_re_string + '\\s*[\\|(?:\\]\\])]');
+		var image_re_string = Morebits.pageNameRegex(image);
+		var links_re = new RegExp('\\[\\[(?:[Ii]mage|[Ff]ile):\\s*' + image_re_string + '\\s*[\\|(?:\\]\\])]');
 		var allLinks = Morebits.string.splitWeightedByKeys(this.text, '[[', ']]');
 		for (var i = 0; i < allLinks.length; ++i) {
 			if (links_re.test(allLinks[i])) {
@@ -4581,9 +4583,8 @@ Morebits.wikitext.page.prototype = {
 	 * @returns {Morebits.wikitext.page}
 	 */
 	removeTemplate: function(template) {
-		var first_char = template.substr(0, 1);
-		var template_re_string = '(?:[Tt]emplate:)?\\s*[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + Morebits.string.escapeRegExp(template.substr(1));
-		var links_re = new RegExp('\\{\\{' + template_re_string + '\\s*[\\|(?:\\}\\})]');
+		var template_re_string = Morebits.pageNameRegex(template);
+		var links_re = new RegExp('\\{\\{(?:[Tt]emplate:)?\\s*[' + template_re_string + '\\s*[\\|(?:\\}\\})]');
 		var allTemplates = Morebits.string.splitWeightedByKeys(this.text, '{{', '}}', [ '{{{', '}}}' ]);
 		for (var i = 0; i < allTemplates.length; ++i) {
 			if (links_re.test(allTemplates[i])) {

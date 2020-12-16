@@ -4,7 +4,7 @@ mw.config.set({
 	pageTriageNamespaces: [0, 2, 118],
 	wgArticleId: 18866,
 	wgIsRedirect: false,
-	wgPageName: 'Macbeth',
+	wgPageName: 'Macbeth,_King_of_Scotland',
 	wgRestrictionEdit: ['autoconfirmed'],
 	wgUserGroups: ['interface-admin', 'oversight', 'patroller', 'reviewer', 'sysop', '*', 'user', 'autoconfirmed'],
 	wgUserName: 'Amorymeltzer',
