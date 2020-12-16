@@ -4517,11 +4517,11 @@ Morebits.wikitext.page.prototype = {
 		// Check for normal image links, i.e. [[File:Foobar.png|...]]
 		// Will eat the whole link
 		var links_re = new RegExp('\\[\\[(?:[Ii]mage|[Ff]ile):\\s*' + image_re_string + '\\s*[\\|(?:\\]\\])]');
-		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys(unbinder.content, '[[', ']]'));
+		var allLinks = Morebits.string.splitWeightedByKeys(unbinder.content, '[[', ']]');
 		for (var i = 0; i < allLinks.length; ++i) {
 			if (links_re.test(allLinks[i])) {
 				var replacement = '<!-- ' + reason + allLinks[i] + ' -->';
-				unbinder.content = unbinder.content.replace(allLinks[i], replacement, 'g');
+				unbinder.content = unbinder.content.replace(allLinks[i], replacement);
 			}
 		}
 		// unbind the newly created comments
@@ -4561,13 +4561,13 @@ Morebits.wikitext.page.prototype = {
 		}
 		var image_re_string = '(?:[Ii]mage|[Ff]ile):\\s*' + first_char_regex + Morebits.string.escapeRegExp(image.substr(1));
 		var links_re = new RegExp('\\[\\[' + image_re_string + '\\s*[\\|(?:\\]\\])]');
-		var allLinks = Morebits.array.uniq(Morebits.string.splitWeightedByKeys(this.text, '[[', ']]'));
+		var allLinks = Morebits.string.splitWeightedByKeys(this.text, '[[', ']]');
 		for (var i = 0; i < allLinks.length; ++i) {
 			if (links_re.test(allLinks[i])) {
 				var replacement = allLinks[i];
 				// just put it at the end?
 				replacement = replacement.replace(/\]\]$/, '|' + data + ']]');
-				this.text = this.text.replace(allLinks[i], replacement, 'g');
+				this.text = this.text.replace(allLinks[i], replacement);
 			}
 		}
 		var gallery_re = new RegExp('^(\\s*' + image_re_string + '.*?)\\|?(.*?)$', 'mg');
@@ -4577,7 +4577,7 @@ Morebits.wikitext.page.prototype = {
 	},
 
 	/**
-	 * Removes transclusions of template from page text.
+	 * Remove all transclusions of a template from page text.
 	 *
 	 * @param {string} template - Page name whose transclusions are to be removed,
 	 * include namespace prefix only if not in template namespace.
@@ -4588,10 +4588,10 @@ Morebits.wikitext.page.prototype = {
 		var first_char = template.substr(0, 1);
 		var template_re_string = '(?:[Tt]emplate:)?\\s*[' + first_char.toUpperCase() + first_char.toLowerCase() + ']' + Morebits.string.escapeRegExp(template.substr(1));
 		var links_re = new RegExp('\\{\\{' + template_re_string + '\\s*[\\|(?:\\}\\})]');
-		var allTemplates = Morebits.array.uniq(Morebits.string.splitWeightedByKeys(this.text, '{{', '}}', [ '{{{', '}}}' ]));
+		var allTemplates = Morebits.string.splitWeightedByKeys(this.text, '{{', '}}', [ '{{{', '}}}' ]);
 		for (var i = 0; i < allTemplates.length; ++i) {
 			if (links_re.test(allTemplates[i])) {
-				this.text = this.text.replace(allTemplates[i], '', 'g');
+				this.text = this.text.replace(allTemplates[i], '');
 			}
 		}
 		return this;

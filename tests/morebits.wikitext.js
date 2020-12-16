@@ -161,6 +161,13 @@ QUnit.test('Morebits.wikitext.page', assert => {
 			params: ['Fee.svg', ['thumb', 'size=42', 'test'].join('|')]
 		},
 		{
+			name: 'multiple',
+			method: 'removeTemplate',
+			input: '{{O}}, {{she|doth}} teach the t{{o}}rches to burn bright!{{o}}',
+			expected: ', {{she|doth}} teach the trches to burn bright!',
+			params: ['o']
+		},
+		{
 			name: 'preRegex',
 			method: 'insertAfterTemplates',
 			input: '{{short description}}{{About}}<!-- random -->{{xfd}}O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!',
@@ -247,8 +254,8 @@ QUnit.test('Morebits.wikitext.page', assert => {
 		{
 			name: 'Template namespace',
 			method: 'removeTemplate',
-			input: 'O, she doth {{Template:plural|teach}} the torches to burn bright!',
-			expected: 'O, she doth  the torches to burn bright!',
+			input: 'O, she doth {{Template:plural|teach}} the {{template:plural|torches}} to burn bright!',
+			expected: 'O, she doth  the  to burn bright!',
 			params: ['Template:plural']
 		},
 		{
