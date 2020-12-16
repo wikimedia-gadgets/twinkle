@@ -111,10 +111,8 @@ class Xfd extends TwinkleModule {
 	}
 
 	// invoked on every mode change
-	onCategoryChange(evt: Event) {
-		// @ts-ignore
+	onCategoryChange(evt) {
 		var venueCode = evt.target.value;
-		// @ts-ignore
 		var form = evt.target.form;
 
 		let mode = Xfd.modeList.filter((mode) => {
@@ -204,7 +202,7 @@ abstract class XfdMode {
 
 	abstract getDiscussionWikitext(): string
 
-	evaluate() {
+	evaluate(): any {
 		this.params = Morebits.quickForm.getInputData(this.result);
 		this.preprocessParams();
 		Morebits.simpleWindow.setButtonsEnabled(false);
@@ -222,6 +220,20 @@ abstract class XfdMode {
 				Xfd.currentRationale = null;
 			}
 		});
+
+		return new Morebits.taskManager(this);
+	}
+
+	/**
+	 * Callback to redirect to the discussion page when everything is done. Relies on the discussion page
+	 * being known as either `this.params.discussionpage` or `this.params.logpage`.
+	 */
+	redirectToDiscussion() {
+		let redirPage = this.params.discussionpage || this.params.logpage;
+		Morebits.status.actionCompleted("Nomination complete, now redirecting to the discussion page");
+		setTimeout(() => {
+			window.location.href = mw.util.getUrl(redirPage);
+		}, Morebits.wiki.actionCompleted.timeOut);
 	}
 
 	autoEditRequest(pageobj: Morebits.wiki.page) {
@@ -530,28 +542,20 @@ class Afd extends XfdMode {
 	}
 
 	evaluate() {
-		super.evaluate();
-
-		let tm = new Morebits.taskManager(this);
+		let tm = super.evaluate();
 		tm.add(this.checkPage, []);
 		tm.add(this.determineDiscussionPage, []);
 		tm.add(this.createDiscussionPage, [this.checkPage, this.determineDiscussionPage]);
 		// create discussion page before linking or transcluding it from anywhere, so that
-		// there's no need to do any purging to prevent the red links
-		tm.add(this.tagPage, [this.createDiscussionPage]);
+		// there's no need to do any purging later (#364)
+		tm.add(this.tagPage, [this.checkPage, this.createDiscussionPage]); // tagPage has an arg coming from checkPage
 		tm.add(this.addToList, [this.createDiscussionPage]);
 		tm.add(this.addToDelsortLists, [this.createDiscussionPage]);
 		tm.add(this.patrolPage, [this.checkPage]);
 		tm.add(this.fetchCreatorInfo, []);
 		tm.add(this.notifyCreator, [this.createDiscussionPage, this.fetchCreatorInfo]);
 		tm.add(this.addToLog, [this.notifyCreator]);
-
-		tm.execute().then(() => {
-			Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
-			setTimeout(() => {
-				window.location.href = mw.util.getUrl(this.params.discussionpage);
-			}, Morebits.wiki.actionCompleted.timeOut);
-		});
+		tm.execute().then(() => this.redirectToDiscussion());
 	}
 
 	preprocessParams() {
@@ -873,9 +877,7 @@ class Tfd extends XfdMode {
 	}
 
 	evaluate() {
-		super.evaluate();
-
-		let tm = new Morebits.taskManager(this);
+		let tm = super.evaluate();
 		tm.add(this.tagPage, []);
 		tm.add(this.addToList, [this.tagPage]);
 		tm.add(this.watchModule, []);
@@ -883,12 +885,8 @@ class Tfd extends XfdMode {
 		tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
 		tm.add(this.notifyOtherCreator, [this.fetchCreatorInfo]);
 		tm.add(this.addToLog, [this.notifyCreator]);
-		tm.execute().then(() => {
-			Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
-			setTimeout(() => {
-				window.location.href = mw.util.getUrl(this.params.logpage);
-			}, Morebits.wiki.actionCompleted.timeOut);
-		});
+		tm.execute().then(() => this.redirectToDiscussion());
+
 	}
 
 	tagPage() {
@@ -1147,20 +1145,13 @@ class Ffd extends XfdMode {
 	}
 
 	evaluate() {
-		super.evaluate();
-
-		let tm = new Morebits.taskManager(this);
+		let tm = super.evaluate();
 		tm.add(this.fetchCreatorInfo, []);
 		tm.add(this.tagPage, []);
 		tm.add(this.addToList, [this.fetchCreatorInfo, this.tagPage]);
 		tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
 		tm.add(this.addToLog, [this.notifyCreator]);
-		tm.execute().then(() => {
-			Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
-			setTimeout(() => {
-				window.location.href = mw.util.getUrl(this.params.logpage);
-			}, Morebits.wiki.actionCompleted.timeOut);
-		});
+		tm.execute().then(() => this.redirectToDiscussion());
 	}
 
 	tagPage() {
@@ -1342,20 +1333,13 @@ class Cfd extends XfdMode {
 	}
 
 	evaluate() {
-		super.evaluate();
-
-		let tm = new Morebits.taskManager(this);
+		let tm = super.evaluate();
 		tm.add(this.tagPage, []);
 		tm.add(this.addToList, [this.tagPage]);
 		tm.add(this.fetchCreatorInfo, []);
 		tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
 		tm.add(this.addToLog, [this.notifyCreator]);
-		tm.execute().then(() => {
-			Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
-			setTimeout(() => {
-				window.location.href = mw.util.getUrl(this.params.logpage);
-			}, Morebits.wiki.actionCompleted.timeOut);
-		});
+		tm.execute().then(() => this.redirectToDiscussion());
 	}
 
 	tagPage() {
@@ -1517,19 +1501,11 @@ class Cfds extends XfdMode {
 	}
 
 	evaluate() {
-		super.evaluate();
-
-		let tm = new Morebits.taskManager(this);
+		let tm = super.evaluate();
 		tm.add(this.tagPage, []);
 		tm.add(this.addToList, []);
 		tm.add(this.addToLog, [this.addToList]);
-		tm.execute().then(() => {
-			Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
-			setTimeout(() => {
-				window.location.href = mw.util.getUrl(this.params.logpage);
-			}, Morebits.wiki.actionCompleted.timeOut);
-		});
-
+		tm.execute().then(() => this.redirectToDiscussion());
 	}
 
 	tagPage() {
@@ -1654,9 +1630,7 @@ class Mfd extends XfdMode {
 	}
 
 	evaluate() {
-		super.evaluate();
-
-		let tm = new Morebits.taskManager(this);
+		let tm = super.evaluate();
 		tm.add(this.determineDiscussionPage, [])
 		tm.add(this.tagPage, [this.determineDiscussionPage]);
 		tm.add(this.addToList, [this.determineDiscussionPage]);
@@ -1665,12 +1639,7 @@ class Mfd extends XfdMode {
 		tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
 		tm.add(this.notifyUserspaceOwner, [this.fetchCreatorInfo]);
 		tm.add(this.addToLog, [this.notifyCreator, this.notifyUserspaceOwner]);
-		tm.execute().then(() => {
-			Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
-			setTimeout(() => {
-				window.location.href = mw.util.getUrl(this.params.discussionpage);
-			}, Morebits.wiki.actionCompleted.timeOut);
-		});
+		tm.execute().then(() => this.redirectToDiscussion());
 	}
 
 	determineDiscussionPage() {
@@ -1907,12 +1876,7 @@ class Rfd extends XfdMode {
 		tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
 		tm.add(this.notifyTargetTalk, [this.fetchCreatorInfo, this.tagPage]);
 		tm.add(this.addToLog, [this.notifyCreator]);
-		tm.execute().then(() => {
-			Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
-			setTimeout(() => {
-				window.location.href = mw.util.getUrl(this.params.logpage);
-			}, Morebits.wiki.actionCompleted.timeOut);
-		});
+		tm.execute().then(() => this.redirectToDiscussion());
 	}
 
 	// Creates: params.rfdtarget, params.curtimestamp, params.section, params.logpage, params.discussionpage

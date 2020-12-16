@@ -107,9 +107,7 @@ var Xfd = /** @class */ (function (_super) {
     };
     // invoked on every mode change
     Xfd.prototype.onCategoryChange = function (evt) {
-        // @ts-ignore
         var venueCode = evt.target.value;
-        // @ts-ignore
         var form = evt.target.form;
         var mode = Xfd.modeList.filter(function (mode) {
             return mode.venueCode === venueCode;
@@ -193,6 +191,18 @@ var XfdMode = /** @class */ (function () {
                 Xfd.currentRationale = null;
             }
         });
+        return new Morebits.taskManager(this);
+    };
+    /**
+     * Callback to redirect to the discussion page when everything is done. Relies on the discussion page
+     * being known as either `this.params.discussionpage` or `this.params.logpage`.
+     */
+    XfdMode.prototype.redirectToDiscussion = function () {
+        var redirPage = this.params.discussionpage || this.params.logpage;
+        Morebits.status.actionCompleted("Nomination complete, now redirecting to the discussion page");
+        setTimeout(function () {
+            window.location.href = mw.util.getUrl(redirPage);
+        }, Morebits.wiki.actionCompleted.timeOut);
     };
     XfdMode.prototype.autoEditRequest = function (pageobj) {
         var params = this.params;
@@ -467,26 +477,20 @@ var Afd = /** @class */ (function (_super) {
     };
     Afd.prototype.evaluate = function () {
         var _this = this;
-        _super.prototype.evaluate.call(this);
-        var tm = new Morebits.taskManager(this);
+        var tm = _super.prototype.evaluate.call(this);
         tm.add(this.checkPage, []);
         tm.add(this.determineDiscussionPage, []);
         tm.add(this.createDiscussionPage, [this.checkPage, this.determineDiscussionPage]);
         // create discussion page before linking or transcluding it from anywhere, so that
-        // there's no need to do any purging to prevent the red links
-        tm.add(this.tagPage, [this.createDiscussionPage]);
+        // there's no need to do any purging later (#364)
+        tm.add(this.tagPage, [this.checkPage, this.createDiscussionPage]); // tagPage has an arg coming from checkPage
         tm.add(this.addToList, [this.createDiscussionPage]);
         tm.add(this.addToDelsortLists, [this.createDiscussionPage]);
         tm.add(this.patrolPage, [this.checkPage]);
         tm.add(this.fetchCreatorInfo, []);
         tm.add(this.notifyCreator, [this.createDiscussionPage, this.fetchCreatorInfo]);
         tm.add(this.addToLog, [this.notifyCreator]);
-        tm.execute().then(function () {
-            Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
-            setTimeout(function () {
-                window.location.href = mw.util.getUrl(_this.params.discussionpage);
-            }, Morebits.wiki.actionCompleted.timeOut);
-        });
+        tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     Afd.prototype.preprocessParams = function () {
         this.params.lookupNonRedirectCreator = true; // for this.fetchCreatorInfo()
@@ -782,8 +786,7 @@ var Tfd = /** @class */ (function (_super) {
     };
     Tfd.prototype.evaluate = function () {
         var _this = this;
-        _super.prototype.evaluate.call(this);
-        var tm = new Morebits.taskManager(this);
+        var tm = _super.prototype.evaluate.call(this);
         tm.add(this.tagPage, []);
         tm.add(this.addToList, [this.tagPage]);
         tm.add(this.watchModule, []);
@@ -791,12 +794,7 @@ var Tfd = /** @class */ (function (_super) {
         tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
         tm.add(this.notifyOtherCreator, [this.fetchCreatorInfo]);
         tm.add(this.addToLog, [this.notifyCreator]);
-        tm.execute().then(function () {
-            Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
-            setTimeout(function () {
-                window.location.href = mw.util.getUrl(_this.params.logpage);
-            }, Morebits.wiki.actionCompleted.timeOut);
-        });
+        tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     Tfd.prototype.tagPage = function () {
         return this.params.xfdcat === 'tfm' ? this.tagPagesForMerge() : this.tagPageForDeletion();
@@ -1032,19 +1030,13 @@ var Ffd = /** @class */ (function (_super) {
     };
     Ffd.prototype.evaluate = function () {
         var _this = this;
-        _super.prototype.evaluate.call(this);
-        var tm = new Morebits.taskManager(this);
+        var tm = _super.prototype.evaluate.call(this);
         tm.add(this.fetchCreatorInfo, []);
         tm.add(this.tagPage, []);
         tm.add(this.addToList, [this.fetchCreatorInfo, this.tagPage]);
         tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
         tm.add(this.addToLog, [this.notifyCreator]);
-        tm.execute().then(function () {
-            Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
-            setTimeout(function () {
-                window.location.href = mw.util.getUrl(_this.params.logpage);
-            }, Morebits.wiki.actionCompleted.timeOut);
-        });
+        tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     Ffd.prototype.tagPage = function () {
         var _this = this;
@@ -1217,19 +1209,13 @@ var Cfd = /** @class */ (function (_super) {
     };
     Cfd.prototype.evaluate = function () {
         var _this = this;
-        _super.prototype.evaluate.call(this);
-        var tm = new Morebits.taskManager(this);
+        var tm = _super.prototype.evaluate.call(this);
         tm.add(this.tagPage, []);
         tm.add(this.addToList, [this.tagPage]);
         tm.add(this.fetchCreatorInfo, []);
         tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
         tm.add(this.addToLog, [this.notifyCreator]);
-        tm.execute().then(function () {
-            Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
-            setTimeout(function () {
-                window.location.href = mw.util.getUrl(_this.params.logpage);
-            }, Morebits.wiki.actionCompleted.timeOut);
-        });
+        tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     Cfd.prototype.tagPage = function () {
         var _this = this;
@@ -1377,17 +1363,11 @@ var Cfds = /** @class */ (function (_super) {
     };
     Cfds.prototype.evaluate = function () {
         var _this = this;
-        _super.prototype.evaluate.call(this);
-        var tm = new Morebits.taskManager(this);
+        var tm = _super.prototype.evaluate.call(this);
         tm.add(this.tagPage, []);
         tm.add(this.addToList, []);
         tm.add(this.addToLog, [this.addToList]);
-        tm.execute().then(function () {
-            Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
-            setTimeout(function () {
-                window.location.href = mw.util.getUrl(_this.params.logpage);
-            }, Morebits.wiki.actionCompleted.timeOut);
-        });
+        tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     Cfds.prototype.tagPage = function () {
         var _this = this;
@@ -1506,8 +1486,7 @@ var Mfd = /** @class */ (function (_super) {
     };
     Mfd.prototype.evaluate = function () {
         var _this = this;
-        _super.prototype.evaluate.call(this);
-        var tm = new Morebits.taskManager(this);
+        var tm = _super.prototype.evaluate.call(this);
         tm.add(this.determineDiscussionPage, []);
         tm.add(this.tagPage, [this.determineDiscussionPage]);
         tm.add(this.addToList, [this.determineDiscussionPage]);
@@ -1516,12 +1495,7 @@ var Mfd = /** @class */ (function (_super) {
         tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
         tm.add(this.notifyUserspaceOwner, [this.fetchCreatorInfo]);
         tm.add(this.addToLog, [this.notifyCreator, this.notifyUserspaceOwner]);
-        tm.execute().then(function () {
-            Morebits.status.actionCompleted('Nomination completed, now redirecting to the discussion page');
-            setTimeout(function () {
-                window.location.href = mw.util.getUrl(_this.params.discussionpage);
-            }, Morebits.wiki.actionCompleted.timeOut);
-        });
+        tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     Mfd.prototype.determineDiscussionPage = function () {
         var params = this.params;
@@ -1742,12 +1716,7 @@ var Rfd = /** @class */ (function (_super) {
         tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
         tm.add(this.notifyTargetTalk, [this.fetchCreatorInfo, this.tagPage]);
         tm.add(this.addToLog, [this.notifyCreator]);
-        tm.execute().then(function () {
-            Morebits.status.actionCompleted("Nomination completed, now redirecting to today's log");
-            setTimeout(function () {
-                window.location.href = mw.util.getUrl(_this.params.logpage);
-            }, Morebits.wiki.actionCompleted.timeOut);
-        });
+        tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     // Creates: params.rfdtarget, params.curtimestamp, params.section, params.logpage, params.discussionpage
     Rfd.prototype.findTarget = function () {
