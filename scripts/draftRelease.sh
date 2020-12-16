@@ -83,7 +83,7 @@ for item in "${log[@]}"; do
 	message="${item#*';;'}"
 
 	# Don't transclude templates
-	message="${message/{{/{{tl|}"
+	message="${message//{{/{{tl|}"
 
 	# Multiple files edited
 	# Should probably be updated to sort module+twinkleconfig under module
