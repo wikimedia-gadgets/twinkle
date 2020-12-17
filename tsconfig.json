@@ -8,6 +8,7 @@
 	  "es5",
 	  "es2015.collection" // Only Map and Set from this are supported in IE 11.
 	],
+	"outDir": "./dist",
 	"sourceMap": true,
 	"moduleResolution": "node",
 	"typeRoots": [
@@ -15,5 +16,6 @@
 	],
 	"esModuleInterop": true,
 	"newLine": "lf"
-  }
+  },
+  "compileOnSave": true
 }

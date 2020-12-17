@@ -121,8 +121,7 @@ var Xfd = /** @class */ (function (_super) {
         this.mode.Window = this.Window;
         $('#wrong-venue-warn').text(this.mode.getVenueWarning() || '');
         form.previewer.closePreview();
-        var fieldset = this.mode.generateFieldset();
-        var renderedFieldset = fieldset.render();
+        var renderedFieldset = this.mode.generateFieldset().render();
         $(this.result).find('fieldset[name=work_area]')
             .replaceWith(renderedFieldset);
         this.mode.postRender(renderedFieldset);
@@ -212,22 +211,20 @@ var XfdMode = /** @class */ (function () {
             pageobj.getStatusElement().error('Page protected and nowhere to add an edit request, aborting');
             return def.reject();
         }
-        else {
-            pageobj.getStatusElement().warn('Page protected, requesting edit');
-            var editRequest = '{{subst:Xfd edit protected|page=' + pageobj.getPageName() +
-                '|discussion=' + params.discussionpage + '|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
-            var talk_page = new Morebits.wiki.page(talkName, 'Automatically posting edit request on talk page');
-            talk_page.setNewSectionTitle('Edit request to complete ' + utils.toTLACase(params.venue) + ' nomination');
-            talk_page.setNewSectionText(editRequest);
-            talk_page.setCreateOption('recreate');
-            talk_page.setWatchlist(Twinkle.getPref('xfdWatchPage'));
-            talk_page.setFollowRedirect(true); // should never be needed, but if the article is moved, we would want to follow the redirect
-            talk_page.setChangeTags(Twinkle.changeTags);
-            talk_page.newSection(def.resolve, function () {
-                talk_page.getStatusElement().warn('Unable to add edit request, the talk page may be protected');
-                def.reject();
-            });
-        }
+        pageobj.getStatusElement().warn('Page protected, requesting edit');
+        var editRequest = '{{subst:Xfd edit protected|page=' + pageobj.getPageName() +
+            '|discussion=' + params.discussionpage + '|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
+        var talk_page = new Morebits.wiki.page(talkName, 'Automatically posting edit request on talk page');
+        talk_page.setNewSectionTitle('Edit request to complete ' + utils.toTLACase(params.venue) + ' nomination');
+        talk_page.setNewSectionText(editRequest);
+        talk_page.setCreateOption('recreate');
+        talk_page.setWatchlist(Twinkle.getPref('xfdWatchPage'));
+        talk_page.setFollowRedirect(true); // should never be needed, but if the article is moved, we would want to follow the redirect
+        talk_page.setChangeTags(Twinkle.changeTags);
+        talk_page.newSection(def.resolve, function () {
+            talk_page.getStatusElement().warn('Unable to add edit request, the talk page may be protected');
+            def.reject();
+        });
         return def;
     };
     XfdMode.prototype.fetchCreatorInfo = function () {
