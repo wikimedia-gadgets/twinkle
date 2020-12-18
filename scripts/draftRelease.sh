@@ -135,7 +135,7 @@ for item in "${log[@]}"; do
 	fi
 
 	if [[ -n "$pr" ]]; then
-		info="[https://github.com/azatoth/twinkle/pull/$pr #$pr]"
+		info="[https://github.com/wikimedia-gadgets/twinkle/pull/$pr #$pr]"
 	fi
 
 	# Avoid ego padding

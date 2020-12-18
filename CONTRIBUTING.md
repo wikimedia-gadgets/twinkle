@@ -6,7 +6,7 @@ There are many ways to help out!
 
 ## Bug reports and feature requests
 
-If you think you've found a bug or have a great idea for a new feature, great!  You can [open a new GitHub issue here](https://github.com/azatoth/twinkle/issues/new) (GitHub account required) or report it at [Wikipedia talk:Twinkle][].  Bigger changes or more complicated requests should be made on-wiki so other users can take part in the discussion of your feature proposal.  If you're unsure if something is a bug, other editors may be able to help identify the issue.  Be sure to search the talk page archives and GitHub issues to see if your request has already been discussed in the past.
+If you think you've found a bug or have a great idea for a new feature, great!  You can [open a new GitHub issue here](https://github.com/wikimedia-gadgets/twinkle/issues/new) (GitHub account required) or report it at [Wikipedia talk:Twinkle][].  Bigger changes or more complicated requests should be made on-wiki so other users can take part in the discussion of your feature proposal.  If you're unsure if something is a bug, other editors may be able to help identify the issue.  Be sure to search the talk page archives and GitHub issues to see if your request has already been discussed in the past.
 
 Whatever the case, the more detailed your description the easier it will be to respond to your report or request.
 
@@ -26,7 +26,7 @@ If you believe you have found a security issue, follow the guidelines in [SECURI
 
 If you'd like to help with Twinkle's development, wonderful!  Anyone can contribute, and it's easy to get set up to do so.
 
-First, familiarize yourself with the code; most likely, the changes you want are to one of the [modules](./modules); you can also check out the [individual Gadget pages][twinkle_gadget] onwiki.  If the changes are to the [Morebits library](./morebits.js), you can view the full docs at http://azatoth.github.io/twinkle or on the [GitHub Wiki](https://github.com/azatoth/twinkle/wiki/morebits).  If you want to propose changes yourself, [fork the repository](https://help.github.com/articles/fork-a-repo/) to make sure you always have the latest versions.  If you're new to GitHub or Git in general, you probably want to read [Getting started with GitHub](https://help.github.com/en/github/getting-started-with-github) first.
+First, familiarize yourself with the code; most likely, the changes you want are to one of the [modules](./modules); you can also check out the [individual Gadget pages][twinkle_gadget] onwiki.  If the changes are to the [Morebits library](./morebits.js), you can view the full docs at http://wikimedia-gadgets.github.io/twinkle or on the [GitHub Wiki](https://github.com/wikimedia-gadgets/twinkle/wiki/morebits).  If you want to propose changes yourself, [fork the repository](https://help.github.com/articles/fork-a-repo/) to make sure you always have the latest versions.  If you're new to GitHub or Git in general, you probably want to read [Getting started with GitHub](https://help.github.com/en/github/getting-started-with-github) first.
 
 Once you've got a local fork up and running, commit your changes!
 
@@ -73,5 +73,5 @@ Everyone is welcome and encouraged to join in, regardless of experience.  Anybod
 [twinkle_gadget]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle/Gadget
 [Wikipedia:Twinkle]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle
 [eslint.org]: https://eslint.org/
-[fivehundred]: https://github.com/azatoth/twinkle/issues/500
+[fivehundred]: https://github.com/wikimedia-gadgets/twinkle/issues/500
 [conduct]: https://www.mediawiki.org/wiki/Code_of_Conduct

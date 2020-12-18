@@ -5,7 +5,7 @@
  * |           Please discuss changes at [[WT:TW]] before editing.           |
  * +-------------------------------------------------------------------------+
  *
- * Imported from github [https://github.com/azatoth/twinkle].
+ * Imported from github [https://github.com/wikimedia-gadgets/twinkle].
  * All changes should be made in the repository, otherwise they will be lost.
  *
  * ----------

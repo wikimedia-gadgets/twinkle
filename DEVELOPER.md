@@ -125,7 +125,6 @@ The `--base` flag operates as a *prefix*; note the presence of the trailing `/`.
 [MediaWiki:Gadget-twinklearv.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklearv.js
 [MediaWiki:Gadget-friendlytalkback.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-friendlytalkback.js
 [MediaWiki:Gadget-twinkleblock.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleblock.js
-[User:AzaToth/twinkle.js]: https://en.wikipedia.org/wiki/User:AzaToth/twinkle.js
 [select2]: https://github.com/select2/select2
 [MediaWiki::API]: https://metacpan.org/pod/MediaWiki::API
 [Git::Repository]: https://metacpan.org/pod/Git::Repository
