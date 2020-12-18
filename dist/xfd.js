@@ -178,19 +178,10 @@ var XfdMode = /** @class */ (function () {
         this.preprocessParams();
         Morebits.simpleWindow.setButtonsEnabled(false);
         Morebits.status.init(this.result);
-        // XXX: Copied from the original twinklexfd, but this isn't great.
-        // Errors in tasks that execute early but don't affect creation of discussion page
-        // such as fetchCreatorInfo() should not print trigger this.
-        // But fetchCreatorInfo() is unlikely to error out so we're good for now.
-        Xfd.currentRationale = this.params.reason;
-        Morebits.status.onError(function () {
-            if (Xfd.currentRationale) {
-                Morebits.status.printUserText(Xfd.currentRationale, 'Your deletion rationale is provided below, which you can copy and paste into a new XFD dialog if you wish to try again:');
-                // only need to print the rationale once
-                Xfd.currentRationale = null;
-            }
-        });
         return new Morebits.taskManager(this);
+    };
+    XfdMode.prototype.printReasonText = function () {
+        Morebits.status.printUserText(this.params.reason, 'Your deletion rationale is provided below, which you can copy and paste into a new XFD dialog if you wish to try again:');
     };
     /**
      * Callback to redirect to the discussion page when everything is done. Relies on the discussion page
@@ -527,7 +518,7 @@ var Afd = /** @class */ (function (_super) {
         var tm = _super.prototype.evaluate.call(this);
         tm.add(this.checkPage, []);
         tm.add(this.determineDiscussionPage, []);
-        tm.add(this.createDiscussionPage, [this.checkPage, this.determineDiscussionPage]);
+        tm.add(this.createDiscussionPage, [this.checkPage, this.determineDiscussionPage], this.printReasonText);
         // create discussion page before linking or transcluding it from anywhere, so that
         // there's no need to do any purging later (#364)
         tm.add(this.tagPage, [this.checkPage, this.createDiscussionPage]); // tagPage has an arg coming from checkPage
@@ -624,10 +615,7 @@ var Afd = /** @class */ (function (_super) {
             pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('createonly');
-            pageobj.save(function () {
-                Xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-                def.resolve();
-            }, def.reject);
+            pageobj.save(def.resolve, def.reject);
         });
         return def;
     };
@@ -792,7 +780,7 @@ var Tfd = /** @class */ (function (_super) {
         var _this = this;
         var tm = _super.prototype.evaluate.call(this);
         tm.add(this.tagPage, []);
-        tm.add(this.addToList, [this.tagPage]);
+        tm.add(this.addToList, [this.tagPage], this.printReasonText);
         tm.add(this.watchModule, []);
         tm.add(this.fetchCreatorInfo, []);
         tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
@@ -915,10 +903,7 @@ var Tfd = /** @class */ (function (_super) {
             pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
-            pageobj.save(function () {
-                Xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-                def.resolve();
-            }, def.reject);
+            pageobj.save(def.resolve, def.reject);
         });
         return def;
     };
@@ -1037,7 +1022,7 @@ var Ffd = /** @class */ (function (_super) {
         var tm = _super.prototype.evaluate.call(this);
         tm.add(this.fetchCreatorInfo, []);
         tm.add(this.tagPage, []);
-        tm.add(this.addToList, [this.fetchCreatorInfo, this.tagPage]);
+        tm.add(this.addToList, [this.fetchCreatorInfo, this.tagPage], this.printReasonText);
         tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
         tm.add(this.addToLog, [this.notifyCreator]);
         tm.execute().then(function () { return _this.redirectToDiscussion(); });
@@ -1086,10 +1071,7 @@ var Ffd = /** @class */ (function (_super) {
             pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
-            pageobj.save(function () {
-                Xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-                def.resolve();
-            }, def.reject);
+            pageobj.save(def.resolve, def.reject);
         });
         return def;
     };
@@ -1215,7 +1197,7 @@ var Cfd = /** @class */ (function (_super) {
         var _this = this;
         var tm = _super.prototype.evaluate.call(this);
         tm.add(this.tagPage, []);
-        tm.add(this.addToList, [this.tagPage]);
+        tm.add(this.addToList, [this.tagPage], this.printReasonText);
         tm.add(this.fetchCreatorInfo, []);
         tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
         tm.add(this.addToLog, [this.notifyCreator]);
@@ -1281,10 +1263,7 @@ var Cfd = /** @class */ (function (_super) {
             pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
-            pageobj.save(function () {
-                Xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-                def.resolve();
-            }, def.reject);
+            pageobj.save(def.resolve, def.reject);
         });
         return def;
     };
@@ -1369,7 +1348,7 @@ var Cfds = /** @class */ (function (_super) {
         var _this = this;
         var tm = _super.prototype.evaluate.call(this);
         tm.add(this.tagPage, []);
-        tm.add(this.addToList, []);
+        tm.add(this.addToList, [], this.printReasonText);
         tm.add(this.addToLog, [this.addToList]);
         tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
@@ -1414,10 +1393,7 @@ var Cfds = /** @class */ (function (_super) {
             pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
-            pageobj.save(function () {
-                Xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-                def.resolve();
-            }, def.reject);
+            pageobj.save(def.resolve, def.reject);
         });
         return def;
     };
@@ -1496,7 +1472,7 @@ var Mfd = /** @class */ (function (_super) {
         tm.add(this.determineDiscussionPage, []);
         tm.add(this.tagPage, [this.determineDiscussionPage]);
         tm.add(this.addToList, [this.determineDiscussionPage]);
-        tm.add(this.createDiscussionPage, [this.determineDiscussionPage]);
+        tm.add(this.createDiscussionPage, [this.determineDiscussionPage], this.printReasonText);
         tm.add(this.fetchCreatorInfo, []);
         tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
         tm.add(this.notifyUserspaceOwner, [this.fetchCreatorInfo]);
@@ -1546,10 +1522,7 @@ var Mfd = /** @class */ (function (_super) {
             pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('createonly');
-            pageobj.save(function () {
-                Xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-                def.resolve();
-            }, def.reject);
+            pageobj.save(def.resolve, def.reject);
         });
         return def;
     };
@@ -1673,7 +1646,7 @@ var Rfd = /** @class */ (function (_super) {
         var tm = new Morebits.taskManager(this);
         tm.add(this.findTarget, []);
         tm.add(this.tagPage, [this.findTarget]);
-        tm.add(this.addToList, [this.tagPage]);
+        tm.add(this.addToList, [this.findTarget, this.tagPage], this.printReasonText);
         tm.add(this.fetchCreatorInfo, []);
         tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
         tm.add(this.notifyTargetTalk, [this.fetchCreatorInfo, this.tagPage]);
@@ -1780,10 +1753,7 @@ var Rfd = /** @class */ (function (_super) {
             pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
-            pageobj.save(function () {
-                def.resolve();
-                Xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-            }, def.reject);
+            pageobj.save(def.resolve, def.reject);
         });
         return def;
     };

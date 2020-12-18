@@ -7,8 +7,6 @@ class Xfd extends TwinkleModule {
 	fieldset: quickFormElement;
 	result: HTMLFormElement;
 
-	static currentRationale: string;
-
 	constructor() {
 		super();
 		for (let mode of Xfd.modeList) {
@@ -213,20 +211,11 @@ abstract class XfdMode {
 		Morebits.simpleWindow.setButtonsEnabled(false);
 		Morebits.status.init(this.result);
 
-		// XXX: Copied from the original twinklexfd, but this isn't great.
-		// Errors in tasks that execute early but don't affect creation of discussion page
-		// such as fetchCreatorInfo() should not print trigger this.
-		// But fetchCreatorInfo() is unlikely to error out so we're good for now.
-		Xfd.currentRationale = this.params.reason;
-		Morebits.status.onError(() => {
-			if (Xfd.currentRationale) {
-				Morebits.status.printUserText(Xfd.currentRationale, 'Your deletion rationale is provided below, which you can copy and paste into a new XFD dialog if you wish to try again:');
-				// only need to print the rationale once
-				Xfd.currentRationale = null;
-			}
-		});
-
 		return new Morebits.taskManager(this);
+	}
+
+	printReasonText() {
+		Morebits.status.printUserText(this.params.reason, 'Your deletion rationale is provided below, which you can copy and paste into a new XFD dialog if you wish to try again:');
 	}
 
 	/**
@@ -604,7 +593,7 @@ class Afd extends XfdMode {
 		let tm = super.evaluate();
 		tm.add(this.checkPage, []);
 		tm.add(this.determineDiscussionPage, []);
-		tm.add(this.createDiscussionPage, [this.checkPage, this.determineDiscussionPage]);
+		tm.add(this.createDiscussionPage, [this.checkPage, this.determineDiscussionPage], this.printReasonText);
 		// create discussion page before linking or transcluding it from anywhere, so that
 		// there's no need to do any purging later (#364)
 		tm.add(this.tagPage, [this.checkPage, this.createDiscussionPage]); // tagPage has an arg coming from checkPage
@@ -709,10 +698,7 @@ class Afd extends XfdMode {
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('createonly');
-			pageobj.save(function() {
-				Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-				def.resolve();
-			}, def.reject);
+			pageobj.save(def.resolve, def.reject);
 		});
 		return def;
 	}
@@ -889,7 +875,7 @@ class Tfd extends XfdMode {
 	evaluate() {
 		let tm = super.evaluate();
 		tm.add(this.tagPage, []);
-		tm.add(this.addToList, [this.tagPage]);
+		tm.add(this.addToList, [this.tagPage], this.printReasonText);
 		tm.add(this.watchModule, []);
 		tm.add(this.fetchCreatorInfo, []);
 		tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
@@ -1029,10 +1015,7 @@ class Tfd extends XfdMode {
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
-			pageobj.save(function() {
-				Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-				def.resolve();
-			}, def.reject);
+			pageobj.save(def.resolve, def.reject);
 		});
 		return def;
 	}
@@ -1158,7 +1141,7 @@ class Ffd extends XfdMode {
 		let tm = super.evaluate();
 		tm.add(this.fetchCreatorInfo, []);
 		tm.add(this.tagPage, []);
-		tm.add(this.addToList, [this.fetchCreatorInfo, this.tagPage]);
+		tm.add(this.addToList, [this.fetchCreatorInfo, this.tagPage], this.printReasonText);
 		tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
 		tm.add(this.addToLog, [this.notifyCreator]);
 		tm.execute().then(() => this.redirectToDiscussion());
@@ -1211,10 +1194,7 @@ class Ffd extends XfdMode {
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
-			pageobj.save(function() {
-				Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-				def.resolve();
-			}, def.reject);
+			pageobj.save(def.resolve, def.reject);
 		});
 		return def;
 	}
@@ -1345,7 +1325,7 @@ class Cfd extends XfdMode {
 	evaluate() {
 		let tm = super.evaluate();
 		tm.add(this.tagPage, []);
-		tm.add(this.addToList, [this.tagPage]);
+		tm.add(this.addToList, [this.tagPage], this.printReasonText);
 		tm.add(this.fetchCreatorInfo, []);
 		tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
 		tm.add(this.addToLog, [this.notifyCreator]);
@@ -1417,10 +1397,7 @@ class Cfd extends XfdMode {
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
-			pageobj.save(function() {
-				Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-				def.resolve();
-			}, def.reject);
+			pageobj.save(def.resolve, def.reject);
 		});
 		return def;
 	}
@@ -1513,7 +1490,7 @@ class Cfds extends XfdMode {
 	evaluate() {
 		let tm = super.evaluate();
 		tm.add(this.tagPage, []);
-		tm.add(this.addToList, []);
+		tm.add(this.addToList, [], this.printReasonText);
 		tm.add(this.addToLog, [this.addToList]);
 		tm.execute().then(() => this.redirectToDiscussion());
 	}
@@ -1559,10 +1536,7 @@ class Cfds extends XfdMode {
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
-			pageobj.save(function() {
-				Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-				def.resolve();
-			}, def.reject);
+			pageobj.save(def.resolve, def.reject);
 		});
 		return def;
 	}
@@ -1646,7 +1620,7 @@ class Mfd extends XfdMode {
 		tm.add(this.determineDiscussionPage, [])
 		tm.add(this.tagPage, [this.determineDiscussionPage]);
 		tm.add(this.addToList, [this.determineDiscussionPage]);
-		tm.add(this.createDiscussionPage, [this.determineDiscussionPage]);
+		tm.add(this.createDiscussionPage, [this.determineDiscussionPage], this.printReasonText);
 		tm.add(this.fetchCreatorInfo, []);
 		tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
 		tm.add(this.notifyUserspaceOwner, [this.fetchCreatorInfo]);
@@ -1697,10 +1671,7 @@ class Mfd extends XfdMode {
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('createonly');
-			pageobj.save(function() {
-				Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-				def.resolve();
-			}, def.reject);
+			pageobj.save(def.resolve, def.reject);
 		});
 		return def;
 	}
@@ -1833,7 +1804,7 @@ class Rfd extends XfdMode {
 		let tm = new Morebits.taskManager(this);
 		tm.add(this.findTarget, []);
 		tm.add(this.tagPage, [this.findTarget]);
-		tm.add(this.addToList, [this.tagPage]);
+		tm.add(this.addToList, [this.findTarget, this.tagPage], this.printReasonText);
 		tm.add(this.fetchCreatorInfo, []);
 		tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
 		tm.add(this.notifyTargetTalk, [this.fetchCreatorInfo, this.tagPage]);
@@ -1943,10 +1914,7 @@ class Rfd extends XfdMode {
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
-			pageobj.save(function() {
-				def.resolve();
-				Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-			}, def.reject);
+			pageobj.save(def.resolve, def.reject);
 		});
 		return def;
 	}
