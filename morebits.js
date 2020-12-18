@@ -5279,6 +5279,7 @@ Morebits.batchOperation = function(currentAction) {
  */
 Morebits.taskManager = function(context) {
 	this.taskDependencyMap = new Map();
+	this.failureCallbackMap = new Map();
 	this.deferreds = new Map();
 	this.allDeferreds = []; // Hack: IE doesn't support Map.prototype.values
 	this.context = context || window;
@@ -5291,9 +5292,12 @@ Morebits.taskManager = function(context) {
 	 *
 	 * @param {Function} func - A task.
 	 * @param {Function[]} deps - Its dependencies.
+	 * @param {Function} [onFailure] - a failure callback that's run if the task or any one
+	 * of its dependencies fail.
 	 */
-	this.add = function(func, deps) {
+	this.add = function(func, deps, onFailure) {
 		this.taskDependencyMap.set(func, deps);
+		this.failureCallbackMap.set(func, onFailure || function() {});
 		var deferred = $.Deferred();
 		this.deferreds.set(func, deferred);
 		this.allDeferreds.push(deferred);
@@ -5302,7 +5306,7 @@ Morebits.taskManager = function(context) {
 	/**
 	 * Run all the tasks. Multiple tasks may be run at once.
 	 *
-	 * @returns {promise} - A jQuery promise object that is resolved or rejected with the api object.
+	 * @returns {jQuery.Promise} - Resolved if all tasks succeed, rejected otherwise.
 	 */
 	this.execute = function() {
 		var self = this; // proxy for `this` for use inside functions where `this` is something else
@@ -5310,10 +5314,21 @@ Morebits.taskManager = function(context) {
 			var dependencyPromisesArray = deps.map(function(dep) {
 				return self.deferreds.get(dep);
 			});
-			$.when.apply(null, dependencyPromisesArray).then(function() {
-				task.apply(self.context, arguments).then(function() {
-					self.deferreds.get(task).resolve.apply(null, arguments);
+			$.when.apply(self.context, dependencyPromisesArray).then(function() {
+				var result = task.apply(self.context, arguments);
+				if (result === undefined) { // maybe the function threw, or it didn't return anything
+					mw.log.error('Morebits.taskManager: task returned undefined');
+					self.deferreds.get(task).reject.apply(self.context, arguments);
+					self.failureCallbackMap.get(task).apply(self.context, []);
+				}
+				result.then(function() {
+					self.deferreds.get(task).resolve.apply(self.context, arguments);
+				}, function() { // task failed
+					self.deferreds.get(task).reject.apply(self.context, arguments);
+					self.failureCallbackMap.get(task).apply(self.context, arguments);
 				});
+			}, function() { // one or more of the dependencies failed
+				self.failureCallbackMap.get(task).apply(self.context, arguments);
 			});
 		});
 		return $.when.apply(null, this.allDeferreds); // resolved when everything is done!
