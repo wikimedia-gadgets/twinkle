@@ -23,30 +23,41 @@ Twinkle.unlink = function twinkleunlink() {
 
 // the parameter is used when invoking unlink from admin speedy
 Twinkle.unlink.callback = function(presetReason) {
+	var fileSpace = mw.config.get('wgNamespaceNumber') === 6;
+
 	var Window = new Morebits.simpleWindow(600, 440);
-	Window.setTitle('Unlink backlinks' + (mw.config.get('wgNamespaceNumber') === 6 ? ' and file usages' : ''));
+	Window.setTitle('Unlink backlinks' + (fileSpace ? ' and file usages' : ''));
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Unlink prefs', 'WP:TW/PREF#unlink');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#unlink');
 
 	var form = new Morebits.quickForm(Twinkle.unlink.callback.evaluate);
 
-	// prepend some basic documentation
-	var node1 = Morebits.htmlNode('code', '[[' + Morebits.pageNameNorm + '|link text]]');
-	var node2 = Morebits.htmlNode('code', 'link text');
-	node1.style.fontFamily = node2.style.fontFamily = 'monospace';
-	node1.style.fontStyle = node2.style.fontStyle = 'normal';
+	// prepend some documentation: files are commented out, while any
+	// display text is preserved for links (otherwise the link itself is used)
+	var linkTextBefore = Morebits.htmlNode('code', '[[' + (fileSpace ? ':' : '') + Morebits.pageNameNorm + '|link text]]');
+	var linkTextAfter = Morebits.htmlNode('code', 'link text');
+	var linkPlainBefore = Morebits.htmlNode('code', '[[' + Morebits.pageNameNorm + ']]');
+	var linkPlainAfter;
+	if (fileSpace) {
+		linkPlainAfter = Morebits.htmlNode('code', '<!-- [[' + Morebits.pageNameNorm + ']] -->');
+	} else {
+		linkPlainAfter = Morebits.htmlNode('code', Morebits.pageNameNorm);
+	}
+	[linkTextBefore, linkTextAfter, linkPlainBefore, linkPlainAfter].forEach(function(node) {
+		node.style.fontFamily = 'monospace';
+		node.style.fontStyle = 'normal';
+	});
+
 	form.append({
 		type: 'div',
 		style: 'margin-bottom: 0.5em',
 		label: [
 			'This tool allows you to unlink all incoming links ("backlinks") that point to this page' +
-				(mw.config.get('wgNamespaceNumber') === 6 ? ', and/or hide all inclusions of this file by wrapping them in <!-- --> comment markup' : '') +
+				(fileSpace ? ', and/or hide all inclusions of this file by wrapping them in <!-- --> comment markup' : '') +
 				'. For instance, ',
-			node1,
-			' would become ',
-			node2,
-			'. Use it with caution.'
+			linkTextBefore, ' would become ', linkTextAfter, ' and ',
+			linkPlainBefore, ' would become ', linkPlainAfter, '. Use it with caution.'
 		]
 	});
 
@@ -67,7 +78,7 @@ Twinkle.unlink.callback = function(presetReason) {
 		rawcontinue: true,
 		format: 'json'
 	};
-	if (mw.config.get('wgNamespaceNumber') === 6) {  // File:
+	if (fileSpace) {
 		query.list += '|imageusage';
 		query.iutitle = query.bltitle;
 		query.iulimit = query.bllimit;
@@ -76,7 +87,7 @@ Twinkle.unlink.callback = function(presetReason) {
 		query.blfilterredir = 'nonredirects';
 	}
 	var wikipedia_api = new Morebits.wiki.api('Grabbing backlinks', query, Twinkle.unlink.callbacks.display.backlinks);
-	wikipedia_api.params = { form: form, Window: Window, image: mw.config.get('wgNamespaceNumber') === 6 };
+	wikipedia_api.params = { form: form, Window: Window, image: fileSpace };
 	wikipedia_api.post();
 
 	var root = document.createElement('div');
