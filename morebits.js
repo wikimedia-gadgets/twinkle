@@ -4485,9 +4485,6 @@ Morebits.wikitext.page.prototype = {
 
 	/**
 	 * Removes links to `link_target` from the page text.
-	 * Files and Categories become links with a leading colon
-	 * (e.g. [[:File:Test.png]]); otherwise, allow for an optional leading
-	 * colon (e.g. [[:User:Test]]).
 	 *
 	 * @param {string} link_target
 	 * @returns {Morebits.wikitext.page}
@@ -4495,6 +4492,8 @@ Morebits.wikitext.page.prototype = {
 	removeLink: function(link_target) {
 		var link_re_string = Morebits.pageNameRegex(link_target);
 
+		// Files and Categories become links with a leading colon, e.g. [[:File:Test.png]]
+		// Otherwise, allow for an optional leading colon, e.g. [[:User:Test]]
 		var special_ns_re = /^(?:[Ff]ile|[Ii]mage|[Cc]ategory):/;
 		var colon = special_ns_re.test(link_target) ? ':' : ':?';
 

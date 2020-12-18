@@ -133,10 +133,17 @@ QUnit.test('Morebits.wikitext.page', assert => {
 			params: ['{{newtag}}', 'short description|about']
 		},
 		{
+			name: 'no linktext',
+			method: 'removeLink',
+			input: 'O, [[Juliet]] she doth {{plural|teach}} [[Romeo|the]] torches to burn bright!',
+			expected: 'O, Juliet she doth {{plural|teach}} [[Romeo|the]] torches to burn bright!',
+			params: ['juliet']
+		},
+		{
 			name: 'multiple',
 			method: 'removeLink',
-			input: 'O, [[Juliet|she]] [[juliet|doth]] {{plural|teach}} [[Romeo|the]] [[:Juliet|torches]] [[juliet|to]] burn bright!',
-			expected: 'O, she doth {{plural|teach}} [[Romeo|the]] torches to burn bright!',
+			input: 'O, [[Juliet]] she [[juliet|doth]] {{plural|teach}} [[Romeo|the]] [[:Juliet|torches]] [[juliet]] to burn bright!',
+			expected: 'O, Juliet she doth {{plural|teach}} [[Romeo|the]] torches juliet to burn bright!',
 			params: ['juliet']
 		},
 		{
@@ -191,9 +198,16 @@ QUnit.test('Morebits.wikitext.page', assert => {
 		{
 			name: 'File links not displays',
 			method: 'removeLink',
-			input: 'O, [[:File:Fee.svg|she]] [[File:Fee.svg|doth]] {{plural|teach}} [[:File:Fee.svg|the]] [[File:Fee.svg|torches]] [[Fee.svg|to]] burn bright!',
-			expected: 'O, she [[File:Fee.svg|doth]] {{plural|teach}} the [[File:Fee.svg|torches]] [[Fee.svg|to]] burn bright!',
+			input: 'O, [[:File:Fee.svg|she]] [[File:Fee.svg|doth]] {{plural|teach}} [[:File:Fee.svg]] the [[File:Fee.svg|torches]] [[Fee.svg|to]] burn bright!',
+			expected: 'O, she [[File:Fee.svg|doth]] {{plural|teach}} File:Fee.svg the [[File:Fee.svg|torches]] [[Fee.svg|to]] burn bright!',
 			params: ['File:Fee.svg']
+		},
+		{
+			name: 'Category links not categorizations',
+			method: 'removeLink',
+			input: 'O, [[:Category:Romeo|she]] doth teach [[:Category:Romeo]] the torches to burn bright![[Category:Romeo]]',
+			expected: 'O, she doth teach Category:Romeo the torches to burn bright![[Category:Romeo]]',
+			params: ['Category:Romeo']
 		},
 		{
 			name: 'File displays not links',
@@ -226,8 +240,8 @@ QUnit.test('Morebits.wikitext.page', assert => {
 		{
 			name: 'Underscores',
 			method: 'removeLink',
-			input: 'O, [[Romeo and Juliet|she]] [[Romeo_and Juliet|doth]] {{plural|teach}} [[Romeo|the]] [[:Romeo_and_Juliet|torches]] [[Romeo and_Juliet|to]] burn bright!',
-			expected: 'O, she doth {{plural|teach}} [[Romeo|the]] torches to burn bright!',
+			input: 'O, [[Romeo and Juliet|she]] [[Romeo_and Juliet|doth]] {{plural|teach}} [[Romeo|the]] [[:Romeo_and_Juliet|torches]] [[Romeo and_Juliet|to]] burn [[Romeo_and_Juliet]] bright!',
+			expected: 'O, she doth {{plural|teach}} [[Romeo|the]] torches to burn Romeo_and_Juliet bright!',
 			params: ['Romeo and Juliet']
 		},
 		{
