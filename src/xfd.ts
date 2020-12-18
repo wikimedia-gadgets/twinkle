@@ -151,6 +151,12 @@ abstract class XfdMode {
 	result: HTMLFormElement
 	params: Record<string, any>
 
+	/**
+	 * Used in determineDiscussionPage(), applicable only if in the XfD process, each page is
+	 * discussed on a separate page (like AfD and MfD). Otherwise this can be skipped.
+	 */
+	discussionPagePrefix: string;
+
 	getMenuTooltip(): string {
 		return 'Nominate page for deletion';
 	}
@@ -233,6 +239,59 @@ abstract class XfdMode {
 		setTimeout(() => {
 			window.location.href = mw.util.getUrl(redirPage);
 		}, Morebits.wiki.actionCompleted.timeOut);
+	}
+
+	/**
+	 * Only applicable for XFD processes that use separate discussion pages for every page.
+	 */
+	determineDiscussionPage() {
+		let params = this.params;
+		let wikipedia_api = new Morebits.wiki.api('Looking for prior nominations of this page', {
+			'action': 'query',
+			'list': 'allpages',
+			'apprefix': new mw.Title(this.discussionPagePrefix).getMain() + '/' + Morebits.pageNameNorm,
+			'apnamespace': 4,
+			'apfilterredir': 'nonredirects',
+			'aplimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
+		});
+		return wikipedia_api.post().then((apiobj) => {
+			var xmlDoc = apiobj.responseXML;
+			var titles = $(xmlDoc).find('allpages p');
+
+			// There has been no earlier entries with this prefix, just go on.
+			if (titles.length <= 0) {
+				params.numbering = params.number = '';
+			} else {
+				var number = 0;
+				var order_re = new RegExp('^' +
+					Morebits.string.escapeRegExp(this.discussionPagePrefix + '/' + Morebits.pageNameNorm) +
+					'\\s*\\(\\s*(\\d+)(?:(?:th|nd|rd|st) nom(?:ination)?)?\\s*\\)\\s*$');
+				for (var i = 0; i < titles.length; ++i) {
+					var title = titles[i].getAttribute('title');
+
+					// First, simple test, is there an instance with this exact name?
+					if (title === this.discussionPagePrefix + '/' + Morebits.pageNameNorm) {
+						number = Math.max(number, 1);
+						continue;
+					}
+
+					var match = order_re.exec(title);
+
+					// No match; A non-good value
+					if (!match) {
+						continue;
+					}
+
+					// A match, set number to the max of current
+					number = Math.max(number, Number(match[1]));
+				}
+				params.number = utils.num2order(number + 1);
+				params.numbering = number > 0 ? ' (' + params.number + ' nomination)' : '';
+			}
+			params.discussionpage = this.discussionPagePrefix + '/' + Morebits.pageNameNorm + params.numbering;
+
+			apiobj.getStatusElement().info('next in order is ' + params.discussionpage);
+		});
 	}
 
 	autoEditRequest(pageobj: Morebits.wiki.page) {
@@ -396,6 +455,8 @@ class Afd extends XfdMode {
 		return mw.config.get('wgNamespaceNumber') === 0;
 	}
 
+	discussionPagePrefix = 'Wikipedia:Articles for deletion';
+
 	getFieldsetLabel() {
 		return 'Articles for deletion';
 	}
@@ -558,55 +619,6 @@ class Afd extends XfdMode {
 
 	preprocessParams() {
 		this.params.lookupNonRedirectCreator = true; // for this.fetchCreatorInfo()
-	}
-
-	determineDiscussionPage() {
-		let params = this.params;
-		return new Morebits.wiki.api('Determining discussion page', {
-			'action': 'query',
-			'list': 'allpages',
-			'apprefix': 'Articles for deletion/' + Morebits.pageNameNorm,
-			'apnamespace': 4,
-			'apfilterredir': 'nonredirects',
-			'aplimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
-		}).post().then((apiobj) => {
-			var xmlDoc = apiobj.responseXML;
-			var titles = $(xmlDoc).find('allpages p');
-
-			// There has been no earlier entries with this prefix, just go on.
-			if (titles.length <= 0) {
-				params.numbering = params.number = '';
-			} else {
-				var number = 0;
-				for (var i = 0; i < titles.length; ++i) {
-					var title = titles[i].getAttribute('title');
-
-					// First, simple test, is there an instance with this exact name?
-					if (title === 'Wikipedia:Articles for deletion/' + Morebits.pageNameNorm) {
-						number = Math.max(number, 1);
-						continue;
-					}
-
-					var order_re = new RegExp('^' +
-						Morebits.string.escapeRegExp('Wikipedia:Articles for deletion/' + Morebits.pageNameNorm) +
-						'\\s*\\(\\s*(\\d+)(?:(?:th|nd|rd|st) nom(?:ination)?)?\\s*\\)\\s*$');
-					var match = order_re.exec(title);
-
-					// No match; A non-good value
-					if (!match) {
-						continue;
-					}
-
-					// A match, set number to the max of current
-					number = Math.max(number, Number(match[1]));
-				}
-				params.number = utils.num2order(parseInt(number, 10) + 1);
-				params.numbering = number > 0 ? ' (' + params.number + ' nomination)' : '';
-			}
-			params.discussionpage = 'Wikipedia:Articles for deletion/' + Morebits.pageNameNorm + params.numbering;
-
-			apiobj.getStatusElement().info(params.discussionpage);
-		});
 	}
 
 	/**
@@ -1592,6 +1604,8 @@ class Mfd extends XfdMode {
 		return 'Miscellany for deletion';
 	}
 
+	discussionPagePrefix = 'Wikipedia:Miscellany for deletion';
+
 	generateFieldset(): quickFormElement {
 		this.fieldset = super.generateFieldset();
 		this.fieldset.append({
@@ -1638,56 +1652,6 @@ class Mfd extends XfdMode {
 		tm.add(this.notifyUserspaceOwner, [this.fetchCreatorInfo]);
 		tm.add(this.addToLog, [this.notifyCreator, this.notifyUserspaceOwner]);
 		tm.execute().then(() => this.redirectToDiscussion());
-	}
-
-	determineDiscussionPage() {
-		let params = this.params;
-		let wikipedia_api = new Morebits.wiki.api('Looking for prior nominations of this page', {
-			'action': 'query',
-			'list': 'allpages',
-			'apprefix': 'Miscellany for deletion/' + Morebits.pageNameNorm,
-			'apnamespace': 4,
-			'apfilterredir': 'nonredirects',
-			'aplimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
-		});
-		return wikipedia_api.post().then((apiobj) => {
-			var xmlDoc = apiobj.responseXML;
-			var titles = $(xmlDoc).find('allpages p');
-
-			// There has been no earlier entries with this prefix, just go on.
-			if (titles.length <= 0) {
-				params.numbering = params.number = '';
-			} else {
-				var number = 0;
-				for (var i = 0; i < titles.length; ++i) {
-					var title = titles[i].getAttribute('title');
-
-					// First, simple test, is there an instance with this exact name?
-					if (title === 'Wikipedia:Miscellany for deletion/' + Morebits.pageNameNorm) {
-						number = Math.max(number, 1);
-						continue;
-					}
-
-					var order_re = new RegExp('^' +
-						Morebits.string.escapeRegExp('Wikipedia:Miscellany for deletion/' + Morebits.pageNameNorm) +
-						'\\s*\\(\\s*(\\d+)(?:(?:th|nd|rd|st) nom(?:ination)?)?\\s*\\)\\s*$');
-					var match = order_re.exec(title);
-
-					// No match; A non-good value
-					if (!match) {
-						continue;
-					}
-
-					// A match, set number to the max of current
-					number = Math.max(number, Number(match[1]));
-				}
-				params.number = utils.num2order(parseInt(number, 10) + 1);
-				params.numbering = number > 0 ? ' (' + params.number + ' nomination)' : '';
-			}
-			params.discussionpage = 'Wikipedia:Miscellany for deletion/' + Morebits.pageNameNorm + params.numbering;
-
-			apiobj.getStatusElement().info('next in order is [[' + params.discussionpage + ']]');
-		});
 	}
 
 	tagPage() {
