@@ -169,24 +169,22 @@ Twinkle.fluff.linkBuilder = {
 
 Twinkle.fluff.addLinks = {
 	contributions: function() {
-		// $('sp-contributions-footer-anon-range') relies on the fmbox
-		// id in [[MediaWiki:Sp-contributions-footer-anon-range]] and
-		// is used to show rollback/vandalism links for IP ranges
-		var isRange = !!$('#sp-contributions-footer-anon-range')[0];
-		if (mw.config.exists('wgRelevantUserName') || isRange) {
+		if (mw.config.exists('wgRelevantUserName')) {
 			// Get the username these contributions are for
 			var username = mw.config.get('wgRelevantUserName');
 			if (Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
 				(mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1) ||
 				(mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1)) {
+
 				var $list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
+				var isRange = Morebits.ip.isRange(username);
 
 				$list.each(function(key, current) {
 					// revid is also available in the href of both
 					// .mw-changeslist-date or .mw-changeslist-diff
 					var page = $(current).find('.mw-contributions-title').text();
 
-					// Get username for IP ranges (wgRelevantUserName is null)
+					// Get revisions-specific username for IP ranges
 					if (isRange) {
 						// The :not is possibly unnecessary, as it appears that
 						// .mw-userlink is simply not present if the username is hidden
