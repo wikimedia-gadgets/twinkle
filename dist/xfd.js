@@ -822,11 +822,18 @@ var Tfd = /** @class */ (function (_super) {
         pageobj.load(function (pageobj) {
             _this.setLogPageAndDiscussionPage(pageobj.getLoadTime());
             var text = pageobj.getPageText();
-            var tableNewline = params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : ''; // No newline for inline
-            params.tagText = (params.noinclude ? '<noinclude>' : '') + '{{subst:template for discussion|help=off' +
-                (params.templatetype !== 'standard' ? '|type=' + params.templatetype : '') +
-                (params.noinclude ? '}}</noinclude>' : '}}') + tableNewline;
-            if (pageobj.canEdit()) {
+            params.tagText = '{{subst:template for discussion|help=off' + (params.templatetype !== 'standard' ? '|type=' + params.templatetype : '') + '}}';
+            if (pageobj.getContentModel() === 'sanitized-css') {
+                params.tagText = '/* ' + params.tagText + ' */';
+            }
+            else {
+                if (params.noinclude) {
+                    params.tagText = '<noinclude>' + params.tagText + '</noinclude>';
+                }
+                // No newline for inline
+                params.tagText += params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : '';
+            }
+            if (pageobj.canEdit() && ['wikitext', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
                 pageobj.setPageText(params.tagText + text);
                 pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
                 pageobj.setChangeTags(Twinkle.changeTags);
@@ -872,11 +879,19 @@ var Tfd = /** @class */ (function (_super) {
     Tfd.prototype.tagForMerge = function (pageobj, params) {
         var def = $.Deferred();
         var text = pageobj.getPageText();
-        var tableNewline = params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : ''; // No newline for inline
-        params.tagText = (params.noinclude ? '<noinclude>' : '') + '{{subst:tfm|help=off|' +
-            (params.templatetype !== 'standard' ? 'type=' + params.templatetype + '|' : '') + '1=' + params.otherTemplateName.replace(/^(?:Template|Module):/, '') +
-            (params.noinclude ? '}}</noinclude>' : '}}') + tableNewline;
-        if (pageobj.canEdit()) {
+        params.tagText = '{{subst:tfm|help=off|' + (params.templatetype !== 'standard' ? 'type=' + params.templatetype + '|' : '') +
+            '1=' + params.otherTemplateName.replace(/^(?:Template|Module):/, '') + '}}';
+        if (pageobj.getContentModel() === 'sanitized-css') {
+            params.tagText = '/* ' + params.tagText + ' */';
+        }
+        else {
+            if (params.noinclude) {
+                params.tagText = '<noinclude>' + params.tagText + '</noinclude>';
+            }
+            // No newline for inline
+            params.tagText += params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : '';
+        }
+        if (pageobj.canEdit() && ['wikitext', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
             pageobj.setPageText(params.tagText + text);
             pageobj.setEditSummary('Listed for merging with [[:' + params.otherTemplateName + ']]; see [[:' + params.discussionpage + ']].');
             pageobj.setChangeTags(Twinkle.changeTags);
