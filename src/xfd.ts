@@ -1998,63 +1998,62 @@ class Rm extends XfdMode {
 			+ '|reason=' + params.reason + '}}';
 	}
 
+	preprocessParams() {
+		this.params.discussionpage = this.params.rmtr ?
+			'Wikipedia:Requested moves/Technical requests' :
+			new mw.Title(Morebits.pageNameNorm).getTalkPage().toText();
+	}
+
 	showPreview(form: HTMLFormElement) {
 		let templatetext = this.getDiscussionWikitext();
-		form.previewer.beginRender(templatetext, this.params.rmtr ?
-			'Wikipedia:Requested moves/Technical requests' :
-			new mw.Title(Morebits.pageNameNorm).getTalkPage().toText());
+		form.previewer.beginRender(templatetext, this.params.discussionpage);
 	}
 
 	evaluate() {
-		super.evaluate();
-		var nomPageName = this.params.rmtr ?
-			'Wikipedia:Requested moves/Technical requests' :
-			new mw.Title(Morebits.pageNameNorm).getTalkPage().toText();
-
-		Morebits.wiki.actionCompleted.redirect = nomPageName;
-		Morebits.wiki.actionCompleted.notice = 'Nomination completed, now redirecting to the discussion page';
-
-		let pageobj = new Morebits.wiki.page(nomPageName, this.params.rmtr ? 'Adding entry at WP:RM/TR' : 'Adding entry on talk page');
-		pageobj.setFollowRedirect(true);
-
-		if (this.params.rmtr) {
-			pageobj.setPageSection(2);
-			pageobj.load((pageobj) => {
-				var text = pageobj.getPageText();
-				var statelem = pageobj.getStatusElement();
-				var hiddenCommentRE = /---- and enter on a new line.* -->/;
-				var newtext = text.replace(hiddenCommentRE, '$&\n' + this.getDiscussionWikitext());
-				if (text === newtext) {
-					statelem.error('failed to find target spot for the entry');
-					return;
-				}
-				pageobj.setPageText(newtext);
-				pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
-				pageobj.setChangeTags(Twinkle.changeTags);
-				pageobj.save(() => {
-					Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-					// add this nomination to the user's userspace log
-					this.addToLog();
-				});
-			});
-		} else {
-			// listAtTalk uses .append(), so no need to load the page
-			this.listAtTalk(pageobj);
-		}
+		let tm = super.evaluate();
+		tm.add(this.addToList, [], this.printReasonText);
+		tm.add(this.addToLog, [this.addToList]);
+		tm.execute().then(() => this.redirectToDiscussion());
 	}
 
-	listAtTalk(pageobj) {
-		var params = this.params;
+	addToList() {
+		return this.params.rmtr ? this.listAtRMTR() : this.listAtTalk();
+	}
+
+	listAtTalk() {
+		let def = $.Deferred();
+		let params = this.params;
+		let pageobj = new Morebits.wiki.page(params.discussionpage, 'Adding entry on talk page');
 		pageobj.setAppendText('\n\n' + this.getDiscussionWikitext());
+		pageobj.setFollowRedirect(true);
 		pageobj.setEditSummary('Proposing move' + (params.newname ? ' to [[:' + params.newname + ']]' : ''));
 		pageobj.setChangeTags(Twinkle.changeTags);
 		pageobj.setCreateOption('recreate'); // since the talk page need not exist
 		pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
-		pageobj.append(() => {
-			Xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-			// add this nomination to the user's userspace log
-			this.addToLog();
-		});
+		pageobj.append(def.resolve, def.reject);
+		return def;
+	}
+
+	listAtRMTR() {
+		let def = $.Deferred();
+		let pageobj = new Morebits.wiki.page(this.params.discussionpage, 'Adding entry at WP:RM/TR');
+		pageobj.setFollowRedirect(true);
+		pageobj.setPageSection(2);
+		pageobj.load((pageobj) => {
+			var text = pageobj.getPageText();
+			var statelem = pageobj.getStatusElement();
+			var hiddenCommentRE = /---- and enter on a new line.* -->/;
+			var newtext = text.replace(hiddenCommentRE, '$&\n' + this.getDiscussionWikitext());
+			if (text === newtext) {
+				statelem.error('failed to find target spot for the entry');
+				return;
+			}
+			pageobj.setPageText(newtext);
+			pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
+			pageobj.setChangeTags(Twinkle.changeTags);
+			pageobj.save(def.resolve, def.reject);
+		}, def.reject);
+		return def;
 	}
 
 	getUserspaceLoggingExtraInfo() {

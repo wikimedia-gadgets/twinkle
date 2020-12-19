@@ -1837,61 +1837,59 @@ var Rm = /** @class */ (function (_super) {
             '{{subst:Requested move|current1=' + pageName + '|new1=' + params.newname)
             + '|reason=' + params.reason + '}}';
     };
+    Rm.prototype.preprocessParams = function () {
+        this.params.discussionpage = this.params.rmtr ?
+            'Wikipedia:Requested moves/Technical requests' :
+            new mw.Title(Morebits.pageNameNorm).getTalkPage().toText();
+    };
     Rm.prototype.showPreview = function (form) {
         var templatetext = this.getDiscussionWikitext();
-        form.previewer.beginRender(templatetext, this.params.rmtr ?
-            'Wikipedia:Requested moves/Technical requests' :
-            new mw.Title(Morebits.pageNameNorm).getTalkPage().toText());
+        form.previewer.beginRender(templatetext, this.params.discussionpage);
     };
     Rm.prototype.evaluate = function () {
         var _this = this;
-        _super.prototype.evaluate.call(this);
-        var nomPageName = this.params.rmtr ?
-            'Wikipedia:Requested moves/Technical requests' :
-            new mw.Title(Morebits.pageNameNorm).getTalkPage().toText();
-        Morebits.wiki.actionCompleted.redirect = nomPageName;
-        Morebits.wiki.actionCompleted.notice = 'Nomination completed, now redirecting to the discussion page';
-        var pageobj = new Morebits.wiki.page(nomPageName, this.params.rmtr ? 'Adding entry at WP:RM/TR' : 'Adding entry on talk page');
-        pageobj.setFollowRedirect(true);
-        if (this.params.rmtr) {
-            pageobj.setPageSection(2);
-            pageobj.load(function (pageobj) {
-                var text = pageobj.getPageText();
-                var statelem = pageobj.getStatusElement();
-                var hiddenCommentRE = /---- and enter on a new line.* -->/;
-                var newtext = text.replace(hiddenCommentRE, '$&\n' + _this.getDiscussionWikitext());
-                if (text === newtext) {
-                    statelem.error('failed to find target spot for the entry');
-                    return;
-                }
-                pageobj.setPageText(newtext);
-                pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
-                pageobj.setChangeTags(Twinkle.changeTags);
-                pageobj.save(function () {
-                    Xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-                    // add this nomination to the user's userspace log
-                    _this.addToLog();
-                });
-            });
-        }
-        else {
-            // listAtTalk uses .append(), so no need to load the page
-            this.listAtTalk(pageobj);
-        }
+        var tm = _super.prototype.evaluate.call(this);
+        tm.add(this.addToList, [], this.printReasonText);
+        tm.add(this.addToLog, [this.addToList]);
+        tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
-    Rm.prototype.listAtTalk = function (pageobj) {
-        var _this = this;
+    Rm.prototype.addToList = function () {
+        return this.params.rmtr ? this.listAtRMTR() : this.listAtTalk();
+    };
+    Rm.prototype.listAtTalk = function () {
+        var def = $.Deferred();
         var params = this.params;
+        var pageobj = new Morebits.wiki.page(params.discussionpage, 'Adding entry on talk page');
         pageobj.setAppendText('\n\n' + this.getDiscussionWikitext());
+        pageobj.setFollowRedirect(true);
         pageobj.setEditSummary('Proposing move' + (params.newname ? ' to [[:' + params.newname + ']]' : ''));
         pageobj.setChangeTags(Twinkle.changeTags);
         pageobj.setCreateOption('recreate'); // since the talk page need not exist
         pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
-        pageobj.append(function () {
-            Xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-            // add this nomination to the user's userspace log
-            _this.addToLog();
-        });
+        pageobj.append(def.resolve, def.reject);
+        return def;
+    };
+    Rm.prototype.listAtRMTR = function () {
+        var _this = this;
+        var def = $.Deferred();
+        var pageobj = new Morebits.wiki.page(this.params.discussionpage, 'Adding entry at WP:RM/TR');
+        pageobj.setFollowRedirect(true);
+        pageobj.setPageSection(2);
+        pageobj.load(function (pageobj) {
+            var text = pageobj.getPageText();
+            var statelem = pageobj.getStatusElement();
+            var hiddenCommentRE = /---- and enter on a new line.* -->/;
+            var newtext = text.replace(hiddenCommentRE, '$&\n' + _this.getDiscussionWikitext());
+            if (text === newtext) {
+                statelem.error('failed to find target spot for the entry');
+                return;
+            }
+            pageobj.setPageText(newtext);
+            pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
+            pageobj.setChangeTags(Twinkle.changeTags);
+            pageobj.save(def.resolve, def.reject);
+        }, def.reject);
+        return def;
     };
     Rm.prototype.getUserspaceLoggingExtraInfo = function () {
         var params = this.params, text = '';
