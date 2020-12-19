@@ -1,3 +1,4 @@
+const {obj_entries, arr_includes} = Twinkle.shims;
 
 class Xfd extends TwinkleModule {
 	mode: XfdMode
@@ -874,6 +875,19 @@ class Tfd extends XfdMode {
 			]
 		});
 
+		this.fieldset.append({
+			type: 'checkbox',
+			list: [
+				{
+					label: 'Notify users of the template',
+					value: 'devpages',
+					name: 'devpages',
+					tooltip: 'A notification template will be sent to Twinkle, AWB, and RedWarn if this is true.',
+					checked: true
+				}
+			]
+		});
+
 		this.appendReasonArea();
 		return this.fieldset;
 	}
@@ -897,6 +911,7 @@ class Tfd extends XfdMode {
 		tm.add(this.fetchCreatorInfo, []);
 		tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
 		tm.add(this.notifyOtherCreator, [this.fetchCreatorInfo]);
+		tm.add(this.notifyDevs, [this.addToList]);
 		tm.add(this.addToLog, [this.notifyCreator]);
 		tm.execute().then(() => this.redirectToDiscussion());
 
@@ -1067,6 +1082,24 @@ class Tfd extends XfdMode {
 			this.notifyTalkPage(otherpagecreator).then(def.resolve, def.reject);
 		});
 		return def;
+	}
+
+	notifyDevs() {
+		if (!this.params.devpages) {
+			return $.Deferred().resolve();
+		}
+		var inCategories = mw.config.get('wgCategories');
+		var categoryNotificationPageMap = {
+			'Templates used by Twinkle': 'Wikipedia talk:Twinkle',
+			'Templates used by AutoWikiBrowser': 'Wikipedia talk:AutoWikiBrowser',
+			'Templates used by RedWarn': 'Wikipedia talk:RedWarn'
+		};
+
+		return $.when.apply($, obj_entries(categoryNotificationPageMap).filter(([cat, page]) => {
+			return arr_includes(inCategories, cat);
+		}).map(([cat, page]) => {
+			return this.notifyTalkPage(page, new Morebits.status('Notifying ' + page + ' of template nomination'));
+		}));
 	}
 
 	watchModule() {
@@ -2102,8 +2135,6 @@ class Rm extends XfdMode {
 	}
 
 }
-
-const {obj_entries} = Twinkle.shims;
 
 let utils = {
 	/** Get ordinal number figure */

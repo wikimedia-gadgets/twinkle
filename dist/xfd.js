@@ -11,6 +11,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var _a = Twinkle.shims, obj_entries = _a.obj_entries, arr_includes = _a.arr_includes;
 var Xfd = /** @class */ (function (_super) {
     __extends(Xfd, _super);
     function Xfd() {
@@ -779,6 +780,18 @@ var Tfd = /** @class */ (function (_super) {
                 }
             ]
         });
+        this.fieldset.append({
+            type: 'checkbox',
+            list: [
+                {
+                    label: 'Notify users of the template',
+                    value: 'devpages',
+                    name: 'devpages',
+                    tooltip: 'A notification template will be sent to Twinkle, AWB, and RedWarn if this is true.',
+                    checked: true
+                }
+            ]
+        });
         this.appendReasonArea();
         return this.fieldset;
     };
@@ -801,6 +814,7 @@ var Tfd = /** @class */ (function (_super) {
         tm.add(this.fetchCreatorInfo, []);
         tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
         tm.add(this.notifyOtherCreator, [this.fetchCreatorInfo]);
+        tm.add(this.notifyDevs, [this.addToList]);
         tm.add(this.addToLog, [this.notifyCreator]);
         tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
@@ -953,6 +967,25 @@ var Tfd = /** @class */ (function (_super) {
             _this.notifyTalkPage(otherpagecreator).then(def.resolve, def.reject);
         });
         return def;
+    };
+    Tfd.prototype.notifyDevs = function () {
+        var _this = this;
+        if (!this.params.devpages) {
+            return $.Deferred().resolve();
+        }
+        var inCategories = mw.config.get('wgCategories');
+        var categoryNotificationPageMap = {
+            'Templates used by Twinkle': 'Wikipedia talk:Twinkle',
+            'Templates used by AutoWikiBrowser': 'Wikipedia talk:AutoWikiBrowser',
+            'Templates used by RedWarn': 'Wikipedia talk:RedWarn'
+        };
+        return $.when.apply($, obj_entries(categoryNotificationPageMap).filter(function (_a) {
+            var cat = _a[0], page = _a[1];
+            return arr_includes(inCategories, cat);
+        }).map(function (_a) {
+            var cat = _a[0], page = _a[1];
+            return _this.notifyTalkPage(page, new Morebits.status('Notifying ' + page + ' of template nomination'));
+        }));
     };
     Tfd.prototype.watchModule = function () {
         var params = this.params;
@@ -1937,7 +1970,6 @@ var Rm = /** @class */ (function (_super) {
     Rm.venueLabel = 'RM (Requested moves)';
     return Rm;
 }(XfdMode));
-var obj_entries = Twinkle.shims.obj_entries;
 var utils = {
     /** Get ordinal number figure */
     num2order: function (num) {
