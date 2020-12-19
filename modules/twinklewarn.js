@@ -10,12 +10,14 @@
  ****************************************
  * Mode of invocation:     Tab ("Warn")
  * Active on:              Any page with relevant user name (userspace, contribs,
- *                         etc.), as well as the rollback success page
+ *                         etc.) (not IP ranges), as well as the rollback success page
  */
 
 Twinkle.warn = function twinklewarn() {
 
-	if (mw.config.get('wgRelevantUserName')) {
+	// Users and IPs but not IP ranges
+	if (mw.config.exists('wgRelevantUserName') &&
+		mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) === mw.util.isIPAddress(mw.config.get('wgRelevantUserName'), true)) {
 		Twinkle.addPortletLink(Twinkle.warn.callback, 'Warn', 'tw-warn', 'Warn/notify user');
 		if (Twinkle.getPref('autoMenuAfterRollback') &&
 			mw.config.get('wgNamespaceNumber') === 3 &&
