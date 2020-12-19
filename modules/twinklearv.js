@@ -18,12 +18,12 @@ Twinkle.arv = function twinklearv() {
 		return;
 	}
 
-	var isIP = mw.util.isIPAddress(username);
-	var title = isIP ? 'Report IP to administrators' : 'Report user to administrators';
+	var isIP = mw.util.isIPAddress(username, true);
+	var userType = isIP ? 'IP' + (!mw.util.isIPAddress(username) ? ' range' : '') : 'user';
 
 	Twinkle.addPortletLink(function() {
 		Twinkle.arv.callback(username, isIP);
-	}, 'ARV', 'tw-arv', title);
+	}, 'ARV', 'tw-arv', 'Report ' + userType + ' to administrators');
 };
 
 Twinkle.arv.callback = function (uid, isIP) {
@@ -36,6 +36,8 @@ Twinkle.arv.callback = function (uid, isIP) {
 	Window.addFooterLink('ARV prefs', 'WP:TW/PREF#arv');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#arv');
 	Window.addFooterLink('Give feedback', 'WT:TW');
+
+	var isIPRange = isIP && !mw.util.isIPAddress(uid);
 
 	var form = new Morebits.quickForm(Twinkle.arv.callback.evaluate);
 	var categories = form.append({
@@ -53,7 +55,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 		type: 'option',
 		label: 'Username (WP:UAA)',
 		value: 'username',
-		disabled: mw.util.isIPAddress(uid)
+		disabled: isIP
 	});
 	categories.append({
 		type: 'option',
@@ -68,7 +70,8 @@ Twinkle.arv.callback = function (uid, isIP) {
 	categories.append({
 		type: 'option',
 		label: 'Edit warring (WP:AN3)',
-		value: 'an3'
+		value: 'an3',
+		disabled: isIPRange // rvuser template doesn't support ranges
 	});
 	form.append({
 		type: 'div',
@@ -108,8 +111,9 @@ Twinkle.arv.callback = function (uid, isIP) {
 	new Morebits.wiki.api("Checking the user's block status", query, function(apiobj) {
 		var blocklist = apiobj.getResponse().query.blocks;
 		if (blocklist.length) {
+			// If an IP is blocked *and* rangeblocked, only use whichever is more recent
 			var block = blocklist[0];
-			var message = (isIP ? 'This IP address' : 'This account') + ' is ' + (block.partial ? 'partially' : 'already') + ' blocked';
+			var message = (isIP ? 'This IP ' + (isIPRange ? 'range' : 'address') : 'This account') + ' is ' + (block.partial ? 'partially' : 'already') + ' blocked';
 			// Start and end differ, range blocked
 			message += block.rangestart !== block.rangeend ? ' as part of a rangeblock.' : '.';
 			if (block.partial) {
@@ -194,12 +198,12 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					{
 						label: 'Evidently a vandalism-only account',
 						value: 'vandalonly',
-						disabled: mw.util.isIPAddress(root.uid.value)
+						disabled: mw.util.isIPAddress(root.uid.value, true)
 					},
 					{
 						label: 'Account is a promotion-only account',
 						value: 'promoonly',
-						disabled: mw.util.isIPAddress(root.uid.value)
+						disabled: mw.util.isIPAddress(root.uid.value, true)
 					},
 					{
 						label: 'Account is evidently a spambot or a compromised account',
@@ -583,7 +587,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					aivPage.getStatusElement().status('Adding new report...');
 					aivPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].');
 					aivPage.setChangeTags(Twinkle.changeTags);
-					aivPage.setAppendText('\n*{{' + (mw.util.isIPAddress(uid) ? 'IPvandal' : 'vandal') + '|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
+					aivPage.setAppendText('\n*{{' + (mw.util.isIPAddress(uid, true) ? 'IPvandal' : 'vandal') + '|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
 					aivPage.append();
 				});
 			});
@@ -857,7 +861,7 @@ Twinkle.arv.processSock = function(params) {
 	// prepare the SPI report
 	var text = '\n\n{{subst:SPI report|socksraw=' +
 		params.sockpuppets.map(function(v) {
-			return '* {{' + (mw.util.isIPAddress(v) ? 'checkip' : 'checkuser') + '|1=' + v + '}}';
+			return '* {{' + (mw.util.isIPAddress(v, true) ? 'checkip' : 'checkuser') + '|1=' + v + '}}';
 		}).join('\n') + '\n|evidence=' + params.evidence + ' \n';
 
 	if (params.checkuser) {
