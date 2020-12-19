@@ -208,12 +208,28 @@ abstract class XfdMode {
 	evaluate(): any {
 		this.params = Morebits.quickForm.getInputData(this.result);
 		this.preprocessParams();
+		if (!this.validateInput()) {
+			return;
+		}
 		Morebits.simpleWindow.setButtonsEnabled(false);
 		Morebits.status.init(this.result);
 
 		return new Morebits.taskManager(this);
 	}
 
+	/**
+	 * Hook for form validation. If this returns false, form submission is aborted
+	 */
+	validateInput(): boolean {
+		return true;
+	}
+
+	/**
+	 * Print reason text if we fail to post the reason to the designated place on the wiki, so that
+	 * the user can reuse the text.
+	 * Should be invoked as a onFailure method in Morebits.taskManager.
+	 * This function shouldn't need to be overridden.
+	 */
 	printReasonText() {
 		Morebits.status.printUserText(this.params.reason, 'Your deletion rationale is provided below, which you can copy and paste into a new XFD dialog if you wish to try again:');
 	}
