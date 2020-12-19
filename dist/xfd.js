@@ -221,11 +221,12 @@ var XfdMode = /** @class */ (function () {
             'apprefix': new mw.Title(this.discussionPagePrefix).getMain() + '/' + Morebits.pageNameNorm,
             'apnamespace': 4,
             'apfilterredir': 'nonredirects',
-            'aplimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
+            'aplimit': 'max',
+            'format': 'json'
         });
         return wikipedia_api.post().then(function (apiobj) {
-            var xmlDoc = apiobj.responseXML;
-            var titles = $(xmlDoc).find('allpages p');
+            var response = apiobj.getResponse();
+            var titles = response.query.allpages;
             // There has been no earlier entries with this prefix, just go on.
             if (titles.length <= 0) {
                 params.numbering = params.number = '';
@@ -236,7 +237,7 @@ var XfdMode = /** @class */ (function () {
                     Morebits.string.escapeRegExp(_this.discussionPagePrefix + '/' + Morebits.pageNameNorm) +
                     '\\s*\\(\\s*(\\d+)(?:(?:th|nd|rd|st) nom(?:ination)?)?\\s*\\)\\s*$');
                 for (var i = 0; i < titles.length; ++i) {
-                    var title = titles[i].getAttribute('title');
+                    var title = titles[i].title;
                     // First, simple test, is there an instance with this exact name?
                     if (title === _this.discussionPagePrefix + '/' + Morebits.pageNameNorm) {
                         number = Math.max(number, 1);
@@ -1690,7 +1691,8 @@ var Rfd = /** @class */ (function (_super) {
         // avoid relying on the client clock to build the log page
         var query = {
             'action': 'query',
-            'curtimestamp': true
+            'curtimestamp': true,
+            'format': 'json'
         };
         if (document.getElementById('softredirect')) {
             // For soft redirects, define the target early
@@ -1704,13 +1706,13 @@ var Rfd = /** @class */ (function (_super) {
         }
         var wikipedia_api = new Morebits.wiki.api('Finding target of redirect', query);
         return wikipedia_api.post().then(function (apiobj) {
-            var $xmlDoc = $(apiobj.responseXML);
-            _this.params.curtimestamp = $xmlDoc.find('api').attr('curtimestamp');
+            var response = apiobj.getResponse();
+            _this.params.curtimestamp = response.curtimestamp;
             var date = new Morebits.date(_this.params.curtimestamp);
             _this.params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.format('YYYY MMMM D', 'utc');
             _this.params.discussionpage = _this.params.logpage + '#' + Morebits.pageNameNorm;
             if (!_this.params.rfdtarget) { // Not a softredirect
-                var target = $xmlDoc.find('redirects r').first().attr('to');
+                var target = response.query.redirects && response.query.redirects[0].to;
                 if (!target) {
                     var message = 'No target found. this page does not appear to be a redirect, aborting';
                     if (mw.config.get('wgAction') === 'history') {
@@ -1720,7 +1722,7 @@ var Rfd = /** @class */ (function (_super) {
                     return $.Deferred().reject();
                 }
                 _this.params.rfdtarget = target;
-                _this.params.section = $xmlDoc.find('redirects r').first().attr('tofragment');
+                var section = response.query.redirects[0].tofragment;
             }
         });
     };
