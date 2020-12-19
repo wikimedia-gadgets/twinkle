@@ -111,6 +111,27 @@ Morebits.sanitizeIPv6 = function (address) {
 };
 
 /**
+ * Get the /64 subnet for an IPv6 address.
+ *
+ * @param {string} ipv6 - The IPv6 address, with or without a subnet.
+ * @returns {boolean|string} - False if not IPv6 or bigger than a 64,
+ * otherwise the (sanitized) /64 address.
+ */
+Morebits.get64 = function (ipv6) {
+	if (!ipv6 || !mw.util.isIPv6Address(ipv6, true)) {
+		return false;
+	}
+	var subnetMatch = ipv6.match(/\/(\d{1,3})$/);
+	if (subnetMatch && parseInt(subnetMatch[1], 10) < 64) {
+		return false;
+	}
+	ipv6 = Morebits.sanitizeIPv6(ipv6);
+	var ip_re = /^((?:[0-9A-F]{1,4}:){4})(?:[0-9A-F]{1,4}:){3}[0-9A-F]{1,4}(?:\/\d{1,3})?$/;
+	return ipv6.replace(ip_re, '$1' + '0:0:0:0/64');
+};
+
+
+/**
  * Determines whether the current page is a redirect or soft redirect. Fails
  * to detect soft redirects on edit, history, etc. pages.  Will attempt to
  * detect [[Module:Redirect for discussion]], with the same failure points.

@@ -19,6 +19,14 @@ QUnit.test('sanitizeIPv6', assert => {
 	assert.strictEqual(Morebits.sanitizeIPv6('2001:0db8:0001:0000:0000:0ab9:C0A8:0102/42'), '2001:DB8:1:0:0:AB9:C0A8:102/42', 'Subnet');
 	assert.strictEqual(Morebits.sanitizeIPv6('127.0.0.1'), '127.0.0.1', 'Home sweet home');
 });
+QUnit.test('get64', assert => {
+	assert.strictEqual(Morebits.get64('2001:0db8:0001:0000:0000:0ab9:C0A8:0102'), '2001:DB8:1:0:0:0:0:0/64', 'IPv6');
+	assert.strictEqual(Morebits.get64('2001:0db8:0001:0000:0000:0ab9:C0A8:0102/65'), '2001:DB8:1:0:0:0:0:0/64', '65 subnet');
+	assert.strictEqual(Morebits.get64('2001:0db8:0001:0000:0000:0ab9:C0A8:0102/64'), '2001:DB8:1:0:0:0:0:0/64', '64 subnet');
+	assert.false(Morebits.get64('2001:0db8:0001:0000:0000:0ab9:C0A8:0102/63'), '63 subnet');
+	assert.false(Morebits.get64(), 'Missing');
+	assert.false(Morebits.get64('127.0.0.1'), 'IPv4');
+});
 
 QUnit.test('pageNameRegex', assert => {
 	assert.strictEqual(Morebits.pageNameRegex(mw.config.get('wgPageName')), '[Mm]acbeth,[_ ]King[_ ]of[_ ]Scotland', 'First character and spaces');
