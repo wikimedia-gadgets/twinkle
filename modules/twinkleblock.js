@@ -42,6 +42,9 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#block');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
+	// Always added, hidden later if actual user not blocked
+	Window.addFooterLink('Unblock this user', 'Special:Unblock/' + mw.config.get('wgRelevantUserName'), true);
+
 	var form = new Morebits.quickForm(Twinkle.block.callback.evaluate);
 	var actionfield = form.append({
 		type: 'field',
@@ -68,7 +71,9 @@ Twinkle.block.callback = function twinkleblockCallback() {
 				label: 'Add block template to user talk page',
 				value: 'template',
 				tooltip: 'If the blocking admin forgot to issue a block template, or you have just blocked the user without templating them, you can use this to issue the appropriate template. Check the partial block box for partial block templates.',
-				checked: true
+				// Disallow for IP ranges
+				checked: !mw.util.isIPAddress(mw.config.get('wgRelevantUserName'), true) || mw.util.isIPAddress(mw.config.get('wgRelevantUserName')),
+				disabled: !mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) && mw.util.isIPAddress(mw.config.get('wgRelevantUserName'), true)
 			}
 		]
 	});
@@ -87,15 +92,12 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	Twinkle.block.fetchUserInfo(function() {
 		// Toggle initial partial state depending on prior block type,
 		// will override the defaultToPartialBlocks pref
-		if (Twinkle.block.currentBlockInfo) {
+		if (Twinkle.block.currentBlockInfo && Twinkle.block.currentBlockInfo.user === mw.config.get('wgRelevantUserName')) {
 			$(result).find('[name=actiontype][value=partial]').prop('checked', Twinkle.block.currentBlockInfo.partial === '');
 		}
 
 		// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
 		Twinkle.block.transformBlockPresets();
-		if (Twinkle.block.currentBlockInfo) {
-			Window.addFooterLink('Unblock this user', 'Special:Unblock/' + mw.config.get('wgRelevantUserName'), true);
-		}
 
 		// init the controls after user and block info have been fetched
 		var evt = document.createEvent('Event');
@@ -105,52 +107,78 @@ Twinkle.block.callback = function twinkleblockCallback() {
 };
 
 Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
-	api.get({
+	var query = {
 		format: 'json',
 		action: 'query',
 		list: 'blocks|users|logevents',
 		letype: 'block',
 		lelimit: 1,
-		bkusers: mw.config.get('wgRelevantUserName'),
-		bkprop: 'expiry|reason|flags|restrictions',
-		ususers: mw.config.get('wgRelevantUserName'),
-		usprop: 'groupmemberships',
-		letitle: 'User:' + mw.config.get('wgRelevantUserName')
-	})
-		.then(function(data) {
-			var blockinfo = data.query.blocks[0],
-				userinfo = data.query.users[0];
+		letitle: 'User:' + mw.config.get('wgRelevantUserName'),
+		bkprop: 'expiry|reason|flags|restrictions|range|user',
+		ususers: mw.config.get('wgRelevantUserName')
+	};
 
-			Twinkle.block.isRegistered = !!userinfo.userid;
-			if (Twinkle.block.isRegistered) {
-				relevantUserName = 'User:' + mw.config.get('wgRelevantUserName');
-				Twinkle.block.userIsBot = !!userinfo.groupmemberships && userinfo.groupmemberships.map(function(e) {
-					return e.group;
-				}).indexOf('bot') !== -1;
-			} else {
-				relevantUserName = mw.config.get('wgRelevantUserName');
-				Twinkle.block.userIsBot = false;
-			}
+	// bkusers doesn't catch single IPs blocked as part of a range block
+	if (mw.util.isIPAddress(mw.config.get('wgRelevantUserName'), true)) {
+		query.bkip = mw.config.get('wgRelevantUserName');
+	} else {
+		query.bkusers = mw.config.get('wgRelevantUserName');
+		// groupmemberships only relevant for registered users
+		query.usprop = 'groupmemberships';
+	}
 
-			if (blockinfo) {
+	api.get(query).then(function(data) {
+		var blockinfo = data.query.blocks[0],
+			userinfo = data.query.users[0];
+		// If an IP is blocked *and* rangeblocked, the above finds
+		// whichever block is more recent, not necessarily correct.
+		// Three seems... unlikely
+		if (data.query.blocks.length > 1 && blockinfo.user !== mw.config.get('wgRelevantUserName')) {
+			blockinfo = data.query.blocks[1];
+		}
+
+		Twinkle.block.isRegistered = !!userinfo.userid;
+		if (Twinkle.block.isRegistered) {
+			relevantUserName = 'User:' + mw.config.get('wgRelevantUserName');
+			Twinkle.block.userIsBot = !!userinfo.groupmemberships && userinfo.groupmemberships.map(function(e) {
+				return e.group;
+			}).indexOf('bot') !== -1;
+		} else {
+			relevantUserName = mw.config.get('wgRelevantUserName');
+			Twinkle.block.userIsBot = false;
+		}
+
+		if (blockinfo) {
 			// handle frustrating system of inverted boolean values
-				blockinfo.disabletalk = blockinfo.allowusertalk === undefined;
-				blockinfo.hardblock = blockinfo.anononly === undefined;
-				Twinkle.block.currentBlockInfo = blockinfo;
-			}
+			blockinfo.disabletalk = blockinfo.allowusertalk === undefined;
+			blockinfo.hardblock = blockinfo.anononly === undefined;
+			Twinkle.block.currentBlockInfo = blockinfo;
+		}
+		if (!blockinfo || blockinfo.user !== relevantUserName) {
+			// hide unblock link
+			var unblockLink = document.querySelector('.morebits-dialog-footerlinks a');
+			unblockLink.hidden = true, unblockLink.nextSibling.hidden = true; // link+trailing bullet
+		}
 
-			Twinkle.block.hasBlockLog = !!data.query.logevents.length;
-			Twinkle.block.blockLog = Twinkle.block.hasBlockLog && data.query.logevents;
-			// Used later to check if block status changed while filling out the form
-			Twinkle.block.blockLogId = Twinkle.block.hasBlockLog ? data.query.logevents[0].logid : false;
+		// Semi-busted on ranges, see [[phab:T270737]] and [[phab:T146628]].
+		// Basically, logevents doesn't treat functionally-equivalent
+		// ranges as equivalent, meaning any functionally-equivalent
+		// IP range is misinterpreted by the log throughout.  Without
+		// logevents redirecting (like Special:Block does) we would
+		// need a function to parse ranges, which is a pain.  IPUtils
+		// has the code, but it'd be a lot of cruft for one purpose.
+		Twinkle.block.hasBlockLog = !!data.query.logevents.length;
+		Twinkle.block.blockLog = Twinkle.block.hasBlockLog && data.query.logevents;
+		// Used later to check if block status changed while filling out the form
+		Twinkle.block.blockLogId = Twinkle.block.hasBlockLog ? data.query.logevents[0].logid : false;
 
-			if (typeof fn === 'function') {
-				return fn();
-			}
-		}, function(msg) {
-			Morebits.status.init($('div[name="currentblock"] span').last()[0]);
-			Morebits.status.warn('Error fetching user info', msg);
-		});
+		if (typeof fn === 'function') {
+			return fn();
+		}
+	}, function(msg) {
+		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
+		Morebits.status.warn('Error fetching user info', msg);
+	});
 };
 
 Twinkle.block.callback.saveFieldset = function twinkleblockCallbacksaveFieldset(fieldset) {
@@ -167,14 +195,14 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	// Make ifs shorter
 	var blockBox = $form.find('[name=actiontype][value=block]').is(':checked');
 	var templateBox = $form.find('[name=actiontype][value=template]').is(':checked');
-	var partial = $form.find('[name=actiontype][value=partial]');
-	var partialBox = partial.is(':checked');
+	var $partial = $form.find('[name=actiontype][value=partial]');
+	var partialBox = $partial.is(':checked');
 	var blockGroup = partialBox ? Twinkle.block.blockGroupsPartial : Twinkle.block.blockGroups;
 
-	partial.prop('disabled', !blockBox && !templateBox);
+	$partial.prop('disabled', !blockBox && !templateBox);
 
 	// Add current block parameters as default preset
-	if (Twinkle.block.currentBlockInfo) {
+	if (Twinkle.block.currentBlockInfo && Twinkle.block.currentBlockInfo.user === mw.config.get('wgRelevantUserName')) {
 		Twinkle.block.blockPresetsInfo.prior = Twinkle.block.currentBlockInfo;
 		var prior = {
 			label: 'Prior block',
@@ -372,7 +400,8 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			]
 		});
 
-		if (Twinkle.block.currentBlockInfo) {
+		// Yet-another-logevents-doesn't-handle-ranges-well
+		if (Twinkle.block.currentBlockInfo && Twinkle.block.currentBlockInfo.user === mw.config.get('wgRelevantUserName')) {
 			field_block_options.append({ type: 'hidden', name: 'reblock', value: '1' });
 		}
 	}
@@ -484,7 +513,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		field_template_options.append({ type: 'div', id: 'blockpreview', label: [ $previewlink[0] ] });
 		field_template_options.append({ type: 'div', id: 'twinkleblock-previewbox', style: 'display: none' });
 	} else if (field_preset) {
-		// Only visible for aeblock and aepblock, toggled in change_template
+		// Only visible for arbitration enforcement, toggled in change_preset
 		field_preset.append(dsSelectSettings);
 	}
 
@@ -584,27 +613,56 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		$form.find('fieldset[name="field_template_options"]').hide();
 	}
 
+	// Any block, including ranges
 	if (Twinkle.block.currentBlockInfo) {
+		// false for an ip covered by a range or a smaller range within a larger range;
+		// true for a user, single ip block, or the exact range for a range block
+		var sameUser = Twinkle.block.currentBlockInfo.user === mw.config.get('wgRelevantUserName');
+
 		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
 		var statusStr = relevantUserName + ' is ' + (Twinkle.block.currentBlockInfo.partial === '' ? 'partially blocked' : 'blocked sitewide');
+
+		// Range blocked
+		if (Twinkle.block.currentBlockInfo.rangestart !== Twinkle.block.currentBlockInfo.rangeend) {
+			if (sameUser) {
+				statusStr += ' as a rangeblock';
+			} else {
+				statusStr += ' within a rangeblock';
+				// Link to the full range
+				var $rangeblockloglink = $('<span>').append($('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: Twinkle.block.currentBlockInfo.user, type: 'block'}) + '">' + Twinkle.block.currentBlockInfo.user + '</a>)'));
+				statusStr += ' (' + $rangeblockloglink.html() + ')';
+			}
+		}
+
 		if (Twinkle.block.currentBlockInfo.expiry === 'infinity') {
 			statusStr += ' (indefinite)';
 		} else if (new Morebits.date(Twinkle.block.currentBlockInfo.expiry).isValid()) {
 			statusStr += ' (expires ' + new Morebits.date(Twinkle.block.currentBlockInfo.expiry).calendar('utc') + ')';
 		}
-		var infoStr = 'This form will change that block';
-		if (Twinkle.block.currentBlockInfo.partial === undefined && partialBox) {
-			infoStr += ', converting it to a partial block';
-		} else if (Twinkle.block.currentBlockInfo.partial === '' && !partialBox) {
-			infoStr += ', converting it to a sitewide block';
+
+
+		var infoStr = 'This form will';
+		if (sameUser) {
+			infoStr += ' change that block';
+			if (Twinkle.block.currentBlockInfo.partial === undefined && partialBox) {
+				infoStr += ', converting it to a partial block';
+			} else if (Twinkle.block.currentBlockInfo.partial === '' && !partialBox) {
+				infoStr += ', converting it to a sitewide block';
+			}
+			infoStr += '.';
+		} else {
+			infoStr += ' add an additional ' + (partialBox ? 'partial ' : '') + 'block.';
 		}
-		infoStr += '.';
+
 		Morebits.status.warn(statusStr, infoStr);
 
 		// Default to the current block conditions on intial form generation
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
 	}
 
+	// This is where T146628 really comes into play: a rangeblock will
+	// only return the correct block log if wgRelevantUserName is the
+	// exact range, not merely a funtional equivalent
 	if (Twinkle.block.hasBlockLog) {
 		var $blockloglink = $('<span>').append($('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgRelevantUserName'), type: 'block'}) + '">block log</a>)'));
 		if (!Twinkle.block.currentBlockInfo) {
@@ -738,14 +796,13 @@ Twinkle.block.blockPresetsInfo = {
 		nocreate: true,
 		reason: '{{spamblacklistblock}} <!-- editor only attempts to add blacklisted links, see [[Special:Log/spamblacklist]] -->'
 	},
-	// Placeholder for when we add support for rangeblocks
-	// 'rangeblock' : {
-	//   reason: '{{rangeblock}}',
-	//   nocreate: true,
-	//   nonstandard: true,
-	//   forAnonOnly: true,
-	//   sig: '~~~~'
-	// },
+	'rangeblock': {
+		reason: '{{rangeblock}}',
+		nocreate: true,
+		nonstandard: true,
+		forAnonOnly: true,
+		sig: '~~~~'
+	},
 	'tor': {
 		expiry: '1 year',
 		forAnonOnly: true,
@@ -1378,7 +1435,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'checkuserblock-wide', value: 'checkuserblock-wide', disabled: !Morebits.userIsInGroup('checkuser') },
 			{ label: 'colocationwebhost', value: 'colocationwebhost' },
 			{ label: 'oversightblock', value: 'oversightblock', disabled: !Morebits.userIsInGroup('oversight') },
-			// { label: 'rangeblock', value: 'rangeblock' }, // placeholder for when we add support for rangeblocks
+			{ label: 'rangeblock', value: 'rangeblock', selected: true }, // Only for IP ranges
 			{ label: 'spamblacklistblock', value: 'spamblacklistblock' },
 			{ label: 'tor', value: 'tor' },
 			{ label: 'webhostblock', value: 'webhostblock' },
@@ -1411,8 +1468,9 @@ Twinkle.block.blockGroupsPartial = [
 Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilteredBlockGroups(group, show_template) {
 	return $.map(group, function(blockGroup) {
 		var list = $.map(blockGroup.list, function(blockPreset) {
-			// only show uw-talkrevoked if reblocking
-			if (!Twinkle.block.currentBlockInfo && blockPreset.value === 'uw-talkrevoked') {
+			// only show {{uw-talkrevoked}} if reblocking or {{rangeblock}} if rangeblocking
+			if ((blockPreset.value === 'uw-talkrevoked' && (!Twinkle.block.currentBlockInfo || Twinkle.block.currentBlockInfo.user !== mw.config.get('wgRelevantUserName'))) ||
+				(blockPreset.value === 'rangeblock' && (mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) || !mw.util.isIPAddress(mw.config.get('wgRelevantUserName'), true)))) {
 				return;
 			}
 
@@ -1442,14 +1500,18 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 };
 
 Twinkle.block.callback.change_preset = function twinkleblockCallbackChangePreset(e) {
-	var key = e.target.form.preset.value;
+	var form = e.target.form, key = form.preset.value;
 	if (!key) {
 		return;
 	}
 
-	e.target.form.template.value = Twinkle.block.blockPresetsInfo[key].templateName || key;
 	Twinkle.block.callback.update_form(e, Twinkle.block.blockPresetsInfo[key]);
-	Twinkle.block.callback.change_template(e);
+	if (form.template) {
+		form.template.value = Twinkle.block.blockPresetsInfo[key].templateName || key;
+		Twinkle.block.callback.change_template(e);
+	} else {
+		Morebits.quickForm.setElementVisibility(form.dstopic.parentNode, key === 'uw-aeblock' || key === 'uw-aepblock');
+	}
 };
 
 Twinkle.block.callback.change_expiry = function twinkleblockCallbackChangeExpiry(e) {
@@ -1745,21 +1807,36 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 		  a block expired (different statuses, confirmation) or the
 		  same block is still active (same status, no confirmation).
 		*/
-		api.get({
+		var query = {
 			format: 'json',
 			action: 'query',
 			list: 'blocks|logevents',
 			letype: 'block',
 			lelimit: 1,
-			letitle: 'User:' + blockoptions.user,
-			bkusers: blockoptions.user
-		}).then(function(data) {
+			letitle: 'User:' + blockoptions.user
+		};
+		// bkusers doesn't catch single IPs blocked as part of a range block
+		if (mw.util.isIPAddress(blockoptions.user, true)) {
+			query.bkip = blockoptions.user;
+		} else {
+			query.bkusers = blockoptions.user;
+		}
+		api.get(query).then(function(data) {
 			var block = data.query.blocks[0];
+			// As with the initial data fetch, if an IP is blocked
+			// *and* rangeblocked, this would only grab whichever
+			// block is more recent, which would likely mean a
+			// mismatch.  However, if the rangeblock is updated
+			// while filling out the form, this won't detect that,
+			// but that's probably fine.
+			if (data.query.blocks.length > 1 && block.user !== mw.config.get('wgRelevantUserName')) {
+				block = data.query.blocks[1];
+			}
 			var logevents = data.query.logevents[0];
 			var logid = data.query.logevents.length ? logevents.logid : false;
 
 			if (logid !== Twinkle.block.blockLogId || !!block !== !!Twinkle.block.currentBlockInfo) {
-				var message = 'The block status of ' + mw.config.get('wgRelevantUserName') + ' has changed. ';
+				var message = 'The block status of ' + blockoptions.user + ' has changed. ';
 				if (block) {
 					message += 'New status: ';
 				} else {
