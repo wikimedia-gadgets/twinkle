@@ -382,7 +382,7 @@ var Afd = /** @class */ (function (_super) {
         return _this;
     }
     Afd.isDefaultChoice = function () {
-        return mw.config.get('wgNamespaceNumber') === 0;
+        return mw.config.get('wgNamespaceNumber') === 0 && !Morebits.isPageRedirect();
     };
     Afd.prototype.getFieldsetLabel = function () {
         return 'Articles for deletion';
@@ -563,7 +563,7 @@ var Afd = /** @class */ (function (_super) {
                 }
             }
             def.resolve(pageobj);
-        });
+        }, def.reject);
         return def;
     };
     Afd.prototype.tagPage = function (pageobj) {
@@ -616,7 +616,7 @@ var Afd = /** @class */ (function (_super) {
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('createonly');
             pageobj.save(def.resolve, def.reject);
-        });
+        }, def.reject);
         return def;
     };
     Afd.prototype.addToList = function () {
@@ -651,7 +651,7 @@ var Afd = /** @class */ (function (_super) {
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
             pageobj.setCreateOption('recreate');
             pageobj.save(def.resolve, def.reject);
-        });
+        }, def.reject);
         return def;
     };
     Afd.prototype.addToDelsortLists = function () {
@@ -824,7 +824,7 @@ var Tfd = /** @class */ (function (_super) {
             else {
                 _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
             }
-        });
+        }, def.reject);
         return def;
     };
     Tfd.prototype.tagPagesForMerge = function () {
@@ -838,7 +838,7 @@ var Tfd = /** @class */ (function (_super) {
         pageobj.load(function (pageobj) {
             _this.setLogPageAndDiscussionPage(pageobj.getLoadTime());
             _this.tagForMerge(pageobj, _this.params).then(defs[0].resolve, defs[0].reject);
-        });
+        }, defs[0].reject);
         var otherpageobj = new Morebits.wiki.page("" + params.otherTemplateName + docOrNot, "Tagging other " + moduleDocOrTemplate + " with merge tag");
         otherpageobj.setFollowRedirect(true);
         otherpageobj.load(function (otherpageobj) {
@@ -846,7 +846,7 @@ var Tfd = /** @class */ (function (_super) {
             _this.tagForMerge(otherpageobj, $.extend({}, params, {
                 otherTemplateName: Morebits.pageNameNorm
             })).then(defs[1].resolve, defs[1].reject);
-        });
+        }, defs[1].reject);
         return $.when.apply($, defs);
     };
     /**
@@ -904,7 +904,7 @@ var Tfd = /** @class */ (function (_super) {
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
             pageobj.save(def.resolve, def.reject);
-        });
+        }, def.reject);
         return def;
     };
     Tfd.prototype.notifyOtherCreator = function () {
@@ -1051,7 +1051,7 @@ var Ffd = /** @class */ (function (_super) {
             else {
                 _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
             }
-        });
+        }, def.reject);
         return def;
     };
     Ffd.prototype.addToList = function () {
@@ -1072,7 +1072,7 @@ var Ffd = /** @class */ (function (_super) {
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
             pageobj.save(def.resolve, def.reject);
-        });
+        }, def.reject);
         return def;
     };
     Ffd.prototype.getDiscussionWikitext = function () {
@@ -1233,7 +1233,7 @@ var Cfd = /** @class */ (function (_super) {
             else {
                 _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
             }
-        });
+        }, def.reject);
         return def;
     };
     Cfd.prototype.addToList = function () {
@@ -1264,7 +1264,7 @@ var Cfd = /** @class */ (function (_super) {
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
             pageobj.save(def.resolve, def.reject);
-        });
+        }, def.reject);
         return def;
     };
     Cfd.prototype.getDiscussionWikitext = function () {
@@ -1372,7 +1372,7 @@ var Cfds = /** @class */ (function (_super) {
             else {
                 _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
             }
-        });
+        }, def.reject);
         return def;
     };
     Cfds.prototype.addToList = function () {
@@ -1394,7 +1394,7 @@ var Cfds = /** @class */ (function (_super) {
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
             pageobj.save(def.resolve, def.reject);
-        });
+        }, def.reject);
         return def;
     };
     Cfds.prototype.getDiscussionWikitext = function () {
@@ -1508,7 +1508,7 @@ var Mfd = /** @class */ (function (_super) {
             else {
                 _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
             }
-        });
+        }, def.reject);
         return def;
     };
     Mfd.prototype.createDiscussionPage = function () {
@@ -1523,7 +1523,7 @@ var Mfd = /** @class */ (function (_super) {
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('createonly');
             pageobj.save(def.resolve, def.reject);
-        });
+        }, def.reject);
         return def;
     };
     Mfd.prototype.getDiscussionWikitext = function () {
@@ -1559,7 +1559,7 @@ var Mfd = /** @class */ (function (_super) {
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
             pageobj.setCreateOption('recreate');
             pageobj.save(def.resolve, def.reject);
-        });
+        }, def.reject);
         return def;
     };
     Mfd.prototype.notifyUserspaceOwner = function () {
@@ -1598,7 +1598,7 @@ var Rfd = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Rfd.isDefaultChoice = function () {
-        return mw.config.get('wgIsRedirect') || document.getElementById('softredirect');
+        return Morebits.isPageRedirect();
     };
     Rfd.prototype.getFieldsetLabel = function () {
         return 'Redirects for discussion';
@@ -1715,7 +1715,7 @@ var Rfd = /** @class */ (function (_super) {
             else {
                 _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
             }
-        });
+        }, def.reject);
         return def;
     };
     Rfd.prototype.getDiscussionWikitext = function () {
@@ -1754,7 +1754,7 @@ var Rfd = /** @class */ (function (_super) {
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
             pageobj.save(def.resolve, def.reject);
-        });
+        }, def.reject);
         return def;
     };
     Rfd.prototype.notifyTargetTalk = function () {
@@ -1977,6 +1977,6 @@ var utils = {
         return '{{' + name + parameterText + '}}';
     }
 };
-Xfd.modeList = [Rfd, Afd, Cfd, Tfd, Rm, Cfds, Mfd, Ffd];
+Xfd.modeList = [Afd, Rfd, Cfd, Cfds, Tfd, Ffd, Mfd, Rm];
 Twinkle.addInitCallback(function () { new Xfd(); }, 'XFD');
 //# sourceMappingURL=xfd.js.map

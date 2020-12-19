@@ -441,7 +441,7 @@ class Afd extends XfdMode {
 	static venueLabel = 'AfD (Articles for deletion)';
 
 	static isDefaultChoice() {
-		return mw.config.get('wgNamespaceNumber') === 0;
+		return mw.config.get('wgNamespaceNumber') === 0 && !Morebits.isPageRedirect();
 	}
 
 	discussionPagePrefix = 'Wikipedia:Articles for deletion';
@@ -641,7 +641,7 @@ class Afd extends XfdMode {
 				}
 			}
 			def.resolve(pageobj);
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -699,7 +699,7 @@ class Afd extends XfdMode {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('createonly');
 			pageobj.save(def.resolve, def.reject);
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -738,7 +738,7 @@ class Afd extends XfdMode {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(def.resolve, def.reject);
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -925,7 +925,7 @@ class Tfd extends XfdMode {
 			} else {
 				this.autoEditRequest(pageobj).then(def.resolve, def.reject);
 			}
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -942,7 +942,7 @@ class Tfd extends XfdMode {
 		pageobj.load((pageobj) => {
 			this.setLogPageAndDiscussionPage(pageobj.getLoadTime());
 			this.tagForMerge(pageobj, this.params).then(defs[0].resolve, defs[0].reject);
-		});
+		}, defs[0].reject);
 
 		let otherpageobj = new Morebits.wiki.page(`${params.otherTemplateName}${docOrNot}`,
 			`Tagging other ${moduleDocOrTemplate} with merge tag`);
@@ -952,7 +952,7 @@ class Tfd extends XfdMode {
 			this.tagForMerge(otherpageobj, $.extend({}, params, {
 				otherTemplateName: Morebits.pageNameNorm
 			})).then(defs[1].resolve, defs[1].reject);
-		});
+		}, defs[1].reject);
 
 		return $.when.apply($, defs);
 	}
@@ -1016,7 +1016,7 @@ class Tfd extends XfdMode {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(def.resolve, def.reject);
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -1172,7 +1172,7 @@ class Ffd extends XfdMode {
 			} else {
 				this.autoEditRequest(pageobj).then(def.resolve, def.reject);
 			}
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -1195,7 +1195,7 @@ class Ffd extends XfdMode {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(def.resolve, def.reject);
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -1364,7 +1364,7 @@ class Cfd extends XfdMode {
 			} else {
 				this.autoEditRequest(pageobj).then(def.resolve, def.reject);
 			}
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -1398,7 +1398,7 @@ class Cfd extends XfdMode {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(def.resolve, def.reject);
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -1513,7 +1513,7 @@ class Cfds extends XfdMode {
 			} else {
 				this.autoEditRequest(pageobj).then(def.resolve, def.reject);
 			}
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -1537,7 +1537,7 @@ class Cfds extends XfdMode {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(def.resolve, def.reject);
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -1657,7 +1657,7 @@ class Mfd extends XfdMode {
 			} else {
 				this.autoEditRequest(pageobj).then(def.resolve, def.reject);
 			}
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -1672,7 +1672,7 @@ class Mfd extends XfdMode {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('createonly');
 			pageobj.save(def.resolve, def.reject);
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -1712,7 +1712,7 @@ class Mfd extends XfdMode {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(def.resolve, def.reject);
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -1752,7 +1752,7 @@ class Rfd extends XfdMode {
 	static venueLabel = 'RfD (Redirects for discussion)';
 
 	static isDefaultChoice() {
-		return mw.config.get('wgIsRedirect') || document.getElementById('softredirect');
+		return Morebits.isPageRedirect();
 	}
 
 	getFieldsetLabel() {
@@ -1874,7 +1874,7 @@ class Rfd extends XfdMode {
 			} else {
 				this.autoEditRequest(pageobj).then(def.resolve, def.reject);
 			}
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -1915,7 +1915,7 @@ class Rfd extends XfdMode {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(def.resolve, def.reject);
-		});
+		}, def.reject);
 		return def;
 	}
 
@@ -2142,6 +2142,6 @@ let utils = {
 };
 
 
-Xfd.modeList = [ Rfd, Afd, Cfd, Tfd, Rm, Cfds, Mfd, Ffd ];
+Xfd.modeList = [ Afd, Rfd, Cfd, Cfds, Tfd, Ffd, Mfd, Rm ];
 
 Twinkle.addInitCallback(function() { new Xfd(); }, 'XFD');
