@@ -182,7 +182,7 @@ var XfdMode = /** @class */ (function () {
         }
         Morebits.simpleWindow.setButtonsEnabled(false);
         Morebits.status.init(this.result);
-        return new Morebits.taskManager(this);
+        this.tm = new Morebits.taskManager(this);
     };
     /**
      * Hook for form validation. If this returns false, form submission is aborted
@@ -505,7 +505,7 @@ var Afd = /** @class */ (function (_super) {
             .attr('data-placeholder', 'Select delsort pages')
             .select2({
             width: '100%',
-            matcher: Morebits.select2.matcher,
+            matcher: Morebits.select2.matchers.optgroupFull,
             templateResult: Morebits.select2.highlightSearchMatches,
             language: {
                 searching: Morebits.select2.queryInterceptor
@@ -532,20 +532,20 @@ var Afd = /** @class */ (function (_super) {
     };
     Afd.prototype.evaluate = function () {
         var _this = this;
-        var tm = _super.prototype.evaluate.call(this);
-        tm.add(this.checkPage, []);
-        tm.add(this.determineDiscussionPage, []);
-        tm.add(this.createDiscussionPage, [this.checkPage, this.determineDiscussionPage], this.printReasonText);
+        _super.prototype.evaluate.call(this);
+        this.tm.add(this.checkPage, []);
+        this.tm.add(this.determineDiscussionPage, []);
+        this.tm.add(this.createDiscussionPage, [this.checkPage, this.determineDiscussionPage], this.printReasonText);
         // create discussion page before linking or transcluding it from anywhere, so that
         // there's no need to do any purging later (#364)
-        tm.add(this.tagPage, [this.checkPage, this.createDiscussionPage]); // tagPage has an arg coming from checkPage
-        tm.add(this.addToList, [this.createDiscussionPage]);
-        tm.add(this.addToDelsortLists, [this.createDiscussionPage]);
-        tm.add(this.patrolPage, [this.checkPage]);
-        tm.add(this.fetchCreatorInfo, []);
-        tm.add(this.notifyCreator, [this.createDiscussionPage, this.fetchCreatorInfo]);
-        tm.add(this.addToLog, [this.notifyCreator]);
-        tm.execute().then(function () { return _this.redirectToDiscussion(); });
+        this.tm.add(this.tagPage, [this.checkPage, this.createDiscussionPage]); // tagPage has an arg coming from checkPage
+        this.tm.add(this.addToList, [this.createDiscussionPage]);
+        this.tm.add(this.addToDelsortLists, [this.createDiscussionPage]);
+        this.tm.add(this.patrolPage, [this.checkPage]);
+        this.tm.add(this.fetchCreatorInfo, []);
+        this.tm.add(this.notifyCreator, [this.createDiscussionPage, this.fetchCreatorInfo]);
+        this.tm.add(this.addToLog, [this.notifyCreator]);
+        this.tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     Afd.prototype.preprocessParams = function () {
         this.params.lookupNonRedirectCreator = true; // for this.fetchCreatorInfo()
@@ -807,16 +807,16 @@ var Tfd = /** @class */ (function (_super) {
     };
     Tfd.prototype.evaluate = function () {
         var _this = this;
-        var tm = _super.prototype.evaluate.call(this);
-        tm.add(this.tagPage, []);
-        tm.add(this.addToList, [this.tagPage], this.printReasonText);
-        tm.add(this.watchModule, []);
-        tm.add(this.fetchCreatorInfo, []);
-        tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
-        tm.add(this.notifyOtherCreator, [this.fetchCreatorInfo]);
-        tm.add(this.notifyDevs, [this.addToList]);
-        tm.add(this.addToLog, [this.notifyCreator]);
-        tm.execute().then(function () { return _this.redirectToDiscussion(); });
+        _super.prototype.evaluate.call(this);
+        this.tm.add(this.tagPage, []);
+        this.tm.add(this.addToList, [this.tagPage], this.printReasonText);
+        this.tm.add(this.watchModule, []);
+        this.tm.add(this.fetchCreatorInfo, []);
+        this.tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
+        this.tm.add(this.notifyOtherCreator, [this.fetchCreatorInfo]);
+        this.tm.add(this.notifyDevs, [this.addToList]);
+        this.tm.add(this.addToLog, [this.notifyCreator]);
+        this.tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     Tfd.prototype.tagPage = function () {
         return this.params.xfdcat === 'tfm' ? this.tagPagesForMerge() : this.tagPageForDeletion();
@@ -1083,13 +1083,13 @@ var Ffd = /** @class */ (function (_super) {
     };
     Ffd.prototype.evaluate = function () {
         var _this = this;
-        var tm = _super.prototype.evaluate.call(this);
-        tm.add(this.fetchCreatorInfo, []);
-        tm.add(this.tagPage, []);
-        tm.add(this.addToList, [this.fetchCreatorInfo, this.tagPage], this.printReasonText);
-        tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
-        tm.add(this.addToLog, [this.notifyCreator]);
-        tm.execute().then(function () { return _this.redirectToDiscussion(); });
+        _super.prototype.evaluate.call(this);
+        this.tm.add(this.fetchCreatorInfo, []);
+        this.tm.add(this.tagPage, []);
+        this.tm.add(this.addToList, [this.fetchCreatorInfo, this.tagPage], this.printReasonText);
+        this.tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
+        this.tm.add(this.addToLog, [this.notifyCreator]);
+        this.tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     Ffd.prototype.tagPage = function () {
         var _this = this;
@@ -1259,13 +1259,13 @@ var Cfd = /** @class */ (function (_super) {
     };
     Cfd.prototype.evaluate = function () {
         var _this = this;
-        var tm = _super.prototype.evaluate.call(this);
-        tm.add(this.tagPage, []);
-        tm.add(this.addToList, [this.tagPage], this.printReasonText);
-        tm.add(this.fetchCreatorInfo, []);
-        tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
-        tm.add(this.addToLog, [this.notifyCreator]);
-        tm.execute().then(function () { return _this.redirectToDiscussion(); });
+        _super.prototype.evaluate.call(this);
+        this.tm.add(this.tagPage, []);
+        this.tm.add(this.addToList, [this.tagPage], this.printReasonText);
+        this.tm.add(this.fetchCreatorInfo, []);
+        this.tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
+        this.tm.add(this.addToLog, [this.notifyCreator]);
+        this.tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     Cfd.prototype.tagPage = function () {
         var _this = this;
@@ -1410,11 +1410,11 @@ var Cfds = /** @class */ (function (_super) {
     };
     Cfds.prototype.evaluate = function () {
         var _this = this;
-        var tm = _super.prototype.evaluate.call(this);
-        tm.add(this.tagPage, []);
-        tm.add(this.addToList, [], this.printReasonText);
-        tm.add(this.addToLog, [this.addToList]);
-        tm.execute().then(function () { return _this.redirectToDiscussion(); });
+        _super.prototype.evaluate.call(this);
+        this.tm.add(this.tagPage, []);
+        this.tm.add(this.addToList, [], this.printReasonText);
+        this.tm.add(this.addToLog, [this.addToList]);
+        this.tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     Cfds.prototype.tagPage = function () {
         var _this = this;
@@ -1532,16 +1532,16 @@ var Mfd = /** @class */ (function (_super) {
     };
     Mfd.prototype.evaluate = function () {
         var _this = this;
-        var tm = _super.prototype.evaluate.call(this);
-        tm.add(this.determineDiscussionPage, []);
-        tm.add(this.tagPage, [this.determineDiscussionPage]);
-        tm.add(this.addToList, [this.determineDiscussionPage]);
-        tm.add(this.createDiscussionPage, [this.determineDiscussionPage], this.printReasonText);
-        tm.add(this.fetchCreatorInfo, []);
-        tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
-        tm.add(this.notifyUserspaceOwner, [this.fetchCreatorInfo]);
-        tm.add(this.addToLog, [this.notifyCreator, this.notifyUserspaceOwner]);
-        tm.execute().then(function () { return _this.redirectToDiscussion(); });
+        _super.prototype.evaluate.call(this);
+        this.tm.add(this.determineDiscussionPage, []);
+        this.tm.add(this.tagPage, [this.determineDiscussionPage]);
+        this.tm.add(this.addToList, [this.determineDiscussionPage]);
+        this.tm.add(this.createDiscussionPage, [this.determineDiscussionPage], this.printReasonText);
+        this.tm.add(this.fetchCreatorInfo, []);
+        this.tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
+        this.tm.add(this.notifyUserspaceOwner, [this.fetchCreatorInfo]);
+        this.tm.add(this.addToLog, [this.notifyCreator, this.notifyUserspaceOwner]);
+        this.tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     Mfd.prototype.tagPage = function () {
         var _this = this;
@@ -1708,14 +1708,14 @@ var Rfd = /** @class */ (function (_super) {
         var _this = this;
         _super.prototype.evaluate.call(this);
         var tm = new Morebits.taskManager(this);
-        tm.add(this.findTarget, []);
-        tm.add(this.tagPage, [this.findTarget]);
-        tm.add(this.addToList, [this.findTarget, this.tagPage], this.printReasonText);
-        tm.add(this.fetchCreatorInfo, []);
-        tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
-        tm.add(this.notifyTargetTalk, [this.fetchCreatorInfo, this.tagPage]);
-        tm.add(this.addToLog, [this.notifyCreator]);
-        tm.execute().then(function () { return _this.redirectToDiscussion(); });
+        this.tm.add(this.findTarget, []);
+        this.tm.add(this.tagPage, [this.findTarget]);
+        this.tm.add(this.addToList, [this.findTarget, this.tagPage], this.printReasonText);
+        this.tm.add(this.fetchCreatorInfo, []);
+        this.tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
+        this.tm.add(this.notifyTargetTalk, [this.fetchCreatorInfo, this.tagPage]);
+        this.tm.add(this.addToLog, [this.notifyCreator]);
+        this.tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     // Creates: params.rfdtarget, params.curtimestamp, params.section, params.logpage, params.discussionpage
     Rfd.prototype.findTarget = function () {
@@ -1913,10 +1913,10 @@ var Rm = /** @class */ (function (_super) {
     };
     Rm.prototype.evaluate = function () {
         var _this = this;
-        var tm = _super.prototype.evaluate.call(this);
-        tm.add(this.addToList, [], this.printReasonText);
-        tm.add(this.addToLog, [this.addToList]);
-        tm.execute().then(function () { return _this.redirectToDiscussion(); });
+        _super.prototype.evaluate.call(this);
+        this.tm.add(this.addToList, [], this.printReasonText);
+        this.tm.add(this.addToLog, [this.addToList]);
+        this.tm.execute().then(function () { return _this.redirectToDiscussion(); });
     };
     Rm.prototype.addToList = function () {
         return this.params.rmtr ? this.listAtRMTR() : this.listAtTalk();

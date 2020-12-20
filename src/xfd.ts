@@ -149,6 +149,7 @@ abstract class XfdMode {
 	fieldset: quickFormElement
 	result: HTMLFormElement
 	params: Record<string, any>
+	tm: Morebits.taskManager
 
 	/**
 	 * Used in determineDiscussionPage(), applicable only if in the XfD process, each page is
@@ -206,7 +207,7 @@ abstract class XfdMode {
 
 	abstract getDiscussionWikitext(): string
 
-	evaluate(): any {
+	evaluate(): void {
 		this.params = Morebits.quickForm.getInputData(this.result);
 		this.preprocessParams();
 		if (!this.validateInput()) {
@@ -215,7 +216,7 @@ abstract class XfdMode {
 		Morebits.simpleWindow.setButtonsEnabled(false);
 		Morebits.status.init(this.result);
 
-		return new Morebits.taskManager(this);
+		this.tm = new Morebits.taskManager(this);
 	}
 
 	/**
@@ -576,7 +577,7 @@ class Afd extends XfdMode {
 			.attr('data-placeholder', 'Select delsort pages')
 			.select2({
 				width: '100%',
-				matcher: Morebits.select2.matcher,
+				matcher: Morebits.select2.matchers.optgroupFull,
 				templateResult: Morebits.select2.highlightSearchMatches,
 				language: {
 					searching: Morebits.select2.queryInterceptor
@@ -608,20 +609,20 @@ class Afd extends XfdMode {
 	}
 
 	evaluate() {
-		let tm = super.evaluate();
-		tm.add(this.checkPage, []);
-		tm.add(this.determineDiscussionPage, []);
-		tm.add(this.createDiscussionPage, [this.checkPage, this.determineDiscussionPage], this.printReasonText);
+		super.evaluate();
+		this.tm.add(this.checkPage, []);
+		this.tm.add(this.determineDiscussionPage, []);
+		this.tm.add(this.createDiscussionPage, [this.checkPage, this.determineDiscussionPage], this.printReasonText);
 		// create discussion page before linking or transcluding it from anywhere, so that
 		// there's no need to do any purging later (#364)
-		tm.add(this.tagPage, [this.checkPage, this.createDiscussionPage]); // tagPage has an arg coming from checkPage
-		tm.add(this.addToList, [this.createDiscussionPage]);
-		tm.add(this.addToDelsortLists, [this.createDiscussionPage]);
-		tm.add(this.patrolPage, [this.checkPage]);
-		tm.add(this.fetchCreatorInfo, []);
-		tm.add(this.notifyCreator, [this.createDiscussionPage, this.fetchCreatorInfo]);
-		tm.add(this.addToLog, [this.notifyCreator]);
-		tm.execute().then(() => this.redirectToDiscussion());
+		this.tm.add(this.tagPage, [this.checkPage, this.createDiscussionPage]); // tagPage has an arg coming from checkPage
+		this.tm.add(this.addToList, [this.createDiscussionPage]);
+		this.tm.add(this.addToDelsortLists, [this.createDiscussionPage]);
+		this.tm.add(this.patrolPage, [this.checkPage]);
+		this.tm.add(this.fetchCreatorInfo, []);
+		this.tm.add(this.notifyCreator, [this.createDiscussionPage, this.fetchCreatorInfo]);
+		this.tm.add(this.addToLog, [this.notifyCreator]);
+		this.tm.execute().then(() => this.redirectToDiscussion());
 	}
 
 	preprocessParams() {
@@ -904,16 +905,16 @@ class Tfd extends XfdMode {
 	}
 
 	evaluate() {
-		let tm = super.evaluate();
-		tm.add(this.tagPage, []);
-		tm.add(this.addToList, [this.tagPage], this.printReasonText);
-		tm.add(this.watchModule, []);
-		tm.add(this.fetchCreatorInfo, []);
-		tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
-		tm.add(this.notifyOtherCreator, [this.fetchCreatorInfo]);
-		tm.add(this.notifyDevs, [this.addToList]);
-		tm.add(this.addToLog, [this.notifyCreator]);
-		tm.execute().then(() => this.redirectToDiscussion());
+		super.evaluate();
+		this.tm.add(this.tagPage, []);
+		this.tm.add(this.addToList, [this.tagPage], this.printReasonText);
+		this.tm.add(this.watchModule, []);
+		this.tm.add(this.fetchCreatorInfo, []);
+		this.tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
+		this.tm.add(this.notifyOtherCreator, [this.fetchCreatorInfo]);
+		this.tm.add(this.notifyDevs, [this.addToList]);
+		this.tm.add(this.addToLog, [this.notifyCreator]);
+		this.tm.execute().then(() => this.redirectToDiscussion());
 
 	}
 
@@ -1204,13 +1205,13 @@ class Ffd extends XfdMode {
 	}
 
 	evaluate() {
-		let tm = super.evaluate();
-		tm.add(this.fetchCreatorInfo, []);
-		tm.add(this.tagPage, []);
-		tm.add(this.addToList, [this.fetchCreatorInfo, this.tagPage], this.printReasonText);
-		tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
-		tm.add(this.addToLog, [this.notifyCreator]);
-		tm.execute().then(() => this.redirectToDiscussion());
+		super.evaluate();
+		this.tm.add(this.fetchCreatorInfo, []);
+		this.tm.add(this.tagPage, []);
+		this.tm.add(this.addToList, [this.fetchCreatorInfo, this.tagPage], this.printReasonText);
+		this.tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
+		this.tm.add(this.addToLog, [this.notifyCreator]);
+		this.tm.execute().then(() => this.redirectToDiscussion());
 	}
 
 	tagPage() {
@@ -1389,13 +1390,13 @@ class Cfd extends XfdMode {
 	}
 
 	evaluate() {
-		let tm = super.evaluate();
-		tm.add(this.tagPage, []);
-		tm.add(this.addToList, [this.tagPage], this.printReasonText);
-		tm.add(this.fetchCreatorInfo, []);
-		tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
-		tm.add(this.addToLog, [this.notifyCreator]);
-		tm.execute().then(() => this.redirectToDiscussion());
+		super.evaluate();
+		this.tm.add(this.tagPage, []);
+		this.tm.add(this.addToList, [this.tagPage], this.printReasonText);
+		this.tm.add(this.fetchCreatorInfo, []);
+		this.tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
+		this.tm.add(this.addToLog, [this.notifyCreator]);
+		this.tm.execute().then(() => this.redirectToDiscussion());
 	}
 
 	tagPage() {
@@ -1554,11 +1555,11 @@ class Cfds extends XfdMode {
 	}
 
 	evaluate() {
-		let tm = super.evaluate();
-		tm.add(this.tagPage, []);
-		tm.add(this.addToList, [], this.printReasonText);
-		tm.add(this.addToLog, [this.addToList]);
-		tm.execute().then(() => this.redirectToDiscussion());
+		super.evaluate();
+		this.tm.add(this.tagPage, []);
+		this.tm.add(this.addToList, [], this.printReasonText);
+		this.tm.add(this.addToLog, [this.addToList]);
+		this.tm.execute().then(() => this.redirectToDiscussion());
 	}
 
 	tagPage() {
@@ -1682,16 +1683,16 @@ class Mfd extends XfdMode {
 	}
 
 	evaluate() {
-		let tm = super.evaluate();
-		tm.add(this.determineDiscussionPage, [])
-		tm.add(this.tagPage, [this.determineDiscussionPage]);
-		tm.add(this.addToList, [this.determineDiscussionPage]);
-		tm.add(this.createDiscussionPage, [this.determineDiscussionPage], this.printReasonText);
-		tm.add(this.fetchCreatorInfo, []);
-		tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
-		tm.add(this.notifyUserspaceOwner, [this.fetchCreatorInfo]);
-		tm.add(this.addToLog, [this.notifyCreator, this.notifyUserspaceOwner]);
-		tm.execute().then(() => this.redirectToDiscussion());
+		super.evaluate();
+		this.tm.add(this.determineDiscussionPage, [])
+		this.tm.add(this.tagPage, [this.determineDiscussionPage]);
+		this.tm.add(this.addToList, [this.determineDiscussionPage]);
+		this.tm.add(this.createDiscussionPage, [this.determineDiscussionPage], this.printReasonText);
+		this.tm.add(this.fetchCreatorInfo, []);
+		this.tm.add(this.notifyCreator, [this.fetchCreatorInfo]);
+		this.tm.add(this.notifyUserspaceOwner, [this.fetchCreatorInfo]);
+		this.tm.add(this.addToLog, [this.notifyCreator, this.notifyUserspaceOwner]);
+		this.tm.execute().then(() => this.redirectToDiscussion());
 	}
 
 	tagPage() {
@@ -1868,14 +1869,14 @@ class Rfd extends XfdMode {
 	evaluate() {
 		super.evaluate();
 		let tm = new Morebits.taskManager(this);
-		tm.add(this.findTarget, []);
-		tm.add(this.tagPage, [this.findTarget]);
-		tm.add(this.addToList, [this.findTarget, this.tagPage], this.printReasonText);
-		tm.add(this.fetchCreatorInfo, []);
-		tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
-		tm.add(this.notifyTargetTalk, [this.fetchCreatorInfo, this.tagPage]);
-		tm.add(this.addToLog, [this.notifyCreator]);
-		tm.execute().then(() => this.redirectToDiscussion());
+		this.tm.add(this.findTarget, []);
+		this.tm.add(this.tagPage, [this.findTarget]);
+		this.tm.add(this.addToList, [this.findTarget, this.tagPage], this.printReasonText);
+		this.tm.add(this.fetchCreatorInfo, []);
+		this.tm.add(this.notifyCreator, [this.fetchCreatorInfo, this.tagPage]);
+		this.tm.add(this.notifyTargetTalk, [this.fetchCreatorInfo, this.tagPage]);
+		this.tm.add(this.addToLog, [this.notifyCreator]);
+		this.tm.execute().then(() => this.redirectToDiscussion());
 	}
 
 	// Creates: params.rfdtarget, params.curtimestamp, params.section, params.logpage, params.discussionpage
@@ -2077,10 +2078,10 @@ class Rm extends XfdMode {
 	}
 
 	evaluate() {
-		let tm = super.evaluate();
-		tm.add(this.addToList, [], this.printReasonText);
-		tm.add(this.addToLog, [this.addToList]);
-		tm.execute().then(() => this.redirectToDiscussion());
+		super.evaluate();
+		this.tm.add(this.addToList, [], this.printReasonText);
+		this.tm.add(this.addToLog, [this.addToList]);
+		this.tm.execute().then(() => this.redirectToDiscussion());
 	}
 
 	addToList() {
