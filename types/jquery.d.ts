@@ -1,4 +1,8 @@
-import JQuery from '@types/jquery';
+import 'jquery';
+import 'select2';
 
-declare const $ = JQuery;
-declare const jQuery = JQuery;
+declare global {
+	interface JQueryStatic {
+		collapsibleTabs: any
+	}
+}
