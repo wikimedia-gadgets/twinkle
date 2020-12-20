@@ -493,6 +493,7 @@ Twinkle.speedy.customRationale = [
 		tooltip: '{{db}} is short for "delete because". At least one of the other deletion criteria must still apply to the page, and you must make mention of this in your rationale. This is not a "catch-all" for when you can\'t find any criteria that fit.',
 		subgroup: {
 			name: 'reason_1',
+			parameter: '1',
 			type: 'input',
 			label: 'Rationale: ',
 			size: 60,
@@ -517,6 +518,7 @@ Twinkle.speedy.fileList = [
 		tooltip: 'Any file that is a redundant copy, in the same file format and same or lower resolution, of something else on Wikipedia. Likewise, other media that is a redundant copy, in the same format and of the same or lower quality. This does not apply to files duplicated on Wikimedia Commons, because of licence issues; these should be tagged with {{subst:ncd|Image:newname.ext}} or {{subst:ncd}} instead',
 		subgroup: {
 			name: 'redundantimage_filename',
+			parameter: 'filename',
 			type: 'input',
 			label: 'File this is redundant to: ',
 			tooltip: 'The "File:" prefix can be left off.',
@@ -563,6 +565,7 @@ Twinkle.speedy.fileList = [
 		tooltip: 'This is only for files with a clearly invalid fair-use tag, such as a {{Non-free logo}} tag on a photograph of a mascot. For cases that require a waiting period (replaceable images or otherwise disputed rationales), use the options on Twinkle\'s DI tab.',
 		subgroup: {
 			name: 'badfairuse_rationale',
+			parameter: 'rationale',
 			type: 'input',
 			label: 'Optional explanation: ',
 			size: 60
@@ -574,6 +577,7 @@ Twinkle.speedy.fileList = [
 		tooltip: 'Non-free images or media from a commercial source (e.g., Associated Press, Getty), where the file itself is not the subject of sourced commentary, are considered an invalid claim of fair use and fail the strict requirements of WP:NFCC.',
 		subgroup: {
 			name: 'badfairuse_rationale',
+			parameter: 'rationale',
 			type: 'input',
 			label: 'Optional explanation: ',
 			size: 60
@@ -586,6 +590,7 @@ Twinkle.speedy.fileList = [
 		tooltip: 'Provided the following conditions are met: 1: The file format of both images is the same. 2: The file\'s license and source status is beyond reasonable doubt, and the license is undoubtedly accepted at Commons. 3: All information on the file description page is present on the Commons file description page. That includes the complete upload history with links to the uploader\'s local user pages. 4: The file is not protected, and the file description page does not contain a request not to move it to Commons. 5: If the file is available on Commons under a different name than locally, all local references to the file must be updated to point to the title used at Commons. 6: For {{c-uploaded}} files: They may be speedily deleted as soon as they are off the Main Page',
 		subgroup: {
 			name: 'commons_filename',
+			parameter: 'filename',
 			type: 'input',
 			label: 'Filename on Commons: ',
 			value: Morebits.pageNameNorm,
@@ -600,12 +605,14 @@ Twinkle.speedy.fileList = [
 		subgroup: [
 			{
 				name: 'imgcopyvio_url',
+				parameter: 'url',
 				type: 'input',
 				label: 'URL of the copyvio, including the "http://".  If the copyvio is of a non-internet source and you cannot provide a URL, you must use the deletion rationale box. ',
 				size: 60
 			},
 			{
 				name: 'imgcopyvio_rationale',
+				parameter: 'rationale',
 				type: 'input',
 				label: 'Deletion rationale for non-internet copyvios: ',
 				size: 60
@@ -642,6 +649,7 @@ Twinkle.speedy.articleList = [
 		tooltip: 'If the article in question does not exist on another project, the template {{notenglish}} should be used instead. All articles in a non-English language that do not meet this criteria (and do not meet any other criteria for speedy deletion) should be listed at Pages Needing Translation (PNT) for review and possible translation',
 		subgroup: {
 			name: 'foreign_source',
+			parameter: 'source',
 			type: 'input',
 			label: 'Interwiki link to the article on the foreign-language wiki: ',
 			tooltip: 'For example, fr:Bonjour',
@@ -659,6 +667,7 @@ Twinkle.speedy.articleList = [
 		tooltip: 'Any article that has been discussed at Articles for Deletion (et al), where the outcome was to transwiki, and where the transwikification has been properly performed and the author information recorded. Alternately, any article that consists of only a dictionary definition, where the transwikification has been properly performed and the author information recorded',
 		subgroup: {
 			name: 'transwiki_location',
+			parameter: 'location',
 			type: 'input',
 			label: 'Link to where the page has been transwikied: ',
 			tooltip: 'For example, https://en.wiktionary.org/wiki/twinkle or [[wikt:twinkle]]'
@@ -723,6 +732,7 @@ Twinkle.speedy.articleList = [
 		tooltip: 'A recently created article with no relevant page history that does not aim to expand upon, detail or improve information within any existing article(s) on the subject, and where the title is not a plausible redirect. This does not include content forks, split pages or any article that aims at expanding or detailing an existing one.',
 		subgroup: {
 			name: 'a10_article',
+			parameter: 'article',
 			type: 'input',
 			label: 'Article that is duplicated: ',
 			required: true
@@ -747,6 +757,7 @@ Twinkle.speedy.categoryList = [
 		tooltip: 'This is for situations where a category is effectively empty, because the template(s) that formerly placed pages in that category are now deleted. This excludes categories that are still in use.',
 		subgroup: {
 			name: 'templatecat_rationale',
+			parameter: 'rationale',
 			type: 'input',
 			label: 'Optional explanation: ',
 			size: 60
@@ -767,6 +778,7 @@ Twinkle.speedy.userList = [
 		tooltip: 'Personal subpages, upon request by their user. In some rare cases there may be administrative need to retain the page. Also, sometimes, main user pages may be deleted as well. See Wikipedia:User page for full instructions and guidelines',
 		subgroup: mw.config.get('wgNamespaceNumber') === 3 && mw.config.get('wgTitle').indexOf('/') === -1 ? {
 			name: 'userreq_rationale',
+			parameter: 'rationale',
 			type: 'input',
 			label: 'A mandatory rationale to explain why this user talk page should be deleted: ',
 			tooltip: 'User talk pages are deleted only in highly exceptional circumstances. See WP:DELTALK.',
@@ -814,6 +826,7 @@ Twinkle.speedy.portalList = [
 		tooltip: 'You must specify a single article criterion that applies in this case (A1, A3, A7, or A10).',
 		subgroup: {
 			name: 'p1_criterion',
+			parameter: 'criterion',
 			type: 'input',
 			label: 'Article criterion that would apply: ',
 			required: true
@@ -856,6 +869,7 @@ Twinkle.speedy.generalList = [
 		tooltip: 'A copy, by any title, of a page that was deleted via an XfD process or Deletion review, provided that the copy is substantially identical to the deleted version. This clause does not apply to content that has been "userfied", to content undeleted as a result of Deletion review, or if the prior deletions were proposed or speedy deletions, although in this last case, other speedy deletion criteria may still apply',
 		subgroup: {
 			name: 'repost_xfd',
+			parameter: 'xfd',
 			type: 'input',
 			label: 'Page where the deletion discussion took place: ',
 			tooltip: 'Must start with "Wikipedia:"',
@@ -869,6 +883,7 @@ Twinkle.speedy.generalList = [
 		tooltip: 'Pages created by banned or blocked users in violation of their ban or block, and which have no substantial edits by others',
 		subgroup: {
 			name: 'banned_user',
+			parameter: 'user',
 			type: 'input',
 			label: 'Username of banned user (if available): ',
 			tooltip: 'Should not start with "User:"'
@@ -881,12 +896,14 @@ Twinkle.speedy.generalList = [
 		subgroup: [
 			{
 				name: 'move_page',
+				parameter: 'page',
 				type: 'input',
 				label: 'Page to be moved here: ',
 				required: true
 			},
 			{
 				name: 'move_reason',
+				parameter: 'reason',
 				type: 'input',
 				label: 'Reason: ',
 				size: 60,
@@ -901,6 +918,7 @@ Twinkle.speedy.generalList = [
 		tooltip: 'A deletion discussion (at AfD, FfD, RfD, TfD, CfD, or MfD) was closed as "delete", but the page wasn\'t actually deleted.',
 		subgroup: {
 			name: 'xfd_fullvotepage',
+			parameter: 'fullvotepage',
 			type: 'input',
 			label: 'Page where the deletion discussion was held: ',
 			tooltip: 'Must start with "Wikipedia:"',
@@ -914,6 +932,7 @@ Twinkle.speedy.generalList = [
 		tooltip: 'This only applies for a copy-and-paste page move of another page that needs to be temporarily deleted to make room for a clean page move.',
 		subgroup: {
 			name: 'copypaste_sourcepage',
+			parameter: 'sourcepage',
 			type: 'input',
 			label: 'Original page that was copy-pasted here: ',
 			required: true
@@ -926,6 +945,7 @@ Twinkle.speedy.generalList = [
 		tooltip: 'Other routine maintenance tasks',
 		subgroup: {
 			name: 'g6_rationale',
+			parameter: 'rationale',
 			type: 'input',
 			label: 'Rationale: ',
 			size: 60
@@ -937,6 +957,7 @@ Twinkle.speedy.generalList = [
 		tooltip: 'Any page for which deletion is requested by the original author in good faith, provided the page\'s only substantial content was added by its author. If the author blanks the page, this can also be taken as a deletion request.',
 		subgroup: {
 			name: 'author_rationale',
+			parameter: 'rationale',
 			type: 'input',
 			label: 'Optional explanation: ',
 			tooltip: 'Perhaps linking to where the author requested this deletion.',
@@ -950,6 +971,7 @@ Twinkle.speedy.generalList = [
 		tooltip: 'such as talk pages with no corresponding subject page; subpages with no parent page; file pages without a corresponding file; redirects to non-existent targets; or categories populated by deleted or retargeted templates. This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		subgroup: {
 			name: 'g8_rationale',
+			parameter: 'rationale',
 			type: 'input',
 			label: 'Optional explanation: ',
 			size: 60
@@ -986,6 +1008,7 @@ Twinkle.speedy.generalList = [
 		subgroup: [
 			{
 				name: 'copyvio_url',
+				parameter: 'url',
 				type: 'input',
 				label: 'URL (if available): ',
 				tooltip: 'If the material was copied from an online source, put the URL here, including the "http://" or "https://" protocol.',
@@ -993,6 +1016,7 @@ Twinkle.speedy.generalList = [
 			},
 			{
 				name: 'copyvio_url2',
+				parameter: 'url2',
 				type: 'input',
 				label: 'Additional URL: ',
 				tooltip: 'Optional. Should begin with "http://" or "https://"',
@@ -1000,6 +1024,7 @@ Twinkle.speedy.generalList = [
 			},
 			{
 				name: 'copyvio_url3',
+				parameter: 'url3',
 				type: 'input',
 				label: 'Additional URL: ',
 				tooltip: 'Optional. Should begin with "http://" or "https://"',
