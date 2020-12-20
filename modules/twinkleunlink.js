@@ -134,8 +134,8 @@ Twinkle.unlink.callbacks = {
 				var imageusage = response.query.imageusage;
 				list = [];
 				for (i = 0; i < imageusage.length; ++i) {
-					var usagetitle = imageusage[i].title;
-					list.push({ label: usagetitle, value: usagetitle, checked: true });
+					// Label made by Twinkle.generateBatchPageLinks
+					list.push({ label: '', value: imageusage[i].title, checked: true });
 				}
 				if (!list.length) {
 					apiobj.params.form.append({ type: 'div', label: 'No instances of file usage found.' });
@@ -184,8 +184,8 @@ Twinkle.unlink.callbacks = {
 			if (backlinks.length > 0) {
 				list = [];
 				for (i = 0; i < backlinks.length; ++i) {
-					var title = backlinks[i].title;
-					list.push({ label: title, value: title, checked: true });
+					// Label made by Twinkle.generateBatchPageLinks
+					list.push({ label: '', value: backlinks[i].title, checked: true });
 				}
 				apiobj.params.form.append({ type: 'header', label: 'Backlinks' });
 				namespaces = [];
@@ -195,7 +195,7 @@ Twinkle.unlink.callbacks = {
 				apiobj.params.form.append({
 					type: 'div',
 					label: 'Selected namespaces: ' + namespaces.join(', '),
-					tooltip: 'You can change this with your Twinkle preferences, at [[WP:TWPREFS]]'
+					tooltip: 'You can change this with your Twinkle preferences, linked at the bottom of this Twinkle window'
 				});
 				if (response['query-continue'] && response['query-continue'].backlinks) {
 					apiobj.params.form.append({
@@ -234,6 +234,9 @@ Twinkle.unlink.callbacks = {
 
 			var result = apiobj.params.form.render();
 			apiobj.params.Window.setContent(result);
+
+			Morebits.quickForm.getElements(result, 'backlinks').forEach(Twinkle.generateBatchPageLinks);
+			Morebits.quickForm.getElements(result, 'imageusage').forEach(Twinkle.generateBatchPageLinks);
 
 		}
 	},

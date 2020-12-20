@@ -539,6 +539,15 @@ Twinkle.generateArrowLinks = function (checkbox) {
 	checkbox.nextElementSibling.append(link);
 };
 
+// Used in deprod and unlink listings to link the page title
+Twinkle.generateBatchPageLinks = function (checkbox) {
+	var $checkbox = $(checkbox);
+	var link = Morebits.htmlNode('a', $checkbox.val());
+	link.setAttribute('class', 'tw-batchpage-link');
+	link.setAttribute('href', mw.util.getUrl($checkbox.val()));
+	link.setAttribute('target', '_blank');
+	$checkbox.next().prepend([link, ' ']);
+};
 
 }(window, document, jQuery)); // End wrap with anonymous function
 
