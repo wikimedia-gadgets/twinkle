@@ -185,7 +185,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 				(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)'));
 			}
 
-			if (page.ns === '6') {  // mimic what delimages used to show for files
+			if (page.ns === 6) {  // mimic what delimages used to show for files
 				metadata.push('uploader: ' + page.imageinfo[0].user);
 				metadata.push('last edit from: ' + page.revisions[0].user);
 			} else {
@@ -355,7 +355,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 						metadata.push('fully protected' +
 						(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)'));
 					}
-					if (page.ns === '6') {  // mimic what delimages used to show for files
+					if (page.ns === 6) {  // mimic what delimages used to show for files
 						metadata.push('uploader: ' + page.imageinfo[0].user);
 						metadata.push('last edit from: ' + page.revisions[0].user);
 					} else {
