@@ -110,6 +110,8 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		var result = apiobj.params.form.render();
 		apiobj.params.Window.setContent(result);
 
+		Morebits.quickForm.getElements(result, 'pages').forEach(Twinkle.generateArrowLinks);
+
 	}, statelem);
 	wikipedia_api.params = { form: form, Window: Window };
 	wikipedia_api.post();

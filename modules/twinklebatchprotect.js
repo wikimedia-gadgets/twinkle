@@ -239,6 +239,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		result.moveexpiry.value = '2 days';
 		result.createexpiry.value = 'infinity';
 
+		Morebits.quickForm.getElements(result, 'pages').forEach(Twinkle.generateArrowLinks);
 
 	}, statelem);
 

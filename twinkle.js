@@ -530,6 +530,16 @@ Twinkle.makeFindSourcesDiv = function makeSourcesDiv() {
 		)[0];
 };
 
+// Used in batch listings to link to the page in question with >
+Twinkle.generateArrowLinks = function (checkbox) {
+	var link = Morebits.htmlNode('a', ' >');
+	link.setAttribute('class', 'tw-arrowpage-link');
+	link.setAttribute('href', mw.util.getUrl(checkbox.value));
+	link.setAttribute('target', '_blank');
+	checkbox.nextElementSibling.append(link);
+};
+
+
 }(window, document, jQuery)); // End wrap with anonymous function
 
 // </nowiki>
