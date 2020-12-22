@@ -1748,7 +1748,7 @@ Twinkle.tag.callbacks = {
 
 		pageobj.setPageText(pageText);
 		pageobj.setEditSummary(summaryText);
-		if (Twinkle.getPref('watchTaggedPages').indexOf('redirects') !== -1) {
+		if (Twinkle.getPref('watchTaggedVenues').indexOf('redirects') !== -1) {
 			pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
 		}
 		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
@@ -1857,7 +1857,7 @@ Twinkle.tag.callbacks = {
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summary.substring(0, summary.length - 2));
 		pageobj.setChangeTags(Twinkle.changeTags);
-		if (Twinkle.getPref('watchTaggedPages').indexOf('files') !== -1) {
+		if (Twinkle.getPref('watchTaggedVenues').indexOf('files') !== -1) {
 			pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
 		}
 		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
