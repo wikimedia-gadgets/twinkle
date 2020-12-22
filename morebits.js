@@ -58,10 +58,11 @@ Morebits.userIsSysop = Morebits.userIsInGroup('sysop');
 
 /**
  * Converts an IPv6 address to the canonical form stored and used by MediaWiki.
- * JavaScript translation of the {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/libs/IPUtils/+/refs/heads/master/src/IPUtils.php#214|`IP::sanitizeIP()`}
- * function from the IPUtils library.
+ * JavaScript translation of the {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/8eb6ac3e84ea3312d391ca96c12c49e3ad0753bb/includes/utils/IP.php#131|`IP::sanitizeIP()`}
+ * function from the IPUtils library.  Adddresses are verbose, uppercase,
+ * normalized, and expanded to 8 words.
  *
- * @param {string} address - The IPv6 address.
+ * @param {string} address - The IPv6 address, with or without CIDR.
  * @returns {string}
  */
 Morebits.sanitizeIPv6 = function (address) {
@@ -69,7 +70,7 @@ Morebits.sanitizeIPv6 = function (address) {
 	if (address === '') {
 		return null;
 	}
-	if (!mw.util.isIPv6Address(address)) {
+	if (!mw.util.isIPv6Address(address, true)) {
 		return address; // nothing else to do for IPv4 addresses or invalid ones
 	}
 	// Remove any whitespaces, convert to upper case
@@ -80,7 +81,7 @@ Morebits.sanitizeIPv6 = function (address) {
 		// We know this is valid IPv6. Find the last index of the
 		// address before any CIDR number (e.g. "a:b:c::/24").
 		var CIDRStart = address.indexOf('/');
-		var addressEnd = CIDRStart > -1 ? CIDRStart - 1 : address.length - 1;
+		var addressEnd = CIDRStart !== -1 ? CIDRStart - 1 : address.length - 1;
 		// If the '::' is at the beginning...
 		var repeat, extra, pad;
 		if (abbrevPos === 0) {
