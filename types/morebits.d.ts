@@ -2,10 +2,6 @@
  * Type definitions for morebits.js
  */
 
-interface FormSubmitEvent extends Event {
-	target: HTMLFormElement
-}
-
 declare namespace Morebits {
 
 	function userIsInGroup(group: string): boolean
@@ -22,7 +18,7 @@ declare namespace Morebits {
 	class quickForm {
 		constructor(event: ((e: FormSubmitEvent) => void), eventType?: string)
 		render(): HTMLFormElement
-		append(data: quickFormElementData): quickFormElement
+		append(data: quickFormElementData): quickForm.element
 		static getInputData(form: HTMLFormElement): Record<string, string>
 		static getElements(form: HTMLFormElement, fieldName: string): HTMLElement[]
 		static getCheckboxOrRadio(elementArray: HTMLInputElement[], value: string): HTMLInputElement
@@ -34,7 +30,16 @@ declare namespace Morebits {
 		static resetElementLabel(element: HTMLElement): boolean | null
 		static setElementVisibility(element: HTMLElement | JQuery | string, visibility?: boolean): void
 		static setElementTooltipVisibility(element: HTMLElement | JQuery | string, visibility?: boolean): void
-		static element: typeof quickFormElement
+	}
+	namespace quickForm {
+		class element {
+			constructor(data: quickFormElementData)
+			static id: number
+			append(data: quickFormElementData): element
+			render(): HTMLElement
+			private compute(data: quickFormElementData): [HTMLElement, HTMLElement]
+			static generateTooltip(node: HTMLElement, data: any): void
+		}
 	}
 
 	namespace string {
@@ -52,6 +57,16 @@ declare namespace Morebits {
 		function uniq<T>(arr: T[]): T[]
 		function dups<T>(arr: T[]): T[]
 		function chunk<T>(arr: T[], size: number): T[][]
+	}
+
+	namespace select2 {
+		let matchers: {
+			optgroupFull: ((params: any, data: any) => any)
+			wordBeginning: ((params: any, data: any) => any)
+		}
+		function highlightSearchMatches(result: any): JQuery
+		function queryInterceptor(params: any): void
+		function autoStart(ev: Event): void
 	}
 
 	class unbinder {
@@ -97,7 +112,7 @@ declare namespace Morebits {
 
 		class api {
 			constructor(currentAction: string, query: any, onSuccess?: ((apiobj: api) => any),
-						statusElement?: string, onFailure?: ((apiobj: api) => any))
+						statusElement?: Morebits.status, onFailure?: ((apiobj: api) => any))
 			responseXML: XMLDocument
 			setParent(parent: any): void
 			setStatusElement(statusElement: Morebits.status): void
@@ -114,7 +129,7 @@ declare namespace Morebits {
 
 		class page {
 			constructor(pageName: string, status?: Morebits.status | string)
-			load(onSuccess: ((pageobj: page) => void)): void
+			load(onSuccess: ((pageobj: page) => void), onFailure?: ((pageobj: page) => void)): void
 			save(onSuccess?: ((pageobj: page) => void), onFailure?: ((pageobj: page) => void)): void
 			append(onSuccess?: ((pageobj: page) => void), onFailure?: ((pageobj: page) => void)): void
 			prepend(onSuccess?: ((pageobj: page) => void), onFailure?: ((pageobj: page) => void)): void
@@ -202,7 +217,7 @@ declare namespace Morebits {
 		headerLevel: number
 		changeTags: string | string[]
 		constructor(logPageName: string)
-		log(logText: string, summaryText: string): void
+		log(logText: string, summaryText: string): JQuery.Deferred<void>
 	}
 
 
@@ -249,10 +264,10 @@ declare namespace Morebits {
 
 	class taskManager {
 		constructor(context: any)
-		taskDependencyMap: Map<Function, Function[]>
-		deferreds: Map<Function, JQuery.Deferred<any>[]>
+		taskDependencyMap: Map<task, task[]>
+		deferreds: Map<task, JQuery.Deferred<any>[]>
 		allDeferreds: JQuery.Deferred<any>[]
-		add(func: Function, deps: Function[])
+		add(func: task, deps: task[], onFailure?: ((...args: any[]) => void))
 		execute(): JQuery.Promise<void>
 	}
 
@@ -262,31 +277,21 @@ declare namespace Morebits {
 		height: number
 		hasFooterLinks: boolean
 		scriptName: string
-		focus(): Morebits.simpleWindow
-		close(event: Event): Morebits.simpleWindow
-		display(): Morebits.simpleWindow
-		setTitle(title: string): Morebits.simpleWindow
-		setScriptName(name: string): Morebits.simpleWindow
-		setWidth(width: number): Morebits.simpleWindow
-		setHeight(height: number): Morebits.simpleWindow
-		setContent(content: HTMLElement): Morebits.simpleWindow
-		addContent(content: HTMLElement): Morebits.simpleWindow
-		purgeContent(): Morebits.simpleWindow
-		addFooterLink(text: string, wikiPage: string, prep?: boolean): Morebits.simpleWindow
-		setModality(modal: boolean): Morebits.simpleWindow
+		focus(): simpleWindow
+		close(event?: Event): simpleWindow
+		display(): simpleWindow
+		setTitle(title: string): simpleWindow
+		setScriptName(name: string): simpleWindow
+		setWidth(width: number): simpleWindow
+		setHeight(height: number): simpleWindow
+		setContent(content: HTMLElement): simpleWindow
+		addContent(content: HTMLElement): simpleWindow
+		purgeContent(): simpleWindow
+		addFooterLink(text: string, wikiPage: string, prep?: boolean): simpleWindow
+		setModality(modal: boolean): simpleWindow
 		static setButtonsEnabled(enabled: boolean)
 	}
 
-}
-
-// TypeScript's handling of nested classes is pathetic ...
-declare class quickFormElement {
-	constructor(data: any)
-	static id: number
-	append(data: quickFormElementData): quickFormElement
-	render(): HTMLElement
-	private compute(data: quickFormElementData): [HTMLElement, HTMLElement]
-	static generateTooltip(node: HTMLElement, data: any): void
 }
 
 interface quickFormElementData {
@@ -302,7 +307,7 @@ interface quickFormElementData {
 	adminonly?: boolean
 	label?: string | HTMLElement | (string | HTMLElement)[] // non-string cases applicable for type=div only
 	value?: string
-	size?: string // for input
+	size?: string | number // for input
 	multiple?: boolean // for select
 	checked?: boolean // for radio, checkbox
 	selected?: boolean // for select
@@ -313,8 +318,16 @@ interface quickFormElementData {
 	required?: boolean // for input, textarea
 	readonly?: boolean // for input, textarea
 	maxlength?: number // for input, textarea
+	shiftClickSupport?: boolean // for checkbox
 }
 
 interface QuickFormEvent extends Event {
 	target: HTMLInputElement
 }
+
+interface FormSubmitEvent extends Event {
+	target: HTMLFormElement
+}
+
+// for Morebits.taskManager
+type task = ((...args: any[]) => JQuery.Thenable<any>);
