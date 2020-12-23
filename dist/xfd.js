@@ -1722,20 +1722,19 @@ var Rfd = /** @class */ (function (_super) {
         var _this = this;
         // Used by regular redirects to find the target, but for all redirects,
         // avoid relying on the client clock to build the log page
+        var isSoftRedirect = !!document.getElementById('softredirect');
         var query = {
             'action': 'query',
             'curtimestamp': true,
-            'format': 'json'
+            'format': 'json',
+            // Find current target of redirect (for hard redirects only)
+            'titles': !isSoftRedirect && mw.config.get('wgPageName'),
+            'redirects': !isSoftRedirect
         };
-        if (document.getElementById('softredirect')) {
+        if (isSoftRedirect) {
             // For soft redirects, define the target early
             // to skip target checks in findTargetCallback
             this.params.rfdtarget = document.getElementById('softredirect').textContent.replace(/^:+/, '');
-        }
-        else {
-            // Find current target of redirect
-            query.titles = mw.config.get('wgPageName');
-            query.redirects = true;
         }
         var wikipedia_api = new Morebits.wiki.api('Finding target of redirect', query);
         return wikipedia_api.post().then(function (apiobj) {
@@ -1744,7 +1743,7 @@ var Rfd = /** @class */ (function (_super) {
             var date = new Morebits.date(_this.params.curtimestamp);
             _this.params.logpage = 'Wikipedia:Redirects for discussion/Log/' + date.format('YYYY MMMM D', 'utc');
             _this.params.discussionpage = _this.params.logpage + '#' + Morebits.pageNameNorm;
-            if (!_this.params.rfdtarget) { // Not a softredirect
+            if (!isSoftRedirect) {
                 var target = response.query.redirects && response.query.redirects[0].to;
                 if (!target) {
                     var message = 'No target found. this page does not appear to be a redirect, aborting';
