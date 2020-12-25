@@ -2079,9 +2079,26 @@ Morebits.wiki.api.prototype = {
 	 *
 	 * @param {object} callerAjaxParameters - Do not specify a parameter unless you really
 	 * really want to give jQuery some extra parameters.
-	 * @returns {promise} - A jQuery promise object that is resolved or rejected with the api object.
+	 * @returns {promise} - A native Promise or jQuery promise (on IE 11) that is resolved or
+	 * rejected with the api object.
 	 */
 	post: function(callerAjaxParameters) {
+		if (typeof Promise !== 'undefined') {
+			return new Promise(function(resolve, reject) { // eslint-disable-line no-undef
+				this.postCore(callerAjaxParameters).then(function(result) {
+					resolve(result);
+				}, function(error) {
+					reject(error);
+				});
+			}.bind(this));
+		}
+		return this.postCore(callerAjaxParameters);
+	},
+
+	/**
+	 * @private
+	 */
+	postCore: function(callerAjaxParameters) {
 
 		++Morebits.wiki.numberOfActionsLeft;
 
