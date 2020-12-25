@@ -237,7 +237,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		// add to CSD log if desired
 		if (lognomination) {
 			params.fromDI = true;
-			Twinkle.speedy.callbacks.user.addToLog(params, null);
+			Twinkle.image.callbacks.addToLog(params, null);
 		}
 		// No auto-notification, display what was going to be added.
 		var noteData = document.createElement('pre');
@@ -310,8 +310,50 @@ Twinkle.image.callbacks = {
 		// add this nomination to the user's userspace log, if the user has enabled it
 		if (params.lognomination) {
 			params.fromDI = true;
-			Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
+			Twinkle.image.callbacks.addToLog(params, initialContrib);
 		}
+	},
+	addToLog: function(params, initialContrib) {
+		var usl = new Morebits.userspaceLogger(Twinkle.getPref('speedyLogPageName'));
+		usl.initialText =
+			"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
+			'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
+			'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].' +
+			(Morebits.userIsSysop ? '\n\nThis log does not track outright speedy deletions made using Twinkle.' : '');
+
+		var formatParamLog = function(normalize, csdparam, input) {
+			if (normalize === 'F5' && csdparam === 'replacement') {
+				input = '[[:' + input + ']]';
+			}
+			return ' {' + normalize + ' ' + csdparam + ': ' + input + '}';
+		};
+
+		var extraInfo = '';
+
+		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
+		var fileLogLink = ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])';
+
+		var appendText = '# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ': DI [[WP:CSD#' + params.normalized.toUpperCase() + '|CSD ' + params.normalized.toUpperCase() + ']] ({{tl|di-' + params.templatename + '}})';
+
+		['reason', 'replacement', 'source'].forEach(function(item) {
+			if (params[item]) {
+				extraInfo += formatParamLog(params.normalized.toUpperCase(), item, params[item]);
+				return false;
+			}
+		});
+
+		if (extraInfo) {
+			appendText += '; additional information:' + extraInfo;
+		}
+		if (initialContrib) {
+			appendText += '; notified {{user|1=' + initialContrib + '}}';
+		}
+		appendText += ' ~~~~~\n';
+
+		var editsummary = 'Logging speedy deletion nomination of [[:' + Morebits.pageNameNorm + ']].';
+
+		usl.changeTags = Twinkle.changeTags;
+		usl.log(appendText, editsummary);
 	}
 };
 
