@@ -380,24 +380,29 @@ var Twinkle = {
     // eg. const {arr_includes, str_startsWith} = Twinkle.shims;
     shims: {
         obj_values: function (obj) {
+            // @ts-ignore
             return Object.values ? Object.values(obj) : Object.keys(obj).map(function (k) { return obj[k]; });
         },
         obj_entries: function (obj) {
+            // @ts-ignore
             return Object.entries ? Object.entries(obj) : Object.keys(obj).map(function (k) { return [k, obj[k]]; });
         },
         arr_includes: function (arr, item) {
             return arr.indexOf(item) !== -1;
         },
         arr_find: function (arr, predicate) {
+            // @ts-ignore
             return Array.prototype.find ? arr.find(predicate) : arr.filter(predicate)[0];
         },
         str_includes: function (str, item) {
             return str.indexOf(item) !== -1;
         },
         str_startsWith: function (str, text) {
+            // @ts-ignore
             return String.prototype.startsWith ? str.startsWith(text) : str.indexOf(text) === 0;
         },
         str_endsWith: function (str, text) {
+            // @ts-ignore
             if (String.prototype.endsWith) {
                 return str.endsWith(text);
             }
@@ -511,12 +516,12 @@ $.ajax({
     $(Twinkle.load);
 });
 var TwinkleModule = /** @class */ (function () {
-    function class_1() {
+    function class_2() {
     }
-    class_1.prototype.addMenu = function () {
+    class_2.prototype.addMenu = function () {
         Twinkle.addPortletLink(this.makeWindow, this.portletName, this.portletId, this.portletTooltip);
     };
-    return class_1;
+    return class_2;
 }());
 // allow global access
 window.Twinkle = Twinkle;

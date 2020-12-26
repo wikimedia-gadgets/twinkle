@@ -416,24 +416,29 @@ var Twinkle = {
 	// eg. const {arr_includes, str_startsWith} = Twinkle.shims;
 	shims: {
 		obj_values(obj) {
+			// @ts-ignore
 			return Object.values ? Object.values(obj) : Object.keys(obj).map(k => obj[k]);
 		},
 		obj_entries(obj) {
+			// @ts-ignore
 			return Object.entries ? Object.entries(obj) : Object.keys(obj).map(k => [k, obj[k]]);
 		},
 		arr_includes<T>(arr: Array<T>, item: T): boolean {
 			return arr.indexOf(item) !== -1;
 		},
 		arr_find<T>(arr: Array<T>, predicate: ((item: T) => boolean)) {
+			// @ts-ignore
 			return Array.prototype.find ? arr.find(predicate) : arr.filter(predicate)[0];
 		},
 		str_includes(str, item): boolean {
 			return str.indexOf(item) !== -1;
 		},
 		str_startsWith(str, text): boolean {
+			// @ts-ignore
 			return String.prototype.startsWith ? str.startsWith(text) : str.indexOf(text) === 0;
 		},
 		str_endsWith(str, text): boolean {
+			// @ts-ignore
 			if (String.prototype.endsWith) {
 				return str.endsWith(text);
 			} else {
@@ -588,6 +593,12 @@ var TwinkleModule = class {
 		Twinkle.addPortletLink(this.makeWindow, this.portletName, this.portletId,
 			this.portletTooltip)
 	}
+}
+
+// Declare pre-existing globals. `Window` is the type of `window`.
+interface Window {
+	TwinkleConfig?: Record<string, any>
+	FriendlyConfig?: Record<string, any>
 }
 
 // allow global access
