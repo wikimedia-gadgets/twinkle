@@ -11,6 +11,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
+var obj_values = Twinkle.shims.obj_values;
 var Tag = /** @class */ (function (_super) {
     __extends(Tag, _super);
     function Tag() {
@@ -87,17 +92,20 @@ var Tag = /** @class */ (function (_super) {
 }(TwinkleModule));
 var TagMode = /** @class */ (function () {
     function TagMode() {
+        this.existingTags = [];
+        this.removalSupported = false; // Override to true for modes that support untagging
     }
     TagMode.isActive = function () {
         return false;
     };
-    Object.defineProperty(TagMode.prototype, "canRemove", {
-        get: function () {
-            return false;
-        },
-        enumerable: false,
-        configurable: true
-    });
+    TagMode.prototype.canRemove = function () {
+        return this.removalSupported &&
+            // Only on latest version of pages
+            (mw.config.get('wgCurRevisionId') === mw.config.get('wgRevisionId')) &&
+            // Disabled on latest diff because the diff slider could be used to slide
+            // away from the latest diff without causing the script to reload
+            !mw.config.get('wgDiffNewId');
+    };
     TagMode.prototype.getMenuTooltip = function () {
         return 'Add maintenance tags to the page';
     };
@@ -108,12 +116,8 @@ var TagMode = /** @class */ (function () {
         var _this = this;
         this.Window = Window;
         this.Window.setTitle(this.getWindowTitle());
-        this.form = new Morebits.quickForm(function () { _this.evaluate(); });
-        this.formAppendQuickFilter();
+        this.form = new Morebits.quickForm(function () { return _this.evaluate(); });
         this.constructFlatObject();
-        return this.form;
-    };
-    TagMode.prototype.formAppendQuickFilter = function () {
         this.form.append({
             type: 'input',
             label: 'Filter tag list: ',
@@ -121,20 +125,36 @@ var TagMode = /** @class */ (function () {
             size: '30px',
             event: QuickFilter.onInputChange
         });
+        if (this.removalSupported && !this.canRemove()) {
+            this.form.append({
+                type: 'div',
+                name: 'untagnotice',
+                label: Morebits.htmlNode('div', 'For removal of existing tags, please open Tag menu from the current version of article')
+            });
+        }
+        this.scrollbox = this.form.append({
+            type: 'div',
+            id: 'tagWorkArea',
+            className: 'morebits-scrollbox',
+            style: 'max-height: 28em'
+        });
+        this.parseExistingTags();
+        this.makeExistingTagList(this.scrollbox);
+        this.makeTagList(this.scrollbox);
     };
-    TagMode.prototype.makeTagList = function () {
+    TagMode.prototype.makeTagList = function (container) {
         var _this = this;
         if (Array.isArray(this.tagList)) {
-            this.makeTagListGroup(this.tagList, this.form);
+            this.makeTagListGroup(this.tagList, container);
         }
         else {
             $.each(this.tagList, function (groupName, group) {
-                _this.form.append({ type: 'header', label: groupName });
+                container.append({ type: 'header', label: groupName });
                 if (Array.isArray(group)) { // if group is a list of tags
-                    _this.makeTagListGroup(group, _this.form);
+                    _this.makeTagListGroup(group, container);
                 }
                 else { // if group is a list of subgroups
-                    var subdiv_1 = _this.form.append({ type: 'div' });
+                    var subdiv_1 = container.append({ type: 'div' });
                     $.each(group, function (subgroupName, subgroup) {
                         subdiv_1.append({ type: 'div', label: [Morebits.htmlNode('b', subgroupName)] });
                         _this.makeTagListGroup(subgroup, subdiv_1);
@@ -143,26 +163,40 @@ var TagMode = /** @class */ (function () {
             });
         }
     };
+    TagMode.prototype.makeExistingTagList = function (container) {
+        var _this = this;
+        if (!this.existingTags.length) {
+            return;
+        }
+        container.append({ type: 'header', label: 'Tags already present' });
+        this.makeTagListGroup(this.existingTags.map(function (tag) {
+            return _this.flatObject[tag] || { tag: tag };
+        }), container, true);
+    };
     // helper function for makeTagList()
-    TagMode.prototype.makeTagListGroup = function (list, container) {
-        if (container === void 0) { container = this.form; }
+    TagMode.prototype.makeTagListGroup = function (list, container, forExistingTags) {
+        var excludeTags = new Set(forExistingTags ? [] : this.existingTags);
         container.append({
             type: 'checkbox',
             name: 'tags',
-            list: list.map(function (item) { return ({
+            list: list.filter(function (item) { return !excludeTags.has(item.tag); }).map(function (item) { return ({
                 label: '{{' + item.tag + '}}' + (item.description ? ': ' + item.description : ''),
                 value: item.tag,
-                subgroup: item.subgroup
+                checked: !!forExistingTags,
+                subgroup: item.subgroup,
+                style: forExistingTags ? 'font-style: italic' : ''
             }); })
         });
     };
+    /**
+     * Parse existing tags. This is NOT asynchronous.
+     * Should be overridden for tag modes where removalSupported is true
+     */
+    TagMode.prototype.parseExistingTags = function () {
+        return;
+    };
     TagMode.prototype.constructFlatObject = function () {
         var _this = this;
-        var obj_values = Object.values || function (obj) {
-            return Object.keys(obj).map(function (key) {
-                return obj[key];
-            });
-        };
         this.flatObject = {};
         if (Array.isArray(this.tagList)) {
             // this.tagList is of type tagData[]
@@ -210,10 +244,33 @@ var TagMode = /** @class */ (function () {
         this.result = this.form.render();
         this.Window.setContent(this.result);
         this.Window.display();
-        QuickFilter.init(this.result);
     };
     TagMode.prototype.postRender = function () {
+        QuickFilter.init(this.result);
         Morebits.quickForm.getElements(this.result, 'tags').forEach(Tag.makeArrowLinks);
+        Morebits.quickForm.getElements(this.result, 'existingTags').forEach(Tag.makeArrowLinks);
+        // style adjustments
+        $(this.scrollbox).find('h5').css({ 'font-size': '110%' });
+        $(this.scrollbox).find('h5:not(:first-child)').css({ 'margin-top': '1em' });
+        $(this.scrollbox).find('div').filter(':has(span.quickformDescription)').css({ 'margin-top': '0.4em' });
+        // Add status text node after Submit button
+        var $status = $('<small>').attr('id', 'tw-tag-status');
+        $status.insertAfter($('button.tw-tag-submit'));
+        var addedCount = 0, removedCount = 0;
+        // tally tags added/removed, update statusNode text
+        $('[name=tags], [name=existingTags]').on('click', function (e) {
+            var checkbox = e.target;
+            if (checkbox.name === 'tags') {
+                addedCount += checkbox.checked ? 1 : -1;
+            }
+            else if (checkbox.name === 'existingTags') {
+                removedCount += checkbox.checked ? -1 : 1;
+            }
+            var firstPart = "Adding " + addedCount + " tag" + (addedCount > 1 ? 's' : '');
+            var secondPart = "Removing " + removedCount + " tag" + (removedCount > 1 ? 's' : '');
+            var statusText = (addedCount ? firstPart : '') + (removedCount ? (addedCount ? '; ' : '') + secondPart : '');
+            $status.text('  ' + statusText);
+        });
     };
     TagMode.prototype.evaluate = function () {
         this.captureFormData();
@@ -223,11 +280,13 @@ var TagMode = /** @class */ (function () {
     };
     TagMode.prototype.captureFormData = function () {
         this.params = Morebits.quickForm.getInputData(this.result);
+        this.params.tagsToRemove = this.result.getUnchecked('existingTags'); // XXX: Morebits-defined function
+        this.params.tagsToRetain = this.params.existingTags || [];
     };
     TagMode.prototype.validateInput = function () {
         // File/redirect: return if no tags selected
         // Article: return if no tag is selected and no already present tag is deselected
-        if (this.params.tags.length === 0 && (!this.canRemove || this.params.tagsToRemove.length === 0)) {
+        if (this.params.tags.length === 0 && (!this.canRemove() || this.params.tagsToRemove.length === 0)) {
             alert('You must select at least one tag!');
             return false;
         }
@@ -240,7 +299,7 @@ var TagMode = /** @class */ (function () {
         Morebits.simpleWindow.setButtonsEnabled(false);
         Morebits.status.init(this.result);
         Morebits.wiki.actionCompleted.redirect = Morebits.pageNameNorm;
-        Morebits.wiki.actionCompleted.notice = 'Tagging complete, reloading article in a few seconds';
+        Morebits.wiki.actionCompleted.notice = ("Tagging complete, reloading " + this.name + " in a few seconds")(__makeTemplateObject([""], [""]));
         if (this.name === 'redirect') {
             Morebits.wiki.actionCompleted.followRedirect = false;
         }
@@ -265,8 +324,8 @@ var QuickFilter = /** @class */ (function () {
     function QuickFilter() {
     }
     QuickFilter.init = function (result) {
-        QuickFilter.$allCheckboxDivs = $(result).find('[name$=tags]').parent();
-        QuickFilter.$allHeaders = $(result).find('h5');
+        QuickFilter.$allCheckboxDivs = $(result).find('[name=tags], [name=existingTags]').parent();
+        QuickFilter.$allHeaders = $(result).find('h5, .quickformDescription');
         result.quickfilter.focus(); // place cursor in the quick filter field as soon as window is opened
         result.quickfilter.autocomplete = 'off'; // disable browser suggestions
         result.quickfilter.addEventListener('keypress', function (e) {
@@ -330,14 +389,12 @@ var RedirectMode = /** @class */ (function (_super) {
     };
     RedirectMode.prototype.makeForm = function (Window) {
         _super.prototype.makeForm.call(this, Window);
-        this.makeTagList();
         if (Twinkle.getPref('customRedirectTagList').length) {
-            this.form.append({ type: 'header', label: 'Custom tags' });
-            this.form.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customRedirectTagList') });
+            this.scrollbox.append({ type: 'header', label: 'Custom tags' });
+            this.scrollbox.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customRedirectTagList') });
         }
         this.formAppendPatrolLink();
         this.formAppendSubmitButton();
-        return this.form;
     };
     RedirectMode.prototype.action = function () {
         var _this = this;
@@ -417,14 +474,12 @@ var FileMode = /** @class */ (function (_super) {
     };
     FileMode.prototype.makeForm = function (Window) {
         _super.prototype.makeForm.call(this, Window);
-        this.makeTagList();
         if (Twinkle.getPref('customFileTagList').length) {
-            this.form.append({ type: 'header', label: 'Custom tags' });
-            this.form.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customFileTagList') });
+            this.scrollbox.append({ type: 'header', label: 'Custom tags' });
+            this.scrollbox.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customFileTagList') });
         }
         this.formAppendPatrolLink();
         this.formAppendSubmitButton();
-        return this.form;
     };
     FileMode.prototype.validateInput = function () {
         // Given an array of incompatible tags, check if we have two or more selected
@@ -504,14 +559,14 @@ var FileMode = /** @class */ (function (_super) {
     FileMode.prototype.action = function () {
         var _this = this;
         _super.prototype.action.call(this);
-        var wikipedia_page = new Morebits.wiki.page(Morebits.pageNameNorm, 'Tagging ' + this.name);
-        wikipedia_page.load(function (pageobj) {
+        var pageobj = new Morebits.wiki.page(Morebits.pageNameNorm, 'Tagging ' + this.name);
+        pageobj.load(function (pageobj) {
             var text = pageobj.getPageText();
             var params = _this.params;
             // Add maintenance tags
             if (params.tags.length) {
                 var tagtext = '', currentTag;
-                $.each(params.tags, function (k, tag) {
+                params.tags.forEach(function (tag) {
                     // when other commons-related tags are placed, remove "move to Commons" tag
                     if (['Keep local', 'Now Commons', 'Do not move to Commons'].indexOf(tag) !== -1) {
                         text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
@@ -530,7 +585,7 @@ var FileMode = /** @class */ (function (_super) {
                             text = text.replace(/\{\{\s*(Template\s*:\s*)?(Non-free reduce|FairUseReduce|Fairusereduce|Fair Use Reduce|Fair use reduce|Reduce size|Reduce|Fair-use reduce|Image-toobig|Comic-ovrsize-img|Non-free-reduce|Nfr|Smaller image|Nonfree reduce)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
                             break;
                         default:
-                            break; // don't care
+                            break;
                     }
                     currentTag = '{{' + currentTag + '}}\n';
                     tagtext += currentTag;
@@ -549,7 +604,6 @@ var FileMode = /** @class */ (function (_super) {
             pageobj.setCreateOption('nocreate');
             pageobj.save();
             if (params.patrol) {
-                pageobj.setChangeTags(Twinkle.changeTags);
                 pageobj.triage();
             }
         });
@@ -562,22 +616,13 @@ var ArticleMode = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.name = 'article';
         _this.tagList = articleTagList;
+        _this.removalSupported = true;
         return _this;
     }
     ArticleMode.isActive = function () {
         return [0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 &&
-            mw.config.get('wgCurRevisionId');
+            mw.config.get('wgCurRevisionId'); // check if page exists
     };
-    Object.defineProperty(ArticleMode.prototype, "canRemove", {
-        get: function () {
-            return (mw.config.get('wgCurRevisionId') === mw.config.get('wgRevisionId')) &&
-                // Disabled on latest diff because the diff slider could be used to slide
-                // away from the latest diff without causing the script to reload
-                !mw.config.get('wgDiffNewId');
-        },
-        enumerable: false,
-        configurable: true
-    });
     ArticleMode.prototype.getMenuTooltip = function () {
         return 'Add or remove article maintenance tags';
     };
@@ -585,43 +630,13 @@ var ArticleMode = /** @class */ (function (_super) {
         return 'Article maintenance tagging';
     };
     ArticleMode.prototype.makeForm = function (Window) {
-        var form = _super.prototype.makeForm.call(this, Window);
-        form.append({
-            type: 'select',
-            name: 'sortorder',
-            label: 'View this list:',
-            tooltip: 'You can change the default view order in your Twinkle preferences (WP:TWPREFS).',
-            event: this.updateSortOrder,
-            list: [{
-                    type: 'option',
-                    value: 'cat',
-                    label: 'By categories',
-                    selected: Twinkle.getPref('tagArticleSortOrder') === 'cat'
-                },
-                {
-                    type: 'option',
-                    value: 'alpha',
-                    label: 'In alphabetical order',
-                    selected: Twinkle.getPref('tagArticleSortOrder') === 'alpha'
-                }
-            ]
-        });
-        if (!this.canRemove) {
-            var divElement = document.createElement('div');
-            divElement.innerHTML = 'For removal of existing tags, please open Tag menu from the current version of article';
-            form.append({
-                type: 'div',
-                name: 'untagnotice',
-                label: divElement
-            });
+        _super.prototype.makeForm.call(this, Window);
+        // append any custom tags
+        if (Twinkle.getPref('customTagList').length) {
+            this.scrollbox.append({ type: 'header', label: 'Custom tags' });
+            this.scrollbox.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customTagList') });
         }
-        form.append({
-            type: 'div',
-            id: 'tagWorkArea',
-            className: 'morebits-scrollbox',
-            style: 'max-height: 28em'
-        });
-        form.append({
+        this.form.append({
             type: 'checkbox',
             list: [{
                     label: 'Group inside {{multiple issues}} if possible',
@@ -631,7 +646,7 @@ var ArticleMode = /** @class */ (function (_super) {
                     checked: Twinkle.getPref('groupByDefault')
                 }]
         });
-        form.append({
+        this.form.append({
             type: 'input',
             label: 'Reason',
             name: 'reason',
@@ -640,186 +655,44 @@ var ArticleMode = /** @class */ (function (_super) {
         });
         this.formAppendPatrolLink();
         this.formAppendSubmitButton();
-        return this.form;
     };
-    ArticleMode.prototype.postRender = function () {
+    ArticleMode.prototype.parseExistingTags = function () {
         var _this = this;
-        this.alreadyPresentTags = [];
-        if (this.canRemove) {
-            // Look for existing maintenance tags in the lead section and put them in array
-            // All tags are HTML table elements that are direct children of .mw-parser-output,
-            // except when they are within {{multiple issues}}
-            $('.mw-parser-output').children().each(function (i, e) {
-                // break out on encountering the first heading, which means we are no
-                // longer in the lead section
-                if (e.tagName === 'H2') {
-                    return false;
-                }
-                // The ability to remove tags depends on the template's {{ambox}} |name=
-                // parameter bearing the template's correct name (preferably) or a name that at
-                // least redirects to the actual name
-                // All tags have their first class name as "box-" + template name
-                if (e.className.indexOf('box-') === 0) {
-                    if (e.classList[0] === 'box-Multiple_issues') {
-                        $(e).find('.ambox').each(function (idx, e) {
-                            var tag = e.classList[0].slice(4).replace(/_/g, ' ');
-                            _this.alreadyPresentTags.push(tag);
-                        });
-                        return; // continue
-                    }
-                    var tag = e.classList[0].slice(4).replace(/_/g, ' ');
-                    _this.alreadyPresentTags.push(tag);
-                }
-            });
-            // {{Uncategorized}} and {{Improve categories}} are usually placed at the end
-            if ($('.box-Uncategorized').length) {
-                this.alreadyPresentTags.push('Uncategorized');
+        // All tags are HTML table elements that are direct children of .mw-parser-output,
+        // except when they are within {{multiple issues}}
+        $('.mw-parser-output').children().each(function (i, e) {
+            // break out on encountering the first heading, which means we are no
+            // longer in the lead section
+            if (e.tagName === 'H2') {
+                return false;
             }
-            if ($('.box-Improve_categories').length) {
-                this.alreadyPresentTags.push('Improve categories');
-            }
-        }
-        // Add status text node after Submit button
-        var statusNode = document.createElement('small');
-        statusNode.id = 'tw-tag-status';
-        this.status = {
-            // initial state; defined like this because these need to be available for reference
-            // in the click event handler
-            numAdded: 0,
-            numRemoved: 0
-        };
-        $('button.tw-tag-submit').after(statusNode);
-        // fake a change event on the sort dropdown, to initialize the tag list
-        var evt = document.createEvent('Event');
-        evt.initEvent('change', true, true);
-        this.result.sortorder.dispatchEvent(evt);
-    };
-    ArticleMode.prototype.updateSortOrder = function (e) {
-        var _this = this;
-        var form = e.target.form;
-        var sortorder = e.target.value;
-        this.checkedTags = form.getChecked('tags');
-        var container = new Morebits.quickForm.element({ type: 'fragment' });
-        // function to generate a checkbox, with appropriate subgroup if needed
-        var makeCheckbox = function (item) {
-            return {
-                value: item.tag,
-                label: '{{' + item.tag + '}}: ' + item.description,
-                checked: _this.checkedTags.indexOf(item.tag) !== -1,
-                subgroup: item.subgroup
-            };
-        };
-        var makeCheckboxesForAlreadyPresentTags = function () {
-            container.append({ type: 'header', label: 'Tags already present' });
-            var subdiv = container.append({ type: 'div' });
-            var unCheckedTags = e.target.form.getUnchecked('existingTags');
-            subdiv.append({
-                type: 'checkbox',
-                name: 'existingTags',
-                list: _this.alreadyPresentTags.map(function (tag) {
-                    return {
-                        value: tag,
-                        label: '{{' + tag + '}}' + (_this.flatObject[tag] ? ': ' + _this.flatObject[tag].description : ''),
-                        checked: unCheckedTags.indexOf(tag) === -1,
-                        style: 'font-style: italic'
-                    };
-                })
-            });
-        };
-        if (sortorder === 'cat') { // categorical sort order
-            // function to iterate through the tags and create a checkbox for each one
-            var doCategoryCheckboxes = function (subdiv, subgroup) {
-                var checkboxes = [];
-                $.each(subgroup, function (k, item) {
-                    if (_this.alreadyPresentTags.indexOf(item.tag) === -1) {
-                        checkboxes.push(makeCheckbox(item));
-                    }
-                });
-                subdiv.append({
-                    type: 'checkbox',
-                    name: 'tags',
-                    list: checkboxes
-                });
-            };
-            if (this.alreadyPresentTags.length > 0) {
-                makeCheckboxesForAlreadyPresentTags();
-            }
-            // go through each category and sub-category and append lists of checkboxes
-            $.each(this.tagList, function (groupName, group) {
-                container.append({ type: 'header', label: groupName });
-                var subdiv = container.append({ type: 'div' });
-                if (Array.isArray(group)) {
-                    doCategoryCheckboxes(subdiv, group);
-                }
-                else {
-                    $.each(group, function (subgroupName, subgroup) {
-                        subdiv.append({ type: 'div', label: [Morebits.htmlNode('b', subgroupName)] });
-                        doCategoryCheckboxes(subdiv, subgroup);
+            // The ability to remove tags depends on the template's {{ambox}} |name=
+            // parameter bearing the template's correct name (preferably) or a name that at
+            // least redirects to the actual name
+            // All tags have their first class name as "box-" + template name
+            if (e.className.indexOf('box-') === 0) {
+                if (e.classList[0] === 'box-Multiple_issues') {
+                    $(e).find('.ambox').each(function (idx, e) {
+                        var tag = e.classList[0].slice(4).replace(/_/g, ' ');
+                        _this.existingTags.push(tag);
                     });
+                    return; // continue
                 }
-            });
-        }
-        else { // alphabetical sort order
-            if (this.alreadyPresentTags.length > 0) {
-                makeCheckboxesForAlreadyPresentTags();
-                container.append({ type: 'header', label: 'Available tags' });
+                var tag = e.classList[0].slice(4).replace(/_/g, ' ');
+                _this.existingTags.push(tag);
             }
-            // Avoid repeatedly resorting
-            this.alphabeticalList = this.alphabeticalList || Object.keys(this.flatObject).sort();
-            var checkboxes = [];
-            this.alphabeticalList.forEach(function (tag) {
-                if (_this.alreadyPresentTags.indexOf(tag) === -1) {
-                    checkboxes.push(makeCheckbox(_this.flatObject[tag]));
-                }
-            });
-            container.append({
-                type: 'checkbox',
-                name: 'tags',
-                list: checkboxes
-            });
-        }
-        // append any custom tags
-        if (Twinkle.getPref('customTagList').length) {
-            container.append({ type: 'header', label: 'Custom tags' });
-            container.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customTagList').map(function (el) {
-                    el.checked = _this.checkedTags.indexOf(el.value) !== -1;
-                    return el;
-                })
-            });
-        }
-        var $workarea = $(form).find('#tagWorkArea');
-        var rendered = container.render();
-        $workarea.empty().append(rendered);
-        // for quick filter:
-        QuickFilter.$allCheckboxDivs = $workarea.find('[name=tags], [name=existingTags]').parent();
-        QuickFilter.$allHeaders = $workarea.find('h5, .quickformDescription');
-        form.quickfilter.value = ''; // clear search, because the search results are not preserved over mode change
-        form.quickfilter.focus();
-        // style adjustments
-        $workarea.find('h5').css({ 'font-size': '110%' });
-        $workarea.find('h5:not(:first-child)').css({ 'margin-top': '1em' });
-        $workarea.find('div').filter(':has(span.quickformDescription)').css({ 'margin-top': '0.4em' });
-        Morebits.quickForm.getElements(form, 'existingTags').forEach(Tag.makeArrowLinks);
-        Morebits.quickForm.getElements(form, 'tags').forEach(Tag.makeArrowLinks);
-        // tally tags added/removed, update statusNode text
-        var statusNode = document.getElementById('tw-tag-status');
-        $('[name=tags], [name=existingTags]').click(function (e) {
-            var checkbox = e.target;
-            if (checkbox.name === 'tags') {
-                _this.status.numAdded += checkbox.checked ? 1 : -1;
-            }
-            else if (checkbox.name === 'existingTags') {
-                _this.status.numRemoved += checkbox.checked ? -1 : 1;
-            }
-            var firstPart = 'Adding ' + _this.status.numAdded + ' tag' + (_this.status.numAdded > 1 ? 's' : '');
-            var secondPart = 'Removing ' + _this.status.numRemoved + ' tag' + (_this.status.numRemoved > 1 ? 's' : '');
-            statusNode.textContent =
-                (_this.status.numAdded ? '  ' + firstPart : '') +
-                    (_this.status.numRemoved ? (_this.status.numAdded ? '; ' : '  ') + secondPart : '');
         });
+        // {{Uncategorized}} and {{Improve categories}} are usually placed at the end
+        if ($('.box-Uncategorized').length) {
+            this.existingTags.push('Uncategorized');
+        }
+        if ($('.box-Improve_categories').length) {
+            this.existingTags.push('Improve categories');
+        }
     };
     ArticleMode.prototype.evaluate = function () {
         var _this = this;
+        _super.prototype.evaluate.call(this);
         var wikipedia_page = new Morebits.wiki.page(this.pageName || Morebits.pageNameNorm, this.pageName ? "Tagging other page \"" + this.pageName + "\"" : 'Tagging ' + this.name);
         wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
         wikipedia_page.load(function (pageobj) {
@@ -842,97 +715,7 @@ var ArticleMode = /** @class */ (function (_super) {
                 pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
                 pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
                 pageobj.setCreateOption('nocreate');
-                pageobj.save(function () {
-                    // special functions for merge tags
-                    if (params.mergeReason) {
-                        // post the rationale on the talk page (only operates in main namespace)
-                        var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
-                        talkpage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
-                        talkpage.setNewSectionTitle(params.talkDiscussionTitleLinked);
-                        talkpage.setChangeTags(Twinkle.changeTags);
-                        talkpage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
-                        talkpage.setCreateOption('recreate');
-                        talkpage.newSection();
-                    }
-                    if (params.mergeTagOther) {
-                        // tag the target page if requested
-                        var otherTagName = 'Merge';
-                        if (params.mergeTag === 'Merge from') {
-                            otherTagName = 'Merge to';
-                        }
-                        else if (params.mergeTag === 'Merge to') {
-                            otherTagName = 'Merge from';
-                        }
-                        var newParams = {
-                            tags: [otherTagName],
-                            tagsToRemove: [],
-                            tagsToRemain: [],
-                            mergeTarget: Morebits.pageNameNorm,
-                            discussArticle: params.discussArticle,
-                            talkDiscussionTitle: params.talkDiscussionTitle,
-                            talkDiscussionTitleLinked: params.talkDiscussionTitleLinked
-                        };
-                        var otherpageTagging = new ArticleMode();
-                        otherpageTagging.params = newParams;
-                        otherpageTagging.pageName = params.mergeTarget;
-                        otherpageTagging.evaluate();
-                        // var otherpage = new Morebits.wiki.page(params.mergeTarget, 'Tagging other page (' +
-                        // 	params.mergeTarget + ')');
-                        // otherpage.setChangeTags(Twinkle.changeTags);
-                        // otherpage.setCallbackParameters(newParams);
-                        // otherpage.load(Twinkle.tag.callbacks.article);
-                    }
-                    // post at WP:PNT for {{not English}} and {{rough translation}} tag
-                    if (params.translationPostAtPNT) {
-                        var pntPage = new Morebits.wiki.page('Wikipedia:Pages needing translation into English', 'Listing article at Wikipedia:Pages needing translation into English');
-                        pntPage.setFollowRedirect(true);
-                        pntPage.load(function friendlytagCallbacksTranslationListPage(pageobj) {
-                            var old_text = pageobj.getPageText();
-                            var template = params.tags.indexOf('Rough translation') !== -1 ? 'duflu' : 'needtrans';
-                            var lang = params.translationLanguage;
-                            var reason = params.translationComments;
-                            var templateText = '{{subst:' + template + '|pg=' + Morebits.pageNameNorm + '|Language=' +
-                                (lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
-                            var text, summary;
-                            if (template === 'duflu') {
-                                text = old_text + '\n\n' + templateText;
-                                summary = 'Translation cleanup requested on ';
-                            }
-                            else {
-                                text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/, '\n\n' + templateText + '\n\n$1');
-                                summary = 'Translation' + (lang ? ' from ' + lang : '') + ' requested on ';
-                            }
-                            if (text === old_text) {
-                                pageobj.getStatusElement().error('failed to find target spot for the discussion');
-                                return;
-                            }
-                            pageobj.setPageText(text);
-                            pageobj.setEditSummary(summary + ' [[:' + Morebits.pageNameNorm + ']]');
-                            pageobj.setChangeTags(Twinkle.changeTags);
-                            pageobj.setCreateOption('recreate');
-                            pageobj.save();
-                        });
-                    }
-                    if (params.translationNotify) {
-                        pageobj.lookupCreation(function (innerPageobj) {
-                            var initialContrib = innerPageobj.getCreator();
-                            // Disallow warning yourself
-                            if (initialContrib === mw.config.get('wgUserName')) {
-                                innerPageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
-                                return;
-                            }
-                            var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-                            userTalkPage.setNewSectionTitle('Your article [[' + Morebits.pageNameNorm + ']]');
-                            userTalkPage.setNewSectionText('{{subst:uw-notenglish|1=' + Morebits.pageNameNorm +
-                                (params.translationPostAtPNT ? '' : '|nopnt=yes') + '}} ~~~~');
-                            userTalkPage.setEditSummary('Notice: Please use English when contributing to the English Wikipedia.');
-                            userTalkPage.setChangeTags(Twinkle.changeTags);
-                            userTalkPage.setCreateOption('recreate');
-                            userTalkPage.setFollowRedirect(true, false);
-                            userTalkPage.newSection();
-                        });
-                    }
-                });
+                pageobj.save(_this.postSave);
                 if (params.patrol) {
                     pageobj.triage();
                 }
@@ -1087,7 +870,7 @@ var ArticleMode = /** @class */ (function (_super) {
             params.tags.forEach(function (tag) {
                 tagRe = new RegExp('\\{\\{' + tag + '(\\||\\}\\})', 'im');
                 // regex check for preexistence of tag can be skipped if in canRemove mode
-                if (_this.canRemove || !tagRe.exec(pageText)) {
+                if (_this.canRemove() || !tagRe.exec(pageText)) {
                     // condition this.flatObject[tag] to ensure that its not a custom tag
                     // Custom tags are assumed non-groupable, since we don't know whether MI template supports them
                     if (_this.flatObject[tag] && !_this.flatObject[tag].excludeMI) {
@@ -1192,13 +975,105 @@ var ArticleMode = /** @class */ (function (_super) {
             }
         });
     };
+    ArticleMode.prototype.postSave = function (pageobj) {
+        var params = this.params;
+        // special functions for merge tags
+        if (params.mergeReason) {
+            // post the rationale on the talk page (only operates in main namespace)
+            var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
+            talkpage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
+            talkpage.setNewSectionTitle(params.talkDiscussionTitleLinked);
+            talkpage.setChangeTags(Twinkle.changeTags);
+            talkpage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
+            talkpage.setCreateOption('recreate');
+            talkpage.newSection();
+        }
+        if (params.mergeTagOther) {
+            // tag the target page if requested
+            var otherTagName = 'Merge';
+            if (params.mergeTag === 'Merge from') {
+                otherTagName = 'Merge to';
+            }
+            else if (params.mergeTag === 'Merge to') {
+                otherTagName = 'Merge from';
+            }
+            var newParams = {
+                tags: [otherTagName],
+                tagsToRemove: [],
+                tagsToRemain: [],
+                mergeTarget: Morebits.pageNameNorm,
+                discussArticle: params.discussArticle,
+                talkDiscussionTitle: params.talkDiscussionTitle,
+                talkDiscussionTitleLinked: params.talkDiscussionTitleLinked
+            };
+            var otherpageTagging = new ArticleMode();
+            otherpageTagging.params = newParams;
+            otherpageTagging.pageName = params.mergeTarget;
+            otherpageTagging.evaluate();
+            // var otherpage = new Morebits.wiki.page(params.mergeTarget, 'Tagging other page (' +
+            // 	params.mergeTarget + ')');
+            // otherpage.setChangeTags(Twinkle.changeTags);
+            // otherpage.setCallbackParameters(newParams);
+            // otherpage.load(Twinkle.tag.callbacks.article);
+        }
+        // post at WP:PNT for {{not English}} and {{rough translation}} tag
+        if (params.translationPostAtPNT) {
+            var pntPage = new Morebits.wiki.page('Wikipedia:Pages needing translation into English', 'Listing article at Wikipedia:Pages needing translation into English');
+            pntPage.setFollowRedirect(true);
+            pntPage.load(function friendlytagCallbacksTranslationListPage(pageobj) {
+                var old_text = pageobj.getPageText();
+                var template = params.tags.indexOf('Rough translation') !== -1 ? 'duflu' : 'needtrans';
+                var lang = params.translationLanguage;
+                var reason = params.translationComments;
+                var templateText = '{{subst:' + template + '|pg=' + Morebits.pageNameNorm + '|Language=' +
+                    (lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
+                var text, summary;
+                if (template === 'duflu') {
+                    text = old_text + '\n\n' + templateText;
+                    summary = 'Translation cleanup requested on ';
+                }
+                else {
+                    text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/, '\n\n' + templateText + '\n\n$1');
+                    summary = 'Translation' + (lang ? ' from ' + lang : '') + ' requested on ';
+                }
+                if (text === old_text) {
+                    pageobj.getStatusElement().error('failed to find target spot for the discussion');
+                    return;
+                }
+                pageobj.setPageText(text);
+                pageobj.setEditSummary(summary + ' [[:' + Morebits.pageNameNorm + ']]');
+                pageobj.setChangeTags(Twinkle.changeTags);
+                pageobj.setCreateOption('recreate');
+                pageobj.save();
+            });
+        }
+        if (params.translationNotify) {
+            pageobj.lookupCreation(function (innerPageobj) {
+                var initialContrib = innerPageobj.getCreator();
+                // Disallow warning yourself
+                if (initialContrib === mw.config.get('wgUserName')) {
+                    innerPageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
+                    return;
+                }
+                var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
+                userTalkPage.setNewSectionTitle('Your article [[' + Morebits.pageNameNorm + ']]');
+                userTalkPage.setNewSectionText('{{subst:uw-notenglish|1=' + Morebits.pageNameNorm +
+                    (params.translationPostAtPNT ? '' : '|nopnt=yes') + '}} ~~~~');
+                userTalkPage.setEditSummary('Notice: Please use English when contributing to the English Wikipedia.');
+                userTalkPage.setChangeTags(Twinkle.changeTags);
+                userTalkPage.setCreateOption('recreate');
+                userTalkPage.setFollowRedirect(true, false);
+                userTalkPage.newSection();
+            });
+        }
+    };
     return ArticleMode;
 }(TagMode));
 // Override to change modes available,
 // each mode is a class extending TagMode
 Tag.modeList = [
-    // ArticleMode,
     RedirectMode,
+    ArticleMode,
     FileMode
 ];
 Twinkle.addInitCallback(function () { new Tag(); }, 'Tag');

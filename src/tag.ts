@@ -1,12 +1,13 @@
+const {obj_values} = Twinkle.shims;
 
-interface tagSubgroupType extends quickFormElementData {
-	parameter?: string
-}
-type tagData = {
+interface tagData {
 	tag: string
 	description?: string
 	subgroup?: tagSubgroupType | tagSubgroupType[]
-	excludeMI?: boolean;
+	excludeMI?: boolean
+}
+interface tagSubgroupType extends quickFormElementData {
+	parameter?: string
 }
 type tagListType = tagData[] | Record<string, (tagData[] | Record<string, tagData[]>)>
 
@@ -58,7 +59,7 @@ class Tag extends TwinkleModule {
 		$(checkbox).parent().append(['\u00A0', link]);
 	}
 
-	static makeEditSummary(addedTags: string[], removedTags?: string[], reason?: string) {
+	static makeEditSummary(addedTags: string[], removedTags?: string[], reason?: string): string {
 		let makeTemplateLink = function(tag: string) {
 			let text = '{{[[';
 			// if it is a custom tag with a parameter
@@ -92,34 +93,45 @@ abstract class TagMode {
 	abstract name: string
 	abstract tagList: tagListType
 	flatObject: Record<string, tagData>
+	existingTags: string[] = []
 
 	Window: Morebits.simpleWindow
 	form: Morebits.quickForm
 	result: HTMLFormElement
+	scrollbox: Morebits.quickForm.element
 	params: Record<string, any>
 
 	static isActive() { // must be overridden
 		return false;
 	}
-	get canRemove() {
-		return false;
+
+	removalSupported = false; // Override to true for modes that support untagging
+
+	canRemove() {
+		return this.removalSupported &&
+			// Only on latest version of pages
+			(mw.config.get('wgCurRevisionId') === mw.config.get('wgRevisionId')) &&
+			// Disabled on latest diff because the diff slider could be used to slide
+			// away from the latest diff without causing the script to reload
+			!mw.config.get('wgDiffNewId');
 	}
+
+
 	getMenuTooltip() {
 		return 'Add maintenance tags to the page';
 	}
+
 	getWindowTitle() {
 		return 'Add maintenance tags';
 	}
+
 	makeForm(Window) {
 		this.Window = Window;
 		this.Window.setTitle(this.getWindowTitle());
-		this.form = new Morebits.quickForm(() => { this.evaluate() });
-		this.formAppendQuickFilter();
+		this.form = new Morebits.quickForm(() => this.evaluate());
 
 		this.constructFlatObject();
-		return this.form;
-	}
-	formAppendQuickFilter() {
+
 		this.form.append({
 			type: 'input',
 			label: 'Filter tag list: ',
@@ -127,17 +139,37 @@ abstract class TagMode {
 			size: '30px',
 			event: QuickFilter.onInputChange
 		});
+
+		if (this.removalSupported && !this.canRemove()) {
+			this.form.append({
+				type: 'div',
+				name: 'untagnotice',
+				label: Morebits.htmlNode('div',  'For removal of existing tags, please open Tag menu from the current version of article')
+			});
+		}
+
+		this.scrollbox = this.form.append({
+			type: 'div',
+			id: 'tagWorkArea',
+			className: 'morebits-scrollbox',
+			style: 'max-height: 28em'
+		});
+
+		this.parseExistingTags();
+		this.makeExistingTagList(this.scrollbox);
+		this.makeTagList(this.scrollbox);
 	}
-	makeTagList() {
+
+	makeTagList(container: Morebits.quickForm.element) {
 		if (Array.isArray(this.tagList)) {
-			this.makeTagListGroup(this.tagList, this.form);
+			this.makeTagListGroup(this.tagList, container);
 		} else {
 			$.each(this.tagList, (groupName, group) => {
-				this.form.append({ type: 'header', label: groupName });
+				container.append({ type: 'header', label: groupName });
 				if (Array.isArray(group)) { // if group is a list of tags
-					this.makeTagListGroup(group, this.form);
+					this.makeTagListGroup(group, container);
 				} else { // if group is a list of subgroups
-					let subdiv = this.form.append({ type: 'div' });
+					let subdiv = container.append({ type: 'div' });
 					$.each(group, (subgroupName: string, subgroup: any[]) => {
 						subdiv.append({ type: 'div', label: [Morebits.htmlNode('b', subgroupName)] });
 						this.makeTagListGroup(subgroup, subdiv);
@@ -147,25 +179,43 @@ abstract class TagMode {
 		}
 	}
 
+	makeExistingTagList(container: Morebits.quickForm.element) {
+		if (!this.existingTags.length) {
+			return;
+		}
+		container.append({ type: 'header', label: 'Tags already present' });
+		this.makeTagListGroup(this.existingTags.map((tag) => {
+			return this.flatObject[tag] || { tag };
+		}), container, true);
+	}
+
 	// helper function for makeTagList()
-	makeTagListGroup(list: tagData[], container: quickFormElement | Morebits.quickForm = this.form) {
+	makeTagListGroup(list: tagData[], container?: Morebits.quickForm.element | Morebits.quickForm,
+		forExistingTags?: boolean) {
+
+		let excludeTags = new Set(forExistingTags ? [] : this.existingTags);
 		container.append({
 			type: 'checkbox',
 			name: 'tags',
-			list: list.map((item) => ({
+			list: list.filter(item => !excludeTags.has(item.tag)).map((item) => ({
 				label: '{{' + item.tag + '}}' + (item.description ? ': ' + item.description : ''),
 				value: item.tag,
-				subgroup: item.subgroup
+				checked: !!forExistingTags,
+				subgroup: item.subgroup,
+				style: forExistingTags ? 'font-style: italic' : ''
 			}))
 		});
 	}
 
-	constructFlatObject() {	// Object.values is unavailable in IE 11
-		var obj_values = Object.values || function (obj) {
-			return Object.keys(obj).map(function (key) {
-				return obj[key];
-			});
-		};
+	/**
+	 * Parse existing tags. This is NOT asynchronous.
+	 * Should be overridden for tag modes where removalSupported is true
+	 */
+	parseExistingTags() {
+		return;
+	}
+
+	constructFlatObject() {
 		this.flatObject = {};
 
 		if (Array.isArray(this.tagList)) {
@@ -203,34 +253,68 @@ abstract class TagMode {
 			}]
 		});
 	}
+
 	formAppendSubmitButton() {
 		this.form.append({
 			type: 'submit',
 			className: 'tw-tag-submit'
 		});
 	}
+
 	formRender() {
 		this.result = this.form.render();
 		this.Window.setContent(this.result);
 		this.Window.display();
-		QuickFilter.init(this.result);
 	}
+
 	postRender() {
+		QuickFilter.init(this.result);
 		Morebits.quickForm.getElements(this.result, 'tags').forEach(Tag.makeArrowLinks);
+		Morebits.quickForm.getElements(this.result, 'existingTags').forEach(Tag.makeArrowLinks);
+
+		// style adjustments
+		$(this.scrollbox).find('h5').css({ 'font-size': '110%' });
+		$(this.scrollbox).find('h5:not(:first-child)').css({ 'margin-top': '1em' });
+		$(this.scrollbox).find('div').filter(':has(span.quickformDescription)').css({ 'margin-top': '0.4em' });
+
+		// Add status text node after Submit button
+		let $status = $('<small>').attr('id', 'tw-tag-status');
+		$status.insertAfter($('button.tw-tag-submit'));
+		let addedCount = 0, removedCount = 0;
+
+		// tally tags added/removed, update statusNode text
+		$('[name=tags], [name=existingTags]').on('click', (e) => {
+			let checkbox = e.target as HTMLInputElement;
+			if (checkbox.name === 'tags') {
+				addedCount += checkbox.checked ? 1 : -1;
+			} else if (checkbox.name === 'existingTags') {
+				removedCount += checkbox.checked ? -1 : 1;
+			}
+
+			let firstPart = `Adding ${addedCount} tag${addedCount > 1 ? 's' : ''}`;
+			let secondPart = `Removing ${removedCount} tag${removedCount > 1 ? 's' : ''}`;
+			let statusText = (addedCount ? firstPart : '') + (removedCount ? (addedCount ? '; ' : '') + secondPart : '');
+			$status.text('  ' + statusText);
+		});
 	}
+
 	evaluate() {
 		this.captureFormData();
 		if (this.validateInput()) {
 			this.action();
 		}
 	}
+
 	captureFormData() {
 		this.params = Morebits.quickForm.getInputData(this.result);
+		this.params.tagsToRemove = this.result.getUnchecked('existingTags'); // XXX: Morebits-defined function
+		this.params.tagsToRetain = this.params.existingTags || [];
 	}
+
 	validateInput(): boolean {
 		// File/redirect: return if no tags selected
 		// Article: return if no tag is selected and no already present tag is deselected
-		if (this.params.tags.length === 0 && (!this.canRemove || this.params.tagsToRemove.length === 0)) {
+		if (this.params.tags.length === 0 && (!this.canRemove() || this.params.tagsToRemove.length === 0)) {
 			alert('You must select at least one tag!');
 			return false;
 		}
@@ -245,7 +329,7 @@ abstract class TagMode {
 		Morebits.status.init(this.result);
 
 		Morebits.wiki.actionCompleted.redirect = Morebits.pageNameNorm;
-		Morebits.wiki.actionCompleted.notice = 'Tagging complete, reloading article in a few seconds';
+		Morebits.wiki.actionCompleted.notice = `Tagging complete, reloading ${this.name} in a few seconds```;
 		if (this.name === 'redirect') {
 			Morebits.wiki.actionCompleted.followRedirect = false;
 		}
@@ -271,8 +355,8 @@ class QuickFilter {
 	static $allHeaders: JQuery
 
 	static init(result: HTMLFormElement) {
-		QuickFilter.$allCheckboxDivs = $(result).find('[name$=tags]').parent();
-		QuickFilter.$allHeaders = $(result).find('h5');
+		QuickFilter.$allCheckboxDivs = $(result).find('[name=tags], [name=existingTags]').parent();
+		QuickFilter.$allHeaders = $(result).find('h5, .quickformDescription');
 		result.quickfilter.focus(); // place cursor in the quick filter field as soon as window is opened
 		result.quickfilter.autocomplete = 'off'; // disable browser suggestions
 		result.quickfilter.addEventListener('keypress', function (e) {
@@ -322,27 +406,29 @@ class QuickFilter {
 class RedirectMode extends TagMode {
 	name = 'redirect';
 	tagList = redirectTagList;
+
 	static isActive() {
 		return Morebits.isPageRedirect();
 	}
+
 	getMenuTooltip() {
 		return 'Tag redirect';
 	}
+
 	getWindowTitle() {
 		return 'Redirect tagging';
 	}
+
 	makeForm(Window) {
 		super.makeForm(Window);
-		this.makeTagList();
 
 		if (Twinkle.getPref('customRedirectTagList').length) {
-			this.form.append({ type: 'header', label: 'Custom tags' });
-			this.form.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customRedirectTagList') });
+			this.scrollbox.append({ type: 'header', label: 'Custom tags' });
+			this.scrollbox.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customRedirectTagList') });
 		}
 
 		this.formAppendPatrolLink();
 		this.formAppendSubmitButton();
-		return this.form;
 	}
 
 	action() {
@@ -429,16 +515,14 @@ class FileMode extends TagMode {
 
 	makeForm(Window) {
 		super.makeForm(Window);
-		this.makeTagList();
 
 		if (Twinkle.getPref('customFileTagList').length) {
-			this.form.append({ type: 'header', label: 'Custom tags' });
-			this.form.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customFileTagList') });
+			this.scrollbox.append({ type: 'header', label: 'Custom tags' });
+			this.scrollbox.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customFileTagList') });
 		}
 
 		this.formAppendPatrolLink();
 		this.formAppendSubmitButton();
-		return this.form;
 	}
 
 	validateInput() {
@@ -525,8 +609,8 @@ class FileMode extends TagMode {
 
 	action() {
 		super.action();
-		var wikipedia_page = new Morebits.wiki.page(Morebits.pageNameNorm, 'Tagging ' + this.name);
-		wikipedia_page.load((pageobj: Morebits.wiki.page) => {
+		var pageobj = new Morebits.wiki.page(Morebits.pageNameNorm, 'Tagging ' + this.name);
+		pageobj.load((pageobj: Morebits.wiki.page) => {
 			var text = pageobj.getPageText();
 			var params = this.params;
 
@@ -534,7 +618,7 @@ class FileMode extends TagMode {
 			if (params.tags.length) {
 
 				var tagtext = '', currentTag;
-				$.each(params.tags, (k, tag) => {
+				params.tags.forEach((tag) => {
 					// when other commons-related tags are placed, remove "move to Commons" tag
 					if (['Keep local', 'Now Commons', 'Do not move to Commons'].indexOf(tag) !== -1) {
 						text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
@@ -555,7 +639,7 @@ class FileMode extends TagMode {
 							text = text.replace(/\{\{\s*(Template\s*:\s*)?(Non-free reduce|FairUseReduce|Fairusereduce|Fair Use Reduce|Fair use reduce|Reduce size|Reduce|Fair-use reduce|Image-toobig|Comic-ovrsize-img|Non-free-reduce|Nfr|Smaller image|Nonfree reduce)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
 							break;
 						default:
-							break;  // don't care
+							break;
 					}
 
 					currentTag = '{{' + currentTag + '}}\n';
@@ -580,7 +664,6 @@ class FileMode extends TagMode {
 			pageobj.save();
 
 			if (params.patrol) {
-				pageobj.setChangeTags(Twinkle.changeTags);
 				pageobj.triage();
 			}
 		});
@@ -591,66 +674,33 @@ class FileMode extends TagMode {
 class ArticleMode extends TagMode {
 	name = 'article';
 	tagList = articleTagList;
+	removalSupported = true;
 
-	alreadyPresentTags: string[]
-	status: { numAdded: number, numRemoved: number }
-	checkedTags: any[]
-	alphabeticalList: string[]
+	pageName: string
 
 	static isActive() {
 		return [0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 &&
-			mw.config.get('wgCurRevisionId');
+			mw.config.get('wgCurRevisionId'); // check if page exists
 	}
-	get canRemove() {
-		return (mw.config.get('wgCurRevisionId') === mw.config.get('wgRevisionId')) &&
-			// Disabled on latest diff because the diff slider could be used to slide
-			// away from the latest diff without causing the script to reload
-			!mw.config.get('wgDiffNewId');
-	}
+
 	getMenuTooltip() {
 		return 'Add or remove article maintenance tags';
 	}
+
 	getWindowTitle() {
 		return 'Article maintenance tagging';
 	}
+
 	makeForm(Window) {
-		let form = super.makeForm(Window);
-		form.append({
-			type: 'select',
-			name: 'sortorder',
-			label: 'View this list:',
-			tooltip: 'You can change the default view order in your Twinkle preferences (WP:TWPREFS).',
-			event: this.updateSortOrder,
-			list: [{
-				type: 'option',
-				value: 'cat',
-				label: 'By categories',
-				selected: Twinkle.getPref('tagArticleSortOrder') === 'cat'
-			},
-				{
-					type: 'option',
-					value: 'alpha',
-					label: 'In alphabetical order',
-					selected: Twinkle.getPref('tagArticleSortOrder') === 'alpha'
-				}
-			]
-		});
-		if (!this.canRemove) {
-			var divElement = document.createElement('div');
-			divElement.innerHTML = 'For removal of existing tags, please open Tag menu from the current version of article';
-			form.append({
-				type: 'div',
-				name: 'untagnotice',
-				label: divElement
-			});
+		super.makeForm(Window);
+
+		// append any custom tags
+		if (Twinkle.getPref('customTagList').length) {
+			this.scrollbox.append({ type: 'header', label: 'Custom tags' });
+			this.scrollbox.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customTagList') });
 		}
-		form.append({
-			type: 'div',
-			id: 'tagWorkArea',
-			className: 'morebits-scrollbox',
-			style: 'max-height: 28em'
-		});
-		form.append({
+
+		this.form.append({
 			type: 'checkbox',
 			list: [{
 				label: 'Group inside {{multiple issues}} if possible',
@@ -660,7 +710,8 @@ class ArticleMode extends TagMode {
 				checked: Twinkle.getPref('groupByDefault')
 			}]
 		});
-		form.append({
+
+		this.form.append({
 			type: 'input',
 			label: 'Reason',
 			name: 'reason',
@@ -670,211 +721,50 @@ class ArticleMode extends TagMode {
 
 		this.formAppendPatrolLink();
 		this.formAppendSubmitButton();
-		return this.form;
 	}
 
-	postRender() {
-		this.alreadyPresentTags = [];
+	parseExistingTags() {
+		// All tags are HTML table elements that are direct children of .mw-parser-output,
+		// except when they are within {{multiple issues}}
+		$('.mw-parser-output').children().each((i, e) => {
 
-		if (this.canRemove) {
-			// Look for existing maintenance tags in the lead section and put them in array
-
-			// All tags are HTML table elements that are direct children of .mw-parser-output,
-			// except when they are within {{multiple issues}}
-			$('.mw-parser-output').children().each((i, e) => {
-
-				// break out on encountering the first heading, which means we are no
-				// longer in the lead section
-				if (e.tagName === 'H2') {
-					return false;
-				}
-
-				// The ability to remove tags depends on the template's {{ambox}} |name=
-				// parameter bearing the template's correct name (preferably) or a name that at
-				// least redirects to the actual name
-
-				// All tags have their first class name as "box-" + template name
-				if (e.className.indexOf('box-') === 0) {
-					if (e.classList[0] === 'box-Multiple_issues') {
-						$(e).find('.ambox').each( (idx, e) => {
-							var tag = e.classList[0].slice(4).replace(/_/g, ' ');
-							this.alreadyPresentTags.push(tag);
-						});
-						return; // continue
-					}
-
-					var tag = e.classList[0].slice(4).replace(/_/g, ' ');
-					this.alreadyPresentTags.push(tag);
-				}
-			});
-
-			// {{Uncategorized}} and {{Improve categories}} are usually placed at the end
-			if ($('.box-Uncategorized').length) {
-				this.alreadyPresentTags.push('Uncategorized');
-			}
-			if ($('.box-Improve_categories').length) {
-				this.alreadyPresentTags.push('Improve categories');
+			// break out on encountering the first heading, which means we are no
+			// longer in the lead section
+			if (e.tagName === 'H2') {
+				return false;
 			}
 
-		}
+			// The ability to remove tags depends on the template's {{ambox}} |name=
+			// parameter bearing the template's correct name (preferably) or a name that at
+			// least redirects to the actual name
 
-		// Add status text node after Submit button
-		var statusNode = document.createElement('small');
-		statusNode.id = 'tw-tag-status';
-		this.status = {
-			// initial state; defined like this because these need to be available for reference
-			// in the click event handler
-			numAdded: 0,
-			numRemoved: 0
-		};
-		$('button.tw-tag-submit').after(statusNode);
-
-		// fake a change event on the sort dropdown, to initialize the tag list
-		var evt = document.createEvent('Event');
-		evt.initEvent('change', true, true);
-		this.result.sortorder.dispatchEvent(evt);
-	}
-
-	updateSortOrder(e) {
-		var form = e.target.form;
-		var sortorder = e.target.value;
-		this.checkedTags = form.getChecked('tags');
-
-		var container = new Morebits.quickForm.element({ type: 'fragment' });
-
-		// function to generate a checkbox, with appropriate subgroup if needed
-		var makeCheckbox = (item) => {
-			return {
-				value: item.tag,
-				label: '{{' + item.tag + '}}: ' + item.description,
-				checked: this.checkedTags.indexOf(item.tag) !== -1,
-				subgroup: item.subgroup
-			};
-		};
-
-		var makeCheckboxesForAlreadyPresentTags = () => {
-			container.append({ type: 'header', label: 'Tags already present' });
-			var subdiv = container.append({ type: 'div' });
-			var unCheckedTags = e.target.form.getUnchecked('existingTags');
-			subdiv.append({
-				type: 'checkbox',
-				name: 'existingTags',
-				list: this.alreadyPresentTags.map((tag) => {
-					return {
-						value: tag,
-						label: '{{' + tag + '}}' + (this.flatObject[tag] ? ': ' + this.flatObject[tag].description : ''),
-						checked: unCheckedTags.indexOf(tag) === -1,
-						style: 'font-style: italic'
-					};
-				})
-			});
-		};
-
-
-		if (sortorder === 'cat') { // categorical sort order
-			// function to iterate through the tags and create a checkbox for each one
-			var doCategoryCheckboxes = (subdiv, subgroup) => {
-				var checkboxes = [];
-				$.each(subgroup, (k, item) => {
-					if (this.alreadyPresentTags.indexOf(item.tag) === -1) {
-						checkboxes.push(makeCheckbox(item));
-					}
-				});
-				subdiv.append({
-					type: 'checkbox',
-					name: 'tags',
-					list: checkboxes
-				});
-			};
-
-			if (this.alreadyPresentTags.length > 0) {
-				makeCheckboxesForAlreadyPresentTags();
-			}
-
-			// go through each category and sub-category and append lists of checkboxes
-			$.each(this.tagList, function(groupName, group) {
-				container.append({ type: 'header', label: groupName });
-				var subdiv = container.append({ type: 'div' });
-				if (Array.isArray(group)) {
-					doCategoryCheckboxes(subdiv, group);
-				} else {
-					$.each(group, function(subgroupName, subgroup) {
-						subdiv.append({ type: 'div', label: [ Morebits.htmlNode('b', subgroupName) ] });
-						doCategoryCheckboxes(subdiv, subgroup);
+			// All tags have their first class name as "box-" + template name
+			if (e.className.indexOf('box-') === 0) {
+				if (e.classList[0] === 'box-Multiple_issues') {
+					$(e).find('.ambox').each( (idx, e) => {
+						var tag = e.classList[0].slice(4).replace(/_/g, ' ');
+						this.existingTags.push(tag);
 					});
+					return; // continue
 				}
-			});
-		} else { // alphabetical sort order
-			if (this.alreadyPresentTags.length > 0) {
-				makeCheckboxesForAlreadyPresentTags();
-				container.append({ type: 'header', label: 'Available tags' });
+
+				var tag = e.classList[0].slice(4).replace(/_/g, ' ');
+				this.existingTags.push(tag);
 			}
-
-			// Avoid repeatedly resorting
-			this.alphabeticalList = this.alphabeticalList || Object.keys(this.flatObject).sort();
-			var checkboxes = [];
-			this.alphabeticalList.forEach((tag) => {
-				if (this.alreadyPresentTags.indexOf(tag) === -1) {
-					checkboxes.push(makeCheckbox(this.flatObject[tag]));
-				}
-			});
-			container.append({
-				type: 'checkbox',
-				name: 'tags',
-				list: checkboxes
-			});
-		}
-
-		// append any custom tags
-		if (Twinkle.getPref('customTagList').length) {
-			container.append({ type: 'header', label: 'Custom tags' });
-			container.append({ type: 'checkbox', name: 'tags',
-				list: Twinkle.getPref('customTagList').map((el) => {
-					el.checked = this.checkedTags.indexOf(el.value) !== -1;
-					return el;
-				})
-			});
-		}
-
-		var $workarea = $(form).find('#tagWorkArea');
-		var rendered = container.render();
-		$workarea.empty().append(rendered);
-
-		// for quick filter:
-		QuickFilter.$allCheckboxDivs = $workarea.find('[name=tags], [name=existingTags]').parent();
-		QuickFilter.$allHeaders = $workarea.find('h5, .quickformDescription');
-		form.quickfilter.value = ''; // clear search, because the search results are not preserved over mode change
-		form.quickfilter.focus();
-
-		// style adjustments
-		$workarea.find('h5').css({ 'font-size': '110%' });
-		$workarea.find('h5:not(:first-child)').css({ 'margin-top': '1em' });
-		$workarea.find('div').filter(':has(span.quickformDescription)').css({ 'margin-top': '0.4em' });
-
-		Morebits.quickForm.getElements(form, 'existingTags').forEach(Tag.makeArrowLinks);
-		Morebits.quickForm.getElements(form, 'tags').forEach(Tag.makeArrowLinks);
-
-		// tally tags added/removed, update statusNode text
-		var statusNode = document.getElementById('tw-tag-status');
-		$('[name=tags], [name=existingTags]').click((e) => {
-			let checkbox = e.target as HTMLInputElement;
-			if (checkbox.name === 'tags') {
-				this.status.numAdded += checkbox.checked ? 1 : -1;
-			} else if (checkbox.name === 'existingTags') {
-				this.status.numRemoved += checkbox.checked ? -1 : 1;
-			}
-
-			var firstPart = 'Adding ' + this.status.numAdded + ' tag' + (this.status.numAdded > 1 ? 's' : '');
-			var secondPart = 'Removing ' + this.status.numRemoved + ' tag' + (this.status.numRemoved > 1 ? 's' : '');
-			statusNode.textContent =
-				(this.status.numAdded ? '  ' + firstPart : '') +
-				(this.status.numRemoved ? (this.status.numAdded ? '; ' : '  ') + secondPart : '');
 		});
-	}
 
-	pageName: string
+		// {{Uncategorized}} and {{Improve categories}} are usually placed at the end
+		if ($('.box-Uncategorized').length) {
+			this.existingTags.push('Uncategorized');
+		}
+		if ($('.box-Improve_categories').length) {
+			this.existingTags.push('Improve categories');
+		}
+	}
 
 	evaluate() {
+		super.evaluate();
+
 		var wikipedia_page = new Morebits.wiki.page(this.pageName || Morebits.pageNameNorm,
 			this.pageName ? `Tagging other page "${this.pageName}"` :'Tagging ' + this.name);
 		wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
@@ -888,7 +778,7 @@ class ArticleMode extends TagMode {
 			 * Saves the page following the removal of tags if any. The last step.
 			 * Called from removeTags()
 			 */
-			var postRemoval = function() {
+			var postRemoval = () => {
 				if (params.tagsToRemove.length) {
 					// Remove empty {{multiple issues}} if found
 					pageText = pageText.replace(/\{\{(multiple ?issues|article ?issues|mi)\s*\|\s*\}\}\n?/im, '');
@@ -901,106 +791,7 @@ class ArticleMode extends TagMode {
 				pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
 				pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 				pageobj.setCreateOption('nocreate');
-				pageobj.save(() => {
-					// special functions for merge tags
-					if (params.mergeReason) {
-						// post the rationale on the talk page (only operates in main namespace)
-						var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
-						talkpage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
-						talkpage.setNewSectionTitle(params.talkDiscussionTitleLinked);
-						talkpage.setChangeTags(Twinkle.changeTags);
-						talkpage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
-						talkpage.setCreateOption('recreate');
-						talkpage.newSection();
-					}
-					if (params.mergeTagOther) {
-						// tag the target page if requested
-						var otherTagName = 'Merge';
-						if (params.mergeTag === 'Merge from') {
-							otherTagName = 'Merge to';
-						} else if (params.mergeTag === 'Merge to') {
-							otherTagName = 'Merge from';
-						}
-						var newParams = {
-							tags: [otherTagName],
-							tagsToRemove: [],
-							tagsToRemain: [],
-							mergeTarget: Morebits.pageNameNorm,
-							discussArticle: params.discussArticle,
-							talkDiscussionTitle: params.talkDiscussionTitle,
-							talkDiscussionTitleLinked: params.talkDiscussionTitleLinked
-						};
-						var otherpageTagging = new ArticleMode();
-						otherpageTagging.params = newParams;
-						otherpageTagging.pageName = params.mergeTarget;
-						otherpageTagging.evaluate();
-
-						// var otherpage = new Morebits.wiki.page(params.mergeTarget, 'Tagging other page (' +
-						// 	params.mergeTarget + ')');
-						// otherpage.setChangeTags(Twinkle.changeTags);
-						// otherpage.setCallbackParameters(newParams);
-						// otherpage.load(Twinkle.tag.callbacks.article);
-					}
-
-					// post at WP:PNT for {{not English}} and {{rough translation}} tag
-					if (params.translationPostAtPNT) {
-						var pntPage = new Morebits.wiki.page('Wikipedia:Pages needing translation into English',
-							'Listing article at Wikipedia:Pages needing translation into English');
-						pntPage.setFollowRedirect(true);
-						pntPage.load(function friendlytagCallbacksTranslationListPage(pageobj) {
-							var old_text = pageobj.getPageText();
-
-							var template = params.tags.indexOf('Rough translation') !== -1 ? 'duflu' : 'needtrans';
-							var lang = params.translationLanguage;
-							var reason = params.translationComments;
-
-							var templateText = '{{subst:' + template + '|pg=' + Morebits.pageNameNorm + '|Language=' +
-								(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
-
-							var text, summary;
-							if (template === 'duflu') {
-								text = old_text + '\n\n' + templateText;
-								summary = 'Translation cleanup requested on ';
-							} else {
-								text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
-									'\n\n' + templateText + '\n\n$1');
-								summary = 'Translation' + (lang ? ' from ' + lang : '') + ' requested on ';
-							}
-
-							if (text === old_text) {
-								pageobj.getStatusElement().error('failed to find target spot for the discussion');
-								return;
-							}
-							pageobj.setPageText(text);
-							pageobj.setEditSummary(summary + ' [[:' + Morebits.pageNameNorm + ']]');
-							pageobj.setChangeTags(Twinkle.changeTags);
-							pageobj.setCreateOption('recreate');
-							pageobj.save();
-						});
-					}
-					if (params.translationNotify) {
-						pageobj.lookupCreation(function(innerPageobj) {
-							var initialContrib = innerPageobj.getCreator();
-
-							// Disallow warning yourself
-							if (initialContrib === mw.config.get('wgUserName')) {
-								innerPageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
-								return;
-							}
-
-							var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib,
-								'Notifying initial contributor (' + initialContrib + ')');
-							userTalkPage.setNewSectionTitle('Your article [[' + Morebits.pageNameNorm + ']]');
-							userTalkPage.setNewSectionText('{{subst:uw-notenglish|1=' + Morebits.pageNameNorm +
-								(params.translationPostAtPNT ? '' : '|nopnt=yes') + '}} ~~~~');
-							userTalkPage.setEditSummary('Notice: Please use English when contributing to the English Wikipedia.');
-							userTalkPage.setChangeTags(Twinkle.changeTags);
-							userTalkPage.setCreateOption('recreate');
-							userTalkPage.setFollowRedirect(true, false);
-							userTalkPage.newSection();
-						});
-					}
-				});
+				pageobj.save(this.postSave);
 
 				if (params.patrol) {
 					pageobj.triage();
@@ -1179,7 +970,7 @@ class ArticleMode extends TagMode {
 			params.tags.forEach((tag) => {
 				tagRe = new RegExp('\\{\\{' + tag + '(\\||\\}\\})', 'im');
 				// regex check for preexistence of tag can be skipped if in canRemove mode
-				if (this.canRemove || !tagRe.exec(pageText)) {
+				if (this.canRemove() || !tagRe.exec(pageText)) {
 					// condition this.flatObject[tag] to ensure that its not a custom tag
 					// Custom tags are assumed non-groupable, since we don't know whether MI template supports them
 					if (this.flatObject[tag] && !this.flatObject[tag].excludeMI) {
@@ -1296,13 +1087,117 @@ class ArticleMode extends TagMode {
 
 	}
 
+	postSave(pageobj: Morebits.wiki.page) {
+		let params = this.params;
+
+		// special functions for merge tags
+		if (params.mergeReason) {
+			// post the rationale on the talk page (only operates in main namespace)
+			var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
+			talkpage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
+			talkpage.setNewSectionTitle(params.talkDiscussionTitleLinked);
+			talkpage.setChangeTags(Twinkle.changeTags);
+			talkpage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
+			talkpage.setCreateOption('recreate');
+			talkpage.newSection();
+		}
+
+		if (params.mergeTagOther) {
+			// tag the target page if requested
+			var otherTagName = 'Merge';
+			if (params.mergeTag === 'Merge from') {
+				otherTagName = 'Merge to';
+			} else if (params.mergeTag === 'Merge to') {
+				otherTagName = 'Merge from';
+			}
+			var newParams = {
+				tags: [otherTagName],
+				tagsToRemove: [],
+				tagsToRemain: [],
+				mergeTarget: Morebits.pageNameNorm,
+				discussArticle: params.discussArticle,
+				talkDiscussionTitle: params.talkDiscussionTitle,
+				talkDiscussionTitleLinked: params.talkDiscussionTitleLinked
+			};
+			var otherpageTagging = new ArticleMode();
+			otherpageTagging.params = newParams;
+			otherpageTagging.pageName = params.mergeTarget;
+			otherpageTagging.evaluate();
+
+			// var otherpage = new Morebits.wiki.page(params.mergeTarget, 'Tagging other page (' +
+			// 	params.mergeTarget + ')');
+			// otherpage.setChangeTags(Twinkle.changeTags);
+			// otherpage.setCallbackParameters(newParams);
+			// otherpage.load(Twinkle.tag.callbacks.article);
+		}
+
+		// post at WP:PNT for {{not English}} and {{rough translation}} tag
+		if (params.translationPostAtPNT) {
+			var pntPage = new Morebits.wiki.page('Wikipedia:Pages needing translation into English',
+				'Listing article at Wikipedia:Pages needing translation into English');
+			pntPage.setFollowRedirect(true);
+			pntPage.load(function friendlytagCallbacksTranslationListPage(pageobj) {
+				var old_text = pageobj.getPageText();
+
+				var template = params.tags.indexOf('Rough translation') !== -1 ? 'duflu' : 'needtrans';
+				var lang = params.translationLanguage;
+				var reason = params.translationComments;
+
+				var templateText = '{{subst:' + template + '|pg=' + Morebits.pageNameNorm + '|Language=' +
+					(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
+
+				var text, summary;
+				if (template === 'duflu') {
+					text = old_text + '\n\n' + templateText;
+					summary = 'Translation cleanup requested on ';
+				} else {
+					text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
+						'\n\n' + templateText + '\n\n$1');
+					summary = 'Translation' + (lang ? ' from ' + lang : '') + ' requested on ';
+				}
+
+				if (text === old_text) {
+					pageobj.getStatusElement().error('failed to find target spot for the discussion');
+					return;
+				}
+				pageobj.setPageText(text);
+				pageobj.setEditSummary(summary + ' [[:' + Morebits.pageNameNorm + ']]');
+				pageobj.setChangeTags(Twinkle.changeTags);
+				pageobj.setCreateOption('recreate');
+				pageobj.save();
+			});
+		}
+
+		if (params.translationNotify) {
+			pageobj.lookupCreation(function(innerPageobj) {
+				var initialContrib = innerPageobj.getCreator();
+
+				// Disallow warning yourself
+				if (initialContrib === mw.config.get('wgUserName')) {
+					innerPageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
+					return;
+				}
+
+				var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib,
+					'Notifying initial contributor (' + initialContrib + ')');
+				userTalkPage.setNewSectionTitle('Your article [[' + Morebits.pageNameNorm + ']]');
+				userTalkPage.setNewSectionText('{{subst:uw-notenglish|1=' + Morebits.pageNameNorm +
+					(params.translationPostAtPNT ? '' : '|nopnt=yes') + '}} ~~~~');
+				userTalkPage.setEditSummary('Notice: Please use English when contributing to the English Wikipedia.');
+				userTalkPage.setChangeTags(Twinkle.changeTags);
+				userTalkPage.setCreateOption('recreate');
+				userTalkPage.setFollowRedirect(true, false);
+				userTalkPage.newSection();
+			});
+		}
+	}
 }
 
 // Override to change modes available,
 // each mode is a class extending TagMode
 Tag.modeList = [
-	// ArticleMode,
 	RedirectMode,
+	ArticleMode,
 	FileMode
 ];
 
