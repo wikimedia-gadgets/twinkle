@@ -445,6 +445,17 @@ var Twinkle = {
 
 
 	/**
+	 * Light wrapper around Morebits.wiki.page that presets the change tags
+	 */
+	wikiPage: class extends Morebits.wiki.page {
+		constructor(pageName: string, status?: Morebits.status | string) {
+			super(pageName, status);
+			this.setChangeTags(Twinkle.changeTags);
+		}
+	},
+
+
+	/**
 	 * Twinkle-specific data shared by multiple modules
 	 * Likely customized per installation
 	 * TODO: move these to a separate file?

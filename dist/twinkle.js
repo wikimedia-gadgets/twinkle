@@ -14,6 +14,19 @@
  * every Wikipedian in between. Visit [[WP:TW]] for more information.
  */
 // <nowiki>
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 /* global Morebits */
 // Check if account is experienced enough to use Twinkle
 if (!Morebits.userIsInGroup('autoconfirmed') && !Morebits.userIsInGroup('confirmed')) {
@@ -394,6 +407,18 @@ var Twinkle = {
             }
         }
     },
+    /**
+     * Light wrapper around Morebits.wiki.page that presets the change tags
+     */
+    wikiPage: /** @class */ (function (_super) {
+        __extends(class_1, _super);
+        function class_1(pageName, status) {
+            var _this = _super.call(this, pageName, status) || this;
+            _this.setChangeTags(Twinkle.changeTags);
+            return _this;
+        }
+        return class_1;
+    }(Morebits.wiki.page)),
     /**
      * Twinkle-specific data shared by multiple modules
      * Likely customized per installation
