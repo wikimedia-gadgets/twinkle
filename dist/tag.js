@@ -11,7 +11,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var _a = Twinkle.shims, obj_entries = _a.obj_entries, obj_values = _a.obj_values;
+var _a = Twinkle.shims, obj_entries = _a.obj_entries, obj_values = _a.obj_values, arr_includes = _a.arr_includes;
 var Tag = /** @class */ (function (_super) {
     __extends(Tag, _super);
     function Tag() {
@@ -197,9 +197,7 @@ var TagMode = /** @class */ (function () {
      * Parse existing tags. This is NOT asynchronous.
      * Should be overridden for tag modes where removalSupported is true
      */
-    TagMode.prototype.parseExistingTags = function () {
-        return;
-    };
+    TagMode.prototype.parseExistingTags = function () { };
     TagMode.prototype.constructFlatObject = function () {
         var _this = this;
         this.flatObject = {};
@@ -238,13 +236,11 @@ var TagMode = /** @class */ (function () {
                 }]
         });
     };
-    TagMode.prototype.formAppendSubmitButton = function () {
+    TagMode.prototype.formRender = function () {
         this.form.append({
             type: 'submit',
             className: 'tw-tag-submit'
         });
-    };
-    TagMode.prototype.formRender = function () {
         this.result = this.form.render();
         this.Window.setContent(this.result);
         this.Window.display();
@@ -279,8 +275,9 @@ var TagMode = /** @class */ (function () {
     TagMode.prototype.evaluate = function () {
         var _this = this;
         this.captureFormData();
-        if (!this.validateInput()) {
-            return;
+        var validationMessage = this.checkInputs();
+        if (validationMessage) {
+            return alert(validationMessage);
         }
         this.preprocessParams();
         Morebits.simpleWindow.setButtonsEnabled(false);
@@ -297,15 +294,18 @@ var TagMode = /** @class */ (function () {
         this.params.tagsToRemove = this.result.getUnchecked('existingTags'); // XXX: Morebits-defined function
         this.params.tagsToRetain = this.params.existingTags || [];
     };
-    TagMode.prototype.validateInput = function () {
-        // File/redirect: return if no tags selected
-        // Article: return if no tag is selected and no already present tag is deselected
+    TagMode.prototype.checkInputs = function () {
+        // Check if any tag is selected or if any already present tag is deselected
         if (this.params.tags.length === 0 && (!this.canRemove() || this.params.tagsToRemove.length === 0)) {
-            alert('You must select at least one tag!');
-            return false;
+            return 'You must select at least one tag!';
         }
-        return true;
+        return this.validateInput();
     };
+    /**
+     * If inputs are invalid, return a string that is shown to the user via alert().
+     * If inputs are valid, don't return anything.
+     */
+    TagMode.prototype.validateInput = function () { };
     TagMode.prototype.preprocessParams = function () {
         this.getTemplateParameters();
     };
@@ -416,7 +416,6 @@ var RedirectMode = /** @class */ (function (_super) {
             this.scrollbox.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customRedirectTagList') });
         }
         this.formAppendPatrolLink();
-        this.formAppendSubmitButton();
     };
     RedirectMode.prototype.action = function () {
         var _this = this;
@@ -502,28 +501,22 @@ var FileMode = /** @class */ (function (_super) {
             this.scrollbox.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customFileTagList') });
         }
         this.formAppendPatrolLink();
-        this.formAppendSubmitButton();
     };
     FileMode.prototype.validateInput = function () {
         // Given an array of incompatible tags, check if we have two or more selected
         var params = this.params, tags = this.params.tags;
-        var checkIncompatible = function (conflicts, extra) {
-            var count = conflicts.reduce(function (sum, tag) {
-                return sum += Number(tags.indexOf(tag) !== -1);
-            }, 0);
-            if (count > 1) {
-                var message = 'Please select only one of: {{' + conflicts.join('}}, {{') + '}}.';
-                message += extra ? ' ' + extra : '';
-                alert(message);
-                return true;
+        var incompatibleSets = [
+            ['Bad GIF', 'Bad JPEG', 'Bad SVG', 'Bad format'],
+            ['Should be PNG', 'Should be SVG', 'Should be text'],
+            ['Bad SVG', 'Vector version available'],
+            ['Bad JPEG', 'Overcompressed JPEG'],
+            ['PNG version available', 'Vector version available']
+        ];
+        for (var _i = 0, incompatibleSets_1 = incompatibleSets; _i < incompatibleSets_1.length; _i++) {
+            var set = incompatibleSets_1[_i];
+            if (set.filter(function (t) { return arr_includes(tags, t); }).length > 1) {
+                return 'Please select only one of: {{' + set.join('}}, {{') + '}}.';
             }
-        };
-        if (checkIncompatible(['Bad GIF', 'Bad JPEG', 'Bad SVG', 'Bad format']) ||
-            checkIncompatible(['Should be PNG', 'Should be SVG', 'Should be text']) ||
-            checkIncompatible(['Bad SVG', 'Vector version available']) ||
-            checkIncompatible(['Bad JPEG', 'Overcompressed JPEG']) ||
-            checkIncompatible(['PNG version available', 'Vector version available'])) {
-            return false;
         }
         // Get extension from either mime-type or title, if not present (e.g., SVGs)
         var extension = ((extension = $('.mime-type').text()) && extension.split(/\//)[1]) ||
@@ -547,37 +540,30 @@ var FileMode = /** @class */ (function (_super) {
                 else {
                     suggestion += 'so {{' + tags[badIndex] + '}} is inappropriate.';
                 }
-                alert(suggestion);
-                return false;
+                return suggestion;
             }
             // Should be PNG|SVG
             if ((tags.toString().indexOf('Should be ') !== -1) && (tags.indexOf('Should be ' + extensionUpper) !== -1)) {
-                alert('This is already a ' + extension + ' file, so {{Should be ' + extensionUpper + '}} is inappropriate.');
-                return false;
+                return 'This is already a ' + extension + ' file, so {{Should be ' + extensionUpper + '}} is inappropriate.';
             }
             // Overcompressed JPEG
             if (tags.indexOf('Overcompressed JPEG') !== -1 && extensionUpper !== 'JPEG') {
-                alert('This appears to be a ' + extension + ' file, so {{Overcompressed JPEG}} probably doesn\'t apply.');
-                return false;
+                return 'This appears to be a ' + extension + ' file, so {{Overcompressed JPEG}} probably doesn\'t apply.';
             }
             // Bad trace and Bad font
             if (extensionUpper !== 'SVG') {
                 if (tags.indexOf('Bad trace') !== -1) {
-                    alert('This appears to be a ' + extension + ' file, so {{Bad trace}} probably doesn\'t apply.');
-                    return false;
+                    return 'This appears to be a ' + extension + ' file, so {{Bad trace}} probably doesn\'t apply.';
                 }
                 else if (tags.indexOf('Bad font') !== -1) {
-                    alert('This appears to be a ' + extension + ' file, so {{Bad font}} probably doesn\'t apply.');
-                    return false;
+                    return 'This appears to be a ' + extension + ' file, so {{Bad font}} probably doesn\'t apply.';
                 }
             }
         }
         if (tags.indexOf('Do not move to Commons') !== -1 && params.DoNotMoveToCommons_expiry &&
             (!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) || parseInt(params.DoNotMoveToCommons_expiry, 10) <= new Date().getFullYear())) {
-            alert('Must be a valid future year.');
-            return false;
+            return 'Must be a valid future year.';
         }
-        return true;
     };
     FileMode.prototype.initialCleanup = function () {
         var _this = this;
@@ -673,7 +659,6 @@ var ArticleMode = /** @class */ (function (_super) {
             size: '60px'
         });
         this.formAppendPatrolLink();
-        this.formAppendSubmitButton();
     };
     ArticleMode.prototype.parseExistingTags = function () {
         var _this = this;
@@ -721,6 +706,18 @@ var ArticleMode = /** @class */ (function (_super) {
     /// Removing unselected existing tags
     /// Final cleanup
     /// Save
+    ArticleMode.prototype.validateInput = function () {
+        var params = this.params, tags = params.tags;
+        if (['Merge', 'Merge from', 'Merge to'].filter(function (t) { return arr_includes(tags, t); }).length > 1) {
+            return 'Please select only one of {{Merge}}, {{Merge from}} and {{Merge to}}. If several merges are required, use {{Merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).';
+        }
+        if ((params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1) {
+            return 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.';
+        }
+        if (['Not English', 'Rough translation'].filter(function (t) { return arr_includes(tags, t); }).length > 1) {
+            return 'Please select only one of {{Not English}} and {{Rough translation}}..';
+        }
+    };
     ArticleMode.prototype.preprocessParams = function () {
         var _this = this;
         _super.prototype.preprocessParams.call(this);
@@ -1105,10 +1102,10 @@ var ArticleMode = /** @class */ (function (_super) {
             otherpage.load(function (otherpage) {
                 _this.templateParams[otherTagName] = {
                     1: Morebits.pageNameNorm,
-                    discuss: _this.templateParams[params.mergeTag].discuss
+                    discuss: _this.templateParams[params.mergeTag].discuss || ''
                 };
-                // XXX: check if tag already exists?
-                var pageText = _this.insertTagText(_this.getTagText(otherTagName), otherpage.getPageText());
+                // XXX: check if {{Merge from}} or {{Merge}} tag already exists?
+                var pageText = _this.insertTagText(_this.getTagText(otherTagName) + '\n', otherpage.getPageText());
                 otherpage.setPageText(pageText);
                 otherpage.setEditSummary(Tag.makeEditSummary([otherTagName], []));
                 otherpage.setWatchlist(Twinkle.getPref('watchTaggedPages'));
@@ -1149,11 +1146,14 @@ var ArticleMode = /** @class */ (function (_super) {
             }, def.reject);
         }
         if (params.translationNotify) {
-            pageobj.lookupCreation(function (innerPageobj) {
-                var initialContrib = innerPageobj.getCreator();
+            var statElem_1 = new Morebits.status('Looking up creator');
+            pageobj.setStatusElement(statElem_1);
+            pageobj.lookupCreation(function (pageobj) {
+                var initialContrib = pageobj.getCreator();
+                statElem_1.info("Found " + initialContrib);
                 // Disallow warning yourself
                 if (initialContrib === mw.config.get('wgUserName')) {
-                    innerPageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
+                    statElem_1.warn('You (' + initialContrib + ') created this page; skipping user notification');
                     return;
                 }
                 var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');

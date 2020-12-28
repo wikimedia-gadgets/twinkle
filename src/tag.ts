@@ -1,4 +1,4 @@
-const {obj_entries, obj_values} = Twinkle.shims;
+const {obj_entries, obj_values, arr_includes} = Twinkle.shims;
 
 interface tagData {
 	// name of the tag template, without namespace prefix (required)
@@ -10,16 +10,16 @@ interface tagData {
 	// list of quickForm inputs to query from the user if tag is added
 	subgroup?: tagSubgroup | tagSubgroup[]
 
-	// should the tag not be included in group (default: false)
+	// should the tag not be included in grouping template (default: false)
 	excludeInGroup?: boolean
 
 	// should the tag be substed instead of transcluded (default: false)
 	subst?: boolean
 
-	// Should the tag be allowed to be added a second time (default: false)
+	// should the tag be allowed to be added a second time (default: false)
 	dupeAllowed?: boolean
 
-	// Should the tag be placed at the bottom of the page instead of top (default: false)
+	// should the tag be placed at the bottom of the page instead of top (default: false)
 	placeBottom?: boolean
 }
 
@@ -240,9 +240,7 @@ abstract class TagMode {
 	 * Parse existing tags. This is NOT asynchronous.
 	 * Should be overridden for tag modes where removalSupported is true
 	 */
-	parseExistingTags() {
-		return;
-	}
+	parseExistingTags() {}
 
 	constructFlatObject() {
 		this.flatObject = {};
@@ -282,14 +280,11 @@ abstract class TagMode {
 		});
 	}
 
-	formAppendSubmitButton() {
+	formRender() {
 		this.form.append({
 			type: 'submit',
 			className: 'tw-tag-submit'
 		});
-	}
-
-	formRender() {
 		this.result = this.form.render();
 		this.Window.setContent(this.result);
 		this.Window.display();
@@ -328,8 +323,9 @@ abstract class TagMode {
 
 	evaluate() {
 		this.captureFormData();
-		if (!this.validateInput()) {
-			return;
+		let validationMessage = this.checkInputs();
+		if (validationMessage) {
+			return alert(validationMessage);
 		}
 		this.preprocessParams();
 		Morebits.simpleWindow.setButtonsEnabled(false);
@@ -348,15 +344,19 @@ abstract class TagMode {
 		this.params.tagsToRetain = this.params.existingTags || [];
 	}
 
-	validateInput(): boolean {
-		// File/redirect: return if no tags selected
-		// Article: return if no tag is selected and no already present tag is deselected
+	checkInputs(): string | void {
+		// Check if any tag is selected or if any already present tag is deselected
 		if (this.params.tags.length === 0 && (!this.canRemove() || this.params.tagsToRemove.length === 0)) {
-			alert('You must select at least one tag!');
-			return false;
+			return 'You must select at least one tag!';
 		}
-		return true;
+		return this.validateInput();
 	}
+
+	/**
+	 * If inputs are invalid, return a string that is shown to the user via alert().
+	 * If inputs are valid, don't return anything.
+	 */
+	validateInput(): string | void {}
 
 	preprocessParams() {
 		this.getTemplateParameters();
@@ -375,9 +375,11 @@ abstract class TagMode {
 		});
 	}
 
-	// Lousy name. This function is for the actions that take place when the form is submitted,
-	// assuming the validations are all clear.
-	// Should be extended in the child classes, needless to say.
+	/**
+	 * This function is for the actions that take place when the form is submitted,
+	 * assuming the validations are all clear.
+	 * Must be extended in the child classes.
+	 */
 	abstract action(): JQuery.Promise<void>;
 
 	getTagText(tag: string) {
@@ -479,7 +481,6 @@ class RedirectMode extends TagMode {
 		}
 
 		this.formAppendPatrolLink();
-		this.formAppendSubmitButton();
 	}
 
 	action() {
@@ -573,31 +574,23 @@ class FileMode extends TagMode {
 		}
 
 		this.formAppendPatrolLink();
-		this.formAppendSubmitButton();
 	}
 
 	validateInput() {
 		// Given an array of incompatible tags, check if we have two or more selected
 		var params = this.params, tags = this.params.tags;
-		var checkIncompatible = function(conflicts: string[], extra?: string) {
-			var count = conflicts.reduce(function(sum, tag) {
-				return sum += Number(tags.indexOf(tag) !== -1);
-			}, 0);
-			if (count > 1) {
-				var message = 'Please select only one of: {{' + conflicts.join('}}, {{') + '}}.';
-				message += extra ? ' ' + extra : '';
-				alert(message);
-				return true;
-			}
-		};
 
-		if (checkIncompatible(['Bad GIF', 'Bad JPEG', 'Bad SVG', 'Bad format']) ||
-			checkIncompatible(['Should be PNG', 'Should be SVG', 'Should be text']) ||
-			checkIncompatible(['Bad SVG', 'Vector version available']) ||
-			checkIncompatible(['Bad JPEG', 'Overcompressed JPEG']) ||
-			checkIncompatible(['PNG version available', 'Vector version available'])
-		) {
-			return false;
+		let incompatibleSets = [
+			['Bad GIF', 'Bad JPEG', 'Bad SVG', 'Bad format'],
+			['Should be PNG', 'Should be SVG', 'Should be text'],
+			['Bad SVG', 'Vector version available'],
+			['Bad JPEG', 'Overcompressed JPEG'],
+			['PNG version available', 'Vector version available']
+		];
+		for (let set of incompatibleSets) {
+			if (set.filter(t => arr_includes(tags, t)).length > 1) {
+				return 'Please select only one of: {{' + set.join('}}, {{') + '}}.';
+			}
 		}
 
 		// Get extension from either mime-type or title, if not present (e.g., SVGs)
@@ -623,39 +616,31 @@ class FileMode extends TagMode {
 				} else {
 					suggestion += 'so {{' + tags[badIndex] + '}} is inappropriate.';
 				}
-				alert(suggestion);
-				return false;
+				return suggestion;
 			}
 			// Should be PNG|SVG
 			if ((tags.toString().indexOf('Should be ') !== -1) && (tags.indexOf('Should be ' + extensionUpper) !== -1)) {
-				alert('This is already a ' + extension + ' file, so {{Should be ' + extensionUpper + '}} is inappropriate.');
-				return false;
+				return 'This is already a ' + extension + ' file, so {{Should be ' + extensionUpper + '}} is inappropriate.';
 			}
 
 			// Overcompressed JPEG
 			if (tags.indexOf('Overcompressed JPEG') !== -1 && extensionUpper !== 'JPEG') {
-				alert('This appears to be a ' + extension + ' file, so {{Overcompressed JPEG}} probably doesn\'t apply.');
-				return false;
+				return 'This appears to be a ' + extension + ' file, so {{Overcompressed JPEG}} probably doesn\'t apply.';
 			}
 			// Bad trace and Bad font
 			if (extensionUpper !== 'SVG') {
 				if (tags.indexOf('Bad trace') !== -1) {
-					alert('This appears to be a ' + extension + ' file, so {{Bad trace}} probably doesn\'t apply.');
-					return false;
+					return 'This appears to be a ' + extension + ' file, so {{Bad trace}} probably doesn\'t apply.';
 				} else if (tags.indexOf('Bad font') !== -1) {
-					alert('This appears to be a ' + extension + ' file, so {{Bad font}} probably doesn\'t apply.');
-					return false;
+					return 'This appears to be a ' + extension + ' file, so {{Bad font}} probably doesn\'t apply.';
 				}
 			}
 		}
 
 		if (tags.indexOf('Do not move to Commons') !== -1 && params.DoNotMoveToCommons_expiry &&
 			(!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) || parseInt(params.DoNotMoveToCommons_expiry, 10) <= new Date().getFullYear())) {
-			alert('Must be a valid future year.');
-			return false;
+			return 'Must be a valid future year.';
 		}
-
-		return true;
 	}
 
 	initialCleanup() {
@@ -774,7 +759,6 @@ class ArticleMode extends TagMode {
 		});
 
 		this.formAppendPatrolLink();
-		this.formAppendSubmitButton();
 	}
 
 	parseExistingTags() {
@@ -829,6 +813,19 @@ class ArticleMode extends TagMode {
 	/// Removing unselected existing tags
 	/// Final cleanup
 	/// Save
+
+	validateInput() {
+		let params = this.params, tags = params.tags;
+		if (['Merge', 'Merge from', 'Merge to'].filter(t => arr_includes(tags, t)).length > 1) {
+			return 'Please select only one of {{Merge}}, {{Merge from}} and {{Merge to}}. If several merges are required, use {{Merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).';
+		}
+		if ((params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1) {
+			return 'Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.';
+		}
+		if (['Not English', 'Rough translation'].filter(t => arr_includes(tags, t)).length > 1) {
+			return 'Please select only one of {{Not English}} and {{Rough translation}}..';
+		}
+	}
 
 	preprocessParams() {
 		super.preprocessParams();
@@ -1242,10 +1239,10 @@ class ArticleMode extends TagMode {
 			otherpage.load((otherpage) => {
 				this.templateParams[otherTagName] = { // these will be accessed by this.getTagText()
 					1: Morebits.pageNameNorm,
-					discuss: this.templateParams[params.mergeTag].discuss
+					discuss: this.templateParams[params.mergeTag].discuss || ''
 				};
-				// XXX: check if tag already exists?
-				let pageText = this.insertTagText(this.getTagText(otherTagName),
+				// XXX: check if {{Merge from}} or {{Merge}} tag already exists?
+				let pageText = this.insertTagText(this.getTagText(otherTagName) + '\n',
 					otherpage.getPageText());
 				otherpage.setPageText(pageText);
 				otherpage.setEditSummary(Tag.makeEditSummary([otherTagName], []));
@@ -1294,12 +1291,15 @@ class ArticleMode extends TagMode {
 		}
 
 		if (params.translationNotify) {
-			pageobj.lookupCreation(function(innerPageobj) {
-				var initialContrib = innerPageobj.getCreator();
+			let statElem = new Morebits.status('Looking up creator');
+			pageobj.setStatusElement(statElem);
+			pageobj.lookupCreation(function(pageobj) {
+				var initialContrib = pageobj.getCreator();
+				statElem.info(`Found ${initialContrib}`);
 
 				// Disallow warning yourself
 				if (initialContrib === mw.config.get('wgUserName')) {
-					innerPageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
+					statElem.warn('You (' + initialContrib + ') created this page; skipping user notification');
 					return;
 				}
 
