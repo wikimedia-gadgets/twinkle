@@ -24,7 +24,7 @@ var translationSubgroups = [
     }
 ] : []);
 // Subgroups for {{merge}}, {{merge-to}} and {{merge-from}}
-var getMergeSubgroups = function (tag) {
+function getMergeSubgroups(tag) {
     var otherTagName = 'Merge';
     switch (tag) {
         case 'Merge from':
@@ -38,6 +38,7 @@ var getMergeSubgroups = function (tag) {
     return [
         {
             name: 'mergeTarget',
+            parameter: '1',
             type: 'input',
             label: 'Other article(s): ',
             tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two',
@@ -61,7 +62,7 @@ var getMergeSubgroups = function (tag) {
             (tag === 'Merge to' ? 'the other article\'s' : 'this article\'s') + ' talk page):',
         tooltip: 'Optional, but strongly recommended. Leave blank if not wanted. Only available if a single article name is entered.'
     } : []);
-};
+}
 var articleTagList = {
     'Cleanup and maintenance tags': {
         'General cleanup': [
@@ -109,7 +110,7 @@ var articleTagList = {
             {
                 tag: 'Copypaste',
                 description: 'appears to have been copied and pasted from another location',
-                excludeMI: true,
+                excludeInGroup: true,
                 subgroup: {
                     name: 'copypaste',
                     parameter: 'url',
@@ -225,7 +226,7 @@ var articleTagList = {
             { tag: 'Undue weight', description: 'lends undue weight to certain ideas, incidents, or controversies' }
         ],
         'Timeliness': [
-            { tag: 'Current', description: 'documents a current event', excludeMI: true },
+            { tag: 'Current', description: 'documents a current event', excludeInGroup: true },
             { tag: 'Update', description: 'needs additional up-to-date information added' }
         ],
         'Neutrality, bias, and factual accuracy': [
@@ -274,7 +275,7 @@ var articleTagList = {
     'Specific content issues': {
         'Language': [
             { tag: 'Not English', description: 'written in a language other than English and needs translation',
-                excludeMI: true,
+                excludeInGroup: true,
                 subgroup: translationSubgroups.slice(0, 1).concat([{
                         type: 'checkbox',
                         list: [
@@ -287,11 +288,11 @@ var articleTagList = {
                         ]
                     }]).concat(translationSubgroups.slice(1))
             },
-            { tag: 'Rough translation', description: 'poor translation from another language', excludeMI: true,
+            { tag: 'Rough translation', description: 'poor translation from another language', excludeInGroup: true,
                 subgroup: translationSubgroups
             },
             { tag: 'Expand language', description: 'should be expanded with text translated from a foreign-language article',
-                excludeMI: true,
+                excludeInGroup: true,
                 subgroup: [{
                         type: 'hidden',
                         name: 'expandLangTopic',
@@ -326,15 +327,15 @@ var articleTagList = {
             { tag: 'No footnotes', description: 'has references, but lacks inline citations' }
         ],
         'Categories': [
-            { tag: 'Improve categories', description: 'needs additional or more specific categories', excludeMI: true },
-            { tag: 'Uncategorized', description: 'not added to any categories', excludeMI: true }
+            { tag: 'Improve categories', description: 'needs additional or more specific categories', excludeInGroup: true },
+            { tag: 'Uncategorized', description: 'not added to any categories', excludeInGroup: true }
         ]
     },
     'Merging': [
         {
             tag: 'History merge',
             description: 'another page should be history merged into this one',
-            excludeMI: true,
+            excludeInGroup: true,
             subgroup: [
                 {
                     name: 'histmergeOriginalPage',
@@ -360,17 +361,17 @@ var articleTagList = {
                 }
             ]
         },
-        { tag: 'Merge', description: 'should be merged with another given article', excludeMI: true,
+        { tag: 'Merge', description: 'should be merged with another given article', excludeInGroup: true,
             subgroup: getMergeSubgroups('Merge') },
-        { tag: 'Merge from', description: 'another given article should be merged into this one', excludeMI: true,
+        { tag: 'Merge from', description: 'another given article should be merged into this one', excludeInGroup: true,
             subgroup: getMergeSubgroups('Merge from') },
-        { tag: 'Merge to', description: 'should be merged into another given article', excludeMI: true,
+        { tag: 'Merge to', description: 'should be merged into another given article', excludeInGroup: true,
             subgroup: getMergeSubgroups('Merge to') }
     ],
     'Informational': [
-        { tag: 'GOCEinuse', description: 'currently undergoing a major copy edit by the Guild of Copy Editors', excludeMI: true },
-        { tag: 'In use', description: 'undergoing a major edit for a short while', excludeMI: true },
-        { tag: 'Under construction', description: 'in the process of an expansion or major restructuring', excludeMI: true }
+        { tag: 'GOCEinuse', description: 'currently undergoing a major copy edit by the Guild of Copy Editors', excludeInGroup: true },
+        { tag: 'In use', description: 'undergoing a major edit for a short while', excludeInGroup: true },
+        { tag: 'Under construction', description: 'in the process of an expansion or major restructuring', excludeInGroup: true }
     ]
 };
 var redirectTagList = {
@@ -563,7 +564,9 @@ var fileTagList = {
     'License and sourcing problem tags': [
         { tag: 'Better source requested', description: 'source info consists of bare image URL/generic base URL only' },
         { tag: 'Non-free reduce', description: 'non-low-resolution fair use image (or too-long audio clip, etc)' },
-        { tag: 'Orphaned non-free revisions', description: 'fair use media with old revisions that need to be deleted',
+        { tag: 'Orphaned non-free revisions',
+            description: 'fair use media with old revisions that need to be deleted',
+            subst: true,
             subgroup: {
                 type: 'hidden',
                 name: 'OrphanedNonFreeRevisionsDate',
@@ -610,6 +613,7 @@ var fileTagList = {
             }
         },
         { tag: 'Now Commons', description: 'file has been copied to Commons',
+            subst: true,
             subgroup: {
                 type: 'input',
                 name: 'nowcommonsName',
@@ -737,7 +741,7 @@ fileTagList['Replacement tags'].forEach(function (el) {
         parameter: '1'
     };
 });
-window.articleTagList = articleTagList;
-window.fileTagList = fileTagList;
-window.redirectTagList = redirectTagList;
+Twinkle.ArticleModeTagList = articleTagList;
+Twinkle.FileModeTagList = fileTagList;
+Twinkle.RedirectModeTagList = redirectTagList;
 //# sourceMappingURL=tag-data.js.map

@@ -1,5 +1,5 @@
 // Shared across {{Rough translation}} and {{Not English}}
-var translationSubgroups = [
+const translationSubgroups: tagSubgroup[] = ([
 	{
 		name: 'translationLanguage',
 		parameter: '1',
@@ -7,7 +7,7 @@ var translationSubgroups = [
 		label: 'Language of article (if known): ',
 		tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
 	}
-].concat(mw.config.get('wgNamespaceNumber') === 0 ? [
+] as tagSubgroup[]).concat(mw.config.get('wgNamespaceNumber') === 0 ? [
 	{
 		type: 'checkbox',
 		list: [ {
@@ -25,7 +25,7 @@ var translationSubgroups = [
 ] : []);
 
 // Subgroups for {{merge}}, {{merge-to}} and {{merge-from}}
-var getMergeSubgroups = function(tag) {
+function getMergeSubgroups(tag: string): tagSubgroup[] {
 	var otherTagName = 'Merge';
 	switch (tag) {
 		case 'Merge from':
@@ -36,9 +36,10 @@ var getMergeSubgroups = function(tag) {
 			break;
 		// no default
 	}
-	return [
+	return ([
 		{
 			name: 'mergeTarget',
+			parameter: '1',
 			type: 'input',
 			label: 'Other article(s): ',
 			tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two',
@@ -55,14 +56,14 @@ var getMergeSubgroups = function(tag) {
 				}
 			]
 		}
-	].concat(mw.config.get('wgNamespaceNumber') === 0 ? {
+	] as tagSubgroup[]).concat(mw.config.get('wgNamespaceNumber') === 0 ? {
 		name: 'mergeReason',
 		type: 'textarea',
 		label: 'Rationale for merge (will be posted on ' +
 			(tag === 'Merge to' ? 'the other article\'s' : 'this article\'s') + ' talk page):',
 		tooltip: 'Optional, but strongly recommended. Leave blank if not wanted. Only available if a single article name is entered.'
 	} : []);
-};
+}
 
 var articleTagList: tagListType = {
 	'Cleanup and maintenance tags': {
@@ -111,7 +112,7 @@ var articleTagList: tagListType = {
 			{
 				tag: 'Copypaste',
 				description: 'appears to have been copied and pasted from another location',
-				excludeMI: true,
+				excludeInGroup: true,
 				subgroup: {
 					name: 'copypaste',
 					parameter: 'url',
@@ -227,7 +228,7 @@ var articleTagList: tagListType = {
 			{ tag: 'Undue weight', description: 'lends undue weight to certain ideas, incidents, or controversies' }
 		],
 		'Timeliness': [
-			{ tag: 'Current', description: 'documents a current event', excludeMI: true }, // Works but not intended for use in MI
+			{ tag: 'Current', description: 'documents a current event', excludeInGroup: true }, // Works but not intended for use in MI
 			{ tag: 'Update', description: 'needs additional up-to-date information added' }
 		],
 		'Neutrality, bias, and factual accuracy': [
@@ -276,7 +277,7 @@ var articleTagList: tagListType = {
 	'Specific content issues': {
 		'Language': [
 			{ tag: 'Not English', description: 'written in a language other than English and needs translation',
-				excludeMI: true,
+				excludeInGroup: true,
 				subgroup: translationSubgroups.slice(0, 1).concat([{
 					type: 'checkbox',
 					list: [
@@ -289,11 +290,11 @@ var articleTagList: tagListType = {
 					]
 				}]).concat(translationSubgroups.slice(1))
 			},
-			{ tag: 'Rough translation', description: 'poor translation from another language', excludeMI: true,
+			{ tag: 'Rough translation', description: 'poor translation from another language', excludeInGroup: true,
 				subgroup: translationSubgroups
 			},
 			{ tag: 'Expand language', description: 'should be expanded with text translated from a foreign-language article',
-				excludeMI: true,
+				excludeInGroup: true,
 				subgroup: [{
 					type: 'hidden',
 					name: 'expandLangTopic',
@@ -328,15 +329,15 @@ var articleTagList: tagListType = {
 			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' }
 		],
 		'Categories': [
-			{ tag: 'Improve categories', description: 'needs additional or more specific categories', excludeMI: true },
-			{ tag: 'Uncategorized', description: 'not added to any categories', excludeMI: true }
+			{ tag: 'Improve categories', description: 'needs additional or more specific categories', excludeInGroup: true },
+			{ tag: 'Uncategorized', description: 'not added to any categories', excludeInGroup: true }
 		]
 	},
 	'Merging': [
 		{
 			tag: 'History merge',
 			description: 'another page should be history merged into this one',
-			excludeMI: true,
+			excludeInGroup: true,
 			subgroup: [
 				{
 					name: 'histmergeOriginalPage',
@@ -362,17 +363,17 @@ var articleTagList: tagListType = {
 				}
 			]
 		},
-		{ tag: 'Merge', description: 'should be merged with another given article', excludeMI: true,
+		{ tag: 'Merge', description: 'should be merged with another given article', excludeInGroup: true,
 			subgroup: getMergeSubgroups('Merge') },
-		{ tag: 'Merge from', description: 'another given article should be merged into this one', excludeMI: true,
+		{ tag: 'Merge from', description: 'another given article should be merged into this one', excludeInGroup: true,
 			subgroup: getMergeSubgroups('Merge from') },
-		{ tag: 'Merge to', description: 'should be merged into another given article', excludeMI: true,
+		{ tag: 'Merge to', description: 'should be merged into another given article', excludeInGroup: true,
 			subgroup: getMergeSubgroups('Merge to') }
 	],
 	'Informational': [
-		{ tag: 'GOCEinuse', description: 'currently undergoing a major copy edit by the Guild of Copy Editors', excludeMI: true },
-		{ tag: 'In use', description: 'undergoing a major edit for a short while', excludeMI: true },
-		{ tag: 'Under construction', description: 'in the process of an expansion or major restructuring', excludeMI: true }
+		{ tag: 'GOCEinuse', description: 'currently undergoing a major copy edit by the Guild of Copy Editors', excludeInGroup: true },
+		{ tag: 'In use', description: 'undergoing a major edit for a short while', excludeInGroup: true },
+		{ tag: 'Under construction', description: 'in the process of an expansion or major restructuring', excludeInGroup: true }
 	]
 };
 
@@ -429,7 +430,7 @@ var redirectTagList: tagListType = {
 					{
 						name: 'altLangInfo',
 						type: 'div',
-						label: $.parseHTML('<p>For a list of language codes, see <a href="/wiki/Wp:Template_messages/Redirect_language_codes">Wikipedia:Template messages/Redirect language codes</a></p>') as HTMLElement
+						label: $.parseHTML('<p>For a list of language codes, see <a href="/wiki/Wp:Template_messages/Redirect_language_codes">Wikipedia:Template messages/Redirect language codes</a></p>')
 					}
 				]
 			},
@@ -574,7 +575,9 @@ var fileTagList: tagListType = {
 	'License and sourcing problem tags': [
 		{ tag: 'Better source requested', description: 'source info consists of bare image URL/generic base URL only' },
 		{ tag: 'Non-free reduce', description: 'non-low-resolution fair use image (or too-long audio clip, etc)' },
-		{ tag: 'Orphaned non-free revisions', description: 'fair use media with old revisions that need to be deleted',
+		{ tag: 'Orphaned non-free revisions',
+			description: 'fair use media with old revisions that need to be deleted',
+			subst: true,
 			subgroup: {
 				type: 'hidden',
 				name: 'OrphanedNonFreeRevisionsDate',
@@ -621,6 +624,7 @@ var fileTagList: tagListType = {
 			}
 		},
 		{ tag: 'Now Commons', description: 'file has been copied to Commons',
+			subst: true
 			subgroup: {
 				type: 'input',
 				name: 'nowcommonsName',
@@ -750,7 +754,7 @@ fileTagList['Replacement tags'].forEach(function(el) {
 	};
 });
 
-window.articleTagList = articleTagList;
-window.fileTagList = fileTagList;
-window.redirectTagList = redirectTagList;
+Twinkle.ArticleModeTagList = articleTagList;
+Twinkle.FileModeTagList = fileTagList;
+Twinkle.RedirectModeTagList = redirectTagList;
 
