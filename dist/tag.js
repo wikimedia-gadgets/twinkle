@@ -161,7 +161,8 @@ var TagMode = /** @class */ (function () {
     };
     // helper function for makeTagList()
     TagMode.prototype.makeTagListGroup = function (list, container) {
-        var excludeTags = new Set(this.existingTags);
+        var _this = this;
+        var excludeTags = new Set(this.existingTags.filter(function (t) { var _a; return !((_a = _this.flatObject[t]) === null || _a === void 0 ? void 0 : _a.dupeAllowed); }));
         container.append({
             type: 'checkbox',
             name: 'tags',
@@ -465,9 +466,9 @@ var RedirectMode = /** @class */ (function (_super) {
             pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
             pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
             pageobj.setCreateOption('nocreate');
+            pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.save(def.resolve, def.reject);
             if (_this.params.patrol) {
-                pageobj.setChangeTags(Twinkle.changeTags);
                 pageobj.triage();
             }
         });
@@ -632,10 +633,6 @@ var ArticleMode = /** @class */ (function (_super) {
         _this.tagList = Twinkle.ArticleModeTagList;
         _this.removalSupported = true;
         // Configurations
-        _this.tagPlacementConfig = {
-            placedBottom: new Set(['Uncategorized', 'Improve categories']),
-            duplicatesAllowed: new Set(['Merge from', 'History merge'])
-        };
         _this.groupTemplateNameRegex = '(?:multiple ?issues|article ?issues|mi)(?!\\s*\\|\\s*section\\s*=)';
         _this.groupTemplateNameRegexFlags = 'i';
         _this.groupMinSize = 2;
@@ -796,7 +793,7 @@ var ArticleMode = /** @class */ (function (_super) {
         var params = this.params;
         params.newTags = params.tags.filter(function (tag) {
             var exists = _this.getTagSearchRegex(tag).test(_this.pageText);
-            if (exists && !_this.tagPlacementConfig.duplicatesAllowed.has(tag)) {
+            if (exists && (!_this.flatObject[tag] || !_this.flatObject[tag].dupeAllowed)) {
                 Morebits.status.warn('Info', "Found {{" + tag + "}} on the article already...excluding");
                 // XXX: don't do anything else with merge tags: handle this better!
                 if (['Merge', 'Merge to'].indexOf(tag) !== -1) {
@@ -819,7 +816,7 @@ var ArticleMode = /** @class */ (function (_super) {
                 params.groupableNewTags.push(tag);
             }
             else {
-                if (_this.tagPlacementConfig.placedBottom.has(tag)) {
+                if (_this.flatObject[tag] && _this.flatObject[tag].placeBottom) {
                     _this.addBottom(_this.getTagText(tag));
                 }
                 else {
@@ -832,7 +829,7 @@ var ArticleMode = /** @class */ (function (_super) {
         this.pageText += '\n\n' + tagText;
     };
     ArticleMode.prototype.groupRegex = function () {
-        var regexString = '\\{\\{\\s*(' + this.groupTemplateNameRegex + ')(?:\\||\\}\\})';
+        var regexString = '\\{\\{\\s*(' + this.groupTemplateNameRegex + ')\\s*(?:\\||\\}\\})';
         return new RegExp(regexString, this.groupTemplateNameRegexFlags);
     };
     ArticleMode.prototype.shouldAddGroup = function () {
@@ -865,12 +862,12 @@ var ArticleMode = /** @class */ (function (_super) {
                     groupableExistingTagsText +
                     '}}';
                 var ungroupedTagsText = _this.makeTagSetText(params.nonGroupableNewTags);
-                _this.pageText = _this.insertTagText('\n' + groupedTagsText + ungroupedTagsText, _this.pageText);
+                _this.pageText = _this.insertTagText(groupedTagsText + '\n' + ungroupedTagsText, _this.pageText);
             });
             /// Case 3. No group exists, no group to be added
         }
         else {
-            this.addTagsOutsideGroup(params.newTags); // all new tags, groupable or not
+            this.addTagsOutsideGroup(params.groupableNewTags.concat(params.nonGroupableNewTags));
             return $.Deferred().resolve();
         }
         // If group needs to be removed because of removal of tags, that's handled in final cleanup, not here.
@@ -922,27 +919,22 @@ var ArticleMode = /** @class */ (function (_super) {
         if (tagsToShiftAsync.length === 0) {
             return $.Deferred().resolve(this.params.groupableExistingTagsText);
         }
-        var api = new Morebits.wiki.api('Getting template redirects', {
-            'action': 'query',
-            'prop': 'linkshere',
-            'titles': tagsToShiftAsync.map(function (pg) { return 'Template:' + pg; }),
-            'redirects': 1,
-            'lhnamespace': '10',
-            'lhshow': 'redirect',
-            'lhlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
-        });
+        var api = new Morebits.wiki.api('Getting template redirects', this.getRedirectsQuery(tagsToShiftAsync));
         return api.post().then(function (apiobj) {
             var pages = apiobj.getResponse().query.pages.filter(function (p) {
                 return !p.missing && !!p.linkshere;
             });
             pages.forEach(function (page) {
-                var shifted = page.linkshere.some(function (template) {
-                    var tag = new mw.Title(template.title).getMainText(); // strip namespace name
-                    return _this.shiftTag(tag);
-                });
+                var shifted = _this.shiftTag(stripNs(page.title));
                 if (!shifted) {
-                    Morebits.status.warn('Info', 'Failed to find {{' +
-                        new mw.Title(page.title).getMainText() + '}} on the page... skip repositioning');
+                    shifted = page.linkshere.some(function (template) {
+                        var tag = stripNs(template.title);
+                        return _this.shiftTag(tag);
+                    });
+                }
+                if (!shifted) { // unnecessary message?
+                    new Morebits.status('Note', 'Failed to find {{' +
+                        stripNs(page.title) + '}} on the page... skip repositioning');
                 }
             });
             return _this.params.groupableExistingTagsText;
@@ -970,7 +962,7 @@ var ArticleMode = /** @class */ (function (_super) {
         // AfD is special, as the tag includes html comments before and after the actual template
         // trailing whitespace/newline needed since this subst's a newline
         var afdRegex = '(?:<!--.*AfD.*\\n\\{\\{(?:Article for deletion\\/dated|AfDM).*\\}\\}\\n<!--.*(?:\\n<!--.*)?AfD.*(?:\\s*\\n))?';
-        return wikipage.insertAfterTemplates('\n' + tagText, templatesAfter, null, afdRegex).getText();
+        return wikipage.insertAfterTemplates(tagText, templatesAfter, null, afdRegex).getText();
     };
     ArticleMode.prototype.getTagText = function (tag) {
         return '{{' + tag + this.getParameterText(tag) +
@@ -988,6 +980,18 @@ var ArticleMode = /** @class */ (function (_super) {
             return '';
         });
         return isRemoved;
+    };
+    ArticleMode.prototype.getRedirectsQuery = function (tags) {
+        return {
+            'action': 'query',
+            'prop': 'linkshere',
+            'titles': tags.map(function (pg) { return 'Template:' + pg; }),
+            'redirects': 1,
+            'lhnamespace': '10',
+            'lhshow': 'redirect',
+            'lhlimit': 'max',
+            'format': 'json'
+        };
     };
     /**
      * Remove tags from pageText
@@ -1007,43 +1011,52 @@ var ArticleMode = /** @class */ (function (_super) {
             return def.resolve();
         }
         // Remove tags which appear in page text as redirects
-        var api = new Morebits.wiki.api('Getting template redirects', {
-            'action': 'query',
-            'prop': 'linkshere',
-            'titles': tagsToRemoveAsync.map(function (pg) { return 'Template:' + pg; }),
-            'redirects': 1,
-            'lhnamespace': '10',
-            'lhshow': 'redirect',
-            'lhlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
-        });
+        var statusMessage = "Getting redirects for " + mw.language.listToText(tagsToRemoveAsync.map(function (t) { return '{{' + t + '}}'; }));
+        var api = new Morebits.wiki.api(statusMessage, this.getRedirectsQuery(tagsToRemoveAsync));
         return api.post().then(function (apiobj) {
             var pages = apiobj.getResponse().query.pages.filter(function (p) {
-                return !p.missing && !!p.linkshere;
+                return (!p.missing && !!p.linkshere) || Morebits.status.warn('Info', 'Failed to find {{' +
+                    stripNs(p.title) + '}} on the page... excluding');
+            });
+            (apiobj.getResponse().query.redirects || []).forEach(function (_a) {
+                var from = _a.from, to = _a.to;
+                new Morebits.status('Note', "Resolved template redirect {{" + stripNs(from) + "}} to {{" + stripNs(to) + "}}");
             });
             pages.forEach(function (page) {
-                var removed = page.linkshere.some(function (template) {
-                    var tag = new mw.Title(template.title).getMainText(); // strip namespace name
-                    return _this.removeTemplate(tag);
-                });
+                var removed = _this.removeTemplate(stripNs(page.title));
                 if (!removed) {
-                    Morebits.status.warn('Info', 'Failed to find {{' +
-                        new mw.Title(page.title).getMainText() + '}} on the page... excluding');
+                    removed = page.linkshere.some(function (template) {
+                        var tag = stripNs(template.title);
+                        return _this.removeTemplate(tag);
+                    });
+                }
+                if (!removed) {
+                    Morebits.status.warn('Note', 'Failed to find {{' +
+                        stripNs(page.title) + '}} on the page... cannot remove');
                 }
             });
         });
     };
-    ArticleMode.prototype.nItemGroupRegex = function (n) {
-        var start = '\\{\\{\\s*' + this.groupTemplateNameRegex + '\\s*\\|\\s*(';
-        var tags = '(?:\\{\\{[^}]+\\}\\}\\s*){' + n + '}';
-        var end = ')\\}\\}\\n?';
-        var regexString = start + tags + end;
-        return new RegExp(regexString, this.groupTemplateNameRegexFlags);
-    };
     ArticleMode.prototype.finalCleanup = function () {
         // Remove any groups containing less than minGroupSize tags
-        for (var i = 0; i <= this.groupMinSize; i++) {
-            this.pageText = this.pageText.replace(this.nItemGroupRegex(i), '$1');
+        var _this = this;
+        // XXX: This might misbehave if existing tags in the MI have parameters
+        // that contain nested templates.
+        // TODO: use regex-less parsing.
+        var nItemGroupRegex = function (n) {
+            var start = '\\{\\{\\s*' + _this.groupTemplateNameRegex + '\\s*\\|\\s*(';
+            var tags = '(?:\\{\\{[^}]+\\}\\}\\s*){' + n + '}';
+            var end = ')\\}\\}\\n?';
+            var regexString = start + tags + end;
+            return new RegExp(regexString, _this.groupTemplateNameRegexFlags);
+        };
+        // unbind substs of time parser functions
+        var unbinder = new Morebits.unbinder(this.pageText);
+        unbinder.unbind('\\{\\{subst:CURRENT', '\\}\\}');
+        for (var i = 0; i < this.groupMinSize; i++) {
+            unbinder.content = unbinder.content.replace(nItemGroupRegex(i), '$1');
         }
+        this.pageText = unbinder.rebind();
     };
     ArticleMode.prototype.savePage = function () {
         var _this = this;
@@ -1053,6 +1066,7 @@ var ArticleMode = /** @class */ (function (_super) {
         this.pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
         this.pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
         this.pageobj.setCreateOption('nocreate');
+        this.pageobj.setChangeTags(Twinkle.changeTags);
         this.pageobj.save(function (pageobj) {
             _this.postSave(pageobj).then(def.resolve, def.reject);
         }, def.reject);
@@ -1157,6 +1171,9 @@ var ArticleMode = /** @class */ (function (_super) {
     };
     return ArticleMode;
 }(TagMode));
+function stripNs(title) {
+    return new mw.Title(title).getMainText();
+}
 function makeArray(obj) {
     if (!obj) {
         return [];

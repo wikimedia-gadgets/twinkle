@@ -329,8 +329,9 @@ var articleTagList: tagListType = {
 			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' }
 		],
 		'Categories': [
-			{ tag: 'Improve categories', description: 'needs additional or more specific categories', excludeInGroup: true },
-			{ tag: 'Uncategorized', description: 'not added to any categories', excludeInGroup: true }
+			{ tag: 'Improve categories', description: 'needs additional or more specific categories',
+				excludeInGroup: true, placeBottom: true },
+			{ tag: 'Uncategorized', description: 'not added to any categories', excludeInGroup: true, placeBottom: true }
 		]
 	},
 	'Merging': [
@@ -338,6 +339,7 @@ var articleTagList: tagListType = {
 			tag: 'History merge',
 			description: 'another page should be history merged into this one',
 			excludeInGroup: true,
+			dupeAllowed: true,
 			subgroup: [
 				{
 					name: 'histmergeOriginalPage',
@@ -365,7 +367,9 @@ var articleTagList: tagListType = {
 		},
 		{ tag: 'Merge', description: 'should be merged with another given article', excludeInGroup: true,
 			subgroup: getMergeSubgroups('Merge') },
-		{ tag: 'Merge from', description: 'another given article should be merged into this one', excludeInGroup: true,
+		{ tag: 'Merge from', description: 'another given article should be merged into this one',
+			excludeInGroup: true,
+			dupeAllowed: true,
 			subgroup: getMergeSubgroups('Merge from') },
 		{ tag: 'Merge to', description: 'should be merged into another given article', excludeInGroup: true,
 			subgroup: getMergeSubgroups('Merge to') }
