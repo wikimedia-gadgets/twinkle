@@ -261,46 +261,39 @@ var XfdMode = /** @class */ (function () {
     };
     XfdMode.prototype.autoEditRequest = function (pageobj) {
         var params = this.params;
-        var def = $.Deferred();
         var talkName = new mw.Title(pageobj.getPageName()).getTalkPage().toText();
         if (talkName === pageobj.getPageName()) {
             pageobj.getStatusElement().error('Page protected and nowhere to add an edit request, aborting');
-            return def.reject();
+            return $.Deferred().reject();
         }
         pageobj.getStatusElement().warn('Page protected, requesting edit');
         var editRequest = '{{subst:Xfd edit protected|page=' + pageobj.getPageName() +
-            '|discussion=' + params.discussionpage + '|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
-        var talk_page = new Morebits.wiki.page(talkName, 'Automatically posting edit request on talk page');
+            '|discussion=' + params.discussionpage + '|tag=<no' + 'wiki>' + params.tagText + '<no' + 'wiki>}}';
+        var talk_page = new Twinkle.page(talkName, 'Automatically posting edit request on talk page');
         talk_page.setNewSectionTitle('Edit request to complete ' + utils.toTLACase(params.venue) + ' nomination');
         talk_page.setNewSectionText(editRequest);
         talk_page.setCreateOption('recreate');
         talk_page.setWatchlist(Twinkle.getPref('xfdWatchPage'));
         talk_page.setFollowRedirect(true); // should never be needed, but if the article is moved, we would want to follow the redirect
-        talk_page.setChangeTags(Twinkle.changeTags);
-        talk_page.newSection(def.resolve, function () {
+        return talk_page.newSection().catch(function () {
             talk_page.getStatusElement().warn('Unable to add edit request, the talk page may be protected');
-            def.reject();
+            return $.Deferred().reject();
         });
-        return def;
     };
     XfdMode.prototype.fetchCreatorInfo = function () {
         var _this = this;
-        var def = $.Deferred();
-        var thispage = new Morebits.wiki.page(Morebits.pageNameNorm, 'Finding page creator');
+        var thispage = new Twinkle.page(Morebits.pageNameNorm, 'Finding page creator');
         thispage.setLookupNonRedirectCreator(this.params.lookupNonRedirectCreator);
-        thispage.lookupCreation(function (pageobj) {
+        return thispage.lookupCreation().then(function (pageobj) {
             _this.params.initialContrib = pageobj.getCreator();
             pageobj.getStatusElement().info('Found ' + pageobj.getCreator());
-            def.resolve();
         });
-        return def;
     };
     XfdMode.prototype.notifyTalkPage = function (notifyTarget, statusElement) {
         // Ensure items with User talk or no namespace prefix both end
         // up at user talkspace as expected, but retain the
         // prefix-less username for addToLog
         var params = this.params;
-        var def = $.Deferred();
         var notifyTitle = mw.Title.newFromText(notifyTarget, 3); // 3: user talk
         var targetNS = notifyTitle.getNamespaceId();
         var usernameOrTarget = notifyTitle.getRelativeText(3);
@@ -311,13 +304,12 @@ var XfdMode = /** @class */ (function () {
             if (usernameOrTarget === mw.config.get('wgUserName')) {
                 params.initialContrib = null; // disable initial contributor logging in userspace log
                 statusElement.warn('You (' + usernameOrTarget + ') created this page; skipping user notification');
-                return def.resolve();
+                return $.Deferred().resolve();
             }
         }
-        var usertalkpage = new Morebits.wiki.page(notifyPageTitle, statusElement);
+        var usertalkpage = new Twinkle.page(notifyPageTitle, statusElement);
         usertalkpage.setAppendText('\n\n' + this.getNotifyText());
         usertalkpage.setEditSummary(this.getNotifyEditSummary());
-        usertalkpage.setChangeTags(Twinkle.changeTags);
         usertalkpage.setCreateOption('recreate');
         // Different pref for RfD target notifications: XXX: handle this better!
         if (params.venue === 'rfd' && targetNS !== 3) {
@@ -327,12 +319,11 @@ var XfdMode = /** @class */ (function () {
             usertalkpage.setWatchlist(Twinkle.getPref('xfdWatchUser'));
         }
         usertalkpage.setFollowRedirect(true, false);
-        usertalkpage.append(def.resolve, function onNotifyError() {
-            // if user could not be notified, null this out for correct userspace logging
+        return usertalkpage.append().catch(function () {
+            // if user could not be notified, null this out for correct userspace logging,
+            // but don't reject the promise
             params.initialContrib = null;
-            def.resolve();
         });
-        return def;
     };
     // Overridden for all venues except FFD and RFD
     XfdMode.prototype.getNotifyText = function () {
@@ -555,17 +546,15 @@ var Afd = /** @class */ (function (_super) {
      */
     Afd.prototype.checkPage = function () {
         var _this = this;
-        var def = $.Deferred();
-        var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Adding deletion tag to article');
+        var pageobj = new Twinkle.page(mw.config.get('wgPageName'), 'Adding deletion tag to article');
         pageobj.setFollowRedirect(true); // should never be needed, but if the article is moved, we would want to follow the redirect
-        pageobj.setChangeTags(Twinkle.changeTags); // Here to apply to triage
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             var text = pageobj.getPageText();
             var statelem = pageobj.getStatusElement();
             _this.params.articleLoadTime = pageobj.getLoadTime();
             if (!pageobj.exists()) {
                 statelem.error("It seems that the page doesn't exist; perhaps it has already been deleted");
-                return def.reject(); // Cancel future operations
+                return $.Deferred().reject(); // Cancel future operations
             }
             // Check for existing AfD tag, for the benefit of new page patrollers
             var textNoAfd = text.replace(/<!--.*AfD.*\n\{\{(?:Article for deletion\/dated|AfDM).*\}\}\n<!--.*(?:\n<!--.*)?AfD.*(?:\s*\n)?/g, '');
@@ -576,16 +565,14 @@ var Afd = /** @class */ (function (_super) {
                 else {
                     statelem.error('Article already tagged with AfD tag, and you chose to abort');
                     window.location.reload();
-                    return def.reject(); // Cancel future operations
+                    return $.Deferred().reject(); // Cancel future operations
                 }
             }
-            def.resolve(pageobj);
-        }, def.reject);
-        return def;
+            return pageobj;
+        });
     };
     Afd.prototype.tagPage = function (pageobj) {
         var params = this.params;
-        var def = $.Deferred();
         params.tagText = (params.noinclude ? '<noinclude>{{' : '{{') + (params.number === '' ? 'subst:afd|help=off' : 'subst:afdx|' +
             params.number + '|help=off') + (params.noinclude ? '}}</noinclude>\n' : '}}\n');
         if (pageobj.canEdit()) {
@@ -604,12 +591,11 @@ var Afd = /** @class */ (function (_super) {
             pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
             pageobj.setCreateOption('nocreate');
-            pageobj.save(def.resolve, def.reject);
+            return pageobj.save();
         }
         else {
-            this.autoEditRequest(pageobj).then(def.resolve, def.reject);
+            return this.autoEditRequest(pageobj);
         }
-        return def;
     };
     Afd.prototype.getDiscussionWikitext = function () {
         var params = this.params;
@@ -624,26 +610,22 @@ var Afd = /** @class */ (function (_super) {
     Afd.prototype.createDiscussionPage = function () {
         var _this = this;
         var params = this.params;
-        var def = $.Deferred();
-        var pageobj = new Morebits.wiki.page(params.discussionpage, 'Creating article deletion discussion page');
-        pageobj.load(function (pageobj) {
+        var pageobj = new Twinkle.page(params.discussionpage, 'Creating article deletion discussion page');
+        return pageobj.load().then(function (pageobj) {
             pageobj.setPageText(_this.getDiscussionWikitext());
             pageobj.setEditSummary('Creating deletion discussion page for [[:' + Morebits.pageNameNorm + ']].');
-            pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('createonly');
-            pageobj.save(def.resolve, def.reject);
-        }, def.reject);
-        return def;
+            return pageobj.save();
+        });
     };
     Afd.prototype.addToList = function () {
         var params = this.params;
-        var def = $.Deferred();
         var date = new Morebits.date(params.articleLoadTime);
-        var pageobj = new Morebits.wiki.page('Wikipedia:Articles for deletion/Log/' +
+        var pageobj = new Twinkle.page('Wikipedia:Articles for deletion/Log/' +
             date.format('YYYY MMMM D', 'utc'), "Adding discussion to today's list");
         pageobj.setFollowRedirect(true);
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             var statelem = pageobj.getStatusElement();
             var added_data = '{{subst:afd3|pg=' + Morebits.pageNameNorm + params.numbering + '}}\n';
             var text;
@@ -659,43 +641,35 @@ var Afd = /** @class */ (function (_super) {
                     linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing AFD') + '?action=purge');
                     linknode.appendChild(document.createTextNode('How to fix AFD'));
                     statelem.error(['Could not find the target spot for the discussion. To fix this problem, please see ', linknode, '.']);
-                    return def.reject();
+                    return $.Deferred().reject();
                 }
             }
             pageobj.setPageText(text);
             pageobj.setEditSummary('Adding [[:' + params.discussionpage + ']].');
-            pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
             pageobj.setCreateOption('recreate');
-            pageobj.save(def.resolve, def.reject);
-        }, def.reject);
-        return def;
+            return pageobj.save();
+        });
     };
     Afd.prototype.addToDelsortLists = function () {
         var params = this.params;
-        var defs = new Array(params.delsortCats.length);
-        for (var i = 0; i < defs.length; i++) {
-            // ugly, would be a lot better when mb.w.page#load and #save return promises
-            defs[i] = $.Deferred();
-        }
-        params.delsortCats.forEach(function (cat, idx) {
-            var delsortPage = new Morebits.wiki.page('Wikipedia:WikiProject Deletion sorting/' + cat, 'Adding to list of ' + cat + '-related deletion discussions');
+        var promises = params.delsortCats.map(function (cat, idx) {
+            var delsortPage = new Twinkle.page('Wikipedia:WikiProject Deletion sorting/' + cat, 'Adding to list of ' + cat + '-related deletion discussions');
             delsortPage.setFollowRedirect(true); // In case a category gets renamed
-            delsortPage.load(function (pageobj) {
+            return delsortPage.load().then(function (pageobj) {
                 var discussionPage = params.discussionpage;
                 var text = pageobj.getPageText().replace('directly below this line -->', 'directly below this line -->\n{{' + discussionPage + '}}');
                 pageobj.setPageText(text);
                 pageobj.setEditSummary('Listing [[:' + discussionPage + ']].');
-                pageobj.setChangeTags(Twinkle.changeTags);
                 pageobj.setCreateOption('nocreate');
-                pageobj.save(defs[idx].resolve, defs[idx].resolve); // failures aren't important
+                return pageobj.save().catch(function () { }); // failures aren't important
             });
         });
-        return $.when.apply($, defs);
+        return $.when.apply($, promises);
     };
     Afd.prototype.patrolPage = function () {
         if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
-            new Morebits.wiki.page(Morebits.pageNameNorm).triage();
+            new Twinkle.page(Morebits.pageNameNorm).triage();
         }
         return $.Deferred().resolve(); // XXX
     };
@@ -830,11 +804,10 @@ var Tfd = /** @class */ (function (_super) {
     Tfd.prototype.tagPageForDeletion = function () {
         var _this = this;
         var params = this.params;
-        var def = $.Deferred();
-        var pageobj = new Morebits.wiki.page(Morebits.pageNameNorm + (params.scribunto ? '/doc' : ''), 'Tagging ' + (params.scribunto ? 'module documentation' : 'template') + ' with ' +
+        var pageobj = new Twinkle.page(Morebits.pageNameNorm + (params.scribunto ? '/doc' : ''), 'Tagging ' + (params.scribunto ? 'module documentation' : 'template') + ' with ' +
             'deletion tag');
         pageobj.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             _this.setLogPageAndDiscussionPage(pageobj.getLoadTime());
             var text = pageobj.getPageText();
             params.tagText = '{{subst:template for discussion|help=off' + (params.templatetype !== 'standard' ? '|type=' + params.templatetype : '') + '}}';
@@ -851,48 +824,44 @@ var Tfd = /** @class */ (function (_super) {
             if (pageobj.canEdit() && ['wikitext', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
                 pageobj.setPageText(params.tagText + text);
                 pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
-                pageobj.setChangeTags(Twinkle.changeTags);
                 pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
                 if (params.scribunto) {
                     pageobj.setCreateOption('recreate'); // Module /doc might not exist
                 }
-                pageobj.save(def.resolve, def.reject);
+                return pageobj.save();
             }
             else {
-                _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
+                return _this.autoEditRequest(pageobj);
             }
-        }, def.reject);
-        return def;
+        });
     };
     Tfd.prototype.tagPagesForMerge = function () {
         var _this = this;
         var params = this.params;
-        var defs = [$.Deferred(), $.Deferred()];
         var docOrNot = params.scribunto ? '/doc' : '';
         var moduleDocOrTemplate = params.scribunto ? 'module documentation' : 'template';
-        var pageobj = new Morebits.wiki.page("" + Morebits.pageNameNorm + docOrNot, "Tagging " + moduleDocOrTemplate + " with merge tag");
+        var pageobj = new Twinkle.page("" + Morebits.pageNameNorm + docOrNot, "Tagging " + moduleDocOrTemplate + " with merge tag");
         pageobj.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
-        pageobj.load(function (pageobj) {
+        var thispageTagging = pageobj.load().then(function (pageobj) {
             _this.setLogPageAndDiscussionPage(pageobj.getLoadTime());
-            _this.tagForMerge(pageobj, _this.params).then(defs[0].resolve, defs[0].reject);
-        }, defs[0].reject);
-        var otherpageobj = new Morebits.wiki.page("" + params.otherTemplateName + docOrNot, "Tagging other " + moduleDocOrTemplate + " with merge tag");
+            return _this.tagForMerge(pageobj, _this.params);
+        });
+        var otherpageobj = new Twinkle.page("" + params.otherTemplateName + docOrNot, "Tagging other " + moduleDocOrTemplate + " with merge tag");
         otherpageobj.setFollowRedirect(true);
-        otherpageobj.load(function (otherpageobj) {
+        var otherpageTagging = otherpageobj.load().then(function (otherpageobj) {
             _this.setLogPageAndDiscussionPage(pageobj.getLoadTime());
-            _this.tagForMerge(otherpageobj, $.extend({}, params, {
+            return _this.tagForMerge(otherpageobj, $.extend({}, params, {
                 otherTemplateName: Morebits.pageNameNorm
-            })).then(defs[1].resolve, defs[1].reject);
-        }, defs[1].reject);
-        return $.when.apply($, defs);
+            }));
+        });
+        return $.when(thispageTagging, otherpageTagging);
     };
     /**
-     * @param {Morebits.wiki.page} pageobj - pageobj should be already loaded
+     * @param {Twinkle.page} pageobj - pageobj should be already loaded
      * @param {Object} params - we can't just use this.params since
      * that would be incorrect when tagging the "other" page
      */
     Tfd.prototype.tagForMerge = function (pageobj, params) {
-        var def = $.Deferred();
         var text = pageobj.getPageText();
         params.tagText = '{{subst:tfm|help=off|' + (params.templatetype !== 'standard' ? 'type=' + params.templatetype + '|' : '') +
             '1=' + params.otherTemplateName.replace(/^(?:Template|Module):/, '') + '}}';
@@ -909,25 +878,22 @@ var Tfd = /** @class */ (function (_super) {
         if (pageobj.canEdit() && ['wikitext', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
             pageobj.setPageText(params.tagText + text);
             pageobj.setEditSummary('Listed for merging with [[:' + params.otherTemplateName + ']]; see [[:' + params.discussionpage + ']].');
-            pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
             if (params.scribunto) {
                 pageobj.setCreateOption('recreate'); // Module /doc might not exist
             }
-            pageobj.save(def.resolve, def.reject);
+            return pageobj.save();
         }
         else {
-            this.autoEditRequest(pageobj).then(def.resolve, def.reject);
+            return this.autoEditRequest(pageobj);
         }
-        return def;
     };
     Tfd.prototype.addToList = function () {
         var _this = this;
         var params = this.params;
-        var def = $.Deferred();
-        var pageobj = new Morebits.wiki.page(params.logpage, "Adding discussion to today's log");
+        var pageobj = new Twinkle.page(params.logpage, "Adding discussion to today's log");
         pageobj.setFollowRedirect(true);
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             var statelem = pageobj.getStatusElement();
             var added_data = _this.getDiscussionWikitext();
             var text;
@@ -940,33 +906,29 @@ var Tfd = /** @class */ (function (_super) {
                 text = old_text.replace('-->', '-->\n' + added_data);
                 if (text === old_text) {
                     statelem.error('failed to find target spot for the discussion');
-                    return;
+                    return $.Deferred().reject();
                 }
             }
             pageobj.setPageText(text);
             pageobj.setEditSummary('Adding ' + (params.xfdcat === 'tfd' ? 'deletion nomination' : 'merge listing') + ' of [[:' + Morebits.pageNameNorm + ']].');
-            pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
-            pageobj.save(def.resolve, def.reject);
-        }, def.reject);
-        return def;
+            return pageobj.save();
+        });
     };
     Tfd.prototype.notifyOtherCreator = function () {
         var _this = this;
-        var def = $.Deferred();
         if (!this.params.otherTemplateName) {
-            return def.resolve();
+            return $.Deferred().resolve();
         }
-        new Morebits.wiki.page(this.params.otherTemplateName, 'Finding other page creator').lookupCreation(function (page) {
+        return new Twinkle.page(this.params.otherTemplateName, 'Finding other page creator').lookupCreation().then(function (page) {
             var otherpagecreator = page.getCreator();
             page.getStatusElement().info('Found ' + otherpagecreator);
             if (otherpagecreator === _this.params.initialContrib) {
-                return def.resolve();
+                return;
             }
-            _this.notifyTalkPage(otherpagecreator).then(def.resolve, def.reject);
+            return _this.notifyTalkPage(otherpagecreator);
         });
-        return def;
     };
     Tfd.prototype.notifyDevs = function () {
         var _this = this;
@@ -1094,10 +1056,9 @@ var Ffd = /** @class */ (function (_super) {
     Ffd.prototype.tagPage = function () {
         var _this = this;
         var params = this.params;
-        var def = $.Deferred();
-        var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Adding deletion tag to file page');
+        var pageobj = new Twinkle.page(mw.config.get('wgPageName'), 'Adding deletion tag to file page');
         pageobj.setFollowRedirect(true);
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             var text = pageobj.getPageText();
             var date = new Morebits.date(pageobj.getLoadTime()).format('YYYY MMMM D', 'utc');
             params.logpage = 'Wikipedia:Files for discussion/' + date;
@@ -1107,24 +1068,21 @@ var Ffd = /** @class */ (function (_super) {
                 text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
                 pageobj.setPageText(params.tagText + text);
                 pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
-                pageobj.setChangeTags(Twinkle.changeTags);
                 pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
                 pageobj.setCreateOption('recreate'); // it might be possible for a file to exist without a description page
-                pageobj.save(def.resolve, def.reject);
+                return pageobj.save();
             }
             else {
-                _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
+                return _this.autoEditRequest(pageobj);
             }
-        }, def.reject);
-        return def;
+        });
     };
     Ffd.prototype.addToList = function () {
         var _this = this;
         var params = this.params;
-        var def = $.Deferred();
-        var wikipedia_page = new Morebits.wiki.page(params.logpage, "Adding discussion to today's list");
+        var wikipedia_page = new Twinkle.page(params.logpage, "Adding discussion to today's list");
         wikipedia_page.setFollowRedirect(true);
-        wikipedia_page.load(function (pageobj) {
+        return wikipedia_page.load().then(function (pageobj) {
             var text = pageobj.getPageText();
             // add date header if the log is found to be empty (a bot should do this automatically)
             if (!pageobj.exists()) {
@@ -1132,12 +1090,10 @@ var Ffd = /** @class */ (function (_super) {
             }
             pageobj.setPageText(text + '\n\n' + _this.getDiscussionWikitext());
             pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
-            pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
-            pageobj.save(def.resolve, def.reject);
-        }, def.reject);
-        return def;
+            return pageobj.save();
+        });
     };
     Ffd.prototype.getDiscussionWikitext = function () {
         return utils.makeTemplate('subst:ffd2', {
@@ -1270,10 +1226,9 @@ var Cfd = /** @class */ (function (_super) {
     Cfd.prototype.tagPage = function () {
         var _this = this;
         var params = this.params;
-        var def = $.Deferred();
-        var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with ' + params.action + ' tag');
+        var pageobj = new Twinkle.page(mw.config.get('wgPageName'), 'Tagging category with ' + params.action + ' tag');
         pageobj.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             // Set data for future actions first
             var date = new Morebits.date(pageobj.getLoadTime());
             params.logpage = 'Wikipedia:Categories for discussion/Log/' + date.format('YYYY MMMM D', 'utc');
@@ -1289,24 +1244,21 @@ var Cfd = /** @class */ (function (_super) {
             if (pageobj.canEdit()) {
                 pageobj.setPageText(params.tagText + text);
                 pageobj.setEditSummary(editsummary);
-                pageobj.setChangeTags(Twinkle.changeTags);
                 pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
                 pageobj.setCreateOption('recreate'); // since categories can be populated without an actual page at that title
-                pageobj.save(def.resolve, def.reject);
+                return pageobj.save();
             }
             else {
-                _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
+                return _this.autoEditRequest(pageobj);
             }
-        }, def.reject);
-        return def;
+        });
     };
     Cfd.prototype.addToList = function () {
         var _this = this;
         var params = this.params;
-        var def = $.Deferred();
-        var pageobj = new Morebits.wiki.page(params.logpage, "Adding discussion to today's list");
+        var pageobj = new Twinkle.page(params.logpage, "Adding discussion to today's list");
         pageobj.setFollowRedirect(true);
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             var statelem = pageobj.getStatusElement();
             var added_data = _this.getDiscussionWikitext();
             var text;
@@ -1319,17 +1271,15 @@ var Cfd = /** @class */ (function (_super) {
                 text = old_text.replace('below this line -->', 'below this line -->\n' + added_data);
                 if (text === old_text) {
                     statelem.error('failed to find target spot for the discussion');
-                    return def.reject();
+                    return $.Deferred().reject();
                 }
             }
             pageobj.setPageText(text);
             pageobj.setEditSummary('Adding ' + params.action + ' nomination of [[:' + Morebits.pageNameNorm + ']].');
-            pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
-            pageobj.save(def.resolve, def.reject);
-        }, def.reject);
-        return def;
+            return pageobj.save();
+        });
     };
     Cfd.prototype.getDiscussionWikitext = function () {
         return utils.makeTemplate('subst:' + this.params.xfdcat + '2', {
@@ -1411,6 +1361,7 @@ var Cfds = /** @class */ (function (_super) {
     Cfds.prototype.evaluate = function () {
         var _this = this;
         _super.prototype.evaluate.call(this);
+        Twinkle.tm = this.tm;
         this.tm.add(this.tagPage, []);
         this.tm.add(this.addToList, [], this.printReasonText);
         this.tm.add(this.addToLog, [this.addToList]);
@@ -1419,47 +1370,41 @@ var Cfds = /** @class */ (function (_super) {
     Cfds.prototype.tagPage = function () {
         var _this = this;
         var params = this.params;
-        var def = $.Deferred();
-        var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging category with rename tag');
+        var pageobj = new Twinkle.page(mw.config.get('wgPageName'), 'Tagging category with rename tag');
         pageobj.setFollowRedirect(true);
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             var text = pageobj.getPageText();
             params.tagText = '{{subst:cfr-speedy|1=' + params.cfdstarget.replace(/^:?Category:/, '') + '}}\n';
             if (pageobj.canEdit()) {
                 pageobj.setPageText(params.tagText + text);
                 pageobj.setEditSummary('Listed for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]].');
-                pageobj.setChangeTags(Twinkle.changeTags);
                 pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
                 pageobj.setCreateOption('recreate'); // since categories can be populated without an actual page at that title
-                pageobj.save(def.resolve, def.reject);
+                return pageobj.save();
             }
             else {
-                _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
+                return _this.autoEditRequest(pageobj);
             }
-        }, def.reject);
-        return def;
+        });
     };
     Cfds.prototype.addToList = function () {
         var _this = this;
-        var def = $.Deferred();
-        var pageobj = new Morebits.wiki.page('Wikipedia:Categories for discussion/Speedy', 'Adding discussion to the list');
+        var pageobj = new Twinkle.page('Wikipedia:Categories for discussion/Speedy', 'Adding discussion to the list');
         pageobj.setFollowRedirect(true);
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             var old_text = pageobj.getPageText();
             var statelem = pageobj.getStatusElement();
             var text = old_text.replace('BELOW THIS LINE -->', 'BELOW THIS LINE -->\n' + _this.getDiscussionWikitext());
             if (text === old_text) {
                 statelem.error('failed to find target spot for the discussion');
-                return def.reject();
+                return $.Deferred().reject();
             }
             pageobj.setPageText(text);
             pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
-            pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
-            pageobj.save(def.resolve, def.reject);
-        }, def.reject);
-        return def;
+            return pageobj.save();
+        });
     };
     Cfds.prototype.getDiscussionWikitext = function () {
         var params = this.params;
@@ -1546,10 +1491,9 @@ var Mfd = /** @class */ (function (_super) {
     Mfd.prototype.tagPage = function () {
         var _this = this;
         var params = this.params;
-        var def = $.Deferred();
-        var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page with deletion tag');
+        var pageobj = new Twinkle.page(mw.config.get('wgPageName'), 'Tagging page with deletion tag');
         pageobj.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             var text = pageobj.getPageText();
             params.tagText = '{{' + (params.number === '' ? 'mfd' : 'mfdx|' + params.number) + '|help=off}}';
             if (['javascript', 'css', 'sanitized-css'].indexOf(mw.config.get('wgPageContentModel')) !== -1) {
@@ -1564,31 +1508,26 @@ var Mfd = /** @class */ (function (_super) {
             if (pageobj.canEdit() && ['wikitext', 'javascript', 'css', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
                 pageobj.setPageText(params.tagText + text);
                 pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
-                pageobj.setChangeTags(Twinkle.changeTags);
                 pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
                 pageobj.setCreateOption('nocreate');
-                pageobj.save(def.resolve, def.reject);
+                return pageobj.save();
             }
             else {
-                _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
+                return _this.autoEditRequest(pageobj);
             }
-        }, def.reject);
-        return def;
+        });
     };
     Mfd.prototype.createDiscussionPage = function () {
         var _this = this;
         var params = this.params;
-        var def = $.Deferred();
-        var pageobj = new Morebits.wiki.page(params.discussionpage, 'Creating deletion discussion page');
-        pageobj.load(function (pageobj) {
+        var pageobj = new Twinkle.page(params.discussionpage, 'Creating deletion discussion page');
+        return pageobj.load().then(function (pageobj) {
             pageobj.setPageText(_this.getDiscussionWikitext());
             pageobj.setEditSummary('Creating deletion discussion page for [[:' + Morebits.pageNameNorm + ']].');
-            pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('createonly');
-            pageobj.save(def.resolve, def.reject);
-        }, def.reject);
-        return def;
+            return pageobj.save();
+        });
     };
     Mfd.prototype.getDiscussionWikitext = function () {
         return utils.makeTemplate('subst:mfd2', {
@@ -1598,11 +1537,10 @@ var Mfd = /** @class */ (function (_super) {
     };
     Mfd.prototype.addToList = function () {
         var params = this.params;
-        var def = $.Deferred();
-        var pageobj = new Morebits.wiki.page('Wikipedia:Miscellany for deletion', "Adding discussion to today's list");
+        var pageobj = new Twinkle.page('Wikipedia:Miscellany for deletion', "Adding discussion to today's list");
         pageobj.setPageSection(2);
         pageobj.setFollowRedirect(true);
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             var text = pageobj.getPageText();
             var statelem = pageobj.getStatusElement();
             var date = new Morebits.date(pageobj.getLoadTime());
@@ -1619,12 +1557,10 @@ var Mfd = /** @class */ (function (_super) {
             }
             pageobj.setPageText(text);
             pageobj.setEditSummary('Adding [[:' + params.discussionpage + ']].');
-            pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
             pageobj.setCreateOption('recreate');
-            pageobj.save(def.resolve, def.reject);
-        }, def.reject);
-        return def;
+            return pageobj.save();
+        });
     };
     Mfd.prototype.notifyUserspaceOwner = function () {
         var params = this.params;
@@ -1662,7 +1598,7 @@ var Rfd = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Rfd.isDefaultChoice = function () {
-        return Morebits.isPageRedirect();
+        return mw.config.get('wgIsRedirect') || !!document.getElementById('softredirect');
     };
     Rfd.prototype.getFieldsetLabel = function () {
         return 'Redirects for discussion';
@@ -1754,33 +1690,30 @@ var Rfd = /** @class */ (function (_super) {
                     return $.Deferred().reject();
                 }
                 _this.params.rfdtarget = target;
-                var section = response.query.redirects[0].tofragment;
+                _this.params.section = response.query.redirects[0].tofragment;
             }
         });
     };
     Rfd.prototype.tagPage = function () {
         var _this = this;
-        var def = $.Deferred();
         var params = this.params;
-        var pageobj = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Adding deletion tag to redirect');
+        var pageobj = new Twinkle.page(mw.config.get('wgPageName'), 'Adding deletion tag to redirect');
         pageobj.setFollowRedirect(false);
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             var text = pageobj.getPageText();
             // Imperfect for edit request but so be it
             params.tagText = '{{subst:rfd|' + (mw.config.get('wgNamespaceNumber') === 10 ? 'showontransclusion=1|' : '') + 'content=\n';
             if (pageobj.canEdit()) {
                 pageobj.setPageText(params.tagText + text + '\n}}');
                 pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
-                pageobj.setChangeTags(Twinkle.changeTags);
                 pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
                 pageobj.setCreateOption('nocreate');
-                pageobj.save(def.resolve, def.reject);
+                return pageobj.save();
             }
             else {
-                _this.autoEditRequest(pageobj).then(def.resolve, def.reject);
+                return _this.autoEditRequest(pageobj);
             }
-        }, def.reject);
-        return def;
+        });
     };
     Rfd.prototype.getDiscussionWikitext = function () {
         var params = this.params;
@@ -1792,11 +1725,10 @@ var Rfd = /** @class */ (function (_super) {
     };
     Rfd.prototype.addToList = function () {
         var _this = this;
-        var def = $.Deferred();
         var params = this.params;
-        var pageobj = new Morebits.wiki.page(params.logpage, 'Adding discussion to today\'s log');
+        var pageobj = new Twinkle.page(params.logpage, 'Adding discussion to today\'s log');
         pageobj.setFollowRedirect(true);
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             var statelem = pageobj.getStatusElement();
             var added_data = _this.getDiscussionWikitext();
             var text;
@@ -1809,17 +1741,15 @@ var Rfd = /** @class */ (function (_super) {
                 text = old_text.replace(/(<!-- Add new entries directly below this line\.? -->)/, '$1\n' + added_data);
                 if (text === old_text) {
                     statelem.error('failed to find target spot for the discussion');
-                    return;
+                    return $.Deferred().reject();
                 }
             }
             pageobj.setPageText(text);
             pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
-            pageobj.setChangeTags(Twinkle.changeTags);
             pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
             pageobj.setCreateOption('recreate');
-            pageobj.save(def.resolve, def.reject);
-        }, def.reject);
-        return def;
+            return pageobj.save();
+        });
     };
     Rfd.prototype.notifyTargetTalk = function () {
         if (!this.params.relatedpage) {
@@ -1832,22 +1762,20 @@ var Rfd = /** @class */ (function (_super) {
             statelem.warn('Circular redirect; skipping target page notification');
             return $.Deferred().resolve();
         }
-        else if (document.getElementById('softredirect')) {
+        if (document.getElementById('softredirect')) {
             statelem.warn('Soft redirect; skipping target page notification');
             return $.Deferred().resolve();
-            // Don't issue if target talk is the initial contributor's talk or your own
         }
-        else if (targetTalk.getNamespaceId() === 3 && targetTalk.getNameText() === this.params.initialContrib) {
+        // Don't issue if target talk is the initial contributor's talk or your own
+        if (targetTalk.getNamespaceId() === 3 && targetTalk.getNameText() === this.params.initialContrib) {
             statelem.warn('Target is initial contributor; skipping target page notification');
             return $.Deferred().resolve();
         }
-        else if (targetTalk.getNamespaceId() === 3 && targetTalk.getNameText() === mw.config.get('wgUserName')) {
+        if (targetTalk.getNamespaceId() === 3 && targetTalk.getNameText() === mw.config.get('wgUserName')) {
             statelem.warn('You (' + mw.config.get('wgUserName') + ') are the target; skipping target page notification');
             return $.Deferred().resolve();
         }
-        else {
-            return this.notifyTalkPage(targetTalk.toText(), statelem);
-        }
+        return this.notifyTalkPage(targetTalk.toText(), statelem);
     };
     Rfd.venueCode = 'rfd';
     Rfd.venueLabel = 'RfD (Redirects for discussion)';
@@ -1921,39 +1849,33 @@ var Rm = /** @class */ (function (_super) {
         return this.params.rmtr ? this.listAtRMTR() : this.listAtTalk();
     };
     Rm.prototype.listAtTalk = function () {
-        var def = $.Deferred();
         var params = this.params;
-        var pageobj = new Morebits.wiki.page(params.discussionpage, 'Adding entry on talk page');
+        var pageobj = new Twinkle.page(params.discussionpage, 'Adding entry on talk page');
         pageobj.setAppendText('\n\n' + this.getDiscussionWikitext());
         pageobj.setFollowRedirect(true);
         pageobj.setEditSummary('Proposing move' + (params.newname ? ' to [[:' + params.newname + ']]' : ''));
-        pageobj.setChangeTags(Twinkle.changeTags);
         pageobj.setCreateOption('recreate'); // since the talk page need not exist
         pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
-        pageobj.append(def.resolve, def.reject);
-        return def;
+        return pageobj.append();
     };
     Rm.prototype.listAtRMTR = function () {
         var _this = this;
-        var def = $.Deferred();
-        var pageobj = new Morebits.wiki.page(this.params.discussionpage, 'Adding entry at WP:RM/TR');
+        var pageobj = new Twinkle.page(this.params.discussionpage, 'Adding entry at WP:RM/TR');
         pageobj.setFollowRedirect(true);
         pageobj.setPageSection(2);
-        pageobj.load(function (pageobj) {
+        return pageobj.load().then(function (pageobj) {
             var text = pageobj.getPageText();
             var statelem = pageobj.getStatusElement();
             var hiddenCommentRE = /---- and enter on a new line.* -->/;
             var newtext = text.replace(hiddenCommentRE, '$&\n' + _this.getDiscussionWikitext());
             if (text === newtext) {
                 statelem.error('failed to find target spot for the entry');
-                return;
+                return $.Deferred().reject();
             }
             pageobj.setPageText(newtext);
             pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
-            pageobj.setChangeTags(Twinkle.changeTags);
-            pageobj.save(def.resolve, def.reject);
-        }, def.reject);
-        return def;
+            return pageobj.save();
+        });
     };
     Rm.prototype.getUserspaceLoggingExtraInfo = function () {
         var params = this.params, text = '';
