@@ -328,8 +328,8 @@ var articleTagList = {
         ],
         'Categories': [
             { tag: 'Improve categories', description: 'needs additional or more specific categories',
-                excludeInGroup: true, placeBottom: true },
-            { tag: 'Uncategorized', description: 'not added to any categories', excludeInGroup: true, placeBottom: true }
+                excludeInGroup: true },
+            { tag: 'Uncategorized', description: 'not added to any categories', excludeInGroup: true }
         ]
     },
     'Merging': [
