@@ -414,16 +414,43 @@ var Twinkle = {
         }
     },
     /**
-     * Light wrapper around Morebits.wiki.page that presets the change tags
+     * Light but immensely hacky wrapper around Morebits.wiki.page that presets the change tags
+     * and promisifies the core methods.
      */
-    wikiPage: /** @class */ (function (_super) {
-        __extends(class_1, _super);
-        function class_1(pageName, status) {
-            var _this = _super.call(this, pageName, status) || this;
+    page: /** @class */ (function (_super) {
+        __extends(Page, _super);
+        // This is ugly, because Morebits.wiki.page uses an implementation pattern
+        // that doesn't define any methods on Morebits.wiki.page.prototype.
+        function Page(title, status) {
+            var _this = _super.call(this, title, status) || this;
             _this.setChangeTags(Twinkle.changeTags);
+            var functionsToPromisify = ['load', 'lookupCreation', 'save', 'append', 'prepend',
+                'newSection', 'deletePage', 'undeletePage', 'protect', 'stabilize'];
+            functionsToPromisify.forEach(function (func) {
+                var origFunc = _this[func].bind(_this);
+                _this[func] = function (onSuccess, onFailure) {
+                    var _this = this;
+                    var def = $.Deferred();
+                    origFunc(function () {
+                        if (onSuccess) {
+                            onSuccess.call(_this, // pass context as this, mostly needed everywhere
+                            _this // pass first arg as this, only needed for fnAutoSave
+                            // which takes pageobj as argument
+                            );
+                        }
+                        def.resolve(_this);
+                    }, function () {
+                        if (onFailure) {
+                            onFailure.call(_this, _this); // same as above
+                        }
+                        def.reject(_this);
+                    });
+                    return def;
+                };
+            });
             return _this;
         }
-        return class_1;
+        return Page;
     }(Morebits.wiki.page)),
     /**
      * Twinkle-specific data shared by multiple modules
@@ -517,12 +544,12 @@ $.ajax({
     $(Twinkle.load);
 });
 var TwinkleModule = /** @class */ (function () {
-    function class_2() {
+    function class_1() {
     }
-    class_2.prototype.addMenu = function () {
+    class_1.prototype.addMenu = function () {
         Twinkle.addPortletLink(this.makeWindow, this.portletName, this.portletId, this.portletTooltip);
     };
-    return class_2;
+    return class_1;
 }());
 // allow global access
 window.Twinkle = Twinkle;
