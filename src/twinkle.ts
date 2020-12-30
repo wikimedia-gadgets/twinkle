@@ -44,7 +44,7 @@ var Twinkle = {
 	 *
 	 * Formerly Twinkle.defaultConfig.twinkle and Twinkle.defaultConfig.friendly
 	 */
-	defaultConfig:  {
+	defaultConfig: {
 		// General
 		userTalkPageMode: 'tab',
 		dialogLargeFont: false,
@@ -179,7 +179,7 @@ var Twinkle = {
 
 	prefs: undefined,
 
-	getPref(name: string) {
+	getPref<T extends keyof typeof Twinkle.defaultConfig>(name: T): typeof Twinkle.defaultConfig[T] {
 		if (typeof Twinkle.prefs === 'object' && Twinkle.prefs[name] !== undefined) {
 			return Twinkle.prefs[name];
 		}
@@ -415,11 +415,11 @@ var Twinkle = {
 	// Use destructuring on the Twinkle.shims object for convenient usage;
 	// eg. const {arr_includes, str_startsWith} = Twinkle.shims;
 	shims: {
-		obj_values(obj) {
+		obj_values<V>(obj: Record<any, V>): Array<V> {
 			// @ts-ignore
 			return Object.values ? Object.values(obj) : Object.keys(obj).map(k => obj[k]);
 		},
-		obj_entries(obj) {
+		obj_entries<V>(obj: Record<string, V>): Array<[string, V]> {
 			// @ts-ignore
 			return Object.entries ? Object.entries(obj) : Object.keys(obj).map(k => [k, obj[k]]);
 		},
@@ -430,16 +430,17 @@ var Twinkle = {
 			// @ts-ignore
 			return Array.prototype.find ? arr.find(predicate) : arr.filter(predicate)[0];
 		},
-		str_includes(str, item): boolean {
+		str_includes(str: string, item: string): boolean {
 			return str.indexOf(item) !== -1;
 		},
-		str_startsWith(str, text): boolean {
+		str_startsWith(str: string, text: string): boolean {
 			// @ts-ignore
 			return String.prototype.startsWith ? str.startsWith(text) : str.indexOf(text) === 0;
 		},
-		str_endsWith(str, text): boolean {
+		str_endsWith(str: string, text: string): boolean {
 			// @ts-ignore
 			if (String.prototype.endsWith) {
+				// @ts-ignore
 				return str.endsWith(text);
 			} else {
 				let lastIdx = str.lastIndexOf(text);
@@ -597,8 +598,8 @@ var TwinkleModule = class {
 
 // Declare pre-existing globals. `Window` is the type of `window`.
 interface Window {
-	TwinkleConfig?: Record<string, any>
-	FriendlyConfig?: Record<string, any>
+	TwinkleConfig?: Record<keyof typeof Twinkle.defaultConfig, any>
+	FriendlyConfig?: Record<keyof typeof Twinkle.defaultConfig, any>
 }
 
 // allow global access

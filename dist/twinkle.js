@@ -404,6 +404,7 @@ var Twinkle = {
         str_endsWith: function (str, text) {
             // @ts-ignore
             if (String.prototype.endsWith) {
+                // @ts-ignore
                 return str.endsWith(text);
             }
             else {
