@@ -3737,13 +3737,13 @@ Morebits.wiki.page = function(pageName, status) {
 		var response = ctx.lookupCreationApi.getResponse().query;
 		var revs = response.pages[0].revisions;
 
-		revs.forEach(function(rev) {
-			if (!/^\s*#redirect/i.test(rev.textContent)) { // inaccessible revisions also check out
-				ctx.creator = rev.user;
-				ctx.timestamp = rev.timestamp;
-				return false; // break
+		for (var i = 0; i < revs.length; i++) {
+			if (!/^\s*#redirect/i.test(revs[i].content)) { // inaccessible revisions also check out
+				ctx.creator = revs[i].user;
+				ctx.timestamp = revs[i].timestamp;
+				break;
 			}
-		});
+		}
 
 		if (!ctx.creator) {
 			// fallback to give first revision author if no non-redirect version in the first 50
