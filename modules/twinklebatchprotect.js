@@ -181,6 +181,10 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		var response = apiobj.getResponse();
 		var pages = (response.query && response.query.pages) || [];
 		var list = [];
+		// json formatversion=2 doesn't sort pages by namespace
+		pages.sort(function(one, two) {
+			return one.ns - two.ns || (one.title > two.title ? 1 : -1);
+		});
 		pages.forEach(function(page) {
 			var metadata = [];
 			var missing = !!page.missing, editProt;

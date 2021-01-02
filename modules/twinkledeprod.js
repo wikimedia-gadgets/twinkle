@@ -61,6 +61,10 @@ Twinkle.deprod.callback = function() {
 		});
 		var list = [];
 		var re = /\{\{Proposed deletion/;
+		// json formatversion=2 doesn't sort pages by namespace
+		pages.sort(function(one, two) {
+			return one.ns - two.ns || (one.title > two.title ? 1 : -1);
+		});
 		pages.forEach(function(page) {
 			var metadata = [];
 
