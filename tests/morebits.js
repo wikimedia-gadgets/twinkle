@@ -15,7 +15,9 @@ QUnit.test('userIsInGroup', assert => {
 
 QUnit.test('sanitizeIPv6', assert => {
 	assert.strictEqual(Morebits.sanitizeIPv6('2001:0db8:0001:0000:0000:0ab9:C0A8:0102'), '2001:DB8:1:0:0:AB9:C0A8:102', 'Shorten IPv6');
-	assert.strictEqual(Morebits.sanitizeIPv6('127:0:0:1'), '127:0:0:1', 'Home sweet home');
+	assert.strictEqual(Morebits.sanitizeIPv6('2001:0db8:0001::1'), '2001:DB8:1:0:0:0:0:1', 'Condensed form');
+	assert.strictEqual(Morebits.sanitizeIPv6('2001:0db8:0001:0000:0000:0ab9:C0A8:0102/42'), '2001:DB8:1:0:0:AB9:C0A8:102/42', 'Subnet');
+	assert.strictEqual(Morebits.sanitizeIPv6('127.0.0.1'), '127.0.0.1', 'Home sweet home');
 });
 
 QUnit.test('pageNameRegex', assert => {
