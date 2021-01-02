@@ -400,10 +400,6 @@ Twinkle.fluff.revertToRevision = function revertToRevision(oldrev) {
 	wikipedia_api.post();
 };
 
-Twinkle.fluff.userIpLink = function(user) {
-	return (mw.util.isIPAddress(user) ? '[[Special:Contributions/' : '[[:User:') + user + '|' + user + ']]';
-};
-
 Twinkle.fluff.callbacks = {
 	toRevision: function(apiobj) {
 		var response = apiobj.getResponse();
