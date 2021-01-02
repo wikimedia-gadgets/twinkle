@@ -148,8 +148,8 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 
 	var query = {
 		action: 'query',
-		prop: 'revisions|info',
-		rvprop: 'size',
+		prop: 'revisions|info|imageinfo',
+		rvprop: 'size|user',
 		inprop: 'protection',
 		format: 'json'
 	};
@@ -194,8 +194,14 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				if (page.redirect) {
 					metadata.push('redirect');
 				}
-				var size = page.revisions[0].size;
-				metadata.push(mw.language.convertNumber(size) + ' bytes');
+
+				if (page.ns === 6) {
+					metadata.push('uploader: ' + page.imageinfo[0].user);
+					metadata.push('last edit from: ' + page.revisions[0].user);
+				} else {
+					metadata.push(mw.language.convertNumber(page.revisions[0].size) + ' bytes');
+				}
+
 				editProt = page.protection.filter(function(pr) {
 					return pr.type === 'edit' && pr.level === 'sysop';
 				}).pop();
