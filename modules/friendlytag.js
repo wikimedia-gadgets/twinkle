@@ -1320,15 +1320,14 @@ Twinkle.tag.callbacks = {
 					pntPage.load(function friendlytagCallbacksTranslationListPage(pageobj) {
 						var old_text = pageobj.getPageText();
 
-						var template = params.tags.indexOf('Rough translation') !== -1 ? 'duflu' : 'needtrans';
 						var lang = params.translationLanguage;
 						var reason = params.translationComments;
 
-						var templateText = '{{subst:' + template + '|pg=' + Morebits.pageNameNorm + '|Language=' +
+						var templateText = '{{subst:needtrans|pg=' + Morebits.pageNameNorm + '|Language=' +
 							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
 
 						var text, summary;
-						if (template === 'duflu') {
+						if (params.tags.indexOf('Rough translation') !== -1) {
 							text = old_text + '\n\n' + templateText;
 							summary = 'Translation cleanup requested on ';
 						} else {
