@@ -4851,7 +4851,7 @@ Morebits.status.prototype = {
 	 *
 	 * @param {string} status - Part of status message after colon.
 	 * @param {string} type - 'status' (blue), 'info' (green), 'warn'
-	 * (red), or 'error' (bold red). FIXME TODO possible options
+	 * (red), or 'error' (bold red).
 	 */
 	update: function(status, type) {
 		this.statRaw = status;
