@@ -4535,11 +4535,24 @@ Morebits.wikitext.page.prototype = {
 	 * @returns {Morebits.wikitext.page}
 	 */
 	removeLink: function(link_target) {
-		var link_re_string = Morebits.pageNameRegex(link_target);
+		// Rempve a leading colon, to be handled later
+		if (link_target.indexOf(':') === 0) {
+			link_target = link_target.slice(1);
+		}
+		var link_re_string = '', ns = '', title = link_target;
 
+		var idx = link_target.indexOf(':');
+		if (idx > 0) {
+			ns = link_target.slice(0, idx);
+			title = link_target.slice(idx + 1);
+
+			link_re_string = Morebits.namespaceRegex(mw.config.get('wgNamespaceIds')[ns.toLowerCase().replace(/ /g, '_')]) + ':';
+		}
+		link_re_string += Morebits.pageNameRegex(title);
+
+		// Allow for an optional leading colon, e.g. [[:User:Test]]
 		// Files and Categories become links with a leading colon, e.g. [[:File:Test.png]]
-		// Otherwise, allow for an optional leading colon, e.g. [[:User:Test]]
-		var colon = new RegExp('^' + Morebits.namespaceRegex([6, 14]) + ':').test(link_target) ? ':' : ':?';
+		var colon = new RegExp(Morebits.namespaceRegex([6, 14])).test(ns) ? ':' : ':?';
 
 		var link_simple_re = new RegExp('\\[\\[' + colon + '(' + link_re_string + ')\\]\\]', 'g');
 		var link_named_re = new RegExp('\\[\\[' + colon + link_re_string + '\\|(.+?)\\]\\]', 'g');

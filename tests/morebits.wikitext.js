@@ -309,6 +309,13 @@ QUnit.test('Morebits.wikitext.page', assert => {
 		},
 		{
 			name: 'AltCaps',
+			method: 'removeLink',
+			input: 'O, [[WP:Juliet]] she [[wp:juliet|doth]] {{plural|teach}} [[Romeo|the]] [[wikipedia:Juliet|torches]] [[Wikipedia:juliet]] to burn bright!',
+			expected: 'O, WP:Juliet she doth {{plural|teach}} [[Romeo|the]] torches Wikipedia:juliet to burn bright!',
+			params: ['wikipedia:juliet']
+		},
+		{
+			name: 'AltCaps',
 			method: 'commentOutImage',
 			input: 'O, [[File:Fee.svg]] she [[file:Fee.svg|doth|teach]] the [[File:fee.svg|torches]] to burn [[file:fee.svg]] bright!',
 			expected: 'O, <!-- [[File:Fee.svg]] --> she <!-- [[file:Fee.svg|doth|teach]] --> the <!-- [[File:fee.svg|torches]] --> to burn <!-- [[file:fee.svg]] --> bright!',
