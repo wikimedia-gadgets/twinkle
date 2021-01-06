@@ -4962,14 +4962,39 @@ Morebits.status.prototype = {
 		this.update(status, 'error');
 	}
 };
+/**
+ * @memberof Morebits.status
+ * @param {string} text - Before colon
+ * @param {string} stats - After colon
+ * @returns {Morebits.status} - `status`-type (blue)
+ */
+Morebits.status.status = function(text, status) {
+	return new Morebits.status(text, status);
+};
+/**
+ * @memberof Morebits.status
+ * @param {string} text - Before colon
+ * @param {string} stats - After colon
+ * @returns {Morebits.status} - `info`-type (green)
+ */
 Morebits.status.info = function(text, status) {
 	return new Morebits.status(text, status, 'info');
 };
-
+/**
+ * @memberof Morebits.status
+ * @param {string} text - Before colon
+ * @param {string} stats - After colon
+ * @returns {Morebits.status} - `warn`-type (red)
+ */
 Morebits.status.warn = function(text, status) {
 	return new Morebits.status(text, status, 'warn');
 };
-
+/**
+ * @memberof Morebits.status
+ * @param {string} text - Before colon
+ * @param {string} stats - After colon
+ * @returns {Morebits.status} - `error`-type (bold red)
+ */
 Morebits.status.error = function(text, status) {
 	return new Morebits.status(text, status, 'error');
 };
