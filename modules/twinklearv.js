@@ -639,7 +639,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 				uaaPage.getStatusElement().status('Adding new report...');
 				uaaPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].');
 				uaaPage.setChangeTags(Twinkle.changeTags);
-				uaaPage.setPageText(text + '\n' + reason);
+
+				// Blank newline per [[Special:Permalink/996949310#Spacing]]; see also [[WP:LISTGAP]] and [[WP:INDENTGAP]]
+				uaaPage.setPageText(text + '\n' + reason + '\n*');
 				uaaPage.save();
 			});
 			break;
