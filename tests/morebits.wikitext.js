@@ -47,20 +47,20 @@ QUnit.test('parseTemplate', assert => {
 	var multiLevel = {
 		name: 'toplevel',
 		parameters: {
-			named: 'namedtop',
+			named: '{{namedtop}}',
 			other: '{{{namedintro|{{{3|asd}}}|really=yes|a}}}',
 			1: 'onetop',
-			final: '{{{last|iswear}}}'
+			final: '{{last|iswear}}'
 		}
 	};
 	assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(multiLevel)), multiLevel, 'Multiple levels');
 	var parser = {
 		name: 'toplevel',
 		parameters: {
-			named: 'namedtop',
+			named: '{{namedtop}}',
 			other: '{{#if:{{{namedintro|{{{3|asd}}}|really=yes|a}}}|true|false}}',
 			1: 'onetop',
-			final: '{{{last|iswear}}}'
+			final: '{{last|iswear}}'
 		}
 	};
 	assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(parser)), parser, 'Parser function');
@@ -71,7 +71,7 @@ QUnit.test('parseTemplate', assert => {
 			named: 'parameter {{tq|with an internal}} template',
 			other: '{{#if:{{{namedintro|{{{3|asd}}}|really=yes|a}}}|true|false}}',
 			1: 'onetop',
-			final: '{{{last|iswear}}}'
+			final: '{{last|iswear}}'
 		}
 	};
 	assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(internal)), internal, 'Internal templates');
