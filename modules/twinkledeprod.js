@@ -45,10 +45,10 @@ Twinkle.deprod.callback = function() {
 		generator: 'categorymembers',
 		gcmtitle: mw.config.get('wgPageName'),
 		gcmlimit: Twinkle.getPref('batchMax'),
-		gcmnamespace: '0|6|108|2', // mostly to ignore categories
-		prop: [ 'info', 'revisions' ],
-		rvprop: [ 'content' ],
-		inprop: [ 'protection' ],
+		gcmnamespace: '0|108|2', // mostly to ignore categories and files
+		prop: 'info|revisions',
+		rvprop: 'content',
+		inprop: 'protection',
 		format: 'json'
 	};
 
@@ -56,9 +56,6 @@ Twinkle.deprod.callback = function() {
 	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
 		var response = apiobj.getResponse();
 		var pages = (response.query && response.query.pages) || [];
-		pages = pages.filter(function(p) {
-			return p.ns !== 6; // all non-files
-		});
 		var list = [];
 		var re = /\{\{Proposed deletion/;
 		// json formatversion=2 doesn't sort pages by namespace
