@@ -240,7 +240,7 @@ Twinkle.welcome.templates = {
 			},
 			'welcome-short': {
 				description: 'a shorter welcome message',
-				syntax: '{{subst:w-short|heading=yes|$EXTRA$}}'
+				syntax: '{{subst:w-short|heading=true|$EXTRA$}}'
 			},
 			'welcome-cookie': {
 				description: 'a welcome message with some helpful links and a plate of cookies',
