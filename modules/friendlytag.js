@@ -980,7 +980,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R mentioned in hatnote', description: 'redirect from a title that is mentioned in a hatnote at the redirect target' },
 			{ tag: 'R to section', description: 'similar to {{R to list entry}}, but when list is organized in sections, such as list of characters in a fictional universe' },
 			{ tag: 'R from shortcut', description: 'redirect from a Wikipedia shortcut' },
-			{ tag: 'R from template shortcut', description: 'redirect from a shortcut page name in any namespace to a page in template namespace' }
+			{ tag: 'R from template shortcut', description: 'redirect from a shortcut page outside the template namespace to a page in that namespace' }
 
 		],
 		'Disambiguation': [
@@ -1000,10 +1000,10 @@ Twinkle.tag.redirectList = {
 		'Namespace': [
 			{ tag: 'R from remote talk page', description: 'redirect from a talk page in any talk namespace to a corresponding page that is more heavily watched' },
 			{ tag: 'R to category namespace', description: 'redirect from a page outside the category namespace to a category page' },
-			{ tag: 'R to help namespace', description: 'redirect from any page inside or outside of help namespace to a page in that namespace' },
+			{ tag: 'R to help namespace', description: 'redirect from a page outside the help namespace to a page in that namespace' },
 			{ tag: 'R to main namespace', description: 'redirect from a page outside the main-article namespace to an article in mainspace' },
-			{ tag: 'R to portal namespace', description: 'redirect from any page inside or outside of portal space to a page in that namespace' },
-			{ tag: 'R to project namespace', description: 'redirect from any page inside or outside of project (Wikipedia: or WP:) space to any page in the project namespace' },
+			{ tag: 'R to portal namespace', description: 'redirect from a page outside the portal space to a page in that namespace' },
+			{ tag: 'R to project namespace', description: 'redirect from a page outside the project (Wikipedia: or WP:) space to any page in the project namespace' },
 			{ tag: 'R to user namespace', description: 'redirect from a page outside the user namespace to a user page (not to a user talk page)' }
 		]
 	},
