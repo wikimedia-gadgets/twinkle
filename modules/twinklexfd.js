@@ -309,8 +309,9 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 			work_area.append({
 				type: 'div',
-				label: Twinkle.makeFindSourcesDiv(),
-				style: 'margin-bottom: 5px;'
+				label: '', // Added later by Twinkle.makeFindSourcesDiv()
+				id: 'twinkle-xfd-findsources',
+				style: 'margin-bottom: 5px; margin-top: -5px;'
 			});
 
 			work_area.append({
@@ -395,6 +396,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			appendReasonBox();
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
+
+			Twinkle.makeFindSourcesDiv('#twinkle-xfd-findsources');
 
 			$(work_area).find('[name=delsortCats]')
 				.attr('data-placeholder', 'Select delsort pages')
