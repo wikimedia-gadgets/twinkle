@@ -455,7 +455,7 @@ Twinkle.fluff.callbacks = {
 				query.watchlist = 'watch';
 				// number allowed but not used in Twinkle.config.watchlistEnums
 				if (!page.watched && typeof watchOrExpiry === 'string' && watchOrExpiry !== 'yes') {
-					query.expiry = watchOrExpiry;
+					query.watchlistexpiry = watchOrExpiry;
 				}
 			}
 		}
@@ -688,7 +688,7 @@ Twinkle.fluff.callbacks = {
 				query.watchlist = 'watch';
 				// number allowed but not used in Twinkle.config.watchlistEnums
 				if (!page.watched && typeof watchOrExpiry === 'string' && watchOrExpiry !== 'yes') {
-					query.expiry = watchOrExpiry;
+					query.watchlistexpiry = watchOrExpiry;
 				}
 			}
 		}
