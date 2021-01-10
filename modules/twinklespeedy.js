@@ -1191,7 +1191,7 @@ Twinkle.speedy.callbacks = {
 		}
 
 		if (initialContrib) {
-			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')'),
+			var user = new Morebits.wiki.user(initialContrib, 'Notifying initial contributor (' + initialContrib + ')'),
 				notifytext, i, editsummary;
 
 			// special cases: "db" and "db-multiple"
@@ -1227,13 +1227,12 @@ Twinkle.speedy.callbacks = {
 				editsummary += ' of an attack page.';
 			}
 
-			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary(editsummary);
-			usertalkpage.setChangeTags(Twinkle.changeTags);
-			usertalkpage.setCreateOption('recreate');
-			usertalkpage.setWatchlist(Twinkle.getPref('watchSpeedyUser'));
-			usertalkpage.setFollowRedirect(true, false);
-			usertalkpage.append(function onNotifySuccess() {
+			user.setMessage(notifytext);
+			user.setReason(editsummary);
+			user.setChangeTags(Twinkle.changeTags);
+			// Custom watchlist behavior
+			user.setPageobjectFunctions({setWatchlist: Twinkle.getPref('watchSpeedyUser')});
+			user.notify(function onNotifySuccess() {
 				// add this nomination to the user's userspace log, if the user has enabled it
 				if (params.lognomination) {
 					Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);

@@ -394,13 +394,17 @@ Twinkle.prod.callbacks = {
 		}
 		var notifytext = '\n{{subst:' + notifyTemplate + '|1=' + Morebits.pageNameNorm + '|concern=' + params.reason + '}} ~~~~';
 
-		var usertalkpage = new Morebits.wiki.page('User talk:' + params.initialContrib, 'Notifying initial contributor (' + params.initialContrib + ')');
-		usertalkpage.setAppendText(notifytext);
-		usertalkpage.setEditSummary('Notification: proposed deletion of [[:' + Morebits.pageNameNorm + ']].');
-		usertalkpage.setChangeTags(Twinkle.changeTags);
-		usertalkpage.setCreateOption('recreate');
-		usertalkpage.setFollowRedirect(true, false);
-		usertalkpage.append(function onNotifySuccess() {
+		var user = new Morebits.wiki.user(params.initialContrib, 'Notifying initial contributor (' + params.initialContrib + ')');
+		user.setMessage(notifytext);
+		user.setReason('Notification: proposed deletion of [[:' + Morebits.pageNameNorm + ']].');
+		user.setChangeTags(Twinkle.changeTags);
+		// Notify everyone for BLPPROD
+		if (params.blp) {
+			user.setNotifyBots(true);
+			user.setNotifyIndef(true);
+		}
+
+		user.notify(function onNotifySuccess() {
 			// add nomination to the userspace log, if the user has enabled it
 			params.logInitialContrib = params.initialContrib;
 			def.resolve();

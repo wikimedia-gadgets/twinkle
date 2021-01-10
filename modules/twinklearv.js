@@ -826,12 +826,12 @@ Twinkle.arv.processSock = function(params) {
 		var notifyText = '\n\n{{subst:socksuspectnotice|1=' + params.uid + '}} ~~~~';
 
 		// notify user's master account
-		var masterTalkPage = new Morebits.wiki.page('User talk:' + params.uid, 'Notifying suspected sockpuppeteer');
-		masterTalkPage.setFollowRedirect(true);
-		masterTalkPage.setEditSummary(notifyEditSummary);
-		masterTalkPage.setChangeTags(Twinkle.changeTags);
-		masterTalkPage.setAppendText(notifyText);
-		masterTalkPage.append();
+		var userPuppeteer = new Morebits.wiki.user(params.uid, 'Notifying suspected sockpuppeteer');
+		userPuppeteer.setReason(notifyEditSummary);
+		userPuppeteer.setChangeTags(Twinkle.changeTags);
+		userPuppeteer.setMessage(notifyText);
+		userPuppeteer.setNotifyBots(true); // Just in case
+		userPuppeteer.notify();
 
 		var statusIndicator = new Morebits.status('Notifying suspected sockpuppets', '0%');
 		var total = params.sockpuppets.length;
@@ -851,12 +851,12 @@ Twinkle.arv.processSock = function(params) {
 
 		// notify each puppet account
 		for (var i = 0; i < socks.length; ++i) {
-			var sockTalkPage = new Morebits.wiki.page('User talk:' + socks[i], 'Notification for ' + socks[i]);
-			sockTalkPage.setFollowRedirect(true);
-			sockTalkPage.setEditSummary(notifyEditSummary);
-			sockTalkPage.setChangeTags(Twinkle.changeTags);
-			sockTalkPage.setAppendText(notifyText);
-			sockTalkPage.append(onSuccess);
+			var sockUser = new Morebits.wiki.user(socks[i], 'Notification for ' + socks[i]);
+			sockUser.setReason(notifyEditSummary);
+			sockUser.setChangeTags(Twinkle.changeTags);
+			sockUser.setMessage(notifyText);
+			sockUser.setNotifyBots(true); // Just in case
+			sockUser.notify(onSuccess);
 		}
 	}
 
@@ -1011,15 +1011,14 @@ Twinkle.arv.processAN3 = function(params) {
 		an3Page.append();
 
 		// notify user
-
 		var notifyText = '\n\n{{subst:an3-notice|1=' + mw.util.wikiUrlencode(params.uid) + '|auto=1}} ~~~~';
 
-		var talkPage = new Morebits.wiki.page('User talk:' + params.uid, 'Notifying edit warrior');
-		talkPage.setFollowRedirect(true);
-		talkPage.setEditSummary('Notifying about edit warring noticeboard discussion.');
-		talkPage.setChangeTags(Twinkle.changeTags);
-		talkPage.setAppendText(notifyText);
-		talkPage.append();
+		var user = new Morebits.wiki.user(params.uid, 'Notifying edit warrior');
+		user.setReason('Notifying about edit warring noticeboard discussion.');
+		user.setChangeTags(Twinkle.changeTags);
+		user.setMessage(notifyText);
+		user.setNotifyBots(true);
+		user.notify();
 		Morebits.wiki.removeCheckpoint();  // all page updates have been started
 	}).fail(function(data) {
 		console.log('API failed :(', data); // eslint-disable-line no-console

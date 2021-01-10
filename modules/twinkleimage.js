@@ -292,19 +292,19 @@ Twinkle.image.callbacks = {
 		if (initialContrib === mw.config.get('wgUserName')) {
 			pageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
 		} else {
-			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
+			var user = new Morebits.wiki.user(initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
 			var notifytext = '\n{{subst:di-' + params.templatename + '-notice|1=' + mw.config.get('wgTitle');
 			if (params.type === 'no permission') {
 				notifytext += params.source ? '|source=' + params.source : '';
 			}
 			notifytext += '}} ~~~~';
-			usertalkpage.setAppendText(notifytext);
-			usertalkpage.setEditSummary('Notification: tagging for deletion of [[:' + Morebits.pageNameNorm + ']].');
-			usertalkpage.setChangeTags(Twinkle.changeTags);
-			usertalkpage.setCreateOption('recreate');
-			usertalkpage.setWatchlist(Twinkle.getPref('deliWatchUser'));
-			usertalkpage.setFollowRedirect(true, false);
-			usertalkpage.append();
+
+			user.setMessage(notifytext);
+			user.setReason('Notification: tagging for deletion of [[:' + Morebits.pageNameNorm + ']].');
+			user.setChangeTags(Twinkle.changeTags);
+			// Custom watchlist behavior
+			user.setPageobjectFunctions({setWatchlist: Twinkle.getPref('deliWatchUser')});
+			user.notify();
 		}
 
 		// add this nomination to the user's userspace log, if the user has enabled it

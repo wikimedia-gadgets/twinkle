@@ -1375,16 +1375,14 @@ Twinkle.tag.callbacks = {
 							return;
 						}
 
-						var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib,
+						var user = new Morebits.wiki.user(initialContrib,
 							'Notifying initial contributor (' + initialContrib + ')');
-						userTalkPage.setNewSectionTitle('Your article [[' + Morebits.pageNameNorm + ']]');
-						userTalkPage.setNewSectionText('{{subst:uw-notenglish|1=' + Morebits.pageNameNorm +
+						user.setSectionTitle('Your article [[' + Morebits.pageNameNorm + ']]');
+						user.setMessage('{{subst:uw-notenglish|1=' + Morebits.pageNameNorm +
 							(params.translationPostAtPNT ? '' : '|nopnt=yes') + '}} ~~~~');
-						userTalkPage.setEditSummary('Notice: Please use English when contributing to the English Wikipedia.');
-						userTalkPage.setChangeTags(Twinkle.changeTags);
-						userTalkPage.setCreateOption('recreate');
-						userTalkPage.setFollowRedirect(true, false);
-						userTalkPage.newSection();
+						user.setReason('Notice: Please use English when contributing to the English Wikipedia.');
+						user.setChangeTags(Twinkle.changeTags);
+						user.notify();
 					});
 				}
 			});
