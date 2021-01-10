@@ -3548,16 +3548,16 @@ Morebits.wiki.page = function(pageName, status) {
 			onFailure = emptyFunction;
 		}
 
-		var page = response.pages[0];
-		// check for invalid titles
-		if (page.invalid) {
-			ctx.statusElement.error('The page title is invalid: ' + ctx.pageName);
-			onFailure(this);
-			return false; // abort
-		}
+		var page = response.pages && response.pages[0];
+		if (page) {
+			// check for invalid titles
+			if (page.invalid) {
+				ctx.statusElement.error('The page title is invalid: ' + ctx.pageName);
+				onFailure(this);
+				return false; // abort
+			}
 
-		// retrieve actual title of the page after normalization and redirects
-		if (page.title) {
+			// retrieve actual title of the page after normalization and redirects
 			var resolvedName = page.title;
 
 			if (response.redirects) {
