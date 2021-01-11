@@ -99,31 +99,16 @@ Twinkle.arv.callback = function (uid, isIP) {
 	Window.display();
 
 	// Check if the user is blocked, update notice
-	var query = {
-		action: 'query',
-		list: 'blocks',
-		bkprop: 'range|flags',
-		format: 'json'
-	};
-	if (isIP) {
-		query.bkip = uid;
-	} else {
-		query.bkusers = uid;
-	}
-	new Morebits.wiki.api("Checking the user's block status", query, function(apiobj) {
-		var blocklist = apiobj.getResponse().query.blocks;
-		if (blocklist.length) {
-			// If an IP is blocked *and* rangeblocked, only use whichever is more recent
-			var block = blocklist[0];
-			var message = (isIP ? 'This IP ' + (Morebits.ip.isRange(uid) ? 'range' : 'address') : 'This account') + ' is ' + (block.partial ? 'partially' : 'already') + ' blocked';
-			// Start and end differ, range blocked
-			message += block.rangestart !== block.rangeend ? ' as part of a rangeblock.' : '.';
-			if (block.partial) {
+	new Morebits.wiki.user(uid, "Checking the user's block status").load(function(userobj) {
+		if (userobj.isBlocked()) {
+			var message = (isIP ? 'This IP ' + (userobj.isIPRange() ? 'range' : 'address') : 'This account') + ' is ' + (userobj.getPartial() ? 'partially' : 'already') + ' blocked';
+			message += userobj.isRangeBlocked() ? ' as part of a rangeblock.' : '.';
+			if (userobj.getPartial()) {
 				$('#twinkle-arv-blockwarning').css('color', 'black'); // Less severe
 			}
 			$('#twinkle-arv-blockwarning').text(message);
 		}
-	}).post();
+	});
 
 
 	// We must init the
