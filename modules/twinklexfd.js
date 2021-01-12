@@ -1265,14 +1265,16 @@ Twinkle.xfd.callbacks = {
 				// The watchdefault pref appears to reliably return '1' (string),
 				// but that's not consistent among prefs so might as well be "correct"
 				watchModule = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
-				watch_query = {
-					action: 'watch',
-					titles: [ mw.config.get('wgPageName') ],
-					token: mw.user.tokens.get('watchToken')
-				};
-				// Expiry
-				if (!pageobj.getWatched() && watchModule && watchPref !== 'default' && watchPref !== 'yes') {
-					watch_query.expiry = watchPref;
+				if (watchModule) {
+					watch_query = {
+						action: 'watch',
+						titles: [ mw.config.get('wgPageName') ],
+						token: mw.user.tokens.get('watchToken')
+					};
+					// Only add the expiry if page is unwatched or already temporarily watched
+					if (pageobj.getWatched() !== true && watchPref !== 'default' && watchPref !== 'yes') {
+						watch_query.expiry = watchPref;
+					}
 				}
 			}
 

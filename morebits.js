@@ -2541,7 +2541,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry && !ctx.watched) {
+		if (ctx.watchlistExpiry && ctx.watched !== true) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 
@@ -3038,7 +3038,11 @@ Morebits.wiki.page = function(pageName, status) {
 		return ctx.contentModel;
 	};
 
-	/** @returns {boolean} - Watched status of the page. */
+	/**
+	 * @returns {boolean|string} - Watched status of the page. Boolean
+	 * unless it's being watched temporarily, in which case returns the
+	 * expiry string.
+	 */
 	this.getWatched = function () {
 		return ctx.watched;
 	};
@@ -3383,8 +3387,8 @@ Morebits.wiki.page = function(pageName, status) {
 	var fnCanUseMwUserToken = function(action) {
 		action = typeof action !== 'undefined' ? action : 'edit'; // IE doesn't support default parameters
 
-		// If a watchlist expiry is set, always load protection status to avoid
-		// overwriting indefinite protection; see [[phab:T270057]] and [[phab:T268834]]
+		// If a watchlist expiry is set, we must always load the page
+		// to avoid overwriting indefinite protection
 		if (ctx.watchlistExpiry) {
 			return false;
 		}
@@ -3490,7 +3494,7 @@ Morebits.wiki.page = function(pageName, status) {
 		}
 
 		ctx.contentModel = page.contentmodel;
-		ctx.watched = page.watched;
+		ctx.watched = page.watchlistexpiry || page.watched;
 
 		// extract protection info, to alert admins when they are about to edit a protected page
 		// Includes cascading protection
@@ -3855,8 +3859,9 @@ Morebits.wiki.page = function(pageName, status) {
 			}
 
 			token = response.tokens.csrftoken;
-			pageTitle = response.pages[0].title;
-			ctx.watched = response.pages[0].watched;
+			var page = response.pages[0];
+			pageTitle = page.title;
+			ctx.watched = page.watchlistexpiry || page.watched;
 		}
 
 		var query = {
@@ -3872,7 +3877,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry && !ctx.watched) {
+		if (ctx.watchlistExpiry && ctx.watched !== true) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 		if (ctx.moveTalkPage) {
@@ -4001,8 +4006,9 @@ Morebits.wiki.page = function(pageName, status) {
 			}
 
 			token = response.tokens.csrftoken;
-			pageTitle = response.pages[0].title;
-			ctx.watched = response.pages[0].watched;
+			var page = response.pages[0];
+			pageTitle = page.title;
+			ctx.watched = page.watchlistexpiry || page.watched;
 		}
 
 		var query = {
@@ -4017,7 +4023,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry && !ctx.watched) {
+		if (ctx.watchlistExpiry && ctx.watched !== true) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 
@@ -4065,8 +4071,9 @@ Morebits.wiki.page = function(pageName, status) {
 			}
 
 			token = response.tokens.csrftoken;
-			pageTitle = response.pages[0].title;
-			ctx.watched = response.pages[0].watched;
+			var page = response.pages[0];
+			pageTitle = page.title;
+			ctx.watched = page.watchlistexpiry || page.watched;
 		}
 
 		var query = {
@@ -4081,7 +4088,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry && !ctx.watched) {
+		if (ctx.watchlistExpiry && ctx.watched !== true) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 
@@ -4129,8 +4136,9 @@ Morebits.wiki.page = function(pageName, status) {
 		}
 
 		var token = response.tokens.csrftoken;
-		var pageTitle = response.pages[0].title;
-		ctx.watched = response.pages[0].watched;
+		var page = response.pages[0];
+		var pageTitle = page.title;
+		ctx.watched = page.watchlistexpiry || page.watched;
 
 		// Fetch existing protection levels
 		var prs = response.pages[0].protection;
@@ -4215,7 +4223,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry && !ctx.watched) {
+		if (ctx.watchlistExpiry && ctx.watched !== true) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 		if (ctx.protectCascade) {
@@ -4242,8 +4250,10 @@ Morebits.wiki.page = function(pageName, status) {
 			}
 
 			token = response.tokens.csrftoken;
-			pageTitle = response.pages[0].title;
-			// ctx.watched = response.pages[0].watched; // Doesn't support watchlist expiry [[phab:T263336]]
+			var page = response.pages[0];
+			pageTitle = page.title;
+			// Doesn't support watchlist expiry [[phab:T263336]]
+			// ctx.watched = page.watchlistexpiry || page.watched;
 		}
 
 		var query = {
@@ -4259,7 +4269,7 @@ Morebits.wiki.page = function(pageName, status) {
 		};
 
 		/* Doesn't support watchlist expiry [[phab:T263336]]
-		if (ctx.watchlistExpiry && !ctx.watched) {
+		if (ctx.watchlistExpiry && ctx.watched !== true) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 		*/
