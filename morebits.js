@@ -4355,6 +4355,7 @@ Morebits.wiki.preview = function(previewbox) {
 	 * @param {string} wikitext - Wikitext to render; most things should work, including `subst:` and `~~~~`.
 	 * @param {string} [pageTitle] - Optional parameter for the page this should be rendered as being on, if omitted it is taken as the current page.
 	 * @param {string} [sectionTitle] - If provided, render the text as a new section using this as the title.
+	 * @returns {jQuery.promise}
 	 */
 	this.beginRender = function(wikitext, pageTitle, sectionTitle) {
 		$(previewbox).show();
@@ -4377,7 +4378,7 @@ Morebits.wiki.preview = function(previewbox) {
 			query.sectiontitle = sectionTitle;
 		}
 		var renderApi = new Morebits.wiki.api('loading...', query, fnRenderSuccess, new Morebits.status('Preview'));
-		renderApi.post();
+		return renderApi.post();
 	};
 
 	var fnRenderSuccess = function(apiobj) {
