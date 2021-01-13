@@ -1,4 +1,4 @@
-# Twinkle ![Linter](https://github.com/azatoth/twinkle/workflows/Linter/badge.svg)
+# Twinkle ![Linter](https://github.com/wikimedia-gadgets/twinkle/workflows/Linter/badge.svg)
 
 Twinkle is a JavaScript application that gives Wikipedians a quick way of performing common maintenance tasks, such as nominating pages for deletion and cleaning up vandalism.
 
@@ -15,12 +15,12 @@ If you'd like to start contributing, awesome!  Check out [CONTRIBUTING.md](CONTR
 
 ## Layout of this repository
 
-* `morebits.js`: The central library used by Twinkle and many other scripts. Contains code to interact with the MediaWiki API, display forms and dialogs, generate status logs, and do various other useful things. The vast majority of code in here is not Twinkle-specific.
+* `morebits.js`: The central library used by Twinkle and many other scripts. Contains code to interact with the MediaWiki API, display forms and dialogs, generate status logs, and do various other useful things. The vast majority of code in here is not Twinkle-specific; see docs ([1](https://wikimedia-gadgets.github.io/twinkle/Morebits.html) and [2](https://github.com/wikimedia-gadgets/twinkle/wiki/morebits))
 * `twinkle.js`: General Twinkle-specific code, mostly related to preferences and exposing Twinkle in the UI. Significantly, it contains the default set of preferences of Twinkle.
 * `modules`: Contains the individual Twinkle modules. Descriptions for these can be found in header comments or in the [Twinkle documentation][]. The module `twinkleconfig.js` powers the [Twinkle preferences panel][WP:TWPREFS].
 
 
-[select2][] is added under the [MIT license](https://github.com/select2/select2/blob/develop/LICENSE.md).
+[select2][] is added under the [MIT license][select2license].  The MediaWiki code used [for tests](./tests/mocking/mw_shim.js) is added under the [GPL2 license][mwlicense].
 
 [Wikipedia:Twinkle]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle
 [AzaToth]: https://en.wikipedia.org/wiki/User:AzaToth
@@ -28,3 +28,5 @@ If you'd like to start contributing, awesome!  Check out [CONTRIBUTING.md](CONTR
 [Twinkle documentation]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle/doc
 [WP:TWPREFS]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle/Preferences
 [select2]: https://github.com/select2/select2
+[select2license]: https://github.com/select2/select2/blob/develop/LICENSE.md
+[mwlicense]: https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/master/COPYING

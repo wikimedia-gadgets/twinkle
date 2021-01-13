@@ -181,7 +181,8 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		var current = {}, adminEditDeferred;
 
 		$.each(page.protection, function(index, protection) {
-			if (protection.type !== 'aft') {
+			// Don't overwrite actual page protection with cascading protection
+			if (!protection.source) {
 				current[protection.type] = {
 					level: protection.level,
 					expiry: protection.expiry,
@@ -191,6 +192,13 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 				if (!adminEditDeferred) {
 					adminEditDeferred = Twinkle.protect.fetchProtectingAdmin(api, mw.config.get('wgPageName'), 'protect');
 				}
+			} else {
+				// Account for the page being covered by cascading protection
+				current.cascading = {
+					expiry: protection.expiry,
+					source: protection.source,
+					level: protection.level // should always be sysop, unused
+				};
 			}
 		});
 
@@ -204,13 +212,15 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 
 		// show the protection level and log info
 		Twinkle.protect.hasProtectLog = !!protectData[0].query.logevents.length;
+		Twinkle.protect.protectLog = Twinkle.protect.hasProtectLog && protectData[0].query.logevents;
 		Twinkle.protect.hasStableLog = hasFlaggedRevs ? !!stableData[0].query.logevents.length : false;
+		Twinkle.protect.stableLog = Twinkle.protect.hasStableLog && stableData[0].query.logevents;
 		Twinkle.protect.currentProtectionLevels = current;
 
 		if (adminEditDeferred) {
 			adminEditDeferred.done(function(admin) {
 				if (admin) {
-					$.each(['edit', 'move', 'create', 'stabilize'], function(i, type) {
+					$.each(['edit', 'move', 'create', 'stabilize', 'cascading'], function(i, type) {
 						if (Twinkle.protect.currentProtectionLevels[type]) {
 							Twinkle.protect.currentProtectionLevels[type].admin = admin;
 						}
@@ -232,13 +242,28 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 
 		if (Twinkle.protect.hasProtectLog) {
 			$linkMarkup.append(
-				$('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">protection log</a>'),
-				Twinkle.protect.hasStableLog ? $('<span> &bull; </span>') : null
-			);
+				$('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">protection log</a>'));
+			if (!currentlyProtected || (!Twinkle.protect.currentProtectionLevels.edit && !Twinkle.protect.currentProtectionLevels.move)) {
+				var lastProtectAction = Twinkle.protect.protectLog[0];
+				if (lastProtectAction.action === 'unprotect') {
+					$linkMarkup.append(' (unprotected ' + new Morebits.date(lastProtectAction.timestamp).calendar('utc') + ')');
+				} else { // protect or modify
+					$linkMarkup.append(' (expired ' + new Morebits.date(lastProtectAction.params.details[0].expiry).calendar('utc') + ')');
+				}
+			}
+			$linkMarkup.append(Twinkle.protect.hasStableLog ? $('<span> &bull; </span>') : null);
 		}
 
 		if (Twinkle.protect.hasStableLog) {
 			$linkMarkup.append($('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'stable'}) + '">pending changes log</a>)'));
+			if (!currentlyProtected || !Twinkle.protect.currentProtectionLevels.stabilize) {
+				var lastStabilizeAction = Twinkle.protect.stableLog[0];
+				if (lastStabilizeAction.action === 'reset') {
+					$linkMarkup.append(' (reset ' + new Morebits.date(lastStabilizeAction.timestamp).calendar('utc') + ')');
+				} else { // config or modify
+					$linkMarkup.append(' (expired ' + new Morebits.date(lastStabilizeAction.params.expiry).calendar('utc') + ')');
+				}
+			}
 		}
 
 		Morebits.status.init($('div[name="hasprotectlog"] span')[0]);
@@ -254,18 +279,31 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 	if (currentlyProtected) {
 		$.each(Twinkle.protect.currentProtectionLevels, function(type, settings) {
 			var label = type === 'stabilize' ? 'Pending Changes' : Morebits.string.toUpperCaseFirstChar(type);
-			protectionNode.push($('<b>' + label + ': ' + settings.level + '</b>')[0]);
+
+			if (type === 'cascading') { // Covered by another page
+				label = 'Cascading protection ';
+				protectionNode.push($('<b>' + label + '</b>')[0]);
+				if (settings.source) { // Should by definition exist
+					var sourceLink = '<a target="_blank" href="' + mw.util.getUrl(settings.source) + '">' + settings.source + '</a>';
+					protectionNode.push($('<span>from ' + sourceLink + '</span>')[0]);
+				}
+			} else {
+				var level = settings.level;
+				// Make cascading protection more prominent
+				if (settings.cascade) {
+					level += ' (cascading)';
+				}
+				protectionNode.push($('<b>' + label + ': ' + level + '</b>')[0]);
+			}
+
 			if (settings.expiry === 'infinity') {
 				protectionNode.push(' (indefinite) ');
 			} else {
-				protectionNode.push(' (expires ' + new Date(settings.expiry).toUTCString() + ') ');
-			}
-			if (settings.cascade) {
-				protectionNode.push('(cascading) ');
+				protectionNode.push(' (expires ' + new Morebits.date(settings.expiry).calendar('utc') + ') ');
 			}
 			if (settings.admin) {
 				var adminLink = '<a target="_blank" href="' + mw.util.getUrl('User talk:' + settings.admin) + '">' + settings.admin + '</a>';
-				protectionNode.push($('<span>by ' + adminLink + '&nbsp;</span>')[0]);
+				protectionNode.push($('<span>by ' + adminLink + '</span>')[0]);
 			}
 			protectionNode.push($('<span> \u2022 </span>')[0]);
 		});
@@ -1069,6 +1107,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 							return;
 						}
 					}
+					thispage.setWatchlist(Twinkle.getPref('watchProtectedPages'));
 				} else {
 					thispage.setCreateProtection(input.createlevel, input.createexpiry);
 					thispage.setWatchlist(false);
@@ -1112,6 +1151,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					statusInited = true;
 				}
 
+				thispage.setWatchlist(Twinkle.getPref('watchProtectedPages'));
 				thispage.stabilize(allDone, function(error) {
 					if (error.errorCode === 'stabilize_denied') { // [[phab:T234743]]
 						thispage.getStatusElement().error('Failed trying to modify pending changes settings, likely due to a mediawiki bug. Other actions (tagging or regular protection) may have taken place. Please reload the page and try again.');
@@ -1367,6 +1407,7 @@ Twinkle.protect.callbacks = {
 
 		protectedPage.setEditSummary(summary);
 		protectedPage.setChangeTags(Twinkle.changeTags);
+		protectedPage.setWatchlist(Twinkle.getPref('watchPPTaggedPages'));
 		protectedPage.setPageText(text);
 		protectedPage.setCreateOption('nocreate');
 		protectedPage.suppressProtectWarning(); // no need to let admins know they are editing through protection
@@ -1471,7 +1512,25 @@ Twinkle.protect.callbacks = {
 		rppPage.setChangeTags(Twinkle.changeTags);
 		rppPage.setPageText(text);
 		rppPage.setCreateOption('recreate');
-		rppPage.save();
+		rppPage.save(function(pageobj) {
+			// Watch the page being requested
+			var watchPref = Twinkle.getPref('watchRequestedPages');
+			// action=watch has no way to rely on user preferences (T262912), so we do it manually.
+			// The watchdefault pref appears to reliably return '1' (string),
+			// but that's not consistent among prefs so might as well be "correct"
+			var watch = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
+			if (watch) {
+				var watch_query = {
+					action: 'watch',
+					titles: mw.config.get('wgPageName'),
+					token: mw.user.tokens.get('watchToken')
+				};
+				if (pageobj.getWatched() && watchPref !== 'default' && watchPref !== 'yes') {
+					watch_query.expiry = watchPref;
+				}
+				new Morebits.wiki.api('Adding requested page to watchlist', watch_query).post();
+			}
+		});
 	}
 };
 

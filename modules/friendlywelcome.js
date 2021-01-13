@@ -64,8 +64,8 @@ Twinkle.welcome.normal = function() {
 
 				var oWelcomeNode = welcomeNode.cloneNode(true);
 				oWelcomeNode.firstChild.setAttribute('href', oHref + '&' + $.param({
-					'friendlywelcome': Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
-					'vanarticle': Morebits.pageNameNorm
+					friendlywelcome: Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
+					vanarticle: Morebits.pageNameNorm
 				}));
 				$oList[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
 				$oList[0].parentNode.parentNode.appendChild(oWelcomeNode);
@@ -76,8 +76,8 @@ Twinkle.welcome.normal = function() {
 
 				var nWelcomeNode = welcomeNode.cloneNode(true);
 				nWelcomeNode.firstChild.setAttribute('href', nHref + '&' + $.param({
-					'friendlywelcome': Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
-					'vanarticle': Morebits.pageNameNorm
+					friendlywelcome: Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
+					vanarticle: Morebits.pageNameNorm
 				}));
 				$nList[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
 				$nList[0].parentNode.parentNode.appendChild(nWelcomeNode);
@@ -120,6 +120,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 	Window.setTitle('Welcome user');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Welcoming Committee', 'WP:WC');
+	Window.addFooterLink('Welcome prefs', 'WP:TW/PREF#welcome');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#welcome');
 
 	var form = new Morebits.quickForm(Twinkle.welcome.callback.evaluate);
@@ -225,7 +226,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 //   - $HEADER$    - adds a level 2 header (most templates already include this)
 
 Twinkle.welcome.templates = {
-	'standard': {
+	standard: {
 		'General welcome templates': {
 			'welcome': {
 				description: 'standard welcome',
@@ -239,11 +240,11 @@ Twinkle.welcome.templates = {
 			},
 			'welcome-short': {
 				description: 'a shorter welcome message',
-				syntax: '{{subst:w-short|heading=yes|$EXTRA$}}'
+				syntax: '{{subst:w-short|heading=true|$EXTRA$}}'
 			},
-			'welcome-personal': {
-				description: 'more personal welcome, including a plate of cookies',
-				syntax: '{{subst:welcome-personal|$USERNAME$}} ~~~~'
+			'welcome-cookie': {
+				description: 'a welcome message with some helpful links and a plate of cookies',
+				syntax: '{{subst:welcome cookie}} ~~~~'
 			},
 			'welcome-graphical': {
 				description: 'colorful welcome message with table of about 20 links',
@@ -333,7 +334,7 @@ Twinkle.welcome.templates = {
 		}
 	},
 
-	'anonymous': {
+	anonymous: {
 		'Anonymous user welcome templates': {
 			'welcome-anon': {
 				description: 'for anonymous users; encourages creating an account',
@@ -363,7 +364,7 @@ Twinkle.welcome.templates = {
 		}
 	},
 
-	'wikiProject': {
+	wikiProject: {
 		'WikiProject-specific welcome templates': {
 			'welcome-anatomy': {
 				description: 'welcome for users with an apparent interest in anatomy topics',
@@ -479,7 +480,7 @@ Twinkle.welcome.templates = {
 		}
 	},
 
-	'nonEnglish': {
+	nonEnglish: {
 		'Non-English welcome templates': {
 			'welcomeen': {
 				description: 'welcome for users whose first language is not listed here',

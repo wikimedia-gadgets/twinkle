@@ -2,11 +2,11 @@
 
 (WIP)
 
-Collaborators are encouraged to thoroughly review and [test](../CONTRIBUTING.md#testing-your-code) each pull request, including their own.  Unless urgent or obvious, it can be helpful to leave PRs open for folks to opine.
+Collaborators are encouraged to thoroughly review and [test](./CONTRIBUTING.md#testing-your-code) each pull request, including their own.  Unless urgent or obvious, it can be helpful to leave PRs open for folks to opine.
 
 Things to watch out for:
 
-- Items and processes laid out in [CONTRIBUTING.md](../CONTRIBUTING.md) are followed.
+- Items and processes laid out in [CONTRIBUTING.md](./CONTRIBUTING.md) are followed.
 - Twinkle is meant to run on the latest weekly version of MediaWiki as rolled out every Thursday on the English Wikipedia.  Backwards compatibility is not guaranteed.
 - The goal is for Twinkle and Morebits to support the same [browsers that MediaWiki supports](https://www.mediawiki.org/wiki/Browser_compatibility).  In particular, collaborators should avoid [unsupported additions](https://kangax.github.io/compat-table/es6/) from ES6 (aka ES2015); `.includes` and `.find` are among the most likely to show up, although the jQuery `$.find()` is fine. Our ESLint configuration includes a [plugin](https://github.com/nkt/eslint-plugin-es5) that should catch most cases.
 - Certain positional jQuery selectors like `:first`, `:last`, and `:eq` were [deprecated in jQuery version 3.4.0](https://blog.jquery.com/2019/04/10/jquery-3-4-0-released/) and should probably not be reintroduced.  Instead, use methods like `.first()`, `.last()`, or `.eq()`.
@@ -125,7 +125,6 @@ The `--base` flag operates as a *prefix*; note the presence of the trailing `/`.
 [MediaWiki:Gadget-twinklearv.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklearv.js
 [MediaWiki:Gadget-friendlytalkback.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-friendlytalkback.js
 [MediaWiki:Gadget-twinkleblock.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleblock.js
-[User:AzaToth/twinkle.js]: https://en.wikipedia.org/wiki/User:AzaToth/twinkle.js
 [select2]: https://github.com/select2/select2
 [MediaWiki::API]: https://metacpan.org/pod/MediaWiki::API
 [Git::Repository]: https://metacpan.org/pod/Git::Repository

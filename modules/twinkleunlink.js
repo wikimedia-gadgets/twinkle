@@ -26,6 +26,7 @@ Twinkle.unlink.callback = function(presetReason) {
 	var Window = new Morebits.simpleWindow(600, 440);
 	Window.setTitle('Unlink backlinks' + (mw.config.get('wgNamespaceNumber') === 6 ? ' and file usages' : ''));
 	Window.setScriptName('Twinkle');
+	Window.addFooterLink('Unlink prefs', 'WP:TW/PREF#unlink');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#unlink');
 
 	var form = new Morebits.quickForm(Twinkle.unlink.callback.evaluate);
@@ -57,29 +58,22 @@ Twinkle.unlink.callback = function(presetReason) {
 		size: 60
 	});
 
-	var query;
+	var query = {
+		action: 'query',
+		list: 'backlinks',
+		bltitle: mw.config.get('wgPageName'),
+		bllimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
+		blnamespace: Twinkle.getPref('unlinkNamespaces'),
+		rawcontinue: true,
+		format: 'json'
+	};
 	if (mw.config.get('wgNamespaceNumber') === 6) {  // File:
-		query = {
-			'action': 'query',
-			'list': [ 'backlinks', 'imageusage' ],
-			'bltitle': mw.config.get('wgPageName'),
-			'iutitle': mw.config.get('wgPageName'),
-			'bllimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
-			'iulimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
-			'blnamespace': Twinkle.getPref('unlinkNamespaces'),
-			'iunamespace': Twinkle.getPref('unlinkNamespaces'),
-			'rawcontinue': true
-		};
+		query.list += '|imageusage';
+		query.iutitle = query.bltitle;
+		query.iulimit = query.bllimit;
+		query.iunamespace = query.blnamespace;
 	} else {
-		query = {
-			'action': 'query',
-			'list': 'backlinks',
-			'bltitle': mw.config.get('wgPageName'),
-			'blfilterredir': 'nonredirects',
-			'bllimit': 'max', // 500 is max for normal users, 5000 for bots and sysops
-			'blnamespace': Twinkle.getPref('unlinkNamespaces'),
-			'rawcontinue': true
-		};
+		query.blfilterredir = 'nonredirects';
 	}
 	var wikipedia_api = new Morebits.wiki.api('Grabbing backlinks', query, Twinkle.unlink.callbacks.display.backlinks);
 	wikipedia_api.params = { form: form, Window: Window, image: mw.config.get('wgNamespaceNumber') === 6 };
@@ -132,15 +126,18 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 Twinkle.unlink.callbacks = {
 	display: {
 		backlinks: function twinkleunlinkCallbackDisplayBacklinks(apiobj) {
-			var xmlDoc = apiobj.responseXML;
+			var response = apiobj.getResponse();
 			var havecontent = false;
 			var list, namespaces, i;
 
 			if (apiobj.params.image) {
-				var imageusage = $(xmlDoc).find('query imageusage iu');
+				var imageusage = response.query.imageusage.sort(function(one, two) {
+					// json formatversion=2 doesn't sort pages by namespace
+					return one.ns - two.ns || (one.title > two.title ? 1 : -1);
+				});
 				list = [];
 				for (i = 0; i < imageusage.length; ++i) {
-					var usagetitle = imageusage[i].getAttribute('title');
+					var usagetitle = imageusage[i].title;
 					list.push({ label: usagetitle, value: usagetitle, checked: true });
 				}
 				if (!list.length) {
@@ -156,7 +153,7 @@ Twinkle.unlink.callbacks = {
 						label: 'Selected namespaces: ' + namespaces.join(', '),
 						tooltip: 'You can change this with your Twinkle preferences, at [[WP:TWPREFS]]'
 					});
-					if ($(xmlDoc).find('query-continue').length) {
+					if (response['query-continue'] && response['query-continue'].imageusage) {
 						apiobj.params.form.append({
 							type: 'div',
 							label: 'First ' + mw.language.convertNumber(list.length) + ' file usages shown.'
@@ -186,11 +183,14 @@ Twinkle.unlink.callbacks = {
 				}
 			}
 
-			var backlinks = $(xmlDoc).find('query backlinks bl');
+			var backlinks = response.query.backlinks.sort(function(one, two) {
+				// json formatversion=2 doesn't sort pages by namespace
+				return one.ns - two.ns || (one.title > two.title ? 1 : -1);
+			});
 			if (backlinks.length > 0) {
 				list = [];
 				for (i = 0; i < backlinks.length; ++i) {
-					var title = backlinks[i].getAttribute('title');
+					var title = backlinks[i].title;
 					list.push({ label: title, value: title, checked: true });
 				}
 				apiobj.params.form.append({ type: 'header', label: 'Backlinks' });
@@ -203,7 +203,7 @@ Twinkle.unlink.callbacks = {
 					label: 'Selected namespaces: ' + namespaces.join(', '),
 					tooltip: 'You can change this with your Twinkle preferences, at [[WP:TWPREFS]]'
 				});
-				if ($(xmlDoc).find('query-continue').length) {
+				if (response['query-continue'] && response['query-continue'].backlinks) {
 					apiobj.params.form.append({
 						type: 'div',
 						label: 'First ' + mw.language.convertNumber(list.length) + ' backlinks shown.'

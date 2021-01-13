@@ -15,7 +15,7 @@
 
 Twinkle.prod = function twinkleprod() {
 	if ((([0, 6, 108].indexOf(mw.config.get('wgNamespaceNumber')) === -1) && (mw.config.get('wgNamespaceNumber') !== 2 || mw.config.get('wgCategories').indexOf('Wikipedia books (user books)') === -1))
-		|| !mw.config.get('wgCurRevisionId') || Morebits.wiki.isPageRedirect()) {
+		|| !mw.config.get('wgCurRevisionId') || Morebits.isPageRedirect()) {
 		return;
 	}
 
@@ -94,6 +94,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 		name: 'parameters'
 	});
 
+	Window.addFooterLink('PROD prefs', 'WP:TW/PREF#prod');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#prod');
 
 	form.append({ type: 'submit', label: 'Propose deletion' });
@@ -186,7 +187,6 @@ var params = {};
 
 Twinkle.prod.callbacks = {
 	checkPriors: function twinkleprodcheckPriors() {
-
 		var talk_title = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
 		// Talk page templates for PROD-able discussions
 		var blocking_templates = 'Template:Old XfD multi|Template:Old MfD|Template:Oldffdfull|' + // Common prior XfD talk page templates
@@ -194,21 +194,22 @@ Twinkle.prod.callbacks = {
 			'Template:Olddelrev|' + // Prior DRV template
 			'Template:Old prod';
 		var query = {
-			'action': 'query',
-			'titles': talk_title,
-			'prop': 'templates',
-			'tltemplates': blocking_templates
+			action: 'query',
+			titles: talk_title,
+			prop: 'templates',
+			tltemplates: blocking_templates,
+			format: 'json'
 		};
 
 		var wikipedia_api = new Morebits.wiki.api('Checking talk page for prior nominations', query);
 		return wikipedia_api.post().then(function(apiobj) {
-			var xmlDoc = apiobj.responseXML;
 			var statelem = apiobj.statelem;
 
 			// Check talk page for templates indicating prior XfD or PROD
-			var numTemplates = $(xmlDoc).find('templates tl').length;
+			var templates = apiobj.getResponse().query.pages[0].templates;
+			var numTemplates = templates && templates.length;
 			if (numTemplates) {
-				var template = $(xmlDoc).find('templates tl')[0].getAttribute('title');
+				var template = templates[0].title;
 				if (numTemplates === 1 && template === 'Template:Old prod') {
 					params.oldProdPresent = true; // Mark for reference later, when deciding if to endorse
 				// if there are multiple templates, at least one of them would be a prior xfd template
@@ -437,11 +438,7 @@ Twinkle.prod.callbacks = {
 		}
 		usl.changeTags = Twinkle.changeTags;
 
-		usl.log(logText, summaryText);
-		return $.Deferred().resolve(); // KLUDGE: this should actually return resolved/
-		// rejected after the logging succeeded/failed, but Morebits.userspaceLogger#log
-		// doesn't support callbacks, and it seems wasteful to add them just for this.
-		// This isn't a real issue since no other task depend on this one.
+		return usl.log(logText, summaryText);
 	}
 
 };
@@ -495,7 +492,6 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 			window.location.href = mw.util.getUrl(mw.config.get('wgPageName'));
 		}, Morebits.wiki.actionCompleted.timeOut);
 	});
-
 };
 
 Twinkle.addInitCallback(Twinkle.prod, 'prod');

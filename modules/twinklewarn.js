@@ -61,6 +61,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	dialog.setTitle('Warn/notify user');
 	dialog.setScriptName('Twinkle');
 	dialog.addFooterLink('Choosing a warning level', 'WP:UWUL#Levels');
+	dialog.addFooterLink('Warn prefs', 'WP:TW/PREF#warn');
 	dialog.addFooterLink('Twinkle help', 'WP:TW/DOC#warn');
 
 	var form = new Morebits.quickForm(Twinkle.warn.callback.evaluate);
@@ -148,11 +149,13 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 				rvstartid: vanrevid,
 				rvlimit: 2,
 				rvdir: 'newer',
-				rvprop: 'user'
+				rvprop: 'user',
+				format: 'json'
 			};
 
 			new Morebits.wiki.api('Checking if you successfully reverted the page', query, function(apiobj) {
-				var revertUser = $(apiobj.getResponse()).find('revisions rev')[1].getAttribute('user');
+				var rev = apiobj.getResponse().query.pages[0].revisions;
+				var revertUser = rev && rev[1].user;
 				if (revertUser && revertUser !== mw.config.get('wgUserName')) {
 					message += ' Someone else reverted the page and may have already warned the user.';
 					$('#twinkle-warn-warning-messages').text('Note:' + message);
@@ -180,10 +183,12 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 				action: 'query',
 				prop: 'revisions',
 				rvprop: 'timestamp',
-				revids: vanrevid
+				revids: vanrevid,
+				format: 'json'
 			};
 			new Morebits.wiki.api('Grabbing the revision timestamps', query, function(apiobj) {
-				vantimestamp = $(apiobj.getResponse()).find('revisions rev').attr('timestamp');
+				var rev = apiobj.getResponse().query.pages[0].revisions;
+				vantimestamp = rev && rev[0].timestamp;
 				checkStale(vantimestamp);
 			}).post();
 		}
@@ -460,6 +465,24 @@ Twinkle.warn.messages = {
 				level4im: {
 					label: 'Ownership of articles',
 					summary: 'Only warning: Ownership of articles'
+				}
+			},
+			'uw-subtle': {
+				level1: {
+					label: 'Subtle vandalism',
+					summary: 'General note: Possible unconstructive editing'
+				},
+				level2: {
+					label: 'Subtle vandalism',
+					summary: 'Caution: Likely unconstructive editing'
+				},
+				level3: {
+					label: 'Subtle vandalism',
+					summary: 'Warning: Subtle vandalism'
+				},
+				level4: {
+					label: 'Subtle vandalism',
+					summary: 'Final warning: Subtle vandalism'
 				}
 			},
 			'uw-tdel': {
@@ -926,12 +949,20 @@ Twinkle.warn.messages = {
 			label: 'Removing proper sources containing dead links',
 			summary: 'Notice: Removing proper sources containing dead links'
 		},
+		'uw-displaytitle': {
+			label: 'Incorrect use of DISPLAYTITLE',
+			summary: 'Notice: Incorrect use of DISPLAYTITLE'
+		},
 		'uw-draftfirst': {
 			label: 'User should draft in userspace without the risk of speedy deletion',
 			summary: 'Notice: Consider drafting your article in [[Help:Userspace draft|userspace]]'
 		},
 		'uw-editsummary': {
-			label: 'Not using edit summary',
+			label: 'New user not using edit summary',
+			summary: 'Notice: Not using edit summary'
+		},
+		'uw-editsummary2': {
+			label: 'Experienced user not using edit summary',
 			summary: 'Notice: Not using edit summary'
 		},
 		'uw-elinbody': {
@@ -966,6 +997,10 @@ Twinkle.warn.messages = {
 		'uw-notenglish': {
 			label: 'Creating non-English articles',
 			summary: 'Notice: Creating non-English articles'
+		},
+		'uw-notenglishedit': {
+			label: 'Adding non-English content to articles',
+			summary: 'Notice: Adding non-English content to articles'
 		},
 		'uw-notvote': {
 			label: 'We use consensus, not voting',
@@ -1010,6 +1045,10 @@ Twinkle.warn.messages = {
 		'uw-toppost': {
 			label: 'Posting at the top of talk pages',
 			summary: 'Notice: Posting at the top of talk pages'
+		},
+		'uw-unattribcc': {
+			label: 'Copying from compatibly-licensed sources without attribution',
+			summary: 'Notice: Copying from compatibly-licensed sources without attribution'
 		},
 		'uw-userspace draft finish': {
 			label: 'Stale userspace draft',
@@ -1290,9 +1329,9 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 					// most likely because it's a cross-namespace redirect
 					// Supersedes the typical $autolevelMessage added in autolevelParseWikitext
 					var $noTalkPageNode = $('<strong/>', {
-						'text': 'Unable to load user talk page; it might be a cross-namespace redirect.  Autolevel detection will not work.',
-						'id': 'twinkle-warn-autolevel-message',
-						'css': {'color': 'red' }
+						text: 'Unable to load user talk page; it might be a cross-namespace redirect.  Autolevel detection will not work.',
+						id: 'twinkle-warn-autolevel-message',
+						css: {color: 'red' }
 					});
 					$noTalkPageNode.insertBefore($('#twinkle-warn-warning-messages'));
 					// If a preview was opened while in a different mode, close it
@@ -1542,7 +1581,7 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
-		var $autolevelMessage = $('<div/>', {'id': 'twinkle-warn-autolevel-message'});
+		var $autolevelMessage = $('<div/>', {id: 'twinkle-warn-autolevel-message'});
 
 		if (isNaN(level)) { // No prior warnings found, this is the first
 			level = 1;
@@ -1564,10 +1603,10 @@ Twinkle.warn.callbacks = {
 					// and thus whether we can continue or need to display the warning and link
 					if (!statelem) {
 						var $link = $('<a/>', {
-							'href': '#',
-							'text': 'click here to open the ARV tool.',
-							'css': { 'fontWeight': 'bold' },
-							'click': function() {
+							href: '#',
+							text: 'click here to open the ARV tool.',
+							css: { fontWeight: 'bold' },
+							click: function() {
 								Morebits.wiki.actionCompleted.redirect = null;
 								Twinkle.warn.dialog.close();
 								Twinkle.arv.callback(mw.config.get('wgRelevantUserName'));
@@ -1576,8 +1615,8 @@ Twinkle.warn.callbacks = {
 							}
 						});
 						var statusNode = $('<div/>', {
-							'text': mw.config.get('wgRelevantUserName') + ' recently received a level 4 warning (' + latest.type + ') so it might be better to report them instead; ',
-							'css': {'color': 'red' }
+							text: mw.config.get('wgRelevantUserName') + ' recently received a level 4 warning (' + latest.type + ') so it might be better to report them instead; ',
+							css: {color: 'red' }
 						});
 						statusNode.append($link[0]);
 						$autolevelMessage.append(statusNode);
@@ -1650,33 +1689,6 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
-		var dateHeaderRegex = now.monthHeaderRegex(), dateHeaderRegexLast, dateHeaderRegexResult;
-		while ((dateHeaderRegexLast = dateHeaderRegex.exec(text)) !== null) {
-			dateHeaderRegexResult = dateHeaderRegexLast;
-		}
-		// If dateHeaderRegexResult is null then lastHeaderIndex is never checked. If it is not null but
-		// \n== is not found, then the date header must be at the very start of the page. lastIndexOf
-		// returns -1 in this case, so lastHeaderIndex gets set to 0 as desired.
-		var lastHeaderIndex = text.lastIndexOf('\n==') + 1;
-
-		if (text.length > 0) {
-			text += '\n\n';
-		}
-
-		if (messageData.heading) {
-			text += '== ' + messageData.heading + ' ==\n';
-		} else if (!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
-			Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
-			text += now.monthHeader() + '\n';
-		}
-		text += Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article,
-			params.reason, params.main_group === 'custom');
-
-		if (Twinkle.getPref('showSharedIPNotice') && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
-			Morebits.status.info('Info', 'Adding a shared IP notice');
-			text += '\n{{subst:Shared IP advice}}';
-		}
-
 		// build the edit summary
 		// Function to handle generation of summary prefix for custom templates
 		var customProcess = function(template) {
@@ -1739,13 +1751,50 @@ Twinkle.warn.callbacks = {
 				}
 			}
 		}
-		summary += '.';
 
-		pageobj.setPageText(text);
-		pageobj.setEditSummary(summary);
+		pageobj.setEditSummary(summary + '.');
 		pageobj.setChangeTags(Twinkle.changeTags);
 		pageobj.setWatchlist(Twinkle.getPref('watchWarnings'));
-		pageobj.save();
+
+
+		// Get actual warning text
+		var warningText = Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article,
+			params.reason, params.main_group === 'custom');
+		if (Twinkle.getPref('showSharedIPNotice') && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
+			Morebits.status.info('Info', 'Adding a shared IP notice');
+			warningText += '\n{{subst:Shared IP advice}}';
+		}
+
+		var sectionExists = false, sectionNumber = 0;
+		// Only check sections if there are sections or there's a chance we won't create our own
+		if (!messageData.heading && text.length) {
+			// Get all L2 sections
+			var sections = text.match(/^(==)[^=].+\1/gm);
+			if (sections && sections.length !== 0) {
+				// Find the index of the section header in question
+				var dateHeaderRegex = now.monthHeaderRegex();
+				sectionNumber = 0;
+				// Find this month's section, preferring the bottom-most
+				sectionExists = sections.reverse().some(function(sec, idx) {
+					return dateHeaderRegex.test(sec) && typeof (sectionNumber = sections.length - 1 - idx) === 'number';
+				});
+			}
+		}
+
+		if (sectionExists) { // append to existing section
+			pageobj.setPageSection(sectionNumber + 1);
+			pageobj.setAppendText('\n\n' + warningText);
+			pageobj.append();
+		} else {
+			if (messageData.heading) { // create new section
+				pageobj.setNewSectionTitle(messageData.heading);
+			} else {
+				Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
+				pageobj.setNewSectionTitle(now.monthHeader());
+			}
+			pageobj.setNewSectionText(warningText);
+			pageobj.newSection();
+		}
 	}
 };
 

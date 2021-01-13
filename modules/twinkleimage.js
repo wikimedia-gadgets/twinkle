@@ -13,7 +13,7 @@
  */
 
 Twinkle.image = function twinkleimage() {
-	if (mw.config.get('wgNamespaceNumber') === 6 && mw.config.get('wgArticleId') && !document.getElementById('mw-sharedupload') && !Morebits.wiki.isPageRedirect()) {
+	if (mw.config.get('wgNamespaceNumber') === 6 && mw.config.get('wgArticleId') && !document.getElementById('mw-sharedupload') && !Morebits.isPageRedirect()) {
 		Twinkle.addPortletLink(Twinkle.image.callback, 'DI', 'tw-di', 'Nominate file for delayed speedy deletion');
 	}
 };
@@ -23,6 +23,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 	Window.setTitle('File for dated speedy deletion');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Speedy deletion policy', 'WP:CSD#Files');
+	Window.addFooterLink('Image prefs', 'WP:TW/PREF#image');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#image');
 
 	var form = new Morebits.quickForm(Twinkle.image.callback.evaluate);
@@ -182,7 +183,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
 	var input = Morebits.quickForm.getInputData(event.target);
 	if (input.replacement) {
-		input.replacement = (/^(Image|File):/i.test(input.replacement) ? '' : 'File:') + input.replacement;
+		input.replacement = (new RegExp('^' + Morebits.namespaceRegex(6) + ':', 'i').test(input.replacement) ? '' : 'File:') + input.replacement;
 	}
 
 	var csdcrit;
@@ -279,17 +280,7 @@ Twinkle.image.callbacks = {
 		pageobj.setPageText(tag + text);
 		pageobj.setEditSummary('This file is up for deletion, per [[WP:CSD#' + params.normalized + '|CSD ' + params.normalized + ']] (' + params.type + ').');
 		pageobj.setChangeTags(Twinkle.changeTags);
-		switch (Twinkle.getPref('deliWatchPage')) {
-			case 'yes':
-				pageobj.setWatchlist(true);
-				break;
-			case 'no':
-				pageobj.setWatchlistFromPreferences(false);
-				break;
-			default:
-				pageobj.setWatchlistFromPreferences(true);
-				break;
-		}
+		pageobj.setWatchlist(Twinkle.getPref('deliWatchPage'));
 		pageobj.setCreateOption('nocreate');
 		pageobj.save();
 	},
@@ -311,17 +302,7 @@ Twinkle.image.callbacks = {
 			usertalkpage.setEditSummary('Notification: tagging for deletion of [[:' + Morebits.pageNameNorm + ']].');
 			usertalkpage.setChangeTags(Twinkle.changeTags);
 			usertalkpage.setCreateOption('recreate');
-			switch (Twinkle.getPref('deliWatchUser')) {
-				case 'yes':
-					usertalkpage.setWatchlist(true);
-					break;
-				case 'no':
-					usertalkpage.setWatchlistFromPreferences(false);
-					break;
-				default:
-					usertalkpage.setWatchlistFromPreferences(true);
-					break;
-			}
+			usertalkpage.setWatchlist(Twinkle.getPref('deliWatchUser'));
 			usertalkpage.setFollowRedirect(true, false);
 			usertalkpage.append();
 		}

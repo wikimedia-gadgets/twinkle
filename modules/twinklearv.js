@@ -18,20 +18,22 @@ Twinkle.arv = function twinklearv() {
 		return;
 	}
 
-	var title = mw.util.isIPAddress(username) ? 'Report IP to administrators' : 'Report user to administrators';
+	var isIP = mw.util.isIPAddress(username);
+	var title = isIP ? 'Report IP to administrators' : 'Report user to administrators';
 
 	Twinkle.addPortletLink(function() {
-		Twinkle.arv.callback(username);
+		Twinkle.arv.callback(username, isIP);
 	}, 'ARV', 'tw-arv', title);
 };
 
-Twinkle.arv.callback = function (uid) {
+Twinkle.arv.callback = function (uid, isIP) {
 	var Window = new Morebits.simpleWindow(600, 500);
 	Window.setTitle('Advance Reporting and Vetting'); // Backronym
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Guide to AIV', 'WP:GAIV');
 	Window.addFooterLink('UAA instructions', 'WP:UAAI');
 	Window.addFooterLink('About SPI', 'WP:SPI');
+	Window.addFooterLink('ARV prefs', 'WP:TW/PREF#arv');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#arv');
 
 	var form = new Morebits.quickForm(Twinkle.arv.callback.evaluate);
@@ -68,6 +70,13 @@ Twinkle.arv.callback = function (uid) {
 		value: 'an3'
 	});
 	form.append({
+		type: 'div',
+		label: '',
+		style: 'color: red',
+		id: 'twinkle-arv-blockwarning'
+	});
+
+	form.append({
 		type: 'field',
 		label: 'Work area',
 		name: 'work_area'
@@ -82,6 +91,33 @@ Twinkle.arv.callback = function (uid) {
 	var result = form.render();
 	Window.setContent(result);
 	Window.display();
+
+	// Check if the user is blocked, update notice
+	var query = {
+		action: 'query',
+		list: 'blocks',
+		bkprop: 'range|flags',
+		format: 'json'
+	};
+	if (isIP) {
+		query.bkip = uid;
+	} else {
+		query.bkusers = uid;
+	}
+	new Morebits.wiki.api("Checking the user's block status", query, function(apiobj) {
+		var blocklist = apiobj.getResponse().query.blocks;
+		if (blocklist.length) {
+			var block = blocklist[0];
+			var message = (isIP ? 'This IP address' : 'This account') + ' is ' + (block.partial ? 'partially' : 'already') + ' blocked';
+			// Start and end differ, range blocked
+			message += block.rangestart !== block.rangeend ? ' as part of a rangeblock.' : '.';
+			if (block.partial) {
+				$('#twinkle-arv-blockwarning').css('color', 'black'); // Less severe
+			}
+			$('#twinkle-arv-blockwarning').text(message);
+		}
+	}).post();
+
 
 	// We must init the
 	var evt = document.createEvent('Event');
@@ -338,51 +374,50 @@ Twinkle.arv.callback.changeCategory = function (e) {
 							rvend: date.toISOString(),
 							rvuser: rvuser,
 							indexpageids: true,
-							redirects: true,
 							titles: titles
 						}).done(function(data) {
 							var pageid = data.query.pageids[0];
 							var page = data.query.pages[pageid];
 							if (!page.revisions) {
 								$('<span class="entry">None found</span>').appendTo($field);
-								return;
-							}
-							for (var i = 0; i < page.revisions.length; ++i) {
-								var rev = page.revisions[i];
-								var $entry = $('<div/>', {
-									'class': 'entry'
-								});
-								var $input = $('<input/>', {
-									'type': 'checkbox',
-									'name': 's_' + field,
-									'value': rev.revid
-								});
-								$input.data('revinfo', rev);
-								$input.appendTo($entry);
-								var comment = '<span>';
-								// revdel/os
-								if (typeof rev.commenthidden === 'string') {
-									comment += '(comment hidden)';
-								} else {
-									comment += '"' + rev.parsedcomment + '"';
+							} else {
+								for (var i = 0; i < page.revisions.length; ++i) {
+									var rev = page.revisions[i];
+									var $entry = $('<div/>', {
+										class: 'entry'
+									});
+									var $input = $('<input/>', {
+										type: 'checkbox',
+										name: 's_' + field,
+										value: rev.revid
+									});
+									$input.data('revinfo', rev);
+									$input.appendTo($entry);
+									var comment = '<span>';
+									// revdel/os
+									if (typeof rev.commenthidden === 'string') {
+										comment += '(comment hidden)';
+									} else {
+										comment += '"' + rev.parsedcomment + '"';
+									}
+									comment += ' at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Morebits.date(rev.timestamp).calendar() + '</a></span>';
+									$entry.append(comment).appendTo($field);
 								}
-								comment += ' at <a href="' + mw.config.get('wgScript') + '?diff=' + rev.revid + '">' + new Morebits.date(rev.timestamp).calendar() + '</a></span>';
-								$entry.append(comment).appendTo($field);
 							}
 
 							// add free form input for resolves
 							if (field === 'resolves') {
 								var $free_entry = $('<div/>', {
-									'class': 'entry'
+									class: 'entry'
 								});
 								var $free_input = $('<input/>', {
-									'type': 'text',
-									'name': 's_resolves_free'
+									type: 'text',
+									name: 's_resolves_free'
 								});
 
 								var $free_label = $('<label/>', {
-									'for': 's_resolves_free',
-									'html': 'URL link of diff with additional discussions: '
+									for: 's_resolves_free',
+									html: 'URL link of diff with additional discussions: '
 								});
 								$free_entry.append($free_label).append($free_input).appendTo($field);
 							}
@@ -604,7 +639,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 				uaaPage.getStatusElement().status('Adding new report...');
 				uaaPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].');
 				uaaPage.setChangeTags(Twinkle.changeTags);
-				uaaPage.setPageText(text + '\n' + reason);
+
+				// Blank newline per [[Special:Permalink/996949310#Spacing]]; see also [[WP:LISTGAP]] and [[WP:INDENTGAP]]
+				uaaPage.setPageText(text + '\n' + reason + '\n*');
 				uaaPage.save();
 			});
 			break;
@@ -666,13 +703,13 @@ Twinkle.arv.callback.evaluate = function(e) {
 				}
 
 				var an3Parameters = {
-					'uid': uid,
-					'page': form.page.value.trim(),
-					'comment': form.comment.value.trim(),
-					'diffs': diffs,
-					'warnings': warnings,
-					'resolves': resolves,
-					'free_resolves': free_resolves
+					uid: uid,
+					page: form.page.value.trim(),
+					comment: form.comment.value.trim(),
+					diffs: diffs,
+					warnings: warnings,
+					resolves: resolves,
+					free_resolves: free_resolves
 				};
 
 				Morebits.simpleWindow.setButtonsEnabled(false);
@@ -837,17 +874,7 @@ Twinkle.arv.processSock = function(params) {
 	spiPage.setEditSummary('Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].');
 	spiPage.setChangeTags(Twinkle.changeTags);
 	spiPage.setAppendText(text);
-	switch (Twinkle.getPref('spiWatchReport')) {
-		case 'yes':
-			spiPage.setWatchlist(true);
-			break;
-		case 'no':
-			spiPage.setWatchlistFromPreferences(false);
-			break;
-		default:
-			spiPage.setWatchlistFromPreferences(true);
-			break;
-	}
+	spiPage.setWatchlist(Twinkle.getPref('spiWatchReport'));
 	spiPage.append();
 
 	Morebits.wiki.removeCheckpoint();  // all page updates have been started
@@ -871,7 +898,6 @@ Twinkle.arv.processAN3 = function(params) {
 		rvstartid: minid,
 		rvexcludeuser: params.uid,
 		indexpageids: true,
-		redirects: true,
 		titles: params.page
 	}).done(function(data) {
 		Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"

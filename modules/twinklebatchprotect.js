@@ -147,10 +147,11 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	});
 
 	var query = {
-		'action': 'query',
-		'prop': 'revisions|info',
-		'rvprop': 'size',
-		'inprop': 'protection'
+		action: 'query',
+		prop: 'revisions|info|imageinfo',
+		rvprop: 'size|user',
+		inprop: 'protection',
+		format: 'json'
 	};
 
 	if (mw.config.get('wgNamespaceNumber') === 14) {  // categories
@@ -177,34 +178,45 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	var statelem = new Morebits.status('Grabbing list of pages');
 
 	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
-		var xml = apiobj.responseXML;
-		var $pages = $(xml).find('page');
+		var response = apiobj.getResponse();
+		var pages = (response.query && response.query.pages) || [];
 		var list = [];
-		$pages.each(function(index, page) {
-			var $page = $(page);
-			var title = $page.attr('title');
-			var isRedir = $page.attr('redirect') === ''; // XXX ??
-			var missing = $page.attr('missing') === ''; // XXX ??
-			var size = $page.find('rev').attr('size');
-			var $editProt;
-
+		// json formatversion=2 doesn't sort pages by namespace
+		pages.sort(function(one, two) {
+			return one.ns - two.ns || (one.title > two.title ? 1 : -1);
+		});
+		pages.forEach(function(page) {
 			var metadata = [];
+			var missing = !!page.missing, editProt;
+
 			if (missing) {
 				metadata.push('page does not exist');
-				$editProt = $page.find('pr[type="create"][level="sysop"]');
+				editProt = page.protection.filter(function(pr) {
+					return pr.type === 'create' && pr.level === 'sysop';
+				}).pop();
 			} else {
-				if (isRedir) {
+				if (page.redirect) {
 					metadata.push('redirect');
 				}
-				metadata.push(mw.language.convertNumber(size) + ' bytes');
-				$editProt = $page.find('pr[type="edit"][level="sysop"]');
+
+				if (page.ns === 6) {
+					metadata.push('uploader: ' + page.imageinfo[0].user);
+					metadata.push('last edit from: ' + page.revisions[0].user);
+				} else {
+					metadata.push(mw.language.convertNumber(page.revisions[0].size) + ' bytes');
+				}
+
+				editProt = page.protection.filter(function(pr) {
+					return pr.type === 'edit' && pr.level === 'sysop';
+				}).pop();
 			}
-			if ($editProt.length > 0) {
+			if (editProt) {
 				metadata.push('fully' + (missing ? ' create' : '') + ' protected' +
-				($editProt.attr('expiry') === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date($editProt.attr('expiry')).calendar('utc') + ' (UTC)'));
+				(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)'));
 			}
 
-			list.push({ label: title + (metadata.length ? ' (' + metadata.join('; ') + ')' : ''), value: title, checked: true, style: $editProt.length > 0 ? 'color:red' : '' });
+			var title = page.title;
+			list.push({ label: title + (metadata.length ? ' (' + metadata.join('; ') + ')' : ''), value: title, checked: true, style: editProt ? 'color:red' : '' });
 		});
 		form.append({ type: 'header', label: 'Pages to protect' });
 		form.append({
@@ -278,8 +290,9 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	batchOperation.setPageList(input.pages);
 	batchOperation.run(function(pageName) {
 		var query = {
-			'action': 'query',
-			'titles': pageName
+			action: 'query',
+			titles: pageName,
+			format: 'json'
 		};
 		var wikipedia_api = new Morebits.wiki.api('Checking if page ' + pageName + ' exists', query,
 			Twinkle.batchprotect.callbacks.main, null, batchOperation.workerFailure);
@@ -293,13 +306,13 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 
 Twinkle.batchprotect.callbacks = {
 	main: function(apiobj) {
-		var xml = apiobj.responseXML;
-		var normal = $(xml).find('normalized n').attr('to');
-		if (normal) {
-			apiobj.params.page = normal;
+		var response = apiobj.getResponse();
+
+		if (response.query.normalized) {
+			apiobj.params.page = response.query.normalized[0].to;
 		}
 
-		var exists = $(xml).find('page').attr('missing') !== '';
+		var exists = !response.query.pages[0].missing;
 
 		var page = new Morebits.wiki.page(apiobj.params.page, 'Protecting ' + apiobj.params.page);
 		var takenAction = false;

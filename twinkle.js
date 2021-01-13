@@ -5,7 +5,7 @@
  * |           Please discuss changes at [[WT:TW]] before editing.           |
  * +-------------------------------------------------------------------------+
  *
- * Imported from github [https://github.com/azatoth/twinkle].
+ * Imported from github [https://github.com/wikimedia-gadgets/twinkle].
  * All changes should be made in the repository, otherwise they will be lost.
  *
  * ----------
@@ -68,6 +68,7 @@ Twinkle.defaultConfig = {
 	rollbackInPlace: false,
 	markRevertedPagesAsMinor: [ 'vand' ],
 	watchRevertedPages: [ 'agf', 'norm', 'vand', 'torev' ],
+	watchRevertedExpiry: 'yes',
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
 	confirmOnMobileFluff: true,
@@ -78,8 +79,13 @@ Twinkle.defaultConfig = {
 	deliWatchPage: 'default',
 	deliWatchUser: 'default',
 
+	// Protect
+	watchRequestedPages: 'yes',
+	watchPPTaggedPages: 'default',
+	watchProtectedPages: 'default',
+
 	// PROD
-	watchProdPages: true,
+	watchProdPages: 'yes',
 	markProdPagesAsPatrolled: false,
 	prodReasonDefault: '',
 	logProdPages: false,
@@ -88,12 +94,13 @@ Twinkle.defaultConfig = {
 	// CSD
 	speedySelectionStyle: 'buttonClick',
 	watchSpeedyPages: [ 'g3', 'g5', 'g10', 'g11', 'g12' ],
+	watchSpeedyExpiry: 'yes',
 	markSpeedyPagesAsPatrolled: false,
 
 	// these next two should probably be identical by default
-	welcomeUserOnSpeedyDeletionNotification: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 't3', 'p1', 'p2' ],
-	notifyUserOnSpeedyDeletionNomination: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 't3', 'p1', 'p2' ],
-	warnUserOnSpeedyDelete: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 't3', 'p1', 'p2' ],
+	welcomeUserOnSpeedyDeletionNotification: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 'p1', 'p2' ],
+	notifyUserOnSpeedyDeletionNomination: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 'p1', 'p2' ],
+	warnUserOnSpeedyDelete: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 'p1', 'p2' ],
 	promptForSpeedyDeletionSummary: [],
 	deleteTalkPageOnDelete: true,
 	deleteRedirectsOnDelete: true,
@@ -111,7 +118,7 @@ Twinkle.defaultConfig = {
 	defaultWarningGroup: '1',
 	combinedSingletMenus: false,
 	showSharedIPNotice: true,
-	watchWarnings: true,
+	watchWarnings: 'yes',
 	oldSelect: false,
 	customWarningList: [],
 
@@ -140,8 +147,9 @@ Twinkle.defaultConfig = {
 	// Formerly defaultConfig.friendly:
 	// Tag
 	groupByDefault: true,
-	watchTaggedPages: true,
-	watchMergeDiscussions: true,
+	watchTaggedVenues: ['articles', 'drafts', 'redirects', 'files'],
+	watchTaggedPages: 'yes',
+	watchMergeDiscussions: 'yes',
 	markTaggedPagesAsMinor: false,
 	markTaggedPagesAsPatrolled: true,
 	tagArticleSortOrder: 'cat',
@@ -151,7 +159,7 @@ Twinkle.defaultConfig = {
 
 	// Welcome
 	topWelcomes: false,
-	watchWelcomes: true,
+	watchWelcomes: 'yes',
 	welcomeHeading: 'Welcome',
 	insertHeadings: true,
 	insertUsername: true,

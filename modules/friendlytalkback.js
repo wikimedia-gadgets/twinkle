@@ -31,6 +31,7 @@ Twinkle.talkback.callback = function() {
 	Window.setTitle('Talkback');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('About {{talkback}}', 'Template:Talkback');
+	Window.addFooterLink('Talkback prefs', 'WP:TW/PREF#talkback');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#talkback');
 
 	var form = new Morebits.quickForm(Twinkle.talkback.evaluate);
@@ -99,7 +100,8 @@ Twinkle.talkback.callback = function() {
 		prop: 'extlinks',
 		titles: 'User talk:' + mw.config.get('wgRelevantUserName'),
 		elquery: 'userjs.invalid/noTalkback',
-		ellimit: '1'
+		ellimit: '1',
+		format: 'json'
 	};
 	var wpapi = new Morebits.wiki.api('Fetching talkback opt-out status', query, Twinkle.talkback.callback.optoutStatus);
 	wpapi.post();
@@ -108,10 +110,10 @@ Twinkle.talkback.callback = function() {
 Twinkle.talkback.optout = '';
 
 Twinkle.talkback.callback.optoutStatus = function(apiobj) {
-	var $el = $(apiobj.getXML()).find('el');
-	if ($el.length) {
+	var el = apiobj.getResponse().query.pages[0].extlinks;
+	if (el && el.length) {
 		Twinkle.talkback.optout = mw.config.get('wgRelevantUserName') + ' prefers not to receive talkbacks';
-		var url = $el.text();
+		var url = el[0].url;
 		var reason = mw.util.getParamValue('reason', url);
 		Twinkle.talkback.optout += reason ? ': ' + reason : '.';
 	}
@@ -290,17 +292,17 @@ Twinkle.talkback.changeTarget = function(e) {
 };
 
 Twinkle.talkback.noticeboards = {
-	'an': {
+	an: {
 		label: "WP:AN (Administrators' noticeboard)",
 		text: '{{subst:AN-notice|thread=$SECTION}} ~~~~',
 		editSummary: 'Notice of discussion at [[Wikipedia:Administrators\' noticeboard]]'
 	},
-	'an3': {
+	an3: {
 		label: "WP:AN3 (Administrators' noticeboard/Edit warring)",
 		text: '{{subst:An3-notice|$SECTION}} ~~~~',
 		editSummary: "Notice of discussion at [[Wikipedia:Administrators' noticeboard/Edit warring]]"
 	},
-	'ani': {
+	ani: {
 		label: "WP:ANI (Administrators' noticeboard/Incidents)",
 		text: "== Notice of Administrators' noticeboard/Incidents discussion ==\n" +
 		'{{subst:ANI-notice|thread=$SECTION}} ~~~~',
@@ -308,67 +310,67 @@ Twinkle.talkback.noticeboards = {
 		defaultSelected: true
 	},
 	// let's keep AN and its cousins at the top
-	'afchd': {
+	afchd: {
 		label: 'WP:AFCHD (Articles for creation/Help desk)',
 		text: '{{subst:AFCHD/u|$SECTION}} ~~~~',
 		editSummary: 'You have replies at the [[Wikipedia:AFCHD|Articles for Creation Help Desk]]'
 	},
-	'blpn': {
+	blpn: {
 		label: 'WP:BLPN (Biographies of living persons noticeboard)',
 		text: '{{subst:BLPN-notice|thread=$SECTION}} ~~~~',
-		editSummary: 'Notice of discussion at [[Wikipedia:Biographies of living persons noticeboard]]'
+		editSummary: 'Notice of discussion at [[Wikipedia:Biographies of living persons/Noticeboard]]'
 	},
-	'coin': {
+	coin: {
 		label: 'WP:COIN (Conflict of interest noticeboard)',
 		text: '{{subst:Coin-notice|thread=$SECTION}} ~~~~',
-		editSummary: 'Notice of discussion at [[Wikipedia:Conflict of interest noticeboard]]'
+		editSummary: 'Notice of discussion at [[Wikipedia:Conflict of interest/Noticeboard]]'
 	},
-	'drn': {
+	drn: {
 		label: 'WP:DRN (Dispute resolution noticeboard)',
 		text: '{{subst:DRN-notice|thread=$SECTION}} ~~~~',
 		editSummary: 'Notice of discussion at [[Wikipedia:Dispute resolution noticeboard]]'
 	},
-	'effp': {
+	effp: {
 		label: 'WP:EFFP/R (Edit filter false positive report)',
 		text: '{{EFFPReply|1=$SECTION|2=~~~~}}',
 		editSummary: 'You have replies to your [[Wikipedia:Edit filter/False positives/Reports|edit filter false positive report]]'
 	},
-	'eln': {
+	eln: {
 		label: 'WP:ELN (External links noticeboard)',
 		text: '{{subst:ELN-notice|thread=$SECTION}} ~~~~',
-		editSummary: 'Notice of discussion at [[Wikipedia:External links/noticeboard]]'
+		editSummary: 'Notice of discussion at [[Wikipedia:External links/Noticeboard]]'
 	},
-	'ftn': {
+	ftn: {
 		label: 'WP:FTN (Fringe theories noticeboard)',
 		text: '{{subst:Ftn-notice|thread=$SECTION}} ~~~~',
 		editSummary: 'Notice of discussion at [[Wikipedia:Fringe theories/Noticeboard]]'
 	},
-	'hd': {
+	hd: {
 		label: 'WP:HD (Help desk)',
 		text: '== Your question at the Help desk ==\n' + '{{helpdeskreply|1=$SECTION|ts=~~~~~}}',
 		editSummary: 'You have replies at the [[Wikipedia:Help desk|Wikipedia help desk]]'
 	},
-	'norn': {
+	norn: {
 		label: 'WP:NORN (Reliable sources noticeboard)',
 		text: '{{subst:Norn-notice|thread=$SECTION}} ~~~~',
 		editSummary: 'Notice of discussion at [[Wikipedia:Reliable sources/Noticeboard]]'
 	},
-	'npovn': {
+	npovn: {
 		label: 'WP:NPOVN (Neutral point of view noticeboard)',
 		text: '{{subst:NPOVN-notice|thread=$SECTION}} ~~~~',
-		editSummary: 'Notice of discussion at [[Wikipedia:Neutral point of view/noticeboard]]'
+		editSummary: 'Notice of discussion at [[Wikipedia:Neutral point of view/Noticeboard]]'
 	},
-	'rsn': {
+	rsn: {
 		label: 'WP:RSN (Reliable sources noticeboard)',
 		text: '{{subst:RSN-notice|thread=$SECTION}} ~~~~',
-		editSummary: 'Notice of discussion at [[Wikipedia:Reliable sources/noticeboard]]'
+		editSummary: 'Notice of discussion at [[Wikipedia:Reliable sources/Noticeboard]]'
 	},
-	'th': {
+	th: {
 		label: 'WP:THQ (Teahouse question forum)',
 		text: "== Teahouse talkback: you've got messages! ==\n{{WP:Teahouse/Teahouse talkback|WP:Teahouse/Questions|$SECTION|ts=~~~~}}",
 		editSummary: 'You have replies at the [[Wikipedia:Teahouse/Questions|Teahouse question board]]'
 	},
-	'otrs': {
+	otrs: {
 		label: 'WP:OTRS/N (OTRS noticeboard)',
 		text: '{{OTRSreply|1=$SECTION|2=~~~~}}',
 		editSummary: 'You have replies at the [[Wikipedia:OTRS noticeboard|OTRS noticeboard]]'
@@ -403,7 +405,7 @@ Twinkle.talkback.evaluate = function(e) {
 			break;
 		default:  // tbtarget one of mytalk, usertalk, other
 			var editSummary = 'Talkback ([[:';
-			if (input.tbtarget !== 'other' && !/^\s*user talk:/i.test(input.page)) {
+			if (input.tbtarget !== 'other' && !new RegExp('^\\s*' + Morebits.namespaceRegex(3) + ':', 'i').test(input.page)) {
 				editSummary += 'User talk:';
 			}
 			talkpage.setEditSummary(editSummary + input.page + (input.section ? '#' + input.section : '') + ']])');

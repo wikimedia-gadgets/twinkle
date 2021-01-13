@@ -41,45 +41,52 @@ Twinkle.deprod.callback = function() {
 	Window.display();
 
 	var query = {
-		'action': 'query',
-		'generator': 'categorymembers',
-		'gcmtitle': mw.config.get('wgPageName'),
-		'gcmlimit': Twinkle.getPref('batchMax'),
-		'gcmnamespace': '0|6|108|2', // mostly to ignore categories
-		'prop': [ 'info', 'revisions' ],
-		'rvprop': [ 'content' ],
-		'inprop': [ 'protection' ]
+		action: 'query',
+		generator: 'categorymembers',
+		gcmtitle: mw.config.get('wgPageName'),
+		gcmlimit: Twinkle.getPref('batchMax'),
+		gcmnamespace: '0|108|2', // mostly to ignore categories and files
+		prop: 'info|revisions',
+		rvprop: 'content',
+		inprop: 'protection',
+		format: 'json'
 	};
 
 	var statelem = new Morebits.status('Grabbing list of pages');
 	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
-		var $doc = $(apiobj.responseXML);
-		var $pages = $doc.find('page[ns!="6"]');  // all non-files
+		var response = apiobj.getResponse();
+		var pages = (response.query && response.query.pages) || [];
 		var list = [];
 		var re = /\{\{Proposed deletion/;
-		$pages.each(function() {
-			var $page = $(this);
-			var title = $page.attr('title');
-			var content = $page.find('revisions rev').text();
-			var $editprot = $page.find('pr[type="edit"][level="sysop"]');
-			var isProtected = $editprot.length > 0;
-
+		// json formatversion=2 doesn't sort pages by namespace
+		pages.sort(function(one, two) {
+			return one.ns - two.ns || (one.title > two.title ? 1 : -1);
+		});
+		pages.forEach(function(page) {
 			var metadata = [];
+
+			var content = page.revisions[0].content;
 			var res = re.exec(content);
+			var title = page.title;
 			if (res) {
 				var parsed = Morebits.wikitext.parseTemplate(content, res.index);
 				concerns[title] = parsed.parameters.concern || '';
 				metadata.push(concerns[title]);
 			}
-			if (isProtected) {
+
+			var editProt = page.protection.filter(function(pr) {
+				return pr.type === 'edit' && pr.level === 'sysop';
+			}).pop();
+			if (editProt) {
 				metadata.push('fully protected' +
-					($editprot.attr('expiry') === 'infinity' ? ' indefinitely' : ', expires ' + $editprot.attr('expiry')));
+					(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + editProt.expiry));
 			}
+
 			list.push({
 				label: metadata.length ? '(' + metadata.join('; ') + ')' : '',
 				value: title,
 				checked: concerns[title] !== '',
-				style: isProtected ? 'color:red' : ''
+				style: editProt ? 'color:red' : ''
 			});
 		});
 		apiobj.params.form.append({ type: 'header', label: 'Pages to delete' });
@@ -98,12 +105,12 @@ Twinkle.deprod.callback = function() {
 			}
 		});
 		apiobj.params.form.append({
-			'type': 'checkbox',
-			'name': 'pages',
-			'list': list
+			type: 'checkbox',
+			name: 'pages',
+			list: list
 		});
 		apiobj.params.form.append({
-			'type': 'submit'
+			type: 'submit'
 		});
 
 		var rendered = apiobj.params.form.render();
@@ -134,10 +141,11 @@ var callback_commit = function(event) {
 			var params = { page: pageName, reason: concerns[page] };
 
 			var query = {
-				'action': 'query',
-				'titles': pageName,
-				'prop': 'redirects',
-				'rdlimit': 'max' // 500 is max for normal users, 5000 for bots and sysops
+				action: 'query',
+				titles: pageName,
+				prop: 'redirects',
+				rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
+				format: 'json'
 			};
 			var wikipedia_api = new Morebits.wiki.api('Grabbing redirects', query, callback_deleteRedirects);
 			wikipedia_api.params = params;
@@ -148,8 +156,9 @@ var callback_commit = function(event) {
 			if (pageTitle && pageTitle.namespace % 2 === 0 && pageTitle.namespace !== 2) {
 				pageTitle.namespace++;  // now pageTitle is the talk page title!
 				query = {
-					'action': 'query',
-					'titles': pageTitle.toText()
+					action: 'query',
+					titles: pageTitle.toText(),
+					format: 'json'
 				};
 				wikipedia_api = new Morebits.wiki.api('Checking whether ' + pageName + ' has a talk page', query,
 					callback_deleteTalk);
@@ -165,11 +174,8 @@ var callback_commit = function(event) {
 		});
 	},
 	callback_deleteTalk = function(apiobj) {
-		var $doc = $(apiobj.responseXML);
-		var exists = $doc.find('page:not([missing])').length > 0;
-
-		if (!exists) {
 		// no talk page; forget about it
+		if (apiobj.getResponse().query.pages[0].missing) {
 			return;
 		}
 
@@ -179,9 +185,10 @@ var callback_commit = function(event) {
 		page.deletePage();
 	},
 	callback_deleteRedirects = function(apiobj) {
-		var $doc = $(apiobj.responseXML);
-		$doc.find('redirects rd').each(function() {
-			var title = $(this).attr('title');
+		var response = apiobj.getResponse();
+		var redirects = response.query.pages[0].redirects || [];
+		redirects.forEach(function(rd) {
+			var title = rd.title;
 			var page = new Morebits.wiki.page(title, 'Deleting redirecting page ' + title);
 			page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + apiobj.params.page + '"');
 			page.setChangeTags(Twinkle.changeTags);

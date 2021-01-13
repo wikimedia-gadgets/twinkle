@@ -38,6 +38,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Block templates', 'Template:Uw-block/doc/Block_templates');
 	Window.addFooterLink('Block policy', 'WP:BLOCK');
+	Window.addFooterLink('Block prefs', 'WP:TW/PREF#block');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#block');
 
 	var form = new Morebits.quickForm(Twinkle.block.callback.evaluate);
@@ -60,7 +61,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 				label: 'Partial block',
 				value: 'partial',
 				tooltip: 'Enable partial blocks and partial block templates.',
-				checked: Twinkle.getPref('defaultToPartialBlocks')
+				checked: Twinkle.getPref('defaultToPartialBlocks') // Overridden if already blocked
 			},
 			{
 				label: 'Add block template to user talk page',
@@ -83,6 +84,12 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	result.root = result;
 
 	Twinkle.block.fetchUserInfo(function() {
+		// Toggle initial partial state depending on prior block type,
+		// will override the defaultToPartialBlocks pref
+		if (Twinkle.block.currentBlockInfo) {
+			$(result).find('[name=actiontype][value=partial]').prop('checked', Twinkle.block.currentBlockInfo.partial === '');
+		}
+
 		// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
 		Twinkle.block.transformBlockPresets();
 		if (Twinkle.block.currentBlockInfo) {
@@ -104,6 +111,7 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 		letype: 'block',
 		lelimit: 1,
 		bkusers: mw.config.get('wgRelevantUserName'),
+		bkprop: 'expiry|reason|flags|restrictions',
 		ususers: mw.config.get('wgRelevantUserName'),
 		usprop: 'groupmemberships',
 		letitle: 'User:' + mw.config.get('wgRelevantUserName')
@@ -131,6 +139,7 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 			}
 
 			Twinkle.block.hasBlockLog = !!data.query.logevents.length;
+			Twinkle.block.blockLog = Twinkle.block.hasBlockLog && data.query.logevents;
 			// Used later to check if block status changed while filling out the form
 			Twinkle.block.blockLogId = Twinkle.block.hasBlockLog ? data.query.logevents[0].logid : false;
 
@@ -163,6 +172,33 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 	partial.prop('disabled', !blockBox && !templateBox);
 
+	// Add current block parameters as default preset
+	if (Twinkle.block.currentBlockInfo) {
+		Twinkle.block.blockPresetsInfo.prior = Twinkle.block.currentBlockInfo;
+		var prior = {
+			label: 'Prior block',
+			// value not a valid template selection, chosen below by setting templateName
+			list: [{ label: 'Prior block settings', value: 'prior', selected: true }]
+		};
+		// Arrays of objects are annoying to check
+		if (!blockGroup.some(function(bg) {
+			return bg.label === prior.label;
+		})) {
+			blockGroup.push(prior);
+		}
+
+		// Always ensure proper template exists/is selected when switching modes
+		if (partialBox) {
+			Twinkle.block.blockPresetsInfo.prior.templateName = Morebits.string.isInfinity(Twinkle.block.currentBlockInfo.expiry) ? 'uw-pblockindef' : 'uw-pblock';
+		} else {
+			if (!Twinkle.block.isRegistered) {
+				Twinkle.block.blockPresetsInfo.prior.templateName = 'uw-ablock';
+			} else {
+				Twinkle.block.blockPresetsInfo.prior.templateName = Morebits.string.isInfinity(Twinkle.block.currentBlockInfo.expiry) ? 'uw-blockindef' : 'uw-block';
+			}
+		}
+	}
+
 	// Can be in preset or template field, so the old one in the template
 	// field will linger. No need to keep the old value around, so just
 	// remove it; saves trouble when hiding/evaluating
@@ -182,8 +218,8 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		});
 
 		field_block_options = new Morebits.quickForm.element({ type: 'field', label: 'Block options', name: 'field_block_options' });
-		field_block_options.append({ type: 'div', name: 'hasblocklog', label: ' ' });
 		field_block_options.append({ type: 'div', name: 'currentblock', label: ' ' });
+		field_block_options.append({ type: 'div', name: 'hasblocklog', label: ' ' });
 		field_block_options.append({
 			type: 'select',
 			name: 'expiry_preset',
@@ -439,7 +475,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			});
 		}
 
-		var $previewlink = $('<a id="twinkleblock-preivew-link">Preview</a>');
+		var $previewlink = $('<a id="twinkleblock-preview-link">Preview</a>');
 		$previewlink.off('click').on('click', function() {
 			Twinkle.block.callback.preview($form[0]);
 		});
@@ -483,12 +519,12 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 						return;
 					}
 					return {
-						'action': 'query',
-						'format': 'json',
-						'list': 'allpages',
-						'apfrom': title.title,
-						'apnamespace': title.namespace,
-						'aplimit': '10'
+						action: 'query',
+						format: 'json',
+						list: 'allpages',
+						apfrom: title.title,
+						apnamespace: title.namespace,
+						aplimit: '10'
 					};
 				},
 				processResults: function(data) {
@@ -547,20 +583,11 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		$form.find('fieldset[name="field_template_options"]').hide();
 	}
 
-	if (Twinkle.block.hasBlockLog) {
-		var $blockloglink = $('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgRelevantUserName'), type: 'block'}) + '">block log</a>)');
-
-		Morebits.status.init($('div[name="hasblocklog"] span').last()[0]);
-		Morebits.status.warn('This user has been blocked in the past', $blockloglink[0]);
-	}
-
 	if (Twinkle.block.currentBlockInfo) {
 		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
-		// list=blocks without bkprops (as we do in fetchUerInfo)
-		// returns partial: '' if the user is partially blocked
 		var statusStr = relevantUserName + ' is ' + (Twinkle.block.currentBlockInfo.partial === '' ? 'partially blocked' : 'blocked sitewide');
 		if (Twinkle.block.currentBlockInfo.expiry === 'infinity') {
-			statusStr += ' (indef)';
+			statusStr += ' (indefinite)';
 		} else if (new Morebits.date(Twinkle.block.currentBlockInfo.expiry).isValid()) {
 			statusStr += ' (expires ' + new Morebits.date(Twinkle.block.currentBlockInfo.expiry).calendar('utc') + ')';
 		}
@@ -570,11 +597,29 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		} else if (Twinkle.block.currentBlockInfo.partial === '' && !partialBox) {
 			infoStr += ', converting it to a sitewide block';
 		}
+		infoStr += '.';
 		Morebits.status.warn(statusStr, infoStr);
+
+		// Default to the current block conditions on intial form generation
 		Twinkle.block.callback.update_form(e, Twinkle.block.currentBlockInfo);
 	}
 
-	// make sure all the fields are correct based on defaults
+	if (Twinkle.block.hasBlockLog) {
+		var $blockloglink = $('<span>').append($('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgRelevantUserName'), type: 'block'}) + '">block log</a>)'));
+		if (!Twinkle.block.currentBlockInfo) {
+			var lastBlockAction = Twinkle.block.blockLog[0];
+			if (lastBlockAction.action === 'unblock') {
+				$blockloglink.append(' (unblocked ' + new Morebits.date(lastBlockAction.timestamp).calendar('utc') + ')');
+			} else { // block or reblock
+				$blockloglink.append(' (expired ' + new Morebits.date(lastBlockAction.params.expiry).calendar('utc') + ')');
+			}
+		}
+
+		Morebits.status.init($('div[name="hasblocklog"] span').last()[0]);
+		Morebits.status.warn(Twinkle.block.currentBlockInfo ? 'Previous blocks' : 'This user has been blocked in the past', $blockloglink[0]);
+	}
+
+	// Make sure all the fields are correct based on initial defaults
 	if (blockBox) {
 		Twinkle.block.callback.change_preset(e);
 	} else if (templateBox) {
@@ -1168,6 +1213,10 @@ Twinkle.block.dsinfo = {
 		code: 'gc',
 		page: 'Wikipedia:Arbitration/Requests/Case/Gun control'
 	},
+	'Horn of Africa (Ethiopia, Somalia, Eritrea, Djibouti)': {
+		code: 'horn',
+		page: 'Wikipedia:Arbitration/Requests/Case/Horn of Africa'
+	},
 	'India, Pakistan, and Afghanistan': {
 		code: 'ipa',
 		page: 'Wikipedia:Requests for arbitration/India-Pakistan'
@@ -1494,11 +1543,51 @@ Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, 
 	} else {
 		form.reason.value = data.reason || '';
 	}
+
+	// Clear and/or set any partial page or namespace restrictions
+	if (form.pagerestrictions) {
+		var $pageSelect = $(form).find('[name=pagerestrictions]');
+		var $namespaceSelect = $(form).find('[name=namespacerestrictions]');
+
+		// Respect useInitialOptions by clearing data when switching presets
+		// In practice, this will always clear, since no partial presets use it
+		if (!data.useInitialOptions) {
+			$pageSelect.val(null).trigger('change');
+			$namespaceSelect.val(null).trigger('change');
+		}
+
+		// Add any preset options; in practice, just used for prior block settings
+		if (data.restrictions) {
+			if (data.restrictions.pages && !$pageSelect.val().length) {
+				var pages = data.restrictions.pages.map(function(pr) {
+					return pr.title;
+				});
+				// since page restrictions use an ajax source, we
+				// short-circuit that and just add a new option
+				pages.forEach(function(page) {
+					if (!$pageSelect.find("option[value='" + $.escapeSelector(page) + "']").length) {
+						var newOption = new Option(page, page, true, true);
+						$pageSelect.append(newOption);
+					}
+				});
+				$pageSelect.val($pageSelect.val().concat(pages)).trigger('change');
+			}
+			if (data.restrictions.namespaces) {
+				$namespaceSelect.val($namespaceSelect.val().concat(data.restrictions.namespaces)).trigger('change');
+			}
+		}
+	}
 };
 
 Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemplate(e) {
 	var form = e.target.form, value = form.template.value, settings = Twinkle.block.blockPresetsInfo[value];
-	if (!$(form).find('[name=actiontype][value=block]').is(':checked')) {
+
+	var blockBox = $(form).find('[name=actiontype][value=block]').is(':checked');
+	var partialBox = $(form).find('[name=actiontype][value=partial]').is(':checked');
+	var templateBox = $(form).find('[name=actiontype][value=template]').is(':checked');
+
+	// Block form is not present
+	if (!blockBox) {
 		if (settings.indefinite || settings.nonstandard) {
 			if (Twinkle.block.prev_template_expiry === null) {
 				Twinkle.block.prev_template_expiry = form.template_expiry.value || '';
@@ -1516,25 +1605,24 @@ Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemp
 			form.expiry.value = Twinkle.block.prev_template_expiry;
 		}
 		Morebits.quickForm.setElementVisibility(form.notalk.parentNode, !settings.nonstandard);
-		Morebits.quickForm.setElementVisibility(form.noemail_template.parentNode, $(form).find('[name=actiontype][value=partial]').is(':checked') && !$(form).find('[name=actiontype][value=block]').is(':checked'));
-		Morebits.quickForm.setElementVisibility(form.nocreate_template.parentNode, $(form).find('[name=actiontype][value=partial]').is(':checked') && !$(form).find('[name=actiontype][value=block]').is(':checked'));
-	} else {
-		// Only present if block && template
-		if (form.blank_duration) {
-			Morebits.quickForm.setElementVisibility(
-				form.blank_duration.parentNode,
-				!settings.indefinite && !settings.nonstandard
-			);
-		}
+		// Partial
+		Morebits.quickForm.setElementVisibility(form.noemail_template.parentNode, partialBox);
+		Morebits.quickForm.setElementVisibility(form.nocreate_template.parentNode, partialBox);
+	} else if (templateBox) { // Only present if block && template forms both visible
+		Morebits.quickForm.setElementVisibility(
+			form.blank_duration.parentNode,
+			!settings.indefinite && !settings.nonstandard
+		);
 	}
 
 	Morebits.quickForm.setElementVisibility(form.dstopic.parentNode, value === 'uw-aeblock' || value === 'uw-aepblock');
 
-	Morebits.quickForm.setElementVisibility(form.article.parentNode, !!settings.pageParam);
-	Morebits.quickForm.setElementVisibility(form.block_reason.parentNode, !!settings.reasonParam);
+	// Only particularly relevant if template form is present
+	Morebits.quickForm.setElementVisibility(form.article.parentNode, settings && !!settings.pageParam);
+	Morebits.quickForm.setElementVisibility(form.block_reason.parentNode, settings && !!settings.reasonParam);
 
 	// Partial block
-	Morebits.quickForm.setElementVisibility(form.area.parentNode, $(form).find('[name=actiontype][value=partial]').is(':checked') && !$(form).find('[name=actiontype][value=block]').is(':checked'));
+	Morebits.quickForm.setElementVisibility(form.area.parentNode, partialBox && !blockBox);
 
 	form.root.previewer.closePreview();
 };
@@ -1752,7 +1840,8 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 		if (!/te?mp|^\s*$|min/.exec(params.expiry)) {
 			if (params.indefinite) {
 				text += '|indef=yes';
-			} else if (!params.blank_duration) {
+			} else if (!params.blank_duration && !new Morebits.date(params.expiry).isValid()) {
+				// Block template wants a duration, not date
 				text += '|time=' + params.expiry;
 			}
 		}
@@ -1816,32 +1905,36 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 };
 
 Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
-	var text = pageobj.getPageText(),
-		params = pageobj.getCallbackParameters(),
+	var params = pageobj.getCallbackParameters(),
+		date = new Morebits.date(pageobj.getLoadTime()),
 		messageData = params.messageData,
-		date = new Morebits.date(pageobj.getLoadTime());
-
-	var dateHeaderRegex = date.monthHeaderRegex(), dateHeaderRegexLast, dateHeaderRegexResult;
-	while ((dateHeaderRegexLast = dateHeaderRegex.exec(text)) !== null) {
-		dateHeaderRegexResult = dateHeaderRegexLast;
-	}
-	// If dateHeaderRegexResult is null then lastHeaderIndex is never checked. If it is not null but
-	// \n== is not found, then the date header must be at the very start of the page. lastIndexOf
-	// returns -1 in this case, so lastHeaderIndex gets set to 0 as desired.
-	var lastHeaderIndex = text.lastIndexOf('\n==') + 1;
-
-	if (text.length > 0) {
-		text += '\n\n';
-	}
+		text;
 
 	params.indefinite = Morebits.string.isInfinity(params.expiry);
 
 	if (Twinkle.getPref('blankTalkpageOnIndefBlock') && params.template !== 'uw-lblock' && params.indefinite) {
 		Morebits.status.info('Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date');
 		text = date.monthHeader() + '\n';
-	} else if (!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
-		Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
-		text += date.monthHeader() + '\n';
+	} else {
+		text = pageobj.getPageText();
+
+		var dateHeaderRegex = date.monthHeaderRegex(), dateHeaderRegexLast, dateHeaderRegexResult;
+		while ((dateHeaderRegexLast = dateHeaderRegex.exec(text)) !== null) {
+			dateHeaderRegexResult = dateHeaderRegexLast;
+		}
+		// If dateHeaderRegexResult is null then lastHeaderIndex is never checked. If it is not null but
+		// \n== is not found, then the date header must be at the very start of the page. lastIndexOf
+		// returns -1 in this case, so lastHeaderIndex gets set to 0 as desired.
+		var lastHeaderIndex = text.lastIndexOf('\n==') + 1;
+
+		if (text.length > 0) {
+			text += '\n\n';
+		}
+
+		if (!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
+			Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
+			text += date.monthHeader() + '\n';
+		}
 	}
 
 	params.expiry = typeof params.template_expiry !== 'undefined' ? params.template_expiry : params.expiry;
