@@ -229,11 +229,12 @@ Twinkle.tag.callback = function friendlytagCallback() {
 						type: 'checkbox',
 						name: 'tags',
 						list: subgroup.map(function (item) {
+							returnValue = undefined;
 							if (redirectTagsPresent.indexOf(item.tag) === -1) {
 								returnValue = { value: item.tag, label: '{{' + item.tag + '}}: ' + item.description, subgroup: item.subgroup };
 							}
 							return returnValue;
-						})
+						}).filter(removeUndefined => removeUndefined !== undefined)
 					});
 				});
 			});
@@ -1734,6 +1735,9 @@ Twinkle.tag.callbacks = {
 
 			summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
 		};
+
+		tags.sort();
+		$.each(tags, addTag);
 		if (rcatsToAdd.length && rcatsToRemove.length) {
 			summaryText += ' & ';
 		}
@@ -1749,14 +1753,15 @@ Twinkle.tag.callbacks = {
 			Morebits.status.warn('Info', 'No tags remaining to apply');
 		}
 
-		tags.sort();
-		$.each(tags, addTag);
-
 		// Check for all Rcat shell redirects (from #433)
 		if (pageText.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
 			// Regex inspired by [[User:Kephir/gadgets/sagittarius.js]] ([[Special:PermaLink/831402893]])
 			var oldTags = pageText.match(/(\s*{{[A-Za-z ]+\|)((?:[^|{}]*|{{[^}]*}})+)(}})\s*/i);
-			pageText = pageText.replace(oldTags[0], oldTags[1] + tagText + oldTags[2] + oldTags[3]);
+			if (rcatsToAdd.length) {
+				pageText = pageText.replace(oldTags[0], oldTags[1] + tagText + oldTags[2] + oldTags[3]);
+			} else {
+				pageText = pageText.replace(oldTags[0], '');
+			}
 		} else {
 			// Fold any pre-existing Rcats into taglist and under Rcatshell
 			var pageTags = pageText.match(/\s*{{R(?:edirect)? .*?}}/img);
@@ -1770,9 +1775,10 @@ Twinkle.tag.callbacks = {
 				});
 			}
 			pageText += '\n{{Redirect category shell|' + tagText + oldPageTags + '\n}}';
+			summaryText += tags.length > 0 ? '' : 'rcat shell';
 		}
 
-		summaryText += (tags.length > 0 ? ' tag' + (tags.length > 1 ? 's' : ' ') : 'rcat shell') + ' to redirect';
+		summaryText += ((tags.length + rcatsToRemove.length) > 0 ? ' tag' + ((tags.length + rcatsToRemove.length) > 1 ? 's' : '') : '') + (rcatsToRemove.length > 0 ? ' from redirect' : ' to redirect');
 
 		// avoid truncated summaries
 		if (summaryText.length > 499) {
