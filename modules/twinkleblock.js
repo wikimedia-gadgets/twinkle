@@ -16,9 +16,10 @@ menuFormattedNamespaces[0] = '(Article)';
  */
 
 Twinkle.block = function twinkleblock() {
-	// should show on Contributions or Block pages, anywhere there's a relevant user
 	relevantUserName = mw.config.get('wgRelevantUserName');
-	if (Morebits.userIsSysop && relevantUserName) {
+	// should show on Contributions or Block pages, anywhere there's a relevant user
+	// Ignore ranges wider than the CIDR limit
+	if (Morebits.userIsSysop && relevantUserName && (!mw.util.isIPAddress(relevantUserName, true) || mw.util.isIPAddress(relevantUserName) || Morebits.validCIDR(relevantUserName))) {
 		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user');
 	}
 };

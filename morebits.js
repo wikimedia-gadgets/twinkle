@@ -111,6 +111,32 @@ Morebits.sanitizeIPv6 = function (address) {
 };
 
 /**
+ * Check that an IP range is within the CIDR limits.  Most likely to be useful
+ * in conjunction with `wgRelevantUserName`.  CIDR limits are harcoded as /16
+ * for IPv4 and /32 for IPv6.
+ *
+ * @returns {boolean} - True for valid ranges within the CIDR limits,
+ * otherwise false (ranges outside the limit, single IPs, non-IPs).
+ */
+Morebits.validCIDR = function (ip) {
+	if (mw.util.isIPAddress(ip, true) && !mw.util.isIPAddress(ip)) {
+		var subnet = parseInt(ip.match(/\/(\d{1,3})$/)[1], 10);
+		if (subnet) { // Should be redundant
+			if (mw.util.isIPv6Address(ip, true)) {
+				if (subnet >= 32) {
+					return true;
+				}
+			} else {
+				if (subnet >= 16) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+};
+
+/**
  * Get the /64 subnet for an IPv6 address.
  *
  * @param {string} ipv6 - The IPv6 address, with or without a subnet.

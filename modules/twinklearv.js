@@ -19,6 +19,10 @@ Twinkle.arv = function twinklearv() {
 	}
 
 	var isIP = mw.util.isIPAddress(username, true);
+	// Ignore ranges wider than the CIDR limit
+	if (isIP && !mw.util.isIPAddress(username) && !Morebits.validCIDR(username)) {
+		return;
+	}
 	var userType = isIP ? 'IP' + (!mw.util.isIPAddress(username) ? ' range' : '') : 'user';
 
 	Twinkle.addPortletLink(function() {
