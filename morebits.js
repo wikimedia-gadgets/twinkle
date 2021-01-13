@@ -134,7 +134,7 @@ Morebits.pageNameNorm = mw.config.get('wgPageName').replace(/_/g, ' ');
 /**
  * Create a string for use in regex matching a page name.  Accounts for
  * leading character's capitalization, underscores as spaces, and special
- * characters being escaped.
+ * characters being escaped.  See also {@link Morebits.namespaceRegex}.
  *
  * @param {string} pageName - Page name without namespace.
  * @returns {string} - For a page name `Foo bar`, returns the string `[Ff]oo[_ ]bar`.
@@ -149,6 +149,50 @@ Morebits.pageNameRegex = function(pageName) {
 		return '[' + mw.Title.phpCharToUpper(firstChar) + firstChar.toLowerCase() + ']' + remainder;
 	}
 	return Morebits.string.escapeRegExp(firstChar) + remainder;
+};
+
+/**
+ * Create a string for use in regex matching all namespace aliases, regardless
+ * of the capitalization and underscores/spaces.  Doesn't include the optional
+ * leading `:`, but if there's more than one item, wraps the list in a
+ * non-capturing group.  This means you can do `Morebits.namespaceRegex([4]) +
+ * ':' + Morebits.pageNameRegex('Twinkle')` to match a full page.  Uses
+ * {@link Morebits.pageNameRegex}.
+ *
+ * @param {number[]} namespaces - Array of namespace numbers.  Unused/invalid
+ * namespace numbers are silently discarded.
+ * @example
+ * // returns '(?:[Ff][Ii][Ll][Ee]|[Ii][Mm][Aa][Gg][Ee])'
+ * Morebits.namespaceRegex([6])
+ * @returns {string} - Regex-suitable string of all namespace aliases.
+ */
+Morebits.namespaceRegex = function(namespaces) {
+	if (!Array.isArray(namespaces)) {
+		namespaces = [namespaces];
+	}
+	var aliases = [], regex;
+	$.each(mw.config.get('wgNamespaceIds'), function(name, number) {
+		if (namespaces.indexOf(number) !== -1) {
+			// Namespaces are completely agnostic as to case,
+			// and a regex string is more useful/compatibile than a RegExp object,
+			// so we accept any casing for any letter.
+			aliases.push(name.split('').map(function(char) {
+				return Morebits.pageNameRegex(char);
+			}).join(''));
+		}
+	});
+	switch (aliases.length) {
+		case 0:
+			regex = '';
+			break;
+		case 1:
+			regex = aliases[0];
+			break;
+		default:
+			regex = '(?:' + aliases.join('|') + ')';
+			break;
+	}
+	return regex;
 };
 
 
@@ -4492,12 +4536,24 @@ Morebits.wikitext.page.prototype = {
 	 * @returns {Morebits.wikitext.page}
 	 */
 	removeLink: function(link_target) {
-		var link_re_string = Morebits.pageNameRegex(link_target);
+		// Rempve a leading colon, to be handled later
+		if (link_target.indexOf(':') === 0) {
+			link_target = link_target.slice(1);
+		}
+		var link_re_string = '', ns = '', title = link_target;
 
+		var idx = link_target.indexOf(':');
+		if (idx > 0) {
+			ns = link_target.slice(0, idx);
+			title = link_target.slice(idx + 1);
+
+			link_re_string = Morebits.namespaceRegex(mw.config.get('wgNamespaceIds')[ns.toLowerCase().replace(/ /g, '_')]) + ':';
+		}
+		link_re_string += Morebits.pageNameRegex(title);
+
+		// Allow for an optional leading colon, e.g. [[:User:Test]]
 		// Files and Categories become links with a leading colon, e.g. [[:File:Test.png]]
-		// Otherwise, allow for an optional leading colon, e.g. [[:User:Test]]
-		var special_ns_re = /^(?:[Ff]ile|[Ii]mage|[Cc]ategory):/;
-		var colon = special_ns_re.test(link_target) ? ':' : ':?';
+		var colon = new RegExp(Morebits.namespaceRegex([6, 14])).test(ns) ? ':' : ':?';
 
 		var link_simple_re = new RegExp('\\[\\[' + colon + '(' + link_re_string + ')\\]\\]', 'g');
 		var link_named_re = new RegExp('\\[\\[' + colon + link_re_string + '\\|(.+?)\\]\\]', 'g');
@@ -4522,7 +4578,7 @@ Morebits.wikitext.page.prototype = {
 
 		// Check for normal image links, i.e. [[File:Foobar.png|...]]
 		// Will eat the whole link
-		var links_re = new RegExp('\\[\\[(?:[Ii]mage|[Ff]ile):\\s*' + image_re_string + '\\s*[\\|(?:\\]\\])]');
+		var links_re = new RegExp('\\[\\[' + Morebits.namespaceRegex(6) + ':\\s*' + image_re_string + '\\s*[\\|(?:\\]\\])]');
 		var allLinks = Morebits.string.splitWeightedByKeys(unbinder.content, '[[', ']]');
 		for (var i = 0; i < allLinks.length; ++i) {
 			if (links_re.test(allLinks[i])) {
@@ -4536,7 +4592,7 @@ Morebits.wikitext.page.prototype = {
 		// Check for gallery images, i.e. instances that must start on a new line,
 		// eventually preceded with some space, and must include File: prefix
 		// Will eat the whole line.
-		var gallery_image_re = new RegExp('(^\\s*(?:[Ii]mage|[Ff]ile):\\s*' + image_re_string + '\\s*(?:\\|.*?$|$))', 'mg');
+		var gallery_image_re = new RegExp('(^\\s*' + Morebits.namespaceRegex(6) + ':\\s*' + image_re_string + '\\s*(?:\\|.*?$|$))', 'mg');
 		unbinder.content = unbinder.content.replace(gallery_image_re, '<!-- ' + reason + '$1 -->');
 
 		// unbind the newly created comments
@@ -4544,7 +4600,7 @@ Morebits.wikitext.page.prototype = {
 
 		// Check free image usages, for example as template arguments, might have the File: prefix excluded, but must be preceeded by an |
 		// Will only eat the image name and the preceeding bar and an eventual named parameter
-		var free_image_re = new RegExp('(\\|\\s*(?:[\\w\\s]+\\=)?\\s*(?:(?:[Ii]mage|[Ff]ile):\\s*)?' + image_re_string + ')', 'mg');
+		var free_image_re = new RegExp('(\\|\\s*(?:[\\w\\s]+\\=)?\\s*(?:' + Morebits.namespaceRegex(6) + ':\\s*)?' + image_re_string + ')', 'mg');
 		unbinder.content = unbinder.content.replace(free_image_re, '<!-- ' + reason + '$1 -->');
 		// Rebind the content now, we are done!
 		this.text = unbinder.rebind();
@@ -4560,7 +4616,7 @@ Morebits.wikitext.page.prototype = {
 	 */
 	addToImageComment: function(image, data) {
 		var image_re_string = Morebits.pageNameRegex(image);
-		var links_re = new RegExp('\\[\\[(?:[Ii]mage|[Ff]ile):\\s*' + image_re_string + '\\s*[\\|(?:\\]\\])]');
+		var links_re = new RegExp('\\[\\[' + Morebits.namespaceRegex(6) + ':\\s*' + image_re_string + '\\s*[\\|(?:\\]\\])]');
 		var allLinks = Morebits.string.splitWeightedByKeys(this.text, '[[', ']]');
 		for (var i = 0; i < allLinks.length; ++i) {
 			if (links_re.test(allLinks[i])) {
@@ -4585,7 +4641,7 @@ Morebits.wikitext.page.prototype = {
 	 */
 	removeTemplate: function(template) {
 		var template_re_string = Morebits.pageNameRegex(template);
-		var links_re = new RegExp('\\{\\{(?:[Tt]emplate:)?\\s*[' + template_re_string + '\\s*[\\|(?:\\}\\})]');
+		var links_re = new RegExp('\\{\\{(?:' + Morebits.namespaceRegex(10) + ':)?\\s*' + template_re_string + '\\s*[\\|(?:\\}\\})]');
 		var allTemplates = Morebits.string.splitWeightedByKeys(this.text, '{{', '}}', [ '{{{', '}}}' ]);
 		for (var i = 0; i < allTemplates.length; ++i) {
 			if (links_re.test(allTemplates[i])) {

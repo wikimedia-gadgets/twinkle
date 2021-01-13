@@ -183,7 +183,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
 	var input = Morebits.quickForm.getInputData(event.target);
 	if (input.replacement) {
-		input.replacement = (/^(Image|File):/i.test(input.replacement) ? '' : 'File:') + input.replacement;
+		input.replacement = (new RegExp('^' + Morebits.namespaceRegex(6) + ':', 'i').test(input.replacement) ? '' : 'File:') + input.replacement;
 	}
 
 	var csdcrit;

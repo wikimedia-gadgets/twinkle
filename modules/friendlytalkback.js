@@ -405,7 +405,7 @@ Twinkle.talkback.evaluate = function(e) {
 			break;
 		default:  // tbtarget one of mytalk, usertalk, other
 			var editSummary = 'Talkback ([[:';
-			if (input.tbtarget !== 'other' && !/^\s*user talk:/i.test(input.page)) {
+			if (input.tbtarget !== 'other' && !new RegExp('^\\s*' + Morebits.namespaceRegex(3) + ':', 'i').test(input.page)) {
 				editSummary += 'User talk:';
 			}
 			talkpage.setEditSummary(editSummary + input.page + (input.section ? '#' + input.section : '') + ']])');

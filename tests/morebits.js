@@ -27,6 +27,14 @@ QUnit.test('pageNameRegex', assert => {
 	assert.strictEqual(Morebits.pageNameRegex('#'), '#', 'Single same-case');
 	assert.strictEqual(Morebits.pageNameRegex('*$, \{}(a) |.?+-^ [ ]'), '\\*\\$,[_ ]\\{\\}\\(a\\)[_ ]\\|\\.\\?\\+\\-\\^\[_ ]\\[[_ ]\\]', 'Special characters');
 });
+QUnit.test('namespaceRegex', assert => {
+	assert.strictEqual(Morebits.namespaceRegex([6]), '(?:[Ff][Ii][Ll][Ee]|[Ii][Mm][Aa][Gg][Ee])', 'Files');
+	assert.strictEqual(Morebits.namespaceRegex(10), '[Tt][Ee][Mm][Pp][Ll][Aa][Tt][Ee]', 'Non-array singlet');
+	assert.strictEqual(Morebits.namespaceRegex([4, 5]), '(?:[Ww][Ii][Kk][Ii][Pp][Ee][Dd][Ii][Aa]|[Ww][Ii][Kk][Ii][Pp][Ee][Dd][Ii][Aa][_ ][Tt][Aa][Ll][Kk]|[Ww][Pp]|[Ww][Tt]|[Pp][Rr][Oo][Jj][Ee][Cc][Tt]|[Pp][Rr][Oo][Jj][Ee][Cc][Tt][_ ][Tt][Aa][Ll][Kk])', 'Project and project talk');
+	assert.strictEqual(Morebits.namespaceRegex(0), '', 'Main');
+	assert.strictEqual(Morebits.namespaceRegex(), '', 'Empty');
+});
+
 QUnit.test('isPageRedirect', assert => {
 	assert.false(Morebits.isPageRedirect(), 'Is redirect');
 });
