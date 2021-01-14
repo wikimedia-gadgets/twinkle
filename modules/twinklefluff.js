@@ -85,10 +85,10 @@ Twinkle.fluff.linkBuilder = {
 	/**
 	 * @param {string} [vandal=null] - Username of the editor being reverted
 	 * Provide a falsey value if the username is hidden, defaults to null
-	 * @param {boolean} inline - True to create two links in a span, false
-	 * to create three links in a div (optional)
-	 * @param {number|string} [rev=wgCurRevisionId] - Revision ID being reverted (optional)
-	 * @param {string} [page=wgPageName] - Page being reverted (optional)
+	 * @param {boolean} [inline=false] - True to place links in an inline span,
+	 * false to place links in a div
+	 * @param {number|string} [rev=wgCurRevisionId] - Revision ID being reverted
+	 * @param {string} [page=wgPageName] - Page being reverted
 	 */
 	rollbackLinks: function(vandal, inline, rev, page) {
 		vandal = vandal || null;
@@ -103,12 +103,19 @@ Twinkle.fluff.linkBuilder = {
 			revNode.setAttribute('id', 'tw-revert');
 		}
 
+		var agfNode = document.createElement('strong');
 		var normNode = document.createElement('strong');
 		var vandNode = document.createElement('strong');
 
-		var normLink = Twinkle.fluff.linkBuilder.buildLink('SteelBlue', 'rollback');
-		var vandLink = Twinkle.fluff.linkBuilder.buildLink('Red', 'vandalism');
+		// Slightly shorter links for inline
+		var agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', inline ? 'good faith' : 'Rollback (AGF)');
+		var normLink = Twinkle.fluff.linkBuilder.buildLink('SteelBlue', inline ? 'rollback' : 'Rollback');
+		var vandLink = Twinkle.fluff.linkBuilder.buildLink('Red', inline ? 'vandalism' : 'Vandalism');
 
+		$(agfLink).click(function() {
+			Twinkle.fluff.revert('agf', vandal, rev, page);
+			Twinkle.fluff.disableLinks(revNode);
+		});
 		$(normLink).click(function() {
 			Twinkle.fluff.revert('norm', vandal, rev, page);
 			Twinkle.fluff.disableLinks(revNode);
@@ -118,28 +125,22 @@ Twinkle.fluff.linkBuilder = {
 			Twinkle.fluff.disableLinks(revNode);
 		});
 
-		vandNode.appendChild(vandLink);
+		agfNode.appendChild(agfLink);
 		normNode.appendChild(normLink);
+		vandNode.appendChild(vandLink);
 
-		var separator = inline ? ' ' : ' || ';
-
-		if (!inline) {
-			var agfNode = document.createElement('strong');
-			var agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
-			$(agfLink).click(function() {
-				Twinkle.fluff.revert('agf', vandal, rev, page);
-				// Twinkle.fluff.disableLinks(revNode); // rollbackInPlace not relevant for any inline situations
-			});
-			agfNode.appendChild(agfLink);
-			revNode.appendChild(agfNode);
+		var separator = ' || ';
+		if (inline) {
+			separator = ' ';
+			revNode.appendChild(document.createTextNode(separator));
 		}
+		revNode.appendChild(agfNode);
 		revNode.appendChild(document.createTextNode(separator));
 		revNode.appendChild(normNode);
 		revNode.appendChild(document.createTextNode(separator));
 		revNode.appendChild(vandNode);
 
 		return revNode;
-
 	},
 
 	// Build [restore this revision] links
@@ -153,7 +154,7 @@ Twinkle.fluff.linkBuilder = {
 		revertToRevisionNode.setAttribute('id', 'tw-revert-to-' + revisionRef);
 		revertToRevisionNode.style.fontWeight = 'bold';
 
-		var revertToRevisionLink = Twinkle.fluff.linkBuilder.buildLink('SaddleBrown', 'restore this version');
+		var revertToRevisionLink = Twinkle.fluff.linkBuilder.buildLink('SaddleBrown', inline ? 'restore this version' : 'Restore this version');
 		$(revertToRevisionLink).click(function() {
 			Twinkle.fluff.revertToRevision(revisionRef);
 		});
@@ -162,6 +163,7 @@ Twinkle.fluff.linkBuilder = {
 			revertToRevisionNode.appendChild(document.createTextNode(' '));
 		}
 		revertToRevisionNode.appendChild(revertToRevisionLink);
+
 		return revertToRevisionNode;
 	}
 };
