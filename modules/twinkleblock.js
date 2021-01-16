@@ -863,7 +863,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'uw-copyrightblock': {
 		autoblock: true,
-		expiry: '24 hours',
+		expiry: 'infinity',
 		nocreate: true,
 		pageParam: true,
 		reason: '[[WP:Copyright violations|Copyright violations]]',
