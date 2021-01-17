@@ -51,6 +51,7 @@ QUnit.test('RegEx headers', assert => {
 });
 QUnit.test('add/subtract', assert => {
 	assert.strictEqual(new Morebits.date(timestamp).add(1, 'day').toISOString(), '2020-11-08T16:26:00.000Z', 'Add 1 day');
+	assert.strictEqual(new Morebits.date(timestamp).add(1, 'DaY').toISOString(), '2020-11-08T16:26:00.000Z', 'Loudly add 1 day');
 	assert.strictEqual(new Morebits.date(timestamp).subtract(1, 'day').toISOString(), '2020-11-06T16:26:00.000Z', 'Subtract 1 day');
 	assert.throws(() => new Morebits.date(timestamp).add(1), 'throws: no unit');
 	assert.throws(() => new Morebits.date(timestamp).subtract(1, 'dayo'), 'throws: bad unit');
