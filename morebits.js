@@ -2689,7 +2689,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry && ctx.watched !== true) {
+		if (fnApplyWatchlistExpiry()) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 
@@ -3747,6 +3747,48 @@ Morebits.wiki.page = function(pageName, status) {
 		return true; // all OK
 	};
 
+	/**
+	 * Determine whether we should provide a watchlist expiry.  Will not
+	 * do so if the page is currently permanently watched, or the current
+	 * expiry is *after* the new, provided expiry.  Only handles strings
+	 * recognized by {@link Morebits.date} or relative timeframes with
+	 * unit it can process.  Relies on the fact that fnCanUseMwUserToken
+	 * requires page loading if a watchlistexpiry is provided, so we are
+	 * ensured of knowing the watch status by the use of this.
+	 *
+	 * @returns {boolean}
+	 */
+	var fnApplyWatchlistExpiry = function() {
+		if (ctx.watchlistExpiry) {
+			if (!ctx.watched || Morebits.string.isInfinity(ctx.watchlistExpiry)) {
+				return true;
+			} else if (typeof ctx.watched === 'string') {
+				var newExpiry;
+				// Attempt to determine if the new expiry is a
+				// relative (e.g. `1 month`) or absolute datetime
+				var rel = ctx.watchlistExpiry.split(' ');
+				try {
+					newExpiry = new Morebits.date().add(rel[0], rel[1]);
+				} catch (e) {
+					newExpiry = new Morebits.date(ctx.watchlistExpiry);
+				}
+
+				// If the date is valid, only use it if it extends the current expiry
+				if (newExpiry.isValid()) {
+					if (newExpiry.isAfter(new Morebits.date(ctx.watched))) {
+						return true;
+					}
+				} else {
+					// If it's still not valid, hope it's a valid MW expiry format that
+					// Morebits.date doesn't recognize, so just default to using it.
+					// This will also include minor typos.
+					return true;
+				}
+			}
+		}
+		return false;
+	};
+
 	// callback from saveApi.post()
 	var fnSaveSuccess = function() {
 		ctx.editMode = 'all';  // cancel append/prepend/newSection/revert modes
@@ -4032,7 +4074,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry && ctx.watched !== true) {
+		if (fnApplyWatchlistExpiry()) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 		if (ctx.moveTalkPage) {
@@ -4178,7 +4220,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry && ctx.watched !== true) {
+		if (fnApplyWatchlistExpiry()) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 
@@ -4243,7 +4285,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry && ctx.watched !== true) {
+		if (fnApplyWatchlistExpiry()) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 
@@ -4378,7 +4420,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.tags = ctx.changeTags;
 		}
 
-		if (ctx.watchlistExpiry && ctx.watched !== true) {
+		if (fnApplyWatchlistExpiry()) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 		if (ctx.protectCascade) {
@@ -4424,7 +4466,7 @@ Morebits.wiki.page = function(pageName, status) {
 		};
 
 		/* Doesn't support watchlist expiry [[phab:T263336]]
-		if (ctx.watchlistExpiry && ctx.watched !== true) {
+		if (fnApplyWatchlistExpiry()) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 		*/
