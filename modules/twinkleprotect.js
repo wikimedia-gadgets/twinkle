@@ -1525,7 +1525,8 @@ Twinkle.protect.callbacks = {
 					titles: mw.config.get('wgPageName'),
 					token: mw.user.tokens.get('watchToken')
 				};
-				if (pageobj.getWatched() && watchPref !== 'default' && watchPref !== 'yes') {
+				// Only add the expiry if page is unwatched or already temporarily watched
+				if (pageobj.getWatched() !== true && watchPref !== 'default' && watchPref !== 'yes') {
 					watch_query.expiry = watchPref;
 				}
 				new Morebits.wiki.api('Adding requested page to watchlist', watch_query).post();
