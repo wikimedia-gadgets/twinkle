@@ -69,6 +69,7 @@ Twinkle.defaultConfig = {
 	markRevertedPagesAsMinor: [ 'vand' ],
 	watchRevertedPages: [ 'agf', 'norm', 'vand', 'torev' ],
 	watchRevertedExpiry: 'yes',
+	customReversionSummaryList: [{value: 'Unsourced addition', label: 'Unsourced'}, {value: 'Unexplained removal of content', label: 'Removal of content'}, {value: 'Potential copyright violation', label: 'Copyright violation'}, {value: 'Disruptive editing', label: 'Disruptive editing'}],
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
 	confirmOnMobileFluff: true,

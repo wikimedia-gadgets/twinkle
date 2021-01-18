@@ -373,7 +373,7 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 		type: 'csrf',
 		format: 'json'
 	};
-	var wikipedia_api = new Morebits.wiki.api('Grabbing data of earlier revisions', query, Twinkle.fluff.callbacks.main);
+	var wikipedia_api = new Morebits.wiki.api('Grabbing data of earlier revisions', query, Twinkle.fluff.getSummary);
 	wikipedia_api.params = params;
 	wikipedia_api.post();
 };
@@ -395,13 +395,61 @@ Twinkle.fluff.revertToRevision = function revertToRevision(oldrev) {
 		type: 'csrf',
 		format: 'json'
 	};
-	var wikipedia_api = new Morebits.wiki.api('Grabbing data of the earlier revision', query, Twinkle.fluff.callbacks.toRevision);
-	wikipedia_api.params = { rev: oldrev };
+	var wikipedia_api = new Morebits.wiki.api('Grabbing data of the earlier revision', query, Twinkle.fluff.getSummary);
+	wikipedia_api.params = { rev: oldrev, type: 'torev' };
 	wikipedia_api.post();
 };
 
+Twinkle.fluff.getSummary = function getSummary(apiobj) {
+	Twinkle.fluff.apiobj = apiobj;
+	var params = apiobj.params;
+	var type = params.type;
+	if (type === 'vand' || (type === 'norm' && !Twinkle.getPref('offerReasonOnNormalRevert'))) {
+		Twinkle.fluff.callbacks.main('noSummary');
+	} else {
+		Twinkle.fluff.simpleWindow = new Morebits.simpleWindow(600, 350);
+		Twinkle.fluff.simpleWindow.setTitle('Enter reversion edit summary');
+		Twinkle.fluff.simpleWindow.setScriptName('Twinkle');
+		Twinkle.fluff.simpleWindow.addFooterLink('Revert and rollback prefs', 'WP:TW/PREF#fluff');
+		Twinkle.fluff.simpleWindow.addFooterLink('Twinkle help', 'WP:TW/DOC#fluff');
+		var form = new Morebits.quickForm(type === 'torev' ? Twinkle.fluff.callbacks.toRevision : Twinkle.fluff.callbacks.main);
+		if (Twinkle.getPref('customReversionSummaryList').length) {
+			form.append({
+				type: 'radio',
+				name: 'summaryList',
+				list: Twinkle.getPref('customReversionSummaryList'),
+				event: function(event) {
+					var esForm = event.target.form;
+					esForm.summary.value = this.value;
+					event.stopPropagation();
+				}
+			});
+		}
+		form.append({
+			id: 'editSummaryInput',
+			type: 'input',
+			name: 'summary',
+			label: 'Edit summary: '
+		});
+		form.append({ type: 'submit' });
+		var result = form.render();
+		Twinkle.fluff.simpleWindow.setContent(result);
+		Twinkle.fluff.simpleWindow.display();
+		document.getElementById('editSummaryInput').focus();
+	}
+};
+
 Twinkle.fluff.callbacks = {
-	toRevision: function(apiobj) {
+	toRevision: function(e) {
+		var optional_summary;
+		if (e !== 'noSummary') {
+			e.preventDefault();
+			var form = e.target;
+			var input = Morebits.quickForm.getInputData(form);
+			optional_summary = input.summary;
+			Twinkle.fluff.simpleWindow.close();
+		}
+		var apiobj = Twinkle.fluff.apiobj;
 		var response = apiobj.getResponse();
 
 		var loadtimestamp = response.curtimestamp;
@@ -418,12 +466,6 @@ Twinkle.fluff.callbacks = {
 
 		if (revertToRevID !== apiobj.params.rev) {
 			apiobj.statelem.error('The retrieved revision does not match the requested revision. Stopping revert.');
-			return;
-		}
-
-		var optional_summary = prompt('Please specify a reason for the revert:                                ', '');  // padded out to widen prompt in Firefox
-		if (optional_summary === null) {
-			apiobj.statelem.error('Aborted by user.');
 			return;
 		}
 
@@ -467,7 +509,16 @@ Twinkle.fluff.callbacks = {
 		wikipedia_api.params = apiobj.params;
 		wikipedia_api.post();
 	},
-	main: function(apiobj) {
+	main: function(e) {
+		var extra_summary;
+		if (e !== 'noSummary') {
+			e.preventDefault();
+			var form = e.target;
+			var input = Morebits.quickForm.getInputData(form);
+			extra_summary = input.summary;
+			Twinkle.fluff.simpleWindow.close();
+		}
+		var apiobj = Twinkle.fluff.apiobj;
 		var response = apiobj.getResponse();
 
 		var loadtimestamp = response.curtimestamp;
@@ -601,14 +652,9 @@ Twinkle.fluff.callbacks = {
 
 		statelem.status([ ' revision ', Morebits.htmlNode('strong', params.goodid), ' that was made ', Morebits.htmlNode('strong', mw.language.convertNumber(count)), ' revisions ago by ', Morebits.htmlNode('strong', params.gooduserHidden ? Twinkle.fluff.hiddenName : params.gooduser) ]);
 
-		var summary, extra_summary;
+		var summary;
 		switch (params.type) {
 			case 'agf':
-				extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
-				if (extra_summary === null) {
-					statelem.error('Aborted by user.');
-					return;
-				}
 				userHasAlreadyConfirmedAction = true;
 
 				summary = Twinkle.fluff.formatSummary('Reverted [[WP:AGF|good faith]] edits by $USER',
@@ -623,15 +669,6 @@ Twinkle.fluff.callbacks = {
 			case 'norm':
 			/* falls through */
 			default:
-				if (Twinkle.getPref('offerReasonOnNormalRevert')) {
-					extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
-					if (extra_summary === null) {
-						statelem.error('Aborted by user.');
-						return;
-					}
-					userHasAlreadyConfirmedAction = true;
-				}
-
 				summary = Twinkle.fluff.formatSummary('Reverted ' + params.count + (params.count > 1 ? ' edits' : ' edit') + ' by $USER',
 					params.userHidden ? null : params.user, extra_summary);
 				break;

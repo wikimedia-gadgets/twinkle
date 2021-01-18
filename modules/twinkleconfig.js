@@ -402,7 +402,14 @@ Twinkle.config.sections = [
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
-
+			{
+				name: 'customReversionSummaryList',
+				label: 'Custom reversion edit summaries to display',
+				helptip: 'These appear as options in the enter reversion edit summary dialog',
+				type: 'customList',
+				customListValueTitle: 'Edit summary',
+				customListLabelTitle: 'Text to show in the dialog'
+			},
 			// TwinkleConfig.offerReasonOnNormalRevert (boolean)
 			// If to offer a prompt for extra summary reason for normal reverts, default to true
 			{
