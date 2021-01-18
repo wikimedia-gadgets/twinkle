@@ -870,17 +870,17 @@ Twinkle.xfd.callbacks = {
 		}
 	},
 	/**
-	 * Unified handler for sending {{Xfd notice}} notifications
-	 * Also handles userspace logging
+	 * Unified handler for sending {{Xfd notice}} notifications.
+	 * Also handles userspace logging.
 	 * @param {object} params
-	 * @param {string} notifyTarget The user or page being notified
-	 * @param {boolean} [noLog=false] Whether to skip logging to userspace
+	 * @param {string} notifyTarget - The user or page being notified.
+	 * @param {boolean} [noLog=false] - Whether to skip logging to userspace
 	 * XfD log, especially useful in cases in where multiple notifications
-	 * may be sent out (MfD, TfM, RfD)
-	 * @param {string} [actionName] Alternative description of the action
-	 * being undertaken. Required if not notifying a user talk page.
+	 * may be sent out (MfD, TfM, RfD).
+	 * @param {string} [action] - Alternative description of the action
+	 * being undertaken.
 	 */
-	notifyUser: function(params, notifyTarget, noLog, actionName) {
+	notifyUser: function(params, notifyTarget, noLog, action) {
 		// Ensure items with User talk or no namespace prefix both end
 		// up at user talkspace as expected, but retain the
 		// prefix-less username for addToLog
@@ -900,7 +900,7 @@ Twinkle.xfd.callbacks = {
 			}
 			// Default is notifying the initial contributor, but MfD also
 			// notifies userspace page owner
-			actionName = actionName || 'Notifying initial contributor (' + usernameOrTarget + ')';
+			action = action || 'Notifying initial contributor (' + usernameOrTarget + ')';
 		}
 
 		var notifytext = '\n{{subst:' + params.venue + ' notice';
@@ -935,33 +935,55 @@ Twinkle.xfd.callbacks = {
 		var editSummary = 'Notification: [[' + params.discussionpage + '|listing]] of [[:' +
 			Morebits.pageNameNorm + ']] at [[WP:' + venueNames[params.venue] + ']].';
 
-		var usertalkpage = new Morebits.wiki.page(notifyTarget, actionName);
-		usertalkpage.setAppendText(notifytext);
-		usertalkpage.setEditSummary(editSummary);
-		usertalkpage.setChangeTags(Twinkle.changeTags);
-		usertalkpage.setCreateOption('recreate');
-		// Different pref for RfD target notifications
-		if (params.venue === 'rfd' && targetNS !== 3) {
-			usertalkpage.setWatchlist(Twinkle.getPref('xfdWatchRelated'));
+		// Morebits.wiki.user and logging for userspace, Morebits.wiki.page for non-userspace
+		if (targetNS === 3) {
+			var wikipedia_user = new Morebits.wiki.user(notifyTarget, action);
+			wikipedia_user.setMessage(notifytext);
+			wikipedia_user.setReason(editSummary);
+			wikipedia_user.setChangeTags(Twinkle.changeTags);
+			// Custom watchlist behavior
+			wikipedia_user.setPageobjectFunctions({setWatchlist: Twinkle.getPref('xfdWatchUser')});
+			if (noLog) {
+				wikipedia_user.notify();
+			} else {
+				wikipedia_user.notify(function onNotifySuccess() {
+					// Don't treat MfD userspace owner as initialContrib in log
+					if (!params.notifycreator) {
+						notifyTarget = null;
+					}
+					// add this nomination to the user's userspace log
+					Twinkle.xfd.callbacks.addToLog(params, usernameOrTarget);
+				}, function onNotifyError() {
+					// if user could not be notified, log nomination without mentioning that notification was sent
+					Twinkle.xfd.callbacks.addToLog(params, null);
+				});
+			}
 		} else {
-			usertalkpage.setWatchlist(Twinkle.getPref('xfdWatchUser'));
-		}
-		usertalkpage.setFollowRedirect(true, false);
-
-		if (noLog) {
-			usertalkpage.append();
-		} else {
-			usertalkpage.append(function onNotifySuccess() {
-				// Don't treat RfD target or MfD userspace owner as initialContrib in log
-				if (!params.notifycreator) {
-					notifyTarget = null;
-				}
-				// add this nomination to the user's userspace log
-				Twinkle.xfd.callbacks.addToLog(params, usernameOrTarget);
-			}, function onNotifyError() {
-				// if user could not be notified, log nomination without mentioning that notification was sent
-				Twinkle.xfd.callbacks.addToLog(params, null);
-			});
+			var wikipedia_page = new Morebits.wiki.page(notifyTarget, action);
+			wikipedia_page.setAppendText(notifytext);
+			wikipedia_page.setEditSummary(editSummary);
+			wikipedia_page.setChangeTags(Twinkle.changeTags);
+			wikipedia_page.setCreateOption('recreate');
+			// Pref to watch RfD target notifications
+			if (params.venue === 'rfd') {
+				wikipedia_page.setWatchlist(Twinkle.getPref('xfdWatchRelated'));
+			}
+			wikipedia_page.setFollowRedirect(true);
+			if (noLog) {
+				wikipedia_page.append();
+			} else {
+				wikipedia_page.append(function onNotifySuccess() {
+					// Don't treat RfD target as initialContrib in log
+					if (!params.notifycreator) {
+						notifyTarget = null;
+					}
+					// add this nomination to the user's userspace log
+					Twinkle.xfd.callbacks.addToLog(params, usernameOrTarget);
+				}, function onNotifyError() {
+					// if page could not be notified, log nomination without mentioning that notification was sent
+					Twinkle.xfd.callbacks.addToLog(params, null);
+				});
+			}
 		}
 	},
 	addToLog: function(params, initialContrib) {
