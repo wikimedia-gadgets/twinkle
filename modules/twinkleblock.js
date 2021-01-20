@@ -1161,7 +1161,7 @@ Twinkle.block.dsinfo = {
 		code: 'ab',
 		page: 'Wikipedia:Arbitration/Requests/Case/Abortion'
 	},
-	'American politics post-1932': {
+	'American politics post-1992': {
 		code: 'ap',
 		page: 'Wikipedia:Arbitration/Requests/Case/American politics 2'
 	},
