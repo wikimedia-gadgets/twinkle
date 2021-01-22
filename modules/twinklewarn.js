@@ -896,6 +896,10 @@ Twinkle.warn.messages = {
 	},
 
 	singlenotice: {
+		'uw-agf-sock': {
+			label: 'Use of multiple accounts (assuming good faith)',
+			summary: 'Notice: Using multiple accounts'
+		},
 		'uw-aiv': {
 			label: 'Bad AIV report',
 			summary: 'Notice: Bad AIV report'
@@ -1077,10 +1081,6 @@ Twinkle.warn.messages = {
 		'uw-affiliate': {
 			label: 'Affiliate marketing',
 			summary: 'Warning: Affiliate marketing'
-		},
-		'uw-agf-sock': {
-			label: 'Use of multiple accounts (assuming good faith)',
-			summary: 'Warning: Using multiple accounts'
 		},
 		'uw-attack': {
 			label: 'Creating attack pages',
