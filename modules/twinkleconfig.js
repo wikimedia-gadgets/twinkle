@@ -489,6 +489,15 @@ Twinkle.config.sections = [
 				type: 'boolean'
 			},
 
+			// TwinkleConfig.watchSpeedyUser (string)
+			// The watchlist setting of the user talk page if they receive a notification.
+			{
+				name: 'watchSpeedyUser',
+				label: 'Add user talk page of initial contributor to watchlist (when notifying)',
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
+			},
+
 			// TwinkleConfig.welcomeUserOnSpeedyDeletionNotification (array of strings)
 			// On what types of speedy deletion notifications shall the user be welcomed
 			// with a "firstarticle" notice if their talk page has not yet been created.

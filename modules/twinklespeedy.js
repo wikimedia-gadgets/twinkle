@@ -1238,6 +1238,7 @@ Twinkle.speedy.callbacks = {
 			usertalkpage.setEditSummary(editsummary);
 			usertalkpage.setChangeTags(Twinkle.changeTags);
 			usertalkpage.setCreateOption('recreate');
+			usertalkpage.setWatchlist(Twinkle.getPref('watchSpeedyUser'));
 			usertalkpage.setFollowRedirect(true, false);
 			usertalkpage.append(function onNotifySuccess() {
 				// add this nomination to the user's userspace log, if the user has enabled it
