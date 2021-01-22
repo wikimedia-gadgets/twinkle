@@ -469,7 +469,7 @@ Twinkle.fluff.callbacks = {
 			return;
 		}
 
-		var summary = Twinkle.fluff.formatSummary('Reverted to revision ' + revertToRevID + ' by $USER',
+		var summary = Twinkle.fluff.formatSummary('Restored revision ' + revertToRevID + ' by $USER',
 			revertToUserHidden ? null : revertToUser, optional_summary);
 
 		var query = {

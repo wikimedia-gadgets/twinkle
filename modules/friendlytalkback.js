@@ -30,9 +30,9 @@ Twinkle.talkback.callback = function() {
 	var Window = new Morebits.simpleWindow(600, 350);
 	Window.setTitle('Talkback');
 	Window.setScriptName('Twinkle');
-	Window.addFooterLink('About {{talkback}}', 'Template:Talkback');
 	Window.addFooterLink('Talkback prefs', 'WP:TW/PREF#talkback');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#talkback');
+	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.talkback.evaluate);
 

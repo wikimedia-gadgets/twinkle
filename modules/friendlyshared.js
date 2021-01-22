@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($) { // eslint-disable-line no-unused-vars
+(function($) {
 
 
 /*
@@ -22,11 +22,12 @@ Twinkle.shared = function friendlyshared() {
 };
 
 Twinkle.shared.callback = function friendlysharedCallback() {
-	var Window = new Morebits.simpleWindow(600, 420);
+	var Window = new Morebits.simpleWindow(600, 450);
 	Window.setTitle('Shared IP address tagging');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Shared prefs', 'WP:TW/PREF#shared');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#shared');
+	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.shared.callback.evaluate);
 
@@ -70,6 +71,13 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 	}
 	);
 
+	var previewlink = document.createElement('a');
+	$(previewlink).click(function() {
+		Twinkle.shared.preview(result);
+	});
+	previewlink.style.cursor = 'pointer';
+	previewlink.textContent = 'Preview';
+	form.append({ type: 'div', id: 'sharedpreview', label: [ previewlink ] });
 	form.append({ type: 'submit' });
 
 	var result = form.render();
@@ -146,14 +154,7 @@ Twinkle.shared.callbacks = {
 		}
 
 		Morebits.status.info('Info', 'Will add the shared IP address template to the top of the user\'s talk page.');
-		var text = '{{' + params.template + '|' + params.organization;
-		if (params.contact) {
-			text += '|' + params.contact;
-		}
-		if (params.host) {
-			text += '|host=' + params.host;
-		}
-		text += '}}\n\n';
+		var text = Twinkle.shared.getTemplateWikitext(params);
 
 		var summaryText = 'Added {{[[Template:' + params.template + '|' + params.template + ']]}} template.';
 		pageobj.setPageText(text + pageText);
@@ -163,6 +164,47 @@ Twinkle.shared.callbacks = {
 		pageobj.setCreateOption('recreate');
 		pageobj.save();
 	}
+};
+
+Twinkle.shared.preview = function(form) {
+	var input = Morebits.quickForm.getInputData(form);
+	if (input.template) {
+		var previewDialog = new Morebits.simpleWindow(700, 500);
+		previewDialog.setTitle('Shared IP template preview');
+		previewDialog.setScriptName('Add Shared IP template');
+		previewDialog.setModality(true);
+
+		var previewdiv = document.createElement('div');
+		previewdiv.style.marginLeft = previewdiv.style.marginRight = '0.5em';
+		previewdiv.style.fontSize = 'small';
+		previewDialog.setContent(previewdiv);
+
+		var previewer = new Morebits.wiki.preview(previewdiv);
+		previewer.beginRender(Twinkle.shared.getTemplateWikitext(input), mw.config.get('wgPageName'));
+
+		var submit = document.createElement('input');
+		submit.setAttribute('type', 'submit');
+		submit.setAttribute('value', 'Close');
+		previewDialog.addContent(submit);
+
+		previewDialog.display();
+
+		$(submit).click(function() {
+			previewDialog.close();
+		});
+	}
+};
+
+Twinkle.shared.getTemplateWikitext = function(input) {
+	var text = '{{' + input.template + '|' + input.organization;
+	if (input.contact) {
+		text += '|' + input.contact;
+	}
+	if (input.host) {
+		text += '|host=' + input.host;
+	}
+	text += '}}\n\n';
+	return text;
 };
 
 Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {

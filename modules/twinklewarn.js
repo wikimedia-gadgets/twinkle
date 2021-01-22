@@ -63,6 +63,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	dialog.addFooterLink('Choosing a warning level', 'WP:UWUL#Levels');
 	dialog.addFooterLink('Warn prefs', 'WP:TW/PREF#warn');
 	dialog.addFooterLink('Twinkle help', 'WP:TW/DOC#warn');
+	dialog.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.warn.callback.evaluate);
 	var main_select = form.append({
@@ -895,6 +896,10 @@ Twinkle.warn.messages = {
 	},
 
 	singlenotice: {
+		'uw-agf-sock': {
+			label: 'Use of multiple accounts (assuming good faith)',
+			summary: 'Notice: Using multiple accounts'
+		},
 		'uw-aiv': {
 			label: 'Bad AIV report',
 			summary: 'Notice: Bad AIV report'
@@ -1076,10 +1081,6 @@ Twinkle.warn.messages = {
 		'uw-affiliate': {
 			label: 'Affiliate marketing',
 			summary: 'Warning: Affiliate marketing'
-		},
-		'uw-agf-sock': {
-			label: 'Use of multiple accounts (assuming good faith)',
-			summary: 'Warning: Using multiple accounts'
 		},
 		'uw-attack': {
 			label: 'Creating attack pages',

@@ -2846,7 +2846,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 * @param {boolean|string} [watchlistOption=false] -
 	 * Basically a mix of MW API and Twinkley options available pre-expiry:
 	 * - `true`|`'yes'`: page will be added to the user's watchlist when the action is called
-	 * - `false`|`'no'`: watchlist status of the page will not be changed.
+	 * - `false`|`'no'`|`'nochange'`: watchlist status of the page will not be changed.
 	 * - `'default'`|`'preferences'`: watchlist status of the page will
          * be set based on the user's preference settings when the action is
          * called.  Ignores ability of default + expiry.
@@ -2854,7 +2854,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 * - {string|number}: watch page until the specified time (relative or absolute datestring)
 	 */
 	this.setWatchlist = function(watchlistOption) {
-		if (!watchlistOption || watchlistOption === 'no') {
+		if (!watchlistOption || watchlistOption === 'no' || watchlistOption === 'nochange') {
 			ctx.watchlistOption = 'nochange';
 		} else if (watchlistOption === 'default' || watchlistOption === 'preferences') {
 			ctx.watchlistOption = 'preferences';
@@ -2872,8 +2872,15 @@ Morebits.wiki.page = function(pageName, status) {
 	 * Set an expiry. setWatchlist can handle this by itself if passed a
 	 * string, so this is here largely for completeness and compatibility.
 	 *
-	 * @param {string} watchlistExpiry
-	 * */
+	 * @param {string} watchlistExpiry - A date-like string or array of strings
+	 * Can be relative (2 weeks) or other similarly date-like (i.e. NOT "potato"):
+	 * ISO 8601: 2038-01-09T03:14:07Z
+	 * MediaWiki: 20380109031407
+	 * UNIX: 2147483647
+	 * SQL: 2038-01-09 03:14:07
+	 * Can also be `infinity` or infinity-like (`infinite`, `indefinite`, and `never`).
+	 * See {@link https://phabricator.wikimedia.org/source/mediawiki-libs-Timestamp/browse/master/src/ConvertibleTimestamp.php;4e53b859a9580c55958078f46dd4f3a44d0fcaa0$57-109?as=source&blame=off}
+	 */
 	this.setWatchlistExpiry = function(watchlistExpiry) {
 		ctx.watchlistExpiry = watchlistExpiry;
 	};
@@ -4972,14 +4979,39 @@ Morebits.status.prototype = {
 		this.update(status, 'error');
 	}
 };
+/**
+ * @memberof Morebits.status
+ * @param {string} text - Before colon
+ * @param {string} stats - After colon
+ * @returns {Morebits.status} - `status`-type (blue)
+ */
+Morebits.status.status = function(text, status) {
+	return new Morebits.status(text, status);
+};
+/**
+ * @memberof Morebits.status
+ * @param {string} text - Before colon
+ * @param {string} stats - After colon
+ * @returns {Morebits.status} - `info`-type (green)
+ */
 Morebits.status.info = function(text, status) {
 	return new Morebits.status(text, status, 'info');
 };
-
+/**
+ * @memberof Morebits.status
+ * @param {string} text - Before colon
+ * @param {string} stats - After colon
+ * @returns {Morebits.status} - `warn`-type (red)
+ */
 Morebits.status.warn = function(text, status) {
 	return new Morebits.status(text, status, 'warn');
 };
-
+/**
+ * @memberof Morebits.status
+ * @param {string} text - Before colon
+ * @param {string} stats - After colon
+ * @returns {Morebits.status} - `error`-type (bold red)
+ */
 Morebits.status.error = function(text, status) {
 	return new Morebits.status(text, status, 'error');
 };

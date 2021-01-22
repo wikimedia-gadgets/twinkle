@@ -40,6 +40,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	Window.addFooterLink('Block policy', 'WP:BLOCK');
 	Window.addFooterLink('Block prefs', 'WP:TW/PREF#block');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#block');
+	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.block.callback.evaluate);
 	var actionfield = form.append({
@@ -1161,7 +1162,7 @@ Twinkle.block.dsinfo = {
 		code: 'ab',
 		page: 'Wikipedia:Arbitration/Requests/Case/Abortion'
 	},
-	'American politics post-1932': {
+	'American politics post-1992': {
 		code: 'ap',
 		page: 'Wikipedia:Arbitration/Requests/Case/American politics 2'
 	},

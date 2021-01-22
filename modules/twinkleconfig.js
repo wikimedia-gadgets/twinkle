@@ -283,7 +283,7 @@ Twinkle.config.sections = [
 			},
 			{
 				name: 'watchProtectedPages',
-				label: 'Add page to watchlist when proteting',
+				label: 'Add page to watchlist when protecting',
 				helptip: 'If also tagging the page after protection, that preference will be favored.',
 				adminOnly: true,
 				type: 'enum',
