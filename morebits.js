@@ -51,7 +51,6 @@ Morebits.userIsInGroup = function (group) {
 };
 /** Hardcodes whether the user is a sysop, used a lot.
  *
- * @constant
  * @type {boolean}
  */
 Morebits.userIsSysop = Morebits.userIsInGroup('sysop');
@@ -1583,8 +1582,8 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
 
 /* **************** Morebits.date **************** */
 /**
- * Create a date object with enhanced processing capabilities, a la {@link
- * https://momentjs.com/|moment.js}. MediaWiki timestamp format is also
+ * Create a date object with enhanced processing capabilities, a la
+ * {@link https://momentjs.com/|moment.js}. MediaWiki timestamp format is also
  * acceptable, in addition to everything that JS Date() accepts.
  *
  * @memberof Morebits
@@ -1762,7 +1761,7 @@ Morebits.date.prototype = {
 	},
 
 	/**
-	 * Formats the date into a string per the given format string.
+	 * Format the date into a string per the given format string.
 	 * Replacement syntax is a subset of that in moment.js:
 	 *
 	 * | Syntax | Output |
@@ -1925,8 +1924,8 @@ Object.getOwnPropertyNames(Date.prototype).forEach(function(func) {
 
 /* **************** Morebits.wiki **************** */
 /**
- * Various objects for wiki editing and API access, including {@link
- * Morebits.wiki.api} and {@link Morebits.wiki.page}.
+ * Various objects for wiki editing and API access, including
+ * {@link Morebits.wiki.api} and {@link Morebits.wiki.page}.
  *
  * @namespace Morebits.wiki
  * @memberof Morebits
@@ -2247,23 +2246,19 @@ Morebits.wiki.api.prototype = {
 
 };
 
+var morebitsWikiApiUserAgent = 'morebits.js ([[w:WT:TW]])';
 /**
- * Custom user agent header, used by WMF for server-side logging.  Set via
- * {@link Morebits.wiki.api.setApiUserAgent|setApiUserAgent}.
+ * Set the custom user agent header, which is used for server-side logging.
+ * Note that doing so will set the useragent for every `Morebits.wiki.api`
+ * process performed thereafter.
  *
  * @see {@link https://lists.wikimedia.org/pipermail/mediawiki-api-announce/2014-November/000075.html}
  * for original announcement.
  *
  * @memberof Morebits.wiki.api
- * @type {string}
- */
-var morebitsWikiApiUserAgent = 'morebits.js ([[w:WT:TW]])';
-
-/**
- * Sets the custom user agent header.
- *
- * @memberof Morebits.wiki.api
- * @param {string} [ua] - User agent.
+ * @param {string} [ua=morebits.js ([[w:WT:TW]])] - User agent.  The default
+ * value of `morebits.js ([[w:WT:TW]])` will be appended to any provided
+ * value.
  */
 Morebits.wiki.api.setApiUserAgent = function(ua) {
 	morebitsWikiApiUserAgent = (ua ? ua + ' ' : '') + 'morebits.js ([[w:WT:TW]])';
@@ -2273,7 +2268,7 @@ Morebits.wiki.api.setApiUserAgent = function(ua) {
 
 /**
  * Change/revision tag applied to Morebits actions when no other tags are specified.
- * Defaults to unused per {@link https://en.wikipedia.org/w/index.php?oldid=970618849#Adding_tags_to_Twinkle_edits_and_actions|consensus}.
+ * Unused by default per {@link https://en.wikipedia.org/w/index.php?oldid=970618849#Adding_tags_to_Twinkle_edits_and_actions|EnWiki consensus}.
  *
  * @constant
  * @memberof Morebits.wiki.api
@@ -2848,8 +2843,8 @@ Morebits.wiki.page = function(pageName, status) {
 	 * - `true`|`'yes'`: page will be added to the user's watchlist when the action is called
 	 * - `false`|`'no'`|`'nochange'`: watchlist status of the page will not be changed.
 	 * - `'default'`|`'preferences'`: watchlist status of the page will
-         * be set based on the user's preference settings when the action is
-         * called.  Ignores ability of default + expiry.
+	 * be set based on the user's preference settings when the action is
+	 * called.  Ignores ability of default + expiry.
 	 * - `'unwatch'`: explicitly unwatch the page
 	 * - {string|number}: watch page until the specified time (relative or absolute datestring)
 	 */
@@ -3270,8 +3265,8 @@ Morebits.wiki.page = function(pageName, status) {
 	 * passing a `pageid` to the API is sufficient, so in those cases just
 	 * using {@link Morebits.wiki.api} is probably preferable.
 	 *
-	 * Will first check if the page is queued via {@link
-	 * Morebits.wiki.page~fnProcessTriageList|fnProcessTriageList}.
+	 * Will first check if the page is queued via
+	 * {@link Morebits.wiki.page~fnProcessTriageList|fnProcessTriageList}.
 	 *
 	 * No error handling since we don't actually care about the errors.
 	 *
@@ -3473,9 +3468,9 @@ Morebits.wiki.page = function(pageName, status) {
 	};
 
 	/**
-	 * When functions can't use {@link
-	 * Morebits.wiki.page~fnCanUseMwUserToken|fnCanUseMwUserToken} or
-	 * require checking protection or watched status, maintain the query
+	 * When functions can't use
+	 * {@link Morebits.wiki.page~fnCanUseMwUserToken|fnCanUseMwUserToken}
+	 * or require checking protection or watched status, maintain the query
 	 * in one place. Used for {@link Morebits.wiki.page#deletePage|delete},
 	 * {@link Morebits.wiki.page#undeletePage|undelete},
 	 * {@link* Morebits.wiki.page#protect|protect},
@@ -3822,7 +3817,7 @@ Morebits.wiki.page = function(pageName, status) {
 
 	/**
 	 * Common checks for action methods. Used for move, undelete, delete,
-	 * protect, stabilize
+	 * protect, stabilize.
 	 *
 	 * @param {string} action - The action being checked.
 	 * @param {string} onFailure - Failure callback.
@@ -4982,7 +4977,7 @@ Morebits.status.prototype = {
 /**
  * @memberof Morebits.status
  * @param {string} text - Before colon
- * @param {string} stats - After colon
+ * @param {string} status - After colon
  * @returns {Morebits.status} - `status`-type (blue)
  */
 Morebits.status.status = function(text, status) {
@@ -4991,7 +4986,7 @@ Morebits.status.status = function(text, status) {
 /**
  * @memberof Morebits.status
  * @param {string} text - Before colon
- * @param {string} stats - After colon
+ * @param {string} status - After colon
  * @returns {Morebits.status} - `info`-type (green)
  */
 Morebits.status.info = function(text, status) {
@@ -5000,7 +4995,7 @@ Morebits.status.info = function(text, status) {
 /**
  * @memberof Morebits.status
  * @param {string} text - Before colon
- * @param {string} stats - After colon
+ * @param {string} status - After colon
  * @returns {Morebits.status} - `warn`-type (red)
  */
 Morebits.status.warn = function(text, status) {
@@ -5009,7 +5004,7 @@ Morebits.status.warn = function(text, status) {
 /**
  * @memberof Morebits.status
  * @param {string} text - Before colon
- * @param {string} stats - After colon
+ * @param {string} status - After colon
  * @returns {Morebits.status} - `error`-type (bold red)
  */
 Morebits.status.error = function(text, status) {
@@ -5148,9 +5143,9 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
  *
  * `run(worker, postFinish)`: Runs the callback `worker` for each page in the
  * list.  The callback must call `workerSuccess` when succeeding, or
- * `workerFailure` when failing.  If using {@link Morebits.wiki.api} or {@link
- * Morebits.wiki.page}, this is easily done by passing these two functions as
- * parameters to the methods on those objects: for instance,
+ * `workerFailure` when failing.  If using {@link Morebits.wiki.api} or
+ * {@link Morebits.wiki.page}, this is easily done by passing these two
+ * functions as parameters to the methods on those objects: for instance,
  * `page.save(batchOp.workerSuccess, batchOp.workerFailure)`.  Make sure the
  * methods are called directly if special success/failure cases arise.  If you
  * omit to call these methods, the batch operation will stall after the first
