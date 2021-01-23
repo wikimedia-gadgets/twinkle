@@ -16,8 +16,7 @@
 Twinkle.warn = function twinklewarn() {
 
 	// Users and IPs but not IP ranges
-	if (mw.config.exists('wgRelevantUserName') &&
-		mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) === mw.util.isIPAddress(mw.config.get('wgRelevantUserName'), true)) {
+	if (mw.config.exists('wgRelevantUserName') && !Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
 		Twinkle.addPortletLink(Twinkle.warn.callback, 'Warn', 'tw-warn', 'Warn/notify user');
 		if (Twinkle.getPref('autoMenuAfterRollback') &&
 			mw.config.get('wgNamespaceNumber') === 3 &&

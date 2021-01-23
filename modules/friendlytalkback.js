@@ -14,9 +14,7 @@
  */
 
 Twinkle.talkback = function() {
-
-	if (!mw.config.exists('wgRelevantUserName') ||
-		mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) !== mw.util.isIPAddress(mw.config.get('wgRelevantUserName'), true)) {
+	if (!mw.config.exists('wgRelevantUserName') || Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
 		return;
 	}
 

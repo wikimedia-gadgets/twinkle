@@ -19,7 +19,7 @@ Twinkle.block = function twinkleblock() {
 	relevantUserName = mw.config.get('wgRelevantUserName');
 	// should show on Contributions or Block pages, anywhere there's a relevant user
 	// Ignore ranges wider than the CIDR limit
-	if (Morebits.userIsSysop && relevantUserName && (!mw.util.isIPAddress(relevantUserName, true) || mw.util.isIPAddress(relevantUserName) || Morebits.ip.validCIDR(relevantUserName))) {
+	if (Morebits.userIsSysop && relevantUserName && (!Morebits.ip.isRange(relevantUserName) || Morebits.ip.validCIDR(relevantUserName))) {
 		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user');
 	}
 };
@@ -74,8 +74,8 @@ Twinkle.block.callback = function twinkleblockCallback() {
 				value: 'template',
 				tooltip: 'If the blocking admin forgot to issue a block template, or you have just blocked the user without templating them, you can use this to issue the appropriate template. Check the partial block box for partial block templates.',
 				// Disallow for IP ranges
-				checked: !mw.util.isIPAddress(relevantUserName, true) || mw.util.isIPAddress(relevantUserName),
-				disabled: !mw.util.isIPAddress(relevantUserName) && mw.util.isIPAddress(relevantUserName, true)
+				checked: !Morebits.ip.isRange(relevantUserName),
+				disabled: Morebits.ip.isRange(relevantUserName)
 			}
 		]
 	});
@@ -254,7 +254,7 @@ Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock
 		$form.find('[name=actiontype][value=template]').prop('disabled', true).prop('checked', false);
 	} else {
 		relevantUserName = mw.config.get('wgRelevantUserName');
-		$form.find('[name=actiontype][value=template]').prop('disabled', !mw.util.isIPv6Address(relevantUserName)).prop('checked', mw.util.isIPv6Address(relevantUserName));
+		$form.find('[name=actiontype][value=template]').prop('disabled', Morebits.ip.isRange(relevantUserName)).prop('checked', !Morebits.ip.isRange(relevantUserName));
 	}
 
 	// Refetch/reprocess user info then regenerate the main content
@@ -1574,7 +1574,7 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 		var list = $.map(blockGroup.list, function(blockPreset) {
 			// only show {{uw-talkrevoked}} if reblocking or {{rangeblock}} if rangeblocking
 			if ((blockPreset.value === 'uw-talkrevoked' && blockedUserName !== relevantUserName) ||
-				(blockPreset.value === 'rangeblock' && (mw.util.isIPAddress(relevantUserName) || !mw.util.isIPAddress(relevantUserName, true)))) {
+				(blockPreset.value === 'rangeblock' && !Morebits.ip.isRange(relevantUserName))) {
 				return;
 			}
 

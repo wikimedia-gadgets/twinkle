@@ -1191,6 +1191,17 @@ Morebits.ip = {
 	},
 
 	/**
+	 * Determine if the given IP address is a range.  Just conjoins
+	 * `mw.util.isIPAddress` with and without the `allowBlock` option.
+	 *
+	 * @param {string} ip
+	 * @returns {boolean} - True if given a valid IP address range, false otherwise.
+	 */
+	isRange: function (ip) {
+		return mw.util.isIPAddress(ip, true) && !mw.util.isIPAddress(ip);
+	},
+
+	/**
 	 * Check that an IP range is within the CIDR limits.  Most likely to be useful
 	 * in conjunction with `wgRelevantUserName`.  CIDR limits are harcoded as /16
 	 * for IPv4 and /32 for IPv6.
@@ -1199,7 +1210,7 @@ Morebits.ip = {
 	 * otherwise false (ranges outside the limit, single IPs, non-IPs).
 	 */
 	validCIDR: function (ip) {
-		if (mw.util.isIPAddress(ip, true) && !mw.util.isIPAddress(ip)) {
+		if (Morebits.ip.isRange(ip)) {
 			var subnet = parseInt(ip.match(/\/(\d{1,3})$/)[1], 10);
 			if (subnet) { // Should be redundant
 				if (mw.util.isIPv6Address(ip, true)) {
