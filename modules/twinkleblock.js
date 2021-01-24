@@ -612,7 +612,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			if (lastBlockAction.action === 'unblock') {
 				$blockloglink.append(' (unblocked ' + new Morebits.date(lastBlockAction.timestamp).calendar('utc') + ')');
 			} else { // block or reblock
-				$blockloglink.append(' (expired ' + new Morebits.date(lastBlockAction.params.expiry).calendar('utc') + ')');
+				$blockloglink.append(' (' + lastBlockAction.params.duration + ', expired ' + new Morebits.date(lastBlockAction.params.expiry).calendar('utc') + ')');
 			}
 		}
 
