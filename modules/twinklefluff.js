@@ -407,15 +407,17 @@ Twinkle.fluff.getSummary = function getSummary(apiobj) {
 	if (type === 'vand' || (type === 'norm' && !Twinkle.getPref('offerReasonOnNormalRevert'))) {
 		Twinkle.fluff.callbacks.main('noSummary');
 	} else {
-		Twinkle.fluff.simpleWindow = new Morebits.simpleWindow(600, 350);
-		Twinkle.fluff.simpleWindow.setTitle('Enter reversion edit summary');
-		Twinkle.fluff.simpleWindow.setScriptName('Twinkle');
-		Twinkle.fluff.simpleWindow.addFooterLink('Revert and rollback prefs', 'WP:TW/PREF#fluff');
-		Twinkle.fluff.simpleWindow.addFooterLink('Twinkle help', 'WP:TW/DOC#fluff');
+		Twinkle.fluff.summaryWindow = new Morebits.simpleWindow(600, 350);
+		Twinkle.fluff.summaryWindow.setTitle('Enter reversion edit summary');
+		Twinkle.fluff.summaryWindow.setScriptName('Twinkle');
+		Twinkle.fluff.summaryWindow.setModality('true');
+		Twinkle.fluff.summaryWindow.addFooterLink('Revert and rollback prefs', 'WP:TW/PREF#fluff');
+		Twinkle.fluff.summaryWindow.addFooterLink('Twinkle help', 'WP:TW/DOC#fluff');
+		Twinkle.fluff.summaryWindow.addFooterLink('Give feedback', 'WT:TW');
 		var form = new Morebits.quickForm(type === 'torev' ? Twinkle.fluff.callbacks.toRevision : Twinkle.fluff.callbacks.main);
 		if (Twinkle.getPref('customReversionSummaryList').length) {
 			form.append({
-				type: 'radio',
+				type: 'select',
 				name: 'summaryList',
 				list: Twinkle.getPref('customReversionSummaryList'),
 				event: function(event) {
@@ -429,13 +431,19 @@ Twinkle.fluff.getSummary = function getSummary(apiobj) {
 			id: 'editSummaryInput',
 			type: 'input',
 			name: 'summary',
-			label: 'Edit summary: '
+			label: 'Edit summary: ',
+			size: '50'
 		});
 		form.append({ type: 'submit' });
 		var result = form.render();
-		Twinkle.fluff.simpleWindow.setContent(result);
-		Twinkle.fluff.simpleWindow.display();
+		Twinkle.fluff.summaryWindow.setContent(result);
+		Twinkle.fluff.summaryWindow.display();
 		document.getElementById('editSummaryInput').focus();
+		$('.ui-dialog').on('dialogclose', function(event) {
+			if (event.originalEvent) {
+				apiobj.statelem.error('Aborted by user.');
+			}
+		});
 	}
 };
 
@@ -447,7 +455,7 @@ Twinkle.fluff.callbacks = {
 			var form = e.target;
 			var input = Morebits.quickForm.getInputData(form);
 			optional_summary = input.summary;
-			Twinkle.fluff.simpleWindow.close();
+			Twinkle.fluff.summaryWindow.close();
 		}
 		var apiobj = Twinkle.fluff.apiobj;
 		var response = apiobj.getResponse();
@@ -516,7 +524,7 @@ Twinkle.fluff.callbacks = {
 			var form = e.target;
 			var input = Morebits.quickForm.getInputData(form);
 			extra_summary = input.summary;
-			Twinkle.fluff.simpleWindow.close();
+			Twinkle.fluff.summaryWindow.close();
 		}
 		var apiobj = Twinkle.fluff.apiobj;
 		var response = apiobj.getResponse();
