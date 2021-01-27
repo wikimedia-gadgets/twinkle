@@ -231,7 +231,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	// for quick filter:
 	$allCheckboxDivs = $(result).find('[name$=tags]').parent();
-	$allHeaders = $(result).find('h5');
+	$allHeaders = $(result).find('h5, .quickformDescription');
 	result.quickfilter.focus();  // place cursor in the quick filter field as soon as window is opened
 	result.quickfilter.autocomplete = 'off'; // disable browser suggestions
 	result.quickfilter.addEventListener('keypress', function(e) {
