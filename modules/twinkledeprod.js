@@ -116,14 +116,7 @@ Twinkle.deprod.callback = function() {
 
 		var rendered = apiobj.params.form.render();
 		apiobj.params.Window.setContent(rendered);
-		Morebits.quickForm.getElements(rendered, 'pages').forEach(function(checkbox) {
-			var $checkbox = $(checkbox);
-			var link = Morebits.htmlNode('a', $checkbox.val());
-			link.setAttribute('class', 'deprod-page-link');
-			link.setAttribute('href', mw.util.getUrl($checkbox.val()));
-			link.setAttribute('target', '_blank');
-			$checkbox.next().prepend([link, ' ']);
-		});
+		Morebits.quickForm.getElements(rendered, 'pages').forEach(Twinkle.generateBatchPageLinks);
 	}, statelem);
 
 	wikipedia_api.params = { form: form, Window: Window };

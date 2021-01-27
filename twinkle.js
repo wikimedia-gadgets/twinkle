@@ -530,6 +530,25 @@ Twinkle.makeFindSourcesDiv = function makeSourcesDiv() {
 		)[0];
 };
 
+// Used in batch listings to link to the page in question with >
+Twinkle.generateArrowLinks = function (checkbox) {
+	var link = Morebits.htmlNode('a', ' >');
+	link.setAttribute('class', 'tw-arrowpage-link');
+	link.setAttribute('href', mw.util.getUrl(checkbox.value));
+	link.setAttribute('target', '_blank');
+	checkbox.nextElementSibling.append(link);
+};
+
+// Used in deprod and unlink listings to link the page title
+Twinkle.generateBatchPageLinks = function (checkbox) {
+	var $checkbox = $(checkbox);
+	var link = Morebits.htmlNode('a', $checkbox.val());
+	link.setAttribute('class', 'tw-batchpage-link');
+	link.setAttribute('href', mw.util.getUrl($checkbox.val()));
+	link.setAttribute('target', '_blank');
+	$checkbox.next().prepend([link, ' ']);
+};
+
 }(window, document, jQuery)); // End wrap with anonymous function
 
 // </nowiki>

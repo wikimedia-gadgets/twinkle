@@ -243,21 +243,13 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		var result = form.render();
 		apiobj.params.Window.setContent(result);
 
-		Morebits.quickForm.getElements(result, 'pages').forEach(generateArrowLinks);
+		Morebits.quickForm.getElements(result, 'pages').forEach(Twinkle.generateArrowLinks);
 
 	}, statelem);
 
 	wikipedia_api.params = { form: form, Window: Window };
 	wikipedia_api.post();
 };
-
-function generateArrowLinks (checkbox) {
-	var link = Morebits.htmlNode('a', ' >');
-	link.setAttribute('class', 'tw-dbatch-page-link');
-	link.setAttribute('href', mw.util.getUrl(checkbox.value));
-	link.setAttribute('target', '_blank');
-	checkbox.nextElementSibling.append(link);
-}
 
 Twinkle.batchdelete.generateNewPageList = function(form) {
 
@@ -307,8 +299,8 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 			newPageList = Twinkle.batchdelete.generateNewPageList(form);
 			$('#tw-dbatch-pages').replaceWith(newPageList);
 
-			Morebits.quickForm.getElements(newPageList, 'pages').forEach(generateArrowLinks);
-			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages').forEach(Twinkle.generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(Twinkle.generateArrowLinks);
 
 			return;
 		}
@@ -402,8 +394,8 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 			newPageList = Twinkle.batchdelete.generateNewPageList(form);
 			$('#tw-dbatch-pages').replaceWith(newPageList);
 
-			Morebits.quickForm.getElements(newPageList, 'pages').forEach(generateArrowLinks);
-			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages').forEach(Twinkle.generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(Twinkle.generateArrowLinks);
 
 			subpagesLoaded = true;
 
@@ -427,7 +419,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		newPageList = Twinkle.batchdelete.generateNewPageList(form);
 		$('#tw-dbatch-pages').replaceWith(newPageList);
 
-		Morebits.quickForm.getElements(newPageList, 'pages').forEach(generateArrowLinks);
+		Morebits.quickForm.getElements(newPageList, 'pages').forEach(Twinkle.generateArrowLinks);
 	}
 };
 
