@@ -160,10 +160,7 @@ Twinkle.defaultConfig = {
 	// Welcome
 	topWelcomes: false,
 	watchWelcomes: 'yes',
-	welcomeHeading: 'Welcome',
-	insertHeadings: true,
 	insertUsername: true,
-	insertSignature: true,  // sign welcome templates, where appropriate
 	quickWelcomeMode: 'norm',
 	quickWelcomeTemplate: 'welcome',
 	customWelcomeList: [],
