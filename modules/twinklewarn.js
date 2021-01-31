@@ -1242,6 +1242,16 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			$(elemRendered).data('messageData', itemProperties);
 		});
 	};
+	var createGroup = function(warnGroup, label, wrapInOptgroup, val) {
+		wrapInOptgroup = typeof wrapInOptgroup !== 'undefined' ? wrapInOptgroup : true;
+		var optgroup = new Morebits.quickForm.element({
+			type: 'optgroup',
+			label: label
+		});
+		optgroup = optgroup.render();
+		sub_group.appendChild(optgroup);
+		createEntries(warnGroup, optgroup, wrapInOptgroup, val);
+	};
 
 	switch (value) {
 		case 'singlenotice':
@@ -1261,13 +1271,13 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			break;
 		case 'kitchensink':
 			['level1', 'level2', 'level3', 'level4', 'level4im'].forEach(function(lvl) {
-				$.each(Twinkle.warn.messages.levels, function(_, levelGroup) {
-					createEntries(levelGroup, sub_group, true, lvl);
+				$.each(Twinkle.warn.messages.levels, function(levelGroupLabel, levelGroup) {
+					createGroup(levelGroup, 'Level ' + lvl.slice(5) + ': ' + levelGroupLabel, true, lvl);
 				});
 			});
-			createEntries(Twinkle.warn.messages.singlenotice, sub_group, true);
-			createEntries(Twinkle.warn.messages.singlewarn, sub_group, true);
-			createEntries(Twinkle.getPref('customWarningList'), sub_group, true);
+			createGroup(Twinkle.warn.messages.singlenotice, 'Single-issue notices');
+			createGroup(Twinkle.warn.messages.singlewarn, 'Single-issue warnings');
+			createGroup(Twinkle.getPref('customWarningList'), 'Custom warnings');
 			break;
 		case 'level1':
 		case 'level2':
@@ -1277,14 +1287,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			// Creates subgroup regardless of whether there is anything to place in it;
 			// leaves "Removal of deletion tags" empty for 4im
 			$.each(Twinkle.warn.messages.levels, function(groupLabel, groupContents) {
-				var optgroup = new Morebits.quickForm.element({
-					type: 'optgroup',
-					label: groupLabel
-				});
-				optgroup = optgroup.render();
-				sub_group.appendChild(optgroup);
-				// create the options
-				createEntries(groupContents, optgroup, false);
+				createGroup(groupContents, groupLabel, false);
 			});
 			break;
 		case 'autolevel':
@@ -1302,14 +1305,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 
 				// Identical to level1, etc. above but explicitly provides the level
 				$.each(Twinkle.warn.messages.levels, function(groupLabel, groupContents) {
-					var optgroup = new Morebits.quickForm.element({
-						type: 'optgroup',
-						label: groupLabel
-					});
-					optgroup = optgroup.render();
-					sub_group.appendChild(optgroup);
-					// create the options
-					createEntries(groupContents, optgroup, false, lvl);
+					createGroup(groupContents, groupLabel, false, lvl);
 				});
 
 				// Trigger subcategory change, add select menu, etc.
