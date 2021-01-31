@@ -1666,6 +1666,22 @@ Morebits.date.localeData = {
 	}
 };
 
+/**
+ * Map units with getter/setter function names, for `add` and `subtract`
+ * methods.
+ *
+ * @memberof Morebits.date
+ * @type {object.<string, string>}
+ */
+Morebits.date.unitMap = {
+	seconds: 'Seconds',
+	minutes: 'Minutes',
+	hours: 'Hours',
+	days: 'Date',
+	months: 'Month',
+	years: 'FullYear'
+};
+
 Morebits.date.prototype = {
 	/** @returns {boolean} */
 	isValid: function() {
@@ -1730,15 +1746,8 @@ Morebits.date.prototype = {
 	 * @returns {Morebits.date}
 	 */
 	add: function(number, unit) {
-		// mapping time units with getter/setter function names
-		var unitMap = {
-			seconds: 'Seconds',
-			minutes: 'Minutes',
-			hours: 'Hours',
-			days: 'Date',
-			months: 'Month',
-			years: 'FullYear'
-		};
+		unit = unit.toLowerCase(); // normalize
+		var unitMap = Morebits.date.unitMap;
 		var unitNorm = unitMap[unit] || unitMap[unit + 's']; // so that both singular and  plural forms work
 		if (unitNorm) {
 			this['set' + unitNorm](this['get' + unitNorm]() + number);
