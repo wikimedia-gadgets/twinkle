@@ -68,7 +68,7 @@ Twinkle.defaultConfig = {
 	rollbackInPlace: false,
 	markRevertedPagesAsMinor: [ 'vand' ],
 	watchRevertedPages: [ 'agf', 'norm', 'vand', 'torev' ],
-	watchRevertedExpiry: 'yes',
+	watchRevertedExpiry: '1 month',
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
 	confirmOnMobileFluff: true,
@@ -76,8 +76,8 @@ Twinkle.defaultConfig = {
 
 	// DI (twinkleimage)
 	notifyUserOnDeli: true,
-	deliWatchPage: 'default',
-	deliWatchUser: 'default',
+	deliWatchPage: '1 month',
+	deliWatchUser: '1 month',
 
 	// Protect
 	watchRequestedPages: 'yes',
@@ -85,7 +85,7 @@ Twinkle.defaultConfig = {
 	watchProtectedPages: 'default',
 
 	// PROD
-	watchProdPages: 'yes',
+	watchProdPages: '1 month',
 	markProdPagesAsPatrolled: false,
 	prodReasonDefault: '',
 	logProdPages: false,
@@ -94,7 +94,7 @@ Twinkle.defaultConfig = {
 	// CSD
 	speedySelectionStyle: 'buttonClick',
 	watchSpeedyPages: [ 'g3', 'g5', 'g10', 'g11', 'g12' ],
-	watchSpeedyExpiry: 'yes',
+	watchSpeedyExpiry: '1 month',
 	markSpeedyPagesAsPatrolled: false,
 
 	// these next two should probably be identical by default
@@ -118,7 +118,7 @@ Twinkle.defaultConfig = {
 	defaultWarningGroup: '1',
 	combinedSingletMenus: false,
 	showSharedIPNotice: true,
-	watchWarnings: 'yes',
+	watchWarnings: '1 month',
 	oldSelect: false,
 	customWarningList: [],
 
@@ -128,9 +128,9 @@ Twinkle.defaultConfig = {
 	noLogOnXfdNomination: [],
 	xfdWatchDiscussion: 'default',
 	xfdWatchList: 'no',
-	xfdWatchPage: 'default',
-	xfdWatchUser: 'default',
-	xfdWatchRelated: 'default',
+	xfdWatchPage: '1 month',
+	xfdWatchUser: '1 month',
+	xfdWatchRelated: '1 month',
 	markXfdPagesAsPatrolled: true,
 
 	// Hidden preferences
@@ -148,8 +148,8 @@ Twinkle.defaultConfig = {
 	// Tag
 	groupByDefault: true,
 	watchTaggedVenues: ['articles', 'drafts', 'redirects', 'files'],
-	watchTaggedPages: 'yes',
-	watchMergeDiscussions: 'yes',
+	watchTaggedPages: '1 month',
+	watchMergeDiscussions: '1 month',
 	markTaggedPagesAsMinor: false,
 	markTaggedPagesAsPatrolled: true,
 	tagArticleSortOrder: 'cat',
@@ -159,7 +159,7 @@ Twinkle.defaultConfig = {
 
 	// Welcome
 	topWelcomes: false,
-	watchWelcomes: 'yes',
+	watchWelcomes: '3 months',
 	insertUsername: true,
 	quickWelcomeMode: 'norm',
 	quickWelcomeTemplate: 'welcome',

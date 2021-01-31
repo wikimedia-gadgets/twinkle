@@ -883,7 +883,7 @@ Twinkle.config.sections = [
 			// The watchlist setting of the XfD list page, *if* the discussion is on a separate page.
 			{
 				name: 'xfdWatchList',
-				label: 'Add the daily log/list page to the watchlist (where applicable)',
+				label: 'Add the daily log/list page to the watchlist (AfD and MfD)',
 				helptip: 'This only applies for AfD and MfD, where the discussions are transcluded onto a daily log page (for AfD) or the main MfD page (for MfD).',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
