@@ -1914,7 +1914,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 	params.indefinite = Morebits.string.isInfinity(params.expiry);
 
 	if (Twinkle.getPref('blankTalkpageOnIndefBlock') && params.template !== 'uw-lblock' && params.indefinite) {
-		Morebits.status.info('Info', 'Blanking talk page per preferences and creating a new level 2 heading for the date');
+		Morebits.status.info('Info', 'Blanking talk page per preferences and creating a new talk page section for this month');
 		text = date.monthHeader() + '\n';
 	} else {
 		text = pageobj.getPageText();
@@ -1933,7 +1933,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 		}
 
 		if (!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
-			Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
+			Morebits.status.info('Info', 'Will create a new talk page section for this month, as none was found');
 			text += date.monthHeader() + '\n';
 		}
 	}

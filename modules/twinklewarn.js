@@ -1786,7 +1786,7 @@ Twinkle.warn.callbacks = {
 			if (messageData.heading) { // create new section
 				pageobj.setNewSectionTitle(messageData.heading);
 			} else {
-				Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
+				Morebits.status.info('Info', 'Will create a new talk page section for this month, as none was found');
 				pageobj.setNewSectionTitle(now.monthHeader());
 			}
 			pageobj.setNewSectionText(warningText);
