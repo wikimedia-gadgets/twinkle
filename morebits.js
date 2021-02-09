@@ -1755,12 +1755,20 @@ Morebits.date.localeData = {
  *
  * @memberof Morebits.date
  * @type {object.<string, string>}
+ * @property {string} seconds
+ * @property {string} minutes
+ * @property {string} hours
+ * @property {string} days
+ * @property {string} weeks
+ * @property {string} months
+ * @property {string} years
  */
 Morebits.date.unitMap = {
 	seconds: 'Seconds',
 	minutes: 'Minutes',
 	hours: 'Hours',
 	days: 'Date',
+	weeks: 'Week', // Not a function but handled in `add` through cunning use of multiplication
 	months: 'Month',
 	years: 'FullYear'
 };
@@ -1820,7 +1828,7 @@ Morebits.date.prototype = {
 	},
 
 	/**
-	 * Add a given number of minutes, hours, days, months or years to the date.
+	 * Add a given number of minutes, hours, days, weeks, months, or years to the date.
 	 * This is done in-place. The modified date object is also returned, allowing chaining.
 	 *
 	 * @param {number} number - Should be an integer.
@@ -1837,6 +1845,11 @@ Morebits.date.prototype = {
 		var unitMap = Morebits.date.unitMap;
 		var unitNorm = unitMap[unit] || unitMap[unit + 's']; // so that both singular and  plural forms work
 		if (unitNorm) {
+			// No built-in week functions, so rather than build out ISO's getWeek/setWeek, just multiply
+			// Probably can't be used for Julian->Gregorian changeovers, etc.
+			if (unitNorm === 'Week') {
+				unitNorm = 'Date', num *= 7;
+			}
 			this['set' + unitNorm](this['get' + unitNorm]() + num);
 			return this;
 		}
@@ -1844,7 +1857,7 @@ Morebits.date.prototype = {
 	},
 
 	/**
-	 * Subtracts a given number of minutes, hours, days, months or years to the date.
+	 * Subtracts a given number of minutes, hours, days, weeks, months, or years to the date.
 	 * This is done in-place. The modified date object is also returned, allowing chaining.
 	 *
 	 * @param {number} number - Should be an integer.
