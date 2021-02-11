@@ -30,10 +30,10 @@ QUnit.test('Methods', assert => {
 	assert.false(new Morebits.date('no').isValid(), 'Invalid');
 
 	// Ideally we would test the differences between UTC and non-UTC dates
-	assert.strictEqual(date.getDayName(), 'Saturday', 'getDayName');
-	assert.strictEqual(date.getDayNameAbbrev(), 'Sat', 'DayNameAbbrev');
-	assert.strictEqual(date.getMonthName(), 'November', 'MonthName');
-	assert.strictEqual(date.getMonthNameAbbrev(), 'Nov', 'MonthNameAbbrev');
+	assert.strictEqual(date.getUTCDayName(), 'Saturday', 'getUTCDayName');
+	assert.strictEqual(date.getUTCDayNameAbbrev(), 'Sat', 'getUTCDayNameAbbrev');
+	assert.strictEqual(date.getUTCMonthName(), 'November', 'getUTCMonthName');
+	assert.strictEqual(date.getUTCMonthNameAbbrev(), 'Nov', 'getUTCMonthNameAbbrev');
 
 	assert.true(new Morebits.date(now).isAfter(date), 'isAfter');
 	assert.true(date.isBefore(new Date(now)), 'isBefore');
