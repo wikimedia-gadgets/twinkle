@@ -113,12 +113,12 @@ Morebits.sanitizeIPv6 = function (address) {
 /**
  * Determines whether the current page is a redirect or soft redirect. Fails
  * to detect soft redirects on edit, history, etc. pages.  Will attempt to
- * detect Module:RfD, with the same failure points.
+ * detect [[Module:Redirect for discussion]], with the same failure points.
  *
  * @returns {boolean}
  */
 Morebits.isPageRedirect = function() {
-	return !!(mw.config.get('wgIsRedirect') || document.getElementById('softredirect') || $('.box-RfD').length);
+	return !!(mw.config.get('wgIsRedirect') || document.getElementById('softredirect') || $('.box-Redirect_for_discussion').length);
 };
 
 /**
