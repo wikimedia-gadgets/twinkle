@@ -1179,11 +1179,6 @@ Twinkle.speedy.callbacks = {
 			Morebits.status.warn('Notifying initial contributor: this user created their own user talk page; skipping notification');
 			initialContrib = null;
 
-		// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page...
-		} else if ((initialContrib === 'Cyberbot I' || initialContrib === 'SoxBot') && params.normalizeds[0] === 'f2') {
-			Morebits.status.warn('Notifying initial contributor: page created procedurally by bot; skipping notification');
-			initialContrib = null;
-
 		// Check for already existing tags
 		} else if (Twinkle.speedy.hasCSD && params.warnUser && !confirm('The page is has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?')) {
 			Morebits.status.info('Notifying initial contributor', 'canceled by user; skipping notification.');
@@ -1230,6 +1225,7 @@ Twinkle.speedy.callbacks = {
 			user.setMessage(notifytext);
 			user.setReason(editsummary);
 			user.setChangeTags(Twinkle.changeTags);
+			user.setNotifySkips(Twinkle.makeOptoutLink('csd'), Twinkle.optoutTemplates);
 			// Custom watchlist behavior
 			user.setPageobjectFunctions({setWatchlist: Twinkle.getPref('watchSpeedyUser')});
 			user.notify(function onNotifySuccess() {

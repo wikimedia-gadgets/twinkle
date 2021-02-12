@@ -398,12 +398,13 @@ Twinkle.prod.callbacks = {
 		user.setMessage(notifytext);
 		user.setReason('Notification: proposed deletion of [[:' + Morebits.pageNameNorm + ']].');
 		user.setChangeTags(Twinkle.changeTags);
-		// Notify everyone for BLPPROD
+		// Notify everyone for BLPPROD, allow optouts otherwise
 		if (params.blp) {
 			user.setNotifyBots(true);
 			user.setNotifyIndef(true);
+		} else {
+			user.setNotifySkips(Twinkle.makeOptoutLink('prod'), Twinkle.optoutTemplates);
 		}
-
 		user.notify(function onNotifySuccess() {
 			// add nomination to the userspace log, if the user has enabled it
 			params.logInitialContrib = params.initialContrib;

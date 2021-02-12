@@ -941,6 +941,7 @@ Twinkle.xfd.callbacks = {
 			wikipedia_user.setMessage(notifytext);
 			wikipedia_user.setReason(editSummary);
 			wikipedia_user.setChangeTags(Twinkle.changeTags);
+			wikipedia_user.setNotifySkips(Twinkle.makeOptoutLink('xfd'), Twinkle.optoutTemplates);
 			// Custom watchlist behavior
 			wikipedia_user.setPageobjectFunctions({setWatchlist: Twinkle.getPref('xfdWatchUser')});
 			if (noLog) {

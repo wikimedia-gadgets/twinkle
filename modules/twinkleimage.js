@@ -302,6 +302,7 @@ Twinkle.image.callbacks = {
 			user.setMessage(notifytext);
 			user.setReason('Notification: tagging for deletion of [[:' + Morebits.pageNameNorm + ']].');
 			user.setChangeTags(Twinkle.changeTags);
+			user.setNotifySkips(Twinkle.makeOptoutLink('csd'), Twinkle.optoutTemplates);
 			// Custom watchlist behavior
 			user.setPageobjectFunctions({setWatchlist: Twinkle.getPref('deliWatchUser')});
 			user.notify();

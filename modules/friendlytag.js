@@ -1382,6 +1382,7 @@ Twinkle.tag.callbacks = {
 							(params.translationPostAtPNT ? '' : '|nopnt=yes') + '}} ~~~~');
 						user.setReason('Notice: Please use English when contributing to the English Wikipedia.');
 						user.setChangeTags(Twinkle.changeTags);
+						user.setNotifySkips(Twinkle.makeOptoutLink('tag'), Twinkle.optoutTemplates);
 						user.notify();
 					});
 				}

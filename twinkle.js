@@ -494,6 +494,16 @@ Twinkle.changeTags = 'twinkle';
 // Available for actions that don't (yet) support tags
 // currently: FlaggedRevs and PageTriage
 Twinkle.summaryAd = ' ([[WP:TW|TW]])';
+// Function to generate an appropriate module-specific optout link i.e. notwinkle.test/?module=xfd
+// Missing protocol defaults to http
+Twinkle.makeOptoutLink = function makeOptoutLink(module) {
+	if (!module) {
+		return '';
+	}
+	return 'notwinkle.test/?module=' + module;
+};
+// Templates which opt a user talk page out of certain notifications
+Twinkle.optoutTemplates = ['Template:Retired', 'Template:Deceased Wikipedian'];
 
 // Various hatnote templates, used when tagging (csd/xfd/tag/prod/protect) to
 // ensure MOS:ORDER
