@@ -85,27 +85,24 @@ Twinkle.talkback.callback = function() {
 	result.tbtarget[0].dispatchEvent(evt);
 
 	// Check whether the user has opted out from talkback
-	var query = {
-		action: 'query',
-		prop: 'extlinks',
-		titles: 'User talk:' + mw.config.get('wgRelevantUserName'),
-		elquery: 'userjs.invalid/noTalkback',
-		ellimit: '1',
-		format: 'json'
-	};
-	var wpapi = new Morebits.wiki.api('Fetching talkback opt-out status', query, Twinkle.talkback.callback.optoutStatus);
-	wpapi.post();
+	var user = new Morebits.wiki.user(mw.config.get('wgRelevantUserName'), 'Fetching talkback opt-out status');
+	user.setNotifySkips('userjs.invalid/noTalkback', Twinkle.optoutTemplates);
+	user.load(Twinkle.talkback.callback.optoutStatus);
 };
 
 Twinkle.talkback.optout = '';
-
-Twinkle.talkback.callback.optoutStatus = function(apiobj) {
-	var el = apiobj.getResponse().query.pages[0].extlinks;
-	if (el && el.length) {
-		Twinkle.talkback.optout = mw.config.get('wgRelevantUserName') + ' prefers not to receive talkbacks';
-		var url = el[0].url;
-		var reason = mw.util.getParamValue('reason', url);
-		Twinkle.talkback.optout += reason ? ': ' + reason : '.';
+Twinkle.talkback.callback.optoutStatus = function(userobj) {
+	var tl = userobj.getTalkTemplates();
+	if (tl && tl.length) {
+		Twinkle.talkback.optout = mw.config.get('wgRelevantUserName') + ' transcludes {{' + tl[0] + '}}, so a talkack might not be helpful';
+	} else {
+		var el = userobj.getTalkLinks();
+		if (el && el.length) {
+			Twinkle.talkback.optout = mw.config.get('wgRelevantUserName') + ' prefers not to receive talkbacks';
+			var url = el[0].url;
+			var reason = mw.util.getParamValue('reason', url);
+			Twinkle.talkback.optout += reason ? ': ' + reason : '.';
+		}
 	}
 	$('#twinkle-talkback-optout-message').text(Twinkle.talkback.optout);
 };
