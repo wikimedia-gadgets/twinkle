@@ -1765,15 +1765,15 @@ Twinkle.warn.callbacks = {
 		var sectionExists = false, sectionNumber = 0;
 		// Only check sections if there are sections or there's a chance we won't create our own
 		if (!messageData.heading && text.length) {
-			// Get all L2 sections
-			var sections = text.match(/^(==)[^=].+\1/gm);
+			// Get all sections
+			var sections = text.match(/^(==*).+\1/gm);
 			if (sections && sections.length !== 0) {
 				// Find the index of the section header in question
 				var dateHeaderRegex = now.monthHeaderRegex();
 				sectionNumber = 0;
-				// Find this month's section, preferring the bottom-most
+				// Find this month's section among L2 sections, preferring the bottom-most
 				sectionExists = sections.reverse().some(function(sec, idx) {
-					return dateHeaderRegex.test(sec) && typeof (sectionNumber = sections.length - 1 - idx) === 'number';
+					return /^(==)[^=].+\1/m.test(sec) && dateHeaderRegex.test(sec) && typeof (sectionNumber = sections.length - 1 - idx) === 'number';
 				});
 			}
 		}
