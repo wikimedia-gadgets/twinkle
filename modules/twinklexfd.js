@@ -750,7 +750,8 @@ Twinkle.xfd.callbacks = {
 			pageobj.getStatusElement().warn('Page protected, requesting edit');
 
 			var editRequest = '{{subst:Xfd edit protected|page=' + pageobj.getPageName() +
-				'|discussion=' + params.discussionpage + '|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
+				'|discussion=' + params.discussionpage + (params.venue === 'rfd' ? '|rfd=yes' : '') +
+				'|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
 
 			var talk_page = new Morebits.wiki.page(talkName, 'Automatically posting edit request on talk page');
 			talk_page.setNewSectionTitle('Edit request to complete ' + utils.toTLACase(params.venue) + ' nomination');
