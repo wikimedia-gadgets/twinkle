@@ -1074,9 +1074,10 @@ Twinkle.tag.fileList = {
 					required: true
 				},
 				{
-					type: 'input',
+					type: 'number',
 					name: 'DoNotMoveToCommons_expiry',
 					label: 'Expiration year: ',
+					min: new Morebits.date().getFullYear(),
 					tooltip: 'If this file can be moved to Commons beginning in a certain year, you can enter it here (optional).'
 				}
 			]
@@ -1980,7 +1981,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			}
 
 			if (params.tags.indexOf('Do not move to Commons') !== -1 && params.DoNotMoveToCommons_expiry &&
-				(!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) || parseInt(params.DoNotMoveToCommons_expiry, 10) <= new Date().getYear() + 1900)) {
+				(!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) || parseInt(params.DoNotMoveToCommons_expiry, 10) <= new Date().getFullYear())) {
 				alert('Must be a valid future year.');
 				return;
 			}
