@@ -12,6 +12,7 @@
  * - {@link Morebits.wikitext} - utilities for dealing with wikitext
  * - {@link Morebits.string} - utilities for manipulating strings
  * - {@link Morebits.array} - utilities for manipulating arrays
+ * - {@link Morebits.ip} - utilities to help process IP addresses
  *
  * Dependencies:
  * - The whole thing relies on jQuery.  But most wikis should provide this by default.
