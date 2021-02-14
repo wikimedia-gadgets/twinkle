@@ -40,7 +40,7 @@ Tests:
   - scripts/patch-test.js
   - scripts/server.js
 Docs:
-  - './*.md'
+  - "*.md"
 Gadget:
   - gadget.txt
 dependencies:
