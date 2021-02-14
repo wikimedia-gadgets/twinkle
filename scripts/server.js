@@ -17,7 +17,7 @@ const server = http.createServer((request, response) => {
 		if (error) {
 			response.end('Oops, something went wrong: ' + error.code + ' ..\n');
 		} else {
-			response.writeHead(200, { 'Content-Type': contentType });
+			response.writeHead(200, { 'Content-Type': contentType + '; charset=utf-8' });
 			response.end(content, 'utf-8');
 		}
 	});
