@@ -333,7 +333,7 @@ Twinkle.fluff.disableLinks = function disablelinks(parentNode) {
 
 Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 	if (mw.util.isIPv6Address(vandal)) {
-		vandal = Morebits.sanitizeIPv6(vandal);
+		vandal = Morebits.ip.sanitizeIPv6(vandal);
 	}
 
 	var pagename = page || mw.config.get('wgPageName');
@@ -505,7 +505,7 @@ Twinkle.fluff.callbacks = {
 		if (params.revid !== lastrevid) {
 			Morebits.status.warn('Warning', [ 'Latest revision ', Morebits.htmlNode('strong', lastrevid), ' doesn\'t equal our revision ', Morebits.htmlNode('strong', params.revid) ]);
 			// Treat ipv6 users on same 64 block as the same
-			if (lastuser === params.user || (mw.util.isIPv6Address(params.user) && Morebits.get64(lastuser) === Morebits.get64(params.user))) {
+			if (lastuser === params.user || (mw.util.isIPv6Address(params.user) && Morebits.ip.get64(lastuser) === Morebits.ip.get64(params.user))) {
 				switch (params.type) {
 					case 'vand':
 						Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm),
@@ -572,7 +572,7 @@ Twinkle.fluff.callbacks = {
 			++count;
 			if (revs[i].user !== params.user) {
 				// Treat ipv6 users on same 64 block as the same
-				if (mw.util.isIPv6Address(revs[i].user) && Morebits.get64(revs[i].user) === Morebits.get64(params.user)) {
+				if (mw.util.isIPv6Address(revs[i].user) && Morebits.ip.get64(revs[i].user) === Morebits.ip.get64(params.user)) {
 					if (!seen64) {
 						new Morebits.status('Note', 'Treating consecutive IPv6 addresses in the same /64 as the same user');
 						seen64 = true;

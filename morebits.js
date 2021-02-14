@@ -56,6 +56,9 @@ Morebits.userIsInGroup = function (group) {
 Morebits.userIsSysop = Morebits.userIsInGroup('sysop');
 
 /**
+ * Deprecated as of February 2021, use {@link Morebits.ip.sanitizeIPv6}.
+ *
+ * @deprecated Use {@link Morebits.ip.sanitizeIPv6}.
  * Converts an IPv6 address to the canonical form stored and used by MediaWiki.
  * JavaScript translation of the {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/8eb6ac3e84ea3312d391ca96c12c49e3ad0753bb/includes/utils/IP.php#131|`IP::sanitizeIP()`}
  * function from the IPUtils library.  Adddresses are verbose, uppercase,
@@ -65,97 +68,9 @@ Morebits.userIsSysop = Morebits.userIsInGroup('sysop');
  * @returns {string}
  */
 Morebits.sanitizeIPv6 = function (address) {
-	address = address.trim();
-	if (address === '') {
-		return null;
-	}
-	if (!mw.util.isIPv6Address(address, true)) {
-		return address; // nothing else to do for IPv4 addresses or invalid ones
-	}
-	// Remove any whitespaces, convert to upper case
-	address = address.toUpperCase();
-	// Expand zero abbreviations
-	var abbrevPos = address.indexOf('::');
-	if (abbrevPos > -1) {
-		// We know this is valid IPv6. Find the last index of the
-		// address before any CIDR number (e.g. "a:b:c::/24").
-		var CIDRStart = address.indexOf('/');
-		var addressEnd = CIDRStart !== -1 ? CIDRStart - 1 : address.length - 1;
-		// If the '::' is at the beginning...
-		var repeat, extra, pad;
-		if (abbrevPos === 0) {
-			repeat = '0:';
-			extra = address === '::' ? '0' : ''; // for the address '::'
-			pad = 9; // 7+2 (due to '::')
-		// If the '::' is at the end...
-		} else if (abbrevPos === (addressEnd - 1)) {
-			repeat = ':0';
-			extra = '';
-			pad = 9; // 7+2 (due to '::')
-		// If the '::' is in the middle...
-		} else {
-			repeat = ':0';
-			extra = ':';
-			pad = 8; // 6+2 (due to '::')
-		}
-		var replacement = repeat;
-		pad -= address.split(':').length - 1;
-		for (var i = 1; i < pad; i++) {
-			replacement += repeat;
-		}
-		replacement += extra;
-		address = address.replace('::', replacement);
-	}
-	// Remove leading zeros from each bloc as needed
-	return address.replace(/(^|:)0+([0-9A-Fa-f]{1,4})/g, '$1$2');
+	console.warn('NOTE: Morebits.sanitizeIPv6 was renamed to Morebits.ip.sanitizeIPv6 in February 2021, please use that instead'); // eslint-disable-line no-console
+	return Morebits.ip.sanitizeIPv6(address);
 };
-
-/**
- * Check that an IP range is within the CIDR limits.  Most likely to be useful
- * in conjunction with `wgRelevantUserName`.  CIDR limits are harcoded as /16
- * for IPv4 and /32 for IPv6.
- *
- * @returns {boolean} - True for valid ranges within the CIDR limits,
- * otherwise false (ranges outside the limit, single IPs, non-IPs).
- */
-Morebits.validCIDR = function (ip) {
-	if (mw.util.isIPAddress(ip, true) && !mw.util.isIPAddress(ip)) {
-		var subnet = parseInt(ip.match(/\/(\d{1,3})$/)[1], 10);
-		if (subnet) { // Should be redundant
-			if (mw.util.isIPv6Address(ip, true)) {
-				if (subnet >= 32) {
-					return true;
-				}
-			} else {
-				if (subnet >= 16) {
-					return true;
-				}
-			}
-		}
-	}
-	return false;
-};
-
-/**
- * Get the /64 subnet for an IPv6 address.
- *
- * @param {string} ipv6 - The IPv6 address, with or without a subnet.
- * @returns {boolean|string} - False if not IPv6 or bigger than a 64,
- * otherwise the (sanitized) /64 address.
- */
-Morebits.get64 = function (ipv6) {
-	if (!ipv6 || !mw.util.isIPv6Address(ipv6, true)) {
-		return false;
-	}
-	var subnetMatch = ipv6.match(/\/(\d{1,3})$/);
-	if (subnetMatch && parseInt(subnetMatch[1], 10) < 64) {
-		return false;
-	}
-	ipv6 = Morebits.sanitizeIPv6(ipv6);
-	var ip_re = /^((?:[0-9A-F]{1,4}:){4})(?:[0-9A-F]{1,4}:){3}[0-9A-F]{1,4}(?:\/\d{1,3})?$/;
-	return ipv6.replace(ip_re, '$1' + '0:0:0:0/64');
-};
-
 
 /**
  * Determines whether the current page is a redirect or soft redirect. Fails
@@ -1211,6 +1126,126 @@ HTMLFormElement.prototype.getUnchecked = function(name, type) {
 		}
 	}
 	return return_array;
+};
+
+/**
+ * Utilities to help process IP addresses.
+ *
+ * @namespace Morebits.ip
+ * @memberof Morebits
+ */
+Morebits.ip = {
+	/**
+	 * Converts an IPv6 address to the canonical form stored and used by MediaWiki.
+	 * JavaScript translation of the {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/8eb6ac3e84ea3312d391ca96c12c49e3ad0753bb/includes/utils/IP.php#131|`IP::sanitizeIP()`}
+	 * function from the IPUtils library.  Adddresses are verbose, uppercase,
+	 * normalized, and expanded to 8 words.
+	 *
+	 * @param {string} address - The IPv6 address, with or without CIDR.
+	 * @returns {string}
+	 */
+	sanitizeIPv6: function (address) {
+		address = address.trim();
+		if (address === '') {
+			return null;
+		}
+		if (!mw.util.isIPv6Address(address, true)) {
+			return address; // nothing else to do for IPv4 addresses or invalid ones
+		}
+		// Remove any whitespaces, convert to upper case
+		address = address.toUpperCase();
+		// Expand zero abbreviations
+		var abbrevPos = address.indexOf('::');
+		if (abbrevPos > -1) {
+			// We know this is valid IPv6. Find the last index of the
+			// address before any CIDR number (e.g. "a:b:c::/24").
+			var CIDRStart = address.indexOf('/');
+			var addressEnd = CIDRStart !== -1 ? CIDRStart - 1 : address.length - 1;
+			// If the '::' is at the beginning...
+			var repeat, extra, pad;
+			if (abbrevPos === 0) {
+				repeat = '0:';
+				extra = address === '::' ? '0' : ''; // for the address '::'
+				pad = 9; // 7+2 (due to '::')
+				// If the '::' is at the end...
+			} else if (abbrevPos === (addressEnd - 1)) {
+				repeat = ':0';
+				extra = '';
+				pad = 9; // 7+2 (due to '::')
+				// If the '::' is in the middle...
+			} else {
+				repeat = ':0';
+				extra = ':';
+				pad = 8; // 6+2 (due to '::')
+			}
+			var replacement = repeat;
+			pad -= address.split(':').length - 1;
+			for (var i = 1; i < pad; i++) {
+				replacement += repeat;
+			}
+			replacement += extra;
+			address = address.replace('::', replacement);
+		}
+		// Remove leading zeros from each bloc as needed
+		return address.replace(/(^|:)0+([0-9A-Fa-f]{1,4})/g, '$1$2');
+	},
+
+	/**
+	 * Determine if the given IP address is a range.  Just conjoins
+	 * `mw.util.isIPAddress` with and without the `allowBlock` option.
+	 *
+	 * @param {string} ip
+	 * @returns {boolean} - True if given a valid IP address range, false otherwise.
+	 */
+	isRange: function (ip) {
+		return mw.util.isIPAddress(ip, true) && !mw.util.isIPAddress(ip);
+	},
+
+	/**
+	 * Check that an IP range is within the CIDR limits.  Most likely to be useful
+	 * in conjunction with `wgRelevantUserName`.  CIDR limits are harcoded as /16
+	 * for IPv4 and /32 for IPv6.
+	 *
+	 * @returns {boolean} - True for valid ranges within the CIDR limits,
+	 * otherwise false (ranges outside the limit, single IPs, non-IPs).
+	 */
+	validCIDR: function (ip) {
+		if (Morebits.ip.isRange(ip)) {
+			var subnet = parseInt(ip.match(/\/(\d{1,3})$/)[1], 10);
+			if (subnet) { // Should be redundant
+				if (mw.util.isIPv6Address(ip, true)) {
+					if (subnet >= 32) {
+						return true;
+					}
+				} else {
+					if (subnet >= 16) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	},
+
+	/**
+	 * Get the /64 subnet for an IPv6 address.
+	 *
+	 * @param {string} ipv6 - The IPv6 address, with or without a subnet.
+	 * @returns {boolean|string} - False if not IPv6 or bigger than a 64,
+	 * otherwise the (sanitized) /64 address.
+	 */
+	get64: function (ipv6) {
+		if (!ipv6 || !mw.util.isIPv6Address(ipv6, true)) {
+			return false;
+		}
+		var subnetMatch = ipv6.match(/\/(\d{1,3})$/);
+		if (subnetMatch && parseInt(subnetMatch[1], 10) < 64) {
+			return false;
+		}
+		ipv6 = Morebits.ip.sanitizeIPv6(ipv6);
+		var ip_re = /^((?:[0-9A-F]{1,4}:){4})(?:[0-9A-F]{1,4}:){3}[0-9A-F]{1,4}(?:\/\d{1,3})?$/;
+		return ipv6.replace(ip_re, '$1' + '0:0:0:0/64');
+	}
 };
 
 

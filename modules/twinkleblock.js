@@ -19,7 +19,7 @@ Twinkle.block = function twinkleblock() {
 	relevantUserName = mw.config.get('wgRelevantUserName');
 	// should show on Contributions or Block pages, anywhere there's a relevant user
 	// Ignore ranges wider than the CIDR limit
-	if (Morebits.userIsSysop && relevantUserName && (!mw.util.isIPAddress(relevantUserName, true) || mw.util.isIPAddress(relevantUserName) || Morebits.validCIDR(relevantUserName))) {
+	if (Morebits.userIsSysop && relevantUserName && (!Morebits.ip.isRange(relevantUserName) || Morebits.ip.validCIDR(relevantUserName))) {
 		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user');
 	}
 };
@@ -74,8 +74,8 @@ Twinkle.block.callback = function twinkleblockCallback() {
 				value: 'template',
 				tooltip: 'If the blocking admin forgot to issue a block template, or you have just blocked the user without templating them, you can use this to issue the appropriate template. Check the partial block box for partial block templates.',
 				// Disallow for IP ranges
-				checked: !mw.util.isIPAddress(relevantUserName, true) || mw.util.isIPAddress(relevantUserName),
-				disabled: !mw.util.isIPAddress(relevantUserName) && mw.util.isIPAddress(relevantUserName, true)
+				checked: !Morebits.ip.isRange(relevantUserName),
+				disabled: Morebits.ip.isRange(relevantUserName)
 			}
 		]
 	});
@@ -84,15 +84,15 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	  Add option for IPv6 ranges smaller than /64 to upgrade to the 64
 	  CIDR ([[WP:/64]]).  This is one of the few places where we want
 	  wgRelevantUserName since this depends entirely on the original user.
-	  In theory, we shouldn't use Morebits.get64 here since since we want
+	  In theory, we shouldn't use Morebits.ip.get64 here since since we want
 	  to exclude functionally-equivalent /64s.  That'd be:
 	  // if (mw.util.isIPv6Address(mw.config.get('wgRelevantUserName'), true) &&
 	  // (mw.util.isIPv6Address(mw.config.get('wgRelevantUserName')) || parseInt(mw.config.get('wgRelevantUserName').replace(/^(.+?)\/?(\d{1,3})?$/, '$2'), 10) > 64)) {
 	  In practice, though, since functionally-equivalent ranges are
 	  (mis)treated as separate by MediaWiki's logging ([[phab:T146628]]),
-	  using Morebits.get64 provides a modicum of relief in thise case.
+	  using Morebits.ip.get64 provides a modicum of relief in thise case.
 	*/
-	var sixtyFour = Morebits.get64(mw.config.get('wgRelevantUserName'));
+	var sixtyFour = Morebits.ip.get64(mw.config.get('wgRelevantUserName'));
 	if (sixtyFour && sixtyFour !== mw.config.get('wgRelevantUserName')) {
 		var block64field = form.append({
 			type: 'field',
@@ -250,11 +250,11 @@ Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock
 	// Single IPv6, or IPv6 range smaller than a /64
 	var priorName = relevantUserName;
 	if ($block64.is(':checked')) {
-		relevantUserName = Morebits.get64(mw.config.get('wgRelevantUserName'));
+		relevantUserName = Morebits.ip.get64(mw.config.get('wgRelevantUserName'));
 		$form.find('[name=actiontype][value=template]').prop('disabled', true).prop('checked', false);
 	} else {
 		relevantUserName = mw.config.get('wgRelevantUserName');
-		$form.find('[name=actiontype][value=template]').prop('disabled', !mw.util.isIPv6Address(relevantUserName)).prop('checked', mw.util.isIPv6Address(relevantUserName));
+		$form.find('[name=actiontype][value=template]').prop('disabled', Morebits.ip.isRange(relevantUserName)).prop('checked', !Morebits.ip.isRange(relevantUserName));
 	}
 
 	// Refetch/reprocess user info then regenerate the main content
@@ -731,7 +731,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			if (sameUser) {
 				statusStr += ' as a rangeblock';
 			} else {
-				statusStr += ' within a' + (Morebits.get64(relevantUserName) === blockedUserName ? ' /64' : '') + ' rangeblock';
+				statusStr += ' within a' + (Morebits.ip.get64(relevantUserName) === blockedUserName ? ' /64' : '') + ' rangeblock';
 				// Link to the full range
 				var $rangeblockloglink = $('<span>').append($('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: blockedUserName, type: 'block'}) + '">' + blockedUserName + '</a>)'));
 				statusStr += ' (' + $rangeblockloglink.html() + ')';
@@ -1574,7 +1574,7 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 		var list = $.map(blockGroup.list, function(blockPreset) {
 			// only show {{uw-talkrevoked}} if reblocking or {{rangeblock}} if rangeblocking
 			if ((blockPreset.value === 'uw-talkrevoked' && blockedUserName !== relevantUserName) ||
-				(blockPreset.value === 'rangeblock' && (mw.util.isIPAddress(relevantUserName) || !mw.util.isIPAddress(relevantUserName, true)))) {
+				(blockPreset.value === 'rangeblock' && !Morebits.ip.isRange(relevantUserName))) {
 				return;
 			}
 

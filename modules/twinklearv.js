@@ -20,10 +20,10 @@ Twinkle.arv = function twinklearv() {
 
 	var isIP = mw.util.isIPAddress(username, true);
 	// Ignore ranges wider than the CIDR limit
-	if (isIP && !mw.util.isIPAddress(username) && !Morebits.validCIDR(username)) {
+	if (Morebits.ip.isRange(username) && !Morebits.ip.validCIDR(username)) {
 		return;
 	}
-	var userType = isIP ? 'IP' + (!mw.util.isIPAddress(username) ? ' range' : '') : 'user';
+	var userType = isIP ? 'IP' + (Morebits.ip.isRange(username) ? ' range' : '') : 'user';
 
 	Twinkle.addPortletLink(function() {
 		Twinkle.arv.callback(username, isIP);
@@ -40,8 +40,6 @@ Twinkle.arv.callback = function (uid, isIP) {
 	Window.addFooterLink('ARV prefs', 'WP:TW/PREF#arv');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#arv');
 	Window.addFooterLink('Give feedback', 'WT:TW');
-
-	var isIPRange = isIP && !mw.util.isIPAddress(uid);
 
 	var form = new Morebits.quickForm(Twinkle.arv.callback.evaluate);
 	var categories = form.append({
@@ -75,7 +73,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 		type: 'option',
 		label: 'Edit warring (WP:AN3)',
 		value: 'an3',
-		disabled: isIPRange // rvuser template doesn't support ranges
+		disabled: Morebits.ip.isRange(uid) // rvuser template doesn't support ranges
 	});
 	form.append({
 		type: 'div',
@@ -117,7 +115,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 		if (blocklist.length) {
 			// If an IP is blocked *and* rangeblocked, only use whichever is more recent
 			var block = blocklist[0];
-			var message = (isIP ? 'This IP ' + (isIPRange ? 'range' : 'address') : 'This account') + ' is ' + (block.partial ? 'partially' : 'already') + ' blocked';
+			var message = (isIP ? 'This IP ' + (Morebits.ip.isRange(uid) ? 'range' : 'address') : 'This account') + ' is ' + (block.partial ? 'partially' : 'already') + ' blocked';
 			// Start and end differ, range blocked
 			message += block.rangestart !== block.rangeend ? ' as part of a rangeblock.' : '.';
 			if (block.partial) {
