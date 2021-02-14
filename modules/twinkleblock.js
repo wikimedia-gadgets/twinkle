@@ -3,7 +3,7 @@
 
 (function($) {
 
-var api = new mw.Api(), relevantUserName, blockedUserName;
+var relevantUserName, blockedUserName;
 var menuFormattedNamespaces = $.extend({}, mw.config.get('wgFormattedNamespaces'));
 menuFormattedNamespaces[0] = '(Article)';
 
@@ -129,52 +129,43 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	Window.display();
 	result.root = result;
 
-	Twinkle.block.fetchUserInfo(function() {
-		// Toggle initial partial state depending on prior block type,
-		// will override the defaultToPartialBlocks pref
-		if (blockedUserName === relevantUserName) {
-			$(result).find('[name=actiontype][value=partial]').prop('checked', Twinkle.block.currentBlockInfo.partial === '');
-		}
+	new Morebits.wiki.user(relevantUserName, 'Fetching user information').load(function(userobj) {
+		Twinkle.block.processUserInfo(userobj, function() {
+			// Toggle initial partial state depending on prior block type,
+			// will override the defaultToPartialBlocks pref
+			if (blockedUserName === relevantUserName) {
+				$(result).find('[name=actiontype][value=partial]').prop('checked', Twinkle.block.currentBlockInfo.partial);
+			}
 
-		// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
-		Twinkle.block.transformBlockPresets();
+			// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
+			Twinkle.block.transformBlockPresets();
 
-		// init the controls after user and block info have been fetched
-		var evt = document.createEvent('Event');
-		evt.initEvent('change', true, true);
-		result.actiontype[0].dispatchEvent(evt);
+			// init the controls after user and block info have been fetched
+			var evt = document.createEvent('Event');
+			evt.initEvent('change', true, true);
+			result.actiontype[0].dispatchEvent(evt);
+		});
+	}, function() {
+		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
+		Morebits.status.warn('Error fetching user info');
 	});
 };
 
 // Store fetched user data, only relevant if switching IPv6 to a /64
 Twinkle.block.fetchedData = {};
-// Processes the data from a a query response, separated from
-// Twinkle.block.fetchUserInfo to allow reprocessing of already-fetched data
-Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
-	var blockinfo = data.query.blocks[0],
-		userinfo = data.query.users[0];
-	// If an IP is blocked *and* rangeblocked, the above finds
-	// whichever block is more recent, not necessarily correct.
-	// Three seems... unlikely
-	if (data.query.blocks.length > 1 && blockinfo.user !== relevantUserName) {
-		blockinfo = data.query.blocks[1];
-	}
+// Processes data from a loaded userobj to allow reprocessing of already-fetched data
+Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(userobj, fn) {
+	var blockinfo = userobj.getBlockInfo();
 	// Cache response, used when toggling /64 blocks
-	Twinkle.block.fetchedData[userinfo.name] = data;
+	Twinkle.block.fetchedData[userobj.getUserName()] = userobj;
 
-	Twinkle.block.isRegistered = !!userinfo.userid;
-	if (Twinkle.block.isRegistered) {
-		Twinkle.block.userIsBot = !!userinfo.groupmemberships && userinfo.groupmemberships.map(function(e) {
-			return e.group;
-		}).indexOf('bot') !== -1;
-	} else {
-		Twinkle.block.userIsBot = false;
-	}
+	Twinkle.block.isRegistered = !userobj.isIP();
+	Twinkle.block.userIsBot = userobj.isBot();
 
 	if (blockinfo) {
 		// handle frustrating system of inverted boolean values
-		blockinfo.disabletalk = blockinfo.allowusertalk === undefined;
-		blockinfo.hardblock = blockinfo.anononly === undefined;
+		blockinfo.disabletalk = !blockinfo.allowusertalk;
+		blockinfo.hardblock = !blockinfo.anononly;
 	}
 	// will undefine if no blocks present
 	Twinkle.block.currentBlockInfo = blockinfo;
@@ -195,43 +186,14 @@ Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
 	// redirecting (like Special:Block does) we would need a function to
 	// parse ranges, which is a pain.  IPUtils has the code, but it'd be a
 	// lot of cruft for one purpose.
-	Twinkle.block.hasBlockLog = !!data.query.logevents.length;
-	Twinkle.block.blockLog = Twinkle.block.hasBlockLog && data.query.logevents;
+	Twinkle.block.hasBlockLog = userobj.hasBlockLog();
+	Twinkle.block.lastBlockLogEntry = userobj.getLastBlockLogEntry();
 	// Used later to check if block status changed while filling out the form
-	Twinkle.block.blockLogId = Twinkle.block.hasBlockLog ? data.query.logevents[0].logid : false;
+	Twinkle.block.lastBlockLogId = Twinkle.block.hasBlockLog ? Twinkle.block.lastBlockLogEntry.logid : false;
 
 	if (typeof fn === 'function') {
 		return fn();
 	}
-};
-
-Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
-	var query = {
-		format: 'json',
-		action: 'query',
-		list: 'blocks|users|logevents',
-		letype: 'block',
-		lelimit: 1,
-		letitle: 'User:' + relevantUserName,
-		bkprop: 'expiry|reason|flags|restrictions|range|user',
-		ususers: relevantUserName
-	};
-
-	// bkusers doesn't catch single IPs blocked as part of a range block
-	if (mw.util.isIPAddress(relevantUserName, true)) {
-		query.bkip = relevantUserName;
-	} else {
-		query.bkusers = relevantUserName;
-		// groupmemberships only relevant for registered users
-		query.usprop = 'groupmemberships';
-	}
-
-	api.get(query).then(function(data) {
-		Twinkle.block.processUserInfo(data, fn);
-	}, function(msg) {
-		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
-		Morebits.status.warn('Error fetching user info', msg);
-	});
 };
 
 Twinkle.block.callback.saveFieldset = function twinkleblockCallbacksaveFieldset(fieldset) {
@@ -276,7 +238,7 @@ Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock
 		// Correct partial state
 		$form.find('[name=actiontype][value=partial]').prop('checked', Twinkle.getPref('defaultToPartialBlocks'));
 		if (blockedUserName === relevantUserName) {
-			$form.find('[name=actiontype][value=partial]').prop('checked', Twinkle.block.currentBlockInfo.partial === '');
+			$form.find('[name=actiontype][value=partial]').prop('checked', Twinkle.block.currentBlockInfo.partial);
 		}
 
 		// Set content appropriately
@@ -286,7 +248,12 @@ Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock
 	if (Twinkle.block.fetchedData[relevantUserName]) {
 		Twinkle.block.processUserInfo(Twinkle.block.fetchedData[relevantUserName], regenerateForm);
 	} else {
-		Twinkle.block.fetchUserInfo(regenerateForm);
+		new Morebits.wiki.user(relevantUserName, 'Fetching user information').load(function(userobj) {
+			Twinkle.block.processUserInfo(userobj, regenerateForm);
+		}, function() {
+			Morebits.status.init($('div[name="currentblock"] span').last()[0]);
+			Morebits.status.warn('Error fetching user info');
+		});
 	}
 };
 
@@ -726,7 +693,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		var sameUser = blockedUserName === relevantUserName;
 
 		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
-		var statusStr = relevantUserName + ' is ' + (Twinkle.block.currentBlockInfo.partial === '' ? 'partially blocked' : 'blocked sitewide');
+		var statusStr = relevantUserName + ' is ' + (Twinkle.block.currentBlockInfo.partial ? 'partially blocked' : 'blocked sitewide');
 
 		// Range blocked
 		if (Twinkle.block.currentBlockInfo.rangestart !== Twinkle.block.currentBlockInfo.rangeend) {
@@ -750,10 +717,8 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		var infoStr = 'This form will';
 		if (sameUser) {
 			infoStr += ' change that block';
-			if (Twinkle.block.currentBlockInfo.partial === undefined && partialBox) {
-				infoStr += ', converting it to a partial block';
-			} else if (Twinkle.block.currentBlockInfo.partial === '' && !partialBox) {
-				infoStr += ', converting it to a sitewide block';
+			if (Twinkle.block.currentBlockInfo.partial !== partialBox) {
+				infoStr += ', converting it to a ' + (partialBox ? 'partial block' : 'sitewide block');
 			}
 			infoStr += '.';
 		} else {
@@ -772,11 +737,10 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	if (Twinkle.block.hasBlockLog) {
 		var $blockloglink = $('<span>').append($('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: relevantUserName, type: 'block'}) + '">block log</a>)'));
 		if (!Twinkle.block.currentBlockInfo) {
-			var lastBlockAction = Twinkle.block.blockLog[0];
-			if (lastBlockAction.action === 'unblock') {
-				$blockloglink.append(' (unblocked ' + new Morebits.date(lastBlockAction.timestamp).calendar('utc') + ')');
+			if (Twinkle.block.lastBlockLogEntry.action === 'unblock') {
+				$blockloglink.append(' (unblocked ' + new Morebits.date(Twinkle.block.lastBlockLogEntry.timestamp).calendar('utc') + ')');
 			} else { // block or reblock
-				$blockloglink.append(' (' + lastBlockAction.params.duration + ', expired ' + new Morebits.date(lastBlockAction.params.expiry).calendar('utc') + ')');
+				$blockloglink.append(' (' + Twinkle.block.lastBlockLogEntry.params.duration + ', expired ' + new Morebits.date(Twinkle.block.lastBlockLogEntry.params.expiry).calendar('utc') + ')');
 			}
 		}
 
@@ -1714,12 +1678,8 @@ Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, 
 		}
 	}
 
-	// boolean-flipped options, more at [[mw:API:Block]]
-	data.disabletalk = data.disabletalk !== undefined ? data.disabletalk : false;
-	data.hardblock = data.hardblock !== undefined ? data.hardblock : false;
-
 	// disable autoblock if blocking a bot
-	if (Twinkle.block.userIsBot || /bot\b/i.test(relevantUserName)) {
+	if (Twinkle.block.userIsBot) {
 		data.autoblock = false;
 	}
 
@@ -1858,7 +1818,6 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 	Twinkle.block.callback.saveFieldset($form.find('[name=field_template_options]'));
 
 	blockoptions = Twinkle.block.field_block_options;
-
 	templateoptions = Twinkle.block.field_template_options;
 
 	templateoptions.disabletalk = !!(templateoptions.disabletalk || blockoptions.disabletalk);
@@ -1882,6 +1841,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 
 	if (toBlock) {
 		if (blockoptions.partial) {
+			// Preempt API/Morebits.wiki.user errors
 			if (blockoptions.disabletalk && blockoptions.namespacerestrictions.indexOf('3') === -1) {
 				return alert('Partial blocks cannot prevent talk page access unless also restricting them from editing User talk space!');
 			}
@@ -1906,71 +1866,62 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 
 		Morebits.simpleWindow.setButtonsEnabled(false);
 		Morebits.status.init(e.target);
-		var statusElement = new Morebits.status('Executing block');
-		blockoptions.action = 'block';
 
-		blockoptions.user = relevantUserName;
-
-		// boolean-flipped options
-		blockoptions.anononly = blockoptions.hardblock ? undefined : true;
-		blockoptions.allowusertalk = blockoptions.disabletalk ? undefined : true;
+		// Message doesn't resolve???
+		var user = new Morebits.wiki.user(relevantUserName, 'Executing block');
+		user.setChangeTags(Twinkle.changeTags);
 
 		/*
 		  Check if block status changed while processing the form.
 
 		  There's a lot to consider here. list=blocks provides the
-		  current block status, but there are at least two issues with
-		  relying on it. First, the id doesn't update on a reblock,
-		  meaning the individual parameters need to be compared. This
-		  can be done roughly with JSON.stringify - we can thankfully
-		  rely on order from the server, although sorting would be
-		  fine if not - but falsey values are problematic and is
-		  non-ideal. More importantly, list=blocks won't indicate if a
-		  non-blocked user is blocked then unblocked. This should be
-		  exceedingy rare, but regardless, we thus need to check
-		  list=logevents, which has a nicely updating logid
-		  parameter. We can't rely just on that, though, since it
-		  doesn't account for blocks that have expired on their own.
+		  current block status, but won't indicate if a non-blocked
+		  user is blocked then unblocked. This should be rare, but we
+		  thus need to check list=logevents, which has a nicely
+		  updating logid parameter. We can't rely just on that,
+		  though, since it doesn't account for blocks that have
+		  naturally expired.
 
-		  As such, we use both. Using some ternaries, the logid
-		  variables are false if there's no logevents, so if they
-		  aren't equal we defintely have a changed entry (send
-		  confirmation). If they are equal, then either the user was
-		  never blocked (the block statuses will be equal, no
-		  confirmation) or there's no new block, in which case either
-		  a block expired (different statuses, confirmation) or the
-		  same block is still active (same status, no confirmation).
+		  Thus, we use both. Using some ternaries, the logid variables
+		  are false if there's no response from logevents, so if they
+		  aren't equivalent we defintely have a changed entry (send
+		  confirmation). If they are, then either the user was never
+		  blocked (the block statuses will be equal, no confirmation)
+		  or there's no new block, in which case either a block
+		  expired (different statuses, confirmation) or the same block
+		  is still active (same status, no confirmation).
 		*/
-		var query = {
-			format: 'json',
-			action: 'query',
-			list: 'blocks|logevents',
-			letype: 'block',
-			lelimit: 1,
-			letitle: 'User:' + blockoptions.user
-		};
-		// bkusers doesn't catch single IPs blocked as part of a range block
-		if (mw.util.isIPAddress(blockoptions.user, true)) {
-			query.bkip = blockoptions.user;
-		} else {
-			query.bkusers = blockoptions.user;
-		}
-		api.get(query).then(function(data) {
-			var block = data.query.blocks[0];
-			// As with the initial data fetch, if an IP is blocked
-			// *and* rangeblocked, this would only grab whichever
-			// block is more recent, which would likely mean a
-			// mismatch.  However, if the rangeblock is updated
-			// while filling out the form, this won't detect that,
-			// but that's probably fine.
-			if (data.query.blocks.length > 1 && block.user !== relevantUserName) {
-				block = data.query.blocks[1];
-			}
-			var logevents = data.query.logevents[0];
-			var logid = data.query.logevents.length ? logevents.logid : false;
+		user.load(function() {
+			// Process the options stored in blockoptions, here after load should override any defaults
+			// Boolean-flipped options
+			blockoptions.anononly = !blockoptions.hardblock;
+			blockoptions.allowusertalk = !blockoptions.disabletalk;
 
-			if (logid !== Twinkle.block.blockLogId || !!block !== !!Twinkle.block.currentBlockInfo) {
-				var message = 'The block status of ' + blockoptions.user + ' has changed. ';
+			// In theory we could probably process field_block_options to get this list,
+			// adding partial status and removing expiry_preset, reason, and the see_alsos
+			// (that's basically what blockoptions is), but in practice we want everything,
+			// regardless of whether they're set or not, and just using all the available
+			// methods in Morebits.wiki.user guards against any future issues.
+			['expiry', 'watchuser', 'reason', 'partial', 'allowusertalk', 'anononly', 'autoblock', 'nocreate', 'noemail', 'reblock'].forEach(function(param) {
+				// e.g. `expiry` -> `user.setExpiry(blockoptions.expiry)`
+				user['set' + Morebits.string.toUpperCaseFirstChar(param)](blockoptions[param]);
+			});
+			if (blockoptions.partial) {
+				if (blockoptions.pagerestrictions) {
+					user.setPartialPages(blockoptions.pagerestrictions);
+				}
+				if (blockoptions.namespacerestrictions) {
+					user.setPartialNamespaces(blockoptions.namespacerestrictions);
+				}
+			}
+
+
+			var block = user.getBlockInfo();
+			var logevents = user.getLastBlockLogEntry();
+			var logid = logevents ? logevents.logid : false;
+
+			if (logid !== Twinkle.block.lastBlockLogId || !!block !== !!Twinkle.block.currentBlockInfo) {
+				var message = 'The block status of ' + user.getUserName() + ' has changed. ';
 				if (block) {
 					message += 'New status: ';
 				} else {
@@ -1978,6 +1929,9 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 				}
 
 				var logExpiry = '';
+				// Only defined if there was ever a block, and we're only ever here if there was ever a block
+				// That is: if there's a difference in logids, then this is defined;
+				// if there isn't but the block status has changed, this is defined
 				if (logevents.params.duration) {
 					if (logevents.params.duration === 'infinity') {
 						logExpiry = 'indefinitely';
@@ -1995,19 +1949,15 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 					Morebits.status.info('Executing block', 'Canceled by user');
 					return;
 				}
-				blockoptions.reblock = 1; // Writing over a block will fail otherwise
+				user.setReblock(true); // Writing over a block will fail otherwise
 			}
 
 			// execute block
-			blockoptions.tags = Twinkle.changeTags;
-			blockoptions.token = mw.user.tokens.get('csrfToken');
-			var mbApi = new Morebits.wiki.api('Executing block', blockoptions, function() {
-				statusElement.info('Completed');
+			user.block(function() {
 				if (toWarn) {
 					Twinkle.block.callback.issue_template(templateoptions);
 				}
 			});
-			mbApi.post();
 		});
 	} else if (toWarn) {
 		Morebits.simpleWindow.setButtonsEnabled(false);
@@ -2126,7 +2076,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 
 	params.indefinite = Morebits.string.isInfinity(params.expiry);
 
-	if (Twinkle.getPref('blankTalkpageOnIndefBlock') && params.template !== 'uw-lblock' && params.indefinite) {
+	if (params.indefinite && Twinkle.getPref('blankTalkpageOnIndefBlock') && params.template !== 'uw-lblock') {
 		Morebits.status.info('Info', 'Blanking talk page per preferences and creating a new talk page section for this month');
 		text = date.monthHeader() + '\n';
 	} else {
