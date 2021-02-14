@@ -30,7 +30,7 @@ QUnit.test('formatReasonText', assert => {
 });
 QUnit.test('isInfinity', assert => {
 	assert.true(Morebits.string.isInfinity('infinity'), 'Infinity');
-	assert.true(Morebits.string.isInfinity('infinity'), 'Indefinite');
+	assert.true(Morebits.string.isInfinity('indefinite'), 'Indefinite');
 	assert.true(Morebits.string.isInfinity('never'), 'Never');
 	assert.true(Morebits.string.isInfinity('infinite'), 'Infinite');
 	assert.false(Morebits.string.isInfinity('always'), 'Always');
