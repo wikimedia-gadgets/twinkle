@@ -111,6 +111,53 @@ Morebits.sanitizeIPv6 = function (address) {
 };
 
 /**
+ * Check that an IP range is within the CIDR limits.  Most likely to be useful
+ * in conjunction with `wgRelevantUserName`.  CIDR limits are harcoded as /16
+ * for IPv4 and /32 for IPv6.
+ *
+ * @returns {boolean} - True for valid ranges within the CIDR limits,
+ * otherwise false (ranges outside the limit, single IPs, non-IPs).
+ */
+Morebits.validCIDR = function (ip) {
+	if (mw.util.isIPAddress(ip, true) && !mw.util.isIPAddress(ip)) {
+		var subnet = parseInt(ip.match(/\/(\d{1,3})$/)[1], 10);
+		if (subnet) { // Should be redundant
+			if (mw.util.isIPv6Address(ip, true)) {
+				if (subnet >= 32) {
+					return true;
+				}
+			} else {
+				if (subnet >= 16) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+};
+
+/**
+ * Get the /64 subnet for an IPv6 address.
+ *
+ * @param {string} ipv6 - The IPv6 address, with or without a subnet.
+ * @returns {boolean|string} - False if not IPv6 or bigger than a 64,
+ * otherwise the (sanitized) /64 address.
+ */
+Morebits.get64 = function (ipv6) {
+	if (!ipv6 || !mw.util.isIPv6Address(ipv6, true)) {
+		return false;
+	}
+	var subnetMatch = ipv6.match(/\/(\d{1,3})$/);
+	if (subnetMatch && parseInt(subnetMatch[1], 10) < 64) {
+		return false;
+	}
+	ipv6 = Morebits.sanitizeIPv6(ipv6);
+	var ip_re = /^((?:[0-9A-F]{1,4}:){4})(?:[0-9A-F]{1,4}:){3}[0-9A-F]{1,4}(?:\/\d{1,3})?$/;
+	return ipv6.replace(ip_re, '$1' + '0:0:0:0/64');
+};
+
+
+/**
  * Determines whether the current page is a redirect or soft redirect. Fails
  * to detect soft redirects on edit, history, etc. pages.  Will attempt to
  * detect [[Module:Redirect for discussion]], with the same failure points.

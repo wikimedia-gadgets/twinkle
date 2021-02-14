@@ -504,10 +504,12 @@ Twinkle.fluff.callbacks = {
 		var index = 1;
 		if (params.revid !== lastrevid) {
 			Morebits.status.warn('Warning', [ 'Latest revision ', Morebits.htmlNode('strong', lastrevid), ' doesn\'t equal our revision ', Morebits.htmlNode('strong', params.revid) ]);
-			if (lastuser === params.user) {
+			// Treat ipv6 users on same 64 block as the same
+			if (lastuser === params.user || (mw.util.isIPv6Address(params.user) && Morebits.get64(lastuser) === Morebits.get64(params.user))) {
 				switch (params.type) {
 					case 'vand':
-						Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm), '. As we assume vandalism, we will proceed to revert.' ]);
+						Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm),
+							lastuser !== params.user ? ', which is on the same /64 subnet' : '', '. As we assume vandalism, we will proceed to revert.' ]);
 						break;
 					case 'agf':
 						Morebits.status.warn('Warning', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm), '. As we assume good faith, we will stop the revert, as the problem might have been fixed.' ]);
@@ -564,10 +566,19 @@ Twinkle.fluff.callbacks = {
 		}
 		var found = false;
 		var count = 0;
+		var seen64 = false;
 
 		for (var i = index; i < revs.length; ++i) {
 			++count;
 			if (revs[i].user !== params.user) {
+				// Treat ipv6 users on same 64 block as the same
+				if (mw.util.isIPv6Address(revs[i].user) && Morebits.get64(revs[i].user) === Morebits.get64(params.user)) {
+					if (!seen64) {
+						new Morebits.status('Note', 'Treating consecutive IPv6 addresses in the same /64 as the same user');
+						seen64 = true;
+					}
+					continue;
+				}
 				found = i;
 				break;
 			}

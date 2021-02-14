@@ -84,7 +84,9 @@ Twinkle.welcome.normal = function() {
 			}
 		}
 	}
-	if (mw.config.get('wgRelevantUserName')) {
+	// Users and IPs but not IP ranges
+	if (mw.config.exists('wgRelevantUserName') &&
+		mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) === mw.util.isIPAddress(mw.config.get('wgRelevantUserName'), true)) {
 		Twinkle.addPortletLink(function() {
 			Twinkle.welcome.callback(mw.config.get('wgRelevantUserName'));
 		}, 'Wel', 'friendly-welcome', 'Welcome user');
