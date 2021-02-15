@@ -4,7 +4,7 @@
  *
  * The highlights include:
  * - {@link Morebits.wiki.api} - make calls to the MediaWiki API
- * - {@link Morebits.wiki.page} - modify pages on the wiki (edit, revert, delete, etc.)
+ * - {@link Morebits.wiki.page} - modify pages on the wiki (edit, move, delete, etc.)
  * - {@link Morebits.date} - enhanced date object processing, sort of a light moment.js
  * - {@link Morebits.quickForm} - generate quick HTML forms on the fly
  * - {@link Morebits.simpleWindow} - a wrapper for jQuery UI Dialog with a custom look and extra features
@@ -2480,9 +2480,6 @@ Morebits.wiki.page = function(pageName, status) {
 		creator: null,
 		timestamp: null,
 
-		// - revert
-		revertOldID: null,
-
 		// - move
 		moveDestination: null,
 		moveTalkPage: false,
@@ -2509,7 +2506,6 @@ Morebits.wiki.page = function(pageName, status) {
 		pageID: null,
 		contentModel: null,
 		revertCurID: null,
-		revertUser: null,
 		watched: false,
 		fullyProtected: false,
 		suppressProtectWarning: false,
@@ -2589,10 +2585,6 @@ Morebits.wiki.page = function(pageName, status) {
 
 		if (ctx.editMode === 'all') {
 			ctx.loadQuery.rvprop = 'content|timestamp';  // get the page content at the same time, if needed
-		} else if (ctx.editMode === 'revert') {
-			ctx.loadQuery.rvprop = 'timestamp';
-			ctx.loadQuery.rvlimit = 1;
-			ctx.loadQuery.rvstartid = ctx.revertOldID;
 		}
 
 		if (ctx.followRedirect) {
@@ -2718,14 +2710,6 @@ Morebits.wiki.page = function(pageName, status) {
 				query.section = 'new';
 				query.text = ctx.newSectionText;  // add a new section to current page
 				query.sectiontitle = ctx.newSectionTitle || ctx.editSummary; // done by the API, but non-'' values would get treated as text
-				break;
-			case 'revert':
-				query.undo = ctx.revertCurID;
-				query.undoafter = ctx.revertOldID;
-				if (ctx.lastEditTime) {
-					query.basetimestamp = ctx.lastEditTime; // check that page hasn't been edited since it was loaded
-				}
-				query.starttimestamp = ctx.loadTime; // check that page hasn't been deleted since it was loaded (don't recreate bad stuff)
 				break;
 			default: // 'all'
 				query.text = ctx.pageText; // replace entire contents of the page
@@ -3083,19 +3067,9 @@ Morebits.wiki.page = function(pageName, status) {
 		ctx.suppressProtectWarning = true;
 	};
 
-	// Revert-related getters/setters:
-	this.setOldID = function(oldID) {
-		ctx.revertOldID = oldID;
-	};
-
 	/** @returns {string} The current revision ID of the page */
 	this.getCurrentID = function() {
 		return ctx.revertCurID;
-	};
-
-	/** @returns {string} Last editor of the page */
-	this.getRevisionUser = function() {
-		return ctx.revertUser;
 	};
 
 	/** @returns {string} ISO 8601 timestamp at which the page was last edited. */
@@ -3255,26 +3229,6 @@ Morebits.wiki.page = function(pageName, status) {
 		ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', query, fnLookupCreationSuccess, ctx.statusElement);
 		ctx.lookupCreationApi.setParent(this);
 		ctx.lookupCreationApi.post();
-	};
-
-	/**
-	 * Reverts a page to `revertOldID` set by `setOldID`.
-	 *
-	 * @param {Function} [onSuccess] - Callback function to run on success.
-	 * @param {Function} [onFailure] - Callback function to run on failure.
-	 */
-	this.revert = function(onSuccess, onFailure) {
-		ctx.onSaveSuccess = onSuccess;
-		ctx.onSaveFailure = onFailure || emptyFunction;
-
-		if (!ctx.revertOldID) {
-			ctx.statusElement.error('Internal error: revision ID to revert to was not set before revert!');
-			ctx.onSaveFailure(this);
-			return;
-		}
-
-		ctx.editMode = 'revert';
-		this.load(fnAutoSave, ctx.onSaveFailure);
 	};
 
 	/**
@@ -3537,7 +3491,7 @@ Morebits.wiki.page = function(pageName, status) {
 			if (!ctx.followCrossNsRedirect) {
 				return false; // must load the page to check for cross namespace redirects
 			}
-			if (action !== 'edit' || (ctx.editMode === 'all' || ctx.editMode === 'revert')) {
+			if (action !== 'edit' || ctx.editMode === 'all') {
 				return false;
 			}
 		}
@@ -3657,27 +3611,6 @@ Morebits.wiki.page = function(pageName, status) {
 			}
 		});
 
-		if (ctx.editMode === 'revert') {
-			ctx.revertCurID = rev && rev.revid;
-			if (!ctx.revertCurID) {
-				ctx.statusElement.error('Failed to retrieve current revision ID.');
-				ctx.onLoadFailure(this);
-				return;
-			}
-			ctx.revertUser = rev && rev.user;
-			if (!ctx.revertUser) {
-				if (rev && rev.userhidden) {  // username was RevDel'd or oversighted
-					ctx.revertUser = '<username hidden>';
-				} else {
-					ctx.statusElement.error('Failed to retrieve user who made the revision.');
-					ctx.onLoadFailure(this);
-					return;
-				}
-			}
-			// set revert edit summary
-			ctx.editSummary = '[[Help:Revert|Reverted]] to revision ' + ctx.revertOldID + ' by ' + ctx.revertUser + ': ' + ctx.editSummary;
-		}
-
 		ctx.pageLoaded = true;
 
 		// alert("Generate edit conflict now");  // for testing edit conflict recovery logic
@@ -3732,7 +3665,7 @@ Morebits.wiki.page = function(pageName, status) {
 
 	// callback from saveApi.post()
 	var fnSaveSuccess = function() {
-		ctx.editMode = 'all';  // cancel append/prepend/newSection/revert modes
+		ctx.editMode = 'all';  // cancel append/prepend/newSection modes
 		var response = ctx.saveApi.getResponse();
 
 		// see if the API thinks we were successful
@@ -3831,7 +3764,7 @@ Morebits.wiki.page = function(pageName, status) {
 					ctx.statusElement.error('Failed to save edit: ' + ctx.saveApi.getErrorText());
 			}
 
-			ctx.editMode = 'all';  // cancel append/prepend/newSection/revert modes
+			ctx.editMode = 'all';  // cancel append/prepend/newSection modes
 			if (ctx.onSaveFailure) {
 				ctx.onSaveFailure(this);  // invoke callback
 			}
