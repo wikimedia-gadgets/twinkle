@@ -153,7 +153,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		letype: 'protect',
 		letitle: mw.config.get('wgPageName'),
 		prop: hasFlaggedRevs ? 'info|flagged' : 'info',
-		inprop: 'protection',
+		inprop: 'protection|watched',
 		titles: mw.config.get('wgPageName')
 	});
 	var stableDeferred = api.get({
@@ -180,6 +180,9 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		var pageid = protectData[0].query.pageids[0];
 		var page = protectData[0].query.pages[pageid];
 		var current = {}, adminEditDeferred;
+
+		// Save requested page's watched status for later in case needed when filing request
+		Twinkle.protect.watched = page.watchlistexpiry || page.watched === '';
 
 		$.each(page.protection, function(index, protection) {
 			// Don't overwrite actual page protection with cascading protection
@@ -1513,7 +1516,7 @@ Twinkle.protect.callbacks = {
 		rppPage.setChangeTags(Twinkle.changeTags);
 		rppPage.setPageText(text);
 		rppPage.setCreateOption('recreate');
-		rppPage.save(function(pageobj) {
+		rppPage.save(function() {
 			// Watch the page being requested
 			var watchPref = Twinkle.getPref('watchRequestedPages');
 			// action=watch has no way to rely on user preferences (T262912), so we do it manually.
@@ -1527,7 +1530,7 @@ Twinkle.protect.callbacks = {
 					token: mw.user.tokens.get('watchToken')
 				};
 				// Only add the expiry if page is unwatched or already temporarily watched
-				if (pageobj.getWatched() !== true && watchPref !== 'default' && watchPref !== 'yes') {
+				if (Twinkle.protect.watched !== true && watchPref !== 'default' && watchPref !== 'yes') {
 					watch_query.expiry = watchPref;
 				}
 				new Morebits.wiki.api('Adding requested page to watchlist', watch_query).post();
