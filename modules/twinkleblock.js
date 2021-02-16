@@ -1541,7 +1541,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'checkuserblock-wide', value: 'checkuserblock-wide' },
 			{ label: 'colocationwebhost', value: 'colocationwebhost' },
 			{ label: 'oversightblock', value: 'oversightblock' },
-			{ label: 'rangeblock', value: 'rangeblock', selected: true }, // Only for IP ranges
+			{ label: 'rangeblock', value: 'rangeblock' }, // Only for IP ranges, selected for non-/64 ranges in filtered_block_groups
 			{ label: 'spamblacklistblock', value: 'spamblacklistblock' },
 			{ label: 'tor', value: 'tor' },
 			{ label: 'webhostblock', value: 'webhostblock' },
@@ -1584,6 +1584,7 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 					if (!Morebits.ip.isRange(relevantUserName)) {
 						return;
 					}
+					blockPreset.selected = !Morebits.ip.get64(relevantUserName);
 					break;
 				case 'CheckUser block':
 				case 'checkuserblock-account':
