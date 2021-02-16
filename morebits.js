@@ -5543,7 +5543,7 @@ Morebits.simpleWindow = function SimpleWindow(width, height) {
 				this.scrollbox.style.maxHeight = 'none';
 			}
 		},
-		resizeEnd: function() {
+		resizeStop: function() {
 			this.scrollbox = null;
 		},
 		resize: function() {
