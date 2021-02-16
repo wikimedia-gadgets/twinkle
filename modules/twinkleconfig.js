@@ -1351,43 +1351,40 @@ Twinkle.config.init = function twinkleconfigInit() {
 Twinkle.config.listDialog = {};
 
 Twinkle.config.listDialog.addRow = function twinkleconfigListDialogAddRow(dlgtable, value, label) {
-	var contenttr = document.createElement('tr');
-	// "remove" button
-	var contenttd = document.createElement('td');
-	var removeButton = document.createElement('button');
-	removeButton.setAttribute('type', 'button');
-	removeButton.addEventListener('click', function() {
-		$(contenttr).remove();
-	}, false);
-	removeButton.textContent = 'Remove';
-	contenttd.appendChild(removeButton);
-	contenttr.appendChild(contenttd);
+	var $contenttr, $valueInput, $labelInput;
 
-	// value input box
-	contenttd = document.createElement('td');
-	var input = document.createElement('input');
-	input.setAttribute('type', 'text');
-	input.className = 'twinkle-config-customlist-value';
-	input.style.width = '97%';
+	$(dlgtable).append(
+		$contenttr = $('<tr>').append(
+			$('<td>').append(
+				$('<button>')
+					.attr('type', 'button')
+					.on('click', function () {
+						$contenttr.remove();
+					})
+					.text('Remove')
+			),
+			$('<td>').append(
+				$valueInput = $('<input>')
+					.attr('type', 'text')
+					.addClass('twinkle-config-customlist-value')
+					.css('width', '97%')
+			),
+			$('<td>').append(
+				$labelInput = $('<input>')
+					.attr('type', 'text')
+					.addClass('twinkle-config-customlist-label')
+					.css('width', '98%')
+			)
+		)
+	);
+
 	if (value) {
-		input.setAttribute('value', value);
+		$valueInput.val(value);
 	}
-	contenttd.appendChild(input);
-	contenttr.appendChild(contenttd);
-
-	// label input box
-	contenttd = document.createElement('td');
-	input = document.createElement('input');
-	input.setAttribute('type', 'text');
-	input.className = 'twinkle-config-customlist-label';
-	input.style.width = '98%';
 	if (label) {
-		input.setAttribute('value', label);
+		$labelInput.val(label);
 	}
-	contenttd.appendChild(input);
-	contenttr.appendChild(contenttd);
 
-	dlgtable.appendChild(contenttr);
 };
 
 Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
