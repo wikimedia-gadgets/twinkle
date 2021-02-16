@@ -397,7 +397,7 @@ $.ajax({
 	dataType: 'text'
 })
 	.fail(function () {
-		mw.notify('Could not load your Twinkle preferences', {type: 'error'});
+		mw.notify('Could not load your Twinkle preferences, resorting to default preferences');
 	})
 	.done(function (optionsText) {
 
