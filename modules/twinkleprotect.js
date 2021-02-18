@@ -474,6 +474,34 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				name: 'protectReason',
 				label: 'Reason (for protection log):'
 			});
+			field2.append({
+				type: 'div',
+				name: 'protectReason_notes',
+				label: 'Notes:',
+				style: 'display:inline-block; margin-top:4px;',
+				tooltip: 'Add a note to the protection log that this was requested at RfPP.'
+			});
+			field2.append({
+				type: 'checkbox',
+				event: Twinkle.protect.callback.annotateProtectReason,
+				style: 'display:inline-block; margin-top:4px;',
+				list: [
+					{
+						label: 'RfPP request',
+						name: 'protectReason_notes_rfpp',
+						checked: false,
+						value: 'requested at [[WP:RfPP]]'
+					}
+				]
+			});
+			field2.append({
+				type: 'input',
+				event: Twinkle.protect.callback.annotateProtectReason,
+				label: 'RfPP revision ID',
+				name: 'protectReason_notes_rfppRevid',
+				value: '',
+				tooltip: 'Optional revision ID of the RfPP page where protection was requested.'
+			});
 			if (!mw.config.get('wgArticleId') || mw.config.get('wgPageContentModel') === 'Scribunto') {  // tagging isn't relevant for non-existing or module pages
 				break;
 			}
@@ -571,6 +599,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 
 		// reduce vertical height of dialog
 		$(e.target.form).find('fieldset[name="field2"] select').parent().css({ display: 'inline-block', marginRight: '0.5em' });
+		$(e.target.form).find('fieldset[name="field2"] input[name="protectReason_notes_rfppRevid"]').parent().css({display: 'inline-block', marginLeft: '15px'}).hide();
 	}
 
 	// re-add protection level and log info, if it's available
@@ -1034,6 +1063,8 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 		} else {
 			reasonField.value = '';
 		}
+		// Add any annotations
+		Twinkle.protect.callback.annotateProtectReason(e);
 
 		// sort out tagging options, disabled if nonexistent or lua
 		if (mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto') {
@@ -1121,6 +1152,11 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					thispage.setEditSummary(input.protectReason);
 				} else {
 					alert('You must enter a protect reason, which will be inscribed into the protection log.');
+					return;
+				}
+
+				if (input.protectReason_notes_rfppRevid && !/^\d+$/.test(input.protectReason_notes_rfppRevid)) {
+					alert('The provided revision ID is malformed. Please see https://en.wikipedia.org/wiki/Help:Permanent_link for information on how to find the correct ID (also called "oldid").');
 					return;
 				}
 
@@ -1349,6 +1385,37 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		default:
 			alert('twinkleprotect: unknown kind of action');
 			break;
+	}
+};
+
+Twinkle.protect.protectReasonAnnotations = [];
+Twinkle.protect.callback.annotateProtectReason = function twinkleprotectCallbackAnnotateProtectReason(e) {
+	var form = e.target.form;
+	var protectReason = form.protectReason.value.replace(new RegExp('(?:; )?' + mw.util.escapeRegExp(Twinkle.protect.protectReasonAnnotations.join(': '))), '');
+
+	if (this.name === 'protectReason_notes_rfpp') {
+		if (this.checked) {
+			Twinkle.protect.protectReasonAnnotations.push(this.value);
+			$(form.protectReason_notes_rfppRevid).parent().show();
+		} else {
+			Twinkle.protect.protectReasonAnnotations = [];
+			form.protectReason_notes_rfppRevid.value = '';
+			$(form.protectReason_notes_rfppRevid).parent().hide();
+		}
+	} else if (this.name === 'protectReason_notes_rfppRevid') {
+		Twinkle.protect.protectReasonAnnotations = Twinkle.protect.protectReasonAnnotations.filter(function(el) {
+			return el.indexOf('[[Special:Permalink') === -1;
+		});
+		if (e.target.value.length) {
+			var permalink = '[[Special:Permalink/' + e.target.value + '#' + Morebits.pageNameNorm + ']]';
+			Twinkle.protect.protectReasonAnnotations.push(permalink);
+		}
+	}
+
+	if (!Twinkle.protect.protectReasonAnnotations.length) {
+		form.protectReason.value = protectReason;
+	} else {
+		form.protectReason.value = (protectReason ? protectReason + '; ' : '') + Twinkle.protect.protectReasonAnnotations.join(': ');
 	}
 };
 
