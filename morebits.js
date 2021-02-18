@@ -1829,11 +1829,15 @@ Morebits.date.prototype = {
 	 * @returns {Morebits.date}
 	 */
 	add: function(number, unit) {
+		var num = parseInt(number, 10); // normalize
+		if (isNaN(num)) {
+			throw new Error('Invalid number "' + number + '" provided.');
+		}
 		unit = unit.toLowerCase(); // normalize
 		var unitMap = Morebits.date.unitMap;
 		var unitNorm = unitMap[unit] || unitMap[unit + 's']; // so that both singular and  plural forms work
 		if (unitNorm) {
-			this['set' + unitNorm](this['get' + unitNorm]() + number);
+			this['set' + unitNorm](this['get' + unitNorm]() + num);
 			return this;
 		}
 		throw new Error('Invalid unit "' + unit + '": Only ' + Object.keys(unitMap).join(', ') + ' are allowed.');
