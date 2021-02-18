@@ -1536,11 +1536,11 @@ Twinkle.block.blockGroups = [
 		label: 'Templated reasons',
 		list: [
 			{ label: 'blocked proxy', value: 'blocked proxy' },
-			{ label: 'CheckUser block', value: 'CheckUser block', disabled: !Morebits.userIsInGroup('checkuser') },
-			{ label: 'checkuserblock-account', value: 'checkuserblock-account', disabled: !Morebits.userIsInGroup('checkuser') },
-			{ label: 'checkuserblock-wide', value: 'checkuserblock-wide', disabled: !Morebits.userIsInGroup('checkuser') },
+			{ label: 'CheckUser block', value: 'CheckUser block' },
+			{ label: 'checkuserblock-account', value: 'checkuserblock-account' },
+			{ label: 'checkuserblock-wide', value: 'checkuserblock-wide' },
 			{ label: 'colocationwebhost', value: 'colocationwebhost' },
-			{ label: 'oversightblock', value: 'oversightblock', disabled: !Morebits.userIsInGroup('oversight') },
+			{ label: 'oversightblock', value: 'oversightblock' },
 			{ label: 'rangeblock', value: 'rangeblock', selected: true }, // Only for IP ranges
 			{ label: 'spamblacklistblock', value: 'spamblacklistblock' },
 			{ label: 'tor', value: 'tor' },
@@ -1574,10 +1574,31 @@ Twinkle.block.blockGroupsPartial = [
 Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilteredBlockGroups(group, show_template) {
 	return $.map(group, function(blockGroup) {
 		var list = $.map(blockGroup.list, function(blockPreset) {
-			// only show {{uw-talkrevoked}} if reblocking or {{rangeblock}} if rangeblocking
-			if ((blockPreset.value === 'uw-talkrevoked' && blockedUserName !== relevantUserName) ||
-				(blockPreset.value === 'rangeblock' && !Morebits.ip.isRange(relevantUserName))) {
-				return;
+			switch (blockPreset.value) {
+				case 'uw-talkrevoked':
+					if (blockedUserName !== relevantUserName) {
+						return;
+					}
+					break;
+				case 'rangeblock':
+					if (!Morebits.ip.isRange(relevantUserName)) {
+						return;
+					}
+					break;
+				case 'CheckUser block':
+				case 'checkuserblock-account':
+				case 'checkuserblock-wide':
+					if (!Morebits.userIsInGroup('checkuser')) {
+						return;
+					}
+					break;
+				case 'oversightblock':
+					if (!Morebits.userIsInGroup('oversight')) {
+						return;
+					}
+					break;
+				default:
+					break;
 			}
 
 			var blockSettings = Twinkle.block.blockPresetsInfo[blockPreset.value];
