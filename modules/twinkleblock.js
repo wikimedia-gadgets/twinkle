@@ -73,7 +73,9 @@ Twinkle.block.callback = function twinkleblockCallback() {
 				label: 'Add block template to user talk page',
 				value: 'template',
 				tooltip: 'If the blocking admin forgot to issue a block template, or you have just blocked the user without templating them, you can use this to issue the appropriate template. Check the partial block box for partial block templates.',
-				checked: true
+				// Disallow when viewing the block dialog on an IP range
+				checked: !Morebits.ip.isRange(relevantUserName),
+				disabled: Morebits.ip.isRange(relevantUserName)
 			}
 		]
 	});
@@ -110,7 +112,8 @@ Twinkle.block.callback = function twinkleblockCallback() {
 			list: [{
 				checked: relevantUserName !== mw.config.get('wgRelevantUserName'), // In case the user closes and reopens the form
 				label: 'Block the /64 instead',
-				value: 'block64'
+				value: 'block64',
+				tooltip: Morebits.ip.isRange(mw.config.get('wgRelevantUserName')) ? 'Will eschew leaving a template.' : 'Any template issued will go to the original IP: ' + mw.config.get('wgRelevantUserName')
 			}]
 		});
 	}
@@ -251,6 +254,10 @@ Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock
 	} else {
 		relevantUserName = mw.config.get('wgRelevantUserName');
 	}
+	// No templates for ranges, but if the original user is a single IP, offer the option
+	// (done separately in Twinkle.block.callback.issue_template)
+	var originalIsRange = Morebits.ip.isRange(mw.config.get('wgRelevantUserName'));
+	$form.find('[name=actiontype][value=template]').prop('disabled', originalIsRange).prop('checked', !originalIsRange);
 
 	// Refetch/reprocess user info then regenerate the main content
 	var regenerateForm = function() {
