@@ -73,7 +73,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 				label: 'Add block template to user talk page',
 				value: 'template',
 				tooltip: 'If the blocking admin forgot to issue a block template, or you have just blocked the user without templating them, you can use this to issue the appropriate template. Check the partial block box for partial block templates.',
-				// Disallow for IP ranges
+				// Disallow when viewing the block dialog on an IP range
 				checked: !Morebits.ip.isRange(relevantUserName),
 				disabled: Morebits.ip.isRange(relevantUserName)
 			}
@@ -112,8 +112,8 @@ Twinkle.block.callback = function twinkleblockCallback() {
 			list: [{
 				checked: relevantUserName !== mw.config.get('wgRelevantUserName'), // In case the user closes and reopens the form
 				label: 'Block the /64 instead',
-				tooltip: 'Will eschew leaving a template.',
-				value: 'block64'
+				value: 'block64',
+				tooltip: Morebits.ip.isRange(mw.config.get('wgRelevantUserName')) ? 'Will eschew leaving a template.' : 'Any template issued will go to the original IP: ' + mw.config.get('wgRelevantUserName')
 			}]
 		});
 	}
@@ -251,11 +251,13 @@ Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock
 	var priorName = relevantUserName;
 	if ($block64.is(':checked')) {
 		relevantUserName = Morebits.ip.get64(mw.config.get('wgRelevantUserName'));
-		$form.find('[name=actiontype][value=template]').prop('disabled', true).prop('checked', false);
 	} else {
 		relevantUserName = mw.config.get('wgRelevantUserName');
-		$form.find('[name=actiontype][value=template]').prop('disabled', Morebits.ip.isRange(relevantUserName)).prop('checked', !Morebits.ip.isRange(relevantUserName));
 	}
+	// No templates for ranges, but if the original user is a single IP, offer the option
+	// (done separately in Twinkle.block.callback.issue_template)
+	var originalIsRange = Morebits.ip.isRange(mw.config.get('wgRelevantUserName'));
+	$form.find('[name=actiontype][value=template]').prop('disabled', originalIsRange).prop('checked', !originalIsRange);
 
 	// Refetch/reprocess user info then regenerate the main content
 	var regenerateForm = function() {
@@ -1992,7 +1994,9 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 };
 
 Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTemplate(formData) {
-	var userTalkPage = 'User_talk:' + relevantUserName;
+	// Use wgRelevantUserName to ensure the block template goes to a single IP and not to the
+	// "talk page" of an IP range (which does not exist)
+	var userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
 	var params = $.extend(formData, {
 		messageData: Twinkle.block.blockPresetsInfo[formData.template],
