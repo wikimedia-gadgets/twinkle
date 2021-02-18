@@ -781,7 +781,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		}
 
 		Morebits.status.init($('div[name="hasblocklog"] span').last()[0]);
-		Morebits.status.warn(Twinkle.block.currentBlockInfo ? 'Previous blocks' : 'This user has been blocked in the past', $blockloglink[0]);
+		Morebits.status.warn(Twinkle.block.currentBlockInfo ? 'Previous blocks' : 'This ' + (Morebits.ip.isRange(relevantUserName) ? 'range' : 'user') + ' has been blocked in the past', $blockloglink[0]);
 	}
 
 	// Make sure all the fields are correct based on initial defaults
