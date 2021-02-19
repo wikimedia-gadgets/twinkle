@@ -508,8 +508,9 @@ Twinkle.fluff.callbacks = {
 			if (lastuser === params.user || (mw.util.isIPv6Address(params.user) && Morebits.ip.get64(lastuser) === Morebits.ip.get64(params.user))) {
 				switch (params.type) {
 					case 'vand':
-						Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm),
-							lastuser !== params.user ? ', which is on the same /64 subnet' : '', '. As we assume vandalism, we will proceed to revert.' ]);
+						var diffUser = lastuser !== params.user;
+						Morebits.status.info('Info', [ 'Latest revision was ' + (diffUser ? '' : 'also ') + 'made by ', Morebits.htmlNode('strong', userNorm),
+							diffUser ? ', which is on the same /64 subnet' : '', '. As we assume vandalism, we will proceed to revert.' ]);
 						break;
 					case 'agf':
 						Morebits.status.warn('Warning', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm), '. As we assume good faith, we will stop the revert, as the problem might have been fixed.' ]);
@@ -585,7 +586,7 @@ Twinkle.fluff.callbacks = {
 		}
 
 		if (!found) {
-			statelem.error([ 'No previous revision found. Perhaps ', Morebits.htmlNode('strong', userNorm), ' is the only contributor, or that the user has made more than ' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + ' edits in a row.' ]);
+			statelem.error([ 'No previous revision found. Perhaps ', Morebits.htmlNode('strong', userNorm), ' is the only contributor, or they have made more than ' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + ' edits in a row.' ]);
 			return;
 		}
 
