@@ -172,10 +172,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		pages = pages.filter(function(page) {
 			return !page.missing && page.imagerepository !== 'shared';
 		});
-		// json formatversion=2 doesn't sort pages by namespace
-		pages.sort(function(one, two) {
-			return one.ns - two.ns || (one.title > two.title ? 1 : -1);
-		});
+		pages.sort(Twinkle.sortByNamespace);
 		pages.forEach(function(page) {
 			var metadata = [];
 			if (page.redirect) {
@@ -339,10 +336,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 				var response = apiobj.getResponse();
 				var pages = (response.query && response.query.pages) || [];
 				var subpageList = [];
-				// json formatversion=2 doesn't sort pages by namespace
-				pages.sort(function(one, two) {
-					return one.ns - two.ns || (one.title > two.title ? 1 : -1);
-				});
+				pages.sort(Twinkle.sortByNamespace);
 				pages.forEach(function(page) {
 					var metadata = [];
 					if (page.redirect) {
