@@ -1365,9 +1365,9 @@ Twinkle.block.dsinfo = {
 		code: 'fg',
 		page: 'Wikipedia:Requests for arbitration/Falun Gong'
 	},
-	'GamerGate or any gender-related dispute or controversy': {
-		code: 'gg',
-		page: 'Wikipedia:Arbitration/Requests/Case/GamerGate'
+	'Gender-related dispute or controversy and associated people (includes GamerGate)': {
+		code: 'gas',
+		page: 'Wikipedia:Arbitration/Requests/Case/Gender and sexuality'
 	},
 	'Genetically modified organisms (GMO)': {
 		code: 'gmo',
