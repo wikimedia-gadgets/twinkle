@@ -215,8 +215,10 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
  *  - `radio`: A radio button. Must use "list" parameter.
  *      - Attributes: name, list, event
  *      - Attributes (within list): name, label, value, checked, disabled, event, subgroup
- *  - `input`: A text box.
- *      - Attributes: name, label, value, size, disabled, required, readonly, maxlength, event
+ *  - `input`: A text input box.
+ *      - Attributes: name, label, value, size, placeholder, maxlength, disabled, required, readonly, event
+ *  - `number`: A number input box.
+ *      - Attributes: Everything the text `input` has, as well as: min, max, step, list
  *  - `dyninput`: A set of text boxes with "Remove" buttons and an "Add" button.
  *      - Attributes: name, label, min, max, sublabel, value, size, maxlength, event
  *  - `hidden`: An invisible form field.
@@ -517,6 +519,8 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				Morebits.checkboxShiftClickSupport(Morebits.quickForm.getElements(node, data.name));
 			}
 			break;
+		// input is actually a text-type, so number here inherits the same stuff
+		case 'number':
 		case 'input':
 			node = document.createElement('div');
 			node.setAttribute('id', 'div_' + id);
@@ -528,29 +532,33 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
-			if (data.value) {
-				subnode.setAttribute('value', data.value);
-			}
 			subnode.setAttribute('name', data.name);
-			subnode.setAttribute('type', 'text');
-			if (data.size) {
-				subnode.setAttribute('size', data.size);
+
+			if (data.type === 'input') {
+				subnode.setAttribute('type', 'text');
+			} else {
+				subnode.setAttribute('type', 'number');
+				['min', 'max', 'step', 'list'].forEach(function(att) {
+					if (data[att]) {
+						subnode.setAttribute(att, data[att]);
+					}
+				});
 			}
-			if (data.disabled) {
-				subnode.setAttribute('disabled', 'disabled');
-			}
-			if (data.required) {
-				subnode.setAttribute('required', 'required');
-			}
-			if (data.readonly) {
-				subnode.setAttribute('readonly', 'readonly');
-			}
-			if (data.maxlength) {
-				subnode.setAttribute('maxlength', data.maxlength);
-			}
+
+			['value', 'size', 'placeholder', 'maxlength'].forEach(function(att) {
+				if (data[att]) {
+					subnode.setAttribute(att, data[att]);
+				}
+			});
+			['disabled', 'required', 'readonly'].forEach(function(att) {
+				if (data[att]) {
+					subnode.setAttribute(att, att);
+				}
+			});
 			if (data.event) {
 				subnode.addEventListener('keyup', data.event, false);
 			}
+
 			childContainder = subnode;
 			break;
 		case 'dyninput':
