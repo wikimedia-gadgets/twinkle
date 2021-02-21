@@ -2526,6 +2526,7 @@ Morebits.wiki.page = function(pageName, status) {
 		onSaveSuccess: null,
 		onSaveFailure: null,
 		onLookupCreationSuccess: null,
+		onLookupCreationFailure: null,
 		onMoveSuccess: null,
 		onMoveFailure: null,
 		onDeleteSuccess: null,
@@ -3224,13 +3225,17 @@ Morebits.wiki.page = function(pageName, status) {
 	 *
 	 * @param {Function} onSuccess - Callback function to be called when
 	 * the username and timestamp are found within the callback.
+	 * @param {Function} [onFailure] - Callback function to be called when
+	 * the lookup fails
 	 */
-	this.lookupCreation = function(onSuccess) {
+	this.lookupCreation = function(onSuccess, onFailure) {
+		ctx.onLookupCreationSuccess = onSuccess;
+		ctx.onLookupCreationFailure = onFailure || emptyFunction;
 		if (!onSuccess) {
 			ctx.statusElement.error('Internal error: no onSuccess callback provided to lookupCreation()!');
+			ctx.onLookupCreationFailure(this);
 			return;
 		}
-		ctx.onLookupCreationSuccess = onSuccess;
 
 		var query = {
 			action: 'query',
@@ -3256,7 +3261,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', query, fnLookupCreationSuccess, ctx.statusElement);
+		ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', query, fnLookupCreationSuccess, ctx.statusElement, ctx.onLookupCreationFailure);
 		ctx.lookupCreationApi.setParent(this);
 		ctx.lookupCreationApi.post();
 	};
@@ -3845,13 +3850,14 @@ Morebits.wiki.page = function(pageName, status) {
 	var fnLookupCreationSuccess = function() {
 		var response = ctx.lookupCreationApi.getResponse().query;
 
-		if (!fnCheckPageName(response)) {
+		if (!fnCheckPageName(response, ctx.onLookupCreationFailure)) {
 			return; // abort
 		}
 
 		var rev = response.pages[0].revisions && response.pages[0].revisions[0];
 		if (!rev) {
 			ctx.statusElement.error('Could not find any revisions of ' + ctx.pageName);
+			ctx.onLookupCreationFailure(this);
 			return;
 		}
 
@@ -3860,11 +3866,13 @@ Morebits.wiki.page = function(pageName, status) {
 			ctx.creator = rev.user;
 			if (!ctx.creator) {
 				ctx.statusElement.error('Could not find name of page creator');
+				ctx.onLookupCreationFailure(this);
 				return;
 			}
 			ctx.timestamp = rev.timestamp;
 			if (!ctx.timestamp) {
 				ctx.statusElement.error('Could not find timestamp of page creation');
+				ctx.onLookupCreationFailure(this);
 				return;
 			}
 			ctx.onLookupCreationSuccess(this);
@@ -3873,7 +3881,7 @@ Morebits.wiki.page = function(pageName, status) {
 			ctx.lookupCreationApi.query.rvlimit = 50; // modify previous query to fetch more revisions
 			ctx.lookupCreationApi.query.titles = ctx.pageName; // update pageName if redirect resolution took place in earlier query
 
-			ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', ctx.lookupCreationApi.query, fnLookupNonRedirectCreator, ctx.statusElement);
+			ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', ctx.lookupCreationApi.query, fnLookupNonRedirectCreator, ctx.statusElement, ctx.onLookupCreationFailure);
 			ctx.lookupCreationApi.setParent(this);
 			ctx.lookupCreationApi.post();
 		}
@@ -3898,12 +3906,14 @@ Morebits.wiki.page = function(pageName, status) {
 			ctx.timestamp = revs[0].timestamp;
 			if (!ctx.creator) {
 				ctx.statusElement.error('Could not find name of page creator');
+				ctx.onLookupCreationFailure(this);
 				return;
 			}
 
 		}
 		if (!ctx.timestamp) {
 			ctx.statusElement.error('Could not find timestamp of page creation');
+			ctx.onLookupCreationFailure(this);
 			return;
 		}
 
