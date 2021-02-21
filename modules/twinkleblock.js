@@ -1049,8 +1049,8 @@ Twinkle.block.blockPresetsInfo = {
 	'uw-efblock': {
 		autoblock: true,
 		nocreate: true,
-		reason: 'Deliberately triggering the [[WP:Edit filter|Edit filter]]',
-		summary: 'You have been blocked from editing for making disruptive edits that repeatedly triggered the [[WP:EF|edit filter]]'
+		reason: 'Repeatedly triggering the [[WP:Edit filter|Edit filter]]',
+		summary: 'You have been blocked from editing for disruptive edits that repeatedly triggered the [[WP:EF|edit filter]]'
 	},
 	'uw-ewblock': {
 		autoblock: true,
