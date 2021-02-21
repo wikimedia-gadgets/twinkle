@@ -1389,6 +1389,10 @@ Twinkle.block.dsinfo = {
 		code: 'cid',
 		page: 'Wikipedia:Arbitration/Requests/Case/Civility in infobox discussions'
 	},
+	'Kurds and Kurdistan': {
+		code: 'kurd',
+		page: 'Wikipedia:Arbitration/Requests/Case/Kurds and Kurdistan'
+	},
 	'Landmark Worldwide': {
 		code: 'lw',
 		page: 'Wikipedia:Arbitration/Requests/Case/Landmark Worldwide'
