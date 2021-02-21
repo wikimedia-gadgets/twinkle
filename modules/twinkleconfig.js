@@ -695,11 +695,13 @@ Twinkle.config.sections = [
 			{
 				name: 'talkbackHeading',
 				label: 'Section heading to use for talkback and please see',
+				tooltip: 'Should NOT include the equals signs ("==") used for wikitext formatting',
 				type: 'string'
 			},
 			{
 				name: 'mailHeading',
 				label: "Section heading to use for \"you've got mail\" notices",
+				tooltip: 'Should NOT include the equals signs ("==") used for wikitext formatting',
 				type: 'string'
 			}
 		]
