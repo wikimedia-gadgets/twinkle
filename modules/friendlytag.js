@@ -980,8 +980,7 @@ Twinkle.tag.redirectList = {
 
 			{ tag: 'R mentioned in hatnote', description: 'redirect from a title that is mentioned in a hatnote at the redirect target' },
 			{ tag: 'R to section', description: 'similar to {{R to list entry}}, but when list is organized in sections, such as list of characters in a fictional universe' },
-			{ tag: 'R from shortcut', description: 'redirect from a Wikipedia shortcut' },
-			{ tag: 'R from template shortcut', description: 'redirect from a shortcut page name in any namespace to a page in template namespace' }
+			{ tag: 'R from shortcut', description: 'redirect from a Wikipedia shortcut' }
 
 		],
 		'Disambiguation': [
