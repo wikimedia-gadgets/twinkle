@@ -136,65 +136,76 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	result.main_group.root = result;
 	result.previewer = new Morebits.wiki.preview($(result).find('div#twinklewarn-previewbox').last()[0]);
 
-	// Potential notices for staleness and missed reverts
-	var vanrevid = mw.util.getParamValue('vanarticlerevid');
-	if (vanrevid) {
-		var message = '';
-		var query = {};
-
-		// If you tried reverting, check if *you* actually reverted
-		if (!mw.util.getParamValue('noautowarn') && mw.util.getParamValue('vanarticle')) { // Via fluff link
-			query = {
-				action: 'query',
-				titles: mw.util.getParamValue('vanarticle'),
-				prop: 'revisions',
-				rvstartid: vanrevid,
-				rvlimit: 2,
-				rvdir: 'newer',
-				rvprop: 'user',
-				format: 'json'
-			};
-
-			new Morebits.wiki.api('Checking if you successfully reverted the page', query, function(apiobj) {
-				var rev = apiobj.getResponse().query.pages[0].revisions;
-				var revertUser = rev && rev[1].user;
-				if (revertUser && revertUser !== mw.config.get('wgUserName')) {
-					message += ' Someone else reverted the page and may have already warned the user.';
-					$('#twinkle-warn-warning-messages').text('Note:' + message);
-				}
-			}).post();
-		}
-
-		// Confirm edit wasn't too old for a warning
-		var checkStale = function(vantimestamp) {
-			var revDate = new Morebits.date(vantimestamp);
-			if (vantimestamp && revDate.isValid()) {
-				if (revDate.add(24, 'hours').isBefore(new Date())) {
-					message += ' This edit was made more than 24 hours ago so a warning may be stale.';
-					$('#twinkle-warn-warning-messages').text('Note:' + message);
-				}
+	var message, vanrevid;
+	new Morebits.wiki.user(mw.config.get('wgRelevantUserName'), "Checking the user's block status").load(function(userobj) {
+		// Check if the user is blocked
+		if (userobj.isBlocked()) {
+			message = (userobj.isIP() ? 'This IP ' + (userobj.isIPRange() ? 'range' : 'address') : 'This account') + ' is ' + (userobj.getPartial() ? 'partially' : 'already') + ' blocked';
+			message += userobj.isRangeBlocked() ? ' as part of a rangeblock.' : '.';
+			if (userobj.getPartial()) {
+				$('#twinkle-warn-warning-messages').css('color', 'black'); // Less severe
 			}
-		};
+			$('#twinkle-warn-warning-messages').text(message);
+		} else if ((vanrevid = mw.util.getParamValue('vanarticlerevid')) && vanrevid) {
+			// Potential notices for staleness and missed reverts
+			message = '';
+			var query = {};
 
-		var vantimestamp = mw.util.getParamValue('vantimestamp');
-		// Provided from a fluff module-based revert, no API lookup necessary
-		if (vantimestamp) {
-			checkStale(vantimestamp);
-		} else {
-			query = {
-				action: 'query',
-				prop: 'revisions',
-				rvprop: 'timestamp',
-				revids: vanrevid,
-				format: 'json'
+			// If you tried reverting, check if *you* actually reverted
+			if (!mw.util.getParamValue('noautowarn') && mw.util.getParamValue('vanarticle')) { // Via fluff link
+				query = {
+					action: 'query',
+					titles: mw.util.getParamValue('vanarticle'),
+					prop: 'revisions',
+					rvstartid: vanrevid,
+					rvlimit: 2,
+					rvdir: 'newer',
+					rvprop: 'user',
+					format: 'json'
+				};
+
+				new Morebits.wiki.api('Checking if you successfully reverted the page', query, function(apiobj) {
+					var rev = apiobj.getResponse().query.pages[0].revisions;
+					var revertUser = rev && rev[1].user;
+					if (revertUser && revertUser !== mw.config.get('wgUserName')) {
+						message += ' Someone else reverted the page and may have already warned the user.';
+						$('#twinkle-warn-warning-messages').text('Note:' + message);
+					}
+				}).post();
+			}
+
+			// Confirm edit wasn't too old for a warning
+			var checkStale = function(vantimestamp) {
+				var revDate = new Morebits.date(vantimestamp);
+				if (vantimestamp && revDate.isValid()) {
+					if (revDate.add(24, 'hours').isBefore(new Date())) {
+						message += ' This edit was made more than 24 hours ago so a warning may be stale.';
+						$('#twinkle-warn-warning-messages').text('Note:' + message);
+					}
+				}
 			};
-			new Morebits.wiki.api('Grabbing the revision timestamps', query, function(apiobj) {
-				var rev = apiobj.getResponse().query.pages[0].revisions;
-				vantimestamp = rev && rev[0].timestamp;
+
+			var vantimestamp = mw.util.getParamValue('vantimestamp');
+			// Provided from a fluff module-based revert, no API lookup necessary
+			if (vantimestamp) {
 				checkStale(vantimestamp);
-			}).post();
+			} else {
+				query = {
+					action: 'query',
+					prop: 'revisions',
+					rvprop: 'timestamp',
+					revids: vanrevid,
+					format: 'json'
+				};
+				new Morebits.wiki.api('Grabbing the revision timestamps', query, function(apiobj) {
+					var rev = apiobj.getResponse().query.pages[0].revisions;
+					vantimestamp = rev && rev[0].timestamp;
+					checkStale(vantimestamp);
+				}).post();
+			}
+
 		}
-	}
+	});
 
 
 	// We must init the first choice (General Note);
