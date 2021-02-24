@@ -1201,7 +1201,7 @@ Twinkle.block.blockPresetsInfo = {
 		expiry: 'infinity',
 		forRegisteredOnly: true,
 		nocreate: true,
-		reason: '{{uw-ublock-double}} <!-- Username closely resembles another user, hard block -->',
+		reason: '{{uw-uhblock-double}} <!-- Attempted impersonation of another user, hard block -->',
 		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] appears to impersonate another established Wikipedia user'
 	},
 	'uw-upeblock': {
@@ -1527,10 +1527,10 @@ Twinkle.block.blockGroups = [
 			{ label: 'Bot username, hard block', value: 'uw-botuhblock' },
 			{ label: 'Promotional username, hard block', value: 'uw-spamublock' },
 			{ label: 'Promotional username, soft block', value: 'uw-softerblock' },
-			{ label: 'Similar username soft block', value: 'uw-ublock-double' },
+			{ label: 'Similar username, soft block', value: 'uw-ublock-double' },
 			{ label: 'Username violation, soft block', value: 'uw-ublock' },
 			{ label: 'Username violation, hard block', value: 'uw-uhblock' },
-			{ label: 'Username impersonation hard block', value: 'uw-uhblock-double' },
+			{ label: 'Username impersonation, hard block', value: 'uw-uhblock-double' },
 			{ label: 'Username represents a well-known person, soft block', value: 'uw-ublock-wellknown' },
 			{ label: 'Username represents a non-profit, soft block', value: 'uw-causeblock' },
 			{ label: 'Username violation, vandalism-only account', value: 'uw-vaublock' }
