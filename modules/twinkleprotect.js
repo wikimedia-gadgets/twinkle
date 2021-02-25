@@ -92,9 +92,15 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 };
 
 
+/** Installation-specific information, likely needing customization */
 // A list of bots who may be the protecting sysop, for whom we shouldn't
 // remind the user contact before requesting unprotection (evaluate)
 Twinkle.protect.trustedBots = ['MusikBot II', 'TFA Protector Bot'];
+
+// A minimum revision ID for the optional "Requested at RfPP" revid link;
+// in theory this could be updated semi-regularly, but in practice the length
+// and leading digit probably matter more than anything else.
+Twinkle.protect.rfppMinRevID = 1000000000;
 
 // Customizable namespace and FlaggedRevs settings
 // In theory it'd be nice to have restrictionlevels defined here,
@@ -495,11 +501,11 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				]
 			});
 			field2.append({
-				type: 'input',
+				type: 'number',
 				event: Twinkle.protect.callback.annotateProtectReason,
 				label: 'RfPP revision ID',
 				name: 'protectReason_notes_rfppRevid',
-				value: '',
+				min: Twinkle.protect.rfppMinRevID,
 				tooltip: 'Optional revision ID of the RfPP page where protection was requested.'
 			});
 			if (!mw.config.get('wgArticleId') || mw.config.get('wgPageContentModel') === 'Scribunto') {  // tagging isn't relevant for non-existing or module pages
