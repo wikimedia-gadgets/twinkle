@@ -3883,6 +3883,8 @@ Morebits.wiki.page = function(pageName, status) {
 				ctx.onLookupCreationFailure(this);
 				return;
 			}
+
+			ctx.statusElement.info('retrieved page creation information');
 			ctx.onLookupCreationSuccess(this);
 
 		} else {
@@ -3925,6 +3927,7 @@ Morebits.wiki.page = function(pageName, status) {
 			return;
 		}
 
+		ctx.statusElement.info('retrieved page creation information');
 		ctx.onLookupCreationSuccess(this);
 
 	};
