@@ -309,7 +309,9 @@ Twinkle.fluff.addLinks = {
 			// &unhide=1), since the username will be available by
 			// checking a.mw-userlink instead, but revert() will
 			// need reworking around userHidden
-			var vandal = $('#mw-diff-ntitle2').find('.mw-userlink')[0].text;
+			var vandal = $('#mw-diff-ntitle2').find('.mw-userlink')[0];
+			// See #1337
+			vandal = vandal ? vandal.text : '';
 			var ntitle = document.getElementById('mw-diff-ntitle1').parentNode;
 
 			ntitle.insertBefore(Twinkle.fluff.linkBuilder.rollbackLinks(vandal), ntitle.firstChild);
