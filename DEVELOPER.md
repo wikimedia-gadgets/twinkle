@@ -1,6 +1,6 @@
-## Reviewing and merging pull requests
+# Helpful information for Twinkle devs
 
-(WIP)
+## Reviewing and merging pull requests (WIP)
 
 Collaborators are encouraged to thoroughly review and [test](./CONTRIBUTING.md#testing-your-code) each pull request, including their own.  Unless urgent or obvious, it can be helpful to leave PRs open for folks to opine.
 
@@ -23,33 +23,33 @@ After the files are synced, ensure that [MediaWiki:Gadgets-definition][] contain
 
 Each Twinkle module and dependency lives on the wiki as a separate file. The list of modules and what pages they should be on are as follows:
 
-* `twinkle.js` &rarr; [MediaWiki:Gadget-Twinkle.js][]
-* `twinkle.css` &rarr; [MediaWiki:Gadget-Twinkle.css][]
-* `twinkle-pagestyles.css` &rarr; [MediaWiki:Gadget-Twinkle-pagestyles.css][]
-* `morebits.js` &rarr; [MediaWiki:Gadget-morebits.js][]
-* `morebits.css` &rarr; [MediaWiki:Gadget-morebits.css][]
-* `select2.min.js` &rarr; [MediaWiki:Gadget-select2.min.js][]
-* `select2.min.css` &rarr; [MediaWiki:Gadget-select2.min.css][]
-* `modules/twinkleprod.js` &rarr; [MediaWiki:Gadget-twinkleprod.js][]
-* `modules/twinkleimage.js` &rarr; [MediaWiki:Gadget-twinkleimage.js][]
-* `modules/twinklebatchundelete.js` &rarr; [MediaWiki:Gadget-twinklebatchundelete.js][]
-* `modules/twinklewarn.js` &rarr; [MediaWiki:Gadget-twinklewarn.js][]
-* `modules/twinklespeedy.js` &rarr; [MediaWiki:Gadget-twinklespeedy.js][]
-* `modules/friendlyshared.js` &rarr; [MediaWiki:Gadget-friendlyshared.js][]
-* `modules/twinklediff.js` &rarr; [MediaWiki:Gadget-twinklediff.js][]
-* `modules/twinkleunlink.js` &rarr; [MediaWiki:Gadget-twinkleunlink.js][]
-* `modules/friendlytag.js` &rarr; [MediaWiki:Gadget-friendlytag.js][]
-* `modules/twinkledeprod.js` &rarr; [MediaWiki:Gadget-twinkledeprod.js][]
-* `modules/friendlywelcome.js` &rarr; [MediaWiki:Gadget-friendlywelcome.js][]
-* `modules/twinklexfd.js` &rarr; [MediaWiki:Gadget-twinklexfd.js][]
-* `modules/twinklebatchdelete.js` &rarr; [MediaWiki:Gadget-twinklebatchdelete.js][]
-* `modules/twinklebatchprotect.js` &rarr; [MediaWiki:Gadget-twinklebatchprotect.js][]
-* `modules/twinkleconfig.js` &rarr; [MediaWiki:Gadget-twinkleconfig.js][]
-* `modules/twinklefluff.js` &rarr; [MediaWiki:Gadget-twinklefluff.js][]
-* `modules/twinkleprotect.js` &rarr; [MediaWiki:Gadget-twinkleprotect.js][]
-* `modules/twinklearv.js` &rarr; [MediaWiki:Gadget-twinklearv.js][]
-* `modules/friendlytalkback.js` &rarr; [MediaWiki:Gadget-friendlytalkback.js][]
-* `modules/twinkleblock.js` &rarr; [MediaWiki:Gadget-twinkleblock.js][]
+- `twinkle.js` &rarr; [MediaWiki:Gadget-Twinkle.js][]
+- `twinkle.css` &rarr; [MediaWiki:Gadget-Twinkle.css][]
+- `twinkle-pagestyles.css` &rarr; [MediaWiki:Gadget-Twinkle-pagestyles.css][]
+- `morebits.js` &rarr; [MediaWiki:Gadget-morebits.js][]
+- `morebits.css` &rarr; [MediaWiki:Gadget-morebits.css][]
+- `select2.min.js` &rarr; [MediaWiki:Gadget-select2.min.js][]
+- `select2.min.css` &rarr; [MediaWiki:Gadget-select2.min.css][]
+- `modules/twinkleprod.js` &rarr; [MediaWiki:Gadget-twinkleprod.js][]
+- `modules/twinkleimage.js` &rarr; [MediaWiki:Gadget-twinkleimage.js][]
+- `modules/twinklebatchundelete.js` &rarr; [MediaWiki:Gadget-twinklebatchundelete.js][]
+- `modules/twinklewarn.js` &rarr; [MediaWiki:Gadget-twinklewarn.js][]
+- `modules/twinklespeedy.js` &rarr; [MediaWiki:Gadget-twinklespeedy.js][]
+- `modules/friendlyshared.js` &rarr; [MediaWiki:Gadget-friendlyshared.js][]
+- `modules/twinklediff.js` &rarr; [MediaWiki:Gadget-twinklediff.js][]
+- `modules/twinkleunlink.js` &rarr; [MediaWiki:Gadget-twinkleunlink.js][]
+- `modules/friendlytag.js` &rarr; [MediaWiki:Gadget-friendlytag.js][]
+- `modules/twinkledeprod.js` &rarr; [MediaWiki:Gadget-twinkledeprod.js][]
+- `modules/friendlywelcome.js` &rarr; [MediaWiki:Gadget-friendlywelcome.js][]
+- `modules/twinklexfd.js` &rarr; [MediaWiki:Gadget-twinklexfd.js][]
+- `modules/twinklebatchdelete.js` &rarr; [MediaWiki:Gadget-twinklebatchdelete.js][]
+- `modules/twinklebatchprotect.js` &rarr; [MediaWiki:Gadget-twinklebatchprotect.js][]
+- `modules/twinkleconfig.js` &rarr; [MediaWiki:Gadget-twinkleconfig.js][]
+- `modules/twinklefluff.js` &rarr; [MediaWiki:Gadget-twinklefluff.js][]
+- `modules/twinkleprotect.js` &rarr; [MediaWiki:Gadget-twinkleprotect.js][]
+- `modules/twinklearv.js` &rarr; [MediaWiki:Gadget-twinklearv.js][]
+- `modules/friendlytalkback.js` &rarr; [MediaWiki:Gadget-friendlytalkback.js][]
+- `modules/twinkleblock.js` &rarr; [MediaWiki:Gadget-twinkleblock.js][]
 
 ### Synchronization using `sync.pl`
 
@@ -65,7 +65,7 @@ When running the program, you can enter your credentials on the command line usi
 
     username = username
     password = password
-	mode     = deploy|push|pull
+    mode     = deploy|push|pull
     lang     = en
     family   = wikipedia
     url      =
