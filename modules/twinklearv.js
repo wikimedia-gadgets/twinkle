@@ -283,7 +283,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					type: 'input',
 					name: 'sockmaster',
 					label: 'Sockpuppeteer',
-					tooltip: 'The username of the sockpuppeteer (sockmaster) without the User:-prefix'
+					tooltip: 'The username of the sockpuppeteer (sockmaster) without the "User:" prefix'
 				}
 			);
 			work_area.append({
@@ -322,7 +322,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					name: 'sockpuppet',
 					label: 'Sockpuppets',
 					sublabel: 'Sock: ',
-					tooltip: 'The username of the sockpuppet without the User:-prefix',
+					tooltip: 'The username of the sockpuppet without the "User:" prefix',
 					min: 2
 				});
 			work_area.append({
@@ -673,9 +673,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 			}
 
 			sockParameters.uid = puppetReport ? form.sockmaster.value.trim() : uid;
-			sockParameters.sockpuppets = puppetReport ? [uid] : $.map($('input:text[name=sockpuppet]', form), function(o) {
+			sockParameters.sockpuppets = puppetReport ? [uid] : Morebits.array.uniq($.map($('input:text[name=sockpuppet]', form), function(o) {
 				return $(o).val() || null;
-			});
+			}));
 
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
