@@ -1411,7 +1411,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 						// header row
 						$('<tr>').append(
 							$('<th>') // top-left cell
-								.css('width', '35%'),
+								.css('width', '5%'),
 							$('<th>') // value column header
 								.css('width', '35%')
 								.text(curpref.customListValueTitle ? curpref.customListValueTitle : 'Value'),
@@ -1427,7 +1427,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 								.append(
 									$('<button>')
 										.text('Add')
-										.css('minWidth', '8em')
+										.css('min-width', '8em')
 										.attr('type', 'button')
 										.on('click', function () {
 											Twinkle.config.listDialog.addRow($dlgtbody);
@@ -1455,7 +1455,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 				.on('click', function () {
 					dialog.close();
 				})
-		)
+		)[0]
 	);
 
 	// content rows
@@ -1474,15 +1474,13 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 
 // Resets the data value, re-populates based on the new (default) value, then saves the
 // old data value again (less surprising behaviour)
-Twinkle.config.listDialog.reset = function twinkleconfigListDialogReset(button, tbody) {
+Twinkle.config.listDialog.reset = function twinkleconfigListDialogReset($button, $tbody) {
 	// reset value on button
-	var $button = $(button);
 	var curpref = $button.data('pref');
 	var oldvalue = $button.data('value');
 	Twinkle.config.resetPref(curpref);
 
 	// reset form
-	var $tbody = $(tbody);
 	$tbody.find('tr').slice(1).remove();  // all rows except the first (header) row
 	// add the new values
 	var curvalue = $button.data('value');
@@ -1494,10 +1492,10 @@ Twinkle.config.listDialog.reset = function twinkleconfigListDialogReset(button, 
 	$button.data('value', oldvalue);
 };
 
-Twinkle.config.listDialog.save = function twinkleconfigListDialogSave(button, tbody) {
+Twinkle.config.listDialog.save = function twinkleconfigListDialogSave($button, $tbody) {
 	var result = [];
 	var current = {};
-	$(tbody).find('input[type="text"]').each(function(inputkey, input) {
+	$tbody.find('input[type="text"]').each(function(inputkey, input) {
 		if ($(input).hasClass('twinkle-config-customlist-value')) {
 			current = { value: input.value };
 		} else {
@@ -1508,7 +1506,7 @@ Twinkle.config.listDialog.save = function twinkleconfigListDialogSave(button, tb
 			}
 		}
 	});
-	$(button).data('value', result);
+	$button.data('value', result);
 };
 
 // reset/restore defaults
