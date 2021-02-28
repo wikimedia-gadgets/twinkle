@@ -515,6 +515,13 @@ Twinkle.makeFindSourcesDiv = function makeSourcesDiv(divID) {
 	}
 };
 
+/** Twinkle-specific utility functions shared by multiple modules */
+// Used in batch, unlink, and deprod to sort pages by namespace, as
+// json formatversion=2 sorts by pageid instead (#1251)
+Twinkle.sortByNamespace = function(first, second) {
+	return first.ns - second.ns || (first.title > second.title ? 1 : -1);
+};
+
 // Used in batch listings to link to the page in question with >
 Twinkle.generateArrowLinks = function (checkbox) {
 	var link = Morebits.htmlNode('a', ' >');
