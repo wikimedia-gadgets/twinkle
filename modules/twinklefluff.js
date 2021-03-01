@@ -319,8 +319,11 @@ Twinkle.fluff.addLinks = {
 	},
 
 	oldid: function() { // Add a [restore this revision] link on old revisions
-		var title = document.getElementById('mw-revision-info').parentNode;
-		title.insertBefore(Twinkle.fluff.linkBuilder.restoreThisRevisionLink('wgRevisionId'), title.firstChild);
+		var revisionInfo = document.getElementById('mw-revision-info');
+		if (revisionInfo) {
+			var title = revisionInfo.parentNode;
+			title.insertBefore(Twinkle.fluff.linkBuilder.restoreThisRevisionLink('wgRevisionId'), title.firstChild);
+		}
 	}
 };
 
