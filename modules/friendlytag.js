@@ -1366,7 +1366,7 @@ Twinkle.tag.callbacks = {
 				}
 				// Notify the user ({{Not English}} only)
 				if (params.translationNotify) {
-					pageobj.lookupCreation(function(innerPageobj) {
+					new Morebits.wiki.page(Morebits.pageNameNorm).lookupCreation(function(innerPageobj) {
 						var initialContrib = innerPageobj.getCreator();
 
 						// Disallow warning yourself
