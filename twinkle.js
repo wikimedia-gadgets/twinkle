@@ -96,6 +96,7 @@ Twinkle.defaultConfig = {
 	watchSpeedyPages: [ 'g3', 'g5', 'g10', 'g11', 'g12' ],
 	watchSpeedyExpiry: '1 month',
 	markSpeedyPagesAsPatrolled: false,
+	watchSpeedyUser: '1 month',
 
 	// these next two should probably be identical by default
 	welcomeUserOnSpeedyDeletionNotification: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 'p1', 'p2' ],
