@@ -694,7 +694,7 @@ Twinkle.config.sections = [
 			},
 			{
 				name: 'talkbackHeading',
-				label: 'Section heading to use for talkbacks',
+				label: 'Section heading to use for talkback and please see',
 				type: 'string'
 			},
 			{
