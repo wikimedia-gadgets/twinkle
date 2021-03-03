@@ -153,7 +153,7 @@ Twinkle.talkback.changeTarget = function(e) {
 				type: 'input',
 				name: 'page',
 				label: 'Page name of the discussion',
-				tooltip: "The page name where the discussion is being held. For example: 'User talk:Jimbo Wales' or Wikipedia talk:Twinkle'.",
+				tooltip: "The page name where the discussion is being held. For example: 'User talk:Jimbo Wales' or Wikipedia talk:Twinkle'. Limited to all talks, Wikipedia-space, and Template-space.",
 				value: prev_page || 'User talk:' + mw.config.get('wgUserName')
 			});
 			work_area.append({
@@ -354,8 +354,8 @@ Twinkle.talkback.callbacks = {
 		var normal = mw.Title.newFromText(page, 3);
 		// Normalize erroneous or likely mis-entered items
 		if (normal) {
-			// Only allow talks and WPspace
-			if (normal.namespace !== 4) {
+			// Only allow talks and WPspace, as well as Template-space for DYK
+			if (normal.namespace !== 4 && normal.namespace !== 10) {
 				normal = normal.getTalkPage();
 			}
 			page = normal.getPrefixedText();
