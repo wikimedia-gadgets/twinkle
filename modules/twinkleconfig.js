@@ -213,6 +213,14 @@ Twinkle.config.sections = [
 		module: 'block',
 		adminOnly: true,
 		preferences: [
+			// TwinkleConfig.defaultToBlock64 (boolean)
+			// Whether to default to just blocking the /64 on or off
+			{
+				name: 'defaultToBlock64',
+				label: 'For IPv6 addressed, select the option to Just Block the /64 by default',
+				type: 'boolean'
+			},
+
 			// TwinkleConfig.defaultToPartialBlocks (boolean)
 			// Whether to default partial blocks on or off
 			{
