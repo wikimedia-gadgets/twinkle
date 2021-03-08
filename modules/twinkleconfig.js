@@ -22,13 +22,13 @@
 Twinkle.config = {};
 
 Twinkle.config.watchlistEnums = {
-	'yes': 'Add to watchlist (indefinitely)',
-	'no': "Don't add to watchlist",
-	'default': 'Follow your site preferences',
-	'1 week': 'Watch for 1 week',
-	'1 month': 'Watch for 1 month',
-	'3 months': 'Watch for 3 months',
-	'6 months': 'Watch for 6 months'
+	'yes': 'Voeg toe aan volglijst (permanent)',
+	'no': "Voeg niet toe aan volglijst",
+	'default': 'Volg site voorkeuren',
+	'1 week': 'Volg 1 week',
+	'1 month': 'Volg 1 maand',
+	'3 months': 'Volg 3 maanden',
+	'6 months': 'Volg 6 maanden'
 };
 
 Twinkle.config.commonSets = {
@@ -94,24 +94,24 @@ Twinkle.config.commonSets = {
 		'p1', 'p2'
 	],
 	namespacesNoSpecial: {
-		0: 'Article',
-		1: 'Talk (article)',
-		2: 'User',
-		3: 'User talk',
+		0: 'Artikel',
+		1: 'Overleg artikel)',
+		2: 'Gebruiker',
+		3: 'Overleg gebruiker',
 		4: 'Wikipedia',
-		5: 'Wikipedia talk',
+		5: 'Overleg Wikipedia',
 		6: 'File',
 		7: 'File talk',
 		8: 'MediaWiki',
-		9: 'MediaWiki talk',
-		10: 'Template',
-		11: 'Template talk',
+		9: 'Overleg MediaWiki',
+		10: 'Sjabloon',
+		11: 'Overleg sjabloon',
 		12: 'Help',
-		13: 'Help talk',
-		14: 'Category',
-		15: 'Category talk',
-		100: 'Portal',
-		101: 'Portal talk',
+		13: 'Overleg help',
+		14: 'Categorie',
+		15: 'Overleg categorie',
+		100: 'Portaal',
+		101: 'Overleg portaal',
 		108: 'Book',
 		109: 'Book talk',
 		118: 'Draft',
@@ -153,7 +153,7 @@ Twinkle.config.commonSets = {
 
 Twinkle.config.sections = [
 	{
-		title: 'General',
+		title: 'Algemeen',
 		module: 'general',
 		preferences: [
 			// TwinkleConfig.userTalkPageMode may take arguments:
@@ -440,7 +440,7 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Shared IP tagging',
+		title: 'Gedeeld IP-labeling',
 		module: 'shared',
 		preferences: [
 			{
@@ -452,7 +452,7 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Speedy deletion (CSD)',
+		title: 'Directe verwijdering (nuweg)',
 		module: 'speedy',
 		preferences: [
 			{
@@ -609,60 +609,61 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Tag',
+		title: 'Label',
 		module: 'tag',
 		preferences: [
 			{
 				name: 'watchTaggedVenues',
-				label: 'Add page to watchlist when tagging these type of pages',
+				label: 'Volg dit type pagina, wanneer ik een label toevoeg',
 				type: 'set',
-				setValues: { articles: 'Articles', drafts: 'Drafts', redirects: 'Redirects', files: 'Files' }
+				setValues: { articles: 'Artikelen', drafts: 'Drafts', redirects: 'Doorverwijzingen', files: 'Files' }
 			},
 			{
 				name: 'watchTaggedPages',
-				label: 'When tagging a page, how long to watch it for',
+				label: 'Indien gelabeld, volg het voor',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
 			{
 				name: 'watchMergeDiscussions',
-				label: 'Add talk pages to watchlist when starting merge discussions',
+				label: 'Voeg overlegpagina toe aan volglijst zodra ik een samenvoegingsdiscussie start',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
 			{
 				name: 'markTaggedPagesAsMinor',
-				label: 'Mark addition of tags as a minor edit',
+				label: 'Markeer een labeltoevoeging als kleine bewerking',
 				type: 'boolean'
 			},
 			{
 				name: 'markTaggedPagesAsPatrolled',
-				label: 'Check the "mark page as patrolled/reviewed" box by default',
+				label: 'Vink het "markeer als gecontroleerd" vakje standaard aan',
 				type: 'boolean'
 			},
 			{
 				name: 'groupByDefault',
-				label: 'Check the "group into {{multiple issues}}" box by default',
+				label: 'Vink het "groepeer {{meerdere problemen}}" vakje standaard aan',
 				type: 'boolean'
 			},
 			{
 				name: 'tagArticleSortOrder',
-				label: 'Default view order for article tags',
+				label: 'Standaard weergavevolgorde voor artikel labels',
 				type: 'enum',
-				enumValues: { cat: 'By categories', alpha: 'In alphabetical order' }
+				enumValues: { cat: 'Op categorie', alpha: 'Op alfabet' }
 			},
 			{
 				name: 'customTagList',
-				label: 'Custom article/draft maintenance tags to display',
-				helptip: "These appear as additional options at the bottom of the list of tags. For example, you could add new maintenance tags which have not yet been added to Twinkle's defaults.",
+				label: 'Aangepaste onderhoudssjablonen',
+				helptip: "Deze worden weergegeven als extra sjablonen onder aan de lijst. Hiermee kun je nieuwe sjablonen toevoegen die (nog) niet zijn opgenomen in Twinkle.",
 				type: 'customList',
-				customListValueTitle: 'Template name (no curly brackets)',
-				customListLabelTitle: 'Text to show in Tag dialog'
+				customListValueTitle: 'Sjabloonnaam (zonder accolades)',
+				customListLabelTitle: 'Label zoals weertegeven in het overzicht'
 			},
+			//  <verwijderen?>
 			{
 				name: 'customFileTagList',
-				label: 'Custom file maintenance tags to display',
-				helptip: 'Additional tags that you wish to add for files.',
+				label: 'Aangepaste file-onderhoudssjablonen om weertegeven',
+				helptip: 'Extra file-sjablonen die je wil kunnen toevoegen aan artikelen.',
 				type: 'customList',
 				customListValueTitle: 'Template name (no curly brackets)',
 				customListLabelTitle: 'Text to show in Tag dialog'
@@ -675,6 +676,7 @@ Twinkle.config.sections = [
 				customListValueTitle: 'Template name (no curly brackets)',
 				customListLabelTitle: 'Text to show in Tag dialog'
 			}
+			//  </verwijderen?>
 		]
 	},
 
@@ -1002,10 +1004,10 @@ Twinkle.config.init = function twinkleconfigInit() {
 			var contentnotice = document.createElement('p');
 			contentnotice.innerHTML = '<table class="plainlinks ombox ombox-content"><tr><td class="mbox-image">' +
 				'<img alt="" src="https://upload.wikimedia.org/wikipedia/commons/3/38/Imbox_content.png" /></td>' +
-				'<td class="mbox-text"><p><big><b>Before modifying your settings here,</b> you must remove your old Twinkle and Friendly settings from your personal skin JavaScript.</big></p>' +
-				'<p>To do this, you can <a href="' + mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/' + mw.config.get('skin') +
-				'.js', { action: 'edit' }) + '" target="_blank"><b>edit your personal skin javascript file</b></a> or <a href="' +
-				mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/common.js', { action: 'edit'}) + '" target="_blank"><b>your common.js file</b></a>, removing all lines of code that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
+				'<td class="mbox-text"><p><big><b>Voordat je verder gaat,</b> moet je eerst je oude Twinkle instellingen verwijderen uit je persoonlijke JavaScript.</big></p>' +
+				'<p>Om dit te doen, kan je <a href="' + mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/' + mw.config.get('skin') +
+				'.js', { action: 'edit' }) + '" target="_blank"><b>je eigen javascript bewerken</b></a> of kun je in <a href="' +
+				mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/common.js', { action: 'edit'}) + '" target="_blank"><b>je common.js bestand</b></a>, alle regels code verwijderen die naar <code>TwinkleConfig</code> verwijzen.</p>' +
 				'</td></tr></table>';
 			contentdiv.appendChild(contentnotice);
 		}
@@ -1290,7 +1292,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		var button = document.createElement('button');
 		button.setAttribute('id', 'twinkle-config-submit');
 		button.setAttribute('type', 'submit');
-		button.appendChild(document.createTextNode('Save changes'));
+		button.appendChild(document.createTextNode('Opslaan'));
 		footerbox.appendChild(button);
 		var footerspan = document.createElement('span');
 		footerspan.className = 'plainlinks';
@@ -1300,7 +1302,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		footera.setAttribute('href', '#tw-reset-all');
 		footera.setAttribute('id', 'twinkle-config-resetall');
 		footera.addEventListener('click', Twinkle.config.resetAllPrefs, false);
-		footera.appendChild(document.createTextNode('Restore defaults'));
+		footera.appendChild(document.createTextNode('Herstel standaard'));
 		footerspan.appendChild(footera);
 		footerbox.appendChild(footerspan);
 		contentform.appendChild(footerbox);
@@ -1329,25 +1331,25 @@ Twinkle.config.init = function twinkleconfigInit() {
 			box.setAttribute('class', 'config-twopt-box');
 
 			if (mw.config.get('wgArticleId') > 0) {  // page exists
-				box.appendChild(document.createTextNode('This page contains your Twinkle preferences. You can change them using the '));
+				box.appendChild(document.createTextNode('Deze pagina bevat je Twinkle instellingen. Je kunt ze veranderen via je '));
 			} else {  // page does not exist
-				box.appendChild(document.createTextNode('You can customize Twinkle to suit your preferences by using the '));
+				box.appendChild(document.createTextNode('Je kunt je Twinkle instellingen veranderen via je '));
 			}
 			link = document.createElement('a');
 			link.setAttribute('href', mw.util.getUrl(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').project] + ':Twinkle/Preferences'));
-			link.appendChild(document.createTextNode('Twinkle preferences panel'));
+			link.appendChild(document.createTextNode('Twinkle configuratiescherm'));
 			box.appendChild(link);
-			box.appendChild(document.createTextNode(', or by editing this page.'));
+			box.appendChild(document.createTextNode(', of door deze pagina te bewerken.'));
 			$(box).insertAfter($('#contentSub'));
 
 		} else if (['monobook', 'vector', 'cologneblue', 'modern', 'timeless', 'minerva', 'common'].indexOf(scriptPageName) !== -1) {
 			// place "Looking for Twinkle options?" notice
 			box.setAttribute('class', 'config-userskin-box');
 
-			box.appendChild(document.createTextNode('If you want to set Twinkle preferences, you can use the '));
+			box.appendChild(document.createTextNode('Om je Twinkle instellingen vast te leggen, ga naar het '));
 			link = document.createElement('a');
 			link.setAttribute('href', mw.util.getUrl(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').project] + ':Twinkle/Preferences'));
-			link.appendChild(document.createTextNode('Twinkle preferences panel'));
+			link.appendChild(document.createTextNode('Twinkle configuratiescherm'));
 			box.appendChild(link);
 			box.appendChild(document.createTextNode('.'));
 			$(box).insertAfter($('#contentSub'));
@@ -1403,7 +1405,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 
 	var dialog = new Morebits.simpleWindow(720, 400);
 	dialog.setTitle(curpref.label);
-	dialog.setScriptName('Twinkle preferences');
+	dialog.setScriptName('Twinkle configuratie');
 
 	var $dlgtbody;
 
@@ -1663,7 +1665,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 						case 'integer':  // read from the input box
 							userValue = parseInt(form[pref.name].value, 10);
 							if (isNaN(userValue)) {
-								Morebits.status.warn('Saving', 'The value you specified for ' + pref.name + ' (' + pref.value + ') was invalid.  The save will continue, but the invalid data value will be skipped.');
+								Morebits.status.warn('Saving', 'De waarde geselecteerd voor ' + pref.name + ' (' + pref.value + ') is ongeldig.  Het opslaan gaat door, maar de ongeldige instellingen worden overgeslagen.');
 								userValue = null;
 							}
 							break;
@@ -1692,7 +1694,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 							break;
 
 						default:
-							alert('twinkleconfig: unknown data type for preference ' + pref.name);
+							alert('twinkleconfig: onbekend data type voor voorkeuk ' + pref.name);
 							break;
 					}
 				} else if (Twinkle.prefs) {
@@ -1710,15 +1712,15 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	});
 
 	var text =
-		'// twinkleoptions.js: personal Twinkle preferences file\n' +
+		'// twinkleoptions.js: persoonlijk Twinkle voorkeurenbestand\n' +
 		'//\n' +
-		'// NOTE: The easiest way to change your Twinkle preferences is by using the\n' +
-		'// Twinkle preferences panel, at [[' + Morebits.pageNameNorm + ']].\n' +
+		'// OPMERKING: De makelijkste manier om je Twinkle voorkeuren aan te passen\n' +
+		'// is via het Twinkle configuratiescherm, op [[' + Morebits.pageNameNorm + ']].\n' +
 		'//\n' +
-		'// This file is AUTOMATICALLY GENERATED.  Any changes you make (aside from\n' +
-		'// changing the configuration parameters in a valid-JavaScript way) will be\n' +
-		'// overwritten the next time you click "save" in the Twinkle preferences\n' +
-		'// panel.  If modifying this file, make sure to use correct JavaScript.\n' +
+		'// Dit bestand is AUTOMATISCH AANGEMAAKT.  Iedere verandering die je maakt\n' +
+		'// (buiten de JS-configuratieparameters in correct JavaScript) worden\n' +
+		'// vernietigd de volgende keer dat je "opslaan" klikt in het Twinkle\n' +
+		'// configuratiescherm.  Als je dit bestand aanpast zorg voor correcte JS.\n' +
 		'// <no' + 'wiki>\n' +
 		'\n' +
 		'window.Twinkle.prefs = ';
@@ -1727,7 +1729,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		';\n' +
 		'\n' +
 		'// </no' + 'wiki>\n' +
-		'// End of twinkleoptions.js\n';
+		'// Einde van twinkleoptions.js\n';
 
 	pageobj.setPageText(text);
 	pageobj.setEditSummary('Saving Twinkle preferences: automatic edit from [[:' + Morebits.pageNameNorm + ']]');
@@ -1743,7 +1745,7 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	noticebox.className = 'successbox';
 	noticebox.style.fontSize = '100%';
 	noticebox.style.marginTop = '2em';
-	noticebox.innerHTML = '<p><b>Your Twinkle preferences have been saved.</b></p><p>To see the changes, you will need to <b>clear your browser cache entirely</b> (see <a href="' + mw.util.getUrl('WP:BYPASS') + '" title="WP:BYPASS">WP:BYPASS</a> for instructions).</p>';
+	noticebox.innerHTML = '<p><b>JE Twinkle voorkeuren zijn opgeslagen.</b></p><p>Mogelijk dien je <b>je browser cache te legen</b> (zie <a href="' + mw.util.getUrl('WP:BYPASS') + '" title="WP:BYPASS">WP:BYPASS</a> voor uitleg).</p>';
 	Morebits.status.root.appendChild(noticebox);
 	var noticeclear = document.createElement('br');
 	noticeclear.style.clear = 'both';
