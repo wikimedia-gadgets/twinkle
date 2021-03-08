@@ -17,13 +17,13 @@ Twinkle.shared = function friendlyshared() {
 		var username = mw.config.get('wgRelevantUserName');
 		Twinkle.addPortletLink(function() {
 			Twinkle.shared.callback(username);
-		}, 'Shared IP', 'friendly-shared', 'Shared IP tagging');
+		}, 'Gedeeld IP', 'friendly-shared', 'Gedeeld IP labelen');
 	}
 };
 
 Twinkle.shared.callback = function friendlysharedCallback() {
 	var Window = new Morebits.simpleWindow(600, 450);
-	Window.setTitle('Shared IP address tagging');
+	Window.setTitle('Gedeeld IP-adres labelen');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Shared prefs', 'WP:TW/PREF#shared');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#shared');
@@ -37,37 +37,37 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 		className: 'morebits-scrollbox'
 	}
 	);
-	div.append({ type: 'header', label: 'Shared IP address templates' });
-	div.append({ type: 'radio', name: 'template', list: Twinkle.shared.standardList,
+	div.append({ type: 'header', label: 'Gedeeld IP-adres sjablonen' });
+	div.append({ type: 'radio', name: 'sjabloon', list: Twinkle.shared.standardList,
 		event: function(e) {
 			Twinkle.shared.callback.change_shared(e);
 			e.stopPropagation();
 		}
 	});
 
-	var org = form.append({ type: 'field', label: 'Fill in other details (optional) and click "Submit"' });
+	var org = form.append({ type: 'field', label: 'Vul overige details in (optioneel) en klik op "Opslaan"' });
 	org.append({
 		type: 'input',
 		name: 'organization',
-		label: 'IP address owner/operator',
+		label: 'IP-adres beheerder (optioneel)',
 		disabled: true,
-		tooltip: 'You can optionally enter the name of the organization that owns/operates the IP address.  You can use wikimarkup if necessary.'
+		tooltip: 'Je kunt optioneel de naam van de organisatie die het IP-adres beheerd/bezit opgeven.  Hierbij mag je ook wikimarkup gebruiken.'
 	}
 	);
 	org.append({
 		type: 'input',
 		name: 'host',
-		label: 'Host name (optional)',
+		label: 'Hostnaam (optioneel)',
 		disabled: true,
-		tooltip: 'The host name (for example, proxy.example.com) can be optionally entered here and will be linked by the template.'
+		tooltip: 'De hostnaam (bijvoorbeeld, proxy.voorbeeld.nl) kan optioneel worden toegevoegd aan het sjabloon.'
 	}
 	);
 	org.append({
 		type: 'input',
 		name: 'contact',
-		label: 'Contact information (only if requested)',
+		label: 'Contact informatie (alleen op verzoek)',
 		disabled: true,
-		tooltip: 'You can optionally enter some contact details for the organization.  Use this parameter only if the organization has specifically requested that it be added.  You can use wikimarkup if necessary.'
+		tooltip: 'Hier kun je contactgegevens toevoegen over de organisatie.  Vul dit alleen in als de organisatie hierom heeft gevraagd.  Je mag hierbij ook wikimarkup gebruiken.'
 	}
 	);
 
@@ -76,7 +76,7 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 		Twinkle.shared.preview(result);
 	});
 	previewlink.style.cursor = 'pointer';
-	previewlink.textContent = 'Preview';
+	previewlink.textContent = 'Voorvertoning';
 	form.append({ type: 'div', id: 'sharedpreview', label: [ previewlink ] });
 	form.append({ type: 'submit' });
 
@@ -108,8 +108,8 @@ Twinkle.shared.standardList = [
 		value: 'Shared IP gov'
 	},
 	{
-		label: '{{Dynamic IP}}: shared IP address template modified for organizations with dynamic addressing',
-		value: 'Dynamic IP'
+		label: '{{Dynip}}: gedeeld IP-adres sjabloon voor dynamische adressering',
+		value: 'Dynamisch IP'
 	},
 	{
 		label: '{{Static IP}}: shared IP address template modified for static IP addresses',
@@ -144,7 +144,7 @@ Twinkle.shared.callbacks = {
 		for (var i = 0; i < Twinkle.shared.standardList.length; i++) {
 			var tagRe = new RegExp('(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im');
 			if (tagRe.exec(pageText)) {
-				Morebits.status.warn('Info', 'Found {{' + Twinkle.shared.standardList[i].value + '}} on the user\'s talk page already...aborting');
+				Morebits.status.warn('Info', '{{' + Twinkle.shared.standardList[i].value + '}} al aanwezig op de overlegpagina van de gebruiker...bewerking afgebroken');
 				found = true;
 			}
 		}
@@ -153,10 +153,10 @@ Twinkle.shared.callbacks = {
 			return;
 		}
 
-		Morebits.status.info('Info', 'Will add the shared IP address template to the top of the user\'s talk page.');
+		Morebits.status.info('Info', 'Sjabloon gedeeld IP-adres toegevoegd bovenaan de overlegpagina van de gebruiker.');
 		var text = Twinkle.shared.getTemplateWikitext(params);
 
-		var summaryText = 'Added {{[[Template:' + params.template + '|' + params.template + ']]}} template.';
+		var summaryText = '{{[[Sjabloon:' + params.template + '|' + params.template + ']]}} toegevoegd.';
 		pageobj.setPageText(text + pageText);
 		pageobj.setEditSummary(summaryText);
 		pageobj.setChangeTags(Twinkle.changeTags);
@@ -170,8 +170,8 @@ Twinkle.shared.preview = function(form) {
 	var input = Morebits.quickForm.getInputData(form);
 	if (input.template) {
 		var previewDialog = new Morebits.simpleWindow(700, 500);
-		previewDialog.setTitle('Shared IP template preview');
-		previewDialog.setScriptName('Add Shared IP template');
+		previewDialog.setTitle('Gedeeld IP sjabloon voorvertoning');
+		previewDialog.setScriptName('Voeg gedeeld IP sjabloon toe');
 		previewDialog.setModality(true);
 
 		var previewdiv = document.createElement('div');
@@ -184,7 +184,7 @@ Twinkle.shared.preview = function(form) {
 
 		var submit = document.createElement('input');
 		submit.setAttribute('type', 'submit');
-		submit.setAttribute('value', 'Close');
+		submit.setAttribute('value', 'Sluiten');
 		previewDialog.addContent(submit);
 
 		previewDialog.display();
@@ -210,11 +210,11 @@ Twinkle.shared.getTemplateWikitext = function(input) {
 Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	var params = Morebits.quickForm.getInputData(e.target);
 	if (!params.template) {
-		alert('You must select a shared IP address template to use!');
+		alert('Je moet een gedeeld IP-adres sjabloon selecteren om te gebruiken!');
 		return;
 	}
 	if (!params.organization) {
-		alert('You must input an organization for the {{' + params.template + '}} template!');
+		alert('Je moet een organisatie opgeven voor het {{' + params.template + '}} sjabloon!');
 		return;
 	}
 
@@ -222,9 +222,9 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	Morebits.status.init(e.target);
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-	Morebits.wiki.actionCompleted.notice = 'Tagging complete, reloading talk page in a few seconds';
+	Morebits.wiki.actionCompleted.notice = 'Labelen voltooid, pagina wordt binnen enkele seconden herladen';
 
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'User talk page modification');
+	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Overlegpagina van gebruiker bewerking');
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.shared.callbacks.main);
