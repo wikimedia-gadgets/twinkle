@@ -17,11 +17,11 @@ Twinkle.talkback = function() {
 	if (!mw.config.exists('wgRelevantUserName') || Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
 		return;
 	}
-	Twinkle.addPortletLink(Twinkle.talkback.callback, 'TB', 'friendly-talkback', 'Easy talkback');
+	Twinkle.addPortletLink(Twinkle.talkback.callback, 'SR', 'friendly-talkback', 'Snel Reageren');
 };
 
 Twinkle.talkback.callback = function() {
-	if (mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') && !confirm("Is it really so bad that you're talking back to yourself?")) {
+	if (mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') && !confirm("Weet je zeker dat je wil reageren op jezelf....?")) {
 		return;
 	}
 
@@ -37,20 +37,20 @@ Twinkle.talkback.callback = function() {
 	form.append({ type: 'radio', name: 'tbtarget',
 		list: [
 			{
-				label: 'Talkback',
+				label: 'Reageren',
 				value: 'talkback',
 				checked: 'true'
 			},
 			{
-				label: 'Please see',
+				label: 'Bekijk',
 				value: 'see'
 			},
 			{
-				label: 'Noticeboard notification',
+				label: 'Verzoekpagina notificatie',
 				value: 'notice'
 			},
 			{
-				label: "You've got mail",
+				label: "Je hebt mail!",
 				value: 'mail'
 			}
 		],
@@ -68,7 +68,7 @@ Twinkle.talkback.callback = function() {
 		Twinkle.talkback.callbacks.preview(result);  // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
-	previewlink.textContent = 'Preview';
+	previewlink.textContent = 'Voorvertoning';
 	form.append({ type: 'div', id: 'talkbackpreview', label: [ previewlink ] });
 	form.append({ type: 'div', id: 'friendlytalkback-previewbox', style: 'display: none' });
 
@@ -93,7 +93,7 @@ Twinkle.talkback.callback = function() {
 		ellimit: '1',
 		format: 'json'
 	};
-	var wpapi = new Morebits.wiki.api('Fetching talkback opt-out status', query, Twinkle.talkback.callback.optoutStatus);
+	var wpapi = new Morebits.wiki.api('Ophalen van talkback opt-out status', query, Twinkle.talkback.callback.optoutStatus);
 	wpapi.post();
 };
 
@@ -102,7 +102,7 @@ Twinkle.talkback.optout = '';
 Twinkle.talkback.callback.optoutStatus = function(apiobj) {
 	var el = apiobj.getResponse().query.pages[0].extlinks;
 	if (el && el.length) {
-		Twinkle.talkback.optout = mw.config.get('wgRelevantUserName') + ' prefers not to receive talkbacks';
+		Twinkle.talkback.optout = mw.config.get('wgRelevantUserName') + ' ontvangt liever geen talkbacks.';
 		var url = el[0].url;
 		var reason = mw.util.getParamValue('reason', url);
 		Twinkle.talkback.optout += reason ? ': ' + reason : '.';
@@ -152,15 +152,15 @@ Twinkle.talkback.changeTarget = function(e) {
 			work_area.append({
 				type: 'input',
 				name: 'page',
-				label: 'Page name of the discussion',
-				tooltip: "The page name where the discussion is being held. For example: 'User talk:Jimbo Wales' or Wikipedia talk:Twinkle'. Limited to all talks, Wikipedia-space, and Template-space.",
+				label: 'Paginanaam van de discussie',
+				tooltip: "De pagina waar de discussie wordt gehouden. Bijvoorbeeld: 'Overleg gebruiker:Jimbo Wales'.",
 				value: prev_page || 'User talk:' + mw.config.get('wgUserName')
 			});
 			work_area.append({
 				type: 'input',
 				name: 'section',
-				label: 'Linked section (optional)',
-				tooltip: "The section heading where the discussion is being held. For example: 'Merge proposal'.",
+				label: 'Subkopje (optional)',
+				tooltip: "Het subkopje waaronder de discussie gehouden wordt. Bijvoorbeeld: 'Bron gevraagd'.",
 				value: prev_section
 			});
 			break;
@@ -171,7 +171,7 @@ Twinkle.talkback.changeTarget = function(e) {
 				label: 'Noticeboard:',
 				event: function(e) {
 					if (e.target.value === 'afchd') {
-						Morebits.quickForm.overrideElementLabel(root.section, 'Title of draft (excluding the prefix): ');
+						Morebits.quickForm.overrideElementLabel(root.section, 'Titel van concept (zonder de prefix): ');
 						Morebits.quickForm.setElementTooltipVisibility(root.section, false);
 					} else {
 						Morebits.quickForm.resetElementLabel(root.section);
@@ -193,7 +193,7 @@ Twinkle.talkback.changeTarget = function(e) {
 				type: 'input',
 				name: 'section',
 				label: 'Linked thread',
-				tooltip: 'The heading of the relevant thread on the noticeboard page.',
+				tooltip: 'De titel van de relevante thread op de verzoekpagina.',
 				value: prev_section
 			});
 			break;
@@ -201,14 +201,19 @@ Twinkle.talkback.changeTarget = function(e) {
 			work_area.append({
 				type: 'input',
 				name: 'section',
-				label: 'Subject of email (optional)',
-				tooltip: 'The subject line of the email you sent.'
+				label: 'Onderwerp van e-mail (optioneel)',
+				tooltip: 'Het onderwerp van je e-mail die je wil verzenden.'
 			});
 			break;
 	}
 
 	if (value !== 'notice') {
-		work_area.append({ type: 'textarea', label: 'Additional message (optional):', name: 'message', tooltip: 'An additional message that you would like to leave below the talkback template. Your signature will be added to the end of the message if you leave one.' });
+		work_area.append({
+			type: 'textarea',
+			label: 'Extra bericht (optioneel):',
+			name: 'message',
+			tooltip: 'Een extra bericht dat je wil toevoegen onder het talkback sjabloon. Je handtekening wordt aan het eind geplaatst, als je die toevoegd.'
+		});
 	}
 
 	work_area = work_area.render();
