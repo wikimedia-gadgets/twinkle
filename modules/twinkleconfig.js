@@ -162,35 +162,35 @@ Twinkle.config.sections = [
 			// 'blank': force open in a new window, even if such a window exists
 			{
 				name: 'userTalkPageMode',
-				label: 'When opening a user talk page, open it',
+				label: 'Als er een overlegpagina geopend wordt, open het',
 				type: 'enum',
-				enumValues: { window: 'In a window, replacing other user talks', tab: 'In a new tab', blank: 'In a totally new window' }
+				enumValues: { window: 'Op het zelfde tabblad', tab: 'Op een nieuw tabblad', blank: 'In een nieuw venster (popup)' }
 			},
 
 			// TwinkleConfig.dialogLargeFont (boolean)
 			{
 				name: 'dialogLargeFont',
-				label: 'Use larger text in Twinkle dialogs',
+				label: 'Gebruik een groter lettertype op Twinkle formulieren',
 				type: 'boolean'
 			},
 
 			// Twinkle.config.disabledModules (array)
 			{
 				name: 'disabledModules',
-				label: 'Turn off the selected Twinkle modules',
-				helptip: 'Anything you select here will NOT be available for use, so act with care. Uncheck to reactivate.',
+				label: 'Schakel bepaalde Twinkle modules uit',
+				helptip: 'Alles wat je uitschakeld kun je niet gebruiken. Plaats het vinkje terug om de de module te herinschakelen.',
 				type: 'set',
-				setValues: { arv: 'ARV', warn: 'Warn', welcome: 'Welcome', shared: 'Shared IP', talkback: 'Talkback', speedy: 'CSD', prod: 'PROD', xfd: 'XfD', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', fluff: 'Revert and rollback' }
+				setValues: { arv: 'ARV', warn: 'Waarschuw', welcome: 'Welkom', shared: 'Gedeeld IP', talkback: 'Talkback', speedy: 'Nuweg', prod: 'PROD', xfd: 'TBx', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', fluff: 'Revert and rollback' }
 			},
 
 			// Twinkle.config.disabledSysopModules (array)
 			{
 				name: 'disabledSysopModules',
-				label: 'Turn off the selected admin-only modules',
-				helptip: 'Anything you select here will NOT be available for use, so act with care. Uncheck to reactivate.',
+				label: 'Schakel moderator-modules uit',
+				helptip: 'Alles wat je uitschakeld kun je niet gebruiken. Plaats het vinkje terug om de de module te herinschakelen.',
 				adminOnly: true,
 				type: 'set',
-				setValues: { block: 'Block', deprod: 'DePROD', batchdelete: 'D-batch', batchprotect: 'P-batch', batchundelete: 'Und-batch' }
+				setValues: { block: 'Blokkeer', deprod: 'DePROD', batchdelete: 'Nuke', batchprotect: 'Nuke-Protect', batchundelete: 'Un-Nuke' }
 			}
 		]
 	},
