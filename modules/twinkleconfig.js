@@ -95,31 +95,23 @@ Twinkle.config.commonSets = {
 	],
 	namespacesNoSpecial: {
 		0: 'Artikel',
-		1: 'Overleg artikel)',
+		1: 'Overleg (artikel)',
 		2: 'Gebruiker',
 		3: 'Overleg gebruiker',
 		4: 'Wikipedia',
 		5: 'Overleg Wikipedia',
-		6: 'File',
-		7: 'File talk',
 		8: 'MediaWiki',
 		9: 'Overleg MediaWiki',
 		10: 'Sjabloon',
 		11: 'Overleg sjabloon',
 		12: 'Help',
-		13: 'Overleg help',
+		13: 'Overleg Help',
 		14: 'Categorie',
 		15: 'Overleg categorie',
 		100: 'Portaal',
 		101: 'Overleg portaal',
-		108: 'Book',
-		109: 'Book talk',
-		118: 'Draft',
-		119: 'Draft talk',
-		710: 'TimedText',
-		711: 'TimedText talk',
 		828: 'Module',
-		829: 'Module talk'
+		829: 'Overleg module'
 	}
 };
 
@@ -178,30 +170,30 @@ Twinkle.config.sections = [
 			{
 				name: 'disabledModules',
 				label: 'Schakel bepaalde Twinkle modules uit',
-				helptip: 'Alles wat je uitschakeld kun je niet gebruiken. Plaats het vinkje terug om de de module te herinschakelen.',
+				helptip: 'Alles wat je uitschakeld kun je niet gebruiken. Haal het vinkje weg om de module weer in te schakelen.',
 				type: 'set',
-				setValues: { arv: 'ARV', warn: 'Waarschuw', welcome: 'Welkom', shared: 'Gedeeld IP', talkback: 'Talkback', speedy: 'Nuweg', prod: 'PROD', xfd: 'TBx', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', fluff: 'Revert and rollback' }
+				setValues: { arv: 'CU-verzoek', warn: 'Waarschuw', welcome: 'Welkom', shared: 'Gedeeld IP', talkback: 'Talkback', speedy: 'Nuweg', xfd: 'TBx', protect: 'Beveiligen', tag: 'Tag', diff: 'Wijz', unlink: 'Ontlink', fluff: 'Ongedaan maken en terugdraaien' }
 			},
 
 			// Twinkle.config.disabledSysopModules (array)
 			{
 				name: 'disabledSysopModules',
-				label: 'Schakel moderator-modules uit',
-				helptip: 'Alles wat je uitschakeld kun je niet gebruiken. Plaats het vinkje terug om de de module te herinschakelen.',
+				label: 'Schakel bepaalde sysop-Twinkle modules uit',
+				helptip: 'Alles wat je uitschakeld kun je niet gebruiken. Haal het vinkje weg om de module weer in te schakelen.',
 				adminOnly: true,
 				type: 'set',
-				setValues: { block: 'Blokkeer', deprod: 'DePROD', batchdelete: 'Nuke', batchprotect: 'Nuke-Protect', batchundelete: 'Un-Nuke' }
+				setValues: { block: 'Blokkeer', batchdelete: 'Batch verwijderen', batchprotect: 'Batch beveiligen', batchundelete: 'Batch terugplaatsen' }
 			}
 		]
 	},
 
 	{
-		title: 'ARV',
+		title: 'CU-verzoeken',
 		module: 'arv',
 		preferences: [
 			{
 				name: 'spiWatchReport',
-				label: 'Add sockpuppet report pages to watchlist',
+				label: 'Voeg sokpopmeldingen toe aan volglijst',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			}
@@ -209,7 +201,7 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Block user',
+		title: 'Blokkeer gebruiker',
 		module: 'block',
 		adminOnly: true,
 		preferences: [
@@ -217,8 +209,8 @@ Twinkle.config.sections = [
 			// Whether to default partial blocks on or off
 			{
 				name: 'defaultToPartialBlocks',
-				label: 'Select partial blocks by default when opening the block menu',
-				helptip: 'If the user is already blocked, this will be overridden by in favor of defaulting to the current block type',
+				label: 'Selecteer standaard deelblokkades zodra het blokkeer menu geopend wordt.',
+				helptip: 'Indien de gebruiker al geblokkeerd is zal deze instelling genegeerd worden ter voorkeur van de huidige blok instellingen.',
 				type: 'boolean'
 			},
 
@@ -226,65 +218,26 @@ Twinkle.config.sections = [
 			// if true, blank the talk page when issuing an indef block notice (per [[WP:UWUL#Indefinitely blocked users]])
 			{
 				name: 'blankTalkpageOnIndefBlock',
-				label: 'Blank the talk page when indefinitely blocking users',
-				helptip: 'See <a href="' + mw.util.getUrl('Wikipedia:WikiProject_User_warnings/Usage_and_layout#Indefinitely_blocked_users') + '">WP:UWUL</a> for more information.',
+				label: 'Haal de overlegpagina leeg bij een OT-blokkade',
+				helptip: 'Zie <a href="' + mw.util.getUrl('en:Wikipedia:WikiProject_User_warnings/Usage_and_layout#Indefinitely_blocked_users') + '">en:WP:UWUL</a> ter referentie.',
 				type: 'boolean'
 			}
 		]
 	},
 
 	{
-		title: 'Image deletion (DI)',
-		module: 'image',
-		preferences: [
-			// TwinkleConfig.notifyUserOnDeli (boolean)
-			// If the user should be notified after placing a file deletion tag
-			{
-				name: 'notifyUserOnDeli',
-				label: 'Check the "notify initial uploader" box by default',
-				type: 'boolean'
-			},
-
-			// TwinkleConfig.deliWatchPage (string)
-			// The watchlist setting of the page tagged for deletion.
-			{
-				name: 'deliWatchPage',
-				label: 'Add image page to watchlist when tagging',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
-
-			// TwinkleConfig.deliWatchUser (string)
-			// The watchlist setting of the user talk page if a notification is placed.
-			{
-				name: 'deliWatchUser',
-				label: 'Add user talk page of initial uploader to watchlist when notifying',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			}
-		]
-	},
-
-	{
-		title: 'Page protection ' + (Morebits.userIsSysop ? '(PP)' : '(RPP)'),
+		title: 'Pagina beveiligen',
 		module: 'protect',
 		preferences: [
 			{
 				name: 'watchRequestedPages',
-				label: 'Add page to watchlist when requesting protection',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
-			{
-				name: 'watchPPTaggedPages',
-				label: 'Add page to watchlist when tagging with protection template',
+				label: 'Toevoegen aan volglijst bij aanvraag beveiliging',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
 			{
 				name: 'watchProtectedPages',
-				label: 'Add page to watchlist when protecting',
-				helptip: 'If also tagging the page after protection, that preference will be favored.',
+				label: 'Toevoegen aan volglijst na uitvoeren beveiliging',
 				adminOnly: true,
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
@@ -293,60 +246,15 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Proposed deletion (PROD)',
-		module: 'prod',
-		preferences: [
-			// TwinkleConfig.watchProdPages (string)
-			// Watchlist setting when applying prod template to page
-			{
-				name: 'watchProdPages',
-				label: 'Add article to watchlist when tagging',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
-
-			// TwinkleConfig.markProdPagesAsPatrolled (boolean)
-			// If, when applying prod template to page, to mark the page as curated/patrolled (if the page was reached from NewPages)
-			{
-				name: 'markProdPagesAsPatrolled',
-				label: 'Mark page as patrolled/reviewed when tagging (if possible)',
-				helptip: 'This should probably not be checked as doing so is against best practice consensus',
-				type: 'boolean'
-			},
-
-			// TwinkleConfig.prodReasonDefault (string)
-			// The prefilled PROD reason.
-			{
-				name: 'prodReasonDefault',
-				label: 'Prefilled PROD reason',
-				type: 'string'
-			},
-
-			{
-				name: 'logProdPages',
-				label: 'Keep a log in userspace of all pages you tag for PROD',
-				helptip: 'Since non-admins do not have access to their deleted contributions, the userspace log offers a good way to keep track of all pages you tag for PROD using Twinkle.',
-				type: 'boolean'
-			},
-			{
-				name: 'prodLogPageName',
-				label: 'Keep the PROD userspace log at this user subpage',
-				helptip: 'Enter a subpage name in this box. You will find your PROD log at User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the PROD userspace log.',
-				type: 'string'
-			}
-		]
-	},
-
-	{
-		title: 'Revert and rollback',  // twinklefluff module
+		title: 'Ongedaan maken en terugdraaien',  // twinklefluff module
 		module: 'fluff',
 		preferences: [
 			// TwinkleConfig.autoMenuAfterRollback (bool)
 			// Option to automatically open the warning menu if the user talk page is opened post-reversion
 			{
 				name: 'autoMenuAfterRollback',
-				label: 'Automatically open the Twinkle warn menu on a user talk page after Twinkle rollback',
-				helptip: 'Only operates if the relevant box is checked below.',
+				label: 'Open dossier-menu automatisch na een Twinkle-terugdraaiing',
+				helptip: 'Wordt alleen uitgevoerd indien de onderstaande instellingen ook geconfigureerd zijn.',
 				type: 'boolean'
 			},
 
@@ -354,9 +262,9 @@ Twinkle.config.sections = [
 			// What types of actions that should result in opening of talk page
 			{
 				name: 'openTalkPage',
-				label: 'Open user talk page after these types of reversions',
+				label: 'Open gebruikersoverleg bij de volgende terugdraaiingen',
 				type: 'set',
-				setValues: { agf: 'AGF rollback', norm: 'Normal rollback', vand: 'Vandalism rollback' }
+				setValues: { agf: 'AGF rollback', norm: 'Normale terugdraaiing', vand: 'Vandalisme terugdraaiing' }
 			},
 
 			// TwinkleConfig.openTalkPageOnAutoRevert (bool)
@@ -445,7 +353,7 @@ Twinkle.config.sections = [
 		preferences: [
 			{
 				name: 'markSharedIPAsMinor',
-				label: 'Mark shared IP tagging as a minor edit',
+				label: 'Markeer Gedeeld IP labeling als kleine bewerking',
 				type: 'boolean'
 			}
 		]
@@ -457,9 +365,9 @@ Twinkle.config.sections = [
 		preferences: [
 			{
 				name: 'speedySelectionStyle',
-				label: 'When to go ahead and tag/delete the page',
+				label: 'Wanneer dient de nominatie geplaatst te worden',
 				type: 'enum',
-				enumValues: { buttonClick: 'When I click "Submit"', radioClick: 'As soon as I click an option' }
+				enumValues: { buttonClick: 'Zodra ik op "Opslaan"', radioClick: 'Zodra ik een reden aanklik' }
 			},
 
 			// TwinkleConfig.watchSpeedyPages (array)
@@ -475,7 +383,7 @@ Twinkle.config.sections = [
 			// If any of the above items are selected, whether to expire the watch
 			{
 				name: 'watchSpeedyExpiry',
-				label: 'When tagging a page, how long to watch it for',
+				label: 'Bij nominatie, volg de pagina voor:',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
@@ -484,7 +392,7 @@ Twinkle.config.sections = [
 			// If, when applying speedy template to page, to mark the page as triaged/patrolled (if the page was reached from NewPages)
 			{
 				name: 'markSpeedyPagesAsPatrolled',
-				label: 'Mark page as patrolled/reviewed when tagging (if possible)',
+				label: 'Markeer een pagina als gecontroleerd na nominatie (indien mogelijk)',
 				helptip: 'This should probably not be checked as doing so is against best practice consensus',
 				type: 'boolean'
 			},
@@ -493,7 +401,7 @@ Twinkle.config.sections = [
 			// The watchlist setting of the user talk page if they receive a notification.
 			{
 				name: 'watchSpeedyUser',
-				label: 'Add user talk page of initial contributor to watchlist (when notifying)',
+				label: 'Plaats overlegpagina aanmaker op volglijst (bij mededelen)',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
@@ -503,8 +411,8 @@ Twinkle.config.sections = [
 			// with a "firstarticle" notice if their talk page has not yet been created.
 			{
 				name: 'welcomeUserOnSpeedyDeletionNotification',
-				label: 'Welcome page creator when notifying with these criteria',
-				helptip: 'The welcome is issued only if the user is notified about the deletion, and only if their talk page does not already exist. The template used is {{firstarticle}}.',
+				label: 'Plaats verwelkoming op overlegpagina bij de volgende nominatiereden',
+				helptip: 'De verwelkoming wordt alleen geplaatst als nominatie wordt medegedeeld met aanmaker, en alleen als er nog geen overlegpagina bestaat.',
 				type: 'set',
 				setValues: Twinkle.config.commonSets.csdCriteriaNotification,
 				setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
@@ -514,8 +422,8 @@ Twinkle.config.sections = [
 			// What types of actions should result in the author of the page being notified of nomination
 			{
 				name: 'notifyUserOnSpeedyDeletionNomination',
-				label: 'Notify page creator when tagging with these criteria',
-				helptip: 'Even if you choose to notify from the CSD screen, the notification will only take place for those criteria selected here.',
+				label: 'Plaats mededeling op de overlegpagina als de volgende nominatiereden wordt gebruikt',
+				helptip: 'Zelfs als je kiest voor mededelen op het nuweg-formulier, zal de mededeling alleen geplaatst worden voor de geselecteerde reden.',
 				type: 'set',
 				setValues: Twinkle.config.commonSets.csdCriteriaNotification,
 				setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
@@ -525,8 +433,8 @@ Twinkle.config.sections = [
 			// What types of actions should result in the author of the page being notified of speedy deletion (admin only)
 			{
 				name: 'warnUserOnSpeedyDelete',
-				label: 'Notify page creator when deleting under these criteria',
-				helptip: 'Even if you choose to notify from the CSD screen, the notification will only take place for those criteria selected here.',
+				label: 'Plaats mededeling op overlegpagina na uitvoeren van nuweg voor de volgende reden',
+				helptip: 'Zelfs als je kiest voor mededelen op het verwijder-formulier, zal de mededeling alleen geplaatst worden voor de geselecteerde reden.',
 				adminOnly: true,
 				type: 'set',
 				setValues: Twinkle.config.commonSets.csdCriteriaNotification,
@@ -536,7 +444,7 @@ Twinkle.config.sections = [
 			// TwinkleConfig.promptForSpeedyDeletionSummary (array of strings)
 			{
 				name: 'promptForSpeedyDeletionSummary',
-				label: 'Allow editing of deletion summary when deleting under these criteria',
+				label: 'Sta toe de verwijdersamenvatting aan te passen bij gebruik van de volgende redenen.',
 				adminOnly: true,
 				type: 'set',
 				setValues: Twinkle.config.commonSets.csdAndDICriteria,
@@ -547,14 +455,14 @@ Twinkle.config.sections = [
 			// If talk page if exists should also be deleted (CSD G8) when spedying a page (admin only)
 			{
 				name: 'deleteTalkPageOnDelete',
-				label: 'Check the "also delete talk page" box by default',
+				label: 'Schakel "overlegpagina meeverwijderen" standaard in',
 				adminOnly: true,
 				type: 'boolean'
 			},
 
 			{
 				name: 'deleteRedirectsOnDelete',
-				label: 'Check the "also delete redirects" box by default',
+				label: 'Schakel "doorverwijzingen meeverwijderen" standaard in',
 				adminOnly: true,
 				type: 'boolean'
 			},
@@ -563,8 +471,8 @@ Twinkle.config.sections = [
 			// Make the CSD screen default to "delete" instead of "tag" (admin only)
 			{
 				name: 'deleteSysopDefaultToDelete',
-				label: 'Default to outright deletion instead of speedy tagging',
-				helptip: 'If there is a CSD tag already present, Twinkle will always default to "delete" mode',
+				label: 'Voer directe verwijdering zelf uit i.p.v. het nuweg sjabloon plaatsen',
+				helptip: 'Indien het nuweg sjabloon al op de pagina staat, voer je de verwijdering zowiso zelf uit.',
 				adminOnly: true,
 				type: 'boolean'
 			},
@@ -573,7 +481,7 @@ Twinkle.config.sections = [
 			// Defines the width of the Twinkle SD window in pixels
 			{
 				name: 'speedyWindowWidth',
-				label: 'Width of speedy deletion window (pixels)',
+				label: 'Breedte van nuweg-formulier (pixels)',
 				type: 'integer'
 			},
 
@@ -581,26 +489,26 @@ Twinkle.config.sections = [
 			// Defines the width of the Twinkle SD window in pixels
 			{
 				name: 'speedyWindowHeight',
-				label: 'Height of speedy deletion window (pixels)',
-				helptip: 'If you have a big monitor, you might like to increase this.',
+				label: 'Hoogte van nuweg-formulier (pixels)',
+				helptip: 'Als je een grootte monitor hebt, is het misschien prettig dit wat groter te maken.',
 				type: 'integer'
 			},
 
 			{
 				name: 'logSpeedyNominations',
-				label: 'Keep a log in userspace of all CSD nominations',
-				helptip: 'Since non-admins do not have access to their deleted contributions, the userspace log offers a good way to keep track of all pages you nominate for CSD using Twinkle. Files tagged using DI are also added to this log.',
+				label: 'Maak een logboek van alle nuweg nominaties in mijn gebruikersnaamruimte',
+				helptip: 'Omdat niet-moderators geen toegang hebben tot hun verwijderde bijdragen, is een logboek een makkelijke manier om inzicht te krijgen in het aantal nominaties.',
 				type: 'boolean'
 			},
 			{
 				name: 'speedyLogPageName',
-				label: 'Keep the CSD userspace log at this user subpage',
-				helptip: 'Enter a subpage name in this box. You will find your CSD log at User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the CSD userspace log.',
+				label: 'Bewaar het logboek op de volgende pagina',
+				helptip: 'Voer een sub-pagina naam in voor het logboek. Je kunt deze terugvingen op Gebruiker:<i>gebruikersnaam</i>/<i>sub-paginanaam</i>.',
 				type: 'string'
 			},
 			{
 				name: 'noLogOnSpeedyNomination',
-				label: 'Do not create a userspace log entry when tagging with these criteria',
+				label: 'Maak geen gebruik van het logboek bij de volgende nominatieredenen',
 				type: 'set',
 				setValues: Twinkle.config.commonSets.csdAndDICriteria,
 				setDisplayOrder: Twinkle.config.commonSets.csdAndDICriteriaDisplayOrder
@@ -661,14 +569,6 @@ Twinkle.config.sections = [
 			},
 			//  <verwijderen?>
 			{
-				name: 'customFileTagList',
-				label: 'Aangepaste file-onderhoudssjablonen om weertegeven',
-				helptip: 'Extra file-sjablonen die je wil kunnen toevoegen aan artikelen.',
-				type: 'customList',
-				customListValueTitle: 'Template name (no curly brackets)',
-				customListLabelTitle: 'Text to show in Tag dialog'
-			},
-			{
 				name: 'customRedirectTagList',
 				label: 'Custom redirect category tags to display',
 				helptip: 'Additional tags that you wish to add for redirects.',
@@ -724,27 +624,27 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Warn user',
+		title: 'Gebruiker dossiers',
 		module: 'warn',
 		preferences: [
 			// TwinkleConfig.defaultWarningGroup (int)
 			// Which level warning should be the default selected group, default is 1
 			{
 				name: 'defaultWarningGroup',
-				label: 'Default warning level',
+				label: 'Standaard waarschuwingsniveau',
 				type: 'enum',
 				enumValues: {
-					1: 'Level 1',
-					2: 'Level 2',
-					3: 'Level 3',
-					4: 'Level 4',
-					5: 'Level 4im',
+					1: 'Niveau 1 - Mededeling',
+					2: 'Niveau 2 - Berisping',
+					3: 'Niveau 3 - Waarschuwing',
+					4: 'Niveau 4 - Laatste waarschuwing',
+					5: 'Niveau E - Enige waarschuwing',
 					6: 'Single-issue notices',
 					7: 'Single-issue warnings',
 					// 8 was used for block templates before #260
-					9: 'Custom warnings',
-					10: 'All warning templates',
-					11: 'Auto-select level (1-4)'
+					9: 'Aangepaste waarschuwingen',
+					10: 'Alle waarschuwingssjablonen',
+					11: 'Automatisch niveau (1-4)'
 				}
 			},
 
@@ -762,7 +662,7 @@ Twinkle.config.sections = [
 			// false: to not print the notice
 			{
 				name: 'showSharedIPNotice',
-				label: 'Add extra notice on shared IP talk pages',
+				label: 'Voeg extra mededeling toe bij gedeelde IP-adressen',
 				helptip: 'Notice used is {{Shared IP advice}}',
 				type: 'boolean'
 			},
@@ -771,7 +671,7 @@ Twinkle.config.sections = [
 			// Watchlist setting for the page which has been dispatched an warning or notice
 			{
 				name: 'watchWarnings',
-				label: 'Add user talk page to watchlist when notifying',
+				label: 'Voeg overlegpagina toe aan volglijst na aanmaken dossier',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
@@ -780,75 +680,74 @@ Twinkle.config.sections = [
 			// if true, use the native select menu rather the select2-based one
 			{
 				name: 'oldSelect',
-				label: 'Use the non-searchable classic select menu',
+				label: 'Gebruik klassiek menu zonder zoekfunctie (verouderd)',
 				type: 'boolean'
 			},
 
 			{
 				name: 'customWarningList',
-				label: 'Custom warning templates to display',
-				helptip: 'You can add individual templates or user subpages. Custom warnings appear in the "Custom warnings" category within the warning dialog box.',
+				label: 'Aangepaste dossier-sjablonen',
+				helptip: 'Je kan overige, of zelfgemaakte, dossiersjablonen toevoegen om te gebruiken in Twinkle. Deze verschijnen onder de "Aangepaste dossiers" categorie op het dossier-formulier.',
 				type: 'customList',
-				customListValueTitle: 'Template name (no curly brackets)',
-				customListLabelTitle: 'Text to show in warning list (also used as edit summary)'
+				customListValueTitle: 'Sjabloonpaginanaam (zonder accolades)',
+				customListLabelTitle: 'Naam zoals weer te geven in lijst (wordt ook gebruikt voor de bewerkingssamenvatting)'
 			}
 		]
 	},
 
 	{
-		title: 'Welcome user',
+		title: 'Verwelkom gebruiker',
 		module: 'welcome',
 		preferences: [
 			{
 				name: 'topWelcomes',
-				label: 'Place welcomes above existing content on user talk pages',
+				label: 'Plaats het welkom-sjabloon boven alle andere content op de overlegpagina',
 				type: 'boolean'
 			},
 			{
 				name: 'watchWelcomes',
-				label: 'Add user talk pages to watchlist when welcoming',
-				helptip: 'Doing so adds to the personal element of welcoming a user - you will be able to see how they are coping as a newbie, and possibly help them.',
+				label: 'Voeg overlegpagina toe aan volglijst na verwelkoming',
+				helptip: 'Dit maakt de verwelkoming wat meer persoonlijk - je kunt de vooruitgang van de nieuweling zien, en waar mogelijk helpen.',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
 			{
 				name: 'insertUsername',
-				label: 'Add your username to the template (where applicable)',
-				helptip: "Some welcome templates have an opening sentence like \"Hi, I'm &lt;username&gt;. Welcome\" etc. If you turn off this option, these templates will not display your username in that way.",
+				label: 'Voeg je gebruikersnaam toe aan de verwelkoming (waar mogelijk)',
 				type: 'boolean'
 			},
 			{
 				name: 'quickWelcomeMode',
-				label: 'Clicking the "welcome" link on a diff page will',
-				helptip: 'If you choose to welcome automatically, the template you specify below will be used.',
+				label: 'Op de "welkom" knop drukken in een wijz zal',
+				helptip: 'Indien je kiest voor automatische plaatsing zal het onderstaande sjabloon gebruikt worden.',
 				type: 'enum',
-				enumValues: { auto: 'welcome automatically', norm: 'prompt you to select a template' }
+				enumValues: { auto: 'automatisch een verwelkoming plaatsen', norm: 'vragen welk sjabloon je wil gebruiken' }
 			},
 			{
 				name: 'quickWelcomeTemplate',
-				label: 'Template to use when welcoming automatically',
-				helptip: 'Enter the name of a welcome template, without the curly brackets. A link to the given article will be added.',
+				label: 'Sjabloon dat gebruikt wordt bij automatische verwelkoming',
+				helptip: 'Geef de sjabloonpaginanaam, zonder accolades. Een link naar de pagina zal automatisch toegevoegd worden.',
 				type: 'string'
 			},
 			{
 				name: 'customWelcomeList',
-				label: 'Custom welcome templates to display',
-				helptip: "You can add other welcome templates, or user subpages that are welcome templates (prefixed with \"User:\"). Don't forget that these templates are substituted onto user talk pages.",
+				label: 'Aangepaste welkomssjablonen om te weergeven',
+				helptip: "Je kan overige, of zelfgemaakte, welkomssjablonen toevoegen om te gebruiken in Twinkle.",
 				type: 'customList',
-				customListValueTitle: 'Template name (no curly brackets)',
-				customListLabelTitle: 'Text to show in Welcome dialog'
+				customListValueTitle: 'Sjabloonpaginanaam (zonder accolades)',
+				customListLabelTitle: 'Naam zoals weer te geven in lijst'
 			},
 			{
 				name: 'customWelcomeSignature',
-				label: 'Automatically sign custom welcome templates',
-				helptip: 'If your custom welcome templates contain a built-in signature within the template, turn off this option.',
+				label: 'Aangepaste welkomssjablonen automatisch ondertekenen',
+				helptip: 'Indien je aangepaste sjabloon zelf al beschikt over een ondertekenfunctie, schakel dit dan uit.',
 				type: 'boolean'
 			}
 		]
 	},
 
 	{
-		title: 'XFD (deletion discussions)',
+		title: 'TBx (verwijder nominatie)',
 		module: 'xfd',
 		preferences: [
 			{
@@ -867,14 +766,14 @@ Twinkle.config.sections = [
 				name: 'noLogOnXfdNomination',
 				label: 'Do not create a userspace log entry when nominating at this venue',
 				type: 'set',
-				setValues: { afd: 'AfD', tfd: 'TfD', ffd: 'FfD', cfd: 'CfD', cfds: 'CfD/S', mfd: 'MfD', rfd: 'RfD', rm: 'RM' }
+				setValues: { afd: 'TBP (Te Beoordelen Pagina)', tfd: 'TfD', ffd: 'FfD', cfd: 'CfD', cfds: 'CfD/S', mfd: 'MfD', rfd: 'RfD', rm: 'RM' }
 			},
 
 			// TwinkleConfig.xfdWatchPage (string)
 			// The watchlist setting of the page being nominated for XfD.
 			{
 				name: 'xfdWatchPage',
-				label: 'Add the nominated page to watchlist',
+				label: 'Voeg genomineerde pagina toe aan volglijst',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
@@ -884,7 +783,7 @@ Twinkle.config.sections = [
 			// or the list page for the other processes.
 			{
 				name: 'xfdWatchDiscussion',
-				label: 'Add the deletion discussion page to watchlist',
+				label: 'Voeg verwijderdiscussie toe aan volglijst',
 				helptip: 'This refers to the discussion subpage (for AfD and MfD) or the daily log page (for TfD, CfD, RfD and FfD)',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
@@ -904,24 +803,14 @@ Twinkle.config.sections = [
 			// The watchlist setting of the user talk page if they receive a notification.
 			{
 				name: 'xfdWatchUser',
-				label: 'Add user talk page of initial contributor to watchlist (when notifying)',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
-
-			// TwinkleConfig.xfdWatchRelated (string)
-			// The watchlist setting of the target of a redirect being nominated for RfD.
-			{
-				name: 'xfdWatchRelated',
-				label: "Add the redirect's target page to watchlist (when notifying)",
-				helptip: 'This only applies for RfD, when leaving a notification on the talk page of the target of the redirect',
+				label: 'Voeg overlegpagina van aanmaker toe aan volglijst (bij notificatie)',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
 
 			{
 				name: 'markXfdPagesAsPatrolled',
-				label: 'Mark page as patrolled/reviewed when nominating for AFD (if possible)',
+				label: 'Markeer pagina als gecontroleerd bij nominatie (indien mogelijk)',
 				type: 'boolean'
 			}
 		]
@@ -1694,7 +1583,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 							break;
 
 						default:
-							alert('twinkleconfig: onbekend data type voor voorkeuk ' + pref.name);
+							alert('twinkleconfig: onbekend data type voor voorkeur ' + pref.name);
 							break;
 					}
 				} else if (Twinkle.prefs) {
@@ -1745,7 +1634,7 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	noticebox.className = 'successbox';
 	noticebox.style.fontSize = '100%';
 	noticebox.style.marginTop = '2em';
-	noticebox.innerHTML = '<p><b>JE Twinkle voorkeuren zijn opgeslagen.</b></p><p>Mogelijk dien je <b>je browser cache te legen</b> (zie <a href="' + mw.util.getUrl('WP:BYPASS') + '" title="WP:BYPASS">WP:BYPASS</a> voor uitleg).</p>';
+	noticebox.innerHTML = '<p><b>Je Twinkle voorkeuren zijn opgeslagen.</b></p><p>Mogelijk dien je <b>je browser cache te legen</b> (zie <a href="' + mw.util.getUrl('WP:BYPASS') + '" title="WP:BYPASS">WP:BYPASS</a> voor uitleg).</p>';
 	Morebits.status.root.appendChild(noticebox);
 	var noticeclear = document.createElement('br');
 	noticeclear.style.clear = 'both';
