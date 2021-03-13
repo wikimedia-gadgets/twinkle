@@ -304,13 +304,7 @@ Twinkle.warn.messages = {
 					label: 'Vergaand cyberpesten',
 					summary: '+wsE cyberpesten'
 				}
-			},
-			'ws-aanval': {
-				level4im: {
-					label: 'Persoonsaanval/Bedreiging',
-					summary: '+wsE persoonsaanval/bedreiging'
-				}
-			},
+			}
 		},
 		'Overig': {
 			'ws-blp': {
@@ -348,288 +342,53 @@ Twinkle.warn.messages = {
 					label: 'Vergaande bewerkingsoorlog',
 					summary: '+wsE bewerkingsoorlog'
 				}
+			},
+			'ws-copyvio': {
+				level1: {
+					label: 'Auteursrechtenschening',
+					summary: '+ws1 copyvio'
+				},
+				level2: {
+					label: 'Auteursrechtenschening',
+					summary: '+ws2 copyvio'
+				},
+				level3: {
+					label: 'Herhaalde auteursrechtenschening',
+					summary: '+ws3 copyvio'
+				},
+				level4: {
+					label: 'Herhaalde auteursrechtenschening',
+					summary: '+ws4 copyvio'
+				}
+			},
+			'ws-verstoring': {
+				level1: {
+					label: 'Projectverstorend gedrag',
+					summary: '+ws1 verstoring'
+				},
+				level2: {
+					label: 'Projectverstorend gedrag',
+					summary: '+ws2 verstoring'
+				},
+				level3: {
+					label: 'Projectverstorend gedrag',
+					summary: '+ws3 verstoring'
+				},
+				level4: {
+					label: 'Herhaald projectverstorend gedrag',
+					summary: '+ws4 verstoring'
+				},
+				level4im: {
+					label: 'Ernstig projectverstorend gedrag',
+					summary: '+wsE verstoring'
+				}
+			},
+			'ws-aanval': {
+				level4im: {
+					label: 'Persoonsaanval/Bedreiging',
+					summary: '+wsE persoonsaanval/bedreiging'
+				}
 			}
-		}
-	},
-
-	singlenotice: {
-		'uw-agf-sock': {
-			label: 'Use of multiple accounts (assuming good faith)',
-			summary: 'Notice: Using multiple accounts'
-		},
-		'uw-aiv': {
-			label: 'Bad AIV report',
-			summary: 'Notice: Bad AIV report'
-		},
-		'uw-autobiography': {
-			label: 'Creating autobiographies',
-			summary: 'Notice: Creating autobiographies'
-		},
-		'uw-badcat': {
-			label: 'Adding incorrect categories',
-			summary: 'Notice: Adding incorrect categories'
-		},
-		'uw-badlistentry': {
-			label: 'Adding inappropriate entries to lists',
-			summary: 'Notice: Adding inappropriate entries to lists'
-		},
-		'uw-bite': {
-			label: '"Biting" newcomers',
-			summary: 'Notice: "Biting" newcomers',
-			suppressArticleInSummary: true  // non-standard (user name, not article), and not necessary
-		},
-		'uw-coi': {
-			label: 'Conflict of interest',
-			summary: 'Notice: Conflict of interest',
-			heading: 'Managing a conflict of interest'
-		},
-		'uw-controversial': {
-			label: 'Introducing controversial material',
-			summary: 'Notice: Introducing controversial material'
-		},
-		'uw-copying': {
-			label: 'Copying text to another page',
-			summary: 'Notice: Copying text to another page'
-		},
-		'uw-crystal': {
-			label: 'Adding speculative or unconfirmed information',
-			summary: 'Notice: Adding speculative or unconfirmed information'
-		},
-		'uw-c&pmove': {
-			label: 'Cut and paste moves',
-			summary: 'Notice: Cut and paste moves'
-		},
-		'uw-dab': {
-			label: 'Incorrect edit to a disambiguation page',
-			summary: 'Notice: Incorrect edit to a disambiguation page'
-		},
-		'uw-date': {
-			label: 'Unnecessarily changing date formats',
-			summary: 'Notice: Unnecessarily changing date formats'
-		},
-		'uw-deadlink': {
-			label: 'Removing proper sources containing dead links',
-			summary: 'Notice: Removing proper sources containing dead links'
-		},
-		'uw-displaytitle': {
-			label: 'Incorrect use of DISPLAYTITLE',
-			summary: 'Notice: Incorrect use of DISPLAYTITLE'
-		},
-		'uw-draftfirst': {
-			label: 'User should draft in userspace without the risk of speedy deletion',
-			summary: 'Notice: Consider drafting your article in [[Help:Userspace draft|userspace]]'
-		},
-		'uw-editsummary': {
-			label: 'New user not using edit summary',
-			summary: 'Notice: Not using edit summary'
-		},
-		'uw-editsummary2': {
-			label: 'Experienced user not using edit summary',
-			summary: 'Notice: Not using edit summary'
-		},
-		'uw-elinbody': {
-			label: 'Adding external links to the body of an article',
-			summary: 'Notice: Keep external links to External links sections at the bottom of an article'
-		},
-		'uw-english': {
-			label: 'Not communicating in English',
-			summary: 'Notice: Not communicating in English'
-		},
-		'uw-hasty': {
-			label: 'Hasty addition of speedy deletion tags',
-			summary: 'Notice: Allow creators time to improve their articles before tagging them for deletion'
-		},
-		'uw-italicize': {
-			label: 'Italicize books, films, albums, magazines, TV series, etc within articles',
-			summary: 'Notice: Italicize books, films, albums, magazines, TV series, etc within articles'
-		},
-		'uw-lang': {
-			label: 'Unnecessarily changing between British and American English',
-			summary: 'Notice: Unnecessarily changing between British and American English',
-			heading: 'National varieties of English'
-		},
-		'uw-linking': {
-			label: 'Excessive addition of redlinks or repeated blue links',
-			summary: 'Notice: Excessive addition of redlinks or repeated blue links'
-		},
-		'uw-minor': {
-			label: 'Incorrect use of minor edits check box',
-			summary: 'Notice: Incorrect use of minor edits check box'
-		},
-		'uw-notenglish': {
-			label: 'Creating non-English articles',
-			summary: 'Notice: Creating non-English articles'
-		},
-		'uw-notenglishedit': {
-			label: 'Adding non-English content to articles',
-			summary: 'Notice: Adding non-English content to articles'
-		},
-		'uw-notvote': {
-			label: 'We use consensus, not voting',
-			summary: 'Notice: We use consensus, not voting'
-		},
-		'uw-plagiarism': {
-			label: 'Copying from public domain sources without attribution',
-			summary: 'Notice: Copying from public domain sources without attribution'
-		},
-		'uw-preview': {
-			label: 'Use preview button to avoid mistakes',
-			summary: 'Notice: Use preview button to avoid mistakes'
-		},
-		'uw-redlink': {
-			label: 'Indiscriminate removal of redlinks',
-			summary: 'Notice: Be careful when removing redlinks'
-		},
-		'uw-selfrevert': {
-			label: 'Reverting self tests',
-			summary: 'Notice: Reverting self tests'
-		},
-		'uw-socialnetwork': {
-			label: 'Wikipedia is not a social network',
-			summary: 'Notice: Wikipedia is not a social network'
-		},
-		'uw-sofixit': {
-			label: 'Be bold and fix things yourself',
-			summary: 'Notice: You can be bold and fix things yourself'
-		},
-		'uw-spoiler': {
-			label: 'Adding spoiler alerts or removing spoilers from appropriate sections',
-			summary: "Notice: Don't delete or flag potential 'spoilers' in Wikipedia articles"
-		},
-		'uw-talkinarticle': {
-			label: 'Talk in article',
-			summary: 'Notice: Talk in article'
-		},
-		'uw-tilde': {
-			label: 'Not signing posts',
-			summary: 'Notice: Not signing posts'
-		},
-		'uw-toppost': {
-			label: 'Posting at the top of talk pages',
-			summary: 'Notice: Posting at the top of talk pages'
-		},
-		'uw-unattribcc': {
-			label: 'Copying from compatibly-licensed sources without attribution',
-			summary: 'Notice: Copying from compatibly-licensed sources without attribution'
-		},
-		'uw-userspace draft finish': {
-			label: 'Stale userspace draft',
-			summary: 'Notice: Stale userspace draft'
-		},
-		'uw-vgscope': {
-			label: 'Adding video game walkthroughs, cheats or instructions',
-			summary: 'Notice: Adding video game walkthroughs, cheats or instructions'
-		},
-		'uw-warn': {
-			label: 'Place user warning templates when reverting vandalism',
-			summary: 'Notice: You can use user warning templates when reverting vandalism'
-		},
-		'uw-wrongsummary': {
-			label: 'Using inaccurate or inappropriate edit summaries',
-			summary: 'Warning: Using inaccurate or inappropriate edit summaries'
-		}
-	},
-
-	singlewarn: {
-		'uw-3rr': {
-			label: 'Potential three-revert rule violation; see also uw-ew',
-			summary: 'Warning: Three-revert rule'
-		},
-		'uw-affiliate': {
-			label: 'Affiliate marketing',
-			summary: 'Warning: Affiliate marketing'
-		},
-		'uw-attack': {
-			label: 'Creating attack pages',
-			summary: 'Warning: Creating attack pages',
-			suppressArticleInSummary: true
-		},
-		'uw-botun': {
-			label: 'Bot username',
-			summary: 'Warning: Bot username'
-		},
-		'uw-canvass': {
-			label: 'Canvassing',
-			summary: 'Warning: Canvassing'
-		},
-		'uw-copyright': {
-			label: 'Copyright violation',
-			summary: 'Warning: Copyright violation'
-		},
-		'uw-copyright-link': {
-			label: 'Linking to copyrighted works violation',
-			summary: 'Warning: Linking to copyrighted works violation'
-		},
-		'uw-copyright-new': {
-			label: 'Copyright violation (with explanation for new users)',
-			summary: 'Notice: Avoiding copyright problems',
-			heading: 'Wikipedia and copyright'
-		},
-		'uw-copyright-remove': {
-			label: 'Removing {{copyvio}} template from articles',
-			summary: 'Warning: Removing {{copyvio}} templates'
-		},
-		'uw-efsummary': {
-			label: 'Edit summary triggering the edit filter',
-			summary: 'Warning: Edit summary triggering the edit filter'
-		},
-		'uw-ew': {
-			label: 'Edit warring (stronger wording)',
-			summary: 'Warning: Edit warring'
-		},
-		'uw-ewsoft': {
-			label: 'Edit warring (softer wording for newcomers)',
-			summary: 'Warning: Edit warring'
-		},
-		'uw-hijacking': {
-			label: 'Hijacking articles',
-			summary: 'Warning: Hijacking articles'
-		},
-		'uw-hoax': {
-			label: 'Creating hoaxes',
-			summary: 'Warning: Creating hoaxes'
-		},
-		'uw-legal': {
-			label: 'Making legal threats',
-			summary: 'Warning: Making legal threats'
-		},
-		'uw-login': {
-			label: 'Editing while logged out',
-			summary: 'Warning: Editing while logged out'
-		},
-		'uw-multipleIPs': {
-			label: 'Usage of multiple IPs',
-			summary: 'Warning: Vandalism using multiple IPs'
-		},
-		'uw-pinfo': {
-			label: 'Personal info (outing)',
-			summary: 'Warning: Personal info'
-		},
-		'uw-salt': {
-			label: 'Recreating salted articles under a different title',
-			summary: 'Notice: Recreating creation-protected articles under a different title'
-		},
-		'uw-socksuspect': {
-			label: 'Sockpuppetry',
-			summary: 'Warning: You are a suspected [[WP:SOCK|sockpuppet]]'  // of User:...
-		},
-		'uw-upv': {
-			label: 'Userpage vandalism',
-			summary: 'Warning: Userpage vandalism'
-		},
-		'uw-username': {
-			label: 'Username is against policy',
-			summary: 'Warning: Your username might be against policy',
-			suppressArticleInSummary: true  // not relevant for this template
-		},
-		'uw-coi-username': {
-			label: 'Username is against policy, and conflict of interest',
-			summary: 'Warning: Username and conflict of interest policy',
-			heading: 'Your username'
-		},
-		'uw-userpage': {
-			label: 'Userpage or subpage is against policy',
-			summary: 'Warning: Userpage or subpage is against policy'
 		}
 	}
 };
@@ -711,18 +470,6 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	};
 
 	switch (value) {
-		case 'singlenotice':
-		case 'singlewarn':
-			createEntries(Twinkle.warn.messages[value], sub_group, true);
-			break;
-		case 'singlecombined':
-			var unSortedSinglets = $.extend({}, Twinkle.warn.messages.singlenotice, Twinkle.warn.messages.singlewarn);
-			var sortedSingletMessages = {};
-			Object.keys(unSortedSinglets).sort().forEach(function(key) {
-				sortedSingletMessages[key] = unSortedSinglets[key];
-			});
-			createEntries(sortedSingletMessages, sub_group, true);
-			break;
 		case 'custom':
 			createEntries(Twinkle.getPref('customWarningList'), sub_group, true);
 			break;
@@ -732,9 +479,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 					createGroup(levelGroup, 'Level ' + lvl.slice(5) + ': ' + levelGroupLabel, true, lvl);
 				});
 			});
-			createGroup(Twinkle.warn.messages.singlenotice, 'Single-issue notices');
-			createGroup(Twinkle.warn.messages.singlewarn, 'Single-issue warnings');
-			createGroup(Twinkle.getPref('customWarningList'), 'Custom warnings');
+			createGroup(Twinkle.getPref('customWarningList'), 'Aangepaste sjablonen');
 			break;
 		case 'level1':
 		case 'level2':
@@ -758,7 +503,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 					sub_group: old_subvalue,
 					article: e.target.root.article.value
 				};
-				var lvl = 'level' + Twinkle.warn.callbacks.autolevelParseWikitext(wikitext, params, latest)[1];
+				var lvl = 'niveau' + Twinkle.warn.callbacks.autolevelParseWikitext(wikitext, params, latest)[1];
 
 				// Identical to level1, etc. above but explicitly provides the level
 				$.each(Twinkle.warn.messages.levels, function(groupLabel, groupContents) {
@@ -773,7 +518,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			if (Twinkle.warn.talkpageObj) {
 				autolevelProc();
 			} else {
-				var usertalk_page = new Morebits.wiki.page('User_talk:' + mw.config.get('wgRelevantUserName'), 'Loading previous warnings');
+				var usertalk_page = new Morebits.wiki.page('User_talk:' + mw.config.get('wgRelevantUserName'), 'Voorgaande waarschuwingen laden');
 				usertalk_page.setFollowRedirect(true, false);
 				usertalk_page.load(function(pageobj) {
 					Twinkle.warn.talkpageObj = pageobj; // Update talkpageObj
@@ -783,7 +528,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 					// most likely because it's a cross-namespace redirect
 					// Supersedes the typical $autolevelMessage added in autolevelParseWikitext
 					var $noTalkPageNode = $('<strong/>', {
-						text: 'Unable to load user talk page; it might be a cross-namespace redirect.  Autolevel detection will not work.',
+						text: 'Overlegpagina kan niet worden geladen; mogelijk heeft de overlegpagina een crosswiki/crossnaamruimte doorverwijzing.',
 						id: 'twinkle-warn-autolevel-message',
 						css: {color: 'red' }
 					});
@@ -795,7 +540,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			}
 			break;
 		default:
-			alert('Unknown warning group in twinklewarn');
+			alert('Waarschuwing onbekent in twinklewarn');
 			break;
 	}
 
@@ -939,13 +684,13 @@ Twinkle.warn.callbacks = {
 		templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle,
 			input.reason, input.main_group === 'custom');
 
-		form.previewer.beginRender(templatetext, 'User_talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username
+		form.previewer.beginRender(templatetext, 'Overleg_gebruiker:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username
 	},
 	// Just a pass-through unless the autolevel option was selected
 	preview: function(form) {
 		if (form.main_group.value === 'autolevel') {
 			// Always get a new, updated talkpage for autolevel processing
-			var usertalk_page = new Morebits.wiki.page('User_talk:' + mw.config.get('wgRelevantUserName'), 'Loading previous warnings');
+			var usertalk_page = new Morebits.wiki.page('Overleg_gebruiker:' + mw.config.get('wgRelevantUserName'), 'Voorgaande waarschuwingen inladen');
 			usertalk_page.setFollowRedirect(true, false);
 			// Will fail silently if the talk page is a cross-ns redirect,
 			// removal of the preview box handled when loading the menu
@@ -1040,7 +785,7 @@ Twinkle.warn.callbacks = {
 		if (isNaN(level)) { // No prior warnings found, this is the first
 			level = 1;
 		} else if (level > 4 || level < 1) { // Shouldn't happen
-			var message = 'Unable to parse previous warning level, please manually select a warning level.';
+			var message = 'Vorig waarschuwingsniveau kan niet worden geladen, kies niveau handmatig.';
 			if (statelem) {
 				statelem.error(message);
 			} else {
@@ -1049,7 +794,7 @@ Twinkle.warn.callbacks = {
 			return;
 		} else {
 			date = date || new Date();
-			var autoTimeout = new Morebits.date(latest.date.getTime()).add(parseInt(Twinkle.getPref('autolevelStaleDays'), 10), 'days');
+			var autoTimeout = new Morebits.date(latest.date.getTime()).add(parseInt(Twinkle.getPref('autolevelStaleDays'), 14), 'days');
 			if (autoTimeout.isAfter(date)) {
 				if (level === 4) {
 					level = 4;
@@ -1058,7 +803,7 @@ Twinkle.warn.callbacks = {
 					if (!statelem) {
 						var $link = $('<a/>', {
 							href: '#',
-							text: 'click here to open the ARV tool.',
+							text: 'klik hier om een CU-onderzoek aan te vragen.',
 							css: { fontWeight: 'bold' },
 							click: function() {
 								Morebits.wiki.actionCompleted.redirect = null;
@@ -1069,7 +814,7 @@ Twinkle.warn.callbacks = {
 							}
 						});
 						var statusNode = $('<div/>', {
-							text: mw.config.get('wgRelevantUserName') + ' recently received a level 4 warning (' + latest.type + ') so it might be better to report them instead; ',
+							text: mw.config.get('wgRelevantUserName') + ' Heeft recent een niveau 4 (' + latest.type + ') waarschuwing ontvangen, dus misschien is een blokverzoek zinvoller; ',
 							css: {color: 'red' }
 						});
 						statusNode.append($link[0]);
@@ -1083,7 +828,7 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
-		$autolevelMessage.prepend($('<div>Will issue a <span style="font-weight: bold;">level ' + level + '</span> template.</div>'));
+		$autolevelMessage.prepend($('<div>Een <span style="font-weight: bold;">niveau ' + level + '</span> sjabloon wordt gebruikt.</div>'));
 		// Place after the stale and other-user-reverted (text-only) messages
 		$('#twinkle-warn-autolevel-message').remove(); // clean slate
 		$autolevelMessage.insertAfter($('#twinkle-warn-warning-messages'));
@@ -1118,8 +863,8 @@ Twinkle.warn.callbacks = {
 			var templateAndLevel = Twinkle.warn.callbacks.autolevelParseWikitext(text, params, latest, now, statelem);
 
 			// Only if there's a change from the prior display/load
-			if (params.sub_group !== templateAndLevel[0] && !confirm('Will issue a {{' + templateAndLevel[0] + '}} template to the user, okay?')) {
-				statelem.error('aborted per user request');
+			if (params.sub_group !== templateAndLevel[0] && !confirm('Sjabloon {{' + templateAndLevel[0] + '}} wordt toegevoegd aan dossier, oké?')) {
+				statelem.error('afgebroken door gebruiker');
 				return;
 			}
 			// Update params now that we've selected a warning
@@ -1127,8 +872,8 @@ Twinkle.warn.callbacks = {
 			messageData = params.messageData['level' + templateAndLevel[1]];
 		} else if (params.sub_group in history) {
 			if (new Morebits.date(history[params.sub_group]).add(1, 'day').isAfter(now)) {
-				if (!confirm('An identical ' + params.sub_group + ' has been issued in the last 24 hours.  \nWould you still like to add this warning/notice?')) {
-					statelem.error('aborted per user request');
+				if (!confirm('Een identieke ' + params.sub_group + ' is de afgelopen 24uur geplaatst.  \nWeet je zeker dat je dit wil toevoegen?')) {
+					statelem.error('afgebroken door gebruiker');
 					return;
 				}
 			}
@@ -1137,8 +882,8 @@ Twinkle.warn.callbacks = {
 		latest.date.add(1, 'minute'); // after long debate, one minute is max
 
 		if (latest.date.isAfter(now)) {
-			if (!confirm('A ' + latest.type + ' has been issued in the last minute.  \nWould you still like to add this warning/notice?')) {
-				statelem.error('aborted per user request');
+			if (!confirm('Een ' + latest.type + ' is de afgelopen minuut geplaatst.  \nWeet je zeker dat je dit wil toevoegen?')) {
+				statelem.error('afgebroken door gebruiker');
 				return;
 			}
 		}
@@ -1150,25 +895,25 @@ Twinkle.warn.callbacks = {
 			var prefix;
 			switch (template.substr(-1)) {
 				case '1':
-					prefix = 'General note';
+					prefix = 'Mededeling';
 					break;
 				case '2':
-					prefix = 'Caution';
+					prefix = 'Berisping';
 					break;
 				case '3':
-					prefix = 'Warning';
+					prefix = 'Waarschuwing';
 					break;
 				case '4':
-					prefix = 'Final warning';
+					prefix = 'Laatste waarschuwing';
 					break;
 				case 'm':
 					if (template.substr(-3) === '4im') {
-						prefix = 'Only warning';
+						prefix = 'Enige waarschuwing';
 						break;
 					}
 					// falls through
 				default:
-					prefix = 'Notice';
+					prefix = 'Mededeling';
 					break;
 			}
 			return prefix + ': ' + Morebits.string.toUpperCaseFirstChar(messageData.label);
@@ -1199,7 +944,7 @@ Twinkle.warn.callbacks = {
 				if (params.sub_group === 'uw-agf-sock' ||
 						params.sub_group === 'uw-socksuspect' ||
 						params.sub_group === 'uw-aiv') {  // these templates require a username
-					summary += ' of [[:User:' + params.article + ']]';
+					summary += ' of [[:Gebruiker:' + params.article + ']]';
 				} else {
 					summary += ' on [[:' + params.article + ']]';
 				}
@@ -1215,7 +960,7 @@ Twinkle.warn.callbacks = {
 		var warningText = Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article,
 			params.reason, params.main_group === 'custom');
 		if (Twinkle.getPref('showSharedIPNotice') && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
-			Morebits.status.info('Info', 'Adding a shared IP notice');
+			Morebits.status.info('Info', 'Voeg gedeeld IP mededeling toe');
 			warningText += '\n{{subst:Shared IP advice}}';
 		}
 
@@ -1243,7 +988,7 @@ Twinkle.warn.callbacks = {
 			if (messageData.heading) { // create new section
 				pageobj.setNewSectionTitle(messageData.heading);
 			} else {
-				Morebits.status.info('Info', 'Will create a new talk page section for this month, as none was found');
+				Morebits.status.info('Info', 'Overlegpagina wordt aangemaakt omdat geen bestaande overlegpagina is gevonden');
 				pageobj.setNewSectionTitle(now.monthHeader());
 			}
 			pageobj.setNewSectionText(warningText);
@@ -1253,14 +998,14 @@ Twinkle.warn.callbacks = {
 };
 
 Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
-	var userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
+	var userTalkPage = 'Overleg_gebruiker:' + mw.config.get('wgRelevantUserName');
 
 	// reason, main_group, sub_group, article
 	var params = Morebits.quickForm.getInputData(e.target);
 
 	// Check that a reason was filled in if uw-username was selected
 	if (params.sub_group === 'uw-username' && !params.article) {
-		alert('You must supply a reason for the {{uw-username}} template.');
+		alert('Je moet een reden opgeven voor het {{uw-username}} sjabloon.');
 		return;
 	}
 
@@ -1279,9 +1024,9 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	Morebits.status.init(e.target);
 
 	Morebits.wiki.actionCompleted.redirect = userTalkPage;
-	Morebits.wiki.actionCompleted.notice = 'Warning complete, reloading talk page in a few seconds';
+	Morebits.wiki.actionCompleted.notice = 'Dossier bijgewerkt, pagina wordt over enkele seconde ververst';
 
-	var wikipedia_page = new Morebits.wiki.page(userTalkPage, 'User talk page modification');
+	var wikipedia_page = new Morebits.wiki.page(userTalkPage, 'Overlegpagina bijwerken');
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.setFollowRedirect(true, false);
 	wikipedia_page.load(Twinkle.warn.callbacks.main);
