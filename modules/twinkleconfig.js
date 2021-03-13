@@ -628,12 +628,13 @@ Twinkle.config.sections = [
 		module: 'warn',
 		preferences: [
 			// TwinkleConfig.defaultWarningGroup (int)
-			// Which level warning should be the default selected group, default is 1
+			// Which level warning should be the default selected group, default is 11
 			{
 				name: 'defaultWarningGroup',
 				label: 'Standaard waarschuwingsniveau',
 				type: 'enum',
 				enumValues: {
+					11: 'Automatisch niveau (1-4)',
 					1: 'Niveau 1 - Mededeling',
 					2: 'Niveau 2 - Berisping',
 					3: 'Niveau 3 - Waarschuwing',
@@ -643,18 +644,8 @@ Twinkle.config.sections = [
 					//7: 'Single-issue warnings', (n.v.t. op nlwiki)
 					// 8 was used for block templates before #260
 					9: 'Aangepaste waarschuwingen',
-					10: 'Alle waarschuwingssjablonen',
-					11: 'Automatisch niveau (1-4)'
+					10: 'Alle waarschuwingssjablonen'
 				}
-			},
-
-			// TwinkleConfig.combinedSingletMenus (boolean)
-			// if true, show one menu with both single-issue notices and warnings instead of two separately
-			{
-				name: 'combinedSingletMenus',
-				label: 'Replace the two separate single-issue menus into one combined menu',
-				helptip: 'Selecting either single-issue notices or single-issue warnings as your default will make this your default if enabled.',
-				type: 'boolean'
 			},
 
 			// TwinkleConfig.showSharedIPNotice may take arguments:
