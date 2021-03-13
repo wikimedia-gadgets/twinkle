@@ -628,13 +628,12 @@ Twinkle.config.sections = [
 		module: 'warn',
 		preferences: [
 			// TwinkleConfig.defaultWarningGroup (int)
-			// Which level warning should be the default selected group, default is 11
+			// Which level warning should be the default selected group, default is 1
 			{
 				name: 'defaultWarningGroup',
 				label: 'Standaard waarschuwingsniveau',
 				type: 'enum',
 				enumValues: {
-					11: 'Automatisch niveau (1-4)',
 					1: 'Niveau 1 - Mededeling',
 					2: 'Niveau 2 - Berisping',
 					3: 'Niveau 3 - Waarschuwing',
@@ -645,6 +644,7 @@ Twinkle.config.sections = [
 					// 8 was used for block templates before #260
 					9: 'Aangepaste waarschuwingen',
 					10: 'Alle waarschuwingssjablonen'
+					//11: 'Automatisch niveau (1-4)' werkt (nog) niet
 				}
 			},
 
