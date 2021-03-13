@@ -62,7 +62,7 @@ Morebits.userIsSysop = Morebits.userIsInGroup('sysop');
  * @deprecated Use {@link Morebits.ip.sanitizeIPv6}.
  * Converts an IPv6 address to the canonical form stored and used by MediaWiki.
  * JavaScript translation of the {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/8eb6ac3e84ea3312d391ca96c12c49e3ad0753bb/includes/utils/IP.php#131|`IP::sanitizeIP()`}
- * function from the IPUtils library.  Adddresses are verbose, uppercase,
+ * function from the IPUtils library.  Addresses are verbose, uppercase,
  * normalized, and expanded to 8 words.
  *
  * @param {string} address - The IPv6 address, with or without CIDR.
@@ -136,7 +136,7 @@ Morebits.namespaceRegex = function(namespaces) {
 	$.each(mw.config.get('wgNamespaceIds'), function(name, number) {
 		if (namespaces.indexOf(number) !== -1) {
 			// Namespaces are completely agnostic as to case,
-			// and a regex string is more useful/compatibile than a RegExp object,
+			// and a regex string is more useful/compatible than a RegExp object,
 			// so we accept any casing for any letter.
 			aliases.push(name.split('').map(function(char) {
 				return Morebits.pageNameRegex(char);
@@ -300,7 +300,7 @@ Morebits.quickForm.element.prototype.render = function QuickFormElementRender(in
 /** @memberof Morebits.quickForm.element */
 Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(data, in_id) {
 	var node;
-	var childContainder = null;
+	var childContainer = null;
 	var label;
 	var id = (in_id ? in_id + '_' : '') + 'node_' + this.id;
 	if (data.adminonly && !Morebits.userIsSysop) {
@@ -361,7 +361,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 					select.appendChild(subnode[0]);
 				}
 			}
-			childContainder = select;
+			childContainer = select;
 			break;
 		case 'option':
 			node = document.createElement('option');
@@ -559,7 +559,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				subnode.addEventListener('keyup', data.event, false);
 			}
 
-			childContainder = subnode;
+			childContainer = subnode;
 			break;
 		case 'dyninput':
 			var min = data.min || 1;
@@ -694,29 +694,29 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			break;
 		case 'submit':
 			node = document.createElement('span');
-			childContainder = node.appendChild(document.createElement('input'));
-			childContainder.setAttribute('type', 'submit');
+			childContainer = node.appendChild(document.createElement('input'));
+			childContainer.setAttribute('type', 'submit');
 			if (data.label) {
-				childContainder.setAttribute('value', data.label);
+				childContainer.setAttribute('value', data.label);
 			}
-			childContainder.setAttribute('name', data.name || 'submit');
+			childContainer.setAttribute('name', data.name || 'submit');
 			if (data.disabled) {
-				childContainder.setAttribute('disabled', 'disabled');
+				childContainer.setAttribute('disabled', 'disabled');
 			}
 			break;
 		case 'button':
 			node = document.createElement('span');
-			childContainder = node.appendChild(document.createElement('input'));
-			childContainder.setAttribute('type', 'button');
+			childContainer = node.appendChild(document.createElement('input'));
+			childContainer.setAttribute('type', 'button');
 			if (data.label) {
-				childContainder.setAttribute('value', data.label);
+				childContainer.setAttribute('value', data.label);
 			}
-			childContainder.setAttribute('name', data.name);
+			childContainer.setAttribute('name', data.name);
 			if (data.disabled) {
-				childContainder.setAttribute('disabled', 'disabled');
+				childContainer.setAttribute('disabled', 'disabled');
 			}
 			if (data.event) {
-				childContainder.addEventListener('click', data.event, false);
+				childContainer.addEventListener('click', data.event, false);
 			}
 			break;
 		case 'textarea':
@@ -749,33 +749,33 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			if (data.value) {
 				subnode.value = data.value;
 			}
-			childContainder = subnode;
+			childContainer = subnode;
 			break;
 		default:
 			throw new Error('Morebits.quickForm: unknown element type ' + data.type.toString());
 	}
 
-	if (!childContainder) {
-		childContainder = node;
+	if (!childContainer) {
+		childContainer = node;
 	}
 	if (data.tooltip) {
 		Morebits.quickForm.element.generateTooltip(label || node, data);
 	}
 
 	if (data.extra) {
-		childContainder.extra = data.extra;
+		childContainer.extra = data.extra;
 	}
 	if (data.style) {
-		childContainder.setAttribute('style', data.style);
+		childContainer.setAttribute('style', data.style);
 	}
 	if (data.className) {
-		childContainder.className = childContainder.className ?
-			childContainder.className + ' ' + data.className :
+		childContainer.className = childContainer.className ?
+			childContainer.className + ' ' + data.className :
 			data.className;
 	}
-	childContainder.setAttribute('id', data.id || id);
+	childContainer.setAttribute('id', data.id || id);
 
-	return [ node, childContainder ];
+	return [ node, childContainer ];
 };
 
 /**
@@ -1147,7 +1147,7 @@ Morebits.ip = {
 	/**
 	 * Converts an IPv6 address to the canonical form stored and used by MediaWiki.
 	 * JavaScript translation of the {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/8eb6ac3e84ea3312d391ca96c12c49e3ad0753bb/includes/utils/IP.php#131|`IP::sanitizeIP()`}
-	 * function from the IPUtils library.  Adddresses are verbose, uppercase,
+	 * function from the IPUtils library.  Addresses are verbose, uppercase,
 	 * normalized, and expanded to 8 words.
 	 *
 	 * @param {string} address - The IPv6 address, with or without CIDR.
@@ -1212,7 +1212,7 @@ Morebits.ip = {
 
 	/**
 	 * Check that an IP range is within the CIDR limits.  Most likely to be useful
-	 * in conjunction with `wgRelevantUserName`.  CIDR limits are harcoded as /16
+	 * in conjunction with `wgRelevantUserName`.  CIDR limits are hardcoded as /16
 	 * for IPv4 and /32 for IPv6.
 	 *
 	 * @returns {boolean} - True for valid ranges within the CIDR limits,
@@ -2643,7 +2643,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 * Warning: Calling `save()` can result in additional calls to the
 	 * previous `load()` callbacks to recover from edit conflicts! In this
 	 * case, callers must make the same edit to the new pageText and
-	 * reinvoke `save()`.  This behavior can be disabled with
+	 * re-invoke `save()`.  This behavior can be disabled with
 	 * `setMaxConflictRetries(0)`.
 	 *
 	 * @param {Function} [onSuccess] - Callback function which is called when the save has succeeded.
@@ -2713,7 +2713,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.notminor = true;  // force Twinkle config to override user preference setting for "all edits are minor"
 		}
 
-		// Set bot edit attribute. If this paramter is present with any value, it is interpreted as true
+		// Set bot edit attribute. If this parameter is present with any value, it is interpreted as true
 		if (ctx.botEdit) {
 			query.bot = true;
 		}
@@ -3103,7 +3103,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 * Warning:
 	 * 1. If there are no revisions among the first 50 that are
 	 * non-redirects, or if there are less 50 revisions and all are
-	 * redirects, the original creation is retrived.
+	 * redirects, the original creation is retrieved.
 	 * 2. Revisions that the user is not privileged to access
 	 * (revdeled/suppressed) will be treated as non-redirects.
 	 * 3. Must not be used when the page has a non-wikitext contentmodel
@@ -3921,7 +3921,7 @@ Morebits.wiki.page = function(pageName, status) {
 			ctx.statusElement.info('Save failed, retrying in 2 seconds ...');
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 
-			// wait for sometime for client to regain connnectivity
+			// wait for sometime for client to regain connectivity
 			sleep(2000).then(function() {
 				ctx.saveApi.post(); // give it another go!
 			});
@@ -4774,7 +4774,7 @@ Morebits.wikitext.page.prototype = {
 	 * @returns {Morebits.wikitext.page}
 	 */
 	removeLink: function(link_target) {
-		// Rempve a leading colon, to be handled later
+		// Remove a leading colon, to be handled later
 		if (link_target.indexOf(':') === 0) {
 			link_target = link_target.slice(1);
 		}
@@ -4836,8 +4836,8 @@ Morebits.wikitext.page.prototype = {
 		// unbind the newly created comments
 		unbinder.unbind('<!--', '-->');
 
-		// Check free image usages, for example as template arguments, might have the File: prefix excluded, but must be preceeded by an |
-		// Will only eat the image name and the preceeding bar and an eventual named parameter
+		// Check free image usages, for example as template arguments, might have the File: prefix excluded, but must be preceded by an |
+		// Will only eat the image name and the preceding bar and an eventual named parameter
 		var free_image_re = new RegExp('(\\|\\s*(?:[\\w\\s]+\\=)?\\s*(?:' + Morebits.namespaceRegex(6) + ':\\s*)?' + image_re_string + ')', 'mg');
 		unbinder.content = unbinder.content.replace(free_image_re, '<!-- ' + reason + '$1 -->');
 		// Rebind the content now, we are done!
@@ -5486,7 +5486,7 @@ Morebits.batchOperation = function(currentAction) {
 	};
 
 	/**
-	 * To be called by worker before it terminates succesfully.
+	 * To be called by worker before it terminates successfully.
 	 *
 	 * @param {(Morebits.wiki.page|Morebits.wiki.api|string)} arg -
 	 * This should be the `Morebits.wiki.page` or `Morebits.wiki.api` object used by worker
