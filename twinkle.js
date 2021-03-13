@@ -104,8 +104,7 @@ Twinkle.defaultConfig = {
 	unlinkNamespaces: [ '0', '10', '100', '118' ],
 
 	// Warn
-	defaultWarningGroup: '1',
-	combinedSingletMenus: false,
+	defaultWarningGroup: '11',
 	showSharedIPNotice: true,
 	watchWarnings: '1 month',
 	oldSelect: false,
@@ -151,7 +150,7 @@ Twinkle.defaultConfig = {
 	watchWelcomes: '3 months',
 	insertUsername: true,
 	quickWelcomeMode: 'norm',
-	quickWelcomeTemplate: 'welcome',
+	quickWelcomeTemplate: 'welkom',
 	customWelcomeList: [],
 	customWelcomeSignature: true,
 
