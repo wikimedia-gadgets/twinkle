@@ -639,8 +639,8 @@ Twinkle.config.sections = [
 					3: 'Niveau 3 - Waarschuwing',
 					4: 'Niveau 4 - Laatste waarschuwing',
 					5: 'Niveau E - Enige waarschuwing',
-					6: 'Single-issue notices',
-					7: 'Single-issue warnings',
+					//6: 'Single-issue notices', (n.v.t. op nlwiki)
+					//7: 'Single-issue warnings', (n.v.t. op nlwiki)
 					// 8 was used for block templates before #260
 					9: 'Aangepaste waarschuwingen',
 					10: 'Alle waarschuwingssjablonen',
