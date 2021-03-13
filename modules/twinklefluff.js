@@ -38,9 +38,9 @@ Twinkle.fluff = function twinklefluff() {
 		Twinkle.fluff.skipTalk = !Twinkle.getPref('openTalkPageOnAutoRevert');
 		Twinkle.fluff.rollbackInPlace = Twinkle.getPref('rollbackInPlace');
 
-		if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
+		if (mw.config.get('wgCanonicalSpecialPageName') === 'Bijdragen') {
 			Twinkle.fluff.addLinks.contributions();
-		} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Recentchanges' || mw.config.get('wgCanonicalSpecialPageName') === 'Recentchangeslinked') {
+		} else if (mw.config.get('wgCanonicalSpecialPageName') === 'RecenteWijzigingen' || mw.config.get('wgCanonicalSpecialPageName') === 'RecenteWijzigingenGelinkt') {
 			// Reload with recent changes updates
 			// structuredChangeFilters.ui.initialized is just on load
 			mw.hook('wikipage.content').add(function(item) {
@@ -58,11 +58,11 @@ Twinkle.fluff = function twinklefluff() {
 // makes edits seconds after the original edit is made.  This only affects
 // vandalism rollback; for good faith rollback, it will stop, indicating a bot
 // has no faith, and for normal rollback, it will rollback that edit.
-Twinkle.fluff.trustedBots = ['AnomieBOT', 'SineBot', 'MajavahBot'];
+Twinkle.fluff.trustedBots = ['nlwikibots','RomaineBot'];
 Twinkle.fluff.skipTalk = null;
 Twinkle.fluff.rollbackInPlace = null;
 // String to insert when a username is hidden
-Twinkle.fluff.hiddenName = 'an unknown user';
+Twinkle.fluff.hiddenName = 'een verborgen gebruiker';
 
 // Consolidated construction of fluff links
 Twinkle.fluff.linkBuilder = {
@@ -106,8 +106,8 @@ Twinkle.fluff.linkBuilder = {
 		var normNode = document.createElement('strong');
 		var vandNode = document.createElement('strong');
 
-		var normLink = Twinkle.fluff.linkBuilder.buildLink('SteelBlue', 'rollback');
-		var vandLink = Twinkle.fluff.linkBuilder.buildLink('Red', 'vandalism');
+		var normLink = Twinkle.fluff.linkBuilder.buildLink('SteelBlue', 'Terugdraaien');
+		var vandLink = Twinkle.fluff.linkBuilder.buildLink('Red', 'Vandalisme');
 
 		$(normLink).click(function() {
 			Twinkle.fluff.revert('norm', vandal, rev, page);
@@ -123,6 +123,7 @@ Twinkle.fluff.linkBuilder = {
 
 		var separator = inline ? ' ' : ' || ';
 
+		/* Een 'ga uit van goede wil terugdraaiing' op WPNL is niet toegestaan, en daarom uitgeschakeld
 		if (!inline) {
 			var agfNode = document.createElement('strong');
 			var agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
@@ -133,7 +134,7 @@ Twinkle.fluff.linkBuilder = {
 			agfNode.appendChild(agfLink);
 			revNode.appendChild(agfNode);
 		}
-		revNode.appendChild(document.createTextNode(separator));
+		revNode.appendChild(document.createTextNode(separator));*/
 		revNode.appendChild(normNode);
 		revNode.appendChild(document.createTextNode(separator));
 		revNode.appendChild(vandNode);
@@ -153,7 +154,7 @@ Twinkle.fluff.linkBuilder = {
 		revertToRevisionNode.setAttribute('id', 'tw-revert-to-' + revisionRef);
 		revertToRevisionNode.style.fontWeight = 'bold';
 
-		var revertToRevisionLink = Twinkle.fluff.linkBuilder.buildLink('SaddleBrown', 'restore this version');
+		var revertToRevisionLink = Twinkle.fluff.linkBuilder.buildLink('SaddleBrown', 'Deze versie terugzetten');
 		$(revertToRevisionLink).click(function() {
 			Twinkle.fluff.revertToRevision(revisionRef);
 		});
@@ -348,7 +349,7 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 		var notifyStatus = document.createElement('span');
 		mw.notify(notifyStatus, {
 			autoHide: false,
-			title: 'Rollback on ' + page,
+			title: 'Terugdraaiing op' + page,
 			tag: 'twinklefluff_' + rev // Shouldn't be necessary given disableLink
 		});
 		Morebits.status.init(notifyStatus);
@@ -378,7 +379,7 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 		type: 'csrf',
 		format: 'json'
 	};
-	var wikipedia_api = new Morebits.wiki.api('Grabbing data of earlier revisions', query, Twinkle.fluff.callbacks.main);
+	var wikipedia_api = new Morebits.wiki.api('Data ophalen van eerdere versies', query, Twinkle.fluff.callbacks.main);
 	wikipedia_api.params = params;
 	wikipedia_api.post();
 };
@@ -400,7 +401,7 @@ Twinkle.fluff.revertToRevision = function revertToRevision(oldrev) {
 		type: 'csrf',
 		format: 'json'
 	};
-	var wikipedia_api = new Morebits.wiki.api('Grabbing data of the earlier revision', query, Twinkle.fluff.callbacks.toRevision);
+	var wikipedia_api = new Morebits.wiki.api('Data ophalen van eerdere versie', query, Twinkle.fluff.callbacks.toRevision);
 	wikipedia_api.params = { rev: oldrev };
 	wikipedia_api.post();
 };
@@ -422,17 +423,17 @@ Twinkle.fluff.callbacks = {
 		var revertToUserHidden = !!rev.userhidden;
 
 		if (revertToRevID !== apiobj.params.rev) {
-			apiobj.statelem.error('The retrieved revision does not match the requested revision. Stopping revert.');
+			apiobj.statelem.error('De opgehaalde data komt niet overeen met de aangevraagde versie. Terugdraaien afgebroken.');
 			return;
 		}
 
-		var optional_summary = prompt('Please specify a reason for the revert:                                ', '');  // padded out to widen prompt in Firefox
+		var optional_summary = prompt('Geef een reden voor de terugdraaiing:                                ', '');  // padded out to widen prompt in Firefox
 		if (optional_summary === null) {
-			apiobj.statelem.error('Aborted by user.');
+			apiobj.statelem.error('Afgebroken door gebruiker.');
 			return;
 		}
 
-		var summary = Twinkle.fluff.formatSummary('Restored revision ' + revertToRevID + ' by $USER',
+		var summary = Twinkle.fluff.formatSummary('Versie ' + revertToRevID + ' van $USER teruggezet',
 			revertToUserHidden ? null : revertToUser, optional_summary);
 
 		var query = {
@@ -466,9 +467,9 @@ Twinkle.fluff.callbacks = {
 		}
 
 		Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-		Morebits.wiki.actionCompleted.notice = 'Reversion completed';
+		Morebits.wiki.actionCompleted.notice = 'Terugdraaien geslaagd';
 
-		var wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.fluff.callbacks.complete, apiobj.statelem);
+		var wikipedia_api = new Morebits.wiki.api('Terugdraaiing opslaan', query, Twinkle.fluff.callbacks.complete, apiobj.statelem);
 		wikipedia_api.params = apiobj.params;
 		wikipedia_api.post();
 	},
@@ -480,7 +481,7 @@ Twinkle.fluff.callbacks = {
 
 		var page = response.query.pages[0];
 		if (!page.actions.edit) {
-			apiobj.statelem.error("Unable to edit the page, it's probably protected.");
+			apiobj.statelem.error("Bewerken mislukt, pagina is waarschijnlijk beveiligd.");
 			return;
 		}
 
@@ -493,14 +494,14 @@ Twinkle.fluff.callbacks = {
 		var params = apiobj.params;
 
 		if (revs.length < 1) {
-			statelem.error('We have less than one additional revision, thus impossible to revert.');
+			statelem.error('We hebben minder dan één extra versie, dus terugdraaiing is onmogelijk.');
 			return;
 		}
 		var top = revs[0];
 		var lastuser = top.user;
 
 		if (lastrevid < params.revid) {
-			Morebits.status.error('Error', [ 'The most recent revision ID received from the server, ', Morebits.htmlNode('strong', lastrevid), ', is less than the ID of the displayed revision. This could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Stopping revert.' ]);
+			Morebits.status.error('Error', [ 'Het meest recente versienummer ontvangen van de server, ', Morebits.htmlNode('strong', lastrevid), ', is lager dan het versienummer van de weergeven versie. Dit kan betekenen dat de huidige versie is verwijderd, de server achterloopt, of dat onjuiste data ontvangen is. Terugdraaiing afgebroken.' ]);
 			return;
 		}
 
@@ -508,20 +509,20 @@ Twinkle.fluff.callbacks = {
 		var userNorm = params.user || Twinkle.fluff.hiddenName;
 		var index = 1;
 		if (params.revid !== lastrevid) {
-			Morebits.status.warn('Warning', [ 'Latest revision ', Morebits.htmlNode('strong', lastrevid), ' doesn\'t equal our revision ', Morebits.htmlNode('strong', params.revid) ]);
+			Morebits.status.warn('Waarschuwing', [ 'Laatste versie ', Morebits.htmlNode('strong', lastrevid), ' is niet gelijk aan onze versie ', Morebits.htmlNode('strong', params.revid) ]);
 			// Treat ipv6 users on same 64 block as the same
 			if (lastuser === params.user || (mw.util.isIPv6Address(params.user) && Morebits.ip.get64(lastuser) === Morebits.ip.get64(params.user))) {
 				switch (params.type) {
 					case 'vand':
 						var diffUser = lastuser !== params.user;
-						Morebits.status.info('Info', [ 'Latest revision was ' + (diffUser ? '' : 'also ') + 'made by ', Morebits.htmlNode('strong', userNorm),
-							diffUser ? ', which is on the same /64 subnet' : '', '. As we assume vandalism, we will proceed to revert.' ]);
+						Morebits.status.info('Info', [ 'Laatste bewerking was ' + (diffUser ? '' : 'also ') + 'gemaakt door ', Morebits.htmlNode('strong', userNorm),
+							diffUser ? ', welke op het zelfde /64 subnet zit' : '', '. Aangezien we vandalisme vermoeden, draaien we deze ook terug.' ]);
 						break;
 					case 'agf':
-						Morebits.status.warn('Warning', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm), '. As we assume good faith, we will stop the revert, as the problem might have been fixed.' ]);
+						Morebits.status.warn('Waarschuwing', [ 'Laatste bewerking was gemaakt door ', Morebits.htmlNode('strong', userNorm), '. Aangezien we uitgaan van goede wil, stoppen we de terugdraaiing hier, aangezien het probleem hier mogelijk opgelost is.' ]);
 						return;
 					default:
-						Morebits.status.warn('Notice', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm), ', but we will stop the revert.' ]);
+						Morebits.status.warn('Note', [ 'Laatste bewerking was gemaakt door ', Morebits.htmlNode('strong', userNorm), ', maar we stoppen de terugdraaiing.' ]);
 						return;
 				}
 			} else if (params.type === 'vand' &&
@@ -529,10 +530,10 @@ Twinkle.fluff.callbacks = {
 					// Besides, none of the trusted bots are going to be revdel'd
 					Twinkle.fluff.trustedBots.indexOf(top.user) !== -1 && revs.length > 1 &&
 					revs[1].revid === params.revid) {
-				Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', a trusted bot, and the revision before was made by our vandal, so we will proceed with the revert.' ]);
+				Morebits.status.info('Info', [ 'Laatste bewerking was gemaakt door ', Morebits.htmlNode('strong', lastuser), ', een vertrouwde robot, maar de bewerking ervoor was door een vandaal, dus we gaan door met terugdraaien.' ]);
 				index = 2;
 			} else {
-				Morebits.status.error('Error', [ 'Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', so it might have already been reverted, we will stop the revert.']);
+				Morebits.status.error('Error', [ 'Laatste bewerking was gemaakt door ', Morebits.htmlNode('strong', lastuser), ', dus mogelijk is er al teruggedraaid, we stoppen de terugdraaiing.']);
 				return;
 			}
 
@@ -546,26 +547,26 @@ Twinkle.fluff.callbacks = {
 		if (Twinkle.fluff.trustedBots.indexOf(params.user) !== -1) {
 			switch (params.type) {
 				case 'vand':
-					Morebits.status.info('Info', [ 'Vandalism revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. As this is a trusted bot, we assume you wanted to revert vandalism made by the previous user instead.' ]);
+					Morebits.status.info('Info', [ 'Vandalisme terugdraaiing was gekozen voor ', Morebits.htmlNode('strong', userNorm), '. Aangezien dit een vertrouwde robot is, gaan we er vanuit dat je de gebruiker ervoor wil terugdraaien.' ]);
 					index = 2;
 					params.user = revs[1].user;
 					params.userHidden = !!revs[1].userhidden;
 					break;
 				case 'agf':
-					Morebits.status.warn('Notice', [ 'Good faith revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. This is a trusted bot and thus AGF rollback will not proceed.' ]);
+					Morebits.status.warn('Note', [ 'Goede wil terugdraaiing was gekozen voor ', Morebits.htmlNode('strong', userNorm), '. Dit is een vertrouwde robot, dus de terugdraaiing wordt niet uitgevoerd.' ]);
 					return;
 				case 'norm':
 				/* falls through */
 				default:
-					var cont = confirm('Normal revert was chosen, but the most recent edit was made by a trusted bot (' + userNorm + '). Do you want to revert the revision before instead?');
+					var cont = confirm('Een terugdraaiing was gekozen, maar de laatste bewerking is gedaan voor een vertrouwde robot (' + userNorm + '). Wil je de voorlaatste bewerking terugdraaien?');
 					if (cont) {
-						Morebits.status.info('Info', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. This is a trusted bot, and per confirmation, we\'ll revert the previous revision instead.' ]);
+						Morebits.status.info('Info', [ 'Een terugdraaiing was gekozen op ', Morebits.htmlNode('strong', userNorm), '. Dit is een vertrouwde robot, dus per jouw besluit, draaien we de voorlaatste bewerking terug.' ]);
 						index = 2;
 						params.user = revs[1].user;
 						params.userHidden = !!revs[1].userhidden;
 						userNorm = params.user || Twinkle.fluff.hiddenName;
 					} else {
-						Morebits.status.warn('Notice', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. This is a trusted bot, but per confirmation, revert on selected revision will proceed.' ]);
+						Morebits.status.warn('Note', [ 'Terugdraaiing was gekozen op ', Morebits.htmlNode('strong', userNorm), '. Dit is een vertrouwde bot, maar per jouw besluit, zetten we de terugdraaiing door.' ]);
 					}
 					break;
 			}
@@ -580,7 +581,7 @@ Twinkle.fluff.callbacks = {
 				// Treat ipv6 users on same 64 block as the same
 				if (mw.util.isIPv6Address(revs[i].user) && Morebits.ip.get64(revs[i].user) === Morebits.ip.get64(params.user)) {
 					if (!seen64) {
-						new Morebits.status('Note', 'Treating consecutive IPv6 addresses in the same /64 as the same user');
+						new Morebits.status('Note', 'Behandel IPv6-adressen binnen hetzelfde /64-subnet als één gebruiker');
 						seen64 = true;
 					}
 					continue;
@@ -591,20 +592,20 @@ Twinkle.fluff.callbacks = {
 		}
 
 		if (!found) {
-			statelem.error([ 'No previous revision found. Perhaps ', Morebits.htmlNode('strong', userNorm), ' is the only contributor, or they have made more than ' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + ' edits in a row.' ]);
+			statelem.error([ 'Geen voorgaande versies gevonden. Mogelijk is ', Morebits.htmlNode('strong', userNorm), ' de enige bewerker, of heeft die meer dan ' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + ' bewerkingen achter elkaar gedaan.' ]);
 			return;
 		}
 
 		if (!count) {
-			Morebits.status.error('Error', 'As it is not possible to revert zero revisions, we will stop this revert. It could be that the edit has already been reverted, but the revision ID was still the same.');
+			Morebits.status.error('Error', 'Aangezien het niet mogelijk is om 0 versies terug te draaien, breken we deze terugdraaiing af. Mogelijk is de terugdraaiing al uitgevoerd, terwijl het versienummer ongewijzigd is gebleven.');
 			return;
 		}
 
 		var good_revision = revs[found];
 		var userHasAlreadyConfirmedAction = false;
 		if (params.type !== 'vand' && count > 1) {
-			if (!confirm(userNorm + ' has made ' + mw.language.convertNumber(count) + ' edits in a row. Are you sure you want to revert them all?')) {
-				Morebits.status.info('Notice', 'Stopping revert.');
+			if (!confirm(userNorm + ' heeft ' + mw.language.convertNumber(count) + ' achter elkaar gemaakt. Weet je zeker dat je die allemaal wil terugdraaien?')) {
+				Morebits.status.info('Note', 'Terugdraaien afgebroken.');
 				return;
 			}
 			userHasAlreadyConfirmedAction = true;
@@ -616,24 +617,24 @@ Twinkle.fluff.callbacks = {
 		params.gooduser = good_revision.user;
 		params.gooduserHidden = !!good_revision.userhidden;
 
-		statelem.status([ ' revision ', Morebits.htmlNode('strong', params.goodid), ' that was made ', Morebits.htmlNode('strong', mw.language.convertNumber(count)), ' revisions ago by ', Morebits.htmlNode('strong', params.gooduserHidden ? Twinkle.fluff.hiddenName : params.gooduser) ]);
+		statelem.status([ ' versie ', Morebits.htmlNode('strong', params.goodid), ' gemaakt door ', Morebits.htmlNode('strong', mw.language.convertNumber(count)), ' wijzigingen gelden ', Morebits.htmlNode('strong', params.gooduserHidden ? Twinkle.fluff.hiddenName : params.gooduser) ]);
 
 		var summary, extra_summary;
 		switch (params.type) {
 			case 'agf':
-				extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
+				extra_summary = prompt('Een optionele bewerkingssamenvatting:                              ', '');  // padded out to widen prompt in Firefox
 				if (extra_summary === null) {
-					statelem.error('Aborted by user.');
+					statelem.error('Afgebroken door gebruiker.');
 					return;
 				}
 				userHasAlreadyConfirmedAction = true;
 
-				summary = Twinkle.fluff.formatSummary('Reverted [[WP:AGF|good faith]] edits by $USER',
+				summary = Twinkle.fluff.formatSummary('[[WP:AGF|good faith]] bewerkingen van $USER teruggedraaid',
 					params.userHidden ? null : params.user, extra_summary);
 				break;
 
 			case 'vand':
-				summary = Twinkle.fluff.formatSummary('Reverted ' + params.count + (params.count > 1 ? ' edits' : ' edit') + ' by $USER to last revision by ' +
+				summary = Twinkle.fluff.formatSummary(params.count + (params.count > 1 ? ' bewerkingen' : ' bewerking') + ' van $USER teruggedraait tot laatste versie van ' +
 					(params.gooduserHidden ? Twinkle.fluff.hiddenName : params.gooduser), params.userHidden ? null : params.user);
 				break;
 
@@ -641,15 +642,15 @@ Twinkle.fluff.callbacks = {
 			/* falls through */
 			default:
 				if (Twinkle.getPref('offerReasonOnNormalRevert')) {
-					extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
+					extra_summary = prompt('Een optionele bewerkinssamenvatting:                              ', '');  // padded out to widen prompt in Firefox
 					if (extra_summary === null) {
-						statelem.error('Aborted by user.');
+						statelem.error('Afgebroken door gerbuiker.');
 						return;
 					}
 					userHasAlreadyConfirmedAction = true;
 				}
 
-				summary = Twinkle.fluff.formatSummary('Reverted ' + params.count + (params.count > 1 ? ' edits' : ' edit') + ' by $USER',
+				summary = Twinkle.fluff.formatSummary(params.count + (params.count > 1 ? ' bewerkingen' : ' bewerking') + ' van $USER teruggedraaid',
 					params.userHidden ? null : params.user, extra_summary);
 				break;
 		}
@@ -657,8 +658,8 @@ Twinkle.fluff.callbacks = {
 		if ((Twinkle.getPref('confirmOnFluff') ||
 			// Mobile user agent taken from [[en:MediaWiki:Gadget-confirmationRollback-mobile.js]]
 			(Twinkle.getPref('confirmOnMobileFluff') && /Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|Opera Mini/i.test(navigator.userAgent))) &&
-			!userHasAlreadyConfirmedAction && !confirm('Reverting page: are you sure?')) {
-			statelem.error('Aborted by user.');
+			!userHasAlreadyConfirmedAction && !confirm('Pagina terugdraaien: weet je het zeker?')) {
+			statelem.error('Afgebroken door gebruiker.');
 			return;
 		}
 
@@ -713,9 +714,9 @@ Twinkle.fluff.callbacks = {
 		if (!Twinkle.fluff.rollbackInPlace) {
 			Morebits.wiki.actionCompleted.redirect = params.pagename;
 		}
-		Morebits.wiki.actionCompleted.notice = 'Reversion completed';
+		Morebits.wiki.actionCompleted.notice = 'Bewerking uitgevoerd';
 
-		var wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.fluff.callbacks.complete, statelem);
+		var wikipedia_api = new Morebits.wiki.api('Terugdraaiing opslaan', query, Twinkle.fluff.callbacks.complete, statelem);
 		wikipedia_api.params = params;
 		wikipedia_api.post();
 
@@ -726,18 +727,18 @@ Twinkle.fluff.callbacks = {
 		var edit = response.edit;
 
 		if (edit.captcha) {
-			apiobj.statelem.error('Could not rollback, because the wiki server wanted you to fill out a CAPTCHA.');
+			apiobj.statelem.error('Terugdraaiing mislukt omdat de wiki server wil dat je een CAPTCHA invuld.');
 		} else if (edit.nochange) {
-			apiobj.statelem.error('Revision we are reverting to is identical to current revision, stopping revert.');
+			apiobj.statelem.error('Terug te draaien versie is identiek aan huidige versie, terugdraaiing afgebroken.');
 		} else {
 			apiobj.statelem.info('done');
 			var params = apiobj.params;
 
 			if (params.notifyUser && !params.userHidden) { // notifyUser only from main, not from toRevision
-				Morebits.status.info('Info', [ 'Opening user talk page edit form for user ', Morebits.htmlNode('strong', params.user) ]);
+				Morebits.status.info('Info', [ 'Gebruikersoverlegpagina wordt geopend ', Morebits.htmlNode('strong', params.user) ]);
 
 				var windowQuery = {
-					title: 'User talk:' + params.user,
+					title: 'Overleg gebruiker:' + params.user,
 					action: 'edit',
 					preview: 'yes',
 					vanarticle: params.pagename.replace(/_/g, ' '),
@@ -773,10 +774,10 @@ Twinkle.fluff.callbacks = {
 					action: 'review',
 					revid: edit.newrevid,
 					token: apiobj.params.csrftoken,
-					comment: 'Automatically reviewing reversion' + Twinkle.summaryAd // until the below
+					comment: 'Bewerking automatisch controleren' + Twinkle.summaryAd // until the below
 					// 'tags': Twinkle.changeTags // flaggedrevs tag support: [[phab:T247721]]
 				};
-				var wikipedia_api = new Morebits.wiki.api('Automatically accepting your changes', query);
+				var wikipedia_api = new Morebits.wiki.api('Je bewerkingen automatisch goedkeuren', query);
 				wikipedia_api.post();
 			}
 		}
@@ -799,10 +800,10 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, customString) {
 	if (/\$USER/.test(builtInString)) {
 		if (userName) {
 			var resultLen = unescape(encodeURIComponent(result.replace('$USER', ''))).length;
-			var contribsLink = '[[Special:Contributions/' + userName + '|' + userName + ']]';
+			var contribsLink = '[[Speciaal:Bijdragen/' + userName + '|' + userName + ']]';
 			var contribsLen = unescape(encodeURIComponent(contribsLink)).length;
 			if (resultLen + contribsLen <= 499) {
-				var talkLink = ' ([[User talk:' + userName + '|talk]])';
+				var talkLink = ' ([[Overleg gebruiker:' + userName + '|overleg]])';
 				if (resultLen + contribsLen + unescape(encodeURIComponent(talkLink)).length <= 499) {
 					result = Morebits.string.safeReplace(result, '$USER', contribsLink + talkLink);
 				} else {
