@@ -1,8 +1,8 @@
 /**
  * +-------------------------------------------------------------------------+
- * |                  === WARNING: GLOBAL GADGET FILE ===                    |
- * |                Changes to this page affect many users.                  |
- * |           Please discuss changes at [[WT:TW]] before editing.           |
+ * |             === WAARSCHUWING: GLOBAAL GADGET BESTAND ===                |
+ * |    Veranderingen kunnen grote effecten hebben voor veel gebruikers.     |
+ * |          Overleg altijd eerst voordat je wijzigingen doorvoerd.         |
  * +-------------------------------------------------------------------------+
  *
  * Imported from github [https://github.com/wikimedia-gadgets/twinkle].
@@ -74,22 +74,10 @@ Twinkle.defaultConfig = {
 	confirmOnMobileFluff: true,
 	showRollbackLinks: [ 'diff', 'others' ],
 
-	// DI (twinkleimage)
-	notifyUserOnDeli: true,
-	deliWatchPage: '1 month',
-	deliWatchUser: '1 month',
-
 	// Protect
 	watchRequestedPages: 'yes',
 	watchPPTaggedPages: 'default',
 	watchProtectedPages: 'default',
-
-	// PROD
-	watchProdPages: '1 month',
-	markProdPagesAsPatrolled: false,
-	prodReasonDefault: '',
-	logProdPages: false,
-	prodLogPageName: 'PROD log',
 
 	// CSD
 	speedySelectionStyle: 'buttonClick',
@@ -394,11 +382,11 @@ var scriptpathbefore = mw.util.wikiScript('index') + '?title=',
 
 // Retrieve the user's Twinkle preferences
 $.ajax({
-	url: scriptpathbefore + 'User:' + encodeURIComponent(mw.config.get('wgUserName')) + '/twinkleoptions.js' + scriptpathafter,
+	url: scriptpathbefore + 'Gebruiker:' + encodeURIComponent(mw.config.get('wgUserName')) + '/twinkleoptions.js' + scriptpathafter,
 	dataType: 'text'
 })
 	.fail(function () {
-		mw.notify('Could not load your Twinkle preferences, resorting to default preferences');
+		mw.notify('Kan Twinkle instellingen niet laden, standaard instellingen worden hersteld');
 	})
 	.done(function (optionsText) {
 
@@ -427,7 +415,7 @@ $.ajax({
 				Twinkle.prefs.optionsVersion = Twinkle.prefs.optionsVersion || 1;
 			}
 		} catch (e) {
-			mw.notify('Could not parse your Twinkle preferences', {type: 'error'});
+			mw.notify('Kan je Twinkle instellingen niet inlezen,', {type: 'error'});
 		}
 	})
 	.always(function () {
