@@ -17,7 +17,7 @@ Twinkle.warn = function twinklewarn() {
 
 	// Users and IPs but not IP ranges
 	if (mw.config.exists('wgRelevantUserName') && !Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
-		Twinkle.addPortletLink(Twinkle.warn.callback, 'Warn', 'tw-warn', 'Warn/notify user');
+		Twinkle.addPortletLink(Twinkle.warn.callback, 'Dossier', 'tw-warn', 'Gebruikersdossier aanmaken');
 		if (Twinkle.getPref('autoMenuAfterRollback') &&
 			mw.config.get('wgNamespaceNumber') === 3 &&
 			mw.util.getParamValue('vanarticle') &&
@@ -33,7 +33,7 @@ Twinkle.warn = function twinklewarn() {
 		var $vandalTalkLink = $('#mw-rollback-success').find('.mw-usertoollinks a').first();
 		if ($vandalTalkLink.length) {
 			$vandalTalkLink.css('font-weight', 'bold');
-			$vandalTalkLink.wrapInner($('<span/>').attr('title', 'If appropriate, you can use Twinkle to warn the user about their edits to this page.'));
+			$vandalTalkLink.wrapInner($('<span/>').attr('title', 'Indien gepast, kun je de gebruiker een waarschuwing geven voor de bewerkingen op deze pagina.'));
 
 			// Can't provide vanarticlerevid as only wgCurRevisionId is provided
 			var extraParam = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm);
@@ -52,60 +52,54 @@ Twinkle.warn.dialog = null;
 
 Twinkle.warn.callback = function twinklewarnCallback() {
 	if (mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') &&
-		!confirm('You are about to warn yourself! Are you sure you want to proceed?')) {
+		!confirm('Je staat op het punt een dossier tegen jezelf te maken.\nWeet je zeker dat je door wil gaan?')) {
 		return;
 	}
 
 	var dialog;
 	Twinkle.warn.dialog = new Morebits.simpleWindow(600, 440);
 	dialog = Twinkle.warn.dialog;
-	dialog.setTitle('Warn/notify user');
+	dialog.setTitle('Gebruikersdossier aanmaken');
 	dialog.setScriptName('Twinkle');
-	dialog.addFooterLink('Choosing a warning level', 'WP:UWUL#Levels');
-	dialog.addFooterLink('Warn prefs', 'WP:TW/PREF#warn');
+	dialog.addFooterLink('Kies waarschuwingsniveau', 'WP:UWUL#Levels');
+	dialog.addFooterLink('Dossier voorkeuren', 'WP:TW/PREF#warn');
 	dialog.addFooterLink('Twinkle help', 'WP:TW/DOC#warn');
-	dialog.addFooterLink('Give feedback', 'WT:TW');
+	dialog.addFooterLink('Geef feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.warn.callback.evaluate);
 	var main_select = form.append({
 		type: 'field',
-		label: 'Choose type of warning/notice to issue',
-		tooltip: 'First choose a main warning group, then the specific warning to issue.'
+		label: 'Kies het type waarschuwing dat je aan het dossier wil toevoegen',
+		tooltip: 'Kies eerst de groep, en dan de specifieke waarschuwing.'
 	});
 
 	var main_group = main_select.append({
 		type: 'select',
 		name: 'main_group',
-		tooltip: 'You can customize the default selection in your Twinkle preferences',
+		tooltip: 'Je kunt de standaardkeuze aanpassen op het Twinkle configuratiescherm',
 		event: Twinkle.warn.callback.change_category
 	});
 
 	var defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'), 10);
-	main_group.append({ type: 'option', label: 'Auto-select level (1-4)', value: 'autolevel', selected: defaultGroup === 11 });
-	main_group.append({ type: 'option', label: '1: General note', value: 'level1', selected: defaultGroup === 1 });
-	main_group.append({ type: 'option', label: '2: Caution', value: 'level2', selected: defaultGroup === 2 });
-	main_group.append({ type: 'option', label: '3: Warning', value: 'level3', selected: defaultGroup === 3 });
-	main_group.append({ type: 'option', label: '4: Final warning', value: 'level4', selected: defaultGroup === 4 });
-	main_group.append({ type: 'option', label: '4im: Only warning', value: 'level4im', selected: defaultGroup === 5 });
-	if (Twinkle.getPref('combinedSingletMenus')) {
-		main_group.append({ type: 'option', label: 'Single-issue messages', value: 'singlecombined', selected: defaultGroup === 6 || defaultGroup === 7 });
-	} else {
-		main_group.append({ type: 'option', label: 'Single-issue notices', value: 'singlenotice', selected: defaultGroup === 6 });
-		main_group.append({ type: 'option', label: 'Single-issue warnings', value: 'singlewarn', selected: defaultGroup === 7 });
-	}
+	main_group.append({ type: 'option', label: 'Automatisch selecteren (Niveau 1-4)', value: 'autolevel', selected: defaultGroup === 11 });
+	main_group.append({ type: 'option', label: 'Niveau 1: Mededeling', value: 'level1', selected: defaultGroup === 1 });
+	main_group.append({ type: 'option', label: 'Niveau 2: Berisping', value: 'level2', selected: defaultGroup === 2 });
+	main_group.append({ type: 'option', label: 'Niveau 3: Waarschuwing', value: 'level3', selected: defaultGroup === 3 });
+	main_group.append({ type: 'option', label: 'Niveau 4: Laatste waarschuwing', value: 'level4', selected: defaultGroup === 4 });
+	main_group.append({ type: 'option', label: 'Niveau E: Enige waarschuwing', value: 'level4im', selected: defaultGroup === 5 });
 	if (Twinkle.getPref('customWarningList').length) {
-		main_group.append({ type: 'option', label: 'Custom warnings', value: 'custom', selected: defaultGroup === 9 });
+		main_group.append({ type: 'option', label: 'Aangepaste dossier-sjablonen', value: 'custom', selected: defaultGroup === 9 });
 	}
-	main_group.append({ type: 'option', label: 'All warning templates', value: 'kitchensink', selected: defaultGroup === 10 });
+	main_group.append({ type: 'option', label: 'Alle dossier-sjablonen', value: 'kitchensink', selected: defaultGroup === 10 });
 
 	main_select.append({ type: 'select', name: 'sub_group', event: Twinkle.warn.callback.change_subcategory }); // Will be empty to begin with.
 
 	form.append({
 		type: 'input',
 		name: 'article',
-		label: 'Linked page',
+		label: 'Betrokken pagina',
 		value: mw.util.getParamValue('vanarticle') || '',
-		tooltip: 'A page can be linked within the notice, perhaps because it was a revert to said page that dispatched this notice. Leave empty for no page to be linked.'
+		tooltip: 'Welke pagina, waarop de gebruiker een bewerking heeft gedaan, is de aanleiding geweest om het dossier aan te maken.'
 	});
 
 	form.append({
@@ -116,19 +110,19 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	});
 
 
-	var more = form.append({ type: 'field', name: 'reasonGroup', label: 'Warning information' });
-	more.append({ type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' });
+	var more = form.append({ type: 'field', name: 'reasonGroup', label: 'Dossier informatie' });
+	more.append({ type: 'textarea', label: 'Extra informatie (optioneel):', name: 'reason', tooltip: 'Bijvoorbeeld een meer gedetailleerde uitleg' });
 
 	var previewlink = document.createElement('a');
 	$(previewlink).click(function() {
 		Twinkle.warn.callbacks.preview(result);  // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
-	previewlink.textContent = 'Preview';
+	previewlink.textContent = 'Voorvertoning';
 	more.append({ type: 'div', id: 'warningpreview', label: [ previewlink ] });
 	more.append({ type: 'div', id: 'twinklewarn-previewbox', style: 'display: none' });
 
-	more.append({ type: 'submit', label: 'Submit' });
+	more.append({ type: 'submit', label: 'Publiceren' });
 
 	var result = form.render();
 	dialog.setContent(result);
@@ -159,7 +153,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 				var rev = apiobj.getResponse().query.pages[0].revisions;
 				var revertUser = rev && rev[1].user;
 				if (revertUser && revertUser !== mw.config.get('wgUserName')) {
-					message += ' Someone else reverted the page and may have already warned the user.';
+					message += ' Iemand anders heeft de terugdraaiing uitgevoerd, en heeft de gebruiker hier mogelijk al voor gewaarschuwd.';
 					$('#twinkle-warn-warning-messages').text('Note:' + message);
 				}
 			}).post();
@@ -169,8 +163,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		var checkStale = function(vantimestamp) {
 			var revDate = new Morebits.date(vantimestamp);
 			if (vantimestamp && revDate.isValid()) {
-				if (revDate.add(24, 'hours').isBefore(new Date())) {
-					message += ' This edit was made more than 24 hours ago so a warning may be stale.';
+				if (revDate.add(72, 'hours').isBefore(new Date())) {
+					message += ' Deze bewerking was meer dan 3 dagen geleden, het is misschien een beetje laat om hiervoor nog te waarschuwen.';
 					$('#twinkle-warn-warning-messages').text('Note:' + message);
 				}
 			}
@@ -188,7 +182,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 				revids: vanrevid,
 				format: 'json'
 			};
-			new Morebits.wiki.api('Grabbing the revision timestamps', query, function(apiobj) {
+			new Morebits.wiki.api('Tijdstempel van bewerking ophalen', query, function(apiobj) {
 				var rev = apiobj.getResponse().query.pages[0].revisions;
 				vantimestamp = rev && rev[0].timestamp;
 				checkStale(vantimestamp);
@@ -210,687 +204,149 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 //   suppressArticleInSummary (optional): Set to true to suppress showing the article name in the edit summary. Useful if the warning relates to attack pages, or some such.
 Twinkle.warn.messages = {
 	levels: {
-		'Common warnings': {
-			'uw-vandalism': {
+		'Veel voorkomend': {
+			'ws-vandalisme': {
 				level1: {
-					label: 'Vandalism',
-					summary: 'General note: Unconstructive editing'
+					label: 'Geen positieve bijdrage',
+					summary: '+ws1 vandalisme'
 				},
 				level2: {
-					label: 'Vandalism',
-					summary: 'Caution: Unconstructive editing'
+					label: 'Geen positieve bijdrage',
+					summary: '+ws2 vandalisme'
 				},
 				level3: {
-					label: 'Vandalism',
-					summary: 'Warning: Vandalism'
+					label: 'Vandalisme',
+					summary: '+ws3 vandalisme'
 				},
 				level4: {
-					label: 'Vandalism',
-					summary: 'Final warning: Vandalism'
+					label: 'Herhaald vandalisme',
+					summary: '+ws4 vandalisme'
+				}
+			},
+			'ws-onzinpagina': {
+				level1: {
+					label: 'Aanmaken onzinpagina',
+					summary: '+ws1 onzinpagina'
+				},
+				level2: {
+					label: 'Aanmaken onzinpagina',
+					summary: '+ws2 onzinpagina'
+				},
+				level3: {
+					label: 'Herhaald aanmaken onzinpagina',
+					summary: '+ws3 onzinpagina'
+				},
+				level4: {
+					label: 'Herhaald aanmaken onzinpagina',
+					summary: '+ws4 onzinpagina'
+				}
+			},
+			'ws-zelfpromotie': {
+				level1: {
+					label: 'Zelfpromotie/Reclame',
+					summary: '+ws1 zelfpromotie'
+				},
+				level2: {
+					label: 'Zelfpromotie/Reclame',
+					summary: '+ws2 zelfpromotie'
+				},
+				level3: {
+					label: 'Spammen',
+					summary: '+ws3 zelfpromotie'
+				},
+				level4: {
+					label: 'Herhaald/doorgaand spammen',
+					summary: '+ws4 zelfpromotie'
+				}
+			},
+			'ws-geklieder': {
+				level1: {
+					label: 'Ongewenste oefenbewerking',
+					summary: '+ws1 geklieder'
+				},
+				level2: {
+					label: 'Geklieder',
+					summary: '+ws2 geklieder'
+				}
+			},
+			'ws-leeghalen': {
+				level1: {
+					label: 'Content weghalen',
+					summary: '+ws1 leeghalen'
+				},
+				level2: {
+					label: 'Content weghalen/pagina leeghalen',
+					summary: '+ws2 leeghalen'
+				},
+				level3: {
+					label: 'Herhaald content weghalen/pagina leeghalen',
+					summary: '+ws3 leeghalen'
+				},
+				level4: {
+					label: 'Herhaald leeghalen',
+					summary: '+ws4 leeghalen'
+				}
+			},
+			'ws-cyberpesten': {
+				level2: {
+					label: 'Cyberpesten',
+					summary: '+ws2 cyberpesten'
+				},
+				level3: {
+					label: 'Cyberpesten',
+					summary: '+ws3 cyberpesten'
+				},
+				level4: {
+					label: 'Cyberpesten',
+					summary: '+ws4 cyberpesten'
 				},
 				level4im: {
-					label: 'Vandalism',
-					summary: 'Only warning: Vandalism'
+					label: 'Vergaand cyberpesten',
+					summary: '+wsE cyberpesten'
 				}
 			},
-			'uw-disruptive': {
-				level1: {
-					label: 'Disruptive editing',
-					summary: 'General note: Unconstructive editing'
-				},
-				level2: {
-					label: 'Disruptive editing',
-					summary: 'Caution: Unconstructive editing'
-				},
-				level3: {
-					label: 'Disruptive editing',
-					summary: 'Warning: Disruptive editing'
-				}
-			},
-			'uw-test': {
-				level1: {
-					label: 'Editing tests',
-					summary: 'General note: Editing tests'
-				},
-				level2: {
-					label: 'Editing tests',
-					summary: 'Caution: Editing tests'
-				},
-				level3: {
-					label: 'Editing tests',
-					summary: 'Warning: Editing tests'
-				}
-			},
-			'uw-delete': {
-				level1: {
-					label: 'Removal of content, blanking',
-					summary: 'General note: Removal of content, blanking'
-				},
-				level2: {
-					label: 'Removal of content, blanking',
-					summary: 'Caution: Removal of content, blanking'
-				},
-				level3: {
-					label: 'Removal of content, blanking',
-					summary: 'Warning: Removal of content, blanking'
-				},
-				level4: {
-					label: 'Removal of content, blanking',
-					summary: 'Final warning: Removal of content, blanking'
-				},
+			'ws-aanval': {
 				level4im: {
-					label: 'Removal of content, blanking',
-					summary: 'Only warning: Removal of content, blanking'
+					label: 'Persoonsaanval/Bedreiging',
+					summary: '+wsE persoonsaanval/bedreiging'
 				}
 			},
-			'uw-generic': {
-				level4: {
-					label: 'Generic warning (for template series missing level 4)',
-					summary: 'Final warning notice'
-				}
-			}
 		},
-		'Behavior in articles': {
-			'uw-biog': {
+		'Overig': {
+			'ws-blp': {
 				level1: {
-					label: 'Adding unreferenced controversial information about living persons',
-					summary: 'General note: Adding unreferenced controversial information about living persons'
+					label: 'Onbebronde informatie over levende personen',
+					summary: '+ws1 blp'
 				},
 				level2: {
-					label: 'Adding unreferenced controversial information about living persons',
-					summary: 'Caution: Adding unreferenced controversial information about living persons'
+					label: 'Onbebronde informatie over levende personen',
+					summary: '+ws2 blp'
 				},
 				level3: {
-					label: 'Adding unreferenced controversial/defamatory information about living persons',
-					summary: 'Warning: Adding unreferenced controversial information about living persons'
+					label: 'Onbebronde informatie over levende personen',
+					summary: '+ws3 blp'
+				}
+			},
+			'ws-bwo': {
+				level1: {
+					label: 'Ongewenste terugdraaiing',
+					summary: '+ws1 ongewenste terugdraaiing'
+				},
+				level2: {
+					label: 'Ongewenste terugdraaiing',
+					summary: '+ws2 ongewenste terugdraaiing'
+				},
+				level3: {
+					label: 'Bewerkingsoorlog',
+					summary: '+ws3 bewerkingsoorlog'
 				},
 				level4: {
-					label: 'Adding unreferenced defamatory information about living persons',
-					summary: 'Final warning: Adding unreferenced controversial information about living persons'
+					label: 'Bewerkingsoorlog',
+					summary: '+ws4 bewerkingsoorlog'
 				},
 				level4im: {
-					label: 'Adding unreferenced defamatory information about living persons',
-					summary: 'Only warning: Adding unreferenced controversial information about living persons'
-				}
-			},
-			'uw-defamatory': {
-				level1: {
-					label: 'Addition of defamatory content',
-					summary: 'General note: Addition of defamatory content'
-				},
-				level2: {
-					label: 'Addition of defamatory content',
-					summary: 'Caution: Addition of defamatory content'
-				},
-				level3: {
-					label: 'Addition of defamatory content',
-					summary: 'Warning: Addition of defamatory content'
-				},
-				level4: {
-					label: 'Addition of defamatory content',
-					summary: 'Final warning: Addition of defamatory content'
-				},
-				level4im: {
-					label: 'Addition of defamatory content',
-					summary: 'Only warning: Addition of defamatory content'
-				}
-			},
-			'uw-error': {
-				level1: {
-					label: 'Introducing deliberate factual errors',
-					summary: 'General note: Introducing factual errors'
-				},
-				level2: {
-					label: 'Introducing deliberate factual errors',
-					summary: 'Caution: Introducing factual errors'
-				},
-				level3: {
-					label: 'Introducing deliberate factual errors',
-					summary: 'Warning: Introducing deliberate factual errors'
-				},
-				level4: {
-					label: 'Introducing deliberate factual errors',
-					summary: 'Final warning: Introducing deliberate factual errors'
-				}
-			},
-			'uw-genre': {
-				level1: {
-					label: 'Frequent or mass changes to genres without consensus or references',
-					summary: 'General note: Frequent or mass changes to genres without consensus or references'
-				},
-				level2: {
-					label: 'Frequent or mass changes to genres without consensus or references',
-					summary: 'Caution: Frequent or mass changes to genres without consensus or references'
-				},
-				level3: {
-					label: 'Frequent or mass changes to genres without consensus or reference',
-					summary: 'Warning: Frequent or mass changes to genres without consensus or reference'
-				},
-				level4: {
-					label: 'Frequent or mass changes to genres without consensus or reference',
-					summary: 'Final warning: Frequent or mass changes to genres without consensus or reference'
-				}
-			},
-			'uw-image': {
-				level1: {
-					label: 'Image-related vandalism in articles',
-					summary: 'General note: Image-related vandalism in articles'
-				},
-				level2: {
-					label: 'Image-related vandalism in articles',
-					summary: 'Caution: Image-related vandalism in articles'
-				},
-				level3: {
-					label: 'Image-related vandalism in articles',
-					summary: 'Warning: Image-related vandalism in articles'
-				},
-				level4: {
-					label: 'Image-related vandalism in articles',
-					summary: 'Final warning: Image-related vandalism in articles'
-				},
-				level4im: {
-					label: 'Image-related vandalism',
-					summary: 'Only warning: Image-related vandalism'
-				}
-			},
-			'uw-joke': {
-				level1: {
-					label: 'Using improper humor in articles',
-					summary: 'General note: Using improper humor in articles'
-				},
-				level2: {
-					label: 'Using improper humor in articles',
-					summary: 'Caution: Using improper humor in articles'
-				},
-				level3: {
-					label: 'Using improper humor in articles',
-					summary: 'Warning: Using improper humor in articles'
-				},
-				level4: {
-					label: 'Using improper humor in articles',
-					summary: 'Final warning: Using improper humor in articles'
-				},
-				level4im: {
-					label: 'Using improper humor',
-					summary: 'Only warning: Using improper humor'
-				}
-			},
-			'uw-nor': {
-				level1: {
-					label: 'Adding original research, including unpublished syntheses of sources',
-					summary: 'General note: Adding original research, including unpublished syntheses of sources'
-				},
-				level2: {
-					label: 'Adding original research, including unpublished syntheses of sources',
-					summary: 'Caution: Adding original research, including unpublished syntheses of sources'
-				},
-				level3: {
-					label: 'Adding original research, including unpublished syntheses of sources',
-					summary: 'Warning: Adding original research, including unpublished syntheses of sources'
-				},
-				level4: {
-					label: 'Adding original research, including unpublished syntheses of sources',
-					summary: 'Final warning: Adding original research, including unpublished syntheses of sources'
-				}
-			},
-			'uw-notcensored': {
-				level1: {
-					label: 'Censorship of material',
-					summary: 'General note: Censorship of material'
-				},
-				level2: {
-					label: 'Censorship of material',
-					summary: 'Caution: Censorship of material'
-				},
-				level3: {
-					label: 'Censorship of material',
-					summary: 'Warning: Censorship of material'
-				}
-			},
-			'uw-own': {
-				level1: {
-					label: 'Ownership of articles',
-					summary: 'General note: Ownership of articles'
-				},
-				level2: {
-					label: 'Ownership of articles',
-					summary: 'Caution: Ownership of articles'
-				},
-				level3: {
-					label: 'Ownership of articles',
-					summary: 'Warning: Ownership of articles'
-				},
-				level4: {
-					label: 'Ownership of articles',
-					summary: 'Final warning: Ownership of articles'
-				},
-				level4im: {
-					label: 'Ownership of articles',
-					summary: 'Only warning: Ownership of articles'
-				}
-			},
-			'uw-subtle': {
-				level1: {
-					label: 'Subtle vandalism',
-					summary: 'General note: Possible unconstructive editing'
-				},
-				level2: {
-					label: 'Subtle vandalism',
-					summary: 'Caution: Likely unconstructive editing'
-				},
-				level3: {
-					label: 'Subtle vandalism',
-					summary: 'Warning: Subtle vandalism'
-				},
-				level4: {
-					label: 'Subtle vandalism',
-					summary: 'Final warning: Subtle vandalism'
-				}
-			},
-			'uw-tdel': {
-				level1: {
-					label: 'Removal of maintenance templates',
-					summary: 'General note: Removal of maintenance templates'
-				},
-				level2: {
-					label: 'Removal of maintenance templates',
-					summary: 'Caution: Removal of maintenance templates'
-				},
-				level3: {
-					label: 'Removal of maintenance templates',
-					summary: 'Warning: Removal of maintenance templates'
-				},
-				level4: {
-					label: 'Removal of maintenance templates',
-					summary: 'Final warning: Removal of maintenance templates'
-				}
-			},
-			'uw-unsourced': {
-				level1: {
-					label: 'Addition of unsourced or improperly cited material',
-					summary: 'General note: Addition of unsourced or improperly cited material'
-				},
-				level2: {
-					label: 'Addition of unsourced or improperly cited material',
-					summary: 'Caution: Addition of unsourced or improperly cited material'
-				},
-				level3: {
-					label: 'Addition of unsourced or improperly cited material',
-					summary: 'Warning: Addition of unsourced or improperly cited material'
-				},
-				level4: {
-					label: 'Addition of unsourced or improperly cited material',
-					summary: 'Final warning: Addition of unsourced or improperly cited material'
-				}
-			}
-		},
-		'Promotions and spam': {
-			'uw-advert': {
-				level1: {
-					label: 'Using Wikipedia for advertising or promotion',
-					summary: 'General note: Using Wikipedia for advertising or promotion'
-				},
-				level2: {
-					label: 'Using Wikipedia for advertising or promotion',
-					summary: 'Caution: Using Wikipedia for advertising or promotion'
-				},
-				level3: {
-					label: 'Using Wikipedia for advertising or promotion',
-					summary: 'Warning: Using Wikipedia for advertising or promotion'
-				},
-				level4: {
-					label: 'Using Wikipedia for advertising or promotion',
-					summary: 'Final warning: Using Wikipedia for advertising or promotion'
-				},
-				level4im: {
-					label: 'Using Wikipedia for advertising or promotion',
-					summary: 'Only warning: Using Wikipedia for advertising or promotion'
-				}
-			},
-			'uw-npov': {
-				level1: {
-					label: 'Not adhering to neutral point of view',
-					summary: 'General note: Not adhering to neutral point of view'
-				},
-				level2: {
-					label: 'Not adhering to neutral point of view',
-					summary: 'Caution: Not adhering to neutral point of view'
-				},
-				level3: {
-					label: 'Not adhering to neutral point of view',
-					summary: 'Warning: Not adhering to neutral point of view'
-				},
-				level4: {
-					label: 'Not adhering to neutral point of view',
-					summary: 'Final warning: Not adhering to neutral point of view'
-				}
-			},
-			'uw-paid': {
-				level1: {
-					label: 'Paid editing without disclosure under the Wikimedia Terms of Use',
-					summary: 'General note: Paid editing without disclosure under the Wikimedia Terms of Use'
-				},
-				level2: {
-					label: 'Paid editing without disclosure under the Wikimedia Terms of Use',
-					summary: 'Caution: Paid editing without disclosure under the Wikimedia Terms of Use'
-				},
-				level3: {
-					label: 'Paid editing without disclosure under the Wikimedia Terms of Use',
-					summary: 'Warning: Paid editing without disclosure under the Wikimedia Terms of Use'
-				},
-				level4: {
-					label: 'Paid editing without disclosure under the Wikimedia Terms of Use',
-					summary: 'Final warning: Paid editing without disclosure under the Wikimedia Terms of Use'
-				}
-			},
-			'uw-spam': {
-				level1: {
-					label: 'Adding inappropriate external links',
-					summary: 'General note: Adding inappropriate external links'
-				},
-				level2: {
-					label: 'Adding spam links',
-					summary: 'Caution: Adding spam links'
-				},
-				level3: {
-					label: 'Adding spam links',
-					summary: 'Warning: Adding spam links'
-				},
-				level4: {
-					label: 'Adding spam links',
-					summary: 'Final warning: Adding spam links'
-				},
-				level4im: {
-					label: 'Adding spam links',
-					summary: 'Only warning: Adding spam links'
-				}
-			}
-		},
-		'Behavior towards other editors': {
-			'uw-agf': {
-				level1: {
-					label: 'Not assuming good faith',
-					summary: 'General note: Not assuming good faith'
-				},
-				level2: {
-					label: 'Not assuming good faith',
-					summary: 'Caution: Not assuming good faith'
-				},
-				level3: {
-					label: 'Not assuming good faith',
-					summary: 'Warning: Not assuming good faith'
-				}
-			},
-			'uw-harass': {
-				level1: {
-					label: 'Harassment of other users',
-					summary: 'General note: Harassment of other users'
-				},
-				level2: {
-					label: 'Harassment of other users',
-					summary: 'Caution: Harassment of other users'
-				},
-				level3: {
-					label: 'Harassment of other users',
-					summary: 'Warning: Harassment of other users'
-				},
-				level4: {
-					label: 'Harassment of other users',
-					summary: 'Final warning: Harassment of other users'
-				},
-				level4im: {
-					label: 'Harassment of other users',
-					summary: 'Only warning: Harassment of other users'
-				}
-			},
-			'uw-npa': {
-				level1: {
-					label: 'Personal attack directed at a specific editor',
-					summary: 'General note: Personal attack directed at a specific editor'
-				},
-				level2: {
-					label: 'Personal attack directed at a specific editor',
-					summary: 'Caution: Personal attack directed at a specific editor'
-				},
-				level3: {
-					label: 'Personal attack directed at a specific editor',
-					summary: 'Warning: Personal attack directed at a specific editor'
-				},
-				level4: {
-					label: 'Personal attack directed at a specific editor',
-					summary: 'Final warning: Personal attack directed at a specific editor'
-				},
-				level4im: {
-					label: 'Personal attack directed at a specific editor',
-					summary: 'Only warning: Personal attack directed at a specific editor'
-				}
-			},
-			'uw-tempabuse': {
-				level1: {
-					label: 'Improper use of warning or blocking template',
-					summary: 'General note: Improper use of warning or blocking template'
-				},
-				level2: {
-					label: 'Improper use of warning or blocking template',
-					summary: 'Caution: Improper use of warning or blocking template'
-				}
-			}
-		},
-		'Removal of deletion tags': {
-			'uw-afd': {
-				level1: {
-					label: 'Removing {{afd}} templates',
-					summary: 'General note: Removing {{afd}} templates'
-				},
-				level2: {
-					label: 'Removing {{afd}} templates',
-					summary: 'Caution: Removing {{afd}} templates'
-				},
-				level3: {
-					label: 'Removing {{afd}} templates',
-					summary: 'Warning: Removing {{afd}} templates'
-				},
-				level4: {
-					label: 'Removing {{afd}} templates',
-					summary: 'Final warning: Removing {{afd}} templates'
-				}
-			},
-			'uw-blpprod': {
-				level1: {
-					label: 'Removing {{blp prod}} templates',
-					summary: 'General note: Removing {{blp prod}} templates'
-				},
-				level2: {
-					label: 'Removing {{blp prod}} templates',
-					summary: 'Caution: Removing {{blp prod}} templates'
-				},
-				level3: {
-					label: 'Removing {{blp prod}} templates',
-					summary: 'Warning: Removing {{blp prod}} templates'
-				},
-				level4: {
-					label: 'Removing {{blp prod}} templates',
-					summary: 'Final warning: Removing {{blp prod}} templates'
-				}
-			},
-			'uw-idt': {
-				level1: {
-					label: 'Removing file deletion tags',
-					summary: 'General note: Removing file deletion tags'
-				},
-				level2: {
-					label: 'Removing file deletion tags',
-					summary: 'Caution: Removing file deletion tags'
-				},
-				level3: {
-					label: 'Removing file deletion tags',
-					summary: 'Warning: Removing file deletion tags'
-				},
-				level4: {
-					label: 'Removing file deletion tags',
-					summary: 'Final warning: Removing file deletion tags'
-				}
-			},
-			'uw-speedy': {
-				level1: {
-					label: 'Removing speedy deletion tags',
-					summary: 'General note: Removing speedy deletion tags'
-				},
-				level2: {
-					label: 'Removing speedy deletion tags',
-					summary: 'Caution: Removing speedy deletion tags'
-				},
-				level3: {
-					label: 'Removing speedy deletion tags',
-					summary: 'Warning: Removing speedy deletion tags'
-				},
-				level4: {
-					label: 'Removing speedy deletion tags',
-					summary: 'Final warning: Removing speedy deletion tags'
-				}
-			}
-		},
-		'Other': {
-			'uw-attempt': {
-				level1: {
-					label: 'Triggering the edit filter',
-					summary: 'General note: Triggering the edit filter'
-				},
-				level2: {
-					label: 'Triggering the edit filter',
-					summary: 'Caution: Triggering the edit filter'
-				},
-				level3: {
-					label: 'Triggering the edit filter',
-					summary: 'Warning: Triggering the edit filter'
-				},
-				level4: {
-					label: 'Triggering the edit filter',
-					summary: 'Final warning: Triggering the edit filter'
-				}
-			},
-			'uw-chat': {
-				level1: {
-					label: 'Using talk page as forum',
-					summary: 'General note: Using talk page as forum'
-				},
-				level2: {
-					label: 'Using talk page as forum',
-					summary: 'Caution: Using talk page as forum'
-				},
-				level3: {
-					label: 'Using talk page as forum',
-					summary: 'Warning: Using talk page as forum'
-				},
-				level4: {
-					label: 'Using talk page as forum',
-					summary: 'Final warning: Using talk page as forum'
-				}
-			},
-			'uw-create': {
-				level1: {
-					label: 'Creating inappropriate pages',
-					summary: 'General note: Creating inappropriate pages'
-				},
-				level2: {
-					label: 'Creating inappropriate pages',
-					summary: 'Caution: Creating inappropriate pages'
-				},
-				level3: {
-					label: 'Creating inappropriate pages',
-					summary: 'Warning: Creating inappropriate pages'
-				},
-				level4: {
-					label: 'Creating inappropriate pages',
-					summary: 'Final warning: Creating inappropriate pages'
-				},
-				level4im: {
-					label: 'Creating inappropriate pages',
-					summary: 'Only warning: Creating inappropriate pages'
-				}
-			},
-			'uw-mos': {
-				level1: {
-					label: 'Manual of style',
-					summary: 'General note: Formatting, date, language, etc (Manual of style)'
-				},
-				level2: {
-					label: 'Manual of style',
-					summary: 'Caution: Formatting, date, language, etc (Manual of style)'
-				},
-				level3: {
-					label: 'Manual of style',
-					summary: 'Warning: Formatting, date, language, etc (Manual of style)'
-				},
-				level4: {
-					label: 'Manual of style',
-					summary: 'Final warning: Formatting, date, language, etc (Manual of style)'
-				}
-			},
-			'uw-move': {
-				level1: {
-					label: 'Page moves against naming conventions or consensus',
-					summary: 'General note: Page moves against naming conventions or consensus'
-				},
-				level2: {
-					label: 'Page moves against naming conventions or consensus',
-					summary: 'Caution: Page moves against naming conventions or consensus'
-				},
-				level3: {
-					label: 'Page moves against naming conventions or consensus',
-					summary: 'Warning: Page moves against naming conventions or consensus'
-				},
-				level4: {
-					label: 'Page moves against naming conventions or consensus',
-					summary: 'Final warning: Page moves against naming conventions or consensus'
-				},
-				level4im: {
-					label: 'Page moves against naming conventions or consensus',
-					summary: 'Only warning: Page moves against naming conventions or consensus'
-				}
-			},
-			'uw-tpv': {
-				level1: {
-					label: "Refactoring others' talk page comments",
-					summary: "General note: Refactoring others' talk page comments"
-				},
-				level2: {
-					label: "Refactoring others' talk page comments",
-					summary: "Caution: Refactoring others' talk page comments"
-				},
-				level3: {
-					label: "Refactoring others' talk page comments",
-					summary: "Warning: Refactoring others' talk page comments"
-				},
-				level4: {
-					label: "Refactoring others' talk page comments",
-					summary: "Final warning: Refactoring others' talk page comments"
-				},
-				level4im: {
-					label: "Refactoring others' talk page comments",
-					summary: "Only warning: Refactoring others' talk page comments"
-				}
-			},
-			'uw-upload': {
-				level1: {
-					label: 'Uploading unencyclopedic images',
-					summary: 'General note: Uploading unencyclopedic images'
-				},
-				level2: {
-					label: 'Uploading unencyclopedic images',
-					summary: 'Caution: Uploading unencyclopedic images'
-				},
-				level3: {
-					label: 'Uploading unencyclopedic images',
-					summary: 'Warning: Uploading unencyclopedic images'
-				},
-				level4: {
-					label: 'Uploading unencyclopedic images',
-					summary: 'Final warning: Uploading unencyclopedic images'
-				},
-				level4im: {
-					label: 'Uploading unencyclopedic images',
-					summary: 'Only warning: Uploading unencyclopedic images'
+					label: 'Vergaande bewerkingsoorlog',
+					summary: '+wsE bewerkingsoorlog'
 				}
 			}
 		}
