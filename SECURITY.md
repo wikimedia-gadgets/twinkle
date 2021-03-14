@@ -1,12 +1,16 @@
-# Reporting a security issue
+# Rapporteer een beveiligingslek
 
-Although rare, we take security bugs in Twinkle seriously.
+Ondanks dat ze zeldzaam zijn, nemen we beveiligingslekken in Twinkle-NL zeer serieus.
 
-If you believe you have found a security issue, please **privately** contact one or both of the currently-active maintainers:
+Indien je het vermoeden hebt dat je een beveiligingslek hebt gevonden, neem dan **vertrouwlijk** contact op met de beheerder van Twinkle-NL:
+
+* @Bas-dehaan: [E-Mail](https://nl.wikipedia.org/wiki/Speciaal:EmailUser/Bas_dehaan)
+
+Indien je het vermoeden hebt dat het beveiligingslek voor alle Twinkle versies van toepassing is (dus ook voor bijv. de engelse Twinkle) neem dan contact op met:
 
 * @Amorymeltzer: [Email](https://en.wikipedia.org/wiki/Special:EmailUser/Amorymeltzer)
 * @MusikAnimal: [Email](https://en.wikipedia.org/wiki/Special:EmailUser/MusikAnimal)
 
-Please include "Twinkle Security" in the subject line and include as much information in the body as you are capable of providing.  We will respond as quickly as we are able with further steps.
+Vermeld "Twinkle Security" in het onderwerp en deel in het bericht zo veel mogelijk informatie over het probleem.  We reageren z.s.m. om vervolg stappen te ondernemen.
 
-If one of use doesn't respond in a timely fashion, you can try to [contact another interface-admin](https://en.wikipedia.org/wiki/Special:ActiveUsers?groups=interface-admin&excludegroups=bot) with the same information.
+Indien er niet binnen afzienbare tijd gereageerd wordt, neem dan [contact op met een interface-moderator](https://nl.wikipedia.org/wiki/Speciaal:ActiveUsers?groups=interface-admin&excludegroups=bot) en deel dezelfde informatie.
