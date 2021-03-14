@@ -21,32 +21,29 @@ Twinkle.xfd = function twinklexfd() {
 		return;
 	}
 
-	var tooltip = 'Start a discussion for deleting';
+	var tooltip = 'Maak een verwijdernominatie aan';
 	if (mw.config.get('wgIsRedirect')) {
-		tooltip += ' or retargeting this redirect';
+		tooltip += ' of verplaats deze doorverwijzing';
 	} else {
 		switch (mw.config.get('wgNamespaceNumber')) {
 			case 0:
-				tooltip += ' or moving this article';
+				tooltip += ' of verplaats dit artikel';
 				break;
 			case 10:
-				tooltip += ' or merging this template';
+				tooltip += ' of verplaats dit sjabloon';
 				break;
 			case 828:
-				tooltip += ' or merging this module';
-				break;
-			case 6:
-				tooltip += ' this file';
+				tooltip += ' of verplaats deze module';
 				break;
 			case 14:
-				tooltip += ', merging or renaming this category';
+				tooltip += ', of hernoem deze categorie';
 				break;
 			default:
-				tooltip += ' this page';
+				tooltip += ' voor deze pagina';
 				break;
 		}
 	}
-	Twinkle.addPortletLink(Twinkle.xfd.callback, 'XFD', 'tw-xfd', tooltip);
+	Twinkle.addPortletLink(Twinkle.xfd.callback, 'TBx', 'tw-xfd', tooltip);
 };
 
 
@@ -54,10 +51,10 @@ var utils = {
 	/** Get ordinal number figure */
 	num2order: function(num) {
 		switch (num) {
-			case 1: return '';
-			case 2: return '2nd';
-			case 3: return '3rd';
-			default: return num + 'th';
+			case 1: return '1ste';
+			case 2: return '2e';
+			case 3: return '3e';
+			default: return num + 'e';
 		}
 	},
 
@@ -109,7 +106,7 @@ Twinkle.xfd.currentRationale = null;
 // error callback on Morebits.status.object
 Twinkle.xfd.printRationale = function twinklexfdPrintRationale() {
 	if (Twinkle.xfd.currentRationale) {
-		Morebits.status.printUserText(Twinkle.xfd.currentRationale, 'Your deletion rationale is provided below, which you can copy and paste into a new XFD dialog if you wish to try again:');
+		Morebits.status.printUserText(Twinkle.xfd.currentRationale, 'Je nominatiereden wordt hieronder weergeven, welke je kunt kopiëren-en-plakken naar een nieuw TBx scherm voor als je overnieuw wil beginnen:');
 		// only need to print the rationale once
 		Twinkle.xfd.currentRationale = null;
 	}
@@ -117,70 +114,40 @@ Twinkle.xfd.printRationale = function twinklexfdPrintRationale() {
 
 Twinkle.xfd.callback = function twinklexfdCallback() {
 	var Window = new Morebits.simpleWindow(700, 400);
-	Window.setTitle('Start a deletion discussion (XfD)');
+	Window.setTitle('Maak verwijdernominatie (TBx)');
 	Window.setScriptName('Twinkle');
-	Window.addFooterLink('About deletion discussions', 'WP:XFD');
-	Window.addFooterLink('XfD prefs', 'WP:TW/PREF#xfd');
+	Window.addFooterLink('Over verwijdernominaties', 'WP:XFD');
+	Window.addFooterLink('TBx voorkeuren', 'WP:TW/PREF#xfd');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#xfd');
-	Window.addFooterLink('Give feedback', 'WT:TW');
+	Window.addFooterLink('Geef feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.xfd.callback.evaluate);
 	var categories = form.append({
 		type: 'select',
 		name: 'venue',
-		label: 'Deletion discussion venue:',
-		tooltip: 'When activated, a default choice is made, based on what namespace you are in. This default should be the most appropriate.',
+		label: 'Locatie voor nominatie:',
+		tooltip: 'Indien ingeschakeld, wordt standaard de relevante naamruimte geselecteerd. In veel gevallen is deze standaard keuze de meest geschikte keuze.',
 		event: Twinkle.xfd.callback.change_category
 	});
 	var namespace = mw.config.get('wgNamespaceNumber');
 
 	categories.append({
 		type: 'option',
-		label: 'AfD (Articles for deletion)',
+		label: 'TPB (Te Beoordelen Pagina\'s)',
 		selected: namespace === 0,  // Main namespace
 		value: 'afd'
 	});
 	categories.append({
 		type: 'option',
-		label: 'TfD (Templates for discussion)',
-		selected: [ 10, 828 ].indexOf(namespace) !== -1,  // Template and module namespaces
+		label: 'TBS (Te Beoordelen Sjablonen)',
+		selected: namespace === 10,  // Template namespace
 		value: 'tfd'
 	});
 	categories.append({
 		type: 'option',
-		label: 'FfD (Files for discussion)',
-		selected: namespace === 6,  // File namespace
-		value: 'ffd'
-	});
-	categories.append({
-		type: 'option',
-		label: 'CfD (Categories for discussion)',
-		selected: namespace === 14 || (namespace === 10 && /-stub$/.test(Morebits.pageNameNorm)),  // Category namespace and stub templates
+		label: 'TBC (Te Beoordelen Categorieën)',
+		selected: namespace === 14,  // Category namespace
 		value: 'cfd'
-	});
-	categories.append({
-		type: 'option',
-		label: 'CfD/S (Categories for speedy renaming)',
-		value: 'cfds'
-	});
-	categories.append({
-		type: 'option',
-		label: 'MfD (Miscellany for deletion)',
-		selected: [ 0, 6, 10, 14, 828 ].indexOf(namespace) === -1 || Morebits.pageNameNorm.indexOf('Template:User ', 0) === 0,
-		// Other namespaces, and userboxes in template namespace
-		value: 'mfd'
-	});
-	categories.append({
-		type: 'option',
-		label: 'RfD (Redirects for discussion)',
-		selected: mw.config.get('wgIsRedirect'),
-		value: 'rfd'
-	});
-	categories.append({
-		type: 'option',
-		label: 'RM (Requested moves)',
-		selected: false,
-		value: 'rm'
 	});
 
 	form.append({
@@ -193,17 +160,17 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		type: 'checkbox',
 		list: [
 			{
-				label: 'Notify page creator if possible',
+				label: 'Breng aanmaker op de hoogte (indien mogelijk)',
 				value: 'notify',
 				name: 'notifycreator',
-				tooltip: "A notification template will be placed on the creator's talk page if this is true.",
+				tooltip: "Een mededeling van nominatie wordt op de overlegpagina van de aanmaker geplaatst.",
 				checked: true
 			}
 		]
 	});
 	form.append({
 		type: 'field',
-		label: 'Work area',
+		label: 'Werk gebied',
 		name: 'work_area'
 	});
 
@@ -212,7 +179,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 		Twinkle.xfd.callbacks.preview(result);  // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
-	previewlink.textContent = 'Preview';
+	previewlink.textContent = 'Voorvertoning';
 	form.append({ type: 'div', id: 'xfdpreview', label: [ previewlink ] });
 	form.append({ type: 'div', id: 'twinklexfd-previewbox', style: 'display: none' });
 
@@ -235,40 +202,20 @@ Twinkle.xfd.callback.wrongVenueWarning = function twinklexfdWrongVenueWarning(ve
 
 	switch (venue) {
 		case 'afd':
-			if (namespace !== 0) {
-				text = 'AfD is generally appropriate only for articles.';
-			} else if (mw.config.get('wgIsRedirect')) {
-				text = 'Please use RfD for redirects.';
+			if (namespace === 10 || namespace === 14) {
+				text = 'De TBP wordt NIET voor sjablonen of categorieën gebruikt.';
 			}
 			break;
 		case 'tfd':
-			if (namespace === 10 && /-stub$/.test(Morebits.pageNameNorm)) {
-				text = 'Use CfD for stub templates.';
-			} else if (Morebits.pageNameNorm.indexOf('Template:User ') === 0) {
-				text = 'Please use MfD for userboxes';
+			if (namespace !== 10) {
+				text = 'De TBS wordt ALLEEN voor sjablonen gebruikt.';
 			}
 			break;
 		case 'cfd':
-			if ([ 10, 14 ].indexOf(namespace) === -1) {
-				text = 'CfD is only for categories and stub templates.';
-			}
-			break;
-		case 'cfds':
 			if (namespace !== 14) {
-				text = 'CfDS is only for categories.';
+				text = 'De TBC wordt ALLEEN voor categorieën gebruikt.';
 			}
 			break;
-		case 'ffd':
-			if (namespace !== 6) {
-				text = 'FFD is selected but this page doesn\'t look like a file!';
-			}
-			break;
-		case 'rm':
-			if (namespace === 14) { // category
-				text = 'Please use CfD or CfDS for category renames.';
-			}
-			break;
-
 		default: // mfd or rfd
 			break;
 	}
@@ -290,9 +237,9 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		work_area.append({
 			type: 'textarea',
 			name: 'reason',
-			label: 'Reason: ',
+			label: 'Reden: ',
 			value: oldreason,
-			tooltip: 'You can use wikimarkup in your reason. Twinkle will automatically sign your post.'
+			tooltip: 'Je kunt wikiopmaak gebruiken in je reden. Twinkle plaatst automatisch je handtekening.'
 		});
 	};
 
@@ -304,7 +251,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		case 'afd':
 			work_area = new Morebits.quickForm.element({
 				type: 'field',
-				label: 'Articles for deletion',
+				label: 'Te Beoordelen Pagina\'s',
 				name: 'work_area'
 			});
 
@@ -319,7 +266,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Wrap deletion tag with <noinclude>',
+						label: 'Plaats nominatie tussen <noinclude> tags',
 						value: 'noinclude',
 						name: 'noinclude',
 						tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. This option is not normally required.'
