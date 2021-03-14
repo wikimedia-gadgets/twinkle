@@ -172,7 +172,7 @@ Twinkle.config.sections = [
 				label: 'Schakel bepaalde Twinkle modules uit',
 				helptip: 'Alles wat je uitschakeld kun je niet gebruiken. Haal het vinkje weg om de module weer in te schakelen.',
 				type: 'set',
-				setValues: { arv: 'CU-verzoek', warn: 'Waarschuw', welcome: 'Welkom', shared: 'Gedeeld IP', talkback: 'Talkback', speedy: 'Nuweg', xfd: 'TBx', protect: 'Beveiligen', tag: 'Tag', diff: 'Wijz', unlink: 'Ontlink', fluff: 'Ongedaan maken en terugdraaien' }
+				setValues: { arv: 'CU-verzoek', warn: 'Waarschuw', welcome: 'Welkom', shared: 'Gedeeld IP', talkback: 'Talkback', speedy: 'Nuweg', xfd: 'TBx', protect: 'Beveiligen', tag: 'Tag', diff: 'Wijz', unlink: 'Ontlink', fluff: 'Terugdraaien' }
 			},
 
 			// Twinkle.config.disabledSysopModules (array)
@@ -246,7 +246,7 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Ongedaan maken en terugdraaien',  // twinklefluff module
+		title: 'Terugdraaien',  // twinklefluff module
 		module: 'fluff',
 		preferences: [
 			// TwinkleConfig.autoMenuAfterRollback (bool)
@@ -264,15 +264,15 @@ Twinkle.config.sections = [
 				name: 'openTalkPage',
 				label: 'Open gebruikersoverleg bij de volgende terugdraaiingen',
 				type: 'set',
-				setValues: { agf: 'AGF rollback', norm: 'Normale terugdraaiing', vand: 'Vandalisme terugdraaiing' }
+				setValues: { norm: 'Normale terugdraaiing', vand: 'Vandalisme terugdraaiing' }
 			},
 
 			// TwinkleConfig.openTalkPageOnAutoRevert (bool)
 			// Defines if talk page should be opened when calling revert from contribs or recent changes pages. If set to true, openTalkPage defines then if talk page will be opened.
 			{
 				name: 'openTalkPageOnAutoRevert',
-				label: 'Open user talk page when invoking rollback from user contributions or recent changes',
-				helptip: 'When this is on, the desired options must be enabled in the previous setting for this to work.',
+				label: 'Open gebruikersoverlegpagina bij terugdraaiing vanuit Recente Wijzigingen of Gebruikers Bijdragen',
+				helptip: 'Wordt alleen uitgevoerd indien de bovenstaande instellingen ook geconfigureerd zijn.',
 				type: 'boolean'
 			},
 
@@ -280,8 +280,8 @@ Twinkle.config.sections = [
 			//
 			{
 				name: 'rollbackInPlace',
-				label: "Don't reload the page when rolling back from contributions or recent changes",
-				helptip: "When this is on, Twinkle won't reload the contributions or recent changes feed after reverting, allowing you to revert more than one edit at a time.",
+				label: "Herlaad de pagina niet bij terugdraaiing vanuit Recente Wijzigingen of Gebruikers Bijdragen",
+				helptip: "Als dit aan staat zal Twinkle de pagina niet herladen waardoor je meerdere terugdraaiingen achter elkaar kan uitvoeren.",
 				type: 'boolean'
 			},
 
@@ -289,24 +289,24 @@ Twinkle.config.sections = [
 			// What types of actions that should result in marking edit as minor
 			{
 				name: 'markRevertedPagesAsMinor',
-				label: 'Mark as minor edit for these types of reversions',
+				label: 'Markeer de volgende bewerkingen als kleine bewerking',
 				type: 'set',
-				setValues: { agf: 'AGF rollback', norm: 'Normal rollback', vand: 'Vandalism rollback', torev: '"Restore this version"' }
+				setValues: { norm: 'Normale terugdraaiing', vand: 'Vandalisme terugdraaiing', torev: '"Plaats deze versie"' }
 			},
 
 			// TwinkleConfig.watchRevertedPages (array)
 			// What types of actions that should result in forced addition to watchlist
 			{
 				name: 'watchRevertedPages',
-				label: 'Add pages to watchlist for these types of reversions',
+				label: 'Voeg pagina\'s toe aan volglijst na deze bewerking',
 				type: 'set',
-				setValues: { agf: 'AGF rollback', norm: 'Normal rollback', vand: 'Vandalism rollback', torev: '"Restore this version"' }
+				setValues: { norm: 'Normale terugdraaiing', vand: 'Vandalisme terugdraaiing', torev: '"Plaats deze versie"' }
 			},
 			// TwinkleConfig.watchRevertedExpiry
 			// If any of the above items are selected, whether to expire the watch
 			{
 				name: 'watchRevertedExpiry',
-				label: 'When reverting a page, how long to watch it for',
+				label: 'Na een terugdraaiing, hoelang moet een pagina op de volglijst geplaatst worden',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
@@ -315,22 +315,22 @@ Twinkle.config.sections = [
 			// If to offer a prompt for extra summary reason for normal reverts, default to true
 			{
 				name: 'offerReasonOnNormalRevert',
-				label: 'Prompt for reason for normal rollbacks',
-				helptip: '"Normal" rollbacks are the ones that are invoked from the middle [rollback] link.',
+				label: 'Vraag om een reden bij een normale terugdraaiing',
+				helptip: 'Met "Normale" terugdraaiing wordt een terugdraaiing met de lichtblauwe [Terugdraaiien] knop -naast de rode [Vandalisme] knop- bedoeld.',
 				type: 'boolean'
 			},
 
 			{
 				name: 'confirmOnFluff',
-				label: 'Require confirmation before reverting (all devices)',
-				helptip: 'For users of pen or touch devices, and chronically indecisive people.',
+				label: 'Vraag bevestiging voor een terugdraaiing (op alle apparaten)',
+				helptip: 'Handig voor laptops met een touchscreen, en voor mensen die graag twijfelen.',
 				type: 'boolean'
 			},
 
 			{
 				name: 'confirmOnMobileFluff',
-				label: 'Require confirmation before reverting (mobile devices only)',
-				helptip: 'Avoid accidental reversions when on mobile devices.',
+				label: 'Vraag bevestiging voor een terugdraaiing (alleen op mobiele apparaten)',
+				helptip: 'Voorkom dat je met mistikken op touchscreen de halve wiki terugdraaid.',
 				type: 'boolean'
 			},
 
@@ -340,9 +340,9 @@ Twinkle.config.sections = [
 			// Note from TTO: |contribs| seems to be equal to |others| + |mine|, i.e. redundant, so I left it out heres
 			{
 				name: 'showRollbackLinks',
-				label: 'Show rollback links on these pages',
+				label: 'Toon terugdraaiknoppen op de volgende pagina\'s',
 				type: 'set',
-				setValues: { diff: 'Diff pages', others: 'Contributions pages of other users', mine: 'My contributions page', recent: 'Recent changes and related changes special pages', history: 'History pages' }
+				setValues: { diff: 'Versie vergelijken', others: 'Bijdragen van anderen', mine: 'Mijn bijdragen', recent: 'Recente wijzigingen', history: 'Artikel geschiedenis' }
 			}
 		]
 	},
@@ -1211,15 +1211,15 @@ Twinkle.config.init = function twinkleconfigInit() {
 			box.setAttribute('class', 'config-twopt-box');
 
 			if (mw.config.get('wgArticleId') > 0) {  // page exists
-				box.appendChild(document.createTextNode('Deze pagina bevat je Twinkle instellingen. Je kunt ze veranderen via je '));
+				box.appendChild(document.createTextNode('Deze pagina bevat je Twinkle instellingen. Je kunt ze het beste veranderen via het '));
 			} else {  // page does not exist
-				box.appendChild(document.createTextNode('Je kunt je Twinkle instellingen veranderen via je '));
+				box.appendChild(document.createTextNode('Je kunt je Twinkle instellingen veranderen via het '));
 			}
 			link = document.createElement('a');
 			link.setAttribute('href', mw.util.getUrl(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').project] + ':Twinkle/Preferences'));
 			link.appendChild(document.createTextNode('Twinkle configuratiescherm'));
 			box.appendChild(link);
-			box.appendChild(document.createTextNode(', of door deze pagina te bewerken.'));
+			box.appendChild(document.createTextNode('.'));
 			$(box).insertAfter($('#contentSub'));
 
 		} else if (['monobook', 'vector', 'cologneblue', 'modern', 'timeless', 'minerva', 'common'].indexOf(scriptPageName) !== -1) {
@@ -1328,7 +1328,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 					)
 				),
 			$('<button>')
-				.text('Save changes')
+				.text('Opslaan')
 				.attr('type', 'submit') // so Morebits.simpleWindow puts the button in the button pane
 				.on('click', function () {
 					Twinkle.config.listDialog.save($prefbutton, $dlgtbody);
@@ -1341,7 +1341,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 					Twinkle.config.listDialog.reset($prefbutton, $dlgtbody);
 				}),
 			$('<button>')
-				.text('Cancel')
+				.text('Annuleren')
 				.attr('type', 'submit')
 				.on('click', function () {
 					dialog.close();
@@ -1455,7 +1455,7 @@ Twinkle.config.resetPref = function twinkleconfigResetPref(pref) {
 			break;
 
 		default:
-			alert('twinkleconfig: unknown data type for preference ' + pref.name);
+			alert('twinkleconfig: onbekend datatype voor voorkeur ' + pref.name);
 			break;
 	}
 };
@@ -1480,7 +1480,7 @@ Twinkle.config.save = function twinkleconfigSave(e) {
 	Morebits.status.init(document.getElementById('twinkle-config-content'));
 
 	var userjs = mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').user] + ':' + mw.config.get('wgUserName') + '/twinkleoptions.js';
-	var wikipedia_page = new Morebits.wiki.page(userjs, 'Saving preferences to ' + userjs);
+	var wikipedia_page = new Morebits.wiki.page(userjs, 'Voorkeuren opslaan naar ' + userjs);
 	wikipedia_page.setCallbackParameters(e.target);
 	wikipedia_page.load(Twinkle.config.writePrefs);
 
@@ -1545,7 +1545,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 						case 'integer':  // read from the input box
 							userValue = parseInt(form[pref.name].value, 10);
 							if (isNaN(userValue)) {
-								Morebits.status.warn('Saving', 'De waarde geselecteerd voor ' + pref.name + ' (' + pref.value + ') is ongeldig.  Het opslaan gaat door, maar de ongeldige instellingen worden overgeslagen.');
+								Morebits.status.warn('Opslaan', 'De waarde geselecteerd voor ' + pref.name + ' (' + pref.value + ') is ongeldig.  Het opslaan gaat door, maar de ongeldige instellingen worden overgeslagen.');
 								userValue = null;
 							}
 							break;
@@ -1612,7 +1612,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		'// Einde van twinkleoptions.js\n';
 
 	pageobj.setPageText(text);
-	pageobj.setEditSummary('Saving Twinkle preferences: automatic edit from [[:' + Morebits.pageNameNorm + ']]');
+	pageobj.setEditSummary('Twinkle instellingen opslaan: automatische bewerking van [[:' + Morebits.pageNameNorm + ']]');
 	pageobj.setChangeTags(Twinkle.changeTags);
 	pageobj.setCreateOption('recreate');
 	pageobj.save(Twinkle.config.saveSuccess);
