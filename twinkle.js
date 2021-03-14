@@ -62,12 +62,12 @@ Twinkle.defaultConfig = {
 	blankTalkpageOnIndefBlock: false,
 
 	// Fluff (revert and rollback)
-	autoMenuAfterRollback: false,
-	openTalkPage: [ 'agf', 'norm', 'vand' ],
+	autoMenuAfterRollback: true,
+	openTalkPage: [ 'norm', 'vand' ],
 	openTalkPageOnAutoRevert: false,
 	rollbackInPlace: false,
 	markRevertedPagesAsMinor: [ 'vand' ],
-	watchRevertedPages: [ 'agf', 'norm', 'vand', 'torev' ],
+	watchRevertedPages: [ 'norm', 'vand', 'torev' ],
 	watchRevertedExpiry: '1 month',
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
@@ -97,7 +97,7 @@ Twinkle.defaultConfig = {
 	speedyWindowHeight: 500,
 	speedyWindowWidth: 800,
 	logSpeedyNominations: false,
-	speedyLogPageName: 'CSD log',
+	speedyLogPageName: 'nuweg logboek',
 	noLogOnSpeedyNomination: [ 'u1' ],
 
 	// Unlink
@@ -112,7 +112,7 @@ Twinkle.defaultConfig = {
 
 	// XfD
 	logXfdNominations: false,
-	xfdLogPageName: 'XfD log',
+	xfdLogPageName: 'TBx logboek',
 	noLogOnXfdNomination: [],
 	xfdWatchDiscussion: 'default',
 	xfdWatchList: 'no',
@@ -146,7 +146,7 @@ Twinkle.defaultConfig = {
 	customRedirectTagList: [],
 
 	// Welcome
-	topWelcomes: false,
+	topWelcomes: true,
 	watchWelcomes: '3 months',
 	insertUsername: true,
 	quickWelcomeMode: 'norm',
@@ -157,8 +157,8 @@ Twinkle.defaultConfig = {
 	// Talkback
 	markTalkbackAsMinor: true,
 	insertTalkbackSignature: true,  // always sign talkback templates
-	talkbackHeading: 'New message from ' + mw.config.get('wgUserName'),
-	mailHeading: "You've got mail!",
+	talkbackHeading: 'Nieuw bericht van ' + mw.config.get('wgUserName'),
+	mailHeading: "Je hebt mail!",
 
 	// Shared
 	markSharedIPAsMinor: true
