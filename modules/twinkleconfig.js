@@ -1619,7 +1619,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 };
 
 Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
-	pageobj.getStatusElement().info('successful');
+	pageobj.getStatusElement().info('done');
 
 	var noticebox = document.createElement('div');
 	noticebox.className = 'successbox';
