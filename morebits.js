@@ -1772,13 +1772,13 @@ Morebits.date.localeData = {
  * @property {string} years
  */
 Morebits.date.unitMap = {
-	seconds: 'Seconds',
-	minutes: 'Minutes',
-	hours: 'Hours',
-	days: 'Date',
+	seconds: 'Seconden',
+	minutes: 'Minuten',
+	hours: 'Uren',
+	days: 'Dagen',
 	weeks: 'Week', // Not a function but handled in `add` through cunning use of multiplication
-	months: 'Month',
-	years: 'FullYear'
+	months: 'Maand',
+	years: 'Jaar'
 };
 
 Morebits.date.prototype = {
@@ -3400,7 +3400,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 * No error handling since we don't actually care about the errors.
 	 */
 	this.patrol = function() {
-		if (!Morebits.userIsSysop && !Morebits.userIsInGroup('patroller')) {
+		if (!Morebits.userIsSysop && !Morebits.userIsInGroup('autoconfirmed')) {
 			return;
 		}
 
@@ -3451,7 +3451,7 @@ Morebits.wiki.page = function(pageName, status) {
 		if (mw.config.get('pageTriageNamespaces').indexOf(new mw.Title(ctx.pageName).getNamespaceId()) === -1) {
 			this.patrol();
 		} else {
-			if (!Morebits.userIsSysop && !Morebits.userIsInGroup('patroller')) {
+			if (!Morebits.userIsSysop && !Morebits.userIsInGroup('autoconfirmed')) {
 				return;
 			}
 
