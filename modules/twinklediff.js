@@ -16,19 +16,19 @@ Twinkle.diff = function twinklediff() {
 	if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId')) {
 		return;
 	}
-	Twinkle.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: 'prev'}), 'Last', 'tw-lastdiff', 'Show most recent diff');
+	Twinkle.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'huidig', oldid: 'vorige'}), 'Laatste', 'tw-lastdiff', 'Toon meest recente wijz');
 
 	// Show additional tabs only on diff pages
 	if (mw.util.getParamValue('diff')) {
 		Twinkle.addPortletLink(function() {
 			Twinkle.diff.evaluate(false);
-		}, 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user');
+		}, 'Sinds', 'tw-since', 'Toon verschillen tussen de huidige versie en de versie van de vorige gebruiker');
 		Twinkle.addPortletLink(function() {
 			Twinkle.diff.evaluate(true);
-		}, 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision');
+		}, 'Sinds mijn', 'tw-sincemine', 'Toon verschillen de huidige versie en mijn laatste bewerking');
 
 		var oldid = /oldid=(.+)/.exec($('#mw-diff-ntitle1').find('strong a').first().attr('href'))[1];
-		Twinkle.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: oldid}), 'Current', 'tw-curdiff', 'Show difference to current revision');
+		Twinkle.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: oldid}), 'Huidige', 'tw-curdiff', 'Toon verschil met huidige versie');
 	}
 };
 
@@ -56,7 +56,7 @@ Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 		format: 'json'
 	};
 	Morebits.status.init(document.getElementById('mw-content-text'));
-	var wikipedia_api = new Morebits.wiki.api('Grabbing data of initial contributor', query, Twinkle.diff.callbacks.main);
+	var wikipedia_api = new Morebits.wiki.api('Data ophalen over aanmaker', query, Twinkle.diff.callbacks.main);
 	wikipedia_api.params = { user: user };
 	wikipedia_api.post();
 };
@@ -67,7 +67,7 @@ Twinkle.diff.callbacks = {
 		var revid = rev && rev[0].revid;
 
 		if (!revid) {
-			self.statelem.error('no suitable earlier revision found, or ' + self.params.user + ' is the only contributor. Aborting.');
+			self.statelem.error('Geen geschikte voorgaande versies gevonden, of ' + self.params.user + ' is de enige bewerken. Afbreken...');
 			return;
 		}
 		window.location = mw.util.getUrl(mw.config.get('wgPageName'), {
