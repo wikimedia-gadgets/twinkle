@@ -69,7 +69,7 @@ Morebits.userIsSysop = Morebits.userIsInGroup('sysop');
  * @returns {string}
  */
 Morebits.sanitizeIPv6 = function (address) {
-	console.warn('NOTE: Morebits.sanitizeIPv6 is hernoemd naar Morebits.ip.sanitizeIPv6 in februari 2021'); // eslint-disable-line no-console
+	console.warn('NOTE: Morebits.sanitizeIPv6 was renamed to Morebits.ip.sanitizeIPv6 in February 2021, please use that instead'); // eslint-disable-line no-console
 	return Morebits.ip.sanitizeIPv6(address);
 };
 
@@ -752,7 +752,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			childContainder = subnode;
 			break;
 		default:
-			throw new Error('Morebits.quickForm: onbekent element type ' + data.type.toString());
+			throw new Error('Morebits.quickForm: unknown element type ' + data.type.toString());
 	}
 
 	if (!childContainder) {
@@ -1274,10 +1274,10 @@ Morebits.ip = {
  */
 RegExp.escape = function(text, space_fix) {
 	if (space_fix) {
-		console.error('NOTE: RegExp.escape van Morebits is verouderd sinds September 2020, vervang het met Morebits.string.escapeRegExp'); // eslint-disable-line no-console
+		console.error('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with Morebits.string.escapeRegExp'); // eslint-disable-line no-console
 		return Morebits.string.escapeRegExp(text);
 	}
-	console.error('NOTE: RegExp.escape van Morebits is verouderd sinds September 2020, vervang het met mw.util.escapeRegExp'); // eslint-disable-line no-console
+	console.error('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with mw.util.escapeRegExp'); // eslint-disable-line no-console
 	return mw.util.escapeRegExp(text);
 };
 
@@ -1321,7 +1321,7 @@ Morebits.string = {
 	 */
 	splitWeightedByKeys: function(str, start, end, skiplist) {
 		if (start.length !== end.length) {
-			throw new Error('start marker en eind marker moeten dezelfde lengte hebben');
+			throw new Error('start marker and end marker must be of the same length');
 		}
 		var level = 0;
 		var initial = null;
@@ -2676,10 +2676,10 @@ Morebits.wiki.page = function(pageName, status) {
 
 		// shouldn't happen if canUseMwUserToken === true
 		if (ctx.fullyProtected && !ctx.suppressProtectWarning &&
-			!confirm('Je staat op het punt een volledig beveiligde pagina te bewereken "' + ctx.pageName +
-			(ctx.fullyProtected === 'infinity' ? '" (permanent beveiligd)' : '" (beveiligd tot ' + new Morebits.date(ctx.fullyProtected).calendar('utc') + ' (UTC))') +
-			'.  \n\nKlik op OK om door te gaan met bewerken, of Cancel om te stoppen.')) {
-			ctx.statusElement.error('Bewerking op volledig beveiligde pagina afgebroken.');
+			!confirm('You are about to make an edit to the fully protected page "' + ctx.pageName +
+			(ctx.fullyProtected === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(ctx.fullyProtected).calendar('utc') + ' (UTC))') +
+			'.  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.')) {
+			ctx.statusElement.error('Edit to fully protected page was aborted.');
 			ctx.onSaveFailure(this);
 			return;
 		}
@@ -2721,7 +2721,7 @@ Morebits.wiki.page = function(pageName, status) {
 		switch (ctx.editMode) {
 			case 'append':
 				if (ctx.appendText === null) {
-					ctx.statusElement.error('Interne fout: append tekst kon niet worden geplaatst voor opslaan!');
+					ctx.statusElement.error('Internal error: append text not set before save!');
 					ctx.onSaveFailure(this);
 					return;
 				}
@@ -2729,7 +2729,7 @@ Morebits.wiki.page = function(pageName, status) {
 				break;
 			case 'prepend':
 				if (ctx.prependText === null) {
-					ctx.statusElement.error('Interne fout: prepend tekst kon niet worden geplaatst voor opslaan!');
+					ctx.statusElement.error('Internal error: prepend text not set before save!');
 					ctx.onSaveFailure(this);
 					return;
 				}
@@ -2737,7 +2737,7 @@ Morebits.wiki.page = function(pageName, status) {
 				break;
 			case 'new':
 				if (!ctx.newSectionText) { // API doesn't allow empty new section text
-					ctx.statusElement.error('Interne fout: nieuwe sectie kon niet worden geplaatst voor opslaan!');
+					ctx.statusElement.error('Internal error: new section text not set before save!');
 					ctx.onSaveFailure(this);
 					return;
 				}
@@ -2770,7 +2770,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.redirect = true;
 		}
 
-		ctx.saveApi = new Morebits.wiki.api('Opslaan...', query, fnSaveSuccess, ctx.statusElement, fnSaveError);
+		ctx.saveApi = new Morebits.wiki.api('Saving page...', query, fnSaveSuccess, ctx.statusElement, fnSaveError);
 		ctx.saveApi.setParent(this);
 		ctx.saveApi.post();
 	};
@@ -3545,7 +3545,7 @@ Morebits.wiki.page = function(pageName, status) {
 		// protection levels from the server
 		var query = fnNeedTokenInfoQuery('protect');
 
-		ctx.protectApi = new Morebits.wiki.api('token ophalen...', query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
+		ctx.protectApi = new Morebits.wiki.api('retrieving token...', query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
 		ctx.protectApi.setParent(this);
 		ctx.protectApi.post();
 	};
@@ -3580,7 +3580,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else {
 			var query = fnNeedTokenInfoQuery('stabilize');
 
-			ctx.stabilizeApi = new Morebits.wiki.api('token ophalen...', query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
+			ctx.stabilizeApi = new Morebits.wiki.api('retrieving token...', query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
 			ctx.stabilizeApi.setParent(this);
 			ctx.stabilizeApi.post();
 		}
@@ -3750,7 +3750,7 @@ Morebits.wiki.page = function(pageName, status) {
 			ctx.revertUser = rev && rev.user;
 			if (!ctx.revertUser) {
 				if (rev && rev.userhidden) {  // username was RevDel'd or oversighted
-					ctx.revertUser = '<verborgen gebruiker>';
+					ctx.revertUser = '<username hidden>';
 				} else {
 					ctx.statusElement.error('Failed to retrieve user who made the revision.');
 					ctx.onLoadFailure(this);
@@ -3861,7 +3861,7 @@ Morebits.wiki.page = function(pageName, status) {
 		var response = ctx.saveApi.getResponse();
 
 		// see if the API thinks we were successful
-		if (response.edit.result === 'gelukt') {
+		if (response.edit.result === 'Success') {
 
 			// real success
 			// default on success action - display link for edited page
@@ -3933,15 +3933,15 @@ Morebits.wiki.page = function(pageName, status) {
 
 				case 'protectedpage':
 					// non-admin attempting to edit a protected page - this gives a friendlier message than the default
-					ctx.statusElement.error('Opslaan mislukt: Pagina is beveiligd');
+					ctx.statusElement.error('Failed to save edit: Page is protected');
 					break;
 
 				case 'abusefilter-disallowed':
-					ctx.statusElement.error('De bewerking is gestopt door misbruikfilter: "' + ctx.saveApi.getResponse().error.abusefilter.description + '".');
+					ctx.statusElement.error('The edit was disallowed by the edit filter: "' + ctx.saveApi.getResponse().error.abusefilter.description + '".');
 					break;
 
 				case 'abusefilter-warning':
-					ctx.statusElement.error([ 'Een waarschuwing is gegeven door misbruikfilter: "', ctx.saveApi.getResponse().error.abusefilter.description, '". If you wish to proceed with the edit, please carry it out again. This warning will not appear a second time.' ]);
+					ctx.statusElement.error([ 'A warning was returned by the edit filter: "', ctx.saveApi.getResponse().error.abusefilter.description, '". If you wish to proceed with the edit, please carry it out again. This warning will not appear a second time.' ]);
 					// We should provide the user with a way to automatically retry the action if they so choose -
 					// I can't see how to do this without creating a UI dependency on Morebits.wiki.page though -- TTO
 					break;
@@ -3949,11 +3949,11 @@ Morebits.wiki.page = function(pageName, status) {
 				case 'spamblacklist':
 					// If multiple items are blacklisted, we only return the first
 					var spam = ctx.saveApi.getResponse().error.spamblacklist.matches[0];
-					ctx.statusElement.error('Kan pagina niet opslaan omdat URL ' + spam + ' op de spam blacklist staat');
+					ctx.statusElement.error('Could not save the page because the URL ' + spam + ' is on the spam blacklist');
 					break;
 
 				default:
-					ctx.statusElement.error('Opslaan mislukt: ' + ctx.saveApi.getErrorText());
+					ctx.statusElement.error('Failed to save edit: ' + ctx.saveApi.getErrorText());
 			}
 
 			ctx.editMode = 'all';  // cancel append/prepend/newSection/revert modes
@@ -4051,7 +4051,7 @@ Morebits.wiki.page = function(pageName, status) {
 	var fnPreflightChecks = function(action, onFailure) {
 		// if a non-admin tries to do this, don't bother
 		if (!Morebits.userIsSysop && action !== 'move') {
-			ctx.statusElement.error('Kan pagina niet ' + action + ': alleen moderators kunnen dat');
+			ctx.statusElement.error('Cannot ' + action + 'page : only admins can do that');
 			onFailure(this);
 			return false;
 		}
@@ -4161,7 +4161,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.noredirect = 'true';
 		}
 
-		ctx.moveProcessApi = new Morebits.wiki.api('pagina verplaatsen...', query, ctx.onMoveSuccess, ctx.statusElement, ctx.onMoveFailure);
+		ctx.moveProcessApi = new Morebits.wiki.api('moving page...', query, ctx.onMoveSuccess, ctx.statusElement, ctx.onMoveFailure);
 		ctx.moveProcessApi.setParent(this);
 		ctx.moveProcessApi.post();
 	};
@@ -4200,9 +4200,9 @@ Morebits.wiki.page = function(pageName, status) {
 			query.tags = ctx.changeTags;
 		}
 
-		var patrolStat = new Morebits.status('Pagina als gecontroleerd melden');
+		var patrolStat = new Morebits.status('Marking page as patrolled');
 
-		ctx.patrolProcessApi = new Morebits.wiki.api('Pagina controleren...', query, null, patrolStat);
+		ctx.patrolProcessApi = new Morebits.wiki.api('patrolling page...', query, null, patrolStat);
 		ctx.patrolProcessApi.setParent(this);
 		ctx.patrolProcessApi.post();
 	};
@@ -4240,7 +4240,7 @@ Morebits.wiki.page = function(pageName, status) {
 	var fnProcessTriage = function() {
 		var responseList = ctx.triageProcessListApi.getResponse().pagetriagelist;
 		// Exit if not in the queue
-		if (!responseList || responseList.result !== 'gelukt') {
+		if (!responseList || responseList.result !== 'success') {
 			return;
 		}
 		var page = responseList.pages && responseList.pages[0];
@@ -4298,7 +4298,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 
-		ctx.deleteProcessApi = new Morebits.wiki.api('pagina verwijderen...', query, ctx.onDeleteSuccess, ctx.statusElement, fnProcessDeleteError);
+		ctx.deleteProcessApi = new Morebits.wiki.api('deleting page...', query, ctx.onDeleteSuccess, ctx.statusElement, fnProcessDeleteError);
 		ctx.deleteProcessApi.setParent(this);
 		ctx.deleteProcessApi.post();
 	};
@@ -4501,7 +4501,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.cascade = 'true';
 		}
 
-		ctx.protectProcessApi = new Morebits.wiki.api('pagina beveiligen...', query, ctx.onProtectSuccess, ctx.statusElement, ctx.onProtectFailure);
+		ctx.protectProcessApi = new Morebits.wiki.api('protecting page...', query, ctx.onProtectSuccess, ctx.statusElement, ctx.onProtectFailure);
 		ctx.protectProcessApi.setParent(this);
 		ctx.protectProcessApi.post();
 	};
@@ -4614,7 +4614,7 @@ Morebits.wiki.preview = function(previewbox) {
 			query.section = 'new';
 			query.sectiontitle = sectionTitle;
 		}
-		var renderApi = new Morebits.wiki.api('laden...', query, fnRenderSuccess, new Morebits.status('Preview'));
+		var renderApi = new Morebits.wiki.api('loading...', query, fnRenderSuccess, new Morebits.status('Preview'));
 		return renderApi.post();
 	};
 
@@ -5194,7 +5194,7 @@ Morebits.status.prototype = {
 		this.update(status, 'info');
 	},
 	warn: function(status) {
-		this.update(status, 'waarschuwing');
+		this.update(status, 'warn');
 	},
 	error: function(status) {
 		this.update(status, 'error');
