@@ -96,7 +96,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 		});
 		deleteOptions.append({
 			type: 'header',
-			label: 'Verwijder opties'
+			label: 'Delete-related options'
 		});
 		if (mw.config.get('wgNamespaceNumber') % 2 === 0 && (mw.config.get('wgNamespaceNumber') !== 2 || (/\//).test(mw.config.get('wgTitle')))) {  // hide option for user pages, to avoid accidentally deleting user talk page
 			deleteOptions.append({
@@ -128,7 +128,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					}
 				},
 				{
-					label: 'Verwijder voor meerdere redenen',
+					label: 'Delete under multiple criteria',
 					value: 'delmultiple',
 					name: 'delmultiple',
 					tooltip: 'When selected, you can select several criteria that apply to the page. For example, G11 and A7 are a common combination for articles.',
@@ -138,7 +138,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					}
 				},
 				{
-					label: 'Notificeer aanmaker',
+					label: 'Notificeer aanmaker op overlegpagina',
 					value: 'warnusertalk',
 					name: 'warnusertalk',
 					tooltip: 'A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences ' +
@@ -160,7 +160,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	if (Morebits.userIsSysop) {
 		tagOptions.append({
 			type: 'header',
-			label: 'Nominatie opties'
+			label: 'Tag-related options'
 		});
 	}
 
@@ -168,7 +168,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 		type: 'checkbox',
 		list: [
 			{
-				label: 'Notificeer aanmaker',
+				label: 'Notify page creator if possible',
 				value: 'notify',
 				name: 'notify',
 				tooltip: 'A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences ' +
@@ -179,7 +179,16 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				}
 			},
 			{
-				label: 'Nomineer voor meerdere redenen',
+				label: 'Tag for creation protection (salting) as well',
+				value: 'salting',
+				name: 'salting',
+				tooltip: 'When selected, the speedy deletion tag will be accompanied by a {{salt}} tag requesting that the deleting administrator apply creation protection. Only select if this page has been repeatedly recreated.',
+				event: function(event) {
+					event.stopPropagation();
+				}
+			},
+			{
+				label: 'Tag with multiple criteria',
 				value: 'multiple',
 				name: 'multiple',
 				tooltip: 'When selected, you can select several criteria that apply to the page. For example, G11 and A7 are a common combination for articles.',
