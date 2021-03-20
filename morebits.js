@@ -1259,30 +1259,6 @@ Morebits.ip = {
 
 
 /**
- * @external RegExp
- */
-/**
- * Deprecated as of September 2020, use {@link Morebits.string.escapeRegExp}
- * or `mw.util.escapeRegExp`.
- *
- * @function external:RegExp.escape
- * @deprecated Use {@link Morebits.string.escapeRegExp} or `mw.util.escapeRegExp`.
- * @param {string} text - String to be escaped.
- * @param {boolean} [space_fix=false] - Whether to replace spaces and
- * underscores with `[ _]` as they are often equivalent.
- * @returns {string} - The escaped text.
- */
-RegExp.escape = function(text, space_fix) {
-	if (space_fix) {
-		console.error('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with Morebits.string.escapeRegExp'); // eslint-disable-line no-console
-		return Morebits.string.escapeRegExp(text);
-	}
-	console.error('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with mw.util.escapeRegExp'); // eslint-disable-line no-console
-	return mw.util.escapeRegExp(text);
-};
-
-
-/**
  * Helper functions to manipulate strings.
  *
  * @namespace Morebits.string
@@ -1434,7 +1410,6 @@ Morebits.string = {
 	/**
 	 * Escapes a string to be used in a RegExp, replacing spaces and
 	 * underscores with `[_ ]` as they are often equivalent.
-	 * Replaced RegExp.escape September 2020.
 	 *
 	 * @param {string} text - String to be escaped.
 	 * @returns {string} - The escaped text.
