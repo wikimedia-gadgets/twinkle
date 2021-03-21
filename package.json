@@ -13,10 +13,10 @@
 		"deployall": "perl scripts/sync.pl --mode=deploy --all"
 	},
 	"devDependencies": {
-		"eslint": "^7.21.0",
+		"eslint": "^7.22.0",
 		"eslint-plugin-es5": "^1.5.0",
 		"jquery": "^3.6.0",
-		"jsdom": "^16.5.0",
-		"qunit": "^2.14.0"
+		"jsdom": "^16.5.1",
+		"qunit": "^2.14.1"
 	}
 }

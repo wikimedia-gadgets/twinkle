@@ -862,11 +862,17 @@
 						pageobj.triage();
 					}
 
+
 					// Wrap SD template in noinclude tags if we are in template space.
 					// Won't work with userboxes in userspace, or any other transcluded page outside template space
 					if (mw.config.get('wgNamespaceNumber') === 10) {  // Template:
 						code = '<noinclude>' + code + '</noinclude>';
 					}
+
+				var xfd = /\{\{((?:article for deletion|proposed deletion|prod blp|template for discussion)\/dated|[cfm]fd\b)/i.exec(text) || /#invoke:(RfD)/.exec(text);
+				if (xfd && !confirm('The deletion-related template {{' + xfd[1] + '}} was found on the page. Do you still want to add a CSD template?')) {
+					return;
+				}
 
 					// Remove tags that become superfluous with this action
 					text = text.replace(/\{\{\s*([Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, '');
