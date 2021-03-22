@@ -803,7 +803,7 @@ Twinkle.warn.callbacks = {
 					if (!statelem) {
 						var $link = $('<a/>', {
 							href: '#',
-							text: 'klik hier om een CU-onderzoek aan te vragen.',
+							text: 'klik hier om deze gebruiker te melden.',
 							css: { fontWeight: 'bold' },
 							click: function() {
 								Morebits.wiki.actionCompleted.redirect = null;
@@ -814,7 +814,7 @@ Twinkle.warn.callbacks = {
 							}
 						});
 						var statusNode = $('<div/>', {
-							text: mw.config.get('wgRelevantUserName') + ' Heeft recent een niveau 4 (' + latest.type + ') waarschuwing ontvangen, dus misschien is een blokverzoek zinvoller; ',
+							text: mw.config.get('wgRelevantUserName') + ' heeft recent een niveau 4 (' + latest.type + ') waarschuwing ontvangen, dus misschien is een blokverzoek zinvoller; ',
 							css: {color: 'red' }
 						});
 						statusNode.append($link[0]);

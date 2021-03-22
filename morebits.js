@@ -1898,6 +1898,7 @@ Morebits.date.prototype = {
 	 * | dddd | Full day name |
 	 * | D | Date |
 	 * | DD | Date (padded) |
+	 * | W | Week |
 	 * | M | Month number (0-indexed) |
 	 * | MM | Month number (0-indexed, padded) |
 	 * | MMM | Abbreviated month name |
@@ -1924,6 +1925,25 @@ Morebits.date.prototype = {
 		} else if (typeof zone === 'number') {
 			// convert to utc, then add the utc offset given
 			udate = new Morebits.date(this.getTime()).add(this.getTimezoneOffset() + zone, 'minutes');
+		} else if (zone === 'cet-cest') {
+			var lastSunday = function(month) {
+				var datum = new Date(this.getFullYear(), month, 1, 2);
+				var weekdag = datum.getDate();
+				var dagDiff = weekdag === 0 ? 7 : weekdag;
+				var lastSunday = datum.setDate(datum.getDate() - dagDiff);
+				return datum.toDateString();
+			}
+
+			var vandaag = new Date();
+			var dstBeg = new Date(lastSunday(3) + " 02:00:00");
+			var dstEnd = new Date(lastSunday(10) + " 02:00:00");
+			if (vandaag >= dstBeg && vandaag < dstEnd) {
+				// daylight saving time
+				udate = new Morebits.date(this.getTime()).add(this.getTimezoneOffset() + 120, 'minutes');
+			} else {
+				// standard time
+				udate = new Morebits.date(this.getTime()).add(this.getTimezoneOffset() + 60, 'minutes');
+			}
 		}
 
 		// default to ISOString
@@ -1935,6 +1955,11 @@ Morebits.date.prototype = {
 			len = len || 2; // Up to length of 00 + 1
 			return ('00' + num).toString().slice(0 - len);
 		};
+
+		var W = function() {
+			var onejan = new Date(this.getFullYear(), 0, 1);
+			return Math.ceil((((this - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+		}
 		var h24 = udate.getHours(), m = udate.getMinutes(), s = udate.getSeconds(), ms = udate.getMilliseconds();
 		var D = udate.getDate(), M = udate.getMonth() + 1, Y = udate.getFullYear();
 		var h12 = h24 % 12 || 12, amOrPm = h24 >= 12 ? 'PM' : 'AM';
@@ -1948,6 +1973,7 @@ Morebits.date.prototype = {
 			MMMM: udate.getMonthName(), MMM: udate.getMonthNameAbbrev(), MM: pad(M), M: M,
 			YYYY: Y, YY: pad(Y % 100), Y: Y
 		};
+
 
 		var unbinder = new Morebits.unbinder(formatstr); // escape stuff between [...]
 		unbinder.unbind('\\[', '\\]');

@@ -52,8 +52,6 @@ var utils = {
 	num2order: function(num) {
 		switch (num) {
 			case 1: return '1ste';
-			case 2: return '2e';
-			case 3: return '3e';
 			default: return num + 'e';
 		}
 	},
@@ -216,7 +214,7 @@ Twinkle.xfd.callback.wrongVenueWarning = function twinklexfdWrongVenueWarning(ve
 				text = 'De TBC wordt ALLEEN voor categorieën gebruikt.';
 			}
 			break;
-		default: // mfd or rfd
+		default:
 			break;
 	}
 
@@ -239,7 +237,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			name: 'reason',
 			label: 'Reden: ',
 			value: oldreason,
-			tooltip: 'Je kunt wikiopmaak gebruiken in je reden. Twinkle plaatst automatisch je handtekening.'
+			tooltip: 'Je kunt wikiopmaak gebruiken in je reden.'
 		});
 	};
 
@@ -251,25 +249,27 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		case 'afd':
 			work_area = new Morebits.quickForm.element({
 				type: 'field',
-				label: 'Artikel voor verwijdering',
+				label: 'Artikel nomineren voor verwijdering',
 				name: 'work_area'
 			});
-			work_area.append({
-				type: 'checkbox',
-				list: [
-					{
-						label: 'Plaatst nominatie tussen <noinclude> tags',
-						value: 'noinclude',
-						name: 'noinclude'
-					}
-				]
+
+			var sjabloon_select = work_area.append({
+				type: 'select',
+				label: 'Sjabloon:',
+				name: 'sjabloon'
 			});
+			sjabloon_select.append({ type: 'option', label: '{{wiu}} Werk in uitvoering', value: 'wiu', selected: true });
+			sjabloon_select.append({ type: 'option', label: '{{ne}} Niet encyclopedisch', value: 'ne' });
+			sjabloon_select.append({ type: 'option', label: '{{wb}} Woordenboekdefinitie', value: 'wb' });
+			sjabloon_select.append({ type: 'option', label: '{{reclame}} Promotionele uiting', value: 'reclame' });
+			sjabloon_select.append({ type: 'option', label: '{{auteur}} Schending auteursrechten', value: 'auteur' });
+
 			if ((mw.config.get('wgNamespaceNumber') === 2 /* Gebruiker: */ || mw.config.get('wgNamespaceNumber') === 3 /* Overleg gebruiker: */) && mw.config.exists('wgRelevantUserName')) {
 				work_area.append({
 					type: 'checkbox',
 					list: [
 						{
-							label: 'Breng eigenaar van paginaruimte op de hoogte (als zij niet de nominator zijn)',
+							label: 'Breng eigenaar van paginaruimte op de hoogte (indien dit niet je eigen paginaruimte is)',
 							value: 'notifyuserspace',
 							name: 'notifyuserspace',
 							checked: true
@@ -281,30 +281,23 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
 			break;
-			
+
 		case 'tfd':
 			work_area = new Morebits.quickForm.element({
 				type: 'field',
-				label: 'Te Beoordelen Sjablonen',
+				label: 'Sjabloon nomineren voor verwijdering',
 				name: 'work_area'
 			});
+			appendReasonBox();
+			work_area = work_area.render();
+			old_area.parentNode.replaceChild(work_area, old_area);
+			break;
 
-			var templateOrModule = mw.config.get('wgPageContentModel') === 'Scribunto' ? 'Module' : 'Sjabloon';
 		case 'cfd':
 			work_area = new Morebits.quickForm.element({
 				type: 'field',
-				label: 'Te Beoordelen Categorieën',
+				label: 'Categorie nomineren voor verwijdering',
 				name: 'work_area'
-			});
-			var isCategory = mw.config.get('wgNamespaceNumber') === 14;
-
-			work_area.append({
-				type: 'input',
-				name: 'cfdtarget',
-				label: 'Categorie: ', // default, changed above
-				disabled: true,
-				required: true, // only when enabled
-				value: ''
 			});
 			appendReasonBox();
 			work_area = work_area.render();
@@ -350,50 +343,27 @@ Twinkle.xfd.callbacks = {
 			talk_page.setChangeTags(Twinkle.changeTags);
 			talk_page.setCallbackParameters(params);
 			talk_page.newSection(null, function() {
-				talk_page.getStatusElement().warn('Verzoekplaatsen mislukt, misschien is de overlegpagina ook beveiligd');
+				talk_page.getStatusElement().warn('Verzoek plaatsen mislukt, misschien is de overlegpagina ook beveiligd');
 			});
 		}
 	},
 	getDiscussionWikitext: function(venue, params) {
-		var text = '{{subst:' + venue + '2';
-		var reasonKey = venue === 'ffd' ? 'Reden' : 'text';
-		// Add a reason unconditionally, so that at least a signature is added
-		text += '|' + reasonKey + '=' + Morebits.string.formatReasonText(params.reason, true);
-
 		if (venue === 'afd') {
-			text += '|pg=' + Morebits.pageNameNorm;
-			if (venue === 'afd') {
-				text += '|cat=' + params.xfdcat;
-			}
+			var text = '{{' + params.sjabloon;
+			text += '|1=' + params.reason;
+			text += '|2={{subst:LOCALYEAR}}|3={{subst:LOCALMONTH}}|4={{subst:LOCALDAY2}}}}';
+			return text;
+		} else if (venue === 'cfd') {
+			var text = '{{categorieweg';
+			text += '|1=' + params.reason;
+			text += '|2={{subst:LOCALYEAR}}|3={{subst:LOCALMONTH}}|4={{subst:LOCALDAY2}}}}';
+			return text;
 		} else {
-			text += '|1=' + mw.config.get('wgTitle');
-			if (mw.config.get('wgPageContentModel') === 'Scribunto') {
-				text += '|module=Module:';
-			}
+			var text = '{{sjabloonweg';
+			text += '|1=' + params.reason;
+			text += '|2={{subst:LOCALYEAR}}|3={{subst:LOCALMONTH}}|4={{subst:LOCALDAY2}}}}';
+			return text;
 		}
-
-		if (params.rfdtarget) {
-			text += '|target=' + params.rfdtarget + (params.section ? '#' + params.section : '');
-		} else if (params.tfdtarget) {
-			text += '|2=' + params.tfdtarget;
-		} else if (params.cfdtarget) {
-			text += '|2=' + params.cfdtarget;
-			if (params.cfdtarget2) {
-				text += '|3=' + params.cfdtarget2;
-			}
-		} else if (params.uploader) {
-			text += '|Uploader=' + params.uploader;
-		}
-
-		text += '}}';
-
-		if (params.delsortCats) { // Only for AFDs
-			params.delsortCats.forEach(function (cat) {
-				text += '\n{{subst:delsort|' + cat + '|~~~~}}';
-			});
-		}
-
-		return text;
 	},
 	showPreview: function(form, venue, params) {
 		var templatetext = Twinkle.xfd.callbacks.getDiscussionWikitext(venue, params);
@@ -542,7 +512,7 @@ Twinkle.xfd.callbacks = {
 		}
 
 		if (initialContrib && params.notifycreator) {
-			appendText += '; {{user|1=' + initialContrib + '}} genotificeerd';
+			appendText += '; {{gebruiker|1=' + initialContrib + '}} genotificeerd';
 		}
 		appendText += ' ~~~~~';
 		if (params.reason) {
@@ -641,7 +611,7 @@ Twinkle.xfd.callbacks = {
 			// Today's list
 			var date = new Morebits.date(pageobj.getLoadTime());
 			wikipedia_page = new Morebits.wiki.page('Wikipedia:Te beoordelen pagina\'s/Toegevoegd ' +
-				date.format('YYYYMMDD', 'utc'), "Toevoegen aan nominatiepagina");
+				date.format('YYYYMMDD', 'cet-cest'), "Toevoegen aan nominatiepagina");
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.todaysList);
@@ -754,7 +724,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			var date = new Morebits.date(pageobj.getLoadTime());
-			params.logpage = 'Wikipedia:Templates for discussion/Log/' + date.format('YYYY MMMM D', 'utc'),
+			params.logpage = 'Wikipedia:Te beoordelen sjablonen/Toegevoegd ' + date.format('YYYY', 'cet-cest') + ' week ' + date.format('W', 'cet-cest'),
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
 			// Add log/discussion page params to the already-loaded page object
 			pageobj.setCallbackParameters(params);
