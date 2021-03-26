@@ -574,7 +574,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 
 			var more = this.compute({
 				type: 'button',
-				label: 'more',
+				label: 'meer',
 				disabled: min >= max,
 				event: function(e) {
 					var new_node = new Morebits.quickForm.element(e.target.sublist);
@@ -2490,7 +2490,7 @@ Morebits.wiki.api.getToken = function() {
 Morebits.wiki.page = function(pageName, status) {
 
 	if (!status) {
-		status = 'Opening page "' + pageName + '"';
+		status = '"' + pageName + '" openen';
 	}
 
 	/**
@@ -2657,7 +2657,7 @@ Morebits.wiki.page = function(pageName, status) {
 			ctx.loadQuery.inprop += '|protection';
 		}
 
-		ctx.loadApi = new Morebits.wiki.api('Retrieving page...', ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
+		ctx.loadApi = new Morebits.wiki.api('Pagina ophalen...', ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
 		ctx.loadApi.setParent(this);
 		ctx.loadApi.post();
 	};
@@ -2796,7 +2796,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.redirect = true;
 		}
 
-		ctx.saveApi = new Morebits.wiki.api('Saving page...', query, fnSaveSuccess, ctx.statusElement, fnSaveError);
+		ctx.saveApi = new Morebits.wiki.api('Opslaan...', query, fnSaveSuccess, ctx.statusElement, fnSaveError);
 		ctx.saveApi.setParent(this);
 		ctx.saveApi.post();
 	};
@@ -3456,43 +3456,13 @@ Morebits.wiki.page = function(pageName, status) {
 	};
 
 	/**
-	 * Marks the page as reviewed by the PageTriage extension.
-	 *
-	 * Will, by it's nature, mark as patrolled as well. Falls back to
-	 * patrolling if not in an appropriate namespace.
-	 *
-	 * Doesn't inherently rely on loading the page in question; simply
-	 * passing a `pageid` to the API is sufficient, so in those cases just
-	 * using {@link Morebits.wiki.api} is probably preferable.
-	 *
-	 * Will first check if the page is queued via
-	 * {@link Morebits.wiki.page~fnProcessTriageList|fnProcessTriageList}.
-	 *
-	 * No error handling since we don't actually care about the errors.
-	 *
-	 * @see {@link https://www.mediawiki.org/wiki/Extension:PageTriage} Referred to as "review" on-wiki.
+	 * Op ENwiki bestaat er een 2e functie waarmee een pagina als gecontroleerd gemarkeerd kan worden,
+	 * namelijk Triage. Aangezien NLwiki voor alsnog geen traige functie kent worden alle
+	 * 'gemarkeerd als getriageerd' doorgestruurd naar 'gemarkeerd als gecontroleerd'
+	 * ofwel alles van this.triage(); doorsturen naar this.parol();.
 	 */
 	this.triage = function() {
-		// Fall back to patrol if not a valid triage namespace
-		if (mw.config.get('pageTriageNamespaces').indexOf(new mw.Title(ctx.pageName).getNamespaceId()) === -1) {
-			this.patrol();
-		} else {
-			if (!Morebits.userIsSysop && !Morebits.userIsInGroup('autoconfirmed')) {
-				return;
-			}
-
-			// If on the page in question, don't need to query for page ID
-			if (new mw.Title(Morebits.pageNameNorm).getPrefixedText() === new mw.Title(ctx.pageName).getPrefixedText()) {
-				ctx.pageID = mw.config.get('wgArticleId');
-				fnProcessTriageList(this, this);
-			} else {
-				var query = fnNeedTokenInfoQuery('triage');
-
-				ctx.triageApi = new Morebits.wiki.api('retrieving token...', query, fnProcessTriageList);
-				ctx.triageApi.setParent(this);
-				ctx.triageApi.post();
-			}
-		}
+		this.patrol();
 	};
 
 	// |delete| is a reserved word in some flavours of JS
@@ -3894,7 +3864,7 @@ Morebits.wiki.page = function(pageName, status) {
 			var link = document.createElement('a');
 			link.setAttribute('href', mw.util.getUrl(ctx.pageName));
 			link.appendChild(document.createTextNode(ctx.pageName));
-			ctx.statusElement.info(['completed (', link, ')']);
+			ctx.statusElement.info(['done (', link, ')']);
 			if (ctx.onSaveSuccess) {
 				ctx.onSaveSuccess(this);  // invoke callback
 			}
@@ -4018,14 +3988,14 @@ Morebits.wiki.page = function(pageName, status) {
 				return;
 			}
 
-			ctx.statusElement.info('retrieved page creation information');
+			ctx.statusElement.info('informatie over aanmaker opgevraagd');
 			ctx.onLookupCreationSuccess(this);
 
 		} else {
 			ctx.lookupCreationApi.query.rvlimit = 50; // modify previous query to fetch more revisions
 			ctx.lookupCreationApi.query.titles = ctx.pageName; // update pageName if redirect resolution took place in earlier query
 
-			ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', ctx.lookupCreationApi.query, fnLookupNonRedirectCreator, ctx.statusElement, ctx.onLookupCreationFailure);
+			ctx.lookupCreationApi = new Morebits.wiki.api('Informatie over aanmaker opvragen', ctx.lookupCreationApi.query, fnLookupNonRedirectCreator, ctx.statusElement, ctx.onLookupCreationFailure);
 			ctx.lookupCreationApi.setParent(this);
 			ctx.lookupCreationApi.post();
 		}
@@ -5536,7 +5506,7 @@ Morebits.batchOperation = function(currentAction) {
 				if (arg.getPageName || arg.pageName || (arg.query && arg.query.title)) {
 					// we know the page title - display a relevant message
 					var pageName = arg.getPageName ? arg.getPageName() : arg.pageName || arg.query.title;
-					statelem.info(['completed (', createPageLink(pageName), ')']);
+					statelem.info(['done (', createPageLink(pageName), ')']);
 				} else {
 					// we don't know the page title - just display a generic message
 					statelem.info('done');
@@ -5591,7 +5561,7 @@ Morebits.batchOperation = function(currentAction) {
 			}
 		} else if (ctx.countFinished === total) {
 			var statusString = 'Done (' + ctx.countFinishedSuccess +
-				'/' + ctx.countFinished + ' actions completed successfully)';
+				'/' + ctx.countFinished + ' acties succesvol uitgevoerd)';
 			if (ctx.countFinishedSuccess < ctx.countFinished) {
 				ctx.statusElement.warn(statusString);
 			} else {
@@ -5891,7 +5861,7 @@ Morebits.simpleWindow.prototype = {
 		$(this.content).find('input[type="submit"], button[type="submit"]').each(function(key, value) {
 			value.style.display = 'none';
 			var button = document.createElement('button');
-			button.textContent = value.hasAttribute('value') ? value.getAttribute('value') : value.textContent ? value.textContent : 'Submit Query';
+			button.textContent = value.hasAttribute('value') ? value.getAttribute('value') : value.textContent ? value.textContent : 'Versturen';
 			button.className = value.className || 'submitButtonProxy';
 			// here is an instance of cheap coding, probably a memory-usage hit in using a closure here
 			button.addEventListener('click', function() {
