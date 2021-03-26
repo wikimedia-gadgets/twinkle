@@ -188,7 +188,7 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'CU-verzoeken',
+		title: 'Rapporteer gebruiker',
 		module: 'arv',
 		preferences: [
 			{
