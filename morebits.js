@@ -293,6 +293,24 @@ Morebits.quickForm.element.prototype.render = function QuickFormElementRender(in
 	return currentNode[0];
 };
 
+/**
+ * Render the label for a quickform element.
+ * @param {HTMLElement} labelElement
+ * @param {Node|string|(Node|string)[]} input
+ */
+Morebits.quickForm.element.prototype.generateLabel = function QuickFromElementGenerateLabel(labelElement, input) {
+	if (!Array.isArray(input)) {
+		input = [ input ];
+	}
+	for (var i = 0; i < input.length; ++i) {
+		if (typeof input[i] === 'string') {
+			labelElement.appendChild(document.createTextNode(input[i]));
+		} else if (input[i] instanceof Node) {
+			labelElement.appendChild(input[i]);
+		}
+	}
+};
+
 /** @memberof Morebits.quickForm.element */
 Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(data, in_id) {
 	var node;
@@ -325,16 +343,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			if (data.label) {
 				label = node.appendChild(document.createElement('label'));
 				label.setAttribute('for', id);
-				if (!Array.isArray(data.label)) {
-					data.label = [ data.label ];
-				}
-				for (i = 0; i < data.label.length; ++i) {
-					if (typeof data.label[i] === 'string') {
-						label.appendChild(document.createTextNode(data.label[i]));
-					} else if (data.label[i] instanceof Element) {
-						label.appendChild(data.label[i]);
-					}
-				}
+				this.generateLabel(label, data.label);
 			}
 			var select = node.appendChild(document.createElement('select'));
 			if (data.event) {
@@ -399,16 +408,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 		case 'field':
 			node = document.createElement('fieldset');
 			label = node.appendChild(document.createElement('legend'));
-			if (!Array.isArray(data.label)) {
-				data.label = [ data.label ];
-			}
-			for (i = 0; i < data.label.length; ++i) {
-				if (typeof data.label[i] === 'string') {
-					label.appendChild(document.createTextNode(data.label[i]));
-				} else if (data.label[i] instanceof Element) {
-					label.appendChild(data.label[i]);
-				}
-			}
+			this.generateLabel(label, data.label);
 			if (data.name) {
 				node.setAttribute('name', data.name);
 			}
@@ -456,17 +456,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 					}
 					label = cur_div.appendChild(document.createElement('label'));
 
-					if (!Array.isArray(current.label)) {
-						current.label = [ current.label ];
-					}
-					var j;
-					for (j = 0; j < current.label.length; ++j) {
-						if (typeof current.label[j] === 'string') {
-							label.appendChild(document.createTextNode(current.label[j]));
-						} else if (current.label[j] instanceof Element) {
-							label.appendChild(current.label[j]);
-						}
-					}
+					this.generateLabel(label, current.label);
 					label.setAttribute('for', cur_id);
 					if (current.tooltip) {
 						Morebits.quickForm.element.generateTooltip(label, current);
@@ -550,16 +540,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 
 			if (data.label) {
 				label = node.appendChild(document.createElement('label'));
-				if (!Array.isArray(data.label)) {
-					data.label = [ data.label ];
-				}
-				for (i = 0; i < data.label.length; ++i) {
-					if (typeof data.label[i] === 'string') {
-						label.appendChild(document.createTextNode(data.label[i]));
-					} else if (data.label[i] instanceof Element) {
-						label.appendChild(data.label[i]);
-					}
-				}
+				this.generateLabel(label, data.label);
 				label.setAttribute('for', data.id || id);
 			}
 
@@ -596,17 +577,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node = document.createElement('div');
 
 			label = node.appendChild(document.createElement('h5'));
-			if (!Array.isArray(data.label)) {
-				data.label = [ data.label ];
-			}
-			for (i = 0; i < data.label.length; ++i) {
-				if (typeof data.label[i] === 'string') {
-					label.appendChild(document.createTextNode(data.label[i]));
-				} else if (data.label[i] instanceof Element) {
-					label.appendChild(data.label[i]);
-				}
-			}
-
+			this.generateLabel(label, data.label);
 			var listNode = node.appendChild(document.createElement('div'));
 
 			var more = this.compute({
@@ -706,16 +677,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			break;
 		case 'header':
 			node = document.createElement('h5');
-			if (!Array.isArray(data.label)) {
-				data.label = [ data.label ];
-			}
-			for (i = 0; i < data.label.length; ++i) {
-				if (typeof data.label[i] === 'string') {
-					node.appendChild(document.createTextNode(data.label[i]));
-				} else if (data.label[i] instanceof Element) {
-					node.appendChild(data.label[i]);
-				}
-			}
+			this.generateLabel(node, data.label);
 			break;
 		case 'div':
 			node = document.createElement('div');
@@ -723,18 +685,9 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				node.setAttribute('name', data.name);
 			}
 			if (data.label) {
-				if (!Array.isArray(data.label)) {
-					data.label = [ data.label ];
-				}
 				var result = document.createElement('span');
 				result.className = 'quickformDescription';
-				for (i = 0; i < data.label.length; ++i) {
-					if (typeof data.label[i] === 'string') {
-						result.appendChild(document.createTextNode(data.label[i]));
-					} else if (data.label[i] instanceof Element) {
-						result.appendChild(data.label[i]);
-					}
-				}
+				this.generateLabel(result, data.label);
 				node.appendChild(result);
 			}
 			break;
@@ -771,16 +724,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			if (data.label) {
 				label = node.appendChild(document.createElement('h5'));
 				var labelElement = document.createElement('label');
-				if (!Array.isArray(data.label)) {
-					data.label = [ data.label ];
-				}
-				for (i = 0; i < data.label.length; ++i) {
-					if (typeof data.label[i] === 'string') {
-						labelElement.appendChild(document.createTextNode(data.label[i]));
-					} else if (data.label[i] instanceof Element) {
-						labelElement.appendChild(data.label[i]);
-					}
-				}
+				this.generateLabel(labelElement, data.label);
 				labelElement.setAttribute('for', data.id || id);
 				label.appendChild(labelElement);
 			}
