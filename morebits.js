@@ -5132,13 +5132,30 @@ Morebits.status.prototype = {
 			if (obj[i] instanceof Element) {
 				result.appendChild(obj[i]);
 			} else {
-				$.parseHTML(obj[i]).forEach(function(elem) {
+				$.parseHTML(this.renderWikilinks(obj[i])).forEach(function(elem) {
 					result.appendChild(elem);
 				});
 			}
 		}
 		return result;
+	},
 
+	/**
+	 * Render wikilinks in given string to HTML form. That is, converts `[[Main Page|the main page]]`
+	 * to `<a target="_blank" href="/wiki/Main_Page" title="Main Page">the main page</a>`
+	 * @param {string} text
+	 * @returns {string}
+	 */
+	renderWikilinks: function(text) {
+		return text.replace(
+			/\[\[:?(?:([^|\]]+?)\|)?([^\]|]+?)\]\]/g,
+			function(_, target, text) {
+				if (!target) {
+					target = text;
+				}
+				return '<a target="_blank" href="' + mw.util.getUrl(target) +
+					'" title="' + target.replace(/"/g, '&#34;') + '">' + text + '</a>';
+			});
 	},
 
 	/**
