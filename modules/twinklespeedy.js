@@ -79,8 +79,6 @@
 							cForm.warnusertalk.checked = !cChecked && !Twinkle.speedy.hasCSD;
 							// enable multiple
 							cForm.multiple.checked = false;
-							// enable requesting creation protection
-							cForm.salting.checked = false;
 
 							Twinkle.speedy.callback.modeChanged(cForm);
 
@@ -121,7 +119,7 @@
 						label: 'Verwijder alle doorverwijzingen',
 						value: 'redirects',
 						name: 'redirects',
-						tooltip: 'Verwijder alle inkomende doorverwijzingen. Gebruik dit NIET bij verplaatsingen/samenvoegingen.',
+						tooltip: 'Verwijder alle pagina\'s die doorverwijzingen naar deze pagina. Gebruik dit NIET bij verplaatsingen/samenvoegingen.',
 						checked: Twinkle.getPref('deleteRedirectsOnDelete'),
 						event: function (event) {
 							event.stopPropagation();
@@ -131,18 +129,17 @@
 						label: 'Verwijder wegens meerdere redenen',
 						value: 'delmultiple',
 						name: 'delmultiple',
-						tooltip: 'When selected, you can select several criteria that apply to the page. For example, G11 and A7 are a common combination for articles.',
+						tooltip: 'Indien geselecteerd kun je de pagina voor meerdere RVM criteria verwijderen.',
 						event: function(event) {
 							Twinkle.speedy.callback.modeChanged(event.target.form);
 							event.stopPropagation();
 						}
 					},
 					{
-						label: 'Notificeer aanmaker op overlegpagina',
+						label: 'Breng aanmaker op de hoogte (indien mogelijk)',
 						value: 'warnusertalk',
 						name: 'warnusertalk',
-						tooltip: 'A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences ' +
-							'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
+						tooltip: 'Een mededeling van nominatie wordt op de overlegpagina van de aanmaker geplaatst, OOK moet je dit inschakelen op het Twinkle configuratiescherm ',
 						checked: !Twinkle.speedy.hasCSD,
 						event: function(event) {
 							event.stopPropagation();
@@ -168,30 +165,20 @@
 			type: 'checkbox',
 			list: [
 				{
-					label: 'Notify page creator if possible',
+					label: 'Breng aanmaker op de hoogte (indien mogelijk)',
 					value: 'notify',
 					name: 'notify',
-					tooltip: 'A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences ' +
-						'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
+					tooltip: 'Een mededeling van nominatie wordt op de overlegpagina van de aanmaker geplaatst, OOK moet je dit inschakelen op het Twinkle configuratiescherm ',
 					checked: !Morebits.userIsSysop || !(Twinkle.speedy.hasCSD || Twinkle.getPref('deleteSysopDefaultToDelete')),
 					event: function(event) {
 						event.stopPropagation();
 					}
 				},
 				{
-					label: 'Tag for creation protection (salting) as well',
-					value: 'salting',
-					name: 'salting',
-					tooltip: 'When selected, the speedy deletion tag will be accompanied by a {{salt}} tag requesting that the deleting administrator apply creation protection. Only select if this page has been repeatedly recreated.',
-					event: function(event) {
-						event.stopPropagation();
-					}
-				},
-				{
-					label: 'Tag with multiple criteria',
+					label: 'Nomineer wegens meerdere redenen ',
 					value: 'multiple',
 					name: 'multiple',
-					tooltip: 'When selected, you can select several criteria that apply to the page. For example, G11 and A7 are a common combination for articles.',
+					tooltip: 'Indien geselecteerd kun je de pagina voor meerdere RVM criteria nomineren.',
 					event: function(event) {
 						Twinkle.speedy.callback.modeChanged(event.target.form);
 						event.stopPropagation();
@@ -209,7 +196,7 @@
 		form.append({
 			type: 'div',
 			name: 'work_area',
-			label: 'Failed to initialize the CSD module. Please try again, or tell the Twinkle developers about the issue.'
+			label: 'Inladen nuweg-module mislukt. Probeer nogmaals, of meld het bij de Twinkle ontwikkelaars.'
 		});
 
 		if (Twinkle.getPref('speedySelectionStyle') !== 'radioClick') {
@@ -256,7 +243,7 @@
 
 			work_area.append({
 				type: 'div',
-				label: 'When finished choosing criteria, click:'
+				label: 'Alle gewenste criteria geselecteerd?, klik:'
 			});
 			work_area.append({
 				type: 'button',
@@ -274,15 +261,11 @@
 			work_area.append({ type: mode.isMultiple ? 'checkbox' : 'radio', name: 'csd', list: Twinkle.speedy.generateCsdList(csdList, mode) });
 		};
 
-		if (mode.isSysop && !mode.isMultiple) {
-			appendList('Custom rationale', Twinkle.speedy.customRationale);
-		}
-
 		if (!Morebits.isPageRedirect()) {
 			switch (namespace) {
 				case 2:  // user
 				case 3:  // user talk
-					appendList('User pages', Twinkle.speedy.userList);
+					appendList('Gebruikersnaamruimte', Twinkle.speedy.userList);
 					break;
 
 				default:
@@ -290,24 +273,21 @@
 			}
 		} else {
 			if (namespace === 2 || namespace === 3) {
-				appendList('User pages', Twinkle.speedy.userList);
+				appendList('Gebruikersnaamruimte', Twinkle.speedy.userList);
 			}
 		}
 
 		var generalCriteria = Twinkle.speedy.generalList;
 
 		// custom rationale lives under general criteria when tagging
-		if (!mode.isSysop) {
-			generalCriteria = Twinkle.speedy.customRationale.concat(generalCriteria);
-		}
-		appendList('General criteria', generalCriteria);
+		appendList('RVM criteria', generalCriteria);
 
 		var old_area = Morebits.quickForm.getElements(form, 'work_area')[0];
 		form.replaceChild(work_area.render(), old_area);
 
 		// if sysop, check if CSD is already on the page and fill in custom rationale
 		if (mode.isSysop && Twinkle.speedy.hasCSD) {
-			var customOption = $('input[name=csd][value=reason]')[0];
+			var customOption = $('input[name=nuweg][value=reason]')[0];
 			if (customOption) {
 				if (Twinkle.getPref('speedySelectionStyle') !== 'radioClick') {
 					// force listeners to re-init
@@ -331,13 +311,13 @@
 			lelimit: 5  // A little bit goes a long way
 		};
 
-		new Morebits.wiki.api('Checking for past deletions', query, function(apiobj) {
+		new Morebits.wiki.api('Controleren op voorgaande verwijderingen', query, function(apiobj) {
 			var response = apiobj.getResponse();
 			var delCount = response.query.logevents.length;
 			if (delCount) {
-				var message = delCount + ' voorgaande verwijderingen';
+				var message = delCount + ' voorgaande verwijdering';
 				if (delCount > 1) {
-					message += 's';
+					message += 'en';
 					if (response.continue) {
 						message = 'Meer dan ' + message;
 					}
@@ -428,7 +408,7 @@
 					criterion.subgroup = criterion.subgroup.concat({
 						type: 'button',
 						name: 'submit',
-						label: mode.isSysop ? 'Delete page' : 'Tag page',
+						label: mode.isSysop ? 'Verwijder pagina' : 'Nomineer pagina',
 						event: submitSubgroupHandler
 					});
 				} else {
@@ -450,26 +430,10 @@
 		});
 	};
 
-	Twinkle.speedy.customRationale = [
-		{
-			label: 'Aangepaste reden',
-			value: 'reason',
-			tooltip: 'Denk er om dat {{nuweg}} alleen voor de reden gebruikt mag worden die op WP:RVM omschreven staan, in alle andere gevallen dien je een TBx-verzoek te gebruiken.',
-			subgroup: {
-				name: 'reason_1',
-				type: 'input',
-				label: 'Reden: ',
-				size: 60
-			},
-			hideWhenMultiple: true
-		}
-	];
-
 	Twinkle.speedy.userList = [
 		{
 			label: 'Pagina in de eigen naamruimte op eigen verzoek',
 			value: 'Verzoek in eigen naamruimte',
-			tooltip: 'Personal subpages, upon request by their user. In some rare cases there may be administrative need to retain the page. Also, sometimes, main user pages may be deleted as well. See Wikipedia:User page for full instructions and guidelines',
 			subgroup: mw.config.get('wgNamespaceNumber') === 3 && mw.config.get('wgTitle').indexOf('/') === -1 ? {
 				name: 'userreq_rationale',
 				type: 'input',
@@ -484,36 +448,36 @@
 	Twinkle.speedy.generalList = [
 		{
 			label: 'Pagina zonder inhoud',
-			value: 'Lege pagina',
+			value: 'leeg',
 			tooltip: 'Een lege pagina, of een aantal losse letters die geen woorden vormen.',
 
 		},
 		{
 			label: 'Pagina met inhoud zonder zinvolle informatie.',
-			value: 'Geen zinvolle inhoud',
-			tooltip: 'Wees er zeker van dat het volstrekte nonsens is. Als er ook maar de geringste twijfel bestaat, is het beter de pagina te plaatsen op de TBP.',
+			value: 'nonsense',
+			tooltip: 'Wees er zeker van dat het volstrekte nonsense is. Als er ook maar de geringste twijfel bestaat, is het beter de pagina te nomineren via TBx.',
 			hideInNamespaces: [ 2 ] // Not applicable in userspace
 		},
 		{
 			label: 'Machinevertaling of niet in het Nederlands geschreven',
-			value: 'Machinevertaling/Niet Nederlandse tekst',
+			value: 'vertaling',
 		},
 		{
 			label: 'Overduidelijke reclame',
-			value: 'Overduidelijke reclame',
+			value: 'reclame',
 		},
 		{
 			label: 'Cyberpesten',
-			value: 'Cyberpesten',
+			value: 'cyberpesten',
 		},
 		{
 			label: 'Overduidelijke zelfpromotie',
-			value: 'Overduidelijke zelfpromotie',
+			value: 'zelfpromotie',
 			tooltip: 'Op grond van de geboortedatum is het onmogelijk dat de persoon opmerkelijke dingen heeft gedaan en/of na een zoektocht op internet worden geen relevante verwijzingen gevonden',
 		},
 		{
 			label: 'Overduidelijke auteursrechtenschending',
-			value: 'Auteursrechten schending van:',
+			value: 'copyvio',
 			subgroup: [
 				{
 					name: 'copyvio_url',
@@ -536,25 +500,94 @@
 					tooltip: 'Optioneel. Dient te beginnen met "http://" of "https://"',
 					size: 60
 				}
-			]
-		}
+			],
+		},
+		{
+			label: 'Afhandelen TBx nominatie',
+			value: 'tbx',
+			hideWhenUser: true,
+			hideWhenMultiple: true,
+			subgroup: [
+				{
+					name: 'venue',
+					type: 'select',
+					label: 'Nominatiepagina: ',
+					list: [
+						{
+							value: 'TBP',
+							type: 'option',
+							label: 'Te Beoordelen Pagina',
+							selected: true
+						},
+						{
+							value: 'TBS',
+							type: 'option',
+							label: 'Te Beoordelen Sjabloon'
+						},
+						{
+							value: 'TBC',
+							type: 'option',
+							label: 'Te Beoordelen Categorie'
+						}
+					],
+				},
+				{
+					name: 'daypage',
+					type: 'number',
+					label: 'Dagpagina: ',
+					tooltip: 'De datum van nominatie, in het formaat JJJJMMDD',
+					placeholder: 'JJJJMMDD',
+					size: 8,
+					min: 20000101,
+					max: 21001231,
+				},
+			],
+		},
+		{
+			label: 'Verwijdering wegens verplaatsing/naamwijziging',
+			value: 'verplaatsing',
+			hideWhenUser: true,
+			hideWhenMultiple: true
+		},
 	];
 
 	Twinkle.speedy.normalizeHash = {
-		reason: 'db',
-		'Lege pagina': 'g1',
-		'Geen zinvolle inhoud': 'g2',
-		'Machinevertaling/Niet Nederlandse tekst': 'g3',
-		'Overduidelijke zelfpromotie': 'g4',
-		'Cyberpesten': 'g10',
-		'Overduidelijke reclame': 'g11',
-		'Auteursrechten schending van:': 'g12',
-		'Verzoek in eigen naamruimte': 'u1',
+		leeg: 'g1',
+		nonsense: 'g2',
+		vertaling: 'g3',
+		zelfpromotie: 'g4',
+		cyberpesten: 'g5',
+		reclame: 'g6',
+		copyvio: 'g7',
+		eigennaamruimte: 'u1',
+		tbx: 's1',
+		verplaatsing: 's2',
 	};
 
-	Twinkle.speedy.reasonTranslate = {
-		reason: '',
+	Twinkle.speedy.templateReason = {
+		leeg: 'Lege pagina',
+		nonsense: 'Geen zinvolle inhoud',
+		vertaling: 'Machinevertaling/Niet Nederlandse tekst',
+		zelfpromotie: 'Overduidelijke zelfpromotie',
+		cyberpesten: 'Cyberpesten',
+		reclame: 'Overduidelijke reclame',
+		copyvio: 'Auteursrechten schending van',
+		eigennaamruimte: 'Verzoek in eigen naamruimte',
 	};
+
+	Twinkle.speedy.deleteReason = {
+		leeg: 'lege pagina',
+		nonsense: 'geen zinvolle inhoud',
+		vertaling: 'machinevertaling/niet Nederlandse tekst',
+		zelfpromotie: 'overduidelijke zelfpromotie',
+		cyberpesten: 'cyberpesten',
+		reclame: 'overduidelijke reclame',
+		copyvio: 'auteursrechten schending',
+		eigennaamruimte: 'verzoek in eigen naamruimte',
+		tbx: 'afhandelen TBx nominatie',
+		verplaatsing: 'verplaatsing/naamwijziging',
+	};
+
 
 	Twinkle.speedy.callbacks = {
 		getTemplateCodeAndParams: function(params) {
@@ -563,7 +596,7 @@
 				code = '{{nuweg|';
 				params.utparams = {};
 				$.each(params.normalizeds, function(index, norm) {
-					code += '\n *' + params.values[index];
+					code += params.templateReason[index] + '; ';
 					parameters = params.templateParams[index] || [];
 					for (var i in parameters) {
 						if (typeof parameters[i] === 'string' && !parseInt(i, 10)) {  // skip numeric parameters - {{db-multiple}} doesn't understand them
@@ -575,7 +608,7 @@
 				code += '}}';
 			} else {
 				parameters = params.templateParams[0] || [];
-				code = '{{nuweg|' + params.values[0]; //FIXME: dit geeft een vreemde prefix output als er voor vrije invoer (reason) gekozen is.
+				code = '{{nuweg|' + params.templateReason[0];
 				for (i in parameters) {
 					if (typeof parameters[i] === 'string') {
 						code += ' ' + parameters[i];
@@ -588,58 +621,33 @@
 			return [code, params.utparams];
 		},
 
-		parseWikitext: function(wikitext, callback) {
-			var query = {
-				action: 'parse',
-				prop: 'text',
-				pst: 'true',
-				text: wikitext,
-				contentmodel: 'wikitext',
-				title: mw.config.get('wgPageName'),
-				disablelimitreport: true,
-				format: 'json'
-			};
-
-			var statusIndicator = new Morebits.status('Building deletion summary');
-			var api = new Morebits.wiki.api('Parsing deletion template', query, function(apiobj) {
-				var reason = decodeURIComponent($(apiobj.getResponse().parse.text).find('#delete-reason').text()).replace(/\+/g, ' ');
-				if (!reason) {
-					statusIndicator.warn('Unable to generate summary from deletion template');
-				} else {
-					statusIndicator.info('done');
-				}
-				callback(reason);
-			}, statusIndicator);
-			api.post();
-		},
-
 		noteToCreator: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
 			var initialContrib = pageobj.getCreator();
 
 			// disallow notifying yourself
 			if (initialContrib === mw.config.get('wgUserName')) {
-				Morebits.status.warn('You (' + initialContrib + ') created this page; skipping user notification');
+				Morebits.status.warn('Jij (' + initialContrib + ') hebt deze pagina aangemaakt; notificatie overgeslagen');
 				initialContrib = null;
 
 				// don't notify users when their user talk page is nominated/deleted
 			} else if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
-				Morebits.status.warn('Notifying initial contributor: this user created their own user talk page; skipping notification');
+				Morebits.status.warn('Notificeer originele aanmaker: deze gebruiker heeft zijn/haar eigen overlegpagina gemaakt; notificatie overgeslagen');
 				initialContrib = null;
 
 				// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page...
 			} else if ((initialContrib === 'Cyberbot I' || initialContrib === 'SoxBot') && params.normalizeds[0] === 'f2') {
-				Morebits.status.warn('Notifying initial contributor: page created procedurally by bot; skipping notification');
+				Morebits.status.warn('Notificeer originele aanmaker: pagina is door een bot aangemaakt, notificatie overgeslagen');
 				initialContrib = null;
 
 				// Check for already existing tags
 			} else if (Twinkle.speedy.hasCSD && params.warnUser && !confirm('The page is has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?')) {
-				Morebits.status.info('Notifying initial contributor', 'canceled by user; skipping notification.');
+				Morebits.status.info('Notificeer originele aanmaker', 'geannuleerd door gebruiker.');
 				initialContrib = null;
 			}
 
 			if (initialContrib) {
-				var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')'),
+				var usertalkpage = new Morebits.wiki.page('Overleg gebruiker:' + initialContrib, 'Notificeer originele aanmaker (' + initialContrib + ')'),
 					notifytext, i, editsummary;
 
 				// special cases: "db" and "db-multiple"
@@ -668,11 +676,15 @@
 				}
 				notifytext += (params.welcomeuser ? '' : '|nowelcome=yes') + '}} ~~~~';
 
-				editsummary = 'Notification: speedy deletion' + (params.warnUser ? '' : ' nomination');
-				if (params.normalizeds.indexOf('g10') === -1) {  // no article name in summary for G10 taggings
-					editsummary += ' of [[:' + Morebits.pageNameNorm + ']].';
+				if (params.normalizeds.indexOf('s1') === -1) {
+					editsummary = 'Mededeling: ' + (params.warnUser ? 'Directe verwijdering' : ' Nuweg nominatie');
+					if (params.normalizeds.indexOf('g5') === -1) {  // no article name in summary for cyberbullying
+						editsummary += ' van [[' + Morebits.pageNameNorm + ']].';
+					} else {
+						editsummary += ' van een cyberpestpagina.';
+					}
 				} else {
-					editsummary += ' of an attack page.';
+					editsummary = 'Mededeling: Verwijdering van [[' + Morebits.pageNameNorm + ']] n.a.v. TBP nominatie';
 				}
 
 				usertalkpage.setAppendText(notifytext);
@@ -701,26 +713,29 @@
 		sysop: {
 			main: function(params) {
 				var reason;
-				if (!params.normalizeds.length && params.normalizeds[0] === 'db') {
-					reason = prompt('Enter the deletion summary to use, which will be entered into the deletion log:', '');
-					Twinkle.speedy.callbacks.sysop.deletePage(reason, params);
-				} else {
-					var code = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params)[0];
-					Twinkle.speedy.callbacks.parseWikitext(code, function(reason) {
-						if (params.promptForSummary) {
-							reason = prompt('Enter the deletion summary to use, or press OK to accept the automatically generated one.', reason);
-						}
-						Twinkle.speedy.callbacks.sysop.deletePage(reason, params);
+
+				if (params.normalizeds.length > 1) {
+					reason = "Direct verwijderd om de volgende redenen: "
+					$.each(params.normalizeds, function(index) {
+						reason += params.deleteReason[index] + '; ';
 					});
+				} else {
+					if (params.normalizeds.indexOf('s1') !== -1) { //TBx afhandeling
+						reason = 'Per beoordelingssessie [[WP:' + params.templateParams[0]['1'] + '/Toegevoegd ' + params.templateParams[0]['2'] + '#' + Morebits.pageNameNorm + ']]';
+					} else {
+						reason = 'Direct verwijderd wegens ' + params.deleteReason;
+					}
 				}
+
+				Twinkle.speedy.callbacks.sysop.deletePage(reason, params);
 			},
 			deletePage: function(reason, params) {
-				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Deleting page');
+				var thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Pagina verwijderen...');
 
 				if (reason === null) {
-					return Morebits.status.error('Asking for reason', 'User cancelled');
-				} else if (!reason || !reason.replace(/^\s*/, '').replace(/\s*$/, '')) {
-					return Morebits.status.error('Asking for reason', "you didn't give one.  I don't know... what with admins and their apathetic antics... I give up...");
+					return Morebits.status.error('Verwijderen afgebroken', 'Gebruiker annuleert');
+				} else if (!reason) {
+					return Morebits.status.error('Verwijderen afgebroken', "Stiekem pagina's verwijderen zonder reden? Dat is vragen om een desysop...");
 				}
 
 				var deleteMain = function(callback) {
@@ -752,8 +767,8 @@
 				if (params.deleteTalkPage &&
 					params.normalized !== 'f8' &&
 					document.getElementById('ca-talk').className !== 'new') {
-					var talkpage = new Morebits.wiki.page(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceNumber') + 1] + ':' + mw.config.get('wgTitle'), 'Deleting talk page');
-					talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page "' + Morebits.pageNameNorm + '"');
+					var talkpage = new Morebits.wiki.page(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceNumber') + 1] + ':' + mw.config.get('wgTitle'), 'Overlegpagina verwijderen');
+					talkpage.setEditSummary('Overlegpagina van verwijderde pagina "' + Morebits.pageNameNorm + '"');
 					talkpage.setChangeTags(Twinkle.changeTags);
 					talkpage.deletePage();
 					// this is ugly, but because of the architecture of wiki.api, it is needed
@@ -775,8 +790,8 @@
 						rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 						format: 'json'
 					};
-					var wikipedia_api = new Morebits.wiki.api('getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
-						new Morebits.status('Deleting redirects'));
+					var wikipedia_api = new Morebits.wiki.api('lijst met doorverwijzingen ophalen...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
+						new Morebits.status('Doorverwijzingen verwijderen'));
 					wikipedia_api.params = params;
 					wikipedia_api.post();
 				}
@@ -788,7 +803,7 @@
 				var statusIndicator = apiobj.statelem;
 
 				if (!total) {
-					statusIndicator.status('no redirects found');
+					statusIndicator.status('geen doorverwijzingen gevonden');
 					return;
 				}
 
@@ -800,7 +815,7 @@
 					statusIndicator.update(now);
 					apiobjInner.statelem.unlink();
 					if (current >= total) {
-						statusIndicator.info(now + ' (completed)');
+						statusIndicator.info(now + ' (voltooid)');
 						Morebits.wiki.removeCheckpoint();
 					}
 				};
@@ -809,8 +824,8 @@
 
 				snapshot.forEach(function(value) {
 					var title = value.title;
-					var page = new Morebits.wiki.page(title, 'Deleting redirect "' + title + '"');
-					page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + Morebits.pageNameNorm + '"');
+					var page = new Morebits.wiki.page(title, 'Doorverwijzing verwijderen "' + title + '"');
+					page.setEditSummary('Doorverwijzing naar verwijderde pagina "' + Morebits.pageNameNorm + '"');
 					page.setChangeTags(Twinkle.changeTags);
 					page.deletePage(onsuccess);
 				});
@@ -822,7 +837,7 @@
 				var statelem = pageobj.getStatusElement();
 
 				if (!pageobj.exists()) {
-					statelem.error("It seems that the page doesn't exist; perhaps it has already been deleted");
+					statelem.error("Het lijkt er op dat de pagina niet meer bestaat, misschien is hij al verwijderd?");
 					return;
 				}
 
@@ -843,17 +858,17 @@
 				if (pageobj.canEdit() && ['wikitext', 'Scribunto', 'javascript', 'css', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
 					var text = pageobj.getPageText();
 
-					statelem.status('Checking for tags on the page...');
+					statelem.status('Controleren op bestaande nominaties...');
 
 					// check for existing deletion tags
 					var tag = /(?:\{\{\s*(nuweg|delete)(?:\s*\||\s*\}\}))/.exec(text);
 					// This won't make use of the db-multiple template but it probably should
-					if (tag && !confirm('De pagina heeft al een {{' + tag[1] + '}} nominatie.  Wil je een extra nominatie toevoegen?')) {
+					if (tag && !confirm('De pagina heeft al een {{nuweg}} nominatie. Wil je een extra nominatie toevoegen?')) {
 						return;
 					}
 
-					var xfd = /\{\{((?:article for deletion|proposed deletion|prod blp|template for discussion)\/dated|[cfm]fd\b)/i.exec(text) || /#invoke:(Redirect for discussion)/.exec(text);
-					if (xfd && !confirm('The deletion-related template {{' + xfd[1] + '}} was found on the page. Do you still want to add a CSD template?')) {
+					var xfd = /(?:\{\{\s*(wiu|ne|wb|auteur|reclame|weg)(?:\s*\||\s*\}\}))/.exec(text);
+					if (xfd && !confirm('De pagina heeft al een {{' + xfd[1] + '}} nominatie. Weet je zeker dat je een nuweg-nominatie wil toevoegen?')) {
 						return;
 					}
 
@@ -869,19 +884,6 @@
 						code = '<noinclude>' + code + '</noinclude>';
 					}
 
-				var xfd = /\{\{((?:article for deletion|proposed deletion|prod blp|template for discussion)\/dated|[cfm]fd\b)/i.exec(text) || /#invoke:(RfD)/.exec(text);
-				if (xfd && !confirm('The deletion-related template {{' + xfd[1] + '}} was found on the page. Do you still want to add a CSD template?')) {
-					return;
-				}
-
-					// Remove tags that become superfluous with this action
-					text = text.replace(/\{\{\s*([Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, '');
-					if (mw.config.get('wgNamespaceNumber') === 6) {
-						// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
-						text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
-					}
-
-
 					if (mw.config.get('wgPageContentModel') === 'Scribunto') {
 						// Scribunto isn't parsed like wikitext, so CSD templates on modules need special handling to work
 						var equals = '';
@@ -895,22 +897,10 @@
 					}
 
 					// Generate edit summary for edit
-					var editsummary;
-					if (params.normalizeds.length > 1) {
-						editsummary = 'Verzoek voor directe verwijdering (';
-						$.each(params.normalizeds, function(index, norm) {
-							editsummary += '[[WP:CSD#' + norm.toUpperCase() + '|CSD ' + norm.toUpperCase() + ']], ';
-						});
-						editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
-						editsummary += ').';
-					} else if (params.normalizeds[0] === 'db') {
-						editsummary = 'Verzoek voor directe verwijdering wegens "' + params.templateParams[0]['1'] + '".';
-					} else {
-						editsummary = 'Verzoek om directe verwijdering ([[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']]).';
-					}
+					var editsummary = 'Verzoek om directe verwijdering (' + params.values + ').';
 
 					// Blank attack pages
-					if (params.normalizeds.indexOf('g10') !== -1) {
+					if (params.normalizeds.indexOf('g5') !== -1) {
 						text = code;
 					} else {
 						// Insert tag after short description or any hatnotes
@@ -926,9 +916,6 @@
 				} else { // Attempt to place on talk page
 					var talkName = new mw.Title(pageobj.getPageName()).getTalkPage().toText();
 					if (talkName !== pageobj.getPageName()) {
-						if (params.requestsalt) {
-							code += '\n{{salt}}';
-						}
 
 						pageobj.getStatusElement().warn('Unable to edit page, placing tag on talk page');
 
@@ -964,13 +951,13 @@
 			addToLog: function(params, initialContrib) {
 				var usl = new Morebits.userspaceLogger(Twinkle.getPref('speedyLogPageName'));
 				usl.initialText =
-					"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
-					'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
-					'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].' +
-					(Morebits.userIsSysop ? '\n\nThis log does not track outright speedy deletions made using Twinkle.' : '');
+					"Dit is een log van alle nuweg-nominaties gemaakt door deze gebruiker middels [[WP:TW|Twinkle]].\n\n" +
+					'Indien je dit logboek niet langer wenst bij te houden, pas dan je instellingen aan op het [[Wikipedia:Twinkle/Preferences|configuratiescherm]].' +
+					'Eventueel kun je deze pagina vervolgens nomineren voor directe verwijdering.' +
+					(Morebits.userIsSysop ? '\n\nDit logboek bewaard niet je moderatorafhandelingen gemaakt met Twinkle.' : '');
 
 				var formatParamLog = function(normalize, csdparam, input) {
-					if (normalize === 'G12' && csdparam.lastIndexOf('url', 0) === 0 && input.lastIndexOf('http', 0) === 0) {
+					if (normalize === 'G7' && csdparam.lastIndexOf('url', 0) === 0 && input.lastIndexOf('http', 0) === 0) {
 						input = '[' + input + ' ' + input + ']';
 					}
 					return ' {' + normalize + ' ' + csdparam + ': ' + input + '}';
@@ -984,7 +971,7 @@
 				var editsummary = 'Logging speedy deletion nomination';
 				var appendText = '# [[:' + Morebits.pageNameNorm;
 
-				if (params.normalizeds.indexOf('g10') === -1) {  // no article name in log for G10 taggings
+				if (params.normalizeds.indexOf('g5') === -1) {  // no article name in log for G5 taggings
 					appendText += ']]' + fileLogLink + ': ';
 					editsummary += ' of [[:' + Morebits.pageNameNorm + ']].';
 				} else {
@@ -1013,7 +1000,7 @@
 						params.templateParams.forEach(function(item, index) {
 							var keys = Object.keys(item);
 							if (keys[0] !== undefined && keys[0].length > 0) {
-								// Second loop required since some items (G12, F9) may have multiple keys
+								// Second loop required since some items (G7) may have multiple keys
 								keys.forEach(function(key, keyIndex) {
 									if (keys[keyIndex] === 'blanked' || keys[keyIndex] === 'ts') {
 										return true; // Not worth logging
@@ -1046,24 +1033,33 @@
 		$.each(values, function(index, value) {
 			var currentParams = [];
 			switch (value) {
-				case 'reason':
-					if (form['csd.reason_1']) {
-						var dbrationale = form['csd.reason_1'].value;
-						if (!dbrationale || !dbrationale.trim()) {
-							alert('Aangepaste reden:  geef een reden op.');
+				case 'tbx': //S1
+					if (form['csd.venue']) {
+						var s1venue = form['csd.venue'].value;
+						if (!s1venue || !s1venue.trim()) {
+							alert('Geef de nominatiepagina op.');
 							parameters = null;
 							return false;
 						}
-						currentParams['1'] = dbrationale;
+						currentParams['1'] = s1venue;
+					}
+					if (form['csd.daypage']){
+						var s1daypage = form['csd.daypage'].value;
+						if (!s1daypage || !s1daypage.trim()) {
+							alert('Geef een dagpagina op in JJJJMMDD stijl.');
+							parameters = null;
+							return false;
+						}
+						currentParams['2'] = s1daypage;
 					}
 					break;
 
-				case 'Verzoek in eigen naamruimte':  // U1
+				case 'eigennaamruimte':  // U1
 					if (form['csd.userreq_rationale']) {
 						var u1rationale = form['csd.userreq_rationale'].value;
 						if (mw.config.get('wgNamespaceNumber') === 3 && !(/\//).test(mw.config.get('wgTitle')) &&
 							(!u1rationale || !u1rationale.trim())) {
-							alert('CSD U1:  Please specify a rationale when nominating user talk pages.');
+							alert('Geef een reden op om een gebruikersoverlegpagina te nomineren.');
 							parameters = null;
 							return false;
 						}
@@ -1071,7 +1067,7 @@
 					}
 					break;
 
-				case 'Auteursrechten schending van:':  // G12
+				case 'copyvio':  // G7
 					if (form['csd.copyvio_url'] && form['csd.copyvio_url'].value) {
 						currentParams.url = form['csd.copyvio_url'].value;
 					}
@@ -1098,12 +1094,10 @@
 		var utparams = [];
 
 		// Special cases
-		if (normalized === 'db') {
-			utparams['2'] = parameters['1'];
-		} else if (normalized === 'g6') {
+		if (normalized === 'g6') {
 			utparams.key1 = 'to';
 			utparams.value1 = Morebits.pageNameNorm;
-		} else if (normalized === 'g12') {
+		} else if (normalized === 'g7') {
 			['url', 'url2', 'url3'].forEach(function(item, idx) {
 				if (parameters[item]) {
 					idx++;
@@ -1167,15 +1161,25 @@
 			return Twinkle.speedy.normalizeHash[value];
 		});
 
+		var templateReason = values.map(function(value) {
+			return Twinkle.speedy.templateReason[value];
+		});
+
+		var deleteReason = values.map(function(value) {
+			return Twinkle.speedy.deleteReason[value];
+		});
+
 		// analyse each criterion to determine whether to watch the page, prompt for summary, or notify the creator
-		var watchPage, promptForSummary;
+		var watchPage;
 		normalizeds.forEach(function(norm) {
 			if (Twinkle.getPref('watchSpeedyPages').indexOf(norm) !== -1) {
 				watchPage = Twinkle.getPref('watchSpeedyExpiry');
 			}
-			if (Twinkle.getPref('promptForSpeedyDeletionSummary').indexOf(norm) !== -1) {
-				promptForSummary = true;
-			}
+		});
+
+		var warnusertalk = form.warnusertalk.checked && normalizeds.some(function (norm, index) {
+			return Twinkle.getPref('warnUserOnSpeedyDelete').indexOf(norm) !== -1 &&
+				!(norm === 'g6' && values[index] !== 'copypaste');
 		});
 
 		var welcomeuser = warnusertalk && normalizeds.some(function (norm) {
@@ -1185,12 +1189,13 @@
 		var params = {
 			values: values,
 			normalizeds: normalizeds,
+			templateReason: templateReason,
+			deleteReason: deleteReason,
 			watch: watchPage,
 			deleteTalkPage: form.talkpage && form.talkpage.checked,
 			deleteRedirects: form.redirects.checked,
 			warnUser: warnusertalk,
 			welcomeuser: welcomeuser,
-			promptForSummary: promptForSummary,
 			templateParams: templateParams
 		};
 
@@ -1223,6 +1228,14 @@
 			return Twinkle.speedy.normalizeHash[value];
 		});
 
+		var templateReason = values.map(function(value) {
+			return Twinkle.speedy.templateReason[value];
+		});
+
+		var deleteReason = values.map(function(value) {
+			return Twinkle.speedy.deleteReason[value];
+		});
+
 		// analyse each criterion to determine whether to watch the page/notify the creator
 		var watchPage = normalizeds.some(function(norm) {
 			return Twinkle.getPref('watchSpeedyPages').indexOf(norm) !== -1 && Twinkle.getPref('watchSpeedyExpiry');
@@ -1241,11 +1254,12 @@
 		var params = {
 			values: values,
 			normalizeds: normalizeds,
+			deleteReason: deleteReason,
+			templateReason: templateReason,
 			watch: watchPage,
 			usertalk: notifyuser,
 			welcomeuser: welcomeuser,
 			lognomination: csdlog,
-			requestsalt: form.salting.checked,
 			templateParams: templateParams
 		};
 
@@ -1253,7 +1267,7 @@
 		Morebits.status.init(form);
 
 		Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-		Morebits.wiki.actionCompleted.notice = 'Nomineren voltooit';
+		Morebits.wiki.actionCompleted.notice = 'Nomineren voltooid. Pagina wordt herladen...';
 
 		var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Pagina nomineren');
 		wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage

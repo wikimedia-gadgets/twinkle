@@ -354,7 +354,7 @@ Twinkle.xfd.callbacks = {
 		if (venue === 'afd') {
 			var text = '\n== [[' + Morebits.pageNameNorm + ']] ==\n';
 			text += '{{tbp-links|' + Morebits.pageNameNorm + '}}\n';
-			text += '\'\'\'' + params.sjabloon + '\'\'\' &ndash; ' + params.reason + ' &ndash; ~~~~';
+			text += '\'\'\'' + params.sjabloon.toUpperCase() + '\'\'\' &ndash; ' + params.reason + ' &ndash; ~~~~';
 			return text;
 		} else if (venue === 'cfd') {
 			var text = '{{categorieweg';
@@ -551,7 +551,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			// Check for existing AfD tag, for the benefit of new page patrollers
-			var textNoAfd = text.replace(/<!--.*AfD.*\n\{\{(?:Article for deletion\/dated|AfDM).*\}\}\n<!--.*(?:\n<!--.*)?AfD.*(?:\s*\n)?/g, '');
+			var textNoAfd = text.replace(/(?:\{\{\s*(wiu|ne|wb|auteur|reclame|weg)(?:\s*\||\s*\}\}))/ig, '');
 			if (text !== textNoAfd) {
 				if (confirm('Een TBP sjabloon is al gevonden op dit artikel. Misschien was iemand sneller.  \nKlik op OK om de nominatie te vervangen met jouw nominatie (niet verstandig), of Cancel om je nominatie af te breken.')) {
 					text = textNoAfd;
