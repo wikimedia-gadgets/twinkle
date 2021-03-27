@@ -5462,7 +5462,7 @@ Morebits.batchOperation = function(currentAction) {
 		},
 
 		// internal counters, etc.
-		statusElement: new Morebits.status(currentAction || 'Performing batch operation'),
+		statusElement: new Morebits.status(currentAction || msg('batch-starting', 'Performing batch operation')),
 		worker: null, // function that executes for each item in pageList
 		postFinish: null, // function that executes when the whole batch has been processed
 		countStarted: 0,
@@ -5529,7 +5529,7 @@ Morebits.batchOperation = function(currentAction) {
 
 		var total = ctx.pageList.length;
 		if (!total) {
-			ctx.statusElement.info('no pages specified');
+			ctx.statusElement.info(msg('batch-no-pages', 'no pages specified'));
 			ctx.running = false;
 			if (ctx.postFinish) {
 				ctx.postFinish();
@@ -5926,7 +5926,7 @@ Morebits.simpleWindow.prototype = {
 		$(this.content).find('input[type="submit"], button[type="submit"]').each(function(key, value) {
 			value.style.display = 'none';
 			var button = document.createElement('button');
-			button.textContent = value.hasAttribute('value') ? value.getAttribute('value') : value.textContent ? value.textContent : 'Submit Query';
+			button.textContent = value.hasAttribute('value') ? value.getAttribute('value') : value.textContent ? value.textContent : msg('submit', 'Submit Query');
 			button.className = value.className || 'submitButtonProxy';
 			// here is an instance of cheap coding, probably a memory-usage hit in using a closure here
 			button.addEventListener('click', function() {
@@ -5974,7 +5974,7 @@ Morebits.simpleWindow.prototype = {
 		var $footerlinks = $(this.content).dialog('widget').find('.morebits-dialog-footerlinks');
 		if (this.hasFooterLinks) {
 			var bullet = document.createElement('span');
-			bullet.textContent = ' \u2022 ';  // U+2022 BULLET
+			bullet.textContent = msg('spaced-bullet', ' \u2022 ');  // U+2022 BULLET
 			if (prep) {
 				$footerlinks.prepend(bullet);
 			} else {
