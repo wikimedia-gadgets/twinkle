@@ -10,6 +10,9 @@ stash*.diff
 .vscode/
 patch-test-loader.js
 
+# Idea
+.idea
+
 # Windows
 Thumbs.db
 ehthumbs.db
