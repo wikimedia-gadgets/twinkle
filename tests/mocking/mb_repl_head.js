@@ -10,6 +10,7 @@ global.document = window.document;
 
 global.HTMLFormElement = window.HTMLFormElement;
 global.Element = window.Element;
+global.Node = window.Node;
 
 global.jQuery = require('jquery');
 
