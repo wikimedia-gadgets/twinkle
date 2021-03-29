@@ -252,7 +252,6 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
 Morebits.quickForm.element = function QuickFormElement(data) {
 	this.data = data;
 	this.childs = [];
-	this.id = Morebits.quickForm.element.id++;
 };
 
 /**
@@ -302,7 +301,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 	var node;
 	var childContainer = null;
 	var label;
-	var id = (in_id ? in_id + '_' : '') + 'node_' + this.id;
+	var id = (in_id ? in_id + '_' : '') + 'node_' + Morebits.quickForm.element.id++;
 	if (data.adminonly && !Morebits.userIsSysop) {
 		// hell hack alpha
 		data.type = 'hidden';
