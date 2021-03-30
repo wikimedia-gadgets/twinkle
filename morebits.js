@@ -2357,7 +2357,7 @@ Morebits.wiki.api.prototype = {
 					// as the first argument to the callback (for legacy code)
 					this.onSuccess.call(this.parent, this);
 				} else {
-					this.statelem.info('done');
+					this.statelem.info(msg('done', 'done'));
 				}
 
 				Morebits.wiki.actionCompleted();
@@ -5557,13 +5557,6 @@ Morebits.batchOperation = function(currentAction) {
 	 */
 	this.workerSuccess = function(arg) {
 
-		var createPageLink = function(pageName) {
-			var link = document.createElement('a');
-			link.setAttribute('href', mw.util.getUrl(pageName));
-			link.appendChild(document.createTextNode(pageName));
-			return link;
-		};
-
 		if (arg instanceof Morebits.wiki.api || arg instanceof Morebits.wiki.page) {
 			// update or remove status line
 			var statelem = arg.getStatusElement();
@@ -5571,10 +5564,10 @@ Morebits.batchOperation = function(currentAction) {
 				if (arg.getPageName || arg.pageName || (arg.query && arg.query.title)) {
 					// we know the page title - display a relevant message
 					var pageName = arg.getPageName ? arg.getPageName() : arg.pageName || arg.query.title;
-					statelem.info(['completed (', createPageLink(pageName), ')']);
+					statelem.info(msg('batch-done-page', pageName, 'completed ([[' + pageName + ']]'));
 				} else {
 					// we don't know the page title - just display a generic message
-					statelem.info('done');
+					statelem.info(msg('done', 'done'));
 				}
 			} else {
 				// remove the status line automatically produced by Morebits.wiki.*
@@ -5582,7 +5575,7 @@ Morebits.batchOperation = function(currentAction) {
 			}
 
 		} else if (typeof arg === 'string' && ctx.options.preserveIndividualStatusLines) {
-			new Morebits.status(arg, ['done (', createPageLink(arg), ')']);
+			new Morebits.status(arg, msg('batch-done-page', arg, 'done ([[' + arg + ']])'));
 		}
 
 		ctx.countFinishedSuccess++;
@@ -5616,7 +5609,8 @@ Morebits.batchOperation = function(currentAction) {
 		// update overall status line
 		var total = ctx.pageList.length;
 		if (ctx.countFinished < total) {
-			ctx.statusElement.status(parseInt(100 * ctx.countFinished / total, 10) + '%');
+			var progress = Math.round(100 * ctx.countFinished / total);
+			ctx.statusElement.status(msg('n-percent', progress, progress + '%'));
 
 			// start a new chunk if we're close enough to the end of the previous chunk, and
 			// we haven't already started the next one
@@ -5625,8 +5619,8 @@ Morebits.batchOperation = function(currentAction) {
 				fnStartNewChunk();
 			}
 		} else if (ctx.countFinished === total) {
-			var statusString = 'Done (' + ctx.countFinishedSuccess +
-				'/' + ctx.countFinished + ' actions completed successfully)';
+			var statusString = msg('batch-progress', ctx.countFinishedSuccess, ctx.countFinished, 'Done (' + ctx.countFinishedSuccess +
+				'/' + ctx.countFinished + ' actions completed successfully)');
 			if (ctx.countFinishedSuccess < ctx.countFinished) {
 				ctx.statusElement.warn(statusString);
 			} else {
@@ -5974,7 +5968,7 @@ Morebits.simpleWindow.prototype = {
 		var $footerlinks = $(this.content).dialog('widget').find('.morebits-dialog-footerlinks');
 		if (this.hasFooterLinks) {
 			var bullet = document.createElement('span');
-			bullet.textContent = msg('spaced-bullet', ' \u2022 ');  // U+2022 BULLET
+			bullet.textContent = msg('bullet-separator', ' \u2022 ');  // U+2022 BULLET
 			if (prep) {
 				$footerlinks.prepend(bullet);
 			} else {
