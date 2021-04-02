@@ -147,7 +147,7 @@ Twinkle.config.sections = [
 				label: 'Schakel bepaalde Twinkle modules uit',
 				helptip: 'Alles wat je uitschakeld kun je niet gebruiken. Haal het vinkje weg om de module weer in te schakelen.',
 				type: 'set',
-				setValues: { arv: 'CU-verzoek', warn: 'Waarschuw', welcome: 'Welkom', shared: 'Gedeeld IP', talkback: 'Talkback', speedy: 'Nuweg', xfd: 'TBx', protect: 'Beveiligen', tag: 'Tag', diff: 'Wijz', unlink: 'Ontlink', fluff: 'Terugdraaien' }
+				setValues: { arv: 'Rapporteer', warn: 'Waarschuw', welcome: 'Welkom', shared: 'Gedeeld IP', talkback: 'Talkback', speedy: 'Nuweg', xfd: 'TBx', protect: 'Beveiligen', tag: 'Tag', diff: 'Wijz', unlink: 'Ontlink', fluff: 'Terugdraaien' }
 			},
 
 			// Twinkle.config.disabledSysopModules (array)
