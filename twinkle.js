@@ -1,18 +1,23 @@
 /**
  * +-------------------------------------------------------------------------+
- * |             === WAARSCHUWING: GLOBAAL GADGET BESTAND ===                |
+ * |             === WAARSCHUWING: PRIMAIR GADGET BESTAND ===                |
  * |    Veranderingen kunnen grote effecten hebben voor veel gebruikers.     |
- * |          Overleg altijd eerst voordat je wijzigingen doorvoerd.         |
+ * |          Overleg altijd eerst voordat je wijzigingen doorvoert.         |
  * +-------------------------------------------------------------------------+
  *
- * Imported from github [https://github.com/wikimedia-gadgets/twinkle].
- * All changes should be made in the repository, otherwise they will be lost.
+ * Geïmporteerd van GitHub: [https://github.com/bas-dehaan/Twinkle-NL].
+ * Alle veranderingen dienen eerst naar deze repository gepushed te worden,
+ * anders worden ze ongedaan gemaakt bij de volgende update.
  *
  * ----------
  *
- * This is AzaToth's Twinkle, the popular script sidekick for newbies, admins, and
- * every Wikipedian in between. Visit [[WP:TW]] for more information.
- */
+ * Dit is Twinkle-NL, een portering van AzaToth's Twinkle naar de
+ * Nederlandstalige Wikipedia. Twinkle is een hulpmiddel bij wiki onderhoud en
+ * is geschikt voor nieuwelingen, mods en iedereen daar tussen in. Bekijk
+ * [[WP:TW]] voor meer informatie. CC-BY-SA
+ *
+ * ----------
+ **/
 // <nowiki>
 
 /* global Morebits */
@@ -72,36 +77,26 @@ Twinkle.defaultConfig = {
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
 	confirmOnMobileFluff: true,
-	showRollbackLinks: [ 'diff', 'others' ],
-
-	// Protect
-	watchRequestedPages: 'yes',
-	watchPPTaggedPages: 'default',
-	watchProtectedPages: 'default',
+	showRollbackLinks: [ 'diff', 'others', 'recent', 'history' ],
 
 	// CSD
 	speedySelectionStyle: 'buttonClick',
-	watchSpeedyPages: [ 'g3', 'g5', 'g10', 'g11', 'g12' ],
+	watchSpeedyPages: [],
 	watchSpeedyExpiry: '1 month',
 	markSpeedyPagesAsPatrolled: false,
 	watchSpeedyUser: '1 month',
-
-	// these next two should probably be identical by default
-	welcomeUserOnSpeedyDeletionNotification: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 'p1', 'p2' ],
-	notifyUserOnSpeedyDeletionNomination: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 'p1', 'p2' ],
-	warnUserOnSpeedyDelete: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 'p1', 'p2' ],
+	welcomeUserOnSpeedyDeletionNotification: [ 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7' ],
+	notifyUserOnSpeedyDeletionNomination: [ 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7' ],
+	warnUserOnSpeedyDelete: [ 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7' ],
 	promptForSpeedyDeletionSummary: [],
 	deleteTalkPageOnDelete: true,
 	deleteRedirectsOnDelete: true,
-	deleteSysopDefaultToDelete: false,
+	deleteSysopDefaultToDelete: true,
 	speedyWindowHeight: 500,
 	speedyWindowWidth: 800,
 	logSpeedyNominations: false,
 	speedyLogPageName: 'nuweg logboek',
 	noLogOnSpeedyNomination: [ 'u1' ],
-
-	// Unlink
-	unlinkNamespaces: [ '0', '10', '100', '118' ],
 
 	// Warn
 	defaultWarningGroup: '1',
@@ -122,7 +117,7 @@ Twinkle.defaultConfig = {
 	markXfdPagesAsPatrolled: true,
 
 	// Hidden preferences
-	autolevelStaleDays: 3, // Huggle is 3, CBNG is 2
+	autolevelStaleDays: 14, // Huggle is 3, CBNG is 2
 	revertMaxRevisions: 50, // intentionally limited
 	batchMax: 5000,
 	batchChunks: 50,

@@ -38,9 +38,9 @@ Twinkle.fluff = function twinklefluff() {
 		Twinkle.fluff.skipTalk = !Twinkle.getPref('openTalkPageOnAutoRevert');
 		Twinkle.fluff.rollbackInPlace = Twinkle.getPref('rollbackInPlace');
 
-		if (mw.config.get('wgCanonicalSpecialPageName') === 'Bijdragen') {
+		if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
 			Twinkle.fluff.addLinks.contributions();
-		} else if (mw.config.get('wgCanonicalSpecialPageName') === 'RecenteWijzigingen' || mw.config.get('wgCanonicalSpecialPageName') === 'RecenteWijzigingenGelinkt') {
+		} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Recentchanges' || mw.config.get('wgCanonicalSpecialPageName') === 'Recentchangeslinked') {
 			// Reload with recent changes updates
 			// structuredChangeFilters.ui.initialized is just on load
 			mw.hook('wikipage.content').add(function(item) {

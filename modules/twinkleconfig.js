@@ -13,9 +13,11 @@
                            currently logged-in user which end in '.js'
  * Active on:              What I just said.  Yeah.
 
- I, [[User:This, that and the other]], originally wrote this.  If the code is misbehaving, or you have any
- questions, don't hesitate to ask me.  (This doesn't at all imply [[WP:OWN]]ership - it's just meant to
- point you in the right direction.)  -- TTO
+ Dit script is geporteerd naar de Nederlandstalige Wikipedia door [[Gebruiker: Bas dehaan]]. Neem bij problemen of vragen
+ gerust contact met me op.
+
+ Dit script is origineel gemaakt door [[User:This, that and the other]]
+
  */
 
 
@@ -33,65 +35,38 @@ Twinkle.config.watchlistEnums = {
 
 Twinkle.config.commonSets = {
 	csdCriteria: {
-		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
-		a1: 'A1', a2: 'A2', a3: 'A3', a5: 'A5', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
-		u1: 'U1', u2: 'U2', u3: 'U3', u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f8: 'F8', f9: 'F9', f10: 'F10',
-		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4',
-		p1: 'P1', p2: 'P2'
+		g1: 'Leeg halen', g2: 'Nonsense', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
+		g6: 'Reclame', g7: 'Copyvio', u1: 'Eigen naamruimte'
 	},
 	csdCriteriaDisplayOrder: [
-		'db',
-		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11',
-		'u1', 'u2', 'u3', 'u5',
-		'f1', 'f2', 'f3', 'f7', 'f8', 'f9', 'f10',
-		'c1',
-		'r2', 'r3', 'r4',
-		'p1', 'p2'
+		'g1', 'g2', 'g3', 'g4', 'g5',
+		'g6', 'g7', 'u1'
 	],
 	csdCriteriaNotification: {
-		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g6: 'G6 ("copy-paste move" only)',
-		g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
-		a1: 'A1', a2: 'A2', a3: 'A3', a5: 'A5', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
-		u3: 'U3', u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f9: 'F9', f10: 'F10',
-		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4',
-		p1: 'P1', p2: 'P2'
+		g1: 'Leeg halen', g2: 'Nonsense', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
+		g6: 'Reclame', g7: 'Copyvio', u1: 'Eigen naamruimte'
 	},
 	csdCriteriaNotificationDisplayOrder: [
-		'db',
-		'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11',
-		'u3', 'u5',
-		'f1', 'f2', 'f3', 'f7', 'f9', 'f10',
-		'c1',
-		'r2', 'r3', 'r4',
-		'p1', 'p2'
+		'g1', 'g2', 'g3', 'g4', 'g5',
+		'g6', 'g7', 'u1'
+	],
+	csdCriteriaDelete: {
+		g1: 'Leeg halen', g2: 'Nonsense', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
+		g6: 'Reclame', g7: 'Copyvio', u1: 'Eigen naamruimte',
+		s1: 'TBx afhandeling', s2: 'Verplaatsing'
+	},
+	csdCriteriaDeleteDisplayOrder: [
+		'g1', 'g2', 'g3', 'g4', 'g5',
+		'g6', 'g7', 'u1',
+		's1', 's2'
 	],
 	csdAndDICriteria: {
-		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
-		a1: 'A1', a2: 'A2', a3: 'A3', a5: 'A5', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
-		u1: 'U1', u2: 'U2', u3: 'U3', u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f5: 'F5', f6: 'F6', f7: 'F7', f8: 'F8', f9: 'F9', f10: 'F10', f11: 'F11',
-		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4',
-		p1: 'P1', p2: 'P2'
+		g1: 'Leeg halen', g2: 'Nonsense', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
+		g6: 'Reclame', g7: 'Copyvio', u1: 'Eigen naamruimte'
 	},
 	csdAndDICriteriaDisplayOrder: [
-		'db',
-		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11',
-		'u1', 'u2', 'u3', 'u5',
-		'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11',
-		'c1',
-		'r2', 'r3', 'r4',
-		'p1', 'p2'
+		'g1', 'g2', 'g3', 'g4', 'g5',
+		'g6', 'g7', 'u1'
 	],
 	namespacesNoSpecial: {
 		0: 'Artikel',
@@ -310,16 +285,6 @@ Twinkle.config.sections = [
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
-
-			// TwinkleConfig.offerReasonOnNormalRevert (boolean)
-			// If to offer a prompt for extra summary reason for normal reverts, default to true
-			{
-				name: 'offerReasonOnNormalRevert',
-				label: 'Vraag om een reden bij een normale terugdraaiing',
-				helptip: 'Met "Normale" terugdraaiing wordt een terugdraaiing met de lichtblauwe [Terugdraaiien] knop -naast de rode [Vandalisme] knop- bedoeld.',
-				type: 'boolean'
-			},
-
 			{
 				name: 'confirmOnFluff',
 				label: 'Vraag bevestiging voor een terugdraaiing (op alle apparaten)',
@@ -374,7 +339,7 @@ Twinkle.config.sections = [
 			// Whether to add speedy tagged or deleted pages to watchlist
 			{
 				name: 'watchSpeedyPages',
-				label: 'Add page to watchlist when using these criteria',
+				label: 'Voeg pagina toe aan volglijst bij gebruikt van volgende nominatieredenen',
 				type: 'set',
 				setValues: Twinkle.config.commonSets.csdCriteria,
 				setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
@@ -393,7 +358,6 @@ Twinkle.config.sections = [
 			{
 				name: 'markSpeedyPagesAsPatrolled',
 				label: 'Markeer een pagina als gecontroleerd na nominatie (indien mogelijk)',
-				helptip: 'This should probably not be checked as doing so is against best practice consensus',
 				type: 'boolean'
 			},
 
@@ -411,7 +375,7 @@ Twinkle.config.sections = [
 			// with a "firstarticle" notice if their talk page has not yet been created.
 			{
 				name: 'welcomeUserOnSpeedyDeletionNotification',
-				label: 'Plaats verwelkoming op overlegpagina bij de volgende nominatiereden',
+				label: 'Plaats verwelkoming op overlegpagina bij de volgende nominatieredenen',
 				helptip: 'De verwelkoming wordt alleen geplaatst als nominatie wordt medegedeeld met aanmaker, en alleen als er nog geen overlegpagina bestaat.',
 				type: 'set',
 				setValues: Twinkle.config.commonSets.csdCriteriaNotification,
@@ -422,7 +386,7 @@ Twinkle.config.sections = [
 			// What types of actions should result in the author of the page being notified of nomination
 			{
 				name: 'notifyUserOnSpeedyDeletionNomination',
-				label: 'Plaats mededeling op de overlegpagina als de volgende nominatiereden wordt gebruikt',
+				label: 'Plaats mededeling op de overlegpagina overlegpagina van de aanmaker bij de volgende nominatieredenen',
 				helptip: 'Zelfs als je kiest voor mededelen op het nuweg-formulier, zal de mededeling alleen geplaatst worden voor de geselecteerde reden.',
 				type: 'set',
 				setValues: Twinkle.config.commonSets.csdCriteriaNotification,
@@ -433,23 +397,14 @@ Twinkle.config.sections = [
 			// What types of actions should result in the author of the page being notified of speedy deletion (admin only)
 			{
 				name: 'warnUserOnSpeedyDelete',
-				label: 'Plaats mededeling op overlegpagina na uitvoeren van nuweg voor de volgende reden',
+				label: 'Plaats mededeling op overlegpagina na uitvoeren van een directe verwijdering voor de volgende redenen',
 				helptip: 'Zelfs als je kiest voor mededelen op het verwijder-formulier, zal de mededeling alleen geplaatst worden voor de geselecteerde reden.',
 				adminOnly: true,
 				type: 'set',
-				setValues: Twinkle.config.commonSets.csdCriteriaNotification,
-				setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
+				setValues: Twinkle.config.commonSets.csdCriteriaDelete,
+				setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDeleteDisplayOrder
 			},
 
-			// TwinkleConfig.promptForSpeedyDeletionSummary (array of strings)
-			{
-				name: 'promptForSpeedyDeletionSummary',
-				label: 'Sta toe de verwijdersamenvatting aan te passen bij gebruik van de volgende redenen.',
-				adminOnly: true,
-				type: 'set',
-				setValues: Twinkle.config.commonSets.csdAndDICriteria,
-				setDisplayOrder: Twinkle.config.commonSets.csdAndDICriteriaDisplayOrder
-			},
 
 			// TwinkleConfig.deleteTalkPageOnDelete (boolean)
 			// If talk page if exists should also be deleted (CSD G8) when spedying a page (admin only)
@@ -472,7 +427,6 @@ Twinkle.config.sections = [
 			{
 				name: 'deleteSysopDefaultToDelete',
 				label: 'Voer directe verwijdering zelf uit i.p.v. het nuweg sjabloon plaatsen',
-				helptip: 'Indien het nuweg sjabloon al op de pagina staat, voer je de verwijdering zowiso zelf uit.',
 				adminOnly: true,
 				type: 'boolean'
 			},
@@ -603,22 +557,6 @@ Twinkle.config.sections = [
 				name: 'mailHeading',
 				label: "Section heading to use for \"you've got mail\" notices",
 				type: 'string'
-			}
-		]
-	},
-
-	{
-		title: 'Unlink',
-		module: 'unlink',
-		preferences: [
-			// TwinkleConfig.unlinkNamespaces (array)
-			// In what namespaces unlink should happen, default in 0 (article), 10 (template), 100 (portal), and 118 (draft)
-			{
-				name: 'unlinkNamespaces',
-				label: 'Remove links from pages in these namespaces',
-				helptip: 'Avoid selecting any talk namespaces, as Twinkle might end up unlinking on talk archives (a big no-no).',
-				type: 'set',
-				setValues: Twinkle.config.commonSets.namespacesNoSpecial
 			}
 		]
 	},

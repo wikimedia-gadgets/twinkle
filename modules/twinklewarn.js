@@ -223,25 +223,25 @@ Twinkle.warn.messages = {
 					summary: '+ws4 vandalisme'
 				}
 			},
-			'ws-onzinpagina': {
+			'ws-nonsense': {
 				level1: {
 					label: 'Aanmaken onzinpagina',
-					summary: '+ws1 onzinpagina'
+					summary: '+ws1 nonsense'
 				},
 				level2: {
 					label: 'Aanmaken onzinpagina',
-					summary: '+ws2 onzinpagina'
+					summary: '+ws2 nonsense'
 				},
 				level3: {
 					label: 'Herhaald aanmaken onzinpagina',
-					summary: '+ws3 onzinpagina'
+					summary: '+ws3 nonsense'
 				},
 				level4: {
 					label: 'Herhaald aanmaken onzinpagina',
-					summary: '+ws4 onzinpagina'
+					summary: '+ws4 nonsense'
 				}
 			},
-			'ws-zelfpromotie': {
+			'ws-reclame': {
 				level1: {
 					label: 'Zelfpromotie/Reclame',
 					summary: '+ws1 zelfpromotie'
@@ -259,16 +259,6 @@ Twinkle.warn.messages = {
 					summary: '+ws4 zelfpromotie'
 				}
 			},
-			'ws-geklieder': {
-				level1: {
-					label: 'Ongewenste oefenbewerking',
-					summary: '+ws1 geklieder'
-				},
-				level2: {
-					label: 'Geklieder',
-					summary: '+ws2 geklieder'
-				}
-			},
 			'ws-leeghalen': {
 				level1: {
 					label: 'Content weghalen',
@@ -281,10 +271,6 @@ Twinkle.warn.messages = {
 				level3: {
 					label: 'Herhaald content weghalen/pagina leeghalen',
 					summary: '+ws3 leeghalen'
-				},
-				level4: {
-					label: 'Herhaald leeghalen',
-					summary: '+ws4 leeghalen'
 				}
 			},
 			'ws-cyberpesten': {
@@ -315,10 +301,6 @@ Twinkle.warn.messages = {
 				level2: {
 					label: 'Onbebronde informatie over levende personen',
 					summary: '+ws2 blp'
-				},
-				level3: {
-					label: 'Onbebronde informatie over levende personen',
-					summary: '+ws3 blp'
 				}
 			},
 			'ws-bwo': {
@@ -351,14 +333,6 @@ Twinkle.warn.messages = {
 				level2: {
 					label: 'Auteursrechtenschening',
 					summary: '+ws2 copyvio'
-				},
-				level3: {
-					label: 'Herhaalde auteursrechtenschening',
-					summary: '+ws3 copyvio'
-				},
-				level4: {
-					label: 'Herhaalde auteursrechtenschening',
-					summary: '+ws4 copyvio'
 				}
 			},
 			'ws-verstoring': {
