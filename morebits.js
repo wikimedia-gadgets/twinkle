@@ -1770,15 +1770,17 @@ Morebits.date.localeData = {
  * @property {string} weeks
  * @property {string} months
  * @property {string} years
+ * 
+ * API Object: NIET VERTALEN!!!
  */
 Morebits.date.unitMap = {
-	seconds: 'Seconden',
-	minutes: 'Minuten',
-	hours: 'Uren',
-	days: 'Dagen',
+	seconds: 'Seconds',
+	minutes: 'Minutes',
+	hours: 'Hours',
+	days: 'Date',
 	weeks: 'Week', // Not a function but handled in `add` through cunning use of multiplication
-	months: 'Maand',
-	years: 'Jaar'
+	months: 'Month',
+	years: 'FullYear'
 };
 
 Morebits.date.prototype = {
