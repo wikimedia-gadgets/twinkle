@@ -567,23 +567,23 @@
 	Twinkle.speedy.templateReason = {
 		leeg: 'Lege pagina',
 		nonsense: 'Geen zinvolle inhoud',
-		vertaling: 'Machinevertaling/Niet Nederlandse tekst',
+		vertaling: 'Niet-Nederlandstalig of resultaat van een computervertaling',
 		zelfpromotie: 'Overduidelijke zelfpromotie',
 		cyberpesten: 'Cyberpesten',
 		reclame: 'Overduidelijke reclame',
-		copyvio: 'Auteursrechten schending van',
+		copyvio: 'Schending van [[Wikipedia:Auteursrechten|auteursrechten]] of geplaatst zonder [[Help:Toestemming|toestemming]]',
 		eigennaamruimte: 'Verzoek in eigen naamruimte',
 	};
 
 	Twinkle.speedy.deleteReason = {
-		leeg: 'lege pagina',
-		nonsense: 'geen zinvolle inhoud',
-		vertaling: 'machinevertaling/niet Nederlandse tekst',
-		zelfpromotie: 'overduidelijke zelfpromotie',
-		cyberpesten: 'cyberpesten',
-		reclame: 'overduidelijke reclame',
-		copyvio: 'auteursrechten schending',
-		eigennaamruimte: 'verzoek in eigen naamruimte',
+		leeg: 'Lege pagina',
+		nonsense: 'Geen zinvolle inhoud',
+		vertaling: 'Niet-Nederlandstalig of resultaat van een computervertaling',
+		zelfpromotie: 'Overduidelijke zelfpromotie',
+		cyberpesten: 'Cyberpesten',
+		reclame: 'Expliciete reclame, werving of propaganda',
+		copyvio: 'Schending van [[Wikipedia:Auteursrechten|auteursrechten]] of geplaatst zonder [[Help:Toestemming|toestemming]]',
+		eigennaamruimte: 'Verzoek in eigen naamruimte',
 		tbx: 'afhandelen TBx nominatie',
 		verplaatsing: 'verplaatsing/naamwijziging',
 	};
