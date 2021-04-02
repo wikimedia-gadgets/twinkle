@@ -131,7 +131,17 @@ Morebits.createHtml = function(input) {
 			fragment.appendChild(input[i]);
 		} else {
 			$.parseHTML(Morebits.createHtml.renderWikilinks(input[i])).forEach(function(node) {
-				fragment.appendChild(node);
+				if (node.nodeType === 3) { // text node
+					fragment.appendChild(node);
+				} else if (node.nodeType === 1) { // Element node, strip dangerous attributes
+					Array.prototype.slice.call(node.attributes).forEach(function(attr) {
+						// onclick, onerror, onload, etc
+						if (attr.name.indexOf('on') === 0) {
+							node.removeAttribute(attr.name);
+						}
+					});
+					fragment.appendChild(node);
+				} // any other node type is suspicious
 			});
 		}
 	}
