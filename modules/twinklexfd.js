@@ -475,7 +475,7 @@ Twinkle.xfd.callbacks = {
 		var usl = new Morebits.userspaceLogger(Twinkle.getPref('xfdLogPageName'));// , 'Adding entry to userspace log');
 
 		usl.initialText =
-			"Dit is een logboek voor alle [[WP:TBP|verwijdernominaties]] die door deze gebruiker met [[WP:TW|Twinkle]] zijn gemaakt.\n\n" +
+			"Dit is een logboek voor alle [[Wikipedia:Te beoordelen pagina\'s|verwijdernominaties]] die door deze gebruiker met [[WP:TW|Twinkle]] zijn gemaakt.\n\n" +
 			'Indien je dit logboek niet langer wil behouden, kun je het uitschakelen via het [[WP:Twinkle/Preferences|configuratiescherm]], ' +
 			'en deze pagina nomineren voor directe verwijdering.' +
 			(Morebits.userIsSysop ? '\n\nDit logboek bewaard niet jouw moderatorafhandeling van een TBP-nominatie!' : '');
@@ -521,7 +521,7 @@ Twinkle.xfd.callbacks = {
 			var response = apiobj.getResponse();
 			var titles = response.query.allpages;
 
-			apiobj.params.discussionpage = 'WP:TBP'; //Een beetje een bodge, maar het werkt ish...
+			apiobj.params.discussionpage = 'Wikipedia:Te beoordelen pagina\'s'; //Een beetje een bodge, maar het werkt ish...
 
 			Morebits.status.info('Discussie pagina: ', '[[' + apiobj.params.discussionpage + ']]');
 
@@ -543,7 +543,7 @@ Twinkle.xfd.callbacks = {
 			var statelem = pageobj.getStatusElement();
 
 			var date = new Morebits.date(pageobj.getLoadTime());
-			var daypage = 'WP:TBP/Toegevoegd ' + date.format('YYYYMMDD', '60');
+			var daypage = 'Wikipedia:Te beoordelen pagina\'s/Toegevoegd ' + date.format('YYYYMMDD', '60');
 
 			if (!pageobj.exists()) {
 				statelem.error("Het lijkt erop dat de pagina niet bestaat; misschien is de pagina al verwijderd?");
