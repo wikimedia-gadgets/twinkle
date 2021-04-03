@@ -62,6 +62,19 @@ Morebits.i18n = {
 		Morebits.i18n.parser = parser;
 	},
 	/**
+	 * QQX is a dummy "language" for documenting messages
+	 * @type {boolean}
+	 */
+	qqxMode: mw.util.getParamValue('uselang') === 'qqx',
+	/**
+	 * Get message key
+	 * @param msgName
+	 * @returns {string}
+	 */
+	getMessageQQX: function(msgName) {
+		return '(' + msgName + ')';
+	},
+	/**
 	 * @private
 	 * @returns {string}
 	 */
@@ -87,7 +100,7 @@ Morebits.i18n = {
 };
 
 // shortcut
-var msg = Morebits.i18n.getMessage;
+var msg = Morebits.i18n.qqxMode ? Morebits.i18n.getMessageQQX : Morebits.i18n.getMessage;
 
 
 /**
