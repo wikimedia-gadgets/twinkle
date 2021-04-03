@@ -47,4 +47,10 @@ QUnit.test('renderWikilinks', assert => {
 		// but it works either way
 		'link with double quote'
 	);
+
+	assert.strictEqual(
+		Morebits.createHtml.renderWikilinks('<code>[[CODE]]</code> [[Yankovic]]'),
+		`<code>[[CODE]]</code> <a target="_blank" href="/wiki/Yankovic" title="Yankovic">Yankovic</a>`,
+		'wikilink in <code> tag'
+	);
 });
