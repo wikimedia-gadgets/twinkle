@@ -20,13 +20,13 @@ Twinkle.block = function twinkleblock() {
 	// should show on Contributions or Block pages, anywhere there's a relevant user
 	// Ignore ranges wider than the CIDR limit
 	if (Morebits.userIsSysop && relevantUserName && (!Morebits.ip.isRange(relevantUserName) || Morebits.ip.validCIDR(relevantUserName))) {
-		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user');
+		Twinkle.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Blokkeer gebruiker');
 	}
 };
 
 Twinkle.block.callback = function twinkleblockCallback() {
 	if (relevantUserName === mw.config.get('wgUserName') &&
-			!confirm('You are about to block yourself! Are you sure you want to proceed?')) {
+			!confirm('LET OP! Je staat op het punt je zelf te blokkeren! wil je doorgaan?')) {
 		return;
 	}
 
@@ -36,16 +36,14 @@ Twinkle.block.callback = function twinkleblockCallback() {
 
 	var Window = new Morebits.simpleWindow(650, 530);
 	// need to be verbose about who we're blocking
-	Window.setTitle('Block or issue block template to ' + relevantUserName);
+	Window.setTitle('Blokkeer of plaats blokkeersjabloon op ' + relevantUserName);
 	Window.setScriptName('Twinkle');
-	Window.addFooterLink('Block templates', 'Template:Uw-block/doc/Block_templates');
-	Window.addFooterLink('Block policy', 'WP:BLOCK');
-	Window.addFooterLink('Block prefs', 'WP:TW/PREF#block');
+	Window.addFooterLink('Blokkeer policy', 'WP:RVM');
+	Window.addFooterLink('Twinkle voorkeuren', 'WP:TW/PREF#block');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#block');
-	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	// Always added, hidden later if actual user not blocked
-	Window.addFooterLink('Unblock this user', 'Special:Unblock/' + relevantUserName, true);
+	Window.addFooterLink('Deblokkeer gebruiker', 'Special:Unblock/' + relevantUserName, true);
 
 	var form = new Morebits.quickForm(Twinkle.block.callback.evaluate);
 	var actionfield = form.append({
@@ -58,19 +56,19 @@ Twinkle.block.callback = function twinkleblockCallback() {
 		event: Twinkle.block.callback.change_action,
 		list: [
 			{
-				label: 'Block user',
+				label: 'Blokkeer gebruiker',
 				value: 'block',
-				tooltip: 'Block the relevant user with the given options. If partial block is unchecked, this will be a sitewide block.',
+				tooltip: 'Blokkeer deze gebruiker met de volgende blokinstellingen. Indien deelblokkade uit staat zal een volledige blok worden uitgevoerd.',
 				checked: true
 			},
 			{
-				label: 'Partial block',
+				label: 'Deelblokkade',
 				value: 'partial',
-				tooltip: 'Enable partial blocks and partial block templates.',
+				tooltip: 'Blokkeer bewerkingsmogelijkheden voor slechts een deel van de wiki.',
 				checked: Twinkle.getPref('defaultToPartialBlocks') // Overridden if already blocked
 			},
 			{
-				label: 'Add block template to user talk page',
+				label: 'Plaats blokmededeling op overlegpagina gebruiker',
 				value: 'template',
 				tooltip: 'If the blocking admin forgot to issue a block template, or you have just blocked the user without templating them, you can use this to issue the appropriate template. Check the partial block box for partial block templates.',
 				// Disallow when viewing the block dialog on an IP range
@@ -96,13 +94,13 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	if (sixtyFour && sixtyFour !== mw.config.get('wgRelevantUserName')) {
 		var block64field = form.append({
 			type: 'field',
-			label: 'Convert to /64 rangeblock',
+			label: 'Pas /64-rangeblok toe',
 			name: 'field_64'
 		});
 		block64field.append({
 			type: 'div',
 			style: 'margin-bottom: 0.5em',
-			label: ['It\'s usually fine, if not better, to ', $.parseHTML('<a target="_blank" href="' + mw.util.getUrl('WP:/64') + '">just block the /64</a>')[0], ' range (',
+			label: ['Aanbevolen: Blokkeer het hele /64-subnet (',
 				$.parseHTML('<a target="_blank" href="' + mw.util.getUrl('Special:Contributions/' + sixtyFour) + '">' + sixtyFour + '</a>)')[0], ').']
 		});
 		block64field.append({
@@ -111,18 +109,18 @@ Twinkle.block.callback = function twinkleblockCallback() {
 			event: Twinkle.block.callback.change_block64,
 			list: [{
 				checked: relevantUserName !== mw.config.get('wgRelevantUserName'), // In case the user closes and reopens the form
-				label: 'Block the /64 instead',
+				label: 'Blokkeer /64-subnet',
 				value: 'block64',
-				tooltip: Morebits.ip.isRange(mw.config.get('wgRelevantUserName')) ? 'Will eschew leaving a template.' : 'Any template issued will go to the original IP: ' + mw.config.get('wgRelevantUserName')
+				tooltip: Morebits.ip.isRange(mw.config.get('wgRelevantUserName')) ? 'Will eschew leaving a template.' : 'Een bloksjabloon wordt geplaatst op: ' + mw.config.get('wgRelevantUserName')
 			}]
 		});
 	}
 
-	form.append({ type: 'field', label: 'Preset', name: 'field_preset' });
-	form.append({ type: 'field', label: 'Template options', name: 'field_template_options' });
-	form.append({ type: 'field', label: 'Block options', name: 'field_block_options' });
+	form.append({ type: 'field', label: 'Voorinstelling', name: 'field_preset' });
+	form.append({ type: 'field', label: 'Sjabloon opties', name: 'field_template_options' });
+	form.append({ type: 'field', label: 'Blokkade opties', name: 'field_block_options' });
 
-	form.append({ type: 'submit' });
+	form.append({ type: 'submit', label: 'Blokkeer' });
 
 	var result = form.render();
 	Window.setContent(result);
@@ -212,7 +210,7 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 		list: 'blocks|users|logevents',
 		letype: 'block',
 		lelimit: 1,
-		letitle: 'User:' + relevantUserName,
+		letitle: 'Gebruiker:' + relevantUserName,
 		bkprop: 'expiry|reason|flags|restrictions|range|user',
 		ususers: relevantUserName
 	};
@@ -302,11 +300,11 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	$partial.prop('disabled', !blockBox && !templateBox);
 
 	// Add current block parameters as default preset
-	var prior = { label: 'Prior block' };
+	var prior = { label: 'Huidige blok' };
 	if (blockedUserName === relevantUserName) {
 		Twinkle.block.blockPresetsInfo.prior = Twinkle.block.currentBlockInfo;
 		// value not a valid template selection, chosen below by setting templateName
-		prior.list = [{ label: 'Prior block settings', value: 'prior', selected: true }];
+		prior.list = [{ label: 'Instellingen huidige blok', value: 'prior', selected: true }];
 
 		// Arrays of objects are annoying to check
 		if (!blockGroup.some(function(bg) {
@@ -341,49 +339,47 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	Twinkle.block.callback.saveFieldset($('[name=field_template_options]'));
 
 	if (blockBox) {
-		field_preset = new Morebits.quickForm.element({ type: 'field', label: 'Preset', name: 'field_preset' });
+		field_preset = new Morebits.quickForm.element({ type: 'field', label: 'Voorinstelling', name: 'field_preset' });
 		field_preset.append({
 			type: 'select',
 			name: 'preset',
-			label: 'Choose a preset:',
+			label: 'Kies een voor ingestelde blokkade:',
 			event: Twinkle.block.callback.change_preset,
 			list: Twinkle.block.callback.filtered_block_groups(blockGroup)
 		});
 
-		field_block_options = new Morebits.quickForm.element({ type: 'field', label: 'Block options', name: 'field_block_options' });
+		field_block_options = new Morebits.quickForm.element({ type: 'field', label: 'Blok opties', name: 'field_block_options' });
 		field_block_options.append({ type: 'div', name: 'currentblock', label: ' ' });
 		field_block_options.append({ type: 'div', name: 'hasblocklog', label: ' ' });
 		field_block_options.append({
 			type: 'select',
 			name: 'expiry_preset',
-			label: 'Expiry:',
+			label: 'Duur:',
 			event: Twinkle.block.callback.change_expiry,
 			list: [
-				{ label: 'custom', value: 'custom', selected: true },
-				{ label: 'indefinite', value: 'infinity' },
-				{ label: '3 hours', value: '3 hours' },
-				{ label: '12 hours', value: '12 hours' },
-				{ label: '24 hours', value: '24 hours' },
-				{ label: '31 hours', value: '31 hours' },
-				{ label: '36 hours', value: '36 hours' },
-				{ label: '48 hours', value: '48 hours' },
-				{ label: '60 hours', value: '60 hours' },
-				{ label: '72 hours', value: '72 hours' },
+				{ label: 'aangepast', value: 'custom', selected: true },
+				{ label: 'onbepaalde tijd', value: 'infinity' },
+				{ label: '3 uur', value: '3 hours' },
+				{ label: '6 uur', value: '6 hours' },
+				{ label: '12 uur', value: '12 hours' },
+				{ label: '1 dag', value: '24 hours' },
+				{ label: '3 dagen', value: '72 hours' },
 				{ label: '1 week', value: '1 week' },
-				{ label: '2 weeks', value: '2 weeks' },
-				{ label: '1 month', value: '1 month' },
-				{ label: '3 months', value: '3 months' },
-				{ label: '6 months', value: '6 months' },
-				{ label: '1 year', value: '1 year' },
-				{ label: '2 years', value: '2 years' },
-				{ label: '3 years', value: '3 years' }
+				{ label: '2 weken', value: '2 weeks' },
+				{ label: '1 maand', value: '1 month' },
+				{ label: '3 maanden', value: '3 months' },
+				{ label: '6 maanden', value: '6 months' },
+				{ label: '1 jaar', value: '1 year' },
+				{ label: '2 jaar', value: '2 years' },
+				{ label: '3 jaar', value: '3 years' },
+				{ label: '5 jaar', value: '5 years' }
 			]
 		});
 		field_block_options.append({
 			type: 'input',
 			name: 'expiry',
-			label: 'Custom expiry',
-			tooltip: 'You can use relative times, like "1 minute" or "19 days", or absolute timestamps, "yyyymmddhhmm" (e.g. "200602011405" is Feb 1, 2006, at 14:05 UTC).',
+			label: 'Aangepaste tijd',
+			tooltip: 'Je kunt relatieve tijd gebruiken (in het Engels), zoals "1 minute" of "19 days", of absolute tijden in "jjjjmmdduumm"-format (bijv. "199905210155" is 21 mei 1999 om 01:55 UTC).', //dit is wel heel speciefiek ;)
 			value: Twinkle.block.field_block_options.expiry || Twinkle.block.field_template_options.template_expiry
 		});
 
@@ -392,17 +388,16 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				type: 'select',
 				multiple: true,
 				name: 'pagerestrictions',
-				label: 'Specific pages to block from editing',
+				label: 'Pagina blokkade',
 				value: '',
-				tooltip: '10 page max.'
+				tooltip: 'max. 10 pagina\'s'
 			});
 			var ns = field_block_options.append({
 				type: 'select',
 				multiple: true,
 				name: 'namespacerestrictions',
-				label: 'Namespace blocks',
-				value: '',
-				tooltip: 'Block from editing these namespaces.'
+				label: 'Naamruimte blokkade',
+				value: ''
 			});
 			$.each(menuFormattedNamespaces, function(number, name) {
 				// Ignore -1: Special; -2: Media; and 2300-2303: Gadget (talk) and Gadget definition (talk)
@@ -415,36 +410,36 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		var blockoptions = [
 			{
 				checked: Twinkle.block.field_block_options.nocreate,
-				label: 'Block account creation',
+				label: 'Blokkeer account aanmaak',
 				name: 'nocreate',
 				value: '1'
 			},
 			{
 				checked: Twinkle.block.field_block_options.noemail,
-				label: 'Block user from sending email',
+				label: 'Blokkeer e-mail functie',
 				name: 'noemail',
 				value: '1'
 			},
 			{
 				checked: Twinkle.block.field_block_options.disabletalk,
-				label: 'Prevent this user from editing their own talk page while blocked',
+				label: 'Blokkeer gebruiker van eigen overlegpagina',
 				name: 'disabletalk',
 				value: '1',
-				tooltip: partialBox ? 'If issuing a partial block, this MUST remain unchecked unless you are also preventing them from editing User talk space' : ''
+				tooltip: partialBox ? 'Bij een deelblokkade MOET dit uitgeschakeld blijven, tenzij je een blokkade voor de \"overleg gebruiker\"-naamruimte oplegd' : ''
 			}
 		];
 
 		if (Twinkle.block.isRegistered) {
 			blockoptions.push({
 				checked: Twinkle.block.field_block_options.autoblock,
-				label: 'Autoblock any IP addresses used (hardblock)',
+				label: 'Blokkeer alle IP-adressen van deze gebruiker (hardblok)',
 				name: 'autoblock',
 				value: '1'
 			});
 		} else {
 			blockoptions.push({
 				checked: Twinkle.block.field_block_options.hardblock,
-				label: 'Block logged-in users from using this IP address (hardblock)',
+				label: 'Blokkeer alle gebruikers die zijn ingelogd met dit ip (hardblok)',
 				name: 'hardblock',
 				value: '1'
 			});
@@ -452,7 +447,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 		blockoptions.push({
 			checked: Twinkle.block.field_block_options.watchuser,
-			label: 'Watch user and user talk pages',
+			label: 'Volg gebruiker en gebruiker overleg',
 			name: 'watchuser',
 			value: '1'
 		});
@@ -464,18 +459,18 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		});
 		field_block_options.append({
 			type: 'textarea',
-			label: 'Reason (for block log):',
+			label: 'Reden (voor blokkeerlogboek):',
 			name: 'reason',
-			tooltip: 'Consider adding helpful details to the default message.',
+			tooltip: 'Overweeg details toe te voegen i.p.v. vooringevulde redenen.',
 			value: Twinkle.block.field_block_options.reason
 		});
 
 		field_block_options.append({
 			type: 'div',
 			name: 'filerlog_label',
-			label: 'See also:',
+			label: 'Zie ook:',
 			style: 'display:inline-block;font-style:normal !important',
-			tooltip: 'Insert a "see also" message to indicate whether the filter log or deleted contributions played a role in the decision to block.'
+			tooltip: 'Voeg een \"zie ook\" bericht toe voor de onderdelen die hebben megewogen bij de blokkade.'
 		});
 		field_block_options.append({
 			type: 'checkbox',
@@ -497,7 +492,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			style: 'display:inline-block',
 			list: [
 				{
-					label: 'Deleted contribs',
+					label: 'Verwijderde bijdragen',
 					checked: false,
 					value: 'deleted contribs'
 				}
@@ -512,30 +507,18 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 	// DS selection visible in either the template field set or preset,
 	// joint settings saved here
-	var dsSelectSettings = {
-		type: 'select',
-		name: 'dstopic',
-		label: 'DS topic',
-		value: '',
-		tooltip: 'If selected, it will inform the template and may be added to the blocking message',
-		event: Twinkle.block.callback.toggle_ds_reason,
-		list: $.map(Twinkle.block.dsinfo, function(info, label) {
-			return {label: label, value: info.code};
-		})
-	};
 	if (templateBox) {
-		field_template_options = new Morebits.quickForm.element({ type: 'field', label: 'Template options', name: 'field_template_options' });
+		field_template_options = new Morebits.quickForm.element({ type: 'field', label: 'Sjabloon instellingen', name: 'field_template_options' });
 		field_template_options.append({
 			type: 'select',
 			name: 'template',
-			label: 'Choose talk page template:',
+			label: 'Kies sjabloon voor op overlegpagina:',
 			event: Twinkle.block.callback.change_template,
 			list: Twinkle.block.callback.filtered_block_groups(blockGroup, true),
 			value: Twinkle.block.field_template_options.template
 		});
 
 		// Only visible for aeblock and aepblock, toggled in change_template
-		field_template_options.append(dsSelectSettings);
 
 		field_template_options.append({
 			type: 'input',
@@ -636,10 +619,10 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 		$form.find('[name=pagerestrictions]').select2({
 			width: '100%',
-			placeholder: 'Select pages to block user from',
+			placeholder: 'Selecteer pagina\'s om gebruiker van te blokken',
 			language: {
 				errorLoading: function() {
-					return 'Incomplete or invalid search term';
+					return 'Incomplete of ongeldige zoekterm';
 				}
 			},
 			maximumSelectionLength: 10, // Software limitation [[phab:T202776]]
@@ -689,7 +672,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				searching: Morebits.select2.queryInterceptor
 			},
 			templateResult: Morebits.select2.highlightSearchMatches,
-			placeholder: 'Select namespaces to block user from'
+			placeholder: 'Selecteer naamruimte om gebruiker van te blokkeren'
 		});
 
 		mw.util.addCSS(
@@ -823,635 +806,78 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  *   To disable, set 'hardblock' and 'disabletalk', respectively
  */
 Twinkle.block.blockPresetsInfo = {
-	'anonblock': {
-		expiry: '31 hours',
-		forAnonOnly: true,
+	// Algemeen
+	'iv': {
+		expiry: 'infinity',
+		forRegisteredOnly: true,
 		nocreate: true,
 		nonstandard: true,
-		reason: '{{anonblock}}',
-		sig: '~~~~'
+		reason: 'Ingelogde vandaal',
+		templateName: 'permblok',
+		sig: null
 	},
-	'anonblock - school': {
-		expiry: '36 hours',
-		forAnonOnly: true,
+	'permblok': {
+		expiry: 'infinity',
+		forRegisteredOnly: true,
 		nocreate: true,
 		nonstandard: true,
-		reason: '{{anonblock}} <!-- Likely a school based on behavioral evidence -->',
-		templateName: 'anonblock',
-		sig: '~~~~'
+		templateName: 'permblok',
+		sig: null
 	},
-	'blocked proxy': {
-		expiry: '1 year',
+	'lange ipblok': {
+		expiry: '6 months',
 		forAnonOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		hardblock: true,
-		reason: '{{blocked proxy}}',
+		templateName: 'blokkadeuitleg',
 		sig: null
 	},
-	'CheckUser block': {
-		expiry: '1 week',
-		forAnonOnly: true,
-		nocreate: true,
-		nonstandard: true,
-		reason: '{{CheckUser block}}',
-		sig: '~~~~'
-	},
-	'checkuserblock-account': {
-		autoblock: true,
+	// Gebruikersnaam
+	'og': {
 		expiry: 'infinity',
 		forRegisteredOnly: true,
-		nocreate: true,
+		autoblock: false,
 		nonstandard: true,
-		reason: '{{checkuserblock-account}}',
-		sig: '~~~~'
-	},
-	'checkuserblock-wide': {
-		forAnonOnly: true,
-		nocreate: true,
-		nonstandard: true,
-		reason: '{{checkuserblock-wide}}',
-		sig: '~~~~'
-	},
-	'colocationwebhost': {
-		expiry: '1 year',
-		forAnonOnly: true,
-		nonstandard: true,
-		reason: '{{colocationwebhost}}',
+		reason: 'Ongewenste gebruikersnaam',
+		templateName: 'og',
 		sig: null
 	},
-	'oversightblock': {
-		autoblock: true,
+	'ogbedrijf': {
 		expiry: 'infinity',
-		nocreate: true,
+		forRegisteredOnly: true,
+		autoblock: false,
 		nonstandard: true,
-		reason: '{{OversightBlock}}',
-		sig: '~~~~'
-	},
-	'school block': {
-		forAnonOnly: true,
-		nocreate: true,
-		nonstandard: true,
-		reason: '{{school block}}',
-		sig: '~~~~'
-	},
-	'spamblacklistblock': {
-		forAnonOnly: true,
-		expiry: '1 month',
-		disabletalk: true,
-		nocreate: true,
-		reason: '{{spamblacklistblock}} <!-- editor only attempts to add blacklisted links, see [[Special:Log/spamblacklist]] -->'
-	},
-	'rangeblock': {
-		reason: '{{rangeblock}}',
-		nocreate: true,
-		nonstandard: true,
-		forAnonOnly: true,
-		sig: '~~~~'
-	},
-	'tor': {
-		expiry: '1 year',
-		forAnonOnly: true,
-		nonstandard: true,
-		reason: '{{Tor}}',
+		reason: 'Ongewenste gebruikersnaam',
+		templateName: 'ogbedrijf',
 		sig: null
 	},
-	'webhostblock': {
-		expiry: '1 year',
-		forAnonOnly: true,
+	'verwarrend': {
+		expiry: 'infinity',
+		forRegisteredOnly: true,
+		autoblock: false,
 		nonstandard: true,
-		reason: '{{webhostblock}}',
-		sig: null
+		reason: 'Verwarrende ongewenste gebruikersnaam',
+		templateName: 'Verwarrend',
+		sig: '~~~~'
 	},
-	// uw-prefixed
-	'uw-3block': {
-		autoblock: true,
-		expiry: '24 hours',
-		nocreate: true,
-		pageParam: true,
-		reason: 'Violation of the [[WP:Three-revert rule|three-revert rule]]',
-		summary: 'You have been blocked from editing for violation of the [[WP:3RR|three-revert rule]]'
-	},
-	'uw-ablock': {
-		autoblock: true,
-		expiry: '31 hours',
-		forAnonOnly: true,
-		nocreate: true,
-		pageParam: true,
-		reasonParam: true,
-		summary: 'Your IP address has been blocked from editing',
-		suppressArticleInSummary: true
-	},
-	'uw-adblock': {
-		autoblock: true,
-		nocreate: true,
-		pageParam: true,
-		reason: 'Using Wikipedia for [[WP:Spam|spam]] or [[WP:NOTADVERTISING|advertising]] purposes',
-		summary: 'You have been blocked from editing for [[WP:SOAP|advertising or self-promotion]]'
-	},
-	'uw-aeblock': {
-		autoblock: true,
-		nocreate: true,
-		pageParam: true,
-		reason: '[[WP:Arbitration enforcement|Arbitration enforcement]]',
-		reasonParam: true,
-		summary: 'You have been blocked from editing for violating an [[WP:Arbitration|arbitration decision]]'
-	},
-	'uw-bioblock': {
-		autoblock: true,
-		nocreate: true,
-		pageParam: true,
-		reason: 'Violations of the [[WP:Biographies of living persons|biographies of living persons]] policy',
-		summary: 'You have been blocked from editing for violations of Wikipedia\'s [[WP:BLP|biographies of living persons policy]]'
-	},
-	'uw-block': {
-		autoblock: true,
-		expiry: '24 hours',
-		forRegisteredOnly: true,
-		nocreate: true,
-		pageParam: true,
-		reasonParam: true,
-		summary: 'You have been blocked from editing',
-		suppressArticleInSummary: true
-	},
-	'uw-blockindef': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: true,
-		pageParam: true,
-		reasonParam: true,
-		summary: 'You have been indefinitely blocked from editing',
-		suppressArticleInSummary: true
-	},
-	'uw-blocknotalk': {
-		disabletalk: true,
-		pageParam: true,
-		reasonParam: true,
-		summary: 'You have been blocked from editing and your user talk page access has been disabled',
-		suppressArticleInSummary: true
-	},
-	'uw-botblock': {
-		forRegisteredOnly: true,
-		pageParam: true,
-		reason: 'Running a [[WP:BOT|bot script]] without [[WP:BRFA|approval]]',
-		summary: 'You have been blocked from editing because it appears you are running a [[WP:BOT|bot script]] without [[WP:BRFA|approval]]'
-	},
-	'uw-botublock': {
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		reason: '{{uw-botublock}} <!-- Username implies a bot, soft block -->',
-		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] indicates this is a [[WP:BOT|bot]] account, which is currently not approved'
-	},
-	'uw-botuhblock': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: true,
-		reason: '{{uw-botuhblock}} <!-- Username implies a bot, hard block -->',
-		summary: 'You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]].'
-	},
-	'uw-causeblock': {
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		reason: '{{uw-causeblock}} <!-- Username represents a non-profit, soft block -->',
-		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] gives the impression that the account represents a group, organization or website'
-	},
-	'uw-compblock': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: true,
-		reason: 'Compromised account',
-		summary: 'You have been indefinitely blocked from editing because it is believed that your [[WP:SECURE|account has been compromised]]'
-	},
-	'uw-copyrightblock': {
-		autoblock: true,
-		expiry: 'infinity',
-		nocreate: true,
-		pageParam: true,
-		reason: '[[WP:Copyright violations|Copyright violations]]',
-		summary: 'You have been blocked from editing for continued [[WP:COPYVIO|copyright infringement]]'
-	},
-	'uw-dblock': {
-		autoblock: true,
-		nocreate: true,
-		reason: 'Persistent removal of content',
-		pageParam: true,
-		summary: 'You have been blocked from editing for continued [[WP:VAND|removal of material]]'
-	},
-	'uw-disruptblock': {
-		autoblock: true,
-		nocreate: true,
-		reason: '[[WP:Disruptive editing|Disruptive editing]]',
-		summary: 'You have been blocked from editing for [[WP:DE|disruptive editing]]'
-	},
-	'uw-efblock': {
-		autoblock: true,
-		nocreate: true,
-		reason: 'Repeatedly triggering the [[WP:Edit filter|Edit filter]]',
-		summary: 'You have been blocked from editing for disruptive edits that repeatedly triggered the [[WP:EF|edit filter]]'
-	},
-	'uw-ewblock': {
-		autoblock: true,
-		expiry: '24 hours',
-		nocreate: true,
-		pageParam: true,
-		reason: '[[WP:Edit warring|Edit warring]]',
-		summary: 'You have been blocked from editing to prevent further [[WP:DE|disruption]] caused by your engagement in an [[WP:EW|edit war]]'
-	},
-	'uw-hblock': {
-		autoblock: true,
-		nocreate: true,
-		pageParam: true,
-		reason: '[[WP:No personal attacks|Personal attacks]] or [[WP:Harassment|harassment]]',
-		summary: 'You have been blocked from editing for attempting to [[WP:HARASS|harass]] other users'
-	},
-	'uw-ipevadeblock': {
-		forAnonOnly: true,
-		nocreate: true,
-		reason: '[[WP:Blocking policy#Evasion of blocks|Block evasion]]',
-		summary: 'Your IP address has been blocked from editing because it has been used to [[WP:EVADE|evade a previous block]]'
-	},
-	'uw-lblock': {
-		autoblock: true,
-		expiry: 'infinity',
-		nocreate: true,
-		reason: 'Making [[WP:No legal threats|legal threats]]',
-		summary: 'You have been blocked from editing for making [[WP:NLT|legal threats or taking legal action]]'
-	},
-	'uw-nothereblock': {
-		autoblock: true,
-		expiry: 'infinity',
-		nocreate: true,
-		reason: 'Clearly [[WP:NOTHERE|not here to build an encyclopedia]]',
-		forRegisteredOnly: true,
-		summary: 'You have been indefinitely blocked from editing because it appears that you are not here to [[WP:NOTHERE|build an encyclopedia]]'
-	},
-	'uw-npblock': {
-		autoblock: true,
-		nocreate: true,
-		pageParam: true,
-		reason: 'Creating [[WP:Patent nonsense|patent nonsense]] or other inappropriate pages',
-		summary: 'You have been blocked from editing for creating [[WP:PN|nonsense pages]]'
-	},
-	'uw-pablock': {
-		autoblock: true,
-		expiry: '31 hours',
-		nocreate: true,
-		reason: '[[WP:No personal attacks|Personal attacks]] or [[WP:Harassment|harassment]]',
-		summary: 'You have been blocked from editing for making [[WP:NPA|personal attacks]] toward other users'
-	},
-	'uw-sblock': {
-		autoblock: true,
-		nocreate: true,
-		reason: 'Using Wikipedia for [[WP:SPAM|spam]] purposes',
-		summary: 'You have been blocked from editing for using Wikipedia for [[WP:SPAM|spam]] purposes'
-	},
-	'uw-soablock': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: true,
-		pageParam: true,
-		reason: '[[WP:Spam|Spam]] / [[WP:NOTADVERTISING|advertising]]-only account',
-		summary: 'You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam, advertising, or promotion]]'
-	},
-	'uw-socialmediablock': {
-		autoblock: true,
-		nocreate: true,
-		pageParam: true,
-		reason: 'Using Wikipedia as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]',
-		summary: 'You have been blocked from editing for using user and/or article pages as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]'
-	},
-	'uw-sockblock': {
-		autoblock: true,
-		forRegisteredOnly: true,
-		nocreate: true,
-		reason: 'Abusing [[WP:Sock puppetry|multiple accounts]]',
-		summary: 'You have been blocked from editing for abusing [[WP:SOCK|multiple accounts]]'
-	},
-	'uw-softerblock': {
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		reason: '{{uw-softerblock}} <!-- Promotional username, soft block -->',
-		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] gives the impression that the account represents a group, organization or website'
-	},
-	'uw-spamublock': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: true,
-		reason: '{{uw-spamublock}} <!-- Promotional username, promotional edits -->',
-		summary: 'You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam or advertising]] and your username is a violation of the [[WP:U|username policy]]'
-	},
-	'uw-spoablock': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: true,
-		reason: '[[WP:SOCK|Sock puppetry]]',
-		summary: 'This account has been blocked as a [[WP:SOCK|sock puppet]] created to violate Wikipedia policy'
-	},
-	'uw-talkrevoked': {
-		disabletalk: true,
-		reason: 'Revoking talk page access: inappropriate use of user talk page while blocked',
-		prependReason: true,
-		summary: 'Your user talk page access has been disabled',
-		useInitialOptions: true
-	},
-	'uw-ublock': {
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		reason: '{{uw-ublock}} <!-- Username violation, soft block -->',
-		reasonParam: true,
-		summary: 'You have been indefinitely blocked from editing because your username is a violation of the [[WP:U|username policy]]'
-	},
-	'uw-ublock-double': {
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		reason: '{{uw-ublock-double}} <!-- Username closely resembles another user, soft block -->',
-		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] is too similar to the username of another Wikipedia user'
-	},
-	'uw-ucblock': {
-		autoblock: true,
-		expiry: '31 hours',
-		nocreate: true,
-		pageParam: true,
-		reason: 'Persistent addition of [[WP:INTREF|unsourced content]]',
-		summary: 'You have been blocked from editing for persistent addition of [[WP:INTREF|unsourced content]]'
-	},
-	'uw-uhblock': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: true,
-		reason: '{{uw-uhblock}} <!-- Username violation, hard block -->',
-		reasonParam: true,
-		summary: 'You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]]'
-	},
-	'uw-ublock-wellknown': {
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		reason: '{{uw-ublock-wellknown}} <!-- Username represents a well-known person, soft block -->',
-		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] matches the name of a well-known living individual'
-	},
-	'uw-uhblock-double': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: true,
-		reason: '{{uw-uhblock-double}} <!-- Attempted impersonation of another user, hard block -->',
-		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] appears to impersonate another established Wikipedia user'
-	},
-	'uw-upeblock': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: true,
-		pageParam: true,
-		reason: '[[WP:PAID|Undisclosed paid editing]] in violation of the WMF [[WP:TOU|Terms of Use]]',
-		summary: 'You have been indefinitely blocked from editing because your account is being used in violation of [[WP:PAID|Wikipedia policy on undisclosed paid advocacy]]'
-	},
-	'uw-vaublock': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: true,
-		pageParam: true,
-		reason: '{{uw-vaublock}} <!-- Username violation, vandalism-only account -->',
-		summary: 'You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]] and your username is a blatant violation of the [[WP:U|username policy]]'
-	},
-	'uw-vblock': {
-		autoblock: true,
-		expiry: '31 hours',
-		nocreate: true,
-		pageParam: true,
-		reason: '[[WP:Vandalism|Vandalism]]',
-		summary: 'You have been blocked from editing to prevent further [[WP:VAND|vandalism]]'
-	},
-	'uw-voablock': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: true,
-		pageParam: true,
-		reason: '[[WP:Vandalism-only account|Vandalism-only account]]',
-		summary: 'You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]]'
-	},
-	'zombie proxy': {
-		expiry: '1 month',
+	// Overig
+	'proxy': {
+		expiry: '1year',
 		forAnonOnly: true,
 		nocreate: true,
 		nonstandard: true,
-		reason: '{{zombie proxy}}',
+		hardblock: true,
+		templateName: 'openproxy',
 		sig: null
 	},
-
-	// Begin partial block templates, accessed in Twinkle.block.blockGroupsPartial
-	'uw-acpblock': {
-		autoblock: true,
-		expiry: '48 hours',
+	'sokpop': {
+		expiry: 'infinity',
 		nocreate: true,
-		pageParam: false,
-		reasonParam: true,
-		reason: 'Misusing [[WP:Sock puppetry|multiple accounts]]',
-		summary: 'You have been [[WP:PB|blocked from creating accounts]] for misusing [[WP:SOCK|multiple accounts]]'
-	},
-	'uw-acpblockindef': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: true,
-		pageParam: false,
-		reasonParam: true,
-		reason: 'Misusing [[WP:Sock puppetry|multiple accounts]]',
-		summary: 'You have been indefinitely [[WP:PB|blocked from creating accounts]] for misusing [[WP:SOCK|multiple accounts]]'
-	},
-	'uw-aepblock': {
-		autoblock: true,
-		nocreate: false,
-		pageParam: false,
-		reason: '[[WP:Arbitration enforcement|Arbitration enforcement]]',
-		reasonParam: true,
-		summary: 'You have been [[WP:PB|partially blocked]] from editing for violating an [[WP:Arbitration|arbitration decision]]'
-	},
-	'uw-epblock': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: false,
-		noemail: true,
-		pageParam: false,
-		reasonParam: true,
-		reason: 'Email [[WP:Harassment|harassment]]',
-		summary: 'You have been [[WP:PB|blocked from emailing]] other editors for [[WP:Harassment|harassment]]'
-	},
-	'uw-ewpblock': {
-		autoblock: true,
-		expiry: '24 hours',
-		nocreate: false,
-		pageParam: false,
-		reasonParam: true,
-		reason: '[[WP:Edit warring|Edit warring]]',
-		summary: 'You have been [[WP:PB|partially blocked]] from editing certain areas of the encyclopedia to prevent further [[WP:DE|disruption]] due to [[WP:EW|edit warring]]'
-	},
-	'uw-pblock': {
-		autoblock: true,
-		expiry: '24 hours',
-		nocreate: false,
-		pageParam: false,
-		reasonParam: true,
-		summary: 'You have been [[WP:PB|partially blocked]] from certain areas of the encyclopedia'
-	},
-	'uw-pblockindef': {
-		autoblock: true,
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		nocreate: false,
-		pageParam: false,
-		reasonParam: true,
-		summary: 'You have been indefinitely [[WP:PB|partially blocked]] from certain areas of the encyclopedia'
-	}
-};
-
-// Codes and links for Discretionary Sanctions, see [[Template:Ds/topics]]
-// Used for uw-ae(p)block
-Twinkle.block.dsinfo = {
-	'': {
-		code: ''
-	},
-	'Abortion': {
-		code: 'ab',
-		page: 'Wikipedia:Arbitration/Requests/Case/Abortion'
-	},
-	'American politics post-1992': {
-		code: 'ap',
-		page: 'Wikipedia:Arbitration/Requests/Case/American politics 2'
-	},
-	'Ancient Egyptian race controversy': {
-		code: 'aerc',
-		page: 'Wikipedia:Requests for arbitration/Ancient Egyptian race controversy'
-	},
-	'Arab-Israeli conflict': {
-		code: 'a-i',
-		page: 'Wikipedia:Arbitration/Index/Palestine-Israel articles'
-	},
-	'Armenia, Azerbaijan, or related conflicts': {
-		code: 'a-a',
-		page: 'Wikipedia:Requests for arbitration/Armenia-Azerbaijan 2'
-	},
-	'Biographies of Living Persons (BLPs)': {
-		code: 'blp',
-		page: 'Wikipedia:Requests for arbitration/Editing of Biographies of Living Persons'
-	},
-	'Climate change': {
-		code: 'cc',
-		page: 'Wikipedia:Arbitration/Requests/Case/Climate change'
-	},
-	'Complementary and alternative medicine': {
-		code: 'com',
-		page: 'Wikipedia:Arbitration/Requests/Case/Acupuncture'
-	},
-	'Eastern Europe or the Balkans': {
-		code: 'e-e',
-		page: 'Wikipedia:Requests for arbitration/Eastern Europe'
-	},
-	'Electronic cigarettes': {
-		code: 'ecig',
-		page: 'Wikipedia:Arbitration/Requests/Case/Editor conduct in e-cigs articles'
-	},
-	'Falun Gong': {
-		code: 'fg',
-		page: 'Wikipedia:Requests for arbitration/Falun Gong'
-	},
-	'Gender-related dispute or controversy and associated people (includes GamerGate)': {
-		code: 'gas',
-		page: 'Wikipedia:Arbitration/Requests/Case/Gender and sexuality'
-	},
-	'Genetically modified organisms (GMO)': {
-		code: 'gmo',
-		page: 'Wikipedia:Arbitration/Requests/Case/Genetically modified organisms'
-	},
-	'Gun control': {
-		code: 'gc',
-		page: 'Wikipedia:Arbitration/Requests/Case/Gun control'
-	},
-	'Horn of Africa (Ethiopia, Somalia, Eritrea, Djibouti)': {
-		code: 'horn',
-		page: 'Wikipedia:Arbitration/Requests/Case/Horn of Africa'
-	},
-	'India, Pakistan, and Afghanistan': {
-		code: 'ipa',
-		page: 'Wikipedia:Requests for arbitration/India-Pakistan'
-	},
-	'Infoboxes': {
-		code: 'cid',
-		page: 'Wikipedia:Arbitration/Requests/Case/Civility in infobox discussions'
-	},
-	'Kurds and Kurdistan': {
-		code: 'kurd',
-		page: 'Wikipedia:Arbitration/Requests/Case/Kurds and Kurdistan'
-	},
-	'Landmark Worldwide': {
-		code: 'lw',
-		page: 'Wikipedia:Arbitration/Requests/Case/Landmark Worldwide'
-	},
-	'Liancourt Rocks': {
-		code: 'lr',
-		page: 'Wikipedia:Requests for arbitration/Liancourt Rocks'
-	},
-	'Manual of Style and article titles': {
-		code: 'mos',
-		page: 'Wikipedia:Arbitration/Requests/Case/Article titles and capitalisation'
-	},
-	'Muhammad': {
-		code: 'muh-im',
-		page: 'Wikipedia:Arbitration/Requests/Case/Muhammad images'
-	},
-	'Pharmaceutical drug prices (medicine)': {
-		code: 'med',
-		page: 'Wikipedia:Arbitration/Requests/Case/Medicine'
-	},
-	'Prem Rawat': {
-		code: 'pr',
-		page: 'Wikipedia:Requests for arbitration/Prem Rawat'
-	},
-	'Pseudoscience and fringe science': {
-		code: 'ps',
-		page: 'Wikipedia:Requests for arbitration/Pseudoscience'
-	},
-	'Race/ethnicity and human abilities, behaviour, and intelligence': {
-		code: 'r-i',
-		page: 'Wikipedia:Arbitration/Requests/Case/Race and intelligence'
-	},
-	'Scientology': {
-		code: 'sci',
-		page: 'Wikipedia:Requests for arbitration/Scientology'
-	},
-	'Senkaku Islands dispute': {
-		code: 'sen',
-		page: 'Wikipedia:Arbitration/Requests/Case/Senkaku Islands'
-	},
-	'September 11 attacks': {
-		code: '9/11',
-		page: 'Wikipedia:Requests for arbitration/September 11 conspiracy theories'
-	},
-	'Shakespeare authorship question': {
-		code: 'saq',
-		page: 'Wikipedia:Arbitration/Requests/Case/Shakespeare authorship question'
-	},
-	'Transcendental Meditation movement': {
-		code: 'tm',
-		page: 'Wikipedia:Arbitration/Requests/Case/Transcendental Meditation movement'
-	},
-	'The Troubles': {
-		code: 'tt',
-		page: 'Wikipedia:Requests for arbitration/The Troubles'
-	},
-	'Waldorf education': {
-		code: 'we',
-		page: 'Wikipedia:Requests for arbitration/Waldorf education'
+		nonstandard: true,
+		hardblock: true,
+		templateName: 'blokpop',
+		sig: null
 	}
 };
 
@@ -1463,9 +889,9 @@ Twinkle.block.transformBlockPresets = function twinkleblockTransformBlockPresets
 		settings.indefinite = settings.indefinite || Morebits.string.isInfinity(settings.expiry);
 
 		if (!Twinkle.block.isRegistered && settings.indefinite) {
-			settings.expiry = '31 hours';
+			settings.expiry = '24 hours';
 		} else {
-			settings.expiry = settings.expiry || '31 hours';
+			settings.expiry = settings.expiry || '24 hours';
 		}
 
 		Twinkle.block.blockPresetsInfo[preset] = settings;
@@ -1477,79 +903,25 @@ Twinkle.block.transformBlockPresets = function twinkleblockTransformBlockPresets
 //   value: <string, the key of a preset in blockPresetsInfo>
 Twinkle.block.blockGroups = [
 	{
-		label: 'Common block reasons',
+		label: 'Algemeen',
 		list: [
-			{ label: 'anonblock', value: 'anonblock' },
-			{ label: 'anonblock - likely a school', value: 'anonblock - school' },
-			{ label: 'school block', value: 'school block' },
-			{ label: 'Generic block (custom reason)', value: 'uw-block' }, // ends up being default for registered users
-			{ label: 'Generic block (custom reason) - IP', value: 'uw-ablock', selected: true }, // set only when blocking IP
-			{ label: 'Generic block (custom reason) - indefinite', value: 'uw-blockindef' },
-			{ label: 'Disruptive editing', value: 'uw-disruptblock' },
-			{ label: 'Inappropriate use of user talk page while blocked', value: 'uw-talkrevoked' },
-			{ label: 'Not here to build an encyclopedia', value: 'uw-nothereblock' },
-			{ label: 'Unsourced content', value: 'uw-ucblock' },
-			{ label: 'Vandalism', value: 'uw-vblock' },
-			{ label: 'Vandalism-only account', value: 'uw-voablock' }
+			{ label: 'Ingelogde vandaal', value: 'iv' },
+			{ label: 'Blokkade onbepaalde tijd', value: 'permblok' },
+			{ label: 'IPblok 6 maand of langer', value: 'lange ipblok' }
 		]
 	},
 	{
-		label: 'Extended reasons',
+		label: 'Gebruikersnaam',
 		list: [
-			{ label: 'Advertising', value: 'uw-adblock' },
-			{ label: 'Arbitration enforcement', value: 'uw-aeblock' },
-			{ label: 'Block evasion - IP', value: 'uw-ipevadeblock' },
-			{ label: 'BLP violations', value: 'uw-bioblock' },
-			{ label: 'Copyright violations', value: 'uw-copyrightblock' },
-			{ label: 'Creating nonsense pages', value: 'uw-npblock' },
-			{ label: 'Edit filter-related', value: 'uw-efblock' },
-			{ label: 'Edit warring', value: 'uw-ewblock' },
-			{ label: 'Generic block with talk page access revoked', value: 'uw-blocknotalk' },
-			{ label: 'Harassment', value: 'uw-hblock' },
-			{ label: 'Legal threats', value: 'uw-lblock' },
-			{ label: 'Personal attacks or harassment', value: 'uw-pablock' },
-			{ label: 'Possible compromised account', value: 'uw-compblock' },
-			{ label: 'Removal of content', value: 'uw-dblock' },
-			{ label: 'Sock puppetry (master)', value: 'uw-sockblock' },
-			{ label: 'Sock puppetry (puppet)', value: 'uw-spoablock' },
-			{ label: 'Social networking', value: 'uw-socialmediablock' },
-			{ label: 'Spam', value: 'uw-sblock' },
-			{ label: 'Spam/advertising-only account', value: 'uw-soablock' },
-			{ label: 'Unapproved bot', value: 'uw-botblock' },
-			{ label: 'Undisclosed paid editing', value: 'uw-upeblock' },
-			{ label: 'Violating the three-revert rule', value: 'uw-3block' }
+			{ label: 'Ongewenste gebruikersnaam', value: 'og' },
+			{ label: 'Ongewenste gebruikersnaam - bedrijf', value: 'ogbedrijf' }
 		]
 	},
 	{
-		label: 'Username violations',
+		label: 'Overig',
 		list: [
-			{ label: 'Bot username, soft block', value: 'uw-botublock' },
-			{ label: 'Bot username, hard block', value: 'uw-botuhblock' },
-			{ label: 'Promotional username, hard block', value: 'uw-spamublock' },
-			{ label: 'Promotional username, soft block', value: 'uw-softerblock' },
-			{ label: 'Similar username, soft block', value: 'uw-ublock-double' },
-			{ label: 'Username violation, soft block', value: 'uw-ublock' },
-			{ label: 'Username violation, hard block', value: 'uw-uhblock' },
-			{ label: 'Username impersonation, hard block', value: 'uw-uhblock-double' },
-			{ label: 'Username represents a well-known person, soft block', value: 'uw-ublock-wellknown' },
-			{ label: 'Username represents a non-profit, soft block', value: 'uw-causeblock' },
-			{ label: 'Username violation, vandalism-only account', value: 'uw-vaublock' }
-		]
-	},
-	{
-		label: 'Templated reasons',
-		list: [
-			{ label: 'blocked proxy', value: 'blocked proxy' },
-			{ label: 'CheckUser block', value: 'CheckUser block' },
-			{ label: 'checkuserblock-account', value: 'checkuserblock-account' },
-			{ label: 'checkuserblock-wide', value: 'checkuserblock-wide' },
-			{ label: 'colocationwebhost', value: 'colocationwebhost' },
-			{ label: 'oversightblock', value: 'oversightblock' },
-			{ label: 'rangeblock', value: 'rangeblock' }, // Only for IP ranges, selected for non-/64 ranges in filtered_block_groups
-			{ label: 'spamblacklistblock', value: 'spamblacklistblock' },
-			{ label: 'tor', value: 'tor' },
-			{ label: 'webhostblock', value: 'webhostblock' },
-			{ label: 'zombie proxy', value: 'zombie proxy' }
+			{ label: 'Sokpopmisbruik', value: 'sokpop' },
+			{ label: 'Open Proxy', value: 'proxy' }
 		]
 	}
 ];
@@ -1566,10 +938,8 @@ Twinkle.block.blockGroupsPartial = [
 	{
 		label: 'Extended partial block reasons',
 		list: [
-			{ label: 'Arbitration enforcement', value: 'uw-aepblock' },
-			{ label: 'Email harassment', value: 'uw-epblock' },
-			{ label: 'Misusing multiple accounts', value: 'uw-acpblock' },
-			{ label: 'Misusing multiple accounts - indefinite', value: 'uw-acpblockindef' }
+			{ label: 'Besluit arbitragecomissie', value: 'uw-aepblock' },
+			{ label: 'Lastigvallen via e-mail', value: 'uw-epblock' }
 		]
 	}
 ];
@@ -1579,28 +949,11 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 	return $.map(group, function(blockGroup) {
 		var list = $.map(blockGroup.list, function(blockPreset) {
 			switch (blockPreset.value) {
-				case 'uw-talkrevoked':
-					if (blockedUserName !== relevantUserName) {
-						return;
-					}
-					break;
 				case 'rangeblock':
 					if (!Morebits.ip.isRange(relevantUserName)) {
 						return;
 					}
 					blockPreset.selected = !Morebits.ip.get64(relevantUserName);
-					break;
-				case 'CheckUser block':
-				case 'checkuserblock-account':
-				case 'checkuserblock-wide':
-					if (!Morebits.userIsInGroup('checkuser')) {
-						return;
-					}
-					break;
-				case 'oversightblock':
-					if (!Morebits.userIsInGroup('oversight')) {
-						return;
-					}
 					break;
 				default:
 					break;
@@ -1659,7 +1012,7 @@ Twinkle.block.callback.change_expiry = function twinkleblockCallbackChangeExpiry
 Twinkle.block.seeAlsos = [];
 Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSeeAlso() {
 	var reason = this.form.reason.value.replace(
-		new RegExp('( <!--|;) ' + 'see also ' + Twinkle.block.seeAlsos.join(' and ') + '( -->)?'), ''
+		new RegExp('( <!--|;) ' + 'zie ook ' + Twinkle.block.seeAlsos.join(' en ') + '( -->)?'), ''
 	);
 
 	Twinkle.block.seeAlsos = Twinkle.block.seeAlsos.filter(function(el) {
@@ -1669,28 +1022,14 @@ Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSee
 	if (this.checked) {
 		Twinkle.block.seeAlsos.push(this.value);
 	}
-	var seeAlsoMessage = Twinkle.block.seeAlsos.join(' and ');
+	var seeAlsoMessage = Twinkle.block.seeAlsos.join(' en ');
 
 	if (!Twinkle.block.seeAlsos.length) {
 		this.form.reason.value = reason;
 	} else if (reason.indexOf('{{') !== -1) {
-		this.form.reason.value = reason + ' <!-- see also ' + seeAlsoMessage + ' -->';
+		this.form.reason.value = reason + ' <!-- zie ook ' + seeAlsoMessage + ' -->';
 	} else {
-		this.form.reason.value = reason + '; see also ' + seeAlsoMessage;
-	}
-};
-
-Twinkle.block.dsReason = '';
-Twinkle.block.callback.toggle_ds_reason = function twinkleblockCallbackToggleDSReason() {
-	var reason = this.form.reason.value.replace(
-		new RegExp(' ?\\(\\[\\[' + Twinkle.block.dsReason + '\\]\\]\\)'), ''
-	);
-
-	Twinkle.block.dsReason = Twinkle.block.dsinfo[this.options[this.selectedIndex].label].page;
-	if (!this.value) {
-		this.form.reason.value = reason;
-	} else {
-		this.form.reason.value = reason + ' ([[' + Twinkle.block.dsReason + ']])';
+		this.form.reason.value = reason + '; zie ook ' + seeAlsoMessage;
 	}
 };
 
@@ -1896,17 +1235,17 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 			}
 		}
 		if (!blockoptions.expiry) {
-			return alert('Please provide an expiry!');
+			return alert('Geef een blokkade-tijd!');
 		} else if (Morebits.string.isInfinity(blockoptions.expiry) && !Twinkle.block.isRegistered) {
-			return alert("Can't indefinitely block an IP address!");
+			return alert("Kan een IP-adres niet blokkeren voor onbepaalde tijd!");
 		}
 		if (!blockoptions.reason) {
-			return alert('Please provide a reason for the block!');
+			return alert('Geef een reden voor de blokkade!');
 		}
 
 		Morebits.simpleWindow.setButtonsEnabled(false);
 		Morebits.status.init(e.target);
-		var statusElement = new Morebits.status('Executing block');
+		var statusElement = new Morebits.status('Blok uitvoeren');
 		blockoptions.action = 'block';
 
 		blockoptions.user = relevantUserName;
@@ -1970,29 +1309,29 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 			var logid = data.query.logevents.length ? logevents.logid : false;
 
 			if (logid !== Twinkle.block.blockLogId || !!block !== !!Twinkle.block.currentBlockInfo) {
-				var message = 'The block status of ' + blockoptions.user + ' has changed. ';
+				var message = 'Blokkade van ' + blockoptions.user + ' is gewijzigd. ';
 				if (block) {
-					message += 'New status: ';
+					message += 'Huidige: ';
 				} else {
-					message += 'Last entry: ';
+					message += 'Vorige: ';
 				}
 
 				var logExpiry = '';
 				if (logevents.params.duration) {
 					if (logevents.params.duration === 'infinity') {
-						logExpiry = 'indefinitely';
+						logExpiry = 'onbepaalde tijd';
 					} else {
 						var expiryDate = new Morebits.date(logevents.params.expiry);
-						logExpiry += (expiryDate.isBefore(new Date()) ? ', expired ' : ' until ') + expiryDate.calendar();
+						logExpiry += (expiryDate.isBefore(new Date()) ? ', verliep ' : ' tot ') + expiryDate.calendar();
 					}
 				} else { // no duration, action=unblock, just show timestamp
 					logExpiry = ' ' + new Morebits.date(logevents.timestamp).calendar();
 				}
-				message += Morebits.string.toUpperCaseFirstChar(logevents.action) + 'ed by ' + logevents.user + logExpiry +
-					' for "' + logevents.comment + '". Do you want to override with your settings?';
+				message += Morebits.string.toUpperCaseFirstChar(logevents.action) + 'ed door ' + logevents.user + logExpiry +
+					' voor "' + logevents.comment + '". Wil je dit overschijven met jouw instellingen?';
 
 				if (!confirm(message)) {
-					Morebits.status.info('Executing block', 'Canceled by user');
+					Morebits.status.info('Blokkade uitvoeren', 'Afgebroken door gebruiker');
 					return;
 				}
 				blockoptions.reblock = 1; // Writing over a block will fail otherwise
@@ -2002,7 +1341,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 			blockoptions.tags = Twinkle.changeTags;
 			blockoptions.token = mw.user.tokens.get('csrfToken');
 			var mbApi = new Morebits.wiki.api('Executing block', blockoptions, function() {
-				statusElement.info('Completed');
+				statusElement.info('done');
 				if (toWarn) {
 					Twinkle.block.callback.issue_template(templateoptions);
 				}
@@ -2015,14 +1354,14 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 		Morebits.status.init(e.target);
 		Twinkle.block.callback.issue_template(templateoptions);
 	} else {
-		return alert('Please give Twinkle something to do!');
+		return alert('Geef Twinkle iets te doen!');
 	}
 };
 
 Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTemplate(formData) {
 	// Use wgRelevantUserName to ensure the block template goes to a single IP and not to the
 	// "talk page" of an IP range (which does not exist)
-	var userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
+	var userTalkPage = 'Overleg_gebruiker:' + mw.config.get('wgRelevantUserName');
 
 	var params = $.extend(formData, {
 		messageData: Twinkle.block.blockPresetsInfo[formData.template],
@@ -2033,9 +1372,9 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	});
 
 	Morebits.wiki.actionCompleted.redirect = userTalkPage;
-	Morebits.wiki.actionCompleted.notice = 'Actions complete, loading user talk page in a few seconds';
+	Morebits.wiki.actionCompleted.notice = 'Acties uitgevoerd, overlegpagina wordt geladen';
 
-	var wikipedia_page = new Morebits.wiki.page(userTalkPage, 'User talk page modification');
+	var wikipedia_page = new Morebits.wiki.page(userTalkPage, 'Overlegpagina bewerken');
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.block.callback.main);
 };
@@ -2127,7 +1466,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 	params.indefinite = Morebits.string.isInfinity(params.expiry);
 
 	if (Twinkle.getPref('blankTalkpageOnIndefBlock') && params.template !== 'uw-lblock' && params.indefinite) {
-		Morebits.status.info('Info', 'Blanking talk page per preferences and creating a new talk page section for this month');
+		Morebits.status.info('Info', 'Overlegpagina leeghalen in overeenstemming met voorkeuren, en bloksjabloon toevoegen.');
 		text = date.monthHeader() + '\n';
 	} else {
 		text = pageobj.getPageText();
@@ -2146,7 +1485,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 		}
 
 		if (!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
-			Morebits.status.info('Info', 'Will create a new talk page section for this month, as none was found');
+			Morebits.status.info('Info', 'Nieuwe subkop op overlegpagina aanmaken voor deze maand.');
 			text += date.monthHeader() + '\n';
 		}
 	}
