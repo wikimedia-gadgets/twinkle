@@ -18,7 +18,7 @@ Twinkle.batchprotect = function twinklebatchprotect() {
 	if (Morebits.userIsSysop && ((mw.config.get('wgArticleId') > 0 && (mw.config.get('wgNamespaceNumber') === 2 ||
 		mw.config.get('wgNamespaceNumber') === 4)) || mw.config.get('wgNamespaceNumber') === 14 ||
 		mw.config.get('wgCanonicalSpecialPageName') === 'Prefixindex')) {
-		Twinkle.addPortletLink(Twinkle.batchprotect.callback, 'P-batch', 'tw-pbatch', 'Protect pages linked from this page');
+		Twinkle.addPortletLink(Twinkle.batchprotect.callback, 'Batch Bev', 'tw-pbatch', 'Beveilig pagina\'s gelinkt op deze pagina');
 	}
 };
 
@@ -27,9 +27,8 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	var Window = new Morebits.simpleWindow(600, 400);
 	Window.setTitle('Batch protection');
 	Window.setScriptName('Twinkle');
-	Window.addFooterLink('Protection policy', 'WP:PROT');
+	Window.addFooterLink('RVM', 'WP:RVM');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#protect');
-	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.batchprotect.callback.evaluate);
 	form.append({
@@ -37,10 +36,10 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		event: Twinkle.protect.formevents.editmodify,
 		list: [
 			{
-				label: 'Modify edit protection',
+				label: 'Beveilig bewerken',
 				value: 'editmodify',
 				name: 'editmodify',
-				tooltip: 'Only for existing pages.',
+				tooltip: 'Alleen voor bestaande pagina\'s.',
 				checked: true
 			}
 		]
@@ -48,14 +47,14 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	form.append({
 		type: 'select',
 		name: 'editlevel',
-		label: 'Edit protection:',
+		label: 'Beveiligingsniveau:',
 		event: Twinkle.protect.formevents.editlevel,
 		list: Twinkle.protect.protectionLevels
 	});
 	form.append({
 		type: 'select',
 		name: 'editexpiry',
-		label: 'Expires:',
+		label: 'Verloopt:',
 		event: function(e) {
 			if (e.target.value === 'custom') {
 				Twinkle.protect.doCustomExpiry(e.target);
@@ -69,10 +68,10 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		event: Twinkle.protect.formevents.movemodify,
 		list: [
 			{
-				label: 'Modify move protection',
+				label: 'Beveilig hernoemen',
 				value: 'movemodify',
 				name: 'movemodify',
-				tooltip: 'Only for existing pages.',
+				tooltip: 'Alleen voor bestaande pagina\'s.',
 				checked: true
 			}
 		]
@@ -80,7 +79,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	form.append({
 		type: 'select',
 		name: 'movelevel',
-		label: 'Move protection:',
+		label: 'Beveiligingsniveau:',
 		event: Twinkle.protect.formevents.movelevel,
 		list: Twinkle.protect.protectionLevels.filter(function(level) {
 			// Autoconfirmed is required for a move, redundant
@@ -90,7 +89,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	form.append({
 		type: 'select',
 		name: 'moveexpiry',
-		label: 'Expires:',
+		label: 'Verloopt:',
 		event: function(e) {
 			if (e.target.value === 'custom') {
 				Twinkle.protect.doCustomExpiry(e.target);
@@ -108,10 +107,10 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		},
 		list: [
 			{
-				label: 'Modify create protection',
+				label: 'Aanmaak beveilliging',
 				value: 'createmodify',
 				name: 'createmodify',
-				tooltip: 'Only for pages that do not exist.',
+				tooltip: 'Alleen voor pagina\'s die nog niet bestaan.',
 				checked: true
 			}
 		]
@@ -119,14 +118,14 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	form.append({
 		type: 'select',
 		name: 'createlevel',
-		label: 'Create protection:',
+		label: 'Beveiligingsniveau:',
 		event: Twinkle.protect.formevents.createlevel,
 		list: Twinkle.protect.protectionLevels
 	});
 	form.append({
 		type: 'select',
 		name: 'createexpiry',
-		label: 'Expires:',
+		label: 'Verloopt:',
 		event: function(e) {
 			if (e.target.value === 'custom') {
 				Twinkle.protect.doCustomExpiry(e.target);
@@ -142,9 +141,9 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason: ',
+		label: 'Reden: ',
 		size: 60,
-		tooltip: 'For the protection log and page history.'
+		tooltip: 'Om weer te geven in logboek en pagina geschiedenis.'
 	});
 
 	var query = {
@@ -176,9 +175,9 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	Morebits.status.init(statusdiv);
 	Window.display();
 
-	var statelem = new Morebits.status('Grabbing list of pages');
+	var statelem = new Morebits.status('Lijst met pagina\'s ophalen');
 
-	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
+	var wikipedia_api = new Morebits.wiki.api('laden...', query, function(apiobj) {
 		var response = apiobj.getResponse();
 		var pages = (response.query && response.query.pages) || [];
 		var list = [];
@@ -188,7 +187,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 			var missing = !!page.missing, editProt;
 
 			if (missing) {
-				metadata.push('page does not exist');
+				metadata.push('pagina bestaat niet');
 				editProt = page.protection.filter(function(pr) {
 					return pr.type === 'create' && pr.level === 'sysop';
 				}).pop();
@@ -199,7 +198,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 
 				if (page.ns === 6) {
 					metadata.push('uploader: ' + page.imageinfo[0].user);
-					metadata.push('last edit from: ' + page.revisions[0].user);
+					metadata.push('laatste bewerking van: ' + page.revisions[0].user);
 				} else {
 					metadata.push(mw.language.convertNumber(page.revisions[0].size) + ' bytes');
 				}
@@ -209,24 +208,24 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 				}).pop();
 			}
 			if (editProt) {
-				metadata.push('fully' + (missing ? ' create' : '') + ' protected' +
-				(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)'));
+				metadata.push('volledig' + (missing ? ' tegen aanmaak' : '') + ' beveiligd' +
+				(editProt.expiry === 'infinity' ? ' voor onbepaalde tijd' : ', verloopt ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)'));
 			}
 
 			var title = page.title;
 			list.push({ label: title + (metadata.length ? ' (' + metadata.join('; ') + ')' : ''), value: title, checked: true, style: editProt ? 'color:red' : '' });
 		});
-		form.append({ type: 'header', label: 'Pages to protect' });
+		form.append({ type: 'header', label: 'Pagina\'s om te beveiligen' });
 		form.append({
 			type: 'button',
-			label: 'Select All',
+			label: 'Selecteer alles',
 			event: function(e) {
 				$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', true);
 			}
 		});
 		form.append({
 			type: 'button',
-			label: 'Deselect All',
+			label: 'Deselecteer alles',
 			event: function(e) {
 				$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', false);
 			}
@@ -243,8 +242,8 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		Window.setContent(result);
 
 		// Set defaults
-		result.editexpiry.value = '2 days';
-		result.moveexpiry.value = '2 days';
+		result.editexpiry.value = '2 weeks';
+		result.moveexpiry.value = '2 weeks';
 		result.createexpiry.value = 'infinity';
 
 		Morebits.quickForm.getElements(result, 'pages').forEach(Twinkle.generateArrowLinks);
@@ -257,21 +256,21 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 Twinkle.batchprotect.currentProtectCounter = 0;
 Twinkle.batchprotect.currentprotector = 0;
 Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEvaluate(event) {
-	Morebits.wiki.actionCompleted.notice = 'Batch protection is now complete';
+	Morebits.wiki.actionCompleted.notice = 'Batch beveiligen is voltooid';
 
 	var form = event.target;
 
 	var numProtected = $(Morebits.quickForm.getElements(form, 'pages')).filter(function(index, element) {
 		return element.checked && element.nextElementSibling.style.color === 'red';
 	}).length;
-	if (numProtected > 0 && !confirm('You are about to act on ' + mw.language.convertNumber(numProtected) + ' fully protected page(s). Are you sure?')) {
+	if (numProtected > 0 && !confirm('Je staat op het punt om ' + mw.language.convertNumber(numProtected) + ' volledig beveiligde pagina(\'s) te bewerken. Weet je dat zeker?')) {
 		return;
 	}
 
 	var input = Morebits.quickForm.getInputData(form);
 
 	if (!input.reason) {
-		alert("You've got to give a reason, you rouge admin!");
+		alert("Je moet wel een reden opgeven, jij protectionist!");
 		return;
 	}
 
@@ -279,11 +278,11 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	Morebits.status.init(form);
 
 	if (input.pages.length === 0) {
-		Morebits.status.error('Error', 'Nothing to protect, aborting');
+		Morebits.status.error('Error', 'Niets te doen, afbreken...');
 		return;
 	}
 
-	var batchOperation = new Morebits.batchOperation('Applying protection settings');
+	var batchOperation = new Morebits.batchOperation('Beveiliging uitvoeren');
 	batchOperation.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 	batchOperation.setOption('preserveIndividualStatusLines', true);
 	batchOperation.setPageList(input.pages);
@@ -293,7 +292,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 			titles: pageName,
 			format: 'json'
 		};
-		var wikipedia_api = new Morebits.wiki.api('Checking if page ' + pageName + ' exists', query,
+		var wikipedia_api = new Morebits.wiki.api('Checken of ' + pageName + ' bestaat', query,
 			Twinkle.batchprotect.callbacks.main, null, batchOperation.workerFailure);
 		wikipedia_api.params = $.extend({
 			page: pageName,
@@ -313,7 +312,7 @@ Twinkle.batchprotect.callbacks = {
 
 		var exists = !response.query.pages[0].missing;
 
-		var page = new Morebits.wiki.page(apiobj.params.page, 'Protecting ' + apiobj.params.page);
+		var page = new Morebits.wiki.page(apiobj.params.page, 'Beveiligen ' + apiobj.params.page);
 		var takenAction = false;
 		if (exists && apiobj.params.editmodify) {
 			page.setEditProtection(apiobj.params.editlevel, apiobj.params.editexpiry);
@@ -328,7 +327,7 @@ Twinkle.batchprotect.callbacks = {
 			takenAction = true;
 		}
 		if (!takenAction) {
-			Morebits.status.warn('Protecting ' + apiobj.params.page, 'page ' + (exists ? 'exists' : 'does not exist') + '; nothing to do, skipping');
+			Morebits.status.warn('Beveiligen ' + apiobj.params.page, 'pagina ' + (exists ? 'bestaat' : 'bestaat niet') + '; niets te doen, overslaan');
 			apiobj.params.batchOperation.workerFailure(apiobj);
 			return;
 		}
