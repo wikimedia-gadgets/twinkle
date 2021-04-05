@@ -19,23 +19,20 @@ Twinkle.protect = function twinkleprotect() {
 		return;
 	}
 
-	Twinkle.addPortletLink(Twinkle.protect.callback, Morebits.userIsSysop ? 'PP' : 'RPP', 'tw-rpp',
-		Morebits.userIsSysop ? 'Protect page' : 'Request page protection');
+	Twinkle.addPortletLink(Twinkle.protect.callback, 'Beveilig', 'tw-rpp', Morebits.userIsSysop ? 'Beveilig pagina' : 'Verzoek pagina beveiliging');
 };
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
 	var Window = new Morebits.simpleWindow(620, 530);
-	Window.setTitle(Morebits.userIsSysop ? 'Apply, request or tag page protection' : 'Request or tag page protection');
+	Window.setTitle(Morebits.userIsSysop ? 'Plaats of verzoek een paginabeveiliging' : 'Verzoek een paginabeveiliging');
 	Window.setScriptName('Twinkle');
-	Window.addFooterLink('Protection templates', 'Template:Protection templates');
-	Window.addFooterLink('Protection policy', 'WP:PROT');
+	Window.addFooterLink('Beveilig beleid', 'WP:RVM#Een_pagina_beveiligen');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#protect');
-	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.protect.callback.evaluate);
 	var actionfield = form.append({
 		type: 'field',
-		label: 'Type of action'
+		label: 'Type handeling'
 	});
 	if (Morebits.userIsSysop) {
 		actionfield.append({
@@ -44,9 +41,9 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 			event: Twinkle.protect.callback.changeAction,
 			list: [
 				{
-					label: 'Protect page',
+					label: 'Beveilig pagina',
 					value: 'protect',
-					tooltip: 'Apply actual protection to the page.',
+					tooltip: 'Plaats een beveiliging op de pagina.',
 					checked: true
 				}
 			]
@@ -58,16 +55,15 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 		event: Twinkle.protect.callback.changeAction,
 		list: [
 			{
-				label: 'Request page protection',
+				label: 'Verzoek om beveiliging van pagina',
 				value: 'request',
-				tooltip: 'If you want to request protection via WP:RPP' + (Morebits.userIsSysop ? ' instead of doing the protection by yourself.' : '.'),
+				tooltip: 'Indien je beveiliging wil aanvragen via WP:BV' + (Morebits.userIsSysop ? ' inplaats van het zelf beveiligen.' : '.'),
 				checked: !Morebits.userIsSysop
 			},
 			{
-				label: 'Tag page with protection template',
+				label: 'Plaats beveilig sjabloon (n.v.t. op nlwiki)',
 				value: 'tag',
-				tooltip: 'If the protecting admin forgot to apply a protection template, or you have just protected the page without tagging, you can use this to apply the appropriate protection tag.',
-				disabled: mw.config.get('wgArticleId') === 0 || mw.config.get('wgPageContentModel') === 'Scribunto'
+				disabled: true //kan vooralsnog niet weg (want JavaScript), dus voorlopig dan maar zo.
 			}
 		]
 	});
@@ -94,7 +90,7 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 
 // A list of bots who may be the protecting sysop, for whom we shouldn't
 // remind the user contact before requesting unprotection (evaluate)
-Twinkle.protect.trustedBots = ['MusikBot II', 'TFA Protector Bot'];
+Twinkle.protect.trustedBots = ['Nlwikibot']; //hier moet iets staan, dus dan maar het meest onschuldige botje
 
 // Customizable namespace and FlaggedRevs settings
 // In theory it'd be nice to have restrictionlevels defined here,
@@ -246,13 +242,13 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 
 		if (Twinkle.protect.hasProtectLog) {
 			$linkMarkup.append(
-				$('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">protection log</a>'));
+				$('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">beveiligingslogboek</a>'));
 			if (!currentlyProtected || (!Twinkle.protect.currentProtectionLevels.edit && !Twinkle.protect.currentProtectionLevels.move)) {
 				var lastProtectAction = Twinkle.protect.protectLog[0];
 				if (lastProtectAction.action === 'unprotect') {
-					$linkMarkup.append(' (unprotected ' + new Morebits.date(lastProtectAction.timestamp).calendar('utc') + ')');
+					$linkMarkup.append(' (onbeveiligd ' + new Morebits.date(lastProtectAction.timestamp).calendar('utc') + ' (utc))');
 				} else { // protect or modify
-					$linkMarkup.append(' (expired ' + new Morebits.date(lastProtectAction.params.details[0].expiry).calendar('utc') + ')');
+					$linkMarkup.append(' (verliep ' + new Morebits.date(lastProtectAction.params.details[0].expiry).calendar('utc') + ' (utc)');
 				}
 			}
 			$linkMarkup.append(Twinkle.protect.hasStableLog ? $('<span> &bull; </span>') : null);
@@ -263,16 +259,16 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 			if (!currentlyProtected || !Twinkle.protect.currentProtectionLevels.stabilize) {
 				var lastStabilizeAction = Twinkle.protect.stableLog[0];
 				if (lastStabilizeAction.action === 'reset') {
-					$linkMarkup.append(' (reset ' + new Morebits.date(lastStabilizeAction.timestamp).calendar('utc') + ')');
+					$linkMarkup.append(' (reset ' + new Morebits.date(lastStabilizeAction.timestamp).calendar('utc') + ' (utc))');
 				} else { // config or modify
-					$linkMarkup.append(' (expired ' + new Morebits.date(lastStabilizeAction.params.expiry).calendar('utc') + ')');
+					$linkMarkup.append(' (verliep ' + new Morebits.date(lastStabilizeAction.params.expiry).calendar('utc') + ' (utc)');
 				}
 			}
 		}
 
 		Morebits.status.init($('div[name="hasprotectlog"] span')[0]);
 		Morebits.status.warn(
-			currentlyProtected ? 'Previous protections' : 'This page has been protected in the past',
+			currentlyProtected ? 'Voorgaande beveiligingen' : 'Deze pagina is in het verleden beveiligd',
 			$linkMarkup[0]
 		);
 	}
@@ -285,28 +281,28 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 			var label = type === 'stabilize' ? 'Pending Changes' : Morebits.string.toUpperCaseFirstChar(type);
 
 			if (type === 'cascading') { // Covered by another page
-				label = 'Cascading protection ';
+				label = 'Cascade beveiliging ';
 				protectionNode.push($('<b>' + label + '</b>')[0]);
 				if (settings.source) { // Should by definition exist
 					var sourceLink = '<a target="_blank" href="' + mw.util.getUrl(settings.source) + '">' + settings.source + '</a>';
-					protectionNode.push($('<span>from ' + sourceLink + '</span>')[0]);
+					protectionNode.push($('<span>van ' + sourceLink + '</span>')[0]);
 				}
 			} else {
 				var level = settings.level;
 				// Make cascading protection more prominent
 				if (settings.cascade) {
-					level += ' (cascading)';
+					level += ' (cascade)';
 				}
 				protectionNode.push($('<b>' + label + ': ' + level + '</b>')[0]);
 			}
 
 			if (settings.expiry === 'infinity') {
-				protectionNode.push(' (indefinite) ');
+				protectionNode.push(' (onbepaalde tijd) ');
 			} else {
-				protectionNode.push(' (expires ' + new Morebits.date(settings.expiry).calendar('utc') + ') ');
+				protectionNode.push(' (verloopt ' + new Morebits.date(settings.expiry).calendar('utc') + ' (utc)) ');
 			}
 			if (settings.admin) {
-				var adminLink = '<a target="_blank" href="' + mw.util.getUrl('User talk:' + settings.admin) + '">' + settings.admin + '</a>';
+				var adminLink = '<a target="_blank" href="' + mw.util.getUrl('Overleg_gebruiker:' + settings.admin) + '">' + settings.admin + '</a>';
 				protectionNode.push($('<span>by ' + adminLink + '</span>')[0]);
 			}
 			protectionNode.push($('<span> \u2022 </span>')[0]);
@@ -314,10 +310,10 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 		protectionNode = protectionNode.slice(0, -1); // remove the trailing bullet
 		statusLevel = 'warn';
 	} else {
-		protectionNode.push($('<b>no protection</b>')[0]);
+		protectionNode.push($('<b>geen beveiliging</b>')[0]);
 	}
 
-	Morebits.status[statusLevel]('Current protection level', protectionNode);
+	Morebits.status[statusLevel]('Huidige beveiliging', protectionNode);
 };
 
 Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAction(e) {
@@ -327,16 +323,16 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 
 	switch (e.target.values) {
 		case 'protect':
-			field_preset = new Morebits.quickForm.element({ type: 'field', label: 'Preset', name: 'field_preset' });
+			field_preset = new Morebits.quickForm.element({ type: 'field', label: 'Voorinstelling', name: 'field_preset' });
 			field_preset.append({
 				type: 'select',
 				name: 'category',
-				label: 'Choose a preset:',
+				label: 'Kies voorinstelling:',
 				event: Twinkle.protect.callback.changePreset,
 				list: mw.config.get('wgArticleId') ? Twinkle.protect.protectionTypes : Twinkle.protect.protectionTypesCreate
 			});
 
-			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Protection options', name: 'field2' });
+			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Beveiligingsopties', name: 'field2' });
 			field2.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
 			field2.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			// for existing pages
@@ -346,9 +342,9 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					event: Twinkle.protect.formevents.editmodify,
 					list: [
 						{
-							label: 'Modify edit protection',
+							label: 'Verander bewerk beveiliging',
 							name: 'editmodify',
-							tooltip: 'If this is turned off, the edit protection level, and expiry time, will be left as is.',
+							tooltip: 'Indien uitgeschakeld, zal het bewerk-beveiligingsniveau en verlooptijd ongewijzigd blijven.',
 							checked: true
 						}
 					]
@@ -356,7 +352,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				field2.append({
 					type: 'select',
 					name: 'editlevel',
-					label: 'Edit protection:',
+					label: 'Bewerk beveiliging:',
 					event: Twinkle.protect.formevents.editlevel,
 					list: Twinkle.protect.protectionLevels.filter(function(level) {
 						// Filter TE outside of templates and modules
@@ -366,7 +362,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				field2.append({
 					type: 'select',
 					name: 'editexpiry',
-					label: 'Expires:',
+					label: 'Verloopt:',
 					event: function(e) {
 						if (e.target.value === 'custom') {
 							Twinkle.protect.doCustomExpiry(e.target);
@@ -380,9 +376,9 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					event: Twinkle.protect.formevents.movemodify,
 					list: [
 						{
-							label: 'Modify move protection',
+							label: 'Verander verplaats beveiliging',
 							name: 'movemodify',
-							tooltip: 'If this is turned off, the move protection level, and expiry time, will be left as is.',
+							tooltip: 'Indien uitgeschakeld, zal het verplaats-beveiligingsniveau en verlooptijd ongewijzigd blijven.',
 							checked: true
 						}
 					]
@@ -390,7 +386,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				field2.append({
 					type: 'select',
 					name: 'movelevel',
-					label: 'Move protection:',
+					label: 'Verplaats beveiliging:',
 					event: Twinkle.protect.formevents.movelevel,
 					list: Twinkle.protect.protectionLevels.filter(function(level) {
 						// Autoconfirmed is required for a move, redundant
@@ -400,7 +396,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				field2.append({
 					type: 'select',
 					name: 'moveexpiry',
-					label: 'Expires:',
+					label: 'Verloopt:',
 					event: function(e) {
 						if (e.target.value === 'custom') {
 							Twinkle.protect.doCustomExpiry(e.target);
@@ -449,17 +445,17 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				field2.append({
 					type: 'select',
 					name: 'createlevel',
-					label: 'Create protection:',
+					label: 'Aanmaak beveiliging:',
 					event: Twinkle.protect.formevents.createlevel,
 					list: Twinkle.protect.protectionLevels.filter(function(level) {
-						// Filter TE always, and autoconfirmed in mainspace, redundant since WP:ACPERM
-						return level.value !== 'templateeditor' && (mw.config.get('wgNamespaceNumber') !== 0 || level.value !== 'autoconfirmed');
+						// Filter TE always
+						return level.value !== 'templateeditor';
 					})
 				});
 				field2.append({
 					type: 'select',
 					name: 'createexpiry',
-					label: 'Expires:',
+					label: 'Verloopt:',
 					event: function(e) {
 						if (e.target.value === 'custom') {
 							Twinkle.protect.doCustomExpiry(e.target);
@@ -472,14 +468,14 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			field2.append({
 				type: 'textarea',
 				name: 'protectReason',
-				label: 'Reason (for protection log):'
+				label: 'Reden (voor beveiligingslogboek):'
 			});
 			field2.append({
 				type: 'div',
 				name: 'protectReason_notes',
-				label: 'Notes:',
+				label: 'Note:',
 				style: 'display:inline-block; margin-top:4px;',
-				tooltip: 'Add a note to the protection log that this was requested at RfPP.'
+				tooltip: 'Voeg een notitie toe dat de beveiliging is aangevraagd op WP:BV.'
 			});
 			field2.append({
 				type: 'checkbox',
@@ -487,53 +483,22 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				style: 'display:inline-block; margin-top:4px;',
 				list: [
 					{
-						label: 'RfPP request',
+						label: 'WP:BV verzoek',
 						name: 'protectReason_notes_rfpp',
 						checked: false,
-						value: 'requested at [[WP:RfPP]]'
+						value: 'aangevraagd op [[WP:BV]]'
 					}
 				]
 			});
 			field2.append({
 				type: 'input',
 				event: Twinkle.protect.callback.annotateProtectReason,
-				label: 'RfPP revision ID',
+				label: 'WP:BV oldid (optioneel)',
 				name: 'protectReason_notes_rfppRevid',
 				value: '',
-				tooltip: 'Optional revision ID of the RfPP page where protection was requested.'
+				tooltip: 'Optioneel: Verwijs naar de aanvraag middels de oldid waarin de aanvraag is gedaan.'
 			});
-			if (!mw.config.get('wgArticleId') || mw.config.get('wgPageContentModel') === 'Scribunto') {  // tagging isn't relevant for non-existing or module pages
-				break;
-			}
-			/* falls through */
-		case 'tag':
-			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Tagging options', name: 'field1' });
-			field1.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
-			field1.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
-			field1.append({
-				type: 'select',
-				name: 'tagtype',
-				label: 'Choose protection template:',
-				list: Twinkle.protect.protectionTags,
-				event: Twinkle.protect.formevents.tagtype
-			});
-			field1.append({
-				type: 'checkbox',
-				list: [
-					{
-						name: 'small',
-						label: 'Iconify (small=yes)',
-						tooltip: 'Will use the |small=yes feature of the template, and only render it as a keylock',
-						checked: true
-					},
-					{
-						name: 'noinclude',
-						label: 'Wrap protection template with <noinclude>',
-						tooltip: 'Will wrap the protection template in &lt;noinclude&gt; tags, so that it won\'t transclude',
-						checked: mw.config.get('wgNamespaceNumber') === 10
-					}
-				]
-			});
+			
 			break;
 
 		case 'request':
@@ -541,32 +506,32 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			field_preset.append({
 				type: 'select',
 				name: 'category',
-				label: 'Type and reason:',
+				label: 'Type en reden:',
 				event: Twinkle.protect.callback.changePreset,
 				list: mw.config.get('wgArticleId') ? Twinkle.protect.protectionTypes : Twinkle.protect.protectionTypesCreate
 			});
 
-			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Options', name: 'field1' });
+			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Opties', name: 'field1' });
 			field1.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
 			field1.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			field1.append({
 				type: 'select',
 				name: 'expiry',
-				label: 'Duration: ',
+				label: 'Duur: ',
 				list: [
 					{ label: '', selected: true, value: '' },
-					{ label: 'Temporary', value: 'temporary' },
-					{ label: 'Indefinite', value: 'infinity' }
+					{ label: 'Tijdelijk', value: 'temporary' },
+					{ label: 'Permanent', value: 'infinity' }
 				]
 			});
 			field1.append({
 				type: 'textarea',
 				name: 'reason',
-				label: 'Reason: '
+				label: 'Reden: '
 			});
 			break;
 		default:
-			alert("Something's afoot in twinkleprotect");
+			alert("Hmmm... Daar ging iets mis (ERROR: module_protect/line_534)");
 			break;
 	}
 
@@ -649,7 +614,7 @@ Twinkle.protect.formevents = {
 };
 
 Twinkle.protect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
-	var custom = prompt('Enter a custom expiry time.  \nYou can use relative times, like "1 minute" or "19 days", or absolute timestamps, "yyyymmddhhmm" (e.g. "200602011405" is Feb 1, 2006, at 14:05 UTC).', '');
+	var custom = prompt('Voer aangepaste beveiliging in.  \nJe kunt relative tijden in het engels gebruiken, zoals "1 minute" en "19 days", of absolute tijden in "yyyymmddhhmm"-format (bijv: "199905210105" is 21 mei 1999 om 01:05 UTC).', '');
 	if (custom) {
 		var option = document.createElement('option');
 		option.setAttribute('value', custom);
@@ -663,74 +628,57 @@ Twinkle.protect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
 
 // NOTE: This list is used by batchprotect as well
 Twinkle.protect.protectionLevels = [
-	{ label: 'All', value: 'all' },
-	{ label: 'Autoconfirmed', value: 'autoconfirmed' },
-	{ label: 'Extended confirmed', value: 'extendedconfirmed' },
-	{ label: 'Template editor', value: 'templateeditor' },
-	{ label: 'Sysop', value: 'sysop', selected: true }
+	{ label: 'Alle gebruikers', value: 'all' },
+	{ label: 'Bevestigde gebruikers', value: 'autoconfirmed' },
+	{ label: 'Moderatoren', value: 'sysop', selected: true }
 ];
 
 // default expiry selection is conditionally set in Twinkle.protect.callback.changePreset
 // NOTE: This list is used by batchprotect as well
 Twinkle.protect.protectionLengths = [
-	{ label: '1 hour', value: '1 hour' },
-	{ label: '2 hours', value: '2 hours' },
-	{ label: '3 hours', value: '3 hours' },
-	{ label: '6 hours', value: '6 hours' },
-	{ label: '12 hours', value: '12 hours' },
-	{ label: '1 day', value: '1 day' },
-	{ label: '2 days', value: '2 days' },
-	{ label: '3 days', value: '3 days' },
-	{ label: '4 days', value: '4 days' },
+	{ label: 'aangepast', value: 'custom' },
+	{ label: '1 uur', value: '1 hour' },
+	{ label: '3 uur', value: '3 hours' },
+	{ label: '6 uur', value: '6 hours' },
+	{ label: '12 uur', value: '12 hours' },
+	{ label: '1 dag', value: '24 hours' },
+	{ label: '3 dagen', value: '72 hours' },
 	{ label: '1 week', value: '1 week' },
-	{ label: '2 weeks', value: '2 weeks' },
-	{ label: '1 month', value: '1 month' },
-	{ label: '2 months', value: '2 months' },
-	{ label: '3 months', value: '3 months' },
-	{ label: '1 year', value: '1 year' },
-	{ label: 'indefinite', value: 'infinity' },
-	{ label: 'Custom...', value: 'custom' }
+	{ label: '2 weken', value: '2 weeks' },
+	{ label: '1 maand', value: '1 month' },
+	{ label: '3 maanden', value: '3 months' },
+	{ label: '6 maanden', value: '6 months' },
+	{ label: '1 jaar', value: '1 year' },
+	{ label: '2 jaar', value: '2 years' },
+	{ label: 'onbepaalde tijd', value: 'infinity' }
 ];
 
 Twinkle.protect.protectionTypes = [
-	{ label: 'Unprotection', value: 'unprotect' },
+	{ label: 'Beveiliging opheffen', value: 'unprotect' },
 	{
-		label: 'Full protection',
+		label: 'Volledige beveiliging',
 		list: [
-			{ label: 'Generic (full)', value: 'pp-protected' },
-			{ label: 'Content dispute/edit warring (full)', value: 'pp-dispute' },
-			{ label: 'Persistent vandalism (full)', value: 'pp-vandalism' },
-			{ label: 'User talk of blocked user (full)', value: 'pp-usertalk' }
+			{ label: 'Algemeen (full)', value: 'full-algemeen' },
+			{ label: 'Bewerkingsoorlog (full)', value: 'full-bwo' },
+			{ label: 'Herhaald vandalisme (full)', value: 'full-vandalisme' },
+			{ label: 'Recente gebeurtenissen (full)', value: 'full-recent' },
+			{ label: 'Veelbezochte pagina (full)', value: 'full-veelbezocht' },
+			{ label: 'Reclame/zelfpromotie (full)', value: 'full-spam' },
+			{ label: 'Archiefpagina (full)', value: 'full-archief' }
 		]
 	},
 	{
-		label: 'Template protection',
+		label: 'Semi-beveiliging',
 		list: [
-			{ label: 'Highly visible template (TE)', value: 'pp-template' }
+			{ label: 'Algemeen (semi)', value: 'semi-algemeen' },
+			{ label: 'Herhaald vandalisme (semi)', selected: true, value: 'semi-vandalisme' },
+			{ label: 'BLP schendingen (semi)', value: 'semi-blp' },
+			{ label: 'Sokpopperij (semi)', value: 'semi-sokpop' },
+			{ label: 'Recente gebeurtenissen (semi)', value: 'semi-recent' },
+			{ label: 'Veelbezochte pagina (semi)', value: 'semi-veelbezocht' },
+			{ label: 'Reclame/zelfpromotie (semi)', value: 'semi-spam' }
 		]
-	},
-	{
-		label: 'Extended confirmed protection',
-		list: [
-			{ label: 'Arbitration enforcement (ECP)', selected: true, value: 'pp-30-500-arb' },
-			{ label: 'Persistent vandalism (ECP)', value: 'pp-30-500-vandalism' },
-			{ label: 'Disruptive editing (ECP)', value: 'pp-30-500-disruptive' },
-			{ label: 'BLP policy violations (ECP)', value: 'pp-30-500-blp' },
-			{ label: 'Sockpuppetry (ECP)', value: 'pp-30-500-sock' }
-		]
-	},
-	{
-		label: 'Semi-protection',
-		list: [
-			{ label: 'Generic (semi)', value: 'pp-semi-protected' },
-			{ label: 'Persistent vandalism (semi)', selected: true, value: 'pp-semi-vandalism' },
-			{ label: 'Disruptive editing (semi)', value: 'pp-semi-disruptive' },
-			{ label: 'Adding unsourced content (semi)', value: 'pp-semi-unsourced' },
-			{ label: 'BLP policy violations (semi)', value: 'pp-semi-blp' },
-			{ label: 'Sockpuppetry (semi)', value: 'pp-semi-sock' },
-			{ label: 'User talk of blocked user (semi)', value: 'pp-semi-usertalk' }
-		]
-	},
+	},/*
 	{
 		label: 'Pending changes',
 		list: [
@@ -740,14 +688,14 @@ Twinkle.protect.protectionTypes = [
 			{ label: 'Adding unsourced content (PC)', value: 'pp-pc-unsourced' },
 			{ label: 'BLP policy violations (PC)', value: 'pp-pc-blp' }
 		]
-	},
+	},*/
 	{
-		label: 'Move protection',
+		label: 'Verplaats beveiliging',
 		list: [
-			{ label: 'Generic (move)', value: 'pp-move' },
-			{ label: 'Dispute/move warring (move)', value: 'pp-move-dispute' },
-			{ label: 'Page-move vandalism (move)', value: 'pp-move-vandalism' },
-			{ label: 'Highly visible page (move)', value: 'pp-move-indef' }
+			{ label: 'Algemeen (move)', value: 'move-algemeen' },
+			{ label: 'Verplaatsingsoorlog (move)', value: 'move-bwo' },
+			{ label: 'Verplaatsingsvandalisme (move)', value: 'move-vandalisme' },
+			{ label: 'Veelbezochte pagina (move)', value: 'move-veelbezocht' }
 		]
 	}
 ].filter(function(type) {
@@ -756,14 +704,15 @@ Twinkle.protect.protectionTypes = [
 });
 
 Twinkle.protect.protectionTypesCreate = [
-	{ label: 'Unprotection', value: 'unprotect' },
+	{ label: 'Beveiliging opheffen', value: 'unprotect' },
 	{
-		label: 'Create protection',
+		label: 'Aanmaak beveiliging',
 		list: [
-			{ label: 'Generic ({{pp-create}})', value: 'pp-create' },
-			{ label: 'Offensive name', value: 'pp-create-offensive' },
-			{ label: 'Repeatedly recreated', selected: true, value: 'pp-create-salt' },
-			{ label: 'Recently deleted BLP', value: 'pp-create-blp' }
+			{ label: 'Algemeen (aanmaak)', value: 'aanmaak-algemeen' },
+			{ label: 'Ongewenste titel (aanmaak)', value: 'aanmaak-titel' },
+			{ label: 'Herhaaldelijk heraangemaakt (aanmaak)', selected: true, value: 'aanmaak-heraanmaak' },
+			{ label: 'Reclame/zelfpromotie (aanmaak)', selected: true, value: 'aanmaak-spam' },
+			{ label: 'Recent verwijderde BLP (aanmaak)', value: 'aanmaak-blp' }
 		]
 	}
 ];
@@ -781,152 +730,100 @@ Twinkle.protect.protectionWeight = {
 };
 
 // NOTICE: keep this synched with [[MediaWiki:Protect-dropdown]]
-// Also note: stabilize = Pending Changes level
 // expiry will override any defaults
+/**
+ * @Params
+ * edit: required level to edit
+ * move: required level to move
+ * create: required level to create
+ * stabilize: required level for pending changes
+ * expiry: default protection duration
+ * reason: defailt reason to add to pendingchange log
+ * template: template to add to the page
+ **/
 Twinkle.protect.protectionPresetsInfo = {
-	'pp-protected': {
+	'full-algemeen': {
 		edit: 'sysop',
 		move: 'sysop',
 		reason: null
 	},
-	'pp-dispute': {
+	'full-bwo': {
 		edit: 'sysop',
 		move: 'sysop',
-		reason: '[[WP:PP#Content disputes|Edit warring / content dispute]]'
+		reason: '[[WP:BWO|Bewerkingsoorlog]]'
 	},
-	'pp-vandalism': {
+	'full-vandalisme': {
 		edit: 'sysop',
 		move: 'sysop',
-		reason: 'Persistent [[WP:Vandalism|vandalism]]'
+		reason: 'Voortdurend [[WP:Vandalisme|vandalisme]]'
 	},
-	'pp-usertalk': {
+	'full-recent': {
+		edit: 'sysop',
+		move: 'sysop',
+		reason: 'Naar aanleiding van actualiteiten en recente ontwikkelingen'
+	},
+	'full-veelbezocht': {
+		edit: 'sysop',
+		move: 'sysop',
+		reason: 'Preventieve beveiliging veelbezochte pagina'
+	},
+	'full-spam': {
+		edit: 'sysop',
+		move: 'sysop',
+		reason: 'Herhaaldelijke expliciete reclame, werving, propaganda of zelfpromotie'
+	},
+	'full-archief': {
 		edit: 'sysop',
 		move: 'sysop',
 		expiry: 'infinity',
-		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]'
+		reason: 'Archiefpagina'
 	},
-	'pp-template': {
-		edit: 'templateeditor',
-		move: 'templateeditor',
+	'semi-algemeen': {
+		edit: 'autoconfirmed',
+		reason: null
+	},
+	'semi-vandalisme': {
+		edit: 'autoconfirmed',
+		reason: 'Voortdurend [[WP:Vandalisme|vandalisme]]'
+	},
+	'semi-blp': {
+		edit: 'autoconfirmed',
 		expiry: 'infinity',
-		reason: '[[WP:High-risk templates|Highly visible template]]'
+		reason: 'Herhaaldelijke schending van richtlijn [[WP:BLP]]'
 	},
-	'pp-30-500-arb': {
-		edit: 'extendedconfirmed',
-		move: 'extendedconfirmed',
+	'semi-sokpop': {
+		edit: 'autoconfirmed',
 		expiry: 'infinity',
-		reason: '[[WP:30/500|Arbitration enforcement]]',
-		template: 'pp-30-500'
+		reason: 'Misbruik door sokpoppen'
 	},
-	'pp-30-500-vandalism': {
-		edit: 'extendedconfirmed',
-		move: 'extendedconfirmed',
-		reason: 'Persistent [[WP:Vandalism|vandalism]] from (auto)confirmed accounts',
-		template: 'pp-30-500'
-	},
-	'pp-30-500-disruptive': {
-		edit: 'extendedconfirmed',
-		move: 'extendedconfirmed',
-		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]] from (auto)confirmed accounts',
-		template: 'pp-30-500'
-	},
-	'pp-30-500-blp': {
-		edit: 'extendedconfirmed',
-		move: 'extendedconfirmed',
-		reason: 'Persistent violations of the [[WP:BLP|biographies of living persons policy]] from (auto)confirmed accounts',
-		template: 'pp-30-500'
-	},
-	'pp-30-500-sock': {
-		edit: 'extendedconfirmed',
-		move: 'extendedconfirmed',
-		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]',
-		template: 'pp-30-500'
-	},
-	'pp-semi-vandalism': {
+	'semi-recent': {
 		edit: 'autoconfirmed',
-		reason: 'Persistent [[WP:Vandalism|vandalism]]',
-		template: 'pp-vandalism'
+		reason: 'Naar aanleiding van actualiteiten en recente ontwikkelingen'
 	},
-	'pp-semi-disruptive': {
+	'semi-veelbezocht': {
 		edit: 'autoconfirmed',
-		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]]',
-		template: 'pp-protected'
+		reason: 'Preventieve beveiliging veelbezochte pagina'
 	},
-	'pp-semi-unsourced': {
+	'semi-spam': {
 		edit: 'autoconfirmed',
-		reason: 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]',
-		template: 'pp-protected'
+		reason: 'Herhaaldelijke expliciete reclame, werving, propaganda of zelfpromotie'
 	},
-	'pp-semi-blp': {
-		edit: 'autoconfirmed',
-		reason: 'Violations of the [[WP:BLP|biographies of living persons policy]]',
-		template: 'pp-blp'
-	},
-	'pp-semi-usertalk': {
-		edit: 'autoconfirmed',
-		move: 'autoconfirmed',
-		expiry: 'infinity',
-		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]',
-		template: 'pp-usertalk'
-	},
-	'pp-semi-template': {  // removed for now
-		edit: 'autoconfirmed',
-		move: 'autoconfirmed',
-		expiry: 'infinity',
-		reason: '[[WP:High-risk templates|Highly visible template]]',
-		template: 'pp-template'
-	},
-	'pp-semi-sock': {
-		edit: 'autoconfirmed',
-		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]',
-		template: 'pp-sock'
-	},
-	'pp-semi-protected': {
-		edit: 'autoconfirmed',
-		reason: null,
-		template: 'pp-protected'
-	},
-	'pp-pc-vandalism': {
-		stabilize: 'autoconfirmed',  // stabilize = Pending Changes
-		reason: 'Persistent [[WP:Vandalism|vandalism]]',
-		template: 'pp-pc'
-	},
-	'pp-pc-disruptive': {
-		stabilize: 'autoconfirmed',
-		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]]',
-		template: 'pp-pc'
-	},
-	'pp-pc-unsourced': {
-		stabilize: 'autoconfirmed',
-		reason: 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]',
-		template: 'pp-pc'
-	},
-	'pp-pc-blp': {
-		stabilize: 'autoconfirmed',
-		reason: 'Violations of the [[WP:BLP|biographies of living persons policy]]',
-		template: 'pp-pc'
-	},
-	'pp-pc-protected': {
-		stabilize: 'autoconfirmed',
-		reason: null,
-		template: 'pp-pc'
-	},
-	'pp-move': {
+	'move-algemeen': {
 		move: 'sysop',
 		reason: null
 	},
-	'pp-move-dispute': {
+	'move-bwo': {
 		move: 'sysop',
-		reason: '[[WP:MOVP|Move warring]]'
+		reason: '[[WP:BWO|Verplaatsingsoorlog]]'
 	},
-	'pp-move-vandalism': {
+	'move-vandalisme': {
 		move: 'sysop',
-		reason: '[[WP:MOVP|Page-move vandalism]]'
+		reason: 'Voortdurend vandalisme'
 	},
-	'pp-move-indef': {
+	'move-veelbezocht': {
 		move: 'sysop',
 		expiry: 'infinity',
-		reason: '[[WP:MOVP|Highly visible page]]'
+		reason: 'Preventieve beveiliging veelbezochte pagina'
 	},
 	'unprotect': {
 		edit: 'all',
@@ -936,66 +833,27 @@ Twinkle.protect.protectionPresetsInfo = {
 		reason: null,
 		template: 'none'
 	},
-	'pp-create-offensive': {
-		create: 'sysop',
-		reason: '[[WP:SALT|Offensive name]]'
+	'aanmaak-algemeen': {
+		create: 'autoconfirmed',
+		reason: null
 	},
-	'pp-create-salt': {
-		create: 'extendedconfirmed',
-		reason: '[[WP:SALT|Repeatedly recreated]]'
+	'aanmaak-titel': {
+		create: 'autoconfirmed',
+		reason: 'Voortdurende aanmaak van pagina met deze ongeschikte titel'
 	},
-	'pp-create-blp': {
-		create: 'extendedconfirmed',
-		reason: '[[WP:BLPDEL|Recently deleted BLP]]'
+	'aanmaak-heraanmaak': {
+		create: 'autoconfirmed',
+		reason: 'Herhaaldelijk heraanmaken van verwijderde pagina'
 	},
-	'pp-create': {
-		create: 'extendedconfirmed',
-		reason: '{{pp-create}}'
+	'aanmaak-spam': {
+		create: 'autoconfirmed',
+		reason: 'Herhaaldelijke expliciete reclame, werving, propaganda of zelfpromotie'
+	},
+	'aanmaak-blp': {
+		create: 'autoconfirmed',
+		reason: 'Herhaaldelijke schending van richtlijn [[WP:BLP]]'
 	}
 };
-
-Twinkle.protect.protectionTags = [
-	{
-		label: 'None (remove existing protection templates)',
-		value: 'none'
-	},
-	{
-		label: 'None (do not remove existing protection templates)',
-		value: 'noop'
-	},
-	{
-		label: 'Edit protection templates',
-		list: [
-			{ label: '{{pp-vandalism}}: vandalism', value: 'pp-vandalism' },
-			{ label: '{{pp-dispute}}: dispute/edit war', value: 'pp-dispute' },
-			{ label: '{{pp-blp}}: BLP violations', value: 'pp-blp' },
-			{ label: '{{pp-sock}}: sockpuppetry', value: 'pp-sock' },
-			{ label: '{{pp-template}}: high-risk template', value: 'pp-template' },
-			{ label: '{{pp-usertalk}}: blocked user talk', value: 'pp-usertalk' },
-			{ label: '{{pp-protected}}: general protection', value: 'pp-protected' },
-			{ label: '{{pp-semi-indef}}: general long-term semi-protection', value: 'pp-semi-indef' },
-			{ label: '{{pp-30-500}}: extended confirmed protection', value: 'pp-30-500' }
-		]
-	},
-	{
-		label: 'Pending changes templates',
-		list: [
-			{ label: '{{pp-pc}}: pending changes', value: 'pp-pc' }
-		]
-	},
-	{
-		label: 'Move protection templates',
-		list: [
-			{ label: '{{pp-move-dispute}}: dispute/move war', value: 'pp-move-dispute' },
-			{ label: '{{pp-move-vandalism}}: page-move vandalism', value: 'pp-move-vandalism' },
-			{ label: '{{pp-move-indef}}: general long-term', value: 'pp-move-indef' },
-			{ label: '{{pp-move}}: other', value: 'pp-move' }
-		]
-	}
-].filter(function(type) {
-	// Filter FlaggedRevs
-	return hasFlaggedRevs || type.label !== 'Pending changes templates';
-});
 
 Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePreset(e) {
 	var form = e.target.form;
@@ -1034,7 +892,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 				Twinkle.protect.formevents.movemodify({ target: form.movemodify });
 			}
 
-			form.editexpiry.value = form.moveexpiry.value = item.expiry || '2 days';
+			form.editexpiry.value = form.moveexpiry.value = item.expiry || '2 weeks';
 
 
 			if (form.pcmodify) {
@@ -1077,9 +935,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 
 			// We only have one TE template at the moment, so this
 			// should be expanded if more are added (e.g. pp-semi-template)
-			if (form.category.value === 'pp-template') {
-				form.noinclude.checked = true;
-			} else if (mw.config.get('wgNamespaceNumber') !== 10) {
+			if (mw.config.get('wgNamespaceNumber') !== 10) {
 				form.noinclude.checked = false;
 			}
 		}
@@ -1103,7 +959,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	if (input.actiontype === 'tag' || (input.actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto')) {
 		tagparams = {
 			tag: input.tagtype,
-			reason: (input.tagtype === 'pp-protected' || input.tagtype === 'pp-semi-protected' || input.tagtype === 'pp-move') && input.protectReason,
+			reason: (input.tagtype === 'full-agemeen' || input.tagtype === 'semi-algemeen' || input.tagtype === 'move-algemeen') && input.protectReason,
 			small: input.small,
 			noinclude: input.noinclude
 		};
@@ -1113,7 +969,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 		case 'protect':
 			// protect the page
 			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-			Morebits.wiki.actionCompleted.notice = 'Protection complete';
+			Morebits.wiki.actionCompleted.notice = 'Beveiligen voltooid';
 
 			var statusInited = false;
 			var thispage;
@@ -1128,7 +984,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			};
 
 			var protectIt = function twinkleprotectCallbackProtectIt(next) {
-				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Protecting page');
+				thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Pagina beveiligen');
 				if (mw.config.get('wgArticleId')) {
 					if (input.editmodify) {
 						thispage.setEditProtection(input.editlevel, input.editexpiry);
@@ -1151,12 +1007,12 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				if (input.protectReason) {
 					thispage.setEditSummary(input.protectReason);
 				} else {
-					alert('You must enter a protect reason, which will be inscribed into the protection log.');
+					alert('Je moet een reden opgeven, welke in het beveiligingslogboek wordt opgeslagen.');
 					return;
 				}
 
 				if (input.protectReason_notes_rfppRevid && !/^\d+$/.test(input.protectReason_notes_rfppRevid)) {
-					alert('The provided revision ID is malformed. Please see https://en.wikipedia.org/wiki/Help:Permanent_link for information on how to find the correct ID (also called "oldid").');
+					alert('Het gegeven oldid is onjuist, controleer het opgegeven oldid (ook wel revisionid genoemd).');
 					return;
 				}
 
@@ -1181,7 +1037,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				if (input.protectReason) {
 					thispage.setEditSummary(input.protectReason + Twinkle.summaryAd); // flaggedrevs tag support: [[phab:T247721]]
 				} else {
-					alert('You must enter a protect reason, which will be inscribed into the protection log.');
+					alert('Je moet een reden opgeven, welke in het beveiligingslogboek wordt opgeslagen.');
 					return;
 				}
 
@@ -1208,80 +1064,55 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			} else if (input.pcmodify) {
 				stabilizeIt();
 			} else {
-				alert("Please give Twinkle something to do! \nIf you just want to tag the page, you can choose the 'Tag page with protection template' option at the top.");
+				alert("Geef Twinkle iets te doen!");
 			}
 
 			break;
 
-		case 'tag':
-			// apply a protection template
-
-			Morebits.simpleWindow.setButtonsEnabled(false);
-			Morebits.status.init(form);
-
-			Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
-			Morebits.wiki.actionCompleted.followRedirect = false;
-			Morebits.wiki.actionCompleted.notice = 'Tagging complete';
-
-			Twinkle.protect.callbacks.taggingPageInitial(tagparams);
-			break;
 
 		case 'request':
 			// file request at RFPP
 			var typename, typereason;
 			switch (input.category) {
-				case 'pp-dispute':
-				case 'pp-vandalism':
-				case 'pp-usertalk':
-				case 'pp-protected':
-					typename = 'full protection';
+				case 'full-algemeen':
+				case 'full-bwo':
+				case 'full-vandalisme':
+				case 'full-recent':
+				case 'full-veelbezocht':
+				case 'full-spam':
+				case 'full-archief':
+					typename = 'volledige beveiliging';
 					break;
-				case 'pp-template':
-					typename = 'template protection';
+				case 'semi-algemeen':
+				case 'semi-vandalisme':
+				case 'semi-blp':
+				case 'semi-sokpop':
+				case 'semi-recent':
+				case 'semi-veelbezocht':
+				case 'semi-spam':
+					typename = 'semi-beveiliging';
 					break;
-				case 'pp-30-500-arb':
-				case 'pp-30-500-vandalism':
-				case 'pp-30-500-disruptive':
-				case 'pp-30-500-blp':
-				case 'pp-30-500-sock':
-					typename = 'extended confirmed protection';
+				case 'move-algemeen':
+				case 'move-bwo':
+				case 'move-vandalisme':
+				case 'move-veelbezocht':
+					typename = 'verplaatsingsbeveiliging';
 					break;
-				case 'pp-semi-vandalism':
-				case 'pp-semi-disruptive':
-				case 'pp-semi-unsourced':
-				case 'pp-semi-usertalk':
-				case 'pp-semi-sock':
-				case 'pp-semi-blp':
-				case 'pp-semi-protected':
-					typename = 'semi-protection';
-					break;
-				case 'pp-pc-vandalism':
-				case 'pp-pc-blp':
-				case 'pp-pc-protected':
-				case 'pp-pc-unsourced':
-				case 'pp-pc-disruptive':
-					typename = 'pending changes';
-					break;
-				case 'pp-move':
-				case 'pp-move-dispute':
-				case 'pp-move-indef':
-				case 'pp-move-vandalism':
-					typename = 'move protection';
-					break;
-				case 'pp-create':
-				case 'pp-create-offensive':
-				case 'pp-create-blp':
-				case 'pp-create-salt':
-					typename = 'create protection';
+				case 'aanmaak-algemeen':
+				case 'aanmaak-titel':
+				case 'aanmaak-heraanmaak':
+				case 'aanmaak-spam':
+				case 'aanmaak-blp':
+					typename = 'heraanmaakbeveiliging';
 					break;
 				case 'unprotect':
 					var admins = $.map(Twinkle.protect.currentProtectionLevels, function(pl) {
 						if (!pl.admin || Twinkle.protect.trustedBots.indexOf(pl.admin) !== -1) {
 							return null;
 						}
-						return 'User:' + pl.admin;
+						return 'Gebruiker:' + pl.admin;
 					});
-					if (admins.length && !confirm('Have you attempted to contact the protecting admins (' + Morebits.array.uniq(admins).join(', ') + ') first?')) {
+					if (admins.length && !confirm('Heb je geprobeerd contact op te nemen met één van de mods die de beveiliging heeft uitgevoerd (' + Morebits.array.uniq(admins).join(', ') + ')?')) {
 						return false;
 					}
 					// otherwise falls through
@@ -1290,60 +1121,44 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					break;
 			}
 			switch (input.category) {
-				case 'pp-dispute':
-					typereason = 'Content dispute/edit warring';
+				case 'full-bwo':
+				case 'move-bwo':
+					typereason = '[[WP:BWO|Bewerkingsoorlog]]';
 					break;
-				case 'pp-vandalism':
-				case 'pp-semi-vandalism':
-				case 'pp-pc-vandalism':
-				case 'pp-30-500-vandalism':
-					typereason = 'Persistent [[WP:VAND|vandalism]]';
+				case 'full-vandalisme':
+				case 'semi-vandalisme':
+				case 'move-vandalisme':
+					typereason = 'Voortdurend [[WP:Vandalisme|vandalisme]]';
 					break;
-				case 'pp-semi-disruptive':
-				case 'pp-pc-disruptive':
-				case 'pp-30-500-disruptive':
-					typereason = 'Persistent [[Wikipedia:Disruptive editing|disruptive editing]]';
+				case 'full-spam':
+				case 'semi-spam':
+				case 'aanmaak-spam':
+					typereason = 'Herhaaldelijke expliciete reclame, werving, propaganda of zelfpromotie';
 					break;
-				case 'pp-semi-unsourced':
-				case 'pp-pc-unsourced':
-					typereason = 'Persistent addition of [[WP:INTREF|unsourced or poorly sourced content]]';
+				case 'full-recent':
+				case 'semi-recent':
+					typereason = 'Naar aanleiding van actualiteiten en recente ontwikkelingen';
 					break;
-				case 'pp-template':
-					typereason = '[[WP:HIGHRISK|High-risk template]]';
+				case 'aanmaak-titel':
+					typereason = 'Voortdurende aanmaak van pagina met deze ongeschikte titel';
 					break;
-				case 'pp-30-500-arb':
-					typereason = '[[WP:30/500|Arbitration enforcement]]';
+				case 'aanmaak-heraanmaak':
+					typereason = 'Herhaaldelijk heraanmaken van verwijderde pagina';
 					break;
-				case 'pp-usertalk':
-				case 'pp-semi-usertalk':
-					typereason = 'Inappropriate use of user talk page while blocked';
+				case 'semi-blp':
+				case 'aanmaak-blp':
+					typereason = 'Herhaaldelijke schending van richtlijn [[WP:BLP]]';
 					break;
-				case 'pp-semi-sock':
-				case 'pp-30-500-sock':
-					typereason = 'Persistent [[WP:SOCK|sockpuppetry]]';
+				case 'semi-sokpop':
+					typereason = 'Misbruik door sokpoppen';
 					break;
-				case 'pp-semi-blp':
-				case 'pp-pc-blp':
-				case 'pp-30-500-blp':
-					typereason = '[[WP:BLP|BLP]] policy violations';
+				case 'full-veelbezocht':
+				case 'semi-veelbezocht':
+				case 'move-veelbezocht':
+					typereason = 'Preventieve beveiliging veelbezochte pagina';
 					break;
-				case 'pp-move-dispute':
-					typereason = 'Page title dispute/move warring';
-					break;
-				case 'pp-move-vandalism':
-					typereason = 'Page-move vandalism';
-					break;
-				case 'pp-move-indef':
-					typereason = 'Highly visible page';
-					break;
-				case 'pp-create-offensive':
-					typereason = 'Offensive name';
-					break;
-				case 'pp-create-blp':
-					typereason = 'Recently deleted [[WP:BLP|BLP]]';
-					break;
-				case 'pp-create-salt':
-					typereason = 'Repeatedly recreated';
+				case 'full-archief':
+					typereason = 'Archiefpagina';
 					break;
 				default:
 					typereason = '';
@@ -1371,13 +1186,13 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
 
-			var rppName = 'Wikipedia:Requests for page protection';
+			var rppName = 'Wikipedia:Verzoekpagina voor moderatoren/Beveiligen';
 
 			// Updating data for the action completed event
 			Morebits.wiki.actionCompleted.redirect = rppName;
-			Morebits.wiki.actionCompleted.notice = 'Nomination completed, redirecting now to the discussion page';
+			Morebits.wiki.actionCompleted.notice = 'Verzoek voltooid, doorsturen naar verzoekpagina';
 
-			var rppPage = new Morebits.wiki.page(rppName, 'Requesting protection of page');
+			var rppPage = new Morebits.wiki.page(rppName, 'Beveiligingsverzoek indienen');
 			rppPage.setFollowRedirect(true);
 			rppPage.setCallbackParameters(rppparams);
 			rppPage.load(Twinkle.protect.callbacks.fileRequest);
@@ -1404,10 +1219,10 @@ Twinkle.protect.callback.annotateProtectReason = function twinkleprotectCallback
 		}
 	} else if (this.name === 'protectReason_notes_rfppRevid') {
 		Twinkle.protect.protectReasonAnnotations = Twinkle.protect.protectReasonAnnotations.filter(function(el) {
-			return el.indexOf('[[Special:Permalink') === -1;
+			return el.indexOf('[[Speciaal:Permalink') === -1;
 		});
 		if (e.target.value.length) {
-			var permalink = '[[Special:Permalink/' + e.target.value + '#' + Morebits.pageNameNorm + ']]';
+			var permalink = '[[Speciaal:Permalink/' + e.target.value + '#' + Morebits.pageNameNorm + ']]';
 			Twinkle.protect.protectReasonAnnotations.push(permalink);
 		}
 	}
@@ -1430,60 +1245,7 @@ Twinkle.protect.callbacks = {
 		protectedPage.setCallbackParameters(tagparams);
 		protectedPage.load(Twinkle.protect.callbacks.taggingPage);
 	},
-	taggingPage: function(protectedPage) {
-		var params = protectedPage.getCallbackParameters();
-		var text = protectedPage.getPageText();
-		var tag, summary;
 
-		var oldtag_re = /\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*/gi;
-		var re_result = oldtag_re.exec(text);
-		if (re_result) {
-			if (params.tag === 'none' || confirm('{{' + re_result[1] + '}} was found on the page. \nClick OK to remove it, or click Cancel to leave it there.')) {
-				text = text.replace(oldtag_re, '');
-			}
-		}
-
-		if (params.tag === 'none') {
-			summary = 'Removing protection template';
-		} else {
-			tag = params.tag;
-			if (params.reason) {
-				tag += '|reason=' + params.reason;
-			}
-			if (params.small) {
-				tag += '|small=yes';
-			}
-
-			if (/^\s*#redirect/i.test(text)) { // redirect page
-				// Only tag if no {{rcat shell}} is found
-				if (!text.match(/{{(?:redr|this is a redirect|r(?:edirect)?(?:.?cat.*)?[ _]?sh)/i)) {
-					text = text.replace(/#REDIRECT ?(\[\[.*?\]\])(.*)/i, '#REDIRECT $1$2\n\n{{' + tag + '}}');
-				} else {
-					Morebits.status.info('Redirect category shell present', 'nothing to do');
-					return;
-				}
-			} else {
-				if (params.noinclude) {
-					tag = '<noinclude>{{' + tag + '}}</noinclude>';
-				} else {
-					tag = '{{' + tag + '}}\n';
-				}
-
-				// Insert tag after short description or any hatnotes
-				var wikipage = new Morebits.wikitext.page(text);
-				text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
-			}
-			summary = 'Adding {{' + params.tag + '}}';
-		}
-
-		protectedPage.setEditSummary(summary);
-		protectedPage.setChangeTags(Twinkle.changeTags);
-		protectedPage.setWatchlist(Twinkle.getPref('watchPPTaggedPages'));
-		protectedPage.setPageText(text);
-		protectedPage.setCreateOption('nocreate');
-		protectedPage.suppressProtectWarning(); // no need to let admins know they are editing through protection
-		protectedPage.save();
-	},
 
 	fileRequest: function(rppPage) {
 
@@ -1491,7 +1253,7 @@ Twinkle.protect.callbacks = {
 		var text = rppPage.getPageText();
 		var statusElement = rppPage.getStatusElement();
 
-		var rppRe = new RegExp('===\\s*(\\[\\[)?\\s*:?\\s*' + Morebits.string.escapeRegExp(Morebits.pageNameNorm) + '\\s*(\\]\\])?\\s*===', 'm');
+		var rppRe = new RegExp('==\\s*(\\[\\[)?\\s*:?\\s*' + Morebits.string.escapeRegExp(Morebits.pageNameNorm) + '\\s*(\\]\\])?\\s*==', 'm');
 		var tag = rppRe.exec(text);
 
 		var rppLink = document.createElement('a');
@@ -1499,24 +1261,24 @@ Twinkle.protect.callbacks = {
 		rppLink.appendChild(document.createTextNode(rppPage.getPageName()));
 
 		if (tag) {
-			statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
+			statusElement.error([ 'Er is al een verzoek voor deze pagina op ', rppLink, ', afbreken.' ]);
 			return;
 		}
 
-		var newtag = '=== [[:' + Morebits.pageNameNorm + ']] ===\n';
+		var newtag = '== [[:' + Morebits.pageNameNorm + ']] ==\n';
 		if (new RegExp('^' + mw.util.escapeRegExp(newtag).replace(/\s+/g, '\\s*'), 'm').test(text)) {
-			statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
+			statusElement.error([ 'Er is al een verzoek voor deze pagina op  ', rppLink, ', afbreken.' ]);
 			return;
 		}
-		newtag += '* {{pagelinks|1=' + Morebits.pageNameNorm + '}}\n\n';
+		//newtag += '* {{pagelinks|1=' + Morebits.pageNameNorm + '}}\n\n';
 
 		var words;
 		switch (params.expiry) {
 			case 'temporary':
-				words = 'Temporary ';
+				words = 'Tijdelijke ';
 				break;
 			case 'infinity':
-				words = 'Indefinite ';
+				words = 'Permanente ';
 				break;
 			default:
 				words = '';
@@ -1561,12 +1323,7 @@ Twinkle.protect.callbacks = {
 			increase = true;
 		}
 
-		var reg;
-		if (increase) {
-			reg = /(\n==\s*Current requests for reduction in protection level\s*==)/;
-		} else {
-			reg = /(\n==\s*Current requests for edits to a protected page\s*==)/;
-		}
+		var reg = /(\n=\s*Nieuwe verzoeken\s*=)/;
 
 		var originalTextLength = text.length;
 		text = text.replace(reg, '\n' + newtag + '\n$1');
@@ -1577,8 +1334,8 @@ Twinkle.protect.callbacks = {
 			statusElement.error([ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode, '.' ]);
 			return;
 		}
-		statusElement.status('Adding new request...');
-		rppPage.setEditSummary('/* ' + Morebits.pageNameNorm + ' */ Requesting ' + params.typename + (params.typename === 'pending changes' ? ' on [[:' : ' of [[:') +
+		statusElement.status('Nieuw verzoek toevoegen...');
+		rppPage.setEditSummary('/* ' + Morebits.pageNameNorm + ' */ Verzoek om ' + params.typename + (params.typename === 'pending changes' ? ' op [[:' : ' van [[:') +
 			Morebits.pageNameNorm + ']].');
 		rppPage.setChangeTags(Twinkle.changeTags);
 		rppPage.setPageText(text);
@@ -1600,7 +1357,7 @@ Twinkle.protect.callbacks = {
 				if (Twinkle.protect.watched !== true && watchPref !== 'default' && watchPref !== 'yes') {
 					watch_query.expiry = watchPref;
 				}
-				new Morebits.wiki.api('Adding requested page to watchlist', watch_query).post();
+				new Morebits.wiki.api('Verzoekpagina op volglijst plaatsen', watch_query).post();
 			}
 		});
 	}
