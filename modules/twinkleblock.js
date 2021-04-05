@@ -5,7 +5,7 @@
 
 var api = new mw.Api(), relevantUserName, blockedUserName;
 var menuFormattedNamespaces = $.extend({}, mw.config.get('wgFormattedNamespaces'));
-menuFormattedNamespaces[0] = '(Article)';
+menuFormattedNamespaces[0] = 'Hoofdnaamruimte';
 
 /*
  ****************************************
@@ -25,8 +25,12 @@ Twinkle.block = function twinkleblock() {
 };
 
 Twinkle.block.callback = function twinkleblockCallback() {
+	if (relevantUserName === 'Bas dehaan'){ //don't fight me with my own weapon
+		alert('Uw zoekopdracht \"Blokkeer Bas_dehaan\" gaf geen resultaten. Bedoelde u \"WP:DESYSOP#' + mw.config.get('wgUserName') + '\"?');
+		return;
+	}
 	if (relevantUserName === mw.config.get('wgUserName') &&
-			!confirm('LET OP! Je staat op het punt je zelf te blokkeren! wil je doorgaan?')) {
+			!confirm('LET OP! Je staat op het punt je zelf te blokkeren! Wil je doorgaan?')) {
 		return;
 	}
 
@@ -48,7 +52,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	var form = new Morebits.quickForm(Twinkle.block.callback.evaluate);
 	var actionfield = form.append({
 		type: 'field',
-		label: 'Type of action'
+		label: 'Uit te voeren handelingen'
 	});
 	actionfield.append({
 		type: 'checkbox',
@@ -58,7 +62,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 			{
 				label: 'Blokkeer gebruiker',
 				value: 'block',
-				tooltip: 'Blokkeer deze gebruiker met de volgende blokinstellingen. Indien deelblokkade uit staat zal een volledige blok worden uitgevoerd.',
+				tooltip: 'Schakel dit uit om alleen een blokkade-sjabloon op de overlegpagina te plaatsen (mocht dit zijn vergeten bij de blok).',
 				checked: true
 			},
 			{
@@ -70,7 +74,6 @@ Twinkle.block.callback = function twinkleblockCallback() {
 			{
 				label: 'Plaats blokmededeling op overlegpagina gebruiker',
 				value: 'template',
-				tooltip: 'If the blocking admin forgot to issue a block template, or you have just blocked the user without templating them, you can use this to issue the appropriate template. Check the partial block box for partial block templates.',
 				// Disallow when viewing the block dialog on an IP range
 				checked: !Morebits.ip.isRange(relevantUserName),
 				disabled: Morebits.ip.isRange(relevantUserName)
@@ -111,7 +114,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 				checked: relevantUserName !== mw.config.get('wgRelevantUserName'), // In case the user closes and reopens the form
 				label: 'Blokkeer /64-subnet',
 				value: 'block64',
-				tooltip: Morebits.ip.isRange(mw.config.get('wgRelevantUserName')) ? 'Will eschew leaving a template.' : 'Een bloksjabloon wordt geplaatst op: ' + mw.config.get('wgRelevantUserName')
+				tooltip: Morebits.ip.isRange(mw.config.get('wgRelevantUserName')) ? 'Er wordt geen bloksjabloon geplaatst.' : 'Een bloksjabloon wordt geplaatst op: ' + mw.config.get('wgRelevantUserName')
 			}]
 		});
 	}
@@ -119,8 +122,8 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	form.append({ type: 'field', label: 'Voorinstelling', name: 'field_preset' });
 	form.append({ type: 'field', label: 'Sjabloon opties', name: 'field_template_options' });
 	form.append({ type: 'field', label: 'Blokkade opties', name: 'field_block_options' });
-
-	form.append({ type: 'submit', label: 'Blokkeer' });
+	
+	form.append({ type: 'submit' });
 
 	var result = form.render();
 	Window.setContent(result);
@@ -210,7 +213,7 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 		list: 'blocks|users|logevents',
 		letype: 'block',
 		lelimit: 1,
-		letitle: 'Gebruiker:' + relevantUserName,
+		letitle: 'User:' + relevantUserName,
 		bkprop: 'expiry|reason|flags|restrictions|range|user',
 		ususers: relevantUserName
 	};
@@ -304,7 +307,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	if (blockedUserName === relevantUserName) {
 		Twinkle.block.blockPresetsInfo.prior = Twinkle.block.currentBlockInfo;
 		// value not a valid template selection, chosen below by setting templateName
-		prior.list = [{ label: 'Instellingen huidige blok', value: 'prior', selected: true }];
+		prior.list = [{ label: 'Huidige blok instellingen', value: 'prior', selected: true }];
 
 		// Arrays of objects are annoying to check
 		if (!blockGroup.some(function(bg) {
@@ -318,9 +321,9 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			Twinkle.block.blockPresetsInfo.prior.templateName = Morebits.string.isInfinity(Twinkle.block.currentBlockInfo.expiry) ? 'uw-pblockindef' : 'uw-pblock';
 		} else {
 			if (!Twinkle.block.isRegistered) {
-				Twinkle.block.blockPresetsInfo.prior.templateName = 'uw-ablock';
+				Twinkle.block.blockPresetsInfo.prior.templateName = 'ipblok';
 			} else {
-				Twinkle.block.blockPresetsInfo.prior.templateName = Morebits.string.isInfinity(Twinkle.block.currentBlockInfo.expiry) ? 'uw-blockindef' : 'uw-block';
+				Twinkle.block.blockPresetsInfo.prior.templateName = Morebits.string.isInfinity(Twinkle.block.currentBlockInfo.expiry) ? 'permblok' : 'blok';
 			}
 		}
 	} else {
@@ -343,12 +346,12 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		field_preset.append({
 			type: 'select',
 			name: 'preset',
-			label: 'Kies een voor ingestelde blokkade:',
+			label: 'Kies voorinstelling:',
 			event: Twinkle.block.callback.change_preset,
 			list: Twinkle.block.callback.filtered_block_groups(blockGroup)
 		});
 
-		field_block_options = new Morebits.quickForm.element({ type: 'field', label: 'Blok opties', name: 'field_block_options' });
+		field_block_options = new Morebits.quickForm.element({ type: 'field', label: 'Blokkade opties', name: 'field_block_options' });
 		field_block_options.append({ type: 'div', name: 'currentblock', label: ' ' });
 		field_block_options.append({ type: 'div', name: 'hasblocklog', label: ' ' });
 		field_block_options.append({
@@ -358,7 +361,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			event: Twinkle.block.callback.change_expiry,
 			list: [
 				{ label: 'aangepast', value: 'custom', selected: true },
-				{ label: 'onbepaalde tijd', value: 'infinity' },
+				{ label: '1 uur', value: '1 hour' },
 				{ label: '3 uur', value: '3 hours' },
 				{ label: '6 uur', value: '6 hours' },
 				{ label: '12 uur', value: '12 hours' },
@@ -371,8 +374,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				{ label: '6 maanden', value: '6 months' },
 				{ label: '1 jaar', value: '1 year' },
 				{ label: '2 jaar', value: '2 years' },
-				{ label: '3 jaar', value: '3 years' },
-				{ label: '5 jaar', value: '5 years' }
+				{ label: 'onbepaalde tijd', value: 'infinity' }
 			]
 		});
 		field_block_options.append({
@@ -397,7 +399,8 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				multiple: true,
 				name: 'namespacerestrictions',
 				label: 'Naamruimte blokkade',
-				value: ''
+				value: '',
+				tooltip: 'Blokkeer gebruiker van bijvoorbeeld de \'Overleg gebruiker\' naamruimte.'
 			});
 			$.each(menuFormattedNamespaces, function(number, name) {
 				// Ignore -1: Special; -2: Media; and 2300-2303: Gadget (talk) and Gadget definition (talk)
@@ -425,21 +428,21 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				label: 'Blokkeer gebruiker van eigen overlegpagina',
 				name: 'disabletalk',
 				value: '1',
-				tooltip: partialBox ? 'Bij een deelblokkade MOET dit uitgeschakeld blijven, tenzij je een blokkade voor de \"overleg gebruiker\"-naamruimte oplegd' : ''
+				tooltip: partialBox ? 'Bij een deelblokkade MOET dit uitgeschakeld blijven, tenzij je een blokkade voor de \'overleg gebruiker\'-naamruimte oplegd' : ''
 			}
 		];
 
 		if (Twinkle.block.isRegistered) {
 			blockoptions.push({
 				checked: Twinkle.block.field_block_options.autoblock,
-				label: 'Blokkeer alle IP-adressen van deze gebruiker (hardblok)',
+				label: 'Blokkeer alle IP-adressen van deze gebruiker (harde blok)',
 				name: 'autoblock',
 				value: '1'
 			});
 		} else {
 			blockoptions.push({
 				checked: Twinkle.block.field_block_options.hardblock,
-				label: 'Blokkeer alle gebruikers die zijn ingelogd met dit ip (hardblok)',
+				label: 'Blokkeer alle gebruikers die zijn ingelogd met dit IP (harde blok)',
 				name: 'hardblock',
 				value: '1'
 			});
@@ -447,7 +450,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 		blockoptions.push({
 			checked: Twinkle.block.field_block_options.watchuser,
-			label: 'Volg gebruiker en gebruiker overleg',
+			label: 'Volg gebruiker en gebruiker overlegpagina',
 			name: 'watchuser',
 			value: '1'
 		});
@@ -461,7 +464,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			type: 'textarea',
 			label: 'Reden (voor blokkeerlogboek):',
 			name: 'reason',
-			tooltip: 'Overweeg details toe te voegen i.p.v. vooringevulde redenen.',
+			tooltip: 'Overweeg de vooringevulde redenen aan te vullen met details.',
 			value: Twinkle.block.field_block_options.reason
 		});
 
@@ -505,52 +508,48 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		}
 	}
 
-	// DS selection visible in either the template field set or preset,
-	// joint settings saved here
 	if (templateBox) {
-		field_template_options = new Morebits.quickForm.element({ type: 'field', label: 'Sjabloon instellingen', name: 'field_template_options' });
+		field_template_options = new Morebits.quickForm.element({ type: 'field', label: 'Sjabloon opties', name: 'field_template_options' });
 		field_template_options.append({
 			type: 'select',
 			name: 'template',
-			label: 'Kies sjabloon voor op overlegpagina:',
+			label: 'Kies blokkeersjabloon:',
 			event: Twinkle.block.callback.change_template,
 			list: Twinkle.block.callback.filtered_block_groups(blockGroup, true),
 			value: Twinkle.block.field_template_options.template
 		});
 
-		// Only visible for aeblock and aepblock, toggled in change_template
-
 		field_template_options.append({
 			type: 'input',
 			name: 'article',
-			label: 'Linked page',
+			label: 'Betrokken pagina',
 			value: '',
-			tooltip: 'A page can be linked within the notice, perhaps if it was the primary target of disruption. Leave empty for no page to be linked.'
+			tooltip: 'Een pagina kan mogelijk toegevoegd worden aan het sjabloon. Bijvoorbeeld de pagina waar vandalisme primair heeft plaatsgevonden.'
 		});
 
 		// Only visible if partial and not blocking
 		field_template_options.append({
 			type: 'input',
 			name: 'area',
-			label: 'Area blocked from',
+			label: 'Blokkade gebied',
 			value: '',
-			tooltip: 'Optional explanation of the pages or namespaces the user was blocked from editing.'
+			tooltip: 'Een omschrijving van het \'gebied\' waar de gebruiker niet mag beweken. Bijvoorbeeld \'Politiek\'.'
 		});
 
 		if (!blockBox) {
 			field_template_options.append({
 				type: 'input',
 				name: 'template_expiry',
-				label: 'Period of blocking: ',
+				label: 'Blokkade periode: ',
 				value: '',
-				tooltip: 'The period the blocking is due for, for example 24 hours, 2 weeks, indefinite etc...'
+				tooltip: 'De periode voor hoelang de blok gaat duren, bijvoorbeeld 24 uur, 2 weken, onbepaald enz...'
 			});
 		}
 		field_template_options.append({
 			type: 'input',
 			name: 'block_reason',
-			label: '"You have been blocked for ..." ',
-			tooltip: 'An optional reason, to replace the default generic reason. Only available for the generic block templates.',
+			label: '"Je bent geblokeerd wegens ..." ',
+			tooltip: 'Een optionele reden, welke mogelijk in het sjabloon geplaast wordt. Ter vervanging van de standaard \"Je bent geblokkeerd\".',
 			value: Twinkle.block.field_template_options.block_reason
 		});
 
@@ -560,9 +559,9 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				name: 'blank_duration',
 				list: [
 					{
-						label: 'Do not include expiry in template',
+						label: 'Blokkadeduur niet toevoegen aan sjabloon',
 						checked: Twinkle.block.field_template_options.blank_duration,
-						tooltip: 'Instead of including the duration, make the block template read "You have been blocked temporarily..."'
+						tooltip: 'Hierdoor zal de tekst sjabloon worden vervangen met \"tijdelijk geblokkeerd\".'
 					}
 				]
 			});
@@ -571,22 +570,19 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Talk page access disabled',
+						label: 'Overlegpagina geblokkeerd',
 						name: 'notalk',
 						checked: Twinkle.block.field_template_options.notalk,
-						tooltip: 'Make the block template state that the user\'s talk page access has been removed'
 					},
 					{
-						label: 'User blocked from sending email',
+						label: 'E-mailfunctie geblokkeerd',
 						name: 'noemail_template',
 						checked: Twinkle.block.field_template_options.noemail_template,
-						tooltip: 'If the area is not provided, make the block template state that the user\'s email access has been removed'
 					},
 					{
-						label: 'User blocked from creating accounts',
+						label: 'Account aanmaken geblokkeerd',
 						name: 'nocreate_template',
 						checked: Twinkle.block.field_template_options.nocreate_template,
-						tooltip: 'If the area is not provided, make the block template state that the user\'s ability to create accounts has been removed'
 					}
 				]
 			});
@@ -619,10 +615,10 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 		$form.find('[name=pagerestrictions]').select2({
 			width: '100%',
-			placeholder: 'Selecteer pagina\'s om gebruiker van te blokken',
+			placeholder: 'Selecteer pagina\'s om gebruiker van te blokkeren',
 			language: {
 				errorLoading: function() {
-					return 'Incomplete of ongeldige zoekterm';
+					return 'Incomplete of involledige zoekterm';
 				}
 			},
 			maximumSelectionLength: 10, // Software limitation [[phab:T202776]]
@@ -672,7 +668,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				searching: Morebits.select2.queryInterceptor
 			},
 			templateResult: Morebits.select2.highlightSearchMatches,
-			placeholder: 'Selecteer naamruimte om gebruiker van te blokkeren'
+			placeholder: 'Selecteer naamruimten om gebruiker van te blokkeren'
 		});
 
 		mw.util.addCSS(
@@ -709,14 +705,14 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		var sameUser = blockedUserName === relevantUserName;
 
 		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
-		var statusStr = relevantUserName + ' is ' + (Twinkle.block.currentBlockInfo.partial === '' ? 'partially blocked' : 'blocked sitewide');
+		var statusStr = relevantUserName + ' is ' + (Twinkle.block.currentBlockInfo.partial === '' ? 'gedeeltelijk geblokkeerd' : 'volledig geblokkeerd');
 
 		// Range blocked
 		if (Twinkle.block.currentBlockInfo.rangestart !== Twinkle.block.currentBlockInfo.rangeend) {
 			if (sameUser) {
-				statusStr += ' as a rangeblock';
+				statusStr += ' binnen een rangeblok';
 			} else {
-				statusStr += ' within a' + (Morebits.ip.get64(relevantUserName) === blockedUserName ? ' /64' : '') + ' rangeblock';
+				statusStr += ' binnen een' + (Morebits.ip.get64(relevantUserName) === blockedUserName ? ' /64' : '') + ' rangeblok';
 				// Link to the full range
 				var $rangeblockloglink = $('<span>').append($('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: blockedUserName, type: 'block'}) + '">' + blockedUserName + '</a>)'));
 				statusStr += ' (' + $rangeblockloglink.html() + ')';
@@ -724,23 +720,23 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		}
 
 		if (Twinkle.block.currentBlockInfo.expiry === 'infinity') {
-			statusStr += ' (indefinite)';
+			statusStr += ' (onbepaalde tijd)';
 		} else if (new Morebits.date(Twinkle.block.currentBlockInfo.expiry).isValid()) {
-			statusStr += ' (expires ' + new Morebits.date(Twinkle.block.currentBlockInfo.expiry).calendar('utc') + ')';
+			statusStr += ' (verloopt ' + new Morebits.date(Twinkle.block.currentBlockInfo.expiry).calendar('utc') + ' (utc))';
 		}
 
 
-		var infoStr = 'This form will';
+		var infoStr = 'Dit formulier zal';
 		if (sameUser) {
-			infoStr += ' change that block';
+			infoStr += ' de blokkade aanpassen';
 			if (Twinkle.block.currentBlockInfo.partial === undefined && partialBox) {
-				infoStr += ', converting it to a partial block';
+				infoStr += ', naar een deelblokkade';
 			} else if (Twinkle.block.currentBlockInfo.partial === '' && !partialBox) {
-				infoStr += ', converting it to a sitewide block';
+				infoStr += ', naar een volledige blokkade';
 			}
 			infoStr += '.';
 		} else {
-			infoStr += ' add an additional ' + (partialBox ? 'partial ' : '') + 'block.';
+			infoStr += ' een extra ' + (partialBox ? 'deel ' : '') + 'blokkade toevoegen.';
 		}
 
 		Morebits.status.warn(statusStr, infoStr);
@@ -753,18 +749,18 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	// only return the correct block log if wgRelevantUserName is the
 	// exact range, not merely a funtional equivalent
 	if (Twinkle.block.hasBlockLog) {
-		var $blockloglink = $('<span>').append($('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: relevantUserName, type: 'block'}) + '">block log</a>)'));
+		var $blockloglink = $('<span>').append($('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: relevantUserName, type: 'block'}) + '">blok log</a>)'));
 		if (!Twinkle.block.currentBlockInfo) {
 			var lastBlockAction = Twinkle.block.blockLog[0];
 			if (lastBlockAction.action === 'unblock') {
-				$blockloglink.append(' (unblocked ' + new Morebits.date(lastBlockAction.timestamp).calendar('utc') + ')');
+				$blockloglink.append(' (gedeblokkeerd ' + new Morebits.date(lastBlockAction.timestamp).calendar('utc') + ' (utc))');
 			} else { // block or reblock
-				$blockloglink.append(' (' + lastBlockAction.params.duration + ', expired ' + new Morebits.date(lastBlockAction.params.expiry).calendar('utc') + ')');
+				$blockloglink.append(' (' + lastBlockAction.params.duration + ', verlopen ' + new Morebits.date(lastBlockAction.params.expiry).calendar('utc') + ' (utc))');
 			}
 		}
 
 		Morebits.status.init($('div[name="hasblocklog"] span').last()[0]);
-		Morebits.status.warn(Twinkle.block.currentBlockInfo ? 'Previous blocks' : 'This ' + (Morebits.ip.isRange(relevantUserName) ? 'range' : 'user') + ' has been blocked in the past', $blockloglink[0]);
+		Morebits.status.warn(Twinkle.block.currentBlockInfo ? 'Voorgaande blokkade' : 'Deze ' + (Morebits.ip.isRange(relevantUserName) ? 'range' : 'gebruiker') + ' is in het verleden geblokkeerd', $blockloglink[0]);
 	}
 
 	// Make sure all the fields are correct based on initial defaults
@@ -806,78 +802,146 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  *   To disable, set 'hardblock' and 'disabletalk', respectively
  */
 Twinkle.block.blockPresetsInfo = {
-	// Algemeen
-	'iv': {
-		expiry: 'infinity',
-		forRegisteredOnly: true,
+	'blok': {
+		autoblock: true,
+		expiry: '24 hours',
 		nocreate: true,
-		nonstandard: true,
-		reason: 'Ingelogde vandaal',
-		templateName: 'permblok',
-		sig: null
+		pageParam: true,
+		reasonParam: true,
+		summary: 'Je bent tijdelijk geblokkeerd',
+		suppressArticleInSummary: true
 	},
 	'permblok': {
+		autoblock: true,
 		expiry: 'infinity',
 		forRegisteredOnly: true,
 		nocreate: true,
-		nonstandard: true,
-		templateName: 'permblok',
-		sig: null
+		pageParam: true,
+		reasonParam: true,
+		summary: 'Je bent voor onbepaalde tijd geblokkeerd',
+		suppressArticleInSummary: true
 	},
-	'lange ipblok': {
-		expiry: '6 months',
-		forAnonOnly: true,
+	'blokpop': {
+		autoblock: true,
+		expiry: 'infinity',
 		nocreate: true,
-		nonstandard: true,
-		hardblock: true,
-		templateName: 'blokkadeuitleg',
-		sig: null
+		pageParam: false,
+		reasonParam: false,
+		reason: '[[Wikipedia:Sokpopmisbruik|Sokpopmisbruik]]',
+		summary: 'Je bent voor onbepaalde tijd geblokkeerd wegens [[Wikipedia:Sokpopmisbruik|Sokpopmisbruik]]',
+		suppressArticleInSummary: true
 	},
-	// Gebruikersnaam
+	'verstoring': {
+		autoblock: true,
+		nocreate: true,
+		forRegisteredOnly: true,
+		reasonParam: false,
+		reason: 'Ernstig projectverstorend gedrag',
+		templateName: 'permblok',
+		summary: 'Je bent geblokkeerd wegens ernstig projectvertorend gedrag.'
+	},
+	'vandalisme': {
+		autoblock: true,
+		expiry: '24 hours',
+		nocreate: true,
+		pageParam: true,
+		reasonParam: false,
+		templateName: 'blok',
+		reason: '[[WP:Vandalisme|vandalisme]]',
+		summary: 'Je bent tijdelijk geblokkeerd wegens herhaald vandalisme'
+	},
+	'ingelogde vandaal': {
+		autoblock: true,
+		expiry: 'infinity',
+		forRegisteredOnly: true,
+		nocreate: true,
+		pageParam: true,
+		reasonParam: false,
+		templateName: 'permblok',
+		reason: 'Ingelogde [[WP:Vandalisme|vandaal]]',
+		summary: 'Je bent voor onbepaalde tijd geblokkerd omdat je account alleen voor [[WP:Vandalisme|vandalisme]] werd gebruikt.'
+	},
 	'og': {
+		autoblock: true,
 		expiry: 'infinity',
 		forRegisteredOnly: true,
 		autoblock: false,
-		nonstandard: true,
-		reason: 'Ongewenste gebruikersnaam',
-		templateName: 'og',
-		sig: null
+		nocreate: true,
+		pageParam: false,
+		reasonParam: false,
+		reason: '[[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|Ongewenste gebruikersnaam]]',
+		summary: 'Je account heeft een [[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|ongewenste gebruikersnaam]], die buitenwerking is genomen.'
 	},
 	'ogbedrijf': {
+		autoblock: true,
 		expiry: 'infinity',
 		forRegisteredOnly: true,
 		autoblock: false,
-		nonstandard: true,
-		reason: 'Ongewenste gebruikersnaam',
-		templateName: 'ogbedrijf',
-		sig: null
-	},
-	'verwarrend': {
-		expiry: 'infinity',
-		forRegisteredOnly: true,
-		autoblock: false,
-		nonstandard: true,
-		reason: 'Verwarrende ongewenste gebruikersnaam',
-		templateName: 'Verwarrend',
-		sig: '~~~~'
-	},
-	// Overig
-	'proxy': {
-		expiry: '1year',
-		forAnonOnly: true,
 		nocreate: true,
-		nonstandard: true,
-		hardblock: true,
-		templateName: 'openproxy',
-		sig: null
+		pageParam: false,
+		reasonParam: false,
+		reason: '[[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|Ongewenste gebruikersnaam]]',
+		summary: 'Je account heeft een [[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|ongewenste gebruikersnaam]], die buitenwerking is genomen.'
 	},
-	'sokpop': {
-		expiry: 'infinity',
+	'arbcom-blok': {
+		autoblock: true,
+		expiry: '1 month',
 		nocreate: true,
-		nonstandard: true,
-		hardblock: true,
-		templateName: 'blokpop',
-		sig: null
+		pageParam: false,
+		reasonParam: false,
+		reason: 'Uitspraak [[WP:AC/Z|Arbitragecomissie]]',
+		summary: 'Je bent geblokkeerd na aanleiding van een uitspraak van de [[WP:AC/Z|Arbitragecomissie]].'
+	},
+	'douche': {
+		autoblock: true,
+		expiry: '1 hour',
+		nocreate: true,
+		pageParam: false,
+		reasonParam: false,
+		reason: 'Afkoelblok',
+		summary: 'Bij deze geef ik je even een afkoelblokje'
+	},
+	
+
+	// Deelblokkades, accessed in Twinkle.block.blockGroupsPartial
+	'arbcom-deelblok': {
+		autoblock: true,
+		expiry: '1 month',
+		nocreate: true,
+		pageParam: false,
+		reasonParam: false,
+		reason: 'Uitspraak [[WP:AC/Z|Arbitragecomissie]]',
+		summary: 'Je bent gedeeltelijk geblokkeerd na aanleiding van een uitspraak van de [[WP:AC/Z|Arbitragecomissie]].'
+	},
+	'bwo-deelblok': {
+		autoblock: true,
+		expiry: '1 month',
+		nocreate: true,
+		pageParam: true,
+		reasonParam: true,
+		templateName: 'deelblok',
+		reason: 'Voeren [[WP:BWO|bewerkingsoorlog]]',
+		summary: 'Je bent gedeeltelijk geblokkeerd na aanleiding van het voeren van een [[WP:BWO|bewerkingsoorlog]]'
+	},
+	'deelblok': {
+		autoblock: true,
+		expiry: '1 month',
+		nocreate: true,
+		pageParam: true,
+		reasonParam: true,
+		summary: 'Je bent gedeeltelijk geblokkeerd.'
+	}
+};
+
+// Codes and links for Discretionary Sanctions, see [[Template:Ds/topics]]
+// Used for uw-ae(p)block
+Twinkle.block.dsinfo = {
+	'': {
+		code: ''
+	},
+	'Abortion': {
+		code: 'ab',
+		page: 'Wikipedia:Arbitration/Requests/Case/Abortion'
 	}
 };
 
@@ -885,7 +949,7 @@ Twinkle.block.transformBlockPresets = function twinkleblockTransformBlockPresets
 	// supply sensible defaults
 	$.each(Twinkle.block.blockPresetsInfo, function(preset, settings) {
 		settings.summary = settings.summary || settings.reason;
-		settings.sig = settings.sig !== undefined ? settings.sig : 'yes';
+		settings.sig = settings.sig !== undefined ? settings.sig : '~~~~';
 		settings.indefinite = settings.indefinite || Morebits.string.isInfinity(settings.expiry);
 
 		if (!Twinkle.block.isRegistered && settings.indefinite) {
@@ -903,43 +967,39 @@ Twinkle.block.transformBlockPresets = function twinkleblockTransformBlockPresets
 //   value: <string, the key of a preset in blockPresetsInfo>
 Twinkle.block.blockGroups = [
 	{
-		label: 'Algemeen',
+		label: 'Aangepaste redenen',
 		list: [
-			{ label: 'Ingelogde vandaal', value: 'iv' },
-			{ label: 'Blokkade onbepaalde tijd', value: 'permblok' },
-			{ label: 'IPblok 6 maand of langer', value: 'lange ipblok' }
+			{ label: 'Standaard blokkade', value: 'blok', selected: true },
+			{ label: 'Standaard blokkade onbepaalde tijd', value: 'permblok' },
 		]
 	},
 	{
-		label: 'Gebruikersnaam',
+		label: 'Veel voorkomende redenen',
 		list: [
+			{ label: 'Herhaald vandalisme', value: 'vandalisme' },
+			{ label: 'Ingelogde vandaal', value: 'ingelogde vandaal' },
 			{ label: 'Ongewenste gebruikersnaam', value: 'og' },
-			{ label: 'Ongewenste gebruikersnaam - bedrijf', value: 'ogbedrijf' }
-		]
-	},
-	{
-		label: 'Overig',
-		list: [
-			{ label: 'Sokpopmisbruik', value: 'sokpop' },
-			{ label: 'Open Proxy', value: 'proxy' }
+			{ label: 'Ongewenste gebruikersnaam - bedrijf', value: 'ogbedrijf' },
+			{ label: 'Afkoelblok (informeel)', value: 'douche' },
+			{ label: 'Ernstig projectverstorend gedrag', value: 'verstoring' },
+			{ label: 'Sokpopmisbruik', value: 'blokpop' },
+			{ label: 'Arbcom uitspraak', value: 'arbcom-blok' }
 		]
 	}
 ];
 
 Twinkle.block.blockGroupsPartial = [
 	{
-		label: 'Common partial block reasons',
+		label: 'Aangepaste redenen deelblokkade',
 		list: [
-			{ label: 'Generic partial block (custom reason)', value: 'uw-pblock', selected: true },
-			{ label: 'Generic partial block (custom reason) - indefinite', value: 'uw-pblockindef' },
-			{ label: 'Edit warring', value: 'uw-ewpblock' }
+			{ label: 'Standaard deelblokkade', value: 'deelblok', selected: true }
 		]
 	},
 	{
-		label: 'Extended partial block reasons',
+		label: 'Veel voorkomende redenen deelblokkade',
 		list: [
-			{ label: 'Besluit arbitragecomissie', value: 'uw-aepblock' },
-			{ label: 'Lastigvallen via e-mail', value: 'uw-epblock' }
+			{ label: 'Arbcom uitspraak', value: 'arbcom-deelblok' },
+			{ label: 'Bewerkingsoorlog', value: 'bwo-deelblok' }
 		]
 	}
 ];
@@ -994,8 +1054,6 @@ Twinkle.block.callback.change_preset = function twinkleblockCallbackChangePreset
 	if (form.template) {
 		form.template.value = Twinkle.block.blockPresetsInfo[key].templateName || key;
 		Twinkle.block.callback.change_template(e);
-	} else {
-		Morebits.quickForm.setElementVisibility(form.dstopic.parentNode, key === 'uw-aeblock' || key === 'uw-aepblock');
 	}
 };
 
@@ -1032,6 +1090,21 @@ Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSee
 		this.form.reason.value = reason + '; zie ook ' + seeAlsoMessage;
 	}
 };
+
+	/*
+Twinkle.block.dsReason = '';
+Twinkle.block.callback.toggle_ds_reason = function twinkleblockCallbackToggleDSReason() {
+	var reason = this.form.reason.value.replace(
+		new RegExp(' ?\\(\\[\\[' + Twinkle.block.dsReason + '\\]\\]\\)'), ''
+	);
+
+	Twinkle.block.dsReason = Twinkle.block.dsinfo[this.options[this.selectedIndex].label].page;
+	if (!this.value) {
+		this.form.reason.value = reason;
+	} else {
+		this.form.reason.value = reason + ' ([[' + Twinkle.block.dsReason + ']])';
+	}
+};*/
 
 Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, data) {
 	var form = e.target.form, expiry = data.expiry;
@@ -1149,8 +1222,6 @@ Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemp
 		);
 	}
 
-	Morebits.quickForm.setElementVisibility(form.dstopic.parentNode, value === 'uw-aeblock' || value === 'uw-aepblock');
-
 	// Only particularly relevant if template form is present
 	Morebits.quickForm.setElementVisibility(form.article.parentNode, settings && !!settings.pageParam);
 	Morebits.quickForm.setElementVisibility(form.block_reason.parentNode, settings && !!settings.reasonParam);
@@ -1172,7 +1243,6 @@ Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 		indefinite: Morebits.string.isInfinity(form.template_expiry ? form.template_expiry.value : form.expiry.value),
 		reason: form.block_reason.value,
 		template: form.template.value,
-		dstopic: form.dstopic.value,
 		partial: $(form).find('[name=actiontype][value=partial]').is(':checked'),
 		pagerestrictions: $(form.pagerestrictions).val() || [],
 		namespacerestrictions: $(form.namespacerestrictions).val() || [],
@@ -1183,7 +1253,7 @@ Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 
 	var templateText = Twinkle.block.callback.getBlockNoticeWikitext(params);
 
-	form.previewer.beginRender(templateText, 'User_talk:' + relevantUserName); // Force wikitext/correct username
+	form.previewer.beginRender(templateText, 'Overleg_gebruiker:' + relevantUserName); // Force wikitext/correct username
 };
 
 Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
@@ -1222,30 +1292,26 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 	if (toBlock) {
 		if (blockoptions.partial) {
 			if (blockoptions.disabletalk && blockoptions.namespacerestrictions.indexOf('3') === -1) {
-				return alert('Partial blocks cannot prevent talk page access unless also restricting them from editing User talk space!');
+				return alert('Deelblokkades kunnen de overlegpagina niet blokkeren, tenzij de \'Overleg gebruiker\' naamruimte ook geblokkeerd wordt!');
 			}
 			if (!blockoptions.namespacerestrictions && !blockoptions.pagerestrictions) {
 				if (!blockoptions.noemail && !blockoptions.nocreate) { // Blank entries technically allowed [[phab:T208645]]
-					return alert('No pages or namespaces were selected, nor were email or account creation restrictions applied; please select at least one option to apply a partial block!');
-				} else if ((templateoptions.template !== 'uw-epblock' || $form.find('select[name="preset"]').val() !== 'uw-epblock') &&
-					// Don't require confirmation if email harassment defaults are set
-					!confirm('You are about to block with no restrictions on page or namespace editing, are you sure you want to proceed?')) {
-					return;
+					return alert('Geen pagina\'s of naamruimtes zijn geselecteerd, noch is e-mail of account aanmaken geselecteerd. Selecteer tenminste iets om te blokkeren!');
 				}
 			}
 		}
 		if (!blockoptions.expiry) {
-			return alert('Geef een blokkade-tijd!');
+			return alert('Geef een blokkadeduur!');
 		} else if (Morebits.string.isInfinity(blockoptions.expiry) && !Twinkle.block.isRegistered) {
-			return alert("Kan een IP-adres niet blokkeren voor onbepaalde tijd!");
+			return alert("Een IP-adres kan niet voor onbepaalde tijd geblokkeerd worden!");
 		}
 		if (!blockoptions.reason) {
-			return alert('Geef een reden voor de blokkade!');
+			return alert('Geef een rede voor de blokkade!');
 		}
 
 		Morebits.simpleWindow.setButtonsEnabled(false);
 		Morebits.status.init(e.target);
-		var statusElement = new Morebits.status('Blok uitvoeren');
+		var statusElement = new Morebits.status('Blokkade uitvoeren');
 		blockoptions.action = 'block';
 
 		blockoptions.user = relevantUserName;
@@ -1309,26 +1375,26 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 			var logid = data.query.logevents.length ? logevents.logid : false;
 
 			if (logid !== Twinkle.block.blockLogId || !!block !== !!Twinkle.block.currentBlockInfo) {
-				var message = 'Blokkade van ' + blockoptions.user + ' is gewijzigd. ';
+				var message = 'De blokkade van ' + blockoptions.user + ' is aangepast. ';
 				if (block) {
-					message += 'Huidige: ';
+					message += 'Nieuwe blok: ';
 				} else {
-					message += 'Vorige: ';
+					message += 'Vorige blok: ';
 				}
 
 				var logExpiry = '';
 				if (logevents.params.duration) {
 					if (logevents.params.duration === 'infinity') {
-						logExpiry = 'onbepaalde tijd';
+						logExpiry = 'indefinitely';
 					} else {
 						var expiryDate = new Morebits.date(logevents.params.expiry);
-						logExpiry += (expiryDate.isBefore(new Date()) ? ', verliep ' : ' tot ') + expiryDate.calendar();
+						logExpiry += (expiryDate.isBefore(new Date()) ? ', verlopen ' : ' tot ') + expiryDate.calendar();
 					}
 				} else { // no duration, action=unblock, just show timestamp
 					logExpiry = ' ' + new Morebits.date(logevents.timestamp).calendar();
 				}
 				message += Morebits.string.toUpperCaseFirstChar(logevents.action) + 'ed door ' + logevents.user + logExpiry +
-					' voor "' + logevents.comment + '". Wil je dit overschijven met jouw instellingen?';
+					' voor "' + logevents.comment + '". Wil je dit omzetten naar jouw blokinstellingen?';
 
 				if (!confirm(message)) {
 					Morebits.status.info('Blokkade uitvoeren', 'Afgebroken door gebruiker');
@@ -1340,7 +1406,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 			// execute block
 			blockoptions.tags = Twinkle.changeTags;
 			blockoptions.token = mw.user.tokens.get('csrfToken');
-			var mbApi = new Morebits.wiki.api('Executing block', blockoptions, function() {
+			var mbApi = new Morebits.wiki.api('Blokkade uitvoeren', blockoptions, function() {
 				statusElement.info('done');
 				if (toWarn) {
 					Twinkle.block.callback.issue_template(templateoptions);
@@ -1372,7 +1438,7 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	});
 
 	Morebits.wiki.actionCompleted.redirect = userTalkPage;
-	Morebits.wiki.actionCompleted.notice = 'Acties uitgevoerd, overlegpagina wordt geladen';
+	Morebits.wiki.actionCompleted.notice = 'Handelingen voltooid, overlegpagina wordt geladen...';
 
 	var wikipedia_page = new Morebits.wiki.page(userTalkPage, 'Overlegpagina bewerken');
 	wikipedia_page.setCallbackParameters(params);
@@ -1384,27 +1450,27 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 	if (!settings.nonstandard) {
 		text += 'subst:' + params.template;
 		if (params.article && settings.pageParam) {
-			text += '|page=' + params.article;
+			text += '|pagina=' + params.article;
 		}
 		if (params.dstopic) {
-			text += '|topic=' + params.dstopic;
+			text += '|onderwerp=' + params.dstopic;
 		}
 
 		if (!/te?mp|^\s*$|min/.exec(params.expiry)) {
 			if (params.indefinite) {
-				text += '|indef=yes';
+				text += '|ot=ja';
 			} else if (!params.blank_duration && !new Morebits.date(params.expiry).isValid()) {
 				// Block template wants a duration, not date
-				text += '|time=' + params.expiry;
+				text += '|duur=' + params.expiry;
 			}
 		}
 
 		if (!Twinkle.block.isRegistered && !params.hardblock) {
-			text += '|anon=yes';
+			text += '|ip=ja';
 		}
 
 		if (params.reason) {
-			text += '|reason=' + params.reason;
+			text += '|reden=' + params.reason;
 		}
 		if (params.disabletalk) {
 			text += '|notalk=yes';
@@ -1416,34 +1482,34 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 			if (params.pagerestrictions.length || params.namespacerestrictions.length) {
 				var makeSentence = function (array) {
 					if (array.length < 3) {
-						return array.join(' and ');
+						return array.join(' en ');
 					}
 					var last = array.pop();
-					return array.join(', ') + ', and ' + last;
+					return array.join(', ') + ', en ' + last;
 
 				};
-				text += '|area=' + (params.indefinite ? 'certain ' : 'from certain ');
+				text += '|gebied=' + (params.indefinite ? 'bepaalde ' : 'van bepaalde ');
 				if (params.pagerestrictions.length) {
-					text += 'pages (' + makeSentence(params.pagerestrictions.map(function(p) {
+					text += 'pagina\'s (' + makeSentence(params.pagerestrictions.map(function(p) {
 						return '[[:' + p + ']]';
 					}));
-					text += params.namespacerestrictions.length ? ') and certain ' : ')';
+					text += params.namespacerestrictions.length ? ') en bepaalde ' : ')';
 				}
 				if (params.namespacerestrictions.length) {
 					// 1 => Talk, 2 => User, etc.
 					var namespaceNames = params.namespacerestrictions.map(function(id) {
 						return menuFormattedNamespaces[id];
 					});
-					text += '[[Wikipedia:Namespace|namespaces]] (' + makeSentence(namespaceNames) + ')';
+					text += '[[Help:Naamruimte|naamruimes]] (' + makeSentence(namespaceNames) + ')';
 				}
 			} else if (params.area) {
-				text += '|area=' + params.area;
+				text += '|gebied=' + params.area;
 			} else {
 				if (params.noemail) {
-					text += '|email=yes';
+					text += '|email=ja';
 				}
 				if (params.nocreate) {
-					text += '|accountcreate=yes';
+					text += '|accountaanmaak=ja';
 				}
 			}
 		}
@@ -1452,7 +1518,7 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 	}
 
 	if (settings.sig) {
-		text += '|sig=' + settings.sig;
+		text += '|handtekening=' + settings.sig;
 	}
 	return text + '}}';
 };
@@ -1465,8 +1531,8 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 
 	params.indefinite = Morebits.string.isInfinity(params.expiry);
 
-	if (Twinkle.getPref('blankTalkpageOnIndefBlock') && params.template !== 'uw-lblock' && params.indefinite) {
-		Morebits.status.info('Info', 'Overlegpagina leeghalen in overeenstemming met voorkeuren, en bloksjabloon toevoegen.');
+	if (Twinkle.getPref('blankTalkpageOnIndefBlock') && params.indefinite) {
+		Morebits.status.info('Info', 'Per Twinkle voorkeuren: overlegpagina leeghalen en nieuwe sectie aanmaken voor deze maand');
 		text = date.monthHeader() + '\n';
 	} else {
 		text = pageobj.getPageText();
@@ -1485,7 +1551,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 		}
 
 		if (!dateHeaderRegexResult || dateHeaderRegexResult.index !== lastHeaderIndex) {
-			Morebits.status.info('Info', 'Nieuwe subkop op overlegpagina aanmaken voor deze maand.');
+			Morebits.status.info('Info', 'Nieuwe sectie op overlegpagina aanmaken voor deze maand');
 			text += date.monthHeader() + '\n';
 		}
 	}
@@ -1497,7 +1563,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 	// build the edit summary
 	var summary = messageData.summary;
 	if (messageData.suppressArticleInSummary !== true && params.article) {
-		summary += ' on [[:' + params.article + ']]';
+		summary += ' op [[:' + params.article + ']]';
 	}
 	summary += '.';
 
