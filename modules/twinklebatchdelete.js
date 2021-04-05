@@ -19,7 +19,7 @@ Twinkle.batchdelete = function twinklebatchdelete() {
 			mw.config.get('wgCanonicalSpecialPageName') === 'Prefixindex'
 		)
 	) {
-		Twinkle.addPortletLink(Twinkle.batchdelete.callback, 'D-batch', 'tw-batch', 'Delete pages found in this category/on this page');
+		Twinkle.addPortletLink(Twinkle.batchdelete.callback, 'Batch Del', 'tw-batch', 'Verwijder alle pagina\'s binnen een categorie of lijst');
 	}
 };
 
@@ -31,17 +31,16 @@ var subpagesLoaded;
 Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	subpagesLoaded = false;
 	var Window = new Morebits.simpleWindow(600, 400);
-	Window.setTitle('Batch deletion');
+	Window.setTitle('Batch Delete');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#batchdelete');
-	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.batchdelete.callback.evaluate);
 	form.append({
 		type: 'checkbox',
 		list: [
 			{
-				label: 'Delete pages',
+				label: 'Verwijder pagina\'s',
 				name: 'delete_page',
 				value: 'delete',
 				checked: true,
@@ -49,19 +48,19 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 					type: 'checkbox',
 					list: [
 						{
-							label: 'Delete associated talk pages (except user talk pages)',
+							label: 'Verwijder betrokken overlegpagina\'s (behalve overleg gebruiker)',
 							name: 'delete_talk',
 							value: 'delete_talk',
 							checked: true
 						},
 						{
-							label: 'Delete redirects to deleted pages',
+							label: 'Verwijder doorverwijzingen naar verwijderde pagina\'s',
 							name: 'delete_redirects',
 							value: 'delete_redirects',
 							checked: true
 						},
 						{
-							label: 'Delete subpages of deleted pages',
+							label: 'Verwijder subpagina\'s van verwijderde pagina\'s',
 							name: 'delete_subpages',
 							value: 'delete_subpages',
 							checked: false,
@@ -70,17 +69,17 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 								type: 'checkbox',
 								list: [
 									{
-										label: 'Delete talk pages of deleted subpages',
+										label: 'Verwijder overlegpagina\'s van subpagina\'s',
 										name: 'delete_subpage_talks',
 										value: 'delete_subpage_talks'
 									},
 									{
-										label: 'Delete redirects to deleted subpages',
+										label: 'Verwijder doorverwijzingen naar subpagina\'s',
 										name: 'delete_subpage_redirects',
 										value: 'delete_subpage_redirects'
 									},
 									{
-										label: 'Unlink backlinks to each deleted subpage (in Main and Portal namespaces only)',
+										label: 'Ontlink subpagina\'s (alleen in Hoofd- en Portaalnaamruimte)',
 										name: 'unlink_subpages',
 										value: 'unlink_subpages'
 									}
@@ -91,13 +90,13 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 				}
 			},
 			{
-				label: 'Unlink backlinks to each page (in Main and Portal namespaces only)',
+				label: 'Ontlink pagina\'s (alleen in Hoofd- en Portaalnaamruimte)',
 				name: 'unlink_page',
 				value: 'unlink',
 				checked: false
 			},
 			{
-				label: 'Remove usages of each file (in all namespaces)',
+				label: 'Ontlink gebruik van bestanden (in alle naamruimtes)',
 				name: 'unlink_file',
 				value: 'unlink_file',
 				checked: true
@@ -107,7 +106,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason: ',
+		label: 'Reden: ',
 		size: 60
 	});
 
@@ -165,8 +164,8 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 
 	Twinkle.batchdelete.pages = {};
 
-	var statelem = new Morebits.status('Grabbing list of pages');
-	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
+	var statelem = new Morebits.status('Lijst met pagina\'s ophalen');
+	var wikipedia_api = new Morebits.wiki.api('laden...', query, function(apiobj) {
 		var response = apiobj.getResponse();
 		var pages = (response.query && response.query.pages) || [];
 		pages = pages.filter(function(page) {
@@ -183,13 +182,13 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 				return pr.type === 'edit' && pr.level === 'sysop';
 			}).pop();
 			if (editProt) {
-				metadata.push('fully protected' +
-				(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)'));
+				metadata.push('Volledig beveiligd' +
+				(editProt.expiry === 'infinity' ? ' voor onbepaalde tijd' : ', verloopt ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)'));
 			}
 
 			if (page.ns === 6) {
 				metadata.push('uploader: ' + page.imageinfo[0].user);
-				metadata.push('last edit from: ' + page.revisions[0].user);
+				metadata.push('laatste bewerking van: ' + page.revisions[0].user);
 			} else {
 				metadata.push(mw.language.convertNumber(page.revisions[0].size) + ' bytes');
 			}
@@ -204,10 +203,10 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		});
 
 		var form = apiobj.params.form;
-		form.append({ type: 'header', label: 'Pages to delete' });
+		form.append({ type: 'header', label: 'Pagina\'s om te verwijderen' });
 		form.append({
 			type: 'button',
-			label: 'Select All',
+			label: 'Selecteer alles',
 			event: function dBatchSelectAll() {
 				$(result).find('input[name=pages]:not(:checked)').each(function(_, e) {
 					e.click(); // check it, and invoke click event so that subgroup can be shown
@@ -219,7 +218,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		});
 		form.append({
 			type: 'button',
-			label: 'Deselect All',
+			label: 'Deselecteer alles',
 			event: function dBatchDeselectAll() {
 				$(result).find('input[name=pages]:checked').each(function(_, e) {
 					e.click(); // uncheck it, and invoke click event so that subgroup can be hidden
@@ -303,7 +302,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		}
 
 		// Proceed with API calls to get list of subpages
-		var loadingText = '<strong id="dbatch-subpage-loading">Loading... </strong>';
+		var loadingText = '<strong id="dbatch-subpage-loading">Laden... </strong>';
 		$(e.target).after(loadingText);
 
 		var pages = $(form.pages).map(function(i, el) {
@@ -322,7 +321,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 				return;
 			}
 
-			var wikipedia_api = new Morebits.wiki.api('Getting list of subpages of ' + pageName, {
+			var wikipedia_api = new Morebits.wiki.api('Lijst met subpagina\'s van ' + pageName + ' ophalen', {
 				action: 'query',
 				prop: 'revisions|info|imageinfo',
 				generator: 'allpages',
@@ -347,12 +346,12 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 						return pr.type === 'edit' && pr.level === 'sysop';
 					}).pop();
 					if (editProt) {
-						metadata.push('fully protected' +
-						(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)'));
+						metadata.push('Volledig beveiligd ' +
+						(editProt.expiry === 'infinity' ? ' voor onbepaalde tijd' : ', verloopt ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)'));
 					}
 					if (page.ns === 6) {
 						metadata.push('uploader: ' + page.imageinfo[0].user);
-						metadata.push('last edit from: ' + page.revisions[0].user);
+						metadata.push('laatste bewerking van: ' + page.revisions[0].user);
 					} else {
 						metadata.push(mw.language.convertNumber(page.revisions[0].size) + ' bytes');
 					}
@@ -418,31 +417,31 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 };
 
 Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvaluate(event) {
-	Morebits.wiki.actionCompleted.notice = 'Batch deletion is now complete';
+	Morebits.wiki.actionCompleted.notice = 'Batch Delete is voltooid';
 
 	var form = event.target;
 
 	var numProtected = $(Morebits.quickForm.getElements(form, 'pages')).filter(function(index, element) {
 		return element.checked && element.nextElementSibling.style.color === 'red';
 	}).length;
-	if (numProtected > 0 && !confirm('You are about to delete ' + mw.language.convertNumber(numProtected) + ' fully protected page(s). Are you sure?')) {
+	if (numProtected > 0 && !confirm('Je staat op het punt om ' + mw.language.convertNumber(numProtected) + ' volledig beveiligde pagina(\'s) te verwijderen. Weet je het zeker?')) {
 		return;
 	}
 
 	var input = Morebits.quickForm.getInputData(form);
 
 	if (!input.reason) {
-		alert('You need to give a reason, you cabal crony!');
+		alert('Je moet een reden op geven, jij deletionist!');
 		return;
 	}
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 	if (input.pages.length === 0) {
-		Morebits.status.error('Error', 'nothing to delete, aborting');
+		Morebits.status.error('Error', 'niets om te verwijderen, afbreken');
 		return;
 	}
 
-	var pageDeleter = new Morebits.batchOperation(input.delete_page ? 'Deleting pages' : 'Initiating requested tasks');
+	var pageDeleter = new Morebits.batchOperation(input.delete_page ? 'Pagina\'s verwijderen' : 'Verwijderingen voorbereiden');
 	pageDeleter.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 	// we only need the initial status lines if we're deleting the pages in the pages array
 	pageDeleter.setOption('preserveIndividualStatusLines', input.delete_page);
@@ -459,7 +458,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 			pageDeleter: pageDeleter
 		};
 
-		var wikipedia_page = new Morebits.wiki.page(pageName, 'Deleting page ' + pageName);
+		var wikipedia_page = new Morebits.wiki.page(pageName, 'Verwijderen van ' + pageName);
 		wikipedia_page.setCallbackParameters(params);
 		if (input.delete_page) {
 			wikipedia_page.setEditSummary(input.reason);
@@ -471,7 +470,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 		}
 	}, function postFinish() {
 		if (input.delete_subpages && input.subpages) {
-			var subpageDeleter = new Morebits.batchOperation('Deleting subpages');
+			var subpageDeleter = new Morebits.batchOperation('Suppagina\'s verwijderen');
 			subpageDeleter.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 			subpageDeleter.setOption('preserveIndividualStatusLines', true);
 			subpageDeleter.setPageList(input.subpages);
@@ -487,7 +486,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 					pageDeleter: subpageDeleter
 				};
 
-				var wikipedia_page = new Morebits.wiki.page(pageName, 'Deleting subpage ' + pageName);
+				var wikipedia_page = new Morebits.wiki.page(pageName, 'Verwijderen van subpagina ' + pageName);
 				wikipedia_page.setCallbackParameters(params);
 				wikipedia_page.setEditSummary(input.reason);
 				wikipedia_page.setChangeTags(Twinkle.changeTags);
@@ -521,7 +520,7 @@ Twinkle.batchdelete.callbacks = {
 				bllimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 				format: 'json'
 			};
-			wikipedia_api = new Morebits.wiki.api('Grabbing backlinks', query, Twinkle.batchdelete.callbacks.unlinkBacklinksMain);
+			wikipedia_api = new Morebits.wiki.api('Links ophalen', query, Twinkle.batchdelete.callbacks.unlinkBacklinksMain);
 			wikipedia_api.params = params;
 			wikipedia_api.post();
 		}
@@ -534,7 +533,7 @@ Twinkle.batchdelete.callbacks = {
 				iulimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 				format: 'json'
 			};
-			wikipedia_api = new Morebits.wiki.api('Grabbing file links', query, Twinkle.batchdelete.callbacks.unlinkImageInstancesMain);
+			wikipedia_api = new Morebits.wiki.api('Bestandlinks ophalen', query, Twinkle.batchdelete.callbacks.unlinkImageInstancesMain);
 			wikipedia_api.params = params;
 			wikipedia_api.post();
 		}
@@ -548,7 +547,7 @@ Twinkle.batchdelete.callbacks = {
 					rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 					format: 'json'
 				};
-				wikipedia_api = new Morebits.wiki.api('Grabbing redirects', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain);
+				wikipedia_api = new Morebits.wiki.api('Doorverwijzingen ophalen', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain);
 				wikipedia_api.params = params;
 				wikipedia_api.post();
 			}
@@ -561,7 +560,7 @@ Twinkle.batchdelete.callbacks = {
 						titles: pageTitle.toText(),
 						format: 'json'
 					};
-					wikipedia_api = new Morebits.wiki.api('Checking whether talk page exists', query, Twinkle.batchdelete.callbacks.deleteTalk);
+					wikipedia_api = new Morebits.wiki.api('Controleren of overlegpagina bestaat', query, Twinkle.batchdelete.callbacks.deleteTalk);
 					wikipedia_api.params = params;
 					wikipedia_api.params.talkPage = pageTitle.toText();
 					wikipedia_api.post();
@@ -579,12 +578,12 @@ Twinkle.batchdelete.callbacks = {
 			return;
 		}
 
-		var redirectDeleter = new Morebits.batchOperation('Deleting redirects to ' + apiobj.params.page);
+		var redirectDeleter = new Morebits.batchOperation('Doorverwijzingen naar ' + apiobj.params.page + ' verwijderen');
 		redirectDeleter.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		redirectDeleter.setPageList(pages);
 		redirectDeleter.run(function(pageName) {
-			var wikipedia_page = new Morebits.wiki.page(pageName, 'Deleting ' + pageName);
-			wikipedia_page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + apiobj.params.page + '"');
+			var wikipedia_page = new Morebits.wiki.page(pageName, 'Verwijderen ' + pageName);
+			wikipedia_page.setEditSummary('Doorverwijzing naar verwijderde pagina "' + apiobj.params.page + '"');
 			wikipedia_page.setChangeTags(Twinkle.changeTags);
 			wikipedia_page.deletePage(redirectDeleter.workerSuccess, redirectDeleter.workerFailure);
 		});
@@ -597,8 +596,8 @@ Twinkle.batchdelete.callbacks = {
 			return;
 		}
 
-		var page = new Morebits.wiki.page(apiobj.params.talkPage, 'Deleting talk page of page ' + apiobj.params.page);
-		page.setEditSummary('[[WP:CSD#G8|G8]]: [[Help:Talk page|Talk page]] of deleted page "' + apiobj.params.page + '"');
+		var page = new Morebits.wiki.page(apiobj.params.talkPage, 'Overlegpagina van ' + apiobj.params.page + ' verwijderen');
+		page.setEditSummary('Overlegpagina van verwijderde pagina "' + apiobj.params.page + '"');
 		page.setChangeTags(Twinkle.changeTags);
 		page.deletePage();
 	},
@@ -612,11 +611,11 @@ Twinkle.batchdelete.callbacks = {
 			return;
 		}
 
-		var unlinker = new Morebits.batchOperation('Unlinking backlinks to ' + apiobj.params.page);
+		var unlinker = new Morebits.batchOperation('Ontlinken van ' + apiobj.params.page);
 		unlinker.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		unlinker.setPageList(pages);
 		unlinker.run(function(pageName) {
-			var wikipedia_page = new Morebits.wiki.page(pageName, 'Unlinking on ' + pageName);
+			var wikipedia_page = new Morebits.wiki.page(pageName, 'Ontlinken op ' + pageName);
 			var params = $.extend({}, apiobj.params);
 			params.title = pageName;
 			params.unlinker = unlinker;
@@ -648,7 +647,7 @@ Twinkle.batchdelete.callbacks = {
 			params.unlinker.workerSuccess(pageobj);
 			return;
 		}
-		pageobj.setEditSummary('Removing link(s) to deleted page ' + params.page);
+		pageobj.setEditSummary('Verwijderen van links naar verwijderde pagina "' + params.page + '"');
 		pageobj.setChangeTags(Twinkle.changeTags);
 		pageobj.setPageText(text);
 		pageobj.setCreateOption('nocreate');
@@ -665,11 +664,11 @@ Twinkle.batchdelete.callbacks = {
 			return;
 		}
 
-		var unlinker = new Morebits.batchOperation('Unlinking backlinks to ' + apiobj.params.page);
+		var unlinker = new Morebits.batchOperation('Ontlinken van bestand ' + apiobj.params.page);
 		unlinker.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		unlinker.setPageList(pages);
 		unlinker.run(function(pageName) {
-			var wikipedia_page = new Morebits.wiki.page(pageName, 'Removing file usages on ' + pageName);
+			var wikipedia_page = new Morebits.wiki.page(pageName, 'Ontlinken van verwijderd bestand ' + pageName);
 			var params = $.extend({}, apiobj.params);
 			params.title = pageName;
 			params.unlinker = unlinker;
@@ -694,15 +693,15 @@ Twinkle.batchdelete.callbacks = {
 		}
 		var old_text = text;
 		var wikiPage = new Morebits.wikitext.page(text);
-		text = wikiPage.commentOutImage(image, 'Commented out because image was deleted').getText();
+		text = wikiPage.commentOutImage(image, 'Weggecommend wegens verwijdering bestand').getText();
 
 		Twinkle.batchdelete.unlinkCache[params.title] = text;
 		if (text === old_text) {
-			pageobj.getStatusElement().error('failed to unlink image ' + image + ' from ' + pageobj.getPageName());
+			pageobj.getStatusElement().error('ontlinken van afbeelding ' + image + ' van ' + pageobj.getPageName() + ' mislukt');
 			params.unlinker.workerFailure(pageobj);
 			return;
 		}
-		pageobj.setEditSummary('Removing instance of file ' + image + ' that has been deleted because "' + params.reason + '")');
+		pageobj.setEditSummary('Verwijderen van link naar bestand ' + image + ' dat is verwijderd (wegens "' + params.reason + '")');
 		pageobj.setChangeTags(Twinkle.changeTags);
 		pageobj.setPageText(text);
 		pageobj.setCreateOption('nocreate');
