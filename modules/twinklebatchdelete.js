@@ -431,7 +431,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 	var input = Morebits.quickForm.getInputData(form);
 
 	if (!input.reason) {
-		alert('Je moet een reden op geven, jij deletionist!');
+		alert('Gij zult ene reden opgeven voor deze godslasterlijke daad, gij deletionist!');
 		return;
 	}
 	Morebits.simpleWindow.setButtonsEnabled(false);
