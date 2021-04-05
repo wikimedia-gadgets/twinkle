@@ -1323,7 +1323,7 @@ Twinkle.protect.callbacks = {
 			increase = true;
 		}
 
-		var reg = /(\n=\s*Nieuwe verzoeken\s*=)/;
+		var reg = /(\n=\s*Behandelde verzoeken\s*=)/;
 
 		var originalTextLength = text.length;
 		text = text.replace(reg, '\n' + newtag + '\n$1');
