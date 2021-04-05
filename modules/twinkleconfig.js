@@ -147,7 +147,7 @@ Twinkle.config.sections = [
 				label: 'Schakel bepaalde Twinkle modules uit',
 				helptip: 'Alles wat je uitschakeld kun je niet gebruiken. Haal het vinkje weg om de module weer in te schakelen.',
 				type: 'set',
-				setValues: { arv: 'Rapporteer', warn: 'Waarschuw', welcome: 'Welkom', shared: 'Gedeeld IP', talkback: 'Talkback', speedy: 'Nuweg', xfd: 'TBx', protect: 'Beveiligen', tag: 'Tag', diff: 'Wijz', unlink: 'Ontlink', fluff: 'Terugdraaien' }
+				setValues: { arv: 'Rapporteer', warn: 'Waarschuw', welcome: 'Welkom', shared: 'Gedeeld IP', speedy: 'Nuweg', xfd: 'TBx', protect: 'Beveiligen', tag: 'Tag', diff: 'Wijz', fluff: 'Terugdraaien' }
 			},
 
 			// Twinkle.config.disabledSysopModules (array)
@@ -535,33 +535,6 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Talkback',
-		module: 'talkback',
-		preferences: [
-			{
-				name: 'markTalkbackAsMinor',
-				label: 'Mark talkbacks as minor edits',
-				type: 'boolean'
-			},
-			{
-				name: 'insertTalkbackSignature',
-				label: 'Insert signature within talkbacks',
-				type: 'boolean'
-			},
-			{
-				name: 'talkbackHeading',
-				label: 'Section heading to use for talkback and please see',
-				type: 'string'
-			},
-			{
-				name: 'mailHeading',
-				label: "Section heading to use for \"you've got mail\" notices",
-				type: 'string'
-			}
-		]
-	},
-
-	{
 		title: 'Gebruiker dossiers',
 		module: 'warn',
 		preferences: [
@@ -582,7 +555,7 @@ Twinkle.config.sections = [
 					// 8 was used for block templates before #260
 					9: 'Aangepaste waarschuwingen',
 					10: 'Alle waarschuwingssjablonen'
-					//11: 'Automatisch niveau (1-4)' werkt (nog) niet
+					//11: 'Automatisch niveau (1-4)' (werkt nog niet)
 				}
 			},
 
@@ -592,7 +565,7 @@ Twinkle.config.sections = [
 			{
 				name: 'showSharedIPNotice',
 				label: 'Voeg extra mededeling toe bij gedeelde IP-adressen',
-				helptip: 'Notice used is {{Shared IP advice}}',
+				helptip: 'Het sjabloon {{Gedeeld IP}} wordt gebruikt',
 				type: 'boolean'
 			},
 
@@ -714,16 +687,6 @@ Twinkle.config.sections = [
 				name: 'xfdWatchDiscussion',
 				label: 'Voeg verwijderdiscussie toe aan volglijst',
 				helptip: 'This refers to the discussion subpage (for AfD and MfD) or the daily log page (for TfD, CfD, RfD and FfD)',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
-
-			// TwinkleConfig.xfdWatchList (string)
-			// The watchlist setting of the XfD list page, *if* the discussion is on a separate page.
-			{
-				name: 'xfdWatchList',
-				label: 'Add the daily log/list page to the watchlist (AfD and MfD)',
-				helptip: 'This only applies for AfD and MfD, where the discussions are transcluded onto a daily log page (for AfD) or the main MfD page (for MfD).',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
