@@ -19,13 +19,13 @@ Twinkle.batchundelete = function twinklebatchundelete() {
 		mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').project)) {
 		return;
 	}
-	Twinkle.addPortletLink(Twinkle.batchundelete.callback, 'Und-batch', 'tw-batch-undel', "Undelete 'em all");
+	Twinkle.addPortletLink(Twinkle.batchundelete.callback, 'Batch undel', 'tw-batch-undel', "Undelete 'em all");
 };
 
 Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	var Window = new Morebits.simpleWindow(600, 400);
 	Window.setScriptName('Twinkle');
-	Window.setTitle('Batch undelete');
+	Window.setTitle('Batch Terugzetten');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#batchundelete');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
@@ -34,7 +34,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		type: 'checkbox',
 		list: [
 			{
-				label: 'Restore talk pages of undeleted pages if they existed',
+				label: 'Overlegpagina\'s van verwijderde pagina\'s terugzetten',
 				name: 'undel_talk',
 				value: 'undel_talk',
 				checked: true
@@ -44,7 +44,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason: ',
+		label: 'Reden: ',
 		size: 60
 	});
 
@@ -63,8 +63,8 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		gpllimit: Twinkle.getPref('batchMax'),
 		format: 'json'
 	};
-	var statelem = new Morebits.status('Grabbing list of pages');
-	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
+	var statelem = new Morebits.status('Pagina lijst ophalen');
+	var wikipedia_api = new Morebits.wiki.api('laden...', query, function(apiobj) {
 		var response = apiobj.getResponse();
 		var pages = (response.query && response.query.pages) || [];
 		pages = pages.filter(function(page) {
@@ -79,24 +79,24 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 
 			var title = page.title;
 			list.push({
-				label: title + (editProt ? ' (fully create protected' +
-					(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)') + ')' : ''),
+				label: title + (editProt ? ' (heraanmaak ' +
+					(editProt.expiry === 'infinity' ? ' voor onbepaalde tijd' : ', verloopt ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC),') + ' beveiligd)' : ''),
 				value: title,
 				checked: true,
 				style: editProt ? 'color:red' : ''
 			});
 		});
-		apiobj.params.form.append({ type: 'header', label: 'Pages to undelete' });
+		apiobj.params.form.append({ type: 'header', label: 'Pagina\'s om terug te zetten' });
 		apiobj.params.form.append({
 			type: 'button',
-			label: 'Select All',
+			label: 'Selecteer alles',
 			event: function(e) {
 				$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', true);
 			}
 		});
 		apiobj.params.form.append({
 			type: 'button',
-			label: 'Deselect All',
+			label: 'Deselecteer alles',
 			event: function(e) {
 				$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', false);
 			}
@@ -120,26 +120,26 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 };
 
 Twinkle.batchundelete.callback.evaluate = function(event) {
-	Morebits.wiki.actionCompleted.notice = 'Batch undeletion is now complete';
+	Morebits.wiki.actionCompleted.notice = 'Batch terugzetten voltooid';
 
 	var numProtected = Morebits.quickForm.getElements(event.target, 'pages').filter(function(element) {
 		return element.checked && element.nextElementSibling.style.color === 'red';
 	}).length;
-	if (numProtected > 0 && !confirm('You are about to undelete ' + numProtected + ' fully create protected page(s). Are you sure?')) {
+	if (numProtected > 0 && !confirm('Je staat op het punt om ' + numProtected + ' volledigbeveiligde pagina(\'s) terug te zetten. Weet je het zeker?')) {
 		return;
 	}
 
 	var input = Morebits.quickForm.getInputData(event.target);
 
 	if (!input.reason) {
-		alert('You need to give a reason, you cabal crony!');
+		alert('Je moet een reden geven, jij inclusionist!');
 		return;
 	}
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(event.target);
 
 	if (!input.pages || !input.pages.length) {
-		Morebits.status.error('Error', 'nothing to undelete, aborting');
+		Morebits.status.error('Error', 'niets om terug te zetten, Afbreken');
 		return;
 	}
 
@@ -155,7 +155,7 @@ Twinkle.batchundelete.callback.evaluate = function(event) {
 			pageUndeleter: pageUndeleter
 		};
 
-		var wikipedia_page = new Morebits.wiki.page(pageName, 'Undeleting page ' + pageName);
+		var wikipedia_page = new Morebits.wiki.page(pageName, 'Terugzetten pagina ' + pageName);
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.setEditSummary(input.reason);
 		wikipedia_page.setChangeTags(Twinkle.changeTags);
@@ -188,7 +188,7 @@ Twinkle.batchundelete.callbacks = {
 					titles: talkpagename,
 					format: 'json'
 				};
-				wikipedia_api = new Morebits.wiki.api('Checking talk page for deleted revisions', query, Twinkle.batchundelete.callbacks.undeleteTalk);
+				wikipedia_api = new Morebits.wiki.api('Overlegpagina controleren op verwijderde versies', query, Twinkle.batchundelete.callbacks.undeleteTalk);
 				wikipedia_api.params = params;
 				wikipedia_api.params.talkPage = talkpagename;
 				wikipedia_api.post();
@@ -205,8 +205,8 @@ Twinkle.batchundelete.callbacks = {
 			return;
 		}
 
-		var talkpage = new Morebits.wiki.page(apiobj.params.talkPage, 'Undeleting talk page of ' + apiobj.params.page);
-		talkpage.setEditSummary('Undeleting [[Help:Talk page|talk page]] of "' + apiobj.params.page + '"');
+		var talkpage = new Morebits.wiki.page(apiobj.params.talkPage, 'Terugzetten van overlegpagina van ' + apiobj.params.page);
+		talkpage.setEditSummary('Terugzetten van overlegpagina van "' + apiobj.params.page + '"');
 		talkpage.setChangeTags(Twinkle.changeTags);
 		talkpage.undeletePage();
 	}
