@@ -207,15 +207,15 @@ Twinkle.warn.messages = {
 		'Veel voorkomend': {
 			'ws-vandalisme': {
 				level1: {
-					label: 'Geen positieve bijdrage',
+					label: 'Vandalisme',
 					summary: '+ws1 vandalisme'
 				},
 				level2: {
-					label: 'Geen positieve bijdrage',
+					label: 'Vandalisme',
 					summary: '+ws2 vandalisme'
 				},
 				level3: {
-					label: 'Vandalisme',
+					label: 'Herhaald vandalisme',
 					summary: '+ws3 vandalisme'
 				},
 				level4: {
@@ -251,25 +251,25 @@ Twinkle.warn.messages = {
 					summary: '+ws2 zelfpromotie'
 				},
 				level3: {
-					label: 'Spammen',
+					label: 'Herhaald zelfpromotie/Reclame',
 					summary: '+ws3 zelfpromotie'
 				},
 				level4: {
-					label: 'Herhaald/doorgaand spammen',
+					label: 'Herhaald zelfpromotie/Reclame',
 					summary: '+ws4 zelfpromotie'
 				}
 			},
 			'ws-leeghalen': {
 				level1: {
-					label: 'Content weghalen',
+					label: 'Pagina leeghalen',
 					summary: '+ws1 leeghalen'
 				},
 				level2: {
-					label: 'Content weghalen/pagina leeghalen',
+					label: 'Pagina leeghalen',
 					summary: '+ws2 leeghalen'
 				},
 				level3: {
-					label: 'Herhaald content weghalen/pagina leeghalen',
+					label: 'Pagina leeghalen',
 					summary: '+ws3 leeghalen'
 				}
 			},
@@ -305,11 +305,11 @@ Twinkle.warn.messages = {
 			},
 			'ws-bwo': {
 				level1: {
-					label: 'Ongewenste terugdraaiing',
+					label: 'Bewerkingsoorlog',
 					summary: '+ws1 ongewenste terugdraaiing'
 				},
 				level2: {
-					label: 'Ongewenste terugdraaiing',
+					label: 'Bewerkingsoorlog',
 					summary: '+ws2 ongewenste terugdraaiing'
 				},
 				level3: {
