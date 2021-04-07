@@ -267,7 +267,6 @@
 				case 3:  // user talk
 					appendList('Gebruikersnaamruimte', Twinkle.speedy.userList);
 					break;
-
 				default:
 					break;
 			}
@@ -433,7 +432,7 @@
 	Twinkle.speedy.userList = [
 		{
 			label: 'Pagina in de eigen naamruimte op eigen verzoek',
-			value: 'Verzoek in eigen naamruimte',
+			value: 'eigennaamruimte',
 			subgroup: mw.config.get('wgNamespaceNumber') === 3 && mw.config.get('wgTitle').indexOf('/') === -1 ? {
 				name: 'userreq_rationale',
 				type: 'input',
