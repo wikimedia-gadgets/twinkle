@@ -636,12 +636,12 @@
 				initialContrib = null;
 
 				// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page...
-			} else if ((initialContrib === 'Cyberbot I' || initialContrib === 'SoxBot') && params.normalizeds[0] === 'f2') {
+			} else if ((initialContrib === 'Nlwikibot' || initialContrib === 'SoxBot') && params.normalizeds[0] === 'f2') {
 				Morebits.status.warn('Notificeer originele aanmaker: pagina is door een bot aangemaakt, notificatie overgeslagen');
 				initialContrib = null;
 
 				// Check for already existing tags
-			} else if (Twinkle.speedy.hasCSD && params.warnUser && !confirm('The page is has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?')) {
+			} else if (Twinkle.speedy.hasCSD && params.warnUser && !confirm('De pagina heeft al een nominatie, dus de aanmaker is waarschijnlijk al gewaarschuwd.  Wil je de aanmaker ook voor deze nominatie waarschuwen?')) {
 				Morebits.status.info('Notificeer originele aanmaker', 'geannuleerd door gebruiker.');
 				initialContrib = null;
 			}
@@ -650,31 +650,21 @@
 				var usertalkpage = new Morebits.wiki.page('Overleg gebruiker:' + initialContrib, 'Notificeer originele aanmaker (' + initialContrib + ')'),
 					notifytext, i, editsummary;
 
-				// special cases: "db" and "db-multiple"
-				if (params.normalizeds.length > 1) {
-					notifytext = '\n{{subst:db-' + (params.warnUser ? 'deleted' : 'notice') + '-multiple|1=' + Morebits.pageNameNorm;
-					var count = 2;
-					$.each(params.normalizeds, function(index, norm) {
-						notifytext += '|' + count++ + '=' + norm.toUpperCase();
-					});
-				} else if (params.normalizeds[0] === 'db') {
-					notifytext = '\n{{subst:db-reason-' + (params.warnUser ? 'deleted' : 'notice') + '|1=' + Morebits.pageNameNorm;
+				
+				notifytext = '\n{{subst:'+ (params.warnUser ? 'pdv' : 'vvn4') + '|1=';
+				if (params.values[0] === 'copypaste') {
+					notifytext += params.templateParams[0].sourcepage;
 				} else {
-					notifytext = '\n{{subst:db-csd-' + (params.warnUser ? 'deleted' : 'notice') + '-custom|1=';
-					if (params.values[0] === 'copypaste') {
-						notifytext += params.templateParams[0].sourcepage;
-					} else {
-						notifytext += Morebits.pageNameNorm;
-					}
-					notifytext += '|2=' + params.values[0];
+					notifytext += Morebits.pageNameNorm;
 				}
-
+				notifytext += '|2=' + params.values[0];
+				
 				for (i in params.utparams) {
 					if (typeof params.utparams[i] === 'string') {
-						notifytext += '|' + i + '=' + params.utparams[i];
+						notifytext += params.utparams[i] + ';';
 					}
 				}
-				notifytext += (params.welcomeuser ? '' : '|nowelcome=yes') + '}} ~~~~';
+				notifytext += '|3=false}} ~~~~';
 
 				if (params.normalizeds.indexOf('s1') === -1) {
 					editsummary = 'Mededeling: ' + (params.warnUser ? 'Directe verwijdering' : ' Nuweg nominatie');
@@ -917,11 +907,11 @@
 					var talkName = new mw.Title(pageobj.getPageName()).getTalkPage().toText();
 					if (talkName !== pageobj.getPageName()) {
 
-						pageobj.getStatusElement().warn('Unable to edit page, placing tag on talk page');
+						pageobj.getStatusElement().warn('Plaatsen op pagina mislukt, proberen op het op de overlegpagina te plaaten');
 
-						var talk_page = new Morebits.wiki.page(talkName, 'Automatically placing tag on talk page');
-						talk_page.setNewSectionTitle(pageobj.getPageName() + ' nominated for CSD, request deletion');
-						talk_page.setNewSectionText(code + '\n\nI was unable to tag ' + pageobj.getPageName() + ' so please delete it. ~~~~');
+						var talk_page = new Morebits.wiki.page(talkName, 'Automatisch op overlegpagina geplaatst');
+						talk_page.setNewSectionTitle(pageobj.getPageName() + ' genomineerd voor directe verwijdering');
+						talk_page.setNewSectionText(code + '\n\nHet is me niet gelukt ' + pageobj.getPageName() + ' te bewerken, dus wil ik langs deze weg verzoeken het direct te verwijderen. ~~~~');
 						talk_page.setCreateOption('recreate');
 						talk_page.setFollowRedirect(true);
 						talk_page.setWatchlist(params.watch);
@@ -929,7 +919,7 @@
 						talk_page.setCallbackParameters(params);
 						talk_page.newSection(Twinkle.speedy.callbacks.user.tagComplete);
 					} else {
-						pageobj.getStatusElement().error('Page protected and nowhere to add an edit request, aborting');
+						pageobj.getStatusElement().error('Pagina beveiligd en geen plek gevonden om een verwijderverzoek in te dienen, afbreken...');
 					}
 				}
 			},
