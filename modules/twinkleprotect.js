@@ -978,9 +978,6 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				if (thispage) {
 					thispage.getStatusElement().info('done');
 				}
-				if (tagparams) {
-					Twinkle.protect.callbacks.taggingPageInitial(tagparams);
-				}
 			};
 
 			var protectIt = function twinkleprotectCallbackProtectIt(next) {
@@ -1160,6 +1157,9 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'full-archief':
 					typereason = 'Archiefpagina';
 					break;
+				case 'unprotection':
+					typereason = 'Beveiliging opheffen';
+					break;
 				default:
 					typereason = '';
 					break;
@@ -1235,18 +1235,6 @@ Twinkle.protect.callback.annotateProtectReason = function twinkleprotectCallback
 };
 
 Twinkle.protect.callbacks = {
-	taggingPageInitial: function(tagparams) {
-		if (tagparams.tag === 'noop') {
-			Morebits.status.info('Applying protection template', 'nothing to do');
-			return;
-		}
-
-		var protectedPage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
-		protectedPage.setCallbackParameters(tagparams);
-		protectedPage.load(Twinkle.protect.callbacks.taggingPage);
-	},
-
-
 	fileRequest: function(rppPage) {
 
 		var params = rppPage.getCallbackParameters();
