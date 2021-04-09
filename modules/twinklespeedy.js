@@ -663,7 +663,7 @@
 						notifytext += params.utparams[i] + ';';
 					}
 				}
-				notifytext += '|3=false}}';
+				notifytext += (params.welcomeuser ? '' : '|3=false') + '}}
 
 				if (params.normalizeds.indexOf('s1') === -1) {
 					editsummary = 'Mededeling: ' + (params.warnUser ? 'Directe verwijdering' : ' Nuweg nominatie');
