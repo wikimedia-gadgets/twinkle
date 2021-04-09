@@ -895,7 +895,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 							input.setAttribute('checked', 'checked');
 						}
 						label.appendChild(input);
-						label.appendChild(document.createTextNode(' ' + pref.label));
+						label.appendChild(document.createTextNode(pref.label));
 						cell.appendChild(label);
 						break;
 

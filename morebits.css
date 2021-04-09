@@ -110,6 +110,12 @@ form.quickform span.quickformDescription
 	font-style: italic;
 }
 
+form.quickform span.quickformDescription code
+{
+	font-style: normal;
+	font-family: monospace;
+}
+
 form.quickform .quickformSubgroup
 {
 	margin-bottom: .5em;

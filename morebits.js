@@ -27,8 +27,8 @@
  * All the stuff here works on all browsers for which MediaWiki provides JavaScript support.
  *
  * This library is maintained by the maintainers of Twinkle.
- * For queries, suggestions, help, etc., head to [Wikipedia talk:Twinkle on English Wikipedia](http://nl.wikipedia.org/wiki/WT:TW).
- * The latest development source is available at {@link https://github.com/wikimedia-gadgets/twinkle/blob/master/morebits.js|GitHub}.
+ * For queries, suggestions, help, etc., head to (https://nl.wikipedia.org/wiki/WT:TW).
+ * The latest development source is available at {@link https://github.com/NLWikiTools/Twinkle/blob/master/morebits.js|GitHub}.
  *
  * @namespace Morebits
  */
@@ -111,6 +111,62 @@ Morebits.pageNameRegex = function(pageName) {
 		return '[' + mw.Title.phpCharToUpper(firstChar) + firstChar.toLowerCase() + ']' + remainder;
 	}
 	return Morebits.string.escapeRegExp(firstChar) + remainder;
+};
+
+/**
+ * Converts string or array of DOM nodes into an HTML fragment.
+ * Wikilink syntax (`[[...]]`) is transformed into HTML anchor.
+ * Used in Morebits.quickForm and Morebits.status
+ * @internal
+ * @param {string|Node|(string|Node)[]} input
+ * @returns {DocumentFragment}
+ */
+Morebits.createHtml = function(input) {
+	var fragment = document.createDocumentFragment();
+	if (!Array.isArray(input)) {
+		input = [ input ];
+	}
+	for (var i = 0; i < input.length; ++i) {
+		if (input[i] instanceof Node) {
+			fragment.appendChild(input[i]);
+		} else {
+			$.parseHTML(Morebits.createHtml.renderWikilinks(input[i])).forEach(function(node) {
+				if (node.nodeType === 3) { // text node
+					fragment.appendChild(node);
+				} else if (node.nodeType === 1) { // Element node, strip dangerous attributes
+					Array.prototype.slice.call(node.attributes).forEach(function(attr) {
+						// onclick, onerror, onload, etc
+						if (attr.name.indexOf('on') === 0) {
+							node.removeAttribute(attr.name);
+						}
+					});
+					fragment.appendChild(node);
+				} // any other node type is suspicious
+			});
+		}
+	}
+	return fragment;
+};
+
+/**
+ * Converts wikilinks to HTML anchor tags.
+ * @param text
+ * @returns {*}
+ */
+Morebits.createHtml.renderWikilinks = function (text) {
+	var ub = new Morebits.unbinder(text);
+	// Don't convert wikilinks within code tags as they're used for displaying wiki-code
+	ub.unbind('<code>', '</code>');
+	ub.content = ub.content.replace(
+		/\[\[:?(?:([^|\]]+?)\|)?([^\]|]+?)\]\]/g,
+		function(_, target, text) {
+			if (!target) {
+				target = text;
+			}
+			return '<a target="_blank" href="' + mw.util.getUrl(target) +
+				'" title="' + target.replace(/"/g, '&#34;') + '">' + text + '</a>';
+		});
+	return ub.rebind();
 };
 
 /**
@@ -1770,7 +1826,7 @@ Morebits.date.localeData = {
  * @property {string} weeks
  * @property {string} months
  * @property {string} years
- * 
+ *
  * API Object: NIET VERTALEN!!!
  */
 Morebits.date.unitMap = {
@@ -4076,7 +4132,7 @@ Morebits.wiki.page = function(pageName, status) {
 		}
 		if (editprot && !ctx.suppressProtectWarning &&
 			!confirm('You are about to ' + action + ' the fully protected page "' + ctx.pageName +
-			(editprot.expiry === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.expiry).calendar('utc') + ' (UTC))') +
+			(editprot.expiry === 'infinity' ? '" (onbepaalde tijd)' : '" (verloopt ' + new Morebits.date(editprot.expiry).calendar('utc') + ' (UTC))') +
 			'.  \n\nClick OK to proceed with ' + action + ', or Cancel to skip.')) {
 			ctx.statusElement.error('Aborted ' + action + ' on fully protected page.');
 			onFailure(this);

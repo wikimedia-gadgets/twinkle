@@ -26,3 +26,8 @@
 #twinkle-config-headerbox.config-userskin-box {
 	width: 60%;
 }
+
+/* WP:TWPREFS */
+#twinkle-config-content input[type=checkbox] {
+	margin-right: 2px;
+}
