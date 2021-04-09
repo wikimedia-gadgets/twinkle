@@ -45,10 +45,6 @@ Twinkle.unlink.callback = function(presetReason) {
 	} else {
 		linkPlainAfter = Morebits.htmlNode('code', Morebits.pageNameNorm);
 	}
-	[linkTextBefore, linkTextAfter, linkPlainBefore, linkPlainAfter].forEach(function(node) {
-		node.style.fontFamily = 'monospace';
-		node.style.fontStyle = 'normal';
-	});
 
 	form.append({
 		type: 'div',
