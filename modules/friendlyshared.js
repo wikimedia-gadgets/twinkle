@@ -49,7 +49,7 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 	org.append({
 		type: 'input',
 		name: 'organization',
-		label: 'IP-adres beheerder (optioneel)',
+		label: 'Naam organisatie (optioneel)',
 		disabled: true,
 		tooltip: 'Je kunt optioneel de naam van de organisatie die het IP-adres beheerd/bezit opgeven.  Hierbij mag je ook wikimarkup gebruiken.'
 	}
@@ -57,9 +57,9 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 	org.append({
 		type: 'input',
 		name: 'host',
-		label: 'Hostnaam (optioneel)',
+		label: 'IP-Range (optioneel)',
 		disabled: true,
-		tooltip: 'De hostnaam (bijvoorbeeld, proxy.voorbeeld.nl) kan optioneel worden toegevoegd aan het sjabloon.'
+		tooltip: 'De IP-Range die deze organisatie bezit (bijvoorbeeld, 10.0.0.0/28) kan optioneel worden toegevoegd aan het sjabloon.'
 	}
 	);
 	org.append({
@@ -87,52 +87,23 @@ Twinkle.shared.callback = function friendlysharedCallback() {
 
 Twinkle.shared.standardList = [
 	{
-		label: '{{Shared IP}}: standard shared IP address template',
-		value: 'Shared IP',
-		tooltip: 'IP user talk page template that shows helpful information to IP users and those wishing to warn, block or ban them'
+		label: '{{Ws-school}}: Gedeeld IP-adres van een onderwijsinstelling',
+		value: 'Ws-school'
 	},
 	{
-		label: '{{Shared IP edu}}: shared IP address template modified for educational institutions',
-		value: 'Shared IP edu'
+		label: '{{Ws-organisatie}}: Gedeeld IP-adres van een bedrijf of andere organisatie',
+		value: 'Ws-organisatie'
 	},
 	{
-		label: '{{Shared IP corp}}: shared IP address template modified for businesses',
-		value: 'Shared IP corp'
-	},
-	{
-		label: '{{Shared IP public}}: shared IP address template modified for public terminals',
-		value: 'Shared IP public'
-	},
-	{
-		label: '{{Shared IP gov}}: shared IP address template modified for government agencies or facilities',
-		value: 'Shared IP gov'
-	},
-	{
-		label: '{{Dynip}}: gedeeld IP-adres sjabloon voor dynamische adressering',
-		value: 'Dynamisch IP'
-	},
-	{
-		label: '{{Static IP}}: shared IP address template modified for static IP addresses',
-		value: 'Static IP'
-	},
-	{
-		label: '{{ISP}}: shared IP address template modified for ISP organizations (specifically proxies)',
-		value: 'ISP'
-	},
-	{
-		label: '{{Mobile IP}}: shared IP address template modified for mobile phone companies and their customers',
-		value: 'Mobile IP'
-	},
-	{
-		label: '{{Whois}}: template for IP addresses in need of monitoring, but unknown whether static, dynamic or shared',
-		value: 'Whois'
+		label: '{{Ws-hogeschool}}: Gedeeld IP-adres van een hogeronderwijsinstelling',
+		value: 'Ws-hogeschool'
 	}
 ];
 
 Twinkle.shared.callback.change_shared = function friendlysharedCallbackChangeShared(e) {
-	e.target.form.contact.disabled = e.target.value !== 'Shared IP edu';  // only supported by {{Shared IP edu}}
-	e.target.form.organization.disabled = false;
-	e.target.form.host.disabled = e.target.value === 'Whois';  // host= not supported by {{Whois}}
+	e.target.form.contact.disabled = true; // disable contact input
+	e.target.form.organization.disabled = false; // disable organization name
+	e.target.form.host.disabled = false;  // disable iprange
 };
 
 Twinkle.shared.callbacks = {
@@ -196,12 +167,12 @@ Twinkle.shared.preview = function(form) {
 };
 
 Twinkle.shared.getTemplateWikitext = function(input) {
-	var text = '{{' + input.template + '|' + input.organization;
-	if (input.contact) {
-		text += '|' + input.contact;
-	}
+	var text = '{{' + input.template + '|1=' + input.organization;
 	if (input.host) {
-		text += '|host=' + input.host;
+		text += '|2=' + input.host;
+	}
+	if (input.contact) {
+		text += '|3=' + input.contact;
 	}
 	text += '}}\n\n';
 	return text;
@@ -211,10 +182,6 @@ Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
 	var params = Morebits.quickForm.getInputData(e.target);
 	if (!params.template) {
 		alert('Je moet een gedeeld IP-adres sjabloon selecteren om te gebruiken!');
-		return;
-	}
-	if (!params.organization) {
-		alert('Je moet een organisatie opgeven voor het {{' + params.template + '}} sjabloon!');
 		return;
 	}
 

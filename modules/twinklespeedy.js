@@ -313,6 +313,7 @@
 		new Morebits.wiki.api('Controleren op voorgaande verwijderingen', query, function(apiobj) {
 			var response = apiobj.getResponse();
 			var delCount = response.query.logevents.length;
+			// noinspection JSJQueryEfficiency
 			if (delCount) {
 				var message = delCount + ' voorgaande verwijdering';
 				if (delCount > 1) {
@@ -649,7 +650,7 @@
 				var usertalkpage = new Morebits.wiki.page('Overleg gebruiker:' + initialContrib, 'Notificeer originele aanmaker (' + initialContrib + ')'),
 					notifytext, i, editsummary;
 
-				
+
 				notifytext = '\n{{subst:'+ (params.warnUser ? 'pdv' : 'vvn4') + '|1=';
 				if (params.values[0] === 'copypaste') {
 					notifytext += params.templateParams[0].sourcepage;
@@ -657,13 +658,13 @@
 					notifytext += Morebits.pageNameNorm;
 				}
 				notifytext += '|2=' + params.values[0];
-				
+
 				for (i in params.utparams) {
 					if (typeof params.utparams[i] === 'string') {
 						notifytext += params.utparams[i] + ';';
 					}
 				}
-				notifytext += (params.welcomeuser ? '' : '|3=false') + '}}
+				notifytext += (params.welcomeuser ? '' : '|3=false') + '}}';
 
 				if (params.normalizeds.indexOf('s1') === -1) {
 					editsummary = 'Mededeling: ' + (params.warnUser ? 'Directe verwijdering' : ' Nuweg nominatie');

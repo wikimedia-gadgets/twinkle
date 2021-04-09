@@ -39,9 +39,8 @@ Twinkle.tag.callback = function friendlytagCallback() {
 	var Window = new Morebits.simpleWindow(630, Twinkle.tag.mode === 'article' ? 500 : 400);
 	Window.setScriptName('Twinkle');
 	// anyone got a good policy/guideline/info page/instructional page link??
-	Window.addFooterLink('Tag prefs', 'WP:TW/PREF#tag');
+	Window.addFooterLink('Tag instellingen', 'WP:TW/PREF#tag');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#tag');
-	Window.addFooterLink('Geef feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.tag.callback.evaluate);
 
@@ -88,7 +87,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	switch (Twinkle.tag.mode) {
 		case 'article':
-			Window.setTitle('Artiekel onderhoud labeling');
+			Window.setTitle('Artikel onderhoud labeling');
 
 			// Object.values is unavailable in IE 11
 			var obj_values = Object.values || function (obj) {
@@ -128,7 +127,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 			if (!Twinkle.tag.canRemove) {
 				var divElement = document.createElement('div');
-				divElement.innerHTML = 'Voor het verwijderen van bestaande labels, open het Label menu in de huidige versie van het artikel';
+				divElement.innerHTML = 'Voor het verwijderen van bestaande sjablonen, open het Label menu in de huidige versie van het artikel';
 				form.append({
 					type: 'div',
 					name: 'untagnotice',
@@ -143,6 +142,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				style: 'max-height: 28em'
 			});
 
+			/*
 			form.append({
 				type: 'checkbox',
 				list: [
@@ -155,12 +155,13 @@ Twinkle.tag.callback = function friendlytagCallback() {
 					}
 				]
 			});
+			*/
 
 			form.append({
 				type: 'input',
 				label: 'Reden',
 				name: 'reason',
-				tooltip: '(Optioneel) Voeg een rede toe voor de bewerkingssamenvatting. Aanbevolen als labels verwijderd worden.',
+				tooltip: '(Optioneel) Voeg een reden toe voor de bewerkingssamenvatting. Aanbevolen als je sjablonen hebt verwijderd.',
 				size: '60px'
 			});
 
@@ -175,7 +176,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			});
 
 			if (Twinkle.getPref('customFileTagList').length) {
-				form.append({ type: 'header', label: 'Custom tags' });
+				form.append({ type: 'header', label: 'Aangepaste sjablonen' });
 				form.append({ type: 'checkbox', name: 'tags', list: Twinkle.getPref('customFileTagList') });
 			}
 			break;
@@ -281,10 +282,10 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 			// {{Uncategorized}} and {{Improve categories}} are usually placed at the end
 			if ($('.box-Uncategorized').length) {
-				Twinkle.tag.alreadyPresentTags.push('Uncategorized');
+				Twinkle.tag.alreadyPresentTags.push('Ongecategoriseerd');
 			}
 			if ($('.box-Improve_categories').length) {
-				Twinkle.tag.alreadyPresentTags.push('Improve categories');
+				Twinkle.tag.alreadyPresentTags.push('Verbeter categorieën');
 			}
 
 		}
@@ -450,8 +451,8 @@ Twinkle.tag.updateSortOrder = function(e) {
 			Twinkle.tag.status.numRemoved += this.checked ? -1 : 1;
 		}
 
-		var firstPart = 'Adding ' + Twinkle.tag.status.numAdded + ' tag' + (Twinkle.tag.status.numAdded > 1 ? 's' : '');
-		var secondPart = 'Removing ' + Twinkle.tag.status.numRemoved + ' tag' + (Twinkle.tag.status.numRemoved > 1 ? 's' : '');
+		var firstPart = Twinkle.tag.status.numAdded + (Twinkle.tag.status.numAdded > 1 ? ' sjablonen' : ' sjabloon') + ' toegevoegd';
+		var secondPart = Twinkle.tag.status.numRemoved + (Twinkle.tag.status.numRemoved > 1 ? ' sjablonen' : ' sjabloon') + ' verwijderd';
 		statusNode.textContent =
 			(Twinkle.tag.status.numAdded ? '  ' + firstPart : '') +
 			(Twinkle.tag.status.numRemoved ? (Twinkle.tag.status.numAdded ? '; ' : '  ') + secondPart : '');
@@ -467,7 +468,7 @@ var generateLinks = function(checkbox) {
 	link.setAttribute('class', 'tag-template-link');
 	var tagname = checkbox.values;
 	link.setAttribute('href', mw.util.getUrl(
-		(tagname.indexOf(':') === -1 ? 'Template:' : '') +
+		(tagname.indexOf(':') === -1 ? 'Sjabloon:' : '') +
 		(tagname.indexOf('|') === -1 ? tagname : tagname.slice(0, tagname.indexOf('|')))
 	));
 	link.setAttribute('target', '_blank');
