@@ -38,6 +38,10 @@ Twinkle.block.callback = function twinkleblockCallback() {
 		alert('Uw zoekopdracht \"Blokkeer Bas_dehaan\" gaf geen resultaten. Bedoelde u \"WP:DESYSOP#' + mw.config.get('wgUserName') + '\"?');
 		return;
 	}
+	if (relevantUserName === 'Daniuu'){ //don't fight me with the weapon I helped creating
+		alert('Op de zevende dag schiep den here Twinkle. Hij verdoemde de persoon die dit gadget tegen zijn scheppers wou gebruiken, en zag dat het goed was.');
+		return;
+	}
 	if (relevantUserName === mw.config.get('wgUserName') &&
 			!confirm('LET OP! Je staat op het punt je zelf te blokkeren! Wil je doorgaan?')) {
 		return;
