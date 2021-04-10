@@ -1,5 +1,15 @@
 // <nowiki>
 
+/*****************************************************************************************************
+ * WARNING: This file is synced with a GitHub-repo. Please make any changes to this file over there. *
+ * Any local changes might be overwritten the next time this file is updated.                        *
+ *                                                                                                   *
+ * LET OP: Dit bestand is gekoppeld aan een GitHub-repo. Gelieve alle bewerkingen daar uitvoeren.    *
+ * Locale bewerkingen worden mogelijk overschreven bij de volgende update.                           *
+ *                                                                                                   *
+ * https://github.com/NLWikiTools/Twinkle/blob/master/modules/friendlywelcome.js                     *
+ *****************************************************************************************************/
+
 
 (function($) {
 
@@ -122,7 +132,6 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Welkom voorkeuren', 'WP:TW/PREF#welcome');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#welcome');
-	Window.addFooterLink('Geef feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.welcome.callback.evaluate);
 
@@ -144,7 +153,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 		id: 'welcomeWorkArea',
 		className: 'morebits-scrollbox'
 	});
-	
+
 	form.append({
 		type: 'input',
 		name: 'article',
@@ -289,7 +298,7 @@ Twinkle.welcome.templates = {
 			}
 		}
 	},
-	
+
 	problem: {
 		'Verwelkoming na een proleem': {
 			'Vreclame': {

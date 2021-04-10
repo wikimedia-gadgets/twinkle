@@ -14,10 +14,10 @@
  * Dit is Twinkle-NL, een portering van AzaToth's Twinkle naar de
  * Nederlandstalige Wikipedia. Twinkle is een hulpmiddel bij wiki onderhoud en
  * is geschikt voor nieuwelingen, mods en iedereen daar tussen in. Bekijk
- * [[WP:TW]] voor meer informatie. CC-BY-SA
+ * [[WP:TW]] voor meer informatie. CC-BY-SA Bas de Haan
  *
  * ----------
- **/
+ * */
 // <nowiki>
 
 /* global Morebits */
@@ -83,7 +83,7 @@ Twinkle.defaultConfig = {
 	speedySelectionStyle: 'buttonClick',
 	watchSpeedyPages: [],
 	watchSpeedyExpiry: '1 month',
-	markSpeedyPagesAsPatrolled: false,
+	markSpeedyPagesAsPatrolled: true,
 	watchSpeedyUser: '1 month',
 	welcomeUserOnSpeedyDeletionNotification: [ 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7' ],
 	notifyUserOnSpeedyDeletionNomination: [ 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7' ],
@@ -100,7 +100,7 @@ Twinkle.defaultConfig = {
 
 	// Warn
 	defaultWarningGroup: '1',
-	showSharedIPNotice: true,
+	showSharedIPNotice: false,
 	watchWarnings: '1 month',
 	oldSelect: false,
 	customWarningList: [],
@@ -123,9 +123,9 @@ Twinkle.defaultConfig = {
 	batchChunks: 50,
 
 	// Deprecated options, as a fallback for add-on scripts/modules
-	summaryAd: ' ([[WP:TW|TW]])',
-	deletionSummaryAd: ' ([[WP:TW|TW]])',
-	protectionSummaryAd: ' ([[WP:TW|TW]])',
+	summaryAd: ' ([[WP:TW|Twinkle]])',
+	deletionSummaryAd: ' ([[WP:TW|Twinkle]])',
+	protectionSummaryAd: ' ([[WP:TW|Twinkle]])',
 
 	// Formerly defaultConfig.friendly:
 	// Tag
@@ -145,15 +145,9 @@ Twinkle.defaultConfig = {
 	watchWelcomes: '3 months',
 	insertUsername: true,
 	quickWelcomeMode: 'norm',
-	quickWelcomeTemplate: 'welkom',
+	quickWelcomeTemplate: 'hola',
 	customWelcomeList: [],
 	customWelcomeSignature: true,
-
-	// Talkback
-	markTalkbackAsMinor: true,
-	insertTalkbackSignature: true,  // always sign talkback templates
-	talkbackHeading: 'Nieuw bericht van ' + mw.config.get('wgUserName'),
-	mailHeading: "Je hebt mail!",
 
 	// Shared
 	markSharedIPAsMinor: true
@@ -475,7 +469,7 @@ Twinkle.load = function () {
 Twinkle.changeTags = 'twinkle';
 // Available for actions that don't (yet) support tags
 // currently: FlaggedRevs and PageTriage
-Twinkle.summaryAd = ' ([[WP:TW|TW]])';
+Twinkle.summaryAd = ' ([[WP:TW|Twinkle]])';
 
 // Various hatnote templates, used when tagging (csd/xfd/tag/prod/protect) to
 // ensure MOS:ORDER

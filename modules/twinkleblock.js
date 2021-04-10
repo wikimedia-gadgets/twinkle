@@ -1,5 +1,14 @@
 // <nowiki>
 
+/*****************************************************************************************************
+ * WARNING: This file is synced with a GitHub-repo. Please make any changes to this file over there. *
+ * Any local changes might be overwritten the next time this file is updated.                        *
+ *                                                                                                   *
+ * LET OP: Dit bestand is gekoppeld aan een GitHub-repo. Gelieve alle bewerkingen daar uitvoeren.    *
+ * Locale bewerkingen worden mogelijk overschreven bij de volgende update.                           *
+ *                                                                                                   *
+ * https://github.com/NLWikiTools/Twinkle/blob/master/modules/twinkleblock.js                        *
+ *****************************************************************************************************/
 
 (function($) {
 
@@ -122,7 +131,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	form.append({ type: 'field', label: 'Voorinstelling', name: 'field_preset' });
 	form.append({ type: 'field', label: 'Sjabloon opties', name: 'field_template_options' });
 	form.append({ type: 'field', label: 'Blokkade opties', name: 'field_block_options' });
-	
+
 	form.append({ type: 'submit' });
 
 	var result = form.render();
@@ -804,7 +813,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 Twinkle.block.blockPresetsInfo = {
 	'blok': {
 		autoblock: true,
-		expiry: '24 hours',
 		nocreate: true,
 		pageParam: true,
 		reasonParam: true,
@@ -842,7 +850,6 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'vandalisme': {
 		autoblock: true,
-		expiry: '24 hours',
 		nocreate: true,
 		pageParam: true,
 		reasonParam: false,
@@ -889,6 +896,7 @@ Twinkle.block.blockPresetsInfo = {
 		nocreate: true,
 		pageParam: false,
 		reasonParam: false,
+		templateName: 'blok',
 		reason: 'Uitspraak [[WP:AC/Z|Arbitragecomissie]]',
 		summary: 'Je bent geblokkeerd na aanleiding van een uitspraak van de [[WP:AC/Z|Arbitragecomissie]].'
 	},
@@ -901,7 +909,7 @@ Twinkle.block.blockPresetsInfo = {
 		reason: 'Afkoelblok',
 		summary: 'Bij deze geef ik je even een afkoelblokje'
 	},
-	
+
 
 	// Deelblokkades, accessed in Twinkle.block.blockGroupsPartial
 	'arbcom-deelblok': {
@@ -910,6 +918,7 @@ Twinkle.block.blockPresetsInfo = {
 		nocreate: true,
 		pageParam: false,
 		reasonParam: false,
+		templateName: 'deelblok',
 		reason: 'Uitspraak [[WP:AC/Z|Arbitragecomissie]]',
 		summary: 'Je bent gedeeltelijk geblokkeerd na aanleiding van een uitspraak van de [[WP:AC/Z|Arbitragecomissie]].'
 	},
@@ -1458,7 +1467,7 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 
 		if (!/te?mp|^\s*$|min/.exec(params.expiry)) {
 			if (params.indefinite) {
-				text += '|ot=ja';
+				text += '|ot=true';
 			} else if (!params.blank_duration && !new Morebits.date(params.expiry).isValid()) {
 				// Block template wants a duration, not date
 				text += '|duur=' + params.expiry;
@@ -1466,14 +1475,14 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 		}
 
 		if (!Twinkle.block.isRegistered && !params.hardblock) {
-			text += '|ip=ja';
+			text += '|ip=true';
 		}
 
 		if (params.reason) {
 			text += '|reden=' + params.reason;
 		}
 		if (params.disabletalk) {
-			text += '|notalk=yes';
+			text += '|overlegblok=true';
 		}
 
 		// Currently, all partial block templates are "standard"

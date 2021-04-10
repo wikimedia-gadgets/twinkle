@@ -1,5 +1,14 @@
 // <nowiki>
 
+/*****************************************************************************************************
+ * WARNING: This file is synced with a GitHub-repo. Please make any changes to this file over there. *
+ * Any local changes might be overwritten the next time this file is updated.                        *
+ *                                                                                                   *
+ * LET OP: Dit bestand is gekoppeld aan een GitHub-repo. Gelieve alle bewerkingen daar uitvoeren.    *
+ * Locale bewerkingen worden mogelijk overschreven bij de volgende update.                           *
+ *                                                                                                   *
+ * https://github.com/NLWikiTools/Twinkle/blob/master/modules/twinklexfd.js                          *
+ *****************************************************************************************************/
 
 (function($) {
 
@@ -543,7 +552,7 @@ Twinkle.xfd.callbacks = {
 			var statelem = pageobj.getStatusElement();
 
 			var date = new Morebits.date(pageobj.getLoadTime());
-			var daypage = 'Wikipedia:Te beoordelen pagina\'s/Toegevoegd ' + date.format('YYYYMMDD', '60');
+			var daypage = 'Wikipedia:Te beoordelen pagina\'s/Toegevoegd ' + date.format('YYYYMMDD', '120');
 
 			if (!pageobj.exists()) {
 				statelem.error("Het lijkt erop dat de pagina niet bestaat; misschien is de pagina al verwijderd?");
@@ -638,7 +647,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			var date = new Morebits.date(pageobj.getLoadTime());
-			params.logpage = 'WP:Te beoordelen sjablonen/Toegevoegd ' + date.format('YYYY', '60') + ' week ' + date.format('W', '60'),
+			params.logpage = 'WP:Te beoordelen sjablonen/Toegevoegd ' + date.format('YYYY', '120') + ' week ' + date.format('W', '120'),
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
 			// Add log/discussion page params to the already-loaded page object
 			pageobj.setCallbackParameters(params);
