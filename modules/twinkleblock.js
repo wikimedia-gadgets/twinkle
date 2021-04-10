@@ -953,10 +953,6 @@ Twinkle.block.blockPresetsInfo = {
 Twinkle.block.dsinfo = {
 	'': {
 		code: ''
-	},
-	'Abortion': {
-		code: 'ab',
-		page: 'Wikipedia:Arbitration/Requests/Case/Abortion'
 	}
 };
 

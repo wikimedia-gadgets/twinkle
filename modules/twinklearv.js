@@ -254,6 +254,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 
 Twinkle.arv.callback.evaluate = function(e) {
 	var form = e.target;
+	form.sockpuppet = undefined;
 	var reason = '';
 	var comment = '';
 	if (form.reason) {
@@ -309,16 +310,16 @@ Twinkle.arv.callback.evaluate = function(e) {
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
 
-			Morebits.wiki.actionCompleted.redirect = 'WP:RB';
+			Morebits.wiki.actionCompleted.redirect = 'Wikipedia:Verzoekpagina voor moderatoren/RegBlok';
 			Morebits.wiki.actionCompleted.notice = 'Rapporteren voltooid';
 
-			var aivPage = new Morebits.wiki.page('WP:RB', 'Regblok verzoek verwerken');
+			var aivPage = new Morebits.wiki.page('Wikipedia:Verzoekpagina voor moderatoren/RegBlok', 'Regblok verzoek verwerken');
 			aivPage.setPageSection(3); //Geteld vanaf onder
 			aivPage.setFollowRedirect(true);
 
 			aivPage.load(function() {
 				var text = aivPage.getPageText();
-				var $aivLink = '<a target="_blank" href="/wiki/WP:RB">WP:Regblok</a>';
+				var $aivLink = '<a target="_blank" href="/wiki/Wikipedia:Verzoekpagina voor moderatoren/RegBlok">WP:Regblok</a>';
 
 				// make the report
 				aivPage.getStatusElement().status('Gebruiker rapporteren...');
@@ -371,16 +372,16 @@ Twinkle.arv.callback.evaluate = function(e) {
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
 
-			Morebits.wiki.actionCompleted.redirect = 'WP:VIB';
+			Morebits.wiki.actionCompleted.redirect = 'Wikipedia:Verzoekpagina voor moderatoren/IPBlok';
 			Morebits.wiki.actionCompleted.notice = 'Rapporteren voltooid';
 
-			var aivPage = new Morebits.wiki.page('WP:VIB', 'IPBlok verzoek verwerken');
+			var aivPage = new Morebits.wiki.page('Wikipedia:Verzoekpagina voor moderatoren/IPBlok', 'IPBlok verzoek verwerken');
 			aivPage.setPageSection(2); //Geteld vanaf onder
 			aivPage.setFollowRedirect(true);
 
 			aivPage.load(function() {
 				var text = aivPage.getPageText();
-				var $aivLink = '<a target="_blank" href="/wiki/WP:VIB">WP:IPBlok</a>';
+				var $aivLink = '<a target="_blank" href="/wiki/Wikipedia:Verzoekpagina voor moderatoren/IPBlok">WP:IPBlok</a>';
 
 				// make the report
 				aivPage.getStatusElement().status('Gebruiker rapporteren...');
@@ -402,10 +403,10 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 			var puppetReport = false; //TODO deze bodge wegwerken
 
-			if (!puppetReport && !form.sockpuppet[0].value.trim()) {
+			/*if (!puppetReport && !form.sockpuppet[0].value.trim()) {
 				alert('Voer de naam van tenminste 1 sokpop in.');
 				return;
-			}
+			}*/
 
 			sockParameters.uid = uid;
 			sockParameters.sockpuppets = puppetReport ? [uid] : Morebits.array.uniq($.map($('input:text[name=sockpuppet]', form), function(o) {
@@ -480,16 +481,16 @@ Twinkle.arv.processSock = function(params) {
 	verzoek += '\n|Motivering=' + params.evidence + ' &ndash; ';
 	verzoek += '\n}}';
 
-	Morebits.wiki.actionCompleted.redirect = 'WP:SOKPOP';
+	Morebits.wiki.actionCompleted.redirect = 'Wikipedia:Verzoekpagina voor moderatoren/Sokpoppen';
 	Morebits.wiki.actionCompleted.notice = 'Raporteren succesvol';
 
-	var spiPage = new Morebits.wiki.page('WP:SOKPOP', 'Verzoekpagina ophalen');
+	var spiPage = new Morebits.wiki.page('Wikipedia:Verzoekpagina voor moderatoren/Sokpoppen', 'Verzoekpagina ophalen');
 	spiPage.setPageSection(2); //Geteld vanaf boven
 	spiPage.setFollowRedirect(true);
 
 	spiPage.load(function() {
 		var text = spiPage.getPageText();
-		var $spiLink = '<a target="_blank" href="/wiki/WP:SOKPOP">WP:Sokpop</a>';
+		var $spiLink = '<a target="_blank" href="/wiki/Wikipedia:Verzoekpagina voor moderatoren/Sokpoppen">WP:Sokpop</a>';
 
 		spiPage.getStatusElement().status('Gebruiker rapporteren...');
 		spiPage.setEditSummary('Checkuser verzoek voor [[Overleg gebruiker:' + params.uid + ']].');
