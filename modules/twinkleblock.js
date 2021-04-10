@@ -839,6 +839,8 @@ Twinkle.block.blockPresetsInfo = {
 		nocreate: true,
 		pageParam: false,
 		reasonParam: false,
+		disabletalk: true,
+		noemail: true,
 		reason: '[[Wikipedia:Sokpopmisbruik|Sokpopmisbruik]]',
 		summary: 'Je bent voor onbepaalde tijd geblokkeerd wegens [[Wikipedia:Sokpopmisbruik|Sokpopmisbruik]]',
 		suppressArticleInSummary: true
@@ -869,14 +871,15 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: true,
 		reasonParam: false,
 		templateName: 'permblok',
+		disabletalk: true,
+		noemail: true,
 		reason: 'Ingelogde [[WP:Vandalisme|vandaal]]',
 		summary: 'Je bent voor onbepaalde tijd geblokkerd omdat je account alleen voor [[WP:Vandalisme|vandalisme]] werd gebruikt.'
 	},
 	'og': {
-		autoblock: true,
+		autoblock: false,
 		expiry: 'infinity',
 		forRegisteredOnly: true,
-		autoblock: false,
 		nocreate: true,
 		pageParam: false,
 		reasonParam: false,
@@ -884,7 +887,6 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'Je account heeft een [[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|ongewenste gebruikersnaam]], die buitenwerking is genomen.'
 	},
 	'ogbedrijf': {
-		autoblock: true,
 		expiry: 'infinity',
 		forRegisteredOnly: true,
 		autoblock: false,
