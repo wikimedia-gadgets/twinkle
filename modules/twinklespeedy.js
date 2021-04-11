@@ -659,8 +659,8 @@
 				var usertalkpage = new Morebits.wiki.page('Overleg gebruiker:' + initialContrib, 'Notificeer originele aanmaker (' + initialContrib + ')'),
 					notifytext, i, editsummary;
 
-
-				notifytext = '\n{{subst:'+ (params.warnUser ? 'pdv' : 'vvn4') + '|1=';
+				notifytext = '\n== '+ (params.warnUser ? 'Directe verwijdering' : 'Nominatie') + ' van ' + Morebits.pageNameNorm + ' ==';
+				notifytext += '\n{{subst:'+ (params.warnUser ? 'pdv' : 'vvn4') + '|1=';
 				if (params.values[0] === 'copypaste') {
 					notifytext += params.templateParams[0].sourcepage;
 				} else {
