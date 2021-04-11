@@ -36,7 +36,6 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	Window.setScriptName('Twinkle');
 	Window.setTitle('Batch Terugzetten');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#batchundelete');
-	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.batchundelete.callback.evaluate);
 	form.append({
@@ -141,7 +140,7 @@ Twinkle.batchundelete.callback.evaluate = function(event) {
 	var input = Morebits.quickForm.getInputData(event.target);
 
 	if (!input.reason) {
-		alert('Je moet een reden geven, jij inclusionist!');
+		alert('Geen reden opgegeven (Mr. Twinkly mompelt iets met sysops en luiheid).');
 		return;
 	}
 	Morebits.simpleWindow.setButtonsEnabled(false);

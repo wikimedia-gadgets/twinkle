@@ -73,7 +73,6 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	dialog.addFooterLink('Kies waarschuwingsniveau', 'WP:UWUL#Levels');
 	dialog.addFooterLink('Dossier voorkeuren', 'WP:TW/PREF#warn');
 	dialog.addFooterLink('Twinkle help', 'WP:TW/DOC#warn');
-	dialog.addFooterLink('Geef feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.warn.callback.evaluate);
 	var main_select = form.append({

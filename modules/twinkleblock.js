@@ -1457,9 +1457,9 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 };
 
 Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
-	var text = '{{', settings = Twinkle.block.blockPresetsInfo[params.template];
+	var text = '\n{{', settings = Twinkle.block.blockPresetsInfo[params.template];
 	if (!settings.nonstandard) {
-		text += 'subst:' + params.template;
+		text += params.template;
 		if (params.article && settings.pageParam) {
 			text += '|pagina=' + params.article;
 		}
@@ -1528,10 +1528,13 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 		text += params.template;
 	}
 
+	text += '}}';
+
 	if (settings.sig) {
-		text += '|handtekening=' + settings.sig;
+		text += ' ' + settings.sig;
 	}
-	return text + '}}';
+
+	return text;
 };
 
 Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {

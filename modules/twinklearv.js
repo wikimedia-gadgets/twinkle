@@ -46,7 +46,6 @@ Twinkle.arv.callback = function (uid, isIP) {
 	Window.addFooterLink('Sokpop info', 'WP:SPM');
 	Window.addFooterLink('Twinkle instellingen', 'WP:TW/PREF#arv');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#arv');
-	Window.addFooterLink('Geef feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.arv.callback.evaluate);
 	var categories = form.append({
@@ -314,7 +313,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			Morebits.wiki.actionCompleted.notice = 'Rapporteren voltooid';
 
 			var aivPage = new Morebits.wiki.page('Wikipedia:Verzoekpagina voor moderatoren/RegBlok', 'Regblok verzoek verwerken');
-			aivPage.setPageSection(3); //Geteld vanaf onder
+			aivPage.setPageSection(2); //Geteld vanaf boven
 			aivPage.setFollowRedirect(true);
 
 			aivPage.load(function() {
@@ -376,7 +375,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			Morebits.wiki.actionCompleted.notice = 'Rapporteren voltooid';
 
 			var aivPage = new Morebits.wiki.page('Wikipedia:Verzoekpagina voor moderatoren/IPBlok', 'IPBlok verzoek verwerken');
-			aivPage.setPageSection(2); //Geteld vanaf onder
+			aivPage.setPageSection(2); //Geteld vanaf boven
 			aivPage.setFollowRedirect(true);
 
 			aivPage.load(function() {
@@ -403,11 +402,6 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 			var puppetReport = false; //TODO deze bodge wegwerken
 
-			/*if (!puppetReport && !form.sockpuppet[0].value.trim()) {
-				alert('Voer de naam van tenminste 1 sokpop in.');
-				return;
-			}*/
-
 			sockParameters.uid = uid;
 			sockParameters.sockpuppets = puppetReport ? [uid] : Morebits.array.uniq($.map($('input:text[name=sockpuppet]', form), function(o) {
 				return $(o).val() || null;
@@ -429,7 +423,7 @@ Twinkle.arv.processSock = function(params) {
 	if (params.notify && params.sockpuppets.length > 0) {
 
 		var notifyEditSummary = 'Op de hoogte brengen van aanvraag CU-onderzoek.';
-		var notifyText = '\n\n{{subst:socksuspectnotice|1=' + params.uid + '}} ~~~~';
+		var notifyText = '\n\n{{subst:ws-sokpop|1=' + params.uid + '}} ~~~~';
 
 		// notify user's master account
 		var masterTalkPage = new Morebits.wiki.page('Overleg gebruiker:' + params.uid, 'op de hoogte brengen van onderzoek');
@@ -482,7 +476,7 @@ Twinkle.arv.processSock = function(params) {
 	verzoek += '\n}}';
 
 	Morebits.wiki.actionCompleted.redirect = 'Wikipedia:Verzoekpagina voor moderatoren/Sokpoppen';
-	Morebits.wiki.actionCompleted.notice = 'Raporteren succesvol';
+	Morebits.wiki.actionCompleted.notice = 'Rapporteren succesvol';
 
 	var spiPage = new Morebits.wiki.page('Wikipedia:Verzoekpagina voor moderatoren/Sokpoppen', 'Verzoekpagina ophalen');
 	spiPage.setPageSection(2); //Geteld vanaf boven

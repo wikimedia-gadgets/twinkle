@@ -967,27 +967,25 @@
 				// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
 				var fileLogLink = mw.config.get('wgNamespaceNumber') === 6 ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])' : '';
 
-				var editsummary = 'Logging speedy deletion nomination';
+				var editsummary = 'Log voor nuweg aanmaken';
 				var appendText = '# [[:' + Morebits.pageNameNorm;
 
 				if (params.normalizeds.indexOf('g5') === -1) {  // no article name in log for G5 taggings
 					appendText += ']]' + fileLogLink + ': ';
-					editsummary += ' of [[:' + Morebits.pageNameNorm + ']].';
+					editsummary += ' van [[:' + Morebits.pageNameNorm + ']].';
 				} else {
-					appendText += '|This]] attack page' + fileLogLink + ': ';
-					editsummary += ' of an attack page.';
+					appendText += '|deze]] cyberpestpagina' + fileLogLink + ': ';
+					editsummary += ' van een cyberpestpagina.';
 				}
 				if (params.normalizeds.length > 1) {
-					appendText += 'multiple criteria (';
+					appendText += 'Twinklecodes: ';
 					$.each(params.normalizeds, function(index, norm) {
-						appendText += '[[WP:CSD#' + norm.toUpperCase() + '|' + norm.toUpperCase() + ']], ';
+						appendText += norm.toUpperCase() + '; ';
 					});
 					appendText = appendText.substr(0, appendText.length - 2);  // remove trailing comma
 					appendText += ')';
-				} else if (params.normalizeds[0] === 'db') {
-					appendText += '{{tl|db-reason}}';
 				} else {
-					appendText += '[[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']] ({{tl|db-' + params.values[0] + '}})';
+					appendText += 'Twinklecode: ' + params.normalizeds[0].toUpperCase() + ' ({{nuweg|' + params.values[0] + '}})';
 				}
 
 				// If params is "empty" it will still be full of empty arrays, but ask anyway
@@ -1012,10 +1010,10 @@
 				}
 
 				if (extraInfo) {
-					appendText += '; additional information:' + extraInfo;
+					appendText += '; overige informatie:' + extraInfo;
 				}
 				if (initialContrib) {
-					appendText += '; notified {{user|1=' + initialContrib + '}}';
+					appendText += '; {{gebruiker|1=' + initialContrib + '}} op de hoogte gebracht';
 				}
 				appendText += ' ~~~~~\n';
 

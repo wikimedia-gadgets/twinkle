@@ -279,7 +279,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	var input = Morebits.quickForm.getInputData(form);
 
 	if (!input.reason) {
-		alert("Je moet wel een reden opgeven, jij protectionist!");
+		alert("Geen reden opgegeven (Mr. Twinkly mompelt iets met sysops en luiheid).");
 		return;
 	}
 

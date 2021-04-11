@@ -105,7 +105,6 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	Window.addFooterLink('Over verwijdernominaties', 'WP:XFD');
 	Window.addFooterLink('TBx voorkeuren', 'WP:TW/PREF#xfd');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#xfd');
-	Window.addFooterLink('Geef feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.xfd.callback.evaluate);
 	var categories = form.append({

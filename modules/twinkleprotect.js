@@ -385,9 +385,9 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					event: Twinkle.protect.formevents.movemodify,
 					list: [
 						{
-							label: 'Verander verplaats beveiliging',
+							label: 'Verander titelbeveiliging',
 							name: 'movemodify',
-							tooltip: 'Indien uitgeschakeld, zal het verplaats-beveiligingsniveau en verlooptijd ongewijzigd blijven.',
+							tooltip: 'Indien uitgeschakeld, zal het titel-beveiligingsniveau en verlooptijd ongewijzigd blijven.',
 							checked: true
 						}
 					]
@@ -395,7 +395,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				field2.append({
 					type: 'select',
 					name: 'movelevel',
-					label: 'Verplaats beveiliging:',
+					label: 'Titelbeveiliging:',
 					event: Twinkle.protect.formevents.movelevel,
 					list: Twinkle.protect.protectionLevels.filter(function(level) {
 						// Autoconfirmed is required for a move, redundant
@@ -699,7 +699,7 @@ Twinkle.protect.protectionTypes = [
 		]
 	},*/
 	{
-		label: 'Verplaats beveiliging',
+		label: 'Titelbeveiliging',
 		list: [
 			{ label: 'Algemeen (move)', value: 'move-algemeen' },
 			{ label: 'Verplaatsingsoorlog (move)', value: 'move-bwo' },
@@ -1102,7 +1102,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'move-bwo':
 				case 'move-vandalisme':
 				case 'move-veelbezocht':
-					typename = 'verplaatsingsbeveiliging';
+					typename = 'titelbeveiliging';
 					break;
 				case 'aanmaak-algemeen':
 				case 'aanmaak-titel':
