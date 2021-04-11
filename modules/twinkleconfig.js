@@ -320,7 +320,7 @@ Twinkle.config.sections = [
 			}
 		]
 	},
-
+/* Module komt later
 	{
 		title: 'Gedeeld IP-labeling',
 		module: 'shared',
@@ -332,9 +332,9 @@ Twinkle.config.sections = [
 			}
 		]
 	},
-
+*/
 	{
-		title: 'Directe verwijdering (nuweg)',
+		title: 'Directe verwijdering (Nuweg)',
 		module: 'speedy',
 		preferences: [
 			{
@@ -478,7 +478,7 @@ Twinkle.config.sections = [
 			}
 		]
 	},
-
+/* module komt later
 	{
 		title: 'Label',
 		module: 'tag',
@@ -542,7 +542,7 @@ Twinkle.config.sections = [
 			//  </verwijderen?>
 		]
 	},
-
+*/
 	{
 		title: 'Gebruiker dossiers',
 		module: 'warn',
@@ -571,12 +571,15 @@ Twinkle.config.sections = [
 			// TwinkleConfig.showSharedIPNotice may take arguments:
 			// true: to show shared ip notice if an IP address
 			// false: to not print the notice
+
+			/* nog niet ingeschakeld //TODO
 			{
 				name: 'showSharedIPNotice',
 				label: 'Voeg extra mededeling toe bij gedeelde IP-adressen',
 				helptip: 'Het sjabloon {{Gedeeld IP}} wordt gebruikt',
 				type: 'boolean'
 			},
+			 */
 
 			// TwinkleConfig.watchWarnings (string)
 			// Watchlist setting for the page which has been dispatched an warning or notice
@@ -663,21 +666,21 @@ Twinkle.config.sections = [
 		preferences: [
 			{
 				name: 'logXfdNominations',
-				label: 'Keep a log in userspace of all pages you nominate for a deletion discussion (XfD)',
-				helptip: 'The userspace log offers a good way to keep track of all pages you nominate for XfD using Twinkle.',
+				label: 'Maak een logboek van alle TBx nominaties in mijn gebruikersnaamruimte',
+				helptip: 'Omdat niet-moderators geen toegang hebben tot hun verwijderde bijdragen, is een logboek een makkelijke manier om inzicht te krijgen in het aantal nominaties.',
 				type: 'boolean'
 			},
 			{
 				name: 'xfdLogPageName',
-				label: 'Keep the deletion discussion userspace log at this user subpage',
-				helptip: 'Enter a subpage name in this box. You will find your XfD log at User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the XfD userspace log.',
+				label: 'Bewaar het logboek op de volgende pagina',
+				helptip: 'Voer een sub-pagina naam in voor het logboek. Je kunt deze terugvingen op Gebruiker:<i>gebruikersnaam</i>/<i>sub-paginanaam</i>.',
 				type: 'string'
 			},
 			{
 				name: 'noLogOnXfdNomination',
-				label: 'Do not create a userspace log entry when nominating at this venue',
+				label: 'Maak geen gebruik van het logboek bij de volgende nominatielocaties',
 				type: 'set',
-				setValues: { afd: 'TBP (Te Beoordelen Pagina)', tfd: 'TfD', ffd: 'FfD', cfd: 'CfD', cfds: 'CfD/S', mfd: 'MfD', rfd: 'RfD', rm: 'RM' }
+				setValues: { afd: 'TBP (Te Beoordelen Pagina\'s)', tfd: 'TBS (Te beoordelen Sjablonen)', cfd: 'TBC (Te beoordelen Categorieën)' }
 			},
 
 			// TwinkleConfig.xfdWatchPage (string)
@@ -695,7 +698,6 @@ Twinkle.config.sections = [
 			{
 				name: 'xfdWatchDiscussion',
 				label: 'Voeg verwijderdiscussie toe aan volglijst',
-				helptip: 'This refers to the discussion subpage (for AfD and MfD) or the daily log page (for TfD, CfD, RfD and FfD)',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},

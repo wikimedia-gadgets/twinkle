@@ -488,14 +488,13 @@ Twinkle.xfd.callbacks = {
 			'en deze pagina nomineren voor directe verwijdering.' +
 			(Morebits.userIsSysop ? '\n\nDit logboek bewaard niet jouw moderatorafhandeling van een TBP-nominatie!' : '');
 
-		var editsummary = 'Loggen van ' + utils.toTLACase(params.venue) + ' nominatie van [[:' + Morebits.pageNameNorm + ']].';
+		var editsummary = 'Loggen van beoordelingsnominatie nominatie van [[:' + Morebits.pageNameNorm + ']].';
 
 		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
 		var fileLogLink = mw.config.get('wgNamespaceNumber') === 6 ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])' : '';
-		// CFD/S and RM don't have canonical links
-		var nominatedLink = params.discussionpage ? '[[' + params.discussionpage + '|genomineerd]]' : 'genomineerd';
 
-		var appendText = '# [[:' + Morebits.pageNameNorm + ']]:' + fileLogLink + ' ' + nominatedLink + ' op [[WP:' + params.venue.toUpperCase() + '|' + utils.toTLACase(params.venue) + ']]';
+
+		var appendText = '# [[:' + Morebits.pageNameNorm + ']]:' + fileLogLink + ' ' + 'Genomineerd op [[Wikipedia:Te beoordelen pagina\'s/Toegevoegd {{subst:LOCALYEAR}}{{subst:LOCALMONTH}}{{subst:LOCALDAY2}}|de TBP]]';
 
 		switch (params.venue) {
 			case 'cfd':

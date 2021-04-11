@@ -985,7 +985,7 @@
 					appendText = appendText.substr(0, appendText.length - 2);  // remove trailing comma
 					appendText += ')';
 				} else {
-					appendText += 'Twinklecode: ' + params.normalizeds[0].toUpperCase() + ' ({{nuweg|' + params.values[0] + '}})';
+					appendText += 'Twinklecode: ' + params.normalizeds[0].toUpperCase() + ' (' + params.values[0] + ')';
 				}
 
 				// If params is "empty" it will still be full of empty arrays, but ask anyway
