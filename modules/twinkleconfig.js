@@ -154,7 +154,7 @@ Twinkle.config.sections = [
 			{
 				name: 'disabledModules',
 				label: 'Schakel bepaalde Twinkle modules uit',
-				helptip: 'Alles wat je uitschakeld kun je niet gebruiken. Haal het vinkje weg om de module weer in te schakelen.',
+				helptip: 'Alles wat je uitschakelt kun je niet gebruiken. Haal het vinkje weg om de module weer in te schakelen.',
 				type: 'set',
 				setValues: { arv: 'Rapporteer', warn: 'Waarschuw', welcome: 'Welkom', shared: 'Gedeeld IP', speedy: 'Nuweg', xfd: 'TBx', protect: 'Beveiligen', tag: 'Tag', diff: 'Wijz', fluff: 'Terugdraaien' }
 			},
@@ -163,7 +163,7 @@ Twinkle.config.sections = [
 			{
 				name: 'disabledSysopModules',
 				label: 'Schakel bepaalde sysop-Twinkle modules uit',
-				helptip: 'Alles wat je uitschakeld kun je niet gebruiken. Haal het vinkje weg om de module weer in te schakelen.',
+				helptip: 'Alles wat je uitschakelt kun je niet gebruiken. Haal het vinkje weg om de module weer in te schakelen.',
 				adminOnly: true,
 				type: 'set',
 				setValues: { block: 'Blokkeer', batchdelete: 'Batch verwijderen', batchprotect: 'Batch beveiligen', batchundelete: 'Batch terugplaatsen' }
@@ -304,7 +304,7 @@ Twinkle.config.sections = [
 			{
 				name: 'confirmOnMobileFluff',
 				label: 'Vraag bevestiging voor een terugdraaiing (alleen op mobiele apparaten)',
-				helptip: 'Voorkom dat je met mistikken op touchscreen de halve wiki terugdraaid.',
+				helptip: 'Voorkom dat je met mistikken op touchscreen de halve wiki terugdraait.',
 				type: 'boolean'
 			},
 
@@ -348,7 +348,7 @@ Twinkle.config.sections = [
 			// Whether to add speedy tagged or deleted pages to watchlist
 			{
 				name: 'watchSpeedyPages',
-				label: 'Voeg pagina toe aan volglijst bij gebruikt van volgende nominatieredenen',
+				label: 'Voeg pagina toe aan volglijst bij gebruik van volgende nominatieredenen',
 				type: 'set',
 				setValues: Twinkle.config.commonSets.csdCriteria,
 				setDisplayOrder: Twinkle.config.commonSets.csdCriteriaDisplayOrder
@@ -453,7 +453,7 @@ Twinkle.config.sections = [
 			{
 				name: 'speedyWindowHeight',
 				label: 'Hoogte van nuweg-formulier (pixels)',
-				helptip: 'Als je een grootte monitor hebt, is het misschien prettig dit wat groter te maken.',
+				helptip: 'Als je een grote monitor hebt, is het misschien prettig dit wat groter te maken.',
 				type: 'integer'
 			},
 
@@ -466,7 +466,7 @@ Twinkle.config.sections = [
 			{
 				name: 'speedyLogPageName',
 				label: 'Bewaar het logboek op de volgende pagina',
-				helptip: 'Voer een sub-pagina naam in voor het logboek. Je kunt deze terugvingen op Gebruiker:<i>gebruikersnaam</i>/<i>sub-paginanaam</i>.',
+				helptip: 'Voer een sub-pagina naam in voor het logboek. Je kunt deze terugvinden op Gebruiker:<i>gebruikersnaam</i>/<i>sub-paginanaam</i>.',
 				type: 'string'
 			},
 			{
@@ -673,7 +673,7 @@ Twinkle.config.sections = [
 			{
 				name: 'xfdLogPageName',
 				label: 'Bewaar het logboek op de volgende pagina',
-				helptip: 'Voer een sub-pagina naam in voor het logboek. Je kunt deze terugvingen op Gebruiker:<i>gebruikersnaam</i>/<i>sub-paginanaam</i>.',
+				helptip: 'Voer een sub-pagina naam in voor het logboek. Je kunt deze terugvinden op Gebruiker:<i>gebruikersnaam</i>/<i>sub-paginanaam</i>.',
 				type: 'string'
 			},
 			{
