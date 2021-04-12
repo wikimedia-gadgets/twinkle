@@ -39,7 +39,7 @@ Twinkle.warn = function twinklewarn() {
 	// Modify URL of talk page on rollback success pages, makes use of a
 	// custom message box in [[MediaWiki:Rollback-success]]
 	if (mw.config.get('wgAction') === 'rollback') {
-		var $vandalTalkLink = $('#mw-rollback-success').find('.mw-usertoollinks a').first();
+		var $vandalTalkLink = $('#mw-content-text').find('.mw-usertoollinks a').first();
 		if ($vandalTalkLink.length) {
 			$vandalTalkLink.css('font-weight', 'bold');
 			$vandalTalkLink.wrapInner($('<span/>').attr('title', 'Indien gepast, kun je de gebruiker een waarschuwing geven voor de bewerkingen op deze pagina.'));
