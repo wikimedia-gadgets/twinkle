@@ -643,7 +643,7 @@ Twinkle.fluff.callbacks = {
 				break;
 
 			case 'vand':
-				summary = Twinkle.fluff.formatSummary(params.count + (params.count > 1 ? ' bewerkingen' : ' bewerking') + ' van $USER teruggedraait tot laatste versie van ' +
+				summary = Twinkle.fluff.formatSummary(params.count + (params.count > 1 ? ' bewerkingen' : ' bewerking') + ' van $USER teruggedraaid tot laatste versie van ' +
 					(params.gooduserHidden ? Twinkle.fluff.hiddenName : params.gooduser), params.userHidden ? null : params.user);
 				break;
 
