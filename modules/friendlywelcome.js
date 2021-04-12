@@ -159,7 +159,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 		name: 'article',
 		label: '* Betrokken artikel (indien ondersteund door sjabloon):',
 		value: mw.util.getParamValue('vanarticle') || '',
-		tooltip: 'Een verwelkoming kan soms worden gekoppelt aan een artikel. Laat leeg om geen artikel te koppelen.  Sjablonen die een koppeling ondersteunen zijn gemarkeert met een *.'
+		tooltip: 'Een verwelkoming kan soms worden gekoppeld aan een artikel. Laat leeg om geen artikel te koppelen.  Sjablonen die een koppeling ondersteunen zijn gemarkeerd met een *.'
 	});
 
 	var previewlink = document.createElement('a');
@@ -243,11 +243,11 @@ Twinkle.welcome.templates = {
 				syntax: '{{hola|gebruiker|~~~~}}'
 			},
 			'salut': {
-				description: 'Een meer personlijke verwelkoming voor ingelogde gebruikers',
+				description: 'Een meer persoonlijke verwelkoming voor ingelogde gebruikers',
 				syntax: '{{subst:Salut}}'
 			},
 			'salut-anon': {
-				description: 'Een meer personlijke verwelkoming voor anonieme gebruikers',
+				description: 'Een meer persoonlijke verwelkoming voor anonieme gebruikers',
 				syntax: '{{subst:Salut-anon}}'
 			},
 			'welkom2': {
@@ -268,11 +268,11 @@ Twinkle.welcome.templates = {
 				syntax: '{{hola-u|gebruiker|~~~~}}'
 			},
 			'salut-u': {
-				description: 'Een meer personlijke verwelkoming voor ingelogde gebruikers in u-vorm',
+				description: 'Een meer persoonlijke verwelkoming voor ingelogde gebruikers in u-vorm',
 				syntax: '{{subst:salut-u}}'
 			},
 			'salut-anon-u': {
-				description: 'Een meer personlijke verwelkoming voor anonieme gebruikers in u-vorm',
+				description: 'Een meer persoonlijke verwelkoming voor anonieme gebruikers in u-vorm',
 				syntax: '{{subst:salut-anon-u}}'
 			},
 			'welkom2-u': {
@@ -293,7 +293,7 @@ Twinkle.welcome.templates = {
 				syntax: '{{welcome}} ~~~~'
 			},
 			'salut-en': {
-				description: 'Een meer personlijke verwelkoming in het Engels',
+				description: 'Een meer persoonlijke verwelkoming in het Engels',
 				syntax: '{{subst:salut-en}}'
 			}
 		}
