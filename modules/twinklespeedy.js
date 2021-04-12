@@ -641,22 +641,22 @@
 
 				// don't notify users when their user talk page is nominated/deleted
 			} else if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
-				Morebits.status.warn('Notificeer originele aanmaker: deze gebruiker heeft zijn/haar eigen overlegpagina gemaakt; notificatie overgeslagen');
+				Morebits.status.warn('Verwittig originele aanmaker: deze gebruiker heeft zijn/haar eigen overlegpagina gemaakt; notificatie overgeslagen');
 				initialContrib = null;
 
 				// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page...
 			} else if ((initialContrib === 'Nlwikibot' || initialContrib === 'SoxBot') && params.normalizeds[0] === 'f2') {
-				Morebits.status.warn('Notificeer originele aanmaker: pagina is door een bot aangemaakt, notificatie overgeslagen');
+				Morebits.status.warn('Verwittig originele aanmaker: pagina is door een bot aangemaakt, notificatie overgeslagen');
 				initialContrib = null;
 
 				// Check for already existing tags
 			} else if (Twinkle.speedy.hasCSD && params.warnUser && !confirm('De pagina heeft al een nominatie, dus de aanmaker is waarschijnlijk al gewaarschuwd.  Wil je de aanmaker ook voor deze nominatie waarschuwen?')) {
-				Morebits.status.info('Notificeer originele aanmaker', 'geannuleerd door gebruiker.');
+				Morebits.status.info('Verwittig originele aanmaker', 'geannuleerd door gebruiker.');
 				initialContrib = null;
 			}
 
 			if (initialContrib) {
-				var usertalkpage = new Morebits.wiki.page('Overleg gebruiker:' + initialContrib, 'Notificeer originele aanmaker (' + initialContrib + ')'),
+				var usertalkpage = new Morebits.wiki.page('Overleg gebruiker:' + initialContrib, 'Verwittig originele aanmaker (' + initialContrib + ')'),
 					notifytext, i, editsummary;
 
 				notifytext = '\n== '+ (params.warnUser ? 'Directe verwijdering' : 'Nominatie') + ' van ' + Morebits.pageNameNorm + ' ==';
