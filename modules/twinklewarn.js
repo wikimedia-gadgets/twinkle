@@ -1006,7 +1006,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	Morebits.status.init(e.target);
 
 	Morebits.wiki.actionCompleted.redirect = userTalkPage;
-	Morebits.wiki.actionCompleted.notice = 'Dossier bijgewerkt, pagina wordt over enkele seconde ververst';
+	Morebits.wiki.actionCompleted.notice = 'Dossier bijgewerkt, pagina wordt over enkele seconden ververst';
 
 	var wikipedia_page = new Morebits.wiki.page(userTalkPage, 'Overlegpagina bijwerken');
 	wikipedia_page.setCallbackParameters(params);
