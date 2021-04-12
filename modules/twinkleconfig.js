@@ -1506,7 +1506,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	var text =
 		'// twinkleoptions.js: persoonlijk Twinkle voorkeurenbestand\n' +
 		'//\n' +
-		'// OPMERKING: De makelijkste manier om je Twinkle voorkeuren aan te passen\n' +
+		'// OPMERKING: De makkelijkste manier om je Twinkle voorkeuren aan te passen\n' +
 		'// is via het Twinkle configuratiescherm, op [[' + Morebits.pageNameNorm + ']].\n' +
 		'//\n' +
 		'// Dit bestand is AUTOMATISCH AANGEMAAKT.  Iedere verandering die je maakt\n' +
