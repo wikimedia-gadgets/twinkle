@@ -245,7 +245,8 @@
 					label: 'Sjabloon:',
 					name: 'sjabloon'
 				});
-				sjabloon_select.append({ type: 'option', label: '{{wiu}} Werk in uitvoering', value: 'wiu', selected: true });
+				sjabloon_select.append({ type: 'option', label: '{{verwijderen}} Algemene noninatie', value: 'verwijderen', selected: true });
+				sjabloon_select.append({ type: 'option', label: '{{wiu}} Werk in uitvoering', value: 'wiu'});
 				sjabloon_select.append({ type: 'option', label: '{{ne}} Niet encyclopedisch', value: 'ne' });
 				sjabloon_select.append({ type: 'option', label: '{{wb}} Woordenboekdefinitie', value: 'wb' });
 				sjabloon_select.append({ type: 'option', label: '{{reclame}} Promotionele uiting', value: 'reclame' });
@@ -362,7 +363,15 @@
 			if (venue === 'afd') {
 				var text = '\n== [[' + Morebits.pageNameNorm + ']] ==\n';
 				text += '{{tbp-links|' + Morebits.pageNameNorm + '}}\n';
-				text += '\'\'\'' + params.sjabloon.toUpperCase() + '\'\'\' &ndash; ' + params.reason + ' &ndash; ~~~~';
+				if(params.sjabloon === 'verwijderen'){
+					text += params.reason + ' &ndash; ~~~~';
+				} else if(params.sjabloon === 'auteur'){
+					text += '\'\'\'AUT\'\'\' &ndash; ' +params.reason + ' &ndash; ~~~~';
+				} else if(params.sjabloon === 'reclame'){
+					text += '\'\'\'POV\'\'\' &ndash; ' +params.reason + ' &ndash; ~~~~';
+				} else {
+					text += '\'\'\'' + params.sjabloon.toUpperCase() + '\'\'\' &ndash; ' + params.reason + ' &ndash; ~~~~';
+				}
 				return text;
 			} else if (venue === 'cfd') {
 				var text = '{{categorieweg';
@@ -435,7 +444,7 @@
 				}
 				// Default is notifying the initial contributor, but MfD also
 				// notifies userspace page owner
-				actionName = actionName || 'Notificeer originele aanmaker (' + usernameOrTarget + ')';
+				actionName = actionName || 'Verwittig originele aanmaker (' + usernameOrTarget + ')';
 			}
 
 
@@ -559,7 +568,7 @@
 				}
 
 				// Check for existing AfD tag, for the benefit of new page patrollers
-				var textNoAfd = text.replace(/(?:\{\{\s*(wiu|ne|wb|auteur|reclame|weg)(?:\s*\||\s*\}\}))/ig, '');
+				var textNoAfd = text.replace(/(?:\{\{\s*(wiu|ne|wb|auteur|reclame|weg|verwijderen)(?:\s*\||\s*\}\}))/ig, '');
 				if (text !== textNoAfd) {
 					if (confirm('Een TBP sjabloon is al gevonden op dit artikel. Misschien was iemand sneller.  \nKlik op OK om de nominatie te vervangen met jouw nominatie (niet verstandig), of Cancel om je nominatie af te breken.')) {
 						text = textNoAfd;
