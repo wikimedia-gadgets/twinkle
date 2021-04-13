@@ -561,8 +561,8 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		field_template_options.append({
 			type: 'input',
 			name: 'block_reason',
-			label: '"Je bent geblokeerd wegens ..." ',
-			tooltip: 'Een optionele reden, welke mogelijk in het sjabloon geplaast wordt. Ter vervanging van de standaard \"Je bent geblokkeerd\".',
+			label: '"Je bent geblokkeerd wegens ..." ',
+			tooltip: 'Een optionele reden, welke mogelijk in het sjabloon geplaatst wordt. Ter vervanging van de standaard \"Je bent geblokkeerd\".',
 			value: Twinkle.block.field_template_options.block_reason
 		});
 
@@ -842,7 +842,7 @@ Twinkle.block.blockPresetsInfo = {
 		disabletalk: true,
 		noemail: true,
 		reason: '[[Wikipedia:Sokpopmisbruik|Sokpopmisbruik]]',
-		summary: 'Je bent voor onbepaalde tijd geblokkeerd wegens [[Wikipedia:Sokpopmisbruik|Sokpopmisbruik]]',
+		summary: 'Je bent voor onbepaalde tijd geblokkeerd wegens [[Wikipedia:Sokpopmisbruik|sokpopmisbruik]]',
 		suppressArticleInSummary: true
 	},
 	'verstoring': {
@@ -852,7 +852,7 @@ Twinkle.block.blockPresetsInfo = {
 		reasonParam: false,
 		reason: 'Ernstig projectverstorend gedrag',
 		templateName: 'permblok',
-		summary: 'Je bent geblokkeerd wegens ernstig projectvertorend gedrag.'
+		summary: 'Je bent geblokkeerd wegens ernstig projectverstorend gedrag.'
 	},
 	'vandalisme': {
 		autoblock: true,
@@ -884,7 +884,7 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: false,
 		reasonParam: false,
 		reason: '[[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|Ongewenste gebruikersnaam]]',
-		summary: 'Je account heeft een [[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|ongewenste gebruikersnaam]], die buitenwerking is genomen.'
+		summary: 'Je account heeft een [[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|ongewenste gebruikersnaam]], die buiten werking is genomen.'
 	},
 	'ogbedrijf': {
 		expiry: 'infinity',
@@ -894,7 +894,7 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: false,
 		reasonParam: false,
 		reason: '[[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|Ongewenste gebruikersnaam]]',
-		summary: 'Je account heeft een [[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|ongewenste gebruikersnaam]], die buitenwerking is genomen.'
+		summary: 'Je account heeft een [[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|ongewenste gebruikersnaam]], die buiten werking is genomen.'
 	},
 	'arbcom-blok': {
 		autoblock: true,
@@ -903,8 +903,8 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: false,
 		reasonParam: false,
 		templateName: 'blok',
-		reason: 'Uitspraak [[WP:AC/Z|Arbitragecomissie]]',
-		summary: 'Je bent geblokkeerd na aanleiding van een uitspraak van de [[WP:AC/Z|Arbitragecomissie]].'
+		reason: 'Uitspraak [[WP:AC/Z|Arbitragecommissie]]',
+		summary: 'Je bent geblokkeerd naar aanleiding van een uitspraak van de [[WP:AC/Z|Arbitragecommissie]].'
 	},
 	'douche': {
 		autoblock: true,
@@ -925,8 +925,8 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: false,
 		reasonParam: false,
 		templateName: 'deelblok',
-		reason: 'Uitspraak [[WP:AC/Z|Arbitragecomissie]]',
-		summary: 'Je bent gedeeltelijk geblokkeerd na aanleiding van een uitspraak van de [[WP:AC/Z|Arbitragecomissie]].'
+		reason: 'Uitspraak [[WP:AC/Z|Arbitragecommissie]]',
+		summary: 'Je bent gedeeltelijk geblokkeerd naar aanleiding van een uitspraak van de [[WP:AC/Z|Arbitragecommissie]].'
 	},
 	'bwo-deelblok': {
 		autoblock: true,
@@ -936,7 +936,7 @@ Twinkle.block.blockPresetsInfo = {
 		reasonParam: true,
 		templateName: 'deelblok',
 		reason: 'Voeren [[WP:BWO|bewerkingsoorlog]]',
-		summary: 'Je bent gedeeltelijk geblokkeerd na aanleiding van het voeren van een [[WP:BWO|bewerkingsoorlog]]'
+		summary: 'Je bent gedeeltelijk geblokkeerd naar aanleiding van het voeren van een [[WP:BWO|bewerkingsoorlog]]'
 	},
 	'deelblok': {
 		autoblock: true,
