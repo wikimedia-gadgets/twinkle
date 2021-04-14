@@ -245,7 +245,7 @@
 					label: 'Sjabloon:',
 					name: 'sjabloon'
 				});
-				sjabloon_select.append({ type: 'option', label: '{{verwijderen}} Algemene noninatie', value: 'verwijderen', selected: true });
+				sjabloon_select.append({ type: 'option', label: '{{verwijderen}} Algemene nominatie', value: 'verwijderen', selected: true });
 				sjabloon_select.append({ type: 'option', label: '{{wiu}} Werk in uitvoering', value: 'wiu'});
 				sjabloon_select.append({ type: 'option', label: '{{ne}} Niet encyclopedisch', value: 'ne' });
 				sjabloon_select.append({ type: 'option', label: '{{wb}} Woordenboekdefinitie', value: 'wb' });
