@@ -632,7 +632,7 @@
 				var params = pageobj.getCallbackParameters();
 
 				pageobj.setAppendText(Twinkle.xfd.callbacks.getDiscussionWikitext('afd', params));
-				pageobj.setEditSummary('Verwijdernominatie voor [[:' + Morebits.pageNameNorm + ']].');
+				pageobj.setEditSummary('Beoordelingsnominatie voor [[:' + Morebits.pageNameNorm + ']].');
 				pageobj.setChangeTags(Twinkle.changeTags);
 				pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 				pageobj.append(function() {
