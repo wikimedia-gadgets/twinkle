@@ -510,7 +510,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				{
 					label: 'Verwijderde bijdragen',
 					checked: false,
-					value: 'deleted contribs'
+					value: 'verwijderde bijdragen'
 				}
 			]
 		});
