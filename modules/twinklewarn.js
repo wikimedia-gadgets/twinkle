@@ -926,9 +926,9 @@ Twinkle.warn.callbacks = {
 				if (params.sub_group === 'uw-agf-sock' ||
 						params.sub_group === 'uw-socksuspect' ||
 						params.sub_group === 'uw-aiv') {  // these templates require a username
-					summary += ' of [[:Gebruiker:' + params.article + ']]';
+					summary += ' van [[:Gebruiker:' + params.article + ']]';
 				} else {
-					summary += ' on [[:' + params.article + ']]';
+					summary += ' op [[:' + params.article + ']]';
 				}
 			}
 		}
