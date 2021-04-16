@@ -335,11 +335,11 @@ Twinkle.warn.messages = {
 			},
 			'ws-copyvio': {
 				level1: {
-					label: 'Auteursrechtenschening',
+					label: 'Auteursrechtenschending',
 					summary: '+ws1 copyvio'
 				},
 				level2: {
-					label: 'Auteursrechtenschening',
+					label: 'Auteursrechtenschending',
 					summary: '+ws2 copyvio'
 				}
 			},
