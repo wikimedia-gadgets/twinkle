@@ -659,12 +659,16 @@
 				var usertalkpage = new Morebits.wiki.page('Overleg gebruiker:' + initialContrib, 'Verwittig originele aanmaker (' + initialContrib + ')'),
 					notifytext, i, editsummary;
 
-				notifytext = '\n== '+ (params.warnUser ? 'Directe verwijdering' : 'Nominatie') + ' van ' + Morebits.pageNameNorm + ' ==';
-				notifytext += '\n{{subst:'+ (params.warnUser ? 'pdv' : 'vvn4') + '|1=';
-				if (params.values[0] === 'copypaste') {
-					notifytext += params.templateParams[0].sourcepage;
+				if (params.normalizeds.indexOf('g5') === -1) { // bij cyberpesten artikel niet noemen in titel
+					notifytext = '\n== '+ (params.warnUser ? 'Directe verwijdering' : 'Nominatie') + ' van ' + Morebits.pageNameNorm + ' ==';
 				} else {
-					notifytext += Morebits.pageNameNorm;
+					notifytext = '\n== '+ (params.warnUser ? 'Directe verwijdering' : 'Nominatie') + ' van een cyberpestpagina ==';
+				}
+				notifytext += '\n{{subst:'+ (params.warnUser ? 'pdv' : 'vvn4');
+				if (params.normalizeds.indexOf('g5') === -1) { // bij cyberpesten artikel niet noemen in tekst
+					notifytext += '|1=' + Morebits.pageNameNorm;
+				} else {
+					notifytext += '';
 				}
 				notifytext += '|2=' + params.values[0];
 
