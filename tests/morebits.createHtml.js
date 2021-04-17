@@ -20,13 +20,6 @@ QUnit.skip('createHtml', (assert) => {
 	assert.strictEqual(fragment.childNodes.length, 1);
 	assert.strictEqual(fragment.childNodes[0].nodeName, '#text');
 
-	fragment = Morebits.createHtml('Hi <a onclick="alert();" href="">text</a>');
-	assert.strictEqual(fragment.childNodes.length, 2);
-	assert.strictEqual(fragment.childNodes[1].nodeName, 'A');
-	// the onclick should have been scrubbed
-	assert.strictEqual(fragment.childNodes[1].attributes.length, 1);
-	assert.strictEqual(fragment.childNodes[1].attributes[0].name, 'href');
-
 });
 
 QUnit.test('renderWikilinks', assert => {
