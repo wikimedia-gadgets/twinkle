@@ -238,7 +238,10 @@ Morebits.createHtml = function(input) {
  * @returns {*}
  */
 Morebits.createHtml.renderWikilinks = function (text) {
-	return text.replace(
+	var ub = new Morebits.unbinder(text);
+	// Don't convert wikilinks within code tags as they're used for displaying wiki-code
+	ub.unbind('<code>', '</code>');
+	ub.content = ub.content.replace(
 		/\[\[:?(?:([^|\]]+?)\|)?([^\]|]+?)\]\]/g,
 		function(_, target, text) {
 			if (!target) {
@@ -247,6 +250,7 @@ Morebits.createHtml.renderWikilinks = function (text) {
 			return '<a target="_blank" href="' + mw.util.getUrl(target) +
 				'" title="' + target.replace(/"/g, '&#34;') + '">' + text + '</a>';
 		});
+	return ub.rebind();
 };
 
 /**
