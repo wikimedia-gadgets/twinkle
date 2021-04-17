@@ -79,7 +79,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 			{
 				label: 'Disputed fair use rationale (CSD F7)',
 				value: 'disputed fair use rationale',
-				tooltip: 'Image or media has a fair use rationale that is disputed'
+				tooltip: 'Image or media has a fair use rationale that is disputed or invalid, such as a {{Non-free logo}} tag on a photograph of a mascot'
 			},
 			{
 				label: 'Replaceable fair use (CSD F7)',

@@ -1746,7 +1746,7 @@ Twinkle.tag.callbacks = {
 			var oldPageTags = '';
 			if (pageTags) {
 				pageTags.forEach(function(pageTag) {
-					var pageRe = new RegExp(pageTag, 'img');
+					var pageRe = new RegExp(Morebits.string.escapeRegExp(pageTag), 'img');
 					pageText = pageText.replace(pageRe, '');
 					pageTag = pageTag.trim();
 					oldPageTags += '\n' + pageTag;
