@@ -4721,7 +4721,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 		callbackParameters: null,
 		statusElement: currentAction instanceof Morebits.status ? currentAction : new Morebits.status(currentAction),
 
-		// block paramters
+		// block parameters
 		hasBlockLog: null,
 		lastBlockLogEntry: null,
 		blockInfo: null, // If blocked, an object full of block parameters
@@ -4913,7 +4913,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 		response = response.query;
 
 		// Even if this is unnecessary (notification), an issue here
-		// is a likley indicates *something* went wrong.  The same
+		// is a likely indicates *something* went wrong.  The same
 		// as Morebits.wiki.page, though it's more necessary there.
 		if (!response.tokens.csrftoken || !response.tokens.userrightstoken) {
 			ctx.statusElement.error('Failed to retrieve tokens.');
@@ -4927,7 +4927,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 		// Not sure scenario could lead to this, but might as well be safe
 		if (!user) {
 			ctx.statusElement.error('Failed to retrieve user ' + ctx.userName);
-			ctx.onloadFailure(this);
+			ctx.onLoadFailure(this);
 			// force error to stay on the screen
 			++Morebits.wiki.numberOfActionsLeft;
 			return;
