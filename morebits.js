@@ -305,7 +305,7 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
  * Create a new element for the the form.
  *
  * Index to Morebits.quickForm.element types:
- * - Global attributes: id, className, style, tooltip, extra, adminonly
+ * - Global attributes: id, className, style, tooltip, extra, $data, adminonly
  * - `select`: A combo box (aka drop-down).
  *     - Attributes: name, label, multiple, size, list, event, disabled
  *  - `option`: An element for a combo box.
@@ -864,6 +864,9 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 
 	if (data.extra) {
 		childContainer.extra = data.extra;
+	}
+	if (data.$data) {
+		$(childContainer).data(data.$data);
 	}
 	if (data.style) {
 		childContainer.setAttribute('style', data.style);
