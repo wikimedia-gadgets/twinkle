@@ -118,10 +118,19 @@ Twinkle.fluff.linkBuilder = {
 			Twinkle.fluff.disableLinks(revNode);
 		});
 
-		vandNode.appendChild(vandLink);
+		normNode.setAttribute('class', 'tw-rollback-link-normal');
+		vandNode.setAttribute('class', 'tw-rollback-link-vandalism');
+
 		normNode.appendChild(normLink);
+		vandNode.appendChild(vandLink);
 
 		var separator = inline ? ' ' : ' || ';
+		var sepNode1 = document.createElement('span');
+		var sepText = document.createTextNode(separator);
+		sepNode1.setAttribute('class', 'tw-rollback-link-separator');
+		sepNode1.appendChild(sepText);
+
+		var sepNode2 = sepNode1.cloneNode(true);
 
 		if (!inline) {
 			var agfNode = document.createElement('strong');
@@ -130,16 +139,17 @@ Twinkle.fluff.linkBuilder = {
 				Twinkle.fluff.revert('agf', vandal, rev, page);
 				// Twinkle.fluff.disableLinks(revNode); // rollbackInPlace not relevant for any inline situations
 			});
+			agfNode.setAttribute('class', 'tw-rollback-link-agf');
 			agfNode.appendChild(agfLink);
 			revNode.appendChild(agfNode);
 		}
-		revNode.appendChild(document.createTextNode(separator));
+
+		revNode.appendChild(sepNode1);
 		revNode.appendChild(normNode);
-		revNode.appendChild(document.createTextNode(separator));
+		revNode.appendChild(sepNode2);
 		revNode.appendChild(vandNode);
 
 		return revNode;
-
 	},
 
 	// Build [restore this revision] links
