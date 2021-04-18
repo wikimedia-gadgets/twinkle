@@ -122,6 +122,13 @@ Twinkle.fluff.linkBuilder = {
 		normNode.appendChild(normLink);
 
 		var separator = inline ? ' ' : ' || ';
+		
+		var sepNode1 = document.createElement('span');
+		sepNode1.setAttribute('class', 'tw-rollback-link-separator');
+		var sepText = document.createTextNode(separator);
+		sepNode1.appendChild(sepText);
+		
+		var sepNode2 = sepNode1.cloneNode(true);
 
 		if (!inline) {
 			var agfNode = document.createElement('strong');
@@ -133,13 +140,12 @@ Twinkle.fluff.linkBuilder = {
 			agfNode.appendChild(agfLink);
 			revNode.appendChild(agfNode);
 		}
-		revNode.appendChild(document.createTextNode(separator));
+		revNode.appendChild(sepNode1);
 		revNode.appendChild(normNode);
-		revNode.appendChild(document.createTextNode(separator));
+		revNode.appendChild(sepNode2);
 		revNode.appendChild(vandNode);
 
 		return revNode;
-
 	},
 
 	// Build [restore this revision] links
