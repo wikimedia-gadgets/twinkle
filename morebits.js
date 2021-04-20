@@ -429,6 +429,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label = node.appendChild(document.createElement('label'));
 				label.setAttribute('for', id);
 				label.appendChild(Morebits.createHtml(data.label));
+				label.style.marginRight = '3px';
 			}
 			var select = node.appendChild(document.createElement('select'));
 			if (data.event) {
@@ -629,6 +630,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label = node.appendChild(document.createElement('label'));
 				label.appendChild(Morebits.createHtml(data.label));
 				label.setAttribute('for', data.id || id);
+				label.style.marginRight = '3px';
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
@@ -720,6 +722,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label = node.appendChild(document.createElement('label'));
 				label.appendChild(document.createTextNode(data.label));
 				label.setAttribute('for', id);
+				label.style.marginRight = '3px';
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
