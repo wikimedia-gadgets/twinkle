@@ -488,7 +488,7 @@ Twinkle.speedy.customRationale = [
 		subgroup: {
 			name: 'reason_1',
 			type: 'input',
-			label: 'Rationale: ',
+			label: 'Rationale:',
 			size: 60
 		},
 		hideWhenMultiple: true
@@ -511,7 +511,7 @@ Twinkle.speedy.fileList = [
 		subgroup: {
 			name: 'redundantimage_filename',
 			type: 'input',
-			label: 'File this is redundant to: ',
+			label: 'File this is redundant to:',
 			tooltip: 'The "File:" prefix can be left off.'
 		}
 	},
@@ -556,7 +556,7 @@ Twinkle.speedy.fileList = [
 		subgroup: {
 			name: 'badfairuse_rationale',
 			type: 'input',
-			label: 'Optional explanation: ',
+			label: 'Optional explanation:',
 			size: 60
 		},
 		hideWhenMultiple: true
@@ -568,7 +568,7 @@ Twinkle.speedy.fileList = [
 		subgroup: {
 			name: 'commons_filename',
 			type: 'input',
-			label: 'Filename on Commons: ',
+			label: 'Filename on Commons:',
 			value: Morebits.pageNameNorm,
 			tooltip: 'This can be left blank if the file has the same name on Commons as here. The "File:" prefix is optional.'
 		},
@@ -582,13 +582,13 @@ Twinkle.speedy.fileList = [
 			{
 				name: 'imgcopyvio_url',
 				type: 'input',
-				label: 'URL of the copyvio, including the "http://".  If the copyvio is of a non-internet source and you cannot provide a URL, you must use the deletion rationale box. ',
+				label: 'URL of the copyvio, including the "http://".  If the copyvio is of a non-internet source and you cannot provide a URL, you must use the deletion rationale box.',
 				size: 60
 			},
 			{
 				name: 'imgcopyvio_rationale',
 				type: 'input',
-				label: 'Deletion rationale for non-internet copyvios: ',
+				label: 'Deletion rationale for non-internet copyvios:',
 				size: 60
 			}
 		]
@@ -624,7 +624,7 @@ Twinkle.speedy.articleList = [
 		subgroup: {
 			name: 'foreign_source',
 			type: 'input',
-			label: 'Interwiki link to the article on the foreign-language wiki: ',
+			label: 'Interwiki link to the article on the foreign-language wiki:',
 			tooltip: 'For example, fr:Bonjour'
 		}
 	},
@@ -640,7 +640,7 @@ Twinkle.speedy.articleList = [
 		subgroup: {
 			name: 'transwiki_location',
 			type: 'input',
-			label: 'Link to where the page has been transwikied: ',
+			label: 'Link to where the page has been transwikied:',
 			tooltip: 'For example, https://en.wiktionary.org/wiki/twinkle or [[wikt:twinkle]]'
 		}
 	},
@@ -704,7 +704,7 @@ Twinkle.speedy.articleList = [
 		subgroup: {
 			name: 'a10_article',
 			type: 'input',
-			label: 'Article that is duplicated: '
+			label: 'Article that is duplicated:'
 		}
 	},
 	{
@@ -727,7 +727,7 @@ Twinkle.speedy.categoryList = [
 		subgroup: {
 			name: 'templatecat_rationale',
 			type: 'input',
-			label: 'Optional explanation: ',
+			label: 'Optional explanation:',
 			size: 60
 		}
 	},
@@ -747,7 +747,7 @@ Twinkle.speedy.userList = [
 		subgroup: mw.config.get('wgNamespaceNumber') === 3 && mw.config.get('wgTitle').indexOf('/') === -1 ? {
 			name: 'userreq_rationale',
 			type: 'input',
-			label: 'A mandatory rationale to explain why this user talk page should be deleted: ',
+			label: 'A mandatory rationale to explain why this user talk page should be deleted:',
 			tooltip: 'User talk pages are deleted only in highly exceptional circumstances. See WP:DELTALK.',
 			size: 60
 		} : null,
@@ -794,7 +794,7 @@ Twinkle.speedy.portalList = [
 		subgroup: {
 			name: 'p1_criterion',
 			type: 'input',
-			label: 'Article criterion that would apply: '
+			label: 'Article criterion that would apply:'
 		}
 	},
 	{
@@ -835,7 +835,7 @@ Twinkle.speedy.generalList = [
 		subgroup: {
 			name: 'repost_xfd',
 			type: 'input',
-			label: 'Page where the deletion discussion took place: ',
+			label: 'Page where the deletion discussion took place:',
 			tooltip: 'Must start with "Wikipedia:"',
 			size: 60
 		}
@@ -847,7 +847,7 @@ Twinkle.speedy.generalList = [
 		subgroup: {
 			name: 'banned_user',
 			type: 'input',
-			label: 'Username of banned user (if available): ',
+			label: 'Username of banned user (if available):',
 			tooltip: 'Should not start with "User:"'
 		}
 	},
@@ -859,12 +859,12 @@ Twinkle.speedy.generalList = [
 			{
 				name: 'move_page',
 				type: 'input',
-				label: 'Page to be moved here: '
+				label: 'Page to be moved here:'
 			},
 			{
 				name: 'move_reason',
 				type: 'input',
-				label: 'Reason: ',
+				label: 'Reason:',
 				size: 60
 			}
 		],
@@ -877,7 +877,7 @@ Twinkle.speedy.generalList = [
 		subgroup: {
 			name: 'xfd_fullvotepage',
 			type: 'input',
-			label: 'Page where the deletion discussion was held: ',
+			label: 'Page where the deletion discussion was held:',
 			tooltip: 'Must start with "Wikipedia:"',
 			size: 40
 		},
@@ -890,7 +890,7 @@ Twinkle.speedy.generalList = [
 		subgroup: {
 			name: 'copypaste_sourcepage',
 			type: 'input',
-			label: 'Original page that was copy-pasted here: '
+			label: 'Original page that was copy-pasted here:'
 		},
 		hideWhenMultiple: true
 	},
@@ -901,7 +901,7 @@ Twinkle.speedy.generalList = [
 		subgroup: {
 			name: 'g6_rationale',
 			type: 'input',
-			label: 'Rationale: ',
+			label: 'Rationale:',
 			size: 60
 		}
 	},
@@ -912,7 +912,7 @@ Twinkle.speedy.generalList = [
 		subgroup: {
 			name: 'author_rationale',
 			type: 'input',
-			label: 'Optional explanation: ',
+			label: 'Optional explanation:',
 			tooltip: 'Perhaps linking to where the author requested this deletion.',
 			size: 60
 		},
@@ -925,7 +925,7 @@ Twinkle.speedy.generalList = [
 		subgroup: {
 			name: 'g8_rationale',
 			type: 'input',
-			label: 'Optional explanation: ',
+			label: 'Optional explanation:',
 			size: 60
 		},
 		hideSubgroupWhenSysop: true
@@ -961,21 +961,21 @@ Twinkle.speedy.generalList = [
 			{
 				name: 'copyvio_url',
 				type: 'input',
-				label: 'URL (if available): ',
+				label: 'URL (if available):',
 				tooltip: 'If the material was copied from an online source, put the URL here, including the "http://" or "https://" protocol.',
 				size: 60
 			},
 			{
 				name: 'copyvio_url2',
 				type: 'input',
-				label: 'Additional URL: ',
+				label: 'Additional URL:',
 				tooltip: 'Optional. Should begin with "http://" or "https://"',
 				size: 60
 			},
 			{
 				name: 'copyvio_url3',
 				type: 'input',
-				label: 'Additional URL: ',
+				label: 'Additional URL:',
 				tooltip: 'Optional. Should begin with "http://" or "https://"',
 				size: 60
 			}

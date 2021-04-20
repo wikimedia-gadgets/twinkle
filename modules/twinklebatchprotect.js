@@ -142,7 +142,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason: ',
+		label: 'Reason:',
 		size: 60,
 		tooltip: 'For the protection log and page history.'
 	});

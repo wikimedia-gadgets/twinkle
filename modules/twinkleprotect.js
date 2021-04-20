@@ -552,7 +552,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			field1.append({
 				type: 'select',
 				name: 'expiry',
-				label: 'Duration: ',
+				label: 'Duration:',
 				list: [
 					{ label: '', selected: true, value: '' },
 					{ label: 'Temporary', value: 'temporary' },
@@ -562,7 +562,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			field1.append({
 				type: 'textarea',
 				name: 'reason',
-				label: 'Reason: '
+				label: 'Reason:'
 			});
 			break;
 		default:
