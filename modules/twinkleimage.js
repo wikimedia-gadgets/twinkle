@@ -148,21 +148,21 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 			work_area.append({
 				type: 'input',
 				name: 'source',
-				label: 'Source: '
+				label: 'Source:'
 			});
 			break;
 		case 'disputed fair use rationale':
 			work_area.append({
 				type: 'textarea',
 				name: 'reason',
-				label: 'Concern: '
+				label: 'Concern:'
 			});
 			break;
 		case 'orphaned fair use':
 			work_area.append({
 				type: 'input',
 				name: 'replacement',
-				label: 'Replacement: ',
+				label: 'Replacement:',
 				tooltip: 'Optional file that replaces this one.  The "File:" prefix is optional.'
 			});
 			break;
@@ -170,7 +170,7 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 			work_area.append({
 				type: 'textarea',
 				name: 'reason',
-				label: 'Reason: '
+				label: 'Reason:'
 			});
 			break;
 		default:

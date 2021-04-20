@@ -45,7 +45,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 	var categories = form.append({
 		type: 'select',
 		name: 'category',
-		label: 'Select report type: ',
+		label: 'Select report type:',
 		event: Twinkle.arv.callback.changeCategory
 	});
 	categories.append({
@@ -150,7 +150,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			work_area.append({
 				type: 'input',
 				name: 'page',
-				label: 'Primary linked page: ',
+				label: 'Primary linked page:',
 				tooltip: 'Leave blank to not link to the page in the report',
 				value: mw.util.getParamValue('vanarticle') || '',
 				event: function(e) {
@@ -167,7 +167,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			work_area.append({
 				type: 'input',
 				name: 'badid',
-				label: 'Revision ID for target page when vandalised: ',
+				label: 'Revision ID for target page when vandalised:',
 				tooltip: 'Leave blank for no diff link',
 				value: mw.util.getParamValue('vanarticlerevid') || '',
 				disabled: !mw.util.getParamValue('vanarticle'),
@@ -180,7 +180,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			work_area.append({
 				type: 'input',
 				name: 'goodid',
-				label: 'Last good revision ID before vandalism of target page: ',
+				label: 'Last good revision ID before vandalism of target page:',
 				tooltip: 'Leave blank for diff link to previous revision',
 				value: mw.util.getParamValue('vanarticlegoodrevid') || '',
 				disabled: !mw.util.getParamValue('vanarticle') || mw.util.getParamValue('vanarticlerevid')
@@ -216,7 +216,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			work_area.append({
 				type: 'textarea',
 				name: 'reason',
-				label: 'Comment: '
+				label: 'Comment:'
 			});
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
@@ -321,7 +321,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					type: 'dyninput',
 					name: 'sockpuppet',
 					label: 'Sockpuppets',
-					sublabel: 'Sock: ',
+					sublabel: 'Sock:',
 					tooltip: 'The username of the sockpuppet without the "User:" prefix',
 					min: 2
 				});

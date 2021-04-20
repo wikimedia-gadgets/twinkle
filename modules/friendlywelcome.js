@@ -130,7 +130,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 	form.append({
 		type: 'select',
 		name: 'type',
-		label: 'Type of welcome: ',
+		label: 'Type of welcome:',
 		event: Twinkle.welcome.populateWelcomeList,
 		list: [
 			{ type: 'option', value: 'standard', label: 'Standard welcomes', selected: !mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },

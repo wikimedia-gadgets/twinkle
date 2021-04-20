@@ -47,7 +47,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	form.append({
 		type: 'input',
-		label: 'Filter tag list: ',
+		label: 'Filter tag list:',
 		name: 'quickfilter',
 		size: '30px',
 		event: function twinkletagquickfilter() {
@@ -484,7 +484,7 @@ var translationSubgroups = [
 		name: 'translationLanguage',
 		parameter: '1',
 		type: 'input',
-		label: 'Language of article (if known): ',
+		label: 'Language of article (if known):',
 		tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
 	}
 ].concat(mw.config.get('wgNamespaceNumber') === 0 ? [
@@ -520,7 +520,7 @@ var getMergeSubgroups = function(tag) {
 		{
 			name: 'mergeTarget',
 			type: 'input',
-			label: 'Other article(s): ',
+			label: 'Other article(s):',
 			tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two',
 			required: true
 		},
@@ -557,7 +557,7 @@ Twinkle.tag.article.tagList = {
 					name: 'cleanup',
 					parameter: 'reason',
 					type: 'input',
-					label: 'Specific reason why cleanup is needed: ',
+					label: 'Specific reason why cleanup is needed:',
 					tooltip: 'Required.',
 					size: 35,
 					required: true
@@ -574,7 +574,7 @@ Twinkle.tag.article.tagList = {
 					name: 'copyEdit',
 					parameter: 'for',
 					type: 'input',
-					label: '"This article may require copy editing for..." ',
+					label: '"This article may require copy editing for..."',
 					tooltip: 'e.g. "consistent spelling". Optional.',
 					size: 35
 				}
@@ -588,7 +588,7 @@ Twinkle.tag.article.tagList = {
 					name: 'closeParaphrasing',
 					parameter: 'source',
 					type: 'input',
-					label: 'Source: ',
+					label: 'Source:',
 					tooltip: 'Source that has been closely paraphrased'
 				}
 			},
@@ -600,7 +600,7 @@ Twinkle.tag.article.tagList = {
 					name: 'copypaste',
 					parameter: 'url',
 					type: 'input',
-					label: 'Source URL: ',
+					label: 'Source URL:',
 					tooltip: 'If known.',
 					size: 50
 				}
@@ -688,21 +688,21 @@ Twinkle.tag.article.tagList = {
 						name: 'expertNeeded',
 						parameter: '1',
 						type: 'input',
-						label: 'Name of relevant WikiProject: ',
+						label: 'Name of relevant WikiProject:',
 						tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.'
 					},
 					{
 						name: 'expertNeededReason',
 						parameter: 'reason',
 						type: 'input',
-						label: 'Reason: ',
+						label: 'Reason:',
 						tooltip: 'Short explanation describing the issue. Either Reason or Talk link is required.'
 					},
 					{
 						name: 'expertNeededTalk',
 						parameter: 'talk',
 						type: 'input',
-						label: 'Talk discussion: ',
+						label: 'Talk discussion:',
 						tooltip: 'Name of the section of this article\'s talk page where the issue is being discussed. Do not give a link, just the name of the section. Either Reason or Talk link is required.'
 					}
 				]
@@ -793,14 +793,14 @@ Twinkle.tag.article.tagList = {
 					name: 'expandLanguageLangCode',
 					parameter: 'langcode',
 					type: 'input',
-					label: 'Language code: ',
+					label: 'Language code:',
 					tooltip: 'Language code of the language from which article is to be expanded from',
 					required: true
 				}, {
 					name: 'expandLanguageArticle',
 					parameter: 'otherarticle',
 					type: 'input',
-					label: 'Name of article: ',
+					label: 'Name of article:',
 					tooltip: 'Name of article to be expanded from, without the interwiki prefix'
 				}]
 			}
@@ -832,7 +832,7 @@ Twinkle.tag.article.tagList = {
 					name: 'histmergeOriginalPage',
 					parameter: 'originalpage',
 					type: 'input',
-					label: 'Other article: ',
+					label: 'Other article:',
 					tooltip: 'Name of the page that should be merged into this one (required).',
 					required: true
 				},
@@ -840,14 +840,14 @@ Twinkle.tag.article.tagList = {
 					name: 'histmergeReason',
 					parameter: 'reason',
 					type: 'input',
-					label: 'Reason: ',
+					label: 'Reason:',
 					tooltip: 'Short explanation describing the reason a history merge is needed. Should probably begin with "because" and end with a period.'
 				},
 				{
 					name: 'histmergeSysopDetails',
 					parameter: 'details',
 					type: 'input',
-					label: 'Extra details: ',
+					label: 'Extra details:',
 					tooltip: 'For complex cases, provide extra instructions for the reviewing administrator.'
 				}
 			]
@@ -908,13 +908,13 @@ Twinkle.tag.redirectList = {
 					{
 						name: 'altLangFrom',
 						type: 'input',
-						label: 'From language (two-letter code): ',
+						label: 'From language (two-letter code):',
 						tooltip: 'Enter the two-letter code of the language the redirect name is in; such as en for English, de for German'
 					},
 					{
 						name: 'altLangTo',
 						type: 'input',
-						label: 'To language (two-letter code): ',
+						label: 'To language (two-letter code):',
 						tooltip: 'Enter the two-letter code of the language the target name is in; such as en for English, de for German'
 					},
 					{
@@ -1073,14 +1073,14 @@ Twinkle.tag.fileList = {
 				{
 					type: 'input',
 					name: 'DoNotMoveToCommons_reason',
-					label: 'Reason: ',
+					label: 'Reason:',
 					tooltip: 'Enter the reason why this image should not be moved to Commons (required). If the file is PD in the US but not in country of origin, enter "US only"',
 					required: true
 				},
 				{
 					type: 'number',
 					name: 'DoNotMoveToCommons_expiry',
-					label: 'Expiration year: ',
+					label: 'Expiration year:',
 					min: new Morebits.date().getFullYear(),
 					tooltip: 'If this file can be moved to Commons beginning in a certain year, you can enter it here (optional).'
 				}
@@ -1092,7 +1092,7 @@ Twinkle.tag.fileList = {
 			subgroup: {
 				type: 'input',
 				name: 'keeplocalName',
-				label: 'Commons image name if different: ',
+				label: 'Commons image name if different:',
 				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
 			}
 		},
@@ -1102,7 +1102,7 @@ Twinkle.tag.fileList = {
 			subgroup: {
 				type: 'input',
 				name: 'nowcommonsName',
-				label: 'Commons image name if different: ',
+				label: 'Commons image name if different:',
 				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
 			}
 		}
@@ -1120,7 +1120,7 @@ Twinkle.tag.fileList = {
 			subgroup: {
 				type: 'input',
 				name: 'cleanupimageReason',
-				label: 'Reason: ',
+				label: 'Reason:',
 				tooltip: 'Enter the reason for cleanup (required)',
 				required: true
 			}
@@ -1138,13 +1138,13 @@ Twinkle.tag.fileList = {
 				{
 					type: 'input',
 					name: 'renamemediaNewname',
-					label: 'New name: ',
+					label: 'New name:',
 					tooltip: 'Enter the new name for the image (optional)'
 				},
 				{
 					type: 'input',
 					name: 'renamemediaReason',
-					label: 'Reason: ',
+					label: 'Reason:',
 					tooltip: 'Enter the reason for the rename (optional)'
 				}
 			]
@@ -1185,7 +1185,7 @@ Twinkle.tag.fileList = {
 			subgroup: {
 				type: 'input',
 				name: 'ImagePoorQualityReason',
-				label: 'Reason: ',
+				label: 'Reason:',
 				tooltip: 'Enter the reason why this image is so bad (required)',
 				required: true
 			}
@@ -1196,7 +1196,7 @@ Twinkle.tag.fileList = {
 			subgroup: {
 				type: 'input',
 				name: 'lowQualityChemReason',
-				label: 'Reason: ',
+				label: 'Reason:',
 				tooltip: 'Enter the reason why the diagram is disputed (required)',
 				required: true
 			}
@@ -1211,7 +1211,7 @@ Twinkle.tag.fileList = {
 Twinkle.tag.fileList['Replacement tags'].forEach(function(el) {
 	el.subgroup = {
 		type: 'input',
-		label: 'Replacement file: ',
+		label: 'Replacement file:',
 		tooltip: 'Enter the name of the file which replaces this one (required)',
 		name: el.value.replace(/ /g, '_') + 'File',
 		required: true
