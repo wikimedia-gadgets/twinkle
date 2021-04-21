@@ -334,6 +334,10 @@ Twinkle.welcome.templates = {
 			'vgp': {
 				description: 'verwelkoming en vriendelijke uitleg over onjuist gebruik van de gebruikerspagina',
 				syntax: '{{vgp}} ~~~~'
+			},
+			'gpi': {
+				description: 'verwelkomen en uitleggen dat het toevoegen van persoonlijke informatie ongewenst is',
+				syntax: '{{gpi}}'
 			}
 		}
  	}
