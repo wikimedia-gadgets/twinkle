@@ -5,7 +5,7 @@
  * |          Overleg altijd eerst voordat je wijzigingen doorvoert.         |
  * +-------------------------------------------------------------------------+
  *
- * Geïmporteerd van GitHub: [https://github.com/bas-dehaan/Twinkle-NL].
+ * Geïmporteerd van GitHub: [https://github.com/NLWikiTools/Twinkle].
  * Alle veranderingen dienen eerst naar deze repository gepushed te worden,
  * anders worden ze ongedaan gemaakt bij de volgende update.
  *
@@ -85,9 +85,9 @@ Twinkle.defaultConfig = {
 	watchSpeedyExpiry: '1 month',
 	markSpeedyPagesAsPatrolled: true,
 	watchSpeedyUser: '1 month',
-	welcomeUserOnSpeedyDeletionNotification: [ 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7' ],
-	notifyUserOnSpeedyDeletionNomination: [ 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7' ],
-	warnUserOnSpeedyDelete: [ 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7' ],
+	welcomeUserOnSpeedyDeletionNotification: [ 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g9', 'u2' ],
+	notifyUserOnSpeedyDeletionNomination: [ 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g9', 'u2' ],
+	warnUserOnSpeedyDelete: [ 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g9', 'u2' ],
 	promptForSpeedyDeletionSummary: [],
 	deleteTalkPageOnDelete: true,
 	deleteRedirectsOnDelete: true,
