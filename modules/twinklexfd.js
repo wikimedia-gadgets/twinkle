@@ -30,7 +30,7 @@
 			return;
 		}
 
-		var tooltip = 'Maak een verwijdernominatie aan';
+		var tooltip = 'Maak een beoordelingsnominatie aan';
 		Twinkle.addPortletLink(Twinkle.xfd.callback, 'TBx', 'tw-xfd', tooltip);
 	};
 
@@ -620,7 +620,7 @@
 					text = wikipage.insertAfterTemplates(params.tagText, Twinkle.hatnoteRegex).getText();
 
 					pageobj.setPageText(text);
-					pageobj.setEditSummary('Genomineerd voor verwijdering, zie [[' + daypage + ']].');
+					pageobj.setEditSummary('Genomineerd voor beoordeling, zie [[' + daypage + ']].');
 					pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
 					pageobj.setCreateOption('nocreate');
 					pageobj.save();
