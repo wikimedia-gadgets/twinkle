@@ -451,6 +451,10 @@
 				size: 60
 			} : null,
 			hideSubgroupWhenMultiple: true
+		},
+		{
+			label: 'Onjuist gebruik eigen naamruimte.',
+			value: 'onjuistgebruik'
 		}
 	];
 
@@ -480,9 +484,26 @@
 			value: 'cyberpesten',
 		},
 		{
+			label: 'Privacyschending',
+			value: 'privacy',
+		},
+		{
 			label: 'Overduidelijke zelfpromotie',
 			value: 'zelfpromotie',
 			tooltip: 'Op grond van de geboortedatum is het onmogelijk dat de persoon opmerkelijke dingen heeft gedaan en/of na een zoektocht op internet worden geen relevante verwijzingen gevonden',
+		},
+		{
+			label: 'Pagina over zelfde onderwerp bestaat al',
+			tooltip: 'Wees er 100% zeker van dat beide pagina\'s exact het zelfde onderwerp beschrijven',
+			value: 'duplicaat',
+			subgroup: [
+				{
+					name: 'duplicaatpag',
+					type: 'input',
+					label: 'Duplicaat van: ',
+					size: 60
+				}
+			],
 		},
 		{
 			label: 'Overduidelijke auteursrechtenschending',
@@ -565,10 +586,13 @@
 		nonsense: 'g2',
 		vertaling: 'g3',
 		zelfpromotie: 'g4',
-		cyberpesten: 'g5',
+		cyberpesten: 'g5', //G5 = Leeghalen bij nominatie
 		reclame: 'g6',
 		copyvio: 'g7',
+		duplicaat: 'g8',
+		privacy: 'g9',
 		eigennaamruimte: 'u1',
+		onjuistgebruik: 'u2',
 		tbx: 's1',
 		verplaatsing: 's2',
 	};
@@ -579,20 +603,26 @@
 		vertaling: 'Niet-Nederlandstalig of resultaat van een computervertaling',
 		zelfpromotie: 'Overduidelijke zelfpromotie',
 		cyberpesten: 'Cyberpesten',
+		privacy: 'Privacyschending',
 		reclame: 'Overduidelijke reclame',
 		copyvio: 'Schending van [[Wikipedia:Auteursrechten|auteursrechten]] of geplaatst zonder [[Help:Toestemming|toestemming]]',
+		duplicaat: 'Onderwerp is reeds beschreven op: ',
 		eigennaamruimte: 'Verzoek in eigen naamruimte',
+		onjuistgebruik: 'Onjuist gebruik van gebruikersnaamruimte',
 	};
 
 	Twinkle.speedy.deleteReason = {
-		leeg: 'Lege pagina',
-		nonsense: 'Geen zinvolle inhoud',
-		vertaling: 'Niet-Nederlandstalig of resultaat van een computervertaling',
-		zelfpromotie: 'Overduidelijke zelfpromotie',
-		cyberpesten: 'Cyberpesten',
-		reclame: 'Expliciete reclame, werving of propaganda',
-		copyvio: 'Schending van [[Wikipedia:Auteursrechten|auteursrechten]] of geplaatst zonder [[Help:Toestemming|toestemming]]',
-		eigennaamruimte: 'Verzoek in eigen naamruimte',
+		leeg: 'lege pagina',
+		nonsense: 'geen zinvolle inhoud',
+		vertaling: 'niet-Nederlandstalig of resultaat van een computervertaling',
+		zelfpromotie: 'overduidelijke zelfpromotie',
+		cyberpesten: 'cyberpesten',
+		privacy: 'privacyschending',
+		reclame: 'expliciete reclame, werving of propaganda',
+		copyvio: 'schending van [[Wikipedia:Auteursrechten|auteursrechten]] of geplaatst zonder [[Help:Toestemming|toestemming]]',
+		duplicaat: 'duplicaat van: ',
+		eigennaamruimte: 'verzoek in eigen naamruimte',
+		onjuistgebruik: 'onjuist gebruik van gebruikersnaamruimte',
 		tbx: 'afhandelen TBx nominatie',
 		verplaatsing: 'verplaatsing/naamwijziging',
 	};
@@ -659,13 +689,15 @@
 				var usertalkpage = new Morebits.wiki.page('Overleg gebruiker:' + initialContrib, 'Verwittig originele aanmaker (' + initialContrib + ')'),
 					notifytext, i, editsummary;
 
-				if (params.normalizeds.indexOf('g5') === -1) { // bij cyberpesten artikel niet noemen in titel
+				if (params.normalizeds.indexOf('g5') === -1 && params.normalizeds.indexOf('g9') === -1) {
 					notifytext = '\n== '+ (params.warnUser ? 'Directe verwijdering' : 'Nominatie') + ' van ' + Morebits.pageNameNorm + ' ==';
-				} else {
+				} else if (params.normalizeds.indexOf('g5') === -1 && params.normalizeds.indexOf('g9') !== -1) { // bij privacyschending artikel niet noemen in titel
+					notifytext = '\n== '+ (params.warnUser ? 'Directe verwijdering' : 'Nominatie') + ' van een privacyschendende pagina ==';
+				} else { // bij cyberpesten artikel niet noemen in titel
 					notifytext = '\n== '+ (params.warnUser ? 'Directe verwijdering' : 'Nominatie') + ' van een cyberpestpagina ==';
 				}
 				notifytext += '\n{{subst:'+ (params.warnUser ? 'pdv' : 'vvn4');
-				if (params.normalizeds.indexOf('g5') === -1) { // bij cyberpesten artikel niet noemen in tekst
+				if (params.normalizeds.indexOf('g5') === -1 || params.normalizeds.indexOf('g9') === -1) { // bij cyberpesten of privacyschending, artikel niet noemen in tekst
 					notifytext += '|1=' + Morebits.pageNameNorm;
 				} else {
 					notifytext += '';
@@ -681,9 +713,11 @@
 
 				if (params.normalizeds.indexOf('s1') === -1) {
 					editsummary = 'Mededeling: ' + (params.warnUser ? 'Directe verwijdering' : ' Nuweg nominatie');
-					if (params.normalizeds.indexOf('g5') === -1) {  // no article name in summary for cyberbullying
+					if (params.normalizeds.indexOf('g5') === -1 && params.normalizeds.indexOf('g9') === -1) {
 						editsummary += ' van [[' + Morebits.pageNameNorm + ']].';
-					} else {
+					} else if (params.normalizeds.indexOf('g5') === -1 && params.normalizeds.indexOf('g9') !== -1) { // bij privacyschending artikel niet noemen in samenvatting
+						editsummary += ' van een privacyschendende pagina.';
+					} else { // bij cyberpesten artikel niet noemen in samenvatting
 						editsummary += ' van een cyberpestpagina.';
 					}
 				} else {
@@ -902,8 +936,8 @@
 					// Generate edit summary for edit
 					var editsummary = 'Verzoek om directe verwijdering (' + params.values + ').';
 
-					// Blank attack pages
-					if (params.normalizeds.indexOf('g5') !== -1) {
+					// Maak pagina leeg bij cyberpesten of privacyschending
+					if (params.normalizeds.indexOf('g5') !== -1 || params.normalizeds.indexOf('g9') !== -1) {
 						text = code;
 					} else {
 						// Insert tag after short description or any hatnotes
@@ -974,9 +1008,12 @@
 				var editsummary = 'Log voor nuweg aanmaken';
 				var appendText = '# [[:' + Morebits.pageNameNorm;
 
-				if (params.normalizeds.indexOf('g5') === -1) {  // no article name in log for G5 taggings
+				if (params.normalizeds.indexOf('g5') === -1 && params.normalizeds.indexOf('g9') === -1) {  //Geen artikel naam in logs bij cyberpesten of privacyschending
 					appendText += ']]' + fileLogLink + ': ';
 					editsummary += ' van [[:' + Morebits.pageNameNorm + ']].';
+				} else if (params.normalizeds.indexOf('g5') === -1 && params.normalizeds.indexOf('g9') !== -1) {
+					appendText += '|deze]] privacyschendende pagina' + fileLogLink + ': ';
+					editsummary += ' van een privacyschendende pagina.';
 				} else {
 					appendText += '|deze]] cyberpestpagina' + fileLogLink + ': ';
 					editsummary += ' van een cyberpestpagina.';
@@ -1052,6 +1089,18 @@
 							return false;
 						}
 						currentParams['2'] = s1daypage;
+					}
+					break;
+					
+				case 'duplicaat':  // G8
+					if (form['csd.duplicaatpag']) {
+						var g8pagina = form['csd.duplicaatpag'].value;
+						if (!g8pagina || !g8pagina.trim()) {
+							alert('Geef de naam van de duplicaatpagina op.');
+							parameters = null;
+							return false;
+						}
+						currentParams['1'] = g8pagina;
 					}
 					break;
 
