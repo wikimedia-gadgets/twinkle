@@ -360,7 +360,7 @@ Twinkle.welcome.getTemplateWikitext = function(type, template, article) {
 			replace(/\$HEADER\$\s*/, '== Welkom ==\n\n').
 			replace('$EXTRA$', '');  // EXTRA is not implemented yet
 	}
-	return '{{' + template + (article ? '|art=' + article : '') + '}}' +
+	return '{{' + template + '}}' +
 			(Twinkle.getPref('customWelcomeSignature') ? ' ~~~~' : '');
 };
 
