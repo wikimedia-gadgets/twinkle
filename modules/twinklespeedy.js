@@ -697,7 +697,7 @@
 					notifytext = '\n== '+ (params.warnUser ? 'Directe verwijdering' : 'Nominatie') + ' van een cyberpestpagina ==';
 				}
 				notifytext += '\n{{subst:'+ (params.warnUser ? 'pdv' : 'vvn4');
-				if (params.normalizeds.indexOf('g5') === -1 || params.normalizeds.indexOf('g9') === -1) { // bij cyberpesten of privacyschending, artikel niet noemen in tekst
+				if (params.normalizeds.indexOf('g5') === -1 && params.normalizeds.indexOf('g9') === -1) { // bij cyberpesten of privacyschending, artikel niet noemen in tekst
 					notifytext += '|1=' + Morebits.pageNameNorm;
 				} else {
 					notifytext += '';
