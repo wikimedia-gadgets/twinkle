@@ -103,11 +103,22 @@ Twinkle.fluff.linkBuilder = {
 			revNode.setAttribute('id', 'tw-revert');
 		}
 
-		var normNode = document.createElement('strong');
-		var vandNode = document.createElement('strong');
+		var separator = inline ? ' ' : ' || ';
+		var sepNode1 = document.createElement('span');
+		var sepText = document.createTextNode(separator);
+		sepNode1.setAttribute('class', 'tw-rollback-link-separator');
+		sepNode1.appendChild(sepText);
+
+		var sepNode2 = sepNode1.cloneNode(true);
+
+		var normNode = document.createElement('span');
+		var vandNode = document.createElement('span');
 
 		var normLink = Twinkle.fluff.linkBuilder.buildLink('SteelBlue', 'rollback');
 		var vandLink = Twinkle.fluff.linkBuilder.buildLink('Red', 'vandalism');
+
+		normLink.style.fontWeight = 'bold';
+		vandLink.style.fontWeight = 'bold';
 
 		$(normLink).click(function() {
 			Twinkle.fluff.revert('norm', vandal, rev, page);
@@ -118,10 +129,14 @@ Twinkle.fluff.linkBuilder = {
 			Twinkle.fluff.disableLinks(revNode);
 		});
 
-		vandNode.appendChild(vandLink);
-		normNode.appendChild(normLink);
+		normNode.setAttribute('class', 'tw-rollback-link-normal');
+		vandNode.setAttribute('class', 'tw-rollback-link-vandalism');
 
-		var separator = inline ? ' ' : ' || ';
+		normNode.appendChild(sepNode1);
+		vandNode.appendChild(sepNode2);
+
+		normNode.appendChild(normLink);
+		vandNode.appendChild(vandLink);
 
 		if (!inline) {
 			var agfNode = document.createElement('strong');
@@ -130,16 +145,15 @@ Twinkle.fluff.linkBuilder = {
 				Twinkle.fluff.revert('agf', vandal, rev, page);
 				// Twinkle.fluff.disableLinks(revNode); // rollbackInPlace not relevant for any inline situations
 			});
+			agfNode.setAttribute('class', 'tw-rollback-link-agf');
 			agfNode.appendChild(agfLink);
 			revNode.appendChild(agfNode);
 		}
-		revNode.appendChild(document.createTextNode(separator));
+
 		revNode.appendChild(normNode);
-		revNode.appendChild(document.createTextNode(separator));
 		revNode.appendChild(vandNode);
 
 		return revNode;
-
 	},
 
 	// Build [restore this revision] links
