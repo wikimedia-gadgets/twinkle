@@ -1,6 +1,16 @@
 // <nowiki>
 
 
+/*****************************************************************************************************
+ * WARNING: This file is synced with a GitHub-repo. Please make any changes to this file over there. *
+ * Any local changes might be overwritten the next time this file is updated.                        *
+ *                                                                                                   *
+ * LET OP: Dit bestand is gekoppeld aan een GitHub-repo. Gelieve alle bewerkingen daar uitvoeren.    *
+ * Locale bewerkingen worden mogelijk overschreven bij de volgende update.                           *
+ *                                                                                                   *
+ * https://github.com/NLWikiTools/Twinkle/blob/master/modules/twinkleunlink.js                       *
+ *****************************************************************************************************/
+
 (function($) {
 
 
@@ -15,7 +25,7 @@
 Twinkle.unlink = function twinkleunlink() {
 	if (mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgPageName') === 'Wikipedia:Zandbak' ||
 		// Restrict to rollback
-		(!Morebits.userIsInGroup('rollback') && !Morebits.userIsSysop)) {
+		(!Morebits.userIsInGroup('rollbacker') && !Morebits.userIsSysop)) {
 		return;
 	}
 	Twinkle.addPortletLink(Twinkle.unlink.callback, 'Ontlink', 'tw-unlink', 'Ontlink deze pagina');
