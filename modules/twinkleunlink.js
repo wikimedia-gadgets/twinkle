@@ -13,12 +13,12 @@
  */
 
 Twinkle.unlink = function twinkleunlink() {
-	if (mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgPageName') === 'Wikipedia:Sandbox' ||
-		// Restrict to extended confirmed users (see #428)
-		(!Morebits.userIsInGroup('extendedconfirmed') && !Morebits.userIsSysop)) {
+	if (mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgPageName') === 'Wikipedia:Zandbak' ||
+		// Restrict to rollback
+		(!Morebits.userIsInGroup('rollback') && !Morebits.userIsSysop)) {
 		return;
 	}
-	Twinkle.addPortletLink(Twinkle.unlink.callback, 'Unlink', 'tw-unlink', 'Unlink backlinks');
+	Twinkle.addPortletLink(Twinkle.unlink.callback, 'Ontlink', 'tw-unlink', 'Ontlink deze pagina');
 };
 
 // the parameter is used when invoking unlink from admin speedy
@@ -26,18 +26,17 @@ Twinkle.unlink.callback = function(presetReason) {
 	var fileSpace = mw.config.get('wgNamespaceNumber') === 6;
 
 	var Window = new Morebits.simpleWindow(600, 440);
-	Window.setTitle('Unlink backlinks' + (fileSpace ? ' and file usages' : ''));
+	Window.setTitle('Ontlink pagina' + (fileSpace ? ' en bestandsgebruik' : ''));
 	Window.setScriptName('Twinkle');
-	Window.addFooterLink('Unlink prefs', 'WP:TW/PREF#unlink');
+	Window.addFooterLink('Ontlink voorkeuren', 'WP:TW/PREF#unlink');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#unlink');
-	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.unlink.callback.evaluate);
 
 	// prepend some documentation: files are commented out, while any
 	// display text is preserved for links (otherwise the link itself is used)
-	var linkTextBefore = Morebits.htmlNode('code', '[[' + (fileSpace ? ':' : '') + Morebits.pageNameNorm + '|link text]]');
-	var linkTextAfter = Morebits.htmlNode('code', 'link text');
+	var linkTextBefore = Morebits.htmlNode('code', '[[' + (fileSpace ? ':' : '') + Morebits.pageNameNorm + '|link tekst]]');
+	var linkTextAfter = Morebits.htmlNode('code', 'link tekst');
 	var linkPlainBefore = Morebits.htmlNode('code', '[[' + Morebits.pageNameNorm + ']]');
 	var linkPlainAfter;
 	if (fileSpace) {
@@ -50,18 +49,18 @@ Twinkle.unlink.callback = function(presetReason) {
 		type: 'div',
 		style: 'margin-bottom: 0.5em',
 		label: [
-			'This tool allows you to unlink all incoming links ("backlinks") that point to this page' +
-				(fileSpace ? ', and/or hide all inclusions of this file by wrapping them in <!-- --> comment markup' : '') +
-				'. For instance, ',
-			linkTextBefore, ' would become ', linkTextAfter, ' and ',
-			linkPlainBefore, ' would become ', linkPlainAfter, '. Use it with caution.'
+			'Deze tool ontlinkt deze pagina, dat wil zeggen dat het alle links naar deze pagina verwijderd' +
+				(fileSpace ? ', en/of al het gebruik van dit bestand verbergt door er <!-- --> omheen te plaatsen' : '') +
+				'. Bijvoorbeeld, ',
+			linkTextBefore, ' wordt ', linkTextAfter, ' en ',
+			linkPlainBefore, ' wordt ', linkPlainAfter, '. Wees voorzichtig met het gebruik van deze tool.'
 		]
 	});
 
 	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason: ',
+		label: 'Reden: ',
 		value: presetReason ? presetReason : '',
 		size: 60
 	});
@@ -83,14 +82,14 @@ Twinkle.unlink.callback = function(presetReason) {
 	} else {
 		query.blfilterredir = 'nonredirects';
 	}
-	var wikipedia_api = new Morebits.wiki.api('Grabbing backlinks', query, Twinkle.unlink.callbacks.display.backlinks);
+	var wikipedia_api = new Morebits.wiki.api('Paginalinks ophalen', query, Twinkle.unlink.callbacks.display.backlinks);
 	wikipedia_api.params = { form: form, Window: Window, image: fileSpace };
 	wikipedia_api.post();
 
 	var root = document.createElement('div');
 	root.style.padding = '15px';  // just so it doesn't look broken
 	Morebits.status.init(root);
-	wikipedia_api.statelem.status('loading...');
+	wikipedia_api.statelem.status('laden...');
 	Window.setContent(root);
 	Window.display();
 };
@@ -100,7 +99,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	var input = Morebits.quickForm.getInputData(form);
 
 	if (!input.reason) {
-		alert('You must specify a reason for unlinking.');
+		alert('Je moet een reden opgeven voor het ontlinken.');
 		return;
 	}
 
@@ -108,20 +107,20 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	input.imageusage = input.imageusage || [];
 	var pages = Morebits.array.uniq(input.backlinks.concat(input.imageusage));
 	if (!pages.length) {
-		alert('You must select at least one item to unlink.');
+		alert('Je moet tenminste een item geven om te ontlinken.');
 		return;
 	}
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 
-	var unlinker = new Morebits.batchOperation('Unlinking ' + (input.backlinks.length ? 'backlinks' +
-			(input.imageusage.length ? ' and instances of file usage' : '') : 'instances of file usage'));
+	var unlinker = new Morebits.batchOperation('Ontlinken van ' + (input.backlinks.length ? 'links' +
+			(input.imageusage.length ? ' en bestandsgebruik' : '') : 'bestandsgebruik'));
 	unlinker.setOption('preserveIndividualStatusLines', true);
 	unlinker.setPageList(pages);
 	var params = { reason: input.reason, unlinker: unlinker };
 	unlinker.run(function(pageName) {
-		var wikipedia_page = new Morebits.wiki.page(pageName, 'Unlinking in page "' + pageName + '"');
+		var wikipedia_page = new Morebits.wiki.page(pageName, 'Ontlinken op pagina "' + pageName + '"');
 		wikipedia_page.setBotEdit(true);  // unlink considered a floody operation
 		wikipedia_page.setCallbackParameters($.extend({
 			doBacklinks: input.backlinks.indexOf(pageName) !== -1,
@@ -146,34 +145,34 @@ Twinkle.unlink.callbacks = {
 					list.push({ label: '', value: imageusage[i].title, checked: true });
 				}
 				if (!list.length) {
-					apiobj.params.form.append({ type: 'div', label: 'No instances of file usage found.' });
+					apiobj.params.form.append({ type: 'div', label: 'Geen gebruik van dit bestand gevonden.' });
 				} else {
-					apiobj.params.form.append({ type: 'header', label: 'File usage' });
+					apiobj.params.form.append({ type: 'header', label: 'Bestandsgebruik' });
 					namespaces = [];
 					$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
 						namespaces.push(v === '0' ? '(Article)' : mw.config.get('wgFormattedNamespaces')[v]);
 					});
 					apiobj.params.form.append({
 						type: 'div',
-						label: 'Selected namespaces: ' + namespaces.join(', '),
-						tooltip: 'You can change this with your Twinkle preferences, at [[WP:TWPREFS]]'
+						label: 'Geselecteerde naamruimtes: ' + namespaces.join(', '),
+						tooltip: 'Je kunt dit aanpassen op het [[WP:TW/PREFS|Twinkle configuratiescherm]]'
 					});
 					if (response['query-continue'] && response['query-continue'].imageusage) {
 						apiobj.params.form.append({
 							type: 'div',
-							label: 'First ' + mw.language.convertNumber(list.length) + ' file usages shown.'
+							label: 'Eerste ' + mw.language.convertNumber(list.length) + ' pagina\'s die dit bestand gebruiken getoond.'
 						});
 					}
 					apiobj.params.form.append({
 						type: 'button',
-						label: 'Select All',
+						label: 'Selecteer alles',
 						event: function(e) {
 							$(Morebits.quickForm.getElements(e.target.form, 'imageusage')).prop('checked', true);
 						}
 					});
 					apiobj.params.form.append({
 						type: 'button',
-						label: 'Deselect All',
+						label: 'Deselecteer alles',
 						event: function(e) {
 							$(Morebits.quickForm.getElements(e.target.form, 'imageusage')).prop('checked', false);
 						}
@@ -195,32 +194,32 @@ Twinkle.unlink.callbacks = {
 					// Label made by Twinkle.generateBatchPageLinks
 					list.push({ label: '', value: backlinks[i].title, checked: true });
 				}
-				apiobj.params.form.append({ type: 'header', label: 'Backlinks' });
+				apiobj.params.form.append({ type: 'header', label: 'Links' });
 				namespaces = [];
 				$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
-					namespaces.push(v === '0' ? '(Article)' : mw.config.get('wgFormattedNamespaces')[v]);
+					namespaces.push(v === '0' ? '(Artikel)' : mw.config.get('wgFormattedNamespaces')[v]);
 				});
 				apiobj.params.form.append({
 					type: 'div',
-					label: 'Selected namespaces: ' + namespaces.join(', '),
-					tooltip: 'You can change this with your Twinkle preferences, linked at the bottom of this Twinkle window'
+					label: 'Geselecteerde naamruimtes: ' + namespaces.join(', '),
+					tooltip: 'Je kunt dit aanpassen op het [[WP:TW/PREFS|Twinkle configuratiescherm]]'
 				});
 				if (response['query-continue'] && response['query-continue'].backlinks) {
 					apiobj.params.form.append({
 						type: 'div',
-						label: 'First ' + mw.language.convertNumber(list.length) + ' backlinks shown.'
+						label: 'Eerste ' + mw.language.convertNumber(list.length) + ' links getoond.'
 					});
 				}
 				apiobj.params.form.append({
 					type: 'button',
-					label: 'Select All',
+					label: 'Selecteer alles',
 					event: function(e) {
 						$(Morebits.quickForm.getElements(e.target.form, 'backlinks')).prop('checked', true);
 					}
 				});
 				apiobj.params.form.append({
 					type: 'button',
-					label: 'Deselect All',
+					label: 'Deselecteer alles',
 					event: function(e) {
 						$(Morebits.quickForm.getElements(e.target.form, 'backlinks')).prop('checked', false);
 					}
@@ -233,7 +232,7 @@ Twinkle.unlink.callbacks = {
 				});
 				havecontent = true;
 			} else {
-				apiobj.params.form.append({ type: 'div', label: 'No backlinks found.' });
+				apiobj.params.form.append({ type: 'div', label: 'Geen links gevonden. ' });
 			}
 
 			if (havecontent) {
@@ -258,12 +257,12 @@ Twinkle.unlink.callbacks = {
 
 		// remove image usages
 		if (params.doImageusage) {
-			text = wikiPage.commentOutImage(mw.config.get('wgTitle'), 'Commented out').getText();
+			text = wikiPage.commentOutImage(mw.config.get('wgTitle'), 'Uitgeschakeld').getText();
 			// did we actually make any changes?
 			if (text === oldtext) {
-				warningString = 'file usages';
+				warningString = 'bestandsgebruik';
 			} else {
-				summaryText = 'Commenting out use(s) of file';
+				summaryText = 'Uitschakelen van bestandsgebruik';
 				oldtext = text;
 			}
 		}
@@ -273,16 +272,16 @@ Twinkle.unlink.callbacks = {
 			text = wikiPage.removeLink(Morebits.pageNameNorm).getText();
 			// did we actually make any changes?
 			if (text === oldtext) {
-				warningString = warningString ? 'backlinks or file usages' : 'backlinks';
+				warningString = warningString ? 'bestandsgebruik en links' : 'links';
 			} else {
-				summaryText = (summaryText ? summaryText + ' / ' : '') + 'Removing link(s) to';
+				summaryText = (summaryText ? summaryText + ' / ' : '') + 'Verwijderen van link(s) naar';
 				oldtext = text;
 			}
 		}
 
 		if (warningString) {
 			// nothing to do!
-			pageobj.getStatusElement().error("Didn't find any " + warningString + ' on the page.');
+			pageobj.getStatusElement().error("Geen " + warningString + ' op de pagina gevonden.');
 			params.unlinker.workerFailure(pageobj);
 			return;
 		}
