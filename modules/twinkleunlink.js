@@ -24,7 +24,7 @@
 
 Twinkle.unlink = function twinkleunlink() {
 	if (mw.config.get('wgNamespaceNumber') < 0 || mw.config.get('wgPageName') === 'Wikipedia:Zandbak' ||
-		// Restrict to rollback
+		//Restrict to rollbacker and sysop
 		(!Morebits.userIsInGroup('rollbacker') && !Morebits.userIsSysop)) {
 		return;
 	}
