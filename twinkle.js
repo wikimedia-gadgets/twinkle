@@ -98,6 +98,9 @@ Twinkle.defaultConfig = {
 	speedyLogPageName: 'nuweg logboek',
 	noLogOnSpeedyNomination: [ 'u1' ],
 
+	// Unlink
+	unlinkNamespaces: [ '0', '10', '100' ],
+
 	// Warn
 	defaultWarningGroup: '1',
 	showSharedIPNotice: false,

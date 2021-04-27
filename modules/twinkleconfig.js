@@ -543,6 +543,24 @@ Twinkle.config.sections = [
 		]
 	},
 */
+
+	{
+		title: 'Ontlink',
+		module: 'unlink',
+		preferences: [
+			// TwinkleConfig.unlinkNamespaces (array)
+			// In what namespaces unlink should happen, default in 0 (artikel), 10 (sjabloon) en 100 (portaal)
+			{
+				name: 'unlinkNamespaces',
+				label: 'Verwijder links naar een pagina alleen in de volgende naamruimtes',
+				helptip: 'Schakel dit NOOIT in op overlegnaamruimtes, aangezien Twinkle dan mogelijk archieven kan gaan ontlinken (a big no-no).',
+				type: 'set',
+				setValues: Twinkle.config.commonSets.namespacesNoSpecial
+			}
+		]
+	},
+
+
 	{
 		title: 'Gebruiker dossiers',
 		module: 'warn',
