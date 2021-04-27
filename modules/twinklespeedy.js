@@ -467,8 +467,8 @@
 		},
 		{
 			label: 'Pagina met inhoud zonder zinvolle informatie.',
-			value: 'nonsense',
-			tooltip: 'Wees er zeker van dat het volstrekte nonsense is. Als er ook maar de geringste twijfel bestaat, is het beter de pagina te nomineren via TBx.',
+			value: 'onzin',
+			tooltip: 'Wees er zeker van dat het volstrekte onzin is. Als er ook maar de geringste twijfel bestaat, is het beter de pagina te nomineren via TBx.',
 			hideInNamespaces: [ 2 ] // Not applicable in userspace
 		},
 		{
@@ -476,7 +476,7 @@
 			value: 'vertaling',
 		},
 		{
-			label: 'Overduidelijke reclame',
+			label: 'Reclame',
 			value: 'reclame',
 		},
 		{
@@ -488,7 +488,7 @@
 			value: 'privacy',
 		},
 		{
-			label: 'Overduidelijke zelfpromotie',
+			label: 'Zelfpromotie',
 			value: 'zelfpromotie',
 			tooltip: 'Op grond van de geboortedatum is het onmogelijk dat de persoon opmerkelijke dingen heeft gedaan en/of na een zoektocht op internet worden geen relevante verwijzingen gevonden',
 		},
@@ -506,7 +506,7 @@
 			],
 		},
 		{
-			label: 'Overduidelijke auteursrechtenschending',
+			label: 'Auteursrechtenschending',
 			value: 'copyvio',
 			subgroup: [
 				{
@@ -583,7 +583,7 @@
 
 	Twinkle.speedy.normalizeHash = {
 		leeg: 'g1',
-		nonsense: 'g2',
+		onzin: 'g2',
 		vertaling: 'g3',
 		zelfpromotie: 'g4',
 		cyberpesten: 'g5', //G5 = Leeghalen bij nominatie
@@ -599,7 +599,7 @@
 
 	Twinkle.speedy.templateReason = {
 		leeg: 'Lege pagina',
-		nonsense: 'Geen zinvolle inhoud',
+		onzin: 'Geen zinvolle inhoud',
 		vertaling: 'Niet-Nederlandstalig of resultaat van een computervertaling',
 		zelfpromotie: 'Overduidelijke zelfpromotie',
 		cyberpesten: 'Cyberpesten',
@@ -613,7 +613,7 @@
 
 	Twinkle.speedy.deleteReason = {
 		leeg: 'lege pagina',
-		nonsense: 'geen zinvolle inhoud',
+		onzin: 'geen zinvolle inhoud',
 		vertaling: 'niet-Nederlandstalig of resultaat van een computervertaling',
 		zelfpromotie: 'overduidelijke zelfpromotie',
 		cyberpesten: 'cyberpesten',
@@ -704,11 +704,14 @@
 				}
 				notifytext += '|2=' + params.values[0];
 
+				/* //TODO deze puinhoop een beetje ordelijk maken
 				for (i in params.utparams) {
 					if (typeof params.utparams[i] === 'string') {
 						notifytext += params.utparams[i] + ';';
 					}
 				}
+				*/
+
 				notifytext += (params.welcomeuser ? '' : '|3=false') + '}}';
 
 				if (params.normalizeds.indexOf('s1') === -1) {
@@ -759,6 +762,13 @@
 				} else {
 					if (params.normalizeds.indexOf('s1') !== -1) { //TBx afhandeling
 						reason = 'Per beoordelingssessie [[WP:' + params.templateParams[0]['1'] + '/Toegevoegd ' + params.templateParams[0]['2'] + '#' + Morebits.pageNameNorm + ']]';
+					} else if (params.normalizeds.indexOf('g7') !== -1 && typeof params.templateParams[0]['url'] !== "undefined") { //only if copyvio and copyvio URL was given
+						reason = 'Direct verwijderd wegens [[Wikipedia:Auteursrechten|auteursrechtenschending]] van';
+						for (var i in params.templateParams[0]) {
+							reason += ' ' + params.templateParams[0][i];
+						}
+					} else if (params.normalizeds.indexOf('g8') !== -1) {
+						reason = 'Direct verwijderd omdat een pagina over dit onderwerp reeds bestaat op [[' + params.templateParams[0]['1'] + ']].';
 					} else {
 						reason = 'Direct verwijderd wegens ' + params.deleteReason;
 					}
@@ -772,7 +782,7 @@
 				if (reason === null) {
 					return Morebits.status.error('Verwijderen afgebroken', 'Gebruiker annuleert');
 				} else if (!reason) {
-					return Morebits.status.error('Verwijderen afgebroken', "Stiekem pagina's verwijderen zonder reden? Dat is vragen om een desysop...");
+					return Morebits.status.error('Verwijderen afgebroken', 'Stiekem pagina\'s verwijderen zonder reden? Dat is vragen om een desysop...');
 				}
 
 				var deleteMain = function(callback) {
@@ -904,7 +914,7 @@
 						return;
 					}
 
-					var xfd = /(?:\{\{\s*(wiu|ne|wb|auteur|reclame|weg)(?:\s*\||\s*\}\}))/.exec(text);
+					var xfd = /(?:\{\{\s*(wiu|ne|wb|auteur|reclame|weg|verwijderen)(?:\s*\||\s*\}\}))/.exec(text);
 					if (xfd && !confirm('De pagina heeft al een {{' + xfd[1] + '}} nominatie. Weet je zeker dat je een nuweg-nominatie wil toevoegen?')) {
 						return;
 					}
@@ -1091,7 +1101,7 @@
 						currentParams['2'] = s1daypage;
 					}
 					break;
-					
+
 				case 'duplicaat':  // G8
 					if (form['csd.duplicaatpag']) {
 						var g8pagina = form['csd.duplicaatpag'].value;

@@ -234,19 +234,19 @@ Twinkle.warn.messages = {
 			'ws-nonsense': {
 				level1: {
 					label: 'Aanmaken onzinpagina',
-					summary: '+ws1 nonsense'
+					summary: '+ws1 onzinpagina'
 				},
 				level2: {
 					label: 'Aanmaken onzinpagina',
-					summary: '+ws2 nonsense'
+					summary: '+ws2 onzinpagina'
 				},
 				level3: {
 					label: 'Herhaald aanmaken onzinpagina',
-					summary: '+ws3 nonsense'
+					summary: '+ws3 onzinpagina'
 				},
 				level4: {
 					label: 'Herhaald aanmaken onzinpagina',
-					summary: '+ws4 nonsense'
+					summary: '+ws4 onzinpagina'
 				}
 			},
 			'ws-reclame': {
@@ -314,11 +314,11 @@ Twinkle.warn.messages = {
 			'ws-bwo': {
 				level1: {
 					label: 'Bewerkingsoorlog',
-					summary: '+ws1 ongewenste terugdraaiing'
+					summary: '+ws1 bewerkingsoorlog'
 				},
 				level2: {
 					label: 'Bewerkingsoorlog',
-					summary: '+ws2 ongewenste terugdraaiing'
+					summary: '+ws2 bewerkingsoorlog'
 				},
 				level3: {
 					label: 'Bewerkingsoorlog',

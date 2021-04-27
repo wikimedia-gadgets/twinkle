@@ -44,7 +44,7 @@ Twinkle.config.watchlistEnums = {
 
 Twinkle.config.commonSets = {
 	csdCriteria: {
-		g1: 'Leeg halen', g2: 'Nonsense', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
+		g1: 'Leeg halen', g2: 'Onzin', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
 		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending', u1: 'Eigen naamruimte', u2: 'Misbruik gebruikersnaamruimte'
 	},
 	csdCriteriaDisplayOrder: [
@@ -52,7 +52,7 @@ Twinkle.config.commonSets = {
 		'g6', 'g7', 'g8', 'g9', 'u1', 'u2'
 	],
 	csdCriteriaNotification: {
-		g1: 'Leeg halen', g2: 'Nonsense', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
+		g1: 'Leeg halen', g2: 'Onzin', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
 		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending', u1: 'Eigen naamruimte', u2: 'Misbruik gebruikersnaamruimte'
 	},
 	csdCriteriaNotificationDisplayOrder: [
@@ -60,7 +60,7 @@ Twinkle.config.commonSets = {
 		'g6', 'g7', 'g8', 'g9', 'u1', 'u2'
 	],
 	csdCriteriaDelete: {
-		g1: 'Leeg halen', g2: 'Nonsense', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
+		g1: 'Leeg halen', g2: 'Onzin', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
 		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending',
 		u1: 'Eigen naamruimte',  u2: 'Misbruik gebruikersnaamruimte', s1: 'TBx afhandeling', s2: 'Verplaatsing'
 	},
@@ -70,7 +70,7 @@ Twinkle.config.commonSets = {
 		'u1', 'u2', 's1', 's2'
 	],
 	csdAndDICriteria: {
-		g1: 'Leeg halen', g2: 'Nonsense', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
+		g1: 'Leeg halen', g2: 'Onzin', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
 		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending', u1: 'Eigen naamruimte', u2: 'Misbruik gebruikersnaamruimte'
 	},
 	csdAndDICriteriaDisplayOrder: [
