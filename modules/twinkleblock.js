@@ -820,7 +820,7 @@ Twinkle.block.blockPresetsInfo = {
 		nocreate: true,
 		pageParam: true,
 		reasonParam: true,
-		summary: 'Je bent tijdelijk geblokkeerd',
+		summary: 'Je bent geblokkeerd',
 		suppressArticleInSummary: true
 	},
 	'permblok': {
@@ -871,8 +871,6 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: true,
 		reasonParam: false,
 		templateName: 'permblok',
-		disabletalk: true,
-		noemail: true,
 		reason: 'Ingelogde [[WP:Vandalisme|vandaal]]',
 		summary: 'Je bent voor onbepaalde tijd geblokkerd omdat je account alleen voor [[WP:Vandalisme|vandalisme]] werd gebruikt.'
 	},
@@ -886,7 +884,7 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '[[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|Ongewenste gebruikersnaam]]',
 		summary: 'Je account heeft een [[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|ongewenste gebruikersnaam]], die buiten werking is genomen.'
 	},
-	'ogbedrijf': {
+	'subst:ogbedrijf': {
 		expiry: 'infinity',
 		forRegisteredOnly: true,
 		autoblock: false,
