@@ -1530,8 +1530,8 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 	}
 
 	text += '}}';
-
-	if (settings.sig) {
+	
+	if (settings.sig && params.template !== 'ogbedrijf') {
 		text += ' ' + settings.sig;
 	}
 
