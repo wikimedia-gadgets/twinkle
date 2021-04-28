@@ -884,7 +884,7 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '[[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|Ongewenste gebruikersnaam]]',
 		summary: 'Je account heeft een [[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|ongewenste gebruikersnaam]], die buiten werking is genomen.'
 	},
-	'subst:ogbedrijf': {
+	'ogbedrijf': {
 		expiry: 'infinity',
 		forRegisteredOnly: true,
 		autoblock: false,
@@ -1457,6 +1457,9 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 	var text = '\n{{', settings = Twinkle.block.blockPresetsInfo[params.template];
 	if (!settings.nonstandard) {
+		if (params.template === 'ogbedrijf') {
+			text += 'subst:';
+		}
 		text += params.template;
 		if (params.article && settings.pageParam) {
 			text += '|pagina=' + params.article;
