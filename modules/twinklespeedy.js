@@ -632,7 +632,7 @@
 		getTemplateCodeAndParams: function(params) {
 			var code, parameters, i;
 			if (params.normalizeds.length > 1) {
-				code = '{{nuweg|';
+				code = '{{nuweg|1=';
 				params.utparams = {};
 				$.each(params.normalizeds, function(index, norm) {
 					code += params.templateReason[index] + '; ';
@@ -647,7 +647,7 @@
 				code += '}}';
 			} else {
 				parameters = params.templateParams[0] || [];
-				code = '{{nuweg|' + params.templateReason[0];
+				code = '{{nuweg|1=' + params.templateReason[0];
 				for (i in parameters) {
 					if (typeof parameters[i] === 'string') {
 						code += ' ' + parameters[i];
