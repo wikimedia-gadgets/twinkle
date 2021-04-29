@@ -845,6 +845,18 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'Je bent voor onbepaalde tijd geblokkeerd wegens [[Wikipedia:Sokpopmisbruik|sokpopmisbruik]]',
 		suppressArticleInSummary: true
 	},
+	'lta': {
+		autoblock: true,
+		expiry: 'infinity',
+		nocreate: true,
+		pageParam: false,
+		reasonParam: false,
+		disabletalk: true,
+		noemail: true,
+		reason: '[[Wikipedia:LSV|Langdurig structureel vandalisme]]',
+		summary: 'Je bent voor onbepaalde tijd geblokkeerd wegens [[Wikipedia:LSV|Langdurig structureel vandalisme]]',
+		suppressArticleInSummary: true
+	},
 	'verstoring': {
 		autoblock: true,
 		nocreate: true,
@@ -987,6 +999,7 @@ Twinkle.block.blockGroups = [
 		list: [
 			{ label: 'Herhaald vandalisme', value: 'vandalisme' },
 			{ label: 'Ingelogde vandaal', value: 'ingelogde vandaal' },
+			{ label: 'Langdurig structureel vandalisme', value: 'lta' },
 			{ label: 'Ongewenste gebruikersnaam', value: 'og' },
 			{ label: 'Ongewenste gebruikersnaam - bedrijf', value: 'ogbedrijf' },
 			{ label: 'Afkoelblok (informeel)', value: 'douche' },
