@@ -842,6 +842,42 @@
 					wikipedia_api.params = params;
 					wikipedia_api.post();
 				}
+				
+				// promote Unlink tool
+				var $link, $bigtext;
+				if (mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8') {
+					$link = $('<a/>', {
+						href: '#',
+						text: 'klik hier om naar de Ontlink module te gaan',
+						css: { fontSize: '130%', fontWeight: 'bold' },
+						click: function() {
+							Morebits.wiki.actionCompleted.redirect = null;
+							Twinkle.speedy.dialog.close();
+							Twinkle.unlink.callback('Ontlinken en buiten gebruik nemen van verwijderd bestand (' + Morebits.pageNameNorm + ')');
+						}
+					});
+					$bigtext = $('<span/>', {
+						text: 'Voorkom rode links en gebroken bestandskoppelingen',
+						css: { fontSize: '130%', fontWeight: 'bold' }
+					});
+					Morebits.status.info($bigtext[0], $link[0]);
+				} else if (params.normalized !== 'f8') {
+					$link = $('<a/>', {
+						href: '#',
+						text: 'klik hier om naar de Ontlink-module te gaan',
+						css: { fontSize: '130%', fontWeight: 'bold' },
+						click: function() {
+							Morebits.wiki.actionCompleted.redirect = null;
+							Twinkle.speedy.dialog.close();
+							Twinkle.unlink.callback('Ontlinken van verwijderde pagina (' + Morebits.pageNameNorm + ')');
+						}
+					});
+					$bigtext = $('<span/>', {
+						text: 'Voorkom rode links',
+						css: { fontSize: '130%', fontWeight: 'bold' }
+					});
+					Morebits.status.info($bigtext[0], $link[0]);
+				}
 			},
 			deleteRedirectsMain: function(apiobj) {
 				var response = apiobj.getResponse();
