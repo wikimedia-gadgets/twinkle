@@ -853,6 +853,7 @@ Twinkle.block.blockPresetsInfo = {
 		reasonParam: false,
 		disabletalk: true,
 		noemail: true,
+		templateName: 'blok',
 		reason: '[[Wikipedia:LSV|Langdurig structureel vandalisme]]',
 		summary: 'Je bent voor onbepaalde tijd geblokkeerd wegens [[Wikipedia:LSV|Langdurig structureel vandalisme]]',
 		suppressArticleInSummary: true
