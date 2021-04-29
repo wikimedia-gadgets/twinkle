@@ -139,13 +139,14 @@ Twinkle.fluff.linkBuilder = {
 		vandNode.appendChild(vandLink);
 
 		if (!inline) {
-			var agfNode = document.createElement('strong');
+			var agfNode = document.createElement('span');
 			var agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
 			$(agfLink).click(function() {
 				Twinkle.fluff.revert('agf', vandal, rev, page);
 				// Twinkle.fluff.disableLinks(revNode); // rollbackInPlace not relevant for any inline situations
 			});
 			agfNode.setAttribute('class', 'tw-rollback-link-agf');
+			agfLink.style.fontWeight = 'bold';
 			agfNode.appendChild(agfLink);
 			revNode.appendChild(agfNode);
 		}
