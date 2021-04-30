@@ -458,7 +458,7 @@ var translationSubgroups = [
 	}
 ] : []);
 
-// Subgroups for {{merge}}, {{merge-to}} and {{merge-from}}
+// Subgroups for {{samenvoegen}}, {{Samenvoegennaar}} and {{Samenvoegenvan}}
 var getMergeSubgroups = function(tag) {
 	var otherTagName = 'Samenvoegen';
 	var anderArtikel = 'Samenvoegen met: ';
@@ -745,7 +745,6 @@ Twinkle.tag.callbacks = {
 			} else {
 				summaryText = '- ' + makeSentence(removedTags);
 			}
-			summaryText += ' tag' + (addedTags.length + removedTags.length > 1 ? 's' : '');
 			if (params.reason) {
 				summaryText += ': ' + params.reason;
 			}
@@ -844,29 +843,6 @@ Twinkle.tag.callbacks = {
 						pageobj.save();
 					});
 				}
-				// Notify the user ({{Not English}} only)
-				if (params.translationNotify) {
-					new Morebits.wiki.page(Morebits.pageNameNorm).lookupCreation(function(innerPageobj) {
-						var initialContrib = innerPageobj.getCreator();
-
-						// Disallow warning yourself
-						if (initialContrib === mw.config.get('wgUserName')) {
-							innerPageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
-							return;
-						}
-
-						var userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib,
-							'Notifying initial contributor (' + initialContrib + ')');
-						userTalkPage.setNewSectionTitle('Your article [[' + Morebits.pageNameNorm + ']]');
-						userTalkPage.setNewSectionText('{{subst:uw-notenglish|1=' + Morebits.pageNameNorm +
-							(params.translationPostAtPNT ? '' : '|nopnt=yes') + '}} ~~~~');
-						userTalkPage.setEditSummary('Notice: Please use English when contributing to the English Wikipedia.');
-						userTalkPage.setChangeTags(Twinkle.changeTags);
-						userTalkPage.setCreateOption('recreate');
-						userTalkPage.setFollowRedirect(true, false);
-						userTalkPage.newSection();
-					});
-				}
 			});
 
 			if (params.patrol) {
@@ -893,12 +869,12 @@ Twinkle.tag.callbacks = {
 			// otherwise moves it to `getRedirectsFor` array earmarking it for
 			// later removal
 			params.tagsToRemove.forEach(function removeTag(tag) {
-				var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
+				var tag_re = new RegExp('\{\{' + Morebits.pageNameRegex(tag) + '\s*(\|[^}]+)?\}\}\n?');
 
 				if (tag_re.test(pageText)) {
 					pageText = pageText.replace(tag_re, '');
 				} else {
-					getRedirectsFor.push('Template:' + tag);
+					getRedirectsFor.push('Sjabloon:' + tag);
 				}
 			});
 
@@ -908,7 +884,7 @@ Twinkle.tag.callbacks = {
 			}
 
 			// Remove tags which appear in page text as redirects
-			var api = new Morebits.wiki.api('Getting template redirects', {
+			var api = new Morebits.wiki.api('Sjabloondoorverwijzingen ophalen', {
 				action: 'query',
 				prop: 'linkshere',
 				titles: getRedirectsFor.join('|'),
@@ -925,7 +901,7 @@ Twinkle.tag.callbacks = {
 					var removed = false;
 					page.linkshere.forEach(function(el) {
 						var tag = el.title.slice(9);
-						var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
+						var tag_re = new RegExp('\{\{' + Morebits.pageNameRegex(tag) + '\s*(\|[^}]*)?\}\}\n?');
 						if (tag_re.test(pageText)) {
 							pageText = pageText.replace(tag_re, '');
 							removed = true;
@@ -933,8 +909,8 @@ Twinkle.tag.callbacks = {
 						}
 					});
 					if (!removed) {
-						Morebits.status.warn('Info', 'Failed to find {{' +
-						page.title.slice(9) + '}} on the page... excluding');
+						Morebits.status.warn('Info', '{{' +
+						page.title.slice(9) + '}} niet gevonden op de pagina... overslaan');
 					}
 
 				});
@@ -995,7 +971,7 @@ Twinkle.tag.callbacks = {
 								params.discussArticle = tagName === 'Samenvoegennaar' ? params.mergeTarget : mw.config.get('wgTitle');
 								// nonDiscussArticle is the article which won't have the discussion
 								params.nonDiscussArticle = tagName === 'Samenvoegennaar' ? mw.config.get('wgTitle') : params.mergeTarget;
-								var direction = '[[' + params.nonDiscussArticle + ']]' + (params.mergeTag === 'Merge' ? ' with ' : ' into ') + '[[' + params.discussArticle + ']]';
+								var direction = '[[' + params.nonDiscussArticle + ']]' + (params.mergeTag === 'Samenvoegen' ? ' met ' : ' naar ') + '[[' + params.discussArticle + ']]';
 								params.talkDiscussionTitleLinked = 'Voorgestelde samenvoeging van ' + direction;
 								params.talkDiscussionTitle = params.talkDiscussionTitleLinked.replace(/\[\[(.*?)\]\]/g, '$1');
 							}
@@ -1022,12 +998,8 @@ Twinkle.tag.callbacks = {
 			// as well as deletion/protection-related templates
 			var wikipage = new Morebits.wikitext.page(pageText);
 			var templatesAfter = Twinkle.hatnoteRegex +
-				// Protection templates
-				'pp|pp-.*?|' +
 				// CSD
-				'db|delete|db-.*?|speedy deletion-.*?|' +
-				// PROD
-				'(?:proposed deletion|prod blp)\\/dated(?:\\s*\\|(?:concern|user|timestamp|help).*)+|' +
+				'nuweg|delete|' +
 				// not a hatnote, but sometimes under a CSD or AfD
 				'salt|proposed deletion endorsed';
 			// AfD is special, as the tag includes html comments before and after the actual template
@@ -1040,7 +1012,7 @@ Twinkle.tag.callbacks = {
 
 		// Separate tags into groupable ones (`groupableTags`) and non-groupable ones (`tags`)
 		params.tags.forEach(function(tag) {
-			tagRe = new RegExp('\\{\\{' + tag + '(\\||\\}\\})', 'im');
+			tagRe = new RegExp('\{\{' + tag + '(\||\}\})', 'im');
 			// regex check for preexistence of tag can be skipped if in canRemove mode
 			if (Twinkle.tag.canRemove || !tagRe.exec(pageText)) {
 				// condition Twinkle.tag.article.tags[tag] to ensure that its not a custom tag
@@ -1051,7 +1023,7 @@ Twinkle.tag.callbacks = {
 					tags.push(tag);
 				}
 			} else {
-				if (tag === 'Samenvoegenvan' || tag === 'History merge') {
+				if (tag === 'Samenvoegenvan') {
 					tags.push(tag);
 				} else {
 					Morebits.status.warn('Info', '{{' + tag +
@@ -1080,7 +1052,7 @@ Twinkle.tag.callbacks = {
 			tagText = '';
 			$.each(groupableTags, addTag);
 
-			var miRegex = new RegExp('(\\{\\{\\s*' + miTest[1] + '\\s*(?:\\|(?:\\{\\{[^{}]*\\}\\}|[^{}])*)?)\\}\\}\\s*', 'im');
+			var miRegex = new RegExp('(\{\{\s*' + miTest[1] + '\s*(?:\|(?:\{\{[^{}]*\}\}|[^{}])*)?)\}\}\s*', 'im');
 			pageText = pageText.replace(miRegex, '$1' + tagText + '}}\n');
 			tagText = '';
 
@@ -1107,7 +1079,7 @@ Twinkle.tag.callbacks = {
 			// Reposition the tags on the page into {{multiple issues}}, if found with its
 			// proper name, else moves it to `getRedirectsFor` array to be handled later
 			groupableExistingTags.forEach(function repositionTagIntoMI(tag) {
-				var tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?)');
+				var tag_re = new RegExp('(\{\{' + Morebits.pageNameRegex(tag) + '\s*(\|[^}]+)?\}\}\n?)');
 				if (tag_re.test(pageText)) {
 					tagText += tag_re.exec(pageText)[1];
 					pageText = pageText.replace(tag_re, '');
@@ -1138,7 +1110,7 @@ Twinkle.tag.callbacks = {
 					var found = false;
 					page.linkshere.forEach(function(el) {
 						var tag = el.title.slice(9);
-						var tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?)');
+						var tag_re = new RegExp('(\{\{' + Morebits.pageNameRegex(tag) + '\s*(\|[^}]*)?\}\}\n?)');
 						if (tag_re.test(pageText)) {
 							tagText += tag_re.exec(pageText)[1];
 							pageText = pageText.replace(tag_re, '');
@@ -1190,7 +1162,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			params.tagsToRemove = form.getUnchecked('existingTags'); // not in `input`
 			params.tagsToRemain = params.existingTags || []; // container not created if none present
 
-			if ((params.tags.indexOf('Samenvoegen') !== -1) || (params.tags.indexOf('Merge from') !== -1) ||
+			if ((params.tags.indexOf('Samenvoegen') !== -1) || (params.tags.indexOf('Samenvoegenvan') !== -1) ||
 				(params.tags.indexOf('Samenvoegennaar') !== -1)) {
 				if (checkIncompatible(['Samenvoegen', 'Samenvoegenvan', 'Samenvoegennaar'], 'If several merges are required, use {{Merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).')) {
 					return;
