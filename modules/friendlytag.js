@@ -614,7 +614,7 @@ Twinkle.tag.article.tagList = {
 						name: 'Dag',
 						parameter: '4',
 						type: 'hidden',
-						value: '{{subst:LOCALDAY}}'
+						value: '{{subst:LOCALDAY2}}'
 					}
 				]
 			},
@@ -647,7 +647,7 @@ Twinkle.tag.article.tagList = {
 						name: 'Dag',
 						parameter: '4',
 						type: 'hidden',
-						value: '{{subst:LOCALDAY}}'
+						value: '{{subst:LOCALDAY2}}'
 					}
 				]
 			},
@@ -672,7 +672,7 @@ Twinkle.tag.article.tagList = {
 							name: 'Dag',
 							parameter: '4',
 							type: 'hidden',
-							value: '{{subst:LOCALDAY}}'
+							value: '{{subst:LOCALDAY2}}'
 						}
 					]
 			}
@@ -721,10 +721,10 @@ Twinkle.tag.callbacks = {
 			// Build edit summary
 			var makeSentence = function(array) {
 				if (array.length < 3) {
-					return array.join(' and ');
+					return array.join(' en ');
 				}
 				var last = array.pop();
-				return array.join(', ') + ', and ' + last;
+				return array.join(', ') + ', en ' + last;
 			};
 			var makeTemplateLink = function(tag) {
 				var text = '{{[[';
@@ -732,7 +732,7 @@ Twinkle.tag.callbacks = {
 				if (tag.indexOf('|') !== -1) {
 					tag = tag.slice(0, tag.indexOf('|'));
 				}
-				text += tag.indexOf(':') !== -1 ? tag : 'Template:' + tag + '|' + tag;
+				text += tag.indexOf(':') !== -1 ? tag : 'Sjabloon:' + tag + '|' + tag;
 				return text + ']]}}';
 			};
 
@@ -740,10 +740,10 @@ Twinkle.tag.callbacks = {
 			var addedTags = params.tags.map(makeTemplateLink);
 			var removedTags = params.tagsToRemove.map(makeTemplateLink);
 			if (addedTags.length) {
-				summaryText = 'Added ' + makeSentence(addedTags);
-				summaryText += removedTags.length ? '; and removed ' + makeSentence(removedTags) : '';
+				summaryText = '+ ' + makeSentence(addedTags);
+				summaryText += removedTags.length ? '; - ' + makeSentence(removedTags) : '';
 			} else {
-				summaryText = 'Removed ' + makeSentence(removedTags);
+				summaryText = '- ' + makeSentence(removedTags);
 			}
 			summaryText += ' tag' + (addedTags.length + removedTags.length > 1 ? 's' : '');
 			if (params.reason) {
@@ -765,7 +765,7 @@ Twinkle.tag.callbacks = {
 			pageobj.save(function() {
 				// COI: Start the discussion on the talk page (mainspace only)
 				if (params.coiReason) {
-					var coiTalkPage = new Morebits.wiki.page('Talk:' + Morebits.pageNameNorm, 'Starting discussion on talk page');
+					var coiTalkPage = new Morebits.wiki.page('Overleg:' + Morebits.pageNameNorm, 'Discussie starten op overlegpagina');
 					coiTalkPage.setNewSectionText(params.coiReason + ' ~~~~');
 					coiTalkPage.setNewSectionTitle('COI tag (' + new Morebits.date(pageobj.getLoadTime()).format('MMMM Y', 'utc') + ')');
 					coiTalkPage.setChangeTags(Twinkle.changeTags);
@@ -776,7 +776,7 @@ Twinkle.tag.callbacks = {
 				// Special functions for merge tags
 				// Post a rationale on the talk page (mainspace only)
 				if (params.mergeReason) {
-					var mergeTalkPage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
+					var mergeTalkPage = new Morebits.wiki.page('Overleg:' + params.discussArticle, 'Reden op overlegpagina plaatsen');
 					mergeTalkPage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
 					mergeTalkPage.setNewSectionTitle(params.talkDiscussionTitleLinked);
 					mergeTalkPage.setChangeTags(Twinkle.changeTags);
@@ -786,11 +786,11 @@ Twinkle.tag.callbacks = {
 				}
 				// Tag the target page (if requested)
 				if (params.mergeTagOther) {
-					var otherTagName = 'Merge';
-					if (params.mergeTag === 'Merge from') {
-						otherTagName = 'Merge to';
-					} else if (params.mergeTag === 'Merge to') {
-						otherTagName = 'Merge from';
+					var otherTagName = 'Samenvoegen';
+					if (params.mergeTag === 'Samenvoegenvan') {
+						otherTagName = 'Samenvoegennaar';
+					} else if (params.mergeTag === 'Samenvoegennaar') {
+						otherTagName = 'Samenvoegenvan';
 					}
 					var newParams = {
 						tags: [otherTagName],
@@ -801,7 +801,7 @@ Twinkle.tag.callbacks = {
 						talkDiscussionTitle: params.talkDiscussionTitle,
 						talkDiscussionTitleLinked: params.talkDiscussionTitleLinked
 					};
-					var otherpage = new Morebits.wiki.page(params.mergeTarget, 'Tagging other page (' +
+					var otherpage = new Morebits.wiki.page(params.mergeTarget, 'Andere pagina labelen (' +
 						params.mergeTarget + ')');
 					otherpage.setChangeTags(Twinkle.changeTags);
 					otherpage.setCallbackParameters(newParams);
