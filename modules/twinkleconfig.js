@@ -45,37 +45,43 @@ Twinkle.config.watchlistEnums = {
 Twinkle.config.commonSets = {
 	csdCriteria: {
 		g1: 'Leeg halen', g2: 'Onzin', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
-		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending', u1: 'Eigen naamruimte', u2: 'Misbruik gebruikersnaamruimte'
+		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending', g10: 'Enige auteur',
+		u1: 'Eigen naamruimte', u2: 'Misbruik gebruikersnaamruimte'
 	},
 	csdCriteriaDisplayOrder: [
 		'g1', 'g2', 'g3', 'g4', 'g5',
-		'g6', 'g7', 'g8', 'g9', 'u1', 'u2'
+		'g6', 'g7', 'g8', 'g9', 'g10', 
+		'u1', 'u2'
 	],
 	csdCriteriaNotification: {
 		g1: 'Leeg halen', g2: 'Onzin', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
-		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending', u1: 'Eigen naamruimte', u2: 'Misbruik gebruikersnaamruimte'
+		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending', g10: 'Enige auteur',
+		u1: 'Eigen naamruimte', u2: 'Misbruik gebruikersnaamruimte'
 	},
 	csdCriteriaNotificationDisplayOrder: [
 		'g1', 'g2', 'g3', 'g4', 'g5',
-		'g6', 'g7', 'g8', 'g9', 'u1', 'u2'
+		'g6', 'g7', 'g8', 'g9', 'g10', 
+		'u1', 'u2'
 	],
 	csdCriteriaDelete: {
 		g1: 'Leeg halen', g2: 'Onzin', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
-		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending',
+		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending', g10: 'Enige auteur',
 		u1: 'Eigen naamruimte',  u2: 'Misbruik gebruikersnaamruimte', s1: 'TBx afhandeling', s2: 'Verplaatsing'
 	},
 	csdCriteriaDeleteDisplayOrder: [
 		'g1', 'g2', 'g3', 'g4', 'g5',
-		'g6', 'g7', 'g8', 'g9',
+		'g6', 'g7', 'g8', 'g9', 'g10',
 		'u1', 'u2', 's1', 's2'
 	],
 	csdAndDICriteria: {
 		g1: 'Leeg halen', g2: 'Onzin', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
-		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending', u1: 'Eigen naamruimte', u2: 'Misbruik gebruikersnaamruimte'
+		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending', g10: 'Enige auteur', 
+		u1: 'Eigen naamruimte', u2: 'Misbruik gebruikersnaamruimte'
 	},
 	csdAndDICriteriaDisplayOrder: [
 		'g1', 'g2', 'g3', 'g4', 'g5',
-		'g6', 'g7', 'g8', 'g9', 'u1', 'u2'
+		'g6', 'g7', 'g8', 'g9', 'g10', 
+		'u1', 'u2'
 	],
 	namespacesNoSpecial: {
 		0: 'Artikel',
