@@ -493,6 +493,13 @@
 			tooltip: 'Op grond van de geboortedatum is het onmogelijk dat de persoon opmerkelijke dingen heeft gedaan en/of na een zoektocht op internet worden geen relevante verwijzingen gevonden',
 		},
 		{
+			label: 'Aanvraag aanmaker',
+			value: 'enigeauteur',
+			tooltip:'Enkel gebruiken wanneer je deze pagina zelf, per abuis, hebt aangemaakt.',
+			hideWhenUser: true,
+			hideWhenMultiple: true,
+		},
+		{
 			label: 'Pagina over zelfde onderwerp bestaat al',
 			tooltip: 'Wees er 100% zeker van dat beide pagina\'s exact het zelfde onderwerp beschrijven',
 			value: 'duplicaat',
@@ -579,11 +586,6 @@
 			hideWhenUser: true,
 			hideWhenMultiple: true
 		},
-		{
-			label: 'Aanvraag aanmaker',
-			value: 'selfrequest',
-			tooltip:'Enkel gebruiken wanneer een pagina verkeerdelijk... is aangemaakt.'
-		},
 	];
 
 	Twinkle.speedy.normalizeHash = {
@@ -595,12 +597,12 @@
 		reclame: 'g6',
 		copyvio: 'g7',
 		duplicaat: 'g8',
-		privacy: 'g9', //Hierbij moet de naam van de persoon in kwestie ook gewist worden.
+		privacy: 'g9', //G9 = Leeghalen bij nominatie
+		enigeauteur:'g10',
 		eigennaamruimte: 'u1',
 		onjuistgebruik: 'u2',
 		tbx: 's1',
 		verplaatsing: 's2',
-		selfrequest:'s3',
 	};
 
 	Twinkle.speedy.templateReason = {
@@ -615,7 +617,7 @@
 		duplicaat: 'Onderwerp is reeds beschreven op: ',
 		eigennaamruimte: 'Verzoek in eigen naamruimte',
 		onjuistgebruik: 'Onjuist gebruik van gebruikersnaamruimte',
-		selfrequest:'Aanvraag door aanmaker (enige auteur)',
+		enigeauteur:'Aanvraag door aanmaker (enige auteur)',
 	};
 
 	Twinkle.speedy.deleteReason = {
@@ -632,7 +634,7 @@
 		onjuistgebruik: 'onjuist gebruik van gebruikersnaamruimte',
 		tbx: 'afhandelen TBx nominatie',
 		verplaatsing: 'verplaatsing/naamwijziging',
-		selfrequest:'Aanvraag van aanmaker',
+		enigeauteur:'Aanvraag van aanmaker',
 	};
 
 
