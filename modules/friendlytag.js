@@ -985,8 +985,8 @@ Twinkle.tag.redirectList = {
 
 			{ tag: 'R mentioned in hatnote', description: 'redirect from a title that is mentioned in a hatnote at the redirect target' },
 			{ tag: 'R to section', description: 'similar to {{R to list entry}}, but when list is organized in sections, such as list of characters in a fictional universe' },
-			{ tag: 'R from shortcut', description: 'redirect from a Wikipedia shortcut' }
-
+			{ tag: 'R from shortcut', description: 'redirect from a Wikipedia shortcut' },
+			{ tag: 'R to subpage', description: 'redirect to a subpage' }
 		],
 		'Disambiguation': [
 			{ tag: 'R from ambiguous term', description: 'redirect from an ambiguous page name to a page that disambiguates it. This template should never appear on a page that has "(disambiguation)" in its title, use R to disambiguation page instead' },
