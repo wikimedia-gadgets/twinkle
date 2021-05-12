@@ -68,7 +68,7 @@ Twinkle.defaultConfig = {
 	rollbackInPlace: false,
 	markRevertedPagesAsMinor: [ 'vand' ],
 	watchRevertedPages: [ 'agf', 'norm', 'vand', 'torev' ],
-	watchRevertedExpiry: 'yes',
+	watchRevertedExpiry: '1 month',
 	offerReasonOnNormalRevert: true,
 	confirmOnFluff: false,
 	confirmOnMobileFluff: true,
@@ -76,8 +76,8 @@ Twinkle.defaultConfig = {
 
 	// DI (twinkleimage)
 	notifyUserOnDeli: true,
-	deliWatchPage: 'default',
-	deliWatchUser: 'default',
+	deliWatchPage: '1 month',
+	deliWatchUser: '1 month',
 
 	// Protect
 	watchRequestedPages: 'yes',
@@ -85,7 +85,7 @@ Twinkle.defaultConfig = {
 	watchProtectedPages: 'default',
 
 	// PROD
-	watchProdPages: 'yes',
+	watchProdPages: '1 month',
 	markProdPagesAsPatrolled: false,
 	prodReasonDefault: '',
 	logProdPages: false,
@@ -94,8 +94,9 @@ Twinkle.defaultConfig = {
 	// CSD
 	speedySelectionStyle: 'buttonClick',
 	watchSpeedyPages: [ 'g3', 'g5', 'g10', 'g11', 'g12' ],
-	watchSpeedyExpiry: 'yes',
+	watchSpeedyExpiry: '1 month',
 	markSpeedyPagesAsPatrolled: false,
+	watchSpeedyUser: '1 month',
 
 	// these next two should probably be identical by default
 	welcomeUserOnSpeedyDeletionNotification: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'f10', 'u3', 'u5', 'p1', 'p2' ],
@@ -118,7 +119,7 @@ Twinkle.defaultConfig = {
 	defaultWarningGroup: '1',
 	combinedSingletMenus: false,
 	showSharedIPNotice: true,
-	watchWarnings: 'yes',
+	watchWarnings: '1 month',
 	oldSelect: false,
 	customWarningList: [],
 
@@ -128,9 +129,9 @@ Twinkle.defaultConfig = {
 	noLogOnXfdNomination: [],
 	xfdWatchDiscussion: 'default',
 	xfdWatchList: 'no',
-	xfdWatchPage: 'default',
-	xfdWatchUser: 'default',
-	xfdWatchRelated: 'default',
+	xfdWatchPage: '1 month',
+	xfdWatchUser: '1 month',
+	xfdWatchRelated: '1 month',
 	markXfdPagesAsPatrolled: true,
 
 	// Hidden preferences
@@ -148,8 +149,8 @@ Twinkle.defaultConfig = {
 	// Tag
 	groupByDefault: true,
 	watchTaggedVenues: ['articles', 'drafts', 'redirects', 'files'],
-	watchTaggedPages: 'yes',
-	watchMergeDiscussions: 'yes',
+	watchTaggedPages: '1 month',
+	watchMergeDiscussions: '1 month',
 	markTaggedPagesAsMinor: false,
 	markTaggedPagesAsPatrolled: true,
 	tagArticleSortOrder: 'cat',
@@ -159,11 +160,8 @@ Twinkle.defaultConfig = {
 
 	// Welcome
 	topWelcomes: false,
-	watchWelcomes: 'yes',
-	welcomeHeading: 'Welcome',
-	insertHeadings: true,
+	watchWelcomes: '3 months',
 	insertUsername: true,
-	insertSignature: true,  // sign welcome templates, where appropriate
 	quickWelcomeMode: 'norm',
 	quickWelcomeTemplate: 'welcome',
 	customWelcomeList: [],
@@ -280,7 +278,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 			if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
 				navigation = 'mw-panel';
 			}
-			outerNavClass = 'vector-menu vector-menu-' + (navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'dropdown' : 'tabs');
+			outerNavClass = 'mw-portlet vector-menu vector-menu-' + (navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'dropdown' : 'tabs');
 			innerDivClass = 'vector-menu-content';
 			break;
 		case 'modern':
@@ -400,7 +398,7 @@ $.ajax({
 	dataType: 'text'
 })
 	.fail(function () {
-		mw.notify('Could not load your Twinkle preferences', {type: 'error'});
+		mw.notify('Could not load your Twinkle preferences, resorting to default preferences');
 	})
 	.done(function (optionsText) {
 
@@ -502,32 +500,46 @@ Twinkle.summaryAd = ' ([[WP:TW|TW]])';
 Twinkle.hatnoteRegex = 'short description|hatnote|main|correct title|dablink|distinguish|for|further|selfref|year dab|similar names|highway detail hatnote|broader|about(?:-distinguish| other people)?|other\\s?(?:hurricane(?: use)?s|people|persons|places|ships|uses(?: of)?)|redirect(?:-(?:distinguish|synonym|multi))?|see\\s?(?:wiktionary|also(?: if exists)?)';
 
 // Used in XFD and PROD
-Twinkle.makeFindSourcesDiv = function makeSourcesDiv() {
-	var makeLink = function(href, text) {
-		return $('<a>').attr({ rel: 'nofollow', class: 'external text',
-			target: '_blank', href: href }).text(text);
-	};
-	var title = encodeURIComponent(Morebits.pageNameNorm);
-	return $('<div>')
-		.addClass('plainlinks')
-		.append(
-			'(',
-			$('<i>').text('Find sources:'), ' ',
-			makeLink('//www.google.com/search?as_eq=wikipedia&q=%22' + title + '%22', 'Google'),
-			' (',
-			makeLink('//www.google.com/search?tbs=bks:1&q=%22' + title + '%22+-wikipedia', 'books'), ' - ',
-			makeLink('//www.google.com/search?tbm=nws&q=%22' + title + '%22+-wikipedia', 'news'), ' - ',
-			makeLink('//www.google.com/search?&q=%22' + title + '%22+site:news.google.com/newspapers&source=newspapers', 'newspapers'), ' - ',
-			makeLink('//scholar.google.com/scholar?q=%22' + title + '%22', 'scholar'), ' - ',
-			makeLink('https://www.google.com/search?safe=off&tbs=sur:fmc&tbm=isch&q=%22' + title + '%22+-site:wikipedia.org+-site:wikimedia.org', 'free images'), ' - ',
-			makeLink('https://www.google.com/custom?hl=en&cx=007734830908295939403%3Agalkqgoksq0&cof=FORID%3A13%3BAH%3Aleft%3BCX%3AWikipedia%2520Reference%2520Search&q=%22' + title + '%22', 'WP refs'),
-			')', ' - ',
-			makeLink('https://en.wikipedia.org/wiki/Wikipedia:Free_English_newspaper_sources', 'FENS'), ' - ',
-			makeLink('https://www.jstor.org/action/doBasicSearch?Query=%22' + title + '%22&acc=on&wc=on', 'JSTOR'), ' - ',
-			makeLink('https://www.nytimes.com/search/%22' + title + '%22', 'NYT'), ' - ',
-			makeLink('https://wikipedialibrary.wmflabs.org/partners/', 'TWL'),
-			')'
-		)[0];
+Twinkle.makeFindSourcesDiv = function makeSourcesDiv(divID) {
+	if (!$(divID).length) {
+		return;
+	}
+	if (!Twinkle.findSources) {
+		var parser = new Morebits.wiki.preview($(divID)[0]);
+		parser.beginRender('({{Find sources|' + Morebits.pageNameNorm + '}})', 'WP:AFD').then(function() {
+			// Save for second-time around
+			Twinkle.findSources = parser.previewbox.innerHTML;
+			$(divID).removeClass('morebits-previewbox');
+		});
+	} else {
+		$(divID).html(Twinkle.findSources);
+	}
+};
+
+/** Twinkle-specific utility functions shared by multiple modules */
+// Used in batch, unlink, and deprod to sort pages by namespace, as
+// json formatversion=2 sorts by pageid instead (#1251)
+Twinkle.sortByNamespace = function(first, second) {
+	return first.ns - second.ns || (first.title > second.title ? 1 : -1);
+};
+
+// Used in batch listings to link to the page in question with >
+Twinkle.generateArrowLinks = function (checkbox) {
+	var link = Morebits.htmlNode('a', ' >');
+	link.setAttribute('class', 'tw-arrowpage-link');
+	link.setAttribute('href', mw.util.getUrl(checkbox.value));
+	link.setAttribute('target', '_blank');
+	checkbox.nextElementSibling.append(link);
+};
+
+// Used in deprod and unlink listings to link the page title
+Twinkle.generateBatchPageLinks = function (checkbox) {
+	var $checkbox = $(checkbox);
+	var link = Morebits.htmlNode('a', $checkbox.val());
+	link.setAttribute('class', 'tw-batchpage-link');
+	link.setAttribute('href', mw.util.getUrl($checkbox.val()));
+	link.setAttribute('target', '_blank');
+	$checkbox.next().prepend([link, ' ']);
 };
 
 }(window, document, jQuery)); // End wrap with anonymous function

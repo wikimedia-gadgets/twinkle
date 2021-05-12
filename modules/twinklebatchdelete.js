@@ -34,6 +34,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	Window.setTitle('Batch deletion');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#batchdelete');
+	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.batchdelete.callback.evaluate);
 	form.append({
@@ -171,10 +172,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		pages = pages.filter(function(page) {
 			return !page.missing && page.imagerepository !== 'shared';
 		});
-		// json formatversion=2 doesn't sort pages by namespace
-		pages.sort(function(one, two) {
-			return one.ns - two.ns || (one.title > two.title ? 1 : -1);
-		});
+		pages.sort(Twinkle.sortByNamespace);
 		pages.forEach(function(page) {
 			var metadata = [];
 			if (page.redirect) {
@@ -242,21 +240,13 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		var result = form.render();
 		apiobj.params.Window.setContent(result);
 
-		Morebits.quickForm.getElements(result, 'pages').forEach(generateArrowLinks);
+		Morebits.quickForm.getElements(result, 'pages').forEach(Twinkle.generateArrowLinks);
 
 	}, statelem);
 
 	wikipedia_api.params = { form: form, Window: Window };
 	wikipedia_api.post();
 };
-
-function generateArrowLinks (checkbox) {
-	var link = Morebits.htmlNode('a', ' >');
-	link.setAttribute('class', 'tw-dbatch-page-link');
-	link.setAttribute('href', mw.util.getUrl(checkbox.value));
-	link.setAttribute('target', '_blank');
-	checkbox.nextElementSibling.append(link);
-}
 
 Twinkle.batchdelete.generateNewPageList = function(form) {
 
@@ -306,8 +296,8 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 			newPageList = Twinkle.batchdelete.generateNewPageList(form);
 			$('#tw-dbatch-pages').replaceWith(newPageList);
 
-			Morebits.quickForm.getElements(newPageList, 'pages').forEach(generateArrowLinks);
-			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages').forEach(Twinkle.generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(Twinkle.generateArrowLinks);
 
 			return;
 		}
@@ -346,10 +336,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 				var response = apiobj.getResponse();
 				var pages = (response.query && response.query.pages) || [];
 				var subpageList = [];
-				// json formatversion=2 doesn't sort pages by namespace
-				pages.sort(function(one, two) {
-					return one.ns - two.ns || (one.title > two.title ? 1 : -1);
-				});
+				pages.sort(Twinkle.sortByNamespace);
 				pages.forEach(function(page) {
 					var metadata = [];
 					if (page.redirect) {
@@ -401,8 +388,8 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 			newPageList = Twinkle.batchdelete.generateNewPageList(form);
 			$('#tw-dbatch-pages').replaceWith(newPageList);
 
-			Morebits.quickForm.getElements(newPageList, 'pages').forEach(generateArrowLinks);
-			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages').forEach(Twinkle.generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(Twinkle.generateArrowLinks);
 
 			subpagesLoaded = true;
 
@@ -426,7 +413,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		newPageList = Twinkle.batchdelete.generateNewPageList(form);
 		$('#tw-dbatch-pages').replaceWith(newPageList);
 
-		Morebits.quickForm.getElements(newPageList, 'pages').forEach(generateArrowLinks);
+		Morebits.quickForm.getElements(newPageList, 'pages').forEach(Twinkle.generateArrowLinks);
 	}
 };
 
@@ -467,7 +454,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 			delete_talk: input.delete_talk,
 			delete_redirects: input.delete_redirects,
 			unlink_page: input.unlink_page,
-			unlink_file: input.unlink_file && /^(File|Image):/i.test(pageName),
+			unlink_file: input.unlink_file && new RegExp('^' + Morebits.namespaceRegex(6) + ':', 'i').test(pageName),
 			reason: input.reason,
 			pageDeleter: pageDeleter
 		};
@@ -698,7 +685,7 @@ Twinkle.batchdelete.callbacks = {
 			return;
 		}
 
-		var image = params.page.replace(/^(?:Image|File):/, '');
+		var image = params.page.replace(new RegExp('^' + Morebits.namespaceRegex(6) + ':'), '');
 		var text;
 		if (params.title in Twinkle.batchdelete.unlinkCache) {
 			text = Twinkle.batchdelete.unlinkCache[params.title];

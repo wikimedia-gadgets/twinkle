@@ -10,30 +10,30 @@ QUnit.assert.pmOne = function(actual, expected, message) {
 };
 
 var now = Date.now();
-var timestamp = '16:26, 7 November 2020 (UTC)', ts_iso = '2020-11-07T16:26:00.000Z', naive = 20201107162600;
+var ts_mw = '16:26, 7 November 2020 (UTC)', ts_iso = '2020-11-07T16:26:00.000Z', naive = 20201107162600;
 QUnit.test('Construction', assert => {
 	// getTime and toISOString imply testing of inherited methods
 	assert.pmOne(new Morebits.date().getTime(), new Date().getTime(), 'Basic constructor');
 
 	assert.strictEqual(new Morebits.date(now).getTime(), new Date(now).getTime(), 'Constructor from timestring');
 	assert.strictEqual(new Morebits.date(2020, 11, 7, 16, 26).getTime(), new Date(2020, 11, 7, 16, 26).getTime(), 'Constructor from parts');
-	assert.strictEqual(new Morebits.date(timestamp).toISOString(), ts_iso, 'enWiki timestamp format');
+	assert.strictEqual(new Morebits.date(ts_mw).toISOString(), ts_iso, 'enWiki timestamp format');
 	assert.strictEqual(new Morebits.date(naive).toISOString(), ts_iso, 'MediaWiki 14-digit number');
 	assert.strictEqual(new Morebits.date(naive.toString()).toISOString(), ts_iso, 'MediaWiki 14-digit string');
 	assert.strictEqual(new Morebits.date(parseInt(naive / 10, 10)).toISOString(), new Date(parseInt(naive / 10, 10)).toISOString(), 'native 13 digit');
 	assert.strictEqual(new Morebits.date(naive * 10).toISOString(), new Date(naive * 10).toISOString(), 'native 15 digit');
 });
-var date = new Morebits.date(timestamp);
+var date = new Morebits.date(ts_mw);
 QUnit.test('Methods', assert => {
 	assert.true(date.isValid(), 'Valid');
 	// Logs a message; not a failure, but annoying
 	assert.false(new Morebits.date('no').isValid(), 'Invalid');
 
 	// Ideally we would test the differences between UTC and non-UTC dates
-	assert.strictEqual(date.getDayName(), 'Saturday', 'getDayName');
-	assert.strictEqual(date.getDayNameAbbrev(), 'Sat', 'DayNameAbbrev');
-	assert.strictEqual(date.getMonthName(), 'November', 'MonthName');
-	assert.strictEqual(date.getMonthNameAbbrev(), 'Nov', 'MonthNameAbbrev');
+	assert.strictEqual(date.getUTCDayName(), 'Saturday', 'getUTCDayName');
+	assert.strictEqual(date.getUTCDayNameAbbrev(), 'Sat', 'getUTCDayNameAbbrev');
+	assert.strictEqual(date.getUTCMonthName(), 'November', 'getUTCMonthName');
+	assert.strictEqual(date.getUTCMonthNameAbbrev(), 'Nov', 'getUTCMonthNameAbbrev');
 
 	assert.true(new Morebits.date(now).isAfter(date), 'isAfter');
 	assert.true(date.isBefore(new Date(now)), 'isBefore');
@@ -50,10 +50,22 @@ QUnit.test('RegEx headers', assert => {
 	assert.false(date.monthHeaderRegex().test('==December 2020=='), 'Wrong month');
 });
 QUnit.test('add/subtract', assert => {
-	assert.strictEqual(new Morebits.date(timestamp).add(1, 'day').toISOString(), '2020-11-08T16:26:00.000Z', 'Add 1 day');
-	assert.strictEqual(new Morebits.date(timestamp).subtract(1, 'day').toISOString(), '2020-11-06T16:26:00.000Z', 'Subtract 1 day');
-	assert.throws(() => new Morebits.date(timestamp).add(1), 'throws: no unit');
-	assert.throws(() => new Morebits.date(timestamp).subtract(1, 'dayo'), 'throws: bad unit');
+	assert.strictEqual(new Morebits.date(ts_mw).add(1, 'day').toISOString(), '2020-11-08T16:26:00.000Z', 'Add 1 day');
+	assert.strictEqual(new Morebits.date(ts_mw).add(1, 'DaY').toISOString(), '2020-11-08T16:26:00.000Z', 'Loudly add 1 day');
+	assert.strictEqual(new Morebits.date(ts_mw).add('1', 'day').toISOString(), '2020-11-08T16:26:00.000Z', "Add 1 day but it's a string");
+	assert.strictEqual(new Morebits.date(ts_mw).subtract(1, 'day').toISOString(), '2020-11-06T16:26:00.000Z', 'Subtract 1 day');
+	assert.strictEqual(new Morebits.date(ts_mw).add(2, 'weeks').toISOString(), '2020-11-21T16:26:00.000Z', 'Add 2 weeks');
+	assert.strictEqual(new Morebits.date(ts_mw).add(2, 'weeks').subtract(2, 'weeks').toISOString(), ts_iso, '2 weeks roundtrip'); // Note, this intentionally twice-crosses a US DST
+
+	assert.strictEqual(new Morebits.date(ts_mw).add(1, 'second').toISOString(), '2020-11-07T16:26:01.000Z', 'Add 1 second');
+	assert.strictEqual(new Morebits.date(ts_mw).add(1, 'minute').toISOString(), '2020-11-07T16:27:00.000Z', 'Add 1 minute');
+	assert.strictEqual(new Morebits.date(ts_mw).add(1, 'hour').toISOString(), '2020-11-07T17:26:00.000Z', 'Add 1 hour');
+	assert.strictEqual(new Morebits.date(ts_mw).add(1, 'month').toISOString(), '2020-12-07T16:26:00.000Z', 'Add 1 month');
+	assert.strictEqual(new Morebits.date(ts_mw).add(1, 'year').toISOString(), '2021-11-07T16:26:00.000Z', 'Add 1 year');
+
+	assert.throws(() => new Morebits.date(ts_mw).add('forty-two'), 'throws: non-number provided');
+	assert.throws(() => new Morebits.date(ts_mw).add(1), 'throws: no unit');
+	assert.throws(() => new Morebits.date(ts_mw).subtract(1, 'dayo'), 'throws: bad unit');
 });
 QUnit.test('Formats', assert => {
 	assert.strictEqual(new Morebits.date(now).format('YYYY-MM-DDTHH:mm:ss.SSSZ', 'utc'), new Date(now).toISOString(), 'ISO format');

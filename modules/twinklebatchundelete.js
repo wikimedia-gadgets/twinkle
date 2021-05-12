@@ -27,6 +27,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	Window.setScriptName('Twinkle');
 	Window.setTitle('Batch undelete');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#batchundelete');
+	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.batchundelete.callback.evaluate);
 	form.append({
@@ -70,10 +71,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 			return page.missing;
 		});
 		var list = [];
-		// json formatversion=2 doesn't sort pages by namespace
-		pages.sort(function(one, two) {
-			return one.ns - two.ns || (one.title > two.title ? 1 : -1);
-		});
+		pages.sort(Twinkle.sortByNamespace);
 		pages.forEach(function(page) {
 			var editProt = page.protection.filter(function(pr) {
 				return pr.type === 'create' && pr.level === 'sysop';
@@ -113,6 +111,8 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 
 		var result = apiobj.params.form.render();
 		apiobj.params.Window.setContent(result);
+
+		Morebits.quickForm.getElements(result, 'pages').forEach(Twinkle.generateArrowLinks);
 
 	}, statelem);
 	wikipedia_api.params = { form: form, Window: Window };

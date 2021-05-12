@@ -309,7 +309,9 @@ Twinkle.fluff.addLinks = {
 			// &unhide=1), since the username will be available by
 			// checking a.mw-userlink instead, but revert() will
 			// need reworking around userHidden
-			var vandal = $('#mw-diff-ntitle2').find('.mw-userlink')[0].text;
+			var vandal = $('#mw-diff-ntitle2').find('.mw-userlink')[0];
+			// See #1337
+			vandal = vandal ? vandal.text : '';
 			var ntitle = document.getElementById('mw-diff-ntitle1').parentNode;
 
 			ntitle.insertBefore(Twinkle.fluff.linkBuilder.rollbackLinks(vandal), ntitle.firstChild);
@@ -317,8 +319,11 @@ Twinkle.fluff.addLinks = {
 	},
 
 	oldid: function() { // Add a [restore this revision] link on old revisions
-		var title = document.getElementById('mw-revision-info').parentNode;
-		title.insertBefore(Twinkle.fluff.linkBuilder.restoreThisRevisionLink('wgRevisionId'), title.firstChild);
+		var revisionInfo = document.getElementById('mw-revision-info');
+		if (revisionInfo) {
+			var title = revisionInfo.parentNode;
+			title.insertBefore(Twinkle.fluff.linkBuilder.restoreThisRevisionLink('wgRevisionId'), title.firstChild);
+		}
 	}
 };
 
@@ -333,7 +338,7 @@ Twinkle.fluff.disableLinks = function disablelinks(parentNode) {
 
 Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 	if (mw.util.isIPv6Address(vandal)) {
-		vandal = Morebits.sanitizeIPv6(vandal);
+		vandal = Morebits.ip.sanitizeIPv6(vandal);
 	}
 
 	var pagename = page || mw.config.get('wgPageName');
@@ -427,7 +432,7 @@ Twinkle.fluff.callbacks = {
 			return;
 		}
 
-		var summary = Twinkle.fluff.formatSummary('Reverted to revision ' + revertToRevID + ' by $USER',
+		var summary = Twinkle.fluff.formatSummary('Restored revision ' + revertToRevID + ' by $USER',
 			revertToUserHidden ? null : revertToUser, optional_summary);
 
 		var query = {
@@ -454,7 +459,7 @@ Twinkle.fluff.callbacks = {
 			} else {
 				query.watchlist = 'watch';
 				// number allowed but not used in Twinkle.config.watchlistEnums
-				if (!page.watched && typeof watchOrExpiry === 'string' && watchOrExpiry !== 'yes') {
+				if ((!page.watched || page.watchlistexpiry) && typeof watchOrExpiry === 'string' && watchOrExpiry !== 'yes') {
 					query.watchlistexpiry = watchOrExpiry;
 				}
 			}
@@ -504,10 +509,13 @@ Twinkle.fluff.callbacks = {
 		var index = 1;
 		if (params.revid !== lastrevid) {
 			Morebits.status.warn('Warning', [ 'Latest revision ', Morebits.htmlNode('strong', lastrevid), ' doesn\'t equal our revision ', Morebits.htmlNode('strong', params.revid) ]);
-			if (lastuser === params.user) {
+			// Treat ipv6 users on same 64 block as the same
+			if (lastuser === params.user || (mw.util.isIPv6Address(params.user) && Morebits.ip.get64(lastuser) === Morebits.ip.get64(params.user))) {
 				switch (params.type) {
 					case 'vand':
-						Morebits.status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm), '. As we assume vandalism, we will proceed to revert.' ]);
+						var diffUser = lastuser !== params.user;
+						Morebits.status.info('Info', [ 'Latest revision was ' + (diffUser ? '' : 'also ') + 'made by ', Morebits.htmlNode('strong', userNorm),
+							diffUser ? ', which is on the same /64 subnet' : '', '. As we assume vandalism, we will proceed to revert.' ]);
 						break;
 					case 'agf':
 						Morebits.status.warn('Warning', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm), '. As we assume good faith, we will stop the revert, as the problem might have been fixed.' ]);
@@ -564,17 +572,26 @@ Twinkle.fluff.callbacks = {
 		}
 		var found = false;
 		var count = 0;
+		var seen64 = false;
 
 		for (var i = index; i < revs.length; ++i) {
 			++count;
 			if (revs[i].user !== params.user) {
+				// Treat ipv6 users on same 64 block as the same
+				if (mw.util.isIPv6Address(revs[i].user) && Morebits.ip.get64(revs[i].user) === Morebits.ip.get64(params.user)) {
+					if (!seen64) {
+						new Morebits.status('Note', 'Treating consecutive IPv6 addresses in the same /64 as the same user');
+						seen64 = true;
+					}
+					continue;
+				}
 				found = i;
 				break;
 			}
 		}
 
 		if (!found) {
-			statelem.error([ 'No previous revision found. Perhaps ', Morebits.htmlNode('strong', userNorm), ' is the only contributor, or that the user has made more than ' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + ' edits in a row.' ]);
+			statelem.error([ 'No previous revision found. Perhaps ', Morebits.htmlNode('strong', userNorm), ' is the only contributor, or they have made more than ' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + ' edits in a row.' ]);
 			return;
 		}
 
@@ -687,7 +704,7 @@ Twinkle.fluff.callbacks = {
 			} else {
 				query.watchlist = 'watch';
 				// number allowed but not used in Twinkle.config.watchlistEnums
-				if (!page.watched && typeof watchOrExpiry === 'string' && watchOrExpiry !== 'yes') {
+				if ((!page.watched || page.watchlistexpiry) && typeof watchOrExpiry === 'string' && watchOrExpiry !== 'yes') {
 					query.watchlistexpiry = watchOrExpiry;
 				}
 			}

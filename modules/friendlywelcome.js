@@ -84,7 +84,8 @@ Twinkle.welcome.normal = function() {
 			}
 		}
 	}
-	if (mw.config.get('wgRelevantUserName')) {
+	// Users and IPs but not IP ranges
+	if (mw.config.exists('wgRelevantUserName') && !Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
 		Twinkle.addPortletLink(function() {
 			Twinkle.welcome.callback(mw.config.get('wgRelevantUserName'));
 		}, 'Wel', 'friendly-welcome', 'Welcome user');
@@ -122,6 +123,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 	Window.addFooterLink('Welcoming Committee', 'WP:WC');
 	Window.addFooterLink('Welcome prefs', 'WP:TW/PREF#welcome');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#welcome');
+	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.welcome.callback.evaluate);
 

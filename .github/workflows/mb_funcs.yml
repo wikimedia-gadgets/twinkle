@@ -5,10 +5,14 @@ on:
     paths:
     - 'morebits.js'
     - 'tests/**'
+    - 'package.json'
+    - 'package-lock.json'
   pull_request:
     paths:
     - 'morebits.js'
     - 'tests/**'
+    - 'package.json'
+    - 'package-lock.json'
 
 jobs:
   lint:

@@ -275,9 +275,9 @@ QUnit.test('Morebits.wikitext.page', assert => {
 		{
 			name: 'Template namespace',
 			method: 'removeTemplate',
-			input: 'O, she doth {{Template:plural|teach}} the {{template:plural|torches}} to burn bright!',
-			expected: 'O, she doth  the  to burn bright!',
-			params: ['Template:plural']
+			input: 'O, {{plural|she}} doth {{Template:plural|teach}} the {{template:plural|torches}} to burn bright!',
+			expected: 'O,  doth  the  to burn bright!',
+			params: ['plural']
 		},
 		{
 			name: 'Similar names',
@@ -306,6 +306,34 @@ QUnit.test('Morebits.wikitext.page', assert => {
 			input: 'O, {{plural|she|}} doth {{pluralize|teach}} the {{plural  | torches}} t{{plural \n\n |}}o {{plural temp|burn}} bright!',
 			expected: 'O,  doth {{pluralize|teach}} the  to {{plural temp|burn}} bright!',
 			params: ['plural']
+		},
+		{
+			name: 'AltCaps',
+			method: 'removeLink',
+			input: 'O, [[WP:Juliet]] she [[wp:juliet|doth]] {{plural|teach}} [[Romeo|the]] [[wikipedia:Juliet|torches]] [[Wikipedia:juliet]] to burn bright!',
+			expected: 'O, WP:Juliet she doth {{plural|teach}} [[Romeo|the]] torches Wikipedia:juliet to burn bright!',
+			params: ['wikipedia:juliet']
+		},
+		{
+			name: 'AltCaps',
+			method: 'commentOutImage',
+			input: 'O, [[File:Fee.svg]] she [[file:Fee.svg|doth|teach]] the [[File:fee.svg|torches]] to burn [[file:fee.svg]] bright!',
+			expected: 'O, <!-- [[File:Fee.svg]] --> she <!-- [[file:Fee.svg|doth|teach]] --> the <!-- [[File:fee.svg|torches]] --> to burn <!-- [[file:fee.svg]] --> bright!',
+			params: ['fee.svg']
+		},
+		{
+			name: 'AltCaps gallery',
+			method: 'commentOutImage',
+			input: '<gallery>\nFile:Fee.svg|1\nfile:Fee.svg|2\nFile:fee.svg|3\nfile:fee.svg|4\n</gallery>',
+			expected: '<gallery>\n<!-- File:Fee.svg|1 -->\n<!-- file:Fee.svg|2 -->\n<!-- File:fee.svg|3 -->\n<!-- file:fee.svg|4 -->\n</gallery>',
+			params: ['Fee.svg']
+		},
+		{
+			name: 'AltCaps',
+			method: 'addToImageComment',
+			input: 'O, [[File:Fee.svg]] she [[file:Fee.svg|doth|teach]] the [[File:fee.svg|torches]] to burn [[file:fee.svg]] bright!',
+			expected: 'O, [[File:Fee.svg|thumb]] she [[file:Fee.svg|doth|teach|thumb]] the [[File:fee.svg|torches|thumb]] to burn [[file:fee.svg|thumb]] bright!',
+			params: ['Fee.svg', 'thumb']
 		}
 	];
 

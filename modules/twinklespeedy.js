@@ -49,6 +49,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	dialog.addFooterLink('Speedy deletion policy', 'WP:CSD');
 	dialog.addFooterLink('CSD prefs', 'WP:TW/PREF#speedy');
 	dialog.addFooterLink('Twinkle help', 'WP:TW/DOC#speedy');
+	dialog.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(callbackfunc, Twinkle.getPref('speedySelectionStyle') === 'radioClick' ? 'change' : null);
 	if (Morebits.userIsSysop) {
@@ -269,37 +270,35 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		});
 	}
 
-	var radioOrCheckbox = mode.isMultiple ? 'checkbox' : 'radio';
+	var appendList = function(headerLabel, csdList) {
+		work_area.append({ type: 'header', label: headerLabel });
+		work_area.append({ type: mode.isMultiple ? 'checkbox' : 'radio', name: 'csd', list: Twinkle.speedy.generateCsdList(csdList, mode) });
+	};
 
 	if (mode.isSysop && !mode.isMultiple) {
-		work_area.append({ type: 'header', label: 'Custom rationale' });
-		work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.customRationale, mode) });
+		appendList('Custom rationale', Twinkle.speedy.customRationale);
 	}
 
 	if (namespace % 2 === 1 && namespace !== 3) {
 		// show db-talk on talk pages, but not user talk pages
-		work_area.append({ type: 'header', label: 'Talk pages' });
-		work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.talkList, mode) });
+		appendList('Talk pages', Twinkle.speedy.talkList);
 	}
 
 	if (!Morebits.isPageRedirect()) {
 		switch (namespace) {
 			case 0:  // article
 			case 1:  // talk
-				work_area.append({ type: 'header', label: 'Articles' });
-				work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.articleList, mode) });
+				appendList('Articles', Twinkle.speedy.articleList);
 				break;
 
 			case 2:  // user
 			case 3:  // user talk
-				work_area.append({ type: 'header', label: 'User pages' });
-				work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userList, mode) });
+				appendList('User pages', Twinkle.speedy.userList);
 				break;
 
 			case 6:  // file
 			case 7:  // file talk
-				work_area.append({ type: 'header', label: 'Files' });
-				work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.fileList, mode) });
+				appendList('Files', Twinkle.speedy.fileList);
 				if (!mode.isSysop) {
 					work_area.append({ type: 'div', label: 'Tagging for CSD F4 (no license), F5 (orphaned fair use), F6 (no fair use rationale), and F11 (no permission) can be done using Twinkle\'s "DI" tab.' });
 				}
@@ -307,14 +306,12 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 
 			case 14:  // category
 			case 15:  // category talk
-				work_area.append({ type: 'header', label: 'Categories' });
-				work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.categoryList, mode) });
+				appendList('Categories', Twinkle.speedy.categoryList);
 				break;
 
 			case 100:  // portal
 			case 101:  // portal talk
-				work_area.append({ type: 'header', label: 'Portals' });
-				work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.portalList, mode) });
+				appendList('Portals', Twinkle.speedy.portalList);
 				break;
 
 			default:
@@ -322,11 +319,9 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		}
 	} else {
 		if (namespace === 2 || namespace === 3) {
-			work_area.append({ type: 'header', label: 'User pages' });
-			work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.userList, mode) });
+			appendList('User pages', Twinkle.speedy.userList);
 		}
-		work_area.append({ type: 'header', label: 'Redirects' });
-		work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(Twinkle.speedy.redirectList, mode) });
+		appendList('Redirects', Twinkle.speedy.redirectList);
 	}
 
 	var generalCriteria = Twinkle.speedy.generalList;
@@ -335,8 +330,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	if (!mode.isSysop) {
 		generalCriteria = Twinkle.speedy.customRationale.concat(generalCriteria);
 	}
-	work_area.append({ type: 'header', label: 'General criteria' });
-	work_area.append({ type: radioOrCheckbox, name: 'csd', list: Twinkle.speedy.generateCsdList(generalCriteria, mode) });
+	appendList('General criteria', generalCriteria);
 
 	var old_area = Morebits.quickForm.getElements(form, 'work_area')[0];
 	form.replaceChild(work_area.render(), old_area);
@@ -556,20 +550,9 @@ Twinkle.speedy.fileList = [
 		hideWhenUser: true
 	},
 	{
-		label: 'F7: Clearly invalid fair-use tag',
-		value: 'badfairuse',  // same as below
-		tooltip: 'This is only for files with a clearly invalid fair-use tag, such as a {{Non-free logo}} tag on a photograph of a mascot. For cases that require a waiting period (replaceable images or otherwise disputed rationales), use the options on Twinkle\'s DI tab.',
-		subgroup: {
-			name: 'badfairuse_rationale',
-			type: 'input',
-			label: 'Optional explanation: ',
-			size: 60
-		}
-	},
-	{
 		label: 'F7: Fair-use media from a commercial image agency which is not the subject of sourced commentary',
-		value: 'badfairuse',  // same as above
-		tooltip: 'Non-free images or media from a commercial source (e.g., Associated Press, Getty), where the file itself is not the subject of sourced commentary, are considered an invalid claim of fair use and fail the strict requirements of WP:NFCC.',
+		value: 'badfairuse',
+		tooltip: 'Non-free images or media from a commercial source (e.g., Associated Press, Getty), where the file itself is not the subject of sourced commentary, are considered an invalid claim of fair use and fail the strict requirements of WP:NFCC. For cases that require a waiting period (invalid or otherwise disputed rationales or replaceable images), use the options on Twinkle\'s DI tab.',
 		subgroup: {
 			name: 'badfairuse_rationale',
 			type: 'input',
@@ -1237,6 +1220,7 @@ Twinkle.speedy.callbacks = {
 			usertalkpage.setEditSummary(editsummary);
 			usertalkpage.setChangeTags(Twinkle.changeTags);
 			usertalkpage.setCreateOption('recreate');
+			usertalkpage.setWatchlist(Twinkle.getPref('watchSpeedyUser'));
 			usertalkpage.setFollowRedirect(true, false);
 			usertalkpage.append(function onNotifySuccess() {
 				// add this nomination to the user's userspace log, if the user has enabled it
@@ -1555,10 +1539,6 @@ Twinkle.speedy.callbacks = {
 			}
 		},
 
-		// note: this code is also invoked from twinkleimage
-		// the params used are:
-		//   for CSD: params.values, params.normalizeds  (note: normalizeds is an array)
-		//   for DI: params.fromDI = true, params.templatename, params.normalized  (note: normalized is a string)
 		addToLog: function(params, initialContrib) {
 			var usl = new Morebits.userspaceLogger(Twinkle.getPref('speedyLogPageName'));
 			usl.initialText =
@@ -1574,8 +1554,7 @@ Twinkle.speedy.callbacks = {
 					(normalize === 'G6' && csdparam === 'sourcepage') ||
 					(normalize === 'A2' && csdparam === 'source') ||
 					(normalize === 'A10' && csdparam === 'article') ||
-					(normalize === 'F1' && csdparam === 'filename') ||
-					(normalize === 'F5' && csdparam === 'replacement')) {
+					(normalize === 'F1' && csdparam === 'filename')) {
 					input = '[[:' + input + ']]';
 				} else if (normalize === 'G5' && csdparam === 'user') {
 					input = '[[:User:' + input + ']]';
@@ -1597,57 +1576,44 @@ Twinkle.speedy.callbacks = {
 			var editsummary = 'Logging speedy deletion nomination';
 			var appendText = '# [[:' + Morebits.pageNameNorm;
 
-			if (params.fromDI) {
-				appendText += ']]' + fileLogLink + ': DI [[WP:CSD#' + params.normalized.toUpperCase() + '|CSD ' + params.normalized.toUpperCase() + ']] ({{tl|di-' + params.templatename + '}})';
-				// The params data structure when coming from DI is quite different,
-				// so this hardcodes the only interesting items worth logging
-				['reason', 'replacement', 'source'].forEach(function(item) {
-					if (params[item]) {
-						extraInfo += formatParamLog(params.normalized.toUpperCase(), item, params[item]);
-						return false;
-					}
-				});
+			if (params.normalizeds.indexOf('g10') === -1) {  // no article name in log for G10 taggings
+				appendText += ']]' + fileLogLink + ': ';
 				editsummary += ' of [[:' + Morebits.pageNameNorm + ']].';
 			} else {
-				if (params.normalizeds.indexOf('g10') === -1) {  // no article name in log for G10 taggings
-					appendText += ']]' + fileLogLink + ': ';
-					editsummary += ' of [[:' + Morebits.pageNameNorm + ']].';
-				} else {
-					appendText += '|This]] attack page' + fileLogLink + ': ';
-					editsummary += ' of an attack page.';
-				}
-				if (params.normalizeds.length > 1) {
-					appendText += 'multiple criteria (';
-					$.each(params.normalizeds, function(index, norm) {
-						appendText += '[[WP:CSD#' + norm.toUpperCase() + '|' + norm.toUpperCase() + ']], ';
-					});
-					appendText = appendText.substr(0, appendText.length - 2);  // remove trailing comma
-					appendText += ')';
-				} else if (params.normalizeds[0] === 'db') {
-					appendText += '{{tl|db-reason}}';
-				} else {
-					appendText += '[[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']] ({{tl|db-' + params.values[0] + '}})';
-				}
+				appendText += '|This]] attack page' + fileLogLink + ': ';
+				editsummary += ' of an attack page.';
+			}
+			if (params.normalizeds.length > 1) {
+				appendText += 'multiple criteria (';
+				$.each(params.normalizeds, function(index, norm) {
+					appendText += '[[WP:CSD#' + norm.toUpperCase() + '|' + norm.toUpperCase() + ']], ';
+				});
+				appendText = appendText.substr(0, appendText.length - 2);  // remove trailing comma
+				appendText += ')';
+			} else if (params.normalizeds[0] === 'db') {
+				appendText += '{{tl|db-reason}}';
+			} else {
+				appendText += '[[WP:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']] ({{tl|db-' + params.values[0] + '}})';
+			}
 
-				// If params is "empty" it will still be full of empty arrays, but ask anyway
-				if (params.templateParams) {
-					// Treat custom rationale individually
-					if (params.normalizeds[0] && params.normalizeds[0] === 'db') {
-						extraInfo += formatParamLog('Custom', 'rationale', params.templateParams[0]['1']);
-					} else {
-						params.templateParams.forEach(function(item, index) {
-							var keys = Object.keys(item);
-							if (keys[0] !== undefined && keys[0].length > 0) {
-								// Second loop required since some items (G12, F9) may have multiple keys
-								keys.forEach(function(key, keyIndex) {
-									if (keys[keyIndex] === 'blanked' || keys[keyIndex] === 'ts') {
-										return true; // Not worth logging
-									}
-									extraInfo += formatParamLog(params.normalizeds[index].toUpperCase(), keys[keyIndex], item[key]);
-								});
-							}
-						});
-					}
+			// If params is "empty" it will still be full of empty arrays, but ask anyway
+			if (params.templateParams) {
+				// Treat custom rationale individually
+				if (params.normalizeds[0] && params.normalizeds[0] === 'db') {
+					extraInfo += formatParamLog('Custom', 'rationale', params.templateParams[0]['1']);
+				} else {
+					params.templateParams.forEach(function(item, index) {
+						var keys = Object.keys(item);
+						if (keys[0] !== undefined && keys[0].length > 0) {
+							// Second loop required since some items (G12, F9) may have multiple keys
+							keys.forEach(function(key, keyIndex) {
+								if (keys[keyIndex] === 'blanked' || keys[keyIndex] === 'ts') {
+									return true; // Not worth logging
+								}
+								extraInfo += formatParamLog(params.normalizeds[index].toUpperCase(), keys[keyIndex], item[key]);
+							});
+						}
+					});
 				}
 			}
 
@@ -1704,7 +1670,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.repost_xfd']) {
 					var deldisc = form['csd.repost_xfd'].value;
 					if (deldisc) {
-						if (!/^(?:wp|wikipedia):/i.test(deldisc)) {
+						if (!new RegExp('^:?' + Morebits.namespaceRegex(4) + ':', 'i').test(deldisc)) {
 							alert('CSD G4:  The deletion discussion page name, if provided, must start with "Wikipedia:".');
 							parameters = null;
 							return false;
@@ -1743,7 +1709,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.xfd_fullvotepage']) {
 					var xfd = form['csd.xfd_fullvotepage'].value;
 					if (xfd) {
-						if (!/^(?:wp|wikipedia):/i.test(xfd)) {
+						if (!new RegExp('^:?' + Morebits.namespaceRegex(4) + ':', 'i').test(xfd)) {
 							alert('CSD G6 (XFD):  The deletion discussion page name, if provided, must start with "Wikipedia:".');
 							parameters = null;
 							return false;
@@ -1818,7 +1784,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						parameters = null;
 						return false;
 					}
-					currentParams.filename = /^\s*(Image|File):/i.test(redimage) ? redimage : 'File:' + redimage;
+					currentParams.filename = new RegExp('^\\s*' + Morebits.namespaceRegex(6) + ':', 'i').test(redimage) ? redimage : 'File:' + redimage;
 				}
 				break;
 
@@ -1832,7 +1798,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.commons_filename']) {
 					var filename = form['csd.commons_filename'].value;
 					if (filename && filename.trim() && filename !== Morebits.pageNameNorm) {
-						currentParams.filename = /^\s*(Image|File):/i.test(filename) ? filename : 'File:' + filename;
+						currentParams.filename = new RegExp('^\\s*' + Morebits.namespaceRegex(6) + ':', 'i').test(filename) ? filename : 'File:' + filename;
 					}
 				}
 				break;

@@ -122,6 +122,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	Window.addFooterLink('About deletion discussions', 'WP:XFD');
 	Window.addFooterLink('XfD prefs', 'WP:TW/PREF#xfd');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#xfd');
+	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.xfd.callback.evaluate);
 	var categories = form.append({
@@ -309,8 +310,9 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 			work_area.append({
 				type: 'div',
-				label: Twinkle.makeFindSourcesDiv(),
-				style: 'margin-bottom: 5px;'
+				label: '', // Added later by Twinkle.makeFindSourcesDiv()
+				id: 'twinkle-xfd-findsources',
+				style: 'margin-bottom: 5px; margin-top: -5px;'
 			});
 
 			work_area.append({
@@ -395,6 +397,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			appendReasonBox();
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
+
+			Twinkle.makeFindSourcesDiv('#twinkle-xfd-findsources');
 
 			$(work_area).find('[name=delsortCats]')
 				.attr('data-placeholder', 'Select delsort pages')
@@ -749,7 +753,8 @@ Twinkle.xfd.callbacks = {
 			pageobj.getStatusElement().warn('Page protected, requesting edit');
 
 			var editRequest = '{{subst:Xfd edit protected|page=' + pageobj.getPageName() +
-				'|discussion=' + params.discussionpage + '|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
+				'|discussion=' + params.discussionpage + (params.venue === 'rfd' ? '|rfd=yes' : '') +
+				'|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
 
 			var talk_page = new Morebits.wiki.page(talkName, 'Automatically posting edit request on talk page');
 			talk_page.setNewSectionTitle('Edit request to complete ' + utils.toTLACase(params.venue) + ' nomination');
@@ -988,7 +993,7 @@ Twinkle.xfd.callbacks = {
 					if (params.tfdtarget) {
 						var contentModel = mw.config.get('wgPageContentModel') === 'Scribunto' ? 'Module:' : 'Template:';
 						appendText += '; Other ' + contentModel.toLowerCase() + ' [[';
-						if (!/^:?(?:template|module):/i.test(params.tfdtarget)) {
+						if (!new RegExp('^:?' + Morebits.namespaceRegex([10, 828]) + ':', 'i').test(params.tfdtarget)) {
 							appendText += contentModel;
 						}
 						appendText += params.tfdtarget + ']]';
@@ -1265,14 +1270,16 @@ Twinkle.xfd.callbacks = {
 				// The watchdefault pref appears to reliably return '1' (string),
 				// but that's not consistent among prefs so might as well be "correct"
 				watchModule = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
-				watch_query = {
-					action: 'watch',
-					titles: [ mw.config.get('wgPageName') ],
-					token: mw.user.tokens.get('watchToken')
-				};
-				// Expiry
-				if (!pageobj.getWatched() && watchModule && watchPref !== 'default' && watchPref !== 'yes') {
-					watch_query.expiry = watchPref;
+				if (watchModule) {
+					watch_query = {
+						action: 'watch',
+						titles: [ mw.config.get('wgPageName') ],
+						token: mw.user.tokens.get('watchToken')
+					};
+					// Only add the expiry if page is unwatched or already temporarily watched
+					if (pageobj.getWatched() !== true && watchPref !== 'default' && watchPref !== 'yes') {
+						watch_query.expiry = watchPref;
+					}
 				}
 			}
 
@@ -1398,7 +1405,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			params.tagText = '{{subst:tfm|help=off|' + (params.templatetype !== 'standard' ? 'type=' + params.templatetype + '|' : '') +
-				'1=' + params.otherTemplateName.replace(/^(?:Template|Module):/, '') + '}}';
+				'1=' + params.otherTemplateName.replace(new RegExp('^' + Morebits.namespaceRegex([10, 828]) + ':'), '') + '}}';
 
 			if (pageobj.getContentModel() === 'sanitized-css') {
 				params.tagText = '/* ' + params.tagText + ' */';

@@ -25,6 +25,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 	Window.addFooterLink('Speedy deletion policy', 'WP:CSD#Files');
 	Window.addFooterLink('Image prefs', 'WP:TW/PREF#image');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#image');
+	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.image.callback.evaluate);
 	form.append({
@@ -78,7 +79,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 			{
 				label: 'Disputed fair use rationale (CSD F7)',
 				value: 'disputed fair use rationale',
-				tooltip: 'Image or media has a fair use rationale that is disputed'
+				tooltip: 'Image or media has a fair use rationale that is disputed or invalid, such as a {{Non-free logo}} tag on a photograph of a mascot'
 			},
 			{
 				label: 'Replaceable fair use (CSD F7)',
@@ -183,7 +184,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
 	var input = Morebits.quickForm.getInputData(event.target);
 	if (input.replacement) {
-		input.replacement = (/^(Image|File):/i.test(input.replacement) ? '' : 'File:') + input.replacement;
+		input.replacement = (new RegExp('^' + Morebits.namespaceRegex(6) + ':', 'i').test(input.replacement) ? '' : 'File:') + input.replacement;
 	}
 
 	var csdcrit;
@@ -236,8 +237,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	} else {
 		// add to CSD log if desired
 		if (lognomination) {
-			params.fromDI = true;
-			Twinkle.speedy.callbacks.user.addToLog(params, null);
+			Twinkle.image.callbacks.addToLog(params, null);
 		}
 		// No auto-notification, display what was going to be added.
 		var noteData = document.createElement('pre');
@@ -309,9 +309,50 @@ Twinkle.image.callbacks = {
 
 		// add this nomination to the user's userspace log, if the user has enabled it
 		if (params.lognomination) {
-			params.fromDI = true;
-			Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
+			Twinkle.image.callbacks.addToLog(params, initialContrib);
 		}
+	},
+	addToLog: function(params, initialContrib) {
+		var usl = new Morebits.userspaceLogger(Twinkle.getPref('speedyLogPageName'));
+		usl.initialText =
+			"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
+			'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
+			'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].' +
+			(Morebits.userIsSysop ? '\n\nThis log does not track outright speedy deletions made using Twinkle.' : '');
+
+		var formatParamLog = function(normalize, csdparam, input) {
+			if (normalize === 'F5' && csdparam === 'replacement') {
+				input = '[[:' + input + ']]';
+			}
+			return ' {' + normalize + ' ' + csdparam + ': ' + input + '}';
+		};
+
+		var extraInfo = '';
+
+		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
+		var fileLogLink = ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])';
+
+		var appendText = '# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ': DI [[WP:CSD#' + params.normalized.toUpperCase() + '|CSD ' + params.normalized.toUpperCase() + ']] ({{tl|di-' + params.templatename + '}})';
+
+		['reason', 'replacement', 'source'].forEach(function(item) {
+			if (params[item]) {
+				extraInfo += formatParamLog(params.normalized.toUpperCase(), item, params[item]);
+				return false;
+			}
+		});
+
+		if (extraInfo) {
+			appendText += '; additional information:' + extraInfo;
+		}
+		if (initialContrib) {
+			appendText += '; notified {{user|1=' + initialContrib + '}}';
+		}
+		appendText += ' ~~~~~\n';
+
+		var editsummary = 'Logging speedy deletion nomination of [[:' + Morebits.pageNameNorm + ']].';
+
+		usl.changeTags = Twinkle.changeTags;
+		usl.log(appendText, editsummary);
 	}
 };
 

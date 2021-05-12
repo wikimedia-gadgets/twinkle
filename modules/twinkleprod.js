@@ -65,8 +65,9 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 
 	field.append({
 		type: 'div',
-		label: Twinkle.makeFindSourcesDiv(),
-		style: 'margin-bottom: 5px;'
+		label: '', // Added later by Twinkle.makeFindSourcesDiv()
+		id: 'twinkle-prod-findsources',
+		style: 'margin-bottom: 5px; margin-top: -5px;'
 	});
 
 	field.append({
@@ -96,6 +97,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 
 	Window.addFooterLink('PROD prefs', 'WP:TW/PREF#prod');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#prod');
+	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	form.append({ type: 'submit', label: 'Propose deletion' });
 
@@ -177,6 +179,8 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 		default:
 			break;
 	}
+
+	Twinkle.makeFindSourcesDiv('#twinkle-prod-findsources');
 
 	event.target.form.replaceChild(field.render(), $(event.target.form).find('fieldset[name="parameters"]')[0]);
 };

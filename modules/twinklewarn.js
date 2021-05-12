@@ -10,12 +10,13 @@
  ****************************************
  * Mode of invocation:     Tab ("Warn")
  * Active on:              Any page with relevant user name (userspace, contribs,
- *                         etc.), as well as the rollback success page
+ *                         etc.) (not IP ranges), as well as the rollback success page
  */
 
 Twinkle.warn = function twinklewarn() {
 
-	if (mw.config.get('wgRelevantUserName')) {
+	// Users and IPs but not IP ranges
+	if (mw.config.exists('wgRelevantUserName') && !Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
 		Twinkle.addPortletLink(Twinkle.warn.callback, 'Warn', 'tw-warn', 'Warn/notify user');
 		if (Twinkle.getPref('autoMenuAfterRollback') &&
 			mw.config.get('wgNamespaceNumber') === 3 &&
@@ -63,6 +64,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	dialog.addFooterLink('Choosing a warning level', 'WP:UWUL#Levels');
 	dialog.addFooterLink('Warn prefs', 'WP:TW/PREF#warn');
 	dialog.addFooterLink('Twinkle help', 'WP:TW/DOC#warn');
+	dialog.addFooterLink('Give feedback', 'WT:TW');
 
 	var form = new Morebits.quickForm(Twinkle.warn.callback.evaluate);
 	var main_select = form.append({
@@ -895,6 +897,10 @@ Twinkle.warn.messages = {
 	},
 
 	singlenotice: {
+		'uw-agf-sock': {
+			label: 'Use of multiple accounts (assuming good faith)',
+			summary: 'Notice: Using multiple accounts'
+		},
 		'uw-aiv': {
 			label: 'Bad AIV report',
 			summary: 'Notice: Bad AIV report'
@@ -1077,10 +1083,6 @@ Twinkle.warn.messages = {
 			label: 'Affiliate marketing',
 			summary: 'Warning: Affiliate marketing'
 		},
-		'uw-agf-sock': {
-			label: 'Use of multiple accounts (assuming good faith)',
-			summary: 'Warning: Using multiple accounts'
-		},
 		'uw-attack': {
 			label: 'Creating attack pages',
 			summary: 'Warning: Creating attack pages',
@@ -1241,6 +1243,16 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			$(elemRendered).data('messageData', itemProperties);
 		});
 	};
+	var createGroup = function(warnGroup, label, wrapInOptgroup, val) {
+		wrapInOptgroup = typeof wrapInOptgroup !== 'undefined' ? wrapInOptgroup : true;
+		var optgroup = new Morebits.quickForm.element({
+			type: 'optgroup',
+			label: label
+		});
+		optgroup = optgroup.render();
+		sub_group.appendChild(optgroup);
+		createEntries(warnGroup, optgroup, wrapInOptgroup, val);
+	};
 
 	switch (value) {
 		case 'singlenotice':
@@ -1260,13 +1272,13 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			break;
 		case 'kitchensink':
 			['level1', 'level2', 'level3', 'level4', 'level4im'].forEach(function(lvl) {
-				$.each(Twinkle.warn.messages.levels, function(_, levelGroup) {
-					createEntries(levelGroup, sub_group, true, lvl);
+				$.each(Twinkle.warn.messages.levels, function(levelGroupLabel, levelGroup) {
+					createGroup(levelGroup, 'Level ' + lvl.slice(5) + ': ' + levelGroupLabel, true, lvl);
 				});
 			});
-			createEntries(Twinkle.warn.messages.singlenotice, sub_group, true);
-			createEntries(Twinkle.warn.messages.singlewarn, sub_group, true);
-			createEntries(Twinkle.getPref('customWarningList'), sub_group, true);
+			createGroup(Twinkle.warn.messages.singlenotice, 'Single-issue notices');
+			createGroup(Twinkle.warn.messages.singlewarn, 'Single-issue warnings');
+			createGroup(Twinkle.getPref('customWarningList'), 'Custom warnings');
 			break;
 		case 'level1':
 		case 'level2':
@@ -1276,14 +1288,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			// Creates subgroup regardless of whether there is anything to place in it;
 			// leaves "Removal of deletion tags" empty for 4im
 			$.each(Twinkle.warn.messages.levels, function(groupLabel, groupContents) {
-				var optgroup = new Morebits.quickForm.element({
-					type: 'optgroup',
-					label: groupLabel
-				});
-				optgroup = optgroup.render();
-				sub_group.appendChild(optgroup);
-				// create the options
-				createEntries(groupContents, optgroup, false);
+				createGroup(groupContents, groupLabel, false);
 			});
 			break;
 		case 'autolevel':
@@ -1301,14 +1306,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 
 				// Identical to level1, etc. above but explicitly provides the level
 				$.each(Twinkle.warn.messages.levels, function(groupLabel, groupContents) {
-					var optgroup = new Morebits.quickForm.element({
-						type: 'optgroup',
-						label: groupLabel
-					});
-					optgroup = optgroup.render();
-					sub_group.appendChild(optgroup);
-					// create the options
-					createEntries(groupContents, optgroup, false, lvl);
+					createGroup(groupContents, groupLabel, false, lvl);
 				});
 
 				// Trigger subcategory change, add select menu, etc.
@@ -1768,15 +1766,15 @@ Twinkle.warn.callbacks = {
 		var sectionExists = false, sectionNumber = 0;
 		// Only check sections if there are sections or there's a chance we won't create our own
 		if (!messageData.heading && text.length) {
-			// Get all L2 sections
-			var sections = text.match(/^(==)[^=].+\1/gm);
+			// Get all sections
+			var sections = text.match(/^(==*).+\1/gm);
 			if (sections && sections.length !== 0) {
 				// Find the index of the section header in question
 				var dateHeaderRegex = now.monthHeaderRegex();
 				sectionNumber = 0;
-				// Find this month's section, preferring the bottom-most
+				// Find this month's section among L2 sections, preferring the bottom-most
 				sectionExists = sections.reverse().some(function(sec, idx) {
-					return dateHeaderRegex.test(sec) && typeof (sectionNumber = sections.length - 1 - idx) === 'number';
+					return /^(==)[^=].+\1/m.test(sec) && dateHeaderRegex.test(sec) && typeof (sectionNumber = sections.length - 1 - idx) === 'number';
 				});
 			}
 		}
@@ -1789,7 +1787,7 @@ Twinkle.warn.callbacks = {
 			if (messageData.heading) { // create new section
 				pageobj.setNewSectionTitle(messageData.heading);
 			} else {
-				Morebits.status.info('Info', 'Will create a new level 2 heading for the date, as none was found for this month');
+				Morebits.status.info('Info', 'Will create a new talk page section for this month, as none was found');
 				pageobj.setNewSectionTitle(now.monthHeader());
 			}
 			pageobj.setNewSectionText(warningText);
