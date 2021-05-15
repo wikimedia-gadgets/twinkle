@@ -2017,7 +2017,7 @@ Morebits.date.prototype = {
 		};
 		var h24 = udate.getHours(), m = udate.getMinutes(), s = udate.getSeconds(), ms = udate.getMilliseconds();
 		var D = udate.getDate(), M = udate.getMonth() + 1, Y = udate.getFullYear();
-		var h12 = h24 % 12 || 12, amOrPm = h24 >= 12 ? 'PM' : 'AM';
+		var h12 = h24 % 12 || 12, amOrPm = h24 >= 12 ? msg('period-pm', 'PM') : msg('period-am', 'AM');
 		var replacementMap = {
 			HH: pad(h24), H: h24, hh: pad(h12), h: h12, A: amOrPm,
 			mm: pad(m), m: m,
@@ -3998,7 +3998,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else if ((errorCode === null || errorCode === undefined) && ctx.retries++ < ctx.maxRetries) {
 
 			// the error might be transient, so try again
-			ctx.statusElement.info(msg('save-failed-retrying', 'Save failed, retrying in 2 seconds ...'));
+			ctx.statusElement.info(msg('save-failed-retrying', 2, 'Save failed, retrying in 2 seconds ...'));
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 
 			// wait for sometime for client to regain connectivity
@@ -5556,7 +5556,7 @@ Morebits.batchOperation = function(currentAction) {
 				if (arg.getPageName || arg.pageName || (arg.query && arg.query.title)) {
 					// we know the page title - display a relevant message
 					var pageName = arg.getPageName ? arg.getPageName() : arg.pageName || arg.query.title;
-					statelem.info(msg('batch-done-page', pageName, 'completed ([[' + pageName + ']]'));
+					statelem.info(msg('batch-done-page', pageName, 'completed ([[' + pageName + ']])'));
 				} else {
 					// we don't know the page title - just display a generic message
 					statelem.info(msg('done', 'done'));
@@ -5567,7 +5567,7 @@ Morebits.batchOperation = function(currentAction) {
 			}
 
 		} else if (typeof arg === 'string' && ctx.options.preserveIndividualStatusLines) {
-			new Morebits.status(arg, msg('batch-done-page', arg, 'done ([[' + arg + ']])'));
+			new Morebits.status(arg, msg('batch-done-page', arg, 'completed ([[' + arg + ']])'));
 		}
 
 		ctx.countFinishedSuccess++;
@@ -5602,7 +5602,7 @@ Morebits.batchOperation = function(currentAction) {
 		var total = ctx.pageList.length;
 		if (ctx.countFinished < total) {
 			var progress = Math.round(100 * ctx.countFinished / total);
-			ctx.statusElement.status(msg('n-percent', progress, progress + '%'));
+			ctx.statusElement.status(msg('percent', progress, progress + '%'));
 
 			// start a new chunk if we're close enough to the end of the previous chunk, and
 			// we haven't already started the next one
