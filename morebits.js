@@ -4071,6 +4071,15 @@ Morebits.wiki.page = function(pageName, status) {
 		}
 	};
 
+	var isTextRedirect = function(text) {
+		if (!text) { // no text - content empty or inaccessible (revdelled or suppressed)
+			return false;
+		}
+		return Morebits.l10n.redirectTagAliases.some(function(tag) {
+			return new RegExp('^\\s*' + tag + '\\W', 'i').test(text);
+		});
+	};
+
 	var fnLookupCreationSuccess = function() {
 		var response = ctx.lookupCreationApi.getResponse().query;
 
@@ -4085,9 +4094,7 @@ Morebits.wiki.page = function(pageName, status) {
 			return;
 		}
 
-		if (!ctx.lookupNonRedirectCreator || !Morebits.l10n.redirectTagAliases.some(function(tag) {
-			return new RegExp('^\\s*' + tag, 'i').test(rev.content);
-		})) {
+		if (!ctx.lookupNonRedirectCreator || !isTextRedirect(rev.content)) {
 
 			ctx.creator = rev.user;
 			if (!ctx.creator) {
@@ -4121,7 +4128,8 @@ Morebits.wiki.page = function(pageName, status) {
 		var revs = response.pages[0].revisions;
 
 		for (var i = 0; i < revs.length; i++) {
-			if (!/^\s*#redirect/i.test(revs[i].content)) { // inaccessible revisions also check out
+
+			if (!isTextRedirect(revs[i].content)) {
 				ctx.creator = revs[i].user;
 				ctx.timestamp = revs[i].timestamp;
 				break;
