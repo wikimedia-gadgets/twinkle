@@ -217,7 +217,7 @@ Twinkle.config.sections = [
 			// Whether to default to just blocking the /64 on or off
 			{
 				name: 'defaultToBlock64',
-				label: 'For IPv6 addressed, select the option to Just Block the /64 by default',
+				label: 'For IPv6 addresses, select the option to block the /64 range by default',
 				type: 'boolean'
 			},
 
